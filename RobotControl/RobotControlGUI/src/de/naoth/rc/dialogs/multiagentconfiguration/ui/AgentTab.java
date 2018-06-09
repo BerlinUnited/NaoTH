@@ -12,9 +12,11 @@ import de.naoth.rc.server.MessageServer;
 import de.naoth.rc.server.ResponseListener;
 import de.naoth.rc.dialogs.multiagentconfiguration.Parameter;
 import de.naoth.rc.dialogs.multiagentconfiguration.Utils;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +26,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -35,6 +39,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.Tooltip;
@@ -43,6 +49,7 @@ import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 
@@ -79,6 +86,8 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
     
     private final String cmd_write_behavior = "Cognition:file::write";
     private final String behaviorPath = "Config/behavior-ic.dat";
+    
+    private final Command cmd_playerinfo_scheme = new Command("Cognition:representation:print").addArg("PlayerInfo");
     
     private String agent = "";
     private List<String> agent_list = new ArrayList<>();
@@ -135,7 +144,7 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
     protected Button btnUpdateParameters;
     
     @FXML
-    protected Button btnSaveParameters;
+    protected SplitMenuButton btnSaveParameters;
     
     @FXML
     protected Button btnSendBehavior;
@@ -143,6 +152,8 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
     @FXML
     protected ComboBox<String> agentList;
     
+    @FXML
+    protected Label lblScheme;
     
     public AgentTab() {
         super();
@@ -194,7 +205,7 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
 
         // set some tooltips
         btnSaveModules.setTooltip(new Tooltip("Save module configuration on robot(s)."));
-        btnSaveParameters.setTooltip(new Tooltip("Save parameters locally."));
+        btnSaveParameters.setTooltip(new Tooltip("Save all parameters locally."));
         btnUpdateDebug.setTooltip(new Tooltip("Update debug requests."));
         btnUpdateModules.setTooltip(new Tooltip("Update modules."));
         btnUpdateParameters.setTooltip(new Tooltip("Update parameters."));
@@ -228,12 +239,13 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
                 sendCommand(cmd_agent_set);
             }
         });
-
+        
         updateModules();
         updateDebugRequests();
         updateParameters();
         sendCommand(cmd_agent_list);
         sendCommand(cmd_agent);
+        sendCommand(cmd_playerinfo_scheme);
     }
     
     private boolean sendCommand(Command cmd) {
@@ -273,7 +285,69 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
     
     @FXML
     protected void saveParameters() {
-        System.out.println("saveParameters");
+        File selectedDirectory = selectParameterDirectory();
+        if(selectedDirectory != null) {
+            // write configs
+            writeConfigFiles(parameterTree.getRoot().getChildren().get(0), selectedDirectory.getPath());
+            writeConfigFiles(parameterTree.getRoot().getChildren().get(1), selectedDirectory.getPath());
+        }
+    }
+    
+    @FXML
+    protected void saveParametersMotion() {
+        File selectedDirectory = selectParameterDirectory();
+        if(selectedDirectory != null) {
+            // write configs
+            writeConfigFiles(parameterTree.getRoot().getChildren().get(0), selectedDirectory.getPath());
+        }
+    }
+    
+    @FXML
+    protected void saveParametersCognition() {
+        File selectedDirectory = selectParameterDirectory();
+        if(selectedDirectory != null) {
+            // write configs
+            writeConfigFiles(parameterTree.getRoot().getChildren().get(1), selectedDirectory.getPath());
+        }
+    }
+    
+    private File selectParameterDirectory() {
+        DirectoryChooser dirChooser = new DirectoryChooser();
+        dirChooser.setTitle("Save all parameters");
+        dirChooser.setInitialDirectory(new File("../../NaoTHSoccer/Config/"));
+        File selectedFile = dirChooser.showDialog(getTabPane().getScene().getWindow());
+        if (selectedFile != null && selectedFile.isDirectory()) {
+            // TODO: ask, whether overwriting file is "ok"
+            if(true) {
+                // trigger exception (if couldn't write)
+                try {
+                    File f = File.createTempFile("tmp_"+Math.random(), ".tmp", selectedFile);
+                    f.delete();
+                } catch (IOException ex) {
+                    // TODO: show hint & exit
+                    Logger.getLogger(AgentTab.class.getName()).log(Level.SEVERE, null, ex);
+                    return null;
+                }
+                return selectedFile;
+            }
+        }
+        return null;
+    }
+    
+    private void writeConfigFiles(TreeItem<Parameter> type, String path) {
+        type.getChildren().forEach((p) -> {
+            try {
+                File cfg = new File(path + File.separator + type.getValue().getName() + "_" + p.getValue().getName() + ".cfg");
+                BufferedWriter bf = new BufferedWriter(new FileWriter(cfg));
+                bf.write("[" + p.getValue().getName() + "]\n");
+                for (TreeItem<Parameter> v : p.getChildren()) {
+                    bf.write(v.getValue().getName() + "=" + v.getValue().getValue() + "\n");
+                }
+                bf.close();
+            } catch (IOException ex) {
+                Logger.getLogger(AgentTab.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
     }
     
     @FXML
@@ -369,6 +443,8 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
             } else if(command.equals(cmd_modules_cognition_store) || command.equals(cmd_modules_motion_store)) {
                 // currently do nothing ...
                 System.out.println(command.getName() + ": " + new String(result));
+            } else if(command.equals(cmd_playerinfo_scheme)) {
+                handlePlayerInforResponse(result);
             } else {
                 System.out.println(command.getName() + ": " + new String(result));
             }
@@ -430,27 +506,23 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
     }
     
     private void handleCognitionParameterResponse(byte[] result) {
-        TreeItem<Parameter> root_item = new TreeItem<>(new Parameter("Cognition", null));
-        root_item.setExpanded(true);
-        parameterTree.getRoot().getChildren().add(root_item);
-        
-        handleParameterResponse(root_item, cmd_parameter_cognition_get, result);
+        handleParameterResponse("Cognition", cmd_parameter_cognition_get, result);
     }
     
     private void handleMotionParameterResponse(byte[] result) {
-        TreeItem<Parameter> root_item = new TreeItem<>(new Parameter("Motion", null));
+        handleParameterResponse("Motion", cmd_parameter_motion_get, result);
+    }
+    
+    private void handleParameterResponse(String type, String cmd, byte[] result) {
+        TreeItem<Parameter> root_item = new TreeItem<>(new Parameter(type, null));
         root_item.setExpanded(true);
         parameterTree.getRoot().getChildren().add(0, root_item);
         
-        handleParameterResponse(root_item, cmd_parameter_motion_get, result);
-    }
-    
-    private void handleParameterResponse(TreeItem<Parameter> root_item, String cmd, byte[] result) {
-        TreeItem<Parameter> root_global = Utils.global_parameters.get(root_item.getValue().getName());
+        TreeItem<Parameter> root_global = Utils.global_parameters.get(type);
         
         Arrays.asList(new String(result).split("\n")).forEach((p) -> {
             // an identifier for the parameter
-            String parameterId = root_item.getValue().getName()+":"+p;
+            String parameterId = type+":"+p;
             // check if the global parameter list contains the parameter
             if(!Utils.global_parameters.containsKey(parameterId)) {
                 TreeItem<Parameter> global_parameter = new TreeItem<>(new Parameter(p, null));
@@ -497,6 +569,18 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
             });
         }
         
+    }
+    
+    private void handlePlayerInforResponse(byte[] result) {
+        // extract representation from string
+        Pattern keyValue = Pattern.compile("^(?<key>.+)=(?<value>.*)$", Pattern.MULTILINE);
+        Map<String, String> repr = new HashMap<>();
+        Matcher m = keyValue.matcher(new String(result));
+        while (m.find()) {
+            repr.put(m.group("key").trim(), m.group("value").trim());
+        }
+        String scheme = repr.getOrDefault("active scheme", "?");
+        lblScheme.setText((scheme.equals("-")?"default parameter":scheme));
     }
     
     private void request(String cmd, ObservableValue o, boolean state) {

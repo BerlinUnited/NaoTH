@@ -88,6 +88,6 @@ public class Parameter
 
     @Override
     public String toString() {
-        return "Parameter (" + type.get() + ":" + module.get() + "." + name.get() + "=" + value.get() + ")";
+        return "Parameter (" + (type==null?"null":type.get()) + ":" + (module==null?"null":module.get()) + "." + name.get() + "=" + value.get() + ")";
     }
 }

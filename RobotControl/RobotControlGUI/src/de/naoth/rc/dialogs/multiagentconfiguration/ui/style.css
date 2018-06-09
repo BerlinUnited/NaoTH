@@ -16,3 +16,8 @@
 #btnSaveModules {
   -fx-graphic: url("../../../res/arrowup.png");
 }
+
+#btnSaveParameters {
+  -fx-graphic: url("../../../res/arrowdown.png");
+  -fx-pref-height: 30;
+}
