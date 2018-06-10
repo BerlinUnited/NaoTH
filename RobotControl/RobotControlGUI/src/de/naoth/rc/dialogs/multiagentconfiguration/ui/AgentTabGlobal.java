@@ -3,6 +3,7 @@ package de.naoth.rc.dialogs.multiagentconfiguration.ui;
 import de.naoth.rc.dialogs.multiagentconfiguration.Parameter;
 import de.naoth.rc.dialogs.multiagentconfiguration.Utils;
 import javafx.scene.control.CheckBoxTreeItem;
+import javafx.scene.control.MenuButton;
 import javafx.scene.control.TreeItem;
 
 /**
@@ -76,5 +77,10 @@ public class AgentTabGlobal extends AgentTab
     @Override
     protected void sendBehaviorFile() {
         // the global tab doesn't update any parameters directly!
+    }
+
+    @Override
+    protected MenuButton createTabButton() {
+        return null;
     }
 }

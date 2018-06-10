@@ -39,7 +39,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
@@ -211,6 +214,19 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
         btnUpdateParameters.setTooltip(new Tooltip("Update parameters."));
         btnSendBehavior.setTooltip(new Tooltip("Sends a new behavior file to the robot(s)."));
         agentList.setTooltip(new Tooltip("Select executing agent."));
+
+        setGraphic(createTabButton());
+    }
+    
+    protected MenuButton createTabButton() {
+        MenuButton b = new MenuButton();
+        b.setContentDisplay(ContentDisplay.TEXT_ONLY); // set via css
+        b.setGraphicTextGap(0);
+        b.setFocusTraversable(false);
+        b.getStyleClass().add(".tab-button");
+        b.getItems().add(new MenuItem("Dis/Connect"));
+        b.getItems().add(new MenuItem("Close"));
+        return b;
     }
     
     public AgentTab(String host, int port)  {
@@ -227,6 +243,7 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
         try {
             server.connect(host, port);
         } catch (IOException ex) {
+            splitPane.setDisable(true);
             Logger.getLogger(Tab.class.getName()).log(Level.SEVERE, null, ex);
         }
         

@@ -21,3 +21,15 @@
   -fx-graphic: url("../../../res/arrowdown.png");
   -fx-pref-height: 30;
 }
+
+.tab-label {
+  -fx-font-style: italic;
+}
+
+.menu-button {
+  -fx-region-background: none;
+}
+
+.menu-button .label {
+  -fx-padding: 0;
+}
