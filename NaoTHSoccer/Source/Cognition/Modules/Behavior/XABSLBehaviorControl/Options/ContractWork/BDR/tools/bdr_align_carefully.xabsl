@@ -31,6 +31,8 @@ option bdr_align_carefully
       motion.walk_speed.rot = robot_pose.charging_target.rotation;
       motion.walk.coordinate = hip;
       motion.walk.stop_with_stand = true;
+
+      motion.walk.precise = true;
     }
 
   }
