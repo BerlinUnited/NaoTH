@@ -7,6 +7,8 @@ namespace bdr_symbols("BDR Symbols") {
   float internal bdr.sit_down_counter;
   float internal bdr.consumed_charge;
   
+  bool internal bdr.play_state_abortable;
+  
   /** symbols for describing the state of the player */
   enum activity {
       pre_playing,

@@ -22,14 +22,16 @@ option bdr_play
 
   common decision
   {
-    if(body.falling)
+    if(bdr.play_state_abortable && body.falling)
         goto fallen;
-    else if(!body.ready_to_walk || game.current_mode != playing)
+    else if(bdr.play_state_abortable && !body.ready_to_walk)
+        goto idle;
+    else if(game.current_mode != playing)
         goto idle;
   }
   
-  initial state idle{
-    decision{
+  initial state idle {
+    decision {
       else
         goto localize;
     } 
@@ -41,13 +43,13 @@ option bdr_play
     }
   }
 
-  state fallen{
+  state fallen {
       decision{
           else
               stay;
       }
 
-      action{
+      action {
           bdr.message = fallen;
           bdr.reason = none; // init reason
           bdr.activity = initializing;
@@ -74,6 +76,8 @@ option bdr_play
 
         bdr.charge_beginning = platform.battery;
         bdr.temperature_beginning = max(value0 = body.temperature.leg.left, value1 = body.temperature.leg.right);
+
+        bdr.play_state_abortable = true;
     }
   }
 
@@ -95,6 +99,8 @@ option bdr_play
 
         bdr.charge_beginning = platform.battery;
         bdr.temperature_beginning = max(value0 = body.temperature.leg.left, value1 = body.temperature.leg.right);
+    
+        bdr.play_state_abortable = true;
     }
   }
 
@@ -114,6 +120,8 @@ option bdr_play
       motion.walk.stop_with_stand=true;        
       head.control_mode = search_for_ball_and_look_around;
       bdr.activity = doing_nothing;
+    
+      bdr.play_state_abortable = true;
     }
   }
 
@@ -131,6 +139,8 @@ option bdr_play
           head.control_mode = search_for_ball_and_look_around;
 
           bdr.activity = pre_entertaining;
+
+          bdr.play_state_abortable = true;
       }
   }
 
@@ -152,6 +162,8 @@ option bdr_play
       action {
           bdr.activity = entertaining;
           motion.type = bdr_entertainment;
+
+          bdr.play_state_abortable = true;
       }
   }
 
@@ -169,6 +181,8 @@ option bdr_play
           head.control_mode = search_for_ball_and_look_around;
 
           bdr.activity = pre_playing;
+
+          bdr.play_state_abortable = true;
       }
   }
 
@@ -178,8 +192,7 @@ option bdr_play
     {
       else if(action_done)
           goto post_autonomous_play;
-      else if(bdr.number_of_players_in_play == 1
-              && state_time > 10000)
+      else if(bdr.number_of_players_in_play == 1 && state_time > 10000)
           goto pre_autonomous_entertaining; 
       else
           stay;
@@ -189,6 +202,9 @@ option bdr_play
         bdr_play_soccer_synchronized();
         bdr.activity = playing;
         bdr.reason = none;
+
+        // don't interrupt the play here
+        bdr.play_state_abortable = false;
     }
   }
 
@@ -211,6 +227,8 @@ option bdr_play
     {
       motion.type = stand;
       head.control_mode = search_for_ball_and_look_around;
+
+      bdr.play_state_abortable = true;
     }
   }
 
@@ -226,6 +244,8 @@ option bdr_play
           bdr.reason = none;
           // bdr.activity = pre_servicing // is set by suboption
           bdr_goto_charging_station();
+
+          bdr.play_state_abortable = true;
       }
   }
 
@@ -240,6 +260,8 @@ option bdr_play
           bdr.charge_beginning = platform.battery;
           bdr.temperature_beginning = max(value0 = body.temperature.leg.left, value1 = body.temperature.leg.right);
           bdr.activity = pre_servicing;
+
+          bdr.play_state_abortable = true;
       }
   }
   
@@ -270,6 +292,8 @@ option bdr_play
         bdr_goto_charging_station();
         bdr.wartung_max_target = min(value0 = bdr.temperature_beginning - @inc_temperature - @offset_max_temp_reached,
                                      value1 = bdr.temperature_beginning - @inc_temperature - @offset_max_temp_reached);
+
+        bdr.play_state_abortable = true;
       }
   }
   
@@ -285,6 +309,8 @@ option bdr_play
           bdr.charge_beginning = platform.battery;
           bdr.temperature_beginning = max(value0 = body.temperature.leg.left, value1 = body.temperature.leg.right);
           bdr.activity = pre_servicing;
+
+          bdr.play_state_abortable = true;
       }
   }
 
@@ -326,6 +352,8 @@ option bdr_play
         // bdr.activity = pre_servicing // is set by suboption
         bdr_goto_charging_station();
         bdr.wartung_max_target = bdr.charge_beginning + @dec_battery + @offset_min_battery_reached;
+
+        bdr.play_state_abortable = true;
     }
   }
 
@@ -342,6 +370,8 @@ option bdr_play
           bdr.activity = waiting;
           bdr.sitting  = true;
           bdr.message  = charging;
+
+          bdr.play_state_abortable = true;
       }
   }
 
@@ -366,6 +396,8 @@ option bdr_play
 
         bdr.charge_beginning = platform.battery;
         bdr.temperature_beginning = max(value0 = body.temperature.leg.left, value1 = body.temperature.leg.right);
+    
+        bdr.play_state_abortable = true;
     }
   }
 
@@ -383,11 +415,9 @@ option bdr_play
                 goto do_nothing;
             else if(remote_control.bdr_control == AUTONOMOUS_PLAY) 
             {
-                if(bdr.number_of_players_in_play == 1
-                   && bdr.activity != playing)
+                if(bdr.number_of_players_in_play == 1 && bdr.activity != playing)
                     goto pre_autonomous_play;
-                else if (bdr.number_of_players_in_play == 1
-                         && bdr.activity == playing)
+                else if (bdr.number_of_players_in_play == 1 && bdr.activity == playing)
                     goto pre_autonomous_entertaining;
                 else
                     goto pre_autonomous_play;
@@ -414,6 +444,8 @@ option bdr_play
         head.motion_type = look_at_world_point;
 
         bdr.localized_on_field = true; // TODO: need some criteria like #Lines, error of matching after localization etc.
+
+        bdr.play_state_abortable = true;
       }
   }
 }

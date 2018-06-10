@@ -16,8 +16,7 @@ option bdr_play_soccer_synchronized
 
     state play {
         decision {
-            if ( bdr.number_of_players_in_play != 2
-                 || state_time > 120000 )
+            if ( bdr.number_of_players_in_play != 2 || state_time > 120000 )
                 goto won_or_lost;
             else
                 stay;
