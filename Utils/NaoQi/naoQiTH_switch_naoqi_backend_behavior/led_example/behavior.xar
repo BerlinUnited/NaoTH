@@ -14,7 +14,7 @@
         <Timeline enable="0">
             <BehaviorLayer name="behavior_layer1">
                 <BehaviorKeyframe name="keyframe1" index="1">
-                    <Diagram scale="59.4604">
+                    <Diagram scale="42.0448">
                         <Box name="get BDRNaoQiRequest" id="4" localization="8" tooltip="get BDRNaoQiRequest" x="538" y="130">
                             <bitmap>media/images/box/sensors/STM.png</bitmap>
                             <script language="4">
