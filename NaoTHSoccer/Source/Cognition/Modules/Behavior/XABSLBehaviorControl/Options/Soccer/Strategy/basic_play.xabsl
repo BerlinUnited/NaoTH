@@ -15,6 +15,8 @@ option basic_play
       motion.walk.style = normal;
       motion.walk.step_control.scale = 1;
 
+      motion.walk.precise = false;
+
       path.routine = none;
       // why was this put here? Steffen?
       //arm.control_mode = normal;

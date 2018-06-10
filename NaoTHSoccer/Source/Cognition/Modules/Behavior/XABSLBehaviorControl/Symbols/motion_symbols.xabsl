@@ -139,6 +139,8 @@ namespace motion_symbols("Motion Symbols") {
   /** The walk coordinate */
   enum motion.walk.coordinate output motion.walk.coordinate;
   
+  bool output motion.walk.precise;
+  
   /** The currently requested motion type. */
   enum motion.type output motion.type;
   /** The currently executed motion type. */

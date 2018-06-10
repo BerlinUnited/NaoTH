@@ -122,6 +122,8 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalOutputSymbol("motion.walk.step_control.speed_direction", &stepControlRequestSpeedDirection);
   engine.registerDecimalOutputSymbol("motion.walk.step_control.scale", &stepControlScale);
 
+  engine.registerBooleanOutputSymbol("motion.walk.precise", &getMotionRequest().walkRequest.stepControl.isProtected);
+
   // motion status
   engine.registerEnumeratedInputSymbol("executed_motion.type","motion.type", &getMotionStatusId);
   engine.registerDecimalInputSymbol("executed_motion.time", &getMotionStatusTime);
@@ -131,7 +133,6 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("executed_motion.planed.target.x", &getMotionStatus().plannedMotion.hip.translation.x);
   engine.registerDecimalInputSymbol("executed_motion.planed.target.y", &getMotionStatus().plannedMotion.hip.translation.y);
   engine.registerDecimalInputSymbol("executed_motion.planed.target.rotation", &getMotionStatus().plannedMotion.hip.rotation);
-
 
   // universal enum type for direction
   engine.registerEnumElement("direction", "direction.right", -1);
