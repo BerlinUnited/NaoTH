@@ -13,13 +13,13 @@ option bdr_agent
                max_temperature = 70,
                inc_temperature = 10,
                offset_max_temp_reached = 2,
-			   min_battery = 0.5,
+               min_battery = 0.5,
                max_battery = 0.9,
-			   dec_battery = 0.04,
+               dec_battery = 0.04,
                inc_battery = 0.06,
-			   offset_min_battery_reached = 0.02,
+               offset_min_battery_reached = 0.02,
                reload_consumed = true,
-			   wait_for_each_other = true);
+               wait_for_each_other = true);
 
       // control the arms
       arms_control();
