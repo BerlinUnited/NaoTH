@@ -294,6 +294,8 @@ option bdr_play
                                      value1 = bdr.temperature_beginning - @inc_temperature - @offset_max_temp_reached);
 
         bdr.play_state_abortable = true;
+
+        bdr.reason = temperature;
       }
   }
   
@@ -354,6 +356,8 @@ option bdr_play
         bdr.wartung_max_target = bdr.charge_beginning + @dec_battery + @offset_min_battery_reached;
 
         bdr.play_state_abortable = true;
+
+        bdr.reason  = battery_charge;
     }
   }
 
