@@ -890,6 +890,7 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
       else if(data.data[CameraSettings::AutoWhiteBalancing] && 
         (*it == CameraSettings::WhiteBalance)) {
         // ignore
+        std::cout << "Ignore WhiteBalance" << std::endl;
       }
       // apply the single parameter setting
       else if(setSingleCameraParameter(csConst[*it], data.data[*it], CameraSettings::getCameraSettingsName(*it))) {
@@ -911,6 +912,7 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
           std::cout << LOG << "autoupdated ExposWhiteBalanceure to "  << currentSettings.data[CameraSettings::WhiteBalance] << std::endl;
         }
 
+        std::cout << LOG << "set " << CameraSettings::getCameraSettingsName(*it) << " to " << data.data[*it] << std::endl;
 
         currentSettings.data[*it] = data.data[*it];
 
