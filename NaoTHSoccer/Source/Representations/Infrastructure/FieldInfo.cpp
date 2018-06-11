@@ -341,6 +341,13 @@ void FieldInfo::draw(DrawingCanvas2D& canvas) const
 {
   fieldLinesTable.draw(canvas);
 
+  // draw the carpet
+  canvas.pen("FF0000",1);
+  canvas.drawLine(carpetRect.min().x, carpetRect.min().y, carpetRect.min().x, carpetRect.max().y);
+  canvas.drawLine(carpetRect.min().x, carpetRect.min().y, carpetRect.max().x, carpetRect.min().y);
+  canvas.drawLine(carpetRect.max().x, carpetRect.max().y, carpetRect.min().x, carpetRect.max().y);
+  canvas.drawLine(carpetRect.max().x, carpetRect.max().y, carpetRect.max().x, carpetRect.min().y);
+
   // draw throw in lines
   canvas.pen("000000", 1);
   canvas.drawLine(leftThrowInPointOwn.x,leftThrowInPointOwn.y,leftThrowInPointOpp.x,leftThrowInPointOpp.y);
