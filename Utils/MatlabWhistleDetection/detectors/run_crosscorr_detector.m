@@ -35,7 +35,8 @@ create_non_detection_plots = false;
 % ref = reference_database.kln17;
 % ref = reference_database.rc17;
 % ref = reference_database.go18;
-ref = reference_database.go17;
+%ref = reference_database.go17;
+ref = reference_database.gen_from_go18_recordings;
 
 ref_stat = struct;
 for r = 1:length(ref)

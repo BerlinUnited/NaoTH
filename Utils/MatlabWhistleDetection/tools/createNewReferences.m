@@ -12,7 +12,7 @@ catch
     disp('ERROR: Could not load capture database')
     return
 end
-%% Find all annoated captures containing whistles
+%% Find all annotated captures containing whistles
 event_names = fieldnames(capture_database);
 % container for references
 annotated_captures = struct; % those are not extracted yet -> choose better name
@@ -62,8 +62,19 @@ for t = 1:length(event_names)
             % export whistle data as raw
             path_to_outputfolder = fullfile(reference_export_path,strcat('gen_from_', char(event_name)));
             mkdir(path_to_outputfolder);
-
-            record_name = strcat(an.game_name, "_", an.half, "_", an.robot_name, "_", an.filename);
+            
+            
+            record_name = strcat(an.game_name, "_", an.half, "_", an.robot_name,"_", int2str(c), ".raw");
+            
+            % make sure that the filename does not start with a number that
+            % fixes later problems in the analysis scripts
+            a = char(record_name);
+            a = a(1); % get first character
+            a = str2num(a); % try the convert it to a number
+            if a
+                record_name = strcat('g', record_name)
+            end
+            
             fileID = fopen(fullfile(path_to_outputfolder, record_name), 'w');
                 fwrite(fileID, whistleData, 'int16', 'ieee-le');
             fclose(fileID);
