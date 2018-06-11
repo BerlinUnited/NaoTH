@@ -47,7 +47,8 @@ option path_decide_role
     action
     {
       team.is_playing_as_striker = true;
-      path_striker();
+      //path_striker();
+      path_striker2018();
       //blinking
       set_left_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
       set_right_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
@@ -64,7 +65,8 @@ option path_decide_role
     action
     {
       team.is_playing_as_striker = false;
-      path_striker();
+      //path_striker();
+      path_striker2018();
       
       //blinking
       set_left_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;

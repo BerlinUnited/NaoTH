@@ -60,6 +60,9 @@ void PathPlanner2018::execute()
       return;
     }
     break;
+  case PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL:
+    moveAroundBall(getPathModel().direction, getPathModel().radius);
+    break;
   case PathModel::PathPlanner2018Routine::FORWARDKICK_LEFT:
     if (farApproach())
     {
@@ -94,6 +97,53 @@ void PathPlanner2018::execute()
 
   // Always executed last
   executeStepBuffer();
+}
+
+void PathPlanner2018::moveAroundBall(const double direction, const double radius)
+{
+  Vector2d ballPos    = getBallModel().positionPreview;
+  double ballRotation = ballPos.angle();
+  double ballDistance = ballPos.abs();
+
+  double min1;
+  double min2;
+  double max1;
+  double max2;
+  if (direction <= 0)
+  {
+    min1 = 0.0;
+    min2 = 0.0;
+    max1 = 45.0;
+    max2 = 100.0;
+  }
+  else {
+    min1 = -45;
+    min2 = -100;
+    max1 = 0;
+    max2 = 0;
+  }
+
+  double stepX = (ballDistance - radius) * std::cos(ballRotation);
+  double stepY = Math::clamp(radius * std::tan(Math::clamp(Math::toDegrees(-direction), min1, max1)), min2, max2) * std::cos(ballRotation);
+
+  Pose2D pose = { ballRotation, stepX, stepY };
+
+  if (stepBuffer.empty())
+  {
+    StepBufferElement new_step;
+    new_step.setPose(pose);
+    new_step.setStepType(StepType::WALKSTEP);
+    new_step.setCharacter(0.7);
+    new_step.setScale(1.0);
+    new_step.setCoordinate(Coordinate::Hip);
+    new_step.setFoot(Foot::NONE);
+    new_step.setSpeedDirection(Math::fromDegrees(0.0));
+    new_step.setRestriction(RestrictionMode::HARD);
+    new_step.setProtected(false);
+    new_step.setTime(250);
+
+    addStep(new_step);
+  }
 }
 
 bool PathPlanner2018::farApproach()
@@ -167,8 +217,12 @@ bool PathPlanner2018::nearApproach_forwardKick(const Foot& foot, const double of
     {
       double translation_xy = params.stepLength;
 
+      double translation_x = std::min(translation_xy, ballPos.x - getFieldInfo().ballRadius - params.nearApproachBallPosOffsetX - std::abs(ballPos.y));
+      double translation_y = std::min(translation_xy, std::abs(ballPos.y)) * (ballPos.y < 0 ? -1 : 1);
+
       StepBufferElement new_step;
-      new_step.setPose({ 0.0, std::min(translation_xy, ballPos.x - getFieldInfo().ballRadius - params.nearApproachBallPosOffsetX), std::min(translation_xy, std::abs(ballPos.y)) * (ballPos.y < 0 ? -1 : 1) });
+      //new_step.setPose({ 0.0, std::min(translation_xy, ballPos.x - getFieldInfo().ballRadius - params.nearApproachBallPosOffsetX), std::min(translation_xy, std::abs(ballPos.y)) * (ballPos.y < 0 ? -1 : 1) });
+      new_step.setPose({ 0.0, translation_x, translation_y });
       new_step.setStepType(StepType::WALKSTEP);
       new_step.setCharacter(0.7);
       new_step.setScale(1.0);
