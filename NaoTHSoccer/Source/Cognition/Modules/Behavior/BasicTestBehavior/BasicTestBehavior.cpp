@@ -69,7 +69,6 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:ParallelKinematik:dance", "parallel_dance", false);
 
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:sound:test", "it is what it is...", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:say:test", "it is what it is...", false);
 
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:led:HeadFrontLeft0", "it is what it is...", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:led:HeadFrontLeft1", "it is what it is...", false);
@@ -101,10 +100,6 @@ void BasicTestBehavior::execute()
   getSoundPlayData().soundFile = "";
   DEBUG_REQUEST("BasicTestBehavior:sound:test",
     getSoundPlayData().soundFile = "victory.wav";
-  );
-
-  DEBUG_REQUEST("BasicTestBehavior:say:test",
-    getSayRequest().setMessage("Hallo World!", getFrameInfo());
   );
 
   DEBUG_REQUEST("BasicTestBehavior:arms:arms_back", 

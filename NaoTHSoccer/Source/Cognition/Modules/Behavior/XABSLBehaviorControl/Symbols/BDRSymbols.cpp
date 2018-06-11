@@ -7,6 +7,7 @@
 
 #include "BDRSymbols.h"
 #include <string>
+#include <sstream>
 
 void BDRSymbols::registerSymbols(xabsl::Engine& engine)
 {
@@ -65,7 +66,10 @@ void BDRSymbols::setBDRMessage(int value) {
   assert(value >= 0 && value < static_cast<int>(BDRPlayerState::num_of_messages));
   BDRPlayerState::Message m = static_cast<BDRPlayerState::Message>(value);
   if(theInstance->getBDRPlayerState().message != m){
-    theInstance->getSayRequest().setMessage(theInstance->getBDRPlayerState().getMessageString(m), theInstance->getFrameInfo());
+    //theInstance->getSayRequest().setMessage(theInstance->getBDRPlayerState().getMessageString(m), theInstance->getFrameInfo());
+    std::ostringstream ss;
+    ss << "bdr" << value << ".wav";
+    theInstance->getSoundPlayData().soundFile = ss.str();
   }
   theInstance->getBDRPlayerState().message = m;
 }

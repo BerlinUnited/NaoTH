@@ -106,14 +106,6 @@ void SMALModule::init()
   }
 
   theDCMHandler.init(pBroker);
-  
-  try
-  {
-    al_textToSpeech = boost::shared_ptr<AL::ALTextToSpeechProxy>(new ALTextToSpeechProxy(pBroker));
-  }
-  catch(ALError& e) {
-    std::cerr << "Failed to init ALTextToSpeechProxy: " << e.what() << endl;
-  }
 
   // calculate the difference between the NaoTime and the DcmTime
   unsigned int delta = 0;
@@ -190,8 +182,7 @@ void SMALModule::init()
   const std::string naoCommandIRSendDataPath = "/nao_command.IRSendData";
   const std::string naoCommandLEDDataPath = "/nao_command.LEDData";
   const std::string naoCommandBDRNaoQiRequestDataPath = "/nao_command.BDRRequestData";
-  const std::string naoCommandSayRequestDataPath= "/nao_command.SayRequestData";
-  
+
   std::cout << "Opening Shared Memory: " << naoCommandMotorJointDataPath << std::endl;
   naoCommandMotorJointData.open(naoCommandMotorJointDataPath);
   std::cout << "Opening Shared Memory: " << naoCommandUltraSoundSendDataPath << std::endl;
@@ -202,8 +193,7 @@ void SMALModule::init()
   naoCommandLEDData.open(naoCommandLEDDataPath);
   std::cout << "Opening Shared Memory: " << naoCommandBDRNaoQiRequestDataPath << std::endl;
   naoCommandBDRNaoQiRequestData.open(naoCommandBDRNaoQiRequestDataPath);
-  std::cout << "Opening Shared Memory: " << naoCommandSayRequestDataPath << std::endl;
-  naoCommandSayRequestData.open(naoCommandSayRequestDataPath);
+
 
   // connect to DCM
   fDCMPreProcessConnection = getParentBroker()->getProxy("DCM")->getModule()->atPreProcess(motion_wrapper_pre);
@@ -262,20 +252,6 @@ void SMALModule::slowDcmUpdate()
   {
     const Accessor<BDRNaoQiRequest>* commandData = naoCommandBDRNaoQiRequestData.reading();
     theDCMHandler.setBDRNaoQiRequest(commandData->get(), dcmTime);
-  }
-  
-  if(naoCommandSayRequestData.swapReading())
-  {
-    const Accessor<SayRequest>* commandData = naoCommandSayRequestData.reading();
-    
-    if (commandData->get().getUpdateTime().getTime() > 0 &&
-         (timeOfLastSayRequest.getTime() == 0 ||
-          commandData->get().getUpdateTime().getTimeSince(timeOfLastSayRequest) > 0)) 
-    {
-        al_textToSpeech->say(commandData->get().getMessage());
-        timeOfLastSayRequest = commandData->get().getUpdateTime();
-        std::cout << "say: " << commandData->get().getMessage() << std::endl;
-    }
   }
 
   BDRNaoQiStatus* status = naoSensorBDRNaoQiStatus.writing();

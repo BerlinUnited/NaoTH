@@ -35,8 +35,7 @@ NaoController::NaoController()
   const std::string naoCommandIRSendDataPath = "/nao_command.IRSendData";
   const std::string naoCommandLEDDataPath = "/nao_command.LEDData";
   const std::string naoCommandBDRNaoQiRequestDataPath = "/nao_command.BDRRequestData";
-  const std::string naoCommandSayRequestDataPath= "/nao_command.SayRequestData";
-  
+
   naoSensorData.open(naoSensorDataPath);
   naoSensorBDRNaoQiStatus.open(naoSensorBDRNaoQiStatusPath);
 
@@ -44,9 +43,7 @@ NaoController::NaoController()
   naoCommandUltraSoundSendData.open(naoCommandUltraSoundSendDataPath);
   naoCommandIRSendData.open(naoCommandIRSendDataPath);
   naoCommandLEDData.open(naoCommandLEDDataPath);
-  
   naoCommandBDRNaoQiRequestData.open(naoCommandBDRNaoQiRequestDataPath);
-  naoCommandSayRequestData.open(naoCommandSayRequestDataPath);
   // end init shared memory
 
   char hostname[128];
@@ -133,7 +130,6 @@ NaoController::NaoController()
   registerOutput<const UltraSoundSendData>(*this);
   registerOutput<const WhistleControl>(*this);
   registerOutput<const BDRNaoQiRequest>(*this);
-  registerOutput<const SayRequest>(*this);
 
 
   /*  INIT DEVICES  */
