@@ -16,6 +16,7 @@ public class AgentTabGlobal extends AgentTab
         super();
 
         setText("All");
+        setClosable(false);
 
         CheckBoxTreeItem<String> motion_root = new CheckBoxTreeItem<>("Motion");
         motion_root.setExpanded(true);

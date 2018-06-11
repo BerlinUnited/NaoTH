@@ -35,6 +35,7 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -62,6 +63,8 @@ import javafx.stage.FileChooser.ExtensionFilter;
  */
 public class AgentTab extends Tab implements ConnectionStatusListener, ResponseListener
 {
+    private String host;
+    private int port;
     private MessageServer server = new MessageServer();
     
     private final Command cmd_debug_cognition = new Command("Cognition:representation:get").addArg("DebugRequest");
@@ -122,6 +125,10 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
         request(p.getType()+":ParameterList:set", args);
     };
     
+    private EventHandler<ActionEvent> menuConnectHandler = (e) -> { connect(); };
+    
+    private EventHandler<ActionEvent> menuDisconnectHandler = (e) -> { disconnect(); };
+    
     @FXML
     protected TreeView<String> debugTree;
     
@@ -157,6 +164,9 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
     
     @FXML
     protected Label lblScheme;
+    
+    private MenuItem miConnection = new MenuItem("Connect");
+    private MenuItem miClose = new MenuItem("Close");
     
     public AgentTab() {
         super();
@@ -223,9 +233,15 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
         b.setContentDisplay(ContentDisplay.TEXT_ONLY); // set via css
         b.setGraphicTextGap(0);
         b.setFocusTraversable(false);
-        b.getStyleClass().add(".tab-button");
-        b.getItems().add(new MenuItem("Dis/Connect"));
-        b.getItems().add(new MenuItem("Close"));
+        b.getItems().add(miConnection);
+        b.getItems().add(miClose);
+        
+        miConnection.setOnAction(menuConnectHandler);
+        
+        miClose.setOnAction((e) -> {
+            requestClose();
+        });
+        
         return b;
     }
     
@@ -233,19 +249,14 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
         this();
         setText(host + ":" + port);
         
+        this.host = host;
+        this.port = port;
+        
         server.addConnectionStatusListener(this);
         
-        setOnCloseRequest((event) -> {
-            System.out.println("closing tab");
-            server.disconnect();
+        setOnCloseRequest((e) -> {
+            disconnect();
         });
-        
-        try {
-            server.connect(host, port);
-        } catch (IOException ex) {
-            splitPane.setDisable(true);
-            Logger.getLogger(Tab.class.getName()).log(Level.SEVERE, null, ex);
-        }
         
         agentList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue != null && !newValue.isEmpty()) {
@@ -257,12 +268,7 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
             }
         });
         
-        updateModules();
-        updateDebugRequests();
-        updateParameters();
-        sendCommand(cmd_agent_list);
-        sendCommand(cmd_agent);
-        sendCommand(cmd_playerinfo_scheme);
+        connect();
     }
     
     private boolean sendCommand(Command cmd) {
@@ -416,16 +422,48 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
         return ((TabPaneSkin) getTabPane().getSkin()).getBehavior();
     }
 
+    private void connect() {
+        try {
+            // try to connect to robot
+            server.connect(host, port);
+            // send "initial" commands
+            updateModules();
+            updateDebugRequests();
+            updateParameters();
+            sendCommand(cmd_agent_list);
+            sendCommand(cmd_agent);
+            sendCommand(cmd_playerinfo_scheme);
+        } catch (IOException ex) {
+            updateConnectionStatusUI(false);
+            
+            Logger.getLogger(Tab.class.getName()).log(Level.WARNING, "Can not connect to robot.");
+        }
+    }
+    
     @Override
     public void connected(ConnectionStatusEvent event) {
-        // TODO: 
-        System.out.println("connected to robot");
+        updateConnectionStatusUI(true);
+    }
+    
+    private void disconnect() {
+        server.disconnect();
     }
 
     @Override
     public void disconnected(ConnectionStatusEvent event) {
-        // TODO: 
-        System.out.println("disconnected from robot");
+        updateConnectionStatusUI(false);
+    }
+    
+    private void updateConnectionStatusUI(boolean connected) {
+        if(connected) {
+            splitPane.setDisable(false);
+            miConnection.setText("Disconnect");
+            miConnection.setOnAction(menuDisconnectHandler);
+        } else {
+            splitPane.setDisable(true);
+            miConnection.setText("Connect");
+            miConnection.setOnAction(menuConnectHandler);
+        }
     }
 
     @Override

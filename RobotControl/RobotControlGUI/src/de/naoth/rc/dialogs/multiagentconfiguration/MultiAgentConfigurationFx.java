@@ -91,6 +91,7 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
         
         allTab.setDisable(true);
         tabpane.getTabs().add(allTab);
+        tabpane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
     }
 
     @Override

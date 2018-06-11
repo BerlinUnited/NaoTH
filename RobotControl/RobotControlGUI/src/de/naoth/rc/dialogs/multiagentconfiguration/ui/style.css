@@ -22,14 +22,18 @@
   -fx-pref-height: 30;
 }
 
-.tab-label {
+#tabpane .tab-label {
   -fx-font-style: italic;
+  /* move the graphic node (tab menu) to the right */
+  -fx-content-display: right;
 }
 
-.menu-button {
+#tabpane .menu-button {
+  /* do not show as "normal" button */
   -fx-region-background: none;
 }
 
-.menu-button .label {
+#tabpane .menu-button .label {
+  /* no spacing between tab label text and "graphic" */
   -fx-padding: 0;
 }
