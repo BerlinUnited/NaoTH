@@ -5,6 +5,7 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.dialogs.multiagentconfiguration.ui.AgentTab;
 import de.naoth.rc.dialogs.multiagentconfiguration.ui.AgentTabGlobal;
+import java.awt.SplashScreen;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
@@ -187,6 +188,8 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
                 stage.setOnCloseRequest((e) -> {
                     System.exit(0);
                 });
+                
+                SplashScreen.getSplashScreen().close();
             } catch (IOException ex) {
                 Logger.getLogger(MultiAgentConfigurationFxMain.class.getName()).log(Level.SEVERE, null, ex);
             }
