@@ -22,7 +22,7 @@ CameraInfoSetter::CameraInfoSetter()
 
 void CameraInfoSetter::execute()
 {
-  const CameraSettings& camSettings = getCameraSettingsRequest();
+  const CameraSettings camSettings = getCameraSettingsRequest().getCameraSettings();
   // copy parameter based representation to the "pure" one
   getCameraInfo().cameraID = CameraInfo::Bottom;
 
@@ -36,7 +36,7 @@ void CameraInfoSetter::execute()
   // set param for image
   getImage().cameraInfo = getCameraInfo();
 
-  const CameraSettings& camSettingsTop = getCameraSettingsRequestTop();
+  const CameraSettings camSettingsTop = getCameraSettingsRequestTop().getCameraSettings();
   // copy parameter based representation to the "pure" one
   getCameraInfoTop().cameraID = CameraInfo::Top;
 
