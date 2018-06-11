@@ -36,8 +36,18 @@ void CameraDebug::execute()
     CameraSettingsRequest& bottom = getCameraSettingsRequest();
     CameraSettingsRequestTop& top = getCameraSettingsRequestTop();
 
-    setCommonCameraSetting(common.autoExposition, bottom.autoExposition, top.autoExposition, changed);
-    setCommonCameraSetting(common.autoWhiteBalancing, bottom.autoWhiteBalancing, top.autoWhiteBalancing, changed);
+    if (getFrameInfo().getFrameNumber() < 100) {
+      bottom.autoExposition = false;
+      top.autoExposition = false;
+      bottom.autoWhiteBalancing = false;
+      top.autoWhiteBalancing = false;
+    } 
+    else
+    {
+      setCommonCameraSetting(common.autoExposition, bottom.autoExposition, top.autoExposition, changed);
+      setCommonCameraSetting(common.autoWhiteBalancing, bottom.autoWhiteBalancing, top.autoWhiteBalancing, changed);
+    }
+    
     setCommonCameraSetting(common.brightness, bottom.brightness, top.brightness, changed);
     setCommonCameraSetting(common.exposure, bottom.exposure, top.exposure, changed);
     setCommonCameraSetting(common.targetGain, bottom.targetGain, top.targetGain, changed);
