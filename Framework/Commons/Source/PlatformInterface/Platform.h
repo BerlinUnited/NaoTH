@@ -35,7 +35,13 @@ private:
     theRobotName(_robotName),
     thePlatform(_platform),
     theScheme(_scheme)
-  {}
+  {
+      // retrieve the config dir from environment var
+      const std::string env = std::getenv("NAOTH_CONFIGDIR") != NULL ? std::string(std::getenv("NAOTH_CONFIGDIR")) : "";
+      if(!env.empty()) {
+          _configDir = env + (env.back() != '/' ? "/" : "");
+      }
+  }
 
   // cannot be copied
   Platform& operator=( const Platform& ) { return *this; }

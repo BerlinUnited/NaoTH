@@ -37,26 +37,29 @@ public class PreferencesDialog extends javax.swing.JDialog
         // gap between preference fields
         java.awt.Dimension componentGap = new java.awt.Dimension(0, 10);
         // only make specific value configurable
-        if(rcConfig.containsKey("NaoSCP")) {
-            PreferencesJar jar = new PreferencesJar("NaoSCP", rcConfig.getProperty("NaoSCP"));
-            jar.setAlignmentX(LEFT_ALIGNMENT);
-            prefPanel.add(jar);
-            prefPanel.add(new javax.swing.Box.Filler(componentGap,componentGap,componentGap));
-        }
-        if(rcConfig.containsKey("RoboViz")) {
-            PreferencesJar jar = new PreferencesJar("RoboViz", rcConfig.getProperty("RoboViz"));
-            jar.setAlignmentX(LEFT_ALIGNMENT);
-            prefPanel.add(jar);
-            prefPanel.add(new javax.swing.Box.Filler(componentGap,componentGap,componentGap));
-        }
-        if(rcConfig.containsKey("useHiDPI")) {
-            PreferencesCheckbox checkbox = new PreferencesCheckbox();
-            checkbox.setText("Use the RC HighDPI feature?");
-            checkbox.setName("useHiDPI");
-            checkbox.setSelected(Boolean.valueOf(rcConfig.getProperty("useHiDPI")));
-            checkbox.setAlignmentX(LEFT_ALIGNMENT);
-            prefPanel.add(checkbox);
-        }
+        PreferencesJar jar_scp = new PreferencesJar("NaoSCP", rcConfig.getProperty("NaoSCP", ""));
+        jar_scp.setAlignmentX(LEFT_ALIGNMENT);
+        prefPanel.add(jar_scp);
+        prefPanel.add(new javax.swing.Box.Filler(componentGap,componentGap,componentGap));
+
+        PreferencesJar jar_viz = new PreferencesJar("RoboViz", rcConfig.getProperty("RoboViz", ""));
+        jar_viz.setAlignmentX(LEFT_ALIGNMENT);
+        prefPanel.add(jar_viz);
+        prefPanel.add(new javax.swing.Box.Filler(componentGap,componentGap,componentGap));
+
+        PreferencesCheckbox checkbox = new PreferencesCheckbox();
+        checkbox.setText("Use the RC HighDPI feature?");
+        checkbox.setName("useHiDPI");
+        checkbox.setSelected(Boolean.valueOf(rcConfig.getProperty("useHiDPI", "false")));
+        checkbox.setAlignmentX(LEFT_ALIGNMENT);
+        prefPanel.add(checkbox);
+        prefPanel.add(new javax.swing.Box.Filler(componentGap,componentGap,componentGap));
+
+        PreferencesSpinner font = new PreferencesSpinner("Font Size", Integer.parseInt(rcConfig.getProperty("fontSize", "12")));
+        font.setName("fontSize");
+        font.setAlignmentX(LEFT_ALIGNMENT);
+        prefPanel.add(font);
+        
         // resize dialog
         pack();
     }

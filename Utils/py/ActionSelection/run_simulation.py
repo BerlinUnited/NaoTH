@@ -1,11 +1,10 @@
-import math
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
-import tools.action as a
-import tools.Simulation as Sim
-from naoth import math2d as m2d
-import tools.tools as tools
+from tools import action as a
+from tools import Simulation as Sim
+from tools import tools
+from state import State
 
 """
 This module visualizes the samples and the decision calculated by the Simulation Based Algorithm.
@@ -19,18 +18,7 @@ Example:
         $ python run_simulation.py
 """
 
-
-class State:
-    def __init__(self):
-        self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(-1000, -1000)
-        self.pose.rotation = math.radians(0)
-
-        self.ball_position = m2d.Vector2(100.0, 0.0)
-
-        self.obstacle_list = ([])  # is in global coordinates
-
-
+      
 def draw_actions(actions_consequences, state, best_action):
     plt.clf()
     tools.draw_field(plt.gca())
@@ -53,26 +41,26 @@ def draw_actions(actions_consequences, state, best_action):
             x = np.append(x, [ball_pos.x])
             y = np.append(y, [ball_pos.y])
 
-    plt.scatter(x, y, c='r', alpha=0.5)
+    plt.scatter(x, y, c='r', alpha=0.5, zorder=100)
     plt.pause(0.0001)
 
 
 def main():
-    state = State()
+    state = State(1000, 0)
 
     no_action = a.Action("none", 0, 0, 0, 0)
-    kick_short = a.Action("kick_short", 780, 150, 0, 6.992268841997358)
-    sidekick_left = a.Action("sidekick_left", 750, 150, 86.170795364136380, 10.669170653645670)
-    sidekick_right = a.Action("sidekick_right", 750, 150, -89.657943335302260, 10.553726275058064)
+    kick_short = a.Action("kick_short", 1080, 150, 0, 7)
+    sidekick_left = a.Action("sidekick_left", 750, 150, 90, 10)
+    sidekick_right = a.Action("sidekick_right", 750, 150, -90, 10)
 
     action_list = [no_action, kick_short, sidekick_left, sidekick_right]
 
-    while True:
+    while plt.get_fignums():
         actions_consequences = []
         # Simulate Consequences
         for action in action_list:
             single_consequence = a.ActionResults([])
-            actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state, 30))
+            actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state, 40))
 
         # actions_consequences is now a list of ActionResults
 

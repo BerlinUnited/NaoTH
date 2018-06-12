@@ -139,7 +139,7 @@ private:
                 const double speedDirection,
                 const WalkRequest::StepControlRequest::RestrictionMode restriction,
                 const bool isProtected,
-								int kick_time);
+                int step_time);
   void update_step(Pose2D &pose);
   void manage_step_buffer();
   void execute_step_buffer();

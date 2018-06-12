@@ -85,6 +85,16 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
         getBallPercept().bearingBasedOffsetOnField.y,
         getFieldInfo().ballRadius);
     }
+
+    FIELD_DRAWING_CONTEXT;
+    PEN("FF9900", 20);
+    for (MultiBallPercept::ConstABPIterator i = getMultiBallPercept().begin(); i != getMultiBallPercept().end(); ++i) {
+      if ((*i).cameraId == cameraID) {
+        CIRCLE((*i).positionOnField.x,
+          (*i).positionOnField.y,
+          getFieldInfo().ballRadius);
+      }
+    }
  );
 
   DEBUG_REQUEST("PerceptionsVisualizer:image:ball_percept",
