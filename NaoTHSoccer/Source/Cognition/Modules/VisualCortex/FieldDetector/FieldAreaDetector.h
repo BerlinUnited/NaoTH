@@ -4,6 +4,7 @@
 #include <ModuleFramework/Module.h>
 
 #include "Representations/Infrastructure/Image.h"
+#include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/ArtificialHorizon.h"
 #include "Representations/Perception/BodyContour.h"
 #include "Representations/Perception/MultiChannelIntegralImage.h"
@@ -37,6 +38,9 @@ BEGIN_DECLARE_MODULE(FieldAreaDetector)
 
   REQUIRE(BallDetectorIntegralImage)
   REQUIRE(BallDetectorIntegralImageTop)
+
+  PROVIDE(FieldPercept)
+  PROVIDE(FieldPerceptTop)
 END_DECLARE_MODULE(FieldAreaDetector)
 
 
@@ -136,6 +140,7 @@ private:
   DOUBLE_CAM_REQUIRE(FieldAreaDetector, FieldColorPercept);
 
   DOUBLE_CAM_REQUIRE(FieldAreaDetector, BallDetectorIntegralImage);
+  DOUBLE_CAM_PROVIDE(FieldAreaDetector, FieldPercept);
 };
 
 #endif  /* __FieldAreaDetector_H_ */

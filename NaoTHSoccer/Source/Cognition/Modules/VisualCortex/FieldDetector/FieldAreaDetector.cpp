@@ -217,11 +217,18 @@ void FieldAreaDetector::create_field() {
     fieldPoly.add(result[i]);
   }
 
+  // add field to percept
+  getFieldPercept().setField(fieldPoly, getArtificialHorizon());
+  // check result
+  getFieldPercept().valid = fieldPoly.getArea() >= 5600;
+
   DEBUG_REQUEST("Vision:FieldAreaDetector:mark_field_polygon",
     int idx = 0;
-    for(int i = 1; i < fieldPoly.length; i++)
+      ColorClasses::Color color = getFieldPercept().valid ? ColorClasses::blue : ColorClasses::red;
+      const FieldPercept::FieldPoly& poly = getFieldPercept().getValidField();
+    for(int i = 1; i < poly.length; i++)
     {
-      LINE_PX(ColorClasses::red, fieldPoly[idx].x, fieldPoly[idx].y, fieldPoly[i].x, fieldPoly[i].y);
+      LINE_PX(color, poly[idx].x, poly[idx].y, poly[i].x, poly[i].y);
       idx = i;
     }
   );
