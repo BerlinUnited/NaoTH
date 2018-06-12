@@ -12,15 +12,24 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBoxTreeItem;
+import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
@@ -29,6 +38,8 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 
@@ -92,8 +103,56 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
         
         allTab.setDisable(true);
         tabpane.getTabs().add(allTab);
+        tabpane.getTabs().add(new Tab("+"));
         tabpane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        tabpane.getSelectionModel().select(allTab);
+        
+        tabpane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue.getText().equals("+")) {
+                System.out.println("new tab");
+                tabpane.getSelectionModel().select(oldValue);
+//                tabpane.getTabs().add(new Tab("+"));
+                ChoiceDialog<String> d = new ChoiceDialog();
+                d.getItems().add("a");
+                d.getItems().add("b");
+                d.getItems().add("c");
+                
+                Optional<String> result = d.showAndWait();
+                
+                if (result.isPresent()) {
+                    Tab n = new Tab(result.get());
+                    tabpane.getTabs().add(tabpane.getTabs().size()-1, n);
+                    tabpane.getSelectionModel().select(n);
+//                     formatSystem();
+                }
+                System.out.println(result);
+                
+            }
+        });
+        
+        final Button  tabButton = new Button("+");
+        Pane controlButtons = (Pane) tabpane.lookup(".tab-header-background");
+        System.out.println(controlButtons);
+        System.out.println(tabpane.lookup(".tab-header-area"));
+        dump(tabpane, 2);
+        /*
+        controlButtons.getChildren().add(tabButton);
+        StackPane.setAlignment(tabButton, Pos.CENTER_LEFT);
+
+        Pane headersRegion = (Pane) tabpane.lookup(".headers-region");
+        System.out.println(headersRegion.getWidth());
+        tabButton.translateXProperty().bind(
+            headersRegion.widthProperty().add(10)
+        );
+        */
     }
+    // debugging routine to dump the scene graph.
+  public  static void dump(Node n) { dump(n, 0); }
+  private static void dump(Node n, int depth) {
+    for (int i = 0; i < depth; i++) System.out.print("  ");
+    System.out.println(n);
+    if (n instanceof Parent) for (Node c : ((Parent) n).getChildrenUnmodifiable()) dump(c, depth + 1);
+  }
 
     @Override
     public Map<KeyCombination, Runnable> getGlobalShortcuts() {
