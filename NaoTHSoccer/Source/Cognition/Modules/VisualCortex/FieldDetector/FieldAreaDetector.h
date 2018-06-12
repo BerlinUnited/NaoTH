@@ -10,7 +10,6 @@
 #include "Representations/Perception/FieldColorPercept.h"
 
 #include "Representations/Perception/FieldPercept.h"
-
 #include "Tools/Debug/DebugRequest.h"
 #include <Tools/Debug/DebugImageDrawings.h>
 #include <Tools/Debug/DebugDrawings.h>
@@ -65,12 +64,20 @@ public:
     {
       PARAMETER_REGISTER(proportion_of_green) = .5;
       PARAMETER_REGISTER(grid_size) = 30;
+
+      PARAMETER_REGISTER(max_grid_size) = 100;
+      PARAMETER_REGISTER(min_grid_size) = 30;
+
       PARAMETER_REGISTER(refine_cell) = true;
       PARAMETER_REGISTER(refine_point) = true;
       syncWithConfig();
     }
     double proportion_of_green;
     int32_t grid_size;
+
+    int32_t max_grid_size;
+    int32_t min_grid_size;
+
     bool refine_cell;
     bool refine_point;
   } params;

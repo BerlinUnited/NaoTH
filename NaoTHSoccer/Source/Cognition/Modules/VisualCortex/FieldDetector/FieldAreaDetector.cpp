@@ -20,21 +20,18 @@ FieldAreaDetector::~FieldAreaDetector()
   getDebugParameterList().remove(&params);
 }
 
-
 void FieldAreaDetector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
+
   if(!getBallDetectorIntegralImage().isValid()) {
     return;
   }
-  factor = getBallDetectorIntegralImage().FACTOR;
-  // TODO better locally refined maximum
 
-  grid_size = params.grid_size/factor;
-  int n_cells_horizontal = getBallDetectorIntegralImage().getWidth()/grid_size;
-  int offset = (getBallDetectorIntegralImage().getWidth() - (n_cells_horizontal*grid_size)) / n_cells_horizontal;
-  pixels_per_cell = ((grid_size+1)*(grid_size+1));
-  min_green = (int)(pixels_per_cell*params.proportion_of_green);
+  factor = getBallDetectorIntegralImage().FACTOR;
+
+  // TODO get from representation
+  double line_width = 50;
 
   endpoints.clear();
 
@@ -42,54 +39,58 @@ void FieldAreaDetector::execute(CameraInfo::CameraID id)
                                   getArtificialHorizon().end().y+1.5);
   horizon_height = std::max(0, horizon_height/factor);
 
-  int32_t minX, maxX, minY, maxY;
-  int32_t last_green_grid_maxY = 0;
-  int32_t last_green_grid_minY = 0;
-  int sum_of_green = 0;
-  for (minX = offset; minX < (int)getBallDetectorIntegralImage().getWidth(); minX += grid_size+offset) {
-    maxX = std::min(minX + grid_size, (int)getBallDetectorIntegralImage().getWidth()-1);
+  grid_size = params.grid_size/factor;
+  int n_cells_horizontal = getBallDetectorIntegralImage().getWidth()/grid_size;
+  int offset = (getBallDetectorIntegralImage().getWidth() - (n_cells_horizontal*grid_size)) / n_cells_horizontal;
+  pixels_per_cell = ((grid_size+1)*(grid_size+1));
+  min_green = (int)(pixels_per_cell*params.proportion_of_green);
 
+  Cell cell;
+  Cell last_green_cell;
+  for (cell.minX=offset; cell.minX < (int)getBallDetectorIntegralImage().getWidth(); cell.minX += grid_size+offset) {
+    //cell.maxX = cell.minX + grid_size;
+    //if (cell.maxX >= (int)getBallDetectorIntegralImage().getWidth()) break;
+    cell.maxX = std::min(cell.minX + grid_size, (int)getBallDetectorIntegralImage().getWidth()-1);
+ 
     // get first pos not occupied by body. HACK: This does not take the difference in refinement into consideration
-    Vector2i start_left(minX*factor, getImage().height()-1);
-    Vector2i start_right(maxX*factor, getImage().height()-1);
+    Vector2i start_left(cell.minX*factor, getImage().height()-1);
+    Vector2i start_right(cell.maxX*factor, getImage().height()-1);
     int start_y = std::min(getBodyContour().getFirstFreeCell(start_left).y/factor,
                            getBodyContour().getFirstFreeCell(start_right).y/factor);
 
     bool green_found = false;
     bool isLastCell = false;
-    for(minY = getBallDetectorIntegralImage().getHeight()-grid_size; !isLastCell; minY -= grid_size) {
-      if(minY < horizon_height) {
-        minY = horizon_height;
+    for(cell.minY = getBallDetectorIntegralImage().getHeight()-1-grid_size; !isLastCell; cell.minY -= grid_size) {
+      if(cell.minY < horizon_height) {
+        cell.minY = horizon_height;
         isLastCell = true;
       }
-      maxY = std::min((int)minY + grid_size, (int)getBallDetectorIntegralImage().getHeight()-1);
-      if(maxY > start_y) {
+      cell.maxY = cell.minY + grid_size;
+      if(cell.maxY > start_y) {
         continue;
       }
-      sum_of_green = getBallDetectorIntegralImage().getSumForRect(minX, minY, maxX, maxY, 1);
-      if(sum_of_green >= min_green) {
-        last_green_grid_minY = minY;
-        last_green_grid_maxY = maxY;
+      cell.sum_of_green = getBallDetectorIntegralImage().getSumForRect(cell.minX, cell.minY, cell.maxX, cell.maxY, 1);
+      if(cell.sum_of_green >= min_green) {
+        last_green_cell = cell;
         green_found = true;
       } else {
         break;
       }
       DEBUG_REQUEST("Vision:FieldAreaDetector:draw_grid",
-        if(sum_of_green >= min_green) {
-          RECT_PX(ColorClasses::green, minX*factor+1, minY*factor+1, maxX*factor-1, maxY*factor-1);
+        if(cell.sum_of_green >= min_green) {
+          RECT_PX(ColorClasses::green, cell.minX*factor+1, cell.minY*factor+1, cell.maxX*factor-1, cell.maxY*factor-1);
         } else {
-          RECT_PX(ColorClasses::red, minX*factor+1, minY*factor+1, maxX*factor-1, maxY*factor-1);
+          RECT_PX(ColorClasses::red, cell.minX*factor+1, cell.minY*factor+1, cell.maxX*factor-1, cell.maxY*factor-1);
         }
       );
     }
 
     if(green_found) {
-      Cell green_cell(minX, last_green_grid_minY, maxX, last_green_grid_maxY);
       if (params.refine_cell) {
-        refine_cell(green_cell);
+        refine_cell(last_green_cell);
       }
       Cell upper, lower;
-      int half_grid_size = split_cell(green_cell, upper, lower);
+      int half_grid_size = split_cell(last_green_cell, upper, lower);
       int min_green_half = (int)(params.proportion_of_green * (half_grid_size+1) * (half_grid_size+1));
       Cell endpoint_cell;
       if (upper.sum_of_green >= min_green_half && lower.sum_of_green >= min_green_half) {
