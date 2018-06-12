@@ -6,8 +6,12 @@
 
 #include "CameraMatrixCorrectorV3.h"
 
-void CamMatErrorFunctionV3::actual_plotting(const Eigen::Matrix<double, 11, 1>& parameter, CameraInfo::CameraID cameraID) const{
-    for(CalibrationData::const_iterator sample = calibrationData.begin(); sample != calibrationData.end(); ++sample){
+#include <array>
+
+void CamMatErrorFunctionV3::actual_plotting(const Eigen::Matrix<double, 11, 1>& parameter, CameraInfo::CameraID cameraID) const
+{
+    for(CalibrationData::const_iterator sample = calibrationData.begin(); sample != calibrationData.end(); ++sample)
+    {
             Vector2d offsetBody(parameter(0),parameter(1));
             Vector3d offsetHead(parameter(2), parameter(3),parameter(4));
             Vector3d offsetCam[CameraInfo::numOfCamera];
@@ -56,7 +60,8 @@ void CamMatErrorFunctionV3::actual_plotting(const Eigen::Matrix<double, 11, 1>& 
 
             DEBUG_REQUEST("CamMatErrorFunctionV3:debug_drawings:draw_matching_global",
             // determine distance to nearst field line and the total aberration
-                for(std::vector<Vector2d>::const_iterator iter = edgelProjections.begin(); iter != edgelProjections.end(); ++iter){
+                for(std::vector<Vector2d>::const_iterator iter = edgelProjections.begin(); iter != edgelProjections.end(); ++iter)
+                {
 
                     const Vector2d& seen_point_relative = *iter;
 
@@ -83,7 +88,8 @@ void CamMatErrorFunctionV3::actual_plotting(const Eigen::Matrix<double, 11, 1>& 
     }
 }
 
-Eigen::VectorXd CamMatErrorFunctionV3::operator()(const Eigen::Matrix<double, 11, 1>& parameter) const {
+Eigen::VectorXd CamMatErrorFunctionV3::operator()(const Eigen::Matrix<double, 11, 1>& parameter) const 
+{
     Eigen::VectorXd r(numberOfResudials);
 
     Vector2d offsetBody(parameter(0),parameter(1));
@@ -94,8 +100,10 @@ Eigen::VectorXd CamMatErrorFunctionV3::operator()(const Eigen::Matrix<double, 11
 
     size_t idx = 0;
     size_t empty = 0;
-    for(int cameraID = 0; cameraID < CameraInfo::numOfCamera; cameraID++){
-        for(CalibrationData::const_iterator sample = calibrationData.begin(); sample != calibrationData.end(); ++sample){
+    for(int cameraID = 0; cameraID < CameraInfo::numOfCamera; cameraID++)
+    {
+        for(CalibrationData::const_iterator sample = calibrationData.begin(); sample != calibrationData.end(); ++sample)
+        {
             if (getEdgelsInImage(sample,cameraID).empty()) {
                 ++empty;
                 continue;
@@ -158,7 +166,6 @@ Eigen::VectorXd CamMatErrorFunctionV3::operator()(const Eigen::Matrix<double, 11
     return r;
 }
 
-#include <array>
 
 CameraMatrixCorrectorV3::CameraMatrixCorrectorV3()
 {
@@ -313,13 +320,14 @@ void CameraMatrixCorrectorV3::reset_calibration()
 }
 
 // returns true if the averaged reduction per second decreases under a heuristic value
-bool CameraMatrixCorrectorV3::calibrate() {
+bool CameraMatrixCorrectorV3::calibrate() 
+{
   double dt = getFrameInfo().getTimeInSeconds()-last_frame_info.getTimeInSeconds();
 
   // calibrate the camera matrix
   Eigen::Matrix<double, 11, 1> epsilon = 1e-4*Eigen::Matrix<double, 11, 1>::Constant(1);
 
-  double error;
+  double error (0.0);
 
   Eigen::Matrix<double, 11, 1> offset = lm_minimizer.minimizeOneStep(*(theCamMatErrorFunctionV3->getModuleT()), cam_mat_offsets, epsilon, error);
 

@@ -26,7 +26,8 @@ public:
     }
 
     template<class T>
-    T minimizeOneStep(const ErrorFunction& errorFunction, const T& x, const T& epsilon, double& error){
+    T minimizeOneStep(const ErrorFunction& errorFunction, const T& x, const T& epsilon, double& error)
+    {
         T zero = T::Zero();
         Eigen::VectorXd r = errorFunction(x);
         Eigen::MatrixXd J = determineJacobian(errorFunction, x, epsilon);
@@ -34,8 +35,10 @@ public:
         Eigen::MatrixXd JtJdiag = (JtJ).diagonal().asDiagonal();
         error = r.sum();
 
-        T offset1 = mapOffsetToXDims(epsilon, (JtJ + lambda   * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r).eval());
-        T offset2 = mapOffsetToXDims(epsilon, (JtJ + lambda/v * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r).eval());
+        auto a = (JtJ + lambda   * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r).eval();
+        auto b = (JtJ + lambda/v * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r).eval();
+        T offset1 = mapOffsetToXDims(epsilon, a);
+        T offset2 = mapOffsetToXDims(epsilon, b);
 
         if(offset1.hasNaN() || offset2.hasNaN()){
             return zero;
@@ -44,12 +47,13 @@ public:
         double r_o1_sum = errorFunction((x + offset1).eval()).sum();
         double r_o2_sum = errorFunction((x + offset2).eval()).sum();
 
-        if(r_o1_sum > error && r_o2_sum > error){
+        if(r_o1_sum > error && r_o2_sum > error)
+        {
             while(true){//for( int i = 0; i < 10; i++){ // retry at most 10 times
                 lambda *= v; // didn't get a better result so increase damping and retry
                 offset1 = mapOffsetToXDims(epsilon, (JtJ + lambda * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r).eval());
 
-                if(offset1.hasNaN()){
+                if(offset1.hasNaN()) {
                     return zero;
                 }
 
@@ -74,7 +78,8 @@ public:
 
 private:
     template<class T>
-    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> determineJacobian(const ErrorFunction& errorFunction, const T& x, const T& epsilon){
+    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> determineJacobian(const ErrorFunction& errorFunction, const T& x, const T& epsilon)
+    {
         Eigen::Matrix<double, T::RowsAtCompileTime, 1> parameterVector = Eigen::Matrix<double, T::RowsAtCompileTime, 1>::Zero();
         Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> mat(errorFunction.getNumberOfResudials(), epsilon.rows() - epsilon.array().isNaN().count());
 
@@ -82,7 +87,8 @@ private:
         Eigen::VectorXd dg2(errorFunction.getNumberOfResudials());
 
         int idx = 0;
-        for(int p = 0; p < T::RowsAtCompileTime; ++p){
+        for(int p = 0; p < T::RowsAtCompileTime; ++p)
+        {
             if (std::isnan(epsilon(p))) continue;
 
             parameterVector(p) = epsilon(p);
@@ -101,11 +107,12 @@ private:
     }
 
     template<class T>
-    T mapOffsetToXDims(const T& epsilon, const Eigen::Matrix<double, Eigen::Dynamic, 1>& offset){
+    T mapOffsetToXDims(const T& epsilon, const Eigen::Matrix<double, Eigen::Dynamic, 1>& offset)
+    {
         T r;
 
         int idx = 0;
-        for(int p = 0; p < T::RowsAtCompileTime; ++p){
+        for(int p = 0; p < T::RowsAtCompileTime; ++p) {
             if(std::isnan(epsilon(p))) {
                 r(p) = 0;
             } else {

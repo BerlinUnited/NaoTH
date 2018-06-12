@@ -114,7 +114,9 @@ private:
     void actual_plotting(const Eigen::Matrix<double, 11, 1>& parameter, CameraInfo::CameraID cameraID) const;
 
 public:
-    CamMatErrorFunctionV3(){
+    CamMatErrorFunctionV3()
+      : numberOfResudials(0)
+    {
         DEBUG_REQUEST_REGISTER("CamMatErrorFunctionV3:debug_drawings:only_bottom", "", false);
         DEBUG_REQUEST_REGISTER("CamMatErrorFunctionV3:debug_drawings:only_top", "", false);
         DEBUG_REQUEST_REGISTER("CamMatErrorFunctionV3:debug_drawings:draw_projected_edgels", "", false);
@@ -129,9 +131,13 @@ public:
         return numberOfResudials;
     }
 
-    void add(const CalibrationDataSample& c_data_sample){
-        int numNewResudials = 2 - c_data_sample.lineGraphPercept.edgelsInImage.empty() - c_data_sample.lineGraphPercept.edgelsInImageTop.empty();
-        if (numNewResudials > 0){
+    void add(const CalibrationDataSample& c_data_sample) 
+    {
+        int numNewResudials = 
+          (c_data_sample.lineGraphPercept.edgelsInImage.empty()   ? 0 : 1) + 
+          (c_data_sample.lineGraphPercept.edgelsInImageTop.empty()? 0 : 1);
+        
+        if (numNewResudials > 0) {
             calibrationData.push_back(c_data_sample);
             numberOfResudials += numNewResudials;
         }
