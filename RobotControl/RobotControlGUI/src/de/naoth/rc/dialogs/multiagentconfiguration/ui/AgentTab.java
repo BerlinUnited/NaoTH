@@ -212,6 +212,7 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
                 return;
             }
             evt.getRowValue().getValue().setValue(evt.getNewValue());
+            evt.getTreeTableView().requestFocus();
         });
         
         behaviorFile.addListener((o, v, f) -> { sendBehaviorFile(); });
