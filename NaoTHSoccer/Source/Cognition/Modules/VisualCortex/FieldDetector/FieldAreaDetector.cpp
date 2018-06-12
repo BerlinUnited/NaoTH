@@ -86,11 +86,13 @@ void FieldAreaDetector::execute(CameraInfo::CameraID id)
     }
 
     if(green_found) {
+      int ix_offset = (int) std::round(x_offset);
+
       if (params.refine_cell) {
         refine_cell(last_green_cell);
-      }
+      }      
       Cell upper, lower;
-      int half_grid_size = split_cell(last_green_cell, upper, lower, (int) x_offset);
+      int half_grid_size = split_cell(last_green_cell, upper, lower, ix_offset);
       int min_green_half = (int)(params.proportion_of_green * (half_grid_size+1) * (half_grid_size+1));
       Cell endpoint_cell;
       if (upper.sum_of_green >= min_green_half && lower.sum_of_green >= min_green_half) {
@@ -101,7 +103,7 @@ void FieldAreaDetector::execute(CameraInfo::CameraID id)
 
       Endpoint endpoint;
       endpoint.cameraID = cameraID;
-      find_endpoint(endpoint_cell, endpoint,(int) x_offset);
+      find_endpoint(endpoint_cell, endpoint, ix_offset);
       if (params.refine_point) {
         refine_point(endpoint, endpoint_cell.minY);
       }
