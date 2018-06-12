@@ -2,3 +2,6 @@
 *.pickle
 *.txt
 *.png
+
+# ignore test folder
+test/*

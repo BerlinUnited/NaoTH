@@ -1,6 +1,8 @@
-from naoth import math2d as m2d
 import math
-import field_info as field
+
+from naoth import math2d as m2d
+
+from . import field_info as field
 
 '''
 This class calculates the raw attack direction the way it's implemented in the PotentialFieldProvider.cpp

@@ -11,22 +11,7 @@ from naoth import math2d as m2d
 from tools import tools
 from tools import field_info as field
 from tools import raw_attack_direction_provider as attack_dir
-
-
-class State:
-    def __init__(self):
-        self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(4500, 1200)
-        self.pose.rotation = math.radians(0)
-        self.rotation_vel = 60  # degrees per sec
-        self.walking_vel = 200  # mm per sec
-        self.ball_position = m2d.Vector2(100.0, 0.0)
-
-        self.obstacle_list = ([])  # is in global coordinates
-
-    def update_pos(self, glob_pos, rotation):
-        self.pose.translation = glob_pos
-        self.pose.rotation = math.radians(rotation)
+from state import State
 
 
 def draw_robot_walk(s, expected_ball_pos, best_action):
