@@ -119,8 +119,6 @@ public:
   Vector3d head_rot;
   Vector3d cam_rot[naoth::CameraInfo::numOfCamera];
 
-  Pose2D global_pose;
-
   virtual void print(std::ostream& stream) const
   {
     stream << "----Offsets-------------" << std::endl;
@@ -139,10 +137,6 @@ public:
     stream << "Roll  (x): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Bottom].x)  << " °" << std::endl;
     stream << "Pitch (y): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Bottom].y)  << " °" << std::endl;
     stream << "Yaw   (z): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Bottom].z)  << " °" << std::endl;
-    stream << "----Global Pose---------" << std::endl;
-    stream << "x: "<< global_pose.translation.x << " mm" << std::endl;
-    stream << "y: "<< global_pose.translation.y << " mm" << std::endl;
-    stream << "rot: "<< Math::toDegrees(global_pose.rotation)  << " °" << std::endl;
   }
 };
 

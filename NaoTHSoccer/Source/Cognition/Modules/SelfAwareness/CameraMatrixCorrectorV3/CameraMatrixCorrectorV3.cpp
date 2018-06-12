@@ -171,10 +171,6 @@ CameraMatrixCorrectorV3::CameraMatrixCorrectorV3()
 {
   getDebugParameterList().add(&getCameraMatrixOffsetV3());
 
-  DEBUG_REQUEST_REGISTER("CameraMatrixV3:calibrate_camera_matrix_line_matching",
-    "calculates the roll and tilt offset of the camera using field lines (it. shoult be exactely 3000mm in front of the robot)",
-    false);
-
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:reset_calibration", "set the calibration offsets of the CM to 0", false);
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:reset_lm_minimizer", "reset lm parameters to initial values", false);
 
@@ -284,11 +280,11 @@ void CameraMatrixCorrectorV3::execute()
         current_target = target_points.begin();
       );
 
-      DEBUG_REQUEST("CameraMatrixV3:calibrate_camera_matrix_line_matching",
+      DEBUG_REQUEST("CameraMatrixV3:calibrate",
           calibrate();
       );
 
-      DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV3:calibrate_camera_matrix_line_matching",
+      DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV3:calibrate",
           writeToRepresentation();
           getCameraMatrixOffsetV3().saveToConfig();
       );
@@ -463,9 +459,6 @@ void CameraMatrixCorrectorV3::writeToRepresentation()
 
   getCameraMatrixOffsetV3().cam_rot[CameraInfo::Top]    += Vector3d(cam_mat_offsets(5),cam_mat_offsets(6),cam_mat_offsets(7));
   getCameraMatrixOffsetV3().cam_rot[CameraInfo::Bottom] += Vector3d(cam_mat_offsets(8),cam_mat_offsets(9),cam_mat_offsets(10));
-
-  getCameraMatrixOffsetV3().global_pose.translation += Vector2d(cam_mat_offsets(11),cam_mat_offsets(12));
-  getCameraMatrixOffsetV3().global_pose.rotation    += cam_mat_offsets(13);
 }
 
 void CameraMatrixCorrectorV3::readFromRepresentation(){
