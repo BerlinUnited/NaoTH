@@ -111,10 +111,10 @@ private:
     Vector2i pos;
   };
 
-  void find_endpoint(const Cell& cell, Endpoint& endpoint);
+  void find_endpoint(const Cell& cell, Endpoint& endpoint, int point_x_offset);
   void refine_cell(Cell& cell);
   void refine_point(Endpoint& endpoint, int32_t minY);
-  int32_t split_cell(const Cell& cell, Cell& upper, Cell& lower);
+  int32_t split_cell(const Cell& cell, Cell& upper, Cell& lower, int split_x_offset);
 
   void create_field();
 

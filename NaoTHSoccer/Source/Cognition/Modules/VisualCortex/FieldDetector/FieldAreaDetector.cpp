@@ -44,6 +44,9 @@ void FieldAreaDetector::execute(CameraInfo::CameraID id)
 
   Cell cell;
   Cell last_green_cell;
+
+  double x_offset = 0;
+
   for (cell.minX=offset; cell.minX < (int)getBallDetectorIntegralImage().getWidth(); cell.minX += grid_size+offset) {
     //cell.maxX = cell.minX + grid_size;
     //if (cell.maxX >= (int)getBallDetectorIntegralImage().getWidth()) break;
@@ -87,7 +90,7 @@ void FieldAreaDetector::execute(CameraInfo::CameraID id)
         refine_cell(last_green_cell);
       }
       Cell upper, lower;
-      int half_grid_size = split_cell(last_green_cell, upper, lower);
+      int half_grid_size = split_cell(last_green_cell, upper, lower, (int) x_offset);
       int min_green_half = (int)(params.proportion_of_green * (half_grid_size+1) * (half_grid_size+1));
       Cell endpoint_cell;
       if (upper.sum_of_green >= min_green_half && lower.sum_of_green >= min_green_half) {
@@ -98,25 +101,24 @@ void FieldAreaDetector::execute(CameraInfo::CameraID id)
 
       Endpoint endpoint;
       endpoint.cameraID = cameraID;
-      find_endpoint(endpoint_cell, endpoint);
+      find_endpoint(endpoint_cell, endpoint,(int) x_offset);
       if (params.refine_point) {
         refine_point(endpoint, endpoint_cell.minY);
       }
       endpoints.push_back(endpoint);
     }
+    x_offset += ((double)(grid_size) / 2 / n_cells_horizontal);
   }
-
   create_field();
 }
 
-void FieldAreaDetector::find_endpoint(const Cell& cell, Endpoint& endpoint) {
+void FieldAreaDetector::find_endpoint(const Cell& cell, Endpoint& endpoint, int point_x_offset) {
   int grid_size = cell.maxY - cell.minY;
   int pixels_per_cell = (grid_size+1) * (grid_size+1);
 
   double cut = cell.sum_of_green / (double)pixels_per_cell;
-  endpoint.pos.x = (cell.minX+cell.maxX)/2;
-  endpoint.pos.y = cell.maxY-(int)(cut*grid_size);
-  endpoint.pos*=factor;
+  endpoint.pos.x = (cell.minX + point_x_offset) * factor; //(cell.minX+cell.maxX)/2 * factor;
+  endpoint.pos.y = (cell.maxY-(int)(cut*grid_size)) * factor;
 
   DEBUG_REQUEST("Vision:FieldAreaDetector:draw_best_squares",
     RECT_PX(ColorClasses::blue, cell.minX*factor+2, cell.minY*factor+2,
@@ -125,10 +127,9 @@ void FieldAreaDetector::find_endpoint(const Cell& cell, Endpoint& endpoint) {
   );
 }
 
-int32_t FieldAreaDetector::split_cell(const Cell& cell, Cell& upper, Cell& lower) {
+int32_t FieldAreaDetector::split_cell(const Cell& cell, Cell& upper, Cell& lower, int split_x_offset) {
   int32_t half_grid_size = grid_size/2;
-
-  upper.minX = lower.minX = half_grid_size/2 + cell.minX;
+  upper.minX = lower.minX = cell.minX + split_x_offset;// half_grid_size/2;
   upper.maxX = lower.maxX = lower.minX + half_grid_size;
 
   lower.minY = cell.maxY - half_grid_size;
