@@ -8,7 +8,7 @@ function result = maxcrosscorr(raw_samples, reference_spectrum, reference_max)
 
     n = 2^nextpow2(size(raw_samples_norm,1));
     
-    mat_spectrum = fft(raw_samples_norm, n * 3);
+    mat_spectrum = fft(raw_samples_norm, n * 2);
 
     % // real x real - imag x imag
     % fftIn[j][0] = realFFTIn * realFFTCmp - imagFFTIn * imagFFTCmp;
