@@ -30,9 +30,6 @@ void FieldAreaDetector::execute(CameraInfo::CameraID id)
 
   factor = getBallDetectorIntegralImage().FACTOR;
 
-  // TODO get from representation
-  double line_width = 50;
-
   endpoints.clear();
 
   horizon_height = (int) std::max(getArtificialHorizon().begin().y+1.5,
