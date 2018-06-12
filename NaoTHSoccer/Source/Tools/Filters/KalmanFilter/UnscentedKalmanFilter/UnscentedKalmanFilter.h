@@ -1,20 +1,20 @@
-#ifndef UNSCENTEDKALMANFILTER_H
-#define UNSCENTEDKALMANFILTER_H
+/**
+* @file UnscentedKalmanFilter.h
+* 
+* Declaration of class UnscentedKalmanFilter
+*
+* @author <a href="mailto:kaden@informatik.hu-berlin.de">Steffen Kaden</a>
+*/ 
 
-#include <Tools/naoth_eigen.h>
+#ifndef _UNSCENTEDKALMANFILTER_H
+#define _UNSCENTEDKALMANFILTER_H
 
+#include <Eigen/Core>
 #include <vector>
-//#include <Eigen/StdVector>
-/*
-// TODO: remove pragma
-#if defined(__GNUC__)
-#pragma GCC diagnostic ignored "-Wconversion"
-#endif
-#include <Eigen/Geometry>
-#include <Eigen/Dense>
-*/
+
 template <class S>
-class UKF {
+class UKF 
+{
 
     public:
         // covariances
@@ -30,15 +30,17 @@ class UKF {
         }
 
     public:
-        void reset(){
+        void reset()
+        {
             P     = Eigen::Matrix<double,S::size,S::size>::Identity();
             state = S();
         }
 
         template<typename U>
-        void predict(U& u, double dt){
+        void predict(const U& u, double dt)
+        {
             // transit the sigma points to the next state
-            for (typename std::vector<S, Eigen::aligned_allocator<S> >::iterator i = sigmaPoints.begin(); i != sigmaPoints.end(); i++){
+            for (typename std::vector<S, Eigen::aligned_allocator<S> >::iterator i = sigmaPoints.begin(); i != sigmaPoints.end(); ++i) {
                 (*i).predict(u, dt);
             }
 
@@ -46,7 +48,7 @@ class UKF {
 
             // calculate new process covariance
             Eigen::Matrix<double, S::size, 2*S::size + 1> temp;
-            for(size_t idx = 0; idx < sigmaPoints.size(); ++idx){
+            for(size_t idx = 0; idx < sigmaPoints.size(); ++idx) {
                temp.col(idx) = sigmaPoints[idx] - mean;
             }
 
@@ -55,12 +57,13 @@ class UKF {
         }
 
         template<typename M, typename Derived>
-        void update(const M& z, const Eigen::MatrixBase<Derived>& R){
+        void update(const M& z, const Eigen::MatrixBase<Derived>& R)
+        {
             std::vector<M, Eigen::aligned_allocator<M> > sigmaMeasurements;
             sigmaMeasurements.reserve(2*S::size+1);
 
             // map sigma points to measurement space
-            for (typename std::vector<S, Eigen::aligned_allocator<S> >::iterator i = sigmaPoints.begin(); i != sigmaPoints.end(); i++){
+            for (typename std::vector<S, Eigen::aligned_allocator<S> >::iterator i = sigmaPoints.begin(); i != sigmaPoints.end(); ++i) {
                 sigmaMeasurements.push_back((*i).asMeasurement(z));
             }
 
@@ -69,14 +72,14 @@ class UKF {
 
             // calculate current measurement covariance
             Eigen::Matrix<double, M::size, 2*S::size+1> temp;
-            for(size_t idx = 0; idx < sigmaMeasurements.size(); ++idx){
+            for(size_t idx = 0; idx < sigmaMeasurements.size(); ++idx) {
                 temp.col(idx) = sigmaMeasurements[idx] - predicted_z;
             }
             Eigen::Matrix<double,M::size,M::size> Pzz(1.0 / static_cast<double>(sigmaPoints.size()) * temp * (temp).transpose());
 
             // calculate state-measurement cross-covariance
             Eigen::Matrix<double, S::size, 2*S::size + 1> temp2;
-            for(size_t idx = 0; idx < sigmaPoints.size(); ++idx){
+            for(size_t idx = 0; idx < sigmaPoints.size(); ++idx) {
                temp2.col(idx) = sigmaPoints[idx] - state;
             }
             Eigen::Matrix<double,S::size,M::size> Pxz(1.0 / static_cast<double>(sigmaPoints.size()) * temp2 * (temp).transpose());
@@ -110,7 +113,8 @@ class UKF {
     public:
         S state;
 
-        void generateSigmaPoints(){
+        void generateSigmaPoints()
+        {
             sigmaPoints.resize(2*S::size+1);
 
             sigmaPoints[2*S::size] = state;
@@ -118,7 +122,8 @@ class UKF {
             choleskyDecompositionOfCov.compute(P+Q);
             Eigen::Matrix<double,S::size,S::size> L = choleskyDecompositionOfCov.matrixL();
 
-            for(int i = 0; i < S::size; i++){
+            for(int i = 0; i < S::size; i++)
+            {
                 S noise(std::sqrt(2*S::size) * L.col(i));
 
                 sigmaPoints[i]  = noise;
@@ -131,7 +136,4 @@ class UKF {
         }
 };
 
-#if defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif
 #endif // UNSCENTEDKALMANFILTER_H
