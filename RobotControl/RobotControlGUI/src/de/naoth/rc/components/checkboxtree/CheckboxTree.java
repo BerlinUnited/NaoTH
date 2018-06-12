@@ -217,7 +217,10 @@ public class CheckboxTree extends JTree
   
   public void selectNode(String path, char seperator)
   {
-    super.setSelectionPath(new TreePath(getNodeTreePath(path, seperator).toArray()));
+    List<SelectableTreeNode> nodepath = getNodeTreePath(path, seperator);
+    if(nodepath != null) {
+        super.setSelectionPath(new TreePath(nodepath.toArray()));
+    }
   }
 
   public void clear()

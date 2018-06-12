@@ -37,7 +37,7 @@ current_date=$(date +"%y%m%d-%H%M")
 current_nao=$(sed -n "2p" $infoFile)
 current_nao_name=$(cat /etc/hostname) # get the name, eg. "nao96"
 current_nao_number=$(cat /etc/hostname | grep -Eo "[0-9]{2}") # get the number, e.g. "96"
-current_nao_player=$(cat /home/nao/Config/robots/$current_nao_name/player.cfg | grep -Eo "PlayerNumber=[0-9]{1,2}")
+current_nao_player=$(exec_cmd_and_return_or_default 'grep "\[PlayerInfo\] playerNumber" /var/log/messages | tail -1 | grep -o "playerNumber.*"' 'playerNumber: UNKNOWN')
 
 current_boot_time=$(</proc/uptime awk '{printf "%d", $1 / 60}')
 
