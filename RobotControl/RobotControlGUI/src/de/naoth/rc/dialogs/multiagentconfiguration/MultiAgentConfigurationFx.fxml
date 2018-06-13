@@ -1,24 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox stylesheets="@ui/style.css" prefHeight="578.0" prefWidth="756.0" xmlns="http://javafx.com/javafx/8.0.162-ea" xmlns:fx="http://javafx.com/fxml/1">
+<VBox prefHeight="578.0" prefWidth="756.0" stylesheets="@ui/style.css" xmlns="http://javafx.com/javafx/8.0.162-ea" xmlns:fx="http://javafx.com/fxml/1">
   <children>
       <ToolBar prefHeight="40.0" prefWidth="200.0">
         <items>
             <ToggleButton fx:id="btn_connect" mnemonicParsing="false" text="Connect" />
-            <TextField fx:id="field_ip" alignment="CENTER_RIGHT" onAction="#connect" prefWidth="120.0" text="127.0.0.1" />
-            <Label text="-" />
-            <TextField fx:id="field_ip_end" alignment="CENTER" onAction="#connect" prefWidth="50.0" text="0" />
-            <Label text=":" />
-            <TextField fx:id="field_port_start" alignment="CENTER" onAction="#connect" prefWidth="50.0" text="5401" />
-            <Label text="-" />
-            <TextField fx:id="field_port_end" alignment="CENTER" onAction="#connect" prefWidth="50.0" text="5401" />
         </items>
       </ToolBar>
       <TabPane fx:id="tabpane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS" />
