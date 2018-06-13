@@ -92,6 +92,7 @@ private:
     void updateByPerceptsCool();
     
     void updateByPerceptsNormal();
+    void updateByPerceptsNaive(CameraInfo::CameraID camera);
 
     void applyOdometryOnFilterState(ExtendedKalmanFilter4d& filter);
 
