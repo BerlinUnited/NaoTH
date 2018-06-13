@@ -18,6 +18,8 @@ void ParameterList::syncWithConfig()
   for (std::list<ConfigParameter*>::iterator iter = parameters.begin(); iter != parameters.end(); ++iter) {
     (*iter)->syncWithConfig(config, name);
   }
+
+  possibly_changed = true;
 }
 
 void ParameterList::saveToConfig()

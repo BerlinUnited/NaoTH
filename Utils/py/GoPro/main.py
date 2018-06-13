@@ -74,9 +74,10 @@ def main():
     gameController = GameController()
     gameController.start()
 
-    network = Network(args.device, args.ssid, args.passwd, args.retries)
+    network = Network(args.device, args.ssid, args.passwd, args.retries, args.mac)
     network.start()
 
+    threads = [ led, gopro, gameLogger, gameController, network ]
     try:
         while True:
             # if config was loaded from file and file was modified since last checked
@@ -86,7 +87,7 @@ def main():
                     # reload config from file
                     importlib.reload(config)
                     Logger.info("Reloaded modified config")
-                    network.setConfig(None, config.ssid, config.passwd, config.retries)
+                    network.setConfig(None, config.ssid, config.passwd, config.retries, config.mac)
                     gopro.setUserSettings({
                         'FRAME_RATE': config.fps if 'fps' in vars(config) else None,
                         'FOV': config.fov if 'fov' in vars(config) else None,
@@ -97,6 +98,9 @@ def main():
             else:
                 # do nothing
                 time.sleep(1)
+                for t in threads:
+                    if not t.is_alive():
+                        Logger.error("Thread %s is not running (anymore)!", str(t.__class__.__name__))
     except (KeyboardInterrupt, SystemExit):
         print("Shutting down ...")
     # cancel threads
@@ -143,6 +147,7 @@ if __name__ == '__main__':
                 args.ssid = config.ssid
                 args.passwd = config.passwd
                 args.retries = config.retries
+                args.mac = config.mac
             except:
                 # no config available!
                 Logger.error("No config available OR invalid config!")
