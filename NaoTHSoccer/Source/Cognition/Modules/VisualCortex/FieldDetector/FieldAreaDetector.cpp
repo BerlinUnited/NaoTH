@@ -31,10 +31,6 @@ void FieldAreaDetector::execute(CameraInfo::CameraID id)
 
   endpoints.clear();
 
-  horizon_height = (int) std::max(getArtificialHorizon().begin().y+1.5,
-                                  getArtificialHorizon().end().y+1.5);
-  horizon_height = std::max(0, horizon_height/factor);
-
   grid_size = params.grid_size / factor;
   int x_width = getBallDetectorIntegralImage().getWidth()-1;
   int n_cells_horizontal = x_width / grid_size;
@@ -57,6 +53,7 @@ void FieldAreaDetector::execute(CameraInfo::CameraID id)
 
     bool green_found = false;
     bool isLastCell = false;
+    horizon_height = std::max(0, (int) getArtificialHorizon().point((cell.minX+cell.maxX)/2*factor).y/factor);
     for(cell.minY = getBallDetectorIntegralImage().getHeight()-1-grid_size; !isLastCell; cell.minY -= grid_size) {
       if(cell.minY < horizon_height) {
         cell.minY = horizon_height;
