@@ -50,6 +50,7 @@ void TeamBallLocatorSimple::execute() {
     );
 
     // Canopy: iterate through all (valid) balls and cluster them based on the loose (t1) & tight distance (t2)
+    //         https://en.wikipedia.org/wiki/Canopy_clustering_algorithm
     // NOTE: equal sized clusters are currently not handled!
     unsigned int largest = 0;
     for (unsigned int i = 0; i < balls.size(); ++i) {
