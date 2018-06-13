@@ -52,7 +52,8 @@ void CameraMatrixFinder::execute()
 
     // actually set the cameraMatrix
     getCameraMatrix() = getCameraMatrixBuffer().getEntry(smallestIndex);
-
+    PLOT("CameraMatrix:selectedIdx:bottom", smallestIndex);
+  
     double oldDiff = fabs((double) getCameraMatrixBuffer().getEntry(0).timestamp -
                           (double) getImage().timestamp);
     PLOT("CameraMatrix:cammatrix-old-diff:bottom", oldDiff);
@@ -87,6 +88,8 @@ void CameraMatrixFinder::execute()
 
     // actually set the cameraMatrix
     getCameraMatrixTop() = getCameraMatrixBufferTop().getEntry(smallestIndex);
+    PLOT("CameraMatrix:selectedIdx:top", smallestIndex);
+  
 
     double oldDiff = fabs((double) getCameraMatrixBufferTop().getEntry(0).timestamp
                           - (double) getImageTop().timestamp);
