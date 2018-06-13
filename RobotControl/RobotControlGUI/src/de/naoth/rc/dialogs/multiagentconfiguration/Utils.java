@@ -177,6 +177,18 @@ public class Utils
                     }
                 }
             }
+        } // end for modules
+        
+        expandSingleTreeNodes(root);
+        expandSingleTreeNodes(global_modules.get((String) root.getValue()));
+    }
+    
+    private static void expandSingleTreeNodes(TreeItem root) {
+        TreeItem current = root;
+        // expand root nodes or nodes with children and no siblings
+        while ((current.getParent() == null || current.getParent().getValue() == null || current.getParent().getChildren().size() == 1) && current.getChildren().size() > 0) {
+            current.setExpanded(true);
+            current = (TreeItem) current.getChildren().get(0);
         }
     }
     
@@ -193,6 +205,4 @@ public class Utils
         motion_root.setExpanded(true);
         return motion_root;
     }
-    
-//    public static TreeItem createParameterTree()
 }
