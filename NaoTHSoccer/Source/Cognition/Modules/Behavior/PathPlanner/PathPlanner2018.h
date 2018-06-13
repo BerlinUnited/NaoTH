@@ -22,7 +22,6 @@
 #include "Representations/Motion/Request/HeadMotionRequest.h"
 #include "Representations/Motion/Request/MotionRequest.h"
 #include "Representations/Motion/MotionStatus.h"
-#include "Representations/Perception/BallPercept.h"
 #include "Representations/Perception/MultiBallPercept.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/PathModel.h"
@@ -35,7 +34,6 @@ PROVIDE(DebugModify)
 PROVIDE(DebugParameterList)
 
 REQUIRE(FieldInfo)
-REQUIRE(BallPercept)
 REQUIRE(MultiBallPercept)
 REQUIRE(MotionStatus)
 REQUIRE(BallModel)
@@ -62,26 +60,30 @@ private:
   public:
     Parameters() : ParameterList("PathPlanner2018")
     {
-      PARAMETER_REGISTER(stepLength)                 = 80.0;
-      PARAMETER_REGISTER(readyForKickThreshold)      = 4.0;
-      PARAMETER_REGISTER(readyForKickThresholdX)     = 4.0;
-      PARAMETER_REGISTER(readyForKickThresholdY)     = 0.5;
-      PARAMETER_REGISTER(nearApproachBallPosOffsetX) = 100;
-      PARAMETER_REGISTER(farToNearApproachThreshold) = 10.0;
-      PARAMETER_REGISTER(rotationLength)             = 30.0;
-      PARAMETER_REGISTER(sidekickOffsetY)            = 40.0;
-      PARAMETER_REGISTER(forwardKickTime)            = 300;
-      PARAMETER_REGISTER(sideKickTime)               = 300;
+      PARAMETER_REGISTER(stepLength)                            = 80.0;
+      PARAMETER_REGISTER(readyForSideKickThresholdX)            = 4.0;
+      PARAMETER_REGISTER(readyForSideKickThresholdY)            = 0.3;
+      PARAMETER_REGISTER(readyForForwardKickThresholdX)         = 4.0;
+      PARAMETER_REGISTER(readyForForwardKickThresholdY)         = 0.3;
+      PARAMETER_REGISTER(nearApproachForwardKickBallPosOffsetX) = 100;
+      PARAMETER_REGISTER(nearApproachSideKickBallPosOffsetX)    = 100;
+      PARAMETER_REGISTER(farToNearApproachThreshold)            = 10.0;
+      PARAMETER_REGISTER(rotationLength)                        = 30.0;
+      PARAMETER_REGISTER(sidekickOffsetY)                       = 40.0;
+      PARAMETER_REGISTER(forwardKickTime)                       = 300;
+      PARAMETER_REGISTER(sideKickTime)                          = 300;
 
       syncWithConfig();
     }
     virtual ~Parameters(){}
 
     double stepLength;
-    double readyForKickThreshold;
-    double readyForKickThresholdX;
-    double readyForKickThresholdY;
-    double nearApproachBallPosOffsetX;
+    double readyForSideKickThresholdX;
+    double readyForSideKickThresholdY;
+    double readyForForwardKickThresholdX;
+    double readyForForwardKickThresholdY;
+    double nearApproachForwardKickBallPosOffsetX;
+    double nearApproachSideKickBallPosOffsetX;
     double farToNearApproachThreshold;
     double rotationLength;
     double sidekickOffsetY;
@@ -107,7 +109,7 @@ private:
   // won't be so complex as to introduce bugs easily
   bool farApproach();
   bool nearApproach_forwardKick(const Foot& foot, const double offsetX, const double offsetY);
-  bool goToBall_sideKick(const Foot& foot, const double offsetX, const double offsetY);
+  bool nearApproach_sideKick(const Foot& foot, const double offsetX, const double offsetY);
   void forwardKick(const Foot& foot);
   void sideKick(const Foot& foot);
 

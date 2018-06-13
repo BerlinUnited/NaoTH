@@ -82,15 +82,21 @@ void PathPlanner2018::execute()
     }
     break;
   case PathModel::PathPlanner2018Routine::SIDEKICK_LEFT:
-    if (goToBall_sideKick(Foot::LEFT, 0.0, params.sidekickOffsetY))
+    if (farApproach())
     {
-      sideKick(Foot::LEFT);
+      if (nearApproach_sideKick(Foot::LEFT, 0.0, params.sidekickOffsetY))
+      {
+        sideKick(Foot::LEFT);
+      }
     }
     break;
   case PathModel::PathPlanner2018Routine::SIDEKICK_RIGHT:
-    if (goToBall_sideKick(Foot::RIGHT, 0.0, -1 * params.sidekickOffsetY))
+    if (farApproach())
     {
-      sideKick(Foot::RIGHT);
+      if (nearApproach_sideKick(Foot::RIGHT, 0.0, -1 * params.sidekickOffsetY))
+      {
+        sideKick(Foot::RIGHT);
+      }
     }
     break;
   }
@@ -212,16 +218,15 @@ bool PathPlanner2018::nearApproach_forwardKick(const Foot& foot, const double of
 
     // Am I ready for a kick or still walking to the ball?
     // In other words: Can I only perform one step before touching the ball or more steps?
-    if (numPossibleStepsX > params.readyForKickThresholdX
-      || numPossibleStepsY > params.readyForKickThresholdY)
+    if (numPossibleStepsX > params.readyForForwardKickThresholdX
+      || numPossibleStepsY > params.readyForForwardKickThresholdY)
     {
       double translation_xy = params.stepLength;
 
-      double translation_x = std::min(translation_xy, ballPos.x - getFieldInfo().ballRadius - params.nearApproachBallPosOffsetX - std::abs(ballPos.y));
+      double translation_x = std::min(translation_xy, ballPos.x - getFieldInfo().ballRadius - params.nearApproachForwardKickBallPosOffsetX - std::abs(ballPos.y));
       double translation_y = std::min(translation_xy, std::abs(ballPos.y)) * (ballPos.y < 0 ? -1 : 1);
 
       StepBufferElement new_step;
-      //new_step.setPose({ 0.0, std::min(translation_xy, ballPos.x - getFieldInfo().ballRadius - params.nearApproachBallPosOffsetX), std::min(translation_xy, std::abs(ballPos.y)) * (ballPos.y < 0 ? -1 : 1) });
       new_step.setPose({ 0.0, translation_x, translation_y });
       new_step.setStepType(StepType::WALKSTEP);
       new_step.setCharacter(0.7);
@@ -263,7 +268,7 @@ bool PathPlanner2018::nearApproach_forwardKick(const Foot& foot, const double of
 }
 
 // TODO: Has to work without rotation (like nearApproach_forwardKick)
-bool PathPlanner2018::goToBall_sideKick(const Foot& foot, const double offsetX, const double offsetY)
+bool PathPlanner2018::nearApproach_sideKick(const Foot& foot, const double offsetX, const double offsetY)
 {
   // Always execute the steps that were planned before planning new steps
   if (stepBuffer.empty())
@@ -289,25 +294,19 @@ bool PathPlanner2018::goToBall_sideKick(const Foot& foot, const double offsetX, 
     ballPos.x += offsetX;
     ballPos.y += offsetY;
 
-    const double ballRot = ballPos.angle();
-
     // TODO: Are there better ways to calculate this?
-    numPossibleSteps          = ballPos.abs() / params.stepLength;
-    numRotationStepsNecessary = ballRot / params.rotationLength;
+    numPossibleStepsX = std::abs(ballPos.x) / params.stepLength;
+    numPossibleStepsY = std::abs(ballPos.y) / params.stepLength;
 
-    // Am I ready for a kick or still walking to the ball?
-    // In other words: Can I only perform one step before touching the ball or more steps?
-    if (numPossibleSteps > params.readyForKickThreshold
-      || numRotationStepsNecessary > numPossibleSteps)
+    // Am I ready for a kick ?
+    if (numPossibleStepsX > params.readyForSideKickThresholdX
+      || numPossibleStepsY > params.readyForSideKickThresholdY)
     {
-      double translation_xy = params.stepLength;
-      // TODO: Are there better ways to incorporate the rotation?
-      if (numRotationStepsNecessary > numPossibleSteps)
-      {
-        translation_xy = 0.0;
-      }
+      double translation_x = std::min(params.stepLength, ballPos.x - getFieldInfo().ballRadius - params.nearApproachSideKickBallPosOffsetX - std::abs(ballPos.y));
+      double translation_y = std::min(params.stepLength, std::abs(ballPos.y)) * (ballPos.y < 0 ? -1 : 1);
+
       StepBufferElement new_step;
-      new_step.setPose({ ballRot, std::min(translation_xy, ballPos.x), std::min(translation_xy, ballPos.y) });
+      new_step.setPose({ 0.0, translation_x, translation_y });
       new_step.setStepType(StepType::WALKSTEP);
       new_step.setCharacter(0.7);
       new_step.setScale(1.0);
@@ -327,9 +326,11 @@ bool PathPlanner2018::goToBall_sideKick(const Foot& foot, const double offsetX, 
       if (movableFoot != (foot == Foot::RIGHT ? MotionStatus::StepControlStatus::RIGHT : MotionStatus::StepControlStatus::LEFT)
         && movableFoot != MotionStatus::StepControlStatus::BOTH)
       {
-        const double translation_xy = params.stepLength;
+        double translation_x = std::min(params.stepLength, ballPos.x - getFieldInfo().ballRadius - params.nearApproachSideKickBallPosOffsetX - std::abs(ballPos.y));
+        double translation_y = std::min(params.stepLength, std::abs(ballPos.y)) * (ballPos.y < 0 ? -1 : 1);
+
         StepBufferElement correction_step;
-        correction_step.setPose({ ballRot, std::min(translation_xy, ballPos.x), std::min(translation_xy, ballPos.y) });
+        correction_step.setPose({ 0.0, translation_x, translation_y });
         correction_step.setStepType(StepType::WALKSTEP);
         correction_step.setCharacter(0.7);
         correction_step.setScale(1.0);
@@ -352,7 +353,7 @@ bool PathPlanner2018::goToBall_sideKick(const Foot& foot, const double offsetX, 
           && ballPosLeftFoot.abs() < ballPosRightFoot.abs())
         {
           StepBufferElement correction_step;
-          correction_step.setPose({ ballRot, 0.0, 0.0 });
+          correction_step.setPose({ 0.0, 0.0, 0.0 });
           correction_step.setStepType(StepType::WALKSTEP);
           correction_step.setCharacter(0.7);
           correction_step.setScale(1.0);
@@ -373,7 +374,7 @@ bool PathPlanner2018::goToBall_sideKick(const Foot& foot, const double offsetX, 
           && ballPosRightFoot.abs() < ballPosLeftFoot.abs())
         {
           StepBufferElement correction_step;
-          correction_step.setPose({ ballRot, 0.0, 0.0 });
+          correction_step.setPose({ 0.0, 0.0, 0.0 });
           correction_step.setStepType(StepType::WALKSTEP);
           correction_step.setCharacter(0.7);
           correction_step.setScale(1.0);
@@ -475,7 +476,7 @@ void PathPlanner2018::sideKick(const Foot& foot)
     new_step.setPose({ 0.0, 500.0, stepY });
     new_step.setStepType(StepType::KICKSTEP);
     new_step.setCharacter(1.0);
-    new_step.setScale(0.7);
+    new_step.setScale(1.0);
     new_step.setCoordinate(coordinate);
     new_step.setFoot(foot);
     new_step.setSpeedDirection(speedDirection);
