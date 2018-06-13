@@ -562,23 +562,28 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
     }
     
     private void handleCognitionParameterResponse(byte[] result) {
-        handleParameterResponse("Cognition", cmd_parameter_cognition_get, result);
+        TreeItem<Parameter> root_item = new TreeItem<>(new Parameter("Cognition", null));
+        root_item.setExpanded(true);
+        parameterTree.getRoot().getChildren().add(root_item);
+        
+        handleParameterResponse(root_item, cmd_parameter_cognition_get, result);
     }
     
     private void handleMotionParameterResponse(byte[] result) {
-        handleParameterResponse("Motion", cmd_parameter_motion_get, result);
-    }
-    
-    private void handleParameterResponse(String type, String cmd, byte[] result) {
-        TreeItem<Parameter> root_item = new TreeItem<>(new Parameter(type, null));
+        TreeItem<Parameter> root_item = new TreeItem<>(new Parameter("Motion", null));
         root_item.setExpanded(true);
         parameterTree.getRoot().getChildren().add(0, root_item);
         
-        TreeItem<Parameter> root_global = Utils.global_parameters.get(type);
+        handleParameterResponse(root_item, cmd_parameter_motion_get, result);
+    }
+    
+    private void handleParameterResponse(TreeItem<Parameter> root_item, String cmd, byte[] result) {
+        
+        TreeItem<Parameter> root_global = Utils.global_parameters.get(root_item.getValue().getName());
         
         Arrays.asList(new String(result).split("\n")).forEach((p) -> {
             // an identifier for the parameter
-            String parameterId = type+":"+p;
+            String parameterId = root_item.getValue().getName()+":"+p;
             // check if the global parameter list contains the parameter
             if(!Utils.global_parameters.containsKey(parameterId)) {
                 TreeItem<Parameter> global_parameter = new TreeItem<>(new Parameter(p, null));
