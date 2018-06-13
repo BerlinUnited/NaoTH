@@ -226,7 +226,7 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
 
   std::vector<int> f;
   for(size_t i = 0; i < filter.size(); ++i){
-     f.push_back(i);
+     f.push_back((int)i);
   }
 
   if (!(filter.empty() || zs.empty()))
