@@ -24,6 +24,9 @@ void CameraMatrixFinder::execute()
 {
   PLOT("CameraMatrix:timestamp:bottom", getImage().timestamp);
   PLOT("CameraMatrix:timestamp:top", getImageTop().timestamp);
+
+  PLOT("CameraMatrix:sensor-joint:yaw", getSensorJointData().position[SensorJointData::HeadYaw]);
+  PLOT("CameraMatrix:sensor-joint:pitch", getSensorJointData().position[SensorJointData::HeadPitch]);
   
   // BOTTOM CAMERA
   if(getCameraMatrixBuffer().size() > 0)
@@ -53,6 +56,9 @@ void CameraMatrixFinder::execute()
     // actually set the cameraMatrix
     getCameraMatrix() = getCameraMatrixBuffer().getEntry(smallestIndex);
     PLOT("CameraMatrix:selectedIdx:bottom", smallestIndex);
+    PLOT("CameraMatrix:test-delay:x-angle:bottom", getCameraMatrix().rotation.getXAngle());
+    PLOT("CameraMatrix:test-delay:y-angle:bottom", getCameraMatrix().rotation.getYAngle());
+    PLOT("CameraMatrix:test-delay:z-angle:bottom", getCameraMatrix().rotation.getZAngle());
   
     double oldDiff = fabs((double) getCameraMatrixBuffer().getEntry(0).timestamp -
                           (double) getImage().timestamp);
@@ -89,6 +95,9 @@ void CameraMatrixFinder::execute()
     // actually set the cameraMatrix
     getCameraMatrixTop() = getCameraMatrixBufferTop().getEntry(smallestIndex);
     PLOT("CameraMatrix:selectedIdx:top", smallestIndex);
+    PLOT("CameraMatrix:test-delay:x-angle:top", getCameraMatrixTop().rotation.getXAngle());
+    PLOT("CameraMatrix:test-delay:y-angle:top", getCameraMatrixTop().rotation.getYAngle());
+    PLOT("CameraMatrix:test-delay:z-angle:top", getCameraMatrixTop().rotation.getZAngle());
   
 
     double oldDiff = fabs((double) getCameraMatrixBufferTop().getEntry(0).timestamp

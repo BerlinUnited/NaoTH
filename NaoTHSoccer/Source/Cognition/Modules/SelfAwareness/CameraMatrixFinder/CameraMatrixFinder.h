@@ -20,6 +20,7 @@
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/Image.h>
 #include <Representations/Infrastructure/FrameInfo.h>
+#include <Representations/Infrastructure/JointData.h>
 #include <Representations/Perception/CameraMatrix.h>
 #include <Representations/Perception/CameraMatrixBuffer.h>
 
@@ -35,6 +36,8 @@ BEGIN_DECLARE_MODULE(CameraMatrixFinder)
   REQUIRE(FrameInfo)
   REQUIRE(CameraMatrixBuffer)
   REQUIRE(CameraMatrixBufferTop)
+  REQUIRE(SensorJointData)
+  
   REQUIRE(Image)
   REQUIRE(ImageTop)
 
