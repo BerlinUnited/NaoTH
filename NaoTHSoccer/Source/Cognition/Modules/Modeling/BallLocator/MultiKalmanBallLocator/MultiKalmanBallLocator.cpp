@@ -225,7 +225,7 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
   }
 
   std::vector<int> f;
-  for(int i = 0; i < filter.size(); ++i){
+  for(size_t i = 0; i < filter.size(); ++i){
      f.push_back(i);
   }
 
@@ -235,8 +235,8 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
     // row index    = measurement
     // column index = filter
     Eigen::MatrixXd scores = Eigen::MatrixXd::Zero(zs.size(), filter.size());
-    for(int i = 0; i < zs.size(); ++i){
-        for (int j = 0; j < filter.size(); ++j){
+    for(size_t i = 0; i < zs.size(); ++i){
+        for (size_t j = 0; j < filter.size(); ++j){
            scores(i,j) = updateAssociationFunction->associationScore(filter[j], zs[i], h);
         }
     }
@@ -314,9 +314,9 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
   }
 
   // phase 4: create new filter for each percept which couldn't be associated with a filter
-  for(int i = 0; i < ps.size(); ++i){
+  for(const Vector2d& p : ps){
     Eigen::Vector4d newState;
-    newState << ps[i].x, 0, ps[i].y, 0;
+    newState << p.x, 0, p.y, 0;
     filter.push_back(BallHypothesis(getFrameInfo(), newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension));
   }
 }
