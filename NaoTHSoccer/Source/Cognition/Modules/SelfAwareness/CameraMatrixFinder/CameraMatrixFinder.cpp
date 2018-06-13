@@ -22,6 +22,9 @@ CameraMatrixFinder::CameraMatrixFinder()
 
 void CameraMatrixFinder::execute()
 {
+  PLOT("CameraMatrix:timestamp:bottom", getImage().timestamp);
+  PLOT("CameraMatrix:timestamp:top", getImageTop().timestamp);
+  
   // BOTTOM CAMERA
   if(getCameraMatrixBuffer().size() > 0)
   {
@@ -52,9 +55,9 @@ void CameraMatrixFinder::execute()
 
     double oldDiff = fabs((double) getCameraMatrixBuffer().getEntry(0).timestamp -
                           (double) getImage().timestamp);
-    PLOT("bottom-cammatrix-old-diff", oldDiff);
+    PLOT("CameraMatrix:cammatrix-old-diff:bottom", oldDiff);
     double bestDiff = smallestDiff;
-    PLOT("bottom-cammatrix-best-diff", bestDiff);
+    PLOT("CameraMatrix:cammatrix-best-diff:bottom", bestDiff);
 
   }
 
@@ -87,9 +90,9 @@ void CameraMatrixFinder::execute()
 
     double oldDiff = fabs((double) getCameraMatrixBufferTop().getEntry(0).timestamp
                           - (double) getImageTop().timestamp);
-    PLOT("top-cammatrix-old-diff", oldDiff);
+    PLOT("CameraMatrix:cammatrix-old-diff:top", oldDiff);
     double bestDiff = smallestDiff;
-    PLOT("top-cammatrix-best-diff", bestDiff);
+    PLOT("CameraMatrix:cammatrix-best-diff:top", bestDiff);
 
   }
 }
