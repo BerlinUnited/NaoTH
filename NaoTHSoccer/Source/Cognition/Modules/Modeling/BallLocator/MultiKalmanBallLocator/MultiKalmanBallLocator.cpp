@@ -243,7 +243,7 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
 
     // phase 3: reduce score matrix iteratively by eliminating row and column of best match
     do {
-      // phase 3.1: find location of smallest entry
+      // phase 3.1: find location of best entry which is according to the updateAssociationFunction a global maximum or minimum
       Eigen::Index maxCol, minCol, maxRow, minRow, bestCol, bestRow;
       double max = scores.maxCoeff(&maxRow, &maxCol);
       double min = scores.minCoeff(&minRow, &minCol);
@@ -278,7 +278,6 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
               TEXT_DRAWING((ps[bestRow].x+state(0))/2,(ps[bestRow].y+state(2))/2, scores(bestRow,bestCol));
           );
 
-          // debug stuff -> should be in a DEBUG_REQUEST
           DEBUG_REQUEST("MultiKalmanBallLocator:plot_prediction_error",
               Eigen::Vector2d prediction_error;
               prediction_error = zs[bestRow] - filter[f[bestCol]].getStateInMeasurementSpace(h);
@@ -290,7 +289,7 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
           filter[f[bestCol]].update(zs[bestRow],h,getFrameInfo());
       }
 
-      // phase 3.3: remove bestCol and bestRow from vectors of filters f and measurements zs/ps and delete corresponding row and col in scores
+      // phase 3.3: remove bestCol and bestRow from vectors of filters f and measurements zs/ps and delete corresponding row and col in the scores matrix
       f.erase(f.begin() + bestCol);
       zs.erase(zs.begin() + bestRow);
       ps.erase(ps.begin() + bestRow);
