@@ -16,12 +16,15 @@
 #include "Representations/Motion/MotionStatus.h"
 
 #include "Representations/Perception/CameraMatrix.h"
+#include "Representations/Infrastructure/Image.h"
+#include "Representations/Perception/MultiChannelIntegralImage.h"
 
 #include "BallHypothesis.h"
 #include "UpdateAssociationFunctions.h"
 
 // debug
 #include "Tools/Debug/DebugDrawings.h"
+#include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugPlot.h"
@@ -36,6 +39,7 @@ BEGIN_DECLARE_MODULE(MultiKalmanBallLocator)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugRequest)
   PROVIDE(DebugParameterList)
+  PROVIDE(DebugImageDrawings)
   PROVIDE(DebugPlot)
 
   REQUIRE(FieldInfo)
@@ -56,6 +60,8 @@ BEGIN_DECLARE_MODULE(MultiKalmanBallLocator)
   REQUIRE(CameraInfoTop)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
+  REQUIRE(Image)
+  REQUIRE(BallDetectorIntegralImage)
 
   PROVIDE(BallModel)
 END_DECLARE_MODULE(MultiKalmanBallLocator)
@@ -92,6 +98,8 @@ private:
     void updateByPerceptsCool();
     
     void updateByPerceptsNormal();
+
+    void negativeUpdate();
 
     void applyOdometryOnFilterState(ExtendedKalmanFilter4d& filter);
 
@@ -141,6 +149,11 @@ private:
             PARAMETER_REGISTER(g0) = 0.01;
             PARAMETER_REGISTER(g1) = 0.1;
 
+            //negative update
+            PARAMETER_REGISTER(negative_update.max_green_inside) = 0.9;
+            PARAMETER_REGISTER(negative_update.max_stall_count)  = 3;
+            PARAMETER_REGISTER(negative_update.radius_offset)    = 0;
+
             syncWithConfig();
         }
 
@@ -168,6 +181,12 @@ private:
         double euclidThreshold;
         double mahalanobisThreshold;
         double maximumLikelihoodThreshold;
+
+        struct {
+            double       max_green_inside;
+            unsigned int max_stall_count;
+            double       radius_offset;
+        } negative_update;
     } kfParameters;
 
     Measurement_Function_H h;

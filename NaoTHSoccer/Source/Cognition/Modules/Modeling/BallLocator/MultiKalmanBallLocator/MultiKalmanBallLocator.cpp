@@ -2,6 +2,7 @@
 
 #include <Tools/naoth_eigen.h>
 #include "Tools/Association.h"
+#include <Tools/ColorClasses.h>
 
 MultiKalmanBallLocator::MultiKalmanBallLocator():
      epsilon(10e-6)
@@ -25,6 +26,8 @@ MultiKalmanBallLocator::MultiKalmanBallLocator():
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:UpdateAssociationFunction:useEuclid",            "minimize Euclidian distance in measurement space",                                false);
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:UpdateAssociationFunction:useMahalanobis",       "minimize Mahalanobis distance in measurement space (no common covarince matrix)", false);
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:UpdateAssociationFunction:useMaximumLikelihood", "maximize likelihood of measurement in measurement space ",                         true);
+
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:back_project_models", "",false);
 
     // Parameter Related Debug Requests
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:reloadParameters",          "reloads the kalman filter parameters from the kfParameter object", false);
@@ -99,6 +102,26 @@ void MultiKalmanBallLocator::execute()
       (*iter).ballSeenFilter.setParameter(kfParameters.g0, kfParameters.g1);
       (*iter).ballSeenFilter.update(updated, 0.3, 0.7);
     }
+
+    for(BallHypothesis& bs: filter){
+        if(bs.getLastUpdateFrame().getFrameNumber() == getFrameInfo().getFrameNumber()) {
+            bs.stall_count = 0;
+        }
+    }
+
+    DEBUG_REQUEST("MultiKalmanBallLocator:back_project_models",
+        // negative feedback... double check not updated models
+        negativeUpdate();
+
+        std::vector<BallHypothesis>::iterator iter = filter.begin();
+        while(iter != filter.end()){
+            if(iter->stall_count >= 3) {
+                iter = filter.erase(iter);
+            } else {
+                ++iter;
+            }
+        }
+    );
 
     // estimate the best model
     bestModel = selectBestModel();
@@ -609,5 +632,47 @@ void MultiKalmanBallLocator::reloadParameters()
     for(Filters::iterator iter = filter.begin(); iter != filter.end(); iter++){
         (*iter).setCovarianceOfProcessNoise(processNoiseCovariancesSingleDimension);
         (*iter).setCovarianceOfMeasurementNoise(measurementNoiseCovariances);
+    }
+}
+
+void MultiKalmanBallLocator::negativeUpdate() {
+    for(BallHypothesis& bh: filter){
+       Vector3d position(bh.getState()(0), bh.getState()(2), getFieldInfo().ballRadius);
+       // model is in close range
+       if(position.abs() < 1500){
+           // model is visible in image
+           Vector2i pos_in_image;
+           if(CameraGeometry::relativePointToImage(getCameraMatrix(), CameraInfo::Bottom, position, pos_in_image)){
+               if(getImage().isInside(pos_in_image.x, pos_in_image.y)){
+                   // get radius of ball in image
+                   double radius_in_image = CameraGeometry::estimatedBallRadius(getCameraMatrix(), getCameraInfo(), getFieldInfo().ballRadius,pos_in_image.x, pos_in_image.y);
+                   if(radius_in_image < 0){
+                       continue;
+                   }
+
+                   radius_in_image += kfParameters.negative_update.radius_offset;
+
+                   // create patch to check
+                   uint32_t x_min = static_cast<uint32_t>(Math::clamp(static_cast<int>(pos_in_image.x - radius_in_image), 0, static_cast<int>(getImage().width()-1)));
+                   uint32_t x_max = static_cast<uint32_t>(Math::clamp(static_cast<int>(pos_in_image.x + radius_in_image), 0, static_cast<int>(getImage().width()-1)));
+                   uint32_t y_min = static_cast<uint32_t>(Math::clamp(static_cast<int>(pos_in_image.y - radius_in_image), 0, static_cast<int>(getImage().height()-1)));
+                   uint32_t y_max = static_cast<uint32_t>(Math::clamp(static_cast<int>(pos_in_image.y + radius_in_image), 0, static_cast<int>(getImage().height()-1)));
+
+                   // count green inside
+                   int32_t FACTOR = getBallDetectorIntegralImage().FACTOR;
+                   double greenInside = getBallDetectorIntegralImage().getDensityForRect(x_min/FACTOR, y_min/FACTOR, x_max/FACTOR, y_max/FACTOR, 1);
+
+                   // decide if stall counting is necessary
+                   if(greenInside > kfParameters.negative_update.max_green_inside) {
+                     // too much green inside patch
+                     RECT_PX(ColorClasses::red, x_min, y_min, x_max, y_max);
+                     bh.stall_count++;
+                   } else {
+                     // still enough different from green
+                     RECT_PX(ColorClasses::blue, x_min, y_min, x_max, y_max);
+                   }
+               }
+           }
+       }
     }
 }
