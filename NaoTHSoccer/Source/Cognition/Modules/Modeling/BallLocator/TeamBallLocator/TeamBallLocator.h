@@ -28,11 +28,6 @@
 // Tools
 #include "Tools/DataStructures/ParameterList.h"
 
-// Canopy Clustering
-#include "Cognition/Modules/Modeling/SelfLocator/MonteCarloSelfLocator/CanopyClustering.h"
-#include "Cognition/Modules/Modeling/SelfLocator/MonteCarloSelfLocator/SampleSet.h"
-#include "Cognition/Modules/Modeling/SelfLocator/MonteCarloSelfLocator/Sample.h"
-
 BEGIN_DECLARE_MODULE(TeamBallLocator)
   PROVIDE(DebugModify)
   PROVIDE(DebugRequest)
