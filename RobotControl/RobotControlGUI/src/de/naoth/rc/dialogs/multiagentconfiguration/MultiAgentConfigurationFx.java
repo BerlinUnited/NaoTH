@@ -131,6 +131,7 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
         });
         
         final Button  tabButton = new Button("+");
+        
         Pane controlButtons = (Pane) tabpane.lookup(".tab-header-background");
         System.out.println(controlButtons);
         System.out.println(tabpane.lookup(".tab-header-area"));
@@ -171,6 +172,20 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
     }
     
     private void connecting() {
+        System.out.println("----" + tabpane.getSkin());
+        System.out.println("----" + tabpane.lookup(".tab-header-area"));
+        System.out.println("----" + tabpane.lookup(".headers-region")); // headers-region
+        System.out.println("----" + tabpane.lookup(".tab-header-background")); //tab-header-background
+        System.out.println("----" + tabpane.lookup(".control-buttons-tab")); //control-buttons-tab
+        Pane p = new Pane();
+        p.setMinWidth(100);
+        p.setMinHeight(10);
+        p.setStyle("-fx-background-color: red;");
+//        tabpane.lookup(".tab-header-area").setStyle("-fx-background: red;");
+        ((StackPane)tabpane.lookup(".tab-header-area")).getChildren().add(0,p);
+        System.out.println(((StackPane)tabpane.lookup(".tab-header-area")).getChildren());
+        System.out.println(((StackPane)tabpane.lookup(".headers-region")).getInsets());
+        
         List<String> ip_parts = Arrays.asList(field_ip.getText().trim().split("\\.", -1));
         String ip_range = field_ip_end.getText().trim().equals("0") ? ip_parts.get(3) : field_ip_end.getText().trim();
         int port_start = Integer.parseInt(field_port_start.getText().trim());
