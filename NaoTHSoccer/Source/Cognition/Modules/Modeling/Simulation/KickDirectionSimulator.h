@@ -102,7 +102,7 @@ public:
 
       //KickDirection Stuff
       //Warum keine uniforme verteilung? damit wird gesichert das jede richtung mindestens ein sample bekomt
-      PARAMETER_REGISTER(num_angle_particle) = 60;
+      PARAMETER_REGISTER(num_angle_particle) = 30;
       PARAMETER_REGISTER(iterations) = 10;
 
       syncWithConfig();
@@ -144,13 +144,15 @@ private:
 
   std::vector<ActionSimulator::Action> action_local;
   //actionsConsequences now contain the angles in which the robot should turn -> rename it accordingly
-  std::vector<double> actionsConsequences;
-  std::vector<double> actionsConsequencesAbs;
+  std::vector<double> correctionAngle;
+  
   double calculate_best_direction(const ActionSimulator::Action& action);
   void update(const ActionSimulator::Action& action);
   void resample(SampleSet& sampleSet, double sigma) const;
   void normalize(SampleSet& samples) const;
+  
   void resetSamples(SampleSet& samples, size_t n) const;  
+  void resetSamplesUniform(SampleSet& samples, size_t n) const; 
 
 public:
   double m_max;
