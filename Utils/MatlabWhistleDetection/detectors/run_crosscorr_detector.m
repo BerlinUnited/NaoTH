@@ -163,5 +163,6 @@ for t = 1:length(recordings_names)
         xticklabels(tick_labels)
         ylabel('total event count')
         ylim([0 max_count + 1])  
-    end    
+    end
+    return
 end %for t = 1:length(capture_database)
