@@ -44,17 +44,35 @@ Pose3D FootTrajectoryGenerator2018::calculateLiftingFootPos(const Step& step) co
 {
   if ( step.type == Step::STEP_CONTROL && step.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP)
   {
-    return stepControl(
-      step.footStep.footBegin(),
-      step.footStep.footEnd(),
-      step.executingCycle,
-      step.samplesDoubleSupport,
-      step.samplesSingleSupport,
-      parameters.kickHeight,
-      0, //footPitchOffset
-      0, //footRollOffset
-      step.walkRequest.stepControl.speedDirection,
-      step.walkRequest.stepControl.scale);
+    // DIRTY HACK: use old stepcontrol trajectory for forward kicks and new one for sidekicks
+    if (step.walkRequest.stepControl.speedDirection == 0)
+    {
+      return stepControl(
+        step.footStep.footBegin(),
+        step.footStep.footEnd(),
+        step.executingCycle,
+        step.samplesDoubleSupport,
+        step.samplesSingleSupport,
+        parameters.kickHeight,
+        0, //footPitchOffset
+        0, //footRollOffset
+        step.walkRequest.stepControl.speedDirection,
+        step.walkRequest.stepControl.scale);
+    }
+    else
+    {
+      return stepControlNew(
+        step.footStep,
+        step.executingCycle,
+        step.samplesDoubleSupport,
+        step.samplesSingleSupport,
+        parameters.kickHeight,
+        0, //footPitchOffset
+        0, //footRollOffset
+        step.walkRequest.stepControl.speedDirection,
+        step.walkRequest.stepControl.scale,
+        parameters.sidekickWidth);
+    }
   }
   else
   {
@@ -253,29 +271,15 @@ Pose3D FootTrajectoryGenerator2018::stepControlNew(
 		std::vector<double> xX;
 		std::vector<double> yX;
 		tk::spline theCubicSplineX;
-		if (std::abs(speedDirection) < 1.0)
-		{
-			xX = { 0.0, 0.125, 0.375, 0.5, 1.0 };
-			yX = {
-				0.0,
-				-0.3,
-				-0.75,
-				-0.1,
-				1.0
-			};
-			theCubicSplineX.set_boundary(tk::spline::first_deriv, 0.0, tk::spline::first_deriv, 0.0, false);
-		}
-		else
-		{
-			xX = { 0.0, 0.125, 0.375, 1.0 };
-			yX = {
-				0.0,
-				0.3,
-				0.75,
-				1.0
-			};
-			theCubicSplineX.set_boundary(tk::spline::first_deriv, 0.0, tk::spline::first_deriv, 0.0, false);
-		}
+
+    xX = { 0.0, 0.125, 0.375, 1.0 };
+    yX = {
+      0.0,
+      0.3,
+      0.75,
+      1.0
+    };
+    theCubicSplineX.set_boundary(tk::spline::first_deriv, 0.0, tk::spline::first_deriv, 0.0, false);
 
 		theCubicSplineX.set_points(xX, yX);
 
@@ -318,7 +322,7 @@ Pose3D FootTrajectoryGenerator2018::stepControlNew(
 		double splineZ = theCubicSplineZ(t);
 
 		Pose3D foot;
-		
+
 		foot.translation.x = (1 - splineX) * startFoot.translation.x + splineX * targetFoot.translation.x;
 		foot.translation.y = (1 - xp) * startFoot.translation.y + xp * targetFoot.translation.y + /*step.liftingFoot() **/ splineY * sidekick_width * std::sin(-speedDirection);
 		foot.translation.z = startFoot.translation.z + splineZ*stepHeight;
