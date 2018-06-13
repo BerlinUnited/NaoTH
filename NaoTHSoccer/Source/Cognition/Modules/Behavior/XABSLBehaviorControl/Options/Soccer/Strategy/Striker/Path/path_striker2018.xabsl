@@ -81,13 +81,14 @@ option path_striker2018
     else if(attack.best_action == sidekick_right)
       goto sidekick_right;
     else
-      // TODO: path_turn_to_attack_direction() should be moved to a new option
-      //       PathPlanner2018 stuff was hacked in there
       stay;
     }
     action
     {
       situation_abortable = true;
+      
+      // TODO: path_turn_to_attack_direction() should be moved to a new option
+      //       PathPlanner2018 stuff was hacked in there
       path_turn_to_attack_direction();
     }
   }
@@ -98,8 +99,6 @@ option path_striker2018
     {
       else if (path.kick_executed)
         goto short_freeze;
-      else if (attack.best_action != kick_short)
-        goto decide;
       else
         stay;
     }
@@ -115,8 +114,6 @@ option path_striker2018
     {
       else if (path.kick_executed)
         goto short_freeze;
-      else if (attack.best_action != kick_short)
-        goto decide;
       else
         stay;
     }
@@ -132,8 +129,6 @@ option path_striker2018
     {
       else if (path.kick_executed)
         goto short_freeze;
-      else if (attack.best_action != sidekick_right)
-        goto decide;
       else
         stay;
     }
@@ -149,8 +144,6 @@ option path_striker2018
     {
       else if (path.kick_executed)
         goto short_freeze;
-      else if (attack.best_action != sidekick_left)
-        goto decide;
       else
         stay;
     }
