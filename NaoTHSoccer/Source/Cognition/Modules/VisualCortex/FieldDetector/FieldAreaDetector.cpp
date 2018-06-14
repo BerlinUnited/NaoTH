@@ -31,7 +31,7 @@ void FieldAreaDetector::execute(CameraInfo::CameraID id)
 
   endpoints.clear();
 
-  grid_size = params.grid_size / factor;
+  grid_size = (cameraID==CameraInfo::Top ? params.grid_size_top : params.grid_size_bottom) / factor;
   int x_width = getBallDetectorIntegralImage().getWidth()-1;
   int n_cells_horizontal = x_width / grid_size;
   double off = (x_width - n_cells_horizontal*grid_size) / (double) n_cells_horizontal;
@@ -62,14 +62,6 @@ void FieldAreaDetector::execute(CameraInfo::CameraID id)
       cell.maxY = cell.minY + grid_size;
       if(cell.maxY > start_y) {
         continue;
-      }
-      if(cell.maxX > (int)getBallDetectorIntegralImage().getWidth()-1){
-        std::cout << "cell ups x: " << cell.maxX << std::endl;
-        cell.maxX = (int)getBallDetectorIntegralImage().getWidth()-1;
-      }
-      if(cell.maxY > (int)getBallDetectorIntegralImage().getHeight()-1){
-        std::cout << "cell ups y: " << cell.maxY << std::endl;
-        cell.maxY = (int)getBallDetectorIntegralImage().getHeight()-1;
       }
       cell.sum_of_green = getBallDetectorIntegralImage().getSumForRect(cell.minX, cell.minY, cell.maxX, cell.maxY, 1);
       if(cell.sum_of_green >= min_green) {
@@ -138,26 +130,10 @@ int32_t FieldAreaDetector::split_cell(const Cell& cell, Cell& upper, Cell& lower
 
   lower.minY = cell.maxY - half_grid_size;
   lower.maxY = cell.maxY;
-  if(lower.maxX > (int)getBallDetectorIntegralImage().getWidth()-1){
-    std::cout << "lower ups x: " << lower.maxX << std::endl;
-    lower.maxX = (int)getBallDetectorIntegralImage().getWidth()-1;
-  }
-  if(lower.maxY > (int)getBallDetectorIntegralImage().getHeight()-1){
-    std::cout << "lower ups y: " << lower.maxY << std::endl;
-    lower.maxY = (int)getBallDetectorIntegralImage().getHeight()-1;
-  }
   lower.sum_of_green = getBallDetectorIntegralImage().getSumForRect(lower.minX, lower.minY, lower.maxX, lower.maxY, 1);
 
   upper.maxY = lower.minY;
   upper.minY = lower.maxY - grid_size;
-  if(upper.maxX > (int)getBallDetectorIntegralImage().getWidth()-1){
-    std::cout << "upper ups x: " << upper.maxX << std::endl;
-    upper.maxX = (int)getBallDetectorIntegralImage().getWidth()-1;
-  }
-  if(upper.maxY > (int)getBallDetectorIntegralImage().getHeight()-1){
-    std::cout << "upper ups y: " << upper.maxY << std::endl;
-    upper.maxY = (int)getBallDetectorIntegralImage().getHeight()-1;
-  }
   upper.sum_of_green = getBallDetectorIntegralImage().getSumForRect(upper.minX, upper.minY, upper.maxX, upper.maxY, 1);
 
   DEBUG_REQUEST("Vision:FieldAreaDetector:draw_split",
@@ -183,14 +159,6 @@ void FieldAreaDetector::refine_cell(Cell& cell) {
   int sum_of_green = 0;
   // move cell up
   for(int offset = 0; offset < grid_size && cell.minY-offset >= horizon_height; ++offset) {
-    if(cell.maxX > (int)getBallDetectorIntegralImage().getWidth()-1){
-      std::cout << "refcell ups x: " << cell.maxX << std::endl;
-      cell.maxX = (int)getBallDetectorIntegralImage().getWidth()-1;
-    }
-    if(cell.maxY > (int)getBallDetectorIntegralImage().getHeight()-1){
-      std::cout << "refcell ups y: " << cell.maxY << std::endl;
-      cell.maxY = (int)getBallDetectorIntegralImage().getHeight()-1;
-    }
     sum_of_green = getBallDetectorIntegralImage().getSumForRect(cell.minX, cell.minY-offset, cell.maxX, cell.maxY-offset, 1);
     if(sum_of_green >= min_green) {
       cell.minY = cell.minY-offset;

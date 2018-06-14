@@ -67,14 +67,17 @@ public:
     Parameters() : ParameterList("FieldAreaDetector")
     {
       PARAMETER_REGISTER(proportion_of_green) = .5;
-      PARAMETER_REGISTER(grid_size) = 30;
+      PARAMETER_REGISTER(grid_size_top) = 80;
+      PARAMETER_REGISTER(grid_size_bottom) = 80;
 
       PARAMETER_REGISTER(refine_cell) = true;
       PARAMETER_REGISTER(refine_point) = true;
       syncWithConfig();
     }
     double proportion_of_green;
-    int32_t grid_size;
+    int32_t grid_size_top;
+    int32_t grid_size_bottom;
+
 
     int32_t max_grid_size;
     int32_t min_grid_size;
