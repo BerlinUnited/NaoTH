@@ -15,6 +15,7 @@
 
 #include <string.h>
 #include <iostream>
+#include <poll.h>
 
 //Custom V4L control variables
 #define V4L2_MT9M114_FADE_TO_BLACK (V4L2_CID_PRIVATE_BASE) //boolean, enable or disable fade to black feature
@@ -34,8 +35,6 @@ using namespace std;
 V4lCameraHandler::V4lCameraHandler()
   :
   selMethodIO(IO_MMAP),
-//  selMethodIO(IO_USERPTR),
-//  selMethodIO(IO_READ),
   actMethodIO(Num_of_MethodIO),
   fd(-1), 
   buffers(NULL),
@@ -279,14 +278,15 @@ void V4lCameraHandler::openDevice(bool blockingMode)
   std::cout << LOG << "Opening camera device '" << cameraName << "' ";
 
   blockingCaptureModeEnabled = blockingMode;
+  // always open file descriptor in non-blocking mode, blocking will be achived with "poll" calls later
+  fd = open(cameraName.c_str(), O_RDWR | O_NONBLOCK, 0);
+    
   if(blockingMode)
   {
-    fd = open(cameraName.c_str(), O_RDWR, 0);
     std::cout << "(blocking mode)";
   }
   else
   {
-    fd = open(cameraName.c_str(), O_RDWR | O_NONBLOCK, 0);
     std::cout << "(non blocking mode)";
   }
   std::cout << endl;
@@ -501,42 +501,73 @@ int V4lCameraHandler::readFrameMMaP()
   buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   buf.memory = V4L2_MEMORY_MMAP;
 
-  int errorOccured = -1;
-  if(blockingCaptureModeEnabled)
+  
+  // in blocking mode, wait up to a second for new image data
+  const unsigned int maxWaitingTime = blockingCaptureModeEnabled ? 1000 : 2; 
+  // wait for available data via poll
+  pollfd pollfds[1] =
   {
-    //in blocking mode just get a buffer from the drivers outgoing queue
-    errorOccured = xioctl(fd, VIDIOC_DQBUF, &buf);
-    hasIOError(errorOccured, errno);
-//    std::cout << "get buffer from driver blocking" << std::endl;
+    {fd, POLLIN | POLLPRI, 0},
+  };
+//  unsigned int startTime = NaoTime::getNaoTimeInMilliSeconds();
+  int polled = poll(pollfds, 1, maxWaitingTime);
+
+//  unsigned int stopTime = NaoTime::getNaoTimeInMilliSeconds();
+//  std::cout << LOG << "polling took " << (stopTime -  startTime) << " ms" << std::endl;
+  if(polled < 0) {
+    std::cerr << LOG << "Polling camera failed after " << maxWaitingTime << " ms. Error was: " << strerror(errno) << std::endl;
+    return -1;
   }
-  else
-  {
-    //in non-blocking mode make some tries if no buffer in the  drivers outgoing queue is ready
-    //but limit the number of tries (better to loose a frame then to stuck in an endless loop)
-    for(int i = 0; i < 20 && errorOccured < 0; i++)
-    {
-      errorOccured = xioctl(fd, VIDIOC_DQBUF, &buf);
-//      std::cout << "get buffer from driver nonblocking" << std::endl;
-      if(errorOccured < 0 && errno == EAGAIN) {
-        usleep(100);
+
+  if(pollfds[0].revents && !(pollfds[0].revents & POLLIN)) {
+      std::cerr << LOG << "Poll for camera returned unexpected poll code " << pollfds[0].revents << std::endl;
+  }
+
+
+  int errorCode = 0;
+  
+  // Deque all camera images in queue until there is none left. Since we polled, we know data should be available.
+  bool first = true;
+  v4l2_buffer lastValidBuf;
+  do {
+    errorCode = xioctl(fd, VIDIOC_DQBUF, &buf);
+
+    if(errorCode == 0) {
+      if(first) {
+        first = false;
       } else {
-        hasIOError(errorOccured, errno);
+        VERIFY(xioctl(fd, VIDIOC_QBUF, &lastValidBuf) == 0);
+      }
+      lastValidBuf = buf;
+    } else {
+      if(errno == EAGAIN) {
+        // last element taken from the queue, abort loop
+        if(!first) {
+          // reset error code since first try was successfull
+          errorCode = 0;
+        }
+        break;
+      } else {
+        // we did do a poll on the file descriptor and still got an error, something is wrong: abort the loop
+        hasIOError(errorCode, errno);
+        break;
       }
     }
-  }
-  currentBuf = buf;
+  } while(errorCode == 0);
+  currentBuf = lastValidBuf;
 
   //remember current buffer for the next frame as last buffer
   lastBuf = currentBuf;
 
   wasQueried = true;
   ASSERT(currentBuf.index < n_buffers);
-  if(errorOccured == 0) {
+  if(errorCode == 0) {
     return currentBuf.index;
   } else {
     return -1;
   }
 }
+
 
 int V4lCameraHandler::readFrameUP()
 {
