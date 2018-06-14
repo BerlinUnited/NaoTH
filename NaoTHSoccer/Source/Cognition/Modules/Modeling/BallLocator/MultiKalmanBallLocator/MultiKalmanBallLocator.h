@@ -83,7 +83,7 @@ private:
     Filters::const_iterator bestModel;
 
     const double epsilon; // 10e-6
-    double area95Threshold;
+    //double area95Threshold;
 
     //double ballMass;
     double c_RR;
@@ -130,7 +130,7 @@ private:
 
             //PARAMETER_REGISTER(ballMass) = 0.026;
             PARAMETER_REGISTER(c_RR) = 0.0245;
-            PARAMETER_REGISTER(area95Threshold) = 1000*1000*Math::pi;
+            PARAMETER_REGISTER(area95Threshold) = 2*Math::pi*700*700;
 
             //thresholds for association functions
             PARAMETER_REGISTER(euclidThreshold) = Math::fromDegrees(10);
@@ -140,6 +140,9 @@ private:
             //AssymetricalBoolFilte parameters
             PARAMETER_REGISTER(g0) = 0.01;
             PARAMETER_REGISTER(g1) = 0.1;
+
+            PARAMETER_REGISTER(area95Threshold_radius.factor) = 1;
+            PARAMETER_REGISTER(area95Threshold_radius.offset) = 125;
 
             syncWithConfig();
         }
@@ -168,6 +171,12 @@ private:
         double euclidThreshold;
         double mahalanobisThreshold;
         double maximumLikelihoodThreshold;
+
+        struct {
+            double factor;
+            double offset;
+        } area95Threshold_radius;
+
     } kfParameters;
 
     Measurement_Function_H h;

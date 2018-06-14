@@ -64,7 +64,9 @@ void MultiKalmanBallLocator::execute()
     if(filter.size() > 1) {
         Filters::iterator iter = filter.begin();
         while(iter != filter.end() && filter.size() > 1) {
-          if(!iter->ballSeenFilter.value() && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * Math::pi > area95Threshold){
+          double distance = Vector2d(iter->getState()(0), iter->getState()(2)).abs();
+          double threshold_radius = kfParameters.area95Threshold_radius.factor * distance + kfParameters.area95Threshold_radius.offset;
+          if(!iter->ballSeenFilter.value() && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * Math::pi >  threshold_radius*threshold_radius*2*Math::pi){
                 iter = filter.erase(iter);
             } else {
                 ++iter;
@@ -595,7 +597,6 @@ void MultiKalmanBallLocator::reloadParameters()
 
     // filter unspecific parameters
     c_RR              = kfParameters.c_RR;
-    area95Threshold   = kfParameters.area95Threshold;
 
     // UAF thresholds
     euclid.setThreshold(kfParameters.euclidThreshold);
