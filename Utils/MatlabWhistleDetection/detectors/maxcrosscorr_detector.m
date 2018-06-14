@@ -2,6 +2,9 @@ function  results = maxcrosscorr_detector(capture_data, window_size, window_offs
 
     results = struct;
     for r = 1:length(ref)
+        if ref(r).autocorrelation == 0
+           continue; 
+        end
         reference_spectrum = ref(r).spectralData;
         reference_max = ref(r).autocorrelation;
   
@@ -32,8 +35,8 @@ function  results = maxcrosscorr_detector(capture_data, window_size, window_offs
             end
             result.indices(end + 1) = i;
             result.values(end + 1)  = res_slice;
-        end
-        if r == 1
+        end        
+        if ~isfield(results(1), 'name')
             results = result;
         else
             results = [results result];
