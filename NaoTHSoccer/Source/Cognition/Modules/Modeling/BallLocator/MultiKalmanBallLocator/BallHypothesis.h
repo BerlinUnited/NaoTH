@@ -13,13 +13,15 @@ class BallHypothesis : public ExtendedKalmanFilter4d
 
     public:
         AssymetricalBoolHysteresisFilter ballSeenFilter;
+        int stall_count;
 
     public:
         BallHypothesis(const naoth::FrameInfo& createFrame, const Eigen::Vector4d& state, const Eigen::Matrix2d& processNoiseStdSingleDimension, const Eigen::Matrix2d& measurementNoiseCovariances, const Eigen::Matrix2d& initialStateStdSingleDimension):
               ExtendedKalmanFilter4d(state, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension),
               lastUpdateFrame(createFrame),
               createFrame(createFrame),
-              ballSeenFilter(0.01, 0.1) // some default params
+              ballSeenFilter(0.01, 0.1), // some default params
+              stall_count(0)
         {}
 
         void update(const Eigen::Vector2d &z, const Measurement_Function_H& h, const naoth::FrameInfo frameInfo){
