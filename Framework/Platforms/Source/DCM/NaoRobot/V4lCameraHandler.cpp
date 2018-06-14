@@ -525,31 +525,36 @@ int V4lCameraHandler::readFrameMMaP()
 
 
   int errorCode = 0;
-  {
-    // Deque all camera images in queue until there is none left. Since we polled, we know data should be available.
-    bool first = false;
-    while(errorCode == 0) {
-      errorCode = xioctl(fd, VIDIOC_DQBUF, &buf);
-      if(errorCode < 0) {
-        if(errno == EAGAIN) {
-          // last element taken from the queue, abort loop
-          if(!first) {
-            // reset error code since first try was successfull
-            errorCode = 0;
-          }
-          break;
-        } else {
-          // we did do a poll on the file descriptor and still got an error, something is wrong: abort the loop
-          hasIOError(errorCode, errno);
-          break;
-        }
-      }
+  
+  // Deque all camera images in queue until there is none left. Since we polled, we know data should be available.
+  bool first = true;
+  v4l2_buffer lastValidBuf;
+  do {
+    errorCode = xioctl(fd, VIDIOC_DQBUF, &buf);
+
+    if(errorCode == 0) {
       if(first) {
         first = false;
+      } else {
+        VERIFY(xioctl(fd, VIDIOC_QBUF, &lastValidBuf) == 0);
+      }
+      lastValidBuf = buf;
+    } else {
+      if(errno == EAGAIN) {
+        // last element taken from the queue, abort loop
+        if(!first) {
+          // reset error code since first try was successfull
+          errorCode = 0;
+        }
+        break;
+      } else {
+        // we did do a poll on the file descriptor and still got an error, something is wrong: abort the loop
+        hasIOError(errorCode, errno);
+        break;
       }
     }
-  }
-  currentBuf = buf;
+  } while(errorCode == 0);
+  currentBuf = lastValidBuf;
 
   //remember current buffer for the next frame as last buffer
   lastBuf = currentBuf;
@@ -562,6 +567,7 @@ int V4lCameraHandler::readFrameMMaP()
     return -1;
   }
 }
+
 
 int V4lCameraHandler::readFrameUP()
 {
