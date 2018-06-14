@@ -1,5 +1,6 @@
 package de.naoth.rc.dialogs.multiagentconfiguration;
 
+import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractJFXDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
@@ -56,6 +57,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
+import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
  *
@@ -66,7 +68,10 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
     
     @RCDialog(category = RCDialog.Category.Tools, name = "MultiAgentConfigurationFx")
     @PluginImplementation
-    public static class Plugin extends DialogPlugin<MultiAgentConfigurationFx> {}
+    public static class Plugin extends DialogPlugin<MultiAgentConfigurationFx> {
+        @InjectPlugin
+        public static RobotControl parent;
+    }
 
     @FXML
     private ToggleButton btn_connect;
@@ -94,6 +99,9 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
 
     @Override
     public void afterInit() {
+        if(Plugin.parent != null) {
+            setConfig(Plugin.parent.getConfig());
+        }
         // TODO
         btn_connect.selectedProperty().addListener((ov, t, t1) -> {
             if(t1) {
