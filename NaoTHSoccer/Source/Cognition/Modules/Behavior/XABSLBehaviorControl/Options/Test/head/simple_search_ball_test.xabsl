@@ -18,11 +18,26 @@ option simple_search_ball_test
 
   state search {
     decision {
+      else if (action_done)
+        goto turn_to_ball;
       else
         stay;
     }
     action {
       search_ball_simple();
+    }
+  }
+
+  state turn_to_ball {
+    decision {
+      else if( !ball.know_where_itis)
+        goto search;
+      else
+        stay;
+    }
+    action {
+      goalie_watch_ball();
+      head.control_mode = search_for_ball;
     }
   }
 

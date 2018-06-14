@@ -35,14 +35,14 @@ public:
 
     naoth::GameData::RobotInfo penaltyInfo = gameData.getOwnRobotInfo(playerNumber);
 
-    if(penaltyInfo.penalty != naoth::GameData::none) {
+    if(penaltyInfo.penalty != naoth::GameData::penalty_none) {
       robotState = penalized;
     } else {
       robotState = (RobotState)gameData.gameState;
     }
 
-    teamColor = gameData.ownTeam.teamColour;
-    kickoff = (gameData.kickOffTeam == teamNumber);
+    teamColor = gameData.ownTeam.teamColor;
+    kickoff = (gameData.kickingTeam == teamNumber);
     playersPerTeam = gameData.playersPerTeam;
   }
 

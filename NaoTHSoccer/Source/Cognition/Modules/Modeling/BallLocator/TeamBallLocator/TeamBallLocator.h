@@ -85,7 +85,7 @@ class TeamBallLocator : protected TeamBallLocatorBase
 
   public:
     TeamBallLocator();
-    ~TeamBallLocator() {}
+		~TeamBallLocator();
 
     virtual void execute();
 

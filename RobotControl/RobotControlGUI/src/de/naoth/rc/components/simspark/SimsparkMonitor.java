@@ -115,7 +115,7 @@ public class SimsparkMonitor extends Simspark {
         
         private void broadcastTeamCommMessages(List<Object> messages) {
             List<TeamCommMessage> c = new ArrayList<>();
-            ByteBuffer readBuffer = ByteBuffer.allocateDirect(SPLMessage.SPL_STANDARD_MESSAGE_SIZE);
+            ByteBuffer readBuffer = ByteBuffer.allocateDirect(SPLMessage.size());
             readBuffer.order(ByteOrder.LITTLE_ENDIAN);
             // iterate over available messages
             for (Object object : messages) {
@@ -135,7 +135,7 @@ public class SimsparkMonitor extends Simspark {
                     readBuffer.clear();
                     readBuffer.put(b);
                     readBuffer.flip();
-                    SPLMessage spl = new SPLMessage(readBuffer);
+                    SPLMessage spl = SPLMessage.parseFrom(readBuffer);
                     c.add(new TeamCommMessage(
                         System.currentTimeMillis(),
                         // see SimSparkController.cpp, ~line: 280, "calculate debug communicaiton port"

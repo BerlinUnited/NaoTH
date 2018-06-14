@@ -44,7 +44,7 @@ BEGIN_DECLARE_MODULE(SituationPriorProvider)
   REQUIRE(GameData)
 
   REQUIRE(MotionStatus)
-  PROVIDE(BodyState)
+  REQUIRE(BodyState)
   REQUIRE(SituationStatus)
 
   PROVIDE(SituationPrior)

@@ -8,6 +8,7 @@
 #include "Representations/Modeling/TeamMessageData.h"
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Infrastructure/GameData.h"
+#include "Representations/Infrastructure/WifiMode.h"
 
 #include <Tools/DataStructures/RingBuffer.h>
 
@@ -28,6 +29,7 @@ BEGIN_DECLARE_MODULE(TeamCommReceiver)
 
   REQUIRE(TeamMessageDataIn)
   REQUIRE(GameData)
+  REQUIRE(WifiMode)
 
   PROVIDE(TeamMessage)
   PROVIDE(TeamMessageData)
@@ -86,12 +88,6 @@ private:
   }
 
   RingBuffer<std::string, 100> delayBuffer;
-
-  unsigned int dropNoSplMessage;
-  unsigned int dropNotOurTeam;
-  unsigned int dropNotParseable;
-  unsigned int dropKeyFail;
-  unsigned int dropMonotonic;
 };
 
 #endif // TEAMCOMMRECEIVER_H

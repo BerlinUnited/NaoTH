@@ -43,21 +43,16 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
   cameraID = id;
 
   // set the percept
-  getFieldColorPercept().greenHSISeparator.set(parameters.green);
-  getFieldColorPercept().redHSISeparator.set(parameters.red);
-
-
-  // update cache if parameter have changed
-  if(
-       cacheParameter.brightnesConeOffset      != parameters.green.brightnesConeOffset 
-    || cacheParameter.brightnesConeRadiusBlack != parameters.green.brightnesConeRadiusBlack
-    || cacheParameter.brightnesConeRadiusWhite != parameters.green.brightnesConeRadiusWhite
-    || cacheParameter.colorAngleCenter         != parameters.green.colorAngleCenter 
-    || cacheParameter.colorAngleWith           != parameters.green.colorAngleWith
-    ) 
+  if(frameWhenParameterChanged.getFrameNumber() == getFrameInfo().getFrameNumber()) 
   {
-    updateCache();
-    cacheParameter = parameters.green;
+    getFieldColorPercept().greenHSISeparator.set(parameters.green);
+    getFieldColorPercept().redHSISeparator.set(parameters.red);
+
+    std::cout << "changed" << std::endl;
+     // update cache if parameter have changed
+    if(parameters.provide_colortable) {
+      updateCache();
+    }
   }
 
   DEBUG_REQUEST("Vision:FieldColorClassifier:CamBottom", if(cameraID == CameraInfo::Bottom) { debug(); } );

@@ -20,11 +20,21 @@ public:
   } eventState;
 
   unsigned int timeOfLastEvent;
+  unsigned int timeOfLastClick;
+  unsigned int clicksInSequence;
   bool isPressed;
 
-  ButtonEvent() : eventState(NONE), timeOfLastEvent(0), isPressed(false) {}
+  ButtonEvent() : eventState(NONE), timeOfLastEvent(0), timeOfLastClick(0), clicksInSequence(0), isPressed(false) {}
   void operator=(EventType id) { eventState = id; }
   bool operator==(EventType id) const { return this->eventState == id; }
+
+  bool isSingleClick() const {
+    return eventState == CLICKED && clicksInSequence == 1;
+  }
+
+  bool isDoubleClick() const {
+    return eventState == CLICKED && clicksInSequence == 2;
+  }
 
   std::string print() const
   {

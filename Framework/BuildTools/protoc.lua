@@ -76,8 +76,16 @@ local function protocCompile(inputFiles, cppOut, javaOut, pythonOut, ipaths)
     end
   end 
 
-  args = args .. table.concat(inputFiles, " ")
-  local cmd = compilerPath .. "/" .. compiler .. " " .. args
+  --args = args .. table.concat(inputFiles, " ")
+  for i,v in pairs(inputFiles) do
+	args = args .. " \"" .. v .. "\""
+  end
+  
+  local cmd = "\"" .. compilerPath .. "/" .. compiler .. "\" " .. args
+  
+  if os.ishost("windows") then
+    cmd = "\"" .. cmd .. "\""
+  end
   
   -- HACK: create the output directories if needed
   os.mkdir(cppOut)
@@ -139,7 +147,7 @@ function add_gcc_ignore_pragmas(files)
   numberFiles = 0
 	for i,file in ipairs(files) do
     print("NOTE: process " .. file)
-		file_add_prefix_sufix(file, suffix, prefix)
+		file_add_prefix_sufix(file, prefix, suffix)
     numberFiles = numberFiles + 1
 	end
   
@@ -148,8 +156,13 @@ function add_gcc_ignore_pragmas(files)
   end
 end
 
+-- a wrapper for an easier access with names parameters
+-- e.g., makeprotoc{inputFiles = {""}, ...}
+function makeprotoc(arg)
+  invokeprotoc(arg.inputFiles, arg.cppOut, arg.javaOut, arg.pythonOut, arg.includeDirs)
+end
 
-function invokeprotoc(inputFiles, cppOut, javaOut, pythonOut, ipaths)
+function invokeprotoc(inputFiles, cppOut, javaOut, pythonOut, includeDirs)
 	-- check if protobuf compile is explicitely requested
     local compile = (_OPTIONS["protoc"] ~= nil)
 
@@ -166,7 +179,7 @@ function invokeprotoc(inputFiles, cppOut, javaOut, pythonOut, ipaths)
       -- execute compile process for each file
       local time = os.time()
       -- do the recompilation
-     if( protocCompile(inputFiles, cppOut, javaOut, pythonOut, ipaths)) then
+     if( protocCompile(inputFiles, cppOut, javaOut, pythonOut, includeDirs)) then
        -- if successfull touch the shadow files
        for i = 1, #inputFiles do
           -- touch shadow file in order to remember this build date

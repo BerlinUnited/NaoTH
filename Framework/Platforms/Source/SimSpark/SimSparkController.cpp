@@ -1315,7 +1315,7 @@ void SimSparkController::get(GameData& data)
     data.newPlayerNumber = theGameInfo.playerNumber;
 
     data.ownTeam.teamNumber = theGameInfo.getTeamNumber();
-    data.ownTeam.teamColour = theGameInfo.getTeamColor();
+    data.ownTeam.teamColor = theGameInfo.getTeamColor();
     data.ownTeam.players.resize(theGameInfo.playersPerTeam);
 
     // todo set opponent team info

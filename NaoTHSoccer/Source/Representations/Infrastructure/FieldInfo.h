@@ -37,7 +37,7 @@ public:
   virtual void print(std::ostream& stream) const;
 
   // some tools
-  inline bool insideCarpet(const Vector2d& p) {
+  inline bool insideCarpet(const Vector2d& p) const {
     return carpetRect.inside(p);
   }
 

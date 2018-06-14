@@ -21,7 +21,8 @@ option positioning_for_opp_kickoff
       motion.type = stand;
     }
   }
-
+  
+  // Number 1
   state goto_opp_kickoff_position_goalie
   {
     decision {
@@ -42,7 +43,8 @@ option positioning_for_opp_kickoff
       // goto_ready_position(x=-2700, y=0, rot=0, check_by_line=true, distToLine=600, maxLineDist=2000, minLineDist=100) alt;
     }
   }
-
+  
+  // Number 2
   state goto_opp_kickoff_position_supporter2
   {
     decision {
@@ -56,7 +58,7 @@ option positioning_for_opp_kickoff
       //go_to_point_with_USOA(x=-2500, y=-900, rot=0);
       go_to_point_with_USOA(
         x=field.xPosOwnPenaltyMark + 500, 
-        y=field.yPosLeftGoal-400,
+        y=field.yPosLeftGoal-100,
         rot=0);
 
       head.control_mode = look_around;
@@ -64,6 +66,7 @@ option positioning_for_opp_kickoff
     }
   }
   
+  // Number 3
   state goto_opp_kickoff_position_striker
   {
     decision {
@@ -81,7 +84,8 @@ option positioning_for_opp_kickoff
 
     }
   }
-
+  
+  // Number 4
   state goto_opp_kickoff_position_defender
   {
     decision {
@@ -95,7 +99,7 @@ option positioning_for_opp_kickoff
       //go_to_point_with_USOA(x=-1000, y=-2000, rot=10);
       go_to_point_with_USOA(
         x=field.xPosOwnPenaltyMark, 
-        y=field.yPosRightGoal+400, 
+        y=field.yPosRightGoal+100, 
         rot=0);
 
       head.control_mode = look_around;
@@ -103,7 +107,8 @@ option positioning_for_opp_kickoff
 
     }
   }
-
+  
+  // Number 5
   state goto_opp_kickoff_position_supporter
   {
     decision {

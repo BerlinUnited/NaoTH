@@ -845,9 +845,8 @@ void Walk::feetStabilize(const Step& executingStep, double (&position)[naoth::Jo
   const Vector2d& inertial = getInertialModel().orientation;
   const Vector3d& gyro = getGyrometerData().data;
 
-  // HACK: small filter...
-  static Vector3d lastGyro = gyro;
-  Vector3d filteredGyro = filteredGyro*0.8 + gyro*0.2;
+  // HACK: small filter:
+  filteredGyro = filteredGyro*0.8 + gyro*0.2;
 
   Vector2d weight;
   weight.x = 
@@ -883,5 +882,4 @@ void Walk::feetStabilize(const Step& executingStep, double (&position)[naoth::Jo
   default: break; // don't stabilize in double support mode
   };
 
-  lastGyro = gyro;
 }//end feetStabilize

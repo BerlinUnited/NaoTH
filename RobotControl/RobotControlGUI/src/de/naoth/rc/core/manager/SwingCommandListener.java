@@ -6,7 +6,6 @@
 
 package de.naoth.rc.core.manager;
 
-import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.ResponseListener;
 import javax.swing.SwingUtilities;
