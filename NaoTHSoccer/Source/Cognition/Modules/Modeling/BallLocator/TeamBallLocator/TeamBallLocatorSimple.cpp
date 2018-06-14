@@ -46,6 +46,10 @@ void TeamBallLocatorSimple::execute() {
         PEN("0000FF", 20);
         for(const Ball& b : balls) {
             CIRCLE(b.pos.x, b.pos.y, 50);
+            PEN("7f00ff", 20);
+            CIRCLE(b.pos.x, b.pos.y, params.t1);
+            PEN("007fff", 20);
+            CIRCLE(b.pos.x, b.pos.y, params.t2);
         }
     );
 
@@ -57,7 +61,7 @@ void TeamBallLocatorSimple::execute() {
         if(balls[i].valid) {
             for (unsigned int j = i+1; j < balls.size(); ++j) {
                 if(balls[j].valid) {
-                    double distance = (balls[i].pos + balls[j].pos).abs();
+                    double distance = (balls[i].pos + balls[j].pos).abs2();
                     // check 'loose' distance
                     if(distance <= (params.t1*params.t1)) {
                         balls[i].add(balls[j]);
