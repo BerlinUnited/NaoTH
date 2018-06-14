@@ -509,7 +509,11 @@ int V4lCameraHandler::readFrameMMaP()
   {
     {fd, POLLIN | POLLPRI, 0},
   };
+//  unsigned int startTime = NaoTime::getNaoTimeInMilliSeconds();
   int polled = poll(pollfds, 1, maxWaitingTime);
+
+//  unsigned int stopTime = NaoTime::getNaoTimeInMilliSeconds();
+//  std::cout << LOG << "polling took " << (stopTime -  startTime) << " ms" << std::endl;
   if(polled < 0) {
     std::cerr << LOG << "Polling camera failed after " << maxWaitingTime << " ms. Error was: " << strerror(errno) << std::endl;
     return -1;
@@ -520,15 +524,13 @@ int V4lCameraHandler::readFrameMMaP()
   }
 
 
-  int errorCode = -1;
+  int errorCode = 0;
   {
-    unsigned int failedDeques = 0;
     // Deque all camera images in queue until there is none left. Since we polled, we know data should be available.
     bool first = false;
-    while(failedDeques < 20) {
+    while(errorCode == 0) {
       errorCode = xioctl(fd, VIDIOC_DQBUF, &buf);
       if(errorCode < 0) {
-        failedDeques++;
         if(errno == EAGAIN) {
           // last element taken from the queue, abort loop
           if(!first) {
