@@ -31,6 +31,8 @@ MultiKalmanBallLocator::MultiKalmanBallLocator():
 
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_trust_the_ball", "..", false);
 
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:provide_model_based_on_covariance", "..", true);
+
     h.ballRadius = getFieldInfo().ballRadius;
 
     updateAssociationFunction = &likelihood;
@@ -511,30 +513,23 @@ void MultiKalmanBallLocator::applyOdometryOnFilterState(ExtendedKalmanFilter4d& 
 
 MultiKalmanBallLocator::Filters::const_iterator MultiKalmanBallLocator::selectBestModel() const
 {
-  /*
-  // find the best model for the ball based on convariance
-  if(!filter.empty())
-  {
-      // find best model
-      Filters::const_iterator bestModel = filter.begin();
-      double evalue = (*bestModel).getEllipseLocation().major * (*bestModel).getEllipseLocation().minor *Math::pi;
-
-      for(std::vector<ExtendedKalmanFilter4d>::const_iterator iter = ++filter.begin(); iter != filter.end(); ++iter){
-          if(getFrameInfo().getTimeSince(iter->getFrameOfCreation().getTime()) > 300) {
-            double temp = (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * Math::pi;
-            if(temp < evalue) {
-                evalue = temp;
-                bestModel = iter;
-            }
-          }
-      }
-  }
-  */
-
-  // find the best model for the ball: closest hypothesis that is "known"
   Filters::const_iterator bestModel = filter.end();
   double value = 0;
 
+  DEBUG_REQUEST("MultiKalmanBallLocator:provide_model_based_on_covariance",
+    // find the best seen model for the ball based on covariance
+    for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); ++iter) {
+        double temp = iter->getEllipseLocation().major * iter->getEllipseLocation().minor * Math::pi;
+        if(bestModel == filter.end() || temp < value){
+            bestModel = iter;
+            value = temp;
+        }
+    }
+
+    return bestModel;
+  );
+
+  // find the best model for the ball: closest hypothesis that is "known"
   for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); ++iter) {
     if(iter->ballSeenFilter.value()) {
       double temp = Vector2d(iter->getState()(0), iter->getState()(2)).abs();
