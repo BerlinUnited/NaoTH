@@ -73,18 +73,21 @@ public:
     {
       PARAMETER_REGISTER(sidekick_right.speed) = 750;
       PARAMETER_REGISTER(sidekick_right.speed_std) = 150;
-      PARAMETER_REGISTER(sidekick_right.angle) = -89.657943335302260;
-      PARAMETER_REGISTER(sidekick_right.angle_std) = 10.553726275058064;
+
+      PARAMETER_ANGLE_REGISTER(sidekick_right.angle) = -89.657943335302260;
+      PARAMETER_ANGLE_REGISTER(sidekick_right.angle_std) = 10.553726275058064;
 
       PARAMETER_REGISTER(sidekick_left.speed) = 750;
       PARAMETER_REGISTER(sidekick_left.speed_std) = 150;
-      PARAMETER_REGISTER(sidekick_left.angle) = 86.170795364136380;
-      PARAMETER_REGISTER(sidekick_left.angle_std) = 10.669170653645670;
+
+      PARAMETER_ANGLE_REGISTER(sidekick_left.angle) = 86.170795364136380;
+      PARAMETER_ANGLE_REGISTER(sidekick_left.angle_std) = 10.669170653645670;
 
       PARAMETER_REGISTER(kick_short.speed) = 1280;
       PARAMETER_REGISTER(kick_short.speed_std) = 150;
-      PARAMETER_REGISTER(kick_short.angle) = 8.454482265522328;
-      PARAMETER_REGISTER(kick_short.angle_std) = 6.992268841997358;
+
+      PARAMETER_ANGLE_REGISTER(kick_short.angle) = 8.454482265522328;
+      PARAMETER_ANGLE_REGISTER(kick_short.angle_std) = 6.992268841997358;
 
       //PARAMETER_REGISTER(kick_long.speed) = 1020;
       //PARAMETER_REGISTER(kick_long.speed_std) = 150;

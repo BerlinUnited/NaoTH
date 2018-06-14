@@ -55,7 +55,7 @@ void KickDirectionSimulator::execute()
     DEBUG_REQUEST("KickDirectionSimulator:draw_best_direction",
       FIELD_DRAWING_CONTEXT;
 
-      Vector2d to = getRobotPose() * (Vector2d(500, 0).rotate(Math::fromDegrees(action_local[i].getAngle())).rotate(correctionAngle[i]));
+      Vector2d to = getRobotPose() * (Vector2d(500, 0).rotate(action_local[i].getAngle()).rotate(correctionAngle[i]));
 
       PEN("FF0000", 50);
       ARROW(getRobotPose().translation.x, getRobotPose().translation.y, to.x, to.y);

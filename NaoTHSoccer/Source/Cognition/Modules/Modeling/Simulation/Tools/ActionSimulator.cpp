@@ -181,11 +181,11 @@ Vector2d ActionSimulator::Action::predict(const Vector2d& ball, bool noise) cons
 	double angle;
 	if (noise) {
 		double speed = Math::generateGaussianNoise(action_speed, action_speed_std);
-		angle = Math::generateGaussianNoise(Math::fromDegrees(action_angle), Math::fromDegrees(action_angle_std));
+		angle = Math::generateGaussianNoise(action_angle, action_angle_std);
 		distance = speed*speed / friction / gforce / 2.0; // friction*mass*gforce*distance = 1/2*mass*speed*speed
 	} else {
 		distance = action_speed*action_speed / friction / gforce / 2.0; // friction*mass*gforce*distance = 1/2*mass*speed*speed
-		angle = Math::fromDegrees(action_angle);
+		angle = action_angle;
 	}  
   Vector2d predictedAction(distance, 0.0);
   predictedAction.rotate(angle);
