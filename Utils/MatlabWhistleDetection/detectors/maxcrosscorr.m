@@ -6,7 +6,7 @@ function result = maxcrosscorr(raw_samples, reference_spectrum, reference_max)
     short_max = 32767;
     raw_samples_norm = raw_samples / short_max;
 
-    n = 2^nextpow2(size(raw_samples_norm,1));
+    n = 2^nextpow2(size(raw_samples_norm, 1));
     
     mat_spectrum = fft(raw_samples_norm, n * 2);
 
