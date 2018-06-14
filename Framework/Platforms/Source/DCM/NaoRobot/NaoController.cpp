@@ -174,12 +174,14 @@ NaoController::~NaoController()
   delete theDebugServer;
 }
 
-void NaoController::set(const CameraSettingsRequest &data)
+void NaoController::set(const CameraSettingsRequest &request)
 {
-  theBottomCameraHandler.setAllCameraParams(data);
+  CameraSettings settings = request.getCameraSettings();
+  theBottomCameraHandler.setAllCameraParams(settings);
 }
 
-void NaoController::set(const CameraSettingsRequestTop &data)
+void NaoController::set(const CameraSettingsRequestTop &request)
 {
-  theTopCameraHandler.setAllCameraParams(data);
+  CameraSettings settings = request.getCameraSettings();
+  theTopCameraHandler.setAllCameraParams(settings);
 }

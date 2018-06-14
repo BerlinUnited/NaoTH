@@ -30,6 +30,11 @@ void LEDSetter::execute()
   }
   // feet and chest button and head from GameController
   copyMultiLEDData(getGameControllerLEDRequest(), LEDData::FootLeft, LEDData::ChestButton);
+
+  if(!getWifiModeSetterLEDRequest().ignore) {
+    // Wifi status can override chest button from GameController
+    copyMultiLEDData(getWifiModeSetterLEDRequest(), LEDData::ChestButton, LEDData::ChestButton);
+  }
   //copyMonoLEDData(getGameControllerLEDRequest(), LEDData::HeadFrontLeft0, LEDData::HeadRearRight2);
 
 } // end execute

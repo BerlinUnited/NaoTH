@@ -44,7 +44,7 @@ END_DECLARE_MODULE(CameraDebug)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
 
-class CameraDebug : private CameraDebugBase, public DebugCommandExecutor
+class CameraDebug : private CameraDebugBase
 {
 
 public:
@@ -53,19 +53,19 @@ public:
 
   virtual void execute();
 
-  virtual void executeDebugCommand(
-    const std::string& command, 
-    const std::map<std::string,std::string>& arguments,
-    std::ostream& outstream);
-
 private:
-  bool isAutoCalibratingCamera;
-  bool afterAutoCalibratingCamera;
-  bool afterQueryCameraSettings;
+  template<class T>
+  void setCommonCameraSetting(T value, T& bottomRequestValue, T& topRequestValue, bool& changed) {
+    if(bottomRequestValue != value) {
+      bottomRequestValue = value;
+      changed = true;
+    }
+    if(topRequestValue != value) {
+      topRequestValue = value;
+      changed = true;
+    }
+  }
 
-  FrameInfo timeWhenCameraCalibrationStopped;
-
-  void setCommonCameraSetting(CameraInfo::CameraID cameraId, CameraSettings::CameraSettingID id, int value, bool& changed);
 };
 
 #endif //_CameraDebug_h_

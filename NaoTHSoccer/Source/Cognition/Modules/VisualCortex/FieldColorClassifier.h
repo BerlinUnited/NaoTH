@@ -57,6 +57,7 @@ BEGIN_DECLARE_MODULE(FieldColorClassifier)
 
   PROVIDE(FieldColorPercept)
   PROVIDE(FieldColorPerceptTop)
+
   PROVIDE(ColorTable64)
 END_DECLARE_MODULE(FieldColorClassifier)
 
@@ -71,6 +72,9 @@ public:
 
   void execute()
   {
+    if(parameters.check_changed()) {
+      frameWhenParameterChanged = getFrameInfo();
+    }
     execute(CameraInfo::Top);
     execute(CameraInfo::Bottom);
   }
@@ -100,6 +104,8 @@ private:
       PARAMETER_REGISTER(red.colorAngleCenter) = -4.4;
       PARAMETER_REGISTER(red.colorAngleWith) = 0.4;
 
+      PARAMETER_REGISTER(provide_colortable) = false;
+
       syncWithConfig();
     }
 
@@ -107,7 +113,11 @@ private:
 
     FieldColorPercept::HSISeparatorOptimized::Parameter green;
     FieldColorPercept::HSISeparatorOptimized::Parameter red;
+
+    bool provide_colortable;
   } parameters;
+  
+  naoth::FrameInfo frameWhenParameterChanged;
 
 private: // doublecam
 
@@ -122,7 +132,6 @@ private: // doublecam
     DOUBLE_CAM_PROVIDE(FieldColorClassifier, FieldColorPercept);
 
 private:
-  FieldColorPercept::HSISeparatorOptimized::Parameter cacheParameter;
   UniformGrid uniformGrid; // subsampling of the image
 
   class Histogram2D
