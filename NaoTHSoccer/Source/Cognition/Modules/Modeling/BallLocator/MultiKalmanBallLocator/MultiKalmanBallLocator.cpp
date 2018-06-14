@@ -27,7 +27,7 @@ MultiKalmanBallLocator::MultiKalmanBallLocator():
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:UpdateAssociationFunction:useMahalanobis",       "minimize Mahalanobis distance in measurement space (no common covarince matrix)", false);
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:UpdateAssociationFunction:useMaximumLikelihood", "maximize likelihood of measurement in measurement space ",                         true);
 
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:back_project_models", "",false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:negative_feedback_by_back_projecting_models", "", true);
 
     // Parameter Related Debug Requests
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:reloadParameters",          "reloads the kalman filter parameters from the kfParameter object", false);
@@ -109,7 +109,7 @@ void MultiKalmanBallLocator::execute()
         }
     }
 
-    DEBUG_REQUEST("MultiKalmanBallLocator:back_project_models",
+    DEBUG_REQUEST("MultiKalmanBallLocator:negative_feedback_by_back_projecting_models",
         // negative feedback... double check not updated models
         negativeUpdate();
 
@@ -640,8 +640,8 @@ void MultiKalmanBallLocator::negativeUpdate() {
        Vector3d position(bh.getState()(0), bh.getState()(2), getFieldInfo().ballRadius);
        // model is in close range
        if(position.abs() < 1500){
-           // model is visible in image
            Vector2i pos_in_image;
+           // model is visible in image
            if(CameraGeometry::relativePointToImage(getCameraMatrix(), CameraInfo::Bottom, position, pos_in_image)){
                if(getImage().isInside(pos_in_image.x, pos_in_image.y)){
                    // get radius of ball in image
