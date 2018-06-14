@@ -89,7 +89,7 @@ private:
     Filters::const_iterator bestModel;
 
     const double epsilon; // 10e-6
-    double area95Threshold;
+    //double area95Threshold;
 
     //double ballMass;
     double c_RR;
@@ -139,7 +139,7 @@ private:
 
             //PARAMETER_REGISTER(ballMass) = 0.026;
             PARAMETER_REGISTER(c_RR) = 0.0245;
-            PARAMETER_REGISTER(area95Threshold) = 1000*1000*Math::pi;
+            PARAMETER_REGISTER(area95Threshold) = 2*Math::pi*700*700;
 
             //thresholds for association functions
             PARAMETER_REGISTER(euclidThreshold) = Math::fromDegrees(10);
@@ -150,10 +150,13 @@ private:
             PARAMETER_REGISTER(g0) = 0.01;
             PARAMETER_REGISTER(g1) = 0.1;
 
+
             //negative update
             PARAMETER_REGISTER(negative_update.max_green_inside) = 0.9;
             PARAMETER_REGISTER(negative_update.max_stall_count)  = 3;
             PARAMETER_REGISTER(negative_update.radius_offset)    = 0;
+            PARAMETER_REGISTER(area95Threshold_radius.factor) = 1;
+            PARAMETER_REGISTER(area95Threshold_radius.offset) = 125;
 
             syncWithConfig();
         }
@@ -188,6 +191,11 @@ private:
             unsigned int max_stall_count;
             double       radius_offset;
         } negative_update;
+
+        struct {
+            double factor;
+            double offset;
+        } area95Threshold_radius;
     } kfParameters;
 
     Measurement_Function_H h;
