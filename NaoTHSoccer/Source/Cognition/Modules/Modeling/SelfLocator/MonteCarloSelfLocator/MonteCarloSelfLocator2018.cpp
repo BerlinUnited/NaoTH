@@ -155,7 +155,7 @@ void MonteCarloSelfLocator2018::execute()
     case BLIND:
     {
       if(parameters.updateByOdometryWhenBlind) {
-        updateByOdometry(theSampleSet, parameters.motionNoise);
+        updateByOdometry(theSampleSet, parameters.motionNoise, parameters.motionNoiseRelative);
       }
 
       /* do nothing */
@@ -169,7 +169,7 @@ void MonteCarloSelfLocator2018::execute()
     }
     case LOCALIZE:
     {
-      updateByOdometry(theSampleSet, parameters.motionNoise);
+      updateByOdometry(theSampleSet, parameters.motionNoise, parameters.motionNoiseRelative);
     
       theSampleSet.resetLikelihood();
 
@@ -230,7 +230,7 @@ void MonteCarloSelfLocator2018::execute()
     }
     case TRACKING:
     {
-      updateByOdometry(theSampleSet, parameters.motionNoise);
+      updateByOdometry(theSampleSet, parameters.motionNoise, parameters.motionNoiseRelative);
 
       theSampleSet.resetLikelihood();
 
@@ -334,69 +334,64 @@ void MonteCarloSelfLocator2018::resetLocator()
   //mhBackendSet.setLikelihood(0.0);
 }
 
-void MonteCarloSelfLocator2018::updateByOdometry(SampleSet& sampleSet, bool noise) const
+void MonteCarloSelfLocator2018::updateByOdometry(SampleSet& sampleSet, bool noise, bool relativeNoise) const
 {
   Pose2D odometryDelta = getOdometryData() - lastRobotOdometry;
   for (size_t i = 0; i < sampleSet.size(); i++)
   {
     sampleSet[i] += odometryDelta;
-    if(noise)
+    
+    if(noise) 
     {
-      sampleSet[i].translation.x += (Math::random()-0.5)*parameters.motionNoiseDistance;
-      sampleSet[i].translation.y += (Math::random()-0.5)*parameters.motionNoiseDistance;
-      sampleSet[i].rotation = Math::normalize(sampleSet[i].rotation + (Math::random()-0.5)*parameters.motionNoiseAngle);
-    }
-
-    /*
-    Pose2D odometryModel(odometryDelta);
-
-    if(noise) {
-      odometryModel.translation += odometryModel.translation * (Math::random()-0.5)*parameters.motionNoiseDistance;
-      odometryModel.rotation += odometryModel.rotation * (Math::random()-0.5)*parameters.motionNoiseAngle;
-    }
-
-    sampleSet[i] += odometryModel;
-    */
+      if(relativeNoise) {
+        sampleSet[i].translation += odometryDelta.translation * (Math::random()-0.5)*parameters.motionNoiseDistance;
+        sampleSet[i].rotation += odometryDelta.rotation * (Math::random()-0.5)*parameters.motionNoiseAngle;
+      } else {
+        sampleSet[i].translation.x += (Math::random()-0.5)*parameters.motionNoiseDistance;
+        sampleSet[i].translation.y += (Math::random()-0.5)*parameters.motionNoiseDistance;
+        sampleSet[i].rotation = Math::normalize(sampleSet[i].rotation + (Math::random()-0.5)*parameters.motionNoiseAngle);
+      }
+    }    
   }
 }//end updateByOdometry
 
 void MonteCarloSelfLocator2018::updateBySituation()
 {
   if(getSituationPrior().currentPrior == getSituationPrior().firstReady)
-    {
-      updateByStartPositions(theSampleSet);
-    }
-    else if(getSituationPrior().currentPrior == getSituationPrior().positionedInSet)
-    {
-      updateByOwnHalfLookingForward(theSampleSet);
-    }
-    else if(getSituationPrior().currentPrior == getSituationPrior().goaliePenalizedInSet)
-    {
-      updateByGoalBox(theSampleSet);
-    }
-    else if(getSituationPrior().currentPrior == getSituationPrior().set)
-    {
-      updateByOwnHalf(theSampleSet);
-    }
-    else if(getSituationPrior().currentPrior == getSituationPrior().playAfterPenalized)
-    {
-      updateBySidePositions(theSampleSet);
-    }
-    else if(getSituationPrior().currentPrior == getSituationPrior().oppHalf)
-    {
-      updateByOppHalf(theSampleSet);
-    }
-    else {
-      DEBUG_REQUEST("MCSLS:draw_state",
-        FIELD_DRAWING_CONTEXT;
-        PEN("000000", 30);
-        const Vector2d& fieldMin = getFieldInfo().fieldRect.min();
-        const Vector2d& fieldMax = getFieldInfo().fieldRect.max();
-        BOX(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
-        LINE(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
-        LINE(fieldMin.x, fieldMax.y, fieldMax.x, fieldMin.y);
-      );
-    }
+  {
+    updateByStartPositions(theSampleSet);
+  }
+  else if(getSituationPrior().currentPrior == getSituationPrior().positionedInSet)
+  {
+    updateByOwnHalfLookingForward(theSampleSet);
+  }
+  else if(getSituationPrior().currentPrior == getSituationPrior().goaliePenalizedInSet)
+  {
+    updateByGoalBox(theSampleSet);
+  }
+  else if(getSituationPrior().currentPrior == getSituationPrior().set)
+  {
+    updateByOwnHalf(theSampleSet);
+  }
+  else if(getSituationPrior().currentPrior == getSituationPrior().playAfterPenalized)
+  {
+    updateBySidePositions(theSampleSet);
+  }
+  else if(getSituationPrior().currentPrior == getSituationPrior().oppHalf)
+  {
+    updateByOppHalf(theSampleSet);
+  }
+  else {
+    DEBUG_REQUEST("MCSLS:draw_state",
+      FIELD_DRAWING_CONTEXT;
+      PEN("000000", 30);
+      const Vector2d& fieldMin = getFieldInfo().fieldRect.min();
+      const Vector2d& fieldMax = getFieldInfo().fieldRect.max();
+      BOX(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+      LINE(fieldMin.x, fieldMin.y, fieldMax.x, fieldMax.y);
+      LINE(fieldMin.x, fieldMax.y, fieldMax.x, fieldMin.y);
+    );
+  }
 }
 
 bool MonteCarloSelfLocator2018::updateBySensors(SampleSet& sampleSet) const

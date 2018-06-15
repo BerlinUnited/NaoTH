@@ -127,6 +127,7 @@ private: // local types
       PARAMETER_REGISTER(processNoiseAngle) = 0.1;
 
       PARAMETER_REGISTER(motionNoise) = false;
+      PARAMETER_REGISTER(motionNoiseRelative) = false;
       PARAMETER_REGISTER(motionNoiseDistance) = 5.0;
       PARAMETER_REGISTER(motionNoiseAngle) = 0.01;
 
@@ -182,6 +183,7 @@ private: // local types
     double processNoiseAngle;
 
     bool motionNoise;
+    bool motionNoiseRelative;
     double motionNoiseDistance;
     double motionNoiseAngle;
 
@@ -287,7 +289,8 @@ private: // data members
   double effective_number_of_samples;
 
 private: // workers
-  void updateByOdometry(SampleSet& sampleSet, bool noise) const;
+  void updateByOdometry(SampleSet& sampleSet, bool noise, bool relativeNoise) const;
+  
 
   bool updateBySensors(SampleSet& sampleSet) const;
   void updateByGoalPosts(const GoalPercept& goalPercept, SampleSet& sampleSet) const;
