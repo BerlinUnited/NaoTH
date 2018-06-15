@@ -20,7 +20,7 @@ public:
   /** id of the cluster this sample belongs to */
   int cluster;
 
-  virtual const Vector2<double>& getPos() const = 0;
+  virtual const Vector2d& getPos() const = 0;
 };
 
 
@@ -32,8 +32,7 @@ public:
 
   double likelihood;
 
-  virtual const Vector2<double>& getPos() const
-  {
+  virtual const Vector2d& getPos() const {
     return translation;
   }
 };
