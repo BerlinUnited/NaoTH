@@ -35,10 +35,14 @@ import de.naoth.rc.messages.Messages.PlotItem;
 import de.naoth.rc.messages.Messages.Plots;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +50,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import org.freehep.graphicsio.emf.EMFExportFileType;
@@ -153,8 +159,45 @@ public class FieldViewer extends AbstractDialog implements ActionListener
     // schedules canvas drawing at a fixed rate, should prevent "flickering"
     this.drawingTimer = new Timer(300, this);
     this.drawingTimer.start();
-  }
+    // remember the location of the mouse
+    jPopupMenu.addPopupMenuListener(new PopupMenuListener() {
+        @Override
+        public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+            Point2D.Double p = convertToFieldCoordinates(fieldCanvas.getMousePosition());
+            jMenuItemCopyCoords.setToolTipText(String.format("%.1f; %.1f", p.x, p.y));
+        }
 
+        @Override
+        public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
+
+        @Override
+        public void popupMenuCanceled(PopupMenuEvent e) {}
+    });
+    // middle click with the mouse on the field copies the field coordinates to the clipboard
+    fieldCanvas.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mousePressed(MouseEvent e) {
+            if(e.getButton() == MouseEvent.BUTTON2) {
+                // "save" Coordinates to clipboard
+                Point2D.Double p = convertToFieldCoordinates(e.getPoint());
+                StringSelection ss = new StringSelection(String.format("%.1f; %.1f", p.x, p.y));
+                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, ss);
+            }
+        }
+    });
+  }
+  
+    /**
+     * Convertes the given relative point of the field to "real" field coordinates.
+     * 
+     * @param p the relative ui point
+     * @return "real" field coordinates.
+     */
+    private Point2D.Double convertToFieldCoordinates(Point p) {
+        Point.Double o = new Point.Double(p.getX(), p.getY());
+        Point2D.Double r = fieldCanvas.canvasCoordinatesToInternal(o);
+        return r;
+    }
 
   /** This method is called from within the constructor to
    * initialize the form.
@@ -166,6 +209,7 @@ public class FieldViewer extends AbstractDialog implements ActionListener
 
         jPopupMenu = new javax.swing.JPopupMenu();
         jMenuItemExport = new javax.swing.JMenuItem();
+        jMenuItemCopyCoords = new javax.swing.JMenuItem();
         coordsPopup = new javax.swing.JDialog();
         jToolBar1 = new javax.swing.JToolBar();
         btReceiveDrawings = new javax.swing.JToggleButton();
@@ -188,6 +232,14 @@ public class FieldViewer extends AbstractDialog implements ActionListener
             }
         });
         jPopupMenu.add(jMenuItemExport);
+
+        jMenuItemCopyCoords.setText("Copy Coordinates");
+        jMenuItemCopyCoords.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemCopyCoordsActionPerformed(evt);
+            }
+        });
+        jPopupMenu.add(jMenuItemCopyCoords);
 
         javax.swing.GroupLayout coordsPopupLayout = new javax.swing.GroupLayout(coordsPopup.getContentPane());
         coordsPopup.getContentPane().setLayout(coordsPopupLayout);
@@ -421,7 +473,12 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         fieldCanvas.setFitToViewport(this.btFitToView.isSelected());
     }//GEN-LAST:event_btFitToViewActionPerformed
 
-  
+    private void jMenuItemCopyCoordsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemCopyCoordsActionPerformed
+        // "save" Coordinates to clipboard
+        StringSelection ss = new StringSelection(jMenuItemCopyCoords.getToolTipText());
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, ss);
+    }//GEN-LAST:event_jMenuItemCopyCoordsActionPerformed
+
   final void resetView()
   {
     this.fieldCanvas.getDrawingList().clear();
@@ -577,6 +634,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     private javax.swing.JDialog coordsPopup;
     private javax.swing.JPanel drawingPanel;
     private de.naoth.rc.components.DynamicCanvasPanel fieldCanvas;
+    private javax.swing.JMenuItem jMenuItemCopyCoords;
     private javax.swing.JMenuItem jMenuItemExport;
     private javax.swing.JPopupMenu jPopupMenu;
     private javax.swing.JSlider jSlider1;

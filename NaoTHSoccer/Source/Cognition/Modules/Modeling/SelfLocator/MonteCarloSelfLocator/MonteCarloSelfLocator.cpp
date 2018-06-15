@@ -55,6 +55,7 @@ MonteCarloSelfLocator::MonteCarloSelfLocator()
   DEBUG_REQUEST_REGISTER("MCSLS:state:BLIND", "", false);
   DEBUG_REQUEST_REGISTER("MCSLS:state:LOCALIZE", "", false);
   DEBUG_REQUEST_REGISTER("MCSLS:state:TRACKING", "", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:state:USERDEFINED", "", false);
 
   initializeSampleSet(getFieldInfo().carpetRect, theSampleSet);
   getDebugParameterList().add(&parameters);
@@ -122,6 +123,7 @@ void MonteCarloSelfLocator::execute()
   DEBUG_REQUEST("MCSLS:state:BLIND", state = BLIND; );
   DEBUG_REQUEST("MCSLS:state:LOCALIZE", state = LOCALIZE; );
   DEBUG_REQUEST("MCSLS:state:TRACKING", state = TRACKING; );
+  DEBUG_REQUEST("MCSLS:state:USERDEFINED", state = USERDEFINED; );
 
 
   DEBUG_REQUEST("MCSLS:draw_state",
@@ -131,6 +133,7 @@ void MonteCarloSelfLocator::execute()
       case BLIND: TEXT_DRAWING(0, 0, "BLIND"); break;
       case LOCALIZE: TEXT_DRAWING(0, 0, "LOCALIZE"); break;
       case TRACKING: TEXT_DRAWING(0, 0, "TRACKING"); break;
+      case USERDEFINED: TEXT_DRAWING(0, 0, "USERDEFINED"); break;
       default: TEXT_DRAWING(0, 0, "DEFAULT");
     }
   );
@@ -278,6 +281,21 @@ void MonteCarloSelfLocator::execute()
       );
 
       lastState = TRACKING;
+      break;
+    }
+    case USERDEFINED:
+    {
+      // vars for the userdefined pose
+      double posX = 0.0, posY = 0.0, rot = 0.0;
+      MODIFY("posX", posX);
+      MODIFY("posY", posY);
+      MODIFY("rot", rot);
+      // sample particles in a 100mm^2 rect of the user defined pose
+      initializeSampleSetFixedRotation(Geometry::Rect2d(Vector2d(posX-50,posY-50), Vector2d(posX+50, posY+50)), rot, theSampleSet);
+      state = LOCALIZE;
+      islocalized = true;
+      lastState = USERDEFINED;
+      getRobotPose().isValid = false;
       break;
     }
     default: assert(false); // should never be here

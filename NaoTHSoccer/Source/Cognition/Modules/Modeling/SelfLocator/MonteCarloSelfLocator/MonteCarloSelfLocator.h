@@ -109,7 +109,8 @@ private: // local types
     BLIND, // no sensory information is processed but the state is monitored
     KIDNAPPED, // robot is lifted up 
     LOCALIZE,
-    TRACKING
+    TRACKING,
+    USERDEFINED
   } state, lastState;
 
   // NOTE: indecates whether the robot is localized
