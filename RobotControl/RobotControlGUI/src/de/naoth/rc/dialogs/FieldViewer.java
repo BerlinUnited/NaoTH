@@ -30,20 +30,24 @@ import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.drawings.Circle;
 import de.naoth.rc.drawings.FieldDrawingSPL3x4;
-import de.naoth.rc.drawings.Robot;
-import de.naoth.rc.drawings.Text;
+import de.naoth.rc.drawings.FillOval;
+import de.naoth.rc.drawings.Line;
+import de.naoth.rc.drawings.Pen;
 import de.naoth.rc.logmanager.BlackBoard;
 import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.logmanager.LogFileEventManager;
 import de.naoth.rc.logmanager.LogFrameListener;
 import de.naoth.rc.manager.DebugDrawingManagerMotion;
 import de.naoth.rc.manager.PlotDataManager;
+import de.naoth.rc.math.Matrix3D;
+import de.naoth.rc.math.Pose2D;
 import de.naoth.rc.math.Vector2D;
-import de.naoth.rc.messages.FrameworkRepresentations;
+import de.naoth.rc.math.Vector3D;
+import de.naoth.rc.messages.CommonTypes.DoubleVector3;
 import de.naoth.rc.messages.FrameworkRepresentations.RobotInfo;
 import de.naoth.rc.messages.Messages.PlotItem;
 import de.naoth.rc.messages.Messages.Plots;
-import de.naoth.rc.messages.TeamMessageOuterClass;
+import de.naoth.rc.messages.Representations;
 import de.naoth.rc.messages.TeamMessageOuterClass.TeamMessage;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -532,6 +536,8 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         {   
             Optional<String> ownBodyID = getOwnBodyID(b);
             
+            Pose2D robotPose = null;
+            
             LogDataFrame teamMessageFrame = b.get("TeamMessage");
             if(teamMessageFrame != null)
             {
@@ -548,6 +554,9 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
                             {
                                 isOwnMsg = ownBodyID.get().equals(splMsg.user.getBodyID());
                             }
+                            if(isOwnMsg) {
+                                robotPose = new Pose2D(splMsg.pose_x, splMsg.pose_y, splMsg.pose_a);
+                            }
 
                             splMsg.draw(dc, isOwnMsg ? Color.red : Color.black, false);
                        }
@@ -558,6 +567,81 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
                 }
             }
             
+            drawScanEdgelPercept(robotPose, b.get("GoalPercept"), b.get("ScanLineEdgelPercept"), b.get("CameraMatrix"), dc, Color.red);
+            drawScanEdgelPercept(robotPose, b.get("GoalPerceptTop"), b.get("ScanLineEdgelPerceptTop"), b.get("CameraMatrixTop"), dc, Color.blue);
+        }
+        
+        
+        private void drawScanEdgelPercept(Pose2D robotPose, LogDataFrame goalPerceptFrame, LogDataFrame scanLineFrame, LogDataFrame cameraMatrixFrame, DrawingCollection dc, Color c) 
+        {
+            if (scanLineFrame == null || cameraMatrixFrame == null) {
+                return;
+            }
+            
+            try {
+                Representations.ScanLineEdgelPercept data = Representations.ScanLineEdgelPercept.parseFrom(scanLineFrame.getData());
+                Representations.CameraMatrix cm = Representations.CameraMatrix.parseFrom(cameraMatrixFrame.getData());
+                Representations.GoalPercept gp = Representations.GoalPercept.parseFrom(goalPerceptFrame.getData());
+                
+                Vector3D t = toVector(cm.getPose().getTranslation());
+                    
+                Matrix3D R = new Matrix3D(
+                    toVector(cm.getPose().getRotation(0)),
+                    toVector(cm.getPose().getRotation(1)),
+                    toVector(cm.getPose().getRotation(2)));
+                
+                final double f = (0.5*640.0) / Math.tan(0.5 * 60.9/180.0*Math.PI);
+                
+                dc.add(new Pen(10, c));
+                for(Representations.Edgel e: data.getEdgelsList()) {
+                    Vector2D p = new Vector2D(e.getPoint().getX(), e.getPoint().getY());
+                    Vector2D p2 = p.add(new Vector2D(e.getDirection().getX(), e.getDirection().getY()));
+                    
+                    Vector2D q = project(R,t,f,p);
+                    Vector2D q2 = project(R,t,f,p2);
+                    q2 = q.add(q2.subtract(q).normalize().multiply(50));
+                    
+                    if(robotPose != null) {
+                        q = robotPose.multiply(q);
+                        q2 = robotPose.multiply(q2);
+                    }
+                    
+                    dc.add(new Circle((int)q.x, (int)q.y, 10));
+                    dc.add(new Line((int)q.x, (int)q.y, (int)q2.x, (int)q2.y));
+                }
+                
+                for(Representations.GoalPercept.GoalPost g: gp.getPostList()) {
+                    Vector2D q = new Vector2D(g.getPosition().getX(), g.getPosition().getY());
+                    //Vector2D q = project(R,t,f,p);
+                    
+                    if(robotPose != null) {
+                        q = robotPose.multiply(q);
+                    }
+                    
+                    dc.add(new Pen(20, c));
+                    dc.add(new FillOval((int)q.x, (int)q.y, 100, 100));
+                    dc.add(new Pen(10, Color.black));
+                    dc.add(new Circle((int)q.x, (int)q.y, 100));
+                }
+
+            } catch (InvalidProtocolBufferException ex) {
+                Logger.getLogger(FieldViewer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        private Vector2D project(Matrix3D R, Vector3D t, double f, Vector2D p) {
+            Vector3D v = new Vector3D(f, 320 - p.x, 240 - p.y);
+            v = R.multiply(v);
+
+            Vector2D q = new Vector2D(
+                t.x - v.x*(t.z/v.z),
+                t.y - v.y*(t.z/v.z));
+            
+            return q;
+        }
+        
+        private Vector3D toVector(DoubleVector3 v) {
+            return new Vector3D(v.getX(), v.getY(), v.getZ());
         }
         
         private Optional<String> getOwnBodyID(BlackBoard b)
