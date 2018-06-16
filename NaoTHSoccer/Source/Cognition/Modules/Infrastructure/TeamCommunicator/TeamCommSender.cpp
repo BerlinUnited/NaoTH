@@ -1,10 +1,7 @@
 #include "TeamCommSender.h"
+
 #include "PlatformInterface/Platform.h"
-#include <Messages/Representations.pb.h>
-
 #include <Tools/NaoTime.h>
-
-using namespace std;
 
 TeamCommSender::TeamCommSender()
   :lastSentTimestamp(0),
