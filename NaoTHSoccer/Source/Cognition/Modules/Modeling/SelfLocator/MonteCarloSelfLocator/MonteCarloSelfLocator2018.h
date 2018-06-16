@@ -152,7 +152,8 @@ private: // local types
       PARAMETER_REGISTER(updateByOldPose) = false;
       PARAMETER_REGISTER(oldPoseSigmaDistance) = 0.1;
 
-      PARAMETER_REGISTER(updateByCompas) = true;
+      PARAMETER_REGISTER(updateByCompasInTracking) = false;
+      PARAMETER_REGISTER(updateByCompasInLocalize) = true;
 
       PARAMETER_REGISTER(treatLiftUp) = true;
       PARAMETER_REGISTER(treatInitState) = true;
@@ -208,7 +209,8 @@ private: // local types
     bool updateByOldPose;
     double oldPoseSigmaDistance;
 
-    bool updateByCompas;
+    bool updateByCompasInTracking;
+    bool updateByCompasInLocalize;
     bool treatLiftUp;
     bool treatInitState;
     bool resetOwnHalf;

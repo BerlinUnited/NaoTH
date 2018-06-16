@@ -187,6 +187,10 @@ void MonteCarloSelfLocator2018::execute()
         }
       }
 
+      if(parameters.updateByCompasInLocalize && getProbabilisticQuadCompas().isValid()) {
+        updateByCompas(theSampleSet);
+      }
+
       updateBySensors(theSampleSet);
 
       // use prior knowledge
@@ -246,6 +250,10 @@ void MonteCarloSelfLocator2018::execute()
           updateByGoalPosts(getGoalPerceptTop(), theSampleSet);
           updatedByGoalPosts = true;
         }
+      }
+
+      if(parameters.updateByCompasInTracking && getProbabilisticQuadCompas().isValid()) {
+        updateByCompas(theSampleSet);
       }
 
       updateBySensors(theSampleSet);
@@ -425,9 +433,11 @@ bool MonteCarloSelfLocator2018::updateBySensors(SampleSet& sampleSet) const
     updateByMiddleCircle(getLinePercept(), sampleSet);
   }
 
+  /*
   if(parameters.updateByCompas && getProbabilisticQuadCompas().isValid()) {
     updateByCompas(sampleSet);
   }
+  */
 
   if(parameters.updateByLinePoints)
   {
