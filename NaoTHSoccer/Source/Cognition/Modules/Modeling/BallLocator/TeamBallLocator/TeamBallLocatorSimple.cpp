@@ -61,7 +61,7 @@ void TeamBallLocatorSimple::execute() {
         if(balls[i].valid) {
             for (unsigned int j = i+1; j < balls.size(); ++j) {
                 if(balls[j].valid) {
-                    double distance = (balls[i].pos + balls[j].pos).abs2();
+                    double distance = (balls[i].pos - balls[j].pos).abs2();
                     // check 'loose' distance
                     if(distance <= (params.t1*params.t1)) {
                         balls[i].add(balls[j]);
