@@ -24,9 +24,7 @@ SimpleRoleDecision::~SimpleRoleDecision()
 }
 
 void SimpleRoleDecision::execute() {
-
   computeStrikers();
-
 }//end execute
 
 void SimpleRoleDecision::computeStrikers() {
@@ -51,6 +49,11 @@ void SimpleRoleDecision::computeStrikers() {
       return;
     }
   }//end for
+
+  // already have a striker and can return
+  if(getRoleDecisionModel().firstStriker < std::numeric_limits<unsigned int>::max()) {
+      return;
+  }
 
   // all team members except goalie!! otherwise goalie is nearest and all thinks he is striker, but he won't clear ball
   //should check who has best position to goal etc.

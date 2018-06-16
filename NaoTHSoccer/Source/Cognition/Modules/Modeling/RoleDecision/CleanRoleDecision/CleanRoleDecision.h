@@ -15,7 +15,7 @@
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/RoleDecisionModel.h"
 #include "Representations/Modeling/SoccerStrategy.h"
-#include "Representations/Modeling/TeamMessageStatisticsModel.h"
+#include "Representations/Modeling/TeamMessagePlayerIsAlive.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/BallModel.h"
 
@@ -36,7 +36,7 @@ BEGIN_DECLARE_MODULE(CleanRoleDecision)
   REQUIRE(PlayerInfo)
   REQUIRE(SoccerStrategy)
   REQUIRE(TeamMessage)
-  REQUIRE(TeamMessageStatisticsModel)
+  REQUIRE(TeamMessagePlayerIsAlive)
   REQUIRE(BodyState)
   REQUIRE(BallModel)
 
@@ -58,8 +58,6 @@ public:
   void computeStrikers();
   
 protected:
-  bool isRobotDead(unsigned int robotNumber);
-
   bool amIactive() {
       return getBodyState().fall_down_state == BodyState::upright
           && getPlayerInfo().robotState != PlayerInfo::penalized
@@ -76,19 +74,15 @@ protected:
   public: 
     Parameters(): ParameterList("CleanRoleDecision")
     {
-      PARAMETER_REGISTER(maximumFreshTime) = 2000;
       PARAMETER_REGISTER(strikerBonusTime) = 4000;
       PARAMETER_REGISTER(maxBallLostTime) = 1000;
-      PARAMETER_REGISTER(minFailureProbability) = 0.85;
       
       // load from the file after registering all parameters
       syncWithConfig();
     }
 
-    int maximumFreshTime;
     int strikerBonusTime;
     int maxBallLostTime;
-    double minFailureProbability;
     
     virtual ~Parameters() {}
   } parameters;
