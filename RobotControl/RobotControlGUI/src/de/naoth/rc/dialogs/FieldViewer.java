@@ -5,6 +5,7 @@
  */
 package de.naoth.rc.dialogs;
 
+import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.RobotControl;
@@ -26,13 +27,28 @@ import de.naoth.rc.drawingmanager.DrawingEventManager;
 import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.core.manager.ObjectListener;
+import de.naoth.rc.dataformats.SPLMessage;
+import de.naoth.rc.drawings.Circle;
 import de.naoth.rc.drawings.FieldDrawingSPL3x4;
+import de.naoth.rc.drawings.FillOval;
+import de.naoth.rc.drawings.Line;
+import de.naoth.rc.drawings.Pen;
+import de.naoth.rc.logmanager.BlackBoard;
+import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.logmanager.LogFileEventManager;
+import de.naoth.rc.logmanager.LogFrameListener;
 import de.naoth.rc.manager.DebugDrawingManagerMotion;
 import de.naoth.rc.manager.PlotDataManager;
+import de.naoth.rc.math.Matrix3D;
+import de.naoth.rc.math.Pose2D;
 import de.naoth.rc.math.Vector2D;
+import de.naoth.rc.math.Vector3D;
+import de.naoth.rc.messages.CommonTypes.DoubleVector3;
+import de.naoth.rc.messages.FrameworkRepresentations.RobotInfo;
 import de.naoth.rc.messages.Messages.PlotItem;
 import de.naoth.rc.messages.Messages.Plots;
+import de.naoth.rc.messages.Representations;
+import de.naoth.rc.messages.TeamMessageOuterClass.TeamMessage;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
@@ -42,7 +58,10 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -87,6 +106,8 @@ public class FieldViewer extends AbstractDialog implements ActionListener
 
   private final PlotDataListener plotDataListener;
   private final StrokePlot strokePlot;
+  
+  private final LogFrameListener logFrameListener;
 
   // create new classes, so the received drawings are stored into different buffers
   private class DrawingsListenerMotion extends DrawingsListener{}
@@ -122,6 +143,8 @@ public class FieldViewer extends AbstractDialog implements ActionListener
     ));
     
     this.plotDataListener = new PlotDataListener();
+    
+    this.logFrameListener = new LogFrameDrawer();
     
     this.fieldCanvas.setBackgroundDrawing((Drawable)this.cbBackground.getSelectedItem());
     this.fieldCanvas.setToolTipText("");
@@ -169,6 +192,7 @@ public class FieldViewer extends AbstractDialog implements ActionListener
         coordsPopup = new javax.swing.JDialog();
         jToolBar1 = new javax.swing.JToolBar();
         btReceiveDrawings = new javax.swing.JToggleButton();
+        btLog = new javax.swing.JToggleButton();
         btClean = new javax.swing.JButton();
         cbBackground = new javax.swing.JComboBox();
         btRotate = new javax.swing.JButton();
@@ -213,6 +237,17 @@ public class FieldViewer extends AbstractDialog implements ActionListener
             }
         });
         jToolBar1.add(btReceiveDrawings);
+
+        btLog.setText("Log");
+        btLog.setFocusable(false);
+        btLog.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btLog.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btLog.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btLogActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btLog);
 
         btClean.setText("Clean");
         btClean.setFocusable(false);
@@ -421,6 +456,17 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         fieldCanvas.setFitToViewport(this.btFitToView.isSelected());
     }//GEN-LAST:event_btFitToViewActionPerformed
 
+    private void btLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btLogActionPerformed
+        if(btLog.isSelected())
+        {
+            Plugin.logFileEventManager.addListener(logFrameListener);
+        }
+        else
+        {
+            Plugin.logFileEventManager.removeListener(logFrameListener);
+        }
+    }//GEN-LAST:event_btLogActionPerformed
+
   
   final void resetView()
   {
@@ -484,7 +530,164 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     }
   }
   
-  
+  class LogFrameDrawer implements LogFrameListener
+  {
+        private void drawTeamMessages(BlackBoard b, DrawingCollection dc)
+        {   
+            Optional<String> ownBodyID = getOwnBodyID(b);
+            
+            Pose2D robotPose = null;
+            
+            LogDataFrame teamMessageFrame = b.get("TeamMessage");
+            if(teamMessageFrame != null)
+            {
+                try {
+                    TeamMessage teamMessage = TeamMessage.parseFrom(teamMessageFrame.getData());
+                    for(int i=0; i < teamMessage.getDataCount(); i++) {
+                       TeamMessage.Data robotMsg = teamMessage.getData(i);
+                        
+                       SPLMessage splMsg = SPLMessage.parseFrom(robotMsg);
+                       
+                       if(!splMsg.user.getIsPenalized()) {
+                            boolean isOwnMsg = false;
+                            if(ownBodyID.isPresent())
+                            {
+                                isOwnMsg = ownBodyID.get().equals(splMsg.user.getBodyID());
+                            }
+                            if(isOwnMsg) {
+                                robotPose = new Pose2D(splMsg.pose_x, splMsg.pose_y, splMsg.pose_a);
+                            }
+
+                            splMsg.draw(dc, isOwnMsg ? Color.red : Color.black, false);
+                       }
+                        
+                    }
+                } catch (InvalidProtocolBufferException ex) {
+                    Logger.getLogger(FieldViewer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            drawScanEdgelPercept(robotPose, b.get("GoalPercept"), b.get("ScanLineEdgelPercept"), b.get("CameraMatrix"), dc, Color.red);
+            drawScanEdgelPercept(robotPose, b.get("GoalPerceptTop"), b.get("ScanLineEdgelPerceptTop"), b.get("CameraMatrixTop"), dc, Color.blue);
+        }
+        
+        
+        private void drawScanEdgelPercept(Pose2D robotPose, LogDataFrame goalPerceptFrame, LogDataFrame scanLineFrame, LogDataFrame cameraMatrixFrame, DrawingCollection dc, Color c) 
+        {
+            if (scanLineFrame == null || cameraMatrixFrame == null) {
+                return;
+            }
+            
+            try {
+                Representations.ScanLineEdgelPercept data = Representations.ScanLineEdgelPercept.parseFrom(scanLineFrame.getData());
+                Representations.CameraMatrix cm = Representations.CameraMatrix.parseFrom(cameraMatrixFrame.getData());
+                Representations.GoalPercept gp = Representations.GoalPercept.parseFrom(goalPerceptFrame.getData());
+                
+                Vector3D t = toVector(cm.getPose().getTranslation());
+                    
+                Matrix3D R = new Matrix3D(
+                    toVector(cm.getPose().getRotation(0)),
+                    toVector(cm.getPose().getRotation(1)),
+                    toVector(cm.getPose().getRotation(2)));
+                
+                final double f = (0.5*640.0) / Math.tan(0.5 * 60.9/180.0*Math.PI);
+                
+                // draw prijected edgesl on the field
+                dc.add(new Pen(10, c));
+                for(Representations.Edgel e: data.getEdgelsList()) {
+                    Vector2D p = new Vector2D(e.getPoint().getX(), e.getPoint().getY());
+                    Vector2D p2 = p.add(new Vector2D(e.getDirection().getX(), e.getDirection().getY()));
+                    
+                    Vector2D q = project(R,t,f,p);
+                    Vector2D q2 = project(R,t,f,p2);
+                    q2 = q.add(q2.subtract(q).normalize().multiply(50));
+                    
+                    if(robotPose != null) {
+                        q = robotPose.multiply(q);
+                        q2 = robotPose.multiply(q2);
+                    }
+                    
+                    dc.add(new Circle((int)q.x, (int)q.y, 10));
+                    dc.add(new Line((int)q.x, (int)q.y, (int)q2.x, (int)q2.y));
+                }
+                
+                Vector2D last_p = null;
+                dc.add(new Pen(10, Color.black));
+                for(Representations.ScanLineEndPoint e: data.getEndPointsList()) {
+                    Vector2D p = new Vector2D(e.getPosOnField().getX(), e.getPosOnField().getY());
+                    
+                    if(robotPose != null) {
+                        p = robotPose.multiply(p);
+                    }
+                    
+                    if (last_p != null) {
+                        dc.add(new Line((int)last_p.x, (int)last_p.y, (int)p.x, (int)p.y));
+                    }
+                    dc.add(new Circle((int)p.x, (int)p.y, 10));
+                    
+                    last_p = p;
+                }
+                
+                // draw prijected goal posts on the field
+                for(Representations.GoalPercept.GoalPost g: gp.getPostList()) {
+                    Vector2D q = new Vector2D(g.getPosition().getX(), g.getPosition().getY());
+                    //Vector2D q = project(R,t,f,p);
+                    
+                    if(robotPose != null) {
+                        q = robotPose.multiply(q);
+                    }
+                    
+                    dc.add(new Pen(20, c));
+                    dc.add(new FillOval((int)q.x, (int)q.y, 100, 100));
+                    dc.add(new Pen(10, Color.black));
+                    dc.add(new Circle((int)q.x, (int)q.y, 100));
+                }
+
+            } catch (InvalidProtocolBufferException ex) {
+                Logger.getLogger(FieldViewer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        private Vector2D project(Matrix3D R, Vector3D t, double f, Vector2D p) {
+            Vector3D v = new Vector3D(f, 320 - p.x, 240 - p.y);
+            v = R.multiply(v);
+
+            Vector2D q = new Vector2D(
+                t.x - v.x*(t.z/v.z),
+                t.y - v.y*(t.z/v.z));
+            
+            return q;
+        }
+        
+        private Vector3D toVector(DoubleVector3 v) {
+            return new Vector3D(v.getX(), v.getY(), v.getZ());
+        }
+        
+        private Optional<String> getOwnBodyID(BlackBoard b)
+        {
+            LogDataFrame robotInfoFrame = b.get("RobotInfo");
+            if(robotInfoFrame != null)
+            {
+                try {
+                    RobotInfo robotInfo = RobotInfo.parseFrom(robotInfoFrame.getData());
+                    return Optional.of(robotInfo.getBodyID());
+                    
+                } catch (InvalidProtocolBufferException ex) {
+                    Logger.getLogger(FieldViewer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            return Optional.empty();
+        }
+        
+        @Override
+        public void newFrame(BlackBoard b) 
+        {
+            DrawingCollection dc = new DrawingCollection();
+            drawTeamMessages(b, dc);
+            drawingBuffers.put(this.getClass(), dc);
+            
+        }
+  }
 
   class PlotDataListener implements ObjectListener<Plots>
   {
@@ -569,6 +772,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     private javax.swing.JButton btClean;
     private javax.swing.JCheckBox btCollectDrawings;
     private javax.swing.JToggleButton btFitToView;
+    private javax.swing.JToggleButton btLog;
     private javax.swing.JToggleButton btReceiveDrawings;
     private javax.swing.JButton btRotate;
     private javax.swing.JCheckBox btTrace;
