@@ -17,6 +17,7 @@ class TeamCommReceiver(threading.Thread):
         # create dgram udp socket
         try:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self.socket.bind(('', port))
         except socket.error:
             raise Exception('Failed to create socket')
@@ -36,7 +37,7 @@ class TeamCommReceiver(threading.Thread):
                 data, addr = self.socket.recvfrom(1024)  # buffer size is 1024 bytes
                 # make sure we got data
                 if len(data) > 0:
-                    self.data[addr[0]] = (int(time.monotonic() * 1000), SPLMessage(data=data))
+                    self.data[addr[0]] = (int(time.time() * 1000), SPLMessage(data=data))
             except socket.error as msg:
                 print('Error Code : ' + str(msg[0]) + ' Message ' + msg[1])
                 self.loop_control.set()
@@ -44,9 +45,12 @@ class TeamCommReceiver(threading.Thread):
 if __name__ == '__main__':
     print('starting ...')
     loop_control = Event()
-    r = TeamCommReceiver(loop_control)
+    r = TeamCommReceiver(loop_control, "192.168.13.255", 10004)
     r.start()
-    time.sleep(10)
+
+    for i in range(10):
+        print(r.data)
+        time.sleep(1)
     loop_control.set()
     r.join()
     print('finished!')
