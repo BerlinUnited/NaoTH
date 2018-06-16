@@ -1,27 +1,27 @@
 
 /**
- * @file TeamBallLocator.h
+ * @file TeamBallLocatorMedian.h
  *
- * Implementation of class TeamBallLocator
+ * Implementation of class TeamBallLocatorMedian
  */
 
-#include "TeamBallLocator.h"
+#include "TeamBallLocatorMedian.h"
 
-TeamBallLocator::TeamBallLocator()
+TeamBallLocatorMedian::TeamBallLocatorMedian()
 {
-  DEBUG_REQUEST_REGISTER("TeamBallLocator:draw_ball_on_field", "draw the team ball model on the field", false);
-  DEBUG_REQUEST_REGISTER("TeamBallLocator:draw_teamball_input", "draw all the balls uses for teamball", false);
-  DEBUG_REQUEST_REGISTER("TeamBallLocator:draw_ownball", "draw all the balls uses for teamball", false);
+  DEBUG_REQUEST_REGISTER("TeamBallLocatorMedian:draw_ball_on_field", "draw the team ball model on the field", false);
+  DEBUG_REQUEST_REGISTER("TeamBallLocatorMedian:draw_teamball_input", "draw all the balls uses for teamball", false);
+  DEBUG_REQUEST_REGISTER("TeamBallLocatorMedian:draw_ownball", "draw all the balls uses for teamball", false);
   
   getDebugParameterList().add(&theParameters);
 }
 
-TeamBallLocator::~TeamBallLocator()
+TeamBallLocatorMedian::~TeamBallLocatorMedian()
 {
 	getDebugParameterList().remove(&theParameters);
 }
 
-void TeamBallLocator::execute()
+void TeamBallLocatorMedian::execute()
 {
   // collect all balls seen by teammates and myself
   for (auto const& it: getTeamMessage().data) {
@@ -100,7 +100,7 @@ void TeamBallLocator::execute()
   }
   ownballPosHist.erase(ownballPosHist.begin(), cutOff);
   
-  DEBUG_REQUEST("TeamBallLocator:draw_teamball_input",
+  DEBUG_REQUEST("TeamBallLocatorMedian:draw_teamball_input",
     FIELD_DRAWING_CONTEXT;
     PEN("0000FF", 20);
     for(size_t i = 0; i < ballPosHist.size(); i++)
@@ -109,7 +109,7 @@ void TeamBallLocator::execute()
     }
   );
   
-  DEBUG_REQUEST("TeamBallLocator:draw_ownball",
+  DEBUG_REQUEST("TeamBallLocatorMedian:draw_ownball",
     FIELD_DRAWING_CONTEXT;
     PEN("66FFFF", 20);
     for(size_t i = 0; i < ownballPosHist.size(); i++)
@@ -151,7 +151,7 @@ void TeamBallLocator::execute()
   // set validity of the teamball -> invalidate after a certain time
   getTeamBallModel().valid = (getTeamBallModel().time + theParameters.maxTimeValid >= getFrameInfo().getTime());
 
-  DEBUG_REQUEST("TeamBallLocator:draw_ball_on_field",
+  DEBUG_REQUEST("TeamBallLocatorMedian:draw_ball_on_field",
     FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 20);
     FILLOVAL(getTeamBallModel().positionOnField.x, getTeamBallModel().positionOnField.y, 50, 50);
