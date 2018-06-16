@@ -141,6 +141,8 @@ private:
             PARAMETER_REGISTER(g0) = 0.01;
             PARAMETER_REGISTER(g1) = 0.1;
 
+            PARAMETER_REGISTER(use_covariance_based_selection) = true;
+
             syncWithConfig();
         }
 
@@ -168,6 +170,8 @@ private:
         double euclidThreshold;
         double mahalanobisThreshold;
         double maximumLikelihoodThreshold;
+
+        bool use_covariance_based_selection;
     } kfParameters;
 
     Measurement_Function_H h;

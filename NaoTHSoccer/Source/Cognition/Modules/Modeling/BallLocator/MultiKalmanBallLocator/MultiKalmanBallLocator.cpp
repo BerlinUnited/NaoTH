@@ -31,8 +31,6 @@ MultiKalmanBallLocator::MultiKalmanBallLocator():
 
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_trust_the_ball", "..", false);
 
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:provide_model_based_on_covariance", "..", true);
-
     h.ballRadius = getFieldInfo().ballRadius;
 
     updateAssociationFunction = &likelihood;
@@ -385,7 +383,8 @@ MultiKalmanBallLocator::Filters::const_iterator MultiKalmanBallLocator::selectBe
   Filters::const_iterator bestModel = filter.end();
   double value = 0;
 
-  DEBUG_REQUEST("MultiKalmanBallLocator:provide_model_based_on_covariance",
+  if(kfParameters.use_covariance_based_selection)
+  {
     // find the best seen model for the ball based on covariance
     for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); ++iter) {
         double temp = iter->getEllipseLocation().major * iter->getEllipseLocation().minor * Math::pi;
@@ -396,7 +395,7 @@ MultiKalmanBallLocator::Filters::const_iterator MultiKalmanBallLocator::selectBe
     }
 
     return bestModel;
-  );
+  }
 
   // find the best model for the ball: closest hypothesis that is "known"
   for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); ++iter) {
