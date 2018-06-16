@@ -81,7 +81,7 @@ void Walk2018::execute()
   theZMPPlanner->execute();
 
   // running phase
-  ASSERT(!getStepBuffer().first().isExecuted());
+  //ASSERT(!getStepBuffer().first().isExecuted());
   calculateTargetCoMFeetPose();
 
   // set arms
@@ -120,7 +120,9 @@ void Walk2018::execute()
 
 void Walk2018::calculateTargetCoMFeetPose()
 {
-  theZMPPreviewController->execute();
+  if(!getStepBuffer().first().isExecuted()){
+    theZMPPreviewController->execute();
+  }
 
   Vector3d com = getTargetCoMFeetPose().pose.com.translation;
 
@@ -130,11 +132,15 @@ void Walk2018::calculateTargetCoMFeetPose()
     getDebugDrawings().fillOval(com.x, com.y, 10, 10);
   );
 
-  theFootTrajectoryGenerator->execute();
+  if(!getStepBuffer().first().isExecuted()){
+    theFootTrajectoryGenerator->execute();
+  }
 
   theHipRotationOffsetModifier->execute();
 
-  theLiftingFootCompensator->execute();
+  if(!getStepBuffer().first().isExecuted()){
+    theLiftingFootCompensator->execute();
+  }
 
   // buffer target CoM feet pose
   getCommandBuffer().footIds.add(getStepBuffer().first().footStep.liftingFoot());

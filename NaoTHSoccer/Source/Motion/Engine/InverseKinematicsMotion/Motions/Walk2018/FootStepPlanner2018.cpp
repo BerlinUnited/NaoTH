@@ -51,10 +51,14 @@ void FootStepPlanner2018::execute()
         ready_to_switch_support = true;
     }
 
+    PLOT("FootStepPlanner2018:ready_to_switch", ready_to_switch_support);
+
     // current step has been executed, remove
     if ( getStepBuffer().first().isExecuted() && (!parameters.stabilization.use_step_feedback || ready_to_switch_support)) {
       getStepBuffer().remove();
     }
+
+    PLOT("FootStepPlanner2018:exceedExecutionCycle", getStepBuffer().first().isExecuted());
 
     // add a new step
     if(getStepBuffer().last().isPlanned()) {
