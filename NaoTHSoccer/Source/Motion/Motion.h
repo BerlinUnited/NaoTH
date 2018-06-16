@@ -187,6 +187,7 @@ private:
   naoth::MotorJointData theLastMotorJointData;
 
   Logger motionLogger;
+  Stopwatch cycleStopwatch;
 
 private:
   std::stringstream debug_answer_stream;
