@@ -77,7 +77,9 @@ include "Options/Soccer/Strategy/positioning_for_own_kickoff.xabsl";
 include "Options/Soccer/Strategy/positioning_for_opp_kickoff.xabsl";
 
 
-include "Options/Soccer/Strategy/positioning_kickoff_dobermann.xabsl";
+include "Options/Soccer/Strategy/decide_and_go_to_ready_position_dobermann.xabsl";
+include "Options/Soccer/Strategy/positioning_for_own_kickoff_dobermann.xabsl";
+include "Options/Soccer/Strategy/positioning_for_opp_kickoff_dobermann.xabsl";
 include "Options/Soccer/Strategy/passive/decide_and_go_to_passive_position_dobermann.xabsl";
 include "Options/Soccer/Strategy/passive/decide_and_go_to_passive_position_dobermann_no_search.xabsl";
 

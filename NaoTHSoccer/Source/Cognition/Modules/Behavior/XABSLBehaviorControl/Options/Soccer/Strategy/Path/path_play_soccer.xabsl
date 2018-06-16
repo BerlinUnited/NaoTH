@@ -121,15 +121,13 @@ option path_play_soccer
         goto play;
       else if (game.current_mode == set)
         goto set;
-      else 
+      else
         stay;
     }
     action 
     {
-      //decide_and_go_to_ready_position();
-
       // play dobermann
-      positioning_kickoff_dobermann();
+      decide_and_go_to_ready_position_dobermann();
       
       //only the first we know that we are in our own half
       situationStatusOwnHalf = (game.msecsRemaining >= 540000);

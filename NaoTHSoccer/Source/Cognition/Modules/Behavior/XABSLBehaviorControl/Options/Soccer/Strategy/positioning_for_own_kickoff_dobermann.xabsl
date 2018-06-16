@@ -1,4 +1,4 @@
-option positioning_kickoff_dobermann
+option positioning_for_own_kickoff_dobermann
 {
   initial state check_player_number
   {
