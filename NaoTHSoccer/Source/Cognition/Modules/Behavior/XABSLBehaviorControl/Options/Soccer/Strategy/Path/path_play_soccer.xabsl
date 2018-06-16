@@ -118,7 +118,7 @@ option path_play_soccer
     decision
     {
       else if (game.current_mode == playing)
-        goto play;
+        goto pre_play_decision;
       else if (game.current_mode == set)
         goto set;
       else
@@ -143,7 +143,7 @@ option path_play_soccer
         if(team.calc_if_is_striker)
           goto initial_striker;
         else
-          goto play;
+          goto pre_play_decision;
       }
       else if (game.current_mode == ready)
         goto ready;
@@ -157,6 +157,35 @@ option path_play_soccer
     }
   }
 
+  state pre_play_decision
+  {
+    decision
+    {
+      else if (game.player_number == 6 && game.own_kickoff)
+        goto pre_play_routine;
+    else 
+      goto play;
+    }
+    action
+    {
+    }
+  }
+
+  state pre_play_routine
+  {
+    decision
+    {
+      else if (action_done)
+        goto play;
+      else
+        stay;
+    }
+    action
+    {
+      kickoff_assist_dobermann(x=1500, y=-700, rot=0);
+    }
+  }
+          
   state play
   {
     decision
