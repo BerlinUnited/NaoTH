@@ -11,7 +11,7 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/TeamMessageData.h"
-#include "Representations/Modeling/TeamMessageTimeStatistics.h"
+#include "Representations/Modeling/TeamMessageNTP.h"
 
 
 BEGIN_DECLARE_MODULE(SimpleNetworkTimeProtocol)
@@ -23,7 +23,7 @@ BEGIN_DECLARE_MODULE(SimpleNetworkTimeProtocol)
   REQUIRE(PlayerInfo)
   REQUIRE(TeamMessage)
 
-  PROVIDE(TeamMessageTimeStatistics)
+  PROVIDE(TeamMessageNTP)
   PROVIDE(TeamMessageData)
 END_DECLARE_MODULE(SimpleNetworkTimeProtocol)
 
