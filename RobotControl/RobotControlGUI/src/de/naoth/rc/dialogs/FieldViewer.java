@@ -592,6 +592,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
                 
                 final double f = (0.5*640.0) / Math.tan(0.5 * 60.9/180.0*Math.PI);
                 
+                // draw prijected edgesl on the field
                 dc.add(new Pen(10, c));
                 for(Representations.Edgel e: data.getEdgelsList()) {
                     Vector2D p = new Vector2D(e.getPoint().getX(), e.getPoint().getY());
@@ -610,6 +611,24 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
                     dc.add(new Line((int)q.x, (int)q.y, (int)q2.x, (int)q2.y));
                 }
                 
+                Vector2D last_p = null;
+                dc.add(new Pen(10, Color.black));
+                for(Representations.ScanLineEndPoint e: data.getEndPointsList()) {
+                    Vector2D p = new Vector2D(e.getPosOnField().getX(), e.getPosOnField().getY());
+                    
+                    if(robotPose != null) {
+                        p = robotPose.multiply(p);
+                    }
+                    
+                    if (last_p != null) {
+                        dc.add(new Line((int)last_p.x, (int)last_p.y, (int)p.x, (int)p.y));
+                    }
+                    dc.add(new Circle((int)p.x, (int)p.y, 10));
+                    
+                    last_p = p;
+                }
+                
+                // draw prijected goal posts on the field
                 for(Representations.GoalPercept.GoalPost g: gp.getPostList()) {
                     Vector2D q = new Vector2D(g.getPosition().getX(), g.getPosition().getY());
                     //Vector2D q = project(R,t,f,p);
