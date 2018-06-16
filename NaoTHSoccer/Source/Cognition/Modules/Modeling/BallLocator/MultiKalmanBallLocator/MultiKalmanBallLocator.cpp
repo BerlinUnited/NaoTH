@@ -517,16 +517,16 @@ void MultiKalmanBallLocator::applyOdometryOnFilterState(ExtendedKalmanFilter4d& 
 MultiKalmanBallLocator::Filters::const_iterator MultiKalmanBallLocator::selectBestModel() const
 {
   Filters::const_iterator bestModel = filter.end();
-  double value = 0;
+  double bestValue = 0;
 
   if(kfParameters.use_covariance_based_selection)
   {
     // find the best seen model for the ball based on covariance
     for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); ++iter) {
         double temp = iter->getEllipseLocation().major * iter->getEllipseLocation().minor * Math::pi;
-        if(bestModel == filter.end() || temp < value){
+        if(bestModel == filter.end() || temp < bestValue){
             bestModel = iter;
-            value = temp;
+            bestValue = temp;
         }
     }
 
@@ -538,10 +538,10 @@ MultiKalmanBallLocator::Filters::const_iterator MultiKalmanBallLocator::selectBe
     double distance = Vector2d(iter->getState()(0), iter->getState()(2)).abs();
     if( bestModel == filter.end() || 
        (iter->ballSeenFilter.value() && !bestModel->ballSeenFilter.value()) ||
-       (iter->ballSeenFilter.value() == bestModel->ballSeenFilter.value() && distance < minDistance)) 
+       (iter->ballSeenFilter.value() == bestModel->ballSeenFilter.value() && distance < bestValue)) 
     {
       bestModel = iter;
-      minDistance = distance;
+      bestValue = distance;
     }
   }
 
