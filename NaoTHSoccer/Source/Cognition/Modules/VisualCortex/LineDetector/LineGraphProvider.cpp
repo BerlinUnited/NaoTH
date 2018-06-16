@@ -283,57 +283,57 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
 
   DEBUG_REQUEST("Vision:LineGraphProvider:draw_neighbors_field",
     FIELD_DRAWING_CONTEXT;
-  for (size_t i = 0; i < edgelNeighbors.size(); i++)
-  {
-    const ScanLineEdgelPercept::EdgelPair& edgel = getScanLineEdgelPercept().pairs[i];
-    bool draw_node = false;
-
-    Vector2d pointOnFieldEdgel;
-    if (!CameraGeometry::imagePixelToFieldCoord(
-      getCameraMatrix(), getCameraInfo(),
-      edgel.point,
-      0.0,
-      pointOnFieldEdgel))
+    for (size_t i = 0; i < edgelNeighbors.size(); i++)
     {
-      continue;
-    }
+      const ScanLineEdgelPercept::EdgelPair& edgel = getScanLineEdgelPercept().pairs[i];
+      bool draw_node = false;
 
-    if (edgelNeighbors[i].left != -1) {
-      const ScanLineEdgelPercept::EdgelPair& edgel_s = getScanLineEdgelPercept().pairs[edgelNeighbors[i].left];
-
-      Vector2d pointOnField;
-      if (CameraGeometry::imagePixelToFieldCoord(
+      Vector2d pointOnFieldEdgel;
+      if (!CameraGeometry::imagePixelToFieldCoord(
         getCameraMatrix(), getCameraInfo(),
-        edgel_s.point,
+        edgel.point,
         0.0,
-        pointOnField))
+        pointOnFieldEdgel))
       {
-        PEN("000000", 1);
-        LINE(pointOnFieldEdgel.x, pointOnFieldEdgel.y, pointOnField.x, pointOnField.y);
-        draw_node = true;
+        continue;
+      }
+
+      if (edgelNeighbors[i].left != -1) {
+        const ScanLineEdgelPercept::EdgelPair& edgel_s = getScanLineEdgelPercept().pairs[edgelNeighbors[i].left];
+
+        Vector2d pointOnField;
+        if (CameraGeometry::imagePixelToFieldCoord(
+          getCameraMatrix(), getCameraInfo(),
+          edgel_s.point,
+          0.0,
+          pointOnField))
+        {
+          PEN("000000", 1);
+          LINE(pointOnFieldEdgel.x, pointOnFieldEdgel.y, pointOnField.x, pointOnField.y);
+          draw_node = true;
+        }
+      }
+
+      if (edgelNeighbors[i].right != -1) {
+        const ScanLineEdgelPercept::EdgelPair& edgel_s = getScanLineEdgelPercept().pairs[edgelNeighbors[i].right];
+        Vector2d pointOnField;
+        if (CameraGeometry::imagePixelToFieldCoord(
+          getCameraMatrix(), getCameraInfo(),
+          edgel_s.point,
+          0.0,
+          pointOnField))
+        {
+          PEN("000000", 1);
+          LINE(pointOnFieldEdgel.x, pointOnFieldEdgel.y, pointOnField.x, pointOnField.y);
+          draw_node = true;
+        }
+      }
+
+      if (draw_node) {
+        PEN("FF0000", 1);
+        CIRCLE(pointOnFieldEdgel.x, pointOnFieldEdgel.y, 25);
       }
     }
-
-    if (edgelNeighbors[i].right != -1) {
-      const ScanLineEdgelPercept::EdgelPair& edgel_s = getScanLineEdgelPercept().pairs[edgelNeighbors[i].right];
-      Vector2d pointOnField;
-      if (CameraGeometry::imagePixelToFieldCoord(
-        getCameraMatrix(), getCameraInfo(),
-        edgel_s.point,
-        0.0,
-        pointOnField))
-      {
-        PEN("000000", 1);
-        LINE(pointOnFieldEdgel.x, pointOnFieldEdgel.y, pointOnField.x, pointOnField.y);
-        draw_node = true;
-      }
-    }
-
-    if (draw_node) {
-      PEN("FF0000", 1);
-      CIRCLE(pointOnFieldEdgel.x, pointOnFieldEdgel.y, 25);
-    }
-  }
   );
 
 }//end execute

@@ -267,6 +267,22 @@ namespace Math
     return val / static_cast<float>(one);
   }
 
+  // exp(x) = lim(n->inf) (1 + x/n)^n
+  // for n=256 about 10x faster than exp but around 2.5 % off on x in [-10, 10]
+  inline double exp256(const double& x)
+  {  
+    double y = 1.0 + x / 256.0;
+    y *= y;
+    y *= y;
+    y *= y;
+    y *= y;
+    y *= y;
+    y *= y;
+    y *= y;
+    y *= y;
+    return y;
+  }
+
 }//end namespace Math
 
 #endif // _Math_Common_h_
