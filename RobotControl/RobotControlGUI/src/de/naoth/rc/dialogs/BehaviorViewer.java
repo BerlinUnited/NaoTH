@@ -937,6 +937,8 @@ public class BehaviorViewer extends AbstractDialog
     if(originalCommand.getName().equals(fileWriteCommandName))
     {
       sendCommand(reloadBehaviorCommand);
+      sendCommand(getListOfAgents);
+      sendCommand(getAgentCommand);
       JOptionPane.showMessageDialog(this,
         new String(result), "Sending Behavior", JOptionPane.INFORMATION_MESSAGE);
     }
