@@ -90,12 +90,15 @@ void MultiKalmanBallLocator::execute()
     doDebugRequestBeforUpdate();
 
     // sensor update
-    //updateByPerceptsNormal();
-    //updateByPerceptsCool();
-
-    // need to handle bottom and top percepts independently because both cameras can observe the same ball
-    updateByPerceptsNaive(CameraInfo::Bottom);
-    updateByPerceptsNaive(CameraInfo::Top);
+    if(kfParameters.association.use_normal){
+        updateByPerceptsNormal();
+    } else if(kfParameters.association.use_cool){
+        updateByPerceptsCool();
+    } else if(kfParameters.association.use_naive){
+        // need to handle bottom and top percepts independently because both cameras can observe the same ball
+        updateByPerceptsNaive(CameraInfo::Bottom);
+        updateByPerceptsNaive(CameraInfo::Top);
+    }
 
     // Heinrich: update the "ball seen" values
     for(Filters::iterator iter = filter.begin(); iter != filter.end(); ++iter){

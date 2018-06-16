@@ -142,6 +142,10 @@ private:
             PARAMETER_REGISTER(g0) = 0.01;
             PARAMETER_REGISTER(g1) = 0.1;
 
+            PARAMETER_REGISTER(association.use_normal) = false;
+            PARAMETER_REGISTER(association.use_cool)   = false;
+            PARAMETER_REGISTER(association.use_naive)  = true;
+
             syncWithConfig();
         }
 
@@ -169,6 +173,13 @@ private:
         double euclidThreshold;
         double mahalanobisThreshold;
         double maximumLikelihoodThreshold;
+
+        struct{
+            bool use_normal;
+            bool use_cool;
+            bool use_naive;
+        } association;
+
     } kfParameters;
 
     Measurement_Function_H h;
