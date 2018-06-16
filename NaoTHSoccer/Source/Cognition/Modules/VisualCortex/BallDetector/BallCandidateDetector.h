@@ -114,11 +114,6 @@ public:
 
     PLOT("BallCandidateDetector:mean",mean);
     PLOT("BallCandidateDetector:mean_of_means",average_mean);
-
-    if(!getMultiBallPercept().getPercepts().empty()) {
-      double normalizedX = ((double) (getMultiBallPercept().getPercepts()[0].centerInImage.x) - 320.0) / 640.0;
-      PLOT("BallCandidateDetector:centerInImage:x", normalizedX);
-    }
   }
 
   static std::map<std::string, std::shared_ptr<AbstractCNNClassifier>> createCNNMap();
