@@ -1,58 +1,43 @@
 clear variables
 clc
-%% Export Capture data
-secret() % import the custom paths
+%% init defaults
+warning('off', 'MATLAB:MKDIR:DirectoryExists');
+addpath('../common')
+secret()
 
-load(capture_database_path)
-
-%% Get the capture categories
-go17_recordings = capture_database.go17_recordings;
-rc17_recordings = capture_database.rc17_recordings;
-
-for i=1:length(go17_recordings)
-    % Export the recordings as raw in the correct folder structure
-    game_name = go17_recordings(i).game_name;
-    half = go17_recordings(i).half;
-    robot_name = go17_recordings(i).robot_name;
-    rawData = go17_recordings(i).rawData;
-    filename = go17_recordings(i).filename;
-    
-    path_to_outputfolder = fullfile(capture_export_path, 'go17_recordings', game_name, half, robot_name);
-    mkdir(path_to_outputfolder)
-    
-    fileID = fopen(fullfile(path_to_outputfolder, filename), 'w');
-        fwrite(fileID, rawData, 'int16', 'ieee-le');
-    fclose(fileID);
-    
-    % Export samples as wav
-    [~,filepartname,~] = fileparts(filename);
-    filename2 = fullfile(path_to_outputfolder, strcat(filepartname, '.wav'));
-    Fs = go17_recordings(i).samplerate;
-    y = rawData ./ max( abs(rawData(:)) );
-    audiowrite(char(filename2),y,Fs);
+try
+    load(capture_database_path)
+    disp('Loading the capture database')
+catch
+    disp('ERROR: No capture database was found')
+    return;
 end
 
-%%
-for i=1:length(rc17_recordings)
-    % Export the recordings as raw in the correct folder structure
-    game_name = rc17_recordings(i).game_name;
-    half = rc17_recordings(i).half;
-    robot_name = rc17_recordings(i).robot_name;
-    rawData = rc17_recordings(i).rawData;
-    filename = rc17_recordings(i).filename;
-    
-    %TODO change the path
-    path_to_outputfolder = fullfile(exportPath, 'rc17_recordings', game_name, half, robot_name);
-    mkdir(path_to_outputfolder)
-    
-    fileID = fopen (fullfile(path_to_outputfolder, filename), 'w');
-        fwrite(fileID, rawData, 'int16', 'ieee-le');
-    fclose(fileID);
-    
-    % Export samples as wav
-    [~,filepartname,~] = fileparts(filename);
-    filename2 = fullfile(path_to_outputfolder, strcat(filepartname, '.wav'));
-    Fs = rc17_recordings(i).samplerate;
-    y = rawData ./ max( abs(rawData(:)) );
-    audiowrite(char(filename2),y,Fs);
+%% Get the capture categories
+events = fieldnames(capture_database);
+for k=1:length(events)
+    current_event = char(events(k));
+    event_struct = capture_database.(current_event);
+    for i=1:length(event_struct)
+        % Export the recordings as raw in the correct folder structure
+        game_name = event_struct(i).game_name;
+        half = event_struct(i).half;
+        robot_name = event_struct(i).robot_name;
+        rawData = event_struct(i).rawData;
+        filename = event_struct(i).filename;
+
+        path_to_outputfolder = fullfile(capture_export_path, current_event, game_name, half, robot_name);
+        mkdir(path_to_outputfolder);
+
+        fileID = fopen(fullfile(path_to_outputfolder, filename), 'w');
+            fwrite(fileID, rawData, 'int16', 'ieee-le');
+        fclose(fileID);
+
+        % Export samples as wav
+        [~,filepartname,~] = fileparts(filename);
+        filename2 = fullfile(path_to_outputfolder, strcat(filepartname, '.wav'));
+        Fs = event_struct(i).samplerate;
+        y = rawData ./ max( abs(rawData(:)) );
+        audiowrite(char(filename2),y,Fs);
+    end
 end
