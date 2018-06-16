@@ -1,121 +1,105 @@
-/**
-* @file TeamMessageStatistics.cpp
-*/
+#include "TeamMessageStatisticsModule.h"
 
-#include "TeamMessageStatistics.h"
+#include "Representations/Modeling/TeamMessageData.h"
+#include "Tools/DataConversion.h"
+#include "PlatformInterface/Platform.h"
 
-TeamMessageStatistics::TeamMessageStatistics()
+TeamMessageStatisticsModule::TeamMessageStatisticsModule()
 {
-  getDebugParameterList().add(&parameters);
+    getDebugParameterList().add(&params);
 }
 
-TeamMessageStatistics::~TeamMessageStatistics()
+TeamMessageStatisticsModule::~TeamMessageStatisticsModule()
 {
-  getDebugParameterList().remove(&parameters);
-}
-
-void TeamMessageStatistics::execute() {   
-  //Check, from which robots we have received a message, and update the corresponding statistics
-  for(auto const &it : getTeamMessage().data) {
-    unsigned int robotNumber = it.first;
-    unsigned int receiveTime = getFrameInfo().getTime();
-    unsigned int receiveTime_sender = it.second.frameInfo.getTime();
-    std::map<unsigned int, RobotMessageStatistics*>::const_iterator r = robotMap.find(robotNumber);
-    if (r != robotMap.end()) {
-      if ((*r->second).lastMessageReceived_sender < receiveTime_sender) {
-        double currentMessageInterval = receiveTime - (*r->second).lastMessageReceived;
-
-        //Update statistics for the corresponding robot
-        (*r->second).messageReceived(receiveTime);
-        (*r->second).lastMessageReceived_sender = receiveTime_sender;
-        getTeamMessageStatisticsModel().amountsOfMessages[robotNumber] = (*r->second).amountOfMessages;
-        getTeamMessageStatisticsModel().averages[robotNumber] = (*r->second).avgMsgInterval;
-        getTeamMessageStatisticsModel().variances[robotNumber] = (*r->second).varianceMsgInterval;
-        PLOT(std::string("MessageStatistics:Robot(")+DataConversion::toStr(robotNumber)+std::string("):MessageInterval"), currentMessageInterval);
-
-        //Update statistics for the whole team
-        if (robotNumber == getPlayerInfo().playerNumber) {
-          continue; //Don't consider our own messages
-        }
-        double old_amountOfMessages = getTeamMessageStatisticsModel().amountOfMessages++;
-        if (parameters.interpolation == 0.0 || old_amountOfMessages == 0 || 1.0/getTeamMessageStatisticsModel().amountOfMessages > parameters.interpolation) {
-          //No interpolation, compute unweighted average
-          getTeamMessageStatisticsModel().avgMsgInterval = (getTeamMessageStatisticsModel().avgMsgInterval * old_amountOfMessages + currentMessageInterval)
-            /getTeamMessageStatisticsModel().amountOfMessages;
-          getTeamMessageStatisticsModel().expectation_xSquared = (getTeamMessageStatisticsModel().expectation_xSquared * old_amountOfMessages + 
-            Math::sqr(currentMessageInterval)) / getTeamMessageStatisticsModel().amountOfMessages;
-        }
-        else {
-          //Interpolation of message intervals
-          getTeamMessageStatisticsModel().avgMsgInterval = parameters.interpolation * currentMessageInterval + 
-            (1.0 - parameters.interpolation) * getTeamMessageStatisticsModel().avgMsgInterval;
-          getTeamMessageStatisticsModel().expectation_xSquared = parameters.interpolation * Math::sqr(currentMessageInterval) +
-            (1.0 - parameters.interpolation) * getTeamMessageStatisticsModel().expectation_xSquared;
-        }
-        getTeamMessageStatisticsModel().varianceMsgInterval = getTeamMessageStatisticsModel().expectation_xSquared - 
-          Math::sqr(getTeamMessageStatisticsModel().avgMsgInterval);
-        PLOT("MessageStatistics:Team:MessageInterval", currentMessageInterval);
-      }
+    // TODO: seems it doesn't work as intended!
+    // 'disable' this module in the representation
+    for(auto& it : getTeamMessageStatistics().data) {
+        it.second.lastStatisticsUpdate.setTime(0);
+        it.second.lastStatisticsUpdate.setFrameNumber(0);
     }
-    //If we haven't received a message from this robot before; add it to the map
-    else {
-      RobotMessageStatistics* rms = new RobotMessageStatistics(robotNumber);
-      rms->messageReceived(receiveTime);
-      rms->lastMessageReceived_sender = receiveTime_sender;
-      robotMap.insert(std::make_pair(robotNumber, rms));
+    getDebugParameterList().remove(&params);
+}
+
+void TeamMessageStatisticsModule::execute() {
+    //Check, from which robots we have received a message, and update the corresponding statistics
+    for(auto const &it : getTeamMessage().data) {
+        const TeamMessageData& data = it.second;
+        // skip my own messages
+        if(data.playerNumber == getPlayerInfo().playerNumber) {
+            continue;
+        }
+        TeamMessageStatistics::Player& player = getTeamMessageStatistics().getPlayer(data.playerNumber);
+
+        double currentMessageInterval = getFrameInfo().getTimeSince(player.lastStatisticsUpdate);
+
+        // Update only with newer information
+        if(data.frameInfo > player.lastStatisticsUpdate)
+        {
+            auto& buffer = playerBuffer[data.playerNumber];
+
+            if(buffer.size() == 0) {
+                // "ignore" the first message interval, most likely it's too high and distorts the statistics
+                currentMessageInterval = params.initialMessageInterval;
+            } else if(player.expectation_xSquared > 0 && currentMessageInterval > player.avgMsgInterval + player.expectation_xSquared * 3) {
+                // haven't heard something in a very long time, first interval is too high and distorts the statistics
+                // use the 99,73% deviation interval
+                currentMessageInterval = player.expectation_xSquared * 3;
+            }
+
+            // add the message time interval to the buffer
+            buffer.add(currentMessageInterval);
+
+            // calculation via stddev buffer
+            player.avgMsgInterval = buffer.getAdjustedAverage();
+            player.expectation_xSquared = buffer.getStdDev(player.avgMsgInterval);
+            player.varianceMsgInterval = buffer.getVariance(player.avgMsgInterval);
+
+            // set last update time
+            player.lastStatisticsUpdate = data.frameInfo;
+            player.lastMsgInterval = 0;
+            player.numOfMessages++;
+            player.indicator_messageReceived_upToNow = 0.0;
+        } else {
+            // didn't receive a new message from teammate, just update the failure probability of the player/robot
+            if (player.varianceMsgInterval > 0) {
+                player.indicator_messageReceived_upToNow += probability(player.lastMsgInterval, currentMessageInterval, player.avgMsgInterval, player.varianceMsgInterval);
+            } else {
+                // if there's no variance and the last message is older than the average, it's likely that the player doesn't send any message
+                if(currentMessageInterval > player.avgMsgInterval) {
+                    player.indicator_messageReceived_upToNow = 1.0;
+                }
+            }
+            player.lastMsgInterval = currentMessageInterval;
+        }
     }
-  } 
-  PLOT("MessageStatistics:Team:stddevMessageInterval", std::sqrt(getTeamMessageStatisticsModel().varianceMsgInterval));
-  PLOT("MessageStatistics:Team:averageMessageInterval", getTeamMessageStatisticsModel().avgMsgInterval);
 
-  //Run the update procedure (incremental computation of probability of failure) for each robot
-  unsigned int currentTime = getFrameInfo().getTime();
-  for (std::map<unsigned int, RobotMessageStatistics*>::const_iterator rms = robotMap.begin(); rms != robotMap.end(); rms++) {
-    (*rms->second).update(currentTime);
-    getTeamMessageStatisticsModel().failureProbabilities.insert(std::make_pair(rms->first, (*rms->second).probability_messageReceived_upToNow));  
-    PLOT(std::string("MessageStatistics:Robot(")+DataConversion::toStr(rms->first)+std::string("):averageMessageInterval"), (*rms->second).avgMsgInterval);
-    PLOT(std::string("MessageStatistics:Robot(")+DataConversion::toStr(rms->first)+std::string("):stddevMesssageInterval"), std::sqrt((*rms->second).varianceMsgInterval));
-    PLOT(std::string("MessageStatistics:Robot(")+DataConversion::toStr(rms->first)+std::string("):probability"), 1.0-(*rms->second).probability_messageReceived_upToNow);
-  } 
+    for(const auto& it : getTeamMessageStatistics().data) {
+        PLOT(std::string("MessageStatistics:Robot(")+DataConversion::toStr(it.first)+std::string("):messageInterval"), it.second.lastMsgInterval);
+        PLOT(std::string("MessageStatistics:Robot(")+DataConversion::toStr(it.first)+std::string("):averageMessageInterval"), it.second.avgMsgInterval);
+        PLOT(std::string("MessageStatistics:Robot(")+DataConversion::toStr(it.first)+std::string("):stddevMesssageInterval"), std::sqrt(it.second.varianceMsgInterval));
+        PLOT(std::string("MessageStatistics:Robot(")+DataConversion::toStr(it.first)+std::string("):indicator"), it.second.indicator_messageReceived_upToNow);
+    }
 }
 
-void TeamMessageStatistics::reset() {
-  getTeamMessageStatisticsModel().amountOfMessages = 0;
-  getTeamMessageStatisticsModel().avgMsgInterval = 0.0;
-  getTeamMessageStatisticsModel().varianceMsgInterval = 0.0;
-  getTeamMessageStatisticsModel().expectation_xSquared = 0.0;
-
-  robotMap.clear();
+double TeamMessageStatisticsModule::probability(double lower, double upper, double avg, double var) {
+    if (upper <= 0.0) {
+        return 0.0;
+    }
+    // NOTE: riemann integral with just one "rectangles" can be insuffiecent!
+    return riemann_integral(&TeamMessageStatisticsModule::normalDensity, lower, upper, 1, avg, var);
 }
 
-double TeamMessageStatistics::probability(double lower, double upper) {
-  if (upper <= 0.0) {
-    return 0.0;
-  }  
-  double probability = riemann_integral(&TeamMessageStatistics::normalDensity, lower, upper, 1);
-
-  return probability;
-}
-
-double TeamMessageStatistics::exponentialDistribution(double x) {
-  return 1.0 - std::exp(-getTeamMessageStatisticsModel().avgMsgInterval * x);
-}
-
-/**
-** Computes the Riemann Integral of some function for the given interval [a, b] and an amount of rectangles.
-**/
-double TeamMessageStatistics::riemann_integral(double (TeamMessageStatistics::*func)(double), double a, double b, int amountOfRectangles) {
-		
-	double *arguments = new double[amountOfRectangles];
-	for (int i = 1; i <= amountOfRectangles; i++) {
-		arguments[i-1] = a + i * (b - a)/amountOfRectangles;
-	}
-		
-  double sum = 0.0;
-	double x = a;
-	for (int index = 0; index < amountOfRectangles; index++) {
+double TeamMessageStatisticsModule::riemann_integral(double (TeamMessageStatisticsModule::*func)(double, double, double), double a, double b, int amountOfRectangles, double avg, double var)
+{
+    double *arguments = new double[amountOfRectangles];
+    for (int i = 1; i <= amountOfRectangles; i++) {
+        arguments[i-1] = a + i * (b - a)/amountOfRectangles;
+    }
+    double sum = 0.0;
+    double x = a;
+    for (int index = 0; index < amountOfRectangles; index++) {
 		double newX = arguments[index];
-		double value = (this->*func)((x+newX)/2.0);
+        double value = (this->*func)((x+newX)/2.0, avg, var);
 		double area = value * (newX-x);
 		sum += area;
 		x = newX;

@@ -5,30 +5,24 @@
 * Statistics for the whole team
 */
 
-#ifndef _TeamMessageStatistics_H
-#define _TeamMessageStatistics_H
-
-#include "RobotMessageStatistics.h"
+#ifndef _TeamMessageStatisticsModule_H
+#define _TeamMessageStatisticsModule_H
 
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include "Representations/Modeling/PlayerInfo.h"
 
-#include "Representations/Modeling/TeamMessage.h"
-#include <Representations/Infrastructure/TeamMessageData.h>
-#include "Representations/Modeling/TeamMessageStatisticsModel.h"
-
-#include "Tools/Math/Common.h"
-#include <Tools/DataConversion.h>
-#include <Tools/DataStructures/ParameterList.h>
+#include "Tools/DataStructures/ParameterList.h"
+#include "Tools/DataStructures/RingBufferWithStddev.h"
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugRequest.h"
 
-#include <list>
-#include <map>
+#include "Representations/Modeling/TeamMessage.h"
+#include "Representations/Modeling/TeamMessageStatistics.h"
 
-BEGIN_DECLARE_MODULE(TeamMessageStatistics)
+
+BEGIN_DECLARE_MODULE(TeamMessageStatisticsModule)
   PROVIDE(DebugPlot)
   PROVIDE(DebugRequest)
   PROVIDE(DebugParameterList)
@@ -37,45 +31,78 @@ BEGIN_DECLARE_MODULE(TeamMessageStatistics)
   REQUIRE(PlayerInfo)
   REQUIRE(TeamMessage)
 
-  PROVIDE(TeamMessageStatisticsModel)
-END_DECLARE_MODULE(TeamMessageStatistics)
+  PROVIDE(TeamMessageStatistics)
+END_DECLARE_MODULE(TeamMessageStatisticsModule)
 
-class TeamMessageStatistics: public TeamMessageStatisticsBase
+
+class TeamMessageStatisticsModule: public TeamMessageStatisticsModuleBase
 {
-
 public:
- TeamMessageStatistics();
- virtual ~TeamMessageStatistics();
+    TeamMessageStatisticsModule();
+    virtual ~TeamMessageStatisticsModule();
 
- std::map<unsigned int, RobotMessageStatistics*> robotMap; // Map from robot number to its statistics object
+    virtual void execute();
 
- virtual void execute();
- void reset();
- void removeRobotNumbers();
- inline double normalDensity(double x) {
-   return 1.0/std::sqrt(2 * Math::pi * getTeamMessageStatisticsModel().varianceMsgInterval) * 
-     std::exp(-Math::sqr(x - getTeamMessageStatisticsModel().avgMsgInterval) / (2 * getTeamMessageStatisticsModel().varianceMsgInterval));
- };
- double probability(double lower, double upper);
- double exponentialDistribution(double x);
- double riemann_integral(double (TeamMessageStatistics::*func)(double), double a, double b, int amountOfRectangles);
+    /**
+     * @brief Calculates the probability that a message will now be received from the other player.
+     * @param lower
+     * @param upper
+     * @return
+     */
+    double probability(double lower, double upper, double avg, double var);
 
-private:
-  class Parameters: public ParameterList
-  {
-  public: 
-    Parameters(): ParameterList("TeamMessageStatistics") {
-      PARAMETER_REGISTER(interpolation) = 0.0;
-      
-      // load from the file after registering all parameters
-      syncWithConfig();
+    /**
+     * @brief Computes the Riemann Integral of a function for the given interval [a, b] and an amount of rectangles.
+     * @param a
+     * @param b
+     * @param amountOfRectangles
+     * @return
+     */
+    double riemann_integral(double (TeamMessageStatisticsModule::*func)(double, double, double), double a, double b, int amountOfRectangles, double avg, double var);
+
+    /**
+     * Probability distribution function of a normal distribution
+     *
+     * @brief f(x|\mu ,\sigma ^{2})={\frac {1}{\sqrt {2\pi \sigma ^{2}}}}e^{-{\frac {(x-\mu )^{2}}{2\sigma ^{2}}}}
+     * @param x
+     * @param mu        the average of the distribution
+     * @param sigma_2   the variance of the distribution
+     * @return          the probability at point x
+     */
+    inline double normalDensity(double x, double mu, double sigma_2) {
+        return  1.0
+                / std::sqrt(2 * Math::pi * sigma_2)
+                * std::exp( -Math::sqr(x - mu) / (2 * sigma_2) );
     }
 
-    double interpolation; //Determines the weighting of newly received message intervals (set to 0 for unweighted average)
-    
-    virtual ~Parameters() {}
-  } parameters;
+private:
+    class Parameters: public ParameterList
+    {
+    public:
+        Parameters(): ParameterList("TeamMessageStatisticsModule") {
+            PARAMETER_REGISTER(interpolation) = 0.0;
+            PARAMETER_REGISTER(initialMessageInterval) = 350;
+            // load from the file after registering all parameters
+            syncWithConfig();
+        }
+        virtual ~Parameters() {}
 
+        /**
+         * @brief Determines the weighting of newly received message intervals (set to 0 for unweighted average)
+         */
+        double interpolation;
+
+        /**
+         * @brief The time interval which should be used if we heard the first time from the teammate.
+         *        Should be approximately the same as the message sending interval.
+         */
+        int initialMessageInterval;
+    } params;
+
+    /**
+     * @brief Buffer for the players (receiving) message interval.
+     */
+    std::map<unsigned int, RingBufferWithStddev<double, 100>> playerBuffer;
 };
 
-#endif  /* _TeamMessageStatistics_H */
+#endif  /* _TeamMessageStatisticsModule_H */
