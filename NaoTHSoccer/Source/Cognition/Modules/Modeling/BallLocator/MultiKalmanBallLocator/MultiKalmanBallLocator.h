@@ -149,6 +149,8 @@ private:
             PARAMETER_REGISTER(area95Threshold_radius.factor) = 1;
             PARAMETER_REGISTER(area95Threshold_radius.offset) = 125;
 
+            PARAMETER_REGISTER(use_covariance_based_selection) = true;
+
             syncWithConfig();
         }
 
@@ -188,6 +190,7 @@ private:
             double offset;
         } area95Threshold_radius;
 
+        bool use_covariance_based_selection;
     } kfParameters;
 
     Measurement_Function_H h;
