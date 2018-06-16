@@ -48,8 +48,7 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id)
     getFieldColorPercept().greenHSISeparator.set(parameters.green);
     getFieldColorPercept().redHSISeparator.set(parameters.red);
 
-    std::cout << "changed" << std::endl;
-     // update cache if parameter have changed
+    // update cache if parameter have changed
     if(parameters.provide_colortable) {
       updateCache();
     }
