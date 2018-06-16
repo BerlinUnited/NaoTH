@@ -39,6 +39,7 @@ MonteCarloSelfLocator2018::MonteCarloSelfLocator2018()
   DEBUG_REQUEST_REGISTER("MCSLS:draw_sensorResetBySensingGoalModel", "", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_state", "visualizes the state of the self locator on the field", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_updateByLinePoints", "", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:draw_edgels_global", "", false);
 
   // resampling
   DEBUG_REQUEST_REGISTER("MCSLS:resample_sus", "", false);
@@ -318,6 +319,18 @@ void MonteCarloSelfLocator2018::execute()
   DEBUG_REQUEST("MCSLS:draw_BackendSamples",
     FIELD_DRAWING_CONTEXT;
     mhBackendSet.drawImportance(getDebugDrawings(), false);
+  );
+
+
+  DEBUG_REQUEST("MCSLS:draw_edgels_global",
+    FIELD_DRAWING_CONTEXT;
+    PEN("000000", 1);
+    for(size_t i = 0; i < getLineGraphPercept().edgelsOnField.size(); ++i) 
+    {
+      const Edgel& edgel = getLineGraphPercept().edgelsOnField[i];
+      Vector2d poseGlobal = getRobotPose()*(Vector2d(edgel.point));
+      CIRCLE(poseGlobal.x, poseGlobal.y, 25);
+    }
   );
 
 }//end execute
