@@ -40,26 +40,29 @@ class TeamCommGenerator(threading.Thread):
         while not self.cancel.is_set():
             # update timestamp of messages
             if self.update_timestamp.is_set():
-                self.sender.msg.data.timestamp = int(time.monotonic() * 1000)
+                self.sender.msg.data.timestamp = int(time.time() * 1000)
 
             # clears the ntp request "buffer"
-            # TODO: is there a better way to clear protobuf repeated field?!
-            while len(self.sender.msg.data.ntpRequest) > 0:
-                self.sender.msg.data.ntpRequest.pop()
+            del self.sender.msg.data.ntpRequest[:]
 
             # only if activated fill the ntp request buffer
             if self.use_ntp.is_set():
                 for p in self.receiver.data:
-                    ntp = self.sender.msg.data.ntpRequest.add()
-                    ntp.playerNum = self.receiver.data[p][1].playerNumber
-                    ntp.sent = self.receiver.data[p][1].data.timestamp
-                    ntp.received = self.receiver.data[p][0]
-                    #print(p, self.receiver.data[p][0], self.receiver.data[p][1].data.timestamp)
+                    if self.sender.msg.playerNumber != self.receiver.data[p][1].playerNumber:
+                        ntp = self.sender.msg.data.ntpRequest.add()
+                        ntp.playerNum = self.receiver.data[p][1].playerNumber
+                        ntp.sent = self.receiver.data[p][1].data.timestamp
+                        ntp.received = self.receiver.data[p][0]
             time.sleep(self.delay)
 
-        # socket is blocking, send some dummy data
-        self.receiver.socket.sendto(b'', (self.host, self.port))
-        self.receiver.socket.close()
+        # close receiving socket
+        try:
+            self.receiver.socket.shutdown(socket.SHUT_RDWR)
+        except Exception as e:
+            # ignore exception
+            pass
+        finally:
+            self.receiver.socket.close()
         # join threads
         self.receiver.join()
         self.sender.join()
