@@ -38,6 +38,7 @@ void FieldAreaDetector::execute(CameraInfo::CameraID id)
   int offset = (int)(off + off/(n_cells_horizontal-1));
   pixels_per_cell = (grid_size+1)*(grid_size+1);
   min_green = (int)(pixels_per_cell*params.proportion_of_green);
+  int min_skipped_green = (int)(pixels_per_cell*params.prop_of_green_skip);
 
   double x_offset = 0;
   Cell last_green_cell;
@@ -53,6 +54,7 @@ void FieldAreaDetector::execute(CameraInfo::CameraID id)
 
     bool green_found = false;
     bool isLastCell = false;
+    bool skipped = false;
     horizon_height = std::max(0, (int) getArtificialHorizon().point((cell.minX+cell.maxX)/2*factor).y/factor);
     for(cell.minY = getBallDetectorIntegralImage().getHeight()-1-grid_size; !isLastCell; cell.minY -= grid_size) {
       if(cell.minY < horizon_height) {
@@ -63,19 +65,33 @@ void FieldAreaDetector::execute(CameraInfo::CameraID id)
       if(cell.maxY > start_y) {
         continue;
       }
+
       cell.sum_of_green = getBallDetectorIntegralImage().getSumForRect(cell.minX, cell.minY, cell.maxX, cell.maxY, 1);
+
       if(cell.sum_of_green >= min_green) {
         last_green_cell = cell;
         green_found = true;
+      } else if (skipped) {
+        if (cell.sum_of_green >= min_skipped_green) {
+          last_green_cell = cell;
+          green_found = true;
+          skipped = false;
+        } else {
+          break;
+        }
       } else {
-        break;
+        skipped = true;
       }
       DEBUG_REQUEST("Vision:FieldAreaDetector:draw_grid",
+        ColorClasses::Color color;
         if(cell.sum_of_green >= min_green) {
-          RECT_PX(ColorClasses::green, cell.minX*factor+1, cell.minY*factor+1, cell.maxX*factor-1, cell.maxY*factor-1);
+          color = ColorClasses::green;
+        } else if (cell.sum_of_green >= min_skipped_green) {
+          color = ColorClasses::yellow;
         } else {
-          RECT_PX(ColorClasses::red, cell.minX*factor+1, cell.minY*factor+1, cell.maxX*factor-1, cell.maxY*factor-1);
+          color = ColorClasses::red;
         }
+        RECT_PX(color, cell.minX*factor+1, cell.minY*factor+1, cell.maxX*factor-1, cell.maxY*factor-1);
       );
     }
 
@@ -84,26 +100,38 @@ void FieldAreaDetector::execute(CameraInfo::CameraID id)
 
       if (params.refine_cell) {
         refine_cell(last_green_cell);
-      }      
-      Cell upper, lower;
-      int half_grid_size = split_cell(last_green_cell, upper, lower, ix_offset);
-      int min_green_half = (int)(params.proportion_of_green * (half_grid_size+1) * (half_grid_size+1));
+      }
+
       Cell endpoint_cell;
-      if (upper.sum_of_green >= min_green_half && lower.sum_of_green >= min_green_half) {
-        endpoint_cell = upper;
+      if (params.split_cell) {
+        Cell upper, lower;
+        int half_grid_size = split_cell(last_green_cell, upper, lower, ix_offset);
+        int min_green_half = (int)(params.proportion_of_green * (half_grid_size+1) * (half_grid_size+1));
+
+        if (upper.sum_of_green >= min_green_half && lower.sum_of_green >= min_green_half) {
+          endpoint_cell = upper;
+        } else {
+          endpoint_cell = lower;
+        }
       } else {
-        endpoint_cell = lower;
+        endpoint_cell = last_green_cell;
       }
 
       Endpoint endpoint;
       endpoint.cameraID = cameraID;
+
       find_endpoint(endpoint_cell, endpoint, ix_offset);
       if (params.refine_point) {
         refine_point(endpoint, endpoint_cell.minY);
       }
       endpoints.push_back(endpoint);
     }
-    x_offset += ((double)(grid_size) / 2 / n_cells_horizontal);
+    if (params.split_cell) {
+      x_offset += (double) grid_size / 2 / n_cells_horizontal;
+    } else {
+      x_offset += (double) grid_size / n_cells_horizontal;
+    }
+
   }
   create_field();
 }

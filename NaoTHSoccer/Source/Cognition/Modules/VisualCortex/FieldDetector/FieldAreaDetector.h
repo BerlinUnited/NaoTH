@@ -67,23 +67,23 @@ public:
     Parameters() : ParameterList("FieldAreaDetector")
     {
       PARAMETER_REGISTER(proportion_of_green) = .5;
+      PARAMETER_REGISTER(prop_of_green_skip) = .7;
       PARAMETER_REGISTER(grid_size_top) = 80;
       PARAMETER_REGISTER(grid_size_bottom) = 80;
-
       PARAMETER_REGISTER(refine_cell) = true;
       PARAMETER_REGISTER(refine_point) = true;
+      PARAMETER_REGISTER(split_cell) = true;
+      PARAMETER_REGISTER(number_of_scan_points_in_cell) = 3;
       syncWithConfig();
     }
     double proportion_of_green;
+    double prop_of_green_skip;
     int32_t grid_size_top;
     int32_t grid_size_bottom;
-
-
-    int32_t max_grid_size;
-    int32_t min_grid_size;
-
     bool refine_cell;
     bool refine_point;
+    bool split_cell;
+    int number_of_scan_points_in_cell;
   } params;
 
 private:
