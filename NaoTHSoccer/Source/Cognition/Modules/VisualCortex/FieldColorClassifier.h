@@ -66,28 +66,11 @@ END_DECLARE_MODULE(FieldColorClassifier)
 
 class FieldColorClassifier : public  FieldColorClassifierBase
 {
-public:
-  FieldColorClassifier();
-  virtual ~FieldColorClassifier();
-
-  void execute()
-  {
-    if(parameters.check_changed()) {
-      frameWhenParameterChanged = getFrameInfo();
-    }
-    execute(CameraInfo::Top);
-    execute(CameraInfo::Bottom);
-  }
-
 private:
-  void execute(const CameraInfo::CameraID id);
-  void updateCache();
-  void debug();
-
   class Parameters: public ParameterList
   {
   public:
-    Parameters() : ParameterList("FieldColorClassifier")
+    Parameters(std::string name = "FieldColorClassifier") : ParameterList(name)
     {
       PARAMETER_REGISTER(green.brightnesConeOffset) = 30;
       PARAMETER_REGISTER(green.brightnesConeRadiusBlack) = 2;
@@ -109,13 +92,46 @@ private:
       syncWithConfig();
     }
 
-    ~Parameters() {}
+    virtual ~Parameters() {}
 
     FieldColorPercept::HSISeparatorOptimized::Parameter green;
     FieldColorPercept::HSISeparatorOptimized::Parameter red;
 
     bool provide_colortable;
-  } parameters;
+  };
+public:
+  FieldColorClassifier();
+  virtual ~FieldColorClassifier();
+
+  void execute()
+  {
+    if(parametersBottom.check_changed() || parametersTop.check_changed()) {
+      frameWhenParameterChanged = getFrameInfo();
+    }
+    execute(CameraInfo::Top, parametersTop);
+    execute(CameraInfo::Bottom, parametersBottom);
+  }
+
+private:
+  void execute(const CameraInfo::CameraID id, Parameters& parameters);
+  void updateCache();
+  void debug(Parameters& parameters);
+
+  
+
+  class ParametersBottom: public Parameters
+  {
+  public:
+    ParametersBottom() : Parameters("FieldColorClassifier") {}
+    virtual ~ParametersBottom() {}
+  } parametersBottom;
+
+  class ParametersTop: public Parameters
+  {
+  public:
+    ParametersTop() :  Parameters("FieldColorClassifierTop") {}
+    virtual ~ParametersTop() {}
+  } parametersTop;
   
   naoth::FrameInfo frameWhenParameterChanged;
 
