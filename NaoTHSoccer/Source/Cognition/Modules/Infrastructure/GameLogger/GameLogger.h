@@ -79,12 +79,14 @@ private:
       PARAMETER_REGISTER(logBallCandidates) = false;
       PARAMETER_REGISTER(logBodyStatus) = false;
       PARAMETER_REGISTER(logPlainImages) = false;
+      PARAMETER_REGISTER(logPlainImagesDelay) = 2000;
       syncWithConfig();
     }
 
     bool logBallCandidates;
     bool logBodyStatus;
     bool logPlainImages;
+    int logPlainImagesDelay;
   } params;
 
 private:
@@ -100,6 +102,8 @@ private:
   PlayerInfo::RobotState oldState;
   bool firstRecording;
   int lastWhistleCounter;
+
+  CameraInfo::CameraID lastRecordedPlainImageID;
 };
 
 #endif // GAMELOGGER_H

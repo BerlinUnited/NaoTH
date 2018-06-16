@@ -31,7 +31,7 @@ void TeamCommSender::execute()
     fillMessageBeforeSending();
 
     // only send data in intervals of 500ms
-    if((unsigned int)getFrameInfo().getTimeSince(lastSentTimestamp) > send_interval)
+    if(getWifiMode().wifiEnabled && (unsigned int)getFrameInfo().getTimeSince(lastSentTimestamp) > send_interval)
     {
         // create the message string of the known data
         getTeamMessageDataOut().data = getTeamMessageData().createSplMessageString();

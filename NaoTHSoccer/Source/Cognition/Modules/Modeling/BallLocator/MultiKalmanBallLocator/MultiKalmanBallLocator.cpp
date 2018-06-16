@@ -83,7 +83,7 @@ void MultiKalmanBallLocator::execute()
     // prediction
     double dt = getFrameInfo().getTimeInSeconds() - lastFrameInfo.getTimeInSeconds();
     ASSERT(dt > 0);
-    for(Filters::iterator iter = filter.begin(); iter != filter.end(); iter++){
+    for(Filters::iterator iter = filter.begin(); iter != filter.end(); ++iter) {
       predict(*iter, dt);
     }
 
@@ -101,7 +101,7 @@ void MultiKalmanBallLocator::execute()
     }
 
     // Heinrich: update the "ball seen" values
-    for(Filters::iterator iter = filter.begin(); iter != filter.end(); ++iter){
+    for(Filters::iterator iter = filter.begin(); iter != filter.end(); ++iter) {
       bool updated = iter->getLastUpdateFrame().getFrameNumber() == getFrameInfo().getFrameNumber();
       (*iter).ballSeenFilter.setParameter(kfParameters.g0, kfParameters.g1);
       (*iter).ballSeenFilter.update(updated, 0.3, 0.7);
@@ -536,15 +536,16 @@ MultiKalmanBallLocator::Filters::const_iterator MultiKalmanBallLocator::selectBe
 
   // find the best model for the ball: closest hypothesis that is "known"
   Filters::const_iterator bestModel = filter.end();
-  double value = 0;
+  double minDistance = 0;
 
   for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); ++iter) {
-    if(iter->ballSeenFilter.value()) {
-      double temp = Vector2d(iter->getState()(0), iter->getState()(2)).abs();
-      if(bestModel == filter.end() || temp < value){
-          bestModel = iter;
-          value = temp;
-      }
+    double distance = Vector2d(iter->getState()(0), iter->getState()(2)).abs();
+    if( bestModel == filter.end() || 
+       (iter->ballSeenFilter.value() && !bestModel->ballSeenFilter.value()) ||
+       (iter->ballSeenFilter.value() == bestModel->ballSeenFilter.value() && distance < minDistance)) 
+    {
+      bestModel = iter;
+      minDistance = distance;
     }
   }
 
@@ -667,7 +668,8 @@ void MultiKalmanBallLocator::doDebugRequest()
       );
 }
 
-void MultiKalmanBallLocator::drawFiltersOnField() const {
+void MultiKalmanBallLocator::drawFiltersOnField() const 
+{
     FIELD_DRAWING_CONTEXT;
 
     for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); iter++)

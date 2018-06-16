@@ -6,8 +6,7 @@
 GameController::GameController()
   : 
   lastWhistleCount(0),
-  lastGameState(GameData::GameState::unknown_game_state),
-  returnMessage(GameReturnData::alive)
+  lastGameState(GameData::GameState::unknown_game_state)
 {
   DEBUG_REQUEST_REGISTER("gamecontroller:play", "force the play state", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:penalized", "force the penalized state", false);
@@ -79,8 +78,8 @@ void GameController::execute()
   PlayerInfo::RobotState oldRobotState = getPlayerInfo().robotState;
   GameData::TeamColor oldTeamColor = getPlayerInfo().teamColor;
 
-  // try update from the game controller message
-  if ( getGameData().valid ) 
+  // try update from the game controller message if not manually overwritten
+  if ( getGameData().valid && getWifiMode().wifiEnabled ) 
   {
     // HACK: needed by SimSpark - overide the player number
     if(getGameData().newPlayerNumber > 0) {
@@ -88,23 +87,6 @@ void GameController::execute()
     }
 
     getPlayerInfo().update(getGameData());
-
-    // reset return message if old message was accepted
-    if( returnMessage == GameReturnData::manual_penalise
-        && getGameData().getOwnRobotInfo(getPlayerInfo().playerNumber).penalty != GameData::penalty_none)
-    {
-      returnMessage = GameReturnData::alive;
-    }
-    else if(returnMessage == GameReturnData::manual_unpenalise
-            && getGameData().getOwnRobotInfo(getPlayerInfo().playerNumber).penalty == GameData::penalty_none)
-    {
-      returnMessage = GameReturnData::alive;
-    }
-  }
-  
-  // keep the manual penalized state
-  if(returnMessage == GameReturnData::manual_penalise) {
-    getPlayerInfo().robotState = PlayerInfo::penalized;
   }
 
   handleButtons();
@@ -142,7 +124,7 @@ void GameController::execute()
   // provide the return message
   getGameReturnData().team = getPlayerInfo().teamNumber;
   getGameReturnData().player = getPlayerInfo().playerNumber;
-  getGameReturnData().message = returnMessage;
+  getGameReturnData().message = getWifiMode().wifiEnabled ? GameReturnData::alive : GameReturnData::dead;
 } // end execute
 
 
@@ -177,27 +159,6 @@ void GameController::handleDebugRequest()
   // NOTE: same behavior as the button interface
   if(debugState != getPlayerInfo().robotState) {
     getPlayerInfo().robotState = debugState;
-
-    // NOTE: logic is reverted in relation to button interface
-    switch (getPlayerInfo().robotState)
-    {
-    case PlayerInfo::initial:
-    case PlayerInfo::ready:
-    case PlayerInfo::set:
-    case PlayerInfo::playing:
-    case PlayerInfo::finished: 
-    {
-      returnMessage = GameReturnData::manual_unpenalise;
-      break;
-    }
-    case PlayerInfo::penalized:
-    {
-      returnMessage = GameReturnData::manual_penalise;
-      break;
-    }
-    default:
-      ASSERT(false);
-    }
   }
 
 } // end handleDebugRequest
@@ -205,7 +166,8 @@ void GameController::handleDebugRequest()
 
 void GameController::handleButtons()
 {
-  if (getButtonState()[ButtonState::Chest] == ButtonEvent::CLICKED)
+
+  if (getButtonState()[ButtonState::Chest].isSingleClick())
   {
     switch (getPlayerInfo().robotState)
     {
@@ -216,13 +178,11 @@ void GameController::handleButtons()
     case PlayerInfo::finished:
     {
       getPlayerInfo().robotState = PlayerInfo::penalized;
-      returnMessage = GameReturnData::manual_penalise;
       break;
     }
     case PlayerInfo::penalized:
     {
       getPlayerInfo().robotState = PlayerInfo::playing;
-      returnMessage = GameReturnData::manual_unpenalise;
       break;
     }
     default:
@@ -267,7 +227,6 @@ void GameController::handleButtons()
     )
   {
     getPlayerInfo().robotState = PlayerInfo::initial;
-    returnMessage = GameReturnData::manual_unpenalise;
   }
 
 } // end handleButtons
@@ -275,11 +234,7 @@ void GameController::handleButtons()
 
 void GameController::handleHeadButtons()
 {
-  getSoundPlayData().mute = true;
-  getSoundPlayData().soundFile = "";
-
-
-  if(   getButtonState().buttons[ButtonState::HeadMiddle] == ButtonEvent::CLICKED
+  if(getButtonState().buttons[ButtonState::HeadMiddle] == ButtonEvent::CLICKED
      && getPlayerInfo().robotState == PlayerInfo::initial)
   {
     int playerNumber = getPlayerInfo().playerNumber;

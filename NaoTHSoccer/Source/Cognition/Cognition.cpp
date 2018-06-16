@@ -20,6 +20,7 @@
 #include "Modules/Infrastructure/IO/Sensor.h"
 #include "Modules/Infrastructure/IO/Actuator.h"
 #include "Modules/Infrastructure/ButtonEventMonitor/ButtonEventMonitor.h"
+#include "Cognition/Modules/Infrastructure/WifiModeSetter/WifiModeSetter.h"
 #include "Modules/Infrastructure/BatteryAlert/BatteryAlert.h"
 #include "Modules/Infrastructure/GameController/GameController.h"
 #include "Modules/Infrastructure/Debug/FrameRateCheck.h"
@@ -34,6 +35,7 @@
 
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
 #include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
+#include "Modules/Infrastructure/Camera/AdaptiveAutoExposure.h"
 #include "Modules/Infrastructure/WhistleDetector/WhistleDetectorConfigSetter.h"
 #include "Modules/Infrastructure/GameLogger/GameLogger.h"
 
@@ -140,16 +142,18 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   // -- BEGIN REGISTER MODULES --
 
   // infrastructure
+  REGISTER_MODULE(ButtonEventMonitor);
+  REGISTER_MODULE(WifiModeSetter);
   REGISTER_MODULE(TeamCommReceiver);
   REGISTER_MODULE(SimpleNetworkTimeProtocol);
   REGISTER_MODULE(GameController);
   REGISTER_MODULE(BatteryAlert);
-  REGISTER_MODULE(ButtonEventMonitor);
   REGISTER_MODULE(LEDSetter);
   REGISTER_MODULE(UltraSoundControl);
 
   REGISTER_MODULE(CameraDebug);
   REGISTER_MODULE(CameraInfoSetter);
+  REGISTER_MODULE(AdaptiveAutoExposure);
   REGISTER_MODULE(WhistleDetectorConfigSetter);
 
   // perception

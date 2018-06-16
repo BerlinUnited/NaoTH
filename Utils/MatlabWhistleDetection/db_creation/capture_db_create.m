@@ -1,14 +1,14 @@
 clear variables
 clc
 
-database = 'capture_database.mat';
-databasePath = 'D:\Downloads\WhistleData_mat';
-capture_path = 'D:\Downloads\WhistleData_mat\capture_recordings';
+%% init defaults
+addpath('../common')
+secret()
 
 % adds a raw file to the whistle capture database
 try
-    load([databasePath '/' database])
-     disp('INFO: using a previously created database')
+    load(capture_database_path)
+    disp('INFO: using a previously created database')
 catch
     disp('INFO: no previous mat file was found')
     capture_database = struct;
@@ -16,17 +16,17 @@ end
 
 
 % get information about the location of each raw file inside gamelog_path
-folderContents = dir(strcat(capture_path, '/**/*.raw'));
+folderContents = dir(strcat(capture_import_path, '/**/*.raw'));
 %% Extract the necessary infos from filepath
-% The following folder structure under capture_path is expected:
-% capture_path
+% The following folder structure under capture_import_path is expected:
+% capture_import_path
 % |-> event_name
 %   |-> game_name
 %       |-> half
 %           |-> robot_name
 %               |-> raw files
 
-eventFolder = split(capture_path, ["/","\"]);
+eventFolder = split(capture_import_path, ["/","\"]);
 eventFolder = eventFolder{end}; % get last folder of gamelog_path
 
 %%
@@ -68,10 +68,10 @@ for i=1:length(folderContents)
     
     extractedPath_split = split(extractedPath, ["/","\"]);
 
-    event_name = string(extractedPath_split(1));
-    game_name = string(extractedPath_split(2));
-    half = string(extractedPath_split(3));
-    robot_name = string(extractedPath_split(4));
+    event_name = string(extractedPath_split(end - 3));
+    game_name = string(extractedPath_split(end - 2));
+    half = string(extractedPath_split(end - 1));
+    robot_name = string(extractedPath_split(end));
     filename = folderContents(i).name;
     
     % get raw file
@@ -89,29 +89,37 @@ for i=1:length(folderContents)
     capture.rawData = raw_samples;
     capture.filename = filename;
     capture.samplerate = 8000;
-    
-    if ~isfield(capture, 'annotations')
-        capture.annotations = [];
-    end
-    showFigs = false;
-    if ~isempty(capture.annotations)
-        showFigs = true;
-    end
-    [rate, annot] = readAudacityProjectFile(filepath, capture.rawData, showFigs);
+    capture.annotations = [];
+    [rate, annot] = readAudacityProjectFile(filepath, capture.rawData, false);
     if rate ~= 0 && ~isempty(annot)
         capture.samplerate = rate;
         capture.annotations = annot;
     end
     clear rate annot
-        
+    
+    % checks if an event struct exists in the database
     if isfield(capture_database, char(event_name))
+        % check if entry is already there via rawData comparision
+        % -> disabled because it takes too long
+%         event_struct = capture_database.(char(event_name));
+%         for j=1:length(event_struct)
+%             test_raw_data = event_struct(j).rawData;
+%             if(isequal(test_raw_data, capture.rawData))
+%                 break
+%             else
+%                 % append capture to event struct
+%                 capture_database.(char(event_name)) = [capture_database.(char(event_name)) capture];
+%             end
+%         end
+        % append capture to event struct
         capture_database.(char(event_name)) = [capture_database.(char(event_name)) capture];
     else
+        % create new event struct
         capture_database.(char(event_name)) = capture;
     end
-%     clear capture
+
 end
 
 %% Save capture database
 disp('Saving Capture database');
-save([databasePath '/' database],'capture_database')
+save(capture_database_path, 'capture_database','-v7.3')
