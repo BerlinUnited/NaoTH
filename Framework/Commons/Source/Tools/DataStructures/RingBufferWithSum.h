@@ -123,7 +123,7 @@ template <class C, int n> class RingBufferWithSum
       return numberOfEntries == n;
     }
 
-  private:
+  protected:
     int current;
     int numberOfEntries;
     C buffer[n];
