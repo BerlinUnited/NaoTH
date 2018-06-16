@@ -31,8 +31,9 @@ fftw('planner','estimate');
 
 database = capture_database;
 
-create_detection_plots = true;
+create_detection_plots = false;
 create_non_detection_plots = false;
+create_comparison_plots = true;
 
 %% set references whistle set to use
 % ref_set_name = 'bhuman';
@@ -140,7 +141,7 @@ for t = 1:length(recordings_names)
             clear means results
         end %if ~isempty(recording(c).annotations)
     end %c = 1:length(recording)
-    if has_any_annotation
+    if create_comparison_plots && has_any_annotation
         %%
         % Generate the TP/FP plots
         tps = [];
