@@ -1,5 +1,5 @@
-#ifndef TEAMMESSAGETIMESTATISTICS_H
-#define TEAMMESSAGETIMESTATISTICS_H
+#ifndef TEAMMESSAGENTP_H
+#define TEAMMESSAGENTP_H
 
 #include <map>
 
@@ -10,25 +10,53 @@
 
 using namespace naoth;
 
-class TeamMessageTimeStatistics : public naoth::Printable
+class TeamMessageNTP : public naoth::Printable
 {
 public:
     /** Stores message time inforamtions. */
     struct Player
     {
-        Player(unsigned int n = 0) : number(n) {}
-
         /** the playernumber */
         unsigned int number;
-        /** last update of this player */
-        FrameInfo lastUpdate;
-        /** the fastest round trip time / latency and the resulting time offset (difference) */
-        long long rtt = 0;
-        long long latency = 0;
-        long long offset = 0;
-        /** Returns the (estimated) timestamp of the player */
+        /** last ntp update of this player */
+        FrameInfo lastNtpUpdate;
+        /** the fastegetTimeInMilliSecondsst round trip time / latency and the resulting time offset (difference) */
+        long long rtt = 0.0;
+        long long latency = 0.0;
+        long long offset = 0.0;
+
+        Player(unsigned int n = 0) : number(n) {}
+
+        /**
+         * @brief Returns the (estimated) timestamp of the player
+         * @return timestamp of the player
+         */
         long long getTimeInMilliSeconds() const {
             return naoth::NaoTime::getSystemTimeInMilliSeconds() - offset;
+        }
+
+        /**
+         * @brief Determines, whether or not a ntp module is enabled and this player was updated.
+         * @return true, if the player has valid ntp infos, false otherwise
+         */
+        bool isNtpActive() const { return lastNtpUpdate.getFrameNumber() > 0; }
+
+        /**
+         * @brief Prints some information to the stream
+         * @param stream where the infos are printed to
+         */
+        void print(std::ostream &stream) const
+        {
+            stream << "player: " << number << ",\n";
+
+            if(lastNtpUpdate.getFrameNumber() > 0) {
+                stream << "  - rtt: "       << rtt << "ms,\n"
+                       << "  - latency: "   << latency << "ms,\n"
+                       << "  - offset: "    << offset << "ms,\n"
+                       << "  - timestamp: " << getTimeInMilliSeconds() << "ms\n";
+            } else {
+                stream << "  - [[ no ntp data ]]\n";
+            }
         }
     };
 
@@ -41,18 +69,13 @@ public:
      */
     virtual void print(std::ostream& stream) const
     {
-        stream << "TimeSyncPlayers ("<<data.size()<<"):\n";
+        stream << "TeamMessageNTP ("<<data.size()<<"):\n";
         if(data.empty()) {
             stream << "\t[NONE]\n";
         } else {
-            for (auto it = data.cbegin(); it != data.cend(); ++it) {
-                Player player = it->second;
-                stream << "player: " << player.number << ",\n"
-                       << "  - rtt: "     << player.rtt << "ms,\n"
-                       << "  - latency: " << player.latency << "ms,\n"
-                       << "  - offset: "  << player.offset << "ms,\n"
-                       << "  - timestamp: " << player.getTimeInMilliSeconds() << "ms"
-                       << "\n";
+            // iterate through players and print data
+            for (const auto& it : data) {
+                it.second.print(stream);
             }
         }
     }
@@ -63,7 +86,7 @@ public:
      * @param number the player number
      * @return Player reference to the players time measure info
      */
-    Player& getPlayer(const unsigned int& number) {
+    Player& getPlayer(unsigned int number) {
         Player& ply = data[number];
         // new player struct
         if(ply.number == 0) {
@@ -73,19 +96,26 @@ public:
     }
 
     /**
-     * @brief Returns the (estimated) timestamp of the player with the given number.
-     *        If no information for the number is available, zero is returned.
-     * @param number
-     * @return timestamp of the player
+     * @brief Determines, whether or not a ntp module is enabled and this player was updated.
+     *        This is a convenience method.
+     * @param player_number the player number to check
+     * @return true|false
      */
-    long long getPlayersTimeInMilliSeconds(const unsigned int& number) const {
-        const auto& it = data.find(number);
-        if(it != data.cend()) {
-            return it->second.getTimeInMilliSeconds();
-        }
-        return 0L;
+    bool isNtpActive(unsigned int player_number) const {
+        const auto& player = data.find(player_number);
+        return player != data.cend() && player->second.isNtpActive();
+    }
+
+    /**
+     * @brief Returns the (estimated) timestamp of the player
+     *        This is a convenience method.
+     * @param player_number the player number to check
+     * @return true|false
+     */
+    long long getTimeInMilliSeconds(unsigned int player_number) const {
+        const auto& player = data.find(player_number);
+        return player != data.cend() ? player->second.getTimeInMilliSeconds() : 0;
     }
 };
 
-
-#endif // TEAMMESSAGETIMESTATISTICS_H
+#endif // TEAMMESSAGENTP_H
