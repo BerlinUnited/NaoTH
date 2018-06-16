@@ -201,6 +201,8 @@ include "Options/Test/agent/change_state_input_test_agent.xabsl";
 // Test options Headcontrol
 include "Options/Test/agent/head_test_agent.xabsl";
 include "Options/Test/head/head_control_test.xabsl";
+include "Options/Test/agent/cammatrix_test_agent.xabsl";
+include "Options/Test/head/cammatrix_test.xabsl";
 include "Options/Test/head/search_ball_test.xabsl";
 include "Options/Test/head/search_ball_back_rot_test.xabsl";
 include "Options/Test/head/simple_search_ball_test.xabsl";
@@ -311,3 +313,4 @@ agent search_simple_search_ball_test ("simple_search_ball_test_agent",simple_sea
 agent change_state_input_test_agent ("change_state_input_test_agent",change_state_input_test_agent);
 
 agent head_test_agent("head_test_agent", head_test_agent);
+agent cammatrix_test_agent("cammatrix_test_agent", cammatrix_test_agent);
