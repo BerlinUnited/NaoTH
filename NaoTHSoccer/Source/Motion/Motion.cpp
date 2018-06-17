@@ -131,13 +131,17 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerInputChanel(getBodyState());
 
   std::cout << "[Motion] register end" << std::endl;
+
+  cycleStopwatch.start();
 }//end init
 
 
 
 void Motion::call()
 {
-
+  cycleStopwatch.stop();
+  cycleStopwatch.start();
+  PLOT("Motion.Cycle", cycleStopwatch.lastValue);
   STOPWATCH_START("MotionExecute");
 
   // run the theLogProvider if avalieble
