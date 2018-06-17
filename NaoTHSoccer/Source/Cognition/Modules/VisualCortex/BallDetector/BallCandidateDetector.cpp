@@ -28,6 +28,8 @@ BallCandidateDetector::BallCandidateDetector()
 
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:keyPointsBlack", "draw black key points extracted from integral image", false);
 
+  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawPatchInImage", "draw the gray-scale patch like it is passed to the CNN in the image", false);
+
   theBallKeyPointExtractor = registerModule<BallKeyPointExtractor>("BallKeyPointExtractor", true);
   getDebugParameterList().add(&params);
 
@@ -288,6 +290,27 @@ void BallCandidateDetector::calculateCandidates()
 
         PatchWork::subsampling(getImage(), patchedBorder.data, patchedBorder.min.x, patchedBorder.min.y, patchedBorder.max.x, patchedBorder.max.y, patch_size);
 
+        PatchWork::multiplyBrightness((cameraID == CameraInfo::Top) ? 
+            params.brightnessMultiplierTop : params.brightnessMultiplierBottom, patchedBorder.data);
+
+        DEBUG_REQUEST("Vision:BallCandidateDetector:drawPatchInImage",
+          unsigned int offsetX = patchedBorder.min.x;
+          unsigned int offsetY = patchedBorder.min.y;
+          unsigned int pixelWidth = (unsigned int) ((double) (patchedBorder.max.x - patchedBorder.min.x) / (double) patchedBorder.SIZE);
+          for(unsigned int x = 0; x < patchedBorder.SIZE; x++) {
+            for(unsigned int y = 0; y < patchedBorder.SIZE; y++) {
+              unsigned char pixelY = patchedBorder.data[(x*patch_size)+y];
+              // draw each image pixel this patch pixel occupies
+              for(unsigned int px=0; px < pixelWidth; px++) {
+                for(unsigned int py=0; py < pixelWidth; py++) {
+                  getDebugImageDrawings().drawPointToImage(pixelY, 128, 128, 
+                    static_cast<int>(offsetX + (x*pixelWidth) + px), offsetY + (y*pixelWidth) + py);
+                }
+              }
+            }
+          }
+        );
+
 
         stopwatch.start();
         
@@ -308,6 +331,27 @@ void BallCandidateDetector::calculateCandidates()
           p.max = max;//(*i).max;
 
           PatchWork::subsampling(getImage(), p.data, min.x, min.y, max.x, max.y, patch_size);
+
+          PatchWork::multiplyBrightness((cameraID == CameraInfo::Top) ? 
+            params.brightnessMultiplierTop : params.brightnessMultiplierBottom, p.data);
+
+          DEBUG_REQUEST("Vision:BallCandidateDetector:drawPatchInImage",
+            unsigned int offsetX = p.min.x;
+            unsigned int offsetY = p.min.y;
+            unsigned int pixelWidth = (unsigned int) ((double) (p.max.x - p.min.x) / (double) p.SIZE);
+            for(unsigned int x = 0; x < p.SIZE; x++) {
+              for(unsigned int y = 0; y < p.SIZE; y++) {
+                unsigned char pixelY = p.data[(x*patch_size)+y];
+                // draw each image pixel this patch pixel occupies
+                for(unsigned int px=0; px < pixelWidth; px++) {
+                  for(unsigned int py=0; py < pixelWidth; py++) {
+                    getDebugImageDrawings().drawPointToImage(pixelY, 128, 128, 
+                      static_cast<int>(offsetX + (x*pixelWidth) + px), offsetY + (y*pixelWidth) + py);
+                  }
+                }
+              }
+            }
+          );
 
           stopwatch.start();
 
