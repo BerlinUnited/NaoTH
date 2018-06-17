@@ -49,6 +49,7 @@ NaoController::NaoController()
   gethostname(hostname, 127);
   theRobotName = string(hostname);
   cout << "[NaoController] " << "RobotName: " << theRobotName << endl;
+  //theWhistleDetector.setRobotName(theRobotName);
 
   // read the theBodyID and the theBodyNickName from file "nao.info"
   const std::string naoInfoPath = Platform::getInstance().theConfigDirectory + "nao.info";

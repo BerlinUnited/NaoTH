@@ -106,6 +106,7 @@ public:
   void get(BatteryData& data) { naoSensorData.get(data); }
   void get(UltraSoundReceiveData& data) { naoSensorData.get(data); }
   void get(WhistlePercept& data) {data.counter = whistleSensorData.data(); }
+  //void get(WhistlePercept& data) { theWhistleDetector.get(data); }
   void get(CpuData& data) { theCPUTemperatureReader.get(data); }
 
   // write directly to the shared memory
@@ -115,6 +116,7 @@ public:
   void set(const IRSendData& data) { naoCommandIRSendData.set(data); }
   void set(const UltraSoundSendData& data) { naoCommandUltraSoundSendData.set(data); }
   void set(const WhistleControl& data) { whistleControlData.set(data.onOffSwitch); }
+  //void set(const WhistleControl& data) { theWhistleDetector.set(data); }
 
 
   virtual void getMotionInput()
@@ -191,6 +193,7 @@ protected:
   SPLGameController* theGameController;
   DebugServer* theDebugServer;
   CPUTemperatureReader theCPUTemperatureReader;
+  //WhistleDetector theWhistleDetector;
 };
 
 } // end namespace naoth
