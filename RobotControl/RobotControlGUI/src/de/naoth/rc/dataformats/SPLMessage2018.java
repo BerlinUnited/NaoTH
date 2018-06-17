@@ -40,5 +40,12 @@ public class SPLMessage2018 extends SPLMessage
                 this.extractCustomData(BU_CUSTOM_DATA_OFFSET_X64);
             }
         }
+        
+        if(this.user != null) {
+            // since it is not contained in the std. message any more, we need to get it from the custom part
+            this.intention = (byte) (this.user.getWasStriker() ? 3 : 0);
+            this.ballVel_x = (float) this.user.getBallVelocity().getX();
+            this.ballVel_y = (float) this.user.getBallVelocity().getY();
+        }
     }
 }
