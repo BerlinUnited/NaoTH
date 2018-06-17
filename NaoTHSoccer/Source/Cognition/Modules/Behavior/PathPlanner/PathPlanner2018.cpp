@@ -64,7 +64,7 @@ void PathPlanner2018::execute()
     moveAroundBall(getPathModel().direction, getPathModel().radius);
     break;
   case PathModel::PathPlanner2018Routine::FORWARDKICK_LEFT:
-    if (farApproach())
+    //if (farApproach())
     {
       if (nearApproach_forwardKick(Foot::LEFT, 0.0, 0.0))
       {
@@ -73,7 +73,7 @@ void PathPlanner2018::execute()
     }
     break;
   case PathModel::PathPlanner2018Routine::FORWARDKICK_RIGHT:
-    if (farApproach())
+    //if (farApproach())
     {
       if (nearApproach_forwardKick(Foot::RIGHT, 0.0, 0.0))
       {
@@ -229,7 +229,7 @@ bool PathPlanner2018::nearApproach_forwardKick(const Foot& foot, const double of
       StepBufferElement new_step;
       new_step.setPose({ 0.0, translation_x, translation_y });
       new_step.setStepType(StepType::WALKSTEP);
-      new_step.setCharacter(0.7);
+      new_step.setCharacter(0.3);
       new_step.setScale(1.0);
       new_step.setCoordinate(coordinate);
       new_step.setFoot(Foot::NONE);
@@ -249,7 +249,7 @@ bool PathPlanner2018::nearApproach_forwardKick(const Foot& foot, const double of
         StepBufferElement correction_step;
         correction_step.setPose({ 0.0, ballPos.x, std::min(translation_xy, ballPos.y) });
         correction_step.setStepType(StepType::WALKSTEP);
-        correction_step.setCharacter(0.7);
+        correction_step.setCharacter(0.3);
         correction_step.setScale(1.0);
         correction_step.setCoordinate(coordinate);
         correction_step.setFoot(Foot::NONE);
