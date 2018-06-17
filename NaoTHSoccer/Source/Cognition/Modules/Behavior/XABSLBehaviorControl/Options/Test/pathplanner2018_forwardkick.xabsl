@@ -55,6 +55,7 @@ option pathplanner2018_forwardkick
     action 
     {
       head.control_mode = look_at_ball_percept;
+      //head.control_mode = search_for_ball;
 
       path2018.routine = path2018.routine.forwardkick_left;
     }
@@ -72,6 +73,7 @@ option pathplanner2018_forwardkick
     action 
     {
       path2018.routine = path2018.routine.none;
+      head.control_mode = look_at_ball_percept;
     }
   }
 }

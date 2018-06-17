@@ -11,7 +11,7 @@ option path_striker2018
     else if(situation_abortable && !ball.know_where_itis)//ball.time_since_last_seen > 1500)
       goto search;
     else if(situation_abortable && vector.abs(x=ball.preview.x, y=ball.preview.y) > 300)
-      goto decide;
+      goto goto_ball;
   }
 
   state wait_for_ball_free {
@@ -46,7 +46,7 @@ option path_striker2018
     decision 
     {
       else if(action_done)
-        goto decide;
+        goto goto_ball;
       else
         stay;
     }
@@ -57,7 +57,40 @@ option path_striker2018
     }
   }
 
-  state decide
+  state goto_ball {
+    decision{
+
+      else if(ball.preview.x < 300 && abs(value = ball.preview.y) < 50)
+      {
+        if(attack.best_action == kick_short) {
+          if (ball.preview.y > 0)
+            goto forwardkick_left;
+          else
+            goto forwardkick_right;
+        }
+        else if(attack.best_action == sidekick_left)
+          goto sidekick_left;
+        else if(attack.best_action == sidekick_right)
+          goto sidekick_right;
+        else
+          goto turn;
+      }
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      /* this distance is smaller than the condition for ball.preview.x above
+         possible unwanted behavior: the ball is closer than 250 but ball.preview.y is
+         bigger than 50. The robot won't rotate in go_to_ball_with_USOA and will continue
+         to walk to the position of the ball. Two possible outcomes:
+         1. the robot runs into the ball (if ball distance is not considered)
+         2. the robot will walk backwards in the successive approaching because it was too close*/
+      go_to_ball_with_USOA(distance = 190); 
+    }
+  }
+
+  state turn
   {
     decision
     {
@@ -105,6 +138,7 @@ option path_striker2018
     action
     {
       path2018.routine = forwardkick_right;
+      head.control_mode = search_for_ball;
     }
   }
   
@@ -120,6 +154,7 @@ option path_striker2018
     action
     {
       path2018.routine = forwardkick_left;
+      head.control_mode = search_for_ball;
     }
   }
 
@@ -135,6 +170,7 @@ option path_striker2018
     action
     {
       path2018.routine = sidekick_right;
+      head.control_mode = search_for_ball;
     }
   }
   
@@ -150,6 +186,7 @@ option path_striker2018
     action
     {
       path2018.routine = sidekick_left;
+      head.control_mode = search_for_ball;
     }
   }
   
@@ -158,14 +195,17 @@ option path_striker2018
     decision
     {
       else if (state_time > 500)
-        goto decide;
+        goto goto_ball;
       else
         stay;
     }
     action
     {
       path2018.routine = none;
+      situation_abortable = false;
       
+      //loook at percept
+      head.control_mode = look_at_ball_percept;
     }
   }
 
@@ -174,7 +214,7 @@ option path_striker2018
     decision
     {
       else if(action_done)
-        goto decide;
+        goto goto_ball;
       else
         stay;
     }
