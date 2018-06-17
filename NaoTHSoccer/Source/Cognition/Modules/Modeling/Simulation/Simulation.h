@@ -108,6 +108,7 @@ public:
     ActionSimulator::ActionParams sidekick_right;
     ActionSimulator::ActionParams sidekick_left;
     ActionSimulator::ActionParams kick_short;
+    // currently not used
     ActionSimulator::ActionParams kick_long;
     double friction;
     double good_threshold_percentage;

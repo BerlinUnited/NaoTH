@@ -104,6 +104,41 @@ public class CheckboxTree extends JTree
     return current;
   }//end insertPath
   
+  public void cleanTree()
+  {
+      cleanTree(rootNode);
+  }
+  
+  /**
+   * Remove all intermediate nodes which contain only one child with the same name.
+   * @param current
+   * @return 
+   */
+  private SelectableTreeNode cleanTree(SelectableTreeNode current)
+  {
+    if (current.getChildCount() == 0) {
+        return current;
+    }
+    
+    // only one leaf-child with the same name
+    if(current.getChildCount() == 1 &&
+       //current.getChildAt(0).isLeaf() && 
+       current.getText().toLowerCase().equals(current.getChildAt(0).getText().toLowerCase())) {
+        return current.getChildAt(0);
+    }
+    
+    // clean recursive
+    for(int i = 0; i < current.getChildCount(); ++i) {
+        SelectableTreeNode node = cleanTree(current.getChildAt(i));
+        if(node != current.getChildAt(i)) {
+            current.insert(node, i);
+            current.remove(i+1);
+        }
+    }
+
+    return current;
+  }//end cleanTree
+  
   public void expandPath(String path, char seperator)
   {
     SelectableTreeNode node = getNode(path,seperator);
@@ -182,7 +217,10 @@ public class CheckboxTree extends JTree
   
   public void selectNode(String path, char seperator)
   {
-    super.setSelectionPath(new TreePath(getNodeTreePath(path, seperator).toArray()));
+    List<SelectableTreeNode> nodepath = getNodeTreePath(path, seperator);
+    if(nodepath != null) {
+        super.setSelectionPath(new TreePath(nodepath.toArray()));
+    }
   }
 
   public void clear()

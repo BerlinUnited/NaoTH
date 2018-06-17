@@ -83,7 +83,7 @@ private:
     Filters::const_iterator bestModel;
 
     const double epsilon; // 10e-6
-    double area95Threshold;
+    //double area95Threshold;
 
     //double ballMass;
     double c_RR;
@@ -92,12 +92,14 @@ private:
     void updateByPerceptsCool();
     
     void updateByPerceptsNormal();
+    void updateByPerceptsNaive(CameraInfo::CameraID camera);
 
     void applyOdometryOnFilterState(ExtendedKalmanFilter4d& filter);
 
     void predict(ExtendedKalmanFilter4d& filter, double dt) const;
 
     Filters::const_iterator selectBestModel() const;
+    Filters::const_iterator selectBestModelBasedOnCovariance() const;
 
     void provideBallModel(const BallHypothesis &model);
 
@@ -130,7 +132,7 @@ private:
 
             //PARAMETER_REGISTER(ballMass) = 0.026;
             PARAMETER_REGISTER(c_RR) = 0.0245;
-            PARAMETER_REGISTER(area95Threshold) = 1000*1000*M_PI;
+            PARAMETER_REGISTER(area95Threshold) = 2*Math::pi*700*700;
 
             //thresholds for association functions
             PARAMETER_REGISTER(euclidThreshold) = Math::fromDegrees(10);
@@ -140,6 +142,15 @@ private:
             //AssymetricalBoolFilte parameters
             PARAMETER_REGISTER(g0) = 0.01;
             PARAMETER_REGISTER(g1) = 0.1;
+
+            PARAMETER_REGISTER(association.use_normal) = false;
+            PARAMETER_REGISTER(association.use_cool)   = false;
+            PARAMETER_REGISTER(association.use_naive)  = true;
+
+            PARAMETER_REGISTER(area95Threshold_radius.factor) = 1;
+            PARAMETER_REGISTER(area95Threshold_radius.offset) = 125;
+
+            PARAMETER_REGISTER(use_covariance_based_selection) = true;
 
             syncWithConfig();
         }
@@ -168,6 +179,20 @@ private:
         double euclidThreshold;
         double mahalanobisThreshold;
         double maximumLikelihoodThreshold;
+
+        struct{
+            bool use_normal;
+            bool use_cool;
+            bool use_naive;
+        } association;
+
+        struct {
+            double factor;
+            double offset;
+        } area95Threshold_radius;
+
+
+        bool use_covariance_based_selection;
     } kfParameters;
 
     Measurement_Function_H h;

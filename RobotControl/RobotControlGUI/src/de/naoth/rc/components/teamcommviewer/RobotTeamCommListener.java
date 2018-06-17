@@ -9,6 +9,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.AsynchronousCloseException;
@@ -40,12 +41,12 @@ public class RobotTeamCommListener implements Runnable {
         private final boolean isOpponent;
 
         public RobotTeamCommListener(boolean isOpponent) {
-            this.readBuffer = ByteBuffer.allocateDirect(SPLMessage.SPL_STANDARD_MESSAGE_SIZE);
+            this.readBuffer = ByteBuffer.allocateDirect(SPLMessage.size());
             this.readBuffer.order(ByteOrder.LITTLE_ENDIAN);
             this.isOpponent = isOpponent;
         }
 
-        boolean isConnected() {
+        public boolean isConnected() {
             return this.channel != null && this.trigger != null;
         }
 
@@ -53,6 +54,7 @@ public class RobotTeamCommListener implements Runnable {
             disconnect();
 
             this.channel = DatagramChannel.open();
+            this.channel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
             this.channel.configureBlocking(true);
             this.channel.bind(new InetSocketAddress(InetAddress.getByName("0.0.0.0"), port));
 
@@ -81,7 +83,7 @@ public class RobotTeamCommListener implements Runnable {
 
                     try {
                         long timestamp = System.currentTimeMillis();
-                        SPLMessage spl_msg = new SPLMessage(this.readBuffer);
+                        SPLMessage spl_msg = SPLMessage.parseFrom(this.readBuffer);
                         TeamCommMessage tc_msg = new TeamCommMessage(timestamp, ((InetSocketAddress) address).getHostString(), spl_msg, this.isOpponent);
 
                         if (address instanceof InetSocketAddress && Plugin.teamcommManager != null) {

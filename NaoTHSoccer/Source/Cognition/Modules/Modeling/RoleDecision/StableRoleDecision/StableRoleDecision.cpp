@@ -60,7 +60,7 @@ void StableRoleDecision::execute()
     }
 
     if (robotNumber == getPlayerInfo().playerNumber && (msg.fallen || msg.custom.isPenalized || 
-      // FIXME: msg.ballAge is set to -1, when the model is not valid anymore. This cancels loose_ball_bonus out.
+      // ball was seen (> -1) and ball isn't too old
       msg.ballAge < 0 || msg.ballAge > parameters.maxBallLostTime + time_bonus)) 
     {
       wantsToBeStriker = false;
@@ -68,7 +68,7 @@ void StableRoleDecision::execute()
 
     if (!msg.fallen
       && !msg.custom.isPenalized
-      && msg.ballAge >= 0 //Ball has been seen
+      && msg.ballAge >= 0 // Ball was seen some time ago ...
       && msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) < parameters.maxBallLostTime + time_bonus) //Ball is fresh
     { 
       if (msg.custom.wantsToBeStriker) { //Decision of the current round

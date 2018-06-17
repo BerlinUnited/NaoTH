@@ -10,9 +10,7 @@
 #ifndef _Matrix3x3_h_
 #define _Matrix3x3_h_
 
-#include <limits>
 #include "Vector3.h"
-#include "Common.h"
 
 /**
  * This class represents a 3x3-matrix 

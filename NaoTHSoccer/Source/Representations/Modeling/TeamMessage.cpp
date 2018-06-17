@@ -1,7 +1,7 @@
 #include "TeamMessage.h"
 
 #include <Tools/DataConversion.h>
-#include <Messages/Representations.pb.h>
+#include <Messages/TeamMessage.pb.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 using namespace naoth;
@@ -9,6 +9,14 @@ using namespace naoth;
 void Serializer<TeamMessage>::serialize(const TeamMessage& r, std::ostream& stream)
 {
   naothmessages::TeamMessage collection;
+
+  // add message drops
+  naothmessages::Drops *d = collection.mutable_messagedrop();
+  d->set_dropnosplmessage(r.dropNoSplMessage);
+  d->set_dropnotourteam(r.dropNotOurTeam);
+  d->set_dropnotparseable(r.dropNotParseable);
+  d->set_dropkeyfail(r.dropKeyFail);
+  d->set_dropmonotonic(r.dropMonotonic);
 
   for(auto const &it : r.data)
   {
@@ -20,7 +28,6 @@ void Serializer<TeamMessage>::serialize(const TeamMessage& r, std::ostream& stre
     DataConversion::toMessage(d.pose, *(msg->mutable_pose()));
     msg->set_ballage((int)d.ballAge);
     DataConversion::toMessage(d.ballPosition, *(msg->mutable_ballposition()));
-    DataConversion::toMessage(d.ballVelocity, *(msg->mutable_ballvelocity()));
     msg->set_fallen(d.fallen);
     msg->mutable_user()->CopyFrom(d.custom.toProto());
     msg->mutable_frameinfo()->set_framenumber(d.frameInfo.getFrameNumber());
@@ -49,6 +56,16 @@ void Serializer<TeamMessage>::deserialize(std::istream& stream, TeamMessage& r)
   google::protobuf::io::IstreamInputStream buf(&stream);
   collection.ParseFromZeroCopyStream(&buf);
 
+  // set message drop stats, if available
+  if(collection.has_messagedrop()) {
+      naothmessages::Drops d = collection.messagedrop();
+      r.dropNoSplMessage = d.has_dropnosplmessage() ? d.dropnosplmessage() : 0;
+      r.dropNotOurTeam   = d.has_dropnotourteam()   ? d.dropnotourteam()   : 0;
+      r.dropNotParseable = d.has_dropnotparseable() ? d.dropnotparseable() : 0;
+      r.dropKeyFail      = d.has_dropkeyfail()      ? d.dropkeyfail()      : 0;
+      r.dropMonotonic    = d.has_dropmonotonic()    ? d.dropmonotonic()    : 0;
+  }
+
   for(int i=0; i < collection.data_size(); i++)
   {
     const naothmessages::TeamMessage::Data& msg = collection.data(i);
@@ -65,7 +82,6 @@ void Serializer<TeamMessage>::deserialize(std::istream& stream, TeamMessage& r)
     DataConversion::fromMessage(msg.pose(), d.pose);
     d.ballAge = msg.ballage();
     DataConversion::fromMessage(msg.ballposition(), d.ballPosition);
-    DataConversion::fromMessage(msg.ballvelocity(), d.ballVelocity);
     d.fallen = msg.fallen();
 
     d.custom.parseFromProto(msg.user());

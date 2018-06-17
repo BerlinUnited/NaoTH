@@ -3,6 +3,7 @@
 
 //#include "MeasurementFunctions.h"
 #include "BallHypothesis.h"
+#include <Tools/Math/Common.h>
 
 struct UpdateAssociationFunction{
     protected:
@@ -58,6 +59,10 @@ struct UpdateAssociationFunction{
         virtual bool inRange() const {
             return score < threshold;
         }
+
+        virtual bool inRange(double score) const {
+            return score < threshold;
+        }
 };
 
 struct EuclideanUAF : UpdateAssociationFunction
@@ -90,7 +95,7 @@ struct LikelihoodUAF : UpdateAssociationFunction
         Eigen::Matrix2d covariance = filter.getStateCovarianceInMeasurementSpace(h);
 
         double exponent = -0.5*(diff.transpose() * covariance.inverse() * diff)(0,0);
-        double factor   = 1/std::sqrt(4*M_PI*M_PI*covariance.determinant());
+        double factor   = 1.0 / (Math::pi2 * std::sqrt(covariance.determinant()));
 
         return factor * std::exp(exponent);
     }
@@ -106,6 +111,10 @@ struct LikelihoodUAF : UpdateAssociationFunction
     }
 
     bool inRange() const {
+        return score > threshold;
+    }
+
+    bool inRange(double score) const {
         return score > threshold;
     }
 };

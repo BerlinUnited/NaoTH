@@ -23,7 +23,8 @@ FieldColorClassifier::FieldColorClassifier()
   DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:histogramUVField", "", false);
   DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:histogramUVBall", "", false);
 
-  getDebugParameterList().add(&parameters);
+  getDebugParameterList().add(&parametersBottom);
+  getDebugParameterList().add(&parametersTop);
 
   for(size_t i = 0; i < CameraInfo::numOfCamera; i++) {
     histogramUVArray[i].setSize(256);
@@ -34,37 +35,33 @@ FieldColorClassifier::FieldColorClassifier()
 
 FieldColorClassifier::~FieldColorClassifier()
 {
-  getDebugParameterList().remove(&parameters);
+  getDebugParameterList().remove(&parametersBottom);
+  getDebugParameterList().remove(&parametersTop);
 }
 
-void FieldColorClassifier::execute(const CameraInfo::CameraID id)
+void FieldColorClassifier::execute(const CameraInfo::CameraID id,  Parameters& parameters)
 {
   // TODO: set this global
   cameraID = id;
 
   // set the percept
-  getFieldColorPercept().greenHSISeparator.set(parameters.green);
-  getFieldColorPercept().redHSISeparator.set(parameters.red);
-
-
-  // update cache if parameter have changed
-  if(
-       cacheParameter.brightnesConeOffset      != parameters.green.brightnesConeOffset 
-    || cacheParameter.brightnesConeRadiusBlack != parameters.green.brightnesConeRadiusBlack
-    || cacheParameter.brightnesConeRadiusWhite != parameters.green.brightnesConeRadiusWhite
-    || cacheParameter.colorAngleCenter         != parameters.green.colorAngleCenter 
-    || cacheParameter.colorAngleWith           != parameters.green.colorAngleWith
-    ) 
+  if(frameWhenParameterChanged.getFrameNumber() == getFrameInfo().getFrameNumber()) 
   {
-    updateCache();
-    cacheParameter = parameters.green;
+    getFieldColorPercept().greenHSISeparator.set(parameters.green);
+    getFieldColorPercept().redHSISeparator.set(parameters.red);
+
+    std::cout << "changed" << std::endl;
+     // update cache if parameter have changed
+    if(parameters.provide_colortable) {
+      updateCache();
+    }
   }
 
-  DEBUG_REQUEST("Vision:FieldColorClassifier:CamBottom", if(cameraID == CameraInfo::Bottom) { debug(); } );
-  DEBUG_REQUEST("Vision:FieldColorClassifier:CamTop", if(cameraID == CameraInfo::Top) { debug(); } );
+  DEBUG_REQUEST("Vision:FieldColorClassifier:CamBottom", if(cameraID == CameraInfo::Bottom) { debug(parametersBottom); } );
+  DEBUG_REQUEST("Vision:FieldColorClassifier:CamTop", if(cameraID == CameraInfo::Top) { debug(parametersTop); } );
 }
 
-void FieldColorClassifier::debug()
+void FieldColorClassifier::debug(Parameters& parameters)
 {
   Histogram2D& histogramUV = histogramUVArray[cameraID];
   Histogram2D& histogramUVBall = histogramUVBallArray[cameraID];

@@ -191,7 +191,7 @@ bool SoccerStrategyProvider::isSomeoneBetweenMeAndPoint(const Vector2d& p) const
     double d = iter->pose.translation.abs();
     if ( d < dist )
     {
-      double ang = Math::normalizeAngle(iter->pose.translation.angle() - dir);
+      double ang = Math::normalize(iter->pose.translation.angle() - dir);
       if (fabs(ang) < Math::pi_2)
       {
         double blockRadius = fabs(d * tan(ang));
@@ -212,7 +212,7 @@ bool SoccerStrategyProvider::isSomeoneBetweenMeAndPoint(const Vector2d& p) const
     double d = iter->pose.translation.abs();
     if (d < dist)
     {
-      double ang = Math::normalizeAngle(iter->pose.translation.angle() - dir);
+      double ang = Math::normalize(iter->pose.translation.angle() - dir);
       if (fabs(ang) < Math::pi_2)
       {
         double blockRadius = fabs(d * tan(ang));
@@ -441,7 +441,7 @@ bool SoccerStrategyProvider::isSomethingBetweenPoints(const Vector2d& p1, Vector
     double d = iter->pose.translation.abs();
     if ( d < dist )
     {
-      double ang = Math::normalizeAngle(iter->pose.translation.angle() - dir);
+      double ang = Math::normalize(iter->pose.translation.angle() - dir);
       if (fabs(ang) < Math::pi_2)
       {
         double blockRadius = fabs(d * tan(ang));
@@ -462,7 +462,7 @@ bool SoccerStrategyProvider::isSomethingBetweenPoints(const Vector2d& p1, Vector
     double d = iter->pose.translation.abs();
     if (d < dist)
     {
-      double ang = Math::normalizeAngle(iter->pose.translation.angle() - dir);
+      double ang = Math::normalize(iter->pose.translation.angle() - dir);
       if (fabs(ang) < Math::pi_2)
       {
         double blockRadius = fabs(d * tan(ang));

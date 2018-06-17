@@ -2,6 +2,11 @@
 
 #include <xmmintrin.h>
 
+// NOTE: VisualStudio 2013 doesn't have alignas
+#ifdef WIN32
+#define alignas(x)
+#endif
+
 CNN_dortmund::CNN_dortmund()
 {
   res[0] = 0;
@@ -24,7 +29,7 @@ bool CNN_dortmund::classify(const BallCandidates::Patch& p) {
 
     cnn(in_step);
 
-//    std::cout << "scores[1]=" << scores[1] << " scores[0]=" << scores[0] << std::endl;
+		//    std::cout << "scores[1]=" << scores[1] << " scores[0]=" << scores[0] << std::endl;
 
     return res[0] > 0;
 
@@ -37,13 +42,13 @@ bool CNN_dortmund::classify(const BallCandidates::Patch& p) {
 }
 
 float CNN_dortmund::getBallConfidence() {
- // we are too confident
+  // we are too confident
   if(std::abs(scores[0] - scores[1]) > 0.2)
   {
     return 1.0f;
   }
   return 0.0f;
-// return (res[0] > 0 && scores[0] >= 0.02) ? 1.0f : 0.0f;
+  // return (res[0] > 0 && scores[0] >= 0.02) ? 1.0f : 0.0f;
 }
 
 float CNN_dortmund::getNoballConfidence(){

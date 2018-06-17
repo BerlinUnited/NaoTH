@@ -94,8 +94,6 @@ private:
       PARAMETER_REGISTER(thresholdGradient) = 7;
       PARAMETER_REGISTER(minGoodPoints) = 3;
 
-      PARAMETER_REGISTER(detectWhiteGoals) = true;
-
       PARAMETER_REGISTER(colorRegionDeviation) = 2;
       PARAMETER_REGISTER(thresholdFeatureSimilarity) = 0.8;
       PARAMETER_REGISTER(maxBarWidthRatio) = 1.5;
@@ -111,8 +109,6 @@ private:
     int thresholdGradient;
     int minGoodPoints;
 
-    bool detectWhiteGoals;
-
     double thresholdFeatureSimilarity;
     double colorRegionDeviation;
     double maxBarWidthRatio;
@@ -127,6 +123,7 @@ private:
   private:
     std::vector<cv::Point2f> points;
     std::vector<GoalBarFeature > features;
+
     double summedWidths;
 
   public:
@@ -180,6 +177,7 @@ private:
   };
 
   std::vector<Cluster> clusters;
+  std::vector<GoalBarFeature> pairs;
   void clusterEdgelFeatures();
   void calcuateGoalPosts();
   Vector2i scanForEndPoint(const Vector2i& start, const Vector2d& direction) const;

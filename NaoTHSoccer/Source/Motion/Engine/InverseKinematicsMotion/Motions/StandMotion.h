@@ -88,6 +88,8 @@ public:
   virtual void execute();
 
 private:
+  void setStiffnessBuffer(double s);
+
   void calcStandPose();
 
   bool interpolateToPose();
@@ -100,7 +102,7 @@ private:
 
   bool relaxedPoseIsStillOk();
   
-  void turnOffStiffnessWhenJointIsOutOfRange();
+  //void turnOffStiffnessWhenJointIsOutOfRange();
 
 
 private:

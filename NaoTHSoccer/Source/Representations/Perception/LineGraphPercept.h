@@ -18,17 +18,24 @@ class LineGraphPercept
 { 
 public:
   void reset() {
-    edgels.clear();
+    edgelsOnField.clear();
+
     edgelsInImage.clear();
     edgelsInImageTop.clear();
+
+    lineGraphs.clear();
+    lineGraphsTop.clear();
   }
 
 public:
   //TODO: should this be double?
-  std::vector<Edgel>  edgels;
+  std::vector<Edgel>  edgelsOnField;
 
   std::vector<EdgelD> edgelsInImage;
   std::vector<EdgelD> edgelsInImageTop;
+
+  std::vector<std::vector<EdgelD>> lineGraphs;
+  std::vector<std::vector<EdgelD>> lineGraphsTop;
 };
 
 namespace naoth

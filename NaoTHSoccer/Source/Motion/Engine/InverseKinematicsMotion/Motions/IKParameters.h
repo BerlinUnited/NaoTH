@@ -16,18 +16,28 @@ class IKParameters : public ParameterList
 {
 public:
 
-  // TODO: what are those parameters?
   double footOffsetY;
+
+  bool useWalk2018;
   
   struct Stand 
   {
     double speed;
     bool enableStabilization;
     bool enableStabilizationRC16;
-    double stiffness;
+    double stiffnessGotoPose;
+    double stiffnessRelax;
 
     double bodyPitchOffset;
     double hipOffsetX;
+
+    struct Stabilization{
+        struct RotationStabilization{
+            Vector2d P;
+            Vector2d VelocityP;
+            Vector2d D;
+        } rotation, rotationRC16;
+    } stabilization;
 
     struct Relax {
 
@@ -145,10 +155,6 @@ public:
       Vector2d stabilizeFeetP;
       Vector2d stabilizeFeetD;
 
-      Vector2d rotationP;
-      Vector2d rotationVelocityP;
-      Vector2d rotationD;
-
       // enable the synamic adaptation of the stepsize
       bool dynamicStepsize;
       double dynamicStepsizeP;
@@ -163,6 +169,12 @@ public:
           double x;
           double y;
       } maxHipOffsetBasedOnStepLength, maxHipOffsetBasedOnStepLengthForKicks;
+
+      struct RotationStabilization{
+          Vector2d P;
+          Vector2d VelocityP;
+          Vector2d D;
+      } rotation, rotationRC16, rotationNewIMU;
 
     } stabilization;
 

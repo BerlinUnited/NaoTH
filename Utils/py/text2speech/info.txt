@@ -1,0 +1,1 @@
+Can be executed on the nao to create sound files with the given text (text-to-speech).

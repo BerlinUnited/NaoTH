@@ -5,6 +5,7 @@
 */
 
 #include "PatchWork.h"
+#include <Tools/ColorClasses.h>
 
 using namespace naoth;
 
