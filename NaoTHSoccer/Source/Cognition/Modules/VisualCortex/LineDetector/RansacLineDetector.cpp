@@ -335,8 +335,7 @@ int RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inli
         double offset = std::fabs(radius - (model - e.point).abs());
 
         // inlier
-        // TODO tangent
-        if(offset <= params.circle_outlierThreshold && sim(model, e) >= params.directionSimilarity) {
+        if(offset <= params.circle_outlierThreshold && Math::toDegrees(angle_diff(model, e)) <= params.circle_max_angle_diff) {
           model_inliers.push_back(i);
           angle_mean += e.direction.angle();
           ++inlier;
@@ -375,7 +374,7 @@ int RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inli
       const Edgel& e = getLineGraphPercept().edgelsOnField[i];
       double offset = std::fabs(radius - (bestModel - e.point).abs());
 
-      if(offset > params.circle_outlierThreshold || sim(bestModel, e) < params.directionSimilarity) {
+      if(offset > params.circle_outlierThreshold || Math::toDegrees(angle_diff(bestModel, e)) > params.circle_max_angle_diff) {
         newOutliers.push_back(i);
       } else {
         inliers.push_back(i);

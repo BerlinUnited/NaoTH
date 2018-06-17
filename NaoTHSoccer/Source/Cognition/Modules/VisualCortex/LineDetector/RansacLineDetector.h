@@ -57,19 +57,20 @@ private:
     {
       //Lines
       PARAMETER_REGISTER(iterations) = 50;
-      PARAMETER_REGISTER(outlierThreshold) = 40;
-      PARAMETER_REGISTER(inlierMin) = 8;
+      PARAMETER_REGISTER(outlierThreshold) = 70;
+      PARAMETER_REGISTER(inlierMin) = 5;
       PARAMETER_REGISTER(directionSimilarity) = 0.8;
       PARAMETER_REGISTER(maxLines) = 11;
       PARAMETER_REGISTER(maxVariance) = 40;
       PARAMETER_REGISTER(length_of_var_check) = 700;
-      PARAMETER_REGISTER(min_line_length) = 300;
+      PARAMETER_REGISTER(min_line_length) = 100;
 
       //Circle
       PARAMETER_REGISTER(circle_iterations) = 20;
       PARAMETER_REGISTER(circle_outlierThreshold) = 70;
-      PARAMETER_REGISTER(circle_inlierMin) = 10;
-      PARAMETER_REGISTER(circle_angle_variance) = 17;
+      PARAMETER_REGISTER(circle_inlierMin) = 7;
+      PARAMETER_REGISTER(circle_angle_variance) = 20;
+      PARAMETER_REGISTER(circle_max_angle_diff) = 8;
 
       syncWithConfig();
     }
@@ -90,6 +91,7 @@ private:
     double circle_outlierThreshold;
     int circle_inlierMin;
     double circle_angle_variance;
+    double circle_max_angle_diff;
 
   } params;
 
@@ -118,6 +120,14 @@ private:
     }
 
     return s;
+  }
+
+  inline double angle_diff(const Vector2d& circle_mean, const Edgel& edgel) const
+  {
+    Vector2d tangent_d(edgel.point - circle_mean);
+    tangent_d.rotateRight().normalize();
+
+    return acos(fabs(tangent_d*edgel.direction));
   }
 
   //swaps v[i] with a random v[x], x in [0:i]
