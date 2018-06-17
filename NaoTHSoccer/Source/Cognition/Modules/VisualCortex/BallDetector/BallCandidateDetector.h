@@ -151,6 +151,9 @@ private:
       PARAMETER_REGISTER(blackKeysCheck.minValue) = 20;
 
       PARAMETER_REGISTER(classifier) = "dortmund";
+
+      PARAMETER_REGISTER(brightnessMultiplierBottom) = 1.0;
+      PARAMETER_REGISTER(brightnessMultiplierTop) = 1.0;
       
       syncWithConfig();
     }
@@ -187,6 +190,9 @@ private:
     double contrastMinimum;
 
     std::string classifier;
+
+    double brightnessMultiplierBottom;
+    double brightnessMultiplierTop;
 
   } params;
 
