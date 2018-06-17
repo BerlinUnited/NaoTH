@@ -5,6 +5,8 @@ RansacLineDetector::RansacLineDetector()
   // initialize some stuff here
   DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:draw_edgels_field", "", false);
   DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:draw_lines_field", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:fit_and_draw_ellipse_field", "", false);
+
   DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:fit_and_draw_circle_field", "", false);
 
   getDebugParameterList().add(&params);
@@ -99,7 +101,7 @@ void RansacLineDetector::execute()
 
   );
 
-  DEBUG_REQUEST("Vision:RansacLineDetector:fit_and_draw_circle_field",
+  DEBUG_REQUEST("Vision:RansacLineDetector:fit_and_draw_ellipse_field",
     FIELD_DRAWING_CONTEXT;
     // fit ellipse
     Ellipse circResult;
@@ -123,6 +125,15 @@ void RansacLineDetector::execute()
         CIRCLE(circResult.x_toFit[i], circResult.y_toFit[i], 20);
       }
     }
+  );
+
+  DEBUG_REQUEST("Vision:RansacLineDetector:fit_and_draw_circle_field",
+    FIELD_DRAWING_CONTEXT;
+    // fit ellipse
+    Vector2d circResult;
+    std::vector<size_t> inliers;
+
+    int bestInlierCirc = ransacCircle(circResult, inliers);
   );
 }
 
@@ -235,6 +246,77 @@ int RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& i
     }
   }
 
+  return bestInlier;
+}
+
+int RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inliers) {
+  if(outliers.size() <= 2) {
+    return 0;
+  }
+
+  Vector2d bestModel;
+
+  int bestInlier = 0;
+  double bestInlierError = 0;
+
+  for(int i = 0; i < params.iterations; ++i)
+  {
+    //pick two random points
+    int i0 = Math::random((int)outliers.size());
+    int i1 = Math::random((int)outliers.size());
+
+    if(i0 == i1) {
+      continue;
+    }
+
+    const Edgel& a = getLineGraphPercept().edgelsOnField[outliers[i0]];
+    const Edgel& b = getLineGraphPercept().edgelsOnField[outliers[i1]];
+
+    //TODO get from representation
+    double radius = 750;
+
+    // create model
+    Vector2d model;
+
+    if (a.point.x == b.point.x && a.point.y == b.point.y) {
+      continue;
+    }
+    Vector2d between((a.point.x + b.point.x)/2, (a.point.y + b.point.y)/2);
+    double distance = (a.point - b.point).abs();
+    double half_distance = distance/2;
+
+    if(half_distance > radius) continue;
+    if(half_distance == radius) {
+      model = between;
+    } else {
+      Vector2d model1;
+      Vector2d model2;
+
+      Vector2d direction(b.point-a.point);
+      direction /= distance;
+
+      double mirror_dist = sqrt(Math::sqr(radius) - Math::sqr(half_distance));
+
+      model1.x = between.x - mirror_dist * direction.y;
+      model1.y = between.y + mirror_dist * direction.x;
+      model2.x = between.x + mirror_dist * direction.y;
+      model2.y = between.y - mirror_dist * direction.x;
+
+      FIELD_DRAWING_CONTEXT;
+
+      PEN("009900", 50);
+
+      CIRCLE(model1.x, model1.y, radius);
+      CIRCLE(model2.x, model2.y, radius);
+
+      PEN("000099", 50);
+      CIRCLE(a.point.x, a.point.y, 30);
+      CIRCLE(b.point.x, b.point.y, 30);
+
+      break;
+
+    }
+  }
   return bestInlier;
 }
 

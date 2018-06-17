@@ -47,6 +47,8 @@ private:
 
   int ransacEllipse(Ellipse& result);
 
+  int ransacCircle(Vector2d& result, std::vector<size_t>& inliers);
+
 //private:
   class Parameters: public ParameterList
   {
