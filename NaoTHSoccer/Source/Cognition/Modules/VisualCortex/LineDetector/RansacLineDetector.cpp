@@ -45,7 +45,7 @@ void RansacLineDetector::execute()
       LinePercept::FieldLineSegment fieldLine;
       fieldLine.lineOnField = result;
       getLinePercept().lines.push_back(fieldLine);
-    } 
+    }
     else {
       break;
     }
@@ -186,7 +186,7 @@ int RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& i
 
     double inlierError = 0;
     int inlier = 0;
-    for(size_t i: outliers) 
+    for(size_t i: outliers)
     {
       const Edgel& e = getLineGraphPercept().edgelsOnField[i];
       double d = model.minDistance(e.point);
@@ -272,6 +272,7 @@ int RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inli
   double radius = 750;
 
   Vector2d bestModel;
+  std::vector<size_t> model_inliers;
 
   int bestInlier = 0;
   double bestInlierError = 0;
@@ -320,15 +321,11 @@ int RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inli
 
       models.push_back(model1);
       models.push_back(model2);
-
-      /*
-      double sim_angle = atan2(a.direction.y, a.direction.x) - atan2(direction.y, direction.x)
-          + atan2(b.direction.y, b.direction.x) - atan2(direction.y, direction.x);
-      */
-      //acos(std::clamp(da_n.x * db_n.x + a_n.y * db_n.y, -1., 1.));
     }
 
     for (Vector2d model : models) {
+      model_inliers.clear();
+      double angle_mean = 0;
       double inlierError = 0;
       int inlier = 0;
 
@@ -340,12 +337,26 @@ int RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inli
         // inlier
         // TODO tangent
         if(offset <= params.circle_outlierThreshold && sim(model, e) >= params.directionSimilarity) {
+          model_inliers.push_back(i);
+          angle_mean += e.direction.angle();
           ++inlier;
           inlierError += offset;
         }
       }
+      if(inlier < params.circle_inlierMin) {
+        continue;
+      }
 
-      if(inlier >= params.circle_inlierMin && (inlier > bestInlier || (inlier == bestInlier && inlierError < bestInlierError))) {
+      angle_mean /= inlier;
+      double angle_variance = 0;
+      for (size_t i: model_inliers) {
+        const Edgel& e = getLineGraphPercept().edgelsOnField[i];
+        angle_variance += Math::sqr(angle_mean - e.direction.angle());
+      }
+      angle_variance /= inlier;
+
+      if((inlier > bestInlier || (inlier == bestInlier && inlierError < bestInlierError))
+         && Math::toDegrees(angle_variance) >= params.circle_angle_variance) {
         bestModel = model;
         bestInlier = inlier;
         bestInlierError = inlierError;

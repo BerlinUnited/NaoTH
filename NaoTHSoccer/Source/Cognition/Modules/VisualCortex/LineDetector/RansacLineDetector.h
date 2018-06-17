@@ -69,6 +69,7 @@ private:
       PARAMETER_REGISTER(circle_iterations) = 20;
       PARAMETER_REGISTER(circle_outlierThreshold) = 70;
       PARAMETER_REGISTER(circle_inlierMin) = 10;
+      PARAMETER_REGISTER(circle_angle_variance) = 17;
 
       syncWithConfig();
     }
@@ -88,6 +89,7 @@ private:
     int circle_iterations;
     double circle_outlierThreshold;
     int circle_inlierMin;
+    double circle_angle_variance;
 
   } params;
 
