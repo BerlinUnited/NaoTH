@@ -134,6 +134,7 @@ private:
       PARAMETER_REGISTER(heuristic.minBlackDetectionSize) = 20;
 
       PARAMETER_REGISTER(cnn.threshold) = 0.2;
+      PARAMETER_REGISTER(cnn.thresholdClose) = 0.3;
 
       PARAMETER_REGISTER(maxNumberOfKeys) = 4;
       PARAMETER_REGISTER(numberOfExportBestPatches) = 2;
@@ -174,6 +175,7 @@ private:
 
     struct CNN {
       double threshold;
+      double thresholdClose;
     } cnn;
 
     int maxNumberOfKeys;

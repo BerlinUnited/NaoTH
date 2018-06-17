@@ -264,17 +264,18 @@ void BallCandidateDetector::calculateCandidates()
       int size = patchedBorder.max.x - patchedBorder.min.x;
       double radius = (double) size / 2.0;
       int postBorder = (int)(radius*params.postBorderFactorFar);
+      double selectedCNNThreshold = params.cnn.threshold;
       if(size >= params.postMaxCloseSize) // HACK: use patch size as estimate if close or far away
       {
         postBorder = (int)(radius*params.postBorderFactorClose);
+        selectedCNNThreshold = params.cnn.thresholdClose;
       }
 
       patchedBorder.min.x = patchedBorder.min.x - postBorder;
       patchedBorder.min.y = patchedBorder.min.y - postBorder;
       patchedBorder.max.x = patchedBorder.max.x + postBorder;
       patchedBorder.max.y = patchedBorder.max.y + postBorder;
-
-        
+  
       if(getImage().isInside(patchedBorder.min.x, patchedBorder.min.y) && getImage().isInside(patchedBorder.max.x, patchedBorder.max.y))
       {
 
@@ -294,7 +295,7 @@ void BallCandidateDetector::calculateCandidates()
         stopwatch.stop();
         stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
 
-        if (found && currentCNNClassifier->getBallConfidence() >= params.cnn.threshold) {
+        if (found && currentCNNClassifier->getBallConfidence() >= selectedCNNThreshold) {
 
           if(!params.blackKeysCheck.enable || blackKeysOK(*i)) {
             addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);
@@ -314,7 +315,7 @@ void BallCandidateDetector::calculateCandidates()
           stopwatch.stop();
           stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
 
-          if (found && currentCNNClassifier->getBallConfidence() >= params.cnn.threshold) {
+          if (found && currentCNNClassifier->getBallConfidence() >= selectedCNNThreshold) {
 
             if(!params.blackKeysCheck.enable || blackKeysOK(*i)) {
               addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);
