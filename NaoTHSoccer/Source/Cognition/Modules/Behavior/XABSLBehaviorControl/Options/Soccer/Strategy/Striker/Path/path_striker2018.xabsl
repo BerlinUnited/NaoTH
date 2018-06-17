@@ -69,9 +69,11 @@ option path_striker2018
             goto forwardkick_right;
         }
         else if(attack.best_action == sidekick_left)
-          goto sidekick_left;
+          //goto sidekick_left;
+          goto turn;
         else if(attack.best_action == sidekick_right)
-          goto sidekick_right;
+          //goto sidekick_right;
+          goto turn;
         else
           goto turn;
       }
@@ -110,9 +112,11 @@ option path_striker2018
         goto dash;
     }
     else if(attack.best_action == sidekick_left)
-      goto sidekick_left;
+      //goto sidekick_left;
+      stay;
     else if(attack.best_action == sidekick_right)
-      goto sidekick_right;
+      //goto sidekick_right;
+      stay;
     else
       stay;
     }
