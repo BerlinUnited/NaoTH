@@ -101,7 +101,11 @@ void MultiKalmanBallLocator::execute()
     }
 
     // estimate the best model
-    bestModel = selectBestModel();
+    if(kfParameters.use_covariance_based_selection){
+        bestModel = selectBestModelBasedOnCovariance();
+    } else {
+        bestModel = selectBestModel();
+    }
 
     // fill the ball model representation
     if (bestModel != filter.end()) {
@@ -380,23 +384,6 @@ void MultiKalmanBallLocator::applyOdometryOnFilterState(ExtendedKalmanFilter4d& 
 
 MultiKalmanBallLocator::Filters::const_iterator MultiKalmanBallLocator::selectBestModel() const
 {
-  Filters::const_iterator bestModel = filter.end();
-  double value = 0;
-
-  if(kfParameters.use_covariance_based_selection)
-  {
-    // find the best seen model for the ball based on covariance
-    for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); ++iter) {
-        double temp = iter->getEllipseLocation().major * iter->getEllipseLocation().minor * Math::pi;
-        if(bestModel == filter.end() || temp < value){
-            bestModel = iter;
-            value = temp;
-        }
-    }
-
-    return bestModel;
-  }
-
   // find the best model for the ball: closest hypothesis that is "known"
   Filters::const_iterator bestModel = filter.end();
   double minDistance = 0;
@@ -410,6 +397,25 @@ MultiKalmanBallLocator::Filters::const_iterator MultiKalmanBallLocator::selectBe
       bestModel = iter;
       minDistance = distance;
     }
+  }
+
+  return bestModel;
+}
+
+MultiKalmanBallLocator::Filters::const_iterator MultiKalmanBallLocator::selectBestModelBasedOnCovariance() const
+{
+  Filters::const_iterator bestModel = filter.end();
+  double value = 0;
+
+  // find the best seen model for the ball based on covariance
+  for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); ++iter) {
+      double temp = iter->getEllipseLocation().major * iter->getEllipseLocation().minor * Math::pi;
+      if(bestModel == filter.end()
+         || (iter->ballSeenFilter.value() && !bestModel->ballSeenFilter.value())
+         || (iter->ballSeenFilter.value() == bestModel->ballSeenFilter.value() && temp < value)) {
+          bestModel = iter;
+          value = temp;
+      }
   }
 
   return bestModel;

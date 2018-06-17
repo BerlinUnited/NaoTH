@@ -98,6 +98,7 @@ private:
     void predict(ExtendedKalmanFilter4d& filter, double dt) const;
 
     Filters::const_iterator selectBestModel() const;
+    Filters::const_iterator selectBestModelBasedOnCovariance() const;
 
     void provideBallModel(const BallHypothesis &model);
 
