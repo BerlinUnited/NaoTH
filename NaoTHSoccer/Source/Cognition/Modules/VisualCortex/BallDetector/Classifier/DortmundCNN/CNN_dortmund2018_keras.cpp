@@ -41,12 +41,14 @@ bool CNN_dortmund2018_keras::classify(const BallCandidates::Patch& p) {
 }
 
 float CNN_dortmund2018_keras::getBallConfidence() {
-  // we are too confident
-  if(std::abs(scores[0] - scores[1]) > 0.2)
-  {
-    return 1.0f;
-  }
-  return 0.0f;
+ // std::cout << "scores[0]=" << scores[0] << " scores[1]=" << scores[1] << std::endl;
+  return scores[1];
+  // // we are too confident
+  // if(std::abs(scores[0] - scores[1]) > 0.2)
+  // {
+  //   return 1.0f;
+  // }
+  // return 0.0f;
   // return (res[0] > 0 && scores[0] >= 0.02) ? 1.0f : 0.0f;
 }
 
