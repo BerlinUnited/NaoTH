@@ -78,7 +78,9 @@ void Walk2018::execute()
   // NOTE: check the integrity of the step buffer
   ASSERT(!getStepBuffer().empty());
   ASSERT(!getStepBuffer().last().isPlanned());
-  theZMPPlanner->execute();
+  if(!getStepBuffer().first().isExecuted()){
+    theZMPPlanner->execute();
+  }
 
   // running phase
   //ASSERT(!getStepBuffer().first().isExecuted());
