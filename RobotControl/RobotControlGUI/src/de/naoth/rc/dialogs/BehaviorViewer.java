@@ -81,8 +81,6 @@ public class BehaviorViewer extends AbstractDialog
       public static SwingCommandExecutor commandExecutor;
       @InjectPlugin
       public static LogFileEventManager logFileEventManager;
-      @InjectPlugin
-      public static DrawingEventManager drawingEventManager;
   }//end Plugin
   
 
@@ -311,32 +309,6 @@ public class BehaviorViewer extends AbstractDialog
     }//end if
   }//end showFrame
 
- private void drawStuff(XABSLBehaviorFrame frame)
- {
-     try
-    {
-     double robot_x = Double.parseDouble(getSymbolValue(frame, "robot_pose.x"));
-     double robot_y = Double.parseDouble(getSymbolValue(frame, "robot_pose.y"));
-     double robot_r = Double.parseDouble(getSymbolValue(frame, "robot_pose.rotation"));
-     
-     Robot robot = new Robot(robot_x, robot_y, robot_r/180.0*Math.PI);
-     
-     double ball_x = Double.parseDouble(getSymbolValue(frame, "ball.position.field.x"));
-     double ball_y = Double.parseDouble(getSymbolValue(frame, "ball.position.field.y"));
-     double ball_radius = Double.parseDouble(getSymbolValue(frame, "ball.radius"));
-     Circle ball = new Circle((int)ball_x, (int)ball_y,(int)ball_radius);
-     
-        DrawingCollection dc = new DrawingCollection();
-        dc.add(robot);
-        dc.add(ball);
-     
-     Plugin.drawingEventManager.fireDrawingEvent(dc, this);
-     
-    }catch(Exception ex)
-    {
-        Logger.getLogger(BehaviorViewer.class.getName()).log(Level.SEVERE, null, ex);
-    }
- }
   /*
   private void drawFrameOnFieldGlobal(XABSLBehaviorFrame frame)
   {
@@ -466,7 +438,6 @@ public class BehaviorViewer extends AbstractDialog
     this.frameList.setSelectedIndex(listModel.getSize()-1);
     //this.frameList.revalidate();
     
-    drawStuff(status);
     showFrame(status);
   }//end addFrame
 
@@ -937,6 +908,8 @@ public class BehaviorViewer extends AbstractDialog
     if(originalCommand.getName().equals(fileWriteCommandName))
     {
       sendCommand(reloadBehaviorCommand);
+      sendCommand(getListOfAgents);
+      sendCommand(getAgentCommand);
       JOptionPane.showMessageDialog(this,
         new String(result), "Sending Behavior", JOptionPane.INFORMATION_MESSAGE);
     }

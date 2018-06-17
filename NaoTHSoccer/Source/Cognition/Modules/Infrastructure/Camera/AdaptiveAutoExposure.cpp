@@ -8,31 +8,55 @@ AdaptiveAutoExposure::AdaptiveAutoExposure()
 
 void AdaptiveAutoExposure::execute()
 {
+    bool executeBottom = false;
+    bool executeTop = false;
+    if(getCommonCameraSettingsRequest().isActive) {
+        // both cameras use the same settings
+        if(getCommonCameraSettingsRequest().autoExposition) {
+            executeBottom = true;
+            executeTop = true;
+        }
+    } else {
+        // test each camera separately
+        if(getCameraSettingsRequest().autoExposition) {
+            executeBottom = true;
+        }
+        if(getCameraSettingsRequestTop().autoExposition) {
+            executeTop = true;
+        }
 
-    if(getCommonCameraSettingsRequest().isActive && getCommonCameraSettingsRequest().autoExposition) 
+    }
+
+    if(getCommonCameraSettingsRequest().autoExpositionMethod == "averageY") 
     {
-
-        if(getCommonCameraSettingsRequest().autoExpositionMethod == "averageY") 
-        {
+        if(executeBottom) {
             getCameraSettingsRequest().autoExpositionAlgorithm = 0;
+        }
+        if(executeTop) {
             getCameraSettingsRequestTop().autoExpositionAlgorithm = 0;
         }
-        else
-        {
-            // apply weight table based auto exposition
+    }
+    else
+    {
+        // apply weight table based auto exposition
+
+        const std::uint8_t onVal = 100;
+        getCameraSettingsRequestTop().setAutoExposureWeights(onVal);
+        getCameraSettingsRequest().setAutoExposureWeights(onVal);
+        // include all per default
+
+        if(executeBottom) {
             getCameraSettingsRequest().autoExpositionAlgorithm = 1;
-            getCameraSettingsRequestTop().autoExpositionAlgorithm = 1;
+        }
+        if(executeTop) {
+            getCameraSettingsRequestTop().autoExpositionAlgorithm = 1;            
+        }
 
-            const std::uint8_t onVal = 100;
-            // include all per default
-            getCameraSettingsRequest().setAutoExposureWeights(onVal);
-            getCameraSettingsRequestTop().setAutoExposureWeights(onVal);
-
-            if(getCommonCameraSettingsRequest().autoExpositionMethod == "dortmund") 
-            {
-                getCameraSettingsRequest().reset();
+        if(getCommonCameraSettingsRequest().autoExpositionMethod == "dortmund") 
+        {
+            
+            if(executeTop) {
                 getCameraSettingsRequestTop().reset();
-
                 getCameraSettingsRequestTop().autoExposureWeights[0][0] = 25;
                 getCameraSettingsRequestTop().autoExposureWeights[0][1] = 25;
                 getCameraSettingsRequestTop().autoExposureWeights[0][2] = 25;
@@ -56,7 +80,10 @@ void AdaptiveAutoExposure::execute()
                 getCameraSettingsRequestTop().autoExposureWeights[3][2] = 75;
                 getCameraSettingsRequestTop().autoExposureWeights[3][3] = 75;
                 getCameraSettingsRequestTop().autoExposureWeights[3][4] = 75;
-            
+            }
+        
+            if(executeBottom) {
+                getCameraSettingsRequest().reset();
                 getCameraSettingsRequest().autoExposureWeights[0][0] = 25;
                 getCameraSettingsRequest().autoExposureWeights[0][1] = 25;
                 getCameraSettingsRequest().autoExposureWeights[0][2] = 25;
@@ -80,13 +107,13 @@ void AdaptiveAutoExposure::execute()
                 getCameraSettingsRequest().autoExposureWeights[3][2] = 25;
                 getCameraSettingsRequest().autoExposureWeights[3][3] = 25;
                 getCameraSettingsRequest().autoExposureWeights[3][4] = 25;
-
             }
-            else if(getCommonCameraSettingsRequest().autoExpositionMethod == "centerlines3") 
-            {
-                getCameraSettingsRequest().reset();
-                getCameraSettingsRequestTop().reset();
 
+        }
+        else if(getCommonCameraSettingsRequest().autoExpositionMethod == "centerlines3") 
+        {
+            if(executeTop) {
+                getCameraSettingsRequestTop().reset();
                 getCameraSettingsRequestTop().autoExposureWeights[4][1] = onVal;
                 getCameraSettingsRequestTop().autoExposureWeights[4][2] = onVal;
                 getCameraSettingsRequestTop().autoExposureWeights[4][3] = onVal;
@@ -96,7 +123,10 @@ void AdaptiveAutoExposure::execute()
                 getCameraSettingsRequestTop().autoExposureWeights[2][1] = onVal;
                 getCameraSettingsRequestTop().autoExposureWeights[2][2] = onVal;
                 getCameraSettingsRequestTop().autoExposureWeights[2][3] = onVal;
-    
+            }
+
+            if(executeBottom) {
+                getCameraSettingsRequest().reset();
                 getCameraSettingsRequest().autoExposureWeights[0][1] = onVal;
                 getCameraSettingsRequest().autoExposureWeights[0][2] = onVal;
                 getCameraSettingsRequest().autoExposureWeights[0][3] = onVal;
@@ -106,30 +136,36 @@ void AdaptiveAutoExposure::execute()
                 getCameraSettingsRequest().autoExposureWeights[2][1] = onVal;
                 getCameraSettingsRequest().autoExposureWeights[2][2] = onVal;
                 getCameraSettingsRequest().autoExposureWeights[2][3] = onVal; 
-            } 
-            else if(getCommonCameraSettingsRequest().autoExpositionMethod == "centerlines2") 
-            {
-                getCameraSettingsRequest().reset();
-                getCameraSettingsRequestTop().reset();
+            }
+        } 
+        else if(getCommonCameraSettingsRequest().autoExpositionMethod == "centerlines2") 
+        {
+            
+            
 
+            if(executeTop) {
+                getCameraSettingsRequestTop().reset();
                 getCameraSettingsRequestTop().autoExposureWeights[4][1] = onVal;
                 getCameraSettingsRequestTop().autoExposureWeights[4][2] = onVal;
                 getCameraSettingsRequestTop().autoExposureWeights[4][3] = onVal;
                 getCameraSettingsRequestTop().autoExposureWeights[3][1] = onVal;
                 getCameraSettingsRequestTop().autoExposureWeights[3][2] = onVal;
                 getCameraSettingsRequestTop().autoExposureWeights[3][3] = onVal;
-        
+            }
+    
+            if(executeBottom) {
+                getCameraSettingsRequest().reset();
                 getCameraSettingsRequest().autoExposureWeights[0][1] = onVal;
                 getCameraSettingsRequest().autoExposureWeights[0][2] = onVal;
                 getCameraSettingsRequest().autoExposureWeights[0][3] = onVal;
                 getCameraSettingsRequest().autoExposureWeights[1][1] = onVal;
                 getCameraSettingsRequest().autoExposureWeights[1][2] = onVal;
                 getCameraSettingsRequest().autoExposureWeights[1][3] = onVal;
-            
             }
-            executeDebugDrawings(onVal);
         }
+        executeDebugDrawings(onVal);
     }
+
 }
 
 void AdaptiveAutoExposure::executeDebugDrawings(std::uint8_t onVal)

@@ -64,7 +64,9 @@ void MultiKalmanBallLocator::execute()
     if(filter.size() > 1) {
         Filters::iterator iter = filter.begin();
         while(iter != filter.end() && filter.size() > 1) {
-          if(!iter->ballSeenFilter.value() && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * Math::pi > area95Threshold){
+          double distance = Vector2d(iter->getState()(0), iter->getState()(2)).abs();
+          double threshold_radius = kfParameters.area95Threshold_radius.factor * distance + kfParameters.area95Threshold_radius.offset;
+          if(!iter->ballSeenFilter.value() && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * Math::pi >  threshold_radius*threshold_radius*2*Math::pi){
                 iter = filter.erase(iter);
             } else {
                 ++iter;
@@ -83,25 +85,36 @@ void MultiKalmanBallLocator::execute()
     // prediction
     double dt = getFrameInfo().getTimeInSeconds() - lastFrameInfo.getTimeInSeconds();
     ASSERT(dt > 0);
-    for(Filters::iterator iter = filter.begin(); iter != filter.end(); iter++){
+    for(Filters::iterator iter = filter.begin(); iter != filter.end(); ++iter) {
       predict(*iter, dt);
     }
 
     doDebugRequestBeforUpdate();
 
     // sensor update
-    //updateByPerceptsNormal();
-    updateByPerceptsCool();
+    if(kfParameters.association.use_normal){
+        updateByPerceptsNormal();
+    } else if(kfParameters.association.use_cool){
+        updateByPerceptsCool();
+    } else if(kfParameters.association.use_naive){
+        // need to handle bottom and top percepts independently because both cameras can observe the same ball
+        updateByPerceptsNaive(CameraInfo::Bottom);
+        updateByPerceptsNaive(CameraInfo::Top);
+    }
 
     // Heinrich: update the "ball seen" values
-    for(Filters::iterator iter = filter.begin(); iter != filter.end(); ++iter){
+    for(Filters::iterator iter = filter.begin(); iter != filter.end(); ++iter) {
       bool updated = iter->getLastUpdateFrame().getFrameNumber() == getFrameInfo().getFrameNumber();
       (*iter).ballSeenFilter.setParameter(kfParameters.g0, kfParameters.g1);
       (*iter).ballSeenFilter.update(updated, 0.3, 0.7);
     }
 
     // estimate the best model
-    bestModel = selectBestModel();
+    if(kfParameters.use_covariance_based_selection){
+        bestModel = selectBestModelBasedOnCovariance();
+    } else {
+        bestModel = selectBestModel();
+    }
 
     // fill the ball model representation
     if (bestModel != filter.end()) {
@@ -188,6 +201,133 @@ void MultiKalmanBallLocator::updateByPerceptsNormal()
     }// end for
 }
 
+void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
+{
+  // set correct camera matrix and info in functional
+  if(camera == CameraInfo::Bottom)
+  {
+      h.camMat  = getCameraMatrix();
+      h.camInfo = getCameraInfo();
+  }
+  else
+  {
+      h.camMat  = getCameraMatrixTop();
+      h.camInfo = getCameraInfoTop();
+  }
+
+  // phase 1: filter percepts and create index vector for filters
+  std::vector<Eigen::Vector2d> zs;
+  std::vector<Vector2d> ps;
+
+  for(const MultiBallPercept::BallPercept& percept : getMultiBallPercept().getPercepts()){
+      Eigen::Vector2d z;
+
+      if(percept.cameraId == camera){
+        // tansform measurement into angles
+        Vector2d angles = CameraGeometry::pixelToAngles(h.camInfo,percept.centerInImage.x,percept.centerInImage.y);
+        z << angles.x, angles.y;
+        zs.push_back(z);
+
+        // needed if a new filter has to be created
+        ps.push_back(percept.positionOnField);
+      }
+  }
+
+  std::vector<int> f;
+  for(size_t i = 0; i < filter.size(); ++i){
+     f.push_back((int)i);
+  }
+
+  if (!(filter.empty() || zs.empty()))
+  {
+    // phase 2: calculate all scores
+    // row index    = measurement
+    // column index = filter
+    Eigen::MatrixXd scores = Eigen::MatrixXd::Zero(zs.size(), filter.size());
+    for(size_t i = 0; i < zs.size(); ++i){
+        for (size_t j = 0; j < filter.size(); ++j){
+           scores(i,j) = updateAssociationFunction->associationScore(filter[j], zs[i], h);
+        }
+    }
+
+    // phase 3: reduce score matrix iteratively by eliminating row and column of best match
+    do {
+      // phase 3.1: find location of best entry which is according to the updateAssociationFunction a global maximum or minimum
+      Eigen::Index maxCol, minCol, maxRow, minRow, bestCol, bestRow;
+      double max = scores.maxCoeff(&maxRow, &maxCol);
+      double min = scores.minCoeff(&minRow, &minCol);
+
+      if(updateAssociationFunction->better(min,max)){
+          bestCol = minCol;
+          bestRow = minRow;
+      } else {
+          bestCol = maxCol;
+          bestRow = maxRow;
+      }
+
+      // phase 3.2: update filter
+      bool allowJustOneModel = false;
+      DEBUG_REQUEST("MultiKalmanBallLocator:allow_just_one_model",
+          allowJustOneModel = true;
+      );
+
+      // if no suitable filter found create a new one
+      if(!allowJustOneModel && !updateAssociationFunction->inRange(scores(bestRow,bestCol)))
+      {
+          // best percept was not good enough to be validly associated to filter so no other will be
+          break;
+      }
+      else
+      {
+          DEBUG_REQUEST("MultiKalmanBallLocator:draw_assignment",
+              FIELD_DRAWING_CONTEXT;
+              PEN("FF0000", 10);
+              const Eigen::Vector4d state = filter[f[bestCol]].getState();
+              LINE(ps[bestRow].x,ps[bestRow].y,state(0),state(2));
+              TEXT_DRAWING((ps[bestRow].x+state(0))/2,(ps[bestRow].y+state(2))/2, scores(bestRow,bestCol));
+          );
+
+          DEBUG_REQUEST("MultiKalmanBallLocator:plot_prediction_error",
+              Eigen::Vector2d prediction_error;
+              prediction_error = zs[bestRow] - filter[f[bestCol]].getStateInMeasurementSpace(h);
+
+              PLOT("MultiKalmanBallLocator:Innovation:x", prediction_error(0));
+              PLOT("MultiKalmanBallLocator:Innovation:y", prediction_error(1));
+          );
+
+          filter[f[bestCol]].update(zs[bestRow],h,getFrameInfo());
+      }
+
+      // phase 3.3: remove bestCol and bestRow from vectors of filters f and measurements zs/ps and delete corresponding row and col in the scores matrix
+      f.erase(f.begin() + bestCol);
+      zs.erase(zs.begin() + bestRow);
+      ps.erase(ps.begin() + bestRow);
+
+      long int numRows = scores.rows()-1;
+      long int numCols = scores.cols();
+
+      if( bestRow < numRows )
+          scores.block(bestRow,0,numRows-bestRow,numCols) = scores.bottomRows(numRows-bestRow).eval();
+
+      scores.conservativeResize(numRows,numCols);
+
+      --numCols;
+
+      if( bestCol < numCols )
+          scores.block(0,bestCol,numRows,numCols-bestCol) = scores.rightCols(numCols-bestCol).eval();
+
+      scores.conservativeResize(numRows,numCols);
+
+    } while(!(f.empty() || zs.empty()));
+  }
+
+  // phase 4: create new filter for each percept which couldn't be associated with a filter
+  for(const Vector2d& p : ps){
+    Eigen::Vector4d newState;
+    newState << p.x, 0, p.y, 0;
+    filter.push_back(BallHypothesis(getFrameInfo(), newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension));
+  }
+}
 
 void MultiKalmanBallLocator::updateByPerceptsCool()
 {
@@ -380,38 +520,38 @@ void MultiKalmanBallLocator::applyOdometryOnFilterState(ExtendedKalmanFilter4d& 
 
 MultiKalmanBallLocator::Filters::const_iterator MultiKalmanBallLocator::selectBestModel() const
 {
-  /*
-  // find the best model for the ball based on convariance
-  if(!filter.empty())
-  {
-      // find best model
-      Filters::const_iterator bestModel = filter.begin();
-      double evalue = (*bestModel).getEllipseLocation().major * (*bestModel).getEllipseLocation().minor *Math::pi;
-
-      for(std::vector<ExtendedKalmanFilter4d>::const_iterator iter = ++filter.begin(); iter != filter.end(); ++iter){
-          if(getFrameInfo().getTimeSince(iter->getFrameOfCreation().getTime()) > 300) {
-            double temp = (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * Math::pi;
-            if(temp < evalue) {
-                evalue = temp;
-                bestModel = iter;
-            }
-          }
-      }
-  }
-  */
-
   // find the best model for the ball: closest hypothesis that is "known"
+  Filters::const_iterator bestModel = filter.end();
+  double minDistance = 0;
+
+  for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); ++iter) {
+    double distance = Vector2d(iter->getState()(0), iter->getState()(2)).abs();
+    if( bestModel == filter.end() || 
+       (iter->ballSeenFilter.value() && !bestModel->ballSeenFilter.value()) ||
+       (iter->ballSeenFilter.value() == bestModel->ballSeenFilter.value() && distance < minDistance)) 
+    {
+      bestModel = iter;
+      minDistance = distance;
+    }
+  }
+
+  return bestModel;
+}
+
+MultiKalmanBallLocator::Filters::const_iterator MultiKalmanBallLocator::selectBestModelBasedOnCovariance() const
+{
   Filters::const_iterator bestModel = filter.end();
   double value = 0;
 
+  // find the best seen model for the ball based on covariance
   for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); ++iter) {
-    if(iter->ballSeenFilter.value()) {
-      double temp = Vector2d(iter->getState()(0), iter->getState()(2)).abs();
-      if(bestModel == filter.end() || temp < value){
+      double temp = iter->getEllipseLocation().major * iter->getEllipseLocation().minor * Math::pi;
+      if(bestModel == filter.end()
+         || (iter->ballSeenFilter.value() && !bestModel->ballSeenFilter.value())
+         || (iter->ballSeenFilter.value() == bestModel->ballSeenFilter.value() && temp < value)) {
           bestModel = iter;
           value = temp;
       }
-    }
   }
 
   return bestModel;
@@ -533,7 +673,8 @@ void MultiKalmanBallLocator::doDebugRequest()
       );
 }
 
-void MultiKalmanBallLocator::drawFiltersOnField() const {
+void MultiKalmanBallLocator::drawFiltersOnField() const 
+{
     FIELD_DRAWING_CONTEXT;
 
     for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); iter++)
@@ -595,7 +736,6 @@ void MultiKalmanBallLocator::reloadParameters()
 
     // filter unspecific parameters
     c_RR              = kfParameters.c_RR;
-    area95Threshold   = kfParameters.area95Threshold;
 
     // UAF thresholds
     euclid.setThreshold(kfParameters.euclidThreshold);
