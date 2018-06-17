@@ -308,6 +308,9 @@ void BallCandidateDetector::calculateCandidates()
 
           PatchWork::subsampling(getImage(), p.data, min.x, min.y, max.x, max.y, patch_size);
 
+          PatchWork::multiplyBrightness((cameraID == CameraInfo::Top) ? 
+            params.brightnessMultiplierTop : params.brightnessMultiplierBottom, p.data);
+
           stopwatch.start();
 
           bool found = currentCNNClassifier->classify(p);
