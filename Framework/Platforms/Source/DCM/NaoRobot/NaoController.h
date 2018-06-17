@@ -105,7 +105,7 @@ public:
   void get(ButtonData& data) { naoSensorData.get(data); }
   void get(BatteryData& data) { naoSensorData.get(data); }
   void get(UltraSoundReceiveData& data) { naoSensorData.get(data); }
-  void get(WhistlePercept& data) {data.counter = whistleSensorData.data(); }}
+  void get(WhistlePercept& data) {data.counter = whistleSensorData.data(); }
   void get(CpuData& data) { theCPUTemperatureReader.get(data); }
 
   // write directly to the shared memory
