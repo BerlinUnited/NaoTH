@@ -105,6 +105,19 @@ private:
     return s;
   }
 
+  inline double sim(const Vector2d& circle_mean, const Edgel& edgel) const
+  {
+    Vector2d tangent_d(edgel.point - circle_mean);
+    tangent_d.rotateRight().normalize();
+
+    double s = 0.0;
+    if(tangent_d*edgel.direction > 0) {
+      s = 1.0-0.5*(fabs(edgel.direction*tangent_d));
+    }
+
+    return s;
+  }
+
   //swaps v[i] with a random v[x], x in [0:i]
   size_t swap_random(std::vector<size_t> &v, int i) {
     int r = Math::random(i+1);

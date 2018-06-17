@@ -134,6 +134,20 @@ void RansacLineDetector::execute()
     std::vector<size_t> inliers;
 
     int bestInlierCirc = ransacCircle(circResult, inliers);
+
+    if (bestInlierCirc) {
+      PEN("000099", 10);
+
+      for(size_t i: inliers)
+      {
+        const Edgel& e = getLineGraphPercept().edgelsOnField[i];
+        CIRCLE(e.point.x, e.point.y, 30);
+      }
+
+      PEN("009900", 20);
+
+      CIRCLE(circResult.x, circResult.y, 750);
+    }
   );
 }
 
@@ -254,6 +268,9 @@ int RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inli
     return 0;
   }
 
+  //TODO get from representation
+  double radius = 750;
+
   Vector2d bestModel;
 
   int bestInlier = 0;
@@ -272,11 +289,9 @@ int RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inli
     const Edgel& a = getLineGraphPercept().edgelsOnField[outliers[i0]];
     const Edgel& b = getLineGraphPercept().edgelsOnField[outliers[i1]];
 
-    //TODO get from representation
-    double radius = 750;
-
     // create model
-    Vector2d model;
+    std::vector<Vector2d> models;
+    models.reserve(2);
 
     if (a.point.x == b.point.x && a.point.y == b.point.y) {
       continue;
@@ -287,7 +302,7 @@ int RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inli
 
     if(half_distance > radius) continue;
     if(half_distance == radius) {
-      model = between;
+      models.push_back(between);
     } else {
       Vector2d model1;
       Vector2d model2;
@@ -295,29 +310,73 @@ int RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inli
       Vector2d direction(b.point-a.point);
       direction /= distance;
 
-      double mirror_dist = sqrt(Math::sqr(radius) - Math::sqr(half_distance));
+      double between_dist = sqrt(Math::sqr(radius) - Math::sqr(half_distance));
 
-      model1.x = between.x - mirror_dist * direction.y;
-      model1.y = between.y + mirror_dist * direction.x;
-      model2.x = between.x + mirror_dist * direction.y;
-      model2.y = between.y - mirror_dist * direction.x;
+      model1.x = between.x - between_dist * direction.y;
+      model1.y = between.y + between_dist * direction.x;
 
-      FIELD_DRAWING_CONTEXT;
+      model2.x = between.x + between_dist * direction.y;
+      model2.y = between.y - between_dist * direction.x;
 
-      PEN("009900", 50);
+      models.push_back(model1);
+      models.push_back(model2);
 
-      CIRCLE(model1.x, model1.y, radius);
-      CIRCLE(model2.x, model2.y, radius);
+      /*
+      double sim_angle = atan2(a.direction.y, a.direction.x) - atan2(direction.y, direction.x)
+          + atan2(b.direction.y, b.direction.x) - atan2(direction.y, direction.x);
+      */
+      //acos(std::clamp(da_n.x * db_n.x + a_n.y * db_n.y, -1., 1.));
+    }
 
-      PEN("000099", 50);
-      CIRCLE(a.point.x, a.point.y, 30);
-      CIRCLE(b.point.x, b.point.y, 30);
+    for (Vector2d model : models) {
+      double inlierError = 0;
+      int inlier = 0;
 
-      break;
+      for(size_t i: outliers)
+      {
+        const Edgel& e = getLineGraphPercept().edgelsOnField[i];
+        double offset = std::fabs(radius - (model - e.point).abs());
+
+        // inlier
+        // TODO tangent
+        if(offset <= params.circle_outlierThreshold && sim(model, e) >= params.directionSimilarity) {
+          ++inlier;
+          inlierError += offset;
+        }
+      }
+
+      if(inlier >= params.circle_inlierMin && (inlier > bestInlier || (inlier == bestInlier && inlierError < bestInlierError))) {
+        bestModel = model;
+        bestInlier = inlier;
+        bestInlierError = inlierError;
+      }
 
     }
   }
-  return bestInlier;
+
+  if (bestInlier > 2) {
+    std::vector<size_t> newOutliers;
+    newOutliers.reserve(outliers.size() - bestInlier + 1);
+
+    // update the outliers
+    for(size_t i: outliers)
+    {
+      const Edgel& e = getLineGraphPercept().edgelsOnField[i];
+      double offset = std::fabs(radius - (bestModel - e.point).abs());
+
+      if(offset > params.circle_outlierThreshold || sim(bestModel, e) < params.directionSimilarity) {
+        newOutliers.push_back(i);
+      } else {
+        inliers.push_back(i);
+      }
+    }
+    outliers = newOutliers;
+
+    result = bestModel;
+    return bestInlier;
+  }
+
+  return 0;
 }
 
 int RansacLineDetector::ransacEllipse(Ellipse& result)
