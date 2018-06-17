@@ -12,6 +12,8 @@
 #include "Tools/BlackSpotExtractor.h"
 
 #include "Classifier/DortmundCNN/CNN_dortmund.h"
+#include "Classifier/DortmundCNN/CNN_dortmund2018.h"
+#include "Classifier/DortmundCNN/CNN_dortmund2018_keras.h"
 
 using namespace std;
 
@@ -27,6 +29,8 @@ BallCandidateDetector::BallCandidateDetector()
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:extractPatches", "generate YUVC patches", false);
 
   DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:keyPointsBlack", "draw black key points extracted from integral image", false);
+
+  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawPatchInImage", "draw the gray-scale patch like it is passed to the CNN in the image", false);
 
   theBallKeyPointExtractor = registerModule<BallKeyPointExtractor>("BallKeyPointExtractor", true);
   getDebugParameterList().add(&params);
@@ -112,6 +116,8 @@ std::map<string, std::shared_ptr<AbstractCNNClassifier> > BallCandidateDetector:
   std::map<string, std::shared_ptr<AbstractCNNClassifier> > result;
 
   result.insert({"dortmund", std::make_shared<CNN_dortmund>()});
+  //result.insert({ "dortmund2018", std::make_shared<CNN_dortmund2018>() });
+  result.insert({ "dortmund2018_keras", std::make_shared<CNN_dortmund2018_keras>() });
 
   return std::move(result);
 }
@@ -264,17 +270,18 @@ void BallCandidateDetector::calculateCandidates()
       int size = patchedBorder.max.x - patchedBorder.min.x;
       double radius = (double) size / 2.0;
       int postBorder = (int)(radius*params.postBorderFactorFar);
+      double selectedCNNThreshold = params.cnn.threshold;
       if(size >= params.postMaxCloseSize) // HACK: use patch size as estimate if close or far away
       {
         postBorder = (int)(radius*params.postBorderFactorClose);
+        selectedCNNThreshold = params.cnn.thresholdClose;
       }
 
       patchedBorder.min.x = patchedBorder.min.x - postBorder;
       patchedBorder.min.y = patchedBorder.min.y - postBorder;
       patchedBorder.max.x = patchedBorder.max.x + postBorder;
       patchedBorder.max.y = patchedBorder.max.y + postBorder;
-
-        
+  
       if(getImage().isInside(patchedBorder.min.x, patchedBorder.min.y) && getImage().isInside(patchedBorder.max.x, patchedBorder.max.y))
       {
 
@@ -287,6 +294,27 @@ void BallCandidateDetector::calculateCandidates()
 
         PatchWork::subsampling(getImage(), patchedBorder.data, patchedBorder.min.x, patchedBorder.min.y, patchedBorder.max.x, patchedBorder.max.y, patch_size);
 
+        PatchWork::multiplyBrightness((cameraID == CameraInfo::Top) ? 
+            params.brightnessMultiplierTop : params.brightnessMultiplierBottom, patchedBorder.data);
+
+        DEBUG_REQUEST("Vision:BallCandidateDetector:drawPatchInImage",
+          unsigned int offsetX = patchedBorder.min.x;
+          unsigned int offsetY = patchedBorder.min.y;
+          unsigned int pixelWidth = (unsigned int) ((double) (patchedBorder.max.x - patchedBorder.min.x) / (double) patchedBorder.SIZE);
+          for(unsigned int x = 0; x < patchedBorder.SIZE; x++) {
+            for(unsigned int y = 0; y < patchedBorder.SIZE; y++) {
+              unsigned char pixelY = patchedBorder.data[(x*patch_size)+y];
+              // draw each image pixel this patch pixel occupies
+              for(unsigned int px=0; px < pixelWidth; px++) {
+                for(unsigned int py=0; py < pixelWidth; py++) {
+                  getDebugImageDrawings().drawPointToImage(pixelY, 128, 128, 
+                    static_cast<int>(offsetX + (x*pixelWidth) + px), offsetY + (y*pixelWidth) + py);
+                }
+              }
+            }
+          }
+        );
+
 
         stopwatch.start();
         
@@ -294,7 +322,7 @@ void BallCandidateDetector::calculateCandidates()
         stopwatch.stop();
         stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
 
-        if (found && currentCNNClassifier->getBallConfidence() >= params.cnn.threshold) {
+        if (found && currentCNNClassifier->getBallConfidence() >= selectedCNNThreshold) {
 
           if(!params.blackKeysCheck.enable || blackKeysOK(*i)) {
             addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);
@@ -308,13 +336,34 @@ void BallCandidateDetector::calculateCandidates()
 
           PatchWork::subsampling(getImage(), p.data, min.x, min.y, max.x, max.y, patch_size);
 
+          PatchWork::multiplyBrightness((cameraID == CameraInfo::Top) ? 
+            params.brightnessMultiplierTop : params.brightnessMultiplierBottom, p.data);
+
+          DEBUG_REQUEST("Vision:BallCandidateDetector:drawPatchInImage",
+            unsigned int offsetX = p.min.x;
+            unsigned int offsetY = p.min.y;
+            unsigned int pixelWidth = (unsigned int) ((double) (p.max.x - p.min.x) / (double) p.SIZE);
+            for(unsigned int x = 0; x < p.SIZE; x++) {
+              for(unsigned int y = 0; y < p.SIZE; y++) {
+                unsigned char pixelY = p.data[(x*patch_size)+y];
+                // draw each image pixel this patch pixel occupies
+                for(unsigned int px=0; px < pixelWidth; px++) {
+                  for(unsigned int py=0; py < pixelWidth; py++) {
+                    getDebugImageDrawings().drawPointToImage(pixelY, 128, 128, 
+                      static_cast<int>(offsetX + (x*pixelWidth) + px), offsetY + (y*pixelWidth) + py);
+                  }
+                }
+              }
+            }
+          );
+
           stopwatch.start();
 
           bool found = currentCNNClassifier->classify(p);
           stopwatch.stop();
           stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
 
-          if (found && currentCNNClassifier->getBallConfidence() >= params.cnn.threshold) {
+          if (found && currentCNNClassifier->getBallConfidence() >= selectedCNNThreshold) {
 
             if(!params.blackKeysCheck.enable || blackKeysOK(*i)) {
               addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);

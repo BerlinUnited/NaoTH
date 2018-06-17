@@ -133,7 +133,8 @@ private:
       PARAMETER_REGISTER(heuristic.blackDotsMinCount) = 1;
       PARAMETER_REGISTER(heuristic.minBlackDetectionSize) = 20;
 
-      PARAMETER_REGISTER(cnn.threshold) = 0.0;
+      PARAMETER_REGISTER(cnn.threshold) = 0.2;
+      PARAMETER_REGISTER(cnn.thresholdClose) = 0.3;
 
       PARAMETER_REGISTER(maxNumberOfKeys) = 4;
       PARAMETER_REGISTER(numberOfExportBestPatches) = 2;
@@ -151,6 +152,10 @@ private:
       PARAMETER_REGISTER(blackKeysCheck.minValue) = 20;
 
       PARAMETER_REGISTER(classifier) = "dortmund";
+
+      PARAMETER_REGISTER(brightnessMultiplierBottom) = 1.0;
+      PARAMETER_REGISTER(brightnessMultiplierTop) = 1.0;
+      
       
       syncWithConfig();
     }
@@ -174,6 +179,7 @@ private:
 
     struct CNN {
       double threshold;
+      double thresholdClose;
     } cnn;
 
     int maxNumberOfKeys;
@@ -187,6 +193,9 @@ private:
     double contrastMinimum;
 
     std::string classifier;
+
+    double brightnessMultiplierBottom;
+    double brightnessMultiplierTop;
 
   } params;
 
