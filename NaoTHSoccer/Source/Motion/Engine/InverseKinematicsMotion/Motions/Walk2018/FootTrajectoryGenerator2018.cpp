@@ -44,8 +44,22 @@ Pose3D FootTrajectoryGenerator2018::calculateLiftingFootPos(const Step& step) co
 {
   if ( step.type == Step::STEP_CONTROL && step.walkRequest.stepControl.type == WalkRequest::StepControlRequest::KICKSTEP)
   {
-    // DIRTY HACK: use old stepcontrol trajectory for forward kicks and new one for sidekicks
-    if (step.walkRequest.stepControl.speedDirection == 0)
+    if (parameters.useSplineFootTrajectoryForSideKicks && step.walkRequest.stepControl.speedDirection != 0)
+    {
+      return stepControlNew(
+        step.footStep,
+        step.executingCycle,
+        step.samplesDoubleSupport,
+        step.samplesSingleSupport,
+        parameters.kickHeight,
+        0,
+        0,
+        step.walkRequest.stepControl.speedDirection,
+        step.walkRequest.stepControl.scale,
+        parameters.sideKickWidth
+        );
+    }
+    else
     {
       return stepControl(
         step.footStep.footBegin(),
@@ -58,20 +72,6 @@ Pose3D FootTrajectoryGenerator2018::calculateLiftingFootPos(const Step& step) co
         0, //footRollOffset
         step.walkRequest.stepControl.speedDirection,
         step.walkRequest.stepControl.scale);
-    }
-    else
-    {
-      return stepControlNew(
-        step.footStep,
-        step.executingCycle,
-        step.samplesDoubleSupport,
-        step.samplesSingleSupport,
-        parameters.kickHeight,
-        0, //footPitchOffset
-        0, //footRollOffset
-        step.walkRequest.stepControl.speedDirection,
-        step.walkRequest.stepControl.scale,
-        parameters.sidekickWidth);
     }
   }
   else
@@ -280,7 +280,6 @@ Pose3D FootTrajectoryGenerator2018::stepControlNew(
       1.0
     };
     theCubicSplineX.set_boundary(tk::spline::first_deriv, 0.0, tk::spline::first_deriv, 0.0, false);
-
 		theCubicSplineX.set_points(xX, yX);
 
 		// Y trajectory
