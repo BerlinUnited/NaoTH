@@ -64,7 +64,9 @@ void MultiKalmanBallLocator::execute()
     if(filter.size() > 1) {
         Filters::iterator iter = filter.begin();
         while(iter != filter.end() && filter.size() > 1) {
-          if(!iter->ballSeenFilter.value() && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * Math::pi > area95Threshold){
+          double distance = Vector2d(iter->getState()(0), iter->getState()(2)).abs();
+          double threshold_radius = kfParameters.area95Threshold_radius.factor * distance + kfParameters.area95Threshold_radius.offset;
+          if(!iter->ballSeenFilter.value() && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * Math::pi >  threshold_radius*threshold_radius*2*Math::pi){
                 iter = filter.erase(iter);
             } else {
                 ++iter;
@@ -108,7 +110,11 @@ void MultiKalmanBallLocator::execute()
     }
 
     // estimate the best model
-    bestModel = selectBestModel();
+    if(kfParameters.use_covariance_based_selection){
+        bestModel = selectBestModelBasedOnCovariance();
+    } else {
+        bestModel = selectBestModel();
+    }
 
     // fill the ball model representation
     if (bestModel != filter.end()) {
@@ -514,26 +520,6 @@ void MultiKalmanBallLocator::applyOdometryOnFilterState(ExtendedKalmanFilter4d& 
 
 MultiKalmanBallLocator::Filters::const_iterator MultiKalmanBallLocator::selectBestModel() const
 {
-  /*
-  // find the best model for the ball based on convariance
-  if(!filter.empty())
-  {
-      // find best model
-      Filters::const_iterator bestModel = filter.begin();
-      double evalue = (*bestModel).getEllipseLocation().major * (*bestModel).getEllipseLocation().minor *Math::pi;
-
-      for(std::vector<ExtendedKalmanFilter4d>::const_iterator iter = ++filter.begin(); iter != filter.end(); ++iter){
-          if(getFrameInfo().getTimeSince(iter->getFrameOfCreation().getTime()) > 300) {
-            double temp = (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * Math::pi;
-            if(temp < evalue) {
-                evalue = temp;
-                bestModel = iter;
-            }
-          }
-      }
-  }
-  */
-
   // find the best model for the ball: closest hypothesis that is "known"
   Filters::const_iterator bestModel = filter.end();
   double minDistance = 0;
@@ -547,6 +533,25 @@ MultiKalmanBallLocator::Filters::const_iterator MultiKalmanBallLocator::selectBe
       bestModel = iter;
       minDistance = distance;
     }
+  }
+
+  return bestModel;
+}
+
+MultiKalmanBallLocator::Filters::const_iterator MultiKalmanBallLocator::selectBestModelBasedOnCovariance() const
+{
+  Filters::const_iterator bestModel = filter.end();
+  double value = 0;
+
+  // find the best seen model for the ball based on covariance
+  for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); ++iter) {
+      double temp = iter->getEllipseLocation().major * iter->getEllipseLocation().minor * Math::pi;
+      if(bestModel == filter.end()
+         || (iter->ballSeenFilter.value() && !bestModel->ballSeenFilter.value())
+         || (iter->ballSeenFilter.value() == bestModel->ballSeenFilter.value() && temp < value)) {
+          bestModel = iter;
+          value = temp;
+      }
   }
 
   return bestModel;
@@ -731,7 +736,6 @@ void MultiKalmanBallLocator::reloadParameters()
 
     // filter unspecific parameters
     c_RR              = kfParameters.c_RR;
-    area95Threshold   = kfParameters.area95Threshold;
 
     // UAF thresholds
     euclid.setThreshold(kfParameters.euclidThreshold);

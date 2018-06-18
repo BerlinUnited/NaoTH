@@ -83,7 +83,7 @@ private:
     Filters::const_iterator bestModel;
 
     const double epsilon; // 10e-6
-    double area95Threshold;
+    //double area95Threshold;
 
     //double ballMass;
     double c_RR;
@@ -99,6 +99,7 @@ private:
     void predict(ExtendedKalmanFilter4d& filter, double dt) const;
 
     Filters::const_iterator selectBestModel() const;
+    Filters::const_iterator selectBestModelBasedOnCovariance() const;
 
     void provideBallModel(const BallHypothesis &model);
 
@@ -131,7 +132,7 @@ private:
 
             //PARAMETER_REGISTER(ballMass) = 0.026;
             PARAMETER_REGISTER(c_RR) = 0.0245;
-            PARAMETER_REGISTER(area95Threshold) = 1000*1000*Math::pi;
+            PARAMETER_REGISTER(area95Threshold) = 2*Math::pi*700*700;
 
             //thresholds for association functions
             PARAMETER_REGISTER(euclidThreshold) = Math::fromDegrees(10);
@@ -145,6 +146,11 @@ private:
             PARAMETER_REGISTER(association.use_normal) = false;
             PARAMETER_REGISTER(association.use_cool)   = false;
             PARAMETER_REGISTER(association.use_naive)  = true;
+
+            PARAMETER_REGISTER(area95Threshold_radius.factor) = 1;
+            PARAMETER_REGISTER(area95Threshold_radius.offset) = 125;
+
+            PARAMETER_REGISTER(use_covariance_based_selection) = true;
 
             syncWithConfig();
         }
@@ -180,6 +186,13 @@ private:
             bool use_naive;
         } association;
 
+        struct {
+            double factor;
+            double offset;
+        } area95Threshold_radius;
+
+
+        bool use_covariance_based_selection;
     } kfParameters;
 
     Measurement_Function_H h;
