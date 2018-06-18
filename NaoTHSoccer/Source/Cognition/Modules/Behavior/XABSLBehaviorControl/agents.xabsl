@@ -82,6 +82,7 @@ include "Options/Soccer/Strategy/Path/path_play_soccer.xabsl";
 include "Options/Soccer/Strategy/Path/path_decide_role.xabsl";
 include "Options/Soccer/Strategy/Path/path_basic_goalie.xabsl";
 include "Options/Soccer/Strategy/Striker/Path/path_striker.xabsl";
+include "Options/Soccer/Strategy/Striker/Path/path_striker2018.xabsl";
 include "Options/Soccer/Strategy/Striker/Path/path_sidekick_left.xabsl";
 include "Options/Soccer/Strategy/Striker/Path/path_sidekick_right.xabsl";
 include "Options/Soccer/Strategy/Striker/Path/path_kick_short_with_approach.xabsl";
@@ -117,6 +118,7 @@ include "Options/Soccer/Strategy/basic_goalie.xabsl";
 include "Options/Soccer/Strategy/goalie_watch_ball.xabsl";
 //Initial Striker
 include "Options/Soccer/Strategy/initial_striker.xabsl";
+include "Options/Soccer/Strategy/Path/path2018_initial_striker.xabsl";
 
 
 // Penalty
@@ -181,6 +183,12 @@ include "Options/Test/agent/pathplanner_test_long_kick_agent.xabsl";
 include "Options/Test/agent/pathplanner_test_only_shortkick_agent.xabsl";
 include "Options/Test/agent/pathplanner_test_only_sidekick_agent.xabsl";
 include "Options/Test/agent/pathplanner_test_dash_agent.xabsl";
+include "Options/Test/agent/pathplanner2018_forwardkick_agent.xabsl";
+include "Options/Test/pathplanner2018_forwardkick.xabsl";
+include "Options/Test/agent/pathplanner2018_sidekick_agent.xabsl";
+include "Options/Test/pathplanner2018_sidekick.xabsl";
+
+
 
 // Test Options PathPlanner
 include "Options/Test/kicks/pathplanner_sidekick.xabsl";
@@ -241,7 +249,7 @@ include "Options/Test/walk/walk_forward.xabsl";
 
 // Test role change
 include "Options/Test/strategy/role_change_test.xabsl";
-
+include "Options/Test/strategy/role_change_goalie_test.xabsl";
 
 include "Options/Test/change_state_input_test.xabsl";
  // Useless?
@@ -301,6 +309,9 @@ agent pathplanner_test_long_kick_agent("pathplanner_test_long_kick_agent", pathp
 agent pathplanner_test_only_sidekick_agent("pathplanner_test_only_sidekick_agent", pathplanner_test_only_sidekick_agent);
 agent pathplanner_test_only_shortkick_agent("pathplanner_test_only_shortkick_agent", pathplanner_test_only_shortkick_agent);
 agent pathplanner_test_dash_agent("pathplanner_test_dash_agent", pathplanner_test_dash_agent);
+agent pathplanner2018_forwardkick_agent("pathplanner2018_forwardkick_agent", pathplanner2018_forwardkick_agent);
+agent pathplanner2018_sidekick_agent("pathplanner2018_sidekick_agent", pathplanner2018_sidekick_agent);
+
 
 // Test agents search
 agent search_test_agent("search_test_agent",search_test_agent);

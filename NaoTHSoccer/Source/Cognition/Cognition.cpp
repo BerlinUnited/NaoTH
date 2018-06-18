@@ -106,6 +106,7 @@
 #include "Modules/Behavior/BasicTestBehavior/BasicTestBehavior.h"
 #include "Modules/Behavior/XABSLBehaviorControl/XABSLBehaviorControl.h"
 #include "Modules/Behavior/PathPlanner/PathPlanner.h"
+#include "Modules/Behavior/PathPlanner/PathPlanner2018.h"
 
 using namespace std;
 
@@ -223,6 +224,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(BasicTestBehavior);
   REGISTER_MODULE(XABSLBehaviorControl);
   REGISTER_MODULE(PathPlanner);
+  REGISTER_MODULE(PathPlanner2018);
 
   REGISTER_MODULE(TeamCommSender);
   

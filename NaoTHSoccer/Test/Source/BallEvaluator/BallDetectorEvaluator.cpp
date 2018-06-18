@@ -164,7 +164,7 @@ void BallDetectorEvaluator::executeCNNBall()
 cv::Mat BallDetectorEvaluator::loadImage(std::string fullFilePath)
 {
   //we assume input images are grayscale
-  cv::Mat img = cv::imread(fullFilePath, CV_LOAD_IMAGE_GRAYSCALE);
+  cv::Mat img = cv::imread(fullFilePath, cv::ImreadModes::IMREAD_GRAYSCALE);
 
   if (img.type() != CV_8UC1)
   {
