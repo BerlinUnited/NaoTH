@@ -175,7 +175,7 @@ option path_play_soccer
   {
     decision
     {
-      else if (action_done)
+      else if (action_done || state_time > 15000)
         goto play;
       else
         stay;
@@ -235,7 +235,7 @@ option path_play_soccer
 	      stay;
 	  }
 	  action {
-	    path2018_initial_striker();
+	    initial_striker();
    		team.is_playing_as_striker = true;
 	  }
   }

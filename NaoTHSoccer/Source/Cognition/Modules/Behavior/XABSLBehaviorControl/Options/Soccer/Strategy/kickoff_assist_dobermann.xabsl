@@ -6,7 +6,7 @@ option kickoff_assist_dobermann
   
   common decision
   {
-    if (state_time > 10000)
+    if (state_time > 15000)
       goto done;
   }
 
