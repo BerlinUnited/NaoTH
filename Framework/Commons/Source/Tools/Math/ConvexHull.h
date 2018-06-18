@@ -36,10 +36,13 @@ namespace ConvexHull
         // TODO: this should be completly changed 2017.07.14
         int n = static_cast<int> (P.size()), k = 0;
 
+		//Anmerkung: mit 3 oder weniger punkten haben
+		//wir den trivialen Fall
         if(n <= 1)
         {
           // Check if we don't have to do anything and provide a (non-crashing) fallback in case the static_cast<int>
           // did indeed overflow and i is less than zero.
+
           return P;
         }
 
