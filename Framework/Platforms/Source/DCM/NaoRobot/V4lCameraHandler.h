@@ -136,6 +136,7 @@ private:
   unsigned char* currentImage;
 
   bool atLeastOneImageRetrieved;
+  bool initialParamsSet;
   bool wasQueried;
   bool isCapturing;
   bool bufferSwitched;

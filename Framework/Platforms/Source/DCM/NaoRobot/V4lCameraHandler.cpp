@@ -41,6 +41,7 @@ V4lCameraHandler::V4lCameraHandler()
   n_buffers(0),
   currentImage(NULL),
   atLeastOneImageRetrieved(false),
+  initialParamsSet(false),
   wasQueried(false),
   isCapturing(false),
   bufferSwitched(false),
@@ -896,16 +897,18 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
     return;
   }
 
-  unsigned long long currentTime = NaoTime::getSystemTimeInMicroSeconds();
-  if(currentTime < lastCameraSettingTimestamp + 16000) {
-    return;
-  }
+   bool forceUpdate = initialParamsSet;
+
+  //unsigned long long currentTime = NaoTime::getSystemTimeInMicroSeconds();
+  //if(currentTime < lastCameraSettingTimestamp + 16000) {
+  //  return;
+  //}
 
   std::list<CameraSettings::CameraSettingID>::const_iterator it = settingsOrder.begin();
   for(; it != settingsOrder.end(); it++)
   {
-    // only set if csConst was set and the value was changed
-    if(csConst[*it] != -1 && data.data[*it] != currentSettings.data[*it])
+    // only set forced or if csConst was set and the value was changed
+    if(forceUpdate || (csConst[*it] != -1 && data.data[*it] != currentSettings.data[*it]))
     {
       /*
       // NOTE: experimental
@@ -964,6 +967,7 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
     }
   }// end for
 
+
   // set the autoexposure grid parameters
   for(std::size_t i=0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
     for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
@@ -976,6 +980,9 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
       }
     }
   }
+
+
+  initialParamsSet = true;
 
 }// end setAllCameraParams
 
