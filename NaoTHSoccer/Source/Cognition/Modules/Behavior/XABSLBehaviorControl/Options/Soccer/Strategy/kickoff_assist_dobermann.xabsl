@@ -1,0 +1,38 @@
+option kickoff_assist_dobermann
+{
+  float @x;
+  float @y;
+  float @rot;
+  
+  common decision
+  {
+    if (state_time > 10000)
+      goto done;
+  }
+
+  initial state go_to_point
+  {
+    decision
+    {
+      else if (action_done)
+        goto done;
+      else
+        stay;
+    }
+    action
+    {
+      go_to_point_with_USOA(
+        x=@x, 
+        y=@y,
+        rot=@rot);
+
+      head.control_mode = look_around;
+    }
+  }
+
+  target state done
+  {
+    action
+    {}
+  }
+}
