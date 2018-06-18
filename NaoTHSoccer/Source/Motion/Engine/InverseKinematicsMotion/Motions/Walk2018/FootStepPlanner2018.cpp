@@ -56,6 +56,8 @@ void FootStepPlanner2018::execute()
     }
 
     PLOT("FootStepPlanner2018:ready_to_switch", ready_to_switch_support);
+    PLOT("FootStepPlanner2018:centre_of_pressure_y", getCentreOfPressure().in_kinematic_chain_origin.CoP.y);
+    PLOT("FootStepPlanner2018:ready_to_switch", delayed_frames);
 
     // current step has been executed, remove
     if (getStepBuffer().first().isExecuted() && (!parameters.stabilization.use_step_feedback || ready_to_switch_support || delayed_frames > parameters.stabilization.max_frames)) {
