@@ -82,7 +82,7 @@ protected:
   ParameterList(const ParameterList& /*obj*/) {}
   ParameterList& operator=( const ParameterList& /*other*/ ) { return *this; }
 
-  ParameterList(const std::string& name) : name(name) {}
+  ParameterList(const std::string& name) : name(name), possibly_changed(true) {}
   virtual ~ParameterList() 
   {
     for (std::list<ConfigParameter*>::iterator iter = parameters.begin(); iter != parameters.end(); ++iter) {
@@ -112,9 +112,19 @@ public:
 
   const std::string& getName() const { return name; }
 
+  // check if any parametsr were changed and reset the flag
+  bool check_changed() const { 
+    bool change = possibly_changed; 
+    possibly_changed = false;
+    return change; 
+  }
+
 private:
   std::string name;
   std::list<ConfigParameter*> parameters;
+
+  // TODO: du it on per parameter basis
+  mutable bool possibly_changed;
 };
 
 

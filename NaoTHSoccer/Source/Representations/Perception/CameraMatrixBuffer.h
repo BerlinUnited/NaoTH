@@ -3,7 +3,7 @@
 
 #include "CameraMatrix.h"
 
-class CameraMatrixBuffer : public RingBuffer<CameraMatrix, 10>, public naoth::Printable
+class CameraMatrixBuffer : public RingBuffer<CameraMatrix, 25>, public naoth::Printable
 {
 public:
 
@@ -21,7 +21,7 @@ public:
   virtual ~CameraMatrixBuffer() {}
 };
 
-class CameraMatrixBufferTop : public RingBuffer<CameraMatrixTop, 10>, public naoth::Printable
+class CameraMatrixBufferTop : public RingBuffer<CameraMatrixTop, 25>, public naoth::Printable
 {
 public:
 

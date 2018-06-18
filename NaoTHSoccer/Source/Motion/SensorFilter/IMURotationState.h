@@ -1,22 +1,21 @@
-#ifndef IMUROTATIONSTATE_H
-#define IMUROTATIONSTATE_H
+/**
+* @file IMURotationState.h
+* 
+* Declaration of class IMURotationState
+*
+* @author <a href="mailto:kaden@informatik.hu-berlin.de">Steffen Kaden</a>
+*/ 
 
-#include <Tools/naoth_eigen.h>
-// TODO: remove pragma
-/*
-#if defined(__GNUC__)
-#pragma GCC diagnostic ignored "-Wconversion"
-#endif
-    #include <Eigen/Geometry>
-    #include <Eigen/Dense>
-#if defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif
-*/
+#ifndef _IMUROTATIONSTATE_H
+#define _IMUROTATIONSTATE_H
+
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 
 // state for rotation and rotational velocity
 template <class M1,/* class M2,*/ int dim, int dim_cov = dim, int rotation_index = 0>
-class RotationState : public Eigen::Matrix<double,dim,1> { //public RotationState<RotationState<M1,/* M2,*/ dim, dim_cov>, rotation_index, dim>{
+class RotationState : public Eigen::Matrix<double,dim,1> //public RotationState<RotationState<M1,/* M2,*/ dim, dim_cov>, rotation_index, dim>
+{
     public: // constructors
         // This constructor allows you to construct MyVectorType from Eigen expressions
         template<typename OtherDerived>
@@ -137,7 +136,7 @@ class RotationState : public Eigen::Matrix<double,dim,1> { //public RotationStat
 
             std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > rotational_differences;
 
-            for(int i = 0; i < 10; ++i){
+            for(int i = 0; i < 10; ++i) {
                 // calculate difference between the mean and the sigma points rotation by means of a rotation
                 rotational_differences.clear();
                 for (typename std::vector<Eigen::Quaterniond, Eigen::aligned_allocator<Eigen::Quaterniond> >::iterator i = rotations.begin(); i != rotations.end(); ++i){
@@ -168,12 +167,12 @@ class RotationState : public Eigen::Matrix<double,dim,1> { //public RotationStat
         }
 
     public:
-        static RotationState calcMean(std::vector<RotationState, Eigen::aligned_allocator<RotationState> >& states){
+        static RotationState calcMean(std::vector<RotationState, Eigen::aligned_allocator<RotationState> >& states) {
             RotationState mean;
             std::vector<Eigen::Quaterniond, Eigen::aligned_allocator<Eigen::Quaterniond> > rotations;
 
             // calculate new state (weighted mean of sigma points)
-            for(typename std::vector<RotationState, Eigen::aligned_allocator<RotationState> >::iterator i = states.begin(); i != states.end(); ++i){
+            for(typename std::vector<RotationState, Eigen::aligned_allocator<RotationState> >::iterator i = states.begin(); i != states.end(); ++i) {
                 rotations.push_back((*i).getRotationAsQuaternion());
                 mean += 1.0 / static_cast<double>(states.size()) * (*i);
             }
@@ -220,7 +219,8 @@ class RotationState : public Eigen::Matrix<double,dim,1> { //public RotationStat
 
 // state for acceleration in "global" reference frame
 template <class M1, int dim, int dim_cov = dim>
-class State : public Eigen::Matrix<double,dim,1>{
+class State : public Eigen::Matrix<double,dim,1>
+{
     public: // constructors
         // This constructor allows you to construct MyVectorType from Eigen expressions
         template<typename OtherDerived>
@@ -229,7 +229,7 @@ class State : public Eigen::Matrix<double,dim,1>{
         { }
 
         // inital state (zero rotation, zero angular velocity)
-        State(): Eigen::Matrix<double,dim,1>(Eigen::Matrix<double,dim,1>::Zero()){
+        State(): Eigen::Matrix<double,dim,1>(Eigen::Matrix<double,dim,1>::Zero()) {
         }
 
         // This method allows you to assign Eigen expressions to MyVectorType
@@ -241,7 +241,7 @@ class State : public Eigen::Matrix<double,dim,1>{
         }
 
     public: // accessors
-        Eigen::Block<Eigen::Matrix<double,dim,1> > acceleration(){
+        Eigen::Block<Eigen::Matrix<double,dim,1> > acceleration() {
             return Eigen::Block<Eigen::Matrix<double,dim,1> >(this->derived(), 0, 0, 3, 1);
         }
 
@@ -264,11 +264,11 @@ class State : public Eigen::Matrix<double,dim,1>{
             return acceleration();
         }
 
-        static State calcMean(std::vector<State, Eigen::aligned_allocator<State> >& states){
+        static State calcMean(std::vector<State, Eigen::aligned_allocator<State> >& states) {
             State mean;
 
             // calculate new state (weighted mean of sigma points)
-            for(typename std::vector<State, Eigen::aligned_allocator<State> >::iterator i = states.begin(); i != states.end(); ++i){
+            for(typename std::vector<State, Eigen::aligned_allocator<State> >::iterator i = states.begin(); i != states.end(); ++i) {
                 mean += 1.0 / static_cast<double>(states.size()) * (*i);
             }
 
@@ -278,4 +278,4 @@ class State : public Eigen::Matrix<double,dim,1>{
         static const int size = dim;
 };
 
-#endif // IMUROTATIONSTATE_H
+#endif // _IMUROTATIONSTATE_H

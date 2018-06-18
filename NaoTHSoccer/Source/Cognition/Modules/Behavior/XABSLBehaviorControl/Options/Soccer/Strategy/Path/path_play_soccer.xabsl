@@ -235,7 +235,7 @@ option path_play_soccer
 	      stay;
 	  }
 	  action {
-	    initial_striker();
+	    path2018_initial_striker();
    		team.is_playing_as_striker = true;
 	  }
   }

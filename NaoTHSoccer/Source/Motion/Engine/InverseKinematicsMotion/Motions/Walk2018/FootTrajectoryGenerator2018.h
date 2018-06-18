@@ -82,7 +82,12 @@ class FootTrajectoryGenerator2018 : private FootTrajectoryGenerator2018Base
     Pose3D stepControl(const Pose3D& oldFoot, const Pose3D& targetFoot,
                        double cycle, double samplesDoubleSupport, double samplesSingleSupport,
                        double stepHeight, double footPitchOffset, double footRollOffset,
-                       double speedDirection, double scale) const;
+					   double speedDirection, double scale) const;
+
+	Pose3D stepControlNew(const FootStep& step,
+						  double cycle, double samplesDoubleSupport, double samplesSingleSupport,
+						  double stepHeight, double footPitchOffset, double footRollOffset,
+		                  double speedDirection, double scale, double sidekick_width) const;
 
     Pose3D genTrajectoryWithSplines(const Pose3D& oldFoot, const Pose3D& targetFoot,
                                     double cycle, double duration,

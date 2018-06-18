@@ -192,9 +192,8 @@ public:
 
   enum Message
   {
-    manual_penalise   = GAMECONTROLLER_RETURN_MSG_MAN_PENALISE,
-    manual_unpenalise = GAMECONTROLLER_RETURN_MSG_MAN_UNPENALISE,
-    alive             = GAMECONTROLLER_RETURN_MSG_ALIVE
+    alive             = GAMECONTROLLER_RETURN_MSG_ALIVE,
+    dead              = 100
   };
 
   static std::string toString(Message value);

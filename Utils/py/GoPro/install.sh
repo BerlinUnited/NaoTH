@@ -23,9 +23,9 @@ check_dependencies() {
 		return 1
 	fi
 	# check python module
-	python -c "import RPi.GPIO" 2> /dev/null
+	python3 -c "import RPi.GPIO" 2> /dev/null
 	if [ $? != 0 ]; then
-		echo "Python module 'RPi.GPIO' is required! Please install first."
+		echo "Python module 'RPi.GPIO' is required! Please install first (eg. 'sudo apt-get install python3-rpi.gpio')."
 		return 2
 	fi
 	# everything 'ok'

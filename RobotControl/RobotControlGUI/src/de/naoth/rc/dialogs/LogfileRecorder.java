@@ -16,17 +16,25 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
+import de.naoth.rc.dataformats.ModuleConfiguration;
 import de.naoth.rc.manager.GenericManager;
 import de.naoth.rc.manager.GenericManagerFactory;
+import de.naoth.rc.manager.ModuleConfigurationManager;
 import de.naoth.rc.scp.Scp;
 import de.naoth.rc.server.Command;
 import java.io.FileOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -40,7 +48,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  *
  * @author thomas
  */
-public class LogfileRecorder extends AbstractDialog
+public class LogfileRecorder extends AbstractDialog implements ObjectListener<ModuleConfiguration>
 {
   @RCDialog(category = RCDialog.Category.Log, name = "Recorder")
   @PluginImplementation
@@ -51,11 +59,16 @@ public class LogfileRecorder extends AbstractDialog
     static public SwingCommandExecutor commandExecutor;
     @InjectPlugin
     public static GenericManagerFactory genericManagerFactory;
+    @InjectPlugin
+    public static ModuleConfigurationManager moduleConfigurationManager;
   }
   
   private LoggerItem selectedLog;
   
   Map<String, Collection<String>> selectionLists = new TreeMap<String, Collection<String>>();
+  // todo: load from config
+  List<String> defaultSelectionSchemes = Arrays.asList("none","Basic Perception", "Last Record", "-----------");
+  List<String> ignoreModulesRepresentations = Arrays.asList();
   
   StatusApdateHandler statusUpdateHandler = new StatusApdateHandler();
   
@@ -80,12 +93,7 @@ public class LogfileRecorder extends AbstractDialog
                 "InertialModel")
     );
     
-    // todo: load from config
-    DefaultComboBoxModel m = new DefaultComboBoxModel();
-    m.addElement("none");
-    m.addElement("Basic Perception");
-    m.addElement("Last Record");
-    cbSelectionScheme.setModel(m);
+    defaultSelectionSchemes.forEach((item) -> { cbSelectionScheme.addItem(item); });
     
     DefaultComboBoxModel loggerListModel = new DefaultComboBoxModel();
     loggerListModel.addElement(new LoggerItem("CognitionLog", "Cognition:CognitionLog"));
@@ -131,6 +139,14 @@ public class LogfileRecorder extends AbstractDialog
             statusUpdateManager.removeListener(listener);
         }
       }
+  }
+
+  private String getLogType() {
+      switch(cbLogName.getSelectedItem().toString()) {
+          case "CognitionLog": return "Cognition";
+          case "MotionLog": return "Motion";
+      }
+      return null;
   }
 
   class DefaultHandler implements ObjectListener<byte[]>
@@ -303,6 +319,7 @@ public class LogfileRecorder extends AbstractDialog
         stringSelectionPanel.setEnabled(false);
 
         cbSelectionScheme.setEnabled(false);
+        cbSelectionScheme.setPrototypeDisplayValue("BallDetectorIntegralImageTop");
         cbSelectionScheme.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbSelectionSchemeActionPerformed(evt);
@@ -328,10 +345,10 @@ public class LogfileRecorder extends AbstractDialog
                     .addComponent(txtTempFile, javax.swing.GroupLayout.DEFAULT_SIZE, 507, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 148, Short.MAX_VALUE)
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cbSelectionScheme, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(cbSelectionScheme, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 507, Short.MAX_VALUE)
                     .addComponent(stringSelectionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 511, Short.MAX_VALUE))
                 .addContainerGap())
@@ -375,6 +392,8 @@ public class LogfileRecorder extends AbstractDialog
         cbLogName.setEnabled(false);
         stringSelectionPanel.setEnabled(true);
         cbSelectionScheme.setEnabled(true);
+        Plugin.moduleConfigurationManager.setModuleOwner(getLogType());
+        Plugin.moduleConfigurationManager.addListener(this);
       }
     }//GEN-LAST:event_btNewActionPerformed
 
@@ -409,7 +428,7 @@ public class LogfileRecorder extends AbstractDialog
           }
           
           // remember selected stuff
-          selectionLists.put("Last Record", stringSelectionPanel.getSelection());
+          selectionLists.put("Last Record", new ArrayList<>(stringSelectionPanel.getSelection()));
         }
         
         // activate permantent logging
@@ -491,8 +510,10 @@ public class LogfileRecorder extends AbstractDialog
 
     private void cbSelectionSchemeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbSelectionSchemeActionPerformed
         stringSelectionPanel.clearSelection();
-        Collection<String> selection = selectionLists.get((String)cbSelectionScheme.getSelectedItem());
-        stringSelectionPanel.select(selection);
+        if(cbSelectionScheme.getSelectedItem() != null) {
+            Collection<String> selection = selectionLists.get((String)cbSelectionScheme.getSelectedItem());
+            stringSelectionPanel.select(selection);
+        }
     }//GEN-LAST:event_cbSelectionSchemeActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -609,4 +630,96 @@ public class LogfileRecorder extends AbstractDialog
     close();
   }
 
+    @Override
+    public void newObjectReceived(ModuleConfiguration moduleConfiguration) {
+        // retrieve modules/representations only once
+        Plugin.moduleConfigurationManager.removeListener(this);
+        // mapping from modules to required representations
+        HashMap<String, Set<String>> modules = new HashMap<>();
+        // mapping from representations to providing modules
+        HashMap<String, Set<String>> representations = new HashMap<>();
+        // iterate through modules
+        for (ModuleConfiguration.Node node : moduleConfiguration.getNodeList()) {
+            // only modules
+            if (node.getType() == ModuleConfiguration.NodeType.Module) {
+                // generate the mapping from modules to required representations
+                if(!node.require.isEmpty()) {
+                    modules.put(node.getName(), new HashSet<>(node.require.stream().map((t) -> {
+                        return t.getName();
+                    }).collect(Collectors.toList())));
+                }
+                // generate the mapping from representations to providing modules
+                if(!node.provide.isEmpty()) {
+                    node.provide.stream().forEach((n) -> {
+                        // create set, if not exists
+                        if(!representations.containsKey(n.getName())) {
+                            representations.put(n.getName(), new HashSet<>());
+                        }
+                        representations.get(n.getName()).add(node.getName());
+                    });
+                }
+            }
+        }
+        
+        ArrayList<String> newModules = new ArrayList<>();
+        HashMap<String, Set<String>> dependend_representations = new HashMap<>();
+        
+        // for all modules collect all dependend modules
+        for (String m : modules.keySet()) {
+            dependend_representations.put(m, new HashSet<>());
+            // the module depends on itself
+            dependend_representations.get(m).add(m);
+            // as long as new/dependend modules are added, continue adding modules
+            while (true) {
+                HashSet<String> subs = new HashSet<>();
+                // check for each depended module, if it got another dependency
+                for (String submodule : dependend_representations.get(m)) {
+                    // do we know the dependent module
+                    if(modules.containsKey(submodule)) {
+                        // add all available & dependable representations
+                        modules.get(submodule).stream().filter((r) -> {
+                            return representations.containsKey(r);
+                        }).forEach((r) -> {
+                            // only select modules, which representations can not directly recorded
+                            if(!stringSelectionPanel.getOptions().contains(r))
+                                subs.addAll(representations.get(r));
+                        });
+                    }
+                }
+                // add dependend modules and check if something new was added
+                int size = dependend_representations.get(m).size();
+                dependend_representations.get(m).addAll(subs);
+                if(dependend_representations.get(m).size() == size) {
+                    // nothing new added, 'finish'
+                    break;
+                }
+            }
+            
+            List<String> module_representations = new ArrayList<>();
+            // only add modules which provide and where representation is available
+            for (String string : dependend_representations.get(m)) {
+                if(modules.containsKey(string)) {
+                    module_representations.addAll(modules.get(string).stream().filter((t) -> {
+                        return stringSelectionPanel.getOptions().contains(t) && !ignoreModulesRepresentations.contains(t);
+                    }).collect(Collectors.toList()));
+                }
+            }
+            
+            // add module to selection list
+            if(!module_representations.isEmpty()) {
+                selectionLists.put(m, module_representations);
+                newModules.add(m);
+            }
+        }
+        
+        // remove "old" modules from scheme selection list and re-add the default ones
+        cbSelectionScheme.removeAllItems();
+        defaultSelectionSchemes.forEach((item) -> { cbSelectionScheme.addItem(item); });
+        newModules.stream().sorted().forEach((m) -> { cbSelectionScheme.addItem(m); });
+    }
+
+    @Override
+    public void errorOccured(String cause) {
+        Plugin.moduleConfigurationManager.removeListener(this);
+    }
 }//end class

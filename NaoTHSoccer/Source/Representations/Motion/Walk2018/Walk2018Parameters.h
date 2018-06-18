@@ -117,6 +117,11 @@ class FootTrajectoryGenerator2018Parameters: public ParameterList{
         PARAMETER_REGISTER(stepHeight) = 21;
         PARAMETER_REGISTER(kickHeight) = 35;
         PARAMETER_REGISTER(useSplineFootTrajectory)  = true;
+        PARAMETER_REGISTER(useSplineFootTrajectoryForSideKicks) = true;
+        PARAMETER_REGISTER(sideKickWidth) = 70;
+
+        // By y030:
+        PARAMETER_REGISTER(sideKickWidth) = 70;
 
         syncWithConfig();
       }
@@ -124,6 +129,8 @@ class FootTrajectoryGenerator2018Parameters: public ParameterList{
       double kickHeight;
       double stepHeight;
       bool   useSplineFootTrajectory;
+      bool   useSplineFootTrajectoryForSideKicks;
+      double sideKickWidth;
 };
 
 class HipRotationOffsetModifierParameters: public ParameterList{

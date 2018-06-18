@@ -125,7 +125,7 @@ void LogFileScanner::readFrame(unsigned int currentFrame, Frame& frame)
   logFile.clear();
   logFile.seekg(start);
   
-  for(LogFileScanner::Frame::iterator i = frame.begin(); i != frame.end(); i++) {
+  for(LogFileScanner::Frame::iterator i = frame.begin(); i != frame.end(); ++i) {
     (*i).second.valid = false;
   }
 

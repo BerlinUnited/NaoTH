@@ -1,11 +1,14 @@
+/**
+* @file IMUModel.cpp
+* 
+* Definition of class IMUModel
+*
+* @author <a href="mailto:kaden@informatik.hu-berlin.de">Steffen Kaden</a>
+*/ 
+
 #include "IMUModel.h"
 
-//TODO: remove pragma, problem with eigens optimization stuff "because conversion sequence for the argument is better"
-#if defined(__GNUC__)
-#pragma GCC diagnostic ignored "-Wconversion"
-#endif
-
-IMUModel::IMUModel():
+IMUModel::IMUModel() :
     integrated(1,0,0,0)
 {
     DEBUG_REQUEST_REGISTER("IMUModel:reset_filter", "reset filter", false);
@@ -29,7 +32,8 @@ IMUModel::~IMUModel()
     getDebugParameterList().remove(&imuParameters);
 }
 
-void IMUModel::execute(){
+void IMUModel::execute()
+{
     DEBUG_REQUEST("IMUModel:reset_filter",
                   ukf_rot.reset();
                   ukf_acc_global.reset();
@@ -67,8 +71,8 @@ void IMUModel::execute(){
     IMU_RotationMeasurement z;
     z << acceleration.normalized(), gyro;
 
-    if(getMotionStatus().currentMotion == motion::walk){
-        if(imuParameters.enableWhileWalking){
+    if(getMotionStatus().currentMotion == motion::walk) {
+        if(imuParameters.enableWhileWalking) {
             ukf_rot.update(z, R_rotation_walk);
         }
     } else {
@@ -83,7 +87,7 @@ void IMUModel::execute(){
     // TODO: really needs bias removal or "calibration" of g
     IMU_AccMeasurementGlobal z_acc = ukf_rot.state.getRotationAsQuaternion()._transformVector(acceleration);
 
-    if(getMotionStatus().currentMotion == motion::walk){
+    if(getMotionStatus().currentMotion == motion::walk) {
         ukf_acc_global.Q = Q_acc_walk;
     } else {
         ukf_acc_global.Q = Q_acc;
@@ -94,8 +98,8 @@ void IMUModel::execute(){
     Eigen::Vector3d u_acc(0,0,0); // TODO: use generated jerk as control vector?
     ukf_acc_global.predict(u_acc, getRobotInfo().getBasicTimeStepInSecond());
 
-    if(getMotionStatus().currentMotion == motion::walk){
-        if(imuParameters.enableWhileWalking){
+    if(getMotionStatus().currentMotion == motion::walk) {
+        if(imuParameters.enableWhileWalking) {
             ukf_acc_global.update(z_acc, R_acc_walk);
         }
     } else {
@@ -112,7 +116,8 @@ void IMUModel::execute(){
     lastFrameInfo = getFrameInfo();
 }
 
-void IMUModel::writeIMUData(){
+void IMUModel::writeIMUData()
+{
     // raw sensor values
     getIMUData().rotational_velocity_sensor = getGyrometerData().data;
     getIMUData().acceleration_sensor        = getAccelerometerData().data;
@@ -164,7 +169,8 @@ void IMUModel::writeIMUData(){
     getIMUData().rotational_velocity.z = ukf_rot.state.rotational_velocity()(2,0);
 }
 
-void IMUModel::plots(){
+void IMUModel::plots()
+{
     // --- for testing integration
         Eigen::Matrix3d rot_vel_mat;
         // getGyrometerData().data.z is inverted!
@@ -245,7 +251,3 @@ void IMUModel::reloadParameters()
     R_rotation_walk.block<3,3>(0,0) *= imuParameters.rotation.walk.measurementNoiseAcc;
     R_rotation_walk.block<3,3>(3,3) *= imuParameters.rotation.walk.measurementNoiseGyro;
 }
-
-#if defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif

@@ -270,9 +270,8 @@ std::string GameReturnData::toString(Message value)
 {
   switch (value)
   {
-    RETURN_VALUE_TO_STR(manual_penalise);
-    RETURN_VALUE_TO_STR(manual_unpenalise);
     RETURN_VALUE_TO_STR(alive);
+    RETURN_VALUE_TO_STR(dead);
   }
   
   ASSERT(false);
