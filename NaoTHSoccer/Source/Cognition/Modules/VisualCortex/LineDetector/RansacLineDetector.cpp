@@ -7,7 +7,7 @@ RansacLineDetector::RansacLineDetector()
   DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:draw_lines_field", "", false);
   DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:fit_and_draw_ellipse_field", "", false);
 
-  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:fit_and_draw_circle_field", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:draw_circle_field", "", false);
 
   getDebugParameterList().add(&params);
 }
@@ -61,7 +61,7 @@ void RansacLineDetector::execute()
     getLinePercept().middleCircleCenter = circResult;
   }
 
-  DEBUG_REQUEST("Vision:RansacLineDetector:fit_and_draw_circle_field",
+  DEBUG_REQUEST("Vision:RansacLineDetector:draw_circle_field",
     FIELD_DRAWING_CONTEXT;
     if (bestInlierCirc) {
       PEN("000099", 5);
