@@ -20,19 +20,13 @@ RansacLineDetector::~RansacLineDetector()
 void RansacLineDetector::execute()
 {
   getLinePercept().reset();
-
-  // copy the edgels
-  // todo: can this be optimized?
-  //outliers.assign(getLineGraphPercept().edgels.begin(), getLineGraphPercept().edgels.end());
   outliers.resize(getLineGraphPercept().edgelsOnField.size());
   getLinePercept().edgelLineIDs.resize(getLineGraphPercept().edgelsOnField.size());
-
+  // copy the edgels
   for(size_t i = 0; i < getLineGraphPercept().edgelsOnField.size(); ++i) {
     outliers[i] = i;
     getLinePercept().edgelLineIDs[i] = -1;
   }
-
-  bool foundLines = false;
 
   std::vector<size_t> inliers;
 
@@ -41,7 +35,6 @@ void RansacLineDetector::execute()
     Math::LineSegment result;
     if(ransac(result, inliers) > 0)
     {
-      foundLines = true;
       LinePercept::FieldLineSegment fieldLine;
       fieldLine.lineOnField = result;
       getLinePercept().lines.push_back(fieldLine);
@@ -108,21 +101,18 @@ void RansacLineDetector::execute()
 
   DEBUG_REQUEST("Vision:RansacLineDetector:draw_lines_field",
     FIELD_DRAWING_CONTEXT;
-
-    if (foundLines) {
-      for(size_t i=0; i<getLinePercept().lines.size(); i++)
-      {
-        std::string color;
-        switch(i%3) {
-          case 0: color = "00FF00"; break;
-          case 1: color = "0000FF"; break;
-          default: color = "00FFFF"; break;
-        }
-        PEN(color, 50);
-        LINE(
-          getLinePercept().lines[i].lineOnField.begin().x, getLinePercept().lines[i].lineOnField.begin().y,
-          getLinePercept().lines[i].lineOnField.end().x, getLinePercept().lines[i].lineOnField.end().y);
+    for(size_t i=0; i<getLinePercept().lines.size(); i++)
+    {
+      std::string color;
+      switch(i%3) {
+        case 0: color = "00FF00"; break;
+        case 1: color = "0000FF"; break;
+        default: color = "00FFFF"; break;
       }
+      PEN(color, 50);
+      LINE(
+        getLinePercept().lines[i].lineOnField.begin().x, getLinePercept().lines[i].lineOnField.begin().y,
+        getLinePercept().lines[i].lineOnField.end().x, getLinePercept().lines[i].lineOnField.end().y);
     }
 
   );
@@ -130,39 +120,39 @@ void RansacLineDetector::execute()
   DEBUG_REQUEST("Vision:RansacLineDetector:fit_and_draw_ellipse_field",
     FIELD_DRAWING_CONTEXT;
     // fit ellipse
-    Ellipse circResult;
+    Ellipse ellipseResult;
 
-    int bestInlierCirc = ransacEllipse(circResult);
+    int bestInlierCirc = ransacEllipse(ellipseResult);
 
     if (bestInlierCirc > 0) {
       {
         
         double c[2];
-        circResult.getCenter(c);
+        ellipseResult.getCenter(c);
 
         double a[2];
-        circResult.axesLength(a);
+        ellipseResult.axesLength(a);
 
         PEN("009900", 50);
 
         //CIRCLE(c[0], c[1], 30);
-        OVAL_ROTATED(c[0], c[1], a[0], a[1], circResult.rotationAngle());
+        OVAL_ROTATED(c[0], c[1], a[0], a[1], ellipseResult.rotationAngle());
 
         PEN("0000AA", 20);
-        for(size_t i=0; i<circResult.x_toFit.size(); i++) {
-          CIRCLE(circResult.x_toFit[i], circResult.y_toFit[i], 20);
+        for(size_t i=0; i<ellipseResult.x_toFit.size(); i++) {
+          CIRCLE(ellipseResult.x_toFit[i], ellipseResult.y_toFit[i], 20);
         }
       }
 
       {
-        Vector2d c = circResult.getCenter();
-        Vector2d a = circResult.axesLength();
+        Vector2d c = ellipseResult.getCenter();
+        Vector2d a = ellipseResult.axesLength();
         
         Vector2d ax(a.x,0.0); 
-        ax.rotate(circResult.rotationAngle());
+        ax.rotate(ellipseResult.rotationAngle());
 
         Vector2d ay(0.0,a.y); 
-        ay.rotate(circResult.rotationAngle());
+        ay.rotate(ellipseResult.rotationAngle());
 
         PEN("FF0000", 20);
         CIRCLE(c.x, c.y, 50);
@@ -171,7 +161,7 @@ void RansacLineDetector::execute()
 
 
         Vector2d point(500,500);
-        Vector2d p = circResult.test_project(point);
+        Vector2d p = ellipseResult.test_project(point);
         PEN("FF0000", 20);
         CIRCLE(point.x, point.y, 50);
         PEN("0000FF", 20);
