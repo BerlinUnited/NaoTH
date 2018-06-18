@@ -10,12 +10,21 @@ option path_basic_goalie
     decision {
       /* why not "body.ready_to_walk"??! */
       else if(game.current_mode == playing)
-        goto go_to_strategy_point;
+        //goto go_to_strategy_point;
+        goto stand;
       else
         stay;
     }
     action {
       
+    }
+  }
+
+  state stand
+  {
+    action
+    {
+      motion.type = stand;
     }
   }
 
