@@ -135,21 +135,50 @@ void RansacLineDetector::execute()
     int bestInlierCirc = ransacEllipse(circResult);
 
     if (bestInlierCirc > 0) {
-      double c[2];
-      circResult.getCenter(c);
+      {
+        
+        double c[2];
+        circResult.getCenter(c);
 
-      double a[2];
-      circResult.axesLength(a);
+        double a[2];
+        circResult.axesLength(a);
 
-      PEN("009900", 50);
+        PEN("009900", 50);
 
-      CIRCLE(c[0], c[1], 30);
-      OVAL_ROTATED(c[0], c[1], a[0], a[1], circResult.rotationAngle());
+        //CIRCLE(c[0], c[1], 30);
+        OVAL_ROTATED(c[0], c[1], a[0], a[1], circResult.rotationAngle());
 
-      PEN("0000AA", 20);
-      for(size_t i=0; i<circResult.x_toFit.size(); i++) {
-        CIRCLE(circResult.x_toFit[i], circResult.y_toFit[i], 20);
+        PEN("0000AA", 20);
+        for(size_t i=0; i<circResult.x_toFit.size(); i++) {
+          CIRCLE(circResult.x_toFit[i], circResult.y_toFit[i], 20);
+        }
       }
+
+      {
+        Vector2d c = circResult.getCenter();
+        Vector2d a = circResult.axesLength();
+        
+        Vector2d ax(a.x,0.0); 
+        ax.rotate(circResult.rotationAngle());
+
+        Vector2d ay(0.0,a.y); 
+        ay.rotate(circResult.rotationAngle());
+
+        PEN("FF0000", 20);
+        CIRCLE(c.x, c.y, 50);
+        LINE(c.x, c.y, c.x+ax.x, c.y+ax.y);
+        LINE(c.x, c.y, c.x+ay.x, c.y+ay.y);
+
+
+        Vector2d point(500,500);
+        Vector2d p = circResult.test_project(point);
+        PEN("FF0000", 20);
+        CIRCLE(point.x, point.y, 50);
+        PEN("0000FF", 20);
+        CIRCLE(p.x, p.y, 50);
+        PEN("000000", 10);
+        LINE(point.x, point.y, p.x, p.y);
+    }
     }
   );
 
@@ -211,7 +240,8 @@ int RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& i
     }
   }
 
-  if(bestInlier > 2) {
+  if(bestInlier > 2) 
+  {
     // update the outliers
     // todo: make it faster
     std::vector<size_t> newOutliers;
@@ -219,7 +249,7 @@ int RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& i
     double minT = 0;
     double maxT = 0;
 
-    double mean_angle = 0;
+    Vector2d mean_direction;
 
     for(size_t i: outliers)
     {
@@ -232,22 +262,26 @@ int RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& i
         maxT = std::max(t, maxT);
         inliers.push_back(i);
 
-        mean_angle += Math::toDegrees(e.direction.angle());
+        mean_direction += e.direction;
       } else {
         newOutliers.push_back(i);
       }
     }
 
-    double angle_var = 0;
+    Vector2d direction_var;
 
-    if(inliers.size()) {
-      mean_angle /= static_cast<int>(inliers.size());
+    if(!inliers.empty()) 
+    {
+      mean_direction /= static_cast<int>(inliers.size());
 
       for(size_t i : inliers) {
         const Edgel& e = getLineGraphPercept().edgelsOnField[i];
-        angle_var += std::pow(Math::toDegrees(e.direction.angle()) - mean_angle, 2);
+        Vector2d tmp(1.0,0.0);
+        tmp.rotate(std::fabs(Math::normalize(e.direction.angle() - mean_direction.angle())));
+
+        direction_var += tmp;
       }
-      angle_var /= static_cast<int>(inliers.size());
+      double angle_var = (direction_var / static_cast<int>(inliers.size())).angle();
 
       result = Math::LineSegment(bestModel.point(minT), bestModel.point(maxT));
       double line_length = result.getLength();
