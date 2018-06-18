@@ -46,11 +46,9 @@ void FootStepPlanner2018::execute()
     if(getStepBuffer().first().footStep.liftingFoot() == FootStep::LEFT){ // weight shifting from right to left
         ready_to_switch_support = getCentreOfPressure().in_kinematic_chain_origin.valid
                                   && getCentreOfPressure().in_kinematic_chain_origin.CoP.y > parameters.stabilization.switching_offset;
-        delayed_frames++;
     } else if(getStepBuffer().first().footStep.liftingFoot() == FootStep::RIGHT){ // weight shifting from left to right
         ready_to_switch_support = getCentreOfPressure().in_kinematic_chain_origin.valid
                                   && getCentreOfPressure().in_kinematic_chain_origin.CoP.y < -1 * parameters.stabilization.switching_offset;
-        delayed_frames++;
     } else { // both feet on the ground
         ready_to_switch_support = true;
     }
@@ -63,9 +61,12 @@ void FootStepPlanner2018::execute()
     if (getStepBuffer().first().isExecuted() && (!parameters.stabilization.use_step_feedback || ready_to_switch_support || delayed_frames > parameters.stabilization.max_frames)) {
       getStepBuffer().remove();
       delayed_frames = 0;
+    } else if(parameters.stabilization.use_step_feedback && getStepBuffer().first().isExecuted()){
+      delayed_frames++;
     }
 
     PLOT("FootStepPlanner2018:exceedExecutionCycle", getStepBuffer().first().isExecuted());
+    PLOT("FootStepPlanner2018:delayed_frames", delayed_frames);
 
     // add a new step
     if(getStepBuffer().last().isPlanned()) {
