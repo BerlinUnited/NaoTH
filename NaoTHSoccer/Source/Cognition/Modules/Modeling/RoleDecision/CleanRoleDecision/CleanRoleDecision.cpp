@@ -28,6 +28,10 @@ void CleanRoleDecision::execute() {
     getRoleDecisionModel().resetRobotStates();
     computeStrikers();
 
+    // reset second striker decision, if we doesn't want to use the second striker
+    if(!parameters.useSecondStriker) {
+        getRoleDecisionModel().secondStriker = std::numeric_limits<int>::max();
+    }
 }//end execute
 
 void CleanRoleDecision::computeStrikers()
@@ -143,8 +147,8 @@ void CleanRoleDecision::strikerSelectionByTime(std::map<unsigned int, unsigned i
             getRoleDecisionModel().secondStriker = it->first;
             ndFastest = it->second;
         }
-        // if there's a robot closer to the ball than myself, i don't want to be striker!
-        if(it->second < ownTimeToBall) {
+        // if there's a 2nd robot closer to the ball than myself, i don't want to be (second)striker!
+        if(ndFastest < ownTimeToBall) {
             getRoleDecisionModel().wantsToBeStriker = false;
         }
     }
@@ -175,8 +179,8 @@ void CleanRoleDecision::strikerSelectionByTimeExceptGoalie(std::map<unsigned int
             getRoleDecisionModel().secondStriker = it->first;
             ndFastest = it->second;
         }
-        // if there's a robot closer to the ball than myself, i don't want to be striker!
-        if(it->second < ownTimeToBall) {
+        // if there's a 2nd robot closer to the ball than myself, i don't want to be (second)striker!
+        if(ndFastest < ownTimeToBall) {
             getRoleDecisionModel().wantsToBeStriker = false;
         }
     }
