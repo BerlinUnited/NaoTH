@@ -14,10 +14,6 @@ option path_decide_role
     {
       goto striker;
     }
-    else if (team.calc_if_is_secondstriker) {
-      goto secondstriker;
-    }
-    
     else if(true)
     {
       goto passive;
@@ -90,7 +86,9 @@ option path_decide_role
     action
     {
       team.is_playing_as_striker = false;
-      decide_and_go_to_passive_position();
+      //decide_and_go_to_passive_position();
+      // dobermann
+      decide_and_go_to_passive_position_dobermann();
     }
   }
   
