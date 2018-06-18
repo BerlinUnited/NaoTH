@@ -118,6 +118,7 @@ include "Options/Soccer/Strategy/basic_goalie.xabsl";
 include "Options/Soccer/Strategy/goalie_watch_ball.xabsl";
 //Initial Striker
 include "Options/Soccer/Strategy/initial_striker.xabsl";
+include "Options/Soccer/Strategy/Path/path2018_initial_striker.xabsl";
 
 
 // Penalty
@@ -248,7 +249,7 @@ include "Options/Test/walk/walk_forward.xabsl";
 
 // Test role change
 include "Options/Test/strategy/role_change_test.xabsl";
-
+include "Options/Test/strategy/role_change_goalie_test.xabsl";
 
 include "Options/Test/change_state_input_test.xabsl";
  // Useless?
