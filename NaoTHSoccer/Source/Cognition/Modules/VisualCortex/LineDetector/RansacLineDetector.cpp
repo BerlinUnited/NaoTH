@@ -187,13 +187,9 @@ int RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& i
 
   for(int i = 0; i < params.iterations; ++i)
   {
-    //pick two random points
-    int i0 = Math::random((int)outliers.size());
-    int i1 = Math::random((int)outliers.size());
-
-    if(i0 == i1) {
-      continue;
-    }
+    //pick two random points without replacement
+    size_t i0 = choose_random_from(outliers, 1);
+    size_t i1 = choose_random_from(outliers, 2);
 
     const Edgel& a = getLineGraphPercept().edgelsOnField[outliers[i0]];
     const Edgel& b = getLineGraphPercept().edgelsOnField[outliers[i1]];

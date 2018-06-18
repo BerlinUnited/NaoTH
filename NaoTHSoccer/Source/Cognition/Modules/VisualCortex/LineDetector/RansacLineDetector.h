@@ -130,6 +130,24 @@ private:
     return acos(fabs(tangent_d*edgel.direction));
   }
 
+  /**
+    Get random items without replacement from a vector.
+    Beware: This changes the order of the items.
+
+    @param vec vector to choose random item from.
+    @param ith choose the ith random item without replacement.
+    Ex: For 3 random items without replacement call
+    the function 3 times with ith=1, ith=2 and ith=3.
+    @return random item of the vector without replacement.
+  */
+  size_t choose_random_from(std::vector<size_t> &vec, int ith) {
+    int max = (int) vec.size()-1;
+    int random_pos = Math::random(ith, max);
+    std::swap(vec[random_pos], vec[ith-1]);
+    return vec[ith-1];
+  }
+
+  // TODO replace with choose_random_from
   //swaps v[i] with a random v[x], x in [0:i]
   size_t swap_random(std::vector<size_t> &v, int i) {
     int r = Math::random(i+1);
