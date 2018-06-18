@@ -52,6 +52,32 @@ void RansacLineDetector::execute()
     inliers.clear();
   }
 
+  // circle
+  Vector2d circResult;
+  inliers.clear();
+  int bestInlierCirc = ransacCircle(circResult, inliers);
+
+  if (bestInlierCirc) {
+    getLinePercept().middleCircleCenter = circResult;
+  }
+
+  DEBUG_REQUEST("Vision:RansacLineDetector:fit_and_draw_circle_field",
+    FIELD_DRAWING_CONTEXT;
+    if (bestInlierCirc) {
+      PEN("000099", 5);
+
+      for(size_t i: inliers)
+      {
+        const Edgel& e = getLineGraphPercept().edgelsOnField[i];
+        CIRCLE(e.point.x, e.point.y, 30);
+      }
+
+      PEN("009900", 10);
+
+      CIRCLE(circResult.x, circResult.y, 750);
+    }
+  );
+
   DEBUG_REQUEST("Vision:RansacLineDetector:draw_edgels_field",
     FIELD_DRAWING_CONTEXT;
 
@@ -127,28 +153,7 @@ void RansacLineDetector::execute()
     }
   );
 
-  DEBUG_REQUEST("Vision:RansacLineDetector:fit_and_draw_circle_field",
-    FIELD_DRAWING_CONTEXT;
-    // fit ellipse
-    Vector2d circResult;
-    std::vector<size_t> inliers;
 
-    int bestInlierCirc = ransacCircle(circResult, inliers);
-
-    if (bestInlierCirc) {
-      PEN("000099", 10);
-
-      for(size_t i: inliers)
-      {
-        const Edgel& e = getLineGraphPercept().edgelsOnField[i];
-        CIRCLE(e.point.x, e.point.y, 30);
-      }
-
-      PEN("009900", 20);
-
-      CIRCLE(circResult.x, circResult.y, 750);
-    }
-  );
 }
 
 int RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& inliers)
