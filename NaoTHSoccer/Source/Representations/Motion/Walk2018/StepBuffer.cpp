@@ -9,6 +9,40 @@
 #include <Messages/Representations.pb.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
+std::ostream& operator<<(std::ostream& os, const Step& s){
+  InverseKinematic::FeetPose begin = s.footStep.begin();
+  InverseKinematic::FeetPose end = s.footStep.end();
+
+  Pose3D end_relative_to_begin;
+  Pose3D begin_foot,end_foot;
+  if(s.footStep.liftingFoot() == FootStep::LEFT) {
+      begin.localInLeftFoot();
+      end.localInRightFoot();
+      end_relative_to_begin = begin.right * end.left;
+      begin.localInRightFoot();
+      begin_foot = begin.left;
+      end_foot   = end.left;
+  } else {
+      begin.localInRightFoot();
+      end.localInLeftFoot();
+      end_relative_to_begin = begin.left * end.right;
+      begin.localInLeftFoot();
+      begin_foot = begin.right;
+      end_foot   = end.right;
+  }
+
+  os << "begin" << std::endl;
+  os << begin_foot/*s.footStep.footBegin()*/ << std::endl;
+  os << "end" << std::endl;
+  os << end_foot/*s.footStep.footEnd()*/   << std::endl;
+  os << "support" << std::endl;
+  os << s.footStep.supFoot()   << std::endl;
+  os << "end relative to begin" << std::endl;
+  os << end_relative_to_begin   << std::endl;
+
+  return os;
+}
+
 //using namespace naoth;
 
 //void Serializer<StepBuffer>::StepBuffer(const StepBuffer& /*representation*/, std::ostream& /*stream*/)
