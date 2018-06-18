@@ -175,7 +175,7 @@ option path_play_soccer
   {
     decision
     {
-      else if (action_done)
+      else if (action_done || state_time > 10000)
         goto play;
       else
         stay;
