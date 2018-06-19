@@ -111,7 +111,8 @@ void RansacLineDetectorOnGraphs::execute()
     );
   }
 
-  if (ransacEllipse(circResult, graphEdgelsTop, getLineGraphPercept().lineGraphsTop)) {
+  if (params.enable_ellipse_fitting
+      && ransacEllipse(circResult, graphEdgelsTop, getLineGraphPercept().lineGraphsTop)) {
     getLinePercept().middleCircleWasSeen = true;
 
     double c[2];

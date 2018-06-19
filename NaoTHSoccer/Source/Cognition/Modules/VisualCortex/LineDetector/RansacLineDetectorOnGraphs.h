@@ -78,6 +78,8 @@ private:
       PARAMETER_REGISTER(circle_degeneration) = 0.9;
       PARAMETER_REGISTER(circle_line_threshold) = 0.5;
 
+      PARAMETER_REGISTER(enable_ellipse_fitting) = false;
+
       syncWithConfig();
     }
 
@@ -94,6 +96,7 @@ private:
     int circle_inlierMin;
     double circle_degeneration;
     double circle_line_threshold;
+    bool enable_ellipse_fitting;
 
   } params;
 
