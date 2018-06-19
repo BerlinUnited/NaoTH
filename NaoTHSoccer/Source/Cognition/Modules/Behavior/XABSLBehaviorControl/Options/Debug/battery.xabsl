@@ -8,6 +8,8 @@ option battery {
         goto charging;
       else if(platform.battery <= 0.05)
         goto low_warn;
+      else if(!battery.isCharging && !battery.isDischarging)
+        goto idle;
       else
         stay;
     }
@@ -50,6 +52,23 @@ option battery {
       set_left_ear = (platform.frameNumber % 30 < 15) ? 9 : 0;
       set_right_ear = (platform.frameNumber % 30 < 15) ? 9 : 0;
       set_head = (platform.frameNumber % 30 < 15) ? ((robot_pose.x < 0) ? 3 : 6) : 0;
+    }
+  }
+  state idle
+  {
+    decision
+    {
+      if(battey.isCharging || battery.isDischarging)
+        goto ok;
+      else
+        stay;        
+    }
+    action
+    {
+      //Fast flashing blinking
+      set_left_ear = (platform.frameNumber % 15 < 8) ? 9 : 0;
+      set_right_ear = (platform.frameNumber % 15 < 8) ? 9 : 0;
+
     }
   }
   
