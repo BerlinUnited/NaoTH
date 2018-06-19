@@ -111,6 +111,7 @@ protected:
       PARAMETER_REGISTER(minFailureProbability) = 0.85;
       PARAMETER_REGISTER(strikerSelection) = 2;
       PARAMETER_REGISTER(strikerSelectionDiffThreshold) = 500; // ms
+      PARAMETER_REGISTER(useSecondStriker) = true;
       
       // load from the file after registering all parameters
       syncWithConfig();
@@ -122,6 +123,7 @@ protected:
     double minFailureProbability;
     int strikerSelection;
     int strikerSelectionDiffThreshold;
+    bool useSecondStriker;
     
     virtual ~Parameters() {}
   } parameters;

@@ -303,20 +303,22 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
       zs.erase(zs.begin() + bestRow);
       ps.erase(ps.begin() + bestRow);
 
-      long int numRows = scores.rows()-1;
-      long int numCols = scores.cols();
+      if (!(zs.empty() || f.empty())) {
+        long int numRows = scores.rows() - 1;
+        long int numCols = scores.cols();
 
-      if( bestRow < numRows )
-          scores.block(bestRow,0,numRows-bestRow,numCols) = scores.bottomRows(numRows-bestRow).eval();
+        if (bestRow < numRows)
+          scores.block(bestRow, 0, numRows - bestRow, numCols) = scores.bottomRows(numRows - bestRow).eval();
 
-      scores.conservativeResize(numRows,numCols);
+        scores.conservativeResize(numRows, numCols);
 
-      --numCols;
+        --numCols;
 
-      if( bestCol < numCols )
-          scores.block(0,bestCol,numRows,numCols-bestCol) = scores.rightCols(numCols-bestCol).eval();
+        if (bestCol < numCols)
+          scores.block(0, bestCol, numRows, numCols - bestCol) = scores.rightCols(numCols - bestCol).eval();
 
-      scores.conservativeResize(numRows,numCols);
+        scores.conservativeResize(numRows, numCols);
+      }
 
     } while(!(f.empty() || zs.empty()));
   }
