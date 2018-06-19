@@ -81,6 +81,9 @@ void SimpleNetworkTimeProtocol::updateMessageStatistics()
                     player.latency = lat;
                     player.offset = (t4 - lat) - t3;
                 }
+                // update the global statistics
+                getTeamMessageTimeStatistics().globalRTT.add(rtt);
+                getTeamMessageTimeStatistics().globalLatency.add(lat);
             }
         }
     }

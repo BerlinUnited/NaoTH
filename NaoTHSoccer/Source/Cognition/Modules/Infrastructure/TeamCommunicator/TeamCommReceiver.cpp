@@ -113,17 +113,24 @@ void TeamCommReceiver::handleMessage(const std::string& data)
   }
   else if (parameters.acceptMixedTeamMessages && msg.isDoBerManMessage())
   {
-    // TODO: this needs to be fixed vefore mixed team comm can be used again
-    //       see: https://gitlab.informatik.hu-berlin.de/berlinunited/NaoTH-2018/issues/36
-    
-    // estimate time to ball for dortmund guys
-    const double stepTime = 200; //ms
-    const double speed = 50.0 / stepTime; // mm/ms
-    const double turnSpeed = Math::fromDegrees(30) / stepTime;
-
     if (msg.ballAge >= 0) {
+      // estimate time to ball for dortmund guys
+      const double stepTime = 200; //ms
+      const double speed = 50.0 / stepTime; // mm/ms
+      const double turnSpeed = Math::fromDegrees(30) / stepTime;
+      // sets the field
       msg.custom.timeToBall = static_cast<unsigned int>((msg.ballPosition.abs() / speed) + (fabs(msg.ballPosition.angle()) / turnSpeed));
     }
+    // artificial time the other robot needs to process the message (cognition cycle)
+    int processingTime = 20;
+    // create a "pseudo" ntp request
+    NtpRequest request;
+    request.playerNumber = getPlayerInfo().playerNumber;
+    // use the average RTT/latency to generate the "pseudo" request
+    request.sent = naoth::NaoTime::getSystemTimeInMilliSeconds() - getTeamMessageTimeStatistics().globalRTT.getAverage() - processingTime;
+    request.received = request.sent + getTeamMessageTimeStatistics().globalLatency.getAverage();
+    msg.custom.timestamp = request.received + processingTime;
+    msg.custom.ntpRequests.push_back(request);
   }
   else
   {
