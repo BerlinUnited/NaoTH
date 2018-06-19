@@ -195,6 +195,13 @@ void BallCandidateDetector::calculateCandidates()
       // (4) check body parts
       // TODO
 
+      BallCandidates::Patch patchedBorder(0);
+      //int size = ((*i).max.x - (*i).min.x)/2;
+      patchedBorder.min = min;//(*i).min;// - Vector2i(size,size);
+      patchedBorder.max = max;//(*i).max;// + Vector2i(size,size);
+      int size = patchedBorder.max.x - patchedBorder.min.x;
+      
+
       // (5) check contrast
       if(params.contrastUse) {
           double stddev = 0;
@@ -217,7 +224,11 @@ void BallCandidateDetector::calculateCandidates()
             CIRCLE( (min.x + max.x)/2, (min.y + max.y)/2, stddev / 5.0);
           );
           // skip this patch, if contrast doesn't fullfill minimum
-          if(stddev <= params.contrastMinimum) {
+          double selectedContrastMinimum = params.contrastMinimum;
+          if(size >= params.postMaxCloseSize) {
+            selectedContrastMinimum = params.contrastMinimumClose;
+          }
+          if(stddev <= selectedContrastMinimum) {
               continue;
           }
       }
@@ -261,13 +272,9 @@ void BallCandidateDetector::calculateCandidates()
       //  cvHaarClassifier.loadModel(params.haarDetector.model_file);
       //}
 
-      BallCandidates::Patch patchedBorder(0);
-      //int size = ((*i).max.x - (*i).min.x)/2;
-      patchedBorder.min = min;//(*i).min;// - Vector2i(size,size);
-      patchedBorder.max = max;//(*i).max;// + Vector2i(size,size);
+      
 
       // add an additional border as post-processing
-      int size = patchedBorder.max.x - patchedBorder.min.x;
       double radius = (double) size / 2.0;
       int postBorder = (int)(radius*params.postBorderFactorFar);
       double selectedCNNThreshold = params.cnn.threshold;
