@@ -130,7 +130,7 @@ void PathPlanner2018::moveAroundBall(const double direction, const double radius
   }
 
   double stepX = (ballDistance - radius) * std::cos(ballRotation);
-  double stepY = Math::clamp(radius * std::tan(Math::clamp(Math::toDegrees(-direction), min1, max1)), min2, max2) * std::cos(ballRotation);
+  double stepY = Math::clamp(radius * std::tan(Math::fromDegrees(Math::clamp(Math::toDegrees(-direction), min1, max1))), min2, max2) * std::cos(ballRotation);
 
   Pose2D pose = { ballRotation, stepX, stepY };
 
