@@ -3,9 +3,7 @@ option path_move_around_ball_test
 
   common decision
   {
-    if (true)
-      goto turn;
-    else if(!body.ready_to_walk || game.current_mode != playing)
+    if(!body.ready_to_walk || game.current_mode != playing)
       goto idle;
     else if(!game.state.playing_is_set_by_game_controller &&
            !game.own_kickoff && game.time_in_play < 10000)
