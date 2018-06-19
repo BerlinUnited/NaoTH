@@ -6,7 +6,7 @@ option path_move_around_ball
 
   common decision
   {
-    if (abs(value=ball.angle)>30)
+    if (abs(value=atan2(y=ball.preview.y, x=ball.preview.x)) > 30)
       goto face_to_ball;
     else if(@direction > 0)
       goto turn_right;
