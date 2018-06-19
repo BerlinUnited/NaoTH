@@ -194,13 +194,9 @@ int RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& i
     const Edgel& a = getLineGraphPercept().edgelsOnField[outliers[i0]];
     const Edgel& b = getLineGraphPercept().edgelsOnField[outliers[i1]];
 
-    //double x = a.sim(b);
     if(a.sim(b) < params.directionSimilarity) {
       continue;
     }
-
-    // check the orientation
-    // TODO
 
     Math::Line model(a.point, b.point-a.point);
 
@@ -228,14 +224,12 @@ int RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& i
 
   if(bestInlier > 2) 
   {
-    // update the outliers
-    // todo: make it faster
     std::vector<size_t> newOutliers;
     newOutliers.reserve(outliers.size() - bestInlier + 1);
     double minT = 0;
     double maxT = 0;
 
-    Vector2d mean_direction;
+    Vector2d direction_var;
 
     for(size_t i: outliers)
     {
@@ -248,33 +242,24 @@ int RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& i
         maxT = std::max(t, maxT);
         inliers.push_back(i);
 
-        mean_direction += e.direction;
+        double ang = e.direction.angle();
+        direction_var.x += cos(ang);
+        direction_var.y += sin(ang);
       } else {
         newOutliers.push_back(i);
       }
     }
 
-    Vector2d direction_var;
-
     if(!inliers.empty()) 
     {
-      mean_direction /= static_cast<int>(inliers.size());
-
-      for(size_t i : inliers) {
-        const Edgel& e = getLineGraphPercept().edgelsOnField[i];
-        Vector2d tmp(1.0,0.0);
-        tmp.rotate(std::fabs(Math::normalize(e.direction.angle() - mean_direction.angle())));
-
-        direction_var += tmp;
-      }
-      double angle_var = (direction_var / static_cast<int>(inliers.size())).angle();
+      direction_var /= static_cast<int>(inliers.size());
+      double angle_var = 1 - sqrt(Math::sqr(direction_var.x) + Math::sqr(direction_var.y));
 
       result = Math::LineSegment(bestModel.point(minT), bestModel.point(maxT));
       double line_length = result.getLength();
 
-      if (line_length < params.min_line_length) {
-        return 0;
-      } else if(line_length < params.length_of_var_check && angle_var > (params.maxVariance - (line_length/params.length_of_var_check))) {
+      if (line_length < params.min_line_length
+          || (line_length < params.length_of_var_check && angle_var >= params.maxVariance)) {
         return 0;
       } else {
         outliers = newOutliers;
@@ -304,13 +289,9 @@ int RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inli
 
   for(int i = 0; i < params.iterations; ++i)
   {
-    //pick two random points
-    int i0 = Math::random((int)outliers.size());
-    int i1 = Math::random((int)outliers.size());
-
-    if(i0 == i1) {
-      continue;
-    }
+    //pick two random points without replacement
+    size_t i0 = choose_random_from(outliers, 1);
+    size_t i1 = choose_random_from(outliers, 2);
 
     const Edgel& a = getLineGraphPercept().edgelsOnField[outliers[i0]];
     const Edgel& b = getLineGraphPercept().edgelsOnField[outliers[i1]];
@@ -350,7 +331,7 @@ int RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inli
 
     for (Vector2d model : models) {
       model_inliers.clear();
-      double angle_mean = 0;
+      Vector2d direction_var;
       double inlierError = 0;
       int inlier = 0;
 
@@ -362,7 +343,11 @@ int RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inli
         // inlier
         if(offset <= params.circle_outlierThreshold && Math::toDegrees(angle_diff(model, e)) <= params.circle_max_angle_diff) {
           model_inliers.push_back(i);
-          angle_mean += e.direction.angle();
+
+          double ang = e.direction.angle();
+          direction_var.x += cos(ang);
+          direction_var.y += sin(ang);
+
           ++inlier;
           inlierError += offset;
         }
@@ -371,16 +356,11 @@ int RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inli
         continue;
       }
 
-      angle_mean /= inlier;
-      double angle_variance = 0;
-      for (size_t i: model_inliers) {
-        const Edgel& e = getLineGraphPercept().edgelsOnField[i];
-        angle_variance += Math::sqr(angle_mean - e.direction.angle());
-      }
-      angle_variance /= inlier;
+      direction_var /= inlier;
+      double angle_variance = 1 - sqrt(Math::sqr(direction_var.x) + Math::sqr(direction_var.y));
 
       if((inlier > bestInlier || (inlier == bestInlier && inlierError < bestInlierError))
-         && Math::toDegrees(angle_variance) >= params.circle_angle_variance) {
+         && angle_variance >= params.circle_angle_variance) {
         bestModel = model;
         bestInlier = inlier;
         bestInlierError = inlierError;

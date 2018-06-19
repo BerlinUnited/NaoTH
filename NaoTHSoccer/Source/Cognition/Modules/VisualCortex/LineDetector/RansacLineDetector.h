@@ -61,15 +61,15 @@ private:
       PARAMETER_REGISTER(inlierMin) = 5;
       PARAMETER_REGISTER(directionSimilarity) = 0.8;
       PARAMETER_REGISTER(maxLines) = 11;
-      PARAMETER_REGISTER(maxVariance) = 40;
-      PARAMETER_REGISTER(length_of_var_check) = 700;
+      PARAMETER_REGISTER(maxVariance) = 0.009;
+      PARAMETER_REGISTER(length_of_var_check) = 800;
       PARAMETER_REGISTER(min_line_length) = 100;
 
       //Circle
       PARAMETER_REGISTER(circle_iterations) = 20;
       PARAMETER_REGISTER(circle_outlierThreshold) = 70;
       PARAMETER_REGISTER(circle_inlierMin) = 7;
-      PARAMETER_REGISTER(circle_angle_variance) = 20;
+      PARAMETER_REGISTER(circle_angle_variance) = 0.02;
       PARAMETER_REGISTER(circle_max_angle_diff) = 8;
 
       syncWithConfig();
