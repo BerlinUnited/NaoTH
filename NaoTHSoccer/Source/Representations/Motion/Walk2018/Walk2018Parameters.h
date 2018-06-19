@@ -64,7 +64,7 @@ class FootStepPlanner2018Parameters: public ParameterList{
 
           PARAMETER_REGISTER(stabilization.use_step_feedback) = true;
           PARAMETER_REGISTER(stabilization.switching_offset)  = -10;
-          PARAMETER_REGISTER(stabilization.max_frames)        = 3;
+          PARAMETER_REGISTER(stabilization.max_frames)        = 10;
 
           syncWithConfig();
       }
