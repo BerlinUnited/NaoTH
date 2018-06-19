@@ -504,7 +504,7 @@ int V4lCameraHandler::readFrameMMaP()
 
   
   // in blocking mode, wait up to a second for new image data
-  const unsigned int maxWaitingTime = blockingCaptureModeEnabled ? 1000 : 2; 
+  const unsigned int maxWaitingTime = blockingCaptureModeEnabled ? 1000 : 5; 
   // wait for available data via poll
   pollfd pollfds[1] =
   {
