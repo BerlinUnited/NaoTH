@@ -41,6 +41,7 @@ V4lCameraHandler::V4lCameraHandler()
   n_buffers(0),
   currentImage(NULL),
   atLeastOneImageRetrieved(false),
+  initialParamsSet(false),
   wasQueried(false),
   isCapturing(false),
   bufferSwitched(false),
@@ -503,7 +504,7 @@ int V4lCameraHandler::readFrameMMaP()
 
   
   // in blocking mode, wait up to a second for new image data
-  const unsigned int maxWaitingTime = blockingCaptureModeEnabled ? 1000 : 2; 
+  const unsigned int maxWaitingTime = blockingCaptureModeEnabled ? 1000 : 5; 
   // wait for available data via poll
   pollfd pollfds[1] =
   {
@@ -896,16 +897,18 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
     return;
   }
 
-  unsigned long long currentTime = NaoTime::getSystemTimeInMicroSeconds();
-  if(currentTime < lastCameraSettingTimestamp + 16000) {
-    return;
-  }
+   bool forceUpdate = !initialParamsSet;
+
+  //unsigned long long currentTime = NaoTime::getSystemTimeInMicroSeconds();
+  //if(currentTime < lastCameraSettingTimestamp + 16000) {
+  //  return;
+  //}
 
   std::list<CameraSettings::CameraSettingID>::const_iterator it = settingsOrder.begin();
   for(; it != settingsOrder.end(); it++)
   {
-    // only set if csConst was set and the value was changed
-    if(csConst[*it] != -1 && data.data[*it] != currentSettings.data[*it])
+    // only set forced or if csConst was set and the value was changed
+    if(forceUpdate || (csConst[*it] != -1 && data.data[*it] != currentSettings.data[*it]))
     {
       /*
       // NOTE: experimental
@@ -940,7 +943,7 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
           // read back the white balance value set to make sure they are in sync
           currentSettings.data[CameraSettings::WhiteBalance] = getSingleCameraParameter(csConst[CameraSettings::WhiteBalance]);
 
-          std::cout << LOG << "autoupdated ExposWhiteBalanceure to "  << currentSettings.data[CameraSettings::WhiteBalance] << std::endl;
+          std::cout << LOG << "autoupdated WhiteBalance to "  << currentSettings.data[CameraSettings::WhiteBalance] << std::endl;
         }
 
         std::cout << LOG << "set " << CameraSettings::getCameraSettingsName(*it) << " to " << data.data[*it] << std::endl;
@@ -960,9 +963,10 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
       } else {
         std::cout << LOG << "setting " << CameraSettings::getCameraSettingsName(*it) << " failed" << std::endl;
       }
-      break;
+//      break;
     }
   }// end for
+
 
   // set the autoexposure grid parameters
   for(std::size_t i=0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
@@ -976,6 +980,9 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
       }
     }
   }
+
+
+  initialParamsSet = true;
 
 }// end setAllCameraParams
 
