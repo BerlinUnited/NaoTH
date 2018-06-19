@@ -9,7 +9,7 @@ option decide_and_go_to_passive_position_dobermann
   initial state idle {
 	  decision {
       else if (action_done || state_time > 10000)
-        // search for maximum 10s
+        // search for maximum 10s - this makes the robot turn immediatly in play
         goto goto_passive;
       else
         stay;
