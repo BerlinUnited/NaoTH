@@ -118,7 +118,7 @@ option path_play_soccer
     decision
     {
       else if (game.current_mode == playing)
-        goto pre_play_decision;
+        goto play;
       else if (game.current_mode == set)
         goto set;
       else
@@ -143,7 +143,7 @@ option path_play_soccer
         if(team.calc_if_is_striker)
           goto initial_striker;
         else
-          goto pre_play_decision;
+          goto play;
       }
       else if (game.current_mode == ready)
         goto ready;
