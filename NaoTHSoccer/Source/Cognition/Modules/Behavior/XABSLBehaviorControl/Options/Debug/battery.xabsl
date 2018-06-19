@@ -67,7 +67,7 @@ option battery {
     {
       //Fast flashing blinking
       set_left_ear = (platform.frameNumber % 8 < 4) ? 9 : 0;
-      set_right_ear = (platform.frameNumber % 9 < 4) ? 9 : 0;
+      set_right_ear = (platform.frameNumber % 8 < 4) ? 9 : 0;
 
     }
   }
