@@ -10,13 +10,17 @@
 #include <Representations/Motion/Request/MotionRequest.h>
 #include <Representations/Motion/CollisionPercept.h>
 //Tools
+#include "Tools/DataStructures/Point.h"
 #include <Tools/Math/ConvexHull.h>
 #include <Tools/DataStructures/RingBufferWithSum.h>
+#include <vector>
+#include <string>
 //Debug
 #include <Tools/Debug/DebugRequest.h>
 #include <Tools/Debug/DebugPlot.h>
 #include <Tools/Debug/DebugModify.h>
 #include <Tools/Debug/DebugParameterList.h>
+
 
 BEGIN_DECLARE_MODULE(ArmCollisionDetector2018)
 PROVIDE(DebugRequest)
@@ -41,7 +45,25 @@ public:
 
 public:
 	class Parameter : public ParameterList
+	{
+	public:
+		Parameter() : ParameterList("ArmCollisionDetector2018")
+		{
+			//Entweder direkt als Point vektor
+			//PARAMETER_REGISTER(ReferenceHull) = vector<Point>;
+			//Oder als Pfad zur txt was vermutlich einfacher ist
+			//PARAMETER_REGISTER(ReferenceHullPath) = "A:\B\C\d.txt"
+			PARAMETER_REGISTER(Yuhh) = 1;
+			syncWithConfig();
+		}
+		std::string point_path;
+	} params;
 
+private:
+	//Private variablen wie zb ringbuffer fuer MJD und SJD synchronisation
+	RingBuffer<double, 4> jointDataBufferLeft;
+	RingBuffer<double, 4> jointDataBufferRight;
+	std::vector<Point> P;
 };
 
 #endif
