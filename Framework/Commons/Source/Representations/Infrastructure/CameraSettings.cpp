@@ -44,6 +44,7 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
     case Sharpness: return "Sharpness"; break;
     case FadeToBlack: return "FadeToBlack"; break;
     case PowerlineFrequency: return "PowerlineFrequency"; break;
+    case AutoExpositionAlgorithm: return "AutoExpositionAlgorithm"; break;
     default: return "Unknown CameraSetting"; break;
   }//end switch
 }//end getCameraSettingsName
