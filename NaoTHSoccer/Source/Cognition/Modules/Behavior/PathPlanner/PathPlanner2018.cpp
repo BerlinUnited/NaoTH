@@ -144,7 +144,7 @@ void PathPlanner2018::moveAroundBall(const double direction, const double radius
     new_step.setCoordinate(Coordinate::Hip);
     new_step.setFoot(Foot::NONE);
     new_step.setSpeedDirection(Math::fromDegrees(0.0));
-    new_step.setRestriction(RestrictionMode::SOFT);
+    new_step.setRestriction(RestrictionMode::HARD);
     new_step.setProtected(false);
     new_step.setTime(250);
 
