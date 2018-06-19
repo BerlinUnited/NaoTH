@@ -113,6 +113,7 @@ option passive_ball_not_seen
     action {
       // update counter
       search_ball.turn_stop_motion_count = search_ball.turn_stop_motion_count + 1;
+      head.control_mode = search_for_ball;
     }
   }
 
