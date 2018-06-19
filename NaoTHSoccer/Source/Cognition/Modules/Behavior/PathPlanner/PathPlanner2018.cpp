@@ -242,24 +242,6 @@ bool PathPlanner2018::nearApproach_forwardKick(const Foot& foot, const double of
     }
     else
     {
-      // Correction step if the movable foot is different from the foot that is supposed to kick
-      if (getMotionStatus().stepControl.moveableFoot != (foot == Foot::RIGHT ? MotionStatus::StepControlStatus::RIGHT : MotionStatus::StepControlStatus::LEFT))
-      {
-        const double translation_xy = params.stepLength;
-        StepBufferElement correction_step;
-        correction_step.setPose({ 0.0, ballPos.x, std::min(translation_xy, ballPos.y) });
-        correction_step.setStepType(StepType::WALKSTEP);
-        correction_step.setCharacter(0.3);
-        correction_step.setScale(1.0);
-        correction_step.setCoordinate(coordinate);
-        correction_step.setFoot(Foot::NONE);
-        correction_step.setSpeedDirection(Math::fromDegrees(0.0));
-        correction_step.setRestriction(RestrictionMode::HARD);
-        correction_step.setProtected(false);
-        correction_step.setTime(250);
-
-        addStep(correction_step);
-      }
       return true;
     }
   }
@@ -415,6 +397,24 @@ void PathPlanner2018::forwardKick(const Foot& foot)
     else
     {
       ASSERT(false);
+    }
+
+    // Correction step if the movable foot is different from the foot that is supposed to kick
+    if (getMotionStatus().stepControl.moveableFoot != (foot == Foot::RIGHT ? MotionStatus::StepControlStatus::RIGHT : MotionStatus::StepControlStatus::LEFT))
+    {
+      StepBufferElement correction_step;
+      correction_step.setPose({ 0.0, 100.0, 0.0 });
+      correction_step.setStepType(StepType::WALKSTEP);
+      correction_step.setCharacter(1.0);
+      correction_step.setScale(1.0);
+      correction_step.setCoordinate(coordinate);
+      correction_step.setFoot(Foot::NONE);
+      correction_step.setSpeedDirection(Math::fromDegrees(0.0));
+      correction_step.setRestriction(RestrictionMode::HARD);
+      correction_step.setProtected(false);
+      correction_step.setTime(250);
+
+      addStep(correction_step);
     }
 
     // The kick
