@@ -139,7 +139,7 @@ void PathPlanner2018::moveAroundBall(const double direction, const double radius
     StepBufferElement new_step;
     new_step.setPose(pose);
     new_step.setStepType(StepType::WALKSTEP);
-    new_step.setCharacter(0.7);
+    new_step.setCharacter(params.moveAroundBallCharacter);
     new_step.setScale(1.0);
     new_step.setCoordinate(Coordinate::Hip);
     new_step.setFoot(Foot::NONE);
