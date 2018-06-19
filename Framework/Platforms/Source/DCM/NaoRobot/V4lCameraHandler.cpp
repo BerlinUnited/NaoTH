@@ -897,7 +897,7 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
     return;
   }
 
-   bool forceUpdate = initialParamsSet;
+   bool forceUpdate = !initialParamsSet;
 
   //unsigned long long currentTime = NaoTime::getSystemTimeInMicroSeconds();
   //if(currentTime < lastCameraSettingTimestamp + 16000) {
@@ -963,7 +963,7 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
       } else {
         std::cout << LOG << "setting " << CameraSettings::getCameraSettingsName(*it) << " failed" << std::endl;
       }
-      break;
+//      break;
     }
   }// end for
 
