@@ -1,0 +1,28 @@
+option decide_and_go_to_passive_position_dobermann
+{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+
+  initial state idle {
+	  decision {
+      else if (action_done || state_time > 10000)
+        // search for maximum 10s - this makes the robot turn immediatly in play
+        goto goto_passive;
+      else
+        stay;
+	  }
+	  action {
+      search_ball();
+	  }
+	}  
+  
+  state goto_passive
+  {
+    action {
+      decide_and_go_to_passive_position_dobermann_no_search();
+    }
+  }
+}

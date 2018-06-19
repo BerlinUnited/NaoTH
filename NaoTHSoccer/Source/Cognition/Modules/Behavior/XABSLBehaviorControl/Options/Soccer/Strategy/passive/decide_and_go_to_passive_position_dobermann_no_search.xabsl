@@ -1,0 +1,61 @@
+option decide_and_go_to_passive_position_dobermann_no_search
+{
+  initial state check_player_number
+  {
+    decision{
+      if(game.player_number == 2)
+          goto defender_right;
+      else if(game.player_number == 4)
+          goto defender_left;
+      else if(game.player_number == 6)
+          goto midfield_left;
+      else
+          stay;
+    }
+    action {
+      head.control_mode = look_around;
+      motion.type = stand;
+    }
+  }
+  
+  state midfield_left
+  {
+    action
+    {
+      go_to_and_keep_passive_position(
+        x=-500, 
+        y=field.yPosLeftGoal,
+        rot=0);
+
+      //head.control_mode = look_around;
+    }
+  }
+  
+  state defender_right
+  {
+    action
+    {
+      go_to_and_keep_passive_position(
+        x = field.xPosOwnPenaltyMark, 
+        y = field.yPosRightGoal - 400, 
+        rot=0);
+
+      //head.control_mode = look_around;
+    }
+  }
+
+  state defender_left
+  {
+    action
+    {
+      go_to_and_keep_passive_position(
+         x=field.xPosOwnPenaltyMark + 500, 
+         y=field.yPosLeftGoal, 
+         rot=0);
+
+      //head.control_mode = look_around;
+    }
+  }
+
+ 
+}
