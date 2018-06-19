@@ -943,7 +943,7 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
           // read back the white balance value set to make sure they are in sync
           currentSettings.data[CameraSettings::WhiteBalance] = getSingleCameraParameter(csConst[CameraSettings::WhiteBalance]);
 
-          std::cout << LOG << "autoupdated ExposWhiteBalanceure to "  << currentSettings.data[CameraSettings::WhiteBalance] << std::endl;
+          std::cout << LOG << "autoupdated WhiteBalance to "  << currentSettings.data[CameraSettings::WhiteBalance] << std::endl;
         }
 
         std::cout << LOG << "set " << CameraSettings::getCameraSettingsName(*it) << " to " << data.data[*it] << std::endl;
