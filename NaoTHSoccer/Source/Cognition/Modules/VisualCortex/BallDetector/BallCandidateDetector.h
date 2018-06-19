@@ -146,6 +146,7 @@ private:
       PARAMETER_REGISTER(contrastUse) = false;
       PARAMETER_REGISTER(contrastVariant) = 1;
       PARAMETER_REGISTER(contrastMinimum) = 50;
+      PARAMETER_REGISTER(contrastMinimumClose) = 50;
 
       PARAMETER_REGISTER(blackKeysCheck.enable) = false;
       PARAMETER_REGISTER(blackKeysCheck.minSizeToCheck) = 60;
@@ -191,6 +192,7 @@ private:
     bool contrastUse;
     int contrastVariant;
     double contrastMinimum;
+    double contrastMinimumClose;
 
     std::string classifier;
 
