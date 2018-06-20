@@ -136,6 +136,7 @@ public:
   int brightness;
   int exposure;
   double gain;
+  int gammaCorrection;
   double targetGain;
   double minAnalogGain;
   double maxAnalogGain;

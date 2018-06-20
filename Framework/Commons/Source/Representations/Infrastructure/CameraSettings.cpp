@@ -177,6 +177,7 @@ CommonCameraSettingsRequest::CommonCameraSettingsRequest(string configName)
   PARAMETER_REGISTER(brightness) = 55;
   PARAMETER_REGISTER(exposure) = 1;
   PARAMETER_REGISTER(gain) = 1;
+  PARAMETER_REGISTER(gammaCorrection) = 220;
   PARAMETER_REGISTER(targetGain) = 100.0;
   PARAMETER_REGISTER(minAnalogGain) = 1.0;
   PARAMETER_REGISTER(maxAnalogGain) = 8.0;
