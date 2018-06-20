@@ -60,6 +60,8 @@ option battery {
     {
       if(battery.isCharging || battery.isDischarging)
         goto ok;
+      else if(platform.battery>=0.96)
+        goto charged;
       else
         stay;        
     }
@@ -71,5 +73,20 @@ option battery {
 
     }
   }
-  
+  state charged
+  {
+    decision
+    {
+      if(platform.battery <= 0.96)
+        goto ok;
+      else
+        stay;
+    }
+    action
+    {
+      set_left_ear = (platform.frameNumber % 30 < 15) ? 9 : 0;
+      set_right_ear = (platform.frameNumber % 30 < 15) ? 9 : 0;
+      set_head = (platform.frameNumber % 30 < 15) ? ((robot_pose.x < 0) ? 3 : 6) : 0;
+    }
+  }
 }
