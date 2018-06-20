@@ -87,6 +87,7 @@ BEGIN_DECLARE_MODULE(MonteCarloSelfLocator)
   REQUIRE(ProbabilisticQuadCompas)
   REQUIRE(LineGraphPercept)
   REQUIRE(LinePercept)
+  REQUIRE(RansacCirclePercept)
 
   PROVIDE(RobotPose)
   PROVIDE(SelfLocGoalModel)
