@@ -385,13 +385,16 @@ void PathPlanner2018::forwardKick(const Foot& foot)
 {
   if (stepBuffer.empty() && !kickPlanned)
   {
+    Vector2d ballPos;
     Coordinate coordinate = Coordinate::Hip;
-    if (foot == Foot::RIGHT)
+    if (foot == Foot::LEFT)
     {
+      ballPos = getBallModel().positionPreviewInLFoot;
       coordinate = Coordinate::LFoot;
     }
-    else if (foot == Foot::LEFT)
+    else if (foot == Foot::RIGHT)
     {
+      ballPos = getBallModel().positionPreviewInRFoot;
       coordinate = Coordinate::RFoot;
     }
     else
@@ -399,10 +402,29 @@ void PathPlanner2018::forwardKick(const Foot& foot)
       ASSERT(false);
     }
 
+    // Correction step if the foot isn't rotated right
+    if (ballPos.angle() > Math::fromDegrees(10))
+    {
+      StepBufferElement correction_step;
+      correction_step.setPose({ ballPos.angle(), 0.0, ballPos.y });
+      correction_step.setStepType(StepType::WALKSTEP);
+      correction_step.setCharacter(0.5);
+      correction_step.setScale(1.0);
+      correction_step.setCoordinate(coordinate);
+      correction_step.setFoot(Foot::NONE);
+      correction_step.setSpeedDirection(Math::fromDegrees(0.0));
+      correction_step.setRestriction(RestrictionMode::HARD);
+      correction_step.setProtected(false);
+      correction_step.setTime(250);
+
+      addStep(correction_step);
+    }
+
     // Correction step if the movable foot is different from the foot that is supposed to kick
     if (getMotionStatus().stepControl.moveableFoot != (foot == Foot::RIGHT ? MotionStatus::StepControlStatus::RIGHT : MotionStatus::StepControlStatus::LEFT))
     {
       StepBufferElement correction_step;
+
       correction_step.setPose({ 0.0, 100.0, 0.0 });
       correction_step.setStepType(StepType::WALKSTEP);
       correction_step.setCharacter(1.0);
@@ -415,6 +437,15 @@ void PathPlanner2018::forwardKick(const Foot& foot)
       correction_step.setTime(250);
 
       addStep(correction_step);
+    }
+
+    if (foot == Foot::RIGHT)
+    {
+      coordinate = Coordinate::LFoot;
+    }
+    else if (foot == Foot::LEFT)
+    {
+      coordinate = Coordinate::RFoot;
     }
 
     // The kick
