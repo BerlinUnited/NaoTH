@@ -19,16 +19,12 @@ FakeBallDetector::~FakeBallDetector()
 }
 
 void FakeBallDetector::execute(){
+    getMultiBallPercept().reset();
 
-    BallPerceptTop ballPercept;
-
-    DEBUG_REQUEST("Vision:FakeBallDetector:ballWasSeen",
-        ballPercept.ballWasSeen = true;
-    );
-
+    MultiBallPercept::BallPercept ballPercept;
 
     DEBUG_REQUEST("Vision:FakeBallDetector:stationaryBallOnField",
-        ballPercept.bearingBasedOffsetOnField = Vector2d(startPosition(0), startPosition(1));
+        ballPercept.positionOnField = Vector2d(startPosition(0), startPosition(1));
     );
 
     MODIFY("Vision:FakeBallDetector:constMovingOnField:Vx", velocity(0));
@@ -46,32 +42,30 @@ void FakeBallDetector::execute(){
         }
 
         Eigen::Vector2d currentPosition = simulateConstantMovementOnField(getFrameInfo().getTimeInSeconds()-lastFrame.getTimeInSeconds(), velocity);
-        ballPercept.bearingBasedOffsetOnField = Vector2d(currentPosition(0), currentPosition(1));
+        ballPercept.positionOnField = Vector2d(currentPosition(0), currentPosition(1));
     );
 
     lastFrame = getFrameInfo();
 
-    getBallPercept()    = ballPercept;
-    getBallPerceptTop() = ballPercept;
 
     DEBUG_REQUEST("Vision:FakeBallDetector:determineCenterInImage",
 
-        Vector3d point(ballPercept.bearingBasedOffsetOnField.x, ballPercept.bearingBasedOffsetOnField.y, 32.5);
+        Vector3d point(ballPercept.positionOnField.x, ballPercept.positionOnField.y, 50.0);
         Vector2d pointInImage;
 
         bool in_front_of_cam = CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), point, pointInImage);
 
         if(in_front_of_cam)
-            getBallPercept().centerInImage = pointInImage;
-        else
-            getBallPercept().ballWasSeen = false;
+            ballPercept.centerInImage = pointInImage;
+            ballPercept.cameraId = CameraInfo::Bottom;
+            getMultiBallPercept().add(ballPercept);
 
         in_front_of_cam = CameraGeometry::relativePointToImage(getCameraMatrixTop(), getCameraInfoTop(), point, pointInImage);
 
         if(in_front_of_cam)
-            getBallPerceptTop().centerInImage = pointInImage;
-        else
-            getBallPerceptTop().ballWasSeen = false;
+            ballPercept.centerInImage = pointInImage;
+            ballPercept.cameraId = CameraInfo::Top;
+            getMultiBallPercept().add(ballPercept);
     );
 }
 
