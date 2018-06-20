@@ -383,8 +383,10 @@ bool PathPlanner2018::nearApproach_sideKick(const Foot& foot, const double offse
 
 void PathPlanner2018::forwardKick(const Foot& foot)
 {
-  if (stepBuffer.empty() && !kickPlanned)
+  if (/*stepBuffer.empty() && */!kickPlanned)
   {
+    stepBuffer.clear();
+
     Coordinate coordinate = Coordinate::Hip;
     if (foot == Foot::RIGHT)
     {
