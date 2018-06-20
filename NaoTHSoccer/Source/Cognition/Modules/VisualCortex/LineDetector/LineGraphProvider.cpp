@@ -122,6 +122,20 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
         FIELD_DRAWING_CONTEXT;
         PEN("FF0000",2);
         CIRCLE( edgel.point.x, edgel.point.y, 25);
+
+        PEN("0000FF",2);
+        CIRCLE( edgelProjectionsBegin[edgelPair.left].x, edgelProjectionsBegin[edgelPair.left].y, 10);
+        PEN("FF0000",2);
+        CIRCLE( edgelProjectionsEnd[edgelPair.left].x, edgelProjectionsEnd[edgelPair.left].y, 10);
+        PEN("000000",2);
+        LINE( edgelProjectionsBegin[edgelPair.left].x, edgelProjectionsBegin[edgelPair.left].y, edgelProjectionsEnd[edgelPair.left].x, edgelProjectionsEnd[edgelPair.left].y);
+
+        PEN("0000FF",2);
+        CIRCLE( edgelProjectionsBegin[edgelPair.right].x, edgelProjectionsBegin[edgelPair.right].y, 10);
+        PEN("FF0000",2);
+        CIRCLE( edgelProjectionsEnd[edgelPair.right].x, edgelProjectionsEnd[edgelPair.right].y, 10);
+        PEN("000000",2);
+        LINE( edgelProjectionsBegin[edgelPair.right].x, edgelProjectionsBegin[edgelPair.right].y, edgelProjectionsEnd[edgelPair.right].x, edgelProjectionsEnd[edgelPair.right].y);
       );
     }
   }
