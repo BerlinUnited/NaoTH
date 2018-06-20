@@ -139,8 +139,7 @@ void KickDirectionSimulator::update(const ActionSimulator::Action& basisAction)
   // evaluate all particles
   for (size_t i = 0; i < samples.size(); i++)
   {
-    //FIXME Dirty getter and setter
-    test_action.setAngle(basisAction.getAngle() + Math::toDegrees(samples[i].rotation));
+    test_action.setAngle(basisAction.getAngle() + samples[i].rotation);
     
     //turningConsequences.reset(); // reset is inside simulateAction
     simulationModule->getModuleT()->simulateAction(test_action, turningConsequences, simulation_num_particles);
