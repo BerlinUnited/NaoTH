@@ -267,6 +267,11 @@ public class SPLMessage
                 drawings.add(new Pen(robotColor, new BasicStroke(10, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{25, 50, 75, 100}, 0)));
                 drawings.add(new Arrow((int) robotPose.translation.x, (int) robotPose.translation.y, (int) tb[0], (int) tb[1]));
             }
+            
+            if(user.getWantsToBeStriker() && !user.getWasStriker()) {
+                drawings.add(new Pen(32, Color.YELLOW));
+                drawings.add(new Circle((int) robotPose.translation.x, (int) robotPose.translation.y, 150));
+            }
         }
     }
     
