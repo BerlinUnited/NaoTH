@@ -52,11 +52,10 @@ public:
 			//Entweder direkt als Point vektor
 			//PARAMETER_REGISTER(ReferenceHull) = vector<Point>;
 			//Oder als Pfad zur txt was vermutlich einfacher ist
-			//PARAMETER_REGISTER(ReferenceHullPath) = "A:\B\C\d.txt"
-			PARAMETER_REGISTER(Yuhh) = 1;
+			PARAMETER_REGISTER(point_config) = "A:\B\C\d.txt";
 			syncWithConfig();
 		}
-		std::string point_path;
+		std::string point_config;
 	} params;
 
 private:
