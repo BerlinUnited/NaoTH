@@ -33,6 +33,7 @@ BEGIN_DECLARE_MODULE(RansacLineDetector)
   REQUIRE(FieldInfo)
 
   PROVIDE(LinePercept)
+  PROVIDE(RansacCirclePercept)
 END_DECLARE_MODULE(RansacLineDetector)
 
 class RansacLineDetector: public RansacLineDetectorBase

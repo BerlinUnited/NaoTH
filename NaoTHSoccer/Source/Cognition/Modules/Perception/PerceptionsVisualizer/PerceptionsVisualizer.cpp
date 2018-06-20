@@ -32,7 +32,7 @@ PerceptionsVisualizer::PerceptionsVisualizer()
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:line_percept", "draw line percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image:line_percept", "draw line percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image_px:line_percept", "draw line percept", false);
-
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:ransac_circle_percept", "draw circle provided by RansacLineDetector", false);
 
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:players_percept", "draw players percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image_px:players_percept", "draw players percept", false);
@@ -407,6 +407,15 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
     }//end for
   ); // end line_percept in image_px
 
+  DEBUG_REQUEST("PerceptionsVisualizer:field:ransac_circle_percept",
+    if(getRansacCirclePercept().middleCircleWasSeen) {
+      FIELD_DRAWING_CONTEXT;
+      PEN("009900", 10);
+      CIRCLE(getRansacCirclePercept().middleCircleCenter.x,
+             getRansacCirclePercept().middleCircleCenter.y,
+             getFieldInfo().centerCircleRadius);
+    }
+  );
 
   DEBUG_REQUEST("PerceptionsVisualizer:field:players_percept",
     FIELD_DRAWING_CONTEXT;

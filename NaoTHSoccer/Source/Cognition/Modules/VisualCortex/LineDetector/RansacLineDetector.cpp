@@ -22,6 +22,7 @@ RansacLineDetector::~RansacLineDetector()
 void RansacLineDetector::execute()
 {
   getLinePercept().reset();
+  getRansacCirclePercept().reset();
   getLinePercept().middleCircleWasSeen = false;
   outliers.resize(getLineGraphPercept().edgelsOnField.size());
   getLinePercept().edgelLineIDs.resize(getLineGraphPercept().edgelsOnField.size());
@@ -69,8 +70,8 @@ void RansacLineDetector::execute()
       Geometry::calculateCircle(pointList,circle_mean, circle_radius);
       */
 
-      getLinePercept().middleCircleCenter = circResult;
-      getLinePercept().middleCircleWasSeen = true;
+      getRansacCirclePercept().middleCircleCenter = circResult;
+      getRansacCirclePercept().middleCircleWasSeen = true;
 
       DEBUG_REQUEST("Vision:RansacLineDetector:draw_circle_field",
         FIELD_DRAWING_CONTEXT;
