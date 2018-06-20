@@ -62,6 +62,10 @@ class FootStepPlanner2018Parameters: public ParameterList{
           PARAMETER_REGISTER(stabilization.emergencyStopError)  = 250;
           PARAMETER_REGISTER(stabilization.maxEmergencyCounter) = 500;
 
+          PARAMETER_REGISTER(stabilization.use_step_feedback) = true;
+          PARAMETER_REGISTER(stabilization.switching_offset)  = -10;
+          PARAMETER_REGISTER(stabilization.max_frames)        = 10;
+
           syncWithConfig();
       }
 
@@ -91,6 +95,10 @@ class FootStepPlanner2018Parameters: public ParameterList{
 
         double emergencyStopError;
         double maxEmergencyCounter;
+
+        bool   use_step_feedback;
+        double switching_offset;
+        int    max_frames;
       } stabilization;
 
       double footOffsetY;
