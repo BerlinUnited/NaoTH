@@ -22,6 +22,7 @@ RansacLineDetector::~RansacLineDetector()
 void RansacLineDetector::execute()
 {
   getLinePercept().reset();
+  getLinePercept().middleCircleWasSeen = false;
   outliers.resize(getLineGraphPercept().edgelsOnField.size());
   getLinePercept().edgelLineIDs.resize(getLineGraphPercept().edgelsOnField.size());
   // copy the edgels
