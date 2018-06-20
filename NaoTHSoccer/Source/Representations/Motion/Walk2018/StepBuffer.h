@@ -101,8 +101,9 @@ public:
     }
   }
 
-  virtual void print(std::ostream& /*stream*/) const
+  virtual void print(std::ostream& stream) const
   {
+      stream << "number of steps in buffer: " << steps.size() << std::endl;
   }
 };
 

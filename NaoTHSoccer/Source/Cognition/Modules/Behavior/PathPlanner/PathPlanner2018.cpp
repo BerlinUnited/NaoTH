@@ -144,7 +144,7 @@ void PathPlanner2018::moveAroundBall(const double direction, const double radius
     new_step.setCoordinate(Coordinate::Hip);
     new_step.setFoot(Foot::NONE);
     new_step.setSpeedDirection(Math::fromDegrees(0.0));
-    new_step.setRestriction(RestrictionMode::HARD);
+    new_step.setRestriction(RestrictionMode::SOFT);
     new_step.setProtected(false);
     new_step.setTime(250);
 
@@ -383,8 +383,10 @@ bool PathPlanner2018::nearApproach_sideKick(const Foot& foot, const double offse
 
 void PathPlanner2018::forwardKick(const Foot& foot)
 {
-  if (stepBuffer.empty() && !kickPlanned)
+  if (/*stepBuffer.empty() && */!kickPlanned)
   {
+    stepBuffer.clear();
+
     Coordinate coordinate = Coordinate::Hip;
     if (foot == Foot::RIGHT)
     {
