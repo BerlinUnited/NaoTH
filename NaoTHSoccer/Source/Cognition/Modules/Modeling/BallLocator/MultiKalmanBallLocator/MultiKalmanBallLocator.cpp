@@ -11,12 +11,13 @@ MultiKalmanBallLocator::MultiKalmanBallLocator():
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:allow_just_one_model",  "allows only one model to be generated (all updates are applied to that model)", false);
 
     // Debug Drawings
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_real_ball_percept",    "draw the real incomming ball percept",                             false);
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_ball_on_field_before", "draw the modelled ball on the field before prediction and update", false);
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_ball_on_field",        "draw the modelled ball on the field before update",                false);
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_ball_on_field_after",  "draw the modelled ball on the field after prediction and update",  false);
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_assignment",           "draws the assignment of the ball percept to the filter",           false);
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_final_ball",           "draws the final i.e. best model",                                  false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_real_ball_percept",     "draw the real incomming ball percept",                             false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_ball_on_field_before",  "draw the modelled ball on the field before prediction and update", false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_ball_on_field",         "draw the modelled ball on the field before update",                false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_ball_on_field_after",   "draw the modelled ball on the field after prediction and update",  false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_assignment",            "draws the assignment of the ball percept to the filter",           false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_final_ball",            "draws the final i.e. best model",                                  false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_future_ball_positions", "draws the position of the models in the next 5 seconds future",    false);
 
     // Plotting Related Debug Requests
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:plot_prediction_error",     "plots the prediction errors in x (horizontal angle) and y (vertical angle)", false);
@@ -120,6 +121,10 @@ void MultiKalmanBallLocator::execute()
     if (bestModel != filter.end()) {
       provideBallModel(*bestModel);
     }
+
+    DEBUG_REQUEST("MultiKalmanBallLocator:draw_future_ball_positions",
+        drawFutureBallPositions();
+    );
     
     doDebugRequest();
 
@@ -675,52 +680,83 @@ void MultiKalmanBallLocator::doDebugRequest()
       );
 }
 
-void MultiKalmanBallLocator::drawFiltersOnField() const 
+void MultiKalmanBallLocator::drawSingleFilterOnField(const BallHypothesis& bh, const Pen &model_pen, const Pen &loc_pen, const Pen &vel_pen) const
+{
+    // draw model state
+    const Eigen::Vector4d& state = bh.getState();
+    PEN(model_pen.color.toString(), model_pen.size);
+    CIRCLE( state(0), state(2), getFieldInfo().ballRadius-10);
+    ARROW( state(0), state(2),
+           state(0)+state(1),
+           state(2)+state(3));
+
+    // draw error ellipses for the location
+    PEN(loc_pen.color.toString(), loc_pen.size);
+    const Ellipse2d& ellipse_loc = bh.getEllipseLocation();
+    OVAL_ROTATED(state(0),
+                 state(2),
+                 ellipse_loc.minor,
+                 ellipse_loc.major,
+                 ellipse_loc.angle);
+
+    // draw error ellipse for the velocity
+    PEN(vel_pen.color.toString(), vel_pen.size);
+    const Ellipse2d& ellipse_vel = bh.getEllipseVelocity();
+    OVAL_ROTATED(state(0)+state(1),
+                 state(2)+state(3),
+                 ellipse_vel.minor,
+                 ellipse_vel.major,
+                 ellipse_vel.angle);
+}
+
+void MultiKalmanBallLocator::drawFiltersOnField() const
 {
     FIELD_DRAWING_CONTEXT;
+    Pen modelPen;
 
     for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); iter++)
     {
         if(getBallModel().valid)
         {
-            if((*iter).getLastUpdateFrame().getTime() == getFrameInfo().getTime()) {
+            if(iter->getLastUpdateFrame().getTime() == getFrameInfo().getTime()) {
                 if(bestModel == iter)
-                    PEN("99FF00", 20);
+                    modelPen=Pen(Color("99FF00FF"), 20);
                 else
-                    PEN("FF9900",20);
+                    modelPen=Pen(Color("FF9900FF"), 20);
             } else {
-                    PEN("0099FF", 20);
+                modelPen=Pen(Color("0099FFFF"), 20);
             }
         } else {
-                PEN("999999", 20);
+            modelPen=Pen(Color("999999FF"), 20);
         }
 
-        const Eigen::Vector4d& state = (*iter).getState();
+        drawSingleFilterOnField(*iter, modelPen, Pen(Color("00FFFFFF"),20), Pen(Color("FF00FFFF"),20));
+     }
+}
 
-        CIRCLE( state(0), state(2), getFieldInfo().ballRadius-10);
-        ARROW( state(0), state(2),
-               state(0)+state(1),
-               state(2)+state(3));
+void MultiKalmanBallLocator::drawFutureBallPositions() const
+{
+    FIELD_DRAWING_CONTEXT;
+    Pen modelPen;
+    modelPen.size = 20;
+    for(const BallHypothesis& bh : filter)
+    {
+        BallHypothesis modelCopy(bh);
 
-        PEN("00FFFF", 20);
+        modelPen.color = Color(0.0, 0.0, 0.0, 1.0);
+        drawSingleFilterOnField(modelCopy, modelPen, Pen(Color("00000000"),20), Pen(Color("00000000"),20));
 
-        // draw error ellipses for the location
-        const Ellipse2d& ellipse_loc = (*iter).getEllipseLocation();
-        OVAL_ROTATED(state(0),
-                     state(2),
-                     ellipse_loc.minor,
-                     ellipse_loc.major,
-                     ellipse_loc.angle);
+        for(double i=0.1; i < 0.5; i+=0.1)
+        {
+          // predict
+          predict(modelCopy, 1.0); // predict 1s in the future
 
-        PEN("FF00FF", 20);
+          // draw model on field
+          modelPen.color = Color(i, i, i, 1.0);
+          drawSingleFilterOnField(modelCopy, modelPen, Pen(Color("00000000"),20), Pen(Color("00000000"),20));
+        }
 
-        // draw error ellipse for the velocity
-        const Ellipse2d& ellipse_vel = (*iter).getEllipseVelocity();
-        OVAL_ROTATED(state(0)+state(1),
-                     state(2)+state(3),
-                     ellipse_vel.minor,
-                     ellipse_vel.major,
-                     ellipse_vel.angle);
+        LINE(bh.getState()(0),bh.getState()(2),modelCopy.getState()(0),modelCopy.getState()(2));
     }
 }
 
