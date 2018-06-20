@@ -77,7 +77,7 @@ option battery {
   {
     decision
     {
-      if(platform.battery <= 0.96)
+      if(platform.battery <= 0.96 || battery.isCharging || battery.isDischarging)
         goto ok;
       else
         stay;
