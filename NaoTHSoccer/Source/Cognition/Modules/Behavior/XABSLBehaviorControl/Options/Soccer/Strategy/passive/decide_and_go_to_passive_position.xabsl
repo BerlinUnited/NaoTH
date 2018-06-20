@@ -62,7 +62,7 @@ option decide_and_go_to_passive_position
     action {
       go_to_and_keep_passive_position(
         x = 1000,
-        y = -field.centerCircleRadius - 1000, 
+        y = -field.centerCircleRadius, 
         rot = 45);
     }
   }
@@ -75,8 +75,8 @@ option decide_and_go_to_passive_position
     }
     action {
       go_to_and_keep_passive_position(
-        x=field.xPosOwnPenaltyMark + 1000, 
-        y=field.yPosRightGoal+400, 
+        x=field.xPosOwnPenaltyMark, 
+        y=field.yPosRightGoal, 
         rot=0);
     }
   }
@@ -89,8 +89,8 @@ option decide_and_go_to_passive_position
     }
     action {
       go_to_and_keep_passive_position(
-        x=field.xPosOwnPenaltyMark, 
-        y=field.yPosLeftGoal-400,
+        x=field.xPosOwnPenaltyMark+1000, 
+        y=field.yPosLeftGoal,
         rot=0);
     }
   }
