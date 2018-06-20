@@ -90,8 +90,7 @@ void RansacLineDetectorOnGraphs::execute()
   if (params.enable_ellipse_fitting) {
     Ellipse circResult;
 
-    getLinePercept().middleCircleWasSeen = false;
-
+    // BOTTOM IMAGE
     if (ransacEllipse(circResult, graphEdgels, getLineGraphPercept().lineGraphs)) {
       getLinePercept().middleCircleWasSeen = true;
 
@@ -111,14 +110,14 @@ void RansacLineDetectorOnGraphs::execute()
         OVAL_ROTATED(c[0], c[1], a[0], a[1], circResult.rotationAngle());
       );
     }
-
+    // TOP IMAGE
     if (ransacEllipse(circResult, graphEdgelsTop, getLineGraphPercept().lineGraphsTop)) {
-      getLinePercept().middleCircleWasSeen = true;
+      getLinePerceptTop().middleCircleWasSeen = true;
 
       double c[2];
       circResult.getCenter(c);
-      getLinePercept().middleCircleCenter.x = c[0];
-      getLinePercept().middleCircleCenter.y = c[1];
+      getLinePerceptTop().middleCircleCenter.x = c[0];
+      getLinePerceptTop().middleCircleCenter.y = c[1];
 
       DEBUG_REQUEST("Vision:RansacLineDetectorOnGraphs:draw_circle_field_top",
         FIELD_DRAWING_CONTEXT;
