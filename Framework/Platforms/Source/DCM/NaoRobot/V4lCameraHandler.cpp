@@ -75,6 +75,7 @@ V4lCameraHandler::V4lCameraHandler()
   settingsOrder.push_back(CameraSettings::Sharpness);
   settingsOrder.push_back(CameraSettings::Exposure);
   settingsOrder.push_back(CameraSettings::Gain);
+  settingsOrder.push_back(CameraSettings::GammaCorrection);
 
   settingsOrder.push_back(CameraSettings::WhiteBalance);
   // this throws errors sometimes and slows down the robot, check whats wrong before activating it
@@ -155,6 +156,7 @@ void V4lCameraHandler::initIDMapping()
   csConst[CameraSettings::MinAnalogGain] = V4L2_MT9M114_AE_MIN_VIRT_AGAIN;
   csConst[CameraSettings::MaxAnalogGain] = V4L2_MT9M114_AE_MAX_VIRT_AGAIN;
   csConst[CameraSettings::TargetGain] = V4L2_MT9M114_AE_TARGET_GAIN;
+  csConst[CameraSettings::GammaCorrection] = V4L2_CID_GAMMA;
   
   csConst[CameraSettings::Exposure] = V4L2_CID_EXPOSURE;
   //csConst[CameraSettings::WhiteBalance] = V4L2_CID_DO_WHITE_BALANCE;

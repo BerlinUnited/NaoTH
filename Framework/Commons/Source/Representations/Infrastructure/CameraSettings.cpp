@@ -45,6 +45,7 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
     case FadeToBlack: return "FadeToBlack"; break;
     case PowerlineFrequency: return "PowerlineFrequency"; break;
     case AutoExpositionAlgorithm: return "AutoExpositionAlgorithm"; break;
+    case GammaCorrection: return "GammaCorrection"; break;
     default: return "Unknown CameraSetting"; break;
   }//end switch
 }//end getCameraSettingsName
@@ -77,6 +78,7 @@ CameraSettingsRequest::CameraSettingsRequest(string configName)
   PARAMETER_REGISTER(exposure) = 1;
   PARAMETER_REGISTER(fadeToBlack) = false;
   PARAMETER_REGISTER(gain) = 1.0;
+  PARAMETER_REGISTER(gammaCorrection) = 220;
   PARAMETER_REGISTER(targetGain) = 100.0;
   PARAMETER_REGISTER(minAnalogGain) = 1.0;
   PARAMETER_REGISTER(maxAnalogGain) = 8.0;
@@ -146,6 +148,7 @@ CameraSettings CameraSettingsRequest::getCameraSettings() const
   result.data[CameraSettings::Sharpness] = Math::clamp(sharpness, -7, 7);
   result.data[CameraSettings::VerticalFlip] = verticalFlip ? 1 : 0;
   result.data[CameraSettings::WhiteBalance] = Math::clamp(whiteBalanceTemperature, 2700, 6500);
+  result.data[CameraSettings::GammaCorrection] = Math::clamp(gammaCorrection, 100, 280);
 
   // use 50 Hz (val = 1) if 60 Hz (val = 2) is not explicitly requested
   result.data[CameraSettings::PowerlineFrequency] = powerlineFrequency == 60 ? 2 : 1;
