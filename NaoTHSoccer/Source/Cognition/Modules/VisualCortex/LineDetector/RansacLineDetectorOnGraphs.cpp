@@ -87,49 +87,50 @@ void RansacLineDetectorOnGraphs::execute()
     }
   }
 
-  Ellipse circResult;
+  if (params.enable_ellipse_fitting) {
+    Ellipse circResult;
 
-  getLinePercept().middleCircleWasSeen = false;
+    getLinePercept().middleCircleWasSeen = false;
 
-  if (ransacEllipse(circResult, graphEdgels, getLineGraphPercept().lineGraphs)) {
-    getLinePercept().middleCircleWasSeen = true;
+    if (ransacEllipse(circResult, graphEdgels, getLineGraphPercept().lineGraphs)) {
+      getLinePercept().middleCircleWasSeen = true;
 
-    double c[2];
-    circResult.getCenter(c);
-    getLinePercept().middleCircleCenter.x = c[0];
-    getLinePercept().middleCircleCenter.y = c[1];
+      double c[2];
+      circResult.getCenter(c);
+      getLinePercept().middleCircleCenter.x = c[0];
+      getLinePercept().middleCircleCenter.y = c[1];
 
-    DEBUG_REQUEST("Vision:RansacLineDetectorOnGraphs:draw_circle_field",
-      FIELD_DRAWING_CONTEXT;
-      double a[2];
-      circResult.axesLength(a);
+      DEBUG_REQUEST("Vision:RansacLineDetectorOnGraphs:draw_circle_field",
+        FIELD_DRAWING_CONTEXT;
+        double a[2];
+        circResult.axesLength(a);
 
-      PEN("009900", 50);
+        PEN("009900", 50);
 
-      CIRCLE(c[0], c[1], 30);
-      OVAL_ROTATED(c[0], c[1], a[0], a[1], circResult.rotationAngle());
-    );
-  }
+        CIRCLE(c[0], c[1], 30);
+        OVAL_ROTATED(c[0], c[1], a[0], a[1], circResult.rotationAngle());
+      );
+    }
 
-  if (params.enable_ellipse_fitting
-      && ransacEllipse(circResult, graphEdgelsTop, getLineGraphPercept().lineGraphsTop)) {
-    getLinePercept().middleCircleWasSeen = true;
+    if (ransacEllipse(circResult, graphEdgelsTop, getLineGraphPercept().lineGraphsTop)) {
+      getLinePercept().middleCircleWasSeen = true;
 
-    double c[2];
-    circResult.getCenter(c);
-    getLinePercept().middleCircleCenter.x = c[0];
-    getLinePercept().middleCircleCenter.y = c[1];
+      double c[2];
+      circResult.getCenter(c);
+      getLinePercept().middleCircleCenter.x = c[0];
+      getLinePercept().middleCircleCenter.y = c[1];
 
-    DEBUG_REQUEST("Vision:RansacLineDetectorOnGraphs:draw_circle_field_top",
-      FIELD_DRAWING_CONTEXT;
-      double a[2];
-      circResult.axesLength(a);
+      DEBUG_REQUEST("Vision:RansacLineDetectorOnGraphs:draw_circle_field_top",
+        FIELD_DRAWING_CONTEXT;
+        double a[2];
+        circResult.axesLength(a);
 
-      PEN("009900", 50);
+        PEN("009900", 50);
 
-      CIRCLE(c[0], c[1], 30);
-      OVAL_ROTATED(c[0], c[1], a[0], a[1], circResult.rotationAngle());
-    );
+        CIRCLE(c[0], c[1], 30);
+        OVAL_ROTATED(c[0], c[1], a[0], a[1], circResult.rotationAngle());
+      );
+    }
   }
 
   DEBUG_REQUEST("Vision:RansacLineDetectorOnGraphs:draw_lines_field",
