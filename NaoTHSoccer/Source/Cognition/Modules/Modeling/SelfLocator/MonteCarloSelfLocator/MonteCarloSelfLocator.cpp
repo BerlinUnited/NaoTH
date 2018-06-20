@@ -419,7 +419,13 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
   */
 
   if(parameters.updateByMiddleCircle) {
-    updateByMiddleCircle(getLinePercept(), sampleSet);
+    if(parameters.updateByLinePerceptCircle && getLinePercept().middleCircleWasSeen) {
+      updateByMiddleCircle(getLinePercept().middleCircleCenter, sampleSet);
+    }
+
+    if(parameters.updateByRansacCircle && getRansacCirclePercept().middleCircleWasSeen) {
+      updateByMiddleCircle(getRansacCirclePercept().middleCircleCenter, sampleSet);
+    }
   }
 
   if(parameters.updateByCompas && getProbabilisticQuadCompas().isValid()) {
@@ -919,12 +925,8 @@ void MonteCarloSelfLocator::updateByShortLines(const LinePercept& linePercept, S
   */
 }//end updateByLinesTable
 
-void MonteCarloSelfLocator::updateByMiddleCircle(const LinePercept& linePercept, SampleSet& sampleSet) const
+void MonteCarloSelfLocator::updateByMiddleCircle(const Vector2d& middleCircleCenter, SampleSet& sampleSet) const
 {
-  if(!linePercept.middleCircleWasSeen) {
-    return;
-  }
-
   double sigmaDistance = parameters.sigmaDistanceCenterCircle;
   double sigmaAngle    = parameters.sigmaAngleCenterCircle;
   double cameraHeight  = getCameraMatrix().translation.z;
@@ -941,8 +943,8 @@ void MonteCarloSelfLocator::updateByMiddleCircle(const LinePercept& linePercept,
     double expectedDistance = localCircle.abs();
     double expectedAngle = localCircle.angle();
 
-    double seenDistance = linePercept.middleCircleCenter.abs();
-    double seenAngle = linePercept.middleCircleCenter.angle();
+    double seenDistance = middleCircleCenter.abs();
+    double seenAngle = middleCircleCenter.angle();
 
     //double distanceDiff = fabs(expectedDistance - seenDistance);
     //double angleDiff = Math::normalize(seenAngle - expectedAngle);
