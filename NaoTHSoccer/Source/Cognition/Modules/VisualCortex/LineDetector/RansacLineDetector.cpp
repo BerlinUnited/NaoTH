@@ -48,44 +48,47 @@ void RansacLineDetector::execute()
   }
 
   // circle
-  Vector2d circResult;
-  inliers.clear();
-  int bestInlierCirc = ransacCircle(circResult, inliers);
+  if(params.enable_circle_ransac) {
+    Vector2d circResult;
+    inliers.clear();
+    int bestInlierCirc = ransacCircle(circResult, inliers);
 
-  if (bestInlierCirc > 2) {
-    /*
-    std::vector<Vector2d> pointList(inliers.size());
-
-    for(size_t i: inliers)
-    {
-      const Edgel& e = getLineGraphPercept().edgelsOnField[i];
-      pointList.push_back(e.point);
-    }
-    Vector2d circle_mean;
-    double circle_radius;
-    // fit circle to inliers
-    Geometry::calculateCircle(pointList,circle_mean, circle_radius);
-    */
-
-    getLinePercept().middleCircleCenter = circResult;
-
-    DEBUG_REQUEST("Vision:RansacLineDetector:draw_circle_field",
-      FIELD_DRAWING_CONTEXT;
-
-      PEN("000099", 5);
+    if (bestInlierCirc > 2) {
+      /*
+      std::vector<Vector2d> pointList(inliers.size());
 
       for(size_t i: inliers)
       {
         const Edgel& e = getLineGraphPercept().edgelsOnField[i];
-        CIRCLE(e.point.x, e.point.y, 30);
+        pointList.push_back(e.point);
       }
+      Vector2d circle_mean;
+      double circle_radius;
+      // fit circle to inliers
+      Geometry::calculateCircle(pointList,circle_mean, circle_radius);
+      */
 
-      PEN("009900", 10);
-      CIRCLE(circResult.x, circResult.y, 750);
-      //PEN("00FF00", 10);
-      //CIRCLE(circle_mean.x, circle_mean.y, circle_radius);
+      getLinePercept().middleCircleCenter = circResult;
 
-    );
+      DEBUG_REQUEST("Vision:RansacLineDetector:draw_circle_field",
+        FIELD_DRAWING_CONTEXT;
+
+        PEN("000099", 5);
+
+        for(size_t i: inliers)
+        {
+          const Edgel& e = getLineGraphPercept().edgelsOnField[i];
+          CIRCLE(e.point.x, e.point.y, 30);
+        }
+
+        PEN("009900", 10);
+        CIRCLE(circResult.x, circResult.y, getFieldInfo().centerCircleRadius);
+        //PEN("00FF00", 10);
+        //CIRCLE(circle_mean.x, circle_mean.y, circle_radius);
+
+      );
+    }
+
   }
 
   DEBUG_REQUEST("Vision:RansacLineDetector:draw_edgels_field",
@@ -295,8 +298,7 @@ int RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inli
     return 0;
   }
 
-  //TODO get from representation
-  double radius = 750;
+  double radius = getFieldInfo().centerCircleRadius;
 
   Vector2d bestModel;
   std::vector<size_t> model_inliers;

@@ -13,6 +13,7 @@
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugParameterList.h"
 
+#include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Perception/LineGraphPercept.h"
 #include "Representations/Perception/LinePercept.h"
 
@@ -29,6 +30,7 @@ BEGIN_DECLARE_MODULE(RansacLineDetector)
   PROVIDE(DebugParameterList)
 
   REQUIRE(LineGraphPercept)
+  REQUIRE(FieldInfo)
 
   PROVIDE(LinePercept)
 END_DECLARE_MODULE(RansacLineDetector)
@@ -71,6 +73,7 @@ private:
       PARAMETER_REGISTER(circle_inlierMin) = 7;
       PARAMETER_REGISTER(circle_angle_variance) = 0.02;
       PARAMETER_REGISTER(circle_max_angle_diff) = 8;
+      PARAMETER_REGISTER(enable_circle_ransac) = true;
 
       syncWithConfig();
     }
@@ -92,6 +95,8 @@ private:
     int circle_inlierMin;
     double circle_angle_variance;
     double circle_max_angle_diff;
+
+    bool enable_circle_ransac;
 
   } params;
 
