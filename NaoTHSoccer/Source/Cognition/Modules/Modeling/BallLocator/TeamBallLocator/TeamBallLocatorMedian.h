@@ -4,8 +4,8 @@
 * Declaration of class TeamBallLocator
 */
 
-#ifndef __TeamBallLocator_h_
-#define __TeamBallLocator_h_
+#ifndef __TeamBallLocatorMedian_h_
+#define __TeamBallLocatorMedian_h_
 
 #include <ModuleFramework/Module.h>
 #include <algorithm>
@@ -28,12 +28,7 @@
 // Tools
 #include "Tools/DataStructures/ParameterList.h"
 
-// Canopy Clustering
-#include "Cognition/Modules/Modeling/SelfLocator/MonteCarloSelfLocator/CanopyClustering.h"
-#include "Cognition/Modules/Modeling/SelfLocator/MonteCarloSelfLocator/SampleSet.h"
-#include "Cognition/Modules/Modeling/SelfLocator/MonteCarloSelfLocator/Sample.h"
-
-BEGIN_DECLARE_MODULE(TeamBallLocator)
+BEGIN_DECLARE_MODULE(TeamBallLocatorMedian)
   PROVIDE(DebugModify)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
@@ -47,9 +42,9 @@ BEGIN_DECLARE_MODULE(TeamBallLocator)
 
   PROVIDE(TeamBallModel)
   PROVIDE(TeamMessageData)
-END_DECLARE_MODULE(TeamBallLocator)
+END_DECLARE_MODULE(TeamBallLocatorMedian)
 
-class TeamBallLocator : protected TeamBallLocatorBase
+class TeamBallLocatorMedian : protected TeamBallLocatorMedianBase
 {
   public:
     // time stamped Vector2d
@@ -70,7 +65,7 @@ class TeamBallLocator : protected TeamBallLocatorBase
     class Parameters: public ParameterList
     {
     public:
-      Parameters() : ParameterList("TeamBallParameters")
+      Parameters() : ParameterList("TeamBallMedianParameters")
       {
         PARAMETER_REGISTER(maxTimeOffset) = 1000;
         PARAMETER_REGISTER(maxTimeValid) = 5000;
@@ -84,8 +79,8 @@ class TeamBallLocator : protected TeamBallLocatorBase
 
 
   public:
-    TeamBallLocator();
-		~TeamBallLocator();
+    TeamBallLocatorMedian();
+    ~TeamBallLocatorMedian();
 
     virtual void execute();
 
@@ -95,4 +90,4 @@ class TeamBallLocator : protected TeamBallLocatorBase
     std::map<unsigned int, unsigned int> lastMessages;
 };
 
-#endif //__TeamBallLocator_h_
+#endif //__TeamBallLocatorMedian_h_

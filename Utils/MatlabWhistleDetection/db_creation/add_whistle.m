@@ -14,7 +14,7 @@ function data = add_whistle(data, file, numChanels, sampleRate, category)
     whistle.rawData = raw;
     
     % calculate spectrum from raw data
-    [spectrum, max_auto_corr] = calculate_spectrum(raw);
+    [spectrum, max_auto_corr] = calc_spectrum(raw);
     
     whistle.spectralData = spectrum;
     

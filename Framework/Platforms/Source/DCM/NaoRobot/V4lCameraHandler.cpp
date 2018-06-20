@@ -15,6 +15,7 @@
 
 #include <string.h>
 #include <iostream>
+#include <poll.h>
 
 //Custom V4L control variables
 #define V4L2_MT9M114_FADE_TO_BLACK (V4L2_CID_PRIVATE_BASE) //boolean, enable or disable fade to black feature
@@ -34,14 +35,13 @@ using namespace std;
 V4lCameraHandler::V4lCameraHandler()
   :
   selMethodIO(IO_MMAP),
-//  selMethodIO(IO_USERPTR),
-//  selMethodIO(IO_READ),
   actMethodIO(Num_of_MethodIO),
   fd(-1), 
   buffers(NULL),
   n_buffers(0),
   currentImage(NULL),
   atLeastOneImageRetrieved(false),
+  initialParamsSet(false),
   wasQueried(false),
   isCapturing(false),
   bufferSwitched(false),
@@ -75,6 +75,7 @@ V4lCameraHandler::V4lCameraHandler()
   settingsOrder.push_back(CameraSettings::Sharpness);
   settingsOrder.push_back(CameraSettings::Exposure);
   settingsOrder.push_back(CameraSettings::Gain);
+  settingsOrder.push_back(CameraSettings::GammaCorrection);
 
   settingsOrder.push_back(CameraSettings::WhiteBalance);
   // this throws errors sometimes and slows down the robot, check whats wrong before activating it
@@ -155,6 +156,7 @@ void V4lCameraHandler::initIDMapping()
   csConst[CameraSettings::MinAnalogGain] = V4L2_MT9M114_AE_MIN_VIRT_AGAIN;
   csConst[CameraSettings::MaxAnalogGain] = V4L2_MT9M114_AE_MAX_VIRT_AGAIN;
   csConst[CameraSettings::TargetGain] = V4L2_MT9M114_AE_TARGET_GAIN;
+  csConst[CameraSettings::GammaCorrection] = V4L2_CID_GAMMA;
   
   csConst[CameraSettings::Exposure] = V4L2_CID_EXPOSURE;
   //csConst[CameraSettings::WhiteBalance] = V4L2_CID_DO_WHITE_BALANCE;
@@ -279,14 +281,15 @@ void V4lCameraHandler::openDevice(bool blockingMode)
   std::cout << LOG << "Opening camera device '" << cameraName << "' ";
 
   blockingCaptureModeEnabled = blockingMode;
+  // always open file descriptor in non-blocking mode, blocking will be achived with "poll" calls later
+  fd = open(cameraName.c_str(), O_RDWR | O_NONBLOCK, 0);
+    
   if(blockingMode)
   {
-    fd = open(cameraName.c_str(), O_RDWR, 0);
     std::cout << "(blocking mode)";
   }
   else
   {
-    fd = open(cameraName.c_str(), O_RDWR | O_NONBLOCK, 0);
     std::cout << "(non blocking mode)";
   }
   std::cout << endl;
@@ -501,42 +504,73 @@ int V4lCameraHandler::readFrameMMaP()
   buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   buf.memory = V4L2_MEMORY_MMAP;
 
-  int errorOccured = -1;
-  if(blockingCaptureModeEnabled)
+  
+  // in blocking mode, wait up to a second for new image data
+  const unsigned int maxWaitingTime = blockingCaptureModeEnabled ? 1000 : 5; 
+  // wait for available data via poll
+  pollfd pollfds[1] =
   {
-    //in blocking mode just get a buffer from the drivers outgoing queue
-    errorOccured = xioctl(fd, VIDIOC_DQBUF, &buf);
-    hasIOError(errorOccured, errno);
-//    std::cout << "get buffer from driver blocking" << std::endl;
+    {fd, POLLIN | POLLPRI, 0},
+  };
+//  unsigned int startTime = NaoTime::getNaoTimeInMilliSeconds();
+  int polled = poll(pollfds, 1, maxWaitingTime);
+
+//  unsigned int stopTime = NaoTime::getNaoTimeInMilliSeconds();
+//  std::cout << LOG << "polling took " << (stopTime -  startTime) << " ms" << std::endl;
+  if(polled < 0) {
+    std::cerr << LOG << "Polling camera failed after " << maxWaitingTime << " ms. Error was: " << strerror(errno) << std::endl;
+    return -1;
   }
-  else
-  {
-    //in non-blocking mode make some tries if no buffer in the  drivers outgoing queue is ready
-    //but limit the number of tries (better to loose a frame then to stuck in an endless loop)
-    for(int i = 0; i < 20 && errorOccured < 0; i++)
-    {
-      errorOccured = xioctl(fd, VIDIOC_DQBUF, &buf);
-//      std::cout << "get buffer from driver nonblocking" << std::endl;
-      if(errorOccured < 0 && errno == EAGAIN) {
-        usleep(100);
+
+  if(pollfds[0].revents && !(pollfds[0].revents & POLLIN)) {
+      std::cerr << LOG << "Poll for camera returned unexpected poll code " << pollfds[0].revents << std::endl;
+  }
+
+
+  int errorCode = 0;
+  
+  // Deque all camera images in queue until there is none left. Since we polled, we know data should be available.
+  bool first = true;
+  v4l2_buffer lastValidBuf;
+  do {
+    errorCode = xioctl(fd, VIDIOC_DQBUF, &buf);
+
+    if(errorCode == 0) {
+      if(first) {
+        first = false;
       } else {
-        hasIOError(errorOccured, errno);
+        VERIFY(xioctl(fd, VIDIOC_QBUF, &lastValidBuf) == 0);
+      }
+      lastValidBuf = buf;
+    } else {
+      if(errno == EAGAIN) {
+        // last element taken from the queue, abort loop
+        if(!first) {
+          // reset error code since first try was successfull
+          errorCode = 0;
+        }
+        break;
+      } else {
+        // we did do a poll on the file descriptor and still got an error, something is wrong: abort the loop
+        hasIOError(errorCode, errno);
+        break;
       }
     }
-  }
-  currentBuf = buf;
+  } while(errorCode == 0);
+  currentBuf = lastValidBuf;
 
   //remember current buffer for the next frame as last buffer
   lastBuf = currentBuf;
 
   wasQueried = true;
   ASSERT(currentBuf.index < n_buffers);
-  if(errorOccured == 0) {
+  if(errorCode == 0) {
     return currentBuf.index;
   } else {
     return -1;
   }
 }
+
 
 int V4lCameraHandler::readFrameUP()
 {
@@ -865,16 +899,18 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
     return;
   }
 
-  unsigned long long currentTime = NaoTime::getSystemTimeInMicroSeconds();
-  if(currentTime < lastCameraSettingTimestamp + 16000) {
-    return;
-  }
+   bool forceUpdate = !initialParamsSet;
+
+  //unsigned long long currentTime = NaoTime::getSystemTimeInMicroSeconds();
+  //if(currentTime < lastCameraSettingTimestamp + 16000) {
+  //  return;
+  //}
 
   std::list<CameraSettings::CameraSettingID>::const_iterator it = settingsOrder.begin();
   for(; it != settingsOrder.end(); it++)
   {
-    // only set if csConst was set and the value was changed
-    if(csConst[*it] != -1 && data.data[*it] != currentSettings.data[*it])
+    // only set forced or if csConst was set and the value was changed
+    if(forceUpdate || (csConst[*it] != -1 && data.data[*it] != currentSettings.data[*it]))
     {
       /*
       // NOTE: experimental
@@ -890,7 +926,7 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
       else if(data.data[CameraSettings::AutoWhiteBalancing] && 
         (*it == CameraSettings::WhiteBalance)) {
         // ignore
-        std::cout << "Ignore WhiteBalance" << std::endl;
+//        std::cout << "Ignore WhiteBalance" << std::endl;
       }
       // apply the single parameter setting
       else if(setSingleCameraParameter(csConst[*it], data.data[*it], CameraSettings::getCameraSettingsName(*it))) {
@@ -909,7 +945,7 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
           // read back the white balance value set to make sure they are in sync
           currentSettings.data[CameraSettings::WhiteBalance] = getSingleCameraParameter(csConst[CameraSettings::WhiteBalance]);
 
-          std::cout << LOG << "autoupdated ExposWhiteBalanceure to "  << currentSettings.data[CameraSettings::WhiteBalance] << std::endl;
+          std::cout << LOG << "autoupdated WhiteBalance to "  << currentSettings.data[CameraSettings::WhiteBalance] << std::endl;
         }
 
         std::cout << LOG << "set " << CameraSettings::getCameraSettingsName(*it) << " to " << data.data[*it] << std::endl;
@@ -929,9 +965,10 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
       } else {
         std::cout << LOG << "setting " << CameraSettings::getCameraSettingsName(*it) << " failed" << std::endl;
       }
-      break;
+//      break;
     }
   }// end for
+
 
   // set the autoexposure grid parameters
   for(std::size_t i=0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
@@ -945,6 +982,9 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
       }
     }
   }
+
+
+  initialParamsSet = true;
 
 }// end setAllCameraParams
 

@@ -342,3 +342,17 @@ message IMUData
  required DoubleVector2 orientation = 8;
  required DoubleVector3 orientation_rotvec = 9;
 }
+
+message CentreOfPressure {
+ required DoubleVector3 in_and_only_left_foot_cop = 1;
+ required double in_and_only_left_foot_magnitude  = 2;
+ required bool   in_and_only_left_foot_valid      = 3;
+
+ required DoubleVector3 in_and_only_right_foot_cop = 4;
+ required double in_and_only_right_foot_magnitude  = 5;
+ required bool   in_and_only_right_foot_valid      = 6;
+
+ required DoubleVector3 in_kinematic_chain_origin_cop = 7;
+ required double in_kinematic_chain_origin_magnitude  = 8;
+ required bool   in_kinematic_chain_origin_valid      = 9;
+}
