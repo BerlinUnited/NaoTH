@@ -47,8 +47,8 @@ option decide_and_go_to_passive_position
     }
     action {
       go_to_and_keep_passive_position(
-        x  =(field.xPosOppPenaltyMark + field.centerCircleRadius)/2,
-        y = field.yPosRightGoal, 
+        x  =(field.xPosOppPenaltyMark + field.centerCircleRadius)/2 + 500,
+        y = field.yPosLeftGoal, 
         rot = 140);
     }
   }
@@ -61,12 +61,13 @@ option decide_and_go_to_passive_position
     }
     action {
       go_to_and_keep_passive_position(
-        x = -field.centerCircleRadius,
-        y = -field.centerCircleRadius/2, 
-        rot = 0);
+        x = centerCircleRadius,
+        y = -field.centerCircleRadius, 
+        rot = 45);
     }
   }
-
+ 
+  // 4
   state goto_passive_position_defender {
     decision {
       else
@@ -77,10 +78,10 @@ option decide_and_go_to_passive_position
         x=field.xPosOwnPenaltyMark, 
         y=field.yPosRightGoal+400, 
         rot=0);
-
     }
   }
-
+ 
+  // 2
   state goto_passive_position_supporter2{
     decision {
       else
@@ -88,7 +89,7 @@ option decide_and_go_to_passive_position
     }
     action {
       go_to_and_keep_passive_position(
-        x=field.xPosOwnPenaltyMark + 500, 
+        x=field.xPosOwnPenaltyMark+1000, 
         y=field.yPosLeftGoal-400,
         rot=0);
     }
