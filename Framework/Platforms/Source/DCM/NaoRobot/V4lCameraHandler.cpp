@@ -926,7 +926,7 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
       else if(data.data[CameraSettings::AutoWhiteBalancing] && 
         (*it == CameraSettings::WhiteBalance)) {
         // ignore
-        std::cout << "Ignore WhiteBalance" << std::endl;
+//        std::cout << "Ignore WhiteBalance" << std::endl;
       }
       // apply the single parameter setting
       else if(setSingleCameraParameter(csConst[*it], data.data[*it], CameraSettings::getCameraSettingsName(*it))) {
