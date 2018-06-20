@@ -40,7 +40,7 @@ option decide_and_go_to_passive_position_after_penalized
     }
     action {
       go_to_and_keep_passive_position(
-        x = 1000,
+        x = field.centerCircleRadius,
         y = -field.centerCircleRadius, 
         rot = 45);
     }
