@@ -6,6 +6,7 @@
 #include <Representations/Infrastructure/TeamMessageData.h>
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Modeling/TeamMessageData.h"
+#include "Representations/Modeling/TeamMessageTimeStatistics.h"
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Infrastructure/GameData.h"
 #include "Representations/Infrastructure/WifiMode.h"
@@ -26,6 +27,7 @@ BEGIN_DECLARE_MODULE(TeamCommReceiver)
 
   REQUIRE(FrameInfo)
   REQUIRE(PlayerInfo)
+  REQUIRE(TeamMessageTimeStatistics)
 
   REQUIRE(TeamMessageDataIn)
   REQUIRE(GameData)

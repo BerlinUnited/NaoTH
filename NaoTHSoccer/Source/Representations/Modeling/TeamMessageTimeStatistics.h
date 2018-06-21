@@ -5,6 +5,7 @@
 
 #include "Tools/NaoTime.h"
 #include "Tools/DataStructures/Printable.h"
+#include "Tools/DataStructures/RingBufferWithSum.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Modeling/TeamMessageData.h"
 
@@ -34,6 +35,10 @@ public:
 
     /** Collection for storing the various player time measure infos */
     std::map<unsigned int, Player> data;
+    /** Aggregates the overall rtt of the team. */
+    RingBufferWithSum<long long, 100> globalRTT;
+    /** Aggregates the overall latency of the team. */
+    RingBufferWithSum<long long, 100> globalLatency;
 
     /**
      * @brief Prints the available time measure infos to the given stream.
