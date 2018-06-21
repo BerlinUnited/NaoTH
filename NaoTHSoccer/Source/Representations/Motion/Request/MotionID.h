@@ -26,6 +26,7 @@ namespace motion
 
     /* inverse kinematic */
     stand,
+    unrelaxed_stand,
     walk,
     kick,
     dance,
@@ -79,6 +80,7 @@ namespace motion
       case sit: return "sit";
 
       case stand: return "stand";
+      case unrelaxed_stand: return "unrelaxed_stand";
       case walk: return "walk";
       case kick: return "kick";
       case dance: return "dance";
