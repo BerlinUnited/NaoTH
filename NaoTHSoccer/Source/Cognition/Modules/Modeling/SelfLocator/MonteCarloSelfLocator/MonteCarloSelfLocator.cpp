@@ -933,6 +933,9 @@ void MonteCarloSelfLocator::updateByMiddleCircle(const Vector2d& middleCircleCen
 
   Vector2<double> centerCirclePosition; // (0,0)
 
+  // Don't update angle if inside center cicle
+  bool updateByAngle = !(getRobotPose().isValid || getRobotPose().translation.abs() < 500);
+
   for(size_t s=0; s < sampleSet.size(); s++)
   {
     Sample& sample = sampleSet[s];
@@ -952,7 +955,9 @@ void MonteCarloSelfLocator::updateByMiddleCircle(const Vector2d& middleCircleCen
     //sample.likelihood *= exp(-pow((angleDiff)/sigmaAngle,2));
 
     sample.likelihood *= computeDistanceWeight(seenDistance, expectedDistance, cameraHeight, sigmaDistance);
-    sample.likelihood *= computeAngleWeight(seenAngle, expectedAngle, sigmaAngle);
+    if (updateByAngle) {
+      sample.likelihood *= computeAngleWeight(seenAngle, expectedAngle, sigmaAngle);
+    }
   }//end for
 
 }//end updateByMiddleCircle
