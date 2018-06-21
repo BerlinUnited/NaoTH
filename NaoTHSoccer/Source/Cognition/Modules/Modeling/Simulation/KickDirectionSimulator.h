@@ -100,8 +100,10 @@ public:
       PARAMETER_REGISTER(numParticles) = 30;
       PARAMETER_REGISTER(minGoalParticles) = 9;
 
+      /*
       PARAMETER_REGISTER(obstacleFilter.g0) = 0.01;
       PARAMETER_REGISTER(obstacleFilter.g1) = 0.1;
+      */
 
       //KickDirection Stuff
       //Warum keine uniforme verteilung? damit wird gesichert das jede richtung mindestens ein sample bekomt
@@ -111,10 +113,12 @@ public:
       syncWithConfig();
     }
 
+    /*
     struct ObstacleFilter {
       double g0;
       double g1;
     } obstacleFilter;
+    */
 
     ActionSimulator::ActionParams sidekick_right;
     ActionSimulator::ActionParams sidekick_left;

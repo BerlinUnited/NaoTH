@@ -55,10 +55,17 @@ void KickDirectionSimulator::execute()
     DEBUG_REQUEST("KickDirectionSimulator:draw_best_direction",
       FIELD_DRAWING_CONTEXT;
 
-      Vector2d to = getRobotPose() * (Vector2d(500, 0).rotate(action_local[i].getAngle()).rotate(correctionAngle[i]));
+      Vector2d globalBall = getRobotPose() *getBallModel().positionPreview;
+      Vector2d action_vector = (Vector2d(1.0, 0.0).rotate(action_local[i].getAngle()).rotate(correctionAngle[i]));
+
+      Vector2d from = globalBall + action_vector * 100;
+      Vector2d to = globalBall + action_vector * 350;
+
+      PEN("FFFF00", 50);
+      FILLOVAL(globalBall.x, globalBall.y, 50, 50);
 
       PEN("FF0000", 50);
-      ARROW(getRobotPose().translation.x, getRobotPose().translation.y, to.x, to.y);
+      ARROW(from.x, from.y, to.x, to.y);
     );
 
   }
