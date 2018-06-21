@@ -36,6 +36,7 @@ public:
     FadeToBlack,
     FPS, // TODO: remove this from settings?
     Gain,
+    GammaCorrection,
     MinAnalogGain,
     MaxAnalogGain,
     TargetGain,
@@ -96,6 +97,7 @@ public:
   int exposure;
   bool fadeToBlack;
   double gain;
+  int gammaCorrection;
   double targetGain;
   double minAnalogGain;
   double maxAnalogGain;
@@ -134,6 +136,7 @@ public:
   int brightness;
   int exposure;
   double gain;
+  int gammaCorrection;
   double targetGain;
   double minAnalogGain;
   double maxAnalogGain;
