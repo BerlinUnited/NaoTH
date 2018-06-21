@@ -1,0 +1,86 @@
+option positioning_for_own_kickoff_dobermann
+{
+  initial state check_player_number
+  {
+    decision{
+      if(game.player_number == 2)
+          goto defender_right;
+      else if(game.player_number == 4)
+          goto defender_left;
+      else if(game.player_number == 6)
+          goto midfield_left;
+      else
+          stay;
+    }
+    action {
+      head.control_mode = look_around;
+      motion.type = stand;
+    }
+  }
+
+  
+
+  state midfield_left
+  {
+    decision {
+      if(action_done)
+        goto arrived;
+      else
+        stay;
+    }
+    action
+    {
+      go_to_point_with_USOA(
+        x=-800, 
+        y=1200,
+        rot=0);
+
+      head.control_mode = look_around;
+    }
+  }
+  
+  state defender_right
+  {
+    decision {
+      if(action_done)
+        goto arrived;
+      else
+        stay;
+    }
+    action
+    {
+      go_to_point_with_USOA(
+        x = field.xPosOwnPenaltyMark, 
+        y = field.yPosRightGoal, 
+        rot=0);
+
+      head.control_mode = look_around;
+    }
+  }
+
+  state defender_left
+  {
+    decision {
+      if(action_done)
+        goto arrived;
+      else
+        stay;
+    }
+    action
+    {
+      go_to_point_with_USOA(
+         x=field.xPosOwnPenaltyMark + 500, 
+         y=field.yPosLeftGoal, 
+         rot=0);
+
+      head.control_mode = look_around;
+    }
+  }
+  
+  target state arrived{
+    action {
+      head.control_mode = look_around;
+      motion.type = stand;
+    }
+  }
+}
