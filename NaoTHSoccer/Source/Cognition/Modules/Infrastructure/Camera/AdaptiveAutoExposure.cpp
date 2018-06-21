@@ -140,9 +140,6 @@ void AdaptiveAutoExposure::execute()
         } 
         else if(getCommonCameraSettingsRequest().autoExpositionMethod == "centerlines2") 
         {
-            
-            
-
             if(executeTop) {
                 getCameraSettingsRequestTop().reset();
                 getCameraSettingsRequestTop().autoExposureWeights[4][1] = onVal;
@@ -161,6 +158,58 @@ void AdaptiveAutoExposure::execute()
                 getCameraSettingsRequest().autoExposureWeights[1][1] = onVal;
                 getCameraSettingsRequest().autoExposureWeights[1][2] = onVal;
                 getCameraSettingsRequest().autoExposureWeights[1][3] = onVal;
+            }
+        } else if(getCommonCameraSettingsRequest().autoExpositionMethod == "centerlines1") 
+        {
+            if(executeTop) {
+                getCameraSettingsRequestTop().reset();
+                getCameraSettingsRequestTop().autoExposureWeights[4][1] = onVal;
+                getCameraSettingsRequestTop().autoExposureWeights[4][2] = onVal;
+                getCameraSettingsRequestTop().autoExposureWeights[4][3] = onVal;
+            }
+    
+            if(executeBottom) {
+                getCameraSettingsRequest().reset();
+                getCameraSettingsRequest().autoExposureWeights[0][1] = onVal;
+                getCameraSettingsRequest().autoExposureWeights[0][2] = onVal;
+                getCameraSettingsRequest().autoExposureWeights[0][3] = onVal;
+            }
+        } else if(getCommonCameraSettingsRequest().autoExpositionMethod == "outdoor") 
+        {
+            // only lowest line (centered)
+            if(executeTop) {
+                getCameraSettingsRequestTop().reset();
+                getCameraSettingsRequestTop().autoExposureWeights[4][1] = onVal;
+                getCameraSettingsRequestTop().autoExposureWeights[4][2] = onVal;
+                getCameraSettingsRequestTop().autoExposureWeights[4][3] = onVal;
+            }   
+
+            // use dortmund for bottom
+            if(executeBottom) {
+                getCameraSettingsRequest().reset();
+                getCameraSettingsRequest().autoExposureWeights[0][0] = 25;
+                getCameraSettingsRequest().autoExposureWeights[0][1] = 25;
+                getCameraSettingsRequest().autoExposureWeights[0][2] = 25;
+                getCameraSettingsRequest().autoExposureWeights[0][3] = 25;
+                getCameraSettingsRequest().autoExposureWeights[0][4] = 25;
+
+                getCameraSettingsRequest().autoExposureWeights[1][0] = 50;
+                getCameraSettingsRequest().autoExposureWeights[1][1] = 75;
+                getCameraSettingsRequest().autoExposureWeights[1][2] = 75;
+                getCameraSettingsRequest().autoExposureWeights[1][3] = 75;
+                getCameraSettingsRequest().autoExposureWeights[1][4] = 50;
+
+                getCameraSettingsRequest().autoExposureWeights[2][0] = 75;
+                getCameraSettingsRequest().autoExposureWeights[2][1] = 75;
+                getCameraSettingsRequest().autoExposureWeights[2][2] = 75;
+                getCameraSettingsRequest().autoExposureWeights[2][3] = 75;
+                getCameraSettingsRequest().autoExposureWeights[2][4] = 75;
+
+                getCameraSettingsRequest().autoExposureWeights[3][0] = 25;
+                getCameraSettingsRequest().autoExposureWeights[3][1] = 25;
+                getCameraSettingsRequest().autoExposureWeights[3][2] = 25;
+                getCameraSettingsRequest().autoExposureWeights[3][3] = 25;
+                getCameraSettingsRequest().autoExposureWeights[3][4] = 25;
             }
         }
         executeDebugDrawings(onVal);
