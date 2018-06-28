@@ -183,6 +183,7 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
         stringSelectionPanel.select(selectedOptions);
         stringSelectionPanel.setEnabled(true);
         cbSelectionScheme.setEnabled(true);
+        btnClearSelection.setEnabled(true);
     }
   }
 
@@ -196,6 +197,7 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
     //stringSelectionPanel.clear();
     stringSelectionPanel.setEnabled(false);
     cbSelectionScheme.setEnabled(false);
+    btnClearSelection.setEnabled(false);
     
     btSave.setEnabled(true);
     btNew.setEnabled(true);
@@ -235,9 +237,11 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
         jLabel2 = new javax.swing.JLabel();
         jProgressBar = new javax.swing.JProgressBar();
         stringSelectionPanel = new de.naoth.rc.components.StringSelectionPanel();
-        cbSelectionScheme = new javax.swing.JComboBox();
         jLabel3 = new javax.swing.JLabel();
         progressLabel = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        cbSelectionScheme = new javax.swing.JComboBox();
+        btnClearSelection = new javax.swing.JButton();
 
         saveFileChooser.setFileFilter(new FileNameExtensionFilter("Log files (*.log)", "log"));
 
@@ -318,6 +322,12 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
         stringSelectionPanel.setToolTipText("Move Items to the right to select them.");
         stringSelectionPanel.setEnabled(false);
 
+        jLabel3.setText("Selection Scheme:");
+
+        progressLabel.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+
+        jPanel1.setLayout(new java.awt.BorderLayout());
+
         cbSelectionScheme.setEnabled(false);
         cbSelectionScheme.setPrototypeDisplayValue("BallDetectorIntegralImageTop");
         cbSelectionScheme.addActionListener(new java.awt.event.ActionListener() {
@@ -325,10 +335,20 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
                 cbSelectionSchemeActionPerformed(evt);
             }
         });
+        jPanel1.add(cbSelectionScheme, java.awt.BorderLayout.CENTER);
 
-        jLabel3.setText("Selection Scheme:");
-
-        progressLabel.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        btnClearSelection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/data/bibliothek/gui/dock/core/small_delete.png"))); // NOI18N
+        btnClearSelection.setToolTipText("Clear selection.");
+        btnClearSelection.setEnabled(false);
+        btnClearSelection.setIconTextGap(0);
+        btnClearSelection.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        btnClearSelection.setMaximumSize(new java.awt.Dimension(20, 10));
+        btnClearSelection.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearSelectionActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnClearSelection, java.awt.BorderLayout.EAST);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -345,12 +365,12 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
                     .addComponent(txtTempFile, javax.swing.GroupLayout.DEFAULT_SIZE, 507, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 148, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 128, Short.MAX_VALUE)
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cbSelectionScheme, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 507, Short.MAX_VALUE)
-                    .addComponent(stringSelectionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 511, Short.MAX_VALUE))
+                    .addComponent(stringSelectionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 575, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -364,12 +384,12 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtTempFile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(cbSelectionScheme, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(stringSelectionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 183, Short.MAX_VALUE)
+                .addComponent(stringSelectionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -392,6 +412,7 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
         cbLogName.setEnabled(false);
         stringSelectionPanel.setEnabled(true);
         cbSelectionScheme.setEnabled(true);
+        btnClearSelection.setEnabled(true);
         Plugin.moduleConfigurationManager.setModuleOwner(getLogType());
         Plugin.moduleConfigurationManager.addListener(this);
       }
@@ -441,6 +462,7 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
         {
             stringSelectionPanel.setEnabled(!btRecord.isSelected());
             cbSelectionScheme.setEnabled(!btRecord.isSelected());
+            btnClearSelection.setEnabled(!btRecord.isSelected());
             btNew.setEnabled(!btRecord.isSelected());
             
             selectedLog.setStatusListener(statusUpdateHandler);
@@ -516,16 +538,22 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
         }
     }//GEN-LAST:event_cbSelectionSchemeActionPerformed
 
+    private void btnClearSelectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearSelectionActionPerformed
+        cbSelectionScheme.setSelectedIndex(0);
+    }//GEN-LAST:event_btnClearSelectionActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btClose;
     private javax.swing.JButton btNew;
     private javax.swing.JToggleButton btRecord;
     private javax.swing.JButton btSave;
+    private javax.swing.JButton btnClearSelection;
     private javax.swing.JComboBox cbLogName;
     private javax.swing.JComboBox cbSelectionScheme;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JProgressBar jProgressBar;
     private javax.swing.JLabel progressLabel;
     private javax.swing.JFileChooser saveFileChooser;
