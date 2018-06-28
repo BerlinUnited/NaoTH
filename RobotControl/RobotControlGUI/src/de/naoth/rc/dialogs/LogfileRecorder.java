@@ -180,8 +180,8 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
     @Override
     public void newObjectReceived(final byte[] result)
     {
-        // remember selected stuff
-        Collection<String> selectedOptions = stringSelectionPanel.getSelection();
+        // remember selected stuff by copying it (no reference!!!)
+        Collection<String> selectedOptions = new ArrayList<>(stringSelectionPanel.getSelection());
         stringSelectionPanel.clear();
         String[] strings = (new String(result)).split(" ");
         stringSelectionPanel.addOptions(strings);
@@ -749,11 +749,14 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
                 newModules.add(m);
             }
         }
-        
+        // temporarily save selection by copying it (no reference!!!)
+        ArrayList<String> tmp = new ArrayList<>(stringSelectionPanel.getSelection());
         // remove "old" modules from scheme selection list and re-add the default ones
         cbSelectionScheme.removeAllItems();
         defaultSelectionSchemes.forEach((item) -> { cbSelectionScheme.addItem(item); });
         newModules.stream().sorted().forEach((m) -> { cbSelectionScheme.addItem(m); });
+        // re-add copied selection; this is necessary, 'cause of removing/adding items to the JCombobox!
+        stringSelectionPanel.select(tmp);
     }
 
     @Override
