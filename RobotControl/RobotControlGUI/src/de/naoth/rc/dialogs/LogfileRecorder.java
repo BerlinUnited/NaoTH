@@ -5,6 +5,7 @@
  */
 package de.naoth.rc.dialogs;
 
+import com.google.gson.Gson;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.SftpProgressMonitor;
@@ -101,6 +102,11 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
     cbLogName.setModel(loggerListModel);
     
     selectedLog = (LoggerItem) cbLogName.getSelectedItem();
+    
+    // add 'last record' selection entries
+    String lastRecordString = Plugin.parent.getConfig().getProperty(this.getClass().getName()+".last_record", "[]");
+    List lastRecord = (new Gson()).fromJson(lastRecordString, List.class);
+    selectionLists.put("Last Record", lastRecord);
   }
   
   class LoggerItem
@@ -656,6 +662,10 @@ public class LogfileRecorder extends AbstractDialog implements ObjectListener<Mo
   {
     // stop recording if necessary
     close();
+    // remember 'last record'
+    if(selectionLists.get("Last Record") != null) {
+        Plugin.parent.getConfig().setProperty(this.getClass().getName()+".last_record", (new Gson()).toJson(selectionLists.get("Last Record")));
+    }
   }
 
     @Override
