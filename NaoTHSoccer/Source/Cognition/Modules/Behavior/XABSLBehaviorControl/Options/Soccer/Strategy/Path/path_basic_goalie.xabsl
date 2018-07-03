@@ -94,7 +94,7 @@ option path_basic_goalie
      }
      action {
        team.is_playing_as_striker = true;
-       path_striker();
+       path_striker2018();
      }
   }
 }

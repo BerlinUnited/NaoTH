@@ -194,6 +194,21 @@ public class SPLMessage
 
     public void draw(DrawingCollection drawings, Color robotColor, boolean mirror)
     {
+        // put the penalized players on "the bench"
+        if(user != null && user.getIsPenalized()) {
+            Pose2D robotPose = mirror ? new Pose2D(4600 - (playerNum * 500), -3300, Math.PI/2) : new Pose2D(-4600 + (playerNum * 500), 3300, -Math.PI/2);
+            // robot
+            drawings.add(new Pen(1.0f, robotColor));
+            drawings.add(new Robot(robotPose.translation.x, robotPose.translation.y, robotPose.rotation));
+
+            // number
+            drawings.add(new Pen(1, Color.BLACK));
+            drawings.add(new Text((int) robotPose.translation.x, (int) robotPose.translation.y + 150, "" + playerNum));
+            
+            // don't draw anything else
+            return;
+        }
+        
         Vector2D ballPos = new Vector2D(ball_x, ball_y);
         Pose2D robotPose = mirror ? new Pose2D(-pose_x, -pose_y, pose_a + Math.PI)
             : new Pose2D(pose_x, pose_y, pose_a);
@@ -266,6 +281,11 @@ public class SPLMessage
                 drawings.add(new Circle((int) tb[0], (int) tb[1], 65));
                 drawings.add(new Pen(robotColor, new BasicStroke(10, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{25, 50, 75, 100}, 0)));
                 drawings.add(new Arrow((int) robotPose.translation.x, (int) robotPose.translation.y, (int) tb[0], (int) tb[1]));
+            }
+            
+            if(user.getWantsToBeStriker() && !user.getWasStriker()) {
+                drawings.add(new Pen(32, Color.YELLOW));
+                drawings.add(new Circle((int) robotPose.translation.x, (int) robotPose.translation.y, 150));
             }
         }
     }

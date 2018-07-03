@@ -288,7 +288,7 @@ private: // data members
   double effective_number_of_samples;
 
 private: // workers
-  void updateByOdometry(SampleSet& sampleSet, bool noise) const;
+  void updateByOdometry(SampleSet& sampleSet, bool noise, bool onlyRotation) const;
 
   bool updateBySensors(SampleSet& sampleSet) const;
   void updateByGoalPosts(const GoalPercept& goalPercept, SampleSet& sampleSet) const;

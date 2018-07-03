@@ -36,17 +36,17 @@ void CameraDebug::execute()
     CameraSettingsRequest& bottom = getCameraSettingsRequest();
     CameraSettingsRequestTop& top = getCameraSettingsRequestTop();
 
-    if (getFrameInfo().getFrameNumber() < 100) {
-      bottom.autoExposition = false;
-      top.autoExposition = false;
-      bottom.autoWhiteBalancing = false;
-      top.autoWhiteBalancing = false;
-    } 
-    else
-    {
+    // if (getFrameInfo().getFrameNumber() < 100) {
+    //   bottom.autoExposition = false;
+    //   top.autoExposition = false;
+    //   bottom.autoWhiteBalancing = false;
+    //   top.autoWhiteBalancing = false;
+    // } 
+    // else
+    //{
       setCommonCameraSetting(common.autoExposition, bottom.autoExposition, top.autoExposition, changed);
       setCommonCameraSetting(common.autoWhiteBalancing, bottom.autoWhiteBalancing, top.autoWhiteBalancing, changed);
-    }
+    //}
     
     setCommonCameraSetting(common.brightness, bottom.brightness, top.brightness, changed);
     setCommonCameraSetting(common.exposure, bottom.exposure, top.exposure, changed);
@@ -58,8 +58,10 @@ void CameraDebug::execute()
     setCommonCameraSetting(common.saturation, bottom.saturation, top.saturation, changed);
     setCommonCameraSetting(common.sharpness, bottom.sharpness, top.sharpness, changed);
     setCommonCameraSetting(common.whiteBalanceTemperature, bottom.whiteBalanceTemperature, top.whiteBalanceTemperature, changed);
+    setCommonCameraSetting(common.gammaCorrection, bottom.gammaCorrection, top.gammaCorrection, changed);
 
     setCommonCameraSetting(common.powerlineFrequency, bottom.powerlineFrequency, top.powerlineFrequency, changed);
+
             
     if(changed)
     {

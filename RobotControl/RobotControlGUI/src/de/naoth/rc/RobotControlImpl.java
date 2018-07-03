@@ -643,14 +643,14 @@ public class RobotControlImpl extends javax.swing.JFrame
     
     try
     {
+      // save layout
+      this.dialogRegistry.saveToFile(userLayoutFile);
+      // notify all dialogs, so they have the chance to clean up
+      this.dialogRegistry.disposeOnClose();
+     
       // save configuration to file
       new File(USER_CONFIG_DIR).mkdirs();
       getConfig().store(new FileWriter(userConfigFile), "");
-
-      // save layout
-     this.dialogRegistry.saveToFile(userLayoutFile);
-     // notify all dialogs, so they have the chance to clean up
-     this.dialogRegistry.disposeOnClose();
     }
     catch(IOException ex)
     {

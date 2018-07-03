@@ -158,7 +158,7 @@ void MonteCarloSelfLocator::execute()
     case BLIND:
     {
       if(parameters.updateByOdometryWhenBlind) {
-        updateByOdometry(theSampleSet, parameters.motionNoise);
+        updateByOdometry(theSampleSet, parameters.motionNoise, true);
       }
 
       /* do nothing */
@@ -172,7 +172,7 @@ void MonteCarloSelfLocator::execute()
     }
     case LOCALIZE:
     {
-      updateByOdometry(theSampleSet, parameters.motionNoise);
+      updateByOdometry(theSampleSet, parameters.motionNoise, false);
     
       theSampleSet.resetLikelihood();
 
@@ -233,7 +233,7 @@ void MonteCarloSelfLocator::execute()
     }
     case TRACKING:
     {
-      updateByOdometry(theSampleSet, parameters.motionNoise);
+      updateByOdometry(theSampleSet, parameters.motionNoise, false);
 
       theSampleSet.resetLikelihood();
 
@@ -352,9 +352,14 @@ void MonteCarloSelfLocator::resetLocator()
   //mhBackendSet.setLikelihood(0.0);
 }
 
-void MonteCarloSelfLocator::updateByOdometry(SampleSet& sampleSet, bool noise) const
+void MonteCarloSelfLocator::updateByOdometry(SampleSet& sampleSet, bool noise, bool onlyRotation) const
 {
   Pose2D odometryDelta = getOdometryData() - lastRobotOdometry;
+
+  if(onlyRotation) {
+    odometryDelta.translation = Vector2d();
+  }
+
   for (size_t i = 0; i < sampleSet.size(); i++)
   {
     sampleSet[i] += odometryDelta;

@@ -6,6 +6,7 @@
 package de.naoth.rc;
 
 import de.naoth.rc.server.MessageServer;
+import javax.swing.SwingUtilities;
 import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.Timer;
@@ -43,9 +44,19 @@ public class ByteRateCheck implements Plugin
       oldSentSize = server.getSentBytes();
       oldLoopCount = server.getLoopCount();
       
-      updateHandler.setReceiveByteRate(receivedKB);
-      updateHandler.setSentByteRate(sentKB);
-      updateHandler.setServerLoopFPS(fps);
+      if(server.isConnected()) 
+      {
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+
+            updateHandler.setReceiveByteRate(receivedKB);
+            updateHandler.setSentByteRate(sentKB);
+            updateHandler.setServerLoopFPS(fps);
+          }
+        });
+      }
+      Thread.yield();
     }
   }
 
