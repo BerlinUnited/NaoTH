@@ -210,7 +210,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(MultiKalmanBallLocator);
 
   REGISTER_MODULE(TeamBallLocatorMedian);
-  REGISTER_MODULE(TeamBallLocatorSimple);
+  REGISTER_MODULE(TeamBallLocatorCanopyCluster);
   REGISTER_MODULE(SimpleRoleDecision);
   REGISTER_MODULE(StableRoleDecision);
   REGISTER_MODULE(CleanRoleDecision);
