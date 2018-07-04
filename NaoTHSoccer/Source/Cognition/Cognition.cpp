@@ -91,7 +91,7 @@
 #include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
 
 #include "Modules/Modeling/BallLocator/TeamBallLocator/TeamBallLocatorMedian.h"
-#include "Modules/Modeling/BallLocator/TeamBallLocator/TeamBallLocatorSimple.h"
+#include "Modules/Modeling/BallLocator/TeamBallLocator/TeamBallLocatorCanopyCluster.h"
 #include "Modules/Modeling/BallLocator/MultiKalmanBallLocator/MultiKalmanBallLocator.h"
 #include "Modules/Modeling/StaticDebugModelProvider/StaticDebugModelProvider.h"
 
@@ -210,7 +210,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(MultiKalmanBallLocator);
 
   REGISTER_MODULE(TeamBallLocatorMedian);
-  REGISTER_MODULE(TeamBallLocatorSimple);
+  REGISTER_MODULE(TeamBallLocatorCanopyCluster);
   REGISTER_MODULE(SimpleRoleDecision);
   REGISTER_MODULE(StableRoleDecision);
   REGISTER_MODULE(CleanRoleDecision);

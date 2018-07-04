@@ -1,19 +1,19 @@
-#include "TeamBallLocatorSimple.h"
+#include "TeamBallLocatorCanopyCluster.h"
 
-TeamBallLocatorSimple::TeamBallLocatorSimple()
+TeamBallLocatorCanopyCluster::TeamBallLocatorCanopyCluster()
 {
     getDebugParameterList().add(&params);
 
-    DEBUG_REQUEST_REGISTER("TeamBallLocatorSimple:draw_teamball_input", "draw all the balls uses for teamball", false);
-    DEBUG_REQUEST_REGISTER("TeamBallLocatorSimple:draw_ball_on_field", "draw the team ball model on the field", false);
+    DEBUG_REQUEST_REGISTER("TeamBallLocatorCanopyCluster:draw_teamball_input", "draw all the balls uses for teamball", false);
+    DEBUG_REQUEST_REGISTER("TeamBallLocatorCanopyCluster:draw_ball_on_field", "draw the team ball model on the field", false);
 }
 
-TeamBallLocatorSimple::~TeamBallLocatorSimple()
+TeamBallLocatorCanopyCluster::~TeamBallLocatorCanopyCluster()
 {
     getDebugParameterList().remove(&params);
 }
 
-void TeamBallLocatorSimple::execute() {
+void TeamBallLocatorCanopyCluster::execute() {
     // valid balls of all player
     std::vector<Ball> balls;
 
@@ -41,7 +41,7 @@ void TeamBallLocatorSimple::execute() {
         }
     }
 
-    DEBUG_REQUEST("TeamBallLocatorSimple:draw_teamball_input",
+    DEBUG_REQUEST("TeamBallLocatorCanopyCluster:draw_teamball_input",
         FIELD_DRAWING_CONTEXT;
         PEN("0000FF", 20);
         for(const Ball& b : balls) {
@@ -91,7 +91,7 @@ void TeamBallLocatorSimple::execute() {
         getTeamBallModel().valid = false;
     }
 
-    DEBUG_REQUEST("TeamBallLocatorSimple:draw_ball_on_field",
+    DEBUG_REQUEST("TeamBallLocatorCanopyCluster:draw_ball_on_field",
         FIELD_DRAWING_CONTEXT;
         PEN((getTeamBallModel().valid ? "FF0000" : "999999"), 20);
         FILLOVAL(getTeamBallModel().positionOnField.x, getTeamBallModel().positionOnField.y, 50, 50);
