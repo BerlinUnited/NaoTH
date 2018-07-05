@@ -29,6 +29,7 @@ MonteCarloSelfLocator::MonteCarloSelfLocator()
 {
   // debug
   DEBUG_REQUEST_REGISTER("MCSLS:reset_samples", "reset the sample set", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:user_defined_pose", "allows the user to modify the location of the robot", false);
 
   // field drawings
   DEBUG_REQUEST_REGISTER("MCSLS:draw_Samples", "draw sample set before resampling", false);
@@ -55,7 +56,6 @@ MonteCarloSelfLocator::MonteCarloSelfLocator()
   DEBUG_REQUEST_REGISTER("MCSLS:state:BLIND", "", false);
   DEBUG_REQUEST_REGISTER("MCSLS:state:LOCALIZE", "", false);
   DEBUG_REQUEST_REGISTER("MCSLS:state:TRACKING", "", false);
-  DEBUG_REQUEST_REGISTER("MCSLS:state:USERDEFINED", "", false);
 
   initializeSampleSet(getFieldInfo().carpetRect, theSampleSet);
   getDebugParameterList().add(&parameters);
@@ -78,6 +78,18 @@ void MonteCarloSelfLocator::execute()
     state = LOCALIZE;
 
     DEBUG_REQUEST("MCSLS:draw_Samples", 
+      FIELD_DRAWING_CONTEXT;
+      theSampleSet.drawImportance(getDebugDrawings());
+    );
+
+    return;
+  );
+
+  DEBUG_REQUEST("MCSLS:user_defined_pose",
+    setUserDefinedPosition();
+    state = LOCALIZE;
+
+    DEBUG_REQUEST("MCSLS:draw_Samples",
       FIELD_DRAWING_CONTEXT;
       theSampleSet.drawImportance(getDebugDrawings());
     );
@@ -123,7 +135,6 @@ void MonteCarloSelfLocator::execute()
   DEBUG_REQUEST("MCSLS:state:BLIND", state = BLIND; );
   DEBUG_REQUEST("MCSLS:state:LOCALIZE", state = LOCALIZE; );
   DEBUG_REQUEST("MCSLS:state:TRACKING", state = TRACKING; );
-  DEBUG_REQUEST("MCSLS:state:USERDEFINED", state = USERDEFINED; );
 
 
   DEBUG_REQUEST("MCSLS:draw_state",
@@ -133,7 +144,6 @@ void MonteCarloSelfLocator::execute()
       case BLIND: TEXT_DRAWING(0, 0, "BLIND"); break;
       case LOCALIZE: TEXT_DRAWING(0, 0, "LOCALIZE"); break;
       case TRACKING: TEXT_DRAWING(0, 0, "TRACKING"); break;
-      case USERDEFINED: TEXT_DRAWING(0, 0, "USERDEFINED"); break;
       default: TEXT_DRAWING(0, 0, "DEFAULT");
     }
   );
@@ -281,21 +291,6 @@ void MonteCarloSelfLocator::execute()
       );
 
       lastState = TRACKING;
-      break;
-    }
-    case USERDEFINED:
-    {
-      // vars for the userdefined pose
-      double posX = 0.0, posY = 0.0, rot = 0.0;
-      MODIFY("MCSLS:posX", posX);
-      MODIFY("MCSLS:posY", posY);
-      MODIFY("MCSLS:rot", rot);
-      // sample particles in a 100mm^2 rect of the user defined pose
-      initializeSampleSetFixedRotation(Geometry::Rect2d(Vector2d(posX-50,posY-50), Vector2d(posX+50, posY+50)), rot, theSampleSet);
-      state = LOCALIZE;
-      islocalized = true;
-      lastState = USERDEFINED;
-      getRobotPose().isValid = false;
       break;
     }
     default: assert(false); // should never be here
@@ -1625,3 +1620,17 @@ void MonteCarloSelfLocator::draw_sensor_belief() const
     }
   }
 }//end draw_closest_points
+
+void MonteCarloSelfLocator::setUserDefinedPosition()
+{
+    // vars for the userdefined pose
+    double posX = 0.0, posY = 0.0, rot = 0.0;
+    MODIFY("MCSLS:posX", posX);
+    MODIFY("MCSLS:posY", posY);
+    MODIFY("MCSLS:rot", rot);
+
+    // sample particles in a 100mm^2 rect of the user defined pose
+    initializeSampleSetFixedRotation(Geometry::Rect2d(Vector2d(posX-50,posY-50), Vector2d(posX+50, posY+50)), rot, theSampleSet);
+
+    islocalized = true;
+}

@@ -109,8 +109,7 @@ private: // local types
     BLIND, // no sensory information is processed but the state is monitored
     KIDNAPPED, // robot is lifted up 
     LOCALIZE,
-    TRACKING,
-    USERDEFINED
+    TRACKING
   } state, lastState;
 
   // NOTE: indecates whether the robot is localized
@@ -327,6 +326,7 @@ private: // workers
 private: //debug
   void draw_sensor_belief() const;
   void drawPosition() const;
+  void setUserDefinedPosition();
 };
 
 #endif //_MonteCarloSelfLocator_h_
