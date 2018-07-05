@@ -275,7 +275,7 @@ public class SPLMessage
         if(user != null)
         {
             double[] tb = {user.getTeamBall().getX(), user.getTeamBall().getY()};
-            if(!Double.isInfinite(tb[0]) && !Double.isInfinite(tb[1])) {
+            if(user.hasTeamBall() && !Double.isInfinite(tb[0]) && !Double.isInfinite(tb[1])) {
                 // ... draw the teamball position
                 drawings.add(new Pen(5.0f, robotColor));
                 drawings.add(new Circle((int) tb[0], (int) tb[1], 65));
