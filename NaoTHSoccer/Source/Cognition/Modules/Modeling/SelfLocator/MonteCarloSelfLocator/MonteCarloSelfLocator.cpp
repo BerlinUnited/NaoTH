@@ -86,7 +86,17 @@ void MonteCarloSelfLocator::execute()
   );
 
   DEBUG_REQUEST("MCSLS:user_defined_pose",
-    setUserDefinedPosition();
+
+    Vector2d pos;
+    double rot (0);
+    MODIFY("MCSLS:posX", pos.x);
+    MODIFY("MCSLS:posY", pos.y);
+    MODIFY("MCSLS:rot", rot);
+    
+    // sample particles in a 100mm^2 rect of the user defined pose
+    initializeSampleSetFixedRotation(Geometry::Rect2d(pos - Vector2d(50,50), pos + Vector2d(50,50)), rot, theSampleSet);
+
+    islocalized = true;
     state = LOCALIZE;
 
     DEBUG_REQUEST("MCSLS:draw_Samples",
@@ -1620,17 +1630,3 @@ void MonteCarloSelfLocator::draw_sensor_belief() const
     }
   }
 }//end draw_closest_points
-
-void MonteCarloSelfLocator::setUserDefinedPosition()
-{
-    // vars for the userdefined pose
-    double posX = 0.0, posY = 0.0, rot = 0.0;
-    MODIFY("MCSLS:posX", posX);
-    MODIFY("MCSLS:posY", posY);
-    MODIFY("MCSLS:rot", rot);
-
-    // sample particles in a 100mm^2 rect of the user defined pose
-    initializeSampleSetFixedRotation(Geometry::Rect2d(Vector2d(posX-50,posY-50), Vector2d(posX+50, posY+50)), rot, theSampleSet);
-
-    islocalized = true;
-}

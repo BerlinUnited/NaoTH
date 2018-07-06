@@ -326,7 +326,6 @@ private: // workers
 private: //debug
   void draw_sensor_belief() const;
   void drawPosition() const;
-  void setUserDefinedPosition();
 };
 
 #endif //_MonteCarloSelfLocator_h_
