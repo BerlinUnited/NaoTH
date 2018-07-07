@@ -19,15 +19,21 @@ DIRS = {
 }
 
 
-def get(config):
-    if os.path.isdir(config):
-        return DirectoryConfig(config + "/" if config[-1] != "/" else "")
-    elif tarfile.is_tarfile(config):
-        return TargzConfig(config)
-    elif zipfile.is_zipfile(config):
-        return ZipConfig(config)
+def getInstance(uri):
+    if os.path.isdir(uri):
+        return DirectoryConfig(uri + "/" if uri[-1] != "/" else "")
+    elif tarfile.is_tarfile(uri):
+        return TargzConfig(uri)
+    elif zipfile.is_zipfile(uri):
+        return ZipConfig(uri)
 
-    return Config(config)
+    return Config(uri)
+
+def readConfig(uri):
+    config = getInstance(uri)
+    # read defined directories of config directory
+    config.readConfig()
+    return config
 
 
 class Config:
@@ -97,6 +103,10 @@ class Config:
 
     def __getitem__(self, item):
         return self._config[item]
+
+    def __cmp__(self, other):
+
+        return self._config == other._config
 
 
 class DirectoryConfig(Config):

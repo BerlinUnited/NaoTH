@@ -32,16 +32,15 @@ class Widget(QWidget):
         self.setAcceptDrops(True)
 
 
-    def __init_config(self, config):
+    def __init_config(self, uri):
         # reset 'global' vars
-        self.scheme = None
-        self.config = Config.get(config)
+        self.config = Config.readConfig(uri)
 
-        self.config_file = Config.get(config)
+        # get the current scheme
+        self.scheme = self.config.getScheme()
 
         self.__reset_ui()
-        self.__read_scheme_file()
-        self.__read_config_directory()
+        self.__init_ui()
         self.__update_tree()
 
         self.ui.config_dir.setText(self.config.getName())
@@ -69,13 +68,7 @@ class Widget(QWidget):
         self.ui.bodies.addItem("Bodies")
         self.ui.heads.addItem("Heads")
 
-    def __read_scheme_file(self):
-        self.scheme = self.config_file.getScheme() if self.config_file else None
-
-    def __read_config_directory(self):
-        # read defined directories of config directory
-        self.config.readConfig()
-
+    def __init_ui(self):
         # update ui comboboxes
         self.ui.platforms.addItems(sorted(self.config.getPlatforms()))
         self.__setComboboxDisabled(self.ui.platforms)
