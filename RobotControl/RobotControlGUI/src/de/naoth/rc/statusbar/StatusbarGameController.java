@@ -68,7 +68,9 @@ public class StatusbarGameController extends StatusbarPluginImpl implements Game
 
     @Override
     public void newGameData(GameControllerDataEvent e) {
-        // TODO: update something?!?
+        if(getIcon() != iconOn) {
+            setIcon(iconOn);
+        }
     }
 
     @Override
