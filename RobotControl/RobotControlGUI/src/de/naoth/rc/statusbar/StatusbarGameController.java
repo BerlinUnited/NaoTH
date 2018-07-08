@@ -25,7 +25,7 @@ public class StatusbarGameController extends StatusbarPluginImpl implements Game
     private final String tooltipOff = "Not connected to GameController";
     private final String tooltipOn  = "Receiving from GameController";
     private final String tooltipIm  = "Listening on GameController (Timeout)";
-    private final String tooltipNR  = "Not ready! (Missing GameController library?)";
+    private final String tooltipNR  = "Not ready! (Missing GameController library - set via preference dialog)";
     
     @Override
     protected void init() {
