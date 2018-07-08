@@ -49,7 +49,7 @@ public:
   {
     Vector2d normal(-other.direction.y, other.direction.x);
     double t = normal*direction;
-    if(t == 0) return std::numeric_limits<double>::infinity(); // the lines are paralell
+    if(t == 0) return std::numeric_limits<double>::infinity(); // the lines are parallel
     return normal*(other.base-base)/(t);
   }
 
