@@ -12,7 +12,7 @@ void Serializer<LineGraphPercept>::serialize(const LineGraphPercept& representat
 {
   naothmessages::LineGraphPercept msg;
 
-  SerialzationHelpers::toMessage(representation.edgels, *msg.mutable_edgelsonfield());
+  SerialzationHelpers::toMessage(representation.edgelsOnField, *msg.mutable_edgelsonfield());
   SerialzationHelpers::toMessage(representation.edgelsInImage, *msg.mutable_edgelsinimage());
   SerialzationHelpers::toMessage(representation.edgelsInImageTop, *msg.mutable_edgelsinimagetop());
 
@@ -31,7 +31,7 @@ void Serializer<LineGraphPercept>::deserialize(std::istream& stream, LineGraphPe
   google::protobuf::io::IstreamInputStream buf(&stream);
   msg.ParseFromZeroCopyStream(&buf);
 
-  SerialzationHelpers::fromMessage(msg.edgelsonfield(), representation.edgels);
+  SerialzationHelpers::fromMessage(msg.edgelsonfield(), representation.edgelsOnField);
   SerialzationHelpers::fromMessage(msg.edgelsinimage(), representation.edgelsInImage);
   SerialzationHelpers::fromMessage(msg.edgelsinimagetop(), representation.edgelsInImageTop);
   

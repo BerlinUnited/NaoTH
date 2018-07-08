@@ -185,11 +185,6 @@ void CameraMatrixCorrectorV2::execute()
       }
   }
 
-  MODIFY("CameraMatrixV2:OffsetRollTop",getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Top].x);
-  MODIFY("CameraMatrixV2:OffsetTiltTop",getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Top].y);
-  MODIFY("CameraMatrixV2:OffsetRollBottom",getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Bottom].x);
-  MODIFY("CameraMatrixV2:OffsetTiltBottom",getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Bottom].y);
-
   MODIFY("CameraMatrixV2:Body:Roll",  getCameraMatrixOffset().body_rot.x);
   MODIFY("CameraMatrixV2:Body:Pitch", getCameraMatrixOffset().body_rot.y);
 

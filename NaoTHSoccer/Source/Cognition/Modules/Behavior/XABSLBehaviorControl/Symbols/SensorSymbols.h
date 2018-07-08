@@ -94,8 +94,6 @@ private:
   static bool getButtonHeadFront();
   static bool getButtonHeadRear();
 
-  static bool getisDischarging();
-
   static double getWhistleSwitch();
   static void setWhistleSwitch(double whistle);
 

@@ -140,6 +140,7 @@ void MonteCarloSelfLocator::execute()
     localize_start = getFrameInfo().getTime();
   }
 
+
   switch(state) 
   {
     case KIDNAPPED:
@@ -148,10 +149,15 @@ void MonteCarloSelfLocator::execute()
       state = LOCALIZE;
       islocalized = false;
       lastState = KIDNAPPED;
+      getRobotPose().isValid = false;
       break;
     }
     case BLIND:
     {
+      if(parameters.updateByOdometryWhenBlind) {
+        updateByOdometry(theSampleSet, parameters.motionNoise, true);
+      }
+
       /* do nothing */
       if(!islocalized) {
         state = LOCALIZE;
@@ -163,7 +169,7 @@ void MonteCarloSelfLocator::execute()
     }
     case LOCALIZE:
     {
-      updateByOdometry(theSampleSet, parameters.motionNoise);
+      updateByOdometry(theSampleSet, parameters.motionNoise, false);
     
       theSampleSet.resetLikelihood();
 
@@ -186,7 +192,7 @@ void MonteCarloSelfLocator::execute()
       if(parameters.updateBySituation) //  && lastState == KIDNAPPED
       {
         updateBySituation();
-      }//end updateBySituation
+      }
 
 
       // NOTE: statistics has to be after updates and before resampling
@@ -224,7 +230,7 @@ void MonteCarloSelfLocator::execute()
     }
     case TRACKING:
     {
-      updateByOdometry(theSampleSet, parameters.motionNoise);
+      updateByOdometry(theSampleSet, parameters.motionNoise, false);
 
       theSampleSet.resetLikelihood();
 
@@ -328,9 +334,14 @@ void MonteCarloSelfLocator::resetLocator()
   //mhBackendSet.setLikelihood(0.0);
 }
 
-void MonteCarloSelfLocator::updateByOdometry(SampleSet& sampleSet, bool noise) const
+void MonteCarloSelfLocator::updateByOdometry(SampleSet& sampleSet, bool noise, bool onlyRotation) const
 {
   Pose2D odometryDelta = getOdometryData() - lastRobotOdometry;
+
+  if(onlyRotation) {
+    odometryDelta.translation = Vector2d();
+  }
+
   for (size_t i = 0; i < sampleSet.size(); i++)
   {
     sampleSet[i] += odometryDelta;
@@ -417,7 +428,7 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
 
   if(parameters.updateByLinePoints)
   {
-    if(!getLineGraphPercept().edgels.empty()) {
+    if(!getLineGraphPercept().edgelsOnField.empty()) {
       updateByLinePoints(getLineGraphPercept(), sampleSet);
     }
   }
@@ -573,10 +584,10 @@ void MonteCarloSelfLocator::updateByLinePoints(const LineGraphPercept& lineGraph
     PEN("000000", 10);
   );
 
-  for(size_t i = 0; i < lineGraphPercept.edgels.size() && i < (size_t)parameters.linePointsMaxNumber; i++) 
+  for(size_t i = 0; i < lineGraphPercept.edgelsOnField.size() && i < (size_t)parameters.linePointsMaxNumber; i++) 
   {
-    int idx = Math::random((int)lineGraphPercept.edgels.size());
-    const Vector2d& seen_point_relative = lineGraphPercept.edgels[idx].point;
+    int idx = Math::random((int)lineGraphPercept.edgelsOnField.size());
+    const Vector2d& seen_point_relative = lineGraphPercept.edgelsOnField[idx].point;
 
     Vector2d seen_point_g = getRobotPose()*seen_point_relative;
 

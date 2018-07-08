@@ -25,7 +25,7 @@ void RansacLineDetectorOnGraphs::execute()
   DEBUG_REQUEST("Vision:RansacLineDetectorOnGraphs:draw_edgels_field",
     FIELD_DRAWING_CONTEXT;
 
-    for(const Edgel& e: getLineGraphPercept().edgels)
+    for(const Edgel& e: getLineGraphPercept().edgelsOnField)
     {
       PEN("FF0000",2);
 

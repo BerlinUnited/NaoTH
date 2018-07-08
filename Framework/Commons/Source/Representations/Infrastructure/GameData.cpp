@@ -155,6 +155,12 @@ GameData::TeamColor GameData::teamColorFromString(const std::string& str)
   RETURN_STING_TO_VALUE(red, str);
   RETURN_STING_TO_VALUE(yellow, str);
   RETURN_STING_TO_VALUE(black, str);
+  RETURN_STING_TO_VALUE(white, str);
+  RETURN_STING_TO_VALUE(green, str);
+  RETURN_STING_TO_VALUE(orange, str);
+  RETURN_STING_TO_VALUE(purple, str);
+  RETURN_STING_TO_VALUE(brown, str);
+  RETURN_STING_TO_VALUE(gray, str);
 
   return unknown_team_color;
 }
@@ -264,9 +270,8 @@ std::string GameReturnData::toString(Message value)
 {
   switch (value)
   {
-    RETURN_VALUE_TO_STR(manual_penalise);
-    RETURN_VALUE_TO_STR(manual_unpenalise);
     RETURN_VALUE_TO_STR(alive);
+    RETURN_VALUE_TO_STR(dead);
   }
   
   ASSERT(false);

@@ -12,12 +12,14 @@ IKParameters::IKParameters()
 :ParameterList("IKParameters")
 {
   PARAMETER_REGISTER(footOffsetY) = 0;
-  
+  PARAMETER_REGISTER(useWalk2018) = true;
+
   // stand parameter
   PARAMETER_REGISTER(stand.speed) = 0.04;
   PARAMETER_REGISTER(stand.enableStabilization) = true;
   PARAMETER_REGISTER(stand.enableStabilizationRC16) = false;
-  PARAMETER_REGISTER(stand.stiffness) = 0.7;
+  PARAMETER_REGISTER(stand.stiffnessGotoPose) = 1.0;
+  PARAMETER_REGISTER(stand.stiffnessRelax) = 0.7;
 
   PARAMETER_ANGLE_REGISTER(stand.bodyPitchOffset) = 0.2;
   PARAMETER_REGISTER(stand.hipOffsetX) = 15;

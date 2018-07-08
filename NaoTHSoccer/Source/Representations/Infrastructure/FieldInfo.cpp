@@ -34,7 +34,7 @@ FieldInfo::FieldInfo() : ParameterList("FieldInfo")
   PARAMETER_REGISTER(goalpostRadius) = 50;
   PARAMETER_REGISTER(xPenaltyMarkDistance) = 1300;
 
-  PARAMETER_REGISTER(goalBoxAsLines) = false;
+  PARAMETER_REGISTER(goalBoxAsLines) = true;
 
   syncWithConfig();
 
@@ -305,6 +305,13 @@ void FieldInfo::createLinesTable()
 void FieldInfo::draw(DrawingCanvas2D& canvas) const
 {
   fieldLinesTable.draw(canvas);
+
+  // draw the carpet
+  canvas.pen("FF0000",1);
+  canvas.drawLine(carpetRect.min().x, carpetRect.min().y, carpetRect.min().x, carpetRect.max().y);
+  canvas.drawLine(carpetRect.min().x, carpetRect.min().y, carpetRect.max().x, carpetRect.min().y);
+  canvas.drawLine(carpetRect.max().x, carpetRect.max().y, carpetRect.min().x, carpetRect.max().y);
+  canvas.drawLine(carpetRect.max().x, carpetRect.max().y, carpetRect.max().x, carpetRect.min().y);
 
   // draw throw in lines
   canvas.pen("000000", 1);

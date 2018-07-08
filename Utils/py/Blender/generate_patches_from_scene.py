@@ -930,7 +930,13 @@ class SceneSetupPatchMask(SceneSetup):
             frame = self.state.current_frame - self.state.num_images
 
         old_name = str(self.state.current_frame) + str(self.scene.frame_current) + ".png"
-        new_name = str(frame) + ".png"
+
+        # get the camera id
+        camID = str(self.scene.camera)
+        if "top" in camID:
+        	new_name = str(frame) + "_top" + ".png"
+        elif "bottom" in camID:
+    	   	new_name = str(frame) + "_bottom" + ".png"
 
         if self.state.current_path is not None:
             IO.rename_file(self.state.current_path, old_name, new_name)

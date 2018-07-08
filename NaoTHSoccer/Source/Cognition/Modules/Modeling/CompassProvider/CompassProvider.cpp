@@ -27,6 +27,7 @@ void CompassProvider::execute()
 {
   getProbabilisticQuadCompas().reset();
 
+  /*
   // calculate the projection for all edgels
   edgelProjectionsBegin.resize(getScanLineEdgelPercept().pairs.size());
   edgelProjectionsEnd.resize(getScanLineEdgelPercept().pairs.size());
@@ -54,15 +55,14 @@ void CompassProvider::execute()
 
     //pair.projectedWidth = Vector2d(beginPointOnField - endPointOnField).abs();
   }
+  */
 
- 
-
+  ASSERT(getLinePercept().edgelLineIDs.size() == getLineGraphPercept().edgelsOnField.size());
   // fill the compas
-  
-  if((int)getLineGraphPercept().edgels.size() > parameters.minimalNumberOfPairs)
+  if((int)getLineGraphPercept().edgelsOnField.size() > parameters.minimalNumberOfPairs)
   {
     getProbabilisticQuadCompas().setSmoothing(parameters.quadCompasSmoothingFactor);
-    for(size_t j = 0; j < getLineGraphPercept().edgels.size(); ++j)
+    for(size_t j = 0; j < getLineGraphPercept().edgelsOnField.size(); ++j)
     {
       //const EdgelPair& edgelPair = edgelPairs[j];
       //const Vector2d& edgelLeft = edgelProjections[edgelPair.left];
@@ -72,7 +72,7 @@ void CompassProvider::execute()
       //double r = (edgelProjectionsBegin[edgelPair.left] - edgelProjectionsBegin[edgelPair.right]).angle();
 
       if(getLinePercept().edgelLineIDs[j] > -1) {
-        double r = getLineGraphPercept().edgels[j].direction.angle();
+        double r = getLineGraphPercept().edgelsOnField[j].direction.angle();
         //getProbabilisticQuadCompas().add(r, edgelPair.sim);
         getProbabilisticQuadCompas().add(r);
       }
@@ -84,9 +84,7 @@ void CompassProvider::execute()
 
 
   DEBUG_REQUEST("Vision:CompassProvider:draw_compas",
-    //if(cameraID == CameraInfo::Top) {
-      getProbabilisticQuadCompas().normalize();
-
+      
       Vector2d last;
       double last_v = 0;
 
@@ -94,11 +92,11 @@ void CompassProvider::execute()
       double offset = 150;
 
       FIELD_DRAWING_CONTEXT;
-      for(unsigned int x = 0; x < getProbabilisticQuadCompas().size()*4+1; x++)
+      for(size_t x = 0; x < getProbabilisticQuadCompas().size()*4+1; x++)
       {
         double v = getProbabilisticQuadCompas()[x];
         Vector2d a(offset + v*scale, 0.0);
-        a.rotate(Math::fromDegrees(x*5));
+        a.rotate(Math::fromDegrees(((double)x)*5.0));
         if(x > 0) {
 
           double d = Math::clamp(std::min(v, last_v)/0.1, 0.0, 1.0);
@@ -110,7 +108,6 @@ void CompassProvider::execute()
         last = a;
         last_v = v;
       }
-    //  }
   );
 
 }//end execute

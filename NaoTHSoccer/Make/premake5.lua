@@ -16,6 +16,8 @@ dofile (FRAMEWORK_PATH .. "/BuildTools/info.lua")
 dofile (FRAMEWORK_PATH .. "/BuildTools/protoc.lua")
 dofile (FRAMEWORK_PATH .. "/BuildTools/qtcreator_2.7+.lua")
 
+dofile (FRAMEWORK_PATH .. "/BuildTools/extract_modules.lua")
+
 
 print("INFO: generating solution NaoTHSoccer")
 print("  PLATFORM = " .. PLATFORM)
@@ -268,6 +270,11 @@ workspace "NaoTHSoccer"
       kind "ConsoleApp"
       links { "NaoTHSoccer", "Commons", naoth_links}
       vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulator" }
+      
+    dofile (FRAMEWORK_PATH .. "/Platforms/Make/DummySimulator.lua")
+      kind "ConsoleApp"
+      links { "NaoTHSoccer", "Commons", naoth_links}
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/DummySimulator" }
       
     -- generate tests if required
     if _OPTIONS["Test"] ~= nil then

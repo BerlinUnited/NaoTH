@@ -7,7 +7,6 @@ package de.naoth.rc;
 
 import de.naoth.rc.server.MessageServer;
 import java.awt.Component;
-import java.awt.Font;
 import java.util.Properties;
 import net.xeoh.plugins.base.Plugin;
 
@@ -22,6 +21,6 @@ public interface RobotControl extends Plugin
   public MessageServer getMessageServer();
   public Properties getConfig();
   
-  public boolean isHighDPI();
+  public int getFontSize();
   public void addToStatusBar(Component c);
 }

@@ -8,6 +8,7 @@ package de.naoth.rc;
 import de.naoth.rc.core.dialog.Dialog;
 import bibliothek.gui.DockUI;
 import bibliothek.gui.dock.util.laf.Nimbus6u10;
+import de.naoth.rc.components.preferences.PreferencesDialog;
 import de.naoth.rc.server.ConnectionDialog;
 import de.naoth.rc.server.ConnectionStatusEvent;
 import de.naoth.rc.server.ConnectionStatusListener;
@@ -52,6 +53,7 @@ public class RobotControlImpl extends javax.swing.JFrame
   private final MessageServer messageServer;
   
   private final Properties config = new Properties();
+  private final PreferencesDialog preferencesDialog;
   private final ConnectionDialog connectionDialog;
   
   private final DialogRegistry dialogRegistry;
@@ -90,9 +92,12 @@ public class RobotControlImpl extends javax.swing.JFrame
                 path += separator + "./bin/linux32";
             }
         } else {
-            path += separator + "./bin/win32"
-                  + separator + "./bin/win64"
-                  + separator + "./bin/macos";
+            if("amd64".equals(arch)) {
+                path += separator + "./bin/win64";
+            } else {
+                path += separator + "./bin/win32";
+            }
+            path += separator + "./bin/macos";
         }
         
         System.setProperty("java.library.path", path );
@@ -189,6 +194,9 @@ public class RobotControlImpl extends javax.swing.JFrame
     this.connectionDialog = new ConnectionDialog(this, this.messageServer, this.getConfig());
     this.connectionDialog.setLocationRelativeTo(this);
     this.disconnectMenuItem.setEnabled(false);
+    // preference dialog
+    this.preferencesDialog = new PreferencesDialog(this, this.getConfig());
+    this.preferencesDialog.setLocationRelativeTo(this);
 
     // set the constraints for the statusbar plugins
     statusPanelPluginsConstraints.fill = GridBagConstraints.VERTICAL;
@@ -275,6 +283,7 @@ public class RobotControlImpl extends javax.swing.JFrame
         disconnectMenuItem = new javax.swing.JMenuItem();
         enforceConnection = new javax.swing.JCheckBoxMenuItem();
         resetLayoutMenuItem = new javax.swing.JMenuItem();
+        preferences = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
         exitMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
@@ -384,6 +393,15 @@ public class RobotControlImpl extends javax.swing.JFrame
             }
         });
         mainControlMenu.add(resetLayoutMenuItem);
+
+        preferences.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
+        preferences.setText("Preferences");
+        preferences.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                preferencesActionPerformed(evt);
+            }
+        });
+        mainControlMenu.add(preferences);
         mainControlMenu.add(jSeparator1);
 
         exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
@@ -479,6 +497,10 @@ public class RobotControlImpl extends javax.swing.JFrame
       beforeClose();
 
     }//GEN-LAST:event_formWindowClosing
+
+    private void preferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_preferencesActionPerformed
+        preferencesDialog.setVisible(true);
+    }//GEN-LAST:event_preferencesActionPerformed
 
   @Override
   public MessageServer getMessageServer()
@@ -591,6 +613,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     private javax.swing.JLabel lblSentBytesS;
     private javax.swing.JMenu mainControlMenu;
     private de.naoth.rc.MainMenuBar mainMenuBar;
+    private javax.swing.JMenuItem preferences;
     private javax.swing.JMenuItem resetLayoutMenuItem;
     private javax.swing.JPanel statusPanel;
     private javax.swing.JPanel statusPanelPlugins;
@@ -625,12 +648,14 @@ public class RobotControlImpl extends javax.swing.JFrame
     
     try
     {
+      // save layout
+      this.dialogRegistry.saveToFile(userLayoutFile);
+      // notify all dialogs, so they have the chance to clean up
+      this.dialogRegistry.disposeOnClose();
+     
       // save configuration to file
       new File(USER_CONFIG_DIR).mkdirs();
       getConfig().store(new FileWriter(userConfigFile), "");
-
-      // save layout
-     this.dialogRegistry.saveToFile(userLayoutFile);
     }
     catch(IOException ex)
     {
@@ -688,10 +713,10 @@ public class RobotControlImpl extends javax.swing.JFrame
   }
   
   @Override
-  public boolean isHighDPI() 
+  public int getFontSize() 
   {
-      return Boolean.valueOf(this.getConfig().getProperty("useHiDPI", "true"))
-          && Toolkit.getDefaultToolkit().getScreenSize().width > 2000;
+      int size = UIManager.getDefaults().getFont("defaultFont") != null ? UIManager.getDefaults().getFont("defaultFont").getSize() : 12;
+      return Integer.parseInt(this.getConfig().getProperty("fontSize", String.valueOf(size)));
   }
   
   private ArrayList<Component> statusPanelComponents = new ArrayList<>();

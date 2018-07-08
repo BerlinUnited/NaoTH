@@ -1,0 +1,79 @@
+option pathplanner2018_forwardkick
+{
+
+  common decision
+  {
+    if (!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+    else if(situation_abortable && !ball.know_where_itis)
+      goto search;
+
+
+  }
+
+  initial state idle 
+  {
+    decision 
+    {
+      else if (body.ready_to_walk && game.current_mode == playing && state_time > 500)
+        goto pathplanner_go;
+      else
+        goto search;
+    }
+    action 
+    {
+      path2018.routine = path2018.routine.none;
+      situation_abortable = true;
+    }
+  }
+  
+  state search 
+  {
+    decision 
+    {
+      else if (action_done)
+        goto pathplanner_go;
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      path2018.routine = path2018.routine.none;
+      search_ball();
+    }
+  }
+
+  
+  state pathplanner_go 
+  {
+    decision {
+      else if (path.kick_executed)
+        goto short_freeze;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = look_at_ball_percept;
+      //head.control_mode = search_for_ball;
+
+      path2018.routine = path2018.routine.forwardkick_left;
+    }
+  }
+  
+  state short_freeze 
+  {
+    decision 
+    {
+      else if(state_time > 500)
+        goto pathplanner_go;
+      else 
+        stay; 
+    }
+    action 
+    {
+      path2018.routine = path2018.routine.none;
+      head.control_mode = look_at_ball_percept;
+    }
+  }
+}

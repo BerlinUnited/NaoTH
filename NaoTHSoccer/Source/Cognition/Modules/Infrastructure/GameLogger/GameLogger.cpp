@@ -5,7 +5,9 @@ GameLogger::GameLogger()
   logfileManager(true),
   lastCompleteFrameNumber(0),
   oldState(PlayerInfo::initial),
-  firstRecording(true)
+  firstRecording(true),
+  lastWhistleCounter(0),
+  lastRecordedPlainImageID(CameraInfo::Bottom)
 {
   logfileManager.openFile("/tmp/game.log");
   
@@ -89,12 +91,26 @@ void GameLogger::execute()
 
       LOGSTUFF(TeamMessage);
 
+      if (lastWhistleCounter < getWhistlePercept().counter)
+      {
+        LOGSTUFF(WhistlePercept);
+        lastWhistleCounter = getWhistlePercept().counter;
+      }
+
       // record images every 1s
-      if(params.logPlainImages && getFrameInfo().getTimeSince(lastTimeImageRecorded) > 2000 && imageOutFile.is_open() && !imageOutFile.fail()) {
+      if(params.logPlainImages && getFrameInfo().getTimeSince(lastTimeImageRecorded) > params.logPlainImagesDelay && imageOutFile.is_open() && !imageOutFile.fail()) {
         unsigned int frameNumber = getFrameInfo().getFrameNumber();
         imageOutFile.write((const char*)(&frameNumber), sizeof(unsigned int));
 
-        imageOutFile.write((const char*)getImageTop().data(), getImageTop().data_size());
+        // switch camera each frame
+        if(lastRecordedPlainImageID == CameraInfo::Top) {
+          imageOutFile.write((const char*)getImage().data(), getImage().data_size());
+          lastRecordedPlainImageID = CameraInfo::Bottom;
+        } else {
+          imageOutFile.write((const char*)getImageTop().data(), getImageTop().data_size());
+          lastRecordedPlainImageID = CameraInfo::Top;
+        }
+
         lastTimeImageRecorded = getFrameInfo();
       }
 

@@ -23,15 +23,21 @@ ArmCollisionDetector::~ArmCollisionDetector()
 void ArmCollisionDetector::execute()
 {
   // hack: we cannot maesure collisions with arms back
-  const bool armModeOK = getMotionRequest().armMotionRequest.id == ArmMotionRequest::arms_synchronised_with_walk ||
+  const bool armModeOK = 
+    getMotionRequest().armMotionRequest.id == ArmMotionRequest::arms_synchronised_with_walk ||
     getMotionRequest().armMotionRequest.id == ArmMotionRequest::arms_down;
 
   const bool motionModeOK = getMotionStatus().currentMotion == motion::walk || getMotionStatus().currentMotion == motion::stand;
 
   if (!armModeOK || !motionModeOK)
   {
+    // clear the joind command history
     jointDataBufferLeft.clear();
     jointDataBufferRight.clear();
+
+    // clear collected errors
+    collisionBufferLeft.clear();
+    collisionBufferRight.clear();
     return;
   }
 
@@ -57,12 +63,12 @@ void ArmCollisionDetector::execute()
   }
 
   // collision arm left
-  if (collisionBufferLeft.getAverage() > max_error) {
+  if (collisionBufferLeft.isFull() && collisionBufferLeft.getAverage() > max_error) {
     getCollisionPercept().timeCollisionArmLeft = getFrameInfo().getTime();
   }
 
   // collision arm right
-  if (collisionBufferRight.getAverage() > max_error) {
+  if (collisionBufferRight.isFull() && collisionBufferRight.getAverage() > max_error) {
     getCollisionPercept().timeCollisionArmRight = getFrameInfo().getTime();
   } 
 

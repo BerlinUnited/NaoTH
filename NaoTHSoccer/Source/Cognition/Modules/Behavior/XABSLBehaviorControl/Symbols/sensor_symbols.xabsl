@@ -57,6 +57,7 @@ namespace sensor("Sensor Symbols") {
   /** The current battery charge  */
   float input platform.battery;
   bool input battery.isDischarging;
+  bool input battery.isCharging;
 
   /** The current frame number (Cognition) */
   float input platform.frameNumber;

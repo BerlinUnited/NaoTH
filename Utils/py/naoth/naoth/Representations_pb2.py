@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='Representations.proto',
   package='naothmessages',
   syntax='proto2',
-  serialized_pb=_b('\n\x15Representations.proto\x12\rnaothmessages\x1a\x11\x43ommonTypes.proto\x1a\x1f\x46ramework-Representations.proto\"\x88\x01\n\x0c\x43\x61meraMatrix\x12#\n\x04pose\x18\x01 \x02(\x0b\x32\x15.naothmessages.Pose3D\x12\x31\n\x08\x63\x61meraID\x18\x02 \x01(\x0e\x32\x17.naothmessages.CameraID:\x06\x62ottom\x12\r\n\x05valid\x18\x03 \x01(\x08\x12\x11\n\ttimestamp\x18\x04 \x01(\r\"\x94\x02\n\x0b\x42\x61llPercept\x12\x13\n\x0b\x62\x61llWasSeen\x18\x01 \x01(\x08\x12\x33\n\rcenterInImage\x18\x02 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x15\n\rradiusInImage\x18\x03 \x01(\x01\x12\'\n\tballColor\x18\x04 \x01(\x0e\x32\x14.naothmessages.Color\x12?\n\x19\x62\x65\x61ringBasedOffsetOnField\x18\x05 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12:\n\x18\x66rameInfoWhenBallWasSeen\x18\x06 \x01(\x0b\x32\x18.naothmessages.FrameInfo\"\xcb\x02\n\x10MultiBallPercept\x12:\n\x18\x66rameInfoWhenBallWasSeen\x18\x01 \x01(\x0b\x32\x18.naothmessages.FrameInfo\x12=\n\x08percepts\x18\x02 \x03(\x0b\x32+.naothmessages.MultiBallPercept.BallPercept\x1a\xbb\x01\n\x0b\x42\x61llPercept\x12\x33\n\rcenterInImage\x18\x01 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x15\n\rradiusInImage\x18\x02 \x01(\x01\x12\x35\n\x0fpositionOnField\x18\x03 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12)\n\x08\x63\x61meraId\x18\x04 \x01(\x0e\x32\x17.naothmessages.CameraID\"\xdc\x03\n\x0bGoalPercept\x12\x17\n\x0f\x61ngleToSeenGoal\x18\x01 \x01(\x01\x12\x32\n\x0cgoalCentroid\x18\x02 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x19\n\x11numberOfSeenPosts\x18\x03 \x01(\x05\x12\x31\n\x04post\x18\x04 \x03(\x0b\x32#.naothmessages.GoalPercept.GoalPost\x1a\xb1\x02\n\x08GoalPost\x12,\n\tbasePoint\x18\x01 \x01(\x0b\x32\x19.naothmessages.IntVector2\x12.\n\x08position\x18\x02 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12#\n\x05\x63olor\x18\x03 \x01(\x0e\x32\x14.naothmessages.Color\x12:\n\x04type\x18\x04 \x01(\x0e\x32,.naothmessages.GoalPercept.GoalPost.PostType\x12\x18\n\x10positionReliable\x18\x05 \x01(\x08\x12\x12\n\nseenHeight\x18\x06 \x01(\x01\"8\n\x08PostType\x12\r\n\trightPost\x10\x00\x12\x0c\n\x08leftPost\x10\x01\x12\x0f\n\x0bunknownPost\x10\x02\"\xc6\x03\n\x11HeadMotionRequest\x12\n\n\x02id\x18\x01 \x02(\r\x12\x10\n\x08\x63\x61meraID\x18\x02 \x02(\r\x12\x39\n\x13targetJointPosition\x18\x03 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x38\n\x12targetPointInImage\x18\x04 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12;\n\x15targetPointInTheWorld\x18\x05 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x32\n\x0csearchCenter\x18\x06 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x30\n\nsearchSize\x18\x07 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x17\n\x0fsearchDirection\x18\x08 \x01(\x08\x12<\n\x16targetPointOnTheGround\x18\t \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x12\n\ncoordinate\x18\n \x01(\r\x12\x10\n\x08velocity\x18\x0b \x01(\x01\"\xa5\x03\n\x12StepControlRequest\x12\x0e\n\x06stepID\x18\x01 \x02(\r\x12\x14\n\x0cmoveLeftFoot\x18\x02 \x02(\x08\x12%\n\x06target\x18\x03 \x02(\x0b\x32\x15.naothmessages.Pose2D\x12\x0c\n\x04time\x18\x04 \x02(\r\x12\x16\n\x0espeedDirection\x18\x05 \x02(\x01\x12\r\n\x05scale\x18\x06 \x02(\x01\x12<\n\x08steptype\x18\x07 \x02(\x0e\x32*.naothmessages.StepControlRequest.StepType\x12\x46\n\x0brestriction\x18\x08 \x02(\x0e\x32\x31.naothmessages.StepControlRequest.RestrictionMode\x12\x13\n\x0bisProtected\x18\t \x02(\x08\x12\x15\n\rstepRequestID\x18\n \x02(\r\"4\n\x08StepType\x12\x0c\n\x08WALKSTEP\x10\x00\x12\x0c\n\x08KICKSTEP\x10\x01\x12\x0c\n\x08ZEROSTEP\x10\x02\"%\n\x0fRestrictionMode\x12\x08\n\x04HARD\x10\x00\x12\x08\n\x04SOFT\x10\x01\"\xba\x01\n\x0bWalkRequest\x12\x12\n\ncoordinate\x18\x01 \x02(\r\x12\x11\n\tcharacter\x18\x02 \x02(\x01\x12%\n\x06target\x18\x03 \x02(\x0b\x32\x15.naothmessages.Pose2D\x12\x36\n\x0bstepControl\x18\x04 \x01(\x0b\x32!.naothmessages.StepControlRequest\x12%\n\x06offset\x18\x05 \x02(\x0b\x32\x15.naothmessages.Pose2D\"{\n\x0bKickRequest\x12/\n\tkickPoint\x18\x01 \x02(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x15\n\rkickDirection\x18\x02 \x02(\x01\x12\x10\n\x08kickFoot\x18\x03 \x02(\x05\x12\x12\n\nfinishKick\x18\x04 \x02(\x08\"\x8b\x01\n\x0cGraspRequest\x12\x33\n\rgraspingPoint\x18\x01 \x02(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x15\n\rgraspingState\x18\x02 \x02(\r\x12\x16\n\x0egraspDistState\x18\x03 \x02(\r\x12\x17\n\x0fgraspStiffState\x18\x04 \x02(\r\"\xde\x03\n\x10\x41rmMotionRequest\x12\n\n\x02id\x18\x01 \x02(\r\x12\x37\n\x11lShoulderPosition\x18\x02 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x38\n\x12lShoulderStiffness\x18\x03 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x34\n\x0elElbowPosition\x18\x04 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x35\n\x0flElbowStiffness\x18\x05 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x37\n\x11rShoulderPosition\x18\x06 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x38\n\x12rShoulderStiffness\x18\x07 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x34\n\x0erElbowPosition\x18\x08 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x35\n\x0frElbowStiffness\x18\t \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\"\xf8\x02\n\rMotionRequest\x12\n\n\x02id\x18\x01 \x02(\r\x12\x0c\n\x04time\x18\x02 \x02(\r\x12\x0e\n\x06\x66orced\x18\x03 \x02(\x08\x12/\n\x0bwalkRequest\x18\x04 \x01(\x0b\x32\x1a.naothmessages.WalkRequest\x12\x16\n\x0estarndardStand\x18\x05 \x01(\x08\x12/\n\x0bkickRequest\x18\x06 \x01(\x0b\x32\x1a.naothmessages.KickRequest\x12\x13\n\x0bstandHeight\x18\x07 \x01(\x01\x12\"\n\x1a\x63\x61librateFootTouchDetector\x18\x08 \x01(\x08\x12\x1c\n\x14\x63ognitionFrameNumber\x18\t \x01(\r\x12\x31\n\x0cgraspRequest\x18\n \x01(\x0b\x32\x1b.naothmessages.GraspRequest\x12\x39\n\x10\x61rmMotionRequest\x18\x0b \x01(\x0b\x32\x1f.naothmessages.ArmMotionRequest\"\xa0\x03\n\x0bLinePercept\x12:\n\x05lines\x18\x01 \x03(\x0b\x32+.naothmessages.LinePercept.FieldLineSegment\x12\x32\n\rintersections\x18\x02 \x03(\x0b\x32\x1b.naothmessages.Intersection\x12\x38\n\x12middleCircleCenter\x18\x03 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x1a\xe6\x01\n\x10\x46ieldLineSegment\x12/\n\x0blineInImage\x18\x01 \x01(\x0b\x32\x1a.naothmessages.LineSegment\x12/\n\x0blineOnField\x18\x02 \x01(\x0b\x32\x1a.naothmessages.LineSegment\x12\x18\n\x10\x62\x65ginExtendCount\x18\x03 \x01(\x05\x12\x16\n\x0e\x65ndExtendCount\x18\x04 \x01(\x05\x12\x11\n\tthickness\x18\x05 \x01(\x01\x12\r\n\x05slope\x18\x06 \x01(\x01\x12\r\n\x05\x61ngle\x18\x07 \x01(\x01\x12\r\n\x05valid\x18\x08 \x01(\x08\"\xac\x01\n\x10ScanLineEndPoint\x12-\n\nposInImage\x18\x01 \x02(\x0b\x32\x19.naothmessages.IntVector2\x12\x30\n\nposOnField\x18\x02 \x02(\x0b\x32\x1c.naothmessages.DoubleVector2\x12#\n\x05\x63olor\x18\x03 \x02(\x0e\x32\x14.naothmessages.Color\x12\x12\n\nScanLineID\x18\x04 \x02(\r\"k\n\x0b\x44oubleEdgel\x12+\n\x05point\x18\x01 \x02(\x0b\x32\x1c.naothmessages.DoubleVector2\x12/\n\tdirection\x18\x02 \x02(\x0b\x32\x1c.naothmessages.DoubleVector2\"b\n\x05\x45\x64gel\x12(\n\x05point\x18\x01 \x02(\x0b\x32\x19.naothmessages.IntVector2\x12/\n\tdirection\x18\x02 \x02(\x0b\x32\x1c.naothmessages.DoubleVector2\"3\n\tEdgelPair\x12\r\n\x05\x62\x65gin\x18\x01 \x02(\x05\x12\x0b\n\x03\x65nd\x18\x02 \x02(\x05\x12\n\n\x02id\x18\x03 \x02(\x05\"\x99\x01\n\x14ScanLineEdgelPercept\x12$\n\x06\x65\x64gels\x18\x01 \x03(\x0b\x32\x14.naothmessages.Edgel\x12\'\n\x05pairs\x18\x03 \x03(\x0b\x32\x18.naothmessages.EdgelPair\x12\x32\n\tendPoints\x18\x02 \x03(\x0b\x32\x1f.naothmessages.ScanLineEndPoint\"\xa8\x01\n\x10LineGraphPercept\x12+\n\redgelsOnField\x18\x01 \x03(\x0b\x32\x14.naothmessages.Edgel\x12\x34\n\x10\x65\x64gelsInImageTop\x18\x02 \x03(\x0b\x32\x1a.naothmessages.DoubleEdgel\x12\x31\n\redgelsInImage\x18\x03 \x03(\x0b\x32\x1a.naothmessages.DoubleEdgel\"P\n\x11StepControlStatus\x12\x0e\n\x06stepID\x18\x01 \x02(\r\x12\x14\n\x0cmoveableFoot\x18\x02 \x02(\r\x12\x15\n\rstepRequestID\x18\x03 \x02(\r\"\xd2\x02\n\x0cMotionStatus\x12\x0c\n\x04time\x18\x01 \x02(\r\x12\x12\n\nlastMotion\x18\x02 \x02(\r\x12\x15\n\rcurrentMotion\x18\x03 \x02(\r\x12\x12\n\nheadMotion\x18\x04 \x02(\r\x12\x1a\n\x12\x63urrentMotionState\x18\x05 \x02(\r\x12\x34\n\x15plannedMotionLeftFoot\x18\x06 \x02(\x0b\x32\x15.naothmessages.Pose2D\x12\x35\n\x16plannedMotionRightFoot\x18\x07 \x02(\x0b\x32\x15.naothmessages.Pose2D\x12/\n\x10plannedMotionHip\x18\x08 \x02(\x0b\x32\x15.naothmessages.Pose2D\x12;\n\x11stepControlStatus\x18\t \x01(\x0b\x32 .naothmessages.StepControlStatus\"3\n\x0cOdometryData\x12#\n\x04pose\x18\x01 \x02(\x0b\x32\x15.naothmessages.Pose2D\"\x1f\n\tBodyState\x12\x12\n\nisLiftedUp\x18\x01 \x01(\x08\"3\n\nBodyStatus\x12\x12\n\ncurrentSum\x18\x01 \x03(\x01\x12\x11\n\ttimestamp\x18\x03 \x02(\r\"\xd0\x01\n\x0f\x43\x61librationData\x12:\n\x14inertialSensorOffset\x18\x01 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x36\n\x10gyroSensorOffset\x18\x05 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x35\n\x0f\x61\x63\x63SensorOffset\x18\x03 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x12\n\ncalibrated\x18\x04 \x02(\x08\"B\n\rInertialModel\x12\x31\n\x0borientation\x18\x01 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\"\x84\x02\n\x17\x43\x61meraMatrixCalibration\x12\x36\n\x10\x63orrectionOffset\x18\x01 \x03(\x0b\x32\x1c.naothmessages.DoubleVector2\x12:\n\x14\x63orrectionOffsetBody\x18\x02 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12:\n\x14\x63orrectionOffsetHead\x18\x03 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x39\n\x13\x63orrectionOffsetCam\x18\x04 \x03(\x0b\x32\x1c.naothmessages.DoubleVector3\"\x8b\x02\n\x0e\x42\x61llCandidates\x12\x34\n\x07patches\x18\x01 \x03(\x0b\x32#.naothmessages.BallCandidates.Patch\x1a\xc2\x01\n\x05Patch\x12&\n\x03min\x18\x01 \x02(\x0b\x32\x19.naothmessages.IntVector2\x12&\n\x03max\x18\x02 \x02(\x0b\x32\x19.naothmessages.IntVector2\x12\x39\n\x04type\x18\x03 \x01(\x0e\x32(.naothmessages.BallCandidates.Patch.Type:\x01Y\x12\x0c\n\x04\x64\x61ta\x18\x05 \x02(\x0c\" \n\x04Type\x12\x05\n\x01Y\x10\x00\x12\x07\n\x03YUV\x10\x01\x12\x08\n\x04YUVC\x10\x02\"\xf9\x03\n\x14RemoteControlCommand\x12\x44\n\x0b\x63ontrolMode\x18\x01 \x01(\x0e\x32/.naothmessages.RemoteControlCommand.ControlMode\x12>\n\x06\x61\x63tion\x18\x02 \x01(\x0e\x32..naothmessages.RemoteControlCommand.ActionType\x12K\n\rsecond_action\x18\x03 \x01(\x0e\x32\x34.naothmessages.RemoteControlCommand.SecondActionType\x12%\n\x06target\x18\x04 \x01(\x0b\x32\x15.naothmessages.Pose2D\"3\n\x0b\x43ontrolMode\x12\x12\n\x0e\x44IRECT_CONTROL\x10\x00\x12\x10\n\x0cLOCK_CONTROL\x10\x01\"y\n\nActionType\x12\x08\n\x04NONE\x10\x00\x12\t\n\x05STAND\x10\x01\x12\x08\n\x04WALK\x10\x02\x12\x0e\n\nKICK_RIGHT\x10\x03\x12\r\n\tKICK_LEFT\x10\x04\x12\x15\n\x11KICK_FORWARD_LEFT\x10\x05\x12\x16\n\x12KICK_FORWARD_RIGHT\x10\x06\"7\n\x10SecondActionType\x12\x0f\n\x0bSECOND_NONE\x10\x00\x12\t\n\x05\x42LINK\x10\x01\x12\x07\n\x03SAY\x10\x02\"\xaf\x01\n\x12GroundContactModel\x12\x19\n\x11leftGroundContact\x18\x01 \x02(\x08\x12\x1a\n\x12rightGroundContact\x18\x02 \x02(\x08\x12;\n\x0bsupportFoot\x18\x03 \x02(\x0e\x32&.naothmessages.GroundContactModel.Foot\"%\n\x04\x46oot\x12\x08\n\x04LEFT\x10\x00\x12\t\n\x05RIGHT\x10\x01\x12\x08\n\x04NONE\x10\x02\"O\n\x10\x43ollisionPercept\x12\x1c\n\x14timeCollisionArmLeft\x18\x01 \x02(\r\x12\x1d\n\x15timeCollisionArmRight\x18\x02 \x02(\r\"\xb8\x03\n\x07IMUData\x12.\n\x08location\x18\x01 \x02(\x0b\x32\x1c.naothmessages.DoubleVector3\x12.\n\x08velocity\x18\x02 \x02(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x32\n\x0c\x61\x63\x63\x65leration\x18\x03 \x02(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x39\n\x13\x61\x63\x63\x65leration_sensor\x18\x04 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\x12.\n\x08rotation\x18\x05 \x02(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x39\n\x13rotational_velocity\x18\x06 \x02(\x0b\x32\x1c.naothmessages.DoubleVector3\x12@\n\x1arotational_velocity_sensor\x18\x07 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x31\n\x0borientation\x18\x08 \x02(\x0b\x32\x1c.naothmessages.DoubleVector2B\x16\n\x14\x64\x65.naoth.rc.messages')
+  serialized_pb=_b('\n\x15Representations.proto\x12\rnaothmessages\x1a\x11\x43ommonTypes.proto\x1a\x1f\x46ramework-Representations.proto\"\x88\x01\n\x0c\x43\x61meraMatrix\x12#\n\x04pose\x18\x01 \x02(\x0b\x32\x15.naothmessages.Pose3D\x12\x31\n\x08\x63\x61meraID\x18\x02 \x01(\x0e\x32\x17.naothmessages.CameraID:\x06\x62ottom\x12\r\n\x05valid\x18\x03 \x01(\x08\x12\x11\n\ttimestamp\x18\x04 \x01(\r\"\x94\x02\n\x0b\x42\x61llPercept\x12\x13\n\x0b\x62\x61llWasSeen\x18\x01 \x01(\x08\x12\x33\n\rcenterInImage\x18\x02 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x15\n\rradiusInImage\x18\x03 \x01(\x01\x12\'\n\tballColor\x18\x04 \x01(\x0e\x32\x14.naothmessages.Color\x12?\n\x19\x62\x65\x61ringBasedOffsetOnField\x18\x05 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12:\n\x18\x66rameInfoWhenBallWasSeen\x18\x06 \x01(\x0b\x32\x18.naothmessages.FrameInfo\"\xcb\x02\n\x10MultiBallPercept\x12:\n\x18\x66rameInfoWhenBallWasSeen\x18\x01 \x01(\x0b\x32\x18.naothmessages.FrameInfo\x12=\n\x08percepts\x18\x02 \x03(\x0b\x32+.naothmessages.MultiBallPercept.BallPercept\x1a\xbb\x01\n\x0b\x42\x61llPercept\x12\x33\n\rcenterInImage\x18\x01 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x15\n\rradiusInImage\x18\x02 \x01(\x01\x12\x35\n\x0fpositionOnField\x18\x03 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12)\n\x08\x63\x61meraId\x18\x04 \x01(\x0e\x32\x17.naothmessages.CameraID\"\xdc\x03\n\x0bGoalPercept\x12\x17\n\x0f\x61ngleToSeenGoal\x18\x01 \x01(\x01\x12\x32\n\x0cgoalCentroid\x18\x02 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x19\n\x11numberOfSeenPosts\x18\x03 \x01(\x05\x12\x31\n\x04post\x18\x04 \x03(\x0b\x32#.naothmessages.GoalPercept.GoalPost\x1a\xb1\x02\n\x08GoalPost\x12,\n\tbasePoint\x18\x01 \x01(\x0b\x32\x19.naothmessages.IntVector2\x12.\n\x08position\x18\x02 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12#\n\x05\x63olor\x18\x03 \x01(\x0e\x32\x14.naothmessages.Color\x12:\n\x04type\x18\x04 \x01(\x0e\x32,.naothmessages.GoalPercept.GoalPost.PostType\x12\x18\n\x10positionReliable\x18\x05 \x01(\x08\x12\x12\n\nseenHeight\x18\x06 \x01(\x01\"8\n\x08PostType\x12\r\n\trightPost\x10\x00\x12\x0c\n\x08leftPost\x10\x01\x12\x0f\n\x0bunknownPost\x10\x02\"\xc6\x03\n\x11HeadMotionRequest\x12\n\n\x02id\x18\x01 \x02(\r\x12\x10\n\x08\x63\x61meraID\x18\x02 \x02(\r\x12\x39\n\x13targetJointPosition\x18\x03 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x38\n\x12targetPointInImage\x18\x04 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12;\n\x15targetPointInTheWorld\x18\x05 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x32\n\x0csearchCenter\x18\x06 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x30\n\nsearchSize\x18\x07 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x17\n\x0fsearchDirection\x18\x08 \x01(\x08\x12<\n\x16targetPointOnTheGround\x18\t \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x12\n\ncoordinate\x18\n \x01(\r\x12\x10\n\x08velocity\x18\x0b \x01(\x01\"\xa5\x03\n\x12StepControlRequest\x12\x0e\n\x06stepID\x18\x01 \x02(\r\x12\x14\n\x0cmoveLeftFoot\x18\x02 \x02(\x08\x12%\n\x06target\x18\x03 \x02(\x0b\x32\x15.naothmessages.Pose2D\x12\x0c\n\x04time\x18\x04 \x02(\r\x12\x16\n\x0espeedDirection\x18\x05 \x02(\x01\x12\r\n\x05scale\x18\x06 \x02(\x01\x12<\n\x08steptype\x18\x07 \x02(\x0e\x32*.naothmessages.StepControlRequest.StepType\x12\x46\n\x0brestriction\x18\x08 \x02(\x0e\x32\x31.naothmessages.StepControlRequest.RestrictionMode\x12\x13\n\x0bisProtected\x18\t \x02(\x08\x12\x15\n\rstepRequestID\x18\n \x02(\r\"4\n\x08StepType\x12\x0c\n\x08WALKSTEP\x10\x00\x12\x0c\n\x08KICKSTEP\x10\x01\x12\x0c\n\x08ZEROSTEP\x10\x02\"%\n\x0fRestrictionMode\x12\x08\n\x04HARD\x10\x00\x12\x08\n\x04SOFT\x10\x01\"\xba\x01\n\x0bWalkRequest\x12\x12\n\ncoordinate\x18\x01 \x02(\r\x12\x11\n\tcharacter\x18\x02 \x02(\x01\x12%\n\x06target\x18\x03 \x02(\x0b\x32\x15.naothmessages.Pose2D\x12\x36\n\x0bstepControl\x18\x04 \x01(\x0b\x32!.naothmessages.StepControlRequest\x12%\n\x06offset\x18\x05 \x02(\x0b\x32\x15.naothmessages.Pose2D\"{\n\x0bKickRequest\x12/\n\tkickPoint\x18\x01 \x02(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x15\n\rkickDirection\x18\x02 \x02(\x01\x12\x10\n\x08kickFoot\x18\x03 \x02(\x05\x12\x12\n\nfinishKick\x18\x04 \x02(\x08\"\x8b\x01\n\x0cGraspRequest\x12\x33\n\rgraspingPoint\x18\x01 \x02(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x15\n\rgraspingState\x18\x02 \x02(\r\x12\x16\n\x0egraspDistState\x18\x03 \x02(\r\x12\x17\n\x0fgraspStiffState\x18\x04 \x02(\r\"\xde\x03\n\x10\x41rmMotionRequest\x12\n\n\x02id\x18\x01 \x02(\r\x12\x37\n\x11lShoulderPosition\x18\x02 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x38\n\x12lShoulderStiffness\x18\x03 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x34\n\x0elElbowPosition\x18\x04 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x35\n\x0flElbowStiffness\x18\x05 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x37\n\x11rShoulderPosition\x18\x06 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x38\n\x12rShoulderStiffness\x18\x07 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x34\n\x0erElbowPosition\x18\x08 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x35\n\x0frElbowStiffness\x18\t \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\"\xf8\x02\n\rMotionRequest\x12\n\n\x02id\x18\x01 \x02(\r\x12\x0c\n\x04time\x18\x02 \x02(\r\x12\x0e\n\x06\x66orced\x18\x03 \x02(\x08\x12/\n\x0bwalkRequest\x18\x04 \x01(\x0b\x32\x1a.naothmessages.WalkRequest\x12\x16\n\x0estarndardStand\x18\x05 \x01(\x08\x12/\n\x0bkickRequest\x18\x06 \x01(\x0b\x32\x1a.naothmessages.KickRequest\x12\x13\n\x0bstandHeight\x18\x07 \x01(\x01\x12\"\n\x1a\x63\x61librateFootTouchDetector\x18\x08 \x01(\x08\x12\x1c\n\x14\x63ognitionFrameNumber\x18\t \x01(\r\x12\x31\n\x0cgraspRequest\x18\n \x01(\x0b\x32\x1b.naothmessages.GraspRequest\x12\x39\n\x10\x61rmMotionRequest\x18\x0b \x01(\x0b\x32\x1f.naothmessages.ArmMotionRequest\"\xa0\x03\n\x0bLinePercept\x12:\n\x05lines\x18\x01 \x03(\x0b\x32+.naothmessages.LinePercept.FieldLineSegment\x12\x32\n\rintersections\x18\x02 \x03(\x0b\x32\x1b.naothmessages.Intersection\x12\x38\n\x12middleCircleCenter\x18\x03 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x1a\xe6\x01\n\x10\x46ieldLineSegment\x12/\n\x0blineInImage\x18\x01 \x01(\x0b\x32\x1a.naothmessages.LineSegment\x12/\n\x0blineOnField\x18\x02 \x01(\x0b\x32\x1a.naothmessages.LineSegment\x12\x18\n\x10\x62\x65ginExtendCount\x18\x03 \x01(\x05\x12\x16\n\x0e\x65ndExtendCount\x18\x04 \x01(\x05\x12\x11\n\tthickness\x18\x05 \x01(\x01\x12\r\n\x05slope\x18\x06 \x01(\x01\x12\r\n\x05\x61ngle\x18\x07 \x01(\x01\x12\r\n\x05valid\x18\x08 \x01(\x08\"\xac\x01\n\x10ScanLineEndPoint\x12-\n\nposInImage\x18\x01 \x02(\x0b\x32\x19.naothmessages.IntVector2\x12\x30\n\nposOnField\x18\x02 \x02(\x0b\x32\x1c.naothmessages.DoubleVector2\x12#\n\x05\x63olor\x18\x03 \x02(\x0e\x32\x14.naothmessages.Color\x12\x12\n\nScanLineID\x18\x04 \x02(\r\"k\n\x0b\x44oubleEdgel\x12+\n\x05point\x18\x01 \x02(\x0b\x32\x1c.naothmessages.DoubleVector2\x12/\n\tdirection\x18\x02 \x02(\x0b\x32\x1c.naothmessages.DoubleVector2\"b\n\x05\x45\x64gel\x12(\n\x05point\x18\x01 \x02(\x0b\x32\x19.naothmessages.IntVector2\x12/\n\tdirection\x18\x02 \x02(\x0b\x32\x1c.naothmessages.DoubleVector2\"3\n\tEdgelPair\x12\r\n\x05\x62\x65gin\x18\x01 \x02(\x05\x12\x0b\n\x03\x65nd\x18\x02 \x02(\x05\x12\n\n\x02id\x18\x03 \x02(\x05\"\x99\x01\n\x14ScanLineEdgelPercept\x12$\n\x06\x65\x64gels\x18\x01 \x03(\x0b\x32\x14.naothmessages.Edgel\x12\'\n\x05pairs\x18\x03 \x03(\x0b\x32\x18.naothmessages.EdgelPair\x12\x32\n\tendPoints\x18\x02 \x03(\x0b\x32\x1f.naothmessages.ScanLineEndPoint\"\xa8\x01\n\x10LineGraphPercept\x12+\n\redgelsOnField\x18\x01 \x03(\x0b\x32\x14.naothmessages.Edgel\x12\x34\n\x10\x65\x64gelsInImageTop\x18\x02 \x03(\x0b\x32\x1a.naothmessages.DoubleEdgel\x12\x31\n\redgelsInImage\x18\x03 \x03(\x0b\x32\x1a.naothmessages.DoubleEdgel\"P\n\x11StepControlStatus\x12\x0e\n\x06stepID\x18\x01 \x02(\r\x12\x14\n\x0cmoveableFoot\x18\x02 \x02(\r\x12\x15\n\rstepRequestID\x18\x03 \x02(\r\"\xd2\x02\n\x0cMotionStatus\x12\x0c\n\x04time\x18\x01 \x02(\r\x12\x12\n\nlastMotion\x18\x02 \x02(\r\x12\x15\n\rcurrentMotion\x18\x03 \x02(\r\x12\x12\n\nheadMotion\x18\x04 \x02(\r\x12\x1a\n\x12\x63urrentMotionState\x18\x05 \x02(\r\x12\x34\n\x15plannedMotionLeftFoot\x18\x06 \x02(\x0b\x32\x15.naothmessages.Pose2D\x12\x35\n\x16plannedMotionRightFoot\x18\x07 \x02(\x0b\x32\x15.naothmessages.Pose2D\x12/\n\x10plannedMotionHip\x18\x08 \x02(\x0b\x32\x15.naothmessages.Pose2D\x12;\n\x11stepControlStatus\x18\t \x01(\x0b\x32 .naothmessages.StepControlStatus\"3\n\x0cOdometryData\x12#\n\x04pose\x18\x01 \x02(\x0b\x32\x15.naothmessages.Pose2D\"\x1f\n\tBodyState\x12\x12\n\nisLiftedUp\x18\x01 \x01(\x08\"3\n\nBodyStatus\x12\x12\n\ncurrentSum\x18\x01 \x03(\x01\x12\x11\n\ttimestamp\x18\x03 \x02(\r\"\xd0\x01\n\x0f\x43\x61librationData\x12:\n\x14inertialSensorOffset\x18\x01 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x36\n\x10gyroSensorOffset\x18\x05 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x35\n\x0f\x61\x63\x63SensorOffset\x18\x03 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x12\n\ncalibrated\x18\x04 \x02(\x08\"B\n\rInertialModel\x12\x31\n\x0borientation\x18\x01 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\"\x88\x02\n\x17\x43\x61meraMatrixCalibration\x12:\n\x10\x63orrectionOffset\x18\x01 \x03(\x0b\x32\x1c.naothmessages.DoubleVector2B\x02\x18\x01\x12:\n\x14\x63orrectionOffsetBody\x18\x02 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12:\n\x14\x63orrectionOffsetHead\x18\x03 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x39\n\x13\x63orrectionOffsetCam\x18\x04 \x03(\x0b\x32\x1c.naothmessages.DoubleVector3\"\x8b\x02\n\x0e\x42\x61llCandidates\x12\x34\n\x07patches\x18\x01 \x03(\x0b\x32#.naothmessages.BallCandidates.Patch\x1a\xc2\x01\n\x05Patch\x12&\n\x03min\x18\x01 \x02(\x0b\x32\x19.naothmessages.IntVector2\x12&\n\x03max\x18\x02 \x02(\x0b\x32\x19.naothmessages.IntVector2\x12\x39\n\x04type\x18\x03 \x01(\x0e\x32(.naothmessages.BallCandidates.Patch.Type:\x01Y\x12\x0c\n\x04\x64\x61ta\x18\x05 \x02(\x0c\" \n\x04Type\x12\x05\n\x01Y\x10\x00\x12\x07\n\x03YUV\x10\x01\x12\x08\n\x04YUVC\x10\x02\"\xf9\x03\n\x14RemoteControlCommand\x12\x44\n\x0b\x63ontrolMode\x18\x01 \x01(\x0e\x32/.naothmessages.RemoteControlCommand.ControlMode\x12>\n\x06\x61\x63tion\x18\x02 \x01(\x0e\x32..naothmessages.RemoteControlCommand.ActionType\x12K\n\rsecond_action\x18\x03 \x01(\x0e\x32\x34.naothmessages.RemoteControlCommand.SecondActionType\x12%\n\x06target\x18\x04 \x01(\x0b\x32\x15.naothmessages.Pose2D\"3\n\x0b\x43ontrolMode\x12\x12\n\x0e\x44IRECT_CONTROL\x10\x00\x12\x10\n\x0cLOCK_CONTROL\x10\x01\"y\n\nActionType\x12\x08\n\x04NONE\x10\x00\x12\t\n\x05STAND\x10\x01\x12\x08\n\x04WALK\x10\x02\x12\x0e\n\nKICK_RIGHT\x10\x03\x12\r\n\tKICK_LEFT\x10\x04\x12\x15\n\x11KICK_FORWARD_LEFT\x10\x05\x12\x16\n\x12KICK_FORWARD_RIGHT\x10\x06\"7\n\x10SecondActionType\x12\x0f\n\x0bSECOND_NONE\x10\x00\x12\t\n\x05\x42LINK\x10\x01\x12\x07\n\x03SAY\x10\x02\"\xaf\x01\n\x12GroundContactModel\x12\x19\n\x11leftGroundContact\x18\x01 \x02(\x08\x12\x1a\n\x12rightGroundContact\x18\x02 \x02(\x08\x12;\n\x0bsupportFoot\x18\x03 \x02(\x0e\x32&.naothmessages.GroundContactModel.Foot\"%\n\x04\x46oot\x12\x08\n\x04LEFT\x10\x00\x12\t\n\x05RIGHT\x10\x01\x12\x08\n\x04NONE\x10\x02\"O\n\x10\x43ollisionPercept\x12\x1c\n\x14timeCollisionArmLeft\x18\x01 \x02(\r\x12\x1d\n\x15timeCollisionArmRight\x18\x02 \x02(\r\"\xf2\x03\n\x07IMUData\x12.\n\x08location\x18\x01 \x02(\x0b\x32\x1c.naothmessages.DoubleVector3\x12.\n\x08velocity\x18\x02 \x02(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x32\n\x0c\x61\x63\x63\x65leration\x18\x03 \x02(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x39\n\x13\x61\x63\x63\x65leration_sensor\x18\x04 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\x12.\n\x08rotation\x18\x05 \x02(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x39\n\x13rotational_velocity\x18\x06 \x02(\x0b\x32\x1c.naothmessages.DoubleVector3\x12@\n\x1arotational_velocity_sensor\x18\x07 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x31\n\x0borientation\x18\x08 \x02(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x38\n\x12orientation_rotvec\x18\t \x02(\x0b\x32\x1c.naothmessages.DoubleVector3B\x16\n\x14\x64\x65.naoth.rc.messages')
   ,
   dependencies=[CommonTypes__pb2.DESCRIPTOR,Framework__Representations__pb2.DESCRIPTOR,])
 
@@ -122,8 +122,8 @@ _BALLCANDIDATES_PATCH_TYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=6043,
-  serialized_end=6075,
+  serialized_start=6047,
+  serialized_end=6079,
 )
 _sym_db.RegisterEnumDescriptor(_BALLCANDIDATES_PATCH_TYPE)
 
@@ -144,8 +144,8 @@ _REMOTECONTROLCOMMAND_CONTROLMODE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=6352,
-  serialized_end=6403,
+  serialized_start=6356,
+  serialized_end=6407,
 )
 _sym_db.RegisterEnumDescriptor(_REMOTECONTROLCOMMAND_CONTROLMODE)
 
@@ -186,8 +186,8 @@ _REMOTECONTROLCOMMAND_ACTIONTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=6405,
-  serialized_end=6526,
+  serialized_start=6409,
+  serialized_end=6530,
 )
 _sym_db.RegisterEnumDescriptor(_REMOTECONTROLCOMMAND_ACTIONTYPE)
 
@@ -212,8 +212,8 @@ _REMOTECONTROLCOMMAND_SECONDACTIONTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=6528,
-  serialized_end=6583,
+  serialized_start=6532,
+  serialized_end=6587,
 )
 _sym_db.RegisterEnumDescriptor(_REMOTECONTROLCOMMAND_SECONDACTIONTYPE)
 
@@ -238,8 +238,8 @@ _GROUNDCONTACTMODEL_FOOT = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=6724,
-  serialized_end=6761,
+  serialized_start=6728,
+  serialized_end=6765,
 )
 _sym_db.RegisterEnumDescriptor(_GROUNDCONTACTMODEL_FOOT)
 
@@ -1832,7 +1832,7 @@ _CAMERAMATRIXCALIBRATION = _descriptor.Descriptor(
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=_descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\030\001'))),
     _descriptor.FieldDescriptor(
       name='correctionOffsetBody', full_name='naothmessages.CameraMatrixCalibration.correctionOffsetBody', index=1,
       number=2, type=11, cpp_type=10, label=1,
@@ -1867,7 +1867,7 @@ _CAMERAMATRIXCALIBRATION = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=5545,
-  serialized_end=5805,
+  serialized_end=5809,
 )
 
 
@@ -1919,8 +1919,8 @@ _BALLCANDIDATES_PATCH = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=5881,
-  serialized_end=6075,
+  serialized_start=5885,
+  serialized_end=6079,
 )
 
 _BALLCANDIDATES = _descriptor.Descriptor(
@@ -1949,8 +1949,8 @@ _BALLCANDIDATES = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=5808,
-  serialized_end=6075,
+  serialized_start=5812,
+  serialized_end=6079,
 )
 
 
@@ -2004,8 +2004,8 @@ _REMOTECONTROLCOMMAND = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=6078,
-  serialized_end=6583,
+  serialized_start=6082,
+  serialized_end=6587,
 )
 
 
@@ -2050,8 +2050,8 @@ _GROUNDCONTACTMODEL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=6586,
-  serialized_end=6761,
+  serialized_start=6590,
+  serialized_end=6765,
 )
 
 
@@ -2088,8 +2088,8 @@ _COLLISIONPERCEPT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=6763,
-  serialized_end=6842,
+  serialized_start=6767,
+  serialized_end=6846,
 )
 
 
@@ -2156,6 +2156,13 @@ _IMUDATA = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='orientation_rotvec', full_name='naothmessages.IMUData.orientation_rotvec', index=8,
+      number=9, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -2168,8 +2175,8 @@ _IMUDATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=6845,
-  serialized_end=7285,
+  serialized_start=6849,
+  serialized_end=7347,
 )
 
 _CAMERAMATRIX.fields_by_name['pose'].message_type = CommonTypes__pb2._POSE3D
@@ -2275,6 +2282,7 @@ _IMUDATA.fields_by_name['rotation'].message_type = CommonTypes__pb2._DOUBLEVECTO
 _IMUDATA.fields_by_name['rotational_velocity'].message_type = CommonTypes__pb2._DOUBLEVECTOR3
 _IMUDATA.fields_by_name['rotational_velocity_sensor'].message_type = CommonTypes__pb2._DOUBLEVECTOR3
 _IMUDATA.fields_by_name['orientation'].message_type = CommonTypes__pb2._DOUBLEVECTOR2
+_IMUDATA.fields_by_name['orientation_rotvec'].message_type = CommonTypes__pb2._DOUBLEVECTOR3
 DESCRIPTOR.message_types_by_name['CameraMatrix'] = _CAMERAMATRIX
 DESCRIPTOR.message_types_by_name['BallPercept'] = _BALLPERCEPT
 DESCRIPTOR.message_types_by_name['MultiBallPercept'] = _MULTIBALLPERCEPT
@@ -2560,4 +2568,6 @@ _sym_db.RegisterMessage(IMUData)
 
 DESCRIPTOR.has_options = True
 DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n\024de.naoth.rc.messages'))
+_CAMERAMATRIXCALIBRATION.fields_by_name['correctionOffset'].has_options = True
+_CAMERAMATRIXCALIBRATION.fields_by_name['correctionOffset']._options = _descriptor._ParseOptions(descriptor_pb2.FieldOptions(), _b('\030\001'))
 # @@protoc_insertion_point(module_scope)

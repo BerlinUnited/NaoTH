@@ -9,6 +9,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.AsynchronousCloseException;
@@ -45,7 +46,7 @@ public class RobotTeamCommListener implements Runnable {
             this.isOpponent = isOpponent;
         }
 
-        boolean isConnected() {
+        public boolean isConnected() {
             return this.channel != null && this.trigger != null;
         }
 
@@ -53,6 +54,7 @@ public class RobotTeamCommListener implements Runnable {
             disconnect();
 
             this.channel = DatagramChannel.open();
+            this.channel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
             this.channel.configureBlocking(true);
             this.channel.bind(new InetSocketAddress(InetAddress.getByName("0.0.0.0"), port));
 

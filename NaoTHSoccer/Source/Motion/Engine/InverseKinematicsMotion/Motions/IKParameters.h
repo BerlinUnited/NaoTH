@@ -16,15 +16,17 @@ class IKParameters : public ParameterList
 {
 public:
 
-  // TODO: what are those parameters?
   double footOffsetY;
+
+  bool useWalk2018;
   
   struct Stand 
   {
     double speed;
     bool enableStabilization;
     bool enableStabilizationRC16;
-    double stiffness;
+    double stiffnessGotoPose;
+    double stiffnessRelax;
 
     double bodyPitchOffset;
     double hipOffsetX;

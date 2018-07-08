@@ -164,6 +164,16 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
     t_edge = theParameters.brightness_threshold_bottom;
   }
 
+  // calculate the threshold depending on the reprojected size of the ball in the image
+  if(theParameters.dynamicThreshold) 
+  {
+    double radius = CameraGeometry::estimatedBallRadius(
+      getCameraMatrix(),getCameraInfo(), getFieldInfo().ballRadius, 
+      getCameraInfo().resolutionWidth / 2, getCameraInfo().resolutionHeight / 4*3);
+
+    t_edge = Math::clamp((int)radius, theParameters.brightness_threshold_top, theParameters.brightness_threshold_bottom);
+  }
+
   Vector2i lastGreenPoint(point); // HACK
   RingBufferWithSum<double, 10> movingWindow; // HACK
 
@@ -328,17 +338,25 @@ bool ScanLineEdgelDetector::validDistance(const Vector2i& pointOne, const Vector
 
 ColorClasses::Color ScanLineEdgelDetector::estimateColorOfSegment(const Vector2i& begin, const Vector2i& end) const
 {
-  ASSERT(begin.x == end.x && end.y <= begin.y);
+  ASSERT(begin.x == end.x);
+
+  // switch if necessary
+  int beginY = begin.y;
+  int endY = end.y;
+  if(end.y > begin.y) {
+    beginY = end.y;
+    endY = begin.y;
+  }
 
   const int numberOfSamples = theParameters.green_sampling_points;
-  int length = begin.y - end.y;
+  int length = beginY - endY; //begin.y - end.y;
   int numberOfGreen = 0;
-  Vector2i point(begin);
+  Vector2i point(begin.x, beginY);
   Pixel pixel;
 
   if(numberOfSamples >= length) 
   {
-    for(; point.y > end.y; point.y--)
+    for(; point.y > endY; --point.y)
     {
       getImage().get(point.x, point.y, pixel);
       numberOfGreen += getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c);
@@ -349,10 +367,10 @@ ColorClasses::Color ScanLineEdgelDetector::estimateColorOfSegment(const Vector2i
     int step = length / numberOfSamples;
     int offset = Math::random(length); // number in [0,length-1]
 
-    for(int i = 0; i < numberOfSamples; i++)
+    for(int i = 0; i < numberOfSamples; ++i)
     {
       int k = (offset + i*step) % length;
-      point.y = end.y + k;
+      point.y = endY + k;
       getImage().get(point.x, point.y, pixel);
       numberOfGreen += getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c);
     }
