@@ -156,7 +156,7 @@ Eigen::VectorXd CamMatErrorFunctionV3::operator()(const Eigen::Matrix<double, 11
                 total_sum += dist;
             }
 
-            r(idx) = total_sum;
+            r(idx) = -total_sum; // the resudial is target - actual, i.e. 0 - total_sum
             ++idx;
         }
     }
@@ -167,7 +167,8 @@ Eigen::VectorXd CamMatErrorFunctionV3::operator()(const Eigen::Matrix<double, 11
 }
 
 
-CameraMatrixCorrectorV3::CameraMatrixCorrectorV3()
+CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
+    lm_minimizer(1,2)
 {
   getDebugParameterList().add(&getCameraMatrixOffsetV3());
 

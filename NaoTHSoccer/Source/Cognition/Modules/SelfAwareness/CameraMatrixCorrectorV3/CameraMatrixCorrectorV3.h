@@ -191,7 +191,7 @@ private:
 
   Eigen::Matrix<double, 11, 1> cam_mat_offsets;
 
-  LevenbergMarquardtMinimizer<CamMatErrorFunctionV3, 1, 2> lm_minimizer;
+  LevenbergMarquardtMinimizer<CamMatErrorFunctionV3> lm_minimizer;
 
   bool calibrate();
   void reset_calibration();

@@ -8,23 +8,48 @@
 
 #include <tuple>
 
-template<class ErrorFunction, int init_lambda, int init_v>
+template<class ErrorFunction>
 class LevenbergMarquardtMinimizer
 {
 public:
-    LevenbergMarquardtMinimizer(){
-        lambda = init_lambda;
-        v = init_v;
-    }
+    double error;
+
+private:
+    double init_lambda;
+    double init_v;
 
     double lambda;
     double v;
 
-    void reset(){
+    bool naned;
+
+// (optional) TODO: stopping criteria || J*r || < eps1, || offset || < eps2 * x, iter > iter_max
+public:
+
+    // init_lambda: > 0, the smaller this value the more we believe that we are already close to the optimum (closeness)
+    // init_v     : the factor for reducing or increasing lambda during minimization (damping)
+    LevenbergMarquardtMinimizer(double init_lambda, double init_v):
+        error(0),
+        init_lambda(init_lambda),
+        init_v(init_v),
+        naned(false)
+    {
         lambda = init_lambda;
         v = init_v;
     }
 
+    void reset(){
+        lambda = init_lambda;
+        v      = init_v;
+        naned  = false;
+        error  = 0;
+    }
+
+    bool NaNed(){
+        return naned;
+    }
+
+    // first version
     template<class T>
     T minimizeOneStep(const ErrorFunction& errorFunction, const T& x, const T& epsilon, double& error)
     {
@@ -74,6 +99,39 @@ public:
         }
 
         return zero;
+    }
+
+    template<class T>
+    bool minimizeOneStep2(const ErrorFunction& errorFunction, const T& x, const T& epsilon, T& offset)
+    {
+        Eigen::VectorXd r = errorFunction(x);
+        Eigen::MatrixXd J = determineJacobian(errorFunction, x, epsilon);
+        Eigen::MatrixXd JtJ = J.transpose()*J;
+        Eigen::MatrixXd JtJdiag = (JtJ).diagonal().asDiagonal();
+        error = r.sum();
+
+        auto a = (JtJ + lambda * JtJdiag).colPivHouseholderQr().solve(J.transpose() * r).eval();
+
+        if(a.hasNaN()){
+            naned = true;
+            return false;
+        }
+
+        offset = mapOffsetToXDims(epsilon, a);
+
+        Eigen::VectorXd r_new = errorFunction(x + offset);
+
+        double g = (r.transpose() * r - r_new.transpose() * r_new) / (offset.transpose() * (lambda * JtJdiag * offset - J.transpose()*r));
+
+        if(g>0) {
+            lambda *= std::max(1/init_v, 1-(2*g-1)*(2*g-1)*(2*g-1)); // update strategy by ... with beta = v = gamma = 2, p =3
+            v = init_v;
+        } else {
+            lambda *= v;
+            v *= 2;
+        }
+
+        return true;
     }
 
 private:
