@@ -64,7 +64,7 @@ public:
         Eigen::MatrixXd J = determineJacobian(errorFunction, x, epsilon);
         Eigen::MatrixXd JtJ = J.transpose()*J;
         Eigen::MatrixXd JtJdiag = (JtJ).diagonal().asDiagonal();
-        error = r.sum();
+        error = r.transpose() * r;
 
         auto a = (JtJ + lambda   * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r).eval();
         auto b = (JtJ + lambda/v * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r).eval();
@@ -72,15 +72,20 @@ public:
         T offset2 = mapOffsetToXDims(epsilon, b);
 
         if(offset1.hasNaN() || offset2.hasNaN()){
+            naned = true;
             return zero;
         }
 
-        double r_o1_sum = errorFunction((x + offset1).eval()).sum();
-        double r_o2_sum = errorFunction((x + offset2).eval()).sum();
+        T r_o1 = errorFunction((x + offset1).eval());
+        T r_o2 = errorFunction((x + offset2).eval());
 
-        if(r_o1_sum > error && r_o2_sum > error)
+        double e_r_o1 = r_o1.transpose() * r_o1;
+        double e_r_o2 = r_o2.transpose() * r_o2;
+
+        if(e_r_o1 > error && e_r_o2 > error)
         {
-            while(true){//for( int i = 0; i < 10; i++){ // retry at most 10 times
+            lambda *= v; // didn't get a better result so increase damping and retry
+            /*while(true){//for( int i = 0; i < 10; i++){ // retry at most 10 times
                 lambda *= v; // didn't get a better result so increase damping and retry
                 offset1 = mapOffsetToXDims(epsilon, (JtJ + lambda * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r).eval());
 
@@ -88,19 +93,20 @@ public:
                     return zero;
                 }
 
-                r_o1_sum = errorFunction((x + offset1).eval()).sum();
+                r_o1 = errorFunction((x + offset1).eval());
+                e_r_o1 = r_o1.transpose() * r_o1;
 
-                if(r_o1_sum < error){
-                    error = r_o1_sum;
+                if(e_r_o1 < error){
+                    error = e_r_o1;
                     return offset1;
                 }
-            }
-        } else if(r_o1_sum > r_o2_sum) {
+            }*/
+        } else if(e_r_o1 > e_r_o2) {
             lambda /= v; // got better result with decreased damping
-            error = r_o2_sum;
+            error = e_r_o2;
             return offset2;
         } else {
-            error = r_o1_sum;
+            error = e_r_o1;
             return offset1; // got better result with current damping
         }
 
@@ -134,12 +140,13 @@ public:
         if(g>0) {
             lambda *= std::max(1/gamma, 1-(beta-1)*std::pow(2*g-1,p)); // update strategy with beta = v = gamma = 2, p =3
             v = beta;
+            return true;
         } else {
             lambda *= v;
             v *= 2;
         }
 
-        return true;
+        return false;
     }
 
 private:
