@@ -49,6 +49,36 @@ void test_LM_Rosenbrock(){
 
     std::cout << std::endl;
     std::cout << "final error    : " << lm.error << std::endl;
+    std::cout << "final solution : " << x << std::endl;
+    std::cout << "number of steps: " << counter << std::endl;
+    std::cout << "average time ln: " << sum.count()/counter << " ns" << std::endl;
+    std::cout << "total time ln  : " << sum.count() << " ns" << std::endl;
+
+    lm.reset();
+    x << -1.2, 1;
+    sum = duration::zero();
+
+    counter = 0;
+    double error;
+    do {
+        begin = std::chrono::high_resolution_clock::now();
+
+        offset = lm.minimizeOneStep(rb, x, eps, error);
+
+        end = std::chrono::high_resolution_clock::now();
+
+        sum += end - begin;
+
+        x += offset;
+
+        counter++;
+
+        //std::cout << lm.error << std::endl;
+    } while(error > 1e-5 && !lm.NaNed() && counter < max_counter);
+
+    std::cout << std::endl;
+    std::cout << "final error    : " << error << std::endl;
+    std::cout << "final solution : " << x << std::endl;
     std::cout << "number of steps: " << counter << std::endl;
     std::cout << "average time ln: " << sum.count()/counter << " ns" << std::endl;
     std::cout << "total time ln  : " << sum.count() << " ns" << std::endl;
