@@ -23,16 +23,22 @@ private:
 
     bool naned;
 
+    const double beta;
+    const double gamma;
+    const double p;
+
 // (optional) TODO: stopping criteria || J*r || < eps1, || offset || < eps2 * x, iter > iter_max
 public:
 
     // init_lambda: > 0, the smaller this value the more we believe that we are already close to the optimum (closeness)
-    // init_v     : the factor for reducing or increasing lambda during minimization (damping)
-    LevenbergMarquardtMinimizer(double init_lambda, double init_v):
+    LevenbergMarquardtMinimizer(double init_lambda):
         error(0),
         init_lambda(init_lambda),
-        init_v(init_v),
-        naned(false)
+        init_v(2),
+        naned(false),
+        beta(2),
+        gamma(2),
+        p(3)
     {
         lambda = init_lambda;
         v = init_v;
@@ -101,6 +107,7 @@ public:
         return zero;
     }
 
+    //Based on H.B. Nielson, Damping Parameter In Marquardt’s Method, Technical Report IMM-REP-1999-05, Dept. of Mathematical Modeling, Technical University Denmark.
     template<class T>
     bool minimizeOneStep2(const ErrorFunction& errorFunction, const T& x, const T& epsilon, T& offset)
     {
@@ -108,9 +115,9 @@ public:
         Eigen::MatrixXd J = determineJacobian(errorFunction, x, epsilon);
         Eigen::MatrixXd JtJ = J.transpose()*J;
         Eigen::MatrixXd JtJdiag = (JtJ).diagonal().asDiagonal();
-        error = r.sum();
+        error = r.transpose() * r;
 
-        auto a = (JtJ + lambda * JtJdiag).colPivHouseholderQr().solve(J.transpose() * r).eval();
+        auto a = (JtJ + lambda * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r).eval();
 
         if(a.hasNaN()){
             naned = true;
@@ -121,11 +128,12 @@ public:
 
         Eigen::VectorXd r_new = errorFunction(x + offset);
 
-        double g = (r.transpose() * r - r_new.transpose() * r_new) / (offset.transpose() * (lambda * JtJdiag * offset - J.transpose()*r));
+        double g;
+        g = (r.transpose() * r - r_new.transpose() * r_new)(0,0) / (offset.transpose() * (lambda * JtJdiag * offset - J.transpose()*r))(0,0);
 
         if(g>0) {
-            lambda *= std::max(1/init_v, 1-(2*g-1)*(2*g-1)*(2*g-1)); // update strategy by ... with beta = v = gamma = 2, p =3
-            v = init_v;
+            lambda *= std::max(1/gamma, 1-(beta-1)*std::pow(2*g-1,p)); // update strategy with beta = v = gamma = 2, p =3
+            v = beta;
         } else {
             lambda *= v;
             v *= 2;
