@@ -15,6 +15,7 @@
 #include <Tools/DataStructures/RingBufferWithSum.h>
 #include <vector>
 #include <string>
+#include <fstream>
 //Debug
 #include <Tools/Debug/DebugRequest.h>
 #include <Tools/Debug/DebugPlot.h>
@@ -52,7 +53,7 @@ public:
 			//Entweder direkt als Point vektor
 			//PARAMETER_REGISTER(ReferenceHull) = vector<Point>;
 			//Oder als Pfad zur txt was vermutlich einfacher ist
-			PARAMETER_REGISTER(point_config) = "A:\B\C\d.txt";
+			PARAMETER_REGISTER(point_config) = "C:/Users/Etienne Couque/PycharmProjects/NAOpy/textnewhull.txt";
 			syncWithConfig();
 		}
 		std::string point_config;
@@ -62,7 +63,10 @@ private:
 	//Private variablen wie zb ringbuffer fuer MJD und SJD synchronisation
 	RingBuffer<double, 4> jointDataBufferLeft;
 	RingBuffer<double, 4> jointDataBufferRight;
+	std::vector<Point> PointBufferLeft;
+	std::vector<Point> PointBufferRight;
 	std::vector<Point> P;
+	std::vector<Point> vBuff;
 };
 
 #endif
