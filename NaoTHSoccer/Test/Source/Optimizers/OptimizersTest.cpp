@@ -119,6 +119,7 @@ void test_GN_Rosenbrock(){
 
     std::cout << std::endl;
     std::cout << "final error    : " << gn.error << std::endl;
+    std::cout << "final solution : " << x << std::endl;
     std::cout << "number of steps: " << counter << std::endl;
     std::cout << "average time gn: " << sum.count()/counter << " ns" << std::endl;
     std::cout << "total time gn  : " << sum.count() << " ns" << std::endl;

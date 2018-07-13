@@ -132,9 +132,8 @@ Eigen::Matrix<double, numOfParameters, 1> GaussNewtonMinimizer<numOfFunctions, n
 
     error = w.transpose() * w;
 
-    //Vector2<double> z_GN = (-((Dg.transpose()*Dg).invert()*Dg.transpose()*w));
-    //Vector2d z_GN = dg * (-w / (dg * dg));
-    Eigen::Matrix<double, numOfParameters, 1> offset = -((dg*dg.transpose()).inverse()*dg*w);
+    //Eigen::Matrix<double, numOfParameters, 1> offset = -((dg*dg.transpose()).inverse()*dg*w);
+    Eigen::Matrix<double, numOfParameters, 1> offset = -((dg.transpose() * dg).inverse()*dg.transpose()*w);
 
     //beware the inverse!
     if(offset.hasNaN()){
