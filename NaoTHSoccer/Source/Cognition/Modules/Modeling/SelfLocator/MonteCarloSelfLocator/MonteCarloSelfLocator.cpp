@@ -29,6 +29,7 @@ MonteCarloSelfLocator::MonteCarloSelfLocator()
 {
   // debug
   DEBUG_REQUEST_REGISTER("MCSLS:reset_samples", "reset the sample set", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:user_defined_pose", "allows the user to modify the location of the robot", false);
 
   // field drawings
   DEBUG_REQUEST_REGISTER("MCSLS:draw_Samples", "draw sample set before resampling", false);
@@ -77,6 +78,28 @@ void MonteCarloSelfLocator::execute()
     state = LOCALIZE;
 
     DEBUG_REQUEST("MCSLS:draw_Samples", 
+      FIELD_DRAWING_CONTEXT;
+      theSampleSet.drawImportance(getDebugDrawings());
+    );
+
+    return;
+  );
+
+  DEBUG_REQUEST("MCSLS:user_defined_pose",
+
+    Vector2d pos;
+    double rot (0);
+    MODIFY("MCSLS:posX", pos.x);
+    MODIFY("MCSLS:posY", pos.y);
+    MODIFY("MCSLS:rot", rot);
+    
+    // sample particles in a 100mm^2 rect of the user defined pose
+    initializeSampleSetFixedRotation(Geometry::Rect2d(pos - Vector2d(50,50), pos + Vector2d(50,50)), rot, theSampleSet);
+
+    islocalized = true;
+    state = LOCALIZE;
+
+    DEBUG_REQUEST("MCSLS:draw_Samples",
       FIELD_DRAWING_CONTEXT;
       theSampleSet.drawImportance(getDebugDrawings());
     );
@@ -140,6 +163,7 @@ void MonteCarloSelfLocator::execute()
     localize_start = getFrameInfo().getTime();
   }
 
+
   switch(state) 
   {
     case KIDNAPPED:
@@ -148,10 +172,15 @@ void MonteCarloSelfLocator::execute()
       state = LOCALIZE;
       islocalized = false;
       lastState = KIDNAPPED;
+      getRobotPose().isValid = false;
       break;
     }
     case BLIND:
     {
+      if(parameters.updateByOdometryWhenBlind) {
+        updateByOdometry(theSampleSet, parameters.motionNoise, true);
+      }
+
       /* do nothing */
       if(!islocalized) {
         state = LOCALIZE;
@@ -163,7 +192,7 @@ void MonteCarloSelfLocator::execute()
     }
     case LOCALIZE:
     {
-      updateByOdometry(theSampleSet, parameters.motionNoise);
+      updateByOdometry(theSampleSet, parameters.motionNoise, false);
     
       theSampleSet.resetLikelihood();
 
@@ -186,7 +215,7 @@ void MonteCarloSelfLocator::execute()
       if(parameters.updateBySituation) //  && lastState == KIDNAPPED
       {
         updateBySituation();
-      }//end updateBySituation
+      }
 
 
       // NOTE: statistics has to be after updates and before resampling
@@ -224,7 +253,7 @@ void MonteCarloSelfLocator::execute()
     }
     case TRACKING:
     {
-      updateByOdometry(theSampleSet, parameters.motionNoise);
+      updateByOdometry(theSampleSet, parameters.motionNoise, false);
 
       theSampleSet.resetLikelihood();
 
@@ -328,9 +357,14 @@ void MonteCarloSelfLocator::resetLocator()
   //mhBackendSet.setLikelihood(0.0);
 }
 
-void MonteCarloSelfLocator::updateByOdometry(SampleSet& sampleSet, bool noise) const
+void MonteCarloSelfLocator::updateByOdometry(SampleSet& sampleSet, bool noise, bool onlyRotation) const
 {
   Pose2D odometryDelta = getOdometryData() - lastRobotOdometry;
+
+  if(onlyRotation) {
+    odometryDelta.translation = Vector2d();
+  }
+
   for (size_t i = 0; i < sampleSet.size(); i++)
   {
     sampleSet[i] += odometryDelta;
@@ -417,7 +451,7 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
 
   if(parameters.updateByLinePoints)
   {
-    if(!getLineGraphPercept().edgels.empty()) {
+    if(!getLineGraphPercept().edgelsOnField.empty()) {
       updateByLinePoints(getLineGraphPercept(), sampleSet);
     }
   }
@@ -431,7 +465,7 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
 
   if(parameters.updateByShortLinePercept)
   {
-    if(!getLinePercept().lines.empty()) {
+    if(!getLinePercept().short_lines.empty()) {
       updateByShortLines(getLinePercept(), sampleSet);
     }
   }
@@ -564,8 +598,8 @@ void MonteCarloSelfLocator::updateByCompas(SampleSet& sampleSet) const
 
 void MonteCarloSelfLocator::updateByLinePoints(const LineGraphPercept& lineGraphPercept, SampleSet& sampleSet) const
 {
-  const double sigmaDistance = parameters.goalPostSigmaDistance;
-  //const double sigmaAngle    = parameters.goalPostSigmaAngle;
+  const double sigmaDistance = parameters.linePointsSigmaDistance;
+  //const double sigmaAngle    = parameters.linePointsSigmaAngle;
   const double cameraHeight  = getCameraMatrix().translation.z;
 
   DEBUG_REQUEST("MCSLS:draw_updateByLinePoints",
@@ -573,10 +607,10 @@ void MonteCarloSelfLocator::updateByLinePoints(const LineGraphPercept& lineGraph
     PEN("000000", 10);
   );
 
-  for(size_t i = 0; i < lineGraphPercept.edgels.size() && i < (size_t)parameters.linePointsMaxNumber; i++) 
+  for(size_t i = 0; i < lineGraphPercept.edgelsOnField.size() && i < (size_t)parameters.linePointsMaxNumber; i++) 
   {
-    int idx = Math::random((int)lineGraphPercept.edgels.size());
-    const Vector2d& seen_point_relative = lineGraphPercept.edgels[idx].point;
+    int idx = Math::random((int)lineGraphPercept.edgelsOnField.size());
+    const Vector2d& seen_point_relative = lineGraphPercept.edgelsOnField[idx].point;
 
     Vector2d seen_point_g = getRobotPose()*seen_point_relative;
 
@@ -615,7 +649,7 @@ void MonteCarloSelfLocator::updateByLines(const LinePercept& linePercept, Sample
   double shortestLine = 1e+5; // very long...
 
   // todo: parameter for max lines to update by
-  for(size_t lp=0; lp < getLinePercept().lines.size() && lp < 3; lp++)
+  for(size_t lp=0; lp < linePercept.lines.size() && lp < 3; lp++)
   {
     //int idx = Math::random((int)linePercept.lines.size());
     // dont use the lines which are parts of the circle 
@@ -766,7 +800,7 @@ void MonteCarloSelfLocator::updateByShortLines(const LinePercept& linePercept, S
   double shortestLine = 1e+5; // very long...
 
   // todo: parameter for max lines to update by
-  for(size_t lp=0; lp < getLinePercept().lines.size() && lp < 3; lp++)
+  for(size_t lp=0; lp < linePercept.short_lines.size() && lp < 3; lp++)
   {
     //int idx = Math::random((int)linePercept.lines.size());
     // dont use the lines which are parts of the circle 
@@ -774,7 +808,7 @@ void MonteCarloSelfLocator::updateByShortLines(const LinePercept& linePercept, S
     //if(linePercept.lines[idx].type == LinePercept::C && linePercept.middleCircleWasSeen)
     //  continue;
 
-    if(linePercept.lines[lp].lineOnField.getLength() < 300) { // don't use too short lines
+    if(linePercept.short_lines[lp].lineOnField.getLength() < 300) { // don't use too short lines
       continue;
     }
 
@@ -792,7 +826,7 @@ void MonteCarloSelfLocator::updateByShortLines(const LinePercept& linePercept, S
     //int lineVotes[30] = {0};
     //int maxIdx = 0;
 
-    const Math::LineSegment& relPercept = linePercept.lines[lp].lineOnField;
+    const Math::LineSegment& relPercept = linePercept.short_lines[lp].lineOnField;
 
     for(size_t s=0; s < sampleSet.size(); s++)
     {
@@ -811,7 +845,7 @@ void MonteCarloSelfLocator::updateByShortLines(const LinePercept& linePercept, S
       // todo: this may make problems when the lines are distored
       int length    = (relPercept.getLength() > 700)?LinesTable::long_lines:LinesTable::short_lines|LinesTable::circle_lines|LinesTable::long_lines;
       int direction = (fabs(abs_direction.x) > fabs(abs_direction.y))?LinesTable::along_lines:LinesTable::across_lines;
-      int type      = (linePercept.lines[lp].type == LinePercept::C)?LinesTable::circle_lines:length|direction;
+      int type      = (linePercept.short_lines[lp].type == LinePercept::C)?LinesTable::circle_lines:length|direction;
 
       /*
       const LinesTable::NamedPoint& p_mid = 

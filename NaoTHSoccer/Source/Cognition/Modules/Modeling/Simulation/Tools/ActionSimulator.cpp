@@ -13,14 +13,14 @@ using namespace std;
 ActionSimulator::ActionSimulator()
   : // own goal
     ownGoalBackSides({
-      Math::LineSegment(getFieldInfo().ownGoalPostLeft, getFieldInfo().ownGoalBackRight),
+      Math::LineSegment(getFieldInfo().ownGoalBackLeft, getFieldInfo().ownGoalBackRight),
       Math::LineSegment(getFieldInfo().ownGoalPostLeft, getFieldInfo().ownGoalBackLeft),
       Math::LineSegment(getFieldInfo().ownGoalPostRight, getFieldInfo().ownGoalBackRight) }),
     // opp goal
     oppGoalBackSides({
-        Math::LineSegment(getFieldInfo().oppGoalBackLeft      , getFieldInfo().oppGoalBackRight),
-        Math::LineSegment(getFieldInfo().opponentGoalPostLeft , getFieldInfo().oppGoalBackLeft),
-        Math::LineSegment(getFieldInfo().opponentGoalPostRight, getFieldInfo().oppGoalBackRight)}
+      Math::LineSegment(getFieldInfo().oppGoalBackLeft      , getFieldInfo().oppGoalBackRight),
+      Math::LineSegment(getFieldInfo().opponentGoalPostLeft , getFieldInfo().oppGoalBackLeft),
+      Math::LineSegment(getFieldInfo().opponentGoalPostRight, getFieldInfo().oppGoalBackRight)}
     )
 
 {

@@ -15,8 +15,21 @@ namespace path_symbols("PathPlanner Symbols") {
     sidekick_right,
     sidekick_left
   };
+  
+  enum path2018.routine
+  {
+    none,
+    move_around_ball,
+    forwardkick_left,
+    forwardkick_right,
+    sidekick_left,
+    sidekick_right
+  };
+
 
   enum path.routine output path.routine;
+  enum path2018.routine output path2018.routine;
+
   
   float output path.distance;
   float output path.yOffset;

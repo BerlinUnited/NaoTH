@@ -33,6 +33,7 @@ albase
 [extra]
 dcm_hal
 alsystem
+
 EOL
 
 # Set autoload.ini in home to NaoTH

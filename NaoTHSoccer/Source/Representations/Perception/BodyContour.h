@@ -97,7 +97,9 @@ public:
 
   Vector2i getCellCoord(const unsigned x, const unsigned y) const
   {
-    ASSERT(x >= 0 && x < (unsigned)cameraResolution.x && y >= 0 && y < (unsigned)cameraResolution.y);
+    // this is allways true for unsigned x and unsigned y
+    //ASSERT(x >= 0 && y >= 0)
+    ASSERT(x < (unsigned)cameraResolution.x && y < (unsigned)cameraResolution.y);
     return Vector2i(x / stepSize, y / stepSize);
   }
 
@@ -117,7 +119,9 @@ public:
 
   const Cell& getCell(const unsigned x, const unsigned y) const
   {
-    ASSERT(x >= 0 && y >= 0 && x < (unsigned)xDensity && y < (unsigned)yDensity);
+    // this is allways true for unsigned x and unsigned y
+    //ASSERT(x >= 0 && y >= 0)
+    ASSERT(x < (unsigned)xDensity && y < (unsigned)yDensity);
     return grid[x][y];
   }
 

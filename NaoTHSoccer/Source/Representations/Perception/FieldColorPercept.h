@@ -9,8 +9,10 @@
 #define FIELDCOLORPERCEPT_H
 
 #include <algorithm>
-#include <Tools/DataStructures/Printable.h>
 #include <Tools/Math/Common.h>
+#include <Tools/Math/Vector2.h>
+
+#include <Tools/DataStructures/Printable.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 
 using namespace naoth;

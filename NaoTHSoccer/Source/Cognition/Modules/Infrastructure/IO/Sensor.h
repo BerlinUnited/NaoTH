@@ -39,6 +39,7 @@
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/OdometryData.h"
 #include <Representations/Modeling/InertialModel.h>
+#include <Representations/Modeling/IMUData.h>
 #include <Representations/Modeling/BodyStatus.h>
 #include <Representations/Perception/CameraMatrix.h>
 #include <Representations/Perception/CameraMatrixBuffer.h>
@@ -96,6 +97,7 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(MotionStatus)
   PROVIDE(OdometryData)
   PROVIDE(InertialModel)
+  PROVIDE(IMUData)
   PROVIDE(CameraMatrixBuffer)
   PROVIDE(CameraMatrixBufferTop)
   PROVIDE(CalibrationData)

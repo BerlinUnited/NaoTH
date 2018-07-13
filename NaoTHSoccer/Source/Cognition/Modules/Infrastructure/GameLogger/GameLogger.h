@@ -5,6 +5,7 @@
 #include <Tools/Logfile/LogfileManager.h>
 
 #include <Representations/Infrastructure/FrameInfo.h>
+#include <Representations/Infrastructure/Image.h>
 #include <Representations/Infrastructure/RobotInfo.h>
 #include <Representations/Modeling/BehaviorStateComplete.h>
 #include <Representations/Modeling/BehaviorStateSparse.h>
@@ -21,6 +22,8 @@
 #include "Representations/Perception/BallCandidates.h"
 #include "Representations/Perception/MultiBallPercept.h"
 
+#include "Representations/Infrastructure/WhistlePercept.h"
+
 // tools
 #include "Tools/Debug/DebugParameterList.h"
 
@@ -35,6 +38,9 @@ BEGIN_DECLARE_MODULE(GameLogger)
 
   REQUIRE(BehaviorStateSparse)
   REQUIRE(BehaviorStateComplete)
+
+  REQUIRE(Image)
+  REQUIRE(ImageTop)
 
   REQUIRE(OdometryData)
   REQUIRE(CameraMatrix)
@@ -53,7 +59,9 @@ BEGIN_DECLARE_MODULE(GameLogger)
   REQUIRE(BallCandidatesTop)
 
   REQUIRE(TeamMessage)
-END_DECLARE_MODULE(GameLogger)
+
+  REQUIRE(WhistlePercept)
+  END_DECLARE_MODULE(GameLogger)
 
 class GameLogger : public GameLoggerBase
 {
@@ -70,22 +78,32 @@ private:
     {
       PARAMETER_REGISTER(logBallCandidates) = false;
       PARAMETER_REGISTER(logBodyStatus) = false;
+      PARAMETER_REGISTER(logPlainImages) = false;
+      PARAMETER_REGISTER(logPlainImagesDelay) = 2000;
       syncWithConfig();
     }
 
     bool logBallCandidates;
     bool logBodyStatus;
+    bool logPlainImages;
+    int logPlainImagesDelay;
   } params;
 
 private:
   // TODO: make a memory aware LogfileManager that flushes whenever a certain memory
   // treshold is reached.
   LogfileManager < 30 > logfileManager;
+  
+  ofstream imageOutFile;
+  FrameInfo lastTimeImageRecorded;
 
   unsigned int lastCompleteFrameNumber;
   
   PlayerInfo::RobotState oldState;
   bool firstRecording;
+  int lastWhistleCounter;
+
+  CameraInfo::CameraID lastRecordedPlainImageID;
 };
 
 #endif // GAMELOGGER_H

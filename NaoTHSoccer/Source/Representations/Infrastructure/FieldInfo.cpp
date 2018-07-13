@@ -14,7 +14,7 @@ FieldInfo::FieldInfo() : ParameterList("FieldInfo")
   ballColor = ColorClasses::orange;
   
   // default values as of SPL rules from 2012
-  PARAMETER_REGISTER(ballRadius) = 32.5;
+  PARAMETER_REGISTER(ballRadius) = 50.0;
 
   PARAMETER_REGISTER(xLength) = 6000;
   PARAMETER_REGISTER(yLength) = 4000;
@@ -34,7 +34,7 @@ FieldInfo::FieldInfo() : ParameterList("FieldInfo")
   PARAMETER_REGISTER(goalpostRadius) = 50;
   PARAMETER_REGISTER(xPenaltyMarkDistance) = 1300;
 
-  PARAMETER_REGISTER(goalBoxAsLines) = false;
+  PARAMETER_REGISTER(goalBoxAsLines) = true;
 
   syncWithConfig();
 
@@ -126,7 +126,7 @@ void FieldInfo::calculateCrossings()
 
 
   ownGoalBackLeft = Vector2d(ownGoalPostLeft.x - goalDepth, ownGoalPostLeft.y);
-  ownGoalBackRight = Vector2d(ownGoalPostRight.x - goalDepth, opponentGoalPostRight.y);  
+  ownGoalBackRight = Vector2d(ownGoalPostRight.x - goalDepth, ownGoalPostRight.y);  
   ownGoalRect = Geometry::Rect2d(ownGoalBackRight, ownGoalPostLeft); 
 
   oppGoalBackLeft = Vector2d(opponentGoalPostLeft.x + goalDepth, opponentGoalPostLeft.y);
@@ -305,6 +305,13 @@ void FieldInfo::createLinesTable()
 void FieldInfo::draw(DrawingCanvas2D& canvas) const
 {
   fieldLinesTable.draw(canvas);
+
+  // draw the carpet
+  canvas.pen("FF0000",1);
+  canvas.drawLine(carpetRect.min().x, carpetRect.min().y, carpetRect.min().x, carpetRect.max().y);
+  canvas.drawLine(carpetRect.min().x, carpetRect.min().y, carpetRect.max().x, carpetRect.min().y);
+  canvas.drawLine(carpetRect.max().x, carpetRect.max().y, carpetRect.min().x, carpetRect.max().y);
+  canvas.drawLine(carpetRect.max().x, carpetRect.max().y, carpetRect.max().x, carpetRect.min().y);
 
   // draw throw in lines
   canvas.pen("000000", 1);

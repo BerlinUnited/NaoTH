@@ -27,21 +27,13 @@ Motion::Motion()
     theLogProvider(NULL),
     motionLogger("MotionLog")
 {
-
   REGISTER_DEBUG_COMMAND(motionLogger.getCommand(), motionLogger.getDescription(), &motionLogger);
-
-  #define ADD_LOGGER(R) motionLogger.addRepresentation(&(get##R()), #R);
-
-  ADD_LOGGER(FrameInfo);
-  ADD_LOGGER(SensorJointData);
-  ADD_LOGGER(MotorJointData);
-  ADD_LOGGER(InertialSensorData);
-  ADD_LOGGER(AccelerometerData);
-  ADD_LOGGER(GyrometerData);
-  ADD_LOGGER(FSRData);
-  ADD_LOGGER(MotionRequest);
+  registerLogableRepresentationList();
 
   DEBUG_REQUEST_REGISTER("Motion:KinematicChain:orientation_test", "", false);
+
+  DEBUG_REQUEST_REGISTER("Motion:KinematicChain:drawMotor3D", "", false);
+  DEBUG_REQUEST_REGISTER("Motion:KinematicChain:drawSensor3D", "", false);
 
   REGISTER_DEBUG_COMMAND("DebugPlot:get", "get the plots", &getDebugPlot());
 
@@ -70,13 +62,17 @@ Motion::Motion()
   theArmCollisionDetector = registerModule<ArmCollisionDetector>("ArmCollisionDetector", true);
 
   theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
+  theCoPProvider  = registerModule<CoPProvider>("CoPProvider", true);
 
   getDebugParameterList().add(&parameter);
+
+  getWalk2018Parameters().init(getDebugParameterList());
 }
 
 Motion::~Motion()
 {
   getDebugParameterList().remove(&parameter);
+  getWalk2018Parameters().remove(getDebugParameterList());
 }
 
 void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
@@ -125,6 +121,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerOutputChanel(getBodyStatus());
   platformInterface.registerOutputChanel(getGroundContactModel());
   platformInterface.registerOutputChanel(getCollisionPercept());
+  platformInterface.registerOutputChanel(getIMUData());
 
   // messages from cognition to motion
   platformInterface.registerInputChanel(getCameraInfo());
@@ -135,13 +132,17 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerInputChanel(getBodyState());
 
   std::cout << "[Motion] register end" << std::endl;
+
+  cycleStopwatch.start();
 }//end init
 
 
 
 void Motion::call()
 {
-
+  cycleStopwatch.stop();
+  cycleStopwatch.start();
+  PLOT("Motion.Cycle", cycleStopwatch.lastValue);
   STOPWATCH_START("MotionExecute");
 
   // run the theLogProvider if avalieble
@@ -172,6 +173,8 @@ void Motion::call()
   postProcess();
   STOPWATCH_STOP("Motion:postProcess");
 
+  DEBUG_REQUEST("Motion:KinematicChain:drawSensor3D",  drawRobot3D(getKinematicChainSensor()); );
+  DEBUG_REQUEST("Motion:KinematicChain:drawMotor3D",  drawRobot3D(getKinematicChainMotor()); );
 
   // todo: execute debug commands => find a better place for this
   getDebugMessageOut().reset();
@@ -215,6 +218,8 @@ void Motion::processSensorData()
       getSensorJointData().position[i] = getSensorJointData().position[i] - getOffsetJointData().position[i];
   }
 
+  theIMUModel->execute();
+
   // calibrate inertia sensors
   theInertiaSensorCalibrator->execute();
 
@@ -224,8 +229,12 @@ void Motion::processSensorData()
   getInertialSensorData().data += getCalibrationData().inertialSensorOffset;
   getAccelerometerData().data  += getCalibrationData().accSensorOffset;
 
-  theIMUModel->execute();
   theInertiaSensorFilterBH->execute();
+
+  // only to enable transparent switching with InertiaSensorFilter
+  if(parameter.letIMUModelProvideInertialModel) {
+      getInertialModel().orientation = getIMUData().orientation;
+  }
 
   //
   theFootGroundContactDetector->execute();
@@ -235,6 +244,9 @@ void Motion::processSensorData()
 
   //
 //  theSupportPolygonGenerator->execute();
+
+  //
+  theCoPProvider->execute();
 
   //
   updateCameraMatrix();
@@ -261,8 +273,9 @@ void Motion::processSensorData()
 
   if(parameter.useIMUDataForRotationOdometry)
   {
-    PLOT("Motion:rotationZ", getIMUData().rotation.z);
-    getOdometryData().rotation = getIMUData().rotation.z;
+    double z_angle = RotationMatrix(getIMUData().rotation).getZAngle();
+    PLOT("Motion:rotationZ", z_angle);
+    getOdometryData().rotation = z_angle;
   }
 
   // store the MotorJointData
@@ -297,7 +310,7 @@ void Motion::postProcess()
 #endif
 
   // apply the offset to motor joint data
-  for( i = 0; i < JointData::numOfJoint; i++){
+  for(int i = 0; i < JointData::numOfJoint; i++){
       mjd.position[i] = mjd.position[i] + getOffsetJointData().position[i];
   }
 
@@ -358,7 +371,7 @@ void Motion::debugPlots()
   // TODO: shouldn't this be part of kinematicChainProvider?
   DEBUG_REQUEST("Motion:KinematicChain:orientation_test",
     RotationMatrix calculatedRotation =
-      Kinematics::ForwardKinematics::calcChestFeetRotation(getKinematicChainSensor());
+      Kinematics::ForwardKinematics::calcChestToFeetRotation(getKinematicChainSensor());
 
     // calculate expected acceleration sensor reading
     Vector2d inertialExpected(calculatedRotation.getXAngle(), calculatedRotation.getYAngle());
@@ -502,3 +515,21 @@ void Motion::updateCameraMatrix()
   getCameraMatrixTop().timestamp = getSensorJointData().timestamp;
   getCameraMatrixTop().valid = true;
 }// end updateCameraMatrix
+
+void Motion::drawRobot3D(const KinematicChain& kinematicChain)
+{
+  const Kinematics::Link* theLink = kinematicChain.theLinks;
+
+  for (int i = 0; i < KinematicChain::numOfLinks; i++)
+  {
+    if ( i != KinematicChain::Neck
+      && i != KinematicChain::LShoulder 
+      && i != KinematicChain::LElbow
+      && i != KinematicChain::RShoulder 
+      && i != KinematicChain::RElbow
+      && i != KinematicChain::Hip)
+    {
+      ENTITY(KinematicChain::getLinkName((KinematicChain::LinkID)i), theLink[i].M);
+    }
+  }//end for
+}//end drawRobot3D

@@ -9,7 +9,6 @@ import de.naoth.rc.drawings3d.Scene;
 import de.naoth.rc.server.Command;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -21,10 +20,14 @@ public class ThreeDimensionSceneManagerImpl extends AbstractManagerPlugin<Scene>
 
   private final String drawablePackageName = Drawable.class.getPackage().getName();
   
-  private final TreeSet<String> warningsForEntities = new TreeSet<String>();
+  //private final TreeSet<String> warningsForEntities = new TreeSet<String>();
+  
+  private Command command = null;
   
   public ThreeDimensionSceneManagerImpl()
   {
+      setModuleOwner("Cognition");
+      
       // TODO:
       Logger.getLogger(ThreeDimensionSceneManagerImpl.class.getName()).log(Level.WARNING, 
           "[ThreeDimensionSceneManagerImpl] Fix missing Lhand and RHand objects in the 3D viever");
@@ -87,8 +90,16 @@ public class ThreeDimensionSceneManagerImpl extends AbstractManagerPlugin<Scene>
   }
 
   @Override
+  final public void setModuleOwner(String name)
+  {
+      if(name != null && name.length() > 0) {
+          command = new Command(name + ":representation:get").addArg("DebugDrawings3D");
+      }
+  }
+  
+  @Override
   public Command getCurrentCommand()
   {
-    return new Command("Cognition:representation:get").addArg("DebugDrawings3D");
+    return command;
   }
 }

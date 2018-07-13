@@ -22,6 +22,7 @@ BEGIN_DECLARE_MODULE(LEDSetter)
 
   REQUIRE(FrameRateCheckLEDRequest)
   REQUIRE(GameControllerLEDRequest)
+  REQUIRE(WifiModeSetterLEDRequest)
   REQUIRE(BehaviorLEDRequest)
   REQUIRE(FrameInfo)
 

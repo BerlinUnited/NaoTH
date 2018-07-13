@@ -12,7 +12,7 @@
 
 BodyStateProvider::BodyStateProvider()
 {
-
+  getDebugParameterList().add(&theParams);
 }
 
 void BodyStateProvider::execute()
@@ -30,10 +30,24 @@ void BodyStateProvider::execute()
   updateTheLegTemperature();
   updateIsLiftedUp();
   
-  if(getBatteryData().current < -0.5){
+  // why do we need this?
+  if(getBatteryData().current < -0.5) {
     getBodyState().isDischarging = true;
-  }else{
+  } else {
     getBodyState().isDischarging = false;
+  }
+
+  if(getBatteryData().current >= theParams.batteryChargingThreshold) {
+    getBodyState().isCharging = true;
+  } else {
+    getBodyState().isCharging = false;
+  }
+
+  batteryChargeBuffer.add(getBatteryData().charge);
+  if(batteryChargeBuffer.isFull()) {
+    getBodyState().batteryCharge = batteryChargeBuffer.getAverage();
+  } else {
+    getBodyState().batteryCharge = getBatteryData().charge;
   }
 
 }//end execute
@@ -62,20 +76,18 @@ void BodyStateProvider::updateTheFallDownState()
   inertialBuffer.add(getInertialSensorData().data);
 
   Vector2d avg = inertialBuffer.getAverage();
-  double inertialXaverage = avg.x;
-  double inertialYaverage = avg.y;
 
   getBodyState().fall_down_state = BodyState::upright;
 
-  if(inertialXaverage < -theParams.getup_threshold) {
+  if(avg.x < -theParams.getup_threshold) {
     getBodyState().fall_down_state = BodyState::lying_on_left_side;
-  } else if(inertialXaverage > theParams.getup_threshold) {
+  } else if(avg.x > theParams.getup_threshold) {
     getBodyState().fall_down_state = BodyState::lying_on_right_side;
   }
 
-  if(inertialYaverage < -theParams.getup_threshold) {
+  if(avg.y < -theParams.getup_threshold) {
     getBodyState().fall_down_state = BodyState::lying_on_back;
-  } else if(inertialYaverage > theParams.getup_threshold) {
+  } else if(avg.y > theParams.getup_threshold) {
     getBodyState().fall_down_state = BodyState::lying_on_front;
   }
 

@@ -25,6 +25,7 @@
 #include "SoundControl.h"
 #include "SPLGameController.h"
 #include "CPUTemperatureReader.h"
+#include "WhistleDetector.h"
 #include "DebugCommunication/DebugServer.h"
 
 #include "Tools/Communication/Network/BroadCaster.h"
@@ -36,8 +37,6 @@
 #include "Representations/Infrastructure/RemoteMessageData.h"
 #include "Representations/Infrastructure/GameData.h"
 #include "Representations/Infrastructure/SoundData.h"
-#include "Representations/Infrastructure/WhistlePercept.h"
-#include "Representations/Infrastructure/WhistleControl.h"
 
 #include "Representations/Infrastructure/GPSData.h"
 #include "Representations/Infrastructure/OptiTrackData.h"
@@ -115,6 +114,7 @@ public:
   void get(BatteryData& data) { naoSensorData.get(data); }
   void get(UltraSoundReceiveData& data) { naoSensorData.get(data); }
   void get(WhistlePercept& data) {data.counter = whistleSensorData.data(); }
+  //void get(WhistlePercept& data) { theWhistleDetector.get(data); }
   void get(CpuData& data) { theCPUTemperatureReader.get(data); }
 
   std::vector<std::string> gpsdata;
@@ -129,6 +129,7 @@ public:
   void set(const IRSendData& data) { naoCommandIRSendData.set(data); }
   void set(const UltraSoundSendData& data) { naoCommandUltraSoundSendData.set(data); }
   void set(const WhistleControl& data) { whistleControlData.set(data.onOffSwitch); }
+  //void set(const WhistleControl& data) { theWhistleDetector.set(data); }
 
 
   virtual void getMotionInput()
@@ -190,11 +191,9 @@ protected:
   SharedMemoryWriter<Accessor<UltraSoundSendData> > naoCommandUltraSoundSendData;
   SharedMemoryWriter<Accessor<IRSendData> > naoCommandIRSendData;
   SharedMemoryWriter<Accessor<LEDData> > naoCommandLEDData;
-
   // WhistleDetector --> NaoController
   SharedMemoryReader<int> whistleSensorData;
   SharedMemoryWriter<Accessor<int> > whistleControlData;
-
   // -- end -- shared memory access --
 
   //
@@ -209,6 +208,7 @@ protected:
   
   CPUTemperatureReader theCPUTemperatureReader;
   OptiTrackClient optiTrackClient;
+  //WhistleDetector theWhistleDetector;
 };
 
 } // end namespace naoth

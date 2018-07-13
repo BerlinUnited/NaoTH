@@ -5,6 +5,7 @@
 */
 
 #include "PatchWork.h"
+#include <Tools/ColorClasses.h>
 
 using namespace naoth;
 
@@ -72,6 +73,19 @@ void PatchWork::subsampling(const Image& image, const FieldColorPercept& fielCol
       yi++;
     }
     xi++;
+  }
+}
+
+void PatchWork::multiplyBrightness(double factor, std::vector<unsigned char>& patch) {
+  if(factor == 1.0) {
+    // nothing to do
+    return;
+  }
+  for(unsigned int i = 0; i < patch.size(); i++) {
+    double originalY = patch[i];
+    double multipliedY = originalY * factor;
+    double clippedY = Math::clamp(multipliedY, 0.0, 255.0);
+    patch[i] = (unsigned char) Math::round(clippedY);
   }
 }
 

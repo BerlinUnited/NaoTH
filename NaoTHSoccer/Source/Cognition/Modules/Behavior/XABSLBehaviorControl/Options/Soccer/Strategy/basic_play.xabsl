@@ -16,6 +16,7 @@ option basic_play
       motion.walk.step_control.scale = 1;
 
       path.routine = none;
+      path2018.routine = none;
       // why was this put here? Steffen?
       //arm.control_mode = normal;
       
@@ -32,6 +33,9 @@ option basic_play
       
       //NOTE: can be set false by fall_down_and_stand_up and treat_lifted
       body.ready_to_walk = true;
+      
+      // this will be set in state play
+      game.time_in_play = 0;
       
       // react to the game controller and observe fall down
       decide_game_state();

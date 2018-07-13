@@ -113,13 +113,16 @@ void Walk::execute()
     } else {
       c.localInHip();
     }
-      
+
     getEngine().rotationStabilize(
       getInertialModel(),
       getGyrometerData(),
       getRobotInfo().getBasicTimeStepInSecond(),
+      parameters().stabilization.rotation.P,
+      parameters().stabilization.rotation.VelocityP,
+      parameters().stabilization.rotation.D,
       c);
-  } 
+  }
   else if(getCalibrationData().calibrated && parameters().stabilization.rotationStabilizeRC16)
   {
     if(stepBuffer.first().footStep.liftingFoot() == FootStep::LEFT) {
@@ -131,9 +134,12 @@ void Walk::execute()
     }
     
     getEngine().rotationStabilizeRC16(
-      getInertialSensorData(),
+      getInertialSensorData().data,
       getGyrometerData(),
       getRobotInfo().getBasicTimeStepInSecond(),
+      parameters().stabilization.rotationRC16.P,
+      parameters().stabilization.rotationRC16.VelocityP,
+      parameters().stabilization.rotationRC16.D,
       c);
   }
   else if(getCalibrationData().calibrated && parameters().stabilization.rotationStabilizeNewIMU)
@@ -146,10 +152,13 @@ void Walk::execute()
       c.localInHip();
     }
 
-    getEngine().rotationStabilizenNewIMU(
-      getIMUData(),
+    getEngine().rotationStabilizeRC16(
+      getIMUData().orientation,
       getGyrometerData(),
       getRobotInfo().getBasicTimeStepInSecond(),
+      parameters().stabilization.rotationNewIMU.P,
+      parameters().stabilization.rotationNewIMU.VelocityP,
+      parameters().stabilization.rotationNewIMU.D,
       c);
   }
 
@@ -242,7 +251,7 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
   newStep.walkRequest = walkRequest;
 
   // STABILIZATION
-  bool do_emergency_stop = com_errors.size() == com_errors.getMaxEntries() && com_errors.getAverage() > parameters().stabilization.emergencyStopError;
+  bool do_emergency_stop = com_errors.isFull() && com_errors.getAverage() > parameters().stabilization.emergencyStopError;
 
   if ( getMotionRequest().id != getId() || (do_emergency_stop && !walkRequest.stepControl.isProtected))
   {
@@ -304,11 +313,11 @@ void Walk::calculateNewStep(const Step& lastStep, Step& newStep, const WalkReque
 
       if(parameters().step.dynamicDuration)
       {
-        if(walkRequest.character == 0.3) {
+        if(walkRequest.character <= 0.3) {
           duration = 300;
-        } else if(walkRequest.character == 0.7) {
+        } else if(walkRequest.character <= 0.7) {
           duration = 280;
-        } else if(walkRequest.character == 1) {
+        } else {// if(walkRequest.character == 1) {
           duration = 260;
         }
       }
@@ -836,9 +845,8 @@ void Walk::feetStabilize(const Step& executingStep, double (&position)[naoth::Jo
   const Vector2d& inertial = getInertialModel().orientation;
   const Vector3d& gyro = getGyrometerData().data;
 
-  // HACK: small filter...
-  static Vector3d lastGyro = gyro;
-  Vector3d filteredGyro = filteredGyro*0.8 + gyro*0.2;
+  // HACK: small filter:
+  filteredGyro = filteredGyro*0.8 + gyro*0.2;
 
   Vector2d weight;
   weight.x = 
@@ -874,5 +882,4 @@ void Walk::feetStabilize(const Step& executingStep, double (&position)[naoth::Jo
   default: break; // don't stabilize in double support mode
   };
 
-  lastGyro = gyro;
 }//end feetStabilize

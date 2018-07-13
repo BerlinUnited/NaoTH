@@ -3,9 +3,6 @@
 <Form version="1.7" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <NonVisualComponents>
     <Component class="javax.swing.JFileChooser" name="teamCommFileChooser">
-      <Properties>
-        <Property name="approveButtonText" type="java.lang.String" value="Open"/>
-      </Properties>
     </Component>
     <Container class="javax.swing.JPopupMenu" name="pmConfig">
       <Events>

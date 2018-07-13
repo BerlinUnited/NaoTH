@@ -65,4 +65,7 @@ namespace internal_symbols("Internal Symbols") {
 
   /** Counts the state changes turn/look in passive_ball_not_seen */
   float internal search_ball.turn_stop_motion_count;
+
+  /** the time we are in play-state in ms*/
+  float internal game.time_in_play;
 }

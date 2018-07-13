@@ -19,6 +19,11 @@
   } \
   getImage().get(x, y, p);
 
+#undef IMG_GET
+
+#define IMG_GET(x,y,p) \
+  getImage().get_direct(x, y, p);
+
 
 GoalFeatureDetectorV2::GoalFeatureDetectorV2()
 : 
@@ -110,15 +115,16 @@ void GoalFeatureDetectorV2::findEdgelFeatures(const Vector2d& scanDir, const Vec
 
     bool edgeFound = false;
 
-    Pixel pixel;
+    //Pixel pixel;
 
     EdgelD lastEdgel;
 
     Vector2i lastPos;
     while(scanner.getNextWithCheck(pos)) 
     {
-      IMG_GET(pos.x, pos.y, pixel);
-      int pixValue =  parameters.detectWhiteGoals ? pixel.y : (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
+      //IMG_GET(pos.x, pos.y, pixel);
+      //int pixValue =  parameters.detectWhiteGoals ? pixel.y : (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
+      int pixValue = getImage().getY_direct(pos.x, pos.y);
 
        DEBUG_REQUEST("Vision:GoalFeatureDetectorV2:draw_scanlines",
         POINT_PX(ColorClasses::gray, pos.x, pos.y );
@@ -166,7 +172,8 @@ void GoalFeatureDetectorV2::findEdgelFeatures(const Vector2d& scanDir, const Vec
 
       if(peakFound)
       {
-        Vector2d gradient = parameters.detectWhiteGoals ? calculateGradientY(peak_point) : calculateGradientUV(peak_point);
+        //Vector2d gradient = parameters.detectWhiteGoals ? calculateGradientY(peak_point) : calculateGradientUV(peak_point);
+        Vector2d gradient = calculateGradientY(peak_point);
         EdgelD newEdgel;
 
         if(gradient.y < 0)
@@ -216,8 +223,9 @@ void GoalFeatureDetectorV2::findEdgelFeatures(const Vector2d& scanDir, const Vec
               GoalBarFeature feature;
               feature.point = Vector2d(lastEdgel.point + newEdgel.point) * 0.5;
           
-              IMG_GET((int)  feature.point.x, (int)  feature.point.y, pixel);
-              int pixValue =  parameters.detectWhiteGoals ? pixel.y : (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
+              //IMG_GET((int)  feature.point.x, (int)  feature.point.y, pixel);
+              //int pixValue =  parameters.detectWhiteGoals ? pixel.y : (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
+              int pixValue = getImage().getY_direct((int)  feature.point.x, (int)  feature.point.y);
               if(pixValue > parameters.threshold)
               {
                 double featureWidth = (newEdgel.point - lastEdgel.point).abs();
@@ -311,28 +319,42 @@ Vector2d GoalFeatureDetectorV2::calculateGradientUV(const Vector2i& point) const
 
 Vector2d GoalFeatureDetectorV2::calculateGradientY(const Vector2i& point) const
 {
+  Vector2d gradient;
+  static const int offset = 2;
+
   // no angle at the border (shouldn't happen)
-  if( point.x < 2 || point.x + 3 > (int)getImage().width() ||
-      point.y < 2 || point.y + 3 > (int)getImage().height() ) {
-    return Vector2d();
+  if( point.x < offset || point.x + offset + 1 > (int)getImage().width() ||
+      point.y < offset || point.y + offset + 1 > (int)getImage().height() ) {
+    return gradient;
   }
 
-  Vector2d gradientY;
-  gradientY.x =
-       (int)getImage().getY(point.x-2, point.y+2)
-    +2*(int)getImage().getY(point.x  , point.y+2)
-    +  (int)getImage().getY(point.x+2, point.y+2)
-    -  (int)getImage().getY(point.x-2, point.y-2)
-    -2*(int)getImage().getY(point.x  , point.y-2)
-    -  (int)getImage().getY(point.x+2, point.y-2);
+  //apply Sobel Operator on (pointX, pointY)
+  //and calculate gradient in x and y direction by that means
+  
+  const int x0 = point.x-offset;
+  const int y0 = point.y-offset;
+  const int x1 = point.x+offset;
+  const int y1 = point.y+offset;
 
-  gradientY.y =
-       (int)getImage().getY(point.x-2, point.y-2)
-    +2*(int)getImage().getY(point.x-2, point.y  )
-    +  (int)getImage().getY(point.x-2, point.y+2)
-    -  (int)getImage().getY(point.x+2, point.y-2)
-    -2*(int)getImage().getY(point.x+2, point.y  )
-    -  (int)getImage().getY(point.x+2, point.y+2);
+  // NOTE: char type is converted to int before doing the actual calculations
+  //       so we don't need cast here
+  gradient.x =
+       getImage().getY_direct(x0, y1)
+    +2*getImage().getY_direct(point.x, y1)
+    +  getImage().getY_direct(x1, y1)
+    -  getImage().getY_direct(x0, y0)
+    -2*getImage().getY_direct(point.x, y0)
+    -  getImage().getY_direct(x1, y0);
 
-  return gradientY.normalize();
-}
+  gradient.y =
+       getImage().getY_direct(x0, y0)
+    +2*getImage().getY_direct(x0, point.y)
+    +  getImage().getY_direct(x0, y1)
+    -  getImage().getY_direct(x1, y0)
+    -2*getImage().getY_direct(x1, point.y)
+    -  getImage().getY_direct(x1, y1);
+
+
+  //calculate the angle of the gradient
+  return gradient.normalize();
+}//end calculateGradient

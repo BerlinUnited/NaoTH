@@ -20,7 +20,6 @@
 #include <Tools/Debug/DebugImageDrawings.h>
 #include <Tools/DataStructures/ParameterList.h>
 #include <Tools/Debug/DebugParameterList.h>
-#include "Tools/Debug/DebugModify.h"
 
 #include "Tools/DoubleCamHelpers.h"
 

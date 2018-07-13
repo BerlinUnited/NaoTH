@@ -49,15 +49,19 @@ public class BehaviorTreePanel extends javax.swing.JScrollPane {
     public DefaultMutableTreeNode actionToNode(XABSLAction a) {
         DefaultMutableTreeNode result = new DefaultMutableTreeNode(a);
 
-        if (!showOptionsOnly && a instanceof XABSLAction.OptionExecution) {
+        if (a instanceof XABSLAction.OptionExecution) {
             XABSLAction.OptionExecution oe = (XABSLAction.OptionExecution)a;
 
             // add parameters
-            for (Symbol p : oe.option.parameters) {
-                result.add(new DefaultMutableTreeNode(p));
+            if(!showOptionsOnly) {
+                for (Symbol p : oe.option.parameters) {
+                    result.add(new DefaultMutableTreeNode(p));
+                }
             }
             
             for (XABSLAction sub: oe.activeSubActions) {
+                // skip symbols if only options should be shown
+                if(showOptionsOnly && sub instanceof XABSLAction.SymbolAssignement) { continue; }
                 result.add(actionToNode(sub));
             }
         }
@@ -102,7 +106,7 @@ public class BehaviorTreePanel extends javax.swing.JScrollPane {
         
         
         newTree.setDoubleBuffered(false);
-        newTree.setCellRenderer(new XABSLActionSparseTreeCellRenderer());
+        newTree.setCellRenderer(new XABSLActionSparseTreeCellRenderer(getFont().getSize()));
         newTree.setVisible(true);
         
         //TODO: this are preparation for jumping to the sourse, when an option is clicked
