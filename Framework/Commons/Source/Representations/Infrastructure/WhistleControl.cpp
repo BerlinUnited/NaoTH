@@ -5,8 +5,10 @@ using namespace naoth;
 WhistleControl::WhistleControl():
   onOffSwitch(0),
   whistleListFile("whistles.lst"),
-  activeChannels("1010")
-
+  activeChannels("1010"),
+  threshold(0.4),
+  checkAllWhistles(true),
+  saveRawAudio(false)
 {}
 
 void WhistleControl::print(std::ostream& stream) const
