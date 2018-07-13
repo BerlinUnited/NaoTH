@@ -178,7 +178,7 @@ void WhistleDetector::execute()
       int bytesToRead = samplesToRead * static_cast<int>(sizeof(short));
 
       // Record some data
-      if (!paSimple || paSimple == NULL)
+      if (paSimple == NULL)
       {
         std::cerr << "[PulseAudio] pa_simple == NULL" << std::endl;
         running = false;
