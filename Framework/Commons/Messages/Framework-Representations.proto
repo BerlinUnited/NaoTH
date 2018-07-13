@@ -133,6 +133,7 @@ message OptiTrackData
   }
   
   repeated TrackableItem trackables = 1;
+}
 
 message WhistlePercept {
   message Whistle {
