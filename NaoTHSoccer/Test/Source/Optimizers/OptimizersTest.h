@@ -53,5 +53,6 @@ void testDifferentialBased(const T& start, const T& eps) {
     std::cout << "number of steps: " << counter << std::endl;
     std::cout << "average time: " << sum.count()/counter << " ns" << std::endl;
     std::cout << "total time  : " << sum.count() << " ns" << std::endl;
+    std::cout << "step failed : " << (optimizer.step_failed() ? "true" : "false") << std::endl;
     std::cout << "---------------------" << std::endl;
 }
