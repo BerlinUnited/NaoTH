@@ -51,11 +51,11 @@ public:
 
         Eigen::MatrixXd J = determineJacobian(errorFunction, x, epsilon);
 
-        Eigen::VectorXd w = errorFunction(x);
+        Eigen::VectorXd r = errorFunction(x);
 
-        error = w.transpose() * w;
+        error = r.transpose() * r;
 
-        auto a = -((J.transpose() * J).inverse()*J.transpose()*w);
+        auto a = (J.transpose() * J).colPivHouseholderQr().solve(-J.transpose() * r).eval();
 
         if(a.hasNaN()){
             failed = true;
