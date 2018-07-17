@@ -168,7 +168,7 @@ Eigen::VectorXd CamMatErrorFunctionV3::operator()(const Eigen::Matrix<double, 11
 
 
 CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
-    lm_minimizer(1,2)
+    lm_minimizer(1)
 {
   getDebugParameterList().add(&getCameraMatrixOffsetV3());
 
