@@ -8,9 +8,9 @@ int main(int /*argc*/, char** /*argv*/){
         Eigen::Vector2d eps;
         eps << 0.001, 0.001;
 
-        testDifferentialBased<wikipedia::Rosenbrock2, Optimizer::GaussNewtonMinimizer,         Eigen::Matrix<double, 2, 1> >(start, eps);
-        testDifferentialBased<wikipedia::Rosenbrock2, Optimizer::LevenbergMarquardtMinimizer,  Eigen::Matrix<double, 2, 1> >(start, eps);
-        testDifferentialBased<wikipedia::Rosenbrock2, Optimizer::LevenbergMarquardtMinimizer2, Eigen::Matrix<double, 2, 1> >(start, eps);
+        testDifferentialBased<wikipedia::Rosenbrock2, Optimizer::GaussNewtonMinimizer        >(start, eps);
+        testDifferentialBased<wikipedia::Rosenbrock2, Optimizer::LevenbergMarquardtMinimizer >(start, eps);
+        testDifferentialBased<wikipedia::Rosenbrock2, Optimizer::LevenbergMarquardtMinimizer2>(start, eps);
     }
 
     {
@@ -20,9 +20,9 @@ int main(int /*argc*/, char** /*argv*/){
         Eigen::Matrix<double, 3, 1> eps;
         eps << 0.001, 0.001, 0.001;
 
-        testDifferentialBased<wikipedia::Rosenbrock3, Optimizer::GaussNewtonMinimizer,         Eigen::Matrix<double, 3, 1> >(start, eps);
-        testDifferentialBased<wikipedia::Rosenbrock3, Optimizer::LevenbergMarquardtMinimizer,  Eigen::Matrix<double, 3, 1> >(start, eps);
-        testDifferentialBased<wikipedia::Rosenbrock3, Optimizer::LevenbergMarquardtMinimizer2, Eigen::Matrix<double, 3, 1> >(start, eps);
+        testDifferentialBased<wikipedia::Rosenbrock3, Optimizer::GaussNewtonMinimizer        >(start, eps);
+        testDifferentialBased<wikipedia::Rosenbrock3, Optimizer::LevenbergMarquardtMinimizer >(start, eps);
+        testDifferentialBased<wikipedia::Rosenbrock3, Optimizer::LevenbergMarquardtMinimizer2>(start, eps);
     }
 
     {
@@ -32,9 +32,9 @@ int main(int /*argc*/, char** /*argv*/){
         Eigen::Matrix<double, 7, 1> eps;
         eps << 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001;
 
-        testDifferentialBased<wikipedia::Rosenbrock7, Optimizer::GaussNewtonMinimizer,         Eigen::Matrix<double, 7, 1> >(start, eps);
-        testDifferentialBased<wikipedia::Rosenbrock7, Optimizer::LevenbergMarquardtMinimizer,  Eigen::Matrix<double, 7, 1> >(start, eps);
-        testDifferentialBased<wikipedia::Rosenbrock7, Optimizer::LevenbergMarquardtMinimizer2, Eigen::Matrix<double, 7, 1> >(start, eps);
+        testDifferentialBased<wikipedia::Rosenbrock7, Optimizer::GaussNewtonMinimizer        >(start, eps);
+        testDifferentialBased<wikipedia::Rosenbrock7, Optimizer::LevenbergMarquardtMinimizer >(start, eps);
+        testDifferentialBased<wikipedia::Rosenbrock7, Optimizer::LevenbergMarquardtMinimizer2>(start, eps);
     }
 
     {
@@ -44,9 +44,9 @@ int main(int /*argc*/, char** /*argv*/){
         Eigen::Vector2d eps;
         eps << 0.001, 0.001;
 
-        testDifferentialBased<wikipedia::Himmelblau, Optimizer::GaussNewtonMinimizer,         Eigen::Vector2d >(start, eps);
-        testDifferentialBased<wikipedia::Himmelblau, Optimizer::LevenbergMarquardtMinimizer,  Eigen::Vector2d >(start, eps);
-        testDifferentialBased<wikipedia::Himmelblau, Optimizer::LevenbergMarquardtMinimizer2, Eigen::Vector2d >(start, eps);
+        testDifferentialBased<wikipedia::Himmelblau, Optimizer::GaussNewtonMinimizer        >(start, eps);
+        testDifferentialBased<wikipedia::Himmelblau, Optimizer::LevenbergMarquardtMinimizer >(start, eps);
+        testDifferentialBased<wikipedia::Himmelblau, Optimizer::LevenbergMarquardtMinimizer2>(start, eps);
     }
 
     {
@@ -56,9 +56,9 @@ int main(int /*argc*/, char** /*argv*/){
         Eigen::Vector2d eps;
         eps << 0.001, 0.001;
 
-        testDifferentialBased<wikipedia::Rastrigin2, Optimizer::GaussNewtonMinimizer,         Eigen::Matrix<double, 2, 1> >(start, eps);
-        testDifferentialBased<wikipedia::Rastrigin2, Optimizer::LevenbergMarquardtMinimizer,  Eigen::Matrix<double, 2, 1> >(start, eps);
-        testDifferentialBased<wikipedia::Rastrigin2, Optimizer::LevenbergMarquardtMinimizer2, Eigen::Matrix<double, 2, 1> >(start, eps);
+        testDifferentialBased<wikipedia::Rastrigin2, Optimizer::GaussNewtonMinimizer        >(start, eps);
+        testDifferentialBased<wikipedia::Rastrigin2, Optimizer::LevenbergMarquardtMinimizer >(start, eps);
+        testDifferentialBased<wikipedia::Rastrigin2, Optimizer::LevenbergMarquardtMinimizer2>(start, eps);
     }
 
     {
@@ -68,9 +68,9 @@ int main(int /*argc*/, char** /*argv*/){
         Eigen::Matrix<double, 3, 1> eps;
         eps << 0.001, 0.001, 0.001;
 
-        testDifferentialBased<wikipedia::Rastrigin3, Optimizer::GaussNewtonMinimizer,         Eigen::Matrix<double, 3, 1> >(start, eps);
-        testDifferentialBased<wikipedia::Rastrigin3, Optimizer::LevenbergMarquardtMinimizer,  Eigen::Matrix<double, 3, 1> >(start, eps);
-        testDifferentialBased<wikipedia::Rastrigin3, Optimizer::LevenbergMarquardtMinimizer2, Eigen::Matrix<double, 3, 1> >(start, eps);
+        testDifferentialBased<wikipedia::Rastrigin3, Optimizer::GaussNewtonMinimizer        >(start, eps);
+        testDifferentialBased<wikipedia::Rastrigin3, Optimizer::LevenbergMarquardtMinimizer >(start, eps);
+        testDifferentialBased<wikipedia::Rastrigin3, Optimizer::LevenbergMarquardtMinimizer2>(start, eps);
     }
 
     {
@@ -80,8 +80,8 @@ int main(int /*argc*/, char** /*argv*/){
         Eigen::Matrix<double, 7, 1> eps;
         eps << 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001;
 
-        testDifferentialBased<wikipedia::Rastrigin7, Optimizer::GaussNewtonMinimizer,         Eigen::Matrix<double, 7, 1> >(start, eps);
-        testDifferentialBased<wikipedia::Rastrigin7, Optimizer::LevenbergMarquardtMinimizer,  Eigen::Matrix<double, 7, 1> >(start, eps);
-        testDifferentialBased<wikipedia::Rastrigin7, Optimizer::LevenbergMarquardtMinimizer2, Eigen::Matrix<double, 7, 1> >(start, eps);
+        testDifferentialBased<wikipedia::Rastrigin7, Optimizer::GaussNewtonMinimizer        >(start, eps);
+        testDifferentialBased<wikipedia::Rastrigin7, Optimizer::LevenbergMarquardtMinimizer >(start, eps);
+        testDifferentialBased<wikipedia::Rastrigin7, Optimizer::LevenbergMarquardtMinimizer2>(start, eps);
     }
 }
