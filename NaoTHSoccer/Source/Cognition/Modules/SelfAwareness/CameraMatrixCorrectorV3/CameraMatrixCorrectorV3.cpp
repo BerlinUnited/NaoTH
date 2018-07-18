@@ -167,13 +167,12 @@ Eigen::VectorXd CamMatErrorFunctionV3::operator()(const Eigen::Matrix<double, 11
 }
 
 
-CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
-    lm_minimizer(1)
+CameraMatrixCorrectorV3::CameraMatrixCorrectorV3()
 {
   getDebugParameterList().add(&getCameraMatrixOffsetV3());
 
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:reset_calibration", "set the calibration offsets of the CM to 0", false);
-  DEBUG_REQUEST_REGISTER("CameraMatrixV3:reset_lm_minimizer", "reset lm parameters to initial values", false);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV3:reset_minimizer", "reset lm parameters to initial values", false);
 
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:collect_calibration_data", "collect the data for calibration", false);
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:clear_calibration_data", "clears the data used for calibration", false);
@@ -184,11 +183,17 @@ CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
 
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:calibrate","",false);
 
+  DEBUG_REQUEST_REGISTER("CameraMatrixV3:optimizer:use_GN",  "use Gauss-Newton based optimizer during calibration", false);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV3:optimizer:use_LM",  "use Levenberg-Marquardt based optimizer during calibration (default)", true);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV3:optimizer:use_LM2", "use Levenberg-Marquardt based optimizer (smoothed update) during calibration", false);
+
   theCamMatErrorFunctionV3 = registerModule<CamMatErrorFunctionV3>("CamMatErrorFunctionV3", true);
 
   auto_cleared_data = auto_collected = auto_calibrated = false;
   play_calibrated = play_calibrating = play_collecting = true;
   last_error = 0;
+
+  minimizer = &lm_minimizer;
 
   // sampling coordinates
   std::array<double,4> pitchs {-20, -10 , 0, 10};
@@ -215,6 +220,19 @@ CameraMatrixCorrectorV3::~CameraMatrixCorrectorV3()
 
 void CameraMatrixCorrectorV3::execute()
 {
+
+  DEBUG_REQUEST("CameraMatrixV3:optimizer:use_GN",
+    minimizer = &gn_minimizer;
+  );
+
+  DEBUG_REQUEST("CameraMatrixV3:optimizer:use_LM",
+    minimizer = &lm_minimizer;
+  );
+
+  DEBUG_REQUEST("CameraMatrixV3:optimizer:use_LM2",
+    minimizer = &lm2_minimizer;
+  );
+
   if (getSoundPlayData().soundFile == "finished.wav"
       || getSoundPlayData().soundFile == "collectingdata.wav"
       || getSoundPlayData().soundFile == "calibrating.wav")
@@ -255,11 +273,11 @@ void CameraMatrixCorrectorV3::execute()
     play_calibrated = play_calibrating = play_collecting = true;
     derrors.clear();
     last_error = 0;
-    lm_minimizer.reset();
+    minimizer->reset();
   );
 
-  DEBUG_REQUEST("CameraMatrixV3:reset_lm_minimizer",
-        lm_minimizer.reset();
+  DEBUG_REQUEST("CameraMatrixV3:reset_minimizer",
+        minimizer->reset();
   );
 
   if(use_automatic_mode){
@@ -292,7 +310,7 @@ void CameraMatrixCorrectorV3::execute()
 
       DEBUG_REQUEST("CameraMatrixV3:reset_calibration",
             reset_calibration();
-            lm_minimizer.reset();
+            minimizer->reset();
             derrors.clear();
             last_error = 0;
       );
@@ -321,29 +339,29 @@ bool CameraMatrixCorrectorV3::calibrate()
 {
   double dt = getFrameInfo().getTimeInSeconds()-last_frame_info.getTimeInSeconds();
 
-  // calibrate the camera matrix
-  Eigen::Matrix<double, 11, 1> epsilon = 1e-4*Eigen::Matrix<double, 11, 1>::Constant(1);
+  Eigen::Matrix<double, 11, 1> epsilon = Eigen::Matrix<double, 11, 1>::Constant(1e-4);
 
-  double error (0.0);
+  Parameter offset;
+  bool valid = minimizer->minimizeOneStep(*(theCamMatErrorFunctionV3->getModuleT()), cam_mat_offsets, epsilon, offset);
 
-  Eigen::Matrix<double, 11, 1> offset = lm_minimizer.minimizeOneStep(*(theCamMatErrorFunctionV3->getModuleT()), cam_mat_offsets, epsilon, error);
+  if(valid) {
+      cam_mat_offsets += offset;
+  }
 
-  double de_dt = (error-last_error)/dt; // improvement per second
+  double de_dt = (minimizer->error - last_error)/dt; // improvement per second
 
   if(last_error != 0){ //ignore the jump from zero to initial error value
     derrors.add(de_dt);
   }
-  last_error = error;
+  last_error = minimizer->error;
 
-  PLOT("CameraMatrixV3:error", error);
+  PLOT("CameraMatrixV3:error", minimizer->error);
   PLOT("CameraMatrixV3:de/dt", de_dt);
   PLOT("CameraMatrixV3:avg_derror", derrors.getAverage());
 
-  // update offsets
-  cam_mat_offsets += offset;
-
-  return (    (derrors.getAverage() > -50) // average error decreases by less than this per second
-           && derrors.isFull() );          // and we have a full history
+  return ((  (derrors.getAverage() > -50) // average error decreases by less than this per second
+           && derrors.isFull())
+           || minimizer->step_failed());          // and we have a full history
 }
 
 // returns true, if the trajectory is starting again from beginning
@@ -431,7 +449,7 @@ void CameraMatrixCorrectorV3::doItAutomatically()
         auto_calibrated = calibrate();
         if(auto_calibrated){
             derrors.clear();
-            lm_minimizer.reset();
+            minimizer->reset();
         }
 
         if(play_calibrating){

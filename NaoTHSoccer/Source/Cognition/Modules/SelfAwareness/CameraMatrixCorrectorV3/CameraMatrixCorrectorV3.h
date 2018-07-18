@@ -35,7 +35,7 @@
 #include "Tools/Debug/DebugPlot.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 
-#include <Tools/Math/LevenbergMarquardtMinimizer.h>
+#include <Tools/Math/Optimizer.h>
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -189,9 +189,14 @@ private:
   std::vector<Vector2d> target_points;
   std::vector<Vector2d>::const_iterator current_target;
 
-  Eigen::Matrix<double, 11, 1> cam_mat_offsets;
+  typedef Eigen::Matrix<double, 11, 1> Parameter;
+  Parameter cam_mat_offsets;
 
-  LevenbergMarquardtMinimizer<CamMatErrorFunctionV3> lm_minimizer;
+  Optimizer::GaussNewtonMinimizer<CamMatErrorFunctionV3, Parameter>* minimizer;
+
+  Optimizer::GaussNewtonMinimizer<CamMatErrorFunctionV3, Parameter> 	    gn_minimizer;
+  Optimizer::LevenbergMarquardtMinimizer<CamMatErrorFunctionV3, Parameter>  lm_minimizer;
+  Optimizer::LevenbergMarquardtMinimizer2<CamMatErrorFunctionV3, Parameter> lm2_minimizer;
 
   bool calibrate();
   void reset_calibration();
