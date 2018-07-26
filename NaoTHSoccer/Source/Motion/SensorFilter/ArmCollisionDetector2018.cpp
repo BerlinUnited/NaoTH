@@ -6,8 +6,16 @@ using namespace naoth;
 
 ArmCollisionDetector2018::ArmCollisionDetector2018()
 {
+	//Debug Requests for easy acces
+	DEBUG_REQUEST_REGISTER("Motion:SensorFilter:Arm_and_Motion_ok", "Display if current motion status and Arm mode is valid or not", true);
+	DEBUG_REQUEST_REGISTER("Motion:SensorFilter:ReferenceHull", "Print reference hull", true);
+	DEBUG_REQUEST_REGISTER("Motion:SensorFilter:BufferL", "Print left point buffer", true);
+	DEBUG_REQUEST_REGISTER("Motion:SensorFilter:BufferR", "Print right point buffer", true);
+	DEBUG_REQUEST_REGISTER("Motion:SensorFilter:BufferL_hull", "Print calculated convex hull for left joint", true);
+	DEBUG_REQUEST_REGISTER("Motion:SensorFilter:BufferR_hull", "Print calculated convex hull for left joint", true);
+
+
 	getDebugParameterList().add(&params);
-	//"C:/Users/Etienne Couque/PycharmProjects/NAOpy/textnewhull.txt"
 	std::string line;
 	std::ifstream file("C:/Users/Etienne Couque/PycharmProjects/NAOpy/textnewhull.txt");
 	if (file.is_open())
@@ -37,6 +45,7 @@ void ArmCollisionDetector2018::execute()
 		getMotionRequest().armMotionRequest.id == ArmMotionRequest::arms_down;
 
 	const bool motionModeOK = getMotionStatus().currentMotion == motion::walk || getMotionStatus().currentMotion == motion::stand;
+	DEBUG_REQUEST("Motion:SensorFilter:Arm_and:Motion_Ok", std::cout << "Arm Mode: " << armModeOK << std::endl << "Motion Mode: " << motionModeOK << std::endl;);
 
 	if (!armModeOK || !motionModeOK)
 	{
@@ -57,12 +66,14 @@ void ArmCollisionDetector2018::execute()
 	if (jointDataBufferLeft.isFull()) {
 		double a = jointDataBufferLeft.first();
 		double b = getSensorJointData().position[JointData::LShoulderPitch];
-		PointBufferLeft.push_back(Point(a, b));
+		double er = (a - b);
+		PointBufferLeft.push_back(Point(a, er));
 	}
 	if (jointDataBufferRight.isFull()) {
 		double a = jointDataBufferRight.first();
 		double b = getSensorJointData().position[JointData::RShoulderPitch];
-		PointBufferRight.push_back(Point(a, b));
+		double er = (a - b);
+		PointBufferRight.push_back(Point(a, er));
 	}
 
 	if (PointBufferLeft.size() == 16)
