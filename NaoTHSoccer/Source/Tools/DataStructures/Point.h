@@ -6,8 +6,8 @@
 
 class Point {
 private:
-	double x;
-	double y;
+	//double x;
+	//double y;
 public:
 	explicit Point(const double& a, const double& b);
 	Point();
@@ -15,6 +15,8 @@ public:
 	double getY() const;
 	bool operator < (const Point &p) const;
 	bool operator == (const Point &p) const;
+	double x;
+	double y;
 };
 
 
