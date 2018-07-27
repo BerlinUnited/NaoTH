@@ -19,6 +19,7 @@ import de.naoth.rc.drawings.DrawingsContainer;
 import de.naoth.rc.drawings.FieldDrawingS3D2011;
 import de.naoth.rc.drawings.FieldDrawingSPL2012;
 import de.naoth.rc.drawings.FieldDrawingSPL2013;
+import de.naoth.rc.drawings.FieldDrawingNaoTHLabor;
 import de.naoth.rc.drawings.FieldDrawingSPL2013BlackWhite;
 import de.naoth.rc.drawings.LocalFieldDrawing;
 import de.naoth.rc.drawings.RadarDrawing;
@@ -141,6 +142,7 @@ public class FieldViewer extends AbstractDialog implements ActionListener
             new FieldDrawingSPL2013(),
             new FieldDrawingSPL2012(),
             new FieldDrawingS3D2011(),
+            new FieldDrawingNaoTHLabor(),
             new FieldDrawingSPL3x4(),
             new LocalFieldDrawing(),
             new RadarDrawing(),
