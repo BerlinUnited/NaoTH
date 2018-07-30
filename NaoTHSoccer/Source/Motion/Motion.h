@@ -25,6 +25,7 @@
 #include "SensorFilter/InertiaSensorFilter.h"
 #include "SensorFilter/IMUModel.h"
 #include "SensorFilter/ArmCollisionDetector.h"
+#include "SensorFilter/ArmCollisionDetector2018.h"
 
 //#include <Representations/Modeling/CameraMatrixOffset.h>
 
@@ -180,6 +181,7 @@ private:
   ModuleCreator<KinematicChainProviderMotion>* theKinematicChainProvider;
   ModuleCreator<IMUModel>* theIMUModel;
   ModuleCreator<ArmCollisionDetector>* theArmCollisionDetector;
+  ModuleCreator<ArmCollisionDetector2018>* theArmCollisionDetector2018;
   
 
   ModuleCreator<MotionEngine>* theMotionEngine;

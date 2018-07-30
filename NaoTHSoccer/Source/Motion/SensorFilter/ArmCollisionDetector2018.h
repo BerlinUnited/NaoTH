@@ -1,5 +1,5 @@
 #ifndef _ArmCollisionDetector2018_H_
-# define _ArmCollisionDetector2018_H_
+#define _ArmCollisionDetector2018_H_
 
 #include <ModuleFramework/Module.h>
 
@@ -53,10 +53,12 @@ public:
 			//Entweder direkt als Point vektor
 			//PARAMETER_REGISTER(ReferenceHull) = vector<Point>;
 			//Oder als Pfad zur txt was vermutlich einfacher ist
-			PARAMETER_REGISTER(point_config) = "C:/Users/Etienne Couque/PycharmProjects/NAOpy/textnewhull.txt";
+			PARAMETER_REGISTER(point_config) = "textnewhull.txt";
+			PARAMETER_REGISTER(collect) = 16;
 			syncWithConfig();
 		}
 		std::string point_config;
+		int collect;
 	} params;
 
 private:

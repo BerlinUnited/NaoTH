@@ -60,6 +60,7 @@ Motion::Motion()
   theIMUModel = registerModule<IMUModel>("IMUModel", true);
 
   theArmCollisionDetector = registerModule<ArmCollisionDetector>("ArmCollisionDetector", true);
+  theArmCollisionDetector2018 = registerModule<ArmCollisionDetector2018>("ArmCollisionDetector2018", true);
 
   theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
 
@@ -242,7 +243,7 @@ void Motion::processSensorData()
   theKinematicChainProvider->execute();
 
   //
-//  theSupportPolygonGenerator->execute();
+  //  theSupportPolygonGenerator->execute();
 
   //
   updateCameraMatrix();
@@ -251,6 +252,7 @@ void Motion::processSensorData()
   theOdometryCalculator->execute();
 
   theArmCollisionDetector->execute();
+  theArmCollisionDetector2018->execute();
 
 
   // NOTE: highly experimental
