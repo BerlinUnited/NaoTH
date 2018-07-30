@@ -157,6 +157,10 @@ public class NaoSCP extends javax.swing.JPanel {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
+        popupMenu = new javax.swing.JPopupMenu();
+        miRestartNao = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        miRestartNaoth = new javax.swing.JMenuItem();
         netwokPanel = new naoscp.components.NetwokPanel();
         naoTHPanel = new naoscp.components.NaoTHPanel();
         statusBarPanel = new javax.swing.JPanel();
@@ -166,9 +170,39 @@ public class NaoSCP extends javax.swing.JPanel {
         btWriteToStick = new javax.swing.JButton();
         btSetNetwork = new javax.swing.JButton();
         btInintRobot = new javax.swing.JButton();
+        btnActions = new javax.swing.JToggleButton();
         logPanel = new javax.swing.JPanel();
         logTextPanel = new naoscp.components.LogTextPanel();
         jProgressBar = new javax.swing.JProgressBar();
+
+        popupMenu.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                popupMenuPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
+
+        miRestartNao.setText("Restart nao");
+        miRestartNao.setToolTipText("Restarts the full nao system");
+        miRestartNao.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miRestartNaoActionPerformed(evt);
+            }
+        });
+        popupMenu.add(miRestartNao);
+        popupMenu.add(jSeparator1);
+
+        miRestartNaoth.setText("Restart naoth");
+        miRestartNaoth.setToolTipText("Restart the naoth process");
+        miRestartNaoth.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miRestartNaothActionPerformed(evt);
+            }
+        });
+        popupMenu.add(miRestartNaoth);
 
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
@@ -211,7 +245,6 @@ public class NaoSCP extends javax.swing.JPanel {
 
         btDeploy.setText("Send to Robot");
         btDeploy.setToolTipText("Send to Robot");
-        btDeploy.setMinimumSize(new java.awt.Dimension(114, 24));
         btDeploy.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btDeployActionPerformed(evt);
@@ -250,6 +283,15 @@ public class NaoSCP extends javax.swing.JPanel {
             }
         });
         statusBarPanel.add(btInintRobot);
+
+        btnActions.setText("▲");
+        btnActions.setMargin(new java.awt.Insets(2, -4, 2, -4));
+        btnActions.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnActionsActionPerformed(evt);
+            }
+        });
+        statusBarPanel.add(btnActions);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -704,6 +746,71 @@ public class NaoSCP extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_formComponentResized
 
+    private void btnActionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActionsActionPerformed
+        popupMenu.show(this.btnActions, 0, -popupMenu.getPreferredSize().height);
+    }//GEN-LAST:event_btnActionsActionPerformed
+
+    private void popupMenuPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_popupMenuPopupMenuWillBecomeInvisible
+        this.btnActions.setSelected(false);
+    }//GEN-LAST:event_popupMenuPopupMenuWillBecomeInvisible
+
+    private void miRestartNaothActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miRestartNaothActionPerformed
+        this.logTextPanel.clear();
+
+        if(txtRobotNumber.getText().trim().isEmpty()) {
+            Logger.getGlobal().log(Level.WARNING, "Missing robot number!");
+            return;
+        }
+
+        new Thread(() -> {
+            try {
+                // send stuff to robot
+                String robotIp = getIpAddress();
+                Scp scp = new Scp(robotIp, "nao", "nao");
+                Scp.CommandStream shell = scp.getShell();
+                Logger.getGlobal().log(Level.INFO, "killing naoth");
+                shell.run("naoth stop", "killing naoth cognition processes");
+                Thread.sleep(500);
+                Logger.getGlobal().log(Level.INFO, "starting naoth");
+                shell.run("naoth start", "starting naoth cognition processes");
+                Logger.getGlobal().log(Level.INFO, "DONE");
+                shell.close();
+                scp.disconnect();
+            } catch (JSchException | IOException | NaoSCPException | InterruptedException ex) {
+                Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
+            }
+        }).start();
+    }//GEN-LAST:event_miRestartNaothActionPerformed
+
+    private void miRestartNaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miRestartNaoActionPerformed
+        this.logTextPanel.clear();
+
+        if(txtRobotNumber.getText().trim().isEmpty()) {
+            Logger.getGlobal().log(Level.WARNING, "Missing robot number!");
+            return;
+        }
+
+        if(JOptionPane.showConfirmDialog(this, "Are you sure you want to reboot Nao"+txtRobotNumber.getText().trim()+"?", "Reboot?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            new Thread(() -> {
+                try {
+                    // send stuff to robot
+                    String robotIp = getIpAddress();
+                    Scp scp = new Scp(robotIp, "nao", "nao");
+                    Scp.CommandStream shell = scp.getShell();
+                    Logger.getGlobal().log(Level.INFO, "Rebooting nao");
+                    shell.run("reboot", "Rebooting nao");
+                    Logger.getGlobal().log(Level.INFO, "Nao {0} is rebooting!", txtRobotNumber.getText().trim());
+                    shell.close();
+                    scp.disconnect();
+                } catch (JSchException | IOException | NaoSCPException ex) {
+                    Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
+                }
+            }).start();
+        } else {
+            Logger.getGlobal().log(Level.INFO, "Canceled.");
+        }
+    }//GEN-LAST:event_miRestartNaoActionPerformed
+
     public void formWindowClosing() {
         try {
             // save configuration to file
@@ -750,11 +857,16 @@ public class NaoSCP extends javax.swing.JPanel {
     private javax.swing.JButton btInintRobot;
     private javax.swing.JButton btSetNetwork;
     private javax.swing.JButton btWriteToStick;
+    private javax.swing.JToggleButton btnActions;
     private javax.swing.JProgressBar jProgressBar;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPanel logPanel;
     private naoscp.components.LogTextPanel logTextPanel;
+    private javax.swing.JMenuItem miRestartNao;
+    private javax.swing.JMenuItem miRestartNaoth;
     private naoscp.components.NaoTHPanel naoTHPanel;
     private naoscp.components.NetwokPanel netwokPanel;
+    private javax.swing.JPopupMenu popupMenu;
     private javax.swing.JPanel statusBarPanel;
     private javax.swing.JTextField txtDeployTag;
     private javax.swing.JFormattedTextField txtRobotNumber;
