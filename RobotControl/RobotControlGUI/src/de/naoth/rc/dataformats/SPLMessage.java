@@ -17,6 +17,7 @@ import java.awt.Color;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -25,6 +26,11 @@ import java.util.Arrays;
 public class SPLMessage
 {
     public static final int SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS = 5;
+    /** List of supported versions */
+    public static final List<Integer> SPL_MESSAGE_VERSIONS = Arrays.asList(
+        SPLMessage2017.SPL_STANDARD_MESSAGE_STRUCT_VERSION,
+        SPLMessage2018.SPL_STANDARD_MESSAGE_STRUCT_VERSION
+    );
     
     public static final int BU_CUSTOM_DATA_OFFSET_X32 = 12;
     public static final int BU_CUSTOM_DATA_OFFSET_X64 = 16;
@@ -172,23 +178,18 @@ public class SPLMessage
             || buffer.get() != 'P'
             || buffer.get() != 'L'
             || buffer.get() != ' ') {
-            throw new Exception("Not an SPL Message.");
+            throw new NotSplMessageException();
         }
         
-        byte version = buffer.get();
-        switch(version) {
+        int version = buffer.get();
+        if(version == SPL_MESSAGE_VERSIONS.get(0)) {
             // parse with v2017
-            case SPLMessage2017.SPL_STANDARD_MESSAGE_STRUCT_VERSION:
-                return new SPLMessage2017(buffer);
+            return new SPLMessage2017(buffer);
+        } else if(version == SPL_MESSAGE_VERSIONS.get(1)) {
             // parse with v2018
-            case SPLMessage2018.SPL_STANDARD_MESSAGE_STRUCT_VERSION:
-                return new SPLMessage2018(buffer);
-            default:
-                throw new Exception(
-                    "Wrong version: reveived " + version + 
-                    ", but expected " + SPLMessage2017.SPL_STANDARD_MESSAGE_STRUCT_VERSION + 
-                    " or " + SPLMessage2018.SPL_STANDARD_MESSAGE_STRUCT_VERSION
-                );
+            return new SPLMessage2018(buffer);
+        } else {
+            throw new WrongSplVersionException(version);
         }
     }
 
@@ -320,5 +321,23 @@ public class SPLMessage
     
     public static int size() {
         return Integer.max(SPLMessage2017.SPL_STANDARD_MESSAGE_SIZE, SPLMessage2018.SPL_STANDARD_MESSAGE_SIZE);
+    }
+    
+    /**
+     * Exception for invalid spl message header.
+     */
+    public static class NotSplMessageException extends Exception {
+        public NotSplMessageException() {
+            super("Not an SPL Message.");
+        }
+    }
+    
+    /**
+     * Exception for invalid/unknown spl message version.
+     */
+    public static class WrongSplVersionException extends Exception {
+        public WrongSplVersionException(int version) {
+            super("Wrong version: reveived " + version + ", but expected one of " + SPL_MESSAGE_VERSIONS);
+        }
     }
 }
