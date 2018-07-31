@@ -83,7 +83,7 @@ class Config:
 
     def __update_config_part(self, config, key, box = None):
         if key in self._config:
-            if box is None:
+            if box is None and not DIRS[key][1]:
                 self.update_dict(config, self._config[key])
             elif box in self._config[key]:
                 self.update_dict(config, self._config[key][box])
