@@ -15,8 +15,10 @@ def compare_dict(d1: dict, d2: dict, verbose: bool, ignore=None):
     #
     if ignore is not None:
         for ign in ignore:
-            k1.remove(ign)
-            k2.remove(ign)
+            if ign in k1:
+                k1.remove(ign)
+            if ign in k2:
+                k2.remove(ign)
     # recursive traverse equal keys
     ke = k1.intersection(k2)
     for k in ke:
@@ -94,3 +96,24 @@ def compare_configs(dir, verbose:bool=False):
             print('Found only 1 configuration!')
     else:
         print('The given URI isn\'t a directory!')
+
+
+def compare_config_pair(config_1, config_2, verbose:bool=False):
+    # load configs
+    c1 = Config.readConfig(config_1)
+    c2 = Config.readConfig(config_2)
+    # compare configs
+    r = compare_dict(c1.getConfigFor(platform='Nao', scheme=c1.getScheme()),
+                     c2.getConfigFor(platform='Nao', scheme=c2.getScheme()),
+                     False,
+                     ['CameraMatrixOffset'])
+    # print out result
+    print('\n', c1.getName(), '\n', c2.getName(), sep='')
+    if r:
+        print('Found differences in ', list(r.keys()), sep='')
+        if verbose:
+            pp = pprint.PrettyPrinter(indent=4)
+            pp.pprint(r)
+    else:
+        print("OK")
+
