@@ -15,8 +15,10 @@ def compare_dict(d1: dict, d2: dict, verbose: bool, ignore=None):
     #
     if ignore is not None:
         for ign in ignore:
-            k1.remove(ign)
-            k2.remove(ign)
+            if ign in k1:
+                k1.remove(ign)
+            if ign in k2:
+                k2.remove(ign)
     # recursive traverse equal keys
     ke = k1.intersection(k2)
     for k in ke:
@@ -94,3 +96,60 @@ def compare_configs(dir, verbose:bool=False):
             print('Found only 1 configuration!')
     else:
         print('The given URI isn\'t a directory!')
+
+
+def compare_config_pair(config_1, config_2, verbose:bool=False, as_table:bool=True):
+    # load configs
+    c1 = Config.readConfig(config_1)
+    c2 = Config.readConfig(config_2)
+    c1_config = c1.getConfigFor(platform='Nao', scheme=c1.getScheme())
+    c2_config = c2.getConfigFor(platform='Nao', scheme=c2.getScheme())
+    # compare configs
+    r = compare_dict(c1_config,
+                     c2_config,
+                     False,
+                     ['CameraMatrixOffset'])
+    # print out result
+    print('\n', c1.getName(), '\n', c2.getName(), sep='')
+    if r:
+        print('Found differences in ', list(r.keys()), sep='')
+        if verbose:
+            if as_table:
+                _print_as_table(r, c1_config, c2_config)
+            else:
+                pp = pprint.PrettyPrinter(indent=4)
+                pp.pprint(r)
+    else:
+        print("OK")
+
+def _print_as_table(r, c1_config, c2_config):
+    for k in r:
+        max_length = [0, 0, 0, 0]  # total, 1 col, 2 col, 3 col
+        for param in r[k]:
+
+            if max_length[1] < len(param):
+                max_length[1] = len(param)
+
+            if k in c1_config and param in c1_config[k] and max_length[2] < len(str(c1_config[k][param])):
+                max_length[2] = len(str(c1_config[k][param]))
+
+            if k in c2_config and param in c2_config[k] and max_length[3] < len(str(c2_config[k][param])):
+                max_length[3] = len(str(c2_config[k][param]))
+
+        max_length[0] = len(k) if sum(max_length) < len(k) else sum(max_length)
+
+        print('|', '-' * (max_length[0] + 8), '|', sep='')
+        print('|', k, ' ' * (max_length[0] - len(k) + 5), '|')
+        print('|', '-' * (max_length[0] + 8), '|', sep='')
+        for param in r[k]:
+            left = str(c1_config[k][param]) if k in c1_config and param in c1_config[
+                k] else ''
+            right = str(c2_config[k][param]) if k in c2_config and param in c2_config[
+                k] else ''
+            first_col_size = max_length[0] - len(param) - sum(max_length[2:]) if sum(max_length[1:]) < max_length[
+                0] else (max_length[1] - len(param))
+            print('| ', param, ' ' * first_col_size,
+                  ' | ', left, ' ' * (max_length[2] - len(left)),
+                  ' | ', right, ' ' * (max_length[3] - len(right)), ' |',
+                  sep='')
+        print('|', '-' * (max_length[0] + 8), '|\n', sep='')
