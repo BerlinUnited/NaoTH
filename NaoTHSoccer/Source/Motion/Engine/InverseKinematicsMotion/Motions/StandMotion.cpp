@@ -49,15 +49,6 @@ void StandMotion::execute()
   setCurrentState(motion::running);
   double stiffDelta = getRobotInfo().getBasicTimeStepInSecond();
 
-  // reset internal stiffness buffer
-  // set stiffness from parameters
-  for( int i = naoth::JointData::RShoulderRoll; i<naoth::JointData::numOfJoint; i++) {
-    stiffness[i] = getEngine().getParameters().stand.stiffness;
-  }
-  // HACK: turn off the hands
-  stiffness[JointData::LHand] = -1;
-  stiffness[JointData::RHand] = -1;
-
   // update joint monitors
   for( int i = naoth::JointData::RShoulderRoll; i <= naoth::JointData::LAnkleRoll; i++) {
     // are the jointOffsets applied twice? Doesn't getMotorJointData contain the offsets already?
@@ -70,6 +61,9 @@ void StandMotion::execute()
   {
   case GotoStandPose:
   {
+    // set stiffness from parameters
+    setStiffnessBuffer(getEngine().getParameters().stand.stiffnessGotoPose);
+
     if(lastState != state) {
       calcStandPose();
       lastState = state;
@@ -98,6 +92,8 @@ void StandMotion::execute()
   break;
 
   case Relax:
+    setStiffnessBuffer(getEngine().getParameters().stand.stiffnessRelax);
+
     // initialize relax on fist execution
     if(lastState != state) {
 
@@ -160,6 +156,17 @@ void StandMotion::execute()
 
   //turnOffStiffnessWhenJointIsOutOfRange();
 }//end execute
+
+void StandMotion::setStiffnessBuffer(double s)
+{
+
+  for( int i = naoth::JointData::RShoulderRoll; i<naoth::JointData::numOfJoint; i++) {
+    stiffness[i] = s;
+  }
+  // HACK: turn off the hands
+  stiffness[JointData::LHand] = -1;
+  stiffness[JointData::RHand] = -1;
+}
 
 
 void StandMotion::calcStandPose() 
@@ -333,7 +340,7 @@ bool StandMotion::relaxedPoseIsStillOk()
     && fabs(currentPose.com.rotation.getYAngle() - target.com.rotation.getYAngle()) < max_rotation_error;
 }// end relaxedPoseIsStillOk
 
-
+/*
 void StandMotion::turnOffStiffnessWhenJointIsOutOfRange()
 {
   const double* pos = getMotorJointData().position;
@@ -362,6 +369,6 @@ void StandMotion::turnOffStiffnessWhenJointIsOutOfRange()
     stiff[naoth::JointData::RAnklePitch] = getEngine().getParameters().stand.stiffness;
   }
 }//end turnOffStiffnessWhenJointIsOutOfRange
-
+*/
 
 

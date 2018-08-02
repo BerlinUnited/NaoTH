@@ -16,7 +16,7 @@ KeyFrameMotion::KeyFrameMotion(const MotionNet& currentMotionNet, motion::Motion
   name(motion::getName(id)),
   currentMotionNet(currentMotionNet),
   t(0.0),
-  stiffness(0.7)
+  stiffness(1.0)
 {
 }
 
@@ -24,7 +24,7 @@ KeyFrameMotion::KeyFrameMotion()
   :
   AbstractMotion(motion::num_of_motions, getMotionLock()),
   t(0.0),
-  stiffness(0.7)
+  stiffness(1.0)
 {
 }
 
@@ -57,7 +57,7 @@ void KeyFrameMotion::init()
 
   // the distance between the current state and the first key frame
   double distance = 0;
-  stiffness = 0.9; //0.7;// only this value is tested!!!
+  stiffness = 1.0; //0.7;// only this value is tested!!!
   for(int joint = 0; joint < currentMotionNet.getNumOfJoints(); joint++)
   {
     JointData::JointID id = currentMotionNet.getJointID(joint);

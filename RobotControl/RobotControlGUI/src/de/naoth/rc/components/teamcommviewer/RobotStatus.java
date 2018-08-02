@@ -108,8 +108,9 @@ public class RobotStatus {
     public BooleanProperty whistleDetectedProperty() { return whistleDetected; }
     public boolean getWhistleDetected() { return whistleDetected.get(); }
     
-    private Vector2D teamBall;
-    public Vector2D getTeamBall() { return teamBall; }
+    private final ObjectProperty<Vector2D> teamBall = new SimpleObjectProperty<>();
+    public ObjectProperty teamBallProperty() { return teamBall; }
+    public Vector2D getTeamBall() { return teamBall.get(); }
     
     private final BooleanProperty showOnField = new SimpleBooleanProperty(true);
     public BooleanProperty showOnFieldProperty() { return showOnField; }
@@ -214,7 +215,7 @@ public class RobotStatus {
             this.wasStriker.set(msg.user.getWasStriker());
             this.isPenalized.set(msg.user.getIsPenalized());
 //            this.whistleDetected = msg.user.getWhistleDetected(); // used in another branch!
-            this.teamBall = new Vector2D(msg.user.getTeamBall().getX(), msg.user.getTeamBall().getY());
+            this.teamBall.set(new Vector2D(msg.user.getTeamBall().getX(), msg.user.getTeamBall().getY()));
         } else if(msg.doberHeader != null) {
             this.temperature.set(-1);
             this.cpuTemperature.set(-1);
@@ -225,7 +226,7 @@ public class RobotStatus {
 
             this.isPenalized.set(msg.doberHeader.isPenalized > 0);
             this.whistleDetected.set(msg.doberHeader.whistleDetected > 0);
-            this.teamBall = new Vector2D(Double.POSITIVE_INFINITY,Double.POSITIVE_INFINITY);
+            this.teamBall.set(new Vector2D(Double.POSITIVE_INFINITY,Double.POSITIVE_INFINITY));
         } else {
             this.temperature.set(-1);
             this.cpuTemperature.set(-1);
@@ -235,7 +236,7 @@ public class RobotStatus {
             this.wasStriker.set(false);
             this.isPenalized.set(false);
             this.whistleDetected.set(false);
-            this.teamBall = new Vector2D(Double.POSITIVE_INFINITY,Double.POSITIVE_INFINITY);
+            this.teamBall.set(new Vector2D(Double.POSITIVE_INFINITY,Double.POSITIVE_INFINITY));
         }
         this.statusChanged();
     }

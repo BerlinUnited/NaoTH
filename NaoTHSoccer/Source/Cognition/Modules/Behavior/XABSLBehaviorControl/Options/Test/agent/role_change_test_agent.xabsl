@@ -7,7 +7,8 @@ option role_change_test_agent {
       // react to the game controller and handle fall down
       basic_play();
 
-      role_change_test();
+      // if its not a goalie -> the option moves to "role_change_test();"
+      role_change_goalie_test();
       
       // control head movement according to value of head.control_mode
       head_control();

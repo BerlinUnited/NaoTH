@@ -1,25 +1,23 @@
-package de.naoth.rc.components;
+package de.naoth.rc.statusbar;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import de.naoth.rc.RobotControl;
+import de.naoth.rc.RobotControlImpl;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.messages.FrameworkRepresentations;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.ConnectionStatusEvent;
 import de.naoth.rc.server.ConnectionStatusListener;
-import java.awt.FontMetrics;
-import java.awt.Point;
+import static de.naoth.rc.statusbar.StatusbarPluginImpl.rc;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.JLabel;
-import javax.swing.UIManager;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
-import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
@@ -27,11 +25,8 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
 @PluginImplementation
-public class RobotInfoImpl implements RobotInfo, ConnectionStatusListener
+public class StatusbarRobotInfo extends StatusbarPluginImpl implements ConnectionStatusListener
 {
-    /* required plugins */
-    @InjectPlugin
-    public static RobotControl rc;
     @InjectPlugin
     public static SwingCommandExecutor commandExecutor;
     
@@ -40,7 +35,6 @@ public class RobotInfoImpl implements RobotInfo, ConnectionStatusListener
     private final Command cmd_pi = new Command("Cognition:representation:print").addArg("PlayerInfo");
     
     /** the icon/label placed in the RC statusbar */
-    private final JLabel l;
     private static final Pattern KEY_VALUE_PATTERN = Pattern.compile("^(?<key>.+)=(?<value>.*)$", Pattern.MULTILINE);
     
     /* vars for the tooltip */
@@ -50,63 +44,73 @@ public class RobotInfoImpl implements RobotInfo, ConnectionStatusListener
     private String team   = "?";
     private String scheme = "?";
     
-    public RobotInfoImpl() {
-        // create icon/label with custom tooltip placement
-        l = new ConnectionIcon();
+    @Override
+    protected void init() {
         // disable by default
-        l.setEnabled(false);
+        setEnabled(false);
         updateTooltip();
         
         // we're using a mouse listener to detect a "tooltip show"-event
         // and updating the tooltip text before the tooltip is triggered
-        l.addMouseListener(new MouseListener() {
+        addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {}
-
-            @Override
-            public void mousePressed(MouseEvent e) {}
-
-            @Override
-            public void mouseReleased(MouseEvent e) {}
-
-            @Override
-            public void mouseExited(MouseEvent e) {}
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                updateTooltip();
+            public void mouseClicked(MouseEvent e) {
+                if(rc.getMessageServer().isConnected()) {
+                    // disconnect from robot
+                    rc.getMessageServer().disconnect();
+                } else if(SwingUtilities.isRightMouseButton(e)) {
+                    // connect to robot with last used host/port
+                    String host = rc.getConfig().getProperty("hostname");
+                    String port = rc.getConfig().getProperty("port");
+                    if(host == null || port == null) {
+                        JOptionPane.showMessageDialog((RobotControlImpl)rc, "There is no last used connection info available.", "Disconnect", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        try {
+                            rc.getMessageServer().connect(host, Integer.parseInt(port));
+                        } catch (IOException ex) {
+                            JOptionPane.showMessageDialog((RobotControlImpl)rc, "Etablishing connection failed: " + ex.getLocalizedMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                } else {
+                    // connect to robot with connection dialog
+                    rc.checkConnected();
+                }
             }
         });
-    }
-    
-    /**
-     * Gets called, when the RC plugin was loaded.
-     * Adds the icon/label to the RC statusbar and registers itself as connection listener.
-     * 
-     * @param robotControl 
-     */
-    @PluginLoaded
-    public void loaded(RobotControl robotControl) {
-        rc.addToStatusBar(l);
+        
         rc.getMessageServer().addConnectionStatusListener(this);
+        
+        setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/network-idle.png")));
+        setText("Not connected");
+        setTooltipHeight(1, 0);
     }
 
     @Override
+    protected void exit() {
+        rc.getMessageServer().removeConnectionStatusListener(this);
+    }
+    
+    @Override
     public void connected(ConnectionStatusEvent event) {
-        l.setEnabled(true);
+        setEnabled(true);
+        setText("Connected to " + event.getAddress());
         // execute commands once
         scheduleCommandsOnce();
+        updateTooltip();
     }
 
     @Override
     public void disconnected(ConnectionStatusEvent event) {
-        l.setEnabled(false);
+        setEnabled(false);
+        setText("Not connected");
+        updateTooltip();
     }
     
     private void updateTooltip() {
-        if(l.isEnabled()) {
+        if(isEnabled()) {
             // INFO: the number of rows/lines should be equivalent to the tooltip location calculation!
-            l.setToolTipText(
+            setTooltipHeight(5, 6);
+            setToolTipText(
                   "<html>"
                 + "<table border=\"0\">"
                 + "<tr><td align=\"right\"><b>BodyID:</b></td><td>"+headId+"</td></tr>"
@@ -119,7 +123,8 @@ public class RobotInfoImpl implements RobotInfo, ConnectionStatusListener
             );
         } else {
             // "disable" tooltip
-            l.setToolTipText(null);
+            setTooltipHeight(1, 0);
+            setToolTipText("Indicates if the RobotControl is connected to a Robot");
         }
     }
 
@@ -132,6 +137,7 @@ public class RobotInfoImpl implements RobotInfo, ConnectionStatusListener
                     FrameworkRepresentations.RobotInfo info = FrameworkRepresentations.RobotInfo.parseFrom(object);
                     headId = info.getHeadNickName();
                     bodyId = info.getBodyNickName();
+                    updateTooltip();
                 } catch (InvalidProtocolBufferException ex) {/* ignore exception */}
             }
 
@@ -153,28 +159,16 @@ public class RobotInfoImpl implements RobotInfo, ConnectionStatusListener
                 player = repr.getOrDefault("playerNumber", "?");
                 team = repr.getOrDefault("teamNumber", "?");
                 scheme = repr.getOrDefault("active scheme", "?");
+                updateTooltip();
             }
 
             @Override
             public void errorOccured(String cause) {/* ignore error */}
         }, cmd_pi);
     }
-    
-    class ConnectionIcon extends JLabel
-    {
-        private final int tooltipHeight;
 
-        public ConnectionIcon() {
-            setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/network-idle.png")));
-            
-            // calculate tooltip height: line-height * line-num + spacing-height * spacing-num + statusbar-height
-            FontMetrics metrics = this.getFontMetrics(UIManager.getLookAndFeelDefaults().getFont("ToolTip.font"));
-            tooltipHeight = metrics.getHeight() * 5 + 5*6 + 25;
-        }
-        
-        @Override
-        public Point getToolTipLocation(MouseEvent event) {
-            return new Point(0, -tooltipHeight);
-        }
+    @Override
+    public int getWeight() {
+        return 100;
     }
 }

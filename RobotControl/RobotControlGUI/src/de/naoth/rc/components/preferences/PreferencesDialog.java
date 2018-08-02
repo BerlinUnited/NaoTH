@@ -47,6 +47,11 @@ public class PreferencesDialog extends javax.swing.JDialog
         prefPanel.add(jar_viz);
         prefPanel.add(new javax.swing.Box.Filler(componentGap,componentGap,componentGap));
 
+        PreferencesJar jar_gc = new PreferencesJar("GameController", rcConfig.getProperty("GameController", ""));
+        jar_gc.setAlignmentX(LEFT_ALIGNMENT);
+        prefPanel.add(jar_gc);
+        prefPanel.add(new javax.swing.Box.Filler(componentGap,componentGap,componentGap));
+
         PreferencesCheckbox checkbox = new PreferencesCheckbox();
         checkbox.setText("Use the RC HighDPI feature?");
         checkbox.setName("useHiDPI");
