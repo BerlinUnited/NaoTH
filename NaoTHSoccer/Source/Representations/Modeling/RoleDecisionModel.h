@@ -7,10 +7,10 @@
 #ifndef ROLEDECISIONMODEL_H
 #define ROLEDECISIONMODEL_H
 
-using namespace std;
-
-#include <list>
 #include <limits>
+#include <ostream>
+
+#include "Tools/DataStructures/Printable.h"
 
 class RoleDecisionModel: public naoth::Printable
 {

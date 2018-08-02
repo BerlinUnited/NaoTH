@@ -128,11 +128,11 @@ protected:
       syncWithConfig();
     }
 
+    bool useSecondStriker;
     int strikerBonusTime;
     int maxBallLostTime;
     int strikerSelection;
     int strikerSelectionDiffThreshold;
-    bool useSecondStriker;
     int firstSecondStrikerBallDistance;
     
     virtual ~Parameters() {}
