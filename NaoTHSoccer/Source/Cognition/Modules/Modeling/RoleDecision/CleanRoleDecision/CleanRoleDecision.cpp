@@ -29,7 +29,7 @@ void CleanRoleDecision::execute() {
 
     // reset second striker decision, if we doesn't want to use the second striker
     if(!parameters.useSecondStriker) {
-        getRoleDecisionModel().secondStriker = std::numeric_limits<int>::max();
+        getRoleDecisionModel().secondStriker = std::numeric_limits<unsigned int>::max();
     }
 }//end execute
 
@@ -97,9 +97,9 @@ void CleanRoleDecision::strikerSelectionByNumber(std::map<unsigned int, unsigned
         //If two robots want to be striker, the one with a smaller number is favoured => is the first in the map!!
         // NOTE: we're doesn't using 'timeToBall' as decision criteria by intention!
         //       if goalie is striker, he get's the first striker
-        if(getRoleDecisionModel().firstStriker == std::numeric_limits<int>::max()) {
+        if(getRoleDecisionModel().firstStriker == std::numeric_limits<unsigned int>::max()) {
             getRoleDecisionModel().firstStriker = it->first;
-        } else if (getRoleDecisionModel().secondStriker == std::numeric_limits<int>::max()) {
+        } else if (getRoleDecisionModel().secondStriker == std::numeric_limits<unsigned int>::max()) {
             getRoleDecisionModel().secondStriker = it->first;
         }
         // if there's a robot closer to the ball than myself, i don't want to be striker!
@@ -118,7 +118,7 @@ void CleanRoleDecision::strikerSelectionByTime(std::map<unsigned int, unsigned i
         // current player faster?
         if(it->second < stFastest) {
             // is there already a "fastest" striker ... but the current player is faster
-            if(getRoleDecisionModel().firstStriker != std::numeric_limits<int>::max()) {
+            if(getRoleDecisionModel().firstStriker != std::numeric_limits<unsigned int>::max()) {
                 // make the previous player the "second fastest" player
                 getRoleDecisionModel().secondStriker = getRoleDecisionModel().firstStriker;
                 ndFastest = stFastest;
@@ -150,7 +150,7 @@ void CleanRoleDecision::strikerSelectionByTimeExceptGoalie(std::map<unsigned int
         // is current player clearly faster?
         if(it->second < stFastest && (it->second + parameters.strikerSelectionDiffThreshold) < stFastest && getRoleDecisionModel().firstStriker != 1) {
             // is there already a "fastest" striker ... but the current player is faster
-            if(getRoleDecisionModel().firstStriker != std::numeric_limits<int>::max()) {
+            if(getRoleDecisionModel().firstStriker != std::numeric_limits<unsigned int>::max()) {
                 // make the previous player the "second fastest" player
                 getRoleDecisionModel().secondStriker = getRoleDecisionModel().firstStriker;
                 ndFastest = stFastest;
@@ -182,7 +182,7 @@ void CleanRoleDecision::strikerSelectionByTimeExceptGoalieWithBallCompare(std::m
         // is current player clearly faster?
         if(it->second < stFastest && (it->second + parameters.strikerSelectionDiffThreshold) < stFastest && getRoleDecisionModel().firstStriker != 1) {
             // is there already a "fastest" striker ... but the current player is faster
-            if(getRoleDecisionModel().firstStriker != std::numeric_limits<int>::max() && isSecondStrikerDifferentFromFirst(getRoleDecisionModel().firstStriker, it->first)) {
+            if(getRoleDecisionModel().firstStriker != std::numeric_limits<unsigned int>::max() && isSecondStrikerDifferentFromFirst(getRoleDecisionModel().firstStriker, it->first)) {
                 // make the previous player the "second fastest" player, if they see different balls
                 getRoleDecisionModel().secondStriker = getRoleDecisionModel().firstStriker;
                 ndFastest = stFastest;
