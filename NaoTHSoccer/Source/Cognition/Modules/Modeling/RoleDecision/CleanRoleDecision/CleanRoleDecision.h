@@ -126,7 +126,7 @@ protected:
       PARAMETER_REGISTER(strikerSelection) = 3;
       PARAMETER_REGISTER(strikerSelectionDiffThreshold) = 500; // ms
       PARAMETER_REGISTER(useSecondStriker) = true;
-      PARAMETER_REGISTER(firstSecondStrikerBallDistance) = 1000; // mm
+      PARAMETER_REGISTER(firstSecondStrikerBallDistance) = 500; // mm
       
       // load from the file after registering all parameters
       syncWithConfig();

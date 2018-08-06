@@ -1,5 +1,5 @@
-#ifndef TEAMBALLLOCATORSIMPLE_H
-#define TEAMBALLLOCATORSIMPLE_H
+#ifndef TEAMBALLLOCATORCANOPYCLUSTER_H
+#define TEAMBALLLOCATORCANOPYCLUSTER_H
 
 #include "ModuleFramework/Module.h"
 
@@ -15,7 +15,7 @@
 #include "Representations/Modeling/TeamMessageTimeStatistics.h"
 
 
-BEGIN_DECLARE_MODULE(TeamBallLocatorSimple)
+BEGIN_DECLARE_MODULE(TeamBallLocatorCanopyCluster)
   PROVIDE(DebugModify)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
@@ -27,16 +27,16 @@ BEGIN_DECLARE_MODULE(TeamBallLocatorSimple)
   REQUIRE(TeamMessageTimeStatistics)
 
   PROVIDE(TeamBallModel)
-END_DECLARE_MODULE(TeamBallLocatorSimple)
+END_DECLARE_MODULE(TeamBallLocatorCanopyCluster)
 
 
-class TeamBallLocatorSimple : protected TeamBallLocatorSimpleBase
+class TeamBallLocatorCanopyCluster : protected TeamBallLocatorCanopyClusterBase
 {
 public:
     class Parameters: public ParameterList
     {
     public:
-        Parameters() : ParameterList("TeamBallLocatorSimpleParameters")
+        Parameters() : ParameterList("TeamBallLocatorCanopyClusterParameters")
         {
             PARAMETER_REGISTER(maxBallAge) = 850; // in ms, wait at least two messages (approx.)
             PARAMETER_REGISTER(t1) = 1000; // in mm
@@ -50,8 +50,8 @@ public:
         int maxTimeTbIsValidWithoutUpdate;
     } params;
 
-    TeamBallLocatorSimple();
-    ~TeamBallLocatorSimple();
+    TeamBallLocatorCanopyCluster();
+    ~TeamBallLocatorCanopyCluster();
 
     virtual void execute();
 
@@ -82,4 +82,4 @@ private:
     };
 };
 
-#endif // TEAMBALLLOCATORSIMPLE_H
+#endif // TEAMBALLLOCATORCANOPYCLUSTER_H

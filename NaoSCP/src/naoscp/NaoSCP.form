@@ -1,6 +1,39 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
+  <NonVisualComponents>
+    <Container class="javax.swing.JPopupMenu" name="popupMenu">
+      <Events>
+        <EventHandler event="popupMenuWillBecomeInvisible" listener="javax.swing.event.PopupMenuListener" parameters="javax.swing.event.PopupMenuEvent" handler="popupMenuPopupMenuWillBecomeInvisible"/>
+      </Events>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout">
+        <Property name="useNullLayout" type="boolean" value="true"/>
+      </Layout>
+      <SubComponents>
+        <MenuItem class="javax.swing.JMenuItem" name="miRestartNao">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Restart nao"/>
+            <Property name="toolTipText" type="java.lang.String" value="Restarts the full nao system"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miRestartNaoActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <Component class="javax.swing.JPopupMenu$Separator" name="jSeparator1">
+        </Component>
+        <MenuItem class="javax.swing.JMenuItem" name="miRestartNaoth">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Restart naoth"/>
+            <Property name="toolTipText" type="java.lang.String" value="Restart the naoth process"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miRestartNaothActionPerformed"/>
+          </Events>
+        </MenuItem>
+      </SubComponents>
+    </Container>
+  </NonVisualComponents>
   <Events>
     <EventHandler event="componentResized" listener="java.awt.event.ComponentListener" parameters="java.awt.event.ComponentEvent" handler="formComponentResized"/>
   </Events>
@@ -101,9 +134,6 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Send to Robot"/>
             <Property name="toolTipText" type="java.lang.String" value="Send to Robot"/>
-            <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="[114, 24]"/>
-            </Property>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btDeployActionPerformed"/>
@@ -143,6 +173,17 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btInintRobotActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JToggleButton" name="btnActions">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="&#x25b2;"/>
+            <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
+              <Insets value="[2, -4, 2, -4]"/>
+            </Property>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnActionsActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>
