@@ -4,6 +4,7 @@ import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractJFXDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
+import de.naoth.rc.dialogs.multiagentconfiguration.ui.AgentSelectionDialog;
 import de.naoth.rc.dialogs.multiagentconfiguration.ui.AgentTab;
 import de.naoth.rc.dialogs.multiagentconfiguration.ui.AgentTabGlobal;
 import java.awt.SplashScreen;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,16 +23,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -39,10 +34,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.ToggleButton;
@@ -53,9 +44,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -83,10 +72,6 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
     
     private Properties config = new Properties();
     
-    private final ExecutorService executor = Executors.newCachedThreadPool();
-    
-    private final ObservableList<AgentItem> hostList = FXCollections.observableArrayList(new TreeSet());
-    
     @Override
     protected boolean isSelfController() {
         return true;
@@ -105,58 +90,18 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
         // TODO
         btn_connect.selectedProperty().addListener((ov, t, t1) -> {
             if(t1) {
-                hostList.clear();
-                String[] ips = config.getProperty("iplist","").split(",");
-
-                for(final String ip: ips) {
-                    executor.submit(() -> {
-                        try {
-                            InetAddress address = InetAddress.getByName(ip);
-                            if(address.isReachable(500)) {
-                                Platform.runLater(() -> hostList.add(new AgentItem(ip)));
-                            }
-                        } catch (IOException e) { /* ignore exception */ }
-                    });
-                }
-                for (int p = 5401; p < 5411; p++) {
-                    final int port = p;
-                    executor.submit(() -> {
-                        try {
-                            (new Socket("localhost", port)).close();
-                            Platform.runLater(() -> hostList.add(new AgentItem("localhost", port)));
-                        } catch (IOException ex) { /* ignore exception */ }
-                    });
-
-                }
-                VBox vb = new VBox();
-                CheckBox cb = new CheckBox("All Agents");
-    //            cb.selectedProperty().bind(Bindings.when(Condi));
-    //            Bindings.createBooleanBinding(hostList.stream().allMatch(AgentItem::getActive), dependencies)
-
-                ListView<AgentItem> l = new ListView(hostList);
-                l.setCellFactory(CheckBoxListCell.forListView((param) -> { return param.activeProperty(); }));
-                vb.getChildren().add(l);
-                vb.getChildren().add(cb);
-                Dialog<List<AgentItem>> dialog = new Dialog<>();
-                dialog.setTitle("Agent Selection");
-                dialog.initStyle(StageStyle.UTILITY);
-    //            dialog.setHeaderText("Select the agents  you want to connect to.");
-                dialog.getDialogPane().setContent(vb);
-                dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-
-                dialog.setResultConverter(dialogButton -> {
-                    if (dialogButton == ButtonType.OK) {
-                        return hostList.stream().filter(AgentItem::getActive).collect(Collectors.toList());
-                    }
-                    return null;
-                });
-
+                List<String> ips = Arrays.asList(config.getProperty("iplist","").split(","));
+                AgentSelectionDialog dialog = new AgentSelectionDialog(ips);
+                
                 Optional<List<AgentItem>> result = dialog.showAndWait();
                 result.ifPresent((al) -> {
-                    connecting(al);
+                    if(!al.isEmpty()) {
+                        connecting(al);
+                        allTab.setDisable(false);
+                    } else {
+                        btn_connect.setSelected(false);
+                    }
                 });
-                // TODO: check if there's something to connect; use binding?!
-                allTab.setDisable(false);
             } else {
                 disconnecting();
                 allTab.setDisable(true);
@@ -314,33 +259,5 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
     
     class AgentListCell extends CheckBoxListCell {
         
-    }
-    
-    class AgentItem
-    {
-        private final StringProperty host = new SimpleStringProperty();
-        private final IntegerProperty port = new SimpleIntegerProperty(5401);
-        private final BooleanProperty active = new SimpleBooleanProperty(true);
-
-        public AgentItem(String host) {
-            this.host.set(host);
-        }
-        
-        public AgentItem(String host, int port) {
-            this.host.set(host);
-            this.port.set(port);
-        }
-        
-        public String getHost() { return host.get(); }
-        public int getPort() { return port.get(); }
-        public boolean getActive() { return active.get(); }
-        public StringProperty hostProperty() { return host; }
-        public IntegerProperty portProperty() { return port; }
-        public BooleanProperty activeProperty() { return active; }
-
-        @Override
-        public String toString() {
-            return getHost() + ":" + getPort();
-        }
     }
 }
