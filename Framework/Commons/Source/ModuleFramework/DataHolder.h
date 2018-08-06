@@ -31,34 +31,29 @@ public:
 }
 
 /**
- * Connects a arbitrary class with Representation
+ * Connects an arbitrary class with Representation
  */
 template<class T>
-class DataHolder: public Representation
+class DataHolder: public Representation, public T
 {
 private:
   // creates an object of the data
   // (this requires the class T to have a default constructor)
-  T  data;
+  //T  data;
 
 public:
   DataHolder(const std::string& name): Representation(name){}
   DataHolder(): Representation(typeid(T).name()){}
   virtual ~DataHolder(){}
 
-  T& operator*() { return data; }
-  const T& operator*() const { return data; }
+  T& operator*() { return *this; }
+  const T& operator*() const { return *this; }
 
   /** 
    * wrap the print, fromDataStream and toDataStream of the data member 
    */
   virtual void print(std::ostream& stream) const {
-    if(std::is_base_of<Printable,T>::value) {
-      Printable* p = (Printable*)(&data);
-      p->print(stream);
-    } else {
-      Representation::print(stream);
-    }
+    std::conditional<std::is_base_of<Printable,T>::value, T, Representation>::type::print(stream);
   }
 
   virtual bool serializable() const {
@@ -66,11 +61,11 @@ public:
   }
 
   void serialize(MsgOut<Representation>::type& msg) const {
-    naoth::Serializer<T>::serialize(data, msg);
+    naoth::Serializer<T>::serialize(*this, msg);
   }
 
   void deserialize(MsgIn<Representation>::type& msg) {
-    naoth::Serializer<T>::deserialize(msg, data);
+    naoth::Serializer<T>::deserialize(msg, *this);
   }
 };
 

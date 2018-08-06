@@ -12,6 +12,7 @@ def parseArguments():
     parser.add_argument('-n', '--net', action='store', default='localhost', help='the host / net, where the messages are send to; e.g. 10.0.4.255; default: localhost')
     parser.add_argument('-p', '--port', action='store', default=10000, type=int, help='the port number where the messages are send to; default: 10000')
     parser.add_argument('-d', '--delay', action='store', default=0.4, type=float, help='sets the time between two messages (in seconds)), default: 0.4')
+    parser.add_argument('--player', action='store', type=int, help='sets the player number of the generated messages')
 
     return parser.parse_args()
 
@@ -37,6 +38,10 @@ if '__main__' == __name__:
                 tc.setMessageField(i, getattr(config, i))
     except:
         print("Error importing config file! Ignoring...")
+
+    # sets the player number, given as argument
+    if args.player:
+        tc.setMessageField("playerNumber", args.player)
 
     tc.start()
 

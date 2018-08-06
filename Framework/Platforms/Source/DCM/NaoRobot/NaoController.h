@@ -105,7 +105,8 @@ public:
   void get(ButtonData& data) { naoSensorData.get(data); }
   void get(BatteryData& data) { naoSensorData.get(data); }
   void get(UltraSoundReceiveData& data) { naoSensorData.get(data); }
-  void get(WhistlePercept& data) { theWhistleDetector.get(data); }
+  void get(WhistlePercept& data) {data.counter = whistleSensorData.data(); }
+  //void get(WhistlePercept& data) { theWhistleDetector.get(data); }
   void get(CpuData& data) { theCPUTemperatureReader.get(data); }
 
   // write directly to the shared memory
@@ -114,7 +115,8 @@ public:
   void set(const LEDData& data) { naoCommandLEDData.set(data); }
   void set(const IRSendData& data) { naoCommandIRSendData.set(data); }
   void set(const UltraSoundSendData& data) { naoCommandUltraSoundSendData.set(data); }
-  void set(const WhistleControl& data) { theWhistleDetector.set(data); }
+  void set(const WhistleControl& data) { whistleControlData.set(data.onOffSwitch); }
+  //void set(const WhistleControl& data) { theWhistleDetector.set(data); }
 
 
   virtual void getMotionInput()
@@ -176,6 +178,9 @@ protected:
   SharedMemoryWriter<Accessor<UltraSoundSendData> > naoCommandUltraSoundSendData;
   SharedMemoryWriter<Accessor<IRSendData> > naoCommandIRSendData;
   SharedMemoryWriter<Accessor<LEDData> > naoCommandLEDData;
+  // WhistleDetector --> NaoController
+  SharedMemoryReader<int> whistleSensorData;
+  SharedMemoryWriter<Accessor<int> > whistleControlData;
   // -- end -- shared memory access --
 
   //
@@ -188,7 +193,7 @@ protected:
   SPLGameController* theGameController;
   DebugServer* theDebugServer;
   CPUTemperatureReader theCPUTemperatureReader;
-  WhistleDetector theWhistleDetector;
+  //WhistleDetector theWhistleDetector;
 };
 
 } // end namespace naoth
