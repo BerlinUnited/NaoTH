@@ -39,23 +39,27 @@ class GoPro(threading.Thread):
         previous_state = { 'game': GameControlData.STATE_INITIAL, 'time': time.time(), 'card': True }
         # run until canceled
         while not self.__cancel.is_set():
-            # wait 'till (re-)connected to network and gopro
-            self.is_connected.wait()
-            # valid cam
-            if self.cam is not None:
-                # update internal cam status
-                self.updateStatus()
-                # handling recording state
-                previous_state['game'] = self.handleRecording(previous_state)
-                # take "keep alive" photo;
-                if self.take_photo_when_idle > 0 and self.take_photo_timestamp + self.take_photo_when_idle < time.time():
-                    self.takePhoto()
-                # notify listeners on the sd card status
-                if previous_state['card'] == True and self.cam_status['sd_card'] == False:
-                    Event.fire(Event.GoproNoSdcard())
-                elif previous_state['card'] == False and self.cam_status['sd_card'] == True:
-                    Event.fire(Event.GoproSdcardInserted())
-                previous_state['card'] = self.cam_status['sd_card']
+            try:
+                # wait 'till (re-)connected to network and gopro
+                self.is_connected.wait()
+                # valid cam
+                if self.cam is not None:
+                    # update internal cam status
+                    self.updateStatus()
+                    # handling recording state
+                    previous_state['game'] = self.handleRecording(previous_state)
+                    # take "keep alive" photo;
+                    if self.take_photo_when_idle > 0 and self.take_photo_timestamp + self.take_photo_when_idle < time.time():
+                        self.takePhoto()
+                    # notify listeners on the sd card status
+                    if previous_state['card'] == True and self.cam_status['sd_card'] == False:
+                        Event.fire(Event.GoproNoSdcard())
+                    elif previous_state['card'] == False and self.cam_status['sd_card'] == True:
+                        Event.fire(Event.GoproSdcardInserted())
+                    previous_state['card'] = self.cam_status['sd_card']
+            except Exception as ex:
+                # something unexpected happen!?
+                Logger.error(str(ex))
         # if canceled, at least fire the disconnect event
         self.disconnect()
 

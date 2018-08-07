@@ -20,6 +20,8 @@
 #include "Representations/Motion/Walk2018/StepBuffer.h"
 #include "Representations/Motion/Walk2018/Walk2018Parameters.h"
 
+#include "Representations/Modeling/CentreOfPressure.h"
+
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugRequest.h"
 
@@ -31,6 +33,7 @@ BEGIN_DECLARE_MODULE(FootStepPlanner2018)
   REQUIRE(FrameInfo)
   REQUIRE(RobotInfo)
   REQUIRE(MotionRequest)
+  REQUIRE(CentreOfPressure)
 
   PROVIDE(MotionStatus) // reason: increasing stepControl.stepRequestID
   PROVIDE(CoMErrors)    // reason: clearing buffers after adaptStepSize or emergency stop

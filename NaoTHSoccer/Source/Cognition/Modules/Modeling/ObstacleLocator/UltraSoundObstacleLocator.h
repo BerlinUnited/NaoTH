@@ -56,7 +56,7 @@ class UltraSoundObstacleLocator : private UltraSoundObstacleLocatorBase
 {
 public:
   UltraSoundObstacleLocator();
-  ~UltraSoundObstacleLocator(){}
+  ~UltraSoundObstacleLocator();
 
   virtual void execute();
 
