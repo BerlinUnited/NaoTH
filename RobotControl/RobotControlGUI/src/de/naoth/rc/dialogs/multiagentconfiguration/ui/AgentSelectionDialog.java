@@ -39,13 +39,13 @@ public class AgentSelectionDialog extends Dialog
 
     private final ExecutorService executor = Executors.newCachedThreadPool();
     
-    private final List<String> ips;
+    private List<String> hosts;
 
     public AgentSelectionDialog(List<String> ips) {
         setTitle("Agent Selection");
         initStyle(StageStyle.UTILITY);
         
-        this.ips = ips;
+        this.hosts = ips;
         
         initUi();
         
@@ -62,6 +62,10 @@ public class AgentSelectionDialog extends Dialog
             // retrieve agents
             pingAgents();
         });
+    }
+
+    public AgentSelectionDialog() {
+        this(new ArrayList<>());
     }
     
     private void initUi() {
@@ -90,9 +94,13 @@ public class AgentSelectionDialog extends Dialog
         getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
     }
     
+    public void setHosts(List<String> h) {
+        hosts = h;
+    }
+    
     private void pingAgents() {
         // try to find some naos
-        for(final String ip: ips) {
+        for(final String ip: hosts) {
             executor.submit(() -> {
                 try {
                     InetAddress address = InetAddress.getByName(ip);

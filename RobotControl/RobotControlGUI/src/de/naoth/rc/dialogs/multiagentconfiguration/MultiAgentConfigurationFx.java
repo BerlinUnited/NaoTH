@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.logging.Logger;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -63,15 +65,12 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
     }
 
     @FXML
-    private ToggleButton btn_connect;
-    
-    @FXML
     private TabPane tabpane;
     
     private final AgentTabGlobal allTab = new AgentTabGlobal();
     
-    private Properties config = new Properties();
-    
+    private final AgentSelectionDialog dialog = new AgentSelectionDialog();
+
     @Override
     protected boolean isSelfController() {
         return true;
@@ -87,93 +86,45 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
         if(Plugin.parent != null) {
             setConfig(Plugin.parent.getConfig());
         }
-        // TODO
-        btn_connect.selectedProperty().addListener((ov, t, t1) -> {
-            if(t1) {
-                List<String> ips = Arrays.asList(config.getProperty("iplist","").split(","));
-                AgentSelectionDialog dialog = new AgentSelectionDialog(ips);
-                
-                Optional<List<AgentItem>> result = dialog.showAndWait();
-                result.ifPresent((al) -> {
-                    if(!al.isEmpty()) {
-                        connecting(al);
-                        allTab.setDisable(false);
-                    } else {
-                        btn_connect.setSelected(false);
-                    }
-                });
-            } else {
-                disconnecting();
-                allTab.setDisable(true);
-            }
-        });
         
-        allTab.setDisable(true);
         tabpane.getTabs().add(allTab);
-//        tabpane.getTabs().add(new Tab("+"));
         tabpane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         tabpane.getSelectionModel().select(allTab);
-        
-        final Button  tabButton = new Button("+");
-        
-        Pane controlButtons = (Pane) tabpane.lookup(".tab-header-background");
-        System.out.println(controlButtons);
-        System.out.println(tabpane.lookup(".tab-header-area"));
-        dump(tabpane, 2);
-        /*
-        controlButtons.getChildren().add(tabButton);
-        StackPane.setAlignment(tabButton, Pos.CENTER_LEFT);
-
-        Pane headersRegion = (Pane) tabpane.lookup(".headers-region");
-        System.out.println(headersRegion.getWidth());
-        tabButton.translateXProperty().bind(
-            headersRegion.widthProperty().add(10)
-        );
-        */
+        // if there's no robot connected, disable "all" tab and select it
+        allTab.disableProperty().bind(Bindings.size(tabpane.getTabs()).lessThanOrEqualTo(1));
+        allTab.disableProperty().addListener((obs, o, n) -> { if(n) { tabpane.getSelectionModel().select(allTab); } });
     }
-    // debugging routine to dump the scene graph.
-  public  static void dump(Node n) { dump(n, 0); }
-  private static void dump(Node n, int depth) {
-    for (int i = 0; i < depth; i++) System.out.print("  ");
-    System.out.println(n);
-    if (n instanceof Parent) for (Node c : ((Parent) n).getChildrenUnmodifiable()) dump(c, depth + 1);
-  }
+
     public void setConfig(Properties c) {
-        config = c;
+        dialog.setHosts(Arrays.asList(c.getProperty("iplist","").split(",")));
     }
 
     @Override
     public Map<KeyCombination, Runnable> getGlobalShortcuts() {
         HashMap<KeyCombination, Runnable> shortcuts = new HashMap<KeyCombination, Runnable>();
+        // TODO: add shortcuts!!
+        /*
         shortcuts.put(new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN), () -> {
             connect();
         });
         shortcuts.put(new KeyCodeCombination(KeyCode.D, KeyCombination.ALT_DOWN, KeyCombination.SHIFT_DOWN), () -> {
             disconnect();
         });
+        */
         return shortcuts;
     }
     
     @FXML
-    public void connect() {
-        btn_connect.selectedProperty().set(true);
+    public void addRobots() {
+        Optional<List<AgentItem>> result = dialog.showAndWait();
+        result.ifPresent((al) -> {
+            if(!al.isEmpty()) {
+                connecting(al);
+            }
+        });
     }
     
     public void connecting(List<AgentItem> l) {
-        System.out.println("----" + tabpane.getSkin());
-        System.out.println("----" + tabpane.lookup(".tab-header-area"));
-        System.out.println("----" + tabpane.lookup(".headers-region")); // headers-region
-        System.out.println("----" + tabpane.lookup(".tab-header-background")); //tab-header-background
-        System.out.println("----" + tabpane.lookup(".control-buttons-tab")); //control-buttons-tab
-        Pane p = new Pane();
-        p.setMinWidth(100);
-        p.setMinHeight(10);
-        p.setStyle("-fx-background-color: red;");
-//        tabpane.lookup(".tab-header-area").setStyle("-fx-background: red;");
-        ((StackPane)tabpane.lookup(".tab-header-area")).getChildren().add(0,p);
-        System.out.println(((StackPane)tabpane.lookup(".tab-header-area")).getChildren());
-        System.out.println(((StackPane)tabpane.lookup(".headers-region")).getInsets());
-        
         for (AgentItem agentItem : l) {
             // TODO: check if already connected!?
             AgentTab tab = new AgentTab(agentItem.getHost(), agentItem.getPort());
@@ -182,10 +133,6 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
             tab.connectButtons(allTab);
             tabpane.getTabs().add(tab);
         }
-    }
-    
-    public void disconnect() {
-        btn_connect.setSelected(false);
     }
     
     private void disconnecting() {
