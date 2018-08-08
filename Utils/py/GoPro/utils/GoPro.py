@@ -22,7 +22,7 @@ class GoPro(threading.Thread):
         self.take_photo_timestamp = 0
 
         self.cam = None
-        self.cam_status = { 'recording': False, 'mode': None, 'lastVideo': None, 'sd_card': False }
+        self.cam_status = { 'recording': False, 'mode': None, 'lastVideo': None, 'sd_card': False, 'info': {} }
         self.cam_settings = {}
         self.user_settings = {}
         self.gc_data = GameControlData()
@@ -75,7 +75,8 @@ class GoPro(threading.Thread):
             Event.fire(Event.GoproConnecting())
             self.cam = GoProCamera.GoPro()
             if self.updateStatus():
-                Event.fire(Event.GoproConnected())
+                self.cam_status['info'] = self.cam.infoCamera()
+                Event.fire(Event.GoproConnected(self.cam_status['info']))
                 # set GoPro to video mode
                 self.setCamVideoMode()
                 self.__updateUserSettings()

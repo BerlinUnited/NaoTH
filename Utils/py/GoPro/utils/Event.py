@@ -42,7 +42,8 @@ class GoproConnecting(Event):
     pass
 
 class GoproConnected(Event):
-    pass
+    def __init__(self, info):
+        self.info = info
 
 class GoproDisconnected(Event):
     pass
