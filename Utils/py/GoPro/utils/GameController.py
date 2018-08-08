@@ -47,6 +47,7 @@ class GameController(threading.Thread):
                 continue
 
         self.socket.close()
+        logger.debug("GameController thread finished.")
 
     def cancel(self):
         self.__cancel.set()

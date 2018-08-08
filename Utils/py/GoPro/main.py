@@ -42,6 +42,7 @@ def parseArguments():
     parser.add_argument('-m', '--max-time', action='store', type=int, default=600, help='How many seconds should be continued to record, after playing time expired and "finished" state wasn\'t set. (precaution to prevent endless recording!; default: 600s)')
     parser.add_argument('-i', '--ignore', action='store_true', help='Ignores the "max time" option - possible infinity recording, if "finished" state isn\'t set.')
     parser.add_argument('-gc', '--check-gc', action='store_true', help='Tries to listen to GameController and print its state (for debugging).')
+    parser.add_argument('-li', '--log-invisible', action='store_true', help='Whether the games with invisibles should be logged.')
     use_rename = any([ o in sys.argv for o in ['-n', '--rename'] ])
     rename = parser.add_argument_group()
     rename.add_argument('-n', '--rename', action='store_true', help='Renames the video files based on the given entries in the log files.')
@@ -57,7 +58,7 @@ def main():
     led = LedStatusMonitor()
     led.start()
 
-    gopro = GoPro(args.background or args.quiet, args.ignore, args.max_time)
+    gopro = GoPro(args.background or args.quiet, args.ignore, args.max_time, args.log_invisible)
     if args.config:
         gopro.setUserSettings({
             'FRAME_RATE': config.fps if 'fps' in vars(config) else None,
@@ -68,7 +69,7 @@ def main():
 
     teams = config.teams if args.config and  'teams' in vars(config) else None
     #gameLogger = GameLoggerSql(os.path.join(os.path.dirname(__file__), 'logs/game.db'), teams)
-    gameLogger = GameLoggerLog(os.path.join(os.path.dirname(__file__), 'logs/'), teams)
+    gameLogger = GameLoggerLog(os.path.join(os.path.dirname(__file__), 'logs/'), teams, args.log_invisible)
     gameLogger.start()
 
     gameController = GameController()
@@ -111,10 +112,15 @@ def main():
     network.cancel()
     # wait for finished threads
     led.join()
+    #Logger.debug("Joined led thread")
     gopro.join()
+    #Logger.debug("Joined gopro thread")
     gameLogger.join()
+    #Logger.debug("Joined gameLogger thread")
     gameController.join()
+    #Logger.debug("Joined gameController thread")
     network.join()
+    #Logger.debug("Joined network thread")
 
     print("Bye")
 

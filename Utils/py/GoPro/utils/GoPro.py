@@ -10,13 +10,14 @@ logger = Logger.getLogger("GoPro")
 
 
 class GoPro(threading.Thread):
-    def __init__(self, quiet:bool, ignore:bool, max_time:int):
+    def __init__(self, quiet:bool, ignore:bool, max_time:int, rec_invisible:bool=False):
         super().__init__()
         Event.registerListener(self)
 
         self.quiet = quiet
         self.ignore = ignore
         self.max_time = max_time
+        self.rec_invisible = rec_invisible
         self.take_photo_when_idle = 0 # in seconds
         self.take_photo_timestamp = 0
 
@@ -62,6 +63,7 @@ class GoPro(threading.Thread):
                 Logger.error(str(ex))
         # if canceled, at least fire the disconnect event
         self.disconnect()
+        logger.debug("GoPro thread finished.")
 
     def connect(self):
         # try to connect
@@ -123,7 +125,7 @@ class GoPro(threading.Thread):
 
     def handleRecording(self, previous_state):
         # check if one team is 'invisible'
-        both_teams_valid = all([t.teamNumber > 0 for t in self.gc_data.team])
+        both_teams_valid = all([t.teamNumber > 0 for t in self.gc_data.team]) or self.rec_invisible
 
         # handle output
         if not self.quiet:

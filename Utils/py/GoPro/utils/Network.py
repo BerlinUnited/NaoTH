@@ -99,6 +99,7 @@ class Network(threading.Thread):
                 Event.fire(Event.NetworkDisconnected())
                 self.connect()
             self.__timer.clear()
+        logger.debug("Network thread finished.")
 
     def cancel(self):
         self.__cancel.set()

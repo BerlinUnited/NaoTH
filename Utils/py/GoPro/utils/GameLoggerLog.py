@@ -8,11 +8,11 @@ import time
 from utils import Event, Logger
 
 # setup logger for network related logs
-logger = Logger.getLogger("GoPro")
+logger = Logger.getLogger("GameLoggerLog")
 
 class GameLoggerLog(threading.Thread):
 
-    def __init__(self, folder, teams=None):
+    def __init__(self, folder, teams=None, log_invisible=False):
         super().__init__()
 
         Event.registerListener(self)
@@ -20,6 +20,7 @@ class GameLoggerLog(threading.Thread):
 
         self.folder = folder
         self.teams = teams if teams is not None else {}
+        self.log_invisible = log_invisible
         self.messages = queue.Queue()
 
         self.state = {}
@@ -29,13 +30,21 @@ class GameLoggerLog(threading.Thread):
         self.separator = '; '
 
     def run(self):
-
+        # run until canceled
         while not self.__cancel.is_set():
+            # get the next message from the queue, added by the methods below
             ts, msg = self.messages.get()
-            if isinstance(msg, str) and self.last_file is not None:
-                # got a videofile, add it to the game
-                self.last_file.write(msg + self.separator)
-                self.last_file.flush()
+            # is it the dummy/cancel message?
+            if ts is None:
+                self.messages.task_done()
+                break
+            elif isinstance(msg, str):
+                if self.last_file is not None:
+                    # got a videofile, add it to the game
+                    self.last_file.write(msg + self.separator)
+                    self.last_file.flush()
+                else:
+                    logger.error("Got a video file, but without an running game!")
             elif msg is not None:
                 # replace whitespaces with underscore
                 t1 = re.sub("\s+", "_", str(self.teams[msg.team[0].teamNumber] if msg.team[0].teamNumber in self.teams else msg.team[0].teamNumber))
@@ -46,17 +55,20 @@ class GameLoggerLog(threading.Thread):
                     # close previous/old game file
                     if self.last_file is not None:
                         self.last_file.close()
-                    # open new game file
-                    file = self.folder + "_".join([time.strftime("%Y-%m-%d_%H-%M-%S", ts), t1, t2, h]) + self.extension
-                    # append, if already exists
-                    self.last_file = open(file, 'a')
-                    if self.last_file:
-                        # make sure everybody can read/write the file
-                        os.chmod(self.last_file.name, 0o666)
+                        self.last_file = None
                     # remember current state
-                    self.state = { 'ts': ts, 't1': t1, 't2': t2, 'h': h }
-
+                    self.state = {'ts': ts, 't1': t1, 't2': t2, 'h': h}
+                    # if we shouldn't log games with invisibles and there's one, skip this game
+                    if self.log_invisible or (msg.team[0].teamNumber != 0 and msg.team[1].teamNumber != 0):
+                        # open new game file
+                        file = self.folder + "_".join([time.strftime("%Y-%m-%d_%H-%M-%S", ts), t1, t2, h]) + self.extension
+                        # append, if already exists
+                        self.last_file = open(file, 'a')
+                        if self.last_file:
+                            # make sure everybody can read/write the file
+                            os.chmod(self.last_file.name, 0o666)
             self.messages.task_done()
+        logger.debug("GameLoggerLog thread finished.")
 
     def cancel(self):
         if self.last_file is not None:

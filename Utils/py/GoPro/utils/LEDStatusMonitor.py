@@ -2,7 +2,11 @@ import socket
 import threading
 import time
 
+from utils import Logger
 from . import Event
+
+# setup logger for network related logs
+logger = Logger.getLogger("LED")
 
 class LedStatusMonitor(threading.Thread):
 
@@ -67,6 +71,7 @@ class LedStatusMonitor(threading.Thread):
 
             # update every 0.5 seconds
             time.sleep(0.5)
+        logger.debug("LED thread finished.")
 
     def cancel(self):
         self.__cancel.set()
