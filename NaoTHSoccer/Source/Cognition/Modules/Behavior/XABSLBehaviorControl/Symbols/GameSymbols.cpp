@@ -45,7 +45,10 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
 GameSymbols* GameSymbols::theInstance = NULL;
 
 bool GameSymbols::getPlayingIsSetByGameController() {
-  return theInstance->getGameData().valid && theInstance->getGameData().gameState == GameData::playing;
+  if (theInstance->getGameData().valid) {
+    playingIsSetByGameController = (theInstance->getGameData().gameState == GameData::playing);
+  }
+  return playingIsSetByGameController;
 }
 
 bool GameSymbols::getOwnKickOff() {

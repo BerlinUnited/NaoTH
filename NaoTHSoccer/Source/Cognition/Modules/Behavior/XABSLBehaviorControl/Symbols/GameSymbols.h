@@ -24,8 +24,10 @@ class GameSymbols: public GameSymbolsBase
 {
 
 public:
-  GameSymbols() {
+  GameSymbols()  {
     theInstance = this;
+
+    playingIsSetByGameController = false;
   }
   virtual ~GameSymbols(){}
   
@@ -43,6 +45,8 @@ private:
   static double getMsecsRemaining();
   static int getGameState();
   static int getSetPlay();
+
+  static bool playingIsSetByGameController;
 
 };//end class GameSymbols
 
