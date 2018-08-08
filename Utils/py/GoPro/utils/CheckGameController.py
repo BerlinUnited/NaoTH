@@ -26,3 +26,4 @@ class CheckGameController:
         # check if one team is 'invisible'
         if any([t.teamNumber == 0 for t in gc_data.team]):
             print("-- INVISIBLES are playing! --\n")
+        print('Team left:', gc_data.team[0].teamNumber, 'Team right:', gc_data.team[1].teamNumber)

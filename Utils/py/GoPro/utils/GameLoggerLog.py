@@ -52,6 +52,7 @@ class GameLoggerLog(threading.Thread):
                 # replace whitespaces with underscore
                 t1 = re.sub("\s+", "_", str(self.teams[msg.team[0].teamNumber] if msg.team[0].teamNumber in self.teams else msg.team[0].teamNumber))
                 t2 = re.sub("\s+", "_", str(self.teams[msg.team[1].teamNumber] if msg.team[1].teamNumber in self.teams else msg.team[1].teamNumber))
+                t = t1 + '_' + t2 if msg.firstHalf else t2 + '_' + t1
                 h = '1stHalf' if msg.firstHalf else '2ndHalf'
                 # check game file - did something changed in the game state?
                 if self.last_file is None or self.state['t1'] != t1 or self.state['t2'] != t2 or self.state['h'] != h:
@@ -62,7 +63,7 @@ class GameLoggerLog(threading.Thread):
                     # if we shouldn't log games with invisibles and there's one, skip this game
                     if self.log_invisible or (msg.team[0].teamNumber != 0 and msg.team[1].teamNumber != 0):
                         # open new game file
-                        file = self.folder + "_".join([time.strftime("%Y-%m-%d_%H-%M-%S", ts), t1, t2, h, self.raspi_name]) + self.extension
+                        file = self.folder + "_".join([time.strftime("%Y-%m-%d_%H-%M-%S", ts), t, h, self.raspi_name]) + self.extension
                         # append, if already exists
                         self.last_file = open(file, 'a')
                         if self.last_file:
