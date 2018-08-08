@@ -26,6 +26,7 @@ Setup GoPro-Controller-Script:
 
 Setup Network:
 - set a appropiate network ip for the lan interface (eg. eth0); if DHCP isn't available
+- set the hostname to a (unique) name; evtl. the logger uses this to write its log files
 
 **Note:** In order to get the gamecontroller data, the Raspberry Pi has to be in the "10.0.x.x/16" subnet. Also make sure, there's no other device with the same IP!  
 
