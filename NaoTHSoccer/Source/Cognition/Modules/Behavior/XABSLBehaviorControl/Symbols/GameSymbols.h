@@ -26,8 +26,6 @@ class GameSymbols: public GameSymbolsBase
 public:
   GameSymbols()  {
     theInstance = this;
-
-    playingIsSetByGameController = false;
   }
   virtual ~GameSymbols(){}
   
