@@ -5,6 +5,7 @@ import threading
 import time
 
 from utils import Event, Logger
+from utils.Bluetooth import Bluetooth
 
 from gopro_bluetooth import bluetooth
 
@@ -25,6 +26,7 @@ class Network(threading.Thread):
         self.passwd = passwd
         self.mac = mac
         self.retries = retries
+        self.bt = None
 
         self.__cancel = threading.Event()
         self.__timer = threading.Event()
@@ -42,7 +44,6 @@ class Network(threading.Thread):
         except:
             pass
 
-
     def connect(self):
         logger.info("Setting up network")
         if not self.isConnected():
@@ -57,6 +58,9 @@ class Network(threading.Thread):
                     logger.info("SSID not found: %s", self.ssid)
                     Event.fire(Event.NetworkNotAvailable())
                     time.sleep(1)
+                    # if canceled, skip everything
+                    if self.__cancel.is_set():
+                        continue
                     self.wakeGoProWLAN()
                 else:
                     logger.info("Waiting for connection to %s", self.ssid)
@@ -83,11 +87,13 @@ class Network(threading.Thread):
 
     def wakeGoProWLAN(self):
       if self.mac is not None:
-        print ("bluetooth setWifiOn")
-        bluetooth.setWifiOn(self.mac)
+        logger.debug("Trying to activate network via bluetooth")
+        self.bt = Bluetooth(self.mac)
+        self.bt.setWifiOn().start()
+        self.bt.join()
       else:
-        print ("bluetooth setWifiOn: mac is None")
-        
+        logger.warning("Bluetooth MAC address not set!")
+
     def run(self):
         # connect and fire connected event
         self.connect()
@@ -104,6 +110,8 @@ class Network(threading.Thread):
     def cancel(self):
         self.__cancel.set()
         self.manager.cancel()
+        if self.bt is not None:
+            self.bt.cancel()
         try:
             self.__timer.set()
         except Exception as e:

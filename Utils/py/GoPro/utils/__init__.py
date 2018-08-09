@@ -8,6 +8,8 @@ from .GameLoggerSql import GameLoggerSql
 from .GameLoggerLog import GameLoggerLog
 from .LEDStatusMonitor import LedStatusMonitor
 from .CheckGameController import CheckGameController
+from .Bluetooth import Bluetooth
+from .CheckBluetooth import CheckBluetooth
 
 
 def rename(videos_dir, logs_dir):

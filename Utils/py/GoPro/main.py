@@ -5,7 +5,7 @@
     Using the 'GoPro API for Python' to communicate with the GoPro:
     https://github.com/KonradIT/gopro-py-api
 '''
-
+import re
 import sys
 import os
 import tempfile
@@ -15,7 +15,8 @@ import time
 import importlib
 import importlib.util
 
-from utils import Logger, Daemonize, Network, GoPro, GameController, GameLoggerSql, GameLoggerLog, LedStatusMonitor, CheckGameController, rename
+from utils import Logger, Daemonize, Network, GoPro, GameController, GameLoggerSql, GameLoggerLog, LedStatusMonitor, \
+    CheckGameController, rename, CheckBluetooth
 
 
 def parseArguments():
@@ -43,6 +44,7 @@ def parseArguments():
     parser.add_argument('-i', '--ignore', action='store_true', help='Ignores the "max time" option - possible infinity recording, if "finished" state isn\'t set.')
     parser.add_argument('-gc', '--check-gc', action='store_true', help='Tries to listen to GameController and print its state (for debugging).')
     parser.add_argument('-li', '--log-invisible', action='store_true', help='Whether the games with invisibles should be logged.')
+    parser.add_argument('-bt', '--check-bt', action='store', nargs='?', type=check_mac_address, default=False, metavar='mac address', help='Tests the bluetooth functionality. If the mac address is not set, a default one is used.')
     use_rename = any([ o in sys.argv for o in ['-n', '--rename'] ])
     rename = parser.add_argument_group()
     rename.add_argument('-n', '--rename', action='store_true', help='Renames the video files based on the given entries in the log files.')
@@ -51,6 +53,12 @@ def parseArguments():
 
 
     return parser.parse_args()
+
+def check_mac_address(mac):
+    if not re.match("[0-9a-f]{2}([-:]?)[0-9a-f]{2}(\\1[0-9a-f]{2}){4}$", mac.lower()):
+        raise argparse.ArgumentTypeError('Not a valid mac address!')
+
+    return mac
 
 def main():
     config_timestamp = 0 if not args.config else os.stat(importlib.util.find_spec("config").origin).st_mtime
@@ -143,6 +151,8 @@ if __name__ == '__main__':
     if args.check_gc:
         loopControl = threading.Event()
         CheckGameController(loopControl)
+    elif args.check_bt != False:
+        CheckBluetooth(args.check_bt if args.check_bt else 'D6:B9:D4:D7:B7:40')
     elif args.rename:
         rename(args.videos[0], args.logs[0])
     else:
