@@ -1,6 +1,6 @@
 import threading, socket
 
-from utils import Event, Logger
+from utils import Logger, blackboard
 from utils.GameControlData import GameControlData
 
 GAME_CONTROLLER_PORT = 3838
@@ -32,11 +32,13 @@ class GameController(threading.Thread):
 
                 if len(data) > 0:
                     message = GameControlData(data)
+                    blackboard['gamecontroller'] = message
                     # one of the teams is invisible
-                    Event.fire(Event.GameControllerMessage(message))
+                    #Event.fire(Event.GameControllerMessage(message))
 
             except socket.timeout:
-                Event.fire(Event.GameControllerTimedout())
+                blackboard['gamecontroller'] = None
+                #Event.fire(Event.GameControllerTimedout())
                 #statusMonitor.setDidntReceivedMessageFromGC(1)
                 logger.warning("Not connected to GameController?")
                 self.message = None

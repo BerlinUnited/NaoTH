@@ -4,7 +4,7 @@ import threading
 
 import time
 
-from utils import Event, Logger
+from utils import Logger, blackboard
 
 # setup logger for network related logs
 logger = Logger.getLogger("GoPro")
@@ -14,15 +14,13 @@ class GameLoggerSql(threading.Thread):
     def __init__(self, db, teams=None):
         super().__init__()
 
-        Event.registerListener(self)
         self.__cancel = threading.Event()
 
         self.db = db
         self.teams = teams if teams is not None else {}
         self.maxTimeGameValid = 60*30
-        self.messages = queue.Queue()
 
-        self.state = {}
+        self.state = { 'v': None }
         self.last_id = 0
 
         self.init_database()
@@ -31,18 +29,22 @@ class GameLoggerSql(threading.Thread):
         con = sqlite3.connect(self.db)
         cur = con.cursor()
         while not self.__cancel.is_set():
-            ts, msg = self.messages.get()
-            if isinstance(msg, tuple):
+
+            gopro = blackboard['gopro']
+            if gopro is not None and gopro['state'] == 2 and self.state['v'] != gopro['lastVideo']:
                 # got a videofile, add it to the game entry
-                cur.execute("UPDATE game SET video = video || ? WHERE id = ?", [ str(msg[1])+', ', msg[0] ])
+                cur.execute("UPDATE game SET video = video || ? WHERE id = ?", [ str(gopro['lastVideo'])+', ', self.last_id ])
                 con.commit()
-            else:
+
+            gc_data = blackboard['gamecontroller']
+            if gc_data is not None:
+                ts = time.gmtime()
                 # check&get game id
-                db_id = cur.execute("SELECT id FROM game WHERE timestmap >= ? and phase = ? and type = ? and half = ? and team_1 = ? and team_2 = ?", [ts-self.maxTimeGameValid, msg.competitionPhase, msg.competitionType, msg.firstHalf, msg.team[0].teamNumber, msg.team[1].teamNumber]).fetchone()
+                db_id = cur.execute("SELECT id FROM game WHERE timestmap >= ? and phase = ? and type = ? and half = ? and team_1 = ? and team_2 = ?", [ts-self.maxTimeGameValid, gc_data.competitionPhase, gc_data.competitionType, gc_data.firstHalf, gc_data.team[0].teamNumber, gc_data.team[1].teamNumber]).fetchone()
                 if not db_id:
                     # new game
                     cur.execute("INSERT INTO game (timestmap, phase, type, half, team_1, team_1_name, team_2, team_2_name) VALUES (?,?,?,?,?,?,?,?)",
-                                [ts, msg.competitionPhase, msg.competitionType, msg.firstHalf, msg.team[0].teamNumber, self.teams[msg.team[0].teamNumber] if msg.team[0].teamNumber in self.teams else None, msg.team[1].teamNumber, self.teams[msg.team[1].teamNumber] if msg.team[1].teamNumber in self.teams else None])
+                                [ts, gc_data.competitionPhase, gc_data.competitionType, gc_data.firstHalf, gc_data.team[0].teamNumber, self.teams[gc_data.team[0].teamNumber] if gc_data.team[0].teamNumber in self.teams else None, gc_data.team[1].teamNumber, self.teams[gc_data.team[1].teamNumber] if gc_data.team[1].teamNumber in self.teams else None])
                     con.commit()
                     db_id = cur.lastrowid
                 else:
@@ -52,38 +54,36 @@ class GameLoggerSql(threading.Thread):
                     self.last_id = db_id
                     if db_id not in self.state:
                         # didn't have something about the current game - init
-                        self.state[db_id] = { 'phase': msg.gamePhase, 'state': msg.gameState, 'set': msg.setPlay, 'half': msg.firstHalf, 'score': (msg.team[0].score, msg.team[1].score) }
+                        self.state[db_id] = { 'phase': gc_data.gamePhase, 'state': gc_data.gameState, 'set': gc_data.setPlay, 'half': gc_data.firstHalf, 'score': (gc_data.team[0].score, gc_data.team[1].score) }
                     else:
                         # game phase change
-                        if self.state[db_id]['phase'] != msg.gamePhase:
+                        if self.state[db_id]['phase'] != gc_data.gamePhase:
                             cur.execute("INSERT INTO event (timestmap, game_id, type, time, extra) VALUES (?,?,?,?,?)",
-                                        [ ts, db_id, 'phase_change', msg.secsRemaining, '[{}, {}]'.format(self.state[db_id]['phase'], msg.gamePhase)])
-                            self.state[db_id]['phase'] = msg.gamePhase
+                                        [ ts, db_id, 'phase_change', gc_data.secsRemaining, '[{}, {}]'.format(self.state[db_id]['phase'], gc_data.gamePhase)])
+                            self.state[db_id]['phase'] = gc_data.gamePhase
                         # game state change
-                        if self.state[db_id]['state'] != msg.gameState:
+                        if self.state[db_id]['state'] != gc_data.gameState:
                             cur.execute("INSERT INTO event (timestmap, game_id, type, time, extra) VALUES (?,?,?,?,?)",
-                                        [ts, db_id, 'state_change', msg.secsRemaining, '[{}, {}]'.format(self.state[db_id]['state'], msg.gameState)])
-                            self.state[db_id]['state'] = msg.gameState
+                                        [ts, db_id, 'state_change', gc_data.secsRemaining, '[{}, {}]'.format(self.state[db_id]['state'], gc_data.gameState)])
+                            self.state[db_id]['state'] = gc_data.gameState
                         # free kick
-                        if self.state[db_id]['set'] != msg.setPlay:
+                        if self.state[db_id]['set'] != gc_data.setPlay:
                             # only log the beginning of the free kick
                             if self.state[db_id]['set'] == 0:
                                 cur.execute("INSERT INTO event (timestmap, game_id, type, time, extra) VALUES (?,?,?,?,?)",
-                                            [ts, db_id, 'free_kick', msg.secsRemaining, str(msg.kickingTeam)])
-                            self.state[db_id]['set'] = msg.setPlay
+                                            [ts, db_id, 'free_kick', gc_data.secsRemaining, str(gc_data.kickingTeam)])
+                            self.state[db_id]['set'] = gc_data.setPlay
                         # goal scored
-                        if self.state[db_id]['score'][0] != msg.team[0].score or self.state[db_id]['score'][1] != msg.team[1].score:
+                        if self.state[db_id]['score'][0] != gc_data.team[0].score or self.state[db_id]['score'][1] != gc_data.team[1].score:
                             cur.execute("INSERT INTO event (timestmap, game_id, type, time, extra) VALUES (?,?,?,?,?)",
-                                        [ts, db_id, 'goal', msg.secsRemaining, '[{}, {}]'.format(msg.team[0].score, msg.team[1].score)])
-                            self.state[db_id]['score'] = (msg.team[0].score, msg.team[1].score)
-            self.messages.task_done()
+                                        [ts, db_id, 'goal', msg.secsRemaining, '[{}, {}]'.format(gc_data.team[0].score, gc_data.team[1].score)])
+                            self.state[db_id]['score'] = (gc_data.team[0].score, gc_data.team[1].score)
 
         con.commit()
         con.close()
 
     def cancel(self):
         self.__cancel.set()
-        self.messages.join()
 
     def init_database(self):
         con = sqlite3.connect(self.db)
@@ -92,7 +92,7 @@ class GameLoggerSql(threading.Thread):
         con.commit()
         con.close()
 
-
+    '''
     def receivedGC(self, evt:Event.GameControllerMessage):
         """ Is called, when a new GameController message was received. """
         self.messages.put_nowait((time.time(), evt.message))
@@ -106,4 +106,4 @@ class GameLoggerSql(threading.Thread):
         if evt.file is not None and len(evt.file) > 0 and self.last_id > 0:
             # only if a 'valid' file is provided
             self.messages.put_nowait((time.time(), (self.last_id, evt.file)))
-
+    '''

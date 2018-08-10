@@ -4,10 +4,8 @@ import re
 import threading
 import time
 
-from utils import Event, Logger
+from utils import Logger, blackboard
 from utils.Bluetooth import Bluetooth
-
-from gopro_bluetooth import bluetooth
 
 # setup logger for network related logs
 logger = Logger.getLogger("Network")
@@ -27,6 +25,8 @@ class Network(threading.Thread):
         self.mac = mac
         self.retries = retries
         self.bt = None
+
+        blackboard['network'] = 0
 
         self.__cancel = threading.Event()
         self.__timer = threading.Event()
@@ -56,7 +56,7 @@ class Network(threading.Thread):
                 # check if ssid is available
                 if not self.manager.getSSIDExists(device, self.ssid):
                     logger.info("SSID not found: %s", self.ssid)
-                    Event.fire(Event.NetworkNotAvailable())
+                    blackboard['network'] = 0 # NetworkNotAvailable
                     time.sleep(1)
                     # if canceled, skip everything
                     if self.__cancel.is_set():
@@ -64,45 +64,45 @@ class Network(threading.Thread):
                     self.wakeGoProWLAN()
                 else:
                     logger.info("Waiting for connection to %s", self.ssid)
-                    Event.fire(Event.NetworkConnecting())
+                    blackboard['network'] = 2 # NetworkConnecting
                     network = self.manager.connectToSSID(device, self.ssid, self.passwd)
 
                     if network is None:
                         logger.error("Couldn't connect to network '%s' with device '%s'!", self.ssid, self.device)
-                        Event.fire(Event.NetworkDisconnected())
+                        blackboard['network'] = 1 # NetworkDisconnected
                         self.__timer.wait(10)
                     else:
                         logger.info("Connected to %s", network)
-                        Event.fire(Event.NetworkConnected())
+                        blackboard['network'] = 3 # NetworkConnected
                         break
         else:
-            Event.fire(Event.NetworkConnected())
+            blackboard['network'] = 3 # NetworkConnected
 
     def disconnect(self):
         # TODO:
-        Event.fire(Event.NetworkDisconnected())
+        blackboard['network'] = 1 # NetworkDisconnected
 
     def isConnected(self):
         return self.ssid == self.manager.getCurrentSSID(self.device, False)
 
     def wakeGoProWLAN(self):
-      if self.mac is not None:
-        logger.debug("Trying to activate network via bluetooth")
-        self.bt = Bluetooth(self.mac)
-        self.bt.setWifiOn().start()
-        self.bt.join()
-      else:
-        logger.warning("Bluetooth MAC address not set!")
+        if self.mac is not None:
+            logger.debug("Trying to activate network via bluetooth")
+            self.bt = Bluetooth(self.mac)
+            self.bt.setWifiOn().start()
+            self.bt.join()
+        else:
+            logger.warning("Bluetooth MAC address not set!")
 
     def run(self):
         # connect and fire connected event
         self.connect()
         while not self.__cancel.is_set():
-            self.wakeGoProWLAN()
             if self.isConnected():
                 self.__timer.wait(10)
             else:
-                Event.fire(Event.NetworkDisconnected())
+                blackboard['network'] = 1 # NetworkDisconnected
+                self.wakeGoProWLAN()
                 self.connect()
             self.__timer.clear()
         logger.debug("Network thread finished.")

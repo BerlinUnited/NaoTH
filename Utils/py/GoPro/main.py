@@ -16,7 +16,7 @@ import importlib
 import importlib.util
 
 from utils import Logger, Daemonize, Network, GoPro, GameController, GameLoggerSql, GameLoggerLog, LedStatusMonitor, \
-    CheckGameController, rename, CheckBluetooth
+    CheckGameController, rename, CheckBluetooth, blackboard
 
 
 def parseArguments():
@@ -89,6 +89,7 @@ def main():
     threads = [ led, gopro, gameLogger, gameController, network ]
     try:
         while True:
+            #print(blackboard)
             # if config was loaded from file and file was modified since last checked
             if args.config and config_timestamp != os.stat(importlib.util.find_spec("config").origin).st_mtime:
                 config_timestamp = os.stat(importlib.util.find_spec("config").origin).st_mtime
@@ -149,8 +150,7 @@ if __name__ == '__main__':
     Logger.setupLogger(args.quiet, args.verbose, args.syslog)
 
     if args.check_gc:
-        loopControl = threading.Event()
-        CheckGameController(loopControl)
+        CheckGameController()
     elif args.check_bt != False:
         CheckBluetooth(args.check_bt if args.check_bt else 'D6:B9:D4:D7:B7:40')
     elif args.rename:
