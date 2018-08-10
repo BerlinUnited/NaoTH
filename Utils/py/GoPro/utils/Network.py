@@ -7,8 +7,6 @@ import time
 from utils import Event, Logger
 from utils.Bluetooth import Bluetooth
 
-from gopro_bluetooth import bluetooth
-
 # setup logger for network related logs
 logger = Logger.getLogger("Network")
 
