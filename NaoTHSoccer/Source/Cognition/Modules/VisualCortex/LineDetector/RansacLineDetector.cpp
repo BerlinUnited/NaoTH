@@ -301,7 +301,7 @@ bool RansacLineDetector::ransacCircle(Vector2d& result) {
   int bestInlier = 0;
   double bestInlierError = 0;
 
-  for(int i = 0; i < params.iterations; ++i)
+  for(int i = 0; i < params.circle_iterations; ++i)
   {
     //pick two random points without replacement
     size_t i0 = choose_random_from(outliers, 1);
