@@ -50,40 +50,37 @@ void RansacLineDetector::execute()
   if(params.enable_circle_ransac) {
     Vector2d circResult;
 
-    if (ransacCircle(circResult)) {
-      /*
-      std::vector<Vector2d> pointList(inliers.size());
-
-      for(size_t i: inliers)
-      {
-        const Edgel& e = getLineGraphPercept().edgelsOnField[i];
-        pointList.push_back(e.point);
-      }
-      Vector2d circle_mean;
-      double circle_radius;
-      // fit circle to inliers
-      Geometry::calculateCircle(pointList,circle_mean, circle_radius);
-      */
-
-      getRansacCirclePercept().middleCircleCenter = circResult;
-      getRansacCirclePercept().middleCircleWasSeen = true;
+    std::vector<Vector2d> inlierPoints;
+    if (ransacCircle(circResult, inlierPoints)) {
 
       DEBUG_REQUEST("Vision:RansacLineDetector:draw_circle_field",
         FIELD_DRAWING_CONTEXT;
-        /*
         PEN("000099", 5);
-        for(size_t i: inliers)
+        for(Vector2d inlier : inlierPoints)
         {
-          const Edgel& e = getLineGraphPercept().edgelsOnField[i];
-          CIRCLE(e.point.x, e.point.y, 30);
+          CIRCLE(inlier.x, inlier.y, 30);
         }
-        */
-        PEN("009900", 10);
+        PEN("990000", 10);
         CIRCLE(circResult.x, circResult.y, getFieldInfo().centerCircleRadius);
-        //PEN("00FF00", 10);
-        //CIRCLE(circle_mean.x, circle_mean.y, circle_radius);
-
       );
+
+      if(params.fit_circle_to_inliers) {
+        Vector2d circleMean;
+        double circleRadius;
+        if (Geometry::calculateCircle(inlierPoints, circleMean, circleRadius)) {
+          getRansacCirclePercept().middleCircleCenter = circleMean;
+          getRansacCirclePercept().middleCircleWasSeen = true;
+
+          DEBUG_REQUEST("Vision:RansacLineDetector:draw_circle_field",
+            FIELD_DRAWING_CONTEXT;
+            PEN("009900", 10);
+            CIRCLE(circleMean.x, circleMean.y, circleRadius);
+          );
+        }
+      } else {
+        getRansacCirclePercept().middleCircleCenter = circResult;
+        getRansacCirclePercept().middleCircleWasSeen = true;
+      }
     }
 
   }
@@ -289,7 +286,7 @@ bool RansacLineDetector::ransac(Math::LineSegment& result)
   return false;
 }
 
-bool RansacLineDetector::ransacCircle(Vector2d& result) {
+bool RansacLineDetector::ransacCircle(Vector2d& result, std::vector<Vector2d>& inlierPoints) {
   if(outliers.size() <= 2) {
     return false;
   }
@@ -381,6 +378,7 @@ bool RansacLineDetector::ransacCircle(Vector2d& result) {
   if (bestInlier >= params.circle_inlierMin) {
     std::vector<size_t> newOutliers;
     newOutliers.reserve(outliers.size() - bestInlier + 1);
+    inlierPoints.reserve(bestInlier);
 
     // update the outliers
     for(size_t i: outliers)
@@ -390,6 +388,8 @@ bool RansacLineDetector::ransacCircle(Vector2d& result) {
 
       if(offset > params.circle_outlierThreshold || Math::toDegrees(angle_diff(bestModel, e)) > params.circle_max_angle_diff) {
         newOutliers.push_back(i);
+      } else {
+        inlierPoints.push_back(e.point);
       }
     }
     outliers = newOutliers;

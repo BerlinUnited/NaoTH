@@ -50,7 +50,7 @@ private:
 
   int ransacEllipse(Ellipse& result);
 
-  bool ransacCircle(Vector2d& result);
+  bool ransacCircle(Vector2d& result, std::vector<Vector2d>& inlierPoints);
 
 //private:
   class Parameters: public ParameterList
@@ -75,6 +75,7 @@ private:
       PARAMETER_REGISTER(circle_angle_variance) = 0.02;
       PARAMETER_REGISTER(circle_max_angle_diff) = 8;
       PARAMETER_REGISTER(enable_circle_ransac) = true;
+      PARAMETER_REGISTER(fit_circle_to_inliers) = true;
 
       syncWithConfig();
     }
@@ -96,8 +97,8 @@ private:
     int circle_inlierMin;
     double circle_angle_variance;
     double circle_max_angle_diff;
-
     bool enable_circle_ransac;
+    bool fit_circle_to_inliers;
 
   } params;
 
