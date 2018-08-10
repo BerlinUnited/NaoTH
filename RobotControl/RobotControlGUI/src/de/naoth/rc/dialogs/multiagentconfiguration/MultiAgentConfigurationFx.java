@@ -9,43 +9,27 @@ import de.naoth.rc.dialogs.multiagentconfiguration.ui.AgentTab;
 import de.naoth.rc.dialogs.multiagentconfiguration.ui.AgentTabGlobal;
 import java.awt.SplashScreen;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.TreeSet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -126,7 +110,11 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
     
     public void connecting(List<AgentItem> l) {
         for (AgentItem agentItem : l) {
-            // TODO: check if already connected!?
+            // check if already connected!
+            if(tabpane.getTabs().stream().anyMatch((t) -> { return t.getText().equals(agentItem.toString()); })) {
+                continue;
+            }
+            // add new tab
             AgentTab tab = new AgentTab(agentItem.getHost(), agentItem.getPort());
             tab.connectDivider(allTab);
             tab.connectAgentList(allTab);
