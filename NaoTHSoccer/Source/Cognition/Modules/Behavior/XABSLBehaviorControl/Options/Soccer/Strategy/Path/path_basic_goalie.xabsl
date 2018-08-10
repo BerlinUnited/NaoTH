@@ -84,8 +84,8 @@ option path_basic_goalie
   state clear_ball {   
    decision {
        else if (action_done 
-           || (ball.distance > 1500 && ball.time_since_last_seen < 1000)
-           || (ball.time_since_last_seen > 2000)
+           || (ball.distance > 1500 && ball.see_where_itis)
+           || (!ball.know_where_itis)
            || ball.position.field.x > field.xPosOwnPenaltyArea + 1000)
        {
          goto go_to_strategy_point;
