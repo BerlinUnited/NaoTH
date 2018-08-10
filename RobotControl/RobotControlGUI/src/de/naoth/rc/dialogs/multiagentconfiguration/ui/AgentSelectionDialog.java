@@ -40,7 +40,6 @@ import javafx.stage.StageStyle;
 public class AgentSelectionDialog extends Dialog
 {
     private final ObservableList<AgentItem> hostList = FXCollections.observableArrayList(new TreeSet());
-//    private final ObservableMap<String, AgentItem> hostList = FXCollections.observableHashMap();
 
     private final ExecutorService executor = Executors.newCachedThreadPool();
     
@@ -49,6 +48,7 @@ public class AgentSelectionDialog extends Dialog
     private TextField host;
     private TextField port;
     private Button addHost;
+    private CheckBox allAgents;
     
     private Pattern ip_pattern = Pattern.compile("\\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\."+
                                                  "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
@@ -71,29 +71,39 @@ public class AgentSelectionDialog extends Dialog
             return new ArrayList<>();
         });
         
-        setOnShowing((e) -> {
-            // clear "old" list
-            hostList.clear();
-            // clear textfields
-            resetTextFields();
-            // retrieve agents
-            pingAgents();
-        });
+        setOnShowing((e) -> { onShowing(); });
     }
 
     public AgentSelectionDialog() {
         this(new ArrayList<>());
     }
-    
+        
     private void initUi() {
         VBox vb = new VBox();
         
         ListView<AgentItem> l = new ListView(hostList);
-        l.setCellFactory(CheckBoxListCell.forListView((param) -> { return param.activeProperty(); }));
+        //l.setCellFactory(CheckBoxListCell.forListView((param) -> { return param.activeProperty(); }));
+        l.setCellFactory((ListView<AgentItem> list) -> {
+            // create new cell and bind to agent active property
+            CheckBoxListCell<AgentItem> c = new CheckBoxListCell<>((p) -> { return p.activeProperty(); });
+            // set mouse listener to cell
+            c.setOnMouseClicked((e) -> {
+                c.getItem().activeProperty().set(!c.getItem().activeProperty().get());
+            });
+            return c;
+        });
+        // enable selection via 'space' key
+        l.setOnKeyReleased((e) -> {
+            if(e.getCode() == KeyCode.SPACE) {
+                AgentItem a = l.getSelectionModel().getSelectedItem();
+                a.activeProperty().set(!a.activeProperty().get());
+            }
+        });
         vb.getChildren().add(l);
         
         host = new TextField();
         host.setPromptText("host ip");
+        host.setTooltip(new Tooltip("Ctrl+Enter adds the agent to the list"));
         host.setOnKeyReleased((e) -> {
             if(e.isControlDown() && e.getCode() == KeyCode.ENTER) {
                 host.commitValue();
@@ -107,6 +117,7 @@ public class AgentSelectionDialog extends Dialog
         port = new TextField();
         port.setPromptText("port");
         port.setPrefColumnCount(5);
+        port.setTooltip(new Tooltip("Ctrl+Enter adds the agent to the list"));
         port.setOnKeyReleased((e) -> {
             if(e.isControlDown() && e.getCode() == KeyCode.ENTER) {
                 port.commitValue();
@@ -149,9 +160,14 @@ public class AgentSelectionDialog extends Dialog
         BorderPane bp = new BorderPane();
         bp.setPadding(new Insets(10, 0, 0, 0));
         
-        CheckBox cb = new CheckBox("All Agents");
-        GridPane.setVgrow(cb, Priority.ALWAYS);
-        bp.setLeft(cb);
+        allAgents = new CheckBox("All Agents");
+        GridPane.setVgrow(allAgents, Priority.ALWAYS);
+        allAgents.setOnAction((e) -> {
+            hostList.stream().forEach((a) -> {
+                a.activeProperty().set(allAgents.isSelected());
+            });
+        });
+        bp.setLeft(allAgents);
         
         Button refresh = new Button();
         refresh.setTooltip(new Tooltip("Refresh agents list"));
@@ -169,6 +185,17 @@ public class AgentSelectionDialog extends Dialog
     private void resetTextFields() {
         host.setText("");
         port.setText("5401");
+    }
+    
+    private void onShowing() {
+        // clear "old" list
+        hostList.clear();
+        // clear textfields
+        resetTextFields();
+        // retrieve agents
+        pingAgents();
+        // set to a fixed size
+        setHeight(500);
     }
     
     public void setHosts(List<String> h) {
@@ -199,7 +226,7 @@ public class AgentSelectionDialog extends Dialog
                     (new Socket("localhost", port)).close();
                     Platform.runLater(() -> {
                             // check if agent is already in the list
-                            addAgent(new AgentItem("localhost", port));
+                            addAgent(new AgentItem("127.0.0.1", port));
                     });
                 } catch (IOException ex) { /* ignore exception */ }
             });
