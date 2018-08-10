@@ -46,11 +46,11 @@ public:
 
 private:
   std::vector<size_t> outliers;
-  int ransac(Math::LineSegment& result, std::vector<size_t>& inliers);
+  bool ransac(Math::LineSegment& result);
 
   int ransacEllipse(Ellipse& result);
 
-  int ransacCircle(Vector2d& result, std::vector<size_t>& inliers);
+  bool ransacCircle(Vector2d& result);
 
 //private:
   class Parameters: public ParameterList
@@ -151,15 +151,6 @@ private:
     int random_pos = Math::random(ith, max);
     std::swap(vec[random_pos], vec[ith-1]);
     return vec[ith-1];
-  }
-
-  // TODO replace with choose_random_from
-  //swaps v[i] with a random v[x], x in [0:i]
-  size_t swap_random(std::vector<size_t> &v, int i) {
-    int r = Math::random(i+1);
-    std::swap(v[r], v[i]);
-
-    return v[i];
   }
 };
 
