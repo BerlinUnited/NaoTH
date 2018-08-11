@@ -28,69 +28,35 @@ public class Utils
         
         String root_name = (String) root.getValue();
         
-        TreeMap<String, TreeItem> items = new TreeMap<>();
-        items.put(root_name, root);
-        
         if(!global_debug_requests.containsKey(root_name)) {
             global_debug_requests.put(root_name, new CheckBoxTreeItem<>(root_name));
         }
         
-        request.getRequestsList().forEach((t) -> {
-//            System.out.println(t.getName() + " = " + t.getValue());
-            String[] path = t.getName().split(":");
-            String str_path = root_name;
-            for (int i = 0; i < path.length; i++) {
-                TreeItem parent = items.get(str_path);
-                TreeItem globalParent = global_debug_requests.get(str_path);
-                
-                if(t.getValue() && !((CheckBoxTreeItem)parent).isIndeterminate()) {
-                    try {
-                        if(!((CheckBoxTreeItem)parent).selectedProperty().isBound()) {
-//                            System.out.println(((CheckBoxTreeItem)parent).getValue() + ", " + str_path);
-                            ((CheckBoxTreeItem)parent).setIndeterminate(true);
-                        } else {
-                            System.out.println(((CheckBoxTreeItem)parent).getValue());
-                        }
-                    } catch (Exception e) {
-                        System.out.println(((CheckBoxTreeItem)parent).getValue());
-                    }
-                    
-                }
-
-                if(t.getValue() && !((CheckBoxTreeItem)globalParent).isIndeterminate()) {
-                    ((CheckBoxTreeItem)globalParent).setIndeterminate(true);
-                }
-
-                str_path += ":" + path[i];
-                
-                if (!global_debug_requests.containsKey(str_path)) {
-                    CheckBoxTreeItem<String> item = new CheckBoxTreeItem<>(path[i]);
-                    
-                    if(i == path.length - 1) {
-                        item.setSelected(t.getValue());
-                    }
-                    globalParent.getChildren().add(item);
-                    global_debug_requests.put(str_path, item);
-                }
-                
-                if (!items.containsKey(str_path)) {
-                    RequestTreeItem item = new RequestTreeItem("", path[i]);
-                    
-                    if(i == path.length - 1) {
-                        item.setSelected(t.getValue());
-                        item.setRequest(t.getName());
-                        
-                        item.selectedProperty().addListener(debugRequest);
-                        // NOTE: can not use 'binding', because we're change the selected property and would causing a runtime exception otherwise
-                        ((CheckBoxTreeItem)global_debug_requests.get(str_path)).selectedProperty().addListener((observable, oldValue, newValue) -> {
-                            item.setSelected(newValue);
-                        });
-                    }
-                    parent.getChildren().add(item);
-                    items.put(str_path, item);
-                }
-
+        request.getRequestsList().forEach((r) -> {
+            int pos = r.getName().lastIndexOf(':');
+            String id = root_name + ":" + r.getName(); // the identifier of this debug request
+            String name = r.getName().substring(pos+1);
+            String path = r.getName().substring(0, pos);
+            
+            // retrieve (and if necessary create) global module item
+            if(!global_debug_requests.containsKey(id)) {
+                CheckBoxTreeItem<String> global_item = new CheckBoxTreeItem<>(name);
+                getParentTreeItem(global_debug_requests.get(root_name), path, ":").getChildren().add(global_item);
+                global_item.setSelected(r.getValue());
+                global_debug_requests.put(id, global_item);
             }
+            RequestTreeItem item = new RequestTreeItem(path, name);
+            item.setRequest(r.getName());
+            getParentTreeItem(root, path, ":").getChildren().add(item); // add this item to the module tree
+            // bind to global module item
+            // NOTE: can not use 'binding', because we're change the selected property and would causing a runtime exception otherwise
+            ((CheckBoxTreeItem)global_debug_requests.get(id)).selectedProperty().addListener((observable, oldValue, newValue) -> {
+                item.setSelected(newValue);
+            });
+            // set the selected state AFTER adding it to its parent
+            item.setSelected(r.getValue());
+            // set the callback for (de-)activating this module (after selecting it!)
+            item.selectedProperty().addListener(debugRequest);
         });
     }
     
@@ -130,30 +96,30 @@ public class Utils
             // retrieve (and if necessary create) global module item
             if(!global_modules.containsKey(id)) {
                 CheckBoxTreeItem<String> global_item = new CheckBoxTreeItem<>(m.getValue());
-                getParentTreeItem(global_modules.get(root_name), m.getPath()).getChildren().add(global_item);
+                getParentTreeItem(global_modules.get(root_name), m.getPath(), "/").getChildren().add(global_item);
                 global_item.setSelected(m.active);
                 global_modules.put(id, global_item);
             }
-            // set the callback for (de-)activating this module
-            m.selectedProperty().addListener(debugRequest);
             // bind to global module item
             // NOTE: can not use 'binding', because we're change the selected property and would causing a runtime exception otherwise
             ((CheckBoxTreeItem)global_modules.get(id)).selectedProperty().addListener((observable, oldValue, newValue) -> {
                 m.setSelected(newValue);
             });
             // add this item to the module tree
-            getParentTreeItem(root, m.getPath()).getChildren().add(m);
+            getParentTreeItem(root, m.getPath(), "/").getChildren().add(m);
             // set the selected state AFTER adding it to its parent
             m.setSelected(m.active);
+            // set the callback for (de-)activating this module
+            m.selectedProperty().addListener(debugRequest);
         });
         
         expandSingleTreeNodes(root);
         expandSingleTreeNodes(global_modules.get((String) root.getValue()));
     }
     
-    private static TreeItem<String> getParentTreeItem(TreeItem<String> root, String path) {
+    private static TreeItem<String> getParentTreeItem(TreeItem<String> root, String path, String sep) {
         TreeItem<String> current_root = root;
-        for (String part : path.split("/")) {
+        for (String part : path.split(sep)) {
             FilteredList<TreeItem<String>> treePart = current_root.getChildren().filtered((m) -> { return m.getValue().equals(part); });
             if(treePart.isEmpty()) {
                 CheckBoxTreeItem<String> treePartNew = new CheckBoxTreeItem<>(part);
