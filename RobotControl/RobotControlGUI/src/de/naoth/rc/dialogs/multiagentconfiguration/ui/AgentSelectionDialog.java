@@ -161,6 +161,7 @@ public class AgentSelectionDialog extends Dialog
         bp.setPadding(new Insets(10, 0, 0, 0));
         
         allAgents = new CheckBox("All Agents");
+        allAgents.setSelected(true);
         GridPane.setVgrow(allAgents, Priority.ALWAYS);
         allAgents.setOnAction((e) -> {
             hostList.stream().forEach((a) -> {
