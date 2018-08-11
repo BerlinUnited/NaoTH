@@ -8,10 +8,23 @@ import javafx.scene.control.CheckBoxTreeItem;
  */
 public class RequestTreeItem extends CheckBoxTreeItem<String>
 {
+    private String path;
     private String request;
+    public boolean active;
     
-    public RequestTreeItem(String value) {
-        super(value);
+    public RequestTreeItem(String path, String name) {
+        this(path, name, false, name);
+    }
+    
+    public RequestTreeItem(String path, String name, boolean selected) {
+        this(path, name, selected, name);
+    }
+    
+    public RequestTreeItem(String path, String name, boolean selected, String request) {
+        super(name);
+        this.path = path;
+        this.request = request;
+        active = selected;
     }
     
     public void setRequest(String request) {
@@ -20,5 +33,9 @@ public class RequestTreeItem extends CheckBoxTreeItem<String>
     
     public String getRequest() {
         return request;
+    }
+    
+    public String getPath() {
+        return path;
     }
 }
