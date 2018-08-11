@@ -53,6 +53,7 @@ import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
+import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -248,10 +249,10 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
     
     public AgentTab(String host, int port)  {
         this();
-        setText(host + ":" + port);
         
         this.host = host;
         this.port = port;
+        setTitle("");
         
         server.addConnectionStatusListener(this);
         
@@ -270,6 +271,10 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
         });
         
         connect();
+    }
+    
+    private void setTitle(String prefix) {
+        setText(prefix + host + ":" + port);
     }
     
     private boolean sendCommand(Command cmd) {
@@ -460,10 +465,31 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
             splitPane.setDisable(false);
             miConnection.setText("Disconnect");
             miConnection.setOnAction(menuDisconnectHandler);
+            Platform.runLater(() -> {
+                setTooltip(new Tooltip("Connected to " + getText()));
+                if(getTabPane() != null) {
+                    getTabPane().lookupAll(".tab-label .text").forEach((t) -> {
+                        if(((Text)t).getText().equals(getText())) {
+                            ((Text)t).setStyle("");
+                        }
+                    });
+                }
+            });
         } else {
             splitPane.setDisable(true);
             miConnection.setText("Connect");
             miConnection.setOnAction(menuConnectHandler);
+            Platform.runLater(() -> {
+                setTooltip(new Tooltip("Disconnected from " + getText()));
+                if(getTabPane() != null) {
+                    // strike through the label of the disconnected tab
+                    getTabPane().lookupAll(".tab-label .text").forEach((t) -> {
+                        if(((Text)t).getText().equals(getText())) {
+                            ((Text)t).setStyle("-fx-strikethrough: true;");
+                        }
+                    });
+                }
+            });
         }
     }
 
