@@ -9,7 +9,8 @@ using namespace naoth;
 using namespace std;
 
 SPLGameController::SPLGameController()
-  :exiting(false), returnPort(GAMECONTROLLER_RETURN_PORT),
+  : exiting(false),
+    returnPort(GAMECONTROLLER_RETURN_PORT),
     socket(NULL),
     gamecontrollerAddress(NULL)
 {
@@ -119,6 +120,7 @@ void SPLGameController::set(const naoth::GameReturnData& data)
 
 SPLGameController::~SPLGameController()
 {
+  // request the thread to stop
   exiting = true;
 
   if(socketThread.joinable())

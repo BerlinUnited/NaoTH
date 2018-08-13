@@ -23,12 +23,14 @@ if [ -f "./deploy/home/nao/bin/libnaosmal.so" ]; then
 fi
 
 # backup the stuff from the robot
+echo "backup the stuff on the robot"
 rm -rf ./backup
 sudo -u nao mkdir ./backup
 sudo -u nao cp -r /home/nao/naoqi/Config ./backup
 sudo -u nao cp -r /home/nao/bin ./backup
 
 # remove files that will be copied and copy the new ones
+echo "clean and copy new files"
 if [ -d "./deploy/home/nao/naoqi/Config" ]; then
   rm -rf /home/nao/Config/general
   rm -rf /home/nao/Config/platform
