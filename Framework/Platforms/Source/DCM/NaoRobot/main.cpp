@@ -13,6 +13,10 @@
 //#include <rttools/rtthread.h>
 #include <atomic>
 
+#include <errno.h>
+
+#define handle_error_en(en, msg) \
+               do { errno = en; perror(msg); exit(EXIT_FAILURE); } while (0)
 
 using namespace naoth;
 
@@ -21,21 +25,23 @@ std::atomic_int framesSinceCognitionLastSeen;
 void got_signal(int t)
 {
 
-  if(t == SIGTERM) {
+  if(t == SIGTERM || t == SIGINT) {
     std::cout << "shutdown requested by kill signal" << t << std::endl;
-  } else if(t == SIGSEGV) {
+  } 
+  else if(t == SIGSEGV) 
+  {
     std::cerr << "SEGMENTATION FAULT" << std::endl;
+    
+    std::cout << "dumping traces" << std::endl;
+    Trace::getInstance().dump();
+    //StopwatchManager::getInstance().dump("cognition");
+
+    std::cout << "syncing file system..." ;
+    sync();
+    std::cout << " finished." << std::endl;
   } else {
-    std::cerr << "catched unknown signal " << t << std::endl;
+    std::cerr << "caught unknown signal " << t << std::endl;
   }
-
-  std::cout << "dumping traces" << std::endl;
-  Trace::getInstance().dump();
-  //StopwatchManager::getInstance().dump("cognition");
-
-  std::cout << "syncing file system..." ;
-  sync();
-  std::cout << " finished." << std::endl;
 
   exit(0);
 }//end got_signal
@@ -126,7 +132,6 @@ void* motionThreadCallback(void* ref)
 
 int main(int /*argc*/, char **/*argv[]*/)
 {
-
   std::cout << "=========================================="  << std::endl;
   std::cout << "NaoTH compiled on: " << __DATE__ << " at " << __TIME__ << std::endl;
 
@@ -150,6 +155,13 @@ int main(int /*argc*/, char **/*argv[]*/)
   saKill.sa_handler = got_signal;
   sigfillset(&saKill.sa_mask);
   sigaction(SIGTERM,&saKill,NULL);
+  
+  struct sigaction saInt;
+  memset( &saInt, 0, sizeof(saInt) );
+  saInt.sa_handler = got_signal;
+  sigfillset(&saInt.sa_mask);
+  sigaction(SIGINT,&saInt,NULL);
+  
   struct sigaction saSeg;
   memset( &saSeg, 0, sizeof(saSeg) );
   saSeg.sa_handler = got_signal;
@@ -183,13 +195,18 @@ int main(int /*argc*/, char **/*argv[]*/)
   // create the motion thread
   // !!we use here a pthread directly, because std::thread doesn't support priorities
   pthread_t motionThread;
-  pthread_create(&motionThread, 0, motionThreadCallback, (void*)&theController);
-
+  int err = pthread_create(&motionThread, NULL, motionThreadCallback, (void*)&theController);
+  if (err != 0) {
+    handle_error_en(err, "create motionThread");
+  }
+  
   // set the pririty of the motion thread to 50
   sched_param param;
   param.sched_priority = 50;
-  pthread_setschedparam(motionThread, SCHED_FIFO, &param);
-
+  err = pthread_setschedparam(motionThread, SCHED_FIFO, &param);
+  if (err != 0) {
+    handle_error_en(err, "set priority motionThread");
+  }
   
   std::thread cognitionThread = std::thread([&theController]
   {
@@ -199,7 +216,6 @@ int main(int /*argc*/, char **/*argv[]*/)
       std::this_thread::yield();
     }
   });
-
 
 
   //if(motionThread != NULL)
@@ -212,5 +228,5 @@ int main(int /*argc*/, char **/*argv[]*/)
     cognitionThread.join();
   }
 
-  return 0;
+  exit (0);
 }//end main
