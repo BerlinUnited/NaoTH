@@ -40,7 +40,6 @@ BEGIN_DECLARE_MODULE(Actuator)
   REQUIRE(LEDData)
   REQUIRE(IRSendData)
   REQUIRE(UltraSoundSendData)
-  REQUIRE(SoundPlayData)
   REQUIRE(MotionStatus)
   REQUIRE(TeamMessageDataOut)
   REQUIRE(DebugMessageOut)
@@ -55,6 +54,7 @@ BEGIN_DECLARE_MODULE(Actuator)
   // HACK: needed to transform the HeadMotionRequest
   REQUIRE(KinematicChain)
 
+  PROVIDE(SoundPlayData)
 
   // HACK: check execute()
   PROVIDE(MotionRequest)
