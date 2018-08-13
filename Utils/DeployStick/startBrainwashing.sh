@@ -27,7 +27,8 @@ echo "backup the stuff on the robot"
 rm -rf ./backup
 sudo -u nao mkdir ./backup
 sudo -u nao cp -r /home/nao/naoqi/Config ./backup
-sudo -u nao cp -r /home/nao/bin ./backup
+sudo -u nao cp -rv /home/nao/bin ./backup
+
 
 # remove files that will be copied and copy the new ones
 echo "clean and copy new files"
