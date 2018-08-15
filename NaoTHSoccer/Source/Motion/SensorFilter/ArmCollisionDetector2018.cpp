@@ -2,6 +2,7 @@
 //Created by Etienne C.-C.
 
 #include "ArmCollisionDetector2018.h"
+#include <PlatformInterface/Platform.h>
 using namespace naoth;
 
 ArmCollisionDetector2018::ArmCollisionDetector2018()
@@ -16,8 +17,12 @@ ArmCollisionDetector2018::ArmCollisionDetector2018()
 
 
 	getDebugParameterList().add(&params);
+
 	std::string line;
-	std::ifstream file(params.point_config);
+
+  const std::string& dirlocation = Platform::getInstance().theConfigDirectory;
+  std::cout << dirlocation + params.point_config << std::endl;
+  std::ifstream file(dirlocation + params.point_config);
 	if (file.is_open())
 	{
 		while (std::getline(file, line))
@@ -26,7 +31,8 @@ ArmCollisionDetector2018::ArmCollisionDetector2018()
 			double alpha = std::stod(line, &sz);
 			double beta = std::stod(line.substr(sz));
 			Point buff(alpha, beta);
-			P.push_back(buff);
+
+      getCollisionPercept().referenceHull.push_back(buff);
 		}
 	}
 
@@ -40,8 +46,9 @@ ArmCollisionDetector2018::~ArmCollisionDetector2018()
 void ArmCollisionDetector2018::execute()
 {
 	//Reference Hull DEBUG-REQUEST must be here at the beginning because execute() returns quiet early when armmode isn't OK
+  //TODO delete me
 	DEBUG_REQUEST("Motion:SensorFilter:ReferenceHull",
-		for (std::vector<Point>::iterator it = P.begin(); it != P.end(); ++it) {
+    for (std::vector<Point>::iterator it = getCollisionPercept().referenceHull.begin(); it != getCollisionPercept().referenceHull.end(); ++it) {
 			std::cout << "x= " << it->getX() << " y= " << it->getY() << std::endl;
 		}
 	);
@@ -90,14 +97,14 @@ void ArmCollisionDetector2018::execute()
 		//Convex Hull calculation
 		//First concatenate PointBuffer to reference points
 		//Next compare result to reference points
-		PointBufferLeft.insert(PointBufferLeft.end(), P.begin(), P.end());
+    PointBufferLeft.insert(PointBufferLeft.end(), getCollisionPercept().referenceHull.begin(), getCollisionPercept().referenceHull.end());
 		vBuff = ConvexHull::convexHull(PointBufferLeft);
 		DEBUG_REQUEST("Motion:SensorFilter:BufferL_hull",
 			for (std::vector<Point>::iterator it = vBuff.begin(); it != vBuff.end(); ++it) {
 				std::cout << "x= " << it->getX() << " y= " << it->getY() << std::endl;
 			}
 		);
-		if (vBuff == P)
+    if (vBuff == getCollisionPercept().referenceHull)
 		{
 			//No Collision
 			vBuff.erase(vBuff.begin(), vBuff.end());
@@ -106,6 +113,8 @@ void ArmCollisionDetector2018::execute()
 		else
 		{
 			//Collision
+      getCollisionPercept().timeCollisionArmLeft = getFrameInfo().getTime();
+
 			vBuff.erase(vBuff.begin(), vBuff.end());
 			PointBufferLeft.erase(PointBufferLeft.begin(), PointBufferLeft.end());
 		}
@@ -115,14 +124,14 @@ void ArmCollisionDetector2018::execute()
 		//Convex Hull claculation
 		//First concatenate PointBuffer to reference points
 		//Next compare result to reference points
-		PointBufferRight.insert(PointBufferRight.end(), P.begin(), P.end());
+    PointBufferRight.insert(PointBufferRight.end(), getCollisionPercept().referenceHull.begin(), getCollisionPercept().referenceHull.end());
 		vBuff = ConvexHull::convexHull(PointBufferRight);
 		DEBUG_REQUEST("Motion:SensorFilter:BufferR_hull",
 			for (std::vector<Point>::iterator it = vBuff.begin(); it != vBuff.end(); ++it) {
 				std::cout << "x= " << it->getX() << " y= " << it->getY() << std::endl;
 			}
 		);
-		if (vBuff == P)
+    if (vBuff == getCollisionPercept().referenceHull)
 		{
 			//No Collision
 			vBuff.erase(vBuff.begin(), vBuff.end());
@@ -131,6 +140,8 @@ void ArmCollisionDetector2018::execute()
 		else
 		{
 			//Collision
+      getCollisionPercept().timeCollisionArmRight = getFrameInfo().getTime();
+
 			vBuff.erase(vBuff.begin(), vBuff.end());
 			PointBufferRight.erase(PointBufferRight.begin(), PointBufferRight.end());
 		}

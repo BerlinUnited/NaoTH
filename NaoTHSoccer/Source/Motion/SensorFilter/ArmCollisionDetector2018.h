@@ -24,17 +24,18 @@
 
 
 BEGIN_DECLARE_MODULE(ArmCollisionDetector2018)
-PROVIDE(DebugRequest)
-PROVIDE(DebugPlot)
-PROVIDE(DebugModify)
-PROVIDE(DebugParameterList)
-PROVIDE(CollisionPercept)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugPlot)
+  PROVIDE(DebugModify)
+  PROVIDE(DebugParameterList)
 
-REQUIRE(FrameInfo)
-REQUIRE(MotorJointData)
-REQUIRE(SensorJointData)
-REQUIRE(MotionStatus)
-REQUIRE(MotionRequest)
+  REQUIRE(FrameInfo)
+  REQUIRE(MotorJointData)
+  REQUIRE(SensorJointData)
+  REQUIRE(MotionStatus)
+  REQUIRE(MotionRequest)
+
+  PROVIDE(CollisionPercept)
 END_DECLARE_MODULE(ArmCollisionDetector2018)
 
 class ArmCollisionDetector2018 : private ArmCollisionDetector2018Base
@@ -58,7 +59,7 @@ public:
 			syncWithConfig();
 		}
 		std::string point_config;
-		int collect;
+		size_t collect;
 	} params;
 
 private:
@@ -67,7 +68,7 @@ private:
 	RingBuffer<double, 4> jointDataBufferRight;
 	std::vector<Point> PointBufferLeft;
 	std::vector<Point> PointBufferRight;
-	std::vector<Point> P;
+	//std::vector<Point> P;
 	std::vector<Point> vBuff;
 };
 

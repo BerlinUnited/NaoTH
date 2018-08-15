@@ -12,6 +12,9 @@
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
 
+#include <vector>
+#include "Tools/DataStructures/Point.h"
+
 /**
 * This describes the CollisionPercept
 */
@@ -29,11 +32,17 @@ public:
   // time stamp of the last collision
   unsigned int timeCollisionArmLeft;
   unsigned int timeCollisionArmRight;
+
+  std::vector<Point> referenceHull;
   
   virtual void print(std::ostream& stream) const
   {
     stream << "timeCollisionArmLeft = " << timeCollisionArmLeft << '\n';
     stream << "timeCollisionArmRight = " << timeCollisionArmRight << '\n';
+    stream << "referenceHull:" << "\n";
+    for (size_t i = 0; i < referenceHull.size(); i++){
+      stream << "x= " << referenceHull[i].getX() << " y = " << referenceHull[i].getY() << "\n";
+    }
   }
 };
 
