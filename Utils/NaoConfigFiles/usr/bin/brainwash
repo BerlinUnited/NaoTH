@@ -31,6 +31,9 @@ else
   then
     # start the actual brainwasher
     ./startBrainwashing.sh
+    
+    # collect the last 1024 lines of the output
+    tail -n 1024 /var/log/messages > ./braindump.txt
   else
     logger -t brainwasher "ERROR: missing brainwasher script"
     sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/error_missing_usb_brainwasher_script.wav
