@@ -6,6 +6,7 @@
  */
 
 #include "NaoController.h"
+#include <Tools/ThreadUtil.h>
 
 #include <glib.h>
 #include <glib-object.h>
@@ -191,6 +192,9 @@ int main(int /*argc*/, char **/*argv[]*/)
   pthread_setschedparam(motionThread, SCHED_FIFO, &param);
 
   
+  pthread_setname_np(motionThread, "Motion");
+  
+  
   std::thread cognitionThread = std::thread([&theController]
   {
     while(true) {
@@ -199,8 +203,8 @@ int main(int /*argc*/, char **/*argv[]*/)
       std::this_thread::yield();
     }
   });
-
-
+  
+  ThreadUtil::setName(cognitionThread, "Cognition");
 
   //if(motionThread != NULL)
   {

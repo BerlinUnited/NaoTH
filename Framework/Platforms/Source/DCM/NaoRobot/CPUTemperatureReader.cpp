@@ -15,6 +15,7 @@ CPUTemperatureReader::CPUTemperatureReader()
   std::cout << "[INFO] CPUTemperatureReader start thread" << std::endl;
   readThread = std::thread([this] {this->readLoop();});
   ThreadUtil::setPriority(readThread, ThreadUtil::Priority::lowest);
+  ThreadUtil::setName(readThread, "CPUTemperature");
   
   temperatureFile.open("/sys/class/thermal/thermal_zone0/temp");
 }
