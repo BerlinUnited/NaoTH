@@ -228,5 +228,5 @@ int main(int /*argc*/, char **/*argv[]*/)
     cognitionThread.join();
   }
 
-  exit (0);
+  return 0;
 }//end main
