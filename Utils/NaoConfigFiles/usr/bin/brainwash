@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# redirect all the output to the logger
+exec 1> >(logger -s -t brainwasher) 2>&1
+
 COUNTER=100 # ~ 10 seconds
 
 # create mount point
@@ -27,6 +31,9 @@ else
   then
     # start the actual brainwasher
     ./startBrainwashing.sh
+    
+    # collect the last 1024 lines of the output
+    tail -n 1024 /var/log/messages > ./braindump.txt
   else
     logger -t brainwasher "ERROR: missing brainwasher script"
     sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/error_missing_usb_brainwasher_script.wav
