@@ -37,6 +37,8 @@ void got_signal(int t)
   sync();
   std::cout << " finished." << std::endl;
 
+  system("/usr/bin/paplay Media/naoth_stop.wav");
+  
   exit(0);
 }//end got_signal
 
