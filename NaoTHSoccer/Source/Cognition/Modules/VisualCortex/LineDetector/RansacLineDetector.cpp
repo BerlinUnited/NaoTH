@@ -35,7 +35,7 @@ void RansacLineDetector::execute()
   for(int i = 0; i < params.maxLines; ++i)
   {
     Math::LineSegment result;
-    if(ransac(result) > 0)
+    if(ransac(result))
     {
       LinePercept::FieldLineSegment fieldLine;
       fieldLine.lineOnField = result;
@@ -481,4 +481,34 @@ int RansacLineDetector::ransacEllipse(Ellipse& result)
 
   return bestInlier;
 
+}
+
+void RansacLineDetector::simpleLinearRegression(std::vector<Vector2d> &points, double& slope, double& intercept) {
+  int n = (int) points.size();
+
+  if(n == 1) {
+    slope = 0.0;
+    intercept = points[0].y;
+    return;
+  }
+
+  Vector2d avg;
+  for(Vector2d point : points) {
+    avg += point;
+  }
+  avg /= n;
+
+  double top = 0.;
+  double bot = 0.;
+  double x_diff = 0.;
+  for(Vector2d point : points) {
+    x_diff = point.x - avg.x;
+    top += x_diff * (point.y - avg.y);
+    bot += x_diff * x_diff;
+  }
+
+  slope = top / bot;
+  intercept = avg.y - slope * avg.x;
+
+  return;
 }

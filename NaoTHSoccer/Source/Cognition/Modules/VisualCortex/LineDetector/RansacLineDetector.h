@@ -52,6 +52,8 @@ private:
 
   bool ransacCircle(Vector2d& result, std::vector<Vector2d>& inlierPoints);
 
+  void simpleLinearRegression(std::vector<Vector2d> &points, double& slope, double& intercept);
+
 //private:
   class Parameters: public ParameterList
   {
