@@ -87,6 +87,7 @@ BEGIN_DECLARE_MODULE(MonteCarloSelfLocator)
   REQUIRE(ProbabilisticQuadCompas)
   REQUIRE(LineGraphPercept)
   REQUIRE(LinePercept)
+  REQUIRE(RansacCirclePercept)
 
   PROVIDE(RobotPose)
   PROVIDE(SelfLocGoalModel)
@@ -145,6 +146,8 @@ private: // local types
       PARAMETER_REGISTER(updateByShortLinePercept) = false;
 
       PARAMETER_REGISTER(updateByMiddleCircle) = true;
+      PARAMETER_REGISTER(updateByLinePerceptCircle) = true;
+      PARAMETER_REGISTER(updateByRansacCircle) = true;
       PARAMETER_REGISTER(sigmaDistanceCenterCircle) = 0.2;
       PARAMETER_REGISTER(sigmaAngleCenterCircle) = 0.1;
 
@@ -200,6 +203,8 @@ private: // local types
 
     
     bool updateByMiddleCircle;
+    bool updateByLinePerceptCircle;
+    bool updateByRansacCircle;
     double sigmaDistanceCenterCircle;
     double sigmaAngleCenterCircle;
 
@@ -297,7 +302,7 @@ private: // workers
   void updateByLines(const LinePercept& linePercept, SampleSet& sampleSet) const;
   void updateByShortLines(const LinePercept& linePercept, SampleSet& sampleSet) const;
 
-  void updateByMiddleCircle(const LinePercept& linePercept, SampleSet& sampleSet) const;
+  void updateByMiddleCircle(const Vector2d& middleCircleCenter, SampleSet& sampleSet) const;
   // A-Priori knowledge based on the game state
   void updateBySidePositions(SampleSet& sampleSet) const;
   void updateByStartPositions(SampleSet& sampleSet) const;
