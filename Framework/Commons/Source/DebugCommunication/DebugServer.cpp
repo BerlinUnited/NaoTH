@@ -16,6 +16,7 @@
 #include <Messages/Messages.pb.h>
 #include "DebugServer.h"
 #include <Tools/NaoTime.h>
+#include <Tools/ThreadUtil.h>
 
 using namespace naoth;
 
@@ -56,6 +57,7 @@ void DebugServer::start(unsigned short port)
   std::cout << "[INFO] Starting debug server thread" << std::endl;
    
   connectionThread = std::thread([this] {this->run();});
+  ThreadUtil::setName(connectionThread, "DebugServer");
 }//end start
 
 void DebugServer::run()

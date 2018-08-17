@@ -70,6 +70,12 @@ fi
 
 naoth start
 
+# wait until the binary is started so we can collect its output
+sleep 4
+
+# collect the last 1024 lines of the output
+tail -n 1024 /var/log/messages > ./braindump.txt
+
 echo "DONE"
 
 

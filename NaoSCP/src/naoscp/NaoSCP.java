@@ -339,6 +339,8 @@ public class NaoSCP extends javax.swing.JPanel {
             @Override
             public void run() {
                 try {
+                    long start = System.currentTimeMillis();
+                    
                     // STEP 1: create the deploy directory for the playerNumber
                     File deployDir = new File(targetDir, "deploy");
 
@@ -355,33 +357,51 @@ public class NaoSCP extends javax.swing.JPanel {
                         naoTHPanel.getAction().run(deployDir);
 
                         FileUtils.copyFiles(new File(deployStickScriptPath), targetDir);
-
+                        
+                        // zip files
+                        File deployZip = new File(targetDir, "deploy.zip");
+                        Logger.getGlobal().log(Level.INFO, "ZIP files to " + deployZip.getPath());
+                        FileUtils.zipDirectory(deployDir, deployZip);
+                        
                         // send stuff to robot
                         String robotIp = getIpAddress();
-                        Scp scp = new Scp(robotIp, "nao", "nao");
                         
+                        Scp scp = new Scp(robotIp, "nao", "nao");
                         scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
 
-                        scp.mkdir("/home/nao/tmp"); // just in case it doesn't exist
-                        scp.cleardir("/home/nao/tmp");
-                        scp.put(deployDir, "/home/nao/tmp/deploy");
+                        Scp.CommandStream shell = scp.getShell();
+
+                        //Logger.getGlobal().log(Level.INFO, "mkdir /home/nao/tmp");
+                        //scp.mkdir("/home/nao/tmp"); // just in case it doesn't exist
+                        //Logger.getGlobal().log(Level.INFO, "rm -rf /home/nao/tmp/*");
+                        //scp.cleardir("/home/nao/tmp");
+
+                        // HACK: string obfuscation (echo -e '\\x44\\x4F\\x4E\\x45') prints 'DONE'
+                        // we wait until echo is executed to be sure that the command is done
+                        shell.run("mkdir /home/nao/tmp; echo -e '\\x44\\x4F\\x4E\\x45'", "DONE");
+                        shell.run("rm -rf /home/nao/tmp/*; echo -e '\\x44\\x4F\\x4E\\x45'", "DONE");
+
+                        //scp.put(deployDir, "/home/nao/tmp/deploy");
+                        scp.put(deployZip, "/home/nao/tmp/deploy.zip");
+
                         scp.put(new File(deployStickScriptPath), "/home/nao/tmp/setup.sh");
 
                         //scp.channel.chown(WIDTH, utilsPath);
                         scp.chmod(755, "/home/nao/tmp/setup.sh");
                         //scp.run("/home/nao/tmp", "./setup.sh");
 
-                        Scp.CommandStream shell = scp.getShell();
                         // HACK: always stop naoth before proceeding
 //                        shell.run("naoth stop", "killing naoth cognition processes");
                         shell.run("su", "Password:");
                         shell.run("root");
                         shell.run("cd /home/nao/tmp/");
-                        shell.run("./setup.sh", "DONE");
+                        shell.run("sudo -u nao unzip -q deploy.zip; ./setup.sh", "DONE");
+                        //shell.run("./setup.sh", "DONE");
 
                         scp.disconnect();
 
-                        Logger.getGlobal().log(Level.INFO, "DONE");
+                        Logger.getGlobal().log(Level.INFO, String.format("DONE (%.2f)", (System.currentTimeMillis() - start)/1000.0));
+
                         //NaoSCP.this.setEnabledAll(true);
                     }
                 } catch (JSchException | SftpException | IOException | NaoSCPException ex) {

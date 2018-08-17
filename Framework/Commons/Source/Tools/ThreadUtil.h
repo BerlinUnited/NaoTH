@@ -11,6 +11,7 @@
 #endif // _WIN32
 
 #include <thread>
+#include <cstring>
 
 namespace naoth {
 
@@ -47,6 +48,20 @@ public:
          return true;
        }
      }
+  #elif _WIN32
+  #endif // _POSIX_THREADS
+
+    return false;
+  }
+
+  static bool setName(std::thread& t, const std::string& name)
+  {
+  #ifdef _POSIX_THREADS
+    // The thread name is a meaningful C language string, whose 
+    // length is restricted to 16 characters,
+    // including the terminating null byte ('\0')
+    pthread_setname_np(t.native_handle(), name.substr(0,15).c_str());
+    
   #elif _WIN32
   #endif // _POSIX_THREADS
 
