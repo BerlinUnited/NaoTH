@@ -34,6 +34,9 @@ public:
   unsigned int timeCollisionArmRight;
 
   std::vector<Point> referenceHull;
+  std::vector<Point> pointBufferLeft;
+  std::vector<Point> pointBufferRight;
+
   
   virtual void print(std::ostream& stream) const
   {
@@ -43,6 +46,14 @@ public:
     for (size_t i = 0; i < referenceHull.size(); i++){
       stream << "x= " << referenceHull[i].getX() << " y = " << referenceHull[i].getY() << "\n";
     }
+	stream << "Left Point Buffer:" << "\n";
+	for (size_t i = 0; i < pointBufferLeft.size(); i++){
+		stream << "x= " << pointBufferLeft[i].getX() << " y = " << pointBufferLeft[i].getY() << "\n";
+	}
+	stream << "Right Point Buffer:" << "\n";
+	for (size_t i = 0; i < pointBufferRight.size(); i++){
+		stream << "x= " << pointBufferRight[i].getX() << " y = " << pointBufferRight[i].getY() << "\n";
+	}
   }
 };
 

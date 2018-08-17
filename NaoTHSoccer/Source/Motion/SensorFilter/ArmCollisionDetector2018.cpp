@@ -25,14 +25,14 @@ ArmCollisionDetector2018::ArmCollisionDetector2018()
   std::ifstream file(dirlocation + params.point_config);
 	if (file.is_open())
 	{
+		std::cout << "Opened configuration file" << std::endl;
 		while (std::getline(file, line))
 		{
 			std::string::size_type sz;
 			double alpha = std::stod(line, &sz);
 			double beta = std::stod(line.substr(sz));
 			Point buff(alpha, beta);
-
-      getCollisionPercept().referenceHull.push_back(buff);
+			getCollisionPercept().referenceHull.push_back(buff);
 		}
 	}
 
@@ -83,13 +83,15 @@ void ArmCollisionDetector2018::execute()
 		double a = jointDataBufferLeft.first();
 		double b = getSensorJointData().position[JointData::LShoulderPitch];
 		double er = (a - b);
-		PointBufferLeft.push_back(Point(a, er));
+		getCollisionPercept().pointBufferLeft.push_back(Point(a, er));
+		//PointBufferLeft.push_back(Point(a, er));
 	}
 	if (jointDataBufferRight.isFull()) {
 		double a = jointDataBufferRight.first();
 		double b = getSensorJointData().position[JointData::RShoulderPitch];
 		double er = (a - b);
-		PointBufferRight.push_back(Point(a, er));
+		getCollisionPercept().pointBufferRight.push_back(Point(a, er));
+		//PointBufferRight.push_back(Point(a, er));
 	}
 
 	if (PointBufferLeft.size() == params.collect)
