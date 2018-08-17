@@ -66,10 +66,6 @@ private:
 	//Private variablen wie zb ringbuffer fuer MJD und SJD synchronisation
 	RingBuffer<double, 4> jointDataBufferLeft;
 	RingBuffer<double, 4> jointDataBufferRight;
-	std::vector<Point> PointBufferLeft;
-	std::vector<Point> PointBufferRight;
-	//std::vector<Point> P;
-	std::vector<Point> vBuff;
 };
 
 #endif

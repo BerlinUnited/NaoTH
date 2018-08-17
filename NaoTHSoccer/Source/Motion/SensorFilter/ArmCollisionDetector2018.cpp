@@ -8,12 +8,7 @@ using namespace naoth;
 ArmCollisionDetector2018::ArmCollisionDetector2018()
 {
 	//Debug Requests for easy acces
-	DEBUG_REQUEST_REGISTER("Motion:SensorFilter:Arm_and_Motion_ok", "Display if current motion status and Arm mode is valid or not", false);
-	DEBUG_REQUEST_REGISTER("Motion:SensorFilter:ReferenceHull", "Print reference hull", false);
-	DEBUG_REQUEST_REGISTER("Motion:SensorFilter:BufferL", "Print left point buffer", false);
-	DEBUG_REQUEST_REGISTER("Motion:SensorFilter:BufferR", "Print right point buffer", false);
-	DEBUG_REQUEST_REGISTER("Motion:SensorFilter:BufferL_hull", "Print calculated convex hull for left joint", false);
-	DEBUG_REQUEST_REGISTER("Motion:SensorFilter:BufferR_hull", "Print calculated convex hull for right joint", false);
+	
 
 
 	getDebugParameterList().add(&params);
@@ -23,9 +18,9 @@ ArmCollisionDetector2018::ArmCollisionDetector2018()
   const std::string& dirlocation = Platform::getInstance().theConfigDirectory;
   std::cout << dirlocation + params.point_config << std::endl;
   std::ifstream file(dirlocation + params.point_config);
-	if (file.is_open())
+	if (file.is_open() && file.good)
 	{
-		std::cout << "Opened configuration file" << std::endl;
+		std::cout << "[ArmCollisionDetector2018] Opened configuration file" << std::endl;
 		while (std::getline(file, line))
 		{
 			std::string::size_type sz;
@@ -45,23 +40,12 @@ ArmCollisionDetector2018::~ArmCollisionDetector2018()
 
 void ArmCollisionDetector2018::execute()
 {
-	//Reference Hull DEBUG-REQUEST must be here at the beginning because execute() returns quiet early when armmode isn't OK
-  //TODO delete me
-	DEBUG_REQUEST("Motion:SensorFilter:ReferenceHull",
-    for (std::vector<Point>::iterator it = getCollisionPercept().referenceHull.begin(); it != getCollisionPercept().referenceHull.end(); ++it) {
-			std::cout << "x= " << it->getX() << " y= " << it->getY() << std::endl;
-		}
-	);
 	//Check if robot is in a suitable situation to recognize collisions
 	const bool armModeOK =
 		getMotionRequest().armMotionRequest.id == ArmMotionRequest::arms_synchronised_with_walk ||
 		getMotionRequest().armMotionRequest.id == ArmMotionRequest::arms_down;
 
 	const bool motionModeOK = getMotionStatus().currentMotion == motion::walk || getMotionStatus().currentMotion == motion::stand;
-	
-	DEBUG_REQUEST("Motion:SensorFilter:Arm_and_Motion_ok", 
-		std::cout << "Arm Mode: " << armModeOK << std::endl << "Motion Mode: " << motionModeOK << std::endl;
-	);
 
 	if (!armModeOK || !motionModeOK)
 	{
@@ -72,11 +56,11 @@ void ArmCollisionDetector2018::execute()
 		return;
 	}
 
-	//collect Sensor & Motorjoint Data and adjust timelag (Motor is 4 Frames ahead of Sensor)
+	//collect Motorjoint Data and adjust timelag (Motor is 4 Frames ahead of Sensor)
 	jointDataBufferLeft.add(getMotorJointData().position[JointData::LShoulderPitch]);
 	jointDataBufferRight.add(getMotorJointData().position[JointData::RShoulderPitch]);
 
-	//Fill up our Point object ringbuffers we want to check when we have enough
+	//Fill up our Point object vectors we want to check when we have enough
 	//Ringbuffers may be unnecessary, do we really want to calculate Hull every frame?
 	//Or only calculate every params.collect frames
 	if (jointDataBufferLeft.isFull()) {
@@ -84,82 +68,57 @@ void ArmCollisionDetector2018::execute()
 		double b = getSensorJointData().position[JointData::LShoulderPitch];
 		double er = (a - b);
 		getCollisionPercept().pointBufferLeft.push_back(Point(a, er));
-		//PointBufferLeft.push_back(Point(a, er));
 	}
 	if (jointDataBufferRight.isFull()) {
 		double a = jointDataBufferRight.first();
 		double b = getSensorJointData().position[JointData::RShoulderPitch];
 		double er = (a - b);
 		getCollisionPercept().pointBufferRight.push_back(Point(a, er));
-		//PointBufferRight.push_back(Point(a, er));
 	}
 
-	if (PointBufferLeft.size() == params.collect)
+	if (getCollisionPercept().pointBufferLeft.size() == params.collect)
 	{
 		//Convex Hull calculation
 		//First concatenate PointBuffer to reference points
 		//Next compare result to reference points
-    PointBufferLeft.insert(PointBufferLeft.end(), getCollisionPercept().referenceHull.begin(), getCollisionPercept().referenceHull.end());
-		vBuff = ConvexHull::convexHull(PointBufferLeft);
-		DEBUG_REQUEST("Motion:SensorFilter:BufferL_hull",
-			for (std::vector<Point>::iterator it = vBuff.begin(); it != vBuff.end(); ++it) {
-				std::cout << "x= " << it->getX() << " y= " << it->getY() << std::endl;
-			}
-		);
-    if (vBuff == getCollisionPercept().referenceHull)
+		getCollisionPercept().pointBufferLeft.insert(getCollisionPercept().pointBufferLeft.end(), getCollisionPercept().referenceHull.begin(), getCollisionPercept().referenceHull.end());
+		getCollisionPercept().newHullLeft = ConvexHull::convexHull(getCollisionPercept().pointBufferLeft);
+    if (getCollisionPercept().newHullLeft == getCollisionPercept().referenceHull)
 		{
 			//No Collision
-			vBuff.erase(vBuff.begin(), vBuff.end());
-			PointBufferLeft.erase(PointBufferLeft.begin(), PointBufferLeft.end());
+			getCollisionPercept().newHullLeft.erase(getCollisionPercept().newHullLeft.begin(), getCollisionPercept().newHullLeft.end());
+			getCollisionPercept().pointBufferLeft.erase(getCollisionPercept().pointBufferLeft.begin(), getCollisionPercept().pointBufferLeft.end());
 		}
 		else
 		{
 			//Collision
-      getCollisionPercept().timeCollisionArmLeft = getFrameInfo().getTime();
+			getCollisionPercept().timeCollisionArmLeft = getFrameInfo().getTime();
 
-			vBuff.erase(vBuff.begin(), vBuff.end());
-			PointBufferLeft.erase(PointBufferLeft.begin(), PointBufferLeft.end());
+			getCollisionPercept().newHullLeft.erase(getCollisionPercept().newHullLeft.begin(), getCollisionPercept().newHullLeft.end());
+			getCollisionPercept().pointBufferLeft.erase(getCollisionPercept().pointBufferLeft.begin(), getCollisionPercept().pointBufferLeft.end());
 		}
 	}
-	if (PointBufferRight.size() == params.collect)
+	if (getCollisionPercept().pointBufferRight.size() == params.collect)
 	{
-		//Convex Hull claculation
+		//Convex Hull calculation
 		//First concatenate PointBuffer to reference points
 		//Next compare result to reference points
-    PointBufferRight.insert(PointBufferRight.end(), getCollisionPercept().referenceHull.begin(), getCollisionPercept().referenceHull.end());
-		vBuff = ConvexHull::convexHull(PointBufferRight);
-		DEBUG_REQUEST("Motion:SensorFilter:BufferR_hull",
-			for (std::vector<Point>::iterator it = vBuff.begin(); it != vBuff.end(); ++it) {
-				std::cout << "x= " << it->getX() << " y= " << it->getY() << std::endl;
-			}
-		);
-    if (vBuff == getCollisionPercept().referenceHull)
+		getCollisionPercept().pointBufferRight.insert(getCollisionPercept().pointBufferRight.end(), getCollisionPercept().referenceHull.begin(), getCollisionPercept().referenceHull.end());
+		getCollisionPercept().newHullRight = ConvexHull::convexHull(getCollisionPercept().pointBufferRight);
+		if (getCollisionPercept().newHullRight == getCollisionPercept().referenceHull)
 		{
 			//No Collision
-			vBuff.erase(vBuff.begin(), vBuff.end());
-			PointBufferRight.erase(PointBufferRight.begin(), PointBufferRight.end());
+			getCollisionPercept().newHullRight.erase(getCollisionPercept().newHullRight.begin(), getCollisionPercept().newHullRight.end());
+			getCollisionPercept().pointBufferRight.erase(getCollisionPercept().pointBufferRight.begin(), getCollisionPercept().pointBufferRight.end());
 		}
 		else
 		{
 			//Collision
-      getCollisionPercept().timeCollisionArmRight = getFrameInfo().getTime();
+			getCollisionPercept().timeCollisionArmRight = getFrameInfo().getTime();
 
-			vBuff.erase(vBuff.begin(), vBuff.end());
-			PointBufferRight.erase(PointBufferRight.begin(), PointBufferRight.end());
+			getCollisionPercept().newHullRight.erase(getCollisionPercept().newHullRight.begin(), getCollisionPercept().newHullRight.end());
+			getCollisionPercept().pointBufferRight.erase(getCollisionPercept().pointBufferRight.begin(), getCollisionPercept().pointBufferRight.end());
 		}
 	}
-
-	//Some DEBUG-REQUEST prints
-
-	DEBUG_REQUEST("Motion:SensorFilter:BufferL",
-		for (std::vector<Point>::iterator it = PointBufferLeft.begin(); it != PointBufferLeft.end(); ++it) {
-			std::cout << "x= " << it->getX() << " y= " << it->getY() << std::endl;
-		}
-	);
-	DEBUG_REQUEST("Motion:SensorFilter:BufferR",
-		for (std::vector<Point>::iterator it = PointBufferRight.begin(); it != PointBufferRight.end(); ++it) {
-			std::cout << "x= " << it->getX() << " y= " << it->getY() << std::endl;
-		}
-	);
 
 }

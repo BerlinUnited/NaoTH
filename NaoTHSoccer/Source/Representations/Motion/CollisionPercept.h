@@ -36,6 +36,8 @@ public:
   std::vector<Point> referenceHull;
   std::vector<Point> pointBufferLeft;
   std::vector<Point> pointBufferRight;
+  std::vector<Point> newHullLeft;
+  std::vector<Point> newHullRight;
 
   
   virtual void print(std::ostream& stream) const
