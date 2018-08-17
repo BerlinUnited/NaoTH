@@ -40,3 +40,5 @@ can be found in the "Third-Party-Licenses" folder.
   -- BSD-style
 * Java Simple Plugin Framework (https://code.google.com/p/jspf/)
   -- New BSD License
+* GSON - A Java serialization/deserialization library to convert Java Objects into JSON and back 
+  -- Apache License 2.0
