@@ -11,6 +11,8 @@
 
 using namespace naoth;
 
+#include <sstream>
+using namespace std;
 
 UDPReceiver::UDPReceiver(unsigned int port, unsigned int buffersize)
   : exiting(false), socket(NULL)
@@ -31,6 +33,10 @@ UDPReceiver::UDPReceiver(unsigned int port, unsigned int buffersize)
 
   socketThread = std::thread([this]{this->loop();});
   ThreadUtil::setPriority(socketThread, ThreadUtil::Priority::lowest);
+
+  stringstream s;
+  s << "Listen " << port;
+  ThreadUtil::setName(socketThread, s.str());
 }
 
 UDPReceiver::~UDPReceiver()
