@@ -40,3 +40,6 @@ RobotControl/RobotConnector/src/de/naoth/rc/messages/*  text eol=lf
 *.zip    binary
 *.wav    binary
 *.mp3    binary
+
+# Whistle stuff
+*.lst    text eol=lf

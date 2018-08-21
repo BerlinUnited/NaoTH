@@ -16,6 +16,7 @@ import java.awt.Font;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -24,6 +25,11 @@ import java.util.Arrays;
 public class SPLMessage
 {
     public static final int SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS = 5;
+    /** List of supported versions */
+    public static final List<Integer> SPL_MESSAGE_VERSIONS = Arrays.asList(
+        SPLMessage2017.SPL_STANDARD_MESSAGE_STRUCT_VERSION,
+        SPLMessage2018.SPL_STANDARD_MESSAGE_STRUCT_VERSION
+    );
     
     public static final int BU_CUSTOM_DATA_OFFSET_X32 = 12;
     public static final int BU_CUSTOM_DATA_OFFSET_X64 = 16;
@@ -200,28 +206,38 @@ public class SPLMessage
             || buffer.get() != 'P'
             || buffer.get() != 'L'
             || buffer.get() != ' ') {
-            throw new Exception("Not an SPL Message.");
+            throw new NotSplMessageException();
         }
         
-        byte version = buffer.get();
-        switch(version) {
+        int version = buffer.get();
+        if(version == SPL_MESSAGE_VERSIONS.get(0)) {
             // parse with v2017
-            case SPLMessage2017.SPL_STANDARD_MESSAGE_STRUCT_VERSION:
-                return new SPLMessage2017(buffer);
+            return new SPLMessage2017(buffer);
+        } else if(version == SPL_MESSAGE_VERSIONS.get(1)) {
             // parse with v2018
-            case SPLMessage2018.SPL_STANDARD_MESSAGE_STRUCT_VERSION:
-                return new SPLMessage2018(buffer);
-            default:
-                throw new Exception(
-                    "Wrong version: reveived " + version + 
-                    ", but expected " + SPLMessage2017.SPL_STANDARD_MESSAGE_STRUCT_VERSION + 
-                    " or " + SPLMessage2018.SPL_STANDARD_MESSAGE_STRUCT_VERSION
-                );
+            return new SPLMessage2018(buffer);
+        } else {
+            throw new WrongSplVersionException(version);
         }
     }
 
     public void draw(DrawingCollection drawings, Color robotColor, boolean mirror)
     {
+        // put the penalized players on "the bench"
+        if(user != null && user.getIsPenalized()) {
+            Pose2D robotPose = mirror ? new Pose2D(4600 - (playerNum * 500), -3300, Math.PI/2) : new Pose2D(-4600 + (playerNum * 500), 3300, -Math.PI/2);
+            // robot
+            drawings.add(new Pen(1.0f, robotColor));
+            drawings.add(new Robot(robotPose.translation.x, robotPose.translation.y, robotPose.rotation));
+
+            // number
+            drawings.add(new Pen(1, Color.BLACK));
+            drawings.add(new Text((int) robotPose.translation.x, (int) robotPose.translation.y + 150, "" + playerNum));
+            
+            // don't draw anything else
+            return;
+        }
+        
         Vector2D ballPos = new Vector2D(ball_x, ball_y);
         Pose2D robotPose = mirror ? new Pose2D(-pose_x, -pose_y, pose_a + Math.PI)
             : new Pose2D(pose_x, pose_y, pose_a);
@@ -295,12 +311,17 @@ public class SPLMessage
         if(user != null)
         {
             double[] tb = {user.getTeamBall().getX(), user.getTeamBall().getY()};
-            if(!Double.isInfinite(tb[0]) && !Double.isInfinite(tb[1])) {
+            if(user.hasTeamBall() && !Double.isInfinite(tb[0]) && !Double.isInfinite(tb[1])) {
                 // ... draw the teamball position
                 drawings.add(new Pen(5.0f, robotColor));
                 drawings.add(new Circle((int) tb[0], (int) tb[1], 65));
                 drawings.add(new Pen(robotColor, new BasicStroke(10, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{25, 50, 75, 100}, 0)));
                 drawings.add(new Arrow((int) robotPose.translation.x, (int) robotPose.translation.y, (int) tb[0], (int) tb[1]));
+            }
+            
+            if(user.getWantsToBeStriker() && !user.getWasStriker()) {
+                drawings.add(new Pen(32, Color.YELLOW));
+                drawings.add(new Circle((int) robotPose.translation.x, (int) robotPose.translation.y, 150));
             }
         }
         */
@@ -336,5 +357,23 @@ public class SPLMessage
     
     public static int size() {
         return Integer.max(SPLMessage2017.SPL_STANDARD_MESSAGE_SIZE, SPLMessage2018.SPL_STANDARD_MESSAGE_SIZE);
+    }
+    
+    /**
+     * Exception for invalid spl message header.
+     */
+    public static class NotSplMessageException extends Exception {
+        public NotSplMessageException() {
+            super("Not an SPL Message.");
+        }
+    }
+    
+    /**
+     * Exception for invalid/unknown spl message version.
+     */
+    public static class WrongSplVersionException extends Exception {
+        public WrongSplVersionException(int version) {
+            super("Wrong version: reveived " + version + ", but expected one of " + SPL_MESSAGE_VERSIONS);
+        }
     }
 }

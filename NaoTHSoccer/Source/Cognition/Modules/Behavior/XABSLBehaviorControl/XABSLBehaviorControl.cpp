@@ -102,11 +102,11 @@ void XABSLBehaviorControl::loadBehaviorFromFile(std::string file, std::string ag
   theEngine->createOptionGraph(input);
  
   // set the currently active agent
-  agentName = agent;
-  if(!theEngine->setSelectedAgent(agentName.c_str())) {
-    std::cerr << "[XABSLBehaviorControl] ERROR: could not set the agent \"" << agentName << "\" for behavior " << std::endl;
+  if(!theEngine->setSelectedAgent(agent.c_str())) {
+    std::cerr << "[XABSLBehaviorControl] ERROR: could not set the agent \"" << agent << "\" for behavior " << std::endl;
   }
   std::cout << "[XABSLBehaviorControl] current agent is set to \"" << theEngine->getSelectedAgentName() << "\"" << std::endl;
+  agentName = theEngine->getSelectedAgentName();
 
   if(!theErrorHandler.errorsOccurred) 
   {

@@ -18,6 +18,7 @@ option basic_play
       motion.walk.precise = false;
 
       path.routine = none;
+      path2018.routine = none;
       // why was this put here? Steffen?
       //arm.control_mode = normal;
       

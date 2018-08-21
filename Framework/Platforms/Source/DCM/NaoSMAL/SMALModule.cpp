@@ -224,7 +224,7 @@ void SMALModule::shutdownCallback()
     sleep(100);
   }
 
-}//end soundThreadCallback
+}//end shutdownCallback
 
 void SMALModule::slowDcmUpdate()
 {

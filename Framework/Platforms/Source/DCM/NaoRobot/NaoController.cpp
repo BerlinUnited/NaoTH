@@ -44,6 +44,8 @@ NaoController::NaoController()
   naoCommandIRSendData.open(naoCommandIRSendDataPath);
   naoCommandLEDData.open(naoCommandLEDDataPath);
   naoCommandBDRNaoQiRequestData.open(naoCommandBDRNaoQiRequestDataPath);
+  whistleSensorData.open("/whistleDetector.count");
+  whistleControlData.open("/whistleDetector.commands");
   // end init shared memory
 
   char hostname[128];
@@ -51,7 +53,7 @@ NaoController::NaoController()
   gethostname(hostname, 127);
   theRobotName = string(hostname);
   cout << "[NaoController] " << "RobotName: " << theRobotName << endl;
-  theWhistleDetector.setRobotName(theRobotName);
+  //theWhistleDetector.setRobotName(theRobotName);
 
   // read the theBodyID and the theBodyNickName from file "nao.info"
   const std::string naoInfoPath = Platform::getInstance().theConfigDirectory + "nao.info";

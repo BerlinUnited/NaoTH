@@ -29,6 +29,7 @@ MonteCarloSelfLocator::MonteCarloSelfLocator()
 {
   // debug
   DEBUG_REQUEST_REGISTER("MCSLS:reset_samples", "reset the sample set", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:user_defined_pose", "allows the user to modify the location of the robot", false);
 
   // field drawings
   DEBUG_REQUEST_REGISTER("MCSLS:draw_Samples", "draw sample set before resampling", false);
@@ -77,6 +78,28 @@ void MonteCarloSelfLocator::execute()
     state = LOCALIZE;
 
     DEBUG_REQUEST("MCSLS:draw_Samples", 
+      FIELD_DRAWING_CONTEXT;
+      theSampleSet.drawImportance(getDebugDrawings());
+    );
+
+    return;
+  );
+
+  DEBUG_REQUEST("MCSLS:user_defined_pose",
+
+    Vector2d pos;
+    double rot (0);
+    MODIFY("MCSLS:posX", pos.x);
+    MODIFY("MCSLS:posY", pos.y);
+    MODIFY("MCSLS:rot", rot);
+    
+    // sample particles in a 100mm^2 rect of the user defined pose
+    initializeSampleSetFixedRotation(Geometry::Rect2d(pos - Vector2d(50,50), pos + Vector2d(50,50)), rot, theSampleSet);
+
+    islocalized = true;
+    state = LOCALIZE;
+
+    DEBUG_REQUEST("MCSLS:draw_Samples",
       FIELD_DRAWING_CONTEXT;
       theSampleSet.drawImportance(getDebugDrawings());
     );
@@ -157,7 +180,7 @@ void MonteCarloSelfLocator::execute()
     case BLIND:
     {
       if(parameters.updateByOdometryWhenBlind) {
-        updateByOdometry(theSampleSet, parameters.motionNoise);
+        updateByOdometry(theSampleSet, parameters.motionNoise, true);
       }
 
       /* do nothing */
@@ -171,7 +194,7 @@ void MonteCarloSelfLocator::execute()
     }
     case LOCALIZE:
     {
-      updateByOdometry(theSampleSet, parameters.motionNoise);
+      updateByOdometry(theSampleSet, parameters.motionNoise, false);
     
       theSampleSet.resetLikelihood();
 
@@ -241,7 +264,7 @@ void MonteCarloSelfLocator::execute()
     }
     case TRACKING:
     {
-      updateByOdometry(theSampleSet, parameters.motionNoise);
+      updateByOdometry(theSampleSet, parameters.motionNoise, false);
 
       theSampleSet.resetLikelihood();
 
@@ -335,9 +358,14 @@ void MonteCarloSelfLocator::resetLocator()
   //mhBackendSet.setLikelihood(0.0);
 }
 
-void MonteCarloSelfLocator::updateByOdometry(SampleSet& sampleSet, bool noise) const
+void MonteCarloSelfLocator::updateByOdometry(SampleSet& sampleSet, bool noise, bool onlyRotation) const
 {
   Pose2D odometryDelta = getOdometryData() - lastRobotOdometry;
+
+  if(onlyRotation) {
+    odometryDelta.translation = Vector2d();
+  }
+
   for (size_t i = 0; i < sampleSet.size(); i++)
   {
     sampleSet[i] += odometryDelta;

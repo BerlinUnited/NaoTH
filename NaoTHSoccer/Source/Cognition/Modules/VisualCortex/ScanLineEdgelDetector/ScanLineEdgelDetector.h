@@ -11,6 +11,7 @@
 
 // Representations
 #include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CameraInfo.h"
 #include <Representations/Perception/FieldColorPercept.h>
@@ -96,6 +97,7 @@ public:
       PARAMETER_REGISTER(minEndPointGreenDensity) = 0.3;
 
       PARAMETER_REGISTER(checkSelfloc) = true;
+      PARAMETER_REGISTER(dynamicThreshold) = true;
 
       syncWithConfig();
       //DebugParameterList::getInstance().add(this);
@@ -110,6 +112,8 @@ public:
     int scanline_count; // number of scanlines
     int pixel_border_y; // don't scan the lower lines in the image
     int green_sampling_points; // number of the random samples to determine whether a segment is green 
+
+    bool dynamicThreshold;
 
     double double_edgel_angle_threshold;
     double minEndPointGreenDensity;

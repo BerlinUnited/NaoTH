@@ -59,6 +59,10 @@ struct UpdateAssociationFunction{
         virtual bool inRange() const {
             return score < threshold;
         }
+
+        virtual bool inRange(double score) const {
+            return score < threshold;
+        }
 };
 
 struct EuclideanUAF : UpdateAssociationFunction
@@ -107,6 +111,10 @@ struct LikelihoodUAF : UpdateAssociationFunction
     }
 
     bool inRange() const {
+        return score > threshold;
+    }
+
+    bool inRange(double score) const {
         return score > threshold;
     }
 };

@@ -164,6 +164,16 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
     t_edge = theParameters.brightness_threshold_bottom;
   }
 
+  // calculate the threshold depending on the reprojected size of the ball in the image
+  if(theParameters.dynamicThreshold) 
+  {
+    double radius = CameraGeometry::estimatedBallRadius(
+      getCameraMatrix(),getCameraInfo(), getFieldInfo().ballRadius, 
+      getCameraInfo().resolutionWidth / 2, getCameraInfo().resolutionHeight / 4*3);
+
+    t_edge = Math::clamp((int)radius, theParameters.brightness_threshold_top, theParameters.brightness_threshold_bottom);
+  }
+
   Vector2i lastGreenPoint(point); // HACK
   RingBufferWithSum<double, 10> movingWindow; // HACK
 

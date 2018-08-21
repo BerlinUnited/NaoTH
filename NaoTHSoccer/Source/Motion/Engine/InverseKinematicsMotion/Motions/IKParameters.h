@@ -25,7 +25,8 @@ public:
     double speed;
     bool enableStabilization;
     bool enableStabilizationRC16;
-    double stiffness;
+    double stiffnessGotoPose;
+    double stiffnessRelax;
 
     double bodyPitchOffset;
     double hipOffsetX;

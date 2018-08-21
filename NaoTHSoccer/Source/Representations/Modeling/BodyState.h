@@ -89,6 +89,8 @@ public:
 
   bool isDischarging;
   bool isCharging;
+
+  // filtered state of the battery
   double batteryCharge;
 
   virtual void print(std::ostream& stream) const
@@ -101,7 +103,7 @@ public:
       stream << "isLiftedUp = " << isLiftedUp << std::endl;
       stream << "isDischarging = " << isDischarging << std::endl;
       stream << "isCharging = " << isCharging << std::endl;
-      stream << "batteryCharge = " << batteryCharge << std::endl;
+      stream << "batteryCharge (filtered) = " << batteryCharge << std::endl;
   }//end print
 
 };
