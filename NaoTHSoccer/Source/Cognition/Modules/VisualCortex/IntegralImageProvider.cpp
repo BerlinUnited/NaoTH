@@ -27,13 +27,13 @@ void IntegralImageProvider::makeIntegralBild(BallDetectorIntegralImage& integral
   const uint32_t MAX_COLOR = integralImage.MAX_COLOR;
 
   const uint32_t imgWidth = getImage().width()/FACTOR;
-	const uint32_t imgHeight = getImage().height()/FACTOR;
-	integralImage.setDimension(imgWidth, imgHeight);
+  const uint32_t imgHeight = getImage().height()/FACTOR;
+  integralImage.setDimension(imgWidth, imgHeight);
 
   uint32_t* dataPtr = integralImage.getDataPointer();
 
   uint32_t* prevRowPtr = dataPtr;
-	uint32_t* curRowPtr  = dataPtr + imgWidth*MAX_COLOR;
+  uint32_t* curRowPtr  = dataPtr + imgWidth*MAX_COLOR;
 
   // NOTE: we use the byte-wise access to the image, so we skipp every 2nd pixel
   const Pixel* imgPtr = reinterpret_cast<Pixel*>(getImage().data());
