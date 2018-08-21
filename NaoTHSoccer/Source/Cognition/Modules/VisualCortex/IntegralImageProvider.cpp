@@ -18,31 +18,36 @@ IntegralImageProvider::~IntegralImageProvider()
 void IntegralImageProvider::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
-  if(cameraID == CameraInfo::Bottom) {
-    //makeIntegralBild(getGameColorIntegralImage());
-    makeIntegralBild(getBallDetectorIntegralImage());
-  } else {
-    //makeIntegralBild(getGameColorIntegralImageTop());
-    makeIntegralBild(getBallDetectorIntegralImageTop());
-  }
+  makeIntegralBild(getBallDetectorIntegralImage());
 }
 
-/*
-void IntegralImageProvider::integralBild()
+void IntegralImageProvider::makeIntegralBild(BallDetectorIntegralImage& integralImage) const
 {
-  const int32_t FACTOR = getMultiChannelIntegralImage().FACTOR;
-  const uint32_t MAX_COLOR = MultiChannelIntegralImage::MAX_COLOR;
-  const uint imgWidth = getImage().width()/FACTOR;
-	const uint imgHeight = getImage().height()/FACTOR;
-	getMultiChannelIntegralImage().setDimension(imgWidth, imgHeight);
+  const int32_t FACTOR = integralImage.FACTOR;
+  const uint32_t MAX_COLOR = integralImage.MAX_COLOR;
 
-  uint32_t* dataPtr = getMultiChannelIntegralImage().getDataPointer();
+  const uint32_t imgWidth = getImage().width()/FACTOR;
+	const uint32_t imgHeight = getImage().height()/FACTOR;
+	integralImage.setDimension(imgWidth, imgHeight);
+
+  uint32_t* dataPtr = integralImage.getDataPointer();
 
   uint32_t* prevRowPtr = dataPtr;
 	uint32_t* curRowPtr  = dataPtr + imgWidth*MAX_COLOR;
 
-  Pixel pixel;
+  // NOTE: we use the byte-wise access to the image, so we skipp every 2nd pixel
+  const Pixel* imgPtr = reinterpret_cast<Pixel*>(getImage().data());
   
+  const int32_t FACTOR_HALF = integralImage.FACTOR/2;
+  // initial offset in the y direction
+  const uint32_t yImageOffsetInitial = getImage().width() * FACTOR_HALF;
+  // In each line we iterate over imgWidth-1 pixel. Because the pixel pointer is accumulated, 
+  // we have to subtract it from the subsequent offset in the y-axis
+  const uint32_t yImageOffsetIteration = yImageOffsetInitial - (imgWidth-1) * FACTOR_HALF;
+
+  // initial y-offset
+  imgPtr += yImageOffsetInitial;
+
   for(uint16_t y = 1; y < imgHeight; ++y) 
   {
     uint32_t akk[MAX_COLOR] = { 0 };
@@ -52,20 +57,12 @@ void IntegralImageProvider::integralBild()
 
     for(uint16_t x = 1; x < imgWidth; ++x) 
     {
-#ifndef WIN32
-      // preload the cache, so the next row(s) are loaded while we are busy
-			// still working with them (https://gcc.gnu.org/onlinedocs/gcc-4.8.2/gcc/Other-Builtins.html)
-			__builtin_prefetch(&prevRowPtr[64], 0);
-#endif
-      getImage().get_direct(x*FACTOR, y*FACTOR, pixel);
-      
-      ColorClasses::Color c = getColorTable64().getColorClass(pixel.y,pixel.u,pixel.v);
-      if(c == ColorClasses::white) { 
-        ++akk[0];
-      } else if (c == ColorClasses::green){
+      imgPtr += FACTOR_HALF;
+
+      if(getFieldColorPercept().greenHSISeparator.isColor(*imgPtr)) {
         ++akk[1];
-      } else if(c == ColorClasses::black) {
-        ++akk[2];
+      } else {
+        akk[0] += (imgPtr->y0);
       }
 
       for(uint32_t i = 0; i < MAX_COLOR; ++i) {
@@ -75,59 +72,8 @@ void IntegralImageProvider::integralBild()
       curRowPtr  += MAX_COLOR;
       prevRowPtr += MAX_COLOR;
     }
+
+    // iteration y-offset
+    imgPtr += yImageOffsetIteration;
   }
 }
-
-void IntegralImageProvider::integralBildBottom()
-{
-  const int32_t FACTOR = getMultiChannelIntegralImage().FACTOR;
-  const uint32_t MAX_COLOR = MultiChannelIntegralImage::MAX_COLOR;
-  const uint imgWidth = getImage().width()/FACTOR;
-	const uint imgHeight = getImage().height()/FACTOR;
-	getMultiChannelIntegralImage().setDimension(imgWidth, imgHeight);
-
-  uint32_t* dataPtr = getMultiChannelIntegralImage().getDataPointer();
-
-  uint32_t* prevRowPtr = dataPtr;
-	uint32_t* curRowPtr  = dataPtr + imgWidth*MAX_COLOR;
-
-  Pixel pixel;
-  Vector2i p;
-  
-  for(uint16_t y = 1; y < imgHeight; ++y) 
-  {
-    uint32_t akk[MAX_COLOR] = { 0 };
-
-    prevRowPtr += MAX_COLOR;
-    curRowPtr  += MAX_COLOR;
-
-    for(uint16_t x = 1; x < imgWidth; ++x) 
-    {
-#ifndef WIN32
-      // preload the cache, so the next row(s) are loaded while we are busy
-			// still working with them (https://gcc.gnu.org/onlinedocs/gcc-4.8.2/gcc/Other-Builtins.html)
-			__builtin_prefetch(&prevRowPtr[64], 0);
-#endif
-      p.x = x*FACTOR;
-      p.y = y*FACTOR;
-      getImage().get_direct(p.x, p.y, pixel);
-      
-      ColorClasses::Color c = getColorTable64().getColorClass(pixel.y,pixel.u,pixel.v);
-      if(c == ColorClasses::white) { 
-        ++akk[0];
-      } else if (c == ColorClasses::green || getBodyContour().isOccupied(p)){
-        ++akk[1];
-      } else if(c == ColorClasses::black) {
-        ++akk[2];
-      }
-
-      for(uint32_t i = 0; i < MAX_COLOR; ++i) {
-        curRowPtr[i] = akk[i] + prevRowPtr[i];
-      }
-
-      curRowPtr  += MAX_COLOR;
-      prevRowPtr += MAX_COLOR;
-    }
-  }
-}
-*/
