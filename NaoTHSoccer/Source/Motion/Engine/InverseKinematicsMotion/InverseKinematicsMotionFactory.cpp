@@ -40,10 +40,6 @@ Module* InverseKinematicsMotionFactory::createMotion(const MotionRequest& motion
   currentMotionCreator = NULL;
 
   REGISTER_MOTION(motion::stand, StandMotion);
-  if(motionRequest.id == motion::unrelaxed_stand)
-  {
-    assert(currentMotionCreator==NULL); currentMotionCreator = StandMotionCreator;
-  }
   REGISTER_MOTION(motion::dance, DanceMotion);
   if(getInverseKinematicsMotionEngineService().getEngine().getParameters().useWalk2018){
       REGISTER_MOTION(motion::walk, Walk2018);
