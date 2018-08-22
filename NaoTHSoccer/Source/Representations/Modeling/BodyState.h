@@ -5,8 +5,8 @@
 * Definition of class BodyState
 */
 
-#ifndef __BodyState_h_
-#define __BodyState_h_
+#ifndef _BodyState_h_
+#define _BodyState_h_
 
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
@@ -24,7 +24,9 @@ public:
     temperatureLeftLeg(0),
     temperatureRightLeg(0),
     isLiftedUp(false),
-    isDischarging(true)
+    isDischarging(true),
+    isCharging(false),
+    batteryCharge(0.0)
   {}
 
   ~BodyState(){}
@@ -86,6 +88,10 @@ public:
   bool isLiftedUp;
 
   bool isDischarging;
+  bool isCharging;
+
+  // filtered state of the battery
+  double batteryCharge;
 
   virtual void print(std::ostream& stream) const
   {
@@ -96,6 +102,8 @@ public:
       stream << "foot_state_time = " << foot_state_time << std::endl;
       stream << "isLiftedUp = " << isLiftedUp << std::endl;
       stream << "isDischarging = " << isDischarging << std::endl;
+      stream << "isCharging = " << isCharging << std::endl;
+      stream << "batteryCharge (filtered) = " << batteryCharge << std::endl;
   }//end print
 
 };

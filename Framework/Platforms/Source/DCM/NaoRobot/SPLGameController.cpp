@@ -9,7 +9,8 @@ using namespace naoth;
 using namespace std;
 
 SPLGameController::SPLGameController()
-  :exiting(false), returnPort(GAMECONTROLLER_RETURN_PORT),
+  : exiting(false),
+    returnPort(GAMECONTROLLER_RETURN_PORT),
     socket(NULL),
     gamecontrollerAddress(NULL)
 {
@@ -35,6 +36,7 @@ SPLGameController::SPLGameController()
     std::cout << "[INFO] SPLGameController start socket thread" << std::endl;
     socketThread = std::thread([this] {this->socketLoop();});
     ThreadUtil::setPriority(socketThread, ThreadUtil::Priority::lowest);
+    ThreadUtil::setName(socketThread, "GameController");
   }
 }
 
@@ -103,14 +105,23 @@ void SPLGameController::set(const naoth::GameReturnData& data)
   std::unique_lock<std::mutex> lock(returnDataMutex, std::try_to_lock);
   if ( lock.owns_lock() )
   {
-    dataOut.player = (uint8_t)data.player;
-    dataOut.team = (uint8_t)data.team;
-    dataOut.message = data.message;
+    if(data.message == GameReturnData::dead) {
+      // set to invalid data to avoid sending the message
+      dataOut.player = 0;
+      dataOut.team = 0;
+      dataOut.message = data.message;
+    } else {
+      dataOut.player = (uint8_t)data.player;
+      dataOut.team = (uint8_t)data.team;
+      dataOut.message = data.message;
+    }
   }
+
 }
 
 SPLGameController::~SPLGameController()
 {
+  // request the thread to stop
   exiting = true;
 
   if(socketThread.joinable())

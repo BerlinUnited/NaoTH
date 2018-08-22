@@ -13,13 +13,13 @@ patch_size = (24, 24)  # width, height
 
 def parse_arguments(argv):
     input_file = ''
-    all = False
+    export_all = False
     try:
         opts, args = getopt.getopt(argv, "hi:", ["ifile=", "all"])
     except getopt.GetoptError:
         print('python patch_export.py -i <logfile> [--all]')
         sys.exit(2)
-    if opts == []:
+    if opts is None:
         print('python patch_export.py -i <logfile> [--all]')
         sys.exit(2)
     for opt, arg in opts:
@@ -27,11 +27,11 @@ def parse_arguments(argv):
             print('python patch_export.py -i <logfile> [--all]')
             sys.exit()
         elif opt == "--all":
-            all = True
+            export_all = True
         elif opt in ("-i", "--ifile"):
             input_file = arg
 
-    return input_file, all
+    return input_file, export_all
 
 
 def load_labels(file):
@@ -42,7 +42,7 @@ def load_labels(file):
         with open(file, 'r') as data_file:
             ball_labels = json.load(data_file)
         tmp_labels[ball_labels["ball"]] = 1
-        if ball_labels.has_key("noball"):
+        if "noball" in ball_labels:
             tmp_labels[ball_labels["noball"]] = 0
         else:
             # set all values to 0 since we have to assume everything unmarked is no ball
@@ -56,30 +56,42 @@ def load_labels(file):
         sys.exit(-1)
 
 
-def exportPatches(patchdata, labels, label_names, target_path):
+def export_patches(patches, camera, labels, label_names, target_path):
 
-    # create the ourput directories for all labels
-    export_path = []
+    # create the output directories for all labels
+    export_path_top = []
+    export_path_bottom = []
     for label in label_names:
-        path = os.path.join(target_path, label)
-        export_path.append(path)
+
+        # create output path for top images
+        path = os.path.join(target_path + '-top', label)
+        export_path_top.append(os.path.join(path))
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        # create output path for bottom images
+        path = os.path.join(target_path + '-bottom', label)
+        export_path_bottom.append(path)
         if not os.path.exists(path):
             os.makedirs(path)
 
     # export the patches
-    for i in range(len(patchdata)):
-        p = patchdata[i]
+    for i in range(len(patches)):
+        p = patches[i]
         if len(p) == 4*patch_size[0]*patch_size[1]:
             a = np.array(p[0::4]).astype(float)
             a = np.transpose(np.reshape(a, patch_size))
             
-            b = np.array(p[3::4]).astype(float)
-            b = np.transpose(np.reshape(b, patch_size))
+            # b = np.array(p[3::4]).astype(float)
+            # b = np.transpose(np.reshape(b, patch_size))
         else:
             a = np.array(p).astype(float)
             a = np.transpose(np.reshape(a, patch_size))
 
-        file_path = os.path.join(export_path[labels[i]], str(i)+".png")
+        if camera[i][0] == 0:
+            file_path = os.path.join(export_path_bottom[labels[i]], str(i)+".png")
+        else:
+            file_path = os.path.join(export_path_top[labels[i]], str(i) + ".png")
 
         # rgba
         '''
@@ -100,7 +112,7 @@ def exportPatches(patchdata, labels, label_names, target_path):
         
         # only the center part
         a = a[4:20, 4:20]
-        b = b[4:20, 4:20]
+        # b = b[4:20, 4:20]
         
         # remove green:
         # gray + set green to 0 (used for balls)
@@ -109,28 +121,34 @@ def exportPatches(patchdata, labels, label_names, target_path):
         cv2.imwrite(file_path, a)
 
 
-def exportPatchesAll(patchdata, target_path):
+def export_patches_all(patches, camera, target_path):
 
-    # create the ourput directories for all labels
-    export_path = os.path.join(target_path, 'patch')
-    if not os.path.exists(export_path):
-        os.makedirs(export_path)
-    
+    # create an export directory
+    path = target_path + '-top'
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    path = target_path + '-bottom'
+    if not os.path.exists(path):
+        os.makedirs(path)
+
     # export the patches
-    for i in range(len(patchdata)):
-        p = patchdata[i]
+    for i in range(len(patches)):
+        p = patches[i]
         if len(p) == 4*patch_size[0]*patch_size[1]:
             a = np.array(p[0::4]).astype(float)
             a = np.transpose(np.reshape(a, patch_size))
             
-            b = np.array(p[3::4]).astype(float)
-            b = np.transpose(np.reshape(b, patch_size))
+            # b = np.array(p[3::4]).astype(float)
+            # b = np.transpose(np.reshape(b, patch_size))
         else:
             a = np.array(p).astype(float)
             a = np.transpose(np.reshape(a, patch_size))
 
-        file_path = os.path.join(export_path, str(i)+".png")
-        print(file_path)
+        if camera[i][0] == 0:
+            file_path = os.path.join(target_path + '-bottom', str(i)+".png")
+        else:
+            file_path = os.path.join(target_path + '-top', str(i) + ".png")
 
         # rgba
         '''
@@ -151,7 +169,7 @@ def exportPatchesAll(patchdata, target_path):
         
         # only the center part
         a = a[4:20, 4:20]
-        b = b[4:20, 4:20]
+        # b = b[4:20, 4:20]
         
         # remove green:
         # gray + set green to 0 (used for balls)
@@ -168,23 +186,15 @@ USAGE:
 if __name__ == "__main__":
     logFilePath, flag = parse_arguments(sys.argv[1:])
 
-    # type: 0-'Y', 1-'YUV', 2-'YUVC'
-    patchdata, _ = patchReader.read_all_patches_from_log(logFilePath, type=2)
-
+    """ type: 0-'Y', 1-'YUV', 2-'YUVC' """
+    patchdata, camera_index = patchReader.read_all_patches_from_log(logFilePath, type=2)
     # load the label file
     base_file, file_extension = os.path.splitext(logFilePath)
 
     if flag:
-        # create an export directory
-        if not os.path.exists(base_file):
-            os.makedirs(base_file)
-        exportPatchesAll(patchdata, base_file)
+        export_patches_all(patchdata, camera_index, base_file)
     else:
         label_file = base_file + '.json'
         labels, label_names = load_labels(label_file)
 
-        # create an export directory
-        if not os.path.exists(base_file):
-          os.makedirs(base_file)
-
-        exportPatches(patchdata, labels, label_names, base_file)
+        export_patches(patchdata, camera_index, labels, label_names, base_file)

@@ -87,8 +87,8 @@ public:
 
 
 private: 
-  std::vector<Vector2d> edgelProjectionsBegin;
-  std::vector<Vector2d> edgelProjectionsEnd;
+  //std::vector<Vector2d> edgelProjectionsBegin;
+  //std::vector<Vector2d> edgelProjectionsEnd;
 
 };
 

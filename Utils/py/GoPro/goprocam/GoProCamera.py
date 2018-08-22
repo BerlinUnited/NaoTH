@@ -22,7 +22,7 @@ import ssl
 class GoPro:
     def prepare_gpcontrol(self):
         try:
-            response_raw = urllib.request.urlopen('http://' + self.ip_addr + '/gp/gpControl', timeout=5).read().decode('utf8')
+            response_raw = urllib.request.urlopen('http://' + self.ip_addr + '/gp/gpControl', timeout=5).read().decode('utf8', 'ignore')
             jsondata = json.loads(response_raw)
             response = jsondata["info"]["firmware_version"]
             if "HX" in response:  # Only session cameras.
@@ -153,7 +153,7 @@ class GoPro:
         return self._camera
       else:
         try:
-          response_raw = urllib.request.urlopen('http://' + self.ip_addr + '/gp/gpControl', timeout=5).read().decode('utf8')
+          response_raw = urllib.request.urlopen('http://' + self.ip_addr + '/gp/gpControl', timeout=5).read().decode('utf8', 'ignore')
           jsondata = json.loads(response_raw)
           response = jsondata["info"]["firmware_version"]
           if "HD4" in response or "HD3.2" in response or "HD5" in response or "HX" in response or "HD6" in response or "FS1" in response:  # Detects HERO4, HERO+ Wifi, HERO5, HERO4 Session
@@ -235,7 +235,7 @@ class GoPro:
           return ""
           print("HTTP Timeout\nMake sure the connection to the WiFi camera is still active.")
       else:
-        print("Error, camera not defined.")
+        print("Error, camera not defined?")
 
     def infoCamera(self, option=""):
       if self.whichCam() == "gpcontrol":
@@ -382,7 +382,7 @@ class GoPro:
         while "{}" not in paired_resp:
           paired_resp = urllib.request.urlopen(
             'http://' + self.ip_addr + '/gp/gpControl/command/wireless/pair/complete?success=1&deviceName=' + socket.gethostname(),
-            timeout=5).read().decode('utf8')
+            timeout=5).read().decode('utf8', 'ignore')
         print("Paired")
         return
       print(
@@ -391,10 +391,10 @@ class GoPro:
       context = ssl._create_unverified_context()
       ssl._create_default_https_context = ssl._create_unverified_context
       response_raw = urllib.request.urlopen('https://' + self.ip_addr + '/gpPair?c=start&pin=' + code + '&mode=0',
-                                            context=context).read().decode('utf8')
+                                            context=context).read().decode('utf8', 'ignore')
       print(response_raw)
       response_raw = urllib.request.urlopen('https://' + self.ip_addr + '/gpPair?c=finish&pin=' + code + '&mode=0',
-                                            context=context).read().decode('utf8')
+                                            context=context).read().decode('utf8', 'ignore')
       print(response_raw)
       wifi_ssid = input("Enter your desired camera wifi ssid name: ")
       wifi_pass = input("Enter new wifi password: ")
@@ -480,7 +480,7 @@ class GoPro:
       folder = ""
       file_lo = ""
       try:
-        raw_data = urllib.request.urlopen('http://' + self.ip_addr + ':8080/gp/gpMediaList').read().decode('utf-8')
+        raw_data = urllib.request.urlopen('http://' + self.ip_addr + ':8080/gp/gpMediaList', timeout=5).read().decode('utf-8', 'ignore')
         json_parse = json.loads(raw_data)
         for i in json_parse['media']:
           folder = i['d']
@@ -499,7 +499,7 @@ class GoPro:
       folder = ""
       file_lo = ""
       try:
-        raw_data = urllib.request.urlopen('http://' + self.ip_addr + ':8080/gp/gpMediaListEx').read().decode('utf-8')
+        raw_data = urllib.request.urlopen('http://' + self.ip_addr + ':8080/gp/gpMediaListEx', timeout=5).read().decode('utf-8', 'ignore')
         json_parse = json.loads(raw_data)
         for i in json_parse['media']:
           folder = i['d']
@@ -519,7 +519,7 @@ class GoPro:
       file = ""
       size = ""
       try:
-        raw_data = urllib.request.urlopen('http://10.5.5.9:8080/gp/gpMediaList').read().decode('utf-8')
+        raw_data = urllib.request.urlopen('http://10.5.5.9:8080/gp/gpMediaList', timeout=5).read().decode('utf-8', 'ignore')
         json_parse = json.loads(raw_data)
         for i in json_parse['media']:
           folder = i['d']
@@ -545,7 +545,7 @@ class GoPro:
       file = ""
       size = ""
       try:
-        raw_data = urllib.request.urlopen('http://10.5.5.9:8080/gp/gpMediaListEx').read().decode('utf-8')
+        raw_data = urllib.request.urlopen('http://10.5.5.9:8080/gp/gpMediaListEx', timeout=5).read().decode('utf-8', 'ignore')
         json_parse = json.loads(raw_data)
         for i in json_parse['media']:
           folder = i['d']
@@ -569,21 +569,21 @@ class GoPro:
     def listMedia(self, format=False, media_array=False):
       try:
         if format == False:
-          raw_data = urllib.request.urlopen('http://' + self.ip_addr + ':8080/gp/gpMediaList').read().decode('utf-8')
+          raw_data = urllib.request.urlopen('http://' + self.ip_addr + ':8080/gp/gpMediaList', timeout=5).read().decode('utf-8', 'ignore')
           parsed_resp = json.loads(raw_data)
           return json.dumps(parsed_resp, indent=2, sort_keys=True)
           print(json.dumps(parsed_resp, indent=2, sort_keys=True))
         else:
           if media_array == True:
             media = []
-            raw_data = urllib.request.urlopen('http://' + self.ip_addr + ':8080/gp/gpMediaList').read().decode('utf-8')
+            raw_data = urllib.request.urlopen('http://' + self.ip_addr + ':8080/gp/gpMediaList', timeout=5).read().decode('utf-8', 'ignore')
             json_parse = json.loads(raw_data)
             for i in json_parse['media']:
               for i2 in i['fs']:
                 media.append([i['d'], i2['n'], i2['s']])
             return media
           else:
-            raw_data = urllib.request.urlopen('http://' + self.ip_addr + ':8080/gp/gpMediaList').read().decode('utf-8')
+            raw_data = urllib.request.urlopen('http://' + self.ip_addr + ':8080/gp/gpMediaList', timeout=5).read().decode('utf-8', 'ignore')
             json_parse = json.loads(raw_data)
             for i in json_parse['media']:
               print("folder: " + i['d'])
@@ -719,7 +719,7 @@ class GoPro:
         try:
           folder = ""
           file = ""
-          raw_data = urllib.request.urlopen('http://' + self.ip_addr + ':8080/gp/gpMediaList').read().decode('utf-8')
+          raw_data = urllib.request.urlopen('http://' + self.ip_addr + ':8080/gp/gpMediaList').read().decode('utf-8', 'ignore')
           json_parse = json.loads(raw_data)
           for i in json_parse['media']:
             folder = i['d']
@@ -736,7 +736,7 @@ class GoPro:
         try:
           folder = ""
           file = ""
-          raw_data = urllib.request.urlopen('http://' + self.ip_addr + ':8080/gp/gpMediaList').read().decode('utf-8')
+          raw_data = urllib.request.urlopen('http://' + self.ip_addr + ':8080/gp/gpMediaList').read().decode('utf-8', 'ignore')
           json_parse = json.loads(raw_data)
           for i in json_parse['media']:
             folder = i['d']
@@ -754,7 +754,7 @@ class GoPro:
         try:
           folder = ""
           file = ""
-          raw_data = urllib.request.urlopen('http://' + self.ip_addr + ':8080/gp/gpMediaList').read().decode('utf-8')
+          raw_data = urllib.request.urlopen('http://' + self.ip_addr + ':8080/gp/gpMediaList').read().decode('utf-8', 'ignore')
           json_parse = json.loads(raw_data)
           for i in json_parse['media']:
             folder = i['d']
@@ -836,7 +836,7 @@ class GoPro:
                 "folder") + "/" + file + '&t=videoinfo').read().decode('utf-8')
         if not file == "" and not folder == "":
           data = urllib.request.urlopen(
-            'http://' + self.ip_addr + ':8080/gp/gpMediaMetadata?p=' + folder + "/" + file + '&t=videoinfo').read().decode('utf-8')
+            'http://' + self.ip_addr + ':8080/gp/gpMediaMetadata?p=' + folder + "/" + file + '&t=videoinfo').read().decode('utf-8', 'ignore')
         jsondata = json.loads(data)
         return jsondata[option]  # dur/tag_count/tags/profile/w/h
 

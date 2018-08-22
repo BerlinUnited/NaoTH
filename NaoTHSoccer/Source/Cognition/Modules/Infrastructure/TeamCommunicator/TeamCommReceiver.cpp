@@ -28,12 +28,14 @@ void TeamCommReceiver::execute()
     usingDelayBuffer = true;
   );
 
-  // process all incomming messages
-  for (auto const &it : getTeamMessageDataIn().data) {
-    if(usingDelayBuffer) {
-      delayBuffer.add(it); // can be used for debugging
-    } else {
-      handleMessage(it);
+  if(getWifiMode().wifiEnabled) {
+    // process all incomming messages
+    for (auto const &it : getTeamMessageDataIn().data) {
+      if(usingDelayBuffer) {
+        delayBuffer.add(it); // can be used for debugging
+      } else {
+        handleMessage(it);
+      }
     }
   }
 
@@ -93,11 +95,12 @@ void TeamCommReceiver::handleMessage(const std::string& data)
   TeamMessageData msg(getFrameInfo());
   // current timestamp as parsing time
   msg.timestampParsed = naoth::NaoTime::getSystemTimeInMilliSeconds();
-  // parse data to message
+
+  //accept own message
   if (msg.parseFromSplMessage(spl))
   {
     // make sure it's really our message
-    if (msg.custom.key != NAOTH_TEAMCOMM_MESAGE_KEY) {
+    if (!msg.isBerlinUnitedMessage()) {
       getTeamMessage().dropKeyFail++;
       return;
     }
@@ -108,13 +111,10 @@ void TeamCommReceiver::handleMessage(const std::string& data)
       return;
     }
   }
-  else if (parameters.acceptMixedTeamMessages)
+  else if (parameters.acceptMixedTeamMessages && msg.isDoBerManMessage())
   {
     // TODO: this needs to be fixed vefore mixed team comm can be used again
     //       see: https://gitlab.informatik.hu-berlin.de/berlinunited/NaoTH-2018/issues/36
-    ASSERT(false);
-    //msg.custom.wantsToBeStriker = (msg.intention == 3);
-    //msg.custom.wasStriker = (msg.intention == 3);
     
     // estimate time to ball for dortmund guys
     const double stepTime = 200; //ms

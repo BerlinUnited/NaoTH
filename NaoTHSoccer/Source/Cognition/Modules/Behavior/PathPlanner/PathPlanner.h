@@ -63,7 +63,10 @@ private:
     Parameters() : ParameterList("PathPlanner")
     {
       PARAMETER_REGISTER(sidekick_scale) = 1.0;
-      PARAMETER_REGISTER(kick_time) = 300;
+			PARAMETER_REGISTER(short_kick_time) = 300;
+			PARAMETER_REGISTER(long_kick_time) = 300;
+			PARAMETER_REGISTER(sidekick_time) = 300;
+
       PARAMETER_REGISTER(approach_ball_adapt_control) = true;
       PARAMETER_REGISTER(approach_ball_adapt_threshold) = 10;
       PARAMETER_REGISTER(approach_ball_slow_distance) = 50;
@@ -73,7 +76,9 @@ private:
     virtual ~Parameters(){}
 
     double sidekick_scale;
-    int kick_time;
+		int short_kick_time;
+		int long_kick_time;
+		int sidekick_time;
     bool approach_ball_adapt_control;
     int approach_ball_adapt_threshold;
     int approach_ball_slow_distance;
@@ -133,7 +138,8 @@ private:
                 const double scale,
                 const double speedDirection,
                 const WalkRequest::StepControlRequest::RestrictionMode restriction,
-                const bool isProtected);
+                const bool isProtected,
+                int step_time);
   void update_step(Pose2D &pose);
   void manage_step_buffer();
   void execute_step_buffer();

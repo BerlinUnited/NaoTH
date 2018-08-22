@@ -22,6 +22,7 @@
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Modeling/TeamBallModel.h"
+#include "Representations/Modeling/OdometryData.h"
 
 #include <Tools/DataStructures/ParameterList.h>
 #include "Tools/Debug/DebugParameterList.h"
@@ -42,6 +43,7 @@ PROVIDE(BallModel) // PROVIDE so that XABSL bool can be read out
   REQUIRE(MultiBallPercept)
   REQUIRE(TeamBallModel)
   REQUIRE(RobotPose)
+  REQUIRE(OdometryData)
 
   REQUIRE(KinematicChain)
 END_DECLARE_MODULE(BallSymbols)
@@ -132,6 +134,7 @@ private:
   AssymetricalBoolFilter ball_seen_filter;
   bool ball_see_where_itis;
 
+  Pose2D lastRobotOdometry;
 };//end class BallSymbols
 
 #endif // _BallSymbols_H_

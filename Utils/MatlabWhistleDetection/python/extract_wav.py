@@ -43,7 +43,7 @@ def extract_wav(input_path):
             -ar 8000 resamples the channel to 8kHz
             """
 
-            os.system("ffmpeg -i {0} -map_channel 0.1.0 -ar 8000{1}.wav".format(file, filename))
+            os.system("ffmpeg -i {0} -map_channel 0.1.0 -ar 8000 {1}.wav".format(file, filename))
         else:
             continue
 

@@ -40,6 +40,8 @@ NaoController::NaoController()
   naoCommandUltraSoundSendData.open(naoCommandUltraSoundSendDataPath);
   naoCommandIRSendData.open(naoCommandIRSendDataPath);
   naoCommandLEDData.open(naoCommandLEDDataPath);
+  whistleSensorData.open("/whistleDetector.count");
+  whistleControlData.open("/whistleDetector.commands");
   // end init shared memory
 
   char hostname[128];
@@ -47,7 +49,7 @@ NaoController::NaoController()
   gethostname(hostname, 127);
   theRobotName = string(hostname);
   cout << "[NaoController] " << "RobotName: " << theRobotName << endl;
-  theWhistleDetector.setRobotName(theRobotName);
+  //theWhistleDetector.setRobotName(theRobotName);
 
   // read the theBodyID and the theBodyNickName from file "nao.info"
   const std::string naoInfoPath = Platform::getInstance().theConfigDirectory + "nao.info";
@@ -174,12 +176,14 @@ NaoController::~NaoController()
   delete theDebugServer;
 }
 
-void NaoController::set(const CameraSettingsRequest &data)
+void NaoController::set(const CameraSettingsRequest &request)
 {
-  theBottomCameraHandler.setAllCameraParams(data);
+  CameraSettings settings = request.getCameraSettings();
+  theBottomCameraHandler.setAllCameraParams(settings);
 }
 
-void NaoController::set(const CameraSettingsRequestTop &data)
+void NaoController::set(const CameraSettingsRequestTop &request)
 {
-  theTopCameraHandler.setAllCameraParams(data);
+  CameraSettings settings = request.getCameraSettings();
+  theTopCameraHandler.setAllCameraParams(settings);
 }

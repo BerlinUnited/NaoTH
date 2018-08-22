@@ -42,7 +42,6 @@ public class Scp {
 
         channel = (ChannelSftp)session.openChannel("sftp");
         channel.connect();
-        
     }
     
     public boolean isConnected() {
@@ -56,6 +55,10 @@ public class Scp {
 
     public void setProgressMonitor(SftpProgressMonitor progressMonitor) {
         this.progressMonitor = progressMonitor;
+    }
+    
+    public String getHost() {
+        return session.getHost();
     }
     
     public void run(String cmd) throws IOException, JSchException
@@ -90,7 +93,7 @@ public class Scp {
             //c.setOutputStream(new LogStream(Level.FINE));
             {
             PipedOutputStream pos = new PipedOutputStream();
-            pis = new PipedInputStream(pos);
+            pis = new PipedInputStream(pos, 1024*1024);
             c.setOutputStream(pos);
             }
             
@@ -131,6 +134,7 @@ public class Scp {
                 
                 boolean check = false;
                 StringBuilder sb = new StringBuilder();
+                StringBuilder line = new StringBuilder();
                 while (!check) 
                 {
                     while(pis.available() > 0)
@@ -138,14 +142,22 @@ public class Scp {
                         char ch = (char)pis.read();
                         if(ch != 13) {
                             sb.append(ch);
+                            line.append(ch);
                         }
                         System.err.print(ch);
                         check = sb.toString().contains(expect);
+                        
+                        // hack: linewise printing
+                        if (ch == '\n') {
+                            java.util.logging.Logger.getGlobal().log(Level.FINEST, line.toString());
+                            line = new StringBuilder();
+                        }
+                        
                     }
-                    try{Thread.sleep(100);}catch(Exception e){System.out.println(e);}
+                    try{Thread.sleep(10);}catch(Exception e){System.out.println(e);}
                 }
                
-                java.util.logging.Logger.getGlobal().log(Level.FINEST, sb.toString());
+                java.util.logging.Logger.getGlobal().log(Level.FINEST, line.toString());
                 
             }
         }
