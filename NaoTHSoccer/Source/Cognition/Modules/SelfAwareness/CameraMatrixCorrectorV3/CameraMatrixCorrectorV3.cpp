@@ -245,7 +245,7 @@ void CameraMatrixCorrectorV3::execute()
   if(auto_calibrated){
     getMotionRequest().id = motion::sit;
   } else {
-    getMotionRequest().id = motion::unrelaxed_stand;
+    getMotionRequest().id = motion::stand;
   }
 
   // enable debug drawings in manual and auto mode
