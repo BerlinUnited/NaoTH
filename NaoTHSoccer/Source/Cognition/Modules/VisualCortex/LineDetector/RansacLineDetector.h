@@ -46,7 +46,7 @@ public:
 
 private:
   std::vector<size_t> outliers;
-  bool ransac(Math::LineSegment& result);
+  bool ransac(Math::LineSegment& result, std::vector<size_t>& inliers, size_t& start_edgel, size_t& end_edgel);
 
   int ransacEllipse(Ellipse& result);
 
@@ -69,6 +69,7 @@ private:
       PARAMETER_REGISTER(maxVariance) = 0.009;
       PARAMETER_REGISTER(length_of_var_check) = 800;
       PARAMETER_REGISTER(min_line_length) = 100;
+      PARAMETER_REGISTER(fit_lines_to_inliers) = true;
 
       //Circle
       PARAMETER_REGISTER(circle_iterations) = 20;
@@ -89,10 +90,10 @@ private:
     int inlierMin;
     double directionSimilarity;
     int maxLines;
-
     double maxVariance;
     double length_of_var_check;
     double min_line_length;
+    bool fit_lines_to_inliers;
 
     int circle_iterations;
     double circle_outlierThreshold;

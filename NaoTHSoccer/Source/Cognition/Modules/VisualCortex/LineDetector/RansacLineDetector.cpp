@@ -31,26 +31,55 @@ void RansacLineDetector::execute()
     outliers[i] = i;
     getLinePercept().edgelLineIDs[i] = -1;
   }
-
+  std::vector<size_t> inliers;
   for(int i = 0; i < params.maxLines; ++i)
   {
+    inliers.clear();
     Math::LineSegment result;
-    if(ransac(result))
+    size_t start_edgel, end_edgel;
+    if(ransac(result, inliers, start_edgel, end_edgel))
     {
+      if(params.fit_lines_to_inliers) {
+        std::vector<Vector2d> points;
+        points.reserve(inliers.size());
+        for(size_t i : inliers) {
+          const Edgel& e = getLineGraphPercept().edgelsOnField[i];
+          points.push_back(e.point);
+        }
+
+        double slope, intercept;
+        simpleLinearRegression(points, slope, intercept);
+
+        Vector2d base(0, intercept);
+        Vector2d direction = base - Vector2d(1, slope + intercept);
+        Math::Line regression_line(base, direction);
+
+        Math::LineSegment regression_result(
+          regression_line.projection(getLineGraphPercept().edgelsOnField[start_edgel].point),
+          regression_line.projection(getLineGraphPercept().edgelsOnField[end_edgel].point)
+        );
+
+        result = regression_result;
+      }
+
       LinePercept::FieldLineSegment fieldLine;
       fieldLine.lineOnField = result;
       getLinePercept().lines.push_back(fieldLine);
+
+      for(size_t i : inliers) {
+        getLinePercept().edgelLineIDs[i] = static_cast<int>(getLinePercept().lines.size()-1);
+      }
     }
     else {
       break;
     }
   }
 
+  std::vector<Vector2d> inlierPoints;
   // circle
   if(params.enable_circle_ransac) {
+    inlierPoints.clear();
     Vector2d circResult;
-
-    std::vector<Vector2d> inlierPoints;
     if (ransacCircle(circResult, inlierPoints)) {
 
       DEBUG_REQUEST("Vision:RansacLineDetector:draw_circle_field",
@@ -189,7 +218,7 @@ void RansacLineDetector::execute()
 
 }
 
-bool RansacLineDetector::ransac(Math::LineSegment& result)
+bool RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& inliers, size_t& start_edgel, size_t& end_edgel)
 {
   if(outliers.size() <= 2) {
     return false;
@@ -235,14 +264,15 @@ bool RansacLineDetector::ransac(Math::LineSegment& result)
     }
   }
 
-  if(bestInlier > 2)
+  if(bestInlier >= params.inlierMin)
   {
     std::vector<size_t> newOutliers;
     newOutliers.reserve(outliers.size() - bestInlier + 1);
-    std::vector<size_t> inliers;
     inliers.reserve(bestInlier);
-    double minT = 0;
-    double maxT = 0;
+
+    double minT = bestModel.project(getLineGraphPercept().edgelsOnField[0].point);
+    double maxT = minT;
+    start_edgel = end_edgel = 0;
 
     Vector2d direction_var;
 
@@ -252,11 +282,17 @@ bool RansacLineDetector::ransac(Math::LineSegment& result)
       double d = bestModel.minDistance(e.point);
 
       if(d < params.outlierThreshold && sim(bestModel, e) > params.directionSimilarity) {
-        double t = bestModel.project(e.point);
-        minT = std::min(t, minT);
-        maxT = std::max(t, maxT);
         inliers.push_back(i);
 
+        double t = bestModel.project(e.point);
+        if (t < minT) {
+          minT = t;
+          start_edgel = i;
+        }
+        if (t > maxT) {
+          maxT = t;
+          end_edgel = i;
+        }
         double ang = e.direction.angle();
         direction_var.x += cos(ang);
         direction_var.y += sin(ang);
@@ -271,14 +307,10 @@ bool RansacLineDetector::ransac(Math::LineSegment& result)
     result = Math::LineSegment(bestModel.point(minT), bestModel.point(maxT));
     double line_length = result.getLength();
 
-    if (line_length < params.min_line_length
-        || (line_length < params.length_of_var_check && angle_var >= params.maxVariance)) {
-      return false;
-    } else {
+    if (line_length > params.min_line_length
+        && (line_length > params.length_of_var_check || angle_var <= params.maxVariance)) {
+
       outliers = newOutliers;
-      for(size_t i : inliers) {
-        getLinePercept().edgelLineIDs[i] = static_cast<int>(getLinePercept().lines.size());
-      }
       return true;
     }
 
@@ -500,7 +532,7 @@ void RansacLineDetector::simpleLinearRegression(std::vector<Vector2d> &points, d
 
   double top = 0.;
   double bot = 0.;
-  double x_diff = 0.;
+  double x_diff;
   for(Vector2d point : points) {
     x_diff = point.x - avg.x;
     top += x_diff * (point.y - avg.y);
