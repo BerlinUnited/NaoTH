@@ -964,8 +964,9 @@ void MonteCarloSelfLocator::updateByMiddleCircle(const Vector2d& middleCircleCen
 
   Vector2<double> centerCirclePosition; // (0,0)
 
+  //TODO: this needs to be analyzed in more detail
   // Don't update angle if inside center cicle
-  bool updateByAngle = !(getRobotPose().isValid || getRobotPose().translation.abs() < 500);
+  bool updateByAngle = !(getRobotPose().isValid || getRobotPose().translation.abs() < getFieldInfo().centerCircleRadius/2.0);
 
   for(size_t s=0; s < sampleSet.size(); s++)
   {
