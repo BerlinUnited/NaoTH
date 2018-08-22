@@ -124,31 +124,37 @@ public:
 private:
   CameraInfo::CameraID cameraID;
 
-  void add_edgel(const Vector2i& point) {
+  void add_edgel(const Vector2i& point, Edgel::Type type) {
+    /*
     Edgel edgel;
     edgel.point = point;
     edgel.direction = calculateGradient(point);
     getScanLineEdgelPercept().edgels.push_back(edgel);
+    */
+    getScanLineEdgelPercept().edgels.emplace_back(point, calculateGradient(point), type);
   }
 
-  void add_double_edgel(const Vector2i& point, int id) {
-    add_edgel(point);
+  void add_double_edgel(int scan_line_id) 
+  {
     ASSERT(getScanLineEdgelPercept().edgels.size() > 1);
+    
+    // use the last two edgels
     int i_end = ((int) getScanLineEdgelPercept().edgels.size())-1;
     int i_begin = i_end - 1;
     const Edgel& end = getScanLineEdgelPercept().edgels[i_end];
     const Edgel& begin = getScanLineEdgelPercept().edgels[i_begin];
 
-    if(1.0-fabs(begin.direction*end.direction) > theParameters.double_edgel_angle_threshold) {
+    if(-(begin.direction*end.direction) < theParameters.double_edgel_angle_threshold) {
       return; // false
     }
 
     ScanLineEdgelPercept::EdgelPair pair;
     pair.begin = i_begin;
     pair.end = i_end;
-    pair.id = id;
+    pair.id = scan_line_id;
 
-    pair.point = Vector2d(begin.point + end.point)*0.5;
+    pair.point.x = (begin.point.x + end.point.x)*0.5;
+    pair.point.y = (begin.point.y + end.point.y)*0.5;
     pair.direction = (begin.direction - end.direction).normalize();
 
     getScanLineEdgelPercept().pairs.push_back(pair);
