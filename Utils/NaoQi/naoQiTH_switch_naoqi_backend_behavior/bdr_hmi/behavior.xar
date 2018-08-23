@@ -1733,7 +1733,7 @@ class MyClass(GeneratedClass):
 
     def onInput_onStart(self):
         self.tts.setLanguage('German')
-        self.onStopped("Ich denke es ist Zeit für eine Runde Volleyball.")
+        self.onStopped("Heute ist ein schöner Tag zum Fußballspielen.")
 
     def onInput_onStop(self):
         self.onUnload() #it is recommended to reuse the clean-up as the box is stopped
