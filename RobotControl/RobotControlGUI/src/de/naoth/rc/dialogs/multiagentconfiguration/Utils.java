@@ -5,6 +5,7 @@ import de.naoth.rc.messages.Messages;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -78,15 +79,27 @@ public class Utils
         
         String root_name = (String) root.getValue();
         Pattern p = Pattern.compile("([^\\s|]+).+/"+root.getValue()+"/(.+)\\/.+\\.h");
-
+        /*
+        list.getModulesList().stream().collect(Collectors.toMap(
+            (m) -> { return m.getName(); }, 
+            (m)->{ return m.getActive(); }
+        )).entrySet().stream().s;
+        */
         list.getModulesList().stream().map((m) -> {
             // create for each module a checkable tree item
             Matcher match = p.matcher(m.getName());
             if(match.matches()) {
-                return new RequestTreeItem(match.group(2), match.group(1), m.getActive(), match.group(1));
+                String name = match.group(1);
+                String path = match.group(2);
+                if(path.endsWith(name)) {
+                    path = path.substring(0, path.length()-name.length()-1);
+                }
+                return new RequestTreeItem(path, name, m.getActive(), name);
             }
             return null;
-        }).filter((m) -> { return m!=null; }).sorted((m1, m2) -> {
+        }).filter((m) -> {
+            return m!=null; 
+        }).sorted((m1, m2) -> {
             // sort the module tree items
             return m1.getPath().compareTo(m2.getPath());
         }).forEach((m) -> {
@@ -106,7 +119,8 @@ public class Utils
                 m.setSelected(newValue);
             });
             // add this item to the module tree
-            getParentTreeItem(root, m.getPath(), "/").getChildren().add(m);
+            //getParentTreeItem(root, m.getPath(), "/").getChildren().add(m);
+            addTreeItem(root, m, "/");
             // set the selected state AFTER adding it to its parent
             m.setSelected(m.active);
             // set the callback for (de-)activating this module
@@ -115,6 +129,30 @@ public class Utils
         
         expandSingleTreeNodes(root);
         expandSingleTreeNodes(global_modules.get((String) root.getValue()));
+    }
+    
+    private static void addTreeItem(TreeItem<String> root, RequestTreeItem item, String sep) {
+        TreeItem<String> current_root = root;
+        for (String part : item.getPath().split(sep)) {
+            FilteredList<TreeItem<String>> treePart = current_root.getChildren().filtered((m) -> { return m.getValue().equals(part); });
+            if(treePart.isEmpty()) {
+                CheckBoxTreeItem<String> treePartNew = new CheckBoxTreeItem<>(part);
+                current_root.getChildren().add(treePartNew);
+                current_root = treePartNew;
+            } else {
+                current_root = treePart.get(0);
+            }
+        }
+        if (current_root instanceof RequestTreeItem) {
+            TreeItem<String> current_root_parent = current_root.getParent();
+            int current_root_index = current_root_parent.getChildren().indexOf(current_root);
+            current_root_parent.getChildren().remove(current_root_index);
+            CheckBoxTreeItem<String> current_root_new = new CheckBoxTreeItem<>(current_root.getValue());
+            current_root_parent.getChildren().add(current_root_index, current_root_new);
+            current_root_new.getChildren().add(current_root);
+            current_root = current_root_new;
+        }
+        current_root.getChildren().add(item);
     }
     
     private static TreeItem<String> getParentTreeItem(TreeItem<String> root, String path, String sep) {
