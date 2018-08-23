@@ -169,8 +169,8 @@ public:
         T offset1 = this->mapOffsetToXDims(epsilon, a);
         T offset2 = this->mapOffsetToXDims(epsilon, b);
 
-        T r_o1 = errorFunction((x + offset1).eval());
-        T r_o2 = errorFunction((x + offset2).eval());
+        Eigen::VectorXd r_o1 = errorFunction((x + offset1).eval());
+        Eigen::VectorXd r_o2 = errorFunction((x + offset2).eval());
 
         double e_r_o1 = r_o1.transpose() * r_o1;
         double e_r_o2 = r_o2.transpose() * r_o2;
