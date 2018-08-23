@@ -18,11 +18,12 @@ ArmCollisionDetector2018::ArmCollisionDetector2018()
   const std::string& dirlocation = Platform::getInstance().theConfigDirectory;
   std::cout << dirlocation + params.point_config << std::endl;
   std::ifstream file(dirlocation + params.point_config);
-	if (file.is_open() && file.good)
+	if (file.is_open() && file.good())
 	{
 		std::cout << "[ArmCollisionDetector2018] Opened configuration file" << std::endl;
 		while (std::getline(file, line))
 		{
+			std::cout << "[ArmCollisionDetector2018] Read line:" << std::endl;
 			std::string::size_type sz;
 			double alpha = std::stod(line, &sz);
 			double beta = std::stod(line.substr(sz));
