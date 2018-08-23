@@ -166,7 +166,6 @@ Eigen::VectorXd CamMatErrorFunctionV3::operator()(const Eigen::Matrix<double, 11
     return r;
 }
 
-
 CameraMatrixCorrectorV3::CameraMatrixCorrectorV3()
 {
   getDebugParameterList().add(&getCameraMatrixOffsetV3());
@@ -244,8 +243,10 @@ void CameraMatrixCorrectorV3::execute()
   // sit down if auto calibrated
   if(auto_calibrated){
     getMotionRequest().id = motion::sit;
+    getMotionRequest().disable_relaxed_stand = false;
   } else {
     getMotionRequest().id = motion::stand;
+    getMotionRequest().disable_relaxed_stand = true;
   }
 
   // enable debug drawings in manual and auto mode

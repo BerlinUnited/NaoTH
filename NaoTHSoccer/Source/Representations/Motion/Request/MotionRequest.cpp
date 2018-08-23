@@ -17,6 +17,7 @@ void Serializer<MotionRequest>::serialize(const MotionRequest& representation, s
   message.set_time(representation.time);
   message.set_cognitionframenumber(representation.cognitionFrameNumber);
   message.set_starndardstand(representation.standardStand);
+  message.set_disable_relaxed_stand(representation.disable_relaxed_stand);
   message.set_calibratefoottouchdetector(representation.calibrateFootTouchDetector);
   switch (representation.id)
   {
@@ -52,6 +53,7 @@ void Serializer<MotionRequest>::deserialize(std::istream& stream, MotionRequest&
   representation.forced = message.forced();
   representation.time = message.time();
   representation.standardStand = message.starndardstand();
+  representation.disable_relaxed_stand = message.disable_relaxed_stand();
   if(message.has_calibratefoottouchdetector())
   {
     representation.calibrateFootTouchDetector = message.calibratefoottouchdetector();
