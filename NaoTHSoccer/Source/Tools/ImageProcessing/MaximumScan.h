@@ -40,7 +40,7 @@ public:
     {
       value_max = value;
       peakMax = point;
-    } else if(value_max > threshhold && value < threshhold) {
+    } else if(value_max > threshhold && value < value_max) {
       maximum = true;
     }
 
