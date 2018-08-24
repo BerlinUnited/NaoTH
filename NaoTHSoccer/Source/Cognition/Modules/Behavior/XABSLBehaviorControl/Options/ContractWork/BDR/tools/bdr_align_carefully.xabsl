@@ -1,24 +1,15 @@
 /** Go to a specific position on the field */
 option bdr_align_carefully
 {
-  /** x position of the point to walk to on the field */
-  float @x; //[-4500..4500] "mm";
-
-  /** y position of the point to walk to on the field */
-  float @y; // [-3000..3000] "mm";
-
-  /** absolute rotation on field */
-  float @rot; // -180...180 "deg";
-
   state move
   {
     decision
     {
-      if (   vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) < 10
-          && abs(value=robot_pose.planned.rotation - @rot) < 5
+      if (   vector.abs(x=robot_pose.charging_target.x, y=robot_pose.charging_target.y) < 10
+          && abs(value=robot_pose.charging_target.rotation) < 5
           && vector.abs(x=executed_motion.planed.target.x, y=executed_motion.planed.target.y) < 5
           && abs(value=executed_motion.planed.target.rotation) < 5 )
-        goto stop;
+        goto check;
       else
         stay;
     }
@@ -34,15 +25,64 @@ option bdr_align_carefully
 
       motion.walk.precise = true;
     }
-
   }
 
-  initial target state stop
+  state move_carefully
   {
     decision
     {
-      if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) > 20 )
-        goto move;
+      if (state_time > 3000)
+        goto check;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk.style = stable;
+      motion.walk_speed.x = robot_pose.charging_target.x;
+      motion.walk_speed.y = robot_pose.charging_target.y;
+      motion.walk_speed.rot = robot_pose.charging_target.rotation;
+      motion.walk.coordinate = hip;
+      motion.walk.stop_with_stand = true;
+
+      motion.walk.precise = true;
+    }
+  }
+
+
+  initial state check
+  {
+    decision
+    {
+      if(state_time > 3000) {
+        if (   abs(value=robot_pose.charging_target.x) < 15
+            && abs(value=robot_pose.charging_target.y) < 10
+            && abs(value=robot_pose.charging_target.rotation) < 5)
+          goto done;
+        else if (   abs(value=robot_pose.charging_target.x) < 50
+            && abs(value=robot_pose.charging_target.y) < 30
+            && abs(value=robot_pose.charging_target.rotation) < 10)
+          goto move_carefully;
+        else
+          goto move;
+      }
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand;
+    }
+  }   
+
+
+  target state done
+  {
+    decision
+    {
+      if ( vector.abs(x=robot_pose.charging_target.x, y=robot_pose.charging_target.y) > 20 )
+        goto check;
       else
         stay;
     }

@@ -10,7 +10,8 @@ option bdr_goto_charging_station
       }
 
       action {
-          head.control_mode = look_around;
+          //head.control_mode = look_around;
+          head.control_mode = look_around_center;
           motion.type = stand;
           bdr.activity = pre_servicing;
           bdr.sit_down_counter = 0;
@@ -26,7 +27,8 @@ option bdr_goto_charging_station
       }
 
       action {
-          head.control_mode = look_around;
+          //head.control_mode = look_around;
+          head.control_mode = look_around_center;
           bdr_goto_point(
             x = -265, 
             y = (robot_pose.is_mirrored?-450:450), 
@@ -46,7 +48,8 @@ option bdr_goto_charging_station
       
       action{
           motion.type = stand;
-          head.control_mode = look_around;
+          //head.control_mode = look_around;
+          head.control_mode = look_around_center;
       }
   }
 
@@ -54,18 +57,16 @@ option bdr_goto_charging_station
       decision{
           if (action_done)
               goto sit;
-          else if(state_time > 10000)
+          else if(state_time > 40000)
             goto approach;
           else
               stay;
       }
 
       action {
-            head.control_mode = look_around;
-            bdr_align_carefully(
-              x = -265, 
-              y = (robot_pose.is_mirrored?-620:620), 
-              rot = (robot_pose.is_mirrored?90:-90));
+            //head.control_mode = look_around;
+            head.control_mode = look_around_center;
+            bdr_align_carefully();
       }
   }
 
@@ -161,7 +162,8 @@ option bdr_goto_charging_station
     action
     {
         motion.type = stand;
-        head.control_mode = look_around;
+        //head.control_mode = look_around;
+        head.control_mode = look_around_center;
     }
   }
 
