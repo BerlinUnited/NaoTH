@@ -62,7 +62,7 @@ void StableRoleDecision::execute()
       time_bonus = parameters.strikerBonusTime;
     }
 
-    if (robotNumber == getPlayerInfo().playerNumber && (msg.fallen || msg.custom.isPenalized || 
+    if (robotNumber == getPlayerInfo().playerNumber && (msg.fallen || msg.custom.isPenalized || msg.custom.robotState != PlayerInfo::playing ||
       // ball was seen (> -1) and ball isn't too old
       msg.ballAge < 0 || msg.ballAge > parameters.maxBallLostTime + time_bonus)) 
     {
@@ -71,6 +71,7 @@ void StableRoleDecision::execute()
 
     if (!msg.fallen
       && !msg.custom.isPenalized
+      && msg.custom.robotState == PlayerInfo::playing
       && msg.ballAge >= 0 // Ball was seen some time ago ...
       && msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) < parameters.maxBallLostTime + time_bonus) //Ball is fresh
     { 
