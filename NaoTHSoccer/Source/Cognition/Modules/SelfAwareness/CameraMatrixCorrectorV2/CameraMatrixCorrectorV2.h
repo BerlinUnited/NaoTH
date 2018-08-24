@@ -160,8 +160,8 @@ public:
                             sample->inertialModel.orientation
                             );
 
-                tmpCM.translation += Vector3d(0, getFieldInfo().yPosRightSideline, 0); // move around on field
-                tmpCM.rotation = RotationMatrix::getRotationZ(Math::fromDegrees(90)) * tmpCM.rotation;
+                //tmpCM.translation += Vector3d(0, getFieldInfo().yPosRightSideline, 0); // move around on field
+                //tmpCM.rotation = RotationMatrix::getRotationZ(Math::fromDegrees(90)) * tmpCM.rotation;
 
                 std::vector<Vector2d> edgelProjections;
                 edgelProjections.resize(getEdgelsInImage(sample).size());
@@ -241,8 +241,8 @@ public:
                                 sample->inertialModel.orientation
                                 );
 
-                    tmpCM.translation += Vector3d(0, getFieldInfo().yPosRightSideline, 0); // move around on field
-                    tmpCM.rotation = RotationMatrix::getRotationZ(Math::fromDegrees(90)) * tmpCM.rotation;
+                    //tmpCM.translation += Vector3d(0, getFieldInfo().yPosRightSideline, 0); // move around on field
+                    //tmpCM.rotation = RotationMatrix::getRotationZ(Math::fromDegrees(90)) * tmpCM.rotation;
 
                     std::vector<Vector2d> edgelProjections;
                     edgelProjections.resize(getEdgelsInImage(sample).size());
