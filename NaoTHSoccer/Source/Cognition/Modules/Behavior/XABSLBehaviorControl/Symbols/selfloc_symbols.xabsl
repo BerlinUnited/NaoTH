@@ -75,5 +75,8 @@ namespace selfloc_symbols("Self-localization Symbols") {
   bool input robot_pose.bdr.close_to_border;
   float input robot_pose.bdr.close_to_border.correction.x;
   float input robot_pose.bdr.close_to_border.correction.y;
+
+  float input field.center.x;
+  float input field.center.y;
 }
 

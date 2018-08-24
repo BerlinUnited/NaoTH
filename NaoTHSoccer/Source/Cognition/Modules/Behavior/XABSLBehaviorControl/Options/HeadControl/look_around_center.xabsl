@@ -1,0 +1,95 @@
+option look_around_center
+{
+  initial state get_starting_point
+  {
+    decision{
+      // find a close point to start the lookaround
+      if(head.yaw > 0){
+        goto look_center_left;
+      }else{
+        goto look_center_right;
+      }
+    }
+    action{}
+  }
+
+  state look_left
+  {
+    decision
+    {
+      if (head.yaw > 60)
+        goto look_center_right;
+      else 
+        stay;
+    }
+    action
+    {
+      head.point_in_world.x = 2000;
+      head.point_in_world.y = 6000;
+      head.point_in_world.z = 500;
+      head.motion_type = look_at_world_point;
+
+      head.camera.id = Top;
+    }
+  }
+
+  state look_center_right
+  {
+    decision
+    {
+      if (state_time > 2000)
+        goto look_right;
+      else 
+        stay;
+    }
+    action
+    {
+      head.point_in_world.x = field.center.x;
+      head.point_in_world.y = field.center.y;
+      head.point_in_world.z = 0;
+      head.motion_type = look_at_world_point;
+
+      head.camera.id = Bottom;
+    }
+  }
+  
+  state look_right
+  {
+    decision
+    {
+      if (head.yaw < -60)
+        goto look_center_left;
+      else 
+        stay;
+    }
+    action
+    {
+      head.point_in_world.x = 2000;
+      head.point_in_world.y = -6000;
+      head.point_in_world.z = 500;
+      head.motion_type = look_at_world_point;
+
+      head.camera.id = Top;
+    }
+  }
+
+  state look_center_left
+  {
+    decision
+    {
+      if (state_time > 2000)
+        goto look_left;
+      else 
+        stay;
+    }
+    action
+    {
+      head.point_in_world.x = field.center.x;
+      head.point_in_world.y = field.center.y;
+      head.point_in_world.z = 0;
+      head.motion_type = look_at_world_point;
+
+      head.camera.id = Bottom;
+    }
+  }
+}

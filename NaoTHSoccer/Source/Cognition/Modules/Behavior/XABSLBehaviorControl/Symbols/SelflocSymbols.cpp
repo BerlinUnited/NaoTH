@@ -71,6 +71,8 @@ void SelflocSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("robot_pose.bdr.close_to_border.correction.x", &safePoint.x);
   engine.registerDecimalInputSymbol("robot_pose.bdr.close_to_border.correction.y", &safePoint.y);
 
+  engine.registerDecimalInputSymbol("field.center.x", &fieldCenter.x);
+  engine.registerDecimalInputSymbol("field.center.y", &fieldCenter.y);
 
   DEBUG_REQUEST_REGISTER("XABSL:draw_selfloc_goal", "draw the position of the goals calculated using the selflocalization", false);
 }//end registerSymbols
@@ -206,6 +208,8 @@ void SelflocSymbols::execute()
       safePoint = global / safePoint;
     }
   }
+
+  fieldCenter = getRobotPose().invert().translation;
 
 }//end execute
 

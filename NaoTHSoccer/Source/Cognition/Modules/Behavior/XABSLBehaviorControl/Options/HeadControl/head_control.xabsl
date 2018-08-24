@@ -25,6 +25,8 @@ option head_control
       goto look_at_ball_percept;
     else if(head.control_mode == search_for_ball_and_look_around)
       goto search_for_ball_and_look_around;
+    else if(head.control_mode == look_around_center)
+      goto look_around_center;
     else if(head.control_mode == look_at_team_ball)
       goto look_at_team_ball;
   }
@@ -92,6 +94,16 @@ option head_control
       search_for_ball(force_ball_model_check=false, look_around=true, look_at_ball_when_distance=1000);
     }
   }
+
+  state look_around_center
+  {
+    action
+    {
+      look_around_center();
+      //head.camera.id = Bottom;
+    }
+  }
+
 
   state look_around
   {

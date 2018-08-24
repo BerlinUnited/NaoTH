@@ -135,6 +135,8 @@ private:
 
   Pose2D targetLocal;
   double targetLocalRotation;
+
+  Vector2d fieldCenter;
 };// End class SelflocSymbols
 
 
