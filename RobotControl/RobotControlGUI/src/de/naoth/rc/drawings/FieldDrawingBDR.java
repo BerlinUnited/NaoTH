@@ -29,10 +29,10 @@ public class FieldDrawingBDR extends FieldDrawingSPL2012
         this.yLength = 1112;
         this.boundary = 90;
 
-        this.xPenaltyAreaLength = 216;
-        this.yPenaltyAreaLength = 478;
+        this.xPenaltyAreaLength = 210;
+        this.yPenaltyAreaLength = 500;
 
-        this.centerCircleRadius = 170;
+        this.centerCircleRadius = 175;
 
         this.xCrossOffset = 300;
         this.crossSize = 10;
