@@ -307,7 +307,6 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
         } else {
             
             String parameterPath = Plugin.parent.getConfig().getProperty(parameterSavePathKey, defaultConfigPath);
-            String p = new File(parameterPath).getAbsolutePath();
             // configure the filechooser ...
             fcSaveParametersDialog.setCurrentDirectory(new File(parameterPath));
             fcSaveParametersDialog.setSelectedFile(new java.io.File(selecedList.name + ".cfg"));
