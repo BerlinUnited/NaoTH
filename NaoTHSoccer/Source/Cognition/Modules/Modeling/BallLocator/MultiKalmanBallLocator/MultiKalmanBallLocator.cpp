@@ -421,14 +421,13 @@ void MultiKalmanBallLocator::predict(ExtendedKalmanFilter4d& filter, double dt) 
 
     const Eigen::Vector4d& x = filter.getState();
     Eigen::Vector2d u; // control vector
-
-    // deceleration has to be in opposite direction of velocity
-    u <<  -x(1), -x(3);
-
+    
+    u <<  x(1), x(3);
     // deceleration vector with "absoulte deceleration" (length of vector) of deceleration
     if(u.norm() > 0){
         u.normalize();
     }
+    // ballDeceleration is negative so the deceleration will be in opposite direction of current velocity
     u *= getFieldInfo().ballDeceleration;
 
     double time_until_vel_x_zero = 0;
