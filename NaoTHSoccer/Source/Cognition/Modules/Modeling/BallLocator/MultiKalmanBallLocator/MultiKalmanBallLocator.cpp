@@ -122,10 +122,6 @@ void MultiKalmanBallLocator::execute()
       provideBallModel(*bestModel);
     }
 
-    DEBUG_REQUEST("MultiKalmanBallLocator:draw_future_ball_positions",
-        drawFutureBallPositions();
-    );
-    
     doDebugRequest();
 
     lastFrameInfo     = getFrameInfo();
@@ -636,9 +632,10 @@ void MultiKalmanBallLocator::doDebugRequestBeforUpdate()
 
 void MultiKalmanBallLocator::doDebugRequest()
 {
-    //PLOT("MultiKalmanBallLocator:ModelIsValid", getBallModel().valid);
+    DEBUG_REQUEST("MultiKalmanBallLocator:draw_future_ball_positions",
+        drawFutureBallPositions();
+    );
 
-    
     //to check correctness of the prediction
     DEBUG_REQUEST("MultiKalmanBallLocator:draw_real_ball_percept",
       if(getMultiBallPercept().wasSeen()) {
