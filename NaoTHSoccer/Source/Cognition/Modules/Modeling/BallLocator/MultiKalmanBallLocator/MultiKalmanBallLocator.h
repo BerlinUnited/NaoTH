@@ -25,6 +25,7 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugPlot.h"
+#include "Tools/Debug/Color.h"
 
 #include "Representations/Infrastructure/FieldInfo.h"
 
@@ -77,6 +78,8 @@ private:
 
     FrameInfo lastFrameInfo;
 
+    struct Pen;
+
 private:
     typedef std::vector<BallHypothesis> Filters;
     Filters filter;
@@ -105,6 +108,8 @@ private:
     void doDebugRequestBeforPredictionAndUpdate();
     void doDebugRequestBeforUpdate();
     void drawFiltersOnField() const;
+    void drawFutureBallPositions() const;
+    void drawSingleFilterOnField(const BallHypothesis& bh, const Pen &model_pen, const Pen &loc_pen, const Pen &vel_pen) const;
     void reloadParameters();
 
     class KFParameters:  public ParameterList
@@ -199,6 +204,14 @@ private:
     Eigen::Matrix2d processNoiseStdSingleDimension;
     Eigen::Matrix2d measurementNoiseCovariances;
     Eigen::Matrix2d initialStateStdSingleDimension;
+
+    struct Pen{
+       Pen(): color(), size(0) {}
+       Pen(Color c, int s): color(c), size(s) {}
+
+       Color color;
+       int   size;
+    };
 };
 
 #endif // MULTIKALMANBALLLOCATOR_H
