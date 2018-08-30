@@ -602,6 +602,14 @@ void MultiKalmanBallLocator::provideBallModel(const BallHypothesis& model)
     const Eigen::Vector4d& x = modelCopy.getState();
     getBallModel().futurePosition[i] = Vector2d(x(0), x(2));
   }
+
+  // Hack for testing: this should be "smartly" decided by behavior
+  getBallModel().position = getBallModel().futurePosition[2];
+  getBallModel().positionPreview = getMotionStatus().plannedMotion.hip / getBallModel().position;
+  ballLeftFoot  = lFoot.projectXY()/getBallModel().position;
+  ballRightFoot = rFoot.projectXY()/getBallModel().position;
+  getBallModel().positionPreviewInLFoot = getMotionStatus().plannedMotion.lFoot / ballLeftFoot;
+  getBallModel().positionPreviewInRFoot = getMotionStatus().plannedMotion.rFoot / ballRightFoot;
 }
 
 void MultiKalmanBallLocator::doDebugRequestBeforPredictionAndUpdate()
