@@ -7,7 +7,7 @@ using namespace naoth;
 
 ArmCollisionDetector2018::ArmCollisionDetector2018()
 {
-	//Debug Requests for easy acces
+	//Debug Plots
 	
 
 
