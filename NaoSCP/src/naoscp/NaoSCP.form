@@ -11,6 +11,15 @@
         <Property name="useNullLayout" type="boolean" value="true"/>
       </Layout>
       <SubComponents>
+        <MenuItem class="javax.swing.JMenuItem" name="miShutdown">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Shutdown nao"/>
+            <Property name="toolTipText" type="java.lang.String" value="Shutdown the full nao system"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miShutdownActionPerformed"/>
+          </Events>
+        </MenuItem>
         <MenuItem class="javax.swing.JMenuItem" name="miRestartNao">
           <Properties>
             <Property name="text" type="java.lang.String" value="Restart nao"/>
@@ -29,6 +38,44 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miRestartNaothActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <Component class="javax.swing.JPopupMenu$Separator" name="jSeparator2">
+        </Component>
+        <MenuItem class="javax.swing.JMenuItem" name="miMute">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Mute"/>
+            <Property name="toolTipText" type="java.lang.String" value="Muting the nao"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miMuteActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="miUnmute">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Un-Mute"/>
+            <Property name="toolTipText" type="java.lang.String" value="Un-muting the nao"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miUnmuteActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="miSetVolume80">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Volume: 80%"/>
+            <Property name="toolTipText" type="java.lang.String" value="Sets the speaker volume to 80%"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miSetVolume80ActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="miSetVolume40">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Volume: 40%"/>
+            <Property name="toolTipText" type="java.lang.String" value="Sets the speaker volume to 40%"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miSetVolume40ActionPerformed"/>
           </Events>
         </MenuItem>
       </SubComponents>
