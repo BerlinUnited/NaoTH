@@ -77,8 +77,9 @@
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
 #include "Modules/Modeling/FieldCompass/FieldCompass.h"
 #include "Modules/Modeling/ObstacleLocator/UltraSoundObstacleLocator.h"
-#include "Modules/Modeling/TeamMessageStatistics/TeamCommReceiveEmulator.h"
-#include "Modules/Modeling/TeamMessageStatistics/TeamMessageStatistics.h"
+#include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiveEmulator.h"
+#include "Modules/Modeling/TeamMessageStatistics/TeamMessageStatisticsModule.h"
+#include "Modules/Modeling/TeamMessageStatistics/TeamMessagePlayerIsAliveModule.h"
 #include "Modules/Modeling/RoleDecision/SimpleRoleDecision/SimpleRoleDecision.h"
 #include "Modules/Modeling/RoleDecision/StableRoleDecision/StableRoleDecision.h"
 #include "Modules/Modeling/RoleDecision/CleanRoleDecision/CleanRoleDecision.h"
@@ -199,7 +200,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(FieldCompass);
   REGISTER_MODULE(UltraSoundObstacleLocator);
   REGISTER_MODULE(TeamCommReceiveEmulator);
-  REGISTER_MODULE(TeamMessageStatistics);
+  REGISTER_MODULE(TeamMessageStatisticsModule);
+  REGISTER_MODULE(TeamMessagePlayerIsAliveModule);
   REGISTER_MODULE(SoccerStrategyProvider);
   REGISTER_MODULE(PotentialFieldProvider);
   REGISTER_MODULE(GPS_SelfLocator);
