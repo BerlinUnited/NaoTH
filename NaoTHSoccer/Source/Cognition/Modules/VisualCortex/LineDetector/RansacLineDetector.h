@@ -50,7 +50,7 @@ private:
 
   int ransacEllipse(Ellipse& result);
 
-  bool ransacCircle(Vector2d& result, std::vector<Vector2d>& inlierPoints);
+  bool ransacCircle(Vector2d& result, std::vector<size_t>& inliers);
 
   void simpleLinearRegression(std::vector<Vector2d> &points, double& slope, double& intercept);
 
