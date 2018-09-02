@@ -34,6 +34,8 @@ void SoundControl::setSoundData(const SoundPlayData& theSoundData)
       std::cerr << "Error: Not able to create MotionDebug-ReceiveThread" << endl;
       return;
     }
+    
+    pthread_setname_np(playThreadID, "SoundControl");
   }
 
 /*

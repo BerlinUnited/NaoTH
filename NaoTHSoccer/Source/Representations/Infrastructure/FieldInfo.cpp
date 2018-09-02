@@ -15,6 +15,7 @@ FieldInfo::FieldInfo() : ParameterList("FieldInfo")
   
   // default values as of SPL rules from 2012
   PARAMETER_REGISTER(ballRadius) = 50.0;
+  PARAMETER_REGISTER(ballRRCoefficient) = 0.0245;
 
   PARAMETER_REGISTER(xLength) = 6000;
   PARAMETER_REGISTER(yLength) = 4000;
@@ -47,6 +48,8 @@ FieldInfo::FieldInfo() : ParameterList("FieldInfo")
 
 void FieldInfo::calculateValues()
 {
+  ballDeceleration = - ballRRCoefficient * Math::g * 1000;
+
   calculateCrossings();
   createLinesTable();
 }//end calculateValues
@@ -348,6 +351,8 @@ void FieldInfo::print(std::ostream& stream) const
 
   stream << "//////////////// basic values from configuration ////////////////\n";
   stream << "ballRadius = "<< ballRadius <<"\n";
+  stream << "ballRRCoefficient = "<< ballRRCoefficient <<"\n";
+  stream << "ballDeceleration = "<< ballDeceleration <<" mm/s^2\n";
 
   stream << "size of the whole field (including the green area outside the lines): \n";
   stream << "xFieldLength = "<< xFieldLength <<"\n";

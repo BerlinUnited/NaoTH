@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# redirect all the output to the logger
+exec 1> >(logger -s -t brainwasher) 2>&1
+
 COUNTER=100 # ~ 10 seconds
 
 # create mount point

@@ -421,17 +421,14 @@ void MultiKalmanBallLocator::predict(ExtendedKalmanFilter4d& filter, double dt) 
 
     const Eigen::Vector4d& x = filter.getState();
     Eigen::Vector2d u; // control vector
-
-    double deceleration = c_RR*Math::g*1e3;//[mm/s^2]
-
-    // deceleration has to be in opposite direction of velocity
-    u <<  -x(1), -x(3);
-
+    
+    u <<  x(1), x(3);
     // deceleration vector with "absoulte deceleration" (length of vector) of deceleration
     if(u.norm() > 0){
         u.normalize();
     }
-    u *= deceleration;
+    // ballDeceleration is negative so the deceleration will be in opposite direction of current velocity
+    u *= getFieldInfo().ballDeceleration;
 
     double time_until_vel_x_zero = 0;
     double time_until_vel_y_zero = 0;
@@ -735,9 +732,6 @@ void MultiKalmanBallLocator::reloadParameters()
 
     initialStateStdSingleDimension << kfParameters.initialStateStdP00, kfParameters.initialStateStdP01,
                                       kfParameters.initialStateStdP10, kfParameters.initialStateStdP11;
-
-    // filter unspecific parameters
-    c_RR              = kfParameters.c_RR;
 
     // UAF thresholds
     euclid.setThreshold(kfParameters.euclidThreshold);
