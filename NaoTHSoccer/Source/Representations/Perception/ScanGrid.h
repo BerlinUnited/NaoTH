@@ -6,6 +6,7 @@ class ScanGrid
 public:
   void reset() {
     vScanPattern.clear();
+    hScanPattern.clear();
     longverticals.clear();
     // vertical is resized in ScanGridProvider
   }
@@ -19,8 +20,19 @@ public:
   };
 
   std::vector<int> vScanPattern;
-
   std::vector<VScanLine> vertical;
+
+  class HScanLine
+  {
+  public:
+    int y;
+    size_t left;
+    size_t right;
+    int skip;
+  };
+
+  std::vector<int> hScanPattern;
+  std::vector<HScanLine> horizontal;
 
   // for field detection
   std::vector<int> longverticals;
