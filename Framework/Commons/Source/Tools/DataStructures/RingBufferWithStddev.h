@@ -25,11 +25,24 @@ public:
      * @return the median value of all values
      */
     C getMedian() const {
-        int size = this->numberOfEntries;
-        C temp[size];
-        memcpy(temp,this->buffer,size * sizeof(C));
-        std::sort(temp, temp + size);
-        return size % 2 ? temp[size / 2] : (temp[size / 2 - 1] + temp[size / 2]) / 2.0;
+        // copy buffer
+        C temp[n];
+        memcpy(temp, this->buffer, n * sizeof(C));
+        // check for median idx (even / odd)
+        if(this->numberOfEntries % 2) {
+            std::nth_element(temp, temp+(this->numberOfEntries/2), temp+this->numberOfEntries);
+            return temp[this->numberOfEntries/2];
+        } else {
+            std::nth_element(temp, temp+((this->numberOfEntries/2)-1), temp+this->numberOfEntries);
+            C t1 = temp[(this->numberOfEntries/2)-1];
+
+            std::nth_element(temp, temp+(this->numberOfEntries/2), temp+this->numberOfEntries);
+            C t2 = temp[this->numberOfEntries/2];
+            // take the avg of the two middle elements
+            return (t1 + t2) / 2.0;
+        }
+        // NOTE: instead of sorting the whole array, we're just searching for the middle item
+        //       even for odd elements it is faster!
     }
 
     /**
