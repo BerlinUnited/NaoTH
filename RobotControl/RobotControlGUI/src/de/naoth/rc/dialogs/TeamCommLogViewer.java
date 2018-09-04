@@ -6,6 +6,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.MalformedJsonException;
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.components.FileDrop;
 import de.naoth.rc.components.teamcomm.TeamCommMessage;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
@@ -87,6 +88,12 @@ public class TeamCommLogViewer extends AbstractDialog
         initComponents();
         messageTree.setRootVisible(false);
         messageTree.setCellRenderer(new TreeCellRenderer());
+        new FileDrop(this, (files) -> {
+            if(files.length > 1) {
+                JOptionPane.showMessageDialog(this, "Only one file can be used here!", "Too many files", JOptionPane.ERROR_MESSAGE);
+            }
+            openFile(files[0]);
+        });
     }
 
     /**
@@ -267,33 +274,7 @@ public class TeamCommLogViewer extends AbstractDialog
 
     private void btnTCLFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTCLFActionPerformed
         if(teamCommFileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            try {
-                // before loading new file, cleanup old one
-                resetMessages();
-                // read the file
-                File f = teamCommFileChooser.getSelectedFile();
-                this.messages_cnt = readMessages(f);
-                
-                this.lblMessages.setToolTipText("Total messages");
-                this.lblMessages.setText(" M: "+String.valueOf(messages.size())+" ");
-                this.lblTimestamps.setToolTipText("Unique timestamps");
-                this.lblTimestamps.setText(" T: "+String.valueOf(messages_cnt)+" ");
-                this.lblFile.setToolTipText(f.getAbsolutePath());
-                this.lblFile.setText(f.getName());
-                
-                btnPlay.setEnabled(true);
-                
-                // cancel previous "TeamComm simulation"
-                stopTeamCommPlayer();
-            } catch (MalformedJsonException | IllegalStateException ex) {
-                JOptionPane.showMessageDialog(null, "Unknown format!", "Unknown file format!", JOptionPane.WARNING_MESSAGE);
-                return;
-            } catch (FileNotFoundException ex) {
-                JOptionPane.showMessageDialog(null, "File not found!", "Not found", JOptionPane.WARNING_MESSAGE);
-            } catch (IOException ex) {
-                Logger.getLogger(TeamCommLogViewer.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            showMessages();
+            openFile(teamCommFileChooser.getSelectedFile());
         }
     }//GEN-LAST:event_btnTCLFActionPerformed
 
@@ -370,6 +351,34 @@ public class TeamCommLogViewer extends AbstractDialog
         }
     }//GEN-LAST:event_btnJsonExportActionPerformed
 
+    private void openFile(File f) {
+        try {
+            // before loading new file, cleanup old one
+            resetMessages();
+            this.messages_cnt = readMessages(f);
+
+            this.lblMessages.setToolTipText("Total messages");
+            this.lblMessages.setText(" M: "+String.valueOf(messages.size())+" ");
+            this.lblTimestamps.setToolTipText("Unique timestamps");
+            this.lblTimestamps.setText(" T: "+String.valueOf(messages_cnt)+" ");
+            this.lblFile.setToolTipText(f.getAbsolutePath());
+            this.lblFile.setText(f.getName());
+
+            btnPlay.setEnabled(true);
+
+            // cancel previous "TeamComm simulation"
+            stopTeamCommPlayer();
+        } catch (MalformedJsonException | IllegalStateException ex) {
+            JOptionPane.showMessageDialog(null, "Unknown format!", "Unknown file format!", JOptionPane.WARNING_MESSAGE);
+            return;
+        } catch (FileNotFoundException ex) {
+            JOptionPane.showMessageDialog(null, "File not found!", "Not found", JOptionPane.WARNING_MESSAGE);
+        } catch (IOException ex) {
+            Logger.getLogger(TeamCommLogViewer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        showMessages();
+    }
+    
     /**
      * Resets all counter, 'clears' the ui and sets the labels to a default value.
      */
