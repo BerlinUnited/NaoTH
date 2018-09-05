@@ -7,17 +7,19 @@ using namespace naoth;
 
 ArmCollisionDetector2018::ArmCollisionDetector2018()
 {
-	//Debug Plots
-	
+	//Debug Requests
+	DEBUG_REQUEST_REGISTER("Motion:ArmCollisionDetector2018:showReferenceHull", "", false);
+	DEBUG_REQUEST_REGISTER("Motion:ArmCollisionDetector2018:showLeftBuffer", "", false);
+	DEBUG_REQUEST_REGISTER("Motion:ArmCollisionDetector2018:showRightBuffer", "", false);
 
 
 	getDebugParameterList().add(&params);
 
 	std::string line;
 
-  const std::string& dirlocation = Platform::getInstance().theConfigDirectory;
-  std::cout << dirlocation + params.point_config << std::endl;
-  std::ifstream file(dirlocation + params.point_config);
+	const std::string& dirlocation = Platform::getInstance().theConfigDirectory;
+	std::cout << dirlocation + params.point_config << std::endl;
+	std::ifstream file(dirlocation + params.point_config);
 	if (file.is_open() && file.good())
 	{
 		std::cout << "[ArmCollisionDetector2018] Opened configuration file" << std::endl;
@@ -41,6 +43,24 @@ ArmCollisionDetector2018::~ArmCollisionDetector2018()
 
 void ArmCollisionDetector2018::execute()
 {
+	DEBUG_REQUEST("Motion:ArmCollisionDetector2018:showReferenceHull",
+		for (size_t i = 0; i <getCollisionPercept().referenceHull.size(); i++){
+			PLOT_GENERIC("ArmCollisionDetector2018:referenceHull", getCollisionPercept().referenceHull[i].getX(), getCollisionPercept().referenceHull[i].getY());
+		}
+	);
+
+	DEBUG_REQUEST("Motion:ArmCollisionDetector2018:showLeftBuffer",
+		for (size_t i = 0; i <getCollisionPercept().pointBufferLeft.size(); i++){
+			PLOT_GENERIC("ArmCollisionDetector2018:pointBufferLeft", getCollisionPercept().pointBufferLeft[i].getX(), getCollisionPercept().pointBufferLeft[i].getY());
+		}
+	);
+
+	DEBUG_REQUEST("Motion:ArmCollisionDetector2018:showRightBuffer",
+		for (size_t i = 0; i <getCollisionPercept().pointBufferRight.size(); i++){
+			PLOT_GENERIC("ArmCollisionDetector2018:pointBufferRight", getCollisionPercept().pointBufferRight[i].getX(), getCollisionPercept().pointBufferRight[i].getY());
+		}
+	);
+
 	//Check if robot is in a suitable situation to recognize collisions
 	const bool armModeOK =
 		getMotionRequest().armMotionRequest.id == ArmMotionRequest::arms_synchronised_with_walk ||
@@ -84,7 +104,7 @@ void ArmCollisionDetector2018::execute()
 		//Next compare result to reference points
 		getCollisionPercept().pointBufferLeft.insert(getCollisionPercept().pointBufferLeft.end(), getCollisionPercept().referenceHull.begin(), getCollisionPercept().referenceHull.end());
 		getCollisionPercept().newHullLeft = ConvexHull::convexHull(getCollisionPercept().pointBufferLeft);
-    if (getCollisionPercept().newHullLeft == getCollisionPercept().referenceHull)
+		if (getCollisionPercept().newHullLeft == getCollisionPercept().referenceHull)
 		{
 			//No Collision
 			getCollisionPercept().newHullLeft.erase(getCollisionPercept().newHullLeft.begin(), getCollisionPercept().newHullLeft.end());
