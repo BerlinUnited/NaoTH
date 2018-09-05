@@ -16,7 +16,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
-//Debug
+//Debug and Plot
 #include <Tools/Debug/DebugRequest.h>
 #include <Tools/Debug/DebugPlot.h>
 #include <Tools/Debug/DebugModify.h>
@@ -24,18 +24,18 @@
 
 
 BEGIN_DECLARE_MODULE(ArmCollisionDetector2018)
-  PROVIDE(DebugRequest)
-  PROVIDE(DebugPlot)
-  PROVIDE(DebugModify)
-  PROVIDE(DebugParameterList)
+PROVIDE(DebugRequest)
+PROVIDE(DebugPlot)
+PROVIDE(DebugModify)
+PROVIDE(DebugParameterList)
 
-  REQUIRE(FrameInfo)
-  REQUIRE(MotorJointData)
-  REQUIRE(SensorJointData)
-  REQUIRE(MotionStatus)
-  REQUIRE(MotionRequest)
+REQUIRE(FrameInfo)
+REQUIRE(MotorJointData)
+REQUIRE(SensorJointData)
+REQUIRE(MotionStatus)
+REQUIRE(MotionRequest)
 
-  PROVIDE(CollisionPercept)
+PROVIDE(CollisionPercept)
 END_DECLARE_MODULE(ArmCollisionDetector2018)
 
 class ArmCollisionDetector2018 : private ArmCollisionDetector2018Base
