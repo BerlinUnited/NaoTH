@@ -1,6 +1,36 @@
 #include <OptimizersTest.h>
+//#include <fstream>
+//#include <iostream>
 
 int main(int /*argc*/, char** /*argv*/){
+    /*{
+        std::ifstream in;
+        in.open("out.dat", std::ios::binary | std::ios::in);
+
+        int cols;
+        int rows;
+
+        in.read((char*) &cols, sizeof (int));
+        in.read((char*) &rows, sizeof (int));
+
+        std::cout << cols << " " << rows << std::endl;
+
+        Eigen::MatrixXd A(rows, cols);
+        in.read((char*)A.data(), cols * rows * sizeof(double));
+
+        in.read((char*) &cols, sizeof (int));
+        in.read((char*) &rows, sizeof (int));
+
+        Eigen::MatrixXd B(rows, cols);
+        in.read((char*)B.data(), cols * rows * sizeof(double));
+
+        in.close();
+
+        Eigen::VectorXd a =  A.colPivHouseholderQr().solve(B);
+
+        std::cout << a << std::endl;
+    }*/
+
     {
         Eigen::Matrix<double, 2, 1> start;
         start << -1, 1;
@@ -8,9 +38,17 @@ int main(int /*argc*/, char** /*argv*/){
         Eigen::Vector2d eps;
         eps << 0.001, 0.001;
 
-        testDifferentialBased<wikipedia::Rosenbrock2, Optimizer::GaussNewtonMinimizer        >(start, eps);
-        testDifferentialBased<wikipedia::Rosenbrock2, Optimizer::LevenbergMarquardtMinimizer >(start, eps);
-        testDifferentialBased<wikipedia::Rosenbrock2, Optimizer::LevenbergMarquardtMinimizer2>(start, eps);
+        Test<wikipedia::Rosenbrock2, Optimizer::GaussNewtonMinimizer        , Eigen::Matrix<double, 2, 1> >* t  = new Test<wikipedia::Rosenbrock2, Optimizer::GaussNewtonMinimizer        , Eigen::Matrix<double, 2, 1> >();
+        Test<wikipedia::Rosenbrock2, Optimizer::LevenbergMarquardtMinimizer , Eigen::Matrix<double, 2, 1> >* t1 = new Test<wikipedia::Rosenbrock2, Optimizer::LevenbergMarquardtMinimizer , Eigen::Matrix<double, 2, 1> >();
+        Test<wikipedia::Rosenbrock2, Optimizer::LevenbergMarquardtMinimizer2, Eigen::Matrix<double, 2, 1> >* t2 = new Test<wikipedia::Rosenbrock2, Optimizer::LevenbergMarquardtMinimizer2, Eigen::Matrix<double, 2, 1> >();
+
+        (*t)(start, eps);
+        (*t1)(start, eps);
+        (*t2)(start, eps);
+
+        delete t;
+        delete t1;
+        delete t2;
     }
 
     {
