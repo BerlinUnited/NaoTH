@@ -21,23 +21,23 @@ public:
      * @brief Determines and calculates the median.
      *        The only difference compared to RingBufferWithSum is on even sized buffers.
      *        There, the median is calculated as mean between the two median values.
-     *        Warning: this variant is slower, because the full buffer is sorted!
      * @return the median value of all values
      */
     C getMedian() const {
         // copy buffer
         C temp[n];
         memcpy(temp, this->buffer, n * sizeof(C));
+        int mid = this->numberOfEntries/2;
         // check for median idx (even / odd)
         if(this->numberOfEntries % 2) {
-            std::nth_element(temp, temp+(this->numberOfEntries/2), temp+this->numberOfEntries);
-            return temp[this->numberOfEntries/2];
+            std::nth_element(temp, temp+mid, temp+this->numberOfEntries);
+            return temp[mid];
         } else {
-            std::nth_element(temp, temp+((this->numberOfEntries/2)-1), temp+this->numberOfEntries);
-            C t1 = temp[(this->numberOfEntries/2)-1];
+            std::nth_element(temp, temp+(mid-1), temp+this->numberOfEntries);
+            C t1 = temp[mid-1];
 
-            std::nth_element(temp, temp+(this->numberOfEntries/2), temp+this->numberOfEntries);
-            C t2 = temp[this->numberOfEntries/2];
+            std::nth_element(temp, temp+mid, temp+this->numberOfEntries);
+            C t2 = temp[mid];
             // take the avg of the two middle elements
             return (t1 + t2) / 2.0;
         }
