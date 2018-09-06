@@ -177,8 +177,6 @@ public:
 class CameraMatrixCorrectorV3: public CameraMatrixCorrectorV3Base, public ModuleManager
 {
 public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
   CameraMatrixCorrectorV3();
   ~CameraMatrixCorrectorV3();
 
