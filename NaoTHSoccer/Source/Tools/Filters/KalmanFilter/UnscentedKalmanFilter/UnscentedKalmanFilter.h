@@ -10,7 +10,7 @@
 #define _UNSCENTEDKALMANFILTER_H
 
 #include <Eigen/Core>
-#include <vector>
+#include <Eigen/StdVector>
 
 template <class S>
 class UKF 
@@ -23,8 +23,6 @@ class UKF
         //Eigen::Matrix<double,dim_measurement_cov,dim_measurement_cov> R; // covariance matrix of measurement noise
 
     public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
         UKF()
         {
         }
