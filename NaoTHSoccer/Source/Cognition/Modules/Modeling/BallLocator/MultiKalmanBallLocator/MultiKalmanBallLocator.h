@@ -2,6 +2,7 @@
 #define MULTIKALMANBALLLOCATOR_H
 
 #include <ModuleFramework/Module.h>
+#include <Eigen/StdVector>
 
 // representations
 #include <Representations/Perception/MultiBallPercept.h>
@@ -74,11 +75,10 @@ public:
 // from other kalman filter ball locator
 private:
     OdometryData lastRobotOdometry;
-
-    FrameInfo lastFrameInfo;
+    FrameInfo    lastFrameInfo;
 
 private:
-    typedef std::vector<BallHypothesis> Filters;
+    typedef std::vector<BallHypothesis, Eigen::aligned_allocator<BallHypothesis> > Filters;
     Filters filter;
     Filters::const_iterator bestModel;
 
@@ -87,7 +87,6 @@ private:
 
 private:
     void updateByPerceptsCool();
-    
     void updateByPerceptsNormal();
     void updateByPerceptsNaive(CameraInfo::CameraID camera);
 
