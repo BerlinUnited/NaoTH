@@ -1,16 +1,5 @@
-#ifndef EIGEN_DONT_VECTORIZE
-#define EIGEN_DONT_VECTORIZE
-#endif
-
-#ifndef EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
-#define EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
-#endif
-
 #ifndef MINIMIZER_H
 #define MINIMIZER_H
-
-#include <Tools/Math/Common.h>
-#include <Tools/Math/Vector2.h>
 
 #include <Tools/naoth_eigen.h>
 
