@@ -65,7 +65,7 @@ BEGIN_DECLARE_MODULE(CameraMatrixCorrectorV3)
 
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)
-  PROVIDE(CameraMatrixOffsetV3)
+  PROVIDE(CameraMatrixOffset)
   PROVIDE(SoundPlayData)
 END_DECLARE_MODULE(CameraMatrixCorrectorV3)
 

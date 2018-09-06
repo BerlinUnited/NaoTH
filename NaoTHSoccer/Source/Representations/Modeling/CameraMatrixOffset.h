@@ -18,7 +18,6 @@
 #include "Messages/Representations.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
-
 class CameraMatrixOffset: public ParameterList, public naoth::Printable
 {
 public:
@@ -42,63 +41,11 @@ public:
 
     syncWithConfig();
   }
-  
+
   virtual ~CameraMatrixOffset(){}
 
-  //experimental
   Vector2d offsetByGoalModel;
   Vector2d offset;
-
-  Vector2d body_rot;
-  Vector3d head_rot;
-  Vector3d cam_rot[naoth::CameraInfo::numOfCamera];
-
-  virtual void print(std::ostream& stream) const
-  {
-    stream << "----Offsets-------------" << std::endl;
-    stream << "----Body----------------" << std::endl;
-    stream << "Roll  (x): "<< body_rot.x << " rad" << std::endl;
-    stream << "Pitch (y): "<< body_rot.y << " rad" << std::endl;
-    stream << "----Head----------------" << std::endl;
-    stream << "Roll  (x): "<< head_rot.x << " rad" << std::endl;
-    stream << "Pitch (y): "<< head_rot.y << " rad" << std::endl;
-    stream << "Yaw   (z): "<< head_rot.z << " rad" << std::endl;
-    stream << "----TopCam--------------" << std::endl;
-    stream << "Roll  (x): "<< cam_rot[naoth::CameraInfo::Top].x  << " rad" << std::endl;
-    stream << "Pitch (y): "<< cam_rot[naoth::CameraInfo::Top].y  << " rad" << std::endl;
-    stream << "Yaw   (z): "<< cam_rot[naoth::CameraInfo::Top].z  << " rad" << std::endl;
-    stream << "----BottomCam-----------" << std::endl;
-    stream << "Roll  (x): "<< cam_rot[naoth::CameraInfo::Bottom].x  << " rad" << std::endl;
-    stream << "Pitch (y): "<< cam_rot[naoth::CameraInfo::Bottom].y  << " rad" << std::endl;
-    stream << "Yaw   (z): "<< cam_rot[naoth::CameraInfo::Bottom].z  << " rad" << std::endl;
-  }
-};
-
-class CameraMatrixOffsetV3: public ParameterList, public naoth::Printable
-{
-public:
-
-  CameraMatrixOffsetV3() : ParameterList("CameraMatrixOffsetV3")
-  {
-    PARAMETER_REGISTER(body_rot.x) = 0;
-    PARAMETER_REGISTER(body_rot.y) = 0;
-
-    PARAMETER_REGISTER(head_rot.x) = 0;
-    PARAMETER_REGISTER(head_rot.y) = 0;
-    PARAMETER_REGISTER(head_rot.z) = 0;
-
-    PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Top].x) = 0;
-    PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Top].y) = 0;
-    PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Top].z) = 0;
-
-    PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Bottom].x) = 0;
-    PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Bottom].y) = 0;
-    PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Bottom].z) = 0;
-
-    syncWithConfig();
-  }
-
-  virtual ~CameraMatrixOffsetV3(){}
 
   Vector2d body_rot;
   Vector3d head_rot;

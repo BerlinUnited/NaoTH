@@ -168,7 +168,7 @@ Eigen::VectorXd CamMatErrorFunctionV3::operator()(const Eigen::Matrix<double, 11
 
 CameraMatrixCorrectorV3::CameraMatrixCorrectorV3()
 {
-  getDebugParameterList().add(&getCameraMatrixOffsetV3());
+  getDebugParameterList().add(&getCameraMatrixOffset());
 
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:reset_calibration", "set the calibration offsets of the CM to 0", false);
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:reset_minimizer", "reset lm parameters to initial values", false);
@@ -214,7 +214,7 @@ CameraMatrixCorrectorV3::CameraMatrixCorrectorV3()
 
 CameraMatrixCorrectorV3::~CameraMatrixCorrectorV3()
 {
-    getDebugParameterList().remove(&getCameraMatrixOffsetV3());
+    getDebugParameterList().remove(&getCameraMatrixOffset());
 }
 
 void CameraMatrixCorrectorV3::execute()
@@ -263,7 +263,7 @@ void CameraMatrixCorrectorV3::execute()
     // Note: wanted behavior because we want to save the "best" solution so far
     if(!auto_calibrated){
         writeToRepresentation();
-        getCameraMatrixOffsetV3().saveToConfig();
+        getCameraMatrixOffset().saveToConfig();
     }
 
     // reset to intial
@@ -306,7 +306,7 @@ void CameraMatrixCorrectorV3::execute()
 
       DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV3:calibrate",
           writeToRepresentation();
-          getCameraMatrixOffsetV3().saveToConfig();
+          getCameraMatrixOffset().saveToConfig();
       );
 
       DEBUG_REQUEST("CameraMatrixV3:reset_calibration",
@@ -318,7 +318,7 @@ void CameraMatrixCorrectorV3::execute()
 
       DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV3:reset_calibration",
           writeToRepresentation();
-          getCameraMatrixOffsetV3().saveToConfig();
+          getCameraMatrixOffset().saveToConfig();
       );
   }
 
@@ -327,10 +327,10 @@ void CameraMatrixCorrectorV3::execute()
 
 void CameraMatrixCorrectorV3::reset_calibration()
 {
-  getCameraMatrixOffsetV3().body_rot = Vector2d();
-  getCameraMatrixOffsetV3().head_rot = Vector3d();
-  getCameraMatrixOffsetV3().cam_rot[CameraInfo::Top]    = Vector3d();
-  getCameraMatrixOffsetV3().cam_rot[CameraInfo::Bottom] = Vector3d();
+  getCameraMatrixOffset().body_rot = Vector2d();
+  getCameraMatrixOffset().head_rot = Vector3d();
+  getCameraMatrixOffset().cam_rot[CameraInfo::Top]    = Vector3d();
+  getCameraMatrixOffset().cam_rot[CameraInfo::Bottom] = Vector3d();
 
   cam_mat_offsets = Eigen::Matrix<double, 11, 1>::Zero();
 }
@@ -462,7 +462,7 @@ void CameraMatrixCorrectorV3::doItAutomatically()
 
     if(auto_calibrated){
         writeToRepresentation();
-        getCameraMatrixOffsetV3().saveToConfig();
+        getCameraMatrixOffset().saveToConfig();
 
         if(play_calibrated) {
             getSoundPlayData().mute = false;
@@ -474,23 +474,23 @@ void CameraMatrixCorrectorV3::doItAutomatically()
 
 void CameraMatrixCorrectorV3::writeToRepresentation()
 {
-  getCameraMatrixOffsetV3().body_rot += Vector2d(cam_mat_offsets(0),cam_mat_offsets(1));
-  getCameraMatrixOffsetV3().head_rot += Vector3d(cam_mat_offsets(2),cam_mat_offsets(3),cam_mat_offsets(4));
+  getCameraMatrixOffset().body_rot += Vector2d(cam_mat_offsets(0),cam_mat_offsets(1));
+  getCameraMatrixOffset().head_rot += Vector3d(cam_mat_offsets(2),cam_mat_offsets(3),cam_mat_offsets(4));
 
-  getCameraMatrixOffsetV3().cam_rot[CameraInfo::Top]    += Vector3d(cam_mat_offsets(5),cam_mat_offsets(6),cam_mat_offsets(7));
-  getCameraMatrixOffsetV3().cam_rot[CameraInfo::Bottom] += Vector3d(cam_mat_offsets(8),cam_mat_offsets(9),cam_mat_offsets(10));
+  getCameraMatrixOffset().cam_rot[CameraInfo::Top]    += Vector3d(cam_mat_offsets(5),cam_mat_offsets(6),cam_mat_offsets(7));
+  getCameraMatrixOffset().cam_rot[CameraInfo::Bottom] += Vector3d(cam_mat_offsets(8),cam_mat_offsets(9),cam_mat_offsets(10));
 }
 
 void CameraMatrixCorrectorV3::readFromRepresentation(){
-  cam_mat_offsets << getCameraMatrixOffsetV3().body_rot.x,
-                     getCameraMatrixOffsetV3().body_rot.y,
-                     getCameraMatrixOffsetV3().head_rot.x,
-                     getCameraMatrixOffsetV3().head_rot.y,
-                     getCameraMatrixOffsetV3().head_rot.z,
-                     getCameraMatrixOffsetV3().cam_rot[CameraInfo::Top].x,
-                     getCameraMatrixOffsetV3().cam_rot[CameraInfo::Top].y,
-                     getCameraMatrixOffsetV3().cam_rot[CameraInfo::Top].z,
-                     getCameraMatrixOffsetV3().cam_rot[CameraInfo::Bottom].x,
-                     getCameraMatrixOffsetV3().cam_rot[CameraInfo::Bottom].y,
-                     getCameraMatrixOffsetV3().cam_rot[CameraInfo::Bottom].z;
+  cam_mat_offsets << getCameraMatrixOffset().body_rot.x,
+                     getCameraMatrixOffset().body_rot.y,
+                     getCameraMatrixOffset().head_rot.x,
+                     getCameraMatrixOffset().head_rot.y,
+                     getCameraMatrixOffset().head_rot.z,
+                     getCameraMatrixOffset().cam_rot[CameraInfo::Top].x,
+                     getCameraMatrixOffset().cam_rot[CameraInfo::Top].y,
+                     getCameraMatrixOffset().cam_rot[CameraInfo::Top].z,
+                     getCameraMatrixOffset().cam_rot[CameraInfo::Bottom].x,
+                     getCameraMatrixOffset().cam_rot[CameraInfo::Bottom].y,
+                     getCameraMatrixOffset().cam_rot[CameraInfo::Bottom].z;
 }
