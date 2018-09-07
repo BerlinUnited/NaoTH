@@ -39,7 +39,7 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
        pointInImage)
     )
   {
-    min_scan_y = pointInImage.y;
+    min_scan_y = std::max(pointInImage.y, 0);
   } else {
     min_scan_y = min_horizon;
   }
@@ -170,6 +170,10 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
       for(size_t i=scanline.top; i<scanline.bottom+1; ++i)
       {
         POINT_PX(ColorClasses::red, scanline.x, getScanGrid().vScanPattern[i]);
+
+        //Test
+        Pixel pixel;
+        getImage().get(scanline.x, getScanGrid().vScanPattern[i], pixel);
       }
     }
   );
@@ -181,6 +185,10 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
       for(size_t i=scanline.left; i<scanline.right+1; i+=scanline.skip)
       {
         POINT_PX(ColorClasses::red, getScanGrid().hScanPattern[i], scanline.y);
+
+        //Test
+        Pixel pixel;
+        getImage().get(getScanGrid().hScanPattern[i], scanline.y, pixel);
       }
     }
   );
