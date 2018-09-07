@@ -9,7 +9,7 @@ option bdr_align_carefully
           && abs(value=robot_pose.charging_target.rotation) < 5
           && vector.abs(x=executed_motion.planed.target.x, y=executed_motion.planed.target.y) < 5
           && abs(value=executed_motion.planed.target.rotation) < 5 )
-        goto check;
+        goto done;
       else
         stay;
     }
@@ -51,11 +51,11 @@ option bdr_align_carefully
   }
 
 
-  initial state check
+  state check
   {
     decision
     {
-      if(state_time > 3000) {
+      if(state_time > 1500) {
         if (   abs(value=robot_pose.charging_target.x) < 15
             && abs(value=robot_pose.charging_target.y) < 10
             && abs(value=robot_pose.charging_target.rotation) < 5)
@@ -74,10 +74,10 @@ option bdr_align_carefully
     {
       motion.type = stand;
     }
-  }   
+  }
 
 
-  target state done
+  initial target state done
   {
     decision
     {

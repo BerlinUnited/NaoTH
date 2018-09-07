@@ -28,7 +28,7 @@ option bdr_goto_charging_station
 
       action {
           //head.control_mode = look_around;
-          head.control_mode = look_around;
+          head.control_mode = look_around_center;
           bdr_goto_point(
             x = -265, 
             y = (robot_pose.is_mirrored?-450:450), 
