@@ -25,7 +25,7 @@ option role_change_test
   { 
     decision 
     {
-      else if( team.members_alive_count != 0 &&
+      else if( team.members_alive_count != 0 &&  // members_alive_count is at least "1" (myself)!
                !team.calc_if_is_striker) {
         if ( team.calc_if_is_secondstriker)
           goto secondstriker;
@@ -49,7 +49,7 @@ option role_change_test
   { 
     decision 
     {
-      else if( team.members_alive_count != 0 &&
+      else if( team.members_alive_count != 0 &&  // members_alive_count is at least "1" (myself)!
                !team.calc_if_is_secondstriker) {
         if (team.calc_if_is_striker)
           goto striker;
@@ -75,7 +75,7 @@ option role_change_test
   { 
     decision 
     {
-      else if( team.members_alive_count == 0 ||
+      else if( team.members_alive_count == 0 ||  // members_alive_count is at least "1" (myself)!
                team.calc_if_is_striker)
         goto striker;
      else if ( team.calc_if_is_secondstriker)

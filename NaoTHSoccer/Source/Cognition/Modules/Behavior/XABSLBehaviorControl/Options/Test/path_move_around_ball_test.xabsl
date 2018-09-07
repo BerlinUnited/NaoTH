@@ -1,0 +1,91 @@
+option path_move_around_ball_test
+{
+
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+    else if(!game.state.playing_is_set_by_game_controller &&
+           !game.own_kickoff && game.time_in_play < 10000)
+      goto wait_for_ball_free;
+    else if(situation_abortable && !ball.know_where_itis)//ball.time_since_last_seen > 1500)
+      goto search;
+    else if(situation_abortable && vector.abs(x=ball.preview.x, y=ball.preview.y) > 300)
+      goto goto_ball;
+  }
+
+  state wait_for_ball_free {
+    decision {
+      else
+        goto search;
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  initial state idle 
+  {
+    decision 
+    {
+      else
+        goto search;
+    }
+    action 
+    {
+      situation_abortable = true;
+      team.is_playing_as_striker = false;
+      
+      path2018.routine = none;
+    }
+  }
+
+  state search 
+  {
+    decision 
+    {
+      else if(action_done)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action
+    {
+      situation_abortable = true;
+      search_ball();
+    }
+  }
+
+  state goto_ball {
+    decision{
+
+      else if(ball.preview.x < 300 && abs(value = ball.preview.y) < 50)
+        goto turn;
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      /* this distance is smaller than the condition for ball.preview.x above
+         possible unwanted behavior: the ball is closer than 250 but ball.preview.y is
+         bigger than 50. The robot won't rotate in go_to_ball_with_USOA and will continue
+         to walk to the position of the ball. Two possible outcomes:
+         1. the robot runs into the ball (if ball distance is not considered)
+         2. the robot will walk backwards in the successive approaching because it was too close*/
+      go_to_ball_with_USOA(distance = 190); 
+    }
+  }
+
+  state turn
+  {
+    action
+    {
+      situation_abortable = true;
+      
+      // TODO: path_turn_to_attack_direction() should be moved to a new option
+      //       PathPlanner2018 stuff was hacked in there
+      path_turn_to_attack_direction();
+    }
+  }
+}

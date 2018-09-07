@@ -63,6 +63,7 @@ Motion::Motion()
   theArmCollisionDetector2018 = registerModule<ArmCollisionDetector2018>("ArmCollisionDetector2018", true);
 
   theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
+  theCoPProvider  = registerModule<CoPProvider>("CoPProvider", true);
 
   getDebugParameterList().add(&parameter);
 
@@ -244,6 +245,9 @@ void Motion::processSensorData()
 
   //
   //  theSupportPolygonGenerator->execute();
+
+  //
+  theCoPProvider->execute();
 
   //
   updateCameraMatrix();

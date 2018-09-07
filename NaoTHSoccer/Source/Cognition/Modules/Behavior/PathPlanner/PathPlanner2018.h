@@ -72,6 +72,7 @@ private:
       PARAMETER_REGISTER(sidekickOffsetY)                       = 40.0;
       PARAMETER_REGISTER(forwardKickTime)                       = 300;
       PARAMETER_REGISTER(sideKickTime)                          = 300;
+      PARAMETER_REGISTER(moveAroundBallCharacter)               = 0.7;
 
       syncWithConfig();
     }
@@ -89,6 +90,7 @@ private:
     double sidekickOffsetY;
     int forwardKickTime;
     int sideKickTime;
+    double moveAroundBallCharacter;
   } params;
 
   // NONE means hip

@@ -15,8 +15,8 @@ retries = -1
 # if the following configs are set, the cam tries to set them before starting recording
 # if you want to configure these setting manually, comment them out
 fps = Video.FrameRate.FR30
-fov = Video.Fov.Wide
-resolution = Video.Resolution.R1080p
+fov = Video.Fov.SuperView
+resolution = Video.Resolution.R1080pSV
 
 # all available teams
 teams = {
@@ -57,15 +57,21 @@ teams = {
     35: "Blue Spider",
     36: "Camellia Dragons",
     37: "JoiTech-SPL",
-    38: "Linköping Humanoids",
+    38: "Linkoeping Humanoids",
     39: "WrightOcean",
     40: "Mars",
     41: "Aztlan Team",
     42: "CMSingle",
     43: "TeamSP",
     44: "Luxembourg United",
+    45: "Naova ETS",
+    46: "Recife Soccer",
+    47: "Rinobot",
     90: "DoBerMan",
     91: "B-HULKs",
     92: "Swift-Ark",
-    93: "Team USA"
+    93: "Team USA",
+    94: "B-Swift",
+    95: "AstroNAOtas",
+    96: "Team-Team"
 }

@@ -21,12 +21,9 @@ StableRoleDecision::~StableRoleDecision()
 
 void StableRoleDecision::execute() 
 {
-  getRoleDecisionModel().aliveRobots.clear();
-  getRoleDecisionModel().deadRobots.clear();
-
   // player numbers for the first and second striker
-  int firstStriker = std::numeric_limits<int>::max();
-  int secondStriker = std::numeric_limits<int>::max();
+  unsigned int firstStriker = std::numeric_limits<unsigned int>::max();
+  unsigned int secondStriker = std::numeric_limits<unsigned int>::max();
 
   bool wantsToBeStriker = true;
   //Goalie is not considered
@@ -40,18 +37,13 @@ void StableRoleDecision::execute()
     ownTimeToBall -= 300;
   }
 
-  for (auto const& i : getTeamMessage().data) 
+  for (auto const& i : getTeamMessage().data)
   {
     unsigned int robotNumber = i.first;
     const TeamMessageData& msg = i.second;
 
-    double failureProbability = getTeamMessageStatisticsModel().getFailureProbability(robotNumber);
-
-    if (failureProbability > parameters.minFailureProbability && msg.playerNumber != getPlayerInfo().playerNumber) { //Message is not fresh
-      getRoleDecisionModel().deadRobots.push_back((int)robotNumber);
+    if (msg.playerNumber != getPlayerInfo().playerNumber && getTeamMessagePlayerIsAlive().isDead(robotNumber)) {
       continue;
-    } else {
-      getRoleDecisionModel().aliveRobots.push_back((int)robotNumber);
     }
 
     double time_bonus = 0;
@@ -74,10 +66,10 @@ void StableRoleDecision::execute()
       if (msg.custom.wantsToBeStriker) { //Decision of the current round
         // If two robots want to be striker, the one with a smaller number is favoured
         // NOTE: goalie is always favoured for the first striker
-        if ((int)robotNumber < firstStriker) { 
+        if (robotNumber < firstStriker) {
           firstStriker = robotNumber;
         }
-        else if ((int)robotNumber < secondStriker) {
+        else if (robotNumber < secondStriker) {
           secondStriker = robotNumber;
         }
       }
@@ -91,7 +83,7 @@ void StableRoleDecision::execute()
   
   // there is no second striker, if goalie is a striker
   if (firstStriker == 1) {
-    secondStriker = std::numeric_limits<int>::max();
+    secondStriker = std::numeric_limits<unsigned int>::max();
   }
 
   getRoleDecisionModel().firstStriker = firstStriker;

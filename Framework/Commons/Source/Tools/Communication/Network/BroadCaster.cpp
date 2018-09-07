@@ -23,6 +23,7 @@ typedef int socklen_t;
 using namespace std;
 using namespace naoth;
 
+#include <sstream>
 
 BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
  :exiting(false), socket(NULL), broadcastAddress(NULL),
@@ -54,6 +55,10 @@ BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
 
   socketThread = std::thread([this]{this->loop();});
   ThreadUtil::setPriority(socketThread, ThreadUtil::Priority::lowest);
+
+  stringstream s;
+  s << "BC " << interfaceName << ":" << port;
+  ThreadUtil::setName(socketThread, s.str());
 }
 
 bool BroadCaster::queryBroadcastAddress()

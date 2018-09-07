@@ -5,6 +5,7 @@
  */
 package de.naoth.rc.dialogs;
 
+import com.google.gson.Gson;
 import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractDialog;
@@ -39,19 +40,31 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -118,6 +131,7 @@ public class BehaviorViewer extends AbstractDialog
   private LogBehaviorListener logBehaviorListener = new LogBehaviorListener();
   
   private SortedSet<String> symbolsToWatch = new TreeSet<>();
+  private HashMap<String, Set<String>> symbolsToWatchHistory = new HashMap<>();
   
   /** Creates new form BehaviorViewer */
   public BehaviorViewer()
@@ -152,8 +166,30 @@ public class BehaviorViewer extends AbstractDialog
       }
     });
 
-
     this.behaviorBuffer = new ArrayList<>();
+    
+    // retrieve symbol watch history from config & parse
+    String history = Plugin.parent.getConfig().getProperty(this.getClass().getName()+".history", "{}");
+    HashMap<String, List<String>> l = (new Gson()).fromJson(history, HashMap.class);
+    // set the symbol watch history menu
+    for (Map.Entry<String, List<String>> entry : l.entrySet()) {
+        symbolsToWatchHistory.put(entry.getKey(), new HashSet(entry.getValue()));
+        JMenuItem watchEntry = new JMenuItem(entry.getKey());
+        watchEntry.addActionListener((e) -> {
+            // clear watches, before setting a stored configuration
+            symbolsToWatch.clear();
+            symbolsToWatchHistory.get(e.getActionCommand()).forEach((t) -> {
+                symbolsToWatch.add(t);
+            });
+        });
+        // list the stored watches in the menu's tooltip
+        watchEntry.setToolTipText("<html>"+entry.getValue().stream().map((t) -> { return "<li>"+t+"</li>"; }).collect(Collectors.joining())+"</html>");
+        popupMenu.add(watchEntry);
+    }
+
+    // show popupmenu to trigger the height calculation
+    popupMenu.setVisible(true);
+    popupMenu.setVisible(false);
   }
 
   class BehaviorListener implements ObjectListener<byte[]>
@@ -456,6 +492,7 @@ public class BehaviorViewer extends AbstractDialog
         jScrollPane4 = new javax.swing.JScrollPane();
         outputSymbolsBoxPanel = new javax.swing.JPanel();
         sortSymbolsTextInput = new javax.swing.JTextField();
+        popupMenu = new javax.swing.JPopupMenu();
         jToolBar1 = new javax.swing.JToolBar();
         btReceive = new javax.swing.JToggleButton();
         btReceiveLogData = new javax.swing.JToggleButton();
@@ -469,6 +506,7 @@ public class BehaviorViewer extends AbstractDialog
         symbolsWatchTextPanel = new javax.swing.JTextArea();
         jToolBar2 = new javax.swing.JToolBar();
         btAddWatch = new javax.swing.JButton();
+        btShowWatchMenu = new javax.swing.JButton();
         behaviorTreePanel = new de.naoth.rc.components.behaviorviewer.BehaviorTreePanel();
         frameListPanel = new javax.swing.JScrollPane();
         frameList = new javax.swing.JList();
@@ -476,7 +514,6 @@ public class BehaviorViewer extends AbstractDialog
         symbolChooser.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         symbolChooser.setTitle("XABSL Symbols");
         symbolChooser.setAlwaysOnTop(true);
-        symbolChooser.setLocationByPlatform(true);
         symbolChooser.setMinimumSize(new java.awt.Dimension(250, 350));
 
         jTabbedPane1.setBackground(new java.awt.Color(255, 255, 255));
@@ -505,6 +542,16 @@ public class BehaviorViewer extends AbstractDialog
             }
         });
         symbolChooser.getContentPane().add(sortSymbolsTextInput, java.awt.BorderLayout.SOUTH);
+
+        popupMenu.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+                popupMenuPopupMenuWillBecomeVisible(evt);
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
 
         setLayout(new java.awt.BorderLayout());
 
@@ -581,15 +628,14 @@ public class BehaviorViewer extends AbstractDialog
 
         jSplitPane.setBorder(javax.swing.BorderFactory.createLineBorder(jToolBar1.getBackground()));
         jSplitPane.setDividerLocation(500);
-        jSplitPane.setDividerSize(10);
         jSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         jSplitPane.setResizeWeight(1.0);
         jSplitPane.setOneTouchExpandable(true);
 
         symbolsPanel.setLayout(new java.awt.BorderLayout());
 
-        symbolsWatchTextPanel.setColumns(20);
         symbolsWatchTextPanel.setEditable(false);
+        symbolsWatchTextPanel.setColumns(20);
         symbolsWatchTextPanel.setRows(5);
         jScrollPane3.setViewportView(symbolsWatchTextPanel);
 
@@ -609,6 +655,21 @@ public class BehaviorViewer extends AbstractDialog
             }
         });
         jToolBar2.add(btAddWatch);
+
+        btShowWatchMenu.setText("▲");
+        btShowWatchMenu.setToolTipText("Last used Watch-Symbols");
+        btShowWatchMenu.setActionCommand("showWatchMenu");
+        btShowWatchMenu.setFocusable(false);
+        btShowWatchMenu.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btShowWatchMenu.setMargin(new java.awt.Insets(2, 0, 2, 0));
+        btShowWatchMenu.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        btShowWatchMenu.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
+        btShowWatchMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btShowWatchMenuActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(btShowWatchMenu);
 
         symbolsPanel.add(jToolBar2, java.awt.BorderLayout.PAGE_END);
 
@@ -779,6 +840,13 @@ public class BehaviorViewer extends AbstractDialog
     private void cbOnlyOptionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbOnlyOptionsActionPerformed
         behaviorTreePanel.setShowOptionsOnly(cbOnlyOptions.isSelected());
     }//GEN-LAST:event_cbOnlyOptionsActionPerformed
+
+    private void btShowWatchMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btShowWatchMenuActionPerformed
+        popupMenu.show(this.btShowWatchMenu, 0, -popupMenu.getHeight());
+    }//GEN-LAST:event_btShowWatchMenuActionPerformed
+
+    private void popupMenuPopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_popupMenuPopupMenuWillBecomeVisible
+    }//GEN-LAST:event_popupMenuPopupMenuWillBecomeVisible
 
   
   private class LogBehaviorListener implements LogFrameListener
@@ -989,6 +1057,21 @@ public class BehaviorViewer extends AbstractDialog
   {
     //Plugin.genericManagerFactory.getManager(getExecutedBehaviorCommand).removeListener(this);
     Plugin.genericManagerFactory.getManager(getBehaviorStateSparse).removeListener(this.behaviorUpdateListener);
+    // save watch configuration, if something is set
+    if(!symbolsToWatch.isEmpty()) {
+        // ... and only if this configuration isn't already saved
+        if(!symbolsToWatchHistory.values().stream().anyMatch((t) -> { return symbolsToWatch.equals(t); })) {
+            // keep only 10 entries
+            if(symbolsToWatchHistory.size() >= 10) {
+                Optional<String> r = symbolsToWatchHistory.keySet().stream().sorted().findFirst();
+                symbolsToWatchHistory.remove(r.get());
+            }
+            // timestamp the watch configuration
+            symbolsToWatchHistory.put((new SimpleDateFormat("yyyy-MM-dd, HH:mm:ss")).format(Calendar.getInstance().getTime()), symbolsToWatch);
+            Plugin.parent.getConfig().setProperty(this.getClass().getName()+".history", (new Gson()).toJson(symbolsToWatchHistory));
+        }
+    }
+    
   }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -997,6 +1080,7 @@ public class BehaviorViewer extends AbstractDialog
     private javax.swing.JToggleButton btReceive;
     private javax.swing.JToggleButton btReceiveLogData;
     private javax.swing.JButton btSend;
+    private javax.swing.JButton btShowWatchMenu;
     private javax.swing.JComboBox cbAgents;
     private javax.swing.JCheckBox cbOnlyOptions;
     private javax.swing.JPanel drawingPanel;
@@ -1011,6 +1095,7 @@ public class BehaviorViewer extends AbstractDialog
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JPanel outputSymbolsBoxPanel;
+    private javax.swing.JPopupMenu popupMenu;
     private javax.swing.JTextField sortSymbolsTextInput;
     private javax.swing.JDialog symbolChooser;
     private javax.swing.JPanel symbolsPanel;

@@ -1,7 +1,7 @@
 /***
   Title: NaoTH Soccer
-  Platform: Aldebaran Nao V3.2~4 (RoboCup edition).
-  Software-Environment: NaoTH 2015
+  Platform: Aldebaran Nao V4-5
+  Software-Environment: NaoTH 2018
 */
 
 // Symbols
@@ -187,6 +187,9 @@ include "Options/Test/agent/pathplanner2018_forwardkick_agent.xabsl";
 include "Options/Test/pathplanner2018_forwardkick.xabsl";
 include "Options/Test/agent/pathplanner2018_sidekick_agent.xabsl";
 include "Options/Test/pathplanner2018_sidekick.xabsl";
+include "Options/Test/agent/path_move_around_ball_agent.xabsl";
+include "Options/Test/path_move_around_ball_test.xabsl";
+
 
 
 
@@ -311,7 +314,7 @@ agent pathplanner_test_only_shortkick_agent("pathplanner_test_only_shortkick_age
 agent pathplanner_test_dash_agent("pathplanner_test_dash_agent", pathplanner_test_dash_agent);
 agent pathplanner2018_forwardkick_agent("pathplanner2018_forwardkick_agent", pathplanner2018_forwardkick_agent);
 agent pathplanner2018_sidekick_agent("pathplanner2018_sidekick_agent", pathplanner2018_sidekick_agent);
-
+agent path_move_around_ball_agent("path_move_around_ball_agent", path_move_around_ball_agent);
 
 // Test agents search
 agent search_test_agent("search_test_agent",search_test_agent);
