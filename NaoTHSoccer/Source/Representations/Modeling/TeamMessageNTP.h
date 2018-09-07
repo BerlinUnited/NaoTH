@@ -20,10 +20,10 @@ public:
         unsigned int number;
         /** last ntp update of this player */
         FrameInfo lastNtpUpdate;
-        /** the fastegetTimeInMilliSecondsst round trip time / latency and the resulting time offset (difference) */
-        long long rtt = 0.0;
-        long long latency = 0.0;
-        long long offset = 0.0;
+        /** the fastesst round trip time / latency and the resulting time offset (difference) */
+        long long rtt = 0;
+        long long latency = 0;
+        long long offset = 0;
 
         Player(unsigned int n = 0) : number(n) {}
 
