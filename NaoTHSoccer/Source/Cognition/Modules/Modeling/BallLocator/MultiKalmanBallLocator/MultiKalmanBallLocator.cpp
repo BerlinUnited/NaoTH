@@ -216,7 +216,7 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
   }
 
   // phase 1: filter percepts and create index vector for filters
-  std::vector<Eigen::Vector2d> zs;
+  std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > zs;
   std::vector<Vector2d> ps;
 
   for(const MultiBallPercept::BallPercept& percept : getMultiBallPercept().getPercepts()){
