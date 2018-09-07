@@ -78,7 +78,6 @@ void TeamCommSender::fillMessageBeforeSending() const
     msg.custom.bodyID = getRobotInfo().bodyID;
     ASSERT(getSoccerStrategy().timeToBall >= 0);
     msg.custom.timeToBall = (unsigned int)getSoccerStrategy().timeToBall;
-    msg.custom.isPenalized = getPlayerInfo().robotState == PlayerInfo::penalized;
     msg.custom.batteryCharge = getBatteryData().charge;
     msg.custom.temperature = std::max(getBodyState().temperatureLeftLeg, getBodyState().temperatureRightLeg);
     msg.custom.cpuTemperature = getCpuData().temperature;

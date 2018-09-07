@@ -69,7 +69,6 @@ public:
   bool wasStriker;
   bool wantsToBeStriker;
   unsigned int timeToBall;    // the shorest time, in which the robot can reach the ball [ms]
-  bool isPenalized;           // whether the robot is penalized, or not
   double batteryCharge;       // the battery charge
   double temperature;         // the max. temperature of the left or right leg!
   double cpuTemperature;      // the temperature of the cpu
@@ -80,7 +79,7 @@ public:
   Vector2d ballVelocity;      // velocity of the ball
   // opponents ?
 
-  PlayerInfo::RobotState robotState;
+  PlayerInfo::RobotState robotState; // state of the robot (initial, ready, set, play, finish, penalized)
 
   /** Sets the data according to the protobuf message. */
   void parseFromProto(const naothmessages::BUUserTeamMessage& userData);
