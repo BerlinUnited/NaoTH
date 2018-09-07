@@ -24,6 +24,7 @@
 // needed by BUUserTeamMessage
 #include "Messages/TeamMessage.pb.h"
 #include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Modeling/PlayerInfo.h"
 
 using namespace naoth;
 
@@ -78,6 +79,8 @@ public:
   std::vector<NtpRequest> ntpRequests; // ntp requests to teammates
   Vector2d ballVelocity;      // velocity of the ball
   // opponents ?
+
+  PlayerInfo::RobotState robotState;
 
   /** Sets the data according to the protobuf message. */
   void parseFromProto(const naothmessages::BUUserTeamMessage& userData);

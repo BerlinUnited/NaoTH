@@ -156,7 +156,8 @@ TeamMessageCustom::TeamMessageCustom() :
   whistleDetected(false),
   whistleCount(0),
   // init with "invalid" position
-  teamBall(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity())
+  teamBall(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity()),
+  robotState(PlayerInfo::initial)
 {
 }
 
@@ -218,6 +219,8 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
     }
     DataConversion::toMessage(ballVelocity, *(userMsg.mutable_ballvelocity()));
     userMsg.set_key(key);
+    userMsg.set_robotstate((naothmessages::RobotState)robotState);
+
     return userMsg;
 }
 
@@ -296,5 +299,7 @@ void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &u
         ballVelocity.x = 0;
         ballVelocity.y = 0;
     }
+
+    robotState = (PlayerInfo::RobotState) userData.robotstate();
 }
 
