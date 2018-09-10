@@ -169,7 +169,7 @@ void TeamMessageCustom::print(std::ostream &stream) const
     << "\t" << "TimeToBall: " << timeToBall << "\n"
     << "\t" << "wasStriker: " << (wasStriker ? "yes" : "no") << "\n"
     << "\t" << "wantsToBeStriker: " << (wantsToBeStriker ? "yes" : "no") << "\n"
-    << "\t" << "robotState: " << robotState << "\n"
+    << "\t" << "robotState: " << PlayerInfo::toString(robotState) << "\n"
     << "\t" << "batteryCharge: " << batteryCharge << "\n"
     << "\t" << "temperature: " << temperature << "°C\n"
     << "\t" << "CPU: " << cpuTemperature << "°C\n"
