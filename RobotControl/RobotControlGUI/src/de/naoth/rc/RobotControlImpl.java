@@ -15,17 +15,20 @@ import de.naoth.rc.server.ConnectionStatusListener;
 import de.naoth.rc.server.MessageServer;
 import de.naoth.rc.statusbar.StatusbarPluginImpl;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -201,6 +204,9 @@ public class RobotControlImpl extends javax.swing.JFrame
     // set the constraints for the statusbar plugins
     statusPanelPluginsConstraints.fill = GridBagConstraints.VERTICAL;
     statusPanelPluginsConstraints.ipadx = 5;
+    
+    // read & set the userdefined dialog configurations
+    setMenuDialogConfiguration();
   }//end constructor
 
   
@@ -259,6 +265,63 @@ public class RobotControlImpl extends javax.swing.JFrame
       return true;
     }
   }//end checkConnected
+  
+  /**
+   * Reads all user-defined dialog configurations and creates appropiate menu items.
+   */
+  private void setMenuDialogConfiguration() {
+      String suffix = "_" + userLayoutFile.getName();
+      Arrays.asList(userLayoutFile.getParentFile().listFiles((dir, name) -> {
+          return name.endsWith(suffix);
+      })).forEach((f) -> {
+          String name = f.getName().substring(0, f.getName().length()-suffix.length());
+          createDialogConfigMenuItem(name);
+      });
+  }
+  
+  /**
+   * Returns the user dialog configuration file for the given configuration name.
+   * 
+   * @param configName the name of the dialog configuration
+   * @return the File object of this dialog configuraiton
+   */
+  private File createUserDialogConfigFile(String configName) {
+        return new File(userLayoutFile.getParent() + "/" + configName + "_" + userLayoutFile.getName());
+  }
+
+  /**
+   * Creates a new dialog configuration menu item and adds it to the restore menu.
+   * 
+   * @param name the name of the dialog configuration item
+   */
+  private void createDialogConfigMenuItem(String name) {
+        JMenuItem item = new JMenuItem(name);
+        item.setToolTipText("<html>Restores this dialog layout.<br>Use <i>Ctrl+Click</i> to delete this dialog layout.</html>");
+        item.addActionListener((e) -> {
+            JMenuItem source = (JMenuItem) e.getSource();
+            if((e.getModifiers() & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK) {
+                // delete requested
+                if(JOptionPane.showConfirmDialog(this, "Do you want to remove the dialog layout '"+name+"'?", "Remove dialog layout", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    if(createUserDialogConfigFile(name).delete()) {
+                        layout.remove(source);
+                    }
+                }
+            } else {
+                // restore dialog configuration
+                File f = createUserDialogConfigFile(source.getText());
+                if(f.isFile()) {
+                    try {
+                        dialogRegistry.loadFromFile(f);
+                    } catch (IOException ex) {
+                        Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "The '"+source.getText()+"' dialog layout file doesn't exists!?", "Missing layout file", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        layout.add(item);
+  }
 
   /**
    * This method is called from within the constructor to initialize the form.
@@ -282,7 +345,10 @@ public class RobotControlImpl extends javax.swing.JFrame
         connectMenuItem = new javax.swing.JMenuItem();
         disconnectMenuItem = new javax.swing.JMenuItem();
         enforceConnection = new javax.swing.JCheckBoxMenuItem();
+        layout = new javax.swing.JMenu();
         resetLayoutMenuItem = new javax.swing.JMenuItem();
+        miSaveDialogConfig = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
         preferences = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
         exitMenuItem = new javax.swing.JMenuItem();
@@ -385,14 +451,28 @@ public class RobotControlImpl extends javax.swing.JFrame
         enforceConnection.setToolTipText("Make sure that RobotControl is connected to a robot when dialogs try to receive data");
         mainControlMenu.add(enforceConnection);
 
+        layout.setText("Layout");
+
         resetLayoutMenuItem.setText("Reset layout");
-        resetLayoutMenuItem.setToolTipText("\"Resets all layout information");
+        resetLayoutMenuItem.setToolTipText("Resets all layout information");
         resetLayoutMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 resetLayoutMenuItemActionPerformed(evt);
             }
         });
-        mainControlMenu.add(resetLayoutMenuItem);
+        layout.add(resetLayoutMenuItem);
+
+        miSaveDialogConfig.setText("Save dialog layout");
+        miSaveDialogConfig.setToolTipText("Saves the current active dialog configuration.");
+        miSaveDialogConfig.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miSaveDialogConfigActionPerformed(evt);
+            }
+        });
+        layout.add(miSaveDialogConfig);
+        layout.add(jSeparator2);
+
+        mainControlMenu.add(layout);
 
         preferences.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
         preferences.setText("Preferences");
@@ -502,6 +582,35 @@ public class RobotControlImpl extends javax.swing.JFrame
         preferencesDialog.setVisible(true);
     }//GEN-LAST:event_preferencesActionPerformed
 
+    private void miSaveDialogConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miSaveDialogConfigActionPerformed
+        // Ask for a name for this dialog configuration
+        String inputName = JOptionPane.showInputDialog("Set a name for the current dialog layout");
+        // ignore canceled inputs
+        if(inputName == null) { return; }
+        // replace "invalid" characters
+        String name = inputName.trim().replaceAll("[^A-Za-z0-9_-]", "");
+        // ignore empty inputs
+        if(name.isEmpty()) { return; }
+        // create layout file
+        File f = createUserDialogConfigFile(name);
+        // if configuration name already exists - ask to overwrite
+        if(f.isFile() && JOptionPane.showConfirmDialog(this, "This dialog layout name already exists. Overwrite?", "Overwrite", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) {
+            // don't overwrite!
+            return;
+        }
+        // save configuration
+        try {
+            boolean exists = f.isFile();
+            dialogRegistry.saveToFile(f);
+            // if this configuration already exists, don't create a new menu entry!
+            if(!exists) {
+                createDialogConfigMenuItem(name);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_miSaveDialogConfigActionPerformed
+
   @Override
   public MessageServer getMessageServer()
   {
@@ -608,11 +717,14 @@ public class RobotControlImpl extends javax.swing.JFrame
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JMenu layout;
     private javax.swing.JLabel lblFramesS;
     private javax.swing.JLabel lblReceivedBytesS;
     private javax.swing.JLabel lblSentBytesS;
     private javax.swing.JMenu mainControlMenu;
     private de.naoth.rc.MainMenuBar mainMenuBar;
+    private javax.swing.JMenuItem miSaveDialogConfig;
     private javax.swing.JMenuItem preferences;
     private javax.swing.JMenuItem resetLayoutMenuItem;
     private javax.swing.JPanel statusPanel;
