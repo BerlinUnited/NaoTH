@@ -71,6 +71,9 @@ public:
       PARAMETER_REGISTER(max_skip_cells) = 2;
       PARAMETER_REGISTER(min_successive_green) = 3;
 
+      PARAMETER_REGISTER(positive_score) = 1;
+      PARAMETER_REGISTER(negative_score) = -2;
+
       PARAMETER_REGISTER(grid_size_top) = 80;
       PARAMETER_REGISTER(grid_size_bottom) = 80;
       syncWithConfig();
@@ -78,6 +81,9 @@ public:
     double proportion_of_green;
     int max_skip_cells;
     int min_successive_green;
+
+    double positive_score;
+    double negative_score;
 
     int grid_size_top;
     int grid_size_bottom;
@@ -95,6 +101,10 @@ private:
 
   CameraInfo::CameraID cameraID;
   int factor;
+  std::vector<Vector2i> endpoints;
+
+  void find_endpoint(const Cell& cell, Vector2i& endpoint);
+  void create_field();
 
   DOUBLE_CAM_PROVIDE(IntegralFieldDetector, DebugImageDrawings);
 
