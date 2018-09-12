@@ -8,6 +8,7 @@ IntegralFieldDetector::IntegralFieldDetector()
   cameraID(CameraInfo::Bottom)
 {
   DEBUG_REQUEST_REGISTER("Vision:IntegralFieldDetector:draw_grid", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:IntegralFieldDetector:draw_end_cell", "", false);
   getDebugParameterList().add(&params);
 }
 
@@ -47,8 +48,8 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
     // HACK: This does not take the difference in refinement to the body contour into consideration
     Vector2i start_left(cell.minX*factor, getImage().height()-1);
     Vector2i start_right(cell.maxX*factor, getImage().height()-1);
-    int start_y = std::min(getBodyContour().getFirstFreeCell(start_left).y/factor,
-                           getBodyContour().getFirstFreeCell(start_right).y/factor);
+    int start_y = std::min(getBodyContour().getFirstFreeCell(start_left).y,
+                           getBodyContour().getFirstFreeCell(start_right).y)/factor;
 
 
     int horizon_height = std::max(
@@ -57,9 +58,10 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
         );
     horizon_height = std::max(0, horizon_height);
 
-    bool green_found = false;
     bool isLastCell = false;
     int skipped = 0;
+    int successive_green = 0;
+    int green_found = 0;
     for(cell.maxY = height-1; !isLastCell; cell.maxY = cell.minY) {
       cell.minY = cell.maxY-grid_size;
       if(cell.minY < horizon_height) {
@@ -84,10 +86,27 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
       );
 
       if(cell.sum_of_green >= min_green) {
-        last_green_cell = cell;
-        green_found = true;
+        skipped = 0;
+        ++successive_green;
+
+        if (successive_green >= params.min_successive_green) {
+          last_green_cell = cell;
+          green_found = true;
+        }
+
+      } else {
         ++skipped;
+        if (skipped > params.max_skip_cells) {
+          successive_green = 0;
+        }
       }
     }
+
+    if(green_found){
+      DEBUG_REQUEST("Vision:IntegralFieldDetector:draw_end_cell",
+        RECT_PX(ColorClasses::skyblue, last_green_cell.minX*factor, last_green_cell.minY*factor+1, last_green_cell.maxX*factor, last_green_cell.maxY*factor-1);
+      );
+    }
+
   }
 }
