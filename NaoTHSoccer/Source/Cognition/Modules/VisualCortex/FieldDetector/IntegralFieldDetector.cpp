@@ -47,12 +47,11 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
     cell.maxX = cell.minX + grid_size;
 
     // Get first pos not occupied by body.
-    // HACK: This does not take the difference in refinement to the body contour into consideration
+    // HACK: This does not take the difference in refinement to the body contour grid into consideration
     Vector2i start_left(cell.minX*factor, getImage().height()-1);
     Vector2i start_right(cell.maxX*factor, getImage().height()-1);
     int start_y = std::min(getBodyContour().getFirstFreeCell(start_left).y,
                            getBodyContour().getFirstFreeCell(start_right).y)/factor;
-
 
     int horizon_height = std::max(
           (int) (getArtificialHorizon().point(cell.maxX*factor).y/factor),
