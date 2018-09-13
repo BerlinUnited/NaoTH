@@ -12,9 +12,6 @@ ScanGridEdgelDetector::ScanGridEdgelDetector()
   DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:scanlines", "mark the scan lines", false);
   DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:mark_edgels", "mark the edgels on the image", false);
   DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:mark_double_edgels", "mark the edgels on the image", false);
-  DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:mark_endpoints", "mark the endpints on the image", false);
-
-  DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:mark_scan_segments", "...", false);
 
   getDebugParameterList().add(&parameters);
 }
@@ -29,6 +26,9 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
   cameraID = id;
   getScanLineEdgelPercept().reset();
 
+  if(!getFieldPercept().valid) {
+    return;
+  }
   // TODO: implement a general validation for timestamps
   if(getBodyContour().timestamp != getFrameInfo().getTime()) {
     return;
@@ -59,10 +59,11 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
 
   MaximumScan<int,int> refinedMaximumScan(0, t_edge);
   MinimumScan<int,int> refinedMinimumScan(0, t_edge);
-
   int x, y, luma, lastLuma, gradient, last_y;
+  int scan_id = 0;
   for(const ScanGrid::VScanLine scanline: getScanGrid().vertical)
   {
+    bool begin_found = false;
     x = scanline.x;
     y = getScanGrid().vScanPattern[scanline.bottom];
 
@@ -72,8 +73,13 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
     lastLuma = getImage().getY(scanline.x, y);
     last_y = getScanGrid().vScanPattern[scanline.bottom];
 
+    int end_of_field = getFieldPercept().getValidField().getClosestPoint(Vector2i(x, getScanGrid().vScanPattern[scanline.top])).y;
+
     for(size_t i=scanline.bottom; i>scanline.top; --i) {
       y = getScanGrid().vScanPattern[i];
+      if(y < end_of_field) {
+        break;
+      }
       luma = getImage().getY(x, y);
       gradient = luma - lastLuma;
       lastLuma = luma;
@@ -86,6 +92,7 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
         refine_edge(refinedMaximumScan, x, startY, last_y);
         int refinedY = refinedMaximumScan.peakPoint;
         add_edgel(x, refinedY);
+        begin_found = true;
       }
 
       // end found
@@ -96,16 +103,33 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
         refine_edge(refinedMinimumScan, x, startY, last_y);
         int refinedY = refinedMinimumScan.peakPoint;
         add_edgel(x, refinedY);
+
+        // new end edgel
+        // found a new double edgel
+        if(begin_found) {
+          add_double_edgel(scan_id);
+        }
+        begin_found = false;
       }
 
       last_y = y;
     }
+    ++scan_id;
   }
 
   DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_edgels",
     for(size_t i = 0; i < getScanLineEdgelPercept().edgels.size(); i++) {
       const Edgel& edgel = getScanLineEdgelPercept().edgels[i];
       LINE_PX(ColorClasses::black,edgel.point.x, edgel.point.y, edgel.point.x + (int)(edgel.direction.x*10), edgel.point.y + (int)(edgel.direction.y*10));
+    }
+  );
+  // mark finished valid edgels
+  DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_double_edgels",
+    for(size_t i = 0; i < getScanLineEdgelPercept().pairs.size(); i++)
+    {
+      const ScanLineEdgelPercept::EdgelPair& pair = getScanLineEdgelPercept().pairs[i];
+      CIRCLE_PX(ColorClasses::black, (int)pair.point.x, (int)pair.point.y, 3);
+      LINE_PX(ColorClasses::red   ,(int)pair.point.x, (int)pair.point.y, (int)(pair.point.x + pair.direction.x*10), (int)(pair.point.y + pair.direction.y*10));
     }
   );
 }//end execute
@@ -124,89 +148,6 @@ inline void ScanGridEdgelDetector::refine_edge(MaximumScan<int,int>& refinedScan
   }
   return;
 }
-
-bool ScanGridEdgelDetector::validDistance(const Vector2i& pointOne, const Vector2i& pointTwo) const
-{
-  if (abs(pointOne.y - pointTwo.y) > 5)
-  {
-    Vector2d beginOnTheGround;
-    if(CameraGeometry::imagePixelToFieldCoord(
-      getCameraMatrix(),
-      getCameraInfo(),
-      pointOne.x,
-      pointOne.y,
-      0.0,
-      beginOnTheGround))
-    {
-      Vector2d endOnTheGround;
-      if(CameraGeometry::imagePixelToFieldCoord(
-        getCameraMatrix(),
-        getCameraInfo(),
-        pointTwo.x,
-        pointTwo.y,
-        0.0,
-        endOnTheGround))
-      {
-        if((beginOnTheGround-endOnTheGround).abs2() > 700*700) {
-          return false;
-        }
-      }
-      else
-      {
-        return false;
-      }
-    }
-    else
-    {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-
-ColorClasses::Color ScanGridEdgelDetector::estimateColorOfSegment(const Vector2i& begin, const Vector2i& end) const
-{
-  ASSERT(begin.x == end.x && end.y <= begin.y);
-
-  const int numberOfSamples = parameters.green_sampling_points;
-  int length = begin.y - end.y;
-  int numberOfGreen = 0;
-  Vector2i point(begin);
-  Pixel pixel;
-
-  if(numberOfSamples >= length)
-  {
-    for(; point.y > end.y; point.y--)
-    {
-      getImage().get(point.x, point.y, pixel);
-      numberOfGreen += getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c);
-    }
-  }
-  else
-  {
-    int step = length / numberOfSamples;
-    int offset = Math::random(length); // number in [0,length-1]
-
-    for(int i = 0; i < numberOfSamples; i++)
-    {
-      int k = (offset + i*step) % length;
-      point.y = end.y + k;
-      getImage().get(point.x, point.y, pixel);
-      numberOfGreen += getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c);
-    }
-  }
-
-  ColorClasses::Color c = (numberOfGreen > numberOfSamples/2) ? ColorClasses::green : ColorClasses::none;
-
-  DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_scan_segments",
-    LINE_PX(c, begin.x, begin.y, end.x, end.y);
-  );
-
-  return c;
-}//end estimateColorOfSegment
-
 
 Vector2d ScanGridEdgelDetector::calculateGradient(const Vector2i& point) const
 {

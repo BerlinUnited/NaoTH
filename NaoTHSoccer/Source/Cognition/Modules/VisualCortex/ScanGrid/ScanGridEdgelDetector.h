@@ -13,6 +13,7 @@
 #include "Representations/Perception/BodyContour.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
 #include "Representations/Perception/ScanGrid.h"
+#include "Representations/Perception/FieldPercept.h"
 
 // Tools
 #include "Tools/DoubleCamHelpers.h"
@@ -53,6 +54,8 @@ BEGIN_DECLARE_MODULE(ScanGridEdgelDetector)
   REQUIRE(ArtificialHorizonTop)
   REQUIRE(BodyContour)
   REQUIRE(BodyContourTop)
+  REQUIRE(FieldPercept)
+  REQUIRE(FieldPerceptTop)
 
   REQUIRE(ScanGrid)
   REQUIRE(ScanGridTop)
@@ -79,15 +82,11 @@ public:
   class Parameters: public ParameterList
   {
   public:
-    Parameters() : ParameterList("ScanLineParameters")
+    Parameters() : ParameterList("ScanGridEdgelDetector")
     {
       PARAMETER_REGISTER(brightness_threshold_top) = 6*2;
       PARAMETER_REGISTER(brightness_threshold_bottom) = 6*4;
-      PARAMETER_REGISTER(scanline_count) = 31;
-      PARAMETER_REGISTER(pixel_border_y) = 3;
-      PARAMETER_REGISTER(green_sampling_points) = 3;
       PARAMETER_REGISTER(double_edgel_angle_threshold) = 0.2;
-      PARAMETER_REGISTER(minEndPointGreenDensity) = 0.3;
 
       syncWithConfig();
       //DebugParameterList::getInstance().add(this);
@@ -99,12 +98,8 @@ public:
 
     int brightness_threshold_top; // threshold for detection of the jumps in the Y channel
     int brightness_threshold_bottom;
-    int scanline_count; // number of scanlines
-    int pixel_border_y; // don't scan the lower lines in the image
-    int green_sampling_points; // number of the random samples to determine whether a segment is green
 
     double double_edgel_angle_threshold;
-    double minEndPointGreenDensity;
   } parameters;
 
 private:
@@ -177,35 +172,33 @@ private:
     getScanLineEdgelPercept().edgels.push_back(edgel);
   }
 
-  void add_double_edgel(const Vector2i& point, int id) {
-    add_edgel(point);
+  void add_double_edgel(int scan_line_id)
+  {
     ASSERT(getScanLineEdgelPercept().edgels.size() > 1);
+
+    // use the last two edgels
     int i_end = ((int) getScanLineEdgelPercept().edgels.size())-1;
     int i_begin = i_end - 1;
     const Edgel& end = getScanLineEdgelPercept().edgels[i_end];
     const Edgel& begin = getScanLineEdgelPercept().edgels[i_begin];
 
-    if(1.0-fabs(begin.direction*end.direction) > parameters.double_edgel_angle_threshold) {
+    if(-(begin.direction*end.direction) < parameters.double_edgel_angle_threshold) {
       return; // false
     }
 
     ScanLineEdgelPercept::EdgelPair pair;
     pair.begin = i_begin;
     pair.end = i_end;
-    pair.id = id;
+    pair.id = scan_line_id;
 
-    pair.point = Vector2d(begin.point + end.point)*0.5;
+    pair.point.x = (begin.point.x + end.point.x)*0.5;
+    pair.point.y = (begin.point.y + end.point.y)*0.5;
     pair.direction = (begin.direction - end.direction).normalize();
 
     getScanLineEdgelPercept().pairs.push_back(pair);
   }
 
   inline void refine_edge(MaximumScan<int,int>& refinedScan, int x, int start_y, int end_y);
-
-  /** */
-  ColorClasses::Color estimateColorOfSegment(const Vector2i& begin, const Vector2i& end) const;
-
-  bool validDistance(const Vector2i& pointOne, const Vector2i& pointTwo) const;
 
   /** Estimates the gradient of the gray-gradient at the point by a Sobel Operator. */
   Vector2d calculateGradient(const Vector2i& point) const;
@@ -219,6 +212,7 @@ private:
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, ArtificialHorizon);
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, BodyContour);
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, ScanGrid);
+  DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, FieldPercept);
 
   DOUBLE_CAM_PROVIDE(ScanGridEdgelDetector, ScanLineEdgelPercept);
 };
