@@ -32,8 +32,6 @@ BEGIN_DECLARE_MODULE(IntegralFieldDetector)
   REQUIRE(ImageTop)
   REQUIRE(ArtificialHorizon)
   REQUIRE(ArtificialHorizonTop)
-  REQUIRE(BodyContour)
-  REQUIRE(BodyContourTop)
   REQUIRE(FieldColorPercept)
   REQUIRE(FieldColorPerceptTop)
 
@@ -67,15 +65,15 @@ public:
 
     Parameters() : ParameterList("IntegralFieldDetector")
     {
-      PARAMETER_REGISTER(proportion_of_green) = .5;
+      PARAMETER_REGISTER(proportion_of_green) = .3;
       PARAMETER_REGISTER(max_skip_cells) = 2;
       PARAMETER_REGISTER(min_successive_green) = 3;
 
       PARAMETER_REGISTER(positive_score) = 1;
-      PARAMETER_REGISTER(negative_score) = -2;
+      PARAMETER_REGISTER(negative_score) = -1;
 
-      PARAMETER_REGISTER(grid_size_top) = 80;
-      PARAMETER_REGISTER(grid_size_bottom) = 80;
+      PARAMETER_REGISTER(grid_size_top) = 20;
+      PARAMETER_REGISTER(grid_size_bottom) = 30;
       syncWithConfig();
     }
     double proportion_of_green;
@@ -111,7 +109,6 @@ private:
   // double cam interface
   DOUBLE_CAM_REQUIRE(IntegralFieldDetector, Image);
   DOUBLE_CAM_REQUIRE(IntegralFieldDetector, ArtificialHorizon);
-  DOUBLE_CAM_REQUIRE(IntegralFieldDetector, BodyContour);
   DOUBLE_CAM_REQUIRE(IntegralFieldDetector, FieldColorPercept);
 
   DOUBLE_CAM_REQUIRE(IntegralFieldDetector, BallDetectorIntegralImage);

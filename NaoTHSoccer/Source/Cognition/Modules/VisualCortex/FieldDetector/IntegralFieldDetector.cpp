@@ -45,14 +45,6 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
   for (double minX=0.; ((int) minX) + grid_size < width; minX = minX + grid_size + offset) {
     cell.minX = (int) (minX + .5);
     cell.maxX = cell.minX + grid_size;
-
-    // Get first pos not occupied by body.
-    // HACK: This does not take the difference in refinement to the body contour grid into consideration
-    Vector2i start_left(cell.minX*factor, getImage().height()-1);
-    Vector2i start_right(cell.maxX*factor, getImage().height()-1);
-    int start_y = std::min(getBodyContour().getFirstFreeCell(start_left).y,
-                           getBodyContour().getFirstFreeCell(start_right).y)/factor;
-
     int horizon_height = std::max(
           (int) (getArtificialHorizon().point(cell.maxX*factor).y/factor),
           (int) (getArtificialHorizon().point(cell.minX*factor).y/factor)
@@ -70,10 +62,6 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
         cell.maxY = cell.minY + grid_size;
         isLastCell = true;
       }
-      if(cell.maxY > start_y) {
-        continue;
-      }
-
       cell.sum_of_green = getBallDetectorIntegralImage().getSumForRect(cell.minX, cell.minY, cell.maxX, cell.maxY, 1);
 
       DEBUG_REQUEST("Vision:IntegralFieldDetector:draw_grid",
