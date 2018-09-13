@@ -144,6 +144,7 @@ message MotionRequest {
   optional uint32 cognitionFrameNumber = 9;
   optional GraspRequest graspRequest = 10;
   optional ArmMotionRequest armMotionRequest = 11;
+  optional bool disable_relaxed_stand = 12;
 }
 
 

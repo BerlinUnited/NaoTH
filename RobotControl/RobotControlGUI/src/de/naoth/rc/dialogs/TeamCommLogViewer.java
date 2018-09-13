@@ -6,6 +6,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.MalformedJsonException;
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.components.FileDrop;
 import de.naoth.rc.components.teamcomm.TeamCommMessage;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
@@ -42,6 +43,9 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import de.naoth.rc.components.teamcomm.TeamCommManager;
 import de.naoth.rc.components.teamcommviewer.TeamCommLogger;
 import de.naoth.rc.core.dialog.RCDialog;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.EOFException;
 import java.io.ObjectInputStream;
 import java.io.ObjectStreamClass;
@@ -50,6 +54,8 @@ import java.net.URLClassLoader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.List;
+import javax.swing.JMenuItem;
+import javax.swing.JTextField;
 
 /**
  *
@@ -77,6 +83,9 @@ public class TeamCommLogViewer extends AbstractDialog
 
     /** The class loader of the GameController (external jar file). */
     private ClassLoader gamecontrol;
+    
+    /** Menu item for selecting the home team number. */
+    private final JMenuItemWithTextField homeTeam = new JMenuItemWithTextField("Home team", "4");
 
     /**
      * Creates new form TeamCommLogViewer
@@ -87,6 +96,15 @@ public class TeamCommLogViewer extends AbstractDialog
         initComponents();
         messageTree.setRootVisible(false);
         messageTree.setCellRenderer(new TreeCellRenderer());
+        new FileDrop(this, (files) -> {
+            if(files.length > 1) {
+                JOptionPane.showMessageDialog(this, "Only one file can be used here!", "Too many files", JOptionPane.ERROR_MESSAGE);
+            }
+            openFile(files[0]);
+        });
+        
+        homeTeam.setToolTipText("The home team number. Must be set BEFORE reading a log file!");
+        pmConfig.add(homeTeam);
     }
 
     /**
@@ -104,6 +122,7 @@ public class TeamCommLogViewer extends AbstractDialog
         loopThrough = new javax.swing.JCheckBoxMenuItem();
         ignoreTimestamps = new javax.swing.JCheckBoxMenuItem();
         startWithSelection = new javax.swing.JCheckBoxMenuItem();
+        jSeparator4 = new javax.swing.JPopupMenu.Separator();
         exportFileChooser = new javax.swing.JFileChooser();
         exportProgress = new javax.swing.JDialog();
         exportProgressBar = new javax.swing.JProgressBar();
@@ -154,6 +173,7 @@ public class TeamCommLogViewer extends AbstractDialog
         startWithSelection.setText("start with selection");
         startWithSelection.setToolTipText("Begins playing with the selected timestamp");
         pmConfig.add(startWithSelection);
+        pmConfig.add(jSeparator4);
 
         exportFileChooser.setDialogType(javax.swing.JFileChooser.SAVE_DIALOG);
         exportFileChooser.setDialogTitle("JSON export");
@@ -267,33 +287,7 @@ public class TeamCommLogViewer extends AbstractDialog
 
     private void btnTCLFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTCLFActionPerformed
         if(teamCommFileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            try {
-                // before loading new file, cleanup old one
-                resetMessages();
-                // read the file
-                File f = teamCommFileChooser.getSelectedFile();
-                this.messages_cnt = readMessages(f);
-                
-                this.lblMessages.setToolTipText("Total messages");
-                this.lblMessages.setText(" M: "+String.valueOf(messages.size())+" ");
-                this.lblTimestamps.setToolTipText("Unique timestamps");
-                this.lblTimestamps.setText(" T: "+String.valueOf(messages_cnt)+" ");
-                this.lblFile.setToolTipText(f.getAbsolutePath());
-                this.lblFile.setText(f.getName());
-                
-                btnPlay.setEnabled(true);
-                
-                // cancel previous "TeamComm simulation"
-                stopTeamCommPlayer();
-            } catch (MalformedJsonException | IllegalStateException ex) {
-                JOptionPane.showMessageDialog(null, "Unknown format!", "Unknown file format!", JOptionPane.WARNING_MESSAGE);
-                return;
-            } catch (FileNotFoundException ex) {
-                JOptionPane.showMessageDialog(null, "File not found!", "Not found", JOptionPane.WARNING_MESSAGE);
-            } catch (IOException ex) {
-                Logger.getLogger(TeamCommLogViewer.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            showMessages();
+            openFile(teamCommFileChooser.getSelectedFile());
         }
     }//GEN-LAST:event_btnTCLFActionPerformed
 
@@ -370,6 +364,34 @@ public class TeamCommLogViewer extends AbstractDialog
         }
     }//GEN-LAST:event_btnJsonExportActionPerformed
 
+    private void openFile(File f) {
+        try {
+            // before loading new file, cleanup old one
+            resetMessages();
+            this.messages_cnt = readMessages(f);
+
+            this.lblMessages.setToolTipText("Total messages");
+            this.lblMessages.setText(" M: "+String.valueOf(messages.size())+" ");
+            this.lblTimestamps.setToolTipText("Unique timestamps");
+            this.lblTimestamps.setText(" T: "+String.valueOf(messages_cnt)+" ");
+            this.lblFile.setToolTipText(f.getAbsolutePath());
+            this.lblFile.setText(f.getName());
+
+            btnPlay.setEnabled(true);
+
+            // cancel previous "TeamComm simulation"
+            stopTeamCommPlayer();
+        } catch (MalformedJsonException | IllegalStateException ex) {
+            JOptionPane.showMessageDialog(null, "Unknown format!", "Unknown file format!", JOptionPane.WARNING_MESSAGE);
+            return;
+        } catch (FileNotFoundException ex) {
+            JOptionPane.showMessageDialog(null, "File not found!", "Not found", JOptionPane.WARNING_MESSAGE);
+        } catch (IOException ex) {
+            Logger.getLogger(TeamCommLogViewer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        showMessages();
+    }
+    
     /**
      * Resets all counter, 'clears' the ui and sets the labels to a default value.
      */
@@ -576,7 +598,7 @@ public class TeamCommLogViewer extends AbstractDialog
                     break;
             }
         }
-        return new TeamCommMessage(timestamp, address, spl, spl.teamNum != 4, gameState);
+        return new TeamCommMessage(timestamp, address, spl, !homeTeam.getTextFieldText().equals(Byte.toString(spl.teamNum)), gameState);
     } // END readTcLogFileNew()
     
     /**
@@ -653,7 +675,8 @@ public class TeamCommLogViewer extends AbstractDialog
                                 time,
                                 (String) obj.getClass().getField("host").get(obj), 
                                 spl,
-                                (int) obj.getClass().getField("team").get(obj) != 4, // TODO: configure it somewhere?!
+                                //(int) obj.getClass().getField("team").get(obj) != 4, // TODO: configure it somewhere?!
+                                !homeTeam.getTextFieldText().equals(Integer.toString((int) obj.getClass().getField("team").get(obj))),
                                 currentGameState
                             );
                             // custom part doesn't get (de-)serialized, but we have everything in data!
@@ -949,6 +972,7 @@ public class TeamCommLogViewer extends AbstractDialog
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
+    private javax.swing.JPopupMenu.Separator jSeparator4;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JLabel lblFile;
     private javax.swing.JLabel lblMessages;
@@ -961,4 +985,65 @@ public class TeamCommLogViewer extends AbstractDialog
     private javax.swing.JFileChooser teamCommFileChooser;
     private javax.swing.JList<Timestamp> timestampList;
     // End of variables declaration//GEN-END:variables
+
+    /**
+     * A menu item with a textfield in it.
+     */
+    private class JMenuItemWithTextField extends JMenuItem {
+
+        private final JTextField field;
+
+        /**
+         * Creates a <code>JMenuItemWithTextField</code> with the specified text and  "0" as textfield text.
+         * @param text the text of the <code>JMenuItemWithTextField</code>
+         */
+        public JMenuItemWithTextField(String text) {
+            this(text, "0");
+        }
+        
+        /**
+         * Creates a <code>JMenuItemWithTextField</code> with the specified text and textfield text.
+         * @param text the text of the <code>JMenuItemWithTextField</code>
+         * @param textfield the text of the textfield
+         */
+        public JMenuItemWithTextField(String text, String textfield) {
+            super(text);
+            
+            field = new JTextField(textfield, 4);
+            field.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+            field.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+            field.setBorder(null);
+            
+            field.addActionListener((ActionEvent e) -> {
+                doClick();
+            });
+            
+            setLayout(new BorderLayout());
+            add(field, BorderLayout.EAST);
+        }
+        
+        /**
+         * Sets the font of the textfield.
+         * @param f the new font of the textfield
+         */
+        public void setTextFieldFont(Font f) {
+            field.setFont(f);
+        }
+        
+        /**
+         * Sets the number of columns in the textfield.
+         * @param c the number of columns &gt;= 0
+         */
+        public void setTextFieldColumns(int c) {
+            field.setColumns(c);
+        }
+        
+        /**
+         * Returns the text contained in the textfield.
+         * @return the text
+         */
+        public String getTextFieldText() {
+            return field.getText();
+        }
+    }
 }

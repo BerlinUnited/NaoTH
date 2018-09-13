@@ -58,9 +58,6 @@ END_DECLARE_MODULE(IMUModel)
 class IMUModel: private IMUModelBase
 {
 public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
-public:
     IMUModel();
     virtual~IMUModel();
 

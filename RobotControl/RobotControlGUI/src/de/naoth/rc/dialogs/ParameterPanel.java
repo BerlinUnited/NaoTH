@@ -54,6 +54,9 @@ public class ParameterPanel extends AbstractDialog
   private int updateSources = 0;
   private final int EXPECTED_SOURCES = 2;
   
+  final private String parameterSavePathKey = "parameter_save_path";
+  final private String defaultConfigPath = "../../NaoTHSoccer/Config/scheme";
+  
   public ParameterPanel()
   {
     initComponents();
@@ -302,7 +305,10 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
         if(selecedList == null) {
             JOptionPane.showMessageDialog(null, "You have to choose a parameter configuration!", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
+            
+            String parameterPath = Plugin.parent.getConfig().getProperty(parameterSavePathKey, defaultConfigPath);
             // configure the filechooser ...
+            fcSaveParametersDialog.setCurrentDirectory(new File(parameterPath));
             fcSaveParametersDialog.setSelectedFile(new java.io.File(selecedList.name + ".cfg"));
             fcSaveParametersDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
             fcSaveParametersDialog.setAcceptAllFileFilterUsed(false);
@@ -328,6 +334,9 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
                         JOptionPane.showMessageDialog(null, "Selected file is not writeable!", "Not writeable", JOptionPane.ERROR_MESSAGE);
                     }
                 }
+                
+                // save the path for later
+                Plugin.parent.getConfig().setProperty(parameterSavePathKey, fcSaveParametersDialog.getSelectedFile().getParent());
             }
         }
     }//GEN-LAST:event_btnSaveActionPerformed
