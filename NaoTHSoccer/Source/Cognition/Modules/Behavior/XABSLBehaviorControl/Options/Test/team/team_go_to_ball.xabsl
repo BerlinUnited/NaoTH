@@ -44,7 +44,7 @@ option team_go_to_ball
       else if (!team.calc_if_is_secondstriker)
         goto idle;
       else if(action_done)
-        goto done_striker;
+        goto done_second_striker;
       else
         stay;
     }
@@ -66,6 +66,24 @@ option team_go_to_ball
     }
     action 
     {
+      team.is_playing_as_striker = true;
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+
+  state done_second_striker
+  {
+    decision
+    {
+      else if(ball.time_seen > 100 && ball.distance > 500)
+        goto idle;
+      else
+        stay;
+    }
+    action 
+    {
+      team.is_playing_as_striker = false;
       head.control_mode = search_for_ball;
       motion.type = stand;
     }
