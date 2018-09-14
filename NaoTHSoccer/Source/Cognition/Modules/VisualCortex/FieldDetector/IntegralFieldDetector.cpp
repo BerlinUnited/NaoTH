@@ -23,8 +23,7 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
 
-  if(getBodyContour().timestamp != getFrameInfo().getTime()
-    || !getBallDetectorIntegralImage().isValid()) {
+  if(!getBallDetectorIntegralImage().isValid()) {
     return;
   }
   factor = getBallDetectorIntegralImage().FACTOR;
@@ -33,17 +32,15 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
   int grid_size = (cameraID==CameraInfo::Top ? params.grid_size_top : params.grid_size_bottom) / factor;
   int width = getBallDetectorIntegralImage().getWidth();
   int height = getBallDetectorIntegralImage().getHeight();
-  double cells_horizontal = (width-1.0) / grid_size;
-  int n_cells_horizontal = (int) cells_horizontal;
-  double offset = (cells_horizontal - n_cells_horizontal) * grid_size;
-  offset /= (n_cells_horizontal-1);
+  double horizontal = (width-1.0) / grid_size;
+  int n_cells_horizontal = (int) horizontal;
+  int rest = (int)((horizontal - n_cells_horizontal) * grid_size);
   int pixels_per_cell = (grid_size+1)*(grid_size+1);
   int min_green = (int)(pixels_per_cell*params.proportion_of_green);
 
   Cell last_green_cell;
   Cell cell;
-  for (double minX=0.; ((int) minX) + grid_size < width; minX = minX + grid_size + offset) {
-    cell.minX = (int) (minX + .5);
+  for (cell.minX=0; cell.minX+grid_size < width; cell.minX = cell.maxX) {
     cell.maxX = cell.minX + grid_size;
     int horizon_height = std::max(
           (int) (getArtificialHorizon().point(cell.maxX*factor).y/factor),
@@ -100,6 +97,12 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
         RECT_PX(ColorClasses::skyblue, last_green_cell.minX*factor, last_green_cell.minY*factor+1, last_green_cell.maxX*factor, last_green_cell.maxY*factor-1);
         CIRCLE_PX(ColorClasses::orange, endpoint.x, endpoint.y, 1);
       );
+    }
+
+    // ensure cells will end on the left image border
+    if(rest > 0 && cell.maxX > width/2) {
+      cell.maxX += rest;
+      rest = 0;
     }
   }
 
