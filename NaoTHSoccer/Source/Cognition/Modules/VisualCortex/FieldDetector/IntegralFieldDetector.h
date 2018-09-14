@@ -101,7 +101,7 @@ private:
   int factor;
   std::vector<Vector2i> endpoints;
 
-  void find_endpoint(const Cell& cell, Vector2i& endpoint);
+  void find_endpoint(int x, const Cell& cell, Vector2i& endpoint);
   void create_field();
 
   DOUBLE_CAM_PROVIDE(IntegralFieldDetector, DebugImageDrawings);

@@ -38,6 +38,8 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
   int pixels_per_cell = (grid_size+1)*(grid_size+1);
   int min_green = (int)(pixels_per_cell*params.proportion_of_green);
 
+  bool first = true;
+  bool green_found = false;
   Cell last_green_cell;
   Cell cell;
   for (cell.minX=0; cell.minX+grid_size < width; cell.minX = cell.maxX) {
@@ -51,7 +53,6 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
     bool isLastCell = false;
     int skipped = 0;
     int successive_green = 0;
-    int green_found = 0;
     for(cell.maxY = height-1; !isLastCell; cell.maxY = cell.minY) {
       cell.minY = cell.maxY-grid_size;
       if(cell.minY < horizon_height) {
@@ -89,14 +90,15 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
     }
 
     if(green_found){
+      if(first) { // find the left most endpoint
+        Vector2i left_endpoint;
+        find_endpoint(last_green_cell.minX * factor, last_green_cell, left_endpoint);
+        endpoints.push_back(left_endpoint);
+        first = false;
+      }
       Vector2i endpoint;
-      find_endpoint(last_green_cell, endpoint);
+      find_endpoint((last_green_cell.minX + last_green_cell.maxX) / 2 * factor, last_green_cell, endpoint);
       endpoints.push_back(endpoint);
-
-      DEBUG_REQUEST("Vision:IntegralFieldDetector:draw_end_cell",
-        RECT_PX(ColorClasses::skyblue, last_green_cell.minX*factor, last_green_cell.minY*factor+1, last_green_cell.maxX*factor, last_green_cell.maxY*factor-1);
-        CIRCLE_PX(ColorClasses::orange, endpoint.x, endpoint.y, 1);
-      );
     }
 
     // ensure cells will end on the left image border
@@ -106,30 +108,22 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
     }
   }
 
+  if(green_found) { // find the right most endpoint
+    Vector2i right_endpoint;
+    find_endpoint(last_green_cell.maxX * factor, last_green_cell, right_endpoint);
+    endpoints.push_back(right_endpoint);
+  }
+
   if(endpoints.size() > 1) {
     create_field();
   }
 }
 
-void IntegralFieldDetector::find_endpoint(const Cell& cell, Vector2i& endpoint) {
-  /*
-  // estimate endpoint
-  int grid_size = cell.maxY - cell.minY;
-  int pixels_per_cell = (grid_size+1) * (grid_size+1);
-
-  double cut = cell.sum_of_green / (double)pixels_per_cell;
-  endpoint.x = (cell.minX+cell.maxX)/2 * factor;
-  endpoint.y = (cell.maxY-(int)(cut*(grid_size+1))) * factor;
-  */
+void IntegralFieldDetector::find_endpoint(int x, const Cell& cell, Vector2i& endpoint) {
   double score = 0.;
   double best_score = 0.;
   int minY = cell.minY*factor;
-  int width = getImage().width();
-  if(cell.minX*factor < width/2) {
-    endpoint.x = cell.minX * factor;
-  } else {
-    endpoint.x = cell.maxX * factor;
-  }
+  endpoint.x = x;
   endpoint.y = cell.maxY*factor;
   for (int y=endpoint.y; y>=minY; --y) {
     Pixel pixel = getImage().get(endpoint.x, y);
@@ -143,6 +137,10 @@ void IntegralFieldDetector::find_endpoint(const Cell& cell, Vector2i& endpoint) 
       endpoint.y = y;
     }
   }
+  DEBUG_REQUEST("Vision:IntegralFieldDetector:draw_end_cell",
+    RECT_PX(ColorClasses::skyblue, cell.minX*factor, cell.minY*factor+1, cell.maxX*factor, cell.maxY*factor-1);
+    CIRCLE_PX(ColorClasses::orange, endpoint.x, endpoint.y, 1);
+  );
 }
 
 void IntegralFieldDetector::create_field() {
