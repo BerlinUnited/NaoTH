@@ -94,17 +94,15 @@ void GameController::execute()
   handleDebugRequest();  
 
   
-  // remember the whistle counter before and after set (ready/playing)
-  if(getPlayerInfo().robotState == PlayerInfo::ready || (lastGameState == GameData::set && getGameData().gameState == GameData::playing)) {
-    lastWhistleCount = getWhistlePercept().counter;
-  }
-  // whistle overrides state when in set
-  else if(getPlayerInfo().robotState == PlayerInfo::set)
+  if(getPlayerInfo().robotState == PlayerInfo::set)
   {
     // switch from set to play
     if(getWhistlePercept().counter > lastWhistleCount) {
       getPlayerInfo().robotState = PlayerInfo::playing;
     }
+  } else {
+    // reset the counter otherwise
+    lastWhistleCount = getWhistlePercept().counter;
   }
 
 
