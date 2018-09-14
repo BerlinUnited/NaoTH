@@ -3,7 +3,7 @@ option team_go_to_ball
 
   common decision
   {
-    if(!body.ready_to_walk || game.current_mode != playing || !team.calc_if_is_striker)
+    if(!body.ready_to_walk || game.current_mode != playing)
       goto idle;
   }
 
@@ -23,6 +23,8 @@ option team_go_to_ball
   {
     decision
     {
+      else if (!team.calc_if_is_striker)
+        goto idle;
       else if(action_done)
         goto done_striker;
       else
@@ -39,8 +41,10 @@ option team_go_to_ball
   {
     decision
     {
+      else if (!team.calc_if_is_secondstriker)
+        goto idle;
       else if(action_done)
-        goto done_second_striker;
+        goto done_striker;
       else
         stay;
     }
@@ -51,28 +55,12 @@ option team_go_to_ball
     }
   }
 
-  state done_second_striker
-  {
-    decision
-    {
-      else if(ball.time_seen > 100 && ball.distance > 500)
-        goto goto_ball_second_striker;
-      else
-        stay;
-    }
-    action 
-    {
-      head.control_mode = search_for_ball;
-      motion.type = stand;
-    }
-  }
-
   state done_striker
   {
     decision
     {
       else if(ball.time_seen > 100 && ball.distance > 500)
-        goto goto_ball_striker;
+        goto idle;
       else
         stay;
     }
@@ -82,6 +70,4 @@ option team_go_to_ball
       motion.type = stand;
     }
   }
-
-  
 }
