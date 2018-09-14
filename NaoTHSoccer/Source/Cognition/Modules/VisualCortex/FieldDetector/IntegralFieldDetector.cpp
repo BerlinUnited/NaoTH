@@ -45,10 +45,10 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
   for (cell.minX=0; cell.minX+grid_size < width; cell.minX = cell.maxX) {
     cell.maxX = cell.minX + grid_size;
     int horizon_height = std::max(
-          (int) (getArtificialHorizon().point(cell.maxX*factor).y/factor),
-          (int) (getArtificialHorizon().point(cell.minX*factor).y/factor)
+          (int) (getArtificialHorizon().point(cell.maxX*factor).y),
+          (int) (getArtificialHorizon().point(cell.minX*factor).y)
         );
-    horizon_height = std::max(0, horizon_height);
+    horizon_height = Math::clamp(horizon_height/factor, 0, height-1);
 
     bool isLastCell = false;
     int skipped = 0;
@@ -58,6 +58,9 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
       if(cell.minY < horizon_height) {
         cell.minY = horizon_height;
         cell.maxY = cell.minY + grid_size;
+        if(cell.maxY >= height) {
+          break;
+        }
         isLastCell = true;
       }
       cell.sum_of_green = getBallDetectorIntegralImage().getSumForRect(cell.minX, cell.minY, cell.maxX, cell.maxY, 1);
