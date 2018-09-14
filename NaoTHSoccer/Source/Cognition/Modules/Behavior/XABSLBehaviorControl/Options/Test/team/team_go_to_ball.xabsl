@@ -1,0 +1,53 @@
+option team_go_to_ball
+{
+
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing || !team.calc_if_is_striker)
+      goto idle;
+  }
+
+  initial state idle {
+    decision {
+      else if(game.current_mode == playing && team.calc_if_is_striker)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action {}
+  }
+
+  state goto_ball
+  {
+    decision
+    {
+      else if(action_done)
+        goto done;
+      else
+        stay;
+    }
+    action 
+    {
+      team.is_playing_as_striker = true;
+      go_to_ball(distance = 210);
+    }
+  }
+
+  state done
+  {
+    decision
+    {
+      else if(ball.time_seen > 100 && ball.distance > 500)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+
+  
+}
