@@ -333,3 +333,5 @@ agent change_state_input_test_agent ("change_state_input_test_agent",change_stat
 
 agent head_test_agent("head_test_agent", head_test_agent);
 agent cammatrix_test_agent("cammatrix_test_agent", cammatrix_test_agent);
+
+agent team_go_to_ball_agent("team_go_to_ball_agent",team_go_to_ball_agent);
