@@ -23,7 +23,7 @@ void TeamBallLocatorCanopyCluster::execute() {
         const TeamMessageData& msg = i.second;
 
         // check if the robot is able to play
-        bool isRobotInactive = msg.fallen || msg.custom.isPenalized;
+        bool isRobotInactive = msg.fallen || msg.custom.robotState == PlayerInfo::penalized;
 
         // TODO: check for "DEAD" robots!? (see CleanRoleDecision)
 
