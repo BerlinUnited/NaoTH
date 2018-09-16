@@ -1,7 +1,7 @@
 #ifndef __SOUND_CONFIG__
 #define __SOUND_CONFIG__
 
-#define NUM_CHANNELS_RX         (1)
+#define NUM_CHANNELS_RX         (2)
 #define NUM_CHANNELS_RX_REC     (4)
 #define SOUND_DEVICE_RX         "default"
 #define SOUND_DEVICE_RX_VOL     "default"

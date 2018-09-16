@@ -11,16 +11,23 @@ WhistleDetectorConfigSetter::~WhistleDetectorConfigSetter()
 
 void WhistleDetectorConfigSetter::execute()
 {
+  //FIXME
+  /*
   if(params.whistleListFile != getWhistleControl().whistleListFile)
   {
     getWhistleControl().whistleListFile = params.whistleListFile;
   }
-
+  */
   if(params.activeChannels != getWhistleControl().activeChannels)
   {
     getWhistleControl().activeChannels = params.activeChannels;
   }
+  if (params.onOffSwitch != getWhistleControl().onOffSwitch)
+  {
+    getWhistleControl().onOffSwitch = params.onOffSwitch;
+  }
 
+  /*
   if(params.threshold != getWhistleControl().threshold)
   {
     getWhistleControl().threshold = params.threshold;
@@ -35,5 +42,6 @@ void WhistleDetectorConfigSetter::execute()
   {
     getWhistleControl().saveRawAudio = params.saveRawAudio;
   }
+  */
 }
 

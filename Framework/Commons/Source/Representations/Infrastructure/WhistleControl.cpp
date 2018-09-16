@@ -3,18 +3,17 @@
 using namespace naoth;
 
 WhistleControl::WhistleControl():
-  onOffSwitch(0),
-  whistleListFile("whistles.lst"),
+  onOffSwitch(1),
   activeChannels("1010"),
-  threshold(0.4),
-  checkAllWhistles(true),
-  saveRawAudio(false)
+  numChannels(2),
+  sampleRate(8000),
+  onlySoundInSet(true),
+  buffer_size(1024)
 {}
 
 void WhistleControl::print(std::ostream& stream) const
 {
   stream << "switch: " << (onOffSwitch == 1 ? "on" : "off") << std::endl;
-  stream << "whistle list file: " << whistleListFile << std::endl;
   stream << "active channels(Left|Front|Right|Rear): " << activeChannels << std::endl;
 }
 

@@ -38,6 +38,7 @@ public:
       PARAMETER_REGISTER(threshold)        = 0.25;
       PARAMETER_REGISTER(checkAllWhistles) = true;
       PARAMETER_REGISTER(saveRawAudio)     = true;
+      PARAMETER_REGISTER(onOffSwitch)      = 1;
       syncWithConfig();
     }
     std::string whistleListFile;
@@ -45,6 +46,7 @@ public:
     double threshold;
     bool checkAllWhistles;
     bool saveRawAudio;
+    int onOffSwitch;
   } params;
 
 private:

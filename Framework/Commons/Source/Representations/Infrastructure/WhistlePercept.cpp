@@ -6,6 +6,7 @@
 using namespace naoth;
 
 WhistlePercept::WhistlePercept():
+  //TODO make a vector<short> for holding the audio samples
   counter(0)
 {
 }

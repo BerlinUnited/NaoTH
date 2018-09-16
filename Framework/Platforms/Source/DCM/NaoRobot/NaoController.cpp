@@ -40,8 +40,6 @@ NaoController::NaoController()
   naoCommandUltraSoundSendData.open(naoCommandUltraSoundSendDataPath);
   naoCommandIRSendData.open(naoCommandIRSendDataPath);
   naoCommandLEDData.open(naoCommandLEDDataPath);
-  whistleSensorData.open("/whistleDetector.count");
-  whistleControlData.open("/whistleDetector.commands");
   // end init shared memory
 
   char hostname[128];
@@ -117,7 +115,7 @@ NaoController::NaoController()
   registerInput<ButtonData>(*this);
   registerInput<BatteryData>(*this);
   registerInput<UltraSoundReceiveData>(*this);
-  registerInput<WhistlePercept>(*this);
+  registerInput<AudioData>(*this);
   registerInput<CpuData>(*this);
 
   // register command output
@@ -125,8 +123,7 @@ NaoController::NaoController()
   registerOutput<const LEDData>(*this);
   registerOutput<const IRSendData>(*this);
   registerOutput<const UltraSoundSendData>(*this);
-  registerOutput<const WhistleControl>(*this);
-
+  registerOutput<const WhistleControl>(*this);  //TODO rename to AudioControl
 
   /*  INIT DEVICES  */
   std::cout << "[NaoController] " << "Init Platform" << endl;
