@@ -234,7 +234,7 @@ public class TeamCommViewerFx extends AbstractJFXDialog
             new Column<> ("TimeToBall",      "timeToBall"),
             new Column<> ("wantToBeStriker", "wantsToBeStriker",(p) -> new CheckBoxTableCell<>()),
             new Column<> ("wasStriker",      "wasStriker",      (p) -> new CheckBoxTableCell<>()),
-            new Column<> ("isPenalized",     "isPenalized",     (p) -> new CheckBoxTableCell<>()),
+            new Column<> ("RobotState",      "robotState"),
             new Column<> ("whistleDetected", "whistleDetected", (p) -> new CheckBoxTableCell<>()),
             new Column<> ("teamBall",        "teamBall",        (p) -> new Vector2DTableCell()),
             new Column<> ("show on field",   "showOnField",     (p) -> new CheckBoxTableCell<>(), true),
