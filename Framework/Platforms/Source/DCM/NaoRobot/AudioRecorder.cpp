@@ -118,7 +118,7 @@ namespace naoth
 	        std::cerr << "[PulseAudio] pa_simple == NULL" << std::endl;
 	        running = false;
 	      }
-	      std::cout << "[AudioRecorder] bytesToRead: " << bytesToRead << std::endl;
+	      //std::cout << "[AudioRecorder] bytesToRead: " << bytesToRead << std::endl;
 	      if (pa_simple_read(paSimple, &audioReadBuffer[0], bytesToRead, &error) < 0)
 	      {
 	        std::cerr << "[PulseAudio] pa_simple_read() failed: " << pa_strerror(error) << std::endl;
@@ -142,6 +142,7 @@ namespace naoth
 	  {
 	  	if(command != controlData.onOffSwitch){
 	  		command = controlData.onOffSwitch;
+	  		std::cout << "Command: " << command << std::endl;
 	  	}	    
 	    
 	    if(activeChannels != controlData.activeChannels)
@@ -205,6 +206,7 @@ namespace naoth
 	{
     if (paSimple != NULL)
     {
+      recording = false;
       std::cout << "[PulseAudio] device closed" << std::endl;
       pa_simple_free(paSimple);
       paSimple = NULL;

@@ -7,7 +7,7 @@ using namespace naoth;
 
 AudioData::AudioData():
 	sampleRate(8000),
-  onlySoundInSet(true)
+	onlySoundInSet(true)
 {
   
 }
