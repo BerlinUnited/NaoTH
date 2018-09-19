@@ -1,15 +1,15 @@
-#include "WhistleDetectorConfigSetter.h"
+#include "AudioConfigSetter.h"
 
-WhistleDetectorConfigSetter::WhistleDetectorConfigSetter(){
+AudioConfigSetter::AudioConfigSetter(){
 	getDebugParameterList().add(&params);
 }
 
-WhistleDetectorConfigSetter::~WhistleDetectorConfigSetter()
+AudioConfigSetter::~AudioConfigSetter()
 {
 	getDebugParameterList().remove(&params);
 }
 
-void WhistleDetectorConfigSetter::execute()
+void AudioConfigSetter::execute()
 {
   //FIXME
   /*

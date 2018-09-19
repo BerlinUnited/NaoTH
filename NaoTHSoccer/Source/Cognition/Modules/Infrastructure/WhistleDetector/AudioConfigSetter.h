@@ -1,5 +1,5 @@
-#ifndef WHISTLEDETECTORCONFIGSETTER_H
-#define WHISTLEDETECTORCONFIGSETTER_H
+#ifndef _AUDIO_CONFIG_SETTER_H
+#define _AUDIO_CONFIG_SETTER_H
 
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/AudioControl.h>
@@ -9,10 +9,10 @@
 
 using namespace naoth;
 
-BEGIN_DECLARE_MODULE(WhistleDetectorConfigSetter)
+BEGIN_DECLARE_MODULE(AudioConfigSetter)
 	PROVIDE(DebugParameterList)
 	PROVIDE(AudioControl)
-END_DECLARE_MODULE(WhistleDetectorConfigSetter)
+END_DECLARE_MODULE(AudioConfigSetter)
 
 
 /**
@@ -20,11 +20,11 @@ END_DECLARE_MODULE(WhistleDetectorConfigSetter)
  */
 
 
-class WhistleDetectorConfigSetter : public WhistleDetectorConfigSetterBase
+class AudioConfigSetter : public AudioConfigSetterBase
 {
 public:
-	WhistleDetectorConfigSetter();
-	virtual ~WhistleDetectorConfigSetter();
+	AudioConfigSetter();
+	virtual ~AudioConfigSetter();
 
 	virtual void execute();
 
@@ -52,4 +52,4 @@ public:
 private:
 };
 
-#endif // WHISTLEDETECTORCONFIGSETTER_H
+#endif // _AUDIO_CONFIG_SETTER_H
