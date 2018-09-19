@@ -46,26 +46,6 @@ namespace naoth
 	    deinitAudio();
 	  }
 	}
-	/*
-	void AudioRecorder::execute()
-	{	
-		running = true;
-		while(running){
-			if(!recording)
-    		{
-    			std::cout << "start recording" << std::endl;
-        		initAudio();
-    		}
-			
-		}//end while
-	  
-	  //unsigned available = std::min((unsigned) snd_pcm_avail(handle), maxFrames);
-  	  //audioData.samples.resize(available * channels);
-
-		//Bhuman fragt an wie viele samples alsa intern hat
-
-	} //end execute
-	*/
 
 	void AudioRecorder::execute()
 	{
@@ -134,7 +114,7 @@ namespace naoth
 	} // end execute
 
 
-	void AudioRecorder::set(const naoth::WhistleControl& controlData)
+	void AudioRecorder::set(const naoth::AudioControl& controlData)
 	{
 	  
 	  std::unique_lock<std::mutex> lock(setMutex, std::try_to_lock);
@@ -164,10 +144,8 @@ namespace naoth
 
 	void AudioRecorder::get(AudioData& data)
 	{
-      std::cout << "[AudioRecorder] write audio samples" << std::endl;
 	  std::unique_lock<std::mutex> lock(getMutex, std::try_to_lock);
 	  if ( lock.owns_lock() ) {
-	    //Todo write the samples
 	    data.sampleRate = sampleRate;
 	  }
 	}

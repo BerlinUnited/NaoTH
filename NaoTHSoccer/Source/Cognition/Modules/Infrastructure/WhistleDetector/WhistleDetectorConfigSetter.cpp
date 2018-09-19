@@ -13,34 +13,34 @@ void WhistleDetectorConfigSetter::execute()
 {
   //FIXME
   /*
-  if(params.whistleListFile != getWhistleControl().whistleListFile)
+  if(params.whistleListFile != getAudioControl().whistleListFile)
   {
-    getWhistleControl().whistleListFile = params.whistleListFile;
+    getAudioControl().whistleListFile = params.whistleListFile;
   }
   */
-  if(params.activeChannels != getWhistleControl().activeChannels)
+  if(params.activeChannels != getAudioControl().activeChannels)
   {
-    getWhistleControl().activeChannels = params.activeChannels;
+	  getAudioControl().activeChannels = params.activeChannels;
   }
-  if (params.onOffSwitch != getWhistleControl().onOffSwitch)
+  if (params.onOffSwitch != getAudioControl().onOffSwitch)
   {
-    getWhistleControl().onOffSwitch = params.onOffSwitch;
+	  getAudioControl().onOffSwitch = params.onOffSwitch;
   }
 
   /*
-  if(params.threshold != getWhistleControl().threshold)
+  if(params.threshold != getAudioControl().threshold)
   {
-    getWhistleControl().threshold = params.threshold;
+    getAudioControl().threshold = params.threshold;
   }
   
-  if(params.checkAllWhistles != getWhistleControl().checkAllWhistles)
+  if(params.checkAllWhistles != getAudioControl().checkAllWhistles)
   {
-    getWhistleControl().checkAllWhistles = params.checkAllWhistles;
+    getAudioControl().checkAllWhistles = params.checkAllWhistles;
   }
   
-  if(params.saveRawAudio != getWhistleControl().saveRawAudio)
+  if(params.saveRawAudio != getAudioControl().saveRawAudio)
   {
-    getWhistleControl().saveRawAudio = params.saveRawAudio;
+    getAudioControl().saveRawAudio = params.saveRawAudio;
   }
   */
 }

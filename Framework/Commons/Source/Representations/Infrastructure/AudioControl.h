@@ -1,13 +1,13 @@
 
-#ifndef _WHISTLE_CONTROL_H
-#define _WHISTLE_CONTROL_H
+#ifndef _AUDIO_CONTROL_H
+#define _AUDIO_CONTROL_H
 
 #include <string>
 #include "Tools/DataStructures/Printable.h"
 
 namespace naoth
 {
-  class WhistleControl: public Printable
+  class AudioControl: public Printable
   {
   public:
     int onOffSwitch;              // controls if detection and audio capture is active or not
@@ -17,12 +17,12 @@ namespace naoth
     bool onlySoundInSet;
     int buffer_size;
 
-    WhistleControl();
+    AudioControl();
     virtual void print(std::ostream& stream) const;
 
-    virtual ~WhistleControl();
+    virtual ~AudioControl();
   };
 }
 
-#endif  /* _WHISTLE_CONTROL_H */
+#endif  /* _AUDIO_CONTROL_H */
 

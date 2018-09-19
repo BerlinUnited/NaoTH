@@ -1,8 +1,8 @@
-#include "WhistleControl.h"
+#include "AudioControl.h"
 
 using namespace naoth;
 
-WhistleControl::WhistleControl():
+AudioControl::AudioControl():
   onOffSwitch(1),
   activeChannels("1010"),
   numChannels(2),
@@ -11,12 +11,12 @@ WhistleControl::WhistleControl():
   buffer_size(1024)
 {}
 
-void WhistleControl::print(std::ostream& stream) const
+void AudioControl::print(std::ostream& stream) const
 {
   stream << "switch: " << (onOffSwitch == 1 ? "on" : "off") << std::endl;
   stream << "active channels(Left|Front|Right|Rear): " << activeChannels << std::endl;
 }
 
-WhistleControl::~WhistleControl()
+AudioControl::~AudioControl()
 {}
 

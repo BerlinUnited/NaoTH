@@ -116,7 +116,7 @@ public:
   void set(const IRSendData& data) { naoCommandIRSendData.set(data); }
   void set(const UltraSoundSendData& data) { naoCommandUltraSoundSendData.set(data); }
 
-  void set(const WhistleControl& data) { theAudioRecorder.set(data); }
+  void set(const AudioControl& data) { theAudioRecorder.set(data); }
 
   virtual void getMotionInput()
   {

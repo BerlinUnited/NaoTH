@@ -77,11 +77,11 @@ void SensorSymbols::execute()
 }//end execute
 
 double SensorSymbols::getWhistleSwitch(){
-  return theInstance->getWhistleControl().onOffSwitch;
+	return theInstance->getAudioControl().onOffSwitch;
 }
 
 void SensorSymbols::setWhistleSwitch(double whistle){
-  theInstance->getWhistleControl().onOffSwitch = (int)whistle;
+  theInstance->getAudioControl().onOffSwitch = (int)whistle;
 }
 
 bool SensorSymbols::getBumberLeftPressed()

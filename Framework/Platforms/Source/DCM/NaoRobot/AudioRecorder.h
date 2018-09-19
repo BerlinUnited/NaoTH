@@ -8,7 +8,7 @@
 #include "SoundConfig.h"
 
 #include "Representations/Infrastructure/AudioData.h"
-#include "Representations/Infrastructure/WhistleControl.h"
+#include "Representations/Infrastructure/AudioControl.h"
 
 namespace naoth
 {
@@ -19,7 +19,7 @@ namespace naoth
 	  	virtual ~AudioRecorder();
 
 	  	void get(naoth::AudioData& data);
-      void set(const naoth::WhistleControl& controlData);
+      void set(const naoth::AudioControl& controlData);
 
 	  	std::vector<short> audioReadBuffer;
 	  protected:

@@ -2,7 +2,7 @@
 #define WHISTLEDETECTORCONFIGSETTER_H
 
 #include <ModuleFramework/Module.h>
-#include <Representations/Infrastructure/WhistleControl.h>
+#include <Representations/Infrastructure/AudioControl.h>
 #include <Tools/DataStructures/ParameterList.h>
 #include <Tools/Debug/DebugParameterList.h>
 
@@ -11,7 +11,7 @@ using namespace naoth;
 
 BEGIN_DECLARE_MODULE(WhistleDetectorConfigSetter)
 	PROVIDE(DebugParameterList)
-  PROVIDE(WhistleControl)
+	PROVIDE(AudioControl)
 END_DECLARE_MODULE(WhistleDetectorConfigSetter)
 
 
@@ -37,8 +37,8 @@ public:
       PARAMETER_REGISTER(activeChannels)   = "1010";
       PARAMETER_REGISTER(threshold)        = 0.25;
       PARAMETER_REGISTER(checkAllWhistles) = true;
-      PARAMETER_REGISTER(saveRawAudio)     = true;
-      PARAMETER_REGISTER(onOffSwitch)      = 1;
+      PARAMETER_REGISTER(saveRawAudio)     = false;
+      PARAMETER_REGISTER(onOffSwitch)      = 0;
       syncWithConfig();
     }
     std::string whistleListFile;
