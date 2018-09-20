@@ -285,7 +285,7 @@ public class NaoTHPanel extends javax.swing.JPanel {
         setConfigEditable();
     }//GEN-LAST:event_cbCopyConfigActionPerformed
 
-    private void setConfigEditable() {
+    public void setConfigEditable() {
         boolean v = cbCopyConfig.isSelected();
         this.jSchemeBox.setEnabled(v);
         this.jColorBox.setEnabled(v);
