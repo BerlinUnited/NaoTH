@@ -123,11 +123,22 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
         }
     }
     
+    @FXML
+    public void disconnectAll() {
+        // disconnect all, except the first ("all") tabs
+        tabpane.getTabs().stream().forEach((t) -> {
+            if(t instanceof Tab) {
+                ((AgentTab)t).disconnect();
+            }
+        });
+    }
+    
     private void disconnecting() {
         // remove all, except the first ("all") tabs
         while (tabpane.getTabs().size() > 1) {
             Tab t = tabpane.getTabs().get(tabpane.getTabs().size()-1);
             if(t instanceof Tab) {
+                System.out.println(t);
                 ((AgentTab)t).requestClose();
             }
         }

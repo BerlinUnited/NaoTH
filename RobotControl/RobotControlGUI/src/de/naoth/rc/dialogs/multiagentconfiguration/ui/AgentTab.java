@@ -451,7 +451,7 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
         updateConnectionStatusUI(true);
     }
     
-    private void disconnect() {
+    public void disconnect() {
         server.disconnect();
     }
 
