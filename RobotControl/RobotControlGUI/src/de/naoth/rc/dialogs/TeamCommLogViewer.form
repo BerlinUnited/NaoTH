@@ -40,6 +40,8 @@
             <Property name="toolTipText" type="java.lang.String" value="Begins playing with the selected timestamp"/>
           </Properties>
         </MenuItem>
+        <Component class="javax.swing.JPopupMenu$Separator" name="jSeparator4">
+        </Component>
       </SubComponents>
     </Container>
     <Component class="javax.swing.JFileChooser" name="exportFileChooser">

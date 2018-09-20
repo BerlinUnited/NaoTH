@@ -12,7 +12,7 @@
 #include "Representations/Modeling/TeamBallModel.h"
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Modeling/RobotPose.h"
-#include "Representations/Modeling/TeamMessageTimeStatistics.h"
+#include "Representations/Modeling/TeamMessageNTP.h"
 
 
 BEGIN_DECLARE_MODULE(TeamBallLocatorCanopyCluster)
@@ -24,7 +24,7 @@ BEGIN_DECLARE_MODULE(TeamBallLocatorCanopyCluster)
   REQUIRE(FrameInfo)
   REQUIRE(TeamMessage)
   REQUIRE(RobotPose)
-  REQUIRE(TeamMessageTimeStatistics)
+  REQUIRE(TeamMessageNTP)
 
   PROVIDE(TeamBallModel)
 END_DECLARE_MODULE(TeamBallLocatorCanopyCluster)

@@ -52,7 +52,10 @@ public class ParameterPanelTree extends AbstractDialog
   
   private final Command cmd_pi = new Command("Cognition:representation:print").addArg("PlayerInfo");
   private static final Pattern KEY_VALUE_PATTERN = Pattern.compile("^(?<key>.+)=(?<value>.*)$", Pattern.MULTILINE);
-  
+
+  final private String parameterSavePathKey = "parameter_save_path";
+  final private String defaultConfigPath = "../../NaoTHSoccer/Config/scheme";
+
   public ParameterPanelTree()
   {
     initComponents();
@@ -149,6 +152,7 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
             ParameterDataNode node = (ParameterDataNode) myTreeTable.getTree().getPathForRow(myTreeTable.getSelectedRow()).getPathComponent(1);
             // configure the filechooser ...
             fcSaveParametersDialog.setSelectedFile(new java.io.File(node.getName() + ".cfg"));
+            fcSaveParametersDialog.setCurrentDirectory(new File(Plugin.parent.getConfig().getProperty(parameterSavePathKey, defaultConfigPath)));
             fcSaveParametersDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
             fcSaveParametersDialog.setAcceptAllFileFilterUsed(false);
             fcSaveParametersDialog.setDialogTitle("Save configuration ("+node.getName()+")");
@@ -172,6 +176,8 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
                         JOptionPane.showMessageDialog(null, "Selected file is not writeable!", "Not writeable", JOptionPane.ERROR_MESSAGE);
                     }
                 }
+                // save the path for later
+                Plugin.parent.getConfig().setProperty(parameterSavePathKey, f.getParent());
             }
         }
     }//GEN-LAST:event_btnSaveActionPerformed

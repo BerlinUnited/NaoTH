@@ -1,10 +1,7 @@
 #include "TeamCommSender.h"
+
 #include "PlatformInterface/Platform.h"
-#include <Messages/Representations.pb.h>
-
 #include <Tools/NaoTime.h>
-
-using namespace std;
 
 TeamCommSender::TeamCommSender()
   :lastSentTimestamp(0),
@@ -81,7 +78,6 @@ void TeamCommSender::fillMessageBeforeSending() const
     msg.custom.bodyID = getRobotInfo().bodyID;
     ASSERT(getSoccerStrategy().timeToBall >= 0);
     msg.custom.timeToBall = (unsigned int)getSoccerStrategy().timeToBall;
-    msg.custom.isPenalized = getPlayerInfo().robotState == PlayerInfo::penalized;
     msg.custom.batteryCharge = getBatteryData().charge;
     msg.custom.temperature = std::max(getBodyState().temperatureLeftLeg, getBodyState().temperatureRightLeg);
     msg.custom.cpuTemperature = getCpuData().temperature;
@@ -93,6 +89,9 @@ void TeamCommSender::fillMessageBeforeSending() const
       getTeamMessageData().custom.teamBall.x = std::numeric_limits<double>::infinity();
       getTeamMessageData().custom.teamBall.y = std::numeric_limits<double>::infinity();
     }
+
+    msg.custom.robotState = getPlayerInfo().robotState;
+
     // TODO: shall we put it into config?
     msg.custom.key = NAOTH_TEAMCOMM_MESAGE_KEY;
 }

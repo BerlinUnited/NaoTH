@@ -158,9 +158,15 @@ public class NaoSCP extends javax.swing.JPanel {
         java.awt.GridBagConstraints gridBagConstraints;
 
         popupMenu = new javax.swing.JPopupMenu();
+        miShutdown = new javax.swing.JMenuItem();
         miRestartNao = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         miRestartNaoth = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        miMute = new javax.swing.JMenuItem();
+        miUnmute = new javax.swing.JMenuItem();
+        miSetVolume80 = new javax.swing.JMenuItem();
+        miSetVolume40 = new javax.swing.JMenuItem();
         netwokPanel = new naoscp.components.NetwokPanel();
         naoTHPanel = new naoscp.components.NaoTHPanel();
         statusBarPanel = new javax.swing.JPanel();
@@ -185,6 +191,15 @@ public class NaoSCP extends javax.swing.JPanel {
             }
         });
 
+        miShutdown.setText("Shutdown nao");
+        miShutdown.setToolTipText("Shutdown the full nao system");
+        miShutdown.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miShutdownActionPerformed(evt);
+            }
+        });
+        popupMenu.add(miShutdown);
+
         miRestartNao.setText("Restart nao");
         miRestartNao.setToolTipText("Restarts the full nao system");
         miRestartNao.addActionListener(new java.awt.event.ActionListener() {
@@ -203,6 +218,43 @@ public class NaoSCP extends javax.swing.JPanel {
             }
         });
         popupMenu.add(miRestartNaoth);
+        popupMenu.add(jSeparator2);
+
+        miMute.setText("Mute");
+        miMute.setToolTipText("Muting the nao");
+        miMute.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miMuteActionPerformed(evt);
+            }
+        });
+        popupMenu.add(miMute);
+
+        miUnmute.setText("Un-Mute");
+        miUnmute.setToolTipText("Un-muting the nao");
+        miUnmute.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miUnmuteActionPerformed(evt);
+            }
+        });
+        popupMenu.add(miUnmute);
+
+        miSetVolume80.setText("Volume: 80%");
+        miSetVolume80.setToolTipText("Sets the speaker volume to 80%");
+        miSetVolume80.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miSetVolume80ActionPerformed(evt);
+            }
+        });
+        popupMenu.add(miSetVolume80);
+
+        miSetVolume40.setText("Volume: 40%");
+        miSetVolume40.setToolTipText("Sets the speaker volume to 40%");
+        miSetVolume40.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miSetVolume40ActionPerformed(evt);
+            }
+        });
+        popupMenu.add(miSetVolume40);
 
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
@@ -339,6 +391,8 @@ public class NaoSCP extends javax.swing.JPanel {
             @Override
             public void run() {
                 try {
+                    long start = System.currentTimeMillis();
+                    
                     // STEP 1: create the deploy directory for the playerNumber
                     File deployDir = new File(targetDir, "deploy");
 
@@ -355,33 +409,51 @@ public class NaoSCP extends javax.swing.JPanel {
                         naoTHPanel.getAction().run(deployDir);
 
                         FileUtils.copyFiles(new File(deployStickScriptPath), targetDir);
-
+                        
+                        // zip files
+                        File deployZip = new File(targetDir, "deploy.zip");
+                        Logger.getGlobal().log(Level.INFO, "ZIP files to " + deployZip.getPath());
+                        FileUtils.zipDirectory(deployDir, deployZip);
+                        
                         // send stuff to robot
                         String robotIp = getIpAddress();
-                        Scp scp = new Scp(robotIp, "nao", "nao");
                         
+                        Scp scp = new Scp(robotIp, "nao", "nao");
                         scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
 
-                        scp.mkdir("/home/nao/tmp"); // just in case it doesn't exist
-                        scp.cleardir("/home/nao/tmp");
-                        scp.put(deployDir, "/home/nao/tmp/deploy");
+                        Scp.CommandStream shell = scp.getShell();
+
+                        //Logger.getGlobal().log(Level.INFO, "mkdir /home/nao/tmp");
+                        //scp.mkdir("/home/nao/tmp"); // just in case it doesn't exist
+                        //Logger.getGlobal().log(Level.INFO, "rm -rf /home/nao/tmp/*");
+                        //scp.cleardir("/home/nao/tmp");
+
+                        // HACK: string obfuscation (echo -e '\\x44\\x4F\\x4E\\x45') prints 'DONE'
+                        // we wait until echo is executed to be sure that the command is done
+                        shell.run("mkdir /home/nao/tmp; echo -e '\\x44\\x4F\\x4E\\x45'", "DONE");
+                        shell.run("rm -rf /home/nao/tmp/*; echo -e '\\x44\\x4F\\x4E\\x45'", "DONE");
+
+                        //scp.put(deployDir, "/home/nao/tmp/deploy");
+                        scp.put(deployZip, "/home/nao/tmp/deploy.zip");
+
                         scp.put(new File(deployStickScriptPath), "/home/nao/tmp/setup.sh");
 
                         //scp.channel.chown(WIDTH, utilsPath);
                         scp.chmod(755, "/home/nao/tmp/setup.sh");
                         //scp.run("/home/nao/tmp", "./setup.sh");
 
-                        Scp.CommandStream shell = scp.getShell();
                         // HACK: always stop naoth before proceeding
 //                        shell.run("naoth stop", "killing naoth cognition processes");
                         shell.run("su", "Password:");
                         shell.run("root");
                         shell.run("cd /home/nao/tmp/");
-                        shell.run("./setup.sh", "DONE");
+                        shell.run("sudo -u nao unzip -q deploy.zip; ./setup.sh", "DONE");
+                        //shell.run("./setup.sh", "DONE");
 
                         scp.disconnect();
 
-                        Logger.getGlobal().log(Level.INFO, "DONE");
+                        Logger.getGlobal().log(Level.INFO, String.format("DONE (%.2f)", (System.currentTimeMillis() - start)/1000.0));
+
                         //NaoSCP.this.setEnabledAll(true);
                     }
                 } catch (JSchException | SftpException | IOException | NaoSCPException ex) {
@@ -755,6 +827,50 @@ public class NaoSCP extends javax.swing.JPanel {
     }//GEN-LAST:event_popupMenuPopupMenuWillBecomeInvisible
 
     private void miRestartNaothActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miRestartNaothActionPerformed
+        singleShellCommand("naoth restart", "starting naoth cognition process", "Restart naoth", null);
+    }//GEN-LAST:event_miRestartNaothActionPerformed
+
+    private void miRestartNaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miRestartNaoActionPerformed
+        if(JOptionPane.showConfirmDialog(this, "Are you sure you want to reboot Nao"+txtRobotNumber.getText().trim()+"?", "Reboot?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            singleShellCommand("reboot", "The system is going down for reboot NOW!", "Rebooting nao", "Nao "+txtRobotNumber.getText().trim()+" is rebooting!");
+        } else {
+            Logger.getGlobal().log(Level.INFO, "Canceled.");
+        }
+    }//GEN-LAST:event_miRestartNaoActionPerformed
+
+    private void miMuteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miMuteActionPerformed
+        singleShellCommand("pactl set-sink-mute 0 true", null, "Muting robot", "Robot muted!");
+    }//GEN-LAST:event_miMuteActionPerformed
+
+    private void miUnmuteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miUnmuteActionPerformed
+        singleShellCommand("pactl set-sink-mute 0 false", null, "Un-muting robot", "Robot un-muted!");
+    }//GEN-LAST:event_miUnmuteActionPerformed
+
+    private void miSetVolume80ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miSetVolume80ActionPerformed
+        singleShellCommand("pactl set-sink-volume 0 80%", null, "Set volume to 80%", null);
+    }//GEN-LAST:event_miSetVolume80ActionPerformed
+
+    private void miSetVolume40ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miSetVolume40ActionPerformed
+        singleShellCommand("pactl set-sink-volume 0 40%", null, "Set volume to 40%", null);
+    }//GEN-LAST:event_miSetVolume40ActionPerformed
+
+    private void miShutdownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miShutdownActionPerformed
+        if(JOptionPane.showConfirmDialog(this, "Are you sure you want to shutdown Nao"+txtRobotNumber.getText().trim()+"?", "Shutdown?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            singleShellCommand("shutdown -h now", "system halt NOW!", "Shutting nao down", null);
+        } else {
+            Logger.getGlobal().log(Level.INFO, "Canceled.");
+        }
+    }//GEN-LAST:event_miShutdownActionPerformed
+
+    /**
+     * Executes a single command on the robot.
+     * 
+     * @param cmd the command to execute
+     * @param expectedOutputPattern the expected output from the command. It can be 'null'.
+     * @param logBeforeCmd the log message, which should be shown before the command execution. It can be 'null'.
+     * @param logAfterCmd the log message, which should be shown after the command execution. It can be 'null'.
+     */
+    private void singleShellCommand(String cmd, String expectedOutputPattern, String logBeforeCmd, String logAfterCmd) {
         this.logTextPanel.clear();
 
         if(txtRobotNumber.getText().trim().isEmpty()) {
@@ -768,49 +884,30 @@ public class NaoSCP extends javax.swing.JPanel {
                 String robotIp = getIpAddress();
                 Scp scp = new Scp(robotIp, "nao", "nao");
                 Scp.CommandStream shell = scp.getShell();
-                Logger.getGlobal().log(Level.INFO, "killing naoth");
-                shell.run("naoth stop", "killing naoth cognition processes");
-                Thread.sleep(500);
-                Logger.getGlobal().log(Level.INFO, "starting naoth");
-                shell.run("naoth start", "starting naoth cognition processes");
-                Logger.getGlobal().log(Level.INFO, "DONE");
+                
+                if(logBeforeCmd != null) {
+                    Logger.getGlobal().log(Level.INFO, logBeforeCmd);
+                }
+                
+                // HACK: see above
+                if(expectedOutputPattern == null) {
+                    shell.run(cmd + "; echo -e '\\x44\\x4F\\x4E\\x45'", "DONE");
+                } else {
+                    shell.run(cmd, expectedOutputPattern);
+                }
+                
+                if(logAfterCmd != null) {
+                    Logger.getGlobal().log(Level.INFO, logAfterCmd, txtRobotNumber.getText().trim());
+                }
+                
                 shell.close();
                 scp.disconnect();
-            } catch (JSchException | IOException | NaoSCPException | InterruptedException ex) {
+            } catch (JSchException | IOException | NaoSCPException ex) {
                 Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
             }
         }).start();
-    }//GEN-LAST:event_miRestartNaothActionPerformed
-
-    private void miRestartNaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miRestartNaoActionPerformed
-        this.logTextPanel.clear();
-
-        if(txtRobotNumber.getText().trim().isEmpty()) {
-            Logger.getGlobal().log(Level.WARNING, "Missing robot number!");
-            return;
-        }
-
-        if(JOptionPane.showConfirmDialog(this, "Are you sure you want to reboot Nao"+txtRobotNumber.getText().trim()+"?", "Reboot?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            new Thread(() -> {
-                try {
-                    // send stuff to robot
-                    String robotIp = getIpAddress();
-                    Scp scp = new Scp(robotIp, "nao", "nao");
-                    Scp.CommandStream shell = scp.getShell();
-                    Logger.getGlobal().log(Level.INFO, "Rebooting nao");
-                    shell.run("reboot", "Rebooting nao");
-                    Logger.getGlobal().log(Level.INFO, "Nao {0} is rebooting!", txtRobotNumber.getText().trim());
-                    shell.close();
-                    scp.disconnect();
-                } catch (JSchException | IOException | NaoSCPException ex) {
-                    Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
-                }
-            }).start();
-        } else {
-            Logger.getGlobal().log(Level.INFO, "Canceled.");
-        }
-    }//GEN-LAST:event_miRestartNaoActionPerformed
-
+    }
+    
     public void formWindowClosing() {
         try {
             // save configuration to file
@@ -860,10 +957,16 @@ public class NaoSCP extends javax.swing.JPanel {
     private javax.swing.JToggleButton btnActions;
     private javax.swing.JProgressBar jProgressBar;
     private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPanel logPanel;
     private naoscp.components.LogTextPanel logTextPanel;
+    private javax.swing.JMenuItem miMute;
     private javax.swing.JMenuItem miRestartNao;
     private javax.swing.JMenuItem miRestartNaoth;
+    private javax.swing.JMenuItem miSetVolume40;
+    private javax.swing.JMenuItem miSetVolume80;
+    private javax.swing.JMenuItem miShutdown;
+    private javax.swing.JMenuItem miUnmute;
     private naoscp.components.NaoTHPanel naoTHPanel;
     private naoscp.components.NetwokPanel netwokPanel;
     private javax.swing.JPopupMenu popupMenu;

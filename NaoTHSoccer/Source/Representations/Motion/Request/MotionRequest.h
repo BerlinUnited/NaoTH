@@ -34,7 +34,8 @@ public:
     forced(false),
     standHeight(-1),
     calibrateFootTouchDetector(false),
-    standardStand(true)
+    standardStand(true),
+    disable_relaxed_stand(false)
   {
   }
 
@@ -63,6 +64,7 @@ public:
 
   // go to stand after the end of the motion (is it correct?)
   bool standardStand;
+  bool disable_relaxed_stand;
 
   /** special parameters if kick is requested */
   KickRequest kickRequest;
@@ -76,7 +78,6 @@ public:
   /** */
   ArmMotionRequest armMotionRequest;
 
-
   /** set the same default values as at construction */
   void reset() 
   {
@@ -87,6 +88,7 @@ public:
     standHeight = -1;
     calibrateFootTouchDetector = false;
     standardStand = true;
+    disable_relaxed_stand = false;
 
     // reset by creating new once
     kickRequest = KickRequest();
