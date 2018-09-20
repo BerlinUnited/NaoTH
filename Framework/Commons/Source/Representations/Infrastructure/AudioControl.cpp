@@ -3,7 +3,7 @@
 using namespace naoth;
 
 AudioControl::AudioControl():
-  onOffSwitch(1),
+  onOffSwitch(0),
   activeChannels("1010"),
   numChannels(2),
   sampleRate(8000),
