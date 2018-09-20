@@ -144,11 +144,14 @@ namespace naoth
 
 	void AudioRecorder::get(AudioData& data)
 	{
-	  std::unique_lock<std::mutex> lock(getMutex, std::try_to_lock);
-	  if ( lock.owns_lock() ) {
-	    data.sampleRate = sampleRate;
+	  if (recording){
+	  	std::unique_lock<std::mutex> lock(getMutex, std::try_to_lock);
+	  	if ( lock.owns_lock() ) {
+		    data.sampleRate = sampleRate;
+		    data.samples = audioReadBuffer;
+	  	}
 	  }
-	}
+	} // end AudioRecorder::get
 
 
 	void AudioRecorder::initAudio()

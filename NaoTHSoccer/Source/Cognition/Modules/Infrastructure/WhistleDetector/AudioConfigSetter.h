@@ -31,25 +31,18 @@ public:
   class Parameters: public ParameterList
   {
   public:
-    Parameters() : ParameterList("WhistleDetectorParameters")
+    Parameters() : ParameterList("AudioConfig")
     {
-      PARAMETER_REGISTER(whistleListFile)  = "whistles.lst";
       PARAMETER_REGISTER(activeChannels)   = "1010";
-      PARAMETER_REGISTER(threshold)        = 0.25;
-      PARAMETER_REGISTER(checkAllWhistles) = true;
-      PARAMETER_REGISTER(saveRawAudio)     = false;
       PARAMETER_REGISTER(onOffSwitch)      = 0;
       syncWithConfig();
     }
-    std::string whistleListFile;
     std::string activeChannels;
-    double threshold;
-    bool checkAllWhistles;
-    bool saveRawAudio;
     int onOffSwitch;
   } params;
 
 private:
+
 };
 
 #endif // _AUDIO_CONFIG_SETTER_H

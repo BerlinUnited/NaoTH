@@ -11,13 +11,6 @@ AudioConfigSetter::~AudioConfigSetter()
 
 void AudioConfigSetter::execute()
 {
-  //FIXME
-  /*
-  if(params.whistleListFile != getAudioControl().whistleListFile)
-  {
-    getAudioControl().whistleListFile = params.whistleListFile;
-  }
-  */
   if(params.activeChannels != getAudioControl().activeChannels)
   {
 	  getAudioControl().activeChannels = params.activeChannels;
@@ -26,22 +19,5 @@ void AudioConfigSetter::execute()
   {
 	  getAudioControl().onOffSwitch = params.onOffSwitch;
   }
-
-  /*
-  if(params.threshold != getAudioControl().threshold)
-  {
-    getAudioControl().threshold = params.threshold;
-  }
-  
-  if(params.checkAllWhistles != getAudioControl().checkAllWhistles)
-  {
-    getAudioControl().checkAllWhistles = params.checkAllWhistles;
-  }
-  
-  if(params.saveRawAudio != getAudioControl().saveRawAudio)
-  {
-    getAudioControl().saveRawAudio = params.saveRawAudio;
-  }
-  */
 }
 
