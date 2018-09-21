@@ -51,15 +51,19 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
     int end_of_field = 10;
 
     prevLuma = getImage().getY(scanline.x, y);
-    prev_y = getScanGrid().vScanPattern[scanline.bottom];
+    int start = getBodyContour().getFirstFreeCell(Vector2i(scanline.x, y)).y;
+    prev_y = start;
     for(size_t i=scanline.bottom-1; i>scanline.top; --i) {
       y = getScanGrid().vScanPattern[i];
       if(y < end_of_field) {
         break;
       }
       luma = getImage().getY(x, y);
+      if(y >= start) {
+        prevLuma = luma;
+        continue;
+      }
       gradient = luma - prevLuma;
-
       // begin
       if(maximumPeak.add(y, prev_y, gradient)) {
         // found greatest peak
