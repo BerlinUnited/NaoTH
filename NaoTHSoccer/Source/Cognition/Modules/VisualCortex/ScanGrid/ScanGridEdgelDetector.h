@@ -113,6 +113,8 @@ private:
     {
       this->threshold = threshold;
       this->maxValue = threshold;
+      this->point = 0;
+      this->prev_point = 0;
       this->found = false;
     }
 
