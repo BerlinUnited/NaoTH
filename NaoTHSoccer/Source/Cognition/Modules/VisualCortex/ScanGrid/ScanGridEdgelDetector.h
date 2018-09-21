@@ -8,8 +8,6 @@
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CameraInfo.h"
 #include <Representations/Perception/FieldColorPercept.h>
-#include "Representations/Perception/CameraMatrix.h"
-#include "Representations/Perception/ArtificialHorizon.h"
 #include "Representations/Perception/BodyContour.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
 #include "Representations/Perception/ScanGrid.h"
@@ -48,8 +46,6 @@ BEGIN_DECLARE_MODULE(ScanGridEdgelDetector)
   REQUIRE(CameraInfoTop)
   REQUIRE(FieldColorPercept)
   REQUIRE(FieldColorPerceptTop)
-  REQUIRE(ArtificialHorizon)
-  REQUIRE(ArtificialHorizonTop)
   REQUIRE(BodyContour)
   REQUIRE(BodyContourTop)
   REQUIRE(FieldPercept)
@@ -209,7 +205,6 @@ private:
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, Image);
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, CameraInfo);
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, FieldColorPercept);
-  DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, ArtificialHorizon);
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, BodyContour);
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, ScanGrid);
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, FieldPercept);
