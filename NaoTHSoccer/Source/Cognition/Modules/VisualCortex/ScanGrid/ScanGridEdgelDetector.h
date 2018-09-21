@@ -48,8 +48,6 @@ BEGIN_DECLARE_MODULE(ScanGridEdgelDetector)
   REQUIRE(CameraInfoTop)
   REQUIRE(FieldColorPercept)
   REQUIRE(FieldColorPerceptTop)
-  REQUIRE(CameraMatrix)
-  REQUIRE(CameraMatrixTop)
   REQUIRE(ArtificialHorizon)
   REQUIRE(ArtificialHorizonTop)
   REQUIRE(BodyContour)
@@ -105,57 +103,60 @@ public:
 private:
   CameraInfo::CameraID cameraID;
 
-
-  template<typename T, typename V>
-  class MaximumScan
+  class MaxPeakScan
   {
   private:
-    V threshhold;
-    V value_max;
-
+    int threshold;
   public:
-    V maxValue;
-    T peakPoint;
+    int point;
+    int prev_point;
+    bool found;
+    int maxValue;
 
-    MaximumScan(T startPoint, V threshhold)
+    MaxPeakScan(int threshold)
     {
-      this->threshhold = threshhold;
-      value_max = threshhold;
-      peakPoint = startPoint;
-      maxValue = threshhold;
+      this->threshold = threshold;
+      this->maxValue = threshold;
+      this->found = false;
     }
-    virtual inline bool add(T point, V value)
-    {
-      if(value > value_max)
-      {
-        value_max = value;
-        peakPoint = point;
-      } else if(value_max > threshhold && value < threshhold) {
-        maxValue = value_max;
-        value_max = threshhold;
+
+    virtual inline bool add(int point, int prev_point, int value) {
+      if(check(point, value)) {
+        this->prev_point = prev_point;
+      } else {
+        if(this->found) {
+          return true;
+        }
+        reset();
+      }
+      return false;
+    }
+
+    virtual inline bool check(int point, int value) {
+      if(value > this->maxValue) {
+        this->found = true;
+        this->point = point;
+        this->maxValue = value;
         return true;
       }
       return false;
     }
 
-    inline void clean(T startPoint) {
-      this->peakPoint = startPoint;
-      value_max = threshhold;
+    inline void reset() {
+      this->found = false;
+      this->maxValue = this->threshold;
     }
   };
 
-  template<typename T, typename V>
-  class MinimumScan: public MaximumScan<T, V>
+  class MinPeakScan: public MaxPeakScan
   {
-    using MaximumScan<T, V>::MaximumScan;
+    using MaxPeakScan::MaxPeakScan;
   public:
-    inline bool add(T point, V value)
+    inline bool check(int point, int value) override
     {
-      return MaximumScan<T, V>::add(point, -value);
+      return MaxPeakScan::check(point, -value);
     }
   };
-
-
 
   void add_edgel(const Vector2i& point) {
     Edgel edgel;
@@ -198,7 +199,7 @@ private:
     getScanLineEdgelPercept().pairs.push_back(pair);
   }
 
-  inline void refine_edge(MaximumScan<int,int>& refinedScan, int x, int start_y, int end_y);
+  inline bool refine(MaxPeakScan& maximumPeak, int x);
 
   /** Estimates the gradient of the gray-gradient at the point by a Sobel Operator. */
   Vector2d calculateGradient(const Vector2i& point) const;
@@ -208,7 +209,6 @@ private:
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, Image);
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, CameraInfo);
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, FieldColorPercept);
-  DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, CameraMatrix);
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, ArtificialHorizon);
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, BodyContour);
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, ScanGrid);
