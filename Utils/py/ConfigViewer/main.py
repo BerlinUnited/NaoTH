@@ -3,6 +3,7 @@ import os, sys, argparse
 
 from PyQt5.QtWidgets import QApplication
 
+import Utils
 from ConfigViewerWidget import Widget
 
 class ArgumentFileParser(argparse.Action):
@@ -28,13 +29,22 @@ def parseArguments():
 
     parser = argparse.ArgumentParser(description='Shows the module configuration')
     parser.add_argument('config_dir', default=source_path+'/../../../NaoTHSoccer/Config', nargs='?', action=ArgumentFileParser, help='the config directory')
+    parser.add_argument('--check-team', action='store_true', default=False, help='checks the team configuration')
+    parser.add_argument('--compare', action=ArgumentFileParser, help='the config to compare with')
+    parser.add_argument('-v', '--verbose', action='store_true', default=False, help='Enables verbose output')
 
     return parser.parse_args()
+
 
 if __name__ == "__main__":
     args = parseArguments()
 
-    app = QApplication(sys.argv)
-    win = Widget(args.config_dir)
-    win.show()
-    sys.exit(app.exec_())
+    if args.check_team:
+        Utils.compare_configs(args.config_dir, args.verbose)
+    elif args.compare:
+        Utils.compare_config_pair(args.config_dir, args.compare, args.verbose)
+    else:
+        app = QApplication(sys.argv)
+        win = Widget(args.config_dir)
+        win.show()
+        sys.exit(app.exec_())

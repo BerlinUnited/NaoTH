@@ -6,6 +6,7 @@ import com.google.gson.stream.JsonWriter;
 import de.naoth.rc.components.teamcomm.TeamCommListener;
 import de.naoth.rc.components.teamcomm.TeamCommManager;
 import de.naoth.rc.components.teamcomm.TeamCommMessage;
+import de.naoth.rc.dataformats.SPLMessage2018;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,14 +21,15 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  *
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
-public class TeamCommLogger implements Runnable, TeamCommListener {
+public class TeamCommLogger implements Runnable, TeamCommListener
+{
     
     @PluginImplementation
     public static class Plugin implements net.xeoh.plugins.base.Plugin {
         @InjectPlugin
         public static TeamCommManager teamcommManager;
     }//end Plugin
-    
+
     /**
      * Thread, which writes the TeamCommMessages to the log file.
      */
@@ -93,7 +95,22 @@ public class TeamCommLogger implements Runnable, TeamCommListener {
             TeamCommMessage msg = logQueue.poll();
             if (msg != null) {
                 try {
-                    this.jw.jsonValue(this.json.toJson(msg));
+                    // NOTE: using the 'new' teamcomm format
+                    //       'old' format: this.jw.jsonValue(this.json.toJson(msg));
+                    jw.beginObject();
+                    jw.name("timestamp").jsonValue(json.toJson(msg.timestamp));
+                    jw.name("gameState").jsonValue(json.toJson(msg.gameState));
+                    jw.name("address").jsonValue(json.toJson(msg.address));
+                    jw.name("header").jsonValue(json.toJson("SPL "));
+                    jw.name("version").jsonValue(json.toJson(SPLMessage2018.SPL_STANDARD_MESSAGE_STRUCT_VERSION));
+                    jw.name("playerNum").jsonValue(json.toJson(msg.message.playerNum));
+                    jw.name("teamNum").jsonValue(json.toJson(msg.message.teamNum));
+                    jw.name("fallen").jsonValue(json.toJson(msg.message.fallen==1));
+                    jw.name("pose").jsonValue(json.toJson(new float[]{msg.message.pose_x, msg.message.pose_y, msg.message.pose_a}));
+                    jw.name("ballAge").jsonValue(json.toJson(msg.message.ballAge));
+                    jw.name("ball").jsonValue(json.toJson(new float[]{msg.message.ball_x, msg.message.ball_y}));
+                    jw.name("data").jsonValue(json.toJson(msg.message.data));
+                    jw.endObject();
                 } catch (IOException ex) {
                     Logger.getLogger(TeamCommLogger.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -154,6 +171,13 @@ public class TeamCommLogger implements Runnable, TeamCommListener {
         return this.isActive;
     }
 
+    /**
+     * Starts the logging process.
+     * If not already started/active, a new log file is created & initialized and a listener to the
+     * teamcomm messages is registered.
+     * 
+     * @return true|false, whether or not the logger thread could be startet
+     */
     public boolean startLogging() {
         if(this.isActive) {
             try {
@@ -168,9 +192,15 @@ public class TeamCommLogger implements Runnable, TeamCommListener {
                 Logger.getLogger(TeamCommLogger.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        return false;
+        return this.isActive;
     }
 
+    /**
+     * Pauses the logger process.
+     * Not teammessages are written to the log file.
+     * 
+     * @return true, if pausing was successfull, false otherwise
+     */
     public boolean pauseLogging() {
         if(this.isActive && this.logger != null && this.logger.isAlive()) {
             try {
@@ -185,6 +215,11 @@ public class TeamCommLogger implements Runnable, TeamCommListener {
         return true;
     }
 
+    /**
+     * Continues logging.
+     * 
+     * @return true, if re-start of the logger process was successfull, false otherwise
+     */
     public boolean resumeLogging() {
         if(this.isActive) {
             this.running = true;
@@ -195,6 +230,12 @@ public class TeamCommLogger implements Runnable, TeamCommListener {
         return false;
     }
 
+    /**
+     * Stops the logging process.
+     * The log file is fully written and closed.
+     * 
+     * @return true, if stopping of the logger process was successfull, false otherwise
+     */
     public boolean stopLogging() {
         Plugin.teamcommManager.removeListener(this);
         boolean result = this.pauseLogging();
@@ -209,5 +250,14 @@ public class TeamCommLogger implements Runnable, TeamCommListener {
         }
         this.isActive = false;
         return result;
+    }
+    
+    /**
+     * Returns the pending messages, which should be written to the log file.
+     * 
+     * @return number of pending messages
+     */
+    public int pendingLogQueueSize() {
+        return logQueue.size();
     }
 }

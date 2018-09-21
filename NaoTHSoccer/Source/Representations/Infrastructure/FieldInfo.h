@@ -48,6 +48,9 @@ public:
 
   //////////////// basic values from configuration ////////////////
   double ballRadius;
+  // Rolling resistance / rolling friction coefficient
+  double ballRRCoefficient;
+  double ballDeceleration; // mm/s^2
 
   // size of the whole field (including the green area outside the lines) 
   double xFieldLength;

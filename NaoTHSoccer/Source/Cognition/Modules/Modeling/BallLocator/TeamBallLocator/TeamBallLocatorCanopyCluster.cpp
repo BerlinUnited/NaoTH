@@ -23,7 +23,7 @@ void TeamBallLocatorCanopyCluster::execute() {
         const TeamMessageData& msg = i.second;
 
         // check if the robot is able to play
-        bool isRobotInactive = msg.fallen || msg.custom.isPenalized;
+        bool isRobotInactive = msg.fallen || msg.custom.robotState == PlayerInfo::penalized;
 
         // TODO: check for "DEAD" robots!? (see CleanRoleDecision)
 
@@ -31,7 +31,7 @@ void TeamBallLocatorCanopyCluster::execute() {
         if(isRobotInactive) { continue; }
 
         // ballage + network delay
-        double ballAge = msg.ballAge + static_cast<double>(getTeamMessageTimeStatistics().getPlayersTimeInMilliSeconds(playerNumber) - msg.custom.timestamp);
+        double ballAge = msg.ballAge + static_cast<double>(getTeamMessageNTP().getTimeInMilliSeconds(playerNumber) - msg.custom.timestamp);
 
         // -1 means "ball never seen", ballAge (incl. network delay) should be small
         if(msg.ballAge >= 0 && ballAge <= params.maxBallAge)

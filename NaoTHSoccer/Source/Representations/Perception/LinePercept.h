@@ -239,6 +239,28 @@ public:
   virtual ~LinePerceptTop() {}
 };
 
+class RansacCirclePercept
+{
+public:
+  bool middleCircleWasSeen;
+  Vector2d middleCircleCenter;
+
+  /* reset percept */
+  void reset()
+  {
+    middleCircleWasSeen = false;
+    middleCircleCenter.x = 0.0;
+    middleCircleCenter.y = 0.0;
+  }//end reset
+
+  RansacCirclePercept()
+  {
+    reset();
+  }
+
+  ~RansacCirclePercept() {}
+};
+
 namespace naoth
 {
   template<>

@@ -26,6 +26,7 @@ void BatteryAlert::execute()
     getSoundPlayData().mute = false;
     getSoundPlayData().soundFile = "battery_low.wav";
   } 
+  // HACK: we assume that getSoundPlayData() was not changed by any other module
   else if (getSoundPlayData().soundFile == "battery_low.wav")
   {
     getSoundPlayData().mute = true;

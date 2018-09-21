@@ -23,12 +23,15 @@ if [ -f "./deploy/home/nao/bin/libnaosmal.so" ]; then
 fi
 
 # backup the stuff from the robot
+echo "backup the stuff on the robot"
 rm -rf ./backup
 sudo -u nao mkdir ./backup
 sudo -u nao cp -r /home/nao/naoqi/Config ./backup
-sudo -u nao cp -r /home/nao/bin ./backup
+sudo -u nao cp -rv /home/nao/bin ./backup
+
 
 # remove files that will be copied and copy the new ones
+echo "clean and copy new files"
 if [ -d "./deploy/home/nao/naoqi/Config" ]; then
   rm -rf /home/nao/Config/general
   rm -rf /home/nao/Config/platform
@@ -66,6 +69,12 @@ if [ -f "./deploy/home/nao/bin/naoth" ]; then
 fi
 
 naoth start
+
+# wait until the binary is started so we can collect its output
+sleep 4
+
+# collect the last 1024 lines of the output
+tail -n 1024 /var/log/messages > ./braindump.txt
 
 echo "DONE"
 

@@ -19,6 +19,7 @@ import de.naoth.rc.drawings.DrawingsContainer;
 import de.naoth.rc.drawings.FieldDrawingS3D2011;
 import de.naoth.rc.drawings.FieldDrawingSPL2012;
 import de.naoth.rc.drawings.FieldDrawingSPL2013;
+import de.naoth.rc.drawings.FieldDrawingNaoTHLabor;
 import de.naoth.rc.drawings.FieldDrawingSPL2013BlackWhite;
 import de.naoth.rc.drawings.LocalFieldDrawing;
 import de.naoth.rc.drawings.RadarDrawing;
@@ -48,6 +49,7 @@ import de.naoth.rc.messages.FrameworkRepresentations.RobotInfo;
 import de.naoth.rc.messages.Messages.PlotItem;
 import de.naoth.rc.messages.Messages.Plots;
 import de.naoth.rc.messages.Representations;
+import de.naoth.rc.messages.TeamMessageOuterClass;
 import de.naoth.rc.messages.TeamMessageOuterClass.TeamMessage;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -141,6 +143,7 @@ public class FieldViewer extends AbstractDialog implements ActionListener
             new FieldDrawingSPL2013(),
             new FieldDrawingSPL2012(),
             new FieldDrawingS3D2011(),
+            new FieldDrawingNaoTHLabor(),
             new FieldDrawingSPL3x4(),
             new LocalFieldDrawing(),
             new RadarDrawing(),
@@ -605,7 +608,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
                         
                        SPLMessage splMsg = SPLMessage.parseFrom(robotMsg);
                        
-                       if(!splMsg.user.getIsPenalized()) {
+                       if((splMsg.user.hasIsPenalized() && !splMsg.user.getIsPenalized()) || (splMsg.user.hasRobotState() && splMsg.user.getRobotState() != TeamMessageOuterClass.RobotState.penalized)) {
                             boolean isOwnMsg = false;
                             if(ownBodyID.isPresent())
                             {

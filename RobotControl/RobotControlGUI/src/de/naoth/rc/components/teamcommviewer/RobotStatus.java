@@ -99,10 +99,10 @@ public class RobotStatus {
     private final BooleanProperty wasStriker = new SimpleBooleanProperty(false);
     public BooleanProperty wasStrikerProperty() { return wasStriker; }
     public boolean getWasStriker() { return wasStriker.get(); }
-    
-    private final BooleanProperty isPenalized = new SimpleBooleanProperty(false);
-    public BooleanProperty isPenalizedProperty() { return isPenalized; }
-    public boolean getIsPenalized() { return isPenalized.get(); }
+
+    private final StringProperty robotState = new SimpleStringProperty("");
+    public StringProperty robotStateProperty() { return robotState; }
+    public String getRobotState() { return robotState.get(); }
     
     private final BooleanProperty whistleDetected = new SimpleBooleanProperty(false);
     public BooleanProperty whistleDetectedProperty() { return whistleDetected; }
@@ -213,7 +213,11 @@ public class RobotStatus {
             this.timeToBall.set(msg.user.getTimeToBall());
             this.wantsToBeStriker.set(msg.user.getWantsToBeStriker());
             this.wasStriker.set(msg.user.getWasStriker());
-            this.isPenalized.set(msg.user.getIsPenalized());
+            if(msg.user.hasIsPenalized()) {
+                this.robotState.set(msg.user.getIsPenalized()?"penalized":"playing");
+            } else {
+                this.robotState.set(msg.user.getRobotState().name());
+            }
 //            this.whistleDetected = msg.user.getWhistleDetected(); // used in another branch!
             this.teamBall.set(new Vector2D(msg.user.getTeamBall().getX(), msg.user.getTeamBall().getY()));
         } else if(msg.doberHeader != null) {
@@ -224,7 +228,7 @@ public class RobotStatus {
             this.wantsToBeStriker.set(false);
             this.wasStriker.set(false);
 
-            this.isPenalized.set(msg.doberHeader.isPenalized > 0);
+            this.robotState.set(msg.doberHeader.isPenalized > 0?"penalized":"playing");
             this.whistleDetected.set(msg.doberHeader.whistleDetected > 0);
             this.teamBall.set(new Vector2D(Double.POSITIVE_INFINITY,Double.POSITIVE_INFINITY));
         } else {
@@ -234,7 +238,7 @@ public class RobotStatus {
             this.timeToBall.set(-1);
             this.wantsToBeStriker.set(false);
             this.wasStriker.set(false);
-            this.isPenalized.set(false);
+            this.robotState.set("unknown");
             this.whistleDetected.set(false);
             this.teamBall.set(new Vector2D(Double.POSITIVE_INFINITY,Double.POSITIVE_INFINITY));
         }
