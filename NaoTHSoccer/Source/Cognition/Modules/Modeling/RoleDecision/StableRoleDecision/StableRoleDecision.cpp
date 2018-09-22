@@ -42,7 +42,7 @@ void StableRoleDecision::execute()
     unsigned int robotNumber = i.first;
     const TeamMessageData& msg = i.second;
 
-    if (msg.playerNumber != getPlayerInfo().playerNumber && getTeamMessagePlayersState().isDead(robotNumber)) {
+    if (msg.playerNumber != getPlayerInfo().playerNumber && !getTeamMessagePlayersState().isActive(robotNumber)) {
       continue;
     }
 

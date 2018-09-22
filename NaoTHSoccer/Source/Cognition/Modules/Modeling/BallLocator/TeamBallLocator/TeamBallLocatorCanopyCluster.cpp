@@ -22,13 +22,8 @@ void TeamBallLocatorCanopyCluster::execute() {
         unsigned int playerNumber = i.first;
         const TeamMessageData& msg = i.second;
 
-        // check if the robot is able to play
-        bool isRobotInactive = msg.fallen || msg.custom.robotState == PlayerInfo::penalized;
-
-        // TODO: check for "DEAD" robots!? (see CleanRoleDecision)
-
-        // inactive robots
-        if(isRobotInactive) { continue; }
+        // check if the robot is able to play (inactive robots)
+        if(msg.fallen || !getTeamMessagePlayersState().isActive(playerNumber)) { continue; }
 
         // ballage + network delay
         double ballAge = msg.ballAge + static_cast<double>(getTeamMessageNTP().getTimeInMilliSeconds(playerNumber) - msg.custom.timestamp);
