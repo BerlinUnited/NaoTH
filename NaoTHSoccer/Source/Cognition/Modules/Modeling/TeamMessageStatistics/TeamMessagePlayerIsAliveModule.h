@@ -44,6 +44,7 @@ public:
      * @see messageIndicator(), messageLastReceived(), messageSimple()
      */
     virtual void execute() {
+        // Dead or Alive
         switch (params.calculationMethod) {
             case 0:
                 // determine 'dead' status based on last msg received
@@ -58,6 +59,8 @@ public:
                 calc(&TeamMessagePlayerIsAliveModule::messageSimple);
                 break;
         }
+        // Active
+        determineActiveStates();
     }
 
 private:
@@ -110,6 +113,18 @@ private:
     bool messageSimple(const TeamMessageData& data) const {
         // HACK: prevent 'unused-parameter' warning
         return &data == &data;
+    }
+
+    /**
+     * @brief Determines the 'active' state of the players.
+     *        A player is 'active', if he's alive, playing on the field and not penalized
+     *        (or in an other state other than 'playing').
+     */
+    void determineActiveStates() {
+        for(const auto& it : getTeamMessage().data) {
+            getTeamMessagePlayerIsAlive().active[it.first] = it.second.custom.robotState == PlayerInfo::playing
+                                                          && getTeamMessagePlayerIsAlive().isAlive(it.first);
+        }
     }
 
     /** The parameter struct holding the parameters. */

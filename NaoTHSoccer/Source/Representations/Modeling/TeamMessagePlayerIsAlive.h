@@ -2,6 +2,7 @@
 #define TEAMMESSAGEPLAYERISALIVE_H
 
 #include <map>
+#include <algorithm>
 
 #include "Tools/NaoTime.h"
 #include "Tools/DataStructures/Printable.h"
@@ -15,27 +16,25 @@ public:
     std::map<unsigned int, bool> data;
 
     /**
+     * Collection for storing the 'active' state of each player (is playing on the field).
+     * A player can be alive, but not active, eg. when he's penalized.
+     */
+    std::map<unsigned int, bool> active;
+
+    /**
      * @brief Returns the number of alive robots.
      * @return number of alive robots
      */
-    unsigned int getAliveCount() const {
-        unsigned int count = 0;
-        for(const auto& it : data) {
-            count += it.second;
-        }
-        return count;
+    long getAliveCount() const {
+        return std::count_if(data.cbegin(), data.cend(), [](const std::pair<unsigned int, bool>& it){ return it.second; });
     }
 
     /**
      * @brief Returns the number of 'dead' robots.
      * @return number of 'dead' robots
      */
-    unsigned int getDeadCount() const {
-        unsigned int count = 0;
-        for(const auto& it : data) {
-            count += !it.second;
-        }
-        return count;
+    long getDeadCount() const {
+        return std::count_if(data.cbegin(), data.cend(), [](const std::pair<unsigned int, bool>& it){ return !it.second; });
     }
 
     /**
@@ -65,11 +64,27 @@ public:
     }
 
     /**
-     * @brief Returns the 'ALIVE' status of a given player number.
-     * @param player_number the player number to check
-     * @return true, if player is 'ALIVE', false otherwise
+     * @brief Returns the number of active robots (playing on the field).
+     *        A player can be alive, but not active, eg. when he's penalized.
+     * @return number of active robots
      */
-    bool operator [](unsigned int player_number) const {
+    long getActiveCount() const {
+        return std::count_if(active.cbegin(), active.cend(), [](const std::pair<unsigned int, bool>& it){ return it.second; });
+    }
+
+    /**
+     * @brief Returns the 'ACTIVE' status of a given player number.
+     *        If the player number wasn't found in the active map, the 'alive' state is
+     *        returned instead - the active state wasn't calculated, but the player could
+     *        be still alive.
+     * @param player_number the player number to check
+     * @return true, if player is 'ACTIVE', false otherwise
+     */
+    bool inline isActive(unsigned int player_number) const {
+        const auto& player = active.find(player_number);
+        if(player != active.cend()) {
+            return player->second;
+        }
         return isAlive(player_number);
     }
 
@@ -85,7 +100,10 @@ public:
         } else {
             // iterate through players and print data
             for (const auto& it : data) {
-                stream << "\t Robot #" << it.first << ": " << (it.second?"true":"false") << "\n";
+                stream << "\t Robot #" << it.first << ": "
+                       << (it.second?"true":"false")
+                       << " & " << (isActive(it.first)?"active":"inactive")
+                       << "\n";
             }
         }
     }

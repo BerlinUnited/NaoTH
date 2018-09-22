@@ -39,6 +39,7 @@ public:
 private:
   static TeamSymbols* theInstance;
   static double getTeamMembersAliveCount();
+  static double getTeamMembersActiveCount();
   static bool calculateIfStriker();
   static bool calculateIfSecondStriker();
   static bool getWasStriker();
