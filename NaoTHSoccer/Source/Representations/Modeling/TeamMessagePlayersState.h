@@ -1,5 +1,5 @@
-#ifndef TEAMMESSAGEPLAYERISALIVE_H
-#define TEAMMESSAGEPLAYERISALIVE_H
+#ifndef TEAMMESSAGEPLAYERSSTATE_H
+#define TEAMMESSAGEPLAYERSSTATE_H
 
 #include <map>
 #include <algorithm>
@@ -9,11 +9,11 @@
 
 using namespace naoth;
 
-class TeamMessagePlayerIsAlive : public naoth::Printable
+class TeamMessagePlayersState : public naoth::Printable
 {
 public:
     /** Collection for storing the 'dead/alive' status of each player */
-    std::map<unsigned int, bool> data;
+    std::map<unsigned int, bool> alive;
 
     /**
      * Collection for storing the 'active' state of each player (is playing on the field).
@@ -26,7 +26,7 @@ public:
      * @return number of alive robots
      */
     long getAliveCount() const {
-        return std::count_if(data.cbegin(), data.cend(), [](const std::pair<unsigned int, bool>& it){ return it.second; });
+        return std::count_if(alive.cbegin(), alive.cend(), [](const std::pair<unsigned int, bool>& it){ return it.second; });
     }
 
     /**
@@ -34,7 +34,7 @@ public:
      * @return number of 'dead' robots
      */
     long getDeadCount() const {
-        return std::count_if(data.cbegin(), data.cend(), [](const std::pair<unsigned int, bool>& it){ return !it.second; });
+        return std::count_if(alive.cbegin(), alive.cend(), [](const std::pair<unsigned int, bool>& it){ return !it.second; });
     }
 
     /**
@@ -43,8 +43,8 @@ public:
      * @return true, if player is 'ALIVE', false otherwise
      */
     bool inline isAlive(unsigned int player_number) const {
-        const auto& player = data.find(player_number);
-        if(player != data.cend()) {
+        const auto& player = alive.find(player_number);
+        if(player != alive.cend()) {
             return player->second;
         }
         return false;
@@ -56,8 +56,8 @@ public:
      * @return true, if player is 'DEAD', false otherwise
      */
     bool inline isDead(unsigned int player_number) const {
-        const auto& player = data.find(player_number);
-        if(player != data.cend()) {
+        const auto& player = alive.find(player_number);
+        if(player != alive.cend()) {
             return !player->second;
         }
         return true;
@@ -94,14 +94,14 @@ public:
      */
     virtual void print(std::ostream& stream) const
     {
-        stream << "TeamMessagePlayerIsAlive ("<<data.size()<<"):\n";
-        if(data.empty()) {
+        stream << "TeamMessagePlayersState ("<<alive.size()<<"):\n";
+        if(alive.empty()) {
             stream << "\t[NONE]\n";
         } else {
             // iterate through players and print data
-            for (const auto& it : data) {
+            for (const auto& it : alive) {
                 stream << "\t Robot #" << it.first << ": "
-                       << (it.second?"true":"false")
+                       << (it.second?"alive":"dead")
                        << " & " << (isActive(it.first)?"active":"inactive")
                        << "\n";
             }
@@ -109,4 +109,4 @@ public:
     }
 };
 
-#endif // TEAMMESSAGEPLAYERISALIVE_H
+#endif // TEAMMESSAGEPLAYERSSTATE_H

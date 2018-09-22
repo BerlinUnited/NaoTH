@@ -6,34 +6,34 @@
 #include "Tools/Debug/DebugParameterList.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Modeling/TeamMessage.h"
-#include "Representations/Modeling/TeamMessagePlayerIsAlive.h"
+#include "Representations/Modeling/TeamMessagePlayersState.h"
 #include "Representations/Modeling/TeamMessageStatistics.h"
 
 
-BEGIN_DECLARE_MODULE(TeamMessagePlayerIsAliveModule)
+BEGIN_DECLARE_MODULE(TeamMessagePlayersStateModule)
   REQUIRE(TeamMessage)
   REQUIRE(FrameInfo)
   REQUIRE(TeamMessageStatistics)
 
   PROVIDE(DebugParameterList)
-  PROVIDE(TeamMessagePlayerIsAlive)
-END_DECLARE_MODULE(TeamMessagePlayerIsAliveModule)
+  PROVIDE(TeamMessagePlayersState)
+END_DECLARE_MODULE(TeamMessagePlayersStateModule)
 
 
-class TeamMessagePlayerIsAliveModule : public TeamMessagePlayerIsAliveModuleBase
+class TeamMessagePlayersStateModule : public TeamMessagePlayersStateModuleBase
 {
 public:
     /**
      * @brief Constructor, registers the paramters for this module.
      */
-    TeamMessagePlayerIsAliveModule() {
+    TeamMessagePlayersStateModule() {
         getDebugParameterList().add(&params);
     }
 
     /**
      * @brief Destructor, unregisters the paramters for this module.
      */
-    virtual ~TeamMessagePlayerIsAliveModule() {
+    virtual ~TeamMessagePlayersStateModule() {
         getDebugParameterList().remove(&params);
     }
 
@@ -48,15 +48,15 @@ public:
         switch (params.calculationMethod) {
             case 0:
                 // determine 'dead' status based on last msg received
-                calc(&TeamMessagePlayerIsAliveModule::messageLastReceived);
+                calc(&TeamMessagePlayersStateModule::messageLastReceived);
                 break;
             case 1:
                 // calc based on msg indicator
-                calc(&TeamMessagePlayerIsAliveModule::messageIndicator);
+                calc(&TeamMessagePlayersStateModule::messageIndicator);
                 break;
             default:
                 // if we got a message, the robot isn't 'dead'
-                calc(&TeamMessagePlayerIsAliveModule::messageSimple);
+                calc(&TeamMessagePlayersStateModule::messageSimple);
                 break;
         }
         // Active
@@ -67,9 +67,9 @@ private:
     /**
      * @brief Determines the 'dead/alive' status for each player we received a message from.
      */
-    void calc(bool (TeamMessagePlayerIsAliveModule::*func)(const TeamMessageData&) const) {
+    void calc(bool (TeamMessagePlayersStateModule::*func)(const TeamMessageData&) const) {
         for(const auto& it : getTeamMessage().data) {
-            getTeamMessagePlayerIsAlive().data[it.first] = (this->*func)(it.second);
+            getTeamMessagePlayersState().alive[it.first] = (this->*func)(it.second);
         }
     }
 
@@ -122,8 +122,8 @@ private:
      */
     void determineActiveStates() {
         for(const auto& it : getTeamMessage().data) {
-            getTeamMessagePlayerIsAlive().active[it.first] = it.second.custom.robotState == PlayerInfo::playing
-                                                          && getTeamMessagePlayerIsAlive().isAlive(it.first);
+            getTeamMessagePlayersState().active[it.first] = it.second.custom.robotState == PlayerInfo::playing
+                                                          && getTeamMessagePlayersState().isAlive(it.first);
         }
     }
 

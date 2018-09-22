@@ -13,10 +13,10 @@
 
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/RoleDecisionModel.h"
-#include "Representations/Modeling/TeamMessagePlayerIsAlive.h"
+#include "Representations/Modeling/TeamMessagePlayersState.h"
 
 BEGIN_DECLARE_MODULE(TeamSymbols)
-  REQUIRE(TeamMessagePlayerIsAlive)
+  REQUIRE(TeamMessagePlayersState)
   PROVIDE(PlayerInfo)
   PROVIDE(RoleDecisionModel)
 END_DECLARE_MODULE(TeamSymbols)

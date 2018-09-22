@@ -56,7 +56,7 @@ void CleanRoleDecision::computeStrikers()
                 || (msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) > parameters.maxBallLostTime + loose_ball_bonus); //Ball isn't fresh
 
         // ignore "DEAD" and inactive robots
-        if(robotNumber != getPlayerInfo().playerNumber && (getTeamMessagePlayerIsAlive().isDead(robotNumber) || isRobotInactive)) { continue; }
+        if(robotNumber != getPlayerInfo().playerNumber && (getTeamMessagePlayersState().isDead(robotNumber) || isRobotInactive)) { continue; }
 
         // for all active robots, which sees the ball AND previously announced to want to be striker OR is striker ...
         if (msg.custom.wantsToBeStriker || msg.custom.wasStriker) {

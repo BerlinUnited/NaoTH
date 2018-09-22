@@ -20,12 +20,12 @@ void TeamSymbols::registerSymbols(xabsl::Engine& engine)
 
 double TeamSymbols::getTeamMembersAliveCount()
 {
-  return (double) theInstance->getTeamMessagePlayerIsAlive().getAliveCount();
+  return (double) theInstance->getTeamMessagePlayersState().getAliveCount();
 }//end getTeamMembersAliveCount
 
 double TeamSymbols::getTeamMembersActiveCount()
 {
-  return (double) theInstance->getTeamMessagePlayerIsAlive().getActiveCount();
+  return (double) theInstance->getTeamMessagePlayersState().getActiveCount();
 }//end getTeamMembersActiveCount
 
 bool TeamSymbols::getWasStriker()
