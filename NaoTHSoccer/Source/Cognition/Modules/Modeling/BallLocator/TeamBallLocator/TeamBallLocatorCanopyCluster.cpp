@@ -23,7 +23,7 @@ void TeamBallLocatorCanopyCluster::execute() {
         const TeamMessageData& msg = i.second;
 
         // check if the robot is able to play (inactive robots)
-        if(msg.fallen || !getTeamMessagePlayersState().isActive(playerNumber)) { continue; }
+        if(!getTeamMessagePlayersState().isPlaying(playerNumber)) { continue; }
 
         // ballage + network delay
         double ballAge = msg.ballAge + static_cast<double>(getTeamMessageNTP().getTimeInMilliSeconds(playerNumber) - msg.custom.timestamp);

@@ -31,7 +31,7 @@ void TeamBallLocatorMedian::execute()
       const TeamMessageData& msg = it.second;
 
       // check if the robot is able to play (inactive robots)
-      if(msg.fallen || !getTeamMessagePlayersState().isActive(playerNumber)) { continue; }
+      if(!getTeamMessagePlayersState().isPlaying(playerNumber)) { continue; }
       
       // -1 means "ball never seen" and only "new" messages
       if(msg.ballAge >= 0 && lastMessages[playerNumber] < msg.frameInfo.getTime())

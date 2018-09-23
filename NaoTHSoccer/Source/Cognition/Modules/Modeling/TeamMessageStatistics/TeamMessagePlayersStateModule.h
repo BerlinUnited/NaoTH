@@ -61,6 +61,8 @@ public:
         }
         // Active
         determineActiveStates();
+        // is playing?
+        determinePlayingStates();
     }
 
 private:
@@ -69,7 +71,7 @@ private:
      */
     void calc(bool (TeamMessagePlayersStateModule::*func)(const TeamMessageData&) const) {
         for(const auto& it : getTeamMessage().data) {
-            getTeamMessagePlayersState().alive[it.first] = (this->*func)(it.second);
+            getTeamMessagePlayersState().data[it.first].alive = (this->*func)(it.second);
         }
     }
 
@@ -122,8 +124,19 @@ private:
      */
     void determineActiveStates() {
         for(const auto& it : getTeamMessage().data) {
-            getTeamMessagePlayersState().active[it.first] = it.second.custom.robotState == PlayerInfo::playing
+            getTeamMessagePlayersState().data[it.first].active = it.second.custom.robotState == PlayerInfo::playing
                                                           && getTeamMessagePlayersState().isAlive(it.first);
+        }
+    }
+
+    /**
+     * @brief Determines the 'playing' state of the players.
+     *        A player is currently 'playing', if he's not fallen.
+     *        There could be other indicators, like de-localised robots.
+     */
+    void determinePlayingStates() {
+        for(const auto& it : getTeamMessage().data) {
+            getTeamMessagePlayersState().data[it.first].playing = it.second.fallen;
         }
     }
 
