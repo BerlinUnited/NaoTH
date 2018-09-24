@@ -129,7 +129,7 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
         DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_jump_horizontal",
           LINE_PX(ColorClasses::red, maximumPeak.prev_point, y, maximumPeak.point, y);
         );
-        if(refine_horizontal(maximumPeak, y)) {
+        if(refine_horizontal(maximumPeak, y) && !getBodyContour().isOccupied(maximumPeak.point,y)) {
           add_edgel(maximumPeak.point, y);
           begin_found = true;
         }
@@ -142,7 +142,7 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
         DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_jump_horizontal",
           LINE_PX(ColorClasses::yellow, minimumPeak.prev_point, y, minimumPeak.point, y);
         );
-        if(refine_horizontal(minimumPeak, y)) {
+        if(refine_horizontal(minimumPeak, y) && !getBodyContour().isOccupied(minimumPeak.point,y)) {
           add_edgel(minimumPeak.point, y);
           // found a new double edgel
           if(begin_found) {
