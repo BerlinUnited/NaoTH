@@ -59,7 +59,7 @@ class GoPro(threading.Thread):
                         # take "keep alive" photo;
                         if self.take_photo_when_idle > 0 and self.take_photo_timestamp + self.take_photo_when_idle < time.time():
                             self.takePhoto()
-                        # notify listeners on the sd card status
+                        # update sd-card status on the blackboard
                         if previous_state['card'] == True and self.cam_status['sd_card'] == False:
                             blackboard['gopro']['state'] = 3 # GoproNoSdcard
                         elif previous_state['card'] == False and self.cam_status['sd_card'] == True:

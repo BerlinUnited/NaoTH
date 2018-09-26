@@ -91,19 +91,3 @@ class GameLoggerSql(threading.Thread):
         con.execute("CREATE TABLE IF NOT EXISTS event (timestmap INTEGER, game_id INTEGER, type VARCHAR(20), time INTEGER, extra TEXT, PRIMARY KEY (timestmap, game_id, type), FOREIGN KEY (game_id) REFERENCES game (id) ON DELETE CASCADE ON UPDATE NO ACTION);")
         con.commit()
         con.close()
-
-    '''
-    def receivedGC(self, evt:Event.GameControllerMessage):
-        """ Is called, when a new GameController message was received. """
-        self.messages.put_nowait((time.time(), evt.message))
-
-    def timeoutGC(self, evt:Event.GameControllerTimedout):
-        """ Is called, when a new GameController times out. """
-        pass
-
-    def stoppedGopro(self, evt:Event.GoproStopRecording):
-        """ Is called, when the gopro stops recording. """
-        if evt.file is not None and len(evt.file) > 0 and self.last_id > 0:
-            # only if a 'valid' file is provided
-            self.messages.put_nowait((time.time(), (self.last_id, evt.file)))
-    '''
