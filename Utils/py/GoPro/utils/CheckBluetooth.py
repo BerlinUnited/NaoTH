@@ -1,4 +1,3 @@
-import threading
 import time
 
 from utils.Bluetooth import Bluetooth

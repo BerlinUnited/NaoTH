@@ -1,29 +1,26 @@
 import threading
 
-from utils import Event, GameController
+from utils import GameController, blackboard
 
 
 class CheckGameController:
-    def __init__(self, loopControl:threading.Event):
-        Event.registerListener(self)
-
+    def __init__(self):
         gameController = GameController()
         gameController.start()
 
-        try:
-            loopControl.wait()
-        except (KeyboardInterrupt, SystemExit):
-            loopControl.set()
+        packet = -1
+        while True:
+            try:
+                gc = blackboard['gamecontroller']
+                if gc is not None and packet != gc.packetNumber:
+                    print(gc)
+                    # check if one team is 'invisible'
+                    if any([t.teamNumber == 0 for t in gc.team]):
+                        print("-- INVISIBLES are playing! --\n")
+                    print('Team left:', gc.team[0].teamNumber, 'Team right:', gc.team[1].teamNumber)
+                    packet = gc.packetNumber
+            except (KeyboardInterrupt, SystemExit):
+                break
 
         gameController.cancel()
         gameController.join()
-
-
-    def receivedGC(self, evt:Event.GameControllerMessage):
-        """ Is called, when a new GameController message was received. """
-        gc_data = evt.message
-        print(gc_data)
-        # check if one team is 'invisible'
-        if any([t.teamNumber == 0 for t in gc_data.team]):
-            print("-- INVISIBLES are playing! --\n")
-        print('Team left:', gc_data.team[0].teamNumber, 'Team right:', gc_data.team[1].teamNumber)

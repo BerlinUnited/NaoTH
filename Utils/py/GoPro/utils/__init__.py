@@ -1,4 +1,5 @@
 from . import Logger
+from .Blackboard import blackboard
 from .Network import Network
 from .GameController import GameController
 from .GameControlData import GameControlData

@@ -16,7 +16,7 @@ import importlib
 import importlib.util
 
 from utils import Logger, Daemonize, Network, GoPro, GameController, GameLoggerSql, GameLoggerLog, LedStatusMonitor, \
-    CheckGameController, rename, CheckBluetooth
+    CheckGameController, rename, CheckBluetooth, blackboard
 
 
 def parseArguments():
@@ -51,7 +51,6 @@ def parseArguments():
     rename.add_argument('videos', nargs=1 if use_rename else '?', help='Path to the video files, which should be renamed.')
     rename.add_argument('logs', nargs=1 if use_rename else '?', help='Path to the log files, on which the video files should be renamed too.')
 
-
     return parser.parse_args()
 
 def check_mac_address(mac):
@@ -61,6 +60,12 @@ def check_mac_address(mac):
     return mac
 
 def main():
+    """
+    The main part of this program.
+    All necessary threads are started and monitored.
+    :return:
+    """
+    # remember the modification timestamp of the config; if the config gets changed, we can realod it!
     config_timestamp = 0 if not args.config else os.stat(importlib.util.find_spec("config").origin).st_mtime
 
     led = LedStatusMonitor()
@@ -86,9 +91,11 @@ def main():
     network = Network(args.device, args.ssid, args.passwd, args.retries, args.mac)
     network.start()
 
+    # monitor threads and config
     threads = [ led, gopro, gameLogger, gameController, network ]
     try:
         while True:
+            #print(blackboard)
             # if config was loaded from file and file was modified since last checked
             if args.config and config_timestamp != os.stat(importlib.util.find_spec("config").origin).st_mtime:
                 config_timestamp = os.stat(importlib.util.find_spec("config").origin).st_mtime
@@ -112,6 +119,7 @@ def main():
                         Logger.error("Thread %s is not running (anymore)!", str(t.__class__.__name__))
     except (KeyboardInterrupt, SystemExit):
         print("Shutting down ...")
+
     # cancel threads
     led.cancel()
     gopro.cancel()
@@ -120,44 +128,35 @@ def main():
     network.cancel()
     # wait for finished threads
     led.join()
-    #Logger.debug("Joined led thread")
     gopro.join()
-    #Logger.debug("Joined gopro thread")
     gameLogger.join()
-    #Logger.debug("Joined gameLogger thread")
     gameController.join()
-    #Logger.debug("Joined gameController thread")
     network.join()
-    #Logger.debug("Joined network thread")
 
     print("Bye")
 
+
 if __name__ == '__main__':
+    # this program is developed for the raspberry pi, so only linux is supported
     if not sys.platform.startswith('linux'):
         sys.stderr.write("Only linux based systems are currently supported!")
         exit(1)
-
-    # define vars
-    tempdir = tempfile.gettempdir()
-    name = 'pyGoPro'  # os.path.basename(sys.argv[0])
-    # check for existing lock file and running process
-    lock_file = os.path.join(tempdir, name + '.lock')
 
     # args = { 'device': 'wifi0', 'ssid': 'NAOCAM', 'password':'a1b0a1b0a1' }
     args = parseArguments()
 
     Logger.setupLogger(args.quiet, args.verbose, args.syslog)
 
+    # call different functions based on the arguments
     if args.check_gc:
-        loopControl = threading.Event()
-        CheckGameController(loopControl)
+        CheckGameController()
     elif args.check_bt != False:
         CheckBluetooth(args.check_bt if args.check_bt else 'D6:B9:D4:D7:B7:40')
     elif args.rename:
         rename(args.videos[0], args.logs[0])
     else:
-        # use config for network setup
         if args.config:
+            # use config for network setup
             try:
                 import config
                 args.ssid = config.ssid
@@ -169,5 +168,9 @@ if __name__ == '__main__':
                 Logger.error("No config available OR invalid config!")
                 exit(2)
 
+        # name and lock file for this program
+        name = 'pyGoPro'
+        lock_file = os.path.join(tempfile.gettempdir(), name + '.lock')
+        # start the actual 'main' program
         daemon = Daemonize(app=name, pid=lock_file, action=main, logger=Logger.logger, foreground=not args.background, chdir='.')
         daemon.start()
