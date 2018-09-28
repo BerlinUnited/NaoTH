@@ -66,7 +66,7 @@ void CleanRoleDecision::computeStrikers()
 
     // get my own message
     auto ownMessage = getTeamMessage().data.at(getPlayerInfo().playerNumber);
-    // i want to be striker, if i'm not the goalie and i'm "active" (not fallen/panelized, see the ball)!!!
+    // i want to be striker, if i'm not the goalie and i'm "active" (not fallen/penalized, see the ball)!!!
     getRoleDecisionModel().wantsToBeStriker = ownMessage.playerNumber != 1
                                               && getTeamMessagePlayersState().isPlaying(getPlayerInfo().playerNumber)
                                               && !(ownMessage.ballAge < 0
