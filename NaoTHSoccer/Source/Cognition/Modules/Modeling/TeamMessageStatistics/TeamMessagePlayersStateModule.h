@@ -136,7 +136,7 @@ private:
      */
     void determinePlayingStates() {
         for(const auto& it : getTeamMessage().data) {
-            getTeamMessagePlayersState().data[it.first].playing = it.second.fallen;
+            getTeamMessagePlayersState().data[it.first].playing = !it.second.fallen;
         }
     }
 

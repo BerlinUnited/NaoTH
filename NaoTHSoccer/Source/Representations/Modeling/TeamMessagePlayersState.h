@@ -28,7 +28,7 @@ public:
      * @return number of alive robots
      */
     long getAliveCount() const {
-        return std::count_if(data.cbegin(), data.cend(), [](const std::pair<unsigned int, Player>& it){ return it.second.active; });
+        return std::count_if(data.cbegin(), data.cend(), [](const std::pair<unsigned int, Player>& it){ return it.second.alive; });
     }
 
     /**
@@ -37,7 +37,7 @@ public:
      * @return number of 'dead' robots
      */
     long getDeadCount() const {
-        return std::count_if(data.cbegin(), data.cend(), [](const std::pair<unsigned int, Player>& it){ return !it.second.active; });
+        return std::count_if(data.cbegin(), data.cend(), [](const std::pair<unsigned int, Player>& it){ return !it.second.alive; });
     }
 
     /**
@@ -73,7 +73,7 @@ public:
      * @return number of active robots
      */
     long getActiveCount() const {
-        return std::count_if(data.cbegin(), data.cend(), [](const std::pair<unsigned int, Player>& it){ return it.second.active; });
+        return std::count_if(data.cbegin(), data.cend(), [](const std::pair<unsigned int, Player>& it){ return isActiveInternal(it.second); });
     }
 
     /**
@@ -85,7 +85,7 @@ public:
     bool inline isActive(unsigned int player_number) const {
         const auto& player = data.find(player_number);
         if(player != data.cend()) {
-            return player->second.alive && player->second.active;
+            return isActiveInternal(player->second);
         }
         return false;
     }
