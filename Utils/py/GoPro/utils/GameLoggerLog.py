@@ -25,6 +25,7 @@ class GameLoggerLog(threading.Thread):
 
         self.state = {'t1': None, 't2': None, 'h': None, 'v': None}
         self.last_file = None
+        self.added_video = False
 
         self.extension = '.log'
         self.separator = ', '
@@ -46,7 +47,12 @@ class GameLoggerLog(threading.Thread):
             if self.last_file is not None:
                 # got a videofile, add it to the game
                 logger.debug("new video file: " + gopro['lastVideo'])
-                self.last_file.write(json.dumps(gopro['lastVideo']) + self.separator)
+                # if there was already a video written to the log file, add seperator first
+                if self.added_video: self.last_file.write(self.separator)
+                # remember, that a video was already added
+                else: self.added_video = True
+                # write the video name to the log file
+                self.last_file.write(json.dumps(gopro['lastVideo']))
                 self.last_file.flush()
                 self.state['v'] = gopro['lastVideo']
             else:
@@ -102,6 +108,7 @@ class GameLoggerLog(threading.Thread):
             self.last_file.close()
             logger.debug("closed log file: " + self.last_file.name)
             self.last_file = None
+            self.added_video = False
 
     def cancel(self):
         self.__cancel.set()
