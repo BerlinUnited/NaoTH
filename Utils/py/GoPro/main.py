@@ -145,7 +145,8 @@ if __name__ == '__main__':
     # args = { 'device': 'wifi0', 'ssid': 'NAOCAM', 'password':'a1b0a1b0a1' }
     args = parseArguments()
 
-    Logger.setupLogger(args.quiet, args.verbose, args.syslog)
+    log_directory = os.path.join(os.path.dirname(__file__), 'logs/')
+    Logger.setupLogger(args.quiet, args.verbose, args.syslog, log_directory)
 
     # call different functions based on the arguments
     if args.check_gc:
