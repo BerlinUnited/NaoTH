@@ -44,7 +44,7 @@ public:
   {
     stream << "timeCollisionArmLeft = " << timeCollisionArmLeft << '\n';
     stream << "timeCollisionArmRight = " << timeCollisionArmRight << '\n';
-    stream << "referenceHull:" << "\n";
+    stream << "referenceHull: Currently only Left joint!" << "\n";
     for (size_t i = 0; i < referenceHull.size(); i++){
       stream << "x= " << referenceHull[i].getX() << " y = " << referenceHull[i].getY() << "\n";
     }

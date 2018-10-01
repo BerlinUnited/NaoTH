@@ -25,11 +25,8 @@
 #include "SensorFilter/InertiaSensorFilter.h"
 #include "SensorFilter/IMUModel.h"
 #include "SensorFilter/ArmCollisionDetector.h"
-<<<<<<< HEAD
 #include "SensorFilter/ArmCollisionDetector2018.h"
-=======
 #include "SensorFilter/CoPProvider.h"
->>>>>>> develop
 
 //#include <Representations/Modeling/CameraMatrixOffset.h>
 
@@ -186,13 +183,9 @@ private:
   ModuleCreator<KinematicChainProviderMotion>* theKinematicChainProvider;
   ModuleCreator<IMUModel>* theIMUModel;
   ModuleCreator<ArmCollisionDetector>* theArmCollisionDetector;
-<<<<<<< HEAD
   ModuleCreator<ArmCollisionDetector2018>* theArmCollisionDetector2018;
-  
-=======
+   
   ModuleCreator<CoPProvider>* theCoPProvider;
-
->>>>>>> develop
 
   ModuleCreator<MotionEngine>* theMotionEngine;
 
