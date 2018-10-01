@@ -11,7 +11,6 @@ lh = logging.StreamHandler()
 sh = None
 fh = None
 logger = logging.getLogger(LOGGER_NAME)
-__children__ = []
 
 def setupLogger(quiet:bool = False, verbose:bool = False, syslog:bool = False, directory:str = None):
     lh.setFormatter(LogFormatter())
@@ -26,8 +25,6 @@ def setupLogger(quiet:bool = False, verbose:bool = False, syslog:bool = False, d
         sh = logging.handlers.SysLogHandler(address='/dev/log')
         sh.setFormatter(logging.Formatter('GoPro:'+LOGGER_FMT))
         logger.addHandler(sh)
-        # add the syslog handler to all child loggers
-        for c in __children__: __addHandler(c, sh)
 
     if directory and os.path.isdir(directory):
         # log to files by day and only warning and above
@@ -35,8 +32,6 @@ def setupLogger(quiet:bool = False, verbose:bool = False, syslog:bool = False, d
         fh.setLevel(logging.WARNING)
         fh.setFormatter(LogFormatter(True))
         logger.addHandler(fh)
-        # add the file handler to all child loggers
-        for c in __children__: __addHandler(c, fh)
 
 def __addHandler(l:logging.Logger, h:logging.Handler):
     # check before adding handler
@@ -44,16 +39,7 @@ def __addHandler(l:logging.Logger, h:logging.Handler):
         l.addHandler(h)
 
 def getLogger(name):
-    l = logger.getChild(name) #logging.getLogger(name)
-    # add handlers
-    l.addHandler(lh)
-    if sh: l.addHandler(sh)
-    if fh: l.addHandler(fh)
-    # dont propagate to parent
-    l.propagate = False
-    # remember children
-    __children__.append(l)
-
+    l = logger.getChild(name)
     return l
 
 class LogFormatter(logging.Formatter):

@@ -173,5 +173,5 @@ if __name__ == '__main__':
         name = 'pyGoPro'
         lock_file = os.path.join(tempfile.gettempdir(), name + '.lock')
         # start the actual 'main' program
-        daemon = Daemonize(app=name, pid=lock_file, action=main, logger=Logger.logger, foreground=not args.background, chdir='.')
+        daemon = Daemonize(app=name, pid=lock_file, action=main, logger=Logger.logger, foreground=not args.background, chdir='.', auto_close_fds=False)
         daemon.start()
