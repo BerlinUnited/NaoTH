@@ -27,7 +27,7 @@ class GameLoggerLog(threading.Thread):
         self.last_file = None
 
         self.extension = '.log'
-        self.separator = '; '
+        self.separator = ', '
         self.raspi_name = socket.gethostname()
         self.gopro_info = 'Unknown'
 
@@ -69,7 +69,7 @@ class GameLoggerLog(threading.Thread):
                     # replace whitespaces with underscore
                     t1 = self.__get_team(gc_data.team[0].teamNumber)
                     t2 = self.__get_team(gc_data.team[1].teamNumber)
-                    t = t1 + '_' + t2 if gc_data.firstHalf else t2 + '_' + t1
+                    t = t1 + '_vs_' + t2 if gc_data.firstHalf else t2 + '_vs_' + t1
                     h = '1stHalf' if gc_data.firstHalf else '2ndHalf'
                     # open new game file
                     file = self.folder + "_".join([time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime()), t, h, self.raspi_name]) + self.extension
@@ -95,7 +95,10 @@ class GameLoggerLog(threading.Thread):
 
     def __closeLog(self):
         if self.last_file is not None:
-            self.last_file.write('], "info": ' + json.dumps(blackboard['gopro']['info']) + ' }\n')
+            self.last_file.write('], "info": '
+                                 + json.dumps(blackboard['gopro']['info'])
+                                 + ', "gopro_time": "' + blackboard['gopro']['datetime'] + '"'
+                                 + ' }\n')
             self.last_file.close()
             logger.debug("closed log file: " + self.last_file.name)
             self.last_file = None

@@ -21,13 +21,13 @@ class GoPro(threading.Thread):
         self.take_photo_timestamp = 0
 
         self.cam = None
-        self.cam_status = { 'recording': False, 'mode': None, 'lastVideo': None, 'sd_card': False, 'info': {} }
+        self.cam_status = { 'recording': False, 'mode': None, 'lastVideo': None, 'sd_card': False, 'info': {}, 'datetime': None }
         self.cam_settings = {}
         self.user_settings = {}
         self.gc_data = GameControlData()
 
         # init blackboard structure
-        blackboard['gopro'] = { 'state': 0, 'info': None, 'lastVideo': None }
+        blackboard['gopro'] = { 'state': 0, 'info': None, 'lastVideo': None, 'datetime': None }
 
         self.is_connected = False
         self.__cancel = threading.Event()
@@ -90,6 +90,7 @@ class GoPro(threading.Thread):
                 self.cam_status['info'] = self.cam.infoCamera()
                 blackboard['gopro']['state'] = 2 # GoproConnected
                 blackboard['gopro']['info'] = self.cam_status['info']
+                blackboard['gopro']['datetime'] = self.cam_status['datetime']
                 # set GoPro to video mode
                 self.setCamVideoMode()
                 self.__updateUserSettings()
@@ -117,6 +118,8 @@ class GoPro(threading.Thread):
                 self.cam_status['recording'] = (js[constants.Status.Status][constants.Status.STATUS.IsRecording] == 1)
                 self.cam_status['sd_card'] = (js[constants.Status.Status][constants.Status.STATUS.SdCardInserted] == 0)
                 self.cam_status['lastVideo'] = self.cam.getMedia()
+                # parse and format datetime data
+                self.cam_status['datetime'] =  "{2:02.0f}.{1:02.0f}.{0}, {3:02.0f}:{4:02.0f}:{5:02.0f}".format(*map(lambda h: int(h,16),filter(None, js[constants.Status.Status]['40'].split('%'))))
                 # update video settings
                 for var, val in vars(constants.Video).items():
                     if not var.startswith("_") and not inspect.isclass(val) and val in js[constants.Status.Settings]:
@@ -191,6 +194,7 @@ class GoPro(threading.Thread):
         self.__updateUserSettings()
         logger.debug("Start recording")
         blackboard['gopro']['state'] = 4 # GoproStartRecording
+        blackboard['gopro']['datetime'] = self.cam_status['datetime']
         self.cam.shutter(constants.start)
         time.sleep(1)  # wait for the command to be executed
 
@@ -202,6 +206,7 @@ class GoPro(threading.Thread):
         time.sleep(1)  # wait for the command to be executed
         blackboard['gopro']['lastVideo'] = self.cam_status['lastVideo']
         blackboard['gopro']['state'] = 2 # GoproStopRecording
+        blackboard['gopro']['datetime'] = self.cam_status['datetime']
 
     def cancel(self):
         self.__cancel.set()
