@@ -5,7 +5,7 @@
     Using the 'GoPro API for Python' to communicate with the GoPro:
     https://github.com/KonradIT/gopro-py-api
 '''
-
+import re
 import sys
 import os
 import tempfile
@@ -15,7 +15,8 @@ import time
 import importlib
 import importlib.util
 
-from utils import Logger, Daemonize, Network, GoPro, GameController, GameLoggerSql, GameLoggerLog, LedStatusMonitor, CheckGameController, rename
+from utils import Logger, Daemonize, Network, GoPro, GameController, GameLoggerSql, GameLoggerLog, LedStatusMonitor, \
+    CheckGameController, rename, CheckBluetooth, blackboard
 
 
 def parseArguments():
@@ -42,22 +43,35 @@ def parseArguments():
     parser.add_argument('-m', '--max-time', action='store', type=int, default=600, help='How many seconds should be continued to record, after playing time expired and "finished" state wasn\'t set. (precaution to prevent endless recording!; default: 600s)')
     parser.add_argument('-i', '--ignore', action='store_true', help='Ignores the "max time" option - possible infinity recording, if "finished" state isn\'t set.')
     parser.add_argument('-gc', '--check-gc', action='store_true', help='Tries to listen to GameController and print its state (for debugging).')
+    parser.add_argument('-li', '--log-invisible', action='store_true', help='Whether the games with invisibles should be logged.')
+    parser.add_argument('-bt', '--check-bt', action='store', nargs='?', type=check_mac_address, default=False, metavar='mac address', help='Tests the bluetooth functionality. If the mac address is not set, a default one is used.')
     use_rename = any([ o in sys.argv for o in ['-n', '--rename'] ])
     rename = parser.add_argument_group()
     rename.add_argument('-n', '--rename', action='store_true', help='Renames the video files based on the given entries in the log files.')
     rename.add_argument('videos', nargs=1 if use_rename else '?', help='Path to the video files, which should be renamed.')
     rename.add_argument('logs', nargs=1 if use_rename else '?', help='Path to the log files, on which the video files should be renamed too.')
 
-
     return parser.parse_args()
 
+def check_mac_address(mac):
+    if not re.match("[0-9a-f]{2}([-:]?)[0-9a-f]{2}(\\1[0-9a-f]{2}){4}$", mac.lower()):
+        raise argparse.ArgumentTypeError('Not a valid mac address!')
+
+    return mac
+
 def main():
+    """
+    The main part of this program.
+    All necessary threads are started and monitored.
+    :return:
+    """
+    # remember the modification timestamp of the config; if the config gets changed, we can realod it!
     config_timestamp = 0 if not args.config else os.stat(importlib.util.find_spec("config").origin).st_mtime
 
     led = LedStatusMonitor()
     led.start()
 
-    gopro = GoPro(args.background or args.quiet, args.ignore, args.max_time)
+    gopro = GoPro(args.background or args.quiet, args.ignore, args.max_time, args.log_invisible)
     if args.config:
         gopro.setUserSettings({
             'FRAME_RATE': config.fps if 'fps' in vars(config) else None,
@@ -68,7 +82,7 @@ def main():
 
     teams = config.teams if args.config and  'teams' in vars(config) else None
     #gameLogger = GameLoggerSql(os.path.join(os.path.dirname(__file__), 'logs/game.db'), teams)
-    gameLogger = GameLoggerLog(os.path.join(os.path.dirname(__file__), 'logs/'), teams)
+    gameLogger = GameLoggerLog(os.path.join(os.path.dirname(__file__), 'logs/'), teams, args.log_invisible)
     gameLogger.start()
 
     gameController = GameController()
@@ -77,9 +91,11 @@ def main():
     network = Network(args.device, args.ssid, args.passwd, args.retries, args.mac)
     network.start()
 
+    # monitor threads and config
     threads = [ led, gopro, gameLogger, gameController, network ]
     try:
         while True:
+            #print(blackboard)
             # if config was loaded from file and file was modified since last checked
             if args.config and config_timestamp != os.stat(importlib.util.find_spec("config").origin).st_mtime:
                 config_timestamp = os.stat(importlib.util.find_spec("config").origin).st_mtime
@@ -103,6 +119,7 @@ def main():
                         Logger.error("Thread %s is not running (anymore)!", str(t.__class__.__name__))
     except (KeyboardInterrupt, SystemExit):
         print("Shutting down ...")
+
     # cancel threads
     led.cancel()
     gopro.cancel()
@@ -118,30 +135,29 @@ def main():
 
     print("Bye")
 
+
 if __name__ == '__main__':
+    # this program is developed for the raspberry pi, so only linux is supported
     if not sys.platform.startswith('linux'):
         sys.stderr.write("Only linux based systems are currently supported!")
         exit(1)
 
-    # define vars
-    tempdir = tempfile.gettempdir()
-    name = 'pyGoPro'  # os.path.basename(sys.argv[0])
-    # check for existing lock file and running process
-    lock_file = os.path.join(tempdir, name + '.lock')
-
     # args = { 'device': 'wifi0', 'ssid': 'NAOCAM', 'password':'a1b0a1b0a1' }
     args = parseArguments()
 
-    Logger.setupLogger(args.quiet, args.verbose, args.syslog)
+    log_directory = os.path.join(os.path.dirname(__file__), 'logs/')
+    Logger.setupLogger(args.quiet, args.verbose, args.syslog, log_directory)
 
+    # call different functions based on the arguments
     if args.check_gc:
-        loopControl = threading.Event()
-        CheckGameController(loopControl)
+        CheckGameController()
+    elif args.check_bt != False:
+        CheckBluetooth(args.check_bt if args.check_bt else 'D6:B9:D4:D7:B7:40')
     elif args.rename:
         rename(args.videos[0], args.logs[0])
     else:
-        # use config for network setup
         if args.config:
+            # use config for network setup
             try:
                 import config
                 args.ssid = config.ssid
@@ -153,5 +169,9 @@ if __name__ == '__main__':
                 Logger.error("No config available OR invalid config!")
                 exit(2)
 
-        daemon = Daemonize(app=name, pid=lock_file, action=main, logger=Logger.logger, foreground=not args.background, chdir='.')
+        # name and lock file for this program
+        name = 'pyGoPro'
+        lock_file = os.path.join(tempfile.gettempdir(), name + '.lock')
+        # start the actual 'main' program
+        daemon = Daemonize(app=name, pid=lock_file, action=main, logger=Logger.logger, foreground=not args.background, chdir='.', auto_close_fds=False)
         daemon.start()
