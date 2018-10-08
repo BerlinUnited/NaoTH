@@ -1,0 +1,70 @@
+/**
+ * The opponent has a free kick! :(
+ * We have to move out of the 0.75m circle around the ball, otherwise we get penalized.
+ * But we can build a 'wall' in front of the ball, outside the circle!
+ */
+option positioning_for_opp_freekick
+{
+  float @distance [mm];
+  
+  initial state check_player_number
+  {
+    decision{
+      if(game.player_number == 1)
+        goto opp_freekick_position_goalie;
+      // move away from the ball and from the players position, who's responsible for the free kick
+      else if( (ball.know_where_itis && vector.abs(x=(ball.preview.x - @distance - ball.radius), y=ball.preview.y) < 100) 
+          || ((team.free_kick_pos.x != 0 || team.free_kick_pos.y != 0) && vector.abs(x=(team.free_kick_pos.x - @distance - ball.radius), y=team.free_kick_pos.y) < 100) )
+        goto goto_def_freekick_position;
+      // NOTE: there could be a state/option for blocking direct goal kicks of the opponent
+      else
+        goto arrived;
+    }
+    action {
+      // TODO: should here be something different?
+      head.control_mode = look_around;
+      motion.type = stand;
+    }
+  }
+
+  state opp_freekick_position_goalie
+  {
+    decision {
+      if(action_done)
+        goto arrived;
+      else
+        stay;
+    }
+    action {
+      // currently no blocking is tried
+      go_to_point_with_USOA(x=field.xPosOwnGroundline + 200, y=0,rot=0);
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state goto_def_freekick_position
+  {
+    decision {
+      if( (ball.know_where_itis && vector.abs(x=(ball.preview.x - @distance - ball.radius), y=ball.preview.y) >= 100) 
+        || ((team.free_kick_pos.x != 0 || team.free_kick_pos.y != 0) && vector.abs(x=(team.free_kick_pos.x - @distance - ball.radius), y=team.free_kick_pos.y) >= 100) )
+        goto arrived;
+      else
+        stay;
+    }
+    action
+    {
+      go_to_point_with_USOA(
+        x= (ball.preview.x - @distance - ball.radius) > (team.free_kick_pos.x - @distance - ball.radius) ? (ball.preview.x - @distance - ball.radius) : (team.free_kick_pos.x - @distance - ball.radius),
+        y= ball.preview.y > team.free_kick_pos.y ? ball.preview.y : team.free_kick_pos.y,
+        rot=atan2(y=ball.preview.y, x=ball.preview.x));
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  target state arrived {
+    action {
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+}

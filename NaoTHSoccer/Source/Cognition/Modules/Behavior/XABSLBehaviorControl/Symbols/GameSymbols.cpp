@@ -26,6 +26,7 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
 
   engine.registerDecimalInputSymbol("game.player_number", &getPlayerNumber);
   engine.registerDecimalInputSymbol("game.msecsRemaining", &getMsecsRemaining);
+  engine.registerDecimalInputSymbol("game.msecsRemainingSecondary", &getMsecsRemainingSecondary);
   engine.registerBooleanInputSymbol("game.own_kickoff", &getOwnKickOff);
 
   // HACK: is only true when the game state plaing was set by the game controller
@@ -62,6 +63,10 @@ double GameSymbols::getPlayerNumber() {
 
 double GameSymbols::getMsecsRemaining() {
   return theInstance->getGameData().secsRemaining*1000.0;
+}
+
+double GameSymbols::getMsecsRemainingSecondary() {
+  return theInstance->getGameData().secondaryTime*1000.0;
 }
 
 int GameSymbols::getGameState() {

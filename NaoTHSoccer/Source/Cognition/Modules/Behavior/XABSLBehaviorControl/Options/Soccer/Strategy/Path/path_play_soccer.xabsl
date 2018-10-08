@@ -162,7 +162,7 @@ option path_play_soccer
       else if (game.current_mode != playing)
         goto idle;
       else if (game.set_play != none && !game.own_kickoff)
-        goto free_kick;
+        goto opponent_free_kick;
       else 
         stay;
     }
@@ -173,22 +173,19 @@ option path_play_soccer
     }
   }
 
-  state free_kick
+  state opponent_free_kick
   {
     decision
     {
-      else if (game.current_mode != playing)
-        goto idle;
-      else if (game.set_play == none)
+      else if (action_done && game.set_play == none)
         goto play;
-      else 
+      else
         stay;
     }
     action 
     {
       last_state_was_penalized = false; // important!!!
-      head.control_mode = search_for_ball;
-      motion.type = stand;
+      free_kick();
     }
   }
 

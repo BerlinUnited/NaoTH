@@ -1,0 +1,145 @@
+option free_kick
+{
+  /*initial state decide_role
+  {
+    decision
+    {
+      if(game.own_kickoff)
+        //goto own_kickoff;
+        stay;
+      else
+        goto opponent_kickoff;
+    }
+    action
+    {
+    }
+  }
+
+  state own_kickoff
+  {
+    decision 
+    {
+      if (state_time >= 20000)
+        goto approach_ball;
+      else
+        stay;
+    }
+    action 
+    {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state approach_ball
+  {
+    decision
+    {
+      if (action_done)
+        goto kick_ball;
+      else
+        stay;
+    }
+    action
+    {
+      path_go_to_ball_with_foot_dynamic(right=true, distance=190);
+    }
+  }
+
+  state kick_ball
+  {
+    decision
+    {
+      if(action_done)
+        goto done;
+      else
+        stay;
+    }
+    action
+    {
+       path_short_kick(foot = right);
+    }
+
+  }*/
+
+  initial state decide
+  {
+    decision
+    {
+      if (ball.know_where_itis && ball.preview.x < 1000)
+        goto flee_backwards;
+      else if (ball.know_where_itis)
+        goto done;
+      else
+        goto check_my_position;
+    }
+    action
+    {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state flee_backwards
+  {
+    decision
+    {
+      if (ball.preview.x >= 1000)
+        goto done;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+       
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+      motion.walk_speed.x = -100.0;
+      motion.walk_speed.y = 0.0;
+      motion.walk_speed.rot = 0.0;
+    }
+  }
+
+  state check_my_position
+  {
+    decision {
+      if(vector.abs(x=team.free_kick_pos.x, y=team.free_kick_pos.y) < 1000)
+        goto flee_from_penalized_teammate;
+      else
+        goto done;
+    }
+    action {
+    }
+  }
+
+  state flee_from_penalized_teammate
+  {
+    decision
+    {
+      if(vector.abs(x=team.free_kick_pos.x, y=team.free_kick_pos.y) >= 1000)
+        goto done;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+       
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+      motion.walk_speed.x = -1 * team.free_kick_pos.x;
+      motion.walk_speed.y = -1 * team.free_kick_pos.y;
+      motion.walk_speed.rot = 0.0;
+
+    }
+  }
+
+  target state done
+  {
+    action
+    {
+      motion.type = stand;
+    }
+  }
+}
