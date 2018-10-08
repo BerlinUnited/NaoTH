@@ -2,7 +2,9 @@
 #define FREEKICKMODULE_H
 
 #include "ModuleFramework/Module.h"
-
+#include "Representations/Infrastructure/GameData.h"
+#include "Representations/Modeling/PlayerInfo.h"
+#include "Representations/Modeling/TeamMessage.h"
 
 BEGIN_DECLARE_MODULE(FreeKickModule)
   //PROVIDE(DebugModify)
@@ -11,9 +13,10 @@ BEGIN_DECLARE_MODULE(FreeKickModule)
   //PROVIDE(DebugParameterList)
 
   //REQUIRE(FrameInfo)
-  //REQUIRE(TeamMessage)
+  REQUIRE(GameData)
+  REQUIRE(PlayerInfo)
   //REQUIRE(RobotPose)
-  //REQUIRE(TeamMessageNTP)
+  REQUIRE(TeamMessage)
   //REQUIRE(TeamMessagePlayersState)
 
   //PROVIDE(TeamBallModel)
@@ -27,6 +30,9 @@ public:
     ~FreeKickModule() {}
 
     virtual void execute();
+
+private:
+    GameData::SetPlay lastSetPlay = GameData::set_none;
 };
 
 #endif // FREEKICKMODULE_H
