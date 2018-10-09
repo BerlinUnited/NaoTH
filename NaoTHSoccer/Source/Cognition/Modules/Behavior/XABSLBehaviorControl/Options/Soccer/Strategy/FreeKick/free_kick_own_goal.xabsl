@@ -1,0 +1,136 @@
+/** If the ball goes out of the baseline by an opponent, the ball is placed back on a corner of the penalty box. */
+
+option free_kick_own_goal
+{
+  common decision {
+    // wait until secondary time is 1s before going back to normal play
+    if(game.msecsRemainingSecondary <= 1)
+      goto done;
+  }
+
+  initial state decide {
+    decision
+    {
+      // TODO: what should be done, if the goalie is penalized or otherwise unable to play?
+      else if (game.player_number == 1) {
+        if(ball.know_where_itis) {
+          goto goalie_position_for_free_kick;
+        } else {
+          goto goalie_look_at_left_corner;
+        }
+      } else {
+        if(ball.know_where_itis) {
+          goto player_turn_to_ball;
+        } else {
+          goto player_search_for_ball;
+        }
+      }
+    }
+    action
+    {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state goalie_position_for_free_kick {
+    decision
+    {
+      // TODO: as long as position is not reached, stay
+      else if (ball.preview.x <= 100)
+        goto wait_for_time;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+       
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+      motion.walk_speed.x = -100.0;
+      motion.walk_speed.y = 0.0;
+      motion.walk_speed.rot = 0.0;
+    }
+  }
+
+  state goalie_look_at_left_corner {
+    decision {
+      else if(ball.know_where_itis) {
+        goto goalie_position_for_free_kick;
+      } else if(state_time >= 5000) {
+        goto goalie_look_at_right_corner;
+      } else {
+        stay;
+      }
+    }
+    action {
+      motion.type = stand;
+      //head.control_mode = look_at_ball;
+
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = field.xPosOwnPenaltyArea;
+      head.point_in_world.y = field.yPosLeftPenaltyArea;
+      head.point_in_world.z = ball.radius; // radius of the ball
+    }
+  }
+
+  state goalie_look_at_right_corner {
+    decision {
+      else if(ball.know_where_itis) {
+        goto goalie_position_for_free_kick;
+      } else if(state_time >= 5000) {
+        goto goalie_search_for_ball;
+      } else {
+        stay;
+      }
+    }
+    action {
+      motion.type = stand;
+      //head.control_mode = look_at_ball;
+
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = field.xPosOwnPenaltyArea;
+      head.point_in_world.y = field.yPosRightPenaltyArea;
+      head.point_in_world.z = ball.radius; // radius of the ball
+    }
+  }
+
+  state goalie_search_for_ball {
+    decision {
+      // TODO: what should we do if the goalie doesn't find the ball after a certain time?
+      else if(ball.know_where_itis) {
+        goto goalie_position_for_free_kick;
+      } else if(state_time >= 5000) {
+        goto goalie_look_at_left_corner;
+      } else {
+        stay;
+      }
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = search_for_ball_goalie;
+    }
+  }
+
+  state wait_for_time {
+    decision {
+      else {
+        stay;
+      }
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = look_at_ball;
+    }
+  }
+
+  /** we're done with positioning and waiting for time is up. */
+  target state done
+  {
+    action
+    {
+      motion.type = stand;
+    }
+  }
+}

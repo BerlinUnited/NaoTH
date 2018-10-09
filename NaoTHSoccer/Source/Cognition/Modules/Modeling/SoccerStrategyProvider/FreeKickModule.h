@@ -25,6 +25,10 @@ END_DECLARE_MODULE(FreeKickModule)
 
 class FreeKickModule : public FreeKickModuleBase
 {
+private:
+    GameData::SetPlay lastSetPlay = GameData::set_none;
+    std::map<unsigned int, GameData::Penalty> penalties;
+
 public:
     FreeKickModule() {}
     ~FreeKickModule() {}
@@ -32,7 +36,7 @@ public:
     virtual void execute();
 
 private:
-    GameData::SetPlay lastSetPlay = GameData::set_none;
+    Vector2d getByLastKnownPose();
 };
 
 #endif // FREEKICKMODULE_H

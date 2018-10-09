@@ -1,0 +1,6 @@
+/** If the ball goes out of the baseline by us, the ball is placed back on a corner of the opponent's penalty box. */
+
+option free_kick_opp_goal
+{
+
+}
