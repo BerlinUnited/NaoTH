@@ -8,12 +8,16 @@ GameController::GameController()
   lastWhistleCount(0),
   lastGameState(GameData::GameState::unknown_game_state)
 {
-  DEBUG_REQUEST_REGISTER("gamecontroller:play", "force the play state", false);
-  DEBUG_REQUEST_REGISTER("gamecontroller:penalized", "force the penalized state", false);
-  DEBUG_REQUEST_REGISTER("gamecontroller:initial", "force the initial state", false);
-  DEBUG_REQUEST_REGISTER("gamecontroller:ready", "force the ready state", false);
-  DEBUG_REQUEST_REGISTER("gamecontroller:set", "force the set state", false);
-  DEBUG_REQUEST_REGISTER("gamecontroller:finished", "force the finished state", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:game_state:play", "force the play state", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:game_state:penalized", "force the penalized state", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:game_state:initial", "force the initial state", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:game_state:ready", "force the ready state", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:game_state:set", "force the set state", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:game_state:finished", "force the finished state", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:none", "force the setPlay state to none", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:goal_free_kick", "force the setPlay state to goal free kick", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:pushing_free_kick", "force the setPlay state to pushing free kick", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:kickoff", "forcs the kickoff to be ours", false);
   DEBUG_REQUEST_REGISTER("whistle:blow", "the robot recognizes a whistle", false);
 
   // TODO: make it parameters?
@@ -132,23 +136,40 @@ void GameController::handleDebugRequest()
 {
   PlayerInfo::RobotState debugState = getPlayerInfo().robotState;
 
-  DEBUG_REQUEST("gamecontroller:initial",
+  // DebugRequests for the game state
+  DEBUG_REQUEST("gamecontroller:game_state:initial",
     debugState = PlayerInfo::initial;
   );
-  DEBUG_REQUEST("gamecontroller:ready",
+  DEBUG_REQUEST("gamecontroller:game_state:ready",
     debugState = PlayerInfo::ready;
   );
-  DEBUG_REQUEST("gamecontroller:set",
+  DEBUG_REQUEST("gamecontroller:game_state:set",
     debugState = PlayerInfo::set;
   );
-  DEBUG_REQUEST("gamecontroller:play",
+  DEBUG_REQUEST("gamecontroller:game_state:play",
     debugState = PlayerInfo::playing;
   );
-  DEBUG_REQUEST("gamecontroller:penalized",
+  DEBUG_REQUEST("gamecontroller:game_state:penalized",
     debugState = PlayerInfo::penalized;
   );
-  DEBUG_REQUEST("gamecontroller:finished",
+  DEBUG_REQUEST("gamecontroller:game_state:finished",
     debugState = PlayerInfo::finished;
+  );
+
+  // DebugRequests for the set play state (free kicks)
+  DEBUG_REQUEST("gamecontroller:set_play:none",
+    getPlayerInfo().robotSetPlay = PlayerInfo::set_none;
+  );
+  DEBUG_REQUEST("gamecontroller:set_play:goal_free_kick",
+    getPlayerInfo().robotSetPlay = PlayerInfo::goal_free_kick;
+  );
+  DEBUG_REQUEST("gamecontroller:set_play:pushing_free_kick",
+    getPlayerInfo().robotSetPlay = PlayerInfo::pushing_free_kick;
+  );
+
+  // DebugRequests for the kickoff state
+  DEBUG_REQUEST("gamecontroller:kickoff",
+    getPlayerInfo().kickoff = true;
   );
 
   DEBUG_REQUEST("whistle:blow",

@@ -74,5 +74,5 @@ int GameSymbols::getGameState() {
 }
 
 int GameSymbols::getSetPlay() {
-  return theInstance->getGameData().setPlay;
+  return theInstance->getPlayerInfo().robotSetPlay;
 }
