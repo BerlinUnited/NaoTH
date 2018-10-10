@@ -2,17 +2,11 @@
 
 option free_kick_own_goal
 {
-  common decision {
-    // wait until secondary time is 1s before going back to normal play
-    if(game.msecsRemainingSecondary <= 1)
-      goto done;
-  }
-
   initial state decide {
     decision
     {
       // TODO: what should be done, if the goalie is penalized or otherwise unable to play?
-      else if (game.player_number == 1) {
+      if (game.player_number == 1) {
         if(ball.know_where_itis) {
           goto goalie_position_for_free_kick;
         } else {
@@ -36,11 +30,14 @@ option free_kick_own_goal
   state goalie_position_for_free_kick {
     decision
     {
-      // TODO: as long as position is not reached, stay
-      else if (ball.preview.x <= 100)
-        goto wait_for_time;
-      else
+      if(!ball.know_where_itis) {
+        goto goalie_search_for_ball;
+      } else if (ball.preview.x <= 100) {
+        // TODO: as long as position is not reached, stay
+        goto done;
+      } else {
         stay;
+      }
     }
     action
     {
@@ -56,7 +53,7 @@ option free_kick_own_goal
 
   state goalie_look_at_left_corner {
     decision {
-      else if(ball.know_where_itis) {
+      if(ball.know_where_itis) {
         goto goalie_position_for_free_kick;
       } else if(state_time >= 5000) {
         goto goalie_look_at_right_corner;
@@ -66,18 +63,18 @@ option free_kick_own_goal
     }
     action {
       motion.type = stand;
-      //head.control_mode = look_at_ball;
-
+      // TODO: needs the goalie to turn his body to look at the corner?
+      head.control_mode = none;
       head.motion_type = look_at_world_point;
-      head.point_in_world.x = field.xPosOwnPenaltyArea;
-      head.point_in_world.y = field.yPosLeftPenaltyArea;
+      head.point_in_world.x = locator.field_to_relative.x(x=field.xPosOwnPenaltyArea, y=field.yPosLeftPenaltyArea);
+      head.point_in_world.y = locator.field_to_relative.y(x=field.xPosOwnPenaltyArea, y=field.yPosLeftPenaltyArea);
       head.point_in_world.z = ball.radius; // radius of the ball
     }
   }
 
   state goalie_look_at_right_corner {
     decision {
-      else if(ball.know_where_itis) {
+      if(ball.know_where_itis) {
         goto goalie_position_for_free_kick;
       } else if(state_time >= 5000) {
         goto goalie_search_for_ball;
@@ -87,11 +84,12 @@ option free_kick_own_goal
     }
     action {
       motion.type = stand;
-      //head.control_mode = look_at_ball;
+      // TODO: needs the goalie to turn his body to look at the corner?
+      head.control_mode = none;
 
       head.motion_type = look_at_world_point;
-      head.point_in_world.x = field.xPosOwnPenaltyArea;
-      head.point_in_world.y = field.yPosRightPenaltyArea;
+      head.point_in_world.x = locator.field_to_relative.x(x=field.xPosOwnPenaltyArea, y=field.yPosRightPenaltyArea);
+      head.point_in_world.y = locator.field_to_relative.y(x=field.xPosOwnPenaltyArea, y=field.yPosRightPenaltyArea);
       head.point_in_world.z = ball.radius; // radius of the ball
     }
   }
@@ -99,7 +97,7 @@ option free_kick_own_goal
   state goalie_search_for_ball {
     decision {
       // TODO: what should we do if the goalie doesn't find the ball after a certain time?
-      else if(ball.know_where_itis) {
+      if(ball.know_where_itis) {
         goto goalie_position_for_free_kick;
       } else if(state_time >= 5000) {
         goto goalie_look_at_left_corner;
@@ -113,21 +111,36 @@ option free_kick_own_goal
     }
   }
 
-  state wait_for_time {
+  state player_turn_to_ball {
     decision {
-      else {
-        stay;
-      }
+      // TODO: if the angle to too big, turn to face the ball directly
+      stay;
     }
     action {
-      motion.type = stand;
-      head.control_mode = look_at_ball;
+    
     }
   }
 
-  /** we're done with positioning and waiting for time is up. */
+  state player_search_for_ball {
+    decision {
+      // TODO: look at the penalty corners
+      stay;
+    }
+    action {
+      
+    }
+  }
+
+  // we're done with positioning and waiting for time is up.
   target state done
   {
+    decision {
+      if(!ball.know_where_itis) {
+        goto goalie_search_for_ball;
+      } else {
+        stay;
+      }
+    }
     action
     {
       motion.type = stand;

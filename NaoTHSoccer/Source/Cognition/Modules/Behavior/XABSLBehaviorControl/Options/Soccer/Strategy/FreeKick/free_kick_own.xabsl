@@ -1,6 +1,9 @@
 /** If a foul was called against an opponent player, we get a free kick. */
-
 option free_kick_own
 {
-
+  initial state decide {
+    action
+    {
+    }
+  }
 }

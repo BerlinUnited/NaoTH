@@ -2,5 +2,32 @@
 
 option free_kick_opp_goal
 {
+  initial state decide {
+    decision
+    {
+      // 
+      if (locator.distance_field_points(x1=robot_pose.x, y1=robot_pose.y, x2=field.xPosOppPenaltyArea, y2=field.yPosLeftPenaltyArea) < field.centerCircleRadius) {
+        // TODO: move away from left penalty corner
+        goto idle;
+      } else if (locator.distance_field_points(x1=robot_pose.x, y1=robot_pose.y, x2=field.xPosOppPenaltyArea, y2=field.yPosRightPenaltyArea) < field.centerCircleRadius) {
+        // TODO: move away from right penalty corner
+        goto idle;
+      } else {
+        // TODO: turn to opponents goal and try to find the ball
+        goto idle;
+      }
+    }
+    action
+    {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
 
+  state idle
+  {
+    action {
+    
+    }
+  }
 }

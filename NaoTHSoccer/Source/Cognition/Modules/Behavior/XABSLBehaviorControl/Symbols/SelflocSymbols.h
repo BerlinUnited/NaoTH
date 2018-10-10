@@ -86,7 +86,9 @@ private:
 
   static double getFieldToRelativeX();
   static double getFieldToRelativeY();
+  static double getDistanceBetweenFieldPoints();
   Vector2d parameterVector;
+  Vector2d parameterVector2;
 
   static SelflocSymbols* theInstance;
 

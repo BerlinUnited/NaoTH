@@ -46,7 +46,11 @@ include "Options/Skills/go_to_ball_with_foot_dynamic.xabsl";
 include "Options/Skills/go_to_ball_with_right_foot.xabsl";
 include "Options/Skills/go_to_ball_with_left_foot.xabsl";
 
-include "Options/Soccer/Strategy/free_kick.xabsl";
+//include "Options/Soccer/Strategy/free_kick.xabsl";
+include "Options/Soccer/Strategy/FreeKick/free_kick_opp.xabsl";
+include "Options/Soccer/Strategy/FreeKick/free_kick_opp_goal.xabsl";
+include "Options/Soccer/Strategy/FreeKick/free_kick_own.xabsl";
+include "Options/Soccer/Strategy/FreeKick/free_kick_own_goal.xabsl";
 
 //
 include "Options/Skills/sidekick.xabsl";
@@ -77,8 +81,8 @@ include "Options/Soccer/Strategy/decide_role.xabsl";
 include "Options/Soccer/Strategy/decide_and_go_to_ready_position.xabsl";
 include "Options/Soccer/Strategy/positioning_for_own_kickoff.xabsl";
 include "Options/Soccer/Strategy/positioning_for_opp_kickoff.xabsl";
-include "Options/Soccer/Strategy/positioning_for_own_freekick.xabsl";
-include "Options/Soccer/Strategy/positioning_for_opp_freekick.xabsl";
+//include "Options/Soccer/Strategy/positioning_for_own_freekick.xabsl";
+//include "Options/Soccer/Strategy/positioning_for_opp_freekick.xabsl";
 
 // Path
 include "Options/Soccer/path_spl_play_soccer.xabsl";

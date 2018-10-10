@@ -59,6 +59,13 @@ void SelflocSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbolDecimalParameter("locator.field_to_relative.y", "locator.field_to_relative.y.x", &parameterVector.x);
   engine.registerDecimalInputSymbolDecimalParameter("locator.field_to_relative.y", "locator.field_to_relative.y.y", &parameterVector.y);
 
+  // "distance_field_points"
+  engine.registerDecimalInputSymbol("locator.distance_field_points", &getDistanceBetweenFieldPoints);
+  engine.registerDecimalInputSymbolDecimalParameter("locator.distance_field_points", "locator.distance_field_points.x1", &parameterVector.x);
+  engine.registerDecimalInputSymbolDecimalParameter("locator.distance_field_points", "locator.distance_field_points.y1", &parameterVector.y);
+  engine.registerDecimalInputSymbolDecimalParameter("locator.distance_field_points", "locator.distance_field_points.x2", &parameterVector2.x);
+  engine.registerDecimalInputSymbolDecimalParameter("locator.distance_field_points", "locator.distance_field_points.y2", &parameterVector2.y);
+
   engine.registerDecimalInputSymbol("look_in_direction_factor",&look_in_direction_factor);
 
   DEBUG_REQUEST_REGISTER("XABSL:draw_selfloc_goal", "draw the position of the goals calculated using the selflocalization", false);
@@ -112,6 +119,11 @@ double SelflocSymbols::getFieldToRelativeX()
 double SelflocSymbols::getFieldToRelativeY()
 {
   return (theInstance->getRobotPose()/theInstance->parameterVector).y;
+}
+
+double SelflocSymbols::getDistanceBetweenFieldPoints()
+{
+  return (theInstance->parameterVector - theInstance->parameterVector2).abs();
 }
 
 

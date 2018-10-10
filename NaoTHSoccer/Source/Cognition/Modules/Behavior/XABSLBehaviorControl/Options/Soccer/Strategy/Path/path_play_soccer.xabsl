@@ -183,7 +183,7 @@ option path_play_soccer
   {
     decision
     {
-      else if (action_done && game.set_play == none)
+      else if (game.set_play != goal_free_kick)
         goto play;
       else
         stay;
@@ -197,7 +197,7 @@ option path_play_soccer
   {
     decision
     {
-      else if (action_done && game.set_play == none)
+      else if (game.set_play != goal_free_kick)
         goto play;
       else
         stay;
@@ -211,7 +211,7 @@ option path_play_soccer
   {
     decision
     {
-      else if (action_done && game.set_play == none)
+      else if (game.set_play != pushing_free_kick)
         goto play;
       else
         stay;
@@ -225,7 +225,7 @@ option path_play_soccer
   {
     decision
     {
-      else if (action_done && game.set_play == none)
+      else if (game.set_play != pushing_free_kick)
         goto play;
       else
         stay;
