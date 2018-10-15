@@ -35,18 +35,6 @@ namespace selfloc_symbols("Self-localization Symbols") {
     y [-3000..3000] "mm";
   );
 
-  /** Calculates the distance between two points on the field */
-  float input locator.distance_field_points "mm" (
-    /** The x position of the first point on the field */
-    x1 [-4500..4500] "mm";
-    /** The y position of the first point on the field */
-    y1 [-3000..3000] "mm";
-    /** The x position of the second point on the field */
-    x2 [-4500..4500] "mm";
-    /** The y position of the second point on the field */
-    y2 [-3000..3000] "mm";
-  );
-
   /** The robot's x-position from GPS*/
   float input gps.x [mm];
   /** The robot's y-position from GPS*/
