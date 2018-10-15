@@ -17,7 +17,13 @@ GameController::GameController()
   DEBUG_REQUEST_REGISTER("gamecontroller:set_play:none", "force the setPlay state to none", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:set_play:goal_free_kick", "force the setPlay state to goal free kick", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:set_play:pushing_free_kick", "force the setPlay state to pushing free kick", false);
-  DEBUG_REQUEST_REGISTER("gamecontroller:kickoff", "forcs the kickoff to be ours", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:kickoff", "forces the kickoff to be ours", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:secondaryTime:30", "sets the secondary time of the gamecontroller to 30s", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:secondaryTime:20", "sets the secondary time of the gamecontroller to 20s", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:secondaryTime:10", "sets the secondary time of the gamecontroller to 10s", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:secondaryTime:5", "sets the secondary time of the gamecontroller to 5s", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:secondaryTime:0", "sets the secondary time of the gamecontroller to 0s", false);
+
   DEBUG_REQUEST_REGISTER("whistle:blow", "the robot recognizes a whistle", false);
 
   // TODO: make it parameters?
@@ -97,7 +103,6 @@ void GameController::execute()
   handleHeadButtons();
   handleDebugRequest();  
 
-  
   // remember the whistle counter before and after set (ready/playing)
   if(getPlayerInfo().robotState == PlayerInfo::ready || (lastGameState == GameData::set && getGameData().gameState == GameData::playing)) {
     lastWhistleCount = getWhistlePercept().counter;
@@ -171,6 +176,13 @@ void GameController::handleDebugRequest()
   DEBUG_REQUEST("gamecontroller:kickoff",
     getPlayerInfo().kickoff = true;
   );
+
+  // DebugRequests for the secondary game time (eg. free kick)
+  DEBUG_REQUEST("gamecontroller:secondaryTime:30", getGameData().secondaryTime = 30;);
+  DEBUG_REQUEST("gamecontroller:secondaryTime:20", getGameData().secondaryTime = 20;);
+  DEBUG_REQUEST("gamecontroller:secondaryTime:10", getGameData().secondaryTime = 10;);
+  DEBUG_REQUEST("gamecontroller:secondaryTime:5", getGameData().secondaryTime = 5;);
+  DEBUG_REQUEST("gamecontroller:secondaryTime:0", getGameData().secondaryTime = 0;);
 
   DEBUG_REQUEST("whistle:blow",
     // kinda "hack": we don't increment the whistle counter, instead ...
