@@ -42,6 +42,8 @@ option free_kick_own_goal
       } else if (vector.abs(x=robot_pose.planned.x - field.xPosOwnPenaltyArea, 
                             y=robot_pose.planned.y - (ball.position.field.y >= 0 ? field.yPosLeftPenaltyArea : field.yPosRightPenaltyArea)) < 200
                  && abs(value=robot_pose.planned.rotation ) < 10) {
+        // TODO: do we want explicitly kick the ball, or just wait and switch to "normal" striker role?!?
+        // path_kick_long_with_approach();
         goto done;
       } else {
         stay;

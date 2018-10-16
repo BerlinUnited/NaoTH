@@ -1,4 +1,5 @@
 /** If a foul was called against an opponent player, we get a free kick. */
+// TODO: should we handle this somehow "team.members_alive_count <= 1"??
 option free_kick_own
 {
   // search for ball
@@ -75,6 +76,8 @@ option free_kick_own
         goto first_move_closer_to_ball;
       } else if(abs(value = atan2(y=locator.field_to_relative.y(x=field.xPosOpponentGroundline, y=0), 
                                   x=locator.field_to_relative.x(x=field.xPosOpponentGroundline, y=0))) <= 10) {
+        // TODO: do we want explicitly kick the ball, or just wait and switch to "normal" striker role?!?
+        // path_kick_long_with_approach();
         goto done;
       } else {
         stay;
@@ -119,6 +122,8 @@ option free_kick_own
         goto second_move_closer_to_ball;
       } else if(abs(value = atan2(y=locator.field_to_relative.y(x=field.xPosOpponentGroundline, y=0), 
                                   x=locator.field_to_relative.x(x=field.xPosOpponentGroundline, y=0))) <= 10) {
+        // TODO: do we want explicitly kick the ball, or just wait and switch to "normal" striker role?!?
+        // path_kick_long_with_approach();
         goto done;
       } else {
         stay;

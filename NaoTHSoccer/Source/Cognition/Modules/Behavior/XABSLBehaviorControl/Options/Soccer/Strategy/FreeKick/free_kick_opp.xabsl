@@ -1,4 +1,9 @@
-/** If a foul was called against us, the oppenent gets a free kick. */
+/** If a foul was called against us, the oppenent gets a free kick.
+ *  NOTE: The goalie can stay in the goal!
+ */
+/*
+- mögliche Positionen: Ball, Teamball, letzte Position des bestraften Spielers
+*/
 option free_kick_opp
 {
   initial state decide {
