@@ -49,7 +49,7 @@ option free_kick_opp_goal
     }
     action {
       // TODO: could be more sophisticated! eg. use relative coordinates than just 10cm from the sideline or the robot could "cut corners" is he knows where the ball is!
-      go_to_point_with_USOA(x=field.xPosOppPenaltyMark-100, 
+      go_to_point_with_USOA(x=field.xPosOppPenaltyMark-200, 
                             y=(robot_pose.y>0?field.yPosLeftSideline:field.yPosRightSideline)+(robot_pose.y>0?-1:1)*100, 
                             rot=0);
     }
@@ -61,8 +61,7 @@ option free_kick_opp_goal
       if(ball.know_where_itis) {
         // the position in front of the ball is better, than "random"
         goto position_for_free_kick_ball_known;
-      } else if((robot_pose.x + field.centerCircleRadius - field.xPosOppPenaltyMark) <= 0
-                && abs(value=(robot_pose.y>0?field.yPosLeftPenaltyArea:field.yPosRightPenaltyArea) - robot_pose.y) <= 100) {
+      } else if(action_done) {
         // done positioning
         goto idle;
       } else {
@@ -71,7 +70,7 @@ option free_kick_opp_goal
     }
     action {
       // TODO: if there are multiple robots, all wants to go to the same position?!
-      go_to_point_with_USOA(x=field.xPosOppPenaltyMark - field.centerCircleRadius - 50,
+      go_to_point_with_USOA(x=field.xPosOppPenaltyMark - field.centerCircleRadius - 100,
                             y=robot_pose.y>0?field.yPosLeftPenaltyArea:field.yPosRightPenaltyArea,
                             rot=0);
     }
@@ -83,8 +82,7 @@ option free_kick_opp_goal
       if(!ball.know_where_itis) {
         // if lost the ball, position in front of one of the possible throw-in points
         goto position_for_free_kick;
-      } else if(robot_pose.x-(ball.position.field.x-field.centerCircleRadius) < 0 
-              && abs(value=robot_pose.y-ball.position.field.y) < 50) {
+      } else if(action_done) {
         // done positioning
         goto idle;
       } else {
@@ -93,7 +91,7 @@ option free_kick_opp_goal
     }
     action {
       // TODO: if there are multiple robots, all wants to go to the same position?!
-      go_to_point_with_USOA(x=ball.position.field.x-field.centerCircleRadius-50, 
+      go_to_point_with_USOA(x=ball.position.field.x-field.centerCircleRadius-100, 
                             y=ball.position.field.y, 
                             rot=0);
     }
@@ -104,8 +102,7 @@ option free_kick_opp_goal
     decision {
       if(!ball.know_where_itis) {
         goto decide;
-      } else if(robot_pose.x-(ball.position.field.x-field.centerCircleRadius) < 0 
-              && abs(value=robot_pose.y-ball.position.field.y) < 50) {
+      } else if(action_done) {
         // done positioning
         goto idle;
       } else {
@@ -113,7 +110,7 @@ option free_kick_opp_goal
       }
     }
     action {
-      go_to_point_with_USOA(x=ball.position.field.x-field.centerCircleRadius-50, 
+      go_to_point_with_USOA(x=ball.position.field.x-field.centerCircleRadius-100, 
                             y=ball.position.field.y, 
                             rot=0);
     }
@@ -124,8 +121,7 @@ option free_kick_opp_goal
     decision {
       if(!ball.team.is_valid) {
         goto decide;
-      } else if(robot_pose.x-(ball.team.position.x-field.centerCircleRadius) < 0 
-              && abs(value=robot_pose.y-ball.team.position.y) < 50) {
+      } else if(action_done) {
         // done positioning
         goto idle;
       } else {
@@ -133,7 +129,7 @@ option free_kick_opp_goal
       }
     }
     action {
-      go_to_point_with_USOA(x=ball.team.position.x-field.centerCircleRadius-50, 
+      go_to_point_with_USOA(x=ball.team.position.x-field.centerCircleRadius-100,
                             y=ball.team.position.y, 
                             rot=0);
     }
@@ -142,7 +138,7 @@ option free_kick_opp_goal
   // we're in the opponents half, try to position itself on a direct line between ball and own goal
   state defend_free_kick {
     decision {
-      if(abs(value=robot_pose.y-((robot_pose.y>0?-1:1)*field.centerCircleRadius * 0.75)) < 50) {
+      if(action_done) {
         goto idle;
       } else {
         stay;
@@ -151,7 +147,7 @@ option free_kick_opp_goal
     action {
       // TODO: what happens if two (or more) robots are on the same "height" (x-coordinate)?!
       go_to_point_with_USOA(x=robot_pose.x, 
-                            y=(robot_pose.y>0?-1:1)*field.centerCircleRadius * 0.75, 
+                            y=(robot_pose.y>0?1:-1)*field.centerCircleRadius * 0.75, 
                             rot=0);
     }
   }
