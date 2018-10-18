@@ -129,8 +129,8 @@ option free_kick_opp_goal
       }
     }
     action {
-      go_to_point_with_USOA(x=ball.team.position.x-field.centerCircleRadius-100,
-                            y=ball.team.position.y, 
+      go_to_point_with_USOA(x=ball.team.position_field.x-field.centerCircleRadius-100,
+                            y=ball.team.position_field.y, 
                             rot=0);
     }
   }

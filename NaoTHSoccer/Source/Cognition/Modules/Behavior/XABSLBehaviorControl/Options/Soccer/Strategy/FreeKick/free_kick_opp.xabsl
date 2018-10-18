@@ -9,7 +9,7 @@ option free_kick_opp
         goto goalie_position_free_kick;
       } else if(ball.know_where_itis && vector.abs(x=ball.preview.x, y=ball.preview.y) <= field.centerCircleRadius) {
         goto player_move_away_from_ball;
-      } else if(ball.team.is_valid && vector.abs(x=(robot_pose.x - ball.team.position.x), y=(robot_pose.y-ball.team.position.y)) < field.centerCircleRadius) {
+      } else if(ball.team.is_valid && vector.abs(x=ball.team.position.x, y=ball.team.position.y) < field.centerCircleRadius) {
         goto player_move_away_from_teamball;
       } else if((freekick.pos.x != 0 || freekick.pos.y != 0) && vector.abs(x=(robot_pose.x - freekick.pos.x), y=(robot_pose.y-freekick.pos.y)) < field.centerCircleRadius+100) {
         goto player_move_away_from_foul_position;
@@ -37,7 +37,7 @@ option free_kick_opp
         goto goalie_position_free_kick_known;
       } else if(ball.team.is_valid) {
         goto goalie_position_free_kick_teamball;
-      } else if(vector.abs(x=robot_pose.x-(field.xPosOwnGroundline + 200), y=robot_pose.y) > 100) {
+      } else if(vector.abs(x=robot_pose.x-(field.xPosOwnGroundline + 200), y=robot_pose.y) > 150) {
         goto goalie_position_free_kick_default;
       } else {
         stay;
@@ -50,8 +50,7 @@ option free_kick_opp
   }
 
   // goalie knows where the ball is and tries to position himself between ball and goal
-  state goalie_position_free_kick_known
-  {
+  state goalie_position_free_kick_known {
     decision {
       if(!ball.know_where_itis) {
         goto goalie_position_free_kick;
@@ -68,8 +67,7 @@ option free_kick_opp
   }
 
   // goalie doesn't know where the ball is, but team knows it and goalie tries to position himself between teamball and goal
-  state goalie_position_free_kick_teamball
-  {
+  state goalie_position_free_kick_teamball {
     decision {
       if(ball.know_where_itis) {
         goto goalie_position_free_kick_known;
@@ -82,7 +80,7 @@ option free_kick_opp
     action {
       // position on a line between goal (middle of it) and teamball
       go_to_point_with_USOA(x=field.xPosOwnGroundline + 200,
-                            y=clip(value=((0-ball.team.position.y)/(field.xPosOwnGroundline-ball.team.position.x))*200, min=field.yPosRightGoal, max=field.yPosLeftGoal),
+                            y=clip(value=((0-ball.team.position_field.y)/(field.xPosOwnGroundline-ball.team.position_field.x))*200, min=field.yPosRightGoal, max=field.yPosLeftGoal),
                             rot=normalize(angle=atan2(y = ball.team.position.y, x = ball.team.position.x)));
     }
   }
@@ -94,7 +92,7 @@ option free_kick_opp
         goto goalie_position_free_kick_known;
       } else if(ball.team.is_valid) {
         goto goalie_position_free_kick_teamball;
-      } else if(vector.abs(x=robot_pose.x-(field.xPosOwnGroundline + 200), y=robot_pose.y) <= 100) {
+      } else if(action_done) {
         goto goalie_position_free_kick;
       } else {
         stay;
@@ -114,26 +112,26 @@ option free_kick_opp
   // robot knows where the ball is and moves away from it
   state player_move_away_from_ball {
     decision {
-      if(!ball.know_where_itis || vector.abs(x=ball.preview.x, y=ball.preview.y) > field.centerCircleRadius) {
+      if(!ball.know_where_itis || action_done) {
         goto decide;
       } else {
         stay;
       }
     }
     action {
-      // "go to ball" + distance <=> move away from ball
       // TODO: what happens, if the robot is near a side/groundline?!
       // TODO: how do we rotate?!?
       // TODO: we should position us between ball and own goal!
-      go_to_ball_with_USOA(distance=field.centerCircleRadius+50);
+      go_to_point_with_USOA(x=ball.position.field.x - field.centerCircleRadius - 100,
+                            y=ball.position.field.y,
+                            rot=0);
     }
   }
 
   // the robot doesn't know where the ball is, but the team does - move away from the teamball position
   state player_move_away_from_teamball {
     decision {
-      if(!ball.team.is_valid || (robot_pose.x-(ball.team.position.x-field.centerCircleRadius) < 0 
-                                  && abs(value=robot_pose.y-ball.team.position.y) < 50)) {
+      if(!ball.team.is_valid || action_done) {
         goto decide;
       } else {
         stay;
@@ -142,17 +140,16 @@ option free_kick_opp
     action {
       // TODO: what happens, if the robot is near a side/groundline?!
       // TODO: we should position us between ball and own goal!
-      go_to_point_with_USOA(x=ball.team.position.x-field.centerCircleRadius-50, 
-                            y=ball.team.position.y, 
+      go_to_point_with_USOA(x=ball.team.position_field.x-field.centerCircleRadius-100, 
+                            y=ball.team.position_field.y, 
                             rot=0);
     }
   }
 
   // the robot tries to move away from the position where the foul occurred
-  state player_move_away_from_foul_position
-  {
+  state player_move_away_from_foul_position {
     decision {
-      if(vector.abs(x=(robot_pose.x - freekick.pos.x), y=(robot_pose.y-freekick.pos.y)) >= field.centerCircleRadius+100) {
+      if(action_done) {
         goto decide;
       } else {
         stay;
