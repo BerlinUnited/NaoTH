@@ -55,7 +55,7 @@ public:
 			//PARAMETER_REGISTER(ReferenceHull) = vector<Point>;
 			//Oder als Pfad zur txt was vermutlich einfacher ist
 			PARAMETER_REGISTER(point_config) = "reference_points_cd18.txt";
-			PARAMETER_REGISTER(collect) = 16;
+			PARAMETER_REGISTER(collect) = 32;
 			syncWithConfig();
 		}
 		std::string point_config;

@@ -31,6 +31,7 @@ ArmCollisionDetector2018::ArmCollisionDetector2018()
 			getCollisionPercept().referenceHull.push_back(buff);
 		}
 	}
+	std::sort(getCollisionPercept().referenceHull.begin(), getCollisionPercept().referenceHull.end());
 
 }
 
@@ -85,13 +86,13 @@ void ArmCollisionDetector2018::execute()
 	if (jointDataBufferLeft.isFull()) {
 		double a = jointDataBufferLeft.first();
 		double b = getSensorJointData().position[JointData::LShoulderPitch];
-		double er = (a - b);
+		double er = (b - a);
 		getCollisionPercept().pointBufferLeft.push_back(Point(a, er));
 	}
 	if (jointDataBufferRight.isFull()) {
 		double a = jointDataBufferRight.first();
 		double b = getSensorJointData().position[JointData::RShoulderPitch];
-		double er = (a - b);
+		double er = (b - a);
 		getCollisionPercept().pointBufferRight.push_back(Point(a, er));
 	}
 
@@ -102,10 +103,11 @@ void ArmCollisionDetector2018::execute()
 		//Next compare result to reference points
 		getCollisionPercept().pointBufferLeft.insert(getCollisionPercept().pointBufferLeft.end(), getCollisionPercept().referenceHull.begin(), getCollisionPercept().referenceHull.end());
 		getCollisionPercept().newHullLeft = ConvexHull::convexHull(getCollisionPercept().pointBufferLeft);
+		std::sort(getCollisionPercept().newHullLeft.begin(), getCollisionPercept().newHullLeft.end());
 		if (getCollisionPercept().newHullLeft == getCollisionPercept().referenceHull)
 		{
 			//No Collision
-			getCollisionPercept().newHullLeft.erase(getCollisionPercept().newHullLeft.begin(), getCollisionPercept().newHullLeft.end());
+			//getCollisionPercept().newHullLeft.erase(getCollisionPercept().newHullLeft.begin(), getCollisionPercept().newHullLeft.end());
 			getCollisionPercept().pointBufferLeft.erase(getCollisionPercept().pointBufferLeft.begin(), getCollisionPercept().pointBufferLeft.end());
 		}
 		else
@@ -113,7 +115,7 @@ void ArmCollisionDetector2018::execute()
 			//Collision
 			getCollisionPercept().timeCollisionArmLeft = getFrameInfo().getTime();
 
-			getCollisionPercept().newHullLeft.erase(getCollisionPercept().newHullLeft.begin(), getCollisionPercept().newHullLeft.end());
+			//getCollisionPercept().newHullLeft.erase(getCollisionPercept().newHullLeft.begin(), getCollisionPercept().newHullLeft.end());
 			getCollisionPercept().pointBufferLeft.erase(getCollisionPercept().pointBufferLeft.begin(), getCollisionPercept().pointBufferLeft.end());
 		}
 	}
@@ -124,6 +126,7 @@ void ArmCollisionDetector2018::execute()
 		//Next compare result to reference points
 		getCollisionPercept().pointBufferRight.insert(getCollisionPercept().pointBufferRight.end(), getCollisionPercept().referenceHull.begin(), getCollisionPercept().referenceHull.end());
 		getCollisionPercept().newHullRight = ConvexHull::convexHull(getCollisionPercept().pointBufferRight);
+		std::sort(getCollisionPercept().newHullRight.begin(), getCollisionPercept().newHullRight.end());
 		if (getCollisionPercept().newHullRight == getCollisionPercept().referenceHull)
 		{
 			//No Collision
