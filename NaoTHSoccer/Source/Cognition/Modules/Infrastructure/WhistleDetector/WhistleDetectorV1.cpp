@@ -3,7 +3,7 @@
 *
 * @author <a href="mailto:schlottb@informatik.hu-berlin.de">Benjamin Schlotter</a>
 * Implementation of class WhistleDetectorV1
-* Implements a basic Peak Detection as whsitle detector. This is only to show how a whistle detection fits in the overall infrastructure
+* Implements a basic Peak Detection as whistle detector. This is only to show how a whistle detection fits in the overall infrastructure
 */
 
 #include "WhistleDetectorV1.h"
