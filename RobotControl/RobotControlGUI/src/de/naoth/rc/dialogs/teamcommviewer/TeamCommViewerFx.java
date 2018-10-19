@@ -225,9 +225,11 @@ public class TeamCommViewerFx extends AbstractJFXDialog
                             RobotStatus ri = robots.get(i);
                             RobotStatus rj = robots.get(j);
                             if(ri.teamNumProperty().get() == rj.teamNumProperty().get() && ri.playerNumProperty().get() == rj.playerNumProperty().get()) {
+                                multipleNumberWarning.setText("The robots " + ri.getIpAddress() + " and " + rj.getIpAddress() + " have the same player number!\n"
+                                    + "There might be more robots with identical player numbers");
                                 multipleNumberWarning.setVisible(true);
                                 return;
-                            }
+                            }  
                         }
                     }
                 } else if(c.wasRemoved() && multipleNumberWarning.isVisible()) {
