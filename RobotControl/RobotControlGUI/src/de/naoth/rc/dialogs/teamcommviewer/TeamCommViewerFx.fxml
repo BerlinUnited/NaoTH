@@ -65,7 +65,7 @@
             </TableView>
             <Label fx:id="multipleNumberWarning" style="-fx-background-color: red;" text="Robots with same player number!" textFill="WHITE" visible="false" StackPane.alignment="TOP_RIGHT">
                <StackPane.margin>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="160.0" />
                </StackPane.margin>
                <padding>
                   <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
