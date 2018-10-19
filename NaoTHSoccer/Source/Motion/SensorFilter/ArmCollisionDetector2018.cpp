@@ -31,6 +31,7 @@ ArmCollisionDetector2018::ArmCollisionDetector2018()
 			getCollisionPercept().referenceHull.push_back(buff);
 		}
 	}
+
 	std::sort(getCollisionPercept().referenceHull.begin(), getCollisionPercept().referenceHull.end());
 
 }
@@ -101,8 +102,10 @@ void ArmCollisionDetector2018::execute()
 		//Convex Hull calculation
 		//First concatenate PointBuffer to reference points
 		//Next compare result to reference points
-		getCollisionPercept().pointBufferLeft.insert(getCollisionPercept().pointBufferLeft.end(), getCollisionPercept().referenceHull.begin(), getCollisionPercept().referenceHull.end());
-		getCollisionPercept().newHullLeft = ConvexHull::convexHull(getCollisionPercept().pointBufferLeft);
+		for (size_t i = 0; i < getCollisionPercept().referenceHull.size(); i++){
+			getCollisionPercept().pointBufferLeft.push_back(getCollisionPercept().referenceHull[i]);
+		}
+		getCollisionPercept().newHullLeft = convex_hull(getCollisionPercept().pointBufferLeft);
 		std::sort(getCollisionPercept().newHullLeft.begin(), getCollisionPercept().newHullLeft.end());
 		if (getCollisionPercept().newHullLeft == getCollisionPercept().referenceHull)
 		{
@@ -124,13 +127,15 @@ void ArmCollisionDetector2018::execute()
 		//Convex Hull calculation
 		//First concatenate PointBuffer to reference points
 		//Next compare result to reference points
-		getCollisionPercept().pointBufferRight.insert(getCollisionPercept().pointBufferRight.end(), getCollisionPercept().referenceHull.begin(), getCollisionPercept().referenceHull.end());
-		getCollisionPercept().newHullRight = ConvexHull::convexHull(getCollisionPercept().pointBufferRight);
+		for (size_t i = 0; i < getCollisionPercept().referenceHull.size(); i++){
+			getCollisionPercept().pointBufferRight.push_back(getCollisionPercept().referenceHull[i]);
+		}
+		getCollisionPercept().newHullRight = convex_hull(getCollisionPercept().pointBufferRight);
 		std::sort(getCollisionPercept().newHullRight.begin(), getCollisionPercept().newHullRight.end());
 		if (getCollisionPercept().newHullRight == getCollisionPercept().referenceHull)
 		{
 			//No Collision
-			getCollisionPercept().newHullRight.erase(getCollisionPercept().newHullRight.begin(), getCollisionPercept().newHullRight.end());
+			//getCollisionPercept().newHullRight.erase(getCollisionPercept().newHullRight.begin(), getCollisionPercept().newHullRight.end());
 			getCollisionPercept().pointBufferRight.erase(getCollisionPercept().pointBufferRight.begin(), getCollisionPercept().pointBufferRight.end());
 		}
 		else
@@ -138,7 +143,7 @@ void ArmCollisionDetector2018::execute()
 			//Collision
 			getCollisionPercept().timeCollisionArmRight = getFrameInfo().getTime();
 
-			getCollisionPercept().newHullRight.erase(getCollisionPercept().newHullRight.begin(), getCollisionPercept().newHullRight.end());
+			//getCollisionPercept().newHullRight.erase(getCollisionPercept().newHullRight.begin(), getCollisionPercept().newHullRight.end());
 			getCollisionPercept().pointBufferRight.erase(getCollisionPercept().pointBufferRight.begin(), getCollisionPercept().pointBufferRight.end());
 		}
 	}

@@ -66,6 +66,34 @@ private:
 	//Private variablen wie zb ringbuffer fuer MJD und SJD synchronisation
 	RingBuffer<double, 4> jointDataBufferLeft;
 	RingBuffer<double, 4> jointDataBufferRight;
+
+	double cross(const Point &O, const Point &A, const Point &B){
+		return (A.getX() - O.getX()) * (B.getY() - O.getY()) - (A.getY() \
+			- O.getY()) * (B.getX() - O.getX());
+	}
+
+	// Implementation of Andrew's monotone chain 2D convex hull algorithm.
+	std::vector<Point> convex_hull(std::vector<Point> P){
+		//Initialization and Trivial case check
+		int n = P.size(), k = 0;
+		if (n <= 3){ return P; };
+		std::vector<Point> H(2 * n);
+		sort(P.begin(), P.end());
+
+		// Build lower hull
+		for (int i = 0; i < n; i++) {
+			while (k >= 2 && cross(H[k - 2], H[k - 1], P[i]) <= 0) k--;
+			H[k++] = P[i];
+		}
+
+		// Build upper hull
+		for (int i = n - 1, t = k + 1; i > 0; i--){
+			while (k >= t && cross(H[k - 2], H[k - 1], P[i - 1]) <= 0) k--;
+			H[k++] = P[i - 1];
+		}
+		H.resize(k - 1);
+		return H;
+	}
 };
 
 #endif
