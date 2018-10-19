@@ -82,8 +82,6 @@ void ArmCollisionDetector2018::execute()
 	jointDataBufferRight.add(getMotorJointData().position[JointData::RShoulderPitch]);
 
 	//Fill up our Point object vectors we want to check when we have enough
-	//Ringbuffers may be unnecessary, do we really want to calculate Hull every frame?
-	//Or only calculate every params.collect frames
 	if (jointDataBufferLeft.isFull()) {
 		double a = jointDataBufferLeft.first();
 		double b = getSensorJointData().position[JointData::LShoulderPitch];
@@ -110,7 +108,7 @@ void ArmCollisionDetector2018::execute()
 		if (getCollisionPercept().newHullLeft == getCollisionPercept().referenceHull)
 		{
 			//No Collision
-			//getCollisionPercept().newHullLeft.erase(getCollisionPercept().newHullLeft.begin(), getCollisionPercept().newHullLeft.end());
+			getCollisionPercept().newHullLeft.erase(getCollisionPercept().newHullLeft.begin(), getCollisionPercept().newHullLeft.end());
 			getCollisionPercept().pointBufferLeft.erase(getCollisionPercept().pointBufferLeft.begin(), getCollisionPercept().pointBufferLeft.end());
 		}
 		else
@@ -118,7 +116,7 @@ void ArmCollisionDetector2018::execute()
 			//Collision
 			getCollisionPercept().timeCollisionArmLeft = getFrameInfo().getTime();
 
-			//getCollisionPercept().newHullLeft.erase(getCollisionPercept().newHullLeft.begin(), getCollisionPercept().newHullLeft.end());
+			getCollisionPercept().newHullLeft.erase(getCollisionPercept().newHullLeft.begin(), getCollisionPercept().newHullLeft.end());
 			getCollisionPercept().pointBufferLeft.erase(getCollisionPercept().pointBufferLeft.begin(), getCollisionPercept().pointBufferLeft.end());
 		}
 	}
@@ -135,7 +133,7 @@ void ArmCollisionDetector2018::execute()
 		if (getCollisionPercept().newHullRight == getCollisionPercept().referenceHull)
 		{
 			//No Collision
-			//getCollisionPercept().newHullRight.erase(getCollisionPercept().newHullRight.begin(), getCollisionPercept().newHullRight.end());
+			getCollisionPercept().newHullRight.erase(getCollisionPercept().newHullRight.begin(), getCollisionPercept().newHullRight.end());
 			getCollisionPercept().pointBufferRight.erase(getCollisionPercept().pointBufferRight.begin(), getCollisionPercept().pointBufferRight.end());
 		}
 		else
@@ -143,7 +141,7 @@ void ArmCollisionDetector2018::execute()
 			//Collision
 			getCollisionPercept().timeCollisionArmRight = getFrameInfo().getTime();
 
-			//getCollisionPercept().newHullRight.erase(getCollisionPercept().newHullRight.begin(), getCollisionPercept().newHullRight.end());
+			getCollisionPercept().newHullRight.erase(getCollisionPercept().newHullRight.begin(), getCollisionPercept().newHullRight.end());
 			getCollisionPercept().pointBufferRight.erase(getCollisionPercept().pointBufferRight.begin(), getCollisionPercept().pointBufferRight.end());
 		}
 	}
