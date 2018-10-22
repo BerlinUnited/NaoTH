@@ -18,21 +18,38 @@ ArmCollisionDetector2018::ArmCollisionDetector2018()
 	std::string line;
 
 	const std::string& dirlocation = Platform::getInstance().theConfigDirectory;
-	std::cout << dirlocation + params.point_config << std::endl;
-	std::ifstream file(dirlocation + params.point_config);
-	if (file.is_open() && file.good())
+	//Left point config
+	std::cout << dirlocation + params.point_configLeft << std::endl;
+	std::ifstream fileLeft(dirlocation + params.point_configLeft);
+	if (fileLeft.is_open() && fileLeft.good())
 	{
-		while (std::getline(file, line))
+		while (std::getline(fileLeft, line))
 		{
 			std::string::size_type sz;
 			double alpha = std::stod(line, &sz);
 			double beta = std::stod(line.substr(sz));
 			Point buff(alpha, beta);
-			getCollisionPercept().referenceHull.push_back(buff);
+			getCollisionPercept().referenceHullLeft.push_back(buff);
 		}
 	}
 
-	std::sort(getCollisionPercept().referenceHull.begin(), getCollisionPercept().referenceHull.end());
+	//Right point config
+	std::cout << dirlocation + params.point_configRight << std::endl;
+	std::ifstream fileRight(dirlocation + params.point_configRight);
+	if (fileRight.is_open() && fileRight.good())
+	{
+		while (std::getline(fileRight, line))
+		{
+			std::string::size_type sz;
+			double alpha = std::stod(line, &sz);
+			double beta = std::stod(line.substr(sz));
+			Point buff(alpha, beta);
+			getCollisionPercept().referenceHullRight.push_back(buff);
+		}
+	}
+
+	std::sort(getCollisionPercept().referenceHullLeft.begin(), getCollisionPercept().referenceHullLeft.end());
+	std::sort(getCollisionPercept().referenceHullRight.begin(), getCollisionPercept().referenceHullRight.end());
 
 }
 
@@ -44,8 +61,8 @@ ArmCollisionDetector2018::~ArmCollisionDetector2018()
 void ArmCollisionDetector2018::execute()
 {
 	DEBUG_REQUEST("Motion:ArmCollisionDetector2018:showReferenceHull",
-		for (size_t i = 0; i <getCollisionPercept().referenceHull.size(); i++){
-			PLOT_GENERIC("ArmCollisionDetector2018:referenceHull", getCollisionPercept().referenceHull[i].getX(), getCollisionPercept().referenceHull[i].getY());
+		for (size_t i = 0; i <getCollisionPercept().referenceHullLeft.size(); i++){
+			PLOT_GENERIC("ArmCollisionDetector2018:referenceHull", getCollisionPercept().referenceHullLeft[i].getX(), getCollisionPercept().referenceHullLeft[i].getY());
 		}
 	);
 
@@ -100,12 +117,12 @@ void ArmCollisionDetector2018::execute()
 		//Convex Hull calculation
 		//First concatenate PointBuffer to reference points
 		//Next compare result to reference points
-		for (size_t i = 0; i < getCollisionPercept().referenceHull.size(); i++){
-			getCollisionPercept().pointBufferLeft.push_back(getCollisionPercept().referenceHull[i]);
+		for (size_t i = 0; i < getCollisionPercept().referenceHullLeft.size(); i++){
+			getCollisionPercept().pointBufferLeft.push_back(getCollisionPercept().referenceHullLeft[i]);
 		}
 		getCollisionPercept().newHullLeft = convex_hull(getCollisionPercept().pointBufferLeft);
 		std::sort(getCollisionPercept().newHullLeft.begin(), getCollisionPercept().newHullLeft.end());
-		if (getCollisionPercept().newHullLeft == getCollisionPercept().referenceHull)
+		if (getCollisionPercept().newHullLeft == getCollisionPercept().referenceHullLeft)
 		{
 			//No Collision
 			getCollisionPercept().newHullLeft.erase(getCollisionPercept().newHullLeft.begin(), getCollisionPercept().newHullLeft.end());
@@ -125,12 +142,12 @@ void ArmCollisionDetector2018::execute()
 		//Convex Hull calculation
 		//First concatenate PointBuffer to reference points
 		//Next compare result to reference points
-		for (size_t i = 0; i < getCollisionPercept().referenceHull.size(); i++){
-			getCollisionPercept().pointBufferRight.push_back(getCollisionPercept().referenceHull[i]);
+		for (size_t i = 0; i < getCollisionPercept().referenceHullRight.size(); i++){
+			getCollisionPercept().pointBufferRight.push_back(getCollisionPercept().referenceHullRight[i]);
 		}
 		getCollisionPercept().newHullRight = convex_hull(getCollisionPercept().pointBufferRight);
 		std::sort(getCollisionPercept().newHullRight.begin(), getCollisionPercept().newHullRight.end());
-		if (getCollisionPercept().newHullRight == getCollisionPercept().referenceHull)
+		if (getCollisionPercept().newHullRight == getCollisionPercept().referenceHullRight)
 		{
 			//No Collision
 			getCollisionPercept().newHullRight.erase(getCollisionPercept().newHullRight.begin(), getCollisionPercept().newHullRight.end());

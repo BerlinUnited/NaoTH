@@ -33,7 +33,8 @@ public:
   unsigned int timeCollisionArmLeft;
   unsigned int timeCollisionArmRight;
 
-  std::vector<Point> referenceHull;
+  std::vector<Point> referenceHullLeft;
+  std::vector<Point> referenceHullRight;
   std::vector<Point> pointBufferLeft;
   std::vector<Point> pointBufferRight;
   std::vector<Point> newHullLeft;
@@ -44,10 +45,14 @@ public:
   {
     stream << "timeCollisionArmLeft = " << timeCollisionArmLeft << '\n';
     stream << "timeCollisionArmRight = " << timeCollisionArmRight << '\n';
-    stream << "referenceHull: Currently only Left joint!" << "\n";
-    for (size_t i = 0; i < referenceHull.size(); i++){
-      stream << "x= " << referenceHull[i].getX() << " y = " << referenceHull[i].getY() << "\n";
+    stream << "referenceHullLeft: " << "\n";
+    for (size_t i = 0; i < referenceHullLeft.size(); i++){
+      stream << "x= " << referenceHullLeft[i].getX() << " y = " << referenceHullLeft[i].getY() << "\n";
     }
+	stream << "referenceHullRight: " << "\n";
+	for (size_t i = 0; i < referenceHullRight.size(); i++){
+		stream << "x= " << referenceHullRight[i].getX() << " y = " << referenceHullRight[i].getY() << "\n";
+	}
   }
 };
 
