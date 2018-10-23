@@ -1,4 +1,5 @@
 import logging
+import math
 import multiprocessing
 import socket
 import struct
@@ -18,6 +19,10 @@ class SimsparkController(multiprocessing.Process):
         self.port = 3200
         self.host = '127.0.0.1'
         self.socket = None
+
+        self.__m = multiprocessing.Manager()
+        self.__environment = self.__m.dict()
+        self.__scene = self.__m.list()
 
         self.__cmd_queue = multiprocessing.Queue()
         self.__cancel = multiprocessing.Event()
@@ -75,23 +80,117 @@ class SimsparkController(multiprocessing.Process):
                 msg = self.socket.recv(length).decode()
                 # print(msg)
                 sexp = sexpr.str2sexpr(msg)
-                # TODO: save the retrieved infos somewhere!?
-                print(sexp)
+
+                self.__update_environment(sexp[0])
+                self.__update_scene(sexp[1:])
+
                 if not self.__cmd_queue.empty():
                     cmd = self.__cmd_queue.get()
                     print(cmd)
                     self.socket.sendall(struct.pack("!I", len(cmd)) + str.encode(cmd))
-                time.sleep(1)
 
         self.disconnect()
+
+    def __update_environment(self, data):
+        for item in data:
+            if item[0] == 'messages':
+                if len(item) > 1:
+                    # TODO: save messages of players
+                    #if item[0] not in self.__environment: self.__environment[item[0]] = {}
+                    #self.__environment[item[0]][] = {}
+                    #print(item)
+                    pass
+            else:
+                self.__environment[item[0]] = item[1]
+
+    def __update_scene(self, data):
+        name, version, subversion = data[0]
+
+        if name == 'RSG':  # Ruby Scene Graph, and indicates that the scene graph is a full description of the environment.
+            # clear old scene graph
+            del self.__scene[:]
+            # apply new scene graph
+            for nd in data[1]:
+                # update known objects
+                if len(nd) == 4 and isinstance(nd, list) and len(nd[3]) > 4 and 'soccerball' in nd[3][3][1]:
+                    # found soccer ball
+                    self.__scene.append({ 'type': 'soccerball', 'x':nd[2][13], 'y':nd[2][14], 'z':nd[2][15] })
+                elif len(nd) >= 4 and len(nd[3]) >= 4 and len(nd[3][3]) >= 4 and len(nd[3][3][3]) >= 4 and 'naobody' in nd[3][3][3][3][1]:
+                    pose = self.__get_robot_pose(nd[3][2][1:])
+                    # set the nao infos
+                    self.__scene.append({
+                        'type': 'nao',
+                        'team': nd[3][3][3][5][2][3:],
+                        'number': int(nd[3][3][3][5][1][6:]),
+                        'x': pose[0],
+                        'y': pose[1],
+                        'z': pose[2],
+                        'r': pose[3]
+                    })
+                    print(self.__scene)
+                else:
+                    # 'unknown' object
+                    self.__scene.append({ 'type': 'node'})
+                    #print(nd)
+        elif name == 'RDS':  # Ruby Diff Scene, and indicates that the scene graph is a partial description of the environment
+            # check scene graph
+            if len(self.__scene) == len(data[1]):
+                # iterate through scene objects and update known
+                for i, nd in enumerate(self.__scene):
+                    # update ball position, only if changed
+                    if nd['type'] == 'soccerball' and len(data[1][i][1]) > 2:
+                        self.__scene[i]['x'] = data[1][i][1][13]
+                        self.__scene[i]['y'] = data[1][i][1][14]
+                        self.__scene[i]['z'] = data[1][i][1][15]
+                    elif nd['type'] == 'nao' and len(data[1][i][1]) > 4:
+                        pose = self.__get_robot_pose(data[1][i][1][1][1:])
+                        self.__scene[i]['x'] = pose[0]
+                        self.__scene[i]['y'] = pose[1]
+                        self.__scene[i]['z'] = pose[2]
+                        self.__scene[i]['r'] = pose[3]
+            else:
+                logging.warning('Scene graph mismatch!')
+        else:
+            logging.warning('invalid scene graph update!')
+
+    def __get_robot_pose(self, data):
+        # make a rotation matrix
+        _ = list(map(float, data))
+        r = [[_[4], -_[0], _[8], _[12]],
+             [_[5], -_[1], _[9], _[13]],
+             [_[6], -_[2], _[10], _[14]],
+             [_[7], -_[3], _[11], _[15]]]
+        z = math.acos(r[0][0] / math.sqrt(r[0][0] * r[0][0] + r[1][0] * r[1][0])) * (-1 if r[1][0] < 0 else 1)
+        #z /= (math.pi/180)
+
+        return r[0][3], r[1][3], r[2][3], z
+
+    def get_robots(self, team=None):
+        robots = []
+        for nd in self.__scene:
+            if nd['type'] == 'nao' and (team is None or team == nd['team']):
+                robots.append(nd)
+        return robots
+
+    def get_robot(self, number, team='Left'):
+        for i, nd in enumerate(self.__scene):
+            if nd['type'] == 'nao' and nd['team'] == team and nd['number'] == number:
+                return nd
+        return None
+
+    def get_ball(self):
+        for i, nd in enumerate(self.__scene):
+            if nd['type'] == 'soccerball':
+                return nd
+        return None
 
     def cmd_dropball(self):
         self.__cmd_queue.put('(dropBall)')
 
-    def cmd_ballPos(self, x=0.0, y=0.0, z=0.0):
+    def cmd_ballPos(self, x=0.0, y=0.0, z=0.05):
         self.__cmd_queue.put('(ball (pos {} {} {}))'.format(x, y, z))
 
-    def cmd_ballPosVel(self, x=0.0, y=0.0, z=0.0, vx=0.0, vy=0.0, vz=0.0):
+    def cmd_ballPosVel(self, x=0.0, y=0.0, z=0.05, vx=0.0, vy=0.0, vz=0.0):
         self.__cmd_queue.put('(ball (pos {} {} {})(vel {} {} {}))'.format(x, y, z, vx, vy, vz))
 
     def cmd_killsim(self):
@@ -114,6 +213,9 @@ class SimsparkController(multiprocessing.Process):
             Accepted values are: "None", "Left", "Right"
         '''
         self.__cmd_queue.put('(kickOff {})'.format(t))
+
+    def cmd_reqfullstate(self):
+        self.__cmd_queue.put('(reqfullstate)')
 
     '''
     "(playMode )",  
