@@ -71,7 +71,7 @@ class SimsparkController(multiprocessing.Process):
         self.__start_application()
         # print(self.__p)
 
-        while not self.__start_instance or self.__p.poll() is None:
+        while (not self.__start_instance or self.__p.poll() is None) and not self.__cancel.is_set():
             if not self.connected.is_set():
                 self.connect()
             else:
@@ -90,6 +90,7 @@ class SimsparkController(multiprocessing.Process):
                     self.socket.sendall(struct.pack("!I", len(cmd)) + str.encode(cmd))
 
         self.disconnect()
+        # TODO: close application!
 
     def __update_environment(self, data):
         for item in data:
@@ -114,20 +115,20 @@ class SimsparkController(multiprocessing.Process):
                 # update known objects
                 if len(nd) == 4 and isinstance(nd, list) and len(nd[3]) > 4 and 'soccerball' in nd[3][3][1]:
                     # found soccer ball
-                    self.__scene.append({ 'type': 'soccerball', 'x':nd[2][13], 'y':nd[2][14], 'z':nd[2][15] })
+                    self.__scene.append({ 'type': 'soccerball', 'x':float(nd[2][13]), 'y':float(nd[2][14]), 'z':float(nd[2][15]) })
                 elif len(nd) >= 4 and len(nd[3]) >= 4 and len(nd[3][3]) >= 4 and len(nd[3][3][3]) >= 4 and 'naobody' in nd[3][3][3][3][1]:
                     pose = self.__get_robot_pose(nd[3][2][1:])
                     # set the nao infos
                     self.__scene.append({
                         'type': 'nao',
                         'team': nd[3][3][3][5][2][3:],
-                        'number': int(nd[3][3][3][5][1][6:]),
+                        'number': int(nd[3][3][3][5][1][6:]) if len(nd[3][3][3][5][1])>6 else 0,
                         'x': pose[0],
                         'y': pose[1],
                         'z': pose[2],
                         'r': pose[3]
                     })
-                    print(self.__scene)
+                    #print(self.__scene)
                 else:
                     # 'unknown' object
                     self.__scene.append({ 'type': 'node'})
@@ -139,15 +140,21 @@ class SimsparkController(multiprocessing.Process):
                 for i, nd in enumerate(self.__scene):
                     # update ball position, only if changed
                     if nd['type'] == 'soccerball' and len(data[1][i][1]) > 2:
-                        self.__scene[i]['x'] = data[1][i][1][13]
-                        self.__scene[i]['y'] = data[1][i][1][14]
-                        self.__scene[i]['z'] = data[1][i][1][15]
+                        ball = self.__scene[i]
+                        ball['x'] = float(data[1][i][1][13])
+                        ball['y'] = float(data[1][i][1][14])
+                        ball['z'] = float(data[1][i][1][15])
+                        # notify the managed list of the change!
+                        self.__scene[i] = ball
                     elif nd['type'] == 'nao' and len(data[1][i][1]) > 4:
+                        robot = self.__scene[i]
                         pose = self.__get_robot_pose(data[1][i][1][1][1:])
-                        self.__scene[i]['x'] = pose[0]
-                        self.__scene[i]['y'] = pose[1]
-                        self.__scene[i]['z'] = pose[2]
-                        self.__scene[i]['r'] = pose[3]
+                        robot['x'] = pose[0]
+                        robot['y'] = pose[1]
+                        robot['z'] = pose[2]
+                        robot['r'] = pose[3]
+                        # notify the managed list of the change!
+                        self.__scene[i] = robot
             else:
                 logging.warning('Scene graph mismatch!')
         else:

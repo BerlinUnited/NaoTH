@@ -61,7 +61,7 @@ class AgentController(multiprocessing.Process):
 
             args = [self.app]
             if self.sync: args.append('--sync')
-            if self.number: args.extend(['-n', self.number])
+            if self.number: args.extend(['-n', str(self.number)])
 
             self.__p = subprocess.Popen(args, cwd=self.cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             self.__socket = None
@@ -78,7 +78,7 @@ class AgentController(multiprocessing.Process):
             logging.info('Agent started')
         else:
             logging.info('No instance of agent started!')
-            self.port = 5401
+            self.port = 5400 + self.number
             self.started.set()
 
     def cancel(self):
@@ -151,3 +151,4 @@ class AgentController(multiprocessing.Process):
             self.__send_commands()
 
             time.sleep(0.3)
+        # TODO: kill agent!
