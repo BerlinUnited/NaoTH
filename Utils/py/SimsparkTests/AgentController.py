@@ -6,6 +6,7 @@ import socket
 import struct
 import subprocess
 import time
+import signal
 
 from naoth import Messages_pb2
 
@@ -81,6 +82,22 @@ class AgentController(multiprocessing.Process):
             self.port = 5400 + self.number
             self.started.set()
 
+    def __stop_agent(self):
+        if self.__start_instance and self.__p.poll() is None:
+            logging.info("Quit agent application")
+            self.__p.send_signal(signal.SIGHUP)
+            time.sleep(0.5)
+            # still running?
+            if self.__p.poll() is None:
+                logging.info("Stop agent application")
+                self.__p.terminate()
+                time.sleep(0.5)
+                # still running?
+                if self.__p.poll() is None:
+                    logging.info("Kill agent application")
+                    self.__p.kill()
+                    time.sleep(0.5)
+
     def cancel(self):
         self.__cancel.set()
 
@@ -151,4 +168,5 @@ class AgentController(multiprocessing.Process):
             self.__send_commands()
 
             time.sleep(0.3)
-        # TODO: kill agent!
+
+        self.__stop_agent()

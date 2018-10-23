@@ -67,6 +67,11 @@ class SimsparkController(multiprocessing.Process):
         else:
             logging.info('No instance of Simspark started!')
 
+    def __stop_application(self):
+        if self.__p and self.__p.poll() is None:
+            logging.info("Quit simspark application")
+            self.__p.kill()
+
     def run(self):
         self.__start_application()
         # print(self.__p)
@@ -86,11 +91,14 @@ class SimsparkController(multiprocessing.Process):
 
                 if not self.__cmd_queue.empty():
                     cmd = self.__cmd_queue.get()
-                    print(cmd)
+                    logging.debug(cmd)
                     self.socket.sendall(struct.pack("!I", len(cmd)) + str.encode(cmd))
-
+        # send kill command, before disconnecting
+        self.cmd_killsim()
+        # disconnect
         self.disconnect()
-        # TODO: close application!
+        # if process still running, kill it
+        self.__stop_application()
 
     def __update_environment(self, data):
         for item in data:

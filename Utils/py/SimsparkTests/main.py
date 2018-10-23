@@ -1,5 +1,6 @@
 import argparse
 import logging
+import math
 import os
 import shutil
 import time
@@ -26,6 +27,18 @@ def parseArguments():
 
     return parser.parse_args()
 
+def wait_for(condition, sleeper, min_time=0.0):
+    _start = time.monotonic()
+    while not condition() or (time.monotonic() - _start) < min_time:
+        time.sleep(sleeper)
+
+def ball_out_or_doesnt_move():
+    _ = s.get_ball()
+    if _['x'] < 4.5 and abs(_['y']) < 3.0 and math.sqrt(math.pow(_['x'] - last_ball['b']['x'], 2) + math.pow(_['y'] - last_ball['b']['y'], 2)) > 0.0:
+        last_ball['b'] = _
+        return False
+    return True
+
 if __name__ == "__main__":
     args = parseArguments()
     #print(args)
@@ -48,26 +61,57 @@ if __name__ == "__main__":
     s.start()
     s.connected.wait() # wait for the monitor to be connected
 
-    a = AgentController(args.agent, args.config, start_instance=not args.no_agent)
+    a = AgentController(args.agent, args.config, number=3, start_instance=not args.no_agent)
     a.start()
     a.started.wait() # wait for the agent to be fully startedps
+
+    # it takes sometimes a while until simspark got the correct player number
+    wait_for(lambda: s.get_robot(3) is not None, 0.3)
+    # wait until the player is on the field
+    wait_for(lambda: s.get_robot(3)['z'] <= 0.2, 0.3)
 
     logging.info('Some Simspark commands')
 
     # some tests commands
-    s.cmd_dropball()
-    s.cmd_ballPos()
-    s.cmd_agentPos(1, -1, 0)
+    for i in range(4):
+        # prepare the test
+        s.cmd_dropball()                # put the ball into the game
+        # first place the robot! If we run this test multiple times, the robot could stand on the penalty mark and if the
+        # ball gets placed first, it would 'jump' away.
+        s.cmd_agentMove(3, 2, 0, r=-90) # place the robot in front of penalty mark
+        s.cmd_ballPos(2.64, 0)          # place the ball on the penalty mark
 
-    a.send_command(Command('Cognition:debugrequest:set',[('gamecontroller:play','on'.encode())]))
+        # if we do this test multiple times, the simulation commands are sometimes a little bit delayed
+        wait_for(lambda: s.get_ball()['x'] - 2.64 <= 0.01, 0.3)
 
-    time.sleep(4)
+        # put the robot in play mode
+        a.send_command(Command('Cognition:debugrequest:set',[('gamecontroller:play','on'.encode())]))
 
-    a.send_command(Command('Cognition:debugrequest:set', [('gamecontroller:play', 'off'.encode())]))
-    #a.send_command(Command('Cognition:representation:get', ['DebugRequest']))
+        # wait for robot touches the ball (the ball moved!)
+        wait_for(lambda: s.get_ball()['x'] - 2.64 > 0.01, 0.3)
 
-    logging.info('waiting ..')
-    while s.is_alive():
+        # its a simulation of a free kick - the ball should be touched only once
+        a.send_command(Command('Cognition:debugrequest:set', [('gamecontroller:play', 'off'.encode())]))
+
+        # HACK!: to preserve the previous ball location in subsequent function calls, we use a dict in global namespace.
+        #        Changes to the dict's elements doesn't change the reference to the dict itself - in contrast to other types
+        # TODO: is there a better way?
+        last_ball = {'b': s.get_ball()}
+        wait_for(ball_out_or_doesnt_move, 0.3, 0.1)
+
+        # print some infos
+        robot = s.get_robot(3)
+        print('Robot is at {},{}'.format(robot['x'], robot['y']))
+        ball = s.get_ball()
+        print('Ball is at {},{}'.format(ball['x'], ball['y']))
+
+        # print the result
+        if ball['x'] > 4.5 and abs(ball['y']) < 0.75:
+            print('GOAL!!!!')
+        else:
+            print('missed ... :(')
+
+        # wait before starting next round
         time.sleep(1)
 
     a.cancel()
@@ -75,7 +119,5 @@ if __name__ == "__main__":
 
     a.join()
     s.join()
-    #'''
-
 
     print('DONE')
