@@ -1,7 +1,5 @@
 import argparse
-import logging
 import math
-import os
 import shutil
 
 from Utils import *
@@ -17,6 +15,8 @@ def parseArguments():
         description='Performs some tests with simspark.',
         epilog= "Example:\n"
                 "\t{0}\n"
+                "\n\nNOTE:\n"
+                "For 'headless' execution you have to modify the 'rcssserverspl.rb' of your simspark installation and set '$enableInternalMonitor = false'."
                 "".format(os.path.basename(__file__)),
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
