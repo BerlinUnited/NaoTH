@@ -149,4 +149,7 @@ if __name__ == "__main__":
     s.join()
     #'''
 
+    # if one is created, it gets removed!
+    remove_simspark_logfile()
+
     print('DONE')
