@@ -3,10 +3,13 @@ import time
 import os
 
 
-def wait_for(condition, sleeper, min_time=0.0):
+def wait_for(condition, sleeper, min_time=0.0, *kwargs):
     _start = time.monotonic()
-    while not condition() or (time.monotonic() - _start) < min_time:
-        time.sleep(sleeper)
+    try:
+        while not condition(*kwargs) or (time.monotonic() - _start) < min_time:
+            time.sleep(sleeper)
+    except Exception as e:
+        logging.error(e)
 
 def wait_for_cmd(agent, cmd_id:int, sleeper=0.1):
     data = agent.command_result(cmd_id)
