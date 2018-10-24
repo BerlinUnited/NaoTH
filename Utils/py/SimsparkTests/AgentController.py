@@ -176,3 +176,9 @@ class AgentController(multiprocessing.Process):
             self.send_command(Command('Cognition:debugrequest:set', [(request, ('on' if enable else 'off').encode())]))
         elif type == 'motion':
             self.send_command(Command('Motion:debugrequest:set', [(request, ('on' if enable else 'off').encode())]))
+
+    def module(self, name:str, enable:bool, type:str='cognition'):
+        if type == 'cognition':
+            self.send_command(Command('Cognition:modules:set', [(name, ('on' if enable else 'off').encode())]))
+        elif type == 'motion':
+            self.send_command(Command('Motion:modules:set', [(name, ('on' if enable else 'off').encode())]))

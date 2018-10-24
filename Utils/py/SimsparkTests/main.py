@@ -72,6 +72,9 @@ if __name__ == "__main__":
 
     logging.info('Some Simspark commands')
 
+    # eg. for en-/disabling a module
+    #a.module('VirtualVisionProcessor', False)
+
     # some tests commands
     for i in range(4):
         # prepare the test
