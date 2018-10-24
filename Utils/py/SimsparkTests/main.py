@@ -85,13 +85,13 @@ if __name__ == "__main__":
         wait_for(lambda: s.get_ball()['x'] - 2.64 <= 0.01, 0.3)
 
         # put the robot in play mode
-        a.send_command(Command('Cognition:debugrequest:set',[('gamecontroller:play','on'.encode())]))
+        a.debugrequest('gamecontroller:play', True)
 
         # wait for robot touches the ball (the ball moved!)
         wait_for(lambda: s.get_ball()['x'] - 2.64 > 0.01, 0.3)
 
         # its a simulation of a free kick - the ball should be touched only once
-        a.send_command(Command('Cognition:debugrequest:set', [('gamecontroller:play', 'off'.encode())]))
+        a.debugrequest('gamecontroller:play', False)
 
         # HACK!: to preserve the previous ball location in subsequent function calls, we use a dict in global namespace.
         #        Changes to the dict's elements doesn't change the reference to the dict itself - in contrast to other types
