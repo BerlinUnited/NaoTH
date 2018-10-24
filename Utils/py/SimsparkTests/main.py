@@ -3,9 +3,9 @@ import logging
 import math
 import os
 import shutil
-import time
 
-from AgentController import AgentController, Command
+from Utils import *
+from AgentController import AgentController
 from SimsparkController import SimsparkController
 from naoth import Framework_Representations_pb2, BehaviorParser
 
@@ -26,18 +26,6 @@ def parseArguments():
     parser.add_argument('-na', '--no-agent', action='store_true', help="")
 
     return parser.parse_args()
-
-def wait_for(condition, sleeper, min_time=0.0):
-    _start = time.monotonic()
-    while not condition() or (time.monotonic() - _start) < min_time:
-        time.sleep(sleeper)
-
-def wait_for_cmd(cmd_id:int, sleeper=0.1):
-    data = a.command_result(cmd_id)
-    while data is None:
-        time.sleep(sleeper)
-        data = a.command_result(cmd_id)
-    return data
 
 
 def ball_out_or_doesnt_move():
@@ -76,7 +64,7 @@ if __name__ == "__main__":
     # create parser for the agents behavior
     parser = BehaviorParser()
     # in order to use the parser, we have to retrieve the complete behavior first
-    parser.init(wait_for_cmd(a.behavior(True)))
+    parser.init(wait_for_cmd(a, a.behavior(True)))
 
     # it takes sometimes a while until simspark got the correct player number
     wait_for(lambda: s.get_robot(3) is not None, 0.3)
