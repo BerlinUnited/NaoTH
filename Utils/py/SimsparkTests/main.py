@@ -7,7 +7,7 @@ import time
 
 from AgentController import AgentController, Command
 from SimsparkController import SimsparkController
-
+from naoth import Framework_Representations_pb2
 
 def parseArguments():
     parser = argparse.ArgumentParser(
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     #a.module('VirtualVisionProcessor', False)
 
     # some tests commands
-    for i in range(4):
+    for i in range(1):
         # prepare the test
         s.cmd_dropball()                # put the ball into the game
         # first place the robot! If we run this test multiple times, the robot could stand on the penalty mark and if the
@@ -90,8 +90,20 @@ if __name__ == "__main__":
         # put the robot in play mode
         a.debugrequest('gamecontroller:play', True)
 
+        pending_cmds = []
         # wait for robot touches the ball (the ball moved!)
-        wait_for(lambda: s.get_ball()['x'] - 2.64 > 0.01, 0.3)
+        #wait_for(lambda: s.get_ball()['x'] - 2.64 > 0.01, 0.3)
+        while not (s.get_ball()['x'] - 2.64 > 0.01):
+            pending_cmds.append(a.representation('FrameInfo', binary=True))
+
+            time.sleep(0.3)
+
+            for p in pending_cmds:
+                data = a.command_result(p)
+                if data:
+                    fi = Framework_Representations_pb2.FrameInfo()
+                    fi.ParseFromString(data)
+                    print(p, ':', fi.frameNumber, '@', fi.time)
 
         # its a simulation of a free kick - the ball should be touched only once
         a.debugrequest('gamecontroller:play', False)

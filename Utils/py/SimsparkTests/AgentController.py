@@ -1,3 +1,4 @@
+import ctypes
 import logging
 import multiprocessing
 import os
@@ -13,6 +14,7 @@ from naoth import Messages_pb2
 
 class Command:
     def __init__(self, name, args=None):
+        self.id = 0
         self.name = name
         self.args = args
 
@@ -47,10 +49,12 @@ class AgentController(multiprocessing.Process):
         self.port = None
 
         self.__p = None
+        self.__m = multiprocessing.Manager()
         self.__start_instance = start_instance
         self.__socket = None
         self.__cmd_q = multiprocessing.Queue()
-        self.__cmd_id = 1
+        self.__cmd_id = self.__m.Value(ctypes.c_long, 1)
+        self.__cmd_result = self.__m.dict()
 
         self.__cancel = multiprocessing.Event()
         self.__connected = multiprocessing.Event()
@@ -120,17 +124,11 @@ class AgentController(multiprocessing.Process):
                     self.__socket.setblocking(True)
                     length = struct.unpack("<I", self.__socket.recv(4))[0]
                     if length > 0:
-                        data = self.__socket.recv(length)
-                        # TODO: the caller should know, how to handle the response!?
-                        try:
-                            dbr = Messages_pb2.DebugRequest()
-                            dbr.ParseFromString(data)
-                            print(dbr)
-                        except Exception as e:
-                            print(e)
-                            print(data)
+                        # The command caller is responsible for retrieving the command result
+                        # TODO: what happens/todo, if the result is never retrieved?!
+                        self.__cmd_result[id] = self.__socket.recv(length)
                     else:
-                        logging.warning('Got invalid command data length!')
+                        logging.warning('Got invalid command data length! (%d)', id)
                 else:
                     logging.warning('Got invalid command id!')
 
@@ -140,16 +138,20 @@ class AgentController(multiprocessing.Process):
 
     def __send_commands(self):
         self.__socket.setblocking(True)
-
         while not self.__cmd_q.empty():
             cmd = self.__cmd_q.get()
-            #c = Messages_pb2.CMD(name='Cognition:representation:get', args=[Messages_pb2.CMDArg(name='DebugRequest')])
-            logging.info('Send command "%s"', cmd.get_name())
-            self.__socket.sendall(cmd.serialize(self.__cmd_id))
-            self.__cmd_id += 1
+            logging.info('Send command %d: "%s"', cmd.id, cmd.get_name())
+            self.__socket.sendall(cmd.serialize(cmd.id))
+
 
     def send_command(self, cmd:Command):
+        cmd.id = self.__cmd_id.value
         self.__cmd_q.put_nowait(cmd)
+        self.__cmd_id.set(self.__cmd_id.value + 1)
+        return cmd.id
+
+    def command_result(self, id):
+        return self.__cmd_result.pop(id, None)
 
     def run(self):
         self.__start_agent()
@@ -161,7 +163,6 @@ class AgentController(multiprocessing.Process):
         while not self.__cancel.is_set() and (not self.__start_instance or self.__p.poll() is None):
             if not self.__connected.is_set():
                 self.connect()
-                #self.send_command(Command('Cognition:representation:get', ['DebugRequest']))
 
             self.__send_heart_beat()
             self.__poll_answers()
@@ -173,12 +174,33 @@ class AgentController(multiprocessing.Process):
 
     def debugrequest(self, request:str, enable:bool, type:str='cognition'):
         if type == 'cognition':
-            self.send_command(Command('Cognition:debugrequest:set', [(request, ('on' if enable else 'off').encode())]))
+            return self.send_command(Command('Cognition:debugrequest:set', [(request, ('on' if enable else 'off').encode())]))
         elif type == 'motion':
-            self.send_command(Command('Motion:debugrequest:set', [(request, ('on' if enable else 'off').encode())]))
+            return self.send_command(Command('Motion:debugrequest:set', [(request, ('on' if enable else 'off').encode())]))
+        else:
+            logging.warning('Unknown debug request type! Allowed: "cognition", "motion"')
+        return 0
 
     def module(self, name:str, enable:bool, type:str='cognition'):
         if type == 'cognition':
-            self.send_command(Command('Cognition:modules:set', [(name, ('on' if enable else 'off').encode())]))
+            return self.send_command(Command('Cognition:modules:set', [(name, ('on' if enable else 'off').encode())]))
         elif type == 'motion':
-            self.send_command(Command('Motion:modules:set', [(name, ('on' if enable else 'off').encode())]))
+            return self.send_command(Command('Motion:modules:set', [(name, ('on' if enable else 'off').encode())]))
+        else:
+            logging.warning('Unknown module type! Allowed: "cognition", "motion"')
+        return 0
+
+    def representation(self, name:str, type:str='cognition', binary:bool=False):
+        if type == 'cognition':
+            if binary:
+                return self.send_command(Command('Cognition:representation:get', [name]))
+            else:
+                return self.send_command(Command('Cognition:representation:print', [name]))
+        elif type == 'motion':
+            if binary:
+                return self.send_command(Command('Motion:representation:get', [name]))
+            else:
+                return self.send_command(Command('Motion:representation:print', [name]))
+        else:
+            logging.warning('Unknown representation type! Allowed: "cognition", "motion"')
+        return 0
