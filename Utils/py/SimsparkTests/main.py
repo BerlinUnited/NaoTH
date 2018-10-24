@@ -10,6 +10,9 @@ from SimsparkController import SimsparkController
 from naoth import Framework_Representations_pb2, BehaviorParser
 
 def parseArguments():
+    # retrieve default path
+    naothsoccer = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../NaoTHSoccer'))
+
     parser = argparse.ArgumentParser(
         description='Performs some tests with simspark.',
         epilog= "Example:\n"
@@ -18,8 +21,8 @@ def parseArguments():
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
     parser.add_argument('-s', '--simspark', default='simspark', action='store', help="")
-    parser.add_argument('-a', '--agent', default='../../../NaoTHSoccer/dist/Native/naoth-simspark', action='store', help="")
-    parser.add_argument('-c', '--config', default='../../../NaoTHSoccer/', action='store', help="")
+    parser.add_argument('-a', '--agent', default=naothsoccer+'/dist/Native/naoth-simspark', action='store', help="")
+    parser.add_argument('-c', '--config', default=naothsoccer, action='store', help="")
     parser.add_argument('-v', '--verbose', action='store_true', help="")
 
     parser.add_argument('-ns', '--no-simspark', action='store_true', help="")
