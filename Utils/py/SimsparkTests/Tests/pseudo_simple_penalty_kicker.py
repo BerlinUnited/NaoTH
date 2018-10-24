@@ -13,11 +13,6 @@ def ball_out_or_doesnt_move(s, last_ball):
         return False
     return True
 
-def te(a,t):
-    t['s']+=1
-    print(a,t)
-    return True
-
 def pseudo_simple_penalty_kicker(args):
     s = SimsparkController(args.simspark, not args.no_simspark)
     s.start()

@@ -60,6 +60,10 @@ class AgentController(multiprocessing.Process):
         self.__connected = multiprocessing.Event()
         self.started = multiprocessing.Event()
 
+    def terminate(self):
+        self.__stop_agent()
+        super(AgentController, self).terminate()
+
     def __start_agent(self):
         if self.__start_instance:
             logging.info('Starting agent')

@@ -28,6 +28,10 @@ class SimsparkController(multiprocessing.Process):
         self.__cancel = multiprocessing.Event()
         self.connected = multiprocessing.Event()
 
+    def terminate(self):
+        self.__stop_application()
+        super(SimsparkController, self).terminate()
+
     def connect(self):
         # print(self.__p, self.__p.poll() is None)
         if not self.__start_instance or (self.__p and self.__p.poll() is None):
@@ -75,7 +79,6 @@ class SimsparkController(multiprocessing.Process):
 
     def run(self):
         self.__start_application()
-        # print(self.__p)
 
         while (not self.__start_instance or self.__p.poll() is None) and not self.__cancel.is_set():
             if not self.connected.is_set():

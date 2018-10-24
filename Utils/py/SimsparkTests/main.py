@@ -1,5 +1,6 @@
 import argparse
 import logging
+import multiprocessing
 import shutil
 import os
 
@@ -12,7 +13,10 @@ def parseArguments():
     naothsoccer = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../NaoTHSoccer'))
 
     parser = argparse.ArgumentParser(
-        description='Performs some tests with simspark.',
+        description='Performs some tests with simspark.\n'
+                    'The exit code indicates the success or failure of the tests. If a test fails, the exit code is increased.\n'
+                    'If an error occurred during the execution of a test, the exit code is increased by 100.\n'
+                    'For eg., if 4 tests are scheduled, one fails and another throws an exception, the exit code is "101".',
         epilog= "Example:\n"
                 "\t{0}\n"
                 "\n\nNOTE:\n"
@@ -57,6 +61,15 @@ if __name__ == "__main__":
                 except:
                     logging.error('An error occurred while executing test "%s"', name)
                     exit_code += 100
+
+                still_active = multiprocessing.active_children()
+                if still_active:
+                    logging.warning('Still some processes running - they get killed!')
+                    for p in still_active:
+                        p.terminate()
+                        p.join(1)
+                        if p.is_alive():
+                            p.kill()
             else:
                 logging.warning('Unknown test: "%s"', name)
 
