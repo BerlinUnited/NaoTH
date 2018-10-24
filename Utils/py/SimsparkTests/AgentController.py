@@ -25,7 +25,7 @@ class Command:
                 if isinstance(a, str):
                     cmd_args.append(Messages_pb2.CMDArg(name=a))
                 else:
-                    cmd_args.append(Messages_pb2.CMDArg(name=a[0], bytes=a[1]))
+                    cmd_args.append(Messages_pb2.CMDArg(name=a[0], bytes=a[1].encode()))
 
         proto = Messages_pb2.CMD(name=self.name, args=cmd_args)
         return struct.pack("<I", cmd_id) + struct.pack("<I", proto.ByteSize()) + proto.SerializeToString()
@@ -145,6 +145,13 @@ class AgentController(multiprocessing.Process):
 
 
     def send_command(self, cmd:Command):
+        """
+        Schedules a command for execution.
+
+        :param cmd: the command which should be scheduled/executed
+        :return: returns the command id, which can be used to retrieve the result afterwards. See :func:`~AgentController.command_result`
+        """
+
         cmd.id = self.__cmd_id.value
         self.__cmd_q.put_nowait(cmd)
         self.__cmd_id.set(self.__cmd_id.value + 1)
@@ -168,24 +175,24 @@ class AgentController(multiprocessing.Process):
             self.__poll_answers()
             self.__send_commands()
 
-            time.sleep(0.3)
+            time.sleep(0.1)
 
         self.__stop_agent()
 
     def debugrequest(self, request:str, enable:bool, type:str='cognition'):
         if type == 'cognition':
-            return self.send_command(Command('Cognition:debugrequest:set', [(request, ('on' if enable else 'off').encode())]))
+            return self.send_command(Command('Cognition:debugrequest:set', [(request, ('on' if enable else 'off'))]))
         elif type == 'motion':
-            return self.send_command(Command('Motion:debugrequest:set', [(request, ('on' if enable else 'off').encode())]))
+            return self.send_command(Command('Motion:debugrequest:set', [(request, ('on' if enable else 'off'))]))
         else:
             logging.warning('Unknown debug request type! Allowed: "cognition", "motion"')
         return 0
 
     def module(self, name:str, enable:bool, type:str='cognition'):
         if type == 'cognition':
-            return self.send_command(Command('Cognition:modules:set', [(name, ('on' if enable else 'off').encode())]))
+            return self.send_command(Command('Cognition:modules:set', [(name, ('on' if enable else 'off'))]))
         elif type == 'motion':
-            return self.send_command(Command('Motion:modules:set', [(name, ('on' if enable else 'off').encode())]))
+            return self.send_command(Command('Motion:modules:set', [(name, ('on' if enable else 'off'))]))
         else:
             logging.warning('Unknown module type! Allowed: "cognition", "motion"')
         return 0
@@ -204,3 +211,12 @@ class AgentController(multiprocessing.Process):
         else:
             logging.warning('Unknown representation type! Allowed: "cognition", "motion"')
         return 0
+
+    def agent(self, name:str):
+        return self.send_command(Command('Cognition:behavior:set_agent', [('agent', name)]))
+
+    def behavior(self, complete=False):
+        if complete:
+            return self.representation('BehaviorStateComplete', binary=True)
+        else:
+            return self.representation('BehaviorStateSparse', binary=True)

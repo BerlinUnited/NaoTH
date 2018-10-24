@@ -7,7 +7,7 @@ import time
 
 from AgentController import AgentController, Command
 from SimsparkController import SimsparkController
-from naoth import Framework_Representations_pb2
+from naoth import Framework_Representations_pb2, BehaviorParser
 
 def parseArguments():
     parser = argparse.ArgumentParser(
@@ -31,6 +31,14 @@ def wait_for(condition, sleeper, min_time=0.0):
     _start = time.monotonic()
     while not condition() or (time.monotonic() - _start) < min_time:
         time.sleep(sleeper)
+
+def wait_for_cmd(cmd_id:int, sleeper=0.1):
+    data = a.command_result(cmd_id)
+    while data is None:
+        time.sleep(sleeper)
+        data = a.command_result(cmd_id)
+    return data
+
 
 def ball_out_or_doesnt_move():
     _ = s.get_ball()
@@ -63,7 +71,12 @@ if __name__ == "__main__":
 
     a = AgentController(args.agent, args.config, number=3, start_instance=not args.no_agent)
     a.start()
-    a.started.wait() # wait for the agent to be fully startedps
+    a.started.wait() # wait for the agent to be fully started
+
+    # create parser for the agents behavior
+    parser = BehaviorParser()
+    # in order to use the parser, we have to retrieve the complete behavior first
+    parser.init(wait_for_cmd(a.behavior(True)))
 
     # it takes sometimes a while until simspark got the correct player number
     wait_for(lambda: s.get_robot(3) is not None, 0.3)
@@ -74,6 +87,7 @@ if __name__ == "__main__":
 
     # eg. for en-/disabling a module
     #a.module('VirtualVisionProcessor', False)
+    a.agent('path_spl_soccer')
 
     # some tests commands
     for i in range(1):
@@ -90,20 +104,28 @@ if __name__ == "__main__":
         # put the robot in play mode
         a.debugrequest('gamecontroller:play', True)
 
-        pending_cmds = []
+        pending_cmds = {}
         # wait for robot touches the ball (the ball moved!)
         #wait_for(lambda: s.get_ball()['x'] - 2.64 > 0.01, 0.3)
         while not (s.get_ball()['x'] - 2.64 > 0.01):
-            pending_cmds.append(a.representation('FrameInfo', binary=True))
+            pending_cmds[a.representation('FrameInfo', binary=True)] = 'FrameInfo'
+            pending_cmds[a.behavior()] = 'Behavior'
 
             time.sleep(0.3)
 
             for p in pending_cmds:
                 data = a.command_result(p)
                 if data:
-                    fi = Framework_Representations_pb2.FrameInfo()
-                    fi.ParseFromString(data)
-                    print(p, ':', fi.frameNumber, '@', fi.time)
+                    if pending_cmds[p] == 'FrameInfo':
+                        fi = Framework_Representations_pb2.FrameInfo()
+                        fi.ParseFromString(data)
+                        print(p, ':', fi.frameNumber, '@', fi.time)
+                    elif pending_cmds[p] == 'Behavior':
+                        parser.parse(data)
+                        if parser.isActiveOption('path_striker2018'):
+                            #print(parser.getActiveOptions())
+                            #print(parser.getActiveStates())
+                            print(parser.getActiveOptionState('path_striker2018'))
 
         # its a simulation of a free kick - the ball should be touched only once
         a.debugrequest('gamecontroller:play', False)
@@ -134,5 +156,6 @@ if __name__ == "__main__":
 
     a.join()
     s.join()
+    #'''
 
     print('DONE')
