@@ -13,12 +13,26 @@ from naoth import Messages_pb2
 
 
 class Command:
+    """Class representing a command for a simspark agent."""
+
     def __init__(self, name, args=None):
+        """
+        Constructor for the command.
+
+        :param name:    the name of the command
+        :param args:    additional arguments of the command
+        """
         self.id = 0
         self.name = name
         self.args = args
 
     def serialize(self, cmd_id):
+        """
+        Serializes the command to a byte representation in order to send it to the agent.
+
+        :param cmd_id:  the id for identifying the command
+        :return:        returns the bytes representation of this command
+        """
         cmd_args = []
         if self.args:
             for a in self.args:
@@ -31,15 +45,20 @@ class Command:
         return struct.pack("<I", cmd_id) + struct.pack("<I", proto.ByteSize()) + proto.SerializeToString()
 
     def get_name(self):
+        """Returns the name of this command."""
         return self.name
 
     def add_arg(self, arg):
+        """Adds an argument to this command."""
         self.args.append(arg)
 
 
 class AgentController(multiprocessing.Process):
+    """Represents the controlling instance of a simspark agent. It serves two purposes, first its starts the agent
+    application and second it sends debug and other requests to the instance."""
 
     def __init__(self, app, cwd, number=None, sync=True, start_instance=True):
+        """Constructor of the :AgentController:. Initializes public and private attributes."""
         super().__init__()
 
         self.app = os.path.abspath(app) if os.path.isfile(app) else app
@@ -61,10 +80,12 @@ class AgentController(multiprocessing.Process):
         self.started = multiprocessing.Event()
 
     def terminate(self):
+        """If this process instance gets killed, this is the last chance to kill the agent instance too."""
         self.__stop_agent()
         super(AgentController, self).terminate()
 
     def __start_agent(self):
+        """Starts a agent instance as separate process and waits until it is completely started."""
         if self.__start_instance:
             logging.info('Starting agent')
 
@@ -91,6 +112,7 @@ class AgentController(multiprocessing.Process):
             self.started.set()
 
     def __stop_agent(self):
+        """Stops a still active agent instance."""
         if self.__start_instance and self.__p.poll() is None:
             logging.info("Quit agent application")
             self.__p.send_signal(signal.SIGHUP)
@@ -107,19 +129,22 @@ class AgentController(multiprocessing.Process):
                     time.sleep(0.5)
 
     def cancel(self):
+        """Sets the canceled flag of this process."""
         self.__cancel.set()
 
     def connect(self):
+        """Connects to the agent instance"""
         self.__socket = socket.create_connection(('localhost', self.port))
         self.__connected.set()
 
     def __send_heart_beat(self):
-        ''' Send heart beat to agent. '''
+        """Send heart beat to agent."""
         if self.__socket:
             self.__socket.setblocking(True)
             self.__socket.sendall(struct.pack('!i', -1))
 
     def __poll_answers(self):
+        """Retrieves the answers of commands send to the agent."""
         if self.__socket:
             try:
                 self.__socket.setblocking(False)
@@ -141,6 +166,7 @@ class AgentController(multiprocessing.Process):
                 pass
 
     def __send_commands(self):
+        """Sends a command to the agent. The command is retrieved of the command queue."""
         self.__socket.setblocking(True)
         while not self.__cmd_q.empty():
             cmd = self.__cmd_q.get()
@@ -153,18 +179,26 @@ class AgentController(multiprocessing.Process):
         Schedules a command for execution.
 
         :param cmd: the command which should be scheduled/executed
-        :return: returns the command id, which can be used to retrieve the result afterwards. See :func:`~AgentController.command_result`
+        :return:    returns the command id, which can be used to retrieve the result afterwards. See :func:`~AgentController.command_result`
         """
-
         cmd.id = self.__cmd_id.value
         self.__cmd_q.put_nowait(cmd)
         self.__cmd_id.set(self.__cmd_id.value + 1)
         return cmd.id
 
     def command_result(self, id):
+        """
+        Returns the result of the command with :id:.
+        If the resault isn't available, None is returned.
+
+        :param id:  the id of the command
+        :return:    the result of the command, or None if the result isn't available
+        """
         return self.__cmd_result.pop(id, None)
 
     def run(self):
+        """The main method of this process. It starts the agent application, connects to it and also sends scheduled
+        commands to the agent (debug requests, representation, ...)."""
         self.__start_agent()
 
         if self.port is None:
@@ -184,6 +218,14 @@ class AgentController(multiprocessing.Process):
         self.__stop_agent()
 
     def debugrequest(self, request:str, enable:bool, type:str='cognition'):
+        """
+        Enables/Disables a debug request of the agent instance.
+
+        :param request: the debug request which should be en-/disabled
+        :param enable:  True, if debug request should be enabled, False if it should be disabled
+        :param type:    the type of the debug request ('cognition' or 'motion')
+        :return:        Returns the id of the scheduled command
+        """
         if type == 'cognition':
             return self.send_command(Command('Cognition:debugrequest:set', [(request, ('on' if enable else 'off'))]))
         elif type == 'motion':
@@ -193,6 +235,14 @@ class AgentController(multiprocessing.Process):
         return 0
 
     def module(self, name:str, enable:bool, type:str='cognition'):
+        """
+        Enables/Disables a module of the agent instance.
+
+        :param name:    the module which should be en-/disabled
+        :param enable:  True, if module should be enabled, False if it should be disabled
+        :param type:    the type of the module ('cognition' or 'motion')
+        :return:        Returns the id of the scheduled command
+        """
         if type == 'cognition':
             return self.send_command(Command('Cognition:modules:set', [(name, ('on' if enable else 'off'))]))
         elif type == 'motion':
@@ -202,6 +252,14 @@ class AgentController(multiprocessing.Process):
         return 0
 
     def representation(self, name:str, type:str='cognition', binary:bool=False):
+        """
+        Schedules a command for retrieving a representation.
+
+        :param name:    the name of the representation which should be retrieved.
+        :param type:    the type of the representation ('cognition' or 'motion')
+        :param binary:  whether the result should be binary (protobuf) or as string
+        :return:        Returns the id of the scheduled command
+        """
         if type == 'cognition':
             if binary:
                 return self.send_command(Command('Cognition:representation:get', [name]))
@@ -217,9 +275,21 @@ class AgentController(multiprocessing.Process):
         return 0
 
     def agent(self, name:str):
+        """
+        Selects an named agent for execution.
+
+        :param name: the name of the agent (behavior), which should be executed
+        :return:    Returns the id of the scheduled command
+        """
         return self.send_command(Command('Cognition:behavior:set_agent', [('agent', name)]))
 
     def behavior(self, complete=False):
+        """
+        Schedules a command for retrieving the current behavior of the agent.
+
+        :param complete: True, if the complete behavior tree should be retrieved, False otherwise (sparse)
+        :return:    Returns the id of the scheduled command
+        """
         if complete:
             return self.representation('BehaviorStateComplete', binary=True)
         else:

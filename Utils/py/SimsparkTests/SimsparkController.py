@@ -10,7 +10,13 @@ import sexpr
 
 
 class SimsparkController(multiprocessing.Process):
+    """Represents the controlling class of an simspark instance. It serves two purposes, first its starts the simspark
+    application and second it acts as simspark monitor to send (trainer) commands to the simspark instance.
+    All available trainer commands can be found here at:
+    http://simspark.sourceforge.net/wiki/index.php/Network_Protocol#Command_Messages_from_Coach.2FTrainer"""
+
     def __init__(self, app, start_instance=True):
+        """Constructor of the :SimsparkController:. Initializes public and private attributes."""
         super().__init__()
 
         self.app = app
@@ -29,11 +35,13 @@ class SimsparkController(multiprocessing.Process):
         self.connected = multiprocessing.Event()
 
     def terminate(self):
+        """If this process instance gets killed, this is the last chance to kill the simspark instance too."""
         self.__stop_application()
         super(SimsparkController, self).terminate()
 
     def connect(self):
-        # print(self.__p, self.__p.poll() is None)
+        """Tries to connect to a running simspark instance. The instance could be started by this class or was started
+        externally."""
         if not self.__start_instance or (self.__p and self.__p.poll() is None):
             logging.info("Connecting to simspark")
             try:
@@ -48,18 +56,26 @@ class SimsparkController(multiprocessing.Process):
             logging.error("Simspark isn't running!?")
 
     def disconnect(self):
+        """Disconnects this simspark monitor from the simspark instance."""
         if self.socket:
             self.socket.close()
             self.socket = None
             self.connected.clear()
 
     def cancel(self):
+        """Sets the canceled flag of this process."""
         self.__cancel.set()
 
     def is_connected(self):
+        """
+        Returns if th monitor is still connected to the simspark instance
+
+        :return: True, if connected, False otherwise
+        """
         return self.connected.is_set()
 
     def __start_application(self):
+        """Starts a simspark instance as separate process and waits until it is completely started."""
         if self.__start_instance:
             logging.info('Start Simspark')
             self.__p = subprocess.Popen([self.app], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -73,26 +89,29 @@ class SimsparkController(multiprocessing.Process):
             logging.info('No instance of Simspark started!')
 
     def __stop_application(self):
+        """Stops a still active simspark instance."""
         if self.__p and self.__p.poll() is None:
             logging.info("Quit simspark application")
             self.__p.kill()
 
     def run(self):
+        """The main method of this process. It starts the simspark application, connects to it and receives updates of
+        the simulation state and also sends scheduled commands to the simulation."""
         self.__start_application()
 
         while (not self.__start_instance or self.__p.poll() is None) and not self.__cancel.is_set():
+            # connect to the simspark instance
             if not self.connected.is_set():
                 self.connect()
             else:
                 length = struct.unpack("!I", self.socket.recv(4))[0]
-                # print(length)
                 msg = self.socket.recv(length).decode()
-                # print(msg)
                 sexp = sexpr.str2sexpr(msg)
 
                 self.__update_environment(sexp[0])
                 self.__update_scene(sexp[1:])
 
+                # send scheduled (trainer) commands
                 if not self.__cmd_queue.empty():
                     cmd = self.__cmd_queue.get()
                     logging.debug(cmd)
@@ -105,6 +124,13 @@ class SimsparkController(multiprocessing.Process):
         self.__stop_application()
 
     def __update_environment(self, data):
+        """
+        Updates the internal state of the simspark environment. The environment contains information about the game time,
+        the messages of the player, the game state and much more.
+
+        :param data:    the updated environment infos as list of key/value pairs
+        :return:        None
+        """
         for item in data:
             if item[0] == 'messages':
                 if len(item) > 1:
@@ -117,6 +143,15 @@ class SimsparkController(multiprocessing.Process):
                 self.__environment[item[0]] = item[1]
 
     def __update_scene(self, data):
+        """
+        Updates the internal scene state of the simspark simulation. This is necessary to retrieve the position of the
+        simulated agents and of the ball. Simspark sends a 'full scene graph' each time a simulated object is add/removed,
+        otherwise a 'sparse scene graph' is send with only the value of the simulated objects which changed. Only the
+        position of the agents and the soccerball are extracted and saved, other objects are ignored.
+
+        :param data:    the scene graph full/sparse as list of lists
+        :return:        None
+        """
         name, version, subversion = data[0]
 
         if name == 'RSG':  # Ruby Scene Graph, and indicates that the scene graph is a full description of the environment.
@@ -129,6 +164,7 @@ class SimsparkController(multiprocessing.Process):
                     # found soccer ball
                     self.__scene.append({ 'type': 'soccerball', 'x':float(nd[2][13]), 'y':float(nd[2][14]), 'z':float(nd[2][15]) })
                 elif len(nd) >= 4 and len(nd[3]) >= 4 and len(nd[3][3]) >= 4 and len(nd[3][3][3]) >= 4 and 'naobody' in nd[3][3][3][3][1]:
+                    # found an agent
                     pose = self.__get_robot_pose(nd[3][2][1:])
                     # set the nao infos
                     self.__scene.append({
@@ -140,11 +176,9 @@ class SimsparkController(multiprocessing.Process):
                         'z': pose[2],
                         'r': pose[3]
                     })
-                    #print(self.__scene)
                 else:
                     # 'unknown' object
                     self.__scene.append({ 'type': 'node'})
-                    #print(nd)
         elif name == 'RDS':  # Ruby Diff Scene, and indicates that the scene graph is a partial description of the environment
             # check scene graph
             if len(self.__scene) == len(data[1]):
@@ -173,6 +207,14 @@ class SimsparkController(multiprocessing.Process):
             logging.warning('invalid scene graph update!')
 
     def __get_robot_pose(self, data):
+        """
+        Retrieves the transformation matrix of the agent of the (sub-)scene graph and calculates the position of the
+        agent. The matrix of the scene graph is a little bit different than what the robot would receive from the
+        simulation.
+
+        :param data:    the (sub-)scene graph which contains the transformation matrix of the agent
+        :return:        a tuple (x,y,z,r) of the agents position
+        """
         # make a rotation matrix
         _ = list(map(float, data))
         r = [[_[4], -_[0], _[8], _[12]],
@@ -185,6 +227,13 @@ class SimsparkController(multiprocessing.Process):
         return r[0][3], r[1][3], r[2][3], z
 
     def get_robots(self, team=None):
+        """
+        Returns all robots acitve in the simulation. If a team is set ('Left' or 'Right') only the robots of this team
+        are returned.
+
+        :param team:    limit the returned robots to the selected team (None, 'Left', 'Right')
+        :return:        a list of the robots in the simulation
+        """
         robots = []
         for nd in self.__scene:
             if nd['type'] == 'nao' and (team is None or team == nd['team']):
@@ -192,60 +241,104 @@ class SimsparkController(multiprocessing.Process):
         return robots
 
     def get_robot(self, number, team='Left'):
+        """
+        Returns the robot with the :number: and :team: in the simulation. If the player number wasn't found None is
+        returned.
+
+        :param number:  the player number of the robot, which should be returned
+        :param team:    the team number of the player, default is 'Left'
+        :return:        None or the found player infos
+        """
         for i, nd in enumerate(self.__scene):
             if nd['type'] == 'nao' and nd['team'] == team and nd['number'] == number:
                 return nd
         return None
 
     def get_ball(self):
+        """
+        Returns the ball informations in the simulation. If there's no ball in the simulation None is returned.
+
+        :return:    None or the ball infos
+        """
         for i, nd in enumerate(self.__scene):
             if nd['type'] == 'soccerball':
                 return nd
         return None
 
     def cmd_dropball(self):
+        """Schedules the '(dropBall)' trainer command for the simspark instance."""
         self.__cmd_queue.put('(dropBall)')
 
     def cmd_ballPos(self, x=0.0, y=0.0, z=0.05):
+        """Schedules the '(ball (pos x y z))' trainer command for the simspark instance."""
         self.__cmd_queue.put('(ball (pos {} {} {}))'.format(x, y, z))
 
     def cmd_ballPosVel(self, x=0.0, y=0.0, z=0.05, vx=0.0, vy=0.0, vz=0.0):
+        """Schedules the '(ball (pos x y z)(vel vx vy vz))' trainer command for the simspark instance."""
         self.__cmd_queue.put('(ball (pos {} {} {})(vel {} {} {}))'.format(x, y, z, vx, vy, vz))
 
     def cmd_killsim(self):
+        """Schedules the '(killsim)' trainer command for the simspark instance."""
         self.__cmd_queue.put('(killsim)')
 
     def cmd_agentPos(self, n, x, y, z=0.2, t='Left'):
+        """Schedules the '(agent (unum n) (team t) (pos x y z))' trainer command for the simspark instance."""
         self.__cmd_queue.put('(agent (unum {}) (team {}) (pos {} {} {}))'.format(n, t, x, y, z))
 
     def cmd_agentMove(self, n, x, y, z=0.2, r=0.0, t='Left'):
+        """Schedules the '(agent (unum n) (team t) (move x y z r))' trainer command for the simspark instance."""
         self.__cmd_queue.put('(agent (unum {}) (team {}) (move {} {} {} {}))'.format(n, t, x, y, z, r))
 
     def cmd_agentBat(self, n, bat, t='Left'):
+        """Schedules the '(agent (unum n) (team t) (battery bat))' trainer command for the simspark instance."""
         self.__cmd_queue.put('(agent (unum {}) (team {}) (battery {}))'.format(n, t, bat))
 
     def cmd_agentTemp(self, n, temp, t='Left'):
+        """Schedules the '(agent (unum n) (team t) (temperature temp))' trainer command for the simspark instance."""
         self.__cmd_queue.put('(agent (unum {}) (team {}) (temperature {}))'.format(n, t, temp))
 
+    def cmd_agentPosMoveBatTemp(self, n, x, y, z=0.2, mx=0.0, my=0.0, mz=0.0, mr=0.0, bat=100.0, temp=30.0, t='Left'):
+        """Schedules the '(agent (unum n) (team t) (pos x y z)(move x y z r)(battery bat)(temperature temp))' trainer command for the simspark instance."""
+        self.__cmd_queue.put('(agent (unum {}) (team {}) (pos {} {} {})(move {} {} {} {})(battery {})(temperature {}))'.format(n, t, x, y, z, mx, my, mz, mr, bat, temp))
+
     def cmd_kickoff(self, t='None'):
-        ''' Sends the "kickoff" command to the simspark instance.
-            Accepted values are: "None", "Left", "Right"
-        '''
+        """Schedules the '(kickOff t)' trainer command for the simspark instance. Accepted values are: "None", "Left", "Right"""
         self.__cmd_queue.put('(kickOff {})'.format(t))
 
+    def cmd_select(self, n, t='Left'):
+        """Schedules the '(select (unum n) (team n))' trainer command for the simspark instance."""
+        self.__cmd_queue.put('(select (unum {}) (team {}))'.format(n, t))
+
+    def cmd_reposSelected(self):
+        """Schedules the '(repos)' trainer command for the simspark instance."""
+        self.__cmd_queue.put('(repos)')
+
+    def cmd_repos(self, n, t='Left'):
+        """Schedules the '(repos (unum n) (team t))' trainer command for the simspark instance."""
+        self.__cmd_queue.put('(repos (unum {}) (team {}))'.format(n, t))
+
+    def cmd_killSelected(self):
+        """Schedules the '(repos)' trainer command for the simspark instance."""
+        self.__cmd_queue.put('(kill)')
+
+    def cmd_kill(self, n, t):
+        """Schedules the '(kill (unum n) (team t))' trainer command for the simspark instance."""
+        self.__cmd_queue.put('(kill (unum {}) (team {}))'.format(n, t))
+
     def cmd_reqfullstate(self):
+        """Schedules the '(reqfullstate)' trainer command for the simspark instance. This command is mainly relevant for
+        the simspark monitors."""
         self.__cmd_queue.put('(reqfullstate)')
 
-    '''
-    "(playMode )",  
-    "(agent (unum <num>) (team <team>) (pos <x> <y> <z>)(move <x> <y> <z> <rot>)(battery <batterylevel>)(temperature <temperature>))", 
-    "(select (unum <num>) (team <team>))", 
-    "(kill)", 
-    "(kill (unum <num>) (team <team>))", 
-    "(repos)", 
-    "(repos (unum <num>) (team <team>))", 
-    "(time <time>)", 
-    "(score (left <score>) (right <score>))",
-    "(reqfullstate)"
+    def cmd_time(self, time):
+        """Schedules the '(time t)' trainer command for the simspark instance."""
+        self.__cmd_queue.put('(time {})'.format(time))
 
-    '''
+    def cmd_score(self, score_left, score_right):
+        """Schedules the '(score (left sl) (right sr))' trainer command for the simspark instance."""
+        self.__cmd_queue.put('(score (left {}) (right {}))'.format(score_left, score_right))
+
+    def cmd_playMode(self, mode):
+        """Schedules the '(playMode mode)' trainer command for the simspark instance.
+        Available play modes can be found at: http://simspark.sourceforge.net/wiki/index.php/Play_Modes"""
+        self.__cmd_queue.put('(playMode {})'.format(mode))
