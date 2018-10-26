@@ -44,7 +44,8 @@ option free_kick_own
         goto search_ball;
       } else if(abs(value = atan2(y=ball.preview.y, x=ball.preview.x)) >= 50) {
         goto turn_to_ball;
-      } else if(game.msecsRemainingSecondary <= 10000) { // 10 seconds
+      } else if(game.msecsRemainingSecondary <= 20000) { // 20 seconds
+        // TODO: we should know if someone is fallen! if that's not the case, we can position us much earlier!
         // all teammates should be up again (if fallen) and it should be clear who's striker!
         if(team.calc_if_is_striker) {
           goto first_position_for_free_kick;

@@ -49,8 +49,10 @@ option free_kick_opp_goal
     }
     action {
       // TODO: could be more sophisticated! eg. use relative coordinates than just 10cm from the sideline or the robot could "cut corners" is he knows where the ball is!
+      head.control_mode = search_for_ball;
       go_to_point_with_USOA(x=field.xPosOppPenaltyMark-200, 
-                            y=(robot_pose.y>0?field.yPosLeftSideline:field.yPosRightSideline)+(robot_pose.y>0?-1:1)*100, 
+                            y= abs(value=robot_pose.y) < field.yPosLeftPenaltyArea ? 0 : // if we are in the penalty area, move back to the center
+                              ((robot_pose.y>0?field.yPosLeftSideline:field.yPosRightSideline)+(robot_pose.y>0?-1:1)*100), // otherwise move to the sideline
                             rot=0);
     }
   }
@@ -70,6 +72,7 @@ option free_kick_opp_goal
     }
     action {
       // TODO: if there are multiple robots, all wants to go to the same position?!
+      head.control_mode = search_for_ball;
       go_to_point_with_USOA(x=field.xPosOppPenaltyMark - field.centerCircleRadius - 100,
                             y=robot_pose.y>0?field.yPosLeftPenaltyArea:field.yPosRightPenaltyArea,
                             rot=0);
@@ -91,6 +94,7 @@ option free_kick_opp_goal
     }
     action {
       // TODO: if there are multiple robots, all wants to go to the same position?!
+      head.control_mode = look_at_ball;
       go_to_point_with_USOA(x=ball.position.field.x-field.centerCircleRadius-100, 
                             y=ball.position.field.y, 
                             rot=0);
@@ -110,6 +114,7 @@ option free_kick_opp_goal
       }
     }
     action {
+      head.control_mode = look_at_ball;
       go_to_point_with_USOA(x=ball.position.field.x-field.centerCircleRadius-100, 
                             y=ball.position.field.y, 
                             rot=0);
@@ -129,6 +134,7 @@ option free_kick_opp_goal
       }
     }
     action {
+      head.control_mode = search_for_ball;
       go_to_point_with_USOA(x=ball.team.position_field.x-field.centerCircleRadius-100,
                             y=ball.team.position_field.y, 
                             rot=0);
@@ -146,6 +152,7 @@ option free_kick_opp_goal
     }
     action {
       // TODO: what happens if two (or more) robots are on the same "height" (x-coordinate)?!
+      head.control_mode = search_for_ball;
       go_to_point_with_USOA(x=robot_pose.x, 
                             y=(robot_pose.y>0?1:-1)*field.centerCircleRadius * 0.75, 
                             rot=0);

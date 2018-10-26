@@ -60,6 +60,7 @@ option free_kick_opp
     }
     action {
       // position on a line between goal (middle of it) and ball
+      head.control_mode = look_at_ball;
       go_to_point_with_USOA(x=field.xPosOwnGroundline + 200,
                             y=clip(value=((0-ball.preview.y)/(field.xPosOwnGroundline-ball.preview.x))*200, min=field.yPosRightGoal, max=field.yPosLeftGoal),
                             rot=normalize(angle=atan2(y = ball.preview.y, x = ball.preview.x)));
@@ -79,6 +80,7 @@ option free_kick_opp
     }
     action {
       // position on a line between goal (middle of it) and teamball
+      head.control_mode = search_for_ball;
       go_to_point_with_USOA(x=field.xPosOwnGroundline + 200,
                             y=clip(value=((0-ball.team.position_field.y)/(field.xPosOwnGroundline-ball.team.position_field.x))*200, min=field.yPosRightGoal, max=field.yPosLeftGoal),
                             rot=normalize(angle=atan2(y = ball.team.position.y, x = ball.team.position.x)));
@@ -122,6 +124,7 @@ option free_kick_opp
       // TODO: what happens, if the robot is near a side/groundline?!
       // TODO: how do we rotate?!?
       // TODO: we should position us between ball and own goal!
+      head.control_mode = look_at_ball;
       go_to_point_with_USOA(x=ball.position.field.x - field.centerCircleRadius - 100,
                             y=ball.position.field.y,
                             rot=0);
@@ -140,6 +143,7 @@ option free_kick_opp
     action {
       // TODO: what happens, if the robot is near a side/groundline?!
       // TODO: we should position us between ball and own goal!
+      head.control_mode = search_for_ball;
       go_to_point_with_USOA(x=ball.team.position_field.x-field.centerCircleRadius-100, 
                             y=ball.team.position_field.y, 
                             rot=0);
@@ -158,6 +162,7 @@ option free_kick_opp
     action {
       // TODO: what happens, if the robot is near a side/groundline?!
       // TODO: we should position us between ball and own goal!
+      head.control_mode = search_for_ball;
       go_to_point_with_USOA(x=freekick.pos.x-field.centerCircleRadius-120, 
                             y=freekick.pos.y, 
                             rot=0);

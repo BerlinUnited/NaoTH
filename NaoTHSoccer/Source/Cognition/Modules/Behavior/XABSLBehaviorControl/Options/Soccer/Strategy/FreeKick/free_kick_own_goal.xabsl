@@ -58,7 +58,6 @@ option free_kick_own_goal
         y=ball.position.field.y >= 0 ? field.yPosLeftPenaltyArea : field.yPosRightPenaltyArea,
         rot=0);
       head.control_mode = look_at_ball;
-      
     }
   }
 
@@ -122,7 +121,6 @@ option free_kick_own_goal
     }
     action {
       motion.type = stand;
-      // TODO: needs the goalie to turn his body to look at the corner?
       head.control_mode = none;
 
       head.motion_type = look_at_world_point;
@@ -318,6 +316,7 @@ option free_kick_own_goal
     }
     action
     {
+      head.control_mode = look_at_ball;
       motion.type = stand;
     }
   }
