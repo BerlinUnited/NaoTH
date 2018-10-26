@@ -48,7 +48,7 @@ can be found in the "Third-Party-Licenses" folder.
   -- MPL2
 * FFTW
   -- GNU LIBRARY GENERAL PUBLIC LICENSE Version 2
-* lib64
+* libb64
   -- Public Domain
 * picojson
   -- BSD 2-Clause
