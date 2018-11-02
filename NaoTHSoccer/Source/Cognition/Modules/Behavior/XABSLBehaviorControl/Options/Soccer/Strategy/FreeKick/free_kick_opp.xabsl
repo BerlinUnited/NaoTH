@@ -125,16 +125,16 @@ option free_kick_opp
       // TODO: how do we rotate?!?
       // TODO: we should position us between ball and own goal!
       head.control_mode = look_at_ball;
-      go_to_point_with_USOA(x=ball.position.field.x - field.centerCircleRadius - 100,
+      go_to_point_with_USOA(x=ball.position.field.x + (robot_pose.x<ball.position.field.x ? -field.centerCircleRadius-100 : field.centerCircleRadius+100),
                             y=ball.position.field.y,
-                            rot=0);
+                            rot=robot_pose.x<ball.position.field.x?0:atan2(y = ball.position.field.y, x = ball.position.field.x));
     }
   }
 
   // the robot doesn't know where the ball is, but the team does - move away from the teamball position
   state player_move_away_from_teamball {
     decision {
-      if(!ball.team.is_valid || action_done) {
+      if(ball.know_where_itis || !ball.team.is_valid || action_done) {
         goto decide;
       } else {
         stay;
@@ -144,9 +144,9 @@ option free_kick_opp
       // TODO: what happens, if the robot is near a side/groundline?!
       // TODO: we should position us between ball and own goal!
       head.control_mode = search_for_ball;
-      go_to_point_with_USOA(x=ball.team.position_field.x-field.centerCircleRadius-100, 
+      go_to_point_with_USOA(x=ball.team.position_field.x + (robot_pose.x<ball.team.position_field.x ? -field.centerCircleRadius-100 : field.centerCircleRadius+100),
                             y=ball.team.position_field.y, 
-                            rot=0);
+                            rot=robot_pose.x<ball.team.position_field.x?0:atan2(y = ball.team.position_field.y, x = ball.team.position_field.x));
     }
   }
 
@@ -163,9 +163,9 @@ option free_kick_opp
       // TODO: what happens, if the robot is near a side/groundline?!
       // TODO: we should position us between ball and own goal!
       head.control_mode = search_for_ball;
-      go_to_point_with_USOA(x=freekick.pos.x-field.centerCircleRadius-120, 
+      go_to_point_with_USOA(x=freekick.pos.x + (robot_pose.x<freekick.pos.x ? -field.centerCircleRadius-120 : field.centerCircleRadius+120),
                             y=freekick.pos.y, 
-                            rot=0);
+                            rot=robot_pose.x<freekick.pos.x?0:atan2(y = freekick.pos.y, x = freekick.pos.x));
     }
   }
 
