@@ -7,7 +7,7 @@ option free_kick_opp
     decision {
       if(game.player_number == 1) {
         goto goalie_position_free_kick;
-      } else if(ball.know_where_itis && vector.abs(x=ball.preview.x, y=ball.preview.y) <= field.centerCircleRadius) {
+      } else if(ball.know_where_itis && ball.distance <= field.centerCircleRadius) {
         goto player_move_away_from_ball;
       } else if(ball.team.is_valid && vector.abs(x=ball.team.position.x, y=ball.team.position.y) < field.centerCircleRadius) {
         goto player_move_away_from_teamball;
@@ -114,20 +114,14 @@ option free_kick_opp
   // robot knows where the ball is and moves away from it
   state player_move_away_from_ball {
     decision {
-      if(!ball.know_where_itis || action_done) {
+      if(action_done) {
         goto decide;
       } else {
         stay;
       }
     }
     action {
-      // TODO: what happens, if the robot is near a side/groundline?!
-      // TODO: how do we rotate?!?
-      // TODO: we should position us between ball and own goal!
-      head.control_mode = look_at_ball;
-      go_to_point_with_USOA(x=ball.position.field.x + (robot_pose.x<ball.position.field.x ? -field.centerCircleRadius-100 : field.centerCircleRadius+100),
-                            y=ball.position.field.y,
-                            rot=robot_pose.x<ball.position.field.x?0:atan2(y = ball.position.field.y, x = ball.position.field.x));
+      avoid_region_go_own_goal(x=ball.position.field.x, y=ball.position.field.y, distance=field.centerCircleRadius);
     }
   }
 

@@ -1,0 +1,121 @@
+option avoid_region_go_own_goal
+{
+  float @x;
+  float @y;
+  float @distance;
+
+  initial state init
+  {
+    decision {
+      if(robot_pose.x<@x && abs(value=robot_pose.y)<abs(value=@y)) {
+        // lower quadrant to the middle
+        goto move_away;
+      } else if(robot_pose.x<@x) {
+        // lower quadrant far from the middle
+        goto move_away_x;
+      } else if(abs(value=robot_pose.y)<abs(value=@y)) {
+        // upper quadrant to the middle
+        goto move_away_y;
+      } else {
+        // upper quadrant far from the middle
+        goto move_away_xy;
+      }
+    }
+    action {
+    }
+  }
+
+  state move_away
+  {
+    decision {
+      if(action_done) {
+        goto done;
+      } else {
+        stay;
+      }
+    }
+    action {
+      // TODO: what happens, if the robot is near a side/groundline?!
+      // TODO: how do we rotate?!?
+      // TODO: we should position us between ball and own goal!
+      head.control_mode = search_for_ball; //look_at_ball;
+      go_to_point_with_USOA(x=field.xPosOwnGroundline+(@x-field.xPosOwnGroundline) - ((@distance+100)*(@x-field.xPosOwnGroundline))/vector.abs(x=(@x-field.xPosOwnGroundline), y=@y), 
+                            y=(@y) - ((@distance+100)*(@y))/vector.abs(x=(@x-field.xPosOwnGroundline), y=@y), 
+                            rot=0//normalize(angle=atan2(y = ball.preview.y, x = ball.preview.x)) //robot_pose.x<ball.position.field.x?0:atan2(y = ball.position.field.y, x = ball.position.field.x)
+                            );
+      /*
+      go_to_point_with_USOA(x=clip(value=ball.position.field.x + (robot_pose.x<ball.position.field.x ? -field.centerCircleRadius-100 : field.centerCircleRadius+100), min=field.xPosOwnGroundline+100, max=field.xPosOpponentGroundline-100),
+                            y=ball.position.field.y + 
+                              * (field.xPosOwnGroundline-clip(value=ball.position.field.x + (robot_pose.x<ball.position.field.x ? -field.centerCircleRadius-100 : field.centerCircleRadius+100), min=field.xPosOwnGroundline+100, max=field.xPosOpponentGroundline-100))
+                              / (field.xPosOwnGroundline - ball.position.field.x),
+                            rot=robot_pose.x<ball.position.field.x?0:atan2(y = ball.position.field.y, x = ball.position.field.x));
+      */
+    }
+  }
+
+  state move_away_x {
+    decision {
+      if(action_done) {
+        goto move_away;
+      } else {
+        stay;
+      }
+    }
+    action {
+      // TODO: what happens, if the robot is near a side/groundline?!
+      // TODO: how do we rotate?!?
+      go_to_point_with_USOA(x=@x-@distance,
+                            y=robot_pose.y,
+                            rot=0.0);
+    }
+  }
+
+  state move_away_y {
+    decision {
+      if(action_done) {
+        goto move_away;
+      } else {
+        stay;
+      }
+    }
+    action {
+      // TODO: what happens, if the robot is near a side/groundline?!
+      // TODO: how do we rotate?!?
+      go_to_point_with_USOA(x=robot_pose.x,
+                            y=@y+(@y<0?@distance:-@distance),
+                            rot=0.0);
+    }
+  }
+
+  state move_away_xy {
+    decision {
+      if(action_done) {
+        if(robot_pose.x<@x)
+          goto move_away_x;
+        else //if(abs(value=robot_pose.y)<abs(value=ball.position.field.y))
+          goto move_away_y;
+      } else {
+        stay;
+      }
+    }
+    action {
+      // TODO: what happens, if the robot is near a side/groundline?!
+      // TODO: how do we rotate?!?      
+      go_to_point_with_USOA(x=abs(value=robot_pose.x-@x) <= abs(value=robot_pose.y-@y)?@x:(@x+@distance),
+                            y=abs(value=robot_pose.x-@x) <= abs(value=robot_pose.y-@y)?(@y+(@y<0?-@distance:@distance)):@y,
+                            rot=0.0);
+    }
+  }
+
+  target state done
+  {
+    decision {
+      if(vector.abs(x=robot_pose.x-@x, y=robot_pose.y-@y) <= @distance)
+        goto init;
+      else
+        stay;
+    }
+    action {
+    }
+  }
+}
