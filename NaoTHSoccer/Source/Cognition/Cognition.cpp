@@ -48,7 +48,6 @@
 #include "Modules/SelfAwareness/CameraMatrixCorrectorV3/CameraMatrixCorrectorV3.h"
 
 #include "Modules/VisualCortex/HistogramProvider.h"
-#include "Modules/VisualCortex/SimpleFieldColorClassifier/SimpleFieldColorClassifier.h"
 #include "Modules/VisualCortex/FieldColorClassifier.h"
 #include "Modules/VisualCortex/ScanLineEdgelDetector/ScanLineEdgelDetector.h"
 #include "Modules/VisualCortex/FieldDetector/FieldDetector.h"
@@ -169,7 +168,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(HistogramProvider);
   REGISTER_MODULE(IntegralImageProvider);
-  REGISTER_MODULE(SimpleFieldColorClassifier);
   REGISTER_MODULE(FieldColorClassifier);
   REGISTER_MODULE(ScanLineEdgelDetector);
   REGISTER_MODULE(FieldDetector);
