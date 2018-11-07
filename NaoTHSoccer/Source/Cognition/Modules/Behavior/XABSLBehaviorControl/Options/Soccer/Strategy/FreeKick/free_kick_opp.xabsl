@@ -121,6 +121,7 @@ option free_kick_opp
       }
     }
     action {
+      head.control_mode = search_for_ball;
       avoid_region_go_own_goal(x=ball.position.field.x, y=ball.position.field.y, distance=field.centerCircleRadius);
     }
   }
