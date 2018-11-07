@@ -56,6 +56,10 @@ class BehaviorParser:
 
     def init(self, data):
         if data is not None:
+            # check given data
+            if data == b'unknown representation\n':
+                raise Exception('Unknown representation')
+
             message = self.__parser.parse('BehaviorStateComplete', data)
 
             # initialize options

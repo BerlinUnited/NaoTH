@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf8 -*-
+
 import argparse
 import logging
 import multiprocessing
@@ -72,6 +75,9 @@ if __name__ == "__main__":
                 except:
                     logging.error('An error occurred while executing test "%s"', name)
                     exit_code += 100
+                    # print the traceback for easier debugging
+                    import traceback
+                    traceback.print_exc()
 
                 # kill processes which are still active
                 still_active = multiprocessing.active_children()
