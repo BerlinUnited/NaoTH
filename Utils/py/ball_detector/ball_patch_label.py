@@ -77,9 +77,8 @@ class PatchLabeling:
         if event.xdata is not None and event.ydata is not None:
             y = int(event.ydata+0.5) / (self.patch_size[1]+1)
             x = int(event.xdata+0.5) / (self.patch_size[0]+1)
-
             if 0 <= y < self.show_size[1] and 0 <= x < self.show_size[0]:
-                i = self.show_size[0]*y + x
+                i = self.show_size[0]*int(y) + int(x)
                 if self.labels[self.window_idx+i] <= 0 and not self.shift_is_held:
                     self.labels[self.window_idx+i] = 1
                 elif self.labels[self.window_idx+i] <= 0 and self.shift_is_held:
