@@ -218,8 +218,8 @@ if __name__ == "__main__":
     bla.patchdata, _ = patchReader.read_all_patches_from_log(logFilePath, type=2)
 
     # load the label file
-    base_file, file_extension = os.path.splitext(logFilePath)
-    label_file = base_file+'.json'
+    label_file = os.path.join(os.path.dirname(logFilePath), 'ball_patch.json')
+
     bla.labels = bla.load_labels(label_file)
 
     bla.show_patches()
