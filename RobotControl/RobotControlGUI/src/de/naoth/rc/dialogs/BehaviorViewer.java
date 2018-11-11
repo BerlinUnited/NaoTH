@@ -198,7 +198,7 @@ public class BehaviorViewer extends AbstractDialog
             }
             catch(InvalidProtocolBufferException ex)
             {
-              Logger.getLogger(BehaviorViewer.class.getName()).log(Level.SEVERE, null, ex);
+              Logger.getLogger(BehaviorViewer.class.getName()).log(Level.SEVERE, "received data: " + new String(object), ex);
             }
         }
 
