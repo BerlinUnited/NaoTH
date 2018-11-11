@@ -21,15 +21,16 @@ RansacLineDetector::~RansacLineDetector()
 
 void RansacLineDetector::execute()
 {
-  getLinePercept().reset();
-  getRansacCirclePercept().reset();
-  getLinePercept().middleCircleWasSeen = false;
-  outliers.resize(getLineGraphPercept().edgelsOnField.size());
-  getLinePercept().edgelLineIDs.resize(getLineGraphPercept().edgelsOnField.size());
+  getRansacLinePercept().reset();
+  getRansacCirclePercept2018().reset();
+
+  getRansacLinePercept().edgelLineIDs.resize(getLineGraphPercept().edgelsOnField.size());
+
+  this->outliers.resize(getLineGraphPercept().edgelsOnField.size());
   // copy the edgels
   for(size_t i = 0; i < getLineGraphPercept().edgelsOnField.size(); ++i) {
-    outliers[i] = i;
-    getLinePercept().edgelLineIDs[i] = -1;
+    this->outliers[i] = i;
+    getRansacLinePercept().edgelLineIDs[i] = -1;
   }
 
   std::vector<size_t> inliers;
@@ -64,12 +65,10 @@ void RansacLineDetector::execute()
         result = regression_result;
       }
 
-      LinePercept::FieldLineSegment fieldLine;
-      fieldLine.lineOnField = result;
-      getLinePercept().lines.push_back(fieldLine);
+      getRansacLinePercept().fieldLineSegments.push_back(result);
 
       for(size_t i : inliers) {
-        getLinePercept().edgelLineIDs[i] = static_cast<int>(getLinePercept().lines.size()-1);
+        getRansacLinePercept().edgelLineIDs[i] = static_cast<int>(getRansacLinePercept().fieldLineSegments.size()-1);
       }
     }
     else {
@@ -105,8 +104,7 @@ void RansacLineDetector::execute()
         Vector2d circleMean;
         double circleRadius;
         if (Geometry::calculateCircle(points, circleMean, circleRadius)) {
-          getRansacCirclePercept().middleCircleCenter = circleMean;
-          getRansacCirclePercept().middleCircleWasSeen = true;
+          getRansacCirclePercept2018().set(circleMean);
 
           DEBUG_REQUEST("Vision:RansacLineDetector:draw_circle_field",
             FIELD_DRAWING_CONTEXT;
@@ -115,8 +113,7 @@ void RansacLineDetector::execute()
           );
         }
       } else {
-        getRansacCirclePercept().middleCircleCenter = circResult;
-        getRansacCirclePercept().middleCircleWasSeen = true;
+        getRansacCirclePercept2018().set(circResult);
       }
     }
 
@@ -128,9 +125,9 @@ void RansacLineDetector::execute()
     {
       const Edgel& e = getLineGraphPercept().edgelsOnField[i];
 
-      if(getLinePercept().edgelLineIDs[i] > -1) {
+      if(getRansacLinePercept().edgelLineIDs[i] > -1) {
         std::string color;
-        switch(getLinePercept().edgelLineIDs[i]%3) {
+        switch(getRansacLinePercept().edgelLineIDs[i]%3) {
           case 0: color = "00FF00"; break;
           case 1: color = "0000FF"; break;
           default: color = "00FFFF"; break;
@@ -150,7 +147,7 @@ void RansacLineDetector::execute()
 
   DEBUG_REQUEST("Vision:RansacLineDetector:draw_lines_field",
     FIELD_DRAWING_CONTEXT;
-    for(size_t i=0; i<getLinePercept().lines.size(); i++)
+    for(size_t i=0; i<getRansacLinePercept().fieldLineSegments.size(); i++)
     {
       std::string color;
       switch(i%3) {
@@ -160,8 +157,8 @@ void RansacLineDetector::execute()
       }
       PEN(color, 50);
       LINE(
-        getLinePercept().lines[i].lineOnField.begin().x, getLinePercept().lines[i].lineOnField.begin().y,
-        getLinePercept().lines[i].lineOnField.end().x, getLinePercept().lines[i].lineOnField.end().y);
+        getRansacLinePercept().fieldLineSegments[i].begin().x, getRansacLinePercept().fieldLineSegments[i].begin().y,
+        getRansacLinePercept().fieldLineSegments[i].end().x, getRansacLinePercept().fieldLineSegments[i].end().y);
     }
 
   );
