@@ -32,9 +32,10 @@ public:
   class PatchT 
   {
   public:
-    static const int SIZE = 12;
+    static const int SIZE = 16;
     PatchT() : data(SIZE*SIZE)
     {}
+    //NOTE: dummy constructor to make emplace_back work
     PatchT(int) : data(SIZE*SIZE)
     {}
     Vector2i min;
