@@ -1,11 +1,11 @@
 /**
-* @file BallCandidateDetector.cpp
+* @file BallDetector2018.cpp
 *
-* Implementation of class BallCandidateDetector
+* Implementation of class BallDetector2018
 *
 */
 
-#include "BallCandidateDetector.h"
+#include "BallDetector2018.h"
 #include "Tools/CameraGeometry.h"
 
 #include "Tools/PatchWork.h"
@@ -17,20 +17,20 @@
 
 using namespace std;
 
-BallCandidateDetector::BallCandidateDetector()
+BallDetector2018::BallDetector2018()
 {
-  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:keyPoints", "draw key points extracted from integral image", false);
-  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawCandidates", "draw ball candidates", false);
-  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawCandidatesResizes", "draw ball candidates (resized)", false);
-  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:refinePatches", "draw refined ball key points", false);
-  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawPercepts", "draw ball percepts", false);
-  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawPatchContrast", "draw patch contrast (only when contrast-check is in use!", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallDetector2018:keyPoints", "draw key points extracted from integral image", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallDetector2018:drawCandidates", "draw ball candidates", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallDetector2018:drawCandidatesResizes", "draw ball candidates (resized)", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallDetector2018:refinePatches", "draw refined ball key points", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallDetector2018:drawPercepts", "draw ball percepts", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallDetector2018:drawPatchContrast", "draw patch contrast (only when contrast-check is in use!", false);
 
-  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:extractPatches", "generate YUVC patches", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallDetector2018:extractPatches", "generate YUVC patches", false);
 
-  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:keyPointsBlack", "draw black key points extracted from integral image", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallDetector2018:keyPointsBlack", "draw black key points extracted from integral image", false);
 
-  DEBUG_REQUEST_REGISTER("Vision:BallCandidateDetector:drawPatchInImage", "draw the gray-scale patch like it is passed to the CNN in the image", false);
+  DEBUG_REQUEST_REGISTER("Vision:BallDetector2018:drawPatchInImage", "draw the gray-scale patch like it is passed to the CNN in the image", false);
 
   theBallKeyPointExtractor = registerModule<BallKeyPointExtractor>("BallKeyPointExtractor", true);
   getDebugParameterList().add(&params);
@@ -41,13 +41,13 @@ BallCandidateDetector::BallCandidateDetector()
   currentCNNClassifier = cnnMap["dortmund"];
 }
 
-BallCandidateDetector::~BallCandidateDetector()
+BallDetector2018::~BallDetector2018()
 {
   getDebugParameterList().remove(&params);
 }
 
 
-void BallCandidateDetector::execute(CameraInfo::CameraID id)
+void BallDetector2018::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
   getBallCandidates().reset();
@@ -72,14 +72,14 @@ void BallCandidateDetector::execute(CameraInfo::CameraID id)
     calculateCandidates();
   }
 
-  DEBUG_REQUEST("Vision:BallCandidateDetector:refinePatches",
+  DEBUG_REQUEST("Vision:BallDetector2018:refinePatches",
     for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i) {
       //BestPatchList::Patch p = theBallKeyPointExtractor->getModuleT()->refineKeyPoint(*i);
       RECT_PX(ColorClasses::red, (*i).min.x, (*i).min.y, (*i).max.x, (*i).max.y);
     }
   );
 
-  DEBUG_REQUEST("Vision:BallCandidateDetector:drawPercepts",
+  DEBUG_REQUEST("Vision:BallDetector2018:drawPercepts",
     for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
       if((*iter).cameraId == cameraID) {
         CIRCLE_PX(ColorClasses::orange, (int)((*iter).centerInImage.x+0.5), (int)((*iter).centerInImage.y+0.5), (int)((*iter).radiusInImage+0.5));
@@ -87,7 +87,7 @@ void BallCandidateDetector::execute(CameraInfo::CameraID id)
     }
   );
 
-  DEBUG_REQUEST("Vision:BallCandidateDetector:extractPatches",
+  DEBUG_REQUEST("Vision:BallDetector2018:extractPatches",
     extractPatches();
   );
 
@@ -95,7 +95,7 @@ void BallCandidateDetector::execute(CameraInfo::CameraID id)
     extractPatches();
   }
 
-  DEBUG_REQUEST("Vision:BallCandidateDetector:keyPointsBlack",  
+  DEBUG_REQUEST("Vision:BallDetector2018:keyPointsBlack",  
     BestPatchList bbest;
     for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i) {
       bbest.clear();
@@ -111,7 +111,7 @@ void BallCandidateDetector::execute(CameraInfo::CameraID id)
   );
 }
 
-std::map<string, std::shared_ptr<AbstractCNNClassifier> > BallCandidateDetector::createCNNMap()
+std::map<string, std::shared_ptr<AbstractCNNClassifier> > BallDetector2018::createCNNMap()
 {
   std::map<string, std::shared_ptr<AbstractCNNClassifier> > result;
 
@@ -123,7 +123,7 @@ std::map<string, std::shared_ptr<AbstractCNNClassifier> > BallCandidateDetector:
 }
 
 
-void BallCandidateDetector::calculateCandidates()
+void BallDetector2018::calculateCandidates()
 {
   // todo needs a better place
   const int32_t FACTOR = getBallDetectorIntegralImage().FACTOR;
@@ -178,7 +178,7 @@ void BallCandidateDetector::calculateCandidates()
       {
         BlackSpotExtractor::calculateKeyPoints(getBallDetectorIntegralImage(), bestBlackKey, min.x, min.y, max.x, max.y);
 
-        DEBUG_REQUEST("Vision:BallCandidateDetector:keyPoints",
+        DEBUG_REQUEST("Vision:BallDetector2018:keyPoints",
           for(BestPatchList::iterator i = bestBlackKey.begin(); i != bestBlackKey.end(); ++i) {
             RECT_PX(ColorClasses::red, min.x, min.y, max.x, max.y);
           }
@@ -218,7 +218,7 @@ void BallCandidateDetector::calculateCandidates()
               break;
           }
 
-          DEBUG_REQUEST("Vision:BallCandidateDetector:drawPatchContrast",
+          DEBUG_REQUEST("Vision:BallDetector2018:drawPatchContrast",
             CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
             PEN("FF0000", 1); // red
             CIRCLE( (min.x + max.x)/2, (min.y + max.y)/2, stddev / 5.0);
@@ -259,7 +259,7 @@ void BallCandidateDetector::calculateCandidates()
       min = maxMin;
       max = maxMax;
       
-      DEBUG_REQUEST("Vision:BallCandidateDetector:drawCandidates",
+      DEBUG_REQUEST("Vision:BallDetector2018:drawCandidates",
         RECT_PX(ColorClasses::yellow, maxMin.x, maxMin.y, maxMax.x, maxMax.y);
       );
       */
@@ -295,7 +295,7 @@ void BallCandidateDetector::calculateCandidates()
           auto r = (patchedBorder.max.x - patchedBorder.min.x)/2;
           auto x = (patchedBorder.min.x + patchedBorder.max.x)/2;
           auto y = (patchedBorder.min.y + patchedBorder.max.y)/2;
-          DEBUG_REQUEST("Vision:BallCandidateDetector:drawCandidatesResizes",
+          DEBUG_REQUEST("Vision:BallDetector2018:drawCandidatesResizes",
             RECT_PX(ColorClasses::pink, x-r, y-r, x+r, y+r);
           );
 
@@ -304,7 +304,7 @@ void BallCandidateDetector::calculateCandidates()
         PatchWork::multiplyBrightness((cameraID == CameraInfo::Top) ? 
             params.brightnessMultiplierTop : params.brightnessMultiplierBottom, patchedBorder.data);
 
-        DEBUG_REQUEST("Vision:BallCandidateDetector:drawPatchInImage",
+        DEBUG_REQUEST("Vision:BallDetector2018:drawPatchInImage",
           unsigned int offsetX = patchedBorder.min.x;
           unsigned int offsetY = patchedBorder.min.y;
           unsigned int pixelWidth = (unsigned int) ((double) (patchedBorder.max.x - patchedBorder.min.x) / (double) patchedBorder.SIZE);
@@ -346,7 +346,7 @@ void BallCandidateDetector::calculateCandidates()
           PatchWork::multiplyBrightness((cameraID == CameraInfo::Top) ? 
             params.brightnessMultiplierTop : params.brightnessMultiplierBottom, p.data);
 
-          DEBUG_REQUEST("Vision:BallCandidateDetector:drawPatchInImage",
+          DEBUG_REQUEST("Vision:BallDetector2018:drawPatchInImage",
             unsigned int offsetX = p.min.x;
             unsigned int offsetY = p.min.y;
             unsigned int pixelWidth = (unsigned int) ((double) (p.max.x - p.min.x) / (double) p.SIZE);
@@ -381,7 +381,7 @@ void BallCandidateDetector::calculateCandidates()
       index++;
 
 
-      DEBUG_REQUEST("Vision:BallCandidateDetector:drawCandidates",
+      DEBUG_REQUEST("Vision:BallDetector2018:drawCandidates",
         ColorClasses::Color c = ColorClasses::gray;
         if(checkGreenBelow && checkGreenInside) {
           c = ColorClasses::orange;
@@ -410,7 +410,7 @@ void BallCandidateDetector::calculateCandidates()
 } // end calculateCandidates
 
 
-void BallCandidateDetector::extractPatches()
+void BallDetector2018::extractPatches()
 {
   int idx = 0;
   for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i)
@@ -438,7 +438,7 @@ void BallCandidateDetector::extractPatches()
   }
 }
 
-void BallCandidateDetector::addBallPercept(const Vector2i& center, double radius) 
+void BallDetector2018::addBallPercept(const Vector2i& center, double radius) 
 {
   const double ballRadius = 50.0;
   MultiBallPercept::BallPercept ballPercept;
@@ -460,7 +460,7 @@ void BallCandidateDetector::addBallPercept(const Vector2i& center, double radius
   }
 }
 
-double BallCandidateDetector::calculateContrast(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size)
+double BallDetector2018::calculateContrast(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size)
 {
     x0 = std::max(0, x0);
     y0 = std::max(0, y0);
@@ -508,7 +508,7 @@ double BallCandidateDetector::calculateContrast(const Image& image,  const Field
     return std::sqrt(variance);
 }
 
-double BallCandidateDetector::calculateContrastIterative(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size)
+double BallDetector2018::calculateContrastIterative(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size)
 {
     x0 = std::max(0, x0);
     y0 = std::max(0, y0);
@@ -546,7 +546,7 @@ double BallCandidateDetector::calculateContrastIterative(const Image& image,  co
     return std::sqrt((sum_sqr - (sum_ * sum_)/n)/(n));
 }
 
-double BallCandidateDetector::calculateContrastIterative2nd(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size)
+double BallDetector2018::calculateContrastIterative2nd(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size)
 {
     x0 = std::max(0, x0);
     y0 = std::max(0, y0);

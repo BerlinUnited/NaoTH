@@ -1,11 +1,11 @@
 /**
-* @file BallCandidateDetector.h
+* @file BallDetector2018.h
 *
-* Definition of class BallCandidateDetector
+* Definition of class BallDetector2018
 */
 
-#ifndef _BallCandidateDetector_H_
-#define _BallCandidateDetector_H_
+#ifndef _BallDetector2018_H_
+#define _BallDetector2018_H_
 
 #include <ModuleFramework/Module.h>
 #include <ModuleFramework/ModuleManager.h>
@@ -48,7 +48,7 @@
 
 #include <memory>
 
-BEGIN_DECLARE_MODULE(BallCandidateDetector)
+BEGIN_DECLARE_MODULE(BallDetector2018)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugImageDrawings)
@@ -82,14 +82,14 @@ BEGIN_DECLARE_MODULE(BallCandidateDetector)
   PROVIDE(BallCandidates)
   PROVIDE(BallCandidatesTop)
   PROVIDE(MultiBallPercept)
-END_DECLARE_MODULE(BallCandidateDetector)
+END_DECLARE_MODULE(BallDetector2018)
 
 
-class BallCandidateDetector: private BallCandidateDetectorBase, private ModuleManager
+class BallDetector2018: private BallDetector2018Base, private ModuleManager
 {
 public:
-  BallCandidateDetector();
-  ~BallCandidateDetector();
+  BallDetector2018();
+  ~BallDetector2018();
 
   void execute(CameraInfo::CameraID id);
 
@@ -112,8 +112,8 @@ public:
     mean_of_means.add(mean);
     double average_mean = mean_of_means.getAverage();
 
-    PLOT("BallCandidateDetector:mean",mean);
-    PLOT("BallCandidateDetector:mean_of_means",average_mean);
+    PLOT("BallDetector2018:mean",mean);
+    PLOT("BallDetector2018:mean_of_means",average_mean);
   }
 
   static std::map<std::string, std::shared_ptr<AbstractCNNClassifier>> createCNNMap();
@@ -122,7 +122,7 @@ public:
 private:
   struct Parameters: public ParameterList
   {
-    Parameters() : ParameterList("BallCandidateDetector")
+    Parameters() : ParameterList("BallDetector2018")
     {
       
       PARAMETER_REGISTER(keyDetector.borderRadiusFactorClose) = 0.5;
@@ -242,17 +242,17 @@ private: // for debugging
 private:
   CameraInfo::CameraID cameraID;
 
-  DOUBLE_CAM_PROVIDE(BallCandidateDetector, DebugImageDrawings);
+  DOUBLE_CAM_PROVIDE(BallDetector2018, DebugImageDrawings);
 
   // double cam stuff
-  DOUBLE_CAM_REQUIRE(BallCandidateDetector, Image);
-  DOUBLE_CAM_REQUIRE(BallCandidateDetector, CameraMatrix);
-  DOUBLE_CAM_REQUIRE(BallCandidateDetector, FieldPercept);
-  //DOUBLE_CAM_REQUIRE(BallCandidateDetector, BodyContour);
-  DOUBLE_CAM_REQUIRE(BallCandidateDetector, BallDetectorIntegralImage);
-  DOUBLE_CAM_REQUIRE(BallCandidateDetector, FieldColorPercept);
+  DOUBLE_CAM_REQUIRE(BallDetector2018, Image);
+  DOUBLE_CAM_REQUIRE(BallDetector2018, CameraMatrix);
+  DOUBLE_CAM_REQUIRE(BallDetector2018, FieldPercept);
+  //DOUBLE_CAM_REQUIRE(BallDetector2018, BodyContour);
+  DOUBLE_CAM_REQUIRE(BallDetector2018, BallDetectorIntegralImage);
+  DOUBLE_CAM_REQUIRE(BallDetector2018, FieldColorPercept);
 
-  DOUBLE_CAM_PROVIDE(BallCandidateDetector, BallCandidates);
-};//end class BallCandidateDetector
+  DOUBLE_CAM_PROVIDE(BallDetector2018, BallCandidates);
+};//end class BallDetector2018
 
-#endif // _BallCandidateDetector_H_
+#endif // _BallDetector2018_H_
