@@ -59,7 +59,6 @@
 #include "Modules/VisualCortex/GoalDetector/GoalCrossBarDetector.h"
 #include "Modules/VisualCortex/BallDetector/RedBallDetector.h"
 #include "Modules/VisualCortex/BallDetector/BallDetector2018.h"
-#include "Modules/VisualCortex/BallDetector/BallDetector.h"
 #include "Modules/VisualCortex/IntegralImageProvider.h"
 
 #include "Modules/SelfAwareness/FakeCameraMatrixFinder/FakeCameraMatrixFinder.h"
@@ -180,8 +179,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(RedBallDetector);
   REGISTER_MODULE(BallDetector2018);
-  REGISTER_MODULE(BallDetector);
-
+  
   REGISTER_MODULE(FakeCameraMatrixFinder);
   REGISTER_MODULE(FakeBallDetector);
 
