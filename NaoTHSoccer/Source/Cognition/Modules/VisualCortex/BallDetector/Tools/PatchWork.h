@@ -10,14 +10,24 @@
 #include <Representations/Infrastructure/Image.h>
 #include "Representations/Perception/BallCandidates.h"
 #include "Representations/Perception/FieldColorPercept.h"
+#include <Tools/Debug/NaoTHAssert.h>
 #include <vector>
 
 class PatchWork
 {
 public:
   static void subsampling(const naoth::Image& image, std::vector<unsigned char>& result, int x0, int y0, int x1, int y1, int size);
-
   static void subsampling(const naoth::Image& image, const FieldColorPercept& fielColorPercept, std::vector<BallCandidates::ClassifiedPixel>& result, int x0, int y0, int x1, int y1, int size);
+
+  static void subsampling(const naoth::Image& image, BallCandidates::Patch& target) {
+    ASSERT(target.data.size() == target.size()*target.size());
+    subsampling(image, target.data, target.min.x, target.min.y, target.max.x, target.max.y, target.size());
+  }
+
+  static void subsampling(const naoth::Image& image, const FieldColorPercept& fielColorPercept, BallCandidates::PatchYUVClassified& target) {
+    ASSERT(target.data.size() == target.size()*target.size());
+    subsampling(image, fielColorPercept, target.data, target.min.x, target.min.y, target.max.x, target.max.y, target.size());
+  }
 
   static void multiplyBrightness(double factor, std::vector<unsigned char>& patch);
 

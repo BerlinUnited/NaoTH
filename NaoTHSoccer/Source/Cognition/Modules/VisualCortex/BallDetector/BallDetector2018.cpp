@@ -129,10 +129,10 @@ void BallDetector2018::calculateCandidates()
   const int32_t FACTOR = getBallDetectorIntegralImage().FACTOR;
 
   //BestPatchList::iterator best_element = best.begin();
-  std::vector<Vector2i> endPoints;
+  //std::vector<Vector2i> endPoints;
 
   // needed for calculating black key-points in the ball candidates
-  BestPatchList bestBlackKey;
+  //BestPatchList bestBlackKey;
 
   // the used patch size
   const int patch_size = 16;
@@ -152,6 +152,7 @@ void BallDetector2018::calculateCandidates()
 
       Vector2i min((*i).min);
       Vector2i max((*i).max);
+      int size = max.x - min.x;
 
       // (1) check green below
       bool checkGreenBelow = false;
@@ -171,65 +172,25 @@ void BallDetector2018::calculateCandidates()
         checkGreenInside = true;
       }
 
-      // (3) check black dots
-      bool checkBlackDots = false;
-      /*
-      if(max.y-min.y > params.heuristic.minBlackDetectionSize) 
-      {
-        BlackSpotExtractor::calculateKeyPoints(getBallDetectorIntegralImage(), bestBlackKey, min.x, min.y, max.x, max.y);
-
-        DEBUG_REQUEST("Vision:BallDetector2018:keyPoints",
-          for(BestPatchList::iterator i = bestBlackKey.begin(); i != bestBlackKey.end(); ++i) {
-            RECT_PX(ColorClasses::red, min.x, min.y, max.x, max.y);
-          }
-        );
-
-        if( (int)bestBlackKey.size() >= params.heuristic.blackDotsMinCount ) {
-          checkBlackDots = true;
-        }
-      } else {
-        //TODO: what to do with small balls?
-      }
-      //*/
-
-      // (4) check body parts
-      // TODO
-
-      BallCandidates::Patch patchedBorder(0);
-      //int size = ((*i).max.x - (*i).min.x)/2;
-      patchedBorder.min = min;//(*i).min;// - Vector2i(size,size);
-      patchedBorder.max = max;//(*i).max;// + Vector2i(size,size);
-      int size = patchedBorder.max.x - patchedBorder.min.x;
       
-
+      
       // (5) check contrast
       if(params.contrastUse) {
-          double stddev = 0;
-          // switch between different "contrast calculation methods" (0-2)
-          switch (params.contrastVariant) {
-          case 1:
-              stddev = calculateContrastIterative(getImage(),getFieldColorPercept(),min.x,min.y,max.x,max.y,patch_size);
-              break;
-          case 2:
-              stddev = calculateContrastIterative2nd(getImage(),getFieldColorPercept(),min.x,min.y,max.x,max.y,patch_size);
-              break;
-          default:
-              stddev = calculateContrast(getImage(),getFieldColorPercept(),min.x,min.y,max.x,max.y,patch_size);
-              break;
-          }
-
+          double stddev = PatchWork::calculateContrastIterative2nd(getImage(),getFieldColorPercept(),min.x,min.y,max.x,max.y,patch_size);
+          
           DEBUG_REQUEST("Vision:BallDetector2018:drawPatchContrast",
             CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
             PEN("FF0000", 1); // red
             CIRCLE( (min.x + max.x)/2, (min.y + max.y)/2, stddev / 5.0);
           );
+
           // skip this patch, if contrast doesn't fullfill minimum
           double selectedContrastMinimum = params.contrastMinimum;
           if(size >= params.postMaxCloseSize) {
             selectedContrastMinimum = params.contrastMinimumClose;
           }
           if(stddev <= selectedContrastMinimum) {
-              continue;
+            continue;
           }
       }
 
@@ -267,13 +228,6 @@ void BallDetector2018::calculateCandidates()
 
       //if(checkGreenBelow && checkGreenInside)
 
-      // hack: if the classifier has not been loaded yet
-      //if(!cvHaarClassifier.modelLoaded()) {
-      //  cvHaarClassifier.loadModel(params.haarDetector.model_file);
-      //}
-
-      
-
       // add an additional border as post-processing
       double radius = (double) size / 2.0;
       int postBorder = (int)(radius*params.postBorderFactorFar);
@@ -284,22 +238,20 @@ void BallDetector2018::calculateCandidates()
         selectedCNNThreshold = params.cnn.thresholdClose;
       }
 
-      patchedBorder.min.x = patchedBorder.min.x - postBorder;
-      patchedBorder.min.y = patchedBorder.min.y - postBorder;
-      patchedBorder.max.x = patchedBorder.max.x + postBorder;
-      patchedBorder.max.y = patchedBorder.max.y + postBorder;
+      BallCandidates::Patch patchedBorder(min-postBorder, max+postBorder, patch_size);
   
-      if(getImage().isInside(patchedBorder.min.x, patchedBorder.min.y) && getImage().isInside(patchedBorder.max.x, patchedBorder.max.y))
+      if(getImage().isInside(patchedBorder.min) && getImage().isInside(patchedBorder.max))
       {
 
-          auto r = (patchedBorder.max.x - patchedBorder.min.x)/2;
-          auto x = (patchedBorder.min.x + patchedBorder.max.x)/2;
-          auto y = (patchedBorder.min.y + patchedBorder.max.y)/2;
-          DEBUG_REQUEST("Vision:BallDetector2018:drawCandidatesResizes",
-            RECT_PX(ColorClasses::pink, x-r, y-r, x+r, y+r);
-          );
+        auto r = (patchedBorder.max.x - patchedBorder.min.x)/2;
+        auto x = (patchedBorder.min.x + patchedBorder.max.x)/2;
+        auto y = (patchedBorder.min.y + patchedBorder.max.y)/2;
 
-        PatchWork::subsampling(getImage(), patchedBorder.data, patchedBorder.min.x, patchedBorder.min.y, patchedBorder.max.x, patchedBorder.max.y, patch_size);
+        DEBUG_REQUEST("Vision:BallDetector2018:drawCandidatesResizes",
+          RECT_PX(ColorClasses::pink, x-r, y-r, x+r, y+r);
+        );
+
+        PatchWork::subsampling(getImage(), patchedBorder);
 
         PatchWork::multiplyBrightness((cameraID == CameraInfo::Top) ? 
             params.brightnessMultiplierTop : params.brightnessMultiplierBottom, patchedBorder.data);
@@ -307,9 +259,9 @@ void BallDetector2018::calculateCandidates()
         DEBUG_REQUEST("Vision:BallDetector2018:drawPatchInImage",
           unsigned int offsetX = patchedBorder.min.x;
           unsigned int offsetY = patchedBorder.min.y;
-          unsigned int pixelWidth = (unsigned int) ((double) (patchedBorder.max.x - patchedBorder.min.x) / (double) patchedBorder.SIZE);
-          for(unsigned int x = 0; x < patchedBorder.SIZE; x++) {
-            for(unsigned int y = 0; y < patchedBorder.SIZE; y++) {
+          unsigned int pixelWidth = (unsigned int) ((double) (patchedBorder.max.x - patchedBorder.min.x) / (double) patchedBorder.size());
+          for(unsigned int x = 0; x < patchedBorder.size(); x++) {
+            for(unsigned int y = 0; y < patchedBorder.size(); y++) {
               unsigned char pixelY = patchedBorder.data[(x*patch_size)+y];
               // draw each image pixel this patch pixel occupies
               for(unsigned int px=0; px < pixelWidth; px++) {
@@ -322,60 +274,54 @@ void BallDetector2018::calculateCandidates()
           }
         );
 
-
+        // run CNN
         stopwatch.start();
-        
         bool found = currentCNNClassifier->classify(patchedBorder);
         stopwatch.stop();
         stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
 
         if (found && currentCNNClassifier->getBallConfidence() >= selectedCNNThreshold) {
-
           if(!params.blackKeysCheck.enable || blackKeysOK(*i)) {
             addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);
           }
-
         }
-      } else if(getImage().isInside(min.x, min.y) && getImage().isInside(max.x, max.y)) {
-          BallCandidates::Patch p(0);
-          p.min = min;//(*i).min;
-          p.max = max;//(*i).max;
+      } 
+      else if(getImage().isInside(min) && getImage().isInside(max)) 
+      {
+        BallCandidates::Patch p(min,max,patch_size);
+        PatchWork::subsampling(getImage(), p);
 
-          PatchWork::subsampling(getImage(), p.data, min.x, min.y, max.x, max.y, patch_size);
+        PatchWork::multiplyBrightness((cameraID == CameraInfo::Top) ? 
+          params.brightnessMultiplierTop : params.brightnessMultiplierBottom, p.data);
 
-          PatchWork::multiplyBrightness((cameraID == CameraInfo::Top) ? 
-            params.brightnessMultiplierTop : params.brightnessMultiplierBottom, p.data);
-
-          DEBUG_REQUEST("Vision:BallDetector2018:drawPatchInImage",
-            unsigned int offsetX = p.min.x;
-            unsigned int offsetY = p.min.y;
-            unsigned int pixelWidth = (unsigned int) ((double) (p.max.x - p.min.x) / (double) p.SIZE);
-            for(unsigned int x = 0; x < p.SIZE; x++) {
-              for(unsigned int y = 0; y < p.SIZE; y++) {
-                unsigned char pixelY = p.data[(x*patch_size)+y];
-                // draw each image pixel this patch pixel occupies
-                for(unsigned int px=0; px < pixelWidth; px++) {
-                  for(unsigned int py=0; py < pixelWidth; py++) {
-                    getDebugImageDrawings().drawPointToImage(pixelY, 128, 128, 
-                      static_cast<int>(offsetX + (x*pixelWidth) + px), offsetY + (y*pixelWidth) + py);
-                  }
+        DEBUG_REQUEST("Vision:BallDetector2018:drawPatchInImage",
+          unsigned int offsetX = p.min.x;
+          unsigned int offsetY = p.min.y;
+          unsigned int pixelWidth = (unsigned int) ((double) (p.max.x - p.min.x) / (double) p.size());
+          for(unsigned int x = 0; x < p.size(); x++) {
+            for(unsigned int y = 0; y < p.size(); y++) {
+              unsigned char pixelY = p.data[(x*patch_size)+y];
+              // draw each image pixel this patch pixel occupies
+              for(unsigned int px=0; px < pixelWidth; px++) {
+                for(unsigned int py=0; py < pixelWidth; py++) {
+                  getDebugImageDrawings().drawPointToImage(pixelY, 128, 128, 
+                    static_cast<int>(offsetX + (x*pixelWidth) + px), offsetY + (y*pixelWidth) + py);
                 }
               }
             }
-          );
-
-          stopwatch.start();
-
-          bool found = currentCNNClassifier->classify(p);
-          stopwatch.stop();
-          stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
-
-          if (found && currentCNNClassifier->getBallConfidence() >= selectedCNNThreshold) {
-
-            if(!params.blackKeysCheck.enable || blackKeysOK(*i)) {
-              addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);
-            }
           }
+        );
+
+        stopwatch.start();
+        bool found = currentCNNClassifier->classify(p);
+        stopwatch.stop();
+        stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
+
+        if (found && currentCNNClassifier->getBallConfidence() >= selectedCNNThreshold) {
+          if(!params.blackKeysCheck.enable || blackKeysOK(*i)) {
+            addBallPercept(Vector2i((min.x + max.x)/2, (min.y + max.y)/2), (max.x - min.x)/2);
+          }
+        }
       }
 
       index++;
@@ -389,10 +335,6 @@ void BallDetector2018::calculateCandidates()
           c = ColorClasses::skyblue;
         }
         RECT_PX(c, min.x, min.y, max.x, max.y);
-
-        if(checkBlackDots) {
-          CIRCLE_PX(ColorClasses::red, (min.x + max.x)/2, (min.y + max.y)/2, (max.x - min.x)/2);
-        }
       );
 
       // TODO: provide ball candidates based on above criteria
@@ -418,20 +360,17 @@ void BallDetector2018::extractPatches()
     if(idx >= params.numberOfExportBestPatches) {
       break;
     }
-    Vector2i min = (*i).min;
-    Vector2i max = (*i).max;
-    int offset = (max.x - min.x)/4;
-    min.x -= offset;
-    min.y -= offset;
-    max.x += offset;
-    max.y += offset;
+    int offset = ((*i).max.x - (*i).min.x)/4;
+    Vector2i min = (*i).min - offset;
+    Vector2i max = (*i).max + offset;
 
     if(getFieldPercept().getValidField().isInside(min) && getFieldPercept().getValidField().isInside(max))
     {
       BallCandidates::PatchYUVClassified& q = getBallCandidates().nextFreePatchYUVClassified();
       q.min = min;
       q.max = max;
-      PatchWork::subsampling(getImage(), getFieldColorPercept(), q.data, q.min.x, q.min.y, q.max.x, q.max.y, 24);
+      q.setSize(24);
+      PatchWork::subsampling(getImage(), getFieldColorPercept(), q);
       
       idx++;
     }
@@ -460,126 +399,3 @@ void BallDetector2018::addBallPercept(const Vector2i& center, double radius)
   }
 }
 
-double BallDetector2018::calculateContrast(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size)
-{
-    x0 = std::max(0, x0);
-    y0 = std::max(0, y0);
-    x1 = std::min((int)image.width()-1, x1);
-    y1 = std::min((int)image.height()-1, y1);
-
-    double width_step = static_cast<double>(x1 - x0) / static_cast<double>(size);
-    double height_step = static_cast<double>(y1 - y0) / static_cast<double>(size);
-
-    double avg = 0;
-    double cnt = 0;
-    BallCandidates::ClassifiedPixel p;
-
-    for(double x = x0 + width_step/2.0; x < x1; x += width_step)
-    {
-        for(double y = y0 + height_step/2.0; y < y1; y += height_step)
-        {
-            image.get((int)(x + 0.5), (int)(y + 0.5), p.pixel);
-            if(!fielColorPercept.greenHSISeparator.isColor(p.pixel)) { // no green!
-                avg += p.pixel.y;
-                cnt++;
-            }
-        }
-    }
-
-    // we got only green ?!
-    if(cnt == 0) { return 0; }
-
-    // expected value -> average/mean
-    avg /= cnt;
-
-    double variance = 0;
-    for(double x = x0 + width_step/2.0; x < x1; x += width_step)
-    {
-        for(double y = y0 + height_step/2.0; y < y1; y += height_step)
-        {
-            image.get((int)(x + 0.5), (int)(y + 0.5), p.pixel);
-            if(!fielColorPercept.greenHSISeparator.isColor(p.pixel)) { // green!
-                auto t = p.pixel.y;
-                variance += (t-avg)*(t-avg);
-            }
-        }
-    }
-    variance /= cnt;
-    return std::sqrt(variance);
-}
-
-double BallDetector2018::calculateContrastIterative(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size)
-{
-    x0 = std::max(0, x0);
-    y0 = std::max(0, y0);
-    x1 = std::min((int)image.width()-1, x1);
-    y1 = std::min((int)image.height()-1, y1);
-
-    double width_step = static_cast<double>(x1 - x0) / static_cast<double>(size);
-    double height_step = static_cast<double>(y1 - y0) / static_cast<double>(size);
-
-    double K = -1; // inidicating first pixel
-    double n = 0;
-    double sum_ = 0;
-    double sum_sqr = 0;
-    BallCandidates::ClassifiedPixel p;
-
-    for(double x = x0 + width_step/2.0; x < x1; x += width_step)
-    {
-        for(double y = y0 + height_step/2.0; y < y1; y += height_step)
-        {
-            image.get((int)(x + 0.5), (int)(y + 0.5), p.pixel);
-            if(!fielColorPercept.greenHSISeparator.isColor(p.pixel)) { // no green!
-                if(K == -1) { K = p.pixel.y; }
-                n++;
-                sum_ += p.pixel.y - K;
-                sum_sqr += (p.pixel.y-K)*(p.pixel.y-K);
-            }
-        }
-    }
-
-    // make sure we got some none-green pixels!
-    if(n == 0) {
-        return 0;
-    }
-
-    return std::sqrt((sum_sqr - (sum_ * sum_)/n)/(n));
-}
-
-double BallDetector2018::calculateContrastIterative2nd(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size)
-{
-    x0 = std::max(0, x0);
-    y0 = std::max(0, y0);
-    x1 = std::min((int)image.width()-1, x1);
-    y1 = std::min((int)image.height()-1, y1);
-
-    double width_step = static_cast<double>(x1 - x0) / static_cast<double>(size);
-    double height_step = static_cast<double>(y1 - y0) / static_cast<double>(size);
-
-    double n = 0;
-    double mean = 0.0;
-    double M2 = 0.0;
-    BallCandidates::ClassifiedPixel p;
-
-    for(double x = x0 + width_step/2.0; x < x1; x += width_step)
-    {
-        for(double y = y0 + height_step/2.0; y < y1; y += height_step)
-        {
-            image.get((int)(x + 0.5), (int)(y + 0.5), p.pixel);
-            if(!fielColorPercept.greenHSISeparator.isColor(p.pixel)) { // no green!
-                n++;
-                double delta = p.pixel.y - mean;
-                mean += delta/n;
-                double delta2 = p.pixel.y - mean;
-                M2 += delta*delta2;
-            }
-        }
-    }
-
-    // make sure we got some none-green pixels!
-    if(n < 2) {
-        return 0;
-    }
-
-    return std::sqrt(M2 / (n-1));
-}

@@ -16,8 +16,6 @@ void PatchWork::subsampling(const Image& image, std::vector<unsigned char>& resu
   x1 = std::min((int)image.width()-1, x1);
   y1 = std::min((int)image.height()-1, y1);
 
-  // TODO: magic number
-  //const double size = 12.0;
   result.resize(size*size);
 
   double width_step = static_cast<double>(x1 - x0) / static_cast<double>(size);
@@ -45,8 +43,6 @@ void PatchWork::subsampling(const Image& image, const FieldColorPercept& fielCol
   x1 = std::min((int)image.width()-1, x1);
   y1 = std::min((int)image.height()-1, y1);
 
-  // TODO: magic number
-  //const double size = 12.0;
   result.resize(size*size);
 
   double width_step = static_cast<double>(x1 - x0) / static_cast<double>(size);

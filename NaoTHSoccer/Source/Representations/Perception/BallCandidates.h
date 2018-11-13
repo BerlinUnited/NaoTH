@@ -31,18 +31,40 @@ public:
   template<typename T>
   class PatchT 
   {
+  private:
+    size_t _size;
+    
   public:
-    static const int SIZE = 16;
-    PatchT() : data(SIZE*SIZE)
+    PatchT() : _size(0)
     {}
-    //NOTE: dummy constructor to make emplace_back work
-    PatchT(int) : data(SIZE*SIZE)
+
+    PatchT(size_t size) : 
+      _size(size), 
+      data(size*size)
     {}
+
     PatchT(const Vector2i& min, const Vector2i& max) : 
+      _size(0),
+      min(min), 
+      max(max)
+    {}
+
+    PatchT(const Vector2i& min, const Vector2i& max, size_t size) :
+      _size(size),
       min(min), 
       max(max),
-      data(SIZE*SIZE)
+      data(size*size)
     {}
+
+    void setSize(size_t size) {
+      _size = size;
+      data.resize(size*size);
+    }
+
+    size_t size() const {
+      return _size;
+    }
+
     Vector2i min;
     Vector2i max;
     std::vector<T> data;
@@ -62,17 +84,17 @@ public:
   PatchYUVClassifiedList patchesYUVClassified;
 
   Patch& nextFreePatch() {
-    patches.emplace_back(0);
+    patches.emplace_back();
     return patches.back();
   }
 
   PatchYUV& nextFreePatchYUV() {
-    patchesYUV.emplace_back(0);
+    patchesYUV.emplace_back();
     return patchesYUV.back();
   }
 
   PatchYUVClassified& nextFreePatchYUVClassified() {
-    patchesYUVClassified.emplace_back(0);
+    patchesYUVClassified.emplace_back();
     return patchesYUVClassified.back();
   }
 

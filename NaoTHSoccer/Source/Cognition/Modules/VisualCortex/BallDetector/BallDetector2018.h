@@ -144,7 +144,6 @@ private:
       PARAMETER_REGISTER(postMaxCloseSize) = 60;
 
       PARAMETER_REGISTER(contrastUse) = false;
-      PARAMETER_REGISTER(contrastVariant) = 1;
       PARAMETER_REGISTER(contrastMinimum) = 50;
       PARAMETER_REGISTER(contrastMinimumClose) = 50;
 
@@ -190,7 +189,6 @@ private:
     int postMaxCloseSize;
 
     bool contrastUse;
-    int contrastVariant;
     double contrastMinimum;
     double contrastMinimumClose;
 
@@ -230,10 +228,7 @@ private:
   void calculateCandidates();
   void addBallPercept(const Vector2i& center, double radius);
   void extractPatches();
-  double calculateContrast(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size);
-  double calculateContrastIterative(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size);
-  double calculateContrastIterative2nd(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size);
-  
+
 private: // for debugging
   Stopwatch stopwatch;
   std::vector<double> stopwatch_values;
