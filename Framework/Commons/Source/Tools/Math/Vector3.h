@@ -9,7 +9,7 @@
 #ifndef _Vector3_h_
 #define _Vector3_h_
 
-#include <math.h>
+#include <cmath>
 #include <ostream>
 #include <istream>
 
