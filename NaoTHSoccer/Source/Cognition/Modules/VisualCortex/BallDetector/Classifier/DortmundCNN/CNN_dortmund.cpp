@@ -31,6 +31,23 @@ bool CNN_dortmund::classify(const BallCandidates::Patch& p)
   return res[0] > 0;
 }
 
+bool CNN_dortmund::classify(const BallCandidates::PatchYUVClassified& p) 
+{
+  ASSERT(p.size() == 16);
+
+  for(size_t x=0; x < p.size(); x++) {
+    for(size_t y=0; y < p.size(); y++) {
+      // TODO: check
+      in_step[x][y][0] = ((float) p.data[p.size() * y + x].pixel.y) / 255.0f;
+    }
+  }
+
+  cnn(in_step);
+
+	//    std::cout << "scores[1]=" << scores[1] << " scores[0]=" << scores[0] << std::endl;
+  return res[0] > 0;
+}
+
 float CNN_dortmund::getBallConfidence() {
   return std::abs(scores[0] - scores[1]);
 }
