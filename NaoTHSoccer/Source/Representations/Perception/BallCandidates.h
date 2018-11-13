@@ -38,6 +38,11 @@ public:
     //NOTE: dummy constructor to make emplace_back work
     PatchT(int) : data(SIZE*SIZE)
     {}
+    PatchT(const Vector2i& min, const Vector2i& max) : 
+      min(min), 
+      max(max),
+      data(SIZE*SIZE)
+    {}
     Vector2i min;
     Vector2i max;
     std::vector<T> data;
