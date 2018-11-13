@@ -1,3 +1,9 @@
+/**
+ * @file Vector2.h
+ * Contains template class Vector2 of type V
+ *
+ */
+
 #ifndef _Vector2_h_
 #define _Vector2_h_
 

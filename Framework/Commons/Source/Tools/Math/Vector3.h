@@ -2,8 +2,6 @@
  * @file Vector3.h
  * Contains template class Vector3 of type V
  *
- * @author <a href="mailto:martin.kallnik@gmx.de" > Martin Kallnik</a>
- * @author Max Risler
  */
 
 #ifndef _Vector3_h_
