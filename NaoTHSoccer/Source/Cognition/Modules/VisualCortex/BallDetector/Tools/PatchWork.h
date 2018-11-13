@@ -30,6 +30,7 @@ public:
   }
 
   static void multiplyBrightness(double factor, std::vector<unsigned char>& patch);
+  static void multiplyBrightness(double factor, BallCandidates::PatchYUVClassified& patch);
 
   static void toPatch(const BallCandidates::PatchYUVClassified& src, BallCandidates::Patch& target);
   static BallCandidates::PatchesList toPatchList(const BallCandidates::PatchYUVClassifiedList &src);

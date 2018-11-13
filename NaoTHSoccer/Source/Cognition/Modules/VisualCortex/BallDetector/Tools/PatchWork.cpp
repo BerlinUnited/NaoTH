@@ -85,6 +85,19 @@ void PatchWork::multiplyBrightness(double factor, std::vector<unsigned char>& pa
   }
 }
 
+void PatchWork::multiplyBrightness(double factor, BallCandidates::PatchYUVClassified& patch) {
+  if(factor == 1.0) {
+    // nothing to do
+    return;
+  }
+  for(unsigned int i = 0; i < patch.size(); i++) {
+    double originalY = patch.data[i].pixel.y;
+    double multipliedY = originalY * factor;
+    double clippedY = Math::clamp(multipliedY, 0.0, 255.0);
+    patch.data[i].pixel.y = (unsigned char) Math::round(clippedY);
+  }
+}
+
 void PatchWork::toPatch(const BallCandidates::PatchYUVClassified &src, BallCandidates::Patch &target)
 {
   target.data.clear();;
