@@ -106,4 +106,5 @@ def pseudo_simple_penalty_kicker(args):
     a.join()
     s.join()
 
-    return 0
+    # return True if the test was successful
+    return True

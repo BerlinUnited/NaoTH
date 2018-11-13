@@ -21,7 +21,7 @@ def position_and_execute(s, a, parser, pos, ball):
 
     start = time.monotonic()
     pending_cmds = {}
-    # max. 90sec for this test
+    # max. 90sec for this test (NOTE: walking of the robot in the simulation is not smooth, therefore we wait longer)
     while time.monotonic() <= (start + 90):
         pending_cmds[a.behavior()] = 'Behavior'
         time.sleep(0.3)
@@ -32,9 +32,9 @@ def position_and_execute(s, a, parser, pos, ball):
                 if pending_cmds[p] == 'Behavior':
                     parser.parse(data)
                     if parser.isActiveOption('free_kick_opp'):
-                        print(parser.getActiveOptionState('free_kick_opp'))
+                        #print(parser.getActiveOptionState('free_kick_opp'))
                         if parser.getActiveOptionState('free_kick_opp') == 'done' and time.monotonic() > (start + 10):
-                            print(parser.symbols.decimal('ball.distance'))
+                            #print(parser.symbols.decimal('ball.distance'))
                             start = 0
                             break
 
@@ -43,11 +43,33 @@ def position_and_execute(s, a, parser, pos, ball):
     # wait until the robot sits (hip is below 0.2)!
     wait_for(lambda: s.get_robot(a.number)['z'] <= 0.2, 0.3, max_time=5.0)
 
-def evaluate_position(s, a):
-    logging.info('evaluate situation')
-    #{'type': 'nao', 'team': 'Left', 'number': 3, 'x': -2.25136, 'y': 1.31149, 'z': 0.285937, 'r': 0.3561912312607644}
+    return evaluate_position(s, a, ball)
+
+def evaluate_position(s, a, ball):
+    # first check if the ball was moved/touched
+    s_ball = s.get_ball()
+    if abs(s_ball['x'] - ball[0]) + abs(s_ball['y']-ball[1]) > 0.1:
+        logging.info('Ball touched!')
+        return False
+
+    robot = s.get_robot(a.number)
+
+    # check if the robot is away from the ball (min. 75cm)
+    if math.sqrt(math.pow(ball[0] - robot['x'], 2) + math.pow(ball[1] - robot['y'], 2)) < 0.75:
+        logging.info("Robot is to close to the ball!")
+        return False
+
+    # check if the robot is somewhere near the line between ball and goal
+    # TODO: doesn't work as expected! :/
+    if abs(ball[1]/(ball[0]+4.5) - robot['y']/(robot['x']+4.5))>0.1:
+        logging.info("Robot doesn't block a goal kick!")
+        return False
+
+    return True
 
 def opp_pushing_free_kick(args):
+    return_code = 0
+
     s = SimsparkController(args.simspark, not args.no_simspark)
     s.start()
     s.connected.wait() # wait for the monitor to be connected
@@ -75,112 +97,18 @@ def opp_pushing_free_kick(args):
     s.cmd_dropball()  # put the ball into the game
     a.debugrequest('gamecontroller:set_play:pushing_free_kick', True)
 
-    ball = (-1.5, 1.5)
-
-    position_and_execute(s, a, parser, (-2, 1.5, -90), ball)
-    evaluate_position(s, a)
-    time.sleep(0.5)
-
-    position_and_execute(s, a, parser, (-2, 1.9, -90), ball)
-    evaluate_position(s, a)
-    time.sleep(0.5)
-
-    position_and_execute(s, a, parser, (-1.5, 2, -180), ball)
-    evaluate_position(s, a)
-    time.sleep(0.5)
-    
-    position_and_execute(s, a, parser, (-1.2, 1.8, 140), ball)
-    evaluate_position(s, a)
-    time.sleep(0.5)
-
-    position_and_execute(s, a, parser, (-1.2, 1.15, 40), ball)
-    evaluate_position(s, a)
-    time.sleep(0.5)
-
-    position_and_execute(s, a, parser, (-1.2, 1.5, 90), ball)
-    evaluate_position(s, a)
-    time.sleep(0.5)
-
-    # next ball position
-    ball = (-3.5, 1.5)
-
-    position_and_execute(s, a, parser, (-4, 1.5, -90), ball)
-    evaluate_position(s, a)
-    time.sleep(0.5)
-
-    position_and_execute(s, a, parser, (-4, 2, -90), ball)
-    evaluate_position(s, a)
-    time.sleep(0.5)
-
-    position_and_execute(s, a, parser, (-3.5, 2, -180), ball)
-    evaluate_position(s, a)
-    time.sleep(0.5)
-
-    position_and_execute(s, a, parser, (-3.2, 1.8, 140), ball)
-    evaluate_position(s, a)
-    time.sleep(0.5)
-
-    position_and_execute(s, a, parser, (-3.2, 1.15, 40), ball)
-    evaluate_position(s, a)
-    time.sleep(0.5)
-
-    position_and_execute(s, a, parser, (-3.2, 1.5, 90), ball)
-    evaluate_position(s, a)
-    time.sleep(0.5)
-
-    # next ball position
-    ball = (-1.5, -1.5)
-
-    position_and_execute(s, a, parser, (-2, -1.5, -90), ball)
-    evaluate_position(s, a)
-    time.sleep(0.5)
-
-    position_and_execute(s, a, parser, (-2, -2, -90), ball)
-    evaluate_position(s, a)
-    time.sleep(0.5)
-
-    position_and_execute(s, a, parser, (-1.5, -2, 0), ball)
-    evaluate_position(s, a)
-    time.sleep(0.5)
-
-    position_and_execute(s, a, parser, (-1.2, -1.8, 45), ball)
-    evaluate_position(s, a)
-    time.sleep(0.5)
-
-    position_and_execute(s, a, parser, (-1.2, -1.15, 125), ball)
-    evaluate_position(s, a)
-    time.sleep(0.5)
-
-    position_and_execute(s, a, parser, (-1.2, -1.5, 90), ball)
-    evaluate_position(s, a)
-    time.sleep(0.5)
-
-    # next ball position
-    ball = (-3.5, -1.5)
-
-    position_and_execute(s, a, parser, (-4, -1.5, -90), ball)
-    evaluate_position(s, a)
-    time.sleep(0.5)
-
-    position_and_execute(s, a, parser, (-4, -2, -90), ball)
-    evaluate_position(s, a)
-    time.sleep(0.5)
-
-    position_and_execute(s, a, parser, (-3.5, -2, 0), ball)
-    evaluate_position(s, a)
-    time.sleep(0.5)
-
-    position_and_execute(s, a, parser, (-3.2, -1.8, 60), ball)
-    evaluate_position(s, a)
-    time.sleep(0.5)
-
-    position_and_execute(s, a, parser, (-3.2, -1.15, 135), ball)
-    evaluate_position(s, a)
-    time.sleep(0.5)
-
-    position_and_execute(s, a, parser, (-3.2, -1.5, 90), ball)
-    evaluate_position(s, a)
-    time.sleep(0.5)
+    positions = {
+        'left_far':    [ (-1.5, 1.5),  (-2,  1.5, -90), (-2, 1.9, -90), (-1.5, 2, -180), (-1.2, 1.8, 140), (-1.2, 1.15, 40), (-1.2, 1.5, 90) ],
+        'left_close':  [ (-3.5, 1.5),  (-4,  1.5, -90), (-4,  2, -90), (-3.5, 2, -180), (-3.2, 1.8, 140), (-3.2, 1.15, 40), (-3.2, 1.5, 90) ],
+        'right_far':   [ (-1.5, -1.5), (-2, -1.5, -90), (-2, -2, -90), (-1.5, -2, 0), (-1.2, -1.8, 45), (-1.2, -1.15, 125), (-1.2, -1.5, 90) ],
+        'right_close': [ (-3.5, -1.5), (-4, -1.5, -90), (-4, -2, -90), (-3.5, -2, 0), (-3.2, -1.8, 60), (-3.2, -1.15, 135), (-3.2, -1.5, 90) ]
+    }
+    for _ in positions:
+        for robot in positions[_][1:]:
+            if not position_and_execute(s, a, parser, robot, positions[_][0]):
+                logging.error("Failed opponent free kick (%s): ball@%s, robot@%s", _, str(positions[_][0]), str(robot))
+                return_code += 1
+            time.sleep(0.5)
 
     a.cancel()
     s.cancel()
@@ -188,4 +116,4 @@ def opp_pushing_free_kick(args):
     a.join()
     s.join()
 
-    return 0
+    return return_code == 0
