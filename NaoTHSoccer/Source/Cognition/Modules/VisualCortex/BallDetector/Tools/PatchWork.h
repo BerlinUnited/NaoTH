@@ -23,6 +23,15 @@ public:
 
   static void toPatch(const BallCandidates::PatchYUVClassified& src, BallCandidates::Patch& target);
   static BallCandidates::PatchesList toPatchList(const BallCandidates::PatchYUVClassifiedList &src);
+
+  static double calculateContrast(const BallCandidates::PatchYUVClassified& patch);
+  static double calculateContrastIterative(const BallCandidates::PatchYUVClassified& patch);
+  static double calculateContrastIterative2nd(const BallCandidates::PatchYUVClassified& patch);
+
+  static double calculateContrast(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size);
+  static double calculateContrastIterative(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size);
+  static double calculateContrastIterative2nd(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size);
+  
 };
 
 #endif // _PatchWork_H_
