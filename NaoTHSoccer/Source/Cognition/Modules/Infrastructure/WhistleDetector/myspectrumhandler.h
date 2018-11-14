@@ -26,7 +26,7 @@ public:
 	nWhistleOkayFrames(nWhistleOkayFrames)
   {  }
 
-  void calcMeanDeviation(const float *data, int length, double &mean, double &dev) {
+  void calcMeanDeviation(const double *data, int length, double &mean, double &dev) {
       mean = dev = 0;
       for(int i = 0; i < length; ++i) {
           mean    += data[i];
@@ -37,7 +37,7 @@ public:
       mean /= length;
   }
 
-  virtual void handle(const float *spectrum, int length)
+  virtual void handle(const double *spectrum, int length)
   {
     static unsigned whistleCounter(0), whistleMissCounter(0), whistleDone(false);
 

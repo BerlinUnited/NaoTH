@@ -18,17 +18,17 @@ STFT::STFT(const int channelOffset, const int windowTime, const int windowTimeSt
       nOverflow(0), overflownData(NULL), input(NULL), output(NULL), outputMag(NULL)
 {
     overflownData   = new int16_t[windowTime]; /* actually a max of (windowTime - 1) */
-    input           = static_cast<float*>(fftwf_malloc(sizeof(float) * windowFrequency));
-    output          = static_cast<fftwf_complex*>(fftwf_malloc(sizeof(fftwf_complex) * windowFrequencyHalf));
-    outputMag       = new float[windowFrequencyHalf];
+    input           = static_cast<double*>(fftw_malloc(sizeof(double) * windowFrequency));
+    output          = static_cast<fftw_complex*>(fftw_malloc(sizeof(fftw_complex) * windowFrequencyHalf));
+    outputMag       = new double[windowFrequencyHalf];
 
     //WARN(windowFrequency >= windowTime, "Frequency window must be greater than Time Window.");
 
     for(int i = 0; i < windowFrequency; ++i) {
-        input[i] = 0.0f;
+		input[i] = 0.0;
     }
 
-    plan = fftwf_plan_dft_r2c_1d(windowFrequency, input, output, FFTW_MEASURE);
+    plan = fftw_plan_dft_r2c_1d(windowFrequency, input, output, FFTW_MEASURE);
 }
 
 STFT::~STFT()
@@ -37,20 +37,20 @@ STFT::~STFT()
         delete[] overflownData;
     }
     if(input) {
-        fftwf_free(input);
+        fftw_free(input);
     }
     if(output) {
-        fftwf_free(output);
+        fftw_free(output);
     }
     if(outputMag) {
         delete[] outputMag;
     }
     if(plan) {
-        fftwf_destroy_plan(plan);
+        fftw_destroy_plan(plan);
     }
 }
 
-void STFT::intToFloat(const int16_t &in, float &out)
+void STFT::intToFloat(const int16_t &in, double &out)
 {
     out = static_cast<float>(in) / (std::numeric_limits<int16_t>::max() + 1);
 }
@@ -82,11 +82,11 @@ void STFT::newData(const int16_t *data, int length, short channels)
         }
         /* and the rest is zero */
 
-        fftwf_execute(plan);
+        fftw_execute(plan);
 
         /* calc magnitude */
         for(int i = 0; i < windowFrequencyHalf; ++i) {
-            outputMag[i] = std::abs(*reinterpret_cast<std::complex<float>* >(&output[i]));
+            outputMag[i] = std::abs(*reinterpret_cast<std::complex<double>* >(&output[i]));
         }
         if(handler != NULL)
         {

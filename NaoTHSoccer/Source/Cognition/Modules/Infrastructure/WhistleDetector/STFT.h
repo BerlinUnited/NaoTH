@@ -15,7 +15,7 @@
 class SpectrumHandler
 {
 public:
-  virtual void handle(const float *spectrum, int length) = 0;
+  virtual void handle(const double *spectrum, int length) = 0;
 };
 
 class STFT
@@ -34,7 +34,8 @@ public:
 
 
 protected:
-    void intToFloat(const int16_t &in, float &out);
+	//TODO rename function
+    void intToFloat(const int16_t &in, double &out);
 
     const int offset;
     const int windowTime, windowTimeStep, windowFrequency, windowFrequencyHalf;
@@ -43,11 +44,11 @@ protected:
 
     int nOverflow;
     int16_t *overflownData;
-    float *input;
-    fftwf_complex *output;
-    float *outputMag;
+    double *input;
+    fftw_complex *output;
+    double *outputMag;
 
-    fftwf_plan plan;
+    fftw_plan plan;
 };
 
 #endif
