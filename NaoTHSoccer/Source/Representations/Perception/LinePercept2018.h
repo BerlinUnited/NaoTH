@@ -3,6 +3,9 @@
 
 #include <vector>
 
+#include "Tools/Math/Vector2.h"
+#include "Tools/Math/Line.h"
+
 class LinePercept2018
 {
 public:
@@ -34,7 +37,7 @@ public:
   }
 };
 
-
+// RansacLineDetector
 class RansacLinePercept : public LinePercept2018
 {
 public:
@@ -43,7 +46,10 @@ public:
 
 class RansacCirclePercept2018 : public MiddleCirclePercept{};
 
+// RansacLineDetectorOnGraphs
+class ShortLinePercept : public LinePercept2018{};
 
-
+class GraphRansacCirclePercept : public MiddleCirclePercept{};
+class GraphRansacCirclePerceptTop : public GraphRansacCirclePercept{};
 
 #endif // LINEPERCEPT2018_H
