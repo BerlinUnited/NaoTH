@@ -32,6 +32,7 @@ void WhistleDetectorV2::execute(){
 
 int WhistleDetectorV2::runFrequencyExtraction(){
 	/* load window times */
+	//TODO dont load it every execution cycle
 	int nWhistleBegin = int(params.fWhistleBegin * params.nWindowSizePadded) / params.fSampleRate;
 	int nWhistleEnd = int(params.fWhistleEnd  * params.nWindowSizePadded) / params.fSampleRate;
 

@@ -4,6 +4,7 @@
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/AudioData.h>
 #include <Representations/Infrastructure/WhistlePercept.h>
+#include <Representations/Infrastructure/AudioControl.h>
 
 #include <Tools/DataStructures/ParameterList.h>
 #include <Tools/Debug/DebugParameterList.h>
@@ -12,6 +13,7 @@ using namespace naoth;
 
 BEGIN_DECLARE_MODULE(WhistleDetectorV1)
 	REQUIRE(AudioData)
+	REQUIRE(AudioControl)
 
 	PROVIDE(WhistlePercept)
 	PROVIDE(DebugParameterList)

@@ -23,11 +23,18 @@ WhistleDetectorV1::~WhistleDetectorV1()
 }
 
 void WhistleDetectorV1::execute(){
-	std::vector<short> samples = getAudioData().samples;
+	std::cout << "Switch: " << getAudioControl().onOffSwitch << std::endl;
+	if (getAudioControl().onOffSwitch > 0){
+		std::vector<short> samples = getAudioData().samples;
 
-	int sum = std::accumulate(samples.begin(), samples.end(), 0);		
-	if (sum > params.threshold){
-		std::cout << "Whistle Detected with sample sum: " << sum << std::endl;
-		getWhistlePercept().counter++;
+		std::cout << "WhistleDetector V1 running" << std::endl;
+
+		int sum = std::accumulate(samples.begin(), samples.end(), 0);
+		if (sum > params.threshold){
+			std::cout << "Whistle Detected with sample sum: " << sum << std::endl;
+			getWhistlePercept().counter++;
+		}
 	}
+	std::cout << "WhistleDetector V1 not running" << std::endl;
+	
 }

@@ -61,7 +61,7 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanInputSymbol("battery.isCharging", &getBodyState().isCharging);
   
 
-  engine.registerDecimalOutputSymbol("whistle.switch",&setWhistleSwitch, &getWhistleSwitch);
+  engine.registerDecimalOutputSymbol("audio.switch", &setAudioSwitch, &getAudioSwitch);
 
 }//end registerSymbols
 
@@ -76,11 +76,11 @@ void SensorSymbols::execute()
 
 }//end execute
 
-double SensorSymbols::getWhistleSwitch(){
+double SensorSymbols::getAudioSwitch(){
 	return theInstance->getAudioControl().onOffSwitch;
 }
 
-void SensorSymbols::setWhistleSwitch(double whistle){
+void SensorSymbols::setAudioSwitch(double whistle){
   theInstance->getAudioControl().onOffSwitch = (int)whistle;
 }
 
