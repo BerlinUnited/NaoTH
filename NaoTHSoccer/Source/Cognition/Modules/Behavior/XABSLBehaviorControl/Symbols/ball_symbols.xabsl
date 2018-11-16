@@ -67,6 +67,9 @@ namespace ball_symbols("Ball Symbols") {
   /** Position of the team ball in x direction relative to the field in mm */
   float input ball.team.position.x "mm";
   float input ball.team.position.y "mm";
+  /** Position of the team ball in x direction on the field in mm */
+  float input ball.team.position_field.x "mm";
+  float input ball.team.position_field.y "mm";
   float input ball.team.rmse "mm";
 }
   

@@ -21,11 +21,11 @@ BEGIN_DECLARE_MODULE(GameController)
   PROVIDE(DebugRequest)
   
   REQUIRE(ButtonState)
-  REQUIRE(GameData)
   REQUIRE(FrameInfo)
   REQUIRE(WhistlePercept)
   REQUIRE(WifiMode)
 
+  PROVIDE(GameData)
   PROVIDE(TeamMessageData)
   PROVIDE(GameReturnData)
   PROVIDE(GameControllerLEDRequest)

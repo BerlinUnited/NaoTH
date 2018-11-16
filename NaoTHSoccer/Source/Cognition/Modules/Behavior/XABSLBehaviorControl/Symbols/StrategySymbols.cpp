@@ -79,9 +79,14 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   
   //engine.registerDecimalInputSymbol("attack.best_action.direction", &(getKickActionModel().rotation));
 
+  // the position of the opponents free kick; it is only valid if x != 0 && y != 0
+  engine.registerDecimalInputSymbol("freekick.pos.x", &freeKickPositionX);
+  engine.registerDecimalInputSymbol("freekick.pos.y", &freeKickPositionY);
+
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_attack_direction","draw the attack direction", false);
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_simpleDefenderPose","draw the position of the defender", false);
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_goalie_defensive_pos","draw the position of the goalie", false);
+  DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_free_kick_pos","draw the position of the opponents free kick", false);
 
 }//end registerSymbols
 
@@ -134,6 +139,13 @@ void StrategySymbols::execute()
       CIRCLE(goalieDefensivePosition.translation.x, goalieDefensivePosition.translation.y, 30);
     );
 
+    retrieveFreeKickPosition();
+    DEBUG_REQUEST("XABSL:StrategySymbols:draw_free_kick_pos",
+      FIELD_DRAWING_CONTEXT;
+      PEN("FF0000", 20);
+      LINE(freeKickPosition.x-60,freeKickPosition.y,freeKickPosition.x+60,freeKickPosition.y);
+      LINE(freeKickPosition.x,freeKickPosition.y-60,freeKickPosition.x,freeKickPosition.y+60);
+    );
 }//end execute
 
 //int StrategySymbols::getSituationStatusId(){ 
@@ -456,4 +468,41 @@ double StrategySymbols::defensePoseA() {
 
 int StrategySymbols::getBestAction() {
    return theInstance->getKickActionModel().bestAction;
+}
+
+void StrategySymbols::retrieveFreeKickPosition() {
+    // check if one of our teamates fouled an opponent
+    if(lastSetPlay == GameData::set_none && getGameData().setPlay == GameData::pushing_free_kick && !getPlayerInfo().kickoff) {
+        // retrieve last pose of the player who has fouled
+        for(unsigned int i = 0; i < getGameData().ownTeam.players.size(); ++i) {
+            // player is now penalized, but wasn't before
+            if(getGameData().ownTeam.players[i].penalty == naoth::GameData::player_pushing && penalties[i+1] == naoth::GameData::penalty_none) {
+                // find his last position from his message
+                const auto& player = getTeamMessage().data.find(i+1);
+                if(player != getTeamMessage().data.cend()) {
+                    freeKickPosition = player->second.pose.translation;
+                }
+            }
+        }
+    }
+
+    // reset free kick position after free kick is over
+    if(lastSetPlay == GameData::pushing_free_kick && getGameData().setPlay != GameData::pushing_free_kick) {
+        freeKickPosition.x = 0.0;
+        freeKickPosition.y = 0.0;
+    }
+
+    // update last setplay and penalties of own teammates
+    lastSetPlay = getGameData().setPlay;
+    for(unsigned int i = 0; i < getGameData().ownTeam.players.size(); ++i) {
+        penalties[i+1] = getGameData().ownTeam.players[i].penalty;
+    }
+}
+
+double StrategySymbols::freeKickPositionX() {
+    return theInstance->freeKickPosition.x;
+}
+
+double StrategySymbols::freeKickPositionY() {
+    return theInstance->freeKickPosition.y;
 }
