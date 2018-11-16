@@ -153,10 +153,6 @@ void BallDetector2018::calculateCandidates()
         selectedCNNThreshold = params.cnn.thresholdClose;
       }
 
-      DEBUG_REQUEST("Vision:BallDetector2018:drawCandidates",
-        RECT_PX(ColorClasses::orange, patch.min.x, patch.min.y, patch.max.x, patch.max.y);
-      );
-
       // resize the patch if possible
       if(getImage().isInside(patch.min - postBorder) && getImage().isInside(patch.max + postBorder)) {
         patch.min -= postBorder;
@@ -189,19 +185,18 @@ void BallDetector2018::calculateCandidates()
         }
       }
 
-
       PatchWork::multiplyBrightness((cameraID == CameraInfo::Top) ? 
             params.brightnessMultiplierTop : params.brightnessMultiplierBottom, patch);
 
       DEBUG_REQUEST("Vision:BallDetector2018:drawPatchInImage",
         unsigned int offsetX = patch.min.x;
         unsigned int offsetY = patch.min.y;
-        unsigned int pixelWidth = (unsigned int) ((double) (patch.max.x - patch.min.x) / (double) patch.size());
+        unsigned int pixelWidth = (unsigned int) ((double) (patch.max.x - patch.min.x) / (double) patch.size() + 0.5);
 
         for(unsigned int x = 0; x < patch.size(); x++) {
           for(unsigned int y = 0; y < patch.size(); y++) 
           {
-            unsigned char pixelY = patch.data[(x*patch_size)+y].pixel.y;
+            unsigned char pixelY = patch.data[x*patch_size + y].pixel.y;
 
             // draw each image pixel this patch pixel occupies
             for(unsigned int px=0; px < pixelWidth; px++) {
@@ -227,7 +222,10 @@ void BallDetector2018::calculateCandidates()
       }
 
       DEBUG_REQUEST("Vision:BallDetector2018:drawCandidates",
-        RECT_PX(ColorClasses::skyblue, patch.min.x, patch.min.y, patch.max.x, patch.max.y);
+        // original patch
+        RECT_PX(ColorClasses::skyblue, (*i).min.x, (*i).min.y, (*i).max.x, (*i).max.y);
+        // possibly recised patch 
+        RECT_PX(ColorClasses::orange, patch.min.x, patch.min.y, patch.max.x, patch.max.y);
       );
 
       index++;
