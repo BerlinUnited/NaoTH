@@ -15,50 +15,71 @@ KickDirectionSimulator::KickDirectionSimulator()
  // : obstacleFilter(0.01, 0.1)
 {
   simulationModule = registerModule<ActionSimulator>(std::string("Simulation"), true);
+  
   DEBUG_REQUEST_REGISTER("KickDirectionSimulator:draw_best_direction", "best direction", false);
-  resetSamples(samples, theParameters.num_angle_particle);
-
+  
+  //resetSamples(samples, theParameters.num_angle_particle);
+  resetSamplesUniform(samples, theParameters.num_angle_particle);
   //calculate the actions
   
   action_local.reserve(KickActionModel::numOfActions); // here we dont simulate the none action so it could be numOfActions-1
   action_local.push_back(ActionSimulator::Action(KickActionModel::kick_short, theParameters.kick_short, theParameters.friction)); // short
-  action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
-  action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
+  //action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
+  //action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
 
-  actionsConsequences.resize(action_local.size()); 
-  actionsConsequencesAbs.resize(action_local.size());
+  correctionAngle.resize(action_local.size()); 
+
+  getDebugParameterList().add(&theParameters);
 }
 
-KickDirectionSimulator::~KickDirectionSimulator(){}
+KickDirectionSimulator::~KickDirectionSimulator()
+{
+  getDebugParameterList().remove(&theParameters);
+}
 
 
 void KickDirectionSimulator::execute()
 {
-  //int bestID = 0;
-  //double smallestAngle = 0;
-  for (size_t i = 0; i < action_local.size(); i++) {
-    resetSamples(samples, theParameters.num_angle_particle);
-    actionsConsequences[i] = calculate_best_direction(action_local[i]);
-    actionsConsequencesAbs[i] = abs(actionsConsequences[i]);
-    /*
-    if (i == 0 || actionsConsequencesAbs[i] < smallestAngle) {
-      smallestAngle = actionsConsequencesAbs[i];
-      bestID = i;
-    }
-    */
-  }
-  size_t bestActionID = std::min_element(actionsConsequencesAbs.begin(), actionsConsequencesAbs.end()) - actionsConsequencesAbs.begin();
+  int bestActionID = 0;
   
+  for (size_t i = 0; i < action_local.size(); i++) 
+  {
+
+    correctionAngle[i] = calculate_best_direction(action_local[i]);
+    
+    // remember the smallest rotation
+    if (i == 0 || correctionAngle[i] < correctionAngle[bestActionID]) {
+      bestActionID = i;
+    }
+
+    DEBUG_REQUEST("KickDirectionSimulator:draw_best_direction",
+      FIELD_DRAWING_CONTEXT;
+
+      Vector2d globalBall = getRobotPose() *getBallModel().positionPreview;
+      Vector2d action_vector = (Vector2d(1.0, 0.0).rotate(action_local[i].getAngle()).rotate(correctionAngle[i]));
+
+      Vector2d from = globalBall + action_vector * 100;
+      Vector2d to = globalBall + action_vector * 350;
+
+      PEN("FFFF00", 50);
+      FILLOVAL(globalBall.x, globalBall.y, 50, 50);
+
+      PEN("FF0000", 50);
+      ARROW(from.x, from.y, to.x, to.y);
+    );
+
+  }
+
   getKickActionModel().bestAction = KickActionModel::none;
+  
   //TODO replace 5.0 with value of angle_std
-  if (fabs(actionsConsequences[bestActionID]) < Math::fromDegrees(5.0)) {
+  if (fabs(correctionAngle[bestActionID]) < Math::fromDegrees(5.0)) {
     getKickActionModel().bestAction = action_local[bestActionID].id();
   }
+
   // if the robot is not already rotated close enough to the optimized rotation of the chosen
   // kick calculate the attackDirection and leave Action to none
-  Vector2d attackDirection(1.0,0.0);
-  attackDirection.rotate(actionsConsequences[bestActionID]);
-  getSoccerStrategy().attackDirection = attackDirection;
+  getSoccerStrategy().attackDirection = Vector2d(1.0,0.0).rotate(correctionAngle[bestActionID]);
 
   //getKickActionModel().rotation = actionsConsequences[bestActionID];
   //std::cout << "Best Action: " << action_local[bestActionID].name() << std::endl;
@@ -75,69 +96,87 @@ void KickDirectionSimulator::execute()
   */
 }//end execute
 
-double KickDirectionSimulator::calculate_best_direction(const ActionSimulator::Action& basisAction){
+double KickDirectionSimulator::calculate_best_direction(const ActionSimulator::Action& basisAction)
+{
+  //resetSamples(samples, theParameters.num_angle_particle);
+  resetSamplesUniform(samples, theParameters.num_angle_particle);
+  
+  double noise = Math::fromDegrees(30.0);
+  double min_noise = Math::fromDegrees(3.0);
 
-  m_min = 0;
-  m_max = 0;
-  double mean_angle = 0.0;
-  for(int i = 0; i < theParameters.iterations; i++){
+  for(int i = 0; i < theParameters.iterations; i++)
+  {
     //evaluate the particles
-
     update(basisAction);
 
     //resample
-    resample(samples, Math::fromDegrees(5.0));
+    resample(samples, noise);
 
-    // add random samples - currently disabled
-
-    // calculate mean angle
-    double a = 0;
-    double b = 0;
-    for (size_t i = 0; i < samples.size(); ++i)
-    {
-      a += sin(samples[i].rotation);
-      b += cos(samples[i].rotation);
-    }
-    mean_angle = atan2(a, b);
-
-    DEBUG_REQUEST("KickDirectionSimulator:draw_best_direction",
-      FIELD_DRAWING_CONTEXT;
-
-    Vector2d to = getRobotPose() * Vector2d(500, 0).rotate(mean_angle);
-
-      PEN("FF0000", 50);
-      ARROW(getRobotPose().translation.x, getRobotPose().translation.y, to.x, to.y);
-    );
+    noise = std::max(min_noise, noise*0.5);
   }
+
+  // calculate mean angle
+  double a = 0;
+  double b = 0;
+  for (size_t i = 0; i < samples.size(); ++i) {
+    a += sin(samples[i].rotation);
+    b += cos(samples[i].rotation);
+  }
+  double mean_angle = atan2(a, b);
+
   return mean_angle;
 }
 
 void KickDirectionSimulator::update(const ActionSimulator::Action& basisAction)
 {
-  ActionSimulator::Action blablaAction(basisAction);
+  ActionSimulator::Action test_action(basisAction);
+  size_t simulation_num_particles = 1;
+  ActionSimulator::ActionResults turningConsequences;
 
-  for (size_t i = 0; i < samples.size(); i++){
-    size_t simulation_num_particles = 1;
-    ActionSimulator::ActionResults turningConsequences;
+  struct Stats {
+    double oppGoal;
+    double inFiled;
+    double potential;
+  };
 
-    //FIXME Dirty getter and setter
-    blablaAction.setAngle(basisAction.getAngle() + Math::toDegrees(samples[i].rotation));
+  // store some statistics for later evaluation
+  static std::vector<Stats> stats;
+  stats.resize(samples.size());
+
+  // evaluate all particles
+  for (size_t i = 0; i < samples.size(); i++)
+  {
+    test_action.setAngle(basisAction.getAngle() + samples[i].rotation);
     
-    simulationModule->getModuleT()->simulateAction(blablaAction, turningConsequences, simulation_num_particles);
+    //turningConsequences.reset(); // reset is inside simulateAction
+    simulationModule->getModuleT()->simulateAction(test_action, turningConsequences, simulation_num_particles);
 
-    if (turningConsequences.category(ActionSimulator::BallPositionCategory::INFIELD) > 0){
-      samples[i].likelihood = -simulationModule->getModuleT()->evaluateAction(turningConsequences);
-      m_min = std::min(m_min, samples[i].likelihood);
-      m_max = std::max(m_max, samples[i].likelihood);
-    }
-    else if (turningConsequences.category(ActionSimulator::BallPositionCategory::OPPGOAL) > 0){
-      samples[i].likelihood = m_max;
-    }
-    else{
-      samples[i].likelihood = m_min;
+    stats[i].oppGoal = turningConsequences.likelihood(ActionSimulator::BallPositionCategory::OPPGOAL);
+    stats[i].inFiled = turningConsequences.likelihood(ActionSimulator::BallPositionCategory::INFIELD);
+    
+    if(stats[i].oppGoal + stats[i].inFiled > 0) {
+      stats[i].potential = -simulationModule->getModuleT()->evaluateAction(turningConsequences);
+      m_min = std::min(m_min, stats[i].potential);
+      m_max = std::max(m_max, stats[i].potential);
+    } else {
+      stats[i].potential = 0.0;
     }
   }
 
+  double diff = m_max - m_min;
+  if (diff == 0) {
+    diff = 1.0;
+  }
+      
+  // calculate the weights for the particles
+  for (size_t i = 0; i < samples.size(); i++)
+  {
+    if(stats[i].oppGoal + stats[i].inFiled > theParameters.good_threshold_percentage) {
+      samples[i].likelihood = (stats[i].oppGoal + stats[i].inFiled)*((stats[i].potential - m_min) / diff) + stats[i].oppGoal;
+    } else {
+      samples[i].likelihood = 0.0;
+    }
+  }
 }
 
 void KickDirectionSimulator::resample(SampleSet& sampleSet, double sigma) const
@@ -184,6 +223,18 @@ void KickDirectionSimulator::resetSamples(SampleSet& samples, size_t n) const
   for (Sample& s : samples) {
     s.likelihood = likelihood;
     s.rotation = Math::random(-Math::pi, Math::pi);
+  }
+}
+
+void KickDirectionSimulator::resetSamplesUniform(SampleSet& samples, size_t n) const
+{
+  samples.resize(n);
+  double likelihood = 1.0 / static_cast<double>(n);
+  double step = Math::pi2 / static_cast<double>(n);
+
+  for (size_t i = 0; i < n; ++i) {
+    samples[i].likelihood = likelihood;
+    samples[i].rotation = -Math::pi + i*step;
   }
 }
 

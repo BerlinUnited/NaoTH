@@ -73,18 +73,21 @@ public:
     {
       PARAMETER_REGISTER(sidekick_right.speed) = 750;
       PARAMETER_REGISTER(sidekick_right.speed_std) = 150;
-      PARAMETER_REGISTER(sidekick_right.angle) = -89.657943335302260;
-      PARAMETER_REGISTER(sidekick_right.angle_std) = 10.553726275058064;
+
+      PARAMETER_ANGLE_REGISTER(sidekick_right.angle) = -89.657943335302260;
+      PARAMETER_ANGLE_REGISTER(sidekick_right.angle_std) = 10.553726275058064;
 
       PARAMETER_REGISTER(sidekick_left.speed) = 750;
       PARAMETER_REGISTER(sidekick_left.speed_std) = 150;
-      PARAMETER_REGISTER(sidekick_left.angle) = 86.170795364136380;
-      PARAMETER_REGISTER(sidekick_left.angle_std) = 10.669170653645670;
+
+      PARAMETER_ANGLE_REGISTER(sidekick_left.angle) = 86.170795364136380;
+      PARAMETER_ANGLE_REGISTER(sidekick_left.angle_std) = 10.669170653645670;
 
       PARAMETER_REGISTER(kick_short.speed) = 1280;
       PARAMETER_REGISTER(kick_short.speed_std) = 150;
-      PARAMETER_REGISTER(kick_short.angle) = 8.454482265522328;
-      PARAMETER_REGISTER(kick_short.angle_std) = 6.992268841997358;
+
+      PARAMETER_ANGLE_REGISTER(kick_short.angle) = 8.454482265522328;
+      PARAMETER_ANGLE_REGISTER(kick_short.angle_std) = 6.992268841997358;
 
       //PARAMETER_REGISTER(kick_long.speed) = 1020;
       //PARAMETER_REGISTER(kick_long.speed_std) = 150;
@@ -97,21 +100,25 @@ public:
       PARAMETER_REGISTER(numParticles) = 30;
       PARAMETER_REGISTER(minGoalParticles) = 9;
 
+      /*
       PARAMETER_REGISTER(obstacleFilter.g0) = 0.01;
       PARAMETER_REGISTER(obstacleFilter.g1) = 0.1;
+      */
 
       //KickDirection Stuff
       //Warum keine uniforme verteilung? damit wird gesichert das jede richtung mindestens ein sample bekomt
-      PARAMETER_REGISTER(num_angle_particle) = 60;
+      PARAMETER_REGISTER(num_angle_particle) = 30;
       PARAMETER_REGISTER(iterations) = 10;
 
       syncWithConfig();
     }
 
+    /*
     struct ObstacleFilter {
       double g0;
       double g1;
     } obstacleFilter;
+    */
 
     ActionSimulator::ActionParams sidekick_right;
     ActionSimulator::ActionParams sidekick_left;
@@ -144,13 +151,15 @@ private:
 
   std::vector<ActionSimulator::Action> action_local;
   //actionsConsequences now contain the angles in which the robot should turn -> rename it accordingly
-  std::vector<double> actionsConsequences;
-  std::vector<double> actionsConsequencesAbs;
+  std::vector<double> correctionAngle;
+  
   double calculate_best_direction(const ActionSimulator::Action& action);
   void update(const ActionSimulator::Action& action);
   void resample(SampleSet& sampleSet, double sigma) const;
   void normalize(SampleSet& samples) const;
+  
   void resetSamples(SampleSet& samples, size_t n) const;  
+  void resetSamplesUniform(SampleSet& samples, size_t n) const; 
 
 public:
   double m_max;
