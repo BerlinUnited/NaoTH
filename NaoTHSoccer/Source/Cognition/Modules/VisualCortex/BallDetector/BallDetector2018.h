@@ -116,9 +116,6 @@ public:
     PLOT("BallDetector2018:mean_of_means",average_mean);
   }
 
-  static std::map<std::string, std::shared_ptr<AbstractCNNClassifier>> createCNNMap();
-
-
 private:
   struct Parameters: public ParameterList
   {
@@ -220,6 +217,7 @@ private:
 
   std::shared_ptr<AbstractCNNClassifier> currentCNNClassifier;
   std::map<std::string, std::shared_ptr<AbstractCNNClassifier> > cnnMap;
+  void setClassifier(const std::string name);
 
   ModuleCreator<BallKeyPointExtractor>* theBallKeyPointExtractor;
   BestPatchList best;

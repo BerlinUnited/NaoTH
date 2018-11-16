@@ -65,6 +65,23 @@ public:
       return _size;
     }
 
+    Vector2i center() const {
+      return Vector2i((min.x + max.x)/2, (min.y + max.y)/2);
+    }
+
+    double radius() const {
+      return static_cast<double>(max.x - min.x)/2.0;
+    }
+
+    int width() const {
+      return max.x - min.x;
+    }
+
+    int height() const {
+      return max.y - min.y;
+    }
+
+  public:
     Vector2i min;
     Vector2i max;
     std::vector<T> data;
