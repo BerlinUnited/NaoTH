@@ -90,7 +90,8 @@ void PatchWork::multiplyBrightness(double factor, BallCandidates::PatchYUVClassi
     // nothing to do
     return;
   }
-  for(unsigned int i = 0; i < patch.size(); i++) {
+  for(unsigned int i = 0; i < patch.data.size(); i++) 
+  {
     double originalY = patch.data[i].pixel.y;
     double multipliedY = originalY * factor;
     double clippedY = Math::clamp(multipliedY, 0.0, 255.0);
