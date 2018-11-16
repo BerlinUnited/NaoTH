@@ -13,6 +13,7 @@
 #include <map>
 #include <list>
 #include <sstream>
+#include <functional>
 #include <Tools/Debug/NaoTHAssert.h>
 #include <Tools/Math/Common.h>
 #include <Representations/Infrastructure/Configuration.h>
@@ -77,6 +78,19 @@ protected:
       virtual T get() const { ASSERT(value != NULL); return Math::toDegrees(*value); }
   };
 
+  template<class T>
+  class CallbackParameter : public DefaultParameter<T> {
+  protected:
+      std::function<void(T,T)> f;
+  public:
+    CallbackParameter(const std::string& name, T* value, std::function<void(T,T)> f) : DefaultParameter<T>(name, value), f(f) {}
+    ~CallbackParameter(){}
+    virtual void set(T v) {
+        f(DefaultParameter<T>::get(), v);
+        DefaultParameter<T>::set(v);
+    }
+  };
+
 protected:
   // ACHTUNG: never copy the content of the parameter list
   ParameterList(const ParameterList& /*obj*/) {}
@@ -94,6 +108,14 @@ protected:
   Parameter<N>& registerParameterT(const std::string& parameterName, N& parameter)
   {
     T<N>* parameterWrapper = new T<N>(parameterName, &parameter);
+    parameters.push_back(parameterWrapper);
+    return *parameterWrapper;
+  }
+
+  template<template<typename N> class T, typename N>
+  Parameter<N>& registerParameterT(const std::string& parameterName, N& parameter, std::function<void(N,N)> f)
+  {
+    T<N>* parameterWrapper = new T<N>(parameterName, &parameter, f);
     parameters.push_back(parameterWrapper);
     return *parameterWrapper;
   }
@@ -129,6 +151,7 @@ private:
 
 
 #define PARAMETER_REGISTER(parameter) registerParameterT<DefaultParameter>(convertName(#parameter), parameter)
+#define PARAMETER_REGISTER_CB(parameter, callback) registerParameterT<CallbackParameter>(convertName(#parameter), parameter, callback)
 #define PARAMETER_ANGLE_REGISTER(parameter) registerParameterT<ParameterAngleDegrees>(convertName(#parameter), parameter)
 
 #endif // _ParameterList_h_
