@@ -76,10 +76,14 @@ public class MessageServer extends AbstractMessageServer {
     }
 
     public void connect(String host, int port) throws IOException {
+        connect(new InetSocketAddress(host, port));
+    }
+    
+    public void connect(InetSocketAddress address) throws IOException {
         // close previous connection if necessary
         disconnect();
-
-        this.address = new InetSocketAddress(host, port);
+        
+        this.address = address;
 
         // open and configure the socket
         this.socketChannel = SocketChannel.open();
@@ -99,6 +103,10 @@ public class MessageServer extends AbstractMessageServer {
         this.fireConnected(this.address);
     }//end connect
 
+    public void reconnect() throws IOException {
+        connect(this.address);
+    }
+    
     public void disconnect() {
         disconnect(null);
     }

@@ -187,8 +187,16 @@ public class RobotControlImpl extends javax.swing.JFrame
             disconnectMenuItem.setEnabled(false);
             connectMenuItem.setEnabled(true);
             if(event.getMessage() != null) {
-                JOptionPane.showMessageDialog(RobotControlImpl.this,
-                    event.getMessage(), "Disconnect", JOptionPane.ERROR_MESSAGE);
+                int result = JOptionPane.showConfirmDialog(RobotControlImpl.this, event.getMessage(), 
+                    "Disconnected. Try to reconnect?", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
+                
+                if(result == JOptionPane.OK_OPTION) {
+                    try {
+                        messageServer.reconnect();
+                    } catch (IOException ex) {
+                        Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
             }
         }
     });
