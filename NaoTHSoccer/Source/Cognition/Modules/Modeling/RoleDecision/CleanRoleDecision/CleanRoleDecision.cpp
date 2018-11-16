@@ -17,6 +17,8 @@ using namespace std;
 CleanRoleDecision::CleanRoleDecision()
 {
   getDebugParameterList().add(&parameters);
+
+  DEBUG_REQUEST_REGISTER("RoleDecision:min_ball_distance", "draws the circle of the min. ball distance to be recognized as different balls between first/second striker.", false);
 }
 
 CleanRoleDecision::~CleanRoleDecision()
@@ -206,5 +208,13 @@ bool CleanRoleDecision::isSecondStrikerDifferentFromFirst(unsigned int firstNumb
     Vector2d secondBall = second.pose * second.ballPosition;
     // check if the ball distance is greater than the given parameter distance radius
     double r = parameters.radius(first.ballPosition, second.ballPosition);
+
+    DEBUG_REQUEST("RoleDecision:min_ball_distance",
+      FIELD_DRAWING_CONTEXT;
+      PEN("000000", 30);
+      CIRCLE(firstBall.x, firstBall.y, r);
+      TEXT_DRAWING(firstBall.x, firstBall.y, secondNumber);
+    );
+
     return ((firstBall - secondBall).abs2() > r*r);
 }

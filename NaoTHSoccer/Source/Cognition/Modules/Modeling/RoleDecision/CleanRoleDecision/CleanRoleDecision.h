@@ -30,8 +30,9 @@
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(CleanRoleDecision)
-  PROVIDE(DebugPlot)
   PROVIDE(DebugRequest)
+  PROVIDE(DebugPlot)
+  PROVIDE(DebugDrawings)
   PROVIDE(DebugParameterList)
 
   REQUIRE(FrameInfo)
@@ -45,7 +46,7 @@ BEGIN_DECLARE_MODULE(CleanRoleDecision)
   REQUIRE(TeamBallModel)
 
   PROVIDE(RoleDecisionModel)
-END_DECLARE_MODULE(CleanRoleDecision)
+END_DECLARE_MODULE(CleanRoleDecision);
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
 
