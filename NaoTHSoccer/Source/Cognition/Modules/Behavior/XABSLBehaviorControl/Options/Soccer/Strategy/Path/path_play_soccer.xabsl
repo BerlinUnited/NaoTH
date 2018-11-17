@@ -162,13 +162,25 @@ option path_play_soccer
       else if (game.current_mode != playing)
         goto idle;
       else if (game.set_play == goal_free_kick && game.own_kickoff)
-        goto free_kick_own_goal;
+        // if free kick time is (nearly) up, we proceed with our normal game, otherwise position for free kick
+        if(game.msecsRemainingSecondary > 5000)
+          goto free_kick_own_goal;
+        else stay;
       else if (game.set_play == goal_free_kick && !game.own_kickoff)
-        goto free_kick_opp_goal;
+        // the free kick time is 1 second, we can start planing our next motion - refs won't call a penalty if there's only 1s left
+        if(game.msecsRemainingSecondary > 1000)
+          goto free_kick_opp_goal;
+        else stay;
       else if (game.set_play == pushing_free_kick && game.own_kickoff)
-        goto free_kick_own;
+        // if free kick time is (nearly) up, we proceed with our normal game, otherwise position for free kick
+        if(game.msecsRemainingSecondary > 5000)
+          goto free_kick_own;
+        else stay;
       else if (game.set_play == pushing_free_kick && !game.own_kickoff)
-        goto free_kick_opp;
+        // the free kick time is 1 second, we can start planing our next motion - refs won't call a penalty if there's only 1s left
+        if(game.msecsRemainingSecondary > 1000)
+          goto free_kick_opp;
+        else stay;
       else 
         stay;
     }
@@ -183,7 +195,7 @@ option path_play_soccer
   {
     decision
     {
-      else if (game.set_play != goal_free_kick)
+      else if (game.set_play != goal_free_kick || game.msecsRemainingSecondary <= 5000)
         goto play;
       else
         stay;
@@ -211,7 +223,7 @@ option path_play_soccer
   {
     decision
     {
-      else if (game.set_play != pushing_free_kick)
+      else if (game.set_play != pushing_free_kick || game.msecsRemainingSecondary <= 5000)
         goto play;
       else
         stay;

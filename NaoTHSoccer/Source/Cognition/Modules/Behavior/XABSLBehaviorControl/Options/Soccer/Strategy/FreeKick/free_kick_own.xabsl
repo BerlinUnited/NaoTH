@@ -44,7 +44,7 @@ option free_kick_own
         goto search_ball;
       } else if(abs(value = atan2(y=ball.preview.y, x=ball.preview.x)) >= 50) {
         goto turn_to_ball;
-      } else if(game.msecsRemainingSecondary <= 20000) { // 20 seconds
+      } else if(game.msecsRemainingSecondary <= 15000) { // 15 seconds
         // TODO: we should know if someone is fallen! if that's not the case, we can position us much earlier!
         // all teammates should be up again (if fallen) and it should be clear who's striker!
         if(team.calc_if_is_striker) {
@@ -71,7 +71,7 @@ option free_kick_own
     decision {
       if(!ball.know_where_itis) {
         goto search_ball;
-      } else if(game.msecsRemainingSecondary > 10000 || !team.calc_if_is_striker) { // 10 seconds
+      } else if(game.msecsRemainingSecondary > 15000 || !team.calc_if_is_striker) { // 15 seconds
         goto wait_and_watch;
       } else if(vector.abs(x=ball.preview.x, y=ball.preview.y) > 250) {
         goto first_move_closer_to_ball;
@@ -96,7 +96,7 @@ option free_kick_own
     decision {
       if(!ball.know_where_itis) {
         goto search_ball;
-      } else if(game.msecsRemainingSecondary > 10000 || !team.calc_if_is_striker) { // 10 seconds
+      } else if(game.msecsRemainingSecondary > 15000 || !team.calc_if_is_striker) { // 15 seconds
         goto wait_and_watch;
       } else if(vector.abs(x=ball.preview.x, y=ball.preview.y) <= 250) {
         goto first_position_for_free_kick;
@@ -117,7 +117,7 @@ option free_kick_own
     decision {
       if(!ball.know_where_itis) {
         goto search_ball;
-      } else if(game.msecsRemainingSecondary > 10000 || !team.calc_if_is_secondstriker) { // 10 seconds
+      } else if(game.msecsRemainingSecondary > 15000 || !team.calc_if_is_secondstriker) { // 15 seconds
         goto wait_and_watch;
       } else if(vector.abs(x=ball.preview.x, y=ball.preview.y) > 250) {
         goto second_move_closer_to_ball;
@@ -142,7 +142,7 @@ option free_kick_own
     decision {
       if(!ball.know_where_itis) {
         goto search_ball;
-      } else if(game.msecsRemainingSecondary > 10000 || !team.calc_if_is_secondstriker) { // 10 seconds
+      } else if(game.msecsRemainingSecondary > 15000 || !team.calc_if_is_secondstriker) { // 15 seconds
         goto wait_and_watch;
       } else if(vector.abs(x=ball.preview.x, y=ball.preview.y) <= 250) {
         goto second_position_for_free_kick;
@@ -164,7 +164,7 @@ option free_kick_own
         goto search_ball;
       } else if(abs(value = atan2(y=ball.preview.y, x=ball.preview.x)) >= 50) {
         goto turn_to_ball;
-      } else if(game.msecsRemainingSecondary > 10000 // 10 seconds
+      } else if(game.msecsRemainingSecondary > 15000 // 10 seconds
               // if one of the striker (first/second) isn't position correctly, go back to "wait_and_watch"
               || ((team.calc_if_is_striker || team.calc_if_is_secondstriker) 
                   && vector.abs(x=ball.preview.x, y=ball.preview.y) > 250)) {
