@@ -73,6 +73,6 @@ int WhistleDetectorV2::runFrequencyExtraction()
 	//int16_t* audiobuffer = &samples[0];
 
 	//stft.newData(audiobuffer, BUFFER_SIZE_RX, NUM_CHANNELS_RX);
-	stft.newData(&(getAudioData().samples[0]), getAudioData().samples.size(), getAudioData().numChannels);
+	stft.newData(&(getAudioData().samples[0]), getAudioData().samples.size(), (short)getAudioData().numChannels);
 	return 0;
 }
