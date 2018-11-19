@@ -18,22 +18,33 @@
 #define _AUDIO_DATA_H
 
 #include "Tools/DataStructures/Printable.h"
+#include "Tools/DataStructures/Serializer.h"
+
 #include <vector>
+
 namespace naoth
 {
-  class AudioData : public Printable
-  {
-  public:
-    int sampleRate;
-    int numChannels;
-    bool onlySoundInSet;
+class AudioData : public Printable
+{
+public:
+  int sampleRate;
+  int numChannels;
+  bool onlySoundInSet;
 
-    std::vector<short> samples; /* Samples are interleaved. */
+  std::vector<short> samples; /* Samples are interleaved. */
 
-    AudioData();
-    virtual ~AudioData();
-    virtual void print(std::ostream& stream) const;
-  };
-}
+  AudioData();
+  virtual ~AudioData();
+  virtual void print(std::ostream& stream) const;
+};
+
+template<>
+class Serializer<AudioData>
+{
+public:
+  static void serialize(const AudioData& representation, std::ostream& stream);
+  static void deserialize(std::istream& stream, AudioData& representation);
+};
+}//end namespace naoth
 
 #endif  /* _AUDIO_DATA_H */
