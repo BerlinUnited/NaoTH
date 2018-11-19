@@ -148,6 +148,7 @@ namespace naoth
 	  	std::unique_lock<std::mutex> lock(getMutex, std::try_to_lock);
 	  	if ( lock.owns_lock() ) {
 		    data.sampleRate = sampleRate;
+        data.numChannels = numChannels;
 		    data.samples = audioReadBuffer;
 	  	}
 	  }

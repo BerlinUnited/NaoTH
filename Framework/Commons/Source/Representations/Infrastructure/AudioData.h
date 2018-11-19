@@ -23,16 +23,17 @@ namespace naoth
 {
   class AudioData : public Printable
   {
-	public:
-	int sampleRate;
+  public:
+    int sampleRate;
+    int numChannels;
     bool onlySoundInSet;
 
-	std::vector<short> samples; /* Samples are interleaved. */
+    std::vector<short> samples; /* Samples are interleaved. */
 
     AudioData();
-	virtual ~AudioData();
+    virtual ~AudioData();
     virtual void print(std::ostream& stream) const;
-	};
+  };
 }
 
 #endif  /* _AUDIO_DATA_H */
