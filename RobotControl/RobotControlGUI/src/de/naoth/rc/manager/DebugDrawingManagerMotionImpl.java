@@ -6,10 +6,9 @@ package de.naoth.rc.manager;
 
 import de.naoth.rc.core.manager.AbstractManagerPlugin;
 import de.naoth.rc.drawings.Drawable;
+import de.naoth.rc.drawings.DrawingFactory;
 import de.naoth.rc.drawings.DrawingsContainer;
 import de.naoth.rc.server.Command;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 
 /**
@@ -36,36 +35,12 @@ public class DebugDrawingManagerMotionImpl extends AbstractManagerPlugin<Drawing
     {
       String[] messages = resultAsString.split("\n");
 
-      for(String str: messages)
+      for(String message: messages)
       {
-        String[] tokens = str.split(":");
-        try{
-          // the drawing-class should be in the same package as the interface Drawable
-          String packageName = Drawable.class.getPackage().getName();
-          // get the class of the drawing
-          Class drawingClass = Class.forName(packageName+"."+tokens[0]);
-          // get the constructor witch takes String[] as parameter
-          Constructor constructor = drawingClass.getConstructor(tokens.getClass());
-          // create new Drawing
-          Object drawing = constructor.newInstance(new Object[] {tokens});
-
-          if(drawing instanceof Drawable)
-          {
-            drawingList.add((Drawable)drawing);
-          }
+        Drawable drawing = DrawingFactory.createDrawing(message.split(":"));
+        if(drawing != null) {
+          drawingList.add((Drawable)drawing);
         }
-        catch(ArrayIndexOutOfBoundsException e)
-        {
-          System.out.println("ERROR: DebugDrawingManager: " + str);
-        }
-        catch(ClassNotFoundException e)
-        {
-          System.out.println("ERROR: DebugDrawingManager: no such drawing: " + str);
-        }
-        catch(NoSuchMethodException e){}
-        catch(InstantiationException e){}
-        catch(IllegalAccessException e){}
-        catch(InvocationTargetException e){}
       }//end for
     } // end if length > 0
 
