@@ -41,7 +41,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
@@ -165,9 +164,9 @@ public class BehaviorViewer extends AbstractDialog
     String history = Plugin.parent.getConfig().getProperty(this.getClass().getName()+".history", "{}");
     HashMap<String, List<String>> l = (new Gson()).fromJson(history, HashMap.class);
     // set the symbol watch history menu
-    for (Map.Entry<String, List<String>> entry : l.entrySet()) {
-        symbolsToWatchHistory.put(entry.getKey(), new HashSet(entry.getValue()));
-        JMenuItem watchEntry = new JMenuItem(entry.getKey());
+    l.keySet().stream().sorted().forEach((k) -> {
+        symbolsToWatchHistory.put(k, new HashSet(l.get(k)));
+        JMenuItem watchEntry = new JMenuItem(k);
         watchEntry.addActionListener((e) -> {
             // clear watches, before setting a stored configuration
             symbolsToWatch.clear();
@@ -176,9 +175,9 @@ public class BehaviorViewer extends AbstractDialog
             });
         });
         // list the stored watches in the menu's tooltip
-        watchEntry.setToolTipText("<html>"+entry.getValue().stream().map((t) -> { return "<li>"+t+"</li>"; }).collect(Collectors.joining())+"</html>");
+        watchEntry.setToolTipText("<html>"+l.get(k).stream().map((t) -> { return "<li>"+t+"</li>"; }).collect(Collectors.joining())+"</html>");
         popupMenu.add(watchEntry);
-    }
+    });
 
     // show popupmenu to trigger the height calculation
     popupMenu.setVisible(true);
