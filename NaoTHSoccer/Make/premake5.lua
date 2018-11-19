@@ -5,6 +5,66 @@ if not premake.checkVersion(premake._VERSION, ">=5.0.0-alpha12") then
 end
 
 
+
+require('gmake')
+
+--[[
+local p = premake
+local make = premake.modules.gmake
+local cpp = premake.modules.gmake.cpp
+local project = p.project
+local config = p.config
+local fileconfig = p.fileconfig
+
+local ccc = premake.modules.gmake.cpp.elements
+print (ccc)
+for k,v in pairs(ccc) do
+    print( k,v )
+end
+premake.modules.gmake.fileDependency = function(prj, node)
+_p("baba")
+end
+
+
+myFileDependency = function(prj, node)
+  _p("baba")
+  print ("dada!")
+end
+
+local blah = premake.modules.gmake.cppFileRules
+
+premake.modules.gmake.cppFileRules = function (prj)
+
+local tr = premake.project.getsourcetree(prj)
+
+local old_rules = make.fileDependency
+print("blub")
+print(cpp.elements.standardFileRules)
+print(old_rules)
+cpp.elements.standardFileRules2 = function(prj, node)
+  print("---------------------------------------")
+  return {
+    --make.fileDependency,
+    myFileDependency,
+    cpp.standardFileRules,
+  }
+end
+
+premake.tree.traverse(tr, {
+			onleaf = function(node, depth)
+        --print(node.name)
+        
+         print(cpp.elements.customFileRules )
+         --print (rules)
+      end
+})
+
+blah(prj)
+
+end
+]]
+
+
 require "tools/clean_action" -- get custom clean action
 require "tools/tools"
 dofile "tools/custom_options.lua" -- define custom options
@@ -220,6 +280,34 @@ workspace "NaoTHSoccer"
     -- Why? OpenCV is always dynamically linked and we can only garantuee that there is one version in Extern (Thomas)
     linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}
    
+   
+  premake.override(premake.make, "cppFileRules", function(base, prj)
+    local tr = premake.project.getsourcetree(prj)
+    premake.project.naothFileIndex = {}
+    local idx = 0
+    premake.tree.traverse(tr, {
+        onleaf = function(node, depth)
+          premake.project.naothFileIndex[node] = idx
+          idx = idx + 1
+        end
+    })
+    base(prj)
+  end)
+  
+  premake.override(premake.make.cpp.elements, "standardFileRules", function(base, prj)
+    return {
+			--premake.make.fileDependency,
+      function (prj, node)
+        local filetype = premake.make.fileType(node)
+        _x('$(OBJDIR)/%s.%s: %s', node.objname, premake.make.fileTypeExtensions()[filetype], node.relpath)
+        --_p('\t@echo $(notdir $<)')
+        _p('\t@echo "[$(shell expr $(shell expr $(x) \\* 100) / 300)]" $(notdir $<)')
+        _p('\t$(eval x := $(shell expr $(x) + 10))')
+      end,
+			premake.make.cpp.standardFileRules,
+		}
+  end)
+   
 -----------------------------------------------------------------------   
 
   -- commons
@@ -308,3 +396,4 @@ workspace "NaoTHSoccer"
         vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulatorJNI" }
     end
   end
+  
