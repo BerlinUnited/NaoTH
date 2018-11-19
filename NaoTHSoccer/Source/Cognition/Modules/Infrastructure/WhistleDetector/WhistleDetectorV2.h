@@ -11,9 +11,9 @@
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(WhistleDetectorV2)
-REQUIRE(AudioData)
+  REQUIRE(AudioData)
 
-PROVIDE(DebugParameterList)
+  PROVIDE(DebugParameterList)
 END_DECLARE_MODULE(WhistleDetectorV2)
 
 class WhistleDetectorV2 : public WhistleDetectorV2Base

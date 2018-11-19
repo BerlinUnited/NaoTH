@@ -13,7 +13,8 @@
 #include <vector>
 
 
-WhistleDetectorV2::WhistleDetectorV2(){
+WhistleDetectorV2::WhistleDetectorV2()
+{
 	getDebugParameterList().add(&params);
 }
 
@@ -22,7 +23,8 @@ WhistleDetectorV2::~WhistleDetectorV2()
 	getDebugParameterList().remove(&params);
 }
 
-void WhistleDetectorV2::execute(){
+void WhistleDetectorV2::execute()
+{
 	int result;
 	result = runFrequencyExtraction();
 
@@ -30,7 +32,8 @@ void WhistleDetectorV2::execute(){
 	std::cout << "Whistledetector Result: " << result << std::endl;
 }
 
-int WhistleDetectorV2::runFrequencyExtraction(){
+int WhistleDetectorV2::runFrequencyExtraction()
+{
 	/* load window times */
 	//TODO dont load it every execution cycle
 	int nWhistleBegin = int(params.fWhistleBegin * params.nWindowSizePadded) / params.fSampleRate;
@@ -65,11 +68,11 @@ int WhistleDetectorV2::runFrequencyExtraction(){
 	// create short time fourier transform
 	STFT stft(0, params.nWindowSize, params.nWindowSkipping, params.nWindowSizePadded, spectrumHandler);
 
-	std::vector<short> samples = getAudioData().samples;
+	//std::vector<short> samples = getAudioData().samples;
 	//HACK the stft class expectes audiobuffer to be a c array of type int16_t
-	int16_t* audiobuffer = &samples[0];
+	//int16_t* audiobuffer = &samples[0];
 
 	//stft.newData(audiobuffer, BUFFER_SIZE_RX, NUM_CHANNELS_RX);
-	stft.newData(audiobuffer, 1024, 1);
+	stft.newData(&(getAudioData().samples[0]), getAudioData().samples.size(), getAudioData().numChannels);
 	return 0;
 }
