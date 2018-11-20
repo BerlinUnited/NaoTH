@@ -68,7 +68,7 @@ public class StatusbarRobotInfo extends StatusbarPluginImpl implements Connectio
                         try {
                             rc.getMessageServer().connect(host, Integer.parseInt(port));
                         } catch (IOException ex) {
-                            JOptionPane.showMessageDialog((RobotControlImpl)rc, "Etablishing connection failed: " + ex.getLocalizedMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog((RobotControlImpl)rc, "Establishing connection failed: " + ex.getLocalizedMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
                         }
                     }
                 } else {
