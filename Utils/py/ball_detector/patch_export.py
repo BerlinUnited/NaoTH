@@ -58,6 +58,8 @@ def load_labels(file):
 
 def export_patches(patches, camera, labels, label_names, target_path):
 
+    print("\n Target Path: ", target_path, "\n")
+
     # create the output directories for all labels
     export_path_top = []
     export_path_bottom = []
@@ -66,6 +68,7 @@ def export_patches(patches, camera, labels, label_names, target_path):
         # create output path for top images
         path = os.path.join(target_path, 'top', label)
         export_path_top.append(os.path.join(path))
+        
         if not os.path.exists(path):
             os.makedirs(path)
 
@@ -74,6 +77,8 @@ def export_patches(patches, camera, labels, label_names, target_path):
         export_path_bottom.append(path)
         if not os.path.exists(path):
             os.makedirs(path)
+
+    print("Export Path Top Images: ", export_path_top)
 
     # export the patches
     for i in range(len(patches)):
@@ -186,16 +191,29 @@ USAGE:
 if __name__ == "__main__":
     logFilePath, flag = parse_arguments(sys.argv[1:])
 
+    # load the label file
+    current_folder_full = os.path.dirname(logFilePath) # this path to current folder TODO rename variable
+
+    # Check if file is located inside the log structure
+    parent_folder = os.path.split(current_folder_full)[0]
+    extracted_folder = os.path.join(os.path.dirname(parent_folder),'extracted')
+
+    if os.path.isdir(extracted_folder):
+        export_folder = os.path.join(extracted_folder , os.path.split(current_folder_full)[-1])
+    else:
+        print("WARNING: Log is not expected folder structure")
+        export_folder = current_folder_full
+
+    print("Patches will be exported to %s \n" % (export_folder))
+
     """ type: 0-'Y', 1-'YUV', 2-'YUVC' """
     patchdata, camera_index = patchReader.read_all_patches_from_log(logFilePath, type=2)
-    # load the label file
-    parent_folder = os.path.dirname(logFilePath)
 
     if flag:
-        export_patches_all(patchdata, camera_index, parent_folder)
+        export_patches_all(patchdata, camera_index, export_folder)
 
     else:
         label_file = os.path.join(os.path.dirname(logFilePath), 'ball_patch.json')
         labels, label_names = load_labels(label_file)
 
-        export_patches(patchdata, camera_index, labels, label_names, parent_folder)
+        export_patches(patchdata, camera_index, labels, label_names, export_folder)
