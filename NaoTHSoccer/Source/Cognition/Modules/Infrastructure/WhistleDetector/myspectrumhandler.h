@@ -68,7 +68,11 @@ public:
     found = false;
 
     int i;
+    double max_value = -1;
     for(i = nWhistleBegin; i < nWhistleEnd; ++i) {
+      if(spectrum[i] > max_value) {
+        max_value = spectrum[i];
+      }
       if(spectrum[i] > whistleThresh) {
         found = true;
         break;
@@ -76,7 +80,7 @@ public:
     }
 
     scan_thc.push_back(whistleThresh);
-    scan_log.push_back(max_v);
+    scan_log.push_back(max_value);
 
     if(whistleDone) {
       if(!found) {
@@ -111,6 +115,7 @@ public:
       if(whistleCounter >= nWhistleOkayFrames) {
 		//TODO increment the whistle heard counter!!!
         std::cout << "  !!! Cool Whistle heard !!!" << std::endl;
+        whistleDetections++;
 
         whistleCounter = 0;
         whistleMissCounter = 0;
@@ -137,6 +142,8 @@ public:
   std::vector<double> scan_log;
   std::vector<double> scan_thc;
   double filter_value = 0;
+
+  unsigned whistleDetections = 0;
 };
 
 #endif // MYSPECTRUMHANDLER

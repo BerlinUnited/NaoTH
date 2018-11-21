@@ -108,9 +108,9 @@ void WhistleDetectorV2::runDetection()
   spectrumHandler->scan_log.clear();
   spectrumHandler->scan_thc.clear();
 
-  if(spectrumHandler->whistleDone) {
-    getWhistlePercept().counter++;
-  }
+  // update the percept
+  getWhistlePercept().counter += spectrumHandler->whistleDetections;
+  spectrumHandler->whistleDetections = 0;
 }
 
 
