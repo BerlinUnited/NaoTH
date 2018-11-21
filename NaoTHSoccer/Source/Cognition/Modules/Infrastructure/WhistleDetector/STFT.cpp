@@ -52,7 +52,7 @@ STFT::~STFT()
 
 void STFT::intToFloat(const int16_t &in, double &out)
 {
-    out = static_cast<float>(in) / (std::numeric_limits<int16_t>::max() + 1);
+    out = static_cast<double>(in) / static_cast<double>(std::numeric_limits<int16_t>::max() + 1);
 }
 
 void STFT::newData(const int16_t *data, int length, short channels)
@@ -86,7 +86,7 @@ void STFT::newData(const int16_t *data, int length, short channels)
 
         /* calc magnitude */
         for(int i = 0; i < windowFrequencyHalf; ++i) {
-            outputMag[i] = std::abs(*reinterpret_cast<std::complex<double>* >(&output[i]));
+            outputMag[i] = std::sqrt(output[i][0]*output[i][0] + output[i][1]*output[i][1]);
         }
         if(handler != NULL)
         {
