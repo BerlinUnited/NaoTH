@@ -9,4 +9,5 @@ message AudioData
   
   required uint32 sampleRate = 3;
   required uint32 numChannels = 4;
+  required uint32 timestamp = 5;
 }

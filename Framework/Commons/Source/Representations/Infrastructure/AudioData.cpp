@@ -10,7 +10,8 @@ using namespace naoth;
 AudioData::AudioData():
   sampleRate(8000),
   numChannels(2),
-  onlySoundInSet(true)
+  onlySoundInSet(true),
+  timestamp(0)
 {
   
 }
@@ -18,7 +19,10 @@ AudioData::AudioData():
 void AudioData::print(std::ostream& stream) const
 {
   stream << "sampleRate: " << sampleRate << std::endl;
+  stream << "numChannels: " << numChannels << std::endl;
+  stream << "Number of Samples: " << samples.size() << std::endl;
   stream << "onlySoundInSet: " << onlySoundInSet << std::endl;  
+  stream << "timestamp: " << timestamp << std::endl;
 }
 
 AudioData::~AudioData()
@@ -33,6 +37,7 @@ void Serializer<AudioData>::serialize(const AudioData& representation, std::ostr
   msg.set_samplerate(representation.sampleRate);
   msg.set_numchannels(representation.numChannels);
   msg.set_samplesize(sizeof(short));
+  msg.set_timestamp(representation.timestamp);
   msg.set_samples((unsigned char*)representation.samples.data(), representation.samples.size()*sizeof(short));
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
@@ -48,8 +53,9 @@ void Serializer<AudioData>::deserialize(std::istream& stream, AudioData& represe
 
   representation.sampleRate = msg.samplerate();
   representation.numChannels = msg.numchannels();
+  representation.timestamp = msg.timestamp();
 
   assert(msg.samplesize() == sizeof(short));
   representation.samples.resize(msg.samples().size() / sizeof(short));
-  std::copy_n(msg.samples().data(), msg.samples().size(), representation.samples.data());
+  std::copy_n(msg.samples().data(), msg.samples().size(), (unsigned char*)representation.samples.data());
 }
