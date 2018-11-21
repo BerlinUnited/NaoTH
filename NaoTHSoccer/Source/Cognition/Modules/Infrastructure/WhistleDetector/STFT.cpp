@@ -53,7 +53,7 @@ STFT::~STFT()
 
 void STFT::intToFloat(const int16_t &in, double &out)
 {
-    out = static_cast<double>(in) / static_cast<double>(std::numeric_limits<int16_t>::max() + 1);
+    out = static_cast<double>(in) / (static_cast<double>(std::numeric_limits<int16_t>::max()) + 1.0);
 }
 
 void STFT::newData(const int16_t *data, int length, short channels)
