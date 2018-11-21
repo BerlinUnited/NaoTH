@@ -57,9 +57,6 @@ def load_labels(file):
 
 
 def export_patches(patches, camera, labels, label_names, target_path):
-
-    print("\n Target Path: ", target_path, "\n")
-
     # create the output directories for all labels
     export_path_top = []
     export_path_bottom = []
@@ -77,8 +74,6 @@ def export_patches(patches, camera, labels, label_names, target_path):
         export_path_bottom.append(path)
         if not os.path.exists(path):
             os.makedirs(path)
-
-    print("Export Path Top Images: ", export_path_top)
 
     # export the patches
     for i in range(len(patches)):
@@ -201,10 +196,10 @@ if __name__ == "__main__":
     if os.path.isdir(extracted_folder):
         export_folder = os.path.join(extracted_folder , os.path.split(current_folder_full)[-1])
     else:
-        print("WARNING: Log is not expected folder structure")
+        print("WARNING: Log is not in expected folder structure")
         export_folder = current_folder_full
 
-    print("Patches will be exported to %s \n" % (export_folder))
+    print("Patches will be exported to %s" % (export_folder))
 
     """ type: 0-'Y', 1-'YUV', 2-'YUVC' """
     patchdata, camera_index = patchReader.read_all_patches_from_log(logFilePath, type=2)
@@ -217,3 +212,5 @@ if __name__ == "__main__":
         labels, label_names = load_labels(label_file)
 
         export_patches(patchdata, camera_index, labels, label_names, export_folder)
+
+    print("Finished exporting the patches from the logs")
