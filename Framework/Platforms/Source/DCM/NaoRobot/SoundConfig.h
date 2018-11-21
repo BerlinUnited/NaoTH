@@ -10,6 +10,7 @@
 #define SAMPLE_RATE_RX_REC      (48000)
 #define SAMPLE_COUNT            (1024) //amount of samples to read must be power of 2
 #define SAMPLE_COUNT_REC        (4096) //amount of samples to read must be power of 2
+// TODO: do we really use overlap? is it implemented correctly?
 #define SAMPLE_OVERLAP_COUNT    (256) //amount of samples to read must be power of 2
 #define SAMPLE_NEW_COUNT        (SAMPLE_COUNT - SAMPLE_OVERLAP_COUNT) //amount of samples to read must be power of 2
 #define BUFFER_SIZE_RX          (NUM_CHANNELS_RX * SAMPLE_COUNT)
