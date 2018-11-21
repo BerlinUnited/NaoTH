@@ -39,8 +39,6 @@ public:
 
   virtual void handle(const double *spectrum, int length)
   {
-    static unsigned whistleCounter(0), whistleMissCounter(0), whistleDone(false);
-
     double mean, dev;
     calcMeanDeviation(spectrum, length, mean, dev);
 
@@ -70,18 +68,23 @@ public:
     {
       if(found) {
         ++whistleCounter;
+        ++whistleCounterGlobal;
         whistleMissCounter = 0;
-      } else if(whistleCounter > 0) {
-        ++whistleMissCounter;
-        if(whistleMissCounter > nWhistleMissFrames) {
-          whistleCounter = 0;
-          whistleMissCounter = 0;
-          whistleDone = false;
+      } else {
+        if(whistleCounter > 0) {
+          ++whistleMissCounter;
+          if(whistleMissCounter > nWhistleMissFrames) {
+            std::cout << "> " << whistleCounter << std::endl;
+            whistleCounter = 0;
+            whistleMissCounter = 0;
+            whistleDone = false;
+          }
         }
+        ++whistleMissCounterGlobal;
       }
       if(whistleCounter >= nWhistleOkayFrames) {
 		//TODO increment the whistle heard counter!!!
-        std::cout << "  !!! Whistle heard !!!" << std::endl;
+        std::cout << "  !!! Cool Whistle heard !!!" << std::endl;
 
         whistleCounter = 0;
         whistleMissCounter = 0;
@@ -96,6 +99,14 @@ private:
   int nWhistleEnd;
   unsigned nWhistleMissFrames;
   unsigned nWhistleOkayFrames;
+
+public:
+  // internal state
+  unsigned whistleCounterGlobal = 0;
+  unsigned whistleMissCounterGlobal = 0;
+  unsigned whistleCounter = 0; 
+  unsigned whistleMissCounter = 0;
+  unsigned whistleDone = false;
 };
 
 #endif // MYSPECTRUMHANDLER
