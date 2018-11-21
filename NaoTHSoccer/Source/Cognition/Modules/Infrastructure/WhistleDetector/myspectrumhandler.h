@@ -6,7 +6,7 @@
 //#include "SharedMemoryIO.h"
 
 #include <iostream>
-
+#include <vector>
 
 class MySpectrumHandler : public SpectrumHandler
 {
