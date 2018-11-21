@@ -91,8 +91,7 @@ void WhistleDetectorV2::runDetection()
 
 	//stft.newData(audiobuffer, BUFFER_SIZE_RX, NUM_CHANNELS_RX);
   // NOTE: SAMPLE_OVERLAP_COUNT = 256
-
-	stft.newData(&(getAudioData().samples[0]), getAudioData().samples.size() - 256*getAudioData().numChannels, (short)getAudioData().numChannels);
+	stft.newData(&(getAudioData().samples[0]), getAudioData().samples.size() /*- 256*getAudioData().numChannels*/, (short)getAudioData().numChannels);
 
 
   PLOT("WhistleDetectorV2:whistleCounter", spectrumHandler->whistleCounterGlobal);
@@ -123,7 +122,7 @@ void WhistleDetectorV2::runDetectionNew()
   whistle_filter.setParameter(params.whistle_filter.g0, params.whistle_filter.g1);
 
   static int iInput = 0;
-  const int length = getAudioData().samples.size() - 256*getAudioData().numChannels;
+  const int length = getAudioData().samples.size();// - 256*getAudioData().numChannels; // due to a bug in overlay
   const int channels = getAudioData().numChannels;
   const int offset = 0;
   const int windowTime = params.nWindowSize;
