@@ -22,6 +22,8 @@ namespace naoth
       void set(const naoth::AudioControl& controlData);
 
 	  	std::vector<short> audioReadBuffer;
+      unsigned long recordingTimestamp;
+
 	  protected:
   		std::thread audioRecorderThread;
       std::mutex getMutex;

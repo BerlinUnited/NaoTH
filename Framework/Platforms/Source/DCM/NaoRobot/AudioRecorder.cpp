@@ -1,6 +1,8 @@
 #include "AudioRecorder.h"
 
 #include <Tools/ThreadUtil.h>
+#include "Tools/NaoTime.h"
+
 #include <chrono>
 #include <pulse/error.h>
 
@@ -11,6 +13,7 @@ namespace naoth
 	AudioRecorder::AudioRecorder()
 	:
 	audioReadBuffer(BUFFER_SIZE_RX, 0),
+  recordingTimestamp(0),
 	command(0),	
 	running(false),
   	recording(false),
@@ -73,7 +76,7 @@ namespace naoth
 	      if(command == 0)
 	      {
 	        // deinit audio device ~8 seconds after switch off command was set
-	        // (recording has blocking behaviour 1024 samples eqal 128 ms 63*128 equals ~8s
+	        // (recording has blocking behaviour 1024 samples equal 128 ms 63*128 equals ~8s
 	        if(deinitCyclesCounter >= 63)
 	        {
 	          std::cout << "stop recording" << std::endl;
@@ -103,7 +106,9 @@ namespace naoth
 	      {
 	        std::cerr << "[PulseAudio] pa_simple_read() failed: " << pa_strerror(error) << std::endl;
 	        running = false;
-	      }
+	      } else {
+          recordingTimestamp = NaoTime::getNaoTimeInMilliSeconds();
+        }
 	    }
 	    else
 	    {
@@ -144,12 +149,15 @@ namespace naoth
 
 	void AudioRecorder::get(AudioData& data)
 	{
-	  if (recording){
+	  if (recording) 
+    {
 	  	std::unique_lock<std::mutex> lock(getMutex, std::try_to_lock);
-	  	if ( lock.owns_lock() ) {
+	  	if ( lock.owns_lock() && recordingTimestamp > data.timestamp) 
+      {
 		    data.sampleRate = sampleRate;
         data.numChannels = numChannels;
 		    data.samples = audioReadBuffer;
+        data.timestamp = recordingTimestamp;
 	  	}
 	  }
 	} // end AudioRecorder::get
