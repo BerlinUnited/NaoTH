@@ -13,6 +13,11 @@ def position_and_execute(s, a, parser, pos, ball):
     s.cmd_agentMove(a.number, pos[0], pos[1], r=pos[2])  # place the robot
     s.cmd_ballPos(ball[0], ball[1])  # place the ball
 
+    # the robot should forget the previous ball!
+    a.debugrequest('MultiKalmanBallLocator:remove_all_models', True)
+    time.sleep(0.5)
+    a.debugrequest('MultiKalmanBallLocator:remove_all_models', False)
+
     # if we do this test multiple times, the simulation commands are sometimes a little bit delayed
     wait_for(lambda: s.get_ball()['x'] - ball[0] <= 0.01, 0.3)
 
@@ -31,8 +36,17 @@ def position_and_execute(s, a, parser, pos, ball):
             if data:
                 if pending_cmds[p] == 'Behavior':
                     parser.parse(data)
+                    #print(parser.getActiveOptions())
                     if parser.isActiveOption('free_kick_opp_goal'):
-                        #print(parser.getActiveOptionState('free_kick_opp'))
+                        '''
+                        print(parser.symbols.boolean('ball.know_where_itis'),
+                              parser.symbols.decimal('ball.preview.x'),
+                              parser.symbols.decimal('ball.preview.y'),
+                              parser.symbols.decimal('ball.x'),
+                              parser.symbols.decimal('ball.y'),
+                              parser.getActiveOptionState('free_kick_opp_goal')
+                        )
+                        '''
                         if parser.getActiveOptionState('free_kick_opp_goal') == 'idle' and time.monotonic() > (start + 10):
                             #print(parser.symbols.decimal('ball.distance'))
                             start = 0
@@ -94,14 +108,33 @@ def opp_goal_free_kick(args):
 
     positions = {
         'right_goal_pos': [(3.0, -1.0),  # ball position
-                          (2.7, -1.0, -90), (2.7, -0.6, -90), (2.9, -0.6, -90), (3.2, -0.6, -90), (3.2, -0.9, -90),
-                          (3.2, -1.1, -90), (3.2, -1.3, -90), (3.0, -1.3, -90), (2.8, -1.3, -90), (2.8, -1.3, -90),
-                          (2.7, -1.1, -90), (2.8, -1.3, -90), (4.0, -1.0, 90), (4.0, -0.8, 90), (4.0, -1.2, 90),
-                          (4.0, -2.5, 90), (2.7, 1.0, -90)  
+                           (3.5, 2.5, 90), (3.5, 1.5, 90), (3.5, 0.5, 90), (3.5, -0.5, 90), (3.5, -1.5, 90), (3.5, -2.5, 90),
+                           (3.0, 2.5, 90), (3.0, 1.5, 90), (3.0, 0.5, 90), (3.0, -0.5, 90), (3.0, -1.5, 90), (3.0, -2.5, 90),
+                           (2.5, 2.0, -90), (2.5, 1.5, -90), (2.5, 0.5, -90), (2.5, -0.5, -90), (2.5, -1.5, -90), (2.5, -2.5, -90),
+                           (1.5, 2.0, -90), (1.5, 0.0, -90), (1.5, -2.0, -90),
+                           (0.5, 0.0, 90),
+                           (-1.5, 1.5, 90), (-1.5, -1.5, 90),
+                           (-3.5, 0.0, 90),
+                           (2.7, -1.0, -90), (2.7, -0.6, -90), (2.9, -0.6, -90), (3.2, -0.6, -90), (3.2, -0.9, -90), (3.2, -1.1, -90),
+                           (3.2, -1.3, -90), (3.0, -1.3, -90), (2.8, -1.3, -90),
+                           (2.7, -1.1, -90), (2.8, -1.3, -90), (4.0, -1.0, 90), (4.0, -0.8, 90), (4.0, -1.2, 90),
+                           (4.0, -2.5, 90), (2.7, 1.0, -90)
         ],
         'left_goal_pos': [ (3.0, 1.0), # ball position
-                         (2.7, 1.0, -90), (2.7, 0.6, -90), (2.9, 0.6, -90), (3.2, 0.6, -90), (3.2, 0.9, -90), (3.2, 1.1, -90), (3.2, 1.3, -90), (3.0, 1.3, -90), (2.8, 1.3, -90), (2.8, 1.3, -90),
-                         (2.7, 1.1, -90), (2.8, 1.3, -90), (4.0, 1.0, 90), (4.0, 0.8, 90), (4.0, 1.2, 90), (4.0, 2.5, 90)
+                           (3.5, 2.5, 90),
+                           (3.5, 1.5, 90), (3.5, 0.5, 90), (3.5, -0.5, 90),
+                           (3.5, -1.5, 90), (3.5, -2.5, 90),
+                           (3.0, 2.5, 90), (3.0, 1.5, 90), (3.0, 0.5, 90), (3.0, -0.5, 90), (3.0, -1.5, 90), (3.0, -2.5, 90),
+                           (2.5, 2.0, -90), (2.5, 1.5, -90), (2.5, 0.5, -90), (2.5, -0.5, -90), (2.5, -1.5, -90), (2.5, -2.5, -90),
+                           (1.5, 2.0, -90), (1.5, 0.0, -90), (1.5, -2.0, -90),
+                           (0.5, 0.0, 90),
+                           (-1.5, 1.5, 90), (-1.5, -1.5, 90),
+                           (-3.5, 0.0, 90),
+                           (2.7, 1.0, -90), (2.7, 0.6, -90), (2.9, 0.6, -90), (3.2, 0.6, -90), (3.2, 0.9, -90),
+                           (3.2, 1.1, -90), (3.2, 1.3, -90), (3.0, 1.3, -90), (2.8, 1.3, -90), (2.8, 1.3, -90),
+                           (2.7, 1.1, -90), (2.8, 1.3, -90), (4.0, 1.0, 90),  (4.0, 0.8, 90),
+                           (4.0, 1.2, 90),
+                           (4.0, 2.5, 90)
         ]
     }
     for _ in positions:
@@ -110,6 +143,10 @@ def opp_goal_free_kick(args):
                 logging.error("Failed opponent free kick (%s): ball@%s, robot@%s", _, str(positions[_][0]), str(robot))
                 return_code += 1
             time.sleep(0.5)
+
+    # TODO: position_for_free_kick (deactivate vision)
+    # TODO: move_away_from_ball
+    # TODO: move_away_from_teamball
 
     a.cancel()
     s.cancel()

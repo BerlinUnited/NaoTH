@@ -7,16 +7,27 @@ option avoid_region_go_own_goal
   /** distance to the x/y position to avoid **/
   float @distance;
 
+/*         x            middle         x
+                          0             
+      \    |              #            |     /       
+  away_xy  |  away_y      #   away_y   |  away_xy   
+        \  |              #            |  /          
+y    ------b------        #      ------b------     -y
+           |              #            |            
+   away_x  |  away        #    away    |  away_x    
+           |              #            |            
+                          #                         */
+
   // initial state where the decision is made in which direction the robot should move
   initial state decide {
     decision {
-      if(robot_pose.x<@x && abs(value=robot_pose.y)<abs(value=@y)) {
+      if(robot_pose.x<@x && ((@y>=0 && @y>=robot_pose.y) || (@y<=0 && @y<=robot_pose.y))) {
         // robot is in the lower quadrant to the middle (y=0)
         goto move_away;
       } else if(robot_pose.x<@x) {
         // robot is in the lower quadrant far from the middle (y=0)
         goto move_away_x;
-      } else if(abs(value=robot_pose.y)<abs(value=@y)) {
+      } else if( (@y>=0 && @y>=robot_pose.y) || (@y<=0 && @y<=robot_pose.y) ) {
         // robot is in the upper quadrant to the middle (y=0)
         goto move_away_y;
       } else {
@@ -129,7 +140,7 @@ option avoid_region_go_own_goal
     action {
       // TODO: what happens, if the robot is near a side/groundline?!
       // depending on which coordinate is closer, we move back in x-direction or y-direction
-      go_to_point_with_USOA(x=abs(value=robot_pose.x-@x) <= abs(value=robot_pose.y-@y)?             @x-200                 : (@x+@distance),
+      go_to_point_with_USOA(x=abs(value=robot_pose.x-@x) <= abs(value=robot_pose.y-@y)?             @x-250                 : (@x+@distance),
                             y=abs(value=robot_pose.x-@x) <= abs(value=robot_pose.y-@y)? (@y+(@y<0?-@distance:@distance))   :       @y,
                             rot=atan2(y = @y-robot_pose.y, x = @x-robot_pose.x));
     }
