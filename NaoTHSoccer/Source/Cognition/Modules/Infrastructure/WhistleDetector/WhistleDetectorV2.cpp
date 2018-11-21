@@ -9,11 +9,14 @@
 #include "WhistleDetectorV2.h"
 //#include "STFT.h"
 #include "myspectrumhandler.h"
+#include <
 
 #include <vector>
 
 
 WhistleDetectorV2::WhistleDetectorV2()
+: lastDataTimestamp(0)
+  //myfile ("example.bin", std::ios::binary)
 {
 	getDebugParameterList().add(&params);
 }
@@ -21,15 +24,15 @@ WhistleDetectorV2::WhistleDetectorV2()
 WhistleDetectorV2::~WhistleDetectorV2()
 {
 	getDebugParameterList().remove(&params);
+  //myfile.close();
 }
 
 void WhistleDetectorV2::execute()
 {
-	int result;
-	result = runFrequencyExtraction();
+	runFrequencyExtraction();
 
 	//Dummy print out
-	std::cout << "Whistledetector Result: " << result << std::endl;
+	//std::cout << "Whistledetector Result: " << result << std::endl;
 }
 
 int WhistleDetectorV2::runFrequencyExtraction()
@@ -62,17 +65,38 @@ int WhistleDetectorV2::runFrequencyExtraction()
 		return -1;
 	}
 
+  // no new data, return
+  if(lastDataTimestamp >= getAudioData().timestamp ) {
+    lastDataTimestamp = getAudioData().timestamp;
+    return 0;
+  }
+
 	//This part corresponds to executeAction function in original implementation
-	MySpectrumHandler* spectrumHandler = new MySpectrumHandler(params.vWhistleThreshold, nWhistleBegin, nWhistleEnd, params.nWhistleMissFrames, params.nWhistleOkayFrames);
+	static MySpectrumHandler* spectrumHandler = new MySpectrumHandler(params.vWhistleThreshold, nWhistleBegin, nWhistleEnd, params.nWhistleMissFrames, params.nWhistleOkayFrames);
+
+  PLOT("WhistleDetectorV2:whistleCounter", spectrumHandler->whistleCounterGlobal);
+  PLOT("WhistleDetectorV2:whistleMissCounter", spectrumHandler->whistleMissCounterGlobal);
+  spectrumHandler->whistleCounterGlobal = 0;
+  spectrumHandler->whistleMissCounterGlobal = 0;
+
+  /*
+  for (size_t i = 0; i < getAudioData().samples.size() - 256*2; i += getAudioData().numChannels) {
+    myfile.write((char*)&getAudioData().samples[i],sizeof(short));
+  }
+  */
 
 	// create short time fourier transform
-	STFT stft(0, params.nWindowSize, params.nWindowSkipping, params.nWindowSizePadded, spectrumHandler);
+	static STFT stft(0, params.nWindowSize, params.nWindowSkipping, params.nWindowSizePadded, spectrumHandler);
 
 	//std::vector<short> samples = getAudioData().samples;
 	//HACK the stft class expectes audiobuffer to be a c array of type int16_t
 	//int16_t* audiobuffer = &samples[0];
 
 	//stft.newData(audiobuffer, BUFFER_SIZE_RX, NUM_CHANNELS_RX);
-	stft.newData(&(getAudioData().samples[0]), getAudioData().samples.size(), (short)getAudioData().numChannels);
+  // NOTE: SAMPLE_OVERLAP_COUNT = 256
+	stft.newData(&(getAudioData().samples[0]), getAudioData().samples.size() - 256*getAudioData().numChannels, (short)getAudioData().numChannels);
+
+  // copy
+  lastDataTimestamp = getAudioData().timestamp;
 	return 0;
 }

@@ -2,15 +2,24 @@
 #define _WHISTLEDETECTOR_V2_H
 
 #include <ModuleFramework/Module.h>
+
+#include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/AudioData.h>
 
 #include <Tools/DataStructures/ParameterList.h>
 #include <Tools/Debug/DebugParameterList.h>
+#include <Tools/Debug/DebugPlot.h>
+#include <Tools/Debug/DebugRequest.h>
 
+#include <fstream>
 
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(WhistleDetectorV2)
+  PROVIDE(DebugPlot)
+  PROVIDE(DebugRequest)
+
+  REQUIRE(FrameInfo)
   REQUIRE(AudioData)
 
   PROVIDE(DebugParameterList)
@@ -56,5 +65,7 @@ public:
 
 private:
 	int runFrequencyExtraction();
+  unsigned int lastDataTimestamp;
+  std::ofstream myfile;
 };
 #endif // _WHISTLEDETECTOR_V2_H
