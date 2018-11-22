@@ -29,6 +29,7 @@ MonteCarloSelfLocator::MonteCarloSelfLocator()
 {
   // debug
   DEBUG_REQUEST_REGISTER("MCSLS:reset_samples", "reset the sample set", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:user_defined_pose", "allows the user to modify the location of the robot", false);
 
   // field drawings
   DEBUG_REQUEST_REGISTER("MCSLS:draw_Samples", "draw sample set before resampling", false);
@@ -77,6 +78,28 @@ void MonteCarloSelfLocator::execute()
     state = LOCALIZE;
 
     DEBUG_REQUEST("MCSLS:draw_Samples", 
+      FIELD_DRAWING_CONTEXT;
+      theSampleSet.drawImportance(getDebugDrawings());
+    );
+
+    return;
+  );
+
+  DEBUG_REQUEST("MCSLS:user_defined_pose",
+
+    Vector2d pos;
+    double rot (0);
+    MODIFY("MCSLS:posX", pos.x);
+    MODIFY("MCSLS:posY", pos.y);
+    MODIFY("MCSLS:rot", rot);
+    
+    // sample particles in a 100mm^2 rect of the user defined pose
+    initializeSampleSetFixedRotation(Geometry::Rect2d(pos - Vector2d(50,50), pos + Vector2d(50,50)), rot, theSampleSet);
+
+    islocalized = true;
+    state = LOCALIZE;
+
+    DEBUG_REQUEST("MCSLS:draw_Samples",
       FIELD_DRAWING_CONTEXT;
       theSampleSet.drawImportance(getDebugDrawings());
     );
@@ -419,7 +442,13 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
   */
 
   if(parameters.updateByMiddleCircle) {
-    updateByMiddleCircle(getLinePercept(), sampleSet);
+    if(parameters.updateByLinePerceptCircle && getLinePercept().middleCircleWasSeen) {
+      updateByMiddleCircle(getLinePercept().middleCircleCenter, sampleSet);
+    }
+
+    if(parameters.updateByRansacCircle && getRansacCirclePercept().middleCircleWasSeen) {
+      updateByMiddleCircle(getRansacCirclePercept().middleCircleCenter, sampleSet);
+    }
   }
 
   if(parameters.updateByCompas && getProbabilisticQuadCompas().isValid()) {
@@ -919,17 +948,17 @@ void MonteCarloSelfLocator::updateByShortLines(const LinePercept& linePercept, S
   */
 }//end updateByLinesTable
 
-void MonteCarloSelfLocator::updateByMiddleCircle(const LinePercept& linePercept, SampleSet& sampleSet) const
+void MonteCarloSelfLocator::updateByMiddleCircle(const Vector2d& middleCircleCenter, SampleSet& sampleSet) const
 {
-  if(!linePercept.middleCircleWasSeen) {
-    return;
-  }
-
   double sigmaDistance = parameters.sigmaDistanceCenterCircle;
   double sigmaAngle    = parameters.sigmaAngleCenterCircle;
   double cameraHeight  = getCameraMatrix().translation.z;
 
   Vector2<double> centerCirclePosition; // (0,0)
+
+  //TODO: this needs to be analyzed in more detail
+  // Don't update angle if inside center cicle
+  bool updateByAngle = !(getRobotPose().isValid || getRobotPose().translation.abs() < getFieldInfo().centerCircleRadius/2.0);
 
   for(size_t s=0; s < sampleSet.size(); s++)
   {
@@ -941,8 +970,8 @@ void MonteCarloSelfLocator::updateByMiddleCircle(const LinePercept& linePercept,
     double expectedDistance = localCircle.abs();
     double expectedAngle = localCircle.angle();
 
-    double seenDistance = linePercept.middleCircleCenter.abs();
-    double seenAngle = linePercept.middleCircleCenter.angle();
+    double seenDistance = middleCircleCenter.abs();
+    double seenAngle = middleCircleCenter.angle();
 
     //double distanceDiff = fabs(expectedDistance - seenDistance);
     //double angleDiff = Math::normalize(seenAngle - expectedAngle);
@@ -950,7 +979,9 @@ void MonteCarloSelfLocator::updateByMiddleCircle(const LinePercept& linePercept,
     //sample.likelihood *= exp(-pow((angleDiff)/sigmaAngle,2));
 
     sample.likelihood *= computeDistanceWeight(seenDistance, expectedDistance, cameraHeight, sigmaDistance);
-    sample.likelihood *= computeAngleWeight(seenAngle, expectedAngle, sigmaAngle);
+    if (updateByAngle) {
+      sample.likelihood *= computeAngleWeight(seenAngle, expectedAngle, sigmaAngle);
+    }
   }//end for
 
 }//end updateByMiddleCircle

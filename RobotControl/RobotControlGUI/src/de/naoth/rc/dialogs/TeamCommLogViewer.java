@@ -3,8 +3,10 @@ package de.naoth.rc.dialogs;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.MalformedJsonException;
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.components.FileDrop;
 import de.naoth.rc.components.teamcomm.TeamCommMessage;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
@@ -39,8 +41,21 @@ import javax.swing.tree.DefaultTreeModel;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import de.naoth.rc.components.teamcomm.TeamCommManager;
+import de.naoth.rc.components.teamcommviewer.TeamCommLogger;
 import de.naoth.rc.core.dialog.RCDialog;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.EOFException;
+import java.io.ObjectInputStream;
+import java.io.ObjectStreamClass;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.List;
+import javax.swing.JMenuItem;
+import javax.swing.JTextField;
 
 /**
  *
@@ -66,6 +81,12 @@ public class TeamCommLogViewer extends AbstractDialog
     
     private TeamCommPlayer teamCommPlayer;
 
+    /** The class loader of the GameController (external jar file). */
+    private ClassLoader gamecontrol;
+    
+    /** Menu item for selecting the home team number. */
+    private final JMenuItemWithTextField homeTeam = new JMenuItemWithTextField("Home team", "4");
+
     /**
      * Creates new form TeamCommLogViewer
      */
@@ -75,6 +96,15 @@ public class TeamCommLogViewer extends AbstractDialog
         initComponents();
         messageTree.setRootVisible(false);
         messageTree.setCellRenderer(new TreeCellRenderer());
+        new FileDrop(this, (files) -> {
+            if(files.length > 1) {
+                JOptionPane.showMessageDialog(this, "Only one file can be used here!", "Too many files", JOptionPane.ERROR_MESSAGE);
+            }
+            openFile(files[0]);
+        });
+        
+        homeTeam.setToolTipText("The home team number. Must be set BEFORE reading a log file!");
+        pmConfig.add(homeTeam);
     }
 
     /**
@@ -92,6 +122,11 @@ public class TeamCommLogViewer extends AbstractDialog
         loopThrough = new javax.swing.JCheckBoxMenuItem();
         ignoreTimestamps = new javax.swing.JCheckBoxMenuItem();
         startWithSelection = new javax.swing.JCheckBoxMenuItem();
+        jSeparator4 = new javax.swing.JPopupMenu.Separator();
+        exportFileChooser = new javax.swing.JFileChooser();
+        exportProgress = new javax.swing.JDialog();
+        exportProgressBar = new javax.swing.JProgressBar();
+        exportProgressLabel = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         timestampList = new javax.swing.JList<>();
@@ -103,9 +138,12 @@ public class TeamCommLogViewer extends AbstractDialog
         btnConfig = new javax.swing.JToggleButton();
         btnPlay = new javax.swing.JToggleButton();
         btnStop = new javax.swing.JButton();
+        btnJsonExport = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JToolBar.Separator();
         lblMessages = new javax.swing.JLabel();
         lblTimestamps = new javax.swing.JLabel();
+        jSeparator3 = new javax.swing.JToolBar.Separator();
+        lblFile = new javax.swing.JLabel();
 
         pmConfig.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
             public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
@@ -135,6 +173,20 @@ public class TeamCommLogViewer extends AbstractDialog
         startWithSelection.setText("start with selection");
         startWithSelection.setToolTipText("Begins playing with the selected timestamp");
         pmConfig.add(startWithSelection);
+        pmConfig.add(jSeparator4);
+
+        exportFileChooser.setDialogType(javax.swing.JFileChooser.SAVE_DIALOG);
+        exportFileChooser.setDialogTitle("JSON export");
+
+        exportProgress.setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        exportProgress.setTitle("Export to JSON");
+        exportProgress.setAlwaysOnTop(true);
+        exportProgress.setModal(true);
+        exportProgress.setSize(new java.awt.Dimension(300, 75));
+        exportProgress.getContentPane().add(exportProgressBar, java.awt.BorderLayout.CENTER);
+
+        exportProgressLabel.setText("Progress...");
+        exportProgress.getContentPane().add(exportProgressLabel, java.awt.BorderLayout.NORTH);
 
         jPanel1.setLayout(new java.awt.BorderLayout());
 
@@ -198,9 +250,24 @@ public class TeamCommLogViewer extends AbstractDialog
             }
         });
         jToolBar1.add(btnStop);
+
+        btnJsonExport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/toolbarButtonGraphics/general/Export24.gif"))); // NOI18N
+        btnJsonExport.setToolTipText("Export GameController TeamComm to new JSON TC format");
+        btnJsonExport.setEnabled(false);
+        btnJsonExport.setFocusable(false);
+        btnJsonExport.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnJsonExport.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnJsonExport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnJsonExportActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btnJsonExport);
         jToolBar1.add(jSeparator2);
         jToolBar1.add(lblMessages);
         jToolBar1.add(lblTimestamps);
+        jToolBar1.add(jSeparator3);
+        jToolBar1.add(lblFile);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -220,30 +287,7 @@ public class TeamCommLogViewer extends AbstractDialog
 
     private void btnTCLFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTCLFActionPerformed
         if(teamCommFileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            try {
-                // before loading new file, cleanup old one
-                resetMessages();
-                // read the file
-                this.messages_cnt = readMessagesFromJsonFile(teamCommFileChooser.getSelectedFile());
-                
-                this.lblMessages.setToolTipText("Total messages");
-                this.lblMessages.setText(" M: "+String.valueOf(messages.size())+" ");
-                this.lblTimestamps.setToolTipText("Unique timestamps");
-                this.lblTimestamps.setText(" T:"+String.valueOf(messages_cnt)+" ");
-                
-                btnPlay.setEnabled(true);
-                
-                // cancel previous "TeamComm simulation"
-                stopTeamCommPlayer();
-            } catch (MalformedJsonException ex) {
-                JOptionPane.showMessageDialog(null, "Unknown format!", "Unknown file format!", JOptionPane.WARNING_MESSAGE);
-                return;
-            } catch (FileNotFoundException ex) {
-                JOptionPane.showMessageDialog(null, "File not found!", "Not found", JOptionPane.WARNING_MESSAGE);
-            } catch (IOException ex) {
-                Logger.getLogger(TeamCommLogViewer.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            showMessages();
+            openFile(teamCommFileChooser.getSelectedFile());
         }
     }//GEN-LAST:event_btnTCLFActionPerformed
 
@@ -286,12 +330,80 @@ public class TeamCommLogViewer extends AbstractDialog
         btnConfig.setSelected(false);
     }//GEN-LAST:event_pmConfigPopupMenuWillBecomeInvisible
 
+    private void btnJsonExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnJsonExportActionPerformed
+        // set export path/filename equivalent to the "imported" file
+        exportFileChooser.setCurrentDirectory(teamCommFileChooser.getCurrentDirectory());
+        if(teamCommFileChooser.getSelectedFile() != null) {
+            exportFileChooser.setSelectedFile(new File(teamCommFileChooser.getSelectedFile().getName()+".tc.json"));
+        }
+        if (exportFileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            // start a logger instance
+            TeamCommLogger logger = new TeamCommLogger();
+            logger.setLogFile(exportFileChooser.getSelectedFile());
+            logger.startLogging();
+            // start "progress monitor"
+            exportProgress.setLocationRelativeTo(this);
+            Thread t = new Thread(() -> { exportProgress.setVisible(true); });
+            t.start();
+            // add messages to logger instance
+            messages.entrySet().forEach(m -> {
+                logger.newTeamCommMessages(m.getValue().messages);
+            });
+            // update "progress monitor" until everything is written
+            while (logger.pendingLogQueueSize() > 0) {
+                try {
+                    exportProgressBar.setValue(messages.size() - logger.pendingLogQueueSize());
+                    Thread.sleep(25);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(TeamCommLogViewer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            // hide "progress monitor" and stop logger
+            exportProgress.setVisible(false);
+            logger.stopLogging();
+        }
+    }//GEN-LAST:event_btnJsonExportActionPerformed
+
+    private void openFile(File f) {
+        try {
+            // before loading new file, cleanup old one
+            resetMessages();
+            this.messages_cnt = readMessages(f);
+
+            this.lblMessages.setToolTipText("Total messages");
+            this.lblMessages.setText(" M: "+String.valueOf(messages.size())+" ");
+            this.lblTimestamps.setToolTipText("Unique timestamps");
+            this.lblTimestamps.setText(" T: "+String.valueOf(messages_cnt)+" ");
+            this.lblFile.setToolTipText(f.getAbsolutePath());
+            this.lblFile.setText(f.getName());
+
+            btnPlay.setEnabled(true);
+
+            // cancel previous "TeamComm simulation"
+            stopTeamCommPlayer();
+        } catch (MalformedJsonException | IllegalStateException ex) {
+            JOptionPane.showMessageDialog(null, "Unknown format!", "Unknown file format!", JOptionPane.WARNING_MESSAGE);
+            return;
+        } catch (FileNotFoundException ex) {
+            JOptionPane.showMessageDialog(null, "File not found!", "Not found", JOptionPane.WARNING_MESSAGE);
+        } catch (IOException ex) {
+            Logger.getLogger(TeamCommLogViewer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        showMessages();
+    }
+    
+    /**
+     * Resets all counter, 'clears' the ui and sets the labels to a default value.
+     */
     private void resetMessages() {
         messages_cnt = 0;
         if(messages != null){ messages.clear(); }
         listMessages.clear();
         treeRootNode.removeAllChildren();
         treeModel.reload();
+        btnJsonExport.setEnabled(false);
+        lblMessages.setText(" M: - ");
+        lblTimestamps.setText(" T: - ");
     }
     
     /**
@@ -308,49 +420,321 @@ public class TeamCommLogViewer extends AbstractDialog
     }
     
     /**
-     * Reads TeamCommMessages from JSON file and returns the number of read messages.
-     * @param f JSON file with the TeamCommMessages
+     * Reads TeamCommMessages from a log file and returns the number of read messages.
+     * @param f file with the TeamCommMessages
      * @return  number of messages
      * @throws FileNotFoundException
      * @throws IOException 
      */
-    private int readMessagesFromJsonFile(File f) throws FileNotFoundException, IOException {
+    private long readMessages(File f) throws FileNotFoundException, IOException {
+        messages = new TreeMap<>();
+        long[] cnt;
+        try {
+            // try to read file as gamecontroller teamcommlog file
+            cnt = readGCLogFile(f);
+            if(cnt[0] > 0) {
+                btnJsonExport.setEnabled(true);
+            }
+        } catch (Exception e) {
+            // ... otherwise try to read file as json teamcommlog file
+            cnt = readTcLogFile(f);
+            btnJsonExport.setEnabled(false);
+        }
+        
+        if(cnt[1] > 0) {
+            // TODO: display, where it is useful?!
+            System.out.println("Failed to read " + cnt[1] + " messages!");
+        }
+        
+        return cnt[0];
+    }
+    
+    /**
+     * Reads TeamCommMessages from JSON file and returns the number of correctly/failed read messages.
+     * @param f JSON file with the TeamCommMessages
+     * @return number of correctly and failed read messages
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
+    private long[] readTcLogFile(File f) throws FileNotFoundException, IOException {
+        // counter for correct messages and for failed (parsing)
+        long[] cnt = {0,0};
         // show progress window (if necessary)
         ProgressMonitorInputStream pmis = new ProgressMonitorInputStream(this, "Reading TeamComm log file", new FileInputStream(f));
         // create/configure Gson-reader
-        Gson json = new GsonBuilder().create();
-        JsonReader jr = new JsonReader(new InputStreamReader(pmis));
-
-        messages = new TreeMap<>();
-        int message_cnt = 0;    
-        int message_fail = 0;
-
+        Gson json = new GsonBuilder().setLenient().create();
         // read the json log file and add each msg to the collection
-        jr.beginArray();
-        while (jr.hasNext()) {
-            TeamCommMessage p = json.fromJson(jr, TeamCommMessage.class);
-            if(p.message != null) {
-                // custom part doesn't get (de-)serialized, but we have everything in data!
-                p.message.parseCustomFromData();
-                if(!messages.containsKey(p.timestamp)) {
-                    messages.put(p.timestamp, new Timestamp(p.timestamp));
+        try (JsonReader jr = new JsonReader(new InputStreamReader(pmis))) {
+            // read the json log file and add each msg to the collection
+            jr.beginArray();
+            while (jr.hasNext()) {
+                TeamCommMessage p = null;
+                // start reading new json object
+                jr.beginObject();
+                // the object must start with a 'timestamp' field
+                if(jr.hasNext() && jr.nextName().equals("timestamp")) {
+                    long timestamp = jr.nextLong();
+                    // ... and more
+                    if(jr.hasNext()) {
+                        String name = jr.nextName();
+                        if(name.equals("gameState")) {
+                            // Read "new" TC format
+                            p = readTcLogFileNew(json, jr, timestamp, jr.nextInt());
+                        } else if(name.equals("address")) {
+                            // Read "old" TC format
+                            p = readTcLogFileOld(json, jr, timestamp, jr.nextString(), true);
+                        } else if(name.equals("isOpponent")) {
+                            // Read "old" TC format
+                            p = readTcLogFileOld(json, jr, timestamp, "", jr.nextBoolean());
+                        }
+                    }
                 }
-                messages.get(p.timestamp).addMessage(p);
-                message_cnt++;
-            } else {
-                message_fail++;
+                // skip all (remaining) unknown fields
+                readTcLogFileSkip(jr);
+                // read end tag of object
+                jr.endObject();
+                
+                if(p != null && p.message != null) {
+                    // custom part doesn't get (de-)serialized, but we have everything in data!
+                    p.message.parseCustomFromData();
+                    if(!messages.containsKey(p.timestamp)) {
+                        messages.put(p.timestamp, new Timestamp(p.timestamp));
+                    }
+                    messages.get(p.timestamp).addMessage(p);
+                    cnt[0]++;
+                } else {
+                    cnt[1]++;
+                }
+            }
+            jr.endArray();
+        }
+        return cnt;
+    }
+
+    /**
+     * If there are still values in the object, they are skipped here.
+     * @param jr
+     * @throws IOException 
+     */
+    private void readTcLogFileSkip(JsonReader jr) throws IOException {
+        while (jr.hasNext()) {
+            if(jr.peek() == JsonToken.NAME) {
+                jr.nextName();
+            }
+            jr.skipValue();
+        }
+    }
+
+    /**
+     * Reads the json data from an 'new' teamcomm log file.
+     * 
+     * @param json
+     * @param jr
+     * @param timestamp
+     * @param gameState
+     * @return
+     * @throws IOException 
+     */
+    private TeamCommMessage readTcLogFileNew(Gson json, JsonReader jr, long timestamp, int gameState) throws IOException {
+        String address = "";
+        SPLMessage spl = new SPLMessage();
+        jr.setLenient(true);
+        
+        while (jr.hasNext()) {
+            String name = jr.nextName();
+            
+            switch (name) {
+                case "address":  address = jr.nextString(); break;
+                case "header":  jr.skipValue(); break;
+                case "version": jr.skipValue(); break;
+                case "playerNum": spl.playerNum = (byte) jr.nextInt(); break;
+                case "teamNum": spl.teamNum = (byte) jr.nextInt(); break;
+                case "fallen": spl.fallen = (byte) (jr.nextBoolean()?1:0); break;
+                case "pose":
+                    jr.beginArray();
+                    spl.pose_x = (float) jr.nextDouble();
+                    spl.pose_y = (float) jr.nextDouble();
+                    spl.pose_a = (float) jr.nextDouble();
+                    jr.endArray();
+                    break;
+                case "ballAge": spl.ballAge = (float) jr.nextDouble(); break;
+                case "ball":
+                    jr.beginArray();
+                    spl.ball_x = (float) jr.nextDouble();
+                    spl.ball_y = (float) jr.nextDouble();
+                    jr.endArray();
+                    break;
+                case "data":
+                    spl.data = json.fromJson(jr, byte[].class);
+                    spl.numOfDataBytes = (short) spl.data.length;
+                    break;
+                case "walkingTo":
+                    jr.beginArray();
+                    spl.walkingTo_x = (float) jr.nextDouble();
+                    spl.walkingTo_y = (float) jr.nextDouble();
+                    jr.endArray();
+                    break;
+                case "shootingTo":
+                    jr.beginArray();
+                    spl.shootingTo_x = (float) jr.nextDouble();
+                    spl.shootingTo_y = (float) jr.nextDouble();
+                    jr.endArray();
+                    break;
+                case "ballVel":
+                    jr.beginArray();
+                    spl.ballVel_x = (float) jr.nextDouble();
+                    spl.ballVel_y = (float) jr.nextDouble();
+                    jr.endArray();
+                    break;
+                case "suggestion": spl.suggestion = json.fromJson(jr, byte[].class); break;
+                case "intention": spl.intention = (byte) jr.nextInt(); break;
+                case "averageWalkSpeed": spl.averageWalkSpeed = (short) jr.nextInt(); break;
+                case "maxKickDistance": spl.maxKickDistance = (short) jr.nextInt(); break;
+                case "currentPositionConfidence": spl.currentPositionConfidence = (byte) jr.nextInt(); break;
+                case "currentSideConfidence": spl.currentSideConfidence = (byte) jr.nextInt(); break;
+                default:
+                    System.out.println(">>> " + name + "(" +jr.peek()+ ")");
+                    jr.skipValue();
+                    break;
             }
         }
-        jr.endArray();
-        jr.close();
+        return new TeamCommMessage(timestamp, address, spl, !homeTeam.getTextFieldText().equals(Byte.toString(spl.teamNum)), gameState);
+    } // END readTcLogFileNew()
+    
+    /**
+     * Reads the json data from an 'old' teamcomm log file.
+     * The 'old' format has a separate object for the spl message part.
+     * 
+     * @param json
+     * @param jr
+     * @param timestamp
+     * @param address
+     * @param isOpponent
+     * @return the parsed TeamCommMessage
+     * @throws IOException 
+     */
+    private TeamCommMessage readTcLogFileOld(Gson json, JsonReader jr, long timestamp, String address, boolean isOpponent) throws IOException {
+        SPLMessage spl = null;
         
-        if(message_fail > 0) {
-            // TODO: display, where it is useful?!
-            System.out.println("Failed to read " + message_fail + " messages!");
+        while (jr.hasNext()) {
+            String name = jr.nextName();
+            switch (name) {
+                case "isOpponent":  isOpponent = jr.nextBoolean(); break;
+                case "spl":
+                case "message":     spl = json.fromJson(jr, SPLMessage.class); break;
+                case "address":     address = jr.nextString(); break;
+                default:
+                    System.out.println(name);
+                    System.out.println(jr.peek());
+                    jr.skipValue();
+                    break;
+            }
         }
-        
-        return message_cnt;
-    }
+        return new TeamCommMessage(timestamp, address, spl, isOpponent);
+    } // END readTcLogFileOld()
+    
+    /**
+     * Reads TeamCommMessages from GameController log file (Objects) and returns the number of correctly/failed read messages.
+     * 
+     * @param f GameController object file with the TeamCommMessages
+     * @return number of correctly and failed read messages
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
+    private long[] readGCLogFile(File f) throws Exception {
+        if(!loadGameController()) {
+            throw new Exception("Missing GameController jar file, cannot load 'SPLStandardMessagePackage' class.");
+        }
+        // counter for correct messages and for failed (parsing)
+        long[] cnt = {0,0};
+        int currentGameState = 0;
+        // show progress window (if necessary)
+        ProgressMonitorInputStream pmis = new ProgressMonitorInputStream(this, "Reading TeamComm log file", new FileInputStream(f));
+        // need a subclassed ObjectInputStream in order to use custom class loader
+        ObjectInputStream stream = new ObjectInputStream(pmis){
+            @Override
+            protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+                return Class.forName(desc.getName(), false, gamecontrol);
+            }
+        };
+        while (stream != null) {
+            try {
+                // read "prefix"
+                final long time = stream.readLong();
+                boolean b = stream.readBoolean();
+                if (b) {
+                    Object obj;
+                    obj = stream.readObject();
+                    // parse GameController data via reflections
+                    if (obj.getClass().getName().equals("teamcomm.net.SPLStandardMessagePackage")) {
+                        try {
+                            ByteBuffer buffer = ByteBuffer.wrap((byte[]) obj.getClass().getField("message").get(obj));
+                            buffer.order(ByteOrder.LITTLE_ENDIAN);
+                            SPLMessage spl = SPLMessage.parseFrom(buffer);
+                            TeamCommMessage p = new TeamCommMessage(
+                                time,
+                                (String) obj.getClass().getField("host").get(obj), 
+                                spl,
+                                //(int) obj.getClass().getField("team").get(obj) != 4, // TODO: configure it somewhere?!
+                                !homeTeam.getTextFieldText().equals(Integer.toString((int) obj.getClass().getField("team").get(obj))),
+                                currentGameState
+                            );
+                            // custom part doesn't get (de-)serialized, but we have everything in data!
+                            p.message.parseCustomFromData();
+                            if (!messages.containsKey(p.timestamp)) {
+                                messages.put(p.timestamp, new Timestamp(p.timestamp));
+                            }
+                            messages.get(p.timestamp).addMessage(p);
+                            // increment correct count
+                            cnt[0]++;
+                        } catch (SPLMessage.NotSplMessageException e) {
+                            // ignore, but increment fail count
+                            cnt[1]++;
+                        } catch (Exception ex) {
+                            // show exception and increment fail count
+                            Logger.getLogger(TeamCommLogViewer.class.getName()).log(Level.SEVERE, null, ex);
+                            cnt[1]++;
+                        }
+                    } else if (obj.getClass().getName().equals("data.AdvancedData") || obj.getClass().getName().equals("data.GameControlData")) {
+                        try {
+                            currentGameState = obj.getClass().getField("gameState").getByte(obj);
+                        } catch (Exception e) { /* shouldn't happen, if we have a GameControlData! */ }
+                    }
+                } else {
+                    // TODO: what's this?!?
+                    System.out.println(time + " | " +  stream.readInt());
+                }
+            } catch(EOFException e) {
+                // ignore EOF - cleanup
+                try { stream.close(); } catch(IOException ex) {} finally { stream = null; }
+            } catch (ClassNotFoundException e) {
+                Logger.getLogger(TeamCommLogViewer.class.getName()).log(Level.SEVERE, null, e);
+                try { stream.close(); } catch(IOException ex) {} finally { stream = null; }
+            }
+        }
+        return cnt;
+    } // END readGCLogFile()
+
+    /**
+     * Tries to load the GameController from the jar file defined in the configuration.
+     * 
+     * @return true, if loading was successfull, false otherwise
+     */
+    private boolean loadGameController() {
+        if(gamecontrol == null && Plugin.parent.getConfig().containsKey("GameController")) {
+            File gcFile = new File(Plugin.parent.getConfig().getProperty("GameController"));
+            if(gcFile.isFile()) {
+                try {
+                    // subclassed classloader
+                    gamecontrol = new URLClassLoader (new URL[] {gcFile.toURI().toURL()}, this.getClass().getClassLoader());
+                } catch (Exception ex) {
+                    Logger.getLogger(TeamCommLogViewer.class.getName()).log(Level.SEVERE, null, ex);
+                    gamecontrol = null;
+                }
+            }
+        }
+        return gamecontrol != null;
+    } // END loadGameController()
     
     /**
      * Shows the timestamps of the read log file in the jList.
@@ -414,8 +798,12 @@ public class TeamCommLogViewer extends AbstractDialog
         for (int i = 0; i < messageTree.getRowCount(); i++) {
             messageTree.expandRow(i);
         }
-    }
+    } // END updateTree()
     
+    /**
+     * Represents a timestamp of the log file.
+     * Keeps a list of messages received at this timestamp.
+     */
     private class Timestamp {
         public final long timestamp;
         public final ArrayList<TeamCommMessage> messages = new ArrayList<>();
@@ -432,6 +820,7 @@ public class TeamCommLogViewer extends AbstractDialog
             return messages.size();
         }
         
+        @Override
         public String toString() {
             return timestamp + " ("+messages.size()+")";
         }
@@ -533,7 +922,8 @@ public class TeamCommLogViewer extends AbstractDialog
                         ignoreTimestamps.isSelected() ? System.currentTimeMillis() : current.timestamp,
                         teamCommMessage.address,
                         teamCommMessage.message,
-                        teamCommMessage.isOpponent())
+                        teamCommMessage.isOpponent()
+                    )
                     );
                 }
                 Plugin.teamcomm.receivedMessages(c);
@@ -567,16 +957,24 @@ public class TeamCommLogViewer extends AbstractDialog
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btnConfig;
+    private javax.swing.JButton btnJsonExport;
     private javax.swing.JToggleButton btnPlay;
     private javax.swing.JButton btnStop;
     private javax.swing.JButton btnTCLF;
+    private javax.swing.JFileChooser exportFileChooser;
+    private javax.swing.JDialog exportProgress;
+    private javax.swing.JProgressBar exportProgressBar;
+    private javax.swing.JLabel exportProgressLabel;
     private javax.swing.JCheckBoxMenuItem ignoreTimestamps;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
+    private javax.swing.JToolBar.Separator jSeparator3;
+    private javax.swing.JPopupMenu.Separator jSeparator4;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JLabel lblFile;
     private javax.swing.JLabel lblMessages;
     private javax.swing.JLabel lblTimestamps;
     private javax.swing.JCheckBoxMenuItem loopThrough;
@@ -587,4 +985,65 @@ public class TeamCommLogViewer extends AbstractDialog
     private javax.swing.JFileChooser teamCommFileChooser;
     private javax.swing.JList<Timestamp> timestampList;
     // End of variables declaration//GEN-END:variables
+
+    /**
+     * A menu item with a textfield in it.
+     */
+    private class JMenuItemWithTextField extends JMenuItem {
+
+        private final JTextField field;
+
+        /**
+         * Creates a <code>JMenuItemWithTextField</code> with the specified text and  "0" as textfield text.
+         * @param text the text of the <code>JMenuItemWithTextField</code>
+         */
+        public JMenuItemWithTextField(String text) {
+            this(text, "0");
+        }
+        
+        /**
+         * Creates a <code>JMenuItemWithTextField</code> with the specified text and textfield text.
+         * @param text the text of the <code>JMenuItemWithTextField</code>
+         * @param textfield the text of the textfield
+         */
+        public JMenuItemWithTextField(String text, String textfield) {
+            super(text);
+            
+            field = new JTextField(textfield, 4);
+            field.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+            field.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+            field.setBorder(null);
+            
+            field.addActionListener((ActionEvent e) -> {
+                doClick();
+            });
+            
+            setLayout(new BorderLayout());
+            add(field, BorderLayout.EAST);
+        }
+        
+        /**
+         * Sets the font of the textfield.
+         * @param f the new font of the textfield
+         */
+        public void setTextFieldFont(Font f) {
+            field.setFont(f);
+        }
+        
+        /**
+         * Sets the number of columns in the textfield.
+         * @param c the number of columns &gt;= 0
+         */
+        public void setTextFieldColumns(int c) {
+            field.setColumns(c);
+        }
+        
+        /**
+         * Returns the text contained in the textfield.
+         * @return the text
+         */
+        public String getTextFieldText() {
+            return field.getText();
+        }
+    }
 }

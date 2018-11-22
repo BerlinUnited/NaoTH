@@ -59,7 +59,7 @@ public: // platform getter and setter
   }
 
 protected:
-  virtual MessageQueue* DummySimulator::createMessageQueue(const std::string& /*name*/) {
+  virtual MessageQueue* createMessageQueue(const std::string& /*name*/) {
     // for single thread
     return new MessageQueue();
   }

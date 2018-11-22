@@ -57,7 +57,7 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanInputSymbol("button.head.pressed.rear", &getButtonHeadRear);
 
   // deprecated?
-  //engine.registerBooleanInputSymbol("battery.isDischarging", &getBodyState().isDischarging);
+  engine.registerBooleanInputSymbol("battery.isDischarging", &getBodyState().isDischarging);
   engine.registerBooleanInputSymbol("battery.isCharging", &getBodyState().isCharging);
   
 

@@ -20,6 +20,7 @@
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Modeling/TeamMessageData.h"
+#include "Representations/Modeling/TeamMessagePlayersState.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/TeamBallModel.h"
 #include "Representations/Infrastructure/GameData.h"
@@ -36,6 +37,7 @@ BEGIN_DECLARE_MODULE(TeamBallLocatorMedian)
   
   REQUIRE(PlayerInfo)
   REQUIRE(TeamMessage)
+  REQUIRE(TeamMessagePlayersState)
   REQUIRE(RobotPose)
   REQUIRE(GameData)
   REQUIRE(FrameInfo)

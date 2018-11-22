@@ -74,6 +74,10 @@ function qtc.footer()
         _p(1, "<variable>ProjectExplorer.Project.Updater.FileVersion</variable>")
         _p(1, "<value type=\"int\">18</value>")
     _p("</data>")
+    _p("<data>")
+        _p(1, "<variable>Version</variable>")
+        _p(1, "<value type=\"int\">18</value>")
+    _p("</data>")
 
     _p("</qtcreator>")
 end

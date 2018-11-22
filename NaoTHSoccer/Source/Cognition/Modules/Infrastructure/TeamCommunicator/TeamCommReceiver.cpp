@@ -1,12 +1,4 @@
 #include "TeamCommReceiver.h"
-#include "TeamCommSender.h"
-
-#include <Tools/Debug/DebugRequest.h>
-#include <Messages/Representations.pb.h>
-
-#include <google/protobuf/io/zero_copy_stream_impl.h>
-
-using namespace std;
 
 TeamCommReceiver::TeamCommReceiver()
 {

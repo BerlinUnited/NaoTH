@@ -45,9 +45,9 @@
 #include "Modules/SelfAwareness/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
 #include "Modules/SelfAwareness/BodyContourProvider/BodyContourProvider.h"
 #include "Modules/SelfAwareness/CameraMatrixCorrectorV2/CameraMatrixCorrectorV2.h"
+#include "Modules/SelfAwareness/CameraMatrixCorrectorV3/CameraMatrixCorrectorV3.h"
 
 #include "Modules/VisualCortex/HistogramProvider.h"
-#include "Modules/VisualCortex/SimpleFieldColorClassifier/SimpleFieldColorClassifier.h"
 #include "Modules/VisualCortex/FieldColorClassifier.h"
 #include "Modules/VisualCortex/ScanLineEdgelDetector/ScanLineEdgelDetector.h"
 #include "Modules/VisualCortex/FieldDetector/FieldDetector.h"
@@ -77,8 +77,9 @@
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
 #include "Modules/Modeling/FieldCompass/FieldCompass.h"
 #include "Modules/Modeling/ObstacleLocator/UltraSoundObstacleLocator.h"
-#include "Modules/Modeling/TeamMessageStatistics/TeamCommReceiveEmulator.h"
-#include "Modules/Modeling/TeamMessageStatistics/TeamMessageStatistics.h"
+#include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiveEmulator.h"
+#include "Modules/Modeling/TeamMessageStatistics/TeamMessageStatisticsModule.h"
+#include "Modules/Modeling/TeamMessageStatistics/TeamMessagePlayersStateModule.h"
 #include "Modules/Modeling/RoleDecision/SimpleRoleDecision/SimpleRoleDecision.h"
 #include "Modules/Modeling/RoleDecision/StableRoleDecision/StableRoleDecision.h"
 #include "Modules/Modeling/RoleDecision/CleanRoleDecision/CleanRoleDecision.h"
@@ -91,7 +92,7 @@
 #include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
 
 #include "Modules/Modeling/BallLocator/TeamBallLocator/TeamBallLocatorMedian.h"
-#include "Modules/Modeling/BallLocator/TeamBallLocator/TeamBallLocatorSimple.h"
+#include "Modules/Modeling/BallLocator/TeamBallLocator/TeamBallLocatorCanopyCluster.h"
 #include "Modules/Modeling/BallLocator/MultiKalmanBallLocator/MultiKalmanBallLocator.h"
 #include "Modules/Modeling/StaticDebugModelProvider/StaticDebugModelProvider.h"
 
@@ -167,7 +168,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(HistogramProvider);
   REGISTER_MODULE(IntegralImageProvider);
-  REGISTER_MODULE(SimpleFieldColorClassifier);
   REGISTER_MODULE(FieldColorClassifier);
   REGISTER_MODULE(ScanLineEdgelDetector);
   REGISTER_MODULE(FieldDetector);
@@ -199,10 +199,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(FieldCompass);
   REGISTER_MODULE(UltraSoundObstacleLocator);
   REGISTER_MODULE(TeamCommReceiveEmulator);
-  REGISTER_MODULE(TeamMessageStatistics);
-  REGISTER_MODULE(SimpleRoleDecision);
-  REGISTER_MODULE(StableRoleDecision);
-  REGISTER_MODULE(CleanRoleDecision);
+  REGISTER_MODULE(TeamMessageStatisticsModule);
+  REGISTER_MODULE(TeamMessagePlayersStateModule);
   REGISTER_MODULE(SoccerStrategyProvider);
   REGISTER_MODULE(PotentialFieldProvider);
   REGISTER_MODULE(GPS_SelfLocator);
@@ -210,9 +208,13 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(OdometrySelfLocator);
   REGISTER_MODULE(WholeGoalLocator);
   REGISTER_MODULE(DummyActiveGoalLocator);
-  REGISTER_MODULE(TeamBallLocatorMedian);
-  REGISTER_MODULE(TeamBallLocatorSimple);
   REGISTER_MODULE(MultiKalmanBallLocator);
+
+  REGISTER_MODULE(TeamBallLocatorMedian);
+  REGISTER_MODULE(TeamBallLocatorCanopyCluster);
+  REGISTER_MODULE(SimpleRoleDecision);
+  REGISTER_MODULE(StableRoleDecision);
+  REGISTER_MODULE(CleanRoleDecision);
 
   REGISTER_MODULE(KickDirectionSimulator);
   REGISTER_MODULE(Simulation);
@@ -225,6 +227,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(XABSLBehaviorControl);
   REGISTER_MODULE(PathPlanner);
   REGISTER_MODULE(PathPlanner2018);
+
+  REGISTER_MODULE(CameraMatrixCorrectorV3);
 
   REGISTER_MODULE(TeamCommSender);
   

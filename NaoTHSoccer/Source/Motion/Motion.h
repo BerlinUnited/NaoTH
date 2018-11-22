@@ -25,6 +25,7 @@
 #include "SensorFilter/InertiaSensorFilter.h"
 #include "SensorFilter/IMUModel.h"
 #include "SensorFilter/ArmCollisionDetector.h"
+#include "SensorFilter/CoPProvider.h"
 
 //#include <Representations/Modeling/CameraMatrixOffset.h>
 
@@ -79,6 +80,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(InertialModel) // need to overwrite the old filter value by IMUModel
   REQUIRE(CalibrationData)
   REQUIRE(IMUData)
+  REQUIRE(CentreOfPressure) // logging
 
   PROVIDE(CameraMatrix)// TODO:strange...
   PROVIDE(CameraMatrixTop)// TODO:strange...
@@ -180,7 +182,8 @@ private:
   ModuleCreator<KinematicChainProviderMotion>* theKinematicChainProvider;
   ModuleCreator<IMUModel>* theIMUModel;
   ModuleCreator<ArmCollisionDetector>* theArmCollisionDetector;
-  
+  ModuleCreator<CoPProvider>* theCoPProvider;
+
 
   ModuleCreator<MotionEngine>* theMotionEngine;
 
