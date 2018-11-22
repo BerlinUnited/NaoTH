@@ -4,7 +4,9 @@ option free_kick_opp_goal
   initial state decide {
     decision
     {
-      if(robot_pose.x - field.xPosOppPenaltyMark > 0) {
+      if(state_time <= 0) {
+        stay;
+      } else if(robot_pose.x - field.xPosOppPenaltyMark >= 0) {
         // the robot is behind the opponent penalty mark, walk back but avoid location of the throw-in point
         goto move_to_side;
       } else if(robot_pose.x + field.centerCircleRadius - field.xPosOppPenaltyMark > 0) {
@@ -35,13 +37,16 @@ option free_kick_opp_goal
       }
     }
     action {
+      head.control_mode = search_for_ball;
+      motion.type = stand;
     }
   }
 
   // move back, but avoid throw-in points of the free kick
   state move_to_side {
     decision {
-      if(robot_pose.x - field.xPosOppPenaltyMark < 0) {
+      if(robot_pose.x - field.xPosOppPenaltyMark < 0
+          && abs(value=robot_pose.y-(robot_pose.y>0?field.yPosLeftPenaltyArea:field.yPosRightPenaltyArea))> field.centerCircleRadius * 0.75) {
         goto decide;
       } else {
         stay;
@@ -52,8 +57,10 @@ option free_kick_opp_goal
       head.control_mode = search_for_ball;
       go_to_point_with_USOA(x=field.xPosOppPenaltyMark-200, 
                             y= abs(value=robot_pose.y) < field.yPosLeftPenaltyArea ? 0 : // if we are in the penalty area, move back to the center
-                              ((robot_pose.y>0?field.yPosLeftSideline:field.yPosRightSideline)+(robot_pose.y>0?-1:1)*100), // otherwise move to the sideline
-                            rot=0);
+                            (robot_pose.y>0?(field.yPosLeftPenaltyArea+field.centerCircleRadius+100):(field.yPosRightPenaltyArea-field.centerCircleRadius-100)), // otherwise move towards the sideline
+                            rot=atan2(y=robot_pose.y-(abs(value=robot_pose.y) < field.yPosLeftPenaltyArea ? 0 : (robot_pose.y>0?(field.yPosLeftPenaltyArea+field.centerCircleRadius+100):(field.yPosRightPenaltyArea-field.centerCircleRadius-100))),
+                                      x=robot_pose.x-(field.xPosOppPenaltyMark-200))+180 // turn in the direction we're moving
+                            );
     }
   }
 
@@ -95,13 +102,11 @@ option free_kick_opp_goal
     action {
       // TODO: if there are multiple robots, all wants to go to the same position?!
       head.control_mode = look_at_ball;
-      go_to_point_with_USOA(x=ball.position.field.x-field.centerCircleRadius-100, 
-                            y=ball.position.field.y, 
-                            rot=0);
+      avoid_region_go_own_goal(x=ball.position.field.x, y=ball.position.field.y, distance=field.centerCircleRadius);
     }
   }
 
-  // the robot is not near the penalty mark, but he sees the ball near him, the robot has to move away from the ball
+  // the robot is NOT near the penalty mark, but he sees the ball near him, the robot has to move away from the ball
   state move_away_from_ball {
     decision {
       if(!ball.know_where_itis) {
@@ -115,13 +120,11 @@ option free_kick_opp_goal
     }
     action {
       head.control_mode = look_at_ball;
-      go_to_point_with_USOA(x=ball.position.field.x-field.centerCircleRadius-100, 
-                            y=ball.position.field.y, 
-                            rot=0);
+      avoid_region_go_own_goal(x=ball.position.field.x, y=ball.position.field.y, distance=field.centerCircleRadius);
     }
   }
 
-  // the robot is not near the penalty mark, but the teamball near him, the robot has to move away from the teamball
+  // the robot is NOT near the penalty mark, but the teamball near him, the robot has to move away from the teamball
   state move_away_from_teamball {
     decision {
       if(!ball.team.is_valid) {
@@ -135,9 +138,7 @@ option free_kick_opp_goal
     }
     action {
       head.control_mode = search_for_ball;
-      go_to_point_with_USOA(x=ball.team.position_field.x-field.centerCircleRadius-100,
-                            y=ball.team.position_field.y, 
-                            rot=0);
+      avoid_region_go_own_goal(x=ball.team.position_field.x, y=ball.team.position_field.y, distance=field.centerCircleRadius);
     }
   }
 
@@ -152,6 +153,7 @@ option free_kick_opp_goal
     }
     action {
       // TODO: what happens if two (or more) robots are on the same "height" (x-coordinate)?!
+      // TODO: if i know where the ball is, i can move towards the ball (in the y axis)
       head.control_mode = search_for_ball;
       go_to_point_with_USOA(x=robot_pose.x, 
                             y=(robot_pose.y>0?1:-1)*field.centerCircleRadius * 0.75, 
@@ -206,6 +208,8 @@ option free_kick_opp_goal
     decision {
       if(ball.know_where_itis && abs(value = atan2(y=ball.preview.y, x=ball.preview.x)) >= 50) {
         goto turn_to_ball;
+      } else if(!ball.know_where_itis) {
+        goto turn_to_opponent_goal;
       } else {
         stay;
       }
