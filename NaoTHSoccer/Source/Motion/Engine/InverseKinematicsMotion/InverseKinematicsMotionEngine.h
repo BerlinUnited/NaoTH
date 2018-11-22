@@ -9,7 +9,6 @@
 #define _INVERSE_KINEMATCS_MOTION_ENGINE_
 
 #include "Motions/IKPose.h"
-#include "PreviewController.h"
 #include "Motions/IKParameters.h"
 
 #include <ModuleFramework/Module.h>
