@@ -51,12 +51,13 @@ void GameLogger::execute()
     }
 
     // condition wheather the current frame should be logged:
-    bool log_this_frame = getBehaviorStateSparse().state.framenumber() == getFrameInfo().getFrameNumber();
+    bool log_this_frame = (getBehaviorStateSparse().state.framenumber() == getFrameInfo().getFrameNumber());
 
     // NOTE: record only the first frame if the state changed to initial or finished
     if(!firstRecording && oldState == getPlayerInfo().robotState) {
       log_this_frame = log_this_frame && getPlayerInfo().robotState != PlayerInfo::initial;
       log_this_frame = log_this_frame && getPlayerInfo().robotState != PlayerInfo::finished;
+      log_this_frame = log_this_frame && getMotionStatus().currentMotion != motion::init;
     }
 
     if(log_this_frame)
