@@ -13,7 +13,7 @@
 #include "Tools/DataStructures/Serializer.h"
 
 #include <vector>
-#include "Tools/DataStructures/Point.h"
+#include "Tools/Math/Vector2.h"
 
 /**
 * This describes the CollisionPercept
@@ -33,12 +33,12 @@ public:
   unsigned int timeCollisionArmLeft;
   unsigned int timeCollisionArmRight;
 
-  std::vector<Point> referenceHullLeft;
-  std::vector<Point> referenceHullRight;
-  std::vector<Point> pointBufferLeft;
-  std::vector<Point> pointBufferRight;
-  std::vector<Point> newHullLeft;
-  std::vector<Point> newHullRight;
+  std::vector<Vector2d> referenceHullLeft;
+  std::vector<Vector2d> referenceHullRight;
+  std::vector<Vector2d> pointBufferLeft;
+  std::vector<Vector2d> pointBufferRight;
+  std::vector<Vector2d> newHullLeft;
+  std::vector<Vector2d> newHullRight;
 
   
   virtual void print(std::ostream& stream) const
@@ -47,11 +47,11 @@ public:
     stream << "timeCollisionArmRight = " << timeCollisionArmRight << '\n';
     stream << "referenceHullLeft: " << "\n";
     for (size_t i = 0; i < referenceHullLeft.size(); i++){
-      stream << "x= " << referenceHullLeft[i].getX() << " y = " << referenceHullLeft[i].getY() << "\n";
+      stream << "x= " << referenceHullLeft[i].x << " y = " << referenceHullLeft[i].y << "\n";
     }
 	stream << "referenceHullRight: " << "\n";
 	for (size_t i = 0; i < referenceHullRight.size(); i++){
-		stream << "x= " << referenceHullRight[i].getX() << " y = " << referenceHullRight[i].getY() << "\n";
+		stream << "x= " << referenceHullRight[i].x << " y = " << referenceHullRight[i].y << "\n";
 	}
   }
 };
