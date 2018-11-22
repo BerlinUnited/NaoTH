@@ -37,6 +37,9 @@ void DebugParameterList::executeDebugCommand(
 
       ParameterMap::const_iterator itParamList = paramlists.find(name);
 
+      // print all bools as true/false instead of 1/0
+      outstream << std::boolalpha; 
+      
       // print only the registered parameters
       itParamList->second->print(outstream);
 
