@@ -163,7 +163,7 @@ void BallDetector2018::calculateCandidates()
       PatchWork::subsampling(getImage(), getFieldColorPercept(), patch);
 
       // (5) check contrast
-      if(params.contrastUse) 
+      if(params.checkContrast) 
       {
         //double stddev = PatchWork::calculateContrastIterative2nd(getImage(),getFieldColorPercept(),min.x,min.y,max.x,max.y,patch_size);
         double stddev = PatchWork::calculateContrastIterative2nd(patch);
@@ -216,9 +216,7 @@ void BallDetector2018::calculateCandidates()
       stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
 
       if (found && currentCNNClassifier->getBallConfidence() >= selectedCNNThreshold) {
-        if(!params.blackKeysCheck.enable || blackKeysOK(*i)) {
-          addBallPercept(patch.center(), patch.radius());
-        }
+        addBallPercept(patch.center(), patch.radius());
       }
 
       DEBUG_REQUEST("Vision:BallDetector2018:drawCandidates",

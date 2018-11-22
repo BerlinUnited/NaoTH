@@ -63,8 +63,6 @@ BEGIN_DECLARE_MODULE(BallDetector2018)
   REQUIRE(Image)
   REQUIRE(ImageTop)
 
-  //PROVIDE(GameColorIntegralImage)
-  //PROVIDE(GameColorIntegralImageTop)
   REQUIRE(BallDetectorIntegralImage)
   REQUIRE(BallDetectorIntegralImageTop)
 
@@ -76,8 +74,6 @@ BEGIN_DECLARE_MODULE(BallDetector2018)
 
   REQUIRE(FieldPercept)
   REQUIRE(FieldPerceptTop)
-  //REQUIRE(BodyContour)
-  //REQUIRE(BodyContourTop)
 
   PROVIDE(BallCandidates)
   PROVIDE(BallCandidatesTop)
@@ -121,15 +117,9 @@ private:
   {
     Parameters() : ParameterList("BallDetector2018")
     {
-      
       PARAMETER_REGISTER(keyDetector.borderRadiusFactorClose) = 0.5;
       PARAMETER_REGISTER(keyDetector.borderRadiusFactorFar) = 0.8;
-
-      PARAMETER_REGISTER(heuristic.maxGreenInsideRatio) = 0.3;
-      PARAMETER_REGISTER(heuristic.minGreenBelowRatio) = 0.5;
-      PARAMETER_REGISTER(heuristic.blackDotsMinCount) = 1;
-      PARAMETER_REGISTER(heuristic.minBlackDetectionSize) = 20;
-
+      
       PARAMETER_REGISTER(cnn.threshold) = 0.2;
       PARAMETER_REGISTER(cnn.thresholdClose) = 0.3;
 
@@ -140,13 +130,10 @@ private:
       PARAMETER_REGISTER(postBorderFactorFar) = 0.0;
       PARAMETER_REGISTER(postMaxCloseSize) = 60;
 
-      PARAMETER_REGISTER(contrastUse) = false;
+      PARAMETER_REGISTER(checkContrast) = false;
       PARAMETER_REGISTER(contrastMinimum) = 50;
       PARAMETER_REGISTER(contrastMinimumClose) = 50;
 
-      PARAMETER_REGISTER(blackKeysCheck.enable) = false;
-      PARAMETER_REGISTER(blackKeysCheck.minSizeToCheck) = 60;
-      PARAMETER_REGISTER(blackKeysCheck.minValue) = 20;
 
       PARAMETER_REGISTER(classifier) = "dortmund";
 
@@ -159,21 +146,6 @@ private:
 
     BallKeyPointExtractor::Parameter keyDetector;
 
-    struct Heuristics {
-      double maxGreenInsideRatio;
-      double minGreenBelowRatio;
-      double blackDotsMinRatio;
-
-      int blackDotsMinCount;
-      int minBlackDetectionSize;
-    } heuristic;
-
-    struct BlackKeysCheck {
-      bool enable;
-      int minSizeToCheck;
-      int minValue;
-    } blackKeysCheck;
-
     struct CNN {
       double threshold;
       double thresholdClose;
@@ -181,11 +153,12 @@ private:
 
     int maxNumberOfKeys;
     int numberOfExportBestPatches;
+
     double postBorderFactorClose;
     double postBorderFactorFar;
     int postMaxCloseSize;
 
-    bool contrastUse;
+    bool checkContrast;
     double contrastMinimum;
     double contrastMinimumClose;
 
@@ -195,23 +168,6 @@ private:
     double brightnessMultiplierTop;
 
   } params;
-
-
-private:
-
-  bool blackKeysOK(const BestPatchList::Patch& patch) 
-  {
-    static BestPatchList bbest;
-    bbest.clear();
-    BlackSpotExtractor::calculateKeyPointsBlackBetter(getBallDetectorIntegralImage(), bbest, patch.min.x, patch.min.y, patch.max.x, patch.max.y);
-
-    if(bbest.size() == 0) {
-      return false;
-    }
-
-    BestPatchList::reverse_iterator b = bbest.rbegin();
-    return (*b).value > params.blackKeysCheck.minValue;
-  }
 
 private:
 
