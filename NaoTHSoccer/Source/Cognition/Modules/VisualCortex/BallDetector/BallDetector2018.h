@@ -1,11 +1,11 @@
 /**
-* @file BallCandidateDetector.h
+* @file BallDetector2018.h
 *
-* Definition of class BallCandidateDetector
+* Definition of class BallDetector2018
 */
 
-#ifndef _BallCandidateDetector_H_
-#define _BallCandidateDetector_H_
+#ifndef _BallDetector2018_H_
+#define _BallDetector2018_H_
 
 #include <ModuleFramework/Module.h>
 #include <ModuleFramework/ModuleManager.h>
@@ -48,7 +48,7 @@
 
 #include <memory>
 
-BEGIN_DECLARE_MODULE(BallCandidateDetector)
+BEGIN_DECLARE_MODULE(BallDetector2018)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugImageDrawings)
@@ -63,8 +63,6 @@ BEGIN_DECLARE_MODULE(BallCandidateDetector)
   REQUIRE(Image)
   REQUIRE(ImageTop)
 
-  //PROVIDE(GameColorIntegralImage)
-  //PROVIDE(GameColorIntegralImageTop)
   REQUIRE(BallDetectorIntegralImage)
   REQUIRE(BallDetectorIntegralImageTop)
 
@@ -76,20 +74,18 @@ BEGIN_DECLARE_MODULE(BallCandidateDetector)
 
   REQUIRE(FieldPercept)
   REQUIRE(FieldPerceptTop)
-  //REQUIRE(BodyContour)
-  //REQUIRE(BodyContourTop)
 
   PROVIDE(BallCandidates)
   PROVIDE(BallCandidatesTop)
   PROVIDE(MultiBallPercept)
-END_DECLARE_MODULE(BallCandidateDetector)
+END_DECLARE_MODULE(BallDetector2018)
 
 
-class BallCandidateDetector: private BallCandidateDetectorBase, private ModuleManager
+class BallDetector2018: private BallDetector2018Base, private ModuleManager
 {
 public:
-  BallCandidateDetector();
-  ~BallCandidateDetector();
+  BallDetector2018();
+  ~BallDetector2018();
 
   void execute(CameraInfo::CameraID id);
 
@@ -112,27 +108,18 @@ public:
     mean_of_means.add(mean);
     double average_mean = mean_of_means.getAverage();
 
-    PLOT("BallCandidateDetector:mean",mean);
-    PLOT("BallCandidateDetector:mean_of_means",average_mean);
+    PLOT("BallDetector2018:mean",mean);
+    PLOT("BallDetector2018:mean_of_means",average_mean);
   }
-
-  static std::map<std::string, std::shared_ptr<AbstractCNNClassifier>> createCNNMap();
-
 
 private:
   struct Parameters: public ParameterList
   {
-    Parameters() : ParameterList("BallCandidateDetector")
+    Parameters() : ParameterList("BallDetector2018")
     {
-      
       PARAMETER_REGISTER(keyDetector.borderRadiusFactorClose) = 0.5;
       PARAMETER_REGISTER(keyDetector.borderRadiusFactorFar) = 0.8;
-
-      PARAMETER_REGISTER(heuristic.maxGreenInsideRatio) = 0.3;
-      PARAMETER_REGISTER(heuristic.minGreenBelowRatio) = 0.5;
-      PARAMETER_REGISTER(heuristic.blackDotsMinCount) = 1;
-      PARAMETER_REGISTER(heuristic.minBlackDetectionSize) = 20;
-
+      
       PARAMETER_REGISTER(cnn.threshold) = 0.2;
       PARAMETER_REGISTER(cnn.thresholdClose) = 0.3;
 
@@ -143,16 +130,13 @@ private:
       PARAMETER_REGISTER(postBorderFactorFar) = 0.0;
       PARAMETER_REGISTER(postMaxCloseSize) = 60;
 
-      PARAMETER_REGISTER(contrastUse) = false;
-      PARAMETER_REGISTER(contrastVariant) = 1;
+      PARAMETER_REGISTER(checkContrast) = false;
       PARAMETER_REGISTER(contrastMinimum) = 50;
       PARAMETER_REGISTER(contrastMinimumClose) = 50;
 
-      PARAMETER_REGISTER(blackKeysCheck.enable) = false;
-      PARAMETER_REGISTER(blackKeysCheck.minSizeToCheck) = 60;
-      PARAMETER_REGISTER(blackKeysCheck.minValue) = 20;
 
       PARAMETER_REGISTER(classifier) = "dortmund";
+      PARAMETER_REGISTER(classifierClose) = "dortmund";
 
       PARAMETER_REGISTER(brightnessMultiplierBottom) = 1.0;
       PARAMETER_REGISTER(brightnessMultiplierTop) = 1.0;
@@ -163,21 +147,6 @@ private:
 
     BallKeyPointExtractor::Parameter keyDetector;
 
-    struct Heuristics {
-      double maxGreenInsideRatio;
-      double minGreenBelowRatio;
-      double blackDotsMinRatio;
-
-      int blackDotsMinCount;
-      int minBlackDetectionSize;
-    } heuristic;
-
-    struct BlackKeysCheck {
-      bool enable;
-      int minSizeToCheck;
-      int minValue;
-    } blackKeysCheck;
-
     struct CNN {
       double threshold;
       double thresholdClose;
@@ -185,43 +154,30 @@ private:
 
     int maxNumberOfKeys;
     int numberOfExportBestPatches;
+
     double postBorderFactorClose;
     double postBorderFactorFar;
     int postMaxCloseSize;
 
-    bool contrastUse;
-    int contrastVariant;
+    bool checkContrast;
     double contrastMinimum;
     double contrastMinimumClose;
 
     std::string classifier;
+    std::string classifierClose;
 
     double brightnessMultiplierBottom;
     double brightnessMultiplierTop;
 
   } params;
 
-
-private:
-
-  bool blackKeysOK(const BestPatchList::Patch& patch) 
-  {
-    static BestPatchList bbest;
-    bbest.clear();
-    BlackSpotExtractor::calculateKeyPointsBlackBetter(getBallDetectorIntegralImage(), bbest, patch.min.x, patch.min.y, patch.max.x, patch.max.y);
-
-    if(bbest.size() == 0) {
-      return false;
-    }
-
-    BestPatchList::reverse_iterator b = bbest.rbegin();
-    return (*b).value > params.blackKeysCheck.minValue;
-  }
-
 private:
 
   std::shared_ptr<AbstractCNNClassifier> currentCNNClassifier;
+  std::shared_ptr<AbstractCNNClassifier> currentCNNClassifierClose;
+
   std::map<std::string, std::shared_ptr<AbstractCNNClassifier> > cnnMap;
+  void setClassifier(const std::string& name, const std::string& nameClose);
 
   ModuleCreator<BallKeyPointExtractor>* theBallKeyPointExtractor;
   BestPatchList best;
@@ -230,10 +186,7 @@ private:
   void calculateCandidates();
   void addBallPercept(const Vector2i& center, double radius);
   void extractPatches();
-  double calculateContrast(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size);
-  double calculateContrastIterative(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size);
-  double calculateContrastIterative2nd(const Image& image,  const FieldColorPercept& fielColorPercept, int x0, int y0, int x1, int y1, int size);
-  
+
 private: // for debugging
   Stopwatch stopwatch;
   std::vector<double> stopwatch_values;
@@ -242,17 +195,17 @@ private: // for debugging
 private:
   CameraInfo::CameraID cameraID;
 
-  DOUBLE_CAM_PROVIDE(BallCandidateDetector, DebugImageDrawings);
+  DOUBLE_CAM_PROVIDE(BallDetector2018, DebugImageDrawings);
 
   // double cam stuff
-  DOUBLE_CAM_REQUIRE(BallCandidateDetector, Image);
-  DOUBLE_CAM_REQUIRE(BallCandidateDetector, CameraMatrix);
-  DOUBLE_CAM_REQUIRE(BallCandidateDetector, FieldPercept);
-  //DOUBLE_CAM_REQUIRE(BallCandidateDetector, BodyContour);
-  DOUBLE_CAM_REQUIRE(BallCandidateDetector, BallDetectorIntegralImage);
-  DOUBLE_CAM_REQUIRE(BallCandidateDetector, FieldColorPercept);
+  DOUBLE_CAM_REQUIRE(BallDetector2018, Image);
+  DOUBLE_CAM_REQUIRE(BallDetector2018, CameraMatrix);
+  DOUBLE_CAM_REQUIRE(BallDetector2018, FieldPercept);
+  //DOUBLE_CAM_REQUIRE(BallDetector2018, BodyContour);
+  DOUBLE_CAM_REQUIRE(BallDetector2018, BallDetectorIntegralImage);
+  DOUBLE_CAM_REQUIRE(BallDetector2018, FieldColorPercept);
 
-  DOUBLE_CAM_PROVIDE(BallCandidateDetector, BallCandidates);
-};//end class BallCandidateDetector
+  DOUBLE_CAM_PROVIDE(BallDetector2018, BallCandidates);
+};//end class BallDetector2018
 
-#endif // _BallCandidateDetector_H_
+#endif // _BallDetector2018_H_
