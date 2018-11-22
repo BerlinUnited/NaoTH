@@ -1,5 +1,5 @@
 /**
-* @file Walk.cpp
+* @file Walk2018.cpp
 *
 * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich, Mellmann</a>
@@ -8,11 +8,6 @@
 */
 
 #include "Walk2018.h"
-#include "../Walk/FootTrajectoryGenerator.h"
-#include "../Walk/ZMPPlanner.h"
-
-
-#include "Tools/DataStructures/Spline.h"
 
 using namespace naoth;
 using namespace InverseKinematic;
