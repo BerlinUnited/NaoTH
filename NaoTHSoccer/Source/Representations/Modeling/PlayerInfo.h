@@ -28,6 +28,14 @@ public:
     penalized  // <== GameState doesn't have this :)
   };
 
+  // Same as SetPlay of the GameData, but can be different by each robot and set (e.g.) via DebugRequest
+  enum RobotSetPlay
+  {
+    set_none          = naoth::GameData::set_none,
+    goal_free_kick    = naoth::GameData::goal_free_kick,
+    pushing_free_kick = naoth::GameData::pushing_free_kick
+  };
+
   void update(const naoth::GameData& gameData) 
   {
     // update only if player number is set correctly
@@ -40,6 +48,7 @@ public:
     } else {
       robotState = (RobotState)gameData.gameState;
     }
+    robotSetPlay = static_cast<RobotSetPlay>(gameData.setPlay);
 
     teamColor = gameData.ownTeam.teamColor;
     kickoff = (gameData.kickingTeam == teamNumber);
@@ -59,6 +68,8 @@ public:
   naoth::GameData::TeamColor teamColor;
   bool kickoff;
   RobotState robotState;
+  RobotSetPlay robotSetPlay;
+
 
   // TODO: move somewhere else (it's a strategic decision)?
   /** Whether the behavior decided to play as striker */
@@ -72,6 +83,7 @@ public:
   }
 
   static std::string toString(RobotState value);
+  static std::string toString(RobotSetPlay value);
 
   virtual void print(std::ostream& stream) const;
 };

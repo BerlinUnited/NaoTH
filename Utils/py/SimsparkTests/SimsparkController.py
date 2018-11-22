@@ -244,6 +244,7 @@ class SimsparkController(multiprocessing.Process):
         """
         Returns the robot with the :number: and :team: in the simulation. If the player number wasn't found None is
         returned.
+        Eg: {'type': 'nao', 'team': 'Left', 'number': 3, 'x': -2.2787, 'y': 1.24506, 'z': 0.189894, 'r': 0.35535245643343066}
 
         :param number:  the player number of the robot, which should be returned
         :param team:    the team number of the player, default is 'Left'
@@ -257,6 +258,7 @@ class SimsparkController(multiprocessing.Process):
     def get_ball(self):
         """
         Returns the ball informations in the simulation. If there's no ball in the simulation None is returned.
+        Eg: {'type': 'soccerball', 'x': -1.5, 'y': 1.5, 'z': 0.0482982}
 
         :return:    None or the ball infos
         """
