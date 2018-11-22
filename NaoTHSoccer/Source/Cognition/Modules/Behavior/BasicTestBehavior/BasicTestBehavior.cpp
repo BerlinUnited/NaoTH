@@ -402,7 +402,8 @@ void BasicTestBehavior::testLED() {
 
 } //testLED
 
-void BasicTestBehavior::testWhistle(){
+void BasicTestBehavior::testWhistle()
+{
 	DEBUG_REQUEST("BasicTestBehavior:whistle:start_whistle",
 		if (getAudioControl().onOffSwitch != 1)
 		{

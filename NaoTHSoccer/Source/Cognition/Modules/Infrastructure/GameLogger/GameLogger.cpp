@@ -7,6 +7,7 @@ GameLogger::GameLogger()
   oldState(PlayerInfo::initial),
   firstRecording(true),
   lastWhistleCounter(0),
+  lastAudioDataTimestamp(0),
   lastRecordedPlainImageID(CameraInfo::Bottom)
 {
   logfileManager.openFile("/tmp/game.log");
@@ -91,8 +92,12 @@ void GameLogger::execute()
 
       LOGSTUFF(TeamMessage);
 
-      if (lastWhistleCounter < getWhistlePercept().counter)
-      {
+      if(params.logAudioData && lastAudioDataTimestamp < getAudioData().timestamp) {
+        LOGSTUFF(AudioData);
+        lastAudioDataTimestamp = getAudioData().timestamp;
+      }
+      
+      if (lastWhistleCounter < getWhistlePercept().counter) {
         LOGSTUFF(WhistlePercept);
         lastWhistleCounter = getWhistlePercept().counter;
       }
