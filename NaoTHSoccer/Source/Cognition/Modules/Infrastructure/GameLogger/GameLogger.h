@@ -109,7 +109,7 @@ private:
   PlayerInfo::RobotState oldState;
   bool firstRecording;
   int lastWhistleCounter;
-  long lastAudioDataTimestamp;
+  unsigned long lastAudioDataTimestamp;
 
   CameraInfo::CameraID lastRecordedPlainImageID;
 };
