@@ -255,7 +255,7 @@ void Motion::processSensorData()
   //
   theOdometryCalculator->execute();
 
-  theArmCollisionDetector->execute();
+  //theArmCollisionDetector->execute();
   theArmCollisionDetector2018->execute();
 
 
