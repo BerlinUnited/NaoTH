@@ -19,7 +19,7 @@
 
 #include "RawAudioFilePlayer.h"
 
-#define CYCLE_TIME 128
+#define CYCLE_TIME 20
 
 class WhistleSimulator : public naoth::PlatformInterface
 {
