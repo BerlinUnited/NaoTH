@@ -39,7 +39,7 @@ std::ostream& operator<<(std::ostream& os, const Step& s){
   os << s.footStep.supFoot()   << std::endl;
   os << "end relative to begin" << std::endl;
   os << end_relative_to_begin   << std::endl;
-
+  os << ((s.type == Step::STEP_WALK) ? "step_walk" : "step_control") << std::endl;
   return os;
 }
 
