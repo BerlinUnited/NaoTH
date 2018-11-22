@@ -65,7 +65,7 @@ public:
 	} params;
 
 private:
-	//Private variablen wie zb ringbuffer fuer MJD und SJD synchronisation
+	//Private variablen wie zb ringbuffer zur MJD und SJD synchronisation
 	RingBuffer<double, 4> jointDataBufferLeft;
 	RingBuffer<double, 4> jointDataBufferRight;
 
