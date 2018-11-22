@@ -36,8 +36,10 @@
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
 #include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
 #include "Modules/Infrastructure/Camera/AdaptiveAutoExposure.h"
-#include "Modules/Infrastructure/WhistleDetector/WhistleDetectorConfigSetter.h"
+#include "Modules/Infrastructure/WhistleDetector/AudioConfigSetter.h"
 #include "Modules/Infrastructure/GameLogger/GameLogger.h"
+#include "Modules/Infrastructure/WhistleDetector/WhistleDetectorV1.h"
+#include "Modules/Infrastructure/WhistleDetector/WhistleDetectorV2.h"
 
 // perception
 #include "Modules/SelfAwareness/CameraMatrixFinder/CameraMatrixFinder.h"
@@ -157,7 +159,9 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(CameraDebug);
   REGISTER_MODULE(CameraInfoSetter);
   REGISTER_MODULE(AdaptiveAutoExposure);
-  REGISTER_MODULE(WhistleDetectorConfigSetter);
+  REGISTER_MODULE(AudioConfigSetter);
+  REGISTER_MODULE(WhistleDetectorV1);
+  REGISTER_MODULE(WhistleDetectorV2);
 
   // perception
   REGISTER_MODULE(CameraMatrixFinder);

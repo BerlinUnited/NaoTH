@@ -22,6 +22,7 @@ import de.naoth.rc.logmanager.LogFileEventManager;
 import de.naoth.rc.logmanager.LogFrameListener;
 import de.naoth.rc.manager.GenericManager;
 import de.naoth.rc.manager.GenericManagerFactory;
+import de.naoth.rc.messages.AudioDataOuterClass;
 import de.naoth.rc.server.Command;
 import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
@@ -499,6 +500,7 @@ public class RepresentationInspector extends AbstractDialog {
         result.addAll(Representations.getDescriptor().getMessageTypes());
         result.addAll(TeamMessageOuterClass.getDescriptor().getMessageTypes());
         result.addAll(Messages.getDescriptor().getMessageTypes());
+        result.addAll(AudioDataOuterClass.getDescriptor().getMessageTypes());
         return result;
     }
 
@@ -527,6 +529,7 @@ public class RepresentationInspector extends AbstractDialog {
             FrameworkRepresentations.class,
             Representations.class,
             TeamMessageOuterClass.class,
+            AudioDataOuterClass.class,
             Messages.class};
 
         for (Class<?> pc : protoClasses) {
