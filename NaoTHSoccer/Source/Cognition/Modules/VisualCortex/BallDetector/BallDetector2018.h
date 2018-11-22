@@ -136,6 +136,7 @@ private:
 
 
       PARAMETER_REGISTER(classifier) = "dortmund";
+      PARAMETER_REGISTER(classifierClose) = "dortmund";
 
       PARAMETER_REGISTER(brightnessMultiplierBottom) = 1.0;
       PARAMETER_REGISTER(brightnessMultiplierTop) = 1.0;
@@ -163,6 +164,7 @@ private:
     double contrastMinimumClose;
 
     std::string classifier;
+    std::string classifierClose;
 
     double brightnessMultiplierBottom;
     double brightnessMultiplierTop;
@@ -172,8 +174,10 @@ private:
 private:
 
   std::shared_ptr<AbstractCNNClassifier> currentCNNClassifier;
+  std::shared_ptr<AbstractCNNClassifier> currentCNNClassifierClose;
+
   std::map<std::string, std::shared_ptr<AbstractCNNClassifier> > cnnMap;
-  void setClassifier(const std::string name);
+  void setClassifier(const std::string& name, const std::string& nameClose);
 
   ModuleCreator<BallKeyPointExtractor>* theBallKeyPointExtractor;
   BestPatchList best;

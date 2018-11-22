@@ -41,7 +41,7 @@ BallDetector2018::BallDetector2018()
   //cnnMap.insert({ "dortmund2018", std::make_shared<CNN_dortmund2018>() });
   cnnMap.insert({ "dortmund2018_keras", std::make_shared<CNN_dortmund2018_keras>() });
 
-  setClassifier("dortmund");
+  setClassifier("dortmund", "dortmund");
 }
 
 BallDetector2018::~BallDetector2018()
@@ -65,7 +65,7 @@ void BallDetector2018::execute(CameraInfo::CameraID id)
 
   // update selected classifier from parameters
   // TODO: make it more efficient
-  setClassifier(params.classifier);
+  setClassifier(params.classifier, params.classifierClose);
 
 
   if(best.size() > 0) {
@@ -111,11 +111,16 @@ void BallDetector2018::execute(CameraInfo::CameraID id)
   );
 }
 
-void BallDetector2018::setClassifier(const std::string name) 
+void BallDetector2018::setClassifier(const std::string& name, const std::string& nameClose) 
 {
   auto location = cnnMap.find(name);
   if(location != cnnMap.end()){
     currentCNNClassifier = location->second;
+  }
+
+  location = cnnMap.find(nameClose);
+  if(location != cnnMap.end()){
+    currentCNNClassifierClose = location->second;
   }
 }
 
@@ -211,11 +216,17 @@ void BallDetector2018::calculateCandidates()
 
       // run CNN
       stopwatch.start();
-      bool found = currentCNNClassifier->classify(patch);
+
+      std::shared_ptr<AbstractCNNClassifier> classifier = currentCNNClassifier;
+      if(patch.width() >= params.postMaxCloseSize) {
+        classifier = currentCNNClassifierClose;
+      }
+
+      bool found = classifier->classify(patch);
       stopwatch.stop();
       stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
 
-      if (found && currentCNNClassifier->getBallConfidence() >= selectedCNNThreshold) {
+      if (found && classifier->getBallConfidence() >= selectedCNNThreshold) {
         addBallPercept(patch.center(), patch.radius());
       }
 
