@@ -19,7 +19,7 @@
 #include <Representations/Infrastructure/TeamMessageData.h>
 #include <Representations/Infrastructure/DebugMessage.h>
 #include <Representations/Infrastructure/GameData.h>
-#include "Representations/Infrastructure/WhistleControl.h"
+#include "Representations/Infrastructure/AudioControl.h"
 
 #include "Representations/Motion/Request/HeadMotionRequest.h"
 #include "Representations/Motion/MotionStatus.h"
@@ -49,7 +49,7 @@ BEGIN_DECLARE_MODULE(Actuator)
   REQUIRE(CameraMatrixOffset)
   REQUIRE(GameReturnData)
   REQUIRE(BodyState)
-  REQUIRE(WhistleControl)
+  REQUIRE(AudioControl)
 
   // HACK: needed to transform the HeadMotionRequest
   REQUIRE(KinematicChain)

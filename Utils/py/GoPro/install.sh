@@ -98,6 +98,21 @@ setup_static_ip() {
 	REBOOT=true
 }
 
+setup_hostname() {
+    if [[ "$1" == "" ]]; then
+        NAME=`cat /etc/hostname`
+        # ask for hostname
+        read -p "hostname [$NAME]: " -r INPUT
+        if [[ ! -z $INPUT ]]; then
+            NAME=$INPUT
+        fi
+    else
+        NAME="$1"
+    fi
+	echo -e "$NAME" > /etc/hostname
+	REBOOT=true
+}
+
 remove_static_ip() {
 	# remove existing configuration
 	sed -i '/^\s*interface/ d' $DHCP_CONFIG
@@ -160,6 +175,11 @@ install() {
 		setup_static_ip
 	fi
 
+	read -p "Setup (unique) hostname? [y|N]: " -r INPUT
+	if [[ $INPUT == "y" || $INPUT == "Y" ]]; then
+		setup_hostname
+	fi
+
 	echo "finished!"
 }
 
@@ -180,6 +200,11 @@ uninstall() {
 	if [[ $INPUT == "y" || $INPUT == "Y" ]]; then
 		remove_static_ip
 		REBOOT=true
+	fi
+
+	read -p "Set hostname (back) to 'raspberrypi'? [y|N]: " -r INPUT
+	if [[ $INPUT == "y" || $INPUT == "Y" ]]; then
+		setup_hostname "raspberrypi"
 	fi
 
 	echo "finished!"

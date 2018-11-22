@@ -18,6 +18,7 @@ PlayerInfo::PlayerInfo()
   teamColor(naoth::GameData::unknown_team_color),
   kickoff(false),
   robotState(initial),
+  robotSetPlay(set_none),
   isPlayingStriker(false),
   scheme(Platform::getInstance().theScheme)
 {
@@ -42,8 +43,22 @@ std::string PlayerInfo::toString(RobotState value)
   }
   
   ASSERT(false);
-  return "invalide RobotState";
+  return "invalid RobotState";
 }
+
+std::string PlayerInfo::toString(RobotSetPlay value)
+{
+  switch (value)
+  {
+    RETURN_VALUE_TO_STR(set_none);
+    RETURN_VALUE_TO_STR(goal_free_kick);
+    RETURN_VALUE_TO_STR(pushing_free_kick);
+  }
+
+  ASSERT(false);
+  return "invalid RobotSetPlay";
+}
+
 
 void PlayerInfo::print(ostream& stream) const
 {
@@ -53,6 +68,7 @@ void PlayerInfo::print(ostream& stream) const
   stream << "teamColor = " << naoth::GameData::toString(teamColor) << endl;
   stream << "kickoff = " << (kickoff?"yes":"no") << endl;
   stream << "robotState = " << toString(robotState) << endl;
+  stream << "robotSetPlay = " << toString(robotSetPlay) << endl;
   stream << "isPlayingStriker = " << (isPlayingStriker?"yes":"no") << endl;
   stream << "active scheme = " << (scheme.empty()?"-":scheme) << std::endl;
 }

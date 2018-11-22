@@ -82,7 +82,8 @@ void StandMotion::execute()
       } else if (static_cast<double>(state_time) > totalTime + timeBeforeRelax
                   && !getBodyState().isLiftedUp
                   && getEngine().getParameters().stand.relax.enable
-                  && relaxedPoseIsStillOk() ) { //only relax if a valid stand pose is reached
+                  && relaxedPoseIsStillOk() //only relax if a valid stand pose is reached
+                  && !getMotionRequest().disable_relaxed_stand) { // and requested
         state = Relax;
       }
 

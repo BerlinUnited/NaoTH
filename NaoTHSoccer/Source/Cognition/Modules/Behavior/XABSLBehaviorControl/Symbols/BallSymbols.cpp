@@ -56,6 +56,8 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanInputSymbol("ball.team.is_valid", &getTeamBallModel().valid);
   engine.registerDecimalInputSymbol("ball.team.position.x", &getTeamBallModel().position.x);
   engine.registerDecimalInputSymbol("ball.team.position.y", &getTeamBallModel().position.y);
+  engine.registerDecimalInputSymbol("ball.team.position_field.x", &getTeamBallModel().positionOnField.x);
+  engine.registerDecimalInputSymbol("ball.team.position_field.y", &getTeamBallModel().positionOnField.y);
   engine.registerDecimalInputSymbol("ball.team.rmse", &getTeamBallModel().rmse);
 
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballLeftFoot", "draw the ball model in left foot's coordinates on field", false);

@@ -49,6 +49,7 @@ import de.naoth.rc.messages.FrameworkRepresentations.RobotInfo;
 import de.naoth.rc.messages.Messages.PlotItem;
 import de.naoth.rc.messages.Messages.Plots;
 import de.naoth.rc.messages.Representations;
+import de.naoth.rc.messages.TeamMessageOuterClass;
 import de.naoth.rc.messages.TeamMessageOuterClass.TeamMessage;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -607,7 +608,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
                         
                        SPLMessage splMsg = SPLMessage.parseFrom(robotMsg);
                        
-                       if(!splMsg.user.getIsPenalized()) {
+                       if((splMsg.user.hasIsPenalized() && !splMsg.user.getIsPenalized()) || (splMsg.user.hasRobotState() && splMsg.user.getRobotState() != TeamMessageOuterClass.RobotState.penalized)) {
                             boolean isOwnMsg = false;
                             if(ownBodyID.isPresent())
                             {

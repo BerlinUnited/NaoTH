@@ -64,7 +64,7 @@ void SimpleRoleDecision::computeStrikers() {
       double time_bonus = messageData.custom.wasStriker ? parameters.strikerBonusTime : 0.0; //At this point, the only robot that may still have been a striker is us
 
     if (!messageData.fallen
-      && !messageData.custom.isPenalized
+      && messageData.custom.robotState == PlayerInfo::playing
       && number != 1 // goalie is not considered
       && getFrameInfo().getTimeSince(messageData.frameInfo.getTime()) < parameters.maximumFreshTime // its fresh
       && (messageData.ballAge >= 0 && messageData.ballAge < parameters.maxBallLostTime+time_bonus )// the guy sees the ball

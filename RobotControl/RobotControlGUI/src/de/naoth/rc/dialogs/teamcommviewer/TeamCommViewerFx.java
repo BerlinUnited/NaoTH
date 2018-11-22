@@ -38,6 +38,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -117,6 +118,9 @@ public class TeamCommViewerFx extends AbstractJFXDialog
     
     @FXML
     private Label statusTablePlaceholder;
+    
+    @FXML
+    private Label multipleNumberWarning;
     
     @FXML
     private Spinner ownPort;
@@ -210,6 +214,39 @@ public class TeamCommViewerFx extends AbstractJFXDialog
                 stopLogging();
             }
         });
+        
+        // handle warning
+        robots.addListener((ListChangeListener.Change<? extends RobotStatus> c) -> {
+            while (c.next()) {
+                if(c.wasAdded() && !multipleNumberWarning.isVisible()) {
+                    // check if warning needs to be shown: two robots with same team & playerNumber
+                    for (int i = 0; i < robots.size(); i++) {
+                        for (int j = i+1; j < robots.size(); j++) {
+                            RobotStatus ri = robots.get(i);
+                            RobotStatus rj = robots.get(j);
+                            if(ri.teamNumProperty().get() == rj.teamNumProperty().get() && ri.playerNumProperty().get() == rj.playerNumProperty().get()) {
+                                multipleNumberWarning.setText("The robots " + ri.getIpAddress() + " and " + rj.getIpAddress() + " have the same player number!\n"
+                                    + "There might be more robots with identical player numbers");
+                                multipleNumberWarning.setVisible(true);
+                                return;
+                            }  
+                        }
+                    }
+                } else if(c.wasRemoved() && multipleNumberWarning.isVisible()) {
+                    // check if warning can be hidden: no two robots with same team & playerNumber
+                    for (int i = 0; i < robots.size(); i++) {
+                        for (int j = i+1; j < robots.size(); j++) {
+                            RobotStatus ri = robots.get(i);
+                            RobotStatus rj = robots.get(j);
+                            if(ri.teamNumProperty().get() == rj.teamNumProperty().get() && ri.playerNumProperty().get() == rj.playerNumProperty().get()) {
+                                return;
+                            }
+                        }
+                    }
+                    multipleNumberWarning.setVisible(false);
+                }
+            }
+        });
     } // afterInit()
     
     /**
@@ -234,7 +271,7 @@ public class TeamCommViewerFx extends AbstractJFXDialog
             new Column<> ("TimeToBall",      "timeToBall"),
             new Column<> ("wantToBeStriker", "wantsToBeStriker",(p) -> new CheckBoxTableCell<>()),
             new Column<> ("wasStriker",      "wasStriker",      (p) -> new CheckBoxTableCell<>()),
-            new Column<> ("isPenalized",     "isPenalized",     (p) -> new CheckBoxTableCell<>()),
+            new Column<> ("RobotState",      "robotState"),
             new Column<> ("whistleDetected", "whistleDetected", (p) -> new CheckBoxTableCell<>()),
             new Column<> ("teamBall",        "teamBall",        (p) -> new Vector2DTableCell()),
             new Column<> ("show on field",   "showOnField",     (p) -> new CheckBoxTableCell<>(), true),
@@ -647,10 +684,12 @@ public class TeamCommViewerFx extends AbstractJFXDialog
                         if (robotStatus == null) {
                             robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address, message.isOpponent(), true);
                             robotStatus.robotColor.set(message.isOpponent() ? javafx.scene.paint.Color.RED : javafx.scene.paint.Color.BLUE);
+                            robotStatus.updateStatus(message.timestamp, message.message); // must be updated before adding to list!
                             robots.add(robotStatus);
+                        } else {
+                            // updates the robotStatus
+                            robotStatus.updateStatus(message.timestamp, message.message);
                         }
-                        // updates the robotStatus
-                        robotStatus.updateStatus(message.timestamp, message.message);
                     } // end for
                 });
             } // end if

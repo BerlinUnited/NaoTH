@@ -22,7 +22,7 @@ for out = 1:out_rows %
     for c = 1 : channels
         for x = 1 : rows
             for y = 1 : cols
-                idx = (c-1)*(cols*rows) + (x-1)*cols + y;
+                idx = (c-1)*(cols*rows) + (y-1)*cols + x;
 
                 % make the file more readable
                 if mod(i,4) == 0
@@ -34,9 +34,7 @@ for out = 1:out_rows %
                 else
                     fprintf(BodyFile, ' - ');
                 end
-
-                fprintf(BodyFile, '%.8ff * out_step%d[%2d][%2d][%d]', abs(weights(out,idx)), step-1, y-1, x-1, c-1);
-
+                fprintf(BodyFile, '%.8ff * out_step%d[%2d][%2d][%d]', abs(weights(out,idx)), step-1, x-1, y-1, c-1);
                 i = i+1;
             end
         end

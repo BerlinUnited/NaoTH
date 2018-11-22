@@ -38,6 +38,7 @@ MonteCarloSelfLocator::MonteCarloSelfLocator()
   DEBUG_REQUEST_REGISTER("MCSLS:draw_post_choice", "", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_sensor_belief", "", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_sensorResetBySensingGoalModel", "", false);
+  DEBUG_REQUEST_REGISTER("MCSLS:draw_sensorResetByMiddleCircle", "", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_state", "visualizes the state of the self locator on the field", false);
   DEBUG_REQUEST_REGISTER("MCSLS:draw_updateByLinePoints", "", false);
 
@@ -226,6 +227,9 @@ void MonteCarloSelfLocator::execute()
       //resampleMHOld(theSampleSet);
 
       sensorResetBySensingGoalModel(theSampleSet, (int)theSampleSet.size() - 1);
+      if(parameters.sensorResetByMiddleCircle) {
+        sensorResetByMiddleCircle(theSampleSet, getRansacCirclePercept().middleCircleCenter);
+      }
 
       // estimate the state
       canopyClustering.cluster(mhBackendSet);
@@ -291,6 +295,10 @@ void MonteCarloSelfLocator::execute()
       }
       if(parameters.resampleGT07) {
         resampleGT07(theSampleSet, true);
+      }
+
+      if(parameters.sensorResetByMiddleCircle) {
+        sensorResetByMiddleCircle(theSampleSet, getRansacCirclePercept().middleCircleCenter);
       }
 
       calculatePose(theSampleSet);
@@ -442,7 +450,13 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
   */
 
   if(parameters.updateByMiddleCircle) {
-    updateByMiddleCircle(getLinePercept(), sampleSet);
+    if(parameters.updateByLinePerceptCircle && getLinePercept().middleCircleWasSeen) {
+      updateByMiddleCircle(getLinePercept().middleCircleCenter, sampleSet);
+    }
+
+    if(parameters.updateByRansacCircle && getRansacCirclePercept().middleCircleWasSeen) {
+      updateByMiddleCircle(getRansacCirclePercept().middleCircleCenter, sampleSet);
+    }
   }
 
   if(parameters.updateByCompas && getProbabilisticQuadCompas().isValid()) {
@@ -942,17 +956,17 @@ void MonteCarloSelfLocator::updateByShortLines(const LinePercept& linePercept, S
   */
 }//end updateByLinesTable
 
-void MonteCarloSelfLocator::updateByMiddleCircle(const LinePercept& linePercept, SampleSet& sampleSet) const
+void MonteCarloSelfLocator::updateByMiddleCircle(const Vector2d& middleCircleCenter, SampleSet& sampleSet) const
 {
-  if(!linePercept.middleCircleWasSeen) {
-    return;
-  }
-
   double sigmaDistance = parameters.sigmaDistanceCenterCircle;
   double sigmaAngle    = parameters.sigmaAngleCenterCircle;
   double cameraHeight  = getCameraMatrix().translation.z;
 
   Vector2<double> centerCirclePosition; // (0,0)
+
+  //TODO: this needs to be analyzed in more detail
+  // Don't update angle if inside center cicle
+  bool updateByAngle = !(getRobotPose().isValid || getRobotPose().translation.abs() < getFieldInfo().centerCircleRadius/2.0);
 
   for(size_t s=0; s < sampleSet.size(); s++)
   {
@@ -964,8 +978,8 @@ void MonteCarloSelfLocator::updateByMiddleCircle(const LinePercept& linePercept,
     double expectedDistance = localCircle.abs();
     double expectedAngle = localCircle.angle();
 
-    double seenDistance = linePercept.middleCircleCenter.abs();
-    double seenAngle = linePercept.middleCircleCenter.angle();
+    double seenDistance = middleCircleCenter.abs();
+    double seenAngle = middleCircleCenter.angle();
 
     //double distanceDiff = fabs(expectedDistance - seenDistance);
     //double angleDiff = Math::normalize(seenAngle - expectedAngle);
@@ -973,7 +987,9 @@ void MonteCarloSelfLocator::updateByMiddleCircle(const LinePercept& linePercept,
     //sample.likelihood *= exp(-pow((angleDiff)/sigmaAngle,2));
 
     sample.likelihood *= computeDistanceWeight(seenDistance, expectedDistance, cameraHeight, sigmaDistance);
-    sample.likelihood *= computeAngleWeight(seenAngle, expectedAngle, sigmaAngle);
+    if (updateByAngle) {
+      sample.likelihood *= computeAngleWeight(seenAngle, expectedAngle, sigmaAngle);
+    }
   }//end for
 
 }//end updateByMiddleCircle
@@ -1464,6 +1480,76 @@ int MonteCarloSelfLocator::sensorResetBySensingGoalModel(SampleSet& sampleSet, i
 
   return n;
 }//end sensorResetBySensingGoalModel
+
+
+void MonteCarloSelfLocator::sensorResetByMiddleCircle(SampleSet& sampleSet, const Vector2d& middleCircleCenter) const
+{
+ 
+  // HACK: this has to go womewhere else
+  bool middleCircleOrientationWasSeen = false;
+  Vector2d middleCircleOrientation;
+
+  if(getRansacCirclePercept().middleCircleWasSeen)
+  {
+    for(size_t i = 0; i < getLinePercept().lines.size(); i++)
+    {
+      double d = getLinePercept().lines[i].lineOnField.minDistance(getLinePercept().middleCircleCenter);
+      if(d < 50.0){
+        middleCircleOrientation = getLinePercept().lines[i].lineOnField.getDirection();
+        middleCircleOrientationWasSeen = true;
+      }
+    }
+
+    if (!middleCircleOrientationWasSeen)
+    {
+      for(size_t i = 0; i < getLinePercept().short_lines.size(); i++)
+      {
+        double d = getLinePercept().short_lines[i].lineOnField.minDistance(getRansacCirclePercept().middleCircleCenter);
+        if(d < 50.0){
+          middleCircleOrientation = getLinePercept().short_lines[i].lineOnField.getDirection();
+          middleCircleOrientationWasSeen = true;
+        }
+      }
+    }
+  }
+
+  if(!middleCircleOrientationWasSeen) {
+    return;
+  }
+  
+  Pose2D centerLeft = Pose2D(Vector2d(middleCircleOrientation).rotateLeft().angle(), middleCircleCenter).invert();
+  Pose2D centerRight = Pose2D(Vector2d(middleCircleOrientation).rotateRight().angle(), middleCircleCenter).invert();
+  
+  DEBUG_REQUEST("MCSLS:draw_sensorResetByMiddleCircle",
+    FIELD_DRAWING_CONTEXT;
+    PEN("FF9999", 20);
+
+    ROBOT(centerLeft.translation.x,
+          centerLeft.translation.y,
+          centerLeft.rotation);
+
+    PEN("9999FF", 20);
+
+    ROBOT(centerRight.translation.x,
+          centerRight.translation.y,
+          centerRight.rotation);
+  );
+
+  if(getRobotPose().isValid) {
+    size_t n = sampleSet.size()-1;
+
+    if((centerLeft.translation - getRobotPose().translation).abs2() < (centerRight.translation - getRobotPose().translation).abs2()){
+      sampleSet[n] = centerLeft;
+    } else {
+      sampleSet[n] = centerRight;
+    }
+  } else 
+  {
+    size_t n = sampleSet.size()-1;
+    sampleSet[n-1] = centerLeft;
+    sampleSet[n] = centerRight;
+  }
+}
 
 
 void MonteCarloSelfLocator::calculatePose(SampleSet& sampleSet)
