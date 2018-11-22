@@ -30,7 +30,7 @@ public:
   int sampleRate;
   int numChannels;
   bool onlySoundInSet;
-  unsigned long timestamp;
+  unsigned int timestamp;
 
   std::vector<short> samples; /* Samples are interleaved. */
 
