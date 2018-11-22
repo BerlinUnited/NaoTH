@@ -15,6 +15,7 @@ public:
   ~CNN_dortmund2018(){}
 
 	bool classify(const BallCandidates::Patch& p);
+  bool classify(const BallCandidates::PatchYUVClassified& p);
   virtual float getBallConfidence();
   virtual float getNoballConfidence();
 

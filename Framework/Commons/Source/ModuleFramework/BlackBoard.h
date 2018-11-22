@@ -13,10 +13,13 @@
 #include <map>
 #include <string>
 #include <typeinfo>
+#include <type_traits>
 
 #include "Tools/Debug/NaoTHAssert.h"
 #include "Representation.h"
 #include "DataHolder.h"
+#include "BlackBoardInterface.h"
+
 
 /**
 * @class BlackBoard 
@@ -85,20 +88,20 @@ private:
   * public default constrictor
   */
   template<class T>
-  class BlackBoardDataHolder: public BlackBoardData
+  class BlackBoardDataHolder: public BlackBoardData, virtual public BlackBoardInterface, virtual public T
   {
-  private:
-    T instance;
+  //private:
+    //T instance;
 
   public:
-    BlackBoardDataHolder(const std::string& name) : instance(name) {}
+    BlackBoardDataHolder(BlackBoard& theBlackBoard, const std::string& name) : BlackBoardInterface(&theBlackBoard), T(name) {}
 
-    T& operator*(){ return instance; }
-    const T& operator*() const { return instance; }
+    //T& operator*(){ return instance; }
+    //const T& operator*() const { return instance; }
 
     virtual const std::string getTypeName() const { return typeid(T).name(); }
-    virtual const Representation& getRepresentation() const { return **this; }
-    virtual Representation& getRepresentation() { return **this; }
+    virtual const Representation& getRepresentation() const { return *this; }
+    virtual Representation& getRepresentation() { return *this; }
   };
 
 
@@ -167,7 +170,7 @@ public:
       assert(false);
     }//end if
 
-    return **typedData;
+    return *typedData;
   }//end getRepresentation
 
 
@@ -183,9 +186,13 @@ public:
     // in case it doesn't exist we get an iterator to the closest existing data
     Registry::iterator iter = registry.lower_bound(name);
 
+    if(std::is_base_of<BlackBoardInterface,T>::value) {
+      std::cout << "----------------------------------------- " << name << std::endl;
+    }
+
     // the data with the given name doesn't exist; insert a new one
     if( iter == registry.end() || !(iter->first == name) ) {
-      iter = registry.insert(iter, std::make_pair(name, new BlackBoardDataHolder<T>(name)));
+      iter = registry.insert(iter, std::make_pair(name, new BlackBoardDataHolder<T>(*this, name)));
     }
 
     // try to cast the representation to the given type
@@ -201,7 +208,7 @@ public:
       assert(false);
     }//end if
 
-    return **typedData;
+    return *typedData;
   }//end getRepresentation
 
 

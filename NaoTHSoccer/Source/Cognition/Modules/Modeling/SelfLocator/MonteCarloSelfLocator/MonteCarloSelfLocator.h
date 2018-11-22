@@ -149,6 +149,8 @@ private: // local types
 
       PARAMETER_REGISTER(updateByShortLinePercept) = false;
 
+      
+      PARAMETER_REGISTER(sensorResetByMiddleCircle) = true;
       PARAMETER_REGISTER(updateByMiddleCircle) = true;
       PARAMETER_REGISTER(updateByLinePerceptCircle) = true;
       PARAMETER_REGISTER(updateByRansacCircle) = true;
@@ -206,6 +208,7 @@ private: // local types
     bool updateByShortLinePercept;
 
     
+    bool sensorResetByMiddleCircle;
     bool updateByMiddleCircle;
     bool updateByLinePerceptCircle;
     bool updateByRansacCircle;
@@ -280,7 +283,6 @@ private: // local types
 private: // goal posts
   bool updatedByGoalPosts;
 
-
 private: // data members
   OdometryData lastRobotOdometry;
   SampleSet theSampleSet;
@@ -331,6 +333,7 @@ private: // workers
   int resampleSUS(SampleSet& sampleSet, int n) const;
 
   int sensorResetBySensingGoalModel(SampleSet& sampleSet, int n) const;
+  void sensorResetByMiddleCircle(SampleSet& sampleSet, const Vector2d& middleCircleCenter) const;
 
   void calculatePose(SampleSet& sampleSet);
 
