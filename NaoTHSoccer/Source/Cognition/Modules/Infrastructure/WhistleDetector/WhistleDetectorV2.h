@@ -96,7 +96,7 @@ private:
           dev     += data[i] * data[i];
       }
 
-      dev = std::sqrt(data.size() * dev - mean * mean) / static_cast<double>(data.size());
+      dev = std::sqrt(static_cast<double>(data.size()) * dev - mean * mean) / static_cast<double>(data.size());
       mean /= static_cast<double>(data.size());
   }
 
