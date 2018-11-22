@@ -35,7 +35,7 @@
 
 // sensor percepts
 #include "Representations/Perception/GoalPercept.h"
-#include "Representations/Perception/LinePercept.h"
+//#include "Representations/Perception/LinePercept.h"
 #include "Representations/Perception/LinePercept2018.h"
 
 // local models
@@ -86,8 +86,8 @@ BEGIN_DECLARE_MODULE(MonteCarloSelfLocator)
   REQUIRE(SensingGoalModel)
   REQUIRE(ProbabilisticQuadCompas)
   REQUIRE(LineGraphPercept)
-  REQUIRE(LinePercept)
-  REQUIRE(RansacCirclePercept)
+  //REQUIRE(LinePercept)
+  //REQUIRE(RansacCirclePercept)
 
   REQUIRE(RansacLinePercept)
   REQUIRE(RansacCirclePercept2018)
@@ -305,8 +305,8 @@ private: // workers
   void updateBySingleGoalPost(const GoalPercept::GoalPost& goalPost, SampleSet& sampleSet) const;
   void updateByCompas(SampleSet& sampleSet) const;
   void updateByLinePoints(const LineGraphPercept& linePercept, SampleSet& sampleSet) const;
-  void updateByLines(const LinePercept& linePercept, SampleSet& sampleSet) const;
-  void updateByShortLines(const LinePercept& linePercept, SampleSet& sampleSet) const;
+  //void updateByLines(const LinePercept& linePercept, SampleSet& sampleSet) const;
+  //void updateByShortLines(const LinePercept& linePercept, SampleSet& sampleSet) const;
 
   void updateByLines2018(const LinePercept2018& linePercept, SampleSet& sampleSet) const;
 
