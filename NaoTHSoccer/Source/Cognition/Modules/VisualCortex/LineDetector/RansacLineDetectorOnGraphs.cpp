@@ -142,6 +142,13 @@ void RansacLineDetectorOnGraphs::execute()
 
   DEBUG_REQUEST("Vision:RansacLineDetectorOnGraphs:draw_lines_field",
     FIELD_DRAWING_CONTEXT;
+    for (const Math::LineSegment line : getShortLinePercept().fieldLineSegments) {
+      PEN("FF0000", 30);
+      LINE(
+        line.begin().x, line.begin().y,
+        line.end().x, line.end().y
+      );
+    }
 
     /*
     if (!getLinePercept().extended_lines.empty()) {
