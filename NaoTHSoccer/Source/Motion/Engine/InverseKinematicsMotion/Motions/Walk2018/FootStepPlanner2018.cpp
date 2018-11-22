@@ -180,7 +180,19 @@ void FootStepPlanner2018::calculateNewStep(const Step& lastStep, Step& newStep, 
   else // regular walk
   {
     newStep.footStep = nextStep(lastStep.footStep, walkRequest);
-    newStep.numberOfCycles = parameters.step.duration / getRobotInfo().basicTimeStep;
+    int duration = parameters.step.duration;
+
+    if(parameters.step.dynamicDuration) {
+      if(walkRequest.character <= 0.3) {
+        duration = 300;
+      } else if(walkRequest.character <= 0.7) {
+        duration = 280;
+      } else {// if(walkRequest.character == 1) {
+        duration = 260;
+      }
+    }
+
+    newStep.numberOfCycles = duration / getRobotInfo().basicTimeStep;
     newStep.type = Step::STEP_WALK;
 
     PLOT("Walk:XABSL_after_adaptStepSize_x", newStep.footStep.footEnd().translation.x);
