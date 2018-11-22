@@ -240,8 +240,8 @@ bool RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& 
     size_t i0 = choose_random_from(outliers, 1);
     size_t i1 = choose_random_from(outliers, 2);
 
-    const Edgel& a = getLineGraphPercept().edgelsOnField[outliers[i0]];
-    const Edgel& b = getLineGraphPercept().edgelsOnField[outliers[i1]];
+    const Edgel& a = getLineGraphPercept().edgelsOnField[i0];
+    const Edgel& b = getLineGraphPercept().edgelsOnField[i1];
 
     if(a.sim(b) < params.directionSimilarity) {
       continue;
@@ -342,8 +342,8 @@ bool RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inl
     size_t i0 = choose_random_from(outliers, 1);
     size_t i1 = choose_random_from(outliers, 2);
 
-    const Edgel& a = getLineGraphPercept().edgelsOnField[outliers[i0]];
-    const Edgel& b = getLineGraphPercept().edgelsOnField[outliers[i1]];
+    const Edgel& a = getLineGraphPercept().edgelsOnField[i0];
+    const Edgel& b = getLineGraphPercept().edgelsOnField[i1];
 
     // create model
     std::vector<Vector2d> models;

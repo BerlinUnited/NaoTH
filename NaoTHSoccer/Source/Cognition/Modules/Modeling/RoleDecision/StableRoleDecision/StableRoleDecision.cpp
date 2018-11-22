@@ -42,7 +42,7 @@ void StableRoleDecision::execute()
     unsigned int robotNumber = i.first;
     const TeamMessageData& msg = i.second;
 
-    if (msg.playerNumber != getPlayerInfo().playerNumber && getTeamMessagePlayerIsAlive().isDead(robotNumber)) {
+    if (msg.playerNumber != getPlayerInfo().playerNumber && !getTeamMessagePlayersState().isPlaying(robotNumber)) {
       continue;
     }
 
@@ -51,15 +51,14 @@ void StableRoleDecision::execute()
       time_bonus = parameters.strikerBonusTime;
     }
 
-    if (robotNumber == getPlayerInfo().playerNumber && (msg.fallen || msg.custom.robotState == PlayerInfo::penalized ||
+    if (robotNumber == getPlayerInfo().playerNumber && (!getTeamMessagePlayersState().isPlaying(robotNumber) ||
       // ball was seen (> -1) and ball isn't too old
       msg.ballAge < 0 || msg.ballAge > parameters.maxBallLostTime + time_bonus)) 
     {
       wantsToBeStriker = false;
     }
 
-    if (!msg.fallen
-      && msg.custom.robotState != PlayerInfo::penalized
+    if (getTeamMessagePlayersState().isPlaying(robotNumber)
       && msg.ballAge >= 0 // Ball was seen some time ago ...
       && msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) < parameters.maxBallLostTime + time_bonus) //Ball is fresh
     { 
