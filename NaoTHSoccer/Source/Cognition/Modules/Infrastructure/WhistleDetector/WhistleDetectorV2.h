@@ -58,7 +58,7 @@ public:
 			PARAMETER_REGISTER(nWhistleMissFrames) = 7;
 
       PARAMETER_REGISTER(whistle_filter.g0) = 0.1;
-      PARAMETER_REGISTER(whistle_filter.g1) = 0.01;
+      PARAMETER_REGISTER(whistle_filter.g1) = 0.05;
 
 			syncWithConfig();
 		}
