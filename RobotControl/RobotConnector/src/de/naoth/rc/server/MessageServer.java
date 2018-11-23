@@ -75,36 +75,42 @@ public class MessageServer extends AbstractMessageServer {
         this.loopCount = 0;
     }
 
-    public void connect(String host, int port) throws IOException {
-        connect(new InetSocketAddress(host, port));
+    public boolean connect(String host, int port) {
+        return connect(new InetSocketAddress(host, port));
     }
     
-    public void connect(InetSocketAddress address) throws IOException {
+    public boolean connect(InetSocketAddress address) {
         // close previous connection if necessary
         disconnect();
         
-        this.address = address;
+        try {
+            this.address = address;
 
-        // open and configure the socket
-        this.socketChannel = SocketChannel.open();
-        this.socketChannel.configureBlocking(true);
-        
-        //this.socketChannel.connect(address);
-        this.socketChannel.socket().connect(address, 1000);
+            // open and configure the socket
+            this.socketChannel = SocketChannel.open();
+            this.socketChannel.configureBlocking(true);
 
-        this.scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-        this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                sendReceiveLoop();
-            }
-        }, 0, updateIntervall, TimeUnit.MILLISECONDS);
-        
-        this.fireConnected(this.address);
+            //this.socketChannel.connect(address);
+            this.socketChannel.socket().connect(address, 1000);
+
+            this.scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+            this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    sendReceiveLoop();
+                }
+            }, 0, updateIntervall, TimeUnit.MILLISECONDS);
+
+            this.fireConnected(this.address);
+        } catch (IOException e) {
+            fireDisconnected(e.getLocalizedMessage());
+            return false;
+        }
+        return true;
     }//end connect
 
-    public void reconnect() throws IOException {
-        connect(this.address);
+    public boolean reconnect() {
+        return connect(this.address);
     }
     
     public void disconnect() {

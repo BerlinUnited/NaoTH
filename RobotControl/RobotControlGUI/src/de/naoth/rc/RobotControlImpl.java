@@ -192,11 +192,7 @@ public class RobotControlImpl extends javax.swing.JFrame
                     "Disconnected. Try to reconnect?", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE, null, options, options[0]);
                 
                 if(result == JOptionPane.OK_OPTION) {
-                    try {
-                        messageServer.reconnect();
-                    } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(RobotControlImpl.this, "Establishing connection failed: " + ex.getLocalizedMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
-                    }
+                    messageServer.reconnect();
                 }
             }
         }
