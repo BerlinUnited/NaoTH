@@ -402,11 +402,12 @@ void BasicTestBehavior::testLED() {
 
 } //testLED
 
-void BasicTestBehavior::testWhistle(){
+void BasicTestBehavior::testWhistle()
+{
 	DEBUG_REQUEST("BasicTestBehavior:whistle:start_whistle",
-		if (getWhistleControl().onOffSwitch != 1)
+		if (getAudioControl().onOffSwitch != 1)
 		{
-			getWhistleControl().onOffSwitch = 1;
+			getAudioControl().onOffSwitch = 1;
 			lastWhistleCount = getWhistlePercept().counter;
 		}
 	if (getWhistlePercept().counter != lastWhistleCount)
@@ -434,11 +435,11 @@ void BasicTestBehavior::testWhistle(){
 	);
 
 	DEBUG_REQUEST("BasicTestBehavior:whistle:stop_whistle",
-		if (getWhistleControl().onOffSwitch != 0)
+		if (getAudioControl().onOffSwitch != 0)
 		{
-			getWhistleControl().onOffSwitch = 0;
+			getAudioControl().onOffSwitch = 0;
 			lastWhistleCount = getWhistlePercept().counter;
 		}
-	getMotionRequest().id = motion::stand;
+		getMotionRequest().id = motion::stand;
 	);
 }

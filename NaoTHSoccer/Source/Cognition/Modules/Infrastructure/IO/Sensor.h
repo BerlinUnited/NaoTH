@@ -30,6 +30,7 @@
 #include <Representations/Infrastructure/DebugMessage.h>
 #include "Representations/Infrastructure/CalibrationData.h"
 #include <Representations/Infrastructure/CpuData.h>
+#include "Representations/Infrastructure/AudioData.h"
 #include "Representations/Motion/CollisionPercept.h"
 
 #include "Representations/Infrastructure/GPSData.h"
@@ -73,6 +74,7 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(UltraSoundReceiveData)
   PROVIDE(SoundCaptureData)
   PROVIDE(CpuData)
+  PROVIDE(AudioData)
 
   PROVIDE(TeamMessageDataIn)
   PROVIDE(RemoteMessageDataIn)

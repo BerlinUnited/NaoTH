@@ -36,8 +36,10 @@
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
 #include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
 #include "Modules/Infrastructure/Camera/AdaptiveAutoExposure.h"
-#include "Modules/Infrastructure/WhistleDetector/WhistleDetectorConfigSetter.h"
+#include "Modules/Infrastructure/WhistleDetector/AudioConfigSetter.h"
 #include "Modules/Infrastructure/GameLogger/GameLogger.h"
+#include "Modules/Infrastructure/WhistleDetector/WhistleDetectorV1.h"
+#include "Modules/Infrastructure/WhistleDetector/WhistleDetectorV2.h"
 
 // perception
 #include "Modules/SelfAwareness/CameraMatrixFinder/CameraMatrixFinder.h"
@@ -48,7 +50,6 @@
 #include "Modules/SelfAwareness/CameraMatrixCorrectorV3/CameraMatrixCorrectorV3.h"
 
 #include "Modules/VisualCortex/HistogramProvider.h"
-#include "Modules/VisualCortex/SimpleFieldColorClassifier/SimpleFieldColorClassifier.h"
 #include "Modules/VisualCortex/FieldColorClassifier.h"
 #include "Modules/VisualCortex/ScanLineEdgelDetector/ScanLineEdgelDetector.h"
 #include "Modules/VisualCortex/FieldDetector/FieldDetector.h"
@@ -60,8 +61,7 @@
 #include "Modules/VisualCortex/GoalDetector/GoalDetectorV2.h"
 #include "Modules/VisualCortex/GoalDetector/GoalCrossBarDetector.h"
 #include "Modules/VisualCortex/BallDetector/RedBallDetector.h"
-#include "Modules/VisualCortex/BallDetector/BallCandidateDetector.h"
-#include "Modules/VisualCortex/BallDetector/BallDetector.h"
+#include "Modules/VisualCortex/BallDetector/BallDetector2018.h"
 #include "Modules/VisualCortex/IntegralImageProvider.h"
 
 #include "Modules/SelfAwareness/FakeCameraMatrixFinder/FakeCameraMatrixFinder.h"
@@ -81,7 +81,7 @@
 #include "Modules/Modeling/ObstacleLocator/UltraSoundObstacleLocator.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiveEmulator.h"
 #include "Modules/Modeling/TeamMessageStatistics/TeamMessageStatisticsModule.h"
-#include "Modules/Modeling/TeamMessageStatistics/TeamMessagePlayerIsAliveModule.h"
+#include "Modules/Modeling/TeamMessageStatistics/TeamMessagePlayersStateModule.h"
 #include "Modules/Modeling/RoleDecision/SimpleRoleDecision/SimpleRoleDecision.h"
 #include "Modules/Modeling/RoleDecision/StableRoleDecision/StableRoleDecision.h"
 #include "Modules/Modeling/RoleDecision/CleanRoleDecision/CleanRoleDecision.h"
@@ -159,7 +159,9 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(CameraDebug);
   REGISTER_MODULE(CameraInfoSetter);
   REGISTER_MODULE(AdaptiveAutoExposure);
-  REGISTER_MODULE(WhistleDetectorConfigSetter);
+  REGISTER_MODULE(AudioConfigSetter);
+  REGISTER_MODULE(WhistleDetectorV1);
+  REGISTER_MODULE(WhistleDetectorV2);
 
   // perception
   REGISTER_MODULE(CameraMatrixFinder);
@@ -170,7 +172,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(HistogramProvider);
   REGISTER_MODULE(IntegralImageProvider);
-  REGISTER_MODULE(SimpleFieldColorClassifier);
   REGISTER_MODULE(FieldColorClassifier);
   REGISTER_MODULE(IntegralFieldDetector);
   REGISTER_MODULE(ScanLineEdgelDetector);
@@ -183,9 +184,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(GoalCrossBarDetector);
 
   REGISTER_MODULE(RedBallDetector);
-  REGISTER_MODULE(BallCandidateDetector);
-  REGISTER_MODULE(BallDetector);
-
+  REGISTER_MODULE(BallDetector2018);
+  
   REGISTER_MODULE(FakeCameraMatrixFinder);
   REGISTER_MODULE(FakeBallDetector);
 
@@ -204,7 +204,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(UltraSoundObstacleLocator);
   REGISTER_MODULE(TeamCommReceiveEmulator);
   REGISTER_MODULE(TeamMessageStatisticsModule);
-  REGISTER_MODULE(TeamMessagePlayerIsAliveModule);
+  REGISTER_MODULE(TeamMessagePlayersStateModule);
   REGISTER_MODULE(SoccerStrategyProvider);
   REGISTER_MODULE(PotentialFieldProvider);
   REGISTER_MODULE(GPS_SelfLocator);

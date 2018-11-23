@@ -46,6 +46,12 @@ include "Options/Skills/go_to_ball_with_foot_dynamic.xabsl";
 include "Options/Skills/go_to_ball_with_right_foot.xabsl";
 include "Options/Skills/go_to_ball_with_left_foot.xabsl";
 
+include "Options/Soccer/Strategy/FreeKick/free_kick_opp.xabsl";
+include "Options/Soccer/Strategy/FreeKick/free_kick_opp_goal.xabsl";
+include "Options/Soccer/Strategy/FreeKick/free_kick_own.xabsl";
+include "Options/Soccer/Strategy/FreeKick/free_kick_own_goal.xabsl";
+include "Options/Soccer/Strategy/FreeKick/avoid_region_go_own_goal.xabsl";
+
 //
 include "Options/Skills/sidekick.xabsl";
 include "Options/Skills/sidekick_to_left.xabsl";
@@ -191,6 +197,8 @@ include "Options/Test/agent/path_move_around_ball_agent.xabsl";
 include "Options/Test/path_move_around_ball_test.xabsl";
 
 
+// Test agents Team behavior
+include "Options/Test/team/team_go_to_ball_agent.xabsl";
 
 
 // Test Options PathPlanner
@@ -256,6 +264,9 @@ include "Options/Test/strategy/role_change_goalie_test.xabsl";
 
 include "Options/Test/change_state_input_test.xabsl";
  // Useless?
+
+// Test options Team behavior
+include "Options/Test/team/team_go_to_ball.xabsl";
 
 /** The soccer competition agent */
 agent spl_soccer("SPL Soccer", spl_play_soccer);
@@ -328,3 +339,5 @@ agent change_state_input_test_agent ("change_state_input_test_agent",change_stat
 
 agent head_test_agent("head_test_agent", head_test_agent);
 agent cammatrix_test_agent("cammatrix_test_agent", cammatrix_test_agent);
+
+agent team_go_to_ball_agent("team_go_to_ball_agent",team_go_to_ball_agent);
