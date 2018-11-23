@@ -55,6 +55,7 @@
 #include "Modules/VisualCortex/ScanGrid/ScanGridEdgelDetector.h"
 #include "Modules/VisualCortex/ScanLineEdgelDetector/ScanLineEdgelDetector.h"
 #include "Modules/VisualCortex/FieldDetector/FieldDetector.h"
+#include "Modules/VisualCortex/FieldDetector/IntegralFieldDetector.h"
 #include "Modules/VisualCortex/LineDetector/LineGraphProvider.h"
 #include "Modules/VisualCortex/GoalDetector/GoalFeatureDetector.h"
 #include "Modules/VisualCortex/GoalDetector/GoalFeatureDetectorV2.h"
@@ -174,6 +175,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(HistogramProvider);
   REGISTER_MODULE(IntegralImageProvider);
   REGISTER_MODULE(FieldColorClassifier);
+  REGISTER_MODULE(IntegralFieldDetector);
   REGISTER_MODULE(ScanGridProvider);
   REGISTER_MODULE(ScanGridEdgelDetector);
   REGISTER_MODULE(ScanLineEdgelDetector);
