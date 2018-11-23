@@ -198,6 +198,7 @@ public class GameControllerManagerImpl implements GameControllerManager
                 parsedData.gameState = gamecontroldata.getField("gameState").getByte(data);
                 parsedData.setPlay = gamecontroldata.getField("setPlay").getByte(data);
                 parsedData.firstHalf = gamecontroldata.getField("firstHalf").getByte(data);
+                parsedData.kickingTeam = gamecontroldata.getField("kickingTeam").getByte(data);
                 parsedData.secsRemaining = gamecontroldata.getField("secsRemaining").getShort(data);
                 parsedData.secondaryTime = gamecontroldata.getField("secondaryTime").getShort(data);
                 return parsedData;

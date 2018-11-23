@@ -802,9 +802,13 @@ public class TeamCommViewerFx extends AbstractJFXDialog
                 default: display += "UNKNOWN"; break;
             }
             
+            // determine the team who as kickoff/freekick
+            int kickingTeam = e.data.kickingTeam + 10000; // use the port for comparison
+            String fk_team = kickingTeam == (int)ownPort.getValue() ? "OWN" : "OPP";
+            
             switch(e.data.setPlay) {
-                case 1: display += "; GOAL_FREE_KICK: " + e.data.secondaryTime; break;
-                case 2: display += "; PUSHING_FREE_KICK " + e.data.secondaryTime; break;
+                case 1: display += "; GOAL_FREE_KICK_"    + fk_team + ": " + e.data.secondaryTime; break;
+                case 2: display += "; PUSHING_FREE_KICK_" + fk_team + ": " + e.data.secondaryTime; break;
             }
             
             setLabelText(display);
