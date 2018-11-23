@@ -50,13 +50,12 @@ void CleanRoleDecision::computeStrikers()
         double loose_ball_bonus = msg.playerNumber == getRoleDecisionModel().firstStriker?parameters.strikerBonusTime:0.0;
 
         // check if the robot is able to play and sees the ball
-        bool isRobotInactive = msg.fallen
-                || msg.custom.isPenalized
+        bool isRobotInactive = !getTeamMessagePlayersState().isPlaying(robotNumber)
                 || msg.ballAge < 0 //Ball was never seen
                 || (msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) > parameters.maxBallLostTime + loose_ball_bonus); //Ball isn't fresh
 
-        // ignore "DEAD" and inactive robots
-        if(robotNumber != getPlayerInfo().playerNumber && (getTeamMessagePlayerIsAlive().isDead(robotNumber) || isRobotInactive)) { continue; }
+        // ignore inactive robots
+        if(robotNumber != getPlayerInfo().playerNumber && isRobotInactive) { continue; }
 
         // for all active robots, which sees the ball AND previously announced to want to be striker OR is striker ...
         if (msg.custom.wantsToBeStriker || msg.custom.wasStriker) {
@@ -67,10 +66,11 @@ void CleanRoleDecision::computeStrikers()
 
     // get my own message
     auto ownMessage = getTeamMessage().data.at(getPlayerInfo().playerNumber);
-    // i want to be striker, if i'm not the goalie and i'm "active" (not fallen/panelized, see the ball)!!!
+    // i want to be striker, if i'm not the goalie and i'm "active" (not fallen/penalized, see the ball)!!!
     getRoleDecisionModel().wantsToBeStriker = ownMessage.playerNumber != 1
-                                              && !(ownMessage.fallen || ownMessage.custom.isPenalized || ownMessage.ballAge < 0
-                                              || (ownMessage.ballAge + getFrameInfo().getTimeSince(ownMessage.frameInfo.getTime()) > parameters.maxBallLostTime + (getPlayerInfo().playerNumber==getRoleDecisionModel().firstStriker?parameters.strikerBonusTime:0.0)));
+                                              && getTeamMessagePlayersState().isPlaying(getPlayerInfo().playerNumber)
+                                              && !(ownMessage.ballAge < 0
+                                                   || (ownMessage.ballAge + getFrameInfo().getTimeSince(ownMessage.frameInfo.getTime()) > parameters.maxBallLostTime + (getPlayerInfo().playerNumber==getRoleDecisionModel().firstStriker?parameters.strikerBonusTime:0.0)));
 
     // if i'm striker, i get a time bonus!
     // NOTE: ownTimeToBall can be negative if the robot is close to ball (!)

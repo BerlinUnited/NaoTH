@@ -67,5 +67,9 @@ namespace strategy("Strategy Symbols") {
 
   enum attack.action_type input attack.best_action;
 
+  /** the position of the opponents free kick; it is only valid if x != 0 && y != 0 */
+  float input freekick.pos.x;
+  float input freekick.pos.y;
+
 }
   

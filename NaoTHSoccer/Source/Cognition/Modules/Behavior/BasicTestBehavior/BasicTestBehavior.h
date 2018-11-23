@@ -34,7 +34,7 @@
 #include <Representations/Infrastructure/RemoteControlCommand.h>
 
 #include <Representations/Infrastructure/WhistlePercept.h>
-#include "Representations/Infrastructure/WhistleControl.h"
+#include "Representations/Infrastructure/AudioControl.h"
 
 // debug
 #include "Tools/Debug/DebugRequest.h"
@@ -66,7 +66,7 @@ BEGIN_DECLARE_MODULE(BasicTestBehavior)
   PROVIDE(SoundPlayData)
   PROVIDE(BehaviorLEDRequest)
   PROVIDE(BodyStatus)
-  PROVIDE(WhistleControl)
+  PROVIDE(AudioControl)
 END_DECLARE_MODULE(BasicTestBehavior)
 
 class BasicTestBehavior: public BasicTestBehaviorBase
