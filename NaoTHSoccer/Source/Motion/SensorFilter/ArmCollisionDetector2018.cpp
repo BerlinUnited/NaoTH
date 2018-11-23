@@ -129,22 +129,8 @@ void ArmCollisionDetector2018::execute()
 			getCollisionPercept().pointBufferLeft.push_back(getCollisionPercept().referenceHullLeft[i]);
 		}
 
-		getCollisionPercept().newHullLeft = convex_hull(getCollisionPercept().pointBufferLeft);
-    std::vector<Vector2d> test = ConvexHull::convexHull(getCollisionPercept().pointBufferLeft);
-
-    std::cout << std::scientific;
-    for(Vector2d p: getCollisionPercept().newHullLeft) {
-      std::cout << p.x << " " << p.y << std::endl;
-    }
-    std::cout << std::endl << std::endl << std::endl;
-
-    assert(test.front() == test.back());
-    assert(getCollisionPercept().newHullLeft.size() == test.size());
-    for(size_t i = 0; i < test.size(); ++i) {
-      assert(test[i] == getCollisionPercept().newHullLeft[i]);
-    }
-
-		//std::sort(getCollisionPercept().newHullLeft.begin(), getCollisionPercept().newHullLeft.end());
+		getCollisionPercept().newHullLeft = ConvexHull::convexHull(getCollisionPercept().pointBufferLeft);
+    
 		if (getCollisionPercept().newHullLeft == getCollisionPercept().referenceHullLeft)
 		{
 			//No Collision
@@ -169,14 +155,9 @@ void ArmCollisionDetector2018::execute()
 			getCollisionPercept().pointBufferRight.push_back(getCollisionPercept().referenceHullRight[i]);
 		}
 
-		getCollisionPercept().newHullRight = convex_hull(getCollisionPercept().pointBufferRight);
-    std::vector<Vector2d> test = ConvexHull::convexHull(getCollisionPercept().pointBufferLeft);
+		getCollisionPercept().newHullRight = ConvexHull::convexHull(getCollisionPercept().pointBufferRight);
 
-    for(size_t i = 0; i < test.size(); ++i) {
-      assert(test[i] == getCollisionPercept().newHullRight[i]);
-    }
 
-		//std::sort(getCollisionPercept().newHullRight.begin(), getCollisionPercept().newHullRight.end());
 		if (getCollisionPercept().newHullRight == getCollisionPercept().referenceHullRight)
 		{
 			//No Collision

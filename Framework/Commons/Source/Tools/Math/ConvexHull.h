@@ -78,6 +78,8 @@ namespace ConvexHull
       H[k++] = P[i];
     }
 
+	//NOTE: This Algorithm resiszes of the size k. The first and the last element are Equal. 
+	//Some algorithm implementations cut that last element off but we need it for the field polygon
     H.resize(k);
     return H;
   }
