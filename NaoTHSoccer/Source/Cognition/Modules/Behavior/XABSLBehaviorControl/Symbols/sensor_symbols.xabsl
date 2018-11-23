@@ -67,6 +67,6 @@ namespace sensor("Sensor Symbols") {
   bool input button.head.pressed.middle;
   bool input button.head.pressed.rear;
 
-  float output whistle.switch;
+  float output audio.switch;
 }
   

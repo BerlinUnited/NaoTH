@@ -68,4 +68,7 @@ namespace internal_symbols("Internal Symbols") {
 
   /** the time we are in play-state in ms*/
   float internal game.time_in_play;
+
+  /** the x or y coordinate which should be constant while moving */
+  float internal freekick_const_pos;
 }

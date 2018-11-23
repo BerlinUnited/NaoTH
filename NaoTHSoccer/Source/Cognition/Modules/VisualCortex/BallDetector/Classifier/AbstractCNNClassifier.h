@@ -11,6 +11,7 @@ public:
     virtual ~AbstractCNNClassifier(){}
 
     virtual bool classify(const BallCandidates::Patch& p) = 0;
+    virtual bool classify(const BallCandidates::PatchYUVClassified& p) = 0;
 
     virtual float getBallConfidence() = 0;
     virtual float getNoballConfidence() = 0;

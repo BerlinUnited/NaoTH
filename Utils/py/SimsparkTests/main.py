@@ -71,7 +71,8 @@ if __name__ == "__main__":
         for name in args.test:
             if name in Tests.functions:
                 try:
-                    exit_code += 1 if Tests.functions[name](args) else 0
+                    # the function should return True if the test was successful!
+                    exit_code += 0 if Tests.functions[name](args) else 1
                 except:
                     logging.error('An error occurred while executing test "%s"', name)
                     exit_code += 100

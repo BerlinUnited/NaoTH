@@ -25,7 +25,7 @@
 #include "Representations/Motion/CollisionPercept.h"
 
 #include <Representations/Infrastructure/ButtonData.h>
-#include <Representations/Infrastructure/WhistleControl.h>
+#include <Representations/Infrastructure/AudioControl.h>
 // tools
 #include "Tools/Math/Common.h"
 
@@ -43,7 +43,7 @@ BEGIN_DECLARE_MODULE(SensorSymbols)
   REQUIRE(ButtonData)
   REQUIRE(CollisionPercept)
 
-  PROVIDE(WhistleControl)
+  PROVIDE(AudioControl)
 END_DECLARE_MODULE(SensorSymbols)
 
 class SensorSymbols: public SensorSymbolsBase
@@ -94,8 +94,8 @@ private:
   static bool getButtonHeadFront();
   static bool getButtonHeadRear();
 
-  static double getWhistleSwitch();
-  static void setWhistleSwitch(double whistle);
+  static double getAudioSwitch();
+  static void setAudioSwitch(double whistle);
 
   static bool getCollisionArmLeft();
   static bool getCollisionArmRight();

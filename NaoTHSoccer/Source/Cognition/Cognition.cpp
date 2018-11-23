@@ -36,8 +36,10 @@
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
 #include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
 #include "Modules/Infrastructure/Camera/AdaptiveAutoExposure.h"
-#include "Modules/Infrastructure/WhistleDetector/WhistleDetectorConfigSetter.h"
+#include "Modules/Infrastructure/WhistleDetector/AudioConfigSetter.h"
 #include "Modules/Infrastructure/GameLogger/GameLogger.h"
+#include "Modules/Infrastructure/WhistleDetector/WhistleDetectorV1.h"
+#include "Modules/Infrastructure/WhistleDetector/WhistleDetectorV2.h"
 
 // perception
 #include "Modules/SelfAwareness/CameraMatrixFinder/CameraMatrixFinder.h"
@@ -58,8 +60,7 @@
 #include "Modules/VisualCortex/GoalDetector/GoalDetectorV2.h"
 #include "Modules/VisualCortex/GoalDetector/GoalCrossBarDetector.h"
 #include "Modules/VisualCortex/BallDetector/RedBallDetector.h"
-#include "Modules/VisualCortex/BallDetector/BallCandidateDetector.h"
-#include "Modules/VisualCortex/BallDetector/BallDetector.h"
+#include "Modules/VisualCortex/BallDetector/BallDetector2018.h"
 #include "Modules/VisualCortex/IntegralImageProvider.h"
 
 #include "Modules/SelfAwareness/FakeCameraMatrixFinder/FakeCameraMatrixFinder.h"
@@ -157,7 +158,9 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(CameraDebug);
   REGISTER_MODULE(CameraInfoSetter);
   REGISTER_MODULE(AdaptiveAutoExposure);
-  REGISTER_MODULE(WhistleDetectorConfigSetter);
+  REGISTER_MODULE(AudioConfigSetter);
+  REGISTER_MODULE(WhistleDetectorV1);
+  REGISTER_MODULE(WhistleDetectorV2);
 
   // perception
   REGISTER_MODULE(CameraMatrixFinder);
@@ -179,9 +182,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(GoalCrossBarDetector);
 
   REGISTER_MODULE(RedBallDetector);
-  REGISTER_MODULE(BallCandidateDetector);
-  REGISTER_MODULE(BallDetector);
-
+  REGISTER_MODULE(BallDetector2018);
+  
   REGISTER_MODULE(FakeCameraMatrixFinder);
   REGISTER_MODULE(FakeBallDetector);
 
