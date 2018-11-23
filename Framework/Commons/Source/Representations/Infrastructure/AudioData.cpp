@@ -39,7 +39,6 @@ void Serializer<AudioData>::serialize(const AudioData& representation, std::ostr
   msg.set_samplesize(sizeof(short));
   msg.set_timestamp(representation.timestamp);
   msg.set_samples((unsigned char*)representation.samples.data(), representation.samples.size()*sizeof(short));
-
   google::protobuf::io::OstreamOutputStream buf(&stream);
   msg.SerializeToZeroCopyStream(&buf);
 }

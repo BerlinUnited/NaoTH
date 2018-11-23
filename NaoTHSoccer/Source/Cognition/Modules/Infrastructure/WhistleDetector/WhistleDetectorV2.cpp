@@ -91,7 +91,7 @@ void WhistleDetectorV2::runDetection()
 
 	//stft.newData(audiobuffer, BUFFER_SIZE_RX, NUM_CHANNELS_RX);
   // NOTE: SAMPLE_OVERLAP_COUNT = 256
-	stft.newData(&(getAudioData().samples[0]), getAudioData().samples.size() /*- 256*getAudioData().numChannels*/, (short)getAudioData().numChannels);
+    stft.newData(&(getAudioData().samples[0]), static_cast<int>(getAudioData().samples.size()) /*- 256*getAudioData().numChannels*/, (short)getAudioData().numChannels);
 
 
   PLOT("WhistleDetectorV2:whistleCounter", spectrumHandler->whistleCounterGlobal);
@@ -102,8 +102,8 @@ void WhistleDetectorV2::runDetection()
   spectrumHandler->filter_value = 0.0;
 
   for(size_t x = 0; x < spectrumHandler->scan_log.size(); ++x) {
-    PLOT_GENERIC("WhistleDetectorV2:scan", x, spectrumHandler->scan_log[x]);
-    PLOT_GENERIC("WhistleDetectorV2:thresh", x, spectrumHandler->scan_thc[x]);
+    PLOT_GENERIC("WhistleDetectorV2:scan",   static_cast<int>(x), spectrumHandler->scan_log[x]);
+    PLOT_GENERIC("WhistleDetectorV2:thresh", static_cast<int>(x), spectrumHandler->scan_thc[x]);
   }
   spectrumHandler->scan_log.clear();
   spectrumHandler->scan_thc.clear();
@@ -122,7 +122,7 @@ void WhistleDetectorV2::runDetectionNew()
   whistle_filter.setParameter(params.whistle_filter.g0, params.whistle_filter.g1);
 
   static int iInput = 0;
-  const int length = getAudioData().samples.size();// - 256*getAudioData().numChannels; // due to a bug in overlay
+  const int length = static_cast<int>(getAudioData().samples.size());// - 256*getAudioData().numChannels; // due to a bug in overlay
   const int channels = getAudioData().numChannels;
   const int offset = 0;
   const int windowTime = params.nWindowSize;

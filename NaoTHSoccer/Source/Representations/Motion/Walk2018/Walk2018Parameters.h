@@ -245,19 +245,43 @@ public:
   double ZMPOffsetYByCharacter;
 };
 
+class GeneralParameters : public ParameterList{
+    public:
+        GeneralParameters() : ParameterList("Walk_General")
+        {
+            PARAMETER_REGISTER(stiffness)     = 1.0;
+            PARAMETER_REGISTER(stiffnessArms) = 0.7;
+            PARAMETER_REGISTER(useArm) = true;
+
+            PARAMETER_REGISTER(hipRollSingleSupFactorLeft) = 0.6;
+            PARAMETER_REGISTER(hipRollSingleSupFactorRight) = 0.6;
+
+            syncWithConfig();
+        }
+
+        double stiffness;
+        double stiffnessArms;
+        bool   useArm;
+
+        // hip joint correction
+        double hipRollSingleSupFactorLeft;
+        double hipRollSingleSupFactorRight;
+};
+
 class Walk2018Parameters : public naoth::Printable
 {
 public:
     Walk2018Parameters(){
     }
 
-    FeetStabilizerParameters      feetStabilizerParams;
-    FootStepPlanner2018Parameters footStepPlanner2018Params;
+    FeetStabilizerParameters              feetStabilizerParams;
+    FootStepPlanner2018Parameters         footStepPlanner2018Params;
     FootTrajectoryGenerator2018Parameters footTrajectoryGenerator2018Params;
-    HipRotationOffsetModifierParameters hipRotationOffsetModifierParams;
-    LiftingFootCompensatorParameters liftingFootCompensatorParams;
-    TorsoRotationStabilizerParameters torsoRotationStabilizerParams;
-    ZMPPlanner2018Parameters zmpPlanner2018Params;
+    HipRotationOffsetModifierParameters   hipRotationOffsetModifierParams;
+    LiftingFootCompensatorParameters      liftingFootCompensatorParams;
+    TorsoRotationStabilizerParameters     torsoRotationStabilizerParams;
+    ZMPPlanner2018Parameters              zmpPlanner2018Params;
+    GeneralParameters                     generalParams;
 
     void init(DebugParameterList& dbpl){
         dbpl.add(&feetStabilizerParams);
@@ -267,6 +291,7 @@ public:
         dbpl.add(&liftingFootCompensatorParams);
         dbpl.add(&torsoRotationStabilizerParams);
         dbpl.add(&zmpPlanner2018Params);
+        dbpl.add(&generalParams);
     }
 
     void remove(DebugParameterList& dbpl){
@@ -277,6 +302,7 @@ public:
         dbpl.remove(&liftingFootCompensatorParams);
         dbpl.remove(&torsoRotationStabilizerParams);
         dbpl.remove(&zmpPlanner2018Params);
+        dbpl.remove(&generalParams);
     }
 
     virtual void print(std::ostream& /*stream*/) const
@@ -295,4 +321,4 @@ public:
 //  };
 //}
 
-#endif // __WALK_2018_Parameters_H_
+#endif // _WALK_2018_Parameters_H_
