@@ -22,6 +22,7 @@
 #include "Representations/Perception/BallCandidates.h"
 #include "Representations/Perception/MultiBallPercept.h"
 
+#include <Representations/Infrastructure/AudioData.h>
 #include "Representations/Infrastructure/WhistlePercept.h"
 
 // tools
@@ -53,6 +54,8 @@ BEGIN_DECLARE_MODULE(GameLogger)
   REQUIRE(ScanLineEdgelPerceptTop)
   REQUIRE(BodyStatus)
 
+  REQUIRE(AudioData)
+
   REQUIRE(MultiBallPercept)
 
   REQUIRE(BallCandidates)
@@ -76,6 +79,7 @@ private:
   {
     Parameters() : ParameterList("GameLogger")
     {
+      PARAMETER_REGISTER(logAudioData) = false;
       PARAMETER_REGISTER(logBallCandidates) = false;
       PARAMETER_REGISTER(logBodyStatus) = false;
       PARAMETER_REGISTER(logPlainImages) = false;
@@ -83,6 +87,7 @@ private:
       syncWithConfig();
     }
 
+    bool logAudioData;
     bool logBallCandidates;
     bool logBodyStatus;
     bool logPlainImages;
@@ -102,6 +107,7 @@ private:
   PlayerInfo::RobotState oldState;
   bool firstRecording;
   int lastWhistleCounter;
+  unsigned long lastAudioDataTimestamp;
 
   CameraInfo::CameraID lastRecordedPlainImageID;
 };

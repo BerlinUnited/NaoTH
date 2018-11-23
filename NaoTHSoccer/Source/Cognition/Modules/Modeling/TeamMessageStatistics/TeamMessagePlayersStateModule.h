@@ -6,34 +6,34 @@
 #include "Tools/Debug/DebugParameterList.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Modeling/TeamMessage.h"
-#include "Representations/Modeling/TeamMessagePlayerIsAlive.h"
+#include "Representations/Modeling/TeamMessagePlayersState.h"
 #include "Representations/Modeling/TeamMessageStatistics.h"
 
 
-BEGIN_DECLARE_MODULE(TeamMessagePlayerIsAliveModule)
+BEGIN_DECLARE_MODULE(TeamMessagePlayersStateModule)
   REQUIRE(TeamMessage)
   REQUIRE(FrameInfo)
   REQUIRE(TeamMessageStatistics)
 
   PROVIDE(DebugParameterList)
-  PROVIDE(TeamMessagePlayerIsAlive)
-END_DECLARE_MODULE(TeamMessagePlayerIsAliveModule)
+  PROVIDE(TeamMessagePlayersState)
+END_DECLARE_MODULE(TeamMessagePlayersStateModule)
 
 
-class TeamMessagePlayerIsAliveModule : public TeamMessagePlayerIsAliveModuleBase
+class TeamMessagePlayersStateModule : public TeamMessagePlayersStateModuleBase
 {
 public:
     /**
      * @brief Constructor, registers the paramters for this module.
      */
-    TeamMessagePlayerIsAliveModule() {
+    TeamMessagePlayersStateModule() {
         getDebugParameterList().add(&params);
     }
 
     /**
      * @brief Destructor, unregisters the paramters for this module.
      */
-    virtual ~TeamMessagePlayerIsAliveModule() {
+    virtual ~TeamMessagePlayersStateModule() {
         getDebugParameterList().remove(&params);
     }
 
@@ -44,29 +44,34 @@ public:
      * @see messageIndicator(), messageLastReceived(), messageSimple()
      */
     virtual void execute() {
+        // Dead or Alive
         switch (params.calculationMethod) {
             case 0:
                 // determine 'dead' status based on last msg received
-                calc(&TeamMessagePlayerIsAliveModule::messageLastReceived);
+                calc(&TeamMessagePlayersStateModule::messageLastReceived);
                 break;
             case 1:
                 // calc based on msg indicator
-                calc(&TeamMessagePlayerIsAliveModule::messageIndicator);
+                calc(&TeamMessagePlayersStateModule::messageIndicator);
                 break;
             default:
                 // if we got a message, the robot isn't 'dead'
-                calc(&TeamMessagePlayerIsAliveModule::messageSimple);
+                calc(&TeamMessagePlayersStateModule::messageSimple);
                 break;
         }
+        // Active
+        determineActiveStates();
+        // is playing?
+        determinePlayingStates();
     }
 
 private:
     /**
      * @brief Determines the 'dead/alive' status for each player we received a message from.
      */
-    void calc(bool (TeamMessagePlayerIsAliveModule::*func)(const TeamMessageData&) const) {
+    void calc(bool (TeamMessagePlayersStateModule::*func)(const TeamMessageData&) const) {
         for(const auto& it : getTeamMessage().data) {
-            getTeamMessagePlayerIsAlive().data[it.first] = (this->*func)(it.second);
+            getTeamMessagePlayersState().data[it.first].alive = (this->*func)(it.second);
         }
     }
 
@@ -110,6 +115,29 @@ private:
     bool messageSimple(const TeamMessageData& data) const {
         // HACK: prevent 'unused-parameter' warning
         return &data == &data;
+    }
+
+    /**
+     * @brief Determines the 'active' state of the players.
+     *        A player is 'active', if he's alive, playing on the field and not penalized
+     *        (or in an other state other than 'playing').
+     */
+    void determineActiveStates() {
+        for(const auto& it : getTeamMessage().data) {
+            getTeamMessagePlayersState().data[it.first].active = it.second.custom.robotState == PlayerInfo::playing
+                                                          && getTeamMessagePlayersState().isAlive(it.first);
+        }
+    }
+
+    /**
+     * @brief Determines the 'playing' state of the players.
+     *        A player is currently 'playing', if he's not fallen.
+     *        There could be other indicators, like de-localised robots.
+     */
+    void determinePlayingStates() {
+        for(const auto& it : getTeamMessage().data) {
+            getTeamMessagePlayersState().data[it.first].playing = !it.second.fallen;
+        }
     }
 
     /** The parameter struct holding the parameters. */

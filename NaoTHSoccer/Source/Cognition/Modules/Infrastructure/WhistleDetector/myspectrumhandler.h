@@ -6,7 +6,7 @@
 //#include "SharedMemoryIO.h"
 
 #include <iostream>
-
+#include <vector>
 
 class MySpectrumHandler : public SpectrumHandler
 {
@@ -26,7 +26,7 @@ public:
 	nWhistleOkayFrames(nWhistleOkayFrames)
   {  }
 
-  void calcMeanDeviation(const double *data, int length, double &mean, double &dev) {
+  void calcMeanDeviationApprox(const double *data, int length, double &mean, double &dev) {
       mean = dev = 0;
       for(int i = 0; i < length; ++i) {
           mean    += data[i];
@@ -37,22 +37,50 @@ public:
       mean /= length;
   }
 
+  void calcMeanDeviation(const double *data, int length, double &mean, double &dev) {
+      mean = dev = 0;
+
+      double n = 0.0;
+      double M2 = 0.0;
+
+      for(int i = 0; i < length; ++i) 
+      {
+        ++n;
+        double delta = data[i] - mean;
+        mean += delta/n;
+        M2 += delta*(data[i] - mean);
+      }
+
+      if(n < 2) {
+        return;
+      }
+
+      dev = std::sqrt(M2 / (n-1));
+  }
+
   virtual void handle(const double *spectrum, int length)
   {
     double mean, dev;
-    calcMeanDeviation(spectrum, length, mean, dev);
+    calcMeanDeviationApprox(spectrum, length, mean, dev);
 
     bool found;
     const double whistleThresh = mean + vWhistleThreshold * dev;
     found = false;
 
     int i;
+    double max_value = -1;
     for(i = nWhistleBegin; i < nWhistleEnd; ++i) {
+      if(spectrum[i] > max_value) {
+        max_value = spectrum[i];
+      }
       if(spectrum[i] > whistleThresh) {
         found = true;
         break;
       }
     }
+
+    scan_thc.push_back(whistleThresh);
+    scan_log.push_back(max_value);
 
     if(whistleDone) {
       if(!found) {
@@ -70,7 +98,9 @@ public:
         ++whistleCounter;
         ++whistleCounterGlobal;
         whistleMissCounter = 0;
-      } else {
+      } 
+      else 
+      {
         if(whistleCounter > 0) {
           ++whistleMissCounter;
           if(whistleMissCounter > nWhistleMissFrames) {
@@ -85,6 +115,7 @@ public:
       if(whistleCounter >= nWhistleOkayFrames) {
 		//TODO increment the whistle heard counter!!!
         std::cout << "  !!! Cool Whistle heard !!!" << std::endl;
+        whistleDetections++;
 
         whistleCounter = 0;
         whistleMissCounter = 0;
@@ -107,6 +138,12 @@ public:
   unsigned whistleCounter = 0; 
   unsigned whistleMissCounter = 0;
   unsigned whistleDone = false;
+
+  std::vector<double> scan_log;
+  std::vector<double> scan_thc;
+  double filter_value = 0;
+
+  unsigned whistleDetections = 0;
 };
 
 #endif // MYSPECTRUMHANDLER

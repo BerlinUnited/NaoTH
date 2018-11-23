@@ -15,7 +15,7 @@
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/RoleDecisionModel.h"
 #include "Representations/Modeling/SoccerStrategy.h"
-#include "Representations/Modeling/TeamMessagePlayerIsAlive.h"
+#include "Representations/Modeling/TeamMessagePlayersState.h"
 #include "Representations/Modeling/TeamBallModel.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/BallModel.h"
@@ -37,7 +37,7 @@ BEGIN_DECLARE_MODULE(CleanRoleDecision)
   REQUIRE(PlayerInfo)
   REQUIRE(SoccerStrategy)
   REQUIRE(TeamMessage)
-  REQUIRE(TeamMessagePlayerIsAlive)
+  REQUIRE(TeamMessagePlayersState)
   REQUIRE(BodyState)
   REQUIRE(BallModel)
   REQUIRE(TeamBallModel)

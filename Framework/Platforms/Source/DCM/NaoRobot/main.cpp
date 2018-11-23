@@ -23,13 +23,13 @@ using namespace naoth;
 
 std::atomic_int framesSinceCognitionLastSeen;
 
-void got_signal(int t)
+void got_signal(int sigid)
 {
 
-  if(t == SIGTERM || t == SIGINT) {
-    std::cout << "shutdown requested by kill signal" << t << std::endl;
+  if(sigid == SIGTERM || sigid == SIGINT) {
+    std::cout << "shutdown requested by kill signal" << sigid << std::endl;
   } 
-  else if(t == SIGSEGV) 
+  else if(sigid == SIGSEGV) 
   {
     std::cerr << "SEGMENTATION FAULT" << std::endl;
     
@@ -41,12 +41,17 @@ void got_signal(int t)
     sync();
     std::cout << " finished." << std::endl;
   } else {
-    std::cerr << "caught unknown signal " << t << std::endl;
+    std::cerr << "caught unknown signal " << sigid << std::endl;
   }
 
   system("/usr/bin/paplay Media/naoth_stop.wav");
   
-  exit(0);
+  // set the default handler for the signal
+  signal(sigid, SIG_DFL);
+  //resend the signal to yourself
+  kill(getpid(), sigid);
+
+  //exit(0);
 }//end got_signal
 
 
