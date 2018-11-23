@@ -12,26 +12,35 @@ public:
     double error;
 
 protected:
-    double lambda;
     double init_lambda;
+    double lambda;
+    double v;
+    double max_step_size;
     bool   failed;
+
+private:
+    bool enforce_reduction; // this is GN specific because a reduction isn't enforced by the algorithm itself
 
 public:
     GaussNewtonMinimizer():
         error(0),
-        init_lambda(0.005),
-        failed(false)
-    {
-        lambda = init_lambda;
-    }
+        init_lambda(1),
+        lambda(init_lambda),
+        v(1.25),
+        max_step_size(0.005),
+        failed(false),
+        enforce_reduction(false)
+    {}
 
-    GaussNewtonMinimizer(double init_lambda):
+    GaussNewtonMinimizer(double init_lambda, double v, double max_step_size, bool enforce_reduction):
         error(0),
         init_lambda(init_lambda),
-        failed(false)
-    {
-        lambda = init_lambda;
-    }
+        lambda(init_lambda),
+        v(v),
+        max_step_size(max_step_size),
+        failed(false),
+        enforce_reduction(enforce_reduction)
+    {}
 
     virtual std::string getName() {
         return "Gauss-Newton";
@@ -48,12 +57,10 @@ public:
     }
 
     virtual bool minimizeOneStep(const ErrorFunction& errorFunction, const T& x, const T& epsilon, T& offset){
-
         Eigen::MatrixXd J = determineJacobian(errorFunction, x, epsilon);
-
         Eigen::VectorXd r = errorFunction(x);
 
-        error = r.transpose() * r;
+        double current_error = r.transpose() * r;
 
         auto a = (J.transpose() * J).colPivHouseholderQr().solve(-J.transpose() * r).eval();
 
@@ -64,8 +71,22 @@ public:
 
         offset = mapOffsetToXDims(epsilon, a);
 
-        if (offset.norm() > lambda) {
-            offset = offset.normalized()*lambda;
+        if (max_step_size > 0 && offset.norm() > max_step_size) {
+            offset = offset.normalized()*max_step_size;
+        }
+
+        if(enforce_reduction){
+            offset *= lambda;
+            r = errorFunction(x+offset);
+            error = r.transpose() * r;
+            if(error > current_error){
+                lambda /= v;
+                return false;
+            } else {
+                lambda = init_lambda;
+            }
+        } else {
+            error = current_error;
         }
 
         return true;
@@ -119,26 +140,17 @@ protected:
 template<class ErrorFunction, class T>
 class LevenbergMarquardtMinimizer : public GaussNewtonMinimizer<ErrorFunction, T>
 {
-protected:
-    double init_v;
-    double v;
-
-
 // (optional) TODO: stopping criteria || J*r || < eps1, || offset || < eps2 * x, iter > iter_max
 public:
     LevenbergMarquardtMinimizer():
-        GaussNewtonMinimizer<ErrorFunction, T>(1),
-        init_v(2)
+        GaussNewtonMinimizer<ErrorFunction, T>(1, 2, -1.0, false)
     {
-        v = init_v;
     }
 
     // init_lambda: > 0, the smaller this value the more we believe that we are already close to the optimum (closeness)
-    LevenbergMarquardtMinimizer(double init_lambda):
-        GaussNewtonMinimizer<ErrorFunction, T>(init_lambda),
-        init_v(2)
+    LevenbergMarquardtMinimizer(double init_lambda, double v, double max_step_size):
+        GaussNewtonMinimizer<ErrorFunction, T>(init_lambda, v, max_step_size, false)
     {
-        v = init_v;
     }
 
     virtual std::string getName() {
@@ -147,7 +159,6 @@ public:
 
     virtual void reset(){
         GaussNewtonMinimizer<ErrorFunction, T>::reset();
-        v      = init_v;
     }
 
     virtual bool minimizeOneStep(const ErrorFunction& errorFunction, const T& x, const T& epsilon, T& offset)
@@ -159,7 +170,7 @@ public:
         this->error = r.transpose() * r;
 
         auto a = (JtJ + this->lambda   * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r).eval();
-        auto b = (JtJ + this->lambda/v * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r).eval();
+        auto b = (JtJ + this->lambda/this->v * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r).eval();
 
         if(a.hasNaN() || b.hasNaN()){
             this->failed = true;
@@ -177,15 +188,21 @@ public:
 
         if(e_r_o1 > this->error && e_r_o2 > this->error)
         {
-            this->lambda *= v; // didn't get a better result so increase damping and retry
+            this->lambda *= this->v; // didn't get a better result so increase damping and retry
         } else if(e_r_o1 > e_r_o2) {
-            this->lambda /= v; // got better result with decreased damping
+            this->lambda /= this->v; // got better result with decreased damping
             this->error = e_r_o2;
             offset = offset2;
+            if (this->max_step_size > 0 && offset.norm() > this->max_step_size) {
+                offset = offset.normalized()*this->max_step_size;
+            }
             return true;
         } else {
             this->error = e_r_o1;
             offset = offset1;
+            if (this->max_step_size > 0 && offset.norm() > this->max_step_size) {
+                offset = offset.normalized()*this->max_step_size;
+            }
             return true; // got better result with current damping
         }
 
@@ -198,6 +215,8 @@ template<class ErrorFunction, class T>
 class LevenbergMarquardtMinimizer2 : public LevenbergMarquardtMinimizer<ErrorFunction, T>
 {
 protected:
+    double init_v;
+
     const double beta;
     const double gamma;
     const double p;
@@ -206,14 +225,16 @@ protected:
 public:
     LevenbergMarquardtMinimizer2():
         LevenbergMarquardtMinimizer<ErrorFunction, T>(),
+        init_v(2),
         beta(2),
         gamma(2),
         p(3)
     {}
 
     // init_lambda: > 0, the smaller this value the more we believe that we are already close to the optimum (closeness)
-    LevenbergMarquardtMinimizer2(double init_lambda, double beta, double gamma, double p):
-        LevenbergMarquardtMinimizer<ErrorFunction, T>(init_lambda),
+    LevenbergMarquardtMinimizer2(double init_lambda, double init_v, double max_step_size, double beta, double gamma, double p):
+        LevenbergMarquardtMinimizer<ErrorFunction, T>(init_lambda, init_v, max_step_size),
+        init_v(init_v),
         beta(beta),
         gamma(gamma),
         p(p)
@@ -248,6 +269,11 @@ public:
         if(g>0) {
             this->lambda *= std::max(1/gamma, 1-(beta-1)*std::pow(2*g-1,p)); // update strategy with beta = v = gamma = 2, p =3
             this->v = beta;
+
+            if (this->max_step_size > 0 && offset.norm() > this->max_step_size) {
+                offset = offset.normalized()*this->max_step_size;
+            }
+
             return true;
         } else {
             this->lambda *= this->v;
@@ -255,6 +281,11 @@ public:
         }
 
         return false;
+    }
+
+    virtual void reset(){
+        LevenbergMarquardtMinimizer<ErrorFunction, T>::reset();
+        this->v = init_v;
     }
 };
 
