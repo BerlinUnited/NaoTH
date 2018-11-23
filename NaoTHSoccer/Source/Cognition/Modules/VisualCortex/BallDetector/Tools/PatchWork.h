@@ -21,12 +21,12 @@ public:
 
   static void subsampling(const naoth::Image& image, BallCandidates::Patch& target) {
     ASSERT(target.data.size() == target.size()*target.size());
-    subsampling(image, target.data, target.min.x, target.min.y, target.max.x, target.max.y, target.size());
+    subsampling(image, target.data, target.min.x, target.min.y, target.max.x, target.max.y, static_cast<int>(target.size()));
   }
 
   static void subsampling(const naoth::Image& image, const FieldColorPercept& fielColorPercept, BallCandidates::PatchYUVClassified& target) {
     ASSERT(target.data.size() == target.size()*target.size());
-    subsampling(image, fielColorPercept, target.data, target.min.x, target.min.y, target.max.x, target.max.y, target.size());
+    subsampling(image, fielColorPercept, target.data, target.min.x, target.min.y, target.max.x, target.max.y, static_cast<int>(target.size()));
   }
 
   static void multiplyBrightness(double factor, std::vector<unsigned char>& patch);
