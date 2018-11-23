@@ -116,32 +116,37 @@ namespace naoth
       int lastSampleRate;
       for (size_t i = 0; i < tracks.size(); i++)
       {
-        std::stringstream stLine(tracks[i]);
-        std::string field;
-        while (!stLine.eof())
+        std::string rate;
+        if (extractField(tracks[i], "rate", rate, 0) != string::npos)
         {
-          if (stLine >> field)
+          sampleRate_ = static_cast<unsigned short>(strtol(rate.c_str(), 0, 10));
+          if (i > 0 && lastSampleRate != sampleRate_)
           {
-            if (field.find("rate") != string::npos)
-            {
-              std::string r = field.substr(6, field.length() - 3);
-              sampleRate_ = (unsigned short)strtol(r.c_str(), 0, 10);
-              if (i > 0 && lastSampleRate != sampleRate_)
-              {
-                std::cerr << "[RawAudioFilePlayer] Tracks habe different rate settings !" << std::endl;
-                assert(false);
-              }
-              lastSampleRate = sampleRate_;
-            }
+            std::cerr << "[RawAudioFilePlayer] Tracks have different rate settings !" << std::endl;
+            assert(false);
           }
+          lastSampleRate = sampleRate_;
         }
       }
     }
     std::cout << "[RawAudioFilePlayer] audio channels " << numChannels_ << " sample rate " << sampleRate_ << std::endl;
   }
 
-	void RawAudioFilePlayer::get(AudioData& data)
-	{
+  size_t RawAudioFilePlayer::extractField(const std::string& line, const std::string name, std::string& value, const size_t start)
+  {
+    size_t pos = line.find(name + "=");
+    if (pos != string::npos)
+    {
+      size_t posB = line.find("\"", pos + name.length());
+      size_t posE = line.find("\"", posB + 1);
+      value = line.substr(posB + 1, posE - posB - 1);
+      return posE + 1;
+    }
+    return string::npos;
+  }	
+  
+  void RawAudioFilePlayer::get(AudioData& data)
+  {
     if (ready)
     {
       readingTimestamp = NaoTime::getNaoTimeInMilliSeconds();
@@ -168,7 +173,7 @@ namespace naoth
           data.timestamp = readingTimestamp;
         }
       }
-	  }
+    }
   } // end RawAudioFilePlayer::get
 
 
