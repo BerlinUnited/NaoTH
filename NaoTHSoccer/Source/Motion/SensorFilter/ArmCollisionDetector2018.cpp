@@ -13,13 +13,22 @@ ArmCollisionDetector2018::ArmCollisionDetector2018()
 	DEBUG_REQUEST_REGISTER("Motion:ArmCollisionDetector2018:showRightBuffer", "", false);
 
 	getDebugParameterList().add(&params);
-
-	std::string line;
-
+	double alpha, beta;
 	const std::string& dirlocation = Platform::getInstance().theConfigDirectory;
-	//Left point config
-	std::cout << dirlocation + params.point_configLeft << std::endl;
+
 	std::ifstream fileLeft(dirlocation + params.point_configLeft);
+	while (fileLeft>>alpha>>beta) {
+		getCollisionPercept().referenceHullLeft.emplace_back(alpha, beta);
+	}
+	fileLeft.close();
+
+	std::ifstream fileRight(dirlocation + params.point_configRight);
+	while (fileRight >> alpha >> beta) {
+		getCollisionPercept().referenceHullRight.emplace_back(alpha, beta);
+	}
+	fileRight.close();
+
+	/*
 	if (fileLeft.is_open() && fileLeft.good())
 	{
 		while (std::getline(fileLeft, line))
@@ -48,7 +57,7 @@ ArmCollisionDetector2018::ArmCollisionDetector2018()
 		}
 	}
   fileRight.close();
-
+  */
   // 
   getCollisionPercept().referenceHullLeft = ConvexHull::convexHull(getCollisionPercept().referenceHullLeft);
   getCollisionPercept().referenceHullRight = ConvexHull::convexHull(getCollisionPercept().referenceHullRight);
@@ -64,10 +73,6 @@ ArmCollisionDetector2018::~ArmCollisionDetector2018()
 
 void ArmCollisionDetector2018::execute()
 {
-  PLOT_GENERIC("ArmCollisionDetector2018:test", 0, 0);
-  PLOT_GENERIC("ArmCollisionDetector2018:test", 1, 1);
-  PLOT_GENERIC("ArmCollisionDetector2018:test", 2, -1);
-
 	DEBUG_REQUEST("Motion:ArmCollisionDetector2018:showReferenceHull",
 		for (size_t i = 0; i <getCollisionPercept().referenceHullLeft.size(); i++){
 			PLOT_GENERIC("ArmCollisionDetector2018:referenceHull", getCollisionPercept().referenceHullLeft[i].x, getCollisionPercept().referenceHullLeft[i].y);
