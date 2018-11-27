@@ -2,9 +2,10 @@
 package de.naoth.rc.drawings;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class DrawingFactory 
@@ -51,18 +52,10 @@ public class DrawingFactory
           return (Drawable)drawing;
         }
       }
-      catch(ArrayIndexOutOfBoundsException e)
-      {
-        System.out.println("ERROR: DebugDrawingManager: " + String.join(":", tokens));
+      catch(Exception ex) {
+          Logger.getLogger(DrawingFactory.class.getName()).log(Level.SEVERE, 
+            "ERROR: Could not create a drawing: " + String.join(":", tokens), ex);
       }
-      catch(ClassNotFoundException e)
-      {
-        System.out.println("ERROR: DebugDrawingManager: no such drawing: " + String.join(":", tokens));
-      }
-      catch(NoSuchMethodException e){}
-      catch(InstantiationException e){}
-      catch(IllegalAccessException e){}
-      catch(InvocationTargetException e){}
 
       return null;
     }
