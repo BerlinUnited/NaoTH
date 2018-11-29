@@ -5,6 +5,7 @@ import de.naoth.rc.messages.Messages.CMD;
 import de.naoth.rc.messages.Messages.CMDArg;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.AsynchronousCloseException;
@@ -13,7 +14,6 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +68,8 @@ public class MessageServer extends AbstractMessageServer {
     // heart beat sent in fixed intervals
     private long timeOfLastHeartBeat = System.currentTimeMillis();
 
+    private final int connectionTimeout = 1000;
+    
     public MessageServer() {
         this.socketChannel = null;
         this.receivedBytes = 0;
@@ -91,7 +93,7 @@ public class MessageServer extends AbstractMessageServer {
             this.socketChannel.configureBlocking(true);
 
             //this.socketChannel.connect(address);
-            this.socketChannel.socket().connect(address, 1000);
+            this.socketChannel.socket().connect(address, this.connectionTimeout);
 
             this.scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
             this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
@@ -102,11 +104,17 @@ public class MessageServer extends AbstractMessageServer {
             }, 0, updateIntervall, TimeUnit.MILLISECONDS);
 
             this.fireConnected(this.address);
+            
+            return true;
+        } catch (SocketTimeoutException ex) {
+            //e.printStackTrace(System.err);
+            fireDisconnected(String.format("Connection atttimed out. Robot didn't respond after %d ms.", connectionTimeout));
         } catch (IOException e) {
+            //e.printStackTrace(System.err);
             fireDisconnected(e.getLocalizedMessage());
-            return false;
         }
-        return true;
+        
+        return false;
     }//end connect
 
     public boolean reconnect() {
