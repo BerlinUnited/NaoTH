@@ -18,7 +18,11 @@ CleanRoleDecision::CleanRoleDecision()
 {
   getDebugParameterList().add(&parameters);
 
-  DEBUG_REQUEST_REGISTER("RoleDecision:min_ball_distance", "draws the circle of the min. ball distance to be recognized as different balls between first/second striker.", false);
+  DEBUG_REQUEST_REGISTER(
+    "RoleDecision:min_ball_distance",
+    "Draws the distance in which the balls of the first and second striker are recognized as identical (only with strikerSelection = 3).",
+    false
+  );
 }
 
 CleanRoleDecision::~CleanRoleDecision()
@@ -179,7 +183,7 @@ void CleanRoleDecision::strikerSelectionByTimeExceptGoalieWithBallCompare(std::m
         // is current player clearly faster?
         if(it->second < stFastest && (it->second + parameters.strikerSelectionDiffThreshold) < stFastest && getRoleDecisionModel().firstStriker != 1) {
             // is there already a "fastest" striker ... but the current player is faster
-            if(getRoleDecisionModel().firstStriker != std::numeric_limits<unsigned int>::max() && isSecondStrikerDifferentFromFirst(getRoleDecisionModel().firstStriker, it->first)) {
+            if(getRoleDecisionModel().firstStriker != std::numeric_limits<unsigned int>::max() && isSecondStrikerDifferentFromFirst(it->first, getRoleDecisionModel().firstStriker)) {
                 // make the previous player the "second fastest" player, if they see different balls
                 getRoleDecisionModel().secondStriker = getRoleDecisionModel().firstStriker;
                 ndFastest = stFastest;
@@ -187,7 +191,10 @@ void CleanRoleDecision::strikerSelectionByTimeExceptGoalieWithBallCompare(std::m
             // set the fastest player
             getRoleDecisionModel().firstStriker = it->first;
             stFastest = it->second;
-        } else if (it->second < ndFastest && (it->second + parameters.strikerSelectionDiffThreshold) < ndFastest && isSecondStrikerDifferentFromFirst(getRoleDecisionModel().firstStriker, it->first)) {
+        } else if (it->second < ndFastest
+                   && (it->second + parameters.strikerSelectionDiffThreshold) < ndFastest
+                   && isSecondStrikerDifferentFromFirst(getRoleDecisionModel().firstStriker, it->first))
+        {
             // make the previous player the "second fastest" player, if they see different balls
             getRoleDecisionModel().secondStriker = it->first;
             ndFastest = it->second;
@@ -213,7 +220,8 @@ bool CleanRoleDecision::isSecondStrikerDifferentFromFirst(unsigned int firstNumb
       FIELD_DRAWING_CONTEXT;
       PEN("000000", 30);
       CIRCLE(firstBall.x, firstBall.y, r);
-      TEXT_DRAWING(firstBall.x, firstBall.y, secondNumber);
+      TEXT_DRAWING(firstBall.x, firstBall.y+60, secondNumber);
+      TEXT_DRAWING(firstBall.x, firstBall.y-60, r);
     );
 
     return ((firstBall - secondBall).abs2() > r*r);
