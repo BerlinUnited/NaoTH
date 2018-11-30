@@ -9,6 +9,9 @@
 #define _Polygon_H_
 
 #include "Tools/DataStructures/Area.h"
+
+#include "ConvexHull.h"
+
 #include <vector>
 
 namespace Math {
@@ -41,12 +44,21 @@ class Polygon: public Area<T>
 
   public:
     Polygon() {}
-    virtual ~Polygon(){}
+
+    Polygon(const std::vector<Vector2<T> >& point_set) {
+      makeFromPointSet(point_set);
+    }
+
+    virtual ~Polygon() {}
     
     //returns the Area surounded by the Polygon defined by the points in the list
     //in their respective order
     double getArea() const {
       return getArea(points);
+    }
+
+    void makeFromPointSet(const std::vector<Vector2<T> >& point_set) {
+      ConvexHull::convexHull(point_set, points);
     }
 
     template <typename P>
