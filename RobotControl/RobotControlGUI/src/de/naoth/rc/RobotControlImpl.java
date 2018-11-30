@@ -262,6 +262,7 @@ public class RobotControlImpl extends javax.swing.JFrame
   {
     if(enforceConnection.isSelected() && !messageServer.isConnected())
     {
+      // NOTE: this call will block until the dialog is closed
       connectionDialog.setVisible(true);
       return messageServer.isConnected();
     }
