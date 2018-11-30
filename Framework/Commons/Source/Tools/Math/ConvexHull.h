@@ -72,9 +72,9 @@ namespace ConvexHull
     }
 
     // Build upper hull
-    for (size_t i = points.size()-2, t = k+1; i >= 0; i--){
-      while (k >= t && cross(result[k-2], result[k-1], points[i]) <= 0) k--;
-      result[k++] = points[i];
+    for (size_t i = points.size()-1, t = k+1; i > 0; i--) {
+      while (k >= t && cross(result[k-2], result[k-1], points[i-1]) <= 0) k--;
+      result[k++] = points[i-1];
     }
 
     // NOTE: This Algorithm resiszes of the size k. The first and the last element are Equal. 
