@@ -118,7 +118,7 @@ void ArmCollisionDetector2018::execute()
 		{
       //collision
       getCollisionPercept().timeCollisionArmLeft = getFrameInfo().getTime();
-			std::cout << "[ArmCollisionDetector2018] Collision detected!" << std::endl;
+			//std::cout << "[ArmCollisionDetector2018] Collision detected!" << std::endl;
 		}
 	}
 
@@ -132,7 +132,7 @@ void ArmCollisionDetector2018::execute()
     {
 			//collision
       getCollisionPercept().timeCollisionArmRight = getFrameInfo().getTime();
-			std::cout << "[ArmCollisionDetector2018] Collision detected!" << std::endl;
+			//std::cout << "[ArmCollisionDetector2018] Collision detected!" << std::endl;
 		}
 	}
 
