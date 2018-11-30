@@ -64,6 +64,10 @@ ArmCollisionDetector2018::ArmCollisionDetector2018()
   getCollisionPercept().referenceHullLeft = ConvexHull::convexHull(getCollisionPercept().referenceHullLeft);
   getCollisionPercept().referenceHullRight = ConvexHull::convexHull(getCollisionPercept().referenceHullRight);
 
+  // test for the new make-method
+  refpolyL.makeFromPointSet(getCollisionPercept().referenceHullLeft);
+  refpolyR.makeFromPointSet(getCollisionPercept().referenceHullRight);
+  
   /*
   for (size_t i = 0; i <getCollisionPercept().referenceHullLeft.size(); i++)
   {
@@ -109,7 +113,8 @@ void ArmCollisionDetector2018::execute()
 		double a = jointDataBufferLeft.first();
 		double b = getSensorJointData().position[JointData::LShoulderPitch];
 		double er = (b - a);
-		if (!Math::Polygon<double>::isInside(getCollisionPercept().referenceHullLeft, Vector2d(a, er)))
+		//if (!Math::Polygon<double>::isInside(getCollisionPercept().referenceHullLeft, Vector2d(a, er)))
+    if (!refpolyL.isInside(Vector2d(a, er)))
 		{
       //collision
       getCollisionPercept().timeCollisionArmLeft = getFrameInfo().getTime();
@@ -122,8 +127,9 @@ void ArmCollisionDetector2018::execute()
 		double a = jointDataBufferRight.first();
 		double b = getSensorJointData().position[JointData::RShoulderPitch];
 		double er = (b - a);
-		if (!Math::Polygon<double>::isInside(getCollisionPercept().referenceHullRight, Vector2d(a, er)))
-		{
+		//if (!Math::Polygon<double>::isInside(getCollisionPercept().referenceHullRight, Vector2d(a, er)))
+		if (!refpolyR.isInside(Vector2d(a, er)))
+    {
 			//collision
       getCollisionPercept().timeCollisionArmRight = getFrameInfo().getTime();
 			std::cout << "[ArmCollisionDetector2018] Collision detected!" << std::endl;

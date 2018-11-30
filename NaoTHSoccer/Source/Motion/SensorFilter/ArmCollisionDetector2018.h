@@ -12,7 +12,7 @@
 
 //Tools
 #include <Tools/Math/ConvexHull.h>
-//#include "Tools/Math/Polygon.h"
+#include "Tools/Math/Polygon.h"
 #include <Tools/DataStructures/RingBufferWithSum.h>
 #include <vector>
 #include <string>
@@ -72,8 +72,8 @@ private:
     //Private variablen wie zb ringbuffer zur MJD und SJD synchronisation
     RingBuffer<double, 4> jointDataBufferLeft;
     RingBuffer<double, 4> jointDataBufferRight;
-	//Math::Polygon<double> refpolyL;
-	//Math::Polygon<double> refpolyR;
+	Math::Polygon<double> refpolyL;
+	Math::Polygon<double> refpolyR;
 
 };
 
