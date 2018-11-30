@@ -4,6 +4,8 @@
 
 #include "ArmCollisionDetector2018.h"
 #include <PlatformInterface/Platform.h>
+#include "Tools/Math/Polygon.h"
+
 using namespace naoth;
 
 ArmCollisionDetector2018::ArmCollisionDetector2018()
@@ -61,6 +63,8 @@ ArmCollisionDetector2018::ArmCollisionDetector2018()
   */
   getCollisionPercept().referenceHullLeft = ConvexHull::convexHull(getCollisionPercept().referenceHullLeft);
   getCollisionPercept().referenceHullRight = ConvexHull::convexHull(getCollisionPercept().referenceHullRight);
+
+  /*
   for (size_t i = 0; i <getCollisionPercept().referenceHullLeft.size(); i++)
   {
 	  refpolyL.add(getCollisionPercept().referenceHullLeft[i]);
@@ -70,12 +74,14 @@ ArmCollisionDetector2018::ArmCollisionDetector2018()
   {
 	  refpolyR.add(getCollisionPercept().referenceHullRight[i]);
   }
+  */
 }
 
 ArmCollisionDetector2018::~ArmCollisionDetector2018()
 {
 	getDebugParameterList().remove(&params);
 }
+
 void ArmCollisionDetector2018::execute()
 {
 	//Check if robot is in a suitable situation to recognize collisions
@@ -94,19 +100,19 @@ void ArmCollisionDetector2018::execute()
 		return;
 	}
 
+  //collect Motorjoint Data and adjust timelag (Motor is 4 Frames ahead of Sensor)
+	jointDataBufferLeft.add(getMotorJointData().position[JointData::LShoulderPitch]);
+	jointDataBufferRight.add(getMotorJointData().position[JointData::RShoulderPitch]);
 
 	if (jointDataBufferLeft.isFull()) 
 	{
 		double a = jointDataBufferLeft.first();
 		double b = getSensorJointData().position[JointData::LShoulderPitch];
 		double er = (b - a);
-		if (refpolyL.isInside(Vector2<double>(a, er)))
+		if (!Math::Polygon<double>::isInside(getCollisionPercept().referenceHullLeft, Vector2d(a, er)))
 		{
-			//no collision
-		}
-		else
-		{
-			//collision
+      //collision
+      getCollisionPercept().timeCollisionArmLeft = getFrameInfo().getTime();
 			std::cout << "[ArmCollisionDetector2018] Collision detected!" << std::endl;
 		}
 	}
@@ -116,18 +122,13 @@ void ArmCollisionDetector2018::execute()
 		double a = jointDataBufferRight.first();
 		double b = getSensorJointData().position[JointData::RShoulderPitch];
 		double er = (b - a);
-		if (refpolyR.isInside(Vector2d(a, er)))
-		{
-			//no collision
-		}
-		else
+		if (!Math::Polygon<double>::isInside(getCollisionPercept().referenceHullRight, Vector2d(a, er)))
 		{
 			//collision
+      getCollisionPercept().timeCollisionArmRight = getFrameInfo().getTime();
 			std::cout << "[ArmCollisionDetector2018] Collision detected!" << std::endl;
 		}
 	}
-
-
 
 }
 /*
