@@ -2,6 +2,10 @@ package de.naoth.rc.dialogs.teamcommviewer;
 
 import de.naoth.rc.Helper;
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.components.gamecontroller.GameControllerEventListener;
+import de.naoth.rc.components.gamecontroller.GameControllerManager;
+import de.naoth.rc.components.gamecontroller.event.GameControllerConnectionEvent;
+import de.naoth.rc.components.gamecontroller.event.GameControllerDataEvent;
 import de.naoth.rc.components.teamcomm.TeamCommManager;
 import de.naoth.rc.components.teamcomm.TeamCommMessage;
 import de.naoth.rc.components.teamcommviewer.RobotStatus;
@@ -53,6 +57,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -84,6 +89,8 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         public static DrawingEventManager drawingEventManager;
         @InjectPlugin
         public static TeamCommManager teamcommManager;
+        @InjectPlugin
+        public static GameControllerManager gamecontroller;
     }
 
     private Timer timerDrawRobots;
@@ -140,6 +147,9 @@ public class TeamCommViewerFx extends AbstractJFXDialog
     @FXML
     private ColorPicker teamColorPicker;
     
+    @FXML
+    private Label gamecontrollerState;
+    
     private final SimpleBooleanProperty recording = new SimpleBooleanProperty(false);
     private final SimpleStringProperty recordingFile = new SimpleStringProperty("<not set>");
     private final FileChooser fileChooser = new FileChooser();
@@ -193,7 +203,7 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
         
         btnRecord.setGraphic(new ImageView(new Image("/de/naoth/rc/res/media-record.png")));
-        btnRecord.tooltipProperty().get().textProperty().bind(Bindings.when(recording).then(recordingFile).otherwise("Start new recording"));
+        btnRecord.tooltipProperty().get().textProperty().bind(Bindings.when(recording).then(recordingFile).otherwise("Start new teamcomm recording"));
         
         btnStop.setGraphic(new ImageView(new Image("/toolbarButtonGraphics/media/Stop24.gif", 16, 16, true, true)));
         btnStop.disableProperty().bind(recording.not());
@@ -247,6 +257,10 @@ public class TeamCommViewerFx extends AbstractJFXDialog
                 }
             }
         });
+        
+        // handle gamecontroller infos
+        Plugin.gamecontroller.addGameListener(new GameControllerUpdater());
+        gamecontrollerState.setTooltip(new Tooltip("GameController info"));
     } // afterInit()
     
     /**
@@ -759,6 +773,77 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         @Override
         public Integer fromString(String value) {
             return value.isEmpty() ? 0 : super.fromString(value);
+        }
+    }
+    
+    /**
+     * Listener class for handling gamecontroller events.
+     */
+    class GameControllerUpdater implements GameControllerEventListener
+    {
+        @Override
+        public void connectionChanged(GameControllerConnectionEvent e) {
+            // remove shown gamecontroller infos
+            if(e.state == GameControllerConnectionEvent.State.DISCONNECTED || e.state == GameControllerConnectionEvent.State.TIMEOUT) {
+                setLabelText("");
+            }
+        }
+
+        @Override
+        public void newGameData(GameControllerDataEvent e) {
+            // update gamecontroller infos
+            String display = "";
+            switch(e.data.gameState) {
+                case 0: display += "INITIAL"; break;
+                case 1: display += "READY: " + e.data.secondaryTime; break;
+                case 2: display += "SET"; break;
+                case 3: display += "PLAYING: " + formatSeconds(e.data.secsRemaining); break;
+                case 4: display += "FINISHED: " + formatSeconds(e.data.secondaryTime); break;
+                default: display += "UNKNOWN"; break;
+            }
+            
+            // determine the team who as kickoff/freekick
+            int kickingTeam = e.data.kickingTeam + 10000; // use the port for comparison
+            String fk_team = kickingTeam == (int)ownPort.getValue() ? "OWN" : "OPP";
+            
+            switch(e.data.setPlay) {
+                case 1: display += "; GOAL_FREE_KICK_"    + fk_team + ": " + e.data.secondaryTime; break;
+                case 2: display += "; PUSHING_FREE_KICK_" + fk_team + ": " + e.data.secondaryTime; break;
+            }
+            
+            setLabelText(display);
+        }
+        
+        /**
+         * Sets the icon of the gamecontroller label.
+         * 
+         * @param icon 
+         */
+        private void setLabelIcon(String icon) {
+            Platform.runLater(() -> {
+                gamecontrollerState.setGraphic(new ImageView(new Image(icon)));
+            });
+        }
+        
+        /**
+         * Sets the string of the gamecontroller label.
+         * 
+         * @param txt the string to display as gamecontroller info
+         */
+        private void setLabelText(String txt) {
+            Platform.runLater(() -> {
+                gamecontrollerState.setText(txt);
+            });
+        }
+        
+        /**
+         * Formats the given seconds to 'mm:ss'.
+         * 
+         * @param seconds the seconds which should be formatted.
+         * @return the formated seconds as string
+         */
+        private String formatSeconds(int seconds) {
+            return String.format("%2d:%02d", seconds/60, seconds%60);
         }
     }
 }

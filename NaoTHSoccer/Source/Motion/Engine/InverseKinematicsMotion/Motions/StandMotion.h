@@ -35,6 +35,8 @@
 
 #include <Representations/Modeling/BodyState.h>
 
+#include "Representations/Motion/Walk2018/Walk2018Parameters.h"
+
 //tools
 #include "Tools/JointMonitor.h"
 #include "Tools/JointOffsets.h"
@@ -63,6 +65,9 @@ BEGIN_DECLARE_MODULE(StandMotion)
 
   // body state
   REQUIRE(BodyState)
+
+  // some parameters of walk are needed to get a smooth transition
+  REQUIRE(Walk2018Parameters)
 
   PROVIDE(MotionLock)
   PROVIDE(MotorJointData)
