@@ -1,5 +1,6 @@
 //ArmCollisionDetector2018
 //Created by Etienne C.-C.
+// coucaste@informatik.hu-berlin.de
 
 #include "ArmCollisionDetector2018.h"
 #include <PlatformInterface/Platform.h>
@@ -58,19 +59,78 @@ ArmCollisionDetector2018::ArmCollisionDetector2018()
 	}
   fileRight.close();
   */
-  // 
   getCollisionPercept().referenceHullLeft = ConvexHull::convexHull(getCollisionPercept().referenceHullLeft);
   getCollisionPercept().referenceHullRight = ConvexHull::convexHull(getCollisionPercept().referenceHullRight);
+  for (size_t i = 0; i <getCollisionPercept().referenceHullLeft.size(); i++)
+  {
+	  refpolyL.add(getCollisionPercept().referenceHullLeft[i]);
+  }
 
-	//std::sort(getCollisionPercept().referenceHullLeft.begin(), getCollisionPercept().referenceHullLeft.end());
-	//std::sort(getCollisionPercept().referenceHullRight.begin(), getCollisionPercept().referenceHullRight.end());
+  for (size_t i = 0; i <getCollisionPercept().referenceHullRight.size(); i++)
+  {
+	  refpolyR.add(getCollisionPercept().referenceHullRight[i]);
+  }
 }
 
 ArmCollisionDetector2018::~ArmCollisionDetector2018()
 {
 	getDebugParameterList().remove(&params);
 }
+void ArmCollisionDetector2018::execute()
+{
+	//Check if robot is in a suitable situation to recognize collisions
+	const bool armModeOK =
+		getMotionRequest().armMotionRequest.id == ArmMotionRequest::arms_synchronised_with_walk ||
+		getMotionRequest().armMotionRequest.id == ArmMotionRequest::arms_down;
 
+	const bool motionModeOK = getMotionStatus().currentMotion == motion::walk || getMotionStatus().currentMotion == motion::stand;
+
+	if (!armModeOK || !motionModeOK)
+	{
+		// clear the joint command history
+		jointDataBufferLeft.clear();
+		jointDataBufferRight.clear();
+
+		return;
+	}
+
+
+	if (jointDataBufferLeft.isFull()) 
+	{
+		double a = jointDataBufferLeft.first();
+		double b = getSensorJointData().position[JointData::LShoulderPitch];
+		double er = (b - a);
+		if (refpolyL.isInside(Vector2<double>(a, er)))
+		{
+			//no collision
+		}
+		else
+		{
+			//collision
+			std::cout << "[ArmCollisionDetector2018] Collision detected!" << std::endl;
+		}
+	}
+
+	if (jointDataBufferRight.isFull())
+	{
+		double a = jointDataBufferRight.first();
+		double b = getSensorJointData().position[JointData::RShoulderPitch];
+		double er = (b - a);
+		if (refpolyR.isInside(Vector2d(a, er)))
+		{
+			//no collision
+		}
+		else
+		{
+			//collision
+			std::cout << "[ArmCollisionDetector2018] Collision detected!" << std::endl;
+		}
+	}
+
+
+
+}
+/*
 void ArmCollisionDetector2018::execute()
 {
 	DEBUG_REQUEST("Motion:ArmCollisionDetector2018:showReferenceHull",
@@ -180,3 +240,4 @@ void ArmCollisionDetector2018::execute()
 	}
 
 }
+*/
