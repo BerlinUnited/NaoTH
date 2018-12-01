@@ -171,7 +171,7 @@ workspace "NaoTHSoccer"
   filter "system:macosx"
     defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING", "EIGEN_DONT_ALIGN" }
     --buildoptions {"-std=c++11"}
-    cppdialect "c++14"
+    cppdialect "c++11"
     -- disable some warnings
     buildoptions {"-Wno-deprecated-declarations"}
     buildoptions {"-Wno-deprecated-register"}
