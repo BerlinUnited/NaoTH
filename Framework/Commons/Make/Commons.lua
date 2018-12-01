@@ -4,7 +4,7 @@ project "Commons"
   
   -- FatalWarnings treats compiler/linker warnings as errors
   -- in premake4 linker warnings are not enabled
-  flags {"FatalCompileWarnings"}
+  --flags {"FatalCompileWarnings"}
   targetname "commons"
   
   includedirs {
