@@ -11,7 +11,9 @@ public class GameControllerData
     public byte competitionType;
     public byte gamePhase;
     public byte gameState;
+    public byte setPlay;
     public byte firstHalf;
+    public byte kickingTeam;
     public short secsRemaining;
     public short secondaryTime;
     
@@ -22,6 +24,8 @@ public class GameControllerData
             + "playersPerTeam = " + playersPerTeam + "\n"
             + "gamePhase = " + gamePhase + "\n"
             + "gameState = " + gameState + "\n"
+            + "setPlay = " + setPlay + "\n"
+            + "kickingTeam = " + kickingTeam + "\n"
             + "secsRemaining = " + secsRemaining + "\n"
             + "secondaryTime = " + secondaryTime + "\n"
             ;
