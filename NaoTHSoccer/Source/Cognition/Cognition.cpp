@@ -36,10 +36,8 @@
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
 #include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
 #include "Modules/Infrastructure/Camera/AdaptiveAutoExposure.h"
-#include "Modules/Infrastructure/WhistleDetector/AudioConfigSetter.h"
+#include "Modules/Infrastructure/AudioConfigSetter/AudioConfigSetter.h"
 #include "Modules/Infrastructure/GameLogger/GameLogger.h"
-#include "Modules/Infrastructure/WhistleDetector/WhistleDetectorV1.h"
-#include "Modules/Infrastructure/WhistleDetector/WhistleDetectorV2.h"
 
 // perception
 #include "Modules/SelfAwareness/CameraMatrixFinder/CameraMatrixFinder.h"
@@ -68,6 +66,8 @@
 
 #include "Modules/Perception/VirtualVisionProcessor/VirtualVisionProcessor.h"
 #include "Modules/Perception/PerceptionsVisualizer/PerceptionsVisualizer.h"
+#include "Modules/Perception/WhistleDetector/WhistleDetectorV1.h"
+#include "Modules/Perception/WhistleDetector/WhistleDetectorV2.h"
 
 #include "Modules/VisualCortex/LineDetector/RansacLineDetector.h"
 #include "Modules/VisualCortex/LineDetector/RansacLineDetectorOnGraphs.h"
