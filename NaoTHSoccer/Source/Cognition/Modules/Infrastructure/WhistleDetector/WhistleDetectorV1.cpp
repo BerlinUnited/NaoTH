@@ -23,7 +23,8 @@ WhistleDetectorV1::~WhistleDetectorV1()
   getDebugParameterList().remove(&params);
 }
 
-void WhistleDetectorV1::execute(){
+void WhistleDetectorV1::execute()
+{
   //std::cout << "Capture: " << getAudioControl().capture << std::endl;
   if (getAudioControl().capture)
   {

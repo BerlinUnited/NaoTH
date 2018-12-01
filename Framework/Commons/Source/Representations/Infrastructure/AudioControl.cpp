@@ -12,8 +12,11 @@ AudioControl::AudioControl() :
 
 void AudioControl::print(std::ostream& stream) const
 {
-  stream << "switch: " << (capture ? "on" : "off") << std::endl;
+  stream << "capture: " << (capture ? "on" : "off") << std::endl;
   stream << "active channels(Left|Front|Right|Rear): " << activeChannels << std::endl;
+  stream << "numChannels: " << numChannels << std::endl;
+  stream << "sampleRate: " << sampleRate << std::endl;
+  stream << "buffer_size: " << buffer_size << std::endl;
 }
 
 
