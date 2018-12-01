@@ -11,30 +11,31 @@
 #include <stdlib.h>
 #include <numeric>
 
-WhistleDetectorV1::WhistleDetectorV1(){
-	getWhistlePercept().counter = 0;
+WhistleDetectorV1::WhistleDetectorV1()
+{
+  getWhistlePercept().reset();
 
-	getDebugParameterList().add(&params);
+  getDebugParameterList().add(&params);
 }
 
 WhistleDetectorV1::~WhistleDetectorV1()
 {
-	getDebugParameterList().remove(&params);
+  getDebugParameterList().remove(&params);
 }
 
 void WhistleDetectorV1::execute(){
-	std::cout << "Switch: " << getAudioControl().onOffSwitch << std::endl;
-	if (getAudioControl().onOffSwitch > 0){
-		std::vector<short> samples = getAudioData().samples;
+  //std::cout << "Capture: " << getAudioControl().capture << std::endl;
+  if (getAudioControl().capture)
+  {
+    const std::vector<short>& samples = getAudioData().samples;
 
-		std::cout << "WhistleDetector V1 running" << std::endl;
+    //std::cout << "WhistleDetector V1 running" << std::endl;
 
-		int sum = std::accumulate(samples.begin(), samples.end(), 0);
-		if (sum > params.threshold){
-			std::cout << "Whistle Detected with sample sum: " << sum << std::endl;
-			getWhistlePercept().counter++;
-		}
-	}
-	std::cout << "WhistleDetector V1 not running" << std::endl;
-	
+    int sum = std::accumulate(samples.begin(), samples.end(), 0);
+    if (sum > params.threshold) {
+      std::cout << "Whistle Detected with sample sum: " << sum << std::endl;
+      getWhistlePercept().counter++;
+    }
+  }
+  //std::cout << "WhistleDetector V1 not running" << std::endl;
 }

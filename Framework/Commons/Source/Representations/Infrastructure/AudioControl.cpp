@@ -3,7 +3,7 @@
 using namespace naoth;
 
 AudioControl::AudioControl() :
-  onOffSwitch(0),
+  capture(false),
   activeChannels("1010"),
   numChannels(2),
   sampleRate(8000),
@@ -12,10 +12,8 @@ AudioControl::AudioControl() :
 
 void AudioControl::print(std::ostream& stream) const
 {
-  stream << "switch: " << (onOffSwitch == 1 ? "on" : "off") << std::endl;
+  stream << "switch: " << (capture ? "on" : "off") << std::endl;
   stream << "active channels(Left|Front|Right|Rear): " << activeChannels << std::endl;
 }
 
-AudioControl::~AudioControl()
-{}
 
