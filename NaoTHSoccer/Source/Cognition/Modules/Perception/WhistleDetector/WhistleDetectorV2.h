@@ -14,7 +14,7 @@
 #include <Tools/Debug/DebugRequest.h>
 
 // tools
-#include <fstream>
+//#include <fstream>
 #include <vector>
 #include <fftw3/fftw3.h>
 #include <Tools/Filters/AssymetricalBoolFilter.h>
@@ -54,8 +54,6 @@ public:
 			PARAMETER_REGISTER(nWindowSkipping) = 80; // windowTimeStep
 
 			PARAMETER_REGISTER(vWhistleThreshold) = 3.5;
-			PARAMETER_REGISTER(nWhistleOkayFrames) = 30;
-			PARAMETER_REGISTER(nWhistleMissFrames) = 7;
 
       PARAMETER_REGISTER(whistle_filter.g0) = 0.1;
       PARAMETER_REGISTER(whistle_filter.g1) = 0.1;
@@ -69,8 +67,6 @@ public:
 		int nWindowSizePadded;
 		int nWindowSkipping;
 		double vWhistleThreshold;
-		unsigned nWhistleOkayFrames;
-		unsigned nWhistleMissFrames;
 
     struct {
       double g0;
@@ -79,11 +75,10 @@ public:
 	} params;
 
 private:
-	void runDetection();
-  void runDetectionNew();
+
   unsigned int lastDataTimestamp;
   AssymetricalBoolHysteresisFilter whistle_filter;
-  std::ofstream myfile;
+  //std::ofstream myfile;
 
   void intToNormalizedDouble(const int16_t &in, double &out) {
       out = static_cast<double>(in) / (static_cast<double>(std::numeric_limits<int16_t>::max()) + 1.0);
