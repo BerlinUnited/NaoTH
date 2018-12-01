@@ -14,7 +14,6 @@ namespace naoth
     std::string activeChannels;   // defines channels to be used in multi channel mode
     int numChannels;
     int sampleRate;
-    bool onlySoundInSet;
     int buffer_size;
 
     AudioControl();

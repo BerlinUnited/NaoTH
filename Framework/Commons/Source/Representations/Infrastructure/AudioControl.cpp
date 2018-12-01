@@ -2,12 +2,11 @@
 
 using namespace naoth;
 
-AudioControl::AudioControl():
+AudioControl::AudioControl() :
   onOffSwitch(0),
   activeChannels("1010"),
   numChannels(2),
   sampleRate(8000),
-  onlySoundInSet(true),
   buffer_size(1024)
 {}
 
