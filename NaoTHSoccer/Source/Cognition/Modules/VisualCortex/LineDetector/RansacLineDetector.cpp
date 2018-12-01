@@ -299,9 +299,7 @@ bool RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& 
           maxT = t;
           end_edgel = i;
         }
-        double ang = e.direction.angle();
-        direction_var.x += cos(ang);
-        direction_var.y += sin(ang);
+        direction_var += e.direction;
       } else {
         newOutliers.push_back(i);
       }
@@ -391,9 +389,7 @@ bool RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inl
         // inlier
         if(offset <= params.circle_outlierThreshold &&
           Math::toDegrees(angle_diff(model, e)) <= params.circle_max_angle_diff) {
-          double ang = e.direction.angle();
-          direction_var.x += cos(ang);
-          direction_var.y += sin(ang);
+          direction_var += e.direction.angle();
 
           ++inlier;
           inlierError += offset;
