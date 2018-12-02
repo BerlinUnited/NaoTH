@@ -154,7 +154,7 @@ public:
 public:
   bool valid; // indicates that this represenation was filled
 
-  int playersPerTeam;                 // the number of players on a team
+  unsigned int playersPerTeam;                 // the number of players on a team
 
   CompetitionPhase competitionPhase;  // phase of the competition (COMPETITION_PHASE_ROUNDROBIN, COMPETITION_PHASE_PLAYOFF)
   CompetitionType  competitionType;   // type of the competition (COMPETITION_TYPE_NORMAL, COMPETITION_TYPE_MIXEDTEAM, COMPETITION_TYPE_GENERAL_PENALTY_KICK)
