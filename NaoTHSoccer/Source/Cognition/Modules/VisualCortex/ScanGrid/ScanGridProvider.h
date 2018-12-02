@@ -70,9 +70,9 @@ public:
     Parameters() : ParameterList("ScanGridProvider")
     {
       PARAMETER_REGISTER(max_scan_distance_mm) = 9700;
-      PARAMETER_REGISTER(max_vertical_scanlines) = 320;
-      PARAMETER_REGISTER(vertical_gap_mm) = 100/2;
-      PARAMETER_REGISTER(horizontal_gap_mm) = 50/2;
+      PARAMETER_REGISTER(max_vertical_scanlines) = 160;
+      PARAMETER_REGISTER(vertical_gap_mm) = 50;
+      PARAMETER_REGISTER(horizontal_gap_mm) = 50;
       PARAMETER_REGISTER(min_horizontal_gap_px) = 2;
 
       syncWithConfig();

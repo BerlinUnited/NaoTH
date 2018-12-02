@@ -5,10 +5,11 @@ class ScanGrid
 {
 public:
   void reset() {
+    vertical.clear();
+    horizontal.clear();
     vScanPattern.clear();
     hScanPattern.clear();
     longverticals.clear();
-    // vertical is resized in ScanGridProvider
   }
 
   class VScanLine
