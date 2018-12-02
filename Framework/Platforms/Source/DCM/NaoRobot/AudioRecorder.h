@@ -21,33 +21,38 @@ namespace naoth
     void get(naoth::AudioData& data);
     void set(const naoth::AudioControl& controlData);
 
-    std::vector<short> audioReadBuffer;
-    unsigned int recordingTimestamp;
-
-  protected:
-    std::thread audioRecorderThread;
-    std::mutex getMutex;
-    std::mutex setMutex;
-      
-    // turn capture on and off
-    bool capture;
-
-    //Audio Control Parameter:
-    std::string activeChannels;
-    int numChannels;
-    int sampleRate;
-    int buffer_size;
-
-    volatile bool running;
-    bool initialized;
-    bool resetting;
-    int deinitCyclesCounter;
-
+  private:
     void execute();      
     void initAudio();
     void deinitAudio();
 
+  private:
+
+    // thread control
+    volatile bool running;
+    std::thread audioRecorderThread;
+    std::mutex getMutex;
+    std::mutex setMutex;
+      
+    //audio control parameter
+    std::string activeChannels; // TODO: no used here
+    int numChannels;
+    int sampleRate;
+    int buffer_size;
+
+    // turn capture on and off
+    bool capture;
+    
+    bool resetting;
+    int deinitCyclesCounter;
+
+    // puls audio device
+    bool initialized;
     pa_simple* paSimple;
+
+    std::vector<short> audioReadBuffer;
+    unsigned int recordingTimestamp;
+
   };
 }
 

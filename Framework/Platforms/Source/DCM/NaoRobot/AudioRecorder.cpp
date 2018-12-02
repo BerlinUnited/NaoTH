@@ -12,13 +12,22 @@ namespace naoth
 {
   AudioRecorder::AudioRecorder()
     :
-    audioReadBuffer(BUFFER_SIZE_RX, 0),
-    recordingTimestamp(0),
-    capture(false),  
     running(false),
-    initialized(false),
+
+    numChannels(NUM_CHANNELS_RX),
+    sampleRate(SAMPLE_RATE_RX),
+    buffer_size(BUFFER_SIZE_RX),
+
+    capture(false), 
+
     resetting(false),
-    deinitCyclesCounter(0)
+    deinitCyclesCounter(0),
+
+    initialized(false),
+    paSimple(NULL),
+
+    audioReadBuffer(BUFFER_SIZE_RX, 0),
+    recordingTimestamp(0)
   {
     std::cout << "[INFO] AudioRecorder thread started" << std::endl;
     audioRecorderThread = std::thread([this] {this->execute();});
