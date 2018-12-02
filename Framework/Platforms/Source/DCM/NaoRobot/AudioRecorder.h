@@ -5,48 +5,51 @@
 #include <iostream>
 #include <pulse/simple.h>
 
-#include "SoundConfig.h"
+//#include "SoundConfig.h"
 
 #include "Representations/Infrastructure/AudioData.h"
 #include "Representations/Infrastructure/AudioControl.h"
 
 namespace naoth
 {
-	class AudioRecorder
-	{
-		public:
-	  	AudioRecorder();
-	  	virtual ~AudioRecorder();
+  class AudioRecorder
+  {
+  public:
+    AudioRecorder();
+    virtual ~AudioRecorder();
 
-	  	void get(naoth::AudioData& data);
-      void set(const naoth::AudioControl& controlData);
+    void get(naoth::AudioData& data);
+    void set(const naoth::AudioControl& controlData);
 
-	  	std::vector<short> audioReadBuffer;
-      unsigned int recordingTimestamp;
+  private:
+    void execute();      
+    void initAudio();
+    void deinitAudio();
 
-	  protected:
-  		std::thread audioRecorderThread;
-      std::mutex getMutex;
-      std::mutex setMutex;
-      int command;
+  private:
 
-      //Audio Control Parameter:
-  		std::string activeChannels;
-      int numChannels;
-      int sampleRate;
-      int buffer_size;
+    // thread control
+    volatile bool exiting;
+    std::thread audioRecorderThread;
+    std::mutex dataMutex;
+      
+    //audio control parameter
+    AudioControl control;
+    
+    //bool resetting;
+    int deinitCyclesCounter;
 
-      volatile bool running;
-      bool recording;
-      bool resetting;
-      int deinitCyclesCounter;
+    // puls audio device
+    pa_simple* paSimple;
 
-  		void execute();  		
-  		void initAudio();
-  		void deinitAudio();
+    // double buffering for the recording
+    std::vector<short> audioBuffer[2];
+    size_t readIdx;
+    size_t writeIdx;
 
-  		pa_simple* paSimple;
-	};
+    unsigned int recordingTimestamp;
+
+  };
 }
 
 #endif // _AudioRecorder_H
