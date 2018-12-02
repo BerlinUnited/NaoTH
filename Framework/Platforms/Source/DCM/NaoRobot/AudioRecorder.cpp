@@ -12,7 +12,7 @@ using namespace naoth;
 
 AudioRecorder::AudioRecorder()
   :
-  running(false),
+  exiting(false),
 
   numChannels(NUM_CHANNELS_RX),
   sampleRate(SAMPLE_RATE_RX),
@@ -48,7 +48,7 @@ AudioRecorder::AudioRecorder()
 
 AudioRecorder::~AudioRecorder()
 { 
-  running = false;
+  exiting = true;
 
   if(audioRecorderThread.joinable()) {
     audioRecorderThread.join();
@@ -61,10 +61,8 @@ AudioRecorder::~AudioRecorder()
 
 void AudioRecorder::execute()
 {
-  running = true;
-
   // return;
-  while(running)
+  while(!exiting)
   {
 
     // initialize the audio stream if necessary
@@ -100,7 +98,7 @@ void AudioRecorder::execute()
       if (!paSimple || paSimple == NULL)
       {
         std::cerr << "[PulseAudio] pa_simple == NULL" << std::endl;
-        running = false;
+        exiting = true;
       }
       //std::cout << "[AudioRecorder] bytesToRead: " << bytesToRead << std::endl;
 
@@ -108,7 +106,7 @@ void AudioRecorder::execute()
       if (pa_simple_read(paSimple, &audioReadBuffer[0], bytesToRead, &error) < 0)
       {
         std::cerr << "[PulseAudio] pa_simple_read() failed: " << pa_strerror(error) << std::endl;
-        running = false;
+        exiting = true;
       } else {
         recordingTimestamp = NaoTime::getNaoTimeInMilliSeconds();
       }

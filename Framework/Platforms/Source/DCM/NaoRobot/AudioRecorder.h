@@ -29,7 +29,7 @@ namespace naoth
   private:
 
     // thread control
-    volatile bool running;
+    volatile bool exiting;
     std::thread audioRecorderThread;
     std::mutex getMutex;
     std::mutex setMutex;
