@@ -39,13 +39,13 @@ namespace naoth
 
   AudioRecorder::~AudioRecorder()
   { 
-    if(audioRecorderThread.joinable())
-    {
+    running = false;
+
+    if(audioRecorderThread.joinable()) {
       audioRecorderThread.join();
     }
 
-    if(initialized)
-    {
+    if(initialized) {
       deinitAudio();
     }
   }
