@@ -19,7 +19,7 @@
 class FieldPercept : public naoth::Printable
 {
 public:
-  typedef Math::Polygon<20> FieldPoly;
+  typedef Math::Polygon<int> FieldPoly;
 
 private:
   FieldPoly fieldPoly;
@@ -33,11 +33,11 @@ private:
     fullFieldPoly.clear();
     // create default field poly in image (the whole image)
     // basically the same as rect
-    fullFieldPoly.add(Vector2i(0, 0));
-    fullFieldPoly.add(Vector2i(0, dimension.y - 1));
-    fullFieldPoly.add(Vector2i(dimension.x - 1, dimension.y - 1));
-    fullFieldPoly.add(Vector2i(dimension.x - 1, 0));
-    fullFieldPoly.add(Vector2i(0, 0));
+    fullFieldPoly.add(0, 0);
+    fullFieldPoly.add(0, dimension.y - 1);
+    fullFieldPoly.add(dimension.x - 1, dimension.y - 1);
+    fullFieldPoly.add(dimension.x - 1, 0);
+    fullFieldPoly.add(0, 0);
   }//end generateDefaultField
 
 public:
@@ -78,9 +78,25 @@ public:
     return getFullField();
   }
 
+  int getMinY() const 
+  {
+    const FieldPoly& fieldPolygon = getValidField();
+
+    // find the top point of the polygon
+    int minY = std::numeric_limits<int>::max();
+    for(size_t i = 0; i < fieldPolygon.size(); i++)
+    {
+      if(fieldPolygon[i].y < minY && fieldPolygon[i].y >= 0) {
+        minY = fieldPolygon[i].y;
+      }
+    }
+
+    return minY;
+  }
+
   void checkPolyIsUnderHorizon(const Math::LineSegment& horizon)
   {
-    for(int i = 0; i < fieldPoly.length; i++)
+    for(size_t i = 0; i < fieldPoly.size(); ++i)
     {
       Vector2i projectedPoint(horizon.projection(fieldPoly[i])); 
 
@@ -105,7 +121,7 @@ public:
   {
     stream << " valid: " << (valid ? "true" : "false") << std::endl;
     stream << " Field Area: " << fieldPoly.getArea() << std::endl;
-    stream << " Poly Vertex Count: " << fieldPoly.length << std::endl;
+    stream << " Poly Vertex Count: " << fieldPoly.size() << std::endl;
   }
 };
 
