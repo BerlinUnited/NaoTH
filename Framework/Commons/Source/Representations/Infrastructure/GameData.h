@@ -145,8 +145,8 @@ public:
 
   GameData();
 
-  const RobotInfo& getOwnRobotInfo(int playerNumber) const {
-    ASSERT(playerNumber > 0 && playerNumber <= (int)(ownTeam.players.size()));
+  const RobotInfo& getOwnRobotInfo(size_t playerNumber) const {
+	  ASSERT(playerNumber > 0 && playerNumber <= ownTeam.players.size());
     return ownTeam.players[playerNumber-1];
   }
 
