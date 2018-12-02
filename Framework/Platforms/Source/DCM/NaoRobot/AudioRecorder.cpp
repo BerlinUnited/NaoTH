@@ -124,8 +124,8 @@ namespace naoth
     std::unique_lock<std::mutex> lock(setMutex, std::try_to_lock);
     if ( lock.owns_lock() )
     {
-      if(capture != controlData.onOffSwitch) {
-        capture = controlData.onOffSwitch;
+      if(capture != controlData.capture) {
+        capture = controlData.capture;
         std::cout << "Capture: " << capture << std::endl;
       }      
       
@@ -135,6 +135,7 @@ namespace naoth
         if(initialized) {
           deinitAudio();
         }
+
         //clearBuffers(); //TODO are there any buffers to clear?
         activeChannels = controlData.activeChannels;
         numChannels = controlData.numChannels;
