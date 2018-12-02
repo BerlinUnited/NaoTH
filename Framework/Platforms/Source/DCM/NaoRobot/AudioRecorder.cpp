@@ -16,7 +16,7 @@ namespace naoth
     recordingTimestamp(0),
     capture(false),  
     running(false),
-    recording(false),
+    initialized(false),
     resetting(false),
     deinitCyclesCounter(0)
   {
@@ -44,7 +44,7 @@ namespace naoth
       audioRecorderThread.join();
     }
 
-    if(recording)
+    if(initialized)
     {
       deinitAudio();
     }
@@ -59,7 +59,7 @@ namespace naoth
     {
       int error = 0;
 
-      if(!recording)
+      if(!initialized)
       {
         if(!resetting && capture)
         {
@@ -89,7 +89,7 @@ namespace naoth
         }
       }
 
-      if(!resetting && recording)
+      if(!resetting && initialized)
       {
         //calculate amount of samples needed
         int samplesToRead = SAMPLE_NEW_COUNT * numChannels;
@@ -132,7 +132,7 @@ namespace naoth
       if(activeChannels != controlData.activeChannels)
       {
         resetting =  true;
-        if(recording) {
+        if(initialized) {
           deinitAudio();
         }
         //clearBuffers(); //TODO are there any buffers to clear?
@@ -147,7 +147,7 @@ namespace naoth
 
   void AudioRecorder::get(AudioData& data)
   {
-    if (recording) 
+    if (initialized) 
     {
       std::unique_lock<std::mutex> lock(getMutex, std::try_to_lock);
       if ( lock.owns_lock() && recordingTimestamp > data.timestamp) 
@@ -165,16 +165,14 @@ namespace naoth
   {
     //clearBuffers(); probably not needed anymore
 
-    int error;
-
     pa_sample_spec paSampleSpec;
-    paSampleSpec.format = PA_SAMPLE_S16LE;
-    paSampleSpec.rate = sampleRate;
+    paSampleSpec.format   = PA_SAMPLE_S16LE;
+    paSampleSpec.rate     = sampleRate;
     paSampleSpec.channels = (uint8_t)numChannels;
 
     // Create the recording stream
-    std::string appName = "AudioRecorder";
-    if (!(paSimple = pa_simple_new(NULL, appName.c_str(), PA_STREAM_RECORD, NULL, "AudioRecorder", &paSampleSpec, NULL, NULL, &error)))
+    int error;
+    if (!(paSimple = pa_simple_new(NULL, "AudioRecorder", PA_STREAM_RECORD, NULL, "AudioRecorder", &paSampleSpec, NULL, NULL, &error)))
     {
       std::cerr << "[PulseAudio] pa_simple_new() failed: " << pa_strerror(error) << "\n" << std::endl;
       paSimple = NULL;
@@ -186,7 +184,7 @@ namespace naoth
       std::cout << "[PulseAudio] Channels: " << (int) paSampleSpec.channels <<std::endl;
       std::cout << "[PulseAudio] Buffer Size: " << buffer_size <<std::endl;
 
-      recording = true;
+      initialized = true;
     }
   } //end initAudio
 
@@ -194,7 +192,7 @@ namespace naoth
   {
     if (paSimple != NULL)
     {
-      recording = false;
+      initialized = false;
       std::cout << "[PulseAudio] device closed" << std::endl;
       pa_simple_free(paSimple);
       paSimple = NULL;

@@ -39,7 +39,7 @@ namespace naoth
     int buffer_size;
 
     volatile bool running;
-    bool recording;
+    bool initialized;
     bool resetting;
     int deinitCyclesCounter;
 
