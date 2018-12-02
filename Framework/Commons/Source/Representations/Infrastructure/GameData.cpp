@@ -216,7 +216,7 @@ void GameData::parseTeamInfo(TeamInfo& teamInfoDst, const spl::TeamInfo& teamInf
   teamInfoDst.teamNumber = teamInfoSrc.teamNumber;
 
   teamInfoDst.players.resize(playersPerTeam);
-  for(size_t i = 0; i < playersPerTeam; i++) {
+  for(unsigned int i = 0; i < playersPerTeam; i++) {
     teamInfoDst.players[i].penalty = (Penalty)teamInfoSrc.players[i].penalty;
 
     // ACHTUNG: casting to signed values - time can be negative (!)
