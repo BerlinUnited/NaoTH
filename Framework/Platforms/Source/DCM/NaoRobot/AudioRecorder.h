@@ -5,7 +5,7 @@
 #include <iostream>
 #include <pulse/simple.h>
 
-#include "SoundConfig.h"
+//#include "SoundConfig.h"
 
 #include "Representations/Infrastructure/AudioData.h"
 #include "Representations/Infrastructure/AudioControl.h"
@@ -31,26 +31,22 @@ namespace naoth
     // thread control
     volatile bool exiting;
     std::thread audioRecorderThread;
-    std::mutex getMutex;
-    std::mutex setMutex;
+    std::mutex dataMutex;
       
     //audio control parameter
-    std::string activeChannels; // TODO: no used here
-    int numChannels;
-    int sampleRate;
-    int buffer_size;
-
-    // turn capture on and off
-    bool capture;
+    AudioControl control;
     
-    bool resetting;
+    //bool resetting;
     int deinitCyclesCounter;
 
     // puls audio device
-    bool initialized;
     pa_simple* paSimple;
 
-    std::vector<short> audioReadBuffer;
+    // double buffering for the recording
+    std::vector<short> audioBuffer[2];
+    size_t readIdx;
+    size_t writeIdx;
+
     unsigned int recordingTimestamp;
 
   };

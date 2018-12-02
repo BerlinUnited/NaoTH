@@ -13,20 +13,10 @@ using namespace naoth;
 AudioRecorder::AudioRecorder()
   :
   exiting(false),
-
-  numChannels(NUM_CHANNELS_RX),
-  sampleRate(SAMPLE_RATE_RX),
-  buffer_size(BUFFER_SIZE_RX),
-
-  capture(false), 
-
-  resetting(false),
   deinitCyclesCounter(0),
-
-  initialized(false),
   paSimple(NULL),
-
-  audioReadBuffer(BUFFER_SIZE_RX, 0),
+  readIdx(1),
+  writeIdx(0),
   recordingTimestamp(0)
 {
   std::cout << "[INFO] AudioRecorder thread started" << std::endl;
@@ -54,7 +44,7 @@ AudioRecorder::~AudioRecorder()
     audioRecorderThread.join();
   }
 
-  if(initialized) {
+  if(paSimple != NULL) {
     deinitAudio();
   }
 }
@@ -64,16 +54,15 @@ void AudioRecorder::execute()
   // return;
   while(!exiting)
   {
-
     // initialize the audio stream if necessary
-    if(capture && !initialized)
+    if(control.capture && paSimple == NULL)
     {
       std::cout << "[AudioRecorder] start recording" << std::endl;
       initAudio();
     }
     
     // stop capturing
-    if(!capture && initialized) 
+    if(!control.capture && paSimple != NULL) 
     {
       // deinit audio device ~8 seconds after switch off command was set
       // (recording has blocking behaviour 1024 samples equal 128 ms 63*128 equals ~8s
@@ -87,28 +76,20 @@ void AudioRecorder::execute()
     }
 
     // capture data as long as the device is initialized
-    if(initialized) 
+    if(paSimple != NULL) 
     {
-      //calculate amount of samples needed
-      //int samplesToRead = SAMPLE_COUNT * numChannels;
-      //int bytesToRead = samplesToRead * static_cast<int>(sizeof(short));
-      int bytesToRead = audioReadBuffer.size() * static_cast<int>(sizeof(short));
-
-      // Record some data
-      if (!paSimple || paSimple == NULL)
-      {
-        std::cerr << "[PulseAudio] pa_simple == NULL" << std::endl;
-        exiting = true;
-      }
-      //std::cout << "[AudioRecorder] bytesToRead: " << bytesToRead << std::endl;
-
+      int bytesToRead = audioBuffer[writeIdx].size() * static_cast<int>(sizeof(short));
       int error = 0;
-      if (pa_simple_read(paSimple, &audioReadBuffer[0], bytesToRead, &error) < 0)
+      if (pa_simple_read(paSimple, &(audioBuffer[writeIdx][0]), bytesToRead, &error) < 0)
       {
         std::cerr << "[PulseAudio] pa_simple_read() failed: " << pa_strerror(error) << std::endl;
         exiting = true;
-      } else {
+      } 
+      else 
+      {
+        std::lock_guard<std::mutex> lock(dataMutex);
         recordingTimestamp = NaoTime::getNaoTimeInMilliSeconds();
+        std::swap(writeIdx, readIdx);
       }
     } 
     else // !initialized
@@ -122,55 +103,37 @@ void AudioRecorder::execute()
 
 void AudioRecorder::set(const naoth::AudioControl& controlData)
 {
-  std::unique_lock<std::mutex> lock(setMutex, std::try_to_lock);
-  if ( lock.owns_lock() )
-  {
-    if(capture != controlData.capture) {
-      capture = controlData.capture;
-      std::cout << "Capture: " << capture << std::endl;
-    }      
-      
-    if(activeChannels != controlData.activeChannels)
-    {
-      resetting =  true;
-      if(initialized) {
-        deinitAudio();
-      }
-
-      //clearBuffers(); //TODO are there any buffers to clear?
-      activeChannels = controlData.activeChannels;
-      numChannels = controlData.numChannels;
-      sampleRate = controlData.sampleRate;
-      buffer_size = controlData.buffer_size;
-      resetting = false;
-    }
+  std::unique_lock<std::mutex> lock(dataMutex, std::try_to_lock);
+  if ( lock.owns_lock() ) {
+    // NOTE: changes in the recording parameters like sampleRate or numChannels 
+    //       will only have an effect when capture is started. It means the parameters
+    //       will not change during an ongoing recording.
+    control = controlData;
   }
 }
 
 void AudioRecorder::get(AudioData& data)
 {
-  if (initialized) 
+  // if there is new data, copy it 
+  std::unique_lock<std::mutex> lock(dataMutex, std::try_to_lock);
+  if ( lock.owns_lock() && recordingTimestamp > data.timestamp) 
   {
-    std::unique_lock<std::mutex> lock(getMutex, std::try_to_lock);
-    if ( lock.owns_lock() && recordingTimestamp > data.timestamp) 
-    {
-      data.sampleRate = sampleRate;
-      data.numChannels = numChannels;
-      data.samples = audioReadBuffer;
-      data.timestamp = recordingTimestamp;
-    }
+    data.sampleRate  = control.sampleRate;
+    data.numChannels = control.numChannels;
+    data.samples     = audioBuffer[readIdx];
+    data.timestamp   = recordingTimestamp;
   }
 } // end AudioRecorder::get
 
 
 void AudioRecorder::initAudio()
 {
-  //clearBuffers(); probably not needed anymore
+  std::lock_guard<std::mutex> lock(dataMutex);
 
   pa_sample_spec paSampleSpec;
   paSampleSpec.format   = PA_SAMPLE_S16LE;
-  paSampleSpec.rate     = sampleRate;
-  paSampleSpec.channels = (uint8_t)numChannels;
+  paSampleSpec.rate     = control.sampleRate;
+  paSampleSpec.channels = (uint8_t)control.numChannels;
 
   // Create the recording stream
   int error = 0;
@@ -178,16 +141,18 @@ void AudioRecorder::initAudio()
   {
     std::cerr << "[PulseAudio] pa_simple_new() failed: " << pa_strerror(error) << "\n" << std::endl;
     // NOTE: paSimple is already NULL, this is why we are here :)
-    paSimple = NULL;
+    //paSimple = NULL;
   }
   else
   {
     std::cout << "[PulseAudio] device opened" << std::endl;
     std::cout << "[PulseAudio] Rate: " << paSampleSpec.rate <<std::endl;
     std::cout << "[PulseAudio] Channels: " << (int) paSampleSpec.channels <<std::endl;
-    std::cout << "[PulseAudio] Buffer Size: " << buffer_size <<std::endl;
+    std::cout << "[PulseAudio] Buffer Size: " << control.buffer_size <<std::endl;
 
-    initialized = true;
+    // resize the buffers if necessary
+    audioBuffer[readIdx].resize(control.buffer_size*control.numChannels);
+    audioBuffer[writeIdx].resize(control.buffer_size*control.numChannels);
 
     // TODO: do we need that?
     // give the device a bit time (moved here from the main while-loop
@@ -199,7 +164,6 @@ void AudioRecorder::deinitAudio()
 {
   if (paSimple != NULL)
   {
-    initialized = false;
     std::cout << "[PulseAudio] device closed" << std::endl;
     pa_simple_free(paSimple);
     paSimple = NULL;
