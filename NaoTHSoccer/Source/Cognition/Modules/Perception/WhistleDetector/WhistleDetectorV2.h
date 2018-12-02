@@ -107,21 +107,6 @@ private:
       input(NULL)
     {}
 
-    FFT(const int windowFrequency) 
-      : 
-      windowFrequency(windowFrequency),
-      windowFrequencyHalf(windowFrequency / 2 + 1),
-      magnitude_vector(windowFrequencyHalf)
-    {
-      input   = static_cast<double*>(fftw_malloc(sizeof(double) * windowFrequency));
-      output  = static_cast<fftw_complex*>(fftw_malloc(sizeof(fftw_complex) * windowFrequencyHalf));
-
-      // init the input buffer with zeros
-      std::fill_n(input, windowFrequency, 0.0);
-
-      plan = fftw_plan_dft_r2c_1d(windowFrequency, input, output, FFTW_MEASURE);
-    }
-
     ~FFT()
     {
       if(input) {
@@ -141,6 +126,27 @@ private:
       for(int i = 0; i < windowFrequencyHalf; ++i) {
           magnitude_vector[i] = std::sqrt(output[i][0]*output[i][0] + output[i][1]*output[i][1]);
       }
+    }
+
+    void init(const int windowFrequency) 
+    {
+      // already initialized
+      if(windowFrequency == this->windowFrequency) {
+        return;
+      }
+      
+      this->windowFrequency = windowFrequency;
+      this->windowFrequencyHalf = windowFrequency / 2 + 1;
+      
+      magnitude_vector.resize(windowFrequencyHalf);
+
+      input   = static_cast<double*>(fftw_malloc(sizeof(double) * windowFrequency));
+      output  = static_cast<fftw_complex*>(fftw_malloc(sizeof(fftw_complex) * windowFrequencyHalf));
+
+      // init the input buffer with zeros
+      std::fill_n(input, windowFrequency, 0.0);
+
+      plan = fftw_plan_dft_r2c_1d(windowFrequency, input, output, FFTW_MEASURE);
     }
 
     int input_length() const {

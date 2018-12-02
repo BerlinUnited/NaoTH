@@ -37,7 +37,7 @@ void WhistleDetectorV2::execute()
   // save the timestamp for later
   lastDataTimestamp = getAudioData().timestamp;
 
-  static FFT fft (params.nWindowSizePadded);
+  fft.init(params.nWindowSizePadded);
   
   whistle_filter.setParameter(params.whistle_filter.g0, params.whistle_filter.g1);
 
