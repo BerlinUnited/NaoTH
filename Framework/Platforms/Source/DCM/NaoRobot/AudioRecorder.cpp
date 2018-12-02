@@ -57,8 +57,6 @@ namespace naoth
     // return;
     while(running)
     {
-      int error = 0;
-
       if(!initialized)
       {
         if(!resetting && capture)
@@ -102,6 +100,8 @@ namespace naoth
           running = false;
         }
         //std::cout << "[AudioRecorder] bytesToRead: " << bytesToRead << std::endl;
+
+        int error = 0;
         if (pa_simple_read(paSimple, &audioReadBuffer[0], bytesToRead, &error) < 0)
         {
           std::cerr << "[PulseAudio] pa_simple_read() failed: " << pa_strerror(error) << std::endl;
@@ -172,7 +172,7 @@ namespace naoth
     paSampleSpec.channels = (uint8_t)numChannels;
 
     // Create the recording stream
-    int error;
+    int error = 0;
     if (!(paSimple = pa_simple_new(NULL, "AudioRecorder", PA_STREAM_RECORD, NULL, "AudioRecorder", &paSampleSpec, NULL, NULL, &error)))
     {
       std::cerr << "[PulseAudio] pa_simple_new() failed: " << pa_strerror(error) << "\n" << std::endl;
