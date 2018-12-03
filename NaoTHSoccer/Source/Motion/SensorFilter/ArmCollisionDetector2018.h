@@ -54,7 +54,6 @@ public:
 		{
 			//Entweder direkt als Point vektor
 			//PARAMETER_REGISTER(ReferenceHull) = vector<Point>;
-			//Oder als Pfad zur txt was vermutlich einfacher ist
 			PARAMETER_REGISTER(point_configLeft) = "reference_points_cd18Left.txt";
 			PARAMETER_REGISTER(point_configRight) = "reference_points_cd18Right.txt";
 			PARAMETER_REGISTER(collect) = 32;
