@@ -54,7 +54,7 @@ public:
         Parameter() : ParameterList("ArmCollisionDetector2018")
         {
             //Entweder direkt als Point vektor
-            //PARAMETER_REGISTER(ReferenceHull) = vector<Point>;
+            //PARAMETER_REGISTER(ReferenceHull) = vector<Point>; // <-- do we need that?
             //Oder als Pfad zur txt was vermutlich einfacher ist
             PARAMETER_REGISTER(point_configLeft) = "reference_points_cd18Left.txt";
             PARAMETER_REGISTER(point_configRight) = "reference_points_cd18Right.txt";
