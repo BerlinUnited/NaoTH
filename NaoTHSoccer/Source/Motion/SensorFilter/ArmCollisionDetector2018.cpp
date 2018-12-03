@@ -63,6 +63,7 @@ ArmCollisionDetector2018::ArmCollisionDetector2018()
   */
   getCollisionPercept().referenceHullLeft = ConvexHull::convexHull(getCollisionPercept().referenceHullLeft);
   getCollisionPercept().referenceHullRight = ConvexHull::convexHull(getCollisionPercept().referenceHullRight);
+<<<<<<< Updated upstream
 
   // test for the new make-method
   refpolyL.makeFromPointSet(getCollisionPercept().referenceHullLeft);
@@ -70,11 +71,15 @@ ArmCollisionDetector2018::ArmCollisionDetector2018()
   
   /*
   for (size_t i = 0; i <getCollisionPercept().referenceHullLeft.size(); i++)
+=======
+  /*
+  for (int i = 0; i <getCollisionPercept().referenceHullLeft.size(); i++)
+>>>>>>> Stashed changes
   {
 	  refpolyL.add(getCollisionPercept().referenceHullLeft[i]);
   }
 
-  for (size_t i = 0; i <getCollisionPercept().referenceHullRight.size(); i++)
+  for (int i = 0; i <getCollisionPercept().referenceHullRight.size(); i++)
   {
 	  refpolyR.add(getCollisionPercept().referenceHullRight[i]);
   }
@@ -85,7 +90,11 @@ ArmCollisionDetector2018::~ArmCollisionDetector2018()
 {
 	getDebugParameterList().remove(&params);
 }
+<<<<<<< Updated upstream
 
+=======
+/*
+>>>>>>> Stashed changes
 void ArmCollisionDetector2018::execute()
 {
 	//Check if robot is in a suitable situation to recognize collisions
@@ -137,7 +146,8 @@ void ArmCollisionDetector2018::execute()
 	}
 
 }
-/*
+*/
+
 void ArmCollisionDetector2018::execute()
 {
 	DEBUG_REQUEST("Motion:ArmCollisionDetector2018:showReferenceHull",
@@ -247,4 +257,3 @@ void ArmCollisionDetector2018::execute()
 	}
 
 }
-*/
