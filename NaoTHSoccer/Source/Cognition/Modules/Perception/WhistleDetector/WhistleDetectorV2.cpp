@@ -1,7 +1,8 @@
 /**
-* @file WhistleDetectorV2.h
+* @file WhistleDetectorV2.cpp
 *
 * @author <a href="mailto:schlottb@informatik.hu-berlin.de">Benjamin Schlotter</a>
+* @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
 * Implementation of class WhistleDetectorV2
 * Implements the austrian kangaroos version of the whistle detector
 */

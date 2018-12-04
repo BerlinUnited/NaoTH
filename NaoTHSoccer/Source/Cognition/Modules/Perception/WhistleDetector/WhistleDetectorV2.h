@@ -1,5 +1,14 @@
-#ifndef _WHISTLEDETECTOR_V2_H
-#define _WHISTLEDETECTOR_V2_H
+/**
+* @file WhistleDetectorV2.h
+*
+* @author <a href="mailto:schlottb@informatik.hu-berlin.de">Benjamin Schlotter</a>
+* @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
+* Implementation of class WhistleDetectorV2
+* Implements the austrian kangaroos version of the whistle detector
+*/
+
+#ifndef _WhistleDetectorV2_h_
+#define _WhistleDetectorV2_h_
 
 #include <ModuleFramework/Module.h>
 
@@ -172,4 +181,4 @@ private:
   FFT fft;
 
 };
-#endif // _WHISTLEDETECTOR_V2_H
+#endif // _WhistleDetectorV2_h_
