@@ -280,6 +280,11 @@ workspace "NaoTHSoccer"
       links { "NaoTHSoccer", "Commons", naoth_links}
       vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/DummySimulator" }
       
+    dofile (FRAMEWORK_PATH .. "/Platforms/Make/WhistleSimulator.lua")
+      kind "ConsoleApp"
+      links { "NaoTHSoccer", "Commons", naoth_links}
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/WhistleSimulator" }
+      
     -- generate tests if required
     if _OPTIONS["Test"] ~= nil then
       dofile ("../Test/Make/BallEvaluator.lua")
