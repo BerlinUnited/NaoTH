@@ -6,7 +6,11 @@
 
 #include "CameraMatrixCorrectorV3.h"
 
-#include <array>
+#include <Messages/Representations.pb.h>
+#include <fstream>
+#include <google/protobuf/io/zero_copy_stream_impl.h>
+
+//#include <array>
 
 void CamMatErrorFunctionV3::actual_plotting(const Eigen::Matrix<double, 11, 1>& parameter, CameraInfo::CameraID cameraID) const
 {
@@ -27,7 +31,7 @@ void CamMatErrorFunctionV3::actual_plotting(const Eigen::Matrix<double, 11, 1>& 
                         offsetCam[cameraID],
                         sample->headYaw,
                         sample->headPitch,
-                        sample->inertialModel.orientation
+                        sample->orientation
                         );
 
             std::vector<Vector2d> edgelProjections;
@@ -36,12 +40,12 @@ void CamMatErrorFunctionV3::actual_plotting(const Eigen::Matrix<double, 11, 1>& 
             // draw projected edgels to field
             for(size_t i = 0; i < getEdgelsInImage(sample,cameraID).size(); i++)
             {
-                const EdgelT<double>& edgelOne = getEdgelsInImage(sample,cameraID)[i];
+                const Vector2d& edgelOne = getEdgelsInImage(sample,cameraID)[i];
 
                 CameraGeometry::imagePixelToFieldCoord(
                             tmpCM, getCameraInfo(cameraID),
-                            edgelOne.point.x,
-                            edgelOne.point.y,
+                            edgelOne.x,
+                            edgelOne.y,
                             0.0,
                             edgelProjections[i]);
 
@@ -88,7 +92,7 @@ void CamMatErrorFunctionV3::actual_plotting(const Eigen::Matrix<double, 11, 1>& 
     }
 }
 
-Eigen::VectorXd CamMatErrorFunctionV3::operator()(const Eigen::Matrix<double, 11, 1>& parameter) const 
+Eigen::VectorXd CamMatErrorFunctionV3::operator()(const Eigen::Matrix<double, 11, 1>& parameter) const
 {
     Eigen::VectorXd r(numberOfResudials);
 
@@ -119,7 +123,7 @@ Eigen::VectorXd CamMatErrorFunctionV3::operator()(const Eigen::Matrix<double, 11
                         offsetCam[cameraID],
                         sample->headYaw,
                         sample->headPitch,
-                        sample->inertialModel.orientation
+                        sample->orientation
                         );
 
             std::vector<Vector2d> edgelProjections;
@@ -128,12 +132,12 @@ Eigen::VectorXd CamMatErrorFunctionV3::operator()(const Eigen::Matrix<double, 11
             // project edgels pairs to field
             for(size_t i = 0; i < getEdgelsInImage(sample,cameraID).size(); i++)
             {
-                const EdgelT<double>& edgelOne = getEdgelsInImage(sample,cameraID)[i];
+                const Vector2d& edgelOne = getEdgelsInImage(sample,cameraID)[i];
 
                 CameraGeometry::imagePixelToFieldCoord(
                             tmpCM, getCameraInfo(cameraID),
-                            edgelOne.point.x,
-                            edgelOne.point.y,
+                            edgelOne.x,
+                            edgelOne.y,
                             0.0,
                             edgelProjections[i]);
             }
@@ -161,9 +165,74 @@ Eigen::VectorXd CamMatErrorFunctionV3::operator()(const Eigen::Matrix<double, 11
         }
     }
 
-    ASSERT(empty+idx == calibrationData.size()*2)
+    ASSERT(empty+idx == calibrationData.size()*2);
     ASSERT(idx == numberOfResudials);
     return r;
+}
+
+void CamMatErrorFunctionV3::write_calibration_data_to_file(){
+    std::ofstream out;
+    out.open("/tmp/calibration_data", std::ofstream::binary);
+
+    naothmessages::CalibrationDataCMC message;
+
+    message.set_numberofresudials(numberOfResudials);
+    for(CalibrationData::const_iterator iter = calibrationData.begin(); iter != calibrationData.end(); ++iter){
+        naothmessages::CalibrationDataCMC::CalibrationDataSampleV3 *sample = message.add_calibrationdata();
+
+        DataConversion::toMessage(iter->chestPose, *sample->mutable_chestpose());
+
+        for(std::vector<Vector2d>::const_iterator iter2 = iter->edgelsInImage.begin(); iter2 != iter->edgelsInImage.end(); ++iter2){
+            naothmessages::DoubleVector2 *edgel = sample->add_edgelsinimage();
+            DataConversion::toMessage(*iter2,*edgel);
+        }
+
+        for(std::vector<Vector2d>::const_iterator iter2 = iter->edgelsInImageTop.begin(); iter2 != iter->edgelsInImageTop.end(); ++iter2){
+            naothmessages::DoubleVector2 *edgel = sample->add_edgelsinimagetop();
+            DataConversion::toMessage(*iter2,*edgel);
+        }
+
+        DataConversion::toMessage(iter->orientation, *sample->mutable_orientation());
+        sample->set_headpitch(iter->headPitch);
+        sample->set_headyaw(iter->headYaw);
+    }
+
+    message.SerializeToOstream(&out);
+
+    out.close();
+}
+
+void CamMatErrorFunctionV3::read_calibration_data_from_file(){
+    std::ifstream in;
+    in.open("/tmp/calibration_data", std::ifstream::binary);
+
+    naothmessages::CalibrationDataCMC message;
+    message.ParseFromIstream(&in);
+
+    size_t size = static_cast<size_t>(message.calibrationdata_size());
+    calibrationData.resize(size);
+    for(size_t i = 0; i < size; ++i){
+       naothmessages::CalibrationDataCMC::CalibrationDataSampleV3 *msg_sample = message.mutable_calibrationdata(static_cast<int>(i));
+       CalibrationDataSample& sample = calibrationData[i];
+
+       DataConversion::fromMessage(*(msg_sample->mutable_chestpose()), sample.chestPose);
+
+       sample.edgelsInImage.resize(static_cast<size_t>(msg_sample->edgelsinimage_size()));
+       for(int i = 0; i < msg_sample->edgelsinimage_size(); ++i){
+           DataConversion::fromMessage(msg_sample->edgelsinimage(i), sample.edgelsInImage[static_cast<size_t>(i)]);
+       }
+
+       sample.edgelsInImageTop.resize(static_cast<size_t>(msg_sample->edgelsinimagetop_size()));
+       for(int i = 0; i < msg_sample->edgelsinimagetop_size(); ++i){
+           DataConversion::fromMessage(msg_sample->edgelsinimagetop(i), sample.edgelsInImageTop[static_cast<size_t>(i)]);
+       }
+
+       DataConversion::fromMessage(*(msg_sample->mutable_orientation()), sample.orientation);
+       sample.headPitch = msg_sample->headpitch();
+       sample.headYaw   = msg_sample->headyaw();
+    }
+
+    in.close();
 }
 
 CameraMatrixCorrectorV3::CameraMatrixCorrectorV3()
@@ -186,7 +255,11 @@ CameraMatrixCorrectorV3::CameraMatrixCorrectorV3()
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:optimizer:use_LM",  "use Levenberg-Marquardt based optimizer during calibration (default)", true);
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:optimizer:use_LM2", "use Levenberg-Marquardt based optimizer (smoothed update) during calibration", false);
 
+  DEBUG_REQUEST_REGISTER("CameraMatrixV3:read_calibration_data_from_file", "", false);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV3:write_calibration_data_to_file",  "", false);
+
   theCamMatErrorFunctionV3 = registerModule<CamMatErrorFunctionV3>("CamMatErrorFunctionV3", true);
+  read_calibration_data = written_calibration_data = false;
 
   auto_cleared_data = auto_collected = auto_calibrated = false;
   play_calibrated = play_calibrating = play_collecting = true;
@@ -219,6 +292,27 @@ CameraMatrixCorrectorV3::~CameraMatrixCorrectorV3()
 
 void CameraMatrixCorrectorV3::execute()
 {
+  DEBUG_REQUEST("CameraMatrixV3:read_calibration_data_from_file",
+    if(!read_calibration_data) {
+      theCamMatErrorFunctionV3->getModuleT()->read_calibration_data_from_file();
+      read_calibration_data = true;
+    }
+  );
+
+  DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV3:read_calibration_data_from_file",
+    read_calibration_data = false;
+  );
+
+  DEBUG_REQUEST("CameraMatrixV3:write_calibration_data_to_file",
+    if(!written_calibration_data) {
+      theCamMatErrorFunctionV3->getModuleT()->write_calibration_data_to_file();
+      written_calibration_data = true;
+    }
+  );
+
+  DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV3:write_calibration_data_to_file",
+    written_calibration_data = false;
+  );
 
   DEBUG_REQUEST("CameraMatrixV3:optimizer:use_GN",
     minimizer = &gn_minimizer;
@@ -336,7 +430,7 @@ void CameraMatrixCorrectorV3::reset_calibration()
 }
 
 // returns true if the averaged reduction per second decreases under a heuristic value
-bool CameraMatrixCorrectorV3::calibrate() 
+bool CameraMatrixCorrectorV3::calibrate()
 {
   double dt = getFrameInfo().getTimeInSeconds()-last_frame_info.getTimeInSeconds();
 
@@ -422,7 +516,7 @@ void CameraMatrixCorrectorV3::sampling()
 
     (theCamMatErrorFunctionV3->getModuleT())->add(CamMatErrorFunctionV3::CalibrationDataSample(getKinematicChain().theLinks[KinematicChain::Torso].M,
                                                                 lineGraphPercept,
-                                                                getInertialModel(),
+                                                                getInertialModel().orientation,
                                                                 getSensorJointData().position[JointData::HeadYaw],
                                                                 getSensorJointData().position[JointData::HeadPitch]
                                                                ));

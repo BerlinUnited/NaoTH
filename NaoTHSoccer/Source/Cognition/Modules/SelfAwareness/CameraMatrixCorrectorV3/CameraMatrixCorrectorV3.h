@@ -77,14 +77,27 @@ class CamMatErrorFunctionV3 : public CamMatErrorFunctionV3Base
 {
 public:
     struct CalibrationDataSample {
-        CalibrationDataSample(const Pose3D& chestPose, const LineGraphPercept& lineGraphPercept, const InertialModel& inertialModel, double headYaw  , double headPitch)
-                             :chestPose(chestPose)   , lineGraphPercept(lineGraphPercept)      , inertialModel(inertialModel)      , headYaw(headYaw), headPitch(headPitch)
-        {}
+        CalibrationDataSample(){}
+
+        CalibrationDataSample(const Pose3D& chestPose, const LineGraphPercept& lineGraphPercept, const Vector2d& orientation, double headYaw  , double headPitch)
+                             :chestPose(chestPose)   , orientation(orientation)      , headYaw(headYaw), headPitch(headPitch)
+        {
+            edgelsInImage.reserve(lineGraphPercept.edgelsInImage.size());
+            for(std::vector<EdgelD>::const_iterator iter = lineGraphPercept.edgelsInImage.begin(); iter != lineGraphPercept.edgelsInImage.end(); ++iter){
+                edgelsInImage.push_back(iter->point);
+            }
+
+            edgelsInImageTop.reserve(lineGraphPercept.edgelsInImageTop.size());
+            for(std::vector<EdgelD>::const_iterator iter = lineGraphPercept.edgelsInImageTop.begin(); iter != lineGraphPercept.edgelsInImageTop.end(); ++iter){
+                edgelsInImageTop.push_back(iter->point);
+            }
+        }
 
         //KinematicChain   kinematicChain;
         Pose3D chestPose; //work around, can't copy kinematic chain
-        LineGraphPercept lineGraphPercept;
-        InertialModel    inertialModel;
+        std::vector<Vector2d> edgelsInImage;
+        std::vector<Vector2d> edgelsInImageTop;
+        Vector2d orientation;
         double headYaw;
         double headPitch;
     };
@@ -93,7 +106,7 @@ public:
 
 private:
     CalibrationData calibrationData;
-    size_t numberOfResudials;
+    unsigned int numberOfResudials;
 
     const CameraInfo& getCameraInfo(int cameraID) const {
       if(cameraID == CameraInfo::Top) {
@@ -103,11 +116,11 @@ private:
       }
     }
 
-    const std::vector<EdgelD>& getEdgelsInImage(std::vector<CalibrationDataSample>::const_iterator& sample, int cameraID) const {
+    const std::vector<Vector2d>& getEdgelsInImage(std::vector<CalibrationDataSample>::const_iterator& sample, int cameraID) const {
       if(cameraID == CameraInfo::Top) {
-        return sample->lineGraphPercept.edgelsInImageTop;
+        return sample->edgelsInImageTop;
       } else {
-        return sample->lineGraphPercept.edgelsInImage;
+        return sample->edgelsInImage;
       }
     }
 
@@ -127,16 +140,16 @@ public:
 
     Eigen::VectorXd operator()(const Eigen::Matrix<double, 11, 1>& parameter) const;
 
-    size_t getNumberOfResudials() const {
+    unsigned int getNumberOfResudials() const {
         return numberOfResudials;
     }
 
-    void add(const CalibrationDataSample& c_data_sample) 
+    void add(const CalibrationDataSample& c_data_sample)
     {
-        int numNewResudials = 
-          (c_data_sample.lineGraphPercept.edgelsInImage.empty()   ? 0 : 1) + 
-          (c_data_sample.lineGraphPercept.edgelsInImageTop.empty()? 0 : 1);
-        
+        unsigned int numNewResudials =
+          (c_data_sample.edgelsInImage.empty()   ? 0 : 1) +
+          (c_data_sample.edgelsInImageTop.empty()? 0 : 1);
+
         if (numNewResudials > 0) {
             calibrationData.push_back(c_data_sample);
             numberOfResudials += numNewResudials;
@@ -171,6 +184,9 @@ public:
             actual_plotting(parameter, CameraInfo::Top);
         }
     }
+
+    void write_calibration_data_to_file();
+    void read_calibration_data_from_file();
 };
 
 // HACK: shouldn't be a ModuleManager but has to be because of the CamMatErrorFunctionV3... see above
@@ -213,6 +229,9 @@ private:
   RingBufferWithSum<double, 50> derrors;
   double last_error;
   FrameInfo last_frame_info;
+
+  // for reading and writing calibration data
+  bool read_calibration_data, written_calibration_data;
 };
 
 #endif //_CameraMatrixCorrectorV3_h_
