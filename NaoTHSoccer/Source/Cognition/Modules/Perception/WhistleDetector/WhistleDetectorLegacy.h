@@ -5,7 +5,7 @@
 
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/AudioData.h>
-#include <Representations/Infrastructure/WhistlePercept.h>
+#include <Representations/Perception/WhistlePercept.h>
 
 // debug
 #include <Tools/DataStructures/ParameterList.h>

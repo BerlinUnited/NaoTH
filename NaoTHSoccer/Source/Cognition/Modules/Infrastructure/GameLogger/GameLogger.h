@@ -24,7 +24,7 @@
 #include "Representations/Perception/MultiBallPercept.h"
 
 #include <Representations/Infrastructure/AudioData.h>
-#include "Representations/Infrastructure/WhistlePercept.h"
+#include "Representations/Perception/WhistlePercept.h"
 
 // tools
 #include "Tools/Debug/DebugParameterList.h"

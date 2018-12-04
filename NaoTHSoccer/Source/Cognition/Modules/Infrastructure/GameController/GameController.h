@@ -10,7 +10,7 @@
 #include "Representations/Infrastructure/ButtonState.h"
 #include "Representations/Infrastructure/SoundData.h"
 #include "Representations/Modeling/PlayerInfo.h"
-#include "Representations/Infrastructure/WhistlePercept.h"
+#include "Representations/Perception/WhistlePercept.h"
 #include "Representations/Infrastructure/GameData.h"
 #include "Representations/Modeling/TeamMessageData.h"
 #include "Representations/Infrastructure/WifiMode.h"

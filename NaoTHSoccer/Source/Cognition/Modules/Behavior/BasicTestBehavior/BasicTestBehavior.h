@@ -33,7 +33,7 @@
 
 #include <Representations/Infrastructure/RemoteControlCommand.h>
 
-#include <Representations/Infrastructure/WhistlePercept.h>
+#include <Representations/Perception/WhistlePercept.h>
 #include "Representations/Infrastructure/AudioControl.h"
 
 // debug
