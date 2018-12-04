@@ -42,46 +42,53 @@ namespace ConvexHull
   };
 
   // Returns a list of points on the convex hull in counter-clockwise order.
-  // Note: the last point in the returned list is the same as the first one.
+  // NOTE: the last point in the returned list is the same as the first one.
   template<typename T, class ComperatorType = Less<T> >
-  vector<T> convexHull(vector<T> P)
+  void convexHull(vector<T> points, vector<T>& result)
   {
-    // TODO: guard against overflow with std::limits<int>
-    // TODO: this should be completly changed 2017.07.14
-    int n = static_cast<int> (P.size());
-    int k = 0;
-
     //Anmerkung: mit 3 oder weniger punkten haben
     //wir den trivialen Fall
-    if(n < 2)
+    if(points.size() < 2)
     {
       // Check if we don't have to do anything and provide a (non-crashing) fallback in case the static_cast<int>
       // did indeed overflow and i is less than zero.
-      return P;
+      result = points;
+      return;
     }
 
     // Worst-case scenario is that an value is assgined to n*2 points at least temporary
-    vector<T> H(n*2);
+    //vector<T> result(n*2);
+    result.resize(points.size()*2);
  
     // Sort points lexicographically
-    sort(P.begin(), P.end(), ComperatorType());
+    sort(points.begin(), points.end(), ComperatorType());
  
+    size_t k = 0;
+
     // Build lower hull
-    for (int i = 0; i < n; i++) {
-      while (k >= 2 && cross(H[k-2], H[k-1], P[i]) <= 0) k--;
-      H[k++] = P[i];
+    for (size_t i = 0; i < points.size(); i++) {
+      while (k >= 2 && cross(result[k-2], result[k-1], points[i]) <= 0) k--;
+      result[k++] = points[i];
     }
 
     // Build upper hull
-    for (int i = n-2, t = k+1; i >= 0; i--){
-      while (k >= t && cross(H[k-2], H[k-1], P[i]) <= 0) k--;
-      H[k++] = P[i];
+    for (size_t i = points.size()-1, t = k+1; i > 0; i--) {
+      while (k >= t && cross(result[k-2], result[k-1], points[i-1]) <= 0) k--;
+      result[k++] = points[i-1];
     }
 
-	//NOTE: This Algorithm resiszes of the size k. The first and the last element are Equal. 
-	//Some algorithm implementations cut that last element off but we need it for the field polygon
-    H.resize(k);
-    return H;
+    // NOTE: This Algorithm resiszes of the size k. The first and the last element are Equal. 
+    //       Some algorithm implementations cut that last element off but we need it for the field polygon.
+    result.resize(k);
+  }
+
+
+  template<typename T, class ComperatorType = Less<T> >
+  vector<T> convexHull(vector<T> points)
+  {
+    vector<T> result;
+    convexHull(points, result);
+    return result;
   }
 
 }

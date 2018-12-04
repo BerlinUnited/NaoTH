@@ -29,7 +29,6 @@ class AudioData : public Printable
 public:
   int sampleRate;
   int numChannels;
-  bool onlySoundInSet;
   unsigned int timestamp;
 
   std::vector<short> samples; /* Samples are interleaved. */

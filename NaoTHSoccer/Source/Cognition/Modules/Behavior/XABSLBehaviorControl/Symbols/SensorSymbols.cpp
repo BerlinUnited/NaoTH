@@ -59,9 +59,8 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   // deprecated?
   engine.registerBooleanInputSymbol("battery.isDischarging", &getBodyState().isDischarging);
   engine.registerBooleanInputSymbol("battery.isCharging", &getBodyState().isCharging);
-  
 
-  engine.registerDecimalOutputSymbol("audio.switch", &setAudioSwitch, &getAudioSwitch);
+  engine.registerBooleanOutputSymbol("audio.capture", &getAudioControl().capture);
 
 }//end registerSymbols
 
@@ -75,14 +74,6 @@ void SensorSymbols::execute()
 {
 
 }//end execute
-
-double SensorSymbols::getAudioSwitch(){
-	return theInstance->getAudioControl().onOffSwitch;
-}
-
-void SensorSymbols::setAudioSwitch(double whistle){
-  theInstance->getAudioControl().onOffSwitch = (int)whistle;
-}
 
 bool SensorSymbols::getBumberLeftPressed()
 {

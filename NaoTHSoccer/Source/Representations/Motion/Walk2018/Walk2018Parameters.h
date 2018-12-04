@@ -12,6 +12,10 @@
 #include "Tools/Math/Vector2.h"
 #include "Tools/Debug/DebugParameterList.h"
 
+#include <PlatformInterface/Platform.h>
+#include <string>
+#include <iostream>
+
 class FeetStabilizerParameters: public ParameterList{
       public:
         FeetStabilizerParameters() : ParameterList("Walk_FeetStabilizer")
@@ -245,6 +249,73 @@ public:
   double ZMPOffsetYByCharacter;
 };
 
+class ZMPPreviewControllerParameter {
+    public:
+        ZMPPreviewControllerParameter(): current(NULL) {
+            loadParameter();
+        }
+
+        struct Parameters {
+            double Ki;
+            Vector3d K;
+            std::vector<double> f;
+            int height;
+        };
+
+        const Parameters* current; // i.e., parameters->loadedParameters[parameterHeight]
+
+        double parameterTimeStep; // time step of the precalculated parameters
+
+        void update(int newHeight){
+            ParameterMap::const_iterator iter = loadedParameters.find(newHeight);
+            assert(iter != loadedParameters.end());
+            current = &(iter->second);
+        }
+
+    private:
+        void loadParameter(){
+            // generate the file name
+            std::string path = naoth::Platform::getInstance().theConfigDirectory;
+            path += "platform/";
+            path += naoth::Platform::getInstance().thePlatform;
+            path += "/previewControl.prm";
+
+            // open the stream
+            std::ifstream ifs(path.c_str());
+            if(!ifs.good()){
+              THROW("[PreviewController] ERROR: load " << path << std::endl);
+            } else {
+              std::cout << "[PreviewController] load " << path << std::endl;
+            }
+
+            // read the header
+            double length_f(0.0), number_of_entries(0.0);
+            ifs >> parameterTimeStep >> length_f >> number_of_entries;
+
+            // read the parameters for each height step
+            double height(0.0);
+            for(int i = 0; i < number_of_entries; i++) {
+              ifs >> height;
+
+              Parameters& p = loadedParameters[static_cast<int>(height)];
+              p.f.resize(static_cast<size_t>(length_f));
+
+              ifs >> p.Ki >> p.K;
+
+              for(unsigned int i = 0; i < p.f.size(); i++) {
+                assert(!ifs.eof());
+                ifs >> p.f[i];
+              }
+
+              p.height = static_cast<int>(height);
+            }
+        }
+
+        // parameters for diffent heights
+        typedef std::map<int, Parameters> ParameterMap;
+        ParameterMap loadedParameters;
+};
+
 class GeneralParameters : public ParameterList{
     public:
         GeneralParameters() : ParameterList("Walk_General")
@@ -281,6 +352,7 @@ public:
     LiftingFootCompensatorParameters      liftingFootCompensatorParams;
     TorsoRotationStabilizerParameters     torsoRotationStabilizerParams;
     ZMPPlanner2018Parameters              zmpPlanner2018Params;
+    ZMPPreviewControllerParameter		  zmpPreviewControllerParams; // don't need to be registered because they arn't normal parameters
     GeneralParameters                     generalParams;
 
     void init(DebugParameterList& dbpl){
