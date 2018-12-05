@@ -20,8 +20,11 @@
                do { errno = en; perror(msg); exit(EXIT_FAILURE); } while (0)
 
 using namespace naoth;
+using namespace std;
 
 std::atomic_int framesSinceCognitionLastSeen;
+std::atomic_bool running;
+std::atomic_bool already_got_signal;
 
 void got_signal(int sigid)
 {
@@ -46,12 +49,19 @@ void got_signal(int sigid)
 
   system("/usr/bin/paplay Media/naoth_stop.wav");
   
-  // set the default handler for the signal
-  signal(sigid, SIG_DFL);
-  //resend the signal to yourself
-  kill(getpid(), sigid);
+  // notify all threads to stop
+  running = false;
 
-  //exit(0);
+  // this is not the first kill signal that we receive, so forward it to the default handler
+  if (already_got_signal) {
+    std::cout << "WARNING: received repeated kill signals. Graceful stop was not possible. Will kill." << std::endl;
+    // set the default handler for the signal
+    signal(sigid, SIG_DFL);
+    //forward the signal to yourself
+    kill(getpid(), sigid);
+  } 
+
+  already_got_signal = true;
 }//end got_signal
 
 
@@ -96,11 +106,13 @@ class TestThread : public RtThread
 void* motionThreadCallback(void* ref)
 {
   framesSinceCognitionLastSeen = 0;
+  running = true;
+  already_got_signal = false;
 
   NaoController* theController = static_cast<NaoController*> (ref);
 
   //Stopwatch stopwatch;
-  while(true)
+  while(running)
   {
     if(framesSinceCognitionLastSeen > 4000)
     {
@@ -221,7 +233,7 @@ int main(int /*argc*/, char **/*argv[]*/)
   
   std::thread cognitionThread = std::thread([&theController]
   {
-    while(true) {
+    while(running) {
       theController.runCognition();
       framesSinceCognitionLastSeen = 0;
       std::this_thread::yield();
