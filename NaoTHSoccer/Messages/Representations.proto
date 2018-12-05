@@ -364,7 +364,9 @@ message WhistlePercept {
     required int64 positionInCapture = 2;
     required double responseValue = 3;
   }
-  required int32 counter  = 1;
-  required string captureFile = 2;
+  
+  optional int32 counter  = 1;
+  optional string captureFile = 2;
   repeated Whistle recognizedWhistles = 3;
+  optional bool whistleDetected = 4;
 }
