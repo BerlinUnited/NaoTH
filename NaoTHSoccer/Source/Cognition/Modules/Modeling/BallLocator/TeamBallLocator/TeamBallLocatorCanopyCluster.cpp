@@ -26,13 +26,21 @@ void TeamBallLocatorCanopyCluster::execute() {
         if(!getTeamMessagePlayersState().isPlaying(playerNumber)) { continue; }
 
         // ballage + network delay
-        double ballAge = msg.ballAge + static_cast<double>(getTeamMessageNTP().getTimeInMilliSeconds(playerNumber) - msg.custom.timestamp);
+        double ballAge = msg.ballAge;
+        if(getTeamMessageNTP().isNtpActive(playerNumber)) {
+            ballAge += static_cast<double>(getTeamMessageNTP().getTimeInMilliSeconds(playerNumber) - msg.custom.timestamp);
+        }
 
         // -1 means "ball never seen", ballAge (incl. network delay) should be small
         if(msg.ballAge >= 0 && ballAge <= params.maxBallAge)
         {
+            Vector2d globalBallPosition = msg.pose * msg.ballPosition;
+
+            // if activated via parameter, skip balls, which are outside the field!
+            if(params.ballsAreOnlyValidOnField && (std::fabs(globalBallPosition.x) > getFieldInfo().xFieldLength * 0.5 || std::fabs(globalBallPosition.y) > getFieldInfo().yFieldLength * 0.5)) { continue; }
+
             // global position of the ball and time last seen
-            balls.push_back(Ball(msg.pose * msg.ballPosition));
+            balls.push_back(Ball(globalBallPosition));
         }
     }
 
