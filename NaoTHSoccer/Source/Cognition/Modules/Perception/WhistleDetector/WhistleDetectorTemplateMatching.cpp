@@ -137,7 +137,8 @@ void WhistleDetectorTemplateMatching::loadReferenceWhistles()
 
 void WhistleDetectorTemplateMatching::execute()
 {
-	
+	getWhistlePercept().reset();
+
   // there is no new data, return
   if(lastDataTimestamp >= getAudioData().timestamp ) {
     return;
@@ -156,7 +157,6 @@ void WhistleDetectorTemplateMatching::execute()
 
   fftw_execute(planFFT); // compute the FFT - repeat as needed
 
-  bool whistleDetected = false;
   for(size_t idxWhistle = 0; idxWhistle < referenceWhistleSpectra.size(); idxWhistle++)
   {
     
@@ -199,9 +199,9 @@ void WhistleDetectorTemplateMatching::execute()
     {
       std::cout << "Whistle " << referenceWhistleNames[idxWhistle] << "(No. " << idxWhistle << ") maxCorr " << correlation << " ref corr " << referenceWhistleAutoCorrelationMaxima[idxWhistle] << std::endl;
       std::cout << "Whistle " << referenceWhistleNames[idxWhistle] << "(No. " << idxWhistle << ") detected! " << response << std::endl;
-      whistleDetected = true;
+      getWhistlePercept().whistleDetected = true;
     }
   }
 
-  PLOT("WhistleDetectorTemplateMatching:whistle_filter", whistleDetected);
+  PLOT("WhistleDetectorTemplateMatching:whistle_filter", getWhistlePercept().whistleDetected);
 }
