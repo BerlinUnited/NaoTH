@@ -1,3 +1,12 @@
+/**
+* @file WhistleDetectorV2.h
+*
+* @author <a href="mailto:schlottb@informatik.hu-berlin.de">Benjamin Schlotter</a>
+* @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
+* Implementation of class WhistleDetectorLegacy
+* Implements the austrian kangaroos version of the whistle detector
+*/
+
 #ifndef _WhistleDetectorLegacy_H
 #define _WhistleDetectorLegacy_H
 
