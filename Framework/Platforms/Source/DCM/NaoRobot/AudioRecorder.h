@@ -4,6 +4,7 @@
 #include <mutex>
 #include <iostream>
 #include <pulse/simple.h>
+#include <condition_variable>
 
 //#include "SoundConfig.h"
 
@@ -32,6 +33,7 @@ namespace naoth
     volatile bool exiting;
     std::thread audioRecorderThread;
     std::mutex dataMutex;
+    std::condition_variable new_command_avaliable;
       
     //audio control parameter
     AudioControl control;
