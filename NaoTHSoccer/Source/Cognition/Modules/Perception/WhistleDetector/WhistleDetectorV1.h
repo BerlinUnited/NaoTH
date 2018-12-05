@@ -3,7 +3,7 @@
 
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/AudioData.h>
-#include <Representations/Infrastructure/WhistlePercept.h>
+#include <Representations/Perception/WhistlePercept.h>
 #include <Representations/Infrastructure/AudioControl.h>
 
 #include <Tools/DataStructures/ParameterList.h>

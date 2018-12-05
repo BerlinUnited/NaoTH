@@ -24,7 +24,7 @@
 #include "Representations/Perception/MultiBallPercept.h"
 
 #include <Representations/Infrastructure/AudioData.h>
-#include "Representations/Infrastructure/WhistlePercept.h"
+#include "Representations/Perception/WhistlePercept.h"
 
 // tools
 #include "Tools/Debug/DebugParameterList.h"
@@ -108,7 +108,6 @@ private:
   
   PlayerInfo::RobotState oldState;
   bool firstRecording;
-  int lastWhistleCounter;
   unsigned long lastAudioDataTimestamp;
 
   CameraInfo::CameraID lastRecordedPlainImageID;
