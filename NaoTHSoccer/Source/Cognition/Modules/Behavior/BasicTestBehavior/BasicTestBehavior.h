@@ -78,10 +78,6 @@ public:
   virtual void execute();
 
 private:
-  int lastWhistleCount;
-  int idleCounter;
-	bool whistleDetected;
-
   void testHead();
   void testMotion();
   void testLED();

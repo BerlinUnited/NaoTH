@@ -47,8 +47,8 @@ private:
   void updateLEDs();
 
 private:
-  int lastWhistleCount;
   GameData::GameState lastGameState;
+  bool debug_whistle_heard;
 };
 
 #endif // GAMECONTROLLER_H

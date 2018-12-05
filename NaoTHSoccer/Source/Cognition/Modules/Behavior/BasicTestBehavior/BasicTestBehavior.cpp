@@ -9,10 +9,6 @@
 #include "BasicTestBehavior.h"
 
 BasicTestBehavior::BasicTestBehavior() 
-:
-  lastWhistleCount(0),
-  idleCounter(11),
-  whistleDetected(false)
 {
   // test head control
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:Search", "Set the HeadMotion-Request to 'search'.", false);
@@ -408,12 +404,10 @@ void BasicTestBehavior::testWhistle()
   DEBUG_REQUEST("BasicTestBehavior:whistle:listen",
     getAudioControl().capture = true;
 
-    if(getWhistlePercept().counter > lastWhistleCount) {
+    if(getWhistlePercept().whistleDetected) {
       getSoundPlayData().soundFile = "victory.wav";
     } else {
       getSoundPlayData().soundFile.clear();
     }
-
-    lastWhistleCount = getWhistlePercept().counter;
   );
 }
