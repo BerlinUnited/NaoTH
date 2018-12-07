@@ -28,6 +28,7 @@ PerceptionsVisualizer::PerceptionsVisualizer()
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:edgels_percept", "draw edgels percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image_px:edgels_percept", "draw edgels percept", false);
 
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:line_percept_2018", "draw new line percept", false);
 
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:line_percept", "draw line percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image:line_percept", "draw line percept", false);
@@ -426,7 +427,6 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
   );
 
 
-
   DEBUG_REQUEST("PerceptionsVisualizer:image:draw_field_polygon",
     ColorClasses::Color color = getFieldPercept().valid ? ColorClasses::green : ColorClasses::red;
     const FieldPercept::FieldPoly& fieldpoly = getFieldPercept().getValidField();
@@ -434,4 +434,45 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
       LINE_PX(color, fieldpoly[i].x, fieldpoly[i].y, fieldpoly[i+1].x, fieldpoly[i+1].y);
     }
   );
+
+  // draw new line percept
+  DEBUG_REQUEST("PerceptionsVisualizer:field:line_percept_2018",
+    FIELD_DRAWING_CONTEXT;
+    PEN("AA666666", 50);
+
+    // draw ransac line percept
+    PEN("AA666666", 50);
+    for (unsigned int i = 0; i < getRansacLinePercept().fieldLineSegments.size(); i++)
+    {
+      const Math::LineSegment line = getRansacLinePercept().fieldLineSegments[i];
+
+      LINE(line.begin().x,
+           line.begin().y,
+           line.end().x,
+           line.end().y);
+    }
+
+    // draw short line percept (RansacLineDetectorOnGraphs)
+    PEN("66AA6666", 50);
+    for (unsigned int i = 0; i < getShortLinePercept().fieldLineSegments.size(); i++)
+    {
+      const Math::LineSegment line = getShortLinePercept().fieldLineSegments[i];
+
+      LINE(line.begin().x,
+           line.begin().y,
+           line.end().x,
+           line.end().y);
+    }
+
+    // draw ransac circle
+    if(getRansacCirclePercept2018().wasSeen)
+    {
+      const Vector2<double>& center = getRansacCirclePercept2018().center;
+      PEN("FFFFFF99", 10);
+      CIRCLE(center.x, center.y, 50);
+      PEN("FFFFFF99", 50);
+      CIRCLE(center.x, center.y, getFieldInfo().centerCircleRadius - 25);
+    }
+  );
+
 }//end execute

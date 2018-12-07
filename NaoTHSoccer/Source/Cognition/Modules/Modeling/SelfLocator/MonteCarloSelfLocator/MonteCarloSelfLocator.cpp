@@ -228,7 +228,8 @@ void MonteCarloSelfLocator::execute()
 
       sensorResetBySensingGoalModel(theSampleSet, (int)theSampleSet.size() - 1);
       if(parameters.sensorResetByMiddleCircle) {
-        sensorResetByMiddleCircle(theSampleSet, getRansacCirclePercept().middleCircleCenter);
+        //sensorResetByMiddleCircle(theSampleSet, getRansacCirclePercept().middleCircleCenter);
+        sensorResetByMiddleCircle(theSampleSet, getRansacCirclePercept2018().center);
       }
 
       // estimate the state
@@ -298,7 +299,8 @@ void MonteCarloSelfLocator::execute()
       }
 
       if(parameters.sensorResetByMiddleCircle) {
-        sensorResetByMiddleCircle(theSampleSet, getRansacCirclePercept().middleCircleCenter);
+        //sensorResetByMiddleCircle(theSampleSet, getRansacCirclePercept().middleCircleCenter);
+        sensorResetByMiddleCircle(theSampleSet, getRansacCirclePercept2018().center);
       }
 
       calculatePose(theSampleSet);
@@ -450,12 +452,17 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
   */
 
   if(parameters.updateByMiddleCircle) {
+    /*
     if(parameters.updateByLinePerceptCircle && getLinePercept().middleCircleWasSeen) {
       updateByMiddleCircle(getLinePercept().middleCircleCenter, sampleSet);
     }
 
     if(parameters.updateByRansacCircle && getRansacCirclePercept().middleCircleWasSeen) {
       updateByMiddleCircle(getRansacCirclePercept().middleCircleCenter, sampleSet);
+    }
+    */
+    if(parameters.updateByRansacCircle && getRansacCirclePercept2018().wasSeen) {
+      updateByMiddleCircle(getRansacCirclePercept2018().center, sampleSet);
     }
   }
 
@@ -472,15 +479,23 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
 
   if(parameters.updateByLinePercept)
   {
+    /*
     if(!getLinePercept().lines.empty()) {
       updateByLines(getLinePercept(), sampleSet);
+    }*/
+    if(!getRansacLinePercept().fieldLineSegments.empty()) {
+      updateByLines2018(getRansacLinePercept(), sampleSet);
     }
   }
 
   if(parameters.updateByShortLinePercept)
   {
+    /*
     if(!getLinePercept().short_lines.empty()) {
       updateByShortLines(getLinePercept(), sampleSet);
+    }*/
+    if(!getShortLinePercept().fieldLineSegments.empty()) {
+      updateByLines2018(getShortLinePercept(), sampleSet);
     }
   }
 
@@ -654,8 +669,7 @@ void MonteCarloSelfLocator::updateByLinePoints(const LineGraphPercept& lineGraph
   }
 }//end updateByLinePoints
 
-
-void MonteCarloSelfLocator::updateByLines(const LinePercept& linePercept, SampleSet& sampleSet) const
+void MonteCarloSelfLocator::updateByLines2018(const LinePercept2018& linePercept, SampleSet& sampleSet) const
 {
   const double cameraHeight = getCameraMatrix().translation.z;
   const double sigmaDistance = parameters.goalPostSigmaDistance;
@@ -663,15 +677,15 @@ void MonteCarloSelfLocator::updateByLines(const LinePercept& linePercept, Sample
   double shortestLine = 1e+5; // very long...
 
   // todo: parameter for max lines to update by
-  for(size_t lp=0; lp < linePercept.lines.size() && lp < 3; lp++)
+  for(size_t lp=0; lp < linePercept.fieldLineSegments.size() && lp < 3; lp++)
   {
     //int idx = Math::random((int)linePercept.lines.size());
-    // dont use the lines which are parts of the circle 
+    // dont use the lines which are parts of the circle
     // when the circle itself was detected
     //if(linePercept.lines[idx].type == LinePercept::C && linePercept.middleCircleWasSeen)
     //  continue;
 
-    if(linePercept.lines[lp].lineOnField.getLength() < 300) { // don't use too short lines
+    if(linePercept.fieldLineSegments[lp].getLength() < 300) { // don't use too short lines
       continue;
     }
 
@@ -689,7 +703,7 @@ void MonteCarloSelfLocator::updateByLines(const LinePercept& linePercept, Sample
     //int lineVotes[30] = {0};
     //int maxIdx = 0;
 
-    const Math::LineSegment& relPercept = linePercept.lines[lp].lineOnField;
+    const Math::LineSegment& relPercept = linePercept.fieldLineSegments[lp];
 
     for(size_t s=0; s < sampleSet.size(); s++)
     {
@@ -708,10 +722,11 @@ void MonteCarloSelfLocator::updateByLines(const LinePercept& linePercept, Sample
       // todo: this may make problems when the lines are distored
       int length    = (relPercept.getLength() > 700)?LinesTable::long_lines:LinesTable::short_lines|LinesTable::long_lines;
       int direction = (fabs(abs_direction.x) > fabs(abs_direction.y))?LinesTable::along_lines:LinesTable::across_lines;
-      int type      = (linePercept.lines[lp].type == LinePercept::C)?LinesTable::circle_lines:length|direction;
+      //int type      = (linePercept.lines[lp].type == LinePercept::C)?LinesTable::circle_lines:length|direction;
+      int type      = length|direction;
 
       /*
-      const LinesTable::NamedPoint& p_mid = 
+      const LinesTable::NamedPoint& p_mid =
         (type&LinesTable::circle_lines)?
           getFieldInfo().fieldLinesTable.get_closest_point_direct(abs_mid, LinesTable::idx_circle):
           getFieldInfo().fieldLinesTable.get_closest_line_point_fast(abs_mid, length, direction);
@@ -734,158 +749,7 @@ void MonteCarloSelfLocator::updateByLines(const LinePercept& linePercept, Sample
         // vote for the corner id
         ASSERT(p_mid.id <= 29);
         lineVotes[p_mid.id]++;
-        if(lineVotes[p_mid.id] > lineVotes[maxIdx]) 
-          maxIdx = p_mid.id;
-      );
-      */
-      // project the perceived line to the reference
-      Vector2d p1 = ref_line.projection(abs_begin);
-      Vector2d p2 = ref_line.projection(abs_end);
-      Vector2d pm = p_mid.position;
-
-      /*
-      DEBUG_REQUEST("MCSL:draw_corner_votes",
-        if(linePercept.lines[lp].type != LinePercept::C) {
-          LINE(p1.x, p1.y, pm.x, pm.y);
-          LINE(p2.x, p2.y, pm.x, pm.y);
-      });
-      */
-
-      {
-        Vector2d relP1(sample/p1);
-        sample.likelihood *= computeDistanceWeight(relPercept.begin().abs(), relP1.abs(), cameraHeight, sigmaDistance);
-        sample.likelihood *= computeAngleWeight(relPercept.begin().angle(), relP1.angle(), sigmaAngle);
-      }
-      {
-        Vector2d relP2(sample/p2);
-        sample.likelihood *= computeDistanceWeight(relPercept.end().abs(), relP2.abs(), cameraHeight, sigmaDistance);
-        sample.likelihood *= computeAngleWeight(relPercept.end().angle(), relP2.angle(), sigmaAngle);
-      }
-      {
-        Vector2d relPM(sample/pm);
-        Vector2d relMidPoint = relPercept.point(0.5*relPercept.getLength());
-        sample.likelihood *= computeDistanceWeight(relMidPoint.abs(), relPM.abs(), cameraHeight, sigmaDistance);
-        sample.likelihood *= computeAngleWeight(relMidPoint.angle(), relPM.angle(), sigmaAngle);
-      }
-    }//end for
-
-    /*
-    DEBUG_REQUEST("MCSL:draw_corner_votes",
-      FIELD_DRAWING_CONTEXT;
-
-      PEN("0000FF", 10);
-      for(int i = 0; i < 30; i++)
-      {
-        if(lineVotes[i] > 0)
-        {
-          Vector2<double> p = getFieldInfo().fieldLinesTable.getLines()[i].begin();
-          Vector2<double> q = getFieldInfo().fieldLinesTable.getLines()[i].end();
-          Vector2<double> r = (p+q)*0.5;
-          LINE(p.x, p.y, q.x, q.y);
-          TEXT_DRAWING(r.x+60, r.y+60, lineVotes[i]);
-        }
-      }//end for
-
-      // the max vote
-      PEN("FF0000", 20);
-      Vector2<double> p = getFieldInfo().fieldLinesTable.getLines()[maxIdx].begin();
-      Vector2<double> q = getFieldInfo().fieldLinesTable.getLines()[maxIdx].end();
-      //Vector2<double> r = (p+q)*0.5;
-      LINE(p.x, p.y, q.x, q.y);
-    );
-    */
-
-  }//end for
-
-  /*
-  shortestLine = shortestLine;
-  DEBUG_REQUEST("MCSL:plots",
-    PLOT("MonteCarloSelfLocator:shortestLine", shortestLine);
-  );
-  */
-}//end updateByLinesTable
-
-
-void MonteCarloSelfLocator::updateByShortLines(const LinePercept& linePercept, SampleSet& sampleSet) const
-{
-  const double cameraHeight = getCameraMatrix().translation.z;
-  const double sigmaDistance = parameters.goalPostSigmaDistance;
-  const double sigmaAngle = parameters.goalPostSigmaAngle;
-  double shortestLine = 1e+5; // very long...
-
-  // todo: parameter for max lines to update by
-  for(size_t lp=0; lp < linePercept.short_lines.size() && lp < 3; lp++)
-  {
-    //int idx = Math::random((int)linePercept.lines.size());
-    // dont use the lines which are parts of the circle 
-    // when the circle itself was detected
-    //if(linePercept.lines[idx].type == LinePercept::C && linePercept.middleCircleWasSeen)
-    //  continue;
-
-    if(linePercept.short_lines[lp].lineOnField.getLength() < 300) { // don't use too short lines
-      continue;
-    }
-
-
-    //const int centerLine_id = 4; // HACK: see FieldInfo
-    // special treatment for the center line
-    //if(linePercept.lines[lp].seen_id == LinePercept::center_line)
-    //{
-      // get the center line
-      //const Math::LineSegment& centerLine = getFieldInfo().fieldLinesTable.getLines()[centerLine_id];
-    //}//end if
-
-
-    // TODO: separate class
-    //int lineVotes[30] = {0};
-    //int maxIdx = 0;
-
-    const Math::LineSegment& relPercept = linePercept.short_lines[lp].lineOnField;
-
-    for(size_t s=0; s < sampleSet.size(); s++)
-    {
-      Sample& sample = sampleSet[s];
-
-      // statistics
-      shortestLine = std::min(shortestLine, relPercept.getLength());
-
-      // translocation of the line percept to the global coords
-      Vector2d abs_begin      = sample*relPercept.begin();
-      Vector2d abs_end        = sample*relPercept.end();
-      Vector2d abs_direction  = abs_end - abs_begin;
-      Vector2d abs_mid        = (abs_begin+abs_end)*0.5;
-
-      // classify the line percept
-      // todo: this may make problems when the lines are distored
-      int length    = (relPercept.getLength() > 700)?LinesTable::long_lines:LinesTable::short_lines|LinesTable::circle_lines|LinesTable::long_lines;
-      int direction = (fabs(abs_direction.x) > fabs(abs_direction.y))?LinesTable::along_lines:LinesTable::across_lines;
-      int type      = (linePercept.short_lines[lp].type == LinePercept::C)?LinesTable::circle_lines:length|direction;
-
-      /*
-      const LinesTable::NamedPoint& p_mid = 
-        (type&LinesTable::circle_lines)?
-          getFieldInfo().fieldLinesTable.get_closest_point_direct(abs_mid, LinesTable::idx_circle):
-          getFieldInfo().fieldLinesTable.get_closest_line_point_fast(abs_mid, length, direction);
-          */
-      // get the closest line in the world
-      //LinesTable::NamedPoint p_begin = getFieldInfo().fieldLinesTable.get_closest_point(absPercept.begin(), type);
-      //LinesTable::NamedPoint p_end = getFieldInfo().fieldLinesTable.get_closest_point(absPercept.end(), type);
-      LinesTable::NamedPoint p_mid = getFieldInfo().fieldLinesTable.get_closest_point(abs_mid, type);
-
-      // there is no such line
-      if(p_mid.id == -1) {
-        continue;
-      }
-
-      // get the line
-      const Math::LineSegment& ref_line = getFieldInfo().fieldLinesTable.getLines()[p_mid.id];
-
-      /*
-      DEBUG_REQUEST("MCSL:draw_corner_votes",
-        // vote for the corner id
-        ASSERT(p_mid.id <= 29);
-        lineVotes[p_mid.id]++;
-        if(lineVotes[p_mid.id] > lineVotes[maxIdx]) 
+        if(lineVotes[p_mid.id] > lineVotes[maxIdx])
           maxIdx = p_mid.id;
       );
       */
@@ -1489,24 +1353,24 @@ void MonteCarloSelfLocator::sensorResetByMiddleCircle(SampleSet& sampleSet, cons
   bool middleCircleOrientationWasSeen = false;
   Vector2d middleCircleOrientation;
 
-  if(getRansacCirclePercept().middleCircleWasSeen)
+  if(getRansacCirclePercept2018().wasSeen)
   {
-    for(size_t i = 0; i < getLinePercept().lines.size(); i++)
+    for(size_t i = 0; i < getRansacLinePercept().fieldLineSegments.size(); i++)
     {
-      double d = getLinePercept().lines[i].lineOnField.minDistance(getLinePercept().middleCircleCenter);
+      double d = getRansacLinePercept().fieldLineSegments[i].minDistance(getRansacCirclePercept2018().center);
       if(d < 50.0){
-        middleCircleOrientation = getLinePercept().lines[i].lineOnField.getDirection();
+        middleCircleOrientation = getRansacLinePercept().fieldLineSegments[i].getDirection();
         middleCircleOrientationWasSeen = true;
       }
     }
 
     if (!middleCircleOrientationWasSeen)
     {
-      for(size_t i = 0; i < getLinePercept().short_lines.size(); i++)
+      for(size_t i = 0; i < getShortLinePercept().fieldLineSegments.size(); i++)
       {
-        double d = getLinePercept().short_lines[i].lineOnField.minDistance(getRansacCirclePercept().middleCircleCenter);
+        double d = getShortLinePercept().fieldLineSegments[i].minDistance(getRansacCirclePercept2018().center);
         if(d < 50.0){
-          middleCircleOrientation = getLinePercept().short_lines[i].lineOnField.getDirection();
+          middleCircleOrientation = getShortLinePercept().fieldLineSegments[i].getDirection();
           middleCircleOrientationWasSeen = true;
         }
       }

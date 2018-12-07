@@ -19,6 +19,7 @@
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/GoalPercept.h"
 #include "Representations/Perception/LinePercept.h"
+#include "Representations/Perception/LinePercept2018.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/MultiBallPercept.h"
@@ -61,6 +62,10 @@ BEGIN_DECLARE_MODULE(PerceptionsVisualizer)
   REQUIRE(ScanLineEdgelPercept)
   REQUIRE(ScanLineEdgelPerceptTop)
   REQUIRE(RansacCirclePercept)
+
+  REQUIRE(RansacLinePercept)
+  REQUIRE(ShortLinePercept)
+  REQUIRE(RansacCirclePercept2018)
   
   REQUIRE(CameraMatrixOffset)
   REQUIRE(CameraMatrix)
