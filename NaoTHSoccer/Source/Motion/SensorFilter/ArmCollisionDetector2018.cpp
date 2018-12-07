@@ -49,6 +49,8 @@ ArmCollisionDetector2018::~ArmCollisionDetector2018()
 
 void ArmCollisionDetector2018::execute()
 {
+	test jenkins
+
 	//Check if robot is in a suitable situation to recognize collisions
 	const bool armModeOK =
 		getMotionRequest().armMotionRequest.id == ArmMotionRequest::arms_synchronised_with_walk ||
