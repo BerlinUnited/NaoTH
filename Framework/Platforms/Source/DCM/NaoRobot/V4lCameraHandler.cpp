@@ -93,7 +93,9 @@ V4lCameraHandler::V4lCameraHandler()
 
 V4lCameraHandler::~V4lCameraHandler()
 {
+  std::cout << "[V4lCameraHandler] stop wait" << std::endl;
   shutdown();
+  std::cout << "[V4lCameraHandler] stop done" << std::endl;
 }
 
 void V4lCameraHandler::init(std::string camDevice, CameraInfo::CameraID camID, bool blockingMode)

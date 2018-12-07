@@ -10,7 +10,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
-#include <signal.h>
+#include <csignal>
 //#include <rttools/rtthread.h>
 #include <atomic>
 
@@ -20,16 +20,34 @@
                do { errno = en; perror(msg); exit(EXIT_FAILURE); } while (0)
 
 using namespace naoth;
+using namespace std;
 
 std::atomic_int framesSinceCognitionLastSeen;
+std::atomic_bool running;
+std::atomic_bool already_got_signal;
 
+// handle signals to stop the binary
 void got_signal(int sigid)
 {
+  // notify all threads to stop
+  running = false;
 
-  if(sigid == SIGTERM || sigid == SIGINT) {
+  system("/usr/bin/paplay Media/naoth_stop.wav");
+
+  if(sigid == SIGTERM || sigid == SIGINT) // graceful stop
+  {
     std::cout << "shutdown requested by kill signal" << sigid << std::endl;
+    
+    if (already_got_signal) {
+      std::cout << "WARNING: received repeated kill signals. Graceful stop was not possible. Will kill." << std::endl;
+    } else {
+      // remember that we got a signal in case we don't manage to stop the binary gracefully
+      already_got_signal = true;
+      // stop signal handling for now and give the binary time to stop gracefully
+      return;
+    }
   } 
-  else if(sigid == SIGSEGV) 
+  else if(sigid == SIGSEGV) // segmentation fault
   {
     std::cerr << "SEGMENTATION FAULT" << std::endl;
     
@@ -40,18 +58,16 @@ void got_signal(int sigid)
     std::cout << "syncing file system..." ;
     sync();
     std::cout << " finished." << std::endl;
-  } else {
+  } 
+  else
+  {
     std::cerr << "caught unknown signal " << sigid << std::endl;
   }
 
-  system("/usr/bin/paplay Media/naoth_stop.wav");
-  
-  // set the default handler for the signal
-  signal(sigid, SIG_DFL);
-  //resend the signal to yourself
-  kill(getpid(), sigid);
+  // set the default handler for the signal and forward the signal
+  std::signal(sigid, SIG_DFL);
+  std::raise(sigid);
 
-  //exit(0);
 }//end got_signal
 
 
@@ -96,11 +112,13 @@ class TestThread : public RtThread
 void* motionThreadCallback(void* ref)
 {
   framesSinceCognitionLastSeen = 0;
+  running = true;
+  already_got_signal = false;
 
   NaoController* theController = static_cast<NaoController*> (ref);
 
   //Stopwatch stopwatch;
-  while(true)
+  while(running)
   {
     if(framesSinceCognitionLastSeen > 4000)
     {
@@ -157,28 +175,22 @@ int main(int /*argc*/, char **/*argv[]*/)
   // init glib
   g_type_init();
 
-  // react on "kill" and segmentation fault
-  struct sigaction saKill;
-  memset( &saKill, 0, sizeof(saKill) );
-  saKill.sa_handler = got_signal;
-  sigfillset(&saKill.sa_mask);
-  sigaction(SIGTERM,&saKill,NULL);
-  
-  struct sigaction saInt;
-  memset( &saInt, 0, sizeof(saInt) );
-  saInt.sa_handler = got_signal;
-  sigfillset(&saInt.sa_mask);
-  sigaction(SIGINT,&saInt,NULL);
-  
-  struct sigaction saSeg;
-  memset( &saSeg, 0, sizeof(saSeg) );
-  saSeg.sa_handler = got_signal;
-  sigfillset(&saSeg.sa_mask);
-  sigaction(SIGSEGV,&saSeg,NULL);
+  //
+  // react on "kill" and segmentation fault:
+  // Signal     Value     Action   Comment
+  // --------------------------------------------------------
+  // SIGSEGV      11       Core    Invalid memory reference
+  // SIGINT        2       Term    Interrupt from keyboard
+  // SIGQUIT       3       Core    Quit from keyboard
+  // SIGKILL       9       Term    Kill signal
+  //
+  std::signal(SIGTERM, got_signal);
+  std::signal(SIGTERM, got_signal);
+  std::signal(SIGINT, got_signal);
+  std::signal(SIGSEGV, got_signal);
 
-  int retChDir = chdir("/home/nao");
-  if(retChDir != 0)
-  {
+  // TODO: why do we need that?
+  if(chdir("/home/nao") != 0) {
     std::cerr << "Could not change working directory" << std::endl;
   }
 
@@ -221,7 +233,7 @@ int main(int /*argc*/, char **/*argv[]*/)
   
   std::thread cognitionThread = std::thread([&theController]
   {
-    while(true) {
+    while(running) {
       theController.runCognition();
       framesSinceCognitionLastSeen = 0;
       std::this_thread::yield();
@@ -235,8 +247,7 @@ int main(int /*argc*/, char **/*argv[]*/)
     pthread_join(motionThread, NULL);
   }
 
-  if(cognitionThread.joinable())
-  {
+  if(cognitionThread.joinable()) {
     cognitionThread.join();
   }
 

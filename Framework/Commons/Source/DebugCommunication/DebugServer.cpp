@@ -33,10 +33,7 @@ DebugServer::DebugServer()
 DebugServer::~DebugServer()
 {
   // notify the connectionThread to stop
-  {
-    std::lock_guard<std::mutex> lock(m_abort);
-    abort = true;
-  }
+  abort = true;
 
   // wait for connectionThread to stop
   if(connectionThread.joinable()) {
@@ -58,20 +55,12 @@ void DebugServer::start(unsigned short port)
    
   connectionThread = std::thread([this] {this->run();});
   ThreadUtil::setName(connectionThread, "DebugServer");
-}//end start
+}
 
 void DebugServer::run()
 {
-  while(true)
+  while(!abort)
   {
-    // check if the stop is requested
-    {
-      std::lock_guard<std::mutex> lock(m_abort);
-      if(abort) {
-        break;
-      }
-    }
-    
     if(comm.isConnected()) 
     {
       try {
@@ -119,7 +108,8 @@ void DebugServer::receive()
   GString* msg = NULL;
   gint32 id;
   unsigned int counter = 0;
-  do {
+  do 
+  {
     msg = comm.readMessage(id);
     if(msg != NULL)
     {
