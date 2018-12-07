@@ -43,11 +43,11 @@ Motion::Motion()
   REGISTER_DEBUG_COMMAND("ParameterList:set", "set the parameter list with the given name", &getDebugParameterList());
 
   // modify commands
-  REGISTER_DEBUG_COMMAND("modify:list", 
+  REGISTER_DEBUG_COMMAND("modify:list",
     "return the list of registered modifiable values", &getDebugModify());
-  REGISTER_DEBUG_COMMAND("modify:set", 
+  REGISTER_DEBUG_COMMAND("modify:set",
     "set a modifiable value (i.e. the value will be always overwritten by the new one) ", &getDebugModify());
-  REGISTER_DEBUG_COMMAND("modify:release", 
+  REGISTER_DEBUG_COMMAND("modify:release",
     "release a modifiable value (i.e. the value will not be overwritten anymore)", &getDebugModify());
 
   // register the modules
@@ -82,7 +82,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   theLogProvider = ModuleManager::getModule("LogProvider");
 
   // TODO: need a better solution for this
-  // load the joint limits from the config 
+  // load the joint limits from the config
   JointData::loadJointLimitsFromConfig();
 
 
@@ -239,7 +239,7 @@ void Motion::processSensorData()
 
   //
   theFootGroundContactDetector->execute();
-    
+
   //
   theKinematicChainProvider->execute();
 
@@ -262,7 +262,7 @@ void Motion::processSensorData()
   // NOTE: highly experimental
   static double rotationGyroZ = 0.0;
   if(getCalibrationData().calibrated) {
-    rotationGyroZ -= getGyrometerData().data.z * getRobotInfo().getBasicTimeStepInSecond();
+    rotationGyroZ += getGyrometerData().data.z * getRobotInfo().getBasicTimeStepInSecond();
   } else {
     rotationGyroZ = 0.0;
   }
@@ -525,9 +525,9 @@ void Motion::drawRobot3D(const KinematicChain& kinematicChain)
   for (int i = 0; i < KinematicChain::numOfLinks; i++)
   {
     if ( i != KinematicChain::Neck
-      && i != KinematicChain::LShoulder 
+      && i != KinematicChain::LShoulder
       && i != KinematicChain::LElbow
-      && i != KinematicChain::RShoulder 
+      && i != KinematicChain::RShoulder
       && i != KinematicChain::RElbow
       && i != KinematicChain::Hip)
     {
