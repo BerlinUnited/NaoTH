@@ -57,6 +57,7 @@ public:
             //Oder als Pfad zur txt was vermutlich einfacher ist
             PARAMETER_REGISTER(point_configLeft) = "reference_points_cd18Left.txt";
             PARAMETER_REGISTER(point_configRight) = "reference_points_cd18Right.txt";
+			PARAMETER_REGISTER(maxErrorStand) = 0.02;
             PARAMETER_REGISTER(collect) = 32;
             syncWithConfig();
 
@@ -64,6 +65,7 @@ public:
 
         std::string  point_configLeft;
         std::string  point_configRight;
+		double maxErrorStand;
         unsigned int collect;
     } params;
 
@@ -71,6 +73,8 @@ private:
     //Private variablen wie zb ringbuffer zur MJD und SJD synchronisation
     RingBuffer<double, 4> jointDataBufferLeft;
     RingBuffer<double, 4> jointDataBufferRight;
+	RingBufferWithSum<double, 100> collisionBufferLeft;
+	RingBufferWithSum<double, 100> collisionBufferRight;
 	Math::Polygon<double> refpolyL;
 	Math::Polygon<double> refpolyR;
 

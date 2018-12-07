@@ -56,18 +56,49 @@ void ArmCollisionDetector2018::execute()
 
 	const bool motionModeOK = getMotionStatus().currentMotion == motion::walk || getMotionStatus().currentMotion == motion::stand;
 
+	// clear the joint command history in order to not check for collision while the robot is already executing a evasive movement for example
 	if (!armModeOK || !motionModeOK)
 	{
-		// clear the joint command history
 		jointDataBufferLeft.clear();
 		jointDataBufferRight.clear();
-
 		return;
 	}
 
-  //collect Motorjoint Data and adjust timelag (Motor is 4 Frames ahead of Sensor)
+    //collect Motorjoint Data and adjust timelag (Motor is 4 Frames ahead of Sensor)
 	jointDataBufferLeft.add(getMotorJointData().position[JointData::LShoulderPitch]);
 	jointDataBufferRight.add(getMotorJointData().position[JointData::RShoulderPitch]);
+
+	//When the robots arms are down, they are less sensible to collisions, so in that case we lower the sensitivity
+	//by using the more sensitive threshold method
+	if (getMotionRequest().armMotionRequest.id == ArmMotionRequest::arms_down)
+	{
+		if (jointDataBufferLeft.isFull()) {
+			double e = jointDataBufferLeft.first() - getSensorJointData().position[JointData::LShoulderPitch];
+			collisionBufferLeft.add(std::fabs(e));
+		}
+		if (jointDataBufferRight.isFull()) {
+			double e = jointDataBufferRight.first() - getSensorJointData().position[JointData::RShoulderPitch];
+			collisionBufferRight.add(std::fabs(e));
+		}
+		double max_error = params.maxErrorStand;
+
+		// collision arm left
+		if (collisionBufferLeft.isFull() && collisionBufferLeft.getAverage() > max_error) {
+			getCollisionPercept().timeCollisionArmLeft = getFrameInfo().getTime();
+			jointDataBufferLeft.clear();
+			collisionBufferLeft.clear();
+
+		}
+
+		// collision arm right
+		if (collisionBufferRight.isFull() && collisionBufferRight.getAverage() > max_error) {
+			getCollisionPercept().timeCollisionArmRight = getFrameInfo().getTime();
+			jointDataBufferRight.clear();
+			collisionBufferRight.clear();
+		}
+
+		return;
+	}
 
 	if (jointDataBufferLeft.isFull()) 
 	{
@@ -79,6 +110,7 @@ void ArmCollisionDetector2018::execute()
 		{
 			//collision
 			getCollisionPercept().timeCollisionArmLeft = getFrameInfo().getTime();
+			jointDataBufferLeft.clear();
 		}
 	}
 
@@ -92,6 +124,7 @@ void ArmCollisionDetector2018::execute()
 		{
 			//collision
 			getCollisionPercept().timeCollisionArmRight = getFrameInfo().getTime();
+			jointDataBufferRight.clear();
 		}
 	}
 
