@@ -6,7 +6,8 @@
 GameController::GameController()
   : 
   lastGameState(GameData::GameState::unknown_game_state),
-  debug_whistle_heard(false)
+  debug_whistle_heard(false),
+  play_by_whistle(false)
 {
   DEBUG_REQUEST_REGISTER("gamecontroller:game_state:play", "force the play state", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:game_state:penalized", "force the penalized state", false);
@@ -86,6 +87,11 @@ void GameController::execute()
   PlayerInfo::RobotState oldRobotState = getPlayerInfo().robotState;
   GameData::TeamColor oldTeamColor = getPlayerInfo().teamColor;
 
+  // reset the whistle state if the game state is not play anymore
+  if(getPlayerInfo().robotState != PlayerInfo::playing) {
+    play_by_whistle = false;
+  }
+
   // try update from the game controller message if not manually overwritten
   if ( getGameData().valid && getWifiMode().wifiEnabled ) 
   {
@@ -95,18 +101,24 @@ void GameController::execute()
     }
 
     getPlayerInfo().update(getGameData());
+
+    // take the ownership of the play state
+    if(getPlayerInfo().robotState == PlayerInfo::playing) {
+      play_by_whistle = false;
+    }
   }
 
   handleButtons();
   handleHeadButtons();
-  handleDebugRequest();  
+  handleDebugRequest();
 
   // whistle overrides state when in set
   if(getPlayerInfo().robotState == PlayerInfo::set)
   {
     // switch from set to play
-    if(getWhistlePercept().whistleDetected || debug_whistle_heard) {
+    if(getWhistlePercept().whistleDetected || debug_whistle_heard || play_by_whistle) {
       getPlayerInfo().robotState = PlayerInfo::playing;
+      play_by_whistle = true;
     }
   }
 
@@ -147,6 +159,8 @@ void GameController::handleDebugRequest()
   );
   DEBUG_REQUEST("gamecontroller:game_state:play",
     debugState = PlayerInfo::playing;
+    // take the ownership of the play state
+    play_by_whistle = false;
   );
   DEBUG_REQUEST("gamecontroller:game_state:penalized",
     debugState = PlayerInfo::penalized;
@@ -211,6 +225,8 @@ void GameController::handleButtons()
     case PlayerInfo::penalized:
     {
       getPlayerInfo().robotState = PlayerInfo::playing;
+      // take the ownership of the play state
+      play_by_whistle = false;
       break;
     }
     default:
