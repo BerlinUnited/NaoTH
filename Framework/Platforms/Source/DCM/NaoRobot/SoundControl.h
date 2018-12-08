@@ -21,8 +21,6 @@
 
 #include "Representations/Infrastructure/SoundData.h"
 
-using namespace std;
-
 namespace naoth
 {
 

@@ -1,4 +1,7 @@
+
 #include "GameLogger.h"
+
+using namespace std;
 
 GameLogger::GameLogger()
   : 
