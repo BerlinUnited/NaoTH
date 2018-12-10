@@ -53,7 +53,7 @@ public:
   void play();
 
 private:
-  string media_path;
+  std::string media_path;
   int err;
   SoundPlayData theSoundDataCopy;
   pthread_t playThreadID;
