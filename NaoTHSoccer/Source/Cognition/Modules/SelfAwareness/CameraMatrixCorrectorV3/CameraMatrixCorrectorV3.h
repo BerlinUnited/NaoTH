@@ -72,6 +72,149 @@ END_DECLARE_MODULE(CameraMatrixCorrectorV3)
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
 /// \brief The CameraMatrixCorrectorV3 class
 
+// TODO: generalize and move it into the optimizer name space
+template<class T>
+class BoundedVariable{
+    public:
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+        typedef Eigen::Array<double, T::RowsAtCompileTime, 1> Bound;
+
+    private:
+        Bound lower_bound;
+        Bound upper_bound;
+
+    public:
+        BoundedVariable():
+            lower_bound(Bound::Constant(-std::numeric_limits<double>::infinity())),
+            upper_bound(Bound::Constant( std::numeric_limits<double>::infinity()))
+        {
+            static_assert(std::numeric_limits<float>::is_iec559, "IEEE 754 required");
+        }
+
+        BoundedVariable(const Bound& lower_bound, const Bound& upper_bound):
+            lower_bound(lower_bound),
+            upper_bound(upper_bound)
+        {
+            static_assert(std::numeric_limits<float>::is_iec559, "IEEE 754 required");
+        }
+
+        T bound(const T& value) const {
+            Bound bounded = value.array().cwiseMax(lower_bound).cwiseMin(upper_bound);
+
+            // shift by 2*pi to avoid problems at zero in fminsearch
+            // otherwise, the initial simplex is vanishingly small
+            T r = (2 * Math::pi + (2 * (bounded - lower_bound) / (upper_bound - lower_bound) - 1).asin()).matrix();
+            return r;
+        }
+
+        T unbound(const T& value) const {
+            Bound r = (value.array().sin() + 1) / 2 * (upper_bound - lower_bound) + lower_bound;
+            return (r.cwiseMin(upper_bound)).cwiseMax(lower_bound).matrix();
+        }
+};
+
+// HACK: shouldn't be a ModuleManager but has to be because of the CamMatErrorFunctionV3... see above
+class CameraMatrixCorrectorV3: public CameraMatrixCorrectorV3Base, public ModuleManager
+{
+public:
+  CameraMatrixCorrectorV3();
+  ~CameraMatrixCorrectorV3();
+
+  void execute();
+
+  typedef Eigen::Matrix<double, 11, 1> Parameter;
+
+private:
+
+  std::vector<Vector2d> target_points;
+  std::vector<Vector2d>::const_iterator current_target;
+
+  Parameter cam_mat_offsets;
+  BoundedVariable<Parameter> bounds;
+
+  Optimizer::GaussNewtonMinimizer<CamMatErrorFunctionV3, Parameter>* minimizer;
+
+  Optimizer::GaussNewtonMinimizer<CamMatErrorFunctionV3, Parameter> 	    gn_minimizer;
+  Optimizer::LevenbergMarquardtMinimizer<CamMatErrorFunctionV3, Parameter>  lm_minimizer;
+  Optimizer::LevenbergMarquardtMinimizer2<CamMatErrorFunctionV3, Parameter> lm2_minimizer;
+
+  bool calibrate();
+  void reset_calibration();
+  bool collectingData();
+  void sampling();
+  void doItAutomatically();
+
+  void writeToRepresentation();
+  void readFromRepresentation();
+
+  ModuleCreator<CamMatErrorFunctionV3>* theCamMatErrorFunctionV3;
+
+  // for automatic calibration
+  bool auto_cleared_data, auto_collected, auto_calibrated;
+  bool play_collecting, play_calibrating, play_calibrated;
+  RingBufferWithSum<double, 50> derrors;
+  double last_error;
+  FrameInfo last_frame_info;
+
+  // for reading and writing calibration data
+  bool read_calibration_data, written_calibration_data;
+
+  class CMCParameters: public ParameterList
+  {
+      public:
+          CMCParameters() : ParameterList("CameraMatrixCorrectorV3")
+          {
+              PARAMETER_ANGLE_REGISTER(lower.body_x)    = -1;
+              PARAMETER_ANGLE_REGISTER(lower.body_y)    = -1;
+              PARAMETER_ANGLE_REGISTER(lower.head_x)    = -1;
+              PARAMETER_ANGLE_REGISTER(lower.head_y)    = -1;
+              PARAMETER_ANGLE_REGISTER(lower.head_z)    = -1;
+              PARAMETER_ANGLE_REGISTER(lower.cam_x)     = -1;
+              PARAMETER_ANGLE_REGISTER(lower.cam_y)     = -1;
+              PARAMETER_ANGLE_REGISTER(lower.cam_z)     = -1;
+              PARAMETER_ANGLE_REGISTER(lower.cam_top_x) = -1;
+              PARAMETER_ANGLE_REGISTER(lower.cam_top_y) = -1;
+              PARAMETER_ANGLE_REGISTER(lower.cam_top_z) = -1;
+
+              PARAMETER_ANGLE_REGISTER(upper.body_x)    = 1;
+              PARAMETER_ANGLE_REGISTER(upper.body_y)    = 1;
+              PARAMETER_ANGLE_REGISTER(upper.head_x)    = 1;
+              PARAMETER_ANGLE_REGISTER(upper.head_y)    = 1;
+              PARAMETER_ANGLE_REGISTER(upper.head_z)    = 1;
+              PARAMETER_ANGLE_REGISTER(upper.cam_x)     = 1;
+              PARAMETER_ANGLE_REGISTER(upper.cam_y)     = 1;
+              PARAMETER_ANGLE_REGISTER(upper.cam_z)     = 1;
+              PARAMETER_ANGLE_REGISTER(upper.cam_top_x) = 1;
+              PARAMETER_ANGLE_REGISTER(upper.cam_top_y) = 1;
+              PARAMETER_ANGLE_REGISTER(upper.cam_top_z) = 1;
+
+              PARAMETER_REGISTER(use_bounded_variable) = true;
+
+              syncWithConfig();
+          }
+
+          struct {
+              double body_x;
+              double body_y;
+
+              double head_x;
+              double head_y;
+              double head_z;
+
+              double cam_x;
+              double cam_y;
+              double cam_z;
+
+              double cam_top_x;
+              double cam_top_y;
+              double cam_top_z;
+          } lower, upper;
+
+          bool use_bounded_variable;
+  } cmc_params;
+};
+
 // HACK: shouldn't be a module, should be a service... wait and see what the future holds ;)
 class CamMatErrorFunctionV3 : public CamMatErrorFunctionV3Base
 {
@@ -104,6 +247,8 @@ public:
 
     typedef std::vector<CalibrationDataSample> CalibrationData;
 
+    const BoundedVariable<CameraMatrixCorrectorV3::Parameter> *bounds;
+
 private:
     CalibrationData calibrationData;
     unsigned int numberOfResudials;
@@ -127,8 +272,9 @@ private:
     void actual_plotting(const Eigen::Matrix<double, 11, 1>& parameter, CameraInfo::CameraID cameraID) const;
 
 public:
-    CamMatErrorFunctionV3()
-      : numberOfResudials(0)
+    CamMatErrorFunctionV3() :
+        bounds(nullptr),
+        numberOfResudials(0)
     {
         DEBUG_REQUEST_REGISTER("CamMatErrorFunctionV3:debug_drawings:only_bottom", "", false);
         DEBUG_REQUEST_REGISTER("CamMatErrorFunctionV3:debug_drawings:only_top", "", false);
@@ -188,50 +334,4 @@ public:
     void write_calibration_data_to_file();
     void read_calibration_data_from_file();
 };
-
-// HACK: shouldn't be a ModuleManager but has to be because of the CamMatErrorFunctionV3... see above
-class CameraMatrixCorrectorV3: public CameraMatrixCorrectorV3Base, public ModuleManager
-{
-public:
-  CameraMatrixCorrectorV3();
-  ~CameraMatrixCorrectorV3();
-
-  void execute();
-
-private:
-
-  std::vector<Vector2d> target_points;
-  std::vector<Vector2d>::const_iterator current_target;
-
-  typedef Eigen::Matrix<double, 11, 1> Parameter;
-  Parameter cam_mat_offsets;
-
-  Optimizer::GaussNewtonMinimizer<CamMatErrorFunctionV3, Parameter>* minimizer;
-
-  Optimizer::GaussNewtonMinimizer<CamMatErrorFunctionV3, Parameter> 	    gn_minimizer;
-  Optimizer::LevenbergMarquardtMinimizer<CamMatErrorFunctionV3, Parameter>  lm_minimizer;
-  Optimizer::LevenbergMarquardtMinimizer2<CamMatErrorFunctionV3, Parameter> lm2_minimizer;
-
-  bool calibrate();
-  void reset_calibration();
-  bool collectingData();
-  void sampling();
-  void doItAutomatically();
-
-  void writeToRepresentation();
-  void readFromRepresentation();
-
-  ModuleCreator<CamMatErrorFunctionV3>* theCamMatErrorFunctionV3;
-
-  // for automatic calibration
-  bool auto_cleared_data, auto_collected, auto_calibrated;
-  bool play_collecting, play_calibrating, play_calibrated;
-  RingBufferWithSum<double, 50> derrors;
-  double last_error;
-  FrameInfo last_frame_info;
-
-  // for reading and writing calibration data
-  bool read_calibration_data, written_calibration_data;
-};
-
 #endif //_CameraMatrixCorrectorV3_h_

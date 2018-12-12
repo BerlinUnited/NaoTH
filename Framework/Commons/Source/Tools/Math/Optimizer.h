@@ -2,6 +2,7 @@
 #define _OPTIMIZER_H
 
 #include "Eigen/Eigen"
+#include "Common.h"
 
 namespace Optimizer {
 
@@ -258,6 +259,66 @@ public:
     }
 };
 
+// implementing a bounded variable for usage with the optimizer methods
+// it does not working transparently to encapsulate the variable in this class
+// so do a more problem specific solution in CameraMatrixCorrector for now
+//template<int dim>
+//class BoundedVariable : public Eigen::Matrix<double, dim, 1> {
+//    public:
+//        typedef Eigen::Array<double, dim, 1> Bound;
+//
+//    private:
+//        Bound lower_bound;
+//        Bound upper_bound;
+//
+//        template<typename Derived>
+//        void bound_value(Eigen::MatrixBase<Derived>& value) {
+//            // infeasible starting value. use bound.
+//            Bound bounded = value.array().cwiseMax(lower_bound).cwiseMin(upper_bound);
+//
+//            // shift by 2*pi to avoid problems at zero in fminsearch
+//            // otherwise, the initial simplex is vanishingly small
+//            this->Eigen::Matrix<double, dim, 1>::operator=((2 * Math::pi + (2 * (bounded - lower_bound) / (upper_bound - lower_bound) - 1).asin()).matrix());
+//       }
+//
+//    public:
+//        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+//
+//        BoundedVariable():
+//            Eigen::Matrix<double, dim, 1>(Eigen::Matrix<double, dim, 1>::Zero()),
+//            lower_bound(Bound::Constant(-std::numeric_limits<double>::infinity())),
+//            upper_bound(Bound::Constant( std::numeric_limits<double>::infinity()))
+//        {}
+//
+//        template<typename Derived>
+//        BoundedVariable(Eigen::MatrixBase<Derived>& initial_value):
+//            Eigen::Matrix<double, dim, 1>(initial_value),
+//            lower_bound(Bound::Constant(-std::numeric_limits<double>::infinity())),
+//            upper_bound(Bound::Constant( std::numeric_limits<double>::infinity()))
+//        {}
+//
+//        template<typename Derived>
+//        BoundedVariable(Eigen::MatrixBase<Derived>& initial_value, Bound& lower_bound, Bound& upper_bound):
+//            lower_bound(lower_bound),
+//            upper_bound(upper_bound)
+//        {
+//            static_assert(std::numeric_limits<float>::is_iec559, "IEEE 754 required");
+//            bound_value(initial_value);
+//        }
+//
+//        // This method allows you to assign Eigen expressions to MyVectorType
+//        template<typename OtherDerived>
+//        BoundedVariable& operator=(const Eigen::MatrixBase <OtherDerived>& other)
+//        {
+//            this->Eigen::Matrix<double,dim,1>::operator=(other);
+//            return *this;
+//        }
+//
+//        Eigen::Matrix<double, dim, 1> unbound(){
+//            Bound r = (this->array().sin() + 1) / 2 * (upper_bound - lower_bound) + lower_bound;
+//            return (r.cwiseMin(upper_bound)).cwiseMax(lower_bound).matrix();
+//        }
+//};
 }
 
 #endif // _OPTIMIZER_H

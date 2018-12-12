@@ -92,9 +92,16 @@ void CamMatErrorFunctionV3::actual_plotting(const Eigen::Matrix<double, 11, 1>& 
     }
 }
 
-Eigen::VectorXd CamMatErrorFunctionV3::operator()(const Eigen::Matrix<double, 11, 1>& parameter) const
+Eigen::VectorXd CamMatErrorFunctionV3::operator()(const Eigen::Matrix<double, 11, 1>& p) const
 {
     Eigen::VectorXd r(numberOfResudials);
+
+    Eigen::Matrix<double, 11, 1> parameter;
+    if(bounds != nullptr){
+        parameter = bounds->unbound(p);
+    } else {
+        parameter = p;
+    }
 
     Vector2d offsetBody(parameter(0),parameter(1));
     Vector3d offsetHead(parameter(2), parameter(3),parameter(4));
@@ -238,6 +245,35 @@ void CamMatErrorFunctionV3::read_calibration_data_from_file(){
 CameraMatrixCorrectorV3::CameraMatrixCorrectorV3()
 {
   getDebugParameterList().add(&getCameraMatrixOffset());
+  getDebugParameterList().add(&cmc_params);
+
+  BoundedVariable<Parameter>::Bound lower;
+  lower << cmc_params.lower.body_x,
+           cmc_params.lower.body_y,
+           cmc_params.lower.head_x,
+           cmc_params.lower.head_y,
+           cmc_params.lower.head_z,
+           cmc_params.lower.cam_x,
+           cmc_params.lower.cam_y,
+           cmc_params.lower.cam_z,
+           cmc_params.lower.cam_top_x,
+           cmc_params.lower.cam_top_y,
+           cmc_params.lower.cam_top_z;
+
+  BoundedVariable<Parameter>::Bound upper;
+  upper << cmc_params.upper.body_x,
+           cmc_params.upper.body_y,
+           cmc_params.upper.head_x,
+           cmc_params.upper.head_y,
+           cmc_params.upper.head_z,
+           cmc_params.upper.cam_x,
+           cmc_params.upper.cam_y,
+           cmc_params.upper.cam_z,
+           cmc_params.upper.cam_top_x,
+           cmc_params.upper.cam_top_y,
+           cmc_params.upper.cam_top_z;
+
+  bounds = BoundedVariable<Parameter>(lower, upper);
 
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:reset_calibration", "set the calibration offsets of the CM to 0", false);
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:reset_minimizer", "reset lm parameters to initial values", false);
@@ -260,6 +296,7 @@ CameraMatrixCorrectorV3::CameraMatrixCorrectorV3()
 
   theCamMatErrorFunctionV3 = registerModule<CamMatErrorFunctionV3>("CamMatErrorFunctionV3", true);
   read_calibration_data = written_calibration_data = false;
+  theCamMatErrorFunctionV3->getModuleT()->bounds = &bounds;
 
   auto_cleared_data = auto_collected = auto_calibrated = false;
   play_calibrated = play_calibrating = play_collecting = true;
@@ -437,10 +474,21 @@ bool CameraMatrixCorrectorV3::calibrate()
   Eigen::Matrix<double, 11, 1> epsilon = Eigen::Matrix<double, 11, 1>::Constant(1e-4);
 
   Parameter offset;
-  bool valid = minimizer->minimizeOneStep(*(theCamMatErrorFunctionV3->getModuleT()), cam_mat_offsets, epsilon, offset);
+  bool valid;
+  if(cmc_params.use_bounded_variable){
+      Parameter bounded_cam_mat_offsets = bounds.bound(cam_mat_offsets);
+      valid = minimizer->minimizeOneStep(*(theCamMatErrorFunctionV3->getModuleT()), bounded_cam_mat_offsets, epsilon, offset);
+  } else {
+      valid = minimizer->minimizeOneStep(*(theCamMatErrorFunctionV3->getModuleT()), cam_mat_offsets, epsilon, offset);
+  }
 
   if(valid) {
-      cam_mat_offsets += offset;
+      if(cmc_params.use_bounded_variable){
+          Parameter bounded_cam_mat_offsets = bounds.bound(cam_mat_offsets);
+          cam_mat_offsets = bounds.unbound(bounded_cam_mat_offsets + offset);
+      } else {
+          cam_mat_offsets += offset;
+      }
   }
 
   double de_dt = (minimizer->error - last_error)/dt; // improvement per second
