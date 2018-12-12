@@ -104,17 +104,15 @@ public class MessageServer extends AbstractMessageServer {
             }, 0, updateIntervall, TimeUnit.MILLISECONDS);
 
             this.fireConnected(this.address);
-            
-            return true;
         } catch (SocketTimeoutException ex) {
             //e.printStackTrace(System.err);
-            fireDisconnected(String.format("Connection atttimed out. Robot didn't respond after %d ms.", connectionTimeout));
+            fireDisconnected(String.format("Connection timed out. Robot didn't respond after %d ms.", connectionTimeout));
         } catch (IOException e) {
             //e.printStackTrace(System.err);
             fireDisconnected(e.getLocalizedMessage());
         }
-        
-        return false;
+        // firing the "disconnect" event could trigger an reconnect - check if the connection is still not established.
+        return isConnected();
     }//end connect
 
     public boolean reconnect() {
