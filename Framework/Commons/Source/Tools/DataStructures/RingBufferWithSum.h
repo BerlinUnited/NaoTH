@@ -3,7 +3,7 @@
  *
  * Declaration of template class RingBufferWithSum
  *
- * @author Matthias Jüngel
+ * @author Matthias Juengel
  * @author Tobias Oberlies
  */
 

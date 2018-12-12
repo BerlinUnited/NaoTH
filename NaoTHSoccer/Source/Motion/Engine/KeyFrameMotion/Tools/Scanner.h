@@ -15,8 +15,6 @@
 #include <iostream>
 #include <cctype>
 
-using namespace std;
-
 // defines the maximal length of a token
 #define MAX_TOKEN_LENGTH 1024
 
@@ -24,7 +22,7 @@ class Scanner
 {
 public:
 
-  Scanner(istream& inputStream)
+  Scanner(std::istream& inputStream)
     : inputStream(inputStream),
       nextChar(' '),
       bufferLength(0),
@@ -44,7 +42,7 @@ public:
   int getLineNumber();
 
 private:
-  istream& inputStream;
+  std::istream& inputStream;
   
   char nextChar;
   int bufferLength;

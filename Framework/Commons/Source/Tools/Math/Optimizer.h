@@ -193,7 +193,7 @@ public:
     }
 };
 
-//Based on H.B. Nielson, Damping Parameter In Marquardt’s Method, Technical Report IMM-REP-1999-05, Dept. of Mathematical Modeling, Technical University Denmark.
+//Based on H.B. Nielson, Damping Parameter In Marquardt's Method, Technical Report IMM-REP-1999-05, Dept. of Mathematical Modeling, Technical University Denmark.
 template<class ErrorFunction, class T>
 class LevenbergMarquardtMinimizer2 : public LevenbergMarquardtMinimizer<ErrorFunction, T>
 {

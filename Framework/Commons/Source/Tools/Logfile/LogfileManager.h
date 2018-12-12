@@ -18,8 +18,6 @@
 
 #include "LogfileEntry.h"
 
-using namespace std;
-
 template<int maxSize> class LogfileManager
 {
 public:
@@ -53,7 +51,7 @@ public:
   {
     closeFile();
     dataBuffer.clear();
-    outFile.open(filePath, ios::out | ios::binary);
+    outFile.open(filePath, std::ios::out | std::ios::binary);
     writtenBytes = 0;
   }
   
@@ -72,7 +70,7 @@ public:
    * After calling this use returned stringstream to transform the data.
    *
    */
-  stringstream& log(unsigned int frameNumber, string name)
+  std::stringstream& log(unsigned int frameNumber, std::string name)
   {
     if(alwaysWriteOut && dataBuffer.isFull())
     {
@@ -145,7 +143,7 @@ public:
 
 
 private:  
-  ofstream outFile;
+  std::ofstream outFile;
   RingBuffer<LogfileEntry, maxSize> dataBuffer;
   bool alwaysWriteOut;
   size_t writtenBytes;

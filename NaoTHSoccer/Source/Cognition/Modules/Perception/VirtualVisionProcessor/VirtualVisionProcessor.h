@@ -64,7 +64,6 @@ BEGIN_DECLARE_MODULE(VirtualVisionProcessor)
   //PROVIDE(GPSData)
 END_DECLARE_MODULE(VirtualVisionProcessor)
 
-using namespace std;
 
 class VirtualVisionProcessor: public VirtualVisionProcessorBase
 {

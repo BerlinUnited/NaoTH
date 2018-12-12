@@ -112,6 +112,9 @@ public:
     PLOT("BallDetector2018:mean_of_means",average_mean);
   }
 
+  // TODO: this is not very elegant, but it is used by the BallDetectorEvaluator.cpp
+  static std::map<std::string, std::shared_ptr<AbstractCNNClassifier> > createCNNMap();
+
 private:
   struct Parameters: public ParameterList
   {

@@ -1,6 +1,7 @@
 #include "SoundControl.h"
 
 using namespace naoth;
+using namespace std;
 
 inline static void *play_thread_handler(void *data)
 {
