@@ -1,3 +1,4 @@
+import json
 import sys
 import threading
 import socket
@@ -121,7 +122,7 @@ class TeamCommGenerator(threading.Thread):
         elif type == float:
             return float(value)
         elif type == bool:
-            return bool(value)
+            return bool(json.loads(value.lower()))
         elif type == str:
             return value
         return None
