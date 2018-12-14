@@ -3,13 +3,13 @@
 *
 * @author <a href="mailto:schlottb@informatik.hu-berlin.de">Benjamin Schlotter</a>
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
+*
 * Implementation of class WhistleDetectorV2
-* Implements the austrian kangaroos version of the whistle detector
+* Implements a whistle detector based on a frequency band filter.
+* (simmilar to the austrian kangaroos whistle detector)
 */
 
 #include "WhistleDetectorV2.h"
-
-#include <vector>
 
 
 WhistleDetectorV2::WhistleDetectorV2()
@@ -18,6 +18,8 @@ WhistleDetectorV2::WhistleDetectorV2()
   whistle_filter(0.3, 0.1)
   //myfile ("example.bin", std::ios::binary)
 {
+  DEBUG_REQUEST_REGISTER("Plot:WhistleDetectorV2:scan_thresh","", false);
+
 	getDebugParameterList().add(&params);
 }
 
@@ -29,7 +31,8 @@ WhistleDetectorV2::~WhistleDetectorV2()
 
 void WhistleDetectorV2::execute()
 {
-	
+	getWhistlePercept().reset();
+
   // there is no new data, return
   if(lastDataTimestamp >= getAudioData().timestamp ) {
     return;
@@ -82,12 +85,14 @@ void WhistleDetectorV2::execute()
         }
       }
 
-      PLOT_GENERIC("WhistleDetectorV2:scan", plot_idx, max_value);
-      PLOT_GENERIC("WhistleDetectorV2:thresh", plot_idx, whistleThresh);
-      plot_idx++;
+      DEBUG_REQUEST("Plot:WhistleDetectorV2:scan_thresh",
+        PLOT_GENERIC("WhistleDetectorV2:scan", plot_idx, max_value);
+        PLOT_GENERIC("WhistleDetectorV2:thresh", plot_idx, whistleThresh);
+        plot_idx++;
+      );
 
       if( whistle_filter.update(found, 0.3, 0.9) ) {
-        getWhistlePercept().counter++;
+        getWhistlePercept().whistleDetected = true;
       }
 
       PLOT("WhistleDetectorV2:whistle_filter", whistle_filter.value());
