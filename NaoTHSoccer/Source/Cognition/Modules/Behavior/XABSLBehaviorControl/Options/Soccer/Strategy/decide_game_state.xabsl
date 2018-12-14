@@ -20,7 +20,6 @@ option decide_game_state
     {
       game.current_mode = init;
       motion.type = init;
-      arm.react_to_collision = false;
       arm.control_mode = normal;
       head.control_mode = stay_as_forced;
       audio.switch = 0;  //whistledetector off
@@ -86,7 +85,6 @@ option decide_game_state
     {
       game.current_mode = penalized;
       motion.type = stand;
-      arm.react_to_collision = false;
       arm.control_mode = normal;
       head.control_mode = (state_time < 2000) ? look_straight_ahead : stay_as_forced;
       audio.switch = 0;  //whistledetector off
@@ -100,7 +98,6 @@ option decide_game_state
     {
       game.current_mode = finished;
       motion.type = stand;
-      arm.react_to_collision = true;
       arm.control_mode = normal;
       head.control_mode = stay_as_forced;
       audio.switch = 0;  //whistledetector off
