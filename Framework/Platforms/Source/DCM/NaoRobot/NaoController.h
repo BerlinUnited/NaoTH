@@ -16,7 +16,6 @@
 
 //
 #include "PlatformInterface/PlatformInterface.h"
-#include "PlatformInterface/Platform.h"
 #include "Tools/Communication/MessageQueue/MessageQueue4Threads.h"
 //#include "Tools/Debug/Stopwatch.h"
 

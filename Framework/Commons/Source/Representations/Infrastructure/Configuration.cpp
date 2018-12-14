@@ -60,6 +60,7 @@ void Configuration::loadFromDir(std::string dirlocation,
                                 const std::string& robotName)
 {
   ASSERT_MSG(isDir(dirlocation), "Could not load configuration from " << dirlocation << ": directory does not exist.");
+  std::cout << "[INFO] loading configuration from " << dirlocation << std::endl;
 
   if (!g_str_has_suffix(dirlocation.c_str(), "/")) {
     dirlocation = dirlocation + "/";

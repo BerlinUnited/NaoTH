@@ -94,7 +94,7 @@ class TestThread : public RtThread
     
         if(sem_wait(dcm_sem) == -1)
         {
-          cerr << "lock errno: " << errno << endl;
+          std::cerr << "lock errno: " << errno << endl;
         }
 
         StopwatchManager::getInstance().notifyStop(stopwatch);
@@ -143,7 +143,7 @@ void* motionThreadCallback(void* ref)
     theController->runMotion();
     
     if(sem_wait(dcm_sem) == -1) {
-      cerr << "lock errno: " << errno << endl;
+      std::cerr << "lock errno: " << errno << std::endl;
     }
 
     //stopwatch.stop();
