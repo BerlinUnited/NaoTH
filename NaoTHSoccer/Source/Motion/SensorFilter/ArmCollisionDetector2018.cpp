@@ -100,6 +100,8 @@ void ArmCollisionDetector2018::execute()
 		return;
 	}
 
+    //In this part we check for collision using the "Polygon method" 
+
 	if (jointDataBufferLeft.isFull()) 
 	{
 		double a = jointDataBufferLeft.first();
