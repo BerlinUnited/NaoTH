@@ -17,6 +17,12 @@ using namespace std;
 CleanRoleDecision::CleanRoleDecision()
 {
   getDebugParameterList().add(&parameters);
+
+  DEBUG_REQUEST_REGISTER(
+    "RoleDecision:min_ball_distance",
+    "Draws the distance in which the balls of the first and second striker are recognized as identical (only with strikerSelection = 3).",
+    false
+  );
 }
 
 CleanRoleDecision::~CleanRoleDecision()
@@ -78,13 +84,8 @@ void CleanRoleDecision::computeStrikers()
 
     // clear for new striker decision
     getRoleDecisionModel().resetStriker();
-    // set the new striker
-    switch (parameters.strikerSelection) {
-        case 1:  strikerSelectionByTime(possible_striker, ownTimeToBall); break;
-        case 2:  strikerSelectionByTimeExceptGoalie(possible_striker, ownTimeToBall); break;
-        case 3:  strikerSelectionByTimeExceptGoalieWithBallCompare(possible_striker, ownTimeToBall); break;
-        default: strikerSelectionByNumber(possible_striker, ownTimeToBall); break;
-    }
+    (this->*parameters.strikerSelectionFunction)(possible_striker, ownTimeToBall);
+
 
     PLOT(std::string("CleanRoleDecision:FirstStrikerDecision"), getRoleDecisionModel().firstStriker);
     PLOT(std::string("CleanRoleDecision:SecondStrikerDecision"), getRoleDecisionModel().secondStriker);
@@ -182,7 +183,7 @@ void CleanRoleDecision::strikerSelectionByTimeExceptGoalieWithBallCompare(std::m
         // is current player clearly faster?
         if(it->second < stFastest && (it->second + parameters.strikerSelectionDiffThreshold) < stFastest && getRoleDecisionModel().firstStriker != 1) {
             // is there already a "fastest" striker ... but the current player is faster
-            if(getRoleDecisionModel().firstStriker != std::numeric_limits<unsigned int>::max() && isSecondStrikerDifferentFromFirst(getRoleDecisionModel().firstStriker, it->first)) {
+            if(getRoleDecisionModel().firstStriker != std::numeric_limits<unsigned int>::max() && isSecondStrikerDifferentFromFirst(it->first, getRoleDecisionModel().firstStriker)) {
                 // make the previous player the "second fastest" player, if they see different balls
                 getRoleDecisionModel().secondStriker = getRoleDecisionModel().firstStriker;
                 ndFastest = stFastest;
@@ -190,7 +191,10 @@ void CleanRoleDecision::strikerSelectionByTimeExceptGoalieWithBallCompare(std::m
             // set the fastest player
             getRoleDecisionModel().firstStriker = it->first;
             stFastest = it->second;
-        } else if (it->second < ndFastest && (it->second + parameters.strikerSelectionDiffThreshold) < ndFastest && isSecondStrikerDifferentFromFirst(getRoleDecisionModel().firstStriker, it->first)) {
+        } else if (it->second < ndFastest
+                   && (it->second + parameters.strikerSelectionDiffThreshold) < ndFastest
+                   && isSecondStrikerDifferentFromFirst(getRoleDecisionModel().firstStriker, it->first))
+        {
             // make the previous player the "second fastest" player, if they see different balls
             getRoleDecisionModel().secondStriker = it->first;
             ndFastest = it->second;
@@ -209,6 +213,16 @@ bool CleanRoleDecision::isSecondStrikerDifferentFromFirst(unsigned int firstNumb
     // get the global ball position
     Vector2d firstBall = first.pose * first.ballPosition;
     Vector2d secondBall = second.pose * second.ballPosition;
-    // check if the ball distance is greater than the given parameter distance
-    return ((firstBall - secondBall).abs2() > parameters.firstSecondStrikerBallDistance*parameters.firstSecondStrikerBallDistance);
+    // check if the ball distance is greater than the given parameter distance radius
+    double r = parameters.radius(first.ballPosition, second.ballPosition);
+
+    DEBUG_REQUEST("RoleDecision:min_ball_distance",
+      FIELD_DRAWING_CONTEXT;
+      PEN("000000", 30);
+      CIRCLE(firstBall.x, firstBall.y, r);
+      TEXT_DRAWING(firstBall.x, firstBall.y+60, secondNumber);
+      TEXT_DRAWING(firstBall.x, firstBall.y-60, r);
+    );
+
+    return ((firstBall - secondBall).abs2() > r*r);
 }

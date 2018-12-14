@@ -7,6 +7,8 @@
 #ifndef _CleanRoleDecision_h_
 #define _CleanRoleDecision_h_
 
+#include <functional>
+
 #include <ModuleFramework/Module.h>
 
 #include "Representations/Modeling/TeamMessage.h"
@@ -28,8 +30,9 @@
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(CleanRoleDecision)
-  PROVIDE(DebugPlot)
   PROVIDE(DebugRequest)
+  PROVIDE(DebugPlot)
+  PROVIDE(DebugDrawings)
   PROVIDE(DebugParameterList)
 
   REQUIRE(FrameInfo)
@@ -43,7 +46,7 @@ BEGIN_DECLARE_MODULE(CleanRoleDecision)
   REQUIRE(TeamBallModel)
 
   PROVIDE(RoleDecisionModel)
-END_DECLARE_MODULE(CleanRoleDecision)
+END_DECLARE_MODULE(CleanRoleDecision);
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
 
@@ -114,16 +117,50 @@ protected:
 
   class Parameters: public ParameterList
   {
-  public: 
+  public:
     Parameters(): ParameterList("CleanRoleDecision")
     {
       PARAMETER_REGISTER(strikerBonusTime) = 4000;
       PARAMETER_REGISTER(maxBallLostTime) = 1000;
-      PARAMETER_REGISTER(strikerSelection) = 3;
       PARAMETER_REGISTER(strikerSelectionDiffThreshold) = 500; // ms
+      PARAMETER_REGISTER(firstSecondStrikerMinBallDistance) = 500.0; // mm
       PARAMETER_REGISTER(useSecondStriker) = true;
-      PARAMETER_REGISTER(firstSecondStrikerBallDistance) = 500; // mm
-      
+
+      // update function, if another striker selection function should be used
+      std::function<void(int,int)> funcS = [&](int, int n){
+          // select a selection function based on the given new parameter
+          switch (n) {
+              case 2:  strikerSelectionFunction = &CleanRoleDecision::strikerSelectionByTimeExceptGoalie; break;
+              case 3:  strikerSelectionFunction = &CleanRoleDecision::strikerSelectionByTimeExceptGoalieWithBallCompare; break;
+              case 1:
+              default: strikerSelectionFunction = &CleanRoleDecision::strikerSelectionByNumber; break;
+          }
+      };
+      PARAMETER_REGISTER_CB(strikerSelection, funcS) = 3;
+
+      // update function, if another radius function should be used
+      std::function<void(int,int)> funcR = [&](int, int n){
+          // select a selection function based on the given new parameter
+          switch (n) {
+              // simply uses a linear 'function f(x) = x*m + n' based on the distance to the ball of the second striker
+              case 2:  radius = [&](const Vector2d&, const Vector2d& second){
+                            return second.abs() * firstSecondStrikerLinBallDistanceM + firstSecondStrikerLinBallDistanceN;
+                        }; break;
+              // uses the firstSecondStrikerMinBallDistance or a linear 'function f(x) = x*m + n' based on the distance to the ball of the second striker to determine the min radius between first and second striker's ball
+              case 3:  radius = [&](const Vector2d&, const Vector2d& second){
+                            return std::max(firstSecondStrikerMinBallDistance, second.abs() * firstSecondStrikerLinBallDistanceM + firstSecondStrikerLinBallDistanceN);
+                        }; break;
+              // simply uses a firstSecondStrikerMinBallDistance as min radius between first and second striker's ball
+              case 1:
+              default: radius = [&](const Vector2d&, const Vector2d&){
+                            return firstSecondStrikerMinBallDistance;
+                        }; break;
+          }
+      };
+      PARAMETER_REGISTER_CB(strikerBallRadiusFunction, funcR) = 3;
+      PARAMETER_REGISTER(firstSecondStrikerLinBallDistanceM) = 0.35;
+      PARAMETER_REGISTER(firstSecondStrikerLinBallDistanceN) = -40.0;
+
       // load from the file after registering all parameters
       syncWithConfig();
     }
@@ -131,9 +168,17 @@ protected:
     bool useSecondStriker;
     int strikerBonusTime;
     int maxBallLostTime;
-    int strikerSelection;
     int strikerSelectionDiffThreshold;
-    int firstSecondStrikerBallDistance;
+
+    int strikerSelection;
+    void (CleanRoleDecision::*strikerSelectionFunction)(std::map<unsigned int, unsigned int>&, double&) = &CleanRoleDecision::strikerSelectionByNumber;
+
+    int strikerBallRadiusFunction;
+    std::function<double(const Vector2d&,const Vector2d&)> radius;
+
+    double firstSecondStrikerMinBallDistance;
+    double firstSecondStrikerLinBallDistanceM;
+    double firstSecondStrikerLinBallDistanceN;
     
     virtual ~Parameters() {}
   } parameters;
