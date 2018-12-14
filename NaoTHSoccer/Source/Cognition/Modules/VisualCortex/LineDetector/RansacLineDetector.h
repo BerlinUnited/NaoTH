@@ -15,7 +15,7 @@
 
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Perception/LineGraphPercept.h"
-#include "Representations/Perception/LinePercept.h"
+#include "Representations/Perception/LinePercept2018.h"
 
 #include "Tools/Debug/DebugParameterList.h"
 
@@ -32,8 +32,8 @@ BEGIN_DECLARE_MODULE(RansacLineDetector)
   REQUIRE(LineGraphPercept)
   REQUIRE(FieldInfo)
 
-  PROVIDE(LinePercept)
-  PROVIDE(RansacCirclePercept)
+  PROVIDE(RansacLinePercept)
+  PROVIDE(RansacCirclePercept2018)
 END_DECLARE_MODULE(RansacLineDetector)
 
 class RansacLineDetector: public RansacLineDetectorBase
