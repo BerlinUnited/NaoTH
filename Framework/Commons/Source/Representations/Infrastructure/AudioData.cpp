@@ -10,7 +10,6 @@ using namespace naoth;
 AudioData::AudioData():
   sampleRate(8000),
   numChannels(2),
-  onlySoundInSet(true),
   timestamp(0)
 {
   
@@ -21,7 +20,6 @@ void AudioData::print(std::ostream& stream) const
   stream << "sampleRate: " << sampleRate << std::endl;
   stream << "numChannels: " << numChannels << std::endl;
   stream << "Number of Samples: " << samples.size() << std::endl;
-  stream << "onlySoundInSet: " << onlySoundInSet << std::endl;  
   stream << "timestamp: " << timestamp << std::endl;
 }
 

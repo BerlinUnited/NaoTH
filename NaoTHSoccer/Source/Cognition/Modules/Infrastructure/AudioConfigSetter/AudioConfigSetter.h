@@ -33,12 +33,12 @@ public:
   public:
     Parameters() : ParameterList("AudioConfig")
     {
-      PARAMETER_REGISTER(activeChannels)   = "1010";
-      PARAMETER_REGISTER(onOffSwitch)      = 0;
+      PARAMETER_REGISTER(activeChannels) = "1010";
+      PARAMETER_REGISTER(capture)        = false;
       syncWithConfig();
     }
     std::string activeChannels;
-    int onOffSwitch;
+    bool capture;
   } params;
 
 private:

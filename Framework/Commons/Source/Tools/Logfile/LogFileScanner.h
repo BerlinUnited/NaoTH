@@ -48,6 +48,8 @@ public:
   }
 
 private:
+  void open_internal(const std::string& filePath);
+
   std::ifstream logFile;
 
   typedef std::map<unsigned int, std::streampos> FramesMap;

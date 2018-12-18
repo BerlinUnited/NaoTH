@@ -2,6 +2,7 @@ import struct
 import os
 import io
 
+from AudioData_pb2 import *
 from CommonTypes_pb2 import *
 from Framework_Representations_pb2 import *
 from Messages_pb2 import *

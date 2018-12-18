@@ -305,8 +305,8 @@ bool RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& 
       }
     }
 
-    direction_var /= static_cast<int>(inliers.size());
-    double angle_var = 1 - sqrt(Math::sqr(direction_var.x) + Math::sqr(direction_var.y));
+    direction_var /= static_cast<double>(inliers.size());
+    double angle_var = 1 - direction_var.abs();
 
     result = Math::LineSegment(bestModel.point(minT), bestModel.point(maxT));
     double line_length = result.getLength();
@@ -387,9 +387,10 @@ bool RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inl
         double offset = std::fabs(radius - (model - e.point).abs());
 
         // inlier
-        if(offset <= params.circle_outlierThreshold &&
-          Math::toDegrees(angle_diff(model, e)) <= params.circle_max_angle_diff) {
-          direction_var += e.direction.angle();
+        if(offset <= params.circle_outlierThreshold && 
+           angle_diff(model, e) <= params.circle_max_angle_diff) 
+        {
+          direction_var += e.direction;
 
           ++inlier;
           inlierError += offset;
@@ -397,10 +398,11 @@ bool RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inl
       }
       if(inlier >= params.circle_inlierMin) {
         direction_var /= inlier;
-        double angle_variance = 1 - sqrt(Math::sqr(direction_var.x) + Math::sqr(direction_var.y));
+        double angle_variance = 1.0 - direction_var.abs();
 
         if((inlier > bestInlier || (inlier == bestInlier && inlierError < bestInlierError))
-          && angle_variance >= params.circle_angle_variance) {
+          && angle_variance >= params.circle_angle_variance) 
+        {
           bestModel = model;
           bestInlier = inlier;
           bestInlierError = inlierError;
@@ -420,7 +422,7 @@ bool RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inl
       const Edgel& e = getLineGraphPercept().edgelsOnField[i];
       double offset = std::fabs(radius - (bestModel - e.point).abs());
 
-      if(offset > params.circle_outlierThreshold || Math::toDegrees(angle_diff(bestModel, e)) > params.circle_max_angle_diff) {
+      if(offset > params.circle_outlierThreshold || angle_diff(bestModel, e) > params.circle_max_angle_diff) {
         newOutliers.push_back(i);
       } else {
         inliers.push_back(i);

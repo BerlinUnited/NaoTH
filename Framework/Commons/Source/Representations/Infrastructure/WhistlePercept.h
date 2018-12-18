@@ -39,6 +39,7 @@ namespace naoth
     void reset()
     {
       recognizedWhistles.clear();
+      counter = 0;
     }
 
     void addWhistle(const std::string& name, const long long& positionInCapture, const double& responseValue)
