@@ -9,6 +9,8 @@
 #include <Representations/Motion/MotionStatus.h>
 #include <Representations/Motion/Request/MotionRequest.h>
 #include <Representations/Motion/CollisionPercept.h>
+#include "Representations/Modeling/BodyState.h"
+
 
 //Tools
 #include <Tools/Math/ConvexHull.h>
@@ -36,6 +38,7 @@ BEGIN_DECLARE_MODULE(ArmCollisionDetector2018)
   REQUIRE(SensorJointData)
   REQUIRE(MotionStatus)
   REQUIRE(MotionRequest)
+  REQUIRE(BodyState)
 
   PROVIDE(CollisionPercept)
 END_DECLARE_MODULE(ArmCollisionDetector2018)
