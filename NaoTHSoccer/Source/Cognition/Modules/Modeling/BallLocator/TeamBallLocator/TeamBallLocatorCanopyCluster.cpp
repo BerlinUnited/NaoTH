@@ -47,10 +47,11 @@ void TeamBallLocatorCanopyCluster::execute() {
             Vector2d globalBallPosition = msg.pose * msg.ballPosition;
 
             // if activated via parameter, skip balls, which are outside the field!
-            if(params.ballsAreOnlyValidOnField && (std::fabs(globalBallPosition.x) > getFieldInfo().xFieldLength * 0.5 || std::fabs(globalBallPosition.y) > getFieldInfo().yFieldLength * 0.5)) { continue; }
+            if(!params.ballsAreOnlyValidOnField || getFieldInfo().insideCarpet(globalBallPosition) ) {
 
-            // global position of the ball and time last seen
-            balls.push_back(Ball(globalBallPosition));
+              // global position of the ball and time last seen
+              balls.push_back(Ball(globalBallPosition));
+            }
         }
     }
 
