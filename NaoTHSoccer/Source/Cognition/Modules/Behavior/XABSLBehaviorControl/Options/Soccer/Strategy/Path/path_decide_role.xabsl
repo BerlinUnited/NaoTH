@@ -4,31 +4,21 @@ option path_decide_role
 
   common decision 
   {
-    /** Goalie */
-    if(game.player_number == 1 && team.members_active_count > 1) //become field player, when all others are "dead"
-    {
+    if(strategy.role == goalie) {
       goto goalie;
-    }
-    /* fallback if everything else is broken */
-    else if( (team.members_active_count <= 1) || (team.calc_if_is_striker))
-    {
-      goto striker;
-    }
-    else if (team.calc_if_is_secondstriker) {
-      goto secondstriker;
-    }
-    
-    else if(true)
-    {
-      goto passive;
+    } else if(strategy.role == defender_left) {
+      goto defender_left;
+    } else if(strategy.role == defender_right) {
+      goto defender_right;
+    } else if(true) {
+      goto idle;
     }
   }
 
   // has to be initial state, otherwise there might be problems with role switching
   initial state idle{
-    action
-    {
-      
+    action {
+      // TODO: indicate, that the player has no role!
     }
   }
 
@@ -41,6 +31,23 @@ option path_decide_role
       path_basic_goalie();
     }
   }
+
+  state defender_left
+  {
+    action
+    {
+      // TODO: defender(true);
+    }
+  }
+
+  state defender_right
+  {
+    action
+    {
+      // TODO: defender(false);
+    }
+  }
+
 
   state striker
   {
@@ -90,8 +97,7 @@ option path_decide_role
     action
     {
       team.is_playing_as_striker = false;
-      decide_and_go_to_passive_position();
+      //decide_and_go_to_passive_position();
     }
   }
-  
 }

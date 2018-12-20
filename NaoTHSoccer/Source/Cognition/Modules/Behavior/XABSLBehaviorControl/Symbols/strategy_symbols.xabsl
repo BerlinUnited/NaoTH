@@ -71,5 +71,34 @@ namespace strategy("Strategy Symbols") {
   float input freekick.pos.x;
   float input freekick.pos.y;
 
+  // static/default roles
+  enum role.static
+  {
+    unknown,
+    goalie,
+    defender_left,
+    defender_center,
+    defender_right,
+    midfielder_left,
+    midfielder_center,
+    midfielder_right,
+    forward_left,
+    forward_center,
+    forward_right
+  };
+
+  // dynamic/short time roles
+  enum role.dynamic
+  {
+    none,
+    supporter,
+    striker
+  };
+  
+  enum role.static input strategy.role;
+  enum role.dynamic input strategy.role_d;
+  
+  float input strategy.home_pos.x;
+  float input strategy.home_pos.y;
 }
   
