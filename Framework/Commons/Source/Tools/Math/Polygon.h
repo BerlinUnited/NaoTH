@@ -8,7 +8,6 @@
 #ifndef _Polygon_H_
 #define _Polygon_H_
 
-#include "Tools/DataStructures/Area.h"
 #include "Tools/Math/Vector2.h"
 
 #include "ConvexHull.h"
@@ -18,7 +17,7 @@
 namespace Math {
 
 template<typename T>
-class Polygon: public Area<T>
+class Polygon
 {
   private:
     std::vector<Vector2<T> > points;
@@ -50,8 +49,6 @@ class Polygon: public Area<T>
       makeFromPointSet(point_set);
     }
 
-    virtual ~Polygon() {}
-    
     //returns the Area surounded by the Polygon defined by the points in the list
     //in their respective order
     double getArea() const {
@@ -83,15 +80,10 @@ class Polygon: public Area<T>
         return -1;
     }
 
-    virtual bool isInside(const Vector2<T>& point) const {
+    inline bool isInside(const Vector2<T>& point) const {
       //return testCrossingNumber(point) == 1;
       return testWindingNumber(points, point) != 0;
     }
-
-    bool isInside_inline(const Vector2<T>& point) const {
-      return testWindingNumber(points, point) != 0;
-    }
-
 
     template<typename P>
     static inline bool isInside(const std::vector<Vector2<P> >& points, const Vector2<T>& point) {
