@@ -274,10 +274,16 @@ bool RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& 
   {
     std::vector<size_t> newOutliers;
     newOutliers.reserve(outliers.size() - bestInlier + 1);
+    inliers.clear(); // make sure the list is empty
     inliers.reserve(bestInlier);
 
-    double minT = bestModel.project(getLineGraphPercept().edgelsOnField[0].point);
-    double maxT = minT;
+    // In the following we determine the endpoints of the line segment
+    // The endpoints are defined by the most outer inliers
+    // ACHTUNG: We need to start with a point inside the actual line segment.
+    // NOTE: We assume that bestModel.point(0) is one of the inliers which had 
+    //       been used to create the model.
+    double minT = 0.0;
+    double maxT = 0.0;
     start_edgel = end_edgel = 0;
 
     Vector2d direction_var;
@@ -287,7 +293,8 @@ bool RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& 
       const Edgel& e = getLineGraphPercept().edgelsOnField[i];
       double d = bestModel.minDistance(e.point);
 
-      if(d < params.outlierThreshold && sim(bestModel, e) > params.directionSimilarity) {
+      if(d < params.outlierThreshold && sim(bestModel, e) > params.directionSimilarity) 
+      {
         inliers.push_back(i);
 
         double t = bestModel.project(e.point);
