@@ -31,36 +31,7 @@ ArmCollisionDetector2018::ArmCollisionDetector2018()
 	}
 	fileRight.close();
 
-	/*
-	if (fileLeft.is_open() && fileLeft.good())
-	{
-		while (std::getline(fileLeft, line))
-		{
-			std::string::size_type sz;
-			double alpha = std::stod(line, &sz);
-			double beta = std::stod(line.substr(sz));
-			Vector2d buff(alpha, beta);
-			getCollisionPercept().referenceHullLeft.push_back(buff);
-		}
-	}
-  fileLeft.close();
-
-	//Right point config
-	std::cout << dirlocation + params.point_configRight << std::endl;
-	std::ifstream fileRight(dirlocation + params.point_configRight);
-	if (fileRight.is_open() && fileRight.good())
-	{
-		while (std::getline(fileRight, line))
-		{
-			std::string::size_type sz;
-			double alpha = std::stod(line, &sz);
-			double beta = std::stod(line.substr(sz));
-			Vector2d buff(alpha, beta);
-			getCollisionPercept().referenceHullRight.push_back(buff);
-		}
-	}
-  fileRight.close();
-  */
+	
   getCollisionPercept().referenceHullLeft = ConvexHull::convexHull(getCollisionPercept().referenceHullLeft);
   getCollisionPercept().referenceHullRight = ConvexHull::convexHull(getCollisionPercept().referenceHullRight);
 
@@ -68,23 +39,13 @@ ArmCollisionDetector2018::ArmCollisionDetector2018()
   refpolyL.makeFromPointSet(getCollisionPercept().referenceHullLeft);
   refpolyR.makeFromPointSet(getCollisionPercept().referenceHullRight);
   
-  /*
-  for (size_t i = 0; i <getCollisionPercept().referenceHullLeft.size(); i++)
-  {
-	  refpolyL.add(getCollisionPercept().referenceHullLeft[i]);
-  }
-
-  for (size_t i = 0; i <getCollisionPercept().referenceHullRight.size(); i++)
-  {
-	  refpolyR.add(getCollisionPercept().referenceHullRight[i]);
-  }
-  */
 }
 
 ArmCollisionDetector2018::~ArmCollisionDetector2018()
 {
 	getDebugParameterList().remove(&params);
 }
+
 
 void ArmCollisionDetector2018::execute()
 {
@@ -114,11 +75,10 @@ void ArmCollisionDetector2018::execute()
 		double b = getSensorJointData().position[JointData::LShoulderPitch];
 		double er = (b - a);
 		//if (!Math::Polygon<double>::isInside(getCollisionPercept().referenceHullLeft, Vector2d(a, er)))
-    if (!refpolyL.isInside(Vector2d(a, er)))
+		if (!refpolyL.isInside(Vector2d(a, er)))
 		{
-      //collision
-      getCollisionPercept().timeCollisionArmLeft = getFrameInfo().getTime();
-			//std::cout << "[ArmCollisionDetector2018] Collision detected!" << std::endl;
+			//collision
+			getCollisionPercept().timeCollisionArmLeft = getFrameInfo().getTime();
 		}
 	}
 
@@ -129,15 +89,16 @@ void ArmCollisionDetector2018::execute()
 		double er = (b - a);
 		//if (!Math::Polygon<double>::isInside(getCollisionPercept().referenceHullRight, Vector2d(a, er)))
 		if (!refpolyR.isInside(Vector2d(a, er)))
-    {
+		{
 			//collision
-      getCollisionPercept().timeCollisionArmRight = getFrameInfo().getTime();
-			//std::cout << "[ArmCollisionDetector2018] Collision detected!" << std::endl;
+			getCollisionPercept().timeCollisionArmRight = getFrameInfo().getTime();
 		}
 	}
 
 }
+
 /*
+// NOTE: Old Version
 void ArmCollisionDetector2018::execute()
 {
 	DEBUG_REQUEST("Motion:ArmCollisionDetector2018:showReferenceHull",

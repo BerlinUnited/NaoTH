@@ -9,10 +9,6 @@
 #include "BasicTestBehavior.h"
 
 BasicTestBehavior::BasicTestBehavior() 
-:
-  lastWhistleCount(0),
-  idleCounter(11),
-  whistleDetected(false)
 {
   // test head control
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:Search", "Set the HeadMotion-Request to 'search'.", false);
@@ -81,8 +77,7 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:arms_none", "set arms request to none", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:arms_synchronised_with_walk", "set arms request to none", false);
 
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:whistle:start_whistle", "start whistle detection", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:whistle:stop_whistle", "stop whistle detection", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:whistle:listen", "start whistle detection", false);
 }
 
 void BasicTestBehavior::execute() 
@@ -404,42 +399,15 @@ void BasicTestBehavior::testLED() {
 
 void BasicTestBehavior::testWhistle()
 {
-  DEBUG_REQUEST("BasicTestBehavior:whistle:start_whistle",
-    if (!getAudioControl().capture) 
-    {
-      getAudioControl().capture = true;
-      lastWhistleCount = getWhistlePercept().counter;
-    }
+  getAudioControl().capture = false;
 
-    if (getWhistlePercept().counter != lastWhistleCount)
-    {
-      if (idleCounter > 10) {
-        idleCounter = 0;
-      }
-      if (idleCounter == 0)
-      {
-        if (!whistleDetected)
-        {
-          getSoundPlayData().soundFile = "anDieArbeit.wav";
-          whistleDetected = true;
-        }
-        else
-        {
-          getSoundPlayData().soundFile = "victory.wav";
-          whistleDetected = false;
-        }
-      }
-      lastWhistleCount = getWhistlePercept().counter;
-    }
-    idleCounter++;
-  );
+  DEBUG_REQUEST("BasicTestBehavior:whistle:listen",
+    getAudioControl().capture = true;
 
-  DEBUG_REQUEST("BasicTestBehavior:whistle:stop_whistle",
-    if (getAudioControl().capture)
-    {
-      getAudioControl().capture = false;
-      lastWhistleCount = getWhistlePercept().counter;
+    if(getWhistlePercept().whistleDetected) {
+      getSoundPlayData().soundFile = "victory.wav";
+    } else {
+      getSoundPlayData().soundFile.clear();
     }
-    getMotionRequest().id = motion::stand;
   );
 }

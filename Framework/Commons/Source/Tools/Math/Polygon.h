@@ -9,6 +9,7 @@
 #define _Polygon_H_
 
 #include "Tools/DataStructures/Area.h"
+#include "Tools/Math/Vector2.h"
 
 #include "ConvexHull.h"
 
@@ -39,8 +40,8 @@ class Polygon: public Area<T>
       return points.size();
     }
 
-    Vector2<T>& operator[] (int i) { return points[i]; }
-    const Vector2<T>& operator[] (int i) const { return points[i]; }
+    Vector2<T>& operator[] (size_t i) { return points[i]; }
+    const Vector2<T>& operator[] (size_t i) const { return points[i]; }
 
   public:
     Polygon() {}
@@ -159,7 +160,7 @@ class Polygon: public Area<T>
     {
         int windingNr = 0;    // the winding number counter
 
-        int j = points.size() - 1;
+        size_t j = points.size() - 1;
 
         // loop through all edges of the polygon
         for (size_t i = 0; i < points.size(); i++)
@@ -184,7 +185,7 @@ class Polygon: public Area<T>
                     }
                 }
             }
-          j = i;
+            j = i;
         }
         return windingNr;
     }

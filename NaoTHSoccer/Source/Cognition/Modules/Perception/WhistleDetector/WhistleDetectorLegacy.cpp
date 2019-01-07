@@ -16,6 +16,8 @@
 WhistleDetectorLegacy::WhistleDetectorLegacy()
   : lastDataTimestamp(0)
 {
+  DEBUG_REQUEST_REGISTER("Plot:WhistleDetectorLegacy:scan_thresh","", false);
+
 	getDebugParameterList().add(&params);
 }
 
@@ -26,7 +28,8 @@ WhistleDetectorLegacy::~WhistleDetectorLegacy()
 
 void WhistleDetectorLegacy::execute()
 {
-	
+	getWhistlePercept().reset();
+
   // there is no new data, return
   if(lastDataTimestamp >= getAudioData().timestamp ) {
     return;
@@ -82,16 +85,20 @@ void WhistleDetectorLegacy::execute()
   spectrumHandler->whistleMissCounterGlobal = 0;
   spectrumHandler->filter_value = 0.0;
 
-  for(size_t x = 0; x < spectrumHandler->scan_log.size(); ++x) {
-    PLOT_GENERIC("WhistleDetectorLegacy:scan",   static_cast<int>(x), spectrumHandler->scan_log[x]);
-    PLOT_GENERIC("WhistleDetectorLegacy:thresh", static_cast<int>(x), spectrumHandler->scan_thc[x]);
-  }
+  DEBUG_REQUEST("Plot:WhistleDetectorLegacy:scan_thresh",
+    for(size_t x = 0; x < spectrumHandler->scan_log.size(); ++x) {
+      PLOT_GENERIC("WhistleDetectorLegacy:scan",   static_cast<int>(x), spectrumHandler->scan_log[x]);
+      PLOT_GENERIC("WhistleDetectorLegacy:thresh", static_cast<int>(x), spectrumHandler->scan_thc[x]);
+    }
+  );
   spectrumHandler->scan_log.clear();
   spectrumHandler->scan_thc.clear();
 
   PLOT("WhistleDetectorLegacy:whistle_filter", (spectrumHandler->whistleDetections > 0) );
 
   // update the percept
-  getWhistlePercept().counter += spectrumHandler->whistleDetections;
+  if(spectrumHandler->whistleDetections > 0) {
+    getWhistlePercept().whistleDetected = true;
+  }
   spectrumHandler->whistleDetections = 0;
 }
