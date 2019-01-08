@@ -43,25 +43,32 @@ END_DECLARE_MODULE(RoleDecision);
 class RoleDecision : public RoleDecisionBase
 {
 public:
-    RoleDecision() { instance = this; }
-    virtual ~RoleDecision() {}
+    RoleDecision() : params(getFieldInfo())
+    {
+        getDebugParameterList().add(&params);
+    }
+
+    virtual ~RoleDecision()
+    {
+        getDebugParameterList().remove(&params);
+    }
 
     virtual void execute();
 
 private:
-    // HACK: for the parameters to get access to the FieldInfo.
-    static RoleDecision* instance;
 
     class Parameters: public ParameterList
     {
     public:
-        Parameters(): ParameterList("RoleDecision")
+        Parameters(const FieldInfo& fi): ParameterList("RoleDecision")
         {
             PARAMETER_REGISTER(assignment) = "1:goalie;2:defender_left;3:forward_center;4:defender_right;5:midfielder_left;6:midfielder_right";
             PARAMETER_REGISTER(active_priority) = "forward_right;defender_left;defender_right;midfielder_center;forward_left";
 
             PARAMETER_REGISTER(base_x) = 9000;
             PARAMETER_REGISTER(base_y) = 6000;
+            field_x = fi.xLength;
+            field_y = fi.yLength;
 
             PARAMETER_REGISTER(goalie_str) = "-4500,0;-4500,0;-4500,0";
             PARAMETER_REGISTER(defender_left_str) = "-2500,1500;-2500,1500;-2500,1500";
@@ -101,6 +108,9 @@ private:
         double base_x;
         double base_y;
 
+        double field_x;
+        double field_y;
+
         std::string goalie_str;
         std::string defender_left_str;
         std::string defender_center_str;
@@ -136,18 +146,18 @@ private:
 
             pos_part = split(parts[0], ',');
             ASSERT(pos_part.size() == 2);
-            r.home.x = std::stod(pos_part[0]) / base_x * instance->getFieldInfo().xLength;
-            r.home.y = std::stod(pos_part[1]) / base_y * instance->getFieldInfo().yLength;
+            r.home.x = std::stod(pos_part[0]) / base_x * field_x;
+            r.home.y = std::stod(pos_part[1]) / base_y * field_y;
 
             pos_part = split(parts[1], ',');
             ASSERT(pos_part.size() == 2);
-            r.own.x = std::stod(pos_part[0]) / base_x * instance->getFieldInfo().xLength;
-            r.own.y = std::stod(pos_part[1]) / base_y * instance->getFieldInfo().yLength;
+            r.own.x = std::stod(pos_part[0]) / base_x * field_x;
+            r.own.y = std::stod(pos_part[1]) / base_y * field_y;
 
             pos_part = split(parts[2], ',');
             ASSERT(pos_part.size() == 2);
-            r.opp.x = std::stod(pos_part[0]) / base_x * instance->getFieldInfo().xLength;
-            r.opp.y = std::stod(pos_part[1]) / base_y * instance->getFieldInfo().yLength;
+            r.opp.x = std::stod(pos_part[0]) / base_x * field_x;
+            r.opp.y = std::stod(pos_part[1]) / base_y * field_y;
         }
 
         void parsePriority() {

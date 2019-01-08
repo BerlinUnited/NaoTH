@@ -561,7 +561,7 @@ double StrategySymbols::getHomePositionX() {
 double StrategySymbols::getHomePositionY() {
     const auto& it = theInstance->getRoleDecisionModel().roles.find(theInstance->getPlayerInfo().playerNumber);
     if(it != theInstance->getRoleDecisionModel().roles.cend()) {
-        return it->second.home.x;
+        return it->second.home.y;
     }
     // put unknown player on the "manual placement line"
     return theInstance->getFieldInfo().yLength/(theInstance->getPlayerInfo().playersPerTeam+2)*theInstance->getPlayerInfo().playerNumber-(theInstance->getFieldInfo().yLength*0.5);
@@ -579,7 +579,7 @@ double StrategySymbols::getHomePositionOwnKickoffX() {
 double StrategySymbols::getHomePositionOwnKickoffY() {
     const auto& it = theInstance->getRoleDecisionModel().roles.find(theInstance->getPlayerInfo().playerNumber);
     if(it != theInstance->getRoleDecisionModel().roles.cend()) {
-        return it->second.own.x;
+        return it->second.own.y;
     }
     // put unknown player on the "manual placement line"
     return theInstance->getFieldInfo().yLength/(theInstance->getPlayerInfo().playersPerTeam+2)*theInstance->getPlayerInfo().playerNumber-(theInstance->getFieldInfo().yLength*0.5);
@@ -597,7 +597,7 @@ double StrategySymbols::getHomePositionOppKickoffX() {
 double StrategySymbols::getHomePositionOppKickoffY() {
     const auto& it = theInstance->getRoleDecisionModel().roles.find(theInstance->getPlayerInfo().playerNumber);
     if(it != theInstance->getRoleDecisionModel().roles.cend()) {
-        return it->second.opp.x;
+        return it->second.opp.y;
     }
     // put unknown player on the "manual placement line"
     return theInstance->getFieldInfo().yLength/(theInstance->getPlayerInfo().playersPerTeam+2)*theInstance->getPlayerInfo().playerNumber-(theInstance->getFieldInfo().yLength*0.5);

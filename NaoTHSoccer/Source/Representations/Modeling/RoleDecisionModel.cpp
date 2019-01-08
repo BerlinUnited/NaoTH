@@ -75,4 +75,14 @@ void RoleDecisionModel::print(std::ostream& stream) const {
     else {
         stream << "Robot does not want to be a striker in the next round.\n\n";
     }
+    stream << "----------------------------------------------------\n\n";
+    for(const auto& it : roles) {
+        stream << it.first << " @ " << getName(it.second.role)
+               << " ("
+                   << it.second.home.x << "/" << it.second.home.y << ", "
+                   << it.second.own.x << "/" << it.second.own.y << ", "
+                   << it.second.opp.x << "/" << it.second.opp.y
+               << ") [" << getName(it.second.dynamic) << "]"
+               << "\n";
+    }
 }
