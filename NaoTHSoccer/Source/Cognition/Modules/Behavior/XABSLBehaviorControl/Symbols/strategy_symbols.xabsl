@@ -97,8 +97,15 @@ namespace strategy("Strategy Symbols") {
   
   enum role.static input strategy.role;
   enum role.dynamic input strategy.role_d;
-  
-  float input strategy.home_pos.x;
-  float input strategy.home_pos.y;
+
+  // default home position
+  float input strategy.position.home.x;
+  float input strategy.position.home.y;
+  // position for own kickoff
+  float input strategy.position.own.x;
+  float input strategy.position.own.y;
+  // position for opp kickoff
+  float input strategy.position.opp.x;
+  float input strategy.position.opp.y;
 }
   

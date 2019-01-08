@@ -148,8 +148,13 @@ private:
   static double freeKickPositionY();
 
   static int getStaticRole();
+  static int getDynamicRole();
   static double getHomePositionX();
   static double getHomePositionY();
+  static double getHomePositionOwnKickoffX();
+  static double getHomePositionOwnKickoffY();
+  static double getHomePositionOppKickoffX();
+  static double getHomePositionOppKickoffY();
 };//end class StrategySymbols
 
 #endif // _StrategySymbols_H_
