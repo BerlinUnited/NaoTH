@@ -1,7 +1,7 @@
 #include "RoleDecisionModel.h"
 
 
-std::string RoleDecisionModel::getName(RoleEnum role) {
+std::string RoleDecisionModel::getName(StaticRole role) {
     switch (role) {
         case unknown:           return "unknown";
         case goalie:            return "goalie";
@@ -18,7 +18,7 @@ std::string RoleDecisionModel::getName(RoleEnum role) {
     return "invalid";
 }
 
-RoleDecisionModel::RoleEnum RoleDecisionModel::getRole(std::string name)
+RoleDecisionModel::StaticRole RoleDecisionModel::getStaticRole(std::string name)
 {
          if (std::strcmp(name.c_str(), "unknown")           == 0) { return unknown; }
     else if (std::strcmp(name.c_str(), "goalie")            == 0) { return goalie; }
@@ -32,6 +32,25 @@ RoleDecisionModel::RoleEnum RoleDecisionModel::getRole(std::string name)
     else if (std::strcmp(name.c_str(), "forward_center")    == 0) { return forward_center; }
     else if (std::strcmp(name.c_str(), "forward_right")     == 0) { return forward_right; }
     return unknown;
+}
+
+std::string RoleDecisionModel::getName(DynamicRole role) {
+    switch (role) {
+        case none:              return "none";
+        case supporter:         return "supporter";
+        case goalie_supporter:  return "goalie_supporter";
+        case striker:           return "striker";
+    }
+    return "invalid";
+}
+
+RoleDecisionModel::DynamicRole RoleDecisionModel::getDynamicRole(std::string name)
+{
+         if (std::strcmp(name.c_str(), "none")             == 0) { return none; }
+    else if (std::strcmp(name.c_str(), "supporter")        == 0) { return supporter; }
+    else if (std::strcmp(name.c_str(), "goalie_supporter") == 0) { return goalie_supporter; }
+    else if (std::strcmp(name.c_str(), "striker")          == 0) { return striker; }
+    return none;
 }
 
 void RoleDecisionModel::print(std::ostream& stream) const {

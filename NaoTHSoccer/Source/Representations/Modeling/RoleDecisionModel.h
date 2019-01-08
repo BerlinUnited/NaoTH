@@ -20,7 +20,7 @@ class RoleDecisionModel: public naoth::Printable
 public:
     RoleDecisionModel() {}
 
-    enum RoleEnum {
+    enum StaticRole {
         unknown,
         goalie,
         defender_left,
@@ -33,15 +33,26 @@ public:
         forward_center,
         forward_right,
         // ------------
-        numOfRoles
+        numOfStaticRoles
+    };
+
+    enum DynamicRole {
+        none,
+        supporter,
+        goalie_supporter,
+        striker,
+        // ------------
+        numOfDynamicRoles
     };
 
     struct Role
     {
         Role():role(unknown){}
-        Role(RoleEnum r):role(r){}
+        Role(StaticRole r):role(r){}
 
-        RoleEnum role; // the actual role
+        StaticRole role; // the actual role
+        DynamicRole dynamic; // the actual role
+
         Vector2d home; // home position
         Vector2d own; // position for own kickoff
         Vector2d opp; // position for opp kickoff
@@ -49,8 +60,10 @@ public:
 
     std::map<unsigned int, Role> roles;
 
-    static std::string getName(RoleEnum role);
-    static RoleEnum getRole(std::string name);
+    static std::string getName(StaticRole role);
+    static std::string getName(DynamicRole role);
+    static StaticRole getStaticRole(std::string name);
+    static DynamicRole getDynamicRole(std::string name);
 
     /* OLD STUFF ------------------------------------------------ */
 

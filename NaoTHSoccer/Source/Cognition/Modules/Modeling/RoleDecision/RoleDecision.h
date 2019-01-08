@@ -58,7 +58,7 @@ private:
         Parameters(): ParameterList("RoleDecision")
         {
             PARAMETER_REGISTER(assignment) = "1:goalie;2:defender_left;3:forward_center;4:defender_right;5:midfielder_left;6:midfielder_right";
-            PARAMETER_REGISTER(priority) = "goalie;forward_right;defender_left;defender_right;midfielder_center;forward_left";
+            PARAMETER_REGISTER(active_priority) = "forward_right;defender_left;defender_right;midfielder_center;forward_left";
 
             PARAMETER_REGISTER(base_x) = 9000;
             PARAMETER_REGISTER(base_y) = 6000;
@@ -93,10 +93,10 @@ private:
         virtual ~Parameters() {}
 
         std::string assignment;
-        std::map<unsigned int, RoleDecisionModel::RoleEnum> assignment_role;
+        std::map<unsigned int, RoleDecisionModel::StaticRole> assignment_role;
 
-        std::string priority;
-        std::vector<RoleDecisionModel::RoleEnum> priority_role;
+        std::string active_priority;
+        std::vector<RoleDecisionModel::StaticRole> priority_role;
 
         double base_x;
         double base_y;
@@ -112,7 +112,7 @@ private:
         std::string forward_center_str;
         std::string forward_right_str;
 
-        std::map<RoleDecisionModel::RoleEnum, RoleDecisionModel::Role> default_roles;
+        std::map<RoleDecisionModel::StaticRole, RoleDecisionModel::Role> default_roles;
 
     private:
         void parseAssignment() {
@@ -120,11 +120,11 @@ private:
             for(const std::string& part : parts) {
                 std::vector<std::string> assign_part = split(part, ':');
                 ASSERT(assign_part.size() == 2);
-                assignment_role[static_cast<unsigned int>(std::stoul(assign_part[0]))] = RoleDecisionModel::getRole(assign_part[1]);
+                assignment_role[static_cast<unsigned int>(std::stoul(assign_part[0]))] = RoleDecisionModel::getStaticRole(assign_part[1]);
             }
         }
 
-        void parsePosition(std::string& positions, RoleDecisionModel::RoleEnum role)
+        void parsePosition(std::string& positions, RoleDecisionModel::StaticRole role)
         {
             auto& r = default_roles[role];
             r.role = role;
@@ -151,9 +151,9 @@ private:
         }
 
         void parsePriority() {
-            std::vector<std::string> parts = split(priority, ';');
+            std::vector<std::string> parts = split(active_priority, ';');
             for(const std::string& part : parts) {
-                RoleDecisionModel::RoleEnum r = RoleDecisionModel::getRole(part);
+                RoleDecisionModel::StaticRole r = RoleDecisionModel::getStaticRole(part);
                 ASSERT(RoleDecisionModel::unknown != r);
                 priority_role.push_back(r);
             }

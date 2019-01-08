@@ -13,6 +13,7 @@ void RoleDecision::execute()
         for (auto const& i : getTeamMessage().data) {
             // set the default positions of the predefined role
             getRoleDecisionModel().roles[i.first] = params.default_roles[params.assignment_role[i.first]];
+            getRoleDecisionModel().roles[i.first].dynamic = RoleDecisionModel::none;
         }
     } else {
         // determine the best role for each player in the team context
