@@ -24,6 +24,9 @@ namespace game_symbols("Game Control Symbols")
   /*Milliseconds remaining in the game */
   float input game.msecsRemaining;
 
+  /*Milliseconds remaining for the secondaryTime */
+  float input game.msecsRemainingSecondary;
+
   bool input game.state.playing_is_set_by_game_controller;
 
   enum game.set_play

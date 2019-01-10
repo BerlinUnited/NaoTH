@@ -10,7 +10,7 @@
 #include "Representations/Infrastructure/ButtonState.h"
 #include "Representations/Infrastructure/SoundData.h"
 #include "Representations/Modeling/PlayerInfo.h"
-#include "Representations/Infrastructure/WhistlePercept.h"
+#include "Representations/Perception/WhistlePercept.h"
 #include "Representations/Infrastructure/GameData.h"
 #include "Representations/Modeling/TeamMessageData.h"
 #include "Representations/Infrastructure/WifiMode.h"
@@ -21,11 +21,11 @@ BEGIN_DECLARE_MODULE(GameController)
   PROVIDE(DebugRequest)
   
   REQUIRE(ButtonState)
-  REQUIRE(GameData)
   REQUIRE(FrameInfo)
   REQUIRE(WhistlePercept)
   REQUIRE(WifiMode)
 
+  PROVIDE(GameData)
   PROVIDE(TeamMessageData)
   PROVIDE(GameReturnData)
   PROVIDE(GameControllerLEDRequest)
@@ -47,8 +47,9 @@ private:
   void updateLEDs();
 
 private:
-  int lastWhistleCount;
   GameData::GameState lastGameState;
+  bool debug_whistle_heard;
+  bool play_by_whistle;
 };
 
 #endif // GAMECONTROLLER_H

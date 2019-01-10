@@ -8,43 +8,16 @@
 #ifndef _SOUNDCONTROL_H
 #define	_SOUNDCONTROL_H
 
-
-#include <iostream>
-#include <fstream>
-#include <cstring>
 #include <string>
-#include <sstream>
-
-#include <pthread.h>
-#include <alsa/asoundlib.h>
-#include <sys/types.h>
+#include <thread>
+#include <atomic>
+#include <mutex>
+#include <condition_variable>
 
 #include "Representations/Infrastructure/SoundData.h"
 
-using namespace std;
-
 namespace naoth
 {
-
-class WaveHeader
-{
-public:
-  //RIFF-Chunk
-  unsigned int fileLength;
-
-  //Format-Chunk
-  unsigned int formatLength;
-  unsigned short formatTag;
-  unsigned short channels;
-  unsigned int samplesPerSec;
-  unsigned int avgBytesPerSec;
-  unsigned short blockAlign;
-  unsigned short bitsPerSample;
-
-  //Data-Chunk
-  unsigned int dataLength;
-};
-
 
 class SoundControl
 {
@@ -52,19 +25,18 @@ public:
   SoundControl();
   ~SoundControl();
   void setSoundData(const SoundPlayData& theSoundData);
+  
+private:
   void play();
 
-private:
-  string media_path;
-  int err;
-  SoundPlayData theSoundDataCopy;
-  pthread_t playThreadID;
+  std::atomic<bool> stopping;
+  std::thread playThread;
+
+  std::string media_path;
   std::string filename;
-  bool is_running;
-
-  void change_volume(const SoundPlayData::SpeakerID id,const int volume);
-  void change_mute(const bool mute);
-
+  
+  std::condition_variable new_data_avaliable;
+  std::mutex dataMutex;
 };
 
 } // end namespace naoth

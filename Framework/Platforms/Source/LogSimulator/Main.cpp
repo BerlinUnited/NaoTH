@@ -58,7 +58,7 @@ int main(int argc, char** argv)
   bool start = false;
 
   char* logpath = getenv("NAOTH_LOGFILE");
-  if(logpath == NULL && argc > 1) {
+  if(argc > 1) {
     logpath = argv[argc-1];
   }
 

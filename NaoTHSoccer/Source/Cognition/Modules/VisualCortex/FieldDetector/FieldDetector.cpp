@@ -25,7 +25,9 @@ FieldDetector::FieldDetector()
 
 
 FieldDetector::~FieldDetector()
-{}
+{
+  getDebugParameterList().remove(&theParameters);
+}
 
 
 void FieldDetector::execute(CameraInfo::CameraID id)
@@ -40,34 +42,25 @@ void FieldDetector::execute(CameraInfo::CameraID id)
 
   if(simulateField)
   {
-    vector<Vector2i> result;
-    result.push_back(Vector2i(0,0));
-    result.push_back(Vector2i(0,getImage().height()-1));
-    result.push_back(Vector2i(getImage().width()-1, getImage().height()-0));
-    result.push_back(Vector2i(getImage().width()-1,0));
-    result.push_back(Vector2i(0,0));
-
     // create the polygon
     FieldPercept::FieldPoly fieldPoly;
-    for(size_t i = 0; i < result.size(); i++)
-    {
-      fieldPoly.add(result[i]);
-    }
+    fieldPoly.add(0,0);
+    fieldPoly.add(0,getImage().height()-1);
+    fieldPoly.add(getImage().width()-1, getImage().height()-0);
+    fieldPoly.add(getImage().width()-1,0);
+    fieldPoly.add(0,0);
+
     Math::LineSegment horizon(Vector2i(0, 0), Vector2i(getImage().width() - 1, 0));
 
     getFieldPercept().setField(fieldPoly, horizon);
-    if(fieldPoly.getArea() >= 5600)
-    {
+    if(fieldPoly.getArea() >= 5600) {
       getFieldPercept().valid = true;
     }
 
     DEBUG_REQUEST( "Vision:FieldDetector:mark_field_polygon",
-      size_t idx = 0;
       ColorClasses::Color color = getFieldPercept().valid ? ColorClasses::black : ColorClasses::red;
-      for(size_t i = 1; i < result.size(); i++)
-      {
-        LINE_PX(color, result[idx].x, result[idx].y, result[i].x, result[i].y);
-        idx = i;
+      for(size_t i = 0; i + 1 < fieldPoly.size(); ++i) {
+        LINE_PX(color, fieldPoly[i].x, fieldPoly[i].y, fieldPoly[i+1].x, fieldPoly[i+1].y);
       }
     );    
   }
@@ -123,16 +116,12 @@ void FieldDetector::execute(CameraInfo::CameraID id)
     static FieldPercept::FieldPoly fieldPoly;
     fieldPoly.clear();
 
-    for(size_t i = 0; i < result.size(); i++)
-    {
+    for(size_t i = 0; i < result.size(); i++) {
       fieldPoly.add(result[i]);
     }
     DEBUG_REQUEST("Vision:FieldDetector:mark_field_polygon_old",
-      int idx = 0;
-      for(int i = 1; i < fieldPoly.length; i++)
-      {
-        LINE_PX(ColorClasses::black, fieldPoly[idx].x, fieldPoly[idx].y, fieldPoly[i].x, fieldPoly[i].y);
-        idx = i;
+      for(size_t i = 0; i + 1 < fieldPoly.size(); i++) {
+        LINE_PX(ColorClasses::black, fieldPoly[i].x, fieldPoly[i].y, fieldPoly[i+1].x, fieldPoly[i+1].y);
       }
     );    
 
@@ -199,8 +188,7 @@ void FieldDetector::execute(CameraInfo::CameraID id)
         result = ConvexHull::convexHull(points);
         // clear old polygon
         fieldPoly.clear();
-        for(size_t i = 0; i < result.size(); i++)
-        {
+        for(size_t i = 0; i < result.size(); i++) {
           fieldPoly.add(result[i]);
         }
       } else
@@ -209,44 +197,32 @@ void FieldDetector::execute(CameraInfo::CameraID id)
       }
     }
     DEBUG_REQUEST("Vision:FieldDetector:mark_field_polygon_new",
-      int idx = 0;
-      for(int i = 1; i < fieldPoly.length; i++)
-      {
-        LINE_PX(ColorClasses::black, fieldPoly[idx].x, fieldPoly[idx].y, fieldPoly[i].x, fieldPoly[i].y);
-        idx = i;
+      for(size_t i = 0; i + 1 < fieldPoly.size(); i++) {
+        LINE_PX(ColorClasses::black, fieldPoly[i].x, fieldPoly[i].y, fieldPoly[i+1].x, fieldPoly[i+1].y);
       }
     );    
 
     // add field to percept
     getFieldPercept().setField(fieldPoly, getArtificialHorizon());
     // check result
-    if(fieldPoly.getArea() >= 5600)
-    {
+    if(fieldPoly.getArea() >= 5600) {
       getFieldPercept().valid = true;
-    }
-    else
-    {
+    } else {
       getFieldPercept().valid = false;
     }
 
     DEBUG_REQUEST( "Vision:FieldDetector:mark_field_polygon",
-      size_t idx = 0;
       ColorClasses::Color color = getFieldPercept().valid ? ColorClasses::black : ColorClasses::red;
-      for(size_t i = 1; i < result.size(); i++)
-      {
-        LINE_PX(color, result[idx].x, result[idx].y, result[i].x, result[i].y);
-        idx = i;
+      for(size_t i = 0; i + 1 < result.size(); i++) {
+        LINE_PX(color, result[i].x, result[i].y, result[i+1].x, result[i+1].y);
       }
     );    
 
     DEBUG_REQUEST( "Vision:FieldDetector:mark_corrected_field_polygon",
-      int idx = 0;
       ColorClasses::Color color = getFieldPercept().valid ? ColorClasses::black : ColorClasses::red;
       const FieldPercept::FieldPoly& fieldpoly = getFieldPercept().getValidField();
-      for(int i = 1; i < fieldpoly.length; i++)
-      {
-        LINE_PX(color, fieldpoly[idx].x, fieldpoly[idx].y, fieldpoly[i].x, fieldpoly[i].y);
-        idx = i;
+      for(size_t i = 0; i + 1 < fieldpoly.size(); i++) {
+        LINE_PX(color, fieldpoly[i].x, fieldpoly[i].y, fieldpoly[i+1].x, fieldpoly[i+1].y);
       }
     );    
   }

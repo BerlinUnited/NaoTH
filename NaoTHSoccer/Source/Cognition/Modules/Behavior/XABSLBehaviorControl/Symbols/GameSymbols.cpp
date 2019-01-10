@@ -26,6 +26,7 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
 
   engine.registerDecimalInputSymbol("game.player_number", &getPlayerNumber);
   engine.registerDecimalInputSymbol("game.msecsRemaining", &getMsecsRemaining);
+  engine.registerDecimalInputSymbol("game.msecsRemainingSecondary", &getMsecsRemainingSecondary);
   engine.registerBooleanInputSymbol("game.own_kickoff", &getOwnKickOff);
 
   // HACK: is only true when the game state plaing was set by the game controller
@@ -34,9 +35,9 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanInputSymbol("game.state.playing_is_set_by_game_controller", &getPlayingIsSetByGameController);
 
 
-  engine.registerEnumElement("game.set_play","game.set_play.none", GameData::set_none);
-  engine.registerEnumElement("game.set_play","game.set_play.goal_free_kick", GameData::goal_free_kick);
-  engine.registerEnumElement("game.set_play","game.set_play.pushing_free_kick", GameData::pushing_free_kick);
+  engine.registerEnumElement("game.set_play","game.set_play.none", PlayerInfo::set_none);
+  engine.registerEnumElement("game.set_play","game.set_play.goal_free_kick", PlayerInfo::goal_free_kick);
+  engine.registerEnumElement("game.set_play","game.set_play.pushing_free_kick", PlayerInfo::pushing_free_kick);
 
   engine.registerEnumeratedInputSymbol("game.set_play", "game.set_play", &getSetPlay);
 
@@ -64,10 +65,14 @@ double GameSymbols::getMsecsRemaining() {
   return theInstance->getGameData().secsRemaining*1000.0;
 }
 
+double GameSymbols::getMsecsRemainingSecondary() {
+  return theInstance->getGameData().secondaryTime*1000.0;
+}
+
 int GameSymbols::getGameState() {
   return theInstance->getPlayerInfo().robotState;
 }
 
 int GameSymbols::getSetPlay() {
-  return theInstance->getGameData().setPlay;
+  return theInstance->getPlayerInfo().robotSetPlay;
 }

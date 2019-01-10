@@ -19,7 +19,7 @@
 
 #include <Tools/naoth_opencv.h>
 
-#include <Cognition/Modules/VisualCortex/BallDetector/BallCandidateDetector.h>
+#include <Cognition/Modules/VisualCortex/BallDetector/BallDetector2018.h>
 
 #if defined(__GNUC__) && defined(_NAOTH_CHECK_CONVERSION_)
 #if (__GNUC__ > 3 && __GNUC_MINOR__ > 5) || (__GNUC__ > 4) // version >= 4.6
@@ -142,7 +142,7 @@ void BallDetectorEvaluator::executeCNNBall()
   bestRecall95 = 0.0;
   bestRecall99 = 0.0;
 
-  cnnClassifiers = BallCandidateDetector::createCNNMap();
+  cnnClassifiers = BallDetector2018::createCNNMap();
 
   ExperimentParameters cnnParams;
   cnnParams.type = ExperimentParameters::Type::cnn;

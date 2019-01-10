@@ -1,5 +1,5 @@
 #include "CNN_dortmund2018.h"
-
+#include <Tools/Debug/NaoTHAssert.h>
 #include <emmintrin.h>
 
 // NOTE: VisualStudio 2013 doesn't have alignas
@@ -14,31 +14,38 @@ CNN_dortmund2018::CNN_dortmund2018()
   scores[1] = 0.0f;
 }
 
+bool CNN_dortmund2018::classify(const BallCandidates::Patch& p) 
+{
+  ASSERT(p.size() == 16);
 
-bool CNN_dortmund2018::classify(const BallCandidates::Patch& p) {
-  if(p.data.size() == 16*16)
-  {
-    for(int x=0; x < 16; x++)
-    {
-      for(int y=0; y < 16; y++)
-      {
-        int idx = (16*y) + x;
-        // TODO: check
-        in_step[x][y][0] = ((float) p.data[idx]) / 255.0f;
-      }
+  for(size_t x=0; x < p.size(); x++) {
+    for(size_t y=0; y < p.size(); y++) {
+      // TODO: check
+      in_step[x][y][0] = ((float) p.data[p.size() * y + x]) / 255.0f;
     }
+  }
 
-    cnn(in_step);
+  cnn(in_step);
+
 	//    std::cout << "scores[1]=" << scores[1] << " scores[0]=" << scores[0] << std::endl;
+  return res[0] > 0;
+}
 
-    return res[0] > 0;
+bool CNN_dortmund2018::classify(const BallCandidates::PatchYUVClassified& p) 
+{
+  ASSERT(p.size() == 16);
 
+  for(size_t x=0; x < p.size(); x++) {
+    for(size_t y=0; y < p.size(); y++) {
+      // TODO: check
+      in_step[x][y][0] = ((float) p.data[p.size() * y + x].pixel.y) / 255.0f;
+    }
   }
-  else
-  {
-    // we can't classify this yet
-    return false;
-  }
+
+  cnn(in_step);
+
+	//    std::cout << "scores[1]=" << scores[1] << " scores[0]=" << scores[0] << std::endl;
+  return res[0] > 0;
 }
 
 float CNN_dortmund2018::getBallConfidence() {

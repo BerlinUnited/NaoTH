@@ -104,8 +104,10 @@ public class Command
   @Override
   public String toString() {
       StringBuilder signature = new StringBuilder(name);
-      for(String a: this.arguments.keySet()) {
-          signature.append("_").append(a);
+      if(arguments != null) {
+          arguments.keySet().forEach((a) -> {
+              signature.append("_").append(a);
+          });
       }
       return signature.toString();
   }
