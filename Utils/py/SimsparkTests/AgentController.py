@@ -11,6 +11,8 @@ import signal
 
 from naoth import Messages_pb2
 
+class UnableToConnect(Exception):
+    pass
 
 class Command:
     """Class representing a command for a simspark agent."""
@@ -134,8 +136,14 @@ class AgentController(multiprocessing.Process):
 
     def connect(self):
         """Connects to the agent instance"""
-        self.__socket = socket.create_connection(('localhost', self.port))
-        self.__connected.set()
+        try:
+            self.__socket = socket.create_connection(('localhost', self.port))
+            self.__connected.set()
+            return
+        except:
+            pass
+
+        raise UnableToConnect("to robot {}".format(self.number))
 
     def __send_heart_beat(self):
         """Send heart beat to agent."""
