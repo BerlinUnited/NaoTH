@@ -3,9 +3,13 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SplitMenuButton?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.control.TreeTableColumn?>
 <?import javafx.scene.control.TreeTableView?>
@@ -15,68 +19,92 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.162-ea" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <SplitPane fx:id="splitPane" dividerPositions="0.6267837541163557, 0.8079034028540066" VBox.vgrow="ALWAYS">
-        <items>
-            <VBox>
+
+<TabPane fx:id="tabs" side="LEFT" xmlns="http://javafx.com/javafx/8.0.162-ea" xmlns:fx="http://javafx.com/fxml/1">
+   <tabs>
+      <Tab closable="false" text="Configuration">
+         <content>
+            <VBox stylesheets="@style.css">
                <children>
-                  <ToolBar prefHeight="40.0" prefWidth="200.0">
+                  <SplitPane fx:id="splitPane" dividerPositions="0.6267837541163557, 0.8079034028540066" VBox.vgrow="ALWAYS">
                     <items>
-                        <ComboBox fx:id="agentList" promptText="- Agents -" />
-                        <Button fx:id="btnSendBehavior" mnemonicParsing="false" onAction="#selectBehaviorFile" text="Send behavior" />
-                        <Label text="Scheme:" />
-                        <Label fx:id="lblScheme" text="-" />
-                        <Pane opacity="0.0" HBox.hgrow="ALWAYS" />
-                        <SplitMenuButton fx:id="btnSaveParameters" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#saveParameters" text="SplitMenuButton">
-                          <items>
-                            <MenuItem mnemonicParsing="false" onAction="#saveParametersMotion" text="Motion only" />
-                            <MenuItem mnemonicParsing="false" onAction="#saveParametersCognition" text="Cognition only" />
-                          </items>
-                        </SplitMenuButton>
-                        <Button fx:id="btnUpdateParameters" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#updateParameters" styleClass="refresh_button" text="Update" />
+                        <VBox>
+                           <children>
+                              <ToolBar prefHeight="40.0" prefWidth="200.0">
+                                <items>
+                                    <ComboBox fx:id="agentList" promptText="- Agents -" />
+                                    <Button fx:id="btnSendBehavior" mnemonicParsing="false" onAction="#selectBehaviorFile" text="Send behavior" />
+                                    <Label text="Scheme:" />
+                                    <Label fx:id="lblScheme" text="-" />
+                                    <Pane opacity="0.0" HBox.hgrow="ALWAYS" />
+                                    <SplitMenuButton fx:id="btnSaveParameters" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#saveParameters" text="SplitMenuButton">
+                                      <items>
+                                        <MenuItem mnemonicParsing="false" onAction="#saveParametersMotion" text="Motion only" />
+                                        <MenuItem mnemonicParsing="false" onAction="#saveParametersCognition" text="Cognition only" />
+                                      </items>
+                                    </SplitMenuButton>
+                                    <Button fx:id="btnUpdateParameters" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#updateParameters" styleClass="refresh_button" text="Update" />
+                                </items>
+                              </ToolBar>
+                              <TreeTableView fx:id="parameterTree" editable="true" prefHeight="417.0" prefWidth="673.0" showRoot="false" tableMenuButtonVisible="true" VBox.vgrow="ALWAYS">
+                                <columns>
+                                  <TreeTableColumn prefWidth="168.0" text="Name" />
+                                  <TreeTableColumn prefWidth="509.0" text="Value" />
+                                </columns>
+                                 <columnResizePolicy>
+                                    <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                 </columnResizePolicy>
+                              </TreeTableView>
+                           </children>
+                        </VBox>
+                        <VBox>
+                           <children>
+                              <ToolBar prefHeight="40.0" prefWidth="200.0">
+                                 <items>
+                                    <Label alignment="CENTER" text="Modules" />
+                                    <Pane opacity="0.0" HBox.hgrow="ALWAYS" />
+                                    <Button fx:id="btnSaveModules" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false" onAction="#saveModules" styleClass="save_button" text="Save">
+                                       <font>
+                                          <Font name="Font Awesome 5 Free Regular" size="13.0" />
+                                       </font>
+                                    </Button>
+                                    <Button fx:id="btnUpdateModules" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#updateModules" styleClass="refresh_button" text="Update" />
+                                 </items>
+                              </ToolBar>
+                              <TreeView fx:id="moduleTree" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                           </children>
+                        </VBox>
+                        <VBox>
+                           <children>
+                              <ToolBar prefHeight="40.0" prefWidth="200.0">
+                                 <items>
+                                    <Label text="DebugRequests" />
+                                    <Pane opacity="0.0" HBox.hgrow="ALWAYS" />
+                                    <Button fx:id="btnUpdateDebug" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#updateDebugRequests" styleClass="refresh_button" text="Update" />
+                                 </items>
+                              </ToolBar>
+                              <TreeView fx:id="debugTree" prefWidth="200.0" showRoot="false" VBox.vgrow="ALWAYS" />
+                           </children>
+                        </VBox>
                     </items>
-                  </ToolBar>
-                  <TreeTableView fx:id="parameterTree" editable="true" prefHeight="417.0" prefWidth="673.0" showRoot="false" tableMenuButtonVisible="true" VBox.vgrow="ALWAYS">
-                    <columns>
-                      <TreeTableColumn prefWidth="168.0" text="Name" />
-                      <TreeTableColumn prefWidth="509.0" text="Value" />
-                    </columns>
-                     <columnResizePolicy>
-                        <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                     </columnResizePolicy>
-                  </TreeTableView>
+                  </SplitPane>
                </children>
             </VBox>
+         </content>
+      </Tab>
+      <Tab fx:id="representationsTab" closable="false" onSelectionChanged="#representationsTabSelect" text="Representations">
+         <content>
             <VBox>
                <children>
-                  <ToolBar prefHeight="40.0" prefWidth="200.0">
+                  <SplitPane dividerPositions="0.1" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                      <items>
-                        <Label alignment="CENTER" text="Modules" />
-                        <Pane opacity="0.0" HBox.hgrow="ALWAYS" />
-                        <Button fx:id="btnSaveModules" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false" onAction="#saveModules" styleClass="save_button" text="Save">
-                           <font>
-                              <Font name="Font Awesome 5 Free Regular" size="13.0" />
-                           </font></Button>
-                        <Button fx:id="btnUpdateModules" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#updateModules" styleClass="refresh_button" text="Update" />
+                        <ListView fx:id="representationsList" prefHeight="200.0" prefWidth="200.0" />
+                        <TextArea editable="false" prefHeight="200.0" prefWidth="200.0" />
                      </items>
-                  </ToolBar>
-                  <TreeView fx:id="moduleTree" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                  </SplitPane>
                </children>
             </VBox>
-            <VBox>
-               <children>
-                  <ToolBar prefHeight="40.0" prefWidth="200.0">
-                     <items>
-                        <Label text="DebugRequests" />
-                        <Pane opacity="0.0" HBox.hgrow="ALWAYS" />
-                        <Button fx:id="btnUpdateDebug" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#updateDebugRequests" styleClass="refresh_button" text="Update" />
-                     </items>
-                  </ToolBar>
-                  <TreeView fx:id="debugTree" prefWidth="200.0" showRoot="false" VBox.vgrow="ALWAYS" />
-               </children>
-            </VBox>
-        </items>
-      </SplitPane>
-   </children>
-</VBox>
+         </content>
+      </Tab>
+   </tabs>
+</TabPane>

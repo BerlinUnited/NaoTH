@@ -35,6 +35,7 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -42,11 +43,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
@@ -95,6 +98,9 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
     private final String behaviorPath = "Config/behavior-ic.dat";
     
     private final Command cmd_playerinfo_scheme = new Command("Cognition:representation:print").addArg("PlayerInfo");
+    
+    private final Command cmd_representations_cognition = new Command("Cognition:representation:list");
+    private final Command cmd_representations_motion = new Command("Motion:representation:list");
     
     private String agent = "";
     private List<String> agent_list = new ArrayList<>();
@@ -165,6 +171,12 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
     
     @FXML
     protected Label lblScheme;
+    
+    @FXML
+    protected TabPane tabs;
+    
+    @FXML
+    protected ListView representationsList;
     
     private MenuItem miConnection = new MenuItem("Connect");
     private MenuItem miClose = new MenuItem("Close");
@@ -492,6 +504,18 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
             });
         }
     }
+    
+    @FXML
+    protected void representationsTabSelect(Event e) {
+        Tab t = (Tab) e.getSource();
+        if(t.isSelected()) {
+            System.out.println("update representation");
+            sendCommand(cmd_representations_cognition);
+            //Plugin.commandExecutor.executeCommand(new RepresentationListUpdater(), new Command(getRepresentationList()));
+        } else {
+            System.out.println("disable representation");
+        }
+    }
 
     @Override
     public void handleResponse(byte[] result, Command command) {
@@ -527,6 +551,8 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
                 System.out.println(command.getName() + ": " + new String(result));
             } else if(command.equals(cmd_playerinfo_scheme)) {
                 handlePlayerInforResponse(result);
+            } else if(command.equals(cmd_representations_cognition)) {
+                handleRepresentationResponse(result);
             } else {
                 System.out.println(command.getName() + ": " + new String(result));
             }
@@ -670,6 +696,10 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
         lblScheme.setText((scheme.equals("-")?"default parameter":scheme));
     }
     
+    private void handleRepresentationResponse(byte[] result) {
+        representationsList.getItems().addAll(Arrays.asList(new String(result).split("\n")));
+    }
+    
     private void request(String cmd, ObservableValue o, boolean state) {
         Object i = ((BooleanProperty)o).getBean();
         if(i instanceof RequestTreeItem && ((RequestTreeItem)i).getRequest() != null && server.isConnected()) {
@@ -702,5 +732,11 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
         other.btnUpdateParameters.addEventHandler(ActionEvent.ACTION, (e) -> { btnUpdateParameters.fire(); });
         other.btnSaveModules.addEventHandler(ActionEvent.ACTION, (e) -> { btnSaveModules.fire(); });
         other.behaviorFile.addListener((o, v, f) -> { behaviorFile.set(f); });
+    }
+    
+    public void connectTabs(AgentTab other) {
+        other.tabs.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
+            tabs.getSelectionModel().select(newValue.intValue());
+        });
     }
 }

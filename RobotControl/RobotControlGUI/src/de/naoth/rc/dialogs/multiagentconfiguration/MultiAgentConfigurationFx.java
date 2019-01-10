@@ -130,6 +130,7 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
             tab.connectDivider(allTab);
             tab.connectAgentList(allTab);
             tab.connectButtons(allTab);
+            tab.connectTabs(allTab);
             tabpane.getTabs().add(tab);
         }
     }
