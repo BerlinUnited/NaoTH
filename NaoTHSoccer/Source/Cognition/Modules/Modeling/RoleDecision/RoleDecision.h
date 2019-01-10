@@ -80,6 +80,9 @@ private:
             PARAMETER_REGISTER(forward_left_str) = "1500,1500;1500,1500;1500,1500";
             PARAMETER_REGISTER(forward_center_str) = "1500,0;1500,0;1500,0";
             PARAMETER_REGISTER(forward_right_str) = "1500,-1500;1500,-1500;1500,-1500";
+
+            PARAMETER_REGISTER(minChangingCycles) = 30;
+            PARAMETER_REGISTER(minChangingTime) = 1.0;
             // load from the file after registering all parameters
             syncWithConfig();
             // after loading config, parse it
@@ -124,6 +127,8 @@ private:
 
         std::map<RoleDecisionModel::StaticRole, RoleDecisionModel::Role> default_roles;
 
+        int minChangingCycles;
+        double minChangingTime;
     private:
         void parseAssignment() {
             std::vector<std::string> parts = split(assignment, ';');
@@ -170,7 +175,16 @@ private:
         }
     } params;
 
-    void simpleAssignment();
+    std::map<unsigned int, std::pair<double, RoleDecisionModel::StaticRole>> role_changes;
+
+    void roleAssignmentBySmallestDistance(std::map<unsigned int, RoleDecisionModel::StaticRole>& new_roles);
+    void roleAssignmentBySmallestTeamDistance(std::map<unsigned int, RoleDecisionModel::StaticRole>& new_roles);
+
+    inline void roleChange(unsigned int playernumber, RoleDecisionModel::StaticRole role);
+
+    void roleChangeByCycle(std::map<unsigned int, RoleDecisionModel::StaticRole>& new_roles);
+    void roleChangeByTime(std::map<unsigned int, RoleDecisionModel::StaticRole>& new_roles);
+
 
     // TODO: put this into commons?!
     static std::vector<std::string> split(std::string strToSplit, char delimeter)

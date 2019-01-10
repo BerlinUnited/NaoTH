@@ -10,13 +10,13 @@ void RoleDecision::execute()
         // TODO/NOTE: should we use the predefined roles only in the beginning of a half???
         //            then we could "optimize" the wallking back of an goal ...
 
-        for (auto const& i : getTeamMessage().data) {
+        for (const auto& i : getTeamMessage().data) {
             // set the default positions of the predefined role
-            getRoleDecisionModel().roles[i.first] = params.default_roles[params.assignment_role[i.first]];
-            getRoleDecisionModel().roles[i.first].dynamic = RoleDecisionModel::none;
+            roleChange(i.first, params.assignment_role[i.first]);
         }
     } else {
         // determine the best role for each player in the team context
+        std::map<unsigned int, RoleDecisionModel::StaticRole> new_roles;
 
         // - more roles than players
         // - same number of roles and players
@@ -26,16 +26,94 @@ void RoleDecision::execute()
         // - optimize role selection
         //   - simple: the robot closest to the role's position, takes the role => not optimal!
         //   - find an optimal solution?
-        simpleAssignment();
+        roleAssignmentBySmallestDistance(new_roles);
+
+        // based on smallest distance
+        // based on smallest summed distance of the whole team
+        // based on the smallest time
+
+        // apply new role for each player, if it was the same role for at least x times or for at least y seconds
+        // TODO: ..
+        roleChangeByCycle(new_roles);
+        // TODO: players, which doesn't get a (new) role, should the 'unknown' role assigned
+        for (const auto& i : getTeamMessage().data) {
+            if(new_roles.find(i.first) == new_roles.cend()) {
+                roleChange(i.first, RoleDecisionModel::unknown);
+            }
+        }
     }
 }
 
-void RoleDecision::simpleAssignment()
+void RoleDecision::roleAssignmentBySmallestDistance(std::map<unsigned int, RoleDecisionModel::StaticRole>& new_roles)
 {
     // determine the distance between each robot/role and assign the role nearest to the robot
-    for (auto const& i : getTeamMessage().data) {
-        unsigned int robotNumber = i.first;
-        const TeamMessageData& msg = i.second;
-        // TODO: slowly changing?
+    for (const auto& r : params.priority_role) {
+        std::pair<unsigned int, double> smallest(0, std::numeric_limits<double>::max());
+        for (const auto& i : getTeamMessage().data) {
+            // only active players and players without an role yet, are used for this role assignment
+            if(getTeamMessagePlayersState().isActive(i.first) && new_roles.find(i.first) == new_roles.cend()) {
+                double distance = (params.default_roles[r].home - i.second.pose.translation).abs2();
+                if(distance < smallest.second) {
+                    smallest.first = i.first;
+                    smallest.second = distance;
+                }
+            }
+        }
+        // there's no player left, who could take a role
+        if(smallest.first == 0) {
+            break;
+        } else {
+            new_roles[smallest.first] = r;
+        }
     }
+}
+
+void RoleDecision::roleAssignmentBySmallestTeamDistance(std::map<unsigned int, RoleDecisionModel::StaticRole>& new_roles) {
+    // TODO: the sum of distances the whole team has to move must be minizied
+}
+
+void RoleDecision::roleChange(unsigned int playernumber, RoleDecisionModel::StaticRole role) {
+    // set the new role for the player
+    getRoleDecisionModel().roles[playernumber] = params.default_roles[role];
+    getRoleDecisionModel().roles[playernumber].dynamic = RoleDecisionModel::none;
+    // reset change counter
+    role_changes[playernumber].first = 0;
+    role_changes[playernumber].second = role;
+}
+
+void RoleDecision::roleChangeByCycle(std::map<unsigned int, RoleDecisionModel::StaticRole>& new_roles)
+{
+    for(const auto& n : new_roles) {
+        if(getRoleDecisionModel().roles[n.first].role == n.second) {
+            // no change, reset change counter
+            role_changes[n.first].first = 0;
+        } else {
+            // role should change
+            if(role_changes[n.first].second == n.second) {
+                if(role_changes[n.first].first >= params.minChangingCycles) {
+                    // waited long enough and still want to change the role - do it!
+                    roleChange(n.first, n.second);
+                } else {
+                    // increase change counter
+                    role_changes[n.first].first++;
+                }
+            } else {
+                // the role decision is different from the previous decision - reset change counter
+                role_changes[n.first].first = 0;
+                role_changes[n.first].second = n.second;
+            }
+        }
+    }
+}
+
+void RoleDecision::roleChangeByTime(std::map<unsigned int, RoleDecisionModel::StaticRole>& new_roles)
+{
+    for(const auto& a : new_roles) {
+        if(getRoleDecisionModel().roles[a.first].role == a.second) {
+            // TODO: update timestamp
+        } else {
+            // TODO: check if we wanted to change the role to the same role for the last x seconds
+        }
+    }
+    //
 }
