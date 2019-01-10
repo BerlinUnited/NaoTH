@@ -1,0 +1,18 @@
+option roles_go_to_passive_position
+{
+  initial state decide
+  {
+    decision
+    {
+      stay;
+    }
+    action
+    {
+      go_to_point_with_USOA(
+        x=strategy.position.home.x,
+        y=strategy.position.home.y,
+        rot=0);
+      head.control_mode = look_around;
+    }
+  }
+}
