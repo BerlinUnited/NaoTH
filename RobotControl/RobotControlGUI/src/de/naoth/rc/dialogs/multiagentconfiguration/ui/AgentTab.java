@@ -3,6 +3,7 @@ package de.naoth.rc.dialogs.multiagentconfiguration.ui;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.sun.javafx.scene.control.behavior.TabPaneBehavior;
 import com.sun.javafx.scene.control.skin.TabPaneSkin;
+import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.messages.Messages;
 import de.naoth.rc.messages.Messages.ModuleList;
 import de.naoth.rc.server.Command;
@@ -12,6 +13,7 @@ import de.naoth.rc.server.MessageServer;
 import de.naoth.rc.server.ResponseListener;
 import de.naoth.rc.dialogs.multiagentconfiguration.Parameter;
 import de.naoth.rc.dialogs.multiagentconfiguration.Utils;
+import de.naoth.rc.manager.GenericManager;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -99,9 +101,6 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
     
     private final Command cmd_playerinfo_scheme = new Command("Cognition:representation:print").addArg("PlayerInfo");
     
-    private final Command cmd_representations_cognition = new Command("Cognition:representation:list");
-    private final Command cmd_representations_motion = new Command("Motion:representation:list");
-    
     private String agent = "";
     private List<String> agent_list = new ArrayList<>();
     private final TreeMap<String, TreeItem<Parameter>> parameter = new TreeMap<>();
@@ -172,12 +171,10 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
     @FXML
     protected Label lblScheme;
     
-    @FXML
-    protected TabPane tabs;
-    
-    @FXML
-    protected ListView representationsList;
-    
+    @FXML protected TabPane tabs;
+    @FXML protected Tab representationsTab;
+    @FXML protected RepresentationsTab representationsTabViewController;
+
     private MenuItem miConnection = new MenuItem("Connect");
     private MenuItem miClose = new MenuItem("Close");
     
@@ -240,6 +237,8 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
         agentList.setTooltip(new Tooltip("Select executing agent."));
 
         setGraphic(createTabButton());
+        
+        representationsTabViewController.setParent(this);
     }
     
     protected MenuButton createTabButton() {
@@ -289,12 +288,35 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
         setText(prefix + host + ":" + port);
     }
     
-    private boolean sendCommand(Command cmd) {
+    public boolean sendCommand(Command cmd) {
+        return sendCommand(cmd, this);
+    }
+    
+    public boolean sendCommand(Command cmd, ResponseListener l) {
         if(server.isConnected()) {
-            server.executeCommand(this, cmd);
+            server.executeCommand(l, cmd);
             return true;
         }
         return false;
+    }
+    
+    private final HashMap<Command, GenericManager> subscription = new HashMap<>();
+    private final HashMap<ObjectListener, GenericManager> subscriptionCallback = new HashMap<>();
+    
+    public void subscribeCommand(Command cmd, ObjectListener<byte[]> callback) {
+        if(!subscription.containsKey(cmd)) {
+            GenericManager manager = new GenericManager(server, cmd);
+            subscription.put(cmd, manager);
+            subscriptionCallback.put(callback, manager);
+        }
+        subscription.get(cmd).addListener(callback);
+    }
+    
+    public void unsubscribeCommand(ObjectListener<byte[]> callback) {
+        if(subscriptionCallback.containsKey(callback)) {
+            subscriptionCallback.get(callback).removeListener(callback);
+            subscriptionCallback.remove(callback);
+        }
     }
     
     @FXML
@@ -507,14 +529,7 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
     
     @FXML
     protected void representationsTabSelect(Event e) {
-        Tab t = (Tab) e.getSource();
-        if(t.isSelected()) {
-            System.out.println("update representation");
-            sendCommand(cmd_representations_cognition);
-            //Plugin.commandExecutor.executeCommand(new RepresentationListUpdater(), new Command(getRepresentationList()));
-        } else {
-            System.out.println("disable representation");
-        }
+        representationsTabViewController.show(((Tab) e.getSource()).isSelected());
     }
 
     @Override
@@ -551,8 +566,6 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
                 System.out.println(command.getName() + ": " + new String(result));
             } else if(command.equals(cmd_playerinfo_scheme)) {
                 handlePlayerInforResponse(result);
-            } else if(command.equals(cmd_representations_cognition)) {
-                handleRepresentationResponse(result);
             } else {
                 System.out.println(command.getName() + ": " + new String(result));
             }
@@ -695,11 +708,7 @@ public class AgentTab extends Tab implements ConnectionStatusListener, ResponseL
         String scheme = repr.getOrDefault("active scheme", "?");
         lblScheme.setText((scheme.equals("-")?"default parameter":scheme));
     }
-    
-    private void handleRepresentationResponse(byte[] result) {
-        representationsList.getItems().addAll(Arrays.asList(new String(result).split("\n")));
-    }
-    
+
     private void request(String cmd, ObservableValue o, boolean state) {
         Object i = ((BooleanProperty)o).getBean();
         if(i instanceof RequestTreeItem && ((RequestTreeItem)i).getRequest() != null && server.isConnected()) {

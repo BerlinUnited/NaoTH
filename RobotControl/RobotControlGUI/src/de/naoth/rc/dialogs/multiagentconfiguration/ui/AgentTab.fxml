@@ -3,13 +3,11 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SplitMenuButton?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.control.TreeTableColumn?>
 <?import javafx.scene.control.TreeTableView?>
@@ -19,10 +17,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
 <TabPane fx:id="tabs" side="LEFT" xmlns="http://javafx.com/javafx/8.0.162-ea" xmlns:fx="http://javafx.com/fxml/1">
    <tabs>
-      <Tab closable="false" text="Configuration">
+      <Tab fx:id="configurationsTab" closable="false" text="Configuration">
          <content>
             <VBox stylesheets="@style.css">
                <children>
@@ -93,18 +90,9 @@
          </content>
       </Tab>
       <Tab fx:id="representationsTab" closable="false" onSelectionChanged="#representationsTabSelect" text="Representations">
-         <content>
-            <VBox>
-               <children>
-                  <SplitPane dividerPositions="0.1" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-                     <items>
-                        <ListView fx:id="representationsList" prefHeight="200.0" prefWidth="200.0" />
-                        <TextArea editable="false" prefHeight="200.0" prefWidth="200.0" />
-                     </items>
-                  </SplitPane>
-               </children>
-            </VBox>
-         </content>
+        <content>
+          <fx:include fx:id="representationsTabView" source="RepresentationsTab.fxml" />
+        </content>
       </Tab>
    </tabs>
 </TabPane>
