@@ -6,7 +6,6 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.dialogs.multiagentconfiguration.ui.AgentSelectionDialog;
 import de.naoth.rc.dialogs.multiagentconfiguration.ui.AgentTab;
-import de.naoth.rc.dialogs.multiagentconfiguration.ui.AgentTabGlobal;
 import java.awt.SplashScreen;
 import java.io.IOException;
 import java.net.URL;
@@ -52,8 +51,6 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
     @FXML
     private TabPane tabpane;
     
-    private final AgentTabGlobal allTab = new AgentTabGlobal();
-    
     private AgentSelectionDialog dialog;
     
     public MultiAgentConfigurationFx() {
@@ -82,12 +79,10 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
             setConfig(Plugin.parent.getConfig());
         }
         
-        tabpane.getTabs().add(allTab);
         tabpane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-        tabpane.getSelectionModel().select(allTab);
         // if there's no robot connected, disable "all" tab and select it
-        allTab.disableProperty().bind(Bindings.size(tabpane.getTabs()).lessThanOrEqualTo(1));
-        allTab.disableProperty().addListener((obs, o, n) -> { if(n) { tabpane.getSelectionModel().select(allTab); } });
+        tabpane.getTabs().get(0).disableProperty().bind(Bindings.size(tabpane.getTabs()).lessThanOrEqualTo(1));
+        tabpane.getTabs().get(0).disableProperty().addListener((obs, o, n) -> { if(n) { tabpane.getSelectionModel().select(0); } });
     }
 
     public void setConfig(Properties c) {
@@ -127,10 +122,11 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
             }
             // add new tab
             AgentTab tab = new AgentTab(agentItem.getHost(), agentItem.getPort());
-            tab.connectDivider(allTab);
-            tab.connectAgentList(allTab);
-            tab.connectButtons(allTab);
-            tab.connectTabs(allTab);
+            // TODO: 
+//            tab.connectDivider(allTab);
+//            tab.connectAgentList(allTab);
+//            tab.connectButtons(allTab);
+//            tab.connectTabs(allTab);
             tabpane.getTabs().add(tab);
         }
     }
@@ -139,7 +135,7 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
     public void disconnectAll() {
         // disconnect all, except the first ("all") tabs
         tabpane.getTabs().stream().forEach((t) -> {
-            if(t instanceof Tab) {
+            if(t instanceof Tab && tabpane.getTabs().indexOf(t) != 0) {
                 ((AgentTab)t).disconnect();
             }
         });

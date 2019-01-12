@@ -3,6 +3,7 @@ package de.naoth.rc.dialogs.multiagentconfiguration;
 import de.naoth.rc.dialogs.multiagentconfiguration.ui.RequestTreeItem;
 import de.naoth.rc.messages.Messages;
 import java.util.TreeMap;
+import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -25,7 +26,7 @@ public class Utils
     public static TreeMap<String, TreeItem<Parameter>> global_parameters = new TreeMap<>();
     
     
-    public static void createDebugRequestTree(Messages.DebugRequest request, TreeItem root, ChangeListener debugRequest) {
+    public static void createDebugRequestTree(Messages.DebugRequest request, TreeItem root, BiConsumer<String, Boolean> debugRequest) {
         
         String root_name = (String) root.getValue();
         
@@ -57,25 +58,25 @@ public class Utils
             // set the selected state AFTER adding it to its parent
             item.setSelected(r.getValue());
             // set the callback for (de-)activating this module (after selecting it!)
-            item.selectedProperty().addListener(debugRequest);
+            item.selectedProperty().addListener((ob, o, n) -> { debugRequest.accept(r.getName(), n); });
         });
     }
     
-    public static TreeItem createDebugRequestCognition(Messages.DebugRequest request, ChangeListener debugRequest) {
+    public static TreeItem createDebugRequestCognition(Messages.DebugRequest request, BiConsumer<String, Boolean> debugRequest) {
         CheckBoxTreeItem<String> cognition_root = new CheckBoxTreeItem<>("Cognition");
         createDebugRequestTree(request, cognition_root, debugRequest);
         cognition_root.setExpanded(true);
         return cognition_root;
     }
     
-    public static TreeItem createDebugRequestMotion(Messages.DebugRequest request, ChangeListener debugRequest) {
+    public static TreeItem createDebugRequestMotion(Messages.DebugRequest request, BiConsumer<String, Boolean> debugRequest) {
         CheckBoxTreeItem<String> motion_root = new CheckBoxTreeItem<>("Motion");
         createDebugRequestTree(request, motion_root, debugRequest);
         motion_root.setExpanded(true);
         return motion_root;
     }
     
-    public static void createModulesTree(Messages.ModuleList list, CheckBoxTreeItem root, ChangeListener debugRequest) {
+    public static void createModulesTree(Messages.ModuleList list, CheckBoxTreeItem root, BiConsumer<String, Boolean> debugRequest) {
         
         String root_name = (String) root.getValue();
         Pattern p = Pattern.compile("([^\\s|]+).+/"+root.getValue()+"/(.+)\\/.+\\.h");
@@ -124,7 +125,7 @@ public class Utils
             // set the selected state AFTER adding it to its parent
             m.setSelected(m.active);
             // set the callback for (de-)activating this module
-            m.selectedProperty().addListener(debugRequest);
+            m.selectedProperty().addListener((ob, o, n) -> { debugRequest.accept(m.getRequest(), n); });
         });
         
         expandSingleTreeNodes(root);
@@ -179,14 +180,14 @@ public class Utils
         }
     }
     
-    public static TreeItem createModulesCognition(Messages.ModuleList list, ChangeListener moduleRequest) {
+    public static TreeItem createModulesCognition(Messages.ModuleList list, BiConsumer<String, Boolean> moduleRequest) {
         CheckBoxTreeItem<String> cognition_root = new CheckBoxTreeItem<>("Cognition");
         createModulesTree(list, cognition_root, moduleRequest);
         cognition_root.setExpanded(true);
         return cognition_root;
     }
     
-    public static TreeItem createModulesMotion(Messages.ModuleList list, ChangeListener moduleRequest) {
+    public static TreeItem createModulesMotion(Messages.ModuleList list, BiConsumer<String, Boolean> moduleRequest) {
         CheckBoxTreeItem<String> motion_root = new CheckBoxTreeItem<>("Motion");
         createModulesTree(list, motion_root, moduleRequest);
         motion_root.setExpanded(true);

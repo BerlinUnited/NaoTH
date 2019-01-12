@@ -6,13 +6,18 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox prefHeight="300.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.162-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.naoth.rc.dialogs.multiagentconfiguration.ui.RepresentationsTab">
    <children>
       <ToolBar prefHeight="40.0" prefWidth="200.0">
          <items>
-            <Button fx:id="btnUpdateList" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#updateList" styleClass="refresh_button" text="Update" />
+            <Button fx:id="btnUpdateList" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#updateList" styleClass="refresh_button" text="Update">
+               <tooltip>
+                  <Tooltip text="Update representation list" />
+               </tooltip>
+            </Button>
             <ChoiceBox fx:id="type" prefWidth="150.0" />
          </items>
       </ToolBar>

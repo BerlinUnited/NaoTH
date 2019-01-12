@@ -5,10 +5,8 @@ import de.naoth.rc.server.Command;
 import de.naoth.rc.server.ResponseListener;
 import java.util.Arrays;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 
