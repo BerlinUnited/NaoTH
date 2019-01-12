@@ -2,8 +2,11 @@ package de.naoth.rc.dialogs.multiagentconfiguration.ui;
 
 import de.naoth.rc.dialogs.multiagentconfiguration.Parameter;
 import de.naoth.rc.dialogs.multiagentconfiguration.Utils;
+import javafx.beans.property.DoubleProperty;
 import javafx.fxml.FXML;
+
 import javafx.scene.control.CheckBoxTreeItem;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 
 /**
@@ -47,5 +50,16 @@ public class AllTab
         cognition_params.setExpanded(true);
         configurationsTabViewController.parameterTree.getRoot().getChildren().add(cognition_params);
         Utils.global_parameters.put(cognition_params.getValue().getName(), cognition_params);
+    }
+    
+    public void bindUiElements(AgentTab other) {
+        for (int i = 0; i < configurationsTabViewController.splitPane.getDividers().size(); i++) {
+            DoubleProperty p1 = configurationsTabViewController.splitPane.getDividers().get(i).positionProperty();
+            DoubleProperty p2 = other.configurationsTabViewController.splitPane.getDividers().get(i).positionProperty();
+            p1.bindBidirectional(p2);
+        }
+        
+        //configurationsTabViewController.agentList.getSelectionModel().selectedIndexProperty()
+        //configurationsTabViewController.agentList.valueProperty().bind(other.configurationsTabViewController.agentList.valueProperty());
     }
 }

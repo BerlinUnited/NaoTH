@@ -6,6 +6,7 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.dialogs.multiagentconfiguration.ui.AgentSelectionDialog;
 import de.naoth.rc.dialogs.multiagentconfiguration.ui.AgentTab;
+import de.naoth.rc.dialogs.multiagentconfiguration.ui.AllTab;
 import java.awt.SplashScreen;
 import java.io.IOException;
 import java.net.URL;
@@ -48,8 +49,8 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
         public static RobotControl parent;
     }
 
-    @FXML
-    private TabPane tabpane;
+    @FXML private TabPane tabpane;
+    @FXML private AllTab allTabViewController;
     
     private AgentSelectionDialog dialog;
     
@@ -122,11 +123,7 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
             }
             // add new tab
             AgentTab tab = new AgentTab(agentItem.getHost(), agentItem.getPort());
-            // TODO: 
-//            tab.connectDivider(allTab);
-//            tab.connectAgentList(allTab);
-//            tab.connectButtons(allTab);
-//            tab.connectTabs(allTab);
+            allTabViewController.bindUiElements(tab);
             tabpane.getTabs().add(tab);
         }
     }
