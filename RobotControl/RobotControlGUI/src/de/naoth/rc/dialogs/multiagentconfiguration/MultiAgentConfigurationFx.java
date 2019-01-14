@@ -81,6 +81,9 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
         }
         
         tabpane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        // add 'all' Tab
+        allTabViewController = new AllTab();
+        tabpane.getTabs().add(allTabViewController);
         // if there's no robot connected, disable "all" tab and select it
         tabpane.getTabs().get(0).disableProperty().bind(Bindings.size(tabpane.getTabs()).lessThanOrEqualTo(1));
         tabpane.getTabs().get(0).disableProperty().addListener((obs, o, n) -> { if(n) { tabpane.getSelectionModel().select(0); } });
@@ -122,8 +125,7 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
                 continue;
             }
             // add new tab
-            AgentTab tab = new AgentTab(agentItem.getHost(), agentItem.getPort());
-            allTabViewController.bindUiElements(tab);
+            AgentTab tab = new AgentTab(agentItem.getHost(), agentItem.getPort(), allTabViewController);
             tabpane.getTabs().add(tab);
         }
     }

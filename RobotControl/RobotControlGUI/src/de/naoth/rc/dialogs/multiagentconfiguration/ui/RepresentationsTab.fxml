@@ -21,7 +21,7 @@
             <ChoiceBox fx:id="type" prefWidth="150.0" />
          </items>
       </ToolBar>
-      <SplitPane dividerPositions="0.2" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+      <SplitPane fx:id="split" dividerPositions="0.2" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
          <items>
             <ListView fx:id="list" prefHeight="200.0" prefWidth="200.0" />
             <TextArea fx:id="content" editable="false" prefHeight="200.0" prefWidth="200.0" />

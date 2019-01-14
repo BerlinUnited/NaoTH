@@ -33,7 +33,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
-import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
@@ -137,10 +136,6 @@ public class ConfigurationsTab implements ResponseListener
             evt.getTreeTableView().requestFocus();
         });
         
-        // set some tooltips
-        btnSaveModules.setTooltip(new Tooltip("Save module configuration on robot(s)."));
-        btnSaveParameters.setTooltip(new Tooltip("Save all parameters locally."));
-                
         agentList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue != null && !newValue.isEmpty()) {
                 if(cmd_agent_set.getArguments() != null) {
@@ -180,21 +175,21 @@ public class ConfigurationsTab implements ResponseListener
     }
     
     @FXML
-    private void updateParameters() {
+    public void updateParameters() {
         parameterTree.getRoot().getChildren().clear();
         parent.sendCommand(cmd_parameter_cognition, this);
         parent.sendCommand(cmd_parameter_motion, this);
     }
     
     @FXML
-    private void updateModules() {
+    public void updateModules() {
         moduleTree.getRoot().getChildren().clear();
         parent.sendCommand(cmd_modules_cognition, this);
         parent.sendCommand(cmd_modules_motion, this);
     }
     
     @FXML
-    private void updateDebugRequests() {
+    public void updateDebugRequests() {
         debugTree.getRoot().getChildren().clear();
         parent.sendCommand(cmd_debug_cognition, this);
         parent.sendCommand(cmd_debug_motion, this);
@@ -219,7 +214,7 @@ public class ConfigurationsTab implements ResponseListener
     }
     
     @FXML
-    private void saveModules() {
+    public void saveModules() {
         parent.sendCommand(cmd_modules_cognition_store, this);
         parent.sendCommand(cmd_modules_motion_store, this);
     }

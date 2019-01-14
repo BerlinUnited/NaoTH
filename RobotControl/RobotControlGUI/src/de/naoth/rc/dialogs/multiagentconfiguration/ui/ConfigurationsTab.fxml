@@ -40,6 +40,9 @@
                               <MenuItem mnemonicParsing="false" onAction="#saveParametersMotion" text="Motion only" />
                               <MenuItem mnemonicParsing="false" onAction="#saveParametersCognition" text="Cognition only" />
                            </items>
+                           <tooltip>
+                              <Tooltip text="Save all parameters locally." />
+                           </tooltip>
                         </SplitMenuButton>
                         <Button fx:id="btnUpdateParameters" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#updateParameters" styleClass="refresh_button" text="Update">
                            <tooltip>
@@ -68,6 +71,9 @@
                            <font>
                               <Font name="Font Awesome 5 Free Regular" size="13.0" />
                            </font>
+                           <tooltip>
+                              <Tooltip text="Save module configuration on robot(s)." />
+                           </tooltip>
                         </Button>
                         <Button fx:id="btnUpdateModules" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#updateModules" styleClass="refresh_button" text="Update">
                            <tooltip>

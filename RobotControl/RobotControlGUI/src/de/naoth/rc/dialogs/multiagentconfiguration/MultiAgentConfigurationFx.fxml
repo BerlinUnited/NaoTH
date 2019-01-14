@@ -13,14 +13,7 @@
   <children>
       <AnchorPane prefHeight="562.0" prefWidth="756.0" VBox.vgrow="ALWAYS">
          <children>
-            <TabPane fx:id="tabpane" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-               <tabs>
-                  <Tab closable="false" disable="true" text="All">
-                    <content>
-                      <fx:include fx:id="allTabView" source="ui/AllTab.fxml" />
-                    </content>
-                  </Tab>
-               </tabs></TabPane>
+            <TabPane fx:id="tabpane" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
             <HBox layoutX="724.0" layoutY="3.0" spacing="4.0" AnchorPane.rightAnchor="3.0" AnchorPane.topAnchor="3.0">
                <children>
                   <Button fx:id="btnDisconnectAll" mnemonicParsing="false" onAction="#disconnectAll" prefWidth="29.0" text="-" textAlignment="CENTER">

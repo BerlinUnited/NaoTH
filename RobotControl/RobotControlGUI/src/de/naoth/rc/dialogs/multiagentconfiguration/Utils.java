@@ -6,8 +6,6 @@ import java.util.TreeMap;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -24,7 +22,7 @@ public class Utils
     public static TreeMap<String, TreeItem> global_modules = new TreeMap<>();
     public static ObservableList<String> global_agent_list = FXCollections.observableArrayList();
     public static TreeMap<String, TreeItem<Parameter>> global_parameters = new TreeMap<>();
-    
+    public static ObservableList<String> global_representations_list = FXCollections.observableArrayList();
     
     public static void createDebugRequestTree(Messages.DebugRequest request, TreeItem root, BiConsumer<String, Boolean> debugRequest) {
         

@@ -1,13 +1,16 @@
 package de.naoth.rc.dialogs.multiagentconfiguration.ui;
 
 import de.naoth.rc.core.manager.ObjectListener;
+import de.naoth.rc.dialogs.multiagentconfiguration.Utils;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.ResponseListener;
 import java.util.Arrays;
+import java.util.List;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
 
 /**
@@ -18,6 +21,7 @@ public class RepresentationsTab implements ResponseListener
     @FXML ChoiceBox<Command> type;
     @FXML ListView<String> list;
     @FXML TextArea content;
+    @FXML SplitPane split;
     
     private AgentTab parent;
     private DataHandlerPrint print;
@@ -78,7 +82,7 @@ public class RepresentationsTab implements ResponseListener
     }
     
     @FXML
-    private void updateList() {
+    public void updateList() {
         typeChanged();
     }
 
@@ -86,7 +90,10 @@ public class RepresentationsTab implements ResponseListener
     public void handleResponse(byte[] result, Command command) {
         if(command.equals(cmd_list_cognition) || command.equals(cmd_list_motion)) {
             Platform.runLater(() -> {
-                list.getItems().setAll(Arrays.asList(new String(result).split("\n")));
+                List<String> items = Arrays.asList(new String(result).split("\n"));
+                list.getItems().setAll(items);
+                // avoid duplicates in global list
+                items.forEach((s) -> { if(!Utils.global_representations_list.contains(s)) { Utils.global_representations_list.add(s); } });
             });
         }
     }

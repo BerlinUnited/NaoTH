@@ -2,20 +2,67 @@ package de.naoth.rc.dialogs.multiagentconfiguration.ui;
 
 import de.naoth.rc.dialogs.multiagentconfiguration.Parameter;
 import de.naoth.rc.dialogs.multiagentconfiguration.Utils;
-import javafx.beans.property.DoubleProperty;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
 
 import javafx.scene.control.CheckBoxTreeItem;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableView;
+import javafx.scene.control.TreeView;
+import javafx.scene.control.cell.TreeItemPropertyValueFactory;
+import javafx.scene.layout.GridPane;
 
 /**
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
-public class AllTab
+public class AllTab extends Tab
 {
-    @FXML protected ConfigurationsTab configurationsTabViewController;
-    @FXML protected RepresentationsTab representationsTabViewController;
+    @FXML protected AllTabConfigurationsTab configurationsTabViewController;
+    
+    @FXML protected TabPane tabs;
+    @FXML protected SplitPane split;
+    @FXML protected GridPane contentArea;
+    @FXML protected ListView list;
+    @FXML protected ChoiceBox type;
+    @FXML protected Button btnUpdateList;
+
+    public AllTab() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/de/naoth/rc/dialogs/multiagentconfiguration/ui/AllTab.fxml"));
+            loader.setController(this);
+            loader.setControllerFactory((type) -> {
+                try {
+                    if(type == ConfigurationsTab.class) {
+                        return new AllTabConfigurationsTab();
+                    }
+                    // default implementation:
+                    return type.newInstance();
+                } catch (Exception exc) {
+                    // this is pretty much fatal...
+                    throw new RuntimeException(exc);
+                }
+            });
+            setContent(loader.load());
+        } catch (IOException ex) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
+        }
+        setText("All");
+        //setDisable(true);
+    }
     
     @FXML
     public void initialize() {
@@ -50,16 +97,145 @@ public class AllTab
         cognition_params.setExpanded(true);
         configurationsTabViewController.parameterTree.getRoot().getChildren().add(cognition_params);
         Utils.global_parameters.put(cognition_params.getValue().getName(), cognition_params);
+        
+        type.valueProperty().addListener((ob) -> {
+            list.getItems().clear();
+        });
+        
+        list.setItems(Utils.global_representations_list);
+        list.selectionModelProperty().addListener((ob, o, n) -> {
+            if(n != null) {
+                
+            }
+        });
+        
+        split.setDividerPosition(0, 0.2);
+        // hide parameter save button - it doesn't make sense to save the parameter of all robots at once!
+        configurationsTabViewController.btnSaveParameters.setVisible(false);
     }
     
-    public void bindUiElements(AgentTab other) {
-        for (int i = 0; i < configurationsTabViewController.splitPane.getDividers().size(); i++) {
-            DoubleProperty p1 = configurationsTabViewController.splitPane.getDividers().get(i).positionProperty();
-            DoubleProperty p2 = other.configurationsTabViewController.splitPane.getDividers().get(i).positionProperty();
-            p1.bindBidirectional(p2);
+    public void addRepresentationsView(TextArea t, String name) {
+        int col = contentArea.getChildren().size() % 3;
+        int row = contentArea.getChildren().size() / 3;
+        try {
+            RepresentationsContent rcc = new RepresentationsContent();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/de/naoth/rc/dialogs/multiagentconfiguration/ui/RepresentationsContent.fxml"));
+            loader.setController(rcc);
+            contentArea.add(loader.load(), col, row); // column, row
+            
+            rcc.setName(name);
+            rcc.getTextProperty().bind(t.textProperty());
+        } catch (IOException ex) {
+            Logger.getLogger(AllTab.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        //configurationsTabViewController.agentList.getSelectionModel().selectedIndexProperty()
-        //configurationsTabViewController.agentList.valueProperty().bind(other.configurationsTabViewController.agentList.valueProperty());
+    }
+    
+    class AllTabConfigurationsTab
+    {
+        @FXML
+        protected TreeView<String> debugTree;
+        @FXML
+        protected TreeView<String> moduleTree;
+        @FXML
+        protected TreeTableView<Parameter> parameterTree;
+        @FXML
+        protected SplitMenuButton btnSaveParameters;
+        @FXML
+        protected Button btnSaveModules;
+        @FXML
+        protected SplitPane splitPane;
+        @FXML
+        protected Button btnUpdateDebug;
+        @FXML
+        protected Button btnUpdateModules;
+        @FXML
+        protected Button btnUpdateParameters;
+        @FXML
+        protected Button btnSendBehavior;
+        @FXML
+        protected ComboBox<String> agentList;
+        @FXML
+        protected Label lblScheme;
+
+        @FXML
+        public void initialize() {
+            // setup ui
+            debugTree.setCellFactory(e -> new CheckableTreeCell());
+            debugTree.setRoot(new TreeItem());
+            debugTree.getRoot().setExpanded(true);
+
+            moduleTree.setCellFactory(e -> new CheckableTreeCell());
+            moduleTree.setRoot(new TreeItem());
+            moduleTree.getRoot().setExpanded(true);
+
+            parameterTree.setShowRoot(false);
+
+            TreeItem<Parameter> parameterTreeRoot = new TreeItem<>(new Parameter("root", null));
+
+            parameterTree.setRoot(parameterTreeRoot);
+            parameterTree.getRoot().setExpanded(true);
+
+            TreeTableColumn<Parameter, String> col_name = (TreeTableColumn<Parameter, String>) parameterTree.getColumns().get(0);
+            TreeTableColumn<Parameter, String> col_value = (TreeTableColumn<Parameter, String>) parameterTree.getColumns().get(1);
+            col_name.setCellValueFactory(new TreeItemPropertyValueFactory("name"));
+            col_value.setCellValueFactory(new TreeItemPropertyValueFactory("value"));
+            col_value.setCellFactory(list -> new ParameterTreeTableCell());
+
+            col_value.setOnEditCommit((evt) -> {
+                if (!evt.getRowValue().isLeaf()) {
+                    return;
+                }
+                evt.getRowValue().getValue().setValue(evt.getNewValue());
+                evt.getTreeTableView().requestFocus();
+            });
+        }
+
+        @FXML
+        private void selectBehaviorFile() {
+            // TODO:
+            System.err.println("Not yet implemented!");
+        }
+
+        @FXML
+        private void saveParameters() {
+            // TODO:
+            System.err.println("Not yet implemented!");
+        }
+
+        @FXML
+        private void updateParameters() {
+            // TODO:
+            System.err.println("Not yet implemented!");
+        }
+
+        @FXML
+        private void updateModules() {
+            // TODO:
+            System.err.println("Not yet implemented!");
+        }
+
+        @FXML
+        private void updateDebugRequests() {
+            // TODO:
+            System.err.println("Not yet implemented!");
+        }
+
+        @FXML
+        private void saveParametersMotion() {
+            // TODO:
+            System.err.println("Not yet implemented!");
+        }
+
+        @FXML
+        private void saveParametersCognition() {
+            // TODO:
+            System.err.println("Not yet implemented!");
+        }
+
+        @FXML
+        private void saveModules() {
+            // TODO:
+            System.err.println("Not yet implemented!");
+        }
     }
 }

@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -24,6 +25,7 @@ import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.text.Text;
 
@@ -34,6 +36,7 @@ public class AgentTab extends Tab implements ConnectionStatusListener
 {
     private String host;
     private int port;
+    private AllTab all;
     private MessageServer server = new MessageServer();
     
     private MenuItem miConnection = new MenuItem("Connect");
@@ -44,6 +47,8 @@ public class AgentTab extends Tab implements ConnectionStatusListener
     
     @FXML protected ConfigurationsTab configurationsTabViewController;
     @FXML protected RepresentationsTab representationsTabViewController;
+    
+    @FXML protected TabPane tabs;
     
     public AgentTab() {
         super();
@@ -63,11 +68,13 @@ public class AgentTab extends Tab implements ConnectionStatusListener
         configurationsTabViewController.setParent(this);
     }
     
-    public AgentTab(String host, int port)  {
+    public AgentTab(String host, int port, AllTab all)  {
         this();
         
         this.host = host;
         this.port = port;
+        this.all = all;
+        
         setTitle("");
         
         server.addConnectionStatusListener(this);
@@ -77,6 +84,7 @@ public class AgentTab extends Tab implements ConnectionStatusListener
         });
         
         connect();
+        bindUiElements();
     }
     
     private void setTitle(String prefix) {
@@ -98,6 +106,44 @@ public class AgentTab extends Tab implements ConnectionStatusListener
         });
         
         return b;
+    }
+    
+    private void bindUiElements() {
+        // bind configuration dividers
+        for (int i = 0; i < configurationsTabViewController.splitPane.getDividers().size(); i++) {
+            DoubleProperty p1 = configurationsTabViewController.splitPane.getDividers().get(i).positionProperty();
+            DoubleProperty p2 = all.configurationsTabViewController.splitPane.getDividers().get(i).positionProperty();
+            p1.bindBidirectional(p2);
+        }
+        
+        configurationsTabViewController.agentList.valueProperty().bind(all.configurationsTabViewController.agentList.valueProperty());
+        representationsTabViewController.split.getDividers().get(0).positionProperty().bindBidirectional(all.split.getDividers().get(0).positionProperty());
+        
+        all.tabs.getSelectionModel().selectedIndexProperty().addListener((ob, o, n) -> {
+            tabs.getSelectionModel().select(n.intValue());
+        });
+        
+        all.addRepresentationsView(representationsTabViewController.content, getText());
+        
+        all.type.getSelectionModel().selectedIndexProperty().addListener((ob, o, n) -> {
+            representationsTabViewController.type.getSelectionModel().select(n.intValue());
+        });
+        
+        all.list.getSelectionModel().selectedItemProperty().addListener((ob, o, n) -> {
+            if(n != null) {
+                // make sure it is the same representation type
+                representationsTabViewController.type.getSelectionModel().select(all.type.getSelectionModel().getSelectedIndex());
+                // select item in list
+                representationsTabViewController.list.getSelectionModel().select(n.toString());
+            }
+        });
+        
+        all.btnUpdateList.addEventHandler(ActionEvent.ACTION, (e) -> { representationsTabViewController.updateList(); });
+        all.configurationsTabViewController.btnUpdateDebug.addEventHandler(ActionEvent.ACTION, (e) -> { configurationsTabViewController.updateDebugRequests(); });
+        all.configurationsTabViewController.btnUpdateModules.addEventHandler(ActionEvent.ACTION, (e) -> { configurationsTabViewController.updateModules(); });
+        all.configurationsTabViewController.btnUpdateParameters.addEventHandler(ActionEvent.ACTION, (e) -> { configurationsTabViewController.updateParameters(); });
+        all.configurationsTabViewController.btnSaveModules.addEventHandler(ActionEvent.ACTION, (e) -> { configurationsTabViewController.saveModules(); });
+//        other.behaviorFile.addListener((o, v, f) -> { behaviorFile.set(f); });
     }
     
     public boolean sendCommand(Command cmd, ResponseListener l) {
@@ -207,31 +253,4 @@ public class AgentTab extends Tab implements ConnectionStatusListener
     protected void representationsTabSelect(Event e) {
         representationsTabViewController.show(((Tab) e.getSource()).isSelected());
     }
-
-    /*
-    public void connectDivider(AgentTab other) {
-        for (int i = 0; i < splitPane.getDividers().size(); i++) {
-            other.splitPane.getDividers().get(i).positionProperty().bindBidirectional(splitPane.getDividers().get(i).positionProperty());
-        }
-    }
-    
-    public void connectAgentList(AgentTab other) {
-        other.agentList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            agentList.getSelectionModel().select(newValue);
-        });
-    }
-    
-    public void connectButtons(AgentTab other) {
-        other.btnUpdateDebug.addEventHandler(ActionEvent.ACTION, (e) -> { btnUpdateDebug.fire(); });
-        other.btnUpdateModules.addEventHandler(ActionEvent.ACTION, (e) -> { btnUpdateModules.fire(); });
-        other.btnUpdateParameters.addEventHandler(ActionEvent.ACTION, (e) -> { btnUpdateParameters.fire(); });
-        other.btnSaveModules.addEventHandler(ActionEvent.ACTION, (e) -> { btnSaveModules.fire(); });
-        other.behaviorFile.addListener((o, v, f) -> { behaviorFile.set(f); });
-    }
-    public void connectTabs(AgentTab other) {
-        other.tabs.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
-            tabs.getSelectionModel().select(newValue.intValue());
-        });
-    }
-    */
 }
