@@ -22,24 +22,27 @@ AudioRecorder::AudioRecorder()
   std::cout << "[INFO] AudioRecorder thread started" << std::endl;
   audioRecorderThread = std::thread([this] {this->execute();});
   ThreadUtil::setPriority(audioRecorderThread, ThreadUtil::Priority::lowest);
+  ThreadUtil::setName(audioRecorderThread, "AudioRecorder");
 
   //The following parameters are used by bhuman:
   //TODO implement them as controll in AudioData Representation
   /*
-  (unsigned)(10) retries,      // Number of tries to open device. 
+    (unsigned)(10) retries,      // Number of tries to open device. 
     (unsigned)(500) retryDelay,  //< Delay before a retry to open device. 
     (bool)(false) allChannels,   //< Use all 4 channels, instead of only two
     (unsigned)(8000) sampleRate, //< Sample rate to capture. This variable will contain the framerate the driver finally selected. 
     (unsigned)(5000) maxFrames,  //< Maximum number of frames read in one cycle. 
     (bool)(true) onlySoundInSet, // If true, the module will not provide audio data in game states other than set 
-
   */
 }
 
 AudioRecorder::~AudioRecorder()
 { 
+  std::cout << "[AudioRecorder] stop wait" << std::endl;
   exiting = true;
 
+  // NOTE: wake up the thread in case it was waiting for the new data
+  new_command_avaliable.notify_one();
   if(audioRecorderThread.joinable()) {
     audioRecorderThread.join();
   }
@@ -47,6 +50,8 @@ AudioRecorder::~AudioRecorder()
   if(paSimple != NULL) {
     deinitAudio();
   }
+
+  std::cout << "[AudioRecorder] stop done" << std::endl;
 }
 
 void AudioRecorder::execute()
@@ -64,6 +69,7 @@ void AudioRecorder::execute()
     // stop capturing
     if(!control.capture && paSimple != NULL) 
     {
+      // TODO: make it dependent on a control parameter, e.g. control.stop_delay
       // deinit audio device ~8 seconds after switch off command was set
       // (recording has blocking behaviour 1024 samples equal 128 ms 63*128 equals ~8s
       if(deinitCyclesCounter >= 63)
@@ -92,12 +98,17 @@ void AudioRecorder::execute()
         std::swap(writeIdx, readIdx);
       }
     } 
-    else // !initialized
+    else // not initialized, wait until new command data arrives
     { 
-      usleep(128); // yield
+      std::cout << "[AudioRecorder] wait for new command" << std::endl;
+      std::unique_lock<std::mutex> lock(dataMutex);
+      new_command_avaliable.wait(lock);
+      std::cout << "[AudioRecorder] continue thread" << std::endl;
     }
 
   } // end while
+
+  
 } // end execute
 
 
@@ -109,6 +120,12 @@ void AudioRecorder::set(const naoth::AudioControl& controlData)
     //       will only have an effect when capture is started. It means the parameters
     //       will not change during an ongoing recording.
     control = controlData;
+
+    if(control.capture) {
+      // release the data lock and notify the thread (in case it was waiting)
+      lock.unlock();
+      new_command_avaliable.notify_one();
+    }
   }
 }
 

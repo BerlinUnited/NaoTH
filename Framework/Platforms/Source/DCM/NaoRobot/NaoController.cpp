@@ -167,6 +167,7 @@ NaoController::NaoController()
 
 NaoController::~NaoController()
 {
+  std::cout << "[NaoController] destruct" << std::endl;
   delete theSoundHandler;
   delete theTeamCommSender;
   delete theTeamCommListener;

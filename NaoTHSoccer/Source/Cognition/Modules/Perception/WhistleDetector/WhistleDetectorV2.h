@@ -3,8 +3,10 @@
 *
 * @author <a href="mailto:schlottb@informatik.hu-berlin.de">Benjamin Schlotter</a>
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
+*
 * Implementation of class WhistleDetectorV2
-* Implements the austrian kangaroos version of the whistle detector
+* Implements a whistle detector based on a frequency band filter.
+* (simmilar to the austrian kangaroos whistle detector)
 */
 
 #ifndef _WhistleDetectorV2_h_
@@ -14,7 +16,7 @@
 
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/AudioData.h>
-#include <Representations/Infrastructure/WhistlePercept.h>
+#include <Representations/Perception/WhistlePercept.h>
 
 // debug
 #include <Tools/DataStructures/ParameterList.h>

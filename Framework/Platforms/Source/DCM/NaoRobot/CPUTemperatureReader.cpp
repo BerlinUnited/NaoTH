@@ -30,6 +30,7 @@ void CPUTemperatureReader::get(CpuData& cpuData)
 
 CPUTemperatureReader::~CPUTemperatureReader()
 {
+  std::cout << "[CPUTemperatureReader] stop wait" << std::endl;
   exiting = true;
 
   if(readThread.joinable()) {
@@ -37,6 +38,7 @@ CPUTemperatureReader::~CPUTemperatureReader()
   }
   
   temperatureFile.close();
+  std::cout << "[CPUTemperatureReader] stop done" << std::endl;
 }
 
 void CPUTemperatureReader::readLoop()
