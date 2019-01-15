@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 
 import javafx.scene.control.CheckBoxTreeItem;
@@ -130,6 +131,13 @@ public class AllTab extends Tab
             rcc.getTextProperty().bind(t.textProperty());
         } catch (IOException ex) {
             Logger.getLogger(AllTab.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void removeRepresentationsView(String name) {
+        for (Node node : contentArea.getChildren()) {
+            System.out.println(node);
+            // TODO: remove Node if it matches?!
         }
     }
     

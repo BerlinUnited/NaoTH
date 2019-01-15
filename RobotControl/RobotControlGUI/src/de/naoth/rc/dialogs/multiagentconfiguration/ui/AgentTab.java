@@ -144,9 +144,13 @@ public class AgentTab extends Tab implements ConnectionStatusListener
         all.configurationsTabViewController.btnUpdateParameters.addEventHandler(ActionEvent.ACTION, (e) -> { configurationsTabViewController.updateParameters(); });
         all.configurationsTabViewController.btnSaveModules.addEventHandler(ActionEvent.ACTION, (e) -> { configurationsTabViewController.saveModules(); });
         all.configurationsTabViewController.behaviorFile.addListener((ob, o, n) -> {
-            System.out.println("new behavior file ..." + this);
             if(n != null) { configurationsTabViewController.behaviorFile.set(n); }
         });
+    }
+    
+    private void unbindUiElements() {
+        all.removeRepresentationsView(getText());
+        // TODO: remove event handlers & bindings?!
     }
     
     public boolean sendCommand(Command cmd, ResponseListener l) {
@@ -183,6 +187,7 @@ public class AgentTab extends Tab implements ConnectionStatusListener
     }
     
     public void requestClose() {
+        unbindUiElements();
         TabPaneBehavior behavior = getBehavior();
         if(behavior.canCloseTab(this)) {
             behavior.closeTab(this);
