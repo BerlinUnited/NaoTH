@@ -25,6 +25,8 @@
 #include "SensorFilter/InertiaSensorFilter.h"
 #include "SensorFilter/IMUModel.h"
 #include "SensorFilter/ArmCollisionDetector.h"
+#include "SensorFilter/ArmCollisionDetector2018.h"
+#include "SensorFilter/CoPProvider.h"
 
 //#include <Representations/Modeling/CameraMatrixOffset.h>
 
@@ -43,6 +45,7 @@
 #include <Representations/Modeling/IMUData.h>
 #include "Representations/Modeling/GroundContactModel.h"
 #include "Representations/Motion/CollisionPercept.h"
+#include "Representations/Motion/Walk2018/Walk2018Parameters.h"
 
 // debug
 #include <Representations/Debug/Stopwatch.h>
@@ -75,9 +78,10 @@ BEGIN_DECLARE_MODULE(Motion)
 
   REQUIRE(MotionStatus)
   PROVIDE(OdometryData) // hack
-  REQUIRE(InertialModel)
+  PROVIDE(InertialModel) // need to overwrite the old filter value by IMUModel
   REQUIRE(CalibrationData)
   REQUIRE(IMUData)
+  REQUIRE(CentreOfPressure) // logging
 
   PROVIDE(CameraMatrix)// TODO:strange...
   PROVIDE(CameraMatrixTop)// TODO:strange...
@@ -112,6 +116,8 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(MotionRequest)
   PROVIDE(BodyStatus)
   PROVIDE(BodyState)
+
+  PROVIDE(Walk2018Parameters) // provide parameters for walk2018 modules, allows for modifying parameters without walking
 END_DECLARE_MODULE(Motion)
 
 
@@ -146,14 +152,14 @@ private:
     Parameter() : ParameterList("Motion")
     {
       PARAMETER_REGISTER(useGyroRotationOdometry) = true;
-      //PARAMETER_REGISTER(useIMUModel) = false;
+      PARAMETER_REGISTER(letIMUModelProvideInertialModel) = true;
       //PARAMETER_REGISTER(useInertiaSensorCalibration) = true;
-      PARAMETER_REGISTER(useIMUDataForRotationOdometry) = false;
+      PARAMETER_REGISTER(useIMUDataForRotationOdometry) = true;
       syncWithConfig();
     }
 
     bool useGyroRotationOdometry;
-    //bool useIMUModel;
+    bool letIMUModelProvideInertialModel;
     //bool useInertiaSensorCalibration;
     bool useIMUDataForRotationOdometry;
 
@@ -163,6 +169,7 @@ private:
 private:
   void debugPlots();
   void updateCameraMatrix();
+  void drawRobot3D(const KinematicChain& kinematicChain);
 
 private:
   // HACK: needs a better solution
@@ -176,13 +183,16 @@ private:
   ModuleCreator<KinematicChainProviderMotion>* theKinematicChainProvider;
   ModuleCreator<IMUModel>* theIMUModel;
   ModuleCreator<ArmCollisionDetector>* theArmCollisionDetector;
-  
+  ModuleCreator<ArmCollisionDetector2018>* theArmCollisionDetector2018;
+   
+  ModuleCreator<CoPProvider>* theCoPProvider;
 
   ModuleCreator<MotionEngine>* theMotionEngine;
 
   naoth::MotorJointData theLastMotorJointData;
 
   Logger motionLogger;
+  Stopwatch cycleStopwatch;
 
 private:
   std::stringstream debug_answer_stream;
@@ -190,6 +200,23 @@ private:
 private:
   RingBuffer<double,100> currentsRingBuffer[naoth::JointData::numOfJoint];
   RingBuffer<double,4> motorJointDataBuffer[naoth::JointData::numOfJoint];
+
+private:
+  // NOTE: copy from Debug.h
+  // TODO: generalize attaching the logger
+  void registerLogableRepresentationList()
+  {
+    const BlackBoard& blackBoard = BlackBoardInterface::getBlackBoard();
+    BlackBoard::Registry::const_iterator iter;
+
+    for(iter = blackBoard.getRegistry().begin(); iter != blackBoard.getRegistry().end(); ++iter)
+    {
+      const Representation& theRepresentation = iter->second->getRepresentation();
+      if(theRepresentation.serializable()) {
+        motionLogger.addRepresentation(&theRepresentation, iter->first);
+      }
+    }
+  }
 };
 
 

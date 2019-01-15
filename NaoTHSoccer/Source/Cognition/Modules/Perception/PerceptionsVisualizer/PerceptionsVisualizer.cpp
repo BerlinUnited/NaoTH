@@ -32,7 +32,7 @@ PerceptionsVisualizer::PerceptionsVisualizer()
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:line_percept", "draw line percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image:line_percept", "draw line percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image_px:line_percept", "draw line percept", false);
-
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:ransac_circle_percept", "draw circle provided by RansacLineDetector", false);
 
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:players_percept", "draw players percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image_px:players_percept", "draw players percept", false);
@@ -84,6 +84,16 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
       CIRCLE(getBallPercept().bearingBasedOffsetOnField.x, 
         getBallPercept().bearingBasedOffsetOnField.y,
         getFieldInfo().ballRadius);
+    }
+
+    FIELD_DRAWING_CONTEXT;
+    PEN("FF9900", 20);
+    for (MultiBallPercept::ConstABPIterator i = getMultiBallPercept().begin(); i != getMultiBallPercept().end(); ++i) {
+      if ((*i).cameraId == cameraID) {
+        CIRCLE((*i).positionOnField.x,
+          (*i).positionOnField.y,
+          getFieldInfo().ballRadius);
+      }
     }
  );
 
@@ -397,6 +407,15 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
     }//end for
   ); // end line_percept in image_px
 
+  DEBUG_REQUEST("PerceptionsVisualizer:field:ransac_circle_percept",
+    if(getRansacCirclePercept().middleCircleWasSeen) {
+      FIELD_DRAWING_CONTEXT;
+      PEN("009900", 10);
+      CIRCLE(getRansacCirclePercept().middleCircleCenter.x,
+             getRansacCirclePercept().middleCircleCenter.y,
+             getFieldInfo().centerCircleRadius);
+    }
+  );
 
   DEBUG_REQUEST("PerceptionsVisualizer:field:players_percept",
     FIELD_DRAWING_CONTEXT;
@@ -409,13 +428,10 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
 
 
   DEBUG_REQUEST("PerceptionsVisualizer:image:draw_field_polygon",
-    int idx = 0;
     ColorClasses::Color color = getFieldPercept().valid ? ColorClasses::green : ColorClasses::red;
     const FieldPercept::FieldPoly& fieldpoly = getFieldPercept().getValidField();
-    for(int i = 1; i < fieldpoly.length; i++)
-    {
-      LINE_PX(color, fieldpoly[idx].x, fieldpoly[idx].y, fieldpoly[i].x, fieldpoly[i].y);
-      idx = i;
+    for(size_t i = 0; i + 1 < fieldpoly.size(); i++) {
+      LINE_PX(color, fieldpoly[i].x, fieldpoly[i].y, fieldpoly[i+1].x, fieldpoly[i+1].y);
     }
   );
 }//end execute

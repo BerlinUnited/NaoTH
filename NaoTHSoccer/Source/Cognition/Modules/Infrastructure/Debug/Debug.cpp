@@ -14,6 +14,7 @@
 // needed for sleep_for in debug kill 
 #include <thread>
 
+using namespace std;
 
 Debug::Debug() : cognitionLogger("CognitionLog")
 {

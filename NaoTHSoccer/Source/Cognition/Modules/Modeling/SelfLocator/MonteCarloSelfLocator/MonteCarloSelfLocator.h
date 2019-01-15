@@ -87,6 +87,7 @@ BEGIN_DECLARE_MODULE(MonteCarloSelfLocator)
   REQUIRE(ProbabilisticQuadCompas)
   REQUIRE(LineGraphPercept)
   REQUIRE(LinePercept)
+  REQUIRE(RansacCirclePercept)
 
   PROVIDE(RobotPose)
   PROVIDE(SelfLocGoalModel)
@@ -144,7 +145,11 @@ private: // local types
 
       PARAMETER_REGISTER(updateByShortLinePercept) = false;
 
+      
+      PARAMETER_REGISTER(sensorResetByMiddleCircle) = true;
       PARAMETER_REGISTER(updateByMiddleCircle) = true;
+      PARAMETER_REGISTER(updateByLinePerceptCircle) = true;
+      PARAMETER_REGISTER(updateByRansacCircle) = true;
       PARAMETER_REGISTER(sigmaDistanceCenterCircle) = 0.2;
       PARAMETER_REGISTER(sigmaAngleCenterCircle) = 0.1;
 
@@ -168,6 +173,8 @@ private: // local types
       PARAMETER_REGISTER(resampleGT07) = true;
 
       PARAMETER_REGISTER(maxAcceptedGoalErrorWhileTracking) = 0;
+
+      PARAMETER_REGISTER(updateByOdometryWhenBlind) = true;
 
       // load from the file after registering all parameters
       syncWithConfig();
@@ -197,7 +204,10 @@ private: // local types
     bool updateByShortLinePercept;
 
     
+    bool sensorResetByMiddleCircle;
     bool updateByMiddleCircle;
+    bool updateByLinePerceptCircle;
+    bool updateByRansacCircle;
     double sigmaDistanceCenterCircle;
     double sigmaAngleCenterCircle;
 
@@ -219,6 +229,8 @@ private: // local types
     bool resampleGT07;
 
     double maxAcceptedGoalErrorWhileTracking;
+
+    bool updateByOdometryWhenBlind;
   } parameters;
 
   class LineDensity {
@@ -267,7 +279,6 @@ private: // local types
 private: // goal posts
   bool updatedByGoalPosts;
 
-
 private: // data members
   OdometryData lastRobotOdometry;
   SampleSet theSampleSet;
@@ -283,7 +294,7 @@ private: // data members
   double effective_number_of_samples;
 
 private: // workers
-  void updateByOdometry(SampleSet& sampleSet, bool noise) const;
+  void updateByOdometry(SampleSet& sampleSet, bool noise, bool onlyRotation) const;
 
   bool updateBySensors(SampleSet& sampleSet) const;
   void updateByGoalPosts(const GoalPercept& goalPercept, SampleSet& sampleSet) const;
@@ -293,7 +304,7 @@ private: // workers
   void updateByLines(const LinePercept& linePercept, SampleSet& sampleSet) const;
   void updateByShortLines(const LinePercept& linePercept, SampleSet& sampleSet) const;
 
-  void updateByMiddleCircle(const LinePercept& linePercept, SampleSet& sampleSet) const;
+  void updateByMiddleCircle(const Vector2d& middleCircleCenter, SampleSet& sampleSet) const;
   // A-Priori knowledge based on the game state
   void updateBySidePositions(SampleSet& sampleSet) const;
   void updateByStartPositions(SampleSet& sampleSet) const;
@@ -316,6 +327,7 @@ private: // workers
   int resampleSUS(SampleSet& sampleSet, int n) const;
 
   int sensorResetBySensingGoalModel(SampleSet& sampleSet, int n) const;
+  void sensorResetByMiddleCircle(SampleSet& sampleSet, const Vector2d& middleCircleCenter) const;
 
   void calculatePose(SampleSet& sampleSet);
 

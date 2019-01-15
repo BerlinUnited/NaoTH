@@ -161,6 +161,26 @@ option path_play_soccer
     {
       else if (game.current_mode != playing)
         goto idle;
+      else if (game.set_play == goal_free_kick && game.own_kickoff)
+        // if free kick time is (nearly) up, we proceed with our normal game, otherwise position for free kick
+        if(game.msecsRemainingSecondary > 5000)
+          goto free_kick_own_goal;
+        else stay;
+      else if (game.set_play == goal_free_kick && !game.own_kickoff)
+        // the free kick time is 1 second, we can start planing our next motion - refs won't call a penalty if there's only 1s left
+        if(game.msecsRemainingSecondary > 1000)
+          goto free_kick_opp_goal;
+        else stay;
+      else if (game.set_play == pushing_free_kick && game.own_kickoff)
+        // if free kick time is (nearly) up, we proceed with our normal game, otherwise position for free kick
+        if(game.msecsRemainingSecondary > 5000)
+          goto free_kick_own;
+        else stay;
+      else if (game.set_play == pushing_free_kick && !game.own_kickoff)
+        // the free kick time is 1 second, we can start planing our next motion - refs won't call a penalty if there's only 1s left
+        if(game.msecsRemainingSecondary > 1000)
+          goto free_kick_opp;
+        else stay;
       else 
         stay;
     }
@@ -168,6 +188,62 @@ option path_play_soccer
     {
       last_state_was_penalized = false; // important!!!
       path_decide_role();
+    }
+  }
+  
+  state free_kick_own_goal
+  {
+    decision
+    {
+      else if (game.set_play != goal_free_kick || game.msecsRemainingSecondary <= 5000)
+        goto play;
+      else
+        stay;
+    }
+    action {
+      free_kick_own_goal();
+    }
+  }
+  
+  state free_kick_opp_goal
+  {
+    decision
+    {
+      else if (game.set_play != goal_free_kick)
+        goto play;
+      else
+        stay;
+    }
+    action {
+      free_kick_opp_goal();
+    }
+  }
+  
+  state free_kick_own
+  {
+    decision
+    {
+      else if (game.set_play != pushing_free_kick || game.msecsRemainingSecondary <= 5000)
+        goto play;
+      else
+        stay;
+    }
+    action {
+      free_kick_own();
+    }
+  }
+  
+  state free_kick_opp
+  {
+    decision
+    {
+      else if (game.set_play != pushing_free_kick)
+        goto play;
+      else
+        stay;
+    }
+    action {
+      free_kick_opp();
     }
   }
 
@@ -183,7 +259,7 @@ option path_play_soccer
 	      stay;
 	  }
 	  action {
-	    initial_striker();
+	    path2018_initial_striker();
    		team.is_playing_as_striker = true;
 	  }
   }

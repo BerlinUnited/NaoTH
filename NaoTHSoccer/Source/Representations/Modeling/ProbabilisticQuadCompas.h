@@ -70,7 +70,7 @@ public:
     return (*this)[(int)(a / bin_size + 0.5)];
   }
 
-  inline double operator[] (int i) const {
+  inline double operator[] (size_t i) const {
     assert(normalized);
     return angles[i % angles.size()];
   }

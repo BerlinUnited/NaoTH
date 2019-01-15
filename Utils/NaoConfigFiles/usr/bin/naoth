@@ -29,24 +29,43 @@ function start_function() {
 }
 
 function stop_function() {
-    echo "killing naoth cognition processes"
+    echo "stopping naoth cognition processes"
+    
     # first try to kill naoth based on the PID file
     if [ -f "$PID" ]; then
       OLDPID=`cat $PID`
       kill $OLDPID
-      sleep 1
+
+      # wait for the process to stop
+      counter=0
+      while kill -0 $OLDPID 2> /dev/null
+      do
+          sleep 1;
+          printf "try %s/30\n" "$counter"
+          
+          # wait for maximal 30 seconds
+          ((counter++))
+          if [ $counter -gt 30 ]; then
+            break
+          fi
+      done
+      printf "\n"
+
     fi
-    # ... afterwards kill all existing naoth processes (and exclude this script!)
+
+    # FALLBACK
+    #... try to stop all running naoth processes (and exclude this script!)
     PIDS=`pidof -x -o %PPID naoth`
     if [[ ! -z $PIDS ]]; then
       kill $PIDS  # send TERM signal
       sleep 5
-      # if there are still existing naoth instances, kill them "hard"
+      # if there are still running naoth instances, kill them "hard"
       PIDS=`pidof -x -o %PPID naoth`
       if [[ ! -z $PIDS ]]; then
         kill -9 $PIDS  # send KILL signal
       fi
     fi
+    
     # remove PID-file
     rm $PID
 }

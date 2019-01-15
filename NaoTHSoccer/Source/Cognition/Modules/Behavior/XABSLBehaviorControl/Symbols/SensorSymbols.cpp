@@ -21,7 +21,8 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("sensor.ultrasound.left", &simplePassLeftSensor);
   engine.registerDecimalInputSymbol("sensor.ultrasound.right", &simplePassRightSensor);
 
-  engine.registerDecimalInputSymbol("platform.battery", &getBatteryData().charge);
+  //engine.registerDecimalInputSymbol("platform.battery", &getBatteryData().charge);
+  engine.registerDecimalInputSymbol("platform.battery", &getBodyState().batteryCharge);
 
   engine.registerEnumElement("fall_down_state", "fall_down_state.undefined", BodyState::undefined);
   engine.registerEnumElement("fall_down_state", "fall_down_state.upright", BodyState::upright);
@@ -31,7 +32,6 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumElement("fall_down_state", "fall_down_state.lying_on_right_side", BodyState::lying_on_right_side);
 
   engine.registerEnumeratedInputSymbol("fall_down_state", "fall_down_state", &getFallDownState);
-
 
   engine.registerDecimalInputSymbol("body.temperature.leg.left", &getBodyState().temperatureLeftLeg);
   engine.registerDecimalInputSymbol("body.temperature.leg.right", &getBodyState().temperatureRightLeg);
@@ -56,9 +56,11 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanInputSymbol("button.head.pressed.middle", &getButtonHeadMiddle);
   engine.registerBooleanInputSymbol("button.head.pressed.rear", &getButtonHeadRear);
 
-  engine.registerBooleanInputSymbol("battery.isDischarging", &getisDischarging);
+  // deprecated?
+  engine.registerBooleanInputSymbol("battery.isDischarging", &getBodyState().isDischarging);
+  engine.registerBooleanInputSymbol("battery.isCharging", &getBodyState().isCharging);
 
-  engine.registerDecimalOutputSymbol("whistle.switch",&setWhistleSwitch, &getWhistleSwitch);
+  engine.registerBooleanOutputSymbol("audio.capture", &getAudioControl().capture);
 
 }//end registerSymbols
 
@@ -73,18 +75,6 @@ void SensorSymbols::execute()
 
 }//end execute
 
-double SensorSymbols::getWhistleSwitch(){
-  return theInstance->getWhistleControl().onOffSwitch;
-}
-
-void SensorSymbols::setWhistleSwitch(double whistle){
-  theInstance->getWhistleControl().onOffSwitch = (int)whistle;
-}
-
-bool SensorSymbols::getisDischarging()
-{
-  return theInstance->getBodyState().isDischarging;
-}
 bool SensorSymbols::getBumberLeftPressed()
 {
   return (theInstance->getButtonData().eventCounter[ButtonData::LeftFootLeft] > 0) ||

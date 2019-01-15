@@ -11,6 +11,7 @@
 
 // Representations
 #include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CameraInfo.h"
 #include <Representations/Perception/FieldColorPercept.h>
@@ -45,6 +46,7 @@ BEGIN_DECLARE_MODULE(ScanLineEdgelDetector)
   PROVIDE(DebugParameterList)  
   
   REQUIRE(FrameInfo)
+  REQUIRE(FieldInfo)
   REQUIRE(Image)
   REQUIRE(ImageTop)
   REQUIRE(CameraInfo)
@@ -90,6 +92,8 @@ public:
       PARAMETER_REGISTER(double_edgel_angle_threshold) = 0.2;
       PARAMETER_REGISTER(minEndPointGreenDensity) = 0.3;
 
+      PARAMETER_REGISTER(dynamicThreshold) = true;
+
       syncWithConfig();
       //DebugParameterList::getInstance().add(this);
     }
@@ -104,6 +108,8 @@ public:
     int pixel_border_y; // don't scan the lower lines in the image
     int green_sampling_points; // number of the random samples to determine whether a segment is green 
 
+    bool dynamicThreshold;
+
     double double_edgel_angle_threshold;
     double minEndPointGreenDensity;
   } theParameters;
@@ -111,31 +117,37 @@ public:
 private:
   CameraInfo::CameraID cameraID;
 
-  void add_edgel(const Vector2i& point) {
+  void add_edgel(const Vector2i& point, Edgel::Type type) {
+    /*
     Edgel edgel;
     edgel.point = point;
     edgel.direction = calculateGradient(point);
     getScanLineEdgelPercept().edgels.push_back(edgel);
+    */
+    getScanLineEdgelPercept().edgels.emplace_back(point, calculateGradient(point), type);
   }
 
-  void add_double_edgel(const Vector2i& point, int id) {
-    add_edgel(point);
+  void add_double_edgel(int scan_line_id) 
+  {
     ASSERT(getScanLineEdgelPercept().edgels.size() > 1);
+    
+    // use the last two edgels
     int i_end = ((int) getScanLineEdgelPercept().edgels.size())-1;
     int i_begin = i_end - 1;
     const Edgel& end = getScanLineEdgelPercept().edgels[i_end];
     const Edgel& begin = getScanLineEdgelPercept().edgels[i_begin];
 
-    if(1.0-fabs(begin.direction*end.direction) > theParameters.double_edgel_angle_threshold) {
+    if(-(begin.direction*end.direction) < theParameters.double_edgel_angle_threshold) {
       return; // false
     }
 
     ScanLineEdgelPercept::EdgelPair pair;
     pair.begin = i_begin;
     pair.end = i_end;
-    pair.id = id;
+    pair.id = scan_line_id;
 
-    pair.point = Vector2d(begin.point + end.point)*0.5;
+    pair.point.x = (begin.point.x + end.point.x)*0.5;
+    pair.point.y = (begin.point.y + end.point.y)*0.5;
     pair.direction = (begin.direction - end.direction).normalize();
 
     getScanLineEdgelPercept().pairs.push_back(pair);

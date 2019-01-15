@@ -76,13 +76,33 @@ local function protocCompile(inputFiles, cppOut, javaOut, pythonOut, ipaths)
     end
   end 
 
-  args = args .. table.concat(inputFiles, " ")
-  local cmd = compilerPath .. "/" .. compiler .. " " .. args
+  --args = args .. table.concat(inputFiles, " ")
+  for i,v in pairs(inputFiles) do
+	args = args .. " \"" .. v .. "\""
+  end
+  
+  local cmd = "\"" .. compilerPath .. "/" .. compiler .. "\" " .. args
+  
+  if os.ishost("windows") then
+    cmd = "\"" .. cmd .. "\""
+  end
   
   -- HACK: create the output directories if needed
   os.mkdir(cppOut)
   os.mkdir(javaOut)
   
+  -- delete all generated message files
+  print("Try to remove the pb.cc and .pb.h files ")
+  -- print(os.matchfiles(path.join(cppOut,"**.pb.h")))
+  for i,file in ipairs(os.matchfiles(path.join(cppOut,"**.pb.h"))) do
+    ok, err = os.remove (file)
+  end
+  for i,file in ipairs(os.matchfiles(path.join(cppOut,"**.pb.cc"))) do
+    ok, err = os.remove (file)
+  end
+  print("Removed all generated message files")
+
+
   -- generate the message files
   print("INFO: (Protbuf) executing " .. cmd)
   local succ, status, returnCode = os.execute(cmd)
@@ -148,8 +168,13 @@ function add_gcc_ignore_pragmas(files)
   end
 end
 
+-- a wrapper for an easier access with names parameters
+-- e.g., makeprotoc{inputFiles = {""}, ...}
+function makeprotoc(arg)
+  invokeprotoc(arg.inputFiles, arg.cppOut, arg.javaOut, arg.pythonOut, arg.includeDirs)
+end
 
-function invokeprotoc(inputFiles, cppOut, javaOut, pythonOut, ipaths)
+function invokeprotoc(inputFiles, cppOut, javaOut, pythonOut, includeDirs)
 	-- check if protobuf compile is explicitely requested
     local compile = (_OPTIONS["protoc"] ~= nil)
 
@@ -161,21 +186,20 @@ function invokeprotoc(inputFiles, cppOut, javaOut, pythonOut, ipaths)
       end
     end
 
-	
-    if(compile) then
-      -- execute compile process for each file
-      local time = os.time()
-      -- do the recompilation
-     if( protocCompile(inputFiles, cppOut, javaOut, pythonOut, ipaths)) then
-       -- if successfull touch the shadow files
-       for i = 1, #inputFiles do
-          -- touch shadow file in order to remember this build date
-          touchShadow(inputFiles[i], time)
-      end -- end for each file to compile
-     else
-      print ("ERROR: protoc not successful")
-     end
-    end -- end if compile
+  if(compile) then
+    -- execute compile process for each file
+    local time = os.time()
+    -- do the recompilation
+   if( protocCompile(inputFiles, cppOut, javaOut, pythonOut, includeDirs)) then
+     -- if successfull touch the shadow files
+     for i = 1, #inputFiles do
+        -- touch shadow file in order to remember this build date
+        touchShadow(inputFiles[i], time)
+    end -- end for each file to compile
+   else
+    print ("ERROR: protoc not successful")
+   end
+  end -- end if compile
 end
 
 newoption {

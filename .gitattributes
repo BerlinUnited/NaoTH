@@ -14,7 +14,7 @@
 *.proto  text
 
 # Netbeans *.form files
-*.form   text
+*.form   text eol=lf
 
 # Declare files that will always have LF line endings on checkout.
 *.sh     text eol=lf
@@ -23,7 +23,6 @@
 *.mef    text eol=lf
 *.xml    text
 *.properties text
-*.form   text
 *.html   text
 *.xabsl  text
 
@@ -41,3 +40,6 @@ RobotControl/RobotConnector/src/de/naoth/rc/messages/*  text eol=lf
 *.zip    binary
 *.wav    binary
 *.mp3    binary
+
+# Whistle stuff
+*.lst    text eol=lf

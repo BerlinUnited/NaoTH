@@ -3,8 +3,8 @@
 	// for the documentation about the extensions.json format
 	"recommendations": [
 		// Extension identifier format: ${publisher}.${name}. Example: vscode.csharp
-		"ms-vscode.cpptools",
-		"gayanhewa.referenceshelper",		
+		"ms-vscode.cpptools",	
+		"cquery-project.cquery",
 		"keyring.lua",
 		"ms-python.python"
 	]

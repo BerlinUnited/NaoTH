@@ -125,13 +125,7 @@ bool RedBallDetector::findMaximumRedPoint(std::vector<Vector2i>& points) const
   const FieldPercept::FieldPoly& fieldPolygon = getFieldPercept().getValidField();
 
   // find the top point of the polygon
-  int minY = getImage().height();
-  for(int i = 0; i < fieldPolygon.length ; i++)
-  {
-    if(fieldPolygon.points[i].y < minY && fieldPolygon.points[i].y >= 0) {
-      minY = fieldPolygon.points[i].y;
-    }
-  }
+  int minY = getFieldPercept().getMinY();
 
   // double check: polygon is empty
   if(minY == (int)getImage().height() || minY < 0) {

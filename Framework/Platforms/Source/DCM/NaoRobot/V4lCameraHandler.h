@@ -96,7 +96,7 @@ private:
   void closeDevice();
 
   int getSingleCameraParameter(int id);
-  bool setSingleCameraParameter(int id, int value);
+  bool setSingleCameraParameter(int id, int value, std::string name);
   void setFPS(int fpsRate);
   void internalUpdateCameraSettings();
 
@@ -104,6 +104,10 @@ private:
   int xioctl(int fd, int request, void* arg) const;
   bool hasIOError(int errOccured, int errNo, bool exitByIOError = true) const;
   std::string getErrnoDescription(int err) const;
+
+  int getAutoExposureGridID(size_t i, size_t j) {
+    return V4L2_CID_PRIVATE_BASE + 7 + (i*CameraSettings::AUTOEXPOSURE_GRID_SIZE) + j;
+  }
 
   typedef enum
   {
@@ -132,6 +136,7 @@ private:
   unsigned char* currentImage;
 
   bool atLeastOneImageRetrieved;
+  bool initialParamsSet;
   bool wasQueried;
   bool isCapturing;
   bool bufferSwitched;

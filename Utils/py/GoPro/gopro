@@ -12,19 +12,36 @@
 EXEC="/home/pi/GoPro/main.py"
 PID="/tmp/pyGoPro.lock"
 
-start() {
+start_fordeground() {
+  echo "Start GoPro-Controller"
 	if [ -x "$EXEC" ]
-        then
-                $EXEC -b -v -c --syslog
+  then
+    $EXEC -v -c --syslog
 	else
 		echo "Missing GoPro-Controller script!"
-        fi
+  fi
+}
+
+start_background() {
+  echo "Start GoPro-Controller"
+	if [ -x "$EXEC" ]
+  then
+    $EXEC -b -v -c --syslog
+	else
+		echo "Missing GoPro-Controller script!"
+  fi
 }
 
 stop() {
+	echo "Stop GoPro-Controller"
 	if [ -f "$PID" ]
 	then
-		pkill -F /tmp/pyGoPro.lock
+		PUID=$(ps --no-headers -o uid `cat $PID` | awk '{print $1}')
+		if [ "$PUID" -eq "0" -a "$(id -u)" -ne "0" ]; then
+			echo "This script was started by root and must be stopped by root!"
+			exit 1
+		fi
+		pkill -F $PID
 	else
 		echo "GoPro-Controller not running!"
 	fi
@@ -32,33 +49,34 @@ stop() {
 
 status() {
 	if [ -f "$PID" ] && $(ps -p `cat $PID` > /dev/null)
-        then
+	then
 		echo "GoPro-Controller is running!"
-        else
-                echo "GoPro-Controller NOT running!"
-        fi
+	else
+		echo "GoPro-Controller NOT running!"
+	fi
 }
 
 case "$1" in
-    start)
-	echo "Start GoPro-Controller"
-	start
-        ;;
-    stop)
-	echo "Stop GoPro-Controller"
-	stop
-        ;;
-    restart)
-	echo "Restart GoPro-Controller"
-	stop
-	start
-        ;;
-    status)
-	status
-	;;
-     *)
-	 echo "(start|stop|restart|status)"
- ;;
+  ""|'')
+    start_fordeground
+    ;;
+  start)
+    start_background
+    ;;
+  stop)
+    stop
+    ;;
+  restart)
+    echo "Restart GoPro-Controller"
+    stop
+    start_background
+    ;;
+  status)
+    status
+    ;;
+  *)
+    echo "(start|stop|restart|status)"
+    ;;
 esac
 
 exit 0

@@ -20,11 +20,11 @@ public class RobotStatusPanel extends javax.swing.JPanel implements RobotStatusL
     /** Creates new form RobotStatus */
     public RobotStatusPanel(RobotStatus rs) {
         this.rs = rs;
-        this.setBackground(rs.robotColor);
+        this.setBackground(rs.getRobotColorAwt());
         rs.addListener(this);
         initComponents();
         // get and set info, if the robot should be drawn on the field
-        this.cbShowRobot.setSelected(rs.showOnField);
+        this.cbShowRobot.setSelected(rs.getShowOnField());
     }
     
     public RobotStatusPanel(RobotStatus rs, Color backgroundColor) {
@@ -138,7 +138,7 @@ public class RobotStatusPanel extends javax.swing.JPanel implements RobotStatusL
     }//GEN-LAST:event_connectButtonActionPerformed
 
     private void cbShowRobotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbShowRobotActionPerformed
-        rs.showOnField = this.cbShowRobot.isSelected();
+        rs.setShowOnField(this.cbShowRobot.isSelected());
     }//GEN-LAST:event_cbShowRobotActionPerformed
 
     @Override
@@ -152,50 +152,50 @@ public class RobotStatusPanel extends javax.swing.JPanel implements RobotStatusL
     }
 
     private void updatePanelUi() {
-        this.jlPlayerNumber.setText("" + rs.playerNum);
-        this.jlAddress.setText(rs.ipAddress);
-        if (rs.isDead) {
+        this.jlPlayerNumber.setText("" + rs.getPlayerNum());
+        this.jlAddress.setText(rs.getIpAddress());
+        if (rs.getIsDead()) {
             this.jlTimestamp.setText("DEAD");
             this.jlTimestamp.setForeground(Color.red);
         } else {
-            this.jlTimestamp.setText(String.format("%4.2f msg/s", rs.msgPerSecond));
+            this.jlTimestamp.setText(String.format("%4.2f msg/s", rs.getMsgPerSecond()));
             this.jlTimestamp.setForeground(Color.black);
         }
-        this.jlFallenTime.setText(rs.fallen == 1 ? "FALLEN" : "NOT FALLEN");
-        this.jlBallAge.setText("" + rs.ballAge + "s");
+        this.jlFallenTime.setText(rs.getFallen() ? "FALLEN" : "NOT FALLEN");
+        this.jlBallAge.setText("" + rs.getBallAge() + "s");
         
         jlTemperature.setForeground(Color.black);
         jlBatteryCharge.setForeground(Color.black);
       
-        if (rs.temperature == -1 && rs.batteryCharge == -1) {
+        if (rs.getBatteryCharge() == -1 && rs.getBatteryCharge() == -1) {
             jlTemperature.setText("TEMP ??");
             jlBatteryCharge.setText("??");
         } else {
             //Representations.BUUserTeamMessage user = Representations.BUUserTeamMessage.parseFrom(msg.data);
-            String temperature = String.format(" %3.1f °C", rs.temperature) + " / CPU:" + String.format(" %3.1f °C", rs.cpuTemperature);
+            String temperature = String.format(" %3.1f °C", rs.getTemperature()) + " / CPU:" + String.format(" %3.1f °C", rs.getCpuTemperature());
             jlTemperature.setText(temperature);
-            jlBatteryCharge.setText(String.format("%3.1f%%", rs.batteryCharge));
+            jlBatteryCharge.setText(String.format("%3.1f%%", rs.getBatteryCharge()));
 
-            if (rs.temperature >= 60.0f) {
+            if (rs.getTemperature() >= 60.0f) {
                 jlTemperature.setForeground(RobotStatus.COLOR_DANGER);
             }
-            if (rs.temperature >= 75.0f) {
+            if (rs.getTemperature() >= 75.0f) {
                 jlTemperature.setForeground(Color.red);
             }
 
-            if (rs.batteryCharge <= 0.3f) {
+            if (rs.getBatteryCharge() <= 0.3f) {
                 jlBatteryCharge.setForeground(RobotStatus.COLOR_WARNING);
             }
-            if (rs.batteryCharge <= 0.1f) {
+            if (rs.getBatteryCharge() <= 0.1f) {
                 jlBatteryCharge.setForeground(Color.red);
             }
 
             
-            this.jlTeamNumber.setText("" + rs.teamNum);
+            this.jlTeamNumber.setText("" + rs.getTeamNum());
         }
-        connectButton.setEnabled(!rs.isConnected);
-        cbShowRobot.setSelected(rs.showOnField);
-        this.setBackground(rs.robotColor);
+        connectButton.setEnabled(!rs.getIsConnected());
+        cbShowRobot.setSelected(rs.getShowOnField());
+        this.setBackground(rs.getRobotColorAwt());
         this.repaint();
     }
     

@@ -9,6 +9,8 @@
 #ifndef _NAOTIME_H
 #define _NAOTIME_H
 
+#include <cstdint>
+
 #ifdef WIN32
 #include <windows.h>
 #else
@@ -34,7 +36,7 @@ public:
 
 
   /*
-   * return the time sinse the start of the controller
+   * return the time since the start of the controller
    */
   static unsigned int getNaoTimeInMilliSeconds();
 
@@ -43,6 +45,11 @@ public:
    * at this point in time
    */
   static const unsigned long long startingTimeInMilliSeconds;
+
+	/**
+	 * Returns the milliseconds since midnight
+	 */
+	static std::uint32_t getSystemTimeSinceMidnight();
 
   static const unsigned long long long_thousand = 1000;
   static const unsigned long long long_million = 1000000;

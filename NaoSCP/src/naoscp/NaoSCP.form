@@ -1,6 +1,86 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
+  <NonVisualComponents>
+    <Container class="javax.swing.JPopupMenu" name="popupMenu">
+      <Events>
+        <EventHandler event="popupMenuWillBecomeInvisible" listener="javax.swing.event.PopupMenuListener" parameters="javax.swing.event.PopupMenuEvent" handler="popupMenuPopupMenuWillBecomeInvisible"/>
+      </Events>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout">
+        <Property name="useNullLayout" type="boolean" value="true"/>
+      </Layout>
+      <SubComponents>
+        <MenuItem class="javax.swing.JMenuItem" name="miShutdown">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Shutdown nao"/>
+            <Property name="toolTipText" type="java.lang.String" value="Shutdown the full nao system"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miShutdownActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="miRestartNao">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Restart nao"/>
+            <Property name="toolTipText" type="java.lang.String" value="Restarts the full nao system"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miRestartNaoActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <Component class="javax.swing.JPopupMenu$Separator" name="jSeparator1">
+        </Component>
+        <MenuItem class="javax.swing.JMenuItem" name="miRestartNaoth">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Restart naoth"/>
+            <Property name="toolTipText" type="java.lang.String" value="Restart the naoth process"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miRestartNaothActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <Component class="javax.swing.JPopupMenu$Separator" name="jSeparator2">
+        </Component>
+        <MenuItem class="javax.swing.JMenuItem" name="miMute">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Mute"/>
+            <Property name="toolTipText" type="java.lang.String" value="Muting the nao"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miMuteActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="miUnmute">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Un-Mute"/>
+            <Property name="toolTipText" type="java.lang.String" value="Un-muting the nao"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miUnmuteActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="miSetVolume80">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Volume: 80%"/>
+            <Property name="toolTipText" type="java.lang.String" value="Sets the speaker volume to 80%"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miSetVolume80ActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="miSetVolume40">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Volume: 40%"/>
+            <Property name="toolTipText" type="java.lang.String" value="Sets the speaker volume to 40%"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miSetVolume40ActionPerformed"/>
+          </Events>
+        </MenuItem>
+      </SubComponents>
+    </Container>
+  </NonVisualComponents>
   <Events>
     <EventHandler event="componentResized" listener="java.awt.event.ComponentListener" parameters="java.awt.event.ComponentEvent" handler="formComponentResized"/>
   </Events>
@@ -92,11 +172,15 @@
               <Format format="#0" subtype="-1" type="0"/>
             </Property>
             <Property name="toolTipText" type="java.lang.String" value="Last octet of the robots ip address."/>
+            <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[40, 18]"/>
+            </Property>
           </Properties>
         </Component>
         <Component class="javax.swing.JButton" name="btDeploy">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Send toRobot"/>
+            <Property name="text" type="java.lang.String" value="Send to Robot"/>
+            <Property name="toolTipText" type="java.lang.String" value="Send to Robot"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btDeployActionPerformed"/>
@@ -106,11 +190,15 @@
           <Properties>
             <Property name="columns" type="int" value="10"/>
             <Property name="toolTipText" type="java.lang.String" value="Small description of the deploying binary / test case."/>
+            <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[40, 18]"/>
+            </Property>
           </Properties>
         </Component>
         <Component class="javax.swing.JButton" name="btWriteToStick">
           <Properties>
             <Property name="text" type="java.lang.String" value="Write to Stick"/>
+            <Property name="toolTipText" type="java.lang.String" value="Write to Stick"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btWriteToStickActionPerformed"/>
@@ -119,6 +207,7 @@
         <Component class="javax.swing.JButton" name="btSetNetwork">
           <Properties>
             <Property name="text" type="java.lang.String" value="Set Network"/>
+            <Property name="toolTipText" type="java.lang.String" value="Set Network"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btSetNetworkActionPerformed"/>
@@ -127,9 +216,21 @@
         <Component class="javax.swing.JButton" name="btInintRobot">
           <Properties>
             <Property name="text" type="java.lang.String" value="Initialize Robot"/>
+            <Property name="toolTipText" type="java.lang.String" value="Initialize Robot"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btInintRobotActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JToggleButton" name="btnActions">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="&#x25b2;"/>
+            <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
+              <Insets value="[2, -4, 2, -4]"/>
+            </Property>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnActionsActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>

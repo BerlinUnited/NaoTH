@@ -12,7 +12,7 @@
 
 BodyStateProvider::BodyStateProvider()
 {
-
+  getDebugParameterList().add(&theParams);
 }
 
 void BodyStateProvider::execute()
@@ -30,10 +30,24 @@ void BodyStateProvider::execute()
   updateTheLegTemperature();
   updateIsLiftedUp();
   
-  if(getBatteryData().current < -0.5){
+  // why do we need this?
+  if(getBatteryData().current < -0.5) {
     getBodyState().isDischarging = true;
-  }else{
+  } else {
     getBodyState().isDischarging = false;
+  }
+
+  if(getBatteryData().current >= theParams.batteryChargingThreshold) {
+    getBodyState().isCharging = true;
+  } else {
+    getBodyState().isCharging = false;
+  }
+
+  batteryChargeBuffer.add(getBatteryData().charge);
+  if(batteryChargeBuffer.isFull()) {
+    getBodyState().batteryCharge = batteryChargeBuffer.getAverage();
+  } else {
+    getBodyState().batteryCharge = getBatteryData().charge;
   }
 
 }//end execute

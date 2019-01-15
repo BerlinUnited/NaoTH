@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# redirect all the output to the logger
+exec 1> >(logger -s -t brainwasher) 2>&1
+
 COUNTER=100 # ~ 10 seconds
 
 # create mount point
@@ -10,6 +14,8 @@ mount /dev/brainwasher /media/brainwasher
 # check success
 if [ $? -ne 0 ]
 then
+  # for a list of supported filesystems, enter the following command on a nao robot: "cat /proc/filesystems"
+  # currently only FAT32 is supported!
   if [ $(blkid -s TYPE -o value /dev/brainwasher) != "vfat" ]
   then
     logger -t brainwasher "ERROR: usb wrong filesystem"

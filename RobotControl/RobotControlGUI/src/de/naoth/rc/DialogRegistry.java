@@ -97,7 +97,6 @@ public class DialogRegistry {
         
         public void dispose()
         {
-            this.dialog.dispose();
             this.dialog.destroy();
             this.getContentPane().removeAll();
             this.getControl().removeSingleDockable(this.getTitleText());
@@ -160,6 +159,10 @@ public class DialogRegistry {
         this.control.getController().setFocusedDockable(dockableDialog.intern(), true);
     }//dockDialog
 
+    protected void disposeOnClose() {
+        this.control.destroy();
+    }
+    
     public class HelpAction implements ActionListener {
 
         private HelpDialog dlg = null;
@@ -175,7 +178,7 @@ public class DialogRegistry {
             this.dlg.setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
             this.dlg.setTitle(title);
             this.dlg.setModal(false);
-            //this.dlg.setAlwaysOnTop(true);
+            this.dlg.setAlwaysOnTop(true);
             this.dlg.setVisible(false);
         }
     }//end HelpAction
@@ -190,7 +193,7 @@ public class DialogRegistry {
         for(int i = 0; i < this.control.getCDockableCount(); i++) {
             String name = ((DialogDockable)this.control.getCDockable(i)).getTitleText();
             
-            if(name.startsWith("Debug Request")) {
+            if(name.startsWith("Debug Request") || name.startsWith("DebugRequest")) {
                 center.gridAdd( 2, 0, 1, 1, new SingleCDockablePerspective( name ) );
             } else {
                 stack.add(new SingleCDockablePerspective( name ));

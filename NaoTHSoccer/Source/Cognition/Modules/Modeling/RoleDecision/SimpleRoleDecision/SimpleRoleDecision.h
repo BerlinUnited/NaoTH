@@ -16,7 +16,6 @@
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/RoleDecisionModel.h"
 #include "Representations/Modeling/SoccerStrategy.h"
-#include "Representations/Modeling/TeamMessageStatisticsModel.h"
 
 #include <Tools/DataStructures/ParameterList.h>
 #include "Tools/Debug/DebugRequest.h"
@@ -70,7 +69,6 @@ public:
     int maximumFreshTime;
     int strikerBonusTime;
     int maxBallLostTime;
-    double minFailureProbability;
     
     virtual ~Parameters() {
     }

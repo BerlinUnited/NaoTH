@@ -74,6 +74,11 @@ for i = 1:numel(layers)
        level = level + 1;
        
        fprintf(' [done]');
+    case 'nnet.cnn.layer.BatchNormalizationLayer'
+       addBatchNormalizationLayer(HeaderFile,BodyFile,level,layer,rows,cols,channels);
+       level = level + 1;
+       
+       fprintf(' [done]');
     case 'nnet.cnn.layer.SoftmaxLayer'
        addSoftMaxLayer(HeaderFile,BodyFile,level,rows,cols,channels);
        level = level + 1;

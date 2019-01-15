@@ -19,7 +19,7 @@
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/RoleDecisionModel.h"
 #include "Representations/Modeling/SoccerStrategy.h"
-#include "Representations/Modeling/TeamMessageStatisticsModel.h"
+#include "Representations/Modeling/TeamMessagePlayersState.h"
 
 #include <Tools/DataStructures/ParameterList.h>
 #include "Tools/Debug/DebugParameterList.h"
@@ -38,9 +38,9 @@ BEGIN_DECLARE_MODULE(StableRoleDecision)
   REQUIRE(PlayerInfo)
   REQUIRE(SoccerStrategy)
   REQUIRE(TeamMessage)
-  REQUIRE(TeamMessageStatisticsModel)
+  REQUIRE(TeamMessagePlayersState)
 
-  PROVIDE(TeamMessageData)
+  REQUIRE(TeamMessageData)
 
   PROVIDE(RoleDecisionModel)
 END_DECLARE_MODULE(StableRoleDecision)

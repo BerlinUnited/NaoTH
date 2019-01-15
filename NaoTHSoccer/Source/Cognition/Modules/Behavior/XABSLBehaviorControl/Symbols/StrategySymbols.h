@@ -16,6 +16,8 @@
 #include "Representations/Modeling/KickActionModel.h"
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/CompassDirection.h"
+#include "Representations/Infrastructure/GameData.h"
+#include "Representations/Modeling/TeamMessage.h"
 
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugRequest.h"
@@ -36,6 +38,8 @@ BEGIN_DECLARE_MODULE(StrategySymbols)
   REQUIRE(MotionStatus)
   REQUIRE(CompassDirection)
   REQUIRE(KickActionModel)
+  REQUIRE(GameData)
+  REQUIRE(TeamMessage)
 
   PROVIDE(SituationStatus)
   PROVIDE(DebugRequest)
@@ -116,8 +120,28 @@ private:
   static double penaltyGoalieGuardPositionX();
   static double penaltyGoalieGuardPositionY();
 
+  Pose2D goalieDefensivePosition;
+  Pose2D calculateGoalieDefensivePosition();
+  static double goalieDefensivePositionX();
+  static double goalieDefensivePositionY();
+  static double goalieDefensivePositionA();
+
   static int getBestAction();
 
+  // vars & methods relating to opponent free kick position
+  /** @brief Position of the opponents free kick; it is only valid if x/y != 0 */
+  Vector2d freeKickPosition;
+  /** @brief temporarly save teammates penalty in order to determine who has fouled an opponent player. */
+  std::map<unsigned int, GameData::Penalty> penalties;
+  /** @brief temporarly save the setPlay state in order to determine, when a foul occurred. */
+  GameData::SetPlay lastSetPlay = GameData::set_none;
+  /**
+   * @brief if a teammate fouled an opponent, the fouling player is penalized and his last position is set as freekick postion of the opponent.
+   *         Also updates the temporarly vars.
+   */
+  void retrieveFreeKickPosition();
+  static double freeKickPositionX();
+  static double freeKickPositionY();
 };//end class StrategySymbols
 
 #endif // _StrategySymbols_H_

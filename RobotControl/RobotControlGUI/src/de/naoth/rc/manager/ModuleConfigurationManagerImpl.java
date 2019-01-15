@@ -91,5 +91,5 @@ public class ModuleConfigurationManagerImpl extends AbstractManagerPlugin<Module
   public Command getCurrentCommand()
   {
     return command;
-  }//end getCurrentCommand
+  }
 }//end class ModuleConfigurationManager

@@ -5,6 +5,7 @@
 
 package de.naoth.rc.core.dialog;
 
+import java.util.logging.Logger;
 import javax.swing.JPanel;
 
 /**
@@ -41,6 +42,11 @@ public class AbstractDialog extends JPanel implements Dialog
   public void init()
   {
       
+  }
+  
+  // return a logger for this dialog
+  protected final Logger getLogger() {
+      return Logger.getLogger(this.getClass().getName());
   }
   
   @Override

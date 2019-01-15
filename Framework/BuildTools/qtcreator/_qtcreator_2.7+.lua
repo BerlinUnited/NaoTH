@@ -22,7 +22,7 @@ newaction
 
 	onproject = function(prj)
 		premake.generate(prj, ".creator", qtc.creator)
-		premake.generate(prj, ".creator.user", qtc.user)
+		premake.generate(prj, ".creator.shared", qtc.user)
 		premake.generate(prj, ".files", qtc.files)
 		premake.generate(prj, ".includes", qtc.includes)
 		premake.generate(prj, ".config", qtc.defines)
@@ -30,6 +30,7 @@ newaction
 
 	oncleanproject  = function(prj)
 		premake.clean.file(prj, ".creator.user")
+		premake.clean.file(prj, ".creator.shared")
 		premake.clean.file(prj, ".creator")
 		premake.clean.file(prj, ".files")
 		premake.clean.file(prj, ".includes")

@@ -37,7 +37,7 @@ public:
   virtual void print(std::ostream& stream) const;
 
   // some tools
-  inline bool insideCarpet(const Vector2d& p) {
+  inline bool insideCarpet(const Vector2d& p) const {
     return carpetRect.inside(p);
   }
 
@@ -48,6 +48,9 @@ public:
 
   //////////////// basic values from configuration ////////////////
   double ballRadius;
+  // Rolling resistance / rolling friction coefficient
+  double ballRRCoefficient;
+  double ballDeceleration; // mm/s^2
 
   // size of the whole field (including the green area outside the lines) 
   double xFieldLength;

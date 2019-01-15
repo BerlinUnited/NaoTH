@@ -9,6 +9,7 @@
 
 #include "NaoController.h"
 
+#include "PlatformInterface/Platform.h"
 #include <algorithm>
 
 using namespace std;
@@ -40,10 +41,6 @@ NaoController::NaoController()
   naoCommandUltraSoundSendData.open(naoCommandUltraSoundSendDataPath);
   naoCommandIRSendData.open(naoCommandIRSendDataPath);
   naoCommandLEDData.open(naoCommandLEDDataPath);
-
-  whistleSensorData.open("/whistleDetector.count");
-  whistleControlData.open("/whistleDetector.commands");
-
   // end init shared memory
 
   char hostname[128];
@@ -51,6 +48,7 @@ NaoController::NaoController()
   gethostname(hostname, 127);
   theRobotName = string(hostname);
   cout << "[NaoController] " << "RobotName: " << theRobotName << endl;
+  //theWhistleDetector.setRobotName(theRobotName);
 
   // read the theBodyID and the theBodyNickName from file "nao.info"
   const std::string naoInfoPath = Platform::getInstance().theConfigDirectory + "nao.info";
@@ -118,7 +116,7 @@ NaoController::NaoController()
   registerInput<ButtonData>(*this);
   registerInput<BatteryData>(*this);
   registerInput<UltraSoundReceiveData>(*this);
-  registerInput<WhistlePercept>(*this);
+  registerInput<AudioData>(*this);
   registerInput<CpuData>(*this);
 
   // register command output
@@ -126,8 +124,7 @@ NaoController::NaoController()
   registerOutput<const LEDData>(*this);
   registerOutput<const IRSendData>(*this);
   registerOutput<const UltraSoundSendData>(*this);
-  registerOutput<const WhistleControl>(*this);
-
+  registerOutput<const AudioControl>(*this);
 
   /*  INIT DEVICES  */
   std::cout << "[NaoController] " << "Init Platform" << endl;
@@ -138,7 +135,7 @@ NaoController::NaoController()
 
   // create the teamcomm
   std::cout << "[NaoController] " << "Init TeamComm" << endl;
-  naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
+  const naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
   string interfaceName = "wlan0";
   if(config.hasKey("teamcomm", "interface"))
   {
@@ -170,6 +167,7 @@ NaoController::NaoController()
 
 NaoController::~NaoController()
 {
+  std::cout << "[NaoController] destruct" << std::endl;
   delete theSoundHandler;
   delete theTeamCommSender;
   delete theTeamCommListener;
@@ -177,12 +175,14 @@ NaoController::~NaoController()
   delete theDebugServer;
 }
 
-void NaoController::set(const CameraSettingsRequest &data)
+void NaoController::set(const CameraSettingsRequest &request)
 {
-  theBottomCameraHandler.setAllCameraParams(data);
+  CameraSettings settings = request.getCameraSettings();
+  theBottomCameraHandler.setAllCameraParams(settings);
 }
 
-void NaoController::set(const CameraSettingsRequestTop &data)
+void NaoController::set(const CameraSettingsRequestTop &request)
 {
-  theTopCameraHandler.setAllCameraParams(data);
+  CameraSettings settings = request.getCameraSettings();
+  theTopCameraHandler.setAllCameraParams(settings);
 }

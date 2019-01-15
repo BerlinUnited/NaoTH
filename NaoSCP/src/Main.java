@@ -1,9 +1,7 @@
-//  w  w w .  ja  v a 2s .  c  o  m
-import java.awt.Container;
+
 import java.text.ParseException;
 import java.util.StringTokenizer;
 
-import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.text.DefaultFormatter;
 import naoscp.NaoSCP;
@@ -40,19 +38,21 @@ public class Main {
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.setTitle("NaoSCP " + NaoSCP.VERSION);
     frame.setLocationByPlatform(true);
-    frame.setMinimumSize(new java.awt.Dimension(525, 564));
-    frame.setPreferredSize(new java.awt.Dimension(1028, 564));
-    frame.setSize(1028, 564);
+    
+    //frame.setMinimumSize(new java.awt.Dimension(525, 564));
+    //frame.setPreferredSize(new java.awt.Dimension(1028, 564));
+    //frame.setSize(1028, 564);
     // set content (panel)
-    Container content = frame.getContentPane();
-    content.setLayout(new BoxLayout(content, BoxLayout.PAGE_AXIS));
-    content.add(panel);
+    frame.setContentPane(panel);
+    //content.setLayout(new BoxLayout(content, BoxLayout.PAGE_AXIS));
+    //content.add(panel);
     
     frame.addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
-                panel.formWindowClosing();
-            }
-        });
+        @Override
+        public void windowClosing(java.awt.event.WindowEvent evt) {
+            panel.formWindowClosing();
+        }
+    });
     
     /*
     JFormattedTextField ftf1 = new JFormattedTextField(new IPAddressFormatter());
@@ -60,6 +60,7 @@ public class Main {
 
     content.add(new JTextField());
     */
+    frame.pack();
     frame.setVisible(true);
   }
 }

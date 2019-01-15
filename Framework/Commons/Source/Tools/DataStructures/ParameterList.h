@@ -15,25 +15,32 @@
 #include <sstream>
 #include <Tools/Debug/NaoTHAssert.h>
 #include <Tools/Math/Common.h>
+//#include <Tools/DataStructures/Printable.h>
+#include <Tools/DataConversion.h>
 #include <Representations/Infrastructure/Configuration.h>
 
-class ParameterList
+//NOTE: it would be goo for ParameterList to be naoth::Printable but it might lead to inheritance issues
+class ParameterList 
 {
-protected:
-
+public:
   class ConfigParameter {
+  public:
+    const std::string name;
+    ConfigParameter(const std::string& name) : name(name) {}
   public:
     virtual ~ConfigParameter() {}
     virtual void syncWithConfig(naoth::Configuration& config, const std::string& group) = 0;
     virtual void writeToConfig(naoth::Configuration& config, const std::string& group) const = 0;
+    virtual void print(std::ostream& stream) const = 0;
   };
 
+protected:
+
   template<class T>
-  class Parameter : public ConfigParameter {
-  private:
-    const std::string name;
+  class Parameter : public ConfigParameter 
+  {
   public:
-    Parameter(const std::string& name) : name(name) {}
+    Parameter(const std::string& name) : ConfigParameter(name) {}
     virtual ~Parameter() {}
 
     virtual void syncWithConfig(naoth::Configuration& config, const std::string& group) {
@@ -44,8 +51,13 @@ protected:
         config.setDefault(group, name, get());
       }
     }
+
     virtual void writeToConfig(naoth::Configuration& config, const std::string& group) const {
       config.set(group, name, get());
+    }
+
+    virtual void print(std::ostream& stream) const {
+      stream << name << "=" << get() << std::endl;
     }
 
     void operator=( const T& v ) { set(v); }
@@ -82,7 +94,7 @@ protected:
   ParameterList(const ParameterList& /*obj*/) {}
   ParameterList& operator=( const ParameterList& /*other*/ ) { return *this; }
 
-  ParameterList(const std::string& name) : name(name) {}
+  ParameterList(const std::string& name) : name(name), possibly_changed(true) {}
   virtual ~ParameterList() 
   {
     for (std::list<ConfigParameter*>::iterator iter = parameters.begin(); iter != parameters.end(); ++iter) {
@@ -112,9 +124,26 @@ public:
 
   const std::string& getName() const { return name; }
 
+  // check if any parametsr were changed and reset the flag
+  bool check_changed() const { 
+    bool change = possibly_changed; 
+    possibly_changed = false;
+    return change; 
+  }
+
+  void print(std::ostream& stream) const 
+  {
+    for (std::list<ConfigParameter*>::const_iterator iter = parameters.begin(); iter != parameters.end(); ++iter) {
+      (**iter).print(stream);
+    }
+  }
+
 private:
   std::string name;
   std::list<ConfigParameter*> parameters;
+
+  // TODO: du it on per parameter basis
+  mutable bool possibly_changed;
 };
 
 

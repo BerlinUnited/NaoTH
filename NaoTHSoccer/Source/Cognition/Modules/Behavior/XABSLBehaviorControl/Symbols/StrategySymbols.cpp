@@ -1,6 +1,7 @@
 #include "StrategySymbols.h"
 
 #include "Tools/Debug/DebugModify.h"
+#include <cmath>
 
 
 using namespace std;
@@ -44,6 +45,9 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("goalie.guardline.y", &goalieGuardPositionY);
   engine.registerDecimalInputSymbol("penalty_goalie.pos.x", &penaltyGoalieGuardPositionX);
   engine.registerDecimalInputSymbol("penalty_goalie.pos.y", &penaltyGoalieGuardPositionY);
+  engine.registerDecimalInputSymbol("goalie.defensive.x", &goalieDefensivePositionX);
+  engine.registerDecimalInputSymbol("goalie.defensive.y", &goalieDefensivePositionY);
+  engine.registerDecimalInputSymbol("goalie.defensive.a", &goalieDefensivePositionA);
 
   engine.registerDecimalInputSymbol("soccer_strategy.formation.x", &getSoccerStrategy().formation.x);
   engine.registerDecimalInputSymbol("soccer_strategy.formation.y", &getSoccerStrategy().formation.y);
@@ -73,10 +77,16 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
 
   engine.registerEnumeratedInputSymbol("attack.best_action", "attack.action_type", &getBestAction);
   
-  engine.registerDecimalInputSymbol("attack.best_action.direction", &(getKickActionModel().rotation));
+  //engine.registerDecimalInputSymbol("attack.best_action.direction", &(getKickActionModel().rotation));
+
+  // the position of the opponents free kick; it is only valid if x != 0 && y != 0
+  engine.registerDecimalInputSymbol("freekick.pos.x", &freeKickPositionX);
+  engine.registerDecimalInputSymbol("freekick.pos.y", &freeKickPositionY);
 
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_attack_direction","draw the attack direction", false);
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_simpleDefenderPose","draw the position of the defender", false);
+  DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_goalie_defensive_pos","draw the position of the goalie", false);
+  DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_free_kick_pos","draw the position of the opponents free kick", false);
 
 }//end registerSymbols
 
@@ -122,6 +132,20 @@ void StrategySymbols::execute()
     CIRCLE(simpleDefenderPose.translation.x, simpleDefenderPose.translation.y, 30);
   );
 
+    goalieDefensivePosition = calculateGoalieDefensivePosition();
+    DEBUG_REQUEST("XABSL:StrategySymbols:draw_goalie_defensive_pos",
+      FIELD_DRAWING_CONTEXT;
+      PEN("FF0000", 50);
+      CIRCLE(goalieDefensivePosition.translation.x, goalieDefensivePosition.translation.y, 30);
+    );
+
+    retrieveFreeKickPosition();
+    DEBUG_REQUEST("XABSL:StrategySymbols:draw_free_kick_pos",
+      FIELD_DRAWING_CONTEXT;
+      PEN("FF0000", 20);
+      LINE(freeKickPosition.x-60,freeKickPosition.y,freeKickPosition.x+60,freeKickPosition.y);
+      LINE(freeKickPosition.x,freeKickPosition.y-60,freeKickPosition.x,freeKickPosition.y+60);
+    );
 }//end execute
 
 //int StrategySymbols::getSituationStatusId(){ 
@@ -240,6 +264,45 @@ double StrategySymbols::penaltyGoalieGuardPositionX()
 double StrategySymbols::penaltyGoalieGuardPositionY()
 {
   return theInstance->calculatePenaltyGoalieGuardPosition().y;
+}
+
+Pose2D StrategySymbols::calculateGoalieDefensivePosition()
+{
+    // Calculates the defensive position of the goalie
+    // The position is on an ellipse within the penalty area.
+    // The position is calculated in such a way, that a direct shot to the middle of the goal is prevented
+    const Vector2d ball = theInstance->getRobotPose()*theInstance->getBallModel().position;
+    const Vector2d c(ball.x - theInstance->getFieldInfo().xPosOwnGroundline, ball.y);
+    // ball is "out"
+    if(ball.x <= theInstance->getFieldInfo().xPosOwnGroundline || c.x == 0) {
+        return Vector2d(theInstance->getFieldInfo().xPosOwnGroundline, 0);
+    }
+    // direct line from goal center to the ball: f(x) = mx
+    double m = c.y / c.x;
+
+    double a = theInstance->getFieldInfo().xPosOwnPenaltyArea - theInstance->getFieldInfo().xPosOwnGroundline;
+    double b = theInstance->getFieldInfo().goalWidth / 2.0;
+    // position on the ellipse: x = \frac{ab}{\sqrt{b^2 + m^2 a^2}}
+    double x = (a*b) / std::sqrt(b*b + m*m * a*a);
+    // y = m*x
+    double y = m*x;
+    //std::cout << "a="<<a<<" w="<<std::atan(a)<<" r="<
+    return Pose2D(std::atan2(y,x),x + theInstance->getFieldInfo().xPosOwnGroundline, y);
+}
+
+double StrategySymbols::goalieDefensivePositionX()
+{
+    return theInstance->goalieDefensivePosition.translation.x;
+}
+
+double StrategySymbols::goalieDefensivePositionY()
+{
+    return theInstance->goalieDefensivePosition.translation.y;
+}
+
+double StrategySymbols::goalieDefensivePositionA()
+{
+    return theInstance->goalieDefensivePosition.rotation;
 }
 
 bool StrategySymbols::getApproachingWithRightFoot()
@@ -405,4 +468,41 @@ double StrategySymbols::defensePoseA() {
 
 int StrategySymbols::getBestAction() {
    return theInstance->getKickActionModel().bestAction;
+}
+
+void StrategySymbols::retrieveFreeKickPosition() {
+    // check if one of our teamates fouled an opponent
+    if(lastSetPlay == GameData::set_none && getGameData().setPlay == GameData::pushing_free_kick && !getPlayerInfo().kickoff) {
+        // retrieve last pose of the player who has fouled
+        for(unsigned int i = 0; i < getGameData().ownTeam.players.size(); ++i) {
+            // player is now penalized, but wasn't before
+            if(getGameData().ownTeam.players[i].penalty == naoth::GameData::player_pushing && penalties[i+1] == naoth::GameData::penalty_none) {
+                // find his last position from his message
+                const auto& player = getTeamMessage().data.find(i+1);
+                if(player != getTeamMessage().data.cend()) {
+                    freeKickPosition = player->second.pose.translation;
+                }
+            }
+        }
+    }
+
+    // reset free kick position after free kick is over
+    if(lastSetPlay == GameData::pushing_free_kick && getGameData().setPlay != GameData::pushing_free_kick) {
+        freeKickPosition.x = 0.0;
+        freeKickPosition.y = 0.0;
+    }
+
+    // update last setplay and penalties of own teammates
+    lastSetPlay = getGameData().setPlay;
+    for(unsigned int i = 0; i < getGameData().ownTeam.players.size(); ++i) {
+        penalties[i+1] = getGameData().ownTeam.players[i].penalty;
+    }
+}
+
+double StrategySymbols::freeKickPositionX() {
+    return theInstance->freeKickPosition.x;
+}
+
+double StrategySymbols::freeKickPositionY() {
+    return theInstance->freeKickPosition.y;
 }

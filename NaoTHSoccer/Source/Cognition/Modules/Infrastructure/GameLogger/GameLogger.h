@@ -18,9 +18,13 @@
 #include <Representations/Perception/CameraMatrix.h>
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Modeling/BodyStatus.h"
+#include "Representations/Motion/MotionStatus.h"
 
 #include "Representations/Perception/BallCandidates.h"
 #include "Representations/Perception/MultiBallPercept.h"
+
+#include <Representations/Infrastructure/AudioData.h>
+#include "Representations/Perception/WhistlePercept.h"
 
 // tools
 #include "Tools/Debug/DebugParameterList.h"
@@ -50,6 +54,9 @@ BEGIN_DECLARE_MODULE(GameLogger)
   REQUIRE(ScanLineEdgelPercept)
   REQUIRE(ScanLineEdgelPerceptTop)
   REQUIRE(BodyStatus)
+  REQUIRE(MotionStatus)
+
+  REQUIRE(AudioData)
 
   REQUIRE(MultiBallPercept)
 
@@ -57,7 +64,9 @@ BEGIN_DECLARE_MODULE(GameLogger)
   REQUIRE(BallCandidatesTop)
 
   REQUIRE(TeamMessage)
-END_DECLARE_MODULE(GameLogger)
+
+  REQUIRE(WhistlePercept)
+  END_DECLARE_MODULE(GameLogger)
 
 class GameLogger : public GameLoggerBase
 {
@@ -72,15 +81,19 @@ private:
   {
     Parameters() : ParameterList("GameLogger")
     {
+      PARAMETER_REGISTER(logAudioData) = false;
       PARAMETER_REGISTER(logBallCandidates) = false;
       PARAMETER_REGISTER(logBodyStatus) = false;
       PARAMETER_REGISTER(logPlainImages) = false;
+      PARAMETER_REGISTER(logPlainImagesDelay) = 2000;
       syncWithConfig();
     }
 
+    bool logAudioData;
     bool logBallCandidates;
     bool logBodyStatus;
     bool logPlainImages;
+    int logPlainImagesDelay;
   } params;
 
 private:
@@ -88,13 +101,16 @@ private:
   // treshold is reached.
   LogfileManager < 30 > logfileManager;
   
-  ofstream imageOutFile;
+  std::ofstream imageOutFile;
   FrameInfo lastTimeImageRecorded;
 
   unsigned int lastCompleteFrameNumber;
   
   PlayerInfo::RobotState oldState;
   bool firstRecording;
+  unsigned long lastAudioDataTimestamp;
+
+  CameraInfo::CameraID lastRecordedPlainImageID;
 };
 
 #endif // GAMELOGGER_H

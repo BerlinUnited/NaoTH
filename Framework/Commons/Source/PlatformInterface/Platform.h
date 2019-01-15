@@ -35,7 +35,16 @@ private:
     theRobotName(_robotName),
     thePlatform(_platform),
     theScheme(_scheme)
-  {}
+  {
+      // only if the config directory doesn't exists locally ...
+      if(!(g_file_test(_configDir.c_str(), G_FILE_TEST_EXISTS) && g_file_test(_configDir.c_str(), G_FILE_TEST_IS_DIR))) {
+          // retrieve the config dir from environment var
+          const std::string env = std::getenv("NAOTH_CONFIGDIR") != NULL ? std::string(std::getenv("NAOTH_CONFIGDIR")) : "";
+          if(!env.empty()) {
+              _configDir = env + (env.back() != '/' ? "/" : "");
+          }
+      }
+  }
 
   // cannot be copied
   Platform& operator=( const Platform& ) { return *this; }

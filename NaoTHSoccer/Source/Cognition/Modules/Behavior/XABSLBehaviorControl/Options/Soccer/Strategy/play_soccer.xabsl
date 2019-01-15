@@ -158,6 +158,8 @@ option play_soccer
     {
       else if (game.current_mode != playing)
         goto idle;
+      else if (game.set_play != none && !game.own_kickoff)
+        goto free_kick;
       else 
         stay;
     }
@@ -167,6 +169,26 @@ option play_soccer
       decide_role();
     }
   }
+
+  state free_kick
+  {
+    decision
+    {
+      else if (game.current_mode != playing)
+        goto idle;
+      else if (game.set_play == none)
+        goto play;
+      else 
+        stay;
+    }
+    action 
+    {
+      last_state_was_penalized = false; // important!!!
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+
 
   state initial_striker {
 	  decision {

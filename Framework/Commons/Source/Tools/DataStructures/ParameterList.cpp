@@ -18,6 +18,8 @@ void ParameterList::syncWithConfig()
   for (std::list<ConfigParameter*>::iterator iter = parameters.begin(); iter != parameters.end(); ++iter) {
     (*iter)->syncWithConfig(config, name);
   }
+
+  possibly_changed = true;
 }
 
 void ParameterList::saveToConfig()
@@ -35,12 +37,9 @@ std::string ParameterList::convertName(std::string name)
 {
   for( std::string::iterator i=name.begin(); i!= name.end();  )
   {
-    if ( *i == '[' || *i == ']' )
-    {
+    if ( *i == '[' || *i == ']' ) {
       i = name.erase(i);
-    }
-    else
-    {
+    } else {
       ++i;
     }
   }

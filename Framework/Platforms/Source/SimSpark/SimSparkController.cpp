@@ -814,6 +814,15 @@ bool SimSparkController::updateHingeJoint(const sexp_t* sexp)
   theSensorJointData.dp[jid] = Math::clamp(Math::normalize(ax - theSensorJointData.position[jid]) / theStepTime,
     -maxJointAbsSpeed, maxJointAbsSpeed);
   theSensorJointData.position[jid] = ax;
+
+  // set the joint temperature
+  sexp = sexp->next;
+  double temp;
+  if (SexpParser::parseGivenValue(sexp, "tp", temp))
+  {
+    theSensorJointData.temperature[jid] = temp;
+  }
+
   return true;
 }
 
@@ -842,6 +851,7 @@ bool SimSparkController::updateGyro(const sexp_t* sexp)
 
   theGyroData.data[0] = Math::fromDegrees(data[1]);
   theGyroData.data[1] = -Math::fromDegrees(data[0]);
+  theGyroData.data[2] = Math::fromDegrees(data[2]);
 
   return true;
 }
@@ -1315,7 +1325,7 @@ void SimSparkController::get(GameData& data)
     data.newPlayerNumber = theGameInfo.playerNumber;
 
     data.ownTeam.teamNumber = theGameInfo.getTeamNumber();
-    data.ownTeam.teamColour = theGameInfo.getTeamColor();
+    data.ownTeam.teamColor = theGameInfo.getTeamColor();
     data.ownTeam.players.resize(theGameInfo.playersPerTeam);
 
     // todo set opponent team info

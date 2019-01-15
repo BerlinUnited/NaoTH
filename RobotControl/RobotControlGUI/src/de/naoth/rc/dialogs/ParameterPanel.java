@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -54,6 +53,9 @@ public class ParameterPanel extends AbstractDialog
   // number of sources which already performed ther update
   private int updateSources = 0;
   private final int EXPECTED_SOURCES = 2;
+  
+  final private String parameterSavePathKey = "parameter_save_path";
+  final private String defaultConfigPath = "../../NaoTHSoccer/Config/scheme";
   
   public ParameterPanel()
   {
@@ -303,7 +305,10 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
         if(selecedList == null) {
             JOptionPane.showMessageDialog(null, "You have to choose a parameter configuration!", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
+            
+            String parameterPath = Plugin.parent.getConfig().getProperty(parameterSavePathKey, defaultConfigPath);
             // configure the filechooser ...
+            fcSaveParametersDialog.setCurrentDirectory(new File(parameterPath));
             fcSaveParametersDialog.setSelectedFile(new java.io.File(selecedList.name + ".cfg"));
             fcSaveParametersDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
             fcSaveParametersDialog.setAcceptAllFileFilterUsed(false);
@@ -329,6 +334,9 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
                         JOptionPane.showMessageDialog(null, "Selected file is not writeable!", "Not writeable", JOptionPane.ERROR_MESSAGE);
                     }
                 }
+                
+                // save the path for later
+                Plugin.parent.getConfig().setProperty(parameterSavePathKey, fcSaveParametersDialog.getSelectedFile().getParent());
             }
         }
     }//GEN-LAST:event_btnSaveActionPerformed
@@ -422,10 +430,14 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
         try {
             BufferedWriter bf = new BufferedWriter(new FileWriter(f));
             bf.write("["+p.name+"]");
-            bf.newLine();
+            //NOTE: we also could set the global property 'line.separator'
+            //bf.newLine();
+            // NOTE: we explicitely need '\n'
+            bf.write('\n');
             for (Map.Entry<String, String> cfg : this.getText().entrySet()) {
                 bf.write(cfg.getKey() + "=" + cfg.getValue());
-                bf.newLine();
+                //bf.newLine();
+                bf.write('\n');
             }
             bf.close();
             return true;
@@ -488,7 +500,8 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
         try {
             BufferedWriter bf = new BufferedWriter(new FileWriter(f));
             bf.write("["+item.name+"]");
-            bf.newLine();
+            //bf.newLine();
+            bf.write('\n');
             bf.write(new String(object));
             bf.close();
         } catch (IOException ex) {

@@ -24,9 +24,7 @@ SimpleRoleDecision::~SimpleRoleDecision()
 }
 
 void SimpleRoleDecision::execute() {
-
   computeStrikers();
-
 }//end execute
 
 void SimpleRoleDecision::computeStrikers() {
@@ -52,6 +50,11 @@ void SimpleRoleDecision::computeStrikers() {
     }
   }//end for
 
+  // already have a striker and can return
+  if(getRoleDecisionModel().firstStriker < std::numeric_limits<unsigned int>::max()) {
+      return;
+  }
+
   // all team members except goalie!! otherwise goalie is nearest and all thinks he is striker, but he won't clear ball
   //should check who has best position to goal etc.
   for(auto const &it : tm.data) {
@@ -61,7 +64,7 @@ void SimpleRoleDecision::computeStrikers() {
       double time_bonus = messageData.custom.wasStriker ? parameters.strikerBonusTime : 0.0; //At this point, the only robot that may still have been a striker is us
 
     if (!messageData.fallen
-      && !messageData.custom.isPenalized
+      && messageData.custom.robotState == PlayerInfo::playing
       && number != 1 // goalie is not considered
       && getFrameInfo().getTimeSince(messageData.frameInfo.getTime()) < parameters.maximumFreshTime // its fresh
       && (messageData.ballAge >= 0 && messageData.ballAge < parameters.maxBallLostTime+time_bonus )// the guy sees the ball

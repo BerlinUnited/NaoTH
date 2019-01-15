@@ -1,29 +1,42 @@
+/**
+* @file IMUModel.h
+* 
+* Declaration of class IMUModel
+*
+* @author <a href="mailto:kaden@informatik.hu-berlin.de">Steffen Kaden</a>
+*/ 
+
+
 #ifndef IMUMODEL_H
 #define IMUMODEL_H
 
 #include <ModuleFramework/Module.h>
 
+// debug
 #include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugDrawings3D.h"
+#include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugParameterList.h"
-#include <Representations/Debug/Stopwatch.h>
 
-#include <Representations/Infrastructure/GyrometerData.h>
-#include <Representations/Infrastructure/AccelerometerData.h>
-
+// basics
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/RobotInfo.h"
 
-#include <Representations/Modeling/IMUData.h>
-#include <Representations/Modeling/InertialModel.h>
-
+// sensors
+#include <Representations/Infrastructure/GyrometerData.h>
+#include <Representations/Infrastructure/AccelerometerData.h>
 #include "Representations/Motion/MotionStatus.h"
 
-#include "Tools/Filters/KalmanFilter/UnscentedKalmanFilter/UnscentedKalmanFilter.h"
+// result
+#include <Representations/Modeling/IMUData.h>
 
+// tools
+#include "Tools/Filters/KalmanFilter/UnscentedKalmanFilter/UnscentedKalmanFilter.h"
 #include "IMURotationMeasurement.h"
 #include "IMURotationState.h"
+
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 
 BEGIN_DECLARE_MODULE(IMUModel)
     PROVIDE(DebugRequest)
@@ -40,14 +53,10 @@ BEGIN_DECLARE_MODULE(IMUModel)
     REQUIRE(MotionStatus)
 
     PROVIDE(IMUData)
-    PROVIDE(InertialModel) // only to enable transparent switching with InertiaSensorFilter
 END_DECLARE_MODULE(IMUModel)
 
 class IMUModel: private IMUModelBase
 {
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
 public:
     IMUModel();
     virtual~IMUModel();
@@ -80,12 +89,12 @@ private:
     Eigen::Matrix<double,3,3> R_acc_walk;
 
 private: /* small helper */
-    Eigen::Vector3d quaternionToRotationVector(const Eigen::Quaterniond& q) const{
+    Eigen::Vector3d quaternionToRotationVector(const Eigen::Quaterniond& q) const {
         Eigen::AngleAxisd temp(q);
         return temp.angle() * temp.axis();
     }
 
-    Vector3d quaternionToVector3D(const Eigen::Quaterniond& q) const{
+    Vector3d quaternionToVector3D(const Eigen::Quaterniond& q) const {
         Eigen::AngleAxisd temp(q);
         Eigen::Vector3d temp2(temp.angle() * temp.axis());
         return Vector3d(temp2(0),temp2(1),temp2(2));

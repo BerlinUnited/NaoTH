@@ -14,8 +14,9 @@ dofile "projectconfig.lua" -- load the global default settings
 -- load some helpers
 dofile (FRAMEWORK_PATH .. "/BuildTools/info.lua")
 dofile (FRAMEWORK_PATH .. "/BuildTools/protoc.lua")
--- dofile (FRAMEWORK_PATH .. "/BuildTools/qtcreator.lua")
 dofile (FRAMEWORK_PATH .. "/BuildTools/qtcreator_2.7+.lua")
+
+dofile (FRAMEWORK_PATH .. "/BuildTools/extract_modules.lua")
 
 
 print("INFO: generating solution NaoTHSoccer")
@@ -42,15 +43,16 @@ workspace "NaoTHSoccer"
     
     EXTERN_PATH .. "/include",
     EXTERN_PATH .. "/include/glib-2.0",
-    EXTERN_PATH .. "/include/gio-unix-2.0", -- does not exists anymore
-    EXTERN_PATH .. "/lib/glib-2.0/include"
+    EXTERN_PATH .. "/include/gio-unix-2.0",
+    EXTERN_PATH .. "/lib/glib-2.0/include",
+    EXTERN_PATH .. "/lib64/glib-2.0/include", -- for os that differentiate between lib and lib64
   }
 
   includedirs { 
     FRAMEWORK_PATH .. "/Commons/Source" 
   }
 
-  syslibdirs { EXTERN_PATH .. "/lib"}
+  syslibdirs { EXTERN_PATH .. "/lib", EXTERN_PATH .. "/lib64"} -- for os that differentiate between lib and lib64
 
   -- this function should be defined in 
   if set_user_defined_paths ~= nil then 
@@ -77,30 +79,29 @@ workspace "NaoTHSoccer"
   }
   
   -- TODO: howto compile the framework representations properly *inside* the project?
-  local COMMONS_MESSAGES = FRAMEWORK_PATH .. "/Commons/Messages/"
+  -- We dont want to assume the location of the NaoTH Make folder for debug purposes
+  local NAOTH_PROJECT = path.join(FRAMEWORK_PATH, "..")
+  local COMMONS_MESSAGES = path.join(FRAMEWORK_PATH, "Commons/Messages/")
   
-  invokeprotoc(
-    { 
-      COMMONS_MESSAGES .. "CommonTypes.proto", 
-      COMMONS_MESSAGES .. "Framework-Representations.proto", 
-      COMMONS_MESSAGES .. "Messages.proto"
-    },
-    FRAMEWORK_PATH .. "/Commons/Source/Messages/", 
-    "../../RobotControl/RobotConnector/src/", 
-    "../../Utils/py/naoth/naoth",
-    {COMMONS_MESSAGES}
-  )
-  -- I dont want to assume the location of the NaoTH Make folder for debug purposes
-  NAOTH_MAKE = path.join(FRAMEWORK_PATH, "../NaoTHSoccer/Make")
-
+  makeprotoc 
+  {
+    inputFiles  = os.matchfiles(path.join(COMMONS_MESSAGES, "*.proto")),
+    cppOut      = path.join(FRAMEWORK_PATH,"Commons/Source/Messages/"),
+    javaOut     = path.join(NAOTH_PROJECT, "RobotControl/RobotConnector/src/"),
+    pythonOut   = path.join(NAOTH_PROJECT, "Utils/py/naoth/naoth"),
+    includeDirs = {COMMONS_MESSAGES}
+  }
+  
   -- relative to naoth Make folder
-  invokeprotoc(
-    {path.join(NAOTH_MAKE, "../Messages/Representations.proto")},
-    path.join(NAOTH_MAKE, "../Source/Messages/"),
-    path.join(NAOTH_MAKE, "../../RobotControl/RobotConnector/src/"),
-    path.join(NAOTH_MAKE, "../../Utils/py/naoth/naoth"),
-    {COMMONS_MESSAGES, path.join(NAOTH_MAKE, "../Messages/")}
-  )
+  makeprotoc 
+  {
+    inputFiles  = os.matchfiles(path.join(NAOTH_PROJECT, "NaoTHSoccer/Messages/*.proto")),
+    cppOut      = path.join(NAOTH_PROJECT, "NaoTHSoccer/Source/Messages/"),
+    javaOut     = path.join(NAOTH_PROJECT, "RobotControl/RobotConnector/src/"),
+    pythonOut   = path.join(NAOTH_PROJECT, "Utils/py/naoth/naoth"),
+    includeDirs = {COMMONS_MESSAGES, path.join(NAOTH_PROJECT, "NaoTHSoccer/Messages/")}
+  }
+  
 
   filter "configurations:Debug"
     defines { "DEBUG" }
@@ -255,6 +256,10 @@ workspace "NaoTHSoccer"
 	  dofile ("../Test/Make/GeneralAlignment.lua")
         kind "ConsoleApp"
         vpaths { ["*"] = "../Test/Source/GeneralAlignment" }
+
+	  dofile ("../Test/Make/Optimizers.lua")
+        kind "ConsoleApp"
+        vpaths { ["*"] = "../Test/Source/Optimizers" }
     end
 
     
@@ -270,6 +275,16 @@ workspace "NaoTHSoccer"
       links { "NaoTHSoccer", "Commons", naoth_links}
       vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulator" }
       
+    dofile (FRAMEWORK_PATH .. "/Platforms/Make/DummySimulator.lua")
+      kind "ConsoleApp"
+      links { "NaoTHSoccer", "Commons", naoth_links}
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/DummySimulator" }
+      
+    dofile (FRAMEWORK_PATH .. "/Platforms/Make/WhistleSimulator.lua")
+      kind "ConsoleApp"
+      links { "NaoTHSoccer", "Commons", naoth_links}
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/WhistleSimulator" }
+      
     -- generate tests if required
     if _OPTIONS["Test"] ~= nil then
       dofile ("../Test/Make/BallEvaluator.lua")
@@ -284,6 +299,10 @@ workspace "NaoTHSoccer"
       dofile ("../Test/Make/GeneralAlignment.lua")
         kind "ConsoleApp"
         vpaths { ["*"] = "../Test/Source/GeneralAlignment" }
+
+      dofile ("../Test/Make/Optimizers.lua")
+        kind "ConsoleApp"
+        vpaths { ["*"] = "../Test/Source/Optimizers" }
     end
 
     -- generate LogSimulatorJNI if required

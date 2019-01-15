@@ -49,15 +49,6 @@ void StandMotion::execute()
   setCurrentState(motion::running);
   double stiffDelta = getRobotInfo().getBasicTimeStepInSecond();
 
-  // reset internal stiffness buffer
-  // set stiffness from parameters
-  for( int i = naoth::JointData::RShoulderRoll; i<naoth::JointData::numOfJoint; i++) {
-    stiffness[i] = getEngine().getParameters().stand.stiffness;
-  }
-  // HACK: turn off the hands
-  stiffness[JointData::LHand] = -1;
-  stiffness[JointData::RHand] = -1;
-
   // update joint monitors
   for( int i = naoth::JointData::RShoulderRoll; i <= naoth::JointData::LAnkleRoll; i++) {
     // are the jointOffsets applied twice? Doesn't getMotorJointData contain the offsets already?
@@ -70,6 +61,9 @@ void StandMotion::execute()
   {
   case GotoStandPose:
   {
+    // set stiffness from parameters
+    setStiffnessBuffer(getEngine().getParameters().stand.stiffnessGotoPose);
+
     if(lastState != state) {
       calcStandPose();
       lastState = state;
@@ -88,7 +82,8 @@ void StandMotion::execute()
       } else if (static_cast<double>(state_time) > totalTime + timeBeforeRelax
                   && !getBodyState().isLiftedUp
                   && getEngine().getParameters().stand.relax.enable
-                  && relaxedPoseIsStillOk() ) { //only relax if a valid stand pose is reached
+                  && relaxedPoseIsStillOk() //only relax if a valid stand pose is reached
+                  && !getMotionRequest().disable_relaxed_stand) { // and requested
         state = Relax;
       }
 
@@ -98,6 +93,8 @@ void StandMotion::execute()
   break;
 
   case Relax:
+    setStiffnessBuffer(getEngine().getParameters().stand.stiffnessRelax);
+
     // initialize relax on fist execution
     if(lastState != state) {
 
@@ -161,6 +158,17 @@ void StandMotion::execute()
   //turnOffStiffnessWhenJointIsOutOfRange();
 }//end execute
 
+void StandMotion::setStiffnessBuffer(double s)
+{
+
+  for( int i = naoth::JointData::RShoulderRoll; i<naoth::JointData::numOfJoint; i++) {
+    stiffness[i] = s;
+  }
+  // HACK: turn off the hands
+  stiffness[JointData::LHand] = -1;
+  stiffness[JointData::RHand] = -1;
+}
+
 
 void StandMotion::calcStandPose() 
 {
@@ -169,7 +177,7 @@ void StandMotion::calcStandPose()
   height = getMotionRequest().standHeight;
 
   // init pose
-  double comHeight = (height < 0.0) ? getEngine().getParameters().walk.hip.comHeight : getMotionRequest().standHeight;
+  double comHeight = (height < 0.0) ? getWalk2018Parameters().zmpPlanner2018Params.comHeight : getMotionRequest().standHeight;
   comHeight = Math::clamp(comHeight, 160.0, 270.0); // valid range
       
   // use the sensors to estimate the current pose
@@ -333,7 +341,7 @@ bool StandMotion::relaxedPoseIsStillOk()
     && fabs(currentPose.com.rotation.getYAngle() - target.com.rotation.getYAngle()) < max_rotation_error;
 }// end relaxedPoseIsStillOk
 
-
+/*
 void StandMotion::turnOffStiffnessWhenJointIsOutOfRange()
 {
   const double* pos = getMotorJointData().position;
@@ -362,6 +370,6 @@ void StandMotion::turnOffStiffnessWhenJointIsOutOfRange()
     stiff[naoth::JointData::RAnklePitch] = getEngine().getParameters().stand.stiffness;
   }
 }//end turnOffStiffnessWhenJointIsOutOfRange
-
+*/
 
 

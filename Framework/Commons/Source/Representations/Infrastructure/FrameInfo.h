@@ -67,6 +67,17 @@ namespace naoth
       frameNumber = n;
     }
 
+    friend bool operator== (const FrameInfo& fi1, const FrameInfo& fi2)
+    {
+        return fi1.time == fi2.time && fi1.frameNumber == fi2.frameNumber && fi1.step == fi2.step;
+    }
+
+    friend bool operator!= (const FrameInfo& fi1, const FrameInfo& fi2) { return !(fi1==fi2); }
+    friend bool operator<  (const FrameInfo& fi1, const FrameInfo& fi2) { return fi1.frameNumber <  fi2.frameNumber; }
+    friend bool operator<= (const FrameInfo& fi1, const FrameInfo& fi2) { return fi1.frameNumber <= fi2.frameNumber; }
+    friend bool operator>  (const FrameInfo& fi1, const FrameInfo& fi2) { return fi1.frameNumber >  fi2.frameNumber; }
+    friend bool operator>= (const FrameInfo& fi1, const FrameInfo& fi2) { return fi1.frameNumber >= fi2.frameNumber; }
+
     virtual void print(std::ostream& stream) const
     {
       stream << "frameNumber = " << frameNumber << std::endl;

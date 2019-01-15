@@ -4,8 +4,8 @@
 * Declaration and implementation of template class NamedArray
 *
 * @author <a href="http://www.martin-loetzsch.de">Martin Loetzsch</a>
-* @author <a href="http://www.informatik.hu-berlin.de/~juengel">Matthias J�ngel</a>
-* @author <a href="http://www.tzi.de/~roefer/">Thomas R�fer</a>
+* @author <a href="http://www.informatik.hu-berlin.de/~juengel">Matthias Juengel</a>
+* @author <a href="http://www.tzi.de/~roefer/">Thomas Roefer</a>
 */
 
 
@@ -47,8 +47,8 @@ public:
 * An element of an NamedArray.
 *
 * @author <a href="http://www.martin-loetzsch.de">Martin Loetzsch</a>
-* @author <a href="http://www.informatik.hu-berlin.de/~juengel">Matthias J�ngel</a>
-* @author <a href="http://www.tzi.de/~roefer/">Thomas R�fer</a>
+* @author <a href="http://www.informatik.hu-berlin.de/~juengel">Matthias Juengel</a>
+* @author <a href="http://www.tzi.de/~roefer/">Thomas Roefer</a>
 */
 template<class T> class NamedArrayElement : public NamedItem
 {
@@ -75,8 +75,8 @@ template<class T> class NamedArrayElement : public NamedItem
 * The class implements a dynamic array.
 *
 * @author <a href="http://www.martin-loetzsch.de">Martin Loetzsch</a>
-* @author <a href="http://www.informatik.hu-berlin.de/~juengel">Matthias J�ngel</a>
-* @author <a href="http://www.tzi.de/~roefer/">Thomas R�fer</a>
+* @author <a href="http://www.informatik.hu-berlin.de/~juengel">Matthias Juengel</a>
+* @author <a href="http://www.tzi.de/~roefer/">Thomas Roefer</a>
 * @author <a href="http://www.sim.informatik.tu-darmstadt.de/pers/card/risler.html">Max Risler</a>
 */
 template <class T> class Array
@@ -211,8 +211,8 @@ template <class T> class Array
 * The class implements a dynamic array. Each array element can have a text label.
 *
 * @author <a href="http://www.martin-loetzsch.de">Martin Loetzsch</a>
-* @author <a href="http://www.informatik.hu-berlin.de/~juengel">Matthias J�ngel</a>
-* @author <a href="http://www.tzi.de/~roefer/">Thomas R�fer</a>
+* @author <a href="http://www.informatik.hu-berlin.de/~juengel">Matthias Juengel</a>
+* @author <a href="http://www.tzi.de/~roefer/">Thomas Roefer</a>
 */
 template <class T> class NamedArray : public Array<NamedArrayElement<T>*>
 {

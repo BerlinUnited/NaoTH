@@ -1,5 +1,5 @@
 import math
-
+import numbers
 
 def clamp(x, minimum, maximum):
     # function f where f(x)=x if min<= x <= max, f(x) = minimum if x < minimum, f(x) = maximum if x > maximum
@@ -7,9 +7,13 @@ def clamp(x, minimum, maximum):
 
 
 class Vector2:
-    def __init__(self, x=0.0, y=0.0):
-        self.x = x
-        self.y = y
+    def __init__(self, x=0.0, y=0.0, pb_vector=None):
+        if pb_vector is not None:
+            self.x = pb_vector.x
+            self.y = pb_vector.y
+        else:
+            self.x = x
+            self.y = y
 
     def __add__(self, other):
         return Vector2(self.x + other.x, self.y + other.y)
@@ -32,7 +36,7 @@ class Vector2:
         if isinstance(other, Vector2):
             # interpret multiplication as other^t * self (scalar product of the vectors, where ^t means transpose)
             return self.x*other.x + self.y*other.y
-        elif isinstance(other, (int, float, long)):
+        elif isinstance(other, numbers.Number):
             return Vector2(self.x*other, self.y*other)
         else:
             return NotImplemented
@@ -41,7 +45,7 @@ class Vector2:
         if isinstance(other, Vector2):
             # interpret multiplication as other^t * self (scalar product of the vectors, where ^t means transpose)
             return self.x * other.x + self.y * other.y
-        elif isinstance(other, (int, float, long)):
+        elif isinstance(other, numbers.Number):
             return Vector2(self.x * other, self.y * other)
         else:
             return NotImplemented
@@ -51,14 +55,25 @@ class Vector2:
     def __div__(self, fraction):
         return Vector2(self.x/fraction, self.y/fraction)
 
+    def __truediv__(self, fraction):
+        return Vector2(self.x/fraction, self.y/fraction)
+
     def __str__(self):
-        return str(self.x) + " " + str(self.y)
+        return "({0},{1})".format(self.x, self.y)
 
     def __eq__(self, other):
         if self.x == other.x and self.y == other.y:
             return True
         else:
             return False
+
+    def __getitem__(self, k):
+        if k == 0:
+            return self.x
+        elif k == 1:
+            return self.y
+        else:
+            raise IndexError()
 
     def normalize(self):
         if Vector2.abs(self) != 0:
@@ -72,6 +87,7 @@ class Vector2:
         else:
             return (Vector2(self.x, self.y)*length) / self.abs()
 
+    # TODO is this function really necessary?
     def rotate_right(self):
         x = self.x
         y = self.y
@@ -80,28 +96,64 @@ class Vector2:
     def angle(self):
         return math.atan2(self.y, self.x)
 
+    def copy(self):
+        return Vector2(self.x, self.y)
+
 
 class Pose2D:
-    def __init__(self, translation=Vector2(), rotation=0):
-        self.translation = translation
-        self.rotation = rotation
+    def __init__(self, translation=Vector2(), rotation=0, pb_pose=None):
+        if pb_pose is not None:
+            self.translation = Vector2(pb_vector=pb_pose.translation)
+            self.rotation = pb_pose.rotation
+        else:
+            self.translation = translation.copy()
+            self.rotation = rotation
 
     def __mul__(self, other):
-        return other.rotate(self.rotation) + self.translation
+        if isinstance(other, Vector2):
+            return other.rotate(self.rotation) + self.translation
+        elif isinstance(other, Pose2D):
+            p = Pose2D()
+            p.translation = self*other.translation
+            p.rotation = (self.rotation + other.rotation + math.pi) % (2*math.pi) - math.pi
+            return p
+        else:
+            return NotImplemented
 
     def __invert__(self):
+        return self.invert()
+
+    def invert(self):
         p = Pose2D()
         p.rotation = -self.rotation
         p.translation = (Vector2() - self.translation).rotate(p.rotation)
         return p
 
-    # TODO python3: use __truediv__
-    # https://docs.python.org/3/library/operator.html
+    # operator method for '/' in python2
     def __div__(self, point):
-        return (point - self.translation).rotate(-self.rotation)
+        if isinstance(point, Vector2):
+            return (point - self.translation).rotate(-self.rotation)
+        else:
+            return NotImplemented
+
+    # operator method for '/' in python3
+    def __truediv__(self, point):
+        if isinstance(point, Vector2):
+            return (point - self.translation).rotate(-self.rotation)
+        else:
+            return NotImplemented
 
     def __str__(self):
-        return str(self.translation.x) + " " + str(self.translation.y) + " " + str(self.rotation)
+        return "(translation = {0}, rotation = {1})".format(self.translation, self.rotation)
+        
+    def rotate(self, a):
+        self.rotation += a
+
+    def translate(self, x, y):
+        self.translation = self * Vector2(x, y)
+
+    def copy(self):
+        return Pose2D(self.translation.copy(), self.rotation)
 
 
 class LineSegment(object):
@@ -126,6 +178,9 @@ class LineSegment(object):
         # t = 1 -> end point
         t = clamp(t, 0.0, self.length)
         return self.base + self.direction*t
+
+    def project(self, p):
+        return self.direction*p - self.direction*self.base
 
     def projection(self, p):
         t = self.direction * p - self.direction * self.base

@@ -11,6 +11,8 @@
 #include <Tools/DataStructures/Printable.h>
 #include <Representations/Debug/Stopwatch.h>
 
+#include <Eigen/Eigen>
+
 /**
  * AbstractModuleCreator is an interface.
  * It is used to create lists of modules.
@@ -47,6 +49,8 @@ template<class V>
 class ModuleInstance: virtual public BlackBoardInterface, virtual public V
 {
 public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
   ModuleInstance(BlackBoard& theBlackBoard)
     : BlackBoardInterface(&theBlackBoard)
   {}

@@ -144,6 +144,7 @@ message MotionRequest {
   optional uint32 cognitionFrameNumber = 9;
   optional GraspRequest graspRequest = 10;
   optional ArmMotionRequest armMotionRequest = 11;
+  optional bool disable_relaxed_stand = 12;
 }
 
 
@@ -253,58 +254,10 @@ message InertialModel
   optional DoubleVector2 orientation = 1;
 }
 
-enum TeamColor
-{
-  blueTeam = 0; redTeam = 1; yellowTeam = 2; blackTeam = 3; invalidTeam = 255;
-}
-
-message TeamMessage
-{
-  message Data
-  {
-    optional uint32 playerNum = 1 [default=0];
-    optional TeamColor teamColor = 11 [default=blueTeam,deprecated=true];
-    optional Pose2D pose = 3;
-    optional int32 ballAge = 4 [default=-1];
-    optional DoubleVector2 ballPosition = 5;
-    optional DoubleVector2 ballVelocity = 6;
-    optional bool fallen = 10 [default=false];
-    optional BUUserTeamMessage user = 8;
-    optional FrameInfo frameInfo = 9;
-    optional uint32 teamNumber = 12 [default=0];
-  }
-  repeated Data data = 1;
-}
-
-message BUUserTeamMessage
-{
-  optional string bodyID = 1 [default="unknown"];
-  optional uint32 timeToBall = 2;
-  optional bool wasStriker = 3 [default=false];
-  optional bool isPenalized = 4 [default=false];
-  repeated Opponent opponents = 5;
-  optional uint32 teamNumber = 6 [default=0,deprecated=true];
-  optional float batteryCharge = 7 [default=1.0];
-  optional float temperature = 8 [default=0.0];
-  optional uint64 timestamp = 9 [default=0];
-  optional bool wantsToBeStriker = 10 [default=false];
-  optional float cpuTemperature = 11 [default=0.0];
-  optional bool whistleDetected = 12 [default=false];
-  optional int32 whistleCount = 13 [default=0];
-  // only for visualizing teamball position in RC
-  optional DoubleVector2 teamBall = 14;
-  optional string key = 100 [default="none"];
-}
-
-message Opponent {
-  required int32 playerNum = 1 [default=0];
-  optional Pose2D poseOnField = 2;
-}
-
 
 message CameraMatrixCalibration
 {
-  repeated DoubleVector2 correctionOffset = 1;
+  repeated DoubleVector2 correctionOffset = 1 [deprecated=true];
   optional DoubleVector2 correctionOffsetBody = 2;
   optional DoubleVector3 correctionOffsetHead = 3;
   repeated DoubleVector3 correctionOffsetCam  = 4;
@@ -388,4 +341,32 @@ message IMUData
  required DoubleVector3 rotational_velocity = 6;
  optional DoubleVector3 rotational_velocity_sensor = 7;
  required DoubleVector2 orientation = 8;
+ required DoubleVector3 orientation_rotvec = 9;
+}
+
+message CentreOfPressure {
+ required DoubleVector3 in_and_only_left_foot_cop = 1;
+ required double in_and_only_left_foot_magnitude  = 2;
+ required bool   in_and_only_left_foot_valid      = 3;
+
+ required DoubleVector3 in_and_only_right_foot_cop = 4;
+ required double in_and_only_right_foot_magnitude  = 5;
+ required bool   in_and_only_right_foot_valid      = 6;
+
+ required DoubleVector3 in_kinematic_chain_origin_cop = 7;
+ required double in_kinematic_chain_origin_magnitude  = 8;
+ required bool   in_kinematic_chain_origin_valid      = 9;
+}
+
+message WhistlePercept {
+  message Whistle {
+    required string name = 1;
+    required int64 positionInCapture = 2;
+    required double responseValue = 3;
+  }
+  
+  optional int32 counter  = 1;
+  optional string captureFile = 2;
+  repeated Whistle recognizedWhistles = 3;
+  optional bool whistleDetected = 4;
 }
