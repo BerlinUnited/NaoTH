@@ -2,9 +2,11 @@ package de.naoth.rc.dialogs.multiagentconfiguration.ui;
 
 import de.naoth.rc.dialogs.multiagentconfiguration.Parameter;
 import de.naoth.rc.dialogs.multiagentconfiguration.Utils;
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -25,6 +27,7 @@ import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
 
 /**
  * @author Philipp Strobel <philippstrobel@posteo.de>
@@ -156,6 +159,8 @@ public class AllTab extends Tab
         protected ComboBox<String> agentList;
         @FXML
         protected Label lblScheme;
+        
+        protected final SimpleObjectProperty<File> behaviorFile = new SimpleObjectProperty<>(null);
 
         @FXML
         public void initialize() {
@@ -192,8 +197,17 @@ public class AllTab extends Tab
 
         @FXML
         private void selectBehaviorFile() {
-            // TODO:
-            System.err.println("Not yet implemented!");
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Open Behavior File");
+            fileChooser.setInitialFileName("behavior-ic.dat");
+            fileChooser.setInitialDirectory(new File("../../NaoTHSoccer/Config/"));
+            fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("Behavior Files", "*.dat"),
+                    new FileChooser.ExtensionFilter("All Files", "*.*"));
+            File selectedFile = fileChooser.showOpenDialog(getTabPane().getScene().getWindow());
+            if (selectedFile != null) {
+                behaviorFile.set(selectedFile);
+            }
         }
 
         @FXML

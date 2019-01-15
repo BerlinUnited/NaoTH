@@ -89,7 +89,7 @@ public class ConfigurationsTab implements ResponseListener
     };
     
     private final String behaviorPath = "Config/behavior-ic.dat";
-    private final SimpleObjectProperty<File> behaviorFile = new SimpleObjectProperty<>(null);
+    protected final SimpleObjectProperty<File> behaviorFile = new SimpleObjectProperty<>(null);
     
     @FXML protected TreeView<String> debugTree;
     @FXML protected TreeView<String> moduleTree;
@@ -290,6 +290,7 @@ public class ConfigurationsTab implements ResponseListener
                 Logger.getLogger(AgentTab.class.getName()).log(Level.SEVERE, null, ex);
             }
             // reset behavior file, in order to be able to select file again
+            // NOTE: this triggers the event handler again!
             behaviorFile.set(null);
         }
     }

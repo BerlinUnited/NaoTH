@@ -143,7 +143,10 @@ public class AgentTab extends Tab implements ConnectionStatusListener
         all.configurationsTabViewController.btnUpdateModules.addEventHandler(ActionEvent.ACTION, (e) -> { configurationsTabViewController.updateModules(); });
         all.configurationsTabViewController.btnUpdateParameters.addEventHandler(ActionEvent.ACTION, (e) -> { configurationsTabViewController.updateParameters(); });
         all.configurationsTabViewController.btnSaveModules.addEventHandler(ActionEvent.ACTION, (e) -> { configurationsTabViewController.saveModules(); });
-//        other.behaviorFile.addListener((o, v, f) -> { behaviorFile.set(f); });
+        all.configurationsTabViewController.behaviorFile.addListener((ob, o, n) -> {
+            System.out.println("new behavior file ..." + this);
+            if(n != null) { configurationsTabViewController.behaviorFile.set(n); }
+        });
     }
     
     public boolean sendCommand(Command cmd, ResponseListener l) {
