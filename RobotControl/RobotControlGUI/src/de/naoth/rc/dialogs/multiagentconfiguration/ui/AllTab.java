@@ -4,6 +4,7 @@ import de.naoth.rc.dialogs.multiagentconfiguration.Parameter;
 import de.naoth.rc.dialogs.multiagentconfiguration.Utils;
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.SimpleObjectProperty;
@@ -125,7 +126,10 @@ public class AllTab extends Tab
             RepresentationsContent rcc = new RepresentationsContent();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/de/naoth/rc/dialogs/multiagentconfiguration/ui/RepresentationsContent.fxml"));
             loader.setController(rcc);
-            contentArea.add(loader.load(), col, row); // column, row
+            
+            Node n = loader.load();
+            n.setUserData(name); // to identify the node on removal
+            contentArea.add(n, col, row); // column, row
             
             rcc.setName(name);
             rcc.getTextProperty().bind(t.textProperty());
@@ -135,10 +139,8 @@ public class AllTab extends Tab
     }
     
     public void removeRepresentationsView(String name) {
-        for (Node node : contentArea.getChildren()) {
-            System.out.println(node);
-            // TODO: remove Node if it matches?!
-        }
+        Optional<Node> node = contentArea.getChildren().stream().filter((n) -> { return n.getUserData().equals(name); }).findFirst();
+        contentArea.getChildren().remove(node.get());
     }
     
     class AllTabConfigurationsTab
