@@ -9,6 +9,7 @@ import de.naoth.rc.server.ConnectionStatusListener;
 import de.naoth.rc.server.MessageServer;
 import de.naoth.rc.server.ResponseListener;
 import de.naoth.rc.manager.GenericManager;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -49,6 +51,24 @@ public class AgentTab extends Tab implements ConnectionStatusListener
     @FXML protected RepresentationsTab representationsTabViewController;
     
     @FXML protected TabPane tabs;
+    
+    // listeners and handlers for various ui elements
+    private EventHandler<ActionEvent> updateModules = (e) -> { configurationsTabViewController.updateModules(); };
+    private EventHandler<ActionEvent> updateParameters = (e) -> { configurationsTabViewController.updateParameters(); };
+    private EventHandler<ActionEvent> updateDebugRequests = (e) -> { configurationsTabViewController.updateDebugRequests(); };
+    private EventHandler<ActionEvent> updateRepresentationList = (e) -> { representationsTabViewController.updateList(); };
+    private EventHandler<ActionEvent> saveModules = (e) -> { configurationsTabViewController.saveModules(); };
+    private ChangeListener<Number> tabsListener = (ob, o, n) -> { tabs.getSelectionModel().select(n.intValue()); };
+    private ChangeListener<Number> typeListener = (ob, o, n) -> { representationsTabViewController.type.getSelectionModel().select(n.intValue()); };
+    private ChangeListener<Number> listListener = (ob, o, n) -> {
+        if(n != null) {
+            // make sure it is the same representation type
+            representationsTabViewController.type.getSelectionModel().select(all.type.getSelectionModel().getSelectedIndex());
+            // select item in list
+            representationsTabViewController.list.getSelectionModel().select(n.toString());
+        }
+    };
+    private ChangeListener<File> behaviorFileListener = (ob, o, n) -> { if(n != null) { configurationsTabViewController.behaviorFile.set(n); } };
     
     public AgentTab() {
         super();
@@ -119,38 +139,46 @@ public class AgentTab extends Tab implements ConnectionStatusListener
         configurationsTabViewController.agentList.valueProperty().bind(all.configurationsTabViewController.agentList.valueProperty());
         representationsTabViewController.split.getDividers().get(0).positionProperty().bindBidirectional(all.split.getDividers().get(0).positionProperty());
         
-        all.tabs.getSelectionModel().selectedIndexProperty().addListener((ob, o, n) -> {
-            tabs.getSelectionModel().select(n.intValue());
-        });
+        all.tabs.getSelectionModel().selectedIndexProperty().addListener(tabsListener);
         
         all.addRepresentationsView(representationsTabViewController.content, getText());
         
-        all.type.getSelectionModel().selectedIndexProperty().addListener((ob, o, n) -> {
-            representationsTabViewController.type.getSelectionModel().select(n.intValue());
-        });
+        all.type.getSelectionModel().selectedIndexProperty().addListener(typeListener);
         
-        all.list.getSelectionModel().selectedItemProperty().addListener((ob, o, n) -> {
-            if(n != null) {
-                // make sure it is the same representation type
-                representationsTabViewController.type.getSelectionModel().select(all.type.getSelectionModel().getSelectedIndex());
-                // select item in list
-                representationsTabViewController.list.getSelectionModel().select(n.toString());
-            }
-        });
+        all.list.getSelectionModel().selectedItemProperty().addListener(listListener);
         
-        all.btnUpdateList.addEventHandler(ActionEvent.ACTION, (e) -> { representationsTabViewController.updateList(); });
-        all.configurationsTabViewController.btnUpdateDebug.addEventHandler(ActionEvent.ACTION, (e) -> { configurationsTabViewController.updateDebugRequests(); });
-        all.configurationsTabViewController.btnUpdateModules.addEventHandler(ActionEvent.ACTION, (e) -> { configurationsTabViewController.updateModules(); });
-        all.configurationsTabViewController.btnUpdateParameters.addEventHandler(ActionEvent.ACTION, (e) -> { configurationsTabViewController.updateParameters(); });
-        all.configurationsTabViewController.btnSaveModules.addEventHandler(ActionEvent.ACTION, (e) -> { configurationsTabViewController.saveModules(); });
-        all.configurationsTabViewController.behaviorFile.addListener((ob, o, n) -> {
-            if(n != null) { configurationsTabViewController.behaviorFile.set(n); }
-        });
+        all.btnUpdateList.addEventHandler(ActionEvent.ACTION, updateRepresentationList);
+        all.configurationsTabViewController.btnUpdateDebug.addEventHandler(ActionEvent.ACTION, updateDebugRequests);
+        all.configurationsTabViewController.btnUpdateModules.addEventHandler(ActionEvent.ACTION, updateModules);
+        all.configurationsTabViewController.btnUpdateParameters.addEventHandler(ActionEvent.ACTION, updateParameters);
+        all.configurationsTabViewController.btnSaveModules.addEventHandler(ActionEvent.ACTION, saveModules);
+        all.configurationsTabViewController.behaviorFile.addListener(behaviorFileListener);
     }
     
     private void unbindUiElements() {
+        for (int i = 0; i < configurationsTabViewController.splitPane.getDividers().size(); i++) {
+            DoubleProperty p1 = configurationsTabViewController.splitPane.getDividers().get(i).positionProperty();
+            DoubleProperty p2 = all.configurationsTabViewController.splitPane.getDividers().get(i).positionProperty();
+            p1.unbindBidirectional(p2);
+        }
+        
+        configurationsTabViewController.agentList.valueProperty().unbind();
+        representationsTabViewController.split.getDividers().get(0).positionProperty().unbindBidirectional(all.split.getDividers().get(0).positionProperty());
+        
+        all.tabs.getSelectionModel().selectedIndexProperty().removeListener(tabsListener);
+        
         all.removeRepresentationsView(getText());
-        // TODO: remove event handlers & bindings?!
+        
+        all.type.getSelectionModel().selectedIndexProperty().removeListener(typeListener);
+        
+        all.list.getSelectionModel().selectedItemProperty().removeListener(listListener);
+        
+        all.btnUpdateList.removeEventHandler(ActionEvent.ACTION, updateRepresentationList);
+        all.configurationsTabViewController.btnUpdateDebug.removeEventHandler(ActionEvent.ACTION, updateDebugRequests);
+        all.configurationsTabViewController.btnUpdateModules.removeEventHandler(ActionEvent.ACTION, updateModules);
+        all.configurationsTabViewController.btnUpdateParameters.removeEventHandler(ActionEvent.ACTION, updateParameters);
+        all.configurationsTabViewController.btnSaveModules.removeEventHandler(ActionEvent.ACTION, saveModules);
+        all.configurationsTabViewController.behaviorFile.removeListener(behaviorFileListener);
     }
     
     public boolean sendCommand(Command cmd, ResponseListener l) {

@@ -77,7 +77,7 @@ public class RepresentationsTab implements ResponseListener
     private void typeChanged() {
         unsubscribeRepresentations();
         if(!parent.sendCommand(type.getValue(), this)) {
-            System.err.println("Unable to change type!");
+            System.err.println("Unable to change representation type on " + parent.getText());
         }
     }
     

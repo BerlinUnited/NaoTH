@@ -219,45 +219,24 @@ public class AllTab extends Tab
         }
 
         @FXML
-        private void saveParameters() {
-            // TODO:
-            System.err.println("Not yet implemented!");
-        }
+        private void saveParameters() { /* not used in the all tab (hidden) */ }
 
         @FXML
-        private void updateParameters() {
-            // TODO:
-            System.err.println("Not yet implemented!");
-        }
+        private void updateParameters() { /* agent tab did bind itself to this button */ }
 
         @FXML
-        private void updateModules() {
-            // TODO:
-            System.err.println("Not yet implemented!");
-        }
+        private void updateModules() { /* agent tab did bind itself to this button */ }
 
         @FXML
-        private void updateDebugRequests() {
-            // TODO:
-            System.err.println("Not yet implemented!");
-        }
+        private void updateDebugRequests() { /* agent tab did bind itself to this button */ }
 
         @FXML
-        private void saveParametersMotion() {
-            // TODO:
-            System.err.println("Not yet implemented!");
-        }
+        private void saveParametersMotion() { /* not used in the all tab (hidden) */ }
 
         @FXML
-        private void saveParametersCognition() {
-            // TODO:
-            System.err.println("Not yet implemented!");
-        }
+        private void saveParametersCognition() { /* not used in the all tab (hidden) */ }
 
         @FXML
-        private void saveModules() {
-            // TODO:
-            System.err.println("Not yet implemented!");
-        }
+        private void saveModules() { /* agent tab did bind itself to this button */ }
     }
 }
