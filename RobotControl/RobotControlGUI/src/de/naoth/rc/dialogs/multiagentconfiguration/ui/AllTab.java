@@ -41,7 +41,7 @@ public class AllTab extends Tab
     @FXML protected TabPane tabs;
     @FXML protected SplitPane split;
     @FXML protected GridPane contentArea;
-    @FXML protected ListView list;
+    @FXML protected ListView<String> list;
     @FXML protected ChoiceBox type;
     @FXML protected Button btnUpdateList;
 

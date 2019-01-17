@@ -105,6 +105,7 @@ public class AgentTab extends Tab implements ConnectionStatusListener
         
         connect();
         bindUiElements();
+        updateUiElements();
     }
     
     private void setTitle(String prefix) {
@@ -179,6 +180,19 @@ public class AgentTab extends Tab implements ConnectionStatusListener
         all.configurationsTabViewController.btnUpdateParameters.removeEventHandler(ActionEvent.ACTION, updateParameters);
         all.configurationsTabViewController.btnSaveModules.removeEventHandler(ActionEvent.ACTION, saveModules);
         all.configurationsTabViewController.behaviorFile.removeListener(behaviorFileListener);
+    }
+    
+    private void updateUiElements() {
+        // switch tabs (if necessary)
+        tabs.getSelectionModel().select(all.tabs.getSelectionModel().getSelectedIndex());
+        // set the representations type if they're different
+        if(all.type.getSelectionModel().getSelectedIndex() != representationsTabViewController.type.getSelectionModel().getSelectedIndex()) {
+            representationsTabViewController.type.getSelectionModel().select(all.type.getSelectionModel().getSelectedIndex());
+        }
+        // select the representation if on is selected in the all tab
+        if(all.list.getSelectionModel().getSelectedItem() != null) {
+            representationsTabViewController.list.getSelectionModel().select(all.list.getSelectionModel().getSelectedItem());
+        }
     }
     
     public boolean sendCommand(Command cmd, ResponseListener l) {
