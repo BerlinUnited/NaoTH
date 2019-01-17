@@ -14,7 +14,7 @@ public class RepresentationsContent
     private Label name;
     
     @FXML
-    private TextArea content;
+    protected TextArea content;
     
     @FXML
     private void initialize() {

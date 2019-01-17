@@ -132,7 +132,10 @@ public class AllTab extends Tab
             contentArea.add(n, col, row); // column, row
             
             rcc.setName(name);
-            rcc.getTextProperty().bind(t.textProperty());
+            // replace old content with the new (and preserve scrollbar position)
+            t.textProperty().addListener((ob, ov, nv) -> {
+                rcc.content.replaceText(0, rcc.content.getText().length(), nv);
+            });
         } catch (IOException ex) {
             Logger.getLogger(AllTab.class.getName()).log(Level.SEVERE, null, ex);
         }
