@@ -60,12 +60,12 @@ public class AgentTab extends Tab implements ConnectionStatusListener
     private EventHandler<ActionEvent> saveModules = (e) -> { configurationsTabViewController.saveModules(); };
     private ChangeListener<Number> tabsListener = (ob, o, n) -> { tabs.getSelectionModel().select(n.intValue()); };
     private ChangeListener<Number> typeListener = (ob, o, n) -> { representationsTabViewController.type.getSelectionModel().select(n.intValue()); };
-    private ChangeListener<Number> listListener = (ob, o, n) -> {
+    private ChangeListener<String> listListener = (ob, o, n) -> {
         if(n != null) {
             // make sure it is the same representation type
             representationsTabViewController.type.getSelectionModel().select(all.type.getSelectionModel().getSelectedIndex());
             // select item in list
-            representationsTabViewController.list.getSelectionModel().select(n.toString());
+            representationsTabViewController.list.getSelectionModel().select(n);
         }
     };
     private ChangeListener<File> behaviorFileListener = (ob, o, n) -> { if(n != null) { configurationsTabViewController.behaviorFile.set(n); } };
