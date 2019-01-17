@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.application.Platform;
@@ -110,6 +111,12 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
     
     @FXML
     public void addRobots() {
+        // generate a list of existing agent items
+        List<AgentItem> existing = tabpane.getTabs().stream().map((t) -> {
+            return (t instanceof AgentTab) ? new AgentItem(((AgentTab)t).getHost(), ((AgentTab)t).getPort()) : null;
+        }).filter((i) -> { return i != null;}).collect(Collectors.toList());
+        dialog.setExisting(existing);
+        
         Optional<List<AgentItem>> result = dialog.showAndWait();
         result.ifPresent((al) -> {
             if(!al.isEmpty()) {

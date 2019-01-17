@@ -40,6 +40,7 @@ import javafx.stage.StageStyle;
 public class AgentSelectionDialog extends Dialog
 {
     private final ObservableList<AgentItem> hostList = FXCollections.observableArrayList(new TreeSet());
+    private final List<AgentItem> existing = new ArrayList<>();
 
     private final ExecutorService executor = Executors.newCachedThreadPool();
     
@@ -236,9 +237,16 @@ public class AgentSelectionDialog extends Dialog
     
     private boolean addAgent(AgentItem agent) {
         if(!hostList.stream().anyMatch((other) -> { return agent.getHost().equals(other.getHost()) && agent.getPort() == other.getPort(); })) {
+            // deactivate agent item, if it already open
+            agent.activeProperty().set(!existing.stream().anyMatch((i) -> { return i.compareTo(agent) == 0; }));
             hostList.add(agent);
             return true;
         }
         return false;
+    }
+    
+    public void setExisting(List<AgentItem> l) {
+        existing.clear();
+        existing.addAll(l);
     }
 } // END AgentSelectionDialog

@@ -303,4 +303,12 @@ public class AgentTab extends Tab implements ConnectionStatusListener
     protected void representationsTabSelect(Event e) {
         representationsTabViewController.show(((Tab) e.getSource()).isSelected());
     }
+    
+    public String getHost() {
+        return host;
+    }
+    
+    public int getPort() {
+        return port;
+    }
 }
