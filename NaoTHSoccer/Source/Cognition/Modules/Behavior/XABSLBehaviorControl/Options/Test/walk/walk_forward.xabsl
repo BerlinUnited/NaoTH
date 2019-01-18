@@ -29,7 +29,7 @@ state forward{
     
       motion.type = walk;
       motion.walk_speed.x = 100;
-      motion.walk.style = fast;
+      motion.walk.style = stable;
     }
   }
 

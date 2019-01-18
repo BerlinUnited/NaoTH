@@ -177,7 +177,7 @@ void StandMotion::calcStandPose()
   height = getMotionRequest().standHeight;
 
   // init pose
-  double comHeight = (height < 0.0) ? getEngine().getParameters().walk.hip.comHeight : getMotionRequest().standHeight;
+  double comHeight = (height < 0.0) ? getWalk2018Parameters().zmpPlanner2018Params.comHeight : getMotionRequest().standHeight;
   comHeight = Math::clamp(comHeight, 160.0, 270.0); // valid range
       
   // use the sensors to estimate the current pose

@@ -91,6 +91,18 @@ local function protocCompile(inputFiles, cppOut, javaOut, pythonOut, ipaths)
   os.mkdir(cppOut)
   os.mkdir(javaOut)
   
+  -- delete all generated message files
+  print("Try to remove the pb.cc and .pb.h files ")
+  -- print(os.matchfiles(path.join(cppOut,"**.pb.h")))
+  for i,file in ipairs(os.matchfiles(path.join(cppOut,"**.pb.h"))) do
+    ok, err = os.remove (file)
+  end
+  for i,file in ipairs(os.matchfiles(path.join(cppOut,"**.pb.cc"))) do
+    ok, err = os.remove (file)
+  end
+  print("Removed all generated message files")
+
+
   -- generate the message files
   print("INFO: (Protbuf) executing " .. cmd)
   local succ, status, returnCode = os.execute(cmd)
@@ -174,21 +186,20 @@ function invokeprotoc(inputFiles, cppOut, javaOut, pythonOut, includeDirs)
       end
     end
 
-	
-    if(compile) then
-      -- execute compile process for each file
-      local time = os.time()
-      -- do the recompilation
-     if( protocCompile(inputFiles, cppOut, javaOut, pythonOut, includeDirs)) then
-       -- if successfull touch the shadow files
-       for i = 1, #inputFiles do
-          -- touch shadow file in order to remember this build date
-          touchShadow(inputFiles[i], time)
-      end -- end for each file to compile
-     else
-      print ("ERROR: protoc not successful")
-     end
-    end -- end if compile
+  if(compile) then
+    -- execute compile process for each file
+    local time = os.time()
+    -- do the recompilation
+   if( protocCompile(inputFiles, cppOut, javaOut, pythonOut, includeDirs)) then
+     -- if successfull touch the shadow files
+     for i = 1, #inputFiles do
+        -- touch shadow file in order to remember this build date
+        touchShadow(inputFiles[i], time)
+    end -- end for each file to compile
+   else
+    print ("ERROR: protoc not successful")
+   end
+  end -- end if compile
 end
 
 newoption {

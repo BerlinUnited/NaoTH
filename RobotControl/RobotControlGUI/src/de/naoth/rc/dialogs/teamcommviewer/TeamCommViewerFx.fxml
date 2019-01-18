@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory?>
 <?import javafx.scene.control.TableView?>
@@ -42,7 +43,7 @@
                 <Tooltip text="Change color of teams." />
               </tooltip>
             </ColorPicker>
-            <ToggleButton fx:id="btnRecord" mnemonicParsing="false" onAction="#actionRecord" text="Record TeamComm">
+            <ToggleButton fx:id="btnRecord" mnemonicParsing="false" onAction="#actionRecord">
               <tooltip>
                 <Tooltip text="Start new recording" />
               </tooltip>
@@ -52,6 +53,8 @@
                 <Tooltip text="Stops recording and closes log file." />
               </tooltip>
             </Button>
+            <Separator layoutX="725.0" layoutY="10.0" orientation="VERTICAL" />
+            <Label fx:id="gamecontrollerState" />
         </items>
       </ToolBar>
    </top>

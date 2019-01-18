@@ -28,9 +28,14 @@ namespace naoth
       double responseValue;
     };
 
+    // NOTE: this was used by template based whistle detector
     std::vector<Whistle> recognizedWhistles;
     std::string captureFile;
+
+    // NOTE: obsolete, this is here for documentation purposes
     int counter;
+
+    bool whistleDetected;
 
     WhistlePercept();
     virtual ~WhistlePercept();
@@ -39,6 +44,8 @@ namespace naoth
     void reset()
     {
       recognizedWhistles.clear();
+      counter = 0; // NOTE: obsolete?
+      whistleDetected = false;
     }
 
     void addWhistle(const std::string& name, const long long& positionInCapture, const double& responseValue)

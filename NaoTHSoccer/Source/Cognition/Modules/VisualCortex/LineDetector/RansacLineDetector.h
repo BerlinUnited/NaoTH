@@ -76,7 +76,7 @@ private:
       PARAMETER_REGISTER(circle_outlierThreshold) = 70;
       PARAMETER_REGISTER(circle_inlierMin) = 7;
       PARAMETER_REGISTER(circle_angle_variance) = 0.02;
-      PARAMETER_REGISTER(circle_max_angle_diff) = 8;
+      PARAMETER_ANGLE_REGISTER(circle_max_angle_diff) = 8;
       PARAMETER_REGISTER(enable_circle_ransac) = true;
       PARAMETER_REGISTER(fit_circle_to_inliers) = true;
 

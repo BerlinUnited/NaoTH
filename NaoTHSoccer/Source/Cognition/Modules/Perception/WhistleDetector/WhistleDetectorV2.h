@@ -1,11 +1,22 @@
-#ifndef _WHISTLEDETECTOR_V2_H
-#define _WHISTLEDETECTOR_V2_H
+/**
+* @file WhistleDetectorV2.h
+*
+* @author <a href="mailto:schlottb@informatik.hu-berlin.de">Benjamin Schlotter</a>
+* @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
+*
+* Implementation of class WhistleDetectorV2
+* Implements a whistle detector based on a frequency band filter.
+* (simmilar to the austrian kangaroos whistle detector)
+*/
+
+#ifndef _WhistleDetectorV2_h_
+#define _WhistleDetectorV2_h_
 
 #include <ModuleFramework/Module.h>
 
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/AudioData.h>
-#include <Representations/Infrastructure/WhistlePercept.h>
+#include <Representations/Perception/WhistlePercept.h>
 
 // debug
 #include <Tools/DataStructures/ParameterList.h>
@@ -14,7 +25,7 @@
 #include <Tools/Debug/DebugRequest.h>
 
 // tools
-#include <fstream>
+//#include <fstream>
 #include <vector>
 #include <fftw3/fftw3.h>
 #include <Tools/Filters/AssymetricalBoolFilter.h>
@@ -54,8 +65,6 @@ public:
 			PARAMETER_REGISTER(nWindowSkipping) = 80; // windowTimeStep
 
 			PARAMETER_REGISTER(vWhistleThreshold) = 3.5;
-			PARAMETER_REGISTER(nWhistleOkayFrames) = 30;
-			PARAMETER_REGISTER(nWhistleMissFrames) = 7;
 
       PARAMETER_REGISTER(whistle_filter.g0) = 0.1;
       PARAMETER_REGISTER(whistle_filter.g1) = 0.1;
@@ -69,8 +78,6 @@ public:
 		int nWindowSizePadded;
 		int nWindowSkipping;
 		double vWhistleThreshold;
-		unsigned nWhistleOkayFrames;
-		unsigned nWhistleMissFrames;
 
     struct {
       double g0;
@@ -79,11 +86,10 @@ public:
 	} params;
 
 private:
-	void runDetection();
-  void runDetectionNew();
+
   unsigned int lastDataTimestamp;
   AssymetricalBoolHysteresisFilter whistle_filter;
-  std::ofstream myfile;
+  //std::ofstream myfile;
 
   void intToNormalizedDouble(const int16_t &in, double &out) {
       out = static_cast<double>(in) / (static_cast<double>(std::numeric_limits<int16_t>::max()) + 1.0);
@@ -112,21 +118,6 @@ private:
       input(NULL)
     {}
 
-    FFT(const int windowFrequency) 
-      : 
-      windowFrequency(windowFrequency),
-      windowFrequencyHalf(windowFrequency / 2 + 1),
-      magnitude_vector(windowFrequencyHalf)
-    {
-      input   = static_cast<double*>(fftw_malloc(sizeof(double) * windowFrequency));
-      output  = static_cast<fftw_complex*>(fftw_malloc(sizeof(fftw_complex) * windowFrequencyHalf));
-
-      // init the input buffer with zeros
-      std::fill_n(input, windowFrequency, 0.0);
-
-      plan = fftw_plan_dft_r2c_1d(windowFrequency, input, output, FFTW_MEASURE);
-    }
-
     ~FFT()
     {
       if(input) {
@@ -146,6 +137,27 @@ private:
       for(int i = 0; i < windowFrequencyHalf; ++i) {
           magnitude_vector[i] = std::sqrt(output[i][0]*output[i][0] + output[i][1]*output[i][1]);
       }
+    }
+
+    void init(const int windowFrequency) 
+    {
+      // already initialized
+      if(windowFrequency == this->windowFrequency) {
+        return;
+      }
+      
+      this->windowFrequency = windowFrequency;
+      this->windowFrequencyHalf = windowFrequency / 2 + 1;
+      
+      magnitude_vector.resize(windowFrequencyHalf);
+
+      input   = static_cast<double*>(fftw_malloc(sizeof(double) * windowFrequency));
+      output  = static_cast<fftw_complex*>(fftw_malloc(sizeof(fftw_complex) * windowFrequencyHalf));
+
+      // init the input buffer with zeros
+      std::fill_n(input, windowFrequency, 0.0);
+
+      plan = fftw_plan_dft_r2c_1d(windowFrequency, input, output, FFTW_MEASURE);
     }
 
     int input_length() const {
@@ -171,4 +183,4 @@ private:
   FFT fft;
 
 };
-#endif // _WHISTLEDETECTOR_V2_H
+#endif // _WhistleDetectorV2_h_

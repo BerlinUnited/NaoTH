@@ -428,13 +428,10 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
 
 
   DEBUG_REQUEST("PerceptionsVisualizer:image:draw_field_polygon",
-    int idx = 0;
     ColorClasses::Color color = getFieldPercept().valid ? ColorClasses::green : ColorClasses::red;
     const FieldPercept::FieldPoly& fieldpoly = getFieldPercept().getValidField();
-    for(int i = 1; i < fieldpoly.length; i++)
-    {
-      LINE_PX(color, fieldpoly[idx].x, fieldpoly[idx].y, fieldpoly[i].x, fieldpoly[i].y);
-      idx = i;
+    for(size_t i = 0; i + 1 < fieldpoly.size(); i++) {
+      LINE_PX(color, fieldpoly[i].x, fieldpoly[i].y, fieldpoly[i+1].x, fieldpoly[i+1].y);
     }
   );
 
