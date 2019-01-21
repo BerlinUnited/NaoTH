@@ -13,7 +13,7 @@ public:
 
   void reset()
   {
-    this->fieldLineSegments.clear();
+    fieldLineSegments.clear();
   }
 };
 
@@ -23,17 +23,18 @@ public:
   bool wasSeen;
   Vector2d center;
 
-  MiddleCirclePercept():
-    wasSeen(false){}
+  MiddleCirclePercept() :
+    wasSeen(false)
+  {}
 
   void set(Vector2d& center) {
-    this->wasSeen = true;
-    this->center = center;
+    wasSeen = true;
+    center = center;
   }
 
   void reset()
   {
-    this->wasSeen = false;
+    wasSeen = false;
   }
 };
 
