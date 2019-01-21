@@ -818,7 +818,7 @@ void MonteCarloSelfLocator::updateByLines2018(const LinePercept2018& linePercept
     PLOT("MonteCarloSelfLocator:shortestLine", shortestLine);
   );
   */
-}//end updateByLinesTable
+}//end updateByLines2018
 
 void MonteCarloSelfLocator::updateByMiddleCircle(const Vector2d& middleCircleCenter, SampleSet& sampleSet) const
 {
@@ -1358,7 +1358,7 @@ void MonteCarloSelfLocator::sensorResetByMiddleCircle(SampleSet& sampleSet, cons
     for(size_t i = 0; i < getRansacLinePercept().fieldLineSegments.size(); i++)
     {
       double d = getRansacLinePercept().fieldLineSegments[i].minDistance(getRansacCirclePercept2018().center);
-      if(d < 50.0){
+      if(d < 50.0) {
         middleCircleOrientation = getRansacLinePercept().fieldLineSegments[i].getDirection();
         middleCircleOrientationWasSeen = true;
       }
@@ -1369,7 +1369,7 @@ void MonteCarloSelfLocator::sensorResetByMiddleCircle(SampleSet& sampleSet, cons
       for(size_t i = 0; i < getShortLinePercept().fieldLineSegments.size(); i++)
       {
         double d = getShortLinePercept().fieldLineSegments[i].minDistance(getRansacCirclePercept2018().center);
-        if(d < 50.0){
+        if(d < 50.0) {
           middleCircleOrientation = getShortLinePercept().fieldLineSegments[i].getDirection();
           middleCircleOrientationWasSeen = true;
         }
@@ -1381,7 +1381,7 @@ void MonteCarloSelfLocator::sensorResetByMiddleCircle(SampleSet& sampleSet, cons
     return;
   }
   
-  Pose2D centerLeft = Pose2D(Vector2d(middleCircleOrientation).rotateLeft().angle(), middleCircleCenter).invert();
+  Pose2D centerLeft  = Pose2D(Vector2d(middleCircleOrientation).rotateLeft().angle(), middleCircleCenter).invert();
   Pose2D centerRight = Pose2D(Vector2d(middleCircleOrientation).rotateRight().angle(), middleCircleCenter).invert();
   
   DEBUG_REQUEST("MCSLS:draw_sensorResetByMiddleCircle",
@@ -1399,15 +1399,17 @@ void MonteCarloSelfLocator::sensorResetByMiddleCircle(SampleSet& sampleSet, cons
           centerRight.rotation);
   );
 
-  if(getRobotPose().isValid) {
+  if(getRobotPose().isValid) 
+  {
     size_t n = sampleSet.size()-1;
 
-    if((centerLeft.translation - getRobotPose().translation).abs2() < (centerRight.translation - getRobotPose().translation).abs2()){
+    if((centerLeft.translation - getRobotPose().translation).abs2() < (centerRight.translation - getRobotPose().translation).abs2()) {
       sampleSet[n] = centerLeft;
     } else {
       sampleSet[n] = centerRight;
     }
-  } else 
+  } 
+  else 
   {
     size_t n = sampleSet.size()-1;
     sampleSet[n-1] = centerLeft;
