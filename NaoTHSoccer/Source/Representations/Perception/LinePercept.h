@@ -12,6 +12,8 @@
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Line.h"
 #include "Tools/CameraGeometry.h"
+#include "Tools/LinesTable.h"
+
 #include <Tools/DataStructures/Printable.h>
 #include <Tools/DataStructures/Serializer.h>
 
@@ -119,13 +121,13 @@ public:
   public:
 
     Intersection()
-      : type(Math::Intersection::unknown)
+      : type(LineIntersection::unknown)
     {
     }
 
     Intersection(const Vector2d& pos)
       :
-      type(Math::Intersection::unknown),
+      type(LineIntersection::unknown),
       pos(pos)
     {
     }
@@ -145,20 +147,20 @@ public:
       segmentsDistanceToIntersection[1] = distTwo;
     }
 
-    void setType(Math::Intersection::IntersectionType typeToSet){ type = typeToSet; }
+    void setType(LineIntersection::Type typeToSet){ type = typeToSet; }
     void setPosOnField(const Vector2d& p) { posOnField = p; }
     void setPosInImage(const Vector2<unsigned int>& p) { pos = p; }
     
 
     // getters
-    Math::Intersection::IntersectionType getType() const { return type; }
+    LineIntersection::Type getType() const { return type; }
     const Vector2<unsigned int>& getSegmentIndices() const { return segmentIndices; }
     const Vector2d& getSegmentsDistancesToIntersection() const { return segmentsDistanceToIntersection; }
     const Vector2d& getPos() const { return pos; }
     const Vector2d& getPosOnField() const { return posOnField; }
 
   private:
-    Math::Intersection::IntersectionType type;
+    LineIntersection::Type type;
     Vector2<unsigned int> segmentIndices;
     Vector2d segmentsDistanceToIntersection;
     Vector2d pos;

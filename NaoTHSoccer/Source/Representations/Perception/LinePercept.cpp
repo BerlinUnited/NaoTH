@@ -161,7 +161,7 @@ void Serializer<LinePercept>::deserialize(std::istream& stream, LinePercept& rep
     //intersection.readFromProtobuf(&p.intersections(i));
 
     if(msg.has_type())
-      percept.setType((Math::Intersection::IntersectionType) msg.type());
+      percept.setType((LineIntersection::Type) msg.type());
 
     if(msg.has_posinimage())
     {

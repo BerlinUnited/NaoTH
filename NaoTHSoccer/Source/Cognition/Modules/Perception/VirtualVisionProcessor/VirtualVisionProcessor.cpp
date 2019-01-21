@@ -358,21 +358,21 @@ void VirtualVisionProcessor::classifyIntersections(vector<LinePercept::FieldLine
 
     if(angleDiff < MAX_LINE_ANGLE_DIFF) // shoud never be the case in simulation
     {
-      theLinePercept.intersections[i].setType(Math::Intersection::E);
+      theLinePercept.intersections[i].setType(LineIntersection::E);
     }
     else if(angleDiff > MAX_LINE_ANGLE_DIFF * 2 && angleDiff < Math::pi_2 - MAX_LINE_ANGLE_DIFF * 2 )
     {
-      theLinePercept.intersections[i].setType(Math::Intersection::C);
+      theLinePercept.intersections[i].setType(LineIntersection::C);
     }
     else if(angleDiff > Math::pi_2 - MAX_FIELDLINE_ANGLE_DIFF && angleDiff < Math::pi_2 + MAX_FIELDLINE_ANGLE_DIFF )
     {
-      Math::Intersection::IntersectionType type = theLinePercept.intersections[i].getType();
+      LineIntersection::Type type = theLinePercept.intersections[i].getType();
       if
       (
-        type != Math::Intersection::C &&
-        type != Math::Intersection::L &&
-        type != Math::Intersection::T &&
-        type != Math::Intersection::X 
+        type != LineIntersection::C &&
+        type != LineIntersection::L &&
+        type != LineIntersection::T &&
+        type != LineIntersection::X 
       )
       {
         Vector2d segmentDistancesToIntersection = theLinePercept.intersections[i].getSegmentsDistancesToIntersection();
@@ -382,23 +382,23 @@ void VirtualVisionProcessor::classifyIntersections(vector<LinePercept::FieldLine
         if(tIntersectsOne && tIntersectsTwo)
         {
           // maybe X intersection, because if not its overwritten with L or so
-          theLinePercept.intersections[i].setType(Math::Intersection::X);
+          theLinePercept.intersections[i].setType(LineIntersection::X);
         }else if(tIntersectsOne || tIntersectsTwo)
         {
           // should be an T intersection
-          theLinePercept.intersections[i].setType(Math::Intersection::T);
+          theLinePercept.intersections[i].setType(LineIntersection::T);
 //          cout << " T" << endl;
         }
         else
         {
           // only L intersection
-          theLinePercept.intersections[i].setType(Math::Intersection::L);
+          theLinePercept.intersections[i].setType(LineIntersection::L);
         }
       }
     }//end if
 
 
-    if( theLinePercept.intersections[i].getType() == Math::Intersection::C)
+    if( theLinePercept.intersections[i].getType() == LineIntersection::C)
     {
       Vector2d middlePointOne = (segOne.lineOnField.begin() + segOne.lineOnField.end()) / 2;
       Vector2d middlePointTwo = (segTwo.lineOnField.begin() + segTwo.lineOnField.end()) / 2;

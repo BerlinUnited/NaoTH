@@ -17,6 +17,58 @@
 #include "Tools/Debug/NaoTHAssert.h"
 #include "Tools/Math/Line.h"
 
+
+//NOTE: this should only be used with field lines.
+// LineIntersection is meant to describe intersections between field lines but not in general mathematical sense.
+// The type of an intersection only makes sense for field lines.
+class LineIntersection
+{
+public:
+  enum Type
+  {
+    unknown, //equals ColorClasses::none
+    T, //1 line intersect an other, equals ColorClasses::orange
+    L, //2 lines touch, equals ColorClasses::yellow
+    C, //lines intersect on/with circle, equals ColorClasses::skyblue
+    E, //line extends each other, equals ColorClasses::white
+    X, //2 intersect each other, equals ColorClasses::red
+    none //the line segments don't intersect
+  };
+
+  LineIntersection(const Math::LineSegment& segmentOne, const Math::LineSegment& segmentTwo)
+    : segmentOne(segmentOne),
+      segmentTwo(segmentTwo)
+  {
+    double s = segmentOne.Line::intersection(segmentTwo);
+    double t = segmentTwo.Line::intersection(segmentOne);
+    
+    double angleDiff = fabs(Math::normalize(segmentOne.getDirection().angle() - segmentTwo.getDirection().angle()));
+    angleDiff = std::min(angleDiff, Math::pi - angleDiff);
+
+    if(segmentOne.getLength() < s || s < 0 || 
+       segmentTwo.getLength() < t || t < 0 ||
+       angleDiff < Math::pi_2 - 0.85 || 
+       angleDiff > Math::pi_2 + 0.85 ) // 0.85 = 5deg
+      type = none;
+    else if(angleDiff > 0.85 * 2.0 && angleDiff < Math::pi_2 - 0.85 * 2.0 )
+      type = C;
+    else if(0 < s && s < segmentOne.getLength() && 0 < t && t < segmentTwo.getLength())
+      type = X;
+    else if((0 < s && s < segmentOne.getLength()) || (0 < t && t < segmentTwo.getLength()))
+      type = T;
+    else
+      type = L;
+
+    pos = segmentOne.point(s);
+  }
+
+  Type type;
+  Vector2i pos; /**< The fieldcoordinates of the intersection */
+  Math::LineSegment segmentOne;
+  Math::LineSegment segmentTwo;
+};
+
+
 class LinesTable
 {
 public:
@@ -93,7 +145,7 @@ private:
   std::vector<Math::LineSegment> lines;
 
   /** list of intersections between the lines */
-  std::vector<Math::Intersection> intersections;
+  std::vector<LineIntersection> intersections;
 
 public:
 
@@ -124,7 +176,7 @@ public:
 
   /** some getter */
   const std::vector<Math::LineSegment>& getLines() const { return lines; }
-  const std::vector<Math::Intersection>& getIntersections() const { return intersections; }
+  const std::vector<LineIntersection>& getIntersections() const { return intersections; }
   const Math::LineSegment& operator[] (unsigned idx) const { return lines[idx]; }
 
   /** calculate the nearest line among all lines*/
@@ -202,7 +254,7 @@ public:
     for (unsigned int i = 0; i < intersections.size(); i++)
     {
       //is a T or X crossing
-      bool isXorT = ((intersections[i].type == Math::Intersection::T) ||(intersections[i].type == Math::Intersection::X));
+      bool isXorT = ((intersections[i].type == LineIntersection::T) ||(intersections[i].type == LineIntersection::X));
 
       if(!isXorT)
           continue;
@@ -226,8 +278,8 @@ public:
     {
       for (unsigned int j = i + 1; j < lines.size(); j++)
       {
-        Math::Intersection intersection(lines[i], lines[j]);
-        if (intersection.type != Math::Intersection::none)
+        LineIntersection intersection(lines[i], lines[j]);
+        if (intersection.type != LineIntersection::none)
         {
           intersections.push_back(intersection);
         }
@@ -254,13 +306,13 @@ public:
       canvas.fillOval(intersections[i].pos.x, intersections[i].pos.y, 20, 20);
       switch(intersections[i].type)
       {
-        case Math::Intersection::L:
+        case LineIntersection::L:
           canvas.drawText(intersections[i].pos.x+30, intersections[i].pos.y+30,"L");
           break;
-        case Math::Intersection::T:
+        case LineIntersection::T:
           canvas.drawText(intersections[i].pos.x+30, intersections[i].pos.y+30,"T");
           break;
-        case Math::Intersection::X:
+        case LineIntersection::X:
           canvas.drawText(intersections[i].pos.x+30, intersections[i].pos.y+30,"X");
           break;
         default: // shouldn't happen

@@ -298,11 +298,11 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
       string type = "N";
       switch(getLinePercept().intersections[i].getType())
       {
-        case Math::Intersection::C: type="C"; break;
-        case Math::Intersection::T: type="T"; break;
-        case Math::Intersection::L: type="L"; break;
-        case Math::Intersection::E: type="E"; break;
-        case Math::Intersection::X: type="X"; break;
+        case LineIntersection::C: type="C"; break;
+        case LineIntersection::T: type="T"; break;
+        case LineIntersection::L: type="L"; break;
+        case LineIntersection::E: type="E"; break;
+        case LineIntersection::X: type="X"; break;
         default: break;
       }
       TEXT_DRAWING(intersectionPoint.x + 100, intersectionPoint.y + 100, type);
@@ -372,11 +372,11 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
       string type = "N";
       switch(getLinePercept().intersections[i].getType())
       {
-        case Math::Intersection::C: type="C"; break;
-        case Math::Intersection::T: type="T"; break;
-        case Math::Intersection::L: type="L"; break;
-        case Math::Intersection::E: type="E"; break;
-        case Math::Intersection::X: type="X"; break;
+        case LineIntersection::C: type="C"; break;
+        case LineIntersection::T: type="T"; break;
+        case LineIntersection::L: type="L"; break;
+        case LineIntersection::E: type="E"; break;
+        case LineIntersection::X: type="X"; break;
         default: break;
       }
       TEXT_DRAWING(intersectionPoint.x + 100, intersectionPoint.y + 100, type);
