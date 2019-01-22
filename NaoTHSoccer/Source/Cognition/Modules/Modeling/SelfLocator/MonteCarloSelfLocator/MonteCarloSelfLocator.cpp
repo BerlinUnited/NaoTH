@@ -1346,7 +1346,7 @@ int MonteCarloSelfLocator::sensorResetBySensingGoalModel(SampleSet& sampleSet, i
 }//end sensorResetBySensingGoalModel
 
 
-void MonteCarloSelfLocator::sensorResetByMiddleCircle(SampleSet& sampleSet, const LinePerceptAugmented& linePerceptAugmented) const
+void MonteCarloSelfLocator::sensorResetByMiddleCircle(SampleSet& sampleSet) const
 {
   if(!getLinePerceptAugmented().middleCircleOrientationWasSeen) {
     return;

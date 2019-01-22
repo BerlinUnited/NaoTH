@@ -335,7 +335,7 @@ private: // workers
   int resampleSUS(SampleSet& sampleSet, int n) const;
 
   int sensorResetBySensingGoalModel(SampleSet& sampleSet, int n) const;
-  void sensorResetByMiddleCircle(SampleSet& sampleSet, const LinePerceptAugmented& linePerceptAugmented) const;
+  void sensorResetByMiddleCircle(SampleSet& sampleSet) const;
 
   void calculatePose(SampleSet& sampleSet);
 
