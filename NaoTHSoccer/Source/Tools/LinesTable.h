@@ -119,7 +119,7 @@ private:
   double xWidth;
 
   int line_type[numberOfLinesTableType];
-  static const int numberOfTables;
+  //static const int numberOfTables;
   /**
     long_lines & along_lines
     long_lines & across_lines
@@ -172,7 +172,7 @@ public:
   void addLine(const Vector2d& begin, const Vector2d& end)
   {
     lines.push_back(Math::LineSegment(begin, end));
-  }//end addLine
+  }
 
   /** some getter */
   const std::vector<Math::LineSegment>& getLines() const { return lines; }
@@ -183,7 +183,7 @@ public:
   Math::LineSegment getNearestLine(const Pose2D& pose) const
   {
     return lines[getNearestLine(pose.translation, all_lines)];
-  }//end getNearestLine
+  }
 
 
   /**
@@ -196,7 +196,7 @@ public:
     double minDistance = std::numeric_limits<double>::infinity();
     int minIdx = -1;
 
-    for (unsigned int i = 0; i < lines.size(); i++)
+    for (size_t i = 0; i < lines.size(); i++)
     {
       Vector2d direction = lines[i].getDirection();
       direction.normalize();
@@ -206,14 +206,14 @@ public:
       int direction_type = (fabs(direction.x) > fabs(direction.y))          ? along_lines :across_lines;
       int line_type      = (lines[i].getBase().abs() < circle_radius + 100) ? circle_lines:(length_type|direction_type);
 
-      if((type & line_type) != line_type)
+      if((type & line_type) != line_type) {
         continue;
+      }
 
       // calculate the distance :)
       double dist = lines[i].minDistance(point);
 
-      if (dist >= 0 && dist <= minDistance)
-      {
+      if (dist >= 0 && dist <= minDistance) {
         minDistance = dist;
         minIdx = i;
       }
@@ -229,10 +229,10 @@ public:
     double minDistance = std::numeric_limits<double>::infinity();
     unsigned int minIdx = 0;
 
-    for (unsigned int i = 0; i < intersections.size(); i++)
+    for (size_t i = 0; i < intersections.size(); i++)
     {
-      // calculate the distance :)
-      double dist = (intersections[i].pos - point).abs();
+      //NOTE: use the square distance because it's faster to calculate
+      double dist = (intersections[i].pos - point).abs2();
 
       if (dist >= 0 && dist <= minDistance)
       {
@@ -251,15 +251,17 @@ public:
     double minDistance = std::numeric_limits<double>::infinity();
     unsigned int minIdx = 0;
 
-    for (unsigned int i = 0; i < intersections.size(); i++)
+    for (size_t i = 0; i < intersections.size(); i++)
     {
       //is a T or X crossing
-      bool isXorT = ((intersections[i].type == LineIntersection::T) ||(intersections[i].type == LineIntersection::X));
+      bool isXorT = ((intersections[i].type == LineIntersection::T) || (intersections[i].type == LineIntersection::X));
 
-      if(!isXorT)
+      if(!isXorT) {
           continue;
+      }
+
       // calculate the distance :)
-      double dist = (intersections[i].pos - point).abs();
+      double dist = (intersections[i].pos - point).abs2();
 
       if (dist >= 0 && dist <= minDistance)
       {
@@ -274,13 +276,12 @@ public:
 
   void findIntersections()
   {
-    for (unsigned int i = 0; i < lines.size(); i++)
+    for (size_t i = 0; i < lines.size(); i++)
     {
-      for (unsigned int j = i + 1; j < lines.size(); j++)
+      for (size_t j = i + 1; j < lines.size(); j++)
       {
         LineIntersection intersection(lines[i], lines[j]);
-        if (intersection.type != LineIntersection::none)
-        {
+        if (intersection.type != LineIntersection::none) {
           intersections.push_back(intersection);
         }
       }//end for
@@ -293,15 +294,14 @@ public:
   void draw(DrawingCanvas2D& canvas) const
   {
     canvas.pen("0000FF", 20);
-    for (unsigned int i = 0; i < lines.size(); i++)
-    {
+    for (size_t i = 0; i < lines.size(); ++i) {
       canvas.drawLine(lines[i].begin().x, lines[i].begin().y,
-        lines[i].end().x, lines[i].end().y);
+                      lines[i].end().x, lines[i].end().y);
     }
 
 
     canvas.pen("FF0000", 20);
-    for (unsigned int i = 0; i < intersections.size(); i++)
+    for (size_t i = 0; i < intersections.size(); ++i)
     {
       canvas.fillOval(intersections[i].pos.x, intersections[i].pos.y, 20, 20);
       switch(intersections[i].type)
@@ -338,10 +338,11 @@ public:
         {
           const int idx = getNearestLine(point, line_type[i]);
           closestPoints[x][y][i].id = idx;
-          if(idx != -1)
+          if(idx != -1) {
             closestPoints[x][y][i].position = lines[idx].projection(point);
-          else
+          } else {
             closestPoints[x][y][i].position = point;
+          }
         }
       }//end for
     }//end for
@@ -440,7 +441,8 @@ public:
     {
       if((type & line_type[i]) == line_type[i] && closestPoints[x][y][i].id != -1)
       {
-        double dist = (closestPoints[x][y][i].position - p).abs();
+        //NOTE: use the square distance because it's faster to calculate
+        double dist = (closestPoints[x][y][i].position - p).abs2(); 
         if(dist < minDist)
         {
           closestPoint = closestPoints[x][y][i];
@@ -471,14 +473,13 @@ public:
           double t = Math::clamp(d/(yWidth*ySize),0.0,1.0);
           Color color = white*t + black*(1-t);
           canvas.pen(color, 20);
-        }else
-        {
-          // noclosest line
+        } else {
+          // no closest line
           canvas.pen(white, 20);
         }
         canvas.fillBox(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
-      }//end for
-    }//end for
+      }
+    }
   }//end draw_closest_points
 
 
@@ -498,8 +499,8 @@ public:
         Color color = white*t + black*(1-t);
         canvas.pen(color, 20);
         canvas.fillBox(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
-      }//end for
-    }//end for
+      }
+    }
   }//end draw_closest_points
 
 
@@ -518,8 +519,8 @@ public:
         Color color = white*t + black*(1-t);
         canvas.pen(color, 20);
         canvas.fillBox(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
-      }//end for
-    }//end for
+      }
+    }
   }//end draw_closest_points
 
 };//end class LinesTable

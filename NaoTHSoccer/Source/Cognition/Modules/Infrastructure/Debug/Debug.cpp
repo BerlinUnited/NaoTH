@@ -257,7 +257,7 @@ void Debug::draw3D()
   // draw ball model in 3D viewer
   DEBUG_REQUEST("3DViewer:Ball", 
     Vector3d ballPos = robotPose3D * Vector3d(getBallModel().position.x, getBallModel().position.y, getFieldInfo().ballRadius);
-    SPHERE(getFieldInfo().ballColor, getFieldInfo().ballRadius, ballPos);
+    SPHERE(ColorClasses::orange, getFieldInfo().ballRadius, ballPos);
   );
 
   DEBUG_REQUEST("3DViewer:kinematic_chain:links",
