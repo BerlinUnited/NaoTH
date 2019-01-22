@@ -234,19 +234,26 @@ public:
   }//end calculateCircle
 	
 
-  class Rect2d {
+  class Rect2d 
+  {
   private:
     Vector2d minimum;
     Vector2d maximum;
 
   public:
     Rect2d() {}
+
     Rect2d(const Vector2d& a, const Vector2d& b) 
 	    :
 	    minimum(std::min(a.x,b.x), std::min(a.y,b.y)),
 	    maximum(std::max(a.x,b.x), std::max(a.y,b.y))
 	  {
     }
+
+    Rect2d(double x0, double y0, double x1, double y1) :
+      minimum(std::min(x0,x1), std::min(y0,y1)),
+	    maximum(std::max(x0,x1), std::max(y0,y1))
+    {}
 
     inline bool inside(const Vector2d& p) const {
        return maximum.x >= p.x && p.x >= minimum.x &&

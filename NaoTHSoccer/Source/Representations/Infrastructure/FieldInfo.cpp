@@ -72,14 +72,15 @@ void FieldInfo::calculateCrossings()
   yPosRightSideline       = -yPosLeftSideline;
 
   //Extra stuff for the Simulator
-  xThrowInLineOwn = xPosOwnGroundline+1000;
-  xThrowInLineOpp = -xThrowInLineOwn;
+  xThrowInLineOwn   = xPosOwnGroundline+1000;
+  xThrowInLineOpp   = -xThrowInLineOwn;
 
   yThrowInLineLeft  = yPosLeftSideline-400;
   yThrowInLineRight = -yThrowInLineLeft;
+  
   //Calculate Points
-  leftThrowInPointOwn = Vector2d(xThrowInLineOwn,yThrowInLineLeft);
-  leftThrowInPointOpp = Vector2d(xThrowInLineOpp,yThrowInLineLeft);
+  leftThrowInPointOwn  = Vector2d(xThrowInLineOwn,yThrowInLineLeft);
+  leftThrowInPointOpp  = Vector2d(xThrowInLineOpp,yThrowInLineLeft);
 
   rightThrowInPointOwn = Vector2d(xThrowInLineOwn,yThrowInLineRight);  
   rightThrowInPointOpp = Vector2d(xThrowInLineOpp,yThrowInLineRight);
@@ -117,17 +118,16 @@ void FieldInfo::calculateCrossings()
   ownGoalPostRight  = Vector2d(xPosOwnGoal-25, yPosRightGoalpost);
   ownGoalCenter     = Vector2d(xPosOwnGoal-25, 0.0);
 
-  carpetRect  = Geometry::Rect2d(Vector2d(-xFieldLength*0.5, -yFieldLength*0.5), Vector2d(xFieldLength*0.5, yFieldLength*0.5));
-  ownHalfRect = Geometry::Rect2d(Vector2d(-xLength*0.5, -yLength*0.5), Vector2d(0, yLength*0.5));
-  fieldRect   = Geometry::Rect2d(Vector2d(-xLength*0.5, -yLength*0.5), Vector2d(xLength*0.5, yLength*0.5));
-  oppHalfRect = Geometry::Rect2d(Vector2d(0, -yLength*0.5), Vector2d(xLength*0.5, yLength*0.5));
+  carpetRect  = Geometry::Rect2d(-xFieldLength*0.5, -yFieldLength*0.5, xFieldLength*0.5, yFieldLength*0.5);
+  fieldRect   = Geometry::Rect2d(-xLength*0.5     , -yLength*0.5     , xLength*0.5     , yLength*0.5);
+  ownHalfRect = Geometry::Rect2d(-xLength*0.5     , -yLength*0.5     , 0               , yLength*0.5);
+  oppHalfRect = Geometry::Rect2d( 0               , -yLength*0.5     , xLength*0.5     , yLength*0.5);
 
-
-  ownGoalBackLeft  = Vector2d(ownGoalPostLeft.x - goalDepth, ownGoalPostLeft.y);
+  ownGoalBackLeft  = Vector2d(ownGoalPostLeft.x  - goalDepth, ownGoalPostLeft.y);
   ownGoalBackRight = Vector2d(ownGoalPostRight.x - goalDepth, ownGoalPostRight.y);  
   ownGoalRect      = Geometry::Rect2d(ownGoalBackRight, ownGoalPostLeft); 
 
-  oppGoalBackLeft  = Vector2d(opponentGoalPostLeft.x + goalDepth, opponentGoalPostLeft.y);
+  oppGoalBackLeft  = Vector2d(opponentGoalPostLeft.x  + goalDepth, opponentGoalPostLeft.y);
   oppGoalBackRight = Vector2d(opponentGoalPostRight.x + goalDepth, opponentGoalPostRight.y);
   oppGoalRect      = Geometry::Rect2d(oppGoalBackRight, opponentGoalPostLeft);
 
