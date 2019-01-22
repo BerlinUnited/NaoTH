@@ -68,11 +68,11 @@ void Serializer<LinePercept>::serialize(const LinePercept& representation, std::
   // intersections
   for(size_t i=0; i < representation.intersections.size(); i++)
   {
-    naothmessages::Intersection* intersection = p.add_intersections();
+    naothmessages::LinePercept::Intersection* intersection = p.add_intersections();
     const LinePercept::Intersection& percept = representation.intersections[i];
     //intersections[i].fillProtobuf(newIntersection);
 
-    intersection->set_type((naothmessages::Intersection_IntersectionType) percept.getType());
+    intersection->set_type((naothmessages::LinePercept_Intersection_IntersectionType) percept.getType());
     intersection->mutable_posinimage()->set_x(percept.getPos().x);
     intersection->mutable_posinimage()->set_y(percept.getPos().y);
     intersection->mutable_posonfield()->set_x(percept.getPosOnField().x);
@@ -157,11 +157,12 @@ void Serializer<LinePercept>::deserialize(std::istream& stream, LinePercept& rep
   for(int i=0; i < p.intersections_size(); i++)
   {
     LinePercept::Intersection percept;
-    const naothmessages::Intersection& msg = p.intersections(i);
+    const naothmessages::LinePercept::Intersection& msg = p.intersections(i);
     //intersection.readFromProtobuf(&p.intersections(i));
 
-    if(msg.has_type())
+    if(msg.has_type()) {
       percept.setType((LineIntersection::Type) msg.type());
+    }
 
     if(msg.has_posinimage())
     {
