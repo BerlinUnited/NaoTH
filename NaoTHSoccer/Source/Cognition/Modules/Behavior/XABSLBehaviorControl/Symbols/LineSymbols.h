@@ -20,6 +20,7 @@
 
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugRequest.h"
+
 BEGIN_DECLARE_MODULE(LineSymbols)
   REQUIRE(LinePercept)
   REQUIRE(FrameInfo)
@@ -33,12 +34,10 @@ class LineSymbols: public LineSymbolsBase
 
 public:
   LineSymbols()
-  :
-  linePercept(getLinePercept()),
-  frameInfo(getFrameInfo())
   {
     theInstance = this;
-  };
+  }
+
   virtual ~LineSymbols(){}
   
   /** registers the symbols at an engine */
@@ -54,11 +53,6 @@ private:
   static double getAngleToEstOrthPoint();
   static double getDistanceToClosestPoint();
   static double getAngleToClosestPoint();
-
-  // representations
-  const LinePercept& linePercept;
-  const naoth::FrameInfo& frameInfo;
-
 
   // small filter for the line points
   RingBuffer<Vector2d, 10> linePointsBuffer;

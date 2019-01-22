@@ -19,21 +19,21 @@ void LineSymbols::registerSymbols(xabsl::Engine& engine)
 {
 
   //general line symbols
-  engine.registerBooleanInputSymbol("line.was_seen", &linePercept.lineWasSeen); 
+  engine.registerBooleanInputSymbol("line.was_seen", &getLinePercept().lineWasSeen); 
   engine.registerDecimalInputSymbol("line.time_since_last_seen", &getLineTimeSinceLastSeen); 
 
   //Symbols for the estimated orthogonal point of a seen line
-  engine.registerDecimalInputSymbol("line.closest.estOrthPoint.x", &linePercept.estOrthPointOfClosestLine.x);
-  engine.registerDecimalInputSymbol("line.closest.estOrthPoint.y", &linePercept.estOrthPointOfClosestLine.y);
+  engine.registerDecimalInputSymbol("line.closest.estOrthPoint.x", &getLinePercept().estOrthPointOfClosestLine.x);
+  engine.registerDecimalInputSymbol("line.closest.estOrthPoint.y", &getLinePercept().estOrthPointOfClosestLine.y);
   engine.registerDecimalInputSymbol("line.closest.estDistance", &getEstDistanceToOrthPoint);
   engine.registerDecimalInputSymbol("line.closest.estOrthPoint.angle", &getAngleToEstOrthPoint);
 
   //Symbols for the closest point of the closest seen line
-  engine.registerDecimalInputSymbol("line.closest.closestPoint.x", &linePercept.closestPointOfClosestLine.x);
-  engine.registerDecimalInputSymbol("line.closest.closestPoint.y", &linePercept.closestPointOfClosestLine.y);
+  engine.registerDecimalInputSymbol("line.closest.closestPoint.x", &getLinePercept().closestPointOfClosestLine.x);
+  engine.registerDecimalInputSymbol("line.closest.closestPoint.y", &getLinePercept().closestPointOfClosestLine.y);
   engine.registerDecimalInputSymbol("line.closest.distance", &getDistanceToClosestPoint);
   engine.registerDecimalInputSymbol("line.closest.closestPoint.angle", &getAngleToEstOrthPoint);
-  engine.registerDecimalInputSymbol("line.closest.length", &linePercept.closestLineSeenLength);
+  engine.registerDecimalInputSymbol("line.closest.length", &getLinePercept().closestLineSeenLength);
 
 
   engine.registerDecimalInputSymbol("line.closest.projection.x", &linePointsBufferMean.x);
@@ -55,7 +55,7 @@ void LineSymbols::execute()
 
   if(getLinePercept().lineWasSeen)
   {
-    linePointsBuffer.add(linePercept.estOrthPointOfClosestLine);
+    linePointsBuffer.add(getLinePercept().estOrthPointOfClosestLine);
   }
 
   if(linePointsBuffer.size() > 0)
@@ -81,31 +81,26 @@ void LineSymbols::execute()
 
 double LineSymbols::getLineTimeSinceLastSeen()
 {
-  return theInstance->frameInfo.getTimeSince(
-    theInstance->linePercept.frameInfoWhenLineWasSeen.getTime());
-
-}//end getLineTimeSinceLastSeen
+  return theInstance->getFrameInfo().getTimeSince(
+    theInstance->getLinePercept().frameInfoWhenLineWasSeen.getTime());
+}
 
 double LineSymbols::getEstDistanceToOrthPoint()
 {
-  return theInstance->linePercept.estOrthPointOfClosestLine.abs();
-
-}//end getEstDistanceToOrthPoint
+  return theInstance->getLinePercept().estOrthPointOfClosestLine.abs();
+}
 
 double LineSymbols::getAngleToEstOrthPoint()
 {
-  return Math::toDegrees(theInstance->linePercept.closestPointOfClosestLine.angle());
-
-}//end getAngleToEstOrthPoint
+  return Math::toDegrees(theInstance->getLinePercept().closestPointOfClosestLine.angle());
+}
 
 double LineSymbols::getDistanceToClosestPoint()
 {
-  return theInstance->linePercept.closestPointOfClosestLine.abs();
-
-}//end getDistanceToClosestPoint
+  return theInstance->getLinePercept().closestPointOfClosestLine.abs();
+}
 
 double LineSymbols::getAngleToClosestPoint()
 {
-  return Math::toDegrees(theInstance->linePercept.estOrthPointOfClosestLine.angle());
-
-}//end getAngleToClosestPoint
+  return Math::toDegrees(theInstance->getLinePercept().estOrthPointOfClosestLine.angle());
+}
