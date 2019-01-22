@@ -61,7 +61,7 @@ BEGIN_DECLARE_MODULE(PerceptionsVisualizer)
   REQUIRE(LinePerceptTop)
   REQUIRE(ScanLineEdgelPercept)
   REQUIRE(ScanLineEdgelPerceptTop)
-  REQUIRE(RansacCirclePercept)
+  //REQUIRE(RansacCirclePercept)
 
   REQUIRE(RansacLinePercept)
   REQUIRE(ShortLinePercept)

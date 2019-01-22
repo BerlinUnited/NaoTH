@@ -408,6 +408,8 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
     }//end for
   ); // end line_percept in image_px
 
+  /*
+  // FIXME: deprecated
   DEBUG_REQUEST("PerceptionsVisualizer:field:ransac_circle_percept",
     if(getRansacCirclePercept().middleCircleWasSeen) {
       FIELD_DRAWING_CONTEXT;
@@ -417,6 +419,7 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
              getFieldInfo().centerCircleRadius);
     }
   );
+  */
 
   DEBUG_REQUEST("PerceptionsVisualizer:field:players_percept",
     FIELD_DRAWING_CONTEXT;

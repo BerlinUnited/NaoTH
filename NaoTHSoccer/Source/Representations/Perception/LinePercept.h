@@ -51,7 +51,7 @@ public:
       :
       thickness(0.0),
       angle(0.0),
-      type(LinePercept::unknown),
+      //type(LinePercept::unknown),
       valid(false)
     {}
 
@@ -63,7 +63,7 @@ public:
     double angle;
 
     /** the type of the line estimated in image */
-    LineType type;
+    //LineType type;
 
     // what do we need it for?
     bool valid;
@@ -112,7 +112,7 @@ public:
     {}
     Vector2d seenPosOnField;
     Vector2d absolutePosOnField; // model of the flag (i.e. its known absolute osition on the field)
-  };//end class Flag
+  };
 
 
 
@@ -132,7 +132,6 @@ public:
     {
     }
 
-    
     void setSegments(int segOne, int segTwo)
     {
       segmentIndices[0] = segOne;
@@ -151,7 +150,6 @@ public:
     void setPosOnField(const Vector2d& p) { posOnField = p; }
     void setPosInImage(const Vector2<unsigned int>& p) { pos = p; }
     
-
     // getters
     LineIntersection::Type getType() const { return type; }
     const Vector2<unsigned int>& getSegmentIndices() const { return segmentIndices; }
@@ -181,11 +179,12 @@ public:
   // middle circle was seen
   bool middleCircleWasSeen;
   Vector2d middleCircleCenter;
+
   bool middleCircleOrientationWasSeen;
   Vector2d middleCircleOrientation;
 
 
-  // representationc for the closest line
+  // representation for the closest line
   // TODO: this calculations can be made sowhere else
   double closestLineSeenLength;
   Vector2d closestPoint;
@@ -241,13 +240,15 @@ public:
   virtual ~LinePerceptTop() {}
 };
 
+/*
+// FIXME: deprecated
 class RansacCirclePercept
 {
 public:
   bool middleCircleWasSeen;
   Vector2d middleCircleCenter;
 
-  /* reset percept */
+  // reset percept
   void reset()
   {
     middleCircleWasSeen = false;
@@ -262,6 +263,7 @@ public:
 
   ~RansacCirclePercept() {}
 };
+*/
 
 namespace naoth
 {
