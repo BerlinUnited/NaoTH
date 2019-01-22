@@ -92,6 +92,7 @@ namespace strategy("Strategy Symbols") {
   {
     none,
     supporter,
+    goalie_supporter,
     striker
   };
   

@@ -46,74 +46,64 @@ option roles_decide_role
   }
 
   state defender_left {
-    action
-    {
-      // TODO: defender(true);
-      roles_go_to_passive_position();
+    action {
+      role_defender_left();
     }
   }
 
   state defender_center {
     action
     {
-      // TODO: defender(false);
-      roles_go_to_passive_position();
+      role_defender_center();
     }
   }
 
   state defender_right {
     action
     {
-      // TODO: defender(false);
-      roles_go_to_passive_position();
+      role_defender_right();
     }
   }
 
   state midfielder_left {
     action
     {
-      // TODO: defender(true);
-      roles_go_to_passive_position();
+      role_midfielder_left();
     }
   }
 
   state midfielder_center {
     action
     {
-      // TODO: defender(false);
-      roles_go_to_passive_position();
+      role_midfielder_center();
     }
   }
 
   state midfielder_right {
     action
     {
-      // TODO: defender(false);
-      roles_go_to_passive_position();
+      role_midfielder_right();
     }
   }
 
   state forward_left {
     action
     {
-      // TODO: defender(true);
-      roles_go_to_passive_position();
+      role_forward_left();
     }
   }
 
   state forward_center {
     action
     {
-      // TODO: defender(false);
-      roles_go_to_passive_position();
+      role_forward_center();
     }
   }
 
   state forward_right {
     action
     {
-      // TODO: defender(false);
-      roles_go_to_passive_position();
+      role_forward_right();
     }
   }
 

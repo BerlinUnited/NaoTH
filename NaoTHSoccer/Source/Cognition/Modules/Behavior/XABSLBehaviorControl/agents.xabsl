@@ -262,6 +262,16 @@ include "Options/Test/walk/walk_forward.xabsl";
 include "Options/Test/strategy/role_change_test.xabsl";
 include "Options/Test/strategy/role_change_goalie_test.xabsl";
 
+include "Options/Test/roles/role_defender_left.xabsl";
+include "Options/Test/roles/role_defender_center.xabsl";
+include "Options/Test/roles/role_defender_right.xabsl";
+include "Options/Test/roles/role_midfielder_left.xabsl";
+include "Options/Test/roles/role_midfielder_center.xabsl";
+include "Options/Test/roles/role_midfielder_right.xabsl";
+include "Options/Test/roles/role_forward_left.xabsl";
+include "Options/Test/roles/role_forward_center.xabsl";
+include "Options/Test/roles/role_forward_right.xabsl";
+
 include "Options/Test/roles/roles_go_to_ready_position.xabsl";
 include "Options/Test/roles/roles_go_to_passive_position.xabsl";
 include "Options/Test/roles/roles_decide_role.xabsl";
