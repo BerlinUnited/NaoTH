@@ -42,16 +42,15 @@ VirtualVisionProcessor::VirtualVisionProcessor()
   cornerNames.insert("F2L");
   cornerNames.insert("F2R");
 
-  const FieldInfo& theFieldInfo = getFieldInfo();
-  flagPosOnField[GameData::blue]["F1L"] = theFieldInfo.crossings[FieldInfo::ownCornerLeft].position;
-  flagPosOnField[GameData::blue]["F2L"] = theFieldInfo.crossings[FieldInfo::ownCornerRight].position;
-  flagPosOnField[GameData::blue]["F1R"] = theFieldInfo.crossings[FieldInfo::opponentCornerLeft].position;
-  flagPosOnField[GameData::blue]["F2R"] = theFieldInfo.crossings[FieldInfo::opponentCornerRight].position;
+  flagPosOnField[GameData::blue]["F1L"] = getFieldInfo().crossings[FieldInfo::ownCornerLeft].position;
+  flagPosOnField[GameData::blue]["F2L"] = getFieldInfo().crossings[FieldInfo::ownCornerRight].position;
+  flagPosOnField[GameData::blue]["F1R"] = getFieldInfo().crossings[FieldInfo::opponentCornerLeft].position;
+  flagPosOnField[GameData::blue]["F2R"] = getFieldInfo().crossings[FieldInfo::opponentCornerRight].position;
 
-  flagPosOnField[GameData::red]["F1L"] = theFieldInfo.crossings[FieldInfo::opponentCornerRight].position;
-  flagPosOnField[GameData::red]["F2L"] = theFieldInfo.crossings[FieldInfo::opponentCornerLeft].position;
-  flagPosOnField[GameData::red]["F1R"] = theFieldInfo.crossings[FieldInfo::ownCornerRight].position;
-  flagPosOnField[GameData::red]["F2R"] = theFieldInfo.crossings[FieldInfo::ownCornerLeft].position;
+  flagPosOnField[GameData::red]["F1L"] = getFieldInfo().crossings[FieldInfo::opponentCornerRight].position;
+  flagPosOnField[GameData::red]["F2L"] = getFieldInfo().crossings[FieldInfo::opponentCornerLeft].position;
+  flagPosOnField[GameData::red]["F1R"] = getFieldInfo().crossings[FieldInfo::ownCornerRight].position;
+  flagPosOnField[GameData::red]["F2R"] = getFieldInfo().crossings[FieldInfo::ownCornerLeft].position;
 
   DEBUG_REQUEST_REGISTER("VirtualVisionProcessor:corner_flags", "draw the corner flags", false);
 
