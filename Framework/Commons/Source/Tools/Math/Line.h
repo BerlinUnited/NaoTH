@@ -88,6 +88,13 @@ public:
     direction.normalize();
   }
 
+  template <class V>
+  LineSegment(const Vector2<V>& base, const Vector2<V>& direction, double length)
+    : Line(base,direction),
+      length(length)
+  {
+  }
+
   ~LineSegment(){}
 
   const Vector2d& begin() const { return base; }
