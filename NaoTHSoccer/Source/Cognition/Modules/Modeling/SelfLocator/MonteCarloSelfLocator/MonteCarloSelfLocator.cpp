@@ -229,7 +229,7 @@ void MonteCarloSelfLocator::execute()
       sensorResetBySensingGoalModel(theSampleSet, (int)theSampleSet.size() - 1);
       if(parameters.sensorResetByMiddleCircle) {
         //sensorResetByMiddleCircle(theSampleSet, getRansacCirclePercept().middleCircleCenter);
-        sensorResetByMiddleCircle(theSampleSet, getRansacCirclePercept2018().center);
+        sensorResetByMiddleCircle(theSampleSet, getLinePerceptAugmented());
       }
 
       // estimate the state
@@ -300,7 +300,7 @@ void MonteCarloSelfLocator::execute()
 
       if(parameters.sensorResetByMiddleCircle) {
         //sensorResetByMiddleCircle(theSampleSet, getRansacCirclePercept().middleCircleCenter);
-        sensorResetByMiddleCircle(theSampleSet, getRansacCirclePercept2018().center);
+        sensorResetByMiddleCircle(theSampleSet, getLinePerceptAugmented());
       }
 
       calculatePose(theSampleSet);
@@ -1346,43 +1346,17 @@ int MonteCarloSelfLocator::sensorResetBySensingGoalModel(SampleSet& sampleSet, i
 }//end sensorResetBySensingGoalModel
 
 
-void MonteCarloSelfLocator::sensorResetByMiddleCircle(SampleSet& sampleSet, const Vector2d& middleCircleCenter) const
+void MonteCarloSelfLocator::sensorResetByMiddleCircle(SampleSet& sampleSet, const LinePerceptAugmented& linePerceptAugmented) const
 {
- 
-  // HACK: this has to go womewhere else
-  bool middleCircleOrientationWasSeen = false;
-  Vector2d middleCircleOrientation;
-
-  if(getRansacCirclePercept2018().wasSeen)
-  {
-    for(size_t i = 0; i < getRansacLinePercept().fieldLineSegments.size(); i++)
-    {
-      double d = getRansacLinePercept().fieldLineSegments[i].minDistance(getRansacCirclePercept2018().center);
-      if(d < 50.0) {
-        middleCircleOrientation = getRansacLinePercept().fieldLineSegments[i].getDirection();
-        middleCircleOrientationWasSeen = true;
-      }
-    }
-
-    if (!middleCircleOrientationWasSeen)
-    {
-      for(size_t i = 0; i < getShortLinePercept().fieldLineSegments.size(); i++)
-      {
-        double d = getShortLinePercept().fieldLineSegments[i].minDistance(getRansacCirclePercept2018().center);
-        if(d < 50.0) {
-          middleCircleOrientation = getShortLinePercept().fieldLineSegments[i].getDirection();
-          middleCircleOrientationWasSeen = true;
-        }
-      }
-    }
-  }
-
-  if(!middleCircleOrientationWasSeen) {
+  if(!getLinePerceptAugmented().middleCircleOrientationWasSeen) {
     return;
   }
   
-  Pose2D centerLeft  = Pose2D(Vector2d(middleCircleOrientation).rotateLeft().angle(), middleCircleCenter).invert();
-  Pose2D centerRight = Pose2D(Vector2d(middleCircleOrientation).rotateRight().angle(), middleCircleCenter).invert();
+  const Vector2d direction = getLinePerceptAugmented().centerLine.getDirection();
+  const Vector2d& center = getLinePerceptAugmented().middleCircleCenter;
+
+  Pose2D centerLeft  = Pose2D(Vector2d(direction).rotateLeft().angle(), center).invert();
+  Pose2D centerRight = Pose2D(Vector2d(direction).rotateRight().angle(), center).invert();
   
   DEBUG_REQUEST("MCSLS:draw_sensorResetByMiddleCircle",
     FIELD_DRAWING_CONTEXT;

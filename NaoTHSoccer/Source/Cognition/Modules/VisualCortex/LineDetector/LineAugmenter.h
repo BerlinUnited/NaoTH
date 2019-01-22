@@ -23,10 +23,12 @@ BEGIN_DECLARE_MODULE(LineAugmenter)
   PROVIDE(DebugParameterList)
 
   REQUIRE(FieldInfo)
+
   REQUIRE(RansacCirclePercept2018)
+  REQUIRE(RansacLinePercept)
+  REQUIRE(ShortLinePercept)
   
   PROVIDE(LinePerceptAugmented)
-  
 END_DECLARE_MODULE(LineAugmenter)
 
 class LineAugmenter: public LineAugmenterBase
@@ -38,7 +40,8 @@ public:
  virtual void execute();
 
 private:
-  //
+  void calculateCenterLine();
+
 };
 
 #endif // _LineAugmenter_H

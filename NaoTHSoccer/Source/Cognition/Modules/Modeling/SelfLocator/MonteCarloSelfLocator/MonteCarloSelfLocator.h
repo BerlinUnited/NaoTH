@@ -37,6 +37,7 @@
 #include "Representations/Perception/GoalPercept.h"
 //#include "Representations/Perception/LinePercept.h"
 #include "Representations/Perception/LinePercept2018.h"
+#include "Representations/Perception/LinePerceptAugmented.h"
 
 // local models
 #include "Representations/Modeling/ProbabilisticQuadCompas.h"
@@ -92,6 +93,7 @@ BEGIN_DECLARE_MODULE(MonteCarloSelfLocator)
   REQUIRE(RansacLinePercept)
   REQUIRE(RansacCirclePercept2018)
   REQUIRE(ShortLinePercept)
+  REQUIRE(LinePerceptAugmented)
 
   PROVIDE(RobotPose)
   PROVIDE(SelfLocGoalModel)
@@ -333,7 +335,7 @@ private: // workers
   int resampleSUS(SampleSet& sampleSet, int n) const;
 
   int sensorResetBySensingGoalModel(SampleSet& sampleSet, int n) const;
-  void sensorResetByMiddleCircle(SampleSet& sampleSet, const Vector2d& middleCircleCenter) const;
+  void sensorResetByMiddleCircle(SampleSet& sampleSet, const LinePerceptAugmented& linePerceptAugmented) const;
 
   void calculatePose(SampleSet& sampleSet);
 
