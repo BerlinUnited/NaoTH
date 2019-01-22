@@ -16,7 +16,7 @@ void RoleDecision::execute()
         }
     } else {
         // determine the best role for each player in the team context
-        std::map<unsigned int, RoleDecisionModel::StaticRole> new_roles;
+        std::map<unsigned int, RM::StaticRole> new_roles;
 
         // - more roles than players
         // - same number of roles and players
@@ -26,6 +26,10 @@ void RoleDecision::execute()
         // - optimize role selection
         //   - simple: the robot closest to the role's position, takes the role => not optimal!
         //   - find an optimal solution?
+
+        // the goalie is always goalie! (should never change)
+        keepGoalie(new_roles);
+
         roleAssignmentBySmallestDistance(new_roles);
 
         // based on smallest distance
@@ -38,13 +42,13 @@ void RoleDecision::execute()
         // TODO: players, which doesn't get a (new) role, should the 'unknown' role assigned
         for (const auto& i : getTeamMessage().data) {
             if(new_roles.find(i.first) == new_roles.cend()) {
-                roleChange(i.first, RoleDecisionModel::unknown);
+                roleChange(i.first, RM::unknown);
             }
         }
     }
 }
 
-void RoleDecision::roleAssignmentBySmallestDistance(std::map<unsigned int, RoleDecisionModel::StaticRole>& new_roles)
+void RoleDecision::roleAssignmentBySmallestDistance(std::map<unsigned int, RM::StaticRole>& new_roles)
 {
     // determine the distance between each robot/role and assign the role nearest to the robot
     for (const auto& r : params.priority_role) {
@@ -68,20 +72,36 @@ void RoleDecision::roleAssignmentBySmallestDistance(std::map<unsigned int, RoleD
     }
 }
 
-void RoleDecision::roleAssignmentBySmallestTeamDistance(std::map<unsigned int, RoleDecisionModel::StaticRole>& new_roles) {
+void RoleDecision::roleAssignmentBySmallestTeamDistance(std::map<unsigned int, RM::StaticRole>& new_roles) {
     // TODO: the sum of distances the whole team has to move must be minizied
+    unsigned int i = 1;
+    for (const auto& r : params.priority_role) {
+        new_roles[i] = r;
+    }
 }
 
-void RoleDecision::roleChange(unsigned int playernumber, RoleDecisionModel::StaticRole role) {
+void RoleDecision::roleChange(unsigned int playernumber, RM::StaticRole role) {
     // set the new role for the player
     getRoleDecisionModel().roles[playernumber] = params.default_roles[role];
-    getRoleDecisionModel().roles[playernumber].dynamic = RoleDecisionModel::none;
+    getRoleDecisionModel().roles[playernumber].dynamic = RM::none;
     // reset change counter
     role_changes[playernumber].first = 0;
     role_changes[playernumber].second = role;
 }
 
-void RoleDecision::roleChangeByCycle(std::map<unsigned int, RoleDecisionModel::StaticRole>& new_roles)
+void RoleDecision::keepGoalie(std::map<unsigned int, RM::StaticRole>& new_roles) {
+    // find the player with the goalie role
+    const auto& goalie = std::find_if(
+                getRoleDecisionModel().roles.cbegin(),
+                getRoleDecisionModel().roles.cend(),
+                [](const std::pair<const unsigned int,RM::Role>& r) {return r.second.role == RM::goalie; });
+    // set the new role to goale (again)
+    if(goalie != getRoleDecisionModel().roles.end()) {
+        new_roles[goalie->first] = RM::goalie;
+    }
+}
+
+void RoleDecision::roleChangeByCycle(std::map<unsigned int, RM::StaticRole>& new_roles)
 {
     for(const auto& n : new_roles) {
         if(getRoleDecisionModel().roles[n.first].role == n.second) {
@@ -106,7 +126,7 @@ void RoleDecision::roleChangeByCycle(std::map<unsigned int, RoleDecisionModel::S
     }
 }
 
-void RoleDecision::roleChangeByTime(std::map<unsigned int, RoleDecisionModel::StaticRole>& new_roles)
+void RoleDecision::roleChangeByTime(std::map<unsigned int, RM::StaticRole>& new_roles)
 {
     for(const auto& a : new_roles) {
         if(getRoleDecisionModel().roles[a.first].role == a.second) {

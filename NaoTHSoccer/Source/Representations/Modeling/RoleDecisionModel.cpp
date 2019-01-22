@@ -14,8 +14,8 @@ std::string RoleDecisionModel::getName(StaticRole role) {
         case forward_left:      return "forward_left";
         case forward_center:    return "forward_center";
         case forward_right:     return "forward_right";
+        default:                return "invalid";
     }
-    return "invalid";
 }
 
 RoleDecisionModel::StaticRole RoleDecisionModel::getStaticRole(std::string name)
@@ -40,8 +40,8 @@ std::string RoleDecisionModel::getName(DynamicRole role) {
         case supporter:         return "supporter";
         case goalie_supporter:  return "goalie_supporter";
         case striker:           return "striker";
+        default:                return "invalid";
     }
-    return "invalid";
 }
 
 RoleDecisionModel::DynamicRole RoleDecisionModel::getDynamicRole(std::string name)

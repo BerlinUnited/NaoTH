@@ -40,6 +40,9 @@ BEGIN_DECLARE_MODULE(RoleDecision)
 END_DECLARE_MODULE(RoleDecision);
 
 
+typedef RoleDecisionModel RM;
+
+
 class RoleDecision : public RoleDecisionBase
 {
 public:
@@ -89,24 +92,24 @@ private:
             parseAssignment();
             parsePriority();
             // parse role positions
-            parsePosition(goalie_str, RoleDecisionModel::goalie);
-            parsePosition(defender_left_str, RoleDecisionModel::defender_left);
-            parsePosition(defender_center_str, RoleDecisionModel::defender_center);
-            parsePosition(defender_right_str, RoleDecisionModel::defender_right);
-            parsePosition(midfielder_left_str, RoleDecisionModel::midfielder_left);
-            parsePosition(midfielder_center_str, RoleDecisionModel::midfielder_center);
-            parsePosition(midfielder_right_str, RoleDecisionModel::midfielder_right);
-            parsePosition(forward_left_str, RoleDecisionModel::forward_left);
-            parsePosition(forward_center_str, RoleDecisionModel::forward_center);
-            parsePosition(forward_right_str, RoleDecisionModel::forward_right);
+            parsePosition(goalie_str, RM::goalie);
+            parsePosition(defender_left_str, RM::defender_left);
+            parsePosition(defender_center_str, RM::defender_center);
+            parsePosition(defender_right_str, RM::defender_right);
+            parsePosition(midfielder_left_str, RM::midfielder_left);
+            parsePosition(midfielder_center_str, RM::midfielder_center);
+            parsePosition(midfielder_right_str, RM::midfielder_right);
+            parsePosition(forward_left_str, RM::forward_left);
+            parsePosition(forward_center_str, RM::forward_center);
+            parsePosition(forward_right_str, RM::forward_right);
         }
         virtual ~Parameters() {}
 
         std::string assignment;
-        std::map<unsigned int, RoleDecisionModel::StaticRole> assignment_role;
+        std::map<unsigned int, RM::StaticRole> assignment_role;
 
         std::string active_priority;
-        std::vector<RoleDecisionModel::StaticRole> priority_role;
+        std::vector<RM::StaticRole> priority_role;
 
         double base_x;
         double base_y;
@@ -125,7 +128,7 @@ private:
         std::string forward_center_str;
         std::string forward_right_str;
 
-        std::map<RoleDecisionModel::StaticRole, RoleDecisionModel::Role> default_roles;
+        std::map<RM::StaticRole, RM::Role> default_roles;
 
         int minChangingCycles;
         double minChangingTime;
@@ -135,11 +138,11 @@ private:
             for(const std::string& part : parts) {
                 std::vector<std::string> assign_part = split(part, ':');
                 ASSERT(assign_part.size() == 2);
-                assignment_role[static_cast<unsigned int>(std::stoul(assign_part[0]))] = RoleDecisionModel::getStaticRole(assign_part[1]);
+                assignment_role[static_cast<unsigned int>(std::stoul(assign_part[0]))] = RM::getStaticRole(assign_part[1]);
             }
         }
 
-        void parsePosition(std::string& positions, RoleDecisionModel::StaticRole role)
+        void parsePosition(std::string& positions, RM::StaticRole role)
         {
             auto& r = default_roles[role];
             r.role = role;
@@ -168,23 +171,23 @@ private:
         void parsePriority() {
             std::vector<std::string> parts = split(active_priority, ';');
             for(const std::string& part : parts) {
-                RoleDecisionModel::StaticRole r = RoleDecisionModel::getStaticRole(part);
+                RM::StaticRole r = RM::getStaticRole(part);
                 ASSERT(RoleDecisionModel::unknown != r);
                 priority_role.push_back(r);
             }
         }
     } params;
 
-    std::map<unsigned int, std::pair<double, RoleDecisionModel::StaticRole>> role_changes;
+    std::map<unsigned int, std::pair<double, RM::StaticRole>> role_changes;
 
-    void roleAssignmentBySmallestDistance(std::map<unsigned int, RoleDecisionModel::StaticRole>& new_roles);
-    void roleAssignmentBySmallestTeamDistance(std::map<unsigned int, RoleDecisionModel::StaticRole>& new_roles);
+    void roleAssignmentBySmallestDistance(std::map<unsigned int, RM::StaticRole>& new_roles);
+    void roleAssignmentBySmallestTeamDistance(std::map<unsigned int, RM::StaticRole>& new_roles);
 
-    inline void roleChange(unsigned int playernumber, RoleDecisionModel::StaticRole role);
+    inline void roleChange(unsigned int playernumber, RM::StaticRole role);
+    inline void keepGoalie(std::map<unsigned int, RM::StaticRole>& new_roles);
 
-    void roleChangeByCycle(std::map<unsigned int, RoleDecisionModel::StaticRole>& new_roles);
-    void roleChangeByTime(std::map<unsigned int, RoleDecisionModel::StaticRole>& new_roles);
-
+    void roleChangeByCycle(std::map<unsigned int, RM::StaticRole>& new_roles);
+    void roleChangeByTime(std::map<unsigned int, RM::StaticRole>& new_roles);
 
     // TODO: put this into commons?!
     static std::vector<std::string> split(std::string strToSplit, char delimeter)
