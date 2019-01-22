@@ -16,8 +16,6 @@
 #include "Representations/Perception/LineGraphPercept.h"
 #include "Representations/Perception/LinePercept2018.h"
 
-#include "Tools/Debug/DebugParameterList.h"
-
 #include "Ellipse.h"
 
 BEGIN_DECLARE_MODULE(RansacLineDetectorOnGraphs)
