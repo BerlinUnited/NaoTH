@@ -82,10 +82,6 @@
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiveEmulator.h"
 #include "Modules/Modeling/TeamMessageStatistics/TeamMessageStatisticsModule.h"
 #include "Modules/Modeling/TeamMessageStatistics/TeamMessagePlayersStateModule.h"
-#include "Modules/Modeling/RoleDecision/RoleDecision.h"
-#include "Modules/Modeling/RoleDecision/SimpleRoleDecision/SimpleRoleDecision.h"
-#include "Modules/Modeling/RoleDecision/StableRoleDecision/StableRoleDecision.h"
-#include "Modules/Modeling/RoleDecision/CleanRoleDecision/CleanRoleDecision.h"
 #include "Modules/Modeling/SoccerStrategyProvider/SoccerStrategyProvider.h"
 #include "Modules/Modeling/PotentialFieldProvider/PotentialFieldProvider.h"
 #include "Modules/Modeling/SelfLocator/GPS_SelfLocator/GPS_SelfLocator.h"
@@ -93,6 +89,13 @@
 #include "Modules/Modeling/SelfLocator/OdometrySelfLocator/OdometrySelfLocator.h"
 #include "Modules/Modeling/GoalModel/DummyActiveGoalLocator/DummyActiveGoalLocator.h"
 #include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
+
+// role decisions
+#include "Modules/Modeling/RoleDecision/RoleDecision.h"
+#include "Modules/Modeling/RoleDecision/RoleDecisionDynamic.h"
+#include "Modules/Modeling/RoleDecision/SimpleRoleDecision/SimpleRoleDecision.h"
+#include "Modules/Modeling/RoleDecision/StableRoleDecision/StableRoleDecision.h"
+#include "Modules/Modeling/RoleDecision/CleanRoleDecision/CleanRoleDecision.h"
 
 #include "Modules/Modeling/BallLocator/TeamBallLocator/TeamBallLocatorMedian.h"
 #include "Modules/Modeling/BallLocator/TeamBallLocator/TeamBallLocatorCanopyCluster.h"
@@ -217,7 +220,9 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(TeamBallLocatorMedian);
   REGISTER_MODULE(TeamBallLocatorCanopyCluster);
+  // role decisions
   REGISTER_MODULE(RoleDecision);
+  REGISTER_MODULE(RoleDecisionDynamic);
   REGISTER_MODULE(SimpleRoleDecision);
   REGISTER_MODULE(StableRoleDecision);
   REGISTER_MODULE(CleanRoleDecision);
