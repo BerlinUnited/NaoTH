@@ -35,6 +35,10 @@ public:
     none //the line segments don't intersect
   };
 
+  LineIntersection(Vector2i pos, Type type) 
+    : pos(pos), type(type)
+  {}
+
   LineIntersection(const Math::LineSegment& segmentOne, const Math::LineSegment& segmentTwo)
     //: segmentOne(segmentOne),
     //  segmentTwo(segmentTwo)
@@ -292,9 +296,18 @@ public:
   // NOTE: this is experimental - a general method to calculate intersections
   void calculateIntersections() 
   {
+    for (size_t i = 0; i < lines.size(); i++) {
+      for (size_t j = i + 1; j < lines.size(); j++)
+      {
+        LineIntersection intersection = estimateIntersection(lines[i], lines[j]);
+        if (intersection.type != LineIntersection::none && intersection.type != LineIntersection::unknown) {
+          intersections.push_back(intersection);
+        }
+      }
+    }
   }
 
-  void estimateIntersection(const Math::LineSegment& segmentOne, const Math::LineSegment& segmentTwo) 
+  LineIntersection estimateIntersection(const Math::LineSegment& segmentOne, const Math::LineSegment& segmentTwo) 
   {
     const double maxAngleDiff = 0.85;
     const double maxDistanceToIntersection = 100.0; // 10cm
@@ -315,7 +328,7 @@ public:
 
     LineIntersection::Type type = LineIntersection::none;
 
-    if(!nearSegmentOne || !nearSegmentOne) { // there is no meaningful intersection
+    if(!nearSegmentOne || !nearSegmentTwo) { // there is no meaningful intersection
       type = LineIntersection::none;
     } else if( insideSegmentOne && insideSegmentTwo) {
       type = LineIntersection::X;
@@ -327,16 +340,14 @@ public:
 
     // check the angle of the intersection
     if( angleDiff < maxAngleDiff || Math::pi - maxAngleDiff < angleDiff) {
-      if(type == LineIntersection::L) {
-        type = LineIntersection::E;
-      }
+      type = LineIntersection::E;
     } else if (angleDiff < 2.0*maxAngleDiff || Math::pi - 2.0*maxAngleDiff < angleDiff) {
-      if(type == LineIntersection::L) {
-        type = LineIntersection::C;
-      }
-    } else if( angleDiff < Math::pi_2 - maxAngleDiff || Math::pi_2 + maxAngleDiff < angleDiff) { // not right angle => weird angle
+      type = LineIntersection::C;
+    } else if( angleDiff < Math::pi_2 - maxAngleDiff || Math::pi_2 + maxAngleDiff < angleDiff) { // not a right angle => weird angle
       type = LineIntersection::unknown;
     }
+
+    return LineIntersection(segmentOne.point(t1), type);
   }
 
   /**
@@ -346,10 +357,8 @@ public:
   {
     canvas.pen("0000FF", 20);
     for (size_t i = 0; i < lines.size(); ++i) {
-      canvas.drawLine(lines[i].begin().x, lines[i].begin().y,
-                      lines[i].end().x, lines[i].end().y);
+      canvas.drawLine(lines[i].begin().x, lines[i].begin().y, lines[i].end().x, lines[i].end().y);
     }
-
 
     canvas.pen("FF0000", 20);
     for (size_t i = 0; i < intersections.size(); ++i)
