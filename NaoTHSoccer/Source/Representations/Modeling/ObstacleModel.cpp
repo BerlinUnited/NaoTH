@@ -17,7 +17,7 @@ void ObstacleModel::print(std::ostream& stream) const
   stream<<"rightDistance = "<< rightDistance << std::endl;
   stream<<"frontDistance = "<< frontDistance << std::endl;
   stream<<"blockedTime = "<< blockedTime << std::endl;
-}//end print
+}
 
 ObstacleModel::ObstacleModel()
   : leftDistance(std::numeric_limits<double>::max()),
