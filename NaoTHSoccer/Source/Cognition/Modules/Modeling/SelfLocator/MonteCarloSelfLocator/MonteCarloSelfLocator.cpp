@@ -229,7 +229,7 @@ void MonteCarloSelfLocator::execute()
       sensorResetBySensingGoalModel(theSampleSet, (int)theSampleSet.size() - 1);
       if(parameters.sensorResetByMiddleCircle) {
         //sensorResetByMiddleCircle(theSampleSet, getRansacCirclePercept().middleCircleCenter);
-        sensorResetByMiddleCircle(theSampleSet, getLinePerceptAugmented());
+        sensorResetByMiddleCircle(theSampleSet);
       }
 
       // estimate the state
@@ -300,7 +300,7 @@ void MonteCarloSelfLocator::execute()
 
       if(parameters.sensorResetByMiddleCircle) {
         //sensorResetByMiddleCircle(theSampleSet, getRansacCirclePercept().middleCircleCenter);
-        sensorResetByMiddleCircle(theSampleSet, getLinePerceptAugmented());
+        sensorResetByMiddleCircle(theSampleSet);
       }
 
       calculatePose(theSampleSet);
