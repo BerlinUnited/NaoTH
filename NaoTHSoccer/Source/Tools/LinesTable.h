@@ -36,8 +36,8 @@ public:
   };
 
   LineIntersection(const Math::LineSegment& segmentOne, const Math::LineSegment& segmentTwo)
-    : segmentOne(segmentOne),
-      segmentTwo(segmentTwo)
+    //: segmentOne(segmentOne),
+    //  segmentTwo(segmentTwo)
   {
     double s = segmentOne.Line::intersection(segmentTwo);
     double t = segmentTwo.Line::intersection(segmentOne);
@@ -64,8 +64,8 @@ public:
 
   Type type;
   Vector2i pos; /**< The fieldcoordinates of the intersection */
-  Math::LineSegment segmentOne;
-  Math::LineSegment segmentTwo;
+  //Math::LineSegment segmentOne;
+  //Math::LineSegment segmentTwo;
 };
 
 
@@ -287,6 +287,57 @@ public:
       }//end for
     }//end for
   }//end findIntersections
+
+
+  // NOTE: this is experimental - a general method to calculate intersections
+  void calculateIntersections() 
+  {
+  }
+
+  void estimateIntersection(const Math::LineSegment& segmentOne, const Math::LineSegment& segmentTwo) 
+  {
+    const double maxAngleDiff = 0.85;
+    const double maxDistanceToIntersection = 100.0; // 10cm
+
+    double t1 = segmentOne.Line::intersection(segmentTwo);
+    double t2 = segmentTwo.Line::intersection(segmentOne);
+
+    //---------o=====[===========]=====o-------------
+    bool insideSegmentOne = maxDistanceToIntersection < t1 && t1 < segmentOne.getLength() - maxDistanceToIntersection;
+    bool insideSegmentTwo = maxDistanceToIntersection < t2 && t2 < segmentTwo.getLength() - maxDistanceToIntersection;
+
+    //---[-----o=======================o-----]-------
+    bool nearSegmentOne = -maxDistanceToIntersection < t1 && t1 < segmentOne.getLength() + maxDistanceToIntersection;
+    bool nearSegmentTwo = -maxDistanceToIntersection < t2 && t2 < segmentTwo.getLength() + maxDistanceToIntersection;
+
+
+    double angleDiff = acos(segmentOne.getDirection()*segmentTwo.getDirection());
+
+    LineIntersection::Type type = LineIntersection::none;
+
+    if(!nearSegmentOne || !nearSegmentOne) { // there is no meaningful intersection
+      type = LineIntersection::none;
+    } else if( insideSegmentOne && insideSegmentTwo) {
+      type = LineIntersection::X;
+    } else if(insideSegmentOne || insideSegmentTwo) {
+      type = LineIntersection::T;
+    } else {
+      type = LineIntersection::L;
+    }
+
+    // check the angle of the intersection
+    if( angleDiff < maxAngleDiff || Math::pi - maxAngleDiff < angleDiff) {
+      if(type == LineIntersection::L) {
+        type = LineIntersection::E;
+      }
+    } else if (angleDiff < 2.0*maxAngleDiff || Math::pi - 2.0*maxAngleDiff < angleDiff) {
+      if(type == LineIntersection::L) {
+        type = LineIntersection::C;
+      }
+    } else if( angleDiff < Math::pi_2 - maxAngleDiff || Math::pi_2 + maxAngleDiff < angleDiff) { // not right angle => weird angle
+      type = LineIntersection::unknown;
+    }
+  }
 
   /**
    * Draws a debug field drawing that displays the set of lines.
