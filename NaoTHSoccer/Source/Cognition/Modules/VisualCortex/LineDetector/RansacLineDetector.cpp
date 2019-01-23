@@ -513,35 +513,30 @@ int RansacLineDetector::ransacEllipse(Ellipse& result)
   }
 
   return bestInlier;
-
 }
 
-void RansacLineDetector::simpleLinearRegression(std::vector<Vector2d> &points, double& slope, double& intercept) {
-  int n = (int) points.size();
-
-  if(n == 1) {
+void RansacLineDetector::simpleLinearRegression(std::vector<Vector2d> &points, double& slope, double& intercept) 
+{
+  if(points.size() < 2) {
     slope = 0.0;
     intercept = points[0].y;
     return;
   }
 
   Vector2d avg;
-  for(Vector2d point : points) {
+  for(const Vector2d& point : points) {
     avg += point;
   }
-  avg /= n;
+  avg /= static_cast<double>(points.size());
 
   double top = 0.;
   double bot = 0.;
-  double x_diff;
-  for(Vector2d point : points) {
-    x_diff = point.x - avg.x;
+  for(const Vector2d& point : points) {
+    double x_diff = point.x - avg.x;
     top += x_diff * (point.y - avg.y);
     bot += x_diff * x_diff;
   }
 
   slope = top / bot;
   intercept = avg.y - slope * avg.x;
-
-  return;
 }
