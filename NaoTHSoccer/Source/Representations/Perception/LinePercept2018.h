@@ -17,27 +17,6 @@ public:
   }
 };
 
-class MiddleCirclePercept
-{
-public:
-  bool wasSeen;
-  Vector2d center;
-
-  MiddleCirclePercept() :
-    wasSeen(false)
-  {}
-
-  void set(Vector2d& center) {
-    wasSeen = true;
-    center = center;
-  }
-
-  void reset()
-  {
-    wasSeen = false;
-  }
-};
-
 // RansacLineDetector
 class RansacLinePercept : public LinePercept2018
 {
@@ -45,12 +24,40 @@ public:
   std::vector<int> edgelLineIDs;
 };
 
-class RansacCirclePercept2018 : public MiddleCirclePercept{};
-
 // RansacLineDetectorOnGraphs
-class ShortLinePercept : public LinePercept2018{};
+class ShortLinePercept : public LinePercept2018
+{
+  public:
+    //
+};
 
-class GraphRansacCirclePercept : public MiddleCirclePercept{};
+
+
+class MiddleCircle
+{
+public: 
+  bool wasSeen;
+  Vector2d center;
+
+public:
+  MiddleCircle() :
+    wasSeen(false)
+  {}
+
+  void set(const Vector2d& center) {
+    this->wasSeen = true;
+    this->center = center;
+  }
+
+  void reset() {
+    wasSeen = false;
+  }
+};
+
+
+class RansacCirclePercept2018 : public MiddleCircle{};
+
+class GraphRansacCirclePercept : public MiddleCircle{};
 class GraphRansacCirclePerceptTop : public GraphRansacCirclePercept{};
 
 #endif // LINEPERCEPT2018_H
