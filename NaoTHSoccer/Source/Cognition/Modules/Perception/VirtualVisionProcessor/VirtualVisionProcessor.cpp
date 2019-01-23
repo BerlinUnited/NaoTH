@@ -145,7 +145,7 @@ void VirtualVisionProcessor::updateGoal()
       Vector2d position(p.x, p.y);
 
       p.z = 0;
-      Vector2<int> basePoint;
+      Vector2i basePoint;
       CameraGeometry::relativePointToImage(theCameraMatrix, theCameraInfo, p, basePoint);
 
       ColorClasses::Color color = goalPostColors.find(*i)->second;
