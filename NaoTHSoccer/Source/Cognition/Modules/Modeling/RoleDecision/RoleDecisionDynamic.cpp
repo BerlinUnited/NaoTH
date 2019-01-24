@@ -57,10 +57,10 @@ void RoleDecisionDynamic::decideStriker(std::map<unsigned int, RM::DynamicRole>&
             // if the ball is near the goal, the goalie has to clear the ball
             if(globalBall.x < params.striker_goalie_min_x_pos && msg.ballPosition.abs() <= params.striker_goalie_ball_distance) {
                 // set goalie as striker
-                checkStriker(playerNumber, indicator, globalBall, new_striker, true);
+                checkStriker(msg, indicator, globalBall, new_striker, true);
             }
         } else {
-            checkStriker(playerNumber, indicator, globalBall, new_striker);
+            checkStriker(msg, indicator, globalBall, new_striker);
         }
     }//end for
 
@@ -70,20 +70,30 @@ void RoleDecisionDynamic::decideStriker(std::map<unsigned int, RM::DynamicRole>&
     }
 }
 
-void RoleDecisionDynamic::checkStriker(const unsigned int& playerNumber,
+void RoleDecisionDynamic::checkStriker(const TeamMessageData& msg,
                                        const double& indicator,
                                        const Vector2d& ball,
                                        std::vector<Striker>& striker,
                                        bool force)
 {
     bool done = false;
+    double r = ballDifferenceRadius(msg.ballPosition.abs());
+
+    DEBUG_REQUEST("RoleDecisionDynamic:striker_ball_difference_radius",
+      FIELD_DRAWING_CONTEXT;
+      PEN("000000", 30);
+      CIRCLE(ball.x, ball.y, r);
+      //TEXT_DRAWING(firstBall.x, firstBall.y+60, secondNumber);
+      //TEXT_DRAWING(firstBall.x, firstBall.y-60, r);
+    );
+
     for(auto& s : striker) {
         // same ball as the current striker
-        if((s.ball - ball).abs() < params.striker_ball_difference_distance) {
+        if((s.ball - ball).abs2() < r*r) {
             // this player is 'faster' to the ball than the current striker or 'forced' to be striker
             if(force || s.indicator > indicator) {
                 // set this player for the ball as striker
-                s.playerNumber = playerNumber;
+                s.playerNumber = msg.playerNumber;
                 s.indicator = indicator;
                 s.ball = ball;
             }
@@ -94,7 +104,7 @@ void RoleDecisionDynamic::checkStriker(const unsigned int& playerNumber,
     }
     // add this player as striker for the ball
     if(!done) {
-        striker.push_back({playerNumber, indicator, ball});
+        striker.push_back({msg.playerNumber, indicator, ball});
     }
 }
 
@@ -118,6 +128,7 @@ void RoleDecisionDynamic::decideGoalieSupporter(std::map<unsigned int, RM::Dynam
      * - someone close to the own goal should be goalie
      * - until, the goalie comes back and is near the home position
      */
+    // TODO!
 
     // iterate over all robots(messages)
     for (const auto& i : getTeamMessage().data) {
@@ -134,6 +145,7 @@ void RoleDecisionDynamic::decideSupporter(std::map<unsigned int, RM::DynamicRole
      * - eg. to receive a pass or as backup, if the goalie lost the ball or a duael
      * - should be someone, who also sees the ball and is in a good position to help ...
      */
+    // TODO!
 
     // iterate over all robots(messages)
     for (const auto& i : getTeamMessage().data) {
