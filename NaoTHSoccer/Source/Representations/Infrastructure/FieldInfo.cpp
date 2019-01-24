@@ -297,7 +297,8 @@ void FieldInfo::createLinesTable()
     x1 = x0;
   }
 
-  fieldLinesTable.findIntersections();
+  //fieldLinesTable.findIntersections();
+  fieldLinesTable.calculateIntersections();
 
   // calculate the field lines
   fieldLinesTable.create_closestPointsTable(xFieldLength,yFieldLength);

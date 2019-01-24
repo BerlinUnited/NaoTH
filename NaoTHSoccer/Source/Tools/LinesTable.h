@@ -49,40 +49,15 @@ public:
   }
 
   LineIntersection(Vector2i pos, Type type) 
-    : pos(pos), type(type)
+    : pos(pos), type(type), segmentOneId(-1), segmentTwoId(-1)
   {}
-
-  LineIntersection(const Math::LineSegment& segmentOne, const Math::LineSegment& segmentTwo)
-    //: segmentOne(segmentOne),
-    //  segmentTwo(segmentTwo)
-  {
-    double s = segmentOne.Line::intersection(segmentTwo);
-    double t = segmentTwo.Line::intersection(segmentOne);
-    
-    double angleDiff = fabs(Math::normalize(segmentOne.getDirection().angle() - segmentTwo.getDirection().angle()));
-    angleDiff = std::min(angleDiff, Math::pi - angleDiff);
-
-    if(segmentOne.getLength() < s || s < 0 || 
-       segmentTwo.getLength() < t || t < 0 ||
-       angleDiff < Math::pi_2 - 0.85 || 
-       angleDiff > Math::pi_2 + 0.85 ) // 0.85 = 5deg
-      type = none;
-    else if(angleDiff > 0.85 * 2.0 && angleDiff < Math::pi_2 - 0.85 * 2.0 )
-      type = C;
-    else if(0 < s && s < segmentOne.getLength() && 0 < t && t < segmentTwo.getLength())
-      type = X;
-    else if((0 < s && s < segmentOne.getLength()) || (0 < t && t < segmentTwo.getLength()))
-      type = T;
-    else
-      type = L;
-
-    pos = segmentOne.point(s);
-  }
 
   Type type;
   Vector2i pos; /**< The fieldcoordinates of the intersection */
-  //Math::LineSegment segmentOne;
-  //Math::LineSegment segmentTwo;
+
+  // hold the ids for the intersecting segments
+  int segmentOneId;
+  int segmentTwoId;
 };
 
 
@@ -186,8 +161,7 @@ public:
   {
   }
 
-  void addLine(const Vector2d& begin, const Vector2d& end)
-  {
+  void addLine(const Vector2d& begin, const Vector2d& end) {
     lines.push_back(Math::LineSegment(begin, end));
   }
 
@@ -197,8 +171,7 @@ public:
   const Math::LineSegment& operator[] (unsigned idx) const { return lines[idx]; }
 
   /** calculate the nearest line among all lines*/
-  Math::LineSegment getNearestLine(const Pose2D& pose) const
-  {
+  Math::LineSegment getNearestLine(const Pose2D& pose) const {
     return lines[getNearestLine(pose.translation, all_lines)];
   }
 
@@ -290,7 +263,7 @@ public:
     return minIdx;
   }//end getNearestTCrossing
 
-
+  /*
   void findIntersections()
   {
     for (size_t i = 0; i < lines.size(); i++)
@@ -304,7 +277,7 @@ public:
       }//end for
     }//end for
   }//end findIntersections
-
+  */
 
   // NOTE: this is experimental - a general method to calculate intersections
   void calculateIntersections() 
