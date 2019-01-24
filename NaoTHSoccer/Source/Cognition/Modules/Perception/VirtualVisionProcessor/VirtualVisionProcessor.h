@@ -171,7 +171,7 @@ private:
   void findIntersections();
 
   /** copied from the LineDetector */
-  void classifyIntersectionsDetectCircle(std::vector<LinePercept::FieldLineSegment>& lineSegments);
+  void classifyIntersectionsDetectCircle();
 
   // id of the camera the module is curently running on
   CameraInfo::CameraID cameraID;

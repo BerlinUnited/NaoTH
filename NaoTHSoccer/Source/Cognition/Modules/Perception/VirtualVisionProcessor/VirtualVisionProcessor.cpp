@@ -69,13 +69,14 @@ void VirtualVisionProcessor::execute(const CameraInfo::CameraID id)
   updateBall();
   updateGoal();
   
+  updatePlayers();
+
+  // line detection
   updateLine();
   updateCorners();
 
-  updatePlayers();
-
   findIntersections();
-  classifyIntersectionsDetectCircle(getLinePercept().lines);
+  classifyIntersectionsDetectCircle();
 }//end execute
 
 Vector3d VirtualVisionProcessor::calculatePosition(const Vector3d& pol)
@@ -330,8 +331,9 @@ void VirtualVisionProcessor::findIntersections()
 
 
 
-void VirtualVisionProcessor::classifyIntersectionsDetectCircle(vector<LinePercept::FieldLineSegment>& lineSegments)
+void VirtualVisionProcessor::classifyIntersectionsDetectCircle()
 {
+  vector<LinePercept::FieldLineSegment>& lineSegments = getLinePercept().lines;
   std::vector<LinePercept::Intersection>& intersections = getLinePercept().intersections;
 
   const double MAX_LINE_ANGLE_DIFF = 0.085; //0.1//0.035

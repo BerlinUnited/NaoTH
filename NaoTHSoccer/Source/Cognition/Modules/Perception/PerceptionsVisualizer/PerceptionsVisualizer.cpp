@@ -165,7 +165,7 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
                   .rotateX(getCameraMatrixOffset().offset.x);
     );
 
-    for(unsigned int i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
+    for(size_t i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
     {
       const ScanLineEdgelPercept::EndPoint& point = getScanLineEdgelPercept().endPoints[i];
       // no projection is avaliable for this point
@@ -272,15 +272,16 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
     FIELD_DRAWING_CONTEXT;
     PEN("666666AA", 50);
 
-    for (unsigned int i = 0; i < getLinePercept().lines.size(); i++)
+    for (size_t i = 0; i < getLinePercept().lines.size(); i++)
     {
       const LinePercept::FieldLineSegment& linePercept = getLinePercept().lines[i];
 
       // draw the circle lines with a different color
-      if(linePercept.type == LinePercept::C)
+      if(linePercept.type == LinePercept::C) {
         PEN("AAAAAAAA", 50);
-      else
+      } else {
         PEN("666666AA", 50);
+      }
 
       LINE(linePercept.lineOnField.begin().x,
            linePercept.lineOnField.begin().y,
@@ -288,30 +289,21 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
            linePercept.lineOnField.end().y);
     }//end for
 
-    for(unsigned int i=0; i < getLinePercept().intersections.size(); i++)
+    for(size_t i=0; i < getLinePercept().intersections.size(); i++)
     {
       //mark intersection on the field
-      PEN(ColorClasses::colorClassToHex((ColorClasses::Color) getLinePercept().intersections[i].getType()), 3); 
-      const Vector2<double>& intersectionPoint = getLinePercept().intersections[i].getPosOnField();
-      CIRCLE(intersectionPoint.x, intersectionPoint.y, 50);
+      LineIntersection::Type type = getLinePercept().intersections[i].getType();
+      const Vector2d& intersectionPoint = getLinePercept().intersections[i].getPos();
 
-      string type = "N";
-      switch(getLinePercept().intersections[i].getType())
-      {
-        case LineIntersection::C: type="C"; break;
-        case LineIntersection::T: type="T"; break;
-        case LineIntersection::L: type="L"; break;
-        case LineIntersection::E: type="E"; break;
-        case LineIntersection::X: type="X"; break;
-        default: break;
-      }
-      TEXT_DRAWING(intersectionPoint.x + 100, intersectionPoint.y + 100, type);
-    }//end for
+      PEN(ColorClasses::colorClassToHex((ColorClasses::Color) type), 3); 
+      CIRCLE(intersectionPoint.x, intersectionPoint.y, 50);
+      TEXT_DRAWING(intersectionPoint.x + 100, intersectionPoint.y + 100, LineIntersection::getTypeName(type));
+    }
 
     // circle
     if(getLinePercept().middleCircleWasSeen)
     {
-      const Vector2<double>& center = getLinePercept().middleCircleCenter;
+      const Vector2d& center = getLinePercept().middleCircleCenter;
       PEN("FFFFFF99", 10);
       CIRCLE(center.x, center.y, 50);
       PEN("FFFFFF99", 50);
@@ -319,7 +311,7 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
 
       if(getLinePercept().middleCircleOrientationWasSeen)
       {
-        const Vector2<double> direction = getLinePercept().middleCircleOrientation*(getFieldInfo().centerCircleRadius+100);
+        const Vector2d direction = getLinePercept().middleCircleOrientation*(getFieldInfo().centerCircleRadius+100);
         LINE(
           center.x + direction.x,
           center.y + direction.y,
@@ -334,53 +326,30 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
   DEBUG_REQUEST("PerceptionsVisualizer:image:line_percept",
     IMAGE_DRAWING_CONTEXT;
     // mark lines
-    for (unsigned int i = 0; i < getLinePercept().lines.size(); i++)
+    for (size_t i = 0; i < getLinePercept().lines.size(); i++)
     {
       const LinePercept::FieldLineSegment& linePercept = getLinePercept().lines[i];
 
-      Vector2<double> d(0.0, ceil(linePercept.lineInImage.thickness / 2.0));
-      //d.rotate(Math::pi_2 - line.angle);
-
-      //Vector2<int> lowerLeft(linePercept.lineInImage.segment.begin() - d);
-      //Vector2<int> upperLeft(linePercept.lineInImage.segment.begin() + d);
-      //Vector2<int> lowerRight(linePercept.lineInImage.segment.end() - d);
-      //Vector2<int> upperRight(linePercept.lineInImage.segment.end() + d);
-
       PEN("009900", 2);
-      //LINE(lowerLeft.x, lowerLeft.y, lowerRight.x, lowerRight.y);
-      //LINE(lowerLeft.x, lowerLeft.y, upperLeft.x, upperLeft.y);
-      //LINE(upperLeft.x, upperLeft.y, upperRight.x, upperRight.y);
-      //LINE(lowerRight.x, lowerRight.y, upperRight.x, upperRight.y);
-
       LINE(linePercept.lineInImage.segment.begin().x, 
            linePercept.lineInImage.segment.begin().y,
            linePercept.lineInImage.segment.end().x, 
            linePercept.lineInImage.segment.end().y);
       
-
       // indicate line count
       LINE((2*i)+1,7,(2*i)+1,12);
     }//end for
 
-    for(unsigned int i=0; i < getLinePercept().intersections.size(); i++)
+    for(size_t i=0; i < getLinePercept().intersections.size(); i++)
     {
       //mark intersection on the field
-      PEN(ColorClasses::colorClassToHex((ColorClasses::Color) getLinePercept().intersections[i].getType()), 3); 
-      const Vector2<double>& intersectionPoint = getLinePercept().intersections[i].getPos();
-      CIRCLE(intersectionPoint.x, intersectionPoint.y, 50);
+      LineIntersection::Type type = getLinePercept().intersections[i].getType();
+      const Vector2d& intersectionPoint = getLinePercept().intersections[i].getPos();
 
-      string type = "N";
-      switch(getLinePercept().intersections[i].getType())
-      {
-        case LineIntersection::C: type="C"; break;
-        case LineIntersection::T: type="T"; break;
-        case LineIntersection::L: type="L"; break;
-        case LineIntersection::E: type="E"; break;
-        case LineIntersection::X: type="X"; break;
-        default: break;
-      }
-      TEXT_DRAWING(intersectionPoint.x + 100, intersectionPoint.y + 100, type);
-    }//end for
+      PEN(ColorClasses::colorClassToHex((ColorClasses::Color) type), 3); 
+      CIRCLE(intersectionPoint.x, intersectionPoint.y, 50);
+      TEXT_DRAWING(intersectionPoint.x + 100, intersectionPoint.y + 100, LineIntersection::getTypeName(type));
+    }
     
   ); // end line_percept in image
 
@@ -388,11 +357,11 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
 
   DEBUG_REQUEST("PerceptionsVisualizer:image_px:line_percept",
     // mark lines
-    for (unsigned int i = 0; i < getLinePercept().lines.size(); i++)
+    for (size_t i = 0; i < getLinePercept().lines.size(); i++)
     {
       const LinePercept::FieldLineSegment& linePercept = getLinePercept().lines[i];
 
-      Vector2<double> d(0.0, ceil(linePercept.lineInImage.thickness / 2.0));
+      Vector2d d(0.0, ceil(linePercept.lineInImage.thickness / 2.0));
       //d.rotate(Math::pi_2 - line.angle);
 
       Vector2<int> lowerLeft(linePercept.lineInImage.segment.begin() - d);
@@ -445,7 +414,7 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
 
     // draw ransac line percept
     PEN("AA666666", 50);
-    for (unsigned int i = 0; i < getRansacLinePercept().fieldLineSegments.size(); i++)
+    for (size_t i = 0; i < getRansacLinePercept().fieldLineSegments.size(); i++)
     {
       const Math::LineSegment line = getRansacLinePercept().fieldLineSegments[i];
 
@@ -457,7 +426,7 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
 
     // draw short line percept (RansacLineDetectorOnGraphs)
     PEN("66AA6666", 50);
-    for (unsigned int i = 0; i < getShortLinePercept().fieldLineSegments.size(); i++)
+    for (size_t i = 0; i < getShortLinePercept().fieldLineSegments.size(); i++)
     {
       const Math::LineSegment line = getShortLinePercept().fieldLineSegments[i];
 
@@ -470,7 +439,7 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
     // draw ransac circle
     if(getRansacCirclePercept2018().wasSeen)
     {
-      const Vector2<double>& center = getRansacCirclePercept2018().center;
+      const Vector2d& center = getRansacCirclePercept2018().center;
       PEN("FFFFFF99", 10);
       CIRCLE(center.x, center.y, 50);
       PEN("FFFFFF99", 50);

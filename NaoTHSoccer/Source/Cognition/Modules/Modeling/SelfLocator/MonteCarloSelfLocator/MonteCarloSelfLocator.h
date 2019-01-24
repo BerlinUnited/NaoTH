@@ -35,7 +35,6 @@
 
 // sensor percepts
 #include "Representations/Perception/GoalPercept.h"
-//#include "Representations/Perception/LinePercept.h"
 #include "Representations/Perception/LinePercept2018.h"
 #include "Representations/Perception/LinePerceptAugmented.h"
 
@@ -87,7 +86,6 @@ BEGIN_DECLARE_MODULE(MonteCarloSelfLocator)
   REQUIRE(SensingGoalModel)
   REQUIRE(ProbabilisticQuadCompas)
   REQUIRE(LineGraphPercept)
-  //REQUIRE(LinePercept)
   //REQUIRE(RansacCirclePercept)
 
   REQUIRE(RansacLinePercept)
