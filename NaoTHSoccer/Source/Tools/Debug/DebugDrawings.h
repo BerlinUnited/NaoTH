@@ -56,6 +56,9 @@ public:
   void drawText(double x, double y, const char* text) {
     out() << "Text:" << x << ":" << y << ":" << text << ":" <<  std::endl;
   }
+  void drawText(double x, double y, const std::string& text) {
+    out() << "Text:" << x << ":" << y << ":" << text << ":" <<  std::endl;
+  }
 
   void drawBox(double x0, double y0, double x1, double y1) {
     out() << "Box:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" << std::endl;
