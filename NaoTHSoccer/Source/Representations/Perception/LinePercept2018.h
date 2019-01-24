@@ -22,6 +22,12 @@ class RansacLinePercept : public LinePercept2018
 {
 public:
   std::vector<int> edgelLineIDs;
+
+  void reset()
+  {
+    LinePercept2018::reset();
+    edgelLineIDs.clear();
+  }
 };
 
 // RansacLineDetectorOnGraphs
@@ -29,6 +35,37 @@ class ShortLinePercept : public LinePercept2018
 {
   public:
     //
+};
+
+// RansacLineDetectorOnGraphs
+class VirtualLinePercept : public LinePercept2018
+{
+public:
+  /** 
+    NOTE: copied from the old LinePercept
+    currently used only in 3DSim to represent the seen corners.
+  */
+  class Flag
+  {
+  public:
+    Flag(const Vector2d& seenPosOnField, const Vector2d& absolutePosOnField)
+      : 
+      seenPosOnField(seenPosOnField),
+      absolutePosOnField(absolutePosOnField)
+    {}
+    Vector2d seenPosOnField;
+    Vector2d absolutePosOnField; // model of the flag (i.e. its known absolute osition on the field)
+  };
+
+  void reset()
+  {
+    LinePercept2018::reset();
+    flags.clear();
+  }
+
+public:
+  // seen flags (only S3D)
+  std::vector<Flag> flags;
 };
 
 

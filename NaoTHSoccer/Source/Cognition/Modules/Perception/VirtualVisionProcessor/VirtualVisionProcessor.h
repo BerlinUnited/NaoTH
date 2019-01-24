@@ -24,6 +24,8 @@
 #include "Representations/Perception/BallPercept.h"
 #include "Representations/Perception/GoalPercept.h"
 #include "Representations/Perception/LinePercept.h"
+#include "Representations/Perception/LinePercept2018.h"
+
 #include "Representations/Perception/PlayersPercept.h"
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Perception/MultiBallPercept.h"
@@ -58,8 +60,11 @@ BEGIN_DECLARE_MODULE(VirtualVisionProcessor)
 
   PROVIDE(GoalPercept)
   PROVIDE(GoalPerceptTop)
+  
   PROVIDE(LinePercept)
   PROVIDE(LinePerceptTop)
+  PROVIDE(VirtualLinePercept)
+
   PROVIDE(PlayersPercept)
   //PROVIDE(GPSData)
 END_DECLARE_MODULE(VirtualVisionProcessor)
@@ -74,6 +79,7 @@ public:
   virtual void execute()
   {
     getMultiBallPercept().reset();
+    getVirtualLinePercept().reset();
 
     execute(CameraInfo::Top);
     execute(CameraInfo::Bottom);

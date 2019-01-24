@@ -532,26 +532,28 @@ void VirtualVisionProcessor::classifyIntersectionsDetectCircle()
 
 void VirtualVisionProcessor::addLine(const Vector3d& pol0, const Vector3d& pol1)
 {
-  Vector3d bP = calculatePosition(pol0);
-  Vector3d eP = calculatePosition(pol1);
-  Vector2d bPos(bP.x, bP.y);
-  Vector2d ePos(eP.x, eP.y);
+  // calculate the relative coordinates of the line
+  const Vector3d bP = calculatePosition(pol0);
+  const Vector3d eP = calculatePosition(pol1);
+  const Vector2d bPos(bP.x, bP.y);
+  const Vector2d ePos(eP.x, eP.y);
+  
+  //LinePercept::FieldLineSegment line;
+  //line.lineOnField = Math::LineSegment(bPos, ePos);
 
-  LinePercept::FieldLineSegment line;
-  line.lineInImage.thickness = 100; //TODO
+  // NOTE: we currently don't need that
+  // reprojection of the line in the image
+  /*
   Vector2i p1, p2;
   if( CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), bP, p1) &&
       CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), eP, p2))
   {
     line.lineInImage.segment = Math::LineSegment(p1, p2);
   }
-
-  //line.begin = CameraGeometry::relativePointToImage(theCameraMatrix, Platform::getInstance().theCameraInfo, bP);
-  //line.end = CameraGeometry::relativePointToImage(theCameraMatrix, Platform::getInstance().theCameraInfo, eP);
-  line.lineOnField = Math::LineSegment(bPos, ePos);
-//  line.valid = true;
-
-  getLinePercept().lines.push_back(line);
+  */
+  
+  //getLinePercept().lines.push_back(line);
+  getVirtualLinePercept().fieldLineSegments.emplace_back(bPos, ePos);
 }//end addLine
 
 void VirtualVisionProcessor::updatePlayers()
@@ -700,9 +702,7 @@ void VirtualVisionProcessor::updateCorners()
 
       ASSERT(flagPos != fpof.end());
 
-      LinePercept::Flag flag(position, flagPos->second);
-
-      getLinePercept().flags.push_back(flag);
+      getVirtualLinePercept().flags.emplace_back(position, flagPos->second);
     }
 
     DEBUG_REQUEST("VirtualVisionProcessor:corner_flags",
