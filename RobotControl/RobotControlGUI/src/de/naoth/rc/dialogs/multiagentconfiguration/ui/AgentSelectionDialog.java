@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -26,6 +28,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -104,11 +107,11 @@ public class AgentSelectionDialog extends Dialog
         
         host = new TextField();
         host.setPromptText("host ip");
-        host.setTooltip(new Tooltip("Ctrl+Enter adds the agent to the list"));
-        host.setOnKeyReleased((e) -> {
-            if(e.isControlDown() && e.getCode() == KeyCode.ENTER) {
+        host.setOnKeyPressed((e) -> {
+            if(e.getCode() == KeyCode.ENTER) {
                 host.commitValue();
                 addHost.fire();
+                e.consume(); // prevent closing dialog, when host textfield has focus
             }
         });
         
@@ -118,15 +121,17 @@ public class AgentSelectionDialog extends Dialog
         port = new TextField();
         port.setPromptText("port");
         port.setPrefColumnCount(5);
-        port.setTooltip(new Tooltip("Ctrl+Enter adds the agent to the list"));
-        port.setOnKeyReleased((e) -> {
-            if(e.isControlDown() && e.getCode() == KeyCode.ENTER) {
+        port.setOnKeyPressed((e) -> {
+            if(e.getCode() == KeyCode.ENTER) {
                 port.commitValue();
                 addHost.fire();
+                e.consume(); // prevent closing dialog, when host textfield has focus
             }
         });
         
         addHost = new Button("+");
+        // prevent closing dialog, when host textfield has focus
+        addHost.setOnKeyPressed((e) -> { if(e.getCode() == KeyCode.ENTER) { e.consume(); } });
         addHost.setOnAction((e) -> {
             boolean error = false;
             String rawHost = host.getText().trim();
