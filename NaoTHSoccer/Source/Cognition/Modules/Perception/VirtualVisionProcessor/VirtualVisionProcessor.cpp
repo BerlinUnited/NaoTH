@@ -330,7 +330,6 @@ void VirtualVisionProcessor::findIntersections()
 }//end findIntersections
 
 
-
 void VirtualVisionProcessor::classifyIntersectionsDetectCircle()
 {
   vector<LinePercept::FieldLineSegment>& lineSegments = getLinePercept().lines;
@@ -448,29 +447,9 @@ void VirtualVisionProcessor::classifyIntersectionsDetectCircle()
     }
     middle = middle / static_cast<double> (circleMiddlePoints.size());
 
-    Math::Matrix_mxn<double> A(static_cast<unsigned int> (circlePoints.size()), 3);
-    Math::Matrix_mxn<double> l(static_cast<unsigned int> (circlePoints.size()), 1);
-    for(size_t i = 0; i < circlePoints.size(); i++)
-    {
-      /*
-      A(i, 0) = circlePoints[i].abs2();
-      A(i, 1) = 2 * circlePoints[i].x;
-      A(i, 2) = 2 * circlePoints[i].y;
-      l(i, 0) = -1;
-      */
-      A(i, 0) = circlePoints[i].x;
-      A(i, 1) = circlePoints[i].y;
-      A(i, 2) = 1.0;
-      l(i, 0) = - circlePoints[i].abs2();
-    }//end for
-    
-    Math::Matrix_mxn<double> AT(A.transpose());
-    Math::Matrix_mxn<double> result(((AT * A).invert() * AT) * l);
-
-    //Vector2d middle1(-result(1, 0) / result(0, 0), -result(2, 0) / result(0, 0));
-    Vector2d middle1(-result(0, 0)*0.5, -result(1, 0)*0.5);
-  
-    if( (middle - middle1).abs() < 150) // 15cm
+    Vector2d middle1;
+    double radius1;
+    if( Geometry::estimateCircle(circlePoints, middle1, radius1) && (middle - middle1).abs() < 150) // 15cm
     {
       getLinePercept().middleCircleWasSeen = true;
       getLinePercept().middleCircleCenter = (middle + middle1) / 2;
@@ -484,46 +463,15 @@ void VirtualVisionProcessor::classifyIntersectionsDetectCircle()
     );
   }//end if
 
-  // TODO: make it more efficient
-  // check if the center line is seen
-  if(getLinePercept().middleCircleWasSeen)
-  {
-    for(size_t i = 0; i < lineSegments.size(); i++)
-    {
-      if(lineSegments[i].type != LinePercept::C)
-      {
-        double d = lineSegments[i].lineOnField.minDistance(getLinePercept().middleCircleCenter);
-        if(d < 300.0)
-        {
-          lineSegments[i].seen_id = LinePercept::center_line;
-          // estimate the orientation of the circle
-          // TODO: treat the case if there are several lines
-          getLinePercept().middleCircleOrientationWasSeen = true;
-          getLinePercept().middleCircleOrientation = lineSegments[i].lineOnField.getDirection();
-        }
-      }
-    }//end for
-
-
-    DEBUG_REQUEST("VirtualVisionProcessor:LineDetector:mark_circle",
+  DEBUG_REQUEST("VirtualVisionProcessor:LineDetector:mark_circle",
+    if(getLinePercept().middleCircleWasSeen) {
       const Vector2d& center = getLinePercept().middleCircleCenter;
       PEN("FFFFFF99", 10);
       CIRCLE(center.x, center.y, 50);
       PEN("FFFFFF99", 50);
       CIRCLE(center.x, center.y, getFieldInfo().centerCircleRadius - 25);
+  });
 
-      if(getLinePercept().middleCircleOrientationWasSeen)
-      {
-        const Vector2d direction = getLinePercept().middleCircleOrientation*(getFieldInfo().centerCircleRadius+100);
-        LINE(
-          center.x + direction.x,
-          center.y + direction.y,
-          center.x - direction.x,
-          center.y - direction.y
-          );
-      }//end if
-    );
-  }//end if
   STOPWATCH_STOP("LineDetector ~ detect circle");
 
 }//end classifyIntersections

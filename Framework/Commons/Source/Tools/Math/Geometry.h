@@ -234,6 +234,45 @@ public:
   }//end calculateCircle
 	
 
+  /**
+  A simple routine to estimate a circle from a set of points
+  */
+  template<class T>
+  static bool estimateCircle( const T& points, Vector2d& center, double& radius )
+  {
+    if (points.size() < 3) {
+      return false;
+    }
+
+    Math::Matrix_mxn<double> A(static_cast<unsigned int> (points.size()), 3);
+    Math::Matrix_mxn<double> b(static_cast<unsigned int> (points.size()), 1);
+
+    for(size_t i = 0; i < points.size(); i++)
+    {
+      A(i, 0) = points[i].x;
+      A(i, 1) = points[i].y;
+      A(i, 2) = 1.0;
+      b(i, 0) = - points[i].abs2(); // - (x^2 + y^2)
+    }
+    
+    try {
+      Math::Matrix_mxn<double> AT(A.transpose());
+      //Math::Matrix_mxn<double> result(((AT * A).invert() * AT) * b);
+      Math::Matrix_mxn<double> result =  (AT*A).solve(AT*b);
+
+      center = Vector2d(-result(0, 0)*0.5, -result(1, 0)*0.5);
+      radius = sqrt(fabs(result(2, 0) - center.abs2()));
+    }
+    catch (MVException) {
+      return false;
+    }
+    catch (...) {
+      return false;
+    }
+
+    return true;
+  }
+
   class Rect2d 
   {
   private:
