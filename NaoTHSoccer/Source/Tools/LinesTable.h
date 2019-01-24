@@ -35,6 +35,19 @@ public:
     none //the line segments don't intersect
   };
 
+  static inline std::string getTypeName(Type type) {
+    switch(type) {
+      case unknown: return "U";
+      case T: return "T";
+      case L: return "L";
+      case C: return "C";
+      case E: return "E";
+      case X: return "X";
+      case none: return "N";
+    }
+    return "Unknown Type";
+  }
+
   LineIntersection(Vector2i pos, Type type) 
     : pos(pos), type(type)
   {}
@@ -309,7 +322,7 @@ public:
 
   LineIntersection estimateIntersection(const Math::LineSegment& segmentOne, const Math::LineSegment& segmentTwo) 
   {
-    const double maxAngleDiff = 0.85;
+    const double maxAngleDiff = Math::fromDegrees(5.0);
     const double maxDistanceToIntersection = 100.0; // 10cm
 
     double t1 = segmentOne.Line::intersection(segmentTwo);
@@ -330,21 +343,14 @@ public:
 
     if(!nearSegmentOne || !nearSegmentTwo) { // there is no meaningful intersection
       type = LineIntersection::none;
+    } else if( angleDiff < Math::pi_2 - maxAngleDiff || Math::pi_2 + maxAngleDiff < angleDiff) { // not a right angle => weird angle
+      type = LineIntersection::C;
     } else if( insideSegmentOne && insideSegmentTwo) {
       type = LineIntersection::X;
     } else if(insideSegmentOne || insideSegmentTwo) {
       type = LineIntersection::T;
     } else {
       type = LineIntersection::L;
-    }
-
-    // check the angle of the intersection
-    if( angleDiff < maxAngleDiff || Math::pi - maxAngleDiff < angleDiff) {
-      type = LineIntersection::E;
-    } else if (angleDiff < 2.0*maxAngleDiff || Math::pi - 2.0*maxAngleDiff < angleDiff) {
-      type = LineIntersection::C;
-    } else if( angleDiff < Math::pi_2 - maxAngleDiff || Math::pi_2 + maxAngleDiff < angleDiff) { // not a right angle => weird angle
-      type = LineIntersection::unknown;
     }
 
     return LineIntersection(segmentOne.point(t1), type);
@@ -364,20 +370,8 @@ public:
     for (size_t i = 0; i < intersections.size(); ++i)
     {
       canvas.fillOval(intersections[i].pos.x, intersections[i].pos.y, 20, 20);
-      switch(intersections[i].type)
-      {
-        case LineIntersection::L:
-          canvas.drawText(intersections[i].pos.x+30, intersections[i].pos.y+30,"L");
-          break;
-        case LineIntersection::T:
-          canvas.drawText(intersections[i].pos.x+30, intersections[i].pos.y+30,"T");
-          break;
-        case LineIntersection::X:
-          canvas.drawText(intersections[i].pos.x+30, intersections[i].pos.y+30,"X");
-          break;
-        default: // shouldn't happen
-          canvas.drawText(intersections[i].pos.x+30, intersections[i].pos.y+30,"Unknown krossing type");
-      }//end switch
+      std::string name = LineIntersection::getTypeName(intersections[i].type);
+      canvas.drawText(intersections[i].pos.x+30, intersections[i].pos.y+30,name);
     }
   }//end draw
 
