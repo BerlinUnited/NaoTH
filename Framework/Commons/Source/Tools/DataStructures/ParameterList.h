@@ -13,6 +13,7 @@
 #include <map>
 #include <list>
 #include <sstream>
+#include <functional>
 #include <Tools/Debug/NaoTHAssert.h>
 #include <Tools/Math/Common.h>
 //#include <Tools/DataStructures/Printable.h>
@@ -89,6 +90,16 @@ protected:
       virtual T get() const { ASSERT(value != NULL); return Math::toDegrees(*value); }
   };
 
+  template<class T>
+  class CallbackParameter : public DefaultParameter<T> {
+  protected:
+      std::function<void(T)> cb;
+  public:
+    CallbackParameter(const std::string& name, T* value, std::function<void(T)> callback) : DefaultParameter<T>(name, value), cb(callback) {}
+    ~CallbackParameter(){}
+    virtual void set(T v) { DefaultParameter<T>::set(v); cb(v); }
+  };
+
 protected:
   // ACHTUNG: never copy the content of the parameter list
   ParameterList(const ParameterList& /*obj*/) {}
@@ -106,6 +117,23 @@ protected:
   Parameter<N>& registerParameterT(const std::string& parameterName, N& parameter)
   {
     T<N>* parameterWrapper = new T<N>(parameterName, &parameter);
+    parameters.push_back(parameterWrapper);
+    return *parameterWrapper;
+  }
+
+  template<template<typename N> class T, typename N>
+  Parameter<N>& registerParameterT(const std::string& parameterName, N& parameter, std::function<void(N)> cb)
+  {
+    T<N>* parameterWrapper = new T<N>(parameterName, &parameter, cb);
+    parameters.push_back(parameterWrapper);
+    return *parameterWrapper;
+  }
+
+  template<template<typename N> class T, typename N, class U>
+  Parameter<N>& registerParameterT(const std::string& parameterName, N& parameter, void(U::*cb)(N))
+  {
+    std::function<void(N)> callback = [this,cb](N v)->void{ (static_cast<U *>( this )->*cb)(v); };
+    T<N>* parameterWrapper = new T<N>(parameterName, &parameter, callback);
     parameters.push_back(parameterWrapper);
     return *parameterWrapper;
   }
@@ -149,5 +177,6 @@ private:
 
 #define PARAMETER_REGISTER(parameter) registerParameterT<DefaultParameter>(convertName(#parameter), parameter)
 #define PARAMETER_ANGLE_REGISTER(parameter) registerParameterT<ParameterAngleDegrees>(convertName(#parameter), parameter)
+#define PARAMETER_REGISTER_CB(parameter, callback) registerParameterT<CallbackParameter>(convertName(#parameter), parameter, callback)
 
 #endif // _ParameterList_h_
