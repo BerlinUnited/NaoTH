@@ -49,7 +49,7 @@ public:
   }
 
   LineIntersection(Vector2i pos, Type type) 
-    : pos(pos), type(type)
+    : type(type), pos(pos)
   {}
 
   Type type;
