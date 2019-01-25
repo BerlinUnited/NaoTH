@@ -6,6 +6,7 @@
 */
 
 #include "PerceptionsVisualizer.h"
+#include "Tools/CameraGeometry.h"
 
 using namespace std;
 
@@ -268,6 +269,7 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
 
 
   //draw line percept
+  /*
   DEBUG_REQUEST("PerceptionsVisualizer:field:line_percept",
     FIELD_DRAWING_CONTEXT;
     PEN("666666AA", 50);
@@ -321,8 +323,9 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
       }//end if
     }//end if
   ); // end line_percept on field
+  */
 
-
+  /*
   DEBUG_REQUEST("PerceptionsVisualizer:image:line_percept",
     IMAGE_DRAWING_CONTEXT;
     // mark lines
@@ -352,9 +355,9 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
     }
     
   ); // end line_percept in image
+  */
 
-
-
+  /*
   DEBUG_REQUEST("PerceptionsVisualizer:image_px:line_percept",
     // mark lines
     for (size_t i = 0; i < getLinePercept().lines.size(); i++)
@@ -376,6 +379,7 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
       LINE_PX(ColorClasses::green,(2*i)+1,7,(2*i)+1,12);
     }//end for
   ); // end line_percept in image_px
+  */
 
   /*
   // FIXME: deprecated
