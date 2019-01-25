@@ -8,7 +8,7 @@
 */
 
 #include "ObstacleModel.h"
-
+#include <limits>
 
 void ObstacleModel::print(std::ostream& stream) const
 {
