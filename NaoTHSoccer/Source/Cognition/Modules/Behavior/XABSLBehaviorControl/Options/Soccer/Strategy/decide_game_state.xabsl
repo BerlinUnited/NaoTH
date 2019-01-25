@@ -51,7 +51,7 @@ option decide_game_state
       game.current_mode = set;
       motion.type = stand;
       //arm.control_mode = back;
-      arm.react_to_collision = true;
+      //arm.react_to_collision = true;
       arm.control_mode = synchronised_with_walk;
       head.control_mode = stay_as_forced;
       audio.capture = true; //whistledetector on
