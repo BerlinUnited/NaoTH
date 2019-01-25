@@ -49,15 +49,11 @@ public:
   }
 
   LineIntersection(Vector2i pos, Type type) 
-    : pos(pos), type(type), segmentOneId(-1), segmentTwoId(-1)
+    : pos(pos), type(type)
   {}
 
   Type type;
   Vector2i pos; /**< The fieldcoordinates of the intersection */
-
-  // hold the ids for the intersecting segments
-  int segmentOneId;
-  int segmentTwoId;
 };
 
 
@@ -293,7 +289,7 @@ public:
     }
   }
 
-  LineIntersection estimateIntersection(const Math::LineSegment& segmentOne, const Math::LineSegment& segmentTwo) 
+  static inline LineIntersection estimateIntersection(const Math::LineSegment& segmentOne, const Math::LineSegment& segmentTwo) 
   {
     const double maxAngleDiff = Math::fromDegrees(5.0);
     const double maxDistanceToIntersection = 100.0; // 10cm

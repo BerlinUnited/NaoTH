@@ -5,6 +5,7 @@
 
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Line.h"
+#include "Tools/LinesTable.h"
 
 class LinePercept2018
 {
@@ -61,11 +62,13 @@ public:
   {
     LinePercept2018::reset();
     flags.clear();
+    intersections.clear();
   }
 
 public:
   // seen flags (only S3D)
   std::vector<Flag> flags;
+  std::vector<LineIntersection> intersections;
 };
 
 

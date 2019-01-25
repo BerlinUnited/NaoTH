@@ -73,10 +73,9 @@ void VirtualVisionProcessor::execute(const CameraInfo::CameraID id)
 
   // line detection
   updateLine();
-  updateCorners();
-
   findIntersections();
-  classifyIntersectionsDetectCircle();
+  
+  updateCorners();
 }//end execute
 
 Vector3d VirtualVisionProcessor::calculatePosition(const Vector3d& pol)
@@ -280,56 +279,101 @@ void VirtualVisionProcessor::updateLine()
 }//end updateLine
 
 
-
 void VirtualVisionProcessor::findIntersections()
 {
-  LinePercept& theLinePercept = getLinePercept();
+  const std::vector<Math::LineSegment>& lines = getVirtualLinePercept().fieldLineSegments;
+  std::vector<LineIntersection>& intersections = getVirtualLinePercept().intersections;
 
-  for (size_t i = 0; i < theLinePercept.lines.size(); i++)
-  {
-    const Math::LineSegment& lineOne = theLinePercept.lines[i].lineOnField;
+  
+  vector<Vector2d> circlePoints;
+  circlePoints.reserve(intersections.size());
 
-    for (size_t j = i + 1; j < theLinePercept.lines.size(); j++)
-    {
-      const Math::LineSegment& lineTwo = theLinePercept.lines[j].lineOnField;
-      
-      double tOneL = lineOne.Line::intersection(lineTwo);
-      double tTwoL = lineTwo.Line::intersection(lineOne);
+  vector<Vector2d> circleMiddlePoints;
+  circleMiddlePoints.reserve(intersections.size());
 
-      Vector2d point = lineOne.Line::point(tOneL);
-      if ( Math::isInf(point.x) || Math::isNan(point.x)
-        || Math::isInf(point.y) || Math::isNan(point.y) )
+  for (size_t i = 0; i < lines.size(); i++) {
+    for (size_t j = i + 1; j < lines.size(); j++) {
+      LineIntersection intersection = LinesTable::estimateIntersection(lines[i], lines[j]);
+      intersections.push_back(intersection);
+
+      // extract circle from intersections
+      if(intersection.type == LineIntersection::C) 
       {
-        continue; // skip bad values
+        Vector2d middlePointOne = (lines[i].begin() + lines[i].end()) / 2;
+        Vector2d middlePointTwo = (lines[j].begin() + lines[j].end()) / 2;
+
+        Math::Line lineNormalOne(middlePointOne, lines[i].getDirection().rotateLeft());
+        Math::Line lineNormalTwo(middlePointTwo, lines[j].getDirection().rotateLeft());
+
+        double p = lineNormalOne.intersection(lineNormalTwo);
+        if(p != std::numeric_limits<double>::infinity())
+        {
+          Vector2d intersectPoint = lineNormalOne.point(p);
+          DEBUG_REQUEST("VirtualVisionProcessor:LineDetector:mark_circle",
+            PEN("FFFFFF", 5); 
+            LINE(middlePointOne.x, middlePointOne.y, intersectPoint.x, intersectPoint.y);
+            LINE(middlePointTwo.x, middlePointTwo.y, intersectPoint.x, intersectPoint.y);
+
+            PEN("FF0000", 30); 
+            CIRCLE(middlePointOne.x, middlePointOne.y, 10);
+            CIRCLE(middlePointTwo.x, middlePointTwo.y, 10);
+            CIRCLE(intersection.pos.x, intersection.pos.y, 10);
+          );
+
+          circlePoints.push_back(middlePointOne);
+          circlePoints.push_back(middlePointTwo);
+          circlePoints.push_back(intersection.pos);
+          circleMiddlePoints.push_back(intersectPoint);
+
+          // mark the lines as circle lines
+          //Vector2<unsigned int> lineIdx = intersections[i].getSegmentIndices();
+          //lineSegments[lineIdx[0]].type = LinePercept::C;
+          //lineSegments[lineIdx[1]].type = LinePercept::C;
+        }//end if
       }
+    }
+  }
 
-      //LinePercept::Intersection intersection(theCameraMatrix, Platform::getInstance().theCameraInfo, point);
-      LinePercept::Intersection intersection;
-      intersection.setPosOnField(point);
-      Vector3d pSpace(point.x, point.y, 0.0);
-      Vector2i pointInImage;
-      CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), pSpace, pointInImage);
-      intersection.setPosInImage(pointInImage);
 
-      double d1 = lineOne.minDistance(intersection.getPosOnField());
-      double d2 = lineTwo.minDistance(intersection.getPosOnField());
+  STOPWATCH_START("LineDetector ~ detect circle");
+  if(circlePoints.size() > 3)
+  {
+    Vector2d middle;
+    for(size_t i = 0; i < circleMiddlePoints.size(); i++) {
+      middle += circleMiddlePoints[i];
+    }
+    middle = middle / static_cast<double> (circleMiddlePoints.size());
 
-      if(max(d1, d2) > 150) { 
-        continue; 
-      }
+    Vector2d middle1;
+    double radius1;
+    if( Geometry::estimateCircle(circlePoints, middle1, radius1) && (middle - middle1).abs() < 150) // 15cm
+    {
+      getLinePercept().middleCircleWasSeen = true;
+      getLinePercept().middleCircleCenter = (middle + middle1) / 2;
+    }
 
-      // TODO: do we need it here? (copied from the LineDetector)
-      double tOne = Math::clamp(tOneL, 0.0, lineOne.getLength());
-      double tTwo = Math::clamp(tTwoL, 0.0, lineTwo.getLength());
-      
-      intersection.setSegments(i, j, tOne, tTwo);
+    DEBUG_REQUEST("VirtualVisionProcessor:LineDetector:mark_circle",
+      PEN("FF000099", 10);
+      CIRCLE(middle.x, middle.y, 50);
+      PEN("0000FF99", 10);
+      CIRCLE(middle1.x, middle1.y, 50);
+    );
+  }//end if
 
-      theLinePercept.intersections.push_back(intersection);
-    }//end for
-  }//end for
+  DEBUG_REQUEST("VirtualVisionProcessor:LineDetector:mark_circle",
+    if(getLinePercept().middleCircleWasSeen) {
+      const Vector2d& center = getLinePercept().middleCircleCenter;
+      PEN("FFFFFF99", 10);
+      CIRCLE(center.x, center.y, 50);
+      PEN("FFFFFF99", 50);
+      CIRCLE(center.x, center.y, getFieldInfo().centerCircleRadius - 25);
+  });
+
+  STOPWATCH_STOP("LineDetector ~ detect circle");
+
 }//end findIntersections
 
-
+/*
 void VirtualVisionProcessor::classifyIntersectionsDetectCircle()
 {
   vector<LinePercept::FieldLineSegment>& lineSegments = getLinePercept().lines;
@@ -475,7 +519,7 @@ void VirtualVisionProcessor::classifyIntersectionsDetectCircle()
   STOPWATCH_STOP("LineDetector ~ detect circle");
 
 }//end classifyIntersections
-
+*/
 
 
 void VirtualVisionProcessor::addLine(const Vector3d& pol0, const Vector3d& pol1)
