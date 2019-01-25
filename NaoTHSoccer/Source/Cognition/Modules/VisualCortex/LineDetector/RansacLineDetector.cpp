@@ -36,7 +36,45 @@ void RansacLineDetector::execute()
 
   std::vector<size_t> inliers;
 
+  
+  // detect circle
+  inliers.clear();
+  if(params.circle.enable) 
+  {
+    Vector2d circResult;
+    if (ransacCircle(circResult, inliers)) 
+    {
+
+      DEBUG_REQUEST("Vision:RansacLineDetector:draw_circle_field",
+        FIELD_DRAWING_CONTEXT;
+        PEN("000099", 5);
+        for(size_t i : inliers) {
+          const Edgel& inlier = getLineGraphPercept().edgelsOnField[i];
+          CIRCLE(inlier.point.x, inlier.point.y, 30);
+        }
+        PEN("990000", 10);
+        CIRCLE(circResult.x, circResult.y, getFieldInfo().centerCircleRadius);
+      );
+
+      if(params.circle.refine) 
+      {
+        Vector2d newCircleMean = refineCircle(inliers, circResult);
+        getRansacCirclePercept2018().set(newCircleMean);
+
+        DEBUG_REQUEST("Vision:RansacLineDetector:draw_circle_field",
+          FIELD_DRAWING_CONTEXT;
+          PEN("009900", 10);
+          CIRCLE(newCircleMean.x, newCircleMean.y, getFieldInfo().centerCircleRadius);
+        );
+      } else {
+        getRansacCirclePercept2018().set(circResult);
+      }
+    }
+  }// end if circle
+
+
   // detect lines
+  inliers.clear();
   for(int i = 0; i < params.line.maxLines; ++i)
   {
     inliers.clear();
@@ -80,40 +118,6 @@ void RansacLineDetector::execute()
     }
   }
 
-  inliers.clear();
-  // detect circle
-  if(params.circle.enable) 
-  {
-    Vector2d circResult;
-    if (ransacCircle(circResult, inliers)) 
-    {
-
-      DEBUG_REQUEST("Vision:RansacLineDetector:draw_circle_field",
-        FIELD_DRAWING_CONTEXT;
-        PEN("000099", 5);
-        for(size_t i : inliers) {
-          const Edgel& inlier = getLineGraphPercept().edgelsOnField[i];
-          CIRCLE(inlier.point.x, inlier.point.y, 30);
-        }
-        PEN("990000", 10);
-        CIRCLE(circResult.x, circResult.y, getFieldInfo().centerCircleRadius);
-      );
-
-      if(params.circle.refine) 
-      {
-        Vector2d newCircleMean = refineCircle(inliers, circResult);
-        getRansacCirclePercept2018().set(newCircleMean);
-
-        DEBUG_REQUEST("Vision:RansacLineDetector:draw_circle_field",
-          FIELD_DRAWING_CONTEXT;
-          PEN("009900", 10);
-          CIRCLE(newCircleMean.x, newCircleMean.y, getFieldInfo().centerCircleRadius);
-        );
-      } else {
-        getRansacCirclePercept2018().set(circResult);
-      }
-    }
-  }// end if circle
 
 
   DEBUG_REQUEST("Vision:RansacLineDetector:draw_edgels_field",
