@@ -49,7 +49,7 @@ ArmCollisionDetector2018::~ArmCollisionDetector2018()
 
 void ArmCollisionDetector2018::execute()
 {
-	//Check if robot is in a suitable situation to recognize collisions
+	//Check if robot is in a suitable situation to recognize collisions#
     const bool bodymodeOK = getBodyState().fall_down_state != BodyState::upright;
 	const bool armModeOK =
 		getMotionRequest().armMotionRequest.id == ArmMotionRequest::arms_synchronised_with_walk ||
@@ -61,8 +61,17 @@ void ArmCollisionDetector2018::execute()
 	{
 		jointDataBufferLeft.clear();
 		jointDataBufferRight.clear();
+        lastIllegalTime = getFrameInfo().getTime();
 		return;
 	}
+
+    //HACK: Robot is reacting to collision during stand up motion wich leads to wrong interpretations
+    /*
+    if (getFrameInfo().getTimeSince(lastIllegalTime)<1)
+    {
+        return;
+    }
+    */
 
     //collect Motorjoint Data and adjust timelag (Motor is 4 Frames ahead of Sensor)
 	jointDataBufferLeft.add(getMotorJointData().position[JointData::LShoulderPitch]);
@@ -99,6 +108,11 @@ void ArmCollisionDetector2018::execute()
 
 		return;
 	}
+    else
+    {
+        collisionBufferLeft.clear();
+        collisionBufferRight.clear();
+    }
 
     //In this part we check for collision using the "Polygon method" 
 

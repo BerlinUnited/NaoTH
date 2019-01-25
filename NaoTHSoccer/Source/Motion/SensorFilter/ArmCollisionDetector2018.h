@@ -80,6 +80,7 @@ private:
 	RingBufferWithSum<double, 100> collisionBufferRight;
 	Math::Polygon<double> refpolyL;
 	Math::Polygon<double> refpolyR;
+    unsigned int lastIllegalTime;
 
 };
 
