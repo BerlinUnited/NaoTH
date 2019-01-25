@@ -58,8 +58,8 @@ private:
     {
       //Lines
       PARAMETER_REGISTER(line.maxLines) = 11;
-      PARAMETER_REGISTER(line.maxIterations) = 50;
-      PARAMETER_REGISTER(line.minInliers) = 5;
+      PARAMETER_REGISTER(line.maxIterations) = 100;
+      PARAMETER_REGISTER(line.minInliers) = 12;
 
       PARAMETER_REGISTER(line.outlierThresholdDist) = 70;
       PARAMETER_REGISTER(line.minDirectionSimilarity) = 0.8;
@@ -70,7 +70,7 @@ private:
       PARAMETER_REGISTER(line.fit_lines_to_inliers) = true;
 
       //Circle
-      PARAMETER_REGISTER(circle.maxIterations) = 20;
+      PARAMETER_REGISTER(circle.maxIterations) = 50;
       PARAMETER_REGISTER(circle.minInliers) = 7;
       PARAMETER_REGISTER(circle.outlierThresholdDist) = 70;
       PARAMETER_ANGLE_REGISTER(circle.outlierThresholdAngle) = 8;
