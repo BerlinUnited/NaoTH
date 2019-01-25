@@ -52,7 +52,7 @@ void RansacLineDetector::execute()
           const Edgel& inlier = getLineGraphPercept().edgelsOnField[i];
           CIRCLE(inlier.point.x, inlier.point.y, 30);
         }
-        PEN("990000", 10);
+        PEN("99000066", 50);
         CIRCLE(circResult.x, circResult.y, getFieldInfo().centerCircleRadius);
       );
 
@@ -63,7 +63,7 @@ void RansacLineDetector::execute()
 
         DEBUG_REQUEST("Vision:RansacLineDetector:draw_circle_field",
           FIELD_DRAWING_CONTEXT;
-          PEN("009900", 10);
+          PEN("00990066", 50);
           CIRCLE(newCircleMean.x, newCircleMean.y, getFieldInfo().centerCircleRadius);
         );
       } else {
@@ -152,9 +152,9 @@ void RansacLineDetector::execute()
     {
       std::string color;
       switch(i%3) {
-        case 0: color = "00FF00"; break;
-        case 1: color = "0000FF"; break;
-        default: color = "00FFFF"; break;
+        case 0: color = "00FF0066"; break;
+        case 1: color = "0000FF66"; break;
+        default: color = "00FFFF66"; break;
       }
       const Math::LineSegment& line = getRansacLinePercept().fieldLineSegments[i];
       PEN(color, 50);
@@ -335,7 +335,7 @@ bool RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inl
       
     // inlier
     double distError = 0.0;
-    if(isCircleInlier(i, bestModel, distError)) 
+    if(isCircleInlier(i, bestModel, distError, 3.0*params.circle.outlierThresholdAngle)) 
     {
       Vector2d c = e.point + (bestModel - e.point).normalize(getFieldInfo().centerCircleRadius);
       bestModel += c;
@@ -377,7 +377,7 @@ bool RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inl
       
       // inlier
       double distError = 0.0;
-      if(isCircleInlier(i, model, distError)) 
+      if(isCircleInlier(i, model, distError, params.circle.outlierThresholdAngle)) 
       {
         inlier += 1;
         inlierError += distError;
@@ -402,7 +402,7 @@ bool RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inl
     for(size_t i: outliers)
     {
       double distError = 0.0;
-      if(isCircleInlier(i, bestModel, distError)) {
+      if(isCircleInlier(i, bestModel, distError, 3.0*params.circle.outlierThresholdAngle)) {
         inliers.push_back(i);
       } else {
         outliers[outlierIdx++] = i;

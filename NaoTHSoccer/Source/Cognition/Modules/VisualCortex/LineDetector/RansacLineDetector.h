@@ -162,14 +162,14 @@ private:
   bool estimateCircle(const Edgel& a, const Edgel& b, const double radius, Vector2d& center);
   Vector2d refineCircle(const std::vector<size_t>& inliers, const Vector2d& center);
 
-  inline bool isCircleInlier(size_t i, const Vector2d& center, double& distError) {
+  inline bool isCircleInlier(size_t i, const Vector2d& center, double& distError, double maxAngleError) {
     const Edgel& e = getLineGraphPercept().edgelsOnField[i];
     const double radius = getFieldInfo().centerCircleRadius;
 
     distError = std::fabs(radius - (center - e.point).abs());
 
     return distError             <= params.circle.outlierThresholdDist && 
-           angle_diff(center, e) <= params.circle.outlierThresholdAngle;
+           angle_diff(center, e) <= maxAngleError;
   }
 };
 
