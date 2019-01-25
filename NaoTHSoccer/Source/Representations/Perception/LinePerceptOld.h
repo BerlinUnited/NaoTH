@@ -1,11 +1,11 @@
 /** 
  * @file BallPercept.h
  * @author <a href="mailto:mohr@informatik.hu-berlin.de">Christian Mohr</a>
- * Declaration of class LinePercept
+ * Declaration of class LinePerceptOld
  */
 
-#ifndef _LinePercept_h_
-#define _LinePercept_h_
+#ifndef _LinePerceptOld_h_
+#define _LinePerceptOld_h_
 
 #include <vector>
 
@@ -20,7 +20,7 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 
 
-class LinePercept : public naoth::Printable
+class LinePerceptOld : public naoth::Printable
 { 
 public:
 
@@ -51,7 +51,7 @@ public:
       :
       thickness(0.0),
       angle(0.0),
-      //type(LinePercept::unknown),
+      //type(LinePerceptOld::unknown),
       valid(false)
     {}
 
@@ -77,7 +77,7 @@ public:
       FieldLineSegment()
         :
         //valid(false),
-        type(LinePercept::unknown),
+        type(LinePerceptOld::unknown),
         seen_id(unknown_id)
       {}
 
@@ -199,7 +199,7 @@ public:
   naoth::FrameInfo frameInfoWhenLineWasSeen;
 
 
-  LinePercept()
+  LinePerceptOld()
   :
     middleCircleWasSeen(false),
     middleCircleOrientationWasSeen(false),
@@ -209,7 +209,7 @@ public:
     reset();
   }
 
-  ~LinePercept() {}
+  ~LinePerceptOld() {}
   
   /* reset percept */
   void reset()
@@ -234,10 +234,10 @@ public:
 
 };
 
-class LinePerceptTop : public LinePercept
+class LinePerceptOldTop : public LinePerceptOld
 {
 public:
-  virtual ~LinePerceptTop() {}
+  virtual ~LinePerceptOldTop() {}
 };
 
 /*
@@ -268,19 +268,19 @@ public:
 namespace naoth
 {
   template<>
-  class Serializer<LinePercept>
+  class Serializer<LinePerceptOld>
   {
   public:
-    static void serialize(const LinePercept& representation, std::ostream& stream);
-    static void deserialize(std::istream& stream, LinePercept& representation);
+    static void serialize(const LinePerceptOld& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, LinePerceptOld& representation);
   };
 
   template<>
-  class Serializer<LinePerceptTop> : public Serializer<LinePercept>
+  class Serializer<LinePerceptOldTop> : public Serializer<LinePerceptOld>
   {};
 
 }
 
-#endif // _LinePercept_h_
+#endif // _LinePerceptOld_h_
 
 
