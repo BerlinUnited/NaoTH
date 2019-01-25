@@ -7,6 +7,27 @@
 #include "Tools/Math/Line.h"
 #include "Tools/LinesTable.h"
 
+class MiddleCircle
+{
+public: 
+  bool wasSeen;
+  Vector2d center;
+
+public:
+  MiddleCircle() :
+    wasSeen(false)
+  {}
+
+  void set(const Vector2d& center) {
+    this->wasSeen = true;
+    this->center = center;
+  }
+
+  void reset() {
+    wasSeen = false;
+  }
+};
+
 class LinePercept2018
 {
 public:
@@ -69,30 +90,12 @@ public:
   // seen flags (only S3D)
   std::vector<Flag> flags;
   std::vector<LineIntersection> intersections;
+  MiddleCircle middleCircle;
 };
 
 
 
-class MiddleCircle
-{
-public: 
-  bool wasSeen;
-  Vector2d center;
 
-public:
-  MiddleCircle() :
-    wasSeen(false)
-  {}
-
-  void set(const Vector2d& center) {
-    this->wasSeen = true;
-    this->center = center;
-  }
-
-  void reset() {
-    wasSeen = false;
-  }
-};
 
 
 class RansacCirclePercept2018 : public MiddleCircle{};

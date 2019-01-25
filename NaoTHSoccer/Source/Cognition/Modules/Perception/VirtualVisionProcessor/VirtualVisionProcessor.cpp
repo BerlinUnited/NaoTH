@@ -10,6 +10,7 @@
 
 #include <Tools/Math/Matrix_mxn.h>
 #include "Tools/DataConversion.h"
+#include "Tools/CameraGeometry.h"
 
 using namespace std;
 
@@ -254,7 +255,7 @@ void VirtualVisionProcessor::updateGoal()
 void VirtualVisionProcessor::updateLine()
 {
   const VirtualVision& theVirtualVision = getVirtualVision();
-  getLinePercept().reset();
+  //getLinePercept().reset();
 
   // lines from flags
   if (theVirtualVision.lines.empty())
@@ -348,8 +349,8 @@ void VirtualVisionProcessor::findIntersections()
     double radius1;
     if( Geometry::estimateCircle(circlePoints, middle1, radius1) && (middle - middle1).abs() < 150) // 15cm
     {
-      getLinePercept().middleCircleWasSeen = true;
-      getLinePercept().middleCircleCenter = (middle + middle1) / 2;
+      getVirtualLinePercept().middleCircle.wasSeen = true;
+      getVirtualLinePercept().middleCircle.center = (middle + middle1) / 2;
     }
 
     DEBUG_REQUEST("VirtualVisionProcessor:LineDetector:mark_circle",
@@ -361,8 +362,8 @@ void VirtualVisionProcessor::findIntersections()
   }//end if
 
   DEBUG_REQUEST("VirtualVisionProcessor:LineDetector:mark_circle",
-    if(getLinePercept().middleCircleWasSeen) {
-      const Vector2d& center = getLinePercept().middleCircleCenter;
+    if(getVirtualLinePercept().middleCircle.wasSeen) {
+      const Vector2d& center = getVirtualLinePercept().middleCircle.center;
       PEN("FFFFFF99", 10);
       CIRCLE(center.x, center.y, 50);
       PEN("FFFFFF99", 50);

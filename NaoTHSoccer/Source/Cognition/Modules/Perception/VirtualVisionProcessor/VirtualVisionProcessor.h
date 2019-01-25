@@ -23,7 +23,7 @@
 
 #include "Representations/Perception/BallPercept.h"
 #include "Representations/Perception/GoalPercept.h"
-#include "Representations/Perception/LinePercept.h"
+//#include "Representations/Perception/LinePercept.h"
 #include "Representations/Perception/LinePercept2018.h"
 
 #include "Representations/Perception/PlayersPercept.h"
@@ -61,8 +61,8 @@ BEGIN_DECLARE_MODULE(VirtualVisionProcessor)
   PROVIDE(GoalPercept)
   PROVIDE(GoalPerceptTop)
   
-  PROVIDE(LinePercept)
-  PROVIDE(LinePerceptTop)
+  //PROVIDE(LinePercept)
+  //PROVIDE(LinePerceptTop)
   PROVIDE(VirtualLinePercept)
 
   PROVIDE(PlayersPercept)
@@ -188,7 +188,7 @@ private:
 
   DOUBLE_CAM_PROVIDE(VirtualVisionProcessor,BallPercept);
   DOUBLE_CAM_PROVIDE(VirtualVisionProcessor,GoalPercept);
-  DOUBLE_CAM_PROVIDE(VirtualVisionProcessor,LinePercept);
+  //DOUBLE_CAM_PROVIDE(VirtualVisionProcessor,LinePercept);
 };
 
 #endif // _VIRTUAL_VISION_PROCESSOR_H
