@@ -1,6 +1,8 @@
 #include "RansacLineDetector.h"
 
 #include "Tools/Math/Geometry.h"
+#include <Tools/Math/Matrix_mxn.h>
+#include <numeric>
 
 RansacLineDetector::RansacLineDetector()
 {
@@ -24,25 +26,27 @@ void RansacLineDetector::execute()
   getRansacLinePercept().reset();
   getRansacCirclePercept2018().reset();
 
+  // prepare the index arrays
   getRansacLinePercept().edgelLineIDs.resize(getLineGraphPercept().edgelsOnField.size());
-
-  this->outliers.resize(getLineGraphPercept().edgelsOnField.size());
-  // copy the edgels
+  outliers.resize(getLineGraphPercept().edgelsOnField.size());
   for(size_t i = 0; i < getLineGraphPercept().edgelsOnField.size(); ++i) {
-    this->outliers[i] = i;
+    outliers[i] = i;
     getRansacLinePercept().edgelLineIDs[i] = -1;
   }
 
   std::vector<size_t> inliers;
 
-  for(int i = 0; i < params.maxLines; ++i)
+  // detect lines
+  for(int i = 0; i < params.line.maxLines; ++i)
   {
     inliers.clear();
     Math::LineSegment result;
     size_t start_edgel, end_edgel;
     if(ransac(result, inliers, start_edgel, end_edgel))
     {
-      if(params.fit_lines_to_inliers) {
+      // refine the detected line segment
+      if(params.line.fit_lines_to_inliers) 
+      {
         std::vector<Vector2d> points;
         points.reserve(inliers.size());
         for(size_t i : inliers) {
@@ -51,7 +55,7 @@ void RansacLineDetector::execute()
         }
 
         double slope, intercept;
-        simpleLinearRegression(points, slope, intercept);
+        Geometry::simpleLinearRegression(points, slope, intercept);
 
         Vector2d base(0, intercept);
         Vector2d direction = base - Vector2d(1, slope + intercept);
@@ -72,21 +76,22 @@ void RansacLineDetector::execute()
       }
     }
     else {
-      break;
+      break; // no line has been found
     }
   }
 
   inliers.clear();
-  // circle
-  if(params.enable_circle_ransac) {
+  // detect circle
+  if(params.circle.enable) 
+  {
     Vector2d circResult;
-    if (ransacCircle(circResult, inliers)) {
+    if (ransacCircle(circResult, inliers)) 
+    {
 
       DEBUG_REQUEST("Vision:RansacLineDetector:draw_circle_field",
         FIELD_DRAWING_CONTEXT;
         PEN("000099", 5);
-        for(size_t i : inliers)
-        {
+        for(size_t i : inliers) {
           const Edgel& inlier = getLineGraphPercept().edgelsOnField[i];
           CIRCLE(inlier.point.x, inlier.point.y, 30);
         }
@@ -94,30 +99,22 @@ void RansacLineDetector::execute()
         CIRCLE(circResult.x, circResult.y, getFieldInfo().centerCircleRadius);
       );
 
-      if(params.fit_circle_to_inliers) {
-        std::vector<Vector2d> points;
-        points.reserve(inliers.size());
-        for(size_t i : inliers) {
-          const Edgel& e = getLineGraphPercept().edgelsOnField[i];
-          points.push_back(e.point);
-        }
-        Vector2d circleMean;
-        double circleRadius;
-        if (Geometry::calculateCircle(points, circleMean, circleRadius)) {
-          getRansacCirclePercept2018().set(circleMean);
+      if(params.circle.refine) 
+      {
+        Vector2d newCircleMean = refineCircle(inliers, circResult);
+        getRansacCirclePercept2018().set(newCircleMean);
 
-          DEBUG_REQUEST("Vision:RansacLineDetector:draw_circle_field",
-            FIELD_DRAWING_CONTEXT;
-            PEN("009900", 10);
-            CIRCLE(circleMean.x, circleMean.y, circleRadius);
-          );
-        }
+        DEBUG_REQUEST("Vision:RansacLineDetector:draw_circle_field",
+          FIELD_DRAWING_CONTEXT;
+          PEN("009900", 10);
+          CIRCLE(newCircleMean.x, newCircleMean.y, getFieldInfo().centerCircleRadius);
+        );
       } else {
         getRansacCirclePercept2018().set(circResult);
       }
     }
+  }// end if circle
 
-  }
 
   DEBUG_REQUEST("Vision:RansacLineDetector:draw_edgels_field",
     FIELD_DRAWING_CONTEXT;
@@ -155,70 +152,56 @@ void RansacLineDetector::execute()
         case 1: color = "0000FF"; break;
         default: color = "00FFFF"; break;
       }
+      const Math::LineSegment& line = getRansacLinePercept().fieldLineSegments[i];
       PEN(color, 50);
-      LINE(
-        getRansacLinePercept().fieldLineSegments[i].begin().x, getRansacLinePercept().fieldLineSegments[i].begin().y,
-        getRansacLinePercept().fieldLineSegments[i].end().x, getRansacLinePercept().fieldLineSegments[i].end().y);
+      LINE(line.begin().x, line.begin().y, line.end().x, line.end().y);
     }
-
   );
 
+  // NOTE: experimental
   DEBUG_REQUEST("Vision:RansacLineDetector:fit_and_draw_ellipse_field",
     FIELD_DRAWING_CONTEXT;
     // fit ellipse
     Ellipse ellipseResult;
-
     int bestInlierCirc = ransacEllipse(ellipseResult);
 
-    if (bestInlierCirc > 0) {
-      {
+    if (bestInlierCirc > 0)
+    {
+      Vector2d c = ellipseResult.getCenter();
+      Vector2d a = ellipseResult.axesLength();
 
-        double c[2];
-        ellipseResult.getCenter(c);
+      Vector2d ax(a.x,0.0);
+      ax.rotate(ellipseResult.rotationAngle());
 
-        double a[2];
-        ellipseResult.axesLength(a);
+      Vector2d ay(0.0,a.y);
+      ay.rotate(ellipseResult.rotationAngle());
 
-        PEN("009900", 50);
+      // draw the oval and the axes
+      PEN("009900", 50);
+      OVAL_ROTATED(c.x, c.y, a.x, a.y, ellipseResult.rotationAngle());
 
-        //CIRCLE(c[0], c[1], 30);
-        OVAL_ROTATED(c[0], c[1], a[0], a[1], ellipseResult.rotationAngle());
+      PEN("FF0000", 20);
+      CIRCLE(c.x, c.y, 50);
+      LINE(c.x, c.y, c.x+ax.x, c.y+ax.y);
+      LINE(c.x, c.y, c.x+ay.x, c.y+ay.y);
 
-        PEN("0000AA", 20);
-        for(size_t i=0; i<ellipseResult.x_toFit.size(); i++) {
-          CIRCLE(ellipseResult.x_toFit[i], ellipseResult.y_toFit[i], 20);
-        }
+      // draw fitted points
+      PEN("0000AA", 20);
+      for(size_t i=0; i<ellipseResult.x_toFit.size(); i++) {
+        CIRCLE(ellipseResult.x_toFit[i], ellipseResult.y_toFit[i], 20);
       }
 
-      {
-        Vector2d c = ellipseResult.getCenter();
-        Vector2d a = ellipseResult.axesLength();
-
-        Vector2d ax(a.x,0.0);
-        ax.rotate(ellipseResult.rotationAngle());
-
-        Vector2d ay(0.0,a.y);
-        ay.rotate(ellipseResult.rotationAngle());
-
-        PEN("FF0000", 20);
-        CIRCLE(c.x, c.y, 50);
-        LINE(c.x, c.y, c.x+ax.x, c.y+ax.y);
-        LINE(c.x, c.y, c.x+ay.x, c.y+ay.y);
-
-
-        Vector2d point(500,500);
-        Vector2d p = ellipseResult.test_project(point);
-        PEN("FF0000", 20);
-        CIRCLE(point.x, point.y, 50);
-        PEN("0000FF", 20);
-        CIRCLE(p.x, p.y, 50);
-        PEN("000000", 10);
-        LINE(point.x, point.y, p.x, p.y);
-    }
+      // NOTE: experimental (Heinrich)
+      Vector2d point(500,500);
+      Vector2d p = ellipseResult.test_project(point);
+      PEN("FF0000", 20);
+      CIRCLE(point.x, point.y, 50);
+      PEN("0000FF", 20);
+      CIRCLE(p.x, p.y, 50);
+      PEN("000000", 10);
+      LINE(point.x, point.y, p.x, p.y);
     }
   );
-
-
 }
 
 bool RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& inliers, size_t& start_edgel, size_t& end_edgel)
@@ -230,8 +213,9 @@ bool RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& 
   Math::Line bestModel;
   int bestInlier = 0;
   double bestInlierError = 0;
+  size_t bestBaseEdgelId = -1;
 
-  for(int i = 0; i < params.iterations; ++i)
+  for(int i = 0; i < params.line.maxIterations; ++i)
   {
     //pick two random points without replacement
     size_t i0 = choose_random_from(outliers, 1);
@@ -240,7 +224,7 @@ bool RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& 
     const Edgel& a = getLineGraphPercept().edgelsOnField[i0];
     const Edgel& b = getLineGraphPercept().edgelsOnField[i1];
 
-    if(a.sim(b) < params.directionSimilarity) {
+    if(a.sim(b) < params.line.minDirectionSimilarity) {
       continue;
     }
 
@@ -254,20 +238,21 @@ bool RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& 
       double d = model.minDistance(e.point);
 
       // inlier
-      if(d < params.outlierThreshold && sim(model, e) > params.directionSimilarity) {
+      if(d < params.line.outlierThresholdDist && sim(model, e) > params.line.minDirectionSimilarity) {
         ++inlier;
         inlierError += d;
       }
     }
 
-    if(inlier >= params.inlierMin && (inlier > bestInlier || (inlier == bestInlier && inlierError < bestInlierError))) {
+    if(inlier >= params.line.minInliers && (inlier > bestInlier || (inlier == bestInlier && inlierError < bestInlierError))) {
       bestModel = model;
       bestInlier = inlier;
       bestInlierError = inlierError;
+      bestBaseEdgelId = i0;
     }
   }
 
-  if(bestInlier >= params.inlierMin)
+  if(bestInlier >= params.line.minInliers && bestBaseEdgelId >= 0)
   {
     std::vector<size_t> newOutliers;
     newOutliers.reserve(outliers.size() - bestInlier + 1);
@@ -281,7 +266,7 @@ bool RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& 
     //       been used to create the model.
     double minT = 0.0;
     double maxT = 0.0;
-    start_edgel = end_edgel = 0;
+    start_edgel = end_edgel = bestBaseEdgelId;
 
     Vector2d direction_var;
 
@@ -290,8 +275,7 @@ bool RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& 
       const Edgel& e = getLineGraphPercept().edgelsOnField[i];
       double d = bestModel.minDistance(e.point);
 
-      if(d < params.outlierThreshold && sim(bestModel, e) > params.directionSimilarity) 
-      {
+      if(d < params.line.outlierThresholdDist && sim(bestModel, e) > params.line.minDirectionSimilarity) {
         inliers.push_back(i);
 
         double t = bestModel.project(e.point);
@@ -309,15 +293,18 @@ bool RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& 
       }
     }
 
+    // adjust the size of the outliers
+    outliers.resize(outliers.size() - inliers.size());
+
     direction_var /= static_cast<double>(inliers.size());
     double angle_var = 1 - direction_var.abs();
 
     result = Math::LineSegment(bestModel.point(minT), bestModel.point(maxT));
     double line_length = result.getLength();
 
-    if (line_length > params.min_line_length
-        && (line_length > params.length_of_var_check || angle_var <= params.maxVariance)) {
-
+    if (line_length > params.line.min_line_length
+        && (line_length > params.line.length_of_var_check || angle_var <= params.line.maxVariance))
+    {
       outliers = newOutliers;
       return true;
     }
@@ -326,118 +313,149 @@ bool RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& 
   return false;
 }
 
-bool RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inliers) {
+bool RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inliers) 
+{
   if(outliers.size() <= 2) {
     return false;
   }
 
-  double radius = getFieldInfo().centerCircleRadius;
-
-  Vector2d bestModel;
-
+  Vector2d bestModel = getRansacCirclePercept2018().center;
   int bestInlier = 0;
   double bestInlierError = 0;
 
-  for(int i = 0; i < params.circle_iterations; ++i)
+  // refine initial model
+  double n = 1;
+  for(size_t i: outliers)
   {
-    //pick two random points without replacement
-    size_t i0 = choose_random_from(outliers, 1);
-    size_t i1 = choose_random_from(outliers, 2);
-
-    const Edgel& a = getLineGraphPercept().edgelsOnField[i0];
-    const Edgel& b = getLineGraphPercept().edgelsOnField[i1];
-
-    // create model
-    std::vector<Vector2d> models;
-    models.reserve(2);
-
-    if (a.point.x == b.point.x && a.point.y == b.point.y) {
-      continue;
-    }
-    Vector2d between((a.point.x + b.point.x)/2, (a.point.y + b.point.y)/2);
-    double distance = (a.point - b.point).abs();
-    double half_distance = distance/2;
-
-    if(half_distance > radius) continue;
-    if(half_distance == radius) {
-      models.push_back(between);
-    } else {
-      Vector2d model1;
-      Vector2d model2;
-
-      Vector2d direction(b.point-a.point);
-      direction /= distance;
-
-      double between_dist = sqrt(Math::sqr(radius) - Math::sqr(half_distance));
-
-      model1.x = between.x - between_dist * direction.y;
-      model1.y = between.y + between_dist * direction.x;
-
-      model2.x = between.x + between_dist * direction.y;
-      model2.y = between.y - between_dist * direction.x;
-
-      models.push_back(model1);
-      models.push_back(model2);
-    }
-
-    for (Vector2d model : models) {
-      Vector2d direction_var;
-      double inlierError = 0;
-      int inlier = 0;
-
-      for(size_t i: outliers)
-      {
-        const Edgel& e = getLineGraphPercept().edgelsOnField[i];
-        double offset = std::fabs(radius - (model - e.point).abs());
-
-        // inlier
-        if(offset <= params.circle_outlierThreshold && 
-           angle_diff(model, e) <= params.circle_max_angle_diff) 
-        {
-          direction_var += e.direction;
-
-          ++inlier;
-          inlierError += offset;
-        }
-      }
-      if(inlier >= params.circle_inlierMin) {
-        direction_var /= inlier;
-        double angle_variance = 1.0 - direction_var.abs();
-
-        if((inlier > bestInlier || (inlier == bestInlier && inlierError < bestInlierError))
-          && angle_variance >= params.circle_angle_variance) 
-        {
-          bestModel = model;
-          bestInlier = inlier;
-          bestInlierError = inlierError;
-        }
-      }
+    const Edgel& e = getLineGraphPercept().edgelsOnField[i];
+      
+    // inlier
+    double distError = 0.0;
+    if(isCircleInlier(i, bestModel, distError)) 
+    {
+      Vector2d c = e.point + (bestModel - e.point).normalize(getFieldInfo().centerCircleRadius);
+      bestModel += c;
+      n++;
     }
   }
 
-  if (bestInlier >= params.circle_inlierMin) {
-    std::vector<size_t> newOutliers;
-    newOutliers.reserve(outliers.size() - bestInlier + 1);
-    inliers.reserve(bestInlier);
+  bestModel /= n;
 
-    // update the outliers
+  const double radius = getFieldInfo().centerCircleRadius;
+
+  for(int i = 0; i < params.circle.maxIterations; ++i)
+  {
+    Vector2d model;
+
+    if(i == 0) {
+      model = bestModel;
+    }
+    else
+    {
+      //pick two random points without replacement
+      size_t i0 = choose_random_from(outliers, 1);
+      size_t i1 = choose_random_from(outliers, 2);
+
+      const Edgel& a = getLineGraphPercept().edgelsOnField[i0];
+      const Edgel& b = getLineGraphPercept().edgelsOnField[i1];
+
+      if(!estimateCircle(a,b,radius,model)) {
+        continue;
+      }
+    }
+
+    double inlierError = 0;
+    int inlier = 0;
+
     for(size_t i: outliers)
     {
       const Edgel& e = getLineGraphPercept().edgelsOnField[i];
-      double offset = std::fabs(radius - (bestModel - e.point).abs());
-
-      if(offset > params.circle_outlierThreshold || angle_diff(bestModel, e) > params.circle_max_angle_diff) {
-        newOutliers.push_back(i);
-      } else {
-        inliers.push_back(i);
+      
+      // inlier
+      double distError = 0.0;
+      if(isCircleInlier(i, model, distError)) 
+      {
+        inlier += 1;
+        inlierError += distError;
       }
     }
-    outliers = newOutliers;
+
+    if(inlier > bestInlier || (inlier == bestInlier && inlierError < bestInlierError)) 
+    {
+      bestModel = model;
+      bestInlier = inlier;
+      bestInlierError = inlierError;
+    }
+
+  } // end for
+
+  // update the outliers
+  if (bestInlier >= params.circle.minInliers) 
+  {
+    size_t outlierIdx = 0;
+    inliers.reserve(bestInlier);
+
+    for(size_t i: outliers)
+    {
+      double distError = 0.0;
+      if(isCircleInlier(i, bestModel, distError)) {
+        inliers.push_back(i);
+      } else {
+        outliers[outlierIdx++] = i;
+      }
+    }
+    outliers.resize(outliers.size() + 1 - bestInlier);
 
     result = bestModel;
     return true;
   }
+
   return false;
+}
+
+bool RansacLineDetector::estimateCircle(const Edgel& a, const Edgel& b, const double radius, Vector2d& center)
+{
+  Math::Line la(a.point, a.direction.rotateLeft());
+  Math::Line lb(b.point, b.direction.rotateLeft());
+  double t = la.intersection(lb);
+
+  // too large error
+  if(fabs(t) > radius*1.5) {
+    return false;
+  }
+
+  Math::LineSegment lab(a.point, b.point);
+  const Vector2d c = la.point(t);
+  const Vector2d direction = (c - lab.projection(c)).normalize();
+
+  Vector2d between((a.point + b.point)/2);
+  double half_distance = (a.point - b.point).abs()/2;
+  double between_dist = sqrt(Math::sqr(radius) - Math::sqr(half_distance));
+
+  center = between + direction*between_dist;
+  return true;
+}
+
+
+Vector2d RansacLineDetector::refineCircle(const std::vector<size_t>& inliers, const Vector2d& center) 
+{
+  Vector2d result;
+  double n = 0;
+
+  for(size_t i: inliers) 
+  {
+    const Edgel& e = getLineGraphPercept().edgelsOnField[i];
+
+    Vector2d c = e.point + (center - e.point).normalize(getFieldInfo().centerCircleRadius);
+    result += c;
+    n++;
+  }
+
+  if(n > 0) {
+    result /= n;
+  }
+
+  return result;
 }
 
 int RansacLineDetector::ransacEllipse(Ellipse& result)
@@ -450,7 +468,7 @@ int RansacLineDetector::ransacEllipse(Ellipse& result)
   int bestInlier = 0;
   double bestInlierError = 0;
 
-  for(int i = 0; i < params.circle_iterations; ++i)
+  for(int i = 0; i < params.circle.maxIterations; ++i)
   {
     // create model
     Ellipse ellipse;
@@ -477,13 +495,13 @@ int RansacLineDetector::ransacEllipse(Ellipse& result)
       const Edgel& e = getLineGraphPercept().edgelsOnField[i];
       double d = ellipse.error_to(e.point.x, e.point.y);
 
-      if(d <= params.circle_outlierThreshold) {
+      if(d <= params.circle.outlierThresholdDist) {
         ++inlier;
         inlierError += d;
         continue;
       }
     }
-    if(inlier >= params.circle_inlierMin && (inlier > bestInlier || (inlier == bestInlier && inlierError < bestInlierError))) {
+    if(inlier >= params.circle.minInliers && (inlier > bestInlier || (inlier == bestInlier && inlierError < bestInlierError))) {
       bestModel = ellipse;
       bestInlier = inlier;
       bestInlierError = inlierError;
@@ -505,7 +523,7 @@ int RansacLineDetector::ransacEllipse(Ellipse& result)
       const Edgel& e = getLineGraphPercept().edgelsOnField[i];
       double d = bestModel.error_to(e.point.x, e.point.y);
 
-      if(d > params.circle_outlierThreshold) {
+      if(d > params.circle.outlierThresholdDist) {
         newOutliers.push_back(i);
       } else {
         inliers_x.push_back(e.point.x);
@@ -522,28 +540,4 @@ int RansacLineDetector::ransacEllipse(Ellipse& result)
   return bestInlier;
 }
 
-void RansacLineDetector::simpleLinearRegression(std::vector<Vector2d> &points, double& slope, double& intercept) 
-{
-  if(points.size() < 2) {
-    slope = 0.0;
-    intercept = points[0].y;
-    return;
-  }
 
-  Vector2d avg;
-  for(const Vector2d& point : points) {
-    avg += point;
-  }
-  avg /= static_cast<double>(points.size());
-
-  double top = 0.;
-  double bot = 0.;
-  for(const Vector2d& point : points) {
-    double x_diff = point.x - avg.x;
-    top += x_diff * (point.y - avg.y);
-    bot += x_diff * x_diff;
-  }
-
-  slope = top / bot;
-  intercept = avg.y - slope * avg.x;
-}

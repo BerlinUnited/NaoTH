@@ -259,6 +259,10 @@ template <class V> class Vector2
     return *this;
   }
 
+  Vector2<V> rotateLeft() const { 
+    return Vector2<V>(*this).rotateLeft();
+  }
+
   /** the vector around a given angle
    * (changes the object)
    */
@@ -283,6 +287,10 @@ template <class V> class Vector2
     x = y;
     y = buffer;
     return *this;
+  }
+
+  Vector2<V> rotateRight() const { 
+    return Vector2<V>(*this).rotateLeft();
   }
 
   /**

@@ -50,8 +50,6 @@ private:
 
   bool ransacCircle(Vector2d& result, std::vector<size_t>& inliers);
 
-  void simpleLinearRegression(std::vector<Vector2d> &points, double& slope, double& intercept);
-
 //private:
   class Parameters: public ParameterList
   {
@@ -59,47 +57,53 @@ private:
     Parameters() : ParameterList("RansacLineDetector")
     {
       //Lines
-      PARAMETER_REGISTER(iterations) = 50;
-      PARAMETER_REGISTER(outlierThreshold) = 70;
-      PARAMETER_REGISTER(inlierMin) = 5;
-      PARAMETER_REGISTER(directionSimilarity) = 0.8;
-      PARAMETER_REGISTER(maxLines) = 11;
-      PARAMETER_REGISTER(maxVariance) = 0.009;
-      PARAMETER_REGISTER(length_of_var_check) = 800;
-      PARAMETER_REGISTER(min_line_length) = 100;
-      PARAMETER_REGISTER(fit_lines_to_inliers) = true;
+      PARAMETER_REGISTER(line.maxLines) = 11;
+      PARAMETER_REGISTER(line.maxIterations) = 50;
+      PARAMETER_REGISTER(line.minInliers) = 5;
+
+      PARAMETER_REGISTER(line.outlierThresholdDist) = 70;
+      PARAMETER_REGISTER(line.minDirectionSimilarity) = 0.8;
+      
+      PARAMETER_REGISTER(line.maxVariance) = 0.009;
+      PARAMETER_REGISTER(line.length_of_var_check) = 800;
+      PARAMETER_REGISTER(line.min_line_length) = 100;
+      PARAMETER_REGISTER(line.fit_lines_to_inliers) = true;
 
       //Circle
-      PARAMETER_REGISTER(circle_iterations) = 20;
-      PARAMETER_REGISTER(circle_outlierThreshold) = 70;
-      PARAMETER_REGISTER(circle_inlierMin) = 7;
-      PARAMETER_REGISTER(circle_angle_variance) = 0.02;
-      PARAMETER_ANGLE_REGISTER(circle_max_angle_diff) = 8;
-      PARAMETER_REGISTER(enable_circle_ransac) = true;
-      PARAMETER_REGISTER(fit_circle_to_inliers) = true;
+      PARAMETER_REGISTER(circle.maxIterations) = 20;
+      PARAMETER_REGISTER(circle.minInliers) = 7;
+      PARAMETER_REGISTER(circle.outlierThresholdDist) = 70;
+      PARAMETER_ANGLE_REGISTER(circle.outlierThresholdAngle) = 8;
+      
+      PARAMETER_REGISTER(circle.enable) = true;
+      PARAMETER_REGISTER(circle.refine) = true;
 
       syncWithConfig();
     }
 
-    virtual ~Parameters() {
-    }
-    int iterations;
-    double outlierThreshold;
-    int inlierMin;
-    double directionSimilarity;
-    int maxLines;
-    double maxVariance;
-    double length_of_var_check;
-    double min_line_length;
-    bool fit_lines_to_inliers;
+    struct Line {
+      int maxLines;
+      int maxIterations;
+      int minInliers;
+      double outlierThresholdDist;
+      double minDirectionSimilarity;
 
-    int circle_iterations;
-    double circle_outlierThreshold;
-    int circle_inlierMin;
-    double circle_angle_variance;
-    double circle_max_angle_diff;
-    bool enable_circle_ransac;
-    bool fit_circle_to_inliers;
+      double maxVariance;
+      double length_of_var_check;
+      double min_line_length;
+
+      bool fit_lines_to_inliers;
+    } line;
+
+    struct Circle {
+      int maxIterations;
+      int minInliers;
+      double outlierThresholdDist;
+      double outlierThresholdAngle;
+      
+      bool enable;
+      bool refine;
+    } circle;
 
   } params;
 
@@ -134,8 +138,8 @@ private:
   {
     Vector2d tangent_d(edgel.point - circle_mean);
     tangent_d.rotateRight().normalize();
-
-    return acos(fabs(tangent_d*edgel.direction));
+    double a = acos(fabs(tangent_d*edgel.direction));
+    return std::min(a, Math::pi - a);
   }
 
   /**
@@ -153,6 +157,19 @@ private:
     int random_pos = Math::random(ith, max);
     std::swap(vec[random_pos], vec[ith-1]);
     return vec[ith-1];
+  }
+
+  bool estimateCircle(const Edgel& a, const Edgel& b, const double radius, Vector2d& center);
+  Vector2d refineCircle(const std::vector<size_t>& inliers, const Vector2d& center);
+
+  inline bool isCircleInlier(size_t i, const Vector2d& center, double& distError) {
+    const Edgel& e = getLineGraphPercept().edgelsOnField[i];
+    const double radius = getFieldInfo().centerCircleRadius;
+
+    distError = std::fabs(radius - (center - e.point).abs());
+
+    return distError             <= params.circle.outlierThresholdDist && 
+           angle_diff(center, e) <= params.circle.outlierThresholdAngle;
   }
 };
 

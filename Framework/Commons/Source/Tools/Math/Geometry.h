@@ -273,6 +273,35 @@ public:
     return true;
   }
 
+  template<class T>
+  static void simpleLinearRegression(const T& points, double& slope, double& intercept) 
+  {
+    if(points.size() < 2) {
+      slope = 0.0;
+      intercept = points[0].y;
+      return;
+    }
+
+    Vector2d avg;
+    for(const Vector2d& point : points) {
+      avg += point;
+    }
+    avg /= static_cast<double>(points.size());
+
+    double top = 0.;
+    double bot = 0.;
+    for(const Vector2d& point : points) {
+      double x_diff = point.x - avg.x;
+      top += x_diff * (point.y - avg.y);
+      bot += x_diff * x_diff;
+    }
+
+    slope = top / bot;
+    intercept = avg.y - slope * avg.x;
+  }
+
+
+
   class Rect2d 
   {
   private:
