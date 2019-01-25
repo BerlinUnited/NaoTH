@@ -217,7 +217,7 @@ bool RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& 
   Math::Line bestModel;
   int bestInlier = 0;
   double bestInlierError = 0;
-  size_t bestBaseEdgelId = -1;
+  int bestBaseEdgelId = -1;
 
   for(int i = 0; i < params.line.maxIterations; ++i)
   {
@@ -373,8 +373,6 @@ bool RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inl
 
     for(size_t i: outliers)
     {
-      const Edgel& e = getLineGraphPercept().edgelsOnField[i];
-      
       // inlier
       double distError = 0.0;
       if(isCircleInlier(i, model, distError, params.circle.outlierThresholdAngle)) 
