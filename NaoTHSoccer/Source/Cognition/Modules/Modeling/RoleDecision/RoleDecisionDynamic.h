@@ -87,6 +87,7 @@ private:
         unsigned int playerNumber;
         double indicator;
         Vector2d ball;
+        double sameBallRadius;
     };
 
     void decideStriker(std::map<unsigned int, RM::DynamicRole>& roles);

@@ -104,8 +104,10 @@ void RoleDecisionDynamic::checkStriker(const TeamMessageData& msg,
     );
 
     for(auto& s : striker) {
+        // use the larger radius for 'same ball' comparison
+        double sameBallRadius = r > s.sameBallRadius ? r : s.sameBallRadius;
         // same ball as the current striker
-        if((s.ball - ball).abs2() < r*r) {
+        if((s.ball - ball).abs2() < sameBallRadius*sameBallRadius) {
             // this player is 'faster' to the ball than the current striker or 'forced' to be striker
             if(force || s.indicator > indicator) {
                 // set this player for the ball as striker
@@ -120,7 +122,7 @@ void RoleDecisionDynamic::checkStriker(const TeamMessageData& msg,
     }
     // add this player as striker for the ball
     if(!done) {
-        striker.push_back({msg.playerNumber, indicator, ball});
+        striker.push_back({msg.playerNumber, indicator, ball, r});
     }
 }
 
