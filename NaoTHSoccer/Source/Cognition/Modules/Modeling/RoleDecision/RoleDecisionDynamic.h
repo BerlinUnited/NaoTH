@@ -47,17 +47,9 @@ typedef RoleDecisionModel RM;
 class RoleDecisionDynamic : public RoleDecisionDynamicBase
 {
 public:
-    RoleDecisionDynamic()
-    {
-        getDebugParameterList().add(&params);
+    RoleDecisionDynamic();
 
-        ballDifferenceRadiusChanger(params.striker_ball_difference_function);
-    }
-
-    virtual ~RoleDecisionDynamic()
-    {
-        getDebugParameterList().remove(&params);
-    }
+    virtual ~RoleDecisionDynamic();
 
     virtual void execute();
 

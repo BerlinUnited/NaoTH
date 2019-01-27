@@ -1,5 +1,21 @@
 #include "RoleDecisionDynamic.h"
 
+RoleDecisionDynamic::RoleDecisionDynamic()
+{
+    getDebugParameterList().add(&params);
+
+    DEBUG_REQUEST_REGISTER("RoleDecisionDynamic:striker_ball_difference_radius",
+                           "Draws the radius around a seen ball, which is used to determine if the seen ball is the same)",
+                           false);
+
+    ballDifferenceRadiusChanger(params.striker_ball_difference_function);
+}
+
+RoleDecisionDynamic::~RoleDecisionDynamic()
+{
+    getDebugParameterList().remove(&params);
+}
+
 void RoleDecisionDynamic::execute()
 {
     std::map<unsigned int, RM::DynamicRole> new_roles;
