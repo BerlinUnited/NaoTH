@@ -32,6 +32,10 @@ template <class V> class Vector2
     y(static_cast<V>(other.y))
   {}
 
+  Vector2<V> clone() const {
+    return Vector2<V>(*this);
+  }
+
   /** Assignment operator
   *\param other The other vector that is assigned to this one
   *\return A reference to this object after the assignment.
@@ -259,8 +263,16 @@ template <class V> class Vector2
     return *this;
   }
 
-  Vector2<V> rotateLeft() const { 
-    return Vector2<V>(*this).rotateLeft();
+  /** the vector is rotated right by 90 degrees.
+  * (changes the object)
+  *\return the rotated vector.
+  */
+  Vector2<V>& rotateRight()
+  { 
+    V buffer = -x;
+    x = y;
+    y = buffer;
+    return *this;
   }
 
   /** the vector around a given angle
@@ -277,21 +289,26 @@ template <class V> class Vector2
     return *this;
   }
 
-  /** the vector is rotated right by 90 degrees.
-  * (changes the object)
-  *\return the rotated vector.
-  */
-  Vector2<V>& rotateRight()
-  { 
-    V buffer = -x;
-    x = y;
-    y = buffer;
-    return *this;
+  /** 
+   * Calculation of the angle of this vector 
+   * The result is allways double.
+   */
+  double angle() const {
+    return std::atan2(static_cast<double>(y),static_cast<double>(x));
   }
 
-  Vector2<V> rotateRight() const { 
-    return Vector2<V>(*this).rotateLeft();
+  double angleTo(const Vector2<V>& other) const {
+    // tan(a) = <v,w^>/<v,w>
+    return atan2(x*other.y - y*other.x, x*other.x + y*other.y);
   }
+
+  double distTo(const Vector2<V>& other) const {
+    //return (*this - other).abs2()
+    V a = x - other.x;
+    V b = y - other.y;
+    return std::sqrt(a*a + b*b);
+  }
+
 
   /**
   * array-like member access.
@@ -306,13 +323,6 @@ template <class V> class Vector2
       return (&x)[i];
   }
 
-  /** 
-   * Calculation of the angle of this vector 
-   * The result is allways double.
-   */
-  double angle() const {
-    return std::atan2(static_cast<double>(y),static_cast<double>(x));
-  }
 };
 
 template <typename V>
