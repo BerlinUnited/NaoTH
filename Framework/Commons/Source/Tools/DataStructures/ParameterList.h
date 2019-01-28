@@ -100,6 +100,20 @@ protected:
     virtual void set(T v) { DefaultParameter<T>::set(v); cb(v); }
   };
 
+  template<class T, class P>
+  class CallbackMemberParameter : public DefaultParameter<T> {
+  protected:
+      P* parent;
+      void (P::*callback)(T v);
+  public:
+    CallbackMemberParameter(const std::string& name, T* value, void (P::*callback)(T v),  P* parent) 
+      : DefaultParameter<T>(name, value), 
+        callback(callback), 
+        parent(parent) 
+    {}
+    virtual void set(T v) { DefaultParameter<T>::set(v); (*parent.*callback)(v); }
+  };
+
 protected:
   // ACHTUNG: never copy the content of the parameter list
   ParameterList(const ParameterList& /*obj*/) {}
@@ -129,11 +143,11 @@ protected:
     return *parameterWrapper;
   }
 
-  template<template<typename N> class T, typename N, class U>
-  Parameter<N>& registerParameterT(const std::string& parameterName, N& parameter, void(U::*cb)(N))
+  template<template<typename N> class T, typename N, class P>
+  Parameter<N>& registerParameterT(const std::string& parameterName, N& parameter, void(P::*callback)(N))
   {
-    std::function<void(N)> callback = [this,cb](N v)->void{ (static_cast<U *>( this )->*cb)(v); };
-    T<N>* parameterWrapper = new T<N>(parameterName, &parameter, callback);
+    //std::function<void(N)> callback = [this,cb](N v)->void{ (static_cast<U *>( this )->*cb)(v); };
+    CallbackMemberParameter<N,P>* parameterWrapper = new CallbackMemberParameter<N,P>(parameterName, &parameter, callback, reinterpret_cast<P*> (this) );
     parameters.push_back(parameterWrapper);
     return *parameterWrapper;
   }
