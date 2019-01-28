@@ -1,5 +1,5 @@
 #include "RoleDecisionModel.h"
-
+#include <iomanip>
 
 std::string RoleDecisionModel::getName(StaticRole role) {
     switch (role) {
@@ -77,12 +77,16 @@ void RoleDecisionModel::print(std::ostream& stream) const {
     }
     stream << "----------------------------------------------------\n\n";
     for(const auto& it : roles) {
-        stream << it.first << " @ " << getName(it.second.role)
-               << " ("
-                   << it.second.home.x << "/" << it.second.home.y << ", "
-                   << it.second.own.x << "/" << it.second.own.y << ", "
-                   << it.second.opp.x << "/" << it.second.opp.y
-               << ") [" << getName(it.second.dynamic) << "]"
+        stream << std::setw(2)  << std::right << it.first << " : "
+               << std::setw(16) << std::right << getName(it.second.role) << " : "
+               << std::setw(16) << std::left  << getName(it.second.dynamic)
                << "\n";
+    }
+    stream << "\n----------------------------------------------------\n\n";
+    for(const auto& it : roles) {
+        stream << std::setw(17) << std::right << getName(it.second.role) << " : "
+               << std::setw(5) << it.second.home.x << "/" << std::setw(5) << it.second.home.y << ", "
+               << std::setw(5) << it.second.own.x  << "/" << std::setw(5) << it.second.own.y  << ", "
+               << std::setw(5) << it.second.opp.x  << "/" << std::setw(5) << it.second.opp.y  << " \n";
     }
 }
