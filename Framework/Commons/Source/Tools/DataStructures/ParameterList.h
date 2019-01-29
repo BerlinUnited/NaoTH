@@ -135,18 +135,9 @@ protected:
     return *parameterWrapper;
   }
 
-  template<template<typename N> class T, typename N>
-  Parameter<N>& registerParameterT(const std::string& parameterName, N& parameter, std::function<void(N)> cb)
-  {
-    T<N>* parameterWrapper = new T<N>(parameterName, &parameter, cb);
-    parameters.push_back(parameterWrapper);
-    return *parameterWrapper;
-  }
-
-  template<template<typename N> class T, typename N, class P>
+  template<typename N, class P>
   Parameter<N>& registerParameterT(const std::string& parameterName, N& parameter, void(P::*callback)(N))
   {
-    //std::function<void(N)> callback = [this,cb](N v)->void{ (static_cast<U *>( this )->*cb)(v); };
     CallbackMemberParameter<N,P>* parameterWrapper = new CallbackMemberParameter<N,P>(parameterName, &parameter, callback, reinterpret_cast<P*> (this) );
     parameters.push_back(parameterWrapper);
     return *parameterWrapper;
@@ -191,6 +182,38 @@ private:
 
 #define PARAMETER_REGISTER(parameter) registerParameterT<DefaultParameter>(convertName(#parameter), parameter)
 #define PARAMETER_ANGLE_REGISTER(parameter) registerParameterT<ParameterAngleDegrees>(convertName(#parameter), parameter)
-#define PARAMETER_REGISTER_CB(parameter, callback) registerParameterT<CallbackParameter>(convertName(#parameter), parameter, callback)
+#define PARAMETER_REGISTER_CB(parameter, callback) registerParameterT(convertName(#parameter), parameter, callback)
+
+/*
+// NOTE: this is a example for the usage of the parameter list
+namespace ParameterListTest
+{
+class MyExampleParameters: public ParameterList
+{
+public: 
+  MyExampleParameters(): ParameterList("MyExampleParameters")
+  {
+    PARAMETER_REGISTER(boolParameter) = false;
+    PARAMETER_REGISTER(intParameter) = 42;
+    PARAMETER_REGISTER(doubleParameter) = 3.14;
+    PARAMETER_REGISTER(stringParameter) = "test"; // ms
+
+    PARAMETER_REGISTER_CB(intParameterWithCallback, &MyExampleParameters::setIntParameter) = 1000;
+
+    // load from the file after registering all parameters
+    syncWithConfig();
+  }
+  virtual ~MyExampleParameters() {}
+
+  bool boolParameter;
+  int intParameter;
+  double doubleParameter;
+  std::string stringParameter;
+  int intParameterWithCallback;
+
+  void setIntParameter(int v) { std::cout << "intParameter: " << v << std::endl; }
+} myExampleParameters;
+};
+*/
 
 #endif // _ParameterList_h_
