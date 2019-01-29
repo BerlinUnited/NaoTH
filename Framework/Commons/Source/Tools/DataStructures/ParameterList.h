@@ -106,10 +106,10 @@ protected:
       P* parent;
       void (P::*callback)(T v);
   public:
-    CallbackMemberParameter(const std::string& name, T* value, void (P::*callback)(T v),  P* parent) 
+    CallbackMemberParameter(const std::string& name, T* value, void (P::*callback)(T v),  P* parent)
       : DefaultParameter<T>(name, value), 
-        callback(callback), 
-        parent(parent) 
+        parent(parent),
+        callback(callback)
     {}
     virtual void set(T v) { DefaultParameter<T>::set(v); (*parent.*callback)(v); }
   };
