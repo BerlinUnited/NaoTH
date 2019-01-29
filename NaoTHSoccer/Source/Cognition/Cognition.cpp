@@ -91,8 +91,12 @@
 #include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
 
 // role decisions
-#include "Modules/Modeling/RoleDecision/RoleDecision.h"
 #include "Modules/Modeling/RoleDecision/RoleDecisionDynamic.h"
+
+#include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionStatic.h"
+#include "Modules/Modeling/RoleDecision/Assignment/RoleDecisionAssignmentStatic.h"
+#include "Modules/Modeling/RoleDecision/Assignment/RoleDecisionAssignmentDistance.h"
+
 #include "Modules/Modeling/RoleDecision/SimpleRoleDecision/SimpleRoleDecision.h"
 #include "Modules/Modeling/RoleDecision/StableRoleDecision/StableRoleDecision.h"
 #include "Modules/Modeling/RoleDecision/CleanRoleDecision/CleanRoleDecision.h"
@@ -220,12 +224,25 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(TeamBallLocatorMedian);
   REGISTER_MODULE(TeamBallLocatorCanopyCluster);
-  // role decisions
-  REGISTER_MODULE(RoleDecision);
+
+  /*
+   * BEGIN ROLE DECISIONS
+   */
+  // first set the position of the roles
+  REGISTER_MODULE(RoleDecisionPositionStatic);
+  // then decide which player should have which role
+  REGISTER_MODULE(RoleDecisionAssignmentStatic);
+  REGISTER_MODULE(RoleDecisionAssignmentDistance);
+  // finally, determine the dynamic role (striker, supporter, ...)
   REGISTER_MODULE(RoleDecisionDynamic);
+
+  // old striker decisions
   REGISTER_MODULE(SimpleRoleDecision);
   REGISTER_MODULE(StableRoleDecision);
   REGISTER_MODULE(CleanRoleDecision);
+  /*
+   * END ROLE DECISIONS
+   */
 
   REGISTER_MODULE(KickDirectionSimulator);
   REGISTER_MODULE(Simulation);

@@ -53,6 +53,15 @@ RoleDecisionModel::DynamicRole RoleDecisionModel::getDynamicRole(std::string nam
     return none;
 }
 
+RoleDecisionModel::RolePosition RoleDecisionModel::getStaticRolePosition(StaticRole role) const
+{
+    const auto& it = roles_position.find(role);
+    if(it != roles_position.cend()) {
+        return it->second;
+    }
+    return {{},{},{}};
+}
+
 void RoleDecisionModel::print(std::ostream& stream) const {
 
     if (firstStriker != std::numeric_limits<unsigned int>::max()) {
@@ -83,8 +92,8 @@ void RoleDecisionModel::print(std::ostream& stream) const {
                << "\n";
     }
     stream << "\n----------------------------------------------------\n\n";
-    for(const auto& it : roles) {
-        stream << std::setw(17) << std::right << getName(it.second.role) << " : "
+    for(const auto& it : roles_position) {
+        stream << std::setw(17) << std::right << getName(it.first) << " : "
                << std::setw(5) << it.second.home.x << "/" << std::setw(5) << it.second.home.y << ", "
                << std::setw(5) << it.second.own.x  << "/" << std::setw(5) << it.second.own.y  << ", "
                << std::setw(5) << it.second.opp.x  << "/" << std::setw(5) << it.second.opp.y  << " \n";

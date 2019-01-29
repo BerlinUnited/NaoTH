@@ -45,6 +45,13 @@ public:
         numOfDynamicRoles
     };
 
+    struct RolePosition
+    {
+        Vector2d home; // home position
+        Vector2d own; // position for own kickoff
+        Vector2d opp; // position for opp kickoff
+    };
+
     struct Role
     {
         Role():role(unknown){}
@@ -52,18 +59,18 @@ public:
 
         StaticRole role; // the actual role
         DynamicRole dynamic; // the actual role
-
-        Vector2d home; // home position
-        Vector2d own; // position for own kickoff
-        Vector2d opp; // position for opp kickoff
     };
 
     std::map<unsigned int, Role> roles;
+    std::map<StaticRole, RolePosition> roles_position;
 
     static std::string getName(StaticRole role);
     static std::string getName(DynamicRole role);
+
     static StaticRole getStaticRole(std::string name);
     static DynamicRole getDynamicRole(std::string name);
+
+    RolePosition getStaticRolePosition(StaticRole role) const;
 
     /* OLD STUFF ------------------------------------------------ */
 
