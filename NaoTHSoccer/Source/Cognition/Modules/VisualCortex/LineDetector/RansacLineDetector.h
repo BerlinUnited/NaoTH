@@ -134,11 +134,10 @@ private:
     return s;
   }
 
+
   inline double angle_diff(const Vector2d& circle_mean, const Edgel& edgel) const
   {
-    Vector2d tangent_d(edgel.point - circle_mean);
-    tangent_d.rotateRight().normalize();
-    double a = acos(fabs(tangent_d*edgel.direction));
+    double a = fabs((edgel.point - circle_mean).rotateRight().angleTo(edgel.direction));
     return std::min(a, Math::pi - a);
   }
 
@@ -159,7 +158,37 @@ private:
     return vec[ith-1];
   }
 
-  bool estimateCircle(const Edgel& a, const Edgel& b, const double radius, Vector2d& center);
+  Vector2i choose_random_two(const std::vector<size_t> &vec) {
+    //ASSERT(vec.size() > 1);
+    int random_pos_one = Math::random(vec.size());
+    int random_pos_two = (random_pos_one + Math::random(vec.size()-1) + 1) % vec.size();
+    return Vector2i(random_pos_one, random_pos_two);
+  }
+
+  //bool estimateCircle(const Edgel& a, const Edgel& b, const double radius, Vector2d& center);
+  inline bool estimateCircle(const Edgel& a, const Edgel& b, const double radius, Vector2d& center)
+  {
+    Math::Line la(a.point, Vector2d(a.direction).rotateLeft());
+    Math::Line lb(b.point, Vector2d(b.direction).rotateLeft());
+    double t = la.intersection(lb);
+
+    // too large error
+    if(fabs(t) > radius*1.5) {
+      return false;
+    }
+
+    Math::LineSegment lab(a.point, b.point);
+    const Vector2d c = la.point(t);
+    const Vector2d direction = (c - lab.projection(c)).normalize();
+
+    Vector2d between((a.point + b.point)/2);
+    double half_distance = (a.point - b.point).abs()/2;
+    double between_dist = sqrt(Math::sqr(radius) - Math::sqr(half_distance));
+
+    center = between + direction*between_dist;
+    return true;
+  }
+
   Vector2d refineCircle(const std::vector<size_t>& inliers, const Vector2d& center);
 
   inline bool isCircleInlier(size_t i, const Vector2d& center, double& distError, double maxAngleError) {
@@ -167,9 +196,19 @@ private:
     const double radius = getFieldInfo().centerCircleRadius;
 
     distError = std::fabs(radius - (center - e.point).abs());
-
     return distError             <= params.circle.outlierThresholdDist && 
+           //sim(center, e) > maxAngleError;
            angle_diff(center, e) <= maxAngleError;
+
+    /*
+    double d2 = (center - e.point).abs2();
+    return fabs(center.x - e.point.x) <= params.circle.outlierThresholdDist + radius &&
+           fabs(center.y - e.point.y) <= params.circle.outlierThresholdDist + radius &&
+           d2 <= Math::sqr(params.circle.outlierThresholdDist + radius) &&
+           radius*radius <= Math::sqr(params.circle.outlierThresholdDist + d2) &&
+           //angle_diff(center, e) <= maxAngleError;
+           sim(center, e) > maxAngleError;
+    */
   }
 };
 
