@@ -2,6 +2,7 @@ package de.naoth.rc.dialogs.multiagentconfiguration;
 
 import de.naoth.rc.dialogs.multiagentconfiguration.ui.RequestTreeItem;
 import de.naoth.rc.messages.Messages;
+import java.io.File;
 import java.util.TreeMap;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
@@ -11,6 +12,8 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.TreeItem;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
 
 /**
  *
@@ -23,6 +26,7 @@ public class Utils
     public static ObservableList<String> global_agent_list = FXCollections.observableArrayList();
     public static TreeMap<String, TreeItem<Parameter>> global_parameters = new TreeMap<>();
     public static ObservableList<String> global_representations_list = FXCollections.observableArrayList();
+    private static FileChooser behaviorFileDialog;
     
     public static void createDebugRequestTree(Messages.DebugRequest request, TreeItem root, BiConsumer<String, Boolean> debugRequest) {
         
@@ -190,5 +194,21 @@ public class Utils
         createModulesTree(list, motion_root, moduleRequest);
         motion_root.setExpanded(true);
         return motion_root;
+    }
+
+    public static File showBehaviorFileDialog(Window owner) {
+        if(behaviorFileDialog == null) {
+            File defaultDirectory = new File("../../NaoTHSoccer/Config/");
+            if(!defaultDirectory.isDirectory()) { defaultDirectory = new File(System.getProperty("user.home")); }
+            
+            behaviorFileDialog = new FileChooser();
+            behaviorFileDialog.setTitle("Open Behavior File");
+            behaviorFileDialog.setInitialFileName("behavior-ic.dat");
+            behaviorFileDialog.setInitialDirectory(defaultDirectory);
+            behaviorFileDialog.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("Behavior Files", "*.dat"),
+                    new FileChooser.ExtensionFilter("All Files", "*.*"));
+        }
+        return behaviorFileDialog.showOpenDialog(owner);
     }
 }

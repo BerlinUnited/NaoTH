@@ -151,14 +151,7 @@ public class ConfigurationsTab implements ResponseListener
     
     @FXML
     private void selectBehaviorFile() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open Behavior File");
-        fileChooser.setInitialFileName("behavior-ic.dat");
-        fileChooser.setInitialDirectory(new File("../../NaoTHSoccer/Config/"));
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Behavior Files", "*.dat"),
-                new FileChooser.ExtensionFilter("All Files", "*.*"));
-        File selectedFile = fileChooser.showOpenDialog(parent.getTabPane().getScene().getWindow());
+        File selectedFile = Utils.showBehaviorFileDialog(parent.getTabPane().getScene().getWindow());
         if (selectedFile != null) {
             behaviorFile.set(selectedFile);
         }

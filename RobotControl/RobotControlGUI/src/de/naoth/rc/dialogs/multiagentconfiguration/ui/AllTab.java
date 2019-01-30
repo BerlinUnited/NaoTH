@@ -29,7 +29,6 @@ import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.layout.GridPane;
-import javafx.stage.FileChooser;
 
 /**
  * @author Philipp Strobel <philippstrobel@posteo.de>
@@ -210,14 +209,7 @@ public class AllTab extends Tab
 
         @FXML
         private void selectBehaviorFile() {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Open Behavior File");
-            fileChooser.setInitialFileName("behavior-ic.dat");
-            fileChooser.setInitialDirectory(new File("../../NaoTHSoccer/Config/"));
-            fileChooser.getExtensionFilters().addAll(
-                    new FileChooser.ExtensionFilter("Behavior Files", "*.dat"),
-                    new FileChooser.ExtensionFilter("All Files", "*.*"));
-            File selectedFile = fileChooser.showOpenDialog(getTabPane().getScene().getWindow());
+            File selectedFile = Utils.showBehaviorFileDialog(getTabPane().getScene().getWindow());
             if (selectedFile != null) {
                 behaviorFile.set(selectedFile);
             }
