@@ -301,11 +301,8 @@ bool RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& 
       }
     }
 
-    // adjust the size of the outliers
-    outliers.resize(outliers.size() - inliers.size());
-
     direction_var /= static_cast<double>(inliers.size());
-    double angle_var = 1 - direction_var.abs();
+    const double angle_var = 1 - direction_var.abs();
 
     result = Math::LineSegment(bestModel.point(minT), bestModel.point(maxT));
     double line_length = result.getLength();

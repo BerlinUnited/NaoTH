@@ -2,7 +2,6 @@
 #define RANSACLINEDETECTOR_H
 
 #include <iostream>
-#include <forward_list>
 
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/FrameInfo.h>
@@ -10,7 +9,6 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugParameterList.h"
 
 #include "Representations/Infrastructure/FieldInfo.h"
@@ -23,8 +21,6 @@ BEGIN_DECLARE_MODULE(RansacLineDetector)
   PROVIDE(DebugRequest)
   PROVIDE(DebugModify)
   PROVIDE(DebugDrawings)
-  PROVIDE(DebugImageDrawings)
-  PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugParameterList)
 
   REQUIRE(LineGraphPercept)
