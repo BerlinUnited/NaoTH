@@ -23,10 +23,12 @@ import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.cell.CheckBoxListCell;
@@ -52,6 +54,10 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
 
     @FXML private TabPane tabpane;
     @FXML private AllTab allTabViewController;
+    
+    @FXML private MenuItem miDisconnect;
+    @FXML private MenuItem miReconnect;
+    @FXML private MenuItem miClose;
     
     private AgentSelectionDialog dialog;
     
@@ -88,6 +94,11 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
         // if there's no robot connected, disable "all" tab and select it
         tabpane.getTabs().get(0).disableProperty().bind(Bindings.size(tabpane.getTabs()).lessThanOrEqualTo(1));
         tabpane.getTabs().get(0).disableProperty().addListener((obs, o, n) -> { if(n) { tabpane.getSelectionModel().select(0); } });
+        
+        BooleanBinding b = Bindings.size(tabpane.getTabs()).lessThanOrEqualTo(1);
+        miDisconnect.disableProperty().bind(b);
+        miReconnect.disableProperty().bind(b);
+        miClose.disableProperty().bind(b);
     }
 
     public void setConfig(Properties c) {
@@ -145,6 +156,27 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
                 ((AgentTab)t).disconnect();
             }
         });
+    }
+    
+    @FXML
+    public void reconnectAll() {
+        // reconnect all, except the first ("all") tabs
+        tabpane.getTabs().stream().forEach((t) -> {
+            if(t instanceof Tab && tabpane.getTabs().indexOf(t) != 0) {
+                ((AgentTab)t).connect();
+            }
+        });
+    }
+    
+    @FXML
+    public void closeAll() {
+        // close all, except the first ("all") tabs
+        while(tabpane.getTabs().size() > 1) {
+            Tab t = tabpane.getTabs().get(tabpane.getTabs().size()-1);
+            if(t instanceof Tab && tabpane.getTabs().indexOf(t) != 0) {
+                ((AgentTab)t).requestClose();
+            }
+        }
     }
     
     private void disconnecting() {

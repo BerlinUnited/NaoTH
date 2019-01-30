@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SplitMenuButton?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
 <VBox prefHeight="578.0" prefWidth="756.0" stylesheets="@ui/style.css" xmlns="http://javafx.com/javafx/8.0.162-ea" xmlns:fx="http://javafx.com/fxml/1">
   <children>
@@ -16,22 +14,13 @@
             <TabPane fx:id="tabpane" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
             <HBox layoutX="724.0" layoutY="3.0" spacing="4.0" AnchorPane.rightAnchor="3.0" AnchorPane.topAnchor="3.0">
                <children>
-                  <Button fx:id="btnDisconnectAll" mnemonicParsing="false" onAction="#disconnectAll" prefWidth="29.0" text="-" textAlignment="CENTER">
-                     <font>
-                        <Font name="System Bold" size="13.0" />
-                     </font>
-                     <tooltip>
-                       <Tooltip text="Disconnect from all robots." />
-                     </tooltip>
-                  </Button>
-                  <Button fx:id="btn_add" mnemonicParsing="false" onAction="#addRobots" text="+" textAlignment="CENTER">
-                     <font>
-                        <Font name="System Bold" size="13.0" />
-                     </font>
-                     <tooltip>
-                       <Tooltip text="Connect to additional robots." />
-                     </tooltip>
-                  </Button>
+                  <SplitMenuButton fx:id="btnActions" mnemonicParsing="false" onAction="#addRobots" text="+">
+                    <items>
+                      <MenuItem fx:id="miDisconnect" disable="true" mnemonicParsing="false" onAction="#disconnectAll" text="Disconnect All" />
+                      <MenuItem fx:id="miReconnect" disable="true" mnemonicParsing="false" onAction="#reconnectAll" text="Reconnect all" />
+                        <MenuItem fx:id="miClose" disable="true" mnemonicParsing="false" onAction="#closeAll" text="Close all" />
+                    </items>
+                  </SplitMenuButton>
                </children>
             </HBox>
          </children>

@@ -78,7 +78,7 @@ public class AgentTab extends Tab implements ConnectionStatusListener
             loader.setController(this);
             setContent(loader.load());
         } catch (IOException ex) {
-            Logger.getLogger(Tab.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
         }
 
         // creates the tab menu for closing/disconnecting ....
@@ -240,16 +240,18 @@ public class AgentTab extends Tab implements ConnectionStatusListener
         return ((TabPaneSkin) getTabPane().getSkin()).getBehavior();
     }
 
-    private void connect() {
-        try {
-            // try to connect to robot
-            server.connect(host, port);
-            // send "initial" commands
-            configurationsTabViewController.connected();
-        } catch (IOException ex) {
-            updateConnectionStatusUI(false);
-            
-            Logger.getLogger(Tab.class.getName()).log(Level.WARNING, "Can not connect to robot.");
+    public void connect() {
+        if(!server.isConnected()) {
+            try {
+                // try to connect to robot
+                server.connect(host, port);
+                // send "initial" commands
+                configurationsTabViewController.connected();
+            } catch (IOException ex) {
+                updateConnectionStatusUI(false);
+
+                Logger.getLogger(getClass().getName()).log(Level.WARNING, "Can not connect to robot.");
+            }
         }
     }
     
