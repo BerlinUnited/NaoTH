@@ -174,12 +174,14 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
     @FXML
     public void closeAll() {
         // close all, except the first ("all") tabs
-        while(tabpane.getTabs().size() > 1) {
-            Tab t = tabpane.getTabs().get(tabpane.getTabs().size()-1);
-            if(t instanceof Tab && tabpane.getTabs().indexOf(t) != 0) {
-                ((AgentTab)t).requestClose();
+        Platform.runLater(() -> {
+            while(tabpane.getTabs().size() > 1) {
+                Tab t = tabpane.getTabs().get(tabpane.getTabs().size()-1);
+                if(t instanceof Tab && tabpane.getTabs().indexOf(t) != 0) {
+                    ((AgentTab)t).requestClose();
+                }
             }
-        }
+        });
     }
     
     private void disconnecting() {
