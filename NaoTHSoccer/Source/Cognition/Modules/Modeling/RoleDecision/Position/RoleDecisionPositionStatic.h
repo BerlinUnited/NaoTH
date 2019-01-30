@@ -56,7 +56,7 @@ private:
             PARAMETER_REGISTER(goalie_str)              = "-4300,    0; -4300,   0;  -4300,    0";
             PARAMETER_REGISTER(defender_left_str)       = "-2500, 1100; -3000, 1500; -3000, 1300";
             PARAMETER_REGISTER(defender_center_str)     = "-2500,    0; -3000,    0; -3000,    0";
-            PARAMETER_REGISTER(defender_right_str)      = "-2500,-1100; -3000,-1500; -3000,-1100";
+            PARAMETER_REGISTER(defender_right_str)      = "-2500,-1100; -3000,-1500; -3000, -450";
             PARAMETER_REGISTER(midfielder_left_str)     = "    0, 1500; -1500,  900; -2000,  500";
             PARAMETER_REGISTER(midfielder_center_str)   = "    0,    0; -1500,    0; -2000,    0";
             PARAMETER_REGISTER(midfielder_right_str)    = "    0,-1500; -1500, -900; -2000, -500";

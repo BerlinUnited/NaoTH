@@ -29,31 +29,8 @@ void RoleDecisionAssignmentDistance::execute()
 
         // the goalie is always goalie! (should never change)
         keepGoalie(new_roles);
-
-        // determine the distance between each robot/role and assign the role nearest to the robot
-        for (const auto& r : params.priority_role) {
-            std::pair<unsigned int, double> smallest(0, std::numeric_limits<double>::max());
-            for (const auto& i : getTeamMessage().data) {
-                // only active players and players without an role yet, are used for this role assignment
-                if(getTeamMessagePlayersState().isActive(i.first) && new_roles.find(i.first) == new_roles.cend()) {
-                    double distance = (getRoleDecisionModel().roles_position[r].home - i.second.pose.translation).abs2();
-                    if(distance < smallest.second) {
-                        smallest.first = i.first;
-                        smallest.second = distance;
-                    }
-                }
-            }
-            // there's no player left, who could take a role
-            if(smallest.first == 0) {
-                break;
-            } else {
-                new_roles[smallest.first] = r;
-            }
-        }
-
-        // based on smallest distance
-        // based on smallest summed distance of the whole team
-        // based on the smallest time
+        // determine new static role
+        withPriority(new_roles);
 
         // apply new role for each player, if it was the same role for at least x times or for at least y seconds
         // TODO: ..
@@ -70,7 +47,7 @@ void RoleDecisionAssignmentDistance::execute()
 void RoleDecisionAssignmentDistance::roleChange(unsigned int playernumber, RM::StaticRole role) {
     // set the new role for the player
     getRoleDecisionModel().roles[playernumber].role = role;
-    // reset change counter
+    // reset (internal) change counter
     role_changes[playernumber].first = 0;
     role_changes[playernumber].second = role;
 }
@@ -85,6 +62,32 @@ void RoleDecisionAssignmentDistance::keepGoalie(std::map<unsigned int, RM::Stati
     if(goalie != getRoleDecisionModel().roles.end()) {
         new_roles[goalie->first] = RM::goalie;
     }
+}
+
+void RoleDecisionAssignmentDistance::withPriority(std::map<unsigned int, RM::StaticRole>& new_roles) {
+    // determine the distance between each robot/role and assign the role nearest to the robot
+    for (const auto& r : params.active_roles) {
+        std::pair<unsigned int, double> smallest(0, std::numeric_limits<double>::max());
+        for (const auto& i : getTeamMessage().data) {
+            // only active players and players without an role yet, are used for this role assignment
+            if(getTeamMessagePlayersState().isActive(i.first) && new_roles.find(i.first) == new_roles.cend()) {
+                double distance = (getRoleDecisionModel().roles_position[r].home - i.second.pose.translation).abs2();
+                if(distance < smallest.second) {
+                    smallest.first = i.first;
+                    smallest.second = distance;
+                }
+            }
+        }
+        // there's no player left, who could take a role
+        if(smallest.first == 0) {
+            break;
+        } else {
+            new_roles[smallest.first] = r;
+        }
+    }
+}
+void RoleDecisionAssignmentDistance::withDistance(std::map<unsigned int, RM::StaticRole>& new_roles) {
+    //
 }
 
 void RoleDecisionAssignmentDistance::roleChangeByCycle(std::map<unsigned int, RM::StaticRole>& new_roles)
