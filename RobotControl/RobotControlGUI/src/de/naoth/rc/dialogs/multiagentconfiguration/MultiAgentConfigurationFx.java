@@ -138,13 +138,16 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
     
     public void connecting(List<AgentItem> l) {
         for (AgentItem agentItem : l) {
-            // check if already connected!
-            if(tabpane.getTabs().stream().anyMatch((t) -> { return t.getText().equals(agentItem.toString()); })) {
-                continue;
+            // check if we got already a tab for this agent
+            Optional<Tab> etab = tabpane.getTabs().stream().filter((t) -> { return t.getText().equals(agentItem.toString()); }).findFirst();
+            if(etab.isPresent()) {
+                // reconnect if necessary
+                ((AgentTab)etab.get()).connect();
+            } else {
+                // add new tab
+                AgentTab tab = new AgentTab(agentItem.getHost(), agentItem.getPort(), allTabViewController);
+                tabpane.getTabs().add(tab);
             }
-            // add new tab
-            AgentTab tab = new AgentTab(agentItem.getHost(), agentItem.getPort(), allTabViewController);
-            tabpane.getTabs().add(tab);
         }
     }
     
