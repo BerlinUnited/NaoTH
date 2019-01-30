@@ -136,7 +136,7 @@ protected:
 
       //std::function<void(int)> cb = [](int i)->void{ std::cout << "test_1: " << i << std::endl; };
       //PARAMETER_REGISTER_CB(test_1, cb) = 1;
-      PARAMETER_REGISTER_CB(test_2, &Parameters::setTest2) = 2;
+      PARAMETER_REGISTER(test_2, &Parameters::setTest2) = 2;
       registerParameterT<MyParameter>("test_3", test_3) = 3;
 
       // load from the file after registering all parameters

@@ -91,12 +91,11 @@ protected:
   };
 
   template<class T>
-  class CallbackParameter : public DefaultParameter<T> {
+  class CallbackLambdaParameter : public DefaultParameter<T> {
   protected:
       std::function<void(T)> cb;
   public:
-    CallbackParameter(const std::string& name, T* value, std::function<void(T)> callback) : DefaultParameter<T>(name, value), cb(callback) {}
-    ~CallbackParameter(){}
+    CallbackLambdaParameter(const std::string& name, T* value, std::function<void(T)> callback) : DefaultParameter<T>(name, value), cb(callback) {}
     virtual void set(T v) { DefaultParameter<T>::set(v); cb(v); }
   };
 
@@ -135,17 +134,25 @@ protected:
     return *parameterWrapper;
   }
 
-  template<typename N, class P>
-  Parameter<N>& registerParameterT(const std::string& parameterName, N& parameter, void(P::*callback)(N))
+  template<typename N>
+  Parameter<N>& registerParameter(const std::string& parameterName, N& parameter) {
+    return registerParameterT<DefaultParameter,N>(parameterName, parameter);
+  }
+
+  template<typename N>
+  Parameter<N>& registerParameter(const std::string& parameterName, N& parameter, std::function<void(N)> callback)
   {
-    CallbackMemberParameter<N,P>* parameterWrapper = new CallbackMemberParameter<N,P>(parameterName, &parameter, callback, reinterpret_cast<P*> (this) );
+    CallbackLambdaParameter<N>* parameterWrapper = new CallbackLambdaParameter<N>(parameterName, &parameter, callback);
     parameters.push_back(parameterWrapper);
     return *parameterWrapper;
   }
 
-  template<typename N>
-  Parameter<N>& registerParameter(const std::string& parameterName, N& parameter) {
-    return registerParameterT<DefaultParameter,N>(parameterName, parameter);
+  template<typename N, class P>
+  Parameter<N>& registerParameter(const std::string& parameterName, N& parameter, void(P::*callback)(N))
+  {
+    CallbackMemberParameter<N,P>* parameterWrapper = new CallbackMemberParameter<N,P>(parameterName, &parameter, callback, reinterpret_cast<P*> (this) );
+    parameters.push_back(parameterWrapper);
+    return *parameterWrapper;
   }
 
   // change some key characters, e.g. []
@@ -180,9 +187,8 @@ private:
 };
 
 
-#define PARAMETER_REGISTER(parameter) registerParameterT<DefaultParameter>(convertName(#parameter), parameter)
+#define PARAMETER_REGISTER(parameter, ...) registerParameter(convertName(#parameter), parameter, ##__VA_ARGS__)
 #define PARAMETER_ANGLE_REGISTER(parameter) registerParameterT<ParameterAngleDegrees>(convertName(#parameter), parameter)
-#define PARAMETER_REGISTER_CB(parameter, callback) registerParameterT(convertName(#parameter), parameter, callback)
 
 /*
 // NOTE: this is a example for the usage of the parameter list
@@ -197,8 +203,13 @@ public:
     PARAMETER_REGISTER(intParameter) = 42;
     PARAMETER_REGISTER(doubleParameter) = 3.14;
     PARAMETER_REGISTER(stringParameter) = "test"; // ms
+    PARAMETER_REGISTER(intParameter, &MyExampleParameters::setIntParameter) = 42;
 
-    PARAMETER_REGISTER_CB(intParameterWithCallback, &MyExampleParameters::setIntParameter) = 1000;
+    PARAMETER_REGISTER(intParameter) = 1000;
+    PARAMETER_REGISTER(intParameterWithCallback, &MyExampleParameters::setIntParameter) = 1000;
+
+    std::function<void(int)> cb = [](int a)->void{ std::cout << a << std::endl; };
+    PARAMETER_REGISTER(intParameterWithCallback, cb) = 1000;
 
     // load from the file after registering all parameters
     syncWithConfig();
@@ -214,6 +225,6 @@ public:
   void setIntParameter(int v) { std::cout << "intParameter: " << v << std::endl; }
 } myExampleParameters;
 };
-*/
+//*/
 
 #endif // _ParameterList_h_
