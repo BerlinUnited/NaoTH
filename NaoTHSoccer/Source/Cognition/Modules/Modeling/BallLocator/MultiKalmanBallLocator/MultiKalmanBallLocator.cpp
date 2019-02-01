@@ -420,68 +420,32 @@ void MultiKalmanBallLocator::predict(ExtendedKalmanFilter4d& filter, double dt) 
     */
 
     const Eigen::Vector4d& x = filter.getState();
-    Eigen::Vector2d u; // control vector
-    
-    u <<  x(1), x(3);
-    // deceleration vector with "absoulte deceleration" (length of vector) of deceleration
-    if(u.norm() > 0){
-        u.normalize();
-    }
-    // ballDeceleration is negative so the deceleration will be in opposite direction of current velocity
-    u *= getFieldInfo().ballDeceleration;
+    Eigen::Vector2d vel; // control vector
+    vel <<  x(1), x(3);
+    double abs_velocity = vel.norm();
 
-    double time_until_vel_x_zero = 0;
-    double time_until_vel_y_zero = 0;
-    
-    if(fabs(u(0)) > epsilon){
-        time_until_vel_x_zero = -x(1)/u(0);
-    }
-    if(fabs(u(1)) > epsilon){
-        time_until_vel_y_zero = -x(3)/u(1);
+    double time_until_vel_zero = 0;
+
+    if(abs_velocity > epsilon){
+        time_until_vel_zero = abs_velocity/getFieldInfo().ballDeceleration;
     }
 
-    if(time_until_vel_x_zero > dt && time_until_vel_y_zero > dt)
-    {
-        filter.predict(u,dt);
-        return;
-    }
-
-    if(time_until_vel_x_zero < epsilon && time_until_vel_y_zero < epsilon)
+    if(time_until_vel_zero < epsilon)
     {
         filter.predict(Eigen::Vector2d::Zero(),dt);
-        return;
-    }
-
-    if(time_until_vel_x_zero < time_until_vel_y_zero)
-    {
-        filter.predict(u,time_until_vel_x_zero);
-        u(0) = 0;
-        dt -= time_until_vel_x_zero;
-
-        if(time_until_vel_y_zero < dt)
-        {
-            double dt2 = time_until_vel_y_zero - time_until_vel_x_zero;
-            filter.predict(u, dt2);
-            u(1) = 0;
-            dt -= dt2;
-        }
-
-        filter.predict(u,dt);
     } else {
-        filter.predict(u,time_until_vel_y_zero);
-        u(1) = 0;
-        dt -= time_until_vel_y_zero;
-
-        if(time_until_vel_x_zero < dt)
-        {
-            double dt2 = time_until_vel_x_zero - time_until_vel_y_zero;
-            filter.predict(u, dt2);
-            u(0) = 0;
-            dt -= dt2;
+        // ballDeceleration is negative so the deceleration will be in opposite direction of current velocity
+        Eigen::Vector2d u = vel.normalized() * getFieldInfo().ballDeceleration;
+        if(time_until_vel_zero >= dt) {
+            filter.predict(u,dt);
+        } else {
+            filter.predict(u, time_until_vel_zero);
+            dt -= time_until_vel_zero;
+            filter.predict(Eigen::Vector2d::Zero(), dt);
         }
-
-        filter.predict(u,dt);
     }
+
+    return;
 }
 
 void MultiKalmanBallLocator::applyOdometryOnFilterState(ExtendedKalmanFilter4d& filter)
