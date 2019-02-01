@@ -4,6 +4,7 @@ package de.naoth.rc.server;
 import java.awt.Frame;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.net.InetAddress;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -115,13 +116,36 @@ public class ConnectionManager
   }
   
   public void showConnectionDialog(String message) {
+      if(!dialog.isVisible()) {
+          updateAvaliableHosts();
+      }
       setMessage(message);
       dialog.setVisible(true);
   }
   
   public void showConnectionDialog() {
+      if(!dialog.isVisible()) {
+          updateAvaliableHosts();
+      }
       setMessage(null);
       dialog.setVisible(true);
   }
   
+  
+  // TODO: for now it's adjusted for the current NaoTH addresses. Make it more general.
+    private void updateAvaliableHosts() {
+
+        String[] ips = this.properties.getProperty("iplist","").split(",");
+
+        for(final String ip: ips) {
+            executor.submit(() -> {
+                try {
+                    InetAddress address = InetAddress.getByName(ip);
+                    if(address.isReachable(500)) {
+                        ipInput.addAddress(ip);
+                    }
+                } catch (Exception e) { /* ignore exception */ }
+            });
+        }
+    }
 }

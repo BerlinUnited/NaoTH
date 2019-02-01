@@ -108,7 +108,7 @@ public class MessageServer extends AbstractMessageServer {
             //e.printStackTrace(System.err);
             fireDisconnected(String.format("Connection timed out. Robot didn't respond after %d ms.", connectionTimeout));
         } catch (IOException e) {
-            //e.printStackTrace(System.err);
+            e.printStackTrace(System.err);
             fireDisconnected(e.getLocalizedMessage());
         }
         // firing the "disconnect" event could trigger an reconnect - check if the connection is still not established.
