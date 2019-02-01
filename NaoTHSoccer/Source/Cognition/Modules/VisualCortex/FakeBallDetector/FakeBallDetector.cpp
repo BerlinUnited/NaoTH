@@ -3,11 +3,9 @@
 FakeBallDetector::FakeBallDetector():
     active(false)
 {
-    DEBUG_REQUEST_REGISTER("Vision:FakeBallDetector:ballWasSeen", "whether ball was seen or not", true);
-    DEBUG_REQUEST_REGISTER("Vision:FakeBallDetector:stationaryBallOnField", "perception of a ball, which is not moving on field", false);
-    DEBUG_REQUEST_REGISTER("Vision:FakeBallDetector:constMovingOnField", "perception of a ball, which moves in a direction with constant velocity on field", true);
-
-    DEBUG_REQUEST_REGISTER("Vision:FakeBallDetector:determineCenterInImage", "determines of the ball's center in the \"image\"", true);
+    DEBUG_REQUEST_REGISTER("Vision:FakeBallDetector:disable", "disable fake ball", false);
+    DEBUG_REQUEST_REGISTER("Vision:FakeBallDetector:stationaryBallOnField", "perception of a ball, which is not moving on field", true);
+    DEBUG_REQUEST_REGISTER("Vision:FakeBallDetector:constMovingOnField", "perception of a ball, which moves in a direction with constant velocity on field", false);
 
     startPosition << 2500, 0;
     velocity = Eigen::Vector2d::Zero();
@@ -18,17 +16,17 @@ FakeBallDetector::~FakeBallDetector()
 
 }
 
-void FakeBallDetector::execute(){
-
-    BallPerceptTop ballPercept;
-
-    DEBUG_REQUEST("Vision:FakeBallDetector:ballWasSeen",
-        ballPercept.ballWasSeen = true;
+void FakeBallDetector::execute()
+{
+    getMultiBallPercept().reset();
+    DEBUG_REQUEST("Vision:FakeBallDetector:disable",
+                  return;
     );
 
+    MultiBallPercept::BallPercept ballPercept;
 
     DEBUG_REQUEST("Vision:FakeBallDetector:stationaryBallOnField",
-        ballPercept.bearingBasedOffsetOnField = Vector2d(startPosition(0), startPosition(1));
+        ballPercept.positionOnField = Vector2d(startPosition(0), startPosition(1));
     );
 
     MODIFY("Vision:FakeBallDetector:constMovingOnField:Vx", velocity(0));
@@ -46,33 +44,33 @@ void FakeBallDetector::execute(){
         }
 
         Eigen::Vector2d currentPosition = simulateConstantMovementOnField(getFrameInfo().getTimeInSeconds()-lastFrame.getTimeInSeconds(), velocity);
-        ballPercept.bearingBasedOffsetOnField = Vector2d(currentPosition(0), currentPosition(1));
+        ballPercept.positionOnField = Vector2d(currentPosition(0), currentPosition(1));
     );
 
     lastFrame = getFrameInfo();
 
-    getBallPercept()    = ballPercept;
-    getBallPerceptTop() = ballPercept;
+    Vector3d point(ballPercept.positionOnField.x, ballPercept.positionOnField.y, 32.5);
+    Vector2d pointInImage;
 
-    DEBUG_REQUEST("Vision:FakeBallDetector:determineCenterInImage",
+    bool in_image_bottom = CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), point, pointInImage);
 
-        Vector3d point(ballPercept.bearingBasedOffsetOnField.x, ballPercept.bearingBasedOffsetOnField.y, 32.5);
-        Vector2d pointInImage;
+    if(in_image_bottom) {
+        ballPercept.centerInImage = pointInImage;
+        ballPercept.cameraId      = naoth::CameraInfo::Bottom;
+        getMultiBallPercept().add(ballPercept);
+    }
 
-        bool in_front_of_cam = CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), point, pointInImage);
+    bool in_image_top = CameraGeometry::relativePointToImage(getCameraMatrixTop(), getCameraInfoTop(), point, pointInImage);
 
-        if(in_front_of_cam)
-            getBallPercept().centerInImage = pointInImage;
-        else
-            getBallPercept().ballWasSeen = false;
+    if(in_image_top) {
+        ballPercept.centerInImage = pointInImage;
+        ballPercept.cameraId      = naoth::CameraInfo::Top;
+        getMultiBallPercept().add(ballPercept);
+    }
 
-        in_front_of_cam = CameraGeometry::relativePointToImage(getCameraMatrixTop(), getCameraInfoTop(), point, pointInImage);
-
-        if(in_front_of_cam)
-            getBallPerceptTop().centerInImage = pointInImage;
-        else
-            getBallPerceptTop().ballWasSeen = false;
-    );
+    if(in_image_bottom || in_image_top) {
+        getMultiBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
+    }
 }
 
 const Eigen::Vector2d FakeBallDetector::simulateConstantMovementOnField(double dt, const Eigen::Vector2d &velocity)
