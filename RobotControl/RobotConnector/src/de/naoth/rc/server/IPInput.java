@@ -36,6 +36,10 @@ public class IPInput extends javax.swing.JPanel {
         }
     }
     
+    public void setPort(int port) {
+        txtPort.setText("" + port);
+    }
+    
     public String getAddress() {
         return (String) cbHost.getSelectedItem();
     }

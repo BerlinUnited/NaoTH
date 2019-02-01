@@ -91,7 +91,12 @@ public class ConnectionManager
         @Override
         public void connected(ConnectionStatusEvent event) {
             ipInput.addAddress(event.getAddress().getHostString());
-
+            
+            // NOTE: set the address of the host as the currectly selected address
+            //       in case the connection was established from somewhere else.
+            ipInput.setSelectedAddress(event.getAddress().getHostString());
+            ipInput.setPort(event.getAddress().getPort());
+            
             properties.put("hostname", event.getAddress().getHostString());
             properties.put("port", "" + event.getAddress().getPort());
             dialog.setVisible(false);
