@@ -27,7 +27,7 @@ void DebugModify::executeDebugCommand(
     
     while(iter != valueMap.end())
     {
-      outstream << iter->second.modify << ";" << iter->first << "=" << iter->second.value << std::endl;
+      outstream << std::noboolalpha << iter->second.modify << ";" << iter->first << "=" << iter->second.value << std::endl;
       ++iter;
     }
   }
