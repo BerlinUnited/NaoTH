@@ -26,6 +26,7 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugPlot.h"
+#include "Tools/Debug/Color.h"
 
 #include "Representations/Infrastructure/FieldInfo.h"
 
@@ -103,6 +104,8 @@ private:
     void doDebugRequest();
     void doDebugRequestBeforPredictionAndUpdate();
     void doDebugRequestBeforUpdate();
+    void drawFilter(const BallHypothesis& bh, const Color& model_color, const Color& cov_loc_color, const Color& cov_vel_color) const;
+    void drawFuturePositions(const Filters& future_filter) const;
     void drawFiltersOnField() const;
     void reloadParameters();
 
@@ -146,6 +149,8 @@ private:
 
             PARAMETER_REGISTER(use_covariance_based_selection) = true;
 
+            PARAMETER_REGISTER(max_preview_in_seconds) = 5;
+
             syncWithConfig();
         }
 
@@ -183,6 +188,7 @@ private:
             double offset;
         } area95Threshold_radius;
 
+        int max_preview_in_seconds;
 
         bool use_covariance_based_selection;
     } kfParameters;
