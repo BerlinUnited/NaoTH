@@ -245,6 +245,7 @@ public class RobotHealth extends AbstractDialog
         @Override
         public void errorOccured(String cause) {
             Plugin.genericManagerFactory.getManager(getFSRDataCommand).removeListener(this);
+            Logger.getLogger(RobotHealth.class.getName()).log(Level.SEVERE, null, cause);
         }
 
         @Override
@@ -277,6 +278,7 @@ public class RobotHealth extends AbstractDialog
         @Override
         public void errorOccured(String cause) {
             Plugin.genericManagerFactory.getManager(getSensorJointDataCommand).removeListener(this);
+            Logger.getLogger(RobotHealth.class.getName()).log(Level.SEVERE, null, cause);
         }
 
         @Override
