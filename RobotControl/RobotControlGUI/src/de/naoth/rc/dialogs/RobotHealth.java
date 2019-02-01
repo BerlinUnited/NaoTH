@@ -23,6 +23,7 @@ import de.naoth.rc.server.Command;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -199,6 +200,12 @@ public class RobotHealth extends AbstractDialog
       {
         Graphics2D g2d = (Graphics2D) g;
         
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+        
         g2d.drawImage(nao_body, null, 0, 0);
         g2d.drawImage(nao_feet, null, nao_feet_offset_x, nao_feet_offset_y);
         
@@ -364,8 +371,8 @@ public class RobotHealth extends AbstractDialog
             g2d.setColor(getColorMix(0, 85f, (float)temperature));
             g2d.fillOval(-radius, -radius, radius*2, radius*2);
             g2d.setColor(Color.black);
-            g2d.drawString(heat_df.format(temperature)+"("+current_df.format(current*1000)+")", 10, 5);
-            g2d.drawString(name, 10, -10);
+            g2d.drawString(heat_df.format(temperature)+"("+current_df.format(current*1000)+")", 10, 12);
+            g2d.drawString(name, 10, -3);
         }
     }
     
