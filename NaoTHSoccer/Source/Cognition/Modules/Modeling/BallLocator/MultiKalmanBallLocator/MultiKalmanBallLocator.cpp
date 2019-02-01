@@ -427,7 +427,7 @@ void MultiKalmanBallLocator::predict(ExtendedKalmanFilter4d& filter, double dt) 
     double time_until_vel_zero = 0;
 
     if(abs_velocity > epsilon){
-        time_until_vel_zero = abs_velocity/getFieldInfo().ballDeceleration;
+        time_until_vel_zero = -abs_velocity/getFieldInfo().ballDeceleration;
     }
 
     if(time_until_vel_zero < epsilon)
