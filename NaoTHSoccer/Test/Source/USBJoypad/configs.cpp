@@ -35,11 +35,11 @@ const std::vector<unsigned char> reportDefault_0000_0000_0000 =
 const std::vector<unsigned char> reportDefault_0003_0079_0126 =
   {0x00,  // X=00000001, A=00000010, B=00000100, Y=00001000, L=00010000, R=00100000
    0x00,  // SELECT=00000001, START=00000010
-   0x0F,  // unknown / unused
+   0x0F,  // unused
    0x80,  // Pad Left pressed = 0x00, Pad Right pressed = 0xFF
    0x80,  // Pad Up pressed = 0x00, Pad D pressed = 0xFF
-   0x80,  // unknown / unused
-   0x80,  // unknown / unused
+   0x80,  // unused
+   0x80,  // unused
    0x00,  // Pad Right off = 0x00, pressed = 0xFF
    0x00,  // Pad Left off = 0x00, pressed = 0xFF
    0x00,  // Pad Up ...
@@ -50,26 +50,26 @@ const std::vector<unsigned char> reportDefault_0003_0079_0126 =
    0x00,  // Y ...
    0x00,  // L off = 0x00, pressed = range(0x00..0xFF)
    0x00,  // R off = 0x00, pressed = range(0x00..0xFF)
-   0x00,  // unknown / unused
-   0x00,  // unknown / unused
-   0x00,  // unknown / unused
-   0x02,  // unknown / unused
-   0x00,  // unknown / unused
-   0x02,  // unknown / unused
-   0x00,  // unknown / unused
-   0x02,  // unknown / unused
-   0x00,  // unknown / unused
-   0x02}; // unknown / unused
+   0x00,  // unused
+   0x00,  // unused
+   0x00,  // unused
+   0x02,  // unused
+   0x00,  // unused
+   0x02,  // unused
+   0x00,  // unused
+   0x02,  // unused
+   0x00,  // unused
+   0x02}; // unused
 //------
 // Saitek pad
 const std::vector<unsigned char> reportDefault_0003_06A3_5F0D =
-{0x01,   // report nr ???
-0x80,   // left stick X  = range(0x00..0xFF)
-0x80,   // left stick Y  = range(0x00..0xFF)
-0x80,   // right stick X = range(0x00..0xFF)
-0x80,   // right stick Y = range(0x00..0xFF)
-0x00,   // low nibble = buttons 1..4, high nibble = buttons 5..8
-0xF0};  // low nibble = buttons 9..12, high nibble = dpad 0..7 (default 0xF.)
+  {0x01,   // report nr ???
+   0x80,   // left stick X  = range(0x00..0xFF)
+   0x80,   // left stick Y  = range(0x00..0xFF)
+   0x80,   // right stick X = range(0x00..0xFF)
+   0x80,   // right stick Y = range(0x00..0xFF)
+   0x00,   // low nibble = buttons 1..4, high nibble = buttons 5..8
+   0xF0};  // low nibble = buttons 9..12, high nibble = dpad 0..7 (default 0xF.)
 //------
 // put more predefined pads in here ...
 

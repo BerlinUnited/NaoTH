@@ -25,7 +25,7 @@ struct JoypadDefaultData
 //--------------------------------------------------------------------------------------------------
 //int GetVendorDataFromFile(const std::string ConfigFilePath,
 int GetJoypadConfigFromFile(JoypadDefaultData& rJoyDefaultData,
-                            const std::string HIDId);
+                            const std::string hidId);
 //--------------------------------------------------------------------------------------------------
 //==================================================================================================
 #endif // _CONFIGS_H

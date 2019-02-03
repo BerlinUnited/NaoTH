@@ -9,11 +9,11 @@
 //
 //==================================================================================================
 //--------------------------------------------------------------------------------------------------
-#include "udevIf.h"
 #include <unistd.h>
 #include <signal.h>
+#include "udevIf.h"
 //--------------------------------------------------------------------------------------------------
-int clUDevInterface::InitUDev()
+int UDevInterface::initUDev()
 {
   pUDev=udev_new();
   if (pUDev == 0)
@@ -23,14 +23,13 @@ int clUDevInterface::InitUDev()
   return 0;
 }
 //--------------------------------------------------------------------------------------------------
-int clUDevInterface::InitMonitor()
+int UDevInterface::initMonitor()
 {
   int Result;
   // Setup a monitor on hidraw devices
-  //Create new udev monitor and connect to a specified event source. 
-  //Valid sources identifiers are "udev" and "kernel"
+  // Create new udev monitor and connect to a specified event source. 
+  // Valid sources identifiers are "udev" and "kernel"
   pUDevMonitor=udev_monitor_new_from_netlink(pUDev, ID_UDEVMONITOR);
-  
   if (pUDevMonitor == NULL)
   {
     printf("Error! Couldn't create udev monitor!\n");
@@ -40,7 +39,7 @@ int clUDevInterface::InitMonitor()
   return 0;
 }
 //--------------------------------------------------------------------------------------------------
-int clUDevInterface::GetDeviceDataFromHIDId(sctJoypadData& rJoypadData, 
+int UDevInterface::GetDeviceDataFromHIDId(JoypadDefaultData& rJoypadData, 
                                             const char* const pHIDId)
 {
   int EnumResult;
@@ -81,14 +80,14 @@ int clUDevInterface::GetDeviceDataFromHIDId(sctJoypadData& rJoypadData,
   return 0;
 }
 //--------------------------------------------------------------------------------------------------
-int clUDevInterface::StartMonitoring()
+int UDevInterface::startMonitoring()
 {
   int ResultEnable;
   int ResultSelect;
 
   ResultEnable=udev_monitor_enable_receiving(pUDevMonitor);
   // Get the file descriptor for the monitor. This descriptor will get passed to select()
-  UDevMonitorDescriptor=udev_monitor_get_fd(pUDevMonitor);
+  udevMonitorDescriptor=udev_monitor_get_fd(pUDevMonitor);
   
   udev_device* pUDevDevice=nullptr;
   fd_set fds;
@@ -112,14 +111,14 @@ int clUDevInterface::StartMonitoring()
   while(ii < 200)
   {
     FD_ZERO(&fds);
-    FD_SET(UDevMonitorDescriptor, &fds);
-    ResultSelect=pselect(UDevMonitorDescriptor+1, &fds, NULL, NULL, &tspec, &SigMask);
+    FD_SET(udevMonitorDescriptor, &fds);
+    ResultSelect=pselect(udevMonitorDescriptor+1, &fds, NULL, NULL, &tspec, &SigMask);
     
     if (ResultSelect < 0)
     {
       printf("Error!!!\n");
     }
-    if (ResultSelect > 0 && FD_ISSET(UDevMonitorDescriptor, &fds)) 
+    if (ResultSelect > 0 && FD_ISSET(udevMonitorDescriptor, &fds)) 
     {
       printf("\nselect() says there should be data\n");
       // Make the call to receive the device.
@@ -147,7 +146,7 @@ int clUDevInterface::StartMonitoring()
     }
 
     //printf("-");
-    usleep(1000*1000);
+    sleep(1); // compiler complains about usleep ???
     fflush(stdout);
     ii++;
   }
@@ -161,18 +160,19 @@ int clUDevInterface::StartMonitoring()
   return 0;
 }
 //--------------------------------------------------------------------------------------------------
-int clUDevInterface::StopMonitoring()
+int UDevInterface::stopMonitoring()
 {
   int RemoveResult;
+
   RemoveResult=udev_monitor_filter_remove(pUDevMonitor);
   return 0;
 }
 //--------------------------------------------------------------------------------------------------
-clUDevInterface::clUDevInterface()
+UDevInterface::UDevInterface()
 //: isUDevInitialized(0), isUDevMonInitialized(0)
 {
-  InitUDev();
-  InitMonitor();
+  initUDev();
+  initMonitor();
   /*
   if (InitUDev() < 0)
   {
@@ -187,7 +187,7 @@ clUDevInterface::clUDevInterface()
   */
 }
 //--------------------------------------------------------------------------------------------------
-clUDevInterface::~clUDevInterface()
+UDevInterface::~UDevInterface()
 {
   udev_monitor_unref(pUDevMonitor);
   udev_unref(pUDev);

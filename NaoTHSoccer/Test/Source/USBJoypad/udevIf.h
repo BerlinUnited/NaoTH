@@ -17,9 +17,8 @@
 #define SUBSYSTEM_HIDRAW "hidraw"
 //Valid monitor sources identifiers are "udev" and "kernel"
 #define ID_UDEVMONITOR   "udev"
-//#define DEVICETYPE_USB "usb"
 //--------------------------------------------------------------------------------------------------
-class clUDevInterface
+class UDevInterface
 {
 private:
   int isUDevInitialized;
@@ -34,16 +33,17 @@ private:
   const char* pHIDDevNode=nullptr;
   const char* pHIDSysName=nullptr;
   struct udev_monitor* pUDevMonitor=nullptr;
-  int UDevMonitorDescriptor;
+  int udevMonitorDescriptor;
   
-  int InitUDev();
-  int InitMonitor();
+  int initUDev();
+  int initMonitor();
 public:
-  int GetDeviceDataFromHIDId(sctJoypadData& JoypadData, const char* const pHIDId);
-  int StartMonitoring();
-  int StopMonitoring();
-  clUDevInterface();
-  ~clUDevInterface();
+  int GetDeviceDataFromHIDId(JoypadDefaultData& JoypadData, const char* const pHIDId);
+
+  int startMonitoring();
+  int stopMonitoring();
+  UDevInterface();
+  ~UDevInterface();
 };
 //--------------------------------------------------------------------------------------------------
 //==================================================================================================
