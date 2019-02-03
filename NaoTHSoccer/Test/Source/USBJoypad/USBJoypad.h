@@ -7,7 +7,7 @@
 #include <fstream>
 #include "Representations/Infrastructure/USBJoypadData.h"
 //------------------------------------------------------------------------------
-class clJoypad
+class USBJoypad
 {
 private:
   bool exiting;
@@ -15,13 +15,13 @@ private:
   std::mutex dataMutex;
   std::thread readThread;
 //  std::ifstream temperatureFile; //???
-  naoth::clJoypadData JoypadInputData;
+  naoth::USBJoypadData JoypadInputData;
 
 public:
-  void get(naoth::clJoypadData& rJoypadData);
+  void get(naoth::USBJoypadData& rJoypadData);
   void readLoop();
-  clJoypad();
-  ~clJoypad();
+  USBJoypad();
+  ~USBJoypad();
 };
 //------------------------------------------------------------------------------
 //==============================================================================

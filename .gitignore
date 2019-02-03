@@ -32,3 +32,7 @@ behavior-ic.dat
 
 #vim swap files
 .*.swp
+/NaoTHSoccer/Test/Source/USBJoypad/USBJoypad.vcxproj
+/NaoTHSoccer/Test/Source/USBJoypad/USBJoypad.vcxproj.filters
+/NaoTHSoccer/Test/Source/USBJoypad/USBJoypad.vcxproj.user
+*.cp0

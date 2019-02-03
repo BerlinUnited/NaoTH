@@ -18,8 +18,9 @@ struct sctJoypadData
 {
   std::string                 HID_Id;
   std::string                 FriendlyName;   // not needed (yet)
+  std::string                 DeviceNode;
   int                         InputReportLen;
-  std::vector<unsigned char>  vInputReportDefaults;
+  std::vector<unsigned char>  vInputReportData;
 };
 //--------------------------------------------------------------------------------------------------
 //bool GetVendorDataFromFile(const std::string ConfigFilePath,
