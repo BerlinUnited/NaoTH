@@ -156,16 +156,13 @@ public class Modify extends AbstractDialog
     @Override
     public void valueChanged(boolean enabled, double value)
     {
-        if(!enabled)
-        {
-            Command command = new Command(prefix + ":modify:release").addArg(name, "");
-            Plugin.commandExecutor.executeCommand(new PrintObjectListener(), command);
-        }
-        else
-        {
-            Command command = new Command(prefix + ":modify:set").addArg(name, ""+value);
-            Plugin.commandExecutor.executeCommand(new PrintObjectListener(), command);
-        }
+        Command command = new Command(prefix + ":representation:set").addArg("DebugModify",
+            Representations.DebugModify.newBuilder().addValueMap(
+                Representations.DebugModify.ModifyValue.newBuilder().setName(name).setModify(enabled).setValue(value)
+            ).build().toByteArray()
+        );
+            
+        Plugin.commandExecutor.executeCommand(new PrintObjectListener(), command);
     }
   }//end class FlagModifiedListener
 
@@ -249,7 +246,7 @@ public class Modify extends AbstractDialog
       Component comp = super.getTableCellRendererComponent(
                       table,  value, isSelected, hasFocus, row, column);
 
-      boolean columnValue = ((Boolean)table.getValueAt(row, table.getColumnModel().getColumnIndex("Modify"))).booleanValue();
+      boolean columnValue = ((Boolean)table.getValueAt(row, table.getColumnModel().getColumnIndex("Modify")));
 
       if (columnValue) {
         setBackground(new Color(1.0f,0.8f,1.0f));
