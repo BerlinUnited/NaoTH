@@ -11,7 +11,6 @@
 #include <Tools/DataStructures/Singleton.h>
 #include <Tools/DataConversion.h>
 
-#include <DebugCommunication/DebugCommandExecutor.h>
 #include <Tools/DataStructures/Serializer.h>
 
 /**
@@ -20,7 +19,7 @@
   where d is a numeric value which can be casted to double with static_cast 
   (can be local). Then this value can be modified using the RC.
  */
-class DebugModify : public DebugCommandExecutor
+class DebugModify
 {
 public:
   DebugModify() {}
@@ -53,10 +52,6 @@ public:
     }
   };//end clas ModifyValue
 
-  virtual void executeDebugCommand(
-    const std::string& command, const std::map<std::string,std::string>& arguments,
-    std::ostream &outstream);
-  
   //@Depricated and shouldn't be used
   //since access using this method is very slow
   void updateValue(const std::string& name, double& d)
