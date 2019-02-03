@@ -14,17 +14,17 @@
 #include <string>
 #include <vector>
 //--------------------------------------------------------------------------------------------------
-struct sctJoypadData
+struct JoypadDefaultData
 {
-  std::string                 HID_Id;
-  std::string                 FriendlyName;   // not needed (yet)
-  std::string                 DeviceNode;
-  int                         InputReportLen;
-  std::vector<unsigned char>  vInputReportData;
+  std::string                 hid_id;
+  std::string                 friendlyName;   // not needed (yet)
+  std::string                 deviceNode;
+  int                         inputReportLen;
+  std::vector<unsigned char>  inputReportData;
 };
 //--------------------------------------------------------------------------------------------------
-//bool GetVendorDataFromFile(const std::string ConfigFilePath,
-int GetJoypadConfigFromFile(sctJoypadData& rJoyData,
+//int GetVendorDataFromFile(const std::string ConfigFilePath,
+int GetJoypadConfigFromFile(JoypadDefaultData& rJoyDefaultData,
                             const std::string HIDId);
 //--------------------------------------------------------------------------------------------------
 //==================================================================================================

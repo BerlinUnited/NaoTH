@@ -11,7 +11,8 @@
 //--------------------------------------------------------------------------------------------------
 #include <chrono>
 #include <iostream>
-#include "Tools\ThreadUtil.h"
+//#include <Tools\ThreadUtil.h>
+#include "ThreadUtil.h"
 #include "USBJoypad.h"
 //#include "udevIf.h"
 //------------------------------------------------------------------------------

@@ -36,3 +36,4 @@ behavior-ic.dat
 /NaoTHSoccer/Test/Source/USBJoypad/USBJoypad.vcxproj.filters
 /NaoTHSoccer/Test/Source/USBJoypad/USBJoypad.vcxproj.user
 *.cp0
+/NaoTHSoccer/Test/Source/USBJoypad/nao/Printable.cpp

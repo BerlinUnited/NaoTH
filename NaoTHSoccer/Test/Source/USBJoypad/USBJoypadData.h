@@ -14,7 +14,8 @@
 //------------------------------------------------------------------------------
 #include <string>
 #include <vector>
-#include "../../Tools/DataStructures/Printable.h"  // subject to adjustment
+//#include "Tools/DataStructures/Printable.h"
+#include "Printable.h"
 //------------------------------------------------------------------------------
 namespace naoth
 {

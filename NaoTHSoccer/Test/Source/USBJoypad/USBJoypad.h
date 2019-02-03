@@ -5,7 +5,7 @@
 #include <mutex>
 #include <thread>
 #include <fstream>
-#include "Representations/Infrastructure/USBJoypadData.h"
+#include "USBJoypadData.h"
 //------------------------------------------------------------------------------
 class USBJoypad
 {

@@ -1,0 +1,4 @@
+Visual Studio 2015 for NAO Standalone project (Linux)
+
+(Configuration) Properties -> Linker -> All Options ->
+Library Dependencies : pthread;udev

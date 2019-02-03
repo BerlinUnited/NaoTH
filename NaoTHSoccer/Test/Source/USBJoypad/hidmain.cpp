@@ -11,18 +11,31 @@
 //
 //==================================================================================================
 //--------------------------------------------------------------------------------------------------
+#include <iostream>
 #include "USBJoypad.h"
 //--------------------------------------------------------------------------------------------------
-//using namespace std;
+using namespace std;
+using namespace naoth;
 //--------
 int main()
 {
   USBJoypadData data;
   USBJoypad usbJoypad;
+  bool gotEnough;
+  int keyPressed;
 
-  // get as much as you want
-  usbJoypad.get(data);
-
+  gotEnough=false;
+  while (!gotEnough)
+  {  // get as much as you want
+    keyPressed=getchar();
+    if (keyPressed=='e')
+      gotEnough=true;
+    else
+    {
+      usbJoypad.get(data);
+      std::cout << data;
+    }
+  }
 
   return 0;
 }
