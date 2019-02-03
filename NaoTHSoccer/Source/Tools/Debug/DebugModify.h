@@ -10,7 +10,9 @@
 
 #include <Tools/DataStructures/Singleton.h>
 #include <Tools/DataConversion.h>
+
 #include <DebugCommunication/DebugCommandExecutor.h>
+#include <Tools/DataStructures/Serializer.h>
 
 /**
   Usage: just write 
@@ -21,17 +23,17 @@
 class DebugModify : public DebugCommandExecutor
 {
 public:
-  DebugModify();
-  virtual ~DebugModify();
+  DebugModify() {}
+  virtual ~DebugModify() {}
 
   /**
   * 
   */
   class ModifyValue 
   {
-  private:
+  public:
     // TODO: find beter solution to hide private stuff
-    friend class DebugModify;
+    //friend class DebugModify;
     //friend class std::map<std::string, ModifyValue>;
 
     double value;
@@ -43,10 +45,11 @@ public:
     template<class T>
     void update(T& d)
     {
-      if(modify)
+      if(modify) {
         d = static_cast<T>(value);
-      else
+      } else {
         value = static_cast<double>(d);
+      }
     }
   };//end clas ModifyValue
 
@@ -56,17 +59,16 @@ public:
   
   //@Depricated and shouldn't be used
   //since access using this method is very slow
-  void updateValue(std::string name, double& d)
+  void updateValue(const std::string& name, double& d)
   {
-    if(valueMap.find(name) != valueMap.end() && valueMap.find(name)->second.modify)
-    {
+    if(valueMap.find(name) != valueMap.end() && valueMap.find(name)->second.modify) {
       d = valueMap.find(name)->second.value;
     } else {
       valueMap[name].value = d;
     }
   }
 
-  ModifyValue& getValueReference(std::string name, double& d)
+  ModifyValue& getValueReference(const std::string& name, double d)
   {
     // add value if not existing
     ModifyValue& modifyValue = valueMap[name];
@@ -75,10 +77,31 @@ public:
     return modifyValue;
   }
 
+  ModifyValue& getValueReference(const std::string& name)
+  {
+    // add value if not existing
+    return valueMap[name];
+  }
+
+  const std::map<std::string, ModifyValue>& getEntries() const {
+    return valueMap;
+  }
+
 private:
   std::map<std::string, ModifyValue> valueMap;
   
 };
+
+namespace naoth
+{
+  template<>
+  class Serializer<DebugModify>
+  {
+  public:
+    static void serialize(const DebugModify& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, DebugModify& representation);
+  };
+}
 
 // MACROS //
 
