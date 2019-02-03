@@ -34,12 +34,7 @@ DebugCommunicator::DebugCommunicator()
 DebugCommunicator::~DebugCommunicator()
 {
   disconnect();
-
-  if (serverSocket != NULL)
-  {
-    g_socket_close(serverSocket, NULL);
-    g_object_unref(serverSocket);
-  }
+  internalClose();
 }
 
 void DebugCommunicator::init(unsigned short portNum)
@@ -75,6 +70,15 @@ GError* DebugCommunicator::internalInit()
   if (err) { return err; }
 
   return NULL;
+}
+
+void DebugCommunicator::internalClose()
+{
+  if (serverSocket != NULL)
+  {
+    g_socket_close(serverSocket, NULL);
+    g_object_unref(serverSocket);
+  }
 }
 
 bool DebugCommunicator::sendMessage(gint32 id, const char* data, size_t size)
@@ -296,6 +300,9 @@ bool DebugCommunicator::connect(int timeout)
     time_of_last_message = naoth::NaoTime::getSystemTimeInMilliSeconds();
     g_socket_set_timeout(connection, time_out_delta);
 
+    // close the server socket and reject further connections
+    internalClose();
+
     return true;
   }
 
@@ -311,6 +318,8 @@ void DebugCommunicator::disconnect()
     connection = NULL;
     std::cerr << "[DebugServer:port " << port << "] " << "disconnected" << std::endl;
   }
+  // re-establish server socket to accept new connections
+  init(port);
 }
 
 bool DebugCommunicator::isConnected()

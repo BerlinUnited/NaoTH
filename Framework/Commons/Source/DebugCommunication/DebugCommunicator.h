@@ -84,6 +84,7 @@ private:
 
   GError* internalSendMessage(gint32 id, const char* data, size_t size);
   GError* internalInit();
+  void internalClose();
   gint32 internalReadMessage(GString** result, GError** err);
 };
 
