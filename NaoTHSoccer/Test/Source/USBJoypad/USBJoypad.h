@@ -14,11 +14,10 @@ private:
   unsigned int lastGetTime;
   std::mutex dataMutex;
   std::thread readThread;
-//  std::ifstream temperatureFile; //???
-  naoth::USBJoypadData JoypadInputData;
+  naoth::USBJoypadData dataJoypad;
 
 public:
-  void get(naoth::USBJoypadData& rJoypadData);
+  void get(naoth::USBJoypadData& dataJoypad);
   void readLoop();
   USBJoypad();
   ~USBJoypad();

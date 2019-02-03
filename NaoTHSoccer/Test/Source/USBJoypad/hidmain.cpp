@@ -21,20 +21,21 @@ int main()
 {
   USBJoypadData data;
   USBJoypad usbJoypad;
-  bool gotEnough;
-  int keyPressed;
+  int gotEnough;
 
-  gotEnough=false;
-  while (!gotEnough)
+  timespec sleepTime;
+  timespec remainingTime;
+
+  sleepTime.tv_sec=0;
+  sleepTime.tv_nsec=250000000;
+  gotEnough=50;
+  while (gotEnough > 0)
   {  // get as much as you want
-    keyPressed=getchar();
-    if (keyPressed=='e')
-      gotEnough=true;
-    else
-    {
-      usbJoypad.get(data);
-      std::cout << data;
-    }
+    printf("%03i: ", gotEnough);
+    usbJoypad.get(data);
+    std::cout << data << std::endl;
+    gotEnough--;
+    nanosleep(&sleepTime, &remainingTime);
   }
 
   return 0;

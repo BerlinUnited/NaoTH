@@ -3,10 +3,9 @@
 // @file configs.h
 // @author <a href="mailto:albert@informatik.hu-berlin.de">Andreas Albert</a>
 //
-// Header for handling of config files
+// Config data handler - data read from files or statically predefined
 //
 //--------------------------------------------------------------------------------------------------
-//
 #ifndef _CONFIGS_H
 #define _CONFIGS_H
 //==================================================================================================
@@ -16,7 +15,7 @@
 //--------------------------------------------------------------------------------------------------
 struct JoypadDefaultData
 {
-  std::string                 hid_id;
+  std::string                 hidId;
   std::string                 friendlyName;   // not needed (yet)
   std::string                 deviceNode;
   int                         inputReportLen;

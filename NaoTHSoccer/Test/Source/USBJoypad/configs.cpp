@@ -37,7 +37,7 @@ const std::vector<unsigned char> reportDefault_0003_0079_0126 =
    0x00,  // SELECT=00000001, START=00000010
    0x0F,  // unused
    0x80,  // Pad Left pressed = 0x00, Pad Right pressed = 0xFF
-   0x80,  // Pad Up pressed = 0x00, Pad D pressed = 0xFF
+   0x80,  // Pad Up pressed = 0x00, Pad Down pressed = 0xFF
    0x80,  // unused
    0x80,  // unused
    0x00,  // Pad Right off = 0x00, pressed = 0xFF
@@ -61,7 +61,7 @@ const std::vector<unsigned char> reportDefault_0003_0079_0126 =
    0x00,  // unused
    0x02}; // unused
 //------
-// Saitek pad
+// Saitek Pad
 const std::vector<unsigned char> reportDefault_0003_06A3_5F0D =
   {0x01,   // report nr ???
    0x80,   // left stick X  = range(0x00..0xFF)
@@ -69,18 +69,18 @@ const std::vector<unsigned char> reportDefault_0003_06A3_5F0D =
    0x80,   // right stick X = range(0x00..0xFF)
    0x80,   // right stick Y = range(0x00..0xFF)
    0x00,   // low nibble = buttons 1..4, high nibble = buttons 5..8
-   0xF0};  // low nibble = buttons 9..12, high nibble = dpad 0..7 (default 0xF.)
+   0xF0};  // low nibble = buttons 9..12, high nibble = dpad 0..7
 //------
 // put more predefined pads in here ...
 
 //--------------------------------------------------------------------------------------------------
-JoypadDefaultData hidData[3]=
+JoypadDefaultData hidDefaultData[3]=
 {
-  {"0000:00000000:00000000", "Dummy Device", NULL, 1, reportDefault_0000_0000_0000}, 
-  {"0003:00000079:00000126", "Wireless USB Gamepad (0079/0126)", NULL, 27, reportDefault_0003_0079_0126},
-  {"0003:000006A3:00005F0D", "Saitek P2600 Rumble Force Pad", NULL, 7, reportDefault_0003_06A3_5F0D}
+  {"0000:00000000:00000000", "Dummy Device", "", 1, reportDefault_0000_0000_0000}, 
+  {"0003:00000079:00000126", "Wireless USB Gamepad (0079/0126)", "", 27, reportDefault_0003_0079_0126},
+  {"0003:000006A3:00005F0D", "Saitek P2600 Rumble Force Pad", "", 7, reportDefault_0003_06A3_5F0D}
+// put more predefined pads in here ...
 };
-
 //------ Linux part ends
 #endif //WIN32
 //--------------------------------------------------------------------------------------------------
@@ -98,13 +98,14 @@ int GetJoypadConfigFromFile(JoypadDefaultData& rJoyData, const std::string hidId
     // !!! HERE !!!
     // and match file data with input data
     configFileNr++;
-    if (hidData[configFileNr].hid_id == hidId)
+    if (hidDefaultData[configFileNr].hidId == hidId)
     {
-      rJoyData.hid_id=hidData[configFileNr].hid_id;
-      rJoyData.friendlyName=hidData[configFileNr].friendlyName;
-      rJoyData.inputReportLen=hidData[configFileNr].inputReportLen;
+      rJoyData.hidId=hidDefaultData[configFileNr].hidId;
+      rJoyData.friendlyName=hidDefaultData[configFileNr].friendlyName;
+//      rJoyData.deviceNode=hidDefaultData[configFileNr].deviceNode;
+      rJoyData.inputReportLen=hidDefaultData[configFileNr].inputReportLen;
       rJoyData.inputReportData.reserve(rJoyData.inputReportLen);
-      rJoyData.inputReportData=hidData[configFileNr].inputReportData;
+      rJoyData.inputReportData=hidDefaultData[configFileNr].inputReportData;
       isDataFound=1;
     }
   }
