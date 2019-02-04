@@ -12,12 +12,15 @@
 
 #include <map>
 #include <list>
-#include <sstream>
-#include <functional>
+#include <string>
+
+// TODO: maybe it can be made prinable in the future
+#include <ostream>
+//#include <Tools/DataStructures/Printable.h>
+
 #include <Tools/Debug/NaoTHAssert.h>
 #include <Tools/Math/Common.h>
-//#include <Tools/DataStructures/Printable.h>
-#include <Tools/DataConversion.h>
+
 #include <Representations/Infrastructure/Configuration.h>
 
 //NOTE: it would be goo for ParameterList to be naoth::Printable but it might lead to inheritance issues
