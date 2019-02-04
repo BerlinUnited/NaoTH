@@ -125,6 +125,7 @@ public class ConnectionManager
           updateAvaliableHosts();
       }
       setMessage(message);
+      dialog.setLocationRelativeTo(this.parent);
       dialog.setVisible(true);
   }
   
@@ -133,6 +134,7 @@ public class ConnectionManager
           updateAvaliableHosts();
       }
       setMessage(null);
+      dialog.setLocationRelativeTo(this.parent);
       dialog.setVisible(true);
   }
   
