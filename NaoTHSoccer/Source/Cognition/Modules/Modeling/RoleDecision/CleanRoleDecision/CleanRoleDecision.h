@@ -114,30 +114,16 @@ protected:
 
   class Parameters: public ParameterList
   {
-      template<class T> class MyParameter : public DefaultParameter<T> {
-      public:
-          MyParameter(const std::string& name, T* value) : DefaultParameter<T>(name, value) {}
-          ~MyParameter(){}
-          virtual void set(T i) {
-              DefaultParameter<T>::set(i);
-              std::cout << "MyParameter: " << i << std::endl;
-          }
-      };
-
+    
   public: 
     Parameters(): ParameterList("CleanRoleDecision")
     {
-      PARAMETER_REGISTER(strikerBonusTime) = 4000;
+      PARAMETER_REGISTER(strikerBonusTime,) = 4000;
       PARAMETER_REGISTER(maxBallLostTime) = 1000;
       PARAMETER_REGISTER(strikerSelection) = 3;
       PARAMETER_REGISTER(strikerSelectionDiffThreshold) = 500; // ms
       PARAMETER_REGISTER(useSecondStriker) = true;
       PARAMETER_REGISTER(firstSecondStrikerBallDistance) = 500; // mm
-
-      //std::function<void(int)> cb = [](int i)->void{ std::cout << "test_1: " << i << std::endl; };
-      //PARAMETER_REGISTER_CB(test_1, cb) = 1;
-      PARAMETER_REGISTER(test_2, &Parameters::setTest2) = 2;
-      registerParameterT<MyParameter>("test_3", test_3) = 3;
 
       // load from the file after registering all parameters
       syncWithConfig();
@@ -149,13 +135,6 @@ protected:
     int strikerSelection;
     int strikerSelectionDiffThreshold;
     int firstSecondStrikerBallDistance;
-
-    int test_1;
-    int test_2;
-    int test_3;
-    
-    virtual ~Parameters() {}
-    void setTest2(int i) { std::cout << "test_2: " << i << std::endl; }
   } parameters;
 
 private:

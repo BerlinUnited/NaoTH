@@ -90,15 +90,6 @@ protected:
       virtual T get() const { ASSERT(value != NULL); return Math::toDegrees(*value); }
   };
 
-  template<class T>
-  class CallbackLambdaParameter : public DefaultParameter<T> {
-  protected:
-      std::function<void(T)> cb;
-  public:
-    CallbackLambdaParameter(const std::string& name, T* value, std::function<void(T)> callback) : DefaultParameter<T>(name, value), cb(callback) {}
-    virtual void set(T v) { DefaultParameter<T>::set(v); cb(v); }
-  };
-
   template<class T, class P>
   class CallbackMemberParameter : public DefaultParameter<T> {
   protected:
@@ -110,7 +101,7 @@ protected:
         parent(parent),
         callback(callback)
     {}
-    virtual void set(T v) { DefaultParameter<T>::set(v); (*parent.*callback)(v); }
+    virtual void set(T v) { (parent->*callback)(v); DefaultParameter<T>::set(v); }
   };
 
 protected:
@@ -139,16 +130,8 @@ protected:
     return registerParameterT<DefaultParameter,N>(parameterName, parameter);
   }
 
-  template<typename N>
-  Parameter<N>& registerParameter(const std::string& parameterName, N& parameter, std::function<void(N)> callback)
-  {
-    CallbackLambdaParameter<N>* parameterWrapper = new CallbackLambdaParameter<N>(parameterName, &parameter, callback);
-    parameters.push_back(parameterWrapper);
-    return *parameterWrapper;
-  }
-
   template<typename N, class P>
-  Parameter<N>& registerParameter(const std::string& parameterName, N& parameter, void(P::*callback)(N))
+  Parameter<N>& registerParameter(const std::string& parameterName, N& parameter, void (P::*callback)(N))
   {
     CallbackMemberParameter<N,P>* parameterWrapper = new CallbackMemberParameter<N,P>(parameterName, &parameter, callback, reinterpret_cast<P*> (this) );
     parameters.push_back(parameterWrapper);
@@ -208,9 +191,6 @@ public:
     PARAMETER_REGISTER(intParameter) = 1000;
     PARAMETER_REGISTER(intParameterWithCallback, &MyExampleParameters::setIntParameter) = 1000;
 
-    std::function<void(int)> cb = [](int a)->void{ std::cout << a << std::endl; };
-    PARAMETER_REGISTER(intParameterWithCallback, cb) = 1000;
-
     // load from the file after registering all parameters
     syncWithConfig();
   }
@@ -220,11 +200,13 @@ public:
   int intParameter;
   double doubleParameter;
   std::string stringParameter;
-  int intParameterWithCallback;
 
-  void setIntParameter(int v) { std::cout << "intParameter: " << v << std::endl; }
+  int intParameterWithCallback;
+  inline void setIntParameter(int v) { std::cout << "old: " << intParameterWithCallback << " new: " << v << std::endl; }
+
 } myExampleParameters;
 };
+
 //*/
 
 #endif // _ParameterList_h_
