@@ -17,9 +17,14 @@
 class UDevInterface
 {
 private:
-  int udevError;
   struct udev* pUDev=nullptr;
+  struct udev_monitor* pUDevMonitor=nullptr;
+  int udevError;
+  int hidStatus;
+
+/*
   struct udev_enumerate* pDeviceEnum=nullptr;
+
   struct udev_list_entry* pDeviceListHead=nullptr;
   struct udev_list_entry* pDeviceListEntry=nullptr;
   const char* pDeviceName= nullptr;
@@ -27,15 +32,13 @@ private:
   struct udev_device* pParentDeviceRaw=nullptr;
   const char* pHIDDevNode=nullptr;
   const char* pHIDSysName=nullptr;
-  struct udev_monitor* pUDevMonitor=nullptr;
-  int udevMonitorDescriptor;
-  
+*/
+
   int InitUDev();
   int InitMonitor();
 public:
-  bool isDeviceStatusChanged();
-  bool isNodeExisting(int node);
-  int GetDeviceDataFromHIDId(JoypadDefaultData& rJoypadData, const char* const pHIDId);
+//  bool isNodeExisting(int node);
+//  int GetDeviceDataFromHIDId(JoypadDefaultData& rJoypadData, const char* const pHIDId);
   int StartMonitoring();
   int StopMonitoring();
   UDevInterface();

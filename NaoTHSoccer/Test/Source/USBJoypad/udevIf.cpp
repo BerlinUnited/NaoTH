@@ -12,6 +12,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <signal.h>
+#include <sys/epoll.h>
 #include "udevIf.h"
 //--------------------------------------------------------------------------------------------------
 #define SUBSYSTEM_HIDRAW "hidraw"
@@ -61,16 +62,7 @@ int UDevInterface::InitMonitor()
   return filterResult;
 }
 //--------------------------------------------------------------------------------------------------
-bool UDevInterface::isDeviceStatusChanged()
-{
-  if (udevError != UDEV_NOERROR)
-  {
-    return false;
-  }
-  // more code
-  return true;
-}
-//--------------------------------------------------------------------------------------------------
+/*
 bool UDevInterface::isNodeExisting(int node)
 {
   if (udevError != UDEV_NOERROR)
@@ -80,7 +72,9 @@ bool UDevInterface::isNodeExisting(int node)
   // more code
   return false;
 }
+*/
 //--------------------------------------------------------------------------------------------------
+/*
 int UDevInterface::GetDeviceDataFromHIDId(JoypadDefaultData& rJoypadData, const char* const pHIDId)
 {
   int EnumResult;
@@ -95,6 +89,8 @@ int UDevInterface::GetDeviceDataFromHIDId(JoypadDefaultData& rJoypadData, const 
   }
   // Create a list of the devices in the 'hidraw' subsystem
   pDeviceEnum=udev_enumerate_new(pUDev);
+
+
   EnumResult=udev_enumerate_add_match_subsystem(pDeviceEnum, SUBSYSTEM_HIDRAW);
   EnumScanResult=udev_enumerate_scan_devices(pDeviceEnum);
   pDeviceListHead=udev_enumerate_get_list_entry(pDeviceEnum);
@@ -103,10 +99,11 @@ int UDevInterface::GetDeviceDataFromHIDId(JoypadDefaultData& rJoypadData, const 
 // using the macro raises an "intelli" warning (Visual Studio 2015 bug???)
 /*
   udev_list_entry_foreach(pDeviceListEntry, pDeviceListHead)
-/*/
+*/
+/*
   for (pDeviceListEntry = pDeviceListHead; pDeviceListEntry != NULL;
        pDeviceListEntry = udev_list_entry_get_next(pDeviceListEntry))
-//*/
+*//*
   {
 // Get the filename of the /sys entry for the (hid) device and create
 // a udev_device object (pUdevDevice) representing it
@@ -129,11 +126,16 @@ int UDevInterface::GetDeviceDataFromHIDId(JoypadDefaultData& rJoypadData, const 
   
   return 0;
 }
+*/
 //--------------------------------------------------------------------------------------------------
 int UDevInterface::StartMonitoring()
 {
   int ResultEnable;
   int ResultSelect;
+  int udevMonDescriptor;
+  udev_device* pReportingDevice=nullptr;
+  int fd_epoll;
+  epoll_event ev_epoll_udev ={0};
 
   if ((udevError & UDEV_NO_MONITOR) > 0)
   {
@@ -141,76 +143,53 @@ int UDevInterface::StartMonitoring()
   }
   ResultEnable=udev_monitor_enable_receiving(pUDevMonitor);
   // Get the file descriptor for the monitor. This descriptor will get passed to select()
-  udevMonitorDescriptor=udev_monitor_get_fd(pUDevMonitor);
+  udevMonDescriptor=udev_monitor_get_fd(pUDevMonitor);
   
-  udev_device* pUDevDevice=nullptr;
-  fd_set fds;
-  timeval tv;
-  timespec tspec;
-  sigset_t SigMask;
-  sigset_t SigOrigMask;
-  
-
-  tv.tv_sec=50;
-  tv.tv_usec=0;
-  tspec.tv_sec=0;
-  tspec.tv_nsec=0;
-  
-  sigemptyset(&SigMask);
-  sigaddset(&SigMask, SIGTERM);
-  sigaddset(&SigMask, SIGINT);
-  sigaddset(&SigMask, SIGUSR1);  
-    
-  int ii=0;
-  while(ii < 200)
+  fd_epoll=epoll_create1(EPOLL_CLOEXEC);
+  if (fd_epoll < 0)
   {
-    FD_ZERO(&fds);
-    FD_SET(udevMonitorDescriptor, &fds);
-    ResultSelect=pselect(udevMonitorDescriptor+1, &fds, NULL, NULL, &tspec, &SigMask);
-    
-    if (ResultSelect < 0)
-    {
-      printf("Error!!!\n");
-    }
-    if (ResultSelect > 0 && FD_ISSET(udevMonitorDescriptor, &fds)) 
-    {
-      printf("\nselect() says there should be data\n");
-      // Make the call to receive the device.
-      // select() ensured that this will not block.
-      // udev_monitor_receive_device allocates new udev_device
-      // this has to be udev_device_unref'd at end of use
-      pUDevDevice=udev_monitor_receive_device(pUDevMonitor);
-      if (pUDevDevice)
-      {
-//        printf("Got Device\n");
-//        printf("   Node: %s\n", udev_device_get_devnode(pUDevDevice));
-//        printf("   Subsystem: %s\n", udev_device_get_subsystem(pUDevDevice));
-////        printf("   Devtype: %s\n", udev_device_get_devtype(pUDevDevice)); // this is NULL
-//        printf("   Action: %s\n", udev_device_get_action(pUDevDevice));
-        udev_device_unref(pUDevDevice);
-      }
-      else
-      {
-        printf("ERROR(udev_monitor_receive_device) - NULL returned.\n");
-      }		
-    }
-    else
-    {
-      printf(".");
-    }
-
-    //printf("-");
-    sleep(1); // compiler complains about usleep ???
-    fflush(stdout);
-    ii++;
+    fprintf(stderr, "error creating epoll\n");
   }
+  ev_epoll_udev.events = EPOLLIN;
+  ev_epoll_udev.data.fd = udevMonDescriptor;
   
-  /*
+  if (epoll_ctl(fd_epoll, EPOLL_CTL_ADD, udevMonDescriptor, &ev_epoll_udev) < 0)
+  {
+    fprintf(stderr, "fail to add fd to epoll\n");
+  }
+// Polling loop for devices
+  const int numOfEvents=5;
+  while (1)
+  {
+    int fdcount;
+    epoll_event ev[numOfEvents];
+    int i = 0;
+    fdcount = epoll_wait(fd_epoll, ev, numOfEvents, -1);
+    if (fdcount < 0)
+    {
+      if (errno != EINTR)
+        fprintf(stderr, "error receiving uevent message: %m\n");
+      continue;
+    }
 
-  fd+1, &fds, NULL, NULL, &tv);
-*/
-    
-
+    for (i = 0; i < fdcount; i++)
+    {
+      if (ev[i].data.fd == udevMonDescriptor && ev[i].events & EPOLLIN)
+      {
+        pReportingDevice=udev_monitor_receive_device(pUDevMonitor);
+        if (pReportingDevice == NULL)
+          continue;
+        
+        printf("\n");
+        printf("Action: %s\n", udev_device_get_action(pReportingDevice)); // add or remove events
+        printf("   Node: %s\n", udev_device_get_devnode(pReportingDevice));
+        printf("   Subsystem: %s\n", udev_device_get_subsystem(pReportingDevice));
+        printf("   Devtype: %s\n", udev_device_get_devtype(pReportingDevice));
+      }
+    }
+  }
+  close(fd_epoll);
+  
   return 0;
 }
 //--------------------------------------------------------------------------------------------------
