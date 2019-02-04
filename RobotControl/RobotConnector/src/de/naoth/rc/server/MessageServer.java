@@ -4,6 +4,7 @@ import com.google.protobuf.ByteString;
 import de.naoth.rc.messages.Messages.CMD;
 import de.naoth.rc.messages.Messages.CMDArg;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
@@ -107,6 +108,10 @@ public class MessageServer extends AbstractMessageServer {
         } catch (SocketTimeoutException ex) {
             //e.printStackTrace(System.err);
             fireDisconnected(String.format("Connection timed out. Robot didn't respond after %d ms.", connectionTimeout));
+        } catch (ConnectException e) {
+            // connection rejected exception
+            Logger.getLogger(getClass().getName()).log(Level.WARNING, e.getLocalizedMessage());
+            fireDisconnected(e.getLocalizedMessage());
         } catch (IOException e) {
             e.printStackTrace(System.err);
             fireDisconnected(e.getLocalizedMessage());
