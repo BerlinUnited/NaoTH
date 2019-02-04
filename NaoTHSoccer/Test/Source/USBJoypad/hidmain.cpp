@@ -28,12 +28,12 @@ int main()
 
   sleepTime.tv_sec=0;
   sleepTime.tv_nsec=250000000;
-  gotEnough=50;
+  gotEnough=10;
   while (gotEnough > 0)
   {  // get as much as you want
     printf("%03i: ", gotEnough);
     usbJoypad.get(data);
-    std::cout << data << std::endl;
+    std::cout << data;
     gotEnough--;
     nanosleep(&sleepTime, &remainingTime);
   }

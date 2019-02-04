@@ -14,15 +14,10 @@
 #include <libudev.h>
 #include "configs.h"
 //--------------------------------------------------------------------------------------------------
-#define SUBSYSTEM_HIDRAW "hidraw"
-//Valid monitor sources identifiers are "udev" and "kernel"
-#define ID_UDEVMONITOR   "udev"
-//--------------------------------------------------------------------------------------------------
 class UDevInterface
 {
 private:
-  int isUDevInitialized;
-  int isUDevMonInitialized;
+  int udevError;
   struct udev* pUDev=nullptr;
   struct udev_enumerate* pDeviceEnum=nullptr;
   struct udev_list_entry* pDeviceListHead=nullptr;
@@ -35,13 +30,14 @@ private:
   struct udev_monitor* pUDevMonitor=nullptr;
   int udevMonitorDescriptor;
   
-  int initUDev();
-  int initMonitor();
+  int InitUDev();
+  int InitMonitor();
 public:
-  int GetDeviceDataFromHIDId(JoypadDefaultData& JoypadData, const char* const pHIDId);
-
-  int startMonitoring();
-  int stopMonitoring();
+  bool isDeviceStatusChanged();
+  bool isNodeExisting(int node);
+  int GetDeviceDataFromHIDId(JoypadDefaultData& rJoypadData, const char* const pHIDId);
+  int StartMonitoring();
+  int StopMonitoring();
   UDevInterface();
   ~UDevInterface();
 };

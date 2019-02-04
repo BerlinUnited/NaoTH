@@ -6,6 +6,7 @@
 #include <thread>
 #include <fstream>
 #include "USBJoypadData.h"
+#include "udevIf.h"
 //------------------------------------------------------------------------------
 class USBJoypad
 {
@@ -15,6 +16,7 @@ private:
   std::mutex dataMutex;
   std::thread readThread;
   naoth::USBJoypadData dataJoypad;
+  UDevInterface udevInterface;
 
 public:
   void get(naoth::USBJoypadData& dataJoypad);

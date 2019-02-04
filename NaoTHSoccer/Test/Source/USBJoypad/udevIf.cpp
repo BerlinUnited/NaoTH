@@ -9,38 +9,79 @@
 //
 //==================================================================================================
 //--------------------------------------------------------------------------------------------------
+#include <iostream>
 #include <unistd.h>
 #include <signal.h>
 #include "udevIf.h"
 //--------------------------------------------------------------------------------------------------
-int UDevInterface::initUDev()
+#define SUBSYSTEM_HIDRAW "hidraw"
+//Valid monitor sources identifiers are "udev" and "kernel"
+#define ID_MONITOR_UDEV  "udev"
+// UDev error codes
+#define UDEV_NOERROR    0x0000
+#define UDEV_NO_UDEV    0x0001
+#define UDEV_NO_MONITOR 0x0002
+#define UDEV_NO_FILTER  0x0004
+#define UDEV_UNKNOWN    0xFFFF
+//--------------------------------------------------------------------------------------------------
+int UDevInterface::InitUDev()
 {
   pUDev=udev_new();
-  if (pUDev == 0)
+  if (pUDev == NULL)
   {
+    udevError=UDEV_NO_UDEV;
+    std::cout << "[UDev] ERROR - unable to create udev object..." << std::endl;
+    std::cout << "[UDev] Can't connect to a joypad - exiting!" << std::endl;
     return -1;
   }
   return 0;
 }
 //--------------------------------------------------------------------------------------------------
-int UDevInterface::initMonitor()
+int UDevInterface::InitMonitor()
 {
-  int Result;
   // Setup a monitor on hidraw devices
   // Create new udev monitor and connect to a specified event source. 
   // Valid sources identifiers are "udev" and "kernel"
-  pUDevMonitor=udev_monitor_new_from_netlink(pUDev, ID_UDEVMONITOR);
+  pUDevMonitor=udev_monitor_new_from_netlink(pUDev, ID_MONITOR_UDEV);
   if (pUDevMonitor == NULL)
   {
-    printf("Error! Couldn't create udev monitor!\n");
+    udevError=UDEV_NO_MONITOR;
+    std::cout << "[UDev ERROR] Unable to create udev monitor..." << std::endl;
+    std::cout << "[UDev ERROR] Joypad may not work (no hotplug support...)!" << std::endl;
     return -1;
   }
-  Result=udev_monitor_filter_add_match_subsystem_devtype(pUDevMonitor, SUBSYSTEM_HIDRAW, NULL);
-  return 0;
+  int filterResult;
+  filterResult=udev_monitor_filter_add_match_subsystem_devtype(pUDevMonitor, SUBSYSTEM_HIDRAW, NULL);
+  if (filterResult < 0)
+  {
+    udevError=UDEV_NO_FILTER;
+    std::cout << "[UDev ERROR] Unable to create udev monitor..." << std::endl;
+    std::cout << "[UDev ERROR] Joypad may not work (no hotplug support...)!" << std::endl;
+  }
+  return filterResult;
 }
 //--------------------------------------------------------------------------------------------------
-int UDevInterface::GetDeviceDataFromHIDId(JoypadDefaultData& rJoypadData, 
-                                            const char* const pHIDId)
+bool UDevInterface::isDeviceStatusChanged()
+{
+  if (udevError != UDEV_NOERROR)
+  {
+    return false;
+  }
+  // more code
+  return true;
+}
+//--------------------------------------------------------------------------------------------------
+bool UDevInterface::isNodeExisting(int node)
+{
+  if (udevError != UDEV_NOERROR)
+  {
+    return false;
+  }
+  // more code
+  return false;
+}
+//--------------------------------------------------------------------------------------------------
+int UDevInterface::GetDeviceDataFromHIDId(JoypadDefaultData& rJoypadData, const char* const pHIDId)
 {
   int EnumResult;
   int EnumScanResult;
@@ -48,17 +89,26 @@ int UDevInterface::GetDeviceDataFromHIDId(JoypadDefaultData& rJoypadData,
   std::string Property1;
   std::string Property2;
   
-//  int handle;
-//  int BytesRead;
-//  unsigned char Buffer[100];
+  if (udevError != UDEV_NOERROR)
+  {
+    return -udevError;
+  }
   // Create a list of the devices in the 'hidraw' subsystem
   pDeviceEnum=udev_enumerate_new(pUDev);
   EnumResult=udev_enumerate_add_match_subsystem(pDeviceEnum, SUBSYSTEM_HIDRAW);
   EnumScanResult=udev_enumerate_scan_devices(pDeviceEnum);
   pDeviceListHead=udev_enumerate_get_list_entry(pDeviceEnum);
+
+//#define udev_list_entry_foreach(list_entry, first_entry) ...
+// using the macro raises an "intelli" warning (Visual Studio 2015 bug???)
+/*
   udev_list_entry_foreach(pDeviceListEntry, pDeviceListHead)
+/*/
+  for (pDeviceListEntry = pDeviceListHead; pDeviceListEntry != NULL;
+       pDeviceListEntry = udev_list_entry_get_next(pDeviceListEntry))
+//*/
   {
-// Get the filename of the /sys entry for the device and create
+// Get the filename of the /sys entry for the (hid) device and create
 // a udev_device object (pUdevDevice) representing it
     pDeviceName=udev_list_entry_get_name(pDeviceListEntry);
     pHIDeviceRaw=udev_device_new_from_syspath(pUDev, pDeviceName);
@@ -80,11 +130,15 @@ int UDevInterface::GetDeviceDataFromHIDId(JoypadDefaultData& rJoypadData,
   return 0;
 }
 //--------------------------------------------------------------------------------------------------
-int UDevInterface::startMonitoring()
+int UDevInterface::StartMonitoring()
 {
   int ResultEnable;
   int ResultSelect;
 
+  if ((udevError & UDEV_NO_MONITOR) > 0)
+  {
+    return -udevError;
+  }
   ResultEnable=udev_monitor_enable_receiving(pUDevMonitor);
   // Get the file descriptor for the monitor. This descriptor will get passed to select()
   udevMonitorDescriptor=udev_monitor_get_fd(pUDevMonitor);
@@ -160,7 +214,7 @@ int UDevInterface::startMonitoring()
   return 0;
 }
 //--------------------------------------------------------------------------------------------------
-int UDevInterface::stopMonitoring()
+int UDevInterface::StopMonitoring()
 {
   int RemoveResult;
 
@@ -169,26 +223,17 @@ int UDevInterface::stopMonitoring()
 }
 //--------------------------------------------------------------------------------------------------
 UDevInterface::UDevInterface()
-//: isUDevInitialized(0), isUDevMonInitialized(0)
+  : udevError(UDEV_NOERROR)
 {
-  initUDev();
-  initMonitor();
-  /*
-  if (InitUDev() < 0)
-  {
-    std::cout << "Couldn't create udev reference - exiting" << std::endl;
-    exit(-1);
-  }
-  if (InitMonitor() < 0)
-  {
-    std::cout << "Couldn't create udev monitor" << std::endl;
-    exit(-1);
-  }
-  */
+  std::cout << "UDev constructor called!" << std::endl;
+  InitUDev();
+  if (udevError == UDEV_NOERROR)
+    InitMonitor();
 }
 //--------------------------------------------------------------------------------------------------
 UDevInterface::~UDevInterface()
 {
+  std::cout << "UDev destructor called!" << std::endl;
   udev_monitor_unref(pUDevMonitor);
   udev_unref(pUDev);
 }

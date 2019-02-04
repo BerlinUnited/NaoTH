@@ -1,3 +1,4 @@
+======================================================================
 Visual Studio 2015 for NAO Standalone project (Linux)
 
 (Configuration) Properties -> Linker -> All Options ->
@@ -9,3 +10,12 @@ collections overview of a connected hid
 
 as root:
 cat /sys/kernel/debug/hid/0003\:0079\:0126.0003/rdesc | less
+
+======================================================================
+systemd Manual (udev functions)
+https://www.freedesktop.org/software/systemd/man/index.html
+
+======================================================================
+
+
+
