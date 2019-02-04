@@ -105,7 +105,7 @@ public class MessageServer extends AbstractMessageServer {
             }, 0, updateIntervall, TimeUnit.MILLISECONDS);
 
             this.fireConnected(this.address);
-        } catch (SocketTimeoutException ex) {
+        } catch (SocketTimeoutException e) {
             //e.printStackTrace(System.err);
             fireDisconnected(String.format("Connection timed out. Robot didn't respond after %d ms.", connectionTimeout));
         } catch (ConnectException e) {
@@ -113,7 +113,7 @@ public class MessageServer extends AbstractMessageServer {
             Logger.getLogger(getClass().getName()).log(Level.WARNING, e.getLocalizedMessage());
             fireDisconnected(e.getLocalizedMessage());
         } catch (IOException e) {
-            e.printStackTrace(System.err);
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Connection Failed.", e);
             fireDisconnected(e.getLocalizedMessage());
         }
         // firing the "disconnect" event could trigger an reconnect - check if the connection is still not established.
