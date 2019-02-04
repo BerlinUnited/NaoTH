@@ -12,11 +12,15 @@
 
 #include <map>
 #include <list>
-#include <sstream>
+#include <string>
+
+// TODO: maybe it can be made prinable in the future
+#include <ostream>
+//#include <Tools/DataStructures/Printable.h>
+
 #include <Tools/Debug/NaoTHAssert.h>
 #include <Tools/Math/Common.h>
-//#include <Tools/DataStructures/Printable.h>
-#include <Tools/DataConversion.h>
+
 #include <Representations/Infrastructure/Configuration.h>
 
 //NOTE: it would be goo for ParameterList to be naoth::Printable but it might lead to inheritance issues
@@ -89,6 +93,20 @@ protected:
       virtual T get() const { ASSERT(value != NULL); return Math::toDegrees(*value); }
   };
 
+  template<class T, class P>
+  class CallbackMemberParameter : public DefaultParameter<T> {
+  protected:
+      P* parent;
+      void (P::*callback)(T v);
+  public:
+    CallbackMemberParameter(const std::string& name, T* value, void (P::*callback)(T v),  P* parent)
+      : DefaultParameter<T>(name, value), 
+        parent(parent),
+        callback(callback)
+    {}
+    virtual void set(T v) { (parent->*callback)(v); DefaultParameter<T>::set(v); }
+  };
+
 protected:
   // ACHTUNG: never copy the content of the parameter list
   ParameterList(const ParameterList& /*obj*/) {}
@@ -113,6 +131,14 @@ protected:
   template<typename N>
   Parameter<N>& registerParameter(const std::string& parameterName, N& parameter) {
     return registerParameterT<DefaultParameter,N>(parameterName, parameter);
+  }
+
+  template<typename N, class P>
+  Parameter<N>& registerParameter(const std::string& parameterName, N& parameter, void (P::*callback)(N))
+  {
+    CallbackMemberParameter<N,P>* parameterWrapper = new CallbackMemberParameter<N,P>(parameterName, &parameter, callback, reinterpret_cast<P*> (this) );
+    parameters.push_back(parameterWrapper);
+    return *parameterWrapper;
   }
 
   // change some key characters, e.g. []
@@ -147,7 +173,43 @@ private:
 };
 
 
-#define PARAMETER_REGISTER(parameter) registerParameterT<DefaultParameter>(convertName(#parameter), parameter)
+#define PARAMETER_REGISTER(parameter, ...) registerParameter(convertName(#parameter), parameter, ##__VA_ARGS__)
 #define PARAMETER_ANGLE_REGISTER(parameter) registerParameterT<ParameterAngleDegrees>(convertName(#parameter), parameter)
+
+/*
+// NOTE: this is a example for the usage of the parameter list
+namespace ParameterListTest
+{
+class MyExampleParameters: public ParameterList
+{
+public: 
+  MyExampleParameters(): ParameterList("MyExampleParameters")
+  {
+    PARAMETER_REGISTER(boolParameter) = false;
+    PARAMETER_REGISTER(intParameter) = 42;
+    PARAMETER_REGISTER(doubleParameter) = 3.14;
+    PARAMETER_REGISTER(stringParameter) = "test"; // ms
+    PARAMETER_REGISTER(intParameter, &MyExampleParameters::setIntParameter) = 42;
+
+    PARAMETER_REGISTER(intParameter) = 1000;
+    PARAMETER_REGISTER(intParameterWithCallback, &MyExampleParameters::setIntParameter) = 1000;
+
+    // load from the file after registering all parameters
+    syncWithConfig();
+  }
+  virtual ~MyExampleParameters() {}
+
+  bool boolParameter;
+  int intParameter;
+  double doubleParameter;
+  std::string stringParameter;
+
+  int intParameterWithCallback;
+  inline void setIntParameter(int v) { std::cout << "old: " << intParameterWithCallback << " new: " << v << std::endl; }
+
+} myExampleParameters;
+};
+
+//*/
 
 #endif // _ParameterList_h_
