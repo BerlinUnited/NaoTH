@@ -114,11 +114,10 @@ protected:
 
   class Parameters: public ParameterList
   {
-    
   public: 
     Parameters(): ParameterList("CleanRoleDecision")
     {
-      PARAMETER_REGISTER(strikerBonusTime,) = 4000;
+      PARAMETER_REGISTER(strikerBonusTime) = 4000;
       PARAMETER_REGISTER(maxBallLostTime) = 1000;
       PARAMETER_REGISTER(strikerSelection) = 3;
       PARAMETER_REGISTER(strikerSelectionDiffThreshold) = 500; // ms
