@@ -34,7 +34,7 @@ DebugCommunicator::DebugCommunicator()
 DebugCommunicator::~DebugCommunicator()
 {
   disconnect();
-  internalClose();
+  closeServerSocket();
 }
 
 void DebugCommunicator::init(unsigned short portNum)
@@ -70,15 +70,6 @@ GError* DebugCommunicator::internalInit()
   if (err) { return err; }
 
   return NULL;
-}
-
-void DebugCommunicator::internalClose()
-{
-  if (serverSocket != NULL)
-  {
-    g_socket_close(serverSocket, NULL);
-    g_object_unref(serverSocket);
-  }
 }
 
 bool DebugCommunicator::sendMessage(gint32 id, const char* data, size_t size)
@@ -256,7 +247,11 @@ bool DebugCommunicator::connect(int timeout)
   // TODO: throw?
   // not initialized
   if (serverSocket == NULL) {
-    return false;
+    // re-establish server socket to accept new connections
+    init(port);
+    if (serverSocket == NULL) {
+      return false;
+    }
   }
 
   // prepare the server socket
@@ -301,12 +296,22 @@ bool DebugCommunicator::connect(int timeout)
     g_socket_set_timeout(connection, time_out_delta);
 
     // close the server socket and reject further connections
-    internalClose();
+    closeServerSocket();
 
     return true;
   }
 
   return false;
+}
+
+void DebugCommunicator::closeServerSocket()
+{
+  if (serverSocket != NULL)
+  {
+    g_socket_close(serverSocket, NULL);
+    g_object_unref(serverSocket);
+    serverSocket = NULL;
+  }
 }
 
 void DebugCommunicator::disconnect()
@@ -318,8 +323,6 @@ void DebugCommunicator::disconnect()
     connection = NULL;
     std::cerr << "[DebugServer:port " << port << "] " << "disconnected" << std::endl;
   }
-  // re-establish server socket to accept new connections
-  init(port);
 }
 
 bool DebugCommunicator::isConnected()
