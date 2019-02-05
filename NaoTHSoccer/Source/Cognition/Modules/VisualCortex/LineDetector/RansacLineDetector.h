@@ -39,14 +39,6 @@ public:
  virtual void execute();
 
 private:
-  std::vector<size_t> outliers;
-  bool ransac(Math::LineSegment& result, std::vector<size_t>& inliers, size_t& start_edgel, size_t& end_edgel);
-
-  int ransacEllipse(Ellipse& result);
-
-  bool ransacCircle(Vector2d& result, std::vector<size_t>& inliers);
-
-//private:
   class Parameters: public ParameterList
   {
   public:
@@ -102,6 +94,20 @@ private:
     } circle;
 
   } params;
+
+  // index vector on remaining outlier edgels
+  std::vector<size_t> outliers;
+
+
+private: // detectors
+
+  bool ransac(Math::LineSegment& result, std::vector<size_t>& inliers, size_t& start_edgel, size_t& end_edgel);
+
+  int ransacEllipse(Ellipse& result);
+
+  bool ransacCircle(Vector2d& result, std::vector<size_t>& inliers);
+
+private: // helper methods
 
   // calculate the simmilarity to the other edgel
   // returns a value [0,1], 0 - not simmilar, 1 - very simmilar

@@ -210,6 +210,7 @@ void RansacLineDetector::execute()
 
 bool RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& inliers, size_t& start_edgel, size_t& end_edgel)
 {
+  // not enough remaining edgels
   if(outliers.size() <= 2) {
     return false;
   }
@@ -228,12 +229,14 @@ bool RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& 
     const Edgel& a = getLineGraphPercept().edgelsOnField[i0];
     const Edgel& b = getLineGraphPercept().edgelsOnField[i1];
 
+    // prior check: edgels should have simmilar direction
     if(a.sim(b) < params.line.minDirectionSimilarity) {
       continue;
     }
 
     Math::Line model(a.point, b.point-a.point);
 
+    // prior check: edgel directions should fit the direction of the line (same check as for inliers)
     if(sim(model, a) < params.line.minDirectionSimilarity || sim(model, b) < params.line.minDirectionSimilarity) {
       continue;
     }
@@ -301,6 +304,8 @@ bool RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& 
       }
     }
 
+    // calculate angle variance
+    // TODO: This might penalize lines with lots of inliers!
     direction_var /= static_cast<double>(inliers.size());
     const double angle_var = 1 - direction_var.abs();
 
