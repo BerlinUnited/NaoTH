@@ -8,38 +8,27 @@ void RoleDecisionAssignmentDistance::execute()
     // skip "first frame"! (until i add myself to teamcomm)
     if(getTeamMessage().data.find(getPlayerInfo().playerNumber) == getTeamMessage().data.end()) { return; }
 
-    if(!(getPlayerInfo().robotState == PlayerInfo::playing || getGameData().gameState == GameData::playing)) {
-        // we're not in playing - use predefined roles
-        // TODO/NOTE: should we use the predefined roles only in the beginning of a half???
-        //            then we could "optimize" the wallking back of an goal ...
-
+    //
+    if(getPlayerInfo().robotState == PlayerInfo::initial)
+    {
+        // set predefined roles
         for (const auto& i : getTeamMessage().data) {
-            // set the default positions of the predefined role
             roleChange(i.first, params.assignment_role[i.first]);
         }
-    } else {
+    } else if (getPlayerInfo().robotState == PlayerInfo::playing) {
         // determine the best role for each player in the team context
         std::map<unsigned int, RM::StaticRole> new_roles;
 
-        // - more roles than players
-        // - same number of roles and players
-        // - more players than roles?!
-
-        // - prioritize roles
-        // - optimize role selection
-        //   - simple: the robot closest to the role's position, takes the role => not optimal!
-        //   - find an optimal solution?
-
         // the goalie is always goalie! (should never change)
         keepGoalie(new_roles);
+
         // determine new static role
-        //withPriority(new_roles);
-        withDistance(new_roles);
+        (this->*params.variantFunc)(new_roles);
 
         // apply new role for each player, if it was the same role for at least x times or for at least y seconds
-        // TODO: ..
-        roleChangeByCycle(new_roles);
-        // TODO: players, which doesn't get a (new) role, should the 'unknown' role assigned
+        (this->*params.changingFunc)(new_roles);
+
+        // players, which doesn't got a (new) role, gets the 'unknown' role assigned
         for (const auto& i : getTeamMessage().data) {
             if(new_roles.find(i.first) == new_roles.cend()) {
                 roleChange(i.first, RM::unknown);
@@ -66,6 +55,12 @@ void RoleDecisionAssignmentDistance::keepGoalie(std::map<unsigned int, RM::Stati
     if(goalie != getRoleDecisionModel().roles.end()) {
         new_roles[goalie->first] = RM::goalie;
     }
+}
+
+double RoleDecisionAssignmentDistance::getMinChangingTime(unsigned int player) {
+    return getTeamMessageStatistics().isStatisticsActive(player) ?
+                (getTeamMessageStatistics().getPlayer(player).avgMsgInterval/1000.0) :
+                params.minChangingTime;
 }
 
 void RoleDecisionAssignmentDistance::withPriority(std::map<unsigned int, RM::StaticRole>& new_roles) {
@@ -119,24 +114,28 @@ void RoleDecisionAssignmentDistance::withDistance(std::map<unsigned int, RM::Sta
         }
     }
 
+    // determine the optimal role assignment (smallest distance the team as a whole has to move)
     HungarianAlgorithm<int>::solve(m);
 
-    std::map<unsigned int, std::vector<RM::StaticRole>> double_assignment;
+    // assign optimal roles, with additional debugging output, if there's a non-optimal assignment
     for (size_t r = 0; r < rows; ++r) {
+        // retrieve assignment per player
         std::vector<RM::StaticRole> assignments;
         for (size_t c = 0; c < cols; ++c) {
             if(m(r,c) == 0.0) {
                 assignments.push_back(assignable_roles[c]);
             }
         }
-        if(assignments.size() == 0) {
-            // ???
+        // check, if we got one assignment
+        if(assignments.size() == 1) {
+            // assign optimal role
+            new_roles[assignable_player[r]] = assignments[0];
+        } else if (assignments.size() == 1) {
+            // DEBUG: print out non-assignments
             std::cout<<"NO ASSIGNMENT "<<assignable_player[r]<<"?"<<std::endl;
             std::cout<<"\n"<<m<<std::endl;
-        } else if (assignments.size() == 1) {
-            new_roles[assignable_player[r]] = assignments[0];
         } else {
-            //double_assignment[assignable_player[r]] = assignments;
+            // DEBUG: print out mupltiple-assignments
             std::cout<<"DOUBLE ASSIGNMENT "<<assignable_player[r]<<"?"<<std::endl;
             for(auto it : assignments) { std::cout<<RM::getName(it)<<", "; }
             std::cout<<"\n"<<m<<std::endl;
@@ -151,8 +150,9 @@ void RoleDecisionAssignmentDistance::roleChangeByCycle(std::map<unsigned int, RM
             // no change, reset change counter
             role_changes[n.first].first = 0;
         } else {
-            // role should change
+            // is role decision the same as before?
             if(role_changes[n.first].second == n.second) {
+                // yes - check if we reached the max. 'waiting' cycles before definitely change
                 if(role_changes[n.first].first >= params.minChangingCycles) {
                     // waited long enough and still want to change the role - do it!
                     roleChange(n.first, n.second);
@@ -161,7 +161,7 @@ void RoleDecisionAssignmentDistance::roleChangeByCycle(std::map<unsigned int, RM
                     role_changes[n.first].first++;
                 }
             } else {
-                // the role decision is different from the previous decision - reset change counter
+                // no - the role decision is different from the previous decision - reset change counter
                 role_changes[n.first].first = 0;
                 role_changes[n.first].second = n.second;
             }
@@ -171,11 +171,31 @@ void RoleDecisionAssignmentDistance::roleChangeByCycle(std::map<unsigned int, RM
 
 void RoleDecisionAssignmentDistance::roleChangeByTime(std::map<unsigned int, RM::StaticRole>& new_roles)
 {
-    for(const auto& a : new_roles) {
-        if(getRoleDecisionModel().roles[a.first].role == a.second) {
-            // TODO: update timestamp
+    for(const auto& it : new_roles)
+    {
+        // helper vars, to make the decision process clearer!
+        const auto& player = it.first;
+        const auto& role_new = it.second;
+        const auto& role_old = getRoleDecisionModel().roles[player].role;
+        const auto& role_last= role_changes[player].second;
+        const auto time = getFrameInfo().getTimeInSeconds();
+
+        if(role_old == role_new) {
+            // no change, reset change time
+            role_changes[player].first = time;
         } else {
-            // TODO: check if we wanted to change the role to the same role for the last x seconds
+            // is role decision the same as before?
+            if(role_last == role_new) {
+                // yes - check if we reached the max. 'waiting' time before definitely change
+                if((time - role_changes[player].first) >= getMinChangingTime(player)) {
+                    // waited long enough and still want to change the role - do it!
+                    roleChange(player, role_new);
+                }
+            } else {
+                // no - the role decision is different from the previous decision - reset change counter
+                role_changes[player].first = time;
+                role_changes[player].second = role_new;
+            }
         }
     }
 }
