@@ -2,7 +2,8 @@
 
 using namespace naoth;
 
-void WifiModeSetter::execute() {
+void WifiModeSetter::execute() 
+{
 
     // reset any old sound request
     getSoundPlayData().mute = true;
