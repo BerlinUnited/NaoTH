@@ -50,7 +50,7 @@ private:
         Parameters() : ParameterList("RoleDecisionAssignmentDistance")
         {
             PARAMETER_REGISTER(assignment) = "1:goalie;2:defender_left;3:forward_center;4:defender_right;5:midfielder_right;6:midfielder_left";
-            PARAMETER_REGISTER(active) = "forward_right;defender_left;defender_right;midfielder_center;forward_left";
+            PARAMETER_REGISTER(active) = "all";
             PARAMETER_REGISTER(minChangingCycles) = 30;
             PARAMETER_REGISTER(minChangingTime) = 1.0;
             // load from the file after registering all parameters
@@ -80,7 +80,7 @@ private:
         }
 
         void parseActive() {
-            if(active.compare("all")) {
+            if(active.compare("all") == 0) {
                 // user all static roles, but ignore the "unknown" one
                 for(int i = 1; i < RM::numOfStaticRoles; ++i)
                 {

@@ -1,4 +1,7 @@
 #include "RoleDecisionAssignmentDistance.h"
+#include "Eigen/Eigen"
+#include <limits>
+#include "Cognition/Modules/Modeling/RoleDecision/HungarianAlgorithm.h"
 
 void RoleDecisionAssignmentDistance::execute()
 {
@@ -30,7 +33,8 @@ void RoleDecisionAssignmentDistance::execute()
         // the goalie is always goalie! (should never change)
         keepGoalie(new_roles);
         // determine new static role
-        withPriority(new_roles);
+        //withPriority(new_roles);
+        withDistance(new_roles);
 
         // apply new role for each player, if it was the same role for at least x times or for at least y seconds
         // TODO: ..
@@ -86,8 +90,58 @@ void RoleDecisionAssignmentDistance::withPriority(std::map<unsigned int, RM::Sta
         }
     }
 }
-void RoleDecisionAssignmentDistance::withDistance(std::map<unsigned int, RM::StaticRole>& new_roles) {
-    //
+
+void RoleDecisionAssignmentDistance::withDistance(std::map<unsigned int, RM::StaticRole>& new_roles)
+{
+    // retrieve assignable roles
+    std::vector<RM::StaticRole> assignable_roles(params.active_roles);
+    // retrieve players, which doesn't already have a role and remove already assigned roles from the assignable vector
+    std::vector<unsigned int> assignable_player;
+    std::for_each(getTeamMessage().data.cbegin(), getTeamMessage().data.cend(), [&](const std::pair<unsigned int, TeamMessageData>& v)->void{
+        auto it = new_roles.find(v.first);
+        if(it == new_roles.cend()) { assignable_player.push_back(v.first); }
+        else { assignable_roles.erase(std::remove(assignable_roles.begin(), assignable_roles.end(), it->second)); }
+    });
+    // save the orginal dimensions
+    size_t rows = assignable_player.size(),
+           cols = assignable_roles.size(),
+           n = std::max(rows, cols);
+    // create a squared matrix with default values
+    Eigen::Array<int, Eigen::Dynamic, Eigen::Dynamic> m = Eigen::Array<int, Eigen::Dynamic, Eigen::Dynamic>::Constant(n,n,0);
+    // prepare distance matrix
+    for (size_t r = 0; r < rows; ++r) {
+        for (size_t c = 0; c < cols; ++c) {
+            auto role = assignable_roles[c];
+            auto role_pos = getRoleDecisionModel().getStaticRolePosition(role).home;
+            auto player = assignable_player[r];
+            auto player_pos = getTeamMessage().data.at(player).pose.translation;
+            m(r,c) = static_cast<int>((role_pos - player_pos).abs2());
+        }
+    }
+
+    HungarianAlgorithm<int>::solve(m);
+
+    std::map<unsigned int, std::vector<RM::StaticRole>> double_assignment;
+    for (size_t r = 0; r < rows; ++r) {
+        std::vector<RM::StaticRole> assignments;
+        for (size_t c = 0; c < cols; ++c) {
+            if(m(r,c) == 0.0) {
+                assignments.push_back(assignable_roles[c]);
+            }
+        }
+        if(assignments.size() == 0) {
+            // ???
+            std::cout<<"NO ASSIGNMENT "<<assignable_player[r]<<"?"<<std::endl;
+            std::cout<<"\n"<<m<<std::endl;
+        } else if (assignments.size() == 1) {
+            new_roles[assignable_player[r]] = assignments[0];
+        } else {
+            //double_assignment[assignable_player[r]] = assignments;
+            std::cout<<"DOUBLE ASSIGNMENT "<<assignable_player[r]<<"?"<<std::endl;
+            for(auto it : assignments) { std::cout<<RM::getName(it)<<", "; }
+            std::cout<<"\n"<<m<<std::endl;
+        }
+    }
 }
 
 void RoleDecisionAssignmentDistance::roleChangeByCycle(std::map<unsigned int, RM::StaticRole>& new_roles)
