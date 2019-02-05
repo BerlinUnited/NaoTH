@@ -85,7 +85,7 @@ JoypadDefaultData hidDefaultData[3]=
 #endif //WIN32
 //--------------------------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
-int GetJoypadConfigFromFile(JoypadDefaultData& rJoyData, const std::string hidId)
+int getJoypadConfigFromFile(JoypadDefaultData& rJoyData, const std::string hidId)
 {
   int isDataFound;
   int configFileNr;

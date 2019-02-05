@@ -41,3 +41,4 @@ behavior-ic.dat
 *.vcxproj.filters
 *.vcxproj*
 *.vcxproj.*
+/NaoTHSoccer/Test/Source/USBJoypad/sa_main.cpp

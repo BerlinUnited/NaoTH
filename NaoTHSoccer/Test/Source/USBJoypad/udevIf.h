@@ -11,6 +11,7 @@
 #define _UDEVIF_H
 //==================================================================================================
 //--------------------------------------------------------------------------------------------------
+#include <thread>
 #include <libudev.h>
 #include "configs.h"
 //--------------------------------------------------------------------------------------------------
@@ -20,7 +21,11 @@ private:
   struct udev* pUDev=nullptr;
   struct udev_monitor* pUDevMonitor=nullptr;
   int udevError;
-  int hidStatus;
+  
+  std::thread thrMon;
+  bool isMonitoring;
+  int deviceChangeStatus;
+//  int hidStatus;
 
 /*
   struct udev_enumerate* pDeviceEnum=nullptr;
@@ -34,13 +39,14 @@ private:
   const char* pHIDSysName=nullptr;
 */
 
-  int InitUDev();
-  int InitMonitor();
+  int initUDev();
+  int initMonitor();
+  int hotplugMonitor();
 public:
 //  bool isNodeExisting(int node);
 //  int GetDeviceDataFromHIDId(JoypadDefaultData& rJoypadData, const char* const pHIDId);
-  int StartMonitoring();
-  int StopMonitoring();
+  int startMonitoring();
+  int stopMonitoring();
   UDevInterface();
   ~UDevInterface();
 };

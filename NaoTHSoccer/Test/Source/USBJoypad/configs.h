@@ -23,7 +23,7 @@ struct JoypadDefaultData
 };
 //--------------------------------------------------------------------------------------------------
 //int GetVendorDataFromFile(const std::string ConfigFilePath,
-int GetJoypadConfigFromFile(JoypadDefaultData& rJoyDefaultData,
+int getJoypadConfigFromFile(JoypadDefaultData& rJoyDefaultData,
                             const std::string hidId);
 //--------------------------------------------------------------------------------------------------
 //==================================================================================================
