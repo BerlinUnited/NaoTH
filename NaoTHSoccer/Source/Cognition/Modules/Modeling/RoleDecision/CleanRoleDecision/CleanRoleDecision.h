@@ -125,39 +125,8 @@ protected:
       PARAMETER_REGISTER(strikerSelectionDiffThreshold) = 500; // ms
       PARAMETER_REGISTER(firstSecondStrikerMinBallDistance) = 500.0; // mm
       PARAMETER_REGISTER(useSecondStriker) = true;
-
-      // update function, if another striker selection function should be used
-      std::function<void(int,int)> funcS = [&](int, int n){
-          // select a selection function based on the given new parameter
-          switch (n) {
-              case 2:  strikerSelectionFunction = &CleanRoleDecision::strikerSelectionByTimeExceptGoalie; break;
-              case 3:  strikerSelectionFunction = &CleanRoleDecision::strikerSelectionByTimeExceptGoalieWithBallCompare; break;
-              case 1:
-              default: strikerSelectionFunction = &CleanRoleDecision::strikerSelectionByNumber; break;
-          }
-      };
-      PARAMETER_REGISTER_CB(strikerSelection, funcS) = 3;
-
-      // update function, if another radius function should be used
-      std::function<void(int,int)> funcR = [&](int, int n){
-          // select a selection function based on the given new parameter
-          switch (n) {
-              // simply uses a linear 'function f(x) = x*m + n' based on the distance to the ball of the second striker
-              case 2:  radius = [&](const Vector2d&, const Vector2d& second){
-                            return second.abs() * firstSecondStrikerLinBallDistanceM + firstSecondStrikerLinBallDistanceN;
-                        }; break;
-              // uses the firstSecondStrikerMinBallDistance or a linear 'function f(x) = x*m + n' based on the distance to the ball of the second striker to determine the min radius between first and second striker's ball
-              case 3:  radius = [&](const Vector2d&, const Vector2d& second){
-                            return std::max(firstSecondStrikerMinBallDistance, second.abs() * firstSecondStrikerLinBallDistanceM + firstSecondStrikerLinBallDistanceN);
-                        }; break;
-              // simply uses a firstSecondStrikerMinBallDistance as min radius between first and second striker's ball
-              case 1:
-              default: radius = [&](const Vector2d&, const Vector2d&){
-                            return firstSecondStrikerMinBallDistance;
-                        }; break;
-          }
-      };
-      PARAMETER_REGISTER_CB(strikerBallRadiusFunction, funcR) = 3;
+      PARAMETER_REGISTER(strikerSelection, &Parameters::setStrikerSelectionFunction) = 3;
+      PARAMETER_REGISTER(strikerBallRadiusFunction, &Parameters::setStrikerBallRadiusFunction) = 3;
       PARAMETER_REGISTER(firstSecondStrikerLinBallDistanceM) = 0.35;
       PARAMETER_REGISTER(firstSecondStrikerLinBallDistanceN) = -40.0;
 
@@ -179,8 +148,43 @@ protected:
     double firstSecondStrikerMinBallDistance;
     double firstSecondStrikerLinBallDistanceM;
     double firstSecondStrikerLinBallDistanceN;
-    
-    virtual ~Parameters() {}
+
+    /**
+     * @brief Update function, if another radius function should be used
+     * @param selection
+     */
+    void setStrikerBallRadiusFunction(int selection) {
+        // select a radius function based on the given new parameter
+        switch (selection) {
+            // simply uses a linear 'function f(x) = x*m + n' based on the distance to the ball of the second striker
+            case 2:  radius = [&](const Vector2d&, const Vector2d& second){
+                          return second.abs() * firstSecondStrikerLinBallDistanceM + firstSecondStrikerLinBallDistanceN;
+                      }; break;
+            // uses the firstSecondStrikerMinBallDistance or a linear 'function f(x) = x*m + n' based on the distance to the ball of the second striker to determine the min radius between first and second striker's ball
+            case 3:  radius = [&](const Vector2d&, const Vector2d& second){
+                          return std::max(firstSecondStrikerMinBallDistance, second.abs() * firstSecondStrikerLinBallDistanceM + firstSecondStrikerLinBallDistanceN);
+                      }; break;
+            // simply uses a firstSecondStrikerMinBallDistance as min radius between first and second striker's ball
+            case 1:
+            default: radius = [&](const Vector2d&, const Vector2d&){
+                          return firstSecondStrikerMinBallDistance;
+                      }; break;
+        }
+    }
+
+    /**
+     * @brief Update function, if another striker selection function should be used
+     * @param selection
+     */
+    void setStrikerSelectionFunction(int selection) {
+        // select a selection function based on the given new parameter
+        switch (selection) {
+            case 2:  strikerSelectionFunction = &CleanRoleDecision::strikerSelectionByTimeExceptGoalie; break;
+            case 3:  strikerSelectionFunction = &CleanRoleDecision::strikerSelectionByTimeExceptGoalieWithBallCompare; break;
+            case 1:
+            default: strikerSelectionFunction = &CleanRoleDecision::strikerSelectionByNumber; break;
+        }
+    }
   } parameters;
 
 private:
