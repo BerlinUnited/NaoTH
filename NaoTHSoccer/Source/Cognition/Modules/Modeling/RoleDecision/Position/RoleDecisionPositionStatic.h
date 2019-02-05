@@ -53,31 +53,19 @@ private:
             field_y = fi.yLength;
 
             // x,y home position; x,y own kickoff position; x,y opponent kickoff position
-            PARAMETER_REGISTER(goalie_str)              = "-4300,    0; -4300,   0;  -4300,    0";
-            PARAMETER_REGISTER(defender_left_str)       = "-2500, 1100; -3000, 1500; -3000, 1300";
-            PARAMETER_REGISTER(defender_center_str)     = "-2500,    0; -3000,    0; -3000,    0";
-            PARAMETER_REGISTER(defender_right_str)      = "-2500,-1100; -3000,-1500; -3000, -450";
-            PARAMETER_REGISTER(midfielder_left_str)     = "    0, 1500; -1500,  900; -2000,  500";
-            PARAMETER_REGISTER(midfielder_center_str)   = "    0,    0; -1500,    0; -2000,    0";
-            PARAMETER_REGISTER(midfielder_right_str)    = "    0,-1500; -1500, -900; -2000, -500";
-            PARAMETER_REGISTER(forward_left_str)        = " 1500, 1500;  -500, 1500; -1000,  750";
-            PARAMETER_REGISTER(forward_center_str)      = " 1500,    0;  -500,    0; -1000,  250";
-            PARAMETER_REGISTER(forward_right_str)       = " 1500,-1500;  -500,-1500; -1000, -750";
+            PARAMETER_REGISTER(goalie_str,           &Parameters::parsePositionGoalie)          = "-4300,    0; -4300,   0;  -4300,    0";
+            PARAMETER_REGISTER(defender_left_str,    &Parameters::parsePositionDefenderLeft)    = "-2500, 1100; -3000, 1500; -3000, 1300";
+            PARAMETER_REGISTER(defender_center_str,  &Parameters::parsePositionDefenderCenter)  = "-2500,    0; -3000,    0; -3000,    0";
+            PARAMETER_REGISTER(defender_right_str,   &Parameters::parsePositionDefenderRight)   = "-2500,-1100; -3000,-1500; -3000, -450";
+            PARAMETER_REGISTER(midfielder_left_str,  &Parameters::parsePositionMidfielderLeft)  = "    0, 1500; -1500,  900; -2000,  500";
+            PARAMETER_REGISTER(midfielder_center_str,&Parameters::parsePositionMidfielderCenter)= "    0,    0; -1500,    0; -2000,    0";
+            PARAMETER_REGISTER(midfielder_right_str, &Parameters::parsePositionMidfielderRight) = "    0,-1500; -1500, -900; -2000, -500";
+            PARAMETER_REGISTER(forward_left_str,     &Parameters::parsePositionForwardLeft)     = " 1500, 1500;  -500, 1500; -1000,  750";
+            PARAMETER_REGISTER(forward_center_str,   &Parameters::parsePositionForwardCenter)   = " 1500,    0;  -500,    0; -1000,  250";
+            PARAMETER_REGISTER(forward_right_str,    &Parameters::parsePositionForwardRight)    = " 1500,-1500;  -500,-1500; -1000, -750";
 
             // load from the file after registering all parameters
             syncWithConfig();
-
-            // after loading config, parse role positions
-            parsePosition(goalie_str, RM::goalie);
-            parsePosition(defender_left_str, RM::defender_left);
-            parsePosition(defender_center_str, RM::defender_center);
-            parsePosition(defender_right_str, RM::defender_right);
-            parsePosition(midfielder_left_str, RM::midfielder_left);
-            parsePosition(midfielder_center_str, RM::midfielder_center);
-            parsePosition(midfielder_right_str, RM::midfielder_right);
-            parsePosition(forward_left_str, RM::forward_left);
-            parsePosition(forward_center_str, RM::forward_center);
-            parsePosition(forward_right_str, RM::forward_right);
         }
 
         double base_x;
@@ -99,6 +87,16 @@ private:
 
         std::map<RM::StaticRole, RM::RolePosition> defaults;
 
+        void parsePositionGoalie(std::string pos)           { parsePosition(pos, RM::goalie); }
+        void parsePositionDefenderLeft(std::string pos)     { parsePosition(pos, RM::defender_left); }
+        void parsePositionDefenderCenter(std::string pos)   { parsePosition(pos, RM::defender_center); }
+        void parsePositionDefenderRight(std::string pos)    { parsePosition(pos, RM::defender_right); }
+        void parsePositionMidfielderLeft(std::string pos)   { parsePosition(pos, RM::midfielder_left); }
+        void parsePositionMidfielderCenter(std::string pos) { parsePosition(pos, RM::midfielder_center); }
+        void parsePositionMidfielderRight(std::string pos)  { parsePosition(pos, RM::midfielder_right); }
+        void parsePositionForwardLeft(std::string pos)      { parsePosition(pos, RM::forward_left); }
+        void parsePositionForwardCenter(std::string pos)    { parsePosition(pos, RM::forward_center); }
+        void parsePositionForwardRight(std::string pos)     { parsePosition(pos, RM::forward_right); }
         void parsePosition(std::string& positions, RM::StaticRole role)
         {
             auto& r = defaults[role];

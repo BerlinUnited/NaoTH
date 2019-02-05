@@ -48,19 +48,16 @@ private:
     public:
         Parameters(): ParameterList("RoleDecisionAssignmentStatic")
         {
-            PARAMETER_REGISTER(assignment) = "1:goalie;2:defender_left;3:forward_center;4:defender_right;5:midfielder_left;6:midfielder_right";
+            PARAMETER_REGISTER(assignment, &Parameters::parseAssignment) = "1:goalie;2:defender_left;3:forward_center;4:defender_right;5:midfielder_left;6:midfielder_right";
             // load from the file after registering all parameters
             syncWithConfig();
-            // after loading config, parse it
-            parseAssignment();
         }
-        virtual ~Parameters() {}
 
         std::string assignment;
         std::map<unsigned int, RoleDecisionModel::StaticRole> assignment_role;
 
     private:
-        void parseAssignment() {
+        void parseAssignment(std::string assignment) {
             std::vector<std::string> parts = StringTools::split(assignment, ';');
             for(const std::string& part : parts) {
                 std::vector<std::string> assign_part = StringTools::split(part, ':');

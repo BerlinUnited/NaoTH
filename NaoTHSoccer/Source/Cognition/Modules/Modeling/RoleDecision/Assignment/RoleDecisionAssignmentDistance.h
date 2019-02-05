@@ -49,17 +49,14 @@ private:
     public:
         Parameters() : ParameterList("RoleDecisionAssignmentDistance")
         {
-            PARAMETER_REGISTER(assignment) = "1:goalie;2:defender_left;3:forward_center;4:defender_right;5:midfielder_right;6:midfielder_left";
-            PARAMETER_REGISTER(active) = "all";
+            PARAMETER_REGISTER(assignment, &Parameters::parseAssignment) = "1:goalie;2:defender_left;3:forward_center;4:defender_right;5:midfielder_right;6:midfielder_left";
+            PARAMETER_REGISTER(active, &Parameters::parseActive) = "all";
             PARAMETER_REGISTER(minChangingCycles) = 30;
             PARAMETER_REGISTER(minChangingTime) = 1.0;
+
             // load from the file after registering all parameters
             syncWithConfig();
-            // after loading config, parse it
-            parseAssignment();
-            parseActive();
         }
-        virtual ~Parameters() {}
 
         int minChangingCycles;
         double minChangingTime;
@@ -70,8 +67,8 @@ private:
         std::string active;
         std::vector<RM::StaticRole> active_roles;
     private:
-        void parseAssignment() {
-            std::vector<std::string> parts = StringTools::split(assignment, ';');
+        void parseAssignment(std::string assign) {
+            std::vector<std::string> parts = StringTools::split(assign, ';');
             for(const std::string& part : parts) {
                 std::vector<std::string> assign_part = StringTools::split(part, ':');
                 ASSERT(assign_part.size() == 2);
@@ -79,7 +76,7 @@ private:
             }
         }
 
-        void parseActive() {
+        void parseActive(std::string active) {
             if(active.compare("all") == 0) {
                 // user all static roles, but ignore the "unknown" one
                 for(int i = 1; i < RM::numOfStaticRoles; ++i)
