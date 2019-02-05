@@ -6,7 +6,9 @@
 //
 
 #include "DebugModify.h"
+
 #include <DebugCommunication/DebugCommandManager.h>
+#include <Tools/DataConversion.h>
 
 using namespace naoth;
 

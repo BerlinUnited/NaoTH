@@ -55,9 +55,7 @@ class BodyStateProvider : public BodyStateProviderBase
 public:
 
   BodyStateProvider();
-  virtual ~BodyStateProvider(){
-    getDebugParameterList().remove(&theParams);
-  }
+  virtual ~BodyStateProvider();
 
   void execute();
 
