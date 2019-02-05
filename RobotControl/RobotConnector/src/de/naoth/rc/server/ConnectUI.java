@@ -165,24 +165,10 @@ public class ConnectUI extends javax.swing.JPanel
   }//GEN-LAST:event_txtHostActionPerformed
 
   private void btConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btConnectActionPerformed
-    
-    try
-    {
-      this.messageServer.connect(txtHost.getText(), Integer.parseInt(txtPort.getText()));
-      this.properties.put("hostname", txtHost.getText());
-      this.properties.put("port", txtPort.getText());
+    if(this.messageServer.connect(txtHost.getText(), Integer.parseInt(txtPort.getText()))) {
+        this.properties.put("hostname", txtHost.getText());
+        this.properties.put("port", txtPort.getText());
     }
-    catch (IOException ex)
-    {
-      /*Logger.getLogger(ImageViewer.class.getName()).log(Level.SEVERE,
-        "Etablishing connection failed", ex);
-			*/
-      
-      JOptionPane.showMessageDialog(this, 
-        "Etablishing connection failed: " + ex.getLocalizedMessage(), "ERROR",
-        JOptionPane.ERROR_MESSAGE);
-    }
-    
   }//GEN-LAST:event_btConnectActionPerformed
 
   private void btDisconnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btDisconnectActionPerformed
@@ -196,30 +182,22 @@ private void btAutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:
   boolean wasConnected = false;
   for(int currentPort = 5400; !wasConnected && currentPort <= 5403; currentPort++ )
   {
-    try
-    {
-      txtPort.setText("" + currentPort);
-      this.messageServer.connect(host, currentPort);
-      wasConnected = true;
-    }
-    catch (IOException ex)
-    {
-      showConnected(false);
-    }
+      if(this.messageServer.connect(host, currentPort)) {
+          txtPort.setText("" + currentPort);
+          wasConnected = true;
+      } else {
+          showConnected(false);
+      }
   }
   
   for(int currentPort = 5500; !wasConnected && currentPort <= 5503; currentPort++ )
   {
-    try
-    {
-      txtPort.setText("" + currentPort);
-      this.messageServer.connect(host, currentPort);
-      wasConnected = true;
-    }
-    catch (IOException ex)
-    {
-      showConnected(false);
-    }
+      if(this.messageServer.connect(host, currentPort)) {
+        txtPort.setText("" + currentPort);
+        wasConnected = true;
+      } else {
+          showConnected(false);
+      }
   }
   
   if(wasConnected)

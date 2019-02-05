@@ -12,7 +12,7 @@
 #include <string> // contains memcpy
 
 #include "Tools/Math/Common.h"
-#include "Tools/Math/Vector3.h"
+#include "Tools/Math/Vector2.h"
 
 #include "Tools/DataStructures/Serializer.h"
 #include "Tools/DataStructures/Printable.h"
@@ -190,6 +190,12 @@ public: // function members
   { 
     return x >= 0 && x < (int)cameraInfo.resolutionWidth && 
            y >= 0 && y < (int)cameraInfo.resolutionHeight;
+  }
+
+  inline bool isInside(const Vector2i& p) const
+  { 
+    return p.x >= 0 && p.x < (int)cameraInfo.resolutionWidth && 
+           p.y >= 0 && p.y < (int)cameraInfo.resolutionHeight;
   }
 
   virtual void print(std::ostream& stream) const;

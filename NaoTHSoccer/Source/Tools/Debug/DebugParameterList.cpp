@@ -35,6 +35,19 @@ void DebugParameterList::executeDebugCommand(
     {
       const std::string& name = iter->second;
 
+      ParameterMap::const_iterator itParamList = paramlists.find(name);
+
+      // print all bools as true/false instead of 1/0
+      outstream << std::boolalpha; 
+      
+      // print only the registered parameters
+      itParamList->second->print(outstream);
+
+      // reset the stream to printing 1/0 insteat 'true'/'false'
+      outstream << std::noboolalpha;
+
+      /*
+      // print all values from the config
       naoth::Configuration& config =  naoth::Platform::getInstance().theConfiguration;
       set<string> keys = config.getKeys(name);
 
@@ -43,6 +56,7 @@ void DebugParameterList::executeDebugCommand(
         string val = config.getRawValue(name, *it);
         outstream << *it << "=" << val << std::endl;
       }
+      */
     }
   }
   else if( command == "ParameterList:set" )

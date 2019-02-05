@@ -21,12 +21,23 @@ class PathSymbols: public PathSymbolsBase
 {
 public:
 
-  PathSymbols() {}
+  PathSymbols() {
+    theInstance = this;
+  }
   ~PathSymbols() {}
 
   void registerSymbols(xabsl::Engine& engine);
 
   virtual void execute();
+
+private:
+  static PathSymbols* theInstance;
+
+  static void setPathRoutine(int id);
+  static int getPathRoutine();
+
+  static void setPathRoutine2018(int id);
+  static int getPathRoutine2018();
 };
 
 #endif /* _PathSymbols_H_ */

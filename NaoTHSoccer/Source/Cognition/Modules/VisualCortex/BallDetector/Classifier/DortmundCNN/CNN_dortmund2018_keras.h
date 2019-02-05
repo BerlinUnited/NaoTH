@@ -15,6 +15,7 @@ public:
   ~CNN_dortmund2018_keras(){}
 
 	bool classify(const BallCandidates::Patch& p);
+  bool classify(const BallCandidates::PatchYUVClassified& p);
   virtual float getBallConfidence();
   virtual float getNoballConfidence();
 

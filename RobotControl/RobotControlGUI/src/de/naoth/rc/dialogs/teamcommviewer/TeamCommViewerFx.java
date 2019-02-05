@@ -2,6 +2,10 @@ package de.naoth.rc.dialogs.teamcommviewer;
 
 import de.naoth.rc.Helper;
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.components.gamecontroller.GameControllerEventListener;
+import de.naoth.rc.components.gamecontroller.GameControllerManager;
+import de.naoth.rc.components.gamecontroller.event.GameControllerConnectionEvent;
+import de.naoth.rc.components.gamecontroller.event.GameControllerDataEvent;
 import de.naoth.rc.components.teamcomm.TeamCommManager;
 import de.naoth.rc.components.teamcomm.TeamCommMessage;
 import de.naoth.rc.components.teamcommviewer.RobotStatus;
@@ -38,7 +42,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -53,6 +56,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -84,6 +88,8 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         public static DrawingEventManager drawingEventManager;
         @InjectPlugin
         public static TeamCommManager teamcommManager;
+        @InjectPlugin
+        public static GameControllerManager gamecontroller;
     }
 
     private Timer timerDrawRobots;
@@ -140,6 +146,9 @@ public class TeamCommViewerFx extends AbstractJFXDialog
     @FXML
     private ColorPicker teamColorPicker;
     
+    @FXML
+    private Label gamecontrollerState;
+    
     private final SimpleBooleanProperty recording = new SimpleBooleanProperty(false);
     private final SimpleStringProperty recordingFile = new SimpleStringProperty("<not set>");
     private final FileChooser fileChooser = new FileChooser();
@@ -193,7 +202,7 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
         
         btnRecord.setGraphic(new ImageView(new Image("/de/naoth/rc/res/media-record.png")));
-        btnRecord.tooltipProperty().get().textProperty().bind(Bindings.when(recording).then(recordingFile).otherwise("Start new recording"));
+        btnRecord.tooltipProperty().get().textProperty().bind(Bindings.when(recording).then(recordingFile).otherwise("Start new teamcomm recording"));
         
         btnStop.setGraphic(new ImageView(new Image("/toolbarButtonGraphics/media/Stop24.gif", 16, 16, true, true)));
         btnStop.disableProperty().bind(recording.not());
@@ -215,38 +224,9 @@ public class TeamCommViewerFx extends AbstractJFXDialog
             }
         });
         
-        // handle warning
-        robots.addListener((ListChangeListener.Change<? extends RobotStatus> c) -> {
-            while (c.next()) {
-                if(c.wasAdded() && !multipleNumberWarning.isVisible()) {
-                    // check if warning needs to be shown: two robots with same team & playerNumber
-                    for (int i = 0; i < robots.size(); i++) {
-                        for (int j = i+1; j < robots.size(); j++) {
-                            RobotStatus ri = robots.get(i);
-                            RobotStatus rj = robots.get(j);
-                            if(ri.teamNumProperty().get() == rj.teamNumProperty().get() && ri.playerNumProperty().get() == rj.playerNumProperty().get()) {
-                                multipleNumberWarning.setText("The robots " + ri.getIpAddress() + " and " + rj.getIpAddress() + " have the same player number!\n"
-                                    + "There might be more robots with identical player numbers");
-                                multipleNumberWarning.setVisible(true);
-                                return;
-                            }  
-                        }
-                    }
-                } else if(c.wasRemoved() && multipleNumberWarning.isVisible()) {
-                    // check if warning can be hidden: no two robots with same team & playerNumber
-                    for (int i = 0; i < robots.size(); i++) {
-                        for (int j = i+1; j < robots.size(); j++) {
-                            RobotStatus ri = robots.get(i);
-                            RobotStatus rj = robots.get(j);
-                            if(ri.teamNumProperty().get() == rj.teamNumProperty().get() && ri.playerNumProperty().get() == rj.playerNumProperty().get()) {
-                                return;
-                            }
-                        }
-                    }
-                    multipleNumberWarning.setVisible(false);
-                }
-            }
-        });
+        // handle gamecontroller infos
+        Plugin.gamecontroller.addGameListener(new GameControllerUpdater());
+        gamecontrollerState.setTooltip(new Tooltip("GameController info"));
     } // afterInit()
     
     /**
@@ -343,6 +323,29 @@ public class TeamCommViewerFx extends AbstractJFXDialog
     }
     
     /**
+     * Checks, whether the available playernumbers are unique.
+     * If not, a warning with the ip adresses of the robots with the same playernumber is shown.
+     */
+    private void checkPlayerNumbers() {
+        String warningText = "";
+        HashMap<String, RobotStatus> numbers = new HashMap<>();
+        for (RobotStatus status : robots) {
+            String key = status.getTeamNum() + "_" + status.getPlayerNum();
+            if(!numbers.containsKey(key)) {
+                numbers.put(key, status);
+            } else {
+                warningText += "\t" + status.getPlayerNum() + " -> " + status.getIpAddress() + " / " + numbers.get(key).getIpAddress() + "\n";
+            }
+        }
+        if(!warningText.isEmpty()) {
+            multipleNumberWarning.setText("The following robots have the same player number:\n" + warningText);
+            multipleNumberWarning.setVisible(true);
+        } else {
+            multipleNumberWarning.setVisible(false);
+        }
+    }
+    
+    /**
      * Stops the teamcomm listener and logging thread - if currently running.
      */
     private void stopLogging() {
@@ -408,6 +411,7 @@ public class TeamCommViewerFx extends AbstractJFXDialog
             }
             // update fx ui
             Platform.runLater(() -> {
+                multipleNumberWarning.setVisible(false);
                 robots.clear();
                 statusTable.refresh();
             });
@@ -684,8 +688,11 @@ public class TeamCommViewerFx extends AbstractJFXDialog
                         if (robotStatus == null) {
                             robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address, message.isOpponent(), true);
                             robotStatus.robotColor.set(message.isOpponent() ? javafx.scene.paint.Color.RED : javafx.scene.paint.Color.BLUE);
+                            robotStatus.playerNumProperty().addListener((o) -> { checkPlayerNumbers(); }); // re-check player numbers if the number changes
                             robotStatus.updateStatus(message.timestamp, message.message); // must be updated before adding to list!
                             robots.add(robotStatus);
+                            // after adding robot to list, check if playernumber is already used!
+                            checkPlayerNumbers();
                         } else {
                             // updates the robotStatus
                             robotStatus.updateStatus(message.timestamp, message.message);
@@ -759,6 +766,77 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         @Override
         public Integer fromString(String value) {
             return value.isEmpty() ? 0 : super.fromString(value);
+        }
+    }
+    
+    /**
+     * Listener class for handling gamecontroller events.
+     */
+    class GameControllerUpdater implements GameControllerEventListener
+    {
+        @Override
+        public void connectionChanged(GameControllerConnectionEvent e) {
+            // remove shown gamecontroller infos
+            if(e.state == GameControllerConnectionEvent.State.DISCONNECTED || e.state == GameControllerConnectionEvent.State.TIMEOUT) {
+                setLabelText("");
+            }
+        }
+
+        @Override
+        public void newGameData(GameControllerDataEvent e) {
+            // update gamecontroller infos
+            String display = "";
+            switch(e.data.gameState) {
+                case 0: display += "INITIAL"; break;
+                case 1: display += "READY: " + e.data.secondaryTime; break;
+                case 2: display += "SET"; break;
+                case 3: display += "PLAYING: " + formatSeconds(e.data.secsRemaining); break;
+                case 4: display += "FINISHED: " + formatSeconds(e.data.secondaryTime); break;
+                default: display += "UNKNOWN"; break;
+            }
+            
+            // determine the team who as kickoff/freekick
+            int kickingTeam = e.data.kickingTeam + 10000; // use the port for comparison
+            String fk_team = kickingTeam == (int)ownPort.getValue() ? "OWN" : "OPP";
+            
+            switch(e.data.setPlay) {
+                case 1: display += "; GOAL_FREE_KICK_"    + fk_team + ": " + e.data.secondaryTime; break;
+                case 2: display += "; PUSHING_FREE_KICK_" + fk_team + ": " + e.data.secondaryTime; break;
+            }
+            
+            setLabelText(display);
+        }
+        
+        /**
+         * Sets the icon of the gamecontroller label.
+         * 
+         * @param icon 
+         */
+        private void setLabelIcon(String icon) {
+            Platform.runLater(() -> {
+                gamecontrollerState.setGraphic(new ImageView(new Image(icon)));
+            });
+        }
+        
+        /**
+         * Sets the string of the gamecontroller label.
+         * 
+         * @param txt the string to display as gamecontroller info
+         */
+        private void setLabelText(String txt) {
+            Platform.runLater(() -> {
+                gamecontrollerState.setText(txt);
+            });
+        }
+        
+        /**
+         * Formats the given seconds to 'mm:ss'.
+         * 
+         * @param seconds the seconds which should be formatted.
+         * @return the formated seconds as string
+         */
+        private String formatSeconds(int seconds) {
+            return String.format("%2d:%02d", seconds/60, seconds%60);
         }
     }
 }

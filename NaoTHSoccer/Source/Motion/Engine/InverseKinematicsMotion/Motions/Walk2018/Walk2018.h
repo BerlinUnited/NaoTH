@@ -73,6 +73,8 @@ BEGIN_DECLARE_MODULE(Walk2018)
   REQUIRE(GyrometerData)
   REQUIRE(KinematicChainSensor)
 
+  REQUIRE(Walk2018Parameters)
+
   PROVIDE(MotionLock)
   PROVIDE(MotionStatus)
   PROVIDE(MotorJointData)
@@ -106,9 +108,7 @@ private:
   ModuleCreator<TorsoRotationStabilizer>*     theTorsoRotationStabilizer;
   ModuleCreator<FeetStabilizer>*              theFeetStabilizer;
 
-  const IKParameters::Walk& parameters() const {
-    return getEngine().getParameters().walk;
-  }
+  const GeneralParameters& parameters;
 
 private:
   void calculateTargetCoMFeetPose();
@@ -118,15 +118,21 @@ private:
 private:
   // TODO: check if really required and correctly used in updateMotionStatus
   //       Options: deletion or moving into a helper header
+  //       some similar function is used by ZMPPlanner2018
   Pose3D calculateStableCoMByFeet(InverseKinematic::FeetPose feet, double pitch) const
   {
-    feet.left.translate(parameters().general.hipOffsetX, 0, 0);
-    feet.right.translate(parameters().general.hipOffsetX, 0, 0);
+    if(getWalk2018Parameters().zmpPlanner2018Params.newZMP_ON) {
+      feet.left.translate(getWalk2018Parameters().zmpPlanner2018Params.bezierZMP.offsetX, 0, 0);
+      feet.right.translate(getWalk2018Parameters().zmpPlanner2018Params.bezierZMP.offsetX, 0, 0);
+    } else {
+      feet.left.translate(getWalk2018Parameters().zmpPlanner2018Params.simpleZMP.offsetX, 0, 0);
+      feet.right.translate(getWalk2018Parameters().zmpPlanner2018Params.simpleZMP.offsetX, 0, 0);
+    }
 
     Pose3D com;
     com.rotation = calculateBodyRotation(feet, pitch);
     com.translation = (feet.left.translation + feet.right.translation) * 0.5;
-    com.translation.z = parameters().hip.comHeight;
+    com.translation.z = getWalk2018Parameters().zmpPlanner2018Params.comHeight;
 
     return com;
   }

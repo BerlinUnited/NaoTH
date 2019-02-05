@@ -6,10 +6,8 @@
  *
  */
 
-#include <string>
-
-#include <PlatformInterface/Platform.h>
 #include "ParameterList.h"
+#include <PlatformInterface/Platform.h>
 
 void ParameterList::syncWithConfig()
 {
@@ -37,12 +35,9 @@ std::string ParameterList::convertName(std::string name)
 {
   for( std::string::iterator i=name.begin(); i!= name.end();  )
   {
-    if ( *i == '[' || *i == ']' )
-    {
+    if ( *i == '[' || *i == ']' ) {
       i = name.erase(i);
-    }
-    else
-    {
+    } else {
       ++i;
     }
   }

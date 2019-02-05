@@ -41,7 +41,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
@@ -165,9 +164,9 @@ public class BehaviorViewer extends AbstractDialog
     String history = Plugin.parent.getConfig().getProperty(this.getClass().getName()+".history", "{}");
     HashMap<String, List<String>> l = (new Gson()).fromJson(history, HashMap.class);
     // set the symbol watch history menu
-    for (Map.Entry<String, List<String>> entry : l.entrySet()) {
-        symbolsToWatchHistory.put(entry.getKey(), new HashSet(entry.getValue()));
-        JMenuItem watchEntry = new JMenuItem(entry.getKey());
+    l.keySet().stream().sorted().forEach((k) -> {
+        symbolsToWatchHistory.put(k, new HashSet(l.get(k)));
+        JMenuItem watchEntry = new JMenuItem(k);
         watchEntry.addActionListener((e) -> {
             // clear watches, before setting a stored configuration
             symbolsToWatch.clear();
@@ -176,9 +175,9 @@ public class BehaviorViewer extends AbstractDialog
             });
         });
         // list the stored watches in the menu's tooltip
-        watchEntry.setToolTipText("<html>"+entry.getValue().stream().map((t) -> { return "<li>"+t+"</li>"; }).collect(Collectors.joining())+"</html>");
+        watchEntry.setToolTipText("<html>"+l.get(k).stream().map((t) -> { return "<li>"+t+"</li>"; }).collect(Collectors.joining())+"</html>");
         popupMenu.add(watchEntry);
-    }
+    });
 
     // show popupmenu to trigger the height calculation
     popupMenu.setVisible(true);
@@ -289,31 +288,28 @@ public class BehaviorViewer extends AbstractDialog
       // input and output symbols
       StringBuffer inputBuffer = new StringBuffer();
       StringBuffer outputBuffer = new StringBuffer();
+      StringBuffer unknownBuffer = new StringBuffer();
 
-      for(String name: symbolsToWatch)
-      {
-        Symbol symbol = frame.getSymbolByName(name);
-        // TODO: error treatment
-        if(symbol == null) {
-            return;
-        }
+        for (String name : symbolsToWatch) {
+            Symbol symbol = frame.getSymbolByName(name);
+            if (symbol == null) {
+                unknownBuffer.append("~ ")
+                             .append(name)
+                             .append("\n");
+            } else {
+                XABSLBehaviorFrame.SymbolIOType type = frame.getSymbolIOType(name);
 
-        XABSLBehaviorFrame.SymbolIOType type = frame.getSymbolIOType(name);
-        
-        if(type == XABSLBehaviorFrame.SymbolIOType.input)
-        {
-          inputBuffer.append("> ")
-                     .append(symbol)
-                     .append("\n");
-        }
-        else if(type == XABSLBehaviorFrame.SymbolIOType.output)
-        {
-          inputBuffer.append("< ")
-                     .append(symbol)
-                     .append("\n");
-        }
-          
-      }//end for
+                if (type == XABSLBehaviorFrame.SymbolIOType.input) {
+                    inputBuffer.append("> ")
+                        .append(symbol)
+                        .append("\n");
+                } else if (type == XABSLBehaviorFrame.SymbolIOType.output) {
+                    outputBuffer.append("< ")
+                        .append(symbol)
+                        .append("\n");
+                }
+            }
+        }//end for
       
       if(inputBuffer.length() > 0)
       {
@@ -326,7 +322,13 @@ public class BehaviorViewer extends AbstractDialog
         watchBuffer.append("-- output symbols --\n");
         watchBuffer.append(outputBuffer).append("\n");
       }
-
+      
+      if(unknownBuffer.length() > 0)
+      {
+        watchBuffer.append("-- unknown symbols --\n");
+        watchBuffer.append(unknownBuffer).append("\n");
+      }
+      
       this.symbolsWatchTextPanel.setText(watchBuffer.toString());
 
       // options

@@ -20,6 +20,11 @@ InverseKinematicsMotionEngine::InverseKinematicsMotionEngine()
     getDebugParameterList().add(&theParameters);
 }
 
+InverseKinematicsMotionEngine::~InverseKinematicsMotionEngine()
+{
+    getDebugParameterList().remove(&theParameters);
+}
+
 Pose3D InverseKinematicsMotionEngine::getLeftFootFromKinematicChain(const KinematicChain& kc) const
 {
   Pose3D p = kc.theLinks[KinematicChain::LFoot].M;
@@ -389,44 +394,6 @@ void InverseKinematicsMotionEngine::controlCenterOfMassCool(
   //std::cout << i << std::endl;
 
 }//end controlCenterOfMassCool
-
-
-void InverseKinematicsMotionEngine::feetStabilize(
-  const InertialModel& theInertialModel,
-  const GyrometerData& theGyrometerData,
-  double (&position)[naoth::JointData::numOfJoint])
-{
-  const Vector2d& inertial = theInertialModel.orientation;
-  const Vector3d& gyro = theGyrometerData.data;
-
-  
-
-  // HACK: small filter...
-  static Vector3d lastGyro = gyro;
-  Vector3d filteredGyro = (lastGyro+gyro)*0.5;
-
-  Vector2d weight;
-  weight.x = 
-      getParameters().walk.stabilization.stabilizeFeetP.x * inertial.x
-    + getParameters().walk.stabilization.stabilizeFeetD.x * filteredGyro.x;
-
-  weight.y = 
-      getParameters().walk.stabilization.stabilizeFeetP.y * inertial.y
-    + getParameters().walk.stabilization.stabilizeFeetD.y * filteredGyro.y;
-
-
-  // X axis
-  //position[JointData::RHipRoll] -= weightX;
-  position[JointData::RAnkleRoll] += weight.x;
-  //position[JointData::LHipRoll] -= weightX;
-  position[JointData::LAnkleRoll] += weight.x;
-
-  // Y axis
-  position[JointData::RAnklePitch] += weight.y;
-  position[JointData::LAnklePitch] += weight.y;
-
-  lastGyro = gyro;
-}//end feetStabilize
 
 bool InverseKinematicsMotionEngine::rotationStabilizeRC16(
   const Vector2d& inertial,

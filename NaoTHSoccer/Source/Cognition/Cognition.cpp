@@ -36,7 +36,7 @@
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
 #include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
 #include "Modules/Infrastructure/Camera/AdaptiveAutoExposure.h"
-#include "Modules/Infrastructure/WhistleDetector/WhistleDetectorConfigSetter.h"
+#include "Modules/Infrastructure/AudioConfigSetter/AudioConfigSetter.h"
 #include "Modules/Infrastructure/GameLogger/GameLogger.h"
 
 // perception
@@ -58,8 +58,7 @@
 #include "Modules/VisualCortex/GoalDetector/GoalDetectorV2.h"
 #include "Modules/VisualCortex/GoalDetector/GoalCrossBarDetector.h"
 #include "Modules/VisualCortex/BallDetector/RedBallDetector.h"
-#include "Modules/VisualCortex/BallDetector/BallCandidateDetector.h"
-#include "Modules/VisualCortex/BallDetector/BallDetector.h"
+#include "Modules/VisualCortex/BallDetector/BallDetector2018.h"
 #include "Modules/VisualCortex/IntegralImageProvider.h"
 
 #include "Modules/SelfAwareness/FakeCameraMatrixFinder/FakeCameraMatrixFinder.h"
@@ -67,6 +66,9 @@
 
 #include "Modules/Perception/VirtualVisionProcessor/VirtualVisionProcessor.h"
 #include "Modules/Perception/PerceptionsVisualizer/PerceptionsVisualizer.h"
+#include "Modules/Perception/WhistleDetector/WhistleDetectorV1.h"
+#include "Modules/Perception/WhistleDetector/WhistleDetectorV2.h"
+#include "Modules/Perception/WhistleDetector/WhistleDetectorLegacy.h"
 
 #include "Modules/VisualCortex/LineDetector/RansacLineDetector.h"
 #include "Modules/VisualCortex/LineDetector/RansacLineDetectorOnGraphs.h"
@@ -157,7 +159,10 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(CameraDebug);
   REGISTER_MODULE(CameraInfoSetter);
   REGISTER_MODULE(AdaptiveAutoExposure);
-  REGISTER_MODULE(WhistleDetectorConfigSetter);
+  REGISTER_MODULE(AudioConfigSetter);
+  REGISTER_MODULE(WhistleDetectorV1);
+  REGISTER_MODULE(WhistleDetectorV2);
+  REGISTER_MODULE(WhistleDetectorLegacy);
 
   // perception
   REGISTER_MODULE(CameraMatrixFinder);
@@ -179,9 +184,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(GoalCrossBarDetector);
 
   REGISTER_MODULE(RedBallDetector);
-  REGISTER_MODULE(BallCandidateDetector);
-  REGISTER_MODULE(BallDetector);
-
+  REGISTER_MODULE(BallDetector2018);
+  
   REGISTER_MODULE(FakeCameraMatrixFinder);
   REGISTER_MODULE(FakeBallDetector);
 
