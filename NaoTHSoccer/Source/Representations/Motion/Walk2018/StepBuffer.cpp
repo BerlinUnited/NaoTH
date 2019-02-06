@@ -1,7 +1,7 @@
 /**
-* @file MotionStatus.h
+* @file StepBuffer.cpp
 *
-* @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
+* @author <a href="mailto:kaden@informatik.hu-berlin.de">Steffen, Kaden</a>
 * 
 */
 
@@ -9,12 +9,14 @@
 #include <Messages/Representations.pb.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
-std::ostream& operator<<(std::ostream& os, const Step& s){
+std::ostream& operator<<(std::ostream& os, const Step& s)
+{
   InverseKinematic::FeetPose begin = s.footStep.begin();
   InverseKinematic::FeetPose end = s.footStep.end();
 
   Pose3D end_relative_to_begin;
-  Pose3D begin_foot,end_foot;
+  Pose3D begin_foot;
+  Pose3D end_foot;
   if(s.footStep.liftingFoot() == FootStep::LEFT) {
       begin.localInLeftFoot();
       end.localInRightFoot();
