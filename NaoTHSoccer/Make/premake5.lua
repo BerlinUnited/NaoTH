@@ -231,11 +231,12 @@ workspace "NaoTHSoccer"
     dofile "NaoTHSoccer.lua"
       vpaths { ["*"] = "../Source" } 
       
-    filter {"system:windows", "action:vs*"}
+    -- NOTE: this only makes sense for VS projects
+    if os.ishost("windows") and _ACTION ~= nil and string.match(_ACTION, "^vs.*") then
       project "Generate"
         kind "Utility"
         prebuildcommands { "cd ../Make/ && premake5 vs2013" }
-  
+    end
   
   -- set up platforms
   if _OPTIONS["platform"] == "Nao" then
