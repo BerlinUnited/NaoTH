@@ -260,6 +260,10 @@ workspace "NaoTHSoccer"
 	  dofile ("../Test/Make/Optimizers.lua")
         kind "ConsoleApp"
         vpaths { ["*"] = "../Test/Source/Optimizers" }
+
+	  dofile ("../Test/Make/Polygon.lua")
+        kind "ConsoleApp"
+        vpaths { ["*"] = "../Test/Source/Polygon" }
     end
 
     
@@ -303,6 +307,10 @@ workspace "NaoTHSoccer"
       dofile ("../Test/Make/Optimizers.lua")
         kind "ConsoleApp"
         vpaths { ["*"] = "../Test/Source/Optimizers" }
+
+	  dofile ("../Test/Make/Polygon.lua")
+        kind "ConsoleApp"
+        vpaths { ["*"] = "../Test/Source/Polygon" }
     end
 
     -- generate LogSimulatorJNI if required
