@@ -62,6 +62,7 @@ public:
   void get(ImageTop& data){ theTopCameraHandler.get(data); } // non blocking
   void get(CurrentCameraSettings& data) { theBottomCameraHandler.getCameraSettings(data); }
   void get(CurrentCameraSettingsTop& data) { theTopCameraHandler.getCameraSettings(data); }
+  
   void set(const CameraSettingsRequest& data);
   void set(const CameraSettingsRequestTop& data);
 

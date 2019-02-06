@@ -58,10 +58,8 @@ class InertiaSensorCalibrator: private InertiaSensorCalibratorBase
 {
 public:
   InertiaSensorCalibrator();
+  ~InertiaSensorCalibrator();
 
-~InertiaSensorCalibrator(){
-    getDebugParameterList().remove(&parameter);
-  }
   void execute();
 
 private:

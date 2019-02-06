@@ -21,6 +21,8 @@ import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.server.Command;
 import java.awt.Color;
 import java.awt.Component;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
@@ -182,29 +184,39 @@ public class Modify extends AbstractDialog
           SwingUtilities.invokeLater(new Runnable() {
               @Override
               public void run() {
-                  try {
-                      for (String msg : modifies) {
-                          String[] s = msg.split("(( |\t)*=( |\t)*)|;");
+                  
+                for (String msg : modifies) 
+                {
+                    String[] s = msg.split("(( |\t)*=( |\t)*)|;");
 
-                          ModifyDataNode node = treeTableModel.insertPath("[" + rootName + "]:" + s[1], ':');
+                    ModifyDataNode node = treeTableModel.insertPath("[" + rootName + "]:" + s[1], ':');
+
+                    try {
+                      node.enabled = Integer.parseInt(s[0]) > 0;
+                      node.value = Double.parseDouble(s[2]);
+                    } catch (NumberFormatException e) {
+                          dispose();
                           
-                          node.enabled = Integer.parseInt(s[0]) > 0;
-                          node.value = Double.parseDouble(s[2]);
-
-                          if (node.enabledListener == null) {
-                              node.enabledListener = new FlagModifiedListener(s[1], rootName);
+                          for(String x: modifies) {
+                              System.out.println(x);
                           }
-                      }//end for
-                  } catch (NumberFormatException e) {
-                      JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.ERROR_MESSAGE);
-                      dispose();
-                  }
+                          
+                          String errorMesage = String.format("%s\nwhile parsing: %s", e.getLocalizedMessage(), msg);
+                          Logger.getLogger(Modify.class.getName()).log(Level.SEVERE, errorMesage, e);
+                          JOptionPane.showMessageDialog(Modify.this, errorMesage, "Error", JOptionPane.ERROR_MESSAGE);
+                          break;
+                    }
+
+                    if (node.enabledListener == null) {
+                        node.enabledListener = new FlagModifiedListener(s[1], rootName);
+                    }
+                }//end for
                   
-                  //myTreeTable.getTree().expandPath(new TreePath(myTreeTable.getTree().getModel().getRoot()));
-                  
-                  myTreeTable.expandRoot();
-                  myTreeTable.revalidate();
-                  myTreeTable.repaint();
+                //myTreeTable.getTree().expandPath(new TreePath(myTreeTable.getTree().getModel().getRoot()));
+
+                myTreeTable.expandRoot();
+                myTreeTable.revalidate();
+                myTreeTable.repaint();
               }
           });
       }
@@ -212,7 +224,6 @@ public class Modify extends AbstractDialog
         @Override
         public void errorOccured(String cause)
         {
-          btRefresh.setSelected(false);
           dispose();
         }
   }
@@ -259,6 +270,7 @@ public class Modify extends AbstractDialog
   {
     Plugin.genericManagerFactory.getManager(commandCognitionModifyList).removeListener(modifyUpdaterCognition);
     Plugin.genericManagerFactory.getManager(commandMotionModifyList).removeListener(modifyUpdaterMotion);
+    this.btRefresh.setSelected(false);
   }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

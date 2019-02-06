@@ -14,6 +14,7 @@ import de.naoth.rc.math.Vector2D;
 import de.naoth.rc.messages.TeamMessageOuterClass;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
@@ -206,7 +207,8 @@ public class SPLMessage
 
             // number
             drawings.add(new Pen(1, Color.BLACK));
-            drawings.add(new Text((int) robotPose.translation.x, (int) robotPose.translation.y + 150, "" + playerNum));
+            Font numberFont = new Font ("Courier New", Font.PLAIN | Font.CENTER_BASELINE, 250);
+            drawings.add(new Text((int) robotPose.translation.x, (int) robotPose.translation.y + 250, 0, "" + playerNum, numberFont));
             
             // don't draw anything else
             return;
@@ -224,7 +226,9 @@ public class SPLMessage
         
         // number
         drawings.add(new Pen(1, Color.BLACK));
-        drawings.add(new Text((int) robotPose.translation.x, (int) robotPose.translation.y + 150, "" + playerNum));
+        Font numberFont = new Font ("Courier New", Font.PLAIN | Font.CENTER_BASELINE, 250);
+        double fontRotation = 0;//robotPose.rotation+Math.PI/2; // rotate in the direction of the robots
+        drawings.add(new Text((int) robotPose.translation.x, (int) robotPose.translation.y + 250, fontRotation, "" + playerNum, numberFont));
 
         // striker
         if (intention == 3) {

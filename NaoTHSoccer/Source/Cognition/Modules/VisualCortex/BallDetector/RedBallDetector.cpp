@@ -8,7 +8,6 @@
 
 #include "RedBallDetector.h"
 
-#include "Tools/DataStructures/ArrayQueue.h"
 #include "Tools/CameraGeometry.h"
 
 #include <Representations/Infrastructure/CameraInfoConstants.h>
