@@ -145,8 +145,8 @@ public:
 
   GameData();
 
-  const RobotInfo& getOwnRobotInfo(int playerNumber) const {
-    ASSERT(playerNumber > 0 && playerNumber <= (int)(ownTeam.players.size()));
+  const RobotInfo& getOwnRobotInfo(size_t playerNumber) const {
+	  ASSERT(playerNumber > 0 && playerNumber <= ownTeam.players.size());
     return ownTeam.players[playerNumber-1];
   }
 
@@ -154,7 +154,7 @@ public:
 public:
   bool valid; // indicates that this represenation was filled
 
-  int playersPerTeam;                 // the number of players on a team
+  unsigned int playersPerTeam;                 // the number of players on a team
 
   CompetitionPhase competitionPhase;  // phase of the competition (COMPETITION_PHASE_ROUNDROBIN, COMPETITION_PHASE_PLAYOFF)
   CompetitionType  competitionType;   // type of the competition (COMPETITION_TYPE_NORMAL, COMPETITION_TYPE_MIXEDTEAM, COMPETITION_TYPE_GENERAL_PENALTY_KICK)
