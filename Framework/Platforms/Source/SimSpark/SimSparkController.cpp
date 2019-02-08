@@ -1516,7 +1516,7 @@ bool SimSparkController::hear(const sexp_t* sexp)
         return false;
     }
 
-    std::cout << "hear message : " << team << "/" << theGameInfo.teamName << " " << time << ' ' << ' ' << direction << ' ' << msg << std::endl;
+    //std::cout << "hear message : " << team << "/" << theGameInfo.teamName << " " << time << ' ' << ' ' << direction << ' ' << msg << std::endl;
 
     return true;
 }
