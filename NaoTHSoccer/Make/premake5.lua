@@ -260,6 +260,10 @@ workspace "NaoTHSoccer"
 	  dofile ("../Test/Make/Optimizers.lua")
         kind "ConsoleApp"
         vpaths { ["*"] = "../Test/Source/Optimizers" }
+
+      dofile ("../Test/Make/USBJoypad.lua")
+            kind "ConsoleApp"
+            vpaths { ["*"] = "../Test/Source/USBJoypad" }
     end
 
     

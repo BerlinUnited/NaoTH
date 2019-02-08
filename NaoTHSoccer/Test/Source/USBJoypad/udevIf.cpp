@@ -15,7 +15,7 @@
 #include <sys/epoll.h>
 #include <sys/file.h>
 //#include "../../../../../Commons/Source/Tools/ThreadUtil.h"
-#include "Nao/Framework/Commons/Source/Tools/ThreadUtil.h"
+#include "Tools/ThreadUtil.h"
 #include "udevIf.h"
 //--------------------------------------------------------------------------------------------------
 //Valid monitor sources identifiers are "udev" and "kernel"
@@ -202,7 +202,8 @@ int UDevInterface::readLoop(const int fdHIDOpen)
   int fdEpollRead;
   int resultPollCtl;
   int fdReturnedCount; // number of file descriptors returned
-  epoll_event evEpollRead={0};
+  epoll_event evEpollRead;
+  memset(&evEpollRead, 0, sizeof(evEpollRead));
   epoll_event evReturned;
 
   fdEpollRead=epoll_create1(EPOLL_CLOEXEC);
@@ -230,7 +231,7 @@ int UDevInterface::readLoop(const int fdHIDOpen)
     fdReturnedCount=epoll_pwait(fdEpollRead, &evReturned, 1, pollTimeRead_ms, NULL);
     if (fdReturnedCount > 0)
     {
-      int xxx=(evReturned.events & 0xFFFFFFFE);
+      //int xxx=(evReturned.events & 0xFFFFFFFE);
         switch (evReturned.events)
       {
       case EPOLLIN:
@@ -367,7 +368,8 @@ int UDevInterface::hotplugMonitor()
   int fdEpollPlug;
   int resultPollCtl;
   int fdCount; // number of file descriptors returned
-  epoll_event evEpollPlug ={0};
+  epoll_event evEpollPlug;
+  memset(&evEpollPlug, 0, sizeof(evEpollPlug));
   epoll_event evReturned;
   udev_device* pReportingDevice=nullptr;
   std::string devNodeReportingDevice;

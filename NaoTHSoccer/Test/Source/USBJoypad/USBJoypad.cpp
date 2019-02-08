@@ -12,7 +12,7 @@
 #include <chrono>
 #include <iostream>
 //#include "../../../../Commons/Source/Tools/ThreadUtil.h"
-#include "Nao/Framework/Commons/Source/Tools/ThreadUtil.h"
+#include "Tools/ThreadUtil.h"
 #include "USBJoypad.h"
 //------------------------------------------------------------------------------
 using namespace naoth;
