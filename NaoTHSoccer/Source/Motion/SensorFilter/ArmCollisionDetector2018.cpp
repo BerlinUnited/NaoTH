@@ -35,7 +35,6 @@ ArmCollisionDetector2018::ArmCollisionDetector2018()
   getCollisionPercept().referenceHullLeft = ConvexHull::convexHull(getCollisionPercept().referenceHullLeft);
   getCollisionPercept().referenceHullRight = ConvexHull::convexHull(getCollisionPercept().referenceHullRight);
 
-  // test for the new make-method
   refpolyL.makeFromPointSet(getCollisionPercept().referenceHullLeft);
   refpolyR.makeFromPointSet(getCollisionPercept().referenceHullRight);
   
@@ -65,13 +64,6 @@ void ArmCollisionDetector2018::execute()
 		return;
 	}
 
-    //HACK: Robot is reacting to collision during stand up motion wich leads to wrong interpretations
-    /*
-    if (getFrameInfo().getTimeSince(lastIllegalTime)<1)
-    {
-        return;
-    }
-    */
 
     //collect Motorjoint Data and adjust timelag (Motor is 4 Frames ahead of Sensor)
 	jointDataBufferLeft.add(getMotorJointData().position[JointData::LShoulderPitch]);
@@ -121,7 +113,6 @@ void ArmCollisionDetector2018::execute()
 		double a = jointDataBufferLeft.first();
 		double b = getSensorJointData().position[JointData::LShoulderPitch];
 		double er = (b - a);
-		//if (!Math::Polygon<double>::isInside(getCollisionPercept().referenceHullLeft, Vector2d(a, er)))
 		if (!refpolyL.isInside(Vector2d(a, er)))
 		{
 			//collision
@@ -135,7 +126,6 @@ void ArmCollisionDetector2018::execute()
 		double a = jointDataBufferRight.first();
 		double b = getSensorJointData().position[JointData::RShoulderPitch];
 		double er = (b - a);
-		//if (!Math::Polygon<double>::isInside(getCollisionPercept().referenceHullRight, Vector2d(a, er)))
 		if (!refpolyR.isInside(Vector2d(a, er)))
 		{
 			//collision
