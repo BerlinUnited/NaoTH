@@ -32,13 +32,3 @@ behavior-ic.dat
 
 #vim swap files
 .*.swp
-/NaoTHSoccer/Test/Source/USBJoypad/USBJoypad.vcxproj
-/NaoTHSoccer/Test/Source/USBJoypad/USBJoypad.vcxproj.filters
-/NaoTHSoccer/Test/Source/USBJoypad/USBJoypad.vcxproj.user
-*.cp0
-/NaoTHSoccer/Test/Source/USBJoypad/nao/Printable.cpp
-*.vcxproj
-*.vcxproj.filters
-*.vcxproj*
-*.vcxproj.*
-/NaoTHSoccer/Test/Source/USBJoypad/sa_main.cpp

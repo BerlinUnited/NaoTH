@@ -1,9 +1,9 @@
 //--------------------------------------------------------------------------------------------------
 //
 // @file USBJoypadData.cpp
-// Gamepad/Joypad data representation class
-//
 // @author <a href="mailto:albert@informatik.hu-berlin.de">Andreas Albert</a>
+//
+// Gamepad/Joypad data representation class
 //
 //--------------------------------------------------------------------------------------------------
 //

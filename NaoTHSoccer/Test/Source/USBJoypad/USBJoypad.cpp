@@ -11,8 +11,8 @@
 //--------------------------------------------------------------------------------------------------
 #include <chrono>
 #include <iostream>
-//#include <Tools\ThreadUtil.h>
-#include "ThreadUtil.h"
+//#include "../../../../Commons/Source/Tools/ThreadUtil.h"
+#include "Nao/Framework/Commons/Source/Tools/ThreadUtil.h"
 #include "USBJoypad.h"
 //------------------------------------------------------------------------------
 using namespace naoth;
@@ -48,10 +48,10 @@ USBJoypad::USBJoypad()
   : exiting(false),
     lastGetTime(0)
 {
-  std::cout << "USBJoypad constructor called!" << std::endl;
+  std::fprintf(stderr, "USBJoypad constructor called!\n");
 
   std::cout << "[JoypadDataReader] thread start" << std::endl;
-  readThread = std::thread( [this]{this->readLoop();} );
+  readThread=std::thread( [this]{this->readLoop();} );
   ThreadUtil::setPriority(readThread, ThreadUtil::Priority::lowest);
   ThreadUtil::setName(readThread, "JoypadData (raw)");
 
@@ -59,10 +59,10 @@ USBJoypad::USBJoypad()
 //------------------------------------------------------------------------------
 USBJoypad::~USBJoypad()
 {
-  std::cout << "USBJoypad destructor called!" << std::endl;
+  std::fprintf(stderr, "USBJoypad destructor called!\n");
 
   std::cout << "[JoypadDataReader] stop wait" << std::endl;
-  exiting = true;
+  exiting=true;
 
   if (readThread.joinable()) 
   {

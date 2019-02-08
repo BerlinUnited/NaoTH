@@ -14,8 +14,9 @@
 //--------------------------------------------------------------------------------------------------
 #include <string>
 #include <vector>
-//#include "Tools/DataStructures/Printable.h"
-#include "Printable.h"
+//#include "../../Tools/DataStructures/Printable.h"
+#include "Nao/Framework/Commons/Source/Tools/DataStructures/Printable.h"
+
 //--------------------------------------------------------------------------------------------------
 namespace naoth
 {

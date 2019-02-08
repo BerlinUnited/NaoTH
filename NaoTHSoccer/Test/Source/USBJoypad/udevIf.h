@@ -15,6 +15,8 @@
 #include <libudev.h>
 #include "configs.h"
 //--------------------------------------------------------------------------------------------------
+#define HANDLE_INVALID  (-1)
+//--------------------------------------------------------------------------------------------------
 class UDevInterface
 {
 private:
@@ -24,8 +26,10 @@ private:
   
   std::thread thrMon;
   bool isMonitoring;
-  int deviceChangeStatus;
-//  int hidStatus;
+//  std::atomic_flag deviceChanged;
+  struct udev_device* pHIDeviceRaw=nullptr;
+//  struct udev_device* pParentDeviceRaw=nullptr;
+  const char* pHIDDevNode=nullptr;
 
 /*
   struct udev_enumerate* pDeviceEnum=nullptr;
@@ -33,22 +37,30 @@ private:
   struct udev_list_entry* pDeviceListHead=nullptr;
   struct udev_list_entry* pDeviceListEntry=nullptr;
   const char* pDeviceName= nullptr;
-  struct udev_device* pHIDeviceRaw=nullptr;
-  struct udev_device* pParentDeviceRaw=nullptr;
   const char* pHIDDevNode=nullptr;
   const char* pHIDSysName=nullptr;
 */
 
   int initUDev();
   int initMonitor();
+
+  int updateDeviceList();
   int hotplugMonitor();
+  int dataReader(const int fdHIDOpen, const int fdPollResult);
+//  int readLoop();
 public:
-//  bool isNodeExisting(int node);
-//  int GetDeviceDataFromHIDId(JoypadDefaultData& rJoypadData, const char* const pHIDId);
+  int startReading();
+  int stopReading();
   int startMonitoring();
   int stopMonitoring();
+  //  bool isNodeExisting(int node);
+  //  int GetDeviceDataFromHIDId(JoypadDefaultData& rJoypadData, const char* const pHIDId);
   UDevInterface();
   ~UDevInterface();
+
+// for debugging only!!!
+public:
+  int readLoop(const int);
 };
 //--------------------------------------------------------------------------------------------------
 //==================================================================================================

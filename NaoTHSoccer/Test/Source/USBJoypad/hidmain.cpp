@@ -21,21 +21,20 @@ int main()
 {
   USBJoypadData data;
   USBJoypad usbJoypad;
-  int gotEnough;
+  int moreData;
 
-  timespec sleepTime;
-  timespec remainingTime;
-
-  sleepTime.tv_sec=0;
-  sleepTime.tv_nsec=250000000;
-  gotEnough=10;
-  while (gotEnough > 0)
+  timespec ts;
+  
+  ts.tv_sec=0;
+  ts.tv_nsec=250000000;
+  moreData=50;
+  while (moreData > 0)
   {  // get as much as you want
-    printf("%03i: ", gotEnough);
+    std::fprintf(stderr, "%03i: ", moreData);
     usbJoypad.get(data);
-    std::cout << data;
-    gotEnough--;
-    nanosleep(&sleepTime, &remainingTime);
+    std::cerr << data;
+    moreData--;
+    nanosleep(&ts, NULL);
   }
 
   return 0;
