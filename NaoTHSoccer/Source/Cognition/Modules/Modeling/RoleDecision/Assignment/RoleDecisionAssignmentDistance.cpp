@@ -3,6 +3,18 @@
 #include <limits>
 #include "Cognition/Modules/Modeling/RoleDecision/HungarianAlgorithm.h"
 
+RoleDecisionAssignmentDistance::RoleDecisionAssignmentDistance()
+{
+    getDebugParameterList().add(&params);
+
+    DEBUG_REQUEST_REGISTER("RoleDecision:Assignment:Distance:print_current_decision", "Prints out (std::cout) the role decisions for the current cycle.", false);
+}
+
+RoleDecisionAssignmentDistance::~RoleDecisionAssignmentDistance()
+{
+    getDebugParameterList().remove(&params);
+}
+
 void RoleDecisionAssignmentDistance::execute()
 {
     // skip "first frame"! (until i add myself to teamcomm)
@@ -24,6 +36,14 @@ void RoleDecisionAssignmentDistance::execute()
 
         // determine new static role
         (this->*params.variantFunc)(new_roles);
+
+        // some debug output
+        DEBUG_REQUEST("RoleDecision:Assignment:Distance:print_current_decision",
+            for(const auto& r : new_roles) {
+                std::cout << r.first << ":" << RM::getName(r.second) << ";";
+            }
+            std::cout << std::endl;
+        );
 
         // apply new role for each player, if it was the same role for at least x times or for at least y seconds
         (this->*params.changingFunc)(new_roles);

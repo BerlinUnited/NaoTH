@@ -4,7 +4,7 @@ RoleDecisionDynamic::RoleDecisionDynamic()
 {
     getDebugParameterList().add(&params);
 
-    DEBUG_REQUEST_REGISTER("RoleDecisionDynamic:striker_ball_difference_radius",
+    DEBUG_REQUEST_REGISTER("RoleDecision:Dynamic:striker_ball_difference_radius",
                            "Draws the radius around a seen ball, which is used to determine if the seen ball is the same)",
                            false);
 
@@ -95,7 +95,7 @@ void RoleDecisionDynamic::checkStriker(const TeamMessageData& msg,
     bool done = false;
     double r = ballDifferenceRadius(msg.ballPosition.abs());
 
-    DEBUG_REQUEST("RoleDecisionDynamic:striker_ball_difference_radius",
+    DEBUG_REQUEST("RoleDecision:Dynamic:striker_ball_difference_radius",
       FIELD_DRAWING_CONTEXT;
       PEN("000000", 30);
       CIRCLE(ball.x, ball.y, r);

@@ -5,6 +5,7 @@
 
 #include "Tools/StringTools.h"
 #include "Tools/DataStructures/ParameterList.h"
+#include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugParameterList.h"
 
 #include "Representations/Infrastructure/FrameInfo.h"
@@ -16,6 +17,7 @@
 
 
 BEGIN_DECLARE_MODULE(RoleDecisionAssignmentDistance)
+  PROVIDE(DebugRequest)
   PROVIDE(DebugParameterList)
 
   REQUIRE(FrameInfo)
@@ -35,16 +37,8 @@ typedef RoleDecisionModel RM;
 class RoleDecisionAssignmentDistance : public RoleDecisionAssignmentDistanceBase
 {
 public:
-    RoleDecisionAssignmentDistance()
-    {
-        getDebugParameterList().add(&params);
-    }
-
-    virtual ~RoleDecisionAssignmentDistance()
-    {
-        getDebugParameterList().remove(&params);
-    }
-
+    RoleDecisionAssignmentDistance();
+    virtual ~RoleDecisionAssignmentDistance();
     virtual void execute();
 
 private:
@@ -89,6 +83,8 @@ private:
          * @param assign
          */
         void parseAssignment(std::string assign) {
+            // clear the 'old' assignments
+            assignment_role.clear();
             std::vector<std::string> parts = StringTools::split(assign, ';');
             for(const std::string& part : parts) {
                 std::vector<std::string> assign_part = StringTools::split(part, ':');
