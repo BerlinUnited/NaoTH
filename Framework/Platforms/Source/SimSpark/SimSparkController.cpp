@@ -1470,7 +1470,6 @@ void SimSparkController::say()
 
 bool SimSparkController::hear(const sexp_t* sexp)
 {
-    size_t idx = 0;
     size_t minMsgSize = (sizeof(SPLStandardMessage) - SPL_STANDARD_MESSAGE_DATA_SIZE);
     std::vector<const sexp_t*> data;
 
@@ -1479,19 +1478,21 @@ bool SimSparkController::hear(const sexp_t* sexp)
         sexp = sexp->next;
     }
 
+    size_t idx = 0;
     // new simspark version (0.6.8+) has an additional "team" field!
     string team = theGameInfo.teamName;
     if(data.size() >= 3) {
-        SexpParser::parseValue(data[idx], team);
-        idx++;
+        SexpParser::parseValue(data[idx++], team);
     }
 
+    // ignore opponent messages
+    if(ignoreOpponentMsg && team.compare(theGameInfo.teamName) != 0) { return true; }
+
     double direction;
-    if(!SexpParser::parseValue(data[idx], direction)) {
+    if(!SexpParser::parseValue(data[idx++], direction)) {
       std::cerr << "[SimSparkController Hear] can not get direction" << std::endl;
       return false;
     }
-    idx++;
 
     /*
     // NOTE: should be handled by the TeamCommReceiver!
@@ -1502,23 +1503,20 @@ bool SimSparkController::hear(const sexp_t* sexp)
     */
 
     double time;
-    if(!SexpParser::parseValue(data[idx], time)) {
+    if(!SexpParser::parseValue(data[idx++], time)) {
         std::cerr << "[SimSparkController Hear] can not get time" << std::endl;
         return false;
     }
-    idx++;
-
-    // ignore opponent messages
-    if(ignoreOpponentMsg && team.compare(theGameInfo.teamName) != 0) { return true; }
 
     string msg;
-    SexpParser::parseValue(sexp, msg);
-
-    if ( !msg.empty() && msg != ""){
+    if (SexpParser::parseValue(sexp, msg) && !msg.empty() && msg != ""){
         theTeamMessageDataIn.data.push_back(msg);
+    } else {
+        std::cerr << "[SimSparkController Hear] can not parse message" << std::endl;
+        return false;
     }
 
-    //std::cout << "hear message : " << team << "/" << theGameInfo.teamName << " " << time << ' ' << ' ' << direction << ' ' << msg << std::endl;
+    std::cout << "hear message : " << team << "/" << theGameInfo.teamName << " " << time << ' ' << ' ' << direction << ' ' << msg << std::endl;
 
     return true;
 }
