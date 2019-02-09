@@ -53,21 +53,25 @@ public:
   SimSparkGameInfo() :
       valid(false),
       gameTime(0),
+      teamNumber(0),
       playerNumber(0),
       // HACK: this number sed to be set by a parameter
       playersPerTeam(5), 
       teamName("unknown"),
       playLeftSide(true),
+      kickoff(false),
       gameState(naoth::GameData::unknown_game_state)
   {}
 
 public:
   bool valid;
   unsigned int gameTime;
-  unsigned int playerNumber; 
+  unsigned int teamNumber;
+  unsigned int playerNumber;
   int playersPerTeam;
   std::string teamName;
   bool playLeftSide;
+  bool kickoff;
 
   naoth::GameData::GameState gameState;
 
@@ -84,7 +88,7 @@ public:
     }
   }
 
-  unsigned int getTeamNumber() const
+  unsigned int getTeamIdx() const
   {
     if ( playLeftSide ) {
       return 0;

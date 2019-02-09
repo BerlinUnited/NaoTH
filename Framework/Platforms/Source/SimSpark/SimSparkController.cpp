@@ -272,6 +272,10 @@ bool SimSparkController::init(const std::string& modelPath, const std::string& t
 
 
   Configuration& config = Platform::getInstance().theConfiguration;
+  if (config.hasKey("player", "TeamNumber"))
+  {
+    theGameInfo.teamNumber = config.getInt("player", "TeamNumber");
+  }
   // if player number wasn't set by configuration -> use the number from the simulation
   if(config.getInt("player", "PlayerNumber") == 0) {
     config.setInt("player", "PlayerNumber", theGameInfo.playerNumber);
@@ -1023,6 +1027,17 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
           cerr << "SimSparkGameInfo::update failed score right\n";
         }
       } 
+      else if ("k" == name)
+      {
+        string kickoffSide;
+        if (!SexpParser::parseValue(t->next, kickoffSide))
+        {
+          ok = false;
+          cerr << "SimSparkGameInfo::update failed kickoffSide\n";
+        }
+        theGameInfo.kickoff = (kickoffSide == STR_TI_LEFT && theGameInfo.playLeftSide)
+                           || (kickoffSide == STR_TI_RIGHT && !theGameInfo.playLeftSide);
+      }
       else
       {
         ok = false;
@@ -1324,9 +1339,10 @@ void SimSparkController::get(GameData& data)
 
     data.newPlayerNumber = theGameInfo.playerNumber;
 
-    data.ownTeam.teamNumber = theGameInfo.getTeamNumber();
+    data.ownTeam.teamNumber = theGameInfo.teamNumber;
     data.ownTeam.teamColor = theGameInfo.getTeamColor();
     data.ownTeam.players.resize(theGameInfo.playersPerTeam);
+    data.kickingTeam = theGameInfo.kickoff ? theGameInfo.teamNumber : 0;
 
     // todo set opponent team info
 
