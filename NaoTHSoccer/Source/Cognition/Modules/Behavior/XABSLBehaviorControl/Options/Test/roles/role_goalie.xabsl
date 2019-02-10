@@ -1,0 +1,65 @@
+option role_goalie
+{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+
+  initial state idle {
+    decision {
+      // only in PLAY switch state, otherwise stay (see common decision)
+      else if(game.current_mode == playing)
+        goto go_to_strategy_point;
+      else
+        stay;
+    }
+    action {}
+  }
+
+  state go_to_strategy_point
+  {
+     decision 
+     {
+       else if(strategy.role_d == striker)
+         goto clear_ball;
+       else if (action_done)
+         goto stand_and_look_at_ball;
+       else 
+         stay;
+     }
+     action {
+       go_to_point_with_USOA(
+         x=strategy.position.home.x,
+         y=strategy.position.home.y,
+         rot=0);
+       head.control_mode = search_for_goal;
+     }
+  }
+
+  state stand_and_look_at_ball {
+    decision {
+      else if(strategy.role_d == striker)
+        goto clear_ball;
+      else 
+        stay;
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = search_for_ball_goalie;
+    }
+  }
+
+  state clear_ball {   
+    decision {
+      else if(strategy.role_d != striker) {
+         goto go_to_strategy_point;
+      }
+      else stay;
+    }
+    action {
+      team.is_playing_as_striker = true;
+      path_striker2018();
+    }
+  }
+}

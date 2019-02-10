@@ -41,7 +41,7 @@ option roles_decide_role
     {
       situationStatusOwnHalf = true;
       team.is_playing_as_striker = false;
-      path_basic_goalie();
+      role_goalie();
     }
   }
 
