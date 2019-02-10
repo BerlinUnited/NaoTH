@@ -73,7 +73,7 @@ void TeamCommSender::fillMessageBeforeSending() const
     // TODO: can we make it more separate?
     msg.custom.timestamp = naoth::NaoTime::getSystemTimeInMilliSeconds();
     msg.custom.wantsToBeStriker = getRoleDecisionModel().wantsToBeStriker;
-    msg.custom.wasStriker = getPlayerInfo().isPlayingStriker; // intention
+    msg.custom.wasStriker = getRoleDecisionModel().isStriker(getPlayerInfo().playerNumber);
 
     msg.custom.bodyID = getRobotInfo().bodyID;
     ASSERT(getSoccerStrategy().timeToBall >= 0);

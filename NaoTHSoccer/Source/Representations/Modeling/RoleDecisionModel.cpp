@@ -62,6 +62,14 @@ RoleDecisionModel::RolePosition RoleDecisionModel::getStaticRolePosition(StaticR
     return {{},{},{}};
 }
 
+bool RoleDecisionModel::isStriker(unsigned int playerNumber) const
+{
+    if(roles.find(playerNumber) != roles.cend()) {
+        return roles.at(playerNumber).dynamic == striker;
+    }
+    return false;
+}
+
 void RoleDecisionModel::print(std::ostream& stream) const {
 
     if (firstStriker != std::numeric_limits<unsigned int>::max()) {

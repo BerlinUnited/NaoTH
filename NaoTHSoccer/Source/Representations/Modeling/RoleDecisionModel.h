@@ -72,6 +72,8 @@ public:
 
     RolePosition getStaticRolePosition(StaticRole role) const;
 
+    bool isStriker(unsigned int playerNumber) const;
+
     /* OLD STUFF ------------------------------------------------ */
 
     unsigned int firstStriker = std::numeric_limits<unsigned int>::max();
