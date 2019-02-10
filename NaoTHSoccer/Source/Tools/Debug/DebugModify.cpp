@@ -6,7 +6,9 @@
 //
 
 #include "DebugModify.h"
+
 #include <DebugCommunication/DebugCommandManager.h>
+#include <Tools/DataConversion.h>
 
 using namespace naoth;
 
@@ -27,7 +29,7 @@ void DebugModify::executeDebugCommand(
     
     while(iter != valueMap.end())
     {
-      outstream << iter->second.modify << ";" << iter->first << "=" << iter->second.value << std::endl;
+      outstream << std::noboolalpha << iter->second.modify << ";" << iter->first << "=" << iter->second.value << std::endl;
       ++iter;
     }
   }

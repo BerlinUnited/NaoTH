@@ -8,7 +8,6 @@
 
 #include "RedBallDetector.h"
 
-#include "Tools/DataStructures/ArrayQueue.h"
 #include "Tools/CameraGeometry.h"
 
 #include <Representations/Infrastructure/CameraInfoConstants.h>
@@ -164,7 +163,7 @@ bool RedBallDetector::findMaximumRedPoint(std::vector<Vector2i>& points) const
       (
         maxRedPeak < pixel.v && // "v" is the croma RED channel
         isOrange(pixel) &&
-        fieldPolygon.isInside_inline(point) // only points inside the field polygon
+        fieldPolygon.isInside(point) // only points inside the field polygon
         //&& !getGoalPostHistograms().isPostColor(pixel) // ball is not goal like colored
         //&& getGoalPostHistograms().histogramV.mean + params.minOffsetToGoalV < pixel.v
       )
@@ -181,7 +180,7 @@ bool RedBallDetector::findMaximumRedPoint(std::vector<Vector2i>& points) const
         if
         (
           isOrange(pixel) &&
-          fieldPolygon.isInside_inline(point) // only points inside the field polygon
+          fieldPolygon.isInside(point) // only points inside the field polygon
         )
         {
           POINT_PX(ColorClasses::red, point.x, point.y);
