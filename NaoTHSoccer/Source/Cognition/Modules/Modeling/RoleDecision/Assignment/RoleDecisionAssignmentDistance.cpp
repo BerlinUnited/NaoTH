@@ -112,11 +112,13 @@ void RoleDecisionAssignmentDistance::withDistance(std::map<unsigned int, RM::Sta
     std::vector<RM::StaticRole> assignable_roles(params.active_roles);
     // retrieve players, which doesn't already have a role and remove already assigned roles from the assignable vector
     std::vector<unsigned int> assignable_player;
-    std::for_each(getTeamMessage().data.cbegin(), getTeamMessage().data.cend(), [&](const std::pair<unsigned int, TeamMessageData>& v)->void{
-        auto it = new_roles.find(v.first);
-        if(it == new_roles.cend()) { assignable_player.push_back(v.first); }
-        else { assignable_roles.erase(std::remove(assignable_roles.begin(), assignable_roles.end(), it->second)); }
-    });
+    for(const auto& v : getTeamMessage().data) {
+        if(new_roles.find(v.first) == new_roles.cend()) { assignable_player.push_back(v.first); }
+        else {
+            auto r = std::remove(assignable_roles.begin(), assignable_roles.end(), new_roles.at(v.first));
+            if(r != assignable_roles.end()) { assignable_roles.erase(r); }
+        }
+    }
     // save the orginal dimensions
     size_t rows = assignable_player.size(),
            cols = assignable_roles.size(),
