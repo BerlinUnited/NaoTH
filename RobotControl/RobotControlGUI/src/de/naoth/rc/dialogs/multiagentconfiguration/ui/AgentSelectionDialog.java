@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.IntConsumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -28,7 +28,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -42,7 +41,7 @@ import javafx.stage.StageStyle;
  */
 public class AgentSelectionDialog extends Dialog
 {
-    private final ObservableList<AgentItem> hostList = FXCollections.observableArrayList(new TreeSet());
+    private final ObservableList<AgentItem> hostList = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
     private final List<AgentItem> existing = new ArrayList<>();
 
     private final ExecutorService executor = Executors.newCachedThreadPool();
@@ -197,6 +196,7 @@ public class AgentSelectionDialog extends Dialog
     private void onShowing() {
         // clear "old" list
         hostList.clear();
+        existing.forEach((a) -> { addAgent(a); });
         // clear textfields
         resetTextFields();
         // retrieve agents
@@ -224,20 +224,20 @@ public class AgentSelectionDialog extends Dialog
                 } catch (IOException e) { /* ignore exception */ }
             });
         }
+        // function to detect a simspark agent on the given port
+        IntConsumer detectSimsparkAgents = (int port) -> {
+            try {
+                // NOTE: throws an exception, if the port isn't used.
+                (new Socket("localhost", port)).close();
+                Platform.runLater(() -> {
+                        // check if agent is already in the list
+                        addAgent(new AgentItem("127.0.0.1", port));
+                });
+            } catch (IOException ex) { /* ignore exception */ }
+        };
         // try to find some simspark agents
-        for (int p = 5401; p < 5411; p++) {
-            final int port = p;
-            executor.submit(() -> {
-                try {
-                    // NOTE: throws an exception, if the port isn't used.
-                    (new Socket("localhost", port)).close();
-                    Platform.runLater(() -> {
-                            // check if agent is already in the list
-                            addAgent(new AgentItem("127.0.0.1", port));
-                    });
-                } catch (IOException ex) { /* ignore exception */ }
-            });
-        }
+        IntStream.rangeClosed(5401, 5411).parallel().forEach(detectSimsparkAgents);
+        IntStream.rangeClosed(5501, 5511).parallel().forEach(detectSimsparkAgents);
     } // END pingAgents()
     
     private boolean addAgent(AgentItem agent) {
