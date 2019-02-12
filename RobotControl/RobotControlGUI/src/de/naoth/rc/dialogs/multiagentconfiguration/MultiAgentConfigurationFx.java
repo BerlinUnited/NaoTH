@@ -137,6 +137,7 @@ public class MultiAgentConfigurationFx extends AbstractJFXDialog
     }
     
     public void connecting(List<AgentItem> l) {
+        l.sort((a1, a2) -> { return a1.toString().compareTo(a2.toString()); });
         for (AgentItem agentItem : l) {
             // check if we got already a tab for this agent
             Optional<Tab> etab = tabpane.getTabs().stream().filter((t) -> { return t.getText().equals(agentItem.toString()); }).findFirst();
