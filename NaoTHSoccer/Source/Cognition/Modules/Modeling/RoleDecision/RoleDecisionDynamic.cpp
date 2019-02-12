@@ -70,8 +70,10 @@ void RoleDecisionDynamic::decideStriker(std::map<unsigned int, RM::DynamicRole>&
 
         // goalie needs to be handled specially
         if(getRoleDecisionModel().roles[playerNumber].role == RM::goalie) {
-            // if the ball is near the goal, the goalie has to clear the ball
-            if(globalBall.x < params.striker_goalie_min_x_pos && msg.ballPosition.abs() <= params.striker_goalie_ball_distance) {
+            // if the ball is near the goal, the goalie has to clear the ball or goalie is alone on the field
+            if((globalBall.x < params.striker_goalie_min_x_pos && msg.ballPosition.abs() <= params.striker_goalie_ball_distance)
+                || getTeamMessagePlayersState().getActiveCount() <= 1)
+            {
                 // set goalie as striker and make sure nobody is "better"
                 indicator = 0.0;
                 checkStriker(msg, indicator, globalBall, new_striker, true);
