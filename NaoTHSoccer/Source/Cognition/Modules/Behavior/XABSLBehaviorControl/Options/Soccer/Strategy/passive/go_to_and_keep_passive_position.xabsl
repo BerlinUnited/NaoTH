@@ -54,9 +54,7 @@ option go_to_and_keep_passive_position{
 
   state pay_attention_to_ball {
     decision {
-      if (!ball.see_where_itis)
-        goto go_with_search_for_ball;
-      else if (!ball.see_where_itis && vector.abs(x=ball.preview.x, y=ball.preview.y)>3000)
+      if (!ball.see_where_itis || vector.abs(x=ball.preview.x, y=ball.preview.y)>3000)
         goto go_with_search_for_ball;
       else
         stay;    
