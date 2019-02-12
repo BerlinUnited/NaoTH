@@ -72,7 +72,8 @@ void RoleDecisionDynamic::decideStriker(std::map<unsigned int, RM::DynamicRole>&
         if(getRoleDecisionModel().roles[playerNumber].role == RM::goalie) {
             // if the ball is near the goal, the goalie has to clear the ball
             if(globalBall.x < params.striker_goalie_min_x_pos && msg.ballPosition.abs() <= params.striker_goalie_ball_distance) {
-                // set goalie as striker
+                // set goalie as striker and make sure nobody is "better"
+                indicator = 0.0;
                 checkStriker(msg, indicator, globalBall, new_striker, true);
             }
         } else {
@@ -131,7 +132,7 @@ double RoleDecisionDynamic::strikerIndicatorDistance(const TeamMessageData& msg)
 {
     double strikerBonus = getRoleDecisionModel().roles[msg.playerNumber].dynamic == RM::striker ?
                 params.striker_indicator_bonus : 0.0;
-    return msg.ballPosition.abs() - strikerBonus;
+    return msg.ballPosition.abs2() - strikerBonus;
 }
 
 double RoleDecisionDynamic::strikerIndicatorTimeToBall(const TeamMessageData& msg) {

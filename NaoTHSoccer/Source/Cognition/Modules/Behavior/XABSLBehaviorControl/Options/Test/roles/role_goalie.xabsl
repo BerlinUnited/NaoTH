@@ -37,10 +37,32 @@ option role_goalie
      }
   }
 
+  state go_to_strategy_point_search_for_ball
+  {
+     decision 
+     {
+       else if(strategy.role_d == striker)
+         goto clear_ball;
+       else if (action_done)
+         goto stand_and_look_at_ball;
+       else 
+         stay;
+     }
+     action {
+       go_to_point_with_USOA(
+         x=strategy.position.home.x,
+         y=strategy.position.home.y,
+         rot=normalize(angle=atan2(y = ball.preview.y, x = ball.preview.x)));
+      head.control_mode = search_for_ball_goalie;
+     }
+  }
+
   state stand_and_look_at_ball {
     decision {
       else if(strategy.role_d == striker)
         goto clear_ball;
+      else if(vector.abs(x=locator.field_to_relative.x(x=strategy.position.home.x, y=strategy.position.home.y), y=locator.field_to_relative.y(x=strategy.position.home.x, y=strategy.position.home.y)) >= 300)
+        goto go_to_strategy_point_search_for_ball;
       else 
         stay;
     }

@@ -1,5 +1,5 @@
-#ifndef ROLEDECISIONPOSITIONSTATIC_H
-#define ROLEDECISIONPOSITIONSTATIC_H
+#ifndef ROLEDECISIONPOSITIONDYNAMIC_H
+#define ROLEDECISIONPOSITIONDYNAMIC_H
 
 #include <ModuleFramework/Module.h>
 #include <Tools/DataStructures/ParameterList.h>
@@ -10,58 +10,37 @@
 
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Modeling/RoleDecisionModel.h"
+#include "Representations/Modeling/TeamBallModel.h"
 
 
-BEGIN_DECLARE_MODULE(RoleDecisionPositionStatic)
+BEGIN_DECLARE_MODULE(RoleDecisionPositionDynamic)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugParameterList)
   REQUIRE(FieldInfo)
+  REQUIRE(TeamBallModel)
   PROVIDE(RoleDecisionModel)
-END_DECLARE_MODULE(RoleDecisionPositionStatic);
+END_DECLARE_MODULE(RoleDecisionPositionDynamic);
 
 
 typedef RoleDecisionModel RM;
 
 
-class RoleDecisionPositionStatic : public RoleDecisionPositionStaticBase
+class RoleDecisionPositionDynamic : public RoleDecisionPositionDynamicBase
 {
 public:
-    RoleDecisionPositionStatic() : params(getFieldInfo())
-    {
-        getDebugParameterList().add(&params);
-
-        DEBUG_REQUEST_REGISTER("RoleDecision:Position:draw_positions_static", "draw role positions on the field", false);
-    }
-
-    virtual ~RoleDecisionPositionStatic()
-    {
-        getDebugParameterList().remove(&params);
-    }
-
-    virtual void execute() {
-        // set the static default positions
-        for (const auto& d : params.defaults) {
-            getRoleDecisionModel().roles_position[d.first] = d.second;
-        }
-
-        DEBUG_REQUEST("RoleDecision:Position:draw_positions_static",
-            FIELD_DRAWING_CONTEXT;
-            PEN("666666", 20);
-            for(const auto& r : getRoleDecisionModel().roles_position) {
-                LINE(r.second.home.x, r.second.home.y-20, r.second.home.x, r.second.home.y+20);
-                LINE(r.second.home.x-20, r.second.home.y, r.second.home.x+20, r.second.home.y);
-            }
-        );
-    }
+    RoleDecisionPositionDynamic();
+    virtual ~RoleDecisionPositionDynamic();
+    virtual void execute();
 
 private:
-
     class Parameters: public ParameterList
     {
     public:
-        Parameters(const FieldInfo& fi) : ParameterList("RoleDecisionPositionStatic")
+        Parameters(const FieldInfo& fi) : ParameterList("RoleDecisionPositionDynamic")
         {
+            PARAMETER_REGISTER(goalie_defense_min_x) = 0;
+
             PARAMETER_REGISTER(base_x) = 9000;
             PARAMETER_REGISTER(base_y) = 6000;
             field_x = fi.xLength;
@@ -82,6 +61,8 @@ private:
             // load from the file after registering all parameters
             syncWithConfig();
         }
+
+        double goalie_defense_min_x;
 
         double base_x;
         double base_y;
@@ -139,6 +120,8 @@ private:
         }
 
     } params;
+
+    void calculateGoalieDefensivePosition();
 };
 
-#endif // ROLEDECISIONPOSITIONSTATIC_H
+#endif // ROLEDECISIONPOSITIONDYNAMIC_H
