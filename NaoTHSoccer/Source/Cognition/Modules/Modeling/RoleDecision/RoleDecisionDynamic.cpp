@@ -1,4 +1,5 @@
 #include "RoleDecisionDynamic.h"
+#include "Tools/Math/Line.h"
 
 RoleDecisionDynamic::RoleDecisionDynamic()
 {
@@ -46,6 +47,7 @@ void RoleDecisionDynamic::decideStriker(std::map<unsigned int, RM::DynamicRole>&
      */
 
     std::vector<Striker> new_striker;
+    const TeamMessageData* goalie = nullptr;
 
     // iterate over all robots(messages)
     for (const auto& i : getTeamMessage().data) {
@@ -65,27 +67,54 @@ void RoleDecisionDynamic::decideStriker(std::map<unsigned int, RM::DynamicRole>&
         // last time ball seen is too big (striker gets an additional bonus)
         if(ballAge > (params.striker_ball_lost_time + timeBonus)) { continue; }
 
-        Vector2d globalBall = msg.pose * msg.ballPosition;
-        double indicator = strikerIndicatorDistance(msg);
-
-        // goalie needs to be handled specially
         if(getRoleDecisionModel().roles[playerNumber].role == RM::goalie) {
-            // if the ball is near the goal, the goalie has to clear the ball or goalie is alone on the field
-            if((globalBall.x < params.striker_goalie_min_x_pos && msg.ballPosition.abs() <= params.striker_goalie_ball_distance)
-                || getTeamMessagePlayersState().getActiveCount() <= 1)
-            {
-                // set goalie as striker and make sure nobody is "better"
-                indicator = 0.0;
-                checkStriker(msg, indicator, globalBall, new_striker, true);
-            }
+            // goalie needs to be handled specially later
+            goalie = &msg;
         } else {
+            Vector2d globalBall = msg.pose * msg.ballPosition;
+            double indicator = strikerIndicatorDistance(msg);
+
             checkStriker(msg, indicator, globalBall, new_striker);
         }
     }//end for
 
+    if(goalie != nullptr) {
+        handleGoalie(goalie, new_striker);
+    }
+
     // set the striker decision to the model
     for(const auto& s : new_striker) {
         roles[s.playerNumber] = RM::striker;
+    }
+}
+
+void RoleDecisionDynamic::handleGoalie(const TeamMessageData* goalie, std::vector<Striker>& striker)
+{
+    double indicator = 0.0;
+    Vector2d globalBall = goalie->pose * goalie->ballPosition;
+    // ball is inside penalty area, goalie is definitely getting striker
+    if(globalBall.x <= getFieldInfo().xPosOwnPenaltyArea) {
+        checkStriker(*goalie, indicator, globalBall, striker, true);
+    } else {
+        bool strikerAlreadyDefending = false;
+        // check if a striker is already defending our goal (striker is between goal and ball)
+        for(auto& s : striker) {
+            if(getTeamMessage().data.at(s.playerNumber).pose.translation.x < globalBall.x) {
+                Math::Line playerBallLine(globalBall, (getTeamMessage().data.at(s.playerNumber).pose.translation - globalBall));
+                Math::LineSegment goalLine(getFieldInfo().ownGoalPostRight, getFieldInfo().ownGoalPostLeft);
+                if(goalLine.intersect(playerBallLine)) {
+                    strikerAlreadyDefending = true;
+                    break;
+                }
+            }
+        }
+        // if goalie is alone on the field or the ball is near the goal and nobody already defendin => the goalie has to clear the ball
+        if(getTeamMessagePlayersState().getActiveCount() <= 1
+           || (!strikerAlreadyDefending && globalBall.x < params.striker_goalie_min_x_pos && goalie->ballPosition.abs() <= params.striker_goalie_ball_distance))
+        {
+            // set goalie as striker and make sure nobody is "better"
+            checkStriker(*goalie, indicator, globalBall, striker, true);
+        }
     }
 }
 

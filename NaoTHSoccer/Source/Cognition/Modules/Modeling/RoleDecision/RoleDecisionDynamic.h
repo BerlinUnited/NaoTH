@@ -95,6 +95,7 @@ private:
     void decideSupporter(std::map<unsigned int, RM::DynamicRole>& roles);
 
     void checkStriker(const TeamMessageData& msg, const double& indicator, const Vector2d& ball, std::vector<Striker>& striker, bool force = false);
+    void handleGoalie(const TeamMessageData *goalie, std::vector<Striker>& striker);
 
     std::function<double(double)> ballDifferenceRadius;
     inline double ballDifferenceRadiusConstant(double /*d*/) { return params.striker_ball_difference_distance; }
