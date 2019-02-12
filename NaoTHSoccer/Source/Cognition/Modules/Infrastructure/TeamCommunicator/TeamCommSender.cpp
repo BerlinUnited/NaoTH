@@ -2,6 +2,7 @@
 
 #include "PlatformInterface/Platform.h"
 #include <Tools/NaoTime.h>
+#include "Representations/Motion/Request/MotionID.h"
 
 TeamCommSender::TeamCommSender()
   :lastSentTimestamp(0),
@@ -68,7 +69,12 @@ void TeamCommSender::fillMessageBeforeSending() const
       msg.custom.ballVelocity.y = 0;
     }
 
-    msg.fallen = getBodyState().fall_down_state != BodyState::upright;
+    // TODO: should be fixed with issue #105
+    msg.fallen = getBodyState().fall_down_state != BodyState::upright
+              || getMotionStatus().currentMotion == motion::stand_up_from_back
+              || getMotionStatus().currentMotion == motion::stand_up_from_side
+              || getMotionStatus().currentMotion == motion::stand_up_from_front
+              || getMotionStatus().currentMotion == motion::stand_up_from_back_arms_back;
 
     // TODO: can we make it more separate?
     msg.custom.timestamp = naoth::NaoTime::getSystemTimeInMilliSeconds();
