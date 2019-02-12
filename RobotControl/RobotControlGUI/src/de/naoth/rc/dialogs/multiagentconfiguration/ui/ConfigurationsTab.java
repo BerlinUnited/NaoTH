@@ -444,15 +444,23 @@ public class ConfigurationsTab implements ResponseListener
             Arrays.asList(new String(result).split("\n")).forEach((p) -> {
                 String[] parts = p.split("=");
                 if(parts.length == 2) {
+                    // find existing parameter in global tree
+                    TreeItem<Parameter> globalParameter = treeItem_global.getChildren().stream().filter((TreeItem<Parameter> t) -> {
+                        return t.getValue().getName().equals(parts[0]);
+                    }).findAny().orElse(null);
+                    // create new item in global tree, if it wasn't found
+                    if(globalParameter == null) {
+                        globalParameter = new TreeItem<>(new Parameter(type, param, parts[0], parts[1]));
+                        treeItem_global.getChildren().add(globalParameter);
+                    }
+                    
                     // create parameter objects (local, global)
                     Parameter pl = new Parameter(type, param, parts[0], parts[1]);
-                    Parameter pg = new Parameter(type, param, parts[0], parts[1]);
                     // add listener to global parameter (changes the local)
-                    pg.valueProperty().addListener((o, v1, v2) -> { pl.setValue(v2); });
+                    globalParameter.getValue().valueProperty().addListener((o, v1, v2) -> { pl.setValue(v2); });
                     pl.valueProperty().addListener((o) -> { parameterRequest.accept(pl); });
                     // add to respective parameter tree
                     treeItem.getChildren().add(new TreeItem<>(pl));
-                    treeItem_global.getChildren().add(new TreeItem<>(pg));
                 } else {
                     System.err.println("Invalid motion parameter: " + Arrays.asList(parts));
                 }
