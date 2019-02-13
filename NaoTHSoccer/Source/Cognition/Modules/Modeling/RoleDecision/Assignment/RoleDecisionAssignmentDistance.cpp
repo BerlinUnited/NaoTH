@@ -84,8 +84,16 @@ double RoleDecisionAssignmentDistance::getMinChangingTime(unsigned int player) {
 }
 
 void RoleDecisionAssignmentDistance::withPriority(std::map<unsigned int, Roles::Static>& new_roles) {
+    // retrieve assignable roles
+    std::vector<Roles::Static> assignable_roles(params.active_roles);
+    for(const auto& v : getTeamMessage().data) {
+        if(new_roles.find(v.first) != new_roles.cend()) {
+            auto r = std::remove(assignable_roles.begin(), assignable_roles.end(), new_roles.at(v.first));
+            if(r != assignable_roles.end()) { assignable_roles.erase(r); }
+        }
+    }
     // determine the distance between each robot/role and assign the role nearest to the robot
-    for (const auto& r : params.active_roles) {
+    for (const auto& r : assignable_roles) {
         std::pair<unsigned int, double> smallest(0, std::numeric_limits<double>::max());
         for (const auto& i : getTeamMessage().data) {
             // only active players and players without an role yet, are used for this role assignment
