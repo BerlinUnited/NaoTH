@@ -9,6 +9,7 @@
 #include "Tools/Debug/DebugParameterList.h"
 
 #include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Infrastructure/Roles.h"
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Modeling/TeamMessageStatistics.h"
 #include "Representations/Modeling/TeamMessagePlayersState.h"
@@ -29,9 +30,6 @@ BEGIN_DECLARE_MODULE(RoleDecisionAssignmentDistance)
 
   PROVIDE(RoleDecisionModel)
 END_DECLARE_MODULE(RoleDecisionAssignmentDistance);
-
-// shorthand definition
-typedef RoleDecisionModel RM;
 
 
 class RoleDecisionAssignmentDistance : public RoleDecisionAssignmentDistanceBase
@@ -63,16 +61,16 @@ private:
         double minChangingTime;
 
         std::string assignment;
-        std::map<unsigned int, RM::StaticRole> assignment_role;
+        std::map<unsigned int, Roles::Static> assignment_role;
 
         std::string active;
-        std::vector<RM::StaticRole> active_roles;
+        std::vector<Roles::Static> active_roles;
 
         std::string variant;
-        void (RoleDecisionAssignmentDistance::*variantFunc)(std::map<unsigned int, RM::StaticRole>&);
+        void (RoleDecisionAssignmentDistance::*variantFunc)(std::map<unsigned int, Roles::Static>&);
 
         std::string changing;
-        void (RoleDecisionAssignmentDistance::*changingFunc)(std::map<unsigned int, RM::StaticRole>&);
+        void (RoleDecisionAssignmentDistance::*changingFunc)(std::map<unsigned int, Roles::Static>&);
     private:
         /**
          * @brief If the 'assignment' parameter changes, the new value is parsed and the new role
@@ -89,7 +87,7 @@ private:
             for(const std::string& part : parts) {
                 std::vector<std::string> assign_part = StringTools::split(part, ':');
                 ASSERT(assign_part.size() == 2);
-                assignment_role[static_cast<unsigned int>(std::stoul(assign_part[0]))] = RoleDecisionModel::getStaticRole(assign_part[1]);
+                assignment_role[static_cast<unsigned int>(std::stoul(assign_part[0]))] = Roles::getStaticRole(assign_part[1]);
             }
         }
 
@@ -106,16 +104,16 @@ private:
             active_roles.clear();
             if(active.compare("all") == 0) {
                 // user all static roles, but ignore the "unknown" one
-                for(int i = 1; i < RM::numOfStaticRoles; ++i)
+                for(int i = 1; i < Roles::numOfStaticRoles; ++i)
                 {
-                    active_roles.push_back(static_cast<RM::StaticRole>(i));
+                    active_roles.push_back(static_cast<Roles::Static>(i));
                 }
             } else {
                 // only use the defined roles
                 std::vector<std::string> parts = StringTools::split(active, ';');
                 for(const std::string& part : parts) {
-                    RM::StaticRole r = RM::getStaticRole(part);
-                    ASSERT(RoleDecisionModel::unknown != r);
+                    Roles::Static r = Roles::getStaticRole(part);
+                    ASSERT(Roles::unknown != r);
                     active_roles.push_back(r);
                 }
             }
@@ -153,7 +151,7 @@ private:
     } params;
 
     /** Holds the decision of the last cycles and a 'counter' for how long this decision is made. */
-    std::map<unsigned int, std::pair<double, RM::StaticRole>> role_changes;
+    std::map<unsigned int, std::pair<double, Roles::Static>> role_changes;
 
     /**
      * @brief Changes the role of the RoleDecisionModel of the given player to the given role
@@ -162,7 +160,7 @@ private:
      * @param playernumber  the player, who should get the new role
      * @param role          the role the player should get
      */
-    void roleChange(unsigned int playernumber, RM::StaticRole role);
+    void roleChange(unsigned int playernumber, Roles::Static role);
 
     /**
      * @brief Finds the 'goalie' role in the current role assignment and keeps the role for the
@@ -170,7 +168,7 @@ private:
      *
      * @param new_roles the role decision for the current cycle
      */
-    void keepGoalie(std::map<unsigned int, RM::StaticRole>& new_roles);
+    void keepGoalie(std::map<unsigned int, Roles::Static>& new_roles);
 
     /**
      * @brief Returns the time in seconds, when a player should take its new role.
@@ -188,7 +186,7 @@ private:
      *
      * @param new_roles the role decision for the current cycle
      */
-    void withPriority(std::map<unsigned int, RM::StaticRole>& new_roles);
+    void withPriority(std::map<unsigned int, Roles::Static>& new_roles);
 
     /**
      * @brief Determines the optimal role assignment for the whole team in that the sum
@@ -196,7 +194,7 @@ private:
      *
      * @param new_roles the role decision for the current cycle
      */
-    void withDistance(std::map<unsigned int, RM::StaticRole>& new_roles);
+    void withDistance(std::map<unsigned int, Roles::Static>& new_roles);
 
     /**
      * @brief The role decision for this cycle is only applied, if the role decicion was
@@ -205,7 +203,7 @@ private:
      *
      * @param new_roles the role decision for the current cycle
      */
-    void roleChangeByCycle(std::map<unsigned int, RM::StaticRole>& new_roles);
+    void roleChangeByCycle(std::map<unsigned int, Roles::Static>& new_roles);
 
     /**
      * @brief The role decision for this cycle is only applied, if the role decicion was
@@ -215,7 +213,7 @@ private:
      *
      * @param new_roles the role decision for the current cycle
      */
-    void roleChangeByTime(std::map<unsigned int, RM::StaticRole>& new_roles);
+    void roleChangeByTime(std::map<unsigned int, Roles::Static>& new_roles);
 };
 
 #endif // ROLEDECISIONASSIGNMENTDISTANCE_H

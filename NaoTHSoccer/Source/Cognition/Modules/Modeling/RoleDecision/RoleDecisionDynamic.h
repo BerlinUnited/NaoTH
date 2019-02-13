@@ -7,6 +7,7 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Infrastructure/GameData.h"
+#include "Representations/Infrastructure/Roles.h"
 
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Modeling/TeamMessageData.h"
@@ -39,9 +40,6 @@ BEGIN_DECLARE_MODULE(RoleDecisionDynamic)
 
   PROVIDE(RoleDecisionModel)
 END_DECLARE_MODULE(RoleDecisionDynamic);
-
-
-typedef RoleDecisionModel RM;
 
 
 class RoleDecisionDynamic : public RoleDecisionDynamicBase
@@ -90,9 +88,9 @@ private:
         double sameBallRadius;
     };
 
-    void decideStriker(std::map<unsigned int, RM::DynamicRole>& roles);
-    void decideGoalieSupporter(std::map<unsigned int, RM::DynamicRole>& roles);
-    void decideSupporter(std::map<unsigned int, RM::DynamicRole>& roles);
+    void decideStriker(std::map<unsigned int, Roles::Dynamic>& roles);
+    void decideGoalieSupporter(std::map<unsigned int, Roles::Dynamic>& roles);
+    void decideSupporter(std::map<unsigned int, Roles::Dynamic>& roles);
 
     void checkStriker(const TeamMessageData& msg, const double& indicator, const Vector2d& ball, std::vector<Striker>& striker, bool force = false);
     void handleGoalie(const TeamMessageData *goalie, std::vector<Striker>& striker);

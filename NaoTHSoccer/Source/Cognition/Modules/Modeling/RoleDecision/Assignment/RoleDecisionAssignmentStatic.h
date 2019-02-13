@@ -35,7 +35,7 @@ public:
         for (const auto& i : getTeamMessage().data) {
             const auto& r = params.assignment_role.find(i.first);
             if(r == params.assignment_role.cend()) {
-                getRoleDecisionModel().roles[i.first] = RoleDecisionModel::unknown;
+                getRoleDecisionModel().roles[i.first] = Roles::unknown;
             } else {
                 getRoleDecisionModel().roles[i.first] = r->second;
             }
@@ -54,7 +54,7 @@ private:
         }
 
         std::string assignment;
-        std::map<unsigned int, RoleDecisionModel::StaticRole> assignment_role;
+        std::map<unsigned int, Roles::Static> assignment_role;
 
     private:
         void parseAssignment(std::string assignment) {
@@ -62,7 +62,7 @@ private:
             for(const std::string& part : parts) {
                 std::vector<std::string> assign_part = StringTools::split(part, ':');
                 ASSERT(assign_part.size() == 2);
-                assignment_role[static_cast<unsigned int>(std::stoul(assign_part[0]))] = RoleDecisionModel::getStaticRole(assign_part[1]);
+                assignment_role[static_cast<unsigned int>(std::stoul(assign_part[0]))] = Roles::getStaticRole(assign_part[1]);
             }
         }
     } params;

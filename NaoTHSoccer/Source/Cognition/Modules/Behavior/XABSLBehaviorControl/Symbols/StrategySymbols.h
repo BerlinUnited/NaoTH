@@ -17,6 +17,7 @@
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/CompassDirection.h"
 #include "Representations/Infrastructure/GameData.h"
+#include "Representations/Infrastructure/Roles.h"
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Modeling/RoleDecisionModel.h"
 #include "Representations/Modeling/TeamMessagePlayersState.h"

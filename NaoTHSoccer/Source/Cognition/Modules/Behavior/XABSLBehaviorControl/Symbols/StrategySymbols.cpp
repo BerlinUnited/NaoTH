@@ -84,19 +84,19 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("freekick.pos.y", &freeKickPositionY);
 
   // role selection
-  for(int i = 0; i < RoleDecisionModel::numOfStaticRoles; ++i)
+  for(int i = 0; i < Roles::numOfStaticRoles; ++i)
   {
     string str("role.static.");
-    str.append(RoleDecisionModel::getName((RoleDecisionModel::StaticRole)i));
+    str.append(Roles::getName((Roles::Static)i));
     engine.registerEnumElement("role.static", str.c_str(), i);
   }
 
   engine.registerEnumeratedInputSymbol("strategy.role", "role.static", &getStaticRole);
 
-  for(int i = 0; i < RoleDecisionModel::numOfDynamicRoles; ++i)
+  for(int i = 0; i < Roles::numOfDynamicRoles; ++i)
   {
     string str("role.dynamic.");
-    str.append(RoleDecisionModel::getName((RoleDecisionModel::DynamicRole)i));
+    str.append(Roles::getName((Roles::Dynamic)i));
     engine.registerEnumElement("role.dynamic", str.c_str(), i);
   }
 
@@ -538,7 +538,7 @@ int StrategySymbols::getStaticRole() {
     if(it != theInstance->getRoleDecisionModel().roles.cend()) {
         return it->second.role;
     }
-    return RoleDecisionModel::unknown;
+    return Roles::unknown;
 }
 
 int StrategySymbols::getDynamicRole() {
@@ -546,7 +546,7 @@ int StrategySymbols::getDynamicRole() {
     if(it != theInstance->getRoleDecisionModel().roles.cend()) {
         return it->second.dynamic;
     }
-    return RoleDecisionModel::none;
+    return Roles::none;
 }
 
 double StrategySymbols::getHomePositionX() {

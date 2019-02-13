@@ -29,7 +29,7 @@ void RoleDecisionAssignmentDistance::execute()
         }
     } else if (getPlayerInfo().robotState == PlayerInfo::playing) {
         // determine the best role for each player in the team context
-        std::map<unsigned int, RM::StaticRole> new_roles;
+        std::map<unsigned int, Roles::Static> new_roles;
 
         // the goalie is always goalie! (should never change)
         keepGoalie(new_roles);
@@ -40,7 +40,7 @@ void RoleDecisionAssignmentDistance::execute()
         // some debug output
         DEBUG_REQUEST("RoleDecision:Assignment:Distance:print_current_decision",
             for(const auto& r : new_roles) {
-                std::cout << r.first << ":" << RM::getName(r.second) << ";";
+                std::cout << r.first << ":" << Roles::getName(r.second) << ";";
             }
             std::cout << std::endl;
         );
@@ -51,13 +51,13 @@ void RoleDecisionAssignmentDistance::execute()
         // players, which doesn't got a (new) role, gets the 'unknown' role assigned
         for (const auto& i : getTeamMessage().data) {
             if(new_roles.find(i.first) == new_roles.cend()) {
-                roleChange(i.first, RM::unknown);
+                roleChange(i.first, Roles::unknown);
             }
         }
     }
 }
 
-void RoleDecisionAssignmentDistance::roleChange(unsigned int playernumber, RM::StaticRole role) {
+void RoleDecisionAssignmentDistance::roleChange(unsigned int playernumber, Roles::Static role) {
     // set the new role for the player
     getRoleDecisionModel().roles[playernumber].role = role;
     // reset (internal) change counter
@@ -65,15 +65,15 @@ void RoleDecisionAssignmentDistance::roleChange(unsigned int playernumber, RM::S
     role_changes[playernumber].second = role;
 }
 
-void RoleDecisionAssignmentDistance::keepGoalie(std::map<unsigned int, RM::StaticRole>& new_roles) {
+void RoleDecisionAssignmentDistance::keepGoalie(std::map<unsigned int, Roles::Static>& new_roles) {
     // find the player with the goalie role
     const auto& goalie = std::find_if(
                 getRoleDecisionModel().roles.cbegin(),
                 getRoleDecisionModel().roles.cend(),
-                [](const std::pair<const unsigned int,RM::Role>& r) {return r.second.role == RM::goalie; });
+                [](const std::pair<const unsigned int,Roles::Role>& r) {return r.second.role == Roles::goalie; });
     // set the new role to goale (again)
     if(goalie != getRoleDecisionModel().roles.end()) {
-        new_roles[goalie->first] = RM::goalie;
+        new_roles[goalie->first] = Roles::goalie;
     }
 }
 
@@ -83,7 +83,7 @@ double RoleDecisionAssignmentDistance::getMinChangingTime(unsigned int player) {
                 params.minChangingTime;
 }
 
-void RoleDecisionAssignmentDistance::withPriority(std::map<unsigned int, RM::StaticRole>& new_roles) {
+void RoleDecisionAssignmentDistance::withPriority(std::map<unsigned int, Roles::Static>& new_roles) {
     // determine the distance between each robot/role and assign the role nearest to the robot
     for (const auto& r : params.active_roles) {
         std::pair<unsigned int, double> smallest(0, std::numeric_limits<double>::max());
@@ -106,10 +106,10 @@ void RoleDecisionAssignmentDistance::withPriority(std::map<unsigned int, RM::Sta
     }
 }
 
-void RoleDecisionAssignmentDistance::withDistance(std::map<unsigned int, RM::StaticRole>& new_roles)
+void RoleDecisionAssignmentDistance::withDistance(std::map<unsigned int, Roles::Static>& new_roles)
 {
     // retrieve assignable roles
-    std::vector<RM::StaticRole> assignable_roles(params.active_roles);
+    std::vector<Roles::Static> assignable_roles(params.active_roles);
     // retrieve players, which doesn't already have a role and remove already assigned roles from the assignable vector
     std::vector<unsigned int> assignable_player;
     for(const auto& v : getTeamMessage().data) {
@@ -142,7 +142,7 @@ void RoleDecisionAssignmentDistance::withDistance(std::map<unsigned int, RM::Sta
     // assign optimal roles, with additional debugging output, if there's a non-optimal assignment
     for (size_t r = 0; r < rows; ++r) {
         // retrieve assignment per player
-        std::vector<RM::StaticRole> assignments;
+        std::vector<Roles::Static> assignments;
         for (size_t c = 0; c < cols; ++c) {
             if(m(r,c) == 0.0) {
                 assignments.push_back(assignable_roles[c]);
@@ -159,13 +159,13 @@ void RoleDecisionAssignmentDistance::withDistance(std::map<unsigned int, RM::Sta
         } else {
             // DEBUG: print out mupltiple-assignments
             std::cout<<"DOUBLE ASSIGNMENT "<<assignable_player[r]<<"?"<<std::endl;
-            for(auto it : assignments) { std::cout<<RM::getName(it)<<", "; }
+            for(auto it : assignments) { std::cout<<Roles::getName(it)<<", "; }
             std::cout<<"\n"<<m<<std::endl;
         }
     }
 }
 
-void RoleDecisionAssignmentDistance::roleChangeByCycle(std::map<unsigned int, RM::StaticRole>& new_roles)
+void RoleDecisionAssignmentDistance::roleChangeByCycle(std::map<unsigned int, Roles::Static>& new_roles)
 {
     for(const auto& n : new_roles) {
         if(getRoleDecisionModel().roles[n.first].role == n.second) {
@@ -191,7 +191,7 @@ void RoleDecisionAssignmentDistance::roleChangeByCycle(std::map<unsigned int, RM
     }
 }
 
-void RoleDecisionAssignmentDistance::roleChangeByTime(std::map<unsigned int, RM::StaticRole>& new_roles)
+void RoleDecisionAssignmentDistance::roleChangeByTime(std::map<unsigned int, Roles::Static>& new_roles)
 {
     for(const auto& it : new_roles)
     {

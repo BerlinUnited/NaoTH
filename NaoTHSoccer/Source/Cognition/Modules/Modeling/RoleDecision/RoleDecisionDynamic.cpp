@@ -19,7 +19,7 @@ RoleDecisionDynamic::~RoleDecisionDynamic()
 
 void RoleDecisionDynamic::execute()
 {
-    std::map<unsigned int, RM::DynamicRole> new_roles;
+    std::map<unsigned int, Roles::Dynamic> new_roles;
 
     decideStriker(new_roles);
     decideGoalieSupporter(new_roles);
@@ -31,12 +31,12 @@ void RoleDecisionDynamic::execute()
         if(it != new_roles.cend()) {
             r.second.dynamic = it->second;
         } else {
-            r.second.dynamic = RM::none;
+            r.second.dynamic = Roles::none;
         }
     }
 }
 
-void RoleDecisionDynamic::decideStriker(std::map<unsigned int, RM::DynamicRole>& roles)
+void RoleDecisionDynamic::decideStriker(std::map<unsigned int, Roles::Dynamic>& roles)
 {
     /*
      * - only active
@@ -61,13 +61,13 @@ void RoleDecisionDynamic::decideStriker(std::map<unsigned int, RM::DynamicRole>&
         if(msg.ballAge < 0) { continue; }
 
         double ballAge = msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime());
-        double timeBonus = getRoleDecisionModel().roles[playerNumber].dynamic == RM::striker ? params.striker_ball_bonus_time : 0.0;
+        double timeBonus = getRoleDecisionModel().roles[playerNumber].dynamic == Roles::striker ? params.striker_ball_bonus_time : 0.0;
 
         // TODO: instead of using 'hard-coded' values, base this on the average receiving time!
         // last time ball seen is too big (striker gets an additional bonus)
         if(ballAge > (params.striker_ball_lost_time + timeBonus)) { continue; }
 
-        if(getRoleDecisionModel().roles[playerNumber].role == RM::goalie) {
+        if(getRoleDecisionModel().roles[playerNumber].role == Roles::goalie) {
             // goalie needs to be handled specially later
             goalie = &msg;
         } else {
@@ -84,7 +84,7 @@ void RoleDecisionDynamic::decideStriker(std::map<unsigned int, RM::DynamicRole>&
 
     // set the striker decision to the model
     for(const auto& s : new_striker) {
-        roles[s.playerNumber] = RM::striker;
+        roles[s.playerNumber] = Roles::striker;
     }
 }
 
@@ -161,7 +161,7 @@ void RoleDecisionDynamic::checkStriker(const TeamMessageData& msg,
 
 double RoleDecisionDynamic::strikerIndicatorDistance(const TeamMessageData& msg)
 {
-    double strikerBonus = getRoleDecisionModel().roles[msg.playerNumber].dynamic == RM::striker ?
+    double strikerBonus = getRoleDecisionModel().roles[msg.playerNumber].dynamic == Roles::striker ?
                 params.striker_indicator_bonus : 0.0;
     return msg.ballPosition.abs2() - strikerBonus;
 }
@@ -171,7 +171,7 @@ double RoleDecisionDynamic::strikerIndicatorTimeToBall(const TeamMessageData& ms
     return msg.custom.timeToBall;
 }
 
-void RoleDecisionDynamic::decideGoalieSupporter(std::map<unsigned int, RM::DynamicRole>& roles)
+void RoleDecisionDynamic::decideGoalieSupporter(std::map<unsigned int, Roles::Dynamic>& roles)
 {
     /*
      * - if goalie is inactive, someone should become "goalie"
@@ -183,12 +183,12 @@ void RoleDecisionDynamic::decideGoalieSupporter(std::map<unsigned int, RM::Dynam
     // iterate over all robots(messages)
     for (const auto& i : getTeamMessage().data) {
         if(roles.find(i.first) == roles.cend()) {
-            roles[i.first] = RM::none;
+            roles[i.first] = Roles::none;
         }
     }
 }
 
-void RoleDecisionDynamic::decideSupporter(std::map<unsigned int, RM::DynamicRole>& roles)
+void RoleDecisionDynamic::decideSupporter(std::map<unsigned int, Roles::Dynamic>& roles)
 {
     /*
      * - the supporter helps the striker
@@ -196,11 +196,38 @@ void RoleDecisionDynamic::decideSupporter(std::map<unsigned int, RM::DynamicRole
      * - should be someone, who also sees the ball and is in a good position to help ...
      */
     // TODO!
+    std::vector<Striker> new_supporter;
 
     // iterate over all robots(messages)
     for (const auto& i : getTeamMessage().data) {
         if(roles.find(i.first) == roles.cend()) {
-            roles[i.first] = RM::none;
+            unsigned int playerNumber = i.first;
+            const TeamMessageData& msg = i.second;
+
+            // inactive/fallen/penalized robot
+            if(!getTeamMessagePlayersState().isPlaying(playerNumber)) { continue; }
+
+            // ball not seen
+            if(msg.ballAge < 0) { continue; }
+
+            double ballAge = msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime());
+
+            // TODO: instead of using 'hard-coded' values, base this on the average receiving time!
+            // last time ball seen is too big (striker gets an additional bonus)
+            if(ballAge > params.striker_ball_lost_time) { continue; }
+
+            // goalie doesn't support, all others do!
+            if(getRoleDecisionModel().roles[playerNumber].role != Roles::goalie) {
+                Vector2d globalBall = msg.pose * msg.ballPosition;
+                double indicator = msg.ballPosition.abs();
+
+                //checkStriker(msg, indicator, globalBall, new_striker);
+            }
         }
+    }
+
+    // set the supporter decision to the model
+    for(const auto& s : new_supporter) {
+        roles[s.playerNumber] = Roles::supporter;
     }
 }

@@ -1,7 +1,7 @@
 #include "RoleDecisionPositionDynamic.h"
 #include "Tools/Math/Common.h"
 
-RoleDecisionPositionDynamic::RoleDecisionPositionDynamic() : params(getFieldInfo())
+RoleDecisionPositionDynamic::RoleDecisionPositionDynamic()
 {
     getDebugParameterList().add(&params);
 
@@ -15,8 +15,8 @@ RoleDecisionPositionDynamic::~RoleDecisionPositionDynamic()
 
 void RoleDecisionPositionDynamic::execute() {
     // set the static default positions
-    for (const auto& d : params.defaults) {
-        if(d.first == RM::goalie) {
+    for (const auto& d : getRoles().defaults) {
+        if(d.first == Roles::goalie) {
             calculateGoalieDefensivePosition();
         } else {
             getRoleDecisionModel().roles_position[d.first] = d.second;
@@ -60,10 +60,10 @@ void RoleDecisionPositionDynamic::calculateGoalieDefensivePosition()
     }
 
     // apply the position to the model
-    getRoleDecisionModel().roles_position[RM::goalie].home.x = x + getFieldInfo().xPosOwnGroundline;
-    getRoleDecisionModel().roles_position[RM::goalie].home.y = y;
+    getRoleDecisionModel().roles_position[Roles::goalie].home.x = x + getFieldInfo().xPosOwnGroundline;
+    getRoleDecisionModel().roles_position[Roles::goalie].home.y = y;
     // keep the default kickoff positions
-    getRoleDecisionModel().roles_position[RM::goalie].own = params.defaults[RM::goalie].own;
-    getRoleDecisionModel().roles_position[RM::goalie].opp = params.defaults[RM::goalie].opp;
+    getRoleDecisionModel().roles_position[Roles::goalie].own = getRoles().defaults.at(Roles::goalie).own;
+    getRoleDecisionModel().roles_position[Roles::goalie].opp = getRoles().defaults.at(Roles::goalie).opp;
 
 }

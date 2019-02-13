@@ -14,63 +14,17 @@
 
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/Math/Vector2.h"
+#include "Representations/Infrastructure/Roles.h"
 
 class RoleDecisionModel: public naoth::Printable
 {
 public:
     RoleDecisionModel() {}
 
-    enum StaticRole {
-        unknown,
-        goalie,
-        defender_left,
-        defender_center,
-        defender_right,
-        midfielder_left,
-        midfielder_center,
-        midfielder_right,
-        forward_left,
-        forward_center,
-        forward_right,
-        // ------------
-        numOfStaticRoles
-    };
+    std::map<unsigned int, Roles::Role> roles;
+    std::map<Roles::Static, Roles::Position> roles_position;
 
-    enum DynamicRole {
-        none,
-        supporter,
-        goalie_supporter,
-        striker,
-        // ------------
-        numOfDynamicRoles
-    };
-
-    struct RolePosition
-    {
-        Vector2d home; // home position
-        Vector2d own; // position for own kickoff
-        Vector2d opp; // position for opp kickoff
-    };
-
-    struct Role
-    {
-        Role():role(unknown){}
-        Role(StaticRole r):role(r){}
-
-        StaticRole role; // the actual role
-        DynamicRole dynamic; // the actual role
-    };
-
-    std::map<unsigned int, Role> roles;
-    std::map<StaticRole, RolePosition> roles_position;
-
-    static std::string getName(StaticRole role);
-    static std::string getName(DynamicRole role);
-
-    static StaticRole getStaticRole(std::string name);
-    static DynamicRole getDynamicRole(std::string name);
-
-    RolePosition getStaticRolePosition(StaticRole role) const;
+    Roles::Position getStaticRolePosition(Roles::Static role) const;
 
     bool isStriker(unsigned int playerNumber) const;
 
