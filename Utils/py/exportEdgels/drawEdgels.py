@@ -84,7 +84,7 @@ def projectEdgel(x,y,cMatrix):
     return (result.x, result.y)
 
 def animate(i, log, edgelsPlotTop, edgelsPlot, projectedEdgelsPlot):
-    msg = log.next()
+    msg = log.__next__()
 
     edgelFrame = [(edgel.point.x, -edgel.point.y) for edgel in msg[1].edgels]
     edgelsPlotTop.set_offsets(edgelFrame)
