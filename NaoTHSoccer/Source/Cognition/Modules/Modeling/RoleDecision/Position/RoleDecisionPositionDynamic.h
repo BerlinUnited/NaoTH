@@ -43,16 +43,20 @@ private:
     public:
         Parameters() : ParameterList("RoleDecisionPositionDynamic")
         {
-            PARAMETER_REGISTER(goalie_defense_min_x) = 0;
-
+            PARAMETER_REGISTER(force_sideline) = 10000000;
+            PARAMETER_REGISTER(force_teammates) = 10000000;
+            PARAMETER_REGISTER(force_ball) = 10;
             // load from the file after registering all parameters
             syncWithConfig();
         }
 
-        double goalie_defense_min_x;
+        double force_sideline;
+        double force_teammates;
+        double force_ball;
     } params;
 
-    void calculateGoalieDefensivePosition();
+    void reset();
+    void calculateRepellerAttractorPosition(Roles::Static r, std::map<Roles::Static, Vector2d> &pos);
 };
 
 #endif // ROLEDECISIONPOSITIONDYNAMIC_H
