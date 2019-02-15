@@ -1,9 +1,9 @@
 //--------------------------------------------------------------------------------------------------
 //
 // @file USBJoypadData.h
-// Gamepad/Joypad data declarations
-//
 // @author <a href="mailto:albert@informatik.hu-berlin.de">Andreas Albert</a>
+//
+// Gamepad/Joypad data declarations
 //
 //--------------------------------------------------------------------------------------------------
 // this file goes to ...Commons/Source/Representations/Infrastructure later
@@ -14,7 +14,6 @@
 //--------------------------------------------------------------------------------------------------
 #include <string>
 #include <vector>
-//#include "../../Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Printable.h"
 
 //--------------------------------------------------------------------------------------------------

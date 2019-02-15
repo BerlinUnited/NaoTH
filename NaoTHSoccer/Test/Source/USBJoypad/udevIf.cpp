@@ -1,6 +1,6 @@
 //--------------------------------------------------------------------------------------------------
 //
-// @file udevInterface.cpp
+// @file udevIf.cpp
 // @author <a href="mailto:albert@informatik.hu-berlin.de">Andreas Albert</a>
 //
 // Interface to udev functions
@@ -9,18 +9,15 @@
 //
 //==================================================================================================
 //--------------------------------------------------------------------------------------------------
-#include <iostream>
-#include <unistd.h>
-#include <signal.h>
 #include <sys/epoll.h>
 #include <sys/file.h>
-//#include "../../../../../Commons/Source/Tools/ThreadUtil.h"
 #include "Tools/ThreadUtil.h"
 #include "udevIf.h"
 //--------------------------------------------------------------------------------------------------
+#define FD_INVALID        -1
 //Valid monitor sources identifiers are "udev" and "kernel"
-#define ID_MONITOR_UDEV  "udev"
-#define SUBSYSTEM_HIDRAW "hidraw"
+#define ID_MONITOR_UDEV   "udev"
+#define SUBSYSTEM_HIDRAW  "hidraw"
 // UDev error codes
 #define UDEV_NOERROR      0x0000
 #define UDEV_UNKNOWN      0xFFFF
@@ -38,23 +35,32 @@ int UDevInterface::initUDev()
   if (pUDev == NULL)
   {
     udevError|=UDEV_PLUG_NO_DEV;
-    std::fprintf(stderr, "[UDev ERROR] Unable to create udev object...\n");
-    std::fprintf(stderr, "[UDev ERROR] Can't connect to a joypad - exiting!\n");
+    std::fprintf(stderr, "[UDev ERROR] Unable to create udev object...\n"); // error msg
+    std::fprintf(stderr, "[UDev ERROR] Can't connect to a joypad - exiting!\n"); // error msg
     return -1;
   }
   return 0;
 }
 //--------------------------------------------------------------------------------------------------
+int UDevInterface::deinitUDev()
+{
+  if (udevError == 0)
+  {
+    udev_unref(pUDev);
+  }
+  return 0;
+}
+  //--------------------------------------------------------------------------------------------------
 int UDevInterface::initMonitor()
 {
   // Setup a monitor on hidraw devices
-  // Create new udev monitor and connect to a specified event source. 
+  // Create new udev monitor and connect to the specified event source. 
   pUDevMonitor=udev_monitor_new_from_netlink(pUDev, ID_MONITOR_UDEV);
   if (pUDevMonitor == NULL)
   {
     udevError|=UDEV_PLUG_NO_MON;
-    std::fprintf(stderr, "[UDev ERROR] Unable to create udev monitor...\n");
-    std::fprintf(stderr, "[UDev ERROR] Joypad may not work (no hotplug support...)!\n");
+    std::fprintf(stderr, "[UDev ERROR] Unable to create udev monitor...\n"); // error msg
+    std::fprintf(stderr, "[UDev ERROR] Joypad may not work (no hotplug support...)!\n"); // error msg
     return -1;
   }
   int filterResult;
@@ -62,418 +68,369 @@ int UDevInterface::initMonitor()
   if (filterResult < 0)
   {
     udevError|=UDEV_PLUG_NO_FLT;
-    std::fprintf(stderr, "[UDev ERROR] Unable to create udev monitor filter...\n");
-    std::fprintf(stderr, "[UDev ERROR] Joypad may not work (no hotplug support...)!\n");
+    std::fprintf(stderr, "[UDev ERROR] Unable to create udev monitor filter...\n"); // error msg
+    std::fprintf(stderr, "[UDev ERROR] Joypad may not work (no hotplug support...)!\n"); // error msg
   }
   return filterResult;
 }
 //--------------------------------------------------------------------------------------------------
-void debugPrint() // errno
+int UDevInterface::deinitMonitor()
 {
-  // process special events
-  switch (errno)
+  if ((udevError & UDEV_PLUG_NO_FLT) == 0)
   {
-  case SIGHUP:
-    std::fprintf(stderr, "SIGHUP\n");
-    break;
-  case SIGINT:
-    std::fprintf(stderr, "SIGINT\n");
-    break;
-  case SIGQUIT:
-    std::fprintf(stderr, "SIGQUIT\n");
-    break;
-  case SIGILL:
-    std::fprintf(stderr, "SIGILL\n");
-    break;
-  case SIGTRAP:
-    std::fprintf(stderr, "SIGTRAP\n");
-    break;
-  case SIGABRT:
-    std::fprintf(stderr, "SIGABRT\n");
-    break;
-  case SIGBUS:
-    std::fprintf(stderr, "SIGBUS\n");
-    break;
-  case SIGFPE:
-    std::fprintf(stderr, "SIGFPE\n");
-    break;
-  case SIGKILL:
-    std::fprintf(stderr, "SIGKILL\n");
-    break;
-  case SIGUSR1:
-    std::fprintf(stderr, "SIGUSR1\n");
-    break;
-  case SIGSEGV:
-    std::fprintf(stderr, "SIGSEGV\n");
-    break;
-  case SIGUSR2:
-    std::fprintf(stderr, "SIGUSR2\n");
-    break;
-  case SIGPIPE:
-    std::fprintf(stderr, "SIGPIPE\n");
-    break;
-  case SIGALRM:
-    std::fprintf(stderr, "SIGALRM\n");
-    break;
-  case SIGTERM:
-    std::fprintf(stderr, "SIGTERM\n");
-    break;
-  case SIGSTKFLT:
-    std::fprintf(stderr, "SIGSTKFLT\n");
-    break;
-  case SIGCHLD:
-    std::fprintf(stderr, "SIGCHLD\n");
-    break;
-  case SIGCONT:
-    std::fprintf(stderr, "SIGCONT\n");
-    break;
-  case SIGSTOP:
-    std::fprintf(stderr, "SIGSTOP\n");
-    break;
-  case SIGTSTP:
-    std::fprintf(stderr, "SIGTSTP\n");
-    break;
-  case SIGTTIN:
-    std::fprintf(stderr, "SIGTTIN\n");
-    break;
-  case SIGTTOU:
-    std::fprintf(stderr, "SIGTTOU\n");
-    break;
-  case SIGURG:
-    std::fprintf(stderr, "SIGURG\n");
-    break;
-  case SIGXCPU:
-    std::fprintf(stderr, "SIGXCPU\n");
-    break;
-  case SIGXFSZ:
-    std::fprintf(stderr, "SIGXFSZ\n");
-    break;
-  case SIGVTALRM:
-    std::fprintf(stderr, "SIGVTALRM\n");
-    break;
-  case SIGPROF:
-    std::fprintf(stderr, "SIGPROF\n");
-    break;
-  case SIGWINCH:
-    std::fprintf(stderr, "SIGWINCH\n");
-    break;
-  case SIGPOLL:
-    std::fprintf(stderr, "SIGPOLL\n");
-    break;
-  case SIGPWR:
-    std::fprintf(stderr, "SIGPWR\n");
-    break;
-  case SIGSYS:
-    std::fprintf(stderr, "SIGSYS\n");
-    break;
-  default:
-    std::fprintf(stderr, "[errno] Unknown error\n");
+    udev_monitor_filter_remove(pUDevMonitor);
   }
+  if ((udevError & UDEV_PLUG_NO_MON) == 0)
+  {
+    udev_monitor_unref(pUDevMonitor);
+  }
+  return 0;
 }
 //--------------------------------------------------------------------------------------------------
-int UDevInterface::dataReader(const int fdHIDOpen, const int fdPollResult)
+//--------------------------------------------------------------------------------------------------
+int UDevInterface::dataReader()
 {
-  const int maxLen=50;
-  std::vector<unsigned char> data(maxLen);
-  ssize_t bytesRead; // int on x86 long int on x64
+  constexpr int maxDataLen=27; // longest known is 27 so far
 
-  if (fdPollResult > 0)
-  {
-    bytesRead=read(fdHIDOpen, &data[0], data.size());
-// VS debug problem - keep in one line - this is only needed for debugging anyway
-    for (int iter=0; iter < bytesRead; iter++) std::fprintf(stderr, "%02X ", data.at(iter)); std::cerr << std::endl;
-    // cmp bytesRead with default data len for device
-    // if (bytesRead == ...)
-    // {
-    // put data to device field
+  ssize_t bytesRead;
+
+  bytesRead=read(fdJoypadDevice, &propsJoypad.inputReportData[0], maxDataLen);
+  if (bytesRead == propsJoypad.inputReportLen)
+  { // read ok
+    // VS debug problem - keep in one line - this is intended and only needed for step debugging
+    for (int i=0; i < bytesRead; i++) std::fprintf(stderr, "%02X ", propsJoypad.inputReportData.at(i)); std::fprintf(stderr, "\n"); // debug msg
   }
   else
-  { // fdPollResult < 0; 0 is covered by readLoop
-    std::fprintf(stderr, "fdPollResult error: %4i\n", fdPollResult);
-    debugPrint(); // errno
-    bytesRead=0;
+  {
+    std::fprintf(stderr, "[dataReader Info] Read %04i bytes, should have read %04i bytes.\n", bytesRead, propsJoypad.inputReportLen); // error msg
+    std::fprintf(stderr, "[dataReader Info] Error code is %03i.\n", errno);
+    bytesRead=-1;
   }
+
   return bytesRead;
 }
 //--------------------------------------------------------------------------------------------------
-int UDevInterface::readLoop(const int fdHIDOpen)
+void UDevInterface::loopRead()
 {
-  const int pollTimeRead_ms=1000;
-  int fdEpollRead;
-  int resultPollCtl;
-  int fdReturnedCount; // number of file descriptors returned
-  epoll_event evEpollRead;
-  memset(&evEpollRead, 0, sizeof(evEpollRead));
-  epoll_event evReturned;
+  constexpr int timeReadPoll_ms=1000;
 
-  fdEpollRead=epoll_create1(EPOLL_CLOEXEC);
-  if (fdEpollRead < 0)
+  int fdepRead;
+  int resultPollCtl;
+  int fdReturnedCount; // number of file descriptors returned from epoll_wait
+  epoll_event evEpollRead;
+  epoll_event evReturned;
+  int resultDataReader;
+
+  std::fprintf(stderr, "[UDevRead Info] Starting the read loop thread.\n"); // debug msg
+  fdJoypadDevice=open(propsJoypad.deviceNode.c_str(), O_RDONLY | O_CLOEXEC);
+  if (fdJoypadDevice == FD_INVALID)
   {
-    std::fprintf(stderr, "[UDevRead ERROR] Error creating epoll!\n");
+    std::fprintf(stderr, "[UDevRead ERROR] Open failed with error #%3i\n", errno); // error msg
+    return;
+  }
+  fdepRead=epoll_create1(EPOLL_CLOEXEC);
+  if (fdepRead < 0)
+  {
+    std::fprintf(stderr, "[UDevRead ERROR] Error creating epoll!\n"); // error msg
     udevError|=UDEV_READ_NO_POLL;
-    return errno;
+    return;
   }
   evEpollRead.events=EPOLLIN;
-  evEpollRead.data.fd=fdHIDOpen;
-  resultPollCtl=epoll_ctl(fdEpollRead, EPOLL_CTL_ADD, fdHIDOpen, &evEpollRead);
+  evEpollRead.data.fd=fdJoypadDevice;
+  resultPollCtl=epoll_ctl(fdepRead, EPOLL_CTL_ADD, fdJoypadDevice, &evEpollRead);
   if (resultPollCtl < 0)
   {
-    std::fprintf(stderr, "[UDevRead ERROR] Failed to add fd to epoll!\n");
+    std::fprintf(stderr, "[UDevRead ERROR] Failed to add fd to epoll_ctl!\n"); // error msg
     udevError=UDEV_READ_NO_POLL;
-    resultPollCtl=errno;
-    close(fdEpollRead);
-    return resultPollCtl;
+    close(fdepRead);
+    return;
   }
-  int loop=100;
-  while (loop > 0)
+  isDeviceReadyForRead=true;
+  while (isDeviceReadyForRead)
   {
-    std::fprintf(stderr, "%4i\n", loop); loop--; // debug msg
-    fdReturnedCount=epoll_pwait(fdEpollRead, &evReturned, 1, pollTimeRead_ms, NULL);
+    fdReturnedCount=epoll_pwait(fdepRead, &evReturned, 1, timeReadPoll_ms, NULL);
     if (fdReturnedCount > 0)
     {
-      //int xxx=(evReturned.events & 0xFFFFFFFE);
-        switch (evReturned.events)
-      {
-      case EPOLLIN:
-        std::fprintf(stderr, "%08X: EPOLLIN.\n", evReturned.events); // debug msg 
-        dataReader(fdHIDOpen, fdReturnedCount);
-        break;
-      case EPOLLERR:
-        std::fprintf(stderr, "%08X: EPOLLERR.\n", evReturned.events); // debug msg
-        sleep(1);
-        break;
-      case EPOLLHUP:
-        std::fprintf(stderr, "%08X: EPOLLHUP.\n", evReturned.events); // debug msg 
-        sleep(1);
-        break;
-      case EPOLLHUP | EPOLLERR:
-        std::fprintf(stderr, "%08X: EPOLLHUP | EPOLLERR.\n", evReturned.events); // debug msg 
-        sleep(1);
-        break;
-      default:
-        std::fprintf(stderr, "%08X: unknown EPOLL result.\n", evReturned.events); // debug msg 
-        sleep(1);
+      resultDataReader=dataReader();
+      std::fprintf(stderr, "[UDevRead Info] dataReader returned: %04i.\n", resultDataReader); // debug msg
+      if (resultDataReader < 0)
+      { // reading failed with error - stop reader loop
+        isDeviceReadyForRead=false;
       }
     }
     else
     {
       if (fdReturnedCount == 0)
-      { // timed out reading or error - 
-        std::fprintf(stderr, "Read Timeout.\n"); // debug msg
+      { // timed out reading
+// debug msg start
+        std::fprintf(stderr, "[UDevRead Info] EPoll timeout waiting for data.\n");
+        // VS debug problem - keep in one line - this is intended and only needed for step debugging
+        for (auto i=0; i < propsJoypad.inputReportLen; i++) std::fprintf(stderr, "%02X ", propsJoypad.inputReportData.at(i)); std::fprintf(stderr, "\n");
+// debug msg end
       }
       else
       {
-        std::fprintf(stderr, "fdReturnedCount < 0!\n"); // debug msg
+        switch (errno)
+        {
+        case EINTR:
+          // received SIGINT
+          break;
+        default:
+          std::fprintf(stderr, "[UDevRead ERROR] returned error %i!", errno); // error msg
+        }
       }
     }
-  } // while
-  resultPollCtl=epoll_ctl(fdEpollRead, EPOLL_CTL_DEL, fdHIDOpen, &evEpollRead);
-  close(fdEpollRead);
+  } // while (isDeviceReadyForRead)
+  // stop getting notifications about read
+  resultPollCtl=epoll_ctl(fdepRead, EPOLL_CTL_DEL, fdJoypadDevice, &evEpollRead);
+  close(fdepRead);
+  close(fdJoypadDevice);
 
-  return 0;
+  std::fprintf(stderr, "[UDevRead Info] loopRead thread ended.\n"); // debug msg
+  return;
 }
 //--------------------------------------------------------------------------------------------------
 int UDevInterface::startReading()
 {
-  // open file for reading
-  // fd=open(node, O_RDONLY | O_CLOEXEC[, permissions]) file for reading
-  // file descriptor returned to read ...
-  // call the read loop thread
+  if (propsJoypad.deviceNode.empty())
+  { // no valid device - nothing to read
+    return -1;
+  }
+  thrRead=std::thread([this]{UDevInterface::loopRead();});
+  naoth::ThreadUtil::setPriority(thrRead, naoth::ThreadUtil::Priority::lowest);
+  naoth::ThreadUtil::setName(thrRead, "HIDDataReader");
 
   return 0;
 }
 //--------------------------------------------------------------------------------------------------
 int UDevInterface::stopReading()
 {
-  // close(fd) close the file descriptor
-
+  isDeviceReadyForRead=false;
+  if (thrRead.joinable())
+  {
+    thrRead.join();
+  }
   return 0;
 }
 //--------------------------------------------------------------------------------------------------
 int UDevInterface::updateDeviceList()
 {
-  // test for plug event - done - called only when plug event 
-
-  std::fprintf(stderr, "Our device is affected!\n");
-  // if our pHIDDevNode == nullptr
-
-
-
-  // if plugevent test if our device is already present and reading
-  // return if so
-
-
-
-  // if not: find if our device is connected
-
+  udev_enumerate* pDeviceEnum=nullptr;
+  udev_list_entry* pDeviceListHead=nullptr;
+  udev_list_entry* pDeviceListEntry=nullptr;
+  const char* pDeviceName=nullptr;
+  udev_device* pUDevDevice=nullptr;
+  udev_device* pParentDevice=nullptr;
+  std::string hidIdFromList;
+  int updateListError=0;
+  int foundConfigForDevice=0;
   // Create a list of the devices in the 'hidraw' subsystem
-//  pDeviceEnum=udev_enumerate_new(pUDev);
-
-
-
-  /*
-  int UDevInterface::GetDeviceDataFromHIDId(JoypadDefaultData& rJoypadData, const char* const pHIDId)
+  pDeviceEnum=udev_enumerate_new(pUDev);
+  if (pDeviceEnum == NULL)
   {
-  int EnumResult;
-  int EnumScanResult;
-
-  std::string Property1;
-  std::string Property2;
-
-
-  EnumResult=udev_enumerate_add_match_subsystem(pDeviceEnum, SUBSYSTEM_HIDRAW);
-  EnumScanResult=udev_enumerate_scan_devices(pDeviceEnum);
-  pDeviceListHead=udev_enumerate_get_list_entry(pDeviceEnum);
-
-  //#define udev_list_entry_foreach(list_entry, first_entry) ...
-  // using the macro raises an "intelli" warning (Visual Studio 2015 bug???)
-  //
-  udev_list_entry_foreach(pDeviceListEntry, pDeviceListHead)
-  /*//*
-  for (pDeviceListEntry = pDeviceListHead; pDeviceListEntry != NULL;
-  pDeviceListEntry = udev_list_entry_get_next(pDeviceListEntry))
-  *//*
+    std::fprintf(stderr, "[DeviceList ERROR] Couldn't create a pointer for device enumeration!\n"); // error msg
+    updateListError=-1;
+  }
+  else
   {
-  // Get the filename of the /sys entry for the (hid) device and create
-  // a udev_device object (pUdevDevice) representing it
-  pDeviceName=udev_list_entry_get_name(pDeviceListEntry);
-  pHIDeviceRaw=udev_device_new_from_syspath(pUDev, pDeviceName);
-  pHIDDevNode=udev_device_get_devnode(pHIDeviceRaw);
-  pParentDeviceRaw=udev_device_get_parent(pHIDeviceRaw);
-
-  Property1=udev_device_get_property_value(pParentDeviceRaw, "HID_ID");
-  Property2=udev_device_get_sysattr_value(pParentDeviceRaw, "modalias");
-  udev_device_unref(pHIDeviceRaw); pHIDeviceRaw=nullptr;
+    updateListError=udev_enumerate_add_match_subsystem(pDeviceEnum, SUBSYSTEM_HIDRAW);
+    if (updateListError < 0)
+    {
+      std::fprintf(stderr, "[DeviceList ERROR] Couldn't enumerate subsystem!\n"); // error msg
+    }
+    else
+    {
+      updateListError=udev_enumerate_scan_devices(pDeviceEnum);
+      if (updateListError < 0)
+      {
+        std::fprintf(stderr, "[DeviceList ERROR] Couldn't scan for devices!\n"); // error msg
+      }
+      else
+      {
+        pDeviceListHead=udev_enumerate_get_list_entry(pDeviceEnum);
+        //#define udev_list_entry_foreach(list_entry, first_entry) ...
+        // using the macro raises an "intelli" warning in VS (bug???)
+        pDeviceListEntry=pDeviceListHead;
+        propsJoypad.deviceNode.clear(); // indicate that propsJoypad is invalid
+        while ((foundConfigForDevice == 0) && (pDeviceListEntry != NULL))
+        {
+          // Get the filename of the /sys entry for the (hid) device and create
+          // a udev_device object (pUdevDevice) representing it
+          // according to the manual the memory pDeviceName points to 
+          // after the assignment doesn't have to explicitely be freed 
+          pDeviceName=udev_list_entry_get_name(pDeviceListEntry);
+          pUDevDevice=udev_device_new_from_syspath(pUDev, pDeviceName);
+          pParentDevice=udev_device_get_parent(pUDevDevice);
+          hidIdFromList=udev_device_get_property_value(pParentDevice, "HID_ID");
+          foundConfigForDevice=getJoypadConfigFromFile(propsJoypad, hidIdFromList);
+          if (foundConfigForDevice > 0)
+          {
+            propsJoypad.deviceNode=udev_device_get_devnode(pUDevDevice);
+          }
+          udev_device_unref(pUDevDevice); // unref from udev_device_new_from_syspath
+          pDeviceListEntry=udev_list_entry_get_next(pDeviceListEntry);
+        }
+      }
+    }
+    udev_enumerate_unref(pDeviceEnum);
   }
+  std::fprintf(stderr, "[DeviceListInfo] returning with %04i!\n", updateListError); // debug msg
+  std::fprintf(stderr, "[DeviceListInfo] active device has node \"%s\".\n", propsJoypad.deviceNode.c_str()); // debug msg
 
-  //  pSysPath=udev_get_sys_path(pUDev);
-  //  pDevPath=udev_get_dev_path(pUDev);
-
-  // Free the enumerator object
-  udev_enumerate_unref(pDeviceEnum); pDeviceEnum=nullptr;
-  udev_unref(pUDev); pUDev=nullptr;
-
-  return 0;
-  }
-  */
-
-
-  return 0;
+  return updateListError;
 }
 //--------------------------------------------------------------------------------------------------
-int UDevInterface::hotplugMonitor()
+void UDevInterface::loopPlug()
 {
-  const int pollTimeMon_ms=500;
-  int fdMonitor;
-  int fdEpollPlug;
+  constexpr int timePlugPoll_ms=500;
+  constexpr int timeWaitUnplug_ms=1000;
+
+  int fdUDevMon;
+  int fdepPlug;
   int resultPollCtl;
   int fdCount; // number of file descriptors returned
-  epoll_event evEpollPlug;
-  memset(&evEpollPlug, 0, sizeof(evEpollPlug));
+  epoll_event evPollPlug;
   epoll_event evReturned;
   udev_device* pReportingDevice=nullptr;
   std::string devNodeReportingDevice;
 
   udev_monitor_enable_receiving(pUDevMonitor);
   // Get the file descriptor for the monitor. This descriptor will get passed to epoll)
-  fdMonitor=udev_monitor_get_fd(pUDevMonitor);
+  fdUDevMon=udev_monitor_get_fd(pUDevMonitor);
 
-  fdEpollPlug=epoll_create1(EPOLL_CLOEXEC);
-  if (fdEpollPlug < 0)
+  fdepPlug=epoll_create1(EPOLL_CLOEXEC);
+  if (fdepPlug < 0)
   {
-    std::fprintf(stderr, "[UDevMon ERROR] Error creating epoll!\n");
+    std::fprintf(stderr, "[UDevMon ERROR] Error creating epoll!\n"); // error msg
     udevError|=UDEV_PLUG_NO_MON;
-    return errno;
+    return;
   }
-  evEpollPlug.events=EPOLLIN;
-  evEpollPlug.data.fd=fdMonitor;
-
-  resultPollCtl=epoll_ctl(fdEpollPlug, EPOLL_CTL_ADD, fdMonitor, &evEpollPlug);
+  evPollPlug.events=EPOLLIN;
+  evPollPlug.data.fd=fdUDevMon;
+  resultPollCtl=epoll_ctl(fdepPlug, EPOLL_CTL_ADD, fdUDevMon, &evPollPlug);
   if (resultPollCtl < 0)
   {
-    std::fprintf(stderr, "[UDevMon ERROR] Failed to add fd to epoll!\n");
+    std::fprintf(stderr, "[UDevMon ERROR] Failed to add fd to epoll!\n"); // error msg
     udevError|=UDEV_PLUG_NO_MON;
-    resultPollCtl=errno;
-    close(fdEpollPlug);
-    return resultPollCtl;
+    close(fdepPlug);
+    return;
   }
 
-  isMonitoring=true;
-  while (isMonitoring)
+  updateDeviceList(); // in case devices are already connected upon start
+  startReading();
+  detectingHIDPlug=true;
+  while (detectingHIDPlug)
   {
-    fdCount=epoll_pwait(fdEpollPlug, &evReturned, 1, pollTimeMon_ms, NULL);
+    fdCount=epoll_pwait(fdepPlug, &evReturned, 1, timePlugPoll_ms, NULL);
     if (fdCount == 0)
     {
-      std::fprintf(stderr, ".");
-      continue;
-    }
-    if (fdCount > 0)
-    {
-      if ((evReturned.data.fd == fdMonitor) && (evReturned.events & EPOLLIN))
-      {
-        pReportingDevice=udev_monitor_receive_device(pUDevMonitor);
-        if (pReportingDevice == NULL)
-        {
-          std::fprintf(stderr, "[UDevMon ERROR] udev_monitor_receive_device returned NULL!\n");
-        }
-        else
-        {
-          devNodeReportingDevice.assign(udev_device_get_devnode(pReportingDevice));
-          std::fprintf(stderr, "\nDC -> ");
-          std::fprintf(stderr, devNodeReportingDevice.data());
-          std::fprintf(stderr, "\n");
-          udev_device_unref(pReportingDevice);
-          if ((pHIDDevNode == nullptr) || (devNodeReportingDevice == pHIDDevNode))
-          {
-            updateDeviceList();
-          }
-        }
-      }
-      else
-      {
-        std::fprintf(stderr, "[UDevMon ERROR] Unexpected file descriptor or event returned!\n");
-      }
+      std::fprintf(stderr, "."); // debug msg - monitor is waiting for plug event
       continue;
     }
     if (fdCount < 0)
     {
-      std::fprintf(stderr, "[UDevMon ERROR] epoll_pwait returned error %i!", errno);
-//      std::fprintf(stderr, "Press [ENTER]"); getchar();
-      //    if (errno != EINTR)
-      //    {
-      //    std::fprintf(stderr, "error receiving uevent message: %m\n");
-      //    }
+      switch (errno)
+      {
+      case EINTR:
+      // received SIGINT
+        break;
+      default:
+        std::fprintf(stderr, "[UDevMon ERROR] epoll_wait returned error %i!", errno); // error msg
+      }
+      continue;
     }
+    if (fdCount == 1)
+    {
+      if ((evReturned.events & EPOLLIN) && (evReturned.data.fd == fdUDevMon))
+      {
+        pReportingDevice=udev_monitor_receive_device(pUDevMonitor);
+        if (pReportingDevice == NULL)
+        {
+          std::fprintf(stderr, "[UDevMon ERROR] udev_monitor_receive_device returned NULL!\n"); // error msg
+        }
+        else
+        {
+          devNodeReportingDevice=udev_device_get_devnode(pReportingDevice);
+          std::fprintf(stderr, "\nDC -> %s\n", devNodeReportingDevice.c_str()); // debug msg
+          udev_device_unref(pReportingDevice);
+          // our node doesn't exist -> goto updateDeviceList
+          // else (our node exists)
+            // if returned node matches our node
+              // reading ok?
+                // no -> goto updateDeviceList
+                // yes -> nothing to do (unlikely) ???
+            // else (returned node doesn't match our node) -> nothing to do
+          if (propsJoypad.deviceNode.empty())
+          {
+            std::fprintf(stderr, "[UDevMon Info] no device present - calling updateDeviceList.\n"); // debug msg
+            updateDeviceList();
+            startReading();
+          }
+          else
+          { // we have a device node
+            if (propsJoypad.deviceNode == devNodeReportingDevice) // it is our device node
+            {
+              usleep(1000*timeWaitUnplug_ms);
+              if (isDeviceReadyForRead)
+              {
+                std::fprintf(stderr, "[UDevMon ERROR] isDeviceReadyForRead still true!\n"); // debug message
+                std::fprintf(stderr, "[UDevMon ERROR] This situation should never occur here.\n"); // debug message
+                // some error condition
+                // - cause: what action to our device could have happened
+                // without setting isDeviceReadyForRead to false ???
+              }
+              else
+              {
+                std::fprintf(stderr, "[UDevMon Info] can't read from node - calling updateDeviceList.\n"); // debug message
+                stopReading(); // stopping the thread that still may try to read from the old node
+                updateDeviceList();
+                startReading();
+              }
+            } // if (HIDNodeName == devNodeReportingDevice) - no else needed (only for debugging)
+            else
+            {
+              std::fprintf(stderr, "[UDevMon Info] Compare failed - not our device.\n"); // debug message
+            }
+          }
+        }
+        continue;
+      }
+    }
+    // if (fdCount > 1)
+    std::fprintf(stderr, "[UDevMon ERROR] Unexpected fd value or event returned!\n"); // error msg
+    std::fprintf(stderr, "[UDevMon ERROR] This error should never occur!\n"); // error msg
   }
-  epoll_ctl(fdEpollPlug, EPOLL_CTL_DEL, fdMonitor, &evEpollPlug);
-  close(fdEpollPlug);
-  std::fprintf(stderr, "[UDevMon Info] Thread ends.\n");
-  return 0;
+  epoll_ctl(fdepPlug, EPOLL_CTL_DEL, fdUDevMon, &evPollPlug);
+  close(fdepPlug);
+  std::fprintf(stderr, "[UDevMon Info] loopPlug thread ended.\n"); // debug msg
+
+  return;
 }
 //--------------------------------------------------------------------------------------------------
-int UDevInterface::startMonitoring()
+int UDevInterface::startHIDPlugDetection()
 {
   if (udevError > 0)
   {
     return -udevError;
   }
-  thrMon=std::thread(&UDevInterface::hotplugMonitor, this);
-  naoth::ThreadUtil::setPriority(thrMon, naoth::ThreadUtil::Priority::lowest);
-  naoth::ThreadUtil::setName(thrMon, "hidHotplugMon");
+  thrPlug=std::thread([this]{loopPlug();});
+  naoth::ThreadUtil::setPriority(thrPlug, naoth::ThreadUtil::Priority::lowest);
+  naoth::ThreadUtil::setName(thrPlug, "HIDHotplug");
 
   return 0;
 }
 //--------------------------------------------------------------------------------------------------
-int UDevInterface::stopMonitoring()
+int UDevInterface::stopHIDPlugDetection()
 {
   if (udevError > 0)
   {
     return -udevError;
   }
-  isMonitoring=false;
-  if (thrMon.joinable())
+  stopReading();
+  detectingHIDPlug=false;
+  if (thrPlug.joinable())
   {
-    thrMon.join();
+    thrPlug.join();
   }
 
   return 0;
@@ -481,8 +438,10 @@ int UDevInterface::stopMonitoring()
 //--------------------------------------------------------------------------------------------------
 UDevInterface::UDevInterface()
   : udevError(UDEV_NOERROR)
-//  , deviceChanged(ATOMIC_FLAG_INIT) // set to false (atomic)
+  , detectingHIDPlug(false)
+  , isDeviceReadyForRead(false)
 {
+  propsJoypad.deviceNode.clear(); // invalidate Joypad properties data
   initUDev();
   if (udevError == UDEV_NOERROR)
   {
@@ -492,18 +451,8 @@ UDevInterface::UDevInterface()
 //--------------------------------------------------------------------------------------------------
 UDevInterface::~UDevInterface()
 {
-  if ((udevError & UDEV_PLUG_NO_MON) == 0)
-  {
-    udev_monitor_filter_remove(pUDevMonitor);
-  }
-  if ((udevError & UDEV_PLUG_NO_MON) == 0)
-  {
-    udev_monitor_unref(pUDevMonitor);
-  }
-  if (udevError == 0)
-  {
-    udev_unref(pUDev);
-  }
+  deinitMonitor();
+  deinitUDev();
 }
 //--------------------------------------------------------------------------------------------------
 //==================================================================================================

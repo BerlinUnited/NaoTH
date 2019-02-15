@@ -23,7 +23,7 @@ void USBJoypadData::print(std::ostream& stream) const
 }
 //--------------------------------------------------------------------------------------------------
 USBJoypadData::USBJoypadData()
-  : vJoypadInputData(27, 65) // (x, 65) for debugging, (1) for release
+  : vJoypadInputData(1)
 {}
 //--------------------------------------------------------------------------------------------------
 USBJoypadData::~USBJoypadData()
