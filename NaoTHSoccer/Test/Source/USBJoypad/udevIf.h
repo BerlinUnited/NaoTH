@@ -12,8 +12,10 @@
 //==================================================================================================
 //--------------------------------------------------------------------------------------------------
 #include <thread>
+#include <mutex>
 #include <libudev.h>
 #include "configs.h"
+#include "USBJoypadData.h"
 //--------------------------------------------------------------------------------------------------
 class UDevInterface
 {
@@ -28,6 +30,7 @@ private:
 
   std::thread thrPlug;
   std::thread thrRead;
+  std::mutex dataMutex;
 
   int initUDev();
   int deinitUDev();
@@ -41,6 +44,7 @@ private:
   int updateDeviceList();
   void loopPlug();
 public:
+  void get(naoth::USBJoypadData& dataJoypad);
   int startHIDPlugDetection();
   int stopHIDPlugDetection();
   UDevInterface();

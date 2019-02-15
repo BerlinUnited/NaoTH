@@ -28,6 +28,18 @@
 #define UDEV_READ_NO_POLL 0x0080
 //#define UDEV_READ_NO_MON  0x0040
 //#define UDEV_READ_NO_FLT  0x0010
+
+
+void UDevInterface::get(naoth::USBJoypadData& data)
+{
+  std::unique_lock<std::mutex> lock(dataMutex, std::try_to_lock);
+
+  if (lock.owns_lock())
+  {
+    data.vJoypadInputData = propsJoypad.inputReportData;
+  }
+}
+
 //--------------------------------------------------------------------------------------------------
 int UDevInterface::initUDev()
 {
@@ -91,6 +103,8 @@ int UDevInterface::deinitMonitor()
 //--------------------------------------------------------------------------------------------------
 int UDevInterface::dataReader()
 {
+  std::lock_guard<std::mutex> lock(dataMutex);
+  
   constexpr int maxDataLen=27; // longest known is 27 so far
 
   ssize_t bytesRead;
