@@ -131,6 +131,7 @@ class SimsparkController(multiprocessing.Process):
         :param data:    the updated environment infos as list of key/value pairs
         :return:        None
         """
+        env = self.__environment
         for item in data:
             if item[0] == 'messages':
                 if len(item) > 1:
@@ -140,7 +141,13 @@ class SimsparkController(multiprocessing.Process):
                     #print(item)
                     pass
             else:
-                self.__environment[item[0]] = item[1]
+                if item[0] in ['FieldLength','FieldWidth','FieldHeight','GoalWidth','GoalDepth','GoalHeight','FreeKickDistance','WaitBeforeKickOff','AgentRadius','BallRadius','BallMass','RuleGoalPauseTime','RuleKickInPauseTime','RuleHalfTime','time']:
+                    env[item[0]] = float(item[1])
+                elif item[0] in ['half','score_left','score_right','play_mode']:
+                    env[item[0]] = int(item[1])
+                else:
+                    env[item[0]] = item[1]
+        self.__environment = env
 
     def __update_scene(self, data):
         """
@@ -181,7 +188,7 @@ class SimsparkController(multiprocessing.Process):
                     self.__scene.append({ 'type': 'node'})
         elif name == 'RDS':  # Ruby Diff Scene, and indicates that the scene graph is a partial description of the environment
             # check scene graph
-            if len(self.__scene) == len(data[1]):
+            if len(data) == 2 and len(self.__scene) == len(data[1]):
                 # iterate through scene objects and update known
                 for i, nd in enumerate(self.__scene):
                     # update ball position, only if changed
@@ -266,6 +273,51 @@ class SimsparkController(multiprocessing.Process):
             if nd['type'] == 'soccerball':
                 return nd
         return None
+
+    def __get_environment(self, key:str):
+        return self.__environment[key] if key in self.__environment else None
+
+    def get_time(self):
+        """
+        Returns the current simulation time.
+
+        :return:    the current simulation time or None (if there's no time)
+        """
+        return self.__get_environment('time')
+
+    def get_half(self):
+        """
+        Returns the current half.
+
+        :return:    the current half or None (if there's no half info)
+        """
+        return self.__get_environment('half')
+
+    def get_score(self, side:str='Left'):
+        """
+        Returns the current score of the left or right team.
+
+        :param left: 'Left', if the left score should be returned, otherwise ('Right') the right score is returned
+        :return:     the current score of the team (left or right) or None (if there's no half info)
+        """
+        return self.__get_environment('score_left') if side == 'Left' else self.__get_environment('score_right')
+
+    def get_team(self, side:str='Left'):
+        """
+        Returns the name of the left or right team.
+
+        :param left: 'Left', if the name of the left team should be returned, otherwise ('Right') the right team name is returned
+        :return:     the name of the team (left or right) or None (if there's no name info)
+        """
+        return self.__get_environment('team_left') if side == 'Left' else self.__get_environment('team_right')
+
+    def get_playMode(self):
+        """
+        Returns the play mode of the simulation.
+
+        :return:    the current play mode
+        """
+        return self.__get_environment('play_mode')
 
     def cmd_dropball(self):
         """Schedules the '(dropBall)' trainer command for the simspark instance."""
