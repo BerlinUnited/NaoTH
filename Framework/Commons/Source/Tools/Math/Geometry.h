@@ -255,6 +255,12 @@ public:
 
     inline const Vector2d& min() const { return minimum; }
     inline const Vector2d& max() const { return maximum; }
+
+    void clamp(Vector2d& p) const
+    {
+      p.x = Math::clamp(p.x, minimum.x, maximum.x);
+      p.y = Math::clamp(p.y, minimum.y, maximum.y);
+    }
   };
 };
 
