@@ -63,8 +63,9 @@ int UDevInterface::initMonitor()
     std::fprintf(stderr, "[UDev ERROR] Joypad may not work (no hotplug support...)!\n"); // error msg
     return -1;
   }
-  int filterResult;
-  filterResult=udev_monitor_filter_add_match_subsystem_devtype(pUDevMonitor, SUBSYSTEM_HIDRAW, NULL);
+  
+  // configure the monitor to listen to hidraw
+  int filterResult = udev_monitor_filter_add_match_subsystem_devtype(pUDevMonitor, SUBSYSTEM_HIDRAW, NULL);
   if (filterResult < 0)
   {
     udevError|=UDEV_PLUG_NO_FLT;
@@ -298,6 +299,7 @@ void UDevInterface::loopPlug()
   // Get the file descriptor for the monitor. This descriptor will get passed to epoll)
   fdUDevMon=udev_monitor_get_fd(pUDevMonitor);
 
+  // create a new poll event
   fdepPlug=epoll_create1(EPOLL_CLOEXEC);
   if (fdepPlug < 0)
   {
@@ -305,6 +307,8 @@ void UDevInterface::loopPlug()
     udevError|=UDEV_PLUG_NO_MON;
     return;
   }
+  
+  // send a poll request
   evPollPlug.events=EPOLLIN;
   evPollPlug.data.fd=fdUDevMon;
   resultPollCtl=epoll_ctl(fdepPlug, EPOLL_CTL_ADD, fdUDevMon, &evPollPlug);
