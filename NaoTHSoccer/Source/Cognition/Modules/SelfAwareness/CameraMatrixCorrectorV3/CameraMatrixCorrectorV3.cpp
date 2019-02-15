@@ -161,7 +161,7 @@ Eigen::VectorXd CamMatErrorFunctionV3::operator()(const Eigen::Matrix<double, 11
         }
     }
 
-    ASSERT(empty+idx == calibrationData.size()*2)
+    ASSERT(empty+idx == calibrationData.size()*2);
     ASSERT(idx == numberOfResudials);
     return r;
 }
