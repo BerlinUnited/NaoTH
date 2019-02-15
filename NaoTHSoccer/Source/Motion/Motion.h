@@ -58,6 +58,7 @@
 #include "Tools/Debug/DebugDrawings3D.h"
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugRequest.h"
 
 #include <Representations/Modeling/BodyState.h>
 
@@ -75,6 +76,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(DebugDrawings3D)
   PROVIDE(DebugParameterList)
   PROVIDE(DebugModify)
+  PROVIDE(DebugRequest)
 
   REQUIRE(MotionStatus)
   PROVIDE(OdometryData) // hack

@@ -23,6 +23,7 @@
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugDrawings3D.h"
+#include "Tools/Debug/DebugRequest.h"
 
 BEGIN_DECLARE_MODULE(Cognition)
   PROVIDE(StopwatchManager)
@@ -31,6 +32,7 @@ BEGIN_DECLARE_MODULE(Cognition)
   PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugPlot)
   PROVIDE(DebugDrawings3D)
+  PROVIDE(DebugRequest)
 
   REQUIRE(FrameInfo)
 END_DECLARE_MODULE(Cognition)
