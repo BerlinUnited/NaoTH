@@ -118,14 +118,16 @@ NaoController::NaoController()
   registerInput<UltraSoundReceiveData>(*this);
   registerInput<AudioData>(*this);
   registerInput<CpuData>(*this);
-
+  registerInput<USBJoypadData>(*this);
+  
   // register command output
   registerOutput<const MotorJointData>(*this);
   registerOutput<const LEDData>(*this);
   registerOutput<const IRSendData>(*this);
   registerOutput<const UltraSoundSendData>(*this);
   registerOutput<const AudioControl>(*this);
-
+  
+  
   /*  INIT DEVICES  */
   std::cout << "[NaoController] " << "Init Platform" << endl;
   Platform::getInstance().init(this);

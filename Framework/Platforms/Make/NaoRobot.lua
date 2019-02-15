@@ -42,7 +42,8 @@ project "NaoRobot"
     "ogg",
     "cap",
     "attr",
-    "wrap"
+    "wrap",
+    "udev"
   }
 
   targetname "naoth"

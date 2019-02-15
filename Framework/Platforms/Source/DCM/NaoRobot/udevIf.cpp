@@ -464,11 +464,13 @@ UDevInterface::UDevInterface()
   if (udevError == UDEV_NOERROR)
   {
     initMonitor();
+    startHIDPlugDetection();
   }
 }
 //--------------------------------------------------------------------------------------------------
 UDevInterface::~UDevInterface()
 {
+  stopHIDPlugDetection();
   deinitMonitor();
   deinitUDev();
 }

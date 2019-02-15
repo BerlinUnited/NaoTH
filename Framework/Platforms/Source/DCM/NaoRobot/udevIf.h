@@ -15,7 +15,7 @@
 #include <mutex>
 #include <libudev.h>
 #include "configs.h"
-#include "USBJoypadData.h"
+#include <Representations/Infrastructure/USBJoypadData.h>
 //--------------------------------------------------------------------------------------------------
 class UDevInterface
 {

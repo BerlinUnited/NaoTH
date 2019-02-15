@@ -17,9 +17,8 @@ void USBJoypadData::print(std::ostream& stream) const
 {
   for (auto& i : vJoypadInputData)
   {
-    stream << i;
+    stream << std::hex << (int)i;
   }
-  stream << std::endl;
 }
 //--------------------------------------------------------------------------------------------------
 USBJoypadData::USBJoypadData()
