@@ -38,7 +38,6 @@
 #include <Tools/Communication/SocketStream/SocketStream.h>
 
 #include "PlatformInterface/PlatformInterface.h"
-#include <DebugCommunication/DebugCommandExecutor.h>
 #include "DebugCommunication/DebugServer.h"
 
 #include "sfsexp/SexpParser.h"
@@ -53,7 +52,7 @@ using namespace naoth;
 // TODO: make this better
 #define MAX_TEAM_MESSAGE_SIZE 1024
 
-class SimSparkController : public PlatformInterface, DebugCommandExecutor
+class SimSparkController : public PlatformInterface
 {
 private:
   GSocket* socket;
@@ -118,10 +117,6 @@ public:
   bool init(const std::string& modelPath, const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync);
 
   void main();
-
-  virtual void executeDebugCommand(
-    const std::string& command, const std::map<std::string,std::string>& arguments,
-    std::ostream &outstream);
 
 public:
   void get(FrameInfo& data);
