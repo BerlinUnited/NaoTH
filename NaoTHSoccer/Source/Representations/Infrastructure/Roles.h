@@ -11,18 +11,20 @@ class Roles : public ParameterList, public naoth::Printable
 public:
     Roles();
 
+    // NOTE: the order of the roles is important!
+    //       it's used to determine the field grid in RoleDecisionPositionDynamic
     enum Static {
-        unknown,
-        goalie,
-        defender_left,
-        defender_center,
-        defender_right,
-        midfielder_left,
-        midfielder_center,
-        midfielder_right,
-        forward_left,
-        forward_center,
-        forward_right,
+        defender_left = 0,
+        defender_center = 1,
+        defender_right = 2,
+        midfielder_left = 3,
+        midfielder_center = 4,
+        midfielder_right = 5,
+        forward_left = 6,
+        forward_center = 7,
+        forward_right = 8,
+        goalie = 9,
+        unknown = 10,
         // ------------
         numOfStaticRoles
     };
@@ -71,6 +73,9 @@ public:
 
     std::map<Static, Position> defaults;
 
+    std::string active_str;
+    std::vector<Static> active;
+
     void parsePositionGoalie(std::string pos)           { parsePosition(pos, goalie); }
     void parsePositionDefenderLeft(std::string pos)     { parsePosition(pos, defender_left); }
     void parsePositionDefenderCenter(std::string pos)   { parsePosition(pos, defender_center); }
@@ -108,12 +113,42 @@ public:
         r.opp.y = std::stod(pos_part[1]) / base_y * field_y;
     }
 
+    /**
+     * @brief If the 'active' parameter changes, the new value is parsed and the new active
+     *        roles are applied. The "all" shortcut is used to activate all roles otherwise
+     *        all roles which should be activated are listed and seperated by a ';'.
+     *        Eg.: "goalie;defender_left;forward_center"
+     *
+     * @param active    the new roles to activate
+     */
+    void parseActive(std::string a) {
+        // clear the 'old' active roles before pushing the new
+        active.clear();
+        if(a.compare("all") == 0) {
+            // user all static roles, but ignore the "unknown" one
+            for(int i = 0; i < Roles::numOfStaticRoles-1; ++i)
+            {
+                active.push_back(static_cast<Roles::Static>(i));
+            }
+        } else {
+            // only use the defined roles
+            std::vector<std::string> parts = naoth::StringTools::split(a, ';');
+            for(const std::string& part : parts) {
+                Roles::Static r = Roles::getStaticRole(part);
+                ASSERT(Roles::unknown != r);
+                active.push_back(r);
+            }
+        }
+
+    }
 
     static std::string getName(Static role);
     static std::string getName(Dynamic role);
 
     static Static getStaticRole(std::string name);
     static Dynamic getDynamicRole(std::string name);
+
+    bool isRoleActive(Static r) const;
 
     virtual void print(std::ostream& stream) const;
 };

@@ -22,6 +22,8 @@ Roles::Roles() : ParameterList("Roles")
     PARAMETER_REGISTER(forward_center_str,   &Roles::parsePositionForwardCenter)   = " 1500,    0;  -500,    0; -1000,  250";
     PARAMETER_REGISTER(forward_right_str,    &Roles::parsePositionForwardRight)    = " 1500,-1500;  -500,-1500; -1000, -750";
 
+    PARAMETER_REGISTER(active_str, &Roles::parseActive) = "all"; // "goalie;defender_left;forward_center;defender_right;midfielder_right;midfielder_left"
+
     // load from the file after registering all parameters
     syncWithConfig();
 }
@@ -78,12 +80,20 @@ Roles::Dynamic Roles::getDynamicRole(std::string name)
     return none;
 }
 
+bool Roles::isRoleActive(Roles::Static r) const
+{
+    return std::find(active.begin(), active.end(), r) != active.end();
+}
 
 void Roles::print(std::ostream& stream) const
 {
-    stream << "Position base: " << base_x << "/" << base_y << "\n"
+    stream << "\n"
+           << "Position base: " << base_x << "/" << base_y << "\n"
            << "Field size: " << field_x << "/" << field_y << "\n"
-           << "\n----------------------------------------------------\n\n"
+           << "----------------------------------------------------\n"
+           << "Active roles ("<<active.size()<<"):\n";
+    for(const auto& r : active) { stream << getName(r) << ", "; }
+    stream << "\n----------------------------------------------------\n"
            << "Default role positions:\n";
 
     for(const auto& it : defaults) {

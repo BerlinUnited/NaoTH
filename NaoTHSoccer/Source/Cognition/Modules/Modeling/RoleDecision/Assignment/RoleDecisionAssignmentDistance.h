@@ -23,6 +23,7 @@ BEGIN_DECLARE_MODULE(RoleDecisionAssignmentDistance)
 
   REQUIRE(FrameInfo)
   REQUIRE(GameData)
+  REQUIRE(Roles)
   REQUIRE(PlayerInfo)
   REQUIRE(TeamMessage)
   REQUIRE(TeamMessageStatistics)
@@ -46,7 +47,6 @@ private:
         Parameters() : ParameterList("RoleDecisionAssignmentDistance")
         {
             PARAMETER_REGISTER(assignment, &Parameters::parseAssignment) = "1:goalie;2:defender_left;3:forward_center;4:defender_right;5:midfielder_right;6:midfielder_left";
-            PARAMETER_REGISTER(active, &Parameters::parseActive) = "all"; // "goalie;defender_left;forward_center;defender_right;midfielder_right;midfielder_left"
             PARAMETER_REGISTER(variant, &Parameters::setVariantFunction) = "distance"; // "distance", "priority"
             PARAMETER_REGISTER(changing, &Parameters::setChangingFunction) = "time"; // "cycle", "time"
 
@@ -62,9 +62,6 @@ private:
 
         std::string assignment;
         std::map<unsigned int, Roles::Static> assignment_role;
-
-        std::string active;
-        std::vector<Roles::Static> active_roles;
 
         std::string variant;
         void (RoleDecisionAssignmentDistance::*variantFunc)(std::map<unsigned int, Roles::Static>&);
@@ -88,34 +85,6 @@ private:
                 std::vector<std::string> assign_part = StringTools::split(part, ':');
                 ASSERT(assign_part.size() == 2);
                 assignment_role[static_cast<unsigned int>(std::stoul(assign_part[0]))] = Roles::getStaticRole(assign_part[1]);
-            }
-        }
-
-        /**
-         * @brief If the 'active' parameter changes, the new value is parsed and the new active
-         *        roles are applied. The "all" shortcut is used to activate all roles otherwise
-         *        all roles which should be activated are listed and seperated by a ';'.
-         *        Eg.: "goalie;defender_left;forward_center"
-         *
-         * @param active    the new roles to activate
-         */
-        void parseActive(std::string active) {
-            // clear the 'old' active roles before pushing the new
-            active_roles.clear();
-            if(active.compare("all") == 0) {
-                // user all static roles, but ignore the "unknown" one
-                for(int i = 1; i < Roles::numOfStaticRoles; ++i)
-                {
-                    active_roles.push_back(static_cast<Roles::Static>(i));
-                }
-            } else {
-                // only use the defined roles
-                std::vector<std::string> parts = StringTools::split(active, ';');
-                for(const std::string& part : parts) {
-                    Roles::Static r = Roles::getStaticRole(part);
-                    ASSERT(Roles::unknown != r);
-                    active_roles.push_back(r);
-                }
             }
         }
 
