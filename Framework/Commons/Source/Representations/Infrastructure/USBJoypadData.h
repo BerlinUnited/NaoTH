@@ -6,8 +6,7 @@
 // Gamepad/Joypad data declarations
 //
 //--------------------------------------------------------------------------------------------------
-// this file goes to ...Commons/Source/Representations/Infrastructure later
-//--------------------------------------------------------------------------------------------------
+//
 #ifndef _USB_JOYPAD_DATA_H
 #define _USB_JOYPAD_DATA_H
 //==================================================================================================
@@ -15,7 +14,6 @@
 #include <string>
 #include <vector>
 #include "Tools/DataStructures/Printable.h"
-
 //--------------------------------------------------------------------------------------------------
 namespace naoth
 {

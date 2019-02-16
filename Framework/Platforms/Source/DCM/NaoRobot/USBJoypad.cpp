@@ -1,9 +1,9 @@
 //--------------------------------------------------------------------------------------------------
 //
-// @file udevIf.cpp
+// @file USBJoypad.cpp
 // @author <a href="mailto:albert@informatik.hu-berlin.de">Andreas Albert</a>
 //
-// Interface to udev functions
+// Joypad data supply for Nao
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -12,7 +12,7 @@
 #include <sys/epoll.h>
 #include <sys/file.h>
 #include "Tools/ThreadUtil.h"
-#include "udevIf.h"
+#include "USBJoypad.h"
 //--------------------------------------------------------------------------------------------------
 #define FD_INVALID        -1
 //Valid monitor sources identifiers are "udev" and "kernel"
@@ -30,7 +30,7 @@
 //#define UDEV_READ_NO_FLT  0x0010
 
 
-void UDevInterface::get(naoth::USBJoypadData& data)
+void USBJoypad::get(naoth::USBJoypadData& data)
 {
   std::unique_lock<std::mutex> lock(dataMutex, std::try_to_lock);
 
@@ -41,7 +41,7 @@ void UDevInterface::get(naoth::USBJoypadData& data)
 }
 
 //--------------------------------------------------------------------------------------------------
-int UDevInterface::initUDev()
+int USBJoypad::initUDev()
 {
   pUDev=udev_new();
   if (pUDev == NULL)
@@ -54,7 +54,7 @@ int UDevInterface::initUDev()
   return 0;
 }
 //--------------------------------------------------------------------------------------------------
-int UDevInterface::deinitUDev()
+int USBJoypad::deinitUDev()
 {
   if (udevError == 0)
   {
@@ -63,7 +63,7 @@ int UDevInterface::deinitUDev()
   return 0;
 }
   //--------------------------------------------------------------------------------------------------
-int UDevInterface::initMonitor()
+int USBJoypad::initMonitor()
 {
   // Setup a monitor on hidraw devices
   // Create new udev monitor and connect to the specified event source. 
@@ -87,7 +87,7 @@ int UDevInterface::initMonitor()
   return filterResult;
 }
 //--------------------------------------------------------------------------------------------------
-int UDevInterface::deinitMonitor()
+int USBJoypad::deinitMonitor()
 {
   if ((udevError & UDEV_PLUG_NO_FLT) == 0)
   {
@@ -101,7 +101,7 @@ int UDevInterface::deinitMonitor()
 }
 //--------------------------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
-int UDevInterface::dataReader()
+int USBJoypad::dataReader()
 {
   std::lock_guard<std::mutex> lock(dataMutex);
   
@@ -125,7 +125,7 @@ int UDevInterface::dataReader()
   return bytesRead;
 }
 //--------------------------------------------------------------------------------------------------
-void UDevInterface::loopRead()
+void USBJoypad::loopRead()
 {
   constexpr int timeReadPoll_ms=1000;
 
@@ -205,20 +205,20 @@ void UDevInterface::loopRead()
   return;
 }
 //--------------------------------------------------------------------------------------------------
-int UDevInterface::startReading()
+int USBJoypad::startReading()
 {
   if (propsJoypad.deviceNode.empty())
   { // no valid device - nothing to read
     return -1;
   }
-  thrRead=std::thread([this]{UDevInterface::loopRead();});
+  thrRead=std::thread([this]{loopRead();});
   naoth::ThreadUtil::setPriority(thrRead, naoth::ThreadUtil::Priority::lowest);
   naoth::ThreadUtil::setName(thrRead, "HIDDataReader");
 
   return 0;
 }
 //--------------------------------------------------------------------------------------------------
-int UDevInterface::stopReading()
+int USBJoypad::stopReading()
 {
   isDeviceReadyForRead=false;
   if (thrRead.joinable())
@@ -228,7 +228,7 @@ int UDevInterface::stopReading()
   return 0;
 }
 //--------------------------------------------------------------------------------------------------
-int UDevInterface::updateDeviceList()
+int USBJoypad::updateDeviceList()
 {
   udev_enumerate* pDeviceEnum=nullptr;
   udev_list_entry* pDeviceListHead=nullptr;
@@ -295,7 +295,7 @@ int UDevInterface::updateDeviceList()
   return updateListError;
 }
 //--------------------------------------------------------------------------------------------------
-void UDevInterface::loopPlug()
+void USBJoypad::loopPlug()
 {
   constexpr int timePlugPoll_ms=500;
   constexpr int timeWaitUnplug_ms=1000;
@@ -425,7 +425,7 @@ void UDevInterface::loopPlug()
   return;
 }
 //--------------------------------------------------------------------------------------------------
-int UDevInterface::startHIDPlugDetection()
+int USBJoypad::startHIDPlugDetection()
 {
   if (udevError > 0)
   {
@@ -438,7 +438,7 @@ int UDevInterface::startHIDPlugDetection()
   return 0;
 }
 //--------------------------------------------------------------------------------------------------
-int UDevInterface::stopHIDPlugDetection()
+int USBJoypad::stopHIDPlugDetection()
 {
   if (udevError > 0)
   {
@@ -454,7 +454,7 @@ int UDevInterface::stopHIDPlugDetection()
   return 0;
 }
 //--------------------------------------------------------------------------------------------------
-UDevInterface::UDevInterface()
+USBJoypad::USBJoypad()
   : udevError(UDEV_NOERROR)
   , detectingHIDPlug(false)
   , isDeviceReadyForRead(false)
@@ -468,7 +468,7 @@ UDevInterface::UDevInterface()
   }
 }
 //--------------------------------------------------------------------------------------------------
-UDevInterface::~UDevInterface()
+USBJoypad::~USBJoypad()
 {
   stopHIDPlugDetection();
   deinitMonitor();

@@ -1,23 +1,23 @@
 //--------------------------------------------------------------------------------------------------
 //
-// @file udevIf.h
+// @file USBJoypad.h
 // @author <a href="mailto:albert@informatik.hu-berlin.de">Andreas Albert</a>
 //
 // Interface to udev functions - header
 //
 //--------------------------------------------------------------------------------------------------
 //
-#ifndef _UDEVIF_H
-#define _UDEVIF_H
+#ifndef _USBJOYPAD_H
+#define _USBJOYPAD_H
 //==================================================================================================
 //--------------------------------------------------------------------------------------------------
 #include <thread>
 #include <mutex>
 #include <libudev.h>
+#include "Representations/Infrastructure/USBJoypadData.h"
 #include "configs.h"
-#include <Representations/Infrastructure/USBJoypadData.h>
 //--------------------------------------------------------------------------------------------------
-class UDevInterface
+class USBJoypad
 {
 private:
   struct udev* pUDev=nullptr;
@@ -43,13 +43,13 @@ private:
   int stopReading();
   int updateDeviceList();
   void loopPlug();
-public:
-  void get(naoth::USBJoypadData& dataJoypad);
   int startHIDPlugDetection();
   int stopHIDPlugDetection();
-  UDevInterface();
-  ~UDevInterface();
+public:
+  void get(naoth::USBJoypadData& dataJoypad);
+  USBJoypad();
+  ~USBJoypad();
 };
 //--------------------------------------------------------------------------------------------------
 //==================================================================================================
-#endif // _UDEVIF_H
+#endif // _USBJOYPAD_H
