@@ -1,25 +1,26 @@
 #include "WhistlePercept.h"
 
-#include "Messages/Framework-Representations.pb.h"
+#include "Messages/Representations.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 using namespace naoth;
 
 WhistlePercept::WhistlePercept():
-  counter(0)
+  counter(0), // NOTE: obsolete
+  whistleDetected(false)
 {
 }
 
 void WhistlePercept::print(std::ostream& stream) const
-{
-  stream << "counter: " << counter << std::endl;
+{ 
+  stream << "whistleDetected: " << whistleDetected << std::endl;
+  stream << "counter: " << counter << std::endl; // NOTE: obsolete
   stream << "capture to file: " << captureFile << std::endl;
   stream << "recognized whistles: " << recognizedWhistles.size() << std::endl;
-  for (size_t wIdx = 0; wIdx < recognizedWhistles.size(); wIdx++)
+  for (size_t wIdx = 0; wIdx < recognizedWhistles.size(); wIdx++) 
   {
     stream << " " << recognizedWhistles[wIdx].name << " @" << recognizedWhistles[wIdx].positionInCapture << " response=" << recognizedWhistles[wIdx] .responseValue << std::endl; 
   }
-
 }
 
 WhistlePercept::~WhistlePercept()
@@ -32,8 +33,18 @@ void Serializer<WhistlePercept>::deserialize(std::istream& stream, WhistlePercep
   google::protobuf::io::IstreamInputStream buf(&stream);
   message.ParseFromZeroCopyStream(&buf);
 
-  representation.counter = message.counter();
-  representation.captureFile = message.capturefile();
+  // NOTE: obsolete
+  if(message.has_counter()) {
+    representation.counter = message.counter();
+  }
+
+  if(message.has_capturefile()) {
+    representation.captureFile = message.capturefile();
+  }
+
+  if(message.has_whistledetected()) {
+    representation.whistleDetected = message.whistledetected();
+  }
 
   representation.recognizedWhistles.clear();
   for (int i = 0; i < message.recognizedwhistles_size(); i++)
@@ -49,8 +60,10 @@ void Serializer<WhistlePercept>::serialize(const WhistlePercept& representation,
 {
   naothmessages::WhistlePercept message;
 
+  // NOTE: obsolete
   message.set_counter(representation.counter);
   message.set_capturefile(representation.captureFile);
+  message.set_whistledetected(representation.whistleDetected);
 
   for (size_t i = 0; i < representation.recognizedWhistles.size(); i++)
   {

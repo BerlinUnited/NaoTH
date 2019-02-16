@@ -5,7 +5,7 @@
 *
 * @author <a href="http://www.martin-loetzsch.de">Martin Loetzsch</a>
 * @author <a href="http://www.sim.informatik.tu-darmstadt.de/pers/card/risler.html">Max Risler</a>
-* @author <a href="http://www.informatik.hu-berlin.de/~juengel">Matthias JŸngel</a>
+* @author <a href="http://www.informatik.hu-berlin.de/~juengel">Matthias Juengel</a>
 */
 
 #ifndef __XabslBasicBehavior_h_
@@ -22,7 +22,7 @@ namespace xabsl
 *
 * @author <a href="http://www.martin-loetzsch.de">Martin Loetzsch</a>
 * @author <a href="http://www.sim.informatik.tu-darmstadt.de/pers/card/risler.html">Max Risler</a>
-* @author <a href="http://www.informatik.hu-berlin.de/~juengel">Matthias JŸngel</a>
+* @author <a href="http://www.informatik.hu-berlin.de/~juengel">Matthias Juengel</a>
 */
 class BasicBehavior : public Behavior
 {

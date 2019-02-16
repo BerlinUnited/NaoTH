@@ -5,8 +5,9 @@
 
 GameController::GameController()
   : 
-  lastWhistleCount(0),
-  lastGameState(GameData::GameState::unknown_game_state)
+  lastGameState(GameData::GameState::unknown_game_state),
+  debug_whistle_heard(false),
+  play_by_whistle(false)
 {
   DEBUG_REQUEST_REGISTER("gamecontroller:game_state:play", "force the play state", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:game_state:penalized", "force the penalized state", false);
@@ -24,7 +25,7 @@ GameController::GameController()
   DEBUG_REQUEST_REGISTER("gamecontroller:secondaryTime:5", "sets the secondary time of the gamecontroller to 5s", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:secondaryTime:0", "sets the secondary time of the gamecontroller to 0s", false);
 
-  DEBUG_REQUEST_REGISTER("whistle:blow", "the robot recognizes a whistle", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:blow_whistle", "the robot recognizes a whistle", false);
 
   // TODO: make it parameters?
   // load values from config
@@ -77,8 +78,6 @@ GameController::GameController()
     getPlayerInfo().playerNumber = config.getInt("team", name);
   }
 
-  // set whistle count on init; otherwise we're detecting a whistle on startup!
-  lastWhistleCount = getWhistlePercept().counter;
   // print out the "final" player number for loggin purposes
   std::cout << "[PlayerInfo] " << "playerNumber: " << getPlayerInfo().playerNumber << std::endl;
 }
@@ -87,6 +86,11 @@ void GameController::execute()
 {
   PlayerInfo::RobotState oldRobotState = getPlayerInfo().robotState;
   GameData::TeamColor oldTeamColor = getPlayerInfo().teamColor;
+
+  // reset the whistle state if the game state is not play anymore
+  if(getPlayerInfo().robotState != PlayerInfo::playing) {
+    play_by_whistle = false;
+  }
 
   // try update from the game controller message if not manually overwritten
   if ( getGameData().valid && getWifiMode().wifiEnabled ) 
@@ -97,22 +101,24 @@ void GameController::execute()
     }
 
     getPlayerInfo().update(getGameData());
+
+    // take the ownership of the play state
+    if(getPlayerInfo().robotState == PlayerInfo::playing) {
+      play_by_whistle = false;
+    }
   }
 
   handleButtons();
   handleHeadButtons();
-  handleDebugRequest();  
+  handleDebugRequest();
 
-  // remember the whistle counter before and after set (ready/playing)
-  if(getPlayerInfo().robotState == PlayerInfo::ready || (lastGameState == GameData::set && getGameData().gameState == GameData::playing)) {
-    lastWhistleCount = getWhistlePercept().counter;
-  }
   // whistle overrides state when in set
-  else if(getPlayerInfo().robotState == PlayerInfo::set)
+  if(getPlayerInfo().robotState == PlayerInfo::set)
   {
     // switch from set to play
-    if(getWhistlePercept().counter > lastWhistleCount) {
+    if(getWhistlePercept().whistleDetected || debug_whistle_heard || play_by_whistle) {
       getPlayerInfo().robotState = PlayerInfo::playing;
+      play_by_whistle = true;
     }
   }
 
@@ -127,7 +133,7 @@ void GameController::execute()
   // remember last game state (from gamecontroller)
   lastGameState = getGameData().gameState;
   // set teamcomm: whistle detected!
-  getTeamMessageData().custom.whistleDetected = getWhistlePercept().counter > lastWhistleCount;
+  getTeamMessageData().custom.whistleDetected = getWhistlePercept().whistleDetected;
   getTeamMessageData().custom.whistleCount = getWhistlePercept().counter;
 
   // provide the return message
@@ -153,6 +159,8 @@ void GameController::handleDebugRequest()
   );
   DEBUG_REQUEST("gamecontroller:game_state:play",
     debugState = PlayerInfo::playing;
+    // take the ownership of the play state
+    play_by_whistle = false;
   );
   DEBUG_REQUEST("gamecontroller:game_state:penalized",
     debugState = PlayerInfo::penalized;
@@ -184,9 +192,10 @@ void GameController::handleDebugRequest()
   DEBUG_REQUEST("gamecontroller:secondaryTime:5", getGameData().secondaryTime = 5;);
   DEBUG_REQUEST("gamecontroller:secondaryTime:0", getGameData().secondaryTime = 0;);
 
-  DEBUG_REQUEST("whistle:blow",
+  debug_whistle_heard = false;
+  DEBUG_REQUEST("gamecontroller:blow_whistle",
     // kinda "hack": we don't increment the whistle counter, instead ...
-    lastWhistleCount--;
+    debug_whistle_heard = true;
   );
 
   // NOTE: same behavior as the button interface
@@ -216,6 +225,8 @@ void GameController::handleButtons()
     case PlayerInfo::penalized:
     {
       getPlayerInfo().robotState = PlayerInfo::playing;
+      // take the ownership of the play state
+      play_by_whistle = false;
       break;
     }
     default:

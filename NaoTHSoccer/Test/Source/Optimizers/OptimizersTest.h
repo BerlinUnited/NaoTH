@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-unsigned long long max_counter = (unsigned long long)2*1e3;
+unsigned long long max_counter = (unsigned long long)(2*1e3);
 
 #include <chrono>
 typedef std::chrono::high_resolution_clock::time_point time_point;

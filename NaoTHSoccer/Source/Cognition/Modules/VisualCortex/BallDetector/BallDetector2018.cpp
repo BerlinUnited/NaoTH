@@ -36,10 +36,7 @@ BallDetector2018::BallDetector2018()
   getDebugParameterList().add(&params);
 
 
-  // register classifiers
-  cnnMap.insert({"dortmund", std::make_shared<CNN_dortmund>()});
-  //cnnMap.insert({ "dortmund2018", std::make_shared<CNN_dortmund2018>() });
-  cnnMap.insert({ "dortmund2018_keras", std::make_shared<CNN_dortmund2018_keras>() });
+  cnnMap = createCNNMap();
 
   setClassifier("dortmund", "dortmund");
 }
@@ -109,6 +106,19 @@ void BallDetector2018::execute(CameraInfo::CameraID id)
       }
     }
   );
+}
+
+// TODO: this is not very elegant, but it is used by the BallDetectorEvaluator.cpp
+std::map<string, std::shared_ptr<AbstractCNNClassifier> > BallDetector2018::createCNNMap()
+{
+  std::map<string, std::shared_ptr<AbstractCNNClassifier> > result;
+
+  // register classifiers
+  result.insert({"dortmund", std::make_shared<CNN_dortmund>()});
+  //result.insert({ "dortmund2018", std::make_shared<CNN_dortmund2018>() });
+  result.insert({ "dortmund2018_keras", std::make_shared<CNN_dortmund2018_keras>() });
+
+  return std::move(result);
 }
 
 void BallDetector2018::setClassifier(const std::string& name, const std::string& nameClose) 

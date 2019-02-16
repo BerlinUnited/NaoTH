@@ -24,7 +24,7 @@
 #include "Representations/Perception/MultiBallPercept.h"
 
 #include <Representations/Infrastructure/AudioData.h>
-#include "Representations/Infrastructure/WhistlePercept.h"
+#include "Representations/Perception/WhistlePercept.h"
 
 // tools
 #include "Tools/Debug/DebugParameterList.h"
@@ -101,14 +101,13 @@ private:
   // treshold is reached.
   LogfileManager < 30 > logfileManager;
   
-  ofstream imageOutFile;
+  std::ofstream imageOutFile;
   FrameInfo lastTimeImageRecorded;
 
   unsigned int lastCompleteFrameNumber;
   
   PlayerInfo::RobotState oldState;
   bool firstRecording;
-  int lastWhistleCounter;
   unsigned long lastAudioDataTimestamp;
 
   CameraInfo::CameraID lastRecordedPlainImageID;

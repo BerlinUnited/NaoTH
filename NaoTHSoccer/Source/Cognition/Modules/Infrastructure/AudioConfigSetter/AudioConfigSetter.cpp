@@ -15,9 +15,9 @@ void AudioConfigSetter::execute()
   {
 	  getAudioControl().activeChannels = params.activeChannels;
   }
-  if (params.onOffSwitch != getAudioControl().onOffSwitch)
+  if (params.capture != getAudioControl().capture)
   {
-	  getAudioControl().onOffSwitch = params.onOffSwitch;
+	  getAudioControl().capture = params.capture;
   }
 }
 

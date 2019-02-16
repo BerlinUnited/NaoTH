@@ -119,13 +119,3 @@ message InertialSensorData {
   optional DoubleVector2 data = 2;
 }
 
-message WhistlePercept {
-  message Whistle {
-    required string name = 1;
-    required int64 positionInCapture = 2;
-    required double responseValue = 3;
-  }
-  required int32 counter  = 1;
-  required string captureFile = 2;
-  repeated Whistle recognizedWhistles = 3;
-}

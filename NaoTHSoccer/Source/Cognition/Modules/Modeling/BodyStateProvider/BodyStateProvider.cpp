@@ -15,6 +15,11 @@ BodyStateProvider::BodyStateProvider()
   getDebugParameterList().add(&theParams);
 }
 
+BodyStateProvider::~BodyStateProvider()
+{
+  getDebugParameterList().remove(&theParams);
+}
+
 void BodyStateProvider::execute()
 {
   // update the fall down state (written by Heinrich Mellmann at 1 am in Magdeburg)

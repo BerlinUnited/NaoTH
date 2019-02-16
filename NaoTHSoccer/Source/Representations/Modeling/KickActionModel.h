@@ -13,7 +13,6 @@
 #include <Tools/Math/Common.h>
 #include <cmath>
 
-using namespace std;
 
 class KickActionModel:public naoth::Printable
 {

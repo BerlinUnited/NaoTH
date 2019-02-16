@@ -1,4 +1,7 @@
+
 #include "GameLogger.h"
+
+using namespace std;
 
 GameLogger::GameLogger()
   : 
@@ -6,7 +9,6 @@ GameLogger::GameLogger()
   lastCompleteFrameNumber(0),
   oldState(PlayerInfo::initial),
   firstRecording(true),
-  lastWhistleCounter(0),
   lastAudioDataTimestamp(0),
   lastRecordedPlainImageID(CameraInfo::Bottom)
 {
@@ -98,9 +100,8 @@ void GameLogger::execute()
         lastAudioDataTimestamp = getAudioData().timestamp;
       }
       
-      if (lastWhistleCounter < getWhistlePercept().counter) {
+      if (getWhistlePercept().whistleDetected) {
         LOGSTUFF(WhistlePercept);
-        lastWhistleCounter = getWhistlePercept().counter;
       }
 
       // record images every 1s
