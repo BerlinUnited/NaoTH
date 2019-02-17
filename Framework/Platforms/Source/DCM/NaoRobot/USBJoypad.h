@@ -23,10 +23,10 @@ private:
   struct udev* pUDev=nullptr;
   struct udev_monitor* pUDevMonitor=nullptr;
   int udevError;
-  bool detectingHIDPlug;
   bool isDeviceReadyForRead;
   JoypadProperties propsJoypad;
   int fdJoypadDevice;
+  int fdPollPipe[2];
 
   std::thread thrPlug;
   std::thread thrRead;
@@ -46,6 +46,8 @@ private:
   int startHIDPlugDetection();
   int stopHIDPlugDetection();
 public:
+  enum controlType {CTRL_READ_STOP=2, CTRL_READ_START, CTRL_PLUG_STOP=8, CTRL_PLUG_START=12};
+  int set(controlType);
   void get(naoth::USBJoypadData& dataJoypad);
   USBJoypad();
   ~USBJoypad();
