@@ -61,7 +61,7 @@ class AgentController(multiprocessing.Process):
 
     def __init__(self, app, cwd, team=None, number=None, sync=True, start_instance=True, connect=True):
         """Constructor of the :AgentController:. Initializes public and private attributes."""
-        super().__init__()
+        super().__init__(name="AgentController:{}:{}".format(str(team), str(number)))
 
         self.app = os.path.abspath(app) if os.path.isfile(app) else app
         self.cwd = cwd

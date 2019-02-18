@@ -5,6 +5,7 @@ import argparse
 import shutil
 import sqlite3
 import configparser
+import signal
 
 import naoth
 from AgentController import AgentController
@@ -12,10 +13,14 @@ from SimsparkController import SimsparkController
 from Utils import *
 
 def parseArguments():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description="Sending HUP signal to a running simulation prints the current run and score of the simulation."
+    )
 
     if '--config' in sys.argv:
         parser.add_argument('--config', type=__check_args_config, action='store', help="Use a configuration file instead of the application arguments")
+    elif len(sys.argv) <= 2 and '--write-config' in sys.argv:
+        parser.add_argument('--write-config', action='store',help="Writes the default config to the given file and exits.")
     else:
         parser.add_argument('-r','--runs', type=int, default=1, action='store', help="The number of runs (games), which should be performed")
         parser.add_argument('-l','--log', type=__check_args_log, action='store', help="The number of runs (games), which should be performed")
@@ -33,6 +38,8 @@ def parseArguments():
         parser.add_argument('-re', '--right-exe', type=__check_args_exe, default='naoth-simspark', action='store', help="The agent executable for the right team")
         parser.add_argument('-rp', '--right-players', type=__check_args_positive, default=5, action='store', help="The the number of players for each team")
         parser.add_argument('-rn', '--right-name', type=str, default='BU', action='store', help="The name of the right Team")
+
+        parser.add_argument('--write-config', action='store', help="Writes the given config to the file and exits.")
 
     return parser.parse_args()
 
@@ -196,63 +203,87 @@ def wait_half(r, s, half_time, log:Log=None):
             log.log_ball(r, t, s.get_ball())
             log.log_player(r, t, s.get_robots())
 
-def configure():
-    args = parseArguments()
+def configure(args):
     if 'config' in args:
         c = {
-            'runs':     args.config.getint('GENERAL', 'RUNS'),
-            'sync':     args.config.getboolean('GENERAL', 'SYNC'),
-            'simspark': args.config.get('GENERAL', 'SIMSPARK'),
-            'log':      args.config.get('GENERAL', 'LOG'),
-            'comment':  args.config.get('GENERAL', 'COMMENT'),
+            'runs':     args.config.getint('general', 'RUNS'),
+            'sync':     args.config.getboolean('general', 'SYNC'),
+            'simspark': args.config.get('general', 'SIMSPARK'),
+            'log':      args.config.get('general', 'LOG'),
+            'comment':  args.config.get('general', 'COMMENT'),
             'left': {
-                'config':  args.config.get('LEFT', 'CONFIG'),
-                'exe':     args.config.get('LEFT', 'EXE'),
-                'name':    args.config.get('LEFT', 'NAME'),
-                'players': args.config.getint('LEFT', 'PLAYERS')
+                'config':  args.config.get('left', 'CONFIG'),
+                'exe':     args.config.get('left', 'EXE'),
+                'name':    args.config.get('left', 'NAME'),
+                'players': args.config.getint('left', 'PLAYERS')
             },
             'right': {
-                'config':  args.config.get('RIGHT', 'CONFIG'),
-                'exe':     args.config.get('RIGHT', 'EXE'),
-                'name':    args.config.get('RIGHT', 'NAME'),
-                'players': args.config.getint('RIGHT', 'PLAYERS')
+                'config':  args.config.get('right', 'CONFIG'),
+                'exe':     args.config.get('right', 'EXE'),
+                'name':    args.config.get('right', 'NAME'),
+                'players': args.config.getint('right', 'PLAYERS')
             }
         }
     else:
         c = {
-            'runs': args.runs,
-            'sync': args.sync,
-            'simspark': args.simspark,
-            'log': args.log,
-            'comment': args.comment,
+            'runs':     args.runs if 'runs' in args else 1,
+            'sync':     args.sync if 'sync' in args else True,
+            'simspark': args.simspark if 'simspark' in args else 'simspark',
+            'log':      args.log if 'log' in args else None,
+            'comment':  args.comment if 'comment' in args else None,
             'left': {
-                'config': args.left_config,
-                'exe': args.left_exe,
-                'name': args.left_name,
-                'players': args.left_players
+                'config':   args.left_config    if 'left_config' in args else None,
+                'exe':      args.left_exe       if 'left_exe' in args else None,
+                'name':     args.left_name      if 'left_name' in args else None,
+                'players':  args.left_players   if 'left_players' in args else None
             },
             'right': {
-                'config': args.right_config,
-                'exe': args.right_exe,
-                'name': args.right_name,
-                'players': args.right_players
+                'config':   args.right_config   if 'right_config' in args else None,
+                'exe':      args.right_exe      if 'right_exe' in args else None,
+                'name':     args.right_name     if 'right_name' in args else None,
+                'players':  args.right_players  if 'right_players' in args else None
             }
         }
 
     return c
 
+def write_config(config, file):
+    cp = configparser.ConfigParser()
+    for c in config:
+        if isinstance(config[c], dict):
+            cp.add_section(c)
+            for sc in config[c]:
+                cp.set(c, sc, str(config[c][sc]))
+        else:
+            if not cp.has_section('general'): cp.add_section('general')
+            cp.set('general', c, str(config[c]))
+        # Writing our configuration file to 'example.cfg'
+        with open(file, 'w') as configfile:
+            cp.write(configfile)
+
+def notify(signum, frame):
+    print('Currently running game simulation #', r, '@', s.get_time(), ',', s.get_team('Left'), s.get_score('Left'), ':', s.get_score('Right'), s.get_team('Right'))
+
 if __name__ == "__main__":
-    config = configure()
+    args = parseArguments()
+    config = configure(args)
+
+    if 'write_config' in args:
+        write_config(config, args.write_config)
+        exit(0)
 
     logging.basicConfig(level=logging.DEBUG)
 
     # TODO: configures simspark
 
+    logging.info("Started at {}".format(time.asctime()))
+
     log = createLog(config['log'])
     log.new_run(config)
 
+    signal.signal(signal.SIGHUP, notify)
 
-    for r in range(config['runs']):
+    for r in range(1, config['runs']+1):
         s = SimsparkController(config['simspark'], True)
         s.start()
         s.connected.wait()  # wait for the monitor to be connected
@@ -302,3 +333,5 @@ if __name__ == "__main__":
         for a in agents: a.join()
 
     log.finish()
+
+    logging.info("Ended at {}".format(time.asctime()))

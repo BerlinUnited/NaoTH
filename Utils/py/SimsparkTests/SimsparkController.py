@@ -5,6 +5,7 @@ import socket
 import struct
 import subprocess
 import time
+import traceback
 
 import sexpr
 
@@ -17,7 +18,7 @@ class SimsparkController(multiprocessing.Process):
 
     def __init__(self, app, start_instance=True):
         """Constructor of the :SimsparkController:. Initializes public and private attributes."""
-        super().__init__()
+        super().__init__(name="SimsparkController")
 
         self.app = app
         self.__start_instance = start_instance
@@ -126,7 +127,7 @@ class SimsparkController(multiprocessing.Process):
                             self.socket.sendall(struct.pack("!I", len(cmd)) + str.encode(cmd))
                     except Exception as e:
                         print('ERROR:', e, e.__class__)
-                        #traceback.print_exc()
+                        traceback.print_exc(limit=2)
                 else:
                     # no data - disconnected
                     self.connected.clear()
