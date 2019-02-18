@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 #include "Tools/DataStructures/Printable.h"
+#include "Tools/Math/Vector2.h"
 //--------------------------------------------------------------------------------------------------
 namespace naoth
 {
@@ -24,6 +25,21 @@ namespace naoth
     virtual void print(std::ostream& stream) const;
     USBJoypadData();
     virtual ~USBJoypadData();
+    
+    Vector2d cross;
+    Vector2d analogL;
+    Vector2d analogR;
+    
+    struct Button {
+      bool A;
+      bool B;
+      bool X;
+      bool Y;  
+      bool start;
+      bool select;       
+    } button;
+    
+    bool valid;
   };
 }
 //--------------------------------------------------------------------------------------------------
