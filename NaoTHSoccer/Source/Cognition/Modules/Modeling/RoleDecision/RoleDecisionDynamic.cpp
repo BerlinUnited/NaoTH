@@ -218,8 +218,8 @@ void RoleDecisionDynamic::decideSupporter(std::map<unsigned int, Roles::Dynamic>
 
             // goalie doesn't support, all others do!
             if(getRoleDecisionModel().roles[playerNumber].role != Roles::goalie) {
-                Vector2d globalBall = msg.pose * msg.ballPosition;
-                double indicator = msg.ballPosition.abs();
+                //Vector2d globalBall = msg.pose * msg.ballPosition;
+                //double indicator = msg.ballPosition.abs();
 
                 //checkStriker(msg, indicator, globalBall, new_striker);
             }

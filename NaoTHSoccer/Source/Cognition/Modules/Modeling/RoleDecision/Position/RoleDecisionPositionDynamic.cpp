@@ -158,7 +158,7 @@ void RoleDecisionPositionDynamic::calculateRepellerAttractorPosition(Roles::Stat
         auto ball = getTeamBallModel().positionOnField;
         //ball -= b_side;
         ball -= p;
-        auto db = ball.abs();
+        //auto db = ball.abs();
         ball.normalize();
         // TODO: should the ball attractor depend on the ball distance?!?
         auto b_force = params.force_ball;// / db;
