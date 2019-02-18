@@ -57,6 +57,12 @@ class SimsparkController(multiprocessing.Process):
 
     def disconnect(self):
         """Disconnects this simspark monitor from the simspark instance."""
+        # empty command queue before closing socket
+        while not (self.__cmd_queue.empty() and self.__cmd_queue.qsize() == 0):
+            cmd = self.__cmd_queue.get()
+            logging.debug(cmd)
+            self.socket.sendall(struct.pack("!I", len(cmd)) + str.encode(cmd))
+        # no commands left, close socket
         if self.socket:
             self.socket.close()
             self.socket = None
@@ -80,10 +86,7 @@ class SimsparkController(multiprocessing.Process):
             logging.info('Start Simspark')
             self.__p = subprocess.Popen([self.app], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             # wait until nothing is printed by simspark anymore
-            l = [0, 1]
-            while l[0] != l[1]:
-                l = [l[1], len(self.__p.stdout.peek())]
-                time.sleep(0.25)
+            time.sleep(1)
             logging.info('Simspark started')
         else:
             logging.info('No instance of Simspark started!')
@@ -104,18 +107,29 @@ class SimsparkController(multiprocessing.Process):
             if not self.connected.is_set():
                 self.connect()
             else:
-                length = struct.unpack("!I", self.socket.recv(4))[0]
-                msg = self.socket.recv(length).decode()
-                sexp = sexpr.str2sexpr(msg)
+                data = self.socket.recv(4)
+                # check if we got some data, empty data is disconnected!
+                if data:
+                    try:
+                        length = struct.unpack("!I", data)[0]
+                        msg = self.socket.recv(length).decode()
+                        sexp = sexpr.str2sexpr(msg)
 
-                self.__update_environment(sexp[0])
-                self.__update_scene(sexp[1:])
+                        if sexp and len(sexp) > 2:
+                            self.__update_environment(sexp[0])
+                            self.__update_scene(sexp[1:])
 
-                # send scheduled (trainer) commands
-                if not self.__cmd_queue.empty():
-                    cmd = self.__cmd_queue.get()
-                    logging.debug(cmd)
-                    self.socket.sendall(struct.pack("!I", len(cmd)) + str.encode(cmd))
+                        # send scheduled (trainer) commands
+                        if not self.__cmd_queue.empty():
+                            cmd = self.__cmd_queue.get()
+                            logging.debug(cmd)
+                            self.socket.sendall(struct.pack("!I", len(cmd)) + str.encode(cmd))
+                    except Exception as e:
+                        print('ERROR:', e, e.__class__)
+                        #traceback.print_exc()
+                else:
+                    # no data - disconnected
+                    self.connected.clear()
         # send kill command, before disconnecting
         self.cmd_killsim()
         # disconnect
@@ -192,7 +206,7 @@ class SimsparkController(multiprocessing.Process):
                 # iterate through scene objects and update known
                 for i, nd in enumerate(self.__scene):
                     # update ball position, only if changed
-                    if nd['type'] == 'soccerball' and len(data[1][i][1]) > 2:
+                    if nd['type'] == 'soccerball' and len(data[1][i][1]) >= 16:
                         ball = self.__scene[i]
                         ball['x'] = float(data[1][i][1][13])
                         ball['y'] = float(data[1][i][1][14])

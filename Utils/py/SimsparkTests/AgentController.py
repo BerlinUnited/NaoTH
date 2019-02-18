@@ -59,15 +59,17 @@ class AgentController(multiprocessing.Process):
     """Represents the controlling instance of a simspark agent. It serves two purposes, first its starts the agent
     application and second it sends debug and other requests to the instance."""
 
-    def __init__(self, app, cwd, number=None, sync=True, start_instance=True):
+    def __init__(self, app, cwd, team=None, number=None, sync=True, start_instance=True, connect=True):
         """Constructor of the :AgentController:. Initializes public and private attributes."""
         super().__init__()
 
         self.app = os.path.abspath(app) if os.path.isfile(app) else app
         self.cwd = cwd
+        self.team = team
         self.number = number
         self.sync = sync
         self.port = None
+        self.connect_dbg = connect
 
         self.__p = None
         self.__m = multiprocessing.Manager()
@@ -94,8 +96,10 @@ class AgentController(multiprocessing.Process):
             args = [self.app]
             if self.sync: args.append('--sync')
             if self.number: args.extend(['-n', str(self.number)])
+            if self.team: args.extend(['--team', self.team])
 
             self.__p = subprocess.Popen(args, cwd=self.cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            logging.debug(' '.join(self.__p.args))
             self.__socket = None
 
             while True:
@@ -189,10 +193,12 @@ class AgentController(multiprocessing.Process):
         :param cmd: the command which should be scheduled/executed
         :return:    returns the command id, which can be used to retrieve the result afterwards. See :func:`~AgentController.command_result`
         """
-        cmd.id = self.__cmd_id.value
-        self.__cmd_q.put_nowait(cmd)
-        self.__cmd_id.set(self.__cmd_id.value + 1)
-        return cmd.id
+        if self.connect_dbg:
+            cmd.id = self.__cmd_id.value
+            self.__cmd_q.put_nowait(cmd)
+            self.__cmd_id.set(self.__cmd_id.value + 1)
+            return cmd.id
+        return 0
 
     def command_result(self, id):
         """
@@ -214,12 +220,14 @@ class AgentController(multiprocessing.Process):
             return
 
         while not self.__cancel.is_set() and (not self.__start_instance or self.__p.poll() is None):
-            if not self.__connected.is_set():
-                self.connect()
+            # only if the controller should connect to the debug port
+            if self.connect_dbg:
+                if not self.__connected.is_set():
+                    self.connect()
 
-            self.__send_heart_beat()
-            self.__poll_answers()
-            self.__send_commands()
+                self.__send_heart_beat()
+                self.__poll_answers()
+                self.__send_commands()
 
             time.sleep(0.1)
 
