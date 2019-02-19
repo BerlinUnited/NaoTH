@@ -1,6 +1,7 @@
 import logging
 import math
 import multiprocessing
+import signal
 import socket
 import struct
 import subprocess
@@ -16,8 +17,14 @@ class SimsparkController(multiprocessing.Process):
     All available trainer commands can be found here at:
     http://simspark.sourceforge.net/wiki/index.php/Network_Protocol#Command_Messages_from_Coach.2FTrainer"""
 
-    def __init__(self, app, start_instance=True):
-        """Constructor of the :SimsparkController:. Initializes public and private attributes."""
+    def __init__(self, app, start_instance=True, print_out=False):
+        """
+        Constructor of the :SimsparkController:. Initializes public and private attributes.
+
+        :param app:             the simspark executable, which should be used if :start_instance: is true
+        :param start_instance:  True, if simspark should be started in a separate process, False otherwise
+        :param print_out:       False, if the print outs from simspark should be hidden, True otherwise show them
+        """
         super().__init__(name="SimsparkController")
 
         self.app = app
@@ -26,6 +33,7 @@ class SimsparkController(multiprocessing.Process):
         self.port = 3200
         self.host = '127.0.0.1'
         self.socket = None
+        self.__cout = print_out
 
         self.__m = multiprocessing.Manager()
         self.__environment = self.__m.dict()
@@ -85,7 +93,9 @@ class SimsparkController(multiprocessing.Process):
         """Starts a simspark instance as separate process and waits until it is completely started."""
         if self.__start_instance:
             logging.info('Start Simspark')
-            self.__p = subprocess.Popen([self.app], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            # pipe output or not
+            if self.__cout: self.__p = subprocess.Popen([self.app])
+            else: self.__p = subprocess.Popen([self.app], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             # wait until nothing is printed by simspark anymore
             time.sleep(1)
             logging.info('Simspark started')
@@ -96,7 +106,12 @@ class SimsparkController(multiprocessing.Process):
         """Stops a still active simspark instance."""
         if self.__p and self.__p.poll() is None:
             logging.info("Quit simspark application")
-            self.__p.kill()
+            self.__p.send_signal(signal.SIGINT)
+            # wait before killing
+            time.sleep(0.2)
+            if self.__p.poll() is None:
+                logging.info("Kill simspark application")
+                self.__p.kill()
 
     def run(self):
         """The main method of this process. It starts the simspark application, connects to it and receives updates of
@@ -148,20 +163,21 @@ class SimsparkController(multiprocessing.Process):
         """
         env = self.__environment
         for item in data:
-            if item[0] == 'messages':
-                if len(item) > 1:
-                    # TODO: save messages of players
-                    #if item[0] not in self.__environment: self.__environment[item[0]] = {}
-                    #self.__environment[item[0]][] = {}
-                    #print(item)
-                    pass
-            else:
-                if item[0] in ['FieldLength','FieldWidth','FieldHeight','GoalWidth','GoalDepth','GoalHeight','FreeKickDistance','WaitBeforeKickOff','AgentRadius','BallRadius','BallMass','RuleGoalPauseTime','RuleKickInPauseTime','RuleHalfTime','time']:
-                    env[item[0]] = float(item[1])
-                elif item[0] in ['half','score_left','score_right','play_mode']:
-                    env[item[0]] = int(item[1])
+            if len(item) == 2:
+                if item[0] == 'messages':
+                    if len(item) > 1:
+                        # TODO: save messages of players
+                        #if item[0] not in self.__environment: self.__environment[item[0]] = {}
+                        #self.__environment[item[0]][] = {}
+                        #print(item)
+                        pass
                 else:
-                    env[item[0]] = item[1]
+                    if item[0] in ['FieldLength','FieldWidth','FieldHeight','GoalWidth','GoalDepth','GoalHeight','FreeKickDistance','WaitBeforeKickOff','AgentRadius','BallRadius','BallMass','RuleGoalPauseTime','RuleKickInPauseTime','RuleHalfTime','time']:
+                        env[item[0]] = float(item[1])
+                    elif item[0] in ['half','score_left','score_right','play_mode']:
+                        env[item[0]] = int(item[1])
+                    else:
+                        env[item[0]] = item[1]
         self.__environment = env
 
     def __update_scene(self, data):
@@ -174,59 +190,61 @@ class SimsparkController(multiprocessing.Process):
         :param data:    the scene graph full/sparse as list of lists
         :return:        None
         """
-        name, version, subversion = data[0]
-
-        if name == 'RSG':  # Ruby Scene Graph, and indicates that the scene graph is a full description of the environment.
-            # clear old scene graph
-            del self.__scene[:]
-            # apply new scene graph
-            for nd in data[1]:
-                # update known objects
-                if len(nd) == 4 and isinstance(nd, list) and len(nd[3]) > 4 and 'soccerball' in nd[3][3][1]:
-                    # found soccer ball
-                    self.__scene.append({ 'type': 'soccerball', 'x':float(nd[2][13]), 'y':float(nd[2][14]), 'z':float(nd[2][15]) })
-                elif len(nd) >= 4 and len(nd[3]) >= 4 and len(nd[3][3]) >= 4 and len(nd[3][3][3]) >= 4 and 'naobody' in nd[3][3][3][3][1]:
-                    # found an agent
-                    pose = self.__get_robot_pose(nd[3][2][1:])
-                    # set the nao infos
-                    self.__scene.append({
-                        'type': 'nao',
-                        'team': nd[3][3][3][5][2][3:],
-                        'number': int(nd[3][3][3][5][1][6:]) if len(nd[3][3][3][5][1])>6 else 0,
-                        'x': pose[0],
-                        'y': pose[1],
-                        'z': pose[2],
-                        'r': pose[3]
-                    })
+        if len(data[0]) == 3:
+            name, version, subversion = data[0]
+            if name == 'RSG':  # Ruby Scene Graph, and indicates that the scene graph is a full description of the environment.
+                # clear old scene graph
+                del self.__scene[:]
+                # apply new scene graph
+                for nd in data[1]:
+                    # update known objects
+                    if len(nd) == 4 and isinstance(nd, list) and len(nd[3]) > 4 and 'soccerball' in nd[3][3][1]:
+                        # found soccer ball
+                        self.__scene.append({ 'type': 'soccerball', 'x':float(nd[2][13]), 'y':float(nd[2][14]), 'z':float(nd[2][15]) })
+                    elif len(nd) >= 4 and len(nd[3]) >= 4 and len(nd[3][3]) >= 4 and len(nd[3][3][3]) >= 4 and 'naobody' in nd[3][3][3][3][1]:
+                        # found an agent
+                        pose = self.__get_robot_pose(nd[3][2][1:])
+                        # set the nao infos
+                        self.__scene.append({
+                            'type': 'nao',
+                            'team': nd[3][3][3][5][2][3:],
+                            'number': int(nd[3][3][3][5][1][6:]) if len(nd[3][3][3][5][1])>6 else 0,
+                            'x': pose[0],
+                            'y': pose[1],
+                            'z': pose[2],
+                            'r': pose[3]
+                        })
+                    else:
+                        # 'unknown' object
+                        self.__scene.append({ 'type': 'node'})
+            elif name == 'RDS':  # Ruby Diff Scene, and indicates that the scene graph is a partial description of the environment
+                # check scene graph
+                if len(data) == 2 and len(self.__scene) == len(data[1]):
+                    # iterate through scene objects and update known
+                    for i, nd in enumerate(self.__scene):
+                        # update ball position, only if changed
+                        if nd['type'] == 'soccerball' and len(data[1][i][1]) >= 16:
+                            ball = self.__scene[i]
+                            ball['x'] = float(data[1][i][1][13])
+                            ball['y'] = float(data[1][i][1][14])
+                            ball['z'] = float(data[1][i][1][15])
+                            # notify the managed list of the change!
+                            self.__scene[i] = ball
+                        elif nd['type'] == 'nao' and len(data[1][i][1]) > 4:
+                            robot = self.__scene[i]
+                            pose = self.__get_robot_pose(data[1][i][1][1][1:])
+                            robot['x'] = pose[0]
+                            robot['y'] = pose[1]
+                            robot['z'] = pose[2]
+                            robot['r'] = pose[3]
+                            # notify the managed list of the change!
+                            self.__scene[i] = robot
                 else:
-                    # 'unknown' object
-                    self.__scene.append({ 'type': 'node'})
-        elif name == 'RDS':  # Ruby Diff Scene, and indicates that the scene graph is a partial description of the environment
-            # check scene graph
-            if len(data) == 2 and len(self.__scene) == len(data[1]):
-                # iterate through scene objects and update known
-                for i, nd in enumerate(self.__scene):
-                    # update ball position, only if changed
-                    if nd['type'] == 'soccerball' and len(data[1][i][1]) >= 16:
-                        ball = self.__scene[i]
-                        ball['x'] = float(data[1][i][1][13])
-                        ball['y'] = float(data[1][i][1][14])
-                        ball['z'] = float(data[1][i][1][15])
-                        # notify the managed list of the change!
-                        self.__scene[i] = ball
-                    elif nd['type'] == 'nao' and len(data[1][i][1]) > 4:
-                        robot = self.__scene[i]
-                        pose = self.__get_robot_pose(data[1][i][1][1][1:])
-                        robot['x'] = pose[0]
-                        robot['y'] = pose[1]
-                        robot['z'] = pose[2]
-                        robot['r'] = pose[3]
-                        # notify the managed list of the change!
-                        self.__scene[i] = robot
+                    logging.warning('Scene graph mismatch!')
             else:
-                logging.warning('Scene graph mismatch!')
+                logging.warning('invalid scene graph update!')
         else:
-            logging.warning('invalid scene graph update!')
+            logging.warning('too few/many scene graph data: %s', str(data[0]))
 
     def __get_robot_pose(self, data):
         """
