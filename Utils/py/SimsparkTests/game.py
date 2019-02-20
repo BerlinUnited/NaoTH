@@ -76,12 +76,7 @@ def __check_args_log(value:str):
 def __check_args_config(value):
     if not os.path.isfile(value):
         raise argparse.ArgumentTypeError("Configuration file doesn't exists (%s)!" % value)
-    c = configparser.ConfigParser()
-    try:
-        c.read(value)
-    except Exception as e:
-        raise argparse.ArgumentTypeError("Error, reading configuration file (%s)!\n%s" % (value, str(e)))
-    return c
+    return value
 
 def prepare_game(s):
     # Left team
@@ -204,24 +199,30 @@ def wait_half(r, s, half_time, log:Log=None):
             log.log_player(r, t, s.get_robots())
 
 def configure(args):
+    base = os.path.dirname(__file__)
+    retrieve_path = lambda p: p if os.path.isabs(p) else os.path.abspath(os.path.join(base, p))
+
     if 'config' in args:
+        c = configparser.ConfigParser()
+        c.read(args.config)
+        base = os.path.dirname(args.config)
         c = {
-            'runs':     args.config.getint('general', 'RUNS'),
-            'sync':     args.config.getboolean('general', 'SYNC'),
-            'simspark': args.config.get('general', 'SIMSPARK'),
-            'log':      args.config.get('general', 'LOG'),
-            'comment':  args.config.get('general', 'COMMENT'),
+            'runs':     c.getint('general', 'RUNS'),
+            'sync':     c.getboolean('general', 'SYNC'),
+            'simspark': c.get('general', 'SIMSPARK'),
+            'log':      retrieve_path(c.get('general', 'LOG')),
+            'comment':  c.get('general', 'COMMENT'),
             'left': {
-                'config':  args.config.get('left', 'CONFIG'),
-                'exe':     args.config.get('left', 'EXE'),
-                'name':    args.config.get('left', 'NAME'),
-                'players': args.config.getint('left', 'PLAYERS')
+                'config':  retrieve_path(c.get('left', 'CONFIG')),
+                'exe':     retrieve_path(c.get('left', 'EXE')),
+                'name':    c.get('left', 'NAME'),
+                'players': c.getint('left', 'PLAYERS')
             },
             'right': {
-                'config':  args.config.get('right', 'CONFIG'),
-                'exe':     args.config.get('right', 'EXE'),
-                'name':    args.config.get('right', 'NAME'),
-                'players': args.config.getint('right', 'PLAYERS')
+                'config':  retrieve_path(c.get('right', 'CONFIG')),
+                'exe':     retrieve_path(c.get('right', 'EXE')),
+                'name':    c.get('right', 'NAME'),
+                'players': c.getint('right', 'PLAYERS')
             }
         }
     else:
@@ -229,19 +230,19 @@ def configure(args):
             'runs':     args.runs if 'runs' in args else 1,
             'sync':     args.sync if 'sync' in args else True,
             'simspark': args.simspark if 'simspark' in args else 'simspark',
-            'log':      args.log if 'log' in args else None,
-            'comment':  args.comment if 'comment' in args else None,
+            'log':      retrieve_path(args.log if 'log' in args else './result.db'),
+            'comment':  args.comment if 'comment' in args else 'default',
             'left': {
-                'config':   args.left_config    if 'left_config' in args else None,
-                'exe':      args.left_exe       if 'left_exe' in args else None,
-                'name':     args.left_name      if 'left_name' in args else None,
-                'players':  args.left_players   if 'left_players' in args else None
+                'config':   retrieve_path(args.left_config if 'left_config' in args else './left'),
+                'exe':      retrieve_path(args.left_exe if 'left_exe' in args else './left/naoth-simspark'),
+                'name':     args.left_name if 'left_name' in args else 'NaoTH',
+                'players':  args.left_players if 'left_players' in args else 5
             },
             'right': {
-                'config':   args.right_config   if 'right_config' in args else None,
-                'exe':      args.right_exe      if 'right_exe' in args else None,
-                'name':     args.right_name     if 'right_name' in args else None,
-                'players':  args.right_players  if 'right_players' in args else None
+                'config':   retrieve_path(args.right_config if 'right_config' in args else './right'),
+                'exe':      retrieve_path(args.right_exe if 'right_exe' in args else './right/naoth-simspark'),
+                'name':     args.right_name if 'right_name' in args else 'BU',
+                'players':  args.right_players if 'right_players' in args else 5
             }
         }
 
