@@ -235,7 +235,7 @@ workspace "NaoTHSoccer"
     if os.ishost("windows") and _ACTION ~= nil and string.match(_ACTION, "^vs.*") then
       project "Generate"
         kind "Utility"
-        prebuildcommands { "cd ../Make/ && premake5 vs2013" }
+        prebuildcommands { "cd ../Make/ && premake5 --Test vs2013" }
     end
   
   -- set up platforms
