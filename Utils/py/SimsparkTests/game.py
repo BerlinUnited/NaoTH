@@ -24,8 +24,11 @@ def parseArguments():
     else:
         parser.add_argument('-r','--runs', type=int, default=1, action='store', help="The number of runs (games), which should be performed")
         parser.add_argument('-l','--log', type=__check_args_log, action='store', help="The number of runs (games), which should be performed")
-        parser.add_argument('-s','--simspark', type=__check_args_simspark, default='simspark', action='store', help="The simspark executable")
         parser.add_argument('-c','--comment', default='', action='store', help="A optional comment to describe this runs.")
+
+        parser.add_argument('-s', '--simspark', type=__check_args_simspark, default='simspark', action='store', help="The simspark executable")
+        parser.add_argument('-ap', '--agent-port', type=int, action='store', help="The port for agents to connect to simspark")
+        parser.add_argument('-sp', '--server-port', type=int, action='store', help="The port for monitors to connect to simspark")
 
         parser.add_argument('--sync', action='store_true', help="Whether the simulation should be run synchronized")
 
@@ -209,9 +212,13 @@ def configure(args):
         c = {
             'runs':     c.getint('general', 'RUNS'),
             'sync':     c.getboolean('general', 'SYNC'),
-            'simspark': c.get('general', 'SIMSPARK'),
             'log':      retrieve_path(c.get('general', 'LOG')),
             'comment':  c.get('general', 'COMMENT'),
+            'simspark': {
+                'exe': c.get('simspark', 'exe'),
+                'agent': c.get('simspark', 'agent'),
+                'server': c.get('simspark', 'server')
+            },
             'left': {
                 'config':  retrieve_path(c.get('left', 'CONFIG')),
                 'exe':     retrieve_path(c.get('left', 'EXE')),
@@ -229,9 +236,13 @@ def configure(args):
         c = {
             'runs':     args.runs if 'runs' in args else 1,
             'sync':     args.sync if 'sync' in args else True,
-            'simspark': args.simspark if 'simspark' in args else 'simspark',
             'log':      retrieve_path(args.log if 'log' in args else './result.db'),
             'comment':  args.comment if 'comment' in args else 'default',
+            'simspark': {
+                'exe': args.simspark if 'simspark' in args else 'simspark',
+                'agent': args.agent_port if 'agent_port' in args else None,
+                'server': args.server_port if 'server_port' in args else None
+            },
             'left': {
                 'config':   retrieve_path(args.left_config if 'left_config' in args else './left'),
                 'exe':      retrieve_path(args.left_exe if 'left_exe' in args else './left/naoth-simspark'),
@@ -285,7 +296,8 @@ if __name__ == "__main__":
     signal.signal(signal.SIGHUP, notify)
 
     for r in range(1, config['runs']+1):
-        s = SimsparkController(config['simspark'], True)
+        s = SimsparkController(config['simspark']['exe'], True)
+        s.set_ports(config['simspark']['server'], config['simspark']['agent'])
         s.start()
         s.connected.wait()  # wait for the monitor to be connected
 
@@ -299,6 +311,7 @@ if __name__ == "__main__":
 
         # start all agents and wait for the agent to be fully started (prevent simspark error)
         for a in agents:
+            if config['simspark']['agent'] is not None: a.ss_port = config['simspark']['agent']
             a.start()
             a.started.wait()
 

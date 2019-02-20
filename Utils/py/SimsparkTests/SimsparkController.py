@@ -30,7 +30,8 @@ class SimsparkController(multiprocessing.Process):
         self.app = app
         self.__start_instance = start_instance
         self.__p = None
-        self.port = 3200
+        self.port_monitor = 3200
+        self.port_agent = 3100
         self.host = '127.0.0.1'
         self.socket = None
         self.__cout = print_out
@@ -54,7 +55,7 @@ class SimsparkController(multiprocessing.Process):
         if not self.__start_instance or (self.__p and self.__p.poll() is None):
             logging.info("Connecting to simspark")
             try:
-                self.socket = socket.create_connection((self.host, self.port))
+                self.socket = socket.create_connection((self.host, self.port_monitor))
                 self.connected.set()
                 logging.info("Connected")
             except Exception as e:
@@ -89,15 +90,36 @@ class SimsparkController(multiprocessing.Process):
         """
         return self.connected.is_set()
 
+    def set_ports(self, monitor:int=None, agent:int=None):
+        """
+        Sets the monitor and/or agent port of the simspark instance. This method must be called before the process is
+        started.
+
+        :param monitor: the simspark monitor port; if None, the default port is used (3200)
+        :param agent:   the simspark agent port; if None, the default port is used (3100)
+        :return:        None
+        """
+        if monitor is not None:
+            self.port_monitor = monitor
+        if agent is not None:
+            self.port_agent = agent
+
     def __start_application(self):
         """Starts a simspark instance as separate process and waits until it is completely started."""
         if self.__start_instance:
-            logging.info('Start Simspark')
+            # prepare call
+            app = [self.app]
+            if self.port_monitor is not None: app.extend(['--server-port', str(self.port_monitor)])
+            if self.port_agent is not None: app.extend(['--agent-port', str(self.port_agent)])
+            logging.info('Start Simspark: %s', ' '.join(app))
             # pipe output or not
-            if self.__cout: self.__p = subprocess.Popen([self.app])
-            else: self.__p = subprocess.Popen([self.app], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            # wait until nothing is printed by simspark anymore
-            time.sleep(1)
+            if self.__cout: self.__p = subprocess.Popen(app)
+            else: self.__p = subprocess.Popen(app, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            # wait for simspark to be fully started
+            time.sleep(2)
+            # NOTE: currently i found no solution to determine exactly, when simspark has started.
+            #       all attempts to read the output from simspark resulted in blocking or nothing read at all, despite
+            #       simspark is outputting some infos ... :(
             logging.info('Simspark started')
         else:
             logging.info('No instance of Simspark started!')

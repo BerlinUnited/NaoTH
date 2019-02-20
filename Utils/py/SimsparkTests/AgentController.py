@@ -68,8 +68,9 @@ class AgentController(multiprocessing.Process):
         self.team = team
         self.number = number
         self.sync = sync
-        self.port = None
-        self.connect_dbg = connect
+        self.dbg_port = None
+        self.dbg_connect = connect
+        self.ss_port = None  # simspark port
 
         self.__p = None
         self.__m = multiprocessing.Manager()
@@ -94,9 +95,10 @@ class AgentController(multiprocessing.Process):
             logging.info('Starting agent')
 
             args = [self.app]
-            if self.sync: args.append('--sync')
-            if self.number: args.extend(['-n', str(self.number)])
-            if self.team: args.extend(['--team', self.team])
+            if self.sync:    args.append('--sync')
+            if self.number:  args.extend(['-n', str(self.number)])
+            if self.team:    args.extend(['--team', self.team])
+            if self.ss_port: args.extend(['--port', self.ss_port])
 
             self.__p = subprocess.Popen(args, cwd=self.cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             logging.debug(' '.join(self.__p.args))
@@ -109,12 +111,12 @@ class AgentController(multiprocessing.Process):
                 if o.startswith('SimSpark Controller runs') or len(o) == 0:
                     break
                 elif o.startswith('[DebugServer:port'): # re.match('\[DebugServer:port (\d+)\]', o):
-                    self.port = re.match('\[DebugServer:port (\d+)\]', o).group(1)
+                    self.dbg_port = re.match('\[DebugServer:port (\d+)\]', o).group(1)
             self.started.set()
             logging.info('Agent started')
         else:
             logging.info('No instance of agent started!')
-            self.port = 5400 + self.number
+            self.dbg_port = 5400 + self.number
             self.started.set()
 
     def __stop_agent(self):
@@ -141,7 +143,7 @@ class AgentController(multiprocessing.Process):
     def connect(self):
         """Connects to the agent instance"""
         try:
-            self.__socket = socket.create_connection(('localhost', self.port))
+            self.__socket = socket.create_connection(('localhost', self.dbg_port))
             self.__connected.set()
             return
         except:
@@ -193,7 +195,7 @@ class AgentController(multiprocessing.Process):
         :param cmd: the command which should be scheduled/executed
         :return:    returns the command id, which can be used to retrieve the result afterwards. See :func:`~AgentController.command_result`
         """
-        if self.connect_dbg:
+        if self.dbg_connect:
             cmd.id = self.__cmd_id.value
             self.__cmd_q.put_nowait(cmd)
             self.__cmd_id.set(self.__cmd_id.value + 1)
@@ -215,13 +217,13 @@ class AgentController(multiprocessing.Process):
         commands to the agent (debug requests, representation, ...)."""
         self.__start_agent()
 
-        if self.port is None:
+        if self.dbg_port is None:
             logging.error("Couldn't retrieve agents debug port!")
             return
 
         while not self.__cancel.is_set() and (not self.__start_instance or self.__p.poll() is None):
             # only if the controller should connect to the debug port
-            if self.connect_dbg:
+            if self.dbg_connect:
                 if not self.__connected.is_set():
                     self.connect()
 
