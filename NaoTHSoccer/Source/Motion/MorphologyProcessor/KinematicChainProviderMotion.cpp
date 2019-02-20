@@ -14,6 +14,11 @@ KinematicChainProviderMotion::KinematicChainProviderMotion()
   getDebugParameterList().add(&parameter);
 }
 
+KinematicChainProviderMotion::~KinematicChainProviderMotion()
+{
+  getDebugParameterList().remove(&parameter);
+}
+
 
 void KinematicChainProviderMotion::execute()
 {

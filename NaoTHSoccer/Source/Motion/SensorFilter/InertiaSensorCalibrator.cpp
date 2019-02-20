@@ -19,6 +19,11 @@ InertiaSensorCalibrator::InertiaSensorCalibrator()
   getDebugParameterList().add(&parameter);
 }
 
+InertiaSensorCalibrator::~InertiaSensorCalibrator()
+{
+  getDebugParameterList().remove(&parameter);
+}
+
 // check all request joints' speed, return true if all joints are almost not moving
 bool InertiaSensorCalibrator::intentionallyMoving()
 {

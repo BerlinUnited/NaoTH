@@ -8,9 +8,6 @@
 #ifndef _DebugModify_H
 #define _DebugModify_H
 
-#include <Tools/DataStructures/Singleton.h>
-#include <Tools/DataConversion.h>
-
 #include <Tools/DataStructures/Serializer.h>
 
 /**
