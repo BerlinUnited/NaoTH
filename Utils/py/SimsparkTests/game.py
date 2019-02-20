@@ -25,6 +25,7 @@ def parseArguments():
         parser.add_argument('-r','--runs', type=int, default=1, action='store', help="The number of runs (games), which should be performed")
         parser.add_argument('-l','--log', type=__check_args_log, action='store', help="The number of runs (games), which should be performed")
         parser.add_argument('-c','--comment', default='', action='store', help="A optional comment to describe this runs.")
+        parser.add_argument('-a','--alternate', action='store_true', help="If used, the sides for the teams a switched for each run.")
 
         parser.add_argument('-s', '--simspark', type=__check_args_simspark, default='simspark', action='store', help="The simspark executable")
         parser.add_argument('-ap', '--agent-port', type=int, action='store', help="The port for agents to connect to simspark")
@@ -213,7 +214,8 @@ def configure(args):
             'runs':     c.getint('general', 'RUNS'),
             'sync':     c.getboolean('general', 'SYNC'),
             'log':      retrieve_path(c.get('general', 'LOG')),
-            'comment':  c.get('general', 'COMMENT'),
+            'comment':  c.get('general', 'COMMENT', fallback=None),
+            'alternate':  c.get('general', 'ALTERNATE', fallback=False),
             'simspark': {
                 'exe': c.get('simspark', 'exe'),
                 'agent': c.get('simspark', 'agent'),
@@ -238,6 +240,7 @@ def configure(args):
             'sync':     args.sync if 'sync' in args else True,
             'log':      retrieve_path(args.log if 'log' in args else './result.db'),
             'comment':  args.comment if 'comment' in args else 'default',
+            'alternate':  args.alternate if 'alternate' in args else False,
             'simspark': {
                 'exe': args.simspark if 'simspark' in args else 'simspark',
                 'agent': args.agent_port if 'agent_port' in args else None,
@@ -295,19 +298,28 @@ if __name__ == "__main__":
 
     signal.signal(signal.SIGHUP, notify)
 
+    left = config['left']
+    right = config['right']
+
     for r in range(1, config['runs']+1):
         s = SimsparkController(config['simspark']['exe'], True)
         s.set_ports(config['simspark']['server'], config['simspark']['agent'])
         s.start()
         s.connected.wait()  # wait for the monitor to be connected
 
+        # switch team sides
+        if config['alternate'] and r%2 == 0:
+            _ = right
+            right = left
+            left = _
+
         agents = []
 
-        for n in range(1, config['left']['players']+1):
-            agents.append(AgentController(config['left']['exe'], config['left']['config'], config['left']['name'], n, config['sync'], True, False))
+        for n in range(1, left['players']+1):
+            agents.append(AgentController(left['exe'], left['config'], left['name'], n, config['sync'], True, False))
 
-        for n in range(1, config['right']['players']+1):
-            agents.append(AgentController(config['right']['exe'], config['right']['config'], config['right']['name'], n, config['sync'], True, False))
+        for n in range(1, right['players']+1):
+            agents.append(AgentController(right['exe'], right['config'], right['name'], n, config['sync'], True, False))
 
         # start all agents and wait for the agent to be fully started (prevent simspark error)
         for a in agents:
