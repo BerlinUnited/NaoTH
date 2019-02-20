@@ -253,18 +253,6 @@ bool SimSparkController::init(const std::string& modelPath, const std::string& t
   }
   // we should get the team index and player number now
 
-#ifdef DEBUG
-  // calculate debug communicaiton port
-  unsigned short debugPort = 5401;
-  if (theGameInfo.playLeftSide) {
-    debugPort = static_cast<short unsigned int> (5400 + theGameInfo.playerNumber);
-  } else {
-    debugPort = static_cast<short unsigned int> (5500 + theGameInfo.playerNumber);
-  }
-
-  theDebugServer.start(debugPort);
-#endif
-
   cout << "NaoTH Simpark initialization successful: " << teamName << " " << theGameInfo.playerNumber << endl;
 
   //DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
@@ -286,6 +274,12 @@ bool SimSparkController::init(const std::string& modelPath, const std::string& t
     config.setString("player", "TeamName", theGameInfo.teamName);
   }
   cout << "Player number: " << theGameInfo.playerNumber << endl;
+
+#ifdef DEBUG
+  // calculate debug communicaiton port
+  unsigned short debugPort = static_cast<short unsigned int> (5000 + (theGameInfo.teamNumber*100) + theGameInfo.playerNumber);
+  theDebugServer.start(debugPort);
+#endif
 
   theLastSenseTime = NaoTime::getNaoTimeInMilliSeconds();
   theLastActTime = theLastSenseTime;
