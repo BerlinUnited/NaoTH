@@ -105,51 +105,27 @@ void RoleDecisionPositionDynamic::execute()
     debugDrawings();
 }
 
+Vector2d RoleDecisionPositionDynamic::calculateRepeller(const Vector2d& point, Vector2d repeller, double force)
+{
+    repeller -= point;
+    auto distance = repeller.abs();
+    return -repeller.normalize() * (this->*params.repellerForce)(force, distance);
+}
+
+
 void RoleDecisionPositionDynamic::calculateRepellerAttractorPosition(Roles::Static r, std::map<Roles::Static, Vector2d>& pos)
 {
     const auto& p = getRoleDecisionModel().roles_position[r].home;
 
-    Vector2d l_side(p.x, getFieldInfo().yPosLeftSideline);
-    Vector2d r_side(p.x, getFieldInfo().yPosRightSideline);
-    Vector2d f_side(getFieldInfo().xPosOpponentGroundline, p.y);
-    Vector2d b_side(getFieldInfo().xPosOwnGroundline, p.y);
-
-    l_side -= p;
-    r_side -= p;
-    f_side -= p;
-    b_side -= p;
-
-    auto dl = l_side.abs(),
-         dr = r_side.abs(),
-         df = f_side.abs(),
-         db = b_side.abs();
-
-    l_side.normalize();
-    r_side.normalize();
-    f_side.normalize();
-    b_side.normalize();
-
-    auto l_force = -1 * params.force_sideline / (dl*dl);
-    auto r_force = -1 * params.force_sideline / (dr*dr);
-    auto f_force = -1 * params.force_sideline / (df*df);
-    auto b_force = -1 * params.force_sideline / (db*db);
-
-    l_side *= l_force;
-    r_side *= r_force;
-    f_side *= f_force;
-    b_side *= b_force;
-
-    pos[r] = p + l_side + r_side + f_side + b_side;
+    pos[r] = p
+            + calculateRepeller(p, {p.x, getFieldInfo().yPosLeftSideline}, params.force_sideline)
+            + calculateRepeller(p, {p.x, getFieldInfo().yPosRightSideline}, params.force_sideline)
+            + calculateRepeller(p, {getFieldInfo().xPosOpponentGroundline, p.y}, params.force_sideline)
+            + calculateRepeller(p, {getFieldInfo().xPosOwnGroundline, p.y}, params.force_sideline);
 
     for (const auto& a : getRoles().active) {
         if(a != Roles::goalie && a != r) {
-            auto mate = getRoleDecisionModel().roles_position[a].home;
-            mate -= p;
-            auto dm = mate.abs();
-            mate.normalize();
-            auto m_force = -1 * params.force_teammates / (dm*dm);
-            mate *= m_force;
-            pos[r] += mate;
+            pos[r] += calculateRepeller(p, getRoleDecisionModel().roles_position[a].home, params.force_teammates);
         }
     }
 
