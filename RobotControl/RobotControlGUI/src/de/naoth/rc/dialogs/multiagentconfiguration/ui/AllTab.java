@@ -219,13 +219,34 @@ public class AllTab extends Tab
         private void saveParameters() { /* not used in the all tab (hidden) */ }
 
         @FXML
-        private void updateParameters() { /* agent tab did bind itself to this button */ }
+        private void updateParameters() {
+            // remove existing nodes of cognition & motion debug request, but keep root nodes.
+            Utils.global_parameters.clear();
+            configurationsTabViewController.parameterTree.getRoot().getChildren().forEach((n) -> {
+                n.getChildren().clear();
+                Utils.global_parameters.put(n.getValue().getName(), n);
+            });
+        }
 
         @FXML
-        private void updateModules() { /* agent tab did bind itself to this button */ }
+        private void updateModules() {
+            // remove existing nodes of cognition & motion modules, but keep root nodes.
+            Utils.global_modules.clear();
+            configurationsTabViewController.moduleTree.getRoot().getChildren().forEach((n) -> {
+                n.getChildren().clear();
+                Utils.global_modules.put(n.getValue(), (TreeNode) n);
+            });
+        }
 
         @FXML
-        private void updateDebugRequests() { /* agent tab did bind itself to this button */ }
+        private void updateDebugRequests() {
+            // remove existing nodes of cognition & motion debug request, but keep root nodes.
+            Utils.global_debug_requests.clear();
+            configurationsTabViewController.debugTree.getRoot().getChildren().forEach((n) -> {
+                n.getChildren().clear();
+                Utils.global_debug_requests.put(n.getValue(), n);
+            });
+        }
 
         @FXML
         private void saveParametersMotion() { /* not used in the all tab (hidden) */ }
