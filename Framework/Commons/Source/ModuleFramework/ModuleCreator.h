@@ -73,7 +73,7 @@ private:
   Stopwatch& stopwatch;
 
   StopwatchManager& getStopwatchManager() {
-    return *(getBlackBoard().getRepresentation<DataHolder<StopwatchManager> >("ModuleStopwatch"));
+    return *(getBlackBoard().template getRepresentation<DataHolder<StopwatchManager> >("ModuleStopwatch"));
   }
 
 public:

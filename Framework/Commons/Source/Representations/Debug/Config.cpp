@@ -10,7 +10,7 @@
 #include "Messages/Messages.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
-void naoth::Serializer<Config>::serialize(const Config& object, std::ostream& stream)
+void naoth::Serializer<Config>::serialize(const Config& /*object*/, std::ostream& stream)
 {
   naothmessages::Config msg;
   
@@ -34,7 +34,7 @@ void naoth::Serializer<Config>::serialize(const Config& object, std::ostream& st
   msg.SerializeToZeroCopyStream(&buf);
 }
 
-void naoth::Serializer<Config>::deserialize(std::istream& stream, Config& object)
+void naoth::Serializer<Config>::deserialize(std::istream& stream, Config& /*object*/)
 {
   naothmessages::Config msg;
   google::protobuf::io::IstreamInputStream buf(&stream);
