@@ -11,14 +11,15 @@ MultiKalmanBallLocator::MultiKalmanBallLocator():
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:allow_just_one_model",  "allows only one model to be generated (all updates are applied to that model)", false);
 
     // Debug Drawings
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_real_ball_percept",     "draw the real incomming ball percept",                             false);
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_ball_on_field_before",  "draw the modelled ball on the field before prediction and update", false);
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_ball_on_field",         "draw the modelled ball on the field before update",                false);
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_ball_on_field_after",   "draw the modelled ball on the field after prediction and update",  false);
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_assignment",            "draws the assignment of the ball percept to the filter",           false);
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_final_ball",            "draws the final i.e. best model",                                  false);
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_future_ball_positions", "draws the estimated postions of the ball in the future in 1s steps", false);
-	DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:plot_covariance_ellipse", "draws the ellipses representing the covariances", false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_real_ball_percept",          "draw the real incomming ball percept",                               false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_ball_on_field_before",       "draw the modelled ball on the field before prediction and update",   false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_ball_on_field",              "draw the modelled ball on the field before update",                  false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_ball_on_field_after",        "draw the modelled ball on the field after prediction and update",    false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_assignment",                 "draws the assignment of the ball percept to the filter",             false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_final_ball",                 "draws the final i.e. best model",                                    false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_final_ball_postion_at_rest", "draws the final i.e. best model's rest position",                    false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_future_ball_positions",      "draws the estimated postions of the ball in the future in 1s steps", false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:plot_covariance_ellipse",         "draws the ellipses representing the covariances",                    false);
 
     // Plotting Related Debug Requests
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:plot_prediction_error",     "plots the prediction errors in x (horizontal angle) and y (vertical angle)", false);
@@ -26,7 +27,7 @@ MultiKalmanBallLocator::MultiKalmanBallLocator():
     // Update Association Function Debug Requests
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:UpdateAssociationFunction:useEuclid",            "minimize Euclidian distance in measurement space",                                false);
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:UpdateAssociationFunction:useMahalanobis",       "minimize Mahalanobis distance in measurement space (no common covarince matrix)", false);
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:UpdateAssociationFunction:useMaximumLikelihood", "maximize likelihood of measurement in measurement space ",                         true);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:UpdateAssociationFunction:useMaximumLikelihood", "maximize likelihood of measurement in measurement space ",                        true );
 
     // Parameter Related Debug Requests
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:reloadParameters",          "reloads the kalman filter parameters from the kfParameter object", false);
@@ -597,11 +598,18 @@ void MultiKalmanBallLocator::provideBallModel(const BallHypothesis& model)
     predict(modelCopy, 1.0); // predict 1s in the future
     pos.x = modelCopy.getState()(0);
     pos.y = modelCopy.getState()(2);
-    future_models.push_back(modelCopy);
+    DEBUG_REQUEST("MultiKalmanBallLocator:draw_future_ball_positions",
+        future_models.push_back(modelCopy);
+    );
   }
 
   DEBUG_REQUEST("MultiKalmanBallLocator:draw_future_ball_positions",
                 drawFuturePositions(future_models);
+  );
+
+
+  DEBUG_REQUEST("MultiKalmanBallLocator:draw_final_ball_postion_at_rest",
+                drawPositionAtRest(modelCopy);
   );
 }
 
@@ -634,7 +642,6 @@ void MultiKalmanBallLocator::doDebugRequestBeforUpdate()
 void MultiKalmanBallLocator::doDebugRequest()
 {
     //PLOT("MultiKalmanBallLocator:ModelIsValid", getBallModel().valid);
-
     
     //to check correctness of the prediction
     DEBUG_REQUEST("MultiKalmanBallLocator:draw_real_ball_percept",
@@ -679,10 +686,10 @@ void MultiKalmanBallLocator::doDebugRequest()
 
 void MultiKalmanBallLocator::drawFilter(const BallHypothesis& bh, const Color& model_color, Color& cov_loc_color, Color& cov_vel_color) const
 {
-	DEBUG_REQUEST("MultiKalmanBallLocator:plot_covariance_ellipse",
-		cov_loc_color[cov_loc_color.Alpha] = 0;
-		cov_vel_color[cov_vel_color.Alpha] = 0;
-	);
+    DEBUG_REQUEST("MultiKalmanBallLocator:plot_covariance_ellipse",
+        cov_loc_color[cov_loc_color.Alpha] = 0;
+        cov_vel_color[cov_vel_color.Alpha] = 0;
+    );
 	
     PEN(model_color.toString(),20);
 
@@ -733,10 +740,8 @@ void MultiKalmanBallLocator::drawFiltersOnField() const
     Color cov_vel_color("FF00FF");
     Color model_color;
 
-    for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); iter++)
-    {
-        if(getBallModel().valid)
-        {
+    for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); iter++) {
+        if(getBallModel().valid) {
             if((*iter).getLastUpdateFrame().getTime() == getFrameInfo().getTime()) {
                 if(bestModel == iter)
                     model_color = "99FF00";
@@ -746,11 +751,29 @@ void MultiKalmanBallLocator::drawFiltersOnField() const
                     model_color = "0099FF";
             }
         } else {
-                model_color = "999999";
+            model_color = "999999";
         }
 
         drawFilter(*iter, model_color, cov_loc_color, cov_vel_color);
     }
+}
+
+void MultiKalmanBallLocator::drawPositionAtRest(BallHypothesis &bh) const {
+    // for more information see: void predict(ExtendedKalmanFilter4d& filter, double dt) const;
+    const Eigen::Vector4d& x = bh.getState();
+    Eigen::Vector2d vel; // control vector
+    vel <<  x(1), x(3);
+    double abs_velocity = vel.norm();
+
+    if(abs_velocity > epsilon){
+        double time_until_vel_zero = -abs_velocity / getFieldInfo().ballDeceleration;
+        Eigen::Vector2d u = vel.normalized() * getFieldInfo().ballDeceleration;
+        bh.predict(u, time_until_vel_zero);
+    }
+
+    FIELD_DRAWING_CONTEXT;
+    PEN(Color(Color::black), 20);
+    CIRCLE(bh.getState()(0), bh.getState()(2), getFieldInfo().ballRadius-10);
 }
 
 void MultiKalmanBallLocator::reloadParameters()

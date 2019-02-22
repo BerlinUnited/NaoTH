@@ -105,6 +105,7 @@ private:
     void doDebugRequestBeforPredictionAndUpdate();
     void doDebugRequestBeforUpdate();
     void drawFilter(const BallHypothesis& bh, const Color& model_color, Color& cov_loc_color, Color& cov_vel_color) const;
+    void drawPositionAtRest(BallHypothesis& bh) const;
     void drawFuturePositions(const Filters& future_filter) const;
     void drawFiltersOnField() const;
     void reloadParameters();
