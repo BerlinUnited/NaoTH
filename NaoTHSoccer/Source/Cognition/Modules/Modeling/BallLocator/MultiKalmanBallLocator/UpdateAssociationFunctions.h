@@ -1,9 +1,10 @@
 #ifndef UPDATEASSOCIATIONFUNCTIONS
 #define UPDATEASSOCIATIONFUNCTIONS
 
-//#include "MeasurementFunctions.h"
-//#include <Tools/Math/Common.h>
-#include "Eigen/StdVector"
+
+#include <Eigen/StdVector>
+#include <Eigen/LU> // needed by inverse()
+
 #include "BallHypothesis.h"
 
 struct UpdateAssociationFunction{
