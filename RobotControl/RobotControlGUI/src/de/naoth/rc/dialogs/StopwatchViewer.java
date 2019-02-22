@@ -351,7 +351,7 @@ private void btResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST
 
                   // update the table
                   ((StopwatchTableModel)stopwatchTable.getModel()).update(map);
-                  if (cbAutoSort.isSelected()) {
+                  if (btAutoSort.isSelected()) {
                     ((TableRowSorter<TableModel>)stopwatchTable.getRowSorter()).sort();
                   }
                   stopwatchTable.repaint();
