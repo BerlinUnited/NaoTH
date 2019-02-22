@@ -242,15 +242,10 @@ public class AgentTab extends Tab implements ConnectionStatusListener
 
     public void connect() {
         if(!server.isConnected()) {
-            try {
-                // try to connect to robot
-                server.connect(host, port);
+            // try to connect to robot
+            if(server.connect(host, port)) {
                 // send "initial" commands
                 configurationsTabViewController.connected();
-            } catch (IOException ex) {
-                updateConnectionStatusUI(false);
-
-                Logger.getLogger(getClass().getName()).log(Level.WARNING, "Can not connect to robot.");
             }
         }
     }
