@@ -60,6 +60,8 @@ public class StopwatchViewer extends AbstractDialog
 
   final StopWatchListener stopWatchListener = new StopWatchListener();
   GenericManager currentManager = null;
+  GenericManager currentManagerModules = null;
+  
   float globalWarnLevel = 40.0f;
   
   public StopwatchViewer()
@@ -109,8 +111,8 @@ public class StopwatchViewer extends AbstractDialog
         btShowStopwatch = new javax.swing.JToggleButton();
         cbProcess = new javax.swing.JComboBox();
         btReset = new javax.swing.JButton();
-        cbAutoSort = new javax.swing.JCheckBox();
-        cbModulesOnly = new javax.swing.JCheckBox();
+        btAutoSort = new javax.swing.JToggleButton();
+        btModulesOnly = new javax.swing.JToggleButton();
         jLabel1 = new javax.swing.JLabel();
         txtWarn = new javax.swing.JFormattedTextField();
         jLabel2 = new javax.swing.JLabel();
@@ -170,27 +172,27 @@ public class StopwatchViewer extends AbstractDialog
         });
         jToolBar1.add(btReset);
 
-        cbAutoSort.setText("Coninuous Sort");
-        cbAutoSort.setFocusable(false);
-        cbAutoSort.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
-        cbAutoSort.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(cbAutoSort);
+        btAutoSort.setText("Coninuous Sort");
+        btAutoSort.setFocusable(false);
+        btAutoSort.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btAutoSort.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(btAutoSort);
 
-        cbModulesOnly.setText("modules only");
-        cbModulesOnly.setFocusable(false);
-        cbModulesOnly.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
-        cbModulesOnly.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        cbModulesOnly.addActionListener(new java.awt.event.ActionListener() {
+        btModulesOnly.setText("Modules Only");
+        btModulesOnly.setFocusable(false);
+        btModulesOnly.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btModulesOnly.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btModulesOnly.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbModulesOnlyActionPerformed(evt);
+                btModulesOnlyActionPerformed(evt);
             }
         });
-        jToolBar1.add(cbModulesOnly);
+        jToolBar1.add(btModulesOnly);
 
         jLabel1.setText("warn:");
         jToolBar1.add(jLabel1);
 
-        txtWarn.setColumns(2);
+        txtWarn.setColumns(3);
         txtWarn.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
         txtWarn.setText("40");
         txtWarn.addActionListener(new java.awt.event.ActionListener() {
@@ -207,7 +209,7 @@ public class StopwatchViewer extends AbstractDialog
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 598, Short.MAX_VALUE)
             .addComponent(jScrollPane)
         );
         layout.setVerticalGroup(
@@ -224,14 +226,9 @@ private void btShowStopwatchActionPerformed(java.awt.event.ActionEvent evt) {//G
 }//GEN-LAST:event_btShowStopwatchActionPerformed
 
 private void btResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btResetActionPerformed
-  resetAll();
+    resetAll();
 }//GEN-LAST:event_btResetActionPerformed
 
-
-  private void cbModulesOnlyActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cbModulesOnlyActionPerformed
-  {//GEN-HEADEREND:event_cbModulesOnlyActionPerformed
-    registerListeners();
-  }//GEN-LAST:event_cbModulesOnlyActionPerformed
 
     private void cbProcessActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbProcessActionPerformed
         registerListeners();
@@ -246,11 +243,15 @@ private void btResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST
         }
     }//GEN-LAST:event_txtWarnActionPerformed
 
+    private void btModulesOnlyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btModulesOnlyActionPerformed
+        registerListeners();
+    }//GEN-LAST:event_btModulesOnlyActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JToggleButton btAutoSort;
+    private javax.swing.JToggleButton btModulesOnly;
     private javax.swing.JButton btReset;
     private javax.swing.JToggleButton btShowStopwatch;
-    private javax.swing.JCheckBox cbAutoSort;
-    private javax.swing.JCheckBox cbModulesOnly;
     private javax.swing.JComboBox cbProcess;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -277,6 +278,10 @@ private void btResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST
       if (currentManager != null) {
           currentManager.removeListener(this.stopWatchListener);
       }
+      
+      if(currentManagerModules != null) {
+          currentManagerModules.removeListener(this.stopWatchListener);
+      }
 
       if(btShowStopwatch.isSelected()) 
       {
@@ -284,15 +289,17 @@ private void btResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST
 
         String process = (String) cbProcess.getSelectedItem();
 
-        Command command;
-        if (cbModulesOnly.isSelected()) {
-            command = new Command(process + ":modules:stopwatch");
-        } else {
-            command = new Command(process + ":representation:get").addArg("StopwatchManager");
+        if(!btModulesOnly.isSelected()) {
+            currentManager = Plugin.genericManagerFactory.getManager(
+                new Command(process + ":representation:get").addArg("StopwatchManager")
+            );
+            currentManager.addListener(this.stopWatchListener);
         }
-
-        currentManager = Plugin.genericManagerFactory.getManager(command);
-        currentManager.addListener(this.stopWatchListener);
+        
+        currentManagerModules = Plugin.genericManagerFactory.getManager(
+            new Command(process + ":representation:get").addArg("ModuleStopwatch")
+        );
+        currentManagerModules.addListener(this.stopWatchListener);
       }
     }
     
