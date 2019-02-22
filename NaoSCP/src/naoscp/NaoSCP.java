@@ -401,6 +401,12 @@ public class NaoSCP extends javax.swing.JPanel {
                         if (!deployDir.mkdirs()) {
                             Logger.getGlobal().log(Level.SEVERE, "Could not create deploy out directory");
                         } else {
+                            // try to establish a connection to the robot before assembling the files
+                            String robotIp = getIpAddress();
+                            Scp scp = new Scp(robotIp, "nao", "nao");
+                            scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
+                            Scp.CommandStream shell = scp.getShell();
+                            
                             //NaoSCP.this.setEnabledAll(false);
                             naoTHPanel.getAction().run(deployDir);
 
@@ -412,12 +418,6 @@ public class NaoSCP extends javax.swing.JPanel {
                             FileUtils.zipDirectory(deployDir, deployZip);
 
                             // send stuff to robot
-                            String robotIp = getIpAddress();
-
-                            Scp scp = new Scp(robotIp, "nao", "nao");
-                            scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
-
-                            Scp.CommandStream shell = scp.getShell();
 
                             //Logger.getGlobal().log(Level.INFO, "mkdir /home/nao/tmp");
                             //scp.mkdir("/home/nao/tmp"); // just in case it doesn't exist
