@@ -19,7 +19,7 @@ MultiKalmanBallLocator::MultiKalmanBallLocator():
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_final_ball",                 "draws the final i.e. best model",                                    false);
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_final_ball_postion_at_rest", "draws the final i.e. best model's rest position",                    false);
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_future_ball_positions",      "draws the estimated postions of the ball in the future in 1s steps", false);
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:plot_covariance_ellipse",         "draws the ellipses representing the covariances",                    false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_covariance_ellipse",         "draws the ellipses representing the covariances",                    false);
 
     // Plotting Related Debug Requests
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:plot_prediction_error",     "plots the prediction errors in x (horizontal angle) and y (vertical angle)", false);
@@ -684,13 +684,18 @@ void MultiKalmanBallLocator::doDebugRequest()
       );
 }
 
-void MultiKalmanBallLocator::drawFilter(const BallHypothesis& bh, const Color& model_color, Color& cov_loc_color, Color& cov_vel_color) const
+void MultiKalmanBallLocator::drawFilter(const BallHypothesis& bh, const Color& model_color, Color cov_loc_color, Color cov_vel_color) const
 {
-    DEBUG_REQUEST("MultiKalmanBallLocator:plot_covariance_ellipse",
-        cov_loc_color[cov_loc_color.Alpha] = 0;
-        cov_vel_color[cov_vel_color.Alpha] = 0;
+    bool draw_covariances = false;
+    DEBUG_REQUEST("MultiKalmanBallLocator:draw_covariance_ellipse",
+        draw_covariances = true;
     );
 	
+    if(!draw_covariances) {
+        cov_loc_color[cov_loc_color.Alpha] = 0;
+        cov_vel_color[cov_vel_color.Alpha] = 0;
+    }
+
     PEN(model_color.toString(),20);
 
     const Eigen::Vector4d& state = bh.getState();
@@ -723,11 +728,11 @@ void MultiKalmanBallLocator::drawFuturePositions(const Filters &future_filter) c
     double alpha = 1.0;
     Color white(Color::white);
     Color black(Color::black);
-	Color future_model_color(Color::red);
+    //Color future_model_color(Color::red);
 
     for(const BallHypothesis& bh : future_filter){
         Color c = black * alpha + white * (1 - alpha);
-		drawFilter(bh, future_model_color, c, c);
+        drawFilter(bh, c /*future_model_color*/, c, c);
         alpha -= 1.0/static_cast<double>(future_filter.size());
     }
 }
