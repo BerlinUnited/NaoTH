@@ -45,10 +45,7 @@ class KinematicChainProviderMotion: private KinematicChainProviderMotionBase
 {
 public:
   KinematicChainProviderMotion();
-
-  ~KinematicChainProviderMotion(){
-    getDebugParameterList().remove(&parameter);
-  }
+  ~KinematicChainProviderMotion();
 
   void execute();
 

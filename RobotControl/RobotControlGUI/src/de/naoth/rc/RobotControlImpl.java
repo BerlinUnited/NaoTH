@@ -10,6 +10,7 @@ import bibliothek.gui.DockUI;
 import bibliothek.gui.dock.util.laf.Nimbus6u10;
 import de.naoth.rc.components.preferences.PreferencesDialog;
 import de.naoth.rc.server.ConnectionDialog;
+import de.naoth.rc.server.ConnectionManager;
 import de.naoth.rc.server.ConnectionStatusEvent;
 import de.naoth.rc.server.ConnectionStatusListener;
 import de.naoth.rc.server.MessageServer;
@@ -57,7 +58,7 @@ public class RobotControlImpl extends javax.swing.JFrame
   
   private final Properties config = new Properties();
   private final PreferencesDialog preferencesDialog;
-  private final ConnectionDialog connectionDialog;
+  private final ConnectionManager connectionManager;
   
   private final DialogRegistry dialogRegistry;
 
@@ -184,18 +185,18 @@ public class RobotControlImpl extends javax.swing.JFrame
 
         @Override
         public void disconnected(ConnectionStatusEvent event) {
+            
             disconnectMenuItem.setEnabled(false);
             connectMenuItem.setEnabled(true);
+            
             if(event.getMessage() != null) {
-                JOptionPane.showMessageDialog(RobotControlImpl.this,
-                    event.getMessage(), "Disconnect", JOptionPane.ERROR_MESSAGE);
+                connectionManager.showConnectionDialog(event.getMessage());
             }
         }
     });
 
-    // connection dialog
-    this.connectionDialog = new ConnectionDialog(this, this.messageServer, this.getConfig());
-    this.connectionDialog.setLocationRelativeTo(this);
+    this.connectionManager = new ConnectionManager(this, this.messageServer, this.getConfig());
+    
     this.disconnectMenuItem.setEnabled(false);
     // preference dialog
     this.preferencesDialog = new PreferencesDialog(this, this.getConfig());
@@ -257,7 +258,9 @@ public class RobotControlImpl extends javax.swing.JFrame
   {
     if(enforceConnection.isSelected() && !messageServer.isConnected())
     {
-      connectionDialog.setVisible(true);
+      // NOTE: this call will block until the dialog is closed
+      //connectionDialog.setVisible(true);
+      this.connectionManager.showConnectionDialog();
       return messageServer.isConnected();
     }
     else
@@ -521,7 +524,7 @@ public class RobotControlImpl extends javax.swing.JFrame
 
     private void connectMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_connectMenuItemActionPerformed
     {//GEN-HEADEREND:event_connectMenuItemActionPerformed
-      connectionDialog.setVisible(true);
+        connectionManager.showConnectionDialog();
     }//GEN-LAST:event_connectMenuItemActionPerformed
 
     private void disconnectMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_disconnectMenuItemActionPerformed

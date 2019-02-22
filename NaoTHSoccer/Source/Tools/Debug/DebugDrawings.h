@@ -36,50 +36,50 @@ public:
 
 public:
   void pen(const char* color, double width) {
-    out() << "Pen:" << color << ":" << width << std::endl;
+    out() << "Pen:" << color << ":" << width << '\n';
   }
   void pen(const std::string& color, double width) {
-    out() << "Pen:" << color << ":" << width << std::endl;
+    out() << "Pen:" << color << ":" << width << '\n';
   }
   void pen(const Color& color, double width) {
-    out() << "Pen:" << color << ":" << width << std::endl;
+    out() << "Pen:" << color << ":" << width << '\n';
   }
   void drawCircle(double x, double y, double radius) {
-    out() << "Circle:" << x << ":" << y << ":" << radius << ":" <<  std::endl;
+    out() << "Circle:" << x << ":" << y << ":" << radius << '\n';
   }
   void drawLine(double x0, double y0, double x1, double y1) {
-    out() << "Line:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  std::endl;
+    out() << "Line:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << '\n';
   }
   void drawArrow(double x0, double y0, double x1, double y1) {
-    out() << "Arrow:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  std::endl;
+    out() << "Arrow:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << '\n';
   }
   void drawText(double x, double y, const char* text) {
-    out() << "Text:" << x << ":" << y << ":" << text << ":" <<  std::endl;
+    out() << "Text:" << x << ":" << y << ":" << text << '\n';
   }
 
   void drawBox(double x0, double y0, double x1, double y1) {
-    out() << "Box:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" << std::endl;
+    out() << "Box:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << '\n';
   }
   void fillBox(double x0, double y0, double x1, double y1) {
-    out() << "FillBox:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" << std::endl;
+    out() << "FillBox:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << '\n';
   }
   void fillOval(double x, double y, double radiusX, double radiusY) {
-    out() << "FillOval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" <<  std::endl;
+    out() << "FillOval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << '\n';
   }
 
   void drawOvalRotated(double x,double y,double radiusX,double radiusY,double rotation) {
-    out() << "Oval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" << rotation << ":" <<  std::endl;
+    out() << "Oval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" << rotation << '\n';
   }
 
   void drawRobot(double x, double y, double rotation){
-    out() << "Robot:" << x << ":" << y << ":" << rotation << ":" <<  std::endl;
+    out() << "Robot:" << x << ":" << y << ":" << rotation << '\n';
   }
 
   void rotate(double angle) {
-    out() << "Rotation:" << angle << std::endl;
+    out() << "Rotation:" << angle << '\n';
   }
   void translate(double x, double y) {
-    out() << "Translation:" << x << ":" << y << std::endl;
+    out() << "Translation:" << x << ":" << y << '\n';
   }
   
 
@@ -104,35 +104,35 @@ template<> class Serializer<DebugDrawings> : public Serializer<DrawingCanvas2D> 
 
 
 #ifdef DEBUG
-#define CANVAS(id) getDebugDrawings().out() << "Canvas:" << id << std::endl
-#define IMAGE_DRAWING_CONTEXT getDebugDrawings().out() << "DrawingOnImage" << std::endl
-#define FIELD_DRAWING_CONTEXT getDebugDrawings().out() << "DrawingOnField" << std::endl
+#define CANVAS(id) getDebugDrawings().out() << "Canvas:" << id << '\n'
+#define IMAGE_DRAWING_CONTEXT getDebugDrawings().out() << "DrawingOnImage" << '\n'
+#define FIELD_DRAWING_CONTEXT getDebugDrawings().out() << "DrawingOnField" << '\n'
 
-#define PEN(color, width) getDebugDrawings().out() << "Pen:" << color << ":" << width << std::endl
-#define ROTATION(angle) getDebugDrawings().out() << "Rotation:" << angle << std::endl
-#define TRANSLATION(x,y) getDebugDrawings().out() << "Translation:" << x << ":" << y << std::endl
+#define PEN(color, width) getDebugDrawings().out() << "Pen:" << color << ":" << width << '\n'
+#define ROTATION(angle) getDebugDrawings().out() << "Rotation:" << angle << '\n'
+#define TRANSLATION(x,y) getDebugDrawings().out() << "Translation:" << x << ":" << y << '\n'
 
-#define CIRCLE(x,y,radius) getDebugDrawings().out() << "Circle:" << x << ":" << y << ":" << radius << ":" <<  std::endl
-#define OVAL(x,y,radiusX,radiusY) getDebugDrawings().out() << "Oval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" <<  std::endl
-#define OVAL_ROTATED(x,y,radiusX,radiusY,rotation) getDebugDrawings().out() << "Oval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" << rotation << ":" <<  std::endl
-#define ARROW(x0,y0,x1,y1) getDebugDrawings().out() << "Arrow:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  std::endl
-#define LINE(x0,y0,x1,y1) getDebugDrawings().out() << "Line:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  std::endl
-#define BOX(x0,y0,x1,y1) getDebugDrawings().out() << "Box:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  std::endl
-#define FILLBOX(x0,y0,x1,y1) getDebugDrawings().out() << "FillBox:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" << std::endl
-#define FILLOVAL(x,y,radiusX,radiusY) getDebugDrawings().out() << "FillOval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" <<  std::endl
-#define TEXT_DRAWING(x,y,text) getDebugDrawings().out() << "Text:" << x << ":" << y << ":" << text << ":" <<  std::endl
-#define SIMPLE_PARTICLE(x,y,r) getDebugDrawings().out() << "Particle:" << x << ":" << y << ":" << r << ":" <<  std::endl
+#define CIRCLE(x,y,radius) getDebugDrawings().out() << "Circle:" << x << ":" << y << ":" << radius << '\n'
+#define OVAL(x,y,radiusX,radiusY) getDebugDrawings().out() << "Oval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << '\n'
+#define OVAL_ROTATED(x,y,radiusX,radiusY,rotation) getDebugDrawings().out() << "Oval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" << rotation << '\n'
+#define ARROW(x0,y0,x1,y1) getDebugDrawings().out() << "Arrow:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << '\n'
+#define LINE(x0,y0,x1,y1) getDebugDrawings().out() << "Line:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << '\n'
+#define BOX(x0,y0,x1,y1) getDebugDrawings().out() << "Box:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << '\n'
+#define FILLBOX(x0,y0,x1,y1) getDebugDrawings().out() << "FillBox:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << '\n'
+#define FILLOVAL(x,y,radiusX,radiusY) getDebugDrawings().out() << "FillOval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << '\n'
+#define TEXT_DRAWING(x,y,text) getDebugDrawings().out() << "Text:" << x << ":" << y << ":" << text << '\n'
+#define SIMPLE_PARTICLE(x,y,r) getDebugDrawings().out() << "Particle:" << x << ":" << y << ":" << r << '\n'
 // voronoi stuff
-#define FILLPOLYGON(x,y) getDebugDrawings().out() << "FillPolygon:" << x << ":" << y <<":" << std::endl
-#define POLYGON(x,y) getDebugDrawings().out() << "Polygon:" << x << ":" << y <<":" << std::endl
+#define FILLPOLYGON(x,y) getDebugDrawings().out() << "FillPolygon:" << x << ":" << y << '\n'
+#define POLYGON(x,y) getDebugDrawings().out() << "Polygon:" << x << ":" << y << '\n'
 // voronoi stuff end
 #define PARTICLE(x,y,r,l) \
   LINE(x,y,x + l*cos(r),y + l*sin(r)); \
   CIRCLE(x,y,0.1*l)
 
-#define BINARY_PLOT(name,value) getDebugDrawings().out() << "BinaryPlotData:" << name << ":" << value << std::endl
-#define ROBOT(x,y,rotation) getDebugDrawings().out() << "Robot:" << x << ":" << y << ":" << rotation << ":" <<  std::endl
-#define ROBOT_WITH_HEAD(x,y,rotation, headRotation) getDebugDrawings().out() << "Robot:" << x << ":" << y << ":" << rotation << ":" <<  headRotation << ':' << std::endl
+#define BINARY_PLOT(name,value) getDebugDrawings().out() << "BinaryPlotData:" << name << ":" << value << '\n'
+#define ROBOT(x,y,rotation) getDebugDrawings().out() << "Robot:" << x << ":" << y << ":" << rotation << '\n'
+#define ROBOT_WITH_HEAD(x,y,rotation, headRotation) getDebugDrawings().out() << "Robot:" << x << ":" << y << ":" << rotation << ":" <<  headRotation << '\n'
 
 
 #else

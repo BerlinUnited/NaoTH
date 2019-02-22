@@ -65,11 +65,7 @@ public class StatusbarRobotInfo extends StatusbarPluginImpl implements Connectio
                     if(host == null || port == null) {
                         JOptionPane.showMessageDialog((RobotControlImpl)rc, "There is no last used connection info available.", "Disconnect", JOptionPane.ERROR_MESSAGE);
                     } else {
-                        try {
-                            rc.getMessageServer().connect(host, Integer.parseInt(port));
-                        } catch (IOException ex) {
-                            JOptionPane.showMessageDialog((RobotControlImpl)rc, "Etablishing connection failed: " + ex.getLocalizedMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
-                        }
+                        rc.getMessageServer().connect(host, Integer.parseInt(port));
                     }
                 } else {
                     // connect to robot with connection dialog

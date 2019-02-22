@@ -12,16 +12,12 @@ package de.naoth.rc.server;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
 import java.net.InetAddress;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 /**
@@ -163,38 +159,17 @@ public class ConnectionDialog extends javax.swing.JDialog
 
     private void btConnectActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btConnectActionPerformed
     {//GEN-HEADEREND:event_btConnectActionPerformed
-      try
-      {
         String host = (String) cbHost.getSelectedItem();
         int port = Integer.parseInt(txtPort.getText());
         
-        this.messageServer.connect(host, port);
+        if(this.messageServer.connect(host, port)) {
+            addItemToCombobox(host);
 
-        addItemToCombobox(host);
-        
-        this.properties.put("hostname", host);
-        this.properties.put("port", "" + port);
+            this.properties.put("hostname", host);
+            this.properties.put("port", "" + port);
 
-        setVisible(false);
-      }
-      catch(UnknownHostException ex)
-      {
-        JOptionPane.showMessageDialog(this,
-          "Could not connect: host \'" + this.messageServer.getAddress() + "\' is unknown.", 
-          "ERROR", JOptionPane.ERROR_MESSAGE);
-      }
-      catch(SocketTimeoutException ex)
-      {
-        JOptionPane.showMessageDialog(this,
-          "Could not connect: socket timeout exception.",
-          "ERROR", JOptionPane.ERROR_MESSAGE);
-      }
-      catch(IOException ex)
-      {
-        JOptionPane.showMessageDialog(this,
-          "Etablishing connection failed: " + ex.getLocalizedMessage(), 
-          "ERROR", JOptionPane.ERROR_MESSAGE);
-      }
+            setVisible(false);
+        }
     }//GEN-LAST:event_btConnectActionPerformed
 
     // TODO: for now it's adjusted for the current NaoTH addresses. Make it more general.
