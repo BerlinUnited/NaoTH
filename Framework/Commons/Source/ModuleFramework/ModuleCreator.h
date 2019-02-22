@@ -61,10 +61,9 @@ public:
  * A module is deleted if it is disabled and created new if it is enabled.
  */
 template<class M>
-class ModuleCreator : public AbstractModuleCreator
+class ModuleCreator : virtual public BlackBoardInterface, public AbstractModuleCreator
 {
 private:
-  BlackBoard& theBlackBoard;
   M* theInstance;
 
   // cannot be copied
@@ -73,13 +72,24 @@ private:
   //
   Stopwatch& stopwatch;
 
+  StopwatchManager& getStopwatchManager() {
+    return *(getBlackBoard().getRepresentation<DataHolder<StopwatchManager> >("ModuleStopwatch"));
+  }
+
 public:
 
+  ModuleCreator()
+    : theInstance(NULL),
+      //stopwatch(StopwatchManager::getInstance().getStopwatch(IF<M>::getName()))
+      stopwatch(getStopwatchManager().getStopwatch(IF<M>::getName()))
+  {
+  }
+
   ModuleCreator(BlackBoard& theBlackBoard, bool enabled = false)
-    : theBlackBoard(theBlackBoard),
+    : BlackBoardInterface(&theBlackBoard),
       theInstance(NULL),
       //stopwatch(StopwatchManager::getInstance().getStopwatch(IF<M>::getName()))
-      stopwatch((*(theBlackBoard.template getRepresentation<DataHolder<StopwatchManager> >("StopwatchManager"))).getStopwatch(IF<M>::getName()))
+      stopwatch(getStopwatchManager().getStopwatch(IF<M>::getName()))
   {
     setEnabled(enabled);
   }
@@ -98,7 +108,7 @@ public:
   {
     if(value) {
       if( theInstance == NULL ) {
-        theInstance = new ModuleInstance<M>(theBlackBoard);
+        theInstance = new ModuleInstance<M>(getBlackBoard());
       }
     } else {
       delete theInstance;
@@ -168,8 +178,7 @@ public:
     }
   }//end print
 
-  virtual const Stopwatch& getStopwatch() const
-  {
+  virtual const Stopwatch& getStopwatch() const {
     return stopwatch;
   }
 };

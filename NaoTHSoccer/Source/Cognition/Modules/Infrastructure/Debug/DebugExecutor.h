@@ -7,13 +7,17 @@
 #define _DebugExecutor_h_
 
 #include <ModuleFramework/Module.h>
+
 #include <Representations/Infrastructure/DebugMessage.h>
 #include <DebugCommunication/DebugCommandManager.h>
+#include <Representations/Debug/Representations.h>
 
 BEGIN_DECLARE_MODULE(DebugExecutor)
   REQUIRE(DebugMessageInCognition)
   PROVIDE(DebugMessageOut)
   REQUIRE(DebugCommandManager)
+
+  PROVIDE(Representations)
 END_DECLARE_MODULE(DebugExecutor)
 
 class DebugExecutor : public DebugExecutorBase

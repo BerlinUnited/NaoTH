@@ -21,10 +21,18 @@
 #include "ModuleCreator.h"
 #include "Tools/DataStructures/Printable.h"
 
+#include "Representations/Debug/Modules.h"
+
 class ModuleManager: virtual public BlackBoardInterface, public Printable
 {
 public:
-  virtual ~ModuleManager();
+  virtual ~ModuleManager()
+  {
+    std::list<std::string>::const_iterator iter;
+    for(iter = getExecutionList().begin(); iter != getExecutionList().end(); ++iter) {
+      getModule(*iter)->setEnabled(false);
+    }
+  }
 
   /**
   * register a module
@@ -35,7 +43,12 @@ public:
   * @return a pointer to the typed module creator in the registeredModules
   */
   template<class T>
-  ModuleCreator<T>* registerModule(std::string name, bool enabled = false);
+  ModuleCreator<T>* registerModule(const std::string& name, bool enabled = false) {
+    ModuleCreator<T>* typedModule = getModules().registerModule<T>(name, enabled);
+    moduleExecutionList.push_back(name);
+    moduleModuleExecutionList.push_back(typedModule);
+    return typedModule;
+  }
 
 
   /**
@@ -43,17 +56,32 @@ public:
   * if the module 'moduleName' doesn't exist
   * no action is done
   */
-  void setModuleEnabled(std::string moduleName, bool value, bool recalculateExecutionList=false);
+  void setModuleEnabled(const std::string& name, bool value, bool recalculateExecutionList=false)
+  {
+    AbstractModuleCreator* module = getModule(name);
+
+    if(module) {
+      module->setEnabled(value);
+    
+      if(recalculateExecutionList) {
+        calculateExecutionList();
+      }
+    }
+  }
 
   /**
   * 
   */
-  AbstractModuleCreator* getModule(const std::string& name);
+  AbstractModuleCreator* getModule(const std::string& name) {
+    return getModules().getModule(name);
+  }
 
   /**
   *
   */
-  const AbstractModuleCreator* getModule(const std::string& name) const;
+  const AbstractModuleCreator* getModule(const std::string& name) const {
+    return getModules().getModule(name);
+  }
 
 
   const std::list<std::string>& getExecutionList() const {
@@ -68,28 +96,19 @@ public:
   virtual void print(std::ostream& stream) const
   {
     std::list<std::string>::const_iterator iter;
-    for(iter = getExecutionList().begin(); iter != getExecutionList().end(); ++iter)
-    {
+    for(iter = getExecutionList().begin(); iter != getExecutionList().end(); ++iter) {
       getModule(*iter)->print(stream);
     }
   }//end print
 
 
 private:
-  /** creates a module creator based on the given type (for internal use only)*/
-  template<class T>
-  ModuleCreator<T>* createModule(bool enabled = false);
-
-  /** store the mapping name->module of the registered modules */
-  typedef std::map<std::string, AbstractModuleCreator* > ModuleCreatorMap;
-  ModuleCreatorMap registeredModules;
-
   /** list of names of modules in the order of their registration */
   std::list<std::string> moduleExecutionList;
   std::list<AbstractModuleCreator*> moduleModuleExecutionList;
 
 protected:
-
+  
   /** */
   void calculateExecutionList();
 
@@ -99,7 +118,16 @@ protected:
    */
   void calculateExecutionListOld();
 
+
 private:
+
+  const Modules& getModules() const {
+    return getBlackBoard().getRepresentation<DataHolder<Modules> >("Modules");
+  }
+
+  Modules& getModules() {
+    return getBlackBoard().getRepresentation<DataHolder<Modules> >("Modules");
+  }
 
   /** */
   void internalAddModuleToExecutionList(
@@ -113,8 +141,5 @@ private:
     std::map<std::string, std::list<std::string> >& provided, bool outputError);
   
 };
-
-// implementations for the template methods
-#include "ModuleManager.hpp"
 
 #endif //_ModuleManager_h_

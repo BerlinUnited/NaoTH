@@ -4,56 +4,6 @@
 
 #include <ctime>
 
-ModuleManager::~ModuleManager()
-{
-  ModuleCreatorMap::iterator iter;
-  for(iter = registeredModules.begin(); iter != registeredModules.end(); ++iter)
-  {
-    delete (iter->second);
-  }//end for
-}//end destructor
-
-
-void ModuleManager::setModuleEnabled(std::string moduleName, bool value, bool recalculateExecutionList)
-{
-  ModuleCreatorMap::iterator iter = registeredModules.find(moduleName);
-  if(iter != registeredModules.end())
-  {
-    iter->second->setEnabled(value);
-    
-    if(recalculateExecutionList)
-    {
-      calculateExecutionList();
-    }
-  }
-}//end setModuleEnabled
-
-
-AbstractModuleCreator* ModuleManager::getModule(const std::string& name)
-{
-  ModuleCreatorMap::const_iterator iter = registeredModules.find(name);
-  if(iter != registeredModules.end())
-  {
-    return iter->second;
-  }
-
-  return NULL;
-}//end getModule
-
-
-const AbstractModuleCreator* ModuleManager::getModule(const std::string& name) const
-{
-  ModuleCreatorMap::const_iterator iter = registeredModules.find(name);
-  if(iter != registeredModules.end())
-  {
-    return iter->second;
-  }
-
-  return NULL;
-}//end getModule
-
-
-
 void ModuleManager::calculateExecutionList()
 {
     
@@ -67,17 +17,18 @@ void ModuleManager::calculateExecutionList()
     changed = false;
     iterations++;
 
-
     for(std::list<std::string>::iterator it1=start; it1 != moduleExecutionList.end(); ++it1)
     {
       start = it1;
-      if(!registeredModules[*it1]->isEnabled()) continue;
-      Module* m1 = registeredModules[*it1]->getModule();
+      AbstractModuleCreator* mc1 = getModules().getModule(*it1);
+      if(!mc1->isEnabled()) continue;
+      Module* m1 = mc1->getModule();
 
       for(std::list<std::string>::iterator it2=it1; it2 != moduleExecutionList.end(); ++it2)
       {
-        if(!registeredModules[*it2]->isEnabled()) continue;
-        Module* m2 = registeredModules[*it2]->getModule();
+        AbstractModuleCreator* mc2 = getModules().getModule(*it2);
+        if(!mc2->isEnabled()) continue;
+        Module* m2 = mc2->getModule();
 
         for(RepresentationMap::const_iterator itReq = m1->getRequire().begin();
           itReq != m1->getRequire().end(); ++itReq)
@@ -102,19 +53,16 @@ void ModuleManager::calculateExecutionList()
 
   }//end while
 
-  if(iterations >= maxAttempts)
-  {
+  if(iterations >= maxAttempts) {
     std::cerr << "WARNING: maximal number of iterations reached." << std::endl;
-  }//end if
+  }
 
 
   // print execution list
   std::cout << "automatic module execution list" << std::endl;
   std::cout << "-------------------------------" << std::endl;
-  for(std::list<std::string>::const_iterator itExec = moduleExecutionList.begin(); 
-    itExec != moduleExecutionList.end(); ++itExec
-  )
-  {
+  std::list<std::string>::const_iterator itExec = moduleExecutionList.begin();
+  for(; itExec != moduleExecutionList.end(); ++itExec) {
     std::cout << *itExec << std::endl;
   }
   std::cout << "-------------------------------" << std::endl;
@@ -132,12 +80,14 @@ void ModuleManager::calculateExecutionListOld()
   std::map<std::string, std::list<std::string> > provided;
     
   // first fill the map with providers and the module graph
-  for(ModuleCreatorMap::const_iterator it = registeredModules.begin(); it != registeredModules.end(); ++it)
+  //for(ModuleCreatorMap::const_iterator it = registeredModules.begin(); it != registeredModules.end(); ++it)
+  for(std::list<std::string>::const_iterator name = moduleExecutionList.begin(); name != moduleExecutionList.end(); ++name)
   {
+    AbstractModuleCreator* mc = getModules().getModule(*name);
     // only include enabled modules
-    if(it->second->isEnabled())
+    if(mc->isEnabled())
     {
-      Module* m = it->second->getModule();
+      Module* m = mc->getModule();
         
       for(RepresentationMap::const_iterator itProv = m->getProvide().begin();
         itProv != m->getProvide().end(); ++itProv)
@@ -146,13 +96,13 @@ void ModuleManager::calculateExecutionListOld()
           
         if(providerForRepresentation.find(repName) == providerForRepresentation.end())
         {
-          providerForRepresentation[repName] = it->first;
-          provided[it->first].push_back(repName);
+          providerForRepresentation[repName] = *name;
+          provided[*name].push_back(repName);
         }
         else
         {
           std::cerr << "ERROR: " << repName << " provided by both " << providerForRepresentation[repName]
-            << " and " << it->first;
+            << " and " << *name;
         }
       }//end for
         
@@ -160,7 +110,7 @@ void ModuleManager::calculateExecutionListOld()
         itReq != m->getRequire().end(); ++itReq)
       {
         std::string repName = itReq->second->getName();
-        required[it->first].push_back(repName);
+        required[*name].push_back(repName);
       }//end for
         
     } // if module enabled
