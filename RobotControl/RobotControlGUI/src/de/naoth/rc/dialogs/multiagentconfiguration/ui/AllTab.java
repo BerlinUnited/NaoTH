@@ -80,13 +80,13 @@ public class AllTab extends Tab
         configurationsTabViewController.debugTree.getRoot().getChildren().add(cognition_root);
         Utils.global_debug_requests.put(cognition_root.getValue(), cognition_root);
 
-        CheckBoxTreeItem<String> motion_modules_root = new CheckBoxTreeItem<>("Motion");
+        TreeNode motion_modules_root = new TreeNode("Motion");
         motion_modules_root.setExpanded(true);
         
         configurationsTabViewController.moduleTree.getRoot().getChildren().add(motion_modules_root);
         Utils.global_modules.put(motion_modules_root.getValue(), motion_modules_root);
 
-        CheckBoxTreeItem<String> cognition_modules_root = new CheckBoxTreeItem<>("Cognition");
+        TreeNode cognition_modules_root = new TreeNode("Cognition");
         cognition_modules_root.setExpanded(true);
         configurationsTabViewController.moduleTree.getRoot().getChildren().add(cognition_modules_root);
         Utils.global_modules.put(cognition_modules_root.getValue(), cognition_modules_root);

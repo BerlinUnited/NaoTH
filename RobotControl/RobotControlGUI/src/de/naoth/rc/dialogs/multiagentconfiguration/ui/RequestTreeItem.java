@@ -1,12 +1,10 @@
 package de.naoth.rc.dialogs.multiagentconfiguration.ui;
 
-import javafx.scene.control.CheckBoxTreeItem;
-
 /**
  *
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
-public class RequestTreeItem extends CheckBoxTreeItem<String>
+public class RequestTreeItem extends TreeNode
 {
     private String path;
     private String request;

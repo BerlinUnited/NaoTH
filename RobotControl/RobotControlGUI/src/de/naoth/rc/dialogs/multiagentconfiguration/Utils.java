@@ -1,8 +1,12 @@
 package de.naoth.rc.dialogs.multiagentconfiguration;
 
 import de.naoth.rc.dialogs.multiagentconfiguration.ui.RequestTreeItem;
+import de.naoth.rc.dialogs.multiagentconfiguration.ui.TreeNode;
 import de.naoth.rc.messages.Messages;
 import java.io.File;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
@@ -22,7 +26,7 @@ import javafx.stage.Window;
 public class Utils
 {
     public static TreeMap<String, TreeItem> global_debug_requests = new TreeMap<>();
-    public static TreeMap<String, TreeItem> global_modules = new TreeMap<>();
+    public static TreeMap<String, TreeNode> global_modules = new TreeMap<>();
     public static ObservableList<String> global_agent_list = FXCollections.observableArrayList();
     public static TreeMap<String, TreeItem<Parameter>> global_parameters = new TreeMap<>();
     public static ObservableList<String> global_representations_list = FXCollections.observableArrayList();
@@ -78,26 +82,27 @@ public class Utils
         return motion_root;
     }
     
-    public static void createModulesTree(Messages.ModuleList list, CheckBoxTreeItem root, BiConsumer<String, Boolean> debugRequest) {
-        
-        String root_name = (String) root.getValue();
+    /**
+     * Creates the module tree for the given modules list and appends it to the root node.
+     * The debug request is used, when the node is selected.
+     * 
+     * @param list  modules list
+     * @param root  the root node (Cognition, Motion)
+     * @param debugRequest the debug request which should be used if a leaf node is selected
+     */
+    public static void createModulesTree(Messages.ModuleList list, TreeNode root, BiConsumer<String, Boolean> debugRequest)
+    {
         Pattern p = Pattern.compile("([^\\s|]+).+/"+root.getValue()+"/(.+)\\/.+\\.h");
-        /*
-        list.getModulesList().stream().collect(Collectors.toMap(
-            (m) -> { return m.getName(); }, 
-            (m)->{ return m.getActive(); }
-        )).entrySet().stream().s;
-        */
+        
+        // remember nodes that have the same name as its leaf node
+        HashMap<String, TreeNode> removeableNodes = new HashMap<>();
+        HashMap<String, TreeNode> removeableNodesGlobal = new HashMap<>();
+        
         list.getModulesList().stream().map((m) -> {
             // create for each module a checkable tree item
             Matcher match = p.matcher(m.getName());
             if(match.matches()) {
-                String name = match.group(1);
-                String path = match.group(2);
-                if(path.endsWith(name)) {
-                    path = path.substring(0, path.length()-name.length()-1);
-                }
-                return new RequestTreeItem(path, name, m.getActive(), name);
+                return new RequestTreeItem(match.group(2), match.group(1), m.getActive(), match.group(1));
             }
             return null;
         }).filter((m) -> {
@@ -105,57 +110,82 @@ public class Utils
         }).sorted((m1, m2) -> {
             // sort the module tree items
             return m1.getPath().compareTo(m2.getPath());
-        }).forEach((m) -> {
-            // add module items and their respective tree path
-            // the identifier of this module
-            String id = root_name + "/" + m.getPath() + "/" + m.getValue();
-            // retrieve (and if necessary create) global module item
-            if(!global_modules.containsKey(id)) {
-                CheckBoxTreeItem<String> global_item = new CheckBoxTreeItem<>(m.getValue());
-                getParentTreeItem(global_modules.get(root_name), m.getPath(), "/").getChildren().add(global_item);
-                global_item.setSelected(m.active);
-                global_modules.put(id, global_item);
+        }).forEach((leaf) -> {
+            List<String> parts = Arrays.asList(leaf.getPath().split("/"));
+            
+            // retrieve the parent node for the leaf and create the path to it, if necessary
+            TreeNode parent = createTreePath(root, parts);
+            TreeNode parentGlobal = createTreePath(global_modules.get(root.getValue()), parts);
+            
+            // remember this node as possible to remove
+            if(parent.getValue().equals(leaf.getValue())) { removeableNodes.put(leaf.getPath(), parent); }
+            if(parentGlobal.getValue().equals(leaf.getValue())) { removeableNodesGlobal.put(leaf.getPath(), parentGlobal); }
+
+            // retrieve the global leaf or create a new, if necessary
+            TreeNode leafGlobal = parentGlobal.getChildren(leaf.getValue());
+            if(leafGlobal == null) {
+                leafGlobal = new TreeNode(leaf.getValue());
+                parentGlobal.getChildren().add(leafGlobal);
+                leafGlobal.setSelected(leaf.active);
             }
+            
             // bind to global module item
             // NOTE: can not use 'binding', because we're change the selected property and would causing a runtime exception otherwise
-            ((CheckBoxTreeItem)global_modules.get(id)).selectedProperty().addListener((observable, oldValue, newValue) -> {
-                m.setSelected(newValue);
+            leafGlobal.selectedProperty().addListener((observable, oldValue, newValue) -> {
+                leaf.setSelected(newValue);
             });
+            
             // add this item to the module tree
-            //getParentTreeItem(root, m.getPath(), "/").getChildren().add(m);
-            addTreeItem(root, m, "/");
+            parent.getChildren().add(leaf);
             // set the selected state AFTER adding it to its parent
-            m.setSelected(m.active);
+            leaf.setSelected(leaf.active);
             // set the callback for (de-)activating this module
-            m.selectedProperty().addListener((ob, o, n) -> { debugRequest.accept(m.getRequest(), n); });
+            leaf.selectedProperty().addListener((ob, o, n) -> { debugRequest.accept(leaf.getRequest(), n); });
+        });
+        
+        // remove node, where the leaf and its parent have the same name and the leaf is the only child
+        removeableNodes.forEach((t, u) -> {
+            if(u.getChildren().size() == 1) {
+                TreeNode parent = (TreeNode) u.getParent();
+                int idx = parent.getChildren().indexOf(u);
+                parent.getChildren().remove(idx);
+                parent.getChildren().add(idx, u.getChildren().get(0));
+            }
+        });
+        
+        // remove node, where the leaf and its parent have the same name and the leaf is the only child
+        removeableNodesGlobal.forEach((t, u) -> {
+            if(u.getChildren().size() == 1) {
+                TreeNode parent = (TreeNode) u.getParent();
+                int idx = parent.getChildren().indexOf(u);
+                parent.getChildren().remove(idx);
+                parent.getChildren().add(idx, u.getChildren().get(0));
+            }
         });
         
         expandSingleTreeNodes(root);
         expandSingleTreeNodes(global_modules.get((String) root.getValue()));
     }
     
-    private static void addTreeItem(TreeItem<String> root, RequestTreeItem item, String sep) {
-        TreeItem<String> current_root = root;
-        for (String part : item.getPath().split(sep)) {
-            FilteredList<TreeItem<String>> treePart = current_root.getChildren().filtered((m) -> { return m.getValue().equals(part); });
-            if(treePart.isEmpty()) {
-                CheckBoxTreeItem<String> treePartNew = new CheckBoxTreeItem<>(part);
-                current_root.getChildren().add(treePartNew);
-                current_root = treePartNew;
-            } else {
-                current_root = treePart.get(0);
+    /**
+     * Iterates from the root through the given path and returns the last node. If an intermediate
+     * node doesn't exists, it is created.
+     * 
+     * @param root  the starting node
+     * @param path  the path which should be iterated through
+     * @return      the last node in in path
+     */
+    private static TreeNode createTreePath(TreeNode root, List<String> path) {
+        TreeNode parent = root;
+        for (int i = 0; i < path.size(); i++) {
+            TreeNode current = parent.getChildren(path.get(i));
+            if(current == null) {
+                current = new TreeNode(path.get(i));
+                parent.getChildren().add(current);
             }
+            parent = current;
         }
-        if (current_root instanceof RequestTreeItem) {
-            TreeItem<String> current_root_parent = current_root.getParent();
-            int current_root_index = current_root_parent.getChildren().indexOf(current_root);
-            current_root_parent.getChildren().remove(current_root_index);
-            CheckBoxTreeItem<String> current_root_new = new CheckBoxTreeItem<>(current_root.getValue());
-            current_root_parent.getChildren().add(current_root_index, current_root_new);
-            current_root_new.getChildren().add(current_root);
-            current_root = current_root_new;
-        }
-        current_root.getChildren().add(item);
+        return parent;
     }
     
     private static TreeItem<String> getParentTreeItem(TreeItem<String> root, String path, String sep) {
@@ -183,14 +213,14 @@ public class Utils
     }
     
     public static TreeItem createModulesCognition(Messages.ModuleList list, BiConsumer<String, Boolean> moduleRequest) {
-        CheckBoxTreeItem<String> cognition_root = new CheckBoxTreeItem<>("Cognition");
+        TreeNode cognition_root = new TreeNode("Cognition");
         createModulesTree(list, cognition_root, moduleRequest);
         cognition_root.setExpanded(true);
         return cognition_root;
     }
     
     public static TreeItem createModulesMotion(Messages.ModuleList list, BiConsumer<String, Boolean> moduleRequest) {
-        CheckBoxTreeItem<String> motion_root = new CheckBoxTreeItem<>("Motion");
+        TreeNode motion_root = new TreeNode("Motion");
         createModulesTree(list, motion_root, moduleRequest);
         motion_root.setExpanded(true);
         return motion_root;
