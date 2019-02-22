@@ -9,6 +9,7 @@
 #define _DebugModify_H
 
 #include <Tools/DataStructures/Serializer.h>
+#include <map>
 
 /**
   Usage: just write 
