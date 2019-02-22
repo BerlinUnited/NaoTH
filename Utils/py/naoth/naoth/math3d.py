@@ -22,7 +22,7 @@ class Vector3:
     def __mul__(self, other):
         if isinstance(other, Vector3):
             return self.x * other.x + self.y * other.y + self.z * other.z
-        elif isinstance(other, (int, float, long)):
+        elif isinstance(other, (int, float)):
             return Vector3(self.x * other, self.y * other, self.z * other)
         else:
             return NotImplemented
@@ -30,7 +30,7 @@ class Vector3:
     def __rmul__(self, other):
         if isinstance(other, Vector3):
             return self.x * other.x + self.y * other.y + self.z * other.z
-        elif isinstance(other, (int, float, long)):
+        elif isinstance(other, (int, float)):
             return Vector3(self.x * other, self.y * other, self.z * other)
         else:
             return NotImplemented

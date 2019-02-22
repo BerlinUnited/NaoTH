@@ -134,8 +134,6 @@ protected:
     int strikerSelection;
     int strikerSelectionDiffThreshold;
     int firstSecondStrikerBallDistance;
-    
-    virtual ~Parameters() {}
   } parameters;
 
 private:
