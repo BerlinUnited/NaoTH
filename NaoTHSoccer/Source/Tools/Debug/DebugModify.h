@@ -1,4 +1,4 @@
-// 
+//
 // File:   DebugModify.h
 // Author: Heinrich Mellmann
 //
@@ -9,11 +9,12 @@
 #define _DebugModify_H
 
 #include <Tools/DataStructures/Serializer.h>
+#include <map>
 
 /**
-  Usage: just write 
-    MODIFY("myvalue", d); 
-  where d is a numeric value which can be casted to double with static_cast 
+  Usage: just write
+    MODIFY("myvalue", d);
+  where d is a numeric value which can be casted to double with static_cast
   (can be local). Then this value can be modified using the RC.
  */
 class DebugModify
@@ -23,9 +24,9 @@ public:
   virtual ~DebugModify() {}
 
   /**
-  * 
+  *
   */
-  class ModifyValue 
+  class ModifyValue
   {
   public:
     // TODO: find beter solution to hide private stuff
@@ -65,7 +66,7 @@ public:
     // add value if not existing
     ModifyValue& modifyValue = valueMap[name];
     modifyValue.value = d;
-      
+
     return modifyValue;
   }
 
@@ -81,7 +82,7 @@ public:
 
 private:
   std::map<std::string, ModifyValue> valueMap;
-  
+
 };
 
 namespace naoth
