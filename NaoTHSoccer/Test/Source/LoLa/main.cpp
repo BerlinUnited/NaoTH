@@ -16,7 +16,8 @@
 /*
 {
   "RobotConfig":["P0000073A03S83I00011","6.0.0","P0000074A03S84F00006","6.0.0"],
-  "Accelerometer":[8.66997,0.287402,-5.48939],"Angles":[-0.0239685,0.990951],
+  "Accelerometer":[8.66997,0.287402,-5.48939],
+  "Angles":[-0.0239685,0.990951],
   "Battery":[0.99,-32552,0.016,3.6],
   "Current":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   "FSR":[0.190524,1.52253,0.000270986,0.654938,1.86128,0.130825,0.692107,0.000510382],
@@ -32,7 +33,7 @@
 
 
 // https://github.com/msgpack/msgpack-c/wiki/v1_1_cpp_adaptor
-struct MyData 
+struct SensorData 
 {
   struct {
     struct {
@@ -73,6 +74,10 @@ struct MyData
     MSGPACK_DEFINE_ARRAY(x,y,z);
   } Gyroscope;
   
+  struct {
+    float x;
+    float y;
+  } Angles;
   
   struct FootFSR {
     float FrontLeft;
@@ -151,9 +156,33 @@ struct MyData
   std::vector<float> Stiffness;
   std::vector<float> Current;
   std::vector<float> Temperature;
-  std::vector<float> Status;
+  std::vector<int> Status;
   
   MSGPACK_DEFINE_MAP(RobotConfig, Accelerometer, Battery, Current, FSR, Gyroscope, Position, Sonar, Stiffness, Temperature, Touch, Status);
+};
+
+struct ActuatorData 
+{
+  std::vector<float> Position;
+  std::vector<float> Stiffness;
+  
+  std::vector<float> REar;
+  std::vector<float> LEar;
+  std::vector<float> Chest;
+  std::vector<float> LEye;
+  std::vector<float> REye;
+  std::vector<float> LFoot;
+  std::vector<float> RFoot;
+  std::vector<float> Skull;
+  
+  struct {
+    bool Left;
+    bool Right;
+    
+    MSGPACK_DEFINE_ARRAY(Left, Right);
+  } Sonar;
+  
+  MSGPACK_DEFINE_MAP(Position, Stiffness, REar, LEar, Chest, LEye, REye, LFoot, RFoot, Skull, Sonar);
 };
 
 
@@ -185,7 +214,7 @@ int main()
   msgpack::unpack(oh, buf, 896);
 
   //std::tuple<std::map<std::string,std::vector<std::string>>, std::map<std::string, std::vector<float>>> t;
-  MyData data;
+  SensorData data;
   oh.get().convert(data);
   
 
