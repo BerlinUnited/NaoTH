@@ -5,12 +5,16 @@
 
 //#define MSGPACK_USE_DEFINE_MAP 
 #include <msgpack.hpp>
+#include <msgpack/fbuffer.hpp>
+#include <msgpack/unpack.hpp>
+#include <ext/stdio_filebuf.h>
 
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
 #include <sstream>
-
+#include <iostream>
+#include <stdio.h>
 
 
 /*
@@ -163,17 +167,17 @@ struct SensorData
 
 struct ActuatorData 
 {
-  std::vector<float> Position;
-  std::vector<float> Stiffness;
+  std::vector<float> Position = std::vector<float>(25, 0);
+  std::vector<float> Stiffness= std::vector<float>(25, 0);
   
-  std::vector<float> REar;
-  std::vector<float> LEar;
-  std::vector<float> Chest;
-  std::vector<float> LEye;
-  std::vector<float> REye;
-  std::vector<float> LFoot;
-  std::vector<float> RFoot;
-  std::vector<float> Skull;
+  std::vector<float> REar = std::vector<float>(10,0);
+  std::vector<float> LEar = std::vector<float>(10,0);
+  std::vector<float> Chest = std::vector<float>(3, 0);
+  std::vector<float> LEye = std::vector<float>(8*3,0);
+  std::vector<float> REye = std::vector<float>(8*3,0);
+  std::vector<float> LFoot = std::vector<float>(3,0);
+  std::vector<float> RFoot = std::vector<float>(3,0);
+  std::vector<float> Skull = std::vector<float>(12,0);
   
   struct {
     bool Left;
@@ -186,54 +190,92 @@ struct ActuatorData
 };
 
 
+
+class Lola 
+{
+  int fd;
+  FILE* fp;
+  
+  static const int PACKET_ZIZE = 896;
+  msgpack::unpacker m_pac;
+  
+  public:
+    Lola()
+    {
+      if ( (fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
+        perror("socket error");
+        exit(-1);
+      }
+      
+      struct sockaddr_un addr;
+      memset(&addr, 0, sizeof(addr));
+      addr.sun_family = AF_UNIX;
+      strncpy(addr.sun_path, "/tmp/robocup", sizeof(addr.sun_path)-1);
+      
+      if (connect(fd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
+        perror("connect error");
+        exit(-1);
+      }
+      
+      fp = fdopen(fd, "w");
+      m_pac.reserve_buffer(PACKET_ZIZE);
+    }  
+  
+    void writeActuators(const ActuatorData& data) {
+      msgpack::fbuffer fbuf(fp);
+      msgpack::pack(fbuf, data);
+      fflush(fp);
+    }
+    
+    void readSensors(SensorData& data) 
+    {
+      m_pac.reserve_buffer(PACKET_ZIZE);
+      int bytes = read(fd, m_pac.buffer(), m_pac.buffer_capacity());
+      
+      if(bytes != PACKET_ZIZE) {
+        std::cout << "wrong message size: " << bytes << " expected " << PACKET_ZIZE << std::endl;
+        exit(-1);
+      }
+      m_pac.buffer_consumed(bytes);
+      
+      msgpack::object_handle oh;
+      m_pac.next(oh);
+      oh.get().convert(data);
+    }
+};
+
+
+void test_eyes(Lola& lola) 
+{
+  ActuatorData actuators;
+  SensorData data;
+  
+  int pos = 0;
+  int step = 0;
+  while (step < 83*10) 
+  {
+    lola.readSensors(data);
+    
+    if(step % 10 == 0) {
+      pos = (pos + 1) % (8*3);
+      actuators.LEye[pos] = 1 - actuators.LEye[pos];
+    }
+    
+    lola.writeActuators(actuators);
+    
+    step++;
+  }
+}
+
 int main()
 {
-
-  int fd;
-  if ( (fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
-    perror("socket error");
-    exit(-1);
-  }
+  Lola lola;
   
-  struct sockaddr_un addr;
-  memset(&addr, 0, sizeof(addr));
-  addr.sun_family = AF_UNIX;
-  strncpy(addr.sun_path, "/tmp/robocup", sizeof(addr.sun_path)-1);
-  
-  if (connect(fd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
-    perror("connect error");
-    exit(-1);
-  }
-  
-  
-  char buf[896];
-  int bytes = read(fd, buf, sizeof(buf));
-  std::cout << "test: " << bytes << std::endl;
-  
-  msgpack::object_handle oh;
-  msgpack::unpack(oh, buf, 896);
-
-  //std::tuple<std::map<std::string,std::vector<std::string>>, std::map<std::string, std::vector<float>>> t;
   SensorData data;
-  oh.get().convert(data);
+  lola.readSensors(data);
   
+  ActuatorData actuators;
+  lola.writeActuators(actuators);
 
-  /*
-  std::stringstream ss;
-  msgpack::pack(ss, data);
-  
-  msgpack::object_handle oh2 =
-      msgpack::unpack(ss.str().data(), ss.str().size());
-  msgpack::object obj = oh2.get();
-  */
-  std::cout << data.RobotConfig.Head.Version << std::endl;
-  
-  /*
-  for(auto& a: s) {
-    std::cout << a.first << std::endl;
-  }
-  */
-  
-  //
-  //close(s);
+  test_eyes(lola);
 }
