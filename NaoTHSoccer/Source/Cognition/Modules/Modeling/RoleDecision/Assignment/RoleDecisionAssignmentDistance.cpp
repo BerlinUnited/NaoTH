@@ -86,6 +86,7 @@ double RoleDecisionAssignmentDistance::getMinChangingTime(unsigned int player) {
 void RoleDecisionAssignmentDistance::withPriority(std::map<unsigned int, Roles::Static>& new_roles) {
     // retrieve assignable roles
     std::vector<Roles::Static> assignable_roles(getRoles().active);
+    // the priority of roles is defined by the order of the active roles!
     for(const auto& v : getTeamMessage().data) {
         if(new_roles.find(v.first) != new_roles.cend()) {
             auto r = std::remove(assignable_roles.begin(), assignable_roles.end(), new_roles.at(v.first));
