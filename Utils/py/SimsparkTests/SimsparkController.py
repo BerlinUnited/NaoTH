@@ -33,7 +33,7 @@ class SimsparkController(multiprocessing.Process):
         self.port_monitor = 3200
         self.port_agent = 3100
         self.host = '127.0.0.1'
-        self.socket = None
+        self.socket: socket.socket = None
         self.__cout = print_out
 
         self.__m = multiprocessing.Manager()
@@ -57,7 +57,7 @@ class SimsparkController(multiprocessing.Process):
             try:
                 self.socket = socket.create_connection((self.host, self.port_monitor))
                 self.connected.set()
-                logging.info("Connected")
+                logging.info("Connected (%s@%s)", self.host, self.port_monitor)
             except Exception as e:
                 print('ERROR! Couldnt connect to simspark', e)
                 if self.__p:
@@ -67,13 +67,13 @@ class SimsparkController(multiprocessing.Process):
 
     def disconnect(self):
         """Disconnects this simspark monitor from the simspark instance."""
-        # empty command queue before closing socket
-        while not (self.__cmd_queue.empty() and self.__cmd_queue.qsize() == 0):
-            cmd = self.__cmd_queue.get()
-            logging.debug(cmd)
-            self.socket.sendall(struct.pack("!I", len(cmd)) + str.encode(cmd))
-        # no commands left, close socket
         if self.socket:
+            # empty command queue before closing socket
+            while not (self.__cmd_queue.empty() and self.__cmd_queue.qsize() == 0):
+                cmd = self.__cmd_queue.get()
+                logging.debug(cmd)
+                self.socket.sendall(struct.pack("!I", len(cmd)) + str.encode(cmd))
+            # no commands left, close socket
             self.socket.close()
             self.socket = None
             self.connected.clear()
@@ -144,6 +144,8 @@ class SimsparkController(multiprocessing.Process):
             # connect to the simspark instance
             if not self.connected.is_set():
                 self.connect()
+                # make sure we got all relevant infos
+                self.cmd_reqfullstate()
             else:
                 data = self.socket.recv(4)
                 # check if we got some data, empty data is disconnected!
@@ -151,11 +153,22 @@ class SimsparkController(multiprocessing.Process):
                     try:
                         length = struct.unpack("!I", data)[0]
                         msg = self.socket.recv(length).decode()
-                        sexp = sexpr.str2sexpr(msg)
 
-                        if sexp and len(sexp) > 2:
-                            self.__update_environment(sexp[0])
-                            self.__update_scene(sexp[1:])
+                        try:
+                            sexp = sexpr.str2sexpr_strict(msg)
+
+                            if sexp and len(sexp) > 2:
+                                self.__update_environment(sexp[0])
+                                self.__update_scene(sexp[1:])
+                        except sexpr.SExprIllegalClosingParenError:
+                            # ignore specific parsing exception
+                            pass
+                        except sexpr.SExprPrematureEOFError:
+                            # ignore specific parsing exception
+                            pass
+                        except Exception as e:
+                            logging.error(str(e))
+                            traceback.print_exc(limit=2)
 
                         # send scheduled (trainer) commands
                         if not self.__cmd_queue.empty():
@@ -163,7 +176,7 @@ class SimsparkController(multiprocessing.Process):
                             logging.debug(cmd)
                             self.socket.sendall(struct.pack("!I", len(cmd)) + str.encode(cmd))
                     except Exception as e:
-                        print('ERROR:', e, e.__class__)
+                        print('ERROR:', e)
                         traceback.print_exc(limit=2)
                 else:
                     # no data - disconnected
@@ -194,12 +207,15 @@ class SimsparkController(multiprocessing.Process):
                         #print(item)
                         pass
                 else:
-                    if item[0] in ['FieldLength','FieldWidth','FieldHeight','GoalWidth','GoalDepth','GoalHeight','FreeKickDistance','WaitBeforeKickOff','AgentRadius','BallRadius','BallMass','RuleGoalPauseTime','RuleKickInPauseTime','RuleHalfTime','time']:
-                        env[item[0]] = float(item[1])
-                    elif item[0] in ['half','score_left','score_right','play_mode']:
-                        env[item[0]] = int(item[1])
-                    else:
-                        env[item[0]] = item[1]
+                    try:
+                        if item[0] in ['FieldLength','FieldWidth','FieldHeight','GoalWidth','GoalDepth','GoalHeight','FreeKickDistance','WaitBeforeKickOff','AgentRadius','BallRadius','BallMass','RuleGoalPauseTime','RuleKickInPauseTime','RuleHalfTime','time']:
+                            env[item[0]] = float(item[1])
+                        elif item[0] in ['half','score_left','score_right','play_mode']:
+                            env[item[0]] = int(item[1])
+                        else:
+                            env[item[0]] = item[1]
+                    except Exception as e:
+                        logging.warning("Exception while updating environment: %s\n%s", e, str(item))
         self.__environment = env
 
     def __update_scene(self, data):

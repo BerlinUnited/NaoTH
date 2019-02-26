@@ -106,7 +106,7 @@ class Log:
     def log_player(self, run, time, players):
         pass
 
-    def half_result(self, run, half, left, right):
+    def half_result(self, run, left, right, half, score_left, score_right):
         pass
 
     def finish(self):
@@ -119,11 +119,8 @@ class LogDb(Log):
             CREATE TABLE IF NOT EXISTS runs (id INTEGER PRIMARY KEY AUTOINCREMENT, 
                                              timestamp DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL, 
                                              num_runs INTEGER NOT NULL, 
-                                             sync BOOLEAN NOT NULL, 
-                                             left VARCHAR(10) NOT NULL, 
-                                             right VARCHAR(10) NOT NULL, 
-                                             players_left TINYINT NOT NULL, 
-                                             players_right TINYINT NOT NULL, 
+                                             sync BOOLEAN NOT NULL,  
+                                             alternate BOOLEAN NOT NULL,  
                                              comment text)
         """)
         self.__db.execute("""
@@ -131,6 +128,10 @@ class LogDb(Log):
                                               rid INTEGER NOT NULL, 
                                               timestamp DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL, 
                                               run INTEGER NOT NULL, 
+                                              team_left VARCHAR(10) NOT NULL, 
+                                              team_right VARCHAR(10) NOT NULL,
+                                              players_left TINYINT NOT NULL, 
+                                              players_right TINYINT NOT NULL, 
                                               half TINYINT NOT NULL, 
                                               score_left SMALLINT NOT NULL, 
                                               score_right SMALLINT NOT NULL, 
@@ -149,10 +150,14 @@ class LogDb(Log):
                                                   PRIMARY KEY (rid, run, game_time, type, team, player), 
                                                   FOREIGN KEY (rid) REFERENCES runs (id) ON DELETE CASCADE ON UPDATE NO ACTION)
         """)
-        self.__db.execute("""CREATE VIEW IF NOT EXISTS "game_results" AS
-                                SELECT h1.rid, h1.run, h1.timestamp as half1_time, h1.score_left, h1.score_right,
-                                       h2.timestamp as half2_time, h2.score_left, h2.score_right
-                                FROM games h1 LEFT OUTER JOIN games h2 
+        self.__db.execute("""CREATE VIEW IF NOT EXISTS "game_results" AS 
+                                SELECT 
+                                    h1.rid, h1.run, h1.team_left, h1.team_right,
+                                    h1.timestamp as half1_time, h1.score_left as half1_score_left, h1.score_right as half1_score_right, 
+                                    h2.timestamp as half2_time, h2.score_left as half2_score_left, h2.score_right as half2_score_right,
+                                    (h1.score_left + h2.score_left) as total_left, (h1.score_right + h2.score_right) as total_right
+                                FROM games h1 
+                                LEFT OUTER JOIN games h2 
                                 ON h1.rid = h2.rid AND h1.run = h2.run AND h1.half = 1 AND h2.half = 2 
                                 WHERE h2.id IS NOT NULL
         """)
@@ -162,20 +167,33 @@ class LogDb(Log):
     def new_run(self, c):
         self.__cursor = self.__db.cursor()
 
-        self.__cursor.execute("INSERT INTO runs (num_runs, sync, left, right, players_left, players_right, comment) VALUES (?,?,?,?,?,?,?)",
-                              [c['runs'], c['sync'], c['left']['name'], c['right']['name'], c['left']['players'], c['right']['players'], c['comment']])
+        self.__cursor.execute("INSERT INTO runs (num_runs, sync, alternate, comment) VALUES (?,?,?,?)",
+                              [c['runs'], c['sync'], c['alternate'], c['comment']])
         self.__db.commit()
         self.__rid = self.__cursor.lastrowid
 
     def log_ball(self, run, time, ball):
-        self.__cursor.execute("INSERT INTO positions (rid, run, game_time, type, x, y) VALUES (?,?,?,?,?,?)", [self.__rid, run, time, 'ball', ball['x'], ball['y']])
+        try:
+            self.__cursor.execute("INSERT INTO positions (rid, run, game_time, type, x, y) VALUES (?,?,?,?,?,?)", [self.__rid, run, time, 'ball', ball['x'], ball['y']])
+        except Exception as e:
+            logging.warning('Exception while logging ball position: %s\n%s', e, str([self.__rid, run, time, 'ball', ball['x'], ball['y']]))
 
     def log_player(self, run, time, players):
         for p in players:
-            self.__cursor.execute("INSERT INTO positions (rid, run, game_time, type, team, player, x, y, r) VALUES (?,?,?,?,?,?,?,?,?)", [self.__rid, run, time, 'player', p['team'], p['number'], p['x'], p['y'], p['r']])
+            try:
+                self.__cursor.execute("INSERT INTO positions (rid, run, game_time, type, team, player, x, y, r) VALUES (?,?,?,?,?,?,?,?,?)", [self.__rid, run, time, 'player', p['team'], p['number'], p['x'], p['y'], p['r']])
+            except Exception as e:
+                logging.warning('Exception while logging player position: %s\n%s', e, str([self.__rid, run, time, 'player', p['team'], p['number'], p['x'], p['y'], p['r']]))
 
-    def half_result(self, run, half, left, right):
-        self.__cursor.execute("INSERT INTO games (rid, run, half, score_left, score_right) VALUES (?,?,?,?,?)", [self.__rid, run, half, left, right])
+    def half_result(self, run, left, right, half, score_left, score_right):
+        try:
+            self.__cursor.execute("""
+                INSERT INTO games 
+                    (rid, run, team_left, team_right, players_left, players_right, half, score_left, score_right) 
+                    VALUES (?,?,?,?,?,?,?,?,?)""",
+                [self.__rid, run, left['name'], right['name'], left['players'], right['players'], half, score_left, score_right])
+        except Exception as e:
+            logging.warning('Exception while logging half result: %s\n%s', e, str([self.__rid, run, left, right, half, score_left, score_right]))
         self.__db.commit()
 
     def finish(self):
@@ -187,20 +205,25 @@ class LogDb(Log):
         self.__rid = None
         self.__db = None
 
+
 def createLog(log:str):
     if log.endswith('db'):
         return LogDb(log)
     return Log()
+
 
 def wait_half(r, s, half_time, log:Log=None):
     t = s.get_time()
     while s.is_connected() and (t is None or t < half_time):
         # wait for the half to end
         time.sleep(1)
-        t = s.get_time()
-        if log:
+        _ = s.get_time()
+        # make sure we got a new time frame to log
+        if log and t != _:
             log.log_ball(r, t, s.get_ball())
             log.log_player(r, t, s.get_robots())
+        t = _
+
 
 def configure(args):
     base = os.path.dirname(__file__)
@@ -262,6 +285,7 @@ def configure(args):
 
     return c
 
+
 def write_config(config, file):
     cp = configparser.ConfigParser()
     for c in config:
@@ -276,8 +300,13 @@ def write_config(config, file):
         with open(file, 'w') as configfile:
             cp.write(configfile)
 
+
 def notify(signum, frame):
-    print('Currently running game simulation #', r, '@', s.get_time(), ',', s.get_team('Left'), s.get_score('Left'), ':', s.get_score('Right'), s.get_team('Right'))
+    if s.is_connected():
+        print('Currently running game simulation #', r, '@', s.get_time(), ',', s.get_team('Left'), s.get_score('Left'), ':', s.get_score('Right'), s.get_team('Right'))
+    else:
+        print('WARNING: not connected to simulation!')
+
 
 if __name__ == "__main__":
     args = parseArguments()
@@ -287,7 +316,7 @@ if __name__ == "__main__":
         write_config(config, args.write_config)
         exit(0)
 
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.WARNING)  # WARNING
 
     # TODO: configures simspark
 
@@ -302,41 +331,40 @@ if __name__ == "__main__":
     right = config['right']
 
     for r in range(1, config['runs']+1):
-        s = SimsparkController(config['simspark']['exe'], True)
+        s = SimsparkController(config['simspark']['exe'], True)  # True
         s.set_ports(config['simspark']['server'], config['simspark']['agent'])
         s.start()
         s.connected.wait()  # wait for the monitor to be connected
 
         # switch team sides
-        if config['alternate'] and r%2 == 0:
-            _ = right
-            right = left
-            left = _
+        if config['alternate']:
+            left, right = right, left
 
         agents = []
 
         for n in range(1, left['players']+1):
-            agents.append(AgentController(left['exe'], left['config'], left['name'], n, config['sync'], True, False))
+            agents.append(('Left', AgentController(left['exe'], left['config'], left['name'], n, config['sync'], True, False)))
 
         for n in range(1, right['players']+1):
-            agents.append(AgentController(right['exe'], right['config'], right['name'], n, config['sync'], True, False))
+            agents.append(('Right', AgentController(right['exe'], right['config'], right['name'], n, config['sync'], True, False)))
 
         # start all agents and wait for the agent to be fully started (prevent simspark error)
-        for a in agents:
+        for t, a in agents:
             if config['simspark']['agent'] is not None: a.ss_port = config['simspark']['agent']
             a.start()
             a.started.wait()
 
         # it takes sometimes a while until simspark got the correct player number
-        for a in agents: wait_for(lambda: s.get_robot(a.number) is not None, 0.3)
+        for t, a in agents: wait_for(lambda: s.get_robot(a.number, t) is not None, 0.3)
+
         # wait until the player is on the field
-        for a in agents: wait_for(lambda: s.get_robot(a.number)['z'] <= 0.4, 0.3)
+        for t, a in agents: wait_for(lambda: s.get_robot(a.number, t) is not None and s.get_robot(a.number, t)['z'] <= 0.4, 0.3)
 
         prepare_game(s)     # move agents to ready location
         s.cmd_kickoff()     # start first half
         wait_half(r, s, 600, log)   # wait for half complete
 
-        log.half_result(r, 1, s.get_score('Left'), s.get_score('Right'))
+        log.half_result(r, left, right, 1, s.get_score('Left'), s.get_score('Right'))
 
         time.sleep(1)       # wait, before starting next half
 
@@ -344,7 +372,7 @@ if __name__ == "__main__":
         s.cmd_kickoff()     # start first half
         wait_half(r, s, 1200, log)  # wait for half complete
 
-        log.half_result(r, 2, s.get_score('Left'), s.get_score('Right'))
+        log.half_result(r, left, right, 2, s.get_score('Left'), s.get_score('Right'))
 
         s.cancel()          # stop simulation
 
@@ -355,8 +383,8 @@ if __name__ == "__main__":
         s.join()
 
         # stop remaining agents
-        for a in agents: a.cancel()
-        for a in agents: a.join()
+        for t, a in agents: a.cancel()
+        for t, a in agents: a.join()
 
     log.finish()
 
