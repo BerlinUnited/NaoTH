@@ -12,6 +12,10 @@ public class TreeNode extends CheckBoxTreeItem<String>
 {
     private final HashMap<String, TreeNode> children = new HashMap<>();
 
+    public TreeNode() {
+        this("root");
+    }
+    
     public TreeNode(String name) {
         super(name);
         

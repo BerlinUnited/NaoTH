@@ -13,7 +13,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 
-import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -70,12 +69,12 @@ public class AllTab extends Tab
     
     @FXML
     public void initialize() {
-        CheckBoxTreeItem<String> motion_root = new CheckBoxTreeItem<>("Motion");
+        TreeNode motion_root = new TreeNode("Motion");
         motion_root.setExpanded(true);
         configurationsTabViewController.debugTree.getRoot().getChildren().add(motion_root);
         Utils.global_debug_requests.put(motion_root.getValue(), motion_root);
 
-        CheckBoxTreeItem<String> cognition_root = new CheckBoxTreeItem<>("Cognition");
+        TreeNode cognition_root = new TreeNode("Cognition");
         cognition_root.setExpanded(true);
         configurationsTabViewController.debugTree.getRoot().getChildren().add(cognition_root);
         Utils.global_debug_requests.put(cognition_root.getValue(), cognition_root);
@@ -244,7 +243,7 @@ public class AllTab extends Tab
             Utils.global_debug_requests.clear();
             configurationsTabViewController.debugTree.getRoot().getChildren().forEach((n) -> {
                 n.getChildren().clear();
-                Utils.global_debug_requests.put(n.getValue(), n);
+                Utils.global_debug_requests.put(n.getValue(), (TreeNode) n);
             });
         }
 

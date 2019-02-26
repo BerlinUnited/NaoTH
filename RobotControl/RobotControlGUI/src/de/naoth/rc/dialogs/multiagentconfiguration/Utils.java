@@ -4,6 +4,7 @@ import de.naoth.rc.dialogs.multiagentconfiguration.ui.RequestTreeItem;
 import de.naoth.rc.dialogs.multiagentconfiguration.ui.TreeNode;
 import de.naoth.rc.messages.Messages;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -13,8 +14,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
-import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.TreeItem;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
@@ -25,19 +24,19 @@ import javafx.stage.Window;
  */
 public class Utils
 {
-    public static TreeMap<String, TreeItem> global_debug_requests = new TreeMap<>();
+    public static TreeMap<String, TreeNode> global_debug_requests = new TreeMap<>();
     public static TreeMap<String, TreeNode> global_modules = new TreeMap<>();
     public static ObservableList<String> global_agent_list = FXCollections.observableArrayList();
     public static TreeMap<String, TreeItem<Parameter>> global_parameters = new TreeMap<>();
     public static ObservableList<String> global_representations_list = FXCollections.observableArrayList();
     private static FileChooser behaviorFileDialog;
     
-    public static void createDebugRequestTree(Messages.DebugRequest request, TreeItem root, BiConsumer<String, Boolean> debugRequest) {
-        
-        String root_name = (String) root.getValue();
+    public static void createDebugRequestTree(Messages.DebugRequest request, TreeNode root, BiConsumer<String, Boolean> debugRequest)
+    {
+        String root_name = root.getValue();
         
         if(!global_debug_requests.containsKey(root_name)) {
-            global_debug_requests.put(root_name, new CheckBoxTreeItem<>(root_name));
+            global_debug_requests.put(root_name, new TreeNode(root_name));
         }
         
         request.getRequestsList().forEach((r) -> {
@@ -48,7 +47,7 @@ public class Utils
             
             // retrieve (and if necessary create) global module item
             if(!global_debug_requests.containsKey(id)) {
-                CheckBoxTreeItem<String> global_item = new CheckBoxTreeItem<>(name);
+                TreeNode global_item = new TreeNode(name);
                 getParentTreeItem(global_debug_requests.get(root_name), path, ":").getChildren().add(global_item);
                 global_item.setSelected(r.getValue());
                 global_debug_requests.put(id, global_item);
@@ -58,7 +57,7 @@ public class Utils
             getParentTreeItem(root, path, ":").getChildren().add(item); // add this item to the module tree
             // bind to global module item
             // NOTE: can not use 'binding', because we're change the selected property and would causing a runtime exception otherwise
-            ((CheckBoxTreeItem)global_debug_requests.get(id)).selectedProperty().addListener((observable, oldValue, newValue) -> {
+            global_debug_requests.get(id).selectedProperty().addListener((observable, oldValue, newValue) -> {
                 item.setSelected(newValue);
             });
             // set the selected state AFTER adding it to its parent
@@ -174,16 +173,15 @@ public class Utils
         return parent;
     }
     
-    private static TreeItem<String> getParentTreeItem(TreeItem<String> root, String path, String sep) {
-        TreeItem<String> current_root = root;
+    private static TreeItem<String> getParentTreeItem(TreeNode root, String path, String sep) {
+        TreeNode current_root = root;
         for (String part : path.split(sep)) {
-            FilteredList<TreeItem<String>> treePart = current_root.getChildren().filtered((m) -> { return m.getValue().equals(part); });
-            if(treePart.isEmpty()) {
-                CheckBoxTreeItem<String> treePartNew = new CheckBoxTreeItem<>(part);
+            if(!current_root.hasChildren(part)) {
+                TreeNode treePartNew = new TreeNode(part);
                 current_root.getChildren().add(treePartNew);
                 current_root = treePartNew;
             } else {
-                current_root = treePart.get(0);
+                current_root = current_root.getChildren(part);
             }
         }
         return current_root;
@@ -226,5 +224,57 @@ public class Utils
                     new FileChooser.ExtensionFilter("All Files", "*.*"));
         }
         return behaviorFileDialog.showOpenDialog(owner);
+    }
+    
+    /**
+     * Creates a list of expanded nodes starting from t.
+     * 
+     * @param t the starting tree node
+     * @return  a list of expanded nodes, starting from node t
+     */
+    public static List<String> getExpandedNodes(TreeItem<String> t) {
+        return getExpandedNodes(t, "");
+    }
+    
+    /**
+     * Creates a list of expanded nodes
+     * 
+     * @param t      the starting tree node
+     * @param parent the path to the starting tree node
+     * @return       a list of expanded nodes, starting from node t
+     */
+    private static List<String> getExpandedNodes(TreeItem<String> t, String parent) {
+        List<String> expanded = new ArrayList<>();
+        if(t.isExpanded()) {
+            String path = parent + (parent.isEmpty()?"":"/") + t.getValue();
+            expanded.add(path);
+            if(!t.isLeaf()) {
+                t.getChildren().forEach((child) -> {
+                    expanded.addAll(getExpandedNodes(child, path));
+                });
+            }
+        }
+        return expanded;
+    }
+    
+    /**
+     * Expands all nodes on the path starting from the root node.
+     * 
+     * @param root  the root node to start from
+     * @param paths the paths, which should be expended
+     */
+    public static void expandNodes(TreeNode root, List<String> paths) {
+        paths.forEach((p) -> {
+            String[] parts = p.split("/");
+            TreeNode current_root = root;
+            for (String part : parts) {
+                if(current_root.hasChildren(part)) {
+                    current_root = current_root.getChildren(part);
+                    current_root.setExpanded(true);
+                } else {
+                    break; // got an unknown node
+                }
+            }
+        });
     }
 }

@@ -28,7 +28,6 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitMenuButton;
@@ -108,7 +107,7 @@ public class ConfigurationsTab implements ResponseListener
         
         // setup ui
         debugTree.setCellFactory(e -> new CheckableTreeCell());
-        debugTree.setRoot(new TreeItem());
+        debugTree.setRoot(new TreeNode());
         debugTree.getRoot().setExpanded(true);
         
         moduleTree.setCellFactory(e -> new CheckableTreeCell());
@@ -345,20 +344,20 @@ public class ConfigurationsTab implements ResponseListener
             // parse data
             Messages.DebugRequest request = Messages.DebugRequest.parseFrom(result);
             // get the cognition debug request root item or create a new, if it doesn't exists
-            CheckBoxTreeItem<String> cognition_root;
-            if(debugTree.getRoot().getChildren().size() > 0 && debugTree.getRoot().getChildren().get(0).getValue().equals("Cognition")) {
-                cognition_root = (CheckBoxTreeItem<String>) debugTree.getRoot().getChildren().get(0);
-            } else if(debugTree.getRoot().getChildren().size() > 1 && debugTree.getRoot().getChildren().get(1).getValue().equals("Cognition")) {
-                cognition_root = (CheckBoxTreeItem<String>) debugTree.getRoot().getChildren().get(1);
+            TreeNode cognition_root;
+            if(((TreeNode)debugTree.getRoot()).hasChildren("Cognition")) {
+                cognition_root = ((TreeNode)debugTree.getRoot()).getChildren("Cognition");
             } else {
-                cognition_root = new CheckBoxTreeItem<>("Cognition");
+                cognition_root = new TreeNode("Cognition");
+                cognition_root.setExpanded(true);
+                debugTree.getRoot().getChildren().add(cognition_root);
             }
+            List<String> t = Utils.getExpandedNodes(cognition_root);
             // remove the old subtree
             cognition_root.getChildren().clear();
             // create the new subtree
             Utils.createDebugRequestTree(request, cognition_root, cognitionDebugRequest);
-            cognition_root.setExpanded(true);
-            debugTree.getRoot().getChildren().add(cognition_root);
+            Utils.expandNodes((TreeNode) cognition_root.getParent(), t);
         } catch (InvalidProtocolBufferException ex) {
             Logger.getLogger(Tab.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -369,18 +368,20 @@ public class ConfigurationsTab implements ResponseListener
             // parse data
             Messages.DebugRequest request = Messages.DebugRequest.parseFrom(result);
             // get the motion debug request root item or create a new, if it doesn't exists
-            CheckBoxTreeItem<String> motion_root;
-            if(debugTree.getRoot().getChildren().size() > 0 && debugTree.getRoot().getChildren().get(0).getValue().equals("Motion")) {
-                motion_root = (CheckBoxTreeItem<String>) debugTree.getRoot().getChildren().get(0);
+            TreeNode motion_root;
+            if(((TreeNode)debugTree.getRoot()).hasChildren("Motion")) {
+                motion_root = (TreeNode) debugTree.getRoot().getChildren().get(0);
             } else {
-                motion_root = new CheckBoxTreeItem<>("Motion");
+                motion_root = new TreeNode("Motion");
+                debugTree.getRoot().getChildren().add(0, motion_root);
+                motion_root.setExpanded(true);
             }
+            List<String> t = Utils.getExpandedNodes(motion_root);
             // remove the old subtree
             motion_root.getChildren().clear();
             // create the new subtree
             Utils.createDebugRequestTree(request, motion_root, motionDebugRequest);
-            motion_root.setExpanded(true);
-            debugTree.getRoot().getChildren().add(0, motion_root);
+            Utils.expandNodes((TreeNode) motion_root.getParent(), t);
         } catch (InvalidProtocolBufferException ex) {
             Logger.getLogger(Tab.class.getName()).log(Level.SEVERE, null, ex);
         }
