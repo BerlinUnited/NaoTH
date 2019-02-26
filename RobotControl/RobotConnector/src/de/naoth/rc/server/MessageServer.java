@@ -144,7 +144,9 @@ public class MessageServer extends AbstractMessageServer {
 
         // close the soccet
         try {
-            socketChannel.close();
+            if(socketChannel != null) {
+                socketChannel.close();
+            }
         } catch (IOException ex) {
             Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE,
                     "Unexpected exception while closing the socket.", ex);

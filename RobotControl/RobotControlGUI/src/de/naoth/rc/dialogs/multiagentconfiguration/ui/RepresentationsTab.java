@@ -128,8 +128,10 @@ public class RepresentationsTab implements ResponseListener
 
         @Override
         public void errorOccured(String cause) {
-            content.setPromptText(cause);
-            content.clear();
+            Platform.runLater(() -> {
+                content.setPromptText(cause);
+                content.clear();
+            });
         }
     }
 }
