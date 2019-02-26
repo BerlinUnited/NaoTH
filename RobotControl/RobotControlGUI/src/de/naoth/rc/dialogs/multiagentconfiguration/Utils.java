@@ -68,20 +68,6 @@ public class Utils
         });
     }
     
-    public static TreeItem createDebugRequestCognition(Messages.DebugRequest request, BiConsumer<String, Boolean> debugRequest) {
-        CheckBoxTreeItem<String> cognition_root = new CheckBoxTreeItem<>("Cognition");
-        createDebugRequestTree(request, cognition_root, debugRequest);
-        cognition_root.setExpanded(true);
-        return cognition_root;
-    }
-    
-    public static TreeItem createDebugRequestMotion(Messages.DebugRequest request, BiConsumer<String, Boolean> debugRequest) {
-        CheckBoxTreeItem<String> motion_root = new CheckBoxTreeItem<>("Motion");
-        createDebugRequestTree(request, motion_root, debugRequest);
-        motion_root.setExpanded(true);
-        return motion_root;
-    }
-    
     /**
      * Creates the module tree for the given modules list and appends it to the root node.
      * The debug request is used, when the node is selected.

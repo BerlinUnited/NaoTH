@@ -28,6 +28,7 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitMenuButton;
@@ -39,7 +40,6 @@ import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 
 /**
  * @author Philipp Strobel <philippstrobel@posteo.de>
@@ -183,7 +183,6 @@ public class ConfigurationsTab implements ResponseListener
     
     @FXML
     public void updateDebugRequests() {
-        debugTree.getRoot().getChildren().clear();
         parent.sendCommand(cmd_debug_cognition, this);
         parent.sendCommand(cmd_debug_motion, this);
     }
@@ -343,8 +342,23 @@ public class ConfigurationsTab implements ResponseListener
     
     private void handleCognitionDebugResponse(byte[] result) {
         try {
+            // parse data
             Messages.DebugRequest request = Messages.DebugRequest.parseFrom(result);
-            debugTree.getRoot().getChildren().add(Utils.createDebugRequestCognition(request, cognitionDebugRequest));
+            // get the cognition debug request root item or create a new, if it doesn't exists
+            CheckBoxTreeItem<String> cognition_root;
+            if(debugTree.getRoot().getChildren().size() > 0 && debugTree.getRoot().getChildren().get(0).getValue().equals("Cognition")) {
+                cognition_root = (CheckBoxTreeItem<String>) debugTree.getRoot().getChildren().get(0);
+            } else if(debugTree.getRoot().getChildren().size() > 1 && debugTree.getRoot().getChildren().get(1).getValue().equals("Cognition")) {
+                cognition_root = (CheckBoxTreeItem<String>) debugTree.getRoot().getChildren().get(1);
+            } else {
+                cognition_root = new CheckBoxTreeItem<>("Cognition");
+            }
+            // remove the old subtree
+            cognition_root.getChildren().clear();
+            // create the new subtree
+            Utils.createDebugRequestTree(request, cognition_root, cognitionDebugRequest);
+            cognition_root.setExpanded(true);
+            debugTree.getRoot().getChildren().add(cognition_root);
         } catch (InvalidProtocolBufferException ex) {
             Logger.getLogger(Tab.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -352,8 +366,21 @@ public class ConfigurationsTab implements ResponseListener
     
     private void handleMotionDebugResponse(byte[] result) {
         try {
+            // parse data
             Messages.DebugRequest request = Messages.DebugRequest.parseFrom(result);
-            debugTree.getRoot().getChildren().add(0, Utils.createDebugRequestMotion(request, motionDebugRequest));
+            // get the motion debug request root item or create a new, if it doesn't exists
+            CheckBoxTreeItem<String> motion_root;
+            if(debugTree.getRoot().getChildren().size() > 0 && debugTree.getRoot().getChildren().get(0).getValue().equals("Motion")) {
+                motion_root = (CheckBoxTreeItem<String>) debugTree.getRoot().getChildren().get(0);
+            } else {
+                motion_root = new CheckBoxTreeItem<>("Motion");
+            }
+            // remove the old subtree
+            motion_root.getChildren().clear();
+            // create the new subtree
+            Utils.createDebugRequestTree(request, motion_root, motionDebugRequest);
+            motion_root.setExpanded(true);
+            debugTree.getRoot().getChildren().add(0, motion_root);
         } catch (InvalidProtocolBufferException ex) {
             Logger.getLogger(Tab.class.getName()).log(Level.SEVERE, null, ex);
         }
