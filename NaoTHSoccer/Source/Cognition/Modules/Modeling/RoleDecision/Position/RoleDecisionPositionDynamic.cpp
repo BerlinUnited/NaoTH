@@ -1,5 +1,6 @@
 #include "RoleDecisionPositionDynamic.h"
 #include "Tools/Math/Common.h"
+#include "Tools/Math/Vector3.h"
 
 #define ROLE_GROUPS 3
 
@@ -110,54 +111,59 @@ void RoleDecisionPositionDynamic::execute()
     debugDrawings();
 }
 
-Vector2d RoleDecisionPositionDynamic::calculateRepeller(const Vector2d& point, Vector2d repeller, double force) const
+Vector2d RoleDecisionPositionDynamic::calculateRepeller(ForceFn method, const Vector2d& point, Vector2d repeller, double force) const
 {
-    repeller -= point;
-    auto distance = repeller.abs();
-    if(repeller.abs2() == 0.0) { return {-force, -force}; }
-    return -repeller.normalize() * (this->*params.repellerForce)(force, distance);
+    auto distance = (repeller - point).abs();
+    auto f = (this->*method)(force, distance);
+
+    Vector3d repeller3d(repeller.x - point.x, repeller.y - point.y, force);
+    repeller3d.normalize();
+    repeller3d *= f;
+
+    return {-repeller3d.x, -repeller3d.y};
 }
 
-Vector2d RoleDecisionPositionDynamic::calculateAttractor(const Vector2d& point, Vector2d attractor, double force) const
+Vector2d RoleDecisionPositionDynamic::calculateAttractor(ForceFn method, const Vector2d& point, Vector2d attractor, double force) const
 {
-    attractor -= point;
-    //if(attractor.abs2() == 0.0) { return {0, 0}; }
-    auto distance = attractor.abs();
-    auto f = (this->*params.attractorForce)(force, distance);
-    //if(f > distance) { return attractor.normalize() * distance; }
-    return attractor.normalize() * f;
+    auto distance = (attractor - point).abs();
+    auto f = (this->*method)(force, distance);
+
+    Vector3d attractor3d(attractor.x - point.x, attractor.y - point.y, -force);
+    attractor3d.normalize();
+    attractor3d *= f;
+
+    return {attractor3d.x, attractor3d.y};
 }
 
 Vector2d RoleDecisionPositionDynamic::calculateRepellerAttractorForce(const Vector2d& p, Roles::Static r) const
 {
 
-    Vector2d n;
-
+    Vector2d shift;
     if(params.enableSideline) {
-        n  = calculateRepeller(p, {p.x, getFieldInfo().yPosLeftSideline}, params.force_sideline)
-           + calculateRepeller(p, {p.x, getFieldInfo().yPosRightSideline}, params.force_sideline)
-           + calculateRepeller(p, {getFieldInfo().xPosOpponentGroundline, p.y}, params.force_sideline)
-           + calculateRepeller(p, {getFieldInfo().xPosOwnGroundline, p.y}, params.force_sideline);
+        shift  = calculateRepeller(params.forceSideline, p, {p.x, getFieldInfo().yPosLeftSideline}, params.force_sideline)
+           + calculateRepeller(params.forceSideline, p, {p.x, getFieldInfo().yPosRightSideline}, params.force_sideline)
+           + calculateRepeller(params.forceSideline, p, {getFieldInfo().xPosOpponentGroundline, p.y}, params.force_sideline)
+           + calculateRepeller(params.forceSideline, p, {getFieldInfo().xPosOwnGroundline, p.y}, params.force_sideline);
     }
 
     for (const auto& a : getRoles().active) {
         // other roles repel the role r
         if(params.enableTeammates && a != Roles::goalie && a != r) {
-            n += calculateRepeller(p, getRoleDecisionModel().roles_position[a].home, params.force_teammates);
+            shift += calculateRepeller(params.forceTeammate, p, getRoleDecisionModel().roles_position[a].home, params.force_teammates);
         }
         // the roles default position attracts the role r
         if(params.enableDefaultPosition && a == r) {
-            auto at = calculateAttractor(p, getRoles().defaults.at(a).home, params.force_default_position);
-            n += at;
+            auto at = calculateAttractor(params.forcePosition, p, getRoles().defaults.at(a).home, params.force_default_position);
+            shift += at;
         }
     }
 
     if(params.enableBall && getTeamBallModel().valid) {
-        auto ball = calculateAttractor(p+n, getTeamBallModel().positionOnField, params.force_ball);
-        n += ball;
+        auto ball = calculateAttractor(params.forceBall, p, getTeamBallModel().positionOnField, params.force_ball);
+        shift += ball;
     }
 
-    return n;
+    return shift * params.update_speed;
 }
 
 void RoleDecisionPositionDynamic::calculateRepellerAttractorPosition(Roles::Static r, std::map<Roles::Static, Vector2d>& pos)
@@ -228,7 +234,7 @@ void RoleDecisionPositionDynamic::debugDrawings() const
             {
                 Vector2d f;
                 if(getTeamBallModel().valid) {
-                    f += calculateAttractor(p, getTeamBallModel().positionOnField, params.force_ball);
+                    f += calculateAttractor(params.forceBall, p, getTeamBallModel().positionOnField, params.force_ball);
                 }
 
                 auto d = f.abs();
@@ -251,10 +257,10 @@ void RoleDecisionPositionDynamic::debugDrawings() const
             {
                 for (p.y = -getFieldInfo().yLength/2.0; p.y <= getFieldInfo().yLength/2.0; p.y += stepY)
                 {
-                    Vector2d f = calculateRepeller(p, {p.x, getFieldInfo().yPosLeftSideline}, params.force_sideline)
-                               + calculateRepeller(p, {p.x, getFieldInfo().yPosRightSideline}, params.force_sideline)
-                               + calculateRepeller(p, {getFieldInfo().xPosOpponentGroundline, p.y}, params.force_sideline)
-                               + calculateRepeller(p, {getFieldInfo().xPosOwnGroundline, p.y}, params.force_sideline);
+                    Vector2d f = calculateRepeller(params.forceSideline, p, {p.x, getFieldInfo().yPosLeftSideline}, params.force_sideline)
+                               + calculateRepeller(params.forceSideline, p, {p.x, getFieldInfo().yPosRightSideline}, params.force_sideline)
+                               + calculateRepeller(params.forceSideline, p, {getFieldInfo().xPosOpponentGroundline, p.y}, params.force_sideline)
+                               + calculateRepeller(params.forceSideline, p, {getFieldInfo().xPosOwnGroundline, p.y}, params.force_sideline);
 
                     auto d = f.abs();
                     f.normalize(50);
