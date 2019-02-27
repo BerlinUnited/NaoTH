@@ -5,6 +5,7 @@ project "LoLa"
   
   includedirs {
     "../Source/LoLa/",
+    FRAMEWORK_PATH .. "/Platforms/Source"
 	}
   
   files {
@@ -13,6 +14,7 @@ project "LoLa"
 	}
   
   links {
+    --"NaoRobot"
 	}
 	
   targetname "lola"

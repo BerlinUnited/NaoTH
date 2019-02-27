@@ -1,6 +1,6 @@
 
 #include <iostream>
-#include "Lola.h"
+#include <DCM/Tools/Lola.h>
 
 void test_eyes(Lola& lola) 
 {
