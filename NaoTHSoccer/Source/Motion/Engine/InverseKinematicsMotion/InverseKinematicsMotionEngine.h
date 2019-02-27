@@ -60,11 +60,7 @@ private:
 public:
 
   InverseKinematicsMotionEngine();
-
-  virtual ~InverseKinematicsMotionEngine()
-  {
-      getDebugParameterList().remove(&theParameters);
-  }
+  virtual ~InverseKinematicsMotionEngine();
 
   virtual void execute(){} // dummy
 

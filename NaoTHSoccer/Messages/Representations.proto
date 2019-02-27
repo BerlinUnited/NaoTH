@@ -357,3 +357,26 @@ message CentreOfPressure {
  required double in_kinematic_chain_origin_magnitude  = 8;
  required bool   in_kinematic_chain_origin_valid      = 9;
 }
+
+message WhistlePercept {
+  message Whistle {
+    required string name = 1;
+    required int64 positionInCapture = 2;
+    required double responseValue = 3;
+  }
+  
+  optional int32 counter  = 1;
+  optional string captureFile = 2;
+  repeated Whistle recognizedWhistles = 3;
+  optional bool whistleDetected = 4;
+}
+
+message DebugModify {
+  message ModifyValue {
+    required string name = 1;
+    optional bool modify = 2;
+    optional double value = 3;
+  }
+  
+  repeated ModifyValue valueMap = 1;
+}

@@ -9,6 +9,7 @@
 
 #include "NaoController.h"
 
+#include "PlatformInterface/Platform.h"
 #include <algorithm>
 
 using namespace std;
@@ -134,7 +135,7 @@ NaoController::NaoController()
 
   // create the teamcomm
   std::cout << "[NaoController] " << "Init TeamComm" << endl;
-  naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
+  const naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
   string interfaceName = "wlan0";
   if(config.hasKey("teamcomm", "interface"))
   {
@@ -166,6 +167,7 @@ NaoController::NaoController()
 
 NaoController::~NaoController()
 {
+  std::cout << "[NaoController] destruct" << std::endl;
   delete theSoundHandler;
   delete theTeamCommSender;
   delete theTeamCommListener;

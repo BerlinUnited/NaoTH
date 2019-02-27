@@ -1,5 +1,7 @@
 #include "Ellipse.h"
 
+#include <Eigen/Eigenvalues>
+
 Ellipse::Ellipse()
 {
   for(int i=0; i<6; i++) {

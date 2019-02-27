@@ -1,6 +1,6 @@
 #include "MultiKalmanBallLocator.h"
 
-#include <Tools/naoth_eigen.h>
+#include <Eigen/Core>
 #include "Tools/Association.h"
 
 MultiKalmanBallLocator::MultiKalmanBallLocator():

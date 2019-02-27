@@ -24,8 +24,8 @@ public:
     STFT(const int channelOffset, 
          const int windowTime, 
          const int windowTimeStep, 
-		 const int windowFrequency,
-		 SpectrumHandler *handler
+		     const int windowFrequency,
+		     SpectrumHandler *handler
 		 );
     
     virtual ~STFT();
@@ -40,7 +40,7 @@ protected:
     const int offset;
     const int windowTime, windowTimeStep, windowFrequency, windowFrequencyHalf;
 
-	SpectrumHandler* handler;
+	  SpectrumHandler* handler;
 
     int nOverflow;
     int16_t *overflownData;

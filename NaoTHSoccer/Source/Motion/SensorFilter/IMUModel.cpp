@@ -1,10 +1,10 @@
 /**
 * @file IMUModel.cpp
-* 
+*
 * Definition of class IMUModel
 *
 * @author <a href="mailto:kaden@informatik.hu-berlin.de">Steffen Kaden</a>
-*/ 
+*/
 
 #include "IMUModel.h"
 
@@ -64,8 +64,7 @@ void IMUModel::execute()
     // ukf.generateSigmaPoints();
 
     Eigen::Vector3d gyro;
-    // gyro z axis seems to measure in opposite direction (turning left measures negative angular velocity, should be positive)
-    gyro << getGyrometerData().data.x, getGyrometerData().data.y, -getGyrometerData().data.z;
+    gyro << getGyrometerData().data.x, getGyrometerData().data.y, getGyrometerData().data.z;
     Eigen::Vector3d acceleration = Eigen::Vector3d(getAccelerometerData().data.x, getAccelerometerData().data.y, getAccelerometerData().data.z);
 
     IMU_RotationMeasurement z;
@@ -174,9 +173,9 @@ void IMUModel::plots()
     // --- for testing integration
         Eigen::Matrix3d rot_vel_mat;
         // getGyrometerData().data.z is inverted!
-        rot_vel_mat << 1                             , getGyrometerData().data.z*0.01,  getGyrometerData().data.y*0.01,
-                      -getGyrometerData().data.z*0.01,                              1, -getGyrometerData().data.x*0.01,
-                      -getGyrometerData().data.y*0.01, getGyrometerData().data.x*0.01,                               1;
+        rot_vel_mat << 1                             , -getGyrometerData().data.z*0.01,  getGyrometerData().data.y*0.01,
+                       getGyrometerData().data.z*0.01,                               1, -getGyrometerData().data.x*0.01,
+                      -getGyrometerData().data.y*0.01,  getGyrometerData().data.x*0.01,                               1;
 
         // continue rotation assuming constant velocity
         integrated = integrated * Eigen::Quaterniond(rot_vel_mat);
@@ -224,7 +223,7 @@ void IMUModel::reloadParameters()
 
     Q_acc_walk.setIdentity();
     Q_acc *= imuParameters.acceleration.walk.processNoiseAcc;
-    
+
     // measurement covariance matrix
     R_acc.setIdentity();
     R_acc *= imuParameters.acceleration.stand.measurementNoiseAcc;

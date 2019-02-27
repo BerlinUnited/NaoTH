@@ -6,12 +6,16 @@ KinematicChainProvider::KinematicChainProvider()
   udpateTime = getFrameInfo().getTime();
 
   // HACK
-  if(!getKinematicChain().is_initialized())
-  {
+  if(!getKinematicChain().is_initialized()) {
     getKinematicChain().init(getSensorJointData());
   }
 
   getDebugParameterList().add(&parameter);
+}
+
+KinematicChainProvider::~KinematicChainProvider()
+{
+  getDebugParameterList().remove(&parameter);
 }
 
 void KinematicChainProvider::execute()
@@ -43,7 +47,3 @@ void KinematicChainProvider::execute()
     theFSRPos);
 }
 
-KinematicChainProvider::~KinematicChainProvider()
-{
-    getDebugParameterList().remove(&parameter);
-}

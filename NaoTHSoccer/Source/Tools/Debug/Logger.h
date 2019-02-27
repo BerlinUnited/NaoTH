@@ -37,8 +37,8 @@ public:
 
   void log(unsigned int frameNum);
 
-  const string& getCommand() const { return command;}
-  const string& getDescription() const { return description;}
+  const std::string& getCommand() const { return command;}
+  const std::string& getDescription() const { return description;}
 
 protected:
   void handleCommand(const std::string& argName, const std::string& argValue, std::ostream& outstream);
