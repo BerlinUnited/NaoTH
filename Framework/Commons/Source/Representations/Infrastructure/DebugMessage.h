@@ -41,7 +41,7 @@ public:
   class Message
   {
   public:
-    Message(int id, long length) : id(id), data(length) {}
+    Message(int id, size_t length) : id(id), data(length) {}
 
     int id;
     std::vector<char> data;
@@ -50,13 +50,14 @@ public:
   std::list<Message*> answers;
 
   void addResponse(int id, std::stringstream& str) {
-    long length = (long)str.tellp(); length = length < 0 ? 0 : length;
+    int length_raw = static_cast<int>(str.tellp()); 
+    size_t length = length_raw < 0 ? 0 : static_cast<size_t>(length_raw);
   
     // NOTE: the objects are deleted later by the DebugServer
     Message* msg = new Message(id, length);
 
     if(length > 0) {
-      str.read(msg->data.data(), msg->data.size());
+      str.read(msg->data.data(), static_cast<int>(msg->data.size()));
     }
 
     answers.push_back(msg);
