@@ -95,6 +95,7 @@
 
 #include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionStatic.h"
 #include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionDynamic.h"
+#include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionPotentialField.h"
 #include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionDynamicGoalie.h"
 #include "Modules/Modeling/RoleDecision/Assignment/RoleDecisionAssignmentStatic.h"
 #include "Modules/Modeling/RoleDecision/Assignment/RoleDecisionAssignmentDistance.h"
@@ -233,6 +234,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   // first set the position of the roles
   REGISTER_MODULE(RoleDecisionPositionStatic);
   REGISTER_MODULE(RoleDecisionPositionDynamic);
+  REGISTER_MODULE(RoleDecisionPositionPotentialField);
   REGISTER_MODULE(RoleDecisionPositionDynamicGoalie);
   // then decide which player should have which role
   REGISTER_MODULE(RoleDecisionAssignmentStatic);
