@@ -1,5 +1,5 @@
-#ifndef ROLEDECISIONPOSITIONDYNAMIC_H
-#define ROLEDECISIONPOSITIONDYNAMIC_H
+#ifndef ROLEDECISIONPOSITIONFORCE_H
+#define ROLEDECISIONPOSITIONFORCE_H
 
 #include <ModuleFramework/Module.h>
 #include <Tools/DataStructures/ParameterList.h>
@@ -15,7 +15,7 @@
 #include "Representations/Modeling/TeamBallModel.h"
 
 
-BEGIN_DECLARE_MODULE(RoleDecisionPositionDynamic)
+BEGIN_DECLARE_MODULE(RoleDecisionPositionForce)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugParameterList)
@@ -25,16 +25,16 @@ BEGIN_DECLARE_MODULE(RoleDecisionPositionDynamic)
   REQUIRE(TeamBallModel)
 
   PROVIDE(RoleDecisionModel)
-END_DECLARE_MODULE(RoleDecisionPositionDynamic);
+END_DECLARE_MODULE(RoleDecisionPositionForce);
 
 
-class RoleDecisionPositionDynamic : public RoleDecisionPositionDynamicBase
+class RoleDecisionPositionForce : public RoleDecisionPositionForceBase
 {
-    typedef double (RoleDecisionPositionDynamic::*ForceFn)(double, double) const;
+    typedef double (RoleDecisionPositionForce::*ForceFn)(double, double) const;
 
 public:
-    RoleDecisionPositionDynamic();
-    virtual ~RoleDecisionPositionDynamic();
+    RoleDecisionPositionForce();
+    virtual ~RoleDecisionPositionForce();
     virtual void execute();
 
 private:
@@ -101,13 +101,13 @@ private:
 
         void setMethod(ForceFn& methodVar, std::string method)
         {
-            if(method == "linear")          { methodVar = &RoleDecisionPositionDynamic::forceLinear; }
-            else if (method == "square")    { methodVar = &RoleDecisionPositionDynamic::forceSquare; }
-            else if (method == "exp")       { methodVar = &RoleDecisionPositionDynamic::forceExp; }
-            else if (method == "exprec")    { methodVar = &RoleDecisionPositionDynamic::forceExpRec; }
-            else if (method == "expsquare") { methodVar = &RoleDecisionPositionDynamic::forceExpSquare; }
-            else if (method == "cos")       { methodVar = &RoleDecisionPositionDynamic::forceCos; }
-            else                            { methodVar = &RoleDecisionPositionDynamic::forceConst; }
+            if(method == "linear")          { methodVar = &RoleDecisionPositionForce::forceLinear; }
+            else if (method == "square")    { methodVar = &RoleDecisionPositionForce::forceSquare; }
+            else if (method == "exp")       { methodVar = &RoleDecisionPositionForce::forceExp; }
+            else if (method == "exprec")    { methodVar = &RoleDecisionPositionForce::forceExpRec; }
+            else if (method == "expsquare") { methodVar = &RoleDecisionPositionForce::forceExpSquare; }
+            else if (method == "cos")       { methodVar = &RoleDecisionPositionForce::forceCos; }
+            else                            { methodVar = &RoleDecisionPositionForce::forceConst; }
         }
     } params;
 
@@ -187,4 +187,4 @@ private:
     double forceCos(double f, double d) const { return (params.force_scale * d)>=(Math::pi_2)?0.0:cos(params.force_scale * d) * f; }
 };
 
-#endif // ROLEDECISIONPOSITIONDYNAMIC_H
+#endif // ROLEDECISIONPOSITIONFORCE_H

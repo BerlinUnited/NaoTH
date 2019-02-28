@@ -4,38 +4,38 @@
 
 #define ROLE_GROUPS 3
 
-RoleDecisionPositionDynamic::RoleDecisionPositionDynamic()
+RoleDecisionPositionForce::RoleDecisionPositionForce()
 {
     getDebugParameterList().add(&params);
 
-    DEBUG_REQUEST_REGISTER("RoleDecision:Position:dynamic_reset_to_default", "draw role positions on the field", false);
-    DEBUG_REQUEST_REGISTER("RoleDecision:Position:draw_active_positions_dynamic", "draw role positions on the field", false);
-    DEBUG_REQUEST_REGISTER("RoleDecision:Position:draw_inactive_positions_dynamic", "draw role positions on the field", false);
-    DEBUG_REQUEST_REGISTER("RoleDecision:Position:draw_grid_dynamic", "draws the role grid on the field", false);
-    DEBUG_REQUEST_REGISTER("RoleDecision:Position:draw_default_position", "draws the default role position on the field", false);
-    DEBUG_REQUEST_REGISTER("RoleDecision:Position:draw_force_sideline", "draws the repeller force of the sidelines", false);
-    DEBUG_REQUEST_REGISTER("RoleDecision:Position:draw_forces", "draws the applied forces", false);
-    //DEBUG_REQUEST_REGISTER("RoleDecision:Position:draw_force_teammates", "draws the repeller force of the teammates", false);
-    DEBUG_REQUEST_REGISTER("RoleDecision:Position:draw_force_ball", "draws the attractor force of the ball", false);
+    DEBUG_REQUEST_REGISTER("RoleDecision:Position:f_dynamic_reset_to_default", "draw role positions on the field", false);
+    DEBUG_REQUEST_REGISTER("RoleDecision:Position:f_draw_active_positions_dynamic", "draw role positions on the field", false);
+    DEBUG_REQUEST_REGISTER("RoleDecision:Position:f_draw_inactive_positions_dynamic", "draw role positions on the field", false);
+    DEBUG_REQUEST_REGISTER("RoleDecision:Position:f_draw_grid_dynamic", "draws the role grid on the field", false);
+    DEBUG_REQUEST_REGISTER("RoleDecision:Position:f_draw_default_position", "draws the default role position on the field", false);
+    DEBUG_REQUEST_REGISTER("RoleDecision:Position:f_draw_force_sideline", "draws the repeller force of the sidelines", false);
+    DEBUG_REQUEST_REGISTER("RoleDecision:Position:f_draw_forces", "draws the applied forces", false);
+    //DEBUG_REQUEST_REGISTER("RoleDecision:Position:f_draw_force_teammates", "draws the repeller force of the teammates", false);
+    DEBUG_REQUEST_REGISTER("RoleDecision:Position:f_draw_force_ball", "draws the attractor force of the ball", false);
 
     // init positions with default
     resetPositions();
     initPositionsGrid();
 }
 
-RoleDecisionPositionDynamic::~RoleDecisionPositionDynamic()
+RoleDecisionPositionForce::~RoleDecisionPositionForce()
 {
     getDebugParameterList().remove(&params);
 }
 
-void RoleDecisionPositionDynamic::resetPositions()
+void RoleDecisionPositionForce::resetPositions()
 {
     for (const auto& d : getRoles().defaults) {
         getRoleDecisionModel().roles_position[d.first] = d.second;
     }
 }
 
-void RoleDecisionPositionDynamic::initPositionsGrid()
+void RoleDecisionPositionForce::initPositionsGrid()
 {
     // make sure the grid is empty
     positionGrid.clear();
@@ -76,9 +76,9 @@ void RoleDecisionPositionDynamic::initPositionsGrid()
     }
 }
 
-void RoleDecisionPositionDynamic::execute()
+void RoleDecisionPositionForce::execute()
 {
-    DEBUG_REQUEST("RoleDecision:Position:dynamic_reset_to_default", resetPositions(); );
+    DEBUG_REQUEST("RoleDecision:Position:f_dynamic_reset_to_default", resetPositions(); );
 
     // container for the new positions,
     std::map<Roles::Static, Vector2d> new_home_positions;
@@ -111,7 +111,7 @@ void RoleDecisionPositionDynamic::execute()
     debugDrawings();
 }
 
-Vector2d RoleDecisionPositionDynamic::calculateRepeller(ForceFn method, const Vector2d& point, Vector2d repeller, double force) const
+Vector2d RoleDecisionPositionForce::calculateRepeller(ForceFn method, const Vector2d& point, Vector2d repeller, double force) const
 {
     auto distance = (repeller - point).abs();
     auto f = (this->*method)(force, distance);
@@ -123,7 +123,7 @@ Vector2d RoleDecisionPositionDynamic::calculateRepeller(ForceFn method, const Ve
     return {-repeller3d.x, -repeller3d.y};
 }
 
-Vector2d RoleDecisionPositionDynamic::calculateAttractor(ForceFn method, const Vector2d& point, Vector2d attractor, double force) const
+Vector2d RoleDecisionPositionForce::calculateAttractor(ForceFn method, const Vector2d& point, Vector2d attractor, double force) const
 {
     auto distance = (attractor - point).abs();
     auto f = (this->*method)(force, distance);
@@ -135,7 +135,7 @@ Vector2d RoleDecisionPositionDynamic::calculateAttractor(ForceFn method, const V
     return {attractor3d.x, attractor3d.y};
 }
 
-Vector2d RoleDecisionPositionDynamic::calculateRepellerAttractorForce(const Vector2d& p, Roles::Static r) const
+Vector2d RoleDecisionPositionForce::calculateRepellerAttractorForce(const Vector2d& p, Roles::Static r) const
 {
 
     Vector2d shift;
@@ -166,16 +166,16 @@ Vector2d RoleDecisionPositionDynamic::calculateRepellerAttractorForce(const Vect
     return shift * params.update_speed;
 }
 
-void RoleDecisionPositionDynamic::calculateRepellerAttractorPosition(Roles::Static r, std::map<Roles::Static, Vector2d>& pos)
+void RoleDecisionPositionForce::calculateRepellerAttractorPosition(Roles::Static r, std::map<Roles::Static, Vector2d>& pos)
 {
     const auto& p = getRoleDecisionModel().roles_position[r].home;
     pos[r] = p + calculateRepellerAttractorForce(p, r);
 }
 
-void RoleDecisionPositionDynamic::debugDrawings() const
+void RoleDecisionPositionForce::debugDrawings() const
 {
     // debug drawings
-    DEBUG_REQUEST("RoleDecision:Position:draw_active_positions_dynamic",
+    DEBUG_REQUEST("RoleDecision:Position:f_draw_active_positions_dynamic",
         FIELD_DRAWING_CONTEXT;
         for(const auto& r : getRoleDecisionModel().roles_position) {
             if(getRoles().isRoleActive(r.first)) {
@@ -188,7 +188,7 @@ void RoleDecisionPositionDynamic::debugDrawings() const
             }
         }
     );
-    DEBUG_REQUEST("RoleDecision:Position:draw_inactive_positions_dynamic",
+    DEBUG_REQUEST("RoleDecision:Position:f_draw_inactive_positions_dynamic",
         FIELD_DRAWING_CONTEXT;
         for(const auto& r : getRoleDecisionModel().roles_position) {
             if(!getRoles().isRoleActive(r.first)) {
@@ -198,7 +198,7 @@ void RoleDecisionPositionDynamic::debugDrawings() const
             }
         }
     );
-    DEBUG_REQUEST("RoleDecision:Position:draw_grid_dynamic",
+    DEBUG_REQUEST("RoleDecision:Position:f_draw_grid_dynamic",
         FIELD_DRAWING_CONTEXT;
         PEN("000000", 10);
         for(const auto& g : positionGrid) {
@@ -206,7 +206,7 @@ void RoleDecisionPositionDynamic::debugDrawings() const
         }
     );
 
-    DEBUG_REQUEST("RoleDecision:Position:draw_default_position",
+    DEBUG_REQUEST("RoleDecision:Position:f_draw_default_position",
         FIELD_DRAWING_CONTEXT;
         for(const auto& r : getRoles().defaults) {
             if(getRoles().isRoleActive(r.first)) {
@@ -217,7 +217,7 @@ void RoleDecisionPositionDynamic::debugDrawings() const
         }
     );
 
-    DEBUG_REQUEST("RoleDecision:Position:draw_force_ball",
+    DEBUG_REQUEST("RoleDecision:Position:f_draw_force_ball",
         FIELD_DRAWING_CONTEXT;
         PEN("ffffff", 10);
         const double stepX = getFieldInfo().xFieldLength/50.0;
@@ -249,7 +249,7 @@ void RoleDecisionPositionDynamic::debugDrawings() const
 //        std::cout << std::endl;
     );
 
-    DEBUG_REQUEST("RoleDecision:Position:draw_force_sideline",
+    DEBUG_REQUEST("RoleDecision:Position:f_draw_force_sideline",
         FIELD_DRAWING_CONTEXT;
             const double stepX = getFieldInfo().xLength/50.0;
             const double stepY = getFieldInfo().yLength/50.0;
@@ -272,7 +272,7 @@ void RoleDecisionPositionDynamic::debugDrawings() const
             }
     );
 
-    DEBUG_REQUEST("RoleDecision:Position:draw_forces",
+    DEBUG_REQUEST("RoleDecision:Position:f_draw_forces",
         FIELD_DRAWING_CONTEXT;
         PEN("ffffff", 10);
         const double stepX = getFieldInfo().xFieldLength/50.0;

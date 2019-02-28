@@ -233,7 +233,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
    */
   // first set the position of the roles
   REGISTER_MODULE(RoleDecisionPositionStatic);
-  REGISTER_MODULE(RoleDecisionPositionDynamic);
+  REGISTER_MODULE(RoleDecisionPositionForce);
   REGISTER_MODULE(RoleDecisionPositionPotentialField);
   REGISTER_MODULE(RoleDecisionPositionDynamicGoalie);
   // then decide which player should have which role
