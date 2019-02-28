@@ -94,7 +94,7 @@
 #include "Modules/Modeling/RoleDecision/RoleDecisionDynamic.h"
 
 #include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionStatic.h"
-#include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionDynamic.h"
+#include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionForce.h"
 #include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionPotentialField.h"
 #include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionDynamicGoalie.h"
 #include "Modules/Modeling/RoleDecision/Assignment/RoleDecisionAssignmentStatic.h"
