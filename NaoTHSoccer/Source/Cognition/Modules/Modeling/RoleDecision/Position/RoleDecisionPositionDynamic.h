@@ -28,10 +28,10 @@ BEGIN_DECLARE_MODULE(RoleDecisionPositionDynamic)
 END_DECLARE_MODULE(RoleDecisionPositionDynamic);
 
 
-typedef double (RoleDecisionPositionDynamic::*ForceFn)(double, double) const;
-
 class RoleDecisionPositionDynamic : public RoleDecisionPositionDynamicBase
 {
+    typedef double (RoleDecisionPositionDynamic::*ForceFn)(double, double) const;
+
 public:
     RoleDecisionPositionDynamic();
     virtual ~RoleDecisionPositionDynamic();

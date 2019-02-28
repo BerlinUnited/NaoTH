@@ -218,6 +218,7 @@ void RoleDecisionPositionDynamic::debugDrawings() const
     );
 
     DEBUG_REQUEST("RoleDecision:Position:draw_force_ball",
+        FIELD_DRAWING_CONTEXT;
         PEN("ffffff", 10);
         const double stepX = getFieldInfo().xFieldLength/50.0;
         const double stepY = getFieldInfo().yFieldLength/50.0;
@@ -272,6 +273,7 @@ void RoleDecisionPositionDynamic::debugDrawings() const
     );
 
     DEBUG_REQUEST("RoleDecision:Position:draw_forces",
+        FIELD_DRAWING_CONTEXT;
         PEN("ffffff", 10);
         const double stepX = getFieldInfo().xFieldLength/50.0;
         const double stepY = getFieldInfo().yFieldLength/50.0;
