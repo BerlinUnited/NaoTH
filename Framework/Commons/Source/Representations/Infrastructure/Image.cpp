@@ -151,7 +151,7 @@ void Serializer<Image>::deserialize(std::istream& stream, Image& representation)
     newCameraInfo.resolutionWidth = img.width();
     representation.setCameraInfo(newCameraInfo);
 
-    const char* data = img.data().c_str();
+    const unsigned char* data = reinterpret_cast<const unsigned char*>(img.data().c_str());
 
     // HACK: copy the image pixel by pixel because the internal structure only 
     //       representa the image in the YUV422 format

@@ -86,12 +86,12 @@ public: // function members
     return reinterpret_cast<Pixel*>(yuv422)[(y * cameraInfo.resolutionWidth + x)/2]; 
   }
 
-  inline unsigned char getY(const int x, const int y) const {
+  inline unsigned char getY(const unsigned int x, const unsigned int y) const {
     ASSERT(isInside(x,y));
     return yuv422[PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x)];
   }
 
-  inline unsigned char getY_direct(const int x, const int y) const {
+  inline unsigned char getY_direct(const unsigned int x, const int y) const {
     //ASSERT(isInside(x,y));
     return yuv422[PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x)];
   }
