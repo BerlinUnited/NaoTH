@@ -321,13 +321,13 @@ private:
   void writeLEDData(const LEDData& ledData, ActuatorData& actuators) 
   {
     // REar
-    for(size_t i = 0; i < LEDData::EarLeft0; ++i) {
-      actuators.REar[LEDData::EarLeft0-i] = (float)ledData.theMonoLED[i];
+    for(size_t i = 0; i <= LEDData::EarRight324; ++i) {
+      actuators.REar[i] = (float)ledData.theMonoLED[LEDData::EarRight324 - i];
     }
 
     // LEar
-    for(size_t i = LEDData::EarLeft0; i < LEDData::numOfMonoLED; ++i) {
-      actuators.LEar[i-LEDData::EarLeft0] = (float)ledData.theMonoLED[i];
+    for(size_t i = 0; i <= LEDData::EarRight324; ++i) {
+      actuators.LEar[i] = (float)ledData.theMonoLED[LEDData::EarLeft0 + i];
     }
 
     // Chest
@@ -337,11 +337,10 @@ private:
 
     // LEye
     {
-    size_t idx = 2;
+    size_t idx = 0;
     for(size_t c = 0; c < LEDData::numOfLEDColor; ++c) {
-      for(size_t i = LEDData::FaceLeft0; i < LEDData::FootLeft; ++i) {
-        actuators.REar[(8-idx) % 8] = (float)ledData.theMultiLED[i][c];
-        idx++;
+      for(size_t i = 0; i <= LEDData::FaceRight315; ++i) {
+        actuators.REar[idx++] = (float)ledData.theMultiLED[(LEDData::FaceRight315 - i + 2) % 8][c];
       }
     }
     }
@@ -350,11 +349,35 @@ private:
     {
     size_t idx = 0;
     for(size_t c = 0; c < LEDData::numOfLEDColor; ++c) {
-      for(size_t i = LEDData::FaceRight0; i < LEDData::FaceLeft0; ++i) {
-        actuators.REar[idx++] = (float)ledData.theMultiLED[i][c];
+      for(size_t i = 0; i <= LEDData::FaceRight315; ++i) {
+        actuators.REar[idx++] = (float)ledData.theMultiLED[LEDData::FaceRight0 + i][c];
       }
     }
     }
+
+    // Skull
+    actuators.Skull[ 0] = (float)ledData.theMonoLED[LEDData::HeadFrontLeft1];
+    actuators.Skull[ 1] = (float)ledData.theMonoLED[LEDData::HeadFrontLeft0];
+    actuators.Skull[ 2] = (float)ledData.theMonoLED[LEDData::HeadMiddleLeft0];
+    actuators.Skull[ 3] = (float)ledData.theMonoLED[LEDData::HeadRearLeft0];
+    actuators.Skull[ 4] = (float)ledData.theMonoLED[LEDData::HeadRearLeft1];
+    actuators.Skull[ 5] = (float)ledData.theMonoLED[LEDData::HeadRearLeft2];
+    actuators.Skull[ 6] = (float)ledData.theMonoLED[LEDData::HeadRearRight2];
+    actuators.Skull[ 7] = (float)ledData.theMonoLED[LEDData::HeadRearRight1];
+    actuators.Skull[ 8] = (float)ledData.theMonoLED[LEDData::HeadRearRight0];
+    actuators.Skull[ 9] = (float)ledData.theMonoLED[LEDData::HeadMiddleRight0];
+    actuators.Skull[10] = (float)ledData.theMonoLED[LEDData::HeadFrontRight0];
+    actuators.Skull[11] = (float)ledData.theMonoLED[LEDData::HeadFrontRight1];
+
+    // LFoot
+    actuators.LFoot[0] = (float)ledData.theMultiLED[LEDData::FootLeft][LEDData::RED];
+    actuators.LFoot[1] = (float)ledData.theMultiLED[LEDData::FootLeft][LEDData::GREEN];
+    actuators.LFoot[2] = (float)ledData.theMultiLED[LEDData::FootLeft][LEDData::BLUE];
+
+    // RFoot
+    actuators.LFoot[0] = (float)ledData.theMultiLED[LEDData::FootRight][LEDData::RED];
+    actuators.LFoot[1] = (float)ledData.theMultiLED[LEDData::FootRight][LEDData::GREEN];
+    actuators.LFoot[2] = (float)ledData.theMultiLED[LEDData::FootRight][LEDData::BLUE];
   }
 
 private:
