@@ -52,13 +52,14 @@ struct SensorData
     MSGPACK_DEFINE_ARRAY(Body.BodyId, Body.Version, Head.FullHeadId, Head.Version);
   } RobotConfig;
   
+  // NOTE: The order for battery values in Softbank's documentation is wrong.
   struct {
     float Charge;
-    float Current;
     float Status;
+    float Current;
     float Temperature;
     
-    MSGPACK_DEFINE_ARRAY(Charge, Current, Status, Temperature);
+    MSGPACK_DEFINE_ARRAY(Charge, Status, Current, Temperature);
   } Battery;
   
   struct {
@@ -80,6 +81,8 @@ struct SensorData
   struct {
     float x;
     float y;
+
+    MSGPACK_DEFINE_ARRAY(x,y);
   } Angles;
   
   struct FootFSR {
@@ -229,7 +232,7 @@ struct SensorData
   std::array<float,25> Temperature;
   std::array<int,25> Status;
   
-  MSGPACK_DEFINE_MAP(RobotConfig, Accelerometer, Battery, Current, FSR, Gyroscope, Position, Sonar, Stiffness, Temperature, Touch, Status);
+  MSGPACK_DEFINE_MAP(RobotConfig, Accelerometer, Angles, Battery, Current, FSR, Gyroscope, Position, Sonar, Stiffness, Temperature, Touch, Status);
 };
 
 struct ActuatorData 
