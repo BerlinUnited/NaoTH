@@ -178,12 +178,12 @@ NaoController::~NaoController()
 
 void NaoController::set(const CameraSettingsRequest &request)
 {
-  CameraSettings settings = request.getCameraSettings();
+  CameraSettings settings = request.getCameraSettings(true);
   theBottomCameraHandler.setAllCameraParams(settings);
 }
 
 void NaoController::set(const CameraSettingsRequestTop &request)
 {
-  CameraSettings settings = request.getCameraSettings();
+  CameraSettings settings = request.getCameraSettings(true);
   theTopCameraHandler.setAllCameraParams(settings);
 }

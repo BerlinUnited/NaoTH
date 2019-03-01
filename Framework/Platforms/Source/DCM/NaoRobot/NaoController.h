@@ -20,7 +20,7 @@
 //#include "Tools/Debug/Stopwatch.h"
 
 //
-#include "V4lCameraHandler.h"
+#include "V4lCameraHandlerV6.h"
 #include "SoundControl.h"
 #include "SPLGameController.h"
 #include "CPUTemperatureReader.h"
@@ -184,8 +184,8 @@ protected:
   // -- end -- shared memory access --
 
   //
-  V4lCameraHandler theBottomCameraHandler;
-  V4lCameraHandler theTopCameraHandler;
+  V4lCameraHandlerV6 theBottomCameraHandler;
+  V4lCameraHandlerV6 theTopCameraHandler;
   SoundControl *theSoundHandler;
   BroadCaster* theTeamCommSender;
   UDPReceiver* theTeamCommListener;
