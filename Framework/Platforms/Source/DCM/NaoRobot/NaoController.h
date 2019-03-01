@@ -26,6 +26,7 @@
 #include "CPUTemperatureReader.h"
 #include "DebugCommunication/DebugServer.h"
 #include "AudioRecorder.h"
+#include "LolaAdaptor.h"
 
 #include "Tools/Communication/Network/BroadCaster.h"
 #include "Tools/Communication/Network/UDPReceiver.h"
