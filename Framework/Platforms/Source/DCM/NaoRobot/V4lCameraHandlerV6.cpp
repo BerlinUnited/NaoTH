@@ -10,9 +10,9 @@
 #include <iostream>
 #include <poll.h>
 #include <linux/uvcvideo.h>
+#include <linux/usb/video.h>
 
 //Custom V4L control variables
-#define V4L2_MT9M114_FADE_TO_BLACK (V4L2_CID_PRIVATE_BASE) //boolean, enable or disable fade to black feature
 #define V4L2_MT9M114_BRIGHTNESS_DARK (V4L2_CID_PRIVATE_BASE+1)
 #define V4L2_MT9M114_AE_TARGET_GAIN (V4L2_CID_PRIVATE_BASE+2)
 #define V4L2_MT9M114_AE_MIN_VIRT_AGAIN (V4L2_CID_PRIVATE_BASE+3)
@@ -42,24 +42,15 @@ V4lCameraHandlerV6::V4lCameraHandlerV6()
 {
 
   // NOTE: width, height and fps are not included here
-  settingsOrder.push_back(CameraSettings::VerticalFlip);
-  settingsOrder.push_back(CameraSettings::HorizontalFlip);
-
-
   settingsOrder.push_back(CameraSettings::AutoExposition);
   settingsOrder.push_back(CameraSettings::AutoExpositionAlgorithm);
   settingsOrder.push_back(CameraSettings::Brightness);
-//  settingsOrder.push_back(CameraSettings::BrightnessDark);
   settingsOrder.push_back(CameraSettings::MinAnalogGain);
   settingsOrder.push_back(CameraSettings::MaxAnalogGain);
   settingsOrder.push_back(CameraSettings::TargetGain);
 
 
   settingsOrder.push_back(CameraSettings::AutoWhiteBalancing);
-
-  settingsOrder.push_back(CameraSettings::PowerlineFrequency);
-  
-
 
   settingsOrder.push_back(CameraSettings::Contrast);
   settingsOrder.push_back(CameraSettings::Saturation);
@@ -72,8 +63,10 @@ V4lCameraHandlerV6::V4lCameraHandlerV6()
   settingsOrder.push_back(CameraSettings::WhiteBalance);
   // this throws errors sometimes and slows down the robot, check whats wrong before activating it
 //  settingsOrder.push_back(CameraSettings::BacklightCompensation);
-  settingsOrder.push_back(CameraSettings::FadeToBlack);
   
+
+  uvcSettingsOrder.push_back(CameraSettings::VerticalFlip);
+  uvcSettingsOrder.push_back(CameraSettings::HorizontalFlip);
 
   for(int i = 0; i < CameraSettings::numOfCameraSetting; i++)  {
     currentSettings.data[i] = -1;
@@ -127,7 +120,9 @@ void V4lCameraHandlerV6::initIDMapping()
   // the params in V4L
   for (int i = 0; i < CameraSettings::numOfCameraSetting; i++) {
     csConst[i] = -1;
+    uvcExtensionSelector[i] = -1;
   }
+
 
   // map the existing parameters that can be used safely
   csConst[CameraSettings::Brightness] = V4L2_CID_BRIGHTNESS;
@@ -135,8 +130,10 @@ void V4lCameraHandlerV6::initIDMapping()
   csConst[CameraSettings::Contrast] = V4L2_CID_CONTRAST;
   csConst[CameraSettings::Saturation] = V4L2_CID_SATURATION;
   csConst[CameraSettings::Hue] = V4L2_CID_HUE;
-  csConst[CameraSettings::VerticalFlip] = V4L2_CID_VFLIP;
-  csConst[CameraSettings::HorizontalFlip] = V4L2_CID_HFLIP;
+
+  uvcExtensionSelector[CameraSettings::VerticalFlip] = 13;
+  uvcExtensionSelector[CameraSettings::HorizontalFlip] = 12;
+  
   csConst[CameraSettings::Sharpness] = V4L2_CID_SHARPNESS;
   csConst[CameraSettings::AutoExposition] = V4L2_CID_EXPOSURE_AUTO;
   csConst[CameraSettings::AutoWhiteBalancing] = V4L2_CID_AUTO_WHITE_BALANCE;
@@ -150,7 +147,6 @@ void V4lCameraHandlerV6::initIDMapping()
   //csConst[CameraSettings::WhiteBalance] = V4L2_CID_DO_WHITE_BALANCE;
   csConst[CameraSettings::WhiteBalance] = V4L2_CID_WHITE_BALANCE_TEMPERATURE;
   csConst[CameraSettings::BacklightCompensation] = V4L2_CID_BACKLIGHT_COMPENSATION;
-  csConst[CameraSettings::FadeToBlack] = V4L2_MT9M114_FADE_TO_BLACK;
   csConst[CameraSettings::PowerlineFrequency] = V4L2_CID_POWER_LINE_FREQUENCY;
 
 //---------------------------------------------------------------------
@@ -558,13 +554,13 @@ void V4lCameraHandlerV6::getCameraSettings(CameraSettings& data, bool update)
   }
 }
 
-int V4lCameraHandlerV6::getSingleCameraParameter(int id)
+int V4lCameraHandlerV6::getSingleCameraParameter(int id, std::string name)
 {
   struct v4l2_queryctrl queryctrl;
   queryctrl.id = id;
   if (int errCode = ioctl(fd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
   {
-    std::cerr << LOG << "VIDIOC_QUERYCTRL failed: "
+    std::cerr << LOG << "VIDIOC_QUERYCTRL failed for " << name << ": "
               << getErrnoDescription(errCode) << std::endl;
     return -1;
   }
@@ -610,6 +606,7 @@ int V4lCameraHandlerV6::getSingleCameraParameter(int id)
   return -1;
 }
 
+
 bool V4lCameraHandlerV6::setSingleCameraParameter(int id, int value, std::string name)
 {
   if(id < 0 ) {
@@ -654,6 +651,41 @@ bool V4lCameraHandlerV6::setSingleCameraParameter(int id, int value, std::string
   return !hasIOError(error, errno, false);
 }
 
+
+int V4lCameraHandlerV6::getSingleCameraParameterUVC(uint8_t id)
+{
+  struct uvc_xu_control_query queryctrl;
+  memset (&queryctrl, 0, sizeof (queryctrl));
+
+  uint8_t value;
+  queryctrl.unit = 3;
+  queryctrl.selector = id;
+  queryctrl.data = &value;
+  queryctrl.query = UVC_GET_CUR;
+
+  int error = xioctl(fd, UVCIOC_CTRL_QUERY, &queryctrl);
+  if (hasIOError(error, errno, false)) {
+    return -1;
+  } else {
+    return static_cast<int>(value);
+  }
+}
+
+bool V4lCameraHandlerV6::setSingleCameraParameterUVC(uint8_t id, uint8_t value) {
+  struct uvc_xu_control_query queryctrl;
+  memset (&queryctrl, 0, sizeof (queryctrl));
+
+  queryctrl.unit = 3;
+  queryctrl.selector = id;
+  queryctrl.data = &value;
+  queryctrl.query = UVC_SET_CUR;
+
+  int error = xioctl(fd, UVCIOC_CTRL_QUERY, &queryctrl);
+  return !hasIOError(error, errno, false);
+}
+
+
+
 void V4lCameraHandlerV6::setAllCameraParams(const CameraSettings& data)
 {
   if(!atLeastOneImageRetrieved)
@@ -664,11 +696,6 @@ void V4lCameraHandlerV6::setAllCameraParams(const CameraSettings& data)
   }
 
    bool forceUpdate = !initialParamsSet;
-
-  //unsigned long long currentTime = NaoTime::getSystemTimeInMicroSeconds();
-  //if(currentTime < lastCameraSettingTimestamp + 16000) {
-  //  return;
-  //}
 
   std::list<CameraSettings::CameraSettingID>::const_iterator it = settingsOrder.begin();
   for(; it != settingsOrder.end(); it++)
@@ -699,15 +726,15 @@ void V4lCameraHandlerV6::setAllCameraParams(const CameraSettings& data)
         if(*it == CameraSettings::AutoExposition && currentSettings.data[*it] == 1 && data.data[*it] == 0)
         {
           // read back the gain and auto exposure values set by the now deactivated auto exposure
-          currentSettings.data[CameraSettings::Exposure] = getSingleCameraParameter(csConst[CameraSettings::Exposure]);
-          currentSettings.data[CameraSettings::Gain] = getSingleCameraParameter(csConst[CameraSettings::Gain]);
+          currentSettings.data[CameraSettings::Exposure] = getSingleCameraParameter(csConst[CameraSettings::Exposure], "Exposure");
+          currentSettings.data[CameraSettings::Gain] = getSingleCameraParameter(csConst[CameraSettings::Gain], "Gain");
 
           std::cout << LOG << "autoupdated Exposure to "  << currentSettings.data[CameraSettings::Exposure] << std::endl;
         }
         else if(*it == CameraSettings::AutoWhiteBalancing && currentSettings.data[*it] == 1 && data.data[*it] == 0)
         {
           // read back the white balance value set to make sure they are in sync
-          currentSettings.data[CameraSettings::WhiteBalance] = getSingleCameraParameter(csConst[CameraSettings::WhiteBalance]);
+          currentSettings.data[CameraSettings::WhiteBalance] = getSingleCameraParameter(csConst[CameraSettings::WhiteBalance], "WhiteBalance");
 
           std::cout << LOG << "autoupdated WhiteBalance to "  << currentSettings.data[CameraSettings::WhiteBalance] << std::endl;
         }
@@ -733,6 +760,20 @@ void V4lCameraHandlerV6::setAllCameraParams(const CameraSettings& data)
     }
   }// end for
 
+  // set the UVC Extension 3 values
+  std::list<CameraSettings::CameraSettingID>::const_iterator itUVC = uvcSettingsOrder.begin();
+  for(; itUVC != uvcSettingsOrder.end(); it++)
+  {
+    if(forceUpdate || (uvcExtensionSelector[*it] >= 0 && data.data[*it] != currentSettings.data[*it]))
+    {
+      uint8_t selectorID = static_cast<uint8_t>(uvcExtensionSelector[*it]);
+      if(setSingleCameraParameterUVC(selectorID, static_cast<uint8_t>(data.data[*it]))) {
+        currentSettings.data[*it] = data.data[*it];
+      } else {
+        currentSettings.data[*it] = getSingleCameraParameterUVC(selectorID);
+      }
+    }
+  }
 
   // set the autoexposure grid parameters
   for(std::size_t i=0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
@@ -757,7 +798,7 @@ void V4lCameraHandlerV6::internalUpdateCameraSettings()
   for (int i = 0; i < CameraSettings::numOfCameraSetting; i++)
   {
     if (csConst[i] > -1) {
-      currentSettings.data[i] = getSingleCameraParameter(csConst[i]);
+      currentSettings.data[i] = getSingleCameraParameter(csConst[i], CameraSettings::getCameraSettingsName(static_cast<CameraSettings::CameraSettingID>(i)));
     }
   }
 }

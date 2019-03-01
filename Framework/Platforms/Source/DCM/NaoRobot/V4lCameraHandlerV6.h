@@ -73,8 +73,10 @@ private:
   void uninitDevice();
   void closeDevice();
 
-  int getSingleCameraParameter(int id);
+  int getSingleCameraParameter(int id, std::string name);
+  int getSingleCameraParameterUVC(uint8_t id);
   bool setSingleCameraParameter(int id, int value, std::string name);
+  bool setSingleCameraParameterUVC(uint8_t id, uint8_t value);
   void setFPS(int fpsRate);
   void internalUpdateCameraSettings();
 
@@ -111,10 +113,13 @@ private:
 
 
   int csConst[CameraSettings::numOfCameraSetting];
+  // Maps a camera setting to the UVC Extension 3 selector ID
+  int uvcExtensionSelector[CameraSettings::numOfCameraSetting]; 
   unsigned long long lastCameraSettingTimestamp;
 
   /** order in which the camera settings need to be applied */
   std::list<CameraSettings::CameraSettingID> settingsOrder;
+  std::list<CameraSettings::CameraSettingID> uvcSettingsOrder;
 
   CameraSettings currentSettings;
   CameraInfo::CameraID currentCamera;
