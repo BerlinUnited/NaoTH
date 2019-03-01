@@ -40,16 +40,6 @@ struct buffer
  * For an example code look at http://v4l2spec.bytesex.org/spec/a16706.htm .
  * The whole specification is located at http://v4l2spec.bytesex.org/spec/book1.htm .
  *
- * @author Thomas Krause
- *
- * NOTE (Settings issues):
- * In general, it seems that the camera settings are preserved after the camera was started once.
- * Exposure is a special case - while the setting value itself is preserved, it seems to be 
- * NOT applied internaly at the start of the camera. So we have to reset it every time.
- * Exposure setting is ONLY applied if the new value is different from the current one. 
- * This is why we have to change it in the "HACK (exposure)".
- * 
- * There are also some driver issues, see "HACK (FadeToBlack and Sharpness)"
  */
 
 namespace naoth {
@@ -101,17 +91,6 @@ private:
   int getAutoExposureGridID(size_t i, size_t j) {
     return V4L2_CID_PRIVATE_BASE + 7 + (i*CameraSettings::AUTOEXPOSURE_GRID_SIZE) + j;
   }
-
-  typedef enum
-  {
-    IO_READ,
-    IO_MMAP,
-    IO_USERPTR,
-    Num_of_MethodIO
-  } MethodIO;
-
-  MethodIO selMethodIO;
-  MethodIO actMethodIO;
 
   std::string cameraName;
 
