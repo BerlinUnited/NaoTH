@@ -792,6 +792,9 @@ void V4lCameraHandlerV6::internalUpdateCameraSettings()
   {
     if (csConst[i] > -1) {
       currentSettings.data[i] = getSingleCameraParameter(csConst[i], CameraSettings::getCameraSettingsName(static_cast<CameraSettings::CameraSettingID>(i)));
+    } else if(uvcExtensionSelector[i] > -1) {
+      uint8_t selectorID = static_cast<uint8_t>(uvcExtensionSelector[i]);
+      currentSettings.data[i] = getSingleCameraParameterUVC(selectorID);
     }
   }
 }
