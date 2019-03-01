@@ -297,17 +297,6 @@ void V4lCameraHandlerV6::openDevice(bool blockingMode)
 
 void V4lCameraHandlerV6::initDevice()
 {
-  struct v4l2_capability cap;
-  memset (&cap, 0, sizeof (cap));
-  
-  memset(&(currentBuf), 0, sizeof (struct v4l2_buffer));
-  currentBuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-  currentBuf.memory = V4L2_MEMORY_MMAP;
-
-  VERIFY(ioctl(fd, VIDIOC_QUERYCAP, &cap) != -1);
-  VERIFY(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE);
-
-  VERIFY(cap.capabilities & V4L2_CAP_STREAMING);
 
   /* Select video input, video standard and tune here. */
   // set image format
@@ -322,6 +311,18 @@ void V4lCameraHandlerV6::initDevice()
 
   /* Note VIDIOC_S_FMT may change width and height. */
   ASSERT(fmt.fmt.pix.sizeimage == naoth::IMAGE_WIDTH*naoth::IMAGE_HEIGHT*2);
+  
+  struct v4l2_capability cap;
+  memset (&cap, 0, sizeof (cap));
+  
+  memset(&(currentBuf), 0, sizeof (struct v4l2_buffer));
+  currentBuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  currentBuf.memory = V4L2_MEMORY_MMAP;
+
+  VERIFY(ioctl(fd, VIDIOC_QUERYCAP, &cap) != -1);
+  VERIFY(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE);
+
+  VERIFY(cap.capabilities & V4L2_CAP_STREAMING);
  
   initMMap();
 }
