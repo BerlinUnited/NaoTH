@@ -66,14 +66,9 @@ private:
 
   void initDevice();
   void initMMap();
-  void initUP(unsigned int buffer_size);
-  void initRead(unsigned int buffer_size);
   void startCapturing();
   int readFrame();
   int readFrameMMaP();
-  int readFrameUP();
-  int readFrameRead();
-
   void stopCapturing();
   void uninitDevice();
   void closeDevice();
