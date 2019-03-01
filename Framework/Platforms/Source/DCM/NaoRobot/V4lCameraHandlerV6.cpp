@@ -843,6 +843,7 @@ string V4lCameraHandlerV6::getErrnoDescription(int err) const
   {
     case	EPERM		: return "Operation not permitted";
     case	ENOENT	: return "No such file or directory";
+    case  ENOBUFS : return "The specified buffer size is incorrect (too big or too small).";
     case	ESRCH		: return "No such process";
     case	EINTR		: return "Interrupted system call";
     case	EIO		 	: return "I/O error";
@@ -875,6 +876,8 @@ string V4lCameraHandlerV6::getErrnoDescription(int err) const
     case	EPIPE		: return "Broken pipe";
     case	EDOM		: return "Math argument out of domain of func";
     case	ERANGE	: return "Math result not representable";
+    case  EBADRQC : return "The given request is not supported by the given control.";
+    
   }
   return "Unknown errorcode";
 }
