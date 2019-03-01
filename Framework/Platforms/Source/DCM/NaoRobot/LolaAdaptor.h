@@ -68,8 +68,16 @@ public:
   {
     exiting = false;
     lolaThread = std::thread([this] {this->run();});
-    ThreadUtil::setPriority(lolaThread, ThreadUtil::Priority::highest);
+    //ThreadUtil::setPriority(lolaThread, ThreadUtil::Priority::highest);
     ThreadUtil::setName(lolaThread, "LOLA");
+
+    sched_param param;
+    param.sched_priority = 50;
+    if(pthread_setschedparam(lolaThread.native_handle(), SCHED_FIFO, &param)) {
+      std::cerr << "[LolaAdaptor] error setting thread priority" << std::endl;
+      assert(false);
+    }
+
   }
   
   void stop() 
