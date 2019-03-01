@@ -188,16 +188,97 @@ private:
 
   
   
-  void readSensorData(const SensorData& sensorData, float* dest) 
+  void readSensorData(const SensorData& sensorData, float* sensorsValue) 
   {
+    // SensorJointData
     for(size_t i = 0; i < lolaJointIdx.size(); ++i) 
     {
-      
+      //NOTE: ignore the JointData::RHipYawPitch
       size_t j = theSensorJointDataIndex + ((lolaJointIdx[i] >= JointData::RHipYawPitch)?lolaJointIdx[i]-1:lolaJointIdx[i])*4;
-      dest[j  ] = sensorData.Current[i];
-      dest[j+1] = sensorData.Temperature[i];
-      dest[j+2] = sensorData.Position[i];
-      dest[j+3] = sensorData.Stiffness[i];
+      sensorsValue[j  ] = sensorData.Current[i];
+      sensorsValue[j+1] = sensorData.Temperature[i];
+      sensorsValue[j+2] = sensorData.Position[i];
+      sensorsValue[j+3] = sensorData.Stiffness[i];
+    }
+
+    
+    { // FSRData
+    unsigned int currentIndex = theFSRDataIndex;
+    sensorsValue[currentIndex++] = sensorData.FSR.LFoot.FrontLeft;
+    sensorsValue[currentIndex++] = sensorData.FSR.LFoot.FrontRight;
+    sensorsValue[currentIndex++] = sensorData.FSR.LFoot.RearLeft;
+    sensorsValue[currentIndex++] = sensorData.FSR.LFoot.RearRight;
+
+    sensorsValue[currentIndex++] = sensorData.FSR.RFoot.FrontLeft;
+    sensorsValue[currentIndex++] = sensorData.FSR.RFoot.FrontRight;
+    sensorsValue[currentIndex++] = sensorData.FSR.RFoot.RearLeft;
+    sensorsValue[currentIndex++] = sensorData.FSR.RFoot.RearRight;
+    }
+
+    { // AccelerometerData
+    sensorsValue[theAccelerometerDataIndex + 0] = sensorData.Accelerometer.x;
+    sensorsValue[theAccelerometerDataIndex + 1] = sensorData.Accelerometer.y;
+    sensorsValue[theAccelerometerDataIndex + 2] = sensorData.Accelerometer.z;
+
+    sensorsValue[theAccelerometerDataIndex + 3] = sensorData.Accelerometer.x;
+    sensorsValue[theAccelerometerDataIndex + 4] = sensorData.Accelerometer.y;
+    sensorsValue[theAccelerometerDataIndex + 5] = sensorData.Accelerometer.z;
+    }
+
+    { // GyrometerData
+    sensorsValue[theGyrometerDataIndex + 0] = sensorData.Gyroscope.x;
+    sensorsValue[theGyrometerDataIndex + 1] = sensorData.Gyroscope.y;
+    sensorsValue[theGyrometerDataIndex + 2] = sensorData.Gyroscope.z;
+
+    sensorsValue[theGyrometerDataIndex + 3] = sensorData.Gyroscope.x;
+    sensorsValue[theGyrometerDataIndex + 4] = sensorData.Gyroscope.y;
+    sensorsValue[theGyrometerDataIndex + 5] = sensorData.Gyroscope.z;
+
+    //sensorsValue[theGyrometerDataIndex + 6] = 0;
+    }
+
+    { // InertialSensorData
+    sensorsValue[theInertialSensorDataIndex    ] = sensorData.Angles.x;
+    sensorsValue[theInertialSensorDataIndex + 1] = sensorData.Angles.y;
+    }
+
+    // IRReceiveData
+    //for (int i = 0; i < IRReceiveData::numOfIRReceive; i++) {
+    //  sensorsValue[theIRReceiveDataIndex + i] = 0;
+    //}
+
+    { // ButtonData
+    unsigned int currentIndex = theButtonDataIndex;
+    sensorsValue[currentIndex++] = sensorData.Touch.ChestBoard.Button;
+
+    sensorsValue[currentIndex++] = sensorData.Touch.LFoot.Bumper.Left;
+    sensorsValue[currentIndex++] = sensorData.Touch.LFoot.Bumper.Right;
+    sensorsValue[currentIndex++] = sensorData.Touch.RFoot.Bumper.Left;
+    sensorsValue[currentIndex++] = sensorData.Touch.RFoot.Bumper.Right;
+
+    sensorsValue[currentIndex++] = sensorData.Touch.Head.Touch.Front;
+    sensorsValue[currentIndex++] = sensorData.Touch.Head.Touch.Middle;
+    sensorsValue[currentIndex++] = sensorData.Touch.Head.Touch.Rear;
+
+    sensorsValue[currentIndex++] = sensorData.Touch.LHand.Touch.Back;
+    sensorsValue[currentIndex++] = sensorData.Touch.LHand.Touch.Left;
+    sensorsValue[currentIndex++] = sensorData.Touch.LHand.Touch.Right;
+
+    sensorsValue[currentIndex++] = sensorData.Touch.RHand.Touch.Back;
+    sensorsValue[currentIndex++] = sensorData.Touch.RHand.Touch.Left;
+    sensorsValue[currentIndex++] = sensorData.Touch.RHand.Touch.Right;
+    }
+
+    { // UltraSoundReceiveData
+    //sensorsValue[theUltraSoundReceiveDataIndex    ] = 0;
+    sensorsValue[theUltraSoundReceiveDataIndex + 1] = sensorData.Sonar.Left;
+    sensorsValue[theUltraSoundReceiveDataIndex + 2] = sensorData.Sonar.Right;
+    }
+
+    { // BatteryData
+    sensorsValue[theBatteryDataIdex    ] = sensorData.Battery.Charge;
+    sensorsValue[theBatteryDataIdex + 1] = sensorData.Battery.Current;
+    sensorsValue[theBatteryDataIdex + 2] = sensorData.Battery.Temperature;
     }
   }
 
