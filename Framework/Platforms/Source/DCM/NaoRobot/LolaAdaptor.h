@@ -36,7 +36,7 @@ public:
     }
     
     const std::string naoSensorDataPath = "/nao_sensor_data";
-    std::cout<< "Opening Shared Memory: "<<naoSensorDataPath<<std::endl;
+    std::cout<< "[LolaAdaptor] Opening Shared Memory: "<<naoSensorDataPath<<std::endl;
     naoSensorData.open(naoSensorDataPath);
     
     const std::string naoCommandMotorJointDataPath = "/nao_command.MotorJointData";
@@ -44,13 +44,13 @@ public:
     const std::string naoCommandIRSendDataPath = "/nao_command.IRSendData";
     const std::string naoCommandLEDDataPath = "/nao_command.LEDData";
 
-    std::cout << "Opening Shared Memory: " << naoCommandMotorJointDataPath << std::endl;
+    std::cout << "[LolaAdaptor] Opening Shared Memory: " << naoCommandMotorJointDataPath << std::endl;
     naoCommandMotorJointData.open(naoCommandMotorJointDataPath);
-    std::cout << "Opening Shared Memory: " << naoCommandUltraSoundSendDataPath << std::endl;
+    std::cout << "[LolaAdaptor] Opening Shared Memory: " << naoCommandUltraSoundSendDataPath << std::endl;
     naoCommandUltraSoundSendData.open(naoCommandUltraSoundSendDataPath);
-    std::cout << "Opening Shared Memory: " << naoCommandIRSendDataPath << std::endl;
+    std::cout << "[LolaAdaptor] Opening Shared Memory: " << naoCommandIRSendDataPath << std::endl;
     naoCommandIRSendData.open(naoCommandIRSendDataPath);
-    std::cout << "Opening Shared Memory: " << naoCommandLEDDataPath << std::endl;
+    std::cout << "[LolaAdaptor] Opening Shared Memory: " << naoCommandLEDDataPath << std::endl;
     naoCommandLEDData.open(naoCommandLEDDataPath);
   }
   
@@ -72,8 +72,12 @@ public:
     ThreadUtil::setName(lolaThread, "LOLA");
   }
   
-  void stop() {
+  void stop() 
+  {
     exiting = true;
+    if(lolaThread.joinable()) {
+      lolaThread.join();
+    }
   }
   
 private:
@@ -82,12 +86,12 @@ private:
   {
     Lola lola;
   
-    SensorData data;
+    SensorData sensors;
     ActuatorData actuators;
   
     while(!exiting) 
     {
-      lola.readSensors(data);
+      lola.readSensors(sensors);
       
       NaoSensorData* sensorData = naoSensorData.writing();
       
@@ -95,7 +99,7 @@ private:
       sensorData->timeStamp = NaoTime::getSystemTimeInMilliSeconds();
 
       // copy sensor data to shared memory 
-      //sensorData->sensorsValue[];
+      readSensorData(sensors, sensorData->sensorsValue);
 
       // push the data to shared memory
       naoSensorData.swapWriting();
@@ -122,7 +126,7 @@ private:
           sem_post(sem);
 
           if(state == DISCONNECTED) {
-            fprintf(stderr, "libnaoth: I think the core is alive.\n");
+            fprintf(stderr, "[LolaAdaptor] I think the core is alive.\n");
           }
 
           drop_count = 0;
@@ -131,9 +135,9 @@ private:
         else
         {
           if(drop_count == 0) {
-            fprintf(stderr, "libnaoth: dropped sensor data.\n");
+            fprintf(stderr, "[LolaAdaptor] dropped sensor data.\n");
           } else if(drop_count == 10) {
-            fprintf(stderr, "libnaoth: I think the core is dead.\n");
+            fprintf(stderr, "[LolaAdaptor] I think the core is dead.\n");
             state = DISCONNECTED;
           }
 
@@ -143,11 +147,60 @@ private:
       }
       else
       {
-        fprintf(stderr, "libnaoth: I couldn't get value by sem_getvalue.\n");
+        fprintf(stderr, "[LolaAdaptor] I couldn't get value by sem_getvalue.\n");
       }
     }//end if SEM_FAILED
   }
   
+  std::array<int,25> lolaJointIdx {{
+    JointData::HeadYaw,
+    JointData::HeadPitch,
+
+    JointData::LShoulderPitch,
+    JointData::LShoulderRoll,
+    JointData::LElbowYaw,
+    JointData::LElbowRoll,
+    JointData::LWristYaw,
+
+    JointData::LHipYawPitch,
+
+    JointData::LHipRoll,
+    JointData::LHipPitch,
+    JointData::LKneePitch,
+    JointData::LAnklePitch,
+    JointData::LAnkleRoll,
+
+    JointData::RHipRoll,
+    JointData::RHipPitch,
+    JointData::RKneePitch,
+    JointData::RAnklePitch,
+    JointData::RAnkleRoll,
+
+    JointData::RShoulderPitch,
+    JointData::RShoulderRoll,
+    JointData::RElbowYaw,
+    JointData::RElbowRoll,
+    JointData::RWristYaw,
+
+    JointData::LHand,
+    JointData::RHand
+  }};
+
+  
+  
+  void readSensorData(const SensorData& sensorData, float* dest) 
+  {
+    for(size_t i = 0; i < lolaJointIdx.size(); ++i) 
+    {
+      
+      size_t j = theSensorJointDataIndex + ((lolaJointIdx[i] >= JointData::RHipYawPitch)?lolaJointIdx[i]-1:lolaJointIdx[i])*4;
+      dest[j  ] = sensorData.Current[i];
+      dest[j+1] = sensorData.Temperature[i];
+      dest[j+2] = sensorData.Position[i];
+      dest[j+3] = sensorData.Stiffness[i];
+    }
+  }
+
 private:
   bool exiting;
   std::thread lolaThread;

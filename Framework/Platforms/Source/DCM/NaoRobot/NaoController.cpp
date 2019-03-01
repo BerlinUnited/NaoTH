@@ -163,6 +163,8 @@ NaoController::NaoController()
   theBottomCameraHandler.init("/dev/video1", CameraInfo::Bottom, true);
   std::cout << "[NaoController] " << "Init CameraHandler (top)" << std::endl;
   theTopCameraHandler.init("/dev/video0", CameraInfo::Top, false);
+  
+  theLolaAdaptor.start();
 }
 
 NaoController::~NaoController()

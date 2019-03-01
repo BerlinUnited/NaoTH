@@ -191,6 +191,7 @@ protected:
   DebugServer* theDebugServer;
   CPUTemperatureReader theCPUTemperatureReader;
   AudioRecorder theAudioRecorder;
+  LolaAdaptor theLolaAdaptor;
 
 };
 
