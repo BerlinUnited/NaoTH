@@ -114,7 +114,7 @@ public:
   void reset();
   void setAutoExposureWeights(std::uint8_t w);
 
-  CameraSettings getCameraSettings() const;
+  CameraSettings getCameraSettings(bool isV6=false) const;
 };
 
 class CameraSettingsRequestTop : public CameraSettingsRequest

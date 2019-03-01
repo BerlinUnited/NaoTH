@@ -107,7 +107,7 @@ void CameraSettingsRequest::setAutoExposureWeights(std::uint8_t w) {
   }
 }
 
-CameraSettings CameraSettingsRequest::getCameraSettings() const 
+CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const 
 {
   CameraSettings result;
 
@@ -122,7 +122,11 @@ CameraSettings CameraSettingsRequest::getCameraSettings() const
   // might be inaccurate or less restricted. Also, for fixed point real numbers the clipping should
   // be performed for the real number range, not the byte-representation.
 
-  result.data[CameraSettings::AutoExposition] = autoExposition ? 1 : 0;
+  if(isV6) {
+    result.data[CameraSettings::AutoExposition] = autoExposition ? 0 : 1;
+  } else {
+    result.data[CameraSettings::AutoExposition] = autoExposition ? 1 : 0;
+  }
   result.data[CameraSettings::AutoWhiteBalancing] = autoWhiteBalancing ? 1 : 0;
   result.data[CameraSettings::BacklightCompensation] = backlightCompensation ? 1 : 0;
   // use target brightness for both lightening conditions

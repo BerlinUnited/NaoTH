@@ -9,6 +9,7 @@
 #include <string.h>
 #include <iostream>
 #include <poll.h>
+#include <linux/uvcvideo.h>
 
 //Custom V4L control variables
 #define V4L2_MT9M114_FADE_TO_BLACK (V4L2_CID_PRIVATE_BASE) //boolean, enable or disable fade to black feature
@@ -107,12 +108,6 @@ void V4lCameraHandlerV6::init(std::string camDevice, CameraInfo::CameraID camID,
   //                            so we don't have to set all of them again
   internalUpdateCameraSettings();
 
-  // HACK (exposure): force change of the exposure
-  if(currentSettings.data[CameraSettings::Exposure] == 40) {
-    setSingleCameraParameter(csConst[CameraSettings::Exposure], 41, "Exposure");
-  } else {
-    setSingleCameraParameter(csConst[CameraSettings::Exposure], 40, "Exposure");
-  }
   setSingleCameraParameter(csConst[CameraSettings::Exposure], currentSettings.data[CameraSettings::Exposure], "Exposure");
 
   // print the retrieved settings
@@ -311,7 +306,7 @@ void V4lCameraHandlerV6::initDevice()
 
   /* Note VIDIOC_S_FMT may change width and height. */
   ASSERT(fmt.fmt.pix.sizeimage == naoth::IMAGE_WIDTH*naoth::IMAGE_HEIGHT*2);
-  
+
   struct v4l2_capability cap;
   memset (&cap, 0, sizeof (cap));
   
