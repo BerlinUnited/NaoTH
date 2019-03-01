@@ -88,9 +88,16 @@ private:
   
     SensorData sensors;
     ActuatorData actuators;
-  
+    
+    //long long start = NaoTime::getSystemTimeInMicroSeconds();
+
     while(!exiting) 
     {
+
+      //long long stop = NaoTime::getSystemTimeInMicroSeconds();
+      //std::cout << (int)(stop - start) << std::endl;
+      //start = NaoTime::getSystemTimeInMicroSeconds();
+
       lola.readSensors(sensors);
       
       NaoSensorData* sensorData = naoSensorData.writing();
@@ -106,8 +113,36 @@ private:
 
       // notify cognition
       notify();
+
+
+      // get the MotorJointData from the shared memory and put them to the DCM
+      if ( naoCommandMotorJointData.swapReading() )
+      {
+        const Accessor<MotorJointData>* commandData = naoCommandMotorJointData.reading();
+        const MotorJointData& motorData = commandData->get();
+        
+        // SensorJointData
+        for(size_t i = 0; i < lolaJointIdx.size(); ++i) 
+        {
+          actuators.Position[i] = (float)motorData.position[lolaJointIdx[i]];
+        }
+
+        for(size_t i = 0; i < lolaJointIdx.size(); ++i) 
+        {
+          actuators.Stiffness[i] = (float)motorData.stiffness[lolaJointIdx[i]];
+        }
+
+        //drop_count = 0;
+        //command_data_available = true;
+      }
+
+      if(naoCommandLEDData.swapReading())
+      {
+        const Accessor<LEDData>* commandData = naoCommandLEDData.reading();
+        writeLEDData(commandData->get(), actuators);
+      }
       
-      //lola.writeActuators(actuators);
+      lola.writeActuators(actuators);
     }
   }
   
@@ -279,6 +314,46 @@ private:
     sensorsValue[theBatteryDataIdex    ] = sensorData.Battery.Charge;
     sensorsValue[theBatteryDataIdex + 1] = sensorData.Battery.Current;
     sensorsValue[theBatteryDataIdex + 2] = sensorData.Battery.Temperature;
+    }
+  }
+
+
+  void writeLEDData(const LEDData& ledData, ActuatorData& actuators) 
+  {
+    // REar
+    for(size_t i = 0; i < LEDData::EarLeft0; ++i) {
+      actuators.REar[LEDData::EarLeft0-i] = (float)ledData.theMonoLED[i];
+    }
+
+    // LEar
+    for(size_t i = LEDData::EarLeft0; i < LEDData::numOfMonoLED; ++i) {
+      actuators.LEar[i-LEDData::EarLeft0] = (float)ledData.theMonoLED[i];
+    }
+
+    // Chest
+    actuators.Chest[0] = (float)ledData.theMultiLED[LEDData::ChestButton][LEDData::RED];
+    actuators.Chest[1] = (float)ledData.theMultiLED[LEDData::ChestButton][LEDData::GREEN];
+    actuators.Chest[2] = (float)ledData.theMultiLED[LEDData::ChestButton][LEDData::BLUE];
+
+    // LEye
+    {
+    size_t idx = 2;
+    for(size_t c = 0; c < LEDData::numOfLEDColor; ++c) {
+      for(size_t i = LEDData::FaceLeft0; i < LEDData::FootLeft; ++i) {
+        actuators.REar[(8-idx) % 8] = (float)ledData.theMultiLED[i][c];
+        idx++;
+      }
+    }
+    }
+
+    // REye
+    {
+    size_t idx = 0;
+    for(size_t c = 0; c < LEDData::numOfLEDColor; ++c) {
+      for(size_t i = LEDData::FaceRight0; i < LEDData::FaceLeft0; ++i) {
+        actuators.REar[idx++] = (float)ledData.theMultiLED[i][c];
+      }
+    }
     }
   }
 
