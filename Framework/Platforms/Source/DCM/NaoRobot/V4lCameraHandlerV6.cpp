@@ -13,7 +13,6 @@
 #include <linux/usb/video.h>
 
 //Custom V4L control variables
-#define V4L2_MT9M114_BRIGHTNESS_DARK (V4L2_CID_PRIVATE_BASE+1)
 #define V4L2_MT9M114_AE_TARGET_GAIN (V4L2_CID_PRIVATE_BASE+2)
 #define V4L2_MT9M114_AE_MIN_VIRT_AGAIN (V4L2_CID_PRIVATE_BASE+3)
 #define V4L2_MT9M114_AE_MAX_VIRT_AGAIN (V4L2_CID_PRIVATE_BASE+4)
@@ -60,10 +59,7 @@ V4lCameraHandlerV6::V4lCameraHandlerV6()
   settingsOrder.push_back(CameraSettings::Gain);
   settingsOrder.push_back(CameraSettings::GammaCorrection);
 
-  settingsOrder.push_back(CameraSettings::WhiteBalance);
-  // this throws errors sometimes and slows down the robot, check whats wrong before activating it
-//  settingsOrder.push_back(CameraSettings::BacklightCompensation);
-  
+  settingsOrder.push_back(CameraSettings::WhiteBalance);  
 
   uvcSettingsOrder.push_back(CameraSettings::VerticalFlip);
   uvcSettingsOrder.push_back(CameraSettings::HorizontalFlip);
@@ -126,7 +122,6 @@ void V4lCameraHandlerV6::initIDMapping()
 
   // map the existing parameters that can be used safely
   csConst[CameraSettings::Brightness] = V4L2_CID_BRIGHTNESS;
-  csConst[CameraSettings::BrightnessDark] = V4L2_MT9M114_BRIGHTNESS_DARK;
   csConst[CameraSettings::Contrast] = V4L2_CID_CONTRAST;
   csConst[CameraSettings::Saturation] = V4L2_CID_SATURATION;
   csConst[CameraSettings::Hue] = V4L2_CID_HUE;
@@ -146,8 +141,6 @@ void V4lCameraHandlerV6::initIDMapping()
   csConst[CameraSettings::Exposure] = V4L2_CID_EXPOSURE;
   //csConst[CameraSettings::WhiteBalance] = V4L2_CID_DO_WHITE_BALANCE;
   csConst[CameraSettings::WhiteBalance] = V4L2_CID_WHITE_BALANCE_TEMPERATURE;
-  csConst[CameraSettings::BacklightCompensation] = V4L2_CID_BACKLIGHT_COMPENSATION;
-  csConst[CameraSettings::PowerlineFrequency] = V4L2_CID_POWER_LINE_FREQUENCY;
 
 //---------------------------------------------------------------------
 // copied from the driver for information:
