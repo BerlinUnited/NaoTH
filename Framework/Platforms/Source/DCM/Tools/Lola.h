@@ -14,6 +14,7 @@
 #include <iostream>
 #include <stdio.h>
 
+#include <array>
 
 /*
 // example of received sensor data
@@ -150,23 +151,91 @@ struct SensorData
       RHand.Touch.Back, RHand.Touch.Left, RHand.Touch.Right
     );
   } Touch;
-  
+
+  /*
+  struct Joints {
+
+    Joints() : RHipYawPitch(LHipYawPitch) {}
+
+    float HeadPitch;
+    float HeadYaw;
+
+    float RShoulderRoll;
+    float LShoulderRoll;
+    float RShoulderPitch;
+    float LShoulderPitch;
+
+    float RElbowRoll;
+    float LElbowRoll;
+    float RElbowYaw;
+    float LElbowYaw;
+
+    float& RHipYawPitch; // doesn't exist on Nao
+    float LHipYawPitch;
+    float RHipPitch;
+    float LHipPitch;
+    float RHipRoll;
+    float LHipRoll;
+    float RKneePitch;
+    float LKneePitch;
+    float RAnklePitch;
+    float LAnklePitch;
+    float RAnkleRoll;
+    float LAnkleRoll;
+
+    // NOTE: those values don't exist on the old V3.2/V3.3 robots
+    //       so; we pu them at the end for easier support for the old format
+    float LWristYaw;
+    float RWristYaw;
+    float LHand;
+    float RHand;
+
+    MSGPACK_DEFINE_ARRAY(
+      HeadYaw,
+      HeadPitch,
+      LShoulderPitch,
+      LShoulderRoll,
+      LElbowYaw,
+      LElbowRoll,
+      LWristYaw,
+      LHipYawPitch,
+      LHipRoll,
+      LHipPitch,
+      LKneePitch,
+      LAnklePitch,
+      LAnkleRoll,
+      RHipRoll,
+      RHipPitch,
+      RKneePitch,
+      RAnklePitch,
+      RAnkleRoll,
+      RShoulderPitch,
+      RShoulderRoll,
+      RElbowYaw,
+      RElbowRoll,
+      RWristYaw,
+      LHand,
+      RHand
+    );
+  };
+  */
+
   // motors
   // note we don't unpack the individual values for the joints, 
-  // because they are adressed by 
-  std::vector<float> Position;
-  std::vector<float> Stiffness;
-  std::vector<float> Current;
-  std::vector<float> Temperature;
-  std::vector<int> Status;
+  // because they are adressed by index
+  std::array<float,25> Position;
+  std::array<float,25> Stiffness;
+  std::array<float,25> Current;
+  std::array<float,25> Temperature;
+  std::array<int,25> Status;
   
   MSGPACK_DEFINE_MAP(RobotConfig, Accelerometer, Battery, Current, FSR, Gyroscope, Position, Sonar, Stiffness, Temperature, Touch, Status);
 };
 
 struct ActuatorData 
 {
-  std::vector<float> Position = std::vector<float>(25, 0);
-  std::vector<float> Stiffness= std::vector<float>(25, 0);
+  std::array<float,25> Position  { {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0} };
+  std::array<float,25> Stiffness { {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0} };
   
   std::vector<float> REar = std::vector<float>(10,0);
   std::vector<float> LEar = std::vector<float>(10,0);
@@ -238,5 +307,7 @@ class Lola
       msgpack::object_handle oh;
       m_pac.next(oh);
       oh.get().convert(data);
+
+      //std::cout << oh.get() << std::endl;
     }
 };
