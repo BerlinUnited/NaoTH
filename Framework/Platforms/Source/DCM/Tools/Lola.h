@@ -269,7 +269,7 @@ class Lola
     Lola()
     {
       if ( (fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
-        perror("socket error");
+        perror("[LOLA] socket error");
         exit(-1);
       }
       
@@ -279,7 +279,7 @@ class Lola
       strncpy(addr.sun_path, "/tmp/robocup", sizeof(addr.sun_path)-1);
       
       if (connect(fd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
-        perror("connect error");
+        perror("[LOLA] connect error");
         exit(-1);
       }
       
@@ -299,13 +299,18 @@ class Lola
       int bytes = read(fd, m_pac.buffer(), m_pac.buffer_capacity());
       
       if(bytes != PACKET_ZIZE) {
-        std::cout << "wrong message size: " << bytes << " expected " << PACKET_ZIZE << std::endl;
-        exit(-1);
+        std::cout << "[LOLA] wrong message size: " << bytes << " expected " << PACKET_ZIZE << std::endl;
       }
       m_pac.buffer_consumed(bytes);
       
       msgpack::object_handle oh;
       m_pac.next(oh);
+
+      if(bytes != PACKET_ZIZE) {
+        std::cout << oh.get() << std::endl;
+        //assert(false);
+      }
+
       oh.get().convert(data);
 
       //std::cout << oh.get() << std::endl;
