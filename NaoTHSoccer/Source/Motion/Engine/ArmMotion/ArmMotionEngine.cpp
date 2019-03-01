@@ -26,10 +26,13 @@ ArmMotionEngine::~ArmMotionEngine()
 
 void ArmMotionEngine::execute()
 {
-  if(!init) {
-    theMotorJointDataOld = getSensorJointData();
-    init = true;
-  }
+
+    if (getFrameInfo().getFrameNumber() == 0 ||
+        getFrameInfo().getFrameNumber() > theMotorJointFrameInfo.getFrameNumber() + 1)
+    {
+        theMotorJointDataOld = getSensorJointData();
+        theMotorJointFrameInfo = getFrameInfo();
+    }
 
   max_velocity_deg_in_second = getMotionRequest().armMotionRequest.max_velocity_deg_in_sec;
   MODIFY("ArmMotionEngine:max_vel_deg_in_second", max_velocity_deg_in_second);
@@ -109,6 +112,7 @@ void ArmMotionEngine::execute()
 
   // copy the requested state
   theMotorJointDataOld = getMotorJointData();
+  theMotorJointFrameInfo = getFrameInfo();
 }//end execute 
 
 void ArmMotionEngine::setLeftShoulderPosition(double shoulderPitch, double shoulderRoll) {
@@ -351,8 +355,11 @@ bool ArmMotionEngine::armsDown()
   diffMax = max(diffMax, fabs(target[JointData::LElbowRoll] - theMotorJointDataOld.position[JointData::LElbowRoll]));
 
   bool result = false;
-
-  if( diffMax <= 0.02 )
+  if( diffMax <= 0.02 
+      || getMotionStatus().lastMotion == motion::MotionID::stand_up_from_back
+      || getMotionStatus().lastMotion == motion::MotionID::stand_up_from_front
+      || getMotionStatus().lastMotion == motion::MotionID::stand_up_from_back_arms_back
+      || getMotionStatus().lastMotion == motion::MotionID::stand_up_from_side)
   {
     result = moveToJoints(target);
   }
@@ -364,7 +371,6 @@ bool ArmMotionEngine::armsDown()
     target[JointData::LElbowYaw]      = Math::fromDegrees( theArmMotionParams.armsOnBack.elbowYaw);
     moveToJoints(target);
   }
-
   return result;
 }//end armsDown
 
