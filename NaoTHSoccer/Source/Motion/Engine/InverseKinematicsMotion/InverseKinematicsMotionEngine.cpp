@@ -20,6 +20,11 @@ InverseKinematicsMotionEngine::InverseKinematicsMotionEngine()
     getDebugParameterList().add(&theParameters);
 }
 
+InverseKinematicsMotionEngine::~InverseKinematicsMotionEngine()
+{
+    getDebugParameterList().remove(&theParameters);
+}
+
 Pose3D InverseKinematicsMotionEngine::getLeftFootFromKinematicChain(const KinematicChain& kc) const
 {
   Pose3D p = kc.theLinks[KinematicChain::LFoot].M;

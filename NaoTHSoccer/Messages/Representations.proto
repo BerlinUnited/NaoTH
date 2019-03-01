@@ -370,3 +370,13 @@ message WhistlePercept {
   repeated Whistle recognizedWhistles = 3;
   optional bool whistleDetected = 4;
 }
+
+message DebugModify {
+  message ModifyValue {
+    required string name = 1;
+    optional bool modify = 2;
+    optional double value = 3;
+  }
+  
+  repeated ModifyValue valueMap = 1;
+}

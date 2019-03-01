@@ -279,24 +279,19 @@ public class RobotStatus {
     
     public boolean connect() {
         if (!this.messageServer.isConnected()) {
-            try {
-                String host = this.ipAddress.get();
-                int port = 5401;
-                // if the ip address contains a ':', the port is included!
-                if(host.contains(":")){
-                    String[] parts = host.split(":");
-                    host = parts[0];
-                    // if we can't parse the port, ignore it
-                    try {
-                        port = Integer.parseInt(parts[1]);
-                    } catch (Exception e) {
-                    }
+            String host = this.ipAddress.get();
+            int port = 5401;
+            // if the ip address contains a ':', the port is included!
+            if(host.contains(":")){
+                String[] parts = host.split(":");
+                host = parts[0];
+                // if we can't parse the port, ignore it
+                try {
+                    port = Integer.parseInt(parts[1]);
+                } catch (Exception e) {
                 }
-                this.messageServer.connect(host, port);
-            } catch (IOException ex) {
-                Logger.getLogger(RobotStatusPanel.class.getName()).log(Level.SEVERE, "Coult not connect.", ex);
-                return false;
             }
+            return this.messageServer.connect(host, port);
         }
         return true;
     }
