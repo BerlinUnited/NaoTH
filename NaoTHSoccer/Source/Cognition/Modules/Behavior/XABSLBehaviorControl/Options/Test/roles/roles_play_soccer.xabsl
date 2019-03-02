@@ -93,7 +93,8 @@ option roles_play_soccer
     {
       else if (game.current_mode == playing)
       {
-        // TODO! how to integrate the initial_striker with roles?!
+          // NOTE: the initial striker problem is resolved with the second/multiple striker
+          //       problem: if there is only a single striker, misperception leads to a wrong striker decision!
           goto play;
       }
       else if (game.current_mode == ready)
