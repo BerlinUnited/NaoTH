@@ -12,13 +12,6 @@
 #include <linux/uvcvideo.h>
 #include <linux/usb/video.h>
 
-//Custom V4L control variables
-#define V4L2_MT9M114_AE_TARGET_GAIN (V4L2_CID_PRIVATE_BASE+2)
-#define V4L2_MT9M114_AE_MIN_VIRT_AGAIN (V4L2_CID_PRIVATE_BASE+3)
-#define V4L2_MT9M114_AE_MAX_VIRT_AGAIN (V4L2_CID_PRIVATE_BASE+4)
-#define V4L2_MT9M114_AE_MIN_VIRT_DGAIN (V4L2_CID_PRIVATE_BASE+5)
-#define V4L2_MT9M114_AE_MAX_VIRT_DGAIN (V4L2_CID_PRIVATE_BASE+6)
-
 #define LOG "[CameraHandler " << currentCamera << "] "
 
 using namespace naoth;
@@ -44,9 +37,6 @@ V4lCameraHandlerV6::V4lCameraHandlerV6()
   settingsOrder.push_back(CameraSettings::AutoExposition);
   settingsOrder.push_back(CameraSettings::AutoExpositionAlgorithm);
   settingsOrder.push_back(CameraSettings::Brightness);
-  settingsOrder.push_back(CameraSettings::MinAnalogGain);
-  settingsOrder.push_back(CameraSettings::MaxAnalogGain);
-  settingsOrder.push_back(CameraSettings::TargetGain);
 
 
   settingsOrder.push_back(CameraSettings::AutoWhiteBalancing);
@@ -57,7 +47,6 @@ V4lCameraHandlerV6::V4lCameraHandlerV6()
   settingsOrder.push_back(CameraSettings::Sharpness);
   settingsOrder.push_back(CameraSettings::Exposure);
   settingsOrder.push_back(CameraSettings::Gain);
-  settingsOrder.push_back(CameraSettings::GammaCorrection);
 
   settingsOrder.push_back(CameraSettings::WhiteBalance);  
 
@@ -133,13 +122,8 @@ void V4lCameraHandlerV6::initIDMapping()
   csConst[CameraSettings::AutoExposition] = V4L2_CID_EXPOSURE_AUTO;
   csConst[CameraSettings::AutoWhiteBalancing] = V4L2_CID_AUTO_WHITE_BALANCE;
   csConst[CameraSettings::Gain] = V4L2_CID_GAIN;
-  csConst[CameraSettings::MinAnalogGain] = V4L2_MT9M114_AE_MIN_VIRT_AGAIN;
-  csConst[CameraSettings::MaxAnalogGain] = V4L2_MT9M114_AE_MAX_VIRT_AGAIN;
-  csConst[CameraSettings::TargetGain] = V4L2_MT9M114_AE_TARGET_GAIN;
-  csConst[CameraSettings::GammaCorrection] = V4L2_CID_GAMMA;
   
-  csConst[CameraSettings::Exposure] = V4L2_CID_EXPOSURE;
-  //csConst[CameraSettings::WhiteBalance] = V4L2_CID_DO_WHITE_BALANCE;
+  csConst[CameraSettings::Exposure] = V4L2_CID_EXPOSURE_ABSOLUTE;
   csConst[CameraSettings::WhiteBalance] = V4L2_CID_WHITE_BALANCE_TEMPERATURE;
 
 //---------------------------------------------------------------------
@@ -877,7 +861,7 @@ string V4lCameraHandlerV6::getErrnoDescription(int err) const
     case	EDOM		: return "Math argument out of domain of func";
     case	ERANGE	: return "Math result not representable";
     case  EBADRQC : return "The given request is not supported by the given control.";
-    
+
   }
   return "Unknown errorcode";
 }
