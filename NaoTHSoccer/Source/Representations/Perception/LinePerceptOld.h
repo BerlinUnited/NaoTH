@@ -1,24 +1,26 @@
 /** 
  * @file BallPercept.h
  * @author <a href="mailto:mohr@informatik.hu-berlin.de">Christian Mohr</a>
- * Declaration of class LinePercept
+ * Declaration of class LinePerceptOld
  */
 
-#ifndef _LinePercept_h_
-#define _LinePercept_h_
+#ifndef _LinePerceptOld_h_
+#define _LinePerceptOld_h_
 
 #include <vector>
 
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Line.h"
 #include "Tools/CameraGeometry.h"
+#include "Tools/LinesTable.h"
+
 #include <Tools/DataStructures/Printable.h>
 #include <Tools/DataStructures/Serializer.h>
 
 #include "Representations/Infrastructure/FrameInfo.h"
 
 
-class LinePercept : public naoth::Printable
+class LinePerceptOld : public naoth::Printable
 { 
 public:
 
@@ -49,7 +51,7 @@ public:
       :
       thickness(0.0),
       angle(0.0),
-      type(LinePercept::unknown),
+      //type(LinePerceptOld::unknown),
       valid(false)
     {}
 
@@ -61,7 +63,7 @@ public:
     double angle;
 
     /** the type of the line estimated in image */
-    LineType type;
+    //LineType type;
 
     // what do we need it for?
     bool valid;
@@ -75,7 +77,7 @@ public:
       FieldLineSegment()
         :
         //valid(false),
-        type(LinePercept::unknown),
+        type(LinePerceptOld::unknown),
         seen_id(unknown_id)
       {}
 
@@ -110,7 +112,7 @@ public:
     {}
     Vector2d seenPosOnField;
     Vector2d absolutePosOnField; // model of the flag (i.e. its known absolute osition on the field)
-  };//end class Flag
+  };
 
 
 
@@ -119,18 +121,17 @@ public:
   public:
 
     Intersection()
-      : type(Math::Intersection::unknown)
+      : type(LineIntersection::unknown)
     {
     }
 
     Intersection(const Vector2d& pos)
       :
-      type(Math::Intersection::unknown),
+      type(LineIntersection::unknown),
       pos(pos)
     {
     }
 
-    
     void setSegments(int segOne, int segTwo)
     {
       segmentIndices[0] = segOne;
@@ -145,20 +146,19 @@ public:
       segmentsDistanceToIntersection[1] = distTwo;
     }
 
-    void setType(Math::Intersection::IntersectionType typeToSet){ type = typeToSet; }
+    void setType(LineIntersection::Type typeToSet){ type = typeToSet; }
     void setPosOnField(const Vector2d& p) { posOnField = p; }
     void setPosInImage(const Vector2<unsigned int>& p) { pos = p; }
     
-
     // getters
-    Math::Intersection::IntersectionType getType() const { return type; }
+    LineIntersection::Type getType() const { return type; }
     const Vector2<unsigned int>& getSegmentIndices() const { return segmentIndices; }
     const Vector2d& getSegmentsDistancesToIntersection() const { return segmentsDistanceToIntersection; }
     const Vector2d& getPos() const { return pos; }
     const Vector2d& getPosOnField() const { return posOnField; }
 
   private:
-    Math::Intersection::IntersectionType type;
+    LineIntersection::Type type;
     Vector2<unsigned int> segmentIndices;
     Vector2d segmentsDistanceToIntersection;
     Vector2d pos;
@@ -179,11 +179,12 @@ public:
   // middle circle was seen
   bool middleCircleWasSeen;
   Vector2d middleCircleCenter;
+
   bool middleCircleOrientationWasSeen;
   Vector2d middleCircleOrientation;
 
 
-  // representationc for the closest line
+  // representation for the closest line
   // TODO: this calculations can be made sowhere else
   double closestLineSeenLength;
   Vector2d closestPoint;
@@ -198,7 +199,7 @@ public:
   naoth::FrameInfo frameInfoWhenLineWasSeen;
 
 
-  LinePercept()
+  LinePerceptOld()
   :
     middleCircleWasSeen(false),
     middleCircleOrientationWasSeen(false),
@@ -208,7 +209,7 @@ public:
     reset();
   }
 
-  ~LinePercept() {}
+  ~LinePerceptOld() {}
   
   /* reset percept */
   void reset()
@@ -233,19 +234,21 @@ public:
 
 };
 
-class LinePerceptTop : public LinePercept
+class LinePerceptOldTop : public LinePerceptOld
 {
 public:
-  virtual ~LinePerceptTop() {}
+  virtual ~LinePerceptOldTop() {}
 };
 
+/*
+// FIXME: deprecated
 class RansacCirclePercept
 {
 public:
   bool middleCircleWasSeen;
   Vector2d middleCircleCenter;
 
-  /* reset percept */
+  // reset percept
   void reset()
   {
     middleCircleWasSeen = false;
@@ -260,23 +263,24 @@ public:
 
   ~RansacCirclePercept() {}
 };
+*/
 
 namespace naoth
 {
   template<>
-  class Serializer<LinePercept>
+  class Serializer<LinePerceptOld>
   {
   public:
-    static void serialize(const LinePercept& representation, std::ostream& stream);
-    static void deserialize(std::istream& stream, LinePercept& representation);
+    static void serialize(const LinePerceptOld& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, LinePerceptOld& representation);
   };
 
   template<>
-  class Serializer<LinePerceptTop> : public Serializer<LinePercept>
+  class Serializer<LinePerceptOldTop> : public Serializer<LinePerceptOld>
   {};
 
 }
 
-#endif // _LinePercept_h_
+#endif // _LinePerceptOld_h_
 
 

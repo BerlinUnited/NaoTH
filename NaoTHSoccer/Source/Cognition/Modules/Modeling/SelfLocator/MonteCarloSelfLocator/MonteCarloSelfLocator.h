@@ -35,8 +35,8 @@
 
 // sensor percepts
 #include "Representations/Perception/GoalPercept.h"
-#include "Representations/Perception/LinePercept.h"
-
+#include "Representations/Perception/LinePercept2018.h"
+#include "Representations/Perception/LinePerceptAugmented.h"
 
 // local models
 #include "Representations/Modeling/ProbabilisticQuadCompas.h"
@@ -86,8 +86,12 @@ BEGIN_DECLARE_MODULE(MonteCarloSelfLocator)
   REQUIRE(SensingGoalModel)
   REQUIRE(ProbabilisticQuadCompas)
   REQUIRE(LineGraphPercept)
-  REQUIRE(LinePercept)
-  REQUIRE(RansacCirclePercept)
+  //REQUIRE(RansacCirclePercept)
+
+  REQUIRE(RansacLinePercept)
+  REQUIRE(RansacCirclePercept2018)
+  REQUIRE(ShortLinePercept)
+  REQUIRE(LinePerceptAugmented)
 
   PROVIDE(RobotPose)
   PROVIDE(SelfLocGoalModel)
@@ -301,8 +305,10 @@ private: // workers
   void updateBySingleGoalPost(const GoalPercept::GoalPost& goalPost, SampleSet& sampleSet) const;
   void updateByCompas(SampleSet& sampleSet) const;
   void updateByLinePoints(const LineGraphPercept& linePercept, SampleSet& sampleSet) const;
-  void updateByLines(const LinePercept& linePercept, SampleSet& sampleSet) const;
-  void updateByShortLines(const LinePercept& linePercept, SampleSet& sampleSet) const;
+  //void updateByLines(const LinePercept& linePercept, SampleSet& sampleSet) const;
+  //void updateByShortLines(const LinePercept& linePercept, SampleSet& sampleSet) const;
+
+  void updateByLines2018(const LinePercept2018& linePercept, SampleSet& sampleSet) const;
 
   void updateByMiddleCircle(const Vector2d& middleCircleCenter, SampleSet& sampleSet) const;
   // A-Priori knowledge based on the game state
@@ -327,7 +333,7 @@ private: // workers
   int resampleSUS(SampleSet& sampleSet, int n) const;
 
   int sensorResetBySensingGoalModel(SampleSet& sampleSet, int n) const;
-  void sensorResetByMiddleCircle(SampleSet& sampleSet, const Vector2d& middleCircleCenter) const;
+  void sensorResetByMiddleCircle(SampleSet& sampleSet) const;
 
   void calculatePose(SampleSet& sampleSet);
 
