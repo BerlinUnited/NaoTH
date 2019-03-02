@@ -213,7 +213,7 @@ template<class T> class IF : public StaticRegistry<T> {};
     IF(Module* module) : module(module) {}                    \
     static std::string getName() { return #M; }               \
     static std::string getModulePath() {                      \
-      return get_sub_core_module_path(__FILE__);              \
+      return __FILE__;                                        \
     }
     
 

@@ -17,15 +17,8 @@ const bool& DebugRequest::registerRequest(const std::string& name, const std::st
 {
   // only add if not known already
   std::map<std::string, Request>::iterator iter = requestMap.lower_bound(name);
-  if(iter == requestMap.end() || iter->first != name)
-  {
-    std::string d =  description;
-    d = d.append(" (debug request, usage: ");
-    d = d.append(name);
-    d = d.append(" [on|off|status]");
-    
-    iter = requestMap.insert(iter, std::make_pair(name, Request(defaultValue)));
-    iter->second.description = description;
+  if(iter == requestMap.end() || iter->first != name) {
+    iter = requestMap.insert(iter, std::make_pair(name, Request(defaultValue, description)));
   } else {
     // TODO:
     //some places use the fact that a debug request may be registered several times
@@ -48,21 +41,8 @@ bool DebugRequest::isActive(const std::string& name) const
 const bool& DebugRequest::getValueReference(const std::string& name) const
 {
   std::map<std::string, Request>::const_iterator iter = requestMap.find(name);
-  if(iter == requestMap.end()) {
-    THROW( "[ERROR] Could not find reference for debug request \"" + name + "\"");
-  }
+  ASSERT_MSG(iter != requestMap.end(), "[ERROR] Could not find reference for debug request \"" + name + "\"");
   return iter->second.value;
-}
-
-
-std::string get_sub_core_path(const std::string& fullpath)
-{
-  unsigned p = static_cast<unsigned int> ( fullpath.find("core"));
-  if (p < fullpath.size()-5) {
-    return fullpath.substr(p+5); // size of "core/"
-  } else {
-    return fullpath;
-  }
 }
 
 void naoth::Serializer<DebugRequest>::serialize(const DebugRequest& r, std::ostream& stream)
@@ -72,7 +52,6 @@ void naoth::Serializer<DebugRequest>::serialize(const DebugRequest& r, std::ostr
   DebugRequest::RequestMap::const_iterator iter = r.getRequestMap().begin();
   for(;iter != r.getRequestMap().end(); ++iter)
   {
-    //stream << iter->first << "|" << iter->second.value << "|" << iter->second.description << std::endl;
     naothmessages::DebugRequest_Item* item = msg.add_requests();
     item->set_name(iter->first);
     item->set_description(iter->second.description);

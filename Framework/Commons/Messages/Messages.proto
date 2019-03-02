@@ -178,9 +178,10 @@ message Module {
  repeated string usedRepresentations = 2;
  repeated string providedRepresentations = 3;
  optional bool active = 4 [default=false];
+ optional string path = 5;
 }
 
-message ModuleList {
+message Modules {
  repeated Module modules = 1;
 }
 
@@ -192,6 +193,20 @@ message DebugRequest {
   }
 
   repeated Item requests = 1;
+}
+
+message Config {
+  message Group {
+    message Entry {
+      required string name = 1;
+      required string value = 2;
+    }
+    
+    required string name = 1;
+    repeated Entry entries = 2;
+  }
+  
+  repeated Group groups = 1;
 }
 
 

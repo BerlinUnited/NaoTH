@@ -19,8 +19,8 @@ import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.dataformats.ModuleConfiguration;
 import de.naoth.rc.dataformats.ModuleConfiguration.Node;
-import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.manager.ModuleConfigurationManager;
+import de.naoth.rc.messages.Messages;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
 import java.awt.Color;
@@ -65,7 +65,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
     }//end Plugin
 
     private final String commandStringStoreModules = "modules:store";
-    private final String commandStringSetModules = "modules:set";
+    private final String commandStringSetModules = "representation:set";
 
     ModuleConfiguration moduleGraph = null;
 
@@ -657,7 +657,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
     
     public class CormpareIgnoreCase implements Comparator<Object>
     {
-
+        @Override
         public int compare(Object o1, Object o2)
         {
             String s1 = o1.toString().toLowerCase();
@@ -744,9 +744,11 @@ public class ModuleConfigurationViewer extends AbstractDialog
         @Override
         public void actionPerformed(java.awt.event.ActionEvent evt)
         {
-            Plugin.commandExecutor.executeCommand(this, 
-                new Command(commandString).addArg(checkBox.getText(), checkBox.isSelected() ? "on" : "off")
-            );
+            Plugin.commandExecutor.executeCommand(this, new Command(commandString).addArg("Modules", 
+                Messages.Modules.newBuilder().addModules(
+                    Messages.Module.newBuilder().setName(checkBox.getText()).setActive(checkBox.isSelected())
+                ).build().toByteArray()
+            ));
             
             // update the module panel
             modulePanel.setNode(node);

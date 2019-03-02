@@ -114,12 +114,27 @@
 using namespace std;
 
 Cognition::Cognition()
-  : ModuleManagerWithDebug("")
 {
 }
 
 Cognition::~Cognition()
 {
+  // write modules from config
+  naoth::Configuration& config = Platform::getInstance().theConfiguration;
+  
+  for(const std::string& name: getExecutionList())
+  {
+    bool moduleState = getModule(name)->isEnabled();
+    // NOTE: if a module is not listet in the config then it is confidered disabled
+    bool configState = config.hasKey("modules", name) && config.getBool("modules", name);
+
+    // TODO: saving only the difference should be a property of the config
+    if(moduleState != configState) {
+      config.setBool("modules", name, moduleState);
+    }
+  }//end for
+
+  config.save();
 }
 
 
@@ -248,20 +263,19 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   ModuleCreator<Actuator>* actuator = registerModule<Actuator>(std::string("Actuator"), true);
   actuator->getModuleT()->init(platformInterface, platform);
 
-  // use the configuration in order to set whether a module is activated or not
+  // load modules from config
   const naoth::Configuration& config = Platform::getInstance().theConfiguration;
   
-  list<string>::const_iterator name = getExecutionList().begin();
-  for(;name != getExecutionList().end(); ++name)
+  for(const std::string& name: getExecutionList())
   {
     bool active = false;
-    if(config.hasKey("modules", *name)) {    
-      active = config.getBool("modules", *name);      
+    if(config.hasKey("modules", name)) {    
+      active = config.getBool("modules", name);      
     }
     if(active) {
-      std::cout << "[Cognition] activating module " << *name << std::endl;
+      std::cout << "[Cognition] activating module " << name << std::endl;
     }
-    setModuleEnabled(*name, active);
+    setModuleEnabled(name, active);
   }//end for
 
   // auto-generate the execution list

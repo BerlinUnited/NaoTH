@@ -7,7 +7,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.core.manager.AbstractManagerPlugin;
 import de.naoth.rc.dataformats.ModuleConfiguration;
 import de.naoth.rc.dataformats.ModuleConfiguration.Node;
-import de.naoth.rc.messages.Messages.ModuleList;
+import de.naoth.rc.messages.Messages.Modules;
 import de.naoth.rc.messages.Messages.Module;
 import de.naoth.rc.server.Command;
 import java.util.logging.Level;
@@ -22,9 +22,7 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
 public class ModuleConfigurationManagerImpl extends AbstractManagerPlugin<ModuleConfiguration>
         implements ModuleConfigurationManager
 {
-
-    private final String commandString = "modules:list";
-    private Command command = new Command(commandString);
+    private Command command = new Command("Cognition:representation:get").addArg("Modules");
     
     
   public ModuleConfigurationManagerImpl(){}
@@ -35,21 +33,24 @@ public class ModuleConfigurationManagerImpl extends AbstractManagerPlugin<Module
     ModuleConfiguration moduleConfiguration = new ModuleConfiguration();
     try
     {
-      ModuleList list = ModuleList.parseFrom(result);
+      Modules list = Modules.parseFrom(result);
 
       for(Module m : list.getModulesList())
       {
-        String str[] = m.getName().split("\\|"); // hack
-        String simpleName = str[0];
+        String simpleName = m.getName();
         String name = simpleName;
         
-        if(str.length > 1) {
+        // if the module has a path, then attach it to the name of the node
+        if(m.hasPath()) {
+            String path = m.getPath(); 
             String lower_name = name.toLowerCase();
-            String hname = str[1].replaceAll("\\\\|/", ":");
+            
+            // replace all / and \ by :
+            path = path.replaceAll("\\\\|/", ":");
             // hack: remove the double name
-            //hname = hname.replaceFirst("(?i):" + lower_name + ".*", "");
-            hname = hname.replaceFirst("(?i):" + lower_name + "\\.(.*)", "");
-            name = hname.toLowerCase() + ":" + name;
+            //path = path.replaceFirst("(?i):" + lower_name + ".*", "");
+            path = path.replaceFirst("(?i):" + lower_name + "\\.(.*)", "");
+            name = path.toLowerCase() + ":" + name;
         }
         
         Node moduleNode = moduleConfiguration.addNode(
@@ -83,7 +84,7 @@ public class ModuleConfigurationManagerImpl extends AbstractManagerPlugin<Module
   public void setModuleOwner(String name)
   {
       if(name != null && name.length() > 0){
-          command = new Command(name + ":" + commandString);
+          command = new Command(name + ":representation:get").addArg("Modules");
       }
   }
   

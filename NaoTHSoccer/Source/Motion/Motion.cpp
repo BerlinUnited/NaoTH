@@ -23,8 +23,7 @@
 using namespace naoth;
 
 Motion::Motion()
-  : ModuleManagerWithDebug(""),
-    theLogProvider(NULL),
+  : theLogProvider(NULL),
     motionLogger("MotionLog")
 {
   REGISTER_DEBUG_COMMAND(motionLogger.getCommand(), motionLogger.getDescription(), &motionLogger);
@@ -172,14 +171,31 @@ void Motion::call()
   // todo: execute debug commands => find a better place for this
   getDebugMessageOut().reset();
 
-  for(std::list<DebugMessageIn::Message>::const_iterator iter = getDebugMessageInMotion().messages.begin();
-      iter != getDebugMessageInMotion().messages.end(); ++iter)
+  // FIXME: this is the same code as in DebugExecutor.h for cognition
+  for(const DebugMessageIn::Message& msg: getDebugMessageInMotion().messages)
   {
     debug_answer_stream.clear();
     debug_answer_stream.str("");
 
-    getDebugCommandManager().handleCommand(iter->command, iter->arguments, debug_answer_stream);
-    getDebugMessageOut().addResponse(iter->id, debug_answer_stream);
+    // execure basic commands
+    // NOTE: this is the first step of removing command callbacks
+    if(msg.command == "representation:get") {
+      for (const auto& p: msg.arguments) {
+        getRepresentations().serializeRepresentation(debug_answer_stream, p.first);
+      }
+    } else if(msg.command == "representation:set") {
+      for (const auto& p: msg.arguments) {
+        getRepresentations().setRepresentation(debug_answer_stream, p.first, p.second);
+      }
+    } else if(msg.command == "representation:print") {
+      for (const auto& p: msg.arguments) {
+        getRepresentations().printRepresentation(debug_answer_stream, p.first);
+      }
+    } else {
+      getDebugCommandManager().handleCommand(msg.command, msg.arguments, debug_answer_stream);
+    }
+
+    getDebugMessageOut().addResponse(msg.id, debug_answer_stream);
   }
 
 

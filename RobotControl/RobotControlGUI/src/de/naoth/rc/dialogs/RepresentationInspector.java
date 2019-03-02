@@ -73,10 +73,6 @@ public class RepresentationInspector extends AbstractDialog {
 
     private String representationOwner;
 
-    private String getRepresentationList() {
-        return representationOwner + ":representation:list";
-    }
-
     private String getRepresentationPrint() {
         return representationOwner + ":representation:print";
     }
@@ -259,7 +255,7 @@ public class RepresentationInspector extends AbstractDialog {
     private void jToggleButtonRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonRefreshActionPerformed
         if (jToggleButtonRefresh.isSelected()) {
             if (Plugin.parent.checkConnected()) {
-                Plugin.commandExecutor.executeCommand(new RepresentationListUpdater(), new Command(getRepresentationList()));
+                Plugin.commandExecutor.executeCommand(new RepresentationListUpdater(), new Command(getRepresentationPrint()).addArg("Representations"));
             } else {
                 jToggleButtonRefresh.setSelected(false);
             }

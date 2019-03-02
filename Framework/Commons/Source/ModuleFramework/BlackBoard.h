@@ -186,9 +186,10 @@ public:
     // in case it doesn't exist we get an iterator to the closest existing data
     Registry::iterator iter = registry.lower_bound(name);
 
-    if(std::is_base_of<BlackBoardInterface,T>::value) {
-      std::cout << "----------------------------------------- " << name << std::endl;
-    }
+    // NOTE: this is for debugging
+    //if(std::is_base_of<BlackBoardInterface,T>::value) {
+    //  std::cout << "----------------------------------------- " << name << std::endl;
+    //}
 
     // the data with the given name doesn't exist; insert a new one
     if( iter == registry.end() || !(iter->first == name) ) {
