@@ -133,7 +133,11 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
   result.data[CameraSettings::Brightness] = Math::clamp(brightness, isV6 ? -255 : 0, 255);
   result.data[CameraSettings::BrightnessDark] = Math::clamp(brightness, 0, 255);
   result.data[CameraSettings::CameraSelection] = cameraSelection;
-  result.data[CameraSettings::Contrast] = Math::toFixPoint<5>(static_cast<float>(Math::clamp(contrast, 0.5, 2.0)));
+  if(isV6) {
+    result.data[CameraSettings::Contrast] = Math::clamp(static_cast<int>(contrast), 0, 255);
+  } else {
+    result.data[CameraSettings::Contrast] = Math::toFixPoint<5>(static_cast<float>(Math::clamp(contrast, 0.5, 2.0)));
+  }
   if(isV6) {
     result.data[CameraSettings::Exposure] = Math::clamp(exposure, 1, 1048575);
   } else {
@@ -161,7 +165,11 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
     result.data[CameraSettings::Hue] = Math::clamp(hue, -22, 22);
   }
   result.data[CameraSettings::Saturation] = Math::clamp(saturation, 0, 255);
-  result.data[CameraSettings::Sharpness] = Math::clamp(sharpness, -7, 7);
+  if(isV6) {
+    result.data[CameraSettings::Sharpness] = Math::clamp(sharpness, 0, 9);
+  } else {
+    result.data[CameraSettings::Sharpness] = Math::clamp(sharpness, -7, 7);
+  }
   result.data[CameraSettings::VerticalFlip] = verticalFlip ? 1 : 0;
   if(isV6) {
     result.data[CameraSettings::WhiteBalance] = Math::clamp(whiteBalanceTemperature, 2500, 6500);
