@@ -11,8 +11,7 @@
 #include "Motion/Engine/MotionFactory.h"
 #include <ModuleFramework/Module.h>
 
-BEGIN_DECLARE_MODULE(InitialMotionFactory)
-END_DECLARE_MODULE(InitialMotionFactory)
+DECLARE_MODULE_WITHOUT_REPRESENTATIONS(InitialMotionFactory)
 
 class InitialMotionFactory: public InitialMotionFactoryBase, public MotionFactory
 {
