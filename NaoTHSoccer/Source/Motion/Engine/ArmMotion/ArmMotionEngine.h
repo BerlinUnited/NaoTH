@@ -35,7 +35,6 @@ BEGIN_DECLARE_MODULE(ArmMotionEngine)
 
   REQUIRE(RobotInfo)
   REQUIRE(MotionRequest)
-  REQUIRE(MotionStatus)
   REQUIRE(FrameInfo)
   REQUIRE(SensorJointData)
 

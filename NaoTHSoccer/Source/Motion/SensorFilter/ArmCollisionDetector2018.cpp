@@ -60,7 +60,6 @@ void ArmCollisionDetector2018::execute()
 	{
 		jointDataBufferLeft.clear();
 		jointDataBufferRight.clear();
-        lastIllegalTime = getFrameInfo().getTime();
 		return;
 	}
 
@@ -131,7 +130,7 @@ void ArmCollisionDetector2018::execute()
 			//collision
 			getCollisionPercept().timeCollisionArmRight = getFrameInfo().getTime();
 			jointDataBufferRight.clear();
-		}
+        }
 	}
 
 }
