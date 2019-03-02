@@ -155,7 +155,11 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
   
 
   result.data[CameraSettings::HorizontalFlip] = horizontalFlip ? 1 : 0;
-  result.data[CameraSettings::Hue] = Math::clamp(hue, -22, 22);
+  if(isV6) {
+    result.data[CameraSettings::Hue] = Math::clamp(hue, -180, 180);
+  } else {
+    result.data[CameraSettings::Hue] = Math::clamp(hue, -22, 22);
+  }
   result.data[CameraSettings::Saturation] = Math::clamp(saturation, 0, 255);
   result.data[CameraSettings::Sharpness] = Math::clamp(sharpness, -7, 7);
   result.data[CameraSettings::VerticalFlip] = verticalFlip ? 1 : 0;
