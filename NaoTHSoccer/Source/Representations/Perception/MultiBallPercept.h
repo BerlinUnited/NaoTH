@@ -30,6 +30,8 @@ public:
             stream << "positionOnField = " << positionOnField << std::endl;
             stream << "cameraId = " << cameraId << std::endl;
         }
+
+        virtual ~BallPercept() {}
     };
 
 private:
