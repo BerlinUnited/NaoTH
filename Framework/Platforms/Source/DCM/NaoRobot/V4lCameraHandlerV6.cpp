@@ -705,8 +705,8 @@ void V4lCameraHandlerV6::setAllCameraParams(const CameraSettings& data)
 
    bool forceUpdate = !initialParamsSet;
 
-  std::list<CameraSettings::CameraSettingID>::const_iterator it = settingsOrder.begin();
-  for(; it != settingsOrder.end(); it++)
+
+  for(std::list<CameraSettings::CameraSettingID>::const_iterator it = settingsOrder.begin(); it != settingsOrder.end(); it++)
   {
     // only set forced or if csConst was set and the value was changed
     if(forceUpdate || (csConst[*it] != -1 && data.data[*it] != currentSettings.data[*it]))
@@ -769,15 +769,14 @@ void V4lCameraHandlerV6::setAllCameraParams(const CameraSettings& data)
   }// end for
 
   // set the UVC Extension 3 values
-  std::list<CameraSettings::CameraSettingID>::const_iterator itUVC = uvcSettingsOrder.begin();
-  for(; itUVC != uvcSettingsOrder.end(); it++)
+  for(std::list<CameraSettings::CameraSettingID>::const_iterator it = uvcSettingsOrder.begin(); it != uvcSettingsOrder.end(); it++)
   {
     if(forceUpdate || (uvcExtensionSelector[*it] >= 0 && data.data[*it] != currentSettings.data[*it]))
     {
       if(setSingleCameraParameterUVC(*it, data.data[*it])) {
         currentSettings.data[*it] = data.data[*it];
       } else {
-        currentSettings.data[*it] = getSingleCameraParameterUVC(*itUVC);
+        currentSettings.data[*it] = getSingleCameraParameterUVC(*it);
       }
     }
   }
