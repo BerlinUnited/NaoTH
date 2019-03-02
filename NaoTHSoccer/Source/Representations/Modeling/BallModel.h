@@ -74,7 +74,9 @@ public:
     else
     {
       ASSERT(frameInfoWhenBallWasSeen.getTime() < frameInfo.getTime());
-      timeBallIsSeen += frameInfo.getTimeSince(frameInfoWhenBallWasSeen.getTime());
+      int diff = frameInfo.getTimeSince(frameInfoWhenBallWasSeen.getTime());
+      ASSERT(diff >= 0); 
+      timeBallIsSeen += static_cast<unsigned int>(diff);
     }
 
     frameInfoWhenBallWasSeen = frameInfo;
