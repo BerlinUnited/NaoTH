@@ -4,13 +4,8 @@
 *
 * Created on 2017.05.21
 */
-#ifdef  WIN32
-#include <windows.h>
-#include <winbase.h>
-#else
-#include <unistd.h>
-#include <fcntl.h>
-#endif //WIN32
+#include <thread>
+#include <chrono>
 
 #include "myconio.h"
 
@@ -33,6 +28,10 @@ DummySimulator::DummySimulator(bool backendMode, bool realTime, unsigned short p
   registerInput<DebugMessageInMotion>(*this);
   registerOutput<DebugMessageOut>(*this);
 
+  // dummy robot
+  registerOutput<MotorJointData>(*this);
+  registerInput<SensorJointData>(*this);
+  registerInput<FSRData>(*this);
 
   theDebugServer.start(port);
   theDebugServer.setTimeOut(0);
@@ -41,15 +40,15 @@ DummySimulator::DummySimulator(bool backendMode, bool realTime, unsigned short p
 
 void DummySimulator::printHelp()
 {
-  cout << endl;
-  cout << "Welcome to the NaoTH DummySimulator" << endl;
-  cout << "--------------------------------------------" << endl << endl;
+  std::cout << endl;
+  std::cout << "Welcome to the NaoTH DummySimulator" << endl;
+  std::cout << "--------------------------------------------" << endl << endl;
 
-  cout << "p - play " << endl;
-  cout << "r - repeat a frame" << endl;
-  cout << "q or x - quit/exit" << endl << endl;
+  std::cout << "p - play " << endl;
+  std::cout << "r - repeat a frame" << endl;
+  std::cout << "q or x - quit/exit" << endl << endl;
 
-  cout << "After a frame was executed you will always get a line showing you the current frame" << endl;
+  std::cout << "After a frame was executed you will always get a line showing you the current frame" << endl;
 }//end printHelp
 
 char DummySimulator::getInput()
@@ -57,7 +56,7 @@ char DummySimulator::getInput()
   if (backendMode) {
     return static_cast<char>(getchar());
   } else {
-    return static_cast<char>(getch());
+    return static_cast<char>(mygetch());
   }
 }
 
@@ -66,57 +65,46 @@ void DummySimulator::main()
   printHelp();
   executeFrame();
 
+  std::thread playThread;
+  doPlay = false;
+
   char c;
   while ((c = getInput()) && c != 'q' && c != 'x')
   {
-    if (c == 'r') {
+    if(doPlay) {
+      // stop playing
+      if (c == 'p' || c == 'q' || c == 'x') {
+        doPlay = false;
+        if(playThread.joinable()) {
+          playThread.join();
+        }
+      }
+    } else if (c == 'r') {
       executeFrame();
     } else if (c == 'p') {
-      play();
-    }
+      doPlay = true;
+      playThread = std::thread([this] { play(); });
+    } 
   }
 
-  cout << endl << "bye bye!" << endl;
+  std::cout << endl << "bye bye!" << endl;
 }//end main
 
 
 void DummySimulator::play()
 {
-#ifdef WIN32
-  //cerr << "Play-Support now yet enabled under Windows" << endl;
-#else
-  // set terminal to non-blocking...
-  const int fd = fileno(stdin);
-  const int fcflags = fcntl(fd, F_GETFL);
-  if (fcntl(fd, F_SETFL, fcflags | O_NONBLOCK) <0)
-  {
-    cerr << "Could not set terminal to non-blocking mode" << endl;
-    cerr << "\"Play\" capatibility not available on this terminal" << endl;
-    return;
-  }
-#endif //WIN32
-
-  int c = -1;
-  while (c != 'p' && c != '\n'&& c != 'q' && c != 'x')
+  while (doPlay)
   {
     unsigned int startTime = NaoTime::getNaoTimeInMilliSeconds();
+    
     executeFrame();
+    
     unsigned int calculationTime = NaoTime::getNaoTimeInMilliSeconds() - startTime;
     // wait at least 5ms but max 1s
     unsigned int waitTime = Math::clamp((int)frameExecutionTime - (int)calculationTime, 5, 1000);
 
-#ifdef WIN32
-    Sleep(waitTime);
-    if (_kbhit()) {
-      c = getInput();
-    }
-#else
-    // wait some time
-    usleep(waitTime * 1000);
-    c = getInput();
-#endif
-
-  }//while
+    std::this_thread::sleep_for(std::chrono::milliseconds(waitTime));
+  }
 }
 
 void DummySimulator::executeFrame()

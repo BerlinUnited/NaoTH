@@ -19,7 +19,7 @@ def parse_arguments(argv):
     except getopt.GetoptError:
         print('python patch_export.py -i <logfile> [--all]')
         sys.exit(2)
-    if opts is None:
+    if not opts:
         print('python patch_export.py -i <logfile> [--all]')
         sys.exit(2)
     for opt, arg in opts:
