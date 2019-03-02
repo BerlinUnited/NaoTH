@@ -159,7 +159,11 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
   result.data[CameraSettings::Saturation] = Math::clamp(saturation, 0, 255);
   result.data[CameraSettings::Sharpness] = Math::clamp(sharpness, -7, 7);
   result.data[CameraSettings::VerticalFlip] = verticalFlip ? 1 : 0;
-  result.data[CameraSettings::WhiteBalance] = Math::clamp(whiteBalanceTemperature, 2700, 6500);
+  if(isV6) {
+    result.data[CameraSettings::WhiteBalance] = Math::clamp(whiteBalanceTemperature, 2500, 6500);
+  } else {
+    result.data[CameraSettings::WhiteBalance] = Math::clamp(whiteBalanceTemperature, 2700, 6500);
+  }
   result.data[CameraSettings::GammaCorrection] = Math::clamp(gammaCorrection, 100, 280);
 
   // use 50 Hz (val = 1) if 60 Hz (val = 2) is not explicitly requested

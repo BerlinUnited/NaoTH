@@ -85,6 +85,12 @@ void V4lCameraHandlerV6::init(std::string camDevice, CameraInfo::CameraID camID,
   //                            so we don't have to set all of them again
   internalUpdateCameraSettings();
 
+  // disable auto-focus
+  setSingleCameraParameter(V4L2_CID_FOCUS_AUTO, 0, "V4L2_CID_FOCUS_AUTO");
+  // TODO: make focus configurable
+  setSingleCameraParameter(V4L2_CID_FOCUS_ABSOLUTE, 250, "V4L2_CID_FOCUS_ABSOLUTE");
+  
+
   // print the retrieved settings
   for (int i = 0; i < CameraSettings::numOfCameraSetting; i++) {
     if (csConst[i] > -1) {
