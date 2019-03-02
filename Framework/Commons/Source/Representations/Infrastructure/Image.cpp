@@ -119,8 +119,8 @@ void Serializer<Image>::serialize(const Image& representation, std::ostream& str
   // the data has to be converted to a YUV (1 byte for each) array. no interlacing
   naothmessages::Image img;
 
-  img.set_height(representation.height());
-  img.set_width(representation.width());
+  img.set_height(static_cast<int>(representation.height()));
+  img.set_width(static_cast<int>(representation.width()));
   img.set_format(naothmessages::Image_Format_YUV422);
   img.set_data(representation.data(), representation.data_size());
 
@@ -144,18 +144,18 @@ void Serializer<Image>::deserialize(std::istream& stream, Image& representation)
   if(img.format() == naothmessages::Image_Format_YUV)
   {
     // check the integrity
-    ASSERT(img.data().size() != Image::PIXEL_SIZE_YUV444 * img.width() * img.height());
+    ASSERT(img.data().size() != Image::PIXEL_SIZE_YUV444 * static_cast<unsigned int>(img.width()) * static_cast<unsigned int>(img.height()));
 
     CameraInfo newCameraInfo;
-    newCameraInfo.resolutionHeight = img.height();
-    newCameraInfo.resolutionWidth = img.width();
+    newCameraInfo.resolutionHeight = static_cast<unsigned int>(img.height());
+    newCameraInfo.resolutionWidth = static_cast<unsigned int>(img.width());
     representation.setCameraInfo(newCameraInfo);
 
     const unsigned char* data = reinterpret_cast<const unsigned char*>(img.data().c_str());
 
     // HACK: copy the image pixel by pixel because the internal structure only 
     //       representa the image in the YUV422 format
-    for(int i=0; i < img.width()*img.height(); i++)
+    for(unsigned int i=0; i < static_cast<unsigned int>(img.width()*img.height()); i++)
     {
       unsigned int x = i % newCameraInfo.resolutionWidth;
       unsigned int y = i / newCameraInfo.resolutionWidth;
@@ -172,11 +172,12 @@ void Serializer<Image>::deserialize(std::istream& stream, Image& representation)
   else if(img.format() == naothmessages::Image_Format_YUV422)
   {
     // check the integrity
-    ASSERT(img.data().size() == Image::PIXEL_SIZE_YUV422 * img.width() * img.height());
+    ASSERT(img.data().size() == Image::PIXEL_SIZE_YUV422 
+      * static_cast<unsigned int>(img.width()) * static_cast<unsigned int>(img.height()));
 
     CameraInfo newCameraInfo;
-    newCameraInfo.resolutionHeight = img.height();
-    newCameraInfo.resolutionWidth = img.width();
+    newCameraInfo.resolutionHeight = static_cast<unsigned int>(img.height());
+    newCameraInfo.resolutionWidth = static_cast<unsigned int>(img.width());
     representation.setCameraInfo(newCameraInfo);
     
     const unsigned char* data = reinterpret_cast<const unsigned char*>(img.data().c_str());
