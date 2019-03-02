@@ -15,8 +15,7 @@ PathPlanner2018::PathPlanner2018()
   kickPlanned(false),
   numPossibleSteps(0.0),
   numPossibleStepsX(0.0),
-  numPossibleStepsY(0.0),
-  numRotationStepsNecessary(0.0)
+  numPossibleStepsY(0.0)
 {
   getDebugParameterList().add(&params);
 }

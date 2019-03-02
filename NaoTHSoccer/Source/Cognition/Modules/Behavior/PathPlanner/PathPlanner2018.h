@@ -188,7 +188,6 @@ private:
   double numPossibleSteps;
   double numPossibleStepsX;
   double numPossibleStepsY;
-  double numRotationStepsNecessary;
 };
 
 #endif // _PathPlanner2018_H_

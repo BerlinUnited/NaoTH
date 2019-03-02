@@ -28,8 +28,6 @@ StandMotion::StandMotion()
   height(-1000),
   standardStand(true),
   stiffnessIsReady(false),
-  relaxedPoseInitialized(false),
-  resetedAfterLifting(false),
   lastFrameInfo(getFrameInfo())
 {
   // create 

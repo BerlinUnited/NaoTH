@@ -198,7 +198,7 @@ private:
   InverseKinematic::CoMFeetPose lastCoMFeetControlPose;
   FrameInfo lastCoMFeetControlFrameInfo;
 
-  double rotationStabilizeFactor; // [0, 1] disable ~ enable
+//  double rotationStabilizeFactor; // [0, 1] disable ~ enable
 };
 
 /**
