@@ -106,6 +106,7 @@ void V4lCameraHandlerV6::initIDMapping()
   for (int i = 0; i < CameraSettings::numOfCameraSetting; i++) {
     csConst[i] = -1;
     uvcExtensionSelector[i] = -1;
+    uvcExtensionDataSize[i] = 0;
   }
 
 
@@ -116,7 +117,9 @@ void V4lCameraHandlerV6::initIDMapping()
   csConst[CameraSettings::Hue] = V4L2_CID_HUE;
 
   uvcExtensionSelector[CameraSettings::VerticalFlip] = 13;
+  uvcExtensionDataSize[CameraSettings::VerticalFlip] = 2;
   uvcExtensionSelector[CameraSettings::HorizontalFlip] = 12;
+  uvcExtensionSelector[CameraSettings::HorizontalFlip] = 2;
   
   csConst[CameraSettings::Sharpness] = V4L2_CID_SHARPNESS;
   csConst[CameraSettings::AutoExposition] = V4L2_CID_EXPOSURE_AUTO;
@@ -629,33 +632,60 @@ bool V4lCameraHandlerV6::setSingleCameraParameter(int id, int value, std::string
 }
 
 
-int V4lCameraHandlerV6::getSingleCameraParameterUVC(uint8_t id)
+int32_t V4lCameraHandlerV6::getSingleCameraParameterUVC(CameraSettings::CameraSettingID id)
 {
+
+  if(uvcExtensionSelector[id] < 0) {
+    return -1;
+  }
+
+
+  uint16_t data_size = uvcExtensionDataSize[id];
+
   struct uvc_xu_control_query queryctrl;
   memset (&queryctrl, 0, sizeof (queryctrl));
 
-  uint8_t value;
+  uint8_t* value_raw = new uint8_t[data_size];
   queryctrl.unit = 3;
-  queryctrl.selector = id;
-  queryctrl.data = &value;
   queryctrl.query = UVC_GET_CUR;
+  queryctrl.selector = static_cast<uint8_t>(uvcExtensionSelector[id]);
+  queryctrl.size = data_size;
+  queryctrl.data = value_raw;
 
   int error = xioctl(fd, UVCIOC_CTRL_QUERY, &queryctrl);
+
+  int32_t value = (value_raw[3] << 24) | (value_raw[2] << 16) | (value_raw[1] << 8) | (value_raw[0]);
+  delete [] value_raw;
   if (hasIOError(error, errno, false)) {
     return -1;
   } else {
-    return static_cast<int>(value);
+    return value;
   }
 }
 
-bool V4lCameraHandlerV6::setSingleCameraParameterUVC(uint8_t id, uint8_t value) {
+bool V4lCameraHandlerV6::setSingleCameraParameterUVC(CameraSettings::CameraSettingID id, int32_t value) {
+
+  if(uvcExtensionSelector[id] < 0 ) {
+    return false;
+  }
+
+  uint16_t data_size = uvcExtensionDataSize[id];
+
   struct uvc_xu_control_query queryctrl;
   memset (&queryctrl, 0, sizeof (queryctrl));
 
+  uint8_t* value_raw = new uint8_t[data_size];
+  memset(value_raw, 0, data_size);
+  value_raw[3] = static_cast<uint8_t>(value >> 24);
+  value_raw[2] = static_cast<uint8_t>(value >> 16);
+  value_raw[1] = static_cast<uint8_t>(value >> 8);
+  value_raw[0] = static_cast<uint8_t>(value);
+
   queryctrl.unit = 3;
-  queryctrl.selector = id;
-  queryctrl.data = &value;
   queryctrl.query = UVC_SET_CUR;
+  queryctrl.selector = static_cast<uint8_t>(uvcExtensionSelector[id]);
+  queryctrl.size = data_size;
+  queryctrl.data = value_raw;
 
   int error = xioctl(fd, UVCIOC_CTRL_QUERY, &queryctrl);
   return !hasIOError(error, errno, false);
@@ -743,11 +773,10 @@ void V4lCameraHandlerV6::setAllCameraParams(const CameraSettings& data)
   {
     if(forceUpdate || (uvcExtensionSelector[*it] >= 0 && data.data[*it] != currentSettings.data[*it]))
     {
-      uint8_t selectorID = static_cast<uint8_t>(uvcExtensionSelector[*it]);
-      if(setSingleCameraParameterUVC(selectorID, static_cast<uint8_t>(data.data[*it]))) {
+      if(setSingleCameraParameterUVC(*it, data.data[*it])) {
         currentSettings.data[*it] = data.data[*it];
       } else {
-        currentSettings.data[*it] = getSingleCameraParameterUVC(selectorID);
+        currentSettings.data[*it] = getSingleCameraParameterUVC(*itUVC);
       }
     }
   }
@@ -774,11 +803,11 @@ void V4lCameraHandlerV6::internalUpdateCameraSettings()
 {
   for (int i = 0; i < CameraSettings::numOfCameraSetting; i++)
   {
+    CameraSettings::CameraSettingID id = static_cast<CameraSettings::CameraSettingID>(i);
     if (csConst[i] > -1) {
-      currentSettings.data[i] = getSingleCameraParameter(csConst[i], CameraSettings::getCameraSettingsName(static_cast<CameraSettings::CameraSettingID>(i)));
+      currentSettings.data[i] = getSingleCameraParameter(csConst[i], CameraSettings::getCameraSettingsName(id));
     } else if(uvcExtensionSelector[i] > -1) {
-      uint8_t selectorID = static_cast<uint8_t>(uvcExtensionSelector[i]);
-      currentSettings.data[i] = getSingleCameraParameterUVC(selectorID);
+      currentSettings.data[i] = getSingleCameraParameterUVC(id);
     }
   }
 }
