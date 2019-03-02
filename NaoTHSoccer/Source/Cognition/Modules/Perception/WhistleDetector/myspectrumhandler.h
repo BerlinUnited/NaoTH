@@ -18,8 +18,8 @@ public:
 		int nWhistleEnd,
 		unsigned nWhistleMissFrames,
 		unsigned nWhistleOkayFrames)
-    : overallWhistleEventCounter(0),
-	vWhistleThreshold(vWhistleThreshold),
+    : 
+  vWhistleThreshold(vWhistleThreshold),
 	nWhistleBegin(nWhistleBegin),
 	nWhistleEnd(nWhistleEnd),
 	nWhistleMissFrames(nWhistleMissFrames),
@@ -124,7 +124,6 @@ public:
     }
   }
 private:
-  int overallWhistleEventCounter;
   double vWhistleThreshold;
   int nWhistleBegin;
   int nWhistleEnd;
