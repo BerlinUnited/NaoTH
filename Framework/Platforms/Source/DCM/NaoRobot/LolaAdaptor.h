@@ -25,13 +25,14 @@ public:
   LolaAdaptor() 
     : 
     exiting(false),
+    shutdown_requested(false),
     state(DISCONNECTED),
     sem(SEM_FAILED)
   {
     // open semaphore
     if((sem = sem_open("motion_trigger", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 0)) == SEM_FAILED)
     {
-      perror("libnaoth: sem_open");
+      perror("[LolaAdaptor] sem_open");
       ::exit(-1);
     }
     
@@ -71,13 +72,14 @@ public:
     //ThreadUtil::setPriority(lolaThread, ThreadUtil::Priority::highest);
     ThreadUtil::setName(lolaThread, "LOLA");
 
+    // NOTE: SCHED_FIFO is a real time sheduler
+    //       max priority for a FIFO thread is 99
     sched_param param;
     param.sched_priority = 50;
     if(pthread_setschedparam(lolaThread.native_handle(), SCHED_FIFO, &param)) {
       std::cerr << "[LolaAdaptor] error setting thread priority" << std::endl;
       assert(false);
     }
-
   }
   
   void stop() 
@@ -115,6 +117,17 @@ private:
 
       // copy sensor data to shared memory 
       readSensorData(sensors, sensorData->sensorsValue);
+
+      // check if chest button was pressed as a request to shutdown
+      // each cycle needs 10ms so if the button was pressed for 30 seconds
+      // these are 300 frames
+      sensorData->get(theButtonData);
+      if(!shutdown_requested && theButtonData.numOfFramesPressed[ButtonData::Chest] > 300)
+      {
+        shutdown_requested = true;
+        exit(-1);
+        //shutdownCallbackThread = std::thread([this]{this->shutdownCallback();});
+      }
 
       // push the data to shared memory
       naoSensorData.swapWriting();
@@ -194,7 +207,31 @@ private:
       }
     }//end if SEM_FAILED
   }
+
+
+  void shutdownCallback()
+  {
+    // play a sound that the user knows we recognized his shutdown request
+    system("/usr/bin/paplay /usr/share/naoqi/wav/bip_gentle.wav");
+
+    // stop the user program
+    std::cout << "[LolaAdaptor] stopping naoth" << std::endl;
+    system("naoth stop");
+
+    sleep(5);
+
+    // we are the child process, do a blocking call to shutdown
+    system("/sbin/shutdown -h now");
+    std::cout << "[LolaAdaptor] System shutdown requested" << std::endl;
+
+    // await termination
+    while(true) {
+      sleep(100);
+    }
+
+  }//end shutdownCallback
   
+
   std::array<int,25> lolaJointIdx {{
     JointData::HeadYaw,
     JointData::HeadPitch,
@@ -348,7 +385,7 @@ private:
     size_t idx = 0;
     for(size_t c = 0; c < LEDData::numOfLEDColor; ++c) {
       for(size_t i = 0; i <= LEDData::FaceRight315; ++i) {
-        actuators.REar[idx++] = (float)ledData.theMultiLED[(LEDData::FaceRight315 - i + 2) % 8][c];
+        actuators.LEye[idx++] = (float)ledData.theMultiLED[(LEDData::FaceRight315 - i + 2) % 8][c];
       }
     }
     }
@@ -358,7 +395,7 @@ private:
     size_t idx = 0;
     for(size_t c = 0; c < LEDData::numOfLEDColor; ++c) {
       for(size_t i = 0; i <= LEDData::FaceRight315; ++i) {
-        actuators.REar[idx++] = (float)ledData.theMultiLED[LEDData::FaceRight0 + i][c];
+        actuators.REye[idx++] = (float)ledData.theMultiLED[LEDData::FaceRight0 + i][c];
       }
     }
     }
@@ -391,6 +428,11 @@ private:
 private:
   bool exiting;
   std::thread lolaThread;
+
+  // these things are necessary to handle shutdown
+  ButtonData theButtonData;
+  bool shutdown_requested;
+  std::thread shutdownCallbackThread;
 
   enum State
   {
