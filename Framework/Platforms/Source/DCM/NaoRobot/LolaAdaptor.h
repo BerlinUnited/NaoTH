@@ -382,22 +382,62 @@ private:
 
     // LEye
     {
-    size_t idx = 0;
-    for(size_t c = 0; c < LEDData::numOfLEDColor; ++c) {
-      for(size_t i = 0; i <= LEDData::FaceRight315; ++i) {
-        actuators.LEye[idx++] = (float)ledData.theMultiLED[(LEDData::FaceRight315 - i + 2) % 8][c];
-      }
-    }
+    actuators.LEye[0] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft45][LEDData::RED]);
+    actuators.LEye[1] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft0][LEDData::RED]);
+    actuators.LEye[2] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft315][LEDData::RED]);
+    actuators.LEye[3] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft270][LEDData::RED]);
+    actuators.LEye[4] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft225][LEDData::RED]);
+    actuators.LEye[5] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft180][LEDData::RED]);
+    actuators.LEye[6] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft135][LEDData::RED]);
+    actuators.LEye[7] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft90][LEDData::RED]);
+
+    actuators.LEye[8] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft45][LEDData::GREEN]);
+    actuators.LEye[9] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft0][LEDData::GREEN]);
+    actuators.LEye[10] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft315][LEDData::GREEN]);
+    actuators.LEye[11] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft270][LEDData::GREEN]);
+    actuators.LEye[12] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft225][LEDData::GREEN]);
+    actuators.LEye[13] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft180][LEDData::GREEN]);
+    actuators.LEye[14] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft135][LEDData::GREEN]);
+    actuators.LEye[15] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft90][LEDData::GREEN]);
+
+    actuators.LEye[16] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft45][LEDData::BLUE]);
+    actuators.LEye[17] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft0][LEDData::BLUE]);
+    actuators.LEye[18] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft315][LEDData::BLUE]);
+    actuators.LEye[19] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft270][LEDData::BLUE]);
+    actuators.LEye[20] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft225][LEDData::BLUE]);
+    actuators.LEye[21] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft180][LEDData::BLUE]);
+    actuators.LEye[22] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft135][LEDData::BLUE]);
+    actuators.LEye[23] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft90][LEDData::BLUE]);
     }
 
     // REye
     {
-    size_t idx = 0;
-    for(size_t c = 0; c < LEDData::numOfLEDColor; ++c) {
-      for(size_t i = 0; i <= LEDData::FaceRight315; ++i) {
-        actuators.REye[idx++] = (float)ledData.theMultiLED[LEDData::FaceRight0 + i][c];
-      }
-    }
+    actuators.LEye[0] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft0][LEDData::RED]);
+    actuators.LEye[1] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft45][LEDData::RED]);
+    actuators.LEye[2] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft90][LEDData::RED]);
+    actuators.LEye[3] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceRight135][LEDData::RED]);
+    actuators.LEye[4] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft180][LEDData::RED]);
+    actuators.LEye[5] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft225][LEDData::RED]);
+    actuators.LEye[6] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft270][LEDData::RED]);
+    actuators.LEye[7] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft315][LEDData::RED]);
+
+    actuators.LEye[8] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft0][LEDData::GREEN]);
+    actuators.LEye[9] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft45][LEDData::GREEN]);
+    actuators.LEye[10] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft90][LEDData::GREEN]);
+    actuators.LEye[11] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceRight135][LEDData::GREEN]);
+    actuators.LEye[12] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft180][LEDData::GREEN]);
+    actuators.LEye[13] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft225][LEDData::GREEN]);
+    actuators.LEye[14] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft270][LEDData::GREEN]);
+    actuators.LEye[15] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft315][LEDData::GREEN]);
+
+    actuators.LEye[16] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft0][LEDData::BLUE]);
+    actuators.LEye[17] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft45][LEDData::BLUE]);
+    actuators.LEye[18] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft90][LEDData::BLUE]);
+    actuators.LEye[19] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceRight135][LEDData::BLUE]);
+    actuators.LEye[20] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft180][LEDData::BLUE]);
+    actuators.LEye[21] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft225][LEDData::BLUE]);
+    actuators.LEye[22] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft270][LEDData::BLUE]);
+    actuators.LEye[23] = static_cast<float>(ledData.theMultiLED[LEDData::MultiLEDID::FaceLeft315][LEDData::BLUE]);
     }
 
     // Skull
