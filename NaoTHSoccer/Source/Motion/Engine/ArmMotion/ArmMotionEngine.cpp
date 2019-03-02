@@ -355,11 +355,7 @@ bool ArmMotionEngine::armsDown()
   diffMax = max(diffMax, fabs(target[JointData::LElbowRoll] - theMotorJointDataOld.position[JointData::LElbowRoll]));
 
   bool result = false;
-  if( diffMax <= 0.02 
-      || getMotionStatus().lastMotion == motion::MotionID::stand_up_from_back
-      || getMotionStatus().lastMotion == motion::MotionID::stand_up_from_front
-      || getMotionStatus().lastMotion == motion::MotionID::stand_up_from_back_arms_back
-      || getMotionStatus().lastMotion == motion::MotionID::stand_up_from_side)
+  if( diffMax <= 0.02)
   {
     result = moveToJoints(target);
   }
