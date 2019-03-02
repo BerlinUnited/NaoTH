@@ -2,6 +2,10 @@
 #include <math.h>
 #include <emmintrin.h>
 
+#pragma clang diagnostic push
+// the loops intialize the weights properly
+#pragma clang diagnostic ignored "-Wmissing-braces"
+
 // NOTE: VisualStudio 2013 doesn't have alignas
 #ifdef WIN32
 #define alignas(x)
@@ -2797,3 +2801,5 @@ int CNN_dortmund2018_keras::cnn(float x0[16][16][1])
   res = scores[1] > scores[res] ? 1 : res;
   return 0;
 }
+
+#pragma clang diagnostic pop
