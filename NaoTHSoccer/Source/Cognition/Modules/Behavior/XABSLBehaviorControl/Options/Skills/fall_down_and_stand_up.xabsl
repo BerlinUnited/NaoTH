@@ -91,7 +91,6 @@ option fall_down_and_stand_up
     }      
     action
     {
-      arm.react_to_collision = true;
       body.ready_to_walk = false;
       motion.type=stand;
       arm.control_mode = normal;
