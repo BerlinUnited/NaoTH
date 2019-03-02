@@ -35,7 +35,6 @@ V4lCameraHandlerV6::V4lCameraHandlerV6()
 
   // NOTE: width, height and fps are not included here
   settingsOrder.push_back(CameraSettings::AutoExposition);
-  settingsOrder.push_back(CameraSettings::AutoExpositionAlgorithm);
   settingsOrder.push_back(CameraSettings::Brightness);
 
 
@@ -85,8 +84,6 @@ void V4lCameraHandlerV6::init(std::string camDevice, CameraInfo::CameraID camID,
   // HACK (preserved settings): load the current settings from the driver,
   //                            so we don't have to set all of them again
   internalUpdateCameraSettings();
-
-  setSingleCameraParameter(csConst[CameraSettings::Exposure], currentSettings.data[CameraSettings::Exposure], "Exposure");
 
   // print the retrieved settings
   for (int i = 0; i < CameraSettings::numOfCameraSetting; i++) {
@@ -598,7 +595,7 @@ bool V4lCameraHandlerV6::setSingleCameraParameter(int id, int value, std::string
   if (int errCode = xioctl(fd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
   {
     std::cerr << LOG << "VIDIOC_QUERYCTRL failed with code " 
-              << errCode << " " << getErrnoDescription(errCode) << std::endl;
+              << errCode << " " << getErrnoDescription(errCode) << " for " << name << std::endl;
     return false;
   }
   if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED)
@@ -718,7 +715,7 @@ void V4lCameraHandlerV6::setAllCameraParams(const CameraSettings& data)
                 << " from " << oldValue << " to " << data.data[*it] << std::endl;
       */
 
-      if(data.data[CameraSettings::AutoExposition] && 
+      if(data.data[CameraSettings::AutoExposition] == 0 && 
         (*it == CameraSettings::Exposure || *it == CameraSettings::Gain)) {
         // ignore
       }
@@ -731,7 +728,7 @@ void V4lCameraHandlerV6::setAllCameraParams(const CameraSettings& data)
       else if(setSingleCameraParameter(csConst[*it], data.data[*it], CameraSettings::getCameraSettingsName(*it))) {
         lastCameraSettingTimestamp = NaoTime::getSystemTimeInMicroSeconds();
 
-        if(*it == CameraSettings::AutoExposition && currentSettings.data[*it] == 1 && data.data[*it] == 0)
+        if(*it == CameraSettings::AutoExposition && currentSettings.data[*it] == 0 && data.data[*it] == 1)
         {
           // read back the gain and auto exposure values set by the now deactivated auto exposure
           currentSettings.data[CameraSettings::Exposure] = getSingleCameraParameter(csConst[CameraSettings::Exposure], "Exposure");
@@ -782,17 +779,17 @@ void V4lCameraHandlerV6::setAllCameraParams(const CameraSettings& data)
   }
 
   // set the autoexposure grid parameters
-  for(std::size_t i=0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
-    for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
-      if(data.autoExposureWeights[i][j] != currentSettings.autoExposureWeights[i][j]) {
-        std::stringstream paramName;
-        paramName << "autoExposureWeights (" << i << "," << j << ")";
-        if(setSingleCameraParameter(getAutoExposureGridID(i, j), data.autoExposureWeights[i][j], paramName.str())) {
-          currentSettings.autoExposureWeights[i][j] = data.autoExposureWeights[i][j];
-        }
-      }
-    }
-  }
+  // for(std::size_t i=0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
+  //   for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
+  //     if(data.autoExposureWeights[i][j] != currentSettings.autoExposureWeights[i][j]) {
+  //       std::stringstream paramName;
+  //       paramName << "autoExposureWeights (" << i << "," << j << ")";
+  //       if(setSingleCameraParameter(getAutoExposureGridID(i, j), data.autoExposureWeights[i][j], paramName.str())) {
+  //         currentSettings.autoExposureWeights[i][j] = data.autoExposureWeights[i][j];
+  //       }
+  //     }
+  //   }
+  // }
 
 
   initialParamsSet = true;

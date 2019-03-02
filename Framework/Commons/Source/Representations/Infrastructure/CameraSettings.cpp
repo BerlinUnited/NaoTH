@@ -134,7 +134,11 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
   result.data[CameraSettings::BrightnessDark] = Math::clamp(brightness, 0, 255);
   result.data[CameraSettings::CameraSelection] = cameraSelection;
   result.data[CameraSettings::Contrast] = Math::toFixPoint<5>(static_cast<float>(Math::clamp(contrast, 0.5, 2.0)));
-  result.data[CameraSettings::Exposure] = Math::clamp(exposure, 1, 1000);
+  if(isV6) {
+    result.data[CameraSettings::Exposure] = Math::clamp(exposure, 1, 1048575);
+  } else {
+    result.data[CameraSettings::Exposure] = Math::clamp(exposure, 1, 1000);
+  }
   result.data[CameraSettings::FadeToBlack] = fadeToBlack ? 1 : 0;
   result.data[CameraSettings::MinAnalogGain] = Math::clamp(Math::toFixPoint<5>(static_cast<float>(minAnalogGain)), 0, 32767);
   result.data[CameraSettings::MaxAnalogGain] = Math::clamp(Math::toFixPoint<5>(static_cast<float>(maxAnalogGain)), 0, 32767);
