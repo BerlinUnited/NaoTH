@@ -11,9 +11,8 @@
 namespace xabsl 
 {
 
-  Agent::Agent(const char* name, Behavior* rootOption,
-                         ErrorHandler& errorHandler, int index)
-: NamedItem(name), rootOption(rootOption), errorHandler(errorHandler), index(index)
+  Agent::Agent(const char* name, Behavior* rootOption)
+: NamedItem(name), rootOption(rootOption)
 {
   XABSL_DEBUG_INIT(errorHandler.message("created agent \"%s\" with root option \"%s\"", n, rootOption->n));
 }
