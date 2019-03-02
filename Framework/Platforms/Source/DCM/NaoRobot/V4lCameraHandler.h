@@ -97,7 +97,7 @@ private:
 
   int getSingleCameraParameter(int id);
   bool setSingleCameraParameter(int id, int value, std::string name);
-  void setFPS(int fpsRate);
+  void setFPS(unsigned int fpsRate);
   void internalUpdateCameraSettings();
 
   // tools
@@ -105,7 +105,7 @@ private:
   bool hasIOError(int errOccured, int errNo, bool exitByIOError = true) const;
   std::string getErrnoDescription(int err) const;
 
-  int getAutoExposureGridID(size_t i, size_t j) {
+  unsigned int getAutoExposureGridID(size_t i, size_t j) {
     return V4L2_CID_PRIVATE_BASE + 7 + (i*CameraSettings::AUTOEXPOSURE_GRID_SIZE) + j;
   }
 
@@ -132,9 +132,7 @@ private:
 
   struct v4l2_buffer currentBuf;
   struct v4l2_buffer lastBuf;
-
-  unsigned char* currentImage;
-
+  
   bool atLeastOneImageRetrieved;
   bool initialParamsSet;
   bool wasQueried;
