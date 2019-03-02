@@ -137,12 +137,12 @@ public:
   /**
    type - list of constraints of the request
    */
-  int getNearestLine(const Vector2d& point, int type = all_lines) const
+  size_t getNearestLine(const Vector2d& point, int type = all_lines) const
   {
     ASSERT(lines.size() > 0);
 
     double minDistance = std::numeric_limits<double>::infinity();
-    int minIdx = -1;
+    size_t minIdx = 0;
 
     for (unsigned int i = 0; i < lines.size(); i++)
     {
@@ -284,7 +284,7 @@ public:
 
         for(int i = 0; i < numberOfLinesTableType; i++)
         {
-          const int idx = getNearestLine(point, line_type[i]);
+          const size_t idx = getNearestLine(point, line_type[i]);
           closestPoints[x][y][i].id = idx;
           if(idx != -1)
             closestPoints[x][y][i].position = lines[idx].projection(point);
