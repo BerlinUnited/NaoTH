@@ -39,8 +39,6 @@
 #include "LogProviderModule.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
-#define CYCLE_TIME 20
-
 class Simulator : public PlatformInterface
 {
 public:
@@ -51,6 +49,8 @@ public:
   virtual std::string getBodyNickName() const {return "naoth"; }
   virtual std::string getHeadNickName() const {return "naoth"; }
   virtual std::string getRobotName() const { return "naoth-logsimulator"; }
+  virtual std::string getPlatformName() const { return "LogSimulator"; }
+  virtual unsigned int getBasicTimeStep() const { return 20; }
 
   void main(bool start = false);
 

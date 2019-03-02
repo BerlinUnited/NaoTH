@@ -53,11 +53,14 @@ public:
   NaoController();
   virtual ~NaoController();
 
+  // platform info
   virtual std::string getBodyID() const { return theBodyID; }
   virtual std::string getBodyNickName() const { return theBodyNickName; }
   virtual std::string getHeadNickName() const { return theHeadNickName; }
   virtual std::string getRobotName() const { return theRobotName; }
-
+  virtual std::string getPlatformName() const { return "Nao"; }
+  virtual unsigned int getBasicTimeStep() const { return 12; }
+  
   // camera stuff
   void get(Image& data){ theBottomCameraHandler.get(data); } // blocking
   void get(ImageTop& data){ theTopCameraHandler.get(data); } // non blocking

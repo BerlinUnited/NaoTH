@@ -19,7 +19,6 @@ using namespace naoth;
 
 NaoController::NaoController()
     :
-    PlatformInterface("Nao", 10),
     theSoundHandler(NULL),
     theTeamCommSender(NULL),
     theTeamCommListener(NULL),

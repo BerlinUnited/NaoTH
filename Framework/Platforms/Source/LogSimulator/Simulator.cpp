@@ -23,7 +23,7 @@ using namespace std;
 using namespace naoth;
 
 Simulator::Simulator(const std::string& filePath, bool backendMode, bool realTime, unsigned short port)
-: PlatformInterface("LogSimulator", CYCLE_TIME),
+  : 
   backendMode(backendMode),
   realTime(realTime),
   logFileScanner(filePath),
