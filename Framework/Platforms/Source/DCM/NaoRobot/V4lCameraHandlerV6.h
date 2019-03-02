@@ -82,7 +82,7 @@ private:
 
   // tools
   int xioctl(int fd, int request, void* arg) const;
-  bool hasIOError(int errOccured, int errNo, bool exitByIOError = true) const;
+  bool hasIOError(int errOccured, int errNo, bool exitByIOError = true, std::string paramName = "") const;
   std::string getErrnoDescription(int err) const;
 
   int getAutoExposureGridID(size_t i, size_t j) {

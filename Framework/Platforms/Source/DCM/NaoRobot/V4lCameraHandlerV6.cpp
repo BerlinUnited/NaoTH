@@ -119,7 +119,7 @@ void V4lCameraHandlerV6::initIDMapping()
   uvcExtensionSelector[CameraSettings::VerticalFlip] = 13;
   uvcExtensionDataSize[CameraSettings::VerticalFlip] = 2;
   uvcExtensionSelector[CameraSettings::HorizontalFlip] = 12;
-  uvcExtensionSelector[CameraSettings::HorizontalFlip] = 2;
+  uvcExtensionDataSize[CameraSettings::HorizontalFlip] = 2;
   
   csConst[CameraSettings::Sharpness] = V4L2_CID_SHARPNESS;
   csConst[CameraSettings::AutoExposition] = V4L2_CID_EXPOSURE_AUTO;
@@ -569,7 +569,7 @@ int V4lCameraHandlerV6::getSingleCameraParameter(int id, std::string name)
       {
         case EAGAIN: usleep(10); break;
         case EBUSY: usleep(100000); break;
-        default: hasIOError(errorOccured, errno, false);
+        default: hasIOError(errorOccured, errno, false, name);
       }
     }
     else
@@ -628,7 +628,7 @@ bool V4lCameraHandlerV6::setSingleCameraParameter(int id, int value, std::string
   control_s.value = value;
 
   int error = xioctl(fd, VIDIOC_S_CTRL, &control_s);
-  return !hasIOError(error, errno, false);
+  return !hasIOError(error, errno, false, name);
 }
 
 
@@ -649,6 +649,7 @@ int32_t V4lCameraHandlerV6::getSingleCameraParameterUVC(CameraSettings::CameraSe
   queryctrl.unit = 3;
   queryctrl.query = UVC_GET_CUR;
   queryctrl.selector = static_cast<uint8_t>(uvcExtensionSelector[id]);
+
   queryctrl.size = data_size;
   queryctrl.data = value_raw;
 
@@ -656,7 +657,7 @@ int32_t V4lCameraHandlerV6::getSingleCameraParameterUVC(CameraSettings::CameraSe
 
   int32_t value = (value_raw[3] << 24) | (value_raw[2] << 16) | (value_raw[1] << 8) | (value_raw[0]);
   delete [] value_raw;
-  if (hasIOError(error, errno, false)) {
+  if (hasIOError(error, errno, false, "get " + CameraSettings::getCameraSettingsName(id))) {
     return -1;
   } else {
     return value;
@@ -688,7 +689,7 @@ bool V4lCameraHandlerV6::setSingleCameraParameterUVC(CameraSettings::CameraSetti
   queryctrl.data = value_raw;
 
   int error = xioctl(fd, UVCIOC_CTRL_QUERY, &queryctrl);
-  return !hasIOError(error, errno, false);
+  return !hasIOError(error, errno, false, "set " + CameraSettings::getCameraSettingsName(id));
 }
 
 
@@ -836,11 +837,11 @@ int V4lCameraHandlerV6::xioctl(int fd, int request, void* arg) const
   return r;
 }
 
-bool V4lCameraHandlerV6::hasIOError(int errOccured, int errNo, bool exitByIOError) const
+bool V4lCameraHandlerV6::hasIOError(int errOccured, int errNo, bool exitByIOError, std::string paramName) const
 {
   if(errOccured < 0 && errNo != EAGAIN)
   {
-    std::cout << LOG << " failed with errno " << errNo << " (" << getErrnoDescription(errNo) << ") >> exiting" << std::endl;
+    std::cout << LOG << paramName << " failed with errno " << errNo << " (" << getErrnoDescription(errNo) << ") >> exiting" << std::endl;
     if(exitByIOError)
     {
       assert(errOccured >= 0);
