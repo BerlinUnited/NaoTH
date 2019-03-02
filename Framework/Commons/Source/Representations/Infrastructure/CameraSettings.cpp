@@ -130,7 +130,7 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
   result.data[CameraSettings::AutoWhiteBalancing] = autoWhiteBalancing ? 1 : 0;
   result.data[CameraSettings::BacklightCompensation] = backlightCompensation ? 1 : 0;
   // use target brightness for both lightening conditions
-  result.data[CameraSettings::Brightness] = Math::clamp(brightness, 0, 255);
+  result.data[CameraSettings::Brightness] = Math::clamp(brightness, isV6 ? -255 : 0, 255);
   result.data[CameraSettings::BrightnessDark] = Math::clamp(brightness, 0, 255);
   result.data[CameraSettings::CameraSelection] = cameraSelection;
   result.data[CameraSettings::Contrast] = Math::toFixPoint<5>(static_cast<float>(Math::clamp(contrast, 0.5, 2.0)));
@@ -142,10 +142,14 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
   result.data[CameraSettings::FadeToBlack] = fadeToBlack ? 1 : 0;
   result.data[CameraSettings::MinAnalogGain] = Math::clamp(Math::toFixPoint<5>(static_cast<float>(minAnalogGain)), 0, 32767);
   result.data[CameraSettings::MaxAnalogGain] = Math::clamp(Math::toFixPoint<5>(static_cast<float>(maxAnalogGain)), 0, 32767);
-
+  
   // manual gain must be inside the min/max given in the other parameters and also can't be larger than 255 (as integer)
-  result.data[CameraSettings::Gain] = Math::clamp(
-    Math::toFixPoint<5>(static_cast<float>(Math::clamp(gain, minAnalogGain, maxAnalogGain))), 0, 255);
+  if(isV6) {
+    result.data[CameraSettings::Gain] = Math::clamp(static_cast<int>(gain), 0, 1023);
+  } else {
+    result.data[CameraSettings::Gain] = Math::clamp(
+      Math::toFixPoint<5>(static_cast<float>(Math::clamp(gain, minAnalogGain, maxAnalogGain))), 0, 255);
+  }
   
   result.data[CameraSettings::TargetGain] = Math::toFixPoint<5>(static_cast<float>(Math::clamp(targetGain, minAnalogGain, maxAnalogGain)));
   
