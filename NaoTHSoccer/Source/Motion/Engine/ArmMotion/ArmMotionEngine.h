@@ -17,7 +17,6 @@
 #include <Representations/Infrastructure/RobotInfo.h>
 #include "Representations/Motion/Request/MotionRequest.h"
 #include <Representations/Infrastructure/JointData.h>
-#include "Representations/Motion/MotionStatus.h"
 #include <Representations/Infrastructure/FrameInfo.h>
 
 #include "Motion/Engine/InverseKinematicsMotion/InverseKinematicsMotionEngine.h"

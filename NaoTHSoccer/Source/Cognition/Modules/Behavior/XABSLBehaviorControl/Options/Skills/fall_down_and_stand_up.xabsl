@@ -20,7 +20,6 @@ option fall_down_and_stand_up
       // remember the arms position for the case the robot falls backwards
       // (used by stand up)
       arm.control_mode_before_fall = arm.control_mode;
-      arm.react_to_collision = true;
     }
   }
   
