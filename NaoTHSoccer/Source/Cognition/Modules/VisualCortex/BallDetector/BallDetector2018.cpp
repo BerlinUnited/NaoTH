@@ -118,7 +118,7 @@ std::map<string, std::shared_ptr<AbstractCNNClassifier> > BallDetector2018::crea
   //result.insert({ "dortmund2018", std::make_shared<CNN_dortmund2018>() });
   result.insert({ "dortmund2018_keras", std::make_shared<CNN_dortmund2018_keras>() });
 
-  return std::move(result);
+  return result;
 }
 
 void BallDetector2018::setClassifier(const std::string& name, const std::string& nameClose) 
