@@ -52,8 +52,7 @@ public:
   enum CompetitionType
   {
     competition_normal  = COMPETITION_TYPE_NORMAL,
-    competition_mixed   = COMPETITION_TYPE_MIXEDTEAM,
-    competition_penalty = COMPETITION_TYPE_GENERAL_PENALTY_KICK
+    competition_mixed   = COMPETITION_TYPE_MIXEDTEAM
   };
 
   enum GamePhase
@@ -164,10 +163,6 @@ public:
 
   bool firstHalf;                     // 1 = game in first half, 0 otherwise
   unsigned int kickingTeam;           // the team number of the next team to kick off, free kick, DROPBALL etc.
-
-  unsigned int dropInTeam;            // number of team that caused last drop in
-  // ACHTUNG: time and can be negative, so it has to be signed (!)
-  int dropInTime;                     // number of seconds passed since the last drop in. -1 (0xffff) before first dropin
 
   int secsRemaining;                  // estimate of number of seconds remaining in the half
   int secondaryTime;                  // number of seconds shown as secondary time (remaining ready, until free ball, etc)
