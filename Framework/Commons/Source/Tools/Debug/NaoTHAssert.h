@@ -45,10 +45,10 @@
   }\
 }
 #else
-#define ASSERT(cond) if(!(cond)) {Trace::getInstance().dump(); assert(false);}
+#define ASSERT(cond) if(!(cond)) {Trace::getInstance().dump(); assert(false);} ((void)0)
 #endif
 
-#define ASSERT_MSG(cond, msg) if(!(cond)) { std::cerr << "ERROR: " << msg << std::endl; Trace::getInstance().dump(); assert(false);}
+#define ASSERT_MSG(cond, msg) if(!(cond)) { std::cerr << "ERROR: " << msg << std::endl; Trace::getInstance().dump(); assert(false);} ((void)0)
 
 /**
  * VERIFY prints a message if cond is false and DEBUG is defined.
@@ -68,7 +68,7 @@
 #define ASSERT(cond) ((void)0)
 #define ASSERT_MSG(cond, msg) ((void)0)
 #define VERIFY(cond) ((void)(cond))
-#define THROW(msg) { std::cerr<<msg<<std::endl; }
+#define THROW(msg) { std::cerr<<msg<<std::endl; } ((void)0)
 #endif //DEBUG
 
 #endif //_NaoTHAssert_h_

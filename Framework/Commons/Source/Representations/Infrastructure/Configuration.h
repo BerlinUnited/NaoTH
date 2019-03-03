@@ -35,6 +35,13 @@ public:
   void save();
 
   /**
+    * Get all group names.
+    * @param group
+    * @return
+    */
+  std::set<std::string> getGroups() const;
+
+  /**
     * Get all keys for a specific group.
     * @param group
     * @return

@@ -167,8 +167,9 @@ void Configuration::loadFile(GKeyFile* keyFile, std::string file, std::string gr
 
 void Configuration::save()
 {
-  if (privateDir.empty())
+  if (privateDir.empty()) {
     return;
+  }
 
   gsize length = 0;
   gchar** groups = g_key_file_get_groups(privateKeyFile, &length);
@@ -223,6 +224,29 @@ void Configuration::saveFile(GKeyFile* keyFile, const std::string& file, const s
   g_key_file_free(tmpKeyFile);
 }
 
+std::set<std::string> Configuration::getGroups() const
+{
+  std::set<std::string> result;
+
+  // public groups
+  gsize length = 0;
+  gchar** groups = g_key_file_get_groups(publicKeyFile, &length);
+  for(gsize i=0; i < length; i++) {
+    result.insert(std::string(groups[i]));
+  }
+  g_strfreev(groups);
+
+  // private groups
+  length = 0;
+  groups = g_key_file_get_groups(privateKeyFile, &length);
+  for(gsize i=0; i < length; i++)
+  {
+    result.insert(std::string(groups[i]));
+  }
+  g_strfreev(groups);
+
+  return result;
+}
 
 std::set<std::string> Configuration::getKeys(const std::string& group) const
 {

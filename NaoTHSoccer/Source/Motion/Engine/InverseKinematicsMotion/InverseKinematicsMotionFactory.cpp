@@ -34,8 +34,9 @@ InverseKinematicsMotionFactory::~InverseKinematicsMotionFactory()
 
 Module* InverseKinematicsMotionFactory::createMotion(const MotionRequest& motionRequest)
 {
-  if(currentMotionCreator != NULL)
+  if(currentMotionCreator != NULL) {
     currentMotionCreator->setEnabled(false);
+  }
   currentMotionCreator = NULL;
 
   REGISTER_MOTION(motion::stand, StandMotion);

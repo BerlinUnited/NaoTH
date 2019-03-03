@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='Messages.proto',
   package='naothmessages',
   syntax='proto2',
-  serialized_pb=_b('\n\x0eMessages.proto\x12\rnaothmessages\x1a\x11\x43ommonTypes.proto\"%\n\x06\x43MDArg\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\r\n\x05\x62ytes\x18\x03 \x01(\x0c\"8\n\x03\x43MD\x12\x0c\n\x04name\x18\x01 \x02(\t\x12#\n\x04\x61rgs\x18\x02 \x03(\x0b\x32\x15.naothmessages.CMDArg\"+\n\rStopwatchItem\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x0c\n\x04time\x18\x02 \x02(\x05\"@\n\x0bStopwatches\x12\x31\n\x0bstopwatches\x18\x01 \x03(\x0b\x32\x1c.naothmessages.StopwatchItem\"\xb2\x01\n\x08PlotItem\x12.\n\x04type\x18\x01 \x02(\x0e\x32 .naothmessages.PlotItem.PlotType\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\r\n\x05value\x18\x03 \x01(\x01\x12\t\n\x01x\x18\x04 \x01(\x01\x12\t\n\x01y\x18\x05 \x01(\x01\x12\x10\n\x08rotation\x18\x06 \x01(\x01\"1\n\x08PlotType\x12\x0b\n\x07\x44\x65\x66\x61ult\x10\x01\x12\n\n\x06Plot2D\x10\x02\x12\x0c\n\x08Origin2D\x10\x03\"J\n\x0cPlotStroke2D\x12\x0c\n\x04name\x18\x02 \x02(\t\x12,\n\x06points\x18\x01 \x03(\x0b\x32\x1c.naothmessages.DoubleVector2\"a\n\x05Plots\x12&\n\x05plots\x18\x01 \x03(\x0b\x32\x17.naothmessages.PlotItem\x12\x30\n\x0bplotstrokes\x18\x02 \x03(\x0b\x32\x1b.naothmessages.PlotStroke2D\"\xf8\x01\n\x0bXABSLSymbol\x12\x0e\n\x02id\x18\x01 \x02(\x05:\x02-1\x12<\n\x04type\x18\x02 \x02(\x0e\x32%.naothmessages.XABSLSymbol.SymbolType:\x07Unknown\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x14\n\x0c\x64\x65\x63imalValue\x18\x0b \x01(\x01\x12\x11\n\tboolValue\x18\x0c \x01(\x08\x12\x11\n\tenumValue\x18\r \x01(\x05\x12\x12\n\nenumTypeId\x18\x0e \x01(\x05\"=\n\nSymbolType\x12\x0b\n\x07\x44\x65\x63imal\x10\x00\x12\x0b\n\x07\x42oolean\x10\x01\x12\x08\n\x04\x45num\x10\x02\x12\x0b\n\x07Unknown\x10\x03\"\xfd\x01\n\x17XABSLActiveOptionSparse\x12\x0e\n\x02id\x18\x01 \x02(\x05:\x02-1\x12\x1a\n\x0ftimeOfExecution\x18\x03 \x01(\x03:\x01\x30\x12\x13\n\x0b\x61\x63tiveState\x18\x04 \x01(\x05\x12\x11\n\tstateTime\x18\x05 \x01(\x03\x12\x19\n\x11\x64\x65\x63imalParameters\x18\x06 \x03(\x01\x12\x19\n\x11\x62ooleanParameters\x18\x07 \x03(\x08\x12\x1c\n\x14\x65numeratedParameters\x18\x08 \x03(\x05\x12:\n\x10\x61\x63tiveSubActions\x18\t \x03(\x0b\x32 .naothmessages.XABSLActionSparse\"\x8c\x02\n\x11XABSLActionSparse\x12\x42\n\x04type\x18\x02 \x02(\x0e\x32+.naothmessages.XABSLActionSparse.ActionType:\x07Unknown\x12*\n\x06symbol\x18\x03 \x01(\x0b\x32\x1a.naothmessages.XABSLSymbol\x12\x36\n\x06option\x18\x04 \x01(\x0b\x32&.naothmessages.XABSLActiveOptionSparse\"O\n\nActionType\x12\n\n\x06Option\x10\x00\x12\x11\n\rBasicBehavior\x10\x01\x12\x15\n\x11SymbolAssignement\x10\x02\x12\x0b\n\x07Unknown\x10\x03\"\x93\x03\n\x0fSymbolValueList\x12<\n\x07\x64\x65\x63imal\x18\x01 \x03(\x0b\x32+.naothmessages.SymbolValueList.DoubleSymbol\x12=\n\x07\x62oolean\x18\x02 \x03(\x0b\x32,.naothmessages.SymbolValueList.BooleanSymbol\x12=\n\nenumerated\x18\x03 \x03(\x0b\x32).naothmessages.SymbolValueList.EnumSymbol\x1a;\n\x0c\x44oubleSymbol\x12\x0e\n\x02id\x18\x01 \x02(\x05:\x02-1\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\r\n\x05value\x18\x03 \x01(\x01\x1a<\n\rBooleanSymbol\x12\x0e\n\x02id\x18\x01 \x02(\x05:\x02-1\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\r\n\x05value\x18\x03 \x01(\x08\x1aI\n\nEnumSymbol\x12\x0e\n\x02id\x18\x01 \x02(\x05:\x02-1\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\r\n\x05value\x18\r \x01(\x05\x12\x0e\n\x06typeId\x18\x0e \x01(\x05\"\xff\x01\n\x13\x42\x65haviorStateSparse\x12\r\n\x05\x61gent\x18\x01 \x01(\t\x12;\n\x11\x61\x63tiveRootActions\x18\x02 \x03(\x0b\x32 .naothmessages.XABSLActionSparse\x12\x37\n\x0finputSymbolList\x18\n \x01(\x0b\x32\x1e.naothmessages.SymbolValueList\x12\x38\n\x10outputSymbolList\x18\x0b \x01(\x0b\x32\x1e.naothmessages.SymbolValueList\x12\x13\n\x0b\x66rameNumber\x18\x05 \x01(\r\x12\x14\n\x0c\x65rrorMessage\x18\x06 \x01(\t\"\xc8\x05\n\x15\x42\x65haviorStateComplete\x12\x43\n\x0c\x65numerations\x18\n \x03(\x0b\x32-.naothmessages.BehaviorStateComplete.EnumType\x12<\n\x07options\x18\x0b \x03(\x0b\x32+.naothmessages.BehaviorStateComplete.Option\x12:\n\x06\x61gents\x18\x0c \x03(\x0b\x32*.naothmessages.BehaviorStateComplete.Agent\x12\x37\n\x0finputSymbolList\x18\r \x01(\x0b\x32\x1e.naothmessages.SymbolValueList\x12\x38\n\x10outputSymbolList\x18\x0e \x01(\x0b\x32\x1e.naothmessages.SymbolValueList\x12\x13\n\x0b\x66rameNumber\x18\x0f \x01(\r\x1a\x89\x01\n\x08\x45numType\x12\x0c\n\x04name\x18\x01 \x02(\t\x12G\n\x08\x65lements\x18\x02 \x03(\x0b\x32\x35.naothmessages.BehaviorStateComplete.EnumType.Element\x1a&\n\x07\x45lement\x12\r\n\x05value\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\x1a\xb0\x01\n\x06Option\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x41\n\x06states\x18\x03 \x03(\x0b\x32\x31.naothmessages.BehaviorStateComplete.Option.State\x12.\n\nparameters\x18\x02 \x03(\x0b\x32\x1a.naothmessages.XABSLSymbol\x1a%\n\x05State\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x0e\n\x06target\x18\x02 \x01(\x08\x1a)\n\x05\x41gent\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x12\n\nrootOption\x18\x02 \x02(\t\"k\n\x06Module\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x1b\n\x13usedRepresentations\x18\x02 \x03(\t\x12\x1f\n\x17providedRepresentations\x18\x03 \x03(\t\x12\x15\n\x06\x61\x63tive\x18\x04 \x01(\x08:\x05\x66\x61lse\"4\n\nModuleList\x12&\n\x07modules\x18\x01 \x03(\x0b\x32\x15.naothmessages.Module\"\x83\x01\n\x0c\x44\x65\x62ugRequest\x12\x32\n\x08requests\x18\x01 \x03(\x0b\x32 .naothmessages.DebugRequest.Item\x1a?\n\x04Item\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x14\n\x05value\x18\x04 \x02(\x08:\x05\x66\x61lse\"\x8b\x01\n\x0f\x46\x65\x61tureKeyPoint\x12\'\n\x02pt\x18\x01 \x02(\x0b\x32\x1b.naothmessages.FloatVector2\x12\x0c\n\x04size\x18\x02 \x02(\x02\x12\r\n\x05\x61ngle\x18\x03 \x02(\x02\x12\x10\n\x08response\x18\x04 \x02(\x02\x12\x0e\n\x06octave\x18\x05 \x02(\x05\x12\x10\n\x08\x63lass_id\x18\x06 \x02(\x05\"\xd9\x01\n\x16\x46\x65\x61tureDetectionResult\x12\x16\n\x0egrayScaleImage\x18\x01 \x02(\x0c\x12\x31\n\tkeyPoints\x18\x02 \x03(\x0b\x32\x1e.naothmessages.FeatureKeyPoint\x12\x34\n\x0b\x64\x65scriptors\x18\x03 \x03(\x0b\x32\x1f.naothmessages.SingleDescriptor\x12\x19\n\x11namesForKeyPoints\x18\x04 \x03(\t\x12#\n\x17numberOfFeatureElements\x18\x05 \x01(\x05:\x02\x36\x34\"\x1d\n\x10SingleDescriptor\x12\t\n\x01\x64\x18\x01 \x03(\x02\"d\n\x0c\x46\x65\x61tureClass\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x30\n\x07samples\x18\x02 \x03(\x0b\x32\x1f.naothmessages.SingleDescriptor\x12\x14\n\x0cobjectHeight\x18\x03 \x01(\x01\"a\n\x0c\x46\x65\x61tureTable\x12,\n\x07\x63lasses\x18\x01 \x03(\x0b\x32\x1b.naothmessages.FeatureClass\x12#\n\x17numberOfFeatureElements\x18\x02 \x01(\x05:\x02\x36\x34\x42\x16\n\x14\x64\x65.naoth.rc.messages')
+  serialized_pb=_b('\n\x0eMessages.proto\x12\rnaothmessages\x1a\x11\x43ommonTypes.proto\"%\n\x06\x43MDArg\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\r\n\x05\x62ytes\x18\x03 \x01(\x0c\"8\n\x03\x43MD\x12\x0c\n\x04name\x18\x01 \x02(\t\x12#\n\x04\x61rgs\x18\x02 \x03(\x0b\x32\x15.naothmessages.CMDArg\"+\n\rStopwatchItem\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x0c\n\x04time\x18\x02 \x02(\x05\"@\n\x0bStopwatches\x12\x31\n\x0bstopwatches\x18\x01 \x03(\x0b\x32\x1c.naothmessages.StopwatchItem\"\xb2\x01\n\x08PlotItem\x12.\n\x04type\x18\x01 \x02(\x0e\x32 .naothmessages.PlotItem.PlotType\x12\x0c\n\x04name\x18\x02 \x02(\t\x12\r\n\x05value\x18\x03 \x01(\x01\x12\t\n\x01x\x18\x04 \x01(\x01\x12\t\n\x01y\x18\x05 \x01(\x01\x12\x10\n\x08rotation\x18\x06 \x01(\x01\"1\n\x08PlotType\x12\x0b\n\x07\x44\x65\x66\x61ult\x10\x01\x12\n\n\x06Plot2D\x10\x02\x12\x0c\n\x08Origin2D\x10\x03\"J\n\x0cPlotStroke2D\x12\x0c\n\x04name\x18\x02 \x02(\t\x12,\n\x06points\x18\x01 \x03(\x0b\x32\x1c.naothmessages.DoubleVector2\"a\n\x05Plots\x12&\n\x05plots\x18\x01 \x03(\x0b\x32\x17.naothmessages.PlotItem\x12\x30\n\x0bplotstrokes\x18\x02 \x03(\x0b\x32\x1b.naothmessages.PlotStroke2D\"\xf8\x01\n\x0bXABSLSymbol\x12\x0e\n\x02id\x18\x01 \x02(\x05:\x02-1\x12<\n\x04type\x18\x02 \x02(\x0e\x32%.naothmessages.XABSLSymbol.SymbolType:\x07Unknown\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x14\n\x0c\x64\x65\x63imalValue\x18\x0b \x01(\x01\x12\x11\n\tboolValue\x18\x0c \x01(\x08\x12\x11\n\tenumValue\x18\r \x01(\x05\x12\x12\n\nenumTypeId\x18\x0e \x01(\x05\"=\n\nSymbolType\x12\x0b\n\x07\x44\x65\x63imal\x10\x00\x12\x0b\n\x07\x42oolean\x10\x01\x12\x08\n\x04\x45num\x10\x02\x12\x0b\n\x07Unknown\x10\x03\"\xfd\x01\n\x17XABSLActiveOptionSparse\x12\x0e\n\x02id\x18\x01 \x02(\x05:\x02-1\x12\x1a\n\x0ftimeOfExecution\x18\x03 \x01(\x03:\x01\x30\x12\x13\n\x0b\x61\x63tiveState\x18\x04 \x01(\x05\x12\x11\n\tstateTime\x18\x05 \x01(\x03\x12\x19\n\x11\x64\x65\x63imalParameters\x18\x06 \x03(\x01\x12\x19\n\x11\x62ooleanParameters\x18\x07 \x03(\x08\x12\x1c\n\x14\x65numeratedParameters\x18\x08 \x03(\x05\x12:\n\x10\x61\x63tiveSubActions\x18\t \x03(\x0b\x32 .naothmessages.XABSLActionSparse\"\x8c\x02\n\x11XABSLActionSparse\x12\x42\n\x04type\x18\x02 \x02(\x0e\x32+.naothmessages.XABSLActionSparse.ActionType:\x07Unknown\x12*\n\x06symbol\x18\x03 \x01(\x0b\x32\x1a.naothmessages.XABSLSymbol\x12\x36\n\x06option\x18\x04 \x01(\x0b\x32&.naothmessages.XABSLActiveOptionSparse\"O\n\nActionType\x12\n\n\x06Option\x10\x00\x12\x11\n\rBasicBehavior\x10\x01\x12\x15\n\x11SymbolAssignement\x10\x02\x12\x0b\n\x07Unknown\x10\x03\"\x93\x03\n\x0fSymbolValueList\x12<\n\x07\x64\x65\x63imal\x18\x01 \x03(\x0b\x32+.naothmessages.SymbolValueList.DoubleSymbol\x12=\n\x07\x62oolean\x18\x02 \x03(\x0b\x32,.naothmessages.SymbolValueList.BooleanSymbol\x12=\n\nenumerated\x18\x03 \x03(\x0b\x32).naothmessages.SymbolValueList.EnumSymbol\x1a;\n\x0c\x44oubleSymbol\x12\x0e\n\x02id\x18\x01 \x02(\x05:\x02-1\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\r\n\x05value\x18\x03 \x01(\x01\x1a<\n\rBooleanSymbol\x12\x0e\n\x02id\x18\x01 \x02(\x05:\x02-1\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\r\n\x05value\x18\x03 \x01(\x08\x1aI\n\nEnumSymbol\x12\x0e\n\x02id\x18\x01 \x02(\x05:\x02-1\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\r\n\x05value\x18\r \x01(\x05\x12\x0e\n\x06typeId\x18\x0e \x01(\x05\"\xff\x01\n\x13\x42\x65haviorStateSparse\x12\r\n\x05\x61gent\x18\x01 \x01(\t\x12;\n\x11\x61\x63tiveRootActions\x18\x02 \x03(\x0b\x32 .naothmessages.XABSLActionSparse\x12\x37\n\x0finputSymbolList\x18\n \x01(\x0b\x32\x1e.naothmessages.SymbolValueList\x12\x38\n\x10outputSymbolList\x18\x0b \x01(\x0b\x32\x1e.naothmessages.SymbolValueList\x12\x13\n\x0b\x66rameNumber\x18\x05 \x01(\r\x12\x14\n\x0c\x65rrorMessage\x18\x06 \x01(\t\"\xc8\x05\n\x15\x42\x65haviorStateComplete\x12\x43\n\x0c\x65numerations\x18\n \x03(\x0b\x32-.naothmessages.BehaviorStateComplete.EnumType\x12<\n\x07options\x18\x0b \x03(\x0b\x32+.naothmessages.BehaviorStateComplete.Option\x12:\n\x06\x61gents\x18\x0c \x03(\x0b\x32*.naothmessages.BehaviorStateComplete.Agent\x12\x37\n\x0finputSymbolList\x18\r \x01(\x0b\x32\x1e.naothmessages.SymbolValueList\x12\x38\n\x10outputSymbolList\x18\x0e \x01(\x0b\x32\x1e.naothmessages.SymbolValueList\x12\x13\n\x0b\x66rameNumber\x18\x0f \x01(\r\x1a\x89\x01\n\x08\x45numType\x12\x0c\n\x04name\x18\x01 \x02(\t\x12G\n\x08\x65lements\x18\x02 \x03(\x0b\x32\x35.naothmessages.BehaviorStateComplete.EnumType.Element\x1a&\n\x07\x45lement\x12\r\n\x05value\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x02(\t\x1a\xb0\x01\n\x06Option\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x41\n\x06states\x18\x03 \x03(\x0b\x32\x31.naothmessages.BehaviorStateComplete.Option.State\x12.\n\nparameters\x18\x02 \x03(\x0b\x32\x1a.naothmessages.XABSLSymbol\x1a%\n\x05State\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x0e\n\x06target\x18\x02 \x01(\x08\x1a)\n\x05\x41gent\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x12\n\nrootOption\x18\x02 \x02(\t\"y\n\x06Module\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x1b\n\x13usedRepresentations\x18\x02 \x03(\t\x12\x1f\n\x17providedRepresentations\x18\x03 \x03(\t\x12\x15\n\x06\x61\x63tive\x18\x04 \x01(\x08:\x05\x66\x61lse\x12\x0c\n\x04path\x18\x05 \x01(\t\"1\n\x07Modules\x12&\n\x07modules\x18\x01 \x03(\x0b\x32\x15.naothmessages.Module\"\x83\x01\n\x0c\x44\x65\x62ugRequest\x12\x32\n\x08requests\x18\x01 \x03(\x0b\x32 .naothmessages.DebugRequest.Item\x1a?\n\x04Item\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x14\n\x05value\x18\x04 \x02(\x08:\x05\x66\x61lse\"\xa6\x01\n\x06\x43onfig\x12+\n\x06groups\x18\x01 \x03(\x0b\x32\x1b.naothmessages.Config.Group\x1ao\n\x05Group\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x32\n\x07\x65ntries\x18\x02 \x03(\x0b\x32!.naothmessages.Config.Group.Entry\x1a$\n\x05\x45ntry\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\r\n\x05value\x18\x02 \x02(\t\"\x8b\x01\n\x0f\x46\x65\x61tureKeyPoint\x12\'\n\x02pt\x18\x01 \x02(\x0b\x32\x1b.naothmessages.FloatVector2\x12\x0c\n\x04size\x18\x02 \x02(\x02\x12\r\n\x05\x61ngle\x18\x03 \x02(\x02\x12\x10\n\x08response\x18\x04 \x02(\x02\x12\x0e\n\x06octave\x18\x05 \x02(\x05\x12\x10\n\x08\x63lass_id\x18\x06 \x02(\x05\"\xd9\x01\n\x16\x46\x65\x61tureDetectionResult\x12\x16\n\x0egrayScaleImage\x18\x01 \x02(\x0c\x12\x31\n\tkeyPoints\x18\x02 \x03(\x0b\x32\x1e.naothmessages.FeatureKeyPoint\x12\x34\n\x0b\x64\x65scriptors\x18\x03 \x03(\x0b\x32\x1f.naothmessages.SingleDescriptor\x12\x19\n\x11namesForKeyPoints\x18\x04 \x03(\t\x12#\n\x17numberOfFeatureElements\x18\x05 \x01(\x05:\x02\x36\x34\"\x1d\n\x10SingleDescriptor\x12\t\n\x01\x64\x18\x01 \x03(\x02\"d\n\x0c\x46\x65\x61tureClass\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x30\n\x07samples\x18\x02 \x03(\x0b\x32\x1f.naothmessages.SingleDescriptor\x12\x14\n\x0cobjectHeight\x18\x03 \x01(\x01\"a\n\x0c\x46\x65\x61tureTable\x12,\n\x07\x63lasses\x18\x01 \x03(\x0b\x32\x1b.naothmessages.FeatureClass\x12#\n\x17numberOfFeatureElements\x18\x02 \x01(\x05:\x02\x36\x34\x42\x16\n\x14\x64\x65.naoth.rc.messages')
   ,
   dependencies=[CommonTypes__pb2.DESCRIPTOR,])
 
@@ -1144,6 +1144,13 @@ _MODULE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='path', full_name='naothmessages.Module.path', index=4,
+      number=5, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -1157,19 +1164,19 @@ _MODULE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=2773,
-  serialized_end=2880,
+  serialized_end=2894,
 )
 
 
-_MODULELIST = _descriptor.Descriptor(
-  name='ModuleList',
-  full_name='naothmessages.ModuleList',
+_MODULES = _descriptor.Descriptor(
+  name='Modules',
+  full_name='naothmessages.Modules',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='modules', full_name='naothmessages.ModuleList.modules', index=0,
+      name='modules', full_name='naothmessages.Modules.modules', index=0,
       number=1, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -1187,8 +1194,8 @@ _MODULELIST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2882,
-  serialized_end=2934,
+  serialized_start=2896,
+  serialized_end=2945,
 )
 
 
@@ -1232,8 +1239,8 @@ _DEBUGREQUEST_ITEM = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3005,
-  serialized_end=3068,
+  serialized_start=3016,
+  serialized_end=3079,
 )
 
 _DEBUGREQUEST = _descriptor.Descriptor(
@@ -1262,8 +1269,113 @@ _DEBUGREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2937,
-  serialized_end=3068,
+  serialized_start=2948,
+  serialized_end=3079,
+)
+
+
+_CONFIG_GROUP_ENTRY = _descriptor.Descriptor(
+  name='Entry',
+  full_name='naothmessages.Config.Group.Entry',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='name', full_name='naothmessages.Config.Group.Entry.name', index=0,
+      number=1, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='value', full_name='naothmessages.Config.Group.Entry.value', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=3212,
+  serialized_end=3248,
+)
+
+_CONFIG_GROUP = _descriptor.Descriptor(
+  name='Group',
+  full_name='naothmessages.Config.Group',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='name', full_name='naothmessages.Config.Group.name', index=0,
+      number=1, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='entries', full_name='naothmessages.Config.Group.entries', index=1,
+      number=2, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[_CONFIG_GROUP_ENTRY, ],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=3137,
+  serialized_end=3248,
+)
+
+_CONFIG = _descriptor.Descriptor(
+  name='Config',
+  full_name='naothmessages.Config',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='groups', full_name='naothmessages.Config.groups', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[_CONFIG_GROUP, ],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=3082,
+  serialized_end=3248,
 )
 
 
@@ -1328,8 +1440,8 @@ _FEATUREKEYPOINT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3071,
-  serialized_end=3210,
+  serialized_start=3251,
+  serialized_end=3390,
 )
 
 
@@ -1387,8 +1499,8 @@ _FEATUREDETECTIONRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3213,
-  serialized_end=3430,
+  serialized_start=3393,
+  serialized_end=3610,
 )
 
 
@@ -1418,8 +1530,8 @@ _SINGLEDESCRIPTOR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3432,
-  serialized_end=3461,
+  serialized_start=3612,
+  serialized_end=3641,
 )
 
 
@@ -1463,8 +1575,8 @@ _FEATURECLASS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3463,
-  serialized_end=3563,
+  serialized_start=3643,
+  serialized_end=3743,
 )
 
 
@@ -1501,8 +1613,8 @@ _FEATURETABLE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3565,
-  serialized_end=3662,
+  serialized_start=3745,
+  serialized_end=3842,
 )
 
 _CMD.fields_by_name['args'].message_type = _CMDARG
@@ -1541,9 +1653,13 @@ _BEHAVIORSTATECOMPLETE.fields_by_name['options'].message_type = _BEHAVIORSTATECO
 _BEHAVIORSTATECOMPLETE.fields_by_name['agents'].message_type = _BEHAVIORSTATECOMPLETE_AGENT
 _BEHAVIORSTATECOMPLETE.fields_by_name['inputSymbolList'].message_type = _SYMBOLVALUELIST
 _BEHAVIORSTATECOMPLETE.fields_by_name['outputSymbolList'].message_type = _SYMBOLVALUELIST
-_MODULELIST.fields_by_name['modules'].message_type = _MODULE
+_MODULES.fields_by_name['modules'].message_type = _MODULE
 _DEBUGREQUEST_ITEM.containing_type = _DEBUGREQUEST
 _DEBUGREQUEST.fields_by_name['requests'].message_type = _DEBUGREQUEST_ITEM
+_CONFIG_GROUP_ENTRY.containing_type = _CONFIG_GROUP
+_CONFIG_GROUP.fields_by_name['entries'].message_type = _CONFIG_GROUP_ENTRY
+_CONFIG_GROUP.containing_type = _CONFIG
+_CONFIG.fields_by_name['groups'].message_type = _CONFIG_GROUP
 _FEATUREKEYPOINT.fields_by_name['pt'].message_type = CommonTypes__pb2._FLOATVECTOR2
 _FEATUREDETECTIONRESULT.fields_by_name['keyPoints'].message_type = _FEATUREKEYPOINT
 _FEATUREDETECTIONRESULT.fields_by_name['descriptors'].message_type = _SINGLEDESCRIPTOR
@@ -1563,8 +1679,9 @@ DESCRIPTOR.message_types_by_name['SymbolValueList'] = _SYMBOLVALUELIST
 DESCRIPTOR.message_types_by_name['BehaviorStateSparse'] = _BEHAVIORSTATESPARSE
 DESCRIPTOR.message_types_by_name['BehaviorStateComplete'] = _BEHAVIORSTATECOMPLETE
 DESCRIPTOR.message_types_by_name['Module'] = _MODULE
-DESCRIPTOR.message_types_by_name['ModuleList'] = _MODULELIST
+DESCRIPTOR.message_types_by_name['Modules'] = _MODULES
 DESCRIPTOR.message_types_by_name['DebugRequest'] = _DEBUGREQUEST
+DESCRIPTOR.message_types_by_name['Config'] = _CONFIG
 DESCRIPTOR.message_types_by_name['FeatureKeyPoint'] = _FEATUREKEYPOINT
 DESCRIPTOR.message_types_by_name['FeatureDetectionResult'] = _FEATUREDETECTIONRESULT
 DESCRIPTOR.message_types_by_name['SingleDescriptor'] = _SINGLEDESCRIPTOR
@@ -1734,12 +1851,12 @@ Module = _reflection.GeneratedProtocolMessageType('Module', (_message.Message,),
   ))
 _sym_db.RegisterMessage(Module)
 
-ModuleList = _reflection.GeneratedProtocolMessageType('ModuleList', (_message.Message,), dict(
-  DESCRIPTOR = _MODULELIST,
+Modules = _reflection.GeneratedProtocolMessageType('Modules', (_message.Message,), dict(
+  DESCRIPTOR = _MODULES,
   __module__ = 'Messages_pb2'
-  # @@protoc_insertion_point(class_scope:naothmessages.ModuleList)
+  # @@protoc_insertion_point(class_scope:naothmessages.Modules)
   ))
-_sym_db.RegisterMessage(ModuleList)
+_sym_db.RegisterMessage(Modules)
 
 DebugRequest = _reflection.GeneratedProtocolMessageType('DebugRequest', (_message.Message,), dict(
 
@@ -1755,6 +1872,29 @@ DebugRequest = _reflection.GeneratedProtocolMessageType('DebugRequest', (_messag
   ))
 _sym_db.RegisterMessage(DebugRequest)
 _sym_db.RegisterMessage(DebugRequest.Item)
+
+Config = _reflection.GeneratedProtocolMessageType('Config', (_message.Message,), dict(
+
+  Group = _reflection.GeneratedProtocolMessageType('Group', (_message.Message,), dict(
+
+    Entry = _reflection.GeneratedProtocolMessageType('Entry', (_message.Message,), dict(
+      DESCRIPTOR = _CONFIG_GROUP_ENTRY,
+      __module__ = 'Messages_pb2'
+      # @@protoc_insertion_point(class_scope:naothmessages.Config.Group.Entry)
+      ))
+    ,
+    DESCRIPTOR = _CONFIG_GROUP,
+    __module__ = 'Messages_pb2'
+    # @@protoc_insertion_point(class_scope:naothmessages.Config.Group)
+    ))
+  ,
+  DESCRIPTOR = _CONFIG,
+  __module__ = 'Messages_pb2'
+  # @@protoc_insertion_point(class_scope:naothmessages.Config)
+  ))
+_sym_db.RegisterMessage(Config)
+_sym_db.RegisterMessage(Config.Group)
+_sym_db.RegisterMessage(Config.Group.Entry)
 
 FeatureKeyPoint = _reflection.GeneratedProtocolMessageType('FeatureKeyPoint', (_message.Message,), dict(
   DESCRIPTOR = _FEATUREKEYPOINT,

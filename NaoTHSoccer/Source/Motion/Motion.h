@@ -12,9 +12,8 @@
 #include <PlatformInterface/Callable.h>
 #include <PlatformInterface/PlatformInterface.h>
 
-#include <ModuleFramework/ModuleManager.h>
 #include <ModuleFramework/Module.h>
-#include <Tools/Debug/ModuleManagerWithDebug.h>
+#include <ModuleFramework/ModuleManager.h>
 
 //#include "MorphologyProcessor/SupportPolygonGenerator.h"
 #include "MorphologyProcessor/OdometryCalculator.h"
@@ -33,7 +32,6 @@
 #include "Tools/Debug/Logger.h"
 #include "Engine/MotionEngine.h"
 
-
 // representations
 #include <Representations/Infrastructure/JointData.h>
 #include <Representations/Infrastructure/FrameInfo.h>
@@ -48,6 +46,8 @@
 #include "Representations/Motion/Walk2018/Walk2018Parameters.h"
 
 // debug
+#include <DebugCommunication/DebugCommandManager.h>
+#include <Representations/Debug/Representations.h>
 #include <Representations/Debug/Stopwatch.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Modeling/BodyStatus.h>
@@ -58,6 +58,7 @@
 #include "Tools/Debug/DebugDrawings3D.h"
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugRequest.h"
 
 #include <Representations/Modeling/BodyState.h>
 
@@ -65,6 +66,8 @@
 #include <Tools/DataStructures/RingBufferWithSum.h>
 
 BEGIN_DECLARE_MODULE(Motion)
+  PROVIDE(Representations)
+
   REQUIRE(GroundContactModel)
 
   PROVIDE(StopwatchManager)
@@ -75,6 +78,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(DebugDrawings3D)
   PROVIDE(DebugParameterList)
   PROVIDE(DebugModify)
+  PROVIDE(DebugRequest)
 
   REQUIRE(MotionStatus)
   PROVIDE(OdometryData) // hack
@@ -103,6 +107,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(AccelerometerData)
   PROVIDE(GyrometerData)
 
+  PROVIDE(DebugCommandManager)
   PROVIDE(DebugMessageInMotion)
   PROVIDE(DebugMessageOut)
 
@@ -121,7 +126,7 @@ BEGIN_DECLARE_MODULE(Motion)
 END_DECLARE_MODULE(Motion)
 
 
-class Motion : public naoth::Callable, private MotionBase, public ModuleManagerWithDebug
+class Motion : public naoth::Callable, private MotionBase, public ModuleManager
 {
 public:
   Motion();

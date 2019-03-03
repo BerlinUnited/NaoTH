@@ -5,8 +5,8 @@
 // Created on 19. march 2008, 21:51
 //
 
-#ifndef _DEBUGREQUEST_H
-#define _DEBUGREQUEST_H
+#ifndef _DebugRequest_H_
+#define _DebugRequest_H_
 
 #include <cstring>
 #include <map>
@@ -29,9 +29,6 @@ public:
   typedef std::map<std::string, Request> RequestMap;
 
 public:
-  DebugRequest(){}
-  virtual ~DebugRequest(){}
-
 
   /** Register debug request. Will do nothing if already known. */
   const bool& registerRequest(const std::string& name, const std::string& description, bool defaultValue);
@@ -70,8 +67,6 @@ private:
   RequestMap requestMap;
 };
 
-std::string get_sub_core_path(const std::string& fullpath);
-
 namespace naoth
 {
 template<>
@@ -89,7 +84,7 @@ public:
 #ifdef DEBUG
   #define STRINGIZE_NX(A) #A
   #define STRINGIZE(A) STRINGIZE_NX(A)
-  #define MAKE_DESCTIPTION(description) std::string(description).append("\n").append(get_sub_core_path(__FILE__)).append(":").append(STRINGIZE(__LINE__))
+  #define MAKE_DESCTIPTION(description) std::string(description).append("\n").append(__FILE__).append(":").append(STRINGIZE(__LINE__))
 
   /** Register debug request. Will do nothing if already known. */
   #define DEBUG_REQUEST_REGISTER(name, description, isActiveByDefault) {getDebugRequest().registerRequest(name, MAKE_DESCTIPTION(description), isActiveByDefault);} ((void)0)
@@ -114,5 +109,5 @@ public:
   #define DEBUG_REQUEST_OR_RELEASE(name, code) {code} ((void)0)
 #endif // DEBUG
 
-#endif  /* _DEBUGREQUEST_H */
+#endif  /* _DebugRequest_H_ */
 
