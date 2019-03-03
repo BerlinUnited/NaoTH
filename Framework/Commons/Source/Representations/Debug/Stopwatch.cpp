@@ -100,7 +100,7 @@ void naoth::Serializer<StopwatchManager>::serialize(const StopwatchManager& obje
   {
     naothmessages::StopwatchItem* s = all.add_stopwatches();
     s->set_name(it->first);
-    s->set_time(it->second.lastValue);
+    s->set_time(static_cast<int>(it->second.lastValue));
   }
     
   google::protobuf::io::OstreamOutputStream buf(&stream);

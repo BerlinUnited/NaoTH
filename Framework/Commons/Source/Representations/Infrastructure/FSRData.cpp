@@ -33,13 +33,13 @@ void FSRData::print(ostream& stream) const
 {
   stream << "Name : force(N) , data"<< std::endl;
   stream << "Left:"<< std::endl;
-  for(int i = 0; i < numOfFSR; i++) {
+  for(size_t i = 0; i < numOfFSR; i++) {
     stream  << getFSRName((SensorID)i) << " : " 
             << dataLeft[i] << " ";
   }
 
   stream << std::endl << "Right:" << std::endl;
-  for(int i = 0; i < numOfFSR; i++) {
+  for(size_t i = 0; i < numOfFSR; i++) {
     stream  << getFSRName((SensorID)i) << " : " 
             << dataRight[i] << " ";
   }
@@ -70,7 +70,7 @@ void Serializer<FSRData>::deserialize(std::istream& stream, FSRData& representat
 
 
   // NOTE: deprecated to support logs before 12.01.2017
-  for (int i = 0; i < FSRData::numOfFSR; i++) {
+  for (size_t i = 0; i < FSRData::numOfFSR; i++) {
 //    representation.force[i] = msg.force(i);
     representation.dataLeft[i] = msg.data(i);
     representation.dataRight[i] = msg.data(FSRData::numOfFSR+i);

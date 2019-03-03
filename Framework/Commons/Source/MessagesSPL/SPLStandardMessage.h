@@ -63,9 +63,9 @@ struct SPLStandardMessage
   // constructor
   SPLStandardMessage() :
     version(SPL_STANDARD_MESSAGE_STRUCT_VERSION),
-    playerNum(-1),
-    teamNum(-1),
-    fallen(-1),
+    playerNum(0),
+    teamNum(0),
+    fallen(0),
     ballAge(-1.f),
     numOfDataBytes(0)
   {

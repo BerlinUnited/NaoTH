@@ -32,8 +32,8 @@ void Serializer<AudioData>::serialize(const AudioData& representation, std::ostr
   // the data has to be converted to a YUV (1 byte for each) array. no interlacing
   naothmessages::AudioData msg;
 
-  msg.set_samplerate(representation.sampleRate);
-  msg.set_numchannels(representation.numChannels);
+  msg.set_samplerate(static_cast<unsigned int>(representation.sampleRate));
+  msg.set_numchannels(static_cast<unsigned int>(representation.numChannels));
   msg.set_samplesize(sizeof(short));
   msg.set_timestamp(representation.timestamp);
   msg.set_samples((unsigned char*)representation.samples.data(), representation.samples.size()*sizeof(short));
@@ -48,8 +48,8 @@ void Serializer<AudioData>::deserialize(std::istream& stream, AudioData& represe
   google::protobuf::io::IstreamInputStream buf(&stream);
   msg.ParseFromZeroCopyStream(&buf);
 
-  representation.sampleRate = msg.samplerate();
-  representation.numChannels = msg.numchannels();
+  representation.sampleRate = static_cast<int>(msg.samplerate());
+  representation.numChannels = static_cast<int>(msg.numchannels());
   representation.timestamp = msg.timestamp();
 
   assert(msg.samplesize() == sizeof(short));
