@@ -121,11 +121,13 @@ void RoleDecisionAssignmentDistance::withDistance(std::map<unsigned int, Roles::
     std::vector<Roles::Static> assignable_roles(getRoles().active);
     // retrieve players, which doesn't already have a role and remove already assigned roles from the assignable vector
     std::vector<unsigned int> assignable_player;
-    for(const auto& v : getTeamMessage().data) {
-        if(new_roles.find(v.first) == new_roles.cend()) { assignable_player.push_back(v.first); }
-        else {
-            auto r = std::remove(assignable_roles.begin(), assignable_roles.end(), new_roles.at(v.first));
-            if(r != assignable_roles.end()) { assignable_roles.erase(r); }
+    for(const auto& v : getTeamMessagePlayersState().data) {
+        if(v.second.isPlaying()) {
+            if(new_roles.find(v.first) == new_roles.cend()) { assignable_player.push_back(v.first); }
+            else {
+                auto r = std::remove(assignable_roles.begin(), assignable_roles.end(), new_roles.at(v.first));
+                if(r != assignable_roles.end()) { assignable_roles.erase(r); }
+            }
         }
     }
     // save the orginal dimensions
@@ -161,7 +163,7 @@ void RoleDecisionAssignmentDistance::withDistance(std::map<unsigned int, Roles::
         if(assignments.size() == 1) {
             // assign optimal role
             new_roles[assignable_player[r]] = assignments[0];
-        } else if (assignments.size() == 1) {
+        } else if (assignments.size() < 1) {
             // DEBUG: print out non-assignments
             std::cout<<"NO ASSIGNMENT "<<assignable_player[r]<<"?"<<std::endl;
             std::cout<<"\n"<<m<<std::endl;

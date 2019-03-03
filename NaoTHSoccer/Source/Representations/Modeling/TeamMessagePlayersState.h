@@ -18,6 +18,9 @@ public:
         bool alive = false;
         bool active = false;
         bool playing = false;
+
+        bool isActive() const { return alive && active; }
+        bool isPlaying() const { return alive && active && playing; }
     };
 
     /** Container for the robot states. */
@@ -73,7 +76,7 @@ public:
      * @return number of active robots
      */
     long getActiveCount() const {
-        return std::count_if(data.cbegin(), data.cend(), [](const std::pair<unsigned int, Player>& it){ return isActiveInternal(it.second); });
+        return std::count_if(data.cbegin(), data.cend(), [](const std::pair<unsigned int, Player>& it){ return it.second.isActive(); });
     }
 
     /**
@@ -85,7 +88,7 @@ public:
     bool inline isActive(unsigned int player_number) const {
         const auto& player = data.find(player_number);
         if(player != data.cend()) {
-            return isActiveInternal(player->second);
+            return player->second.isActive();
         }
         return false;
     }
@@ -96,7 +99,7 @@ public:
      * @return number of 'playing' robots
      */
     long getPlayingCount() const {
-        return std::count_if(data.cbegin(), data.cend(), [](const std::pair<unsigned int, Player>& it){ return isPlayingInternal(it.second); });
+        return std::count_if(data.cbegin(), data.cend(), [](const std::pair<unsigned int, Player>& it){ return it.second.isPlaying(); });
     }
 
     /**
@@ -108,7 +111,7 @@ public:
     bool inline isPlaying(unsigned int player_number) const {
         const auto& player = data.find(player_number);
         if(player != data.cend()) {
-            return isPlayingInternal(player->second);
+            return player->second.isPlaying();
         }
         return false;
     }
@@ -133,27 +136,6 @@ public:
             }
         }
     } // END print
-
-private:
-    /**
-     * @brief Internal helper method to make sure every that every other 'active' method
-     *        uses the same condition.
-     * @param p the player state, which should be evaluated
-     * @return true, if the player is alive and active, false otherwise
-     */
-    static inline bool isActiveInternal(const Player& p) {
-        return p.alive && p.active;
-    }
-
-    /**
-     * @brief Internal helper method to make sure every that every other 'playing' method
-     *        uses the same condition.
-     * @param p the player state, which should be evaluated
-     * @return true, if the player is alive, active and playing, false otherwise
-     */
-    static inline bool isPlayingInternal(const Player& p) {
-        return p.alive && p.active && p.playing;
-    }
 };
 
 #endif // TEAMMESSAGEPLAYERSSTATE_H
