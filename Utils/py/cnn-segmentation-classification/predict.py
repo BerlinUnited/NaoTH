@@ -5,6 +5,7 @@ import pickle
 from utility_functions.stats import keras_infer
 from utility_functions.loader import loadImage
 import numpy as np
+import cv2
 
 parser = argparse.ArgumentParser(description='Train the network given ')
 
@@ -33,5 +34,10 @@ with open(imgdb_path, "rb") as f:
     mean = pickle.load(f)
 img = loadImage(args.img, res) - mean
 prediction= keras_infer(img.reshape(1, res["x"], res["y"], 1), model_path)
-#print(prediction)
-print(np.argmax(prediction, axis=3))
+
+prediction = prediction[0]
+cv2.namedWindow('image',cv2.WINDOW_NORMAL)
+cv2.resizeWindow('image', 600,600)
+cv2.imshow("image", prediction)
+cv2.waitKey()
+#print(np.argmax(prediction, axis=3))

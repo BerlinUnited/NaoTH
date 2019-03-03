@@ -43,7 +43,7 @@ def loadImages(path, res):
             f_mask = mask_path + "/" +  os.path.basename(p)
             img_mask = cv2.imread(f_mask, 0)
             img_mask = cv2.resize(img_mask, (res["x"], res["y"]))
-            db.append((img / 255, img_mask == 255, p))
+            db.append((img / 255, img_mask / 255, p))
 
     random.shuffle(db)
     x, y, p = list(map(np.array, list(zip(*db))))
@@ -52,8 +52,7 @@ def loadImages(path, res):
     
     x = x.reshape(*x.shape, 1)
     y = y.reshape(*y.shape, 1)
-    y = to_categorical(y, num_classes=2)
-
+    
     print("Loading finished")
     print("images: " + str(len(x)))
     return x, y, mean, p
