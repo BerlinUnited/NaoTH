@@ -18,6 +18,8 @@ GameController::GameController()
   DEBUG_REQUEST_REGISTER("gamecontroller:set_play:none", "force the setPlay state to none", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:set_play:goal_free_kick", "force the setPlay state to goal free kick", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:set_play:pushing_free_kick", "force the setPlay state to pushing free kick", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:corner_kick", "force the setPlay state to corner kick", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:kick_in", "force the setPlay state to kick-in", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:kickoff", "forces the kickoff to be ours", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:secondaryTime:30", "sets the secondary time of the gamecontroller to 30s", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:secondaryTime:20", "sets the secondary time of the gamecontroller to 20s", false);
@@ -178,6 +180,12 @@ void GameController::handleDebugRequest()
   );
   DEBUG_REQUEST("gamecontroller:set_play:pushing_free_kick",
     getPlayerInfo().robotSetPlay = PlayerInfo::pushing_free_kick;
+  );
+  DEBUG_REQUEST("gamecontroller:set_play:corner_kick",
+    getPlayerInfo().robotSetPlay = PlayerInfo::corner_kick;
+  );
+  DEBUG_REQUEST("gamecontroller:set_play:kick_in",
+    getPlayerInfo().robotSetPlay = PlayerInfo::kick_in;
   );
 
   // DebugRequests for the kickoff state

@@ -77,7 +77,9 @@ public:
   {
     set_none          = SET_PLAY_NONE,
     goal_free_kick    = SET_PLAY_GOAL_FREE_KICK,
-    pushing_free_kick = SET_PLAY_PUSHING_FREE_KICK
+    pushing_free_kick = SET_PLAY_PUSHING_FREE_KICK,
+    corner_kick       = SET_PLAY_CORNER_KICK,
+    kick_in           = SET_PLAY_KICK_IN
   };
 
   enum Penalty
@@ -92,6 +94,7 @@ public:
     kick_off_goal         = PENALTY_SPL_KICK_OFF_GOAL,
     request_for_pickup    = PENALTY_SPL_REQUEST_FOR_PICKUP,
     local_game_stuck      = PENALTY_SPL_LOCAL_GAME_STUCK,
+    illegal_positioning   = PENALTY_SPL_ILLEGAL_POSITIONING,
     substitute            = PENALTY_SUBSTITUTE,
     manual                = PENALTY_MANUAL
   };

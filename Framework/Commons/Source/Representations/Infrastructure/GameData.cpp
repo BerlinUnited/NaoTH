@@ -115,6 +115,8 @@ std::string GameData::toString(SetPlay value)
     RETURN_VALUE_TO_STR(set_none);
     RETURN_VALUE_TO_STR(goal_free_kick);
     RETURN_VALUE_TO_STR(pushing_free_kick);
+    RETURN_VALUE_TO_STR(corner_kick);
+    RETURN_VALUE_TO_STR(kick_in);
   }
   
   ASSERT(false);
@@ -136,6 +138,7 @@ std::string GameData::toString(Penalty value)
     RETURN_VALUE_TO_STR(kick_off_goal);
     RETURN_VALUE_TO_STR(request_for_pickup);
     RETURN_VALUE_TO_STR(local_game_stuck);
+    RETURN_VALUE_TO_STR(illegal_positioning);
     RETURN_VALUE_TO_STR(substitute);
     RETURN_VALUE_TO_STR(manual);
   }
