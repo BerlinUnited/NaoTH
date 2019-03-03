@@ -25,7 +25,6 @@ if args.model_path is not None:
     model_path = args.model_path
 
 with open(imgdb_path, "rb") as f:
-    pickle.load(f)  # Ignore image mean
     x = pickle.load(f)
     y = pickle.load(f)
 

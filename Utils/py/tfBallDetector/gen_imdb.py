@@ -35,8 +35,7 @@ if args.res is not None:
     res = {"x": int(args.res), "y": int(args.res)}
     
 with open(imgdb_path, "wb") as f:
-    x, y, mean, p = loadImages(img_path, res, 2)
-    pickle.dump(mean, f)
+    x, y, p = loadImages(img_path, res)
     pickle.dump(x, f)
     pickle.dump(y, f)
     pickle.dump(p, f)

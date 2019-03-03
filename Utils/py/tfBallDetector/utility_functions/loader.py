@@ -5,6 +5,7 @@ import numpy as np
 from keras.utils.np_utils import to_categorical
 import imutils
 from os.path import relpath
+import os
 
 
 def adjust_gamma(image, gamma=1.0):
@@ -19,43 +20,42 @@ def loadImage(path, res):
     return cv2.resize(img, (res["x"], res["y"]))
 
 
-def getDBPath(path, clss, filetype):
-    return glob(path + "/**/" + str(clss) + "/*." + filetype) + glob(path + "/" + str(clss) + "/*." + filetype)
+def getPatchPaths(path):
+    return glob(path + "/**/*_patch_bw/") + glob(path + "/*_patch_bw/")
 
 
-def loadImages(path, res, num_classes, rotate=True, flip=True, gain=True, color=False):
+def loadImages(path, res):
     db = []
     print("Loading imgs...")
-    num = np.zeros(num_classes)
-    for clss in range(num_classes):
-        for f in getDBPath(path, clss, "png") + getDBPath(path, clss, "jpg"):
-            num[clss] += 1
+
+
+    for patch_folder in getPatchPaths(path):
+        patch_folder_rel = str(relpath(patch_folder, path))
+        mask_path = path + "/" + patch_folder_rel[0:-len("_patch_bw")] + "_patch_mask" 
+        for f in glob(patch_folder + "/*.png"):
+            
             p = relpath(f, path)
-            print("\rLoading " + f + "... \t\t(" + str(len(db)) + ")", end="")
-            if color:
-              img = cv2.imread(f)
-            else:
-              img = cv2.imread(f, 0)
+#            print("\rLoading " + f + "... \t\t(" + str(len(db)) + ")", end="")
+            img = cv2.imread(f, 0)
             img = cv2.resize(img, (res["x"], res["y"]))
-            db.append((img / 255, to_categorical(clss, num_classes), p))
-            if clss == 1:  # Sorry, hard coded for now
-                if rotate:
-                    for a in (90, 180, 270):
-                        db.append((imutils.rotate(img / 255, a), to_categorical(clss, num_classes), p))
-                if flip:
-                    db.append((cv2.flip(img, 1) / 255, to_categorical(clss, num_classes), p))
-                if gain:
-                    for g in (0.4, 1.3):
-                        db.append((adjust_gamma(img, g) / 255, to_categorical(clss, num_classes), p))
+
+            # load mask file
+            f_mask = mask_path + "/" +  os.path.basename(p)
+            img_mask = cv2.imread(f_mask, 0)
+            img_mask = cv2.resize(img, (res["x"], res["y"]))
+            db.append((img / 255, img_mask / 255, p))
+
     random.shuffle(db)
     x, y, p = list(map(np.array, list(zip(*db))))
     mean = np.mean(x)
     x -= mean
-    if color:
-        x = x.reshape(*x.shape)
-    else:
-        x = x.reshape(*x.shape, 1)
+    
+    x = x.reshape(*x.shape, 1)
+    y = y.reshape(*y.shape, 1)
+
     print("Loading finished")
-    print("Ball images: " + str(num[1]))
-    print("Other images: " + str(num[0]))
-    return x, y, mean, p
+    print("images: " + str(len(x)))
+    return x, y, p
+
+if __name__ == "__main__":
+    loadImages("/home/thomas/src/nao2018/Utils/py/Blender/training_set_patchMask", res={"x":16, "y":16})
