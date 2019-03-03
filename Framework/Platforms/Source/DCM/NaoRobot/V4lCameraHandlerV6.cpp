@@ -88,9 +88,9 @@ void V4lCameraHandlerV6::init(std::string camDevice, CameraInfo::CameraID camID,
   // disable auto-focus
   // TODO: make focus configurable
   setSingleCameraParameter(V4L2_CID_FOCUS_AUTO, 0, "V4L2_CID_FOCUS_AUTO");
-  setSingleCameraParameter(V4L2_CID_FOCUS_ABSOLUTE, 250, "V4L2_CID_FOCUS_ABSOLUTE");
-  setSingleCameraParameter(V4L2_CID_FOCUS_ABSOLUTE, 250, "V4L2_CID_FOCUS_ABSOLUTE");
-  setSingleCameraParameter(V4L2_CID_FOCUS_ABSOLUTE, 250, "V4L2_CID_FOCUS_ABSOLUTE");
+  setSingleCameraParameter(V4L2_CID_FOCUS_ABSOLUTE, 0, "V4L2_CID_FOCUS_ABSOLUTE");
+  setSingleCameraParameter(V4L2_CID_FOCUS_ABSOLUTE, 0, "V4L2_CID_FOCUS_ABSOLUTE");
+  setSingleCameraParameter(V4L2_CID_FOCUS_ABSOLUTE, 0, "V4L2_CID_FOCUS_ABSOLUTE");
   
   // disable auto Hue
   setSingleCameraParameter(V4L2_CID_HUE_AUTO, 0, "V4L2_CID_HUE_AUTO");
