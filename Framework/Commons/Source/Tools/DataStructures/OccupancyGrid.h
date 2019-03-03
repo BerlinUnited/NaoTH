@@ -71,7 +71,7 @@ public:
   const unsigned int width;
   const unsigned int height;
 
-  OccupancyGrid(int width, int height)
+  OccupancyGrid(unsigned int width, unsigned int height)
     : width(width),
       height(height)
   { 
@@ -102,7 +102,7 @@ public:
       bias = 1 - bias; // bias = !bias :)
     }
 
-    currentValue = bias*height*width + (toResetY*width + toResetX + 1);
+    currentValue = static_cast<long>(bias*height*width + (toResetY*width + toResetX + 1));
 
     // reset a single element
     field[toResetY*width+toResetX] = 0;
@@ -145,7 +145,7 @@ protected:
   /** describes the value which is interpreted as "true" :) */
   long currentValue;
 
-  long bias;
+  unsigned int bias;
 
   unsigned int toResetX;
   unsigned int toResetY;
@@ -159,7 +159,7 @@ class ExtendedOccupancyGrid: public OccupancyGrid
 {
 
 public:
-  ExtendedOccupancyGrid(int width, int height)
+  ExtendedOccupancyGrid(unsigned int width, unsigned int height)
     : OccupancyGrid(width, height)
   {
   }
@@ -171,11 +171,11 @@ public:
   */
   class ValueAccessor
   {
-    int x;
-    int y;
+    unsigned int x;
+    unsigned int y;
     OccupancyGrid* grid;
 
-    ValueAccessor& create(int x, int y, OccupancyGrid* grid)
+    ValueAccessor& create(unsigned int x, unsigned int y, OccupancyGrid* grid)
     {
       this->x = x;
       this->y = y;
