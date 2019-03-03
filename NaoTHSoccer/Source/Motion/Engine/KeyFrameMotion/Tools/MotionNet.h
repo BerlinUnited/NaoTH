@@ -54,7 +54,7 @@ protected:
 public:
   const KeyFrame& getKeyFrame(int id) const;
   KeyFrame& getMutableKeyFrame(int id);
-  const Transition& getTransition(int i) const { return transitionArray[i]; }
+  const Transition& getTransition(int i) const { return transitionArray.at(i); }
 
   void add(const naoth::JointData::JointID& id);
   void add(const KeyFrame& keyFrame);
