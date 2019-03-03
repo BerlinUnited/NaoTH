@@ -57,7 +57,7 @@ void CompassProvider::execute()
   }
   */
 
-  ASSERT(getLinePercept().edgelLineIDs.size() == getLineGraphPercept().edgelsOnField.size());
+  ASSERT(getRansacLinePercept().edgelLineIDs.size() == getLineGraphPercept().edgelsOnField.size());
   // fill the compas
   if((int)getLineGraphPercept().edgelsOnField.size() > parameters.minimalNumberOfPairs)
   {
@@ -71,7 +71,7 @@ void CompassProvider::execute()
       // TODO: mean difference?
       //double r = (edgelProjectionsBegin[edgelPair.left] - edgelProjectionsBegin[edgelPair.right]).angle();
 
-      if(getLinePercept().edgelLineIDs[j] > -1) {
+      if(getRansacLinePercept().edgelLineIDs[j] > -1) {
         double r = getLineGraphPercept().edgelsOnField[j].direction.angle();
         //getProbabilisticQuadCompas().add(r, edgelPair.sim);
         getProbabilisticQuadCompas().add(r);
