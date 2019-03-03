@@ -24,8 +24,6 @@ GameData::GameData()
 
     firstHalf(true),
     kickingTeam(0),
-    dropInTeam(0),
-    dropInTime(0),
     secsRemaining(0),
     secondaryTime(0),
     // HACK: for more info see declaration
@@ -74,7 +72,6 @@ std::string GameData::toString(CompetitionType value)
   {
     RETURN_VALUE_TO_STR(competition_normal);
     RETURN_VALUE_TO_STR(competition_mixed);
-    RETURN_VALUE_TO_STR(competition_penalty);
   }
   
   ASSERT(false);
@@ -189,10 +186,7 @@ void GameData::parseFrom(const spl::RoboCupGameControlData& data, int teamNumber
   firstHalf       = data.firstHalf == 1;
   kickingTeam     = data.kickingTeam;
 
-  dropInTeam      = data.dropInTeam;
-
   // ACHTUNG: casting to signed values - game time can be negative (!)
-  dropInTime      = (int16_t)data.dropInTime;
   secsRemaining   = (int16_t)data.secsRemaining;
   secondaryTime   = (int16_t)data.secondaryTime;
   
@@ -212,7 +206,7 @@ void GameData::parseTeamInfo(TeamInfo& teamInfoDst, const spl::TeamInfo& teamInf
 {
   teamInfoDst.penaltyShot = teamInfoSrc.penaltyShot;
   teamInfoDst.score = teamInfoSrc.score;
-  teamInfoDst.teamColor = (TeamColor)teamInfoSrc.teamColor;
+  teamInfoDst.teamColor = (TeamColor)teamInfoSrc.teamColour;
   teamInfoDst.teamNumber = teamInfoSrc.teamNumber;
 
   teamInfoDst.players.resize(playersPerTeam);
@@ -237,8 +231,6 @@ void GameData::print(ostream& stream) const
 
   stream << "firstHalf = "      << firstHalf << std::endl;
   stream << "kickingTeam = "    << kickingTeam << std::endl;
-  stream << "dropInTeam = "     << dropInTeam << std::endl;
-  stream << "dropInTime = "     << dropInTime << std::endl;
   stream << "secsRemaining = "  << secsRemaining << std::endl;
   stream << "secondaryTime = "  << secondaryTime << std::endl;
 
