@@ -38,6 +38,8 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumElement("game.set_play","game.set_play.none", PlayerInfo::set_none);
   engine.registerEnumElement("game.set_play","game.set_play.goal_free_kick", PlayerInfo::goal_free_kick);
   engine.registerEnumElement("game.set_play","game.set_play.pushing_free_kick", PlayerInfo::pushing_free_kick);
+  engine.registerEnumElement("game.set_play","game.set_play.corner_kick", PlayerInfo::corner_kick);
+  engine.registerEnumElement("game.set_play","game.set_play.kick_in", PlayerInfo::kick_in);
 
   engine.registerEnumeratedInputSymbol("game.set_play", "game.set_play", &getSetPlay);
 
