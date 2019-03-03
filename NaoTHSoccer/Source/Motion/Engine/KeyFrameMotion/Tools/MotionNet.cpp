@@ -31,10 +31,8 @@ void MotionNet::add(const MotionNet::Transition& transition)
 
 void MotionNet::add(const JointData::JointID& id)
 {
-  if(numberOfJoints < JointData::numOfJoint)
-  {
-    jointIndex[numberOfJoints++] = id;
-  }//end if
+  assert(numberOfJoints < JointData::numOfJoint);
+  jointIndex[numberOfJoints++] = id;
 }//add
 
 
