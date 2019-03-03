@@ -1,10 +1,12 @@
 import logging
 import math
 import multiprocessing
+import signal
 import socket
 import struct
 import subprocess
 import time
+import traceback
 
 import sexpr
 
@@ -15,16 +17,24 @@ class SimsparkController(multiprocessing.Process):
     All available trainer commands can be found here at:
     http://simspark.sourceforge.net/wiki/index.php/Network_Protocol#Command_Messages_from_Coach.2FTrainer"""
 
-    def __init__(self, app, start_instance=True):
-        """Constructor of the :SimsparkController:. Initializes public and private attributes."""
-        super().__init__()
+    def __init__(self, app, start_instance=True, print_out=False):
+        """
+        Constructor of the :SimsparkController:. Initializes public and private attributes.
+
+        :param app:             the simspark executable, which should be used if :start_instance: is true
+        :param start_instance:  True, if simspark should be started in a separate process, False otherwise
+        :param print_out:       False, if the print outs from simspark should be hidden, True otherwise show them
+        """
+        super().__init__(name="SimsparkController")
 
         self.app = app
         self.__start_instance = start_instance
         self.__p = None
-        self.port = 3200
+        self.port_monitor = 3200
+        self.port_agent = 3100
         self.host = '127.0.0.1'
-        self.socket = None
+        self.socket: socket.socket = None
+        self.__cout = print_out
 
         self.__m = multiprocessing.Manager()
         self.__environment = self.__m.dict()
@@ -45,9 +55,9 @@ class SimsparkController(multiprocessing.Process):
         if not self.__start_instance or (self.__p and self.__p.poll() is None):
             logging.info("Connecting to simspark")
             try:
-                self.socket = socket.create_connection((self.host, self.port))
+                self.socket = socket.create_connection((self.host, self.port_monitor))
                 self.connected.set()
-                logging.info("Connected")
+                logging.info("Connected (%s@%s)", self.host, self.port_monitor)
             except Exception as e:
                 print('ERROR! Couldnt connect to simspark', e)
                 if self.__p:
@@ -58,6 +68,12 @@ class SimsparkController(multiprocessing.Process):
     def disconnect(self):
         """Disconnects this simspark monitor from the simspark instance."""
         if self.socket:
+            # empty command queue before closing socket
+            while not (self.__cmd_queue.empty() and self.__cmd_queue.qsize() == 0):
+                cmd = self.__cmd_queue.get()
+                logging.debug(cmd)
+                self.socket.sendall(struct.pack("!I", len(cmd)) + str.encode(cmd))
+            # no commands left, close socket
             self.socket.close()
             self.socket = None
             self.connected.clear()
@@ -74,16 +90,36 @@ class SimsparkController(multiprocessing.Process):
         """
         return self.connected.is_set()
 
+    def set_ports(self, monitor:int=None, agent:int=None):
+        """
+        Sets the monitor and/or agent port of the simspark instance. This method must be called before the process is
+        started.
+
+        :param monitor: the simspark monitor port; if None, the default port is used (3200)
+        :param agent:   the simspark agent port; if None, the default port is used (3100)
+        :return:        None
+        """
+        if monitor is not None:
+            self.port_monitor = monitor
+        if agent is not None:
+            self.port_agent = agent
+
     def __start_application(self):
         """Starts a simspark instance as separate process and waits until it is completely started."""
         if self.__start_instance:
-            logging.info('Start Simspark')
-            self.__p = subprocess.Popen([self.app], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            # wait until nothing is printed by simspark anymore
-            l = [0, 1]
-            while l[0] != l[1]:
-                l = [l[1], len(self.__p.stdout.peek())]
-                time.sleep(0.25)
+            # prepare call
+            app = [self.app]
+            if self.port_monitor is not None: app.extend(['--server-port', str(self.port_monitor)])
+            if self.port_agent is not None: app.extend(['--agent-port', str(self.port_agent)])
+            logging.info('Start Simspark: %s', ' '.join(app))
+            # pipe output or not
+            if self.__cout: self.__p = subprocess.Popen(app)
+            else: self.__p = subprocess.Popen(app, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            # wait for simspark to be fully started
+            time.sleep(2)
+            # NOTE: currently i found no solution to determine exactly, when simspark has started.
+            #       all attempts to read the output from simspark resulted in blocking or nothing read at all, despite
+            #       simspark is outputting some infos ... :(
             logging.info('Simspark started')
         else:
             logging.info('No instance of Simspark started!')
@@ -92,7 +128,12 @@ class SimsparkController(multiprocessing.Process):
         """Stops a still active simspark instance."""
         if self.__p and self.__p.poll() is None:
             logging.info("Quit simspark application")
-            self.__p.kill()
+            self.__p.send_signal(signal.SIGINT)
+            # wait before killing
+            time.sleep(0.2)
+            if self.__p.poll() is None:
+                logging.info("Kill simspark application")
+                self.__p.kill()
 
     def run(self):
         """The main method of this process. It starts the simspark application, connects to it and receives updates of
@@ -103,19 +144,43 @@ class SimsparkController(multiprocessing.Process):
             # connect to the simspark instance
             if not self.connected.is_set():
                 self.connect()
+                # make sure we got all relevant infos
+                self.cmd_reqfullstate()
             else:
-                length = struct.unpack("!I", self.socket.recv(4))[0]
-                msg = self.socket.recv(length).decode()
-                sexp = sexpr.str2sexpr(msg)
+                data = self.socket.recv(4)
+                # check if we got some data, empty data is disconnected!
+                if data:
+                    try:
+                        length = struct.unpack("!I", data)[0]
+                        msg = self.socket.recv(length).decode()
 
-                self.__update_environment(sexp[0])
-                self.__update_scene(sexp[1:])
+                        try:
+                            sexp = sexpr.str2sexpr_strict(msg)
 
-                # send scheduled (trainer) commands
-                if not self.__cmd_queue.empty():
-                    cmd = self.__cmd_queue.get()
-                    logging.debug(cmd)
-                    self.socket.sendall(struct.pack("!I", len(cmd)) + str.encode(cmd))
+                            if sexp and len(sexp) > 2:
+                                self.__update_environment(sexp[0])
+                                self.__update_scene(sexp[1:])
+                        except sexpr.SExprIllegalClosingParenError:
+                            # ignore specific parsing exception
+                            pass
+                        except sexpr.SExprPrematureEOFError:
+                            # ignore specific parsing exception
+                            pass
+                        except Exception as e:
+                            logging.error(str(e))
+                            traceback.print_exc(limit=2)
+
+                        # send scheduled (trainer) commands
+                        if not self.__cmd_queue.empty():
+                            cmd = self.__cmd_queue.get()
+                            logging.debug(cmd)
+                            self.socket.sendall(struct.pack("!I", len(cmd)) + str.encode(cmd))
+                    except Exception as e:
+                        print('ERROR:', e)
+                        traceback.print_exc(limit=2)
+                else:
+                    # no data - disconnected
+                    self.connected.clear()
         # send kill command, before disconnecting
         self.cmd_killsim()
         # disconnect
@@ -131,16 +196,27 @@ class SimsparkController(multiprocessing.Process):
         :param data:    the updated environment infos as list of key/value pairs
         :return:        None
         """
+        env = self.__environment
         for item in data:
-            if item[0] == 'messages':
-                if len(item) > 1:
-                    # TODO: save messages of players
-                    #if item[0] not in self.__environment: self.__environment[item[0]] = {}
-                    #self.__environment[item[0]][] = {}
-                    #print(item)
-                    pass
-            else:
-                self.__environment[item[0]] = item[1]
+            if len(item) == 2:
+                if item[0] == 'messages':
+                    if len(item) > 1:
+                        # TODO: save messages of players
+                        #if item[0] not in self.__environment: self.__environment[item[0]] = {}
+                        #self.__environment[item[0]][] = {}
+                        #print(item)
+                        pass
+                else:
+                    try:
+                        if item[0] in ['FieldLength','FieldWidth','FieldHeight','GoalWidth','GoalDepth','GoalHeight','FreeKickDistance','WaitBeforeKickOff','AgentRadius','BallRadius','BallMass','RuleGoalPauseTime','RuleKickInPauseTime','RuleHalfTime','time']:
+                            env[item[0]] = float(item[1])
+                        elif item[0] in ['half','score_left','score_right','play_mode']:
+                            env[item[0]] = int(item[1])
+                        else:
+                            env[item[0]] = item[1]
+                    except Exception as e:
+                        logging.warning("Exception while updating environment: %s\n%s", e, str(item))
+        self.__environment = env
 
     def __update_scene(self, data):
         """
@@ -152,59 +228,61 @@ class SimsparkController(multiprocessing.Process):
         :param data:    the scene graph full/sparse as list of lists
         :return:        None
         """
-        name, version, subversion = data[0]
-
-        if name == 'RSG':  # Ruby Scene Graph, and indicates that the scene graph is a full description of the environment.
-            # clear old scene graph
-            del self.__scene[:]
-            # apply new scene graph
-            for nd in data[1]:
-                # update known objects
-                if len(nd) == 4 and isinstance(nd, list) and len(nd[3]) > 4 and 'soccerball' in nd[3][3][1]:
-                    # found soccer ball
-                    self.__scene.append({ 'type': 'soccerball', 'x':float(nd[2][13]), 'y':float(nd[2][14]), 'z':float(nd[2][15]) })
-                elif len(nd) >= 4 and len(nd[3]) >= 4 and len(nd[3][3]) >= 4 and len(nd[3][3][3]) >= 4 and 'naobody' in nd[3][3][3][3][1]:
-                    # found an agent
-                    pose = self.__get_robot_pose(nd[3][2][1:])
-                    # set the nao infos
-                    self.__scene.append({
-                        'type': 'nao',
-                        'team': nd[3][3][3][5][2][3:],
-                        'number': int(nd[3][3][3][5][1][6:]) if len(nd[3][3][3][5][1])>6 else 0,
-                        'x': pose[0],
-                        'y': pose[1],
-                        'z': pose[2],
-                        'r': pose[3]
-                    })
+        if len(data[0]) == 3:
+            name, version, subversion = data[0]
+            if name == 'RSG':  # Ruby Scene Graph, and indicates that the scene graph is a full description of the environment.
+                # clear old scene graph
+                del self.__scene[:]
+                # apply new scene graph
+                for nd in data[1]:
+                    # update known objects
+                    if len(nd) == 4 and isinstance(nd, list) and len(nd[3]) > 4 and 'soccerball' in nd[3][3][1]:
+                        # found soccer ball
+                        self.__scene.append({ 'type': 'soccerball', 'x':float(nd[2][13]), 'y':float(nd[2][14]), 'z':float(nd[2][15]) })
+                    elif len(nd) >= 4 and len(nd[3]) >= 4 and len(nd[3][3]) >= 4 and len(nd[3][3][3]) >= 4 and 'naobody' in nd[3][3][3][3][1]:
+                        # found an agent
+                        pose = self.__get_robot_pose(nd[3][2][1:])
+                        # set the nao infos
+                        self.__scene.append({
+                            'type': 'nao',
+                            'team': nd[3][3][3][5][2][3:],
+                            'number': int(nd[3][3][3][5][1][6:]) if len(nd[3][3][3][5][1])>6 else 0,
+                            'x': pose[0],
+                            'y': pose[1],
+                            'z': pose[2],
+                            'r': pose[3]
+                        })
+                    else:
+                        # 'unknown' object
+                        self.__scene.append({ 'type': 'node'})
+            elif name == 'RDS':  # Ruby Diff Scene, and indicates that the scene graph is a partial description of the environment
+                # check scene graph
+                if len(data) == 2 and len(self.__scene) == len(data[1]):
+                    # iterate through scene objects and update known
+                    for i, nd in enumerate(self.__scene):
+                        # update ball position, only if changed
+                        if nd['type'] == 'soccerball' and len(data[1][i][1]) >= 16:
+                            ball = self.__scene[i]
+                            ball['x'] = float(data[1][i][1][13])
+                            ball['y'] = float(data[1][i][1][14])
+                            ball['z'] = float(data[1][i][1][15])
+                            # notify the managed list of the change!
+                            self.__scene[i] = ball
+                        elif nd['type'] == 'nao' and len(data[1][i][1]) > 4:
+                            robot = self.__scene[i]
+                            pose = self.__get_robot_pose(data[1][i][1][1][1:])
+                            robot['x'] = pose[0]
+                            robot['y'] = pose[1]
+                            robot['z'] = pose[2]
+                            robot['r'] = pose[3]
+                            # notify the managed list of the change!
+                            self.__scene[i] = robot
                 else:
-                    # 'unknown' object
-                    self.__scene.append({ 'type': 'node'})
-        elif name == 'RDS':  # Ruby Diff Scene, and indicates that the scene graph is a partial description of the environment
-            # check scene graph
-            if len(self.__scene) == len(data[1]):
-                # iterate through scene objects and update known
-                for i, nd in enumerate(self.__scene):
-                    # update ball position, only if changed
-                    if nd['type'] == 'soccerball' and len(data[1][i][1]) > 2:
-                        ball = self.__scene[i]
-                        ball['x'] = float(data[1][i][1][13])
-                        ball['y'] = float(data[1][i][1][14])
-                        ball['z'] = float(data[1][i][1][15])
-                        # notify the managed list of the change!
-                        self.__scene[i] = ball
-                    elif nd['type'] == 'nao' and len(data[1][i][1]) > 4:
-                        robot = self.__scene[i]
-                        pose = self.__get_robot_pose(data[1][i][1][1][1:])
-                        robot['x'] = pose[0]
-                        robot['y'] = pose[1]
-                        robot['z'] = pose[2]
-                        robot['r'] = pose[3]
-                        # notify the managed list of the change!
-                        self.__scene[i] = robot
+                    logging.warning('Scene graph mismatch!')
             else:
-                logging.warning('Scene graph mismatch!')
+                logging.warning('invalid scene graph update!')
         else:
-            logging.warning('invalid scene graph update!')
+            logging.warning('too few/many scene graph data: %s', str(data[0]))
 
     def __get_robot_pose(self, data):
         """
@@ -266,6 +344,51 @@ class SimsparkController(multiprocessing.Process):
             if nd['type'] == 'soccerball':
                 return nd
         return None
+
+    def __get_environment(self, key:str):
+        return self.__environment[key] if key in self.__environment else None
+
+    def get_time(self):
+        """
+        Returns the current simulation time.
+
+        :return:    the current simulation time or None (if there's no time)
+        """
+        return self.__get_environment('time')
+
+    def get_half(self):
+        """
+        Returns the current half.
+
+        :return:    the current half or None (if there's no half info)
+        """
+        return self.__get_environment('half')
+
+    def get_score(self, side:str='Left'):
+        """
+        Returns the current score of the left or right team.
+
+        :param left: 'Left', if the left score should be returned, otherwise ('Right') the right score is returned
+        :return:     the current score of the team (left or right) or None (if there's no half info)
+        """
+        return self.__get_environment('score_left') if side == 'Left' else self.__get_environment('score_right')
+
+    def get_team(self, side:str='Left'):
+        """
+        Returns the name of the left or right team.
+
+        :param left: 'Left', if the name of the left team should be returned, otherwise ('Right') the right team name is returned
+        :return:     the name of the team (left or right) or None (if there's no name info)
+        """
+        return self.__get_environment('team_left') if side == 'Left' else self.__get_environment('team_right')
+
+    def get_playMode(self):
+        """
+        Returns the play mode of the simulation.
+
+        :return:    the current play mode
+        """
+        return self.__get_environment('play_mode')
 
     def cmd_dropball(self):
         """Schedules the '(dropBall)' trainer command for the simspark instance."""

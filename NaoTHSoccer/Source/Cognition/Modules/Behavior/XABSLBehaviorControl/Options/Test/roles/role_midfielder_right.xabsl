@@ -1,0 +1,60 @@
+option role_midfielder_right
+{
+  common decision
+  {
+    if(!body.ready_to_walk)
+      goto idle;
+  }
+
+  initial state idle {
+    decision {
+      else
+        goto decide_subrole_or_passive;
+    }
+    action { /* do nothing */ }
+  }
+
+  state decide_subrole_or_passive
+  {
+    decision {
+      else if(strategy.role_d == striker)
+        goto striker_subrole;
+      else if(strategy.role_d == goalie_supporter)
+        // TODO: implement usefull behavior for the goalie supporter
+        stay;
+      else if(strategy.role_d == supporter)
+      // TODO: implement usefull behavior for the supporter
+        stay;
+      else 
+        stay;
+    }
+    action {
+      roles_go_to_passive_position();
+    }
+  }
+
+  state striker_subrole
+  {
+    decision {
+      else if(strategy.role_d != striker) {
+        goto decide_subrole_or_passive;
+      } else {
+        stay;
+      }
+    }
+    action {
+      head.control_mode = search_for_ball;
+
+      path_striker2018();
+      
+      //blinking
+      set_left_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
+      set_right_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
+      set_head = (platform.frameNumber % 3 == 0) ? ((robot_pose.x < 0) ? 3 : 6) : 0;
+      //for rotating
+      //set_left_ear = platform.frameNumber % 10;
+      //set_right_ear = platform.frameNumber % 10;
+      //set_head = platform.frameNumber % 13;
+    }
+  }
+}

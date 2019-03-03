@@ -9,53 +9,37 @@
 
 #include <limits>
 #include <ostream>
+#include <cstring>
+#include <map>
 
 #include "Tools/DataStructures/Printable.h"
+#include "Tools/Math/Vector2.h"
+#include "Representations/Infrastructure/Roles.h"
 
 class RoleDecisionModel: public naoth::Printable
 {
 public:
+    RoleDecisionModel() {}
 
-  unsigned int firstStriker;
-  unsigned int secondStriker;
+    std::map<unsigned int, Roles::Role> roles;
+    std::map<Roles::Static, Roles::Position> roles_position;
 
-  bool wantsToBeStriker;
+    Roles::Position getStaticRolePosition(Roles::Static role) const;
 
-  RoleDecisionModel():
-    firstStriker(std::numeric_limits<unsigned int>::max()),
-    secondStriker(std::numeric_limits<unsigned int>::max()),
-    wantsToBeStriker(false)
-  {
-  }
+    bool isStriker(unsigned int playerNumber) const;
 
-  virtual void print(std::ostream& stream) const {
+    /* OLD STUFF ------------------------------------------------ */
 
-    if (firstStriker != std::numeric_limits<unsigned int>::max()) {
-      stream << "First Striker: " << "Robot No. " << firstStriker << "\n";
+    unsigned int firstStriker = std::numeric_limits<unsigned int>::max();
+    unsigned int secondStriker = std::numeric_limits<unsigned int>::max();
+    bool wantsToBeStriker = false;
+
+    virtual void print(std::ostream& stream) const;
+
+    void resetStriker() {
+        firstStriker = std::numeric_limits<unsigned int>::max();
+        secondStriker = std::numeric_limits<unsigned int>::max();
     }
-    else {
-      stream << "Currently no first striker in use.\n";
-    }
-
-    if (secondStriker != std::numeric_limits<unsigned int>::max()) {
-      stream << "Second Striker: " << "Robot No. " << secondStriker << "\n";
-    }
-    else {
-      stream << "Currently no second striker in use.\n\n";
-    }
-
-    if (wantsToBeStriker) {
-      stream << "Robot wants to be a striker in the next round.\n\n";
-    }
-    else {      
-      stream << "Robot does not want to be a striker in the next round.\n\n";
-    }
-  }
-
-  void resetStriker() {
-      firstStriker = std::numeric_limits<unsigned int>::max();
-      secondStriker = std::numeric_limits<unsigned int>::max();
-  }
 };
 
 

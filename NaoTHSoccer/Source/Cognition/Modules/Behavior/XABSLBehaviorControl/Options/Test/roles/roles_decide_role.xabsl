@@ -1,0 +1,109 @@
+/** Behavior that is common to all players (goalie, striker, defender, ...) */
+option roles_decide_role
+{
+
+  common decision 
+  {
+    if(strategy.role == goalie) {
+      goto goalie_role;
+    } else if(strategy.role == defender_left) {
+      goto defender_left;
+    } else if(strategy.role == defender_center) {
+      goto defender_center;
+    } else if(strategy.role == defender_right) {
+      goto defender_right;
+    } else if(strategy.role == midfielder_left) {
+      goto midfielder_left;
+    } else if(strategy.role == midfielder_center) {
+      goto midfielder_center;
+    } else if(strategy.role == midfielder_right) {
+      goto midfielder_right;
+    } else if(strategy.role == forward_left) {
+      goto forward_left;
+    } else if(strategy.role == forward_center) {
+      goto forward_center;
+    } else if(strategy.role == forward_right) {
+      goto forward_right;
+    } else if(true) {
+      goto idle;
+    }
+  }
+
+  // has to be initial state, otherwise there might be problems with role switching
+  initial state idle{
+    action {
+      // TODO: indicate, that the player has no role!
+    }
+  }
+
+  state goalie_role {
+    action
+    {
+      situationStatusOwnHalf = true;
+      team.is_playing_as_striker = false;
+      role_goalie();
+    }
+  }
+
+  state defender_left {
+    action {
+      role_defender_left();
+    }
+  }
+
+  state defender_center {
+    action
+    {
+      role_defender_center();
+    }
+  }
+
+  state defender_right {
+    action
+    {
+      role_defender_right();
+    }
+  }
+
+  state midfielder_left {
+    action
+    {
+      role_midfielder_left();
+    }
+  }
+
+  state midfielder_center {
+    action
+    {
+      role_midfielder_center();
+    }
+  }
+
+  state midfielder_right {
+    action
+    {
+      role_midfielder_right();
+    }
+  }
+
+  state forward_left {
+    action
+    {
+      role_forward_left();
+    }
+  }
+
+  state forward_center {
+    action
+    {
+      role_forward_center();
+    }
+  }
+
+  state forward_right {
+    action
+    {
+      role_forward_right();
+    }
+  }
+}

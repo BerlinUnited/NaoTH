@@ -104,6 +104,16 @@ public:
     }
 
     /**
+     * @brief Returns the team message statistic representation of a player with the player number "number".
+     * @param number the player number
+     * @return Player reference to the players time measure info
+     * @throw  std::out_of_range  If no such player is present.
+     */
+    const Player& getPlayer(unsigned int number) const {
+        return data.at(number);
+    }
+
+    /**
      * @brief isStatisticsActive
      * @param player_number
      * @return
