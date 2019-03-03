@@ -4,6 +4,7 @@ import argparse
 import pickle
 from utility_functions.stats import keras_infer
 from utility_functions.loader import loadImage
+import numpy as np
 
 parser = argparse.ArgumentParser(description='Train the network given ')
 
@@ -31,4 +32,6 @@ if args.imgdb_path is not None:
 with open(imgdb_path, "rb") as f:
     mean = pickle.load(f)
 img = loadImage(args.img, res) - mean
-print(keras_infer(img.reshape(1, res["x"], res["y"], 1), args.model_path))
+prediction= keras_infer(img.reshape(1, res["x"], res["y"], 1), model_path)
+#print(prediction)
+print(np.argmax(prediction, axis=3))

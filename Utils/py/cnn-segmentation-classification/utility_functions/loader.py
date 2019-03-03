@@ -6,7 +6,7 @@ from keras.utils.np_utils import to_categorical
 import imutils
 from os.path import relpath
 import os
-
+import numpy as np;
 
 def adjust_gamma(image, gamma=1.0):
     invGamma = 1.0 / gamma
@@ -42,7 +42,7 @@ def loadImages(path, res):
             # load mask file
             f_mask = mask_path + "/" +  os.path.basename(p)
             img_mask = cv2.imread(f_mask, 0)
-            img_mask = cv2.resize(img, (res["x"], res["y"]))
+            img_mask = cv2.resize(img_mask, (res["x"], res["y"]))
             db.append((img / 255, img_mask == 255, p))
 
     random.shuffle(db)
@@ -56,7 +56,7 @@ def loadImages(path, res):
 
     print("Loading finished")
     print("images: " + str(len(x)))
-    return x, y, p
+    return x, y, mean, p
 
 if __name__ == "__main__":
     loadImages("/home/thomas/src/nao2018/Utils/py/Blender/training_set_patchMask", res={"x":16, "y":16})

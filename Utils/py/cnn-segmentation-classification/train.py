@@ -25,6 +25,7 @@ if args.model_path is not None:
     model_path = args.model_path
 
 with open(imgdb_path, "rb") as f:
+    pickle.load(f) # skip mean
     x = pickle.load(f)
     y = pickle.load(f)
 
@@ -49,5 +50,5 @@ model.compile(loss='categorical_crossentropy',
               metrics=['accuracy'])
 
 print(model.summary())
-model.fit(x, y, batch_size=100, epochs=200, verbose=1, validation_split=0.05)
+model.fit(x, y, batch_size=1000, epochs=200, verbose=1, validation_split=0.05)
 model.save(model_path)
