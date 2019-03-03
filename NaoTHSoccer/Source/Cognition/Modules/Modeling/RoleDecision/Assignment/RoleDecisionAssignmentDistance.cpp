@@ -27,7 +27,7 @@ void RoleDecisionAssignmentDistance::execute()
         for (const auto& i : getTeamMessage().data) {
             roleChange(i.first, params.assignment_role[i.first]);
         }
-    } else if (getPlayerInfo().robotState == PlayerInfo::playing) {
+    } else {
         // determine the best role for each player in the team context
         std::map<unsigned int, Roles::Static> new_roles;
 
