@@ -70,7 +70,7 @@ void Serializer<FSRData>::deserialize(std::istream& stream, FSRData& representat
 
 
   // NOTE: deprecated to support logs before 12.01.2017
-  for (size_t i = 0; i < FSRData::numOfFSR; i++) {
+  for (int i = 0; i < FSRData::numOfFSR; i++) {
 //    representation.force[i] = msg.force(i);
     representation.dataLeft[i] = msg.data(i);
     representation.dataRight[i] = msg.data(FSRData::numOfFSR+i);

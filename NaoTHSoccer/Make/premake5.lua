@@ -107,14 +107,14 @@ workspace "NaoTHSoccer"
     defines { "DEBUG" }
     -- FatalWarnings treats compiler/linker warnings as errors
     -- in premake4 linker warnings are not enabled
-    --flags { "FatalCompileWarnings"}
+    flags { "FatalCompileWarnings"}
     symbols "On"
 
   filter "configurations:OptDebug"
     defines { "DEBUG" }
     -- FatalWarnings treats compiler/linker warnings as errors
     -- in premake4 linker warnings are not enabled
-    -- flags { "FatalCompileWarnings" } --"LinkTimeOptimization"
+    flags { "FatalCompileWarnings" } --"LinkTimeOptimization"
     optimize "Speed"
 
   filter { "platforms:Native" }
@@ -141,8 +141,8 @@ workspace "NaoTHSoccer"
     warnings "Extra"
     -- Wconversion is not included in Wall and Wextra
     buildoptions {"-Wconversion"}
-    -- Wsign-conversion might be useful and is not included in Wconversion
-    --buildoptions {"-Wsign-conversion"}
+    -- These are a lot of warnings that should be fixed, but currently this is not the highest priority
+    buildoptions {"-Wno-sign-conversion"}
     
     -- for debugging:
     -- buildoptions {"-time"}

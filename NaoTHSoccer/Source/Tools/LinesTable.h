@@ -285,7 +285,7 @@ public:
         for(int i = 0; i < numberOfLinesTableType; i++)
         {
           const size_t idx = getNearestLine(point, line_type[i]);
-          closestPoints[x][y][i].id = idx;
+          closestPoints[x][y][i].id = static_cast<int>(idx);
           closestPoints[x][y][i].position = lines[idx].projection(point);
         }
       }//end for
