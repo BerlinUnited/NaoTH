@@ -74,7 +74,7 @@ public:
     {
       // the module creator with the given name already existed, so check if its type 
       // corresponds to the given one
-      ModuleCreator<T>* typedModule = dynamic_cast<ModuleCreator<T>*>(m->second);
+      typedModule = dynamic_cast<ModuleCreator<T>*>(m->second);
       if(typedModule == NULL)
       {
         std::cerr << "Module type mismatch: " << name << " is already registered as "
