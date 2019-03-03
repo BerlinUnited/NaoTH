@@ -38,16 +38,16 @@ model.add(Convolution2D(12, (3, 3), activation='relu'))
 #model.add(LeakyReLU(alpha=0.2))
 #model.add(MaxPooling2D(pool_size=(2, 2)))
 #model.add(Dropout(0.4))
-model.add(Convolution2D(1, (2, 2), activation='softmax'))
+model.add(Convolution2D(2, (2, 2), activation='softmax'))
 # begin upscaling
 model.add(UpSampling2D(size=(x.shape[1], x.shape[2])))
 
 # Now define how to train the net.
 
-model.compile(loss='mse',
+model.compile(loss='categorical_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
 
 print(model.summary())
-model.fit(x, y, batch_size=1000, epochs=200, verbose=1, validation_split=0.05)
+model.fit(x, y, batch_size=100, epochs=200, verbose=1, validation_split=0.05)
 model.save(model_path)
