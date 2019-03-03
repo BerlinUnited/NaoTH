@@ -286,10 +286,7 @@ public:
         {
           const size_t idx = getNearestLine(point, line_type[i]);
           closestPoints[x][y][i].id = idx;
-          if(idx != -1)
-            closestPoints[x][y][i].position = lines[idx].projection(point);
-          else
-            closestPoints[x][y][i].position = point;
+          closestPoints[x][y][i].position = lines[idx].projection(point);
         }
       }//end for
     }//end for
