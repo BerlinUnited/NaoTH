@@ -1,7 +1,7 @@
-package de.naoth.rc.dialogs.multiagentconfiguration;
+package de.naoth.rc.dialogsFx.multiagentconfiguration;
 
-import de.naoth.rc.dialogs.multiagentconfiguration.ui.RequestTreeItem;
-import de.naoth.rc.dialogs.multiagentconfiguration.ui.TreeNode;
+import de.naoth.rc.dialogsFx.multiagentconfiguration.ui.RequestTreeItem;
+import de.naoth.rc.dialogsFx.multiagentconfiguration.ui.TreeNode;
 import de.naoth.rc.messages.Messages;
 import java.io.File;
 import java.util.ArrayList;

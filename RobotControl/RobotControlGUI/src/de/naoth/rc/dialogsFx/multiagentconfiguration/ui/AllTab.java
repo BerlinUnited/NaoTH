@@ -1,7 +1,7 @@
-package de.naoth.rc.dialogs.multiagentconfiguration.ui;
+package de.naoth.rc.dialogsFx.multiagentconfiguration.ui;
 
-import de.naoth.rc.dialogs.multiagentconfiguration.Parameter;
-import de.naoth.rc.dialogs.multiagentconfiguration.Utils;
+import de.naoth.rc.dialogsFx.multiagentconfiguration.Parameter;
+import de.naoth.rc.dialogsFx.multiagentconfiguration.Utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;

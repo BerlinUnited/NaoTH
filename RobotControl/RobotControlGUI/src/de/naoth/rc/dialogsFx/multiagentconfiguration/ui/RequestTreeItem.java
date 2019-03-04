@@ -1,4 +1,4 @@
-package de.naoth.rc.dialogs.multiagentconfiguration.ui;
+package de.naoth.rc.dialogsFx.multiagentconfiguration.ui;
 
 /**
  *

@@ -1,7 +1,7 @@
-package de.naoth.rc.dialogs.multiagentconfiguration.ui;
+package de.naoth.rc.dialogsFx.multiagentconfiguration.ui;
 
 import de.naoth.rc.core.manager.ObjectListener;
-import de.naoth.rc.dialogs.multiagentconfiguration.Utils;
+import de.naoth.rc.dialogsFx.multiagentconfiguration.Utils;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.ResponseListener;
 import java.util.Arrays;

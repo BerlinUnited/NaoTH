@@ -1,8 +1,8 @@
-package de.naoth.rc.dialogs.multiagentconfiguration.ui;
+package de.naoth.rc.dialogsFx.multiagentconfiguration.ui;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import de.naoth.rc.dialogs.multiagentconfiguration.Parameter;
-import de.naoth.rc.dialogs.multiagentconfiguration.Utils;
+import de.naoth.rc.dialogsFx.multiagentconfiguration.Parameter;
+import de.naoth.rc.dialogsFx.multiagentconfiguration.Utils;
 import de.naoth.rc.messages.Messages;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.ResponseListener;

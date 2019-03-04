@@ -1,12 +1,12 @@
-package de.naoth.rc.dialogs.multiagentconfiguration;
+package de.naoth.rc.dialogsFx.multiagentconfiguration;
 
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractJFXDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
-import de.naoth.rc.dialogs.multiagentconfiguration.ui.AgentSelectionDialog;
-import de.naoth.rc.dialogs.multiagentconfiguration.ui.AgentTab;
-import de.naoth.rc.dialogs.multiagentconfiguration.ui.AllTab;
+import de.naoth.rc.dialogsFx.multiagentconfiguration.ui.AgentSelectionDialog;
+import de.naoth.rc.dialogsFx.multiagentconfiguration.ui.AgentTab;
+import de.naoth.rc.dialogsFx.multiagentconfiguration.ui.AllTab;
 import java.awt.SplashScreen;
 import java.io.IOException;
 import java.net.URL;

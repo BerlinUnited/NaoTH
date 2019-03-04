@@ -1,6 +1,6 @@
-package de.naoth.rc.dialogs.multiagentconfiguration.ui;
+package de.naoth.rc.dialogsFx.multiagentconfiguration.ui;
 
-import de.naoth.rc.dialogs.multiagentconfiguration.AgentItem;
+import de.naoth.rc.dialogsFx.multiagentconfiguration.AgentItem;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;

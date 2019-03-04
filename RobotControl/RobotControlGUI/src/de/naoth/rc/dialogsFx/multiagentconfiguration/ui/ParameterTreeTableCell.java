@@ -1,6 +1,6 @@
-package de.naoth.rc.dialogs.multiagentconfiguration.ui;
+package de.naoth.rc.dialogsFx.multiagentconfiguration.ui;
 
-import de.naoth.rc.dialogs.multiagentconfiguration.Parameter;
+import de.naoth.rc.dialogsFx.multiagentconfiguration.Parameter;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.input.KeyCode;

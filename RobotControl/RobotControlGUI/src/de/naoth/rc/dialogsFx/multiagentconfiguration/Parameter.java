@@ -1,4 +1,4 @@
-package de.naoth.rc.dialogs.multiagentconfiguration;
+package de.naoth.rc.dialogsFx.multiagentconfiguration;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
