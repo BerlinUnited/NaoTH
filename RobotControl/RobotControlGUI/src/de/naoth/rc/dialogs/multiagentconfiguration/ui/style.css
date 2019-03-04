@@ -1,0 +1,43 @@
+/* 
+    Created on : 05.06.2018, 18:46:24
+    Author     : Philipp Strobel <philippstrobel@posteo.de>
+*/
+
+.save_button {
+    -fx-graphic: url("../../../res/arrowdown.png");
+    -fx-padding: 0.5em;
+}
+
+.refresh_button {
+    -fx-graphic: url("../../../res/reload.png");
+    -fx-padding: 0.5em;
+}
+
+#btnSaveModules {
+  -fx-graphic: url("../../../res/arrowup.png");
+}
+
+#btnSaveParameters {
+  -fx-graphic: url("../../../res/arrowdown.png");
+  -fx-pref-height: 30;
+}
+
+#tabpane .tab-label {
+  -fx-font-style: italic;
+  /* move the graphic node (tab menu) to the right */
+  -fx-content-display: right;
+}
+
+#tabpane .menu-button {
+  /* do not show as "normal" button */
+  -fx-region-background: none;
+}
+
+#tabpane .menu-button .label {
+  /* no spacing between tab label text and "graphic" */
+  -fx-padding: 0;
+}
+
+#tabpane > .tab-header-area {
+  -fx-padding: 0.5em 5px 0em 2.5em;
+}
