@@ -35,7 +35,6 @@ ArmCollisionDetector2018::ArmCollisionDetector2018()
   getCollisionPercept().referenceHullLeft = ConvexHull::convexHull(getCollisionPercept().referenceHullLeft);
   getCollisionPercept().referenceHullRight = ConvexHull::convexHull(getCollisionPercept().referenceHullRight);
 
-  // test for the new make-method
   refpolyL.makeFromPointSet(getCollisionPercept().referenceHullLeft);
   refpolyR.makeFromPointSet(getCollisionPercept().referenceHullRight);
   
@@ -49,36 +48,75 @@ ArmCollisionDetector2018::~ArmCollisionDetector2018()
 
 void ArmCollisionDetector2018::execute()
 {
-	//Check if robot is in a suitable situation to recognize collisions
+	//Check if robot is in a suitable situation to recognize collisions#
+    const bool bodymodeOK = getBodyState().fall_down_state != BodyState::upright;
 	const bool armModeOK =
 		getMotionRequest().armMotionRequest.id == ArmMotionRequest::arms_synchronised_with_walk ||
 		getMotionRequest().armMotionRequest.id == ArmMotionRequest::arms_down;
+    const bool motionModeOK = getMotionStatus().currentMotion == motion::walk || getMotionStatus().currentMotion == motion::stand;
 
-	const bool motionModeOK = getMotionStatus().currentMotion == motion::walk || getMotionStatus().currentMotion == motion::stand;
-
-	if (!armModeOK || !motionModeOK)
+	// clear the joint command history in order to not check for collision while the robot is already executing a evasive movement for example
+	if (!armModeOK || !motionModeOK || !bodymodeOK)
 	{
-		// clear the joint command history
 		jointDataBufferLeft.clear();
 		jointDataBufferRight.clear();
-
 		return;
 	}
 
-  //collect Motorjoint Data and adjust timelag (Motor is 4 Frames ahead of Sensor)
+
+    //collect Motorjoint Data and adjust timelag (Motor is 4 Frames ahead of Sensor)
 	jointDataBufferLeft.add(getMotorJointData().position[JointData::LShoulderPitch]);
 	jointDataBufferRight.add(getMotorJointData().position[JointData::RShoulderPitch]);
+
+	//When the robots arms are down, they are less sensible to collisions, so in that case we lower the sensitivity
+	//by using the more sensitive threshold method
+	if (getMotionRequest().armMotionRequest.id == ArmMotionRequest::arms_down)
+	{
+		if (jointDataBufferLeft.isFull()) {
+			double e = jointDataBufferLeft.first() - getSensorJointData().position[JointData::LShoulderPitch];
+			collisionBufferLeft.add(std::fabs(e));
+		}
+		if (jointDataBufferRight.isFull()) {
+			double e = jointDataBufferRight.first() - getSensorJointData().position[JointData::RShoulderPitch];
+			collisionBufferRight.add(std::fabs(e));
+		}
+		double max_error = params.maxErrorStand;
+
+		// collision arm left
+		if (collisionBufferLeft.isFull() && collisionBufferLeft.getAverage() > max_error) {
+			getCollisionPercept().timeCollisionArmLeft = getFrameInfo().getTime();
+			jointDataBufferLeft.clear();
+			collisionBufferLeft.clear();
+
+		}
+
+		// collision arm right
+		if (collisionBufferRight.isFull() && collisionBufferRight.getAverage() > max_error) {
+			getCollisionPercept().timeCollisionArmRight = getFrameInfo().getTime();
+			jointDataBufferRight.clear();
+			collisionBufferRight.clear();
+		}
+
+		return;
+	}
+    else
+    {
+        collisionBufferLeft.clear();
+        collisionBufferRight.clear();
+    }
+
+    //In this part we check for collision using the "Polygon method" 
 
 	if (jointDataBufferLeft.isFull()) 
 	{
 		double a = jointDataBufferLeft.first();
 		double b = getSensorJointData().position[JointData::LShoulderPitch];
 		double er = (b - a);
-		//if (!Math::Polygon<double>::isInside(getCollisionPercept().referenceHullLeft, Vector2d(a, er)))
 		if (!refpolyL.isInside(Vector2d(a, er)))
 		{
 			//collision
 			getCollisionPercept().timeCollisionArmLeft = getFrameInfo().getTime();
+			jointDataBufferLeft.clear();
 		}
 	}
 
@@ -87,125 +125,12 @@ void ArmCollisionDetector2018::execute()
 		double a = jointDataBufferRight.first();
 		double b = getSensorJointData().position[JointData::RShoulderPitch];
 		double er = (b - a);
-		//if (!Math::Polygon<double>::isInside(getCollisionPercept().referenceHullRight, Vector2d(a, er)))
 		if (!refpolyR.isInside(Vector2d(a, er)))
 		{
 			//collision
 			getCollisionPercept().timeCollisionArmRight = getFrameInfo().getTime();
-		}
+			jointDataBufferRight.clear();
+        }
 	}
 
 }
-
-/*
-// NOTE: Old Version
-void ArmCollisionDetector2018::execute()
-{
-	DEBUG_REQUEST("Motion:ArmCollisionDetector2018:showReferenceHull",
-		for (size_t i = 0; i <getCollisionPercept().referenceHullLeft.size(); i++){
-			PLOT_GENERIC("ArmCollisionDetector2018:referenceHull", getCollisionPercept().referenceHullLeft[i].x, getCollisionPercept().referenceHullLeft[i].y);
-		}
-	);
-
-	DEBUG_REQUEST("Motion:ArmCollisionDetector2018:showLeftBuffer",
-		for (size_t i = 0; i <getCollisionPercept().pointBufferLeft.size(); i++){
-			PLOT_GENERIC("ArmCollisionDetector2018:pointBufferLeft", getCollisionPercept().pointBufferLeft[i].x, getCollisionPercept().pointBufferLeft[i].y);
-		}
-	);
-
-	DEBUG_REQUEST("Motion:ArmCollisionDetector2018:showRightBuffer",
-		for (size_t i = 0; i <getCollisionPercept().pointBufferRight.size(); i++){
-			PLOT_GENERIC("ArmCollisionDetector2018:pointBufferRight", getCollisionPercept().pointBufferRight[i].x, getCollisionPercept().pointBufferRight[i].y);
-		}
-	);
-
-	//Check if robot is in a suitable situation to recognize collisions
-	const bool armModeOK =
-		getMotionRequest().armMotionRequest.id == ArmMotionRequest::arms_synchronised_with_walk ||
-		getMotionRequest().armMotionRequest.id == ArmMotionRequest::arms_down;
-
-	const bool motionModeOK = getMotionStatus().currentMotion == motion::walk || getMotionStatus().currentMotion == motion::stand;
-
-	if (!armModeOK || !motionModeOK)
-	{
-		// clear the joint command history
-		jointDataBufferLeft.clear();
-		jointDataBufferRight.clear();
-
-		return;
-	}
-
-	//collect Motorjoint Data and adjust timelag (Motor is 4 Frames ahead of Sensor)
-	jointDataBufferLeft.add(getMotorJointData().position[JointData::LShoulderPitch]);
-	jointDataBufferRight.add(getMotorJointData().position[JointData::RShoulderPitch]);
-
-	//Fill up our Point object vectors we want to check when we have enough
-	if (jointDataBufferLeft.isFull()) {
-		double a = jointDataBufferLeft.first();
-		double b = getSensorJointData().position[JointData::LShoulderPitch];
-		double er = (b - a);
-		getCollisionPercept().pointBufferLeft.push_back(Vector2d(a, er));
-	}
-	if (jointDataBufferRight.isFull()) {
-		double a = jointDataBufferRight.first();
-		double b = getSensorJointData().position[JointData::RShoulderPitch];
-		double er = (b - a);
-		getCollisionPercept().pointBufferRight.push_back(Vector2d(a, er));
-	}
-
-	if (getCollisionPercept().pointBufferLeft.size() == params.collect)
-	{
-		//Convex Hull calculation
-		//First concatenate PointBuffer to reference points
-		//Next compare result to reference points
-		for (size_t i = 0; i < getCollisionPercept().referenceHullLeft.size(); i++){
-			getCollisionPercept().pointBufferLeft.push_back(getCollisionPercept().referenceHullLeft[i]);
-		}
-
-		getCollisionPercept().newHullLeft = ConvexHull::convexHull(getCollisionPercept().pointBufferLeft);
-    
-		if (getCollisionPercept().newHullLeft == getCollisionPercept().referenceHullLeft)
-		{
-			//No Collision
-			getCollisionPercept().newHullLeft.erase(getCollisionPercept().newHullLeft.begin(), getCollisionPercept().newHullLeft.end());
-			getCollisionPercept().pointBufferLeft.erase(getCollisionPercept().pointBufferLeft.begin(), getCollisionPercept().pointBufferLeft.end());
-		}
-		else
-		{
-			//Collision
-			getCollisionPercept().timeCollisionArmLeft = getFrameInfo().getTime();
-
-			getCollisionPercept().newHullLeft.erase(getCollisionPercept().newHullLeft.begin(), getCollisionPercept().newHullLeft.end());
-			getCollisionPercept().pointBufferLeft.erase(getCollisionPercept().pointBufferLeft.begin(), getCollisionPercept().pointBufferLeft.end());
-		}
-	}
-	if (getCollisionPercept().pointBufferRight.size() == params.collect)
-	{
-		//Convex Hull calculation
-		//First concatenate PointBuffer to reference points
-		//Next compare result to reference points
-		for (size_t i = 0; i < getCollisionPercept().referenceHullRight.size(); i++){
-			getCollisionPercept().pointBufferRight.push_back(getCollisionPercept().referenceHullRight[i]);
-		}
-
-		getCollisionPercept().newHullRight = ConvexHull::convexHull(getCollisionPercept().pointBufferRight);
-
-
-		if (getCollisionPercept().newHullRight == getCollisionPercept().referenceHullRight)
-		{
-			//No Collision
-			getCollisionPercept().newHullRight.erase(getCollisionPercept().newHullRight.begin(), getCollisionPercept().newHullRight.end());
-			getCollisionPercept().pointBufferRight.erase(getCollisionPercept().pointBufferRight.begin(), getCollisionPercept().pointBufferRight.end());
-		}
-		else
-		{
-			//Collision
-			getCollisionPercept().timeCollisionArmRight = getFrameInfo().getTime();
-
-			getCollisionPercept().newHullRight.erase(getCollisionPercept().newHullRight.begin(), getCollisionPercept().newHullRight.end());
-			getCollisionPercept().pointBufferRight.erase(getCollisionPercept().pointBufferRight.begin(), getCollisionPercept().pointBufferRight.end());
-		}
-	}
-
-}
-*/
