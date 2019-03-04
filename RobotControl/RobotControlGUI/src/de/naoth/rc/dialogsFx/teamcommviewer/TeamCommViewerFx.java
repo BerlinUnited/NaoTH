@@ -1,4 +1,4 @@
-package de.naoth.rc.dialogs.teamcommviewer;
+package de.naoth.rc.dialogsFx.teamcommviewer;
 
 import de.naoth.rc.Helper;
 import de.naoth.rc.RobotControl;
