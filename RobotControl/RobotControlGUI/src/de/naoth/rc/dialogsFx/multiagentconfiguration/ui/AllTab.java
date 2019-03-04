@@ -1,5 +1,7 @@
 package de.naoth.rc.dialogsFx.multiagentconfiguration.ui;
 
+import de.naoth.rc.componentsFx.TreeNode;
+import de.naoth.rc.componentsFx.CheckableTreeCell;
 import de.naoth.rc.dialogsFx.multiagentconfiguration.Parameter;
 import de.naoth.rc.dialogsFx.multiagentconfiguration.Utils;
 import java.io.File;
@@ -69,23 +71,23 @@ public class AllTab extends Tab
     
     @FXML
     public void initialize() {
-        TreeNode motion_root = new TreeNode("Motion");
+        TreeNode<String> motion_root = new TreeNode("Motion");
         motion_root.setExpanded(true);
         configurationsTabViewController.debugTree.getRoot().getChildren().add(motion_root);
         Utils.global_debug_requests.put(motion_root.getValue(), motion_root);
 
-        TreeNode cognition_root = new TreeNode("Cognition");
+        TreeNode<String> cognition_root = new TreeNode("Cognition");
         cognition_root.setExpanded(true);
         configurationsTabViewController.debugTree.getRoot().getChildren().add(cognition_root);
         Utils.global_debug_requests.put(cognition_root.getValue(), cognition_root);
 
-        TreeNode motion_modules_root = new TreeNode("Motion");
+        TreeNode<String> motion_modules_root = new TreeNode("Motion");
         motion_modules_root.setExpanded(true);
         
         configurationsTabViewController.moduleTree.getRoot().getChildren().add(motion_modules_root);
         Utils.global_modules.put(motion_modules_root.getValue(), motion_modules_root);
 
-        TreeNode cognition_modules_root = new TreeNode("Cognition");
+        TreeNode<String> cognition_modules_root = new TreeNode("Cognition");
         cognition_modules_root.setExpanded(true);
         configurationsTabViewController.moduleTree.getRoot().getChildren().add(cognition_modules_root);
         Utils.global_modules.put(cognition_modules_root.getValue(), cognition_modules_root);

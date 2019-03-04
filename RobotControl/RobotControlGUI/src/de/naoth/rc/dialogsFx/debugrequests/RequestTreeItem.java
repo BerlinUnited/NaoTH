@@ -1,10 +1,11 @@
-package de.naoth.rc.dialogsFx.multiagentconfiguration.ui;
+package de.naoth.rc.dialogsFx.debugrequests;
+
+import de.naoth.rc.componentsFx.TreeNode;
 
 /**
- *
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
-public class RequestTreeItem extends TreeNode
+public class RequestTreeItem extends TreeNode<String>
 {
     private String path;
     private String request;

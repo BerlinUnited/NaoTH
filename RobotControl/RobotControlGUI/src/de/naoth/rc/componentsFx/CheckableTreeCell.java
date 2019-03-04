@@ -1,4 +1,4 @@
-package de.naoth.rc.dialogsFx.multiagentconfiguration.ui;
+package de.naoth.rc.componentsFx;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -11,10 +11,10 @@ import javafx.scene.control.TreeItem;
 import javafx.util.Callback;
 
 /**
- *
  * @author Philipp Strobel <philippstrobel@posteo.de>
+ * @param <T>
  */
-public class CheckableTreeCell extends TreeCell<String>
+public class CheckableTreeCell<T extends Object> extends TreeCell<T>
 {
     private final CheckBox checkBox;
 
@@ -23,10 +23,8 @@ public class CheckableTreeCell extends TreeCell<String>
     private BooleanProperty indeterminateProperty;
 
     // --- selected state callback property
-    private ObjectProperty<Callback<TreeItem<String>, ObservableValue<Boolean>>>
-            selectedStateCallback =
-            new SimpleObjectProperty<Callback<TreeItem<String>, ObservableValue<Boolean>>>(
-            this, "selectedStateCallback");
+    private ObjectProperty<Callback<TreeItem<T>, ObservableValue<Boolean>>>
+            selectedStateCallback = new SimpleObjectProperty<>(this, "selectedStateCallback");
     
     public CheckableTreeCell() {
         this.getStyleClass().add("check-box-tree-cell");
@@ -44,34 +42,35 @@ public class CheckableTreeCell extends TreeCell<String>
         setGraphic(null);
     }
     
-    
     /**
      * Returns the {@link Callback} that is bound to by the CheckBox shown on screen.
+     * @return 
      */
-    public final Callback<TreeItem<String>, ObservableValue<Boolean>> getSelectedStateCallback() {
+    public final Callback<TreeItem<T>, ObservableValue<Boolean>> getSelectedStateCallback() {
         return selectedStateCallbackProperty().get();
     }
     
     /**
      * Property representing the {@link Callback} that is bound to by the
      * CheckBox shown on screen.
+     * @return 
      */
-    public final ObjectProperty<Callback<TreeItem<String>, ObservableValue<Boolean>>> selectedStateCallbackProperty() {
+    public final ObjectProperty<Callback<TreeItem<T>, ObservableValue<Boolean>>> selectedStateCallbackProperty() {
         return selectedStateCallback;
     }
     
     @Override
-    public void updateItem(String item, boolean empty) {
+    public void updateItem(T item, boolean empty) {
         super.updateItem(item, empty);
         
         if (empty) {
             setText(null);
             setGraphic(null);
         } else {
-            TreeItem<String> treeItem = getTreeItem();
+            TreeItem<T> treeItem = getTreeItem();
 
             // update the node content
-            setText(treeItem.getValue());
+            setText(String.valueOf(treeItem.getValue()));
             checkBox.setGraphic(treeItem == null ? null : treeItem.getGraphic());
             
             setGraphic(checkBox);
@@ -96,7 +95,7 @@ public class CheckableTreeCell extends TreeCell<String>
                 indeterminateProperty = cbti.indeterminateProperty();
                 checkBox.indeterminateProperty().bindBidirectional(indeterminateProperty);
             } else {
-                Callback<TreeItem<String>, ObservableValue<Boolean>> callback = getSelectedStateCallback();
+                Callback<TreeItem<T>, ObservableValue<Boolean>> callback = getSelectedStateCallback();
                 if (callback == null) {
                     throw new NullPointerException(
                             "The CheckBoxTreeCell selectedStateCallbackProperty can not be null");
@@ -108,5 +107,5 @@ public class CheckableTreeCell extends TreeCell<String>
                 }
             }
         }
-    }
+    } // updateItem()
 }

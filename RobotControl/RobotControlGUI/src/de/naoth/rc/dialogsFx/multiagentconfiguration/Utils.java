@@ -1,7 +1,7 @@
 package de.naoth.rc.dialogsFx.multiagentconfiguration;
 
-import de.naoth.rc.dialogsFx.multiagentconfiguration.ui.RequestTreeItem;
-import de.naoth.rc.dialogsFx.multiagentconfiguration.ui.TreeNode;
+import de.naoth.rc.dialogsFx.debugrequests.RequestTreeItem;
+import de.naoth.rc.componentsFx.TreeNode;
 import de.naoth.rc.messages.Messages;
 import java.io.File;
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ public class Utils
     public static ObservableList<String> global_representations_list = FXCollections.observableArrayList();
     private static FileChooser behaviorFileDialog;
     
-    public static void createDebugRequestTree(Messages.DebugRequest request, TreeNode root, BiConsumer<String, Boolean> debugRequest)
+    public static void createDebugRequestTree(Messages.DebugRequest request, TreeNode<String> root, BiConsumer<String, Boolean> debugRequest)
     {
         String root_name = root.getValue();
         
