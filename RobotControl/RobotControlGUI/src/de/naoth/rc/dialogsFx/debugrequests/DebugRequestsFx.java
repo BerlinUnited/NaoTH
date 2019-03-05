@@ -27,7 +27,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  */
 public class DebugRequestsFx extends AbstractJFXDialog implements ResponseListener
 {
-    @RCDialog(category = RCDialog.Category.Debug, name = "DebugRequestsFx")
+    @RCDialog(category = RCDialog.Category.Debug, name = "DebugRequest (FX)")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<DebugRequestsFx> {
         @InjectPlugin
