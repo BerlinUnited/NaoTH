@@ -67,10 +67,20 @@ public:
         double current_error = r.transpose() * r;
 
         Eigen::VectorXd a;
-        if(regularizer > 0.0)
-            a = (JtJ + regularizer * Eigen::MatrixXd::Identity(JtJ.rows(),JtJ.cols())).colPivHouseholderQr().solve(-J.transpose() * r + regularizer * Eigen::MatrixXd::Identity(J.cols(),J.cols()) * x);
-        else
+        if(regularizer > 0.0) {
+            Eigen::MatrixXd R = Eigen::MatrixXd::Zero(x.array().isFinite().sum(), T::RowsAtCompileTime);
+            int row_idx = 0;
+            for(int i = 0; i < T::RowsAtCompileTime; ++i){
+                if(std::isnan(x(i)))
+                    continue;
+
+                R(row_idx, i) = 1;
+                ++row_idx;
+            }
+            a = (JtJ + regularizer * Eigen::MatrixXd::Identity(JtJ.rows(),JtJ.cols())).colPivHouseholderQr().solve(-J.transpose() * r + regularizer * R * x);
+        } else {
             a = (JtJ).colPivHouseholderQr().solve(-J.transpose() * r);
+        }
 
         if(a.hasNaN()){
             failed = true;
@@ -179,8 +189,17 @@ public:
 
         Eigen::VectorXd a,b;
         if(this->regularizer > 0.0) {
-            a = (JtJ + this->lambda * JtJdiag         + this->regularizer * Eigen::MatrixXd::Identity(JtJ.rows(),JtJ.cols())).colPivHouseholderQr().solve(-J.transpose() * r + this->regularizer * Eigen::MatrixXd::Identity(J.cols(),J.cols()) * x);
-            b = (JtJ + this->lambda/this->v * JtJdiag + this->regularizer * Eigen::MatrixXd::Identity(JtJ.rows(),JtJ.cols())).colPivHouseholderQr().solve(-J.transpose() * r + this->regularizer * Eigen::MatrixXd::Identity(J.cols(),J.cols()) * x);
+            Eigen::MatrixXd R = Eigen::MatrixXd::Zero(x.array().isFinite().sum(), T::RowsAtCompileTime);
+            int row_idx = 0;
+            for(int i = 0; i < T::RowsAtCompileTime; ++i){
+                if(std::isnan(x(i)))
+                    continue;
+
+                R(row_idx, i) = 1;
+                ++row_idx;
+            }
+            a = (JtJ + this->lambda * JtJdiag         + this->regularizer * Eigen::MatrixXd::Identity(JtJ.rows(),JtJ.cols())).colPivHouseholderQr().solve(-J.transpose() * r + this->regularizer * R * x);
+            b = (JtJ + this->lambda/this->v * JtJdiag + this->regularizer * Eigen::MatrixXd::Identity(JtJ.rows(),JtJ.cols())).colPivHouseholderQr().solve(-J.transpose() * r + this->regularizer * R * x);
         } else {
             a = (JtJ + this->lambda * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r);
             b = (JtJ + this->lambda/this->v * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r);
@@ -268,7 +287,16 @@ public:
 
         Eigen::VectorXd a;
         if(this->regularizer > 0.0) {
-            a = (JtJ + this->lambda * JtJdiag + this->regularizer * Eigen::MatrixXd::Identity(JtJ.rows(),JtJ.cols())).colPivHouseholderQr().solve(-J.transpose() * r + this->regularizer * Eigen::MatrixXd::Identity(J.cols(),J.cols()) * x);
+            Eigen::MatrixXd R = Eigen::MatrixXd::Zero(x.array().isFinite().sum(), T::RowsAtCompileTime);
+            int row_idx = 0;
+            for(int i = 0; i < T::RowsAtCompileTime; ++i){
+                if(std::isnan(x(i)))
+                    continue;
+
+                R(row_idx, i) = 1;
+                ++row_idx;
+            }
+            a = (JtJ + this->lambda * JtJdiag + this->regularizer * Eigen::MatrixXd::Identity(JtJ.rows(),JtJ.cols())).colPivHouseholderQr().solve(-J.transpose() * r + this->regularizer * R * x);
         } else {
             a = (JtJ + this->lambda * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r);
         }
