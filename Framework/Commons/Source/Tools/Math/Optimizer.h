@@ -68,7 +68,7 @@ public:
 
         Eigen::VectorXd a;
         if(regularizer > 0.0) {
-            Eigen::MatrixXd R = Eigen::MatrixXd::Zero(x.array().isFinite().sum(), T::RowsAtCompileTime);
+            Eigen::MatrixXd R = Eigen::MatrixXd::Zero(x.array().isFinite().count(), T::RowsAtCompileTime);
             int row_idx = 0;
             for(int i = 0; i < T::RowsAtCompileTime; ++i){
                 if(std::isnan(x(i)))
@@ -189,7 +189,7 @@ public:
 
         Eigen::VectorXd a,b;
         if(this->regularizer > 0.0) {
-            Eigen::MatrixXd R = Eigen::MatrixXd::Zero(x.array().isFinite().sum(), T::RowsAtCompileTime);
+            Eigen::MatrixXd R = Eigen::MatrixXd::Zero(x.array().isFinite().count(), T::RowsAtCompileTime);
             int row_idx = 0;
             for(int i = 0; i < T::RowsAtCompileTime; ++i){
                 if(std::isnan(x(i)))
@@ -287,7 +287,7 @@ public:
 
         Eigen::VectorXd a;
         if(this->regularizer > 0.0) {
-            Eigen::MatrixXd R = Eigen::MatrixXd::Zero(x.array().isFinite().sum(), T::RowsAtCompileTime);
+            Eigen::MatrixXd R = Eigen::MatrixXd::Zero(x.array().isFinite().count(), T::RowsAtCompileTime);
             int row_idx = 0;
             for(int i = 0; i < T::RowsAtCompileTime; ++i){
                 if(std::isnan(x(i)))

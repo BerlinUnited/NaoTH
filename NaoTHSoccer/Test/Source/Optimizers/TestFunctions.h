@@ -114,6 +114,7 @@ namespace wikipedia {
 namespace fitting {
 
     class Linear {
+    public:
         Eigen::Vector2d x[5];
         Linear():
             x {Eigen::Vector2d(-2,-2),
@@ -123,21 +124,23 @@ namespace fitting {
                Eigen::Vector2d(2,2)}
         {}
 
-        Eigen::Matrix<double, 5, 1> operator ()(const Eigen::Matrix<double, 3, 1>& p) const {
+        Eigen::Matrix<double, 6, 1> operator ()(const Eigen::Matrix<double, 3, 1>& p) const {
             Eigen::Vector2d s(p(0),p(1));
-            double angle = p(2);
+            Eigen::Vector2d ortho_n(-std::sin(p(2)), std::cos(p(2)));
 
-            Eigen::Matrix<double, 5, 1> r;
+            Eigen::Matrix<double, 6, 1> r;
             for( int i = 0; i < 5; ++i){
                 Eigen::Vector2d c = x[i] - s;
-                r(i) = std::sqrt((c.transpose()*c - (c.transpose() * c) * std::cos(angle) * std::cos(angle))(0));
+                r(i) = ortho_n.transpose() * c;
             }
+
+            r(5) = p.transpose() * p;
 
             return r;
         }
 
         size_t getNumberOfResudials() const{
-            return 5;
+            return 6;
         }
 
         std::string getName(){
