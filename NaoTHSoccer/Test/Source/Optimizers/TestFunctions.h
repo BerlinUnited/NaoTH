@@ -111,4 +111,40 @@ namespace wikipedia {
     typedef Rastrigin<7> Rastrigin7;
 }
 
+namespace fitting {
+
+    class Linear {
+        Eigen::Vector2d x[5];
+        Linear():
+            x {Eigen::Vector2d(-2,-2),
+               Eigen::Vector2d(-1,-1),
+               Eigen::Vector2d(0,0),
+               Eigen::Vector2d(1,1),
+               Eigen::Vector2d(2,2)}
+        {}
+
+        Eigen::Matrix<double, 5, 1> operator ()(const Eigen::Matrix<double, 3, 1>& p) const {
+            Eigen::Vector2d s(p(0),p(1));
+            double angle = p(2);
+
+            Eigen::Matrix<double, 5, 1> r;
+            for( int i = 0; i < 5; ++i){
+                Eigen::Vector2d c = x[i] - s;
+                r(i) = std::sqrt((c.transpose()*c - (c.transpose() * c) * std::cos(angle) * std::cos(angle))(0));
+            }
+
+            return r;
+        }
+
+        size_t getNumberOfResudials() const{
+            return 5;
+        }
+
+        std::string getName(){
+            std::stringstream ss;
+            ss << "Linear Fitting" << std::endl;
+            return ss.str();
+        }
+    };
+}
 #endif
