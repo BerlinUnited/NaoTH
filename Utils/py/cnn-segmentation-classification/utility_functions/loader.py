@@ -52,6 +52,7 @@ def loadImages(path, res):
     
     x = x.reshape(*x.shape, 1)
     y = y.reshape(*y.shape, 1)
+    y = to_categorical(y, num_classes=2)
     
     print("Loading finished")
     print("images: " + str(len(x)))

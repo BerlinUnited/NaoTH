@@ -2,8 +2,68 @@
 
 import argparse
 import pickle
-from keras.layers import Flatten, MaxPooling2D, Convolution2D, Dropout, LeakyReLU, UpSampling2D, Dense
-from keras.models import Sequential
+import keras
+from keras.models import *
+from keras.layers import *
+
+def conv_block(inputs, filters, kernel_size):
+    x = inputs
+    if kernel_size is not None and (kernel_size[0] == 3 and kernel_size[1] == 3):
+        x = ZeroPadding2D((1,1))(x)
+    x = Conv2D(filters, kernel_size, use_bias=False)(x)
+    x = BatchNormalization()(x)
+    x = Activation("relu")(x)
+    return x
+
+def small_sweaty3(num_classes=2):
+    image_16x16 = Input((16,16,1))
+
+    # image dimension: 16x16
+    x = conv_block(image_16x16, 16, (1,1))
+    x = conv_block(x, 32, (3,3))
+
+    concat_16x16 = Concatenate()([image_16x16, x])
+
+    # downscale to image dimension: 8x8
+    image_8x8 = MaxPooling2D((2,2))(concat_16x16)
+
+    x = conv_block(image_8x8, 32, (1,1))
+    x = conv_block(x, 64, (3,3))
+    x = conv_block(x, 32, (1,1))
+    x = conv_block(x, 64, (3,3))
+
+    concat_8x8 = Concatenate()([image_8x8, x])
+
+    # downscale to image dimension: 4x4
+    image_4x4 = MaxPooling2D((2,2))(concat_8x8)
+
+    x = conv_block(image_4x4, 64, (1,1))
+    x = conv_block(x, 128, (3,3))
+    x = conv_block(x, 64, (1,1))
+    x = conv_block(x, 128, (3,3))
+    x = conv_block(x, 64, (3,3))
+
+    # upscale to image dimension 8x8
+    x = UpSampling2D((2,2))(x)
+
+    x = Concatenate()([x, concat_8x8])
+
+    x = conv_block(x, 64, (1,1))
+    x = conv_block(x, 32, (3,3))
+    x = conv_block(x, 32, (3,3))
+
+    # upscale to image dimension 16x6
+    x = UpSampling2D((2,2))(x)
+
+    x = Concatenate()([x, concat_16x16])
+
+    x = conv_block(x, 16,(1,1))
+    x = conv_block(x, 16,(3,3))
+    x = conv_block(x, num_classes, (3,3))
+
+
+
+    return Model(inputs=image_16x16, outputs=x)
 
 parser = argparse.ArgumentParser(description='Train the network given ')
 
@@ -29,27 +89,12 @@ with open(imgdb_path, "rb") as f:
     x = pickle.load(f)
     y = pickle.load(f)
 
-# The keras network. Adapt to your needs.
-
-model = Sequential()
-model.add(Convolution2D(8, (5, 5), input_shape=(x.shape[1], x.shape[2], 1),
-                        activation='relu', strides=(2, 2), padding='same'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Convolution2D(12, (3, 3), activation='relu'))
-#model.add(LeakyReLU(alpha=0.2))
-#model.add(MaxPooling2D(pool_size=(2, 2)))
-#model.add(Dropout(0.4))
-#model.add(Convolution2D(2, (2, 2), activation='softmax'))
-model.add(Dense(1))
-# begin upscaling
-model.add(UpSampling2D(size=(8, 8)))
-
-# Now define how to train the net.
-
+# define the keras network
+model = small_sweaty3()
 model.compile(loss='mean_squared_error',
               optimizer='adam',
               metrics=['accuracy'])
 
 print(model.summary())
-model.fit(x, y, batch_size=1000, epochs=200, verbose=1, validation_split=0.1)
+model.fit(x, y, batch_size=4, epochs=200, verbose=1, validation_split=0.1)
 model.save(model_path)
