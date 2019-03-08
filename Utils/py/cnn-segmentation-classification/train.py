@@ -65,6 +65,14 @@ def small_sweaty3(num_classes=2):
 
     return Model(inputs=image_16x16, outputs=x)
 
+def str2bool(v):
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
 parser = argparse.ArgumentParser(description='Train the network given ')
 
 parser.add_argument('-b', '--database-path', dest='imgdb_path',
@@ -72,6 +80,10 @@ parser.add_argument('-b', '--database-path', dest='imgdb_path',
                          'Default is img.db in current folder.')
 parser.add_argument('-m', '--model-path', dest='model_path',
                     help='Store the trained model using this path. Default is model.h5.')
+parser.add_argument("--proceed", type=str2bool, nargs='?', dest="proceed",
+                        const=True,
+                        help="Use the stored and pre-trained model base.")
+
 
 args = parser.parse_args()
 
@@ -84,13 +96,20 @@ if args.imgdb_path is not None:
 if args.model_path is not None:
     model_path = args.model_path
 
+
 with open(imgdb_path, "rb") as f:
     pickle.load(f) # skip mean
     x = pickle.load(f)
     y = pickle.load(f)
 
 # define the keras network
-model = small_sweaty3()
+if args.proceed is None or args.proceed == False:
+    print("Creating new model")
+    model = small_sweaty3()
+else:
+    print("Loading model " + model_path)
+    model = load_model(model_path)
+
 model.compile(loss='mean_squared_error',
               optimizer='adam',
               metrics=['accuracy'])
