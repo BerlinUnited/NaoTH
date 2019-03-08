@@ -1,19 +1,40 @@
 package de.naoth.rc.dialogsFx.representationinspector;
 
+import com.google.protobuf.Descriptors;
+import com.google.protobuf.DynamicMessage;
+import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractJFXDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
+import de.naoth.rc.logmanager.BlackBoard;
+import de.naoth.rc.logmanager.LogFileEventManager;
+import de.naoth.rc.logmanager.LogFrameListener;
 import de.naoth.rc.manager.GenericManager;
 import de.naoth.rc.manager.GenericManagerFactory;
+import de.naoth.rc.messages.AudioDataOuterClass;
+import de.naoth.rc.messages.FrameworkRepresentations;
+import de.naoth.rc.messages.Messages;
+import de.naoth.rc.messages.Representations;
+import de.naoth.rc.messages.TeamMessageOuterClass;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.ResponseListener;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
@@ -35,6 +56,8 @@ public class RepresentationInspectorFx  extends AbstractJFXDialog implements Res
         public static RobotControl parent;
         @InjectPlugin
         public static GenericManagerFactory genericManagerFactory;
+        @InjectPlugin
+        public static LogFileEventManager logFileEventManager;
     }
     
     @FXML ToggleGroup listener;
@@ -50,6 +73,8 @@ public class RepresentationInspectorFx  extends AbstractJFXDialog implements Res
     
     private GenericManager currentManager;
     private ObjectListener currentHandler;
+    private Listener dataListener;
+    private final LogRepresentationListener logHandler = new LogRepresentationListener();
     
     @Override
     protected boolean isSelfController() {
@@ -70,8 +95,9 @@ public class RepresentationInspectorFx  extends AbstractJFXDialog implements Res
         type.setValue(cmd_list_cognition);
         type.setOnAction((e) -> { typeChanged(); });
         
+        //SynchronizedObservableList
         list.getSelectionModel().selectedItemProperty().addListener((ob, o, n) -> {
-            subscribeRepresentations(n);
+            dataListener.setSelected(n);
         });
         
         listener.selectedToggleProperty().addListener((o, oldButton, newButton) -> {
@@ -89,7 +115,8 @@ public class RepresentationInspectorFx  extends AbstractJFXDialog implements Res
                 } else if(newButton.equals(btnBinary)) {
                     content.setText("TODO: Binary!");
                 } else if(newButton.equals(btnLog)) {
-                    content.setText("TODO: Log!");
+                    dataListener = new LogRepresentationListener();
+                    Plugin.logFileEventManager.addListener((LogFrameListener) dataListener);
                 }
             }
         });
@@ -147,6 +174,95 @@ public class RepresentationInspectorFx  extends AbstractJFXDialog implements Res
             return listName;
         }
     }
+    
+    class Listener
+    {
+        protected String selected = null;
+
+        /**
+         * Set/updates the new list data.
+         * @param c 
+         */
+        public void updateList(Collection<String> c) {
+            Platform.runLater(() -> {
+                // NOTE: setAll removes the selection, need to preserve it
+                String s = selected;
+                list.getItems().setAll(c.stream().sorted().collect(Collectors.toList()));
+                list.getSelectionModel().select(s);
+                selected = s;
+            });
+        }
+        
+        public void updateContent(String c) {
+            Platform.runLater(() -> {
+                content.setText(c);
+            });
+        }
+        
+        public void setSelected(String s) {
+            selected = s;
+        }
+    }
+    
+    
+    private class LogRepresentationListener extends Listener implements LogFrameListener
+    {
+        private final Map<String, byte[]> dataByName = new HashMap<>();
+        private final Map<String, Descriptors.Descriptor> pbMessages = new HashMap<>();
+
+        public LogRepresentationListener() {
+            retrievePbMessages(FrameworkRepresentations.getDescriptor());
+            retrievePbMessages(Representations.getDescriptor());
+            retrievePbMessages(TeamMessageOuterClass.getDescriptor());
+            retrievePbMessages(Messages.getDescriptor());
+            retrievePbMessages(AudioDataOuterClass.getDescriptor());
+        }
+        
+        private void retrievePbMessages(Descriptors.FileDescriptor d) {
+            d.getMessageTypes().forEach((desc) -> {
+                pbMessages.put(desc.getName(), desc);
+            });
+        }
+        
+        @Override
+        public void newFrame(BlackBoard b) {
+            // clear old frame data
+            dataByName.clear();
+            // map new frame data
+            b.getNames().forEach((name) -> { dataByName.put(name, b.get(name).getData()); });
+            // update list
+            updateList(dataByName.keySet());
+            
+            showFrame();
+        }
+
+        @Override
+        public void setSelected(String s) {
+            super.setSelected(s);
+            showFrame();
+        }
+        
+        public void showFrame() {
+            if(selected != null) {
+                if(pbMessages.containsKey(selected)) {
+                    if(dataByName.containsKey(selected)) {
+                        try {
+                            DynamicMessage r = DynamicMessage.parseFrom(pbMessages.get(selected), dataByName.get(selected));
+                            updateContent(r.toString());
+                        } catch (InvalidProtocolBufferException ex) {
+                            updateContent("Error while parsing.");
+                            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
+                        }
+                    } else {
+                        updateContent("No data available: " + selected);
+                    }
+                } else {
+                    updateContent("Unknown protobuf message: " + selected);
+                }
+            }
+        }
+    }
+
     
     class DataHandlerPrint implements ObjectListener<byte[]>
     {
