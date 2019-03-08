@@ -7,6 +7,10 @@ dt = 0.010; % s ~10ms
 % time to preview in the future
 previewTime = 0.5; %s
 
+% parameters for walk2017/2018
+R = 100;
+q = 1e5;
+
 % number of preview steps, i.e., length of F
 N = floor(previewTime / dt);
 
@@ -23,7 +27,7 @@ paramFileName = sprintf('previewControl%d.prm', round(previewTime*1000));
 save(paramFileName, 'dt', 'N', 'Nh', '-ascii');
 
 for z = h_min:dh:h_max
-	[A, b, c, Ki, Ks,  F] = previewcontrol(z, dt, previewTime);
+	[A, b, c, Ki, Ks,  F] = previewcontrol(z, dt, previewTime,R,q);
 	h = z*1000; % h in mm
 	save(paramFileName, 'h', 'Ki', 'Ks', 'F', '-ascii', '-append')
 end
