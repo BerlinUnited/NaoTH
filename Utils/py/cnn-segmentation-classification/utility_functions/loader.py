@@ -26,7 +26,7 @@ def getPatchPaths(path):
 
 def loadImages(path, res):
     db = []
-    print("Loading imgs...")
+    print("Loading images...")
 
 
     for patch_folder in getPatchPaths(path):
@@ -41,7 +41,12 @@ def loadImages(path, res):
 
             # load mask file
             f_mask = mask_path + "/" +  os.path.basename(p)
-            img_mask = cv2.imread(f_mask, 0)
+            if os.path.exists(f_mask):
+                img_mask = cv2.imread(f_mask, 0)
+            elif "noball" in mask_path:
+                img_mask = np.zeros((res["x"], res["y"]))
+            else:
+                raise "Missing mask file for " + f
             img_mask = cv2.resize(img_mask, (res["x"], res["y"]))
             db.append((img / 255, img_mask / 255, p))
 
