@@ -53,10 +53,10 @@ def loadImages(path, res):
 
             img_mask = cv2.GaussianBlur(img_mask,(3,3), 0.4)
             
-            cv2.namedWindow('image',cv2.WINDOW_NORMAL)
-            cv2.resizeWindow('image', 600,600)
-            cv2.imshow("image", np.concatenate((img, img_mask), axis=1))
-            cv2.waitKey()
+            #cv2.namedWindow('image',cv2.WINDOW_NORMAL)
+            #cv2.resizeWindow('image', 600,600)
+            #cv2.imshow("image", np.concatenate((img, img_mask), axis=1))
+            #cv2.waitKey()
 
             db.append((img / 255, img_mask / 255, p))
 
