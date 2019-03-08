@@ -62,6 +62,3 @@ def loadImages(path, res):
     print("Loading finished")
     print("images: " + str(len(x)))
     return x, y, mean, p
-
-if __name__ == "__main__":
-    loadImages("/home/thomas/src/nao2018/Utils/py/Blender/training_set_patchMask", res={"x":16, "y":16})

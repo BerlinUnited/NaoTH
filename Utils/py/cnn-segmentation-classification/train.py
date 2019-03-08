@@ -102,7 +102,7 @@ with open(imgdb_path, "rb") as f:
     x = pickle.load(f)
     y = pickle.load(f)
 
-# define the keras network
+# define the Keras network
 if args.proceed is None or args.proceed == False:
     print("Creating new model")
     model = small_sweaty3()
