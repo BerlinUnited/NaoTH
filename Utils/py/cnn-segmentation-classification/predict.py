@@ -36,8 +36,18 @@ img = loadImage(args.img, res) - mean
 prediction= keras_infer(img.reshape(1, res["x"], res["y"], 1), model_path)
 
 prediction = prediction[0]
+
+# color-code classification
+predicted_image = np.zeros((16,16))
+for row in range(0,16):
+    for col in range(0,16):
+        if prediction[row][col][0] > prediction[row][col][1]:
+            predicted_image[row][col] = 0.0
+        else:
+            predicted_image[row][col] = 1.0
+
 cv2.namedWindow('image',cv2.WINDOW_NORMAL)
 cv2.resizeWindow('image', 600,600)
-cv2.imshow("image", prediction)
+cv2.imshow("image", np.concatenate((img, predicted_image), axis=1))
 cv2.waitKey()
 #print(np.argmax(prediction, axis=3))
