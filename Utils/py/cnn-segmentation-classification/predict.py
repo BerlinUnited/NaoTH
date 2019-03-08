@@ -36,13 +36,14 @@ img_orig = loadImage(args.img, res)
 img = img_orig - mean
 prediction= keras_infer(img.reshape(1, res["x"], res["y"], 1), model_path)
 
+# only one patch in image
 prediction = prediction[0]
 
-# color-code classification
-predicted_image = np.argmax(prediction, axis=2)
+classified = np.argmax(prediction, axis=2)
+ball_prop = prediction[:, :, 1]
 
 cv2.namedWindow('image',cv2.WINDOW_NORMAL)
 cv2.resizeWindow('image', 600,600)
-cv2.imshow("image", np.concatenate((img_orig, predicted_image), axis=1))
+cv2.imshow("image", np.concatenate((img_orig, ball_prop, classified), axis=1))
 cv2.waitKey()
 #print(np.argmax(prediction, axis=3))
