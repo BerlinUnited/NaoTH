@@ -96,5 +96,8 @@ model.compile(loss='mean_squared_error',
               metrics=['accuracy'])
 
 print(model.summary())
-model.fit(x, y, batch_size=4, epochs=200, verbose=1, validation_split=0.1)
+
+save_callback = keras.callbacks.ModelCheckpoint(filepath='model.h5', monitor='loss', verbose=1, save_best_only=True)
+
+model.fit(x, y, batch_size=4, epochs=200, verbose=1, validation_split=0.1, callbacks=[save_callback])
 model.save(model_path)
