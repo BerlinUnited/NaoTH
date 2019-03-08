@@ -32,7 +32,8 @@ if args.imgdb_path is not None:
 
 with open(imgdb_path, "rb") as f:
     mean = pickle.load(f)
-img = loadImage(args.img, res) - mean
+img_orig = loadImage(args.img, res)
+img = img_orig - mean
 prediction= keras_infer(img.reshape(1, res["x"], res["y"], 1), model_path)
 
 prediction = prediction[0]
@@ -42,6 +43,6 @@ predicted_image = np.argmax(prediction, axis=2)
 
 cv2.namedWindow('image',cv2.WINDOW_NORMAL)
 cv2.resizeWindow('image', 600,600)
-cv2.imshow("image", np.concatenate((img, predicted_image), axis=1))
+cv2.imshow("image", np.concatenate((img_orig, predicted_image), axis=1))
 cv2.waitKey()
 #print(np.argmax(prediction, axis=3))
