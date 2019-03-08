@@ -7,6 +7,8 @@ import imutils
 from os.path import relpath
 import os
 import numpy as np;
+import cv2
+
 
 def adjust_gamma(image, gamma=1.0):
     invGamma = 1.0 / gamma
@@ -38,16 +40,24 @@ def loadImages(path, res):
 #            print("\rLoading " + f + "... \t\t(" + str(len(db)) + ")", end="")
             img = cv2.imread(f, 0)
             img = cv2.resize(img, (res["x"], res["y"]))
-
+            
             # load mask file
             f_mask = mask_path + "/" +  os.path.basename(p)
             if os.path.exists(f_mask):
                 img_mask = cv2.imread(f_mask, 0)
+                img_mask = cv2.resize(img_mask, (res["x"], res["y"]))
             elif "noball" in mask_path:
                 img_mask = np.zeros((res["x"], res["y"]))
             else:
                 raise "Missing mask file for " + f
-            img_mask = cv2.resize(img_mask, (res["x"], res["y"]))
+
+            img_mask = cv2.blur(img_mask,(2,2))
+            
+            #cv2.namedWindow('image',cv2.WINDOW_NORMAL)
+            #cv2.resizeWindow('image', 600,600)
+            #cv2.imshow("image", np.concatenate((img, img_mask), axis=1))
+            #cv2.waitKey()
+
             db.append((img / 255, img_mask / 255, p))
 
     random.shuffle(db)
@@ -62,3 +72,6 @@ def loadImages(path, res):
     print("Loading finished")
     print("images: " + str(len(x)))
     return x, y, mean, p
+
+if __name__ == "__main__":
+    loadImages("/home/thomas/src/nao2018/Utils/py/Blender/training_set_patchMask", res={"x":16, "y":16})
