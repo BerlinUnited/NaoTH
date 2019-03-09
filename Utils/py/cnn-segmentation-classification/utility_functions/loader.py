@@ -5,7 +5,8 @@ import numpy as np
 import imutils
 from os.path import relpath
 import os
-import numpy as np;
+import numpy as np
+import math
 import cv2
 
 
@@ -37,21 +38,24 @@ def loadImages(path, res):
             
             p = relpath(f, path)
 #            print("\rLoading " + f + "... \t\t(" + str(len(db)) + ")", end="")
-            img = cv2.imread(f, 0)
+            img = cv2.imread(f, cv2.IMREAD_GRAYSCALE)
             img = cv2.resize(img, (res["x"], res["y"]))
             
             # load mask file
             f_mask = mask_path + "/" +  os.path.basename(p)
             if os.path.exists(f_mask):
-                img_mask = cv2.imread(f_mask, 0)
+                img_mask = cv2.imread(f_mask, cv2.IMREAD_GRAYSCALE)
                 img_mask = cv2.resize(img_mask, (res["x"], res["y"]))
             elif "noball" in mask_path:
                 img_mask = np.zeros((res["x"], res["y"]))
             else:
                 raise "Missing mask file for " + f
 
-            img_mask = cv2.GaussianBlur(img_mask,(3,3), 0.4)
-            
+            img = img.astype(float) / 255.0
+            img_mask = img_mask.astype(float) / 255.0
+
+            img_mask = cv2.GaussianBlur(img_mask,(3,3), 0.5)
+
             #cv2.namedWindow('image',cv2.WINDOW_NORMAL)
             #cv2.resizeWindow('image', 600,600)
             #cv2.imshow("image", np.concatenate((img, img_mask), axis=1))
@@ -59,10 +63,10 @@ def loadImages(path, res):
 
             #make the image mask a two channel
             img_mask_channel = np.zeros((res["x"], res["y"], 2))
-            img_mask_channel[:,:,0] = 1-(img_mask/255)
-            img_mask_channel[:,:,1] = img_mask/255
+            img_mask_channel[:,:,0] = 1-(img_mask)
+            img_mask_channel[:,:,1] = img_mask
 
-            db.append((img / 255, img_mask_channel, p))
+            db.append((img, img_mask_channel, p))
 
     random.shuffle(db)
     x, y, p = list(map(np.array, list(zip(*db))))
