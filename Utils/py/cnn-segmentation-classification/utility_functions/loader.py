@@ -2,7 +2,6 @@ import random
 from glob import glob
 import cv2
 import numpy as np
-from keras.utils.np_utils import to_categorical
 import imutils
 from os.path import relpath
 import os
@@ -58,16 +57,19 @@ def loadImages(path, res):
             #cv2.imshow("image", np.concatenate((img, img_mask), axis=1))
             #cv2.waitKey()
 
-            db.append((img / 255, img_mask / 255, p))
+            #make the image mask a two channel
+            img_mask_channel = np.zeros((res["x"], res["y"], 2))
+            img_mask_channel[:,:,0] = 1-(img_mask/255)
+            img_mask_channel[:,:,1] = img_mask/255
+
+            db.append((img / 255, img_mask_channel, p))
 
     random.shuffle(db)
     x, y, p = list(map(np.array, list(zip(*db))))
     mean = np.mean(x)
     x -= mean
-    
+
     x = x.reshape(*x.shape, 1)
-    y = y.reshape(*y.shape, 1)
-    y = to_categorical(y, num_classes=2)
     
     print("Loading finished")
     print("images: " + str(len(x)))
