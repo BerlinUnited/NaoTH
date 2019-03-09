@@ -2,7 +2,7 @@
 
 import argparse
 import pickle
-from utility_functions.stats import keras_infer
+import keras;
 from utility_functions.loader import loadImage
 import numpy as np
 import cv2
@@ -10,6 +10,7 @@ import cv2
 parser = argparse.ArgumentParser(description='Train the network given ')
 
 parser.add_argument('img', metavar='img',
+                    nargs='+',
                     help='The image to be predicted.')
 parser.add_argument('-b', '--database-path', dest='imgdb_path',
                     help='Path to the image database containing the required image mean.'
@@ -32,18 +33,24 @@ if args.imgdb_path is not None:
 
 with open(imgdb_path, "rb") as f:
     mean = pickle.load(f)
-img_orig = loadImage(args.img, res)
-img = img_orig - mean
-prediction= keras_infer(img.reshape(1, res["x"], res["y"], 1), model_path)
 
-# only one patch in image
-prediction = prediction[0]
-
-classified = np.argmax(prediction, axis=2)
-ball_prop = prediction[:, :, 1]
+model = keras.models.load_model(model_path)
 
 cv2.namedWindow('image',cv2.WINDOW_NORMAL)
 cv2.resizeWindow('image', 600,600)
-cv2.imshow("image", np.concatenate((img_orig, ball_prop, classified), axis=1))
+
+out_images = list()
+
+for img_path in args.img:
+    img_orig = loadImage(img_path, res)
+    img = img_orig - mean
+    prediction = model.predict(img.reshape(1, res["x"], res["y"], 1))[0]
+
+    classified = np.argmax(prediction, axis=2)
+    noball_prop = prediction[:, :, 0]
+    ball_prop = prediction[:, :, 1]
+    out_images.append(np.concatenate((img_orig, noball_prop, ball_prop, classified), axis=0))
+
+cv2.imshow("image", np.concatenate(out_images, axis=1))
 cv2.waitKey()
 #print(np.argmax(prediction, axis=3))
