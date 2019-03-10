@@ -135,11 +135,12 @@ namespace naoth
       uc.button.RB     = ((report[5] & 0x20) == 0x20);
       uc.button.LT     = ((report[5] & 0x40) == 0x40);
       uc.button.RT     = ((report[5] & 0x80) == 0x80);
+      uc.dpad          = report[6] >> 4;
       uc.stick.L.x     = report[1] / 128.0 - 1; // normalized -1..1
       uc.stick.L.y     = report[2] / 128.0 - 1; // normalized -1..1
-      uc.stick.R.x     = report[3] / 128.0 - 1; // normalized -1..1
-      uc.stick.R.y     = report[4] / 128.0 - 1; // normalized -1..1
-      uc.dpad          = report[6] >> 4;
+      // right stick x/y converted to Nao x/y coordinates
+      uc.stick.R.x     = 1 - report[4] / 128.0; // normalized -1..1
+      uc.stick.R.y     = report[3] / 128.0 - 1; // normalized -1..1
       return 0;
     }
 //--------
@@ -153,6 +154,8 @@ namespace naoth
       databaseJoypads.insert(std::make_pair(j1->getVendorId(), j1));
       auto j2 = std::make_shared<Saitek5F0D>();
       databaseJoypads.insert(std::make_pair(j2->getVendorId(), j2));
+
+      resultFind = databaseJoypads.cbegin();
     }
 //--------
     int SupportedJoypad::findDevice(const std::string& nodeToSearchFor)

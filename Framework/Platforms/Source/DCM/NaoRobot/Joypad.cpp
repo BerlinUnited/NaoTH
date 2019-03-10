@@ -17,7 +17,7 @@
 #include "Joypad.h"
 //--------------------------------------------------------------------------------------------------
 #ifndef DEBUG
-#define DEBUG
+//#define DEBUG
 #endif // !DEBUG
 
 #define FD_INVALID        -1

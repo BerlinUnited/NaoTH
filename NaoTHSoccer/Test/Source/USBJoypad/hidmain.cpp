@@ -29,7 +29,7 @@ int main()
 
   ts.tv_sec = 0;
   ts.tv_nsec = 100000000;
-  int moreData = 500;
+  int moreData = 200;
   while (moreData > 0)
   {  // get as much as you want
     std::fprintf(stderr, "%03i: \n", moreData);
