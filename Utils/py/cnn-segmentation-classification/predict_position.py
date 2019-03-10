@@ -40,14 +40,15 @@ cv2.namedWindow('image',cv2.WINDOW_NORMAL)
 cv2.resizeWindow('image', 600,600)
 
 out_images = list()
-
+print("Predicting image...", end="")
+i = 0
 for img_path in args.img:
     img_orig = loadImage(img_path, res)
     debug_img = cv2.cvtColor((img_orig*255).astype(np.uint8), cv2.COLOR_GRAY2BGR)
 
     img = img_orig - mean
+    
     prediction = model.predict(img.reshape(1, res["x"], res["y"], 1))[0]
-
 
     radius = prediction[0]
     x = prediction[1]
@@ -63,6 +64,25 @@ for img_path in args.img:
 
     out_images.append(debug_img)
 
-cv2.imshow("image", np.concatenate(out_images, axis=1))
+    if i % 10 == 0:
+        print(".", end='')
+print()
+print("Showing matrix")
+i = 0
+image_row = list()
+all_image_rows = list()
+for img in out_images:
+    image_row.append(img)
+    if len(image_row) == 25:
+        all_image_rows.append(np.concatenate(image_row, axis=1))
+        image_row = list()
+
+
+if len(image_row) > 0:
+    all_image_rows.append(np.concatenate(image_row, axis=1))
+    image_row = list()
+
+
+cv2.imshow("image", np.concatenate(all_image_rows, axis=0))
 cv2.waitKey()
 #print(np.argmax(prediction, axis=3))
