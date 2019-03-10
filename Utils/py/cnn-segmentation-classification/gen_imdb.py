@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
-from utility_functions.loader import loadImages
+from utility_functions.csv_loader import loadImages
 import pickle
 
 
