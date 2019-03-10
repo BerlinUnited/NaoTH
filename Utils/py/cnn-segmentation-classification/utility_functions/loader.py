@@ -92,7 +92,7 @@ def loadImages(path, res):
             
             db.append((img, y, p))
             # augment: flip
-            db.append((cv2.flip(img, 1), y, p))
+#            db.append((cv2.flip(img, 1), y, p))
 #            # augment: blur
             db.append((cv2.GaussianBlur(img, (3,3), 1.2), y, p))
              
