@@ -1,67 +1,82 @@
+//--------------------------------------------------------------------------------------------------
 //
-// @file configs.h
+// @file JoypadConfig.h
 // @author <a href="mailto:albert@informatik.hu-berlin.de">Andreas Albert</a>
 //
-// Config data handler - data read from files or statically predefined
+// Configs for custom gamepads/joypads
 //
-#ifndef _SupportedJoypads_H_
-#define _SupportedJoypads_H_
-#include <string>
-#include <vector>
+//--------------------------------------------------------------------------------------------------
+//
+#ifndef _JOYPADCONFIG_H
+#define _JOYPADCONFIG_H
+//==================================================================================================
+//--------------------------------------------------------------------------------------------------
 #include <map>
-
-#include "USBJoypadData.h"
-
-
-class Joypad
+#include <memory>
+#include "Representations/Infrastructure/USBJoypadData.h"
+//--------------------------------------------------------------------------------------------------
+namespace naoth
 {
-public:
-  const std::string id;
-  const std::string name;
-  
-  Joypad(const std::string& id, const std::string& name) : id(id), name(name) {}
-  
-  bool read(const std::vector<unsigned char>& data, USBJoypadData& result) = 0;
-};
-
-
-class DragonRise: public Joypad
-{
-public:
-  DragonRise() 
-    : Joypad("0003:00000079:00000126", "Wireless USB Gamepad (0079/0126)")
-  {}
-  
-  bool read(const std::vector<unsigned char>& data, USBJoypadData& result) 
+  namespace joypads
   {
-    result.button.A = data[10] > 0;
-  }
-}
-
-
-class SupportedJoypads
-{
-private:
-  std::map<std::string, Joypad> joypads;
-  
-public:
-
-    SupportedJoypads() {
-      
-    }
-
-    bool getJoypad(std::string id, const std::string& name, Joypad& joypad) 
+    class GenericJoypad
     {
-      auto iter = joypads.find(id);
-      if(iter == joypads.end()){
-        return false;
-      }
-      
-      joypad = *iter;
-      
-      return true;
-    }  
-};
-
-
-#endif // _SupportedJoypads_H_
+    private:
+      struct VendorData
+      {
+        const std::string idHID;
+        const std::string friendlyName;
+        const std::vector<unsigned char> defaultInputReport;
+      } vendor;
+      ssize_t lenInputReport{0};
+    public:
+      virtual std::string getVendorId(void);
+      virtual std::string getDeviceName(void);
+      virtual std::vector<unsigned char> getDefaultReport(void);
+      virtual std::size_t getDefaultReportLen(void);
+      virtual int getReportAsControls(const std::vector<unsigned char>&, 
+                                      UnifiedJoypadControls&) = 0;
+      GenericJoypad(const std::string& idVendor, 
+                    const std::string& nameVendor, 
+                    const std::vector<unsigned char> defaultReport);
+    };
+//--------------------------------------------------------------------------------------------------
+//  idHID("0003:00000079:00000126");
+    class DragonRise0126 : public GenericJoypad
+    {
+    public:
+      virtual int getReportAsControls(const std::vector<unsigned char>&, 
+                                      UnifiedJoypadControls&);
+      DragonRise0126();
+    };
+//--------------------------------------------------------------------------------------------------
+//  idHID("0003:000006A3:00005F0D");
+    class Saitek5F0D : public GenericJoypad
+    {
+    public:
+      virtual int getReportAsControls(const std::vector<unsigned char>&, 
+                                      UnifiedJoypadControls&);
+      Saitek5F0D();
+    };
+//--------
+// put more supported Joypads here
+//--------------------------------------------------------------------------------------------------
+    class SupportedJoypad
+    {
+    private:
+      std::map<std::string, std::shared_ptr<GenericJoypad>> databaseJoypads;
+      std::map<std::string, std::shared_ptr<GenericJoypad>>::const_iterator resultFind;
+      std::vector<unsigned char> reportInput;
+    public:
+      int findDevice(const std::string& idToSearchFor);
+      std::size_t getDefaultReportLen(void);
+      int setReport(const std::vector<unsigned char>&);
+      std::vector<unsigned char> getReportRaw(void);
+      int getReportAsControls(UnifiedJoypadControls&);
+      SupportedJoypad();
+    };
+  } // namespace joypads
+} // namespace naoth
+//--------------------------------------------------------------------------------------------------
+//==================================================================================================
+#endif // _JOYPADCONFIG_H

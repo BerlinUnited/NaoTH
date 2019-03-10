@@ -1,9 +1,9 @@
 //--------------------------------------------------------------------------------------------------
 //
-// @file USBJoypadData.cpp
+// @file JoypadData.cpp
 // @author <a href="mailto:albert@informatik.hu-berlin.de">Andreas Albert</a>
 //
-// Gamepad/Joypad data representation class
+// Joypad/Gamepad data representation class
 //
 //--------------------------------------------------------------------------------------------------
 //
@@ -13,19 +13,18 @@
 //--------------------------------------------------------------------------------------------------
 using namespace naoth;
 //--------------------------------------------------------------------------------------------------
-void USBJoypadData::print(std::ostream& stream) const
-{
-  for (auto& i : vJoypadInputData)
-  {
-    stream << std::hex << (int)i;
-  }
+void JoypadData::print(std::ostream& stream) const
+{ // not complete
+  stream << "Joypad Button A: " << controls.button.A << std::endl;
+  stream << "Joypad Button B: " << controls.button.B << std::endl;
+  stream << "Joypad Button X: " << controls.button.X << std::endl;
+  stream << "Joypad Button Y: " << controls.button.Y << std::endl;
 }
 //--------------------------------------------------------------------------------------------------
-USBJoypadData::USBJoypadData()
-  : vJoypadInputData(1)
+JoypadData::JoypadData()
 {}
 //--------------------------------------------------------------------------------------------------
-USBJoypadData::~USBJoypadData()
+JoypadData::~JoypadData()
 {} // something???
 //--------------------------------------------------------------------------------------------------
 //==================================================================================================
