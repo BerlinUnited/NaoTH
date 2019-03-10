@@ -11,10 +11,8 @@ import cv2
 import csv
 import json
 
-
-def loadImages(path, res):
-    db = []
-    print("Loading images...")
+def load_image_from_path(path, db, res):
+    print("Loading images from " + path + "...")
 
     num_balls=0
     num_noballs=0
@@ -80,6 +78,19 @@ def loadImages(path, res):
             y = np.array([radius, x, y])
             img = img.astype(float) / 255.0
             db.append((img, y, p))
+    return num_balls, num_noballs
+
+def loadImages(all_paths, res):
+    db = []
+
+    total_balls=0
+    total_noballs=0
+
+    for path in all_paths:
+        balls, noballs = load_image_from_path(path, db, res)
+        total_balls += balls
+        total_noballs += noballs
+   
     
     random.shuffle(db)
     x, y, p = list(map(np.array, list(zip(*db))))
@@ -89,7 +100,7 @@ def loadImages(path, res):
     x = x.reshape(*x.shape, 1)
 
     print("Loading finished")
-    print("images: " + str(len(x)) + " balls: " + str(num_balls) + " no balls: " + str(num_noballs))
+    print("images: " + str(len(x)) + " balls: " + str(total_balls) + " no balls: " + str(total_noballs))
     return x, y, mean, p
 
 if __name__ == "__main__":
