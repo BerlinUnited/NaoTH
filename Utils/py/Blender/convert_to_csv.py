@@ -52,6 +52,7 @@ def loadImages(path, res):
                 radius = 0
                 x = res["x"]/2
                 y = res["y"]/2
+                region_count = 0
                 # find largest circle (if existing)
                 for cnt in contours:
                     (nx, ny), nradius = cv2.minEnclosingCircle(cnt)
@@ -67,6 +68,7 @@ def loadImages(path, res):
 
                     region = {"name": "circle", "cx": x, "cy": y, "r": radius}
                     atts = {"type": "ball"}
+                    region_count = 1
 
                 else:
                     radius = 0
@@ -76,7 +78,7 @@ def loadImages(path, res):
                     region = {}
                     atts = {}
 
-                writer.writerow({"filename": p, "file_attributes": "{}", "region_count": 1, "region_id": 0, 
+                writer.writerow({"filename": p, "file_attributes": "{}", "region_count": region_count, "region_id": 0, 
                         "region_shape_attributes": json.dumps(region), "region_attributes": json.dumps(atts)})
 
                 #cv2.namedWindow('image', cv2.WINDOW_NORMAL)
