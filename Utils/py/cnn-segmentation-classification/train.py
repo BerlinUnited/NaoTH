@@ -10,6 +10,9 @@ def conv_block(inputs, filters, kernel_size):
     x = inputs
     if kernel_size is not None and (kernel_size[0] == 3 and kernel_size[1] == 3):
         x = ZeroPadding2D((1,1))(x)
+    elif kernel_size is not None and (kernel_size[0] == 5 and kernel_size[1] == 5):
+        x = ZeroPadding2D((2,2))(x)
+
     x = Conv2D(filters, kernel_size, use_bias=False)(x)
     x = BatchNormalization()(x)
     x = Activation("relu")(x)
@@ -61,7 +64,41 @@ def small_sweaty3(num_classes=2):
     x = conv_block(x, 16,(3,3))
     x = conv_block(x, num_classes, (3,3))
 
+    return Model(inputs=image_16x16, outputs=x)
 
+def sweaty_position():
+    image_16x16 = Input((16,16,1))
+
+    # image dimension: 16x16
+    x = conv_block(image_16x16, 16, (1,1))
+    x = conv_block(x, 32, (3,3))
+
+    concat_16x16 = Concatenate()([image_16x16, x])
+
+    # downscale to image dimension: 8x8
+    image_8x8 = MaxPooling2D((2,2))(concat_16x16)
+
+    x = conv_block(image_8x8, 32, (1,1))
+    x = conv_block(x, 64, (3,3))
+    x = conv_block(x, 32, (1,1))
+    x = conv_block(x, 64, (3,3))
+
+    concat_8x8 = Concatenate()([image_8x8, x])
+
+    # downscale to image dimension: 4x4
+    image_4x4 = MaxPooling2D((2,2))(concat_8x8)
+
+    x = conv_block(image_4x4, 64, (1,1))
+    x = conv_block(x, 128, (3,3))
+    x = conv_block(x, 64, (1,1))
+    x = conv_block(x, 128, (3,3))
+    x = conv_block(x, 64, (3,3))
+
+    # classifier
+    x = Flatten()(x)
+    # radius, x, y
+    x = Dense(3)(x)
+    
 
     return Model(inputs=image_16x16, outputs=x)
 
@@ -105,7 +142,8 @@ with open(imgdb_path, "rb") as f:
 # define the Keras network
 if args.proceed is None or args.proceed == False:
     print("Creating new model")
-    model = small_sweaty3()
+    #model = small_sweaty3()
+    model = sweaty_position()
 else:
     print("Loading model " + model_path)
     model = load_model(model_path)

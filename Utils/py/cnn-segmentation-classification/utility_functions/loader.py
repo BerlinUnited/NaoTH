@@ -47,27 +47,55 @@ def loadImages(path, res):
                 img_mask = cv2.imread(f_mask, cv2.IMREAD_GRAYSCALE)
                 img_mask = cv2.resize(img_mask, (res["x"], res["y"]))
             elif "noball" in mask_path:
-                img_mask = np.zeros((res["x"], res["y"]))
+                img_mask = np.zeros((res["x"], res["y"])).astype(np.uint8)
             else:
                 raise "Missing mask file for " + f
 
-            img = img.astype(float) / 255.0
-            img_mask = img_mask.astype(float) / 255.0
+            # fit circle on img_mask
+            _,contours,_ = cv2.findContours(img_mask, 1, 2)
+            
+            debug_img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+            
+            radius = 0
+            x = res["x"]/2
+            y = res["y"]/2
+            # find largest circle (if existing)
+            for cnt in contours:
+                (nx,ny), nradius = cv2.minEnclosingCircle(cnt)
+                if nradius >= radius:
+                    x = nx
+                    y = ny
+                    radius = nradius + 1
 
-            img_mask = cv2.GaussianBlur(img_mask,(3,3), 0.5)
+            if radius > 0:
+                # draw detected circle into debug image
+                cv2.circle(debug_img, (int(x),int(y)), int(radius), color=(0,0,255))
+
+                # normalize to resolution
+                x = x / res["x"]
+                y = y / res["y"]
+                radius = radius / max(res["x"], res["y"])
+            
+            else:
+                radius = 0
+                x = 0.5
+                y = 0.5
+            
+            y = np.array([radius, x, y])
 
             #cv2.namedWindow('image',cv2.WINDOW_NORMAL)
             #cv2.resizeWindow('image', 600,600)
-            #cv2.imshow("image", np.concatenate((img, img_mask), axis=1))
+            #cv2.imshow("image", debug_img)
             #cv2.waitKey()
 
-            #make the image mask a two channel
-            img_mask_channel = np.zeros((res["x"], res["y"], 2))
-            img_mask_channel[:,:,0] = 1-(img_mask)
-            img_mask_channel[:,:,1] = img_mask
-
-            db.append((img, img_mask_channel, p))
-
+            img = img.astype(float) / 255.0
+            
+            db.append((img, y, p))
+            # augment: flip
+            db.append((cv2.flip(img, 1), y, p))
+#            # augment: blur
+            db.append((cv2.GaussianBlur(img, (3,3), 1.2), y, p))
+             
     random.shuffle(db)
     x, y, p = list(map(np.array, list(zip(*db))))
     mean = np.mean(x)
@@ -80,4 +108,4 @@ def loadImages(path, res):
     return x, y, mean, p
 
 if __name__ == "__main__":
-    loadImages("/home/thomas/src/nao2018/Utils/py/Blender/training_set_patchMask", res={"x":16, "y":16})
+    loadImages("/home/thomas/src/nao2018/Utils/py/Blender/20190304_060526_patchMask", res={"x":16, "y":16})
