@@ -94,7 +94,7 @@ def loadImages(path, res):
             # augment: flip
 #            db.append((cv2.flip(img, 1), y, p))
 #            # augment: blur
-            db.append((cv2.GaussianBlur(img, (3,3), 1.2), y, p))
+#            db.append((cv2.GaussianBlur(img, (3,3), 1.2), y, p))
              
     random.shuffle(db)
     x, y, p = list(map(np.array, list(zip(*db))))

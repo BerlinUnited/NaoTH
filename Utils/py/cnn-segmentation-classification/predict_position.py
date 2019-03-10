@@ -53,11 +53,13 @@ for img_path in args.img:
     x = prediction[1]
     y = prediction[2]
 
-    if radius > 0.1:
+    if radius > 0.25:
         radius = radius * max(res["x"], res["y"])
         x = x * res["x"]
         y = y * res["y"]
         cv2.circle(debug_img, (int(x),int(y)), int(radius), color=(0,0,255))
+    else:
+        cv2.rectangle(debug_img, (0,0), (res["x"]-1, res["y"]-1), color=(255,0,0))
 
     out_images.append(debug_img)
 
