@@ -6,6 +6,7 @@ import keras;
 from utility_functions.csv_loader import loadImage
 import numpy as np
 import cv2
+import sys
 
 parser = argparse.ArgumentParser(description='Train the network given ')
 
@@ -66,6 +67,7 @@ for img_path in args.img:
 
     if i % 10 == 0:
         print(".", end='')
+        sys.stdout.flush()
 print()
 print("Showing matrix")
 i = 0
