@@ -11,6 +11,10 @@ import cv2
 import csv
 import json
 
+def loadImage(path, res):
+    img = cv2.imread(path, 0) / 255
+    return cv2.resize(img, (res["x"], res["y"]))
+
 def load_image_from_path(path, db, res):
     print("Loading images from " + path + "...")
 

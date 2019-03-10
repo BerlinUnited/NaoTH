@@ -3,7 +3,7 @@
 import argparse
 import pickle
 import keras;
-from utility_functions.loader import loadImage
+from utility_functions.csv_loader import loadImage
 import numpy as np
 import cv2
 
