@@ -38,7 +38,8 @@ with open(imgdb_path, "rb") as f:
 model = keras.models.load_model(model_path)
 
 cv2.namedWindow('image',cv2.WINDOW_NORMAL)
-cv2.resizeWindow('image', 600,600)
+cv2.moveWindow("image", 0,0)
+#cv2.resizeWindow('image', 600,600)
 
 out_images = list()
 print("Predicting image...", end="")
@@ -63,7 +64,7 @@ for img_path in args.img:
     else:
         cv2.rectangle(debug_img, (0,0), (res["x"]-1, res["y"]-1), color=(255,0,0))
 
-    out_images.append(debug_img)
+    out_images.append(cv2.resize(debug_img, dsize=(64,64),interpolation=cv2.INTER_CUBIC))
 
     if i % 10 == 0:
         print(".", end='')

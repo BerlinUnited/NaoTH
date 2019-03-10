@@ -102,6 +102,73 @@ def sweaty_position():
 
     return Model(inputs=image_16x16, outputs=x)
 
+def naodevils():
+    model = Sequential()
+    model.add(Convolution2D(8, (5, 5), input_shape=(x.shape[1], x.shape[2], 1),
+                            activation='relu', strides=(2, 2), padding='same'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Convolution2D(12, (3, 3), activation='relu'))
+    model.add(Convolution2D(2, (2, 2), activation='softmax'))
+    model.add(Flatten())
+
+    # radius, x, y
+    model.add(Dense(3))
+
+    return model
+
+def custom():
+    image_16x16 = Input((16,16,1))
+
+    # image dimension: 16x16
+    x = conv_block(image_16x16, 16, (3,3))
+
+    # downscale to image dimension: 8x8
+    image_8x8 = MaxPooling2D((2,2))(x)
+
+    x = conv_block(image_8x8, 16, (1,1))
+    x = conv_block(x, 32, (3,3))
+    concat_8x8 = Concatenate()([image_8x8, x])
+
+    # downscale to image dimension: 4x4
+    image_4x4 = MaxPooling2D((2,2))(concat_8x8)
+    x = conv_block(image_4x4, 32, (1,1))
+
+    # classifier
+    x = Flatten()(x)
+    # radius, x, y
+    x = Dense(3)(x)
+    
+
+    return Model(inputs=image_16x16, outputs=x)
+
+def yolo():
+    model = Sequential()
+    model.add(Convolution2D(12, (3, 3), input_shape=(16,16,1), padding='same'))
+    model.add(LeakyReLU(alpha=0.0))  # alpha unknown, so default
+    # model.add(BatchNormalization())
+
+    model.add(Convolution2D(16, (3, 3), padding='same'))
+    model.add(LeakyReLU())
+    # model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    model.add(Convolution2D(24, (3, 3), padding='same'))
+    model.add(LeakyReLU())
+    # model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    model.add(Convolution2D(32, (3, 3), padding='same'))
+    model.add(LeakyReLU(alpha=0.0))
+    model.add(Convolution2D(6, (1, 1), padding='same'))
+   
+    # classifier
+    model.add(Flatten())
+    # radius, x, y
+    model.add(Dense(3))
+
+    return model
+
+
 def str2bool(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
         return True
@@ -143,7 +210,8 @@ with open(imgdb_path, "rb") as f:
 if args.proceed is None or args.proceed == False:
     print("Creating new model")
     #model = small_sweaty3()
-    model = sweaty_position()
+    #model = sweaty_position()
+    model = yolo()
 else:
     print("Loading model " + model_path)
     model = load_model(model_path)
@@ -156,5 +224,5 @@ print(model.summary())
 
 save_callback = keras.callbacks.ModelCheckpoint(filepath='model.h5', monitor='loss', verbose=1, save_best_only=True)
 
-model.fit(x, y, batch_size=4, epochs=200, verbose=1, validation_split=0.1, callbacks=[save_callback])
+model.fit(x, y, batch_size=4, epochs=200, verbose=1, validation_split=0.0, callbacks=[save_callback])
 model.save(model_path)
