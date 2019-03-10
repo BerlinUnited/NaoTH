@@ -14,7 +14,7 @@
 #include <thread>
 #include <mutex>
 #include <libudev.h>
-#include "USBJoypadConfig.h"
+#include "JoypadConfig.h"
 //--------------------------------------------------------------------------------------------------
 class Joypad
 {

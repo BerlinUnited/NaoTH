@@ -1,6 +1,6 @@
 //==================================================================================================
 //--------------------------------------------------------------------------------------------------
-#include "USBJoypadConfig.h"
+#include "JoypadConfig.h"
 //--------------------------------------------------------------------------------------------------
 namespace naoth
 {
@@ -35,8 +35,19 @@ namespace naoth
       return vendor.defaultInputReport;
     }
 //--------------------------------------------------------------------------------------------------
+    ErrorDevice::ErrorDevice()
+      : GenericJoypad{"0000:00000000:00000000", "No Gamepad", {}}
+    {}
+//--------
+    int ErrorDevice::getReportAsControls(const std::vector<unsigned char>& /* report (unused here) */, 
+                                         UnifiedJoypadControls& uc)
+    {
+      uc.isValid = false;
+      return -1;
+    }
+//--------------------------------------------------------------------------------------------------
     DragonRise0126::DragonRise0126()
-      : GenericJoypad{"0003:00000079:00000126", "DragonRise GamePad",
+      : GenericJoypad{"0003:00000079:00000126", "DragonRise Gamepad",
       { // input report defaults
         0x00,  // X=00000001, A=00000010, B=00000100, Y=00001000, L=00010000, R=00100000
         0x00,  // SELECT=00000001, START=00000010
@@ -136,6 +147,8 @@ namespace naoth
 //--------------------------------------------------------------------------------------------------
     SupportedJoypad::SupportedJoypad()
     {
+      auto j0 = std::make_shared<ErrorDevice>();
+      databaseJoypads.insert(std::make_pair(j0->getVendorId(), j0));
       auto j1 = std::make_shared<DragonRise0126>();
       databaseJoypads.insert(std::make_pair(j1->getVendorId(), j1));
       auto j2 = std::make_shared<Saitek5F0D>();
@@ -145,9 +158,10 @@ namespace naoth
     int SupportedJoypad::findDevice(const std::string& nodeToSearchFor)
     {
       resultFind = databaseJoypads.find(nodeToSearchFor);
-      if (resultFind == databaseJoypads.end())
-      { // no joypad entry was found
-        reportInput.clear();
+      if (resultFind == databaseJoypads.cend())
+      { // no joypad entry was found, point to "error device"
+        resultFind = databaseJoypads.cbegin();
+        reportInput = resultFind->second->getDefaultReport();
         return 0;
       }
       reportInput = resultFind->second->getDefaultReport();

@@ -109,7 +109,7 @@ public:
   
   void get(AudioData& data) { theAudioRecorder.get(data); }
   void get(CpuData& data) { theCPUTemperatureReader.get(data); }
-  void get(USBJoypadData& data){ theUDevInterface.get(data); }
+  void get(JoypadData& data){ theUDevInterface.get(data); }
 
   // write directly to the shared memory
   // ACHTUNG: each set calls swapWriting()

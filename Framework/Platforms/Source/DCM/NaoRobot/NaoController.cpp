@@ -118,7 +118,7 @@ NaoController::NaoController()
   registerInput<UltraSoundReceiveData>(*this);
   registerInput<AudioData>(*this);
   registerInput<CpuData>(*this);
-  registerInput<USBJoypadData>(*this);
+  registerInput<JoypadData>(*this);
   
   // register command output
   registerOutput<const MotorJointData>(*this);

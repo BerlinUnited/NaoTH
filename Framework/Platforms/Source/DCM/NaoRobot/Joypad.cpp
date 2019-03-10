@@ -14,7 +14,7 @@
 #include <sys/epoll.h>
 #include <sys/file.h>
 #include "Tools/ThreadUtil.h"
-#include "USBJoypad.h"
+#include "Joypad.h"
 //--------------------------------------------------------------------------------------------------
 #ifndef DEBUG
 #define DEBUG
@@ -161,7 +161,7 @@ int Joypad::dataReader()
 //--------------------------------------------------------------------------------------------------
 void Joypad::loopRead()
 {
-  constexpr int timeReadPoll_ms = 250;
+  constexpr int timeReadPoll_ms = 100;
 
 #ifdef DEBUG
   std::fprintf(stderr, "[UDevRead Info] Starting the read loop thread.\n"); // debug msg
@@ -209,7 +209,7 @@ void Joypad::loopRead()
     {
       if (fdReturnedCount == 0)
       { // timed out reading
-        std::fprintf(stderr, "[UDevRead Info] EPoll timeout waiting for data.\n");
+//        std::fprintf(stderr, "[UDevRead Info] EPoll timeout waiting for data.\n");
         // VS debug problem - keep in one line - this is intended and only needed for step debugging
         for (auto& i : supportedJoypad.getReportRaw()) { std::fprintf(stderr, "%02X ", i); } std::fprintf(stderr, "\n");
       }
@@ -494,8 +494,6 @@ int Joypad::stopHIDPlugDetection()
 Joypad::Joypad()
   : udevError(UDEV_NOERROR)
 {
-  // initialized empty by default through SupportedJoypad
-  //  supportedJoypad.deviceNode.clear(); // invalidate Joypad properties data
   initUDev();
   if (udevError == UDEV_NOERROR)
   {

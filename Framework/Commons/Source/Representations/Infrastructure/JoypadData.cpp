@@ -9,16 +9,16 @@
 //
 //==================================================================================================
 //--------------------------------------------------------------------------------------------------
-#include "USBJoypadData.h"
+#include "JoypadData.h"
 //--------------------------------------------------------------------------------------------------
 using namespace naoth;
 //--------------------------------------------------------------------------------------------------
 void JoypadData::print(std::ostream& stream) const
 { // not complete
-  stream << "Joypad Button A: " << controls.button.A << std::endl;
-  stream << "Joypad Button B: " << controls.button.B << std::endl;
   stream << "Joypad Button X: " << controls.button.X << std::endl;
   stream << "Joypad Button Y: " << controls.button.Y << std::endl;
+  stream << "Joypad Button A: " << controls.button.A << std::endl;
+  stream << "Joypad Button B: " << controls.button.B << std::endl;
 }
 //--------------------------------------------------------------------------------------------------
 JoypadData::JoypadData()

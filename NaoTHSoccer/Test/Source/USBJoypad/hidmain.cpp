@@ -12,26 +12,46 @@
 //==================================================================================================
 //--------------------------------------------------------------------------------------------------
 #include <iostream>
-#include "Nao/Framework/Platforms/Source/DCM/NaoRobot/USBJoypad.h"
+#include "Nao/Framework/Platforms/Source/DCM/NaoRobot/Joypad.h"
 //--------------------------------------------------------------------------------------------------
 using namespace std;
 using namespace naoth;
 //--------
 int main()
 {
-  USBJoypadData data;
-  USBJoypad usbJoypad;
-  int moreData;
-
+  Joypad usbJoypad;
+  JoypadData data;
   timespec ts;
-  
-  ts.tv_sec=0;
-  ts.tv_nsec=250000000;
-  moreData=50;
+
+//  ts.tv_sec = 1;
+//  ts.tv_nsec = 0;
+//  nanosleep(&ts, NULL);
+
+  ts.tv_sec = 0;
+  ts.tv_nsec = 100000000;
+  int moreData = 500;
   while (moreData > 0)
   {  // get as much as you want
-    std::fprintf(stderr, "%03i: ", moreData);
+    std::fprintf(stderr, "%03i: \n", moreData);
     usbJoypad.get(data);
+
+    fprintf(stderr, "Valid = %i: ", data.controls.isValid);
+    fprintf(stderr, "%i, ", data.controls.button.select);
+    fprintf(stderr, "%i, ", data.controls.button.start);
+    fprintf(stderr, "%i, ", data.controls.button.X);
+    fprintf(stderr, "%i, ", data.controls.button.Y);
+    fprintf(stderr, "%i, ", data.controls.button.A);
+    fprintf(stderr, "%i, ", data.controls.button.B);
+    fprintf(stderr, "%i, ", data.controls.button.LB);
+    fprintf(stderr, "%i, ", data.controls.button.RB);
+    fprintf(stderr, "%i, ", data.controls.button.LT);
+    fprintf(stderr, "%i, ", data.controls.button.RT);
+    fprintf(stderr, "%02i, ", data.controls.dpad);
+    fprintf(stderr, "%-03.6f, ", data.controls.stick.L.x);
+    fprintf(stderr, "%-03.6f, ", data.controls.stick.L.y);
+    fprintf(stderr, "%-03.6f, ", data.controls.stick.R.x);
+    fprintf(stderr, "%-03.6f", data.controls.stick.R.y);
+
 //    std::cerr << data;
     std::cerr << std::endl;
     moreData--;

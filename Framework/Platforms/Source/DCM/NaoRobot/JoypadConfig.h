@@ -13,7 +13,7 @@
 //--------------------------------------------------------------------------------------------------
 #include <map>
 #include <memory>
-#include "Representations/Infrastructure/USBJoypadData.h"
+#include "Representations/Infrastructure/JoypadData.h"
 //--------------------------------------------------------------------------------------------------
 namespace naoth
 {
@@ -41,7 +41,17 @@ namespace naoth
                     const std::vector<unsigned char> defaultReport);
     };
 //--------------------------------------------------------------------------------------------------
-//  idHID("0003:00000079:00000126");
+//  this pseudo device provides well defined data if no registered joypad is found
+    class ErrorDevice : public GenericJoypad
+    {
+    public:
+      virtual int getReportAsControls(const std::vector<unsigned char>&,
+                                      UnifiedJoypadControls&);
+      ErrorDevice();
+    };
+//--------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
+//  idHID("0003:00000000:00000000");
     class DragonRise0126 : public GenericJoypad
     {
     public:
