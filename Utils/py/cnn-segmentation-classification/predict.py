@@ -46,7 +46,7 @@ i = 0
 for img_path in args.img:
     img_orig = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE) 
     img_orig = cv2.resize(img_orig, (res["x"], res["y"]))
-    debug_img = cv2.cvtColor(img_orig).astype(np.uint8), cv2.COLOR_GRAY2BGR)
+    debug_img = cv2.cvtColor(img_orig.astype(np.uint8), cv2.COLOR_GRAY2BGR)
 
     #img = img_orig - mean
     img = (img_orig / 255) - mean
