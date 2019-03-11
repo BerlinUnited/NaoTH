@@ -26,7 +26,7 @@
 #include "CPUTemperatureReader.h"
 #include "DebugCommunication/DebugServer.h"
 #include "AudioRecorder.h"
-#include "udevIf.h"
+#include "Joypad.h"
 
 #include "Tools/Communication/Network/BroadCaster.h"
 #include "Tools/Communication/Network/UDPReceiver.h"
