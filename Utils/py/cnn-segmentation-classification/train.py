@@ -142,8 +142,10 @@ def custom():
     return Model(inputs=image_16x16, outputs=x)
 
 def yolo():
+    input_shape = (16, 16, 1)
+
     model = Sequential()
-    model.add(Convolution2D(12, (3, 3), input_shape=(16,16,1), padding='same'))
+    model.add(Convolution2D(12, (3, 3), input_shape=input_shape, padding='same'))
     model.add(LeakyReLU(alpha=0.0))  # alpha unknown, so default
     # model.add(BatchNormalization())
 
@@ -159,7 +161,15 @@ def yolo():
 
     model.add(Convolution2D(32, (3, 3), padding='same'))
     model.add(LeakyReLU(alpha=0.0))
+    # model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    model.add(Convolution2D(32, (3, 3), padding='same'))
+    model.add(LeakyReLU())
+    # model.add(BatchNormalization())
+
     model.add(Convolution2D(6, (1, 1), padding='same'))
+
    
     # classifier
     model.add(Flatten())
@@ -168,7 +178,38 @@ def yolo():
 
     return model
 
+def yolo2():
+    image_16x16 = Input((16,16,1))
+    x = Convolution2D(12, (3, 3), input_shape=(16,16,1), padding='same')(image_16x16)
+    x = LeakyReLU(alpha=0.0)(x)  # alpha unknown, so default
 
+    x = Convolution2D(16, (3, 3), padding='same')(x)
+    x = LeakyReLU()(x)
+
+    x = Concatenate()([x, image_16x16])
+    
+    image_8x8 = MaxPooling2D(pool_size=(2, 2))(x)
+
+    x = Convolution2D(24, (3, 3), padding='same')(image_8x8)
+    x = LeakyReLU()(x)
+    
+    x = Concatenate()([x, image_8x8])
+    image_4x4 = MaxPooling2D(pool_size=(2, 2))(x)
+
+    x = Convolution2D(64, (1,1))(image_4x4)
+    x = LeakyReLU()(x)
+    x = Convolution2D(128, (3,3))(x)
+    x = LeakyReLU()(x)
+    x = Convolution2D(64, (1,1))(x)
+
+   
+    # classifier
+    x= Flatten()(x)
+    # radius, x, y
+    x = Dense(3)(x)
+
+    return Model(inputs=image_16x16, outputs=x)
+    
 def str2bool(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
         return True
