@@ -266,5 +266,5 @@ print(model.summary())
 
 save_callback = keras.callbacks.ModelCheckpoint(filepath=model_path, monitor='loss', verbose=1, save_best_only=True)
 
-model.fit(x, y, batch_size=64, epochs=2000, verbose=1, validation_split=0.2, callbacks=[save_callback])
+model.fit(x, y, batch_size=64, epochs=2000, verbose=1, validation_split=0.1, callbacks=[save_callback])
 model.save(model_path)

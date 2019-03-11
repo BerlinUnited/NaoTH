@@ -56,7 +56,7 @@ for img_path in args.img:
     x = abs(prediction[1])
     y = abs(prediction[2])
 
-    if radius > 0.1:
+    if radius > 0.2:
         radius = radius * max(res["x"], res["y"])
         x = x * res["x"]
         y = y * res["y"]
