@@ -53,8 +53,8 @@ for img_path in args.img:
     prediction = model.predict(img.reshape(1, res["x"], res["y"], 1))[0]
 
     radius = prediction[0]
-    x = prediction[1]
-    y = prediction[2]
+    x = abs(prediction[1])
+    y = abs(prediction[2])
 
     if radius > 0.1:
         radius = radius * max(res["x"], res["y"])

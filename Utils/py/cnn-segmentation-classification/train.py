@@ -162,14 +162,15 @@ def yolo():
     model.add(Convolution2D(32, (3, 3), padding='same'))
     model.add(LeakyReLU(alpha=0.0))
     # model.add(BatchNormalization())
-    model.add(MaxPooling2D(pool_size=(2, 2)))
+#    model.add(MaxPooling2D(pool_size=(2, 2)))
 
-    model.add(Convolution2D(32, (3, 3), padding='same'))
-    model.add(LeakyReLU())
+ #   model.add(Convolution2D(32, (3, 3), padding='same'))
+#    model.add(LeakyReLU())
     # model.add(BatchNormalization())
 
-    model.add(Convolution2D(6, (1, 1), padding='same'))
+    model.add(Convolution2D(32, (1, 1), padding='same'))
 
+#    model.add(Dense(32))
    
     # classifier
     model.add(Flatten())
@@ -263,7 +264,7 @@ model.compile(loss='mean_squared_error',
 
 print(model.summary())
 
-save_callback = keras.callbacks.ModelCheckpoint(filepath='model.h5', monitor='loss', verbose=1, save_best_only=True)
+save_callback = keras.callbacks.ModelCheckpoint(filepath=model_path, monitor='loss', verbose=1, save_best_only=True)
 
-model.fit(x, y, batch_size=4, epochs=200, verbose=1, validation_split=0.0, callbacks=[save_callback])
+model.fit(x, y, batch_size=64, epochs=2000, verbose=1, validation_split=0.2, callbacks=[save_callback])
 model.save(model_path)
