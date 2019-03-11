@@ -2,10 +2,10 @@
 
 import argparse
 import pickle
-import keras;
-from utility_functions.csv_loader import loadImage
+import keras
 import numpy as np
 import cv2
+import sys
 
 parser = argparse.ArgumentParser(description='Train the network given ')
 
@@ -37,20 +37,56 @@ with open(imgdb_path, "rb") as f:
 model = keras.models.load_model(model_path)
 
 cv2.namedWindow('image',cv2.WINDOW_NORMAL)
-cv2.resizeWindow('image', 600,600)
+cv2.moveWindow("image", 0,0)
+#cv2.resizeWindow('image', 600,600)
 
 out_images = list()
-
+print("Predicting image...", end="")
+i = 0
 for img_path in args.img:
-    img_orig = loadImage(img_path, res)
-    img = img_orig - mean
+    img_orig = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE) 
+    img_orig = cv2.resize(img_orig, (res["x"], res["y"]))
+    debug_img = cv2.cvtColor(img_orig).astype(np.uint8), cv2.COLOR_GRAY2BGR)
+
+    #img = img_orig - mean
+    img = (img_orig / 255) - mean
+
     prediction = model.predict(img.reshape(1, res["x"], res["y"], 1))[0]
 
-    classified = np.argmax(prediction, axis=2)
-    noball_prop = prediction[:, :, 0]
-    ball_prop = prediction[:, :, 1]
-    out_images.append(np.concatenate((img_orig, noball_prop, ball_prop, classified), axis=0))
+    radius = prediction[0]
+    x = abs(prediction[1])
+    y = abs(prediction[2])
 
-cv2.imshow("image", np.concatenate(out_images, axis=1))
+    if radius > 0.2:
+        radius = radius * max(res["x"], res["y"])
+        x = x * res["x"]
+        y = y * res["y"]
+        cv2.circle(debug_img, (int(x),int(y)), int(radius), color=(0,0,255))
+    else:
+        cv2.rectangle(debug_img, (0,0), (res["x"]-1, res["y"]-1), color=(255,0,0))
+
+    out_images.append(cv2.resize(debug_img, dsize=(64,64),interpolation=cv2.INTER_CUBIC))
+
+    if i % 10 == 0:
+        print(".", end='')
+        sys.stdout.flush()
+print()
+print("Showing matrix")
+i = 0
+image_row = list()
+all_image_rows = list()
+for img in out_images:
+    image_row.append(img)
+    if len(image_row) == 25:
+        all_image_rows.append(np.concatenate(image_row, axis=1))
+        image_row = list()
+
+
+if len(image_row) > 0:
+    all_image_rows.append(np.concatenate(image_row, axis=1))
+    image_row = list()
+
+
+cv2.imshow("image", np.concatenate(all_image_rows, axis=0))
 cv2.waitKey()
 #print(np.argmax(prediction, axis=3))
