@@ -30,18 +30,18 @@ public:
         v(1.25),
         max_step_size(0.005),
         failed(false),
-        regularizer(0.0),
+        //regularizer(0.0),
         enforce_reduction(false)
     {}
 
-    GaussNewtonMinimizer(double init_lambda, double v, double max_step_size, double regularizer, bool enforce_reduction):
+    GaussNewtonMinimizer(double init_lambda, double v, double max_step_size, /*double regularizer,*/ bool enforce_reduction):
         error(0),
         init_lambda(init_lambda),
         lambda(init_lambda),
         v(v),
         max_step_size(max_step_size),
         failed(false),
-        regularizer(regularizer),
+        //regularizer(regularizer),
         enforce_reduction(enforce_reduction)
     {}
 
@@ -67,7 +67,7 @@ public:
         double current_error = r.transpose() * r;
 
         Eigen::VectorXd a;
-        if(regularizer > 0.0) {
+        /*if(regularizer > 0.0) {
             Eigen::MatrixXd R = Eigen::MatrixXd::Zero(x.array().isFinite().count(), T::RowsAtCompileTime);
             int row_idx = 0;
             for(int i = 0; i < T::RowsAtCompileTime; ++i){
@@ -78,9 +78,9 @@ public:
                 ++row_idx;
             }
             a = (JtJ + regularizer * Eigen::MatrixXd::Identity(JtJ.rows(),JtJ.cols())).colPivHouseholderQr().solve(-J.transpose() * r + regularizer * R * x);
-        } else {
+        } else {*/
             a = (JtJ).colPivHouseholderQr().solve(-J.transpose() * r);
-        }
+        //}
 
         if(a.hasNaN()){
             failed = true;
@@ -161,13 +161,13 @@ class LevenbergMarquardtMinimizer : public GaussNewtonMinimizer<ErrorFunction, T
 // (optional) TODO: stopping criteria || J*r || < eps1, || offset || < eps2 * x, iter > iter_max
 public:
     LevenbergMarquardtMinimizer():
-        GaussNewtonMinimizer<ErrorFunction, T>(1, 2, -1.0, 0.0, false)
+        GaussNewtonMinimizer<ErrorFunction, T>(1, 2, -1.0, /*0.0,*/ false)
     {
     }
 
     // init_lambda: > 0, the smaller this value the more we believe that we are already close to the optimum (closeness)
-    LevenbergMarquardtMinimizer(double init_lambda, double v, double max_step_size, double regularizer):
-        GaussNewtonMinimizer<ErrorFunction, T>(init_lambda, v, max_step_size, regularizer, false)
+    LevenbergMarquardtMinimizer(double init_lambda, double v, double max_step_size/*, double regularizer*/):
+        GaussNewtonMinimizer<ErrorFunction, T>(init_lambda, v, max_step_size, /*regularizer,*/ false)
     {
     }
 
@@ -188,7 +188,7 @@ public:
         this->error = r.transpose() * r;
 
         Eigen::VectorXd a,b;
-        if(this->regularizer > 0.0) {
+        /*if(this->regularizer > 0.0) {
             Eigen::MatrixXd R = Eigen::MatrixXd::Zero(x.array().isFinite().count(), T::RowsAtCompileTime);
             int row_idx = 0;
             for(int i = 0; i < T::RowsAtCompileTime; ++i){
@@ -200,10 +200,10 @@ public:
             }
             a = (JtJ + this->lambda * JtJdiag         + this->regularizer * Eigen::MatrixXd::Identity(JtJ.rows(),JtJ.cols())).colPivHouseholderQr().solve(-J.transpose() * r + this->regularizer * R * x);
             b = (JtJ + this->lambda/this->v * JtJdiag + this->regularizer * Eigen::MatrixXd::Identity(JtJ.rows(),JtJ.cols())).colPivHouseholderQr().solve(-J.transpose() * r + this->regularizer * R * x);
-        } else {
+        } else {*/
             a = (JtJ + this->lambda * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r);
             b = (JtJ + this->lambda/this->v * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r);
-        }
+        //}
 
         if(a.hasNaN() || b.hasNaN()){
             this->failed = true;
@@ -265,8 +265,8 @@ public:
     {}
 
     // init_lambda: > 0, the smaller this value the more we believe that we are already close to the optimum (closeness)
-    LevenbergMarquardtMinimizer2(double init_lambda, double init_v, double max_step_size, double regularizer, double beta, double gamma, double p):
-        LevenbergMarquardtMinimizer<ErrorFunction, T>(init_lambda, init_v, max_step_size, regularizer),
+    LevenbergMarquardtMinimizer2(double init_lambda, double init_v, double max_step_size, /*double regularizer,*/ double beta, double gamma, double p):
+        LevenbergMarquardtMinimizer<ErrorFunction, T>(init_lambda, init_v, max_step_size/*, regularizer*/),
         init_v(init_v),
         beta(beta),
         gamma(gamma),
@@ -286,7 +286,7 @@ public:
         this->error = r.transpose() * r;
 
         Eigen::VectorXd a;
-        if(this->regularizer > 0.0) {
+        /*if(this->regularizer > 0.0) {
             Eigen::MatrixXd R = Eigen::MatrixXd::Zero(x.array().isFinite().count(), T::RowsAtCompileTime);
             int row_idx = 0;
             for(int i = 0; i < T::RowsAtCompileTime; ++i){
@@ -297,9 +297,9 @@ public:
                 ++row_idx;
             }
             a = (JtJ + this->lambda * JtJdiag + this->regularizer * Eigen::MatrixXd::Identity(JtJ.rows(),JtJ.cols())).colPivHouseholderQr().solve(-J.transpose() * r + this->regularizer * R * x);
-        } else {
+        } else {*/
             a = (JtJ + this->lambda * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r);
-        }
+        //}
 
         if(a.hasNaN()){
             this->failed = true;

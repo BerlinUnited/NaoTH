@@ -134,11 +134,11 @@ int main(int /*argc*/, char** /*argv*/){
         testDifferentialBased<fitting::Linear, Optimizer::LevenbergMarquardtMinimizer>(start, eps);
         testDifferentialBased<fitting::Linear, Optimizer::LevenbergMarquardtMinimizer2>(start, eps);
 
-        Optimizer::GaussNewtonMinimizer<fitting::Linear, Eigen::Matrix<double,3,1> > o(1.0, 1.25, 0.0, 100.0, false);
+        Optimizer::GaussNewtonMinimizer<fitting::Linear, Eigen::Matrix<double,3,1> > o(1.0, 1.25, 0.0, /*100.0,*/ false);
         testDifferentialBased(&o, start, eps);
-        Optimizer::LevenbergMarquardtMinimizer<fitting::Linear, Eigen::Matrix<double,3,1> > o2(1.0, 1.25, 0.0, 100.0);
+        Optimizer::LevenbergMarquardtMinimizer<fitting::Linear, Eigen::Matrix<double,3,1> > o2(1.0, 1.25, 0.0/*, 100.0*/);
         testDifferentialBased(&o2, start, eps);
-        Optimizer::LevenbergMarquardtMinimizer2<fitting::Linear, Eigen::Matrix<double,3,1> > o3(1.0, 1.25, 0.0, 100.0, 2, 2, 3);
+        Optimizer::LevenbergMarquardtMinimizer2<fitting::Linear, Eigen::Matrix<double,3,1> > o3(1.0, 1.25, 0.0, /*100.0,*/ 2, 2, 3);
         testDifferentialBased(&o3, start, eps);
     }
 }
