@@ -11,6 +11,11 @@ import cv2
 import csv
 import json
 
+def adjust_gamma(image, gamma=1.0):
+    invGamma = 1.0 / gamma
+    table = np.array([((i / 255.0) ** invGamma) * 255
+                      for i in np.arange(0, 256)]).astype("uint8")
+    return cv2.LUT(image, table)
 
 def load_image_from_path(path, db, res):
     print("Loading images from " + path + "...")
@@ -30,7 +35,7 @@ def load_image_from_path(path, db, res):
             img = cv2.imread(f, cv2.IMREAD_GRAYSCALE)
             img = cv2.resize(img, (res["x"], res["y"]))
 
-
+            is_ball = False
             debug_img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
             # load ball information
@@ -59,6 +64,7 @@ def load_image_from_path(path, db, res):
                         radius = radius / max(res["x"], res["y"])
 
                         num_balls += 1
+                        is_ball = True
 
                         #cv2.namedWindow('image',cv2.WINDOW_NORMAL)
                         #cv2.resizeWindow('image', 600,600)
@@ -81,8 +87,18 @@ def load_image_from_path(path, db, res):
 
             # for each row add the image and the prediction 
             y = np.array([radius, x, y])
-            img = img.astype(float) / 255.0
-            db.append((img, y, p))
+
+            db.append((img.astype(float) / 255.0, y, p))
+
+            # augment: gamma
+            for g in (0.4, 1.3):
+                db.append((adjust_gamma(img, g).astype(float) / 255.0, y, p))
+                if is_ball:
+                    num_balls += 1
+                else:
+                    num_noballs += 1
+
+
     return num_balls, num_noballs
 
 def loadImages(all_paths, res):
