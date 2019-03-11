@@ -83,6 +83,8 @@ private:
   Parameter cam_mat_offsets;
   BoundedVariable<Parameter> bounds;
 
+  CamMatErrorFunctionV3 theCamMatErrorFunctionV3;
+
   Optimizer::GaussNewtonMinimizer<CamMatErrorFunctionV3, Parameter>* minimizer;
 
   Optimizer::GaussNewtonMinimizer<CamMatErrorFunctionV3, Parameter>         gn_minimizer;
@@ -97,8 +99,6 @@ private:
 
   void writeToRepresentation();
   void readFromRepresentation();
-
-  CamMatErrorFunctionV3 theCamMatErrorFunctionV3;
 
   // for automatic calibration
   bool auto_cleared_data, auto_collected, auto_calibrated;

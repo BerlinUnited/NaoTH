@@ -9,7 +9,8 @@
 
 
 CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
-    theCamMatErrorFunctionV3(getDebugRequest(), getDebugDrawings(), getDebugModify(), getFieldInfo(), getCameraInfo(), getCameraInfoTop())
+    theCamMatErrorFunctionV3(getDebugRequest(), getDebugDrawings(), getDebugModify(), getFieldInfo(), getCameraInfo(), getCameraInfoTop()),
+    gn_minimizer(1, 1.25, 0.005, /*double regularizer,*/ false)
 {
   getDebugParameterList().add(&getCameraMatrixOffset());
   getDebugParameterList().add(&cmc_params);
@@ -54,8 +55,8 @@ CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
 
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:calibrate","",false);
 
-  DEBUG_REQUEST_REGISTER("CameraMatrixV3:optimizer:use_GN",  "use Gauss-Newton based optimizer during calibration", false);
-  DEBUG_REQUEST_REGISTER("CameraMatrixV3:optimizer:use_LM",  "use Levenberg-Marquardt based optimizer during calibration (default)", true);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV3:optimizer:use_GN",  "use Gauss-Newton based optimizer during calibration (default)", true);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV3:optimizer:use_LM",  "use Levenberg-Marquardt based optimizer during calibration", false);
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:optimizer:use_LM2", "use Levenberg-Marquardt based optimizer (smoothed update) during calibration", false);
 
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:read_calibration_data_from_file", "", false);
@@ -68,7 +69,7 @@ CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
   play_calibrated = play_calibrating = play_collecting = true;
   last_error = 0;
 
-  minimizer = &lm_minimizer;
+  minimizer = &gn_minimizer;
 
   // sampling coordinates
   std::array<double,4> pitchs {-20, -10 , 0, 10};
@@ -229,7 +230,7 @@ void CameraMatrixCorrectorV3::reset_calibration()
   getCameraMatrixOffset().cam_rot[CameraInfo::Top]    = Vector3d();
   getCameraMatrixOffset().cam_rot[CameraInfo::Bottom] = Vector3d();
 
-  cam_mat_offsets = Eigen::Matrix<double, 11, 1>::Zero();
+  cam_mat_offsets = Parameter::Zero();
 }
 
 // returns true if the averaged reduction per second decreases under a heuristic value
