@@ -5,6 +5,7 @@ import pickle
 import keras
 from keras.models import *
 from keras.layers import *
+from datetime import datetime
 
 def conv_block(inputs, filters, kernel_size):
     x = inputs
@@ -265,7 +266,7 @@ model.compile(loss='mean_squared_error',
 print(model.summary())
 
 save_callback = keras.callbacks.ModelCheckpoint(filepath=model_path, monitor='loss', verbose=1, save_best_only=True)
-log_callback = keras.callbacks.TensorBoard(log_dir='./logs')
+log_callback = keras.callbacks.TensorBoard(log_dir='./logs/' + str(datetime.now()).replace(" ", "_"))
 
 history = model.fit(x, y, batch_size=64, epochs=2000, verbose=1, validation_split=0.1, callbacks=[save_callback, log_callback])
 model.save(model_path)
