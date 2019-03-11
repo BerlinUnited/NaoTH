@@ -20,7 +20,7 @@ namespace xabsl
 * 
 * Combines some options to an agent
 *
-* @author Martin Lötzsch
+* @author Martin Loetzsch
 */
 class Agent : public NamedItem
 {

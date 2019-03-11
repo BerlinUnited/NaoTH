@@ -25,7 +25,9 @@ FieldDetector::FieldDetector()
 
 
 FieldDetector::~FieldDetector()
-{}
+{
+  getDebugParameterList().remove(&theParameters);
+}
 
 
 void FieldDetector::execute(CameraInfo::CameraID id)

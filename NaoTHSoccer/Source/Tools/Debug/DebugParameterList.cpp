@@ -43,6 +43,9 @@ void DebugParameterList::executeDebugCommand(
       // print only the registered parameters
       itParamList->second->print(outstream);
 
+      // reset the stream to printing 1/0 insteat 'true'/'false'
+      outstream << std::noboolalpha;
+
       /*
       // print all values from the config
       naoth::Configuration& config =  naoth::Platform::getInstance().theConfiguration;

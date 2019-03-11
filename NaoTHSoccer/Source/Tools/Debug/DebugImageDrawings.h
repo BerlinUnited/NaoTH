@@ -8,11 +8,9 @@
 #ifndef _DebugImageDrawings_H
 #define _DebugImageDrawings_H
 
-#include <Tools/DataStructures/Singleton.h>
 #include <Tools/ImageProcessing/ImageDrawings.h>
-#include <Representations/Infrastructure/CameraInfo.h>
-
 #include <Tools/ImageProcessing/ImagePrimitives.h>
+
 #include <Tools/Math/Vector2.h>
 #include "Tools/ColorClasses.h"
 

@@ -19,6 +19,7 @@
 
 
 using namespace naoth;
+using namespace std;
 
 KeyFrameMotionFactory::KeyFrameMotionFactory()
 {

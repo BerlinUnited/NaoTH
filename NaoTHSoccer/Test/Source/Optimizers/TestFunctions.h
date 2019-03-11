@@ -6,6 +6,8 @@
 #include <sstream>
 #include "math.h"
 
+#include "Tools/Math/Common.h"
+
 // implementing some test functions from "Damping Parameter In Marquardt's Mehtod", Hans Bruun Nielsen
 namespace nielsen {
     class Rosenbrock {
@@ -88,9 +90,9 @@ namespace wikipedia {
         Eigen::Matrix<double, N, 1> operator ()(const Eigen::Matrix<double, N, 1>& p) const {
             Eigen::Matrix<double, N, 1> f;
             for( int i = 0; i < N-1; i++){
-                f(i,0) = p(i,0) * p(i,0) - 10 * std::cos(2 * M_PI * p(i,0));
+                f(i,0) = p(i,0) * p(i,0) - 10 * std::cos(2 * Math::pi * p(i,0));
             }
-            f(N-1,0) = 10 * N + p(N-1,0) * p(N-1,0) - 10 * std::cos(2 * M_PI * p(N-1,0));
+            f(N-1,0) = 10 * N + p(N-1,0) * p(N-1,0) - 10 * std::cos(2 * Math::pi * p(N-1,0));
 
             return f;
         }

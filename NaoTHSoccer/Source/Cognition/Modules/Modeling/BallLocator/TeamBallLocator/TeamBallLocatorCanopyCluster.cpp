@@ -4,6 +4,7 @@ TeamBallLocatorCanopyCluster::TeamBallLocatorCanopyCluster()
 {
     getDebugParameterList().add(&params);
 
+    DEBUG_REQUEST_REGISTER("TeamBallLocatorCanopyCluster:draw_all_balls", "draws all communicated balls on the field", false);
     DEBUG_REQUEST_REGISTER("TeamBallLocatorCanopyCluster:draw_teamball_input", "draw all the balls uses for teamball", false);
     DEBUG_REQUEST_REGISTER("TeamBallLocatorCanopyCluster:draw_ball_on_field", "draw the team ball model on the field", false);
 }
@@ -26,13 +27,31 @@ void TeamBallLocatorCanopyCluster::execute() {
         if(!getTeamMessagePlayersState().isPlaying(playerNumber)) { continue; }
 
         // ballage + network delay
-        double ballAge = msg.ballAge + static_cast<double>(getTeamMessageNTP().getTimeInMilliSeconds(playerNumber) - msg.custom.timestamp);
+        double ballAge = msg.ballAge;
+        if(getTeamMessageNTP().isNtpActive(playerNumber)) {
+            ballAge += static_cast<double>(getTeamMessageNTP().getTimeInMilliSeconds(playerNumber) - msg.custom.timestamp);
+        }
+
+        DEBUG_REQUEST("TeamBallLocatorCanopyCluster:draw_all_balls",
+            FIELD_DRAWING_CONTEXT;
+            PEN("666666", 20);
+            auto drawing_position = msg.pose * msg.ballPosition;
+            CIRCLE(drawing_position.x, drawing_position.y, 50);
+            TEXT_DRAWING(drawing_position.x+100, drawing_position.y+100, playerNumber);
+            TEXT_DRAWING(drawing_position.x+100, drawing_position.y-100, ballAge);
+        );
 
         // -1 means "ball never seen", ballAge (incl. network delay) should be small
         if(msg.ballAge >= 0 && ballAge <= params.maxBallAge)
         {
-            // global position of the ball and time last seen
-            balls.push_back(Ball(msg.pose * msg.ballPosition));
+            Vector2d globalBallPosition = msg.pose * msg.ballPosition;
+
+            // if activated via parameter, skip balls, which are outside the field!
+            if(!params.ballsAreOnlyValidOnField || getFieldInfo().insideCarpet(globalBallPosition) ) {
+
+              // global position of the ball and time last seen
+              balls.push_back(Ball(globalBallPosition));
+            }
         }
     }
 

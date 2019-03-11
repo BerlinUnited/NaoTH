@@ -24,8 +24,6 @@ GameData::GameData()
 
     firstHalf(true),
     kickingTeam(0),
-    dropInTeam(0),
-    dropInTime(0),
     secsRemaining(0),
     secondaryTime(0),
     // HACK: for more info see declaration
@@ -74,7 +72,6 @@ std::string GameData::toString(CompetitionType value)
   {
     RETURN_VALUE_TO_STR(competition_normal);
     RETURN_VALUE_TO_STR(competition_mixed);
-    RETURN_VALUE_TO_STR(competition_penalty);
   }
   
   ASSERT(false);
@@ -118,6 +115,8 @@ std::string GameData::toString(SetPlay value)
     RETURN_VALUE_TO_STR(set_none);
     RETURN_VALUE_TO_STR(goal_free_kick);
     RETURN_VALUE_TO_STR(pushing_free_kick);
+    RETURN_VALUE_TO_STR(corner_kick);
+    RETURN_VALUE_TO_STR(kick_in);
   }
   
   ASSERT(false);
@@ -139,6 +138,7 @@ std::string GameData::toString(Penalty value)
     RETURN_VALUE_TO_STR(kick_off_goal);
     RETURN_VALUE_TO_STR(request_for_pickup);
     RETURN_VALUE_TO_STR(local_game_stuck);
+    RETURN_VALUE_TO_STR(illegal_positioning);
     RETURN_VALUE_TO_STR(substitute);
     RETURN_VALUE_TO_STR(manual);
   }
@@ -189,10 +189,7 @@ void GameData::parseFrom(const spl::RoboCupGameControlData& data, int teamNumber
   firstHalf       = data.firstHalf == 1;
   kickingTeam     = data.kickingTeam;
 
-  dropInTeam      = data.dropInTeam;
-
   // ACHTUNG: casting to signed values - game time can be negative (!)
-  dropInTime      = (int16_t)data.dropInTime;
   secsRemaining   = (int16_t)data.secsRemaining;
   secondaryTime   = (int16_t)data.secondaryTime;
   
@@ -212,11 +209,11 @@ void GameData::parseTeamInfo(TeamInfo& teamInfoDst, const spl::TeamInfo& teamInf
 {
   teamInfoDst.penaltyShot = teamInfoSrc.penaltyShot;
   teamInfoDst.score = teamInfoSrc.score;
-  teamInfoDst.teamColor = (TeamColor)teamInfoSrc.teamColor;
+  teamInfoDst.teamColor = (TeamColor)teamInfoSrc.teamColour;
   teamInfoDst.teamNumber = teamInfoSrc.teamNumber;
 
   teamInfoDst.players.resize(playersPerTeam);
-  for(int i = 0; i < playersPerTeam; i++) {
+  for(unsigned int i = 0; i < playersPerTeam; i++) {
     teamInfoDst.players[i].penalty = (Penalty)teamInfoSrc.players[i].penalty;
 
     // ACHTUNG: casting to signed values - time can be negative (!)
@@ -237,8 +234,6 @@ void GameData::print(ostream& stream) const
 
   stream << "firstHalf = "      << firstHalf << std::endl;
   stream << "kickingTeam = "    << kickingTeam << std::endl;
-  stream << "dropInTeam = "     << dropInTeam << std::endl;
-  stream << "dropInTime = "     << dropInTime << std::endl;
   stream << "secsRemaining = "  << secsRemaining << std::endl;
   stream << "secondaryTime = "  << secondaryTime << std::endl;
 
