@@ -49,6 +49,9 @@ def load_image_from_path(path, db, res):
                         y = int(shape["cy"])
                         radius = int(shape["r"])
 
+                        if x < 0 or y < 0 or x > res["x"] or y > res["y"]:
+                            continue
+
                         # draw detected circle into debug image
                         cv2.circle(debug_img, (int(x),int(y)), int(radius), color=(0,0,255))
 
