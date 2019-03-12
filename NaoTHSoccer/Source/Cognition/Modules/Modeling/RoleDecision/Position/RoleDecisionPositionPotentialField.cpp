@@ -1,4 +1,5 @@
 #include "RoleDecisionPositionPotentialField.h"
+#include <iomanip>
 
 #define ROLE_GROUPS 3
 
@@ -119,27 +120,25 @@ Vector2d RoleDecisionPositionPotentialField::calculateRepellerAttractorForce(con
 {
     Vector2d shift;
     if(params.enableSideline) {
-        shift  = -calculate(params.forceSideline, p, {p.x, getFieldInfo().yPosLeftSideline}, params.force_sideline, params.force_sideline_scale)
-                - calculate(params.forceSideline, p, {p.x, getFieldInfo().yPosRightSideline}, params.force_sideline, params.force_sideline_scale)
-                - calculate(params.forceSideline, p, {getFieldInfo().xPosOpponentGroundline, p.y}, params.force_sideline, params.force_sideline_scale)
-                - calculate(params.forceSideline, p, {getFieldInfo().xPosOwnGroundline, p.y}, params.force_sideline, params.force_sideline_scale);
+        shift = calculate(params.forceSideline, p, {p.x, getFieldInfo().yPosLeftSideline}, params.force_sideline, params.force_sideline_scale)
+              + calculate(params.forceSideline, p, {p.x, getFieldInfo().yPosRightSideline}, params.force_sideline, params.force_sideline_scale)
+              + calculate(params.forceSideline, p, {getFieldInfo().xPosOpponentGroundline, p.y}, params.force_sideline, params.force_sideline_scale)
+              + calculate(params.forceSideline, p, {getFieldInfo().xPosOwnGroundline, p.y}, params.force_sideline, params.force_sideline_scale);
     }
 
     for (const auto& a : getRoles().active) {
         // other roles repel the role r
         if(params.enableTeammates && a != Roles::goalie && a != r) {
-            shift -= calculate(params.forceTeammate, p, getRoleDecisionModel().roles_position[a].home, params.force_teammates, params.force_teammates_scale);
+            shift += calculate(params.forceTeammate, p, getRoleDecisionModel().roles_position[a].home, params.force_teammates, params.force_teammates_scale);
         }
         // the roles default position attracts the role r
         if(params.enableDefaultPosition && a == r) {
-            auto at = calculate(params.forcePosition, p, getRoles().defaults.at(a).home, params.force_default_position, params.force_default_position_scale);
-            shift += at;
+            shift -= calculate(params.forcePosition, p, getRoles().defaults.at(a).home, params.force_default_position, params.force_default_position_scale);
         }
     }
 
     if(params.enableBall && getTeamBallModel().valid) {
-        auto ball = calculate(params.forceBall, p, getTeamBallModel().positionOnField, params.force_ball, params.force_ball_scale);
-        shift += ball;
+        shift -= calculate(params.forceBall, p, getTeamBallModel().positionOnField, params.force_ball, params.force_ball_scale);
     }
 
     return shift;
@@ -227,6 +226,7 @@ void RoleDecisionPositionPotentialField::debugDrawings(std::string debugRequestN
             {
                 auto f = calculateRepellerAttractorForce(p, r);
                 auto d = f.abs();
+
                 f.normalize(50);
                 f+=p;
                 PEN(Color(1.0, 0.0, 0.0, d / std::max({params.force_sideline, params.force_teammates, params.force_ball})), 10);

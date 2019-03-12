@@ -50,19 +50,19 @@ private:
             PARAMETER_REGISTER(force_sideline) = 4000;
             PARAMETER_REGISTER(force_sideline_scale) = 1;
             PARAMETER_REGISTER(force_teammates) = 4000;
-            PARAMETER_REGISTER(force_teammates_scale) = 1;
+            PARAMETER_REGISTER(force_teammates_scale) = 500;
             PARAMETER_REGISTER(force_ball) = 4000;
-            PARAMETER_REGISTER(force_ball_scale) = 1;
-            PARAMETER_REGISTER(force_default_position) = 2000;
-            PARAMETER_REGISTER(force_default_position_scale) = 1;
+            PARAMETER_REGISTER(force_ball_scale) = 2;
+            PARAMETER_REGISTER(force_default_position) = 0.8;
+            PARAMETER_REGISTER(force_default_position_scale) = -1;
 
-            PARAMETER_REGISTER(update_speed) = 0.05;
+            PARAMETER_REGISTER(update_speed) = 2.0;
 
             PARAMETER_REGISTER(restrictToGrid) = false;
 
             // const, linear, square exp, exprec, expsquare, cos
             PARAMETER_REGISTER(force_method_sideline, &Parameters::setSidelineMethod) = "exprec";
-            PARAMETER_REGISTER(force_method_teammate, &Parameters::setTeammateMethod) = "exprec";
+            PARAMETER_REGISTER(force_method_teammate, &Parameters::setTeammateMethod) = "expnegrec";
             PARAMETER_REGISTER(force_method_ball,     &Parameters::setBallMethod)     = "linear";
             PARAMETER_REGISTER(force_method_position, &Parameters::setPositionMethod) = "const";
 
@@ -172,23 +172,23 @@ private:
     /** Returns the force as constant $\operatorname{force} = s \cdot f$. */
     double forceConst(double f, double /*d*/, double s) const { return s*f; }
     /** Returns the force as a linear function: $\operatorname{force} = \begin{cases} 0 &d>f\\f-d &\end{cases}$ */
-    double forceLinear(double f, double d, double s) const { return s * (d>f?0:(f-d)); }
+    double forceLinear(double f, double d, double s) const { return d>f||d==0.0 ? 0 : -s; }
     /** Returns the force as a square function: $\operatorname{force} = \begin{cases} 0 &d^2>f\\f-d^2 &\end{cases}$ */
-    double forceSquare(double f, double d, double s) const { return s*((d*d)>f?0:(f - (d * d))); }
+    double forceSquare(double f, double d, double s) const { return (d*d)>f ? 0 : -2*s*d; }
     /** Returns the force as a square function: $\operatorname{force} = \frac{s \cdot f}{d}$ */
-    double forceRatio(double f, double d, double s) const { return (s*f)/d; }
+    double forceRatio(double f, double d, double s) const { return d == 0.0 ? 0 : -s*f / (d*d); }
     /** Returns the force as a square function: $\operatorname{force} = f \cdot e^{s \cdot d}$ */
-    double forceExp(double f, double d, double s) const { return f * exp(s * d); }
+    double forceExp(double f, double d, double s) const { return - s * f * exp(-s * d); }
     /** Returns the force as a square function: $\operatorname{force} = s \cdot e^{\frac{f}{d}}$ */
-    double forceExpRec(double f, double d, double s) const { return s * exp(f / d); }
+    double forceExpRec(double f, double d, double s) const { return s*exp(f/d) * (-f/(d*d)); }
     /** Returns the force as a square function: $\operatorname{force} = s \cdot e^{\frac{f}{d^2}}$ */
-    double forceExpRecSquare(double f, double d, double s) const { return s * exp(f / (d*d)); }
+    double forceExpRecSquare(double f, double d, double s) const { return s*exp(f/(d*d)) * ((-2*f)/(d*d*d)); }
     /** Returns the force as a square function: $\operatorname{force} = f \cdot e^{-\frac{d}{s}}$ */
-    double forceExpNegRec(double f, double d, double s) const { return f * exp(-d / s); }
+    double forceExpNegRec(double f, double d, double s) const { return f*exp(-d/s) * (-1/s); }
     /** Returns the force as a square function: $\operatorname{force} = f \cdot e^{-\frac{d^2}{s}}$ */
-    double forceExpNegRecSquare(double f, double d, double s) const { return f * exp(-(d*d) / s); }
+    double forceExpNegRecSquare(double f, double d, double s) const { return f*exp(-(d*d)/s)*((-2*d)/s); }
     /** Returns the force as the cos function: $\operatorname{force} = f \cdot \cos({s \cdot d})$ */
-    double forceCos(double f, double d, double s) const { return (s * d)>=(Math::pi_2)?0.0:cos(s * d) * f; }
+    double forceCos(double f, double d, double s) const { return (s * d)>=(Math::pi_2)?0.0:-s*f*sin(s*d); }
 };
 
 #endif // ROLEDECISIONPOSITIONPOTENTIALFIELD_H
