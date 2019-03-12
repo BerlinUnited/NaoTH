@@ -7,6 +7,20 @@ from keras.models import *
 from keras.layers import *
 from datetime import datetime
 
+class AccHistory(keras.callbacks.Callback):
+    def on_train_begin(self, logs={}):
+        self.acc = []
+
+    def on_epoch_end(self, batch, logs={}):
+        self.acc.append(logs.get('acc'))
+        print("Accuracy history:")
+        for (idx,a) in enumerate(self.acc):
+            end = " -> "
+            if idx == len(self.acc)-1:
+                end = "\n"
+            print("{:.3f}".format(a), end=end)
+            
+
 def naodevils():
     model = Sequential()
     model.add(Convolution2D(8, (5, 5), input_shape=(x.shape[1], x.shape[2], 1),
@@ -46,11 +60,10 @@ def naodevils_yolo():
 #    model.add(MaxPooling2D(pool_size=(2, 2)))
 
     model.add(Convolution2D(32, (1, 1), padding='same'))
-
-#    model.add(Dense(32))
    
     # classifier
     model.add(Flatten())
+    #    model.add(Dense(32))
     # radius, x, y
     model.add(Dense(3))
 
@@ -115,7 +128,7 @@ print(model.summary())
 
 save_callback = keras.callbacks.ModelCheckpoint(filepath=model_path, monitor='loss', verbose=1, save_best_only=True)
 
-callbacks = [save_callback]
+callbacks = [save_callback, AccHistory()]
 
 if log_dir is not None:
     log_callback = keras.callbacks.TensorBoard(log_dir='./logs/' + str(datetime.now()).replace(" ", "_"))
