@@ -13,13 +13,14 @@ class AccHistory(keras.callbacks.Callback):
 
     def on_epoch_end(self, batch, logs={}):
         self.acc.append(logs.get('acc'))
+        prev = None
         print("Accuracy history:")
         for (idx,a) in enumerate(self.acc):
-            end = " -> "
-            if idx == len(self.acc)-1:
-                end = "\n"
-            print("{:.3f}".format(a), end=end)
-            
+            if prev is None:
+                print("   {:.3f}".format(a))
+            else:
+                print("-> {:.3f} ({:+.3f}) ".format(a, (a - prev)))
+            prev = a
 
 def naodevils():
     model = Sequential()
