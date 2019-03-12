@@ -6,6 +6,7 @@ import keras
 from keras.models import *
 from keras.layers import *
 from datetime import datetime
+import numpy as np
 
 class AccHistory(keras.callbacks.Callback):
     def on_train_begin(self, logs={}):
@@ -14,13 +15,19 @@ class AccHistory(keras.callbacks.Callback):
     def on_epoch_end(self, batch, logs={}):
         self.acc.append(logs.get('acc'))
         prev = None
+        max_idx = np.array(self.acc).argmax()
         print("Accuracy history:")
         for (idx,a) in enumerate(self.acc):
             if prev is None:
                 print("   {:.3f}".format(a))
             else:
-                print("-> {:.3f} ({:+.3f}) ".format(a, (a - prev)))
+                if max_idx == idx:
+                    print("-> {:.3f} ({:+.3f}) [max]".format(a, (a - prev)))
+                else:
+                    print("-> {:.3f} ({:+.3f}) ".format(a, (a - prev)))
             prev = a
+        if max_idx >= 0 and max_idx < len(self.acc):
+            print("Maximum is {:.3f}".format(self.acc[max_idx]) )
 
 def naodevils():
     model = Sequential()
