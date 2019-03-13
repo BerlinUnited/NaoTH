@@ -47,7 +47,7 @@ public class AllTab extends Tab
 
     public AllTab() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/de/naoth/rc/dialogs/multiagentconfiguration/ui/AllTab.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("AllTab.fxml"));
             loader.setController(this);
             loader.setControllerFactory((type) -> {
                 try {
@@ -124,7 +124,7 @@ public class AllTab extends Tab
         int row = contentArea.getChildren().size() / 3;
         try {
             RepresentationsContent rcc = new RepresentationsContent();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/de/naoth/rc/dialogs/multiagentconfiguration/ui/RepresentationsContent.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("RepresentationsContent.fxml"));
             loader.setController(rcc);
             
             Node n = loader.load();

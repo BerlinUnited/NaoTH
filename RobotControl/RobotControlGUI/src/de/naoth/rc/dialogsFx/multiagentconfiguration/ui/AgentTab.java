@@ -74,7 +74,7 @@ public class AgentTab extends Tab implements ConnectionStatusListener
         super();
         
         try {
-            FXMLLoader loader = new FXMLLoader(AgentTab.class.getResource("/de/naoth/rc/dialogs/multiagentconfiguration/ui/AgentTab.fxml"));
+            FXMLLoader loader = new FXMLLoader(AgentTab.class.getResource("AgentTab.fxml"));
             loader.setController(this);
             setContent(loader.load());
         } catch (IOException ex) {
