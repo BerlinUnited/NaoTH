@@ -11,10 +11,9 @@
 #include <cstring>
 #include <map>
 
-#include <DebugCommunication/DebugCommandExecutor.h>
 #include "Tools/DataStructures/Serializer.h"
 
-class DebugRequest : public DebugCommandExecutor
+class DebugRequest
 {
 public:
   class Request
@@ -30,8 +29,8 @@ public:
   typedef std::map<std::string, Request> RequestMap;
 
 public:
-  DebugRequest();
-  virtual ~DebugRequest();
+  DebugRequest(){}
+  virtual ~DebugRequest(){}
 
 
   /** Register debug request. Will do nothing if already known. */
@@ -47,10 +46,17 @@ public:
    * It is used for fast access to the values. (see DEBUG_REQUEST)
    */
   const bool& getValueReference(const std::string& name) const;
-  
-  virtual void executeDebugCommand(
-    const std::string& command, const std::map<std::string,std::string>& arguments,
-    std::ostream &outstream);
+
+  /** 
+   * set the value of the request if existing
+   * this is mostly used by the decerializer 
+   */
+  void setValue(const std::string& name, bool v) {
+    std::map<std::string, Request>::iterator iter = requestMap.find(name);
+    if(iter != requestMap.end()) {
+      iter->second.value = v;
+    }
+  }
   
   const RequestMap& getRequestMap() const {
     return requestMap;
@@ -64,7 +70,7 @@ private:
   RequestMap requestMap;
 };
 
-std::string get_sub_core_path(std::string fullpath);
+std::string get_sub_core_path(const std::string& fullpath);
 
 namespace naoth
 {
