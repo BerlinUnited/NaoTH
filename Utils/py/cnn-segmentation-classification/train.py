@@ -16,8 +16,10 @@ class AccHistory(keras.callbacks.Callback):
         self.acc.append(logs.get('acc'))
         prev = None
         max_idx = np.array(self.acc).argmax()
+        offset = max(0, len(self.acc) - 10)
         print("Accuracy history:")
         for (idx,a) in enumerate(self.acc[-10:]):
+            idx = idx + offset
             if prev is None:
                 print("   {:.4f}".format(a))
             else:
