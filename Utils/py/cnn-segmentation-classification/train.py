@@ -17,7 +17,7 @@ class AccHistory(keras.callbacks.Callback):
         prev = None
         max_idx = np.array(self.acc).argmax()
         print("Accuracy history:")
-        for (idx,a) in enumerate(self.acc[:-10]):
+        for (idx,a) in enumerate(self.acc[-10:]):
             if prev is None:
                 print("   {:.3f}".format(a))
             else:
