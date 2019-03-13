@@ -19,15 +19,15 @@ class AccHistory(keras.callbacks.Callback):
         print("Accuracy history:")
         for (idx,a) in enumerate(self.acc[-10:]):
             if prev is None:
-                print("   {:.3f}".format(a))
+                print("   {:.4f}".format(a))
             else:
                 if max_idx == idx:
-                    print("-> {:.3f} ({:+.3f}) [max]".format(a, (a - prev)))
+                    print("-> {:.4f} ({:+.4f}) [max]".format(a, (a - prev)))
                 else:
-                    print("-> {:.3f} ({:+.3f}) ".format(a, (a - prev)))
+                    print("-> {:.4f} ({:+.4f}) ".format(a, (a - prev)))
             prev = a
         if max_idx >= 0 and max_idx < len(self.acc):
-            print("Maximum is {:.3f}".format(self.acc[max_idx]) )
+            print("Maximum is {:.4f}".format(self.acc[max_idx]) )
 
 def naodevils():
     model = Sequential()
