@@ -59,8 +59,8 @@ def load_image_from_path(path, db, res):
                         cv2.circle(debug_img, (int(x),int(y)), int(radius), color=(0,0,255))
 
                         # normalize to resolution
-                        x = x / res["x"]
-                        y = y / res["y"]
+                        x = (x / res["x"])
+                        y = (y / res["y"])
                         radius = radius / max(res["x"], res["y"])
 
                         num_balls += 1
@@ -81,8 +81,8 @@ def load_image_from_path(path, db, res):
             else:
                 # no region means no ball
                 radius = 0.0
-                x = -1.0
-                y = -1.0
+                x = 0
+                y = 0
                 num_noballs += 1
 
             # for each row add the image and the prediction 

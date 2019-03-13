@@ -73,7 +73,7 @@ def naodevils_yolo():
     model.add(Flatten())
     #    model.add(Dense(32))
     # radius, x, y
-    model.add(Dense(3))
+    model.add(Dense(3, activation="relu"))
 
     return model
 
