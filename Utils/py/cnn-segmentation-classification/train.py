@@ -138,11 +138,11 @@ print(model.summary())
 
 save_callback = keras.callbacks.ModelCheckpoint(filepath=model_path, monitor='loss', verbose=1, save_best_only=True)
 
-callbacks = [save_callback, AccHistory()]
+callbacks = [save_callback]
 
 if log_dir is not None:
     log_callback = keras.callbacks.TensorBoard(log_dir='./logs/' + str(datetime.now()).replace(" ", "_"))
     callbacks.append(log_callback)
 
-history = model.fit(x, y, batch_size=64, epochs=40, verbose=1, validation_split=0.1, callbacks=callbacks)
+history = model.fit(x, y, batch_size=64, epochs=80, verbose=1, validation_split=0.1, callbacks=callbacks)
 model.save(model_path)
