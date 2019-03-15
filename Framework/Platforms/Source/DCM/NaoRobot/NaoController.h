@@ -109,7 +109,7 @@ public:
   
   void get(AudioData& data) { theAudioRecorder.get(data); }
   void get(CpuData& data) { theCPUTemperatureReader.get(data); }
-  void get(JoypadData& data){ theUDevInterface.get(data); }
+  void get(JoypadData& data){ theJoypad.get(data); }
 
   // write directly to the shared memory
   // ACHTUNG: each set calls swapWriting()
@@ -192,7 +192,7 @@ protected:
   DebugServer* theDebugServer;
   CPUTemperatureReader theCPUTemperatureReader;
   AudioRecorder theAudioRecorder;
-  UDevInterface theUDevInterface;
+  Joypad theJoypad;
 };
 
 } // end namespace naoth
