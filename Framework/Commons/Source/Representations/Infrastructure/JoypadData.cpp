@@ -15,6 +15,7 @@ using namespace naoth;
 //--------------------------------------------------------------------------------------------------
 void JoypadData::print(std::ostream& stream) const
 { // not complete
+  stream << "isValid: " << controls.isValid << std::endl;
   stream << "Joypad Button X: " << controls.button.X << std::endl;
   stream << "Joypad Button Y: " << controls.button.Y << std::endl;
   stream << "Joypad Button A: " << controls.button.A << std::endl;
