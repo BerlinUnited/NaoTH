@@ -4,7 +4,8 @@
 RoleDecisionPositionSimulation::RoleDecisionPositionSimulation()
 {
     getDebugParameterList().add(&params);
-    //DEBUG_REQUEST_REGISTER("RoleDecision:Position:draw_positions_static", "draw role positions on the field", false);
+
+    DEBUG_REQUEST_REGISTER("RoleDecision:Position:s_draw_simulated_balls", "draw the simulated balls on the field", false);
 }
 
 
@@ -15,13 +16,24 @@ RoleDecisionPositionSimulation::~RoleDecisionPositionSimulation()
 
 void RoleDecisionPositionSimulation::execute()
 {
-    // current ball position
-    Vector2d globalBallStartPosition = getTeamBallModel().positionOnField;
+    if(getTeamBallModel().valid) {
+        // init particles with current ball position
+        std::vector<Vector2d> particles(params.numParticles, getTeamBallModel().positionOnField);
 
-    std::vector<Vector2d> particles;
+        // TODO: calculate driection to the own goal
+        // TODO: handle goals/outs/....
+        // TODO: handle players on the shooting line
 
-    for(int j=0; j < params.numParticles; ++j) {
-        particles.push_back(predict(globalBallStartPosition, true));
+        for (int i = 0; i < params.numIteration; ++i) {
+            for(auto& p : particles) {
+                p = predict(p, true);
+                DEBUG_REQUEST("RoleDecision:Position:s_draw_simulated_balls",
+                    FIELD_DRAWING_CONTEXT;
+                    PEN(Color(0.67, (static_cast<double>(i)/params.numIteration), (static_cast<double>(i)/params.numIteration)), 20);
+                    CIRCLE(p.x, p.y, 10);
+                );
+            }
+        }
     }
 }
 

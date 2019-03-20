@@ -42,9 +42,17 @@ private:
     public:
         Parameters() : ParameterList("RoleDecisionPositionSimulation")
         {
+            PARAMETER_REGISTER(numParticles) = 30;
+            PARAMETER_REGISTER(numIteration) = 1;
+
+            PARAMETER_REGISTER(ball_speed) = 800;
+            PARAMETER_REGISTER(ball_speed_std) = 100;
+            PARAMETER_REGISTER(ball_angle) = 8.5;
+            PARAMETER_REGISTER(ball_angle_std) = 6.9;
         }
 
         int numParticles;
+        int numIteration;
 
         double ball_speed;
         double ball_speed_std;
