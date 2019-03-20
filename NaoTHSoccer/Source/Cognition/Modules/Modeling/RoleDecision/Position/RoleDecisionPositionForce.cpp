@@ -179,12 +179,18 @@ void RoleDecisionPositionForce::debugDrawings() const
         FIELD_DRAWING_CONTEXT;
         for(const auto& r : getRoleDecisionModel().roles_position) {
             if(getRoles().isRoleActive(r.first)) {
+                // more functional presentation
                 PEN("666666", 20);
                 LINE(r.second.home.x, r.second.home.y-20, r.second.home.x, r.second.home.y+20);
                 LINE(r.second.home.x-20, r.second.home.y, r.second.home.x+20, r.second.home.y);
                 // mark active positions with a circle
                 PEN("666666", 10);
                 CIRCLE(r.second.home.x, r.second.home.y, 40);
+
+                // nicer representation (eg. for images)
+                //PEN("0000ff", 20);
+                //ROBOT(r.second.home.x, r.second.home.y, 0);
+                //TEXT_DRAWING2(r.second.home.x, r.second.home.y-250, 0.6, Roles::getName(r.first));
             }
         }
     );
@@ -192,9 +198,15 @@ void RoleDecisionPositionForce::debugDrawings() const
         FIELD_DRAWING_CONTEXT;
         for(const auto& r : getRoleDecisionModel().roles_position) {
             if(!getRoles().isRoleActive(r.first)) {
+                // more functional presentation
                 PEN("666666", 20);
                 LINE(r.second.home.x, r.second.home.y-20, r.second.home.x, r.second.home.y+20);
                 LINE(r.second.home.x-20, r.second.home.y, r.second.home.x+20, r.second.home.y);
+
+                // nicer representation (eg. for images)
+                //PEN("0000ff", 20);
+                //ROBOT(r.second.home.x, r.second.home.y, 0);
+                //TEXT_DRAWING2(r.second.home.x, r.second.home.y-250, 0.6, Roles::getName(r.first));
             }
         }
     );
