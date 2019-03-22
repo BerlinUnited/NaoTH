@@ -53,8 +53,9 @@ HungarianAlgorithm<T>::HungarianAlgorithm(Eigen::Array<T, Eigen::Dynamic, Eigen:
     ASSERT_MSG(matrix.rows() == matrix.cols(),
                "Input matrix has to be square!");
 
-    // Prepare the matrix values...
+    // Prepare the matrix values: subtract from each row the min. row value
     matrix.colwise() -= matrix.rowwise().minCoeff();
+    // ... and from each column the min. column value
     matrix.rowwise() -= matrix.colwise().minCoeff();
 
     // Follow the steps
@@ -86,6 +87,9 @@ HungarianAlgorithm<T>::HungarianAlgorithm(Eigen::Array<T, Eigen::Dynamic, Eigen:
     }
 }
 
+/**
+ * Searches the matrix for an uncovered zero.
+ */
 template<typename T>
 bool HungarianAlgorithm<T>::find_uncovered_in_matrix (size_t & row, size_t & col) const
 {
@@ -103,6 +107,10 @@ bool HungarianAlgorithm<T>::find_uncovered_in_matrix (size_t & row, size_t & col
     return false;
 }
 
+/**
+ * Find a zero (Z) in the resulting matrix. If there is no starred zero in its row or column, star Z.
+ * Repeat for each element in the matrix. Go to step 2.
+ */
 template<typename T>
 int HungarianAlgorithm<T>::step1 ()
 {
@@ -111,10 +119,12 @@ int HungarianAlgorithm<T>::step1 ()
             if (matrix(row, col) == 0) {
                 for (size_t nrow = 0; nrow < row; nrow++) {
                     if (STAR == mask_matrix (nrow, col) ) {
+                        // skip the rest
                         goto next_column;
                     }
                 }
                 mask_matrix (row,col) = STAR;
+                // skip the rest, we got a starred zero
                 goto next_row;
             }
             next_column:;
@@ -124,6 +134,11 @@ int HungarianAlgorithm<T>::step1 ()
     return 2;
 }
 
+/**
+ * Cover each column containing a starred zero.
+ * If "size" columns are covered, the starred zeros describe a complete set of unique assignments (finish).
+ * Otherwise go to step 3.
+ */
 template<typename T>
 int HungarianAlgorithm<T>::step2 ()
 {
@@ -131,7 +146,7 @@ int HungarianAlgorithm<T>::step2 ()
 
     for (size_t col = 0; col < size; col++) {
         for (size_t row = 0; row < size; row++) {
-            if (STAR == mask_matrix (row, col) ) {
+            if (mask_matrix (row, col) == STAR) {
                 col_mask(col) = true;
                 covercount++;
             }
@@ -140,6 +155,10 @@ int HungarianAlgorithm<T>::step2 ()
     return covercount >= size ? 0 : 3;
 }
 
+/**
+ * Prime uncovered zeros, convert covered cols to covered rows and find starting point to construct
+ * a path of alternating Z' and Z*.
+ */
 template<typename T>
 int HungarianAlgorithm<T>::step3 ()
 {
@@ -158,10 +177,12 @@ int HungarianAlgorithm<T>::step3 ()
         }
         return 4;   // No starred zero in the row containing this primed zero.
     }
-
     return 5;
 }
 
+/**
+ * Construct a series of alternating primed and starred zeros.
+ */
 template<typename T>
 int HungarianAlgorithm<T>::step4 ()
 {
@@ -212,14 +233,16 @@ int HungarianAlgorithm<T>::step4 ()
     return 2;
 }
 
+/**
+ * Find the smallest uncovered value (h). Add the value to every element of each covered row,
+ * and subtract it from every element of each uncovered column. Return to Step 3 without
+ * altering any stars, primes, or covered lines.
+ */
 template<typename T>
 int HungarianAlgorithm<T>::step5 ()
 {
     // New Zero Manufactures
     // 1. Let h be the smallest uncovered entry in the (modified) distance matrix.
-    // 2. Add h to all covered rows.
-    // 3. Subtract h from all uncovered columns
-    // 4. Return to Step 3, without altering stars, primes, or covers.
     T h = std::numeric_limits<T>::max ();
     for (size_t col = 0; col < size; col++) {
         if (!col_mask(col)) {
@@ -233,6 +256,7 @@ int HungarianAlgorithm<T>::step5 ()
         }
     }
 
+    // 2. Add h to all covered rows.
     for (size_t row = 0; row < size; row++) {
         if (row_mask(row)) {
             for (size_t col = 0; col < size; col++) {
@@ -241,6 +265,7 @@ int HungarianAlgorithm<T>::step5 ()
         }
     }
 
+    // 3. Subtract h from all uncovered columns
     for (size_t col = 0; col < size; col++) {
         if (!col_mask(col)) {
             for (size_t row = 0; row < size; row++) {
@@ -249,6 +274,7 @@ int HungarianAlgorithm<T>::step5 ()
         }
     }
 
+    // 4. Return to Step 3, without altering stars, primes, or covers.
     return 3;
 }
 

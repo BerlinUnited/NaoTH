@@ -135,7 +135,7 @@ void RoleDecisionAssignmentDistance::withDistance(std::map<unsigned int, Roles::
            cols = assignable_roles.size(),
            n = std::max(rows, cols);
     // create a squared matrix with default values
-    Eigen::Array<int, Eigen::Dynamic, Eigen::Dynamic> m = Eigen::Array<int, Eigen::Dynamic, Eigen::Dynamic>::Constant(n,n,0);
+    Eigen::Array<int, Eigen::Dynamic, Eigen::Dynamic> m = Eigen::Array<int, Eigen::Dynamic, Eigen::Dynamic>::Constant(n,n,std::numeric_limits<int>::max());
     // prepare distance matrix
     for (size_t r = 0; r < rows; ++r) {
         for (size_t c = 0; c < cols; ++c) {
