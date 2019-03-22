@@ -13,9 +13,26 @@
 
 #include "Representations/Infrastructure/Image.h"
 
-#include <string.h>
+#include <cstring>
 #include <iostream>
+#include <cerrno>
+
 #include <poll.h>
+
+/*
+// NOTE: for future improvements of the error handling take a look at 
+   https://linux.die.net/man/3/explain_ioctl
+  
+  #include <libexplain/ioctl.h>
+  
+  if (ioctl(fildes, request, data) < 0)
+  {
+      int err = errno;
+      fprintf(stderr, "%s\n",
+          explain_errno_ioctl(err, fildes, request, data));
+      exit(EXIT_FAILURE);
+  }
+*/
 
 //Custom V4L control variables
 #define V4L2_MT9M114_FADE_TO_BLACK (V4L2_CID_PRIVATE_BASE) //boolean, enable or disable fade to black feature
@@ -26,7 +43,8 @@
 #define V4L2_MT9M114_AE_MIN_VIRT_DGAIN (V4L2_CID_PRIVATE_BASE+5)
 #define V4L2_MT9M114_AE_MAX_VIRT_DGAIN (V4L2_CID_PRIVATE_BASE+6)
 
-#define LOG "[CameraHandler " << currentCamera << "] "
+#define LOG "[CameraHandler:" << __LINE__ << ", Camera: " << cameraName << "] "
+#define hasIOError(...) hasIOErrorPrint(__LINE__, __VA_ARGS__)
 
 using namespace naoth;
 using namespace std;
@@ -36,6 +54,7 @@ V4lCameraHandler::V4lCameraHandler()
   :
   selMethodIO(IO_MMAP),
   actMethodIO(Num_of_MethodIO),
+  cameraName("none"),
   fd(-1), 
   buffers(NULL),
   n_buffers(0),
@@ -46,9 +65,9 @@ V4lCameraHandler::V4lCameraHandler()
   isCapturing(false),
   bufferSwitched(false),
   blockingCaptureModeEnabled(false),
-  lastCameraSettingTimestamp(0)
+  lastCameraSettingTimestamp(0),
+  currentCamera(numOfCamera)
 {
-
   // NOTE: width, height and fps are not included here
   settingsOrder.push_back(CameraSettings::VerticalFlip);
   settingsOrder.push_back(CameraSettings::HorizontalFlip);
@@ -82,7 +101,10 @@ V4lCameraHandler::V4lCameraHandler()
 //  settingsOrder.push_back(CameraSettings::BacklightCompensation);
   settingsOrder.push_back(CameraSettings::FadeToBlack);
   
-
+  
+  // DEBUG: test hasIOError
+  //hasIOError(-1, EPIPE);
+  
   for(int i = 0; i < CameraSettings::numOfCameraSetting; i++)  {
     currentSettings.data[i] = -1;
   }
@@ -802,8 +824,7 @@ int V4lCameraHandler::getSingleCameraParameter(int id)
   queryctrl.id = id;
   if (int errCode = ioctl(fd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
   {
-    std::cerr << LOG << "VIDIOC_QUERYCTRL failed: "
-              << getErrnoDescription(errCode) << std::endl;
+    std::cerr << LOG << "VIDIOC_QUERYCTRL failed: " << strerror(errCode) << std::endl;
     return -1;
   }
   if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED)
@@ -858,8 +879,7 @@ bool V4lCameraHandler::setSingleCameraParameter(int id, int value, std::string n
   queryctrl.id = id;
   if (int errCode = xioctl(fd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
   {
-    std::cerr << LOG << "VIDIOC_QUERYCTRL failed with code " 
-              << errCode << " " << getErrnoDescription(errCode) << std::endl;
+    std::cerr << LOG << "VIDIOC_QUERYCTRL failed with code " << errCode << " " << strerror(errCode) << std::endl;
     return false;
   }
   if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED)
@@ -1012,23 +1032,22 @@ bool V4lCameraHandler::isRunning()
   return isCapturing;
 }
 
+// https://01.org/linuxgraphics/gfx-docs/drm/media/uapi/v4l/capture.c.html
 int V4lCameraHandler::xioctl(int fd, int request, void* arg) const
 {
   int r;
   // TODO: possibly endless loop?
-  do
-  {
-    r = ioctl (fd, request, arg);
-  }
-  while (-1 == r && EINTR == errno); // repeat if the call was interrupted
+  do {
+    r = ioctl(fd, request, arg);
+  } while (-1 == r && EINTR == errno); // repeat if the call was interrupted
   return r;
 }
 
-bool V4lCameraHandler::hasIOError(int errOccured, int errNo, bool exitByIOError) const
+bool V4lCameraHandler::hasIOErrorPrint(int lineNumber, int errOccured, int errNo, bool exitByIOError) const
 {
   if(errOccured < 0 && errNo != EAGAIN)
   {
-    std::cout << LOG << " failed with errno " << errNo << " (" << getErrnoDescription(errNo) << ") >> exiting" << std::endl;
+    std::cout << LOG << "[hasIOError:" << lineNumber << "]" << " failed with errno " << errNo << " (" << strerror(errNo) << ") >> exiting" << std::endl;
     if(exitByIOError)
     {
       assert(errOccured >= 0);
@@ -1036,46 +1055,4 @@ bool V4lCameraHandler::hasIOError(int errOccured, int errNo, bool exitByIOError)
     return true;
   }
   return false;
-}
-
-string V4lCameraHandler::getErrnoDescription(int err) const
-{
-  switch (err)
-  {
-    case	EPERM		: return "Operation not permitted";
-    case	ENOENT	: return "No such file or directory";
-    case	ESRCH		: return "No such process";
-    case	EINTR		: return "Interrupted system call";
-    case	EIO		 	: return "I/O error";
-    case	ENXIO		: return "No such device or address";
-    case	E2BIG		: return "Argument list too long";
-    case	ENOEXEC	: return "Exec format error";
-    case	EBADF		: return "Bad file number";
-    case	ECHILD	: return "No child processes";
-    case	EAGAIN	: return "Try again";
-    case	ENOMEM	: return "Out of memory";
-    case	EACCES	: return "Permission denied";
-    case	EFAULT	: return "Bad address";
-    case	ENOTBLK	: return "Block device required";
-    case	EBUSY		: return "Device or resource busy";
-    case	EEXIST	: return "File exists";
-    case	EXDEV		: return "Cross-device link";
-    case	ENODEV	: return "No such device";
-    case	ENOTDIR	: return "Not a directory";
-    case	EISDIR	: return "Is a directory";
-    case	EINVAL	: return "Invalid argument";
-    case	ENFILE	: return "File table overflow";
-    case	EMFILE	: return "Too many open files";
-    case	ENOTTY	: return "Not a typewriter";
-    case	ETXTBSY	: return "Text file busy";
-    case	EFBIG		: return "File too large";
-    case	ENOSPC	: return "No space left on device";
-    case	ESPIPE	: return "Illegal seek";
-    case	EROFS		: return "Read-only file system";
-    case	EMLINK	: return "Too many links";
-    case	EPIPE		: return "Broken pipe";
-    case	EDOM		: return "Math argument out of domain of func";
-    case	ERANGE	: return "Math result not representable";
-  }
-  return "Unknown errorcode";
 }
