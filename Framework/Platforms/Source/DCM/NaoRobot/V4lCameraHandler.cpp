@@ -66,7 +66,7 @@ V4lCameraHandler::V4lCameraHandler()
   bufferSwitched(false),
   blockingCaptureModeEnabled(false),
   lastCameraSettingTimestamp(0),
-  currentCamera(numOfCamera)
+  currentCamera(CameraInfo::numOfCamera)
 {
   // NOTE: width, height and fps are not included here
   settingsOrder.push_back(CameraSettings::VerticalFlip);
@@ -102,9 +102,9 @@ V4lCameraHandler::V4lCameraHandler()
   settingsOrder.push_back(CameraSettings::FadeToBlack);
   
   
-  // DEBUG: test hasIOError
+  // DEBUG: test
   //hasIOError(-1, EPIPE);
-  
+
   for(int i = 0; i < CameraSettings::numOfCameraSetting; i++)  {
     currentSettings.data[i] = -1;
   }
@@ -557,16 +557,35 @@ int V4lCameraHandler::readFrameMMaP()
   bool first = true;
   v4l2_buffer lastValidBuf;
   do {
+    
+    /*
+    // NOTE: 
+    Last buffer produced by the hardware. mem2mem codec drivers set this flag on the capture queue 
+    for the last buffer when the ioctl VIDIOC_QUERYBUF or VIDIOC_DQBUF ioctl is called. Due to hardware 
+    limitations, the last buffer may be empty. In this case the driver will set the bytesused field to 0, 
+    regardless of the format. Any Any subsequent call to the VIDIOC_DQBUF ioctl will not block anymore, 
+    but return an EPIPE error code.
+    
+    // https://www.kernel.org/doc/html/v4.8/media/uapi/v4l/buffer.html?highlight=v4l2_buf_flag_last
+    // https://github.com/gebart/python-v4l2capture/issues/16#issuecomment-473519282
+    // https://github.com/gebart/python-v4l2capture/issues/16
+    */
     errorCode = xioctl(fd, VIDIOC_DQBUF, &buf);
 
-    if(errorCode == 0) {
+    if(errorCode == 0) 
+    {
       if(first) {
         first = false;
       } else {
-        VERIFY(xioctl(fd, VIDIOC_QBUF, &lastValidBuf) == 0);
+        if (xioctl(fd, VIDIOC_QBUF, &lastValidBuf) != 0) {
+          std::cout << LOG << "Buffer { .index = " << buf.index << ", .bytesused = " << buf.bytesused << ", .flags" << buf.flags << "}" << std::endl;
+          ASSERT(false);
+        }
       }
       lastValidBuf = buf;
-    } else {
+    } 
+    else 
+    {
       if(errno == EAGAIN) {
         // last element taken from the queue, abort loop
         if(!first) {
@@ -576,6 +595,8 @@ int V4lCameraHandler::readFrameMMaP()
         break;
       } else {
         // we did do a poll on the file descriptor and still got an error, something is wrong: abort the loop
+        // print some info about the buffer
+        std::cout << LOG << "Buffer { .index = " << buf.index << ", .bytesused = " << buf.bytesused << ", .flags" << buf.flags << "}" << std::endl;
         hasIOError(errorCode, errno);
         break;
       }
