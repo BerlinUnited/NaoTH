@@ -42,6 +42,8 @@
 
 #include <memory>
 
+#include <fdeep/fdeep.hpp>
+
 BEGIN_DECLARE_MODULE(CNNBallDetector)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
@@ -106,9 +108,6 @@ public:
     PLOT("CNNBallDetector:mean_of_means",average_mean);
   }
 
-  // TODO: this is not very elegant, but it is used by the BallDetectorEvaluator.cpp
-  static std::map<std::string, std::shared_ptr<AbstractCNNClassifier> > createCNNMap();
-
 private:
   struct Parameters: public ParameterList
   {
@@ -170,10 +169,9 @@ private:
 
 private:
 
-  std::shared_ptr<AbstractCNNClassifier> currentCNNClassifier;
-  std::shared_ptr<AbstractCNNClassifier> currentCNNClassifierClose;
+  std::shared_ptr<fdeep::model> currentCNN;
+  std::shared_ptr<fdeep::model> currentCNNClose;
 
-  std::map<std::string, std::shared_ptr<AbstractCNNClassifier> > cnnMap;
   void setClassifier(const std::string& name, const std::string& nameClose);
 
   ModuleCreator<BallKeyPointExtractor>* theBallKeyPointExtractor;

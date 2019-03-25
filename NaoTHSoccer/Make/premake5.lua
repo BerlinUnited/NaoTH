@@ -200,7 +200,7 @@ workspace "NaoTHSoccer"
     -- (see http://www.airs.com/blog/archives/120 for some nice explanation)
     buildoptions {"-fno-strict-overflow"}
     --buildoptions {"-std=c++11"}
-    cppdialect "c++11"
+    cppdialect "c++14"
     
     --flags { "ExtraWarnings" }
     links {"pthread"}

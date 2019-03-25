@@ -28,9 +28,6 @@ CNNBallDetector::CNNBallDetector()
   theBallKeyPointExtractor = registerModule<BallKeyPointExtractor>("BallKeyPointExtractor", true);
   getDebugParameterList().add(&params);
 
-
-  cnnMap = createCNNMap();
-
   setClassifier("dortmund", "dortmund");
 }
 
@@ -101,30 +98,11 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
   );
 }
 
-// TODO: this is not very elegant, but it is used by the BallDetectorEvaluator.cpp
-std::map<string, std::shared_ptr<AbstractCNNClassifier> > CNNBallDetector::createCNNMap()
-{
-  std::map<string, std::shared_ptr<AbstractCNNClassifier> > result;
-
-  // register classifiers
-  result.insert({"dortmund", std::make_shared<CNN_dortmund>()});
-  //result.insert({ "dortmund2018", std::make_shared<CNN_dortmund2018>() });
-  result.insert({ "dortmund2018_keras", std::make_shared<CNN_dortmund2018_keras>() });
-
-  return std::move(result);
-}
 
 void CNNBallDetector::setClassifier(const std::string& name, const std::string& nameClose) 
 {
-  auto location = cnnMap.find(name);
-  if(location != cnnMap.end()){
-    currentCNNClassifier = location->second;
-  }
-
-  location = cnnMap.find(nameClose);
-  if(location != cnnMap.end()){
-    currentCNNClassifierClose = location->second;
-  }
+  currentCNN = std::make_shared<fdeep::model>(fdeep::load_model(name));
+  currentCNNClose = std::make_shared<fdeep::model>(fdeep::load_model(nameClose));
 }
 
 
@@ -220,16 +198,38 @@ void CNNBallDetector::calculateCandidates()
       // run CNN
       stopwatch.start();
 
-      std::shared_ptr<AbstractCNNClassifier> classifier = currentCNNClassifier;
+      std::shared_ptr<fdeep::model> cnn = currentCNN;
       if(patch.width() >= params.postMaxCloseSize) {
-        classifier = currentCNNClassifierClose;
+        cnn = currentCNNClose;
       }
 
-      bool found = classifier->classify(patch);
+      // create input data from patch (TODO: why not use a Y-patch directly and save the copy operation?)
+      ASSERT(patch.size() == 16);
+      fdeep::tensor5 inputTensor = fdeep::tensor5(fdeep::shape5(1,1, 16, 16, 1), 0);
+
+      for(size_t x=0; x < patch.size(); x++) {
+        for(size_t y=0; y < patch.size(); y++) {
+          // TODO: check
+          inputTensor.set(0, 0, y, x, 0, static_cast<float>((patch.data[patch.size() * y + x].pixel.y) / 255.0f));
+        }
+      }
+
+      std::vector<fdeep::tensor5> result = cnn->predict({inputTensor});
+
+      bool found = false;
+      if(result.size() == 1) {
+        float radius = result[0].get(0,0,0,0,0);
+        float x = result[0].get(0,0,0,1,0);
+        float y = result[0].get(0,0,0,2,0);
+
+        if(radius > 0.3f && x >= 0.0f && y >= 0.0f) {
+          found = true;
+        }
+      }
       stopwatch.stop();
       stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
 
-      if (found && classifier->getBallConfidence() >= selectedCNNThreshold) {
+      if (found /* && classifier->getBallConfidence() >= selectedCNNThreshold*/) {
         addBallPercept(patch.center(), patch.radius());
       }
 
