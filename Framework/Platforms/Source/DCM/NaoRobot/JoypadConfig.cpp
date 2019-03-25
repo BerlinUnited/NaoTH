@@ -1,3 +1,12 @@
+//--------------------------------------------------------------------------------------------------
+//
+// @file JoypadConfig.cpp
+// @author <a href="mailto:albert@informatik.hu-berlin.de">Andreas Albert</a>
+//
+// Joypad config definitions
+//
+//--------------------------------------------------------------------------------------------------
+//
 //==================================================================================================
 //--------------------------------------------------------------------------------------------------
 #include "JoypadConfig.h"
@@ -158,9 +167,9 @@ namespace naoth
       resultFind = databaseJoypads.cbegin();
     }
 //--------
-    int SupportedJoypad::findDevice(const std::string& nodeToSearchFor)
+    int SupportedJoypad::findDevice(const std::string& idToSearchFor)
     {
-      resultFind = databaseJoypads.find(nodeToSearchFor);
+      resultFind = databaseJoypads.find(idToSearchFor);
       if (resultFind == databaseJoypads.cend())
       { // no joypad entry was found, point to "error device"
         resultFind = databaseJoypads.cbegin();

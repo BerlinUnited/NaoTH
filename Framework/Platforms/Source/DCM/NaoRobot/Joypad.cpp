@@ -133,7 +133,7 @@ int Joypad::dataReader()
   constexpr int maxDataLen = 27; // longest known is 27 so far
 
   std::vector<unsigned char> data(maxDataLen);
-  data.reserve(maxDataLen);
+//  data.reserve(maxDataLen);
   ssize_t bytesRead = read(fdJoypadDevice, &data[0], maxDataLen);
 
   std::lock_guard<std::mutex> lock(dataMutex);
@@ -153,15 +153,14 @@ int Joypad::dataReader()
   }
 #ifdef DEBUG
   // VS debug problem workaround - keep in one line - this is intended and only needed for step debugging
-  for (auto& i : supportedJoypad.getReportRaw()) { std::fprintf(stderr, "%02X ", i); } std::fprintf(stderr, "\n"); // debug msg
-//  for (auto& i : propsJoypad.inputReportData){std::cerr << std::setfill('0') << std::setprecision(2) << std::uppercase << std::hex << (int)i << ' ';}std::cerr << std::endl;
+//  for (auto& i : supportedJoypad.getReportRaw()) { std::fprintf(stderr, "%02X ", i); } std::fprintf(stderr, "\n"); // debug msg
 #endif // DEBUG
   return bytesRead;
 }
 //--------------------------------------------------------------------------------------------------
 void Joypad::loopRead()
 {
-  constexpr int timeReadPoll_ms = 100;
+  constexpr int timeReadPoll_ms = 100; // adjust as needed
 
 #ifdef DEBUG
   std::fprintf(stderr, "[UDevRead Info] Starting the read loop thread.\n"); // debug msg
@@ -211,7 +210,7 @@ void Joypad::loopRead()
       { // timed out reading
 //        std::fprintf(stderr, "[UDevRead Info] EPoll timeout waiting for data.\n");
         // VS debug problem - keep in one line - this is intended and only needed for step debugging
-        for (auto& i : supportedJoypad.getReportRaw()) { std::fprintf(stderr, "%02X ", i); } std::fprintf(stderr, "\n");
+//        for (auto& i : supportedJoypad.getReportRaw()) { std::fprintf(stderr, "%02X ", i); } std::fprintf(stderr, "\n");
       }
       else
       {
