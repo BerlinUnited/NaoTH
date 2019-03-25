@@ -15,8 +15,11 @@ public:
     /** Struct containing the states of the teammates, which can be retrieved of the teammessage. */
     struct Player
     {
+        /** A player is 'alive', if he's continously sending messages. */
         bool alive = false;
+        /** A player is 'active', if he's 'alive' and is in the 'playing' gamestate. */
         bool active = false;
+        /** A player is 'playing', if he's not fallen. */
         bool playing = false;
 
         bool isActive() const { return alive && active; }
