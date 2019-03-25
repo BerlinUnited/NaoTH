@@ -87,6 +87,7 @@ private:
         double minPositionDistance;
     } params;
 
+    void resetPositions() const;
     void debugDrawings() const;
 };
 

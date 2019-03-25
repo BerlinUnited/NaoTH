@@ -7,9 +7,13 @@ RoleDecisionPositionFormation::RoleDecisionPositionFormation()
 {
     getDebugParameterList().add(&params);
 
+    DEBUG_REQUEST_REGISTER("RoleDecision:Position:formation:reset_positions", "", false);
     DEBUG_REQUEST_REGISTER("RoleDecision:Position:formation:draw_default_position", "", false);
     DEBUG_REQUEST_REGISTER("RoleDecision:Position:formation:draw_active_positions", "", false);
     DEBUG_REQUEST_REGISTER("RoleDecision:Position:formation:draw_inactive_positions", "", false);
+
+    // init positions with default
+    resetPositions();
 }
 
 RoleDecisionPositionFormation::~RoleDecisionPositionFormation()
@@ -17,8 +21,16 @@ RoleDecisionPositionFormation::~RoleDecisionPositionFormation()
     getDebugParameterList().remove(&params);
 }
 
+void RoleDecisionPositionFormation::resetPositions() const
+{
+    for (const auto& d : getRoles().defaults) {
+        getRoleDecisionModel().roles_position[d.first] = d.second;
+    }
+}
+
 void RoleDecisionPositionFormation::execute()
 {
+    DEBUG_REQUEST("RoleDecision:Position:formation:reset_positions", resetPositions(); );
     // TODO: make factor function configurable
 
     if(getTeamBallModel().valid) {
