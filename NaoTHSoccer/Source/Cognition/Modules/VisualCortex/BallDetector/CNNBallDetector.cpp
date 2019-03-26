@@ -234,8 +234,7 @@ void CNNBallDetector::calculateCandidates()
         x = result[0].get(0,0,0,1,0);
         y = result[0].get(0,0,0,2,0);
 
-        double minRadius = cameraID == CameraInfo::Top ? params.cnn.threshold : params.cnn.thresholdClose;
-        if(radius >= minRadius && x >= 0.0f && y >= 0.0f) {
+        if(radius >= selectedCNNThreshold && x >= 0.0f && y >= 0.0f) {
           found = true;
         }
       }
