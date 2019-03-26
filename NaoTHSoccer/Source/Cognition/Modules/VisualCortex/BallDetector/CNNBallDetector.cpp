@@ -231,11 +231,14 @@ void CNNBallDetector::calculateCandidates()
       double y = 0.0;
       if(result.size() == 1) {
         radius = result[0].get(0,0,0,0,0);
-        x = result[0].get(0,0,0,1,0);
-        y = result[0].get(0,0,0,2,0);
+        x = result[0].get(0,0,0,0,1);
+        y = result[0].get(0,0,0,0,2);
+
 
         if(radius >= selectedCNNThreshold && x >= 0.0f && y >= 0.0f) {
           found = true;
+
+          //std::cout << fdeep::show_tensor5s(result) << " (radius=" << radius << " x=" << x << " y=" << y << ")" << std::endl;
         }
       }
       stopwatch.stop();
@@ -243,8 +246,9 @@ void CNNBallDetector::calculateCandidates()
 
       if (found /* && classifier->getBallConfidence() >= selectedCNNThreshold*/) {
         // adjust the center and radius of the patch
-        Vector2i ballCenterInPatch(static_cast<int>(x * 16.0f), static_cast<int>(y*16.0f));
-        addBallPercept(Vector2i(patch.center() + ballCenterInPatch), patch.radius() * (radius/0.5f));
+        Vector2i ballCenterInPatch(static_cast<int>(x * patch.width()), static_cast<int>(y*patch.width()));
+       
+        addBallPercept(patch.min + ballCenterInPatch, radius*patch.width());
       }
 
       DEBUG_REQUEST("Vision:CNNBallDetector:drawCandidates",
