@@ -217,7 +217,7 @@ void CNNBallDetector::calculateCandidates()
         for(size_t y=0; y < patch.size(); y++) {
           // TODO: check if x and y are correct
           // The average brightness should have value 0.0
-          float value = (static_cast<float>((patch.data[patch.size() * y + x].pixel.y)) / 255.0f) 
+          float value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) 
             - static_cast<float>(params.cnn.meanBrightness);
           inputTensor.set(0, 0, y, x, 0, value);
         }
@@ -226,10 +226,13 @@ void CNNBallDetector::calculateCandidates()
       std::vector<fdeep::tensor5> result = cnn->predict({inputTensor});
 
       bool found = false;
+      double radius = 0.0;
+      double x = 0.0;
+      double y = 0.0;
       if(result.size() == 1) {
-        double radius = result[0].get(0,0,0,0,0);
-        float x = result[0].get(0,0,0,1,0);
-        float y = result[0].get(0,0,0,2,0);
+        radius = result[0].get(0,0,0,0,0);
+        x = result[0].get(0,0,0,1,0);
+        y = result[0].get(0,0,0,2,0);
 
         double minRadius = cameraID == CameraInfo::Top ? params.cnn.threshold : params.cnn.thresholdClose;
         if(radius >= minRadius && x >= 0.0f && y >= 0.0f) {
@@ -240,7 +243,9 @@ void CNNBallDetector::calculateCandidates()
       stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
 
       if (found /* && classifier->getBallConfidence() >= selectedCNNThreshold*/) {
-        addBallPercept(patch.center(), patch.radius());
+        // adjust the center and radius of the patch
+        Vector2i ballCenterInPatch(static_cast<int>(x * 16.0f), static_cast<int>(y*16.0f));
+        addBallPercept(Vector2i(patch.center() + ballCenterInPatch), patch.radius() * (radius/0.5f));
       }
 
       DEBUG_REQUEST("Vision:CNNBallDetector:drawCandidates",
