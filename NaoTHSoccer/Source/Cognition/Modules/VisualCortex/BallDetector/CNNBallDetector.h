@@ -131,8 +131,8 @@ private:
       PARAMETER_REGISTER(contrastMinimumClose) = 50;
 
 
-      PARAMETER_REGISTER(classifier) = "dortmund";
-      PARAMETER_REGISTER(classifierClose) = "dortmund";
+      PARAMETER_REGISTER(classifier) = "bottom.json";
+      PARAMETER_REGISTER(classifierClose) = "bottom.json";
 
       PARAMETER_REGISTER(brightnessMultiplierBottom) = 1.0;
       PARAMETER_REGISTER(brightnessMultiplierTop) = 1.0;
@@ -170,7 +170,10 @@ private:
 private:
 
   std::shared_ptr<fdeep::model> currentCNN;
+  std::string currentCNNName;
+
   std::shared_ptr<fdeep::model> currentCNNClose;
+  std::string currentCNNCloseName;
 
   void setClassifier(const std::string& name, const std::string& nameClose);
 

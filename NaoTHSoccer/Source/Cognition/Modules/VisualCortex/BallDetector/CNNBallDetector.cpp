@@ -28,7 +28,7 @@ CNNBallDetector::CNNBallDetector()
   theBallKeyPointExtractor = registerModule<BallKeyPointExtractor>("BallKeyPointExtractor", true);
   getDebugParameterList().add(&params);
 
-  setClassifier("dortmund", "dortmund");
+  setClassifier("bottom.json", "bottom.json");
 }
 
 CNNBallDetector::~CNNBallDetector()
@@ -101,8 +101,14 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
 
 void CNNBallDetector::setClassifier(const std::string& name, const std::string& nameClose) 
 {
-  currentCNN = std::make_shared<fdeep::model>(fdeep::load_model(name));
-  currentCNNClose = std::make_shared<fdeep::model>(fdeep::load_model(nameClose));
+  if(currentCNNName != name) {
+    currentCNN = std::make_shared<fdeep::model>(fdeep::load_model("Config/" + name));
+    currentCNNName = name;
+  }
+  if(currentCNNCloseName != nameClose) {
+    currentCNNClose = std::make_shared<fdeep::model>(fdeep::load_model("Config/" + nameClose));
+    currentCNNCloseName = nameClose;
+  }
 }
 
 
