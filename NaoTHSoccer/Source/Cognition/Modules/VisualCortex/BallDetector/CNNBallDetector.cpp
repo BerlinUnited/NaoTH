@@ -215,8 +215,11 @@ void CNNBallDetector::calculateCandidates()
 
       for(size_t x=0; x < patch.size(); x++) {
         for(size_t y=0; y < patch.size(); y++) {
-          // TODO: check
-          inputTensor.set(0, 0, y, x, 0, static_cast<float>((patch.data[patch.size() * y + x].pixel.y) / 255.0f));
+          // TODO: check if x and y are correct
+          // The average brightness should have value 0.0
+          float value = (static_cast<float>((patch.data[patch.size() * y + x].pixel.y)) / 255.0f) 
+            - static_cast<float>(params.cnn.meanBrightness);
+          inputTensor.set(0, 0, y, x, 0, value);
         }
       }
 
@@ -224,11 +227,12 @@ void CNNBallDetector::calculateCandidates()
 
       bool found = false;
       if(result.size() == 1) {
-        float radius = result[0].get(0,0,0,0,0);
+        double radius = result[0].get(0,0,0,0,0);
         float x = result[0].get(0,0,0,1,0);
         float y = result[0].get(0,0,0,2,0);
 
-        if(radius > 0.3f && x >= 0.0f && y >= 0.0f) {
+        double minRadius = cameraID == CameraInfo::Top ? params.cnn.threshold : params.cnn.thresholdClose;
+        if(radius >= minRadius && x >= 0.0f && y >= 0.0f) {
           found = true;
         }
       }
