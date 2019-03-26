@@ -33,6 +33,7 @@ if args.imgdb_path is not None:
 
 with open(imgdb_path, "rb") as f:
     mean = pickle.load(f)
+    print("mean=" + str(mean))
 
 model = keras.models.load_model(model_path)
 
