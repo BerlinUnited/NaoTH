@@ -136,7 +136,7 @@ workspace "NaoTHSoccer"
       print("NOTE: set the target OS to " .. os.target())
     end
     
-    cppdialect "c++11"
+    cppdialect "c++14"
     
     warnings "Extra"
     -- Wconversion is not included in Wall and Wextra
@@ -171,7 +171,7 @@ workspace "NaoTHSoccer"
   filter "system:macosx"
     defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING", "EIGEN_DONT_ALIGN" }
     --buildoptions {"-std=c++11"}
-    cppdialect "c++11"
+    cppdialect "c++14"
     -- disable some warnings
     buildoptions {"-Wno-deprecated-declarations"}
     buildoptions {"-Wno-deprecated-register"}
