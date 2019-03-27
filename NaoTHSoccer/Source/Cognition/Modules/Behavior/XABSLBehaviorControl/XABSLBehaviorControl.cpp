@@ -265,6 +265,8 @@ void XABSLBehaviorControl::updateXABSLSymbols()
     theStrategySymbols->execute();
     // right now, not doing anything
     thePathSymbols->execute();
+
+    theRemoteSymbols->execute();
   }
 }//end updateXABSLSymbols
 

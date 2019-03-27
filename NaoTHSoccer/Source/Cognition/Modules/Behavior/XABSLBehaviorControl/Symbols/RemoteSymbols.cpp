@@ -46,7 +46,22 @@ RemoteSymbols::~RemoteSymbols()
 
 void RemoteSymbols::execute()
 {
+  // NOTE: this is a test for pluged in Joystick
+  if(getJoypadData().controls.isValid) 
+  {
+    getRemoteControlCommand().controlMode = RemoteControlCommand::DIRECT_CONTROL;
+    getRemoteControlCommand().action = RemoteControlCommand::STAND;
 
+    if(getJoypadData().controls.stick.L.x != 0 || getJoypadData().controls.stick.L.y != 0) 
+    {
+      getRemoteControlCommand().action = RemoteControlCommand::WALK;
+      getRemoteControlCommand().target.translation.x = -getJoypadData().controls.stick.L.y * 50;
+      //getRemoteControlCommand().target.translation.y = getJoypadData().controls.stick.L.x * 50;
+      getRemoteControlCommand().target.rotation = -getJoypadData().controls.stick.L.x * 60; // Math::fromDegrees(
+    }
+
+    getRemoteControlCommand().frameInfoWhenUpdated = getFrameInfo();
+  }
 }
 
 double RemoteSymbols::timeSinceUpdate()
