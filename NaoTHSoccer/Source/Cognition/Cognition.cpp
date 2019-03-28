@@ -72,6 +72,8 @@
 
 #include "Modules/VisualCortex/LineDetector/RansacLineDetector.h"
 #include "Modules/VisualCortex/LineDetector/RansacLineDetectorOnGraphs.h"
+#include "Modules/VisualCortex/LineDetector/LineAugmenter.h"
+
 
 #include "Modules/Modeling/CompassProvider/CompassProvider.h"
 
@@ -194,7 +196,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(RansacLineDetector);
   REGISTER_MODULE(RansacLineDetectorOnGraphs);
-
+  REGISTER_MODULE(LineAugmenter);
+  
   REGISTER_MODULE(CompassProvider);
 
   // modeling

@@ -43,8 +43,8 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   // goalie positioning
   engine.registerDecimalInputSymbol("goalie.guardline.x", &goalieGuardPositionX);
   engine.registerDecimalInputSymbol("goalie.guardline.y", &goalieGuardPositionY);
-  engine.registerDecimalInputSymbol("penalty_goalie.pos.x", &penaltyGoalieGuardPositionX);
-  engine.registerDecimalInputSymbol("penalty_goalie.pos.y", &penaltyGoalieGuardPositionY);
+  //engine.registerDecimalInputSymbol("penalty_goalie.pos.x", &penaltyGoalieGuardPositionX);
+  //engine.registerDecimalInputSymbol("penalty_goalie.pos.y", &penaltyGoalieGuardPositionY);
   engine.registerDecimalInputSymbol("goalie.defensive.x", &goalieDefensivePositionX);
   engine.registerDecimalInputSymbol("goalie.defensive.y", &goalieDefensivePositionY);
   engine.registerDecimalInputSymbol("goalie.defensive.a", &goalieDefensivePositionA);
@@ -188,6 +188,7 @@ Vector2d StrategySymbols::calculateGoalieGuardPosition()
   return result;
 }
 
+/*
 Vector2d StrategySymbols::calculatePenaltyGoalieGuardPosition()
 {
   const Vector2d goalCenter(getFieldInfo().xPosOwnGroundline, 0);
@@ -245,6 +246,7 @@ Vector2d StrategySymbols::calculatePenaltyGoalieGuardPosition()
     return result;
   }
 }
+*/
 
 double StrategySymbols::goalieGuardPositionX()
 {
@@ -256,6 +258,7 @@ double StrategySymbols::goalieGuardPositionY()
   return theInstance->calculateGoalieGuardPosition().y;
 }
 
+/*
 double StrategySymbols::penaltyGoalieGuardPositionX()
 {
   return theInstance->calculatePenaltyGoalieGuardPosition().x;
@@ -265,6 +268,7 @@ double StrategySymbols::penaltyGoalieGuardPositionY()
 {
   return theInstance->calculatePenaltyGoalieGuardPosition().y;
 }
+*/
 
 Pose2D StrategySymbols::calculateGoalieDefensivePosition()
 {

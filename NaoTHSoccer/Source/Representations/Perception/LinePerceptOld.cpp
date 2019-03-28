@@ -1,10 +1,10 @@
 /**
- * @file LinePercept.cpp
+ * @file LinePerceptOld.cpp
  * 
- * Definition of class LinePercept
+ * Definition of class LinePerceptOld
  */ 
 
-#include "LinePercept.h"
+#include "LinePerceptOld.h"
 
 #include "Messages/Representations.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
@@ -12,7 +12,7 @@
 using namespace naoth;
 using namespace std;
 
-void LinePercept::print(ostream& stream) const
+void LinePerceptOld::print(ostream& stream) const
 {
   for(unsigned int i = 0; i < lines.size(); i++)
   {
@@ -37,7 +37,7 @@ void LinePercept::print(ostream& stream) const
   }//end for
 }//end print
 
-void Serializer<LinePercept>::serialize(const LinePercept& representation, std::ostream& stream)
+void Serializer<LinePerceptOld>::serialize(const LinePerceptOld& representation, std::ostream& stream)
 {
   
   naothmessages::LinePercept p;
@@ -46,7 +46,7 @@ void Serializer<LinePercept>::serialize(const LinePercept& representation, std::
   for(size_t i=0; i < representation.lines.size(); i++)
   {
     naothmessages::LinePercept::FieldLineSegment* segment = p.add_lines();
-    const LinePercept::FieldLineSegment& line = representation.lines[i];
+    const LinePerceptOld::FieldLineSegment& line = representation.lines[i];
 
     //lines[i].fillProtobuf(newLineSegment);
     // TODO: put it somewhere else
@@ -68,11 +68,11 @@ void Serializer<LinePercept>::serialize(const LinePercept& representation, std::
   // intersections
   for(size_t i=0; i < representation.intersections.size(); i++)
   {
-    naothmessages::Intersection* intersection = p.add_intersections();
-    const LinePercept::Intersection& percept = representation.intersections[i];
+    naothmessages::LinePercept::Intersection* intersection = p.add_intersections();
+    const LinePerceptOld::Intersection& percept = representation.intersections[i];
     //intersections[i].fillProtobuf(newIntersection);
 
-    intersection->set_type((naothmessages::Intersection_IntersectionType) percept.getType());
+    intersection->set_type((naothmessages::LinePercept_Intersection_IntersectionType) percept.getType());
     intersection->mutable_posinimage()->set_x(percept.getPos().x);
     intersection->mutable_posinimage()->set_y(percept.getPos().y);
     intersection->mutable_posonfield()->set_x(percept.getPosOnField().x);
@@ -101,7 +101,7 @@ void Serializer<LinePercept>::serialize(const LinePercept& representation, std::
 
 
 
-void Serializer<LinePercept>::deserialize(std::istream& stream, LinePercept& representation)
+void Serializer<LinePerceptOld>::deserialize(std::istream& stream, LinePerceptOld& representation)
 {
   // reset the percept befor copy from stream
   representation.reset();
@@ -114,7 +114,7 @@ void Serializer<LinePercept>::deserialize(std::istream& stream, LinePercept& rep
   // line segments
   for(int i=0; i < p.lines_size(); i++)
   {
-    LinePercept::FieldLineSegment line;
+    LinePerceptOld::FieldLineSegment line;
     const naothmessages::LinePercept::FieldLineSegment& segment = p.lines(i);
     //line.readFromProtobuf(&p.lines(i));
 
@@ -156,12 +156,13 @@ void Serializer<LinePercept>::deserialize(std::istream& stream, LinePercept& rep
   // intersections
   for(int i=0; i < p.intersections_size(); i++)
   {
-    LinePercept::Intersection percept;
-    const naothmessages::Intersection& msg = p.intersections(i);
+    LinePerceptOld::Intersection percept;
+    const naothmessages::LinePercept::Intersection& msg = p.intersections(i);
     //intersection.readFromProtobuf(&p.intersections(i));
 
-    if(msg.has_type())
-      percept.setType((Math::Intersection::IntersectionType) msg.type());
+    if(msg.has_type()) {
+      percept.setType((LineIntersection::Type) msg.type());
+    }
 
     if(msg.has_posinimage())
     {

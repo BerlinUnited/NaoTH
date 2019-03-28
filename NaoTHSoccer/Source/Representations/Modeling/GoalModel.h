@@ -13,6 +13,7 @@
 
 #include <Tools/Math/Vector2.h>
 #include <Tools/Math/Pose2D.h>
+#include "Tools/ColorClasses.h"
 #include <Tools/DataStructures/Printable.h>
 
 #include "Representations/Infrastructure/FieldInfo.h"
@@ -29,17 +30,16 @@ public:
     Goal(){}
     virtual ~Goal(){}
 
-    Vector2<double> leftPost;
-    Vector2<double> rightPost;
+    Vector2d leftPost;
+    Vector2d rightPost;
     naoth::FrameInfo frameInfoWhenGoalLastSeen;
     
     /* color of the goal */
     ColorClasses::Color color;
 
-    Vector2<double> calculateCenter() const
-    {
+    Vector2d calculateCenter() const {
       return (leftPost + rightPost)*0.5;
-    }//end calculateCenter
+    }
 
   };//end class Goal
 
@@ -81,7 +81,7 @@ public:
 
   virtual void print(std::ostream& stream) const;
 
-  Vector2<double> seen_center;
+  Vector2d seen_center;
   double seen_angle;
 
   naoth::FrameInfo frameWhenOpponentGoalWasSeen;
