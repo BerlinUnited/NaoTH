@@ -8,7 +8,6 @@
 
 #include "RedBallDetector.h"
 
-#include "Tools/DataStructures/ArrayQueue.h"
 #include "Tools/CameraGeometry.h"
 
 #include <Representations/Infrastructure/CameraInfoConstants.h>
@@ -125,13 +124,7 @@ bool RedBallDetector::findMaximumRedPoint(std::vector<Vector2i>& points) const
   const FieldPercept::FieldPoly& fieldPolygon = getFieldPercept().getValidField();
 
   // find the top point of the polygon
-  int minY = getImage().height();
-  for(int i = 0; i < fieldPolygon.length ; i++)
-  {
-    if(fieldPolygon.points[i].y < minY && fieldPolygon.points[i].y >= 0) {
-      minY = fieldPolygon.points[i].y;
-    }
-  }
+  int minY = getFieldPercept().getMinY();
 
   // double check: polygon is empty
   if(minY == (int)getImage().height() || minY < 0) {
@@ -170,7 +163,7 @@ bool RedBallDetector::findMaximumRedPoint(std::vector<Vector2i>& points) const
       (
         maxRedPeak < pixel.v && // "v" is the croma RED channel
         isOrange(pixel) &&
-        fieldPolygon.isInside_inline(point) // only points inside the field polygon
+        fieldPolygon.isInside(point) // only points inside the field polygon
         //&& !getGoalPostHistograms().isPostColor(pixel) // ball is not goal like colored
         //&& getGoalPostHistograms().histogramV.mean + params.minOffsetToGoalV < pixel.v
       )
@@ -187,7 +180,7 @@ bool RedBallDetector::findMaximumRedPoint(std::vector<Vector2i>& points) const
         if
         (
           isOrange(pixel) &&
-          fieldPolygon.isInside_inline(point) // only points inside the field polygon
+          fieldPolygon.isInside(point) // only points inside the field polygon
         )
         {
           POINT_PX(ColorClasses::red, point.x, point.y);

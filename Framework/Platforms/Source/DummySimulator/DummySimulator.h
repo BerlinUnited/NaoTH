@@ -16,6 +16,10 @@
 #include "DebugCommunication/DebugServer.h"
 #include "PlatformInterface/PlatformInterface.h"
 
+// simple robot
+#include <Representations/Infrastructure/JointData.h>
+#include <Representations/Infrastructure/FSRData.h>
+
 #define CYCLE_TIME 20
 
 class DummySimulator : public naoth::PlatformInterface
@@ -42,6 +46,7 @@ public: // platform getter and setter
 
     if (!backendMode) {
       std::cout << "Frame: " << data.getFrameNumber() << "\t\r";
+      std::cout.flush();
     }
   }
 
@@ -58,6 +63,51 @@ public: // platform getter and setter
     }
   }
 
+
+public: // a dummy robot simulator
+  naoth::SensorJointData robotJointData;
+  naoth::FSRData fsrData;
+
+  void set(const naoth::MotorJointData& data) {
+    for(size_t i = 0; i < naoth::JointData::numOfJoint; ++i) {
+      robotJointData.position[i] = data.position[i];
+      robotJointData.stiffness[i] = data.stiffness[i];
+      //robotJointData.temperature[i] = 40.0;
+      //robotJointData.electricCurrent[i] = 0.0;
+    }
+
+    // HACK:
+    double leftPressure = 0.0;
+    double rightPressure = 0.0;
+    if(std::fabs(robotJointData.position[naoth::JointData::LKneePitch] - robotJointData.position[naoth::JointData::RKneePitch]) < 0.1) {
+      leftPressure = 1.0;
+      rightPressure = 1.0;
+    } else if(robotJointData.position[naoth::JointData::LKneePitch] > robotJointData.position[naoth::JointData::RKneePitch]) {
+      leftPressure = 0.0;
+      rightPressure = 1.0;
+    } else {
+      leftPressure = 1.0;
+      rightPressure = 0.0;
+    }
+
+    for(size_t i = 0; i < naoth::FSRData::numOfFSR; ++i) {
+        fsrData.dataLeft[i] = leftPressure;
+        fsrData.dataRight[i] = rightPressure;
+      }
+  }
+
+  void get(naoth::SensorJointData& data) const { data = robotJointData; }
+  void get(naoth::FSRData& data) const { data = fsrData; }
+
+  /*
+  void get(BatteryData& data);
+  void get(FSRData& data);
+  void get(AccelerometerData& data);
+  void get(GyrometerData& data);
+  void get(InertialSensorData& data);
+  */
+
+
 protected:
   virtual MessageQueue* createMessageQueue(const std::string& /*name*/) {
     // for single thread
@@ -72,7 +122,7 @@ public:
   char getInput();
   void executeFrame();
   void play();
-
+  bool doPlay;
 
 private:
   DebugServer theDebugServer;

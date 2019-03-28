@@ -7,200 +7,186 @@
 #include <pulse/error.h>
 
 using namespace std;
+using namespace naoth;
 
-namespace naoth
+
+AudioRecorder::AudioRecorder()
+  :
+  exiting(false),
+  deinitCyclesCounter(0),
+  paSimple(NULL),
+  readIdx(1),
+  writeIdx(0),
+  recordingTimestamp(0)
 {
-	AudioRecorder::AudioRecorder()
-	:
-	audioReadBuffer(BUFFER_SIZE_RX, 0),
-  recordingTimestamp(0),
-	command(0),	
-	running(false),
-  	recording(false),
-  	resetting(false),
-  	deinitCyclesCounter(0)
-	{
-	  std::cout << "[INFO] AudioRecorder thread started" << std::endl;
-	  audioRecorderThread = std::thread([this] {this->execute();});
-	  ThreadUtil::setPriority(audioRecorderThread, ThreadUtil::Priority::lowest);
+  std::cout << "[INFO] AudioRecorder thread started" << std::endl;
+  audioRecorderThread = std::thread([this] {this->execute();});
+  ThreadUtil::setPriority(audioRecorderThread, ThreadUtil::Priority::lowest);
+  ThreadUtil::setName(audioRecorderThread, "AudioRecorder");
 
-	  //The following parameters are used by bhuman:
-	  //TODO implement them as controll in AudioData Representation
-	  /*
-		(unsigned)(10) retries,      // Number of tries to open device. 
-	    (unsigned)(500) retryDelay,  //< Delay before a retry to open device. 
-	    (bool)(false) allChannels,   //< Use all 4 channels, instead of only two
-	    (unsigned)(8000) sampleRate, //< Sample rate to capture. This variable will contain the framerate the driver finally selected. 
-	    (unsigned)(5000) maxFrames,  //< Maximum number of frames read in one cycle. 
-	    (bool)(true) onlySoundInSet, // If true, the module will not provide audio data in game states other than set 
+  //The following parameters are used by bhuman:
+  //TODO implement them as controll in AudioData Representation
+  /*
+    (unsigned)(10) retries,      // Number of tries to open device. 
+    (unsigned)(500) retryDelay,  //< Delay before a retry to open device. 
+    (bool)(false) allChannels,   //< Use all 4 channels, instead of only two
+    (unsigned)(8000) sampleRate, //< Sample rate to capture. This variable will contain the framerate the driver finally selected. 
+    (unsigned)(5000) maxFrames,  //< Maximum number of frames read in one cycle. 
+    (bool)(true) onlySoundInSet, // If true, the module will not provide audio data in game states other than set 
+  */
+}
 
-	  */
-	}
+AudioRecorder::~AudioRecorder()
+{ 
+  std::cout << "[AudioRecorder] stop wait" << std::endl;
+  exiting = true;
 
-	AudioRecorder::~AudioRecorder()
-	{ 
-	  if(audioRecorderThread.joinable())
-	  {
-	    audioRecorderThread.join();
-	  }
+  // NOTE: wake up the thread in case it was waiting for the new data
+  new_command_avaliable.notify_one();
+  if(audioRecorderThread.joinable()) {
+    audioRecorderThread.join();
+  }
 
-	  if(recording)
-	  {
-	    deinitAudio();
-	  }
-	}
+  if(paSimple != NULL) {
+    deinitAudio();
+  }
 
-	void AudioRecorder::execute()
-	{
-	  running = true;
+  std::cout << "[AudioRecorder] stop done" << std::endl;
+}
 
-	  // return;
-	  while(running)
-	  {
-	    int error = 0;
-
-	    if(!recording)
-	    {
-	      if(!resetting && command == 1)
-	      {
-	        std::cout << "[AudioRecorder] start recording" << std::endl;
-	        initAudio();
-	      }
-	      else if(resetting)
-	      {
-	        usleep(128);
-	      }
-	    }
-	    else
-	    {
-	      if(command == 0)
-	      {
-	        // deinit audio device ~8 seconds after switch off command was set
-	        // (recording has blocking behaviour 1024 samples equal 128 ms 63*128 equals ~8s
-	        if(deinitCyclesCounter >= 63)
-	        {
-	          std::cout << "stop recording" << std::endl;
-	          deinitAudio();
-	          deinitCyclesCounter = 0;
-	          usleep(128);
-	          continue;
-	        }
-	        deinitCyclesCounter++;
-	      }
-	    }
-
-	    if(!resetting && recording)
-	    {
-	      //calculate amount of samples needed
-	      int samplesToRead = SAMPLE_NEW_COUNT * numChannels;
-	      int bytesToRead = samplesToRead * static_cast<int>(sizeof(short));
-
-	      // Record some data
-	      if (!paSimple || paSimple == NULL)
-	      {
-	        std::cerr << "[PulseAudio] pa_simple == NULL" << std::endl;
-	        running = false;
-	      }
-	      //std::cout << "[AudioRecorder] bytesToRead: " << bytesToRead << std::endl;
-	      if (pa_simple_read(paSimple, &audioReadBuffer[0], bytesToRead, &error) < 0)
-	      {
-	        std::cerr << "[PulseAudio] pa_simple_read() failed: " << pa_strerror(error) << std::endl;
-	        running = false;
-	      } else {
-          recordingTimestamp = NaoTime::getNaoTimeInMilliSeconds();
-        }
-	    }
-	    else
-	    {
-	      usleep(128);
-	      continue;
-	    }
-	  } // end while
-	} // end execute
-
-
-	void AudioRecorder::set(const naoth::AudioControl& controlData)
-	{
-	  
-	  std::unique_lock<std::mutex> lock(setMutex, std::try_to_lock);
-	  if ( lock.owns_lock() )
-	  {
-	  	if(command != controlData.onOffSwitch){
-	  		command = controlData.onOffSwitch;
-	  		std::cout << "Command: " << command << std::endl;
-	  	}	    
-	    
-	    if(activeChannels != controlData.activeChannels)
-	    {
-	      resetting =  true;
-	      if(recording)
-	      {
-	        deinitAudio();
-	      }
-	      //clearBuffers(); //TODO are there any buffers to clear?
-	      activeChannels = controlData.activeChannels;
-	      numChannels = controlData.numChannels;
-	      sampleRate = controlData.sampleRate;
-	      buffer_size = controlData.buffer_size;
-	      resetting = false;
-	    }
-	  }
-	}
-
-	void AudioRecorder::get(AudioData& data)
-	{
-	  if (recording) 
+void AudioRecorder::execute()
+{
+  // return;
+  while(!exiting)
+  {
+    // initialize the audio stream if necessary
+    if(control.capture && paSimple == NULL)
     {
-	  	std::unique_lock<std::mutex> lock(getMutex, std::try_to_lock);
-	  	if ( lock.owns_lock() && recordingTimestamp > data.timestamp) 
-      {
-		    data.sampleRate = sampleRate;
-        data.numChannels = numChannels;
-		    data.samples = audioReadBuffer;
-        data.timestamp = recordingTimestamp;
-	  	}
-	  }
-	} // end AudioRecorder::get
-
-
-	void AudioRecorder::initAudio()
-	{
-	  //clearBuffers(); probably not needed anymore
-
-	  int error;
-
-	  pa_sample_spec paSampleSpec;
-	  paSampleSpec.format = PA_SAMPLE_S16LE;
-	  paSampleSpec.rate = sampleRate;
-	  paSampleSpec.channels = (uint8_t)numChannels;
-
-	  // Create the recording stream
-	  std::string appName = "AudioRecorder";
-	  if (!(paSimple = pa_simple_new(NULL, appName.c_str(), PA_STREAM_RECORD, NULL, "AudioRecorder", &paSampleSpec, NULL, NULL, &error)))
-	  {
-	    std::cerr << "[PulseAudio] pa_simple_new() failed: " << pa_strerror(error) << "\n" << std::endl;
-	    paSimple = NULL;
-	  }
-	  else
-	  {
-	    std::cout << "[PulseAudio] device opened" << std::endl;
-	    std::cout << "[PulseAudio] Rate: " << paSampleSpec.rate <<std::endl;
-	    std::cout << "[PulseAudio] Channels: " << (int) paSampleSpec.channels <<std::endl;
-	    std::cout << "[PulseAudio] Buffer Size: " << buffer_size <<std::endl;
-
-	    recording = true;
-	  }
-	} //end initAudio
-
-	void AudioRecorder::deinitAudio()
-	{
-    if (paSimple != NULL)
-    {
-      recording = false;
-      std::cout << "[PulseAudio] device closed" << std::endl;
-      pa_simple_free(paSimple);
-      paSimple = NULL;
+      std::cout << "[AudioRecorder] start recording" << std::endl;
+      initAudio();
     }
-	} //end deinitAudio
+    
+    // stop capturing
+    if(!control.capture && paSimple != NULL) 
+    {
+      // TODO: make it dependent on a control parameter, e.g. control.stop_delay
+      // deinit audio device ~8 seconds after switch off command was set
+      // (recording has blocking behaviour 1024 samples equal 128 ms 63*128 equals ~8s
+      if(deinitCyclesCounter >= 63)
+      {
+        std::cout << "[AudioRecorder] stop recording" << std::endl;
+        deinitAudio();
+        deinitCyclesCounter = 0;
+      }
+      deinitCyclesCounter++;
+    }
 
-}// end namespace
+    // capture data as long as the device is initialized
+    if(paSimple != NULL) 
+    {
+      int bytesToRead = audioBuffer[writeIdx].size() * static_cast<int>(sizeof(short));
+      int error = 0;
+      if (pa_simple_read(paSimple, &(audioBuffer[writeIdx][0]), bytesToRead, &error) < 0)
+      {
+        std::cerr << "[PulseAudio] pa_simple_read() failed: " << pa_strerror(error) << std::endl;
+        exiting = true;
+      } 
+      else 
+      {
+        std::lock_guard<std::mutex> lock(dataMutex);
+        recordingTimestamp = NaoTime::getNaoTimeInMilliSeconds();
+        std::swap(writeIdx, readIdx);
+      }
+    } 
+    else // not initialized, wait until new command data arrives
+    { 
+      std::cout << "[AudioRecorder] wait for new command" << std::endl;
+      std::unique_lock<std::mutex> lock(dataMutex);
+      new_command_avaliable.wait(lock);
+      std::cout << "[AudioRecorder] continue thread" << std::endl;
+    }
+
+  } // end while
+
+  
+} // end execute
+
+
+void AudioRecorder::set(const naoth::AudioControl& controlData)
+{
+  std::unique_lock<std::mutex> lock(dataMutex, std::try_to_lock);
+  if ( lock.owns_lock() ) {
+    // NOTE: changes in the recording parameters like sampleRate or numChannels 
+    //       will only have an effect when capture is started. It means the parameters
+    //       will not change during an ongoing recording.
+    control = controlData;
+
+    if(control.capture) {
+      // release the data lock and notify the thread (in case it was waiting)
+      lock.unlock();
+      new_command_avaliable.notify_one();
+    }
+  }
+}
+
+void AudioRecorder::get(AudioData& data)
+{
+  // if there is new data, copy it 
+  std::unique_lock<std::mutex> lock(dataMutex, std::try_to_lock);
+  if ( lock.owns_lock() && recordingTimestamp > data.timestamp) 
+  {
+    data.sampleRate  = control.sampleRate;
+    data.numChannels = control.numChannels;
+    data.samples     = audioBuffer[readIdx];
+    data.timestamp   = recordingTimestamp;
+  }
+} // end AudioRecorder::get
+
+
+void AudioRecorder::initAudio()
+{
+  std::lock_guard<std::mutex> lock(dataMutex);
+
+  pa_sample_spec paSampleSpec;
+  paSampleSpec.format   = PA_SAMPLE_S16LE;
+  paSampleSpec.rate     = control.sampleRate;
+  paSampleSpec.channels = (uint8_t)control.numChannels;
+
+  // Create the recording stream
+  int error = 0;
+  if (!(paSimple = pa_simple_new(NULL, "AudioRecorder", PA_STREAM_RECORD, NULL, "AudioRecorder", &paSampleSpec, NULL, NULL, &error)))
+  {
+    std::cerr << "[PulseAudio] pa_simple_new() failed: " << pa_strerror(error) << "\n" << std::endl;
+    // NOTE: paSimple is already NULL, this is why we are here :)
+    //paSimple = NULL;
+  }
+  else
+  {
+    std::cout << "[PulseAudio] device opened" << std::endl;
+    std::cout << "[PulseAudio] Rate: " << paSampleSpec.rate <<std::endl;
+    std::cout << "[PulseAudio] Channels: " << (int) paSampleSpec.channels <<std::endl;
+    std::cout << "[PulseAudio] Buffer Size: " << control.buffer_size <<std::endl;
+
+    // resize the buffers if necessary
+    audioBuffer[readIdx].resize(control.buffer_size*control.numChannels);
+    audioBuffer[writeIdx].resize(control.buffer_size*control.numChannels);
+
+    // TODO: do we need that?
+    // give the device a bit time (moved here from the main while-loop
+    usleep(128);
+  }
+} //end initAudio
+
+void AudioRecorder::deinitAudio()
+{
+  if (paSimple != NULL)
+  {
+    std::cout << "[PulseAudio] device closed" << std::endl;
+    pa_simple_free(paSimple);
+    paSimple = NULL;
+    
+    // TODO: do we need that?
+    // give the device a bit time (moved here from the main while-loop
+    usleep(128);
+  }
+} //end deinitAudio

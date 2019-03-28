@@ -9,10 +9,6 @@
 #include "BasicTestBehavior.h"
 
 BasicTestBehavior::BasicTestBehavior() 
-:
-  lastWhistleCount(0),
-  idleCounter(11),
-	whistleDetected(false)
 {
   // test head control
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:Search", "Set the HeadMotion-Request to 'search'.", false);
@@ -61,8 +57,8 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:init", "Set the robot init.", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:dance", "Let's dance", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:protect_falling", "Don't hurt me!", false);
-	// needed by the motion editor
-	DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:play_editor_motionnet", "play the motion editor motion", false);
+  // needed by the motion editor
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:play_editor_motionnet", "play the motion editor motion", false);
 
   // parallelkinematik
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:ParallelKinematik:stepper", "parallel_stepper", false);
@@ -81,8 +77,7 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:arms_none", "set arms request to none", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:arms_synchronised_with_walk", "set arms request to none", false);
 
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:whistle:start_whistle", "start whistle detection", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:whistle:stop_whistle", "stop whistle detection", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:whistle:listen", "start whistle detection", false);
 }
 
 void BasicTestBehavior::execute() 
@@ -117,7 +112,7 @@ void BasicTestBehavior::execute()
     getMotionRequest().walkRequest.target.translation.x = 0;
   }
 
-	testWhistle();
+  testWhistle();
 
 }//end execute
 
@@ -271,26 +266,26 @@ void BasicTestBehavior::testMotion()
    if ( getMotionStatus().stepControl.stepID % 5 == 0){
     getMotionRequest().walkRequest.stepControl.stepID = getMotionStatus().stepControl.stepID;
     switch(getMotionStatus().stepControl.moveableFoot){
-			case MotionStatus::StepControlStatus::LEFT:
-			case MotionStatus::StepControlStatus::BOTH:
-			{
-				getMotionRequest().walkRequest.stepControl.moveLeftFoot = true;
-				getMotionRequest().walkRequest.coordinate = WalkRequest::LFoot;
-				break;
-			}
-			case MotionStatus::StepControlStatus::RIGHT:
-			{
-				getMotionRequest().walkRequest.stepControl.moveLeftFoot = false;
-				getMotionRequest().walkRequest.coordinate = WalkRequest::RFoot;
-				break;
-			}
-			default: ASSERT(false);
-			 break;
+      case MotionStatus::StepControlStatus::LEFT:
+      case MotionStatus::StepControlStatus::BOTH:
+      {
+        getMotionRequest().walkRequest.stepControl.moveLeftFoot = true;
+        getMotionRequest().walkRequest.coordinate = WalkRequest::LFoot;
+        break;
+      }
+      case MotionStatus::StepControlStatus::RIGHT:
+      {
+        getMotionRequest().walkRequest.stepControl.moveLeftFoot = false;
+        getMotionRequest().walkRequest.coordinate = WalkRequest::RFoot;
+        break;
+      }
+      default: ASSERT(false);
+       break;
     }
-		double stepTime = 1000;
-		double speedDirection = 0;
-		MODIFY("StepControl.time",stepTime);
-		MODIFY("StepControl.speedDirection",speedDirection);
+    double stepTime = 1000;
+    double speedDirection = 0;
+    MODIFY("StepControl.time",stepTime);
+    MODIFY("StepControl.speedDirection",speedDirection);
     getMotionRequest().walkRequest.stepControl.target = Pose2D(0, 100, 0);
     getMotionRequest().walkRequest.stepControl.time = (unsigned int)stepTime;
     getMotionRequest().walkRequest.stepControl.speedDirection = Math::fromDegrees(speedDirection);
@@ -404,42 +399,15 @@ void BasicTestBehavior::testLED() {
 
 void BasicTestBehavior::testWhistle()
 {
-	DEBUG_REQUEST("BasicTestBehavior:whistle:start_whistle",
-		if (getAudioControl().onOffSwitch != 1)
-		{
-			getAudioControl().onOffSwitch = 1;
-			lastWhistleCount = getWhistlePercept().counter;
-		}
-	if (getWhistlePercept().counter != lastWhistleCount)
-	{
-		if (idleCounter > 10)
-		{
-			idleCounter = 0;
-		}
-		if (idleCounter == 0)
-		{
-			if (!whistleDetected)
-			{
-				getSoundPlayData().soundFile = "anDieArbeit.wav";
-				whistleDetected = true;
-			}
-			else
-			{
-				getSoundPlayData().soundFile = "victory.wav";
-				whistleDetected = false;
-			}
-		}
-		lastWhistleCount = getWhistlePercept().counter;
-	}
-	idleCounter++;
-	);
+  getAudioControl().capture = false;
 
-	DEBUG_REQUEST("BasicTestBehavior:whistle:stop_whistle",
-		if (getAudioControl().onOffSwitch != 0)
-		{
-			getAudioControl().onOffSwitch = 0;
-			lastWhistleCount = getWhistlePercept().counter;
-		}
-		getMotionRequest().id = motion::stand;
-	);
+  DEBUG_REQUEST("BasicTestBehavior:whistle:listen",
+    getAudioControl().capture = true;
+
+    if(getWhistlePercept().whistleDetected) {
+      getSoundPlayData().soundFile = "victory.wav";
+    } else {
+      getSoundPlayData().soundFile.clear();
+    }
+  );
 }

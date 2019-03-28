@@ -288,31 +288,28 @@ public class BehaviorViewer extends AbstractDialog
       // input and output symbols
       StringBuffer inputBuffer = new StringBuffer();
       StringBuffer outputBuffer = new StringBuffer();
+      StringBuffer unknownBuffer = new StringBuffer();
 
-      for(String name: symbolsToWatch)
-      {
-        Symbol symbol = frame.getSymbolByName(name);
-        // TODO: error treatment
-        if(symbol == null) {
-            return;
-        }
+        for (String name : symbolsToWatch) {
+            Symbol symbol = frame.getSymbolByName(name);
+            if (symbol == null) {
+                unknownBuffer.append("~ ")
+                             .append(name)
+                             .append("\n");
+            } else {
+                XABSLBehaviorFrame.SymbolIOType type = frame.getSymbolIOType(name);
 
-        XABSLBehaviorFrame.SymbolIOType type = frame.getSymbolIOType(name);
-        
-        if(type == XABSLBehaviorFrame.SymbolIOType.input)
-        {
-          inputBuffer.append("> ")
-                     .append(symbol)
-                     .append("\n");
-        }
-        else if(type == XABSLBehaviorFrame.SymbolIOType.output)
-        {
-          inputBuffer.append("< ")
-                     .append(symbol)
-                     .append("\n");
-        }
-          
-      }//end for
+                if (type == XABSLBehaviorFrame.SymbolIOType.input) {
+                    inputBuffer.append("> ")
+                        .append(symbol)
+                        .append("\n");
+                } else if (type == XABSLBehaviorFrame.SymbolIOType.output) {
+                    outputBuffer.append("< ")
+                        .append(symbol)
+                        .append("\n");
+                }
+            }
+        }//end for
       
       if(inputBuffer.length() > 0)
       {
@@ -325,7 +322,13 @@ public class BehaviorViewer extends AbstractDialog
         watchBuffer.append("-- output symbols --\n");
         watchBuffer.append(outputBuffer).append("\n");
       }
-
+      
+      if(unknownBuffer.length() > 0)
+      {
+        watchBuffer.append("-- unknown symbols --\n");
+        watchBuffer.append(unknownBuffer).append("\n");
+      }
+      
       this.symbolsWatchTextPanel.setText(watchBuffer.toString());
 
       // options

@@ -54,6 +54,8 @@ public:
   bool isExecuted() const { return executingCycle >= numberOfCycles; }
 };
 
+std::ostream& operator<<(std::ostream& os, const Step& s);
+
 class StepBuffer : public naoth::Printable
 {
 private:
@@ -103,7 +105,10 @@ public:
 
   virtual void print(std::ostream& stream) const
   {
-      stream << "number of steps in buffer: " << steps.size() << std::endl;
+      for(const Step& s: steps){
+          stream << "-------------" << std::endl;
+          stream << s << std::endl;
+      }
   }
 };
 

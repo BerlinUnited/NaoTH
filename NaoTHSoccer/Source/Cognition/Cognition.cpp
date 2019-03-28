@@ -36,10 +36,8 @@
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
 #include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
 #include "Modules/Infrastructure/Camera/AdaptiveAutoExposure.h"
-#include "Modules/Infrastructure/WhistleDetector/AudioConfigSetter.h"
+#include "Modules/Infrastructure/AudioConfigSetter/AudioConfigSetter.h"
 #include "Modules/Infrastructure/GameLogger/GameLogger.h"
-#include "Modules/Infrastructure/WhistleDetector/WhistleDetectorV1.h"
-#include "Modules/Infrastructure/WhistleDetector/WhistleDetectorV2.h"
 
 // perception
 #include "Modules/SelfAwareness/CameraMatrixFinder/CameraMatrixFinder.h"
@@ -68,6 +66,9 @@
 
 #include "Modules/Perception/VirtualVisionProcessor/VirtualVisionProcessor.h"
 #include "Modules/Perception/PerceptionsVisualizer/PerceptionsVisualizer.h"
+#include "Modules/Perception/WhistleDetector/WhistleDetectorV1.h"
+#include "Modules/Perception/WhistleDetector/WhistleDetectorV2.h"
+#include "Modules/Perception/WhistleDetector/WhistleDetectorLegacy.h"
 
 #include "Modules/VisualCortex/LineDetector/RansacLineDetector.h"
 #include "Modules/VisualCortex/LineDetector/RansacLineDetectorOnGraphs.h"
@@ -163,6 +164,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(AudioConfigSetter);
   REGISTER_MODULE(WhistleDetectorV1);
   REGISTER_MODULE(WhistleDetectorV2);
+  REGISTER_MODULE(WhistleDetectorLegacy);
 
   // perception
   REGISTER_MODULE(CameraMatrixFinder);
@@ -234,7 +236,9 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(PathPlanner);
   REGISTER_MODULE(PathPlanner2018);
 
-  REGISTER_MODULE(CameraMatrixCorrectorV3);
+  // This is to prevent accidental use of a non working Camera Matrix Corrector. A different name is shown in Robotcontrol
+  //REGISTER_MODULE(CameraMatrixCorrectorV3);
+  registerModule<CameraMatrixCorrectorV3>("FIXMECameraMatrixCorrectorV3", false);
 
   REGISTER_MODULE(TeamCommSender);
   

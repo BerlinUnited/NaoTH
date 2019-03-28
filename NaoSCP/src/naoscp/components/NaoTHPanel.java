@@ -377,13 +377,15 @@ public class NaoTHPanel extends javax.swing.JPanel {
             .toArray();
     
     // create a new model
-    ComboBoxModel model = new DefaultComboBoxModel(names);
+    DefaultComboBoxModel model = new DefaultComboBoxModel(names);
     
     // restore the selected scheme if avaliable in the properties
     if (properties != null) {
-        model.setSelectedItem(properties.getProperty("naoscp.scheme", "n/a"));
+        String defaultScheme = properties.getProperty("naoscp.scheme", "n/a");
+        if(model.getIndexOf(defaultScheme) != -1) {
+            model.setSelectedItem(defaultScheme);
+        }
     }
-    
     // set the new model
     this.jSchemeBox.setModel(model);
     

@@ -9,6 +9,7 @@
 #include "Tools/Debug/DebugParameterList.h"
 
 #include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Modeling/TeamBallModel.h"
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Modeling/RobotPose.h"
@@ -23,13 +24,14 @@ BEGIN_DECLARE_MODULE(TeamBallLocatorCanopyCluster)
   PROVIDE(DebugParameterList)
 
   REQUIRE(FrameInfo)
+  REQUIRE(FieldInfo)
   REQUIRE(TeamMessage)
   REQUIRE(RobotPose)
   REQUIRE(TeamMessageNTP)
   REQUIRE(TeamMessagePlayersState)
 
   PROVIDE(TeamBallModel)
-END_DECLARE_MODULE(TeamBallLocatorCanopyCluster)
+END_DECLARE_MODULE(TeamBallLocatorCanopyCluster);
 
 
 class TeamBallLocatorCanopyCluster : protected TeamBallLocatorCanopyClusterBase
@@ -44,12 +46,14 @@ public:
             PARAMETER_REGISTER(t1) = 1000; // in mm
             PARAMETER_REGISTER(t2) = 500; // in mm
             PARAMETER_REGISTER(maxTimeTbIsValidWithoutUpdate) = 2000; // in ms
+            PARAMETER_REGISTER(ballsAreOnlyValidOnField) = true; // the received balls are only 'valid' if their inside the field boundries
             syncWithConfig();
         }
         int maxBallAge;
         int t1; // loose distance
         int t2; // tight distance
         int maxTimeTbIsValidWithoutUpdate;
+        bool ballsAreOnlyValidOnField;
     } params;
 
     TeamBallLocatorCanopyCluster();

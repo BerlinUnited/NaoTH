@@ -42,7 +42,6 @@
 #include <Representations/Modeling/BodyStatus.h>
 #include <Representations/Perception/CameraMatrix.h>
 #include <Representations/Perception/CameraMatrixBuffer.h>
-#include <Representations/Infrastructure/WhistlePercept.h>
 
 // others
 #include <Representations/Infrastructure/FrameInfo.h>
@@ -81,8 +80,6 @@ BEGIN_DECLARE_MODULE(Sensor)
 
   // EVIL HACK
   PROVIDE(RemoteControlCommand)
-
-  PROVIDE(WhistlePercept)
 
   PROVIDE(GPSData)
   PROVIDE(GameData)

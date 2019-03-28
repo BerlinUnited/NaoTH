@@ -6,10 +6,8 @@
  *
  */
 
-#include <string>
-
-#include <PlatformInterface/Platform.h>
 #include "ParameterList.h"
+#include <PlatformInterface/Platform.h>
 
 void ParameterList::syncWithConfig()
 {

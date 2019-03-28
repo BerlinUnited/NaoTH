@@ -52,8 +52,7 @@ public:
   enum CompetitionType
   {
     competition_normal  = COMPETITION_TYPE_NORMAL,
-    competition_mixed   = COMPETITION_TYPE_MIXEDTEAM,
-    competition_penalty = COMPETITION_TYPE_GENERAL_PENALTY_KICK
+    competition_mixed   = COMPETITION_TYPE_MIXEDTEAM
   };
 
   enum GamePhase
@@ -78,7 +77,9 @@ public:
   {
     set_none          = SET_PLAY_NONE,
     goal_free_kick    = SET_PLAY_GOAL_FREE_KICK,
-    pushing_free_kick = SET_PLAY_PUSHING_FREE_KICK
+    pushing_free_kick = SET_PLAY_PUSHING_FREE_KICK,
+    corner_kick       = SET_PLAY_CORNER_KICK,
+    kick_in           = SET_PLAY_KICK_IN
   };
 
   enum Penalty
@@ -93,6 +94,7 @@ public:
     kick_off_goal         = PENALTY_SPL_KICK_OFF_GOAL,
     request_for_pickup    = PENALTY_SPL_REQUEST_FOR_PICKUP,
     local_game_stuck      = PENALTY_SPL_LOCAL_GAME_STUCK,
+    illegal_positioning   = PENALTY_SPL_ILLEGAL_POSITIONING,
     substitute            = PENALTY_SUBSTITUTE,
     manual                = PENALTY_MANUAL
   };
@@ -145,8 +147,8 @@ public:
 
   GameData();
 
-  const RobotInfo& getOwnRobotInfo(int playerNumber) const {
-    ASSERT(playerNumber > 0 && playerNumber <= (int)(ownTeam.players.size()));
+  const RobotInfo& getOwnRobotInfo(size_t playerNumber) const {
+	  ASSERT(playerNumber > 0 && playerNumber <= ownTeam.players.size());
     return ownTeam.players[playerNumber-1];
   }
 
@@ -154,7 +156,7 @@ public:
 public:
   bool valid; // indicates that this represenation was filled
 
-  int playersPerTeam;                 // the number of players on a team
+  unsigned int playersPerTeam;                 // the number of players on a team
 
   CompetitionPhase competitionPhase;  // phase of the competition (COMPETITION_PHASE_ROUNDROBIN, COMPETITION_PHASE_PLAYOFF)
   CompetitionType  competitionType;   // type of the competition (COMPETITION_TYPE_NORMAL, COMPETITION_TYPE_MIXEDTEAM, COMPETITION_TYPE_GENERAL_PENALTY_KICK)
@@ -164,10 +166,6 @@ public:
 
   bool firstHalf;                     // 1 = game in first half, 0 otherwise
   unsigned int kickingTeam;           // the team number of the next team to kick off, free kick, DROPBALL etc.
-
-  unsigned int dropInTeam;            // number of team that caused last drop in
-  // ACHTUNG: time and can be negative, so it has to be signed (!)
-  int dropInTime;                     // number of seconds passed since the last drop in. -1 (0xffff) before first dropin
 
   int secsRemaining;                  // estimate of number of seconds remaining in the half
   int secondaryTime;                  // number of seconds shown as secondary time (remaining ready, until free ball, etc)

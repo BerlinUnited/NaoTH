@@ -42,7 +42,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -225,39 +224,6 @@ public class TeamCommViewerFx extends AbstractJFXDialog
             }
         });
         
-        // handle warning
-        robots.addListener((ListChangeListener.Change<? extends RobotStatus> c) -> {
-            while (c.next()) {
-                if(c.wasAdded() && !multipleNumberWarning.isVisible()) {
-                    // check if warning needs to be shown: two robots with same team & playerNumber
-                    for (int i = 0; i < robots.size(); i++) {
-                        for (int j = i+1; j < robots.size(); j++) {
-                            RobotStatus ri = robots.get(i);
-                            RobotStatus rj = robots.get(j);
-                            if(ri.teamNumProperty().get() == rj.teamNumProperty().get() && ri.playerNumProperty().get() == rj.playerNumProperty().get()) {
-                                multipleNumberWarning.setText("The robots " + ri.getIpAddress() + " and " + rj.getIpAddress() + " have the same player number!\n"
-                                    + "There might be more robots with identical player numbers");
-                                multipleNumberWarning.setVisible(true);
-                                return;
-                            }  
-                        }
-                    }
-                } else if(c.wasRemoved() && multipleNumberWarning.isVisible()) {
-                    // check if warning can be hidden: no two robots with same team & playerNumber
-                    for (int i = 0; i < robots.size(); i++) {
-                        for (int j = i+1; j < robots.size(); j++) {
-                            RobotStatus ri = robots.get(i);
-                            RobotStatus rj = robots.get(j);
-                            if(ri.teamNumProperty().get() == rj.teamNumProperty().get() && ri.playerNumProperty().get() == rj.playerNumProperty().get()) {
-                                return;
-                            }
-                        }
-                    }
-                    multipleNumberWarning.setVisible(false);
-                }
-            }
-        });
-        
         // handle gamecontroller infos
         Plugin.gamecontroller.addGameListener(new GameControllerUpdater());
         gamecontrollerState.setTooltip(new Tooltip("GameController info"));
@@ -357,6 +323,29 @@ public class TeamCommViewerFx extends AbstractJFXDialog
     }
     
     /**
+     * Checks, whether the available playernumbers are unique.
+     * If not, a warning with the ip adresses of the robots with the same playernumber is shown.
+     */
+    private void checkPlayerNumbers() {
+        String warningText = "";
+        HashMap<String, RobotStatus> numbers = new HashMap<>();
+        for (RobotStatus status : robots) {
+            String key = status.getTeamNum() + "_" + status.getPlayerNum();
+            if(!numbers.containsKey(key)) {
+                numbers.put(key, status);
+            } else {
+                warningText += "\t" + status.getPlayerNum() + " -> " + status.getIpAddress() + " / " + numbers.get(key).getIpAddress() + "\n";
+            }
+        }
+        if(!warningText.isEmpty()) {
+            multipleNumberWarning.setText("The following robots have the same player number:\n" + warningText);
+            multipleNumberWarning.setVisible(true);
+        } else {
+            multipleNumberWarning.setVisible(false);
+        }
+    }
+    
+    /**
      * Stops the teamcomm listener and logging thread - if currently running.
      */
     private void stopLogging() {
@@ -422,6 +411,7 @@ public class TeamCommViewerFx extends AbstractJFXDialog
             }
             // update fx ui
             Platform.runLater(() -> {
+                multipleNumberWarning.setVisible(false);
                 robots.clear();
                 statusTable.refresh();
             });
@@ -698,8 +688,11 @@ public class TeamCommViewerFx extends AbstractJFXDialog
                         if (robotStatus == null) {
                             robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address, message.isOpponent(), true);
                             robotStatus.robotColor.set(message.isOpponent() ? javafx.scene.paint.Color.RED : javafx.scene.paint.Color.BLUE);
+                            robotStatus.playerNumProperty().addListener((o) -> { checkPlayerNumbers(); }); // re-check player numbers if the number changes
                             robotStatus.updateStatus(message.timestamp, message.message); // must be updated before adding to list!
                             robots.add(robotStatus);
+                            // after adding robot to list, check if playernumber is already used!
+                            checkPlayerNumbers();
                         } else {
                             // updates the robotStatus
                             robotStatus.updateStatus(message.timestamp, message.message);
