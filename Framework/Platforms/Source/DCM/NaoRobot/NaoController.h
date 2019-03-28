@@ -26,6 +26,7 @@
 #include "CPUTemperatureReader.h"
 #include "DebugCommunication/DebugServer.h"
 #include "AudioRecorder.h"
+#include "Joypad.h"
 
 #include "Tools/Communication/Network/BroadCaster.h"
 #include "Tools/Communication/Network/UDPReceiver.h"
@@ -108,6 +109,7 @@ public:
   
   void get(AudioData& data) { theAudioRecorder.get(data); }
   void get(CpuData& data) { theCPUTemperatureReader.get(data); }
+  void get(JoypadData& data){ theJoypad.get(data); }
 
   // write directly to the shared memory
   // ACHTUNG: each set calls swapWriting()
@@ -190,7 +192,7 @@ protected:
   DebugServer* theDebugServer;
   CPUTemperatureReader theCPUTemperatureReader;
   AudioRecorder theAudioRecorder;
-
+  Joypad theJoypad;
 };
 
 } // end namespace naoth

@@ -274,6 +274,10 @@ workspace "NaoTHSoccer"
 	    dofile ("../Test/Make/Polygon.lua")
             kind "ConsoleApp"
             vpaths { ["*"] = "../Test/Source/Polygon" }
+
+        dofile ("../Test/Make/USBJoypad.lua")
+            kind "ConsoleApp"
+            vpaths { ["*"] = "../Test/Source/USBJoypad" }
     end
 
     

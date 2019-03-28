@@ -10,13 +10,15 @@
 
 #include "Representations/Infrastructure/RemoteControlCommand.h"
 #include <Representations/Infrastructure/FrameInfo.h>
+#include <Representations/Infrastructure/JoypadData.h>
 
 // tools
 #include "Tools/Math/Common.h"
 
 BEGIN_DECLARE_MODULE(RemoteSymbols)
   REQUIRE(FrameInfo)
-  REQUIRE(RemoteControlCommand)
+  PROVIDE(RemoteControlCommand) // HACK: see cpp
+  REQUIRE(JoypadData)
 END_DECLARE_MODULE(RemoteSymbols)
 
 class RemoteSymbols: public RemoteSymbolsBase

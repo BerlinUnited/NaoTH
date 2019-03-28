@@ -30,6 +30,7 @@
 #include <Representations/Infrastructure/DebugMessage.h>
 #include "Representations/Infrastructure/CalibrationData.h"
 #include <Representations/Infrastructure/CpuData.h>
+#include <Representations/Infrastructure/JoypadData.h>
 #include "Representations/Infrastructure/AudioData.h"
 #include "Representations/Motion/CollisionPercept.h"
 
@@ -74,6 +75,7 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(SoundCaptureData)
   PROVIDE(CpuData)
   PROVIDE(AudioData)
+  PROVIDE(JoypadData)
 
   PROVIDE(TeamMessageDataIn)
   PROVIDE(RemoteMessageDataIn)
