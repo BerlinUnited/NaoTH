@@ -1066,7 +1066,7 @@ int V4lCameraHandler::xioctl(int fd, int request, void* arg) const
   return r;
 }
 
-bool V4lCameraHandler::hasIOErrorPrint(int lineNumber, int errOccured, int errNo, bool exitByIOError) const
+bool V4lCameraHandler::hasIOErrorPrint(int lineNumber, int errOccured, int errNo, bool exitByIOError)
 {
   if(errOccured < 0 && errNo != EAGAIN)
   {

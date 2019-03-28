@@ -102,7 +102,7 @@ private:
 
   // tools
   int xioctl(int fd, int request, void* arg) const;
-  bool hasIOErrorPrint(int lineNumber, int errOccured, int errNo, bool exitByIOError = true) const;
+  bool hasIOErrorPrint(int lineNumber, int errOccured, int errNo, bool exitByIOError = true);
 
   int getAutoExposureGridID(size_t i, size_t j) {
     return V4L2_CID_PRIVATE_BASE + 7 + (i*CameraSettings::AUTOEXPOSURE_GRID_SIZE) + j;
