@@ -26,7 +26,8 @@ public:
 
   virtual void execute();
 private:
-  FrameInfo timeSinceFree;
+    FrameInfo collisionStartTimeLeft;
+    FrameInfo collisionStartTimeRight;
 };
 
 #endif // COLLISIONDETECTOR_OLD_H

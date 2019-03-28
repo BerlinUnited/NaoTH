@@ -14,7 +14,11 @@ public:
   virtual void print(std::ostream &stream) const;
 
   naoth::FrameInfo collisionStartTime;
+
   bool isColliding;
+  bool isLeftFootColliding;
+  bool isRightFootColliding;
+
 
 };
 

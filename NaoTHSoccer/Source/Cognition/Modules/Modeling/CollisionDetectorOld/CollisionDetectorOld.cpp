@@ -12,50 +12,44 @@ CollisionDetectorOld::~CollisionDetectorOld()
 
 void CollisionDetectorOld::execute()
 {
-  double allowedRobotDistance = 0.3;
-  MODIFY("CollisionDetectorOld:allowedRobotDistance", allowedRobotDistance);
-
-  if(getCollisionModel().isColliding)
+  if (getCollisionModel().isLeftFootColliding)
   {
-    // we were colliding in the last frame
-
-    // no near robot in front of us any longer?
-    if(getUltraSoundReceiveData().dataLeft[0] >= allowedRobotDistance
-       || getUltraSoundReceiveData().dataRight[0] >= allowedRobotDistance)
+    // do some filtering: wait at least 500ms until space is really free
+    if (getFrameInfo().getTimeSince(collisionStartTimeLeft.getTime()) > 500)
     {
-      // do some filtering: wait at least 500ms until space is really free
-      if(getFrameInfo().getTimeSince(timeSinceFree.getTime()) > 500)
-      {
-        getCollisionModel().isColliding = false;
-        getCollisionModel().collisionStartTime = getFrameInfo();
-      }
+        getCollisionModel().isLeftFootColliding = false;
+        collisionStartTimeLeft = getFrameInfo();
     }
-    else
-    {
-      // reset timer if something got too near
-      timeSinceFree = getFrameInfo();
-    }
-
   }
-  else
+
+  if (getCollisionModel().isRightFootColliding)
+  {
+      // do some filtering: wait at least 500ms until space is really free
+      if (getFrameInfo().getTimeSince(collisionStartTimeRight.getTime()) > 500)
+      {
+          getCollisionModel().isRightFootColliding = false;
+          collisionStartTimeRight = getFrameInfo();
+      }
+  }
+  
+  if (!getCollisionModel().isLeftFootColliding && !getCollisionModel().isRightFootColliding)
   {
     // no collision yet, check if one occured
     // (and be sure it's really a collison)
-
-    if(
-       getUltraSoundReceiveData().dataLeft[0] < allowedRobotDistance
-       && getUltraSoundReceiveData().dataRight[0] < allowedRobotDistance
-       && (
-         getButtonData().isPressed[ButtonData::LeftFootLeft]
-         || getButtonData().isPressed[ButtonData::LeftFootRight]
-         || getButtonData().isPressed[ButtonData::RightFootLeft]
-         || getButtonData().isPressed[ButtonData::RightFootRight]
-       ))
+    if( getButtonData().isPressed[ButtonData::RightFootLeft]
+        || getButtonData().isPressed[ButtonData::RightFootRight])
     {
-      getCollisionModel().isColliding = true;
-      getCollisionModel().collisionStartTime = getFrameInfo();
-      timeSinceFree = getFrameInfo();
+        getCollisionModel().isRightFootColliding = true;
+        collisionStartTimeRight = getFrameInfo();
     }
 
-  }
+    // no collision yet, check if one occured
+    // (and be sure it's really a collison)
+    if (getButtonData().isPressed[ButtonData::LeftFootLeft]
+        || getButtonData().isPressed[ButtonData::LeftFootRight])
+    {
+        getCollisionModel().isLeftFootColliding = true;
+        collisionStartTimeLeft = getFrameInfo();
+    }
+   }
 }
