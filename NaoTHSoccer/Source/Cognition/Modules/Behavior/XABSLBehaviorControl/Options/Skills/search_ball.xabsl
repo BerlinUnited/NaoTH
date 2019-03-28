@@ -1,20 +1,42 @@
 option search_ball
 {  
+  float @x;
+  float @y;
 
-  // stop first
-  initial state walk_back
+  common decision
+  {
+    if(ball.know_where_itis)
+      goto finish;
+  }
+
+  initial state decide
   {
     decision {
-      if(ball.know_where_itis)
-        goto finish;
-      else //if(state_time > 2000)
-      {
-        //goto start;
-        if(ball.preview.y > 0)
-          goto search_ball_rot_left;
-        else
-          goto search_ball_rot_right;
-      }
+      // if we last saw the ball in >2m distance, we just start looking left/right
+      else if(ball.distance > 2000) // 2m
+        goto start;
+      // otherwise walk back for some mm
+      else 
+        goto walk_back;
+    }
+    action {
+      path.routine = none;
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+  
+  state walk_back
+  {
+    decision {
+      // dont leave the field!
+      else if(abs(value=robot_pose.planned.x) > field.xPosOpponentGroundline || abs(value=robot_pose.planned.y) > field.yPosLeftSideline)
+        goto start;
+      // walk back for max. 50cm
+      else if(vector.abs(x=robot_pose.x - @x, y=robot_pose.y - @y) > 500)
+        goto start;
+      else
+        stay;
     }
     action {
       motion.type = walk;
@@ -26,11 +48,10 @@ option search_ball
     }
   }
 
-
   state start
   {
     decision {
-      if(executed_motion.type == stand)
+      else if(executed_motion.type == stand)
       {
 	      if(ball.preview.y > 0)
 	        goto search_ball_rot_left;
@@ -50,7 +71,7 @@ option search_ball
   state search_ball_rot_left
   {
     decision {
-      if(action_done)
+      else if(action_done)
         goto search_ball_simple_right;
       else
         stay;
@@ -63,7 +84,7 @@ option search_ball
  state search_ball_rot_right
   {
     decision {
-      if(action_done)
+      else if(action_done)
         goto search_ball_simple_left;
       else
         stay;
@@ -76,7 +97,7 @@ option search_ball
   state search_ball_simple_left
   {
     decision {
-      if(action_done)
+      else if(action_done)
         goto finish;
       else
         stay;
@@ -90,7 +111,7 @@ option search_ball
   state search_ball_simple_right
   {
     decision {
-      if(action_done)
+      else if(action_done)
         goto finish;
       else
         stay;

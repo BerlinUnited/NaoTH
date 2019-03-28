@@ -29,7 +29,7 @@ option kick_long_with_approach_left
     }
     action{
       situation_abortable = true;
-      search_ball();
+      search_ball(x=robot_pose.x, y=robot_pose.y);
     }
   }
 

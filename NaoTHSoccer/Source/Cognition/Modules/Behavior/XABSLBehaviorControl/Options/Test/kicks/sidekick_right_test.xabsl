@@ -30,7 +30,7 @@ option sidekick_right_test
     }
     action{
       situation_abortable = true;
-      search_ball();
+      search_ball(x=robot_pose.x, y=robot_pose.y);
     }
   }
 
