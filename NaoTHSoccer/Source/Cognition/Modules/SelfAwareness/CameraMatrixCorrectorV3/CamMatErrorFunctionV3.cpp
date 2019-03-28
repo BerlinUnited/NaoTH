@@ -33,6 +33,9 @@ void CamMatErrorFunctionV3::actual_plotting(const Parameter &p, naoth::CameraInf
                         sample->orientation
                         );
 
+            tmpCM.translation += Vector3d(global_position->x, global_position->y, 0); // move around on field
+            tmpCM.rotation = RotationMatrix::getRotationZ(*global_orientation) * tmpCM.rotation;
+
             std::vector<Vector2d> edgelProjections;
             edgelProjections.resize(getEdgelsInImage(sample,cameraID).size());
 
@@ -131,6 +134,9 @@ Eigen::VectorXd CamMatErrorFunctionV3::operator()(const Parameter& p) const
                         sample->headPitch,
                         sample->orientation
                         );
+
+            tmpCM.translation += Vector3d(global_position->x, global_position->y, 0); // move around on field
+            tmpCM.rotation = RotationMatrix::getRotationZ(*global_orientation) * tmpCM.rotation;
 
             std::vector<Vector2d> edgelProjections;
             edgelProjections.resize(getEdgelsInImage(sample,cameraID).size());

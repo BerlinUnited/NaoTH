@@ -90,6 +90,8 @@ public:
     typedef Eigen::Matrix<double, 11, 1> Parameter; // TODO: can this be the same typedef like in CameraMatrixCorrectorV3
 
     BoundedVariable<Parameter> const * bounds;
+    Vector2d const * global_position;
+    double const * global_orientation;
 
 private:
     CalibrationData calibrationData;

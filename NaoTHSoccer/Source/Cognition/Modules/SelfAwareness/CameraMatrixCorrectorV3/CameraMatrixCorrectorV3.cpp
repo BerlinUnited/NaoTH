@@ -6,8 +6,6 @@
 
 #include "CameraMatrixCorrectorV3.h"
 
-
-
 CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
     theCamMatErrorFunctionV3(getDebugRequest(), getDebugDrawings(), getDebugModify(), getFieldInfo(), getCameraInfo(), getCameraInfoTop()),
     gn_minimizer(1, 1.25, 0.005, /*double regularizer,*/ false)
@@ -63,7 +61,14 @@ CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:write_calibration_data_to_file",  "", false);
 
   read_calibration_data = written_calibration_data = false;
-  theCamMatErrorFunctionV3.bounds = &bounds;
+  if(cmc_params.use_bounded_variable){
+    theCamMatErrorFunctionV3.bounds = &bounds;
+  } else {
+    theCamMatErrorFunctionV3.bounds = nullptr;
+  }
+
+  theCamMatErrorFunctionV3.global_position = &cmc_params.global_pose.position;
+  theCamMatErrorFunctionV3.global_orientation = &cmc_params.global_pose.orientation;
 
   auto_cleared_data = auto_collected = auto_calibrated = false;
   play_calibrated = play_calibrating = play_collecting = true;

@@ -141,6 +141,10 @@ private:
 
               PARAMETER_REGISTER(use_bounded_variable) = false;
 
+              PARAMETER_REGISTER(global_pose.position.x) = 0;
+              PARAMETER_REGISTER(global_pose.position.y) = 0;
+              PARAMETER_ANGLE_REGISTER(global_pose.orientation) = 0;
+
               syncWithConfig();
           }
 
@@ -162,6 +166,12 @@ private:
           } lower, upper;
 
           bool use_bounded_variable;
+
+          struct {
+              Vector2d position;
+              double   orientation;
+          } global_pose;
+
   } cmc_params;
 };
 
