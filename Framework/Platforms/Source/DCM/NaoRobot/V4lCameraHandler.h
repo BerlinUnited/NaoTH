@@ -151,6 +151,7 @@ private:
   CameraSettings currentSettings;
   CameraInfo::CameraID currentCamera;
 
+  int error_count;
 };
 
 } // namespace naoth
