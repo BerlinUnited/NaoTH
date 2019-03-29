@@ -1,33 +1,6 @@
 #include "Roles.h"
 #include <iomanip>
 
-Roles::Roles() : ParameterList("Roles")
-{
-    PARAMETER_REGISTER(base_x) = 9000;
-    PARAMETER_REGISTER(base_y) = 6000;
-
-    // TODO: how to get that from the FieldInfo?!
-    field_x = 9000; //fi.xLength;
-    field_y = 6000; //fi.yLength;
-
-    // x,y home position; x,y own kickoff position; x,y opponent kickoff position
-    PARAMETER_REGISTER(goalie_str,           &Roles::parsePositionGoalie)          = "-4300,    0; -4300,   0;  -4300,    0";
-    PARAMETER_REGISTER(defender_left_str,    &Roles::parsePositionDefenderLeft)    = "-2500, 1100; -3000, 1500; -3000, 1300";
-    PARAMETER_REGISTER(defender_center_str,  &Roles::parsePositionDefenderCenter)  = "-2500,    0; -3000,    0; -3000,    0";
-    PARAMETER_REGISTER(defender_right_str,   &Roles::parsePositionDefenderRight)   = "-2500,-1100; -3000,-1500; -3000, -450";
-    PARAMETER_REGISTER(midfielder_left_str,  &Roles::parsePositionMidfielderLeft)  = "    0, 1500; -1500,  900; -2000,  500";
-    PARAMETER_REGISTER(midfielder_center_str,&Roles::parsePositionMidfielderCenter)= "    0,    0; -1500,    0; -2000,    0";
-    PARAMETER_REGISTER(midfielder_right_str, &Roles::parsePositionMidfielderRight) = "    0,-1500; -1500, -900; -2000, -500";
-    PARAMETER_REGISTER(forward_left_str,     &Roles::parsePositionForwardLeft)     = " 1500, 1500;  -500, 1500; -1000,  750";
-    PARAMETER_REGISTER(forward_center_str,   &Roles::parsePositionForwardCenter)   = " 1500,    0;  -500,    0; -1000,  250";
-    PARAMETER_REGISTER(forward_right_str,    &Roles::parsePositionForwardRight)    = " 1500,-1500;  -500,-1500; -1000, -750";
-
-    PARAMETER_REGISTER(active_str, &Roles::parseActive) = "all"; // "goalie;defender_left;forward_center;defender_right;midfielder_right;midfielder_left"
-
-    // load from the file after registering all parameters
-    syncWithConfig();
-}
-
 std::string Roles::getName(Roles::Static role) {
     switch (role) {
         case unknown:           return "unknown";
@@ -87,10 +60,7 @@ bool Roles::isRoleActive(Roles::Static r) const
 
 void Roles::print(std::ostream& stream) const
 {
-    stream << "\n"
-           << "Position base: " << base_x << "/" << base_y << "\n"
-           << "Field size: " << field_x << "/" << field_y << "\n"
-           << "----------------------------------------------------\n"
+    stream << "----------------------------------------------------\n"
            << "Active roles ("<<active.size()<<"):\n";
     for(const auto& r : active) { stream << getName(r) << ", "; }
     stream << "\n----------------------------------------------------\n"

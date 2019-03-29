@@ -91,6 +91,7 @@
 #include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
 
 // role decisions
+#include "Modules/Modeling/RoleDecision/RolesProvider.h"
 #include "Modules/Modeling/RoleDecision/RoleDecisionDynamic.h"
 
 #include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionStatic.h"
@@ -233,6 +234,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   /*
    * BEGIN ROLE DECISIONS
    */
+  REGISTER_MODULE(RolesProvider);
   // first set the position of the roles
   REGISTER_MODULE(RoleDecisionPositionStatic);
   REGISTER_MODULE(RoleDecisionPositionForce);
