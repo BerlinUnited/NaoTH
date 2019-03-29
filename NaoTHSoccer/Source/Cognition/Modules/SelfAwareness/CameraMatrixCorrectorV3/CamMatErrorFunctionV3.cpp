@@ -221,6 +221,7 @@ void CamMatErrorFunctionV3::read_calibration_data_from_file(){
     naothmessages::CalibrationDataCMC message;
     message.ParseFromIstream(&in);
 
+    numberOfResudials = 0;
     size_t size = static_cast<size_t>(message.calibrationdata_size());
     calibrationData.resize(size);
     for(size_t i = 0; i < size; ++i){
@@ -233,10 +234,16 @@ void CamMatErrorFunctionV3::read_calibration_data_from_file(){
        for(int i = 0; i < msg_sample->edgelsinimage_size(); ++i){
            naoth::DataConversion::fromMessage(msg_sample->edgelsinimage(i), sample.edgelsInImage[static_cast<size_t>(i)]);
        }
+       if(sample.edgelsInImage.size() > 0){
+           ++numberOfResudials;
+       }
 
        sample.edgelsInImageTop.resize(static_cast<size_t>(msg_sample->edgelsinimagetop_size()));
        for(int i = 0; i < msg_sample->edgelsinimagetop_size(); ++i){
            naoth::DataConversion::fromMessage(msg_sample->edgelsinimagetop(i), sample.edgelsInImageTop[static_cast<size_t>(i)]);
+       }
+       if(sample.edgelsInImageTop.size() > 0){
+           ++numberOfResudials;
        }
 
        naoth::DataConversion::fromMessage(*(msg_sample->mutable_orientation()), sample.orientation);
