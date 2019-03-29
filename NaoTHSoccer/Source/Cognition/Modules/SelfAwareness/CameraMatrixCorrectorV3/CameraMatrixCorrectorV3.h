@@ -81,7 +81,7 @@ private:
   std::vector<Vector2d>::const_iterator current_target;
 
   Parameter cam_mat_offsets;
-  BoundedVariable<Parameter> bounds;
+  Optimizer::BoundedVariable<Parameter> bounds;
 
   CamMatErrorFunctionV3 theCamMatErrorFunctionV3;
 
@@ -115,31 +115,31 @@ private:
       public:
           CMCParameters() : ParameterList("CameraMatrixCorrectorV3")
           {
-              PARAMETER_ANGLE_REGISTER(lower.body_x)    = -1;
-              PARAMETER_ANGLE_REGISTER(lower.body_y)    = -1;
-              PARAMETER_ANGLE_REGISTER(lower.head_x)    = -1;
-              PARAMETER_ANGLE_REGISTER(lower.head_y)    = -1;
-              PARAMETER_ANGLE_REGISTER(lower.head_z)    = -1;
-              PARAMETER_ANGLE_REGISTER(lower.cam_x)     = -1;
-              PARAMETER_ANGLE_REGISTER(lower.cam_y)     = -1;
-              PARAMETER_ANGLE_REGISTER(lower.cam_z)     = -1;
-              PARAMETER_ANGLE_REGISTER(lower.cam_top_x) = -1;
-              PARAMETER_ANGLE_REGISTER(lower.cam_top_y) = -1;
-              PARAMETER_ANGLE_REGISTER(lower.cam_top_z) = -1;
+              PARAMETER_ANGLE_REGISTER(lower.body_x)    = -2;
+              PARAMETER_ANGLE_REGISTER(lower.body_y)    = -2;
+              PARAMETER_ANGLE_REGISTER(lower.head_x)    = -2;
+              PARAMETER_ANGLE_REGISTER(lower.head_y)    = -2;
+              PARAMETER_ANGLE_REGISTER(lower.head_z)    = -2;
+              PARAMETER_ANGLE_REGISTER(lower.cam_x)     = -2;
+              PARAMETER_ANGLE_REGISTER(lower.cam_y)     = -2;
+              PARAMETER_ANGLE_REGISTER(lower.cam_z)     = -2;
+              PARAMETER_ANGLE_REGISTER(lower.cam_top_x) = -2;
+              PARAMETER_ANGLE_REGISTER(lower.cam_top_y) = -2;
+              PARAMETER_ANGLE_REGISTER(lower.cam_top_z) = -2;
 
-              PARAMETER_ANGLE_REGISTER(upper.body_x)    = 1;
-              PARAMETER_ANGLE_REGISTER(upper.body_y)    = 1;
-              PARAMETER_ANGLE_REGISTER(upper.head_x)    = 1;
-              PARAMETER_ANGLE_REGISTER(upper.head_y)    = 1;
-              PARAMETER_ANGLE_REGISTER(upper.head_z)    = 1;
-              PARAMETER_ANGLE_REGISTER(upper.cam_x)     = 1;
-              PARAMETER_ANGLE_REGISTER(upper.cam_y)     = 1;
-              PARAMETER_ANGLE_REGISTER(upper.cam_z)     = 1;
-              PARAMETER_ANGLE_REGISTER(upper.cam_top_x) = 1;
-              PARAMETER_ANGLE_REGISTER(upper.cam_top_y) = 1;
-              PARAMETER_ANGLE_REGISTER(upper.cam_top_z) = 1;
+              PARAMETER_ANGLE_REGISTER(upper.body_x)    = 2;
+              PARAMETER_ANGLE_REGISTER(upper.body_y)    = 2;
+              PARAMETER_ANGLE_REGISTER(upper.head_x)    = 2;
+              PARAMETER_ANGLE_REGISTER(upper.head_y)    = 2;
+              PARAMETER_ANGLE_REGISTER(upper.head_z)    = 2;
+              PARAMETER_ANGLE_REGISTER(upper.cam_x)     = 2;
+              PARAMETER_ANGLE_REGISTER(upper.cam_y)     = 2;
+              PARAMETER_ANGLE_REGISTER(upper.cam_z)     = 2;
+              PARAMETER_ANGLE_REGISTER(upper.cam_top_x) = 2;
+              PARAMETER_ANGLE_REGISTER(upper.cam_top_y) = 2;
+              PARAMETER_ANGLE_REGISTER(upper.cam_top_z) = 2;
 
-              PARAMETER_REGISTER(use_bounded_variable) = false;
+              PARAMETER_REGISTER(use_bounded_variable) = true;
 
               PARAMETER_REGISTER(global_pose.position.x) = 0;
               PARAMETER_REGISTER(global_pose.position.y) = 0;

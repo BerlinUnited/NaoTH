@@ -13,7 +13,7 @@ CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
   getDebugParameterList().add(&getCameraMatrixOffset());
   getDebugParameterList().add(&cmc_params);
 
-  BoundedVariable<Parameter>::Bound lower;
+  Optimizer::BoundedVariable<Parameter>::Bound lower;
   lower << cmc_params.lower.body_x,
            cmc_params.lower.body_y,
            cmc_params.lower.head_x,
@@ -26,7 +26,7 @@ CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
            cmc_params.lower.cam_top_y,
            cmc_params.lower.cam_top_z;
 
-  BoundedVariable<Parameter>::Bound upper;
+  Optimizer::BoundedVariable<Parameter>::Bound upper;
   upper << cmc_params.upper.body_x,
            cmc_params.upper.body_y,
            cmc_params.upper.head_x,
@@ -39,7 +39,7 @@ CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
            cmc_params.upper.cam_top_y,
            cmc_params.upper.cam_top_z;
 
-  bounds = BoundedVariable<Parameter>(lower, upper);
+  bounds = Optimizer::BoundedVariable<Parameter>(lower, upper);
 
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:automatic_mode","try to do automatic calibration", false);
 

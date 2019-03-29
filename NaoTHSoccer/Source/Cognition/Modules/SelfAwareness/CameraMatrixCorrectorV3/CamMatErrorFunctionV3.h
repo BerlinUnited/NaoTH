@@ -15,47 +15,7 @@
 #include "Tools/Debug/DebugModify.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 
-// TODO: generalize and move it into the optimizer name space
-template<class T>
-class BoundedVariable{
-    public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
-        typedef Eigen::Array<double, T::RowsAtCompileTime, 1> Bound;
-
-    private:
-        Bound lower_bound;
-        Bound upper_bound;
-
-    public:
-        BoundedVariable():
-            lower_bound(Bound::Constant(-std::numeric_limits<double>::infinity())),
-            upper_bound(Bound::Constant( std::numeric_limits<double>::infinity()))
-        {
-            static_assert(std::numeric_limits<float>::is_iec559, "IEEE 754 required");
-        }
-
-        BoundedVariable(const Bound& lower_bound, const Bound& upper_bound):
-            lower_bound(lower_bound),
-            upper_bound(upper_bound)
-        {
-            static_assert(std::numeric_limits<float>::is_iec559, "IEEE 754 required");
-        }
-
-        T bound(const T& value) const {
-            Bound bounded = value.array().cwiseMax(lower_bound).cwiseMin(upper_bound);
-
-            // shift by 2*pi to avoid problems at zero in fminsearch
-            // otherwise, the initial simplex is vanishingly small
-            T r = (2 * Math::pi + (2 * (bounded - lower_bound) / (upper_bound - lower_bound) - 1).asin()).matrix();
-            return r;
-        }
-
-        T unbound(const T& value) const {
-            Bound r = (value.array().sin() + 1) / 2 * (upper_bound - lower_bound) + lower_bound;
-            return (r.cwiseMin(upper_bound)).cwiseMax(lower_bound).matrix();
-        }
-};
+#include "Tools/Math/Optimizer.h"
 
 class CamMatErrorFunctionV3
 {
@@ -89,7 +49,7 @@ public:
     typedef std::vector<CalibrationDataSample> CalibrationData;
     typedef Eigen::Matrix<double, 11, 1> Parameter; // TODO: can this be the same typedef like in CameraMatrixCorrectorV3
 
-    BoundedVariable<Parameter> const * bounds;
+    Optimizer::BoundedVariable<Parameter> const * bounds;
     Vector2d const * global_position;
     double const * global_orientation;
 
