@@ -5,7 +5,7 @@ RoleDecisionPositionSimulation::RoleDecisionPositionSimulation()
 {
     getDebugParameterList().add(&params);
 
-    DEBUG_REQUEST_REGISTER("RoleDecision:Position:s_draw_simulated_balls", "draw the simulated balls on the field", false);
+    DEBUG_REQUEST_REGISTER("RoleDecision:Position:simulation:draw_simulated_balls", "draw the simulated balls on the field", false);
 }
 
 
@@ -27,7 +27,7 @@ void RoleDecisionPositionSimulation::execute()
         for (int i = 0; i < params.numIteration; ++i) {
             for(auto& p : particles) {
                 p = predict(p, true);
-                DEBUG_REQUEST("RoleDecision:Position:s_draw_simulated_balls",
+                DEBUG_REQUEST("RoleDecision:Position:simulation:draw_simulated_balls",
                     FIELD_DRAWING_CONTEXT;
                     PEN(Color(0.67, (static_cast<double>(i)/params.numIteration), (static_cast<double>(i)/params.numIteration)), 20);
                     CIRCLE(p.x, p.y, 10);

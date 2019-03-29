@@ -7,13 +7,13 @@ RoleDecisionPositionPotentialField::RoleDecisionPositionPotentialField()
 {
     getDebugParameterList().add(&params);
 
-    DEBUG_REQUEST_REGISTER("RoleDecision:Position:pf_dynamic_reset_to_default", "draw role positions on the field", false);
-    DEBUG_REQUEST_REGISTER("RoleDecision:Position:pf_draw_active_positions_dynamic", "draw role positions on the field", false);
-    DEBUG_REQUEST_REGISTER("RoleDecision:Position:pf_draw_inactive_positions_dynamic", "draw role positions on the field", false);
-    DEBUG_REQUEST_REGISTER("RoleDecision:Position:pf_draw_grid_dynamic", "draws the role grid on the field", false);
-    DEBUG_REQUEST_REGISTER("RoleDecision:Position:pf_draw_default_position", "draws the default role position on the field", false);
+    DEBUG_REQUEST_REGISTER("RoleDecision:Position:potential:dynamic_reset_to_default", "draw role positions on the field", false);
+    DEBUG_REQUEST_REGISTER("RoleDecision:Position:potential:draw_active_positions_dynamic", "draw role positions on the field", false);
+    DEBUG_REQUEST_REGISTER("RoleDecision:Position:potential:draw_inactive_positions_dynamic", "draw role positions on the field", false);
+    DEBUG_REQUEST_REGISTER("RoleDecision:Position:potential:draw_grid_dynamic", "draws the role grid on the field", false);
+    DEBUG_REQUEST_REGISTER("RoleDecision:Position:potential:draw_default_position", "draws the default role position on the field", false);
     for (const auto& r : getRoles().active) {
-        DEBUG_REQUEST_REGISTER("RoleDecision:Position:pf_draw_field_"+Roles::getName(r), "draws the potential field of the " + Roles::getName(r), false);
+        DEBUG_REQUEST_REGISTER("RoleDecision:Position:potential:draw_field_"+Roles::getName(r), "draws the potential field of the " + Roles::getName(r), false);
     }
 
     // init positions with default
@@ -77,7 +77,7 @@ void RoleDecisionPositionPotentialField::initPositionsGrid()
 
 void RoleDecisionPositionPotentialField::execute()
 {
-    DEBUG_REQUEST("RoleDecision:Position:pf_dynamic_reset_to_default", resetPositions(); );
+    DEBUG_REQUEST("RoleDecision:Position:potential:dynamic_reset_to_default", resetPositions(); );
 
     // container for the new positions,
     std::map<Roles::Static, Vector2d> new_home_positions;
@@ -156,7 +156,7 @@ Vector2d RoleDecisionPositionPotentialField::calculate(ForceFn method, const Vec
 void RoleDecisionPositionPotentialField::debugDrawings() const
 {
 
-    DEBUG_REQUEST("RoleDecision:Position:pf_draw_default_position",
+    DEBUG_REQUEST("RoleDecision:Position:potential:draw_default_position",
         FIELD_DRAWING_CONTEXT;
         for(const auto& r : getRoles().defaults) {
             if(getRoles().isRoleActive(r.first)) {
@@ -167,7 +167,7 @@ void RoleDecisionPositionPotentialField::debugDrawings() const
         }
     );
 
-    DEBUG_REQUEST("RoleDecision:Position:pf_draw_active_positions_dynamic",
+    DEBUG_REQUEST("RoleDecision:Position:potential:draw_active_positions_dynamic",
         FIELD_DRAWING_CONTEXT;
         for(const auto& r : getRoleDecisionModel().roles_position) {
             if(getRoles().isRoleActive(r.first)) {
@@ -187,7 +187,7 @@ void RoleDecisionPositionPotentialField::debugDrawings() const
         }
     );
 
-    DEBUG_REQUEST("RoleDecision:Position:pf_draw_inactive_positions_dynamic",
+    DEBUG_REQUEST("RoleDecision:Position:potential:draw_inactive_positions_dynamic",
         FIELD_DRAWING_CONTEXT;
         for(const auto& r : getRoleDecisionModel().roles_position) {
             if(!getRoles().isRoleActive(r.first)) {
@@ -204,7 +204,7 @@ void RoleDecisionPositionPotentialField::debugDrawings() const
         }
     );
 
-    DEBUG_REQUEST("RoleDecision:Position:pf_draw_grid_dynamic",
+    DEBUG_REQUEST("RoleDecision:Position:potential:draw_grid_dynamic",
         FIELD_DRAWING_CONTEXT;
         PEN("000000", 10);
         for(const auto& g : positionGrid) {
@@ -213,7 +213,7 @@ void RoleDecisionPositionPotentialField::debugDrawings() const
     );
 
     for (const auto& r : getRoles().active) {
-        debugDrawings("RoleDecision:Position:pf_draw_field_"+Roles::getName(r), r);
+        debugDrawings("RoleDecision:Position:potential:draw_field_"+Roles::getName(r), r);
     }
 
 }

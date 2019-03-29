@@ -29,7 +29,7 @@ class RoleDecisionPositionStatic : public RoleDecisionPositionStaticBase
 public:
     RoleDecisionPositionStatic()
     {
-        DEBUG_REQUEST_REGISTER("RoleDecision:Position:draw_positions_static", "draw role positions on the field", false);
+        DEBUG_REQUEST_REGISTER("RoleDecision:Position:static:draw_positions_static", "draw role positions on the field", false);
     }
 
     virtual void execute() {
@@ -38,7 +38,7 @@ public:
             getRoleDecisionModel().roles_position[d.first] = d.second;
         }
 
-        DEBUG_REQUEST("RoleDecision:Position:draw_positions_static",
+        DEBUG_REQUEST("RoleDecision:Position:static:draw_positions_static",
             FIELD_DRAWING_CONTEXT;
             PEN("666666", 20);
             for(const auto& r : getRoleDecisionModel().roles_position) {

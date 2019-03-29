@@ -1,13 +1,13 @@
 #include "RoleDecisionAssignmentDistance.h"
 #include "Eigen/Eigen"
 #include <limits>
-#include "Cognition/Modules/Modeling/RoleDecision/HungarianAlgorithm.h"
+#include "Tools/HungarianAlgorithm.h"
 
 RoleDecisionAssignmentDistance::RoleDecisionAssignmentDistance()
 {
     getDebugParameterList().add(&params);
 
-    DEBUG_REQUEST_REGISTER("RoleDecision:Assignment:Distance:print_current_decision", "Prints out (std::cout) the role decisions for the current cycle.", false);
+    DEBUG_REQUEST_REGISTER("RoleDecision:Assignment:distance:print_current_decision", "Prints out (std::cout) the role decisions for the current cycle.", false);
 }
 
 RoleDecisionAssignmentDistance::~RoleDecisionAssignmentDistance()
@@ -38,7 +38,7 @@ void RoleDecisionAssignmentDistance::execute()
         (this->*params.variantFunc)(new_roles);
 
         // some debug output
-        DEBUG_REQUEST("RoleDecision:Assignment:Distance:print_current_decision",
+        DEBUG_REQUEST("RoleDecision:Assignment:distance:print_current_decision",
             for(const auto& r : new_roles) {
                 std::cout << r.first << ":" << Roles::getName(r.second) << ";";
             }
