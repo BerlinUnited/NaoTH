@@ -28,7 +28,7 @@ option pathplanner_kick_long{
     }
     action{
       situation_abortable = true;
-      search_ball(x=robot_pose.x, y=robot_pose.y);
+      search_ball();
     }
   }
 

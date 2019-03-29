@@ -1,8 +1,5 @@
 option search_ball
-{  
-  float @x;
-  float @y;
-
+{
   common decision
   {
     if(ball.know_where_itis)
@@ -30,21 +27,18 @@ option search_ball
   {
     decision {
       // dont leave the field!
-      else if(abs(value=robot_pose.planned.x) > field.xPosOpponentGroundline || abs(value=robot_pose.planned.y) > field.yPosLeftSideline)
+      else if(abs(value=robot_pose.planned.x) > field.xPosOpponentGroundline || 
+              abs(value=robot_pose.planned.y) > field.yPosLeftSideline)
         goto start;
-      // walk back for max. 50cm
-      else if(vector.abs(x=robot_pose.x - @x, y=robot_pose.y - @y) > 500)
+      // walk back
+      else if(action_done)
         goto start;
       else
         stay;
     }
     action {
-      motion.type = walk;
-      motion.walk_speed.x = -50; // mm
-      motion.walk_speed.y = 0; // mm
-      motion.walk_speed.rot = 0; //deg
-      motion.walk.coordinate = hip;
-      head.control_mode = search_for_ball;
+      // walk back for max. 50cm
+      search_ball_walk_back(d=500);
     }
   }
 

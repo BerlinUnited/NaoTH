@@ -65,6 +65,7 @@ include "Options/Skills/USOA/go_to_point_with_USOA.xabsl";
 //
 include "Options/Skills/search_ball_back_rot.xabsl";
 include "Options/Skills/search_ball_simple.xabsl";
+include "Options/Skills/search_ball_walk_back.xabsl";
 include "Options/Skills/search_ball.xabsl";
 
 // Debug

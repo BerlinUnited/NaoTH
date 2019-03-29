@@ -14,7 +14,7 @@ option decide_and_go_to_passive_position
         stay;
 	  }
 	  action {
-      search_ball(x=robot_pose.x, y=robot_pose.y);
+      search_ball();
       motion.walk.style = stable;
 	  }
 	}  

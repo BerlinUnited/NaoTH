@@ -1,0 +1,43 @@
+option search_ball_walk_back
+{
+  float @d; // in mm
+
+  initial state init {
+    decision {
+      if(state_time > 0)
+        goto walk_back;
+      else
+        stay;
+    }
+    action {
+      search_ball_walk_back.x = robot_pose.x;
+      search_ball_walk_back.y = robot_pose.y;
+    }
+  }
+
+  state walk_back
+  {
+    decision {
+      // walk back for max. "d" mm
+      if(vector.abs(x=robot_pose.x - search_ball_walk_back.x, y=robot_pose.y - search_ball_walk_back.y) > @d)
+        goto finish;
+      else
+        stay;
+    }
+    action {
+      motion.type = walk;
+      motion.walk_speed.x = -50; // mm
+      motion.walk_speed.y = 0; // mm
+      motion.walk_speed.rot = 0; //deg
+      motion.walk.coordinate = hip;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  target state finish {
+    action{
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+}

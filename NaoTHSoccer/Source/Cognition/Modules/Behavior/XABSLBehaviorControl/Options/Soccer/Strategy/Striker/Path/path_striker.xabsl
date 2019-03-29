@@ -45,7 +45,7 @@ option path_striker
     }
     action{
       situation_abortable = true;
-      search_ball(x=robot_pose.x, y=robot_pose.y);
+      search_ball();
     }
   }
 

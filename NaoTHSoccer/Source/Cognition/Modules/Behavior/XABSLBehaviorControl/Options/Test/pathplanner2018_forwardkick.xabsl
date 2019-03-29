@@ -39,7 +39,7 @@ option pathplanner2018_forwardkick
     action{
       situation_abortable = true;
       path2018.routine = path2018.routine.none;
-      search_ball(x=robot_pose.x, y=robot_pose.y);
+      search_ball();
     }
   }
 

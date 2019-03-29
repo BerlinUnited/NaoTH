@@ -73,4 +73,8 @@ namespace internal_symbols("Internal Symbols") {
 
   /** the x or y coordinate which should be constant while moving */
   float internal freekick_const_pos;
+
+  /** stores the position from which the search has to move away */
+  float internal search_ball_walk_back.x;
+  float internal search_ball_walk_back.y;
 }
