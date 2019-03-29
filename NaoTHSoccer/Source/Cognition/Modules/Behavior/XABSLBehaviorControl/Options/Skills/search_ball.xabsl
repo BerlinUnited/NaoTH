@@ -11,10 +11,19 @@ option search_ball
     decision {
       // if we last saw the ball in >2m distance, we just start looking left/right
       else if(ball.distance > 2000) // 2m
-        goto start;
-      // otherwise walk back for some mm
-      else 
-        goto walk_back;
+      {
+        // search for ball the ball in the direction last seen
+        if(ball.preview.y > 0)
+          goto search_ball_simple_left;
+        else
+          goto search_ball_simple_right;
+      } else {
+        // otherwise walk back for some mm and search for ball the ball in the direction last seen
+        if(ball.preview.y > 0)
+          goto search_ball_rot_left;
+        else
+          goto search_ball_rot_right;
+      }
     }
     action {
       path.routine = none;
@@ -22,35 +31,17 @@ option search_ball
       head.control_mode = search_for_ball;
     }
   }
-  
-  state walk_back
-  {
-    decision {
-      // dont leave the field!
-      else if(abs(value=robot_pose.planned.x) > field.xPosOpponentGroundline || 
-              abs(value=robot_pose.planned.y) > field.yPosLeftSideline)
-        goto start;
-      // walk back
-      else if(action_done)
-        goto start;
-      else
-        stay;
-    }
-    action {
-      // walk back for max. 50cm
-      search_ball_walk_back(d=500);
-    }
-  }
-
+/*
+  // stand, before starting to walk back
   state start
   {
     decision {
       else if(executed_motion.type == stand)
       {
-	      if(ball.preview.y > 0)
-	        goto search_ball_rot_left;
-	      else
-	        goto search_ball_rot_right;
+        if(ball.preview.y > 0)
+          goto search_ball_rot_left;
+        else
+          goto search_ball_rot_right;
       }
       else
         stay;
@@ -61,7 +52,7 @@ option search_ball
       head.control_mode = search_for_ball;
     }
   }
-  
+*/
   state search_ball_rot_left
   {
     decision {
@@ -71,7 +62,7 @@ option search_ball
         stay;
     }
     action {
-      search_ball_back_rot(search_direction = left);
+      search_ball_back_rot(distance = 500, search_direction = left);
     }
   }
 
@@ -84,7 +75,7 @@ option search_ball
         stay;
     }
     action {
-      search_ball_back_rot(search_direction = right);
+      search_ball_back_rot(distance = 500, search_direction = right);
     }
   }
 
