@@ -1,4 +1,5 @@
 #include <OptimizersTest.h>
+#include <cmath>
 //#include <fstream>
 //#include <iostream>
 
@@ -140,5 +141,44 @@ int main(int /*argc*/, char** /*argv*/){
         testDifferentialBased(&o2, start, eps);
         Optimizer::LevenbergMarquardtMinimizer2<fitting::Linear, Eigen::Matrix<double,3,1> > o3(1.0, 1.25, 0.0, /*100.0,*/ 2, 2, 3);
         testDifferentialBased(&o3, start, eps);
+    }
+
+    {
+        std::cout << "Bounded Variable Test" << std::endl;
+        typedef Eigen::Matrix<double, 1, 1> Parameter;
+
+        Optimizer::BoundedVariable<Parameter>::Bound lower_bound;
+        lower_bound << -1;
+        Optimizer::BoundedVariable<Parameter>::Bound upper_bound;
+        upper_bound << 1;
+
+        Optimizer::BoundedVariable<Parameter> bounds(lower_bound, upper_bound);
+        Parameter var;
+        Parameter var2;
+
+        var << 0.5;
+        std::cout << "inside bounds " << var(0) << ": " << bounds.unbound(bounds.bound(var))(0) << std::endl;
+
+        var << -1.2;
+        std::cout << "below bounds " << var(0) << ": " << bounds.unbound(bounds.bound(var))(0) << std::endl;
+
+        var << 1.2;
+        std::cout << "above bounds " << var(0) << ": " << bounds.unbound(bounds.bound(var))(0) << std::endl;
+
+        var << M_PI_2 + M_PI_4;
+        std::cout << "overflow " << std::sin(M_PI_4) << ": " << bounds.unbound(var)(0) << std::endl;
+
+        var << -M_PI_2 + -M_PI_4;
+        std::cout << "underflow " << std::sin(-M_PI_4) << ": " << bounds.unbound(var)(0) << std::endl;
+
+        for(double i = 0; i < 1.3; i+=0.1){
+            var << i;
+            std::cout << i << " " << bounds.bound(var)(0) - 2 * M_PI << std::endl;
+        }
+
+        for(double i = 0; i <= M_PI; i+=M_PI/10){
+            var << i;
+            std::cout << i << " " << bounds.unbound(var)(0) << std::endl;
+        }
     }
 }
