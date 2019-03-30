@@ -1,5 +1,15 @@
 /**
-  Searches for the ball and walking back for some distance (mm).
+  Searches for the ball and walking back for some distance (mm), walking an s-shaped path.
+  
+  First, the robot walks straight back for 1/3 of the distance,
+  then it walks back and turns (rotating) for 1/3 of the distance,
+  finally it walks back and turns in the opposite direction for the last 1/3 of the distance.
+  
+  path >>>>-.
+            #-.
+              #->>>>> 0
+
+  NOTE: a small distance makes the s-shaped path smaller and not so easily recognizable
 */
 option search_ball_back_rot
 {
@@ -34,7 +44,7 @@ option search_ball_back_rot
   state walk_back_straight {
     decision {
       // walk half the distance back without rotating (walk straight)
-      else if(vector.abs(x=robot_pose.x - search_ball_walk_back.x, y=robot_pose.y - search_ball_walk_back.y) > (@distance)) // @distance*0.5
+      else if(vector.abs(x=robot_pose.x - search_ball_walk_back.x, y=robot_pose.y - search_ball_walk_back.y) > (@distance*0.33))
       {
         if (@search_direction == right)
           goto walk_back_turn_right_first;
@@ -68,7 +78,7 @@ option search_ball_back_rot
   state walk_back_turn_left_first {
     decision {
       // walk back for a quarter of the distance, rotating left first
-      else if(vector.abs(x=robot_pose.x - search_ball_walk_back.x, y=robot_pose.y - search_ball_walk_back.y) > (@distance)) // @distance*0.75
+      else if(vector.abs(x=robot_pose.x - search_ball_walk_back.x, y=robot_pose.y - search_ball_walk_back.y) > (@distance*0.66))
         goto stop_left;
       else
         stay;
@@ -76,11 +86,11 @@ option search_ball_back_rot
     action {
       motion.type = walk;
       motion.walk.style = fast;
-      // TODO: this doesn't work as intended! the player should walk on a curve/arc
+      // NOTE: too much rotation and the robot is just turning without walking back!
       motion.walk.coordinate = hip;
-      motion.walk_speed.x = -10000;
-      motion.walk_speed.y = -10000;
-      motion.walk_speed.rot = 40;
+      motion.walk_speed.x = -100;
+      motion.walk_speed.y = -100;
+      motion.walk_speed.rot = 15;
   
       head.control_mode = none;
       head.point_in_world.x = 200;
@@ -94,7 +104,7 @@ option search_ball_back_rot
   state walk_back_turn_right_first {
     decision {
       // walk back for a quarter of the distance, rotating right first
-      else if(vector.abs(x=robot_pose.x - search_ball_walk_back.x, y=robot_pose.y - search_ball_walk_back.y) > (@distance)) // @distance*0.75
+      else if(vector.abs(x=robot_pose.x - search_ball_walk_back.x, y=robot_pose.y - search_ball_walk_back.y) > (@distance*0.66))
         goto stop_right;
       else
         stay;
@@ -102,11 +112,11 @@ option search_ball_back_rot
     action {
       motion.type = walk;
       motion.walk.style = fast;
-      // TODO: this doesn't work as intended! the player should walk on a curve/arc
+      // NOTE: too much rotation and the robot is just turning without walking back!
       motion.walk.coordinate = hip;
-      motion.walk_speed.x = -10000;
-      motion.walk_speed.y = 10000;
-      motion.walk_speed.rot = -40;
+      motion.walk_speed.x = -100;
+      motion.walk_speed.y = 100;
+      motion.walk_speed.rot = -15;
   
       head.control_mode = none;
       head.point_in_world.x = 200;
@@ -169,11 +179,11 @@ option search_ball_back_rot
     action {
       motion.type = walk;
       motion.walk.style = fast;
-      // TODO: this doesn't work as intended! the player should walk on a curve/arc
+      // NOTE: too much rotation and the robot is just turning without walking back!
       motion.walk.coordinate = hip;
-      motion.walk_speed.x = -10000;
-      motion.walk_speed.y = 10000;
-      motion.walk_speed.rot = -40;
+      motion.walk_speed.x = -100;
+      motion.walk_speed.y = 100;
+      motion.walk_speed.rot = -15;
   
       head.control_mode = none;
       head.point_in_world.x = 200;
@@ -194,11 +204,11 @@ option search_ball_back_rot
     action {
       motion.type = walk;
       motion.walk.style = fast;
-      // TODO: this doesn't work as intended! the player should walk on a curve/arc
+      // NOTE: too much rotation and the robot is just turning without walking back!
       motion.walk.coordinate = hip;
-      motion.walk_speed.x = -10000;
-      motion.walk_speed.y = -10000;
-      motion.walk_speed.rot = 40;
+      motion.walk_speed.x = -100;
+      motion.walk_speed.y = -100;
+      motion.walk_speed.rot = 15;
   
       head.control_mode = none;
       head.point_in_world.x = 200;
