@@ -17,12 +17,29 @@ public:
     {
         /** A player is 'alive', if he's continously sending messages. */
         bool alive = false;
-        /** A player is 'active', if he's 'alive' and is in the 'playing' gamestate. */
+        /** A player is 'active', if he's 'alive' and is in the 'playing' gamestate (or 'ready', 'set'). */
         bool active = false;
+        /** A player is 'penalized', if he's 'penalized'. */
+        bool penalized = false;
         /** A player is 'playing', if he's not fallen. */
         bool playing = false;
 
+        /**
+         * @brief Returns true, if the player is 'alive' & 'active'.
+         * @return true|false
+         */
         bool isActive() const { return alive && active; }
+
+        /**
+         * @brief Returns true, if the player is 'alive' & 'penalized'.
+         * @return true|false
+         */
+        bool isPenalized() const { return alive && penalized; }
+
+        /**
+         * @brief Returns true, if the player is 'alive' & 'active' & 'playing'.
+         * @return true|false
+         */
         bool isPlaying() const { return alive && active && playing; }
     };
 

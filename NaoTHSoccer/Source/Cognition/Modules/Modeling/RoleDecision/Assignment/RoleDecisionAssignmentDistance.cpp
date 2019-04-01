@@ -122,8 +122,7 @@ void RoleDecisionAssignmentDistance::withDistance(std::map<unsigned int, Roles::
     // retrieve players, which doesn't already have a role and remove already assigned roles from the assignable vector
     std::vector<unsigned int> assignable_player;
     for(const auto& v : getTeamMessagePlayersState().data) {
-        // TODO: make this better! I want to ignore penalized player!
-        if(v.second.alive) {
+        if(v.second.isActive()) {
             if(new_roles.find(v.first) == new_roles.cend()) { assignable_player.push_back(v.first); }
             else {
                 auto r = std::remove(assignable_roles.begin(), assignable_roles.end(), new_roles.at(v.first));

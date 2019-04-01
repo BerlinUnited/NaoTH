@@ -46,6 +46,7 @@ private:
     public:
         Parameters() : ParameterList("RoleDecisionAssignmentDistance")
         {
+            // the initial assignments, they don't have to be the active ones
             PARAMETER_REGISTER(assignment, &Parameters::parseAssignment) = "1:goalie;2:defender_left;3:forward_center;4:defender_right;5:midfielder_right;6:midfielder_left";
             PARAMETER_REGISTER(variant, &Parameters::setVariantFunction) = "distance"; // "distance", "priority"
             PARAMETER_REGISTER(changing, &Parameters::setChangingFunction) = "time"; // "cycle", "time"
