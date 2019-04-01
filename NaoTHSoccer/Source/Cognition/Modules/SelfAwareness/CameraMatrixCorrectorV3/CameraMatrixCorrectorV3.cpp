@@ -269,6 +269,7 @@ bool CameraMatrixCorrectorV3::calibrate()
   PLOT("CameraMatrixV3:error", minimizer->error);
   PLOT("CameraMatrixV3:de/dt", de_dt);
   PLOT("CameraMatrixV3:avg_derror", derrors.getAverage());
+  writeToRepresentation();
 
   return ((  (derrors.getAverage() > -50) // average error decreases by less than this per second
            && derrors.isFull())
