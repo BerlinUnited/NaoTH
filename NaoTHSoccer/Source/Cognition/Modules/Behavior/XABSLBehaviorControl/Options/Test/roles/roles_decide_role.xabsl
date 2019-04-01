@@ -25,14 +25,14 @@ option roles_decide_role
     } else if(strategy.role == forward_right) {
       goto forward_right;
     } else if(true) {
-      goto idle;
+      goto unknown_role;
     }
   }
 
   // has to be initial state, otherwise there might be problems with role switching
-  initial state idle{
+  initial state unknown_role {
     action {
-      // TODO: indicate, that the player has no role!
+      role_unknown();
     }
   }
 
