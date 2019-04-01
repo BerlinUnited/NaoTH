@@ -41,24 +41,20 @@ CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
 
   bounds = BoundedVariable<Parameter>(lower, upper);
 
-  DEBUG_REQUEST_REGISTER("CameraMatrixV3:reset_calibration", "set the calibration offsets of the CM to 0", false);
-  DEBUG_REQUEST_REGISTER("CameraMatrixV3:reset_minimizer", "reset lm parameters to initial values", false);
-
-  DEBUG_REQUEST_REGISTER("CameraMatrixV3:collect_calibration_data", "collect the data for calibration", false);
-  DEBUG_REQUEST_REGISTER("CameraMatrixV3:clear_calibration_data", "clears the data used for calibration", false);
-
-  DEBUG_REQUEST_REGISTER("CameraMatrixV3:enable_CamMatErrorFunctionV3_drawings", "needed to be activated for error function drawings", true);
-
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:automatic_mode","try to do automatic calibration", false);
 
-  DEBUG_REQUEST_REGISTER("CameraMatrixV3:calibrate","",false);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV3:manual:collect_calibration_data", "collect the data for calibration", false);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV3:manual:calibrate","",false);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV3:manual:clear_calibration_data", "clears the data used for calibration", false);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV3:manual:reset_calibration", "set the calibration offsets of the CM to 0", false);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV3:manual:reset_minimizer", "reset lm parameters to initial values", false);
 
-  DEBUG_REQUEST_REGISTER("CameraMatrixV3:optimizer:use_GN",  "use Gauss-Newton based optimizer during calibration (default)", true);
-  DEBUG_REQUEST_REGISTER("CameraMatrixV3:optimizer:use_LM",  "use Levenberg-Marquardt based optimizer during calibration", false);
-  DEBUG_REQUEST_REGISTER("CameraMatrixV3:optimizer:use_LM2", "use Levenberg-Marquardt based optimizer (smoothed update) during calibration", false);
-
-  DEBUG_REQUEST_REGISTER("CameraMatrixV3:read_calibration_data_from_file", "", false);
-  DEBUG_REQUEST_REGISTER("CameraMatrixV3:write_calibration_data_to_file",  "", false);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV3:debug:enable_CamMatErrorFunctionV3_drawings", "needed to be activated for error function drawings", true);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV3:debug:optimizer:use_GN",  "use Gauss-Newton based optimizer during calibration (default)", true);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV3:debug:optimizer:use_LM",  "use Levenberg-Marquardt based optimizer during calibration", false);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV3:debug:optimizer:use_LM2", "use Levenberg-Marquardt based optimizer (smoothed update) during calibration", false);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV3:debug:read_calibration_data_from_file", "", false);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV3:debug:write_calibration_data_to_file",  "", false);
 
   read_calibration_data = written_calibration_data = false;
   if(cmc_params.use_bounded_variable){
@@ -101,37 +97,37 @@ CameraMatrixCorrectorV3::~CameraMatrixCorrectorV3()
 
 void CameraMatrixCorrectorV3::execute()
 {
-  DEBUG_REQUEST("CameraMatrixV3:read_calibration_data_from_file",
+  DEBUG_REQUEST("CameraMatrixV3:debug:read_calibration_data_from_file",
     if(!read_calibration_data) {
       theCamMatErrorFunctionV3.read_calibration_data_from_file();
       read_calibration_data = true;
     }
   );
 
-  DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV3:read_calibration_data_from_file",
+  DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV3:debug:read_calibration_data_from_file",
     read_calibration_data = false;
   );
 
-  DEBUG_REQUEST("CameraMatrixV3:write_calibration_data_to_file",
+  DEBUG_REQUEST("CameraMatrixV3:debug:write_calibration_data_to_file",
     if(!written_calibration_data) {
       theCamMatErrorFunctionV3.write_calibration_data_to_file();
       written_calibration_data = true;
     }
   );
 
-  DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV3:write_calibration_data_to_file",
+  DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV3:debug:write_calibration_data_to_file",
     written_calibration_data = false;
   );
 
-  DEBUG_REQUEST("CameraMatrixV3:optimizer:use_GN",
+  DEBUG_REQUEST("CameraMatrixV3:debug:optimizer:use_GN",
     minimizer = &gn_minimizer;
   );
 
-  DEBUG_REQUEST("CameraMatrixV3:optimizer:use_LM",
+  DEBUG_REQUEST("CameraMatrixV3:debug:optimizer:use_LM",
     minimizer = &lm_minimizer;
   );
 
-  DEBUG_REQUEST("CameraMatrixV3:optimizer:use_LM2",
+  DEBUG_REQUEST("CameraMatrixV3:debug:optimizer:use_LM2",
     minimizer = &lm2_minimizer;
   );
 
@@ -153,7 +149,7 @@ void CameraMatrixCorrectorV3::execute()
   }
 
   // enable debug drawings in manual and auto mode
-  DEBUG_REQUEST("CameraMatrixV3:enable_CamMatErrorFunctionV3_drawings",
+  DEBUG_REQUEST("CameraMatrixV3:debug:enable_CamMatErrorFunctionV3_drawings",
       theCamMatErrorFunctionV3.plot_CalibrationData(cam_mat_offsets);
   );
 
@@ -180,7 +176,7 @@ void CameraMatrixCorrectorV3::execute()
     minimizer->reset();
   );
 
-  DEBUG_REQUEST("CameraMatrixV3:reset_minimizer",
+  DEBUG_REQUEST("CameraMatrixV3:manual:reset_minimizer",
         minimizer->reset();
   );
 
@@ -189,37 +185,37 @@ void CameraMatrixCorrectorV3::execute()
           doItAutomatically();
       }
   } else { // manual mode
-      DEBUG_REQUEST("CameraMatrixV3:clear_calibration_data",
+      DEBUG_REQUEST("CameraMatrixV3:manual:clear_calibration_data",
         theCamMatErrorFunctionV3.clear();
       );
 
-      DEBUG_REQUEST("CameraMatrixV3:collect_calibration_data",
+      DEBUG_REQUEST("CameraMatrixV3:manual:collect_calibration_data",
         collectingData();
       );
 
-      DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV3:collect_calibration_data",
+      DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV3:manual:collect_calibration_data",
         // reset to initial
         getHeadMotionRequest().id = HeadMotionRequest::hold;
         current_target = target_points.begin();
       );
 
-      DEBUG_REQUEST("CameraMatrixV3:calibrate",
+      DEBUG_REQUEST("CameraMatrixV3:manual:calibrate",
           calibrate();
       );
 
-      DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV3:calibrate",
+      DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV3:manual:calibrate",
           writeToRepresentation();
           getCameraMatrixOffset().saveToConfig();
       );
 
-      DEBUG_REQUEST("CameraMatrixV3:reset_calibration",
+      DEBUG_REQUEST("CameraMatrixV3:manual:reset_calibration",
             reset_calibration();
             minimizer->reset();
             derrors.clear();
             last_error = 0;
       );
 
-      DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV3:reset_calibration",
+      DEBUG_REQUEST_ON_DEACTIVE("CameraMatrixV3:manual:reset_calibration",
           writeToRepresentation();
           getCameraMatrixOffset().saveToConfig();
       );
