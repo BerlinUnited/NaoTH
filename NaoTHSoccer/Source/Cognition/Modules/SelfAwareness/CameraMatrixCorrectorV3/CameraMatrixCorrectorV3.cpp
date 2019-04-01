@@ -384,11 +384,11 @@ void CameraMatrixCorrectorV3::doItAutomatically()
 
 void CameraMatrixCorrectorV3::writeToRepresentation()
 {
-  getCameraMatrixOffset().body_rot += Vector2d(cam_mat_offsets(0),cam_mat_offsets(1));
-  getCameraMatrixOffset().head_rot += Vector3d(cam_mat_offsets(2),cam_mat_offsets(3),cam_mat_offsets(4));
+  getCameraMatrixOffset().body_rot = Vector2d(cam_mat_offsets(0),cam_mat_offsets(1));
+  getCameraMatrixOffset().head_rot = Vector3d(cam_mat_offsets(2),cam_mat_offsets(3),cam_mat_offsets(4));
 
-  getCameraMatrixOffset().cam_rot[CameraInfo::Top]    += Vector3d(cam_mat_offsets(5),cam_mat_offsets(6),cam_mat_offsets(7));
-  getCameraMatrixOffset().cam_rot[CameraInfo::Bottom] += Vector3d(cam_mat_offsets(8),cam_mat_offsets(9),cam_mat_offsets(10));
+  getCameraMatrixOffset().cam_rot[CameraInfo::Top]    = Vector3d(cam_mat_offsets(5),cam_mat_offsets(6),cam_mat_offsets(7));
+  getCameraMatrixOffset().cam_rot[CameraInfo::Bottom] = Vector3d(cam_mat_offsets(8),cam_mat_offsets(9),cam_mat_offsets(10));
 }
 
 void CameraMatrixCorrectorV3::readFromRepresentation(){
