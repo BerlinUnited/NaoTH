@@ -14,11 +14,11 @@ class BoundedVariable{
 
         typedef Eigen::Array<double, T::RowsAtCompileTime, 1> Bound;
 
-    private:
+    public:
         Bound lower_bound;
         Bound upper_bound;
 
-    public:
+        // TODO: this doesn't work with these bounds
         BoundedVariable():
             lower_bound(Bound::Constant(-std::numeric_limits<double>::infinity())),
             upper_bound(Bound::Constant( std::numeric_limits<double>::infinity()))

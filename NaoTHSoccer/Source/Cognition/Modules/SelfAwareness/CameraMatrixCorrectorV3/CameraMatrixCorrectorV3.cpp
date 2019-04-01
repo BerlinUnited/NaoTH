@@ -13,8 +13,7 @@ CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
   getDebugParameterList().add(&getCameraMatrixOffset());
   getDebugParameterList().add(&cmc_params);
 
-  Optimizer::BoundedVariable<Parameter>::Bound lower;
-  lower << cmc_params.lower.body_x,
+  bounds.lower_bound << cmc_params.lower.body_x,
            cmc_params.lower.body_y,
            cmc_params.lower.head_x,
            cmc_params.lower.head_y,
@@ -26,8 +25,7 @@ CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
            cmc_params.lower.cam_top_y,
            cmc_params.lower.cam_top_z;
 
-  Optimizer::BoundedVariable<Parameter>::Bound upper;
-  upper << cmc_params.upper.body_x,
+  bounds.upper_bound << cmc_params.upper.body_x,
            cmc_params.upper.body_y,
            cmc_params.upper.head_x,
            cmc_params.upper.head_y,
@@ -39,7 +37,11 @@ CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
            cmc_params.upper.cam_top_y,
            cmc_params.upper.cam_top_z;
 
-  bounds = Optimizer::BoundedVariable<Parameter>(lower, upper);
+  if(cmc_params.use_bounded_variable){
+    theCamMatErrorFunctionV3.bounds = &bounds;
+  } else {
+    theCamMatErrorFunctionV3.bounds = nullptr;
+  }
 
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:automatic_mode","try to do automatic calibration", false);
 
@@ -56,16 +58,10 @@ CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:debug:read_calibration_data_from_file", "", false);
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:debug:write_calibration_data_to_file",  "", false);
 
-  read_calibration_data = written_calibration_data = false;
-  if(cmc_params.use_bounded_variable){
-    theCamMatErrorFunctionV3.bounds = &bounds;
-  } else {
-    theCamMatErrorFunctionV3.bounds = nullptr;
-  }
-
   theCamMatErrorFunctionV3.global_position = &cmc_params.global_pose.position;
   theCamMatErrorFunctionV3.global_orientation = &cmc_params.global_pose.orientation;
 
+  read_calibration_data = written_calibration_data = false;
   auto_cleared_data = auto_collected = auto_calibrated = false;
   play_calibrated = play_calibrating = play_collecting = true;
   last_error = 0;
@@ -97,6 +93,10 @@ CameraMatrixCorrectorV3::~CameraMatrixCorrectorV3()
 
 void CameraMatrixCorrectorV3::execute()
 {
+  if(cmc_params.check_changed()){
+      update_bounds();
+  }
+
   DEBUG_REQUEST("CameraMatrixV3:debug:read_calibration_data_from_file",
     if(!read_calibration_data) {
       theCamMatErrorFunctionV3.read_calibration_data_from_file();
@@ -403,4 +403,36 @@ void CameraMatrixCorrectorV3::readFromRepresentation(){
                      getCameraMatrixOffset().cam_rot[CameraInfo::Bottom].x,
                      getCameraMatrixOffset().cam_rot[CameraInfo::Bottom].y,
                      getCameraMatrixOffset().cam_rot[CameraInfo::Bottom].z;
+}
+
+void CameraMatrixCorrectorV3::update_bounds(){
+  bounds.lower_bound << cmc_params.lower.body_x,
+           cmc_params.lower.body_y,
+           cmc_params.lower.head_x,
+           cmc_params.lower.head_y,
+           cmc_params.lower.head_z,
+           cmc_params.lower.cam_x,
+           cmc_params.lower.cam_y,
+           cmc_params.lower.cam_z,
+           cmc_params.lower.cam_top_x,
+           cmc_params.lower.cam_top_y,
+           cmc_params.lower.cam_top_z;
+
+  bounds.upper_bound << cmc_params.upper.body_x,
+           cmc_params.upper.body_y,
+           cmc_params.upper.head_x,
+           cmc_params.upper.head_y,
+           cmc_params.upper.head_z,
+           cmc_params.upper.cam_x,
+           cmc_params.upper.cam_y,
+           cmc_params.upper.cam_z,
+           cmc_params.upper.cam_top_x,
+           cmc_params.upper.cam_top_y,
+           cmc_params.upper.cam_top_z;
+
+  if(cmc_params.use_bounded_variable){
+    theCamMatErrorFunctionV3.bounds = &bounds;
+  } else {
+    theCamMatErrorFunctionV3.bounds = nullptr;
+  }
 }

@@ -110,6 +110,8 @@ private:
   // for reading and writing calibration data
   bool read_calibration_data, written_calibration_data;
 
+  void update_bounds();
+
   class CMCParameters: public ParameterList
   {
       public:
@@ -139,7 +141,7 @@ private:
               PARAMETER_ANGLE_REGISTER(upper.cam_top_y) = 2;
               PARAMETER_ANGLE_REGISTER(upper.cam_top_z) = 2;
 
-              PARAMETER_REGISTER(use_bounded_variable) = true;
+              PARAMETER_REGISTER(use_bounded_variable) = false;
 
               PARAMETER_REGISTER(global_pose.position.x) = 0;
               PARAMETER_REGISTER(global_pose.position.y) = 0;
