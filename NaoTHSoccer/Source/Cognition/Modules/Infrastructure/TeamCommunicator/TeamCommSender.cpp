@@ -60,8 +60,8 @@ void TeamCommSender::fillMessageBeforeSending() const
       msg.ballAge = getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime());
       msg.ballPosition = getBallModel().position;
       msg.custom.ballVelocity = getBallModel().speed;
-    } 
-    else 
+    }
+    else
     {
       // only sent these values if the ball was never seen
       msg.ballAge = -1;
@@ -98,7 +98,8 @@ void TeamCommSender::fillMessageBeforeSending() const
       getTeamMessageData().custom.teamBall.y = std::numeric_limits<double>::infinity();
     }
 
-    msg.custom.robotState = getPlayerInfo().robotState;
+    // if the robot is in the "inital pose" (InitialMotion) just send 'initial' otherwise send the current robotState
+    msg.custom.robotState = getMotionStatus().currentMotion == motion::init ? PlayerInfo::initial : getPlayerInfo().robotState;
     msg.custom.robotRole = getRoleDecisionModel().getRole(getPlayerInfo().playerNumber);
 
     msg.custom.readyToWalk = getBodyState().readyToWalk;
