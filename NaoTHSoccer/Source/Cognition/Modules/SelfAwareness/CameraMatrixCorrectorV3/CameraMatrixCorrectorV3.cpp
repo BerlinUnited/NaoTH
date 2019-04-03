@@ -52,9 +52,9 @@ CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:manual:reset_minimizer", "reset lm parameters to initial values", false);
 
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:debug:enable_CamMatErrorFunctionV3_drawings", "needed to be activated for error function drawings", true);
-  DEBUG_REQUEST_REGISTER("CameraMatrixV3:debug:optimizer:use_GN",  "use Gauss-Newton based optimizer during calibration (default)", true);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV3:debug:optimizer:use_GN",  "use Gauss-Newton based optimizer during calibration (default)", false);
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:debug:optimizer:use_LM",  "use Levenberg-Marquardt based optimizer during calibration", false);
-  DEBUG_REQUEST_REGISTER("CameraMatrixV3:debug:optimizer:use_LM2", "use Levenberg-Marquardt based optimizer (smoothed update) during calibration", false);
+  DEBUG_REQUEST_REGISTER("CameraMatrixV3:debug:optimizer:use_LM2", "use Levenberg-Marquardt based optimizer (smoothed update) during calibration", true);
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:debug:read_calibration_data_from_file", "", false);
   DEBUG_REQUEST_REGISTER("CameraMatrixV3:debug:write_calibration_data_to_file",  "", false);
 
@@ -66,7 +66,7 @@ CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
   play_calibrated = play_calibrating = play_collecting = true;
   last_error = 0;
 
-  minimizer = &gn_minimizer;
+  minimizer = &lm2_minimizer;
 
   // sampling coordinates
   std::array<double,4> pitchs {-20, -10 , 0, 10};
