@@ -822,6 +822,8 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         }
         // add buffered drawings to field drawing list
         drawingBuffers.forEach((s,b)->{fieldCanvas.getDrawingList().add(b);});
+        // clear buffers
+        drawingBuffers.clear();
         // re-draw field
         fieldCanvas.repaint();
     }
