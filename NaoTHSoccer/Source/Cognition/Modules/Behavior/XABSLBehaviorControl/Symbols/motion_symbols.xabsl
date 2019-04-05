@@ -146,6 +146,9 @@ namespace motion_symbols("Motion Symbols") {
   /** indicates whether the RIGHT foot is currently avaliable for the step control */
   bool input executed_motion.step_control.right_movable;
   
+  /** indicates whether some motion specific target was reached,
+       e.g. the stand motion reached it's target position*/
+  bool input executed_motion.target_reached;
   
   /** the universal enum type for direction */  
   enum direction   

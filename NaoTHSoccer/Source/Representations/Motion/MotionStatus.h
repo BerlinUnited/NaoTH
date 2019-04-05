@@ -55,7 +55,8 @@ public:
   lastMotion(motion::num_of_motions),
   currentMotion(motion::num_of_motions),
   currentMotionState(motion::stopped),
-  headMotion(HeadMotionRequest::numOfHeadMotion)
+  headMotion(HeadMotionRequest::numOfHeadMotion),
+  target_reached(false)
   {
   }
 
@@ -68,7 +69,7 @@ public:
   HeadMotionRequest::HeadMotionID headMotion;
   PlannedMotion plannedMotion;
   StepControlStatus stepControl;
-
+  bool target_reached;
 
   virtual void print(std::ostream& stream) const
   {
@@ -81,6 +82,7 @@ public:
     stream << "left foot = "<< plannedMotion.lFoot<<"\n";
     stream << "right foot = "<< plannedMotion.rFoot<<"\n";
     stream << "step control = "<< stepControl.stepID << " " << stepControl.moveableFoot <<"\n";
+    stream << "target_reached = " << target_reached << '\n';
   }//end print
 };
 
