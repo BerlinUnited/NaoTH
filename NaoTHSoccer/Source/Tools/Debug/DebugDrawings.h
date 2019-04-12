@@ -121,6 +121,7 @@ template<> class Serializer<DebugDrawings> : public Serializer<DrawingCanvas2D> 
 #define FILLBOX(x0,y0,x1,y1) getDebugDrawings().out() << "FillBox:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << '\n'
 #define FILLOVAL(x,y,radiusX,radiusY) getDebugDrawings().out() << "FillOval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << '\n'
 #define TEXT_DRAWING(x,y,text) getDebugDrawings().out() << "Text:" << x << ":" << y << ":" << text << '\n'
+#define TEXT_DRAWING2(x,y,s,text) getDebugDrawings().out() << "Text:" << x << ":" << y << ":" << s << ":" << text << '\n'
 #define SIMPLE_PARTICLE(x,y,r) getDebugDrawings().out() << "Particle:" << x << ":" << y << ":" << r << '\n'
 // voronoi stuff
 #define FILLPOLYGON(x,y) getDebugDrawings().out() << "FillPolygon:" << x << ":" << y << '\n'
@@ -152,6 +153,7 @@ template<> class Serializer<DebugDrawings> : public Serializer<DrawingCanvas2D> 
 #define FILLBOX(x0,y0,x1,y1) ((void)0)
 #define FILLOVAL(x,y,radiusX,radiusY) ((void)0)
 #define TEXT_DRAWING(x,y,text) ((void)0)
+#define TEXT_DRAWING2(x,y,s,text) ((void)0)
 
 #define PARTICLE(x,y,r,l) ((void)0)
 

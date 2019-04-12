@@ -1,5 +1,7 @@
 import numpy as np
 
+import gym  # import gym for action spaces
+
 from scipy.spatial import cKDTree as KDTree
 
 
@@ -72,7 +74,7 @@ def rotation_feature_vec(angle_rad):
     return f
 
 
-def feature_vec(state, description_output=False):
+def feature_vec(state, description_output=False, return_output_space=False):
     angle = state.direction.angle()
     position = (state.position.x, state.position.y)
 
@@ -89,10 +91,82 @@ def feature_vec(state, description_output=False):
 
     feature_vec = np.transpose(feature_vec)
 
+    if return_output_space:
+        return gym.spaces.MultiBinary(872)  # type: MultiBinary TODO: make derivable
+
     if description_output:
         return feature_vec, (position_len, rotation_len)
     else:
         return feature_vec
+
+def no_features(state, return_output_space=False):
+    x = state.position.x
+    y = state.position.y
+    angle = state.direction.angle() % (2 * np.pi)
+
+    if return_output_space:
+        # return continuous box space with size -4500 , 4500 / -3000 , 3000 / 0 , 2pi
+        return gym.spaces.Box(low=np.array([-4500.0,-3000.0,0.]), high=np.array([4500.0,3000.0,2*np.pi]))
+
+    output_variables = np.array([x,y,angle], dtype=np.float64).reshape((1,3))
+    output = np.transpose(output_variables)
+    #output = output_variables
+
+    return output
+
+def feature_vec_nodirection(state, description_output=False, return_output_space=False):
+
+    angle = state.direction.angle()
+    position = (state.position.x, state.position.y)
+
+    position_feature = heinrichs_feature_vec(position)
+    position_len = position_feature.shape[0]
+
+    feature_vec = position_feature.reshape((1, position_len))
+
+    # TODO: add dictionary which includes all feature creation params
+    # currently feature_vec is (864,) MultiBinary numpy array 864 for the field 8 for rotation
+
+    feature_vec = np.transpose(feature_vec)
+
+    if return_output_space:
+        return gym.spaces.MultiBinary(864)  # type: MultiBinary TODO: make derivable
+    if description_output:
+        return feature_vec, (position_len)
+    else:
+        return feature_vec
+
+def no_features_normalized(state, return_output_space=False):
+    x = state.position.x
+    y = state.position.y
+    angle = state.direction.angle() % (2 * np.pi)
+
+    if return_output_space:
+        # return continuous box space with size -4500 , 4500 / -3000 , 3000 / 0 , 2pi
+        return gym.spaces.Box(low=np.array([-4500.0,-3000.0,0.]), high=np.array([4500.0,3000.0,2*np.pi]))
+
+    output_variables = np.array([x,y,angle], dtype=np.float64).reshape((1,3))
+    # normalize features
+    output_variables = output_variables / np.array([9000., 6000., 2*np.pi]).reshape((1,3))
+    output = np.transpose(output_variables)
+    #output = output_variables
+
+    return output
+
+def no_features_no_angle(state, return_output_space=False):
+    x = state.position.x
+    y = state.position.y
+
+    if return_output_space:
+        # return continuous box space with size -4500 , 4500 / -3000 , 3000 / 0 , 2pi
+        return gym.spaces.Box(low=np.array([-4500.0,-3000.0,0.]), high=np.array([4500.0,3000.0,2*np.pi]))
+
+    output_variables = np.array([x,y], dtype=np.float64).reshape((1,2))
+    # normalize features
+    output = np.transpose(output_variables)
+    #output = output_variables
+
+    return output
 
 
 

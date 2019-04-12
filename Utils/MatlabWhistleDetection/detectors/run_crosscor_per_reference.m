@@ -20,7 +20,8 @@ catch
 end
 %% Settings
 % Choose the references here
-reference = reference_database.gen_from_go18_recordings;
+%reference = reference_database.gen_from_go18_recordings;
+reference = reference_database.gen_from_rc18_recordings;
 event_names = fieldnames(capture_database);
 
 threshold = 0.25;
@@ -34,7 +35,7 @@ for i=1:length(reference)
     fprintf("Check detection for reference %s \n", reference(i).name)
     
     % Check first event only for now
-    event = capture_database.(event_names{1});
+    event = capture_database.(event_names{6});
     tp = 0;
     fp = 0;
     fn = 0;
@@ -82,13 +83,13 @@ for i=1:length(reference)
     
 end % end length(references)
 
-%%
+%
 % get the names
 for q=1:length(reference)
     names(q,:) = string(reference(q).name);
 end
 
-%% Plot the bar graphs
+% Plot the bar graphs
 subplot(4,1,1);
 bar(tp_bar)
 ylim([0 length(annotated_capture)])
@@ -110,5 +111,5 @@ xtickangle(45)
 xticks(1:length(names))
 xticklabels(names)
 ylim([0 length(annotated_capture)])
-title('Number of whistles detected')
+title('Number of whistles detected') % its more like number of detections
 
