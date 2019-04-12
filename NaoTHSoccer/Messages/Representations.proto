@@ -358,6 +358,20 @@ message CentreOfPressure {
  required bool   in_kinematic_chain_origin_valid      = 9;
 }
 
+message CalibrationDataCMC {
+ message CalibrationDataSampleV3 {
+  optional Pose3D chestPose               = 1;
+  repeated DoubleVector2 edgelsInImage    = 2;
+  repeated DoubleVector2 edgelsInImageTop = 3;
+  optional DoubleVector2 orientation      = 4;
+  optional double headYaw                 = 5;
+  optional double headPitch               = 6;
+ }
+
+ repeated CalibrationDataSampleV3 calibrationData = 1;
+ optional uint32 numberOfResudials                = 2;
+}
+
 message WhistlePercept {
   message Whistle {
     required string name = 1;
