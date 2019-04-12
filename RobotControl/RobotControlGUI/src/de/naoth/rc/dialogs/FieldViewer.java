@@ -56,8 +56,6 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
@@ -70,7 +68,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -85,7 +82,7 @@ import org.freehep.util.export.ExportDialog;
  *
  * @author  Heinrich Mellmann
  */
-public class FieldViewer extends AbstractDialog implements ActionListener
+public class FieldViewer extends AbstractDialog
 {
 
     @RCDialog(category = RCDialog.Category.View, name = "Field")
@@ -108,9 +105,8 @@ public class FieldViewer extends AbstractDialog implements ActionListener
         public static LogFileEventManager logFileEventManager;
     }//end Plugin
 
-  private final Timer drawingTimer;
   // drawing buffer for concurrent access; every "source" gets its own "buffer"
-  private ConcurrentHashMap<Class<?>, Drawable> drawingBuffers = new ConcurrentHashMap<>();
+  private final MultiSourceDrawingCollection drawings = new MultiSourceDrawingCollection();
 
   private final PlotDataListener plotDataListener;
   private final StrokePlot strokePlot;
@@ -158,11 +154,13 @@ public class FieldViewer extends AbstractDialog implements ActionListener
     this.fieldCanvas.setBackgroundDrawing((Drawable)this.cbBackground.getSelectedItem());
     this.fieldCanvas.setToolTipText("");
     this.fieldCanvas.setFitToViewport(this.btFitToView.isSelected());
+    this.fieldCanvas.addDrawing(drawings);
+    
     canvasExport = this.fieldCanvas;
     
     Plugin.drawingEventManager.addListener((Drawable drawing, Object src) -> {
         // add drawing of the source to the drawing buffer
-        drawingBuffers.put(src.getClass(), drawing);
+        drawings.add(src.getClass(), drawing);
     });
     
     // intialize the field
@@ -183,8 +181,8 @@ public class FieldViewer extends AbstractDialog implements ActionListener
 
     this.strokePlot = new StrokePlot(300);
     // schedules canvas drawing at a fixed rate, should prevent "flickering"
-    this.drawingTimer = new Timer(300, this);
-    this.drawingTimer.start();
+    //this.drawingTimer = new Timer(300, this);
+    //this.drawingTimer.start();
     // remember the location of the mouse
     jPopupMenu.addPopupMenuListener(new PopupMenuListener() {
         @Override
@@ -531,11 +529,13 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
   final void resetView()
   {
     this.fieldCanvas.getDrawingList().clear();
+    
+    this.drawings.clear();
+    this.fieldCanvas.addDrawing(drawings);
+    
     if(btTrace.isSelected()) {
         this.fieldCanvas.getDrawingList().add(this.strokePlot);
     }
-    
-    drawingBuffers.clear();
   }//end resetView
 
   private void exportCanvasToPNG() {
@@ -569,7 +569,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         }
         
         // add received drawings to buffer
-        drawingBuffers.put(this.getClass(), drawingCollection);
+        drawings.add(this.getClass(), drawingCollection);
 
         if(cbExportOnDrawing.isSelected()) {
             SwingUtilities.invokeLater(new Runnable() {
@@ -744,8 +744,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         {
             DrawingCollection dc = new DrawingCollection();
             drawTeamMessages(b, dc);
-            drawingBuffers.put(this.getClass(), dc);
-            
+            drawings.add(this.getClass(), dc);
         }
   }
 
@@ -781,26 +780,6 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     }//end newObjectReceived
   }//end class PlotDataListener
     
-    class DrawingBuffer extends DrawingCollection
-    {
-        private int maxNumberOfEnties;
-        public DrawingBuffer(int maxNumberOfEnties) {
-            this.maxNumberOfEnties = maxNumberOfEnties;
-        }
-        
-        @Override
-        public void add(Drawable d) {
-            if(maxNumberOfEnties > 0 && this.drawables.size() >= maxNumberOfEnties) {
-                this.drawables.remove(0);
-            }
-            super.add(d);
-        }
-        
-        public void clear() {
-            this.drawables.clear();
-        }
-    }
-    
   @Override
   public void dispose()
   {
@@ -810,23 +789,58 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     Plugin.plotDataManager.removeListener(plotDataListener);
   }
   
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        // clear old field drawings
-        if(!btCollectDrawings.isSelected()) {
-            fieldCanvas.getDrawingList().clear();
-            // removed it! in order to continue drawing strokes, we have to "re-add" it
-            if(btTrace.isSelected()) {
-                this.fieldCanvas.getDrawingList().add(this.strokePlot);
-            }
+  /*
+  // NOTE: can we use this again?
+  class DrawingCollectionLimited extends DrawingCollection
+    {
+        private final int maxNumberOfEnties;
+        public DrawingCollectionLimited(int maxNumberOfEnties) {
+            this.maxNumberOfEnties = maxNumberOfEnties;
         }
-        // add buffered drawings to field drawing list
-        drawingBuffers.forEach((s,b)->{fieldCanvas.getDrawingList().add(b);});
-        // clear buffers
-        drawingBuffers.clear();
-        // re-draw field
-        fieldCanvas.repaint();
+
+        @Override
+        public void add(Drawable d) {
+            if(maxNumberOfEnties > 0 && this.drawables.size() >= maxNumberOfEnties) {
+                this.drawables.remove(0);
+            }
+            super.add(d);
+        }
     }
+  */
+  
+  class MultiSourceDrawingCollection implements Drawable
+  {
+      // drawing buffer for concurrent access; every "source" gets its own "buffer"
+      private final ConcurrentHashMap<Class<?>, DrawingCollection> drawingBuffers = new ConcurrentHashMap<>();
+      
+      public void add(Class<?> owner, Drawable d) 
+      {
+          // get the collection for the owner
+          DrawingCollection dc = drawingBuffers.get(owner);
+          if(dc == null) {
+              dc = new DrawingCollection();
+              drawingBuffers.put(owner, dc);
+          }
+          
+          if(!btCollectDrawings.isSelected()) {
+              dc.clear();
+          }
+          
+          dc.add(d);
+          
+          // re-draw field
+          fieldCanvas.repaint();
+      }
+      
+      public void clear() {
+          drawingBuffers.clear();
+      }
+      
+      @Override
+      public void draw(Graphics2D g2d) {
+          drawingBuffers.forEach((s,b)->{b.draw(g2d);});
+      }
+  }
 
   
     // Variables declaration - do not modify//GEN-BEGIN:variables
