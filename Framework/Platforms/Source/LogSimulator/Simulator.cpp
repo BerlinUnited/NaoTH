@@ -120,8 +120,11 @@ void Simulator::printCurrentLineInfo()
   LogFileScanner::FrameIterator end = logFileScanner.last();
 
   // output some informations about the current frame
-  cout << "[" << *currentFrame << "|" << *begin << "-" << *end << "]\t\r";
-  std::cout.flush();
+  if (backendMode) {
+    cout << "[" << *currentFrame << "|" << *begin << "-" << *end << "]" << std::endl;
+  } else {
+    cout << "[" << *currentFrame << "|" << *begin << "-" << *end << "]\t\r";
+  }
 }//end printCurrentLineInfo
 
 char Simulator::getInput()

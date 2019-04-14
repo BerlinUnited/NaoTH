@@ -37,11 +37,16 @@ class LogSimulatorWidget(QtWidgets.QTextEdit):
 
     def _connect_events(self):
         self.process.readyRead.connect(self._output_ready)
+        self.process.readyReadStandardError.connect(self._error_ready)
         self.process.finished.connect(self._process_finished)
 
     def _output_ready(self):
         output = bytes(self.process.readAll()).decode('utf-8')
         self.append(output)
+
+    def _error_ready(self):
+        output = bytes(self.process.readAllStandardError()).decode('utf-8')
+        self.append(f'<font color="DeepPink">{output}</font><br>')
 
     def _process_finished(self, exit_status):
         self.stop()
@@ -56,7 +61,7 @@ class LogSimulatorWidget(QtWidgets.QTextEdit):
         elif event.text():
             logger.debug(f'Key {event.text()} pressed.')
             byte_array = QtCore.QByteArray()
-            byte_array.append(event.text())
+            byte_array.append(event.text().lower())
             self.process.write(byte_array)
             event.accept()
 
@@ -120,7 +125,7 @@ class LogSimulatorWidget(QtWidgets.QTextEdit):
         # start log simulator if all necessary files are available
         if self.log_file and self.config_folder:
             if self.log_sim is None:
-                self.log_sim = LogSimulator(self.log_file, self.config_folder, self.logsimulator_path)
+                self.log_sim = LogSimulator(self.log_file, self.config_folder, executable=self.logsimulator_path)
             # check if executable is available
             if self.log_sim.executable:
                 # stop previous running simulator
@@ -185,7 +190,7 @@ if __name__ == '__main__':
     def is_file(path):
         if not os.path.isfile(path):
             parser.error(f'Given argument "{path}" is not a valid file path, '
-                         f'compile log simulator first!')
+                         f'compile the log simulator first!')
             return
         if not os.access(path, os.X_OK):
             parser.error(f'Given argument "{path}" is not executable!')
@@ -196,7 +201,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # setup logging
-    import mrl_experiments.logging_config.default as log
+    import naoth.logging_config.default as log
 
     log.configure()
 

@@ -30,7 +30,7 @@ class Relay:
 
             # relay and parse command id
             robot_writer.write(raw_id)
-            command_id = _read_long(raw_id)
+            command_id = read_long(raw_id)
 
             # check if command is not just a heart beat
             if command_id != -1:
@@ -38,7 +38,7 @@ class Relay:
                 raw_length = await commander_reader.read(4)
                 robot_writer.write(raw_length)
 
-                command_length = _read_long(raw_length)
+                command_length = read_long(raw_length)
 
                 # relay and parse command
                 command_bytes = await commander_reader.read(command_length)
@@ -50,13 +50,16 @@ class Relay:
                 print(command)
 
                 # check if python implementation produces the same result
+                """
+                TODO: fix
                 native_command = Command(command.name)
                 for arg in command.args:
                     if arg.bytes:
-                        native_command.add_args(arg.name, arg.bytes)
+                        native_command.add_arg(arg.name, arg.bytes)
                     else:
-                        native_command.add_args(arg.name)
+                        native_command.add_arg(arg.name)
                 assert command_bytes == bytes(native_command)
+                """
 
     @staticmethod
     async def _relay_robot(robot_reader, command_writer):
@@ -69,7 +72,7 @@ class Relay:
             raw_size = await robot_reader.read(4)
             command_writer.write(raw_size)
 
-            size = _read_long(raw_size)
+            size = read_long(raw_size)
             print('Size', size)
 
             # relay and parse response data
@@ -83,11 +86,12 @@ class Relay:
 
 
 class Command:
-    def __init__(self, name):
+    def __init__(self, name, _id):
         self.name = name
+        self._id = _id
         self.args = {}
 
-    def add_args(self, name, value=None):
+    def add_arg(self, name, value=None):
         if isinstance(value, str):
             value = value.encode()
         if isinstance(value, bytes) or value is None:
@@ -103,14 +107,36 @@ class Command:
             arg.name = name
             if value is not None:
                 arg.bytes = value
-        return cmd.SerializeToString()
+        raw_command = cmd.SerializeToString()
+        return long_from_int(self._id) + long_from_int(len(raw_command)) + raw_command
 
 
-def _long_from_int(integer):
+class Response:
+    def __init__(self):
+        self._id = None
+        self.data = None
+
+    async def read(self, reader):
+        # read command id
+        raw_id = await reader.read(4)
+        self._id = read_long(raw_id)
+
+        # read response size
+        raw_size = await reader.read(4)
+
+        size = read_long(raw_size)
+        # read response data
+        self.data = await reader.read(size)
+
+    def get_id(self):
+        return self._id
+
+
+def long_from_int(integer):
     return struct.pack('=l', integer)
 
 
-def _read_long(_bytes):
+def read_long(_bytes):
     return struct.unpack('=l', _bytes)[0]
 
 
