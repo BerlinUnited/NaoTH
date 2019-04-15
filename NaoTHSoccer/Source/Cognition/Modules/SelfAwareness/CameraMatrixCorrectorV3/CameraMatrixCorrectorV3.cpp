@@ -5,6 +5,7 @@
 */
 
 #include "CameraMatrixCorrectorV3.h"
+#include <array>
 
 CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
     theCamMatErrorFunctionV3(getDebugRequest(), getDebugDrawings(), getDebugModify(), getFieldInfo(), getCameraInfo(), getCameraInfoTop()),
