@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import os
+import shutil
 from tempfile import TemporaryDirectory
 from zipfile import ZipFile
 
@@ -23,6 +24,7 @@ class LogRecapture(Extractor):
         target_folder = os.path.dirname(target_log)
 
         tmp_dir = None
+        config_zip_path = None
         # looking for config folder
         for file in os.listdir(target_folder):
             if file.lower() == 'config.zip':
@@ -32,9 +34,11 @@ class LogRecapture(Extractor):
                 with ZipFile(config_zip_path) as config_zip:
                     config_zip.extractall(tmp_dir.name)
                 target_config = os.path.join(tmp_dir.name, 'Config')
+                output_config = os.path.join(os.path.dirname(output_path), file)
                 break
             elif file == 'Config':
                 target_config = os.path.join(target_folder, file)
+                output_config = os.path.join(os.path.dirname(output_path), file)
                 break
         else:
             raise FileNotFoundError(f'Config for target log not found in "{target_folder}"!')
@@ -45,10 +49,15 @@ class LogRecapture(Extractor):
         loop = asyncio.get_event_loop()
         loop.run_until_complete(self.recapture(logsim, output_path))
 
-        # TODO copy Config
-
-        if tmp_dir is not None:
+        logger.info(f'Copying Config to "{output_config}"')
+        if config_zip_path is not None:
+            # Copy config zip
+            shutil.copy2(config_zip_path, output_config)
             tmp_dir.cleanup()
+        else:
+            shutil.copytree(target_config, output_config)
+
+        logger.info(f'Done.')
 
     @staticmethod
     async def recapture(logsim, output_path):
@@ -139,8 +148,6 @@ class LogRecapture(Extractor):
 
         logger.info(f'Shutting down log simulator instance...')
         await instance.shutdown()
-
-        logger.info(f'Done.')
 
 
 if __name__ == '__main__':

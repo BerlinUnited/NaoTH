@@ -8,12 +8,19 @@ from naoth.log_extractor.extractor.recapture import LogRecapture
 from naoth.log_extractor.log_extractor import LogExtractorWidget
 
 if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser(description='Tool to apply information extractions on multiple log files')
+    parser.add_argument('-e', '--executable', help='path to log simulator executable')
+    args = parser.parse_args()
+
+    if args.executable is not None:
+        os.environ['LOG_SIMULATOR_PATH'] = args.executable
+
     # setup logging
     import naoth.logging_config.default as log
 
     log.configure()
-
-    os.environ['LOG_SIMULATOR_PATH'] = '/home/robert/Repository/NaoTH-2018/NaoTHSoccer/dist/Native/logsimulator'
 
     app = QtWidgets.QApplication(sys.argv)
 
