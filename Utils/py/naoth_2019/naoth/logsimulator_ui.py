@@ -1,6 +1,8 @@
 import logging
 import os
 import sys
+from tempfile import TemporaryDirectory
+from zipfile import ZipFile
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 
@@ -23,6 +25,7 @@ class LogSimulatorWidget(QtWidgets.QTextEdit):
 
         self.setText('Awaiting log file and config folder... (Drag & Drop here)')
 
+        self.tmp_dir = None
         self.config_folder = None
         self.log_file = None
 
@@ -90,6 +93,10 @@ class LogSimulatorWidget(QtWidgets.QTextEdit):
     def dropEvent(self, event):
         messages = []
 
+        # stop previous running simulator
+        if self.process.state() == QtCore.QProcess.Running:
+            self.stop()
+
         if self.awaiting_executable:
             # get log simulator executable path from drop event
             for path in self.parse_urls(event):
@@ -105,10 +112,21 @@ class LogSimulatorWidget(QtWidgets.QTextEdit):
             # get log file and config folder path from drop event
             for path in self.parse_urls(event):
                 if os.path.isfile(path):
-                    self.log_file = path
-                    message = f'Registered log file "{self.log_file}".'
+                    if path.endswith('.zip'):
+                        # unzip config.zip
+                        self.tmp_dir = TemporaryDirectory(prefix='logsim_cwd_')
+                        logger.info(f'Creating temporary directory "{self.tmp_dir.name}" to unzip {path}...')
+                        with ZipFile(path) as config_zip:
+                            config_zip.extractall(self.tmp_dir.name)
+                        self.config_folder = os.path.join(self.tmp_dir.name, 'Config')
+                        message = f'Registered config folder "{self.config_folder}".'
+                    else:
+                        # log file
+                        self.log_file = path
+                        message = f'Registered log file "{self.log_file}".'
                     logger.info(message)
                 elif os.path.isdir(path):
+                    # config folder
                     self.config_folder = path
                     message = f'Registered config folder "{self.config_folder}".'
                     logger.info(message)
@@ -124,13 +142,10 @@ class LogSimulatorWidget(QtWidgets.QTextEdit):
 
         # start log simulator if all necessary files are available
         if self.log_file and self.config_folder:
-            if self.log_sim is None:
-                self.log_sim = LogSimulator(self.log_file, self.config_folder, executable=self.logsimulator_path)
+            self.log_sim = LogSimulator(self.log_file, self.config_folder, executable=self.logsimulator_path)
+
             # check if executable is available
             if self.log_sim.executable:
-                # stop previous running simulator
-                if self.process.state() == QtCore.QProcess.Running:
-                    self.stop()
                 # start simulator
                 self.clear()
                 self.start()
@@ -149,7 +164,7 @@ class LogSimulatorWidget(QtWidgets.QTextEdit):
         logger.info('Starting log simulator...')
         self.process.setWorkingDirectory(self.log_sim.working_dir())
         args = self.log_sim.program_args()
-
+        print(args)
         if len(args) > 1:
             self.process.start(args[0], args[1:])
         else:
