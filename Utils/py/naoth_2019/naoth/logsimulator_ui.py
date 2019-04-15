@@ -161,10 +161,9 @@ class LogSimulatorWidget(QtWidgets.QTextEdit):
         self.setText('\n'.join(messages))
 
     def start(self):
-        logger.info('Starting log simulator...')
         self.process.setWorkingDirectory(self.log_sim.working_dir())
         args = self.log_sim.program_args()
-        print(args)
+        logger.info(f'Starting log simulator with {args}...')
         if len(args) > 1:
             self.process.start(args[0], args[1:])
         else:
