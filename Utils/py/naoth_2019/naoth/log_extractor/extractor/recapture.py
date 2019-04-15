@@ -85,6 +85,14 @@ class LogRecapture(Extractor):
             # send command
             robot_writer.write(bytes(command))
 
+        # disable frame skip
+        command = Command('Cognition:ParameterList:set', cmd_id)
+        cmd_id += 1
+        command.add_arg('<name>', value='DebugParameter'.encode())
+        command.add_arg('log.skipTimeMS', value='0'.encode())
+        # send command
+        robot_writer.write(bytes(command))
+
         logger.info(f'Enabling recording in "{output_path}"...')
         command = Command('Cognition:CognitionLog', cmd_id)
         cmd_id += 1
@@ -100,6 +108,8 @@ class LogRecapture(Extractor):
 
         # parse responses
         response = Response()
+        await response.read(robot_reader)
+        logger.info(f'Response: {response.data.decode().strip()}')
         await response.read(robot_reader)
         logger.info(f'Response: {response.data.decode().strip()}')
         await response.read(robot_reader)
