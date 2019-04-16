@@ -189,14 +189,12 @@ class LogExtractorWidget(QtWidgets.QWidget):
         return missing
 
     def _jobs_missing(self):
-        missing = False
         if not self.ui.job_list.topLevelItemCount():
-            missing = True
             self._set_label_color(self.ui.add_jobs_label, 'red')
+            return True
         else:
             self._set_label_color(self.ui.add_jobs_label, 'black')
-
-        return self._check_missing() or missing
+            return False
 
     def execute_jobs(self):
         if self._jobs_missing():
