@@ -19,6 +19,10 @@ public class DrawingCollection implements Drawable {
             this.drawables.add(d);
         }
     }
+    
+    public void clear() {
+        drawables.clear();
+    }
 
     @Override
     public void draw(Graphics2D g2d) {
