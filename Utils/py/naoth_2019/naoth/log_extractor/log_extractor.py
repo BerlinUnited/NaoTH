@@ -131,14 +131,31 @@ class LogExtractorWidget(QtWidgets.QWidget):
 
         self.number_of_finished_jobs = 0
 
+    @staticmethod
+    def _set_label_color(label: QtWidgets.QLabel, color):
+        label.setStyleSheet(f'QLabel {{color : {color};}}')
+
+    def _enable_ui(self, boolean):
+        self.ui.execute_button.setEnabled(boolean)
+        self.ui.job_button.setEnabled(boolean)
+        self.ui.clear_job_list_button.setEnabled(boolean)
+
+    def _progress(self):
+        self.ui.progress_bar.setMaximum(100)
+
+        self.number_of_finished_jobs += 1
+        # set progress bar
+        if self.number_of_finished_jobs == self.ui.job_list.topLevelItemCount():
+            self._enable_ui(True)
+            self.ui.progress_bar.setValue(100)
+        else:
+            progress = self.number_of_finished_jobs / self.ui.job_list.topLevelItemCount()
+            self.ui.progress_bar.setValue(progress * 100)
+
     def job_done(self, _id, results):
         job_item = self.ui.job_list.topLevelItem(_id)
         job_item.set_done()
-
-        # set progress bar
-        self.number_of_finished_jobs += 1
-        progress = self.number_of_finished_jobs / self.ui.job_list.topLevelItemCount()
-        self.ui.progress_bar.setValue(progress*100)
+        self._progress()
 
     def job_failed(self, _id, traceback):
         job_item = self.ui.job_list.topLevelItem(_id)
@@ -146,19 +163,56 @@ class LogExtractorWidget(QtWidgets.QWidget):
 
         logger.error(f'Execution of job "{job_item.extractor.name}" failed!\n{traceback}')
 
-        # set progress bar
-        self.number_of_finished_jobs += 1
-        progress = self.number_of_finished_jobs / self.ui.job_list.topLevelItemCount()
-        self.ui.progress_bar.setValue(progress * 100)
+        self._progress()
+
+    def _check_missing(self):
+        missing = False
+
+        for _ in self.ui.file_tree.selected_files():
+            self._set_label_color(self.ui.files_label, 'black')
+            break
+        else:
+            missing = True
+            self._set_label_color(self.ui.files_label, 'red')
+
+        if not self.ui.extractor_list.selectedItems():
+            missing = True
+            self._set_label_color(self.ui.extractor_label, 'red')
+        else:
+            self._set_label_color(self.ui.extractor_label, 'black')
+
+        if self.ui.output_selection.text().endswith('...') or not os.path.isdir(self.ui.output_selection.text()):
+            missing = True
+            self._set_label_color(self.ui.output_label, 'red')
+        else:
+            self._set_label_color(self.ui.output_label, 'black')
+        return missing
+
+    def _jobs_missing(self):
+        missing = False
+        if not self.ui.job_list.topLevelItemCount():
+            missing = True
+            self._set_label_color(self.ui.add_jobs_label, 'red')
+        else:
+            self._set_label_color(self.ui.add_jobs_label, 'black')
+
+        return self._check_missing() or missing
 
     def execute_jobs(self):
+        if self._jobs_missing():
+            return
+
         self.number_of_finished_jobs = 0
         self.ui.progress_bar.setValue(0)
+        # use progress bar as busy indicator
+        self.ui.progress_bar.setMaximum(0)
 
         jobs_added = False
         for i in range(self.ui.job_list.topLevelItemCount()):
             job_item = self.ui.job_list.topLevelItem(i)
             if not job_item.done:
+                self._enable_ui(False)
+
                 # create output path
                 path = os.path.dirname(os.path.realpath(job_item.get_output()))
                 logger.debug(f'Creating output path "{path}".')
@@ -169,7 +223,7 @@ class LogExtractorWidget(QtWidgets.QWidget):
                 self.job_executor.add_job(i, job_item.extractor.extract, args, kwargs)
                 jobs_added = True
             else:
-                self.number_of_finished_jobs += 1
+                self._progress()
 
         # start thread
         if jobs_added:
@@ -189,6 +243,9 @@ class LogExtractorWidget(QtWidgets.QWidget):
         """
         Add jobs (selected extractors x selected files) to the job list
         """
+        if self._check_missing():
+            return
+
         output_path = self.ui.output_selection.text()
 
         for extractor_item in self.ui.extractor_list.selectedItems():

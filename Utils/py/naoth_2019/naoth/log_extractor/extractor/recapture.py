@@ -5,7 +5,7 @@ import shutil
 from tempfile import TemporaryDirectory
 from zipfile import ZipFile
 
-from naoth.connection import Command, long_from_int, Response
+from naoth.connection import Command, Response
 from naoth.log_extractor.extractor import Extractor
 from naoth.logsimulator import LogSimulator
 
