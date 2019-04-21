@@ -28,6 +28,8 @@ public:
 private:
     FrameInfo collisionStartTimeLeft;
     FrameInfo collisionStartTimeRight;
+    bool bumperCollisionLeft;
+    bool bumperCollisionRight;
 };
 
 #endif // COLLISIONDETECTOR_OLD_H

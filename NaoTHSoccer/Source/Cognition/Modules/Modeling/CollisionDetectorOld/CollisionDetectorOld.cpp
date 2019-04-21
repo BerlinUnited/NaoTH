@@ -17,8 +17,13 @@ void CollisionDetectorOld::execute()
     // do some filtering: wait at least 500ms until space is really free
     if (getFrameInfo().getTimeSince(collisionStartTimeLeft.getTime()) > 500)
     {
-        getCollisionModel().isLeftFootColliding = false;
-        collisionStartTimeLeft = getFrameInfo();
+        //Only reset the representation to false when there is no bumper pressed
+        if (!getButtonData().isPressed[ButtonData::LeftFootLeft]
+            && !getButtonData().isPressed[ButtonData::LeftFootRight])
+        {
+            getCollisionModel().isLeftFootColliding = false;
+            collisionStartTimeLeft = getFrameInfo();
+        }
     }
   }
 
@@ -27,8 +32,13 @@ void CollisionDetectorOld::execute()
       // do some filtering: wait at least 500ms until space is really free
       if (getFrameInfo().getTimeSince(collisionStartTimeRight.getTime()) > 500)
       {
-          getCollisionModel().isRightFootColliding = false;
-          collisionStartTimeRight = getFrameInfo();
+          //Only reset the representation to false when there is no bumper pressed
+          if (!getButtonData().isPressed[ButtonData::RightFootLeft]
+              && !getButtonData().isPressed[ButtonData::RightFootRight])
+          {
+              getCollisionModel().isRightFootColliding = false;
+              collisionStartTimeRight = getFrameInfo();
+          }
       }
   }
   
@@ -52,4 +62,18 @@ void CollisionDetectorOld::execute()
         collisionStartTimeLeft = getFrameInfo();
     }
    }
+  //Now we want to distinguish single bumper presses from "real" collisions
+  //First "naive" implementation and very high 3000ms threshold (to check functionnality)
+  if (getCollisionModel().isLeftFootColliding > 3000)
+  {
+      //Left bumper collision -> evasive movement
+      getCollisionModel().isLeftFootColliding = false;
+      collisionStartTimeLeft = getFrameInfo();
+  }
+  if (getCollisionModel().isRightFootColliding > 3000)
+  {
+      //Right bumper collision -> evasive movement
+      getCollisionModel().isRightFootColliding = false;
+      collisionStartTimeRight = getFrameInfo();
+  }
 }
