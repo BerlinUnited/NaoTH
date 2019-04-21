@@ -28,6 +28,8 @@ public:
 private:
     FrameInfo collisionStartTimeLeft;
     FrameInfo collisionStartTimeRight;
+    FrameInfo lastBumpTimeLeft;
+    FrameInfo lastBumpTimeRight;
     bool bumperCollisionLeft;
     bool bumperCollisionRight;
 };
