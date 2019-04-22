@@ -155,6 +155,7 @@ workspace "NaoTHSoccer"
     buildoptions {"/wd4996"} -- disable warning: "...deprecated..."
     buildoptions {"/wd4290"} -- exception specification ignored (typed specifications are ignored)
     buildoptions {"/wd4800"} -- protobuf 3.4.1 forcing value to bool 'true' or 'false' (performance warning)
+    buildoptions {"/wd4503"} -- disable decorated name length exceeded warning
     links {"ws2_32"}
     
     ignoredefaultlibraries { "MSVCRT" }
