@@ -97,6 +97,7 @@ void TeamCommSender::fillMessageBeforeSending() const
     }
 
     msg.custom.robotState = getPlayerInfo().robotState;
+    msg.custom.robotRole = getRoleDecisionModel().getRole(getPlayerInfo().playerNumber);
 
     // TODO: shall we put it into config?
     msg.custom.key = NAOTH_TEAMCOMM_MESAGE_KEY;

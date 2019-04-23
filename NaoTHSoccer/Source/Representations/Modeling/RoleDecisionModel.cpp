@@ -1,6 +1,15 @@
 #include "RoleDecisionModel.h"
 #include <iomanip>
 
+Roles::Role RoleDecisionModel::getRole(unsigned int playerNumber) const
+{
+    const auto& it = roles.find(playerNumber);
+    if(it != roles.cend()) {
+        return it->second;
+    }
+    return {};
+}
+
 Roles::Position RoleDecisionModel::getStaticRolePosition(Roles::Static role) const
 {
     const auto& it = roles_position.find(role);

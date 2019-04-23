@@ -52,8 +52,9 @@ public:
 
     struct Role
     {
-        Role():role(unknown){}
-        Role(Static r):role(r){}
+        Role():role(unknown),dynamic(none){}
+        Role(Static r):role(r),dynamic(none){}
+        Role(Static r, Dynamic d):role(r),dynamic(d){}
 
         Static role; // the actual role
         Dynamic dynamic; // the actual role
