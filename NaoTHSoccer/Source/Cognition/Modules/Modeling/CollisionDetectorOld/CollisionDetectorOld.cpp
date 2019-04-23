@@ -76,8 +76,8 @@ void CollisionDetectorOld::execute()
     }
    }
   //Now we want to distinguish single bumper presses from "real" collisions
-  //First "naive" implementation and very high 3000ms threshold (to check functionnality)
-  if ((getFrameInfo().getTimeSince(collisionStartTimeLeft.getTime()) > 3000)
+  //First "naive" implementation and very high ms threshold (to check functionnality)
+  if ((getFrameInfo().getTimeSince(collisionStartTimeLeft.getTime()) > 2000)
       &&getCollisionModel().isLeftFootColliding)
   {
       //Left bumper collision -> evasive movement
@@ -85,7 +85,7 @@ void CollisionDetectorOld::execute()
       std::cout << "*************** LEFT BUMPER COLLISION ******************" << std::endl;
       collisionStartTimeLeft = getFrameInfo();
   }
-  if ((getFrameInfo().getTimeSince(collisionStartTimeRight.getTime()) > 3000)
+  if ((getFrameInfo().getTimeSince(collisionStartTimeRight.getTime()) > 2000)
       &&getCollisionModel().isRightFootColliding)
   {
       //Right bumper collision -> evasive movement
