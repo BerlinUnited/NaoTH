@@ -42,36 +42,43 @@ void RoleDecisionPositionFormation::execute()
         const auto& anchor = getRoles().defaults.at(Roles::goalie).home;
         const auto angle = (getTeamBallModel().positionOnField - Vector2d(getFieldInfo().xPosOwnGroundline, 0)).angle();
 
+        double x, y;
+
         for(const auto& r : getRoles().defaults) {
             if(r.first == Roles::goalie) { continue; }
 
-            Vector2d shift;
+            Vector2d shift = r.second.home - anchor;
             // NOTE: the assumption is that the roles are each divided into three groups!
             switch (r.first / 3) {
                 case 0: // defender
-                    shift.x = (r.second.home.x - anchor.x) * Math::clamp(std::sqrt(2.2*factor), params.defenderMinFactorX, params.defenderMaxFactorX);
-                    shift.y = (r.second.home.y - anchor.y) * Math::clamp(1.2-1.8*std::exp(-4.2*factor), params.defenderMinFactorY, params.defenderMaxFactorY);
+                    x = std::sqrt(2.2*factor);         // \sqrt{2.2 \cdot \text{factor}}
+                    y = 1.2-1.8*std::exp(-4.2*factor); // 1.2 - 1.8 \cdot e^{-4.2 \cdot \text{factor}}
+
+                    shift.x *= Math::clamp(x, params.defenderMinFactorX, params.defenderMaxFactorX);
+                    shift.y *= Math::clamp(y, params.defenderMinFactorY, params.defenderMaxFactorY);
                     shift.rotate(Math::clamp(angle, params.defenderMinAngle, params.defenderMaxAngle));
-                    shift += anchor;
                     break;
                 case 1: // midfielder
-                    //0.3+\frac{1}{1+e^{-\left(x-0.5\right)d}}\cdot0.99
-                    //0.4+\frac{1}{1+e^{-xd}}\cdot0.99
-                    shift.x = (r.second.home.x - anchor.x) * Math::clamp(0.3+(1/(1+std::exp(-3.2*(factor-0.5))))*1.0, params.midfielderMinFactorX, params.midfielderMaxFactorX);
-                    shift.y = (r.second.home.y - anchor.y) * Math::clamp(1.2-1.8*std::exp(-4.2*factor), params.midfielderMinFactorY, params.midfielderMaxFactorY);
+                    x = 0.3+(1/(1+std::exp(-3.2*(factor-0.5))))*1.0; // 0.3 + \frac{1}{1+e^{-3.2 \cdot \left( \text{factor} - 0.5 \right)}} \cdot 1.0
+                    y = 1.2-1.8*std::exp(-4.2*factor);               // 1.2 - 1.8 \cdot e^{-4.2 \cdot \text{factor}}
+
+                    shift.x *= Math::clamp(x, params.midfielderMinFactorX, params.midfielderMaxFactorX);
+                    shift.y *= Math::clamp(y, params.midfielderMinFactorY, params.midfielderMaxFactorY);
                     shift.rotate(Math::clamp(angle, params.midfielderMinAngle, params.midfielderMaxAngle));
-                    shift += anchor;
                     break;
                 case 2: // forward
-                    //0.3+\frac{1}{1+e^{-\left(x-0.5\right)d}}\cdot1.1
-                    shift.x = (r.second.home.x - anchor.x) * Math::clamp(0.3+(1/(1+std::exp(-2.4*(factor-0.5))))*1.1, params.forwardMinFactorX, params.forwardMaxFactorX);
-                    shift.y = (r.second.home.y - anchor.y) * Math::clamp(1.2-1.8*std::exp(-4.2*factor), params.forwardMinFactorY, params.forwardMaxFactorY);
+                    x = 0.3+(1/(1+std::exp(-2.4*(factor-0.5))))*1.1; // 0.3 + \frac{1}{1+e^{-2.4 \cdot \left( \text{factor} - 0.5 \right)}} \cdot 1.1
+                    y = 1.2-1.8*std::exp(-4.2*factor);               // 1.2 - 1.8 \cdot e^{-4.2 \cdot \text{factor}}
+
+                    shift.x *= Math::clamp(x, params.forwardMinFactorX, params.forwardMaxFactorX);
+                    shift.y *= Math::clamp(y, params.forwardMinFactorY, params.forwardMaxFactorY);
                     shift.rotate(Math::clamp(angle, params.forwardMinAngle, params.forwardMaxAngle));
-                    shift += anchor;
                     break;
                 default:
-                    shift = r.second.home;
+                    // unknown role, do nothing
+                    break;
             }
+            shift += anchor;
             getRoleDecisionModel().roles_position[r.first].home = shift;
         }
     }
