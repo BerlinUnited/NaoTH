@@ -7,10 +7,12 @@ RoleDecisionPositionFormation::RoleDecisionPositionFormation()
 {
     getDebugParameterList().add(&params);
 
-    DEBUG_REQUEST_REGISTER("RoleDecision:Position:formation:reset_positions", "", false);
-    DEBUG_REQUEST_REGISTER("RoleDecision:Position:formation:draw_default_position", "", false);
-    DEBUG_REQUEST_REGISTER("RoleDecision:Position:formation:draw_active_positions", "", false);
-    DEBUG_REQUEST_REGISTER("RoleDecision:Position:formation:draw_inactive_positions", "", false);
+    DEBUG_REQUEST_REGISTER("RoleDecision:Position:formation:reset_positions", "resets the role positions to its defaults.", false);
+    DEBUG_REQUEST_REGISTER("RoleDecision:Position:formation:draw_default_position", "draws the default role positions.", false);
+    DEBUG_REQUEST_REGISTER("RoleDecision:Position:formation:draw_active_positions", "draws the ACTIVE role positions on the field as simple cross and a circle around it", false);
+    DEBUG_REQUEST_REGISTER("RoleDecision:Position:formation:draw_active_positions_robots", "draws the ACTIVE role positions on the field as robot with role name", false);
+    DEBUG_REQUEST_REGISTER("RoleDecision:Position:formation:draw_inactive_positions", "draws the INACTIVE role positions on the field as simple cross", false);
+    DEBUG_REQUEST_REGISTER("RoleDecision:Position:formation:draw_inactive_positions_robots", "draws the INACTIVE role positions on the field as robot with role name", false);
 
     // init positions with default
     resetPositions();
@@ -36,7 +38,7 @@ void RoleDecisionPositionFormation::execute()
     if(getTeamBallModel().valid) {
         double factor = Math::clamp((getTeamBallModel().positionOnField.x - getFieldInfo().xPosOwnGroundline) / getFieldInfo().xLength, 0.0, 1.0);
 
-        //Vector2d anchor(getFieldInfo().xPosOwnGroundline, 0);
+        // an alternative anchor could be simply the center of the own groundline: getFieldInfo().xPosOwnGroundline, 0
         const auto& anchor = getRoles().defaults.at(Roles::goalie).home;
         const auto angle = (getTeamBallModel().positionOnField - Vector2d(getFieldInfo().xPosOwnGroundline, 0)).angle();
 
@@ -44,6 +46,7 @@ void RoleDecisionPositionFormation::execute()
             if(r.first == Roles::goalie) { continue; }
 
             Vector2d shift;
+            // NOTE: the assumption is that the roles are each divided into three groups!
             switch (r.first / 3) {
                 case 0: // defender
                     shift.x = (r.second.home.x - anchor.x) * Math::clamp(std::sqrt(2.2*factor), params.defenderMinFactorX, params.defenderMaxFactorX);
@@ -78,7 +81,6 @@ void RoleDecisionPositionFormation::execute()
 
 void RoleDecisionPositionFormation::debugDrawings() const
 {
-
     DEBUG_REQUEST("RoleDecision:Position:formation:draw_default_position",
         FIELD_DRAWING_CONTEXT;
         for(const auto& r : getRoles().defaults) {
@@ -90,39 +92,53 @@ void RoleDecisionPositionFormation::debugDrawings() const
         }
     );
 
+    // more functional presentation
     DEBUG_REQUEST("RoleDecision:Position:formation:draw_active_positions",
         FIELD_DRAWING_CONTEXT;
         for(const auto& r : getRoleDecisionModel().roles_position) {
             if(getRoles().isRoleActive(r.first)) {
-                // more functional presentation
                 PEN("666666", 20);
                 LINE(r.second.home.x, r.second.home.y-20, r.second.home.x, r.second.home.y+20);
                 LINE(r.second.home.x-20, r.second.home.y, r.second.home.x+20, r.second.home.y);
                 // mark active positions with a circle
                 PEN("666666", 10);
                 CIRCLE(r.second.home.x, r.second.home.y, 40);
-
-                // nicer representation (eg. for images)
-                //PEN("0000ff", 20);
-                //ROBOT(r.second.home.x, r.second.home.y, 0);
-                //TEXT_DRAWING2(r.second.home.x, r.second.home.y-250, 0.6, Roles::getName(r.first));
             }
         }
     );
 
+    // nicer representation (eg. for images)
+    DEBUG_REQUEST("RoleDecision:Position:formation:draw_active_positions_robots",
+        FIELD_DRAWING_CONTEXT;
+        for(const auto& r : getRoleDecisionModel().roles_position) {
+            if(getRoles().isRoleActive(r.first)) {
+                PEN("0000ff", 20);
+                ROBOT(r.second.home.x, r.second.home.y, 0);
+                TEXT_DRAWING2(r.second.home.x, r.second.home.y-250, 0.6, Roles::getName(r.first));
+            }
+        }
+    );
+
+    // more functional presentation
     DEBUG_REQUEST("RoleDecision:Position:formation:draw_inactive_positions",
         FIELD_DRAWING_CONTEXT;
         for(const auto& r : getRoleDecisionModel().roles_position) {
-            if(!getRoles().isRoleActive(r.first)) {
-                // more functional presentation
+            if(!getRoles().isRoleActive(r.first) && r.first != Roles::unknown) {
                 PEN("666666", 20);
                 LINE(r.second.home.x, r.second.home.y-20, r.second.home.x, r.second.home.y+20);
                 LINE(r.second.home.x-20, r.second.home.y, r.second.home.x+20, r.second.home.y);
+            }
+        }
+    );
 
-                // nicer representation (eg. for images)
-                //PEN("0000ff", 20);
-                //ROBOT(r.second.home.x, r.second.home.y, 0);
-                //TEXT_DRAWING2(r.second.home.x, r.second.home.y-250, 0.6, Roles::getName(r.first));
+    // nicer representation (eg. for images)
+    DEBUG_REQUEST("RoleDecision:Position:formation:draw_inactive_positions_robots",
+        FIELD_DRAWING_CONTEXT;
+        for(const auto& r : getRoleDecisionModel().roles_position) {
+            if(!getRoles().isRoleActive(r.first) && r.first != Roles::unknown) {
+                PEN("0000ff", 20);
+                ROBOT(r.second.home.x, r.second.home.y, 0);
+                TEXT_DRAWING2(r.second.home.x, r.second.home.y-250, 0.6, Roles::getName(r.first));
             }
         }
     );

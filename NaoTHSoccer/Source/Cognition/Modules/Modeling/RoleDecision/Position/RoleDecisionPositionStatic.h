@@ -30,7 +30,7 @@ public:
     RoleDecisionPositionStatic()
     {
         DEBUG_REQUEST_REGISTER("RoleDecision:Position:static:draw_active_positions", "draws the ACTIVE role positions on the field as simple cross and a circle around it", false);
-        DEBUG_REQUEST_REGISTER("RoleDecision:Position:static:draw_active_positions_robots", "draws the active role positions on the field as robot with role name", false);
+        DEBUG_REQUEST_REGISTER("RoleDecision:Position:static:draw_active_positions_robots", "draws the ACTIVE role positions on the field as robot with role name", false);
         DEBUG_REQUEST_REGISTER("RoleDecision:Position:static:draw_inactive_positions", "draws the INACTIVE role positions on the field as simple cross", false);
         DEBUG_REQUEST_REGISTER("RoleDecision:Position:static:draw_inactive_positions_robots", "draws the INACTIVE role positions on the field as robot with role name", false);
     }
