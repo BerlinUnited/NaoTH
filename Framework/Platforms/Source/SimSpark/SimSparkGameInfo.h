@@ -63,8 +63,6 @@ public:
       score(0,0),
       ownPlayers(playersPerTeam),
       oppPlayers(playersPerTeam),
-      penalty(naoth::GameData::penalty_none),
-      penaltyTime(0.0),
       gameState(naoth::GameData::unknown_game_state)
   {}
 
@@ -80,9 +78,6 @@ public:
   std::pair<int, int> score;
   std::vector<naoth::GameData::RobotInfo> ownPlayers;
   std::vector<naoth::GameData::RobotInfo> oppPlayers;
-
-  naoth::GameData::Penalty penalty;
-  double penaltyTime;
 
   naoth::GameData::GameState gameState;
 
