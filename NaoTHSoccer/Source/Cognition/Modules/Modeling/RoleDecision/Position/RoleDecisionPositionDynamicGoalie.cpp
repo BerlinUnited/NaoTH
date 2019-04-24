@@ -14,8 +14,11 @@ RoleDecisionPositionDynamicGoalie::~RoleDecisionPositionDynamicGoalie()
 void RoleDecisionPositionDynamicGoalie::execute() {
     double x = 100.0;
     double y = 0.0;
+    // prevent "oscillation" when the ball is near the defense line
+    // go forward, when ball is behind min x and go back if the ball is in front of max x
+    double defense_x = lastActive ? params.goalie_defense_max_x : params.goalie_defense_min_x;
     // we're using the teamball, so it has to be valid
-    if(getTeamBallModel().valid && getTeamBallModel().positionOnField.x <= params.goalie_defense_min_x) {
+    if(getTeamBallModel().valid && getTeamBallModel().positionOnField.x <= defense_x) {
         // Calculates the defensive position of the goalie
         // The position is on an ellipse within the penalty area.
         // The position is calculated in such a way, that a direct shot to the middle of the goal is prevented
@@ -34,6 +37,9 @@ void RoleDecisionPositionDynamicGoalie::execute() {
             x = Math::clamp(x, 100.0, getFieldInfo().xPosOwnPenaltyArea - getFieldInfo().xPosOwnGroundline);
             y = Math::clamp(y, getFieldInfo().yPosRightGoalpost + 100, getFieldInfo().yPosLeftGoalpost - 100);
         }
+        lastActive = true;
+    } else {
+        lastActive = false;
     }
 
     // apply the position to the model

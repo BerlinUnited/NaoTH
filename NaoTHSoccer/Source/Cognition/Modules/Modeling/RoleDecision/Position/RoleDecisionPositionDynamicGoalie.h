@@ -40,13 +40,17 @@ private:
     public:
         Parameters() : ParameterList("RoleDecisionPositionDynamicGoalie")
         {
-            PARAMETER_REGISTER(goalie_defense_min_x) = 0;
+            PARAMETER_REGISTER(goalie_defense_min_x) = -750;
+            PARAMETER_REGISTER(goalie_defense_max_x) = 0;
             // load from the file after registering all parameters
             syncWithConfig();
         }
 
         double goalie_defense_min_x;
+        double goalie_defense_max_x;
     } params;
+
+    bool lastActive = false;
 };
 
 #endif // ROLEDECISIONDYNAMICGOALIE_H
