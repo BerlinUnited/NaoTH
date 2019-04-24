@@ -96,6 +96,11 @@ private:
   {
     Lola lola;
   
+    // end the thread if lola could not connect to the socket
+    if(lola.hasError()) {
+      return;
+    }
+  
     SensorData sensors;
     ActuatorData actuators;
     

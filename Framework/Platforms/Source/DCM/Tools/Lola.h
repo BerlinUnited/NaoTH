@@ -268,12 +268,16 @@ class Lola
   static const int PACKET_ZIZE = 896;
   msgpack::unpacker m_pac;
   
+  bool error = false;
+  
   public:
     Lola()
     {
       if ( (fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
         perror("[LOLA] socket error");
-        exit(-1);
+        //exit(-1);
+        error = true;
+        return;
       }
       
       struct sockaddr_un addr;
@@ -283,12 +287,18 @@ class Lola
       
       if (connect(fd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
         perror("[LOLA] connect error");
-        exit(-1);
+        //exit(-1);
+        error = true;
+        return;
       }
       
       fp = fdopen(fd, "w");
       m_pac.reserve_buffer(PACKET_ZIZE);
     }  
+    
+    bool hasError() {
+      return error;
+    }
   
     void writeActuators(const ActuatorData& data) {
       msgpack::fbuffer fbuf(fp);
