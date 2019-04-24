@@ -28,7 +28,8 @@
 #include "SensorFilter/ArmCollisionDetector2018.h"
 #include "SensorFilter/CoPProvider.h"
 
-//#include <Representations/Modeling/CameraMatrixOffset.h>
+#include "Representations/Perception/CameraMatrix.h"
+#include <Representations/Modeling/CameraMatrixOffset.h>
 
 #include "Tools/Debug/Logger.h"
 #include "Engine/MotionEngine.h"

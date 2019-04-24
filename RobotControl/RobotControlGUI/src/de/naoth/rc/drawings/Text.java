@@ -19,6 +19,7 @@ public class Text implements Drawable
   private final int y;
   private final double rotation;
   private final String text;
+  private static int defaultSize = 250;
 
   private Font myFont;
   
@@ -26,13 +27,18 @@ public class Text implements Drawable
   {
     this((int)(Double.parseDouble(args[1])),
          (int)(Double.parseDouble(args[2])),
-         args[3]);
+         args.length == 4 ? defaultSize : (int)(Double.parseDouble(args[3])*defaultSize),
+         args.length == 4 ? args[3] : args[4]);
   }
 
   public Text(int x, int y, String text) {
-    this(x,y,0.0, text, new Font ("Courier New", Font.PLAIN, 250));
+    this(x, y, defaultSize, text);
   }
-  
+
+  public Text(int x, int y, int s, String text) {
+    this(x, y, 0.0, text, new Font ("Courier New", Font.PLAIN, s));
+  }
+    
   public Text(int x, int y, double rotation, String text, Font font) {
     this.x = x;
     this.y = y;
