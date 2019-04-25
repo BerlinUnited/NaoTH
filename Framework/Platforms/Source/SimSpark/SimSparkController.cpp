@@ -1086,11 +1086,11 @@ bool SimSparkController::parseTeamInfo(const sexp_t* team, std::vector<naoth::Ga
                 return false;
             }
             // make sure, we got a valid player number
-            if(playerNumber > 0 && static_cast<size_t>(playerNumber) < players.size()) {
+            if(playerNumber > 0 && static_cast<size_t>(playerNumber) <= players.size()) {
                 players.at(static_cast<size_t>(playerNumber-1)).penalty = GameData::penaltyFromString(penalty);
                 players.at(static_cast<size_t>(playerNumber-1)).secsTillUnpenalised = static_cast<int>(ceil(penaltyTime));
             } else {
-                cerr << "SimSparkGameInfo::got an invalid player number!\n";
+                cerr << "SimSparkGameInfo::got an invalid player number: "<< playerNumber <<"\n";
                 return false;
             }
         }
