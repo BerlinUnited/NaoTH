@@ -90,6 +90,7 @@ CameraMatrixCorrectorV3::CameraMatrixCorrectorV3():
 CameraMatrixCorrectorV3::~CameraMatrixCorrectorV3()
 {
     getDebugParameterList().remove(&getCameraMatrixOffset());
+    getDebugParameterList().remove(&cmc_params);
 }
 
 void CameraMatrixCorrectorV3::execute()
