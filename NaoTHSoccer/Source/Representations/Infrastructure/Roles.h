@@ -12,7 +12,7 @@ public:
     Roles() {
         // init with empty
         for(int i = 0; i < Roles::numOfStaticRoles; ++i) {
-            defaults[static_cast<Static>(i)] = {};
+            defaults[static_cast<Static>(i)] = {{},{},{}};
         }
     }
 

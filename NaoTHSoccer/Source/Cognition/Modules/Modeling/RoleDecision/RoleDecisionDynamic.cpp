@@ -93,7 +93,7 @@ void RoleDecisionDynamic::handleGoalie(const TeamMessageData* goalie, std::vecto
     double indicator = 0.0;
     Vector2d globalBall = goalie->pose * goalie->ballPosition;
     // ball is inside penalty area, goalie is definitely getting striker
-    if(globalBall.x <= getFieldInfo().xPosOwnPenaltyArea) {
+    if(globalBall.x <= getFieldInfo().xPosOwnPenaltyArea && fabs(globalBall.y) <= getFieldInfo().yPosLeftPenaltyArea) {
         checkStriker(*goalie, indicator, globalBall, striker, true);
     } else {
         bool strikerAlreadyDefending = false;
