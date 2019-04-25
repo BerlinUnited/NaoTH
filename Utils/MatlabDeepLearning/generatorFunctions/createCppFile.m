@@ -64,6 +64,11 @@ for i = 1:numel(layers)
        level = level + 1;
        
        fprintf(' [done]');
+    case 'nnet.cnn.layer.LeakyReLULayer'
+       addLeakyReLULayer(HeaderFile,BodyFile,level,layer,rows,cols,channels);
+       level = level + 1;
+       
+       fprintf(' [done]');
     case 'nnet.cnn.layer.MaxPooling2DLayer'
        [rows, cols, channels] = addMaxPolling2dLayer(HeaderFile,BodyFile,level,layer,rows,cols,channels);
        level = level + 1;
