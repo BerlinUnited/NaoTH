@@ -15,12 +15,14 @@ def parse_arguments(argv):
     try:
         opts, args = getopt.getopt(argv, "hi:", ["ifile="])
     except getopt.GetoptError:
-        print('ExportTopImages.py -i <input file>')
+        print('patchReader.py -i <input file>')
         sys.exit(2)
-        
+    if not opts:
+        print('python patchReader.py -i <logfile>')
+        sys.exit(2)    
     for opt, arg in opts:
         if opt == '-h':
-            print('ExportTopImages.py -i <input file>')
+            print('patchReader.py -i <input file>')
             sys.exit()
         elif opt in ("-i", "--ifile"):
             input_file = arg

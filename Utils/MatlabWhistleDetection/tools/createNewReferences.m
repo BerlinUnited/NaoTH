@@ -37,7 +37,7 @@ for t = 1:length(event_names)
     end    
 end
 
-%% Get the first 1024 samples of positive annotated samples in each capture
+%% Get the first 2048 samples of positive annotated samples in each capture
 extracted_references = annotated_captures;
 event_names = fieldnames(extracted_references);
 for t = 1:length(event_names)
@@ -52,11 +52,11 @@ for t = 1:length(event_names)
 
             whistleData = an.rawData(logical(whistle_marker));
 
-            % shorten the whistledata to 1024 samples
-            if length(whistleData) < 1024
+            % shorten the whistledata to 2048 samples
+            if length(whistleData) < 2048
                 continue
             else
-                whistleData = whistleData(1:1024);
+                whistleData = whistleData(1:2048);
             end        
 
             % export whistle data as raw

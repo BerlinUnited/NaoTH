@@ -17,7 +17,7 @@ extern "C"
 
 #include <fcntl.h>
 #include <unistd.h>
-#include <errno.h>
+//#include <errno.h>
 #include <malloc.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -102,8 +102,7 @@ private:
 
   // tools
   int xioctl(int fd, int request, void* arg) const;
-  bool hasIOError(int errOccured, int errNo, bool exitByIOError = true) const;
-  std::string getErrnoDescription(int err) const;
+  bool hasIOErrorPrint(int lineNumber, int errOccured, int errNo, bool exitByIOError = true) const;
 
   int getAutoExposureGridID(size_t i, size_t j) {
     return V4L2_CID_PRIVATE_BASE + 7 + (i*CameraSettings::AUTOEXPOSURE_GRID_SIZE) + j;

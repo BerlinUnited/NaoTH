@@ -15,6 +15,7 @@ from naoth.math2d import Vector2 as Vec
 
 
 class Actions:
+    #TODO: cleanup
     """
     all available actions
 
@@ -22,7 +23,7 @@ class Actions:
 
     all actions manipulate the state object thus there is no return
     """
-    nr_of_actions = 5
+    action_space = range(0,5)
     add_noise=True
 
     short = act.Action("kick_short", 1080, 150, 0, 7)
@@ -127,35 +128,131 @@ class Actions:
         eval_state.update_pos(direction=new_direction)
         # print math.degrees(state.pose.rotation)
 
+    def turn_right_angle(self, eval_state, angle):
+        pass
+
+    def turn_left_angle(self, eval_state, angle):
+        pass
+
     def get_actions_from_state(self, eval_state):
-        return self.get_actions_degree(math.degrees(eval_state.direction.angle()))
+        return self.get_actions_degree(eval_state.direction.angle())
+
+
+class Actions_2:
+    action_space = range(0,5)
+
+
+    def __init__(self, add_noise=True):
+        self.add_noise = add_noise
+        self.short_with_degree = lambda degree: act.Action("kick_short", 1080, 150, degree, 7) # degree in degrees
+
+
+    def kick_short_degree(self, eval_state, degree):
+        kick = self.short_with_degree(degree)
+        eval_state.ball_position = kick.predict(eval_state.ball_position, self.add_noise)
+
+    def get_actions_degree(self, rad):  # actions with current degree
+
+        #########
+        #
+        #   all actions are functions which expect a state input ( State object )
+        #
+        #########
+
+        degree = np.degrees(rad) % 360  # get degrees from radian in range 0 to 359.9
+
+        actions = \
+            [lambda eval_state: self.kick_short_degree(eval_state, degree),
+             lambda eval_state: self.kick_short_degree(eval_state, degree + 30),
+             lambda eval_state: self.kick_short_degree(eval_state, degree - 30),
+             lambda eval_state: self.kick_short_degree(eval_state, degree + 135),
+             lambda eval_state: self.kick_short_degree(eval_state, degree - 135)]
+
+        names = ["kick_short",
+                 "kick_short_plus_30",
+                 "kick_short_minus_30",
+                 "kick_short_plus_60",
+                 "kick_short_minus_60"]
+        return actions, names
+
+    def get_actions_from_state(self, eval_state):
+        return self.get_actions_degree(eval_state.direction.angle())
+
+
+class Actions_3:
+    # class inhabits only
+    action_space = range(0,12)
+
+    def __init__(self, add_noise=True):
+        self.add_noise = add_noise
+        self.short_with_degree = lambda degree: act.Action("kick_short", 1080, 150, degree, 7) # degree in degrees
+
+
+    def kick_short_degree(self, eval_state, degree):
+        kick = self.short_with_degree(degree)
+        eval_state.ball_position = kick.predict(eval_state.ball_position, self.add_noise)
+
+    def get_actions_degree(self, rad):  # actions with current degree
+
+        #########
+        #
+        #   all actions are functions which expect a state input ( State object )
+        #
+        #########
+
+        degree = np.degrees(rad) % 360  # get degrees from radian in range 0 to 359.9
+
+        actions = \
+            [lambda eval_state: self.kick_short_degree(eval_state, 0),
+             lambda eval_state: self.kick_short_degree(eval_state, +30),
+             lambda eval_state: self.kick_short_degree(eval_state, -30),
+             lambda eval_state: self.kick_short_degree(eval_state, +60),
+             lambda eval_state: self.kick_short_degree(eval_state, -60),
+             lambda eval_state: self.kick_short_degree(eval_state, +90),
+             lambda eval_state: self.kick_short_degree(eval_state, -90),
+             lambda eval_state: self.kick_short_degree(eval_state, +120),
+             lambda eval_state: self.kick_short_degree(eval_state, -120),
+             lambda eval_state: self.kick_short_degree(eval_state, +150),
+             lambda eval_state: self.kick_short_degree(eval_state, -150),
+             lambda eval_state: self.kick_short_degree(eval_state, +180),
+             ]
+
+        names = ["short_0"]
+        for degree_name in range(30,180,30):
+            names += ["short_pl_" + str(degree_name), "short_min_" + str(degree_name)]
+        names += ["short_180"]
+
+        return actions, names
+
+    def get_actions_from_state(self, eval_state):
+        return self.get_actions_degree(eval_state.direction.angle())
+
+
 
 
 if __name__ == "__main__":
     import visualisation
     import world
+    from copy import deepcopy
 
-    actions = Actions(add_noise=True)
+    #actions = Actions_2(add_noise=False)
     state = State()
     state.direction = Vec(1,0)
 
     state_history = []
     key_history = []
-    SimWorld = world.World()
+    SimWorld = world.World(None,None)
+    SimWorld.reset()
 
-    state.position = Vec(4000., 0.)
-    state.ball_position = Vec(4000., 0.)
-    state_history += [copy.copy(state)]
+    for i in SimWorld.action_space:
+        SimWorld.reset()
+        SimWorld.state.position = Vec(0,0)
+        SimWorld.state.ball_position = Vec(0,0)
+        SimWorld.state.direction = Vec(1,0)
 
-    key = "kick_short_degree"
-    #actions.get_actions_from_state(state)[key](state)
-    SimWorld.step(state, key)
+        SimWorld.step(i)
 
-    print "in opp goal: " + str(SimWorld.in_opp_goal(state.position, state.ball_position))
-
-    state.direction = (state.ball_position - state.position).normalize()
-    state.position = state.ball_position
-    state_history += [copy.copy(state)]
+        SimWorld.render()
 
     """
     for key, value in actions.get_actions_degree_dict(direction_in_degrees).items():

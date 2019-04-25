@@ -44,7 +44,7 @@ import math
 from naoth.math2d import Vector2 as Vec
 from naoth.math2d import LineSegment
 
-from actions import Actions
+from actions import Actions, Actions_2, Actions_3
 from state import State
 
 from copy import deepcopy
@@ -69,6 +69,8 @@ class Field():
     center_point = Vec(0, 0)
     opp_goal_line = LineSegment(Vec(4500, 750), Vec(4500, -750))
     own_goal_line = LineSegment(Vec(-4500, 750), Vec(-4500, -750))
+
+    objects = []
 
     def in_own_goal(self, object1, object2=None):
         """
@@ -112,7 +114,27 @@ class Field():
             in_goal = 0
         return in_goal
 
-        # return ((object1.x > 4500) and (-750 < object1.y < 750))
+    def add_object(self, object):
+        self.objects.append(object)
+
+    def object_collision(self, state):
+        """
+        ball_trajectory = LineSegment(state.position, state.ball_position)
+
+        collision = object.intersect(ball_trajectory) and \
+                  ball_trajectory.intersect(object)
+
+        if collision == float('inf'):
+            collision = 0
+        return collision
+        """
+        ball_trajectory = self.get_ball_trajectory(state.position, state.ball_position)
+
+        for object in self.objects:
+            if object.collision(ball_trajectory):
+                return True
+        return False
+
 
     def in_field(self,object):
         """
@@ -129,8 +151,6 @@ class Field():
         :param player: math2d Vector2 object
         :return: return line segment
         """
-        if (ball-player).abs() <= 100:
-            return None  # if distance of the player and ball are to small, return nothing
         return LineSegment(player, ball)
 
 class Rules(Field):
@@ -190,8 +210,6 @@ class Rules(Field):
             if player is not None:
                 ## here we always asume that there is only one player thus we know who touched the ball at last
                 ### the opponent goal is on the right, the own goal on the left side
-                # TODO: add team / side recognition
-                # TODO: could be done with trajectories as in the goal methods
                 # first case: ball went out crossing a sideline
                 if -4500 < ball.x < 4500:
                     if ball.x <= player.x:
@@ -210,20 +228,17 @@ class Rules(Field):
                     else:
                         new_ball.x = player.x - 1000
                 if ball.x < -4500:
-                    new_ball.x = -3500
+                    new_ball.x = -3500  # adding random noise
 
                 if ball.y > 0:  # set on upper or lower throw-in line
                     new_ball.y = 2600
                 else:
                     new_ball.y = -2600
 
-
-            # TODO: if player is None fall einfuegen // Noetig??
-
             ball = new_ball # set new_ball as ball otherwise just return the ball position
         state.ball_position = ball
 
-class World(Rules, Actions):
+class World(Rules, Actions_3):
     """
     This class models the World in which the Robot interacts
 
@@ -244,12 +259,22 @@ class World(Rules, Actions):
 
     state = None
 
-    def __init__(self, reward, feature):
-        self.feature = feature  # feature function which gives a feature vector
-        self.reward = lambda state: reward(self, state)  # reward function which derives reward from state ( inout must be State object )
+    def __init__(self, reward_function, feature_function):
+        Actions_3.__init__(self, add_noise=True)
+        if feature_function is None:
+            self.feature = lambda state=None, return_output_state=None: None
+        else:
+            self.feature = feature_function  # feature function which gives a feature vector
+
+        if reward_function is None:
+            self.reward = lambda state=None, old_state=None: None
+        else:
+            self.reward = lambda state, old_state: reward_function(self, state, old_state)  # reward function which derives reward from state ( inout must be State object )
 
         self.state = self.reset_state()  # initialize state
 
+    def current_state(self):
+        return self.feature(self.state)
 
     def perform_action(self, state, chosen_action):
         """
@@ -261,8 +286,6 @@ class World(Rules, Actions):
         """
 
         action_list, _ = self.get_actions_from_state(state)
-        if chosen_action >= self.nr_of_actions:
-            raise IndexError
 
         action_list[chosen_action](state)  # take action
         self.throw_in(state)  # check throw in rules
@@ -302,9 +325,14 @@ class World(Rules, Actions):
     def terminated(self, state):
         # position and ball position should not be equal for this check to be usefull!!
         if self.in_opp_goal(state.position, state.ball_position):
-            return 100.  # reward = 100
+            return True  # reward = 100
         elif self.in_own_goal(state.position, state.ball_position):
-            return -100.  # reward = -100
+            return True  # reward = -100
+
+        for obstacle in self.obstacles:
+            pass # check collision
+
+        return False
 
     def reset_history(self):
         self.history = []
@@ -321,9 +349,9 @@ class World(Rules, Actions):
 
         self.perform_action(self.state, action) # do action
 
-        reward = self.reward(self.state)  # get reward for action
+        reward, done = self.reward(self.state, old_state)  # get reward for action
 
-        done = self.terminated(self.state)  # get termination state (bool)
+        #done = self.terminated(self.state)  # get termination state (bool)
 
         self.move_robot_to_ball(self.state)  # move robot to ball
 
@@ -346,73 +374,60 @@ class World(Rules, Actions):
         self.reset()
 
     def render(self):
-        # TODO: use history for visualisation!
-        pass
+        from matplotlib import pyplot as plt
+        from naoth import math2d as m2d
+        from tools.tools import draw_field
+
+        state_history = [None]*len(self.history)
+        action_history = [None]*len(self.history)
+        for i, entry in enumerate(self.history):
+            state_history[i] = entry[0]
+            action_history[i] = entry[1]
+            if i == len(self.history)-1:
+                state_history.append(entry[3])
+
+        print(action_history)
+        print(str(len(self.history)))
+
+        plt.clf()
+        axes = plt.gca()
+        draw_field(axes)
+
+        # h1 = np.array([[h.state.pose.translation.x, h.state.pose.translation.y] for h in run])
+        positions = np.array([[state.position.x, state.position.y] for state in state_history])
+        #plt.plot(positions[:,0], positions[:,1], '-or')
+
+        _, action_names = self.get_actions_degree(0)
+
+        for i, state in enumerate(state_history):
+            #plt.scatter(positions[:i+1, 0], positions[:i+1, 1], '-or')
+
+            plt.plot(positions[:i+1, 0], positions[:i+1, 1], '-or')
+
+            arrow_head = m2d.Vector2(500, 0).rotate(state.direction.angle())
+            axes.arrow(state.position.x, state.position.y, arrow_head.x, arrow_head.y, head_width=100,
+                       head_length=100, fc='k', ec='k')
+            if i < len(state_history)-1:
+                axes.text(x=positions[i,0],y=positions[i,1]+30,s=action_names[action_history[i]])
+            plt.pause(0.2)
+        plt.show()
+
+
+        print("#"*20)
+
+
+
 
 
 
 if __name__ == "__main__":
     import features
     import reward
+    from naoth import math2d
 
-    simWorld = World(reward.simple_reward_and_termination, features.feature_vec)
-    new_state = simWorld.reset_state()
-    print simWorld.feature(simWorld.state).shape
-
-
-
-    """
-    GameRules = Rules()
-    new_ball = GameRules.throw_in(Vec(3000,4000),Vec(2000,2000))
-    print(new_ball)
-    print GameRules.in_opp_goal(Vec(4500.234,-340.3))
-    print GameRules.in_own_goal(Vec(-5000,749.235))
-    
-    GameActions = Actions()
-    new_state = State()
-    print new_state.direction
-    GameActions.turn_right_45(new_state)
-    print new_state.direction
-    print new_state.ball_position
-    GameActions.sidekick_right(new_state)
-    #GameActions.sidekick_right(new_state)
-    print new_state.ball_position
-    GameActions.sidekick_left(new_state)
-    print new_state.ball_position
-    GameActions.kick_short(new_state)
-    print new_state.ball_position
-    """
-    """
-
-    simWorld = World()
-    for i in range(0,5):
-        print "Action: " + str(i)
-        print "before:"
-        new_state = State()
-        print "Ball Position:"
-        print new_state.ball_position
-        print "Position:"
-        print new_state.position
-        print "Direction"
-        print new_state.direction
-        print "++++++++"
-        simWorld.do_action(new_state, i)
-        print "after kick"
-        print "Ball Position:"
-        print new_state.ball_position
-        print "Position:"
-        print new_state.position
-        print "Direction"
-        print new_state.direction
-        print "++++++++"
-        simWorld.set_robot_position_to_ball_position(new_state)
-        print "after resetting position"
-        print "Ball Position:"
-        print new_state.ball_position
-        print "Position:"
-        print new_state.position
-        print "Direction"
-        print new_state.direction
-        print "------------------"
-        """
-
+    simWorld = World(reward.simple_reward, features.no_features_normalized)
+    simWorld.state = State(position=math2d.Vector2(4000,2800),direction=math2d.Vector2(0,1))
+    #print simWorld.feature(simWorld.state).shape
+    simWorld.step(0)
+    simWorld.step(0)
+    simWorld.render()
