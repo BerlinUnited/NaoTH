@@ -121,6 +121,7 @@ void StandMotion::execute()
       if ( getMotionRequest().id != getId()) {
         // correct the pose before leaving stand
         state = GotoStandPose;
+        getMotionStatus().target_reached = false;
       } // the pose needs to be corrected
       else if ( getBodyState().isLiftedUp
                   || height != getMotionRequest().standHeight // requested height changed

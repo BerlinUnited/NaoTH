@@ -11,13 +11,14 @@ using namespace naoth;
 using namespace std;
 
 KeyFrameMotion::KeyFrameMotion(const MotionNet& currentMotionNet, motion::MotionID id)
-  : 
+  :
   AbstractMotion(id, getMotionLock()),
   name(motion::getName(id)),
   currentMotionNet(currentMotionNet),
   t(0.0),
   stiffness(1.0)
 {
+    getMotionStatus().target_reached = false;
 }
 
 KeyFrameMotion::KeyFrameMotion()
@@ -26,6 +27,7 @@ KeyFrameMotion::KeyFrameMotion()
   t(0.0),
   stiffness(1.0)
 {
+    getMotionStatus().target_reached = false;
 }
 
 //KeyFrameMotion::KeyFrameMotion(const KeyFrameMotion& other)
@@ -100,6 +102,8 @@ void KeyFrameMotion::execute()
     setCurrentState(motion::running);
   }//end if
 
+  getMotionStatus().target_reached = false;
+
   // skip frames if necessary
   while(t <= timeStep)
   {
@@ -109,6 +113,7 @@ void KeyFrameMotion::execute()
 
     if(isStopped())
     {
+      getMotionStatus().target_reached = true;
       return;
     }//end if
     //DOUT("Keyframe: " << fromKeyFrame.id << " <--- " << toKeyFrame.id << " " << condition << "|" << currentMotionNetName << "|" << transition.toMotionNetName << "\n");
@@ -120,7 +125,7 @@ void KeyFrameMotion::execute()
   {
     JointData::JointID id = currentMotionNet.getJointID(joint);
     lastMotorJointData.position[id] = (1.0-dt)*lastMotorJointData.position[id] + dt*currentKeyFrame.jointData[joint];
-    
+
     // set the joint data (the only place where theMotorJointData is set)
     getMotorJointData().stiffness[id] = stiffness;
     getMotorJointData().position[id] = lastMotorJointData.position[id];
