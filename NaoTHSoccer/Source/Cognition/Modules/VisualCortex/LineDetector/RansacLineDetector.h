@@ -139,7 +139,7 @@ private: // helper methods
 
   inline double angle_diff(const Vector2d& circle_mean, const Edgel& edgel) const
   {
-    double a = fabs((edgel.point - circle_mean).rotateRight().angleTo(edgel.direction));
+    double a = fabs(Vector2d(edgel.point - circle_mean).rotateRight().angleTo(edgel.direction));
     return std::min(a, Math::pi - a);
   }
 
