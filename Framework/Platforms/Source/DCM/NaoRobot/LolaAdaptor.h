@@ -24,6 +24,7 @@ public:
 
   LolaAdaptor() 
     : 
+    running(false),
     exiting(false),
     shutdown_requested(false),
     state(DISCONNECTED),
@@ -90,6 +91,10 @@ public:
     }
   }
   
+  bool isRunning() const {
+    return running;
+  }
+  
 private:
 
   void run() 
@@ -101,6 +106,7 @@ private:
       return;
     }
   
+    running = true;
     SensorData sensors;
     ActuatorData actuators;
     
@@ -130,7 +136,8 @@ private:
       if(!shutdown_requested && theButtonData.numOfFramesPressed[ButtonData::Chest] > 300)
       {
         shutdown_requested = true;
-        exit(-1);
+        //exit(-1);
+        break;
         //shutdownCallbackThread = std::thread([this]{this->shutdownCallback();});
       }
 
@@ -170,6 +177,8 @@ private:
       
       lola.writeActuators(actuators);
     }
+    
+    running = false;
   }
   
   void notify() 
@@ -471,6 +480,7 @@ private:
   }
 
 private:
+  bool running;
   bool exiting;
   std::thread lolaThread;
 

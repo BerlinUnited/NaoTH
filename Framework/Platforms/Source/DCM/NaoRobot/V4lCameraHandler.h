@@ -33,12 +33,6 @@ extern "C"
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CameraSettings.h"
 
-struct buffer
-{
-  void * start;
-  size_t length;
-};
-
 /**
  * This is a CameraHandler that uses the V4L2 API directly. It will use the
  * Memory Map Streaming method for getting the images (which should be the
@@ -78,6 +72,12 @@ public:
   void setAllCameraParams(const CameraSettings &data);
 
 private:
+  struct buffer
+  {
+    void * start;
+    size_t length;
+  };
+
   void initIDMapping();
   void openDevice(bool blockingMode);
 

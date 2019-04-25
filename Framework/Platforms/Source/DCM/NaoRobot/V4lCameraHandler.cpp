@@ -1068,9 +1068,10 @@ bool V4lCameraHandler::hasIOErrorPrint(int lineNumber, int errOccured, int errNo
 {
   if(errOccured < 0 && errNo != EAGAIN)
   {
-    std::cout << LOG << "[hasIOError:" << lineNumber << "]" << " failed with errno " << errNo << " (" << strerror(errNo) << ") >> exiting" << std::endl;
+    std::cout << LOG << "[hasIOError:" << lineNumber << "]" << " failed with errno " << errNo << " (" << strerror(errNo) << ")" << std::endl;
     if(exitByIOError)
     {
+      std::cout << " >>>> exiting" << std::endl;
       assert(errOccured >= 0);
     }
     return true;
