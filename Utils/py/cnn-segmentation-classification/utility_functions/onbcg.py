@@ -12,7 +12,7 @@ import os
 import platform
 import numpy as np
 from keras import backend as K, Model
-from keras.layers import Convolution2D, MaxPooling2D, Flatten, Dropout, BatchNormalization, LeakyReLU
+from keras.layers import Convolution2D, MaxPooling2D, Flatten, Dropout, BatchNormalization, LeakyReLU, Dense
 from keras.models import load_model
 
 if platform.system() != 'Darwin':
@@ -96,7 +96,6 @@ int main()
 #endif
 '''
 
-
 sse_conv = '''
 {indent}w = _mm_set_ps({w3}f, {w2}f, {w1}f, {w0}f);
 {indent}x = _mm_load_ps1(&x{prev_layer}[{x_1}][{x_2}][{kw}]);
@@ -156,6 +155,24 @@ sse_leaky = '''
 {indent}_mm_store_ps((float*)&x{prev_layer}[{i}][{j}][{k}], x);
 '''
 
+def write_naoth_header_file():
+    fp = open("yolo.h", "w")
+    with fp:
+        print("#ifndef _CNN_THOMAS_BALLS_H", file=fp)
+        print("#define _CNN_THOMAS_BALLS_H", file=fp)
+        print("", file=fp)
+        print("# include <emmintrin.h>", file=fp)
+        print("# include <math.h>", file=fp)
+        print("", file=fp)
+        print("#include \"AbstractCNNClassifier.h\"", file=fp)
+        print("", file=fp)
+        print("class CNN_THOMAS_BALLS : public AbstractCNNClassifier {", file=fp)
+        print("", file=fp)
+        print("public:", file=fp)
+        print("\tint cnn(float x0[16][16][1],  double output_tensor[3][1][1]);", file=fp)
+        print("", file=fp)
+        print("};", file=fp)
+        print("# endif", file=fp)
 
 def compile(c_inf, optimize=False):
     c = compiler_O3 if optimize else compiler
@@ -165,9 +182,10 @@ def compile(c_inf, optimize=False):
 
 
 def softmax(x, c_inf):
-    assert(x.shape[2] == 2)  # Sorry, only for depth 2 at the moment
+    assert (x.shape[2] == 2)  # Sorry, only for depth 2 at the moment
     x_out = np.zeros(x.shape).astype('float32')
-    writeC(c_inf, '\tstatic float x{:d}[{:d}][{:d}][{:d}] = {{0}};\n'.format(c_inf["layer"], x.shape[0], x.shape[1], x.shape[2]))
+    writeC(c_inf, '\tstatic float x{:d}[{:d}][{:d}][{:d}] = {{0}};\n'.format(c_inf["layer"], x.shape[0], x.shape[1],
+                                                                             x.shape[2]))
 
     for i in range(size(x, 1)):
         for j in range(size(x, 2)):
@@ -178,7 +196,7 @@ def softmax(x, c_inf):
                        c_inf["layer"] - 1, i, j,
                        c_inf["layer"] - 1, i, j,
                        c_inf["layer"] - 1, i, j))
-            x_out[i,j] = 2.718281828459045 ** (x - np.max(x))
+            x_out[i, j] = 2.718281828459045 ** (x - np.max(x))
             writeC(c_inf,
                    '\tx{:d}[{:d}][{:d}][0] = (float)exp(x{:d}[{:d}][{:d}][0] - max{:d});\n'
                    '\tx{:d}[{:d}][{:d}][1] = (float)exp(x{:d}[{:d}][{:d}][1] - max{:d});\n'.format(
@@ -189,7 +207,7 @@ def softmax(x, c_inf):
                        c_inf["layer"] - 1, i, j,
                        c_inf["layer"]))
 
-            x_out[i, j] = x_out[i,j] / x_out[i,j].sum()
+            x_out[i, j] = x_out[i, j] / x_out[i, j].sum()
             writeC(c_inf, '\tstatic float sum{:d};\n'.format(c_inf["layer"]))
             writeC(c_inf, '\tsum{:d} = x{:d}[{:d}][{:d}][0] + x{:d}[{:d}][{:d}][1];\n'.format(
                 c_inf["layer"],
@@ -211,6 +229,8 @@ def writeC(c_inf, str):
 
 
 def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", conv_mode=0):
+    write_naoth_header_file()
+
     test_im_index = 0
     im = imdb["images"][test_im_index]
     c_inf = {}
@@ -221,27 +241,29 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
         c_inf["z_dim"] = im.shape[2]
     else:
         c_inf["z_dim"] = 1
-    intermediate_output = []
+    # intermediate_output = []
 
     c_inf = writeHeader(c_inf, arch)
     if unroll_level > 0:
-        writeC(c_inf, '\tfor (int xi = 0; xi < {:d}; xi += 1)\n\t{{\n'.format(size(im,1)))
+        writeC(c_inf, '\tfor (int xi = 0; xi < {:d}; xi += 1)\n\t{{\n'.format(size(im, 1)))
         _xi = 'xi'
-    for xi in range(size(im,1)):
+    for xi in range(size(im, 1)):
         if unroll_level == 0:
             _xi = xi
-        for xj in range(size(im,2)):
-            for xk in range(size(im,3)):
+        for xj in range(size(im, 2)):
+            for xk in range(size(im, 3)):
                 if unroll_level == 0 or xi == 0:
                     writeC(c_inf, '\tx0[{xi}][{:d}][{:d}] = (x0[{xi}][{:d}][{:d}] - {:f}f);\n'.format(
-                        xj,xk,xj,xk,imdb["mean"],xi=_xi))
+                        xj, xk, xj, xk, imdb["mean"], xi=_xi))
     if unroll_level > 0:
         writeC(c_inf, '\t}\n')
     model = load_model(model_path)
     _x = imdb["images"][test_im_index]
     last_activation = 'none'
     for layer in model.layers:
+        print("layer is: ", layer, c_inf['layer'])
         if type(layer) == Convolution2D:
+            writeC(c_inf, '\n \t// Convolution Layer\n')
             w = K.eval(layer.weights[0])
             b = K.eval(layer.bias)
             if conv_mode == 0:
@@ -258,8 +280,10 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
                 _x, c_inf = softmax(_x, c_inf)
             last_activation = layer.activation.__name__
         elif type(layer) == MaxPooling2D:
+            writeC(c_inf, '\n \t// Maxpool Layer \n')
             _x, c_inf = max_pool(_x, layer.pool_size, layer.strides, c_inf, unroll_level, arch)
         elif type(layer) == LeakyReLU:
+            writeC(c_inf, '\n \t// Leaky ReLu Layer\n')
             _x, c_inf = rectifiedLinearUnit(_x, c_inf, unroll_level, float(layer.alpha), arch)
             last_activation = 'leaky'
         elif type(layer) == Flatten:
@@ -269,9 +293,17 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
         elif type(layer) == BatchNormalization:
             print("Warning: BatchNormalization not implemented")
             pass
+        elif type(layer) == Dense:
+            writeC(c_inf, '\n \t// Dense Layer\n')
+            print("Warning: Dense implementation not finished")
+            w = K.eval(layer.weights[0])
+            b = K.eval(layer.bias)
+            _x, c_inf = dense(_x, w, b, c_inf)
+
         else:
             print("Unknown layer")
             exit(-1)
+        """
         intermediate_layer_model = Model(inputs=model.input,
                                          outputs=layer.output)
         io = intermediate_layer_model.predict(im.reshape(1, *im.shape))
@@ -281,9 +313,11 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
             print(str(layer) + ": err, maximum err = ", diff.max())
         else:
             print(str(layer) + ": ok")
+        """
 
     # last layer with softmax activition indicates a classification problem
     # write scores etc. only in this case
+    """
     classification = False
     if last_activation == 'softmax':
         for ix in range(size(_x, 3)):
@@ -293,14 +327,14 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
         for i in range(1, size(_x, 3)):
             writeC(c_inf, '\t*res = scores[{:d}] > scores[*res] ? {:d} : *res;\n'.format(i, i))
         classification = True
-
-    writeFooter(c_inf, _x, classification)
-
+    """
+    writeFooter(c_inf, _x, classification=False)
+    """
     if classification:
         print("Testing...")
         for i in range(10000):
             im_num = random.randrange(len(imdb["images"]))
-            #im_num = 407910
+            # im_num = 407910
             im = imdb["images"][im_num]
             im = im.reshape(1, *im.shape)
             (im + imdb["mean"]).astype("float32").tofile("img.bin")
@@ -312,6 +346,7 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
                 print("Error at image " + str(im_num))
                 exit(-2)
     else:
+        return
         print("Running...")
         im.tofile("img.bin")
         expected_result = model.predict(im.reshape(1, *im.shape))
@@ -329,11 +364,52 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
         times = [float(o.split()[2]) for o in output.split("\n") if o.startswith("inference")]
         times = np.array(times)
         print("runs: {}, total: {} micro seconds, mean: {} micro seconds".format(times.size, times.sum(), times.mean()))
+    """
 
+
+def dense(_x, weights, b, c_inf):
+    # TODO get output size dynamically
+    # TODO use bias
+    x_out = np.zeros(shape=(3, 1, 1)).astype('float32')
+    print()
+    print("Input shape: ", _x.shape)
+    print("Weight shape: ", weights.shape)
+
+    x_dim = _x.shape[0]
+    y_dim = _x.shape[1]
+    channels = _x.shape[2]
+
+    i = 0
+
+    for output in range(len(x_out)):
+        c_inf["f"].write("\tx{:d}[{:d}] = ".format(c_inf["layer"], output))
+        for c in range(channels):
+            for x in range(x_dim):
+                for y in range(y_dim):
+                    idx = (c - 1) * (y_dim * x_dim) + (y - 1) * y_dim + x
+                    if i % 4 is 0:
+                        c_inf["f"].write('\n\t')
+
+                    if weights[idx, output] >= 0:
+                        c_inf["f"].write(' + ')
+                    else:
+                        c_inf["f"].write(' - ')
+
+                    c_inf["f"].write('{:f} * x{:d}[{:d}][{:d}][{:d}]'.format(
+                        abs(weights[idx, output]),
+                        c_inf["layer"] - 1, x, y, c
+                    ))
+
+                    i += 1
+        c_inf["f"].write(';\n')
+        c_inf["f"].write('\n')
+
+    c_inf["layer"] = c_inf["layer"] + 1
+    return x_out, c_inf
 
 
 def size(x, i=1):
-    return x.shape[i-1]
+    return x.shape[i - 1]
 
 
 def writeHeader(c_inf, arch):
@@ -341,18 +417,30 @@ def writeHeader(c_inf, arch):
     c_inf["layer"] = 1
     if arch == 'sse3':
         c_inf["f"].write('#include <emmintrin.h>\n')
-    c_inf["f"].write('#include <math.h>\nint cnn(float x0[{:d}][{:d}][{:d}], int *res, float *scores)\n'.format(
+
+    c_inf["f"].write('#include <math.h>\nint cnn(float x0[{:d}][{:d}][{:d}], int *res, double *scores)\n'.format(
         c_inf["x_dim"],
         c_inf["y_dim"],
         c_inf["z_dim"]) + '{\n')
+
     if arch == 'sse3':
-        c_inf["f"].write('__m128 w, x, y, y2, t, t2;\n')
+        # FIXME The next line throws unsused variable warnings
+        # c_inf["f"].write('__m128 w, x, y, y2, t, t2;\n')
+        c_inf["f"].write('\t__m128 w, x, y;\n')
+
     return c_inf
 
 
 def writeFooter(c_inf, _x, classification):
     if c_inf["f"] is not None:
         c_inf["f"].write('\treturn 0;\n}\n')
+
+        # Dummy Stuff for Naoth
+        c_inf["f"].write('bool classify(const BallCandidates::Patch& p){return true;}\n')
+        c_inf["f"].write('bool classify(const BallCandidates::PatchYUVClassified& p){return true;}\n')
+        c_inf["f"].write('float getBallConfidence(){return 0.0f;}\n')
+        c_inf["f"].write('float getNoballConfidence(){return 0.0f;}\n')
+
         if classification:
             c_inf["f"].write(footer_test.format(**c_inf))
         else:
@@ -370,8 +458,8 @@ def writeFooter(c_inf, _x, classification):
                 file.write(data)
         c_inf["f"].close()
         c_inf["f"] = None
-        print("Compiling...")
-        compile(c_inf, optimize=True)
+        #print("Compiling...")
+        #compile(c_inf, optimize=True)
 
     return c_inf
 
@@ -433,7 +521,6 @@ def convolution(x, w, b, stride, pad, c_inf, unroll_level, arch):
         str_data['indent'] = '\t'
         writeC(c_inf, '{indent}}}\n'.format(**str_data))
 
-
     if unroll_level > 0:
         writeC(c_inf, '{indent}for (int ix = -{pt}; ix < {:d}; ix += {stride0})\n{indent}{{\n'.format(
             H - KH + 1 + pad_bottom, **str_data))
@@ -467,7 +554,7 @@ def convolution(x, w, b, stride, pad, c_inf, unroll_level, arch):
             for iw in range(KH):
                 x_1 = ix + iw
                 if (ix == -pad_top and unroll_level == 1) or (unroll_level == 2 and jx == -pad_left and ix == -pad_top):
-                    writeC(c_inf, '{indent}x_1 = ix + {:d};\n'.format(iw,  **str_data))
+                    writeC(c_inf, '{indent}x_1 = ix + {:d};\n'.format(iw, **str_data))
                     if pad == 'same':
                         writeC(c_inf, '{indent}if (x_1 >= 0 && x_1 < {:d})\n{indent}{{\n'.format(H, **str_data))
                         str_data['indent'] += '\t'
@@ -494,7 +581,8 @@ def convolution(x, w, b, stride, pad, c_inf, unroll_level, arch):
                                 if x_1 >= 0 and x_1 < H:
                                     if x_2 >= 0 and x_2 < W:
                                         x_out[x_out_1, x_out_2, lw] = (
-                                                x_out[x_out_1, x_out_2, lw] + w[iw, jw, kw, lw] * x[x_1, x_2, kw]).astype(
+                                                x_out[x_out_1, x_out_2, lw] + w[iw, jw, kw, lw] * x[
+                                            x_1, x_2, kw]).astype(
                                             'float32')
                                         x_out[x_out_1, x_out_2, lw + 1] = (
                                                 x_out[x_out_1, x_out_2, lw + 1] + w[iw, jw, kw, lw + 1] * x[
@@ -506,7 +594,7 @@ def convolution(x, w, b, stride, pad, c_inf, unroll_level, arch):
                                                 x_out[x_out_1, x_out_2, lw + 3] + w[iw, jw, kw, lw + 3] * x[
                                             x_1, x_2, kw]).astype('float32')
                                 if (unroll_level == 0 and x_1 >= 0 and x_1 < H and x_2 >= 0 and x_2 < W) \
-                                    or (ix == -pad_top and unroll_level == 1 and x_2 >= 0 and x_2 < W) or \
+                                        or (ix == -pad_top and unroll_level == 1 and x_2 >= 0 and x_2 < W) or \
                                         (unroll_level == 2 and jx == -pad_left and ix == -pad_top):
                                     writeC(c_inf, sse_conv.format(**str_data))
                             elif arch == "general" or (arch == "sse3" and C_OUT % 4 != 0):
@@ -517,7 +605,7 @@ def convolution(x, w, b, stride, pad, c_inf, unroll_level, arch):
                                             (x_out[x_out_1, x_out_2, lw] + w[iw, jw, kw, lw] * x[x_1, x_2, kw]).astype(
                                                 'float32')
                                 if (unroll_level == 0 and x_1 >= 0 and x_1 < H and x_2 >= 0 and x_2 < W) \
-                                    or (ix == -pad_top and unroll_level == 1 and x_2 >= 0 and x_2 < W) or \
+                                        or (ix == -pad_top and unroll_level == 1 and x_2 >= 0 and x_2 < W) or \
                                         (unroll_level == 2 and jx == -pad_left and ix == -pad_top):
                                     writeC(c_inf,
                                            '{indent}x{layer}[{x_out_1}][{x_out_2}][{lw}] += '
@@ -526,7 +614,7 @@ def convolution(x, w, b, stride, pad, c_inf, unroll_level, arch):
                         str_data['indent'] = str_data['indent'][:-1]
                         writeC(c_inf, '{indent}}}\n'.format(**str_data))
                 if ((ix == -pad_top and unroll_level == 1) or \
-                        (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and pad == 'same':
+                    (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and pad == 'same':
                     str_data['indent'] = str_data['indent'][:-1]
                     writeC(c_inf, '{indent}}}\n'.format(**str_data))
         if unroll_level > 1 and ix == -pad_top:
@@ -633,15 +721,16 @@ def convolution_2(x, w, b, stride, pad, c_inf, unroll_level, arch):
                 write_general = arch == "general" or (arch == "sse3" and size(w, 4) % 4 != 0)
                 #   Load target pixel
                 if (unroll_level == 0 or (ix == -pad_top and unroll_level == 1) or \
-                        (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and write_sse:
-                    writeC(c_inf, '{indent}y = _mm_load_ps((float*)&x{layer}[{x_out_1}][{x_out_2}][{lw}]);\n'.format(**str_data))
+                    (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and write_sse:
+                    writeC(c_inf, '{indent}y = _mm_load_ps((float*)&x{layer}[{x_out_1}][{x_out_2}][{lw}]);\n'.format(
+                        **str_data))
                 #  ------------------
                 for iw in range(KH):  # Loop over filter x
                     x_1 = ix + iw
                     if ((ix == -pad_top and unroll_level == 1) or \
-                            (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and \
+                        (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and \
                             (write_sse or write_general):
-                        writeC(c_inf, '{indent}x_1 = ix + {:d};\n'.format(iw,  **str_data))
+                        writeC(c_inf, '{indent}x_1 = ix + {:d};\n'.format(iw, **str_data))
                         if pad == 'same':
                             writeC(c_inf, '{indent}if (x_1 >= 0 && x_1 < {:d})\n{indent}{{\n'.format(H, **str_data))
                             str_data['indent'] += '\t'
@@ -667,7 +756,8 @@ def convolution_2(x, w, b, stride, pad, c_inf, unroll_level, arch):
                                 if x_1 >= 0 and x_1 < H:
                                     if x_2 >= 0 and x_2 < W:
                                         x_out[x_out_1, x_out_2, lw] = (
-                                                x_out[x_out_1, x_out_2, lw] + w[iw, jw, kw, lw] * x[x_1, x_2, kw]).astype(
+                                                x_out[x_out_1, x_out_2, lw] + w[iw, jw, kw, lw] * x[
+                                            x_1, x_2, kw]).astype(
                                             'float32')
                                         x_out[x_out_1, x_out_2, lw + 1] = (
                                                 x_out[x_out_1, x_out_2, lw + 1] + w[iw, jw, kw, lw + 1] * x[
@@ -679,7 +769,7 @@ def convolution_2(x, w, b, stride, pad, c_inf, unroll_level, arch):
                                                 x_out[x_out_1, x_out_2, lw + 3] + w[iw, jw, kw, lw + 3] * x[
                                             x_1, x_2, kw]).astype('float32')
                                 if (unroll_level == 0 and x_1 >= 0 and x_1 < H and x_2 >= 0 and x_2 < W) \
-                                    or (ix == -pad_top and unroll_level == 1 and x_2 >= 0 and x_2 < W) or \
+                                        or (ix == -pad_top and unroll_level == 1 and x_2 >= 0 and x_2 < W) or \
                                         (unroll_level == 2 and jx == -pad_left and ix == -pad_top):
                                     writeC(c_inf, sse_conv_2.format(**str_data))
                             elif write_general:
@@ -690,7 +780,7 @@ def convolution_2(x, w, b, stride, pad, c_inf, unroll_level, arch):
                                             (x_out[x_out_1, x_out_2, lw] + w[iw, jw, kw, lw] * x[x_1, x_2, kw]).astype(
                                                 'float32')
                                 if (unroll_level == 0 and x_1 >= 0 and x_1 < H and x_2 >= 0 and x_2 < W) \
-                                    or (ix == -pad_top and unroll_level == 1 and x_2 >= 0 and x_2 < W) or \
+                                        or (ix == -pad_top and unroll_level == 1 and x_2 >= 0 and x_2 < W) or \
                                         (unroll_level == 2 and jx == -pad_left and ix == -pad_top):
                                     writeC(c_inf,
                                            '{indent}x{layer}[{x_out_1}][{x_out_2}][{lw}] += '
@@ -700,13 +790,13 @@ def convolution_2(x, w, b, stride, pad, c_inf, unroll_level, arch):
                             str_data['indent'] = str_data['indent'][:-1]
                             writeC(c_inf, '{indent}}}\n'.format(**str_data))
                     if ((ix == -pad_top and unroll_level == 1) or \
-                            (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and \
+                        (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and \
                             pad == 'same' and (write_sse or write_general):
                         str_data['indent'] = str_data['indent'][:-1]
                         writeC(c_inf, '{indent}}}\n'.format(**str_data))
                 #  Save target pixel
                 if (unroll_level == 0 or (ix == -pad_top and unroll_level == 1) or \
-                        (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and write_sse:
+                    (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and write_sse:
                     writeC(c_inf, '{indent}_mm_store_ps((float*)&x{layer}[{x_out_1}][{x_out_2}][{lw}], y);\n'.format(
                         **str_data))
                 #  -------------------
@@ -720,6 +810,7 @@ def convolution_2(x, w, b, stride, pad, c_inf, unroll_level, arch):
 
     c_inf["layer"] = c_inf["layer"] + 1
     return x_out, c_inf
+
 
 def convolution_3(x, w, b, stride, pad, c_inf, unroll_level, arch):
     assert x.shape[2] == w.shape[2]
@@ -813,17 +904,18 @@ def convolution_3(x, w, b, stride, pad, c_inf, unroll_level, arch):
                 write_general = arch == "general" or (arch == "sse3" and size(w, 4) % 4 != 0)
                 #   Load target pixel
                 if (unroll_level == 0 or (ix == -pad_top and unroll_level == 1) or \
-                        (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and write_sse:
-                    writeC(c_inf, '{indent}y = _mm_load_ps((float*)&x{layer}[{x_out_1}][{x_out_2}][{lw}]);\n'.format(**str_data))
+                    (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and write_sse:
+                    writeC(c_inf, '{indent}y = _mm_load_ps((float*)&x{layer}[{x_out_1}][{x_out_2}][{lw}]);\n'.format(
+                        **str_data))
                     writeC(c_inf, '{indent}y2 = _mm_setzero_ps();\n'.format(**str_data))
-                    even=True
+                    even = True
                 #  ------------------
                 for iw in range(KH):  # Loop over filter x
                     x_1 = ix + iw
                     if ((ix == -pad_top and unroll_level == 1) or \
-                            (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and \
+                        (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and \
                             (write_sse or write_general):
-                        writeC(c_inf, '{indent}x_1 = ix + {:d};\n'.format(iw,  **str_data))
+                        writeC(c_inf, '{indent}x_1 = ix + {:d};\n'.format(iw, **str_data))
                         if pad == 'same':
                             writeC(c_inf, '{indent}if (x_1 >= 0 && x_1 < {:d})\n{indent}{{\n'.format(H, **str_data))
                             str_data['indent'] += '\t'
@@ -849,7 +941,8 @@ def convolution_3(x, w, b, stride, pad, c_inf, unroll_level, arch):
                                 if x_1 >= 0 and x_1 < H:
                                     if x_2 >= 0 and x_2 < W:
                                         x_out[x_out_1, x_out_2, lw] = (
-                                                x_out[x_out_1, x_out_2, lw] + w[iw, jw, kw, lw] * x[x_1, x_2, kw]).astype(
+                                                x_out[x_out_1, x_out_2, lw] + w[iw, jw, kw, lw] * x[
+                                            x_1, x_2, kw]).astype(
                                             'float32')
                                         x_out[x_out_1, x_out_2, lw + 1] = (
                                                 x_out[x_out_1, x_out_2, lw + 1] + w[iw, jw, kw, lw + 1] * x[
@@ -861,7 +954,7 @@ def convolution_3(x, w, b, stride, pad, c_inf, unroll_level, arch):
                                                 x_out[x_out_1, x_out_2, lw + 3] + w[iw, jw, kw, lw + 3] * x[
                                             x_1, x_2, kw]).astype('float32')
                                 if (unroll_level == 0 and x_1 >= 0 and x_1 < H and x_2 >= 0 and x_2 < W) \
-                                    or (ix == -pad_top and unroll_level == 1 and x_2 >= 0 and x_2 < W) or \
+                                        or (ix == -pad_top and unroll_level == 1 and x_2 >= 0 and x_2 < W) or \
                                         (unroll_level == 2 and jx == -pad_left and ix == -pad_top):
                                     if even:
                                         writeC(c_inf, sse_conv_even.format(**str_data))
@@ -876,7 +969,7 @@ def convolution_3(x, w, b, stride, pad, c_inf, unroll_level, arch):
                                             (x_out[x_out_1, x_out_2, lw] + w[iw, jw, kw, lw] * x[x_1, x_2, kw]).astype(
                                                 'float32')
                                 if (unroll_level == 0 and x_1 >= 0 and x_1 < H and x_2 >= 0 and x_2 < W) \
-                                    or (ix == -pad_top and unroll_level == 1 and x_2 >= 0 and x_2 < W) or \
+                                        or (ix == -pad_top and unroll_level == 1 and x_2 >= 0 and x_2 < W) or \
                                         (unroll_level == 2 and jx == -pad_left and ix == -pad_top):
                                     writeC(c_inf,
                                            '{indent}x{layer}[{x_out_1}][{x_out_2}][{lw}] += '
@@ -886,13 +979,13 @@ def convolution_3(x, w, b, stride, pad, c_inf, unroll_level, arch):
                             str_data['indent'] = str_data['indent'][:-1]
                             writeC(c_inf, '{indent}}}\n'.format(**str_data))
                     if ((ix == -pad_top and unroll_level == 1) or \
-                            (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and \
+                        (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and \
                             pad == 'same' and (write_sse or write_general):
                         str_data['indent'] = str_data['indent'][:-1]
                         writeC(c_inf, '{indent}}}\n'.format(**str_data))
                 #  Save target pixel
                 if (unroll_level == 0 or (ix == -pad_top and unroll_level == 1) or \
-                        (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and write_sse:
+                    (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and write_sse:
                     writeC(c_inf, '{indent}y = _mm_add_ps(y, y2);\n'.format(**str_data))
                     writeC(c_inf, '{indent}_mm_store_ps((float*)&x{layer}[{x_out_1}][{x_out_2}][{lw}], y);\n'.format(
                         **str_data))
@@ -969,11 +1062,13 @@ def max_pool(x, p, stride, c_inf, unroll_level, arch='general'):
                 'stride0': stride[0], 'p': p[0], 'x_res': x_res, 'y_res': y_res, 'z_res': z_res, 'stride1': stride[1]}
     writeC(c_inf, '\tstatic float x{layer}[{x_res}][{y_res}][{z_res}] = {{0}};\n'.format(**str_data))
     if unroll_level > 0:
-        writeC(c_inf, '\tfor (int ix = 0; ix < {:d}; ix += {stride0})\n\t{{\n'.format(size(x, 1) - p[0] + 1, **str_data))
+        writeC(c_inf,
+               '\tfor (int ix = 0; ix < {:d}; ix += {stride0})\n\t{{\n'.format(size(x, 1) - p[0] + 1, **str_data))
         str_data['indent'] = '\t\t'
-        writeC(c_inf, '{indent}int x_1, x_out_1;\n'.format(**str_data))
+        # writeC(c_inf, '{indent}int x_1, x_out_1;\n'.format(**str_data))  # FIXME generates unsused variable warning
+        writeC(c_inf, '{indent}int x_out_1;\n'.format(**str_data))
     for ix in range(0, size(x, 1) - p[0] + 1, stride[0]):
-        x_out_1 = ix // stride[0] # ix is a multiple of stride[0], so integer division is fine
+        x_out_1 = ix // stride[0]  # ix is a multiple of stride[0], so integer division is fine
         if unroll_level > 0 and ix == 0:
             writeC(c_inf, '{indent}x_out_1 = ix / {stride0};\n'.format(**str_data))
             if unroll_level == 2:
@@ -985,7 +1080,7 @@ def max_pool(x, p, stride, c_inf, unroll_level, arch='general'):
             str_data['x_out_1'] = x_out_1
             str_data['ix'] = ix
         for jx in range(0, size(x, 2) - p[1] + 1, stride[1]):
-            x_out_2 = jx // stride[1] # jx is a multiple of stride[1], so integer division is fine
+            x_out_2 = jx // stride[1]  # jx is a multiple of stride[1], so integer division is fine
             if unroll_level == 2 and ix == 0 and jx == 0:
                 writeC(c_inf, '{indent}x_out_2 = jx / {stride1};\n'.format(**str_data))
             if unroll_level < 2:
@@ -997,9 +1092,12 @@ def max_pool(x, p, stride, c_inf, unroll_level, arch='general'):
                 if unroll_level == 0 or (unroll_level == 1 and ix == 0) or (unroll_level == 2 and ix == 0 and jx == 0):
                     if arch == "sse3":
                         if kx % 4 == 0:
-                            writeC(c_inf, "{indent}x = _mm_load_ps((float*)&x{prev_layer}[{ix}][{jx}][{kx}]);\n".format(**str_data))
+                            writeC(c_inf, "{indent}x = _mm_load_ps((float*)&x{prev_layer}[{ix}][{jx}][{kx}]);\n".format(
+                                **str_data))
                     else:
-                        writeC(c_inf, '{indent}x{layer}[{x_out_1}][{x_out_2}][{kx}] = x{prev_layer}[{ix}][{jx}][{kx}];\n'.format(**str_data))
+                        writeC(c_inf,
+                               '{indent}x{layer}[{x_out_1}][{x_out_2}][{kx}] = x{prev_layer}[{ix}][{jx}][{kx}];\n'.format(
+                                   **str_data))
                 for mi in range(0, p[0]):
                     if unroll_level == 0:
                         str_data['mi'] = ix + mi
@@ -1010,19 +1108,26 @@ def max_pool(x, p, stride, c_inf, unroll_level, arch='general'):
                             str_data['mj'] = mj
                         else:
                             str_data['mj'] = 'jx + ' + str(mj)
-                        if unroll_level == 0 or (unroll_level == 1 and ix == 0) or (unroll_level == 2 and ix == 0 and jx == 0):
+                        if unroll_level == 0 or (unroll_level == 1 and ix == 0) or (
+                                unroll_level == 2 and ix == 0 and jx == 0):
                             if arch == "sse3":
                                 if kx % 4 == 0:
-                                    writeC(c_inf, "{indent}y = _mm_load_ps((float*)&x{prev_layer}[{mi}][{mj}][{kx}]);\n".format(**str_data))
+                                    writeC(c_inf,
+                                           "{indent}y = _mm_load_ps((float*)&x{prev_layer}[{mi}][{mj}][{kx}]);\n".format(
+                                               **str_data))
                                     writeC(c_inf, "{indent}x = _mm_max_ps(x, y);\n".format(**str_data))
                             else:
                                 writeC(c_inf,
                                        '{indent}x{layer}[{x_out_1}][{x_out_2}][{kx}] = '
                                        'x{prev_layer}[{mi}][{mj}][{kx}] > x{layer}[{x_out_1}][{x_out_2}][{kx}] ?'
-                                       ' x{prev_layer}[{mi}][{mj}][{kx}] : x{layer}[{x_out_1}][{x_out_2}][{kx}];\n'.format(**str_data))
-                    if unroll_level == 0 or (unroll_level == 1 and ix == 0) or (unroll_level == 2 and ix == 0 and jx == 0):
+                                       ' x{prev_layer}[{mi}][{mj}][{kx}] : x{layer}[{x_out_1}][{x_out_2}][{kx}];\n'.format(
+                                           **str_data))
+                    if unroll_level == 0 or (unroll_level == 1 and ix == 0) or (
+                            unroll_level == 2 and ix == 0 and jx == 0):
                         if arch == "sse3" and kx % 4 == 0:
-                            writeC(c_inf, "{indent}_mm_store_ps((float*)&x{layer}[{x_out_1}][{x_out_2}][{kx}], x);\n".format(**str_data))
+                            writeC(c_inf,
+                                   "{indent}_mm_store_ps((float*)&x{layer}[{x_out_1}][{x_out_2}][{kx}], x);\n".format(
+                                       **str_data))
         if unroll_level > 1 and ix == 0:
             writeC(c_inf, '\t\t}\n')
     c_inf["layer"] = c_inf["layer"] + 1
