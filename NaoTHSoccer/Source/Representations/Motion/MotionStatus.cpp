@@ -31,6 +31,8 @@ void Serializer<MotionStatus>::serialize(const MotionStatus& representation, std
   stepControlStatus->set_moveablefoot(representation.stepControl.moveableFoot);
 
   message.set_target_reached(representation.target_reached);
+  message.set_head_target_reached(representation.head_target_reached);
+  message.set_head_got_stuck(representation.head_got_stuck);
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
   message.SerializeToZeroCopyStream(&buf);
@@ -58,6 +60,8 @@ void Serializer<MotionStatus>::deserialize(std::istream& stream, MotionStatus& r
     representation.stepControl.moveableFoot = static_cast<MotionStatus::StepControlStatus::MoveableFoot>(stepControlStatus.moveablefoot());
 
     representation.target_reached = message.target_reached();
+    representation.head_target_reached = message.head_target_reached();
+    representation.head_got_stuck = message.head_got_stuck();
   }
   else
   {

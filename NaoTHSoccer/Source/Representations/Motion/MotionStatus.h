@@ -87,6 +87,8 @@ public:
     stream << "right foot = "<< plannedMotion.rFoot<<"\n";
     stream << "step control = "<< stepControl.stepID << " " << stepControl.moveableFoot <<"\n";
     stream << "target_reached = " << target_reached << '\n';
+    stream << "head_target_reached = " << head_target_reached << '\n';
+    stream << "head_got_stuck = " << head_target_reached << '\n';
   }//end print
 };
 
