@@ -217,7 +217,7 @@ def write_naoth_header_file():
         print("private:", file=fp)
         print("\tfloat in_step[16][16][1];", file=fp)
         print("\tint res[1];", file=fp)
-        print("\tdouble scores[2];", file=fp)
+        print("\tdouble scores[3];", file=fp)
         print("", file=fp)
         print("};", file=fp)
         print("# endif", file=fp)
@@ -419,13 +419,12 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
 
 def dense(_x, weights, b, c_inf):
     # TODO get output size dynamically
-    # TODO use bias
     x_out = np.zeros(shape=(3, 1, 1)).astype('float32')
 
     x_dim = _x.shape[0]
     y_dim = _x.shape[1]
     channels = _x.shape[2]
-    print("Bias: ", b)
+
     i = 0
 
     for output in range(len(x_out)):
