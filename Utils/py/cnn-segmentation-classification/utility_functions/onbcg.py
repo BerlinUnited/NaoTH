@@ -155,8 +155,9 @@ sse_leaky = '''
 {indent}_mm_store_ps((float*)&x{prev_layer}[{i}][{j}][{k}], x);
 '''
 
+
 def write_naoth_header_file():
-    fp = open("yolo.h", "w")
+    fp = open("CNN_thomas_balls.h", "w")
     with fp:
         print("#ifndef _CNN_THOMAS_BALLS_H", file=fp)
         print("#define _CNN_THOMAS_BALLS_H", file=fp)
@@ -173,6 +174,7 @@ def write_naoth_header_file():
         print("", file=fp)
         print("};", file=fp)
         print("# endif", file=fp)
+
 
 def compile(c_inf, optimize=False):
     c = compiler_O3 if optimize else compiler
@@ -216,10 +218,11 @@ def softmax(x, c_inf):
             ))
             writeC(c_inf, '\tx{:d}[{:d}][{:d}][0] /= sum{:d};\n'
                           '\tx{:d}[{:d}][{:d}][1] /= sum{:d};\n'.format(
-                c_inf["layer"], i, j,
-                c_inf["layer"],
-                c_inf["layer"], i, j,
-                c_inf["layer"]))
+                           c_inf["layer"], i, j,
+                           c_inf["layer"],
+                           c_inf["layer"], i, j,
+                           c_inf["layer"]))
+
     return x_out, c_inf
 
 
@@ -243,7 +246,7 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
         c_inf["z_dim"] = 1
     # intermediate_output = []
 
-    c_inf = writeHeader(c_inf, arch)
+    c_inf = write_header(c_inf, arch)
     if unroll_level > 0:
         writeC(c_inf, '\tfor (int xi = 0; xi < {:d}; xi += 1)\n\t{{\n'.format(size(im, 1)))
         _xi = 'xi'
@@ -328,7 +331,7 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
             writeC(c_inf, '\t*res = scores[{:d}] > scores[*res] ? {:d} : *res;\n'.format(i, i))
         classification = True
     """
-    writeFooter(c_inf, _x, classification=False)
+    write_footer(c_inf, _x, classification=False)
     """
     if classification:
         print("Testing...")
@@ -371,9 +374,6 @@ def dense(_x, weights, b, c_inf):
     # TODO get output size dynamically
     # TODO use bias
     x_out = np.zeros(shape=(3, 1, 1)).astype('float32')
-    print()
-    print("Input shape: ", _x.shape)
-    print("Weight shape: ", weights.shape)
 
     x_dim = _x.shape[0]
     y_dim = _x.shape[1]
@@ -382,7 +382,7 @@ def dense(_x, weights, b, c_inf):
     i = 0
 
     for output in range(len(x_out)):
-        c_inf["f"].write("\tx{:d}[{:d}] = ".format(c_inf["layer"], output))
+        c_inf["f"].write("\tx{:d}[{:d}][0][0] = ".format(c_inf["layer"], output))
         for c in range(channels):
             for x in range(x_dim):
                 for y in range(y_dim):
@@ -412,11 +412,12 @@ def size(x, i=1):
     return x.shape[i - 1]
 
 
-def writeHeader(c_inf, arch):
+def write_header(c_inf, arch):
     c_inf["f"] = open(c_inf["path"], 'w')
     c_inf["layer"] = 1
     if arch == 'sse3':
         c_inf["f"].write('#include <emmintrin.h>\n')
+        c_inf["f"].write('#include CNN_thomas_balls.h\n\n')
 
     c_inf["f"].write('#include <math.h>\nint cnn(float x0[{:d}][{:d}][{:d}], int *res, double *scores)\n'.format(
         c_inf["x_dim"],
@@ -424,23 +425,22 @@ def writeHeader(c_inf, arch):
         c_inf["z_dim"]) + '{\n')
 
     if arch == 'sse3':
-        # FIXME The next line throws unsused variable warnings
         # c_inf["f"].write('__m128 w, x, y, y2, t, t2;\n')
         c_inf["f"].write('\t__m128 w, x, y;\n')
 
     return c_inf
 
 
-def writeFooter(c_inf, _x, classification):
+def write_footer(c_inf, _x, classification):
     if c_inf["f"] is not None:
         c_inf["f"].write('\treturn 0;\n}\n')
 
-        # Dummy Stuff for Naoth
-        c_inf["f"].write('bool classify(const BallCandidates::Patch& p){return true;}\n')
-        c_inf["f"].write('bool classify(const BallCandidates::PatchYUVClassified& p){return true;}\n')
-        c_inf["f"].write('float getBallConfidence(){return 0.0f;}\n')
-        c_inf["f"].write('float getNoballConfidence(){return 0.0f;}\n')
-
+        # Dummy Stuff for Naoth - TODO is this necessary
+        # c_inf["f"].write('bool classify(const BallCandidates::Patch& p){return true;}\n')
+        # c_inf["f"].write('bool classify(const BallCandidates::PatchYUVClassified& p){return true;}\n')
+        # c_inf["f"].write('float getBallConfidence(){return 0.0f;}\n')
+        # c_inf["f"].write('float getNoballConfidence(){return 0.0f;}\n')
+        """
         if classification:
             c_inf["f"].write(footer_test.format(**c_inf))
         else:
@@ -460,7 +460,7 @@ def writeFooter(c_inf, _x, classification):
         c_inf["f"] = None
         #print("Compiling...")
         #compile(c_inf, optimize=True)
-
+        """
     return c_inf
 
 
@@ -1075,7 +1075,7 @@ def max_pool(x, p, stride, c_inf, unroll_level, arch='general'):
                 writeC(c_inf, '\tfor (int jx = 0; jx < {:d}; jx += {stride1})\n\t{{\n'.format(size(x, 2) - p[1] + 1,
                                                                                               **str_data))
                 str_data['indent'] = '\t\t'
-                writeC(c_inf, '{indent}int x_2, x_out_2;\n'.format(**str_data))
+                writeC(c_inf, '{indent}int x_out_2;\n'.format(**str_data))
         elif unroll_level == 0:
             str_data['x_out_1'] = x_out_1
             str_data['ix'] = ix
