@@ -53,10 +53,10 @@ public:
     id(hold),
     cameraID(naoth::CameraInfo::Bottom),
     coordinate(Hip),
+    velocity(300),
     searchCenter(0, 0, 0),
     searchSize(90, 45, 0),
-    searchDirection(true),
-    velocity(300)
+    searchDirection(true)
   {
   }
 
