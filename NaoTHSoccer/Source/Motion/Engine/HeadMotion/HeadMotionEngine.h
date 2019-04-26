@@ -80,7 +80,7 @@ private:
       PARAMETER_REGISTER(max_velocity_deg_in_second_slow) = 90;
       PARAMETER_REGISTER(cutting_velocity) = 40;
 
-      PARAMETER_ANGLE_REGISTER(at_rest_threshold) = 0.2;
+      PARAMETER_ANGLE_REGISTER(at_rest_threshold) = 0.3;
       PARAMETER_ANGLE_REGISTER(at_target_threshold) = 3;
 
       syncWithConfig();
@@ -123,7 +123,7 @@ private:
   // for providing head_target_reached and head_got_stuck
   Vector2d motion_target, last_motion_target;
   HeadMotionRequest::HeadMotionID last_id;
-  RingBufferWithSum<double, 10> absolute_velocity_buffer;
+  RingBufferWithSum<Vector2d, 10> absolute_velocity_buffer;
 };
 
 #endif  /* _HeadMotionEngine_H */

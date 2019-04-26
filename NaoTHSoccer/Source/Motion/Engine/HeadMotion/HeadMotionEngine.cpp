@@ -96,8 +96,9 @@ void HeadMotionEngine::execute()
 
   testCalc = true;
 
+  bool target_changed = (last_motion_target - motion_target).abs() > params.at_target_threshold;
   if(last_id != getHeadMotionRequest().id
-     || (last_motion_target - motion_target).abs() < params.at_target_threshold){
+     || target_changed){
       absolute_velocity_buffer.clear();
   }
 
@@ -106,15 +107,18 @@ void HeadMotionEngine::execute()
 
   static Vector2d last_yaw_pitch;
   Vector2d current_yaw_pitch(getSensorJointData().position[JointData::HeadYaw],getSensorJointData().position[JointData::HeadPitch]);
-  absolute_velocity_buffer.add((last_yaw_pitch - current_yaw_pitch).abs() / getRobotInfo().getBasicTimeStepInSecond());
+  absolute_velocity_buffer.add((last_yaw_pitch - current_yaw_pitch) / getRobotInfo().getBasicTimeStepInSecond());
   last_yaw_pitch = current_yaw_pitch;
 
   getMotionStatus().head_target_reached = (motion_target - current_yaw_pitch).abs() < params.at_target_threshold;
 
-  getMotionStatus().head_got_stuck = !getMotionStatus().target_reached
-                                     && absolute_velocity_buffer.getAverage() < params.at_rest_threshold
+  getMotionStatus().head_got_stuck = (!getMotionStatus().head_target_reached)
+                                     && absolute_velocity_buffer.getAverage().abs() < params.at_rest_threshold
                                      && absolute_velocity_buffer.isFull();
 
+  PLOT("HeadMotion:target_changed", target_changed);
+  PLOT("HeadMotion:absolute_avg_velocity", absolute_velocity_buffer.getAverage().abs());
+  PLOT("HeadMotion:at_rest", absolute_velocity_buffer.getAverage().abs() < params.at_rest_threshold);
   PLOT("HeadMotion:target_reached", getMotionStatus().head_target_reached);
   PLOT("HeadMotion:got_stuck", getMotionStatus().head_got_stuck);
 }//end execute

@@ -22,7 +22,7 @@
 class HeadMotionRequest : public naoth::Printable
 {
 public:
-  
+
   enum Coordinate
   {
     Hip,
@@ -74,7 +74,7 @@ public:
     targetPointOnTheGround = Vector2d();
     coordinate = Hip;
     searchCenter = Vector3d();
-    searchSize = Vector3d(90, 45, 0),
+    searchSize = Vector3d(90, 45, 0);
     searchDirection = true;
     velocity = 300;
   }
@@ -86,7 +86,7 @@ public:
   // id of the camera to use
   naoth::CameraInfo::CameraID cameraID;
 
-  // describes the target angle-position: x=yaw, y=pitch 
+  // describes the target angle-position: x=yaw, y=pitch
   Vector2<double> targetJointPosition;
 
   /** target point in image which the camera should point to with the center*/
@@ -98,17 +98,15 @@ public:
   /** see coordinate */
   Vector2<double> targetPointOnTheGround;
 
-
   /** the coordinate system for the targetPointInTheWorld and targetPointOnTheGround */
   Coordinate coordinate;
 
+  double velocity;
 
   // parameters for head search motion
   Vector3<double> searchCenter;
   Vector3<double> searchSize;
   bool searchDirection;
-
-  double velocity;
 
   /** return the name of the motion id */
   static std::string getName(HeadMotionID id);
