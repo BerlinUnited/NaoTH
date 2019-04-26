@@ -119,6 +119,7 @@ private:
   void lookAtWorldPointSimple(const Vector3<double>& target);
 
   Vector3<double> g(double yaw, double pitch, const Vector3<double>& pointInWorld);
+  void export_g();
 
   // for providing head_target_reached and head_got_stuck
   Vector2d motion_target, last_motion_target;

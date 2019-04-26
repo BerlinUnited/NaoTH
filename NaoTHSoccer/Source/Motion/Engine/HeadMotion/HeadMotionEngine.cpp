@@ -27,6 +27,7 @@ HeadMotionEngine::HeadMotionEngine():
 {
   theKinematicChain.init(theJointData);
 
+  DEBUG_REQUEST_REGISTER("HeadMotionEngine:export_g", "exports g for plotting the function", false);
   DEBUG_REQUEST_REGISTER("HeadMotionEngine:draw_search_points_on_field", "draw the projected search points on the field", false);
 
   getDebugParameterList().add(&params);
@@ -45,56 +46,25 @@ void HeadMotionEngine::execute()
   switch(getHeadMotionRequest().id)
   {
     case HeadMotionRequest::look_straight_ahead:
-      lookStraightAhead(); break; // done
+      lookStraightAhead(); break;
     case HeadMotionRequest::look_at_point:
-      lookAtPoint(); break; // done
+      lookAtPoint(); break;
     case HeadMotionRequest::look_at_world_point:
-      lookAtWorldPoint(getHeadMotionRequest().targetPointInTheWorld); break; //done
+      lookAtWorldPoint(getHeadMotionRequest().targetPointInTheWorld); break;
     case HeadMotionRequest::look_at_point_on_the_ground:
       gotoPointOnTheGround(getHeadMotionRequest().targetPointOnTheGround); break;
     case HeadMotionRequest::goto_angle:
-      gotoAngle(getHeadMotionRequest().targetJointPosition);  break; //done
+      gotoAngle(getHeadMotionRequest().targetJointPosition);  break;
     case HeadMotionRequest::hold:
       hold(); break;
     case HeadMotionRequest::stabilize:
-      lookStraightAheadWithStabilization(); break; //done
+      lookStraightAheadWithStabilization(); break;
     case HeadMotionRequest::search:
       search(); break;
     default: break;
   }//end switch
 
-  // plots the function ||g(yaw, pith)-y||
-  // used to control the head (cmp. look_at_world_point)
-  static bool testCalc = true;
-
-  if(!testCalc)
-  {
-    std::ofstream os("test.txt",std::ofstream::out);
-    Vector3<double> target(2500.0, 0.0, 0.0);
-    double y = -Math::pi_2;
-    double p = -Math::pi_2;
-    double steps = 25.0;
-    double delta_y = Math::pi/steps;
-    double delta_p = Math::pi/steps;
-
-    for(int i = 0; i < steps; i++)
-    {
-      for(int j = 0; j < steps; j++)
-      {
-        double a = y+i*delta_y;
-        double b = p+j*delta_p;
-        double f = (g(a, b, target) - target).abs();
-        if(j != 0)
-          os << ",";
-
-        os << f;
-      }
-      os << std::endl;
-    }
-    os.close();
-  }//end if
-
-  testCalc = true;
+  DEBUG_REQUEST_ON_DEACTIVE("HeadMotionEngine:export_g", export_g(););
 
   bool target_changed = (last_motion_target - motion_target).abs() > params.at_target_threshold;
   if(last_id != getHeadMotionRequest().id
@@ -530,4 +500,32 @@ void HeadMotionEngine::lookStraightAheadWithStabilization()
 {
   motion_target = Vector2d(0.0, -getInertialModel().orientation.y);
   gotoAngle(motion_target);
+}
+
+// exports g for plotting the function ||g(yaw, pith)-y||
+// used to control the head (cmp. look_at_world_point)
+void HeadMotionEngine::export_g(){
+    std::ofstream os("test.txt",std::ofstream::out);
+    Vector3<double> target(2500.0, 0.0, 0.0);
+    double y = -Math::pi_2;
+    double p = -Math::pi_2;
+    double steps = 25.0;
+    double delta_y = Math::pi/steps;
+    double delta_p = Math::pi/steps;
+
+    for(int i = 0; i < steps; i++)
+    {
+      for(int j = 0; j < steps; j++)
+      {
+        double a = y+i*delta_y;
+        double b = p+j*delta_p;
+        double f = (g(a, b, target) - target).abs();
+        if(j != 0)
+          os << ",";
+
+        os << f;
+      }
+      os << std::endl;
+    }
+    os.close();
 }
