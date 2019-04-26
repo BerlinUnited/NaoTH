@@ -40,6 +40,7 @@ public:
     void resetStriker() {
         firstStriker = std::numeric_limits<unsigned int>::max();
         secondStriker = std::numeric_limits<unsigned int>::max();
+        for(auto& r : roles) { if(r.second.dynamic == Roles::striker) { r.second.dynamic = Roles::none; } }
     }
 };
 
