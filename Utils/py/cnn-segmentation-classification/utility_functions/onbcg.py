@@ -155,6 +155,44 @@ sse_leaky = '''
 {indent}_mm_store_ps((float*)&x{prev_layer}[{i}][{j}][{k}], x);
 '''
 
+classify_yuv_patch = '''
+\n
+bool CNN_THOMAS_BALLS::classify(const BallCandidates::PatchYUVClassified& p)
+{
+\tASSERT(p.size() == 16);
+
+\tfor(size_t x=0; x < p.size(); x++) {
+\t\tfor(size_t y=0; y < p.size(); y++) {
+\t\t\t// TODO: check
+\t\t\tin_step[x][y][0] = ((float) p.data[p.size() * y + x].pixel.y) / 255.0f;
+\t\t}
+\t}
+
+\tcnn(in_step);
+\t//std::cout << "scores[1]=" << scores[1] << " scores[0]=" << scores[0] << std::endl;
+\treturn res[0] > 0;
+}
+'''
+
+classify_path = '''
+bool CNN_THOMAS_BALLS::classify(const BallCandidates::Patch& p) 
+{
+\tASSERT(p.size() == 16);
+
+\tfor(size_t x=0; x < p.size(); x++) {
+\t\tfor(size_t y=0; y < p.size(); y++) {
+\t\t\t// TODO: check
+\t\t\tin_step[x][y][0] = ((float) p.data[p.size() * y + x]) / 255.0f;
+\t\t}
+\t}
+
+\tcnn(in_step);
+
+\t// std::cout << "scores[1]=" << scores[1] << " scores[0]=" << scores[0] << std::endl;
+\treturn res[0] > 0;
+}
+'''
+
 
 def write_naoth_header_file():
     fp = open("CNN_thomas_balls.h", "w")
@@ -170,7 +208,16 @@ def write_naoth_header_file():
         print("class CNN_THOMAS_BALLS : public AbstractCNNClassifier {", file=fp)
         print("", file=fp)
         print("public:", file=fp)
-        print("\tint cnn(float x0[16][16][1],  double output_tensor[3][1][1]);", file=fp)
+        print("\tint cnn(float x0[16][16][1]);", file=fp)
+        print("\tbool classify(const BallCandidates::Patch& p);", file=fp)
+        print("\tbool classify(const BallCandidates::PatchYUVClassified& p);", file=fp)
+        print("\tvirtual float getBallConfidence();", file=fp)
+        print("\tvirtual float getNoballConfidence();", file=fp)
+        print("", file=fp)
+        print("private:", file=fp)
+        print("\tfloat in_step[16][16][1];", file=fp)
+        print("\tint res[1];", file=fp)
+        print("\tdouble scores[2];", file=fp)
         print("", file=fp)
         print("};", file=fp)
         print("# endif", file=fp)
@@ -382,7 +429,7 @@ def dense(_x, weights, b, c_inf):
     i = 0
 
     for output in range(len(x_out)):
-        c_inf["f"].write("\tx{:d}[{:d}][0][0] = ".format(c_inf["layer"], output))
+        c_inf["f"].write("\tscores[{:d}] = ".format(output))
         for c in range(channels):
             for x in range(x_dim):
                 for y in range(y_dim):
@@ -417,9 +464,9 @@ def write_header(c_inf, arch):
     c_inf["layer"] = 1
     if arch == 'sse3':
         c_inf["f"].write('#include <emmintrin.h>\n')
-        c_inf["f"].write('#include CNN_thomas_balls.h\n\n')
+        c_inf["f"].write('#include \"CNN_thomas_balls.h\"\n\n')
 
-    c_inf["f"].write('#include <math.h>\nint cnn(float x0[{:d}][{:d}][{:d}], int *res, double *scores)\n'.format(
+    c_inf["f"].write('#include <math.h>\nint CNN_THOMAS_BALLS::cnn(float x0[{:d}][{:d}][{:d}])\n'.format(
         c_inf["x_dim"],
         c_inf["y_dim"],
         c_inf["z_dim"]) + '{\n')
@@ -435,21 +482,24 @@ def write_footer(c_inf, _x, classification):
     if c_inf["f"] is not None:
         c_inf["f"].write('\treturn 0;\n}\n')
 
-        # Dummy Stuff for Naoth - TODO is this necessary
-        # c_inf["f"].write('bool classify(const BallCandidates::Patch& p){return true;}\n')
-        # c_inf["f"].write('bool classify(const BallCandidates::PatchYUVClassified& p){return true;}\n')
-        # c_inf["f"].write('float getBallConfidence(){return 0.0f;}\n')
-        # c_inf["f"].write('float getNoballConfidence(){return 0.0f;}\n')
-        """
+        # TODO functions do not work properly yet
+        c_inf["f"].write(classify_path)
+        c_inf["f"].write(classify_yuv_patch)
+        c_inf["f"].write('float CNN_THOMAS_BALLS::getBallConfidence(){return 1.0f;}\n')
+        c_inf["f"].write('float CNN_THOMAS_BALLS::getNoballConfidence(){return 0.0f;}\n')
+
         if classification:
             c_inf["f"].write(footer_test.format(**c_inf))
         else:
-            c_inf["f"].write(footer_benchmark.format(x_dim=c_inf['x_dim'], y_dim=c_inf['y_dim'], z_dim=c_inf['z_dim'],
-                                                     *_x.shape))
+            # c_inf["f"].write(footer_benchmark.format(x_dim=c_inf['x_dim'], y_dim=c_inf['y_dim'], z_dim=c_inf['z_dim'],
+            #                                         *_x.shape))
             c_inf["f"].close()
+
+            # replace the name of the output layer
             with open(c_inf["path"], 'r') as file:
                 data = file.read()
-            data = data.replace("int *res, float *scores", ' float output_tensor[{:d}][{:d}][{:d}]'.format(
+
+            data = data.replace("int *res, double *scores", ' double output_tensor[{:d}][{:d}][{:d}]'.format(
                 size(_x, 1),
                 size(_x, 2),
                 size(_x, 3)))
@@ -458,9 +508,10 @@ def write_footer(c_inf, _x, classification):
                 file.write(data)
         c_inf["f"].close()
         c_inf["f"] = None
-        #print("Compiling...")
-        #compile(c_inf, optimize=True)
-        """
+
+        # print("Compiling...")
+        # compile(c_inf, optimize=True)
+
     return c_inf
 
 

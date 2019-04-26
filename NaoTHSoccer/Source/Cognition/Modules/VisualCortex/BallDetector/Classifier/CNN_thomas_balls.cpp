@@ -1,8 +1,8 @@
 #include <emmintrin.h>
-#include <math.h>
 #include "CNN_thomas_balls.h"
 
-int CNN_THOMAS_BALLS::cnn(float x0[16][16][1],  double output_tensor[3][1][1])
+#include <math.h>
+int CNN_THOMAS_BALLS::cnn(float x0[16][16][1])
 {
 	__m128 w, x, y;
 	for (int xi = 0; xi < 16; xi += 1)
@@ -23840,7 +23840,7 @@ int CNN_THOMAS_BALLS::cnn(float x0[16][16][1],  double output_tensor[3][1][1])
 	}
 
  	// Dense Layer
-	output_tensor[0][0][0] =
+	scores[0] = 
 	 - 0.002847 * x7[0][0][0] + 0.021425 * x7[0][1][0] - 0.011234 * x7[0][2][0] + 0.000134 * x7[0][3][0]
 	 - 0.004935 * x7[1][0][0] + 0.010535 * x7[1][1][0] - 0.034857 * x7[1][2][0] + 0.005216 * x7[1][3][0]
 	 - 0.010260 * x7[2][0][0] - 0.020543 * x7[2][1][0] + 0.014410 * x7[2][2][0] - 0.020292 * x7[2][3][0]
@@ -23970,7 +23970,7 @@ int CNN_THOMAS_BALLS::cnn(float x0[16][16][1],  double output_tensor[3][1][1])
 	 + 0.013684 * x7[2][0][31] - 0.003592 * x7[2][1][31] + 0.006641 * x7[2][2][31] - 0.002785 * x7[2][3][31]
 	 - 0.033160 * x7[3][0][31] + 0.021433 * x7[3][1][31] + 0.000399 * x7[3][2][31] - 0.005076 * x7[3][3][31];
 
-	 output_tensor[1][0][0] =
+	scores[1] = 
 	 - 0.009758 * x7[0][0][0] + 0.005907 * x7[0][1][0] + 0.001758 * x7[0][2][0] - 0.010662 * x7[0][3][0]
 	 - 0.011007 * x7[1][0][0] - 0.029386 * x7[1][1][0] - 0.000379 * x7[1][2][0] + 0.000291 * x7[1][3][0]
 	 + 0.012910 * x7[2][0][0] - 0.018059 * x7[2][1][0] + 0.096311 * x7[2][2][0] - 0.063531 * x7[2][3][0]
@@ -24100,7 +24100,7 @@ int CNN_THOMAS_BALLS::cnn(float x0[16][16][1],  double output_tensor[3][1][1])
 	 + 0.072187 * x7[2][0][31] - 0.049169 * x7[2][1][31] + 0.002174 * x7[2][2][31] - 0.009408 * x7[2][3][31]
 	 - 0.031528 * x7[3][0][31] - 0.062281 * x7[3][1][31] + 0.013071 * x7[3][2][31] + 0.000842 * x7[3][3][31];
 
-	 output_tensor[2][0][0] =
+	scores[2] = 
 	 - 0.001046 * x7[0][0][0] + 0.062279 * x7[0][1][0] - 0.003300 * x7[0][2][0] + 0.000933 * x7[0][3][0]
 	 - 0.006727 * x7[1][0][0] - 0.023891 * x7[1][1][0] - 0.024532 * x7[1][2][0] - 0.003442 * x7[1][3][0]
 	 - 0.035977 * x7[2][0][0] - 0.005303 * x7[2][1][0] + 0.083088 * x7[2][2][0] + 0.063532 * x7[2][3][0]
@@ -24232,3 +24232,40 @@ int CNN_THOMAS_BALLS::cnn(float x0[16][16][1],  double output_tensor[3][1][1])
 
 	return 0;
 }
+
+bool CNN_THOMAS_BALLS::classify(const BallCandidates::Patch& p) 
+{
+	ASSERT(p.size() == 16);
+
+	for(size_t x=0; x < p.size(); x++) {
+		for(size_t y=0; y < p.size(); y++) {
+			// TODO: check
+			in_step[x][y][0] = ((float) p.data[p.size() * y + x]) / 255.0f;
+		}
+	}
+
+	cnn(in_step);
+
+	// std::cout << "scores[1]=" << scores[1] << " scores[0]=" << scores[0] << std::endl;
+	return res[0] > 0;
+}
+
+
+
+bool CNN_THOMAS_BALLS::classify(const BallCandidates::PatchYUVClassified& p)
+{
+	ASSERT(p.size() == 16);
+
+	for(size_t x=0; x < p.size(); x++) {
+		for(size_t y=0; y < p.size(); y++) {
+			// TODO: check
+			in_step[x][y][0] = ((float) p.data[p.size() * y + x].pixel.y) / 255.0f;
+		}
+	}
+
+	cnn(in_step);
+	//std::cout << "scores[1]=" << scores[1] << " scores[0]=" << scores[0] << std::endl;
+	return res[0] > 0;
+}
+float CNN_THOMAS_BALLS::getBallConfidence(){return 1.0f;}
+float CNN_THOMAS_BALLS::getNoballConfidence(){return 0.0f;}
