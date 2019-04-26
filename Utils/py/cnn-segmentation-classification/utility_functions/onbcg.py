@@ -425,11 +425,11 @@ def dense(_x, weights, b, c_inf):
     x_dim = _x.shape[0]
     y_dim = _x.shape[1]
     channels = _x.shape[2]
-
+    print("Bias: ", b)
     i = 0
 
     for output in range(len(x_out)):
-        c_inf["f"].write("\tscores[{:d}] = ".format(output))
+        c_inf["f"].write("\tscores[{:d}] = {:f}".format(output, b[output]))
         for c in range(channels):
             for x in range(x_dim):
                 for y in range(y_dim):
