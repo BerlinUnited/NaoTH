@@ -58,7 +58,7 @@ option search_for_ball
     {
       if (ball.percept.was_seen)
         goto look_at_ball_percept;
-      else if(head.yaw < -40)
+      else if(head.target_reached || head.got_stuck)
         goto search_for_ball_left_high;
       else
        stay;
@@ -80,7 +80,7 @@ option search_for_ball
     {
       if (ball.percept.was_seen)
         goto look_at_ball_percept;
-      else if(head.yaw > 40)
+      else if(head.target_reached || head.got_stuck)
         goto search_for_ball_right;
       else
        stay;
@@ -102,7 +102,7 @@ option search_for_ball
     {
       if (ball.percept.was_seen)
         goto look_at_ball_percept;
-      else if(head.yaw < -40) {
+      else if(head.target_reached || head.got_stuck) {
         if(@use_teamball && ball.team.is_valid)
           goto look_at_teamball;
         else
@@ -127,7 +127,7 @@ option search_for_ball
     {
       if (ball.percept.was_seen)
         goto look_at_ball_percept;
-      else if(head.yaw > 40)
+      else if(head.target_reached || head.got_stuck)
         goto search_for_ball_right_high;
       else
        stay;
