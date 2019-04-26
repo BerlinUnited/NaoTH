@@ -170,6 +170,13 @@ private: // helper methods
   //bool estimateCircle(const Edgel& a, const Edgel& b, const double radius, Vector2d& center);
   inline bool estimateCircle(const Edgel& a, const Edgel& b, const double radius, Vector2d& center)
   {
+    double half_distance = (a.point - b.point).abs()/2;
+
+    // the points need to be reasonably close to each other to form a circle
+    if(half_distance > 0.9*radius) {
+      return false;
+    }
+
     Math::Line la(a.point, Vector2d(a.direction).rotateLeft());
     Math::Line lb(b.point, Vector2d(b.direction).rotateLeft());
     double t = la.intersection(lb);
@@ -184,10 +191,12 @@ private: // helper methods
     const Vector2d direction = (c - lab.projection(c)).normalize();
 
     Vector2d between((a.point + b.point)/2);
-    double half_distance = (a.point - b.point).abs()/2;
-    double between_dist = sqrt(Math::sqr(radius) - Math::sqr(half_distance));
+    // NOTE: we allways make sure half_distance > radius, but just to be sure take fabs ;)
+    double between_dist = sqrt(fabs(Math::sqr(radius) - Math::sqr(half_distance)));
 
     center = between + direction*between_dist;
+    
+    //assert(std::isfinite(center.x) && std::isfinite(center.y));
     return true;
   }
 
