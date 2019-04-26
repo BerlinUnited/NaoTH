@@ -83,6 +83,9 @@ void RansacLineDetector::execute()
     if(ransacLine(result, inliers, start_edgel, end_edgel))
     {
       // refine the detected line segment
+      /*
+      // FIXME: the simpleLinearRegression doesn't work properly for two-variabe regression
+      //        don't use until it's fixed
       if(params.line.fit_lines_to_inliers) 
       {
         std::vector<Vector2d> points;
@@ -106,6 +109,7 @@ void RansacLineDetector::execute()
 
         result = regression_result;
       }
+      */
 
       getRansacLinePercept().fieldLineSegments.push_back(result);
 

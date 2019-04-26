@@ -55,7 +55,7 @@ private:
       PARAMETER_REGISTER(line.maxVariance) = 0.009;
       PARAMETER_REGISTER(line.length_of_var_check) = 800;
       PARAMETER_REGISTER(line.min_line_length) = 100;
-      PARAMETER_REGISTER(line.fit_lines_to_inliers) = true;
+      //PARAMETER_REGISTER(line.fit_lines_to_inliers) = false;
 
       //Circle
       PARAMETER_REGISTER(circle.maxIterations) = 50;
@@ -80,7 +80,7 @@ private:
       double length_of_var_check;
       double min_line_length;
 
-      bool fit_lines_to_inliers;
+      //bool fit_lines_to_inliers;
     } line;
 
     struct Circle {
