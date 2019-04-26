@@ -1,4 +1,5 @@
 import logging
+
 import math
 import multiprocessing
 import signal
@@ -67,6 +68,7 @@ class SimsparkController(multiprocessing.Process):
 
     def disconnect(self):
         """Disconnects this simspark monitor from the simspark instance."""
+        logging.debug('Simspark disconnecting, remaining commands: %d', self.__cmd_queue.qsize())
         if self.socket:
             # empty command queue before closing socket
             while not (self.__cmd_queue.empty() and self.__cmd_queue.qsize() == 0):
@@ -81,6 +83,7 @@ class SimsparkController(multiprocessing.Process):
     def cancel(self):
         """Sets the canceled flag of this process."""
         self.__cancel.set()
+        logging.debug('Simspark canceled')
 
     def is_connected(self):
         """

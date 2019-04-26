@@ -1,11 +1,11 @@
 #! /usr/bin/env python3
 import sys
-import json
 import argparse
 import shutil
 import sqlite3
 import configparser
 import signal
+import multiprocessing
 
 import naoth
 from AgentController import AgentController
@@ -212,9 +212,9 @@ def createLog(log:str):
     return Log()
 
 
-def wait_half(r, s, half_time, log:Log=None):
+def wait_half(r, s, half_time, log:Log=None, i:multiprocessing.Event=None):
     t = s.get_time()
-    while s.is_connected() and (t is None or t < half_time):
+    while s.is_connected() and (t is None or t < half_time) and ((i is not None and not i.is_set()) or i is None):
         # wait for the half to end
         time.sleep(1)
         _ = s.get_time()
@@ -307,6 +307,21 @@ def notify(signum, frame):
     else:
         print('WARNING: not connected to simulation!')
 
+def interrupt(signum, frame):
+    logging.info("Interrupted at {}".format(time.asctime()))
+    if interrupt:
+        interrupt.set()
+
+def stop(s, agents):
+    # stop simulation
+    s.cancel()
+    # wait for simspark to exit
+    while s.is_alive():
+        time.sleep(1)
+    s.join()
+    # stop remaining agents
+    for t, a in agents: a.cancel()
+    for t, a in agents: a.join()
 
 if __name__ == "__main__":
     args = parseArguments()
@@ -326,6 +341,10 @@ if __name__ == "__main__":
     log.new_run(config)
 
     signal.signal(signal.SIGHUP, notify)
+    signal.signal(signal.SIGINT, interrupt)
+
+    # TODO: is there a better solution to propagate the interrupt?!?
+    interrupt = multiprocessing.Event()
 
     left = config['left']
     right = config['right']
@@ -362,7 +381,11 @@ if __name__ == "__main__":
 
         prepare_game(s)     # move agents to ready location
         s.cmd_kickoff()     # start first half
-        wait_half(r, s, 600, log)   # wait for half complete
+        wait_half(r, s, 600, log, interrupt)   # wait for half complete
+
+        if interrupt.is_set():
+            stop(s, agents)
+            break
 
         log.half_result(r, left, right, 1, s.get_score('Left'), s.get_score('Right'))
 
@@ -370,21 +393,15 @@ if __name__ == "__main__":
 
         prepare_game(s)     # move agents to ready location
         s.cmd_kickoff()     # start first half
-        wait_half(r, s, 1200, log)  # wait for half complete
+        wait_half(r, s, 1200, log, interrupt)  # wait for half complete
 
         log.half_result(r, left, right, 2, s.get_score('Left'), s.get_score('Right'))
 
-        s.cancel()          # stop simulation
+        stop(s, agents)
 
-        # wait for simspark to exit
-        while s.is_alive():
-            time.sleep(1)
+        if interrupt.is_set():
+            break
 
-        s.join()
-
-        # stop remaining agents
-        for t, a in agents: a.cancel()
-        for t, a in agents: a.join()
 
     log.finish()
 
