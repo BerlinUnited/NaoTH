@@ -80,7 +80,7 @@ void RansacLineDetector::execute()
     inliers.clear();
     Math::LineSegment result;
     size_t start_edgel, end_edgel;
-    if(ransac(result, inliers, start_edgel, end_edgel))
+    if(ransacLine(result, inliers, start_edgel, end_edgel))
     {
       // refine the detected line segment
       if(params.line.fit_lines_to_inliers) 
@@ -208,7 +208,7 @@ void RansacLineDetector::execute()
   );
 }
 
-bool RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& inliers, size_t& start_edgel, size_t& end_edgel)
+bool RansacLineDetector::ransacLine(Math::LineSegment& result, std::vector<size_t>& inliers, size_t& start_edgel, size_t& end_edgel)
 {
   // not enough remaining edgels
   if(outliers.size() <= 2) {
@@ -323,7 +323,7 @@ bool RansacLineDetector::ransac(Math::LineSegment& result, std::vector<size_t>& 
   return false;
 }
 
-bool RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inliers) 
+bool RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inliers)
 {
   if(outliers.size() <= 2) {
     return false;
@@ -435,7 +435,7 @@ bool RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inl
 }
 
 
-Vector2d RansacLineDetector::refineCircle(const std::vector<size_t>& inliers, const Vector2d& center) 
+Vector2d RansacLineDetector::refineCircle(const std::vector<size_t>& inliers, const Vector2d& center) const
 {
   Vector2d result;
   double n = 0;

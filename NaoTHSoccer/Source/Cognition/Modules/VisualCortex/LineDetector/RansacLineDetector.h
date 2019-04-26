@@ -101,7 +101,7 @@ private:
 
 private: // detectors
 
-  bool ransac(Math::LineSegment& result, std::vector<size_t>& inliers, size_t& start_edgel, size_t& end_edgel);
+  bool ransacLine(Math::LineSegment& result, std::vector<size_t>& inliers, size_t& start_edgel, size_t& end_edgel);
 
   int ransacEllipse(Ellipse& result);
 
@@ -153,14 +153,14 @@ private: // helper methods
     the function 3 times with ith=1, ith=2 and ith=3.
     @return random item of the vector without replacement.
   */
-  size_t choose_random_from(std::vector<size_t> &vec, int ith) {
+  size_t choose_random_from(std::vector<size_t> &vec, int ith)  const {
     int max = (int) vec.size()-1;
     int random_pos = Math::random(ith, max);
     std::swap(vec[random_pos], vec[ith-1]);
     return vec[ith-1];
   }
 
-  Vector2i choose_random_two(const std::vector<size_t> &vec) {
+  Vector2i choose_random_two(const std::vector<size_t> &vec) const {
     //ASSERT(vec.size() > 1);
     int random_pos_one = Math::random(vec.size());
     int random_pos_two = (random_pos_one + Math::random(vec.size()-1) + 1) % vec.size();
@@ -168,7 +168,7 @@ private: // helper methods
   }
 
   //bool estimateCircle(const Edgel& a, const Edgel& b, const double radius, Vector2d& center);
-  inline bool estimateCircle(const Edgel& a, const Edgel& b, const double radius, Vector2d& center)
+  inline bool estimateCircle(const Edgel& a, const Edgel& b, const double radius, Vector2d& center) const 
   {
     double half_distance = (a.point - b.point).abs()/2;
 
@@ -200,9 +200,9 @@ private: // helper methods
     return true;
   }
 
-  Vector2d refineCircle(const std::vector<size_t>& inliers, const Vector2d& center);
+  Vector2d refineCircle(const std::vector<size_t>& inliers, const Vector2d& center) const;
 
-  inline bool isCircleInlier(size_t i, const Vector2d& center, double& distError, double maxAngleError) {
+  inline bool isCircleInlier(size_t i, const Vector2d& center, double& distError, double maxAngleError) const {
     const Edgel& e = getLineGraphPercept().edgelsOnField[i];
     const double radius = getFieldInfo().centerCircleRadius;
 
