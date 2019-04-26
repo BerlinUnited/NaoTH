@@ -56,7 +56,9 @@ public:
   currentMotion(motion::num_of_motions),
   currentMotionState(motion::stopped),
   headMotion(HeadMotionRequest::numOfHeadMotion),
-  target_reached(false)
+  target_reached(false),
+  head_target_reached(false),
+  head_got_stuck(false)
   {
   }
 
@@ -70,6 +72,8 @@ public:
   PlannedMotion plannedMotion;
   StepControlStatus stepControl;
   bool target_reached;
+  bool head_target_reached;
+  bool head_got_stuck;
 
   virtual void print(std::ostream& stream) const
   {

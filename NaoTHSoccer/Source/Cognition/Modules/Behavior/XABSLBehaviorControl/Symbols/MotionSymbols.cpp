@@ -53,6 +53,9 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumElement("head.camera", "head.camera.Bottom", naoth::CameraInfo::Bottom);
   engine.registerEnumeratedOutputSymbol("head.camera.id", "head.camera", &setCameraId, &getCameraId);
 
+  engine.registerBooleanInputSymbol("head.target_reached", &getMotionStatus().head_target_reached);
+  engine.registerBooleanInputSymbol("head.got_stuck", &getMotionStatus().head_got_stuck);
+
   //arm motion
   // enum type for motion
   for(int i = 0; i <= ArmMotionRequest::numOfArmMotion; i++)
