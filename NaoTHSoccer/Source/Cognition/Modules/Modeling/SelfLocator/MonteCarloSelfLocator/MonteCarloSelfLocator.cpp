@@ -720,7 +720,7 @@ void MonteCarloSelfLocator::updateByLines2018(const LinePercept2018& linePercept
 
       // classify the line percept
       // todo: this may make problems when the lines are distored
-      int length    = (relPercept.getLength() > 700)?LinesTable::long_lines:LinesTable::short_lines|LinesTable::long_lines;
+      int length    = (relPercept.getLength() > 700)?LinesTable::long_lines:(LinesTable::short_lines|LinesTable::long_lines|LinesTable::circle_lines);
       int direction = (fabs(abs_direction.x) > fabs(abs_direction.y))?LinesTable::along_lines:LinesTable::across_lines;
       //int type      = (linePercept.lines[lp].type == LinePercept::C)?LinesTable::circle_lines:length|direction;
       int type      = length|direction;
