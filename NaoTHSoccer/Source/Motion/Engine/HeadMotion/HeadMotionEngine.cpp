@@ -82,13 +82,15 @@ void HeadMotionEngine::execute()
 
   getMotionStatus().head_target_reached = (motion_target - current_yaw_pitch).abs() < params.at_target_threshold;
 
+  bool at_rest = absolute_velocity_buffer.getAverage().abs() < (getMotionStatus().currentMotion == motion::walk ? params.at_rest_threshold_walking : params.at_rest_threshold);
+
   getMotionStatus().head_got_stuck = (!getMotionStatus().head_target_reached)
-                                     && absolute_velocity_buffer.getAverage().abs() < params.at_rest_threshold
+                                     && at_rest
                                      && absolute_velocity_buffer.isFull();
 
   PLOT("HeadMotion:target_changed", target_changed);
   PLOT("HeadMotion:absolute_avg_velocity", absolute_velocity_buffer.getAverage().abs());
-  PLOT("HeadMotion:at_rest", absolute_velocity_buffer.getAverage().abs() < params.at_rest_threshold);
+  PLOT("HeadMotion:at_rest", at_rest);
   PLOT("HeadMotion:target_reached", getMotionStatus().head_target_reached);
   PLOT("HeadMotion:got_stuck", getMotionStatus().head_got_stuck);
 }//end execute

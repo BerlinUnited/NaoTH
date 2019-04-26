@@ -81,6 +81,7 @@ private:
       PARAMETER_REGISTER(cutting_velocity) = 40;
 
       PARAMETER_ANGLE_REGISTER(at_rest_threshold) = 0.3;
+      PARAMETER_ANGLE_REGISTER(at_rest_threshold_walking) = 10;
       PARAMETER_ANGLE_REGISTER(at_target_threshold) = 3;
 
       syncWithConfig();
@@ -91,6 +92,7 @@ private:
     double cutting_velocity;
 
     double at_rest_threshold;
+    double at_rest_threshold_walking;
     double at_target_threshold;
   } params;
 
