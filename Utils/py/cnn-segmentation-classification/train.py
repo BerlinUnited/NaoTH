@@ -111,6 +111,66 @@ def fy_half():
     model.add(Dense(3, activation="relu"))
 
     return model
+
+def fy_step1():
+    input_shape = (16, 16, 1)
+
+    model = Sequential()
+    model.add(Convolution2D(12, (3, 3), input_shape=input_shape, padding='same'))
+    model.add(LeakyReLU(alpha=0.0))  # alpha unknown, so default
+ 
+    model.add(Convolution2D(13, (3, 3), padding='same'))
+    model.add(LeakyReLU())
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    model.add(Convolution2D(14, (3, 3), padding='same'))
+    model.add(LeakyReLU())
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    model.add(Convolution2D(15, (3, 3), padding='same'))
+    model.add(LeakyReLU(alpha=0.0))
+ 
+    model.add(Convolution2D(15, (1, 1), padding='same'))
+   
+    # classifier
+    model.add(Flatten())
+    # radius, x, y
+    model.add(Dense(3, activation="relu"))
+
+    return model
+
+def fy_lessfeat():
+    input_shape = (16, 16, 1)
+
+    model = Sequential()
+    model.add(Convolution2D(4, (3, 3), input_shape=input_shape, padding='same'))
+    model.add(LeakyReLU(alpha=0.0))  # alpha unknown, so default
+    # model.add(BatchNormalization())
+
+    model.add(Convolution2D(10, (3, 3), padding='same'))
+    model.add(LeakyReLU())
+    # model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    model.add(Convolution2D(20, (3, 3), padding='same'))
+    model.add(LeakyReLU())
+    # model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    model.add(Convolution2D(22, (3, 3), padding='same'))
+    model.add(LeakyReLU(alpha=0.0))
+    # model.add(BatchNormalization())
+#    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    model.add(Convolution2D(22, (1, 1), padding='same'))
+   
+    # classifier
+    model.add(Flatten())
+    #    model.add(Dense(32))
+    # radius, x, y
+    model.add(Dense(3, activation="relu"))
+
+    return model
     
 def str2bool(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
@@ -157,8 +217,11 @@ with open(imgdb_path, "rb") as f:
 # define the Keras network
 if args.proceed is None or args.proceed == False:
     print("Creating new model")
-    model = fy_max()
+#    model = fy_max()
 #    model = fy_half()
+#    model = fy_lessfeat()
+#    model = fy_step1()
+#    model = naodevils()
 else:
     print("Loading model " + model_path)
     model = load_model(model_path)
