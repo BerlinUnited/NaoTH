@@ -125,6 +125,7 @@ private: // local types
   public: 
     Parameters(): ParameterList("MCSLParameters")
     {
+      // particle filter params
       PARAMETER_REGISTER(thresholdCanopy) = 900;
       PARAMETER_REGISTER(resamplingThreshhold) = 0.01;
 
@@ -135,21 +136,26 @@ private: // local types
       PARAMETER_REGISTER(motionNoiseDistance) = 5.0;
       PARAMETER_REGISTER(motionNoiseAngle) = 0.01;
 
+      // goal
       PARAMETER_REGISTER(updateByGoalPostTracking) = false;
       PARAMETER_REGISTER(updateByGoalPostLocalize) = true;
       PARAMETER_REGISTER(goalPostSigmaDistance) = 0.1;
       PARAMETER_REGISTER(goalPostSigmaAngle) = 0.1;
+      PARAMETER_REGISTER(maxAcceptedGoalErrorWhileTracking) = 0;
 
-      PARAMETER_REGISTER(updateByLinePoints) = true;
+      // this is legacy
+      PARAMETER_REGISTER(updateByLinePoints) = false;
       PARAMETER_REGISTER(linePointsSigmaDistance) = 0.1;
       PARAMETER_REGISTER(linePointsSigmaAngle) = 0.1;
       PARAMETER_REGISTER(linePointsMaxNumber) = 10;
 
+      // lines
       PARAMETER_REGISTER(updateByLinePercept) = true;
-
       PARAMETER_REGISTER(updateByShortLinePercept) = false;
-
+      PARAMETER_REGISTER(lineMaxNumber) = 3;
+      PARAMETER_REGISTER(lineMinLength) = 300;
       
+      // circle
       PARAMETER_REGISTER(sensorResetByMiddleCircle) = true;
       PARAMETER_REGISTER(updateByMiddleCircle) = true;
       PARAMETER_REGISTER(updateByLinePerceptCircle) = true;
@@ -176,14 +182,13 @@ private: // local types
       PARAMETER_REGISTER(resampleSUS) = false;
       PARAMETER_REGISTER(resampleGT07) = true;
 
-      PARAMETER_REGISTER(maxAcceptedGoalErrorWhileTracking) = 0;
-
       PARAMETER_REGISTER(updateByOdometryWhenBlind) = true;
 
       // load from the file after registering all parameters
       syncWithConfig();
     }
 
+    // particle filter parameters
     double thresholdCanopy;
     double resamplingThreshhold;
 
@@ -194,20 +199,27 @@ private: // local types
     double motionNoiseDistance;
     double motionNoiseAngle;
 
+    // goal
     bool updateByGoalPostTracking;
     bool updateByGoalPostLocalize;
     double goalPostSigmaDistance;
     double goalPostSigmaAngle;
+    double maxAcceptedGoalErrorWhileTracking;
 
+    // line points (legacy)
     bool updateByLinePoints;
     double linePointsSigmaDistance;
     double linePointsSigmaAngle;
     int linePointsMaxNumber;
-
+    
+    
+    // lines
     bool updateByLinePercept;
     bool updateByShortLinePercept;
-
+    int lineMaxNumber;
+    int lineMinLength;
     
+    // cirlcle
     bool sensorResetByMiddleCircle;
     bool updateByMiddleCircle;
     bool updateByLinePerceptCircle;
@@ -232,9 +244,8 @@ private: // local types
     bool resampleSUS;
     bool resampleGT07;
 
-    double maxAcceptedGoalErrorWhileTracking;
-
     bool updateByOdometryWhenBlind;
+
   } parameters;
 
   class LineDensity {

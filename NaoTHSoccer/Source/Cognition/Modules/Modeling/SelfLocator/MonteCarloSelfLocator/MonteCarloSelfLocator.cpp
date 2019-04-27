@@ -677,7 +677,7 @@ void MonteCarloSelfLocator::updateByLines2018(const LinePercept2018& linePercept
   double shortestLine = 1e+5; // very long...
 
   // todo: parameter for max lines to update by
-  for(size_t lp=0; lp < linePercept.fieldLineSegments.size() && lp < 3; lp++)
+  for(size_t lp=0; lp < linePercept.fieldLineSegments.size() && lp < parameters.lineMaxNumber; lp++)
   {
     //int idx = Math::random((int)linePercept.lines.size());
     // dont use the lines which are parts of the circle
@@ -685,7 +685,7 @@ void MonteCarloSelfLocator::updateByLines2018(const LinePercept2018& linePercept
     //if(linePercept.lines[idx].type == LinePercept::C && linePercept.middleCircleWasSeen)
     //  continue;
 
-    if(linePercept.fieldLineSegments[lp].getLength() < 300) { // don't use too short lines
+    if(linePercept.fieldLineSegments[lp].getLength() < parameters.lineMinLength) { // don't use too short lines
       continue;
     }
 
