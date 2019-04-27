@@ -22,6 +22,14 @@ void ZMPPreviewController::execute(){
     getZMPReferenceBuffer().pop();
 
     getTargetCoMFeetPose().pose.com.translation = com;
+
+    PLOT("ZMPPreviewController:is_stationary", is_stationary());
+    PLOT("ZMPPreviewController:com:x", com.x);
+    PLOT("ZMPPreviewController:com:y", com.y);
+    PLOT("ZMPPreviewController:dcom:x", dcom.x);
+    PLOT("ZMPPreviewController:dcom:y", dcom.y);
+    PLOT("ZMPPreviewController:ddcom:x", ddcom.x);
+    PLOT("ZMPPreviewController:ddcom:y", ddcom.y);
 }
 
 ZMPPreviewController::ZMPPreviewController():
