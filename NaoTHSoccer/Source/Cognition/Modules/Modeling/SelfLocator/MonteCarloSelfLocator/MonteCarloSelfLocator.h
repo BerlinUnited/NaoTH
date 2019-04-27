@@ -127,9 +127,9 @@ private: // local types
     {
       // particle filter params
       PARAMETER_REGISTER(thresholdCanopy) = 900;
-      PARAMETER_REGISTER(resamplingThreshhold) = 0.01;
+      PARAMETER_REGISTER(resamplingThreshhold) = 0.02;
 
-      PARAMETER_REGISTER(processNoiseDistance) = 70;
+      PARAMETER_REGISTER(processNoiseDistance) = 40;
       PARAMETER_REGISTER(processNoiseAngle) = 0.1;
 
       PARAMETER_REGISTER(motionNoise) = false;
@@ -146,13 +146,13 @@ private: // local types
 
       // this is legacy
       PARAMETER_REGISTER(updateByLinePoints) = false;
-      PARAMETER_REGISTER(linePointsSigmaDistance) = 0.1;
+      PARAMETER_REGISTER(linePointsSigmaDistance) = 0.2;
       PARAMETER_REGISTER(linePointsSigmaAngle) = 0.1;
       PARAMETER_REGISTER(linePointsMaxNumber) = 10;
 
       // lines
       PARAMETER_REGISTER(updateByLinePercept) = true;
-      PARAMETER_REGISTER(updateByShortLinePercept) = false;
+      PARAMETER_REGISTER(updateByShortLinePercept) = true;
       PARAMETER_REGISTER(lineSigmaDistance) = 0.1;
       PARAMETER_REGISTER(lineSigmaAngle) = 0.1;
       PARAMETER_REGISTER(lineMaxNumber) = 3;
@@ -163,7 +163,7 @@ private: // local types
       PARAMETER_REGISTER(updateByMiddleCircle) = true;
       PARAMETER_REGISTER(updateByLinePerceptCircle) = true;
       PARAMETER_REGISTER(updateByRansacCircle) = true;
-      PARAMETER_REGISTER(sigmaDistanceCenterCircle) = 0.2;
+      PARAMETER_REGISTER(sigmaDistanceCenterCircle) = 0.1;
       PARAMETER_REGISTER(sigmaAngleCenterCircle) = 0.1;
 
       PARAMETER_REGISTER(updateByOldPose) = false;
