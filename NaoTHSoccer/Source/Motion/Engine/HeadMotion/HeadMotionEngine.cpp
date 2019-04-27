@@ -69,6 +69,7 @@ void HeadMotionEngine::execute()
   bool target_changed = (last_motion_target - motion_target).abs() > params.at_target_threshold;
   if(last_id != getHeadMotionRequest().id
      || target_changed){
+	  //TODO vielleicht ist es sinnvoller die gelenkwinkel zu filtern anstatt die geschwindigkeit
       absolute_velocity_buffer.clear();
   }
 
