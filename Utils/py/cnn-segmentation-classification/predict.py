@@ -39,7 +39,7 @@ model = keras.models.load_model(model_path)
 
 cv2.namedWindow('image',cv2.WINDOW_NORMAL)
 cv2.moveWindow("image", 0,0)
-#cv2.resizeWindow('image', 600,600)
+cv2.resizeWindow('image', 1700, 900)
 
 out_images = list()
 print("Predicting image...", end="")
