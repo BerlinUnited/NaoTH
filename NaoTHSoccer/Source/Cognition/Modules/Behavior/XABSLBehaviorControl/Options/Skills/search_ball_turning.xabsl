@@ -1,5 +1,5 @@
 /** just turning and looking for ball */
-option search_ball_simple
+option search_ball_turning
 {
   enum direction @search_direction;
 
