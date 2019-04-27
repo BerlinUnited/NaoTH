@@ -21,9 +21,11 @@ option role_unknown
         goto striker_subrole;
       else if(strategy.role_d == goalie_supporter)
         // TODO: implement usefull behavior for the goalie supporter
+        // NOTE: be aware of the transition between different subroles and the passive behavior!
         stay;
       else if(strategy.role_d == supporter)
-      // TODO: implement usefull behavior for the supporter
+        // TODO: implement usefull behavior for the supporter
+        // NOTE: be aware of the transition between different subroles and the passive behavior!
         stay;
       else 
         stay;
