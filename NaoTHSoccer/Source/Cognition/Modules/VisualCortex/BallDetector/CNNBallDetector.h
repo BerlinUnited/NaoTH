@@ -191,7 +191,7 @@ private:
   void extractPatches();
 
 private: // for debugging
-  Stopwatch østopwatch;
+  Stopwatch stopwatch;
   std::vector<double> stopwatch_values;
   RingBufferWithSum<double, 100> mean_of_means;
 

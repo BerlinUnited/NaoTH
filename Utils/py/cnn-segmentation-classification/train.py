@@ -102,6 +102,62 @@ def fy_1300():
 
     return model
 
+def fy_stride():
+    input_shape = (16, 16, 1)
+
+    model = Sequential()
+    model.add(Convolution2D(4, (3, 3), input_shape=input_shape, padding='same'))
+    model.add(LeakyReLU(alpha=0.0))  # alpha unknown, so default
+
+    model.add(Convolution2D(5, (3, 3), padding='same'))
+    model.add(LeakyReLU())
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    model.add(Convolution2D(6, (3, 3), strides=(2, 2), padding='same'))
+    model.add(LeakyReLU())
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    model.add(Convolution2D(7, (3, 3), padding='same'))
+    model.add(LeakyReLU(alpha=0.0))
+
+    model.add(Convolution2D(7, (1, 1), padding='same'))
+   
+    # classifier
+    model.add(Flatten())
+    #    model.add(Dense(32))
+    # radius, x, y
+    model.add(Dense(3, activation="relu"))
+
+    return model
+
+def fy_1500():
+    input_shape = (16, 16, 1)
+
+    model = Sequential()
+    model.add(Convolution2D(4, (3, 3), input_shape=input_shape, padding='same'))
+    model.add(LeakyReLU(alpha=0.0))  # alpha unknown, so default
+
+    model.add(Convolution2D(4, (3, 3), padding='same'))
+    model.add(LeakyReLU())
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    model.add(Convolution2D(8, (3, 3), padding='same'))
+    model.add(LeakyReLU())
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    model.add(Convolution2D(8, (3, 3), padding='same'))
+    model.add(LeakyReLU(alpha=0.0))
+
+    model.add(Convolution2D(8, (1, 1), padding='same'))
+   
+    # classifier
+    model.add(Flatten())
+    #    model.add(Dense(32))
+    # radius, x, y
+    model.add(Dense(3, activation="relu"))
+
+    return model
+
 def fy_half():
     input_shape = (16, 16, 1)
 
@@ -240,11 +296,15 @@ with open(imgdb_path, "rb") as f:
 # define the Keras network
 if args.proceed is None or args.proceed == False:
     print("Creating new model")
+
+    model = fy_stride()
 #    model = fy_max()
 #    model = fy_half()
 #    model = fy_lessfeat()
 #    model = fy_step1()
-    model = fy_1300()
+#    model = fy_1300()
+#    model = fy_1000()
+#    model = fy_1500()
 #    model = naodevils()
 else:
     print("Loading model " + model_path)
