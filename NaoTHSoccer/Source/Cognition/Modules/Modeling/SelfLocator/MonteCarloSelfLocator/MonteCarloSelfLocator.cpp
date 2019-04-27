@@ -230,7 +230,6 @@ void MonteCarloSelfLocator::execute()
         sensorResetBySensingGoalModel(theSampleSet, (int)theSampleSet.size() - 1);
       }
       if(parameters.sensorResetByMiddleCircle) {
-        //sensorResetByMiddleCircle(theSampleSet, getRansacCirclePercept().middleCircleCenter);
         sensorResetByMiddleCircle(theSampleSet);
       }
 
@@ -301,7 +300,6 @@ void MonteCarloSelfLocator::execute()
       }
 
       if(parameters.sensorResetByMiddleCircle) {
-        //sensorResetByMiddleCircle(theSampleSet, getRansacCirclePercept().middleCircleCenter);
         sensorResetByMiddleCircle(theSampleSet);
       }
 
@@ -442,6 +440,7 @@ void MonteCarloSelfLocator::updateBySituation()
 bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
 {
   /*
+  // NOTE: those updates are done directly in separate phases
   if(parameters.updateByGoalPost)
   {
     if(getGoalPercept().getNumberOfSeenPosts() > 0) {
@@ -453,19 +452,8 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
   }
   */
 
-  if(parameters.updateByMiddleCircle) {
-    /*
-    if(parameters.updateByLinePerceptCircle && getLinePercept().middleCircleWasSeen) {
-      updateByMiddleCircle(getLinePercept().middleCircleCenter, sampleSet);
-    }
-
-    if(parameters.updateByRansacCircle && getRansacCirclePercept().middleCircleWasSeen) {
-      updateByMiddleCircle(getRansacCirclePercept().middleCircleCenter, sampleSet);
-    }
-    */
-    if(parameters.updateByRansacCircle && getRansacCirclePercept2018().wasSeen) {
-      updateByMiddleCircle(getRansacCirclePercept2018().center, sampleSet);
-    }
+  if(parameters.updateByRansacCircle && getRansacCirclePercept2018().wasSeen) {
+    updateByMiddleCircle(getRansacCirclePercept2018().center, sampleSet);
   }
 
   if(parameters.updateByCompas && getProbabilisticQuadCompas().isValid()) {
@@ -679,7 +667,7 @@ void MonteCarloSelfLocator::updateByLines2018(const LinePercept2018& linePercept
   double shortestLine = 1e+5; // very long...
 
   // todo: parameter for max lines to update by
-  for(size_t lp=0; lp < linePercept.fieldLineSegments.size() && lp < parameters.lineMaxNumber; lp++)
+  for(size_t lp=0; lp < linePercept.fieldLineSegments.size() && lp < (size_t)parameters.lineMaxNumber; lp++)
   {
     //int idx = Math::random((int)linePercept.lines.size());
     // dont use the lines which are parts of the circle

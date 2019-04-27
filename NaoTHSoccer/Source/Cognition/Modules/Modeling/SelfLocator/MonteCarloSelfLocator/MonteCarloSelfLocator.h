@@ -159,9 +159,7 @@ private: // local types
       PARAMETER_REGISTER(lineMinLength) = 300;
       
       // circle
-      PARAMETER_REGISTER(sensorResetByMiddleCircle) = true;
-      PARAMETER_REGISTER(updateByMiddleCircle) = true;
-      PARAMETER_REGISTER(updateByLinePerceptCircle) = true;
+      PARAMETER_REGISTER(sensorResetByMiddleCircle) = true; // LinePerceptAugmented
       PARAMETER_REGISTER(updateByRansacCircle) = true;
       PARAMETER_REGISTER(sigmaDistanceCenterCircle) = 0.1;
       PARAMETER_REGISTER(sigmaAngleCenterCircle) = 0.1;
@@ -227,8 +225,6 @@ private: // local types
     
     // cirlcle
     bool sensorResetByMiddleCircle;
-    bool updateByMiddleCircle;
-    bool updateByLinePerceptCircle;
     bool updateByRansacCircle;
     double sigmaDistanceCenterCircle;
     double sigmaAngleCenterCircle;
