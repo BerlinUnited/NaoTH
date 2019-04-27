@@ -461,9 +461,10 @@ def size(x, i=1):
 def write_header(c_inf, arch):
     c_inf["f"] = open(c_inf["path"], 'w')
     c_inf["layer"] = 1
+    c_inf["f"].write('#include \"CNN_thomas_balls.h\"\n\n')
+    
     if arch == 'sse3':
         c_inf["f"].write('#include <emmintrin.h>\n')
-        c_inf["f"].write('#include \"CNN_thomas_balls.h\"\n\n')
 
     c_inf["f"].write('#include <math.h>\nint CNN_THOMAS_BALLS::cnn(float x0[{:d}][{:d}][{:d}])\n'.format(
         c_inf["x_dim"],
