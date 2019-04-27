@@ -369,6 +369,16 @@ void MonteCarloSelfLocator::resetLocator()
 
 void MonteCarloSelfLocator::updateByOdometry(SampleSet& sampleSet, bool noise, bool onlyRotation) const
 {
+  if(parameters.updateByOdometryRelative) {
+    updateByOdometryRelative(sampleSet, noise, onlyRotation);
+  } else {
+    updateByOdometryAbsolute(sampleSet, noise, onlyRotation);
+  }
+}
+
+// odometry update with the independend noise model
+void MonteCarloSelfLocator::updateByOdometryAbsolute(SampleSet& sampleSet, bool noise, bool onlyRotation) const
+{
   Pose2D odometryDelta = getOdometryData() - lastRobotOdometry;
 
   if(onlyRotation) {
@@ -384,8 +394,20 @@ void MonteCarloSelfLocator::updateByOdometry(SampleSet& sampleSet, bool noise, b
       sampleSet[i].translation.y += (Math::random()-0.5)*parameters.motionNoiseDistance;
       sampleSet[i].rotation = Math::normalize(sampleSet[i].rotation + (Math::random()-0.5)*parameters.motionNoiseAngle);
     }
+  }
+}//end updateByOdometryAbsolute
 
-    /*
+// odometry update with the relative noise model
+void MonteCarloSelfLocator::updateByOdometryRelative(SampleSet& sampleSet, bool noise, bool onlyRotation) const
+{
+  Pose2D odometryDelta = getOdometryData() - lastRobotOdometry;
+
+  if(onlyRotation) {
+    odometryDelta.translation = Vector2d();
+  }
+
+  for (size_t i = 0; i < sampleSet.size(); i++)
+  {
     Pose2D odometryModel(odometryDelta);
 
     if(noise) {
@@ -394,9 +416,9 @@ void MonteCarloSelfLocator::updateByOdometry(SampleSet& sampleSet, bool noise, b
     }
 
     sampleSet[i] += odometryModel;
-    */
+    Math::normalize(sampleSet[i].rotation);
   }
-}//end updateByOdometry
+}//end updateByOdometryRelative
 
 void MonteCarloSelfLocator::updateBySituation()
 {

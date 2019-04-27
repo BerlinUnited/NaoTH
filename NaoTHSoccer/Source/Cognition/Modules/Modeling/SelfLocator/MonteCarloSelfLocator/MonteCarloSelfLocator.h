@@ -132,9 +132,14 @@ private: // local types
       PARAMETER_REGISTER(processNoiseDistance) = 40;
       PARAMETER_REGISTER(processNoiseAngle) = 0.1;
 
+      PARAMETER_REGISTER(updateByOdometryWhenBlind) = true;
+      PARAMETER_REGISTER(updateByOdometryRelative) = false;
       PARAMETER_REGISTER(motionNoise) = false;
       PARAMETER_REGISTER(motionNoiseDistance) = 5.0;
       PARAMETER_REGISTER(motionNoiseAngle) = 0.01;
+
+      PARAMETER_REGISTER(resampleSUS) = false;
+      PARAMETER_REGISTER(resampleGT07) = true;
 
       // goal
       PARAMETER_REGISTER(updateByGoalPostTracking) = false;
@@ -181,11 +186,6 @@ private: // local types
       PARAMETER_REGISTER(startPositionsSigmaDistance) = 500;
       PARAMETER_REGISTER(startPositionsSigmaAngle) = 0.5;
 
-      PARAMETER_REGISTER(resampleSUS) = false;
-      PARAMETER_REGISTER(resampleGT07) = true;
-
-      PARAMETER_REGISTER(updateByOdometryWhenBlind) = true;
-
       // load from the file after registering all parameters
       syncWithConfig();
     }
@@ -197,9 +197,14 @@ private: // local types
     double processNoiseDistance;
     double processNoiseAngle;
 
+    bool updateByOdometryWhenBlind;
+    bool updateByOdometryRelative;
     bool motionNoise;
     double motionNoiseDistance;
     double motionNoiseAngle;
+
+    bool resampleSUS;
+    bool resampleGT07;
 
     // goal
     bool updateByGoalPostTracking;
@@ -244,11 +249,6 @@ private: // local types
     bool updateBySituation;
     double startPositionsSigmaDistance;
     double startPositionsSigmaAngle;
-
-    bool resampleSUS;
-    bool resampleGT07;
-
-    bool updateByOdometryWhenBlind;
 
   } parameters;
 
@@ -314,6 +314,8 @@ private: // data members
 
 private: // workers
   void updateByOdometry(SampleSet& sampleSet, bool noise, bool onlyRotation) const;
+  void updateByOdometryAbsolute(SampleSet& sampleSet, bool noise, bool onlyRotation) const;
+  void updateByOdometryRelative(SampleSet& sampleSet, bool noise, bool onlyRotation) const;
 
   bool updateBySensors(SampleSet& sampleSet) const;
   void updateByGoalPosts(const GoalPercept& goalPercept, SampleSet& sampleSet) const;
