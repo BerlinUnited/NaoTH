@@ -46,7 +46,7 @@ def naodevils():
     return model
 
 
-def naodevils_yolo():
+def fy_max():
     input_shape = (16, 16, 1)
 
     model = Sequential()
@@ -125,7 +125,7 @@ with open(imgdb_path, "rb") as f:
 # define the Keras network
 if args.proceed is None or args.proceed == False:
     print("Creating new model")
-    model = naodevils_yolo()
+    model = fy_max()
 else:
     print("Loading model " + model_path)
     model = load_model(model_path)
