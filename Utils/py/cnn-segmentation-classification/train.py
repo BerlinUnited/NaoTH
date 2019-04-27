@@ -217,7 +217,7 @@ with open(imgdb_path, "rb") as f:
 # define the Keras network
 if args.proceed is None or args.proceed == False:
     print("Creating new model")
-#    model = fy_max()
+    model = fy_max()
 #    model = fy_half()
 #    model = fy_lessfeat()
 #    model = fy_step1()
