@@ -141,7 +141,8 @@ private: // local types
       PARAMETER_REGISTER(updateByGoalPostLocalize) = true;
       PARAMETER_REGISTER(goalPostSigmaDistance) = 0.1;
       PARAMETER_REGISTER(goalPostSigmaAngle) = 0.1;
-      PARAMETER_REGISTER(maxAcceptedGoalErrorWhileTracking) = 0;
+      PARAMETER_REGISTER(maxAcceptedGoalErrorWhileTracking) = 3000;
+      PARAMETER_REGISTER(sensorResetByGoalModel) = true;
 
       // this is legacy
       PARAMETER_REGISTER(updateByLinePoints) = false;
@@ -207,6 +208,7 @@ private: // local types
     double goalPostSigmaDistance;
     double goalPostSigmaAngle;
     double maxAcceptedGoalErrorWhileTracking;
+    bool sensorResetByGoalModel;
 
     // line points (legacy)
     bool updateByLinePoints;

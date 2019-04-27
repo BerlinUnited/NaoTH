@@ -226,7 +226,9 @@ void MonteCarloSelfLocator::execute()
       resampleMH(theSampleSet);
       //resampleMHOld(theSampleSet);
 
-      sensorResetBySensingGoalModel(theSampleSet, (int)theSampleSet.size() - 1);
+      if(parameters.sensorResetByGoalModel) {
+        sensorResetBySensingGoalModel(theSampleSet, (int)theSampleSet.size() - 1);
+      }
       if(parameters.sensorResetByMiddleCircle) {
         //sensorResetByMiddleCircle(theSampleSet, getRansacCirclePercept().middleCircleCenter);
         sensorResetByMiddleCircle(theSampleSet);
