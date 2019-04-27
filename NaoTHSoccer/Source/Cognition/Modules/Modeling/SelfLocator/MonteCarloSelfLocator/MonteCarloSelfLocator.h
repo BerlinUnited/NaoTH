@@ -152,6 +152,8 @@ private: // local types
       // lines
       PARAMETER_REGISTER(updateByLinePercept) = true;
       PARAMETER_REGISTER(updateByShortLinePercept) = false;
+      PARAMETER_REGISTER(lineSigmaDistance) = 0.1;
+      PARAMETER_REGISTER(lineSigmaAngle) = 0.1;
       PARAMETER_REGISTER(lineMaxNumber) = 3;
       PARAMETER_REGISTER(lineMinLength) = 300;
       
@@ -216,6 +218,8 @@ private: // local types
     // lines
     bool updateByLinePercept;
     bool updateByShortLinePercept;
+    double lineSigmaDistance;
+    double lineSigmaAngle;
     int lineMaxNumber;
     int lineMinLength;
     

@@ -672,8 +672,8 @@ void MonteCarloSelfLocator::updateByLinePoints(const LineGraphPercept& lineGraph
 void MonteCarloSelfLocator::updateByLines2018(const LinePercept2018& linePercept, SampleSet& sampleSet) const
 {
   const double cameraHeight = getCameraMatrix().translation.z;
-  const double sigmaDistance = parameters.goalPostSigmaDistance;
-  const double sigmaAngle = parameters.goalPostSigmaAngle;
+  const double sigmaDistance = parameters.lineSigmaDistance;
+  const double sigmaAngle = parameters.lineSigmaAngle;
   double shortestLine = 1e+5; // very long...
 
   // todo: parameter for max lines to update by
