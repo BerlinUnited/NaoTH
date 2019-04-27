@@ -223,7 +223,9 @@ void CNNBallDetector::calculateCandidates()
         }
       }
 
+      STOPWATCH_START("CNNBallDetector:predict");
       std::vector<fdeep::tensor5> result = cnn->predict({inputTensor});
+      STOPWATCH_STOP("CNNBallDetector:predict");
 
       bool found = false;
       double radius = 0.0;
