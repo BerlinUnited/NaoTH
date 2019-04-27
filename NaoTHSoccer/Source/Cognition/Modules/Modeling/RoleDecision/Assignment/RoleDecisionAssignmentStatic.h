@@ -35,9 +35,9 @@ public:
         for (const auto& i : getTeamMessage().data) {
             const auto& r = params.assignment_role.find(i.first);
             if(r == params.assignment_role.cend()) {
-                getRoleDecisionModel().roles[i.first] = Roles::unknown;
+                getRoleDecisionModel().roles[i.first].role = Roles::unknown;
             } else {
-                getRoleDecisionModel().roles[i.first] = r->second;
+                getRoleDecisionModel().roles[i.first].role = r->second;
             }
         }
     }
