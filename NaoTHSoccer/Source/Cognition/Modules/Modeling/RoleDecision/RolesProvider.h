@@ -6,9 +6,13 @@
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Infrastructure/Roles.h"
 #include "Tools/Debug/DebugParameterList.h"
+#include "Tools/Debug/DebugRequest.h"
 
 BEGIN_DECLARE_MODULE(RolesProvider)
   PROVIDE(DebugParameterList)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugDrawings)
+
   REQUIRE(FieldInfo)
 
   PROVIDE(Roles)
@@ -20,6 +24,13 @@ class RolesProvider : public RolesProviderBase
 public:
     RolesProvider() : params(this)
     {
+        DEBUG_REQUEST_REGISTER("RoleDecision:Position:defaults:draw_active_home_positions", "draws the ACTIVE home role positions on the field as robot with role name", false);
+        DEBUG_REQUEST_REGISTER("RoleDecision:Position:defaults:draw_inactive_home_positions", "draws the INACTIVE home role positions on the field as robot with role name", false);
+        DEBUG_REQUEST_REGISTER("RoleDecision:Position:defaults:draw_active_own_kickoff_positions", "draws the ACTIVE own kickoff role positions on the field as robot with role name", false);
+        DEBUG_REQUEST_REGISTER("RoleDecision:Position:defaults:draw_inactive_own_kickoff_positions", "draws the INACTIVE own kickoff role positions on the field as robot with role name", false);
+        DEBUG_REQUEST_REGISTER("RoleDecision:Position:defaults:draw_active_opp_kickoff_positions", "draws the ACTIVE opp kickoff role positions on the field as robot with role name", false);
+        DEBUG_REQUEST_REGISTER("RoleDecision:Position:defaults:draw_inactive_opp_kickoff_positions", "draws the INACTIVE opp kickoff role positions on the field as robot with role name", false);
+
         getDebugParameterList().add(&params);
     }
 
@@ -30,6 +41,7 @@ public:
 
     virtual void execute()
     {
+        debugDrawings();
     }
 
 private:
@@ -145,6 +157,70 @@ private:
 
         }
     } params;
+
+    void inline debugDrawings()
+    {
+        DEBUG_REQUEST("RoleDecision:Position:defaults:draw_active_home_positions",
+            FIELD_DRAWING_CONTEXT;
+            for(const auto& r : getRoles().defaults) {
+                if(getRoles().isRoleActive(r.first)) {
+                    PEN("0000ff", 20);
+                    ROBOT(r.second.home.x, r.second.home.y, 0);
+                    TEXT_DRAWING2(r.second.home.x, r.second.home.y-250, 0.6, Roles::getName(r.first));
+                }
+            }
+        );
+        DEBUG_REQUEST("RoleDecision:Position:defaults:draw_inactive_home_positions",
+            FIELD_DRAWING_CONTEXT;
+            for(const auto& r : getRoles().defaults) {
+                if(!getRoles().isRoleActive(r.first)) {
+                    PEN("0000ff", 20);
+                    ROBOT(r.second.home.x, r.second.home.y, 0);
+                    TEXT_DRAWING2(r.second.home.x, r.second.home.y-250, 0.6, Roles::getName(r.first));
+                }
+            }
+        );
+        DEBUG_REQUEST("RoleDecision:Position:defaults:draw_active_own_kickoff_positions",
+            FIELD_DRAWING_CONTEXT;
+            for(const auto& r : getRoles().defaults) {
+                if(getRoles().isRoleActive(r.first)) {
+                    PEN("0000ff", 20);
+                    ROBOT(r.second.own.x, r.second.own.y, 0);
+                    TEXT_DRAWING2(r.second.own.x, r.second.own.y-250, 0.6, Roles::getName(r.first));
+                }
+            }
+        );
+        DEBUG_REQUEST("RoleDecision:Position:defaults:draw_inactive_own_kickoff_positions",
+            FIELD_DRAWING_CONTEXT;
+            for(const auto& r : getRoles().defaults) {
+                if(!getRoles().isRoleActive(r.first)) {
+                    PEN("0000ff", 20);
+                    ROBOT(r.second.own.x, r.second.own.y, 0);
+                    TEXT_DRAWING2(r.second.own.x, r.second.own.y-250, 0.6, Roles::getName(r.first));
+                }
+            }
+        );
+        DEBUG_REQUEST("RoleDecision:Position:defaults:draw_active_opp_kickoff_positions",
+            FIELD_DRAWING_CONTEXT;
+            for(const auto& r : getRoles().defaults) {
+                if(getRoles().isRoleActive(r.first)) {
+                    PEN("0000ff", 20);
+                    ROBOT(r.second.opp.x, r.second.opp.y, 0);
+                    TEXT_DRAWING2(r.second.opp.x, r.second.opp.y-250, 0.6, Roles::getName(r.first));
+                }
+            }
+        );
+        DEBUG_REQUEST("RoleDecision:Position:defaults:draw_inactive_opp_kickoff_positions",
+            FIELD_DRAWING_CONTEXT;
+            for(const auto& r : getRoles().defaults) {
+                if(!getRoles().isRoleActive(r.first)) {
+                    PEN("0000ff", 20);
+                    ROBOT(r.second.opp.x, r.second.opp.y, 0);
+                    TEXT_DRAWING2(r.second.opp.x, r.second.opp.y-250, 0.6, Roles::getName(r.first));
+                }
+            }
+        );
+    }
 };
 
 #endif // ROLESPROVIDER_H
