@@ -31,6 +31,7 @@ import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.drawings.Circle;
 import de.naoth.rc.drawings.FieldDrawingSPL3x4;
+import de.naoth.rc.drawings.FieldDrawingSPLAspen;
 import de.naoth.rc.drawings.FillOval;
 import de.naoth.rc.drawings.Line;
 import de.naoth.rc.drawings.Pen;
@@ -140,6 +141,7 @@ public class FieldViewer extends AbstractDialog
             new FieldDrawingSPL2012(),
             new FieldDrawingS3D2011(),
             new FieldDrawingNaoTHLabor(),
+            new FieldDrawingSPLAspen(),
             new FieldDrawingSPL3x4(),
             new LocalFieldDrawing(),
             new RadarDrawing(),
