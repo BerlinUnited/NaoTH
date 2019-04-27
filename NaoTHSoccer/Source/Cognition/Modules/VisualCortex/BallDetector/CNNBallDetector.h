@@ -117,7 +117,7 @@ private:
       PARAMETER_REGISTER(keyDetector.borderRadiusFactorFar) = 0.8;
       
       PARAMETER_REGISTER(cnn.threshold) = 0.3;
-      PARAMETER_REGISTER(cnn.thresholdClose) = 0.4;
+      PARAMETER_REGISTER(cnn.thresholdClose) = 0.5;
       PARAMETER_REGISTER(cnn.meanBrightness) = 0.5;
       
 
@@ -134,8 +134,8 @@ private:
       PARAMETER_REGISTER(contrastMinimumClose) = 50;
 
 
-      PARAMETER_REGISTER(classifier) = "bottom.json";
-      PARAMETER_REGISTER(classifierClose) = "bottom.json";
+      PARAMETER_REGISTER(classifier) = "fy_1300.json";
+      PARAMETER_REGISTER(classifierClose) = "fy_1300.json";
 
       PARAMETER_REGISTER(brightnessMultiplierBottom) = 1.0;
       PARAMETER_REGISTER(brightnessMultiplierTop) = 1.0;
@@ -191,7 +191,7 @@ private:
   void extractPatches();
 
 private: // for debugging
-  Stopwatch stopwatch;
+  Stopwatch østopwatch;
   std::vector<double> stopwatch_values;
   RingBufferWithSum<double, 100> mean_of_means;
 
