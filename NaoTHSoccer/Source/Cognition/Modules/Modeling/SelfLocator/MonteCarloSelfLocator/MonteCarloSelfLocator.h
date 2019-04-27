@@ -165,7 +165,8 @@ private: // local types
       PARAMETER_REGISTER(sigmaAngleCenterCircle) = 0.1;
 
       PARAMETER_REGISTER(updateByOldPose) = false;
-      PARAMETER_REGISTER(oldPoseSigmaDistance) = 0.1;
+      PARAMETER_REGISTER(oldPoseSigmaDistance) = 500; // mm
+      PARAMETER_REGISTER(oldPoseSigmaAngle) = Math::fromDegrees(45.0);
 
       PARAMETER_REGISTER(updateByCompas) = true;
 
@@ -231,6 +232,7 @@ private: // local types
 
     bool updateByOldPose;
     double oldPoseSigmaDistance;
+    double oldPoseSigmaAngle;
 
     bool updateByCompas;
     bool treatLiftUp;

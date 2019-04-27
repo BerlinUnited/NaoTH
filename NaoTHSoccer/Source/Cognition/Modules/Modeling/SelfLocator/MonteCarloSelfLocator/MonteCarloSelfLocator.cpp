@@ -1023,9 +1023,9 @@ void MonteCarloSelfLocator::updateByGoalBox(SampleSet& sampleSet) const
 void MonteCarloSelfLocator::updateByOldPose(SampleSet& sampleSet) const
 {     
   double sigmaDistance = parameters.oldPoseSigmaDistance;
-  //double sigmaAngle = parameters.oldPoseSigmaAngle;
+  double sigmaAngle = parameters.oldPoseSigmaAngle;
 
-  updateByPose(sampleSet, getRobotPose(), sigmaDistance, 0); // NOTE: rotation is not used
+  updateByPose(sampleSet, getRobotPose(), sigmaDistance, sigmaAngle);
 }
 
 /*
@@ -1040,13 +1040,15 @@ void MonteCarloSelfLocator::updateByGoalModel(SampleSet& sampleSet) const
 }//end updateByGoalModel
 */
 
-void MonteCarloSelfLocator::updateByPose(SampleSet& sampleSet, Pose2D pose, double sigmaDistance, double /*sigmaAngle*/) const
+void MonteCarloSelfLocator::updateByPose(SampleSet& sampleSet, Pose2D pose, double sigmaDistance, double sigmaAngle) const
 {
   for (size_t j = 0; j < sampleSet.size(); j++)
   {   
+    double angleDiff = Math::normalize(sampleSet[j].rotation - pose.rotation);
+    sampleSet[j].likelihood *= Math::gaussianProbability(angleDiff, sigmaAngle);
+
     double distDif = (sampleSet[j].translation - pose.translation).abs();
-    //sampleSet[j].likelihood *= computeAngleWeighting(pose.rotation, sampleSet[j].rotation, sigmaAngle, bestPossibleAngleWeighting);
-    sampleSet[j].likelihood *= Math::gaussianProbability(distDif,sigmaDistance); 
+    sampleSet[j].likelihood *= Math::gaussianProbability(distDif, sigmaDistance); 
   }
 }
 
