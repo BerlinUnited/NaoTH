@@ -249,11 +249,22 @@ public:
   double ZMPOffsetYByCharacter;
 };
 
-class ZMPPreviewControllerParameter {
+class ZMPPreviewControllerParameter : public ParameterList {
     public:
-        ZMPPreviewControllerParameter(): current(NULL) {
+        ZMPPreviewControllerParameter() :
+            ParameterList("Walk_ZMPPreviewControllerParameter"),
+            current(nullptr)
+        {
+            PARAMETER_REGISTER(stationary_threshold.velocity) = 1;
+            PARAMETER_REGISTER(stationary_threshold.acceleration) = 1;
+            syncWithConfig();
             loadParameter();
         }
+
+        struct {
+            double velocity;
+            double acceleration;
+        } stationary_threshold;
 
         struct Parameters {
             double Ki;
@@ -363,6 +374,7 @@ public:
         dbpl.add(&liftingFootCompensatorParams);
         dbpl.add(&torsoRotationStabilizerParams);
         dbpl.add(&zmpPlanner2018Params);
+        dbpl.add(&zmpPreviewControllerParams);
         dbpl.add(&generalParams);
     }
 
@@ -374,6 +386,7 @@ public:
         dbpl.remove(&liftingFootCompensatorParams);
         dbpl.remove(&torsoRotationStabilizerParams);
         dbpl.remove(&zmpPlanner2018Params);
+        dbpl.remove(&zmpPreviewControllerParams);
         dbpl.remove(&generalParams);
     }
 

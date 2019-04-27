@@ -28,8 +28,10 @@ void ZMPPreviewController::execute(){
     PLOT("ZMPPreviewController:com:y", com.y);
     PLOT("ZMPPreviewController:dcom:x", dcom.x);
     PLOT("ZMPPreviewController:dcom:y", dcom.y);
+    PLOT("ZMPPreviewController:dcom:abs", dcom.abs());
     PLOT("ZMPPreviewController:ddcom:x", ddcom.x);
     PLOT("ZMPPreviewController:ddcom:y", ddcom.y);
+    PLOT("ZMPPreviewController:ddcom:abs", ddcom.abs());
 }
 
 ZMPPreviewController::ZMPPreviewController():
