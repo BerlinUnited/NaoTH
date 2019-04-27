@@ -31,12 +31,6 @@ option search_ball_simple
     }
     action
     {
-      //head.control_mode = none;
-      //head.motion_type = look_at_world_point;
-      //head.point_in_world.x = 200;
-      //head.point_in_world.y = 200;
-      //head.point_in_world.z = 0;
-      
       head.control_mode = search_for_ball;
 
       motion.type = walk;
@@ -47,7 +41,7 @@ option search_ball_simple
     }
   }
 
-  state turning_right
+  state turning_right 
   {
     decision
     {
@@ -55,13 +49,7 @@ option search_ball_simple
         stay;
     }
     action
-    {    
-      //head.control_mode = none;
-
-      //head.motion_type = look_at_world_point;
-      //head.point_in_world.x = 200;
-      //head.point_in_world.y = -200;
-      //head.point_in_world.z = 0;
+    {
 
       head.control_mode = search_for_ball;
 
