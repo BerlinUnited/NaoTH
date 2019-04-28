@@ -274,6 +274,11 @@ include "Options/Test/roles/role_forward_left.xabsl";
 include "Options/Test/roles/role_forward_center.xabsl";
 include "Options/Test/roles/role_forward_right.xabsl";
 
+include "Options/Test/roles/freekick/role_free_kick_opp.xabsl";
+include "Options/Test/roles/freekick/role_free_kick_opp_goal.xabsl";
+include "Options/Test/roles/freekick/role_free_kick_own.xabsl";
+include "Options/Test/roles/freekick/role_free_kick_own_goal.xabsl";
+
 include "Options/Test/roles/roles_go_to_ready_position.xabsl";
 include "Options/Test/roles/roles_go_to_passive_position.xabsl";
 include "Options/Test/roles/roles_decide_role.xabsl";
