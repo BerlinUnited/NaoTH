@@ -7,6 +7,8 @@ option arms_control
         goto arms_back;
       else if(arm.control_mode == synchronised_with_walk)
         goto arms_synchronised_with_walk;
+      else if((body.collision.arm.left || body.collision.arm.right) && arm.react_to_collision)
+        goto arms_back_by_collision;
       else
         stay;
     }
@@ -35,7 +37,7 @@ option arms_control
         goto arms_take_down;
       else if(arm.control_mode == back)
         goto arms_back;
-      else if(arm.control_mode != synchronised_with_walk)
+      else if(!arm.react_to_collision)
         goto arms_normal;
       else
         stay;
@@ -50,7 +52,7 @@ option arms_control
     decision {
       if(arm.control_mode != synchronised_with_walk)
         goto arms_take_down;
-      else if(body.collision.arm.left || body.collision.arm.right)
+      else if((body.collision.arm.left || body.collision.arm.right) && arm.react_to_collision)
         goto arms_back_by_collision;
       else
         stay;

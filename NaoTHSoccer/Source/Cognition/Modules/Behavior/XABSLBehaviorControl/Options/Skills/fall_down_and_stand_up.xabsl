@@ -39,6 +39,7 @@ option fall_down_and_stand_up
       body.ready_to_walk = false;
       motion.execute_immediately = true;
       motion.type = dead;
+      arm.react_to_collision = false;
     }
   }
 
@@ -56,6 +57,7 @@ option fall_down_and_stand_up
       body.ready_to_walk = false;
       motion.execute_immediately = true;
       motion.type = dead;
+      arm.react_to_collision = false;
     }
   }
 
@@ -70,6 +72,7 @@ option fall_down_and_stand_up
     }
     action 
     {
+      arm.react_to_collision = false;
       body.ready_to_walk = false;
       motion.execute_immediately = false;
       stand_up();
@@ -105,6 +108,7 @@ option fall_down_and_stand_up
 
     action
     {
+      arm.react_to_collision = false;
       body.ready_to_walk = false;
       motion.type=stand;
       arm.control_mode = normal;

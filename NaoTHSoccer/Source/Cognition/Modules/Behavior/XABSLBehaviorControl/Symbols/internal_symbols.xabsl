@@ -62,6 +62,8 @@ namespace internal_symbols("Internal Symbols") {
   enum arm.control_mode internal arm.control_mode;
   // needed by the get up motion
   enum arm.control_mode internal arm.control_mode_before_fall;
+  
+  bool internal arm.react_to_collision;
 
   /** Counts the state changes turn/look in passive_ball_not_seen */
   float internal search_ball.turn_stop_motion_count;
