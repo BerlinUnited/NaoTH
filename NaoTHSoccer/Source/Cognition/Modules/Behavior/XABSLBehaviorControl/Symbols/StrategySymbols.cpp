@@ -100,7 +100,7 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
     engine.registerEnumElement("role.dynamic", str.c_str(), i);
   }
 
-  engine.registerEnumeratedInputSymbol("strategy.role_d", "role.dynamic", &getDynamicRole);
+  engine.registerEnumeratedInputSymbol("strategy.role_dynamic", "role.dynamic", &getDynamicRole);
 
   engine.registerDecimalInputSymbol("strategy.position.home.x", &getHomePositionX);
   engine.registerDecimalInputSymbol("strategy.position.home.y", &getHomePositionY);

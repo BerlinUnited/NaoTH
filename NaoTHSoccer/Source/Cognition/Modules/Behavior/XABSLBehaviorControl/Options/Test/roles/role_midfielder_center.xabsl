@@ -17,13 +17,13 @@ option role_midfielder_center
   state decide_subrole_or_passive
   {
     decision {
-      else if(strategy.role_d == striker)
+      else if(strategy.role_dynamic == striker)
         goto striker_subrole;
-      else if(strategy.role_d == goalie_supporter)
+      else if(strategy.role_dynamic == goalie_supporter)
         // TODO: implement usefull behavior for the goalie supporter
         // NOTE: be aware of the transition between different subroles and the passive behavior!
         stay;
-      else if(strategy.role_d == supporter)
+      else if(strategy.role_dynamic == supporter)
         // TODO: implement usefull behavior for the supporter
         // NOTE: be aware of the transition between different subroles and the passive behavior!
         stay;
@@ -38,7 +38,7 @@ option role_midfielder_center
   state striker_subrole
   {
     decision {
-      else if(strategy.role_d != striker) {
+      else if(strategy.role_dynamic != striker) {
         goto decide_subrole_or_passive;
       } else {
         stay;

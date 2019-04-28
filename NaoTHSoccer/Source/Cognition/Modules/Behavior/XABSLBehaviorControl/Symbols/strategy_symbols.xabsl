@@ -97,7 +97,7 @@ namespace strategy("Strategy Symbols") {
   };
   
   enum role.static input strategy.role;
-  enum role.dynamic input strategy.role_d;
+  enum role.dynamic input strategy.role_dynamic;
 
   // default home position
   float input strategy.position.home.x;

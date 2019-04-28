@@ -21,7 +21,7 @@ option role_goalie
   {
      decision 
      {
-       else if(strategy.role_d == striker)
+       else if(strategy.role_dynamic == striker)
          goto clear_ball;
        else if (action_done)
          goto stand_and_look_at_ball;
@@ -41,7 +41,7 @@ option role_goalie
   {
      decision 
      {
-       else if(strategy.role_d == striker)
+       else if(strategy.role_dynamic == striker)
          goto clear_ball;
        else if (action_done)
          goto stand_and_look_at_ball;
@@ -59,7 +59,7 @@ option role_goalie
 
   state stand_and_look_at_ball {
     decision {
-      else if(strategy.role_d == striker)
+      else if(strategy.role_dynamic == striker)
         goto clear_ball;
       else if(vector.abs(x=locator.field_to_relative.x(x=strategy.position.home.x, y=strategy.position.home.y), y=locator.field_to_relative.y(x=strategy.position.home.x, y=strategy.position.home.y)) >= 300)
         goto go_to_strategy_point_search_for_ball;
@@ -74,7 +74,7 @@ option role_goalie
 
   state clear_ball {   
     decision {
-      else if(strategy.role_d != striker) {
+      else if(strategy.role_dynamic != striker) {
          goto go_to_strategy_point;
       }
       else stay;
