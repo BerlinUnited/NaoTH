@@ -180,7 +180,6 @@ private: // local types
       
       PARAMETER_REGISTER(resetOwnHalf) = false;
       PARAMETER_REGISTER(downWeightFactorOwnHalf) = 0.01;
-      PARAMETER_REGISTER(maxTimeForLiftUp) = 500;
       
       PARAMETER_REGISTER(updateBySituation) = true;
       PARAMETER_REGISTER(startPositionsSigmaDistance) = 500;
@@ -244,7 +243,6 @@ private: // local types
     bool treatInitState;
     bool resetOwnHalf;
     double downWeightFactorOwnHalf;
-    double maxTimeForLiftUp;
 
     bool updateBySituation;
     double startPositionsSigmaDistance;
