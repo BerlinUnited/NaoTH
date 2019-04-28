@@ -111,7 +111,7 @@ void MonteCarloSelfLocator::execute()
   // treat the situation when the robot has been lifted from the ground
   // (keednapped)
 
-  // only in stand, walk or init(!)
+  // only treat kidnapping in stand, walk or init(!)
   bool motion_ok_kidnap = getMotionStatus().currentMotion == motion::stand ||
                    getMotionStatus().currentMotion == motion::init ||
                    getMotionStatus().currentMotion == motion::walk;
