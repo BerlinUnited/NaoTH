@@ -32,8 +32,14 @@ def load_image_from_path(path, db, res):
             p  = row["filename"]
 
             # load image
-            img = cv2.imread(f, cv2.IMREAD_GRAYSCALE)
-            img = cv2.resize(img, (res["x"], res["y"]))
+            try:
+#                print(f)
+
+                img = cv2.imread(f, cv2.IMREAD_GRAYSCALE)
+                img = cv2.resize(img, (res["x"], res["y"]))
+            except Exception as ex:
+                print("Error loading image ", f)
+                raise ex
 
             is_ball = False
             debug_img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
@@ -109,6 +115,7 @@ def loadImages(all_paths, res):
 
     for path in all_paths:
         balls, noballs = load_image_from_path(path, db, res)
+        
         total_balls += balls
         total_noballs += noballs
    
