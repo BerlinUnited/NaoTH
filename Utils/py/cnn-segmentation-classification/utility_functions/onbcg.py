@@ -157,19 +157,20 @@ sse_leaky = '''
 
 classify_yuv_patch = '''
 \n
-void CNN_THOMAS_BALLS::find(const BallCandidates::PatchYUVClassified& p, double /* meanBrightness */)
+void CNN_THOMAS_BALLS::find(const BallCandidates::PatchYUVClassified& patch, double meanBrightness)
 {
-\tASSERT(p.size() == 16);
+\tASSERT(patch.size() == 16);
 
-\tfor(size_t x=0; x < p.size(); x++) {
-\t\tfor(size_t y=0; y < p.size(); y++) {
+\tfor(size_t x=0; x < patch.size(); x++) {
+\t\tfor(size_t y=0; y < patch.size(); y++) {
 \t\t\t// TODO: check
-\t\t\tin_step[x][y][0] = ((float) p.data[p.size() * y + x].pixel.y) / 255.0f;
+\t\t\tfloat value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) - static_cast<float>(meanBrightness);
+\t\t\tin_step[x][y][0] = value;
 \t\t}
 \t}
 
 \tcnn(in_step);
-\t//std::cout << "scores[1]=" << scores[1] << " scores[0]=" << scores[0] << std::endl;
+\t//std::cout << "scores[0]=" << scores[0] << " scores[1]=" << scores[1] << " scores[2]=" << scores[2] << std::endl;
 }
 '''
 
@@ -404,13 +405,13 @@ def dense(_x, weights, b, c_inf):
     channels = _x.shape[2]
 
     i = 0
-
     for output in range(len(x_out)):
         c_inf["f"].write("\tscores[{:d}] = {:f}".format(output, b[output]))
-        for c in range(channels):
-            for x in range(x_dim):
-                for y in range(y_dim):
-                    idx = (c - 1) * (y_dim * x_dim) + (y - 1) * y_dim + x
+        for x in range(x_dim):
+            for y in range(y_dim):
+                for c in range(channels):
+                    idx = (x * (y_dim * channels)) + (y * channels) + c
+                  #  print("x: {}, y: {}, c: {} -> {}".format(x,y,c, idx))
                     if i % 4 is 0:
                         c_inf["f"].write('\n\t')
 
@@ -426,7 +427,11 @@ def dense(_x, weights, b, c_inf):
 
                     i += 1
         c_inf["f"].write(';\n')
+        # ReLU
+        c_inf["f"].write("\tscores[{:d}] = scores[{:d}] > 0.0f ? scores[{:d}] : 0.0f;\n".format(output, output, output))
+
         c_inf["f"].write('\n')
+        
 
     c_inf["layer"] = c_inf["layer"] + 1
     return x_out, c_inf
