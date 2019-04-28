@@ -165,7 +165,7 @@ void CNN_THOMAS_BALLS::find(const BallCandidates::PatchYUVClassified& patch, dou
 \t\tfor(size_t y=0; y < patch.size(); y++) {
 \t\t\t// TODO: check
 \t\t\tfloat value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) - static_cast<float>(meanBrightness);
-\t\t\tin_step[x][y][0] = value;
+\t\t\tin_step[y][x][0] = value;
 \t\t}
 \t}
 
@@ -196,7 +196,7 @@ def write_naoth_header_file():
         print("", file=fp)
         print("private:", file=fp)
         print("\tfloat in_step[16][16][1];", file=fp)
-        print("\tdouble scores[3];", file=fp)
+        print("\tfloat scores[3];", file=fp)
         print("", file=fp)
         print("};", file=fp)
         print("# endif", file=fp)
@@ -406,7 +406,7 @@ def dense(_x, weights, b, c_inf):
 
     i = 0
     for output in range(len(x_out)):
-        c_inf["f"].write("\tscores[{:d}] = {:f}".format(output, b[output]))
+        c_inf["f"].write("\tscores[{:d}] = {:f}f".format(output, b[output]))
         for x in range(x_dim):
             for y in range(y_dim):
                 for c in range(channels):
@@ -420,7 +420,7 @@ def dense(_x, weights, b, c_inf):
                     else:
                         c_inf["f"].write(' - ')
 
-                    c_inf["f"].write('{:f} * x{:d}[{:d}][{:d}][{:d}]'.format(
+                    c_inf["f"].write('{:f}f * x{:d}[{:d}][{:d}][{:d}]'.format(
                         abs(weights[idx, output]),
                         c_inf["layer"] - 1, x, y, c
                     ))
