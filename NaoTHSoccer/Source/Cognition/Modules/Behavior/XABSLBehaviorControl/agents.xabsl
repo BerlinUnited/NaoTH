@@ -198,7 +198,8 @@ include "Options/Test/path_move_around_ball_test.xabsl";
 
 
 // Test agents Team behavior
-include "Options/Test/team/team_go_to_ball_agent.xabsl";
+
+include "Options/Test/team/team_go_to_ball_agent.xabsl";
 
 
 // Test Options PathPlanner
@@ -262,28 +263,29 @@ include "Options/Test/walk/walk_forward.xabsl";
 include "Options/Test/strategy/role_change_test.xabsl";
 include "Options/Test/strategy/role_change_goalie_test.xabsl";
 
-include "Options/Test/roles/role_goalie.xabsl";
-include "Options/Test/roles/role_unknown.xabsl";
-include "Options/Test/roles/role_defender_left.xabsl";
-include "Options/Test/roles/role_defender_center.xabsl";
-include "Options/Test/roles/role_defender_right.xabsl";
-include "Options/Test/roles/role_midfielder_left.xabsl";
-include "Options/Test/roles/role_midfielder_center.xabsl";
-include "Options/Test/roles/role_midfielder_right.xabsl";
-include "Options/Test/roles/role_forward_left.xabsl";
-include "Options/Test/roles/role_forward_center.xabsl";
-include "Options/Test/roles/role_forward_right.xabsl";
+include "Options/Roles/role_goalie.xabsl";
+include "Options/Roles/role_unknown.xabsl";
+include "Options/Roles/role_defender_left.xabsl";
+include "Options/Roles/role_defender_center.xabsl";
+include "Options/Roles/role_defender_right.xabsl";
+include "Options/Roles/role_midfielder_left.xabsl";
+include "Options/Roles/role_midfielder_center.xabsl";
+include "Options/Roles/role_midfielder_right.xabsl";
+include "Options/Roles/role_forward_left.xabsl";
+include "Options/Roles/role_forward_center.xabsl";
+include "Options/Roles/role_forward_right.xabsl";
 
-include "Options/Test/roles/freekick/role_free_kick_opp.xabsl";
-include "Options/Test/roles/freekick/role_free_kick_opp_goal.xabsl";
-include "Options/Test/roles/freekick/role_free_kick_own.xabsl";
-include "Options/Test/roles/freekick/role_free_kick_own_goal.xabsl";
+include "Options/Roles/freekick/role_avoid_region_go_own_goal.xabsl";
+include "Options/Roles/freekick/role_free_kick_opp.xabsl";
+include "Options/Roles/freekick/role_free_kick_opp_goal.xabsl";
+include "Options/Roles/freekick/role_free_kick_own.xabsl";
+include "Options/Roles/freekick/role_free_kick_own_goal.xabsl";
 
-include "Options/Test/roles/roles_go_to_ready_position.xabsl";
-include "Options/Test/roles/roles_go_to_passive_position.xabsl";
-include "Options/Test/roles/roles_decide_role.xabsl";
-include "Options/Test/roles/roles_play_soccer.xabsl";
-include "Options/Test/roles/roles_agent.xabsl";
+include "Options/Roles/roles_go_to_ready_position.xabsl";
+include "Options/Roles/roles_go_to_passive_position.xabsl";
+include "Options/Roles/roles_decide_role.xabsl";
+include "Options/Roles/roles_play_soccer.xabsl";
+include "Options/Roles/roles_agent.xabsl";
 
 include "Options/Test/change_state_input_test.xabsl";
  // Useless?
