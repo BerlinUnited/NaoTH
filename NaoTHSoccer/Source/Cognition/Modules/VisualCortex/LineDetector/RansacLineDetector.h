@@ -165,7 +165,7 @@ private: // helper methods
     //ASSERT(vec.size() > 1);
     int size = static_cast<int>(vec.size());
     int random_pos_one = Math::random(size);
-    int random_pos_two = (random_pos_one + Math::random(size-1) + 1) % vec.size();
+    int random_pos_two = (random_pos_one + Math::random(size-1) + 1) % size;
     return Vector2i(random_pos_one, random_pos_two);
   }
 
