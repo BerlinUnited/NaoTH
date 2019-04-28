@@ -2,7 +2,7 @@ import numpy as np
 from keras.models import load_model
 from utility_functions.onbcg import keras_compile
 
-model_path = "models/bottom.h5"
+model_path = "models/fy_1500.h5"
 #model_path = "models/extra-step.h5"
 model = load_model(model_path)
 model.summary()

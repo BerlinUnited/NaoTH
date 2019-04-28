@@ -118,8 +118,6 @@ std::map<string, std::shared_ptr<AbstractCNNClassifier> > BallDetector2018::crea
   result.insert({"dortmund", std::make_shared<CNN_dortmund>()});
   //result.insert({ "dortmund2018", std::make_shared<CNN_dortmund2018>() });
   result.insert({ "dortmund2018_keras", std::make_shared<CNN_dortmund2018_keras>() });
-  result.insert({ "thomas_balls", std::make_shared<CNN_THOMAS_BALLS>() });
-
   return std::move(result);
 }
 
@@ -234,7 +232,9 @@ void BallDetector2018::calculateCandidates()
         classifier = currentCNNClassifierClose;
       }
 
+      STOPWATCH_START("BallDetector2018:classify");
       bool found = classifier->classify(patch);
+      STOPWATCH_STOP("BallDetector2018:classify");
       stopwatch.stop();
       stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
 

@@ -6,18 +6,17 @@
 
 #include "AbstractCNNClassifier.h"
 
-class CNN_THOMAS_BALLS : public AbstractCNNClassifier {
+class CNN_THOMAS_BALLS : public AbstractCNNFinder {
 
 public:
-	int cnn(float x0[16][16][1]);
-	bool classify(const BallCandidates::Patch& p);
-	bool classify(const BallCandidates::PatchYUVClassified& p);
-	virtual float getBallConfidence();
-	virtual float getNoballConfidence();
+	void cnn(float x0[16][16][1]);
+	void find(const BallCandidates::PatchYUVClassified& p, double meanBrightness);
+
+	double getRadius();
+    Vector2d getCenter();
 
 private:
 	float in_step[16][16][1];
-	int res[1];
 	double scores[3];
 
 };

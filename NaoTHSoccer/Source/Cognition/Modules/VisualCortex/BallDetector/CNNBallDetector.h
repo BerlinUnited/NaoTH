@@ -174,13 +174,13 @@ private:
 
 private:
 
-  std::shared_ptr<fdeep::model> currentCNN;
+  std::shared_ptr<AbstractCNNFinder> currentCNN;
   std::string currentCNNName;
 
-  std::shared_ptr<fdeep::model> currentCNNClose;
+  std::shared_ptr<AbstractCNNFinder> currentCNNClose;
   std::string currentCNNCloseName;
 
-  void setClassifier(const std::string& name, const std::string& nameClose);
+  std::map<std::string, std::shared_ptr<AbstractCNNFinder> > cnnMap;
 
   ModuleCreator<BallKeyPointExtractor>* theBallKeyPointExtractor;
   BestPatchList best;
@@ -189,6 +189,10 @@ private:
   void calculateCandidates();
   void addBallPercept(const Vector2i& center, double radius);
   void extractPatches();
+
+  void setClassifier(const std::string& name, const std::string& nameClose);
+  std::map<std::string, std::shared_ptr<AbstractCNNFinder> > createCNNMap();
+
 
 private: // for debugging
   Stopwatch stopwatch;

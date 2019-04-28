@@ -4,9 +4,8 @@
 #include "Tools/PatchWork.h"
 #include "Tools/BlackSpotExtractor.h"
 
-#include "Classifier/DortmundCNN/CNN_dortmund.h"
-#include "Classifier/DortmundCNN/CNN_dortmund2018.h"
-#include "Classifier/DortmundCNN/CNN_dortmund2018_keras.h"
+#include "Classifier/CNN_thomas_balls.h"
+#include "Classifier/FrugallyDeep.h"
 
 using namespace std;
 
@@ -28,7 +27,9 @@ CNNBallDetector::CNNBallDetector()
   theBallKeyPointExtractor = registerModule<BallKeyPointExtractor>("BallKeyPointExtractor", true);
   getDebugParameterList().add(&params);
 
-  setClassifier("bottom.json", "bottom.json");
+  cnnMap = createCNNMap();
+
+  setClassifier("fy_1500", "fy_1500");
 }
 
 CNNBallDetector::~CNNBallDetector()
@@ -98,18 +99,33 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
   );
 }
 
-
-void CNNBallDetector::setClassifier(const std::string& name, const std::string& nameClose) 
+std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNNMap()
 {
-  if(currentCNNName != name) {
-    currentCNN = std::make_shared<fdeep::model>(fdeep::load_model("Config/" + name));
-    currentCNNName = name;
-  }
-  if(currentCNNCloseName != nameClose) {
-    currentCNNClose = std::make_shared<fdeep::model>(fdeep::load_model("Config/" + nameClose));
-    currentCNNCloseName = nameClose;
-  }
+  std::map<string, std::shared_ptr<AbstractCNNFinder> > result;
+
+  // register classifiers
+  result.insert({ "fy_1500", std::make_shared<CNN_THOMAS_BALLS>() });
+  result.insert({ "fdeep_fy_1300", std::make_shared<FrugallyDeep>("fy_1300.json")});
+  result.insert({ "fdeep_fy_1500", std::make_shared<FrugallyDeep>("fy_1500.json")});
+  
+  return std::move(result);
 }
+
+
+
+
+ void CNNBallDetector::setClassifier(const std::string& name, const std::string& nameClose) 
+ {
+   auto location = cnnMap.find(name);
+   if(location != cnnMap.end()){
+     currentCNN = location->second;
+   }
+
+   location = cnnMap.find(nameClose);
+   if(location != cnnMap.end()){
+     currentCNNClose = location->second;
+   }
+ }
 
 
 void CNNBallDetector::calculateCandidates()
@@ -204,51 +220,28 @@ void CNNBallDetector::calculateCandidates()
       // run CNN
       stopwatch.start();
 
-      std::shared_ptr<fdeep::model> cnn = currentCNN;
+      std::shared_ptr<AbstractCNNFinder> cnn = currentCNN;
       if(patch.width() >= params.postMaxCloseSize) {
         cnn = currentCNNClose;
       }
 
-      // create input data from patch (TODO: why not use a Y-patch directly and save the copy operation?)
-      ASSERT(patch.size() == 16);
-      fdeep::tensor5 inputTensor = fdeep::tensor5(fdeep::shape5(1,1, 16, 16, 1), 0);
-
-      for(size_t x=0; x < patch.size(); x++) {
-        for(size_t y=0; y < patch.size(); y++) {
-          // TODO: check if x and y are correct
-          // The average brightness should have value 0.0
-          float value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) 
-            - static_cast<float>(params.cnn.meanBrightness);
-          inputTensor.set(0, 0, y, x, 0, value);
-        }
-      }
-
       STOPWATCH_START("CNNBallDetector:predict");
-      std::vector<fdeep::tensor5> result = cnn->predict({inputTensor});
+      cnn->find(patch, params.cnn.meanBrightness);
       STOPWATCH_STOP("CNNBallDetector:predict");
 
       bool found = false;
-      double radius = 0.0;
-      double x = 0.0;
-      double y = 0.0;
-      if(result.size() == 1) {
-        radius = result[0].get(0,0,0,0,0);
-        x = result[0].get(0,0,0,0,1);
-        y = result[0].get(0,0,0,0,2);
-
-
-        if(radius >= selectedCNNThreshold && x >= 0.0f && y >= 0.0f) {
-          found = true;
-
-          //std::cout << fdeep::show_tensor5s(result) << " (radius=" << radius << " x=" << x << " y=" << y << ")" << std::endl;
-        }
+      double radius = cnn->getRadius();
+      Vector2d pos = cnn->getCenter();
+      if(radius >= selectedCNNThreshold && pos.x >= 0.0 && pos.y >= 0.0) {
+        found = true;
       }
+
       stopwatch.stop();
       stopwatch_values.push_back(static_cast<double>(stopwatch.lastValue) * 0.001);
 
-      if (found /* && classifier->getBallConfidence() >= selectedCNNThreshold*/) {
+      if (found) {
         // adjust the center and radius of the patch
-        Vector2i ballCenterInPatch(static_cast<int>(x * patch.width()), static_cast<int>(y*patch.width()));
+        Vector2i ballCenterInPatch(static_cast<int>(pos.x * patch.width()), static_cast<int>(pos.y*patch.width()));
        
         addBallPercept(patch.min + ballCenterInPatch, radius*patch.width());
       }
