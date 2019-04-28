@@ -65,17 +65,19 @@ logger -f $errorFile
 
 logger "Brainwasher:copy files"
 # create directory
-mkdir $current_date-$current_nao
+dir_name=$current_date-$current_nao
+target_path=/media/brainwasher/$dir_name
+mkdir $dir_name
 
 # copy info file of the nao
-cp $infoFile /media/brainwasher/$current_date-$current_nao/nao.info
-echo "Name=$current_nao_name" >> /media/brainwasher/$current_date-$current_nao/nao.info
-echo "Number=$current_nao_number" >> /media/brainwasher/$current_date-$current_nao/nao.info
-echo "$current_nao_player" >> /media/brainwasher/$current_date-$current_nao/nao.info
-echo "$current_compile_branch" >> /media/brainwasher/$current_date-$current_nao/nao.info
-echo "$current_compile_revision" >> /media/brainwasher/$current_date-$current_nao/nao.info
-echo "$current_compile_time" >> /media/brainwasher/$current_date-$current_nao/nao.info
-echo "$current_compile_owner" >> /media/brainwasher/$current_date-$current_nao/nao.info
+cp $infoFile $target_path/nao.info
+echo "Name=$current_nao_name" >> $target_path/nao.info
+echo "Number=$current_nao_number" >> $target_path/nao.info
+echo "$current_nao_player" >> $target_path/nao.info
+echo "$current_compile_branch" >> $target_path/nao.info
+echo "$current_compile_revision" >> $target_path/nao.info
+echo "$current_compile_time" >> $target_path/nao.info
+echo "$current_compile_owner" >> $target_path/nao.info
 
 # find log files and copy them to the created directory
 #find -L /tmp -type d -name media -prune -o -name "*.log" -exec cp {} /media/brainwasher/$current_date-$current_nao \;
@@ -83,24 +85,24 @@ echo "$current_compile_owner" >> /media/brainwasher/$current_date-$current_nao/n
 for f in $(find -L /tmp -type d -name media -prune -o -name "*.log")
 do
 	md5sum $f | sed -e "s/\/tmp\///g" > "$f.md5"
-	cp "$f.md5" $f /media/brainwasher/$current_date-$current_nao/
+	cp "$f.md5" $f $target_path/
 	check_for_errors "Brainwasher:ERROR copying $f"
 done
 
 # copy the config directory
 cd /home/nao/naoqi
-zip -q -r -0 /media/brainwasher/$current_date-$current_nao/config.zip Config
+zip -q -r -0 $target_path/config.zip Config
 cd -
 check_for_errors "Brainwasher:ERROR copying config"
 
 # copy logs of naoth binary (std::out/::err) and clear them afterwards
-cp "/var/log/naoth.log" "/var/log/naoth_err.log" /media/brainwasher/$current_date-$current_nao/
+cp "/var/log/naoth.log" "/var/log/naoth_err.log" $target_path/
 check_for_errors "Brainwasher:ERROR copying /var/log/naoth.log"
 > /var/log/naoth.log
 > /var/log/naoth_err.log
 
 # find and copy trace dump files since boot and log errors
-find /home/nao -maxdepth 1 -type f -mmin -$current_boot_time -iname "trace.dump.*" -exec zip -q -0 /media/brainwasher/$current_date-$current_nao/dumps.zip {} + 2> $errorFile
+find /home/nao -maxdepth 1 -type f -mmin -$current_boot_time -iname "trace.dump.*" -exec zip -q -0 $target_path/dumps.zip {} + 2> $errorFile
 logger -f $errorFile
 # if no error occurred, we can savely delete all trace dump files, which were previously copied
 if [ ! -s "$errorFile" ]; then
@@ -109,7 +111,7 @@ if [ ! -s "$errorFile" ]; then
 fi
 
 # find and copy whistle raw files and log errors
-find /tmp/ -maxdepth 1 -type f -iname "capture_*.raw" -exec zip -q -0 /media/brainwasher/$current_date-$current_nao/whistle.zip {} + 2> $errorFile
+find /tmp/ -maxdepth 1 -type f -iname "capture_*.raw" -exec zip -q -0 $target_path/whistle.zip {} + 2> $errorFile
 logger -f $errorFile
 # if no error occurred, we can savely delete all whistle files
 if [ ! -s "$errorFile" ]; then
