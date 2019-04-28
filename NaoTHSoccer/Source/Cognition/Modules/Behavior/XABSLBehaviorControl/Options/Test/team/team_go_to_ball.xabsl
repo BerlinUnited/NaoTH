@@ -9,10 +9,8 @@ option team_go_to_ball
 
   initial state idle {
     decision {
-      else if(game.current_mode == playing && team.calc_if_is_striker)
+      else if(game.current_mode == playing && strategy.role_dynamic == striker)
         goto goto_ball_striker;
-      else if(game.current_mode == playing && team.calc_if_is_secondstriker)
-        goto goto_ball_second_striker;
       else
         stay;
     }
@@ -23,7 +21,7 @@ option team_go_to_ball
   {
     decision
     {
-      else if (!team.calc_if_is_striker)
+      else if (strategy.role_dynamic != striker)
         goto idle;
       else if(action_done)
         goto done_striker;
@@ -33,24 +31,6 @@ option team_go_to_ball
     action 
     {
       team.is_playing_as_striker = true;
-      go_to_ball(distance = 210);
-    }
-  }
-
-  state goto_ball_second_striker
-  {
-    decision
-    {
-      else if (!team.calc_if_is_secondstriker)
-        goto idle;
-      else if(action_done)
-        goto done_second_striker;
-      else
-        stay;
-    }
-    action 
-    {
-      team.is_playing_as_striker = false;
       go_to_ball(distance = 210);
     }
   }
@@ -67,23 +47,6 @@ option team_go_to_ball
     action 
     {
       team.is_playing_as_striker = true;
-      head.control_mode = search_for_ball;
-      motion.type = stand;
-    }
-  }
-
-  state done_second_striker
-  {
-    decision
-    {
-      else if(ball.time_seen > 100 && ball.distance > 500)
-        goto idle;
-      else
-        stay;
-    }
-    action 
-    {
-      team.is_playing_as_striker = false;
       head.control_mode = search_for_ball;
       motion.type = stand;
     }

@@ -138,7 +138,7 @@ option path_play_soccer
     {
       else if (game.current_mode == playing)
       {
-        if(team.calc_if_is_striker)
+        if(strategy.role_dynamic == striker)
           goto initial_striker;
         else
           goto play;
@@ -253,7 +253,7 @@ option path_play_soccer
         goto ready;
       else if (game.current_mode == set)
         goto set;
-	    else if(action_done || !team.calc_if_is_striker)
+	    else if(action_done || strategy.role_dynamic != striker)
 	      goto play;
 	    else
 	      stay;

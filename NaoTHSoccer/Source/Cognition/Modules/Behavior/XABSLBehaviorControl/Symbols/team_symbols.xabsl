@@ -7,13 +7,13 @@ namespace team("Team Symbols") {
   /** Count of team members who are active (which means they're in the playing state) */
   float input team.members_active_count [number];
 
-  /** Whether we have been choosen as striker in dynamic role handling*/
+  /** Whether we have been choosen as striker in the 'old' dynamic role handling */
   bool input team.calc_if_is_striker;
 
-  /** Whether we have been chosen as the second striker in dynamic role handling */
+  /** Whether we have been chosen as the second striker in the 'old' dynamic role handling */
   bool input team.calc_if_is_secondstriker;
 
-  /** Whether we actually play as striker */
+  /** Whether we actually play as striker in the 'old' role handling */
   bool output team.is_playing_as_striker;
 }
   
