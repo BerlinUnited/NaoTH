@@ -201,7 +201,7 @@ public:
 
       if (dist >= 0 && dist <= minDistance) {
         minDistance = dist;
-        minIdx = i;
+        minIdx = static_cast<int>(i);
       }
     }//end for
 
@@ -223,7 +223,7 @@ public:
       if (dist >= 0 && dist <= minDistance)
       {
         minDistance = dist;
-        minIdx = i;
+        minIdx = static_cast<int>(i);
       }
     }//end for
 

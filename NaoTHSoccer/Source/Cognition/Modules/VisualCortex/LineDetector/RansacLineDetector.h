@@ -154,16 +154,18 @@ private: // helper methods
     @return random item of the vector without replacement.
   */
   size_t choose_random_from(std::vector<size_t> &vec, int ith)  const {
-    int max = (int) vec.size()-1;
+    int max = static_cast<int>(vec.size())-1;
     int random_pos = Math::random(ith, max);
     std::swap(vec[random_pos], vec[ith-1]);
     return vec[ith-1];
   }
 
+  // NOTE: we never call this function with vec.size() <= 2
   Vector2i choose_random_two(const std::vector<size_t> &vec) const {
     //ASSERT(vec.size() > 1);
-    int random_pos_one = Math::random(vec.size());
-    int random_pos_two = (random_pos_one + Math::random(vec.size()-1) + 1) % vec.size();
+    int size = static_cast<int>(vec.size());
+    int random_pos_one = Math::random(size);
+    int random_pos_two = (random_pos_one + Math::random(size-1) + 1) % vec.size();
     return Vector2i(random_pos_one, random_pos_two);
   }
 
