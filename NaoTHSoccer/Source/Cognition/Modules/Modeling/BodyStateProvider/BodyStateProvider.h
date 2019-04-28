@@ -23,7 +23,7 @@
 
 // Tools
 #include "Tools/DataStructures/RingBufferWithSum.h"
-//#include <Tools/DataStructures/ParameterList.h>
+
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugRequest.h"
@@ -65,20 +65,19 @@ private:
   public:
     Parameters() : ParameterList("BodyStateParameters")
     {
-      PARAMETER_REGISTER(getup_threshold) = 1.2;
-      PARAMETER_REGISTER(maxTimeForLiftUp) = 500;
-      PARAMETER_REGISTER(batteryChargingThreshold) = 0.8;
+      PARAMETER_ANGLE_REGISTER(getup_threshold) = 70; // in deg
+      PARAMETER_ANGLE_REGISTER(upright_threshold) = 30; // in deg
+
+      PARAMETER_REGISTER(maxTimeForLiftUp) = 500; // in ms
+      PARAMETER_REGISTER(batteryChargingThreshold) = 0.8; // in %
       syncWithConfig();
     }
 
-    ~Parameters()
-    {
-    }
-
+    double upright_threshold;
     double getup_threshold;
     double maxTimeForLiftUp;
     double batteryChargingThreshold;
-  } theParams;
+  } params;
 
 
   void updateTheFallDownState();
@@ -90,7 +89,7 @@ private:
   void updateIsLiftedUp();
 
   // internal data
-  RingBufferWithSum<Vector2<double>, 10> inertialBuffer;
+  RingBufferWithSum<Vector2d, 10> inertialBuffer;
 
   // filter the battery state
   RingBufferWithSum<double, 1000> batteryChargeBuffer;

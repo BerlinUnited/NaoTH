@@ -12,12 +12,12 @@
 
 BodyStateProvider::BodyStateProvider()
 {
-  getDebugParameterList().add(&theParams);
+  getDebugParameterList().add(&params);
 }
 
 BodyStateProvider::~BodyStateProvider()
 {
-  getDebugParameterList().remove(&theParams);
+  getDebugParameterList().remove(&params);
 }
 
 void BodyStateProvider::execute()
@@ -42,7 +42,7 @@ void BodyStateProvider::execute()
     getBodyState().isDischarging = false;
   }
 
-  if(getBatteryData().current >= theParams.batteryChargingThreshold) {
+  if(getBatteryData().current >= params.batteryChargingThreshold) {
     getBodyState().isCharging = true;
   } else {
     getBodyState().isCharging = false;
@@ -82,17 +82,22 @@ void BodyStateProvider::updateTheFallDownState()
 
   Vector2d avg = inertialBuffer.getAverage();
 
-  getBodyState().fall_down_state = BodyState::upright;
+  // the state is undefined by default
+  getBodyState().fall_down_state = BodyState::undefined;
 
-  if(avg.x < -theParams.getup_threshold) {
+  if(fabs(avg.x) < params.upright_threshold && fabs(avg.y) < params.upright_threshold) {
+    getBodyState().fall_down_state = BodyState::upright;
+  }
+
+  if(avg.x < -params.getup_threshold) {
     getBodyState().fall_down_state = BodyState::lying_on_left_side;
-  } else if(avg.x > theParams.getup_threshold) {
+  } else if(avg.x > params.getup_threshold) {
     getBodyState().fall_down_state = BodyState::lying_on_right_side;
   }
 
-  if(avg.y < -theParams.getup_threshold) {
+  if(avg.y < -params.getup_threshold) {
     getBodyState().fall_down_state = BodyState::lying_on_back;
-  } else if(avg.y > theParams.getup_threshold) {
+  } else if(avg.y > params.getup_threshold) {
     getBodyState().fall_down_state = BodyState::lying_on_front;
   }
 
@@ -135,11 +140,10 @@ void BodyStateProvider::updateTheLegTemperature()
   getBodyState().temperatureRightLeg = tempR;
 }//end updateTheLegTemperature
 
-void BodyStateProvider::updateIsLiftedUp(){
-   getBodyState().isLiftedUp =  getBodyState().fall_down_state == BodyState::upright && 
+void BodyStateProvider::updateIsLiftedUp()
+{
+   getBodyState().isLiftedUp = getBodyState().fall_down_state == BodyState::upright && 
                       !getBodyState().standByLeftFoot && 
                       !getBodyState().standByRightFoot && // no foot is on the ground
-                       getFrameInfo().getTimeSince(getBodyState().foot_state_time) > theParams.maxTimeForLiftUp;
-
- 
+                       getFrameInfo().getTimeSince(getBodyState().foot_state_time) > params.maxTimeForLiftUp;
 }
