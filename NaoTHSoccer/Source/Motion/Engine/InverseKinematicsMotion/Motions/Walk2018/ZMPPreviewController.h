@@ -93,8 +93,8 @@ class ZMPPreviewController : private ZMPPreviewControllerBase
     }
 
     bool is_stationary() const {
-      return com_velocity().abs() < parameters.stationary_threshold.velocity
-             && com_acceleration().abs() < parameters.stationary_threshold.acceleration;
+      return com_velocity().abs2() < parameters.stationary_threshold.velocity * parameters.stationary_threshold.velocity
+             && com_acceleration().abs2() < parameters.stationary_threshold.acceleration * parameters.stationary_threshold.acceleration;
     }
 
     void init(const Vector3d& com)
