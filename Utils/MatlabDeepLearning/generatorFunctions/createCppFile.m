@@ -1,4 +1,10 @@
-function [path] = createCppFile(convnet, file)
+function [path] = createCppFile(convnet, file, isKerasModel)
+
+if exist('isKerasModel', 'var') && isKerasModel
+    subtractAvg = false;
+else
+    subtractAvg = true;
+end
 
 BodyFile   = fopen(strcat(file,'.cpp'), 'w');
 HeaderFile = fopen(strcat(file,'.h'), 'w');
@@ -49,7 +55,7 @@ for i = 1:numel(layers)
        
        addInitialCopyFromInput(HeaderFile,BodyFile,rows,cols,channels);
 
-       addImageInputLayer(HeaderFile,BodyFile,level,layer);
+       addImageInputLayer(HeaderFile,BodyFile,level,layer,subtractAvg);
        level = level + 1;
        
        fprintf(' [done]');
