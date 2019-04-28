@@ -10,10 +10,9 @@ class CNN_THOMAS_BALLS : public AbstractCNNFinder {
 
 public:
 	void cnn(float x0[16][16][1]);
-	void find(const BallCandidates::PatchYUVClassified& p, double meanBrightness);
-
-	double getRadius();
-    Vector2d getCenter();
+	void find(const BallCandidates::PatchYUVClassified& p,double meanBrightness);
+	virtual double getRadius();
+	virtual Vector2d getCenter();
 
 private:
 	float in_step[16][16][1];

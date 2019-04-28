@@ -34,7 +34,7 @@ if args.imgdb_path is not None:
 
 
 with open(imgdb_path, "rb") as f:
-    pickle.load(f) # skip mean
+    mb = pickle.load(f)
     x = pickle.load(f)
     y = pickle.load(f)
 
@@ -44,4 +44,4 @@ noball = len(x) - ball
 
 print("images: {}".format(len(x)))
 print("ball: {} / noball: {}".format(ball, noball))
-
+print("mean brightness: {}".format(mb))

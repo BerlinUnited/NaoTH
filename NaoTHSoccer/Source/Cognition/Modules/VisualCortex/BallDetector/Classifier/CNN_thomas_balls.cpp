@@ -2513,6 +2513,8 @@ void CNN_THOMAS_BALLS::cnn(float x0[16][16][1])
 
 }
 
+
+
 void CNN_THOMAS_BALLS::find(const BallCandidates::PatchYUVClassified& p, double /* meanBrightness */)
 {
 	ASSERT(p.size() == 16);
@@ -2525,14 +2527,7 @@ void CNN_THOMAS_BALLS::find(const BallCandidates::PatchYUVClassified& p, double 
 	}
 
 	cnn(in_step);
+	//std::cout << "scores[1]=" << scores[1] << " scores[0]=" << scores[0] << std::endl;
 }
-
-double CNN_THOMAS_BALLS::getRadius() {
-	return scores[0];
-}
-
-Vector2d CNN_THOMAS_BALLS::getCenter() {
-
-	return Vector2d(scores[1], scores[2]);
-}
-
+double CNN_THOMAS_BALLS::getRadius() {return scores[0];}
+Vector2d CNN_THOMAS_BALLS::getCenter() {return Vector2d(scores[1], scores[2]);}

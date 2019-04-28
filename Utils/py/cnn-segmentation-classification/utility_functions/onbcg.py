@@ -157,7 +157,7 @@ sse_leaky = '''
 
 classify_yuv_patch = '''
 \n
-bool CNN_THOMAS_BALLS::classify(const BallCandidates::PatchYUVClassified& p)
+void CNN_THOMAS_BALLS::find(const BallCandidates::PatchYUVClassified& p, double /* meanBrightness */)
 {
 \tASSERT(p.size() == 16);
 
@@ -170,26 +170,6 @@ bool CNN_THOMAS_BALLS::classify(const BallCandidates::PatchYUVClassified& p)
 
 \tcnn(in_step);
 \t//std::cout << "scores[1]=" << scores[1] << " scores[0]=" << scores[0] << std::endl;
-\treturn res[0] > 0;
-}
-'''
-
-classify_path = '''
-bool CNN_THOMAS_BALLS::classify(const BallCandidates::Patch& p) 
-{
-\tASSERT(p.size() == 16);
-
-\tfor(size_t x=0; x < p.size(); x++) {
-\t\tfor(size_t y=0; y < p.size(); y++) {
-\t\t\t// TODO: check
-\t\t\tin_step[x][y][0] = ((float) p.data[p.size() * y + x]) / 255.0f;
-\t\t}
-\t}
-
-\tcnn(in_step);
-
-\t// std::cout << "scores[1]=" << scores[1] << " scores[0]=" << scores[0] << std::endl;
-\treturn res[0] > 0;
 }
 '''
 
@@ -205,18 +185,16 @@ def write_naoth_header_file():
         print("", file=fp)
         print("#include \"AbstractCNNClassifier.h\"", file=fp)
         print("", file=fp)
-        print("class CNN_THOMAS_BALLS : public AbstractCNNClassifier {", file=fp)
+        print("class CNN_THOMAS_BALLS : public AbstractCNNFinder {", file=fp)
         print("", file=fp)
         print("public:", file=fp)
-        print("\tint cnn(float x0[16][16][1]);", file=fp)
-        print("\tbool classify(const BallCandidates::Patch& p);", file=fp)
-        print("\tbool classify(const BallCandidates::PatchYUVClassified& p);", file=fp)
-        print("\tvirtual float getBallConfidence();", file=fp)
-        print("\tvirtual float getNoballConfidence();", file=fp)
+        print("\tvoid cnn(float x0[16][16][1]);", file=fp)
+        print("\tvoid find(const BallCandidates::PatchYUVClassified& p,double meanBrightness);", file=fp)
+        print("\tvirtual double getRadius();", file=fp)
+        print("\tvirtual Vector2d getCenter();", file=fp)
         print("", file=fp)
         print("private:", file=fp)
         print("\tfloat in_step[16][16][1];", file=fp)
-        print("\tint res[1];", file=fp)
         print("\tdouble scores[3];", file=fp)
         print("", file=fp)
         print("};", file=fp)
@@ -466,7 +444,7 @@ def write_header(c_inf, arch):
     if arch == 'sse3':
         c_inf["f"].write('#include <emmintrin.h>\n')
 
-    c_inf["f"].write('#include <math.h>\nint CNN_THOMAS_BALLS::cnn(float x0[{:d}][{:d}][{:d}])\n'.format(
+    c_inf["f"].write('#include <math.h>\nvoid CNN_THOMAS_BALLS::cnn(float x0[{:d}][{:d}][{:d}])\n'.format(
         c_inf["x_dim"],
         c_inf["y_dim"],
         c_inf["z_dim"]) + '{\n')
@@ -480,13 +458,12 @@ def write_header(c_inf, arch):
 
 def write_footer(c_inf, _x, classification):
     if c_inf["f"] is not None:
-        c_inf["f"].write('\treturn 0;\n}\n')
+        c_inf["f"].write('}\n')
 
         # TODO functions do not work properly yet
-        c_inf["f"].write(classify_path)
         c_inf["f"].write(classify_yuv_patch)
-        c_inf["f"].write('float CNN_THOMAS_BALLS::getBallConfidence(){return 1.0f;}\n')
-        c_inf["f"].write('float CNN_THOMAS_BALLS::getNoballConfidence(){return 0.0f;}\n')
+        c_inf["f"].write('double CNN_THOMAS_BALLS::getRadius() {return scores[0];}\n')
+        c_inf["f"].write('Vector2d CNN_THOMAS_BALLS::getCenter() {return Vector2d(scores[1], scores[2]);}\n')
 
         if classification:
             c_inf["f"].write(footer_test.format(**c_inf))
