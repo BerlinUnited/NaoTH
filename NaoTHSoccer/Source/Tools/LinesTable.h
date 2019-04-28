@@ -213,7 +213,7 @@ public:
     ASSERT(intersections.size() > 0);
 
     double minDistance = std::numeric_limits<double>::infinity();
-    unsigned int minIdx = 0;
+    int minIdx = 0;
 
     for (size_t i = 0; i < intersections.size(); i++)
     {
@@ -235,7 +235,7 @@ public:
     ASSERT(intersections.size() > 0);
 
     double minDistance = std::numeric_limits<double>::infinity();
-    unsigned int minIdx = 0;
+    int minIdx = 0;
 
     for (size_t i = 0; i < intersections.size(); i++)
     {
@@ -243,7 +243,7 @@ public:
       bool isXorT = ((intersections[i].type == LineIntersection::T) || (intersections[i].type == LineIntersection::X));
 
       if(!isXorT) {
-          continue;
+        continue;
       }
 
       // calculate the distance :)
@@ -252,7 +252,7 @@ public:
       if (dist >= 0 && dist <= minDistance)
       {
         minDistance = dist;
-        minIdx = i;
+        minIdx = static_cast<int>(i);
       }
     }//end for
 
