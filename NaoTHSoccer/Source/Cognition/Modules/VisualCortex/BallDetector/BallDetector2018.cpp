@@ -14,7 +14,6 @@
 #include "Classifier/DortmundCNN/CNN_dortmund.h"
 #include "Classifier/DortmundCNN/CNN_dortmund2018.h"
 #include "Classifier/DortmundCNN/CNN_dortmund2018_keras.h"
-#include "Classifier/CNN_thomas_balls.h"
 
 using namespace std;
 

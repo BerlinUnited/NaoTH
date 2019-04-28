@@ -4,7 +4,7 @@
 #include "Tools/PatchWork.h"
 #include "Tools/BlackSpotExtractor.h"
 
-#include "Classifier/CNN_thomas_balls.h"
+#include "Classifier/Fy1500.h"
 #include "Classifier/FrugallyDeep.h"
 
 using namespace std;
@@ -104,7 +104,7 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
   std::map<string, std::shared_ptr<AbstractCNNFinder> > result;
 
   // register classifiers
-  result.insert({ "fy_1500", std::make_shared<CNN_THOMAS_BALLS>() });
+  result.insert({ "fy_1500", std::make_shared<Fy1500>() });
   result.insert({ "fdeep_fy_1300", std::make_shared<FrugallyDeep>("fy_1300.json")});
   result.insert({ "fdeep_fy_1500", std::make_shared<FrugallyDeep>("fy_1500.json")});
   

@@ -15,4 +15,4 @@ array = np.random.randint(0, 255+1, size=input_shape).astype(np.float32)
 
 test_img_db = {'images': [array], 'mean': 0.0}  # Replace this by real images
 
-keras_compile(test_img_db, model_path, "CNN_thomas_balls.cpp", unroll_level=2, arch="sse3")
+keras_compile(test_img_db, model_path, "Fy1500.cpp", unroll_level=2, arch="sse3")

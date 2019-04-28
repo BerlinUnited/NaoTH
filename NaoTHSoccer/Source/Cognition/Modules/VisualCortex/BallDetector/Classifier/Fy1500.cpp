@@ -1,8 +1,8 @@
-#include "CNN_thomas_balls.h"
+#include "Fy1500.h"
 
 #include <emmintrin.h>
 #include <math.h>
-void CNN_THOMAS_BALLS::cnn(float x0[16][16][1])
+void Fy1500::cnn(float x0[16][16][1])
 {
 	__m128 w, x, y;
 	for (int xi = 0; xi < 16; xi += 1)
@@ -2518,7 +2518,7 @@ void CNN_THOMAS_BALLS::cnn(float x0[16][16][1])
 
 
 
-void CNN_THOMAS_BALLS::find(const BallCandidates::PatchYUVClassified& patch, double meanBrightness)
+void Fy1500::find(const BallCandidates::PatchYUVClassified& patch, double meanBrightness)
 {
 	ASSERT(patch.size() == 16);
 
@@ -2531,7 +2531,7 @@ void CNN_THOMAS_BALLS::find(const BallCandidates::PatchYUVClassified& patch, dou
 	}
 
 	cnn(in_step);
-//	std::cout << "scores[0]=" << scores[0] << " scores[1]=" << scores[1] << " scores[2]=" << scores[2] << std::endl;
+	//std::cout << "scores[0]=" << scores[0] << " scores[1]=" << scores[1] << " scores[2]=" << scores[2] << std::endl;
 }
-double CNN_THOMAS_BALLS::getRadius() {return scores[0];}
-Vector2d CNN_THOMAS_BALLS::getCenter() {return Vector2d(scores[1], scores[2]);}
+double Fy1500::getRadius() {return scores[0];}
+Vector2d Fy1500::getCenter() {return Vector2d(scores[1], scores[2]);}

@@ -157,36 +157,36 @@ sse_leaky = '''
 
 classify_yuv_patch = '''
 \n
-void CNN_THOMAS_BALLS::find(const BallCandidates::PatchYUVClassified& patch, double meanBrightness)
-{
+void {}::find(const BallCandidates::PatchYUVClassified& patch, double meanBrightness)
+{{
 \tASSERT(patch.size() == 16);
 
-\tfor(size_t x=0; x < patch.size(); x++) {
-\t\tfor(size_t y=0; y < patch.size(); y++) {
+\tfor(size_t x=0; x < patch.size(); x++) {{
+\t\tfor(size_t y=0; y < patch.size(); y++) {{
 \t\t\t// TODO: check
 \t\t\tfloat value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) - static_cast<float>(meanBrightness);
 \t\t\tin_step[y][x][0] = value;
-\t\t}
-\t}
+\t\t}}
+\t}}
 
 \tcnn(in_step);
 \t//std::cout << "scores[0]=" << scores[0] << " scores[1]=" << scores[1] << " scores[2]=" << scores[2] << std::endl;
-}
+}}
 '''
 
 
-def write_naoth_header_file():
-    fp = open("CNN_thomas_balls.h", "w")
+def write_naoth_header_file(class_name):
+    fp = open(class_name + ".h", "w")
     with fp:
-        print("#ifndef _CNN_THOMAS_BALLS_H", file=fp)
-        print("#define _CNN_THOMAS_BALLS_H", file=fp)
+        print("#ifndef _{}_H".format(class_name.upper()), file=fp)
+        print("#define _{}_H".format(class_name.upper()), file=fp)
         print("", file=fp)
         print("# include <emmintrin.h>", file=fp)
         print("# include <math.h>", file=fp)
         print("", file=fp)
         print("#include \"AbstractCNNClassifier.h\"", file=fp)
         print("", file=fp)
-        print("class CNN_THOMAS_BALLS : public AbstractCNNFinder {", file=fp)
+        print("class {} : public AbstractCNNFinder {{".format(class_name), file=fp)
         print("", file=fp)
         print("public:", file=fp)
         print("\tvoid cnn(float x0[16][16][1]);", file=fp)
@@ -258,7 +258,11 @@ def writeC(c_inf, str):
 
 
 def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", conv_mode=0):
-    write_naoth_header_file()
+
+    class_name = os.path.splitext(os.path.basename(code_path))[0]
+    print("Creating class", class_name)
+
+    write_naoth_header_file(class_name)
 
     test_im_index = 0
     im = imdb["images"][test_im_index]
@@ -272,7 +276,7 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
         c_inf["z_dim"] = 1
     # intermediate_output = []
 
-    c_inf = write_header(c_inf, arch)
+    c_inf = write_header(c_inf, arch, class_name)
     if unroll_level > 0:
         writeC(c_inf, '\tfor (int xi = 0; xi < {:d}; xi += 1)\n\t{{\n'.format(size(im, 1)))
         _xi = 'xi'
@@ -357,7 +361,7 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
             writeC(c_inf, '\t*res = scores[{:d}] > scores[*res] ? {:d} : *res;\n'.format(i, i))
         classification = True
     """
-    write_footer(c_inf, _x, classification=False)
+    write_footer(c_inf, _x, classification=False, class_name=class_name)
     """
     if classification:
         print("Testing...")
@@ -441,15 +445,16 @@ def size(x, i=1):
     return x.shape[i - 1]
 
 
-def write_header(c_inf, arch):
+def write_header(c_inf, arch, class_name):
     c_inf["f"] = open(c_inf["path"], 'w')
     c_inf["layer"] = 1
-    c_inf["f"].write('#include \"CNN_thomas_balls.h\"\n\n')
+    c_inf["f"].write('#include \"{}.h\"\n\n'.format(class_name))
     
     if arch == 'sse3':
         c_inf["f"].write('#include <emmintrin.h>\n')
 
-    c_inf["f"].write('#include <math.h>\nvoid CNN_THOMAS_BALLS::cnn(float x0[{:d}][{:d}][{:d}])\n'.format(
+    c_inf["f"].write('#include <math.h>\nvoid {}::cnn(float x0[{:d}][{:d}][{:d}])\n'.format(
+        class_name,
         c_inf["x_dim"],
         c_inf["y_dim"],
         c_inf["z_dim"]) + '{\n')
@@ -461,14 +466,14 @@ def write_header(c_inf, arch):
     return c_inf
 
 
-def write_footer(c_inf, _x, classification):
+def write_footer(c_inf, _x, classification, class_name):
     if c_inf["f"] is not None:
         c_inf["f"].write('}\n')
 
         # TODO functions do not work properly yet
-        c_inf["f"].write(classify_yuv_patch)
-        c_inf["f"].write('double CNN_THOMAS_BALLS::getRadius() {return scores[0];}\n')
-        c_inf["f"].write('Vector2d CNN_THOMAS_BALLS::getCenter() {return Vector2d(scores[1], scores[2]);}\n')
+        c_inf["f"].write(classify_yuv_patch.format(class_name))
+        c_inf["f"].write('double {}::getRadius() {{return scores[0];}}\n'.format(class_name))
+        c_inf["f"].write('Vector2d {}::getCenter() {{return Vector2d(scores[1], scores[2]);}}\n'.format(class_name))
 
         if classification:
             c_inf["f"].write(footer_test.format(**c_inf))
