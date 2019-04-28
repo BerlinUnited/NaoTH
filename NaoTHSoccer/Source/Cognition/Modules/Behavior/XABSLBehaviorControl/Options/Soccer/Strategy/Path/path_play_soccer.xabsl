@@ -277,8 +277,7 @@ option path_play_soccer
         stay;
     }
     action {
-      // TODO !!!
-      //free_kick_own_corner();
+      free_kick_own_corner();
     }
   }
   
@@ -292,8 +291,7 @@ option path_play_soccer
         stay;
     }
     action {
-      // TODO !!!
-      //free_kick_opp_corner();
+      free_kick_opp_corner();
     }
   }
 
@@ -307,8 +305,7 @@ option path_play_soccer
         stay;
     }
     action {
-      // TODO !!!
-      //free_kick_own_in();
+      free_kick_own_in();
     }
   }
   
@@ -322,8 +319,7 @@ option path_play_soccer
         stay;
     }
     action {
-      // TODO !!!
-      //free_kick_opp_in();
+      free_kick_opp_in();
     }
   }
 
