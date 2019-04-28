@@ -6,9 +6,9 @@
 * the stand motion goes from current pose to the default stand pose.
 * running - this motion is cyclic and there is allways running when the motion
 *           request is set to stand
-* stopped - the motion stopps when the motion request is not stand and the 
+* stopped - the motion stopps when the motion request is not stand and the
 *           default stand pose has been reached
-* 
+*
 */
 
 #include "StandMotion.h"
@@ -16,13 +16,13 @@
 using namespace naoth;
 
 StandMotion::StandMotion()
-  : 
+  :
   IKMotion(getInverseKinematicsMotionEngineService(), motion::stand, getMotionLock()),
-    
+
   state(GotoStandPose),
   lastState(Relax),//HACK: need to be different from state (another enum value would require a default case in the switch statement)
   state_time(0),
-  
+
   totalTime(0),
   time(0),
   height(-1000),
@@ -32,7 +32,7 @@ StandMotion::StandMotion()
   resetedAfterLifting(false),
   lastFrameInfo(getFrameInfo())
 {
-  // create 
+  // create
   std::vector<double> x = {0.0, 0.5, 1.0};
   std::vector<double> y = {0.0, 0.5, 1.0};
 
@@ -69,7 +69,7 @@ void StandMotion::execute()
       lastState = state;
       stiffnessIsReady = false;
     }
-      
+
     bool d = interpolateToPose();
     PLOT("StandMotion:stiffnessIsReady",stiffnessIsReady);
     PLOT("StandMotion:interpolateToPose",d);
@@ -170,7 +170,7 @@ void StandMotion::setStiffnessBuffer(double s)
 }
 
 
-void StandMotion::calcStandPose() 
+void StandMotion::calcStandPose()
 {
   // initialize standing
   standardStand = getMotionRequest().standardStand;
@@ -179,12 +179,15 @@ void StandMotion::calcStandPose()
   // init pose
   double comHeight = (height < 0.0) ? getWalk2018Parameters().zmpPlanner2018Params.comHeight : getMotionRequest().standHeight;
   comHeight = Math::clamp(comHeight, 160.0, 270.0); // valid range
-      
+
   // use the sensors to estimate the current pose
   startPose  = getEngine().getCurrentCoMFeetPose();//getEngine().getCoMFeetPoseBasedOnModel();//
-  targetPose = getStandPose(comHeight, getEngine().getParameters().stand.hipOffsetX, getEngine().getParameters().stand.bodyPitchOffset, standardStand);
+  targetPose = getStandPose(comHeight,
+                            getEngine().getParameters().stand.hipOffsetX,
+                            getEngine().getParameters().stand.bodyPitchOffset,
+                            standardStand);
 
-	// HACK: don't do anything if after walk
+  // HACK: don't do anything if after walk
   if(getMotionStatus().lastMotion == motion::walk) {
     targetPose = startPose;
   }
@@ -203,6 +206,8 @@ void StandMotion::calcStandPose()
 
 bool StandMotion::interpolateToPose()
 {
+  PLOT("StandMotion:totalTime", totalTime);
+  PLOT("StandMotion:time", time);
   // execute the stand motion
   if(totalTime >= 0 && time <= totalTime)
   {
@@ -229,7 +234,7 @@ bool StandMotion::interpolateToPose()
 }//end interpolateToPose
 
 
-void StandMotion::applyPose(const InverseKinematic::CoMFeetPose& p) 
+void StandMotion::applyPose(const InverseKinematic::CoMFeetPose& p)
 {
   bool solved = false;
   InverseKinematic::HipFeetPose c = getEngine().controlCenterOfMass(getMotorJointData(), p, solved, false);
@@ -285,7 +290,7 @@ void StandMotion::tuneJointOffsets()
 
     // try the C++ 11 way of findig the maximal index :)
     auto max_joint = std::max_element(currents.begin(), currents.end());
-    
+
     // if greater than Threshold then try to tune the offsets
     if(max_joint != currents.end() && max_joint->second > getEngine().getParameters().stand.relax.jointOffsetTuning.currentThreshold) {
       jointOffsets.decreaseOffset(max_joint->first);
@@ -293,7 +298,7 @@ void StandMotion::tuneJointOffsets()
 
     lastFrameInfo = getFrameInfo();
   }
-  
+
   for( int i = naoth::JointData::RHipYawPitch; i <= naoth::JointData::LAnkleRoll; i++) {
     getMotorJointData().position[i] += jointOffsets[i];
   }
@@ -320,7 +325,7 @@ void StandMotion::tuneStiffness()
 }// end tuneStiffness
 
 
-bool StandMotion::relaxedPoseIsStillOk() 
+bool StandMotion::relaxedPoseIsStillOk()
 {
   InverseKinematic::CoMFeetPose currentPose = getEngine().getCurrentCoMFeetPose();
   currentPose.localInLeftFoot();

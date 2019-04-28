@@ -116,7 +116,9 @@ void Walk2018::execute()
 
   PLOT("Walk:stopping_for", getFrameInfo().getTimeSince(start_stopping));
 
-  if(getMotionRequest().id != getId() && theZMPPreviewController->getModuleT()->is_stationary()) {
+  if(getMotionRequest().id != getId()
+     && theZMPPreviewController->getModuleT()->is_stationary()
+     && getStepBuffer().only_zero_steps()) {
     setCurrentState(motion::stopped);
     std::cout << "walk stopped" << std::endl;
   } else {
