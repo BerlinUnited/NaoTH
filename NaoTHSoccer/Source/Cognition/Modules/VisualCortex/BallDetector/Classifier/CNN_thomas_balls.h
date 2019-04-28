@@ -16,7 +16,7 @@ public:
 
 private:
 	float in_step[16][16][1];
-	double scores[3];
+	float scores[3];
 
 };
 # endif
