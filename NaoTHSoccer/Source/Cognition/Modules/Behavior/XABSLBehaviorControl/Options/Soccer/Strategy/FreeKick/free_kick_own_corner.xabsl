@@ -1,4 +1,6 @@
-/** If a foul was called against an opponent player, we get a free kick. */
+/** If the ball leaves the opponent baseline, it is put back on the corner and a corner kick is 
+ *  awarded to us.
+ */
 // TODO: should we handle this somehow "team.members_alive_count <= 1"??
 option free_kick_own_corner
 {
@@ -13,6 +15,7 @@ option free_kick_own_corner
     }
     action
     {
+      // TODO: we can look to the left/right corner, the ball MUST be there!
       passive_ball_not_seen();
     }
   }

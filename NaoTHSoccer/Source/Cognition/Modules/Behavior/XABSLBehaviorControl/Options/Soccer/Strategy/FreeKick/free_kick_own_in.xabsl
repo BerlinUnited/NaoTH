@@ -1,4 +1,6 @@
-/** If a foul was called against an opponent player, we get a free kick. */
+/** If the ball leaves the field (sideline), it is put back on the sideline and a kick-in is 
+ *  awarded to the team that did NOT last touch the ball.
+ */
 // TODO: should we handle this somehow "team.members_alive_count <= 1"??
 option free_kick_own_in
 {
@@ -13,6 +15,7 @@ option free_kick_own_in
     }
     action
     {
+      // TODO: we could take a look at the last valid team ball position?!
       passive_ball_not_seen();
     }
   }
