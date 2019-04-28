@@ -18,6 +18,7 @@
 #include "Representations/Infrastructure/JointData.h"
 #include "Representations/Infrastructure/BatteryData.h"
 #include "Representations/Modeling/GroundContactModel.h"
+#include "Representations/Motion/MotionStatus.h"
 
 #include "Representations/Modeling/BodyState.h"
 
@@ -44,6 +45,7 @@ BEGIN_DECLARE_MODULE(BodyStateProvider)
   REQUIRE(SensorJointData)
   REQUIRE(BatteryData)
   REQUIRE(GroundContactModel)
+  REQUIRE(MotionStatus)
 
   PROVIDE(BodyState)
 END_DECLARE_MODULE(BodyStateProvider)
@@ -68,14 +70,18 @@ private:
       PARAMETER_ANGLE_REGISTER(getup_threshold) = 70; // in deg
       PARAMETER_ANGLE_REGISTER(upright_threshold) = 30; // in deg
 
-      PARAMETER_REGISTER(maxTimeForLiftUp) = 500; // in ms
+      PARAMETER_REGISTER(lifted_up_time) = 500; // in ms
+      PARAMETER_REGISTER(lifted_up_time_walk) = 1000; // in ms
+
       PARAMETER_REGISTER(batteryChargingThreshold) = 0.8; // in %
       syncWithConfig();
     }
 
     double upright_threshold;
     double getup_threshold;
-    double maxTimeForLiftUp;
+
+    double lifted_up_time;
+    double lifted_up_time_walk;
     double batteryChargingThreshold;
   } params;
 

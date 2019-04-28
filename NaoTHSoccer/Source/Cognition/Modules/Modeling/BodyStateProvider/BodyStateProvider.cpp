@@ -142,8 +142,11 @@ void BodyStateProvider::updateTheLegTemperature()
 
 void BodyStateProvider::updateIsLiftedUp()
 {
-   getBodyState().isLiftedUp = getBodyState().fall_down_state == BodyState::upright && 
-                      !getBodyState().standByLeftFoot && 
-                      !getBodyState().standByRightFoot && // no foot is on the ground
-                       getFrameInfo().getTimeSince(getBodyState().foot_state_time) > params.maxTimeForLiftUp;
+  double lifted_up_time = getMotionStatus().currentMotion == motion::walk? params.lifted_up_time_walk: params.lifted_up_time;
+
+  getBodyState().isLiftedUp = 
+     getBodyState().fall_down_state == BodyState::upright && 
+    !getBodyState().standByLeftFoot && 
+    !getBodyState().standByRightFoot && // no foot is on the ground
+     getFrameInfo().getTimeSince(getBodyState().foot_state_time) > lifted_up_time;
 }
