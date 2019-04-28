@@ -67,8 +67,8 @@ logger "Brainwasher:copy files"
 # create directory
 #dir_name=$current_date-$current_nao
 dir_name=${current_nao_player}_${current_nao_number}_${current_nao}
-target_path=/media/brainwasher/$dir_name
-mkdir $dir_name
+target_path=/media/brainwasher/logs_$current_date/$dir_name
+mkdir $target_path
 
 # copy info file of the nao
 cp $infoFile $target_path/nao.info
