@@ -255,8 +255,8 @@ class ZMPPreviewControllerParameter : public ParameterList {
             ParameterList("Walk_ZMPPreviewControllerParameter"),
             current(nullptr)
         {
-            PARAMETER_REGISTER(stationary_threshold.velocity) = 1;
-            PARAMETER_REGISTER(stationary_threshold.acceleration) = 1;
+            PARAMETER_REGISTER(stationary_threshold.velocity) = 3;
+            PARAMETER_REGISTER(stationary_threshold.acceleration) = 100;
             syncWithConfig();
             loadParameter();
         }
