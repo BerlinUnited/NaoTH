@@ -107,36 +107,37 @@ void PathPlanner2018::execute()
 
 void PathPlanner2018::moveAroundBall(const double direction, const double radius)
 {
-  Vector2d ballPos    = getBallModel().positionPreview;
-  double ballRotation = ballPos.angle();
-  double ballDistance = ballPos.abs();
+ if (stepBuffer.empty())
+ {
+	Vector2d ballPos    = getBallModel().positionPreview;
+	double ballRotation = ballPos.angle();
+	double ballDistance = ballPos.abs();
 
-  double min1;
-  double min2;
-  double max1;
-  double max2;
-  if (direction <= 0)
-  {
-    min1 = 0.0;
-    min2 = 0.0;
-    max1 = 45.0;
-    max2 = 100.0;
-  }
-  else {
-    min1 = -45;
-    min2 = -100;
-    max1 = 0;
-    max2 = 0;
-  }
+	double min1;
+	double min2;
+	double max1;
+	double max2;
+	if (direction <= 0)
+	{
+	min1 = 0.0;
+	min2 = 0.0;
+	max1 = 45.0;
+	max2 = 100.0;
+	}
+	else {
+	min1 = -45;
+	min2 = -100;
+	max1 = 0;
+	max2 = 0;
+	}
 
-  double stepX = (ballDistance - radius) * std::cos(ballRotation);
-  double stepY = Math::clamp(radius * std::tan(Math::fromDegrees(Math::clamp(Math::toDegrees(-direction), min1, max1))), min2, max2) * std::cos(ballRotation);
+	double stepX = (ballDistance - radius) * std::cos(ballRotation);
+	double stepY = Math::clamp(radius * std::tan(Math::fromDegrees(Math::clamp(Math::toDegrees(-direction), min1, max1))), min2, max2) * std::cos(ballRotation);
 
-  Pose2D pose = { ballRotation, stepX, stepY };
+	Pose2D pose = { ballRotation, stepX, stepY };
 
-  //TODO move this condition to top of function
-  if (stepBuffer.empty())
-  {
+	//TODO move this condition to top of function
+  
     StepBufferElement new_step;
     new_step.setPose(pose);
     new_step.setStepType(StepType::WALKSTEP);
