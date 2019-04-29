@@ -29,6 +29,9 @@ def fy_1500():
 
     return model
 
+
+### Tests that where not used
+
 def fy_4000():
     input_shape = (16, 16, 1)
 
@@ -85,8 +88,6 @@ def fy_1300():
 
     return model
 
-
-### Tests that where not used
 
 def fy_1300_flexrelu():
     input_shape = (16, 16, 1)
