@@ -8,6 +8,8 @@
 #include <Representations/Infrastructure/ButtonData.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Tools/Debug/DebugModify.h>
+#include <Tools/DataStructures/ParameterList.h>
+#include <Tools/Debug/DebugParameterList.h>
 
 BEGIN_DECLARE_MODULE(CollisionDetectorOld)
 REQUIRE(FrameInfo)
@@ -15,12 +17,26 @@ REQUIRE(UltraSoundReceiveData)
 REQUIRE(ButtonData)
 PROVIDE(DebugModify)
 PROVIDE(CollisionModel)
+PROVIDE(DebugParameterList)
 
 END_DECLARE_MODULE(CollisionDetectorOld)
 
 class CollisionDetectorOld : public CollisionDetectorOldBase
 {
 public:
+    class Parameter : public ParameterList
+    {
+    public:
+        Parameter() : ParameterList("CollisionDetectorBumper")
+        {
+            PARAMETER_REGISTER(collisionInterval) = 1500;
+            PARAMETER_REGISTER(timesToBump) = 3;
+            syncWithConfig();
+        }
+
+        double collisionInterval;
+        double timesToBump;
+    } params;
   CollisionDetectorOld();
   virtual ~CollisionDetectorOld();
 
@@ -32,6 +48,7 @@ private:
     FrameInfo lastBumpTimeRight;
     bool bumperCollisionLeft;
     bool bumperCollisionRight;
+    double bumpInterval = params.collisionInterval / params.timesToBump;
 };
 
 #endif // COLLISIONDETECTOR_OLD_H

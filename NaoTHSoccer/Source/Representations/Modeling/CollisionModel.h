@@ -15,6 +15,8 @@ public:
 
   bool isLeftFootColliding;
   bool isRightFootColliding;
+  naoth::FrameInfo lastComputedCollisionLeft;
+  naoth::FrameInfo lastComputedCollisionRight;
 
 
 };
