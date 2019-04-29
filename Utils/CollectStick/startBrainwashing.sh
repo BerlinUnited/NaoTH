@@ -37,7 +37,12 @@ current_date=$(date +"%y%m%d-%H%M")
 current_nao=$(sed -n "2p" $infoFile)
 current_nao_name=$(cat /etc/hostname) # get the name, eg. "nao96"
 current_nao_number=$(cat /etc/hostname | grep -Eo "[0-9]{2}") # get the number, e.g. "96"
-current_nao_player=$(exec_cmd_and_return_or_default 'grep "\[PlayerInfo\] playerNumber" /var/log/messages | tail -1 | grep -o "playerNumber.*"' 'playerNumber: UNKNOWN')
+current_nao_player=$(exec_cmd_and_return_or_default 'grep -o -E "\[PlayerInfo\] playerNumber.*" /var/log/messages | tail -1 | sed "s/[^0-9]*//g"' '0') # grep the playerNumber from log, take the last one and extract the actual number
+
+# if no player number could be extracted, set it to default
+if [[ -z "$current_nao_player" ]]; then
+	current_nao_player="0"
+fi
 
 current_boot_time=$(</proc/uptime awk '{printf "%d", $1 / 60}')
 
@@ -66,15 +71,15 @@ logger -f $errorFile
 logger "Brainwasher:copy files"
 # create directory
 #dir_name=$current_date-$current_nao
-dir_name=${current_nao_player}_${current_nao_number}_${current_nao}
-target_path=/media/brainwasher/logs_$current_date/$dir_name
-mkdir $target_path
+dir_name=${current_nao_player}_${current_nao_number}_${current_nao}_${current_date}
+target_path=/media/brainwasher/$dir_name
+mkdir -p $target_path
 
 # copy info file of the nao
 cp $infoFile $target_path/nao.info
 echo "Name=$current_nao_name" >> $target_path/nao.info
 echo "Number=$current_nao_number" >> $target_path/nao.info
-echo "$current_nao_player" >> $target_path/nao.info
+echo "playerNumber: $current_nao_player" >> $target_path/nao.info
 echo "$current_compile_branch" >> $target_path/nao.info
 echo "$current_compile_revision" >> $target_path/nao.info
 echo "$current_compile_time" >> $target_path/nao.info
