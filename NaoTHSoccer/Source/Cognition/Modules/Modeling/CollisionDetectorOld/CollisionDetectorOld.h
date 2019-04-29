@@ -48,7 +48,6 @@ private:
     FrameInfo lastBumpTimeRight;
     bool bumperCollisionLeft;
     bool bumperCollisionRight;
-    double bumpInterval = params.collisionInterval / params.timesToBump;
 };
 
 #endif // COLLISIONDETECTOR_OLD_H
