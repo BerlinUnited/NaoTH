@@ -97,7 +97,6 @@
 #include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionStatic.h"
 #include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionForce.h"
 #include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionPotentialField.h"
-#include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionSimulation.h"
 #include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionFormation.h"
 #include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionDynamicGoalie.h"
 #include "Modules/Modeling/RoleDecision/Assignment/RoleDecisionAssignmentStatic.h"
@@ -239,7 +238,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(RoleDecisionPositionStatic);
   REGISTER_MODULE(RoleDecisionPositionForce);
   REGISTER_MODULE(RoleDecisionPositionPotentialField);
-  REGISTER_MODULE(RoleDecisionPositionSimulation);
   REGISTER_MODULE(RoleDecisionPositionFormation);
   REGISTER_MODULE(RoleDecisionPositionDynamicGoalie);
   // then decide which player should have which role
