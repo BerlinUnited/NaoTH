@@ -119,38 +119,36 @@ void PathPlanner2018::moveAroundBall(const double direction, const double radius
 	double max2;
 	if (direction <= 0)
 	{
-	min1 = 0.0;
-	min2 = 0.0;
-	max1 = 45.0;
-	max2 = 100.0;
+	  min1 = 0.0;
+	  min2 = 0.0;
+	  max1 = 45.0;
+	  max2 = 100.0;
 	}
 	else {
-	min1 = -45;
-	min2 = -100;
-	max1 = 0;
-	max2 = 0;
+	  min1 = -45;
+	  min2 = -100;
+	  max1 = 0;
+	  max2 = 0;
 	}
 
 	double stepX = (ballDistance - radius) * std::cos(ballRotation);
 	double stepY = Math::clamp(radius * std::tan(Math::fromDegrees(Math::clamp(Math::toDegrees(-direction), min1, max1))), min2, max2) * std::cos(ballRotation);
 
 	Pose2D pose = { ballRotation, stepX, stepY };
-
-	//TODO move this condition to top of function
   
-    StepBufferElement new_step;
-    new_step.setPose(pose);
-    new_step.setStepType(StepType::WALKSTEP);
-    new_step.setCharacter(params.moveAroundBallCharacter);
-    new_step.setScale(1.0);
-    new_step.setCoordinate(Coordinate::Hip);
-    new_step.setFoot(Foot::NONE);
-    new_step.setSpeedDirection(Math::fromDegrees(0.0));
-    new_step.setRestriction(RestrictionMode::SOFT);
-    new_step.setProtected(false);
-    new_step.setTime(250);
+  StepBufferElement new_step;
+  new_step.setPose(pose);
+  new_step.setStepType(StepType::WALKSTEP);
+  new_step.setCharacter(params.moveAroundBallCharacter);
+  new_step.setScale(1.0);
+  new_step.setCoordinate(Coordinate::Hip);
+  new_step.setFoot(Foot::NONE);
+  new_step.setSpeedDirection(Math::fromDegrees(0.0));
+  new_step.setRestriction(RestrictionMode::SOFT);
+  new_step.setProtected(false);
+  new_step.setTime(250);
 
-    addStep(new_step);
+  addStep(new_step);
   }
 }
 
