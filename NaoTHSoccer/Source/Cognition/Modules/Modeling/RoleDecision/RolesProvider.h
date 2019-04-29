@@ -56,18 +56,18 @@ private:
             PARAMETER_REGISTER(base_y) = 6000;
 
             // x,y home position; x,y own kickoff position; x,y opponent kickoff position
-            PARAMETER_REGISTER(goalie_str,           &Parameters::parsePositionGoalie)          = "-4300,    0; -4300,   0;  -4300,    0";
-            PARAMETER_REGISTER(defender_left_str,    &Parameters::parsePositionDefenderLeft)    = "-2500, 1100; -3000, 1500; -3000, 1300";
+            PARAMETER_REGISTER(goalie_str,           &Parameters::parsePositionGoalie)          = "-4300,    0; -4300,    0; -4300,    0";
+            PARAMETER_REGISTER(defender_left_str,    &Parameters::parsePositionDefenderLeft)    = "-2500, 1100; -3000,  800; -3000, 1300";
             PARAMETER_REGISTER(defender_center_str,  &Parameters::parsePositionDefenderCenter)  = "-2500,    0; -3000,    0; -3000,    0";
-            PARAMETER_REGISTER(defender_right_str,   &Parameters::parsePositionDefenderRight)   = "-2500,-1100; -3000,-1500; -3000, -450";
-            PARAMETER_REGISTER(midfielder_left_str,  &Parameters::parsePositionMidfielderLeft)  = "    0, 1500; -1500,  900; -2000,  500";
-            PARAMETER_REGISTER(midfielder_center_str,&Parameters::parsePositionMidfielderCenter)= "    0,    0; -1500,    0; -2000,    0";
-            PARAMETER_REGISTER(midfielder_right_str, &Parameters::parsePositionMidfielderRight) = "    0,-1500; -1500, -900; -2000, -500";
+            PARAMETER_REGISTER(defender_right_str,   &Parameters::parsePositionDefenderRight)   = "-2500,-1100; -3000, -800; -3000, -450";
+            PARAMETER_REGISTER(midfielder_left_str,  &Parameters::parsePositionMidfielderLeft)  = " -750, 1500; -1500,  900; -2000,  500";
+            PARAMETER_REGISTER(midfielder_center_str,&Parameters::parsePositionMidfielderCenter)= " -750,    0; -1500,  300; -2000,  300";
+            PARAMETER_REGISTER(midfielder_right_str, &Parameters::parsePositionMidfielderRight) = " -750,-1500; -1500, -900; -2000, -500";
             PARAMETER_REGISTER(forward_left_str,     &Parameters::parsePositionForwardLeft)     = " 1500, 1500;  -500, 1500; -1000,  750";
-            PARAMETER_REGISTER(forward_center_str,   &Parameters::parsePositionForwardCenter)   = " 1500,    0;  -500,    0; -1000,  250";
+            PARAMETER_REGISTER(forward_center_str,   &Parameters::parsePositionForwardCenter)   = " 1500,    0;  -500,    0; -1100,    0";
             PARAMETER_REGISTER(forward_right_str,    &Parameters::parsePositionForwardRight)    = " 1500,-1500;  -500,-1500; -1000, -750";
 
-            PARAMETER_REGISTER(active_str, &Parameters::parseActive) = "all"; // "goalie;defender_left;forward_center;defender_right;midfielder_right;midfielder_left"
+            PARAMETER_REGISTER(active_str, &Parameters::parseActive) = "goalie;defender_left;forward_center;defender_right;midfielder_center"; //"all";
 
             // load from the file after registering all parameters
             syncWithConfig();
