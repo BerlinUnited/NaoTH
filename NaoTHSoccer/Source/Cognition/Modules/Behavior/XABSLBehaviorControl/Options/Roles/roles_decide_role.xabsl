@@ -32,7 +32,9 @@ option roles_decide_role
   // has to be initial state, otherwise there might be problems with role switching
   initial state unknown_role {
     action {
-      role_unknown();
+      // TODO: indicate, that the player has no role!
+      //role_unknown();
+      role_default();
     }
   }
 
@@ -47,63 +49,72 @@ option roles_decide_role
 
   state defender_left {
     action {
-      role_defender_left();
+      //role_defender_left();
+      role_default();
     }
   }
 
   state defender_center {
     action
     {
-      role_defender_center();
+      //role_defender_center();
+      role_default();
     }
   }
 
   state defender_right {
     action
     {
-      role_defender_right();
+      //role_defender_right();
+      role_default();
     }
   }
 
   state midfielder_left {
     action
     {
-      role_midfielder_left();
+      //role_midfielder_left();
+      role_default();
     }
   }
 
   state midfielder_center {
     action
     {
-      role_midfielder_center();
+      //role_midfielder_center();
+      role_default();
     }
   }
 
   state midfielder_right {
     action
     {
-      role_midfielder_right();
+      //role_midfielder_right();
+      role_default();
     }
   }
 
   state forward_left {
     action
     {
-      role_forward_left();
+      //role_forward_left();
+      role_default();
     }
   }
 
   state forward_center {
     action
     {
-      role_forward_center();
+      //role_forward_center();
+      role_default();
     }
   }
 
   state forward_right {
     action
     {
-      role_forward_right();
+      //role_forward_right();
+      role_default();
     }
   }
 }

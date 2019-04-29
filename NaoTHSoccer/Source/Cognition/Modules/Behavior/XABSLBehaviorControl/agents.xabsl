@@ -264,6 +264,7 @@ include "Options/Test/strategy/role_change_test.xabsl";
 include "Options/Test/strategy/role_change_goalie_test.xabsl";
 
 include "Options/Roles/role_goalie.xabsl";
+include "Options/Roles/role_default.xabsl";
 include "Options/Roles/role_unknown.xabsl";
 include "Options/Roles/role_defender_left.xabsl";
 include "Options/Roles/role_defender_center.xabsl";

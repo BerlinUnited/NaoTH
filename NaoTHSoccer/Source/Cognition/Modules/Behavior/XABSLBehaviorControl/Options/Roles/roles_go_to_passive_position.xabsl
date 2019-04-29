@@ -1,22 +1,6 @@
 option roles_go_to_passive_position
 {
-  // IMPORTANT: the transition from another subrole to the passive behavior
-  // the search for ball behavior should be especially used from the striker to passive!
-  initial state search_ball {
-    decision {
-      // search for maximum 10s
-      if (action_done || state_time > 10000)
-        goto go_to_passive_position;
-      else
-        stay;
-    }
-    action {
-      search_ball();
-      motion.walk.style = stable;
-    }
-  }
-
-  state go_to_passive_position
+  initial state go_to_passive_position
   {
     decision
     {
