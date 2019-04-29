@@ -129,7 +129,7 @@ private:
       PARAMETER_REGISTER(postBorderFactorFar) = 0.3;
       PARAMETER_REGISTER(postMaxCloseSize) = 60;
 
-      PARAMETER_REGISTER(checkContrast) = false;
+      PARAMETER_REGISTER(checkContrast) = true;
       PARAMETER_REGISTER(contrastMinimum) = 50;
       PARAMETER_REGISTER(contrastMinimumClose) = 50;
 
