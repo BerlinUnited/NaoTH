@@ -143,6 +143,9 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   // dribble
   engine.registerBooleanOutputSymbol("motion.dribble", &dribble, &dribbleG);
   engine.registerBooleanInputSymbol("motion.dribble.action_done", &dribbleG);
+
+  //Temporary Collision Symbols
+  engine.registerBooleanInputSymbol()
 }//end registerSymbols
 
 void MotionSymbols::execute()
