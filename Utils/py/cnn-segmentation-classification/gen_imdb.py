@@ -4,6 +4,15 @@ import argparse
 from utility_functions.csv_loader import loadImages
 import pickle
 
+
+def str2bool(v):
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
 parser = argparse.ArgumentParser(description='Generate the image database for training etc. '
                                               'using a folder with 0, 1 etc. subfolders with png images.')
 
@@ -15,6 +24,9 @@ parser.add_argument('-i', '--image-folder', dest='img_path', nargs='+',
 parser.add_argument('-r', '--resolution', dest='res',
                     help='Images will be resized to this resolution. Default is 16x16')
 
+parser.add_argument("-l","--limit-noball", type=str2bool, nargs='?', dest="limit_noball",
+                        const=True,
+                        help="Randomly select at most |balls| from no balls class")
 
 args = parser.parse_args()
 
@@ -32,7 +44,8 @@ if args.res is not None:
     res = {"x": int(args.res), "y": int(args.res)}
     
 with open(imgdb_path, "wb") as f:
-    x, y, mean, p = loadImages(img_path, res)
+    x, y, mean, p = loadImages(img_path, res, args.limit_noball)
+
     pickle.dump(mean, f)
     pickle.dump(x, f)
     pickle.dump(y, f)

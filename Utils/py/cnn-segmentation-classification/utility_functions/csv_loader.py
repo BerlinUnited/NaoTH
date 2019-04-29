@@ -17,11 +17,8 @@ def adjust_gamma(image, gamma=1.0):
                       for i in np.arange(0, 256)]).astype("uint8")
     return cv2.LUT(image, table)
 
-def load_image_from_path(path, db, res):
+def load_image_from_path(path, db_balls, db_noballs, res):
     print("Loading images from " + path + "...")
-
-    num_balls=0
-    num_noballs=0
 
     # parse csv file
     with open(path, newline='') as csvfile:
@@ -70,7 +67,6 @@ def load_image_from_path(path, db, res):
                         y = (y / res["y"])
                         radius = radius / max(res["x"], res["y"])
 
-                        num_balls += 1
                         is_ball = True
 
                         #cv2.namedWindow('image',cv2.WINDOW_NORMAL)
@@ -90,38 +86,41 @@ def load_image_from_path(path, db, res):
                 radius = 0.0
                 x = 0
                 y = 0
-                num_noballs += 1
 
             # for each row add the image and the prediction 
             y = np.array([radius, x, y])
 
-            db.append((img.astype(float) / 255.0, y, p))
+            img_f = img.astype(float) / 255.0
 
-            # augment: gamma
-            for g in (0.4, 1.3):
-                db.append((adjust_gamma(img, g).astype(float) / 255.0, y, p))
-                if is_ball:
-                    num_balls += 1
-                else:
-                    num_noballs += 1
+            if is_ball:
+                db_balls.append((img_f, y, p))
+            else:
+                db_noballs.append((img_f, y, p))
+            
+            avg_img_f = np.average(img_f)
 
+            if avg_img_f >= 0.2 and avg_img_f <= 0.8:
+                # augment: gamma
+                for g in (0.4, 1.3):
+                    if is_ball:
+                        db_balls.append((adjust_gamma(img, g).astype(float) / 255.0, y, p))
+                    else:
+                        db_noballs.append((adjust_gamma(img, g).astype(float) / 255.0, y, p))
+                
 
-    return num_balls, num_noballs
-
-def loadImages(all_paths, res):
-    db = []
-
-    total_balls=0
-    total_noballs=0
+def loadImages(all_paths, res, limit_noballs):
+    db_balls = []
+    db_noballs = []
 
     for path in all_paths:
-        balls, noballs = load_image_from_path(path, db, res)
-        
-        total_balls += balls
-        total_noballs += noballs
+        load_image_from_path(path, db_balls, db_noballs, res)
+
+    if limit_noballs == True and len(db_balls) < len(db_noballs):
+        db_noballs = np.random.choice(db_noballs, len(db_balls))    
    
-    
+    db = db_balls + db_noballs
     random.shuffle(db)
+    
     x, y, p = list(map(np.array, list(zip(*db))))
     mean = np.mean(x)
     x -= mean
@@ -129,7 +128,7 @@ def loadImages(all_paths, res):
     x = x.reshape(*x.shape, 1)
 
     print("Loading finished")
-    print("images: " + str(len(x)) + " balls: " + str(total_balls) + " no balls: " + str(total_noballs))
+    print("images: " + str(len(x)) + " balls: " + str(len(db_balls)) + " no balls: " + str(len(db_noballs)))
     return x, y, mean, p
 
 if __name__ == "__main__":
