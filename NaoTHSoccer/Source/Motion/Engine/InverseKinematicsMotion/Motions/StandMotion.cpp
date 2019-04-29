@@ -183,9 +183,12 @@ void StandMotion::calcStandPose()
 
   // use the sensors to estimate the current pose
   startPose  = getEngine().getCurrentCoMFeetPose();//getEngine().getCoMFeetPoseBasedOnModel();//
-  targetPose = getStandPose(comHeight, getEngine().getParameters().stand.hipOffsetX, getEngine().getParameters().stand.bodyPitchOffset, standardStand);
+  targetPose = getStandPose(comHeight,
+                            getEngine().getParameters().stand.hipOffsetX,
+                            getEngine().getParameters().stand.bodyPitchOffset,
+                            standardStand);
 
-    // HACK: don't do anything if after walk
+  // HACK: don't do anything if after walk
   if(getMotionStatus().lastMotion == motion::walk) {
     targetPose = startPose;
   }
@@ -204,6 +207,8 @@ void StandMotion::calcStandPose()
 
 bool StandMotion::interpolateToPose()
 {
+  PLOT("StandMotion:totalTime", totalTime);
+  PLOT("StandMotion:time", time);
   // execute the stand motion
   if(totalTime >= 0 && time <= totalTime)
   {
