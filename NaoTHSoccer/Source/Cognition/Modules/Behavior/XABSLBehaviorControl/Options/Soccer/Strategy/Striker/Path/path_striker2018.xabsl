@@ -83,7 +83,7 @@ option path_striker2018
     action{
       situation_abortable = true;
       /* this distance is smaller than the condition for ball.preview.x above
-         possible unwanted behavior: the ball is closer than 250 but ball.preview.y is
+         possible unwanted behavior: the ball is closer than 300 but ball.preview.y is
          bigger than 50. The robot won't rotate in go_to_ball_with_USOA and will continue
          to walk to the position of the ball. Two possible outcomes:
          1. the robot runs into the ball (if ball distance is not considered)

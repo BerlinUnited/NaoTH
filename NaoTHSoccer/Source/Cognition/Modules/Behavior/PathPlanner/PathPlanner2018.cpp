@@ -134,6 +134,7 @@ void PathPlanner2018::moveAroundBall(const double direction, const double radius
 
   Pose2D pose = { ballRotation, stepX, stepY };
 
+  //TODO move this condition to top of function
   if (stepBuffer.empty())
   {
     StepBufferElement new_step;
@@ -221,6 +222,7 @@ bool PathPlanner2018::nearApproach_forwardKick(const Foot& foot, const double of
     if (numPossibleStepsX > params.readyForForwardKickThresholdX
       || numPossibleStepsY > params.readyForForwardKickThresholdY)
     {
+	  // generate a correction step
       double translation_xy = params.stepLength;
 
       double translation_x = std::min(translation_xy, ballPos.x - getFieldInfo().ballRadius - params.nearApproachForwardKickBallPosOffsetX - std::abs(ballPos.y));
