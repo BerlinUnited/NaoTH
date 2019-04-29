@@ -117,15 +117,15 @@ private:
       PARAMETER_REGISTER(keyDetector.borderRadiusFactorFar) = 0.8;
       
       PARAMETER_REGISTER(cnn.threshold) = 0.3;
-      PARAMETER_REGISTER(cnn.thresholdClose) = 0.5;
+      PARAMETER_REGISTER(cnn.thresholdClose) = 0.45;
       PARAMETER_REGISTER(cnn.meanBrightness) = 0.5;
       
 
 
-      PARAMETER_REGISTER(maxNumberOfKeys) = 4;
+      PARAMETER_REGISTER(maxNumberOfKeys) = 12;
       PARAMETER_REGISTER(numberOfExportBestPatches) = 2;
 
-      PARAMETER_REGISTER(postBorderFactorClose) = 0.3;
+      PARAMETER_REGISTER(postBorderFactorClose) = 0.0;
       PARAMETER_REGISTER(postBorderFactorFar) = 0.3;
       PARAMETER_REGISTER(postMaxCloseSize) = 60;
 
@@ -134,8 +134,8 @@ private:
       PARAMETER_REGISTER(contrastMinimumClose) = 50;
 
 
-      PARAMETER_REGISTER(classifier) = "fy1500";
-      PARAMETER_REGISTER(classifierClose) = "fy1500";
+      PARAMETER_REGISTER(classifier) = "fy1500_2";
+      PARAMETER_REGISTER(classifierClose) = "fy1500_2";
 
       PARAMETER_REGISTER(brightnessMultiplierBottom) = 1.0;
       PARAMETER_REGISTER(brightnessMultiplierTop) = 1.0;
