@@ -19,6 +19,7 @@
 // simple robot
 #include <Representations/Infrastructure/JointData.h>
 #include <Representations/Infrastructure/FSRData.h>
+#include <Representations/Infrastructure/AccelerometerData.h>
 
 #define CYCLE_TIME 20
 
@@ -98,6 +99,11 @@ public: // a dummy robot simulator
 
   void get(naoth::SensorJointData& data) const { data = robotJointData; }
   void get(naoth::FSRData& data) const { data = fsrData; }
+
+  void get(naoth::AccelerometerData& data) {
+    data.data.z = Math::g;
+    data.rawData.z = Math::g;
+  }
 
   /*
   void get(BatteryData& data);
