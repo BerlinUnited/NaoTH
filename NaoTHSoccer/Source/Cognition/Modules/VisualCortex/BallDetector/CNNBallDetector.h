@@ -42,8 +42,6 @@
 
 #include <memory>
 
-#include <fdeep/fdeep.hpp>
-
 BEGIN_DECLARE_MODULE(CNNBallDetector)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)

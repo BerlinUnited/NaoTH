@@ -109,10 +109,12 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
   result.insert({ "fy1500", std::make_shared<Fy1500>() });
   result.insert({ "fy1500_2", std::make_shared<Fy1500_2>() });
   result.insert({ "fy1500_3", std::make_shared<Fy1500_3>() });
+
+#ifndef WIN32
   result.insert({ "fdeep_fy1300", std::make_shared<FrugallyDeep>("fy1300.json")});
   result.insert({ "fdeep_fy1500", std::make_shared<FrugallyDeep>("fy1500.json")});
-  
-  
+#endif
+
   return std::move(result);
 }
 

@@ -1,6 +1,8 @@
 #ifndef _FRUGALLY_DEEP_H
 #define _FRUGALLY_DEEP_H
 
+#ifndef WIN32
+
 # include <emmintrin.h>
 # include <math.h>
 
@@ -28,3 +30,5 @@ private:
 
 };
 # endif
+
+#endif

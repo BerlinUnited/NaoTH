@@ -1,5 +1,9 @@
 #include "Fy1500_2.h"
 
+#ifdef WIN32
+#define alignas(x)
+#endif
+
 #include <emmintrin.h>
 #include <math.h>
 void Fy1500_2::cnn(float x0[16][16][1])
