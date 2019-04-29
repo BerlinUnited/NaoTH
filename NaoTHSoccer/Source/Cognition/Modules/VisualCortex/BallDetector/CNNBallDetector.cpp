@@ -6,6 +6,7 @@
 
 #include "Classifier/Fy1500.h"
 #include "Classifier/Fy1500_2.h"
+#include "Classifier/Fy1500_3.h"
 #include "Classifier/FrugallyDeep.h"
 
 using namespace std;
@@ -107,8 +108,10 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
   // register classifiers
   result.insert({ "fy1500", std::make_shared<Fy1500>() });
   result.insert({ "fy1500_2", std::make_shared<Fy1500_2>() });
+  result.insert({ "fy1500_3", std::make_shared<Fy1500_3>() });
   result.insert({ "fdeep_fy1300", std::make_shared<FrugallyDeep>("fy1300.json")});
   result.insert({ "fdeep_fy1500", std::make_shared<FrugallyDeep>("fy1500.json")});
+  
   
   return std::move(result);
 }

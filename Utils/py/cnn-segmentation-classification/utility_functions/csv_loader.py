@@ -40,7 +40,9 @@ def load_image_from_path(path, db_balls, db_noballs, res):
 #                raise ex
 
             is_ball = False
-            debug_img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+
+
+            #debug_img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
             # load ball information
             num_regions = int(row["region_count"])
@@ -60,7 +62,7 @@ def load_image_from_path(path, db_balls, db_noballs, res):
                             continue
 
                         # draw detected circle into debug image
-                        cv2.circle(debug_img, (int(x),int(y)), int(radius), color=(0,0,255))
+                        #cv2.circle(debug_img, (int(x),int(y)), int(radius), color=(0,0,255))
 
                         # normalize to resolution
                         x = (x / res["x"])
@@ -68,11 +70,10 @@ def load_image_from_path(path, db_balls, db_noballs, res):
                         radius = radius / max(res["x"], res["y"])
 
                         is_ball = True
-
-                        #cv2.namedWindow('image',cv2.WINDOW_NORMAL)
-                        #cv2.resizeWindow('image', 600,600)
-                        #cv2.imshow("image", debug_img)
-                        #cv2.waitKey()
+#                        cv2.namedWindow('image',cv2.WINDOW_NORMAL)
+#                        cv2.resizeWindow('image', 600,600)
+#                        cv2.imshow("image", debug_img)
+#                        cv2.waitKey()
                          
                     else:
                         # we only support circles
@@ -99,6 +100,15 @@ def load_image_from_path(path, db_balls, db_noballs, res):
             
             avg_img_f = np.average(img_f)
 
+            # augment: binarized image
+            bin_img = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
+            cv2.THRESH_BINARY,11,2).reshape((16,16))
+
+            if is_ball:
+               db_balls.append((bin_img.astype(float) / 255.0, y, p))
+            else:
+               db_noballs.append((bin_img.astype(float) / 255.0, y, p))
+                
             if avg_img_f >= 0.2 and avg_img_f <= 0.8:
                 # augment: gamma
                 for g in (0.4, 1.3):
