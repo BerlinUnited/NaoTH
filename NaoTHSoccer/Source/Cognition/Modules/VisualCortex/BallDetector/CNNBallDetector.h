@@ -134,8 +134,8 @@ private:
       PARAMETER_REGISTER(contrastMinimumClose) = 50;
 
 
-      PARAMETER_REGISTER(classifier) = "fy_1300.json";
-      PARAMETER_REGISTER(classifierClose) = "fy_1300.json";
+      PARAMETER_REGISTER(classifier) = "fy1500";
+      PARAMETER_REGISTER(classifierClose) = "fy1500";
 
       PARAMETER_REGISTER(brightnessMultiplierBottom) = 1.0;
       PARAMETER_REGISTER(brightnessMultiplierTop) = 1.0;

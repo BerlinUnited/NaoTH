@@ -30,7 +30,7 @@ CNNBallDetector::CNNBallDetector()
 
   cnnMap = createCNNMap();
 
-  setClassifier("fy_1500", "fy_1500");
+  setClassifier("fy1500", "fy1500");
 }
 
 CNNBallDetector::~CNNBallDetector()
@@ -105,10 +105,10 @@ std::map<string, std::shared_ptr<AbstractCNNFinder> > CNNBallDetector::createCNN
   std::map<string, std::shared_ptr<AbstractCNNFinder> > result;
 
   // register classifiers
-  result.insert({ "fy_1500", std::make_shared<Fy1500>() });
-  result.insert({ "fy_1500_2", std::make_shared<Fy1500_2>() });
-  result.insert({ "fdeep_fy_1300", std::make_shared<FrugallyDeep>("fy_1300.json")});
-  result.insert({ "fdeep_fy_1500", std::make_shared<FrugallyDeep>("fy_1500.json")});
+  result.insert({ "fy1500", std::make_shared<Fy1500>() });
+  result.insert({ "fy1500_2", std::make_shared<Fy1500_2>() });
+  result.insert({ "fdeep_fy1300", std::make_shared<FrugallyDeep>("fy1300.json")});
+  result.insert({ "fdeep_fy1500", std::make_shared<FrugallyDeep>("fy1500.json")});
   
   return std::move(result);
 }
