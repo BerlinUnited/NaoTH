@@ -26,7 +26,14 @@ public:
   class GoalPost
   {
   public:
-    GoalPost(): color(ColorClasses::none),type(unknownPost), positionReliable(false), seenHeight(0), seenWidth(0){}
+    GoalPost() : 
+      color(ColorClasses::none),
+      type(unknownPost), 
+      positionReliable(false), 
+      seenHeight(0), 
+      seenWidth(0)
+    {}
+    
     ~GoalPost(){}
 
     /* possible types of goalposts */

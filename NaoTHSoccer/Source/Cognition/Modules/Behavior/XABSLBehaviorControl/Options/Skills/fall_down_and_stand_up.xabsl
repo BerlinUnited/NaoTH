@@ -47,7 +47,9 @@ option fall_down_and_stand_up
   {
     decision
     {
-      if (state_time > 500)
+      if(fall_down_state == undefined)
+        stay;
+      else if (state_time > 500)
         goto stand_up;
       else 
         stay;
@@ -100,7 +102,7 @@ option fall_down_and_stand_up
   {
     decision
     {
-      if(state_time > 1500)
+      if(executed_motion.target_reached)
         goto idle;
       else
         stay;
