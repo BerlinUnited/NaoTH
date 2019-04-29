@@ -39,7 +39,8 @@ def load_image_from_path(path, db, res):
                 img = cv2.resize(img, (res["x"], res["y"]))
             except Exception as ex:
                 print("Error loading image ", f)
-                raise ex
+                continue
+#                raise ex
 
             is_ball = False
             debug_img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
