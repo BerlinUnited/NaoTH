@@ -326,7 +326,8 @@ agent pathplanner_test_dash_agent("pathplanner_test_dash_agent", pathplanner_tes
 agent pathplanner2018_forwardkick_agent("pathplanner2018_forwardkick_agent", pathplanner2018_forwardkick_agent);
 agent pathplanner2018_sidekick_agent("pathplanner2018_sidekick_agent", pathplanner2018_sidekick_agent);
 agent path_move_around_ball_agent("path_move_around_ball_agent", path_move_around_ball_agent);
-
+//Collision Test Agents
+agent collision_test_bumperCollision_agent("collision_test_bumperCollision_agent", collision_test_bumperCollision_agent);
 // Test agents search
 agent search_test_agent("search_test_agent",search_test_agent);
 agent search_only_looking_for_ball("only_looking_for_ball",only_ball_looking);

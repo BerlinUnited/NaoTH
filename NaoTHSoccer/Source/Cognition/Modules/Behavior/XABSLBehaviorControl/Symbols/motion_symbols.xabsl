@@ -198,5 +198,9 @@ namespace motion_symbols("Motion Symbols") {
 
   bool output motion.dribble;
   bool input motion.dribble.action_done;
+
+  //Collision Symbols temporarily here
+  float input motion.collision.LastBumperCollisionLeftFrame;
+  float input motion.collision.LastBumperCollisionRightFrame;
  }
   
