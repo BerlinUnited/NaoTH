@@ -45,7 +45,7 @@ option search_ball_back_rot
   state walk_back_straight {
     decision {
       // walk half the distance back without rotating (walk straight)
-      else if(vector.abs(x=robot_pose.x - search_ball_walk_back.x, y=robot_pose.y - search_ball_walk_back.y) > (@distance))
+      else if(vector.abs(x=robot_pose.planned.x - search_ball_walk_back.x, y=robot_pose.planned.y - search_ball_walk_back.y) > (@distance))
       {
         if (@search_direction == right)
           goto walk_back_turn_right_first;
@@ -79,8 +79,7 @@ option search_ball_back_rot
   state walk_back_turn_left_first {
     decision {
       // walk back for a quarter of the distance, rotating left first
-      // vector.abs(x=robot_pose.x - search_ball_walk_back.x, y=robot_pose.y - search_ball_walk_back.y) > (@distance*0.66)
-      else if(atan2(y=search_ball_walk_back.y - robot_pose.y, x=search_ball_walk_back.x - robot_pose.x) - robot_pose.rotation < -@max_rotation)
+      else if(atan2(y=search_ball_walk_back.y - robot_pose.planned.y, x=search_ball_walk_back.x - robot_pose.planned.x) - robot_pose.planned.rotation < -@max_rotation)
         goto stop_left;
       else
         stay;
@@ -106,8 +105,7 @@ option search_ball_back_rot
   state walk_back_turn_right_first {
     decision {
       // walk back for a quarter of the distance, rotating right first
-      //else if(vector.abs(x=robot_pose.x - search_ball_walk_back.x, y=robot_pose.y - search_ball_walk_back.y) > (@distance*0.66))
-      else if(atan2(y=search_ball_walk_back.y - robot_pose.y, x=search_ball_walk_back.x - robot_pose.x) - robot_pose.rotation > @max_rotation)
+      else if(atan2(y=search_ball_walk_back.y - robot_pose.planned.y, x=search_ball_walk_back.x - robot_pose.planned.x) - robot_pose.planned.rotation > @max_rotation)
         goto stop_right;
       else
         stay;
@@ -174,8 +172,7 @@ option search_ball_back_rot
   /* walk back and rotate to the right (after rotating left) */
   state walk_back_turn_right {
     decision {
-      //else if(vector.abs(x=robot_pose.x - search_ball_walk_back.x, y=robot_pose.y - search_ball_walk_back.y) > @distance)
-      else if(atan2(y=search_ball_walk_back.y - robot_pose.y, x=search_ball_walk_back.x - robot_pose.x) - robot_pose.rotation > @max_rotation)
+      else if(atan2(y=search_ball_walk_back.y - robot_pose.planned.y, x=search_ball_walk_back.x - robot_pose.planned.x) - robot_pose.planned.rotation > @max_rotation)
         goto finish;
       else
         stay;
@@ -200,8 +197,7 @@ option search_ball_back_rot
   /* walk back and rotate to the left (after rotating right) */
   state walk_back_turn_left {
     decision {
-      //else if(vector.abs(x=robot_pose.x - search_ball_walk_back.x, y=robot_pose.y - search_ball_walk_back.y) > @distance)
-      else if(atan2(y=search_ball_walk_back.y - robot_pose.y, x=search_ball_walk_back.x - robot_pose.x) - robot_pose.rotation < -@max_rotation)
+      else if(atan2(y=search_ball_walk_back.y - robot_pose.planned.y, x=search_ball_walk_back.x - robot_pose.planned.x) - robot_pose.planned.rotation < -@max_rotation)
         goto finish;
       else
         stay;
