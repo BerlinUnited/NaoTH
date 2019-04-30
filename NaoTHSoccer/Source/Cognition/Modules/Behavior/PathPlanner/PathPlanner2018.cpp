@@ -221,7 +221,7 @@ bool PathPlanner2018::nearApproach_forwardKick(const Foot& foot, const double of
     if (numPossibleStepsX > params.readyForForwardKickThresholdX
       || numPossibleStepsY > params.readyForForwardKickThresholdY)
     {
-	  // generate a correction step
+	    // generate a correction step
       double translation_xy = params.stepLength;
 
       double translation_x = std::min(translation_xy, ballPos.x - getFieldInfo().ballRadius - params.nearApproachForwardKickBallPosOffsetX - std::abs(ballPos.y));
@@ -448,8 +448,7 @@ void PathPlanner2018::forwardKick(const Foot& foot)
   }
 }
 
-// Foot == RIGHT means that we want to kick with the right foot to the left side
-void PathPlanner2018::sideKick(const Foot& foot)
+void PathPlanner2018::sideKick(const Foot& foot) // Foot == RIGHT means that we want to kick with the right foot to the left side
 {
   if (stepBuffer.empty() && !kickPlanned)
   {
