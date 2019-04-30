@@ -72,19 +72,25 @@ void CollisionDetectorOld::execute()
   {
       //Left bumper collision -> evasive movement
       getCollisionModel().lastComputedCollisionLeft = getFrameInfo();
-      getCollisionModel().lastComputedCollisionLeftFrame = getFrameInfo().getFrameNumber();
+      getCollisionModel().collision_left_bumber = true;
 
       getCollisionModel().isLeftFootColliding = false;
       collisionStartTimeLeft = getFrameInfo();
+  }
+  else{
+    getCollisionModel().collision_left_bumber = false;
   }
   if ((getFrameInfo().getTimeSince(collisionStartTimeRight.getTime()) > params.collisionInterval*params.timesToBump)
       &&getCollisionModel().isRightFootColliding)
   {
       //Right bumper collision -> evasive movement
       getCollisionModel().lastComputedCollisionRight = getFrameInfo();
-      getCollisionModel().lastComputedCollisionRightFrame = getFrameInfo().getFrameNumber();
+      getCollisionModel().collision_right_bumber = true;
 
       getCollisionModel().isRightFootColliding = false;
       collisionStartTimeRight = getFrameInfo();
+  }
+  else{
+    getCollisionModel().collision_right_bumber = false;
   }
 }

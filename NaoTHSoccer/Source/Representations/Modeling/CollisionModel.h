@@ -15,10 +15,14 @@ public:
 
   bool isLeftFootColliding;
   bool isRightFootColliding;
+
+  // Why?
   naoth::FrameInfo lastComputedCollisionLeft;
   naoth::FrameInfo lastComputedCollisionRight;
-  double lastComputedCollisionLeftFrame = lastComputedCollisionLeft.getFrameNumber();
-  double lastComputedCollisionRightFrame = lastComputedCollisionLeft.getFrameNumber();
+
+  //
+  bool collision_left_bumber;
+  bool collision_right_bumber;
 
 };
 

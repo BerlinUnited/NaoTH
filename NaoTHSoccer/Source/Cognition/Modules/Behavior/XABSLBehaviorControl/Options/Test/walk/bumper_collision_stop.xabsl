@@ -1,0 +1,57 @@
+/**
+This file should become the central place to handle collisions
+for all kinds of different types of collision. For now there will
+only be the Bumper collision handling. Planning on moving
+arm collision handling from arms_control into here (good idea?)
+*/
+option bumper_collision_stop
+{
+common decision {
+  if (!body.ready_to_walk || game.current_mode != playing)
+    goto idle;
+}
+
+initial state idle{
+  decision 
+  {
+    else
+      goto forward;
+  }
+  action{}
+}
+
+state forward{
+  decision
+    {
+      else if(state_time > 5000 || motion.collision.collision_left_bumber ||
+              motion.collision.collision_right_bumber){
+       goto stand;
+      } else {
+       stay;
+      }
+    }
+    action
+    {
+      head.control_mode = look_straight_ahead;
+    
+      motion.type = walk;
+      motion.walk_speed.x = 100;
+      motion.walk.style = stable;
+    }
+  }
+
+state stand{
+  decision{
+      else {
+        stay;
+      }
+    }
+    action
+    {
+      head.control_mode = look_straight_ahead;
+
+      motion.type = stand;
+    }  
+  }
+
+}
