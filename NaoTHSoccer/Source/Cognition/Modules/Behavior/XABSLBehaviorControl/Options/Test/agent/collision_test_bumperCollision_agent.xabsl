@@ -1,5 +1,9 @@
-/** The root option of the bumper collision testing behavior */
-option walk_forward_agent {
+/**
+The root option of the bumper collision testing behavior.
+Maybe instead of using "collision_handler" we could hard code
+bumper collision handling in here for testig purpouses
+*/
+option collision_test_bumpercollision_agent {
 
   initial state test {    
     action {

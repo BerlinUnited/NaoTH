@@ -38,6 +38,8 @@ include "Options/Skills/fall_down_and_stand_up.xabsl";
 include "Options/Skills/treat_lifted.xabsl";
 include "Options/Skills/stand_up.xabsl";
 include "Options/Skills/move_around_ball.xabsl";
+//Added a new Skill for collision handling
+include "Options/Skills/collision_handler.xabsl";
 //
 include "Options/Skills/go_to_ball.xabsl";
 include "Options/Skills/go_to_point.xabsl";
@@ -198,7 +200,8 @@ include "Options/Test/path_move_around_ball_test.xabsl";
 
 
 // Test agents Team behavior
-include "Options/Test/team/team_go_to_ball_agent.xabsl";
+
+include "Options/Test/team/team_go_to_ball_agent.xabsl";
 
 
 // Test Options PathPlanner
@@ -217,6 +220,8 @@ include "Options/Test/agent/role_change_test_agent.xabsl";
 include "Options/Test/agent/change_state_input_test_agent.xabsl";
  //Useless?
 
+//Test Agents collision
+include "Options/Test/agent/collision_test_bumpercollision_agent.xabsl";
 // Test options Headcontrol
 include "Options/Test/agent/head_test_agent.xabsl";
 include "Options/Test/head/head_control_test.xabsl";
@@ -326,8 +331,9 @@ agent pathplanner_test_dash_agent("pathplanner_test_dash_agent", pathplanner_tes
 agent pathplanner2018_forwardkick_agent("pathplanner2018_forwardkick_agent", pathplanner2018_forwardkick_agent);
 agent pathplanner2018_sidekick_agent("pathplanner2018_sidekick_agent", pathplanner2018_sidekick_agent);
 agent path_move_around_ball_agent("path_move_around_ball_agent", path_move_around_ball_agent);
-//Collision Test Agents
-agent collision_test_bumperCollision_agent("collision_test_bumperCollision_agent", collision_test_bumperCollision_agent);
+
+//Collision Test Agents
+agent collision_test_bumpercollision_agent("collision_test_bumpercollision_agent", collision_test_bumpercollision_agent);
 // Test agents search
 agent search_test_agent("search_test_agent",search_test_agent);
 agent search_only_looking_for_ball("only_looking_for_ball",only_ball_looking);
