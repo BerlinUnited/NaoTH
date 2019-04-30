@@ -84,6 +84,8 @@ void FootStepPlanner2018::calculateNewStep(const Step& lastStep, Step& newStep, 
 
   // STABILIZATION
   bool do_emergency_stop = getCoMErrors().absolute2.isFull() && getCoMErrors().absolute2.getAverage() > parameters.stabilization.emergencyStopError;
+  // NOTE: set the walk_emergency_stop below only in the case if it's actually executed
+  getMotionStatus().walk_emergency_stop = false;
 
   // TODO: maybe move the check back to walk2018 and call a special function for finishing the motion
   if ( getMotionRequest().id != motion::walk /*getId()*/ || (do_emergency_stop && !walkRequest.stepControl.isProtected))
@@ -92,6 +94,8 @@ void FootStepPlanner2018::calculateNewStep(const Step& lastStep, Step& newStep, 
     // current fix: force leaving emergency_stop after some cycles
     if(do_emergency_stop) {
       emergencyCounter++;
+
+      getMotionStatus().walk_emergency_stop = do_emergency_stop;
     }
 
     PLOT("Walk:emergencyCounter",emergencyCounter);
