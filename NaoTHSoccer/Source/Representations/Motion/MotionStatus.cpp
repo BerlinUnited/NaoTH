@@ -34,7 +34,7 @@ void Serializer<MotionStatus>::serialize(const MotionStatus& representation, std
   message.set_head_target_reached(representation.head_target_reached);
   message.set_head_got_stuck(representation.head_got_stuck);
 
-  message.set_head_got_stuck(representation.walk_emergency_stop);
+  message.set_walk_emergency_stop(representation.walk_emergency_stop);
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
   message.SerializeToZeroCopyStream(&buf);
