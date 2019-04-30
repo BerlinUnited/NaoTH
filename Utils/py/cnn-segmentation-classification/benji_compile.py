@@ -2,7 +2,7 @@ import numpy as np
 from keras.models import load_model
 from utility_functions.onbcg import keras_compile
 
-model_path = "models/fy1500_3.h5"
+model_path = "models/fy4000_3.h5"
 #model_path = "models/extra-step.h5"
 model = load_model(model_path)
 model.summary()
@@ -15,4 +15,4 @@ array = np.random.randint(0, 255+1, size=input_shape).astype(np.float32)
 
 test_img_db = {'images': [array], 'mean': 0.0}  # Replace this by real images
 
-keras_compile(test_img_db, model_path, "Fy1500_3.cpp", unroll_level=2, arch="sse3")
+keras_compile(test_img_db, model_path, "Fy4000_3.cpp", unroll_level=2, arch="sse3")
