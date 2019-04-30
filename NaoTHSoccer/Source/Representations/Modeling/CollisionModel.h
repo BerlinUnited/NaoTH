@@ -17,7 +17,8 @@ public:
   bool isRightFootColliding;
   naoth::FrameInfo lastComputedCollisionLeft;
   naoth::FrameInfo lastComputedCollisionRight;
-
+  double lastComputedCollisionLeftFrame = lastComputedCollisionLeft.getFrameNumber();
+  double lastComputedCollisionRightFrame = lastComputedCollisionLeft.getFrameNumber();
 
 };
 

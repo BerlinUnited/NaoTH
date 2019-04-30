@@ -145,7 +145,9 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanInputSymbol("motion.dribble.action_done", &dribbleG);
 
   //Temporary Collision Symbols
-  engine.registerBooleanInputSymbol()
+  engine.registerDecimalInputSymbol("motion.collision.LastBumperCollisionLeft", &getCollisionModel().lastComputedCollisionLeftFrame);
+  engine.registerDecimalInputSymbol("motion.collision.LastBumperCollisionRight", &getCollisionModel().lastComputedCollisionRightFrame);
+
 }//end registerSymbols
 
 void MotionSymbols::execute()

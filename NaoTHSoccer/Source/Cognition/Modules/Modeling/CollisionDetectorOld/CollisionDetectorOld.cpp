@@ -72,6 +72,8 @@ void CollisionDetectorOld::execute()
   {
       //Left bumper collision -> evasive movement
       getCollisionModel().lastComputedCollisionLeft = getFrameInfo();
+      getCollisionModel().lastComputedCollisionLeftFrame = getFrameInfo().getFrameNumber();
+
       getCollisionModel().isLeftFootColliding = false;
       collisionStartTimeLeft = getFrameInfo();
   }
@@ -80,6 +82,8 @@ void CollisionDetectorOld::execute()
   {
       //Right bumper collision -> evasive movement
       getCollisionModel().lastComputedCollisionRight = getFrameInfo();
+      getCollisionModel().lastComputedCollisionRightFrame = getFrameInfo().getFrameNumber();
+
       getCollisionModel().isRightFootColliding = false;
       collisionStartTimeRight = getFrameInfo();
   }
