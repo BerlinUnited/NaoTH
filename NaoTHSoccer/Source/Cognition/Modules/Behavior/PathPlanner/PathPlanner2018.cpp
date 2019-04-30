@@ -224,6 +224,7 @@ bool PathPlanner2018::nearApproach_forwardKick(const Foot& foot, const double of
 	    // generate a correction step
       double translation_xy = params.stepLength;
 
+      //TODO why - std::abs(ballPos.y) => das heißt doch wenn der ball in der y richtung springt wird ein schritt zurück geplant und ausgeführt
       double translation_x = std::min(translation_xy, ballPos.x - getFieldInfo().ballRadius - params.nearApproachForwardKickBallPosOffsetX - std::abs(ballPos.y));
       double translation_y = std::min(translation_xy, std::abs(ballPos.y)) * (ballPos.y < 0 ? -1 : 1);
 
