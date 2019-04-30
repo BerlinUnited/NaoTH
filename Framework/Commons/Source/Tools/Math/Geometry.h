@@ -248,7 +248,7 @@ public:
     Math::Matrix_mxn<double> A(static_cast<unsigned int> (points.size()), 3);
     Math::Matrix_mxn<double> b(static_cast<unsigned int> (points.size()), 1);
 
-    for(size_t i = 0; i < points.size(); i++)
+    for(unsigned int i = 0; i < static_cast<unsigned int>(points.size()); i++)
     {
       A(i, 0) = points[i].x;
       A(i, 1) = points[i].y;

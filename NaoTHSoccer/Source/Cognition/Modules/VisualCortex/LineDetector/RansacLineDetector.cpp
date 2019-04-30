@@ -263,7 +263,7 @@ bool RansacLineDetector::ransacLine(Math::LineSegment& result, std::vector<size_
       bestModel = model;
       bestInlier = inlier;
       bestInlierError = inlierError;
-      bestBaseEdgelId = i0;
+      bestBaseEdgelId = static_cast<int>(i0);
     }
   }
 
