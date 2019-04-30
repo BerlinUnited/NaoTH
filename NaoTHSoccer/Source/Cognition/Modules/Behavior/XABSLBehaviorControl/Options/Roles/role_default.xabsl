@@ -88,7 +88,7 @@ option role_default
   state subrole_transition_striker_none_ball
   {
     decision {
-      else if(strategy.role_dynamic != none || state_time > 10000) {
+      else if(strategy.role_dynamic != none || state_time > 5000) { // 5s
         goto decide_subrole_or_passive;
       } else {
         stay;
