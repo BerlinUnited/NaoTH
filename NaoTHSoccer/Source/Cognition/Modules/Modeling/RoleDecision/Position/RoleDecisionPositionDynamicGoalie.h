@@ -40,17 +40,21 @@ private:
     public:
         Parameters() : ParameterList("RoleDecisionPositionDynamicGoalie")
         {
+            PARAMETER_REGISTER(goalie_max_come_out) = 300; // 600 -> penalty area
             PARAMETER_REGISTER(goalie_defense_min_x) = -750;
             PARAMETER_REGISTER(goalie_defense_max_x) = 0;
             // load from the file after registering all parameters
             syncWithConfig();
         }
 
+        double goalie_max_come_out;
         double goalie_defense_min_x;
         double goalie_defense_max_x;
     } params;
 
     bool lastActive = false;
+
+    Vector2d calculateEllipsePoint(const Vector2d& ball);
 };
 
 #endif // ROLEDECISIONDYNAMICGOALIE_H
