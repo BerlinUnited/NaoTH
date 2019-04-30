@@ -68,7 +68,7 @@ int main()
     const int x_out_dim = {:d};
     const int y_out_dim = {:d};
     const int z_out_dim = {:d};
-    float output_tensor alignas(16) [x_out_dim][y_out_dim][z_out_dim];
+    alignas(16) float output_tensor [x_out_dim][y_out_dim][z_out_dim];
     
     // read test image
     FILE *f = fopen("img.bin", "r");
@@ -128,7 +128,7 @@ sse_conv_odd = '''
 
 x86_conv = '''
 {{
-{indent}static const float g alignas(16) [4] = {{{w0}f, {w1}f, {w2}f, {w3}f}};
+{indent}alignas(16) static const float g [4] = {{{w0}f, {w1}f, {w2}f, {w3}f}};
 {indent}asm ("movaps %2, %%xmm0\\n"  
 {indent}     "movss %1, %%xmm1\\n" 
 {indent}     "shufps $0, %%xmm1, %%xmm1\\n"
@@ -175,8 +175,8 @@ void {}::find(const BallCandidates::PatchYUVClassified& patch, double meanBright
 '''
 
 
-def write_naoth_header_file(class_name):
-    fp = open(class_name + ".h", "w")
+def write_naoth_header_file(class_name, output_folder="."):
+    fp = open(os.path.join(output_folder, class_name + ".h"), "w")
     with fp:
         print("#ifndef _{}_H".format(class_name.upper()), file=fp)
         print("#define _{}_H".format(class_name.upper()), file=fp)
@@ -262,7 +262,9 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
     class_name = os.path.splitext(os.path.basename(code_path))[0]
     print("Creating class", class_name)
 
-    write_naoth_header_file(class_name)
+    output_folder = os.path.dirname(os.path.abspath(code_path))
+
+    write_naoth_header_file(class_name, output_folder)
 
     test_im_index = 0
     im = imdb["images"][test_im_index]
@@ -449,6 +451,10 @@ def write_header(c_inf, arch, class_name):
     c_inf["f"] = open(c_inf["path"], 'w')
     c_inf["layer"] = 1
     c_inf["f"].write('#include \"{}.h\"\n\n'.format(class_name))
+    c_inf["f"].write("""#if WIN32
+#define alignas(x) __declspec(align(x))
+#endif\n\n""")
+    
     
     if arch == 'sse3':
         c_inf["f"].write('#include <emmintrin.h>\n')
@@ -532,7 +538,7 @@ def convolution(x, w, b, stride, pad, c_inf, unroll_level, arch):
                 'stride0': stride[0], 'stride1': stride[1], 'i': 'i', 'j': 'j',
                 'pt': pad_top, 'pb': pad_bottom, 'pl': pad_left, 'pr': pad_right}
 
-    writeC(c_inf, '{indent}static float x{layer} alignas(16) [{x_res}][{y_res}][{z_res}] = {{0}};\n'.format(**str_data))
+    writeC(c_inf, '{indent}alignas(16) static float x{layer} [{x_res}][{y_res}][{z_res}] = {{0}};\n'.format(**str_data))
 
     if unroll_level > 0:
         writeC(c_inf, '{indent}for (int i = 0; i < {:d}; i += 1)\n{indent}{{\n'.format(H_OUT, **str_data))
@@ -697,7 +703,7 @@ def convolution_2(x, w, b, stride, pad, c_inf, unroll_level, arch):
                 'stride0': SH, 'stride1': SW, 'i': 'i', 'j': 'j',
                 'pt': pad_top, 'pb': pad_bottom, 'pl': pad_left, 'pr': pad_right}
 
-    writeC(c_inf, '{indent}static float x{layer} alignas(16) [{x_res}][{y_res}][{z_res}] = {{0}};\n'.format(**str_data))
+    writeC(c_inf, '{indent}alignas(16) static float x{layer} [{x_res}][{y_res}][{z_res}] = {{0}};\n'.format(**str_data))
 
     if unroll_level > 0:
         writeC(c_inf, '{indent}for (int i = 0; i < {:d}; i += 1)\n{indent}{{\n'.format(H_OUT, **str_data))
@@ -880,7 +886,7 @@ def convolution_3(x, w, b, stride, pad, c_inf, unroll_level, arch):
                 'stride0': SH, 'stride1': SW, 'i': 'i', 'j': 'j',
                 'pt': pad_top, 'pb': pad_bottom, 'pl': pad_left, 'pr': pad_right}
 
-    writeC(c_inf, '{indent}static float x{layer} alignas(16) [{x_res}][{y_res}][{z_res}] = {{0}};\n'.format(**str_data))
+    writeC(c_inf, '{indent}alignas(16) static float x{layer} [{x_res}][{y_res}][{z_res}] = {{0}};\n'.format(**str_data))
 
     if unroll_level > 0:
         writeC(c_inf, '{indent}for (int i = 0; i < {:d}; i += 1)\n{indent}{{\n'.format(H_OUT, **str_data))

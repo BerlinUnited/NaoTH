@@ -1,5 +1,9 @@
 #include "Fy4000_3.h"
 
+#if WIN32
+#define alignas(x) __declspec(align(x))
+#endif
+
 #include <emmintrin.h>
 #include <math.h>
 void Fy4000_3::cnn(float x0[16][16][1])
@@ -26,7 +30,7 @@ void Fy4000_3::cnn(float x0[16][16][1])
 	}
 
  	// Convolution Layer
-	static float x1 alignas(16) [16][16][4] = {0};
+	alignas(16) static float x1 [16][16][4] = {0};
 	for (int i = 0; i < 16; i += 1)
 	{
 		for (int j = 0; j < 16; j += 1)
@@ -172,7 +176,7 @@ void Fy4000_3::cnn(float x0[16][16][1])
 	}
 
  	// Convolution Layer
-	static float x2 alignas(16) [16][16][8] = {0};
+	alignas(16) static float x2 [16][16][8] = {0};
 	for (int i = 0; i < 16; i += 1)
 	{
 		for (int j = 0; j < 16; j += 1)
@@ -803,7 +807,7 @@ void Fy4000_3::cnn(float x0[16][16][1])
 	}
 
  	// Convolution Layer
-	static float x4 alignas(16) [8][8][12] = {0};
+	alignas(16) static float x4 [8][8][12] = {0};
 	for (int i = 0; i < 8; i += 1)
 	{
 		for (int j = 0; j < 8; j += 1)
@@ -2461,7 +2465,7 @@ void Fy4000_3::cnn(float x0[16][16][1])
 	}
 
  	// Convolution Layer
-	static float x6 alignas(16) [4][4][16] = {0};
+	alignas(16) static float x6 [4][4][16] = {0};
 	for (int i = 0; i < 4; i += 1)
 	{
 		for (int j = 0; j < 4; j += 1)
@@ -5592,7 +5596,7 @@ void Fy4000_3::cnn(float x0[16][16][1])
 	}
 
  	// Convolution Layer
-	static float x7 alignas(16) [4][4][16] = {0};
+	alignas(16) static float x7 [4][4][16] = {0};
 	for (int i = 0; i < 4; i += 1)
 	{
 		for (int j = 0; j < 4; j += 1)
