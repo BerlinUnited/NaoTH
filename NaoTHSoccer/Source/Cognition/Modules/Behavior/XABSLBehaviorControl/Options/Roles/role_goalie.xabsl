@@ -52,7 +52,8 @@ option role_goalie
        go_to_point_with_USOA(
          x=strategy.position.home.x,
          y=strategy.position.home.y,
-         rot=normalize(angle=atan2(y = ball.preview.y, x = ball.preview.x)));
+         rot=0
+         );
       head.control_mode = search_for_ball_goalie;
      }
   }
