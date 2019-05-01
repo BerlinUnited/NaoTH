@@ -146,8 +146,8 @@ private:
     pair.end = i_end;
     pair.id = scan_line_id;
 
-    pair.point.x = (begin.point.x + end.point.x)*0.5;
-    pair.point.y = (begin.point.y + end.point.y)*0.5;
+    pair.point.x = static_cast<double>(begin.point.x + end.point.x)*0.5;
+    pair.point.y = static_cast<double>(begin.point.y + end.point.y)*0.5;
     pair.direction = (begin.direction - end.direction).normalize();
 
     getScanLineEdgelPercept().pairs.push_back(pair);
