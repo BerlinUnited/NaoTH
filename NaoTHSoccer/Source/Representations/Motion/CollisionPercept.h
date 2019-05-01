@@ -51,7 +51,7 @@ public:
   
   virtual void print(std::ostream& stream) const
   {
-    stream << "timeCollisionArmLeft = " << timeCollisionArmLeft << '\n';
+    /*stream << "timeCollisionArmLeft = " << timeCollisionArmLeft << '\n';
     stream << "timeCollisionArmRight = " << timeCollisionArmRight << '\n';
     stream << "referenceHullLeft: " << "\n";
     for (size_t i = 0; i < referenceHullLeft.size(); i++){
@@ -60,7 +60,11 @@ public:
 	stream << "referenceHullRight: " << "\n";
 	for (size_t i = 0; i < referenceHullRight.size(); i++){
 		stream << "x= " << referenceHullRight[i].x << " y = " << referenceHullRight[i].y << "\n";
-	}
+	}*/
+    stream << "isLeftFootColliding=" << (isLeftFootColliding ? "true" : "false") << std::endl;
+    stream << "isRightFootColliding=" << (isRightFootColliding ? "true" : "false") << std::endl;
+    stream << "Last computed collision Left: " << lastComputedCollisionLeft.getFrameNumber() << std::endl;
+    stream << "Last computed collision Right: " << lastComputedCollisionRight.getFrameNumber() << std::endl;
   }
 };
 
