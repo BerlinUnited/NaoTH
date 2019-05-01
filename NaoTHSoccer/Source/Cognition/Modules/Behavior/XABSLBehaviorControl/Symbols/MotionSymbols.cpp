@@ -53,6 +53,9 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumElement("head.camera", "head.camera.Bottom", naoth::CameraInfo::Bottom);
   engine.registerEnumeratedOutputSymbol("head.camera.id", "head.camera", &setCameraId, &getCameraId);
 
+  engine.registerBooleanInputSymbol("head.target_reached", &getMotionStatus().head_target_reached);
+  engine.registerBooleanInputSymbol("head.got_stuck", &getMotionStatus().head_got_stuck);
+
   //arm motion
   // enum type for motion
   for(int i = 0; i <= ArmMotionRequest::numOfArmMotion; i++)
@@ -63,7 +66,6 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   }
 
   engine.registerEnumeratedOutputSymbol("arm.type", "arm.type", &setArmRequestId, &getArmRequestId);
-
 
   // enum type for motion
   for(int i = 0; i <= motion::num_of_motions; i++)
@@ -127,6 +129,7 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("executed_motion.time", &getMotionStatusTime);
   engine.registerBooleanInputSymbol("executed_motion.step_control.left_movable", &getMotionStatusLeftMovable);
   engine.registerBooleanInputSymbol("executed_motion.step_control.right_movable", &getMotionStatusRightMovable);
+  engine.registerBooleanInputSymbol("executed_motion.target_reached", &getMotionStatus().target_reached);
 
   // universal enum type for direction
   engine.registerEnumElement("direction", "direction.right", -1);
@@ -190,61 +193,61 @@ void MotionSymbols::updateOutputSymbols()
 MotionSymbols* MotionSymbols::theInstance = NULL;
 
 
-void MotionSymbols::setHeadMotionRequest(int value) { 
-  theInstance->getHeadMotionRequest().id = (HeadMotionRequest::HeadMotionID)value; 
+void MotionSymbols::setHeadMotionRequest(int value) {
+  theInstance->getHeadMotionRequest().id = (HeadMotionRequest::HeadMotionID)value;
 }
 
-int MotionSymbols::getHeadMotionRequestId() { 
-  return (int)(theInstance->getHeadMotionRequest().id); 
+int MotionSymbols::getHeadMotionRequestId() {
+  return (int)(theInstance->getHeadMotionRequest().id);
 }
 
-int MotionSymbols::getHeadMotionStatus() { 
-  return (int)(theInstance->getMotionStatus().headMotion); 
+int MotionSymbols::getHeadMotionStatus() {
+  return (int)(theInstance->getMotionStatus().headMotion);
 }
 
-void MotionSymbols::setCameraId(int value) { 
+void MotionSymbols::setCameraId(int value) {
   assert(value >= 0 && value < static_cast<int>(naoth::CameraInfo::numOfCamera));
   theInstance->getHeadMotionRequest().cameraID = static_cast<naoth::CameraInfo::CameraID>(value);
 }
 
-int MotionSymbols::getCameraId() { 
-  return static_cast<int>(theInstance->getHeadMotionRequest().cameraID); 
+int MotionSymbols::getCameraId() {
+  return static_cast<int>(theInstance->getHeadMotionRequest().cameraID);
 }
 
-void MotionSymbols::setArmRequestId(int value) { 
-  theInstance->getMotionRequest().armMotionRequest.id = (ArmMotionRequest::ArmMotionID)value; 
+void MotionSymbols::setArmRequestId(int value) {
+  theInstance->getMotionRequest().armMotionRequest.id = (ArmMotionRequest::ArmMotionID)value;
 }
 
-int MotionSymbols::getArmRequestId() { 
-  return (int)(theInstance->getMotionRequest().armMotionRequest.id); 
+int MotionSymbols::getArmRequestId() {
+  return (int)(theInstance->getMotionRequest().armMotionRequest.id);
 }
 
-void MotionSymbols::setMotionRequestId(int value) { 
-  theInstance->getMotionRequest().id = (motion::MotionID)value; 
+void MotionSymbols::setMotionRequestId(int value) {
+  theInstance->getMotionRequest().id = (motion::MotionID)value;
 }
 
-int MotionSymbols::getMotionRequestId() { 
-  return (int)(theInstance->getMotionRequest().id); 
+int MotionSymbols::getMotionRequestId() {
+  return (int)(theInstance->getMotionRequest().id);
 }
 
-int MotionSymbols::getMotionStatusId() { 
-  return (int)(theInstance->getMotionStatus().currentMotion); 
+int MotionSymbols::getMotionStatusId() {
+  return (int)(theInstance->getMotionStatus().currentMotion);
 }
 
-double MotionSymbols::getMotionStatusTime() { 
-  return theInstance->getFrameInfo().getTimeSince(theInstance->getMotionStatus().time); 
+double MotionSymbols::getMotionStatusTime() {
+  return theInstance->getFrameInfo().getTimeSince(theInstance->getMotionStatus().time);
 }
 
 bool MotionSymbols::getMotionStatusLeftMovable()
-{ 
-  return theInstance->getMotionStatus().stepControl.moveableFoot == MotionStatus::StepControlStatus::BOTH 
-      || theInstance->getMotionStatus().stepControl.moveableFoot == MotionStatus::StepControlStatus::LEFT; 
+{
+  return theInstance->getMotionStatus().stepControl.moveableFoot == MotionStatus::StepControlStatus::BOTH
+      || theInstance->getMotionStatus().stepControl.moveableFoot == MotionStatus::StepControlStatus::LEFT;
 }
 
 bool MotionSymbols::getMotionStatusRightMovable()
-{ 
-  return theInstance->getMotionStatus().stepControl.moveableFoot == MotionStatus::StepControlStatus::BOTH 
-      || theInstance->getMotionStatus().stepControl.moveableFoot == MotionStatus::StepControlStatus::RIGHT; 
+{
+  return theInstance->getMotionStatus().stepControl.moveableFoot == MotionStatus::StepControlStatus::BOTH
+      || theInstance->getMotionStatus().stepControl.moveableFoot == MotionStatus::StepControlStatus::RIGHT;
 }
 
 void MotionSymbols::setWalkOffsetRot(double rot) {
@@ -319,7 +322,7 @@ string MotionSymbols::getStepControlFootName(StepControlFoot i)
   return "unknown";
 }
 
-bool MotionSymbols::dribbleG() 
+bool MotionSymbols::dribbleG()
 {
   return ((theInstance->actionPerformed) == (int)(theInstance->getMotionStatus().stepControl.stepID));
 }
@@ -328,7 +331,7 @@ void MotionSymbols::dribble(bool /*dummy*/)
 {
   const Vector2d& ball = theInstance->getBallModel().positionPreviewInRFoot;
   Pose2D& motionTarget = theInstance->getMotionRequest().walkRequest.target;
-  
+
   double offsetX = 190;
   double offsetY = 20;
 

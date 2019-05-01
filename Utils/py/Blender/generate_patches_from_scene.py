@@ -1192,6 +1192,7 @@ class ManageRender(bpy.types.Operator):
             self.state.patch_size = TestArguments.patch_size
             self.state.num_images = TestArguments.num_images
             self.state.generate_no_ball = TestArguments.generate_no_ball
+            self.state.use_motion_blur = True
             print("self.state.op_mode", self.state.op_mode)
             print("self.state.path", self.state.path)
             print("self.state.patch_size", self.state.patch_size)

@@ -43,8 +43,8 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   // goalie positioning
   engine.registerDecimalInputSymbol("goalie.guardline.x", &goalieGuardPositionX);
   engine.registerDecimalInputSymbol("goalie.guardline.y", &goalieGuardPositionY);
-  engine.registerDecimalInputSymbol("penalty_goalie.pos.x", &penaltyGoalieGuardPositionX);
-  engine.registerDecimalInputSymbol("penalty_goalie.pos.y", &penaltyGoalieGuardPositionY);
+  //engine.registerDecimalInputSymbol("penalty_goalie.pos.x", &penaltyGoalieGuardPositionX);
+  //engine.registerDecimalInputSymbol("penalty_goalie.pos.y", &penaltyGoalieGuardPositionY);
   engine.registerDecimalInputSymbol("goalie.defensive.x", &goalieDefensivePositionX);
   engine.registerDecimalInputSymbol("goalie.defensive.y", &goalieDefensivePositionY);
   engine.registerDecimalInputSymbol("goalie.defensive.a", &goalieDefensivePositionA);
@@ -214,6 +214,7 @@ Vector2d StrategySymbols::calculateGoalieGuardPosition()
   return result;
 }
 
+/*
 Vector2d StrategySymbols::calculatePenaltyGoalieGuardPosition()
 {
   const Vector2d goalCenter(getFieldInfo().xPosOwnGroundline, 0);
@@ -271,6 +272,7 @@ Vector2d StrategySymbols::calculatePenaltyGoalieGuardPosition()
     return result;
   }
 }
+*/
 
 double StrategySymbols::goalieGuardPositionX()
 {
@@ -282,6 +284,7 @@ double StrategySymbols::goalieGuardPositionY()
   return theInstance->calculateGoalieGuardPosition().y;
 }
 
+/*
 double StrategySymbols::penaltyGoalieGuardPositionX()
 {
   return theInstance->calculatePenaltyGoalieGuardPosition().x;
@@ -291,6 +294,7 @@ double StrategySymbols::penaltyGoalieGuardPositionY()
 {
   return theInstance->calculatePenaltyGoalieGuardPosition().y;
 }
+*/
 
 Pose2D StrategySymbols::calculateGoalieDefensivePosition()
 {
@@ -497,23 +501,39 @@ int StrategySymbols::getBestAction() {
 }
 
 void StrategySymbols::retrieveFreeKickPosition() {
-    // check if one of our teamates fouled an opponent
-    if(lastSetPlay == GameData::set_none && getGameData().setPlay == GameData::pushing_free_kick && !getPlayerInfo().kickoff) {
-        // retrieve last pose of the player who has fouled
-        for(unsigned int i = 0; i < getGameData().ownTeam.players.size(); ++i) {
-            // player is now penalized, but wasn't before
-            if(getGameData().ownTeam.players[i].penalty == naoth::GameData::player_pushing && penalties[i+1] == naoth::GameData::penalty_none) {
-                // find his last position from his message
-                const auto& player = getTeamMessage().data.find(i+1);
-                if(player != getTeamMessage().data.cend()) {
-                    freeKickPosition = player->second.pose.translation;
+    // check if a set play for the opponent was called
+    if(lastSetPlay == GameData::set_none && !getPlayerInfo().kickoff) {
+        // one of our teamates fouled an opponent
+        if(getGameData().setPlay == GameData::pushing_free_kick)
+        {
+            // retrieve last pose of the player who has fouled
+            for(unsigned int i = 0; i < getGameData().ownTeam.players.size(); ++i) {
+                // player is now penalized, but wasn't before
+                if(getGameData().ownTeam.players[i].penalty == naoth::GameData::player_pushing && penalties[i+1] == naoth::GameData::penalty_none) {
+                    // find his last position from his message
+                    const auto& player = getTeamMessage().data.find(i+1);
+                    if(player != getTeamMessage().data.cend()) {
+                        freeKickPosition = player->second.pose.translation;
+                    }
                 }
             }
+        }
+        // the opponent has a corner kick
+        else if(getGameData().setPlay == GameData::corner_kick)
+        {
+            // we're moving away from both corners!
+            // if we're near the actual corner kick-in position, we have to move away, if we're on the other side,
+            // it is better to move closer to the actual corner kick-in position.
+            freeKickPosition = getRobotPose().translation.y >= 0 ?
+                        getFieldInfo().crossings[FieldInfo::ownCornerLeft].position :
+                        getFieldInfo().crossings[FieldInfo::ownCornerRight].position;
         }
     }
 
     // reset free kick position after free kick is over
-    if(lastSetPlay == GameData::pushing_free_kick && getGameData().setPlay != GameData::pushing_free_kick) {
+    if((lastSetPlay == GameData::pushing_free_kick && getGameData().setPlay != GameData::pushing_free_kick) ||
+       (lastSetPlay == GameData::corner_kick && getGameData().setPlay != GameData::corner_kick))
+    {
         freeKickPosition.x = 0.0;
         freeKickPosition.y = 0.0;
     }

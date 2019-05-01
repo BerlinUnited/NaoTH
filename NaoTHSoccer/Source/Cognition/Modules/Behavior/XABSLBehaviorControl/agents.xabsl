@@ -1,7 +1,7 @@
 /***
   Title: NaoTH Soccer
-  Platform: Aldebaran Nao V4-5
-  Software-Environment: NaoTH 2018
+  Platform: Aldebaran Nao V4-6
+  Software-Environment: NaoTH 2019
 */
 
 // Symbols
@@ -48,8 +48,13 @@ include "Options/Skills/go_to_ball_with_left_foot.xabsl";
 
 include "Options/Soccer/Strategy/FreeKick/free_kick_opp.xabsl";
 include "Options/Soccer/Strategy/FreeKick/free_kick_opp_goal.xabsl";
+include "Options/Soccer/Strategy/FreeKick/free_kick_opp_corner.xabsl";
+include "Options/Soccer/Strategy/FreeKick/free_kick_opp_in.xabsl";
 include "Options/Soccer/Strategy/FreeKick/free_kick_own.xabsl";
 include "Options/Soccer/Strategy/FreeKick/free_kick_own_goal.xabsl";
+include "Options/Soccer/Strategy/FreeKick/free_kick_own_corner.xabsl";
+include "Options/Soccer/Strategy/FreeKick/free_kick_own_in.xabsl";
+include "Options/Soccer/Strategy/FreeKick/free_kick_simple.xabsl";
 include "Options/Soccer/Strategy/FreeKick/avoid_region_go_own_goal.xabsl";
 
 //
@@ -64,7 +69,7 @@ include "Options/Skills/USOA/go_to_ball_with_USOA.xabsl";
 include "Options/Skills/USOA/go_to_point_with_USOA.xabsl";
 //
 include "Options/Skills/search_ball_back_rot.xabsl";
-include "Options/Skills/search_ball_simple.xabsl";
+include "Options/Skills/search_ball_turning.xabsl";
 include "Options/Skills/search_ball.xabsl";
 
 // Debug
@@ -151,8 +156,6 @@ include "Options/Remote/spl_remote_secondary_actions.xabsl";
 // Test agents Head Control
 
 include "Options/Test/agent/search_test_agent.xabsl";
-include "Options/Test/agent/search_ball_back_rot_test_agent.xabsl";
-include "Options/Test/agent/simple_search_ball_test_agent.xabsl";
 include "Options/Test/agent/only_ball_looking_agent.xabsl";
 include "Options/Test/agent/only_goal_looking_agent.xabsl";
 include "Options/Test/agent/searching_for_ball_and_look_around_agent.xabsl";
@@ -171,6 +174,8 @@ include "Options/Test/agent/sidekick_right_agent.xabsl";
 include "Options/Test/agent/test_walk_lv1_agent.xabsl";
 include "Options/Test/agent/test_walk_lv2_agent.xabsl";
 include "Options/Test/agent/test_walk_step_control_agent.xabsl";
+include "Options/Test/agent/test_walk_stop_and_go_backwards_agent.xabsl";
+include "Options/Test/agent/test_walk_forth_and_back_agent.xabsl";
 include "Options/Test/agent/follow_ball_test_agent.xabsl";
 include "Options/Test/agent/go_to_ball_test_agent.xabsl";
 include "Options/Test/agent/go_to_ball_with_foot_test_agent.xabsl";
@@ -223,9 +228,8 @@ include "Options/Test/agent/head_test_agent.xabsl";
 include "Options/Test/head/head_control_test.xabsl";
 include "Options/Test/agent/cammatrix_test_agent.xabsl";
 include "Options/Test/head/cammatrix_test.xabsl";
-include "Options/Test/head/search_ball_test.xabsl";
-include "Options/Test/head/search_ball_back_rot_test.xabsl";
-include "Options/Test/head/simple_search_ball_test.xabsl";
+include "Options/Test/strategy/search_ball_test.xabsl";
+
 // Test options Arms
 include "Options/Test/arm_back_test.xabsl";
 // Test options Kicks
@@ -242,6 +246,8 @@ include "Options/Test/kicks/sidekick_left_test.xabsl";
 include "Options/Test/walk/test_walk_lv1.xabsl";
 include "Options/Test/walk/test_walk_lv2.xabsl";
 include "Options/Test/walk/test_walk_step_control.xabsl";
+include "Options/Test/walk/test_walk_stop_and_go_backwards.xabsl";
+include "Options/Test/walk/test_walk_forth_and_back.xabsl";
 include "Options/Test/walk/walk_square_diagonally.xabsl";
 include "Options/Test/walk/walk_square.xabsl";
 include "Options/Test/walk/walk_circularly_x.xabsl";
@@ -277,6 +283,7 @@ include "Options/Roles/role_unknown.xabsl";
 //include "Options/Roles/role_forward_right.xabsl";
 
 include "Options/Roles/freekick/role_avoid_region_go_own_goal.xabsl";
+include "Options/Roles/freekick/role_free_kick_simple.xabsl";
 include "Options/Roles/freekick/role_free_kick_opp.xabsl";
 include "Options/Roles/freekick/role_free_kick_opp_goal.xabsl";
 include "Options/Roles/freekick/role_free_kick_own.xabsl";
@@ -329,6 +336,8 @@ agent kick_short_left("kick_short_left", kick_short_with_approach_left_agent);
 agent motion_test_walk_lv1("test walk level 1", test_walk_lv1_agent);
 agent motion_test_walk_lv2("test walk level 2", test_walk_lv2_agent);
 agent motion_test_walk_step_control("test walk step control", test_walk_step_control_agent);
+agent motion_test_walk_stop_and_go_backwards("test walk stop and go backwards", test_walk_stop_and_go_backwards_agent);
+agent motion_test_walk_forth_and_back("test walk forth and back", test_walk_forth_and_back_agent);
 
 agent goto_follow_ball_test("follow_ball_test_agent", follow_ball_test_agent);
 agent goto_ball_test("go_to_ball_test_agent", go_to_ball_test_agent);
@@ -359,8 +368,6 @@ agent search_test_agent("search_test_agent",search_test_agent);
 agent search_only_looking_for_ball("only_looking_for_ball",only_ball_looking);
 agent searching_for_ball_and_look_around("searching_for_ball_and_look_around",searching_for_ball_and_look_around);
 agent search_only_looking_for_goal("only_looking_for_goal",only_goal_looking);
-agent search_ball_back_rot_test_agent("search_ball_back_rot_test_agent",search_ball_back_rot_test_agent);
-agent search_simple_search_ball_test ("simple_search_ball_test_agent",simple_search_ball_test_agent);
 
 agent change_state_input_test_agent ("change_state_input_test_agent",change_state_input_test_agent);
 

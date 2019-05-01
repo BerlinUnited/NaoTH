@@ -119,11 +119,11 @@ private:
   double attackDirectionPreviewRFoot;
 
   Vector2d calculateGoalieGuardPosition();
-  Vector2d calculatePenaltyGoalieGuardPosition();
+  //Vector2d calculatePenaltyGoalieGuardPosition();
   static double goalieGuardPositionX();
   static double goalieGuardPositionY();
-  static double penaltyGoalieGuardPositionX();
-  static double penaltyGoalieGuardPositionY();
+  //static double penaltyGoalieGuardPositionX();
+  //static double penaltyGoalieGuardPositionY();
 
   Pose2D goalieDefensivePosition;
   Pose2D calculateGoalieDefensivePosition();
