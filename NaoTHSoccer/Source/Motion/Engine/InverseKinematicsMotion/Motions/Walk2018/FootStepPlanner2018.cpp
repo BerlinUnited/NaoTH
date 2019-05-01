@@ -157,14 +157,13 @@ void FootStepPlanner2018::calculateNewStep(const Step& lastStep, Step& newStep, 
 
       int duration = parameters.step.duration;
 
-      if(parameters.step.dynamicDuration)
-      {
+      if(parameters.step.dynamicDuration.on) {
         if(walkRequest.character <= 0.3) {
-          duration = 300;
+          duration = parameters.step.dynamicDuration.stable; //300;
         } else if(walkRequest.character <= 0.7) {
-          duration = 280;
+          duration = parameters.step.dynamicDuration.normal; //280;
         } else {// if(walkRequest.character == 1) {
-          duration = 260;
+          duration = parameters.step.dynamicDuration.fast; //260;
         }
       }
 
@@ -185,13 +184,13 @@ void FootStepPlanner2018::calculateNewStep(const Step& lastStep, Step& newStep, 
     newStep.footStep = nextStep(lastStep.footStep, walkRequest);
     int duration = parameters.step.duration;
 
-    if(parameters.step.dynamicDuration) {
+    if(parameters.step.dynamicDuration.on) {
       if(walkRequest.character <= 0.3) {
-        duration = 300;
+        duration = parameters.step.dynamicDuration.stable; //300;
       } else if(walkRequest.character <= 0.7) {
-        duration = 280;
+        duration = parameters.step.dynamicDuration.normal; //280;
       } else {// if(walkRequest.character == 1) {
-        duration = 260;
+        duration = parameters.step.dynamicDuration.fast; //260;
       }
     }
 
