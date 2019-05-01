@@ -14,6 +14,7 @@
 
 #include <vector>
 #include "Tools/Math/Vector2.h"
+#include <Representations/Infrastructure/FrameInfo.h>
 
 /**
 * This describes the CollisionPercept
@@ -29,7 +30,7 @@ public:
 
   ~CollisionPercept(){}
 
-  // time stamp of the last collision
+  // Stuff for the Arm collision
   unsigned int timeCollisionArmLeft;
   unsigned int timeCollisionArmRight;
 
@@ -40,6 +41,13 @@ public:
   std::vector<Vector2d> newHullLeft;
   std::vector<Vector2d> newHullRight;
 
+  //stuff for bumper collision
+  bool isLeftFootColliding;
+  bool isRightFootColliding;
+  naoth::FrameInfo lastComputedCollisionLeft;
+  naoth::FrameInfo lastComputedCollisionRight;
+  bool collision_left_bumper;
+  bool collision_right_bumper;
   
   virtual void print(std::ostream& stream) const
   {

@@ -1,5 +1,5 @@
-#ifndef COLLISIONDETECTOR_OLD_H
-#define COLLISIONDETECTOR_OLD_H
+#ifndef BUMPERCOLLISIONDETECTOR_H
+#define BUMPERCOLLISIONDETECTOR_H
 
 #include <ModuleFramework/Module.h>
 
@@ -11,7 +11,7 @@
 #include <Tools/DataStructures/ParameterList.h>
 #include <Tools/Debug/DebugParameterList.h>
 
-BEGIN_DECLARE_MODULE(CollisionDetectorOld)
+BEGIN_DECLARE_MODULE(BumperCollisionDetector)
 REQUIRE(FrameInfo)
 REQUIRE(UltraSoundReceiveData)
 REQUIRE(ButtonData)
@@ -19,9 +19,9 @@ PROVIDE(DebugModify)
 PROVIDE(CollisionModel)
 PROVIDE(DebugParameterList)
 
-END_DECLARE_MODULE(CollisionDetectorOld)
+END_DECLARE_MODULE(BumperCollisionDetector)
 
-class CollisionDetectorOld : public CollisionDetectorOldBase
+class BumperCollisionDetector : public BumperCollisionDetector
 {
 public:
     class Parameter : public ParameterList
@@ -29,7 +29,7 @@ public:
     public:
         Parameter() : ParameterList("CollisionDetectorBumper")
         {
-            PARAMETER_REGISTER(collisionInterval) = 1500;
+            PARAMETER_REGISTER(collisionInterval) = 500;
             PARAMETER_REGISTER(timesToBump) = 3;
             syncWithConfig();
         }
@@ -37,8 +37,8 @@ public:
         double collisionInterval;
         double timesToBump;
     } params;
-  CollisionDetectorOld();
-  virtual ~CollisionDetectorOld();
+    BumperCollisionDetector();
+    virtual ~BumperCollisionDetector();
 
   virtual void execute();
 private:
@@ -50,4 +50,4 @@ private:
     bool bumperCollisionRight;
 };
 
-#endif // COLLISIONDETECTOR_OLD_H
+#endif // BumperCollisionDetector_h

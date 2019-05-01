@@ -1,17 +1,17 @@
 
-#include "CollisionDetectorOld.h"
+#include "BumperCollisionDetector.h"
 
-CollisionDetectorOld::CollisionDetectorOld()
+BumperCollisionDetector::BumperCollisionDetector()
 {
     getDebugParameterList().add(&params);
 }
 
-CollisionDetectorOld::~CollisionDetectorOld()
+BumperCollisionDetector::~BumperCollisionDetector()
 {
     getDebugParameterList().remove(&params);
 }
 
-void CollisionDetectorOld::execute()
+void BumperCollisionDetector::execute()
 {
     if (getButtonData().isPressed[ButtonData::RightFootLeft]
         || getButtonData().isPressed[ButtonData::RightFootRight])
