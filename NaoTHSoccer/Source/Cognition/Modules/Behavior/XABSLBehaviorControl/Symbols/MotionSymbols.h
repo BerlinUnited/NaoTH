@@ -20,6 +20,7 @@
 #include <Representations/Infrastructure/JointData.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include "Representations/Modeling/BallModel.h"
+#include <Representations/Modeling/CollisionModel.h>
 
 BEGIN_DECLARE_MODULE(MotionSymbols)
   REQUIRE(MotionStatus)
@@ -27,6 +28,7 @@ BEGIN_DECLARE_MODULE(MotionSymbols)
   REQUIRE(SensorJointData)
 
   REQUIRE(BallModel)
+  REQUIRE(CollisionModel)
 
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)

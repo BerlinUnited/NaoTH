@@ -159,8 +159,10 @@ include "Options/Test/agent/search_test_agent.xabsl";
 include "Options/Test/agent/only_ball_looking_agent.xabsl";
 include "Options/Test/agent/only_goal_looking_agent.xabsl";
 include "Options/Test/agent/searching_for_ball_and_look_around_agent.xabsl";
+
 // Test agents Arms
 include "Options/Test/agent/arm_back_test_agent.xabsl";
+
 // Test agents Kicks
 include "Options/Test/agent/walk_against_ball_test_agent.xabsl";
 include "Options/Test/agent/kick_short_with_approach_left_agent.xabsl";
@@ -170,6 +172,7 @@ include "Options/Test/agent/kick_long_with_approach_left_agent.xabsl";
 
 include "Options/Test/agent/sidekick_left_agent.xabsl";
 include "Options/Test/agent/sidekick_right_agent.xabsl";
+
 // Test agents Walk
 include "Options/Test/agent/test_walk_lv1_agent.xabsl";
 include "Options/Test/agent/test_walk_lv2_agent.xabsl";
@@ -186,6 +189,7 @@ include "Options/Test/agent/clown_walk_test_agent.xabsl";
 include "Options/Test/agent/obstacle_test_agent.xabsl";
 include "Options/Test/agent/dribble_test_agent.xabsl";
 include "Options/Test/agent/walk_forward_agent.xabsl";
+include "Options/Test/agent/bumper_collision_agent.xabsl";
 
 // Test agents PathPlanner
 include "Options/Test/agent/pathplanner_test_sidekick_agent.xabsl";
@@ -200,7 +204,6 @@ include "Options/Test/agent/pathplanner2018_sidekick_agent.xabsl";
 include "Options/Test/pathplanner2018_sidekick.xabsl";
 include "Options/Test/agent/path_move_around_ball_agent.xabsl";
 include "Options/Test/path_move_around_ball_test.xabsl";
-
 
 // Test agents Team behavior
 
@@ -242,6 +245,7 @@ include "Options/Test/kicks/kick_short_with_approach_left.xabsl";
 
 include "Options/Test/kicks/sidekick_right_test.xabsl";
 include "Options/Test/kicks/sidekick_left_test.xabsl";
+
 // Test options Walk
 include "Options/Test/walk/test_walk_lv1.xabsl";
 include "Options/Test/walk/test_walk_lv2.xabsl";
@@ -264,6 +268,7 @@ include "Options/Test/walk/clown_walk_test.xabsl";
 include "Options/Test/walk/turn_around_ball_test.xabsl";
 include "Options/Test/test_dribble.xabsl";
 include "Options/Test/walk/walk_forward.xabsl";
+include "Options/Test/walk/bumper_collision_stop.xabsl";
 
 // Test role change
 include "Options/Test/strategy/role_change_test.xabsl";
@@ -362,6 +367,9 @@ agent pathplanner_test_dash_agent("pathplanner_test_dash_agent", pathplanner_tes
 agent pathplanner2018_forwardkick_agent("pathplanner2018_forwardkick_agent", pathplanner2018_forwardkick_agent);
 agent pathplanner2018_sidekick_agent("pathplanner2018_sidekick_agent", pathplanner2018_sidekick_agent);
 agent path_move_around_ball_agent("path_move_around_ball_agent", path_move_around_ball_agent);
+
+// Collision Test Agents
+agent bumper_collision_agent("bumper_collision_agent", bumper_collision_agent);
 
 // Test agents search
 agent search_test_agent("search_test_agent",search_test_agent);
