@@ -83,6 +83,32 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("freekick.pos.x", &freeKickPositionX);
   engine.registerDecimalInputSymbol("freekick.pos.y", &freeKickPositionY);
 
+  // role selection
+  for(int i = 0; i < Roles::numOfStaticRoles; ++i)
+  {
+    string str("role.static.");
+    str.append(Roles::getName((Roles::Static)i));
+    engine.registerEnumElement("role.static", str.c_str(), i);
+  }
+
+  engine.registerEnumeratedInputSymbol("strategy.role", "role.static", &getStaticRole);
+
+  for(int i = 0; i < Roles::numOfDynamicRoles; ++i)
+  {
+    string str("role.dynamic.");
+    str.append(Roles::getName((Roles::Dynamic)i));
+    engine.registerEnumElement("role.dynamic", str.c_str(), i);
+  }
+
+  engine.registerEnumeratedInputSymbol("strategy.role_dynamic", "role.dynamic", &getDynamicRole);
+
+  engine.registerDecimalInputSymbol("strategy.position.home.x", &getHomePositionX);
+  engine.registerDecimalInputSymbol("strategy.position.home.y", &getHomePositionY);
+  engine.registerDecimalInputSymbol("strategy.position.own.x", &getHomePositionOwnKickoffX);
+  engine.registerDecimalInputSymbol("strategy.position.own.y", &getHomePositionOwnKickoffY);
+  engine.registerDecimalInputSymbol("strategy.position.opp.x", &getHomePositionOppKickoffX);
+  engine.registerDecimalInputSymbol("strategy.position.opp.y", &getHomePositionOppKickoffY);
+
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_attack_direction","draw the attack direction", false);
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_simpleDefenderPose","draw the position of the defender", false);
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_goalie_defensive_pos","draw the position of the goalie", false);
@@ -509,4 +535,74 @@ double StrategySymbols::freeKickPositionX() {
 
 double StrategySymbols::freeKickPositionY() {
     return theInstance->freeKickPosition.y;
+}
+
+int StrategySymbols::getStaticRole() {
+    const auto& it = theInstance->getRoleDecisionModel().roles.find(theInstance->getPlayerInfo().playerNumber);
+    if(it != theInstance->getRoleDecisionModel().roles.cend()) {
+        return it->second.role;
+    }
+    return Roles::unknown;
+}
+
+int StrategySymbols::getDynamicRole() {
+    const auto& it = theInstance->getRoleDecisionModel().roles.find(theInstance->getPlayerInfo().playerNumber);
+    if(it != theInstance->getRoleDecisionModel().roles.cend()) {
+        return it->second.dynamic;
+    }
+    return Roles::none;
+}
+
+double StrategySymbols::getHomePositionX() {
+    const auto& it = theInstance->getRoleDecisionModel().roles.find(theInstance->getPlayerInfo().playerNumber);
+    if(it != theInstance->getRoleDecisionModel().roles.cend()) {
+        return theInstance->getRoleDecisionModel().getStaticRolePosition(it->second.role).home.x;
+    }
+    // put unknown player on the "manual placement line"
+    return theInstance->getFieldInfo().xPosOwnPenaltyArea;
+}
+
+double StrategySymbols::getHomePositionY() {
+    const auto& it = theInstance->getRoleDecisionModel().roles.find(theInstance->getPlayerInfo().playerNumber);
+    if(it != theInstance->getRoleDecisionModel().roles.cend()) {
+        return theInstance->getRoleDecisionModel().getStaticRolePosition(it->second.role).home.y;
+    }
+    // put unknown player on the "manual placement line"
+    return theInstance->getFieldInfo().yLength/(theInstance->getPlayerInfo().playersPerTeam+2)*theInstance->getPlayerInfo().playerNumber-(theInstance->getFieldInfo().yLength*0.5);
+}
+
+double StrategySymbols::getHomePositionOwnKickoffX() {
+    const auto& it = theInstance->getRoleDecisionModel().roles.find(theInstance->getPlayerInfo().playerNumber);
+    if(it != theInstance->getRoleDecisionModel().roles.cend()) {
+        return theInstance->getRoleDecisionModel().getStaticRolePosition(it->second.role).own.x;
+    }
+    // put unknown player on the "manual placement line"
+    return theInstance->getFieldInfo().xPosOwnPenaltyArea;
+}
+
+double StrategySymbols::getHomePositionOwnKickoffY() {
+    const auto& it = theInstance->getRoleDecisionModel().roles.find(theInstance->getPlayerInfo().playerNumber);
+    if(it != theInstance->getRoleDecisionModel().roles.cend()) {
+        return theInstance->getRoleDecisionModel().getStaticRolePosition(it->second.role).own.y;
+    }
+    // put unknown player on the "manual placement line"
+    return theInstance->getFieldInfo().yLength/(theInstance->getPlayerInfo().playersPerTeam+2)*theInstance->getPlayerInfo().playerNumber-(theInstance->getFieldInfo().yLength*0.5);
+}
+
+double StrategySymbols::getHomePositionOppKickoffX() {
+    const auto& it = theInstance->getRoleDecisionModel().roles.find(theInstance->getPlayerInfo().playerNumber);
+    if(it != theInstance->getRoleDecisionModel().roles.cend()) {
+        return theInstance->getRoleDecisionModel().getStaticRolePosition(it->second.role).opp.x;
+    }
+    // put unknown player on the "manual placement line"
+    return theInstance->getFieldInfo().xPosOwnPenaltyArea;
+}
+
+double StrategySymbols::getHomePositionOppKickoffY() {
+    const auto& it = theInstance->getRoleDecisionModel().roles.find(theInstance->getPlayerInfo().playerNumber);
+    if(it != theInstance->getRoleDecisionModel().roles.cend()) {
+        return theInstance->getRoleDecisionModel().getStaticRolePosition(it->second.role).opp.y;
+    }
+    // put unknown player on the "manual placement line"
+    return theInstance->getFieldInfo().yLength/(theInstance->getPlayerInfo().playersPerTeam+2)*theInstance->getPlayerInfo().playerNumber-(theInstance->getFieldInfo().yLength*0.5);
 }

@@ -16,10 +16,17 @@ class CommandParser(cmd.Cmd):
         else:
             super(CommandParser, self).default(line)
 
-    def do_quit(self, args):
+    def __stop_thread(self):
         'Stops sending messages and exits.'
         self.thread.cancel.set()
         self.thread.join()
+
+    def do_quit(self, args):
+        self.__stop_thread()
+        return True
+
+    def do_exit(self, args):
+        self.__stop_thread()
         return True
 
     def do_info(self, args):

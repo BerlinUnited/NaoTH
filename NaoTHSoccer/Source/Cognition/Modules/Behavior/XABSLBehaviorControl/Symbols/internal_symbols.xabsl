@@ -73,4 +73,7 @@ namespace internal_symbols("Internal Symbols") {
 
   /** the x or y coordinate which should be constant while moving */
   float internal freekick_const_pos;
+
+  /** remember the last dynamic role (for transition handling) */
+  enum role.dynamic internal strategy.role_dynamic_last;
 }

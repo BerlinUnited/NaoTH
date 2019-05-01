@@ -179,7 +179,10 @@ void TeamMessageCustom::print(std::ostream &stream) const
             << std::setw(9) << ballVelocity.x << ", "
             << std::setw(9) << ballVelocity.y << "\n"
     << "\t" << "teamball position: "
-        << teamBall.x << "/" << teamBall.y << "\n";
+        << teamBall.x << "/" << teamBall.y << "\n"
+    << "\t" << "role: "
+        << Roles::getName(robotRole.role) << " / " << Roles::getName(robotRole.dynamic)
+    << "\n";
   if(!ntpRequests.empty()) {
       stream << "\t" << "ntp request for: \n";
       for(auto const& request : ntpRequests) {
@@ -218,6 +221,8 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
     DataConversion::toMessage(ballVelocity, *(userMsg.mutable_ballvelocity()));
     userMsg.set_key(key);
     userMsg.set_robotstate((naothmessages::RobotState)robotState);
+    userMsg.mutable_robotrole()->set_role_static((naothmessages::RobotRoleStatic)robotRole.role);
+    userMsg.mutable_robotrole()->set_role_dynamic((naothmessages::RobotRoleDynamic)robotRole.dynamic);
 
     return userMsg;
 }
@@ -304,6 +309,11 @@ void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &u
     } else {
         // for the old log files, if the robot wasn't penalized
         robotState = PlayerInfo::playing;
+    }
+
+    if(userData.has_robotrole()) {
+        robotRole.role = (Roles::Static) userData.robotrole().role_static();
+        robotRole.dynamic = (Roles::Dynamic) userData.robotrole().role_dynamic();
     }
 }
 
