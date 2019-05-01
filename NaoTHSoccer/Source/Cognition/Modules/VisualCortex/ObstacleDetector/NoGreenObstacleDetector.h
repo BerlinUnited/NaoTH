@@ -53,11 +53,14 @@ private:
       PARAMETER_REGISTER(detector_width) = 280.;
       PARAMETER_REGISTER(detector_range) = 200.;
 
+      PARAMETER_REGISTER(min_expected_area) = .8;
+
       syncWithConfig();
     }
     double detector_field_offset;
     double detector_width;
     double detector_range;
+    double min_expected_area;
   } params;
 
   class DetectorField
@@ -95,6 +98,8 @@ private:
     }
 
     bool limit(int maxX, int maxY, int minX, int minY) {
+      // if field is not a rectangle it needs to be rectified first
+
       // check if rectangle is at least partially inside limits
       if(edges[0].x > maxX || edges[1].x < minX) {
         return false;
@@ -103,19 +108,51 @@ private:
         return false;
       }
 
-      edges[2].x = std::max(edges[2].x, minX);
-      edges[0].x = edges[2].x;
+      edges[0].x = edges[2].x = std::max(edges[0].x, minX);
+      edges[1].x = edges[3].x = std::min(edges[1].x, maxX);
 
-      edges[3].x = std::min(edges[3].x, maxX);
-      edges[1].x = edges[3].x;
-
-      edges[2].y = std::max(edges[2].y, minY);
-      edges[3].y = edges[2].y;
-
-      edges[0].y = std::min(edges[0].y, maxY);
-      edges[1].y = edges[1].y;
+      edges[0].y = edges[1].y = std::min(edges[0].y, maxY);
+      edges[2].y = edges[3].y = std::max(edges[2].y, minY);
 
       return true;
+    }
+
+    int area() {
+      // expects field to be a rectangle
+      int x = maxX() - minX();
+      int y = maxY() - minY();
+
+      return x*y;
+    }
+
+    int pixels() {
+      // expects field to be a rectangle
+      int x = maxX() - minX() + 1;
+      int y = maxY() - minY() + 1;
+
+      return x*y;
+    }
+
+    int minX() {
+      return edges[2].x;
+    }
+
+    int minY() {
+      return edges[2].y;
+    }
+
+    int maxX() {
+      return edges[1].x;
+    }
+
+    int maxY() {
+      return edges[1].y;
+    }
+
+    int green(const BallDetectorIntegralImage& integralImage) {
+      int factor = integralImage.FACTOR;
+      // HACK: not correct because of integer division
+      return integralImage.getSumForRect(minX()/factor, minY()/factor, maxX()/factor, maxY()/factor, 1) * (factor * factor);
     }
 
     std::vector<Vector2i> edges;

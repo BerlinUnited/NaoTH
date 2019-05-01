@@ -44,23 +44,43 @@ void NoGreenObstacleDetector::execute()
           getCameraMatrix(), getCameraInfo(),
           RotationMatrix::getRotationZ(getCameraMatrix().rotation.getZAngle()) * Vector3d(fieldPoint.x, fieldPoint.y, 0),
           pointInImage);
-    if(!projectionSuccess)
-    {
+    if(!projectionSuccess) {
       return;
     }
   }
 
   detectorImage.rectify();
 
+  int expectedArea = detectorImage.area();
+
   bool limitSuccess = detectorImage.limit((int) getCameraInfo().resolutionWidth-1, (int) getCameraInfo().resolutionHeight-1, 0, 0);
   if(!limitSuccess) {
     return;
   }
 
+  int detectorArea = detectorImage.area();
+  bool bigEnough = (double) detectorArea / expectedArea >= params.min_expected_area;
+
   DEBUG_REQUEST("Vision:NoGreenObstacleDetector:draw_detector_field",
     IMAGE_DRAWING_CONTEXT;
+    if (bigEnough) {
+      PEN("FF69B4", 5);
+    } else {
+      PEN("FF4D4D", 5);
+    }
+    BOX(detectorImage.minX(), detectorImage.minY(), detectorImage.maxX(), detectorImage.maxY());
+  );
+
+  if (!bigEnough) {
+    return;
+  }
+
+  DEBUG_REQUEST("Vision:NoGreenObstacleDetector:draw_detector_field",
+    FIELD_DRAWING_CONTEXT;
     PEN("FF69B4", 5);
 
-    BOX(detectorImage.edges[0].x, detectorImage.edges[0].y, detectorImage.edges[3].x, detectorImage.edges[3].y);
+    std::ostringstream stringStream;
+    stringStream << (double) detectorImage.green(getBallDetectorIntegralImage()) / detectorImage.pixels() * 100 << '%';
+    TEXT_DRAWING(1000, 1000, stringStream.str());
   );
 }
