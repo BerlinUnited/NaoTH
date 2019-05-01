@@ -140,6 +140,7 @@ public:
 
   static TeamColor teamColorFromString(const std::string& str);
   static GameState gameStateFromString(const std::string& str);
+  static Penalty penaltyFromString(const std::string& str);
 
   virtual void print(std::ostream& stream) const;
   void parseFrom(const spl::RoboCupGameControlData& data, int teamNumber);

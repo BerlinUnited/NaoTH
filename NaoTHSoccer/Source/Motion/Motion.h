@@ -27,6 +27,7 @@
 #include "SensorFilter/ArmCollisionDetector.h"
 #include "SensorFilter/ArmCollisionDetector2018.h"
 #include "SensorFilter/CoPProvider.h"
+#include "SensorFilter/SensorLogger.h"
 
 #include "Representations/Perception/CameraMatrix.h"
 #include <Representations/Modeling/CameraMatrixOffset.h>
@@ -156,6 +157,8 @@ private:
       PARAMETER_REGISTER(letIMUModelProvideInertialModel) = true;
       //PARAMETER_REGISTER(useInertiaSensorCalibration) = true;
       PARAMETER_REGISTER(useIMUDataForRotationOdometry) = true;
+
+      PARAMETER_REGISTER(recordSensorData) = false;
       syncWithConfig();
     }
 
@@ -164,6 +167,7 @@ private:
     //bool useInertiaSensorCalibration;
     bool useIMUDataForRotationOdometry;
 
+    bool recordSensorData;
   } parameter;
 
 
@@ -187,6 +191,7 @@ private:
   ModuleCreator<ArmCollisionDetector2018>* theArmCollisionDetector2018;
    
   ModuleCreator<CoPProvider>* theCoPProvider;
+  ModuleCreator<SensorLogger>* theSensorLogger;
 
   ModuleCreator<MotionEngine>* theMotionEngine;
 

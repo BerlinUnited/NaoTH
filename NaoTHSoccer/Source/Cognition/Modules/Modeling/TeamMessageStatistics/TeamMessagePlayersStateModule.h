@@ -118,14 +118,19 @@ private:
     }
 
     /**
-     * @brief Determines the 'active' state of the players.
+     * @brief Determines the 'active' state of the players and sets the 'penalized' state.
      *        A player is 'active', if he's alive, playing on the field and not penalized
-     *        (or in an other state other than 'playing').
+     *        ('ready','set','playing').
      */
     void determineActiveStates() {
         for(const auto& it : getTeamMessage().data) {
-            getTeamMessagePlayersState().data[it.first].active = it.second.custom.robotState == PlayerInfo::playing
-                                                          && getTeamMessagePlayersState().isAlive(it.first);
+            auto& active = getTeamMessagePlayersState().data[it.first].active;
+            active = getTeamMessagePlayersState().isAlive(it.first) && (
+                        it.second.custom.robotState == PlayerInfo::ready ||
+                        it.second.custom.robotState == PlayerInfo::set ||
+                        it.second.custom.robotState == PlayerInfo::playing
+                    );
+            getTeamMessagePlayersState().data[it.first].penalized = it.second.custom.robotState == PlayerInfo::penalized;
         }
     }
 

@@ -58,7 +58,10 @@ class FootStepPlanner2018Parameters: public ParameterList{
 
           PARAMETER_REGISTER(step.doubleSupportTime) = 0;
           PARAMETER_REGISTER(step.duration) = 260;
-          PARAMETER_REGISTER(step.dynamicDuration) = true;
+          PARAMETER_REGISTER(step.dynamicDuration.on) = true;
+          PARAMETER_REGISTER(step.dynamicDuration.fast) = 260;
+          PARAMETER_REGISTER(step.dynamicDuration.normal) = 280;
+          PARAMETER_REGISTER(step.dynamicDuration.stable) = 300;
 
           PARAMETER_REGISTER(stabilization.dynamicStepSize)  = true;
           PARAMETER_REGISTER(stabilization.dynamicStepSizeP) = -0.1;
@@ -89,7 +92,14 @@ class FootStepPlanner2018Parameters: public ParameterList{
       struct Step {
         int  doubleSupportTime;
         int  duration;
-        bool dynamicDuration;
+
+        struct {
+          bool on;
+          int fast;
+          int normal;
+          int stable;
+        } dynamicDuration;
+
       } step;
 
       struct Stabilization {
@@ -249,11 +259,22 @@ public:
   double ZMPOffsetYByCharacter;
 };
 
-class ZMPPreviewControllerParameter {
+class ZMPPreviewControllerParameter : public ParameterList {
     public:
-        ZMPPreviewControllerParameter(): current(NULL) {
+        ZMPPreviewControllerParameter() :
+            ParameterList("Walk_ZMPPreviewControllerParameter"),
+            current(nullptr)
+        {
+            PARAMETER_REGISTER(stationary_threshold.velocity) = 3;
+            PARAMETER_REGISTER(stationary_threshold.acceleration) = 100;
+            syncWithConfig();
             loadParameter();
         }
+
+        struct {
+            double velocity;
+            double acceleration;
+        } stationary_threshold;
 
         struct Parameters {
             double Ki;
@@ -363,6 +384,7 @@ public:
         dbpl.add(&liftingFootCompensatorParams);
         dbpl.add(&torsoRotationStabilizerParams);
         dbpl.add(&zmpPlanner2018Params);
+        dbpl.add(&zmpPreviewControllerParams);
         dbpl.add(&generalParams);
     }
 
@@ -374,6 +396,7 @@ public:
         dbpl.remove(&liftingFootCompensatorParams);
         dbpl.remove(&torsoRotationStabilizerParams);
         dbpl.remove(&zmpPlanner2018Params);
+        dbpl.remove(&zmpPreviewControllerParams);
         dbpl.remove(&generalParams);
     }
 
