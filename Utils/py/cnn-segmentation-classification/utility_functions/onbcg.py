@@ -193,6 +193,7 @@ def write_naoth_header_file(class_name, output_folder="."):
         print("\tvoid find(const BallCandidates::PatchYUVClassified& p,double meanBrightness);", file=fp)
         print("\tvirtual double getRadius();", file=fp)
         print("\tvirtual Vector2d getCenter();", file=fp)
+        print("\tvirtual double getBallConfidence();", file=fp)
         print("", file=fp)
         print("private:", file=fp)
         print("\tfloat in_step[16][16][1];", file=fp)
@@ -480,6 +481,7 @@ def write_footer(c_inf, _x, classification, class_name):
         c_inf["f"].write(classify_yuv_patch.format(class_name))
         c_inf["f"].write('double {}::getRadius() {{return scores[0];}}\n'.format(class_name))
         c_inf["f"].write('Vector2d {}::getCenter() {{return Vector2d(scores[1], scores[2]);}}\n'.format(class_name))
+        c_inf["f"].write('double {}::getBallConfidence() {{return scores[3];}}\n'.format(class_name))
 
         if classification:
             c_inf["f"].write(footer_test.format(**c_inf))

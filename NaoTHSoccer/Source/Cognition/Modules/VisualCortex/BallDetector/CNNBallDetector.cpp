@@ -241,7 +241,7 @@ void CNNBallDetector::calculateCandidates()
       bool found = false;
       double radius = cnn->getRadius();
       Vector2d pos = cnn->getCenter();
-      if(radius >= selectedCNNThreshold && pos.x >= 0.0 && pos.y >= 0.0) {
+      if(cnn->getBallConfidence() >= selectedCNNThreshold && pos.x >= 0.0 && pos.y >= 0.0) {
         found = true;
       }
 
