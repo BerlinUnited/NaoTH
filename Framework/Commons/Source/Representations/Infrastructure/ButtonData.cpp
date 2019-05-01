@@ -7,6 +7,9 @@
 
 #include "ButtonData.h"
 
+#include "Messages/Framework-Representations.pb.h"
+#include <google/protobuf/io/zero_copy_stream_impl.h>
+
 #include <string>
 
 using namespace naoth;
@@ -20,10 +23,6 @@ ButtonData::ButtonData()
     numOfFramesPressed[i] = 0;
     eventCounter[i] = 0;
   }
-}
-
-ButtonData::~ButtonData()
-{
 }
 
 string ButtonData::getButtonName(ButtonID id)
@@ -64,5 +63,38 @@ void ButtonData::print(ostream& stream) const
             << std::endl;
   }
 }//end print
+
+void Serializer<ButtonData>::serialize(const ButtonData& representation, std::ostream& stream)
+{
+  naothmessages::ButtonData msg;
+
+  // NOTE: deprecated to support logs before 12.01.2017
+  for(size_t i=0; i < ButtonData::numOfButtons; i++) {
+    msg.add_ispressed(representation.isPressed[i]);
+    msg.add_numofframespressed(representation.numOfFramesPressed[i]);
+    msg.add_eventcounter(representation.eventCounter[i]);
+  }
+
+  google::protobuf::io::OstreamOutputStream buf(&stream);
+  msg.SerializeToZeroCopyStream(&buf);
+}
+
+void Serializer<ButtonData>::deserialize(std::istream& stream, ButtonData& representation)
+{
+  google::protobuf::io::IstreamInputStream buf(&stream);
+  naothmessages::ButtonData msg;
+  msg.ParseFromZeroCopyStream(&buf);
+
+  ASSERT(ButtonData::numOfButtons == msg.ispressed_size());
+  ASSERT(ButtonData::numOfButtons == msg.numofframespressed_size());
+  ASSERT(ButtonData::numOfButtons == msg.eventcounter_size());
+
+  for(size_t i=0; i < ButtonData::numOfButtons; i++) {
+    representation.isPressed[i] = msg.ispressed(i);
+    representation.numOfFramesPressed[i] = msg.numofframespressed(i);
+    representation.eventCounter[i] = msg.eventcounter(i);
+  }
+}
+
 
 
