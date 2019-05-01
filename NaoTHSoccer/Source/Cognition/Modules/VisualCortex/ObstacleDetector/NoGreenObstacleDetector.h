@@ -60,23 +60,26 @@ private:
     double detector_range;
   } params;
 
-  template <typename T>
   class DetectorField
   {
   public:
     DetectorField() : edges(4) {
+      // indices are expected to look like
+      // (0) 2 --- 3 (x)
+      //      |   |
+      // (y) 0 --- 1
       edges.resize(4);
     }
 
-    DetectorField(Vector2<T> x1, Vector2<T> x2, Vector2<T> x3, Vector2<T> x4) : edges(4) {
-      edges = {x1, x2, x3, x4};
+    DetectorField(Vector2i bottomLeft, Vector2i bottomRight, Vector2i topLeft, Vector2i topRight) : edges(4) {
+      edges = {bottomLeft, bottomRight, topLeft, topRight};
     }
 
-    void squarify() {
-      T maxX = edges[0].x,
-        maxY = edges[0].y,
-        minX = edges[0].x,
-        minY = edges[0].y;
+    void rectify() {
+      int maxX = edges[0].x,
+          maxY = edges[0].y,
+          minX = edges[0].x,
+          minY = edges[0].y;
 
       for (size_t i=1; i<4; i++) {
         maxX = std::max(maxX, edges[i].x);
@@ -85,18 +88,43 @@ private:
         minY = std::min(minY, edges[i].y);
       }
 
-      edges[0] = Vector2<T>(minX, minY);
-      edges[1] = Vector2<T>(minX, maxY);
-      edges[2] = Vector2<T>(maxX, minY);
-      edges[3] = Vector2<T>(maxX, maxY);
+      edges[0] = Vector2i(minX, maxY);
+      edges[1] = Vector2i(maxX, maxY);
+      edges[2] = Vector2i(minX, minY);
+      edges[3] = Vector2i(maxX, minY);
     }
 
-    std::vector<Vector2<T>> edges;
+    bool limit(int maxX, int maxY, int minX, int minY) {
+      // check if rectangle is at least partially inside limits
+      if(edges[0].x > maxX || edges[1].x < minX) {
+        return false;
+      }
+      else if(edges[2].y > maxY || edges[0].y < minY) {
+        return false;
+      }
+
+      edges[2].x = std::max(edges[2].x, minX);
+      edges[0].x = edges[2].x;
+
+      edges[3].x = std::min(edges[3].x, maxX);
+      edges[1].x = edges[3].x;
+
+      edges[2].y = std::max(edges[2].y, minY);
+      edges[3].y = edges[2].y;
+
+      edges[0].y = std::min(edges[0].y, maxY);
+      edges[1].y = edges[1].y;
+
+      return true;
+    }
+
+    std::vector<Vector2i> edges;
   };
 
   CameraInfo::CameraID cameraID;
 
   DOUBLE_CAM_REQUIRE(NoGreenObstacleDetector, BallDetectorIntegralImage)
+  DOUBLE_CAM_REQUIRE(NoGreenObstacleDetector, CameraInfo)
 };
 
 #endif // NOGREENOBSTACLEDETECTOR_H
