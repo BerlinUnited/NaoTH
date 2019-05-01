@@ -21,8 +21,8 @@ public:
   naoth::FrameInfo lastComputedCollisionRight;
 
   //
-  bool collision_left_bumber;
-  bool collision_right_bumber;
+  bool collision_left_bumper;
+  bool collision_right_bumper;
 
 };
 
