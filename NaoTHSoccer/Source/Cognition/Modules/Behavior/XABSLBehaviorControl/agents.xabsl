@@ -283,6 +283,7 @@ include "Options/Roles/role_unknown.xabsl";
 //include "Options/Roles/role_forward_right.xabsl";
 
 include "Options/Roles/freekick/role_avoid_region_go_own_goal.xabsl";
+include "Options/Roles/freekick/role_free_kick_simple.xabsl";
 include "Options/Roles/freekick/role_free_kick_opp.xabsl";
 include "Options/Roles/freekick/role_free_kick_opp_goal.xabsl";
 include "Options/Roles/freekick/role_free_kick_own.xabsl";
