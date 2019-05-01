@@ -405,7 +405,7 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
 
 def dense(_x, weights, b, c_inf):
     # TODO get output size dynamically
-    x_out = np.zeros(shape=(3, 1, 1)).astype('float32')
+    x_out = np.zeros(shape=(4, 1, 1)).astype('float32')
 
     x_dim = _x.shape[0]
     y_dim = _x.shape[1]
