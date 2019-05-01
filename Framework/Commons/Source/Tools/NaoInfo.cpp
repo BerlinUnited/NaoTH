@@ -24,18 +24,18 @@ const double NaoInfo::ElbowOffsetY = 15.00;
 // http://doc.aldebaran.com/2-4/family/robots/fsr_robot.html#robot-fsr
 const Vector3d NaoInfo::FSRPositionsLeft[naoth::FSRData::numOfFSR] =
 {
-  Vector3d( 70.2, 30,-46),
-  Vector3d( 70.2,-23,-46),
-  Vector3d(-30.2, 30,-46),
-  Vector3d(-29.6,-19,-46)
+  Vector3d( 70.25, 29.9,-FootHeight),
+  Vector3d( 70.25,-23.1,-FootHeight),
+  Vector3d(-30.25, 29.9,-FootHeight),
+  Vector3d(-29.65,-19.1,-FootHeight)
 };
 
 const Vector3d NaoInfo::FSRPositionsRight[naoth::FSRData::numOfFSR] =
 {
-  Vector3d( 70.2, 23,-46),
-  Vector3d( 70.2,-30,-46),
-  Vector3d(-30.2, 19,-46),
-  Vector3d(-29.6,-30,-46)
+  Vector3d( 70.25, 23.1,-FootHeight),
+  Vector3d( 70.25,-29.9,-FootHeight),
+  Vector3d(-30.25, 19.1,-FootHeight),
+  Vector3d(-29.65,-29.9,-FootHeight)
 };
 
 const NaoInfo::RobotDimensions NaoInfo::robotDimensions;
