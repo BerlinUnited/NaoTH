@@ -48,8 +48,13 @@ include "Options/Skills/go_to_ball_with_left_foot.xabsl";
 
 include "Options/Soccer/Strategy/FreeKick/free_kick_opp.xabsl";
 include "Options/Soccer/Strategy/FreeKick/free_kick_opp_goal.xabsl";
+include "Options/Soccer/Strategy/FreeKick/free_kick_opp_corner.xabsl";
+include "Options/Soccer/Strategy/FreeKick/free_kick_opp_in.xabsl";
 include "Options/Soccer/Strategy/FreeKick/free_kick_own.xabsl";
 include "Options/Soccer/Strategy/FreeKick/free_kick_own_goal.xabsl";
+include "Options/Soccer/Strategy/FreeKick/free_kick_own_corner.xabsl";
+include "Options/Soccer/Strategy/FreeKick/free_kick_own_in.xabsl";
+include "Options/Soccer/Strategy/FreeKick/free_kick_simple.xabsl";
 include "Options/Soccer/Strategy/FreeKick/avoid_region_go_own_goal.xabsl";
 
 //
