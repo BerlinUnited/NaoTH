@@ -114,8 +114,6 @@
 #include "Modules/Modeling/BallLocator/MultiKalmanBallLocator/MultiKalmanBallLocator.h"
 #include "Modules/Modeling/StaticDebugModelProvider/StaticDebugModelProvider.h"
 
-#include "Modules/Modeling/CollisionDetectorOld/CollisionDetectorOld.h"
-
 #include "Modules/Modeling/Simulation/SimulationTest.h"
 #include "Modules/Modeling/Simulation/Simulation.h"
 #include "Modules/Modeling/Simulation/SimulationOLD.h"
@@ -260,8 +258,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   /*
    * END ROLE DECISIONS
    */
-
-  REGISTER_MODULE(CollisionDetectorOld);
 
   REGISTER_MODULE(KickDirectionSimulator);
   REGISTER_MODULE(Simulation);

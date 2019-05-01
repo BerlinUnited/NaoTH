@@ -1,5 +1,5 @@
-#ifndef BUMPERCOLLISIONDETECTOR_H
-#define BUMPERCOLLISIONDETECTOR_H
+#ifndef _BUMPERCOLLISIONDETECTOR_H_
+#define _BUMPERCOLLISIONDETECTOR_H_
 
 #include <ModuleFramework/Module.h>
 
@@ -7,8 +7,12 @@
 #include <Representations/Infrastructure/UltraSoundData.h>
 #include <Representations/Infrastructure/ButtonData.h>
 #include <Representations/Infrastructure/FrameInfo.h>
-#include <Tools/Debug/DebugModify.h>
+#include <Representations/Motion/CollisionPercept.h>
+
+
 #include <Tools/DataStructures/ParameterList.h>
+#include <Tools/Debug/DebugRequest.h>
+#include <Tools/Debug/DebugModify.h>
 #include <Tools/Debug/DebugParameterList.h>
 
 BEGIN_DECLARE_MODULE(BumperCollisionDetector)
@@ -18,10 +22,10 @@ REQUIRE(ButtonData)
 PROVIDE(DebugModify)
 PROVIDE(CollisionModel)
 PROVIDE(DebugParameterList)
-
+PROVIDE(CollisionPercept)
 END_DECLARE_MODULE(BumperCollisionDetector)
 
-class BumperCollisionDetector : public BumperCollisionDetector
+class BumperCollisionDetector : public BumperCollisionDetectorBase
 {
 public:
     class Parameter : public ParameterList

@@ -148,8 +148,8 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanInputSymbol("motion.dribble.action_done", &dribbleG);
 
   //Temporary Collision Symbols
-  engine.registerBooleanInputSymbol("motion.collision.collision_left_bumper", &getCollisionModel().collision_left_bumper);
-  engine.registerBooleanInputSymbol("motion.collision.collision_right_bumper", &getCollisionModel().collision_right_bumper);
+  engine.registerBooleanInputSymbol("motion.collision.collision_left_bumper", &getCollisionPercept().collision_left_bumper);
+  engine.registerBooleanInputSymbol("motion.collision.collision_right_bumper", &getCollisionPercept().collision_right_bumper);
 
 }//end registerSymbols
 
