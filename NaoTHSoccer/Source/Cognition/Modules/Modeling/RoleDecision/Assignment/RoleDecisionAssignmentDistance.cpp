@@ -88,7 +88,8 @@ void RoleDecisionAssignmentDistance::withPriority(std::map<unsigned int, Roles::
     std::vector<Roles::Static> assignable_roles(getRoles().active);
     // the priority of roles is defined by the order of the active roles!
     for(const auto& v : getTeamMessage().data) {
-        if(new_roles.find(v.first) != new_roles.cend()) {
+        if(getTeamMessagePlayersState().isActive(v.first) && new_roles.find(v.first) != new_roles.cend()) {
+            // remove already assigned roles
             auto r = std::remove(assignable_roles.begin(), assignable_roles.end(), new_roles.at(v.first));
             if(r != assignable_roles.end()) { assignable_roles.erase(r); }
         }
@@ -130,18 +131,52 @@ void RoleDecisionAssignmentDistance::withDistance(std::map<unsigned int, Roles::
             }
         }
     }
+
+    findOptimalTeamAssignment(assignable_roles, assignable_player, new_roles);
+}
+
+void RoleDecisionAssignmentDistance::withPriorityDistance(std::map<unsigned int, Roles::Static>& new_roles)
+{
+    // retrieve assignable roles
+    std::vector<Roles::Static> assignable_roles(getRoles().active);
+    // retrieve players, which doesn't already have a role and remove already assigned roles from the assignable vector
+    std::vector<unsigned int> assignable_player;
+    for(const auto& v : getTeamMessagePlayersState().data) {
+        if(v.second.isActive()) {
+            if(new_roles.find(v.first) == new_roles.cend()) {
+                // player has NO role and is available for new assignment
+                assignable_player.push_back(v.first);
+            } else {
+                // player a role, remove role from the assignable roles
+                auto r = std::remove(assignable_roles.begin(), assignable_roles.end(), new_roles.at(v.first));
+                if(r != assignable_roles.end()) { assignable_roles.erase(r); }
+            }
+        }
+    }
+    // restrict assignment to the higher priorized roles
+    if(assignable_player.size() < assignable_roles.size()) {
+        assignable_roles.resize(assignable_player.size());
+    }
+
+    findOptimalTeamAssignment(assignable_roles, assignable_player, new_roles);
+}
+
+void RoleDecisionAssignmentDistance::findOptimalTeamAssignment(const std::vector<Roles::Static>& roles,
+                                                               const std::vector<unsigned int>& players,
+                                                               std::map<unsigned int, Roles::Static>& new_roles)
+{
     // save the orginal dimensions
-    size_t rows = assignable_player.size(),
-           cols = assignable_roles.size(),
+    size_t rows = players.size(),
+           cols = roles.size(),
            n = std::max(rows, cols);
     // create a squared matrix with default values
     Eigen::Array<int, Eigen::Dynamic, Eigen::Dynamic> m = Eigen::Array<int, Eigen::Dynamic, Eigen::Dynamic>::Constant(n,n,std::numeric_limits<int>::max());
     // prepare distance matrix
     for (size_t r = 0; r < rows; ++r) {
         for (size_t c = 0; c < cols; ++c) {
-            auto role = assignable_roles[c];
+            auto role = roles[c];
             auto role_pos = getRoleDecisionModel().getStaticRolePosition(role).home;
-            auto player = assignable_player[r];
+            auto player = players[r];
             auto player_pos = getTeamMessage().data.at(player).pose.translation;
             m(r,c) = static_cast<int>((role_pos - player_pos).abs2());
         }
@@ -156,20 +191,20 @@ void RoleDecisionAssignmentDistance::withDistance(std::map<unsigned int, Roles::
         std::vector<Roles::Static> assignments;
         for (size_t c = 0; c < cols; ++c) {
             if(m(r,c) == 0.0) {
-                assignments.push_back(assignable_roles[c]);
+                assignments.push_back(roles[c]);
             }
         }
         // check, if we got one assignment
         if(assignments.size() == 1) {
             // assign optimal role
-            new_roles[assignable_player[r]] = assignments[0];
+            new_roles[players[r]] = assignments[0];
         } else if (assignments.size() < 1) {
             // DEBUG: print out non-assignments
-            std::cout<<"NO ASSIGNMENT "<<assignable_player[r]<<"?"<<std::endl;
+            std::cout<<"NO ASSIGNMENT "<<players[r]<<"?"<<std::endl;
             std::cout<<"\n"<<m<<std::endl;
         } else {
             // DEBUG: print out mupltiple-assignments
-            std::cout<<"DOUBLE ASSIGNMENT "<<assignable_player[r]<<"?"<<std::endl;
+            std::cout<<"DOUBLE ASSIGNMENT "<<players[r]<<"?"<<std::endl;
             for(auto it : assignments) { std::cout<<Roles::getName(it)<<", "; }
             std::cout<<"\n"<<m<<std::endl;
         }
