@@ -113,11 +113,19 @@ void PathPlanner2018::moveAroundBall(const double direction, const double radius
 	double ballRotation = ballPos.angle();
 	double ballDistance = ballPos.abs();
 
+  double direction_deg = Math::toDegrees(direction);
+  if (direction_deg > -10 && direction_deg <= 0){
+    direction_deg = -10;
+  }
+  if (direction_deg < 10 && direction_deg > 0){
+    direction_deg = 10;
+  }
+
 	double min1;
 	double min2;
 	double max1;
 	double max2;
-	if (direction <= 0)
+  if (direction_deg <= 0)
 	{
     // turn left
 	  min1 = 0.0;
@@ -136,8 +144,7 @@ void PathPlanner2018::moveAroundBall(const double direction, const double radius
 	double stepX = (ballDistance - radius) * std::cos(ballRotation);
   // Math::clamp(-direction, min1, max1) ==> safe guard for xabsl input
   // outer clamp geht von -radius zu 0 
-  // NOTE direction is in degrees here
-	double stepY = Math::clamp(radius * std::tan( Math::fromDegrees( Math::clamp(-direction, min1, max1) ) ), min2, max2) * std::cos(ballRotation);
+  double stepY = Math::clamp(radius * std::tan(Math::fromDegrees(Math::clamp(-direction_deg, min1, max1))), min2, max2) * std::cos(ballRotation);
 
 	Pose2D pose = { ballRotation, stepX, stepY };
   

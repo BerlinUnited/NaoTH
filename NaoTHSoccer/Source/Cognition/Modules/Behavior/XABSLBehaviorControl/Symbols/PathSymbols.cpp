@@ -39,7 +39,8 @@ void PathSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalOutputSymbol("path.yOffset", &getPathModel().yOffset);
 
   // move around ball: direction and radius
-  engine.registerDecimalOutputSymbol("path.direction", &getPathModel().direction); // TODO this is in degrees should be converted here somehow
+  //engine.registerDecimalOutputSymbol("path.direction", &getPathModel().direction); // TODO this is in degrees should be converted here somehow
+  engine.registerDecimalOutputSymbol("path.direction", &setDirection, &getDirection);  
   engine.registerDecimalOutputSymbol("path.radius", &getPathModel().radius);
 
   engine.registerBooleanInputSymbol("path.kick_executed", &getPathModel().kick_executed);
@@ -66,4 +67,12 @@ void PathSymbols::setPathRoutine2018(int id) {
 
 int PathSymbols::getPathRoutine2018() {
   return static_cast<int>(theInstance->getPathModel().path2018_routine);
+}
+
+void PathSymbols::setDirection(double rot) {
+  theInstance->getPathModel().direction = Math::fromDegrees(rot);
+}
+
+double PathSymbols::getDirection() {
+  return Math::toDegrees(theInstance->getPathModel().direction);
 }
