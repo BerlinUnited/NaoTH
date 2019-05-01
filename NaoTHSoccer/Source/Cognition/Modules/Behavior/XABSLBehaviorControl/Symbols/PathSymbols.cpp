@@ -39,7 +39,7 @@ void PathSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalOutputSymbol("path.yOffset", &getPathModel().yOffset);
 
   // move around ball: direction and radius
-  engine.registerDecimalOutputSymbol("path.direction", &getPathModel().direction);
+  engine.registerDecimalOutputSymbol("path.direction", &getPathModel().direction); // TODO this is in degrees should be converted here somehow
   engine.registerDecimalOutputSymbol("path.radius", &getPathModel().radius);
 
   engine.registerBooleanInputSymbol("path.kick_executed", &getPathModel().kick_executed);
