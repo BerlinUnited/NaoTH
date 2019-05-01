@@ -23,8 +23,8 @@ initial state idle{
 state forward{
   decision
     {
-      else if(state_time > 5000 || motion.collision.collision_left_bumber ||
-              motion.collision.collision_right_bumber){
+      else if(state_time > 5000 || motion.collision.collision_left_bumper ||
+              motion.collision.collision_right_bumper){
        goto stand;
       } else {
        stay;
