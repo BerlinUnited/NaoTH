@@ -50,16 +50,17 @@ void ScanLineEdgelDetector::execute(CameraInfo::CameraID id)
   //horizon_height = getFieldPerceptRaw().getValidField().points[0].y;
 
   // horizontal stepsize between the scanlines
-  int step = (getImage().width() - 1) / (theParameters.scanline_count - 1);
+  double step = static_cast<double>(getImage().width()) / static_cast<double>(theParameters.scanline_count);
+  double scanline_x = step / 2.0;
 
   // don't scan the lower lines in the image
   int borderY = getImage().height() - theParameters.pixel_border_y - 1;
   
   // start and endpoints for the scanlines
-  Vector2i start(step / 2, borderY);
-  Vector2i end(step / 2, horizon_height );
+  Vector2i start((int) scanline_x, borderY);
+  Vector2i end((int) scanline_x, horizon_height );
   
-  for (int i = 0; i < theParameters.scanline_count - 1; i++)
+  for (int i = 0; i < theParameters.scanline_count; i++)
   {
     ASSERT(getImage().isInside(start.x, start.y));
     // don't scan the own body
@@ -86,8 +87,9 @@ void ScanLineEdgelDetector::execute(CameraInfo::CameraID id)
     //
     getScanLineEdgelPercept().endPoints.push_back(endPoint);
 
+    scanline_x += step;
     start.y = borderY;
-    start.x += step;
+    start.x = (int) (scanline_x + 0.5);
     end.x = start.x;
   }//end for
 
@@ -218,9 +220,9 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
     if(positiveScan.add(point.y+1, g))
     {
       // refine the position of the peak
-      int f_2 = getImage().getY(point.x, peak_point_max.y-2);
-      int f0  = getImage().getY(point.x, peak_point_max.y);
-      int f2  = getImage().getY(point.x, peak_point_max.y+2);
+      int f_2 = getImage().getY_direct(point.x, peak_point_max.y-2);
+      int f0  = getImage().getY_direct(point.x, peak_point_max.y);
+      int f2  = getImage().getY_direct(point.x, peak_point_max.y+2);
 
       if(f_2-f0 > positiveScan.maxValue()) peak_point_max.y -= 1;
       if(f0 -f2 > positiveScan.maxValue()) peak_point_max.y += 1;
@@ -239,9 +241,9 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
     if(negativeScan.add(point.y+1, -g))
     {
       // refine the position of the peak
-      int f_2 = getImage().getY(point.x, peak_point_min.y-2);
-      int f0  = getImage().getY(point.x, peak_point_min.y);
-      int f2  = getImage().getY(point.x, peak_point_min.y+2);
+      int f_2 = getImage().getY_direct(point.x, peak_point_min.y-2);
+      int f0  = getImage().getY_direct(point.x, peak_point_min.y);
+      int f2  = getImage().getY_direct(point.x, peak_point_min.y+2);
         
       if(f_2-f0 < negativeScan.maxValue()) peak_point_min.y -= 1;
       if(f0 -f2 < negativeScan.maxValue()) peak_point_min.y += 1;
