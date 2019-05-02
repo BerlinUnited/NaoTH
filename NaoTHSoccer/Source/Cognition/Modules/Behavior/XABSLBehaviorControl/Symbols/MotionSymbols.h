@@ -104,8 +104,8 @@ private:
   static double getHeadPitchAngle();
   static double getHeadYawAngle();
 
-  static double lastComputedCollisionRight();
-  static double lastComputedCollisionLeft();
+  static double getlastComputedCollisionRight();
+  static double getlastComputedCollisionLeft();
 
   // some local members
   struct HeadMotion

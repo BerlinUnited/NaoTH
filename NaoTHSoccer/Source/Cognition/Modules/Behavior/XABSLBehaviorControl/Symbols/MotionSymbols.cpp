@@ -150,8 +150,8 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   //Temporary Collision Symbols
   engine.registerBooleanInputSymbol("motion.collision.collision_left_bumper", &getCollisionPercept().collision_left_bumper);
   engine.registerBooleanInputSymbol("motion.collision.collision_right_bumper", &getCollisionPercept().collision_right_bumper);
-  engine.registerDecimalInputSymbol("motion.collision.timeSinceCollisionBumperLeft", &lastComputedCollisionLeft);
-  engine.registerDecimalInputSymbol("motion.collision.timeSinceCollisionBumperRight", &lastComputedCollisionRight);
+  engine.registerDecimalInputSymbol("motion.collision.timeSinceCollisionBumperLeft", &getlastComputedCollisionLeft);
+  engine.registerDecimalInputSymbol("motion.collision.timeSinceCollisionBumperRight", &getlastComputedCollisionRight);
 
 }//end registerSymbols
 
@@ -301,11 +301,11 @@ double MotionSymbols::getHeadPitchAngle() {
   return Math::toDegrees(theInstance->getSensorJointData().position[JointData::HeadPitch]);
 }
 
-double MotionSymbols::lastComputedCollisionRight() {
+double MotionSymbols::getlastComputedCollisionRight() {
   return theInstance->getCollisionPercept().lastComputedCollisionRight - theInstance->getFrameInfo().getTimeInSeconds();
 }
 
-double MotionSymbols::lastComputedCollisionLeft(){
+double MotionSymbols::getlastComputedCollisionLeft(){
   return theInstance->getCollisionPercept().lastComputedCollisionLeft - theInstance->getFrameInfo().getTimeInSeconds();
 }
 
