@@ -61,7 +61,7 @@ void PathPlanner2018::execute()
     }
     break;
   case PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL:
-    moveAroundBall(getPathModel().direction, getPathModel().radius, getPathModel().stable = false);
+    moveAroundBall(getPathModel().direction, getPathModel().radius, getPathModel().stable);
     break;
   case PathModel::PathPlanner2018Routine::FORWARDKICK_LEFT:
     //if (farApproach())
