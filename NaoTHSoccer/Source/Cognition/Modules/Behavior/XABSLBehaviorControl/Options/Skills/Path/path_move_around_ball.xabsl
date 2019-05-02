@@ -35,7 +35,7 @@ option path_move_around_ball
       path.direction = @direction;
       path.radius = @radius;
       
-      //loook at percept
+      //look at percept
       head.control_mode = look_at_ball_percept;
     }
   }
@@ -49,7 +49,7 @@ option path_move_around_ball
       path.direction = @direction;
       path.radius = @radius;
       
-      //loook at percept
+      //look at percept
       head.control_mode = look_at_ball_percept;
     }
   }

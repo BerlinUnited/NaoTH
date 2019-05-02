@@ -29,6 +29,8 @@ public:
 
     virtual double getRadius() = 0;
     virtual Vector2d getCenter() = 0;
+
+    virtual double getBallConfidence() {return getRadius(); }
 };
 
 #endif // ABSTRACTCNNCLASSIFIER_H

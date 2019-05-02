@@ -83,6 +83,32 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("freekick.pos.x", &freeKickPositionX);
   engine.registerDecimalInputSymbol("freekick.pos.y", &freeKickPositionY);
 
+  // role selection
+  for(int i = 0; i < Roles::numOfStaticRoles; ++i)
+  {
+    string str("role.static.");
+    str.append(Roles::getName((Roles::Static)i));
+    engine.registerEnumElement("role.static", str.c_str(), i);
+  }
+
+  engine.registerEnumeratedInputSymbol("strategy.role", "role.static", &getStaticRole);
+
+  for(int i = 0; i < Roles::numOfDynamicRoles; ++i)
+  {
+    string str("role.dynamic.");
+    str.append(Roles::getName((Roles::Dynamic)i));
+    engine.registerEnumElement("role.dynamic", str.c_str(), i);
+  }
+
+  engine.registerEnumeratedInputSymbol("strategy.role_dynamic", "role.dynamic", &getDynamicRole);
+
+  engine.registerDecimalInputSymbol("strategy.position.home.x", &getHomePositionX);
+  engine.registerDecimalInputSymbol("strategy.position.home.y", &getHomePositionY);
+  engine.registerDecimalInputSymbol("strategy.position.own.x", &getHomePositionOwnKickoffX);
+  engine.registerDecimalInputSymbol("strategy.position.own.y", &getHomePositionOwnKickoffY);
+  engine.registerDecimalInputSymbol("strategy.position.opp.x", &getHomePositionOppKickoffX);
+  engine.registerDecimalInputSymbol("strategy.position.opp.y", &getHomePositionOppKickoffY);
+
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_attack_direction","draw the attack direction", false);
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_simpleDefenderPose","draw the position of the defender", false);
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_goalie_defensive_pos","draw the position of the goalie", false);
@@ -475,23 +501,39 @@ int StrategySymbols::getBestAction() {
 }
 
 void StrategySymbols::retrieveFreeKickPosition() {
-    // check if one of our teamates fouled an opponent
-    if(lastSetPlay == GameData::set_none && getGameData().setPlay == GameData::pushing_free_kick && !getPlayerInfo().kickoff) {
-        // retrieve last pose of the player who has fouled
-        for(unsigned int i = 0; i < getGameData().ownTeam.players.size(); ++i) {
-            // player is now penalized, but wasn't before
-            if(getGameData().ownTeam.players[i].penalty == naoth::GameData::player_pushing && penalties[i+1] == naoth::GameData::penalty_none) {
-                // find his last position from his message
-                const auto& player = getTeamMessage().data.find(i+1);
-                if(player != getTeamMessage().data.cend()) {
-                    freeKickPosition = player->second.pose.translation;
+    // check if a set play for the opponent was called
+    if(lastSetPlay == GameData::set_none && !getPlayerInfo().kickoff) {
+        // one of our teamates fouled an opponent
+        if(getGameData().setPlay == GameData::pushing_free_kick)
+        {
+            // retrieve last pose of the player who has fouled
+            for(unsigned int i = 0; i < getGameData().ownTeam.players.size(); ++i) {
+                // player is now penalized, but wasn't before
+                if(getGameData().ownTeam.players[i].penalty == naoth::GameData::player_pushing && penalties[i+1] == naoth::GameData::penalty_none) {
+                    // find his last position from his message
+                    const auto& player = getTeamMessage().data.find(i+1);
+                    if(player != getTeamMessage().data.cend()) {
+                        freeKickPosition = player->second.pose.translation;
+                    }
                 }
             }
+        }
+        // the opponent has a corner kick
+        else if(getGameData().setPlay == GameData::corner_kick)
+        {
+            // we're moving away from both corners!
+            // if we're near the actual corner kick-in position, we have to move away, if we're on the other side,
+            // it is better to move closer to the actual corner kick-in position.
+            freeKickPosition = getRobotPose().translation.y >= 0 ?
+                        getFieldInfo().crossings[FieldInfo::ownCornerLeft].position :
+                        getFieldInfo().crossings[FieldInfo::ownCornerRight].position;
         }
     }
 
     // reset free kick position after free kick is over
-    if(lastSetPlay == GameData::pushing_free_kick && getGameData().setPlay != GameData::pushing_free_kick) {
+    if((lastSetPlay == GameData::pushing_free_kick && getGameData().setPlay != GameData::pushing_free_kick) ||
+       (lastSetPlay == GameData::corner_kick && getGameData().setPlay != GameData::corner_kick))
+    {
         freeKickPosition.x = 0.0;
         freeKickPosition.y = 0.0;
     }
@@ -509,4 +551,74 @@ double StrategySymbols::freeKickPositionX() {
 
 double StrategySymbols::freeKickPositionY() {
     return theInstance->freeKickPosition.y;
+}
+
+int StrategySymbols::getStaticRole() {
+    const auto& it = theInstance->getRoleDecisionModel().roles.find(theInstance->getPlayerInfo().playerNumber);
+    if(it != theInstance->getRoleDecisionModel().roles.cend()) {
+        return it->second.role;
+    }
+    return Roles::unknown;
+}
+
+int StrategySymbols::getDynamicRole() {
+    const auto& it = theInstance->getRoleDecisionModel().roles.find(theInstance->getPlayerInfo().playerNumber);
+    if(it != theInstance->getRoleDecisionModel().roles.cend()) {
+        return it->second.dynamic;
+    }
+    return Roles::none;
+}
+
+double StrategySymbols::getHomePositionX() {
+    const auto& it = theInstance->getRoleDecisionModel().roles.find(theInstance->getPlayerInfo().playerNumber);
+    if(it != theInstance->getRoleDecisionModel().roles.cend()) {
+        return theInstance->getRoleDecisionModel().getStaticRolePosition(it->second.role).home.x;
+    }
+    // put unknown player on the "manual placement line"
+    return theInstance->getFieldInfo().xPosOwnPenaltyArea;
+}
+
+double StrategySymbols::getHomePositionY() {
+    const auto& it = theInstance->getRoleDecisionModel().roles.find(theInstance->getPlayerInfo().playerNumber);
+    if(it != theInstance->getRoleDecisionModel().roles.cend()) {
+        return theInstance->getRoleDecisionModel().getStaticRolePosition(it->second.role).home.y;
+    }
+    // put unknown player on the "manual placement line"
+    return theInstance->getFieldInfo().yLength/(theInstance->getPlayerInfo().playersPerTeam+2)*theInstance->getPlayerInfo().playerNumber-(theInstance->getFieldInfo().yLength*0.5);
+}
+
+double StrategySymbols::getHomePositionOwnKickoffX() {
+    const auto& it = theInstance->getRoleDecisionModel().roles.find(theInstance->getPlayerInfo().playerNumber);
+    if(it != theInstance->getRoleDecisionModel().roles.cend()) {
+        return theInstance->getRoleDecisionModel().getStaticRolePosition(it->second.role).own.x;
+    }
+    // put unknown player on the "manual placement line"
+    return theInstance->getFieldInfo().xPosOwnPenaltyArea;
+}
+
+double StrategySymbols::getHomePositionOwnKickoffY() {
+    const auto& it = theInstance->getRoleDecisionModel().roles.find(theInstance->getPlayerInfo().playerNumber);
+    if(it != theInstance->getRoleDecisionModel().roles.cend()) {
+        return theInstance->getRoleDecisionModel().getStaticRolePosition(it->second.role).own.y;
+    }
+    // put unknown player on the "manual placement line"
+    return theInstance->getFieldInfo().yLength/(theInstance->getPlayerInfo().playersPerTeam+2)*theInstance->getPlayerInfo().playerNumber-(theInstance->getFieldInfo().yLength*0.5);
+}
+
+double StrategySymbols::getHomePositionOppKickoffX() {
+    const auto& it = theInstance->getRoleDecisionModel().roles.find(theInstance->getPlayerInfo().playerNumber);
+    if(it != theInstance->getRoleDecisionModel().roles.cend()) {
+        return theInstance->getRoleDecisionModel().getStaticRolePosition(it->second.role).opp.x;
+    }
+    // put unknown player on the "manual placement line"
+    return theInstance->getFieldInfo().xPosOwnPenaltyArea;
+}
+
+double StrategySymbols::getHomePositionOppKickoffY() {
+    const auto& it = theInstance->getRoleDecisionModel().roles.find(theInstance->getPlayerInfo().playerNumber);
+    if(it != theInstance->getRoleDecisionModel().roles.cend()) {
+        return theInstance->getRoleDecisionModel().getStaticRolePosition(it->second.role).opp.y;
+    }
+    // put unknown player on the "manual placement line"
+    return theInstance->getFieldInfo().yLength/(theInstance->getPlayerInfo().playersPerTeam+2)*theInstance->getPlayerInfo().playerNumber-(theInstance->getFieldInfo().yLength*0.5);
 }

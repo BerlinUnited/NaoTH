@@ -3,7 +3,7 @@ from keras.models import load_model
 from utility_functions.onbcg import keras_compile
 import os
 
-model_path = "models/fy4000_3.h5"
+model_path = "models/fy1500_conf.h5"
 #model_path = "models/extra-step.h5"
 model = load_model(model_path)
 model.summary()

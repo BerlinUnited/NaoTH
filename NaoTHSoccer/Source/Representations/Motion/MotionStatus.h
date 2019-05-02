@@ -58,7 +58,8 @@ public:
   headMotion(HeadMotionRequest::numOfHeadMotion),
   target_reached(false),
   head_target_reached(false),
-  head_got_stuck(false)
+  head_got_stuck(false),
+  walk_emergency_stop(false)
   {
   }
 
@@ -74,6 +75,7 @@ public:
   bool target_reached;
   bool head_target_reached;
   bool head_got_stuck;
+  bool walk_emergency_stop;
 
   virtual void print(std::ostream& stream) const
   {
@@ -88,7 +90,8 @@ public:
     stream << "step control = "<< stepControl.stepID << " " << stepControl.moveableFoot <<"\n";
     stream << "target_reached = " << target_reached << '\n';
     stream << "head_target_reached = " << head_target_reached << '\n';
-    stream << "head_got_stuck = " << head_target_reached << '\n';
+    stream << "head_got_stuck = " << head_got_stuck << '\n';
+    stream << "walk_emergency_stop = " << walk_emergency_stop << '\n';
   }//end print
 };
 

@@ -55,7 +55,6 @@ option pathplanner2018_forwardkick
     action 
     {
       head.control_mode = look_at_ball_percept;
-      //head.control_mode = search_for_ball;
 
       path2018.routine = path2018.routine.forwardkick_left;
     }
@@ -66,7 +65,7 @@ option pathplanner2018_forwardkick
     decision 
     {
       else if(state_time > 500)
-        goto pathplanner_go;
+        goto stand;
       else 
         stay; 
     }
@@ -76,4 +75,19 @@ option pathplanner2018_forwardkick
       head.control_mode = look_at_ball_percept;
     }
   }
+
+  state stand{
+  decision{
+      else {
+        stay;
+      }
+    }
+    action
+    {
+      head.control_mode = look_straight_ahead;
+
+      motion.type = stand;
+    }  
+  }
+
 }
