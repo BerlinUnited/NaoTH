@@ -311,22 +311,22 @@ private:
 
     { // AccelerometerData
     sensorsValue[theAccelerometerDataIndex + 0] = sensorData.Accelerometer.x;
-    sensorsValue[theAccelerometerDataIndex + 1] = sensorData.Accelerometer.y;
+    sensorsValue[theAccelerometerDataIndex + 1] = -sensorData.Accelerometer.y; // y-axis of v6 robots is mirrored compared to v5 and earlier
     sensorsValue[theAccelerometerDataIndex + 2] = sensorData.Accelerometer.z;
 
     sensorsValue[theAccelerometerDataIndex + 3] = sensorData.Accelerometer.x;
-    sensorsValue[theAccelerometerDataIndex + 4] = sensorData.Accelerometer.y;
+    sensorsValue[theAccelerometerDataIndex + 4] = -sensorData.Accelerometer.y; // y-axis of v6 robots is mirrored compared to v5 and earlier
     sensorsValue[theAccelerometerDataIndex + 5] = sensorData.Accelerometer.z;
     }
 
     { // GyrometerData
     sensorsValue[theGyrometerDataIndex + 0] = sensorData.Gyroscope.x;
     sensorsValue[theGyrometerDataIndex + 1] = sensorData.Gyroscope.y;
-    sensorsValue[theGyrometerDataIndex + 2] = sensorData.Gyroscope.z;
+    sensorsValue[theGyrometerDataIndex + 2] = -sensorData.Gyroscope.z;// z-axis of v6 robots is mirrored compared to v5 and earlier
 
     sensorsValue[theGyrometerDataIndex + 3] = sensorData.Gyroscope.x;
     sensorsValue[theGyrometerDataIndex + 4] = sensorData.Gyroscope.y;
-    sensorsValue[theGyrometerDataIndex + 5] = sensorData.Gyroscope.z;
+    sensorsValue[theGyrometerDataIndex + 5] = -sensorData.Gyroscope.z;// z-axis of v6 robots is mirrored compared to v5 and earlier
 
     //sensorsValue[theGyrometerDataIndex + 6] = 0;
     }
