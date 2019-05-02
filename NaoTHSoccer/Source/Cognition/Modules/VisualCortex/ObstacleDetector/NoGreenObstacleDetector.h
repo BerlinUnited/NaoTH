@@ -16,7 +16,7 @@
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/MultiChannelIntegralImage.h"
-#include "Representations/Perception/NoGreenObstacle.h"
+#include "Representations/Perception/Obstacle.h"
 
 // Tools
 #include "Tools/CameraGeometry.h"
@@ -29,7 +29,7 @@ BEGIN_DECLARE_MODULE(NoGreenObstacleDetector)
   REQUIRE(BallDetectorIntegralImage)
   REQUIRE(BallDetectorIntegralImageTop)
 
-  PROVIDE(NoGreenObstacle)
+  PROVIDE(VisionObstacle)
 
   PROVIDE(DebugRequest)
   PROVIDE(DebugModify)
@@ -58,12 +58,17 @@ private:
 
       PARAMETER_REGISTER(min_expected_area) = .8;
 
+      PARAMETER_REGISTER(max_green_density) = .5;
+
       syncWithConfig();
     }
     double detector_field_offset;
     double detector_width;
     double detector_range;
     double min_expected_area;
+
+    // maximal green density witch still is classified as an obstacle
+    double max_green_density;
   } params;
 
   class DetectorField

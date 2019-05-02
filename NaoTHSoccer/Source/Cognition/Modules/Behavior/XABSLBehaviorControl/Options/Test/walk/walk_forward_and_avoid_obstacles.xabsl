@@ -1,0 +1,106 @@
+option walk_forward_and_avoid_obstacles{
+
+common decision {
+  if (!body.ready_to_walk || game.current_mode != playing)
+    goto idle;
+}
+
+initial state idle{
+  decision 
+  {
+    else
+      goto forward;
+  }
+  action{}
+}
+
+state forward{
+  decision
+    {
+      else if(sensor.obstacle.valid && sensor.obstacle.inFront){
+       if(sensor.obstacle.right) {
+         goto avoid_left;
+       } else {
+         goto avoid_right;
+       }
+      } else {
+       stay;
+      }
+    }
+    action
+    {
+      head.control_mode = look_straight_ahead;
+    
+      motion.type = walk;
+      motion.walk_speed.x = 100;
+      motion.walk.style = stable;
+    }
+  }
+
+state avoid_left{
+  decision
+    {
+      else if(sensor.obstacle.valid && !sensor.obstacle.inFront){
+        goto forward;
+      } else if(sensor.obstacle.valid && sensor.obstacle.left) {
+        goto avoid_right;
+      } else {
+        stay;
+      }
+    }
+    action
+    {
+      head.control_mode = look_straight_ahead;
+      
+      motion.type = walk;
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = -60;
+      motion.walk_speed.rot = 0;
+    }
+  }
+
+state avoid_right{
+  decision
+    {
+      else if(sensor.obstacle.valid && !sensor.obstacle.inFront){
+       goto forward;
+      } else if(sensor.obstacle.valid && sensor.obstacle.right) {
+        goto avoid_left;
+      } else {
+       stay;
+      }
+    }
+    action
+    {
+      head.control_mode = look_straight_ahead;
+      
+      motion.type = walk;
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 60;
+      motion.walk_speed.rot = 0;
+    }
+  }
+
+state stand{
+  decision{
+      else if(sensor.obstacle.valid && !sensor.obstacle.inFront){
+        goto forward;      
+      }
+      else {
+        stay;
+      }
+    }
+    action
+    {
+      head.control_mode = look_straight_ahead;
+
+      motion.type = stand;
+    }  
+  }
+}

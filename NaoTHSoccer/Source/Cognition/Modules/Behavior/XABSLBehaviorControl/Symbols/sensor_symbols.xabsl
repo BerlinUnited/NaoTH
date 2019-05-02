@@ -50,6 +50,12 @@ namespace sensor("Sensor Symbols") {
   float input sensor.ultrasound.left;
   float input sensor.ultrasound.right;
 
+  /** reverse green density in front of robot */
+  bool input sensor.obstacle.inFront;
+  bool input sensor.obstacle.valid;
+  bool input sensor.obstacle.left;
+  bool input sensor.obstacle.right;
+
   /** use the obstacle model */
   float input obstacle.ultrasound.distance;
   float input obstacle.ultrasound.left.distance;

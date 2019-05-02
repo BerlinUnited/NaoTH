@@ -23,6 +23,7 @@
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CalibrationData.h"
 #include "Representations/Motion/CollisionPercept.h"
+#include "Representations/Perception/Obstacle.h"
 
 #include <Representations/Infrastructure/ButtonData.h>
 #include <Representations/Infrastructure/AudioControl.h>
@@ -42,6 +43,7 @@ BEGIN_DECLARE_MODULE(SensorSymbols)
   REQUIRE(CalibrationData)
   REQUIRE(ButtonData)
   REQUIRE(CollisionPercept)
+  REQUIRE(VisionObstacle)
 
   PROVIDE(AudioControl)
 END_DECLARE_MODULE(SensorSymbols)

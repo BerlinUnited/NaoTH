@@ -186,6 +186,7 @@ include "Options/Test/agent/clown_walk_test_agent.xabsl";
 include "Options/Test/agent/obstacle_test_agent.xabsl";
 include "Options/Test/agent/dribble_test_agent.xabsl";
 include "Options/Test/agent/walk_forward_agent.xabsl";
+include "Options/Test/agent/walk_forward_and_avoid_obstacles_agent.xabsl";
 
 // Test agents PathPlanner
 include "Options/Test/agent/pathplanner_test_sidekick_agent.xabsl";
@@ -264,6 +265,7 @@ include "Options/Test/walk/clown_walk_test.xabsl";
 include "Options/Test/walk/turn_around_ball_test.xabsl";
 include "Options/Test/test_dribble.xabsl";
 include "Options/Test/walk/walk_forward.xabsl";
+include "Options/Test/walk/walk_forward_and_avoid_obstacles.xabsl";
 
 // Test role change
 include "Options/Test/strategy/role_change_test.xabsl";
@@ -350,6 +352,8 @@ agent goto_ball_with_USOA_test_agent("go_to_ball_with_USOA_test_agent", go_to_ba
 agent goto_point_with_USOA_test("go_to_point_with_USOA_test_agent", go_to_point_with_USOA_test_agent);
 
 agent walk_forward("walk_forward_agent", walk_forward_agent);
+agent walk_forward_and_avoid_obstacles("walk_forward_and_avoid_obstacles_agent", walk_forward_and_avoid_obstacles_agent);
+
 agent dribble_test_agent("dribble_test_agent", dribble_test_agent);
 
 // PathPlanner Test Agents
