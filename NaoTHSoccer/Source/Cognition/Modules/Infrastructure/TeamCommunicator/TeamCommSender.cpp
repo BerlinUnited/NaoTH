@@ -2,6 +2,7 @@
 
 #include "PlatformInterface/Platform.h"
 #include <Tools/NaoTime.h>
+#include "Representations/Motion/Request/MotionID.h"
 
 TeamCommSender::TeamCommSender()
   :lastSentTimestamp(0),
@@ -68,12 +69,17 @@ void TeamCommSender::fillMessageBeforeSending() const
       msg.custom.ballVelocity.y = 0;
     }
 
-    msg.fallen = getBodyState().fall_down_state != BodyState::upright;
+    // TODO: should be fixed with issue #105
+    msg.fallen = getBodyState().fall_down_state != BodyState::upright
+              || getMotionStatus().currentMotion == motion::stand_up_from_back
+              || getMotionStatus().currentMotion == motion::stand_up_from_side
+              || getMotionStatus().currentMotion == motion::stand_up_from_front
+              || getMotionStatus().currentMotion == motion::stand_up_from_back_arms_back;
 
     // TODO: can we make it more separate?
     msg.custom.timestamp = naoth::NaoTime::getSystemTimeInMilliSeconds();
     msg.custom.wantsToBeStriker = getRoleDecisionModel().wantsToBeStriker;
-    msg.custom.wasStriker = getPlayerInfo().isPlayingStriker; // intention
+    msg.custom.wasStriker = getRoleDecisionModel().isStriker(getPlayerInfo().playerNumber);
 
     msg.custom.bodyID = getRobotInfo().bodyID;
     ASSERT(getSoccerStrategy().timeToBall >= 0);
@@ -91,6 +97,7 @@ void TeamCommSender::fillMessageBeforeSending() const
     }
 
     msg.custom.robotState = getPlayerInfo().robotState;
+    msg.custom.robotRole = getRoleDecisionModel().getRole(getPlayerInfo().playerNumber);
 
     // TODO: shall we put it into config?
     msg.custom.key = NAOTH_TEAMCOMM_MESAGE_KEY;

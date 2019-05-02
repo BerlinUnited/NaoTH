@@ -58,7 +58,10 @@ class FootStepPlanner2018Parameters: public ParameterList{
 
           PARAMETER_REGISTER(step.doubleSupportTime) = 0;
           PARAMETER_REGISTER(step.duration) = 260;
-          PARAMETER_REGISTER(step.dynamicDuration) = true;
+          PARAMETER_REGISTER(step.dynamicDuration.on) = true;
+          PARAMETER_REGISTER(step.dynamicDuration.fast) = 260;
+          PARAMETER_REGISTER(step.dynamicDuration.normal) = 280;
+          PARAMETER_REGISTER(step.dynamicDuration.stable) = 300;
 
           PARAMETER_REGISTER(stabilization.dynamicStepSize)  = true;
           PARAMETER_REGISTER(stabilization.dynamicStepSizeP) = -0.1;
@@ -89,7 +92,14 @@ class FootStepPlanner2018Parameters: public ParameterList{
       struct Step {
         int  doubleSupportTime;
         int  duration;
-        bool dynamicDuration;
+
+        struct {
+          bool on;
+          int fast;
+          int normal;
+          int stable;
+        } dynamicDuration;
+
       } step;
 
       struct Stabilization {
