@@ -54,6 +54,17 @@ public:
   }
 };
 
+namespace naoth
+{
+template<>
+class Serializer<RansacLinePercept>
+{
+  public:
+  static void serialize(const RansacLinePercept& object, std::ostream& stream);
+  static void deserialize(std::istream& stream, RansacLinePercept& object);
+};
+}
+
 // RansacLineDetectorOnGraphs
 class ShortLinePercept : public LinePercept2018
 {
