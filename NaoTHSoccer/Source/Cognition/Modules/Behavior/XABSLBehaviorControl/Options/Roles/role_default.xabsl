@@ -17,6 +17,11 @@ option role_default
   state decide_subrole_or_passive
   {
     decision {
+      else if((!game.state.playing_is_set_by_game_controller && !game.own_kickoff && game.time_in_play < 10000)
+              // if we see the ball outside the centercircle, the ball is free!
+              //&& ((ball.know_where_itis && (abs(value=ball.position.field.x) <= field.centerCircleRadius || abs(value=ball.position.field.y) <= field.centerCircleRadius)) || !ball.know_where_itis)
+              )
+          goto wait_for_ball_free;
       else if(strategy.role_dynamic == striker)
         goto striker_subrole;
       else if(strategy.role_dynamic == goalie_supporter)
@@ -33,6 +38,20 @@ option role_default
     action {
       strategy.role_dynamic_last = none;
       roles_go_to_passive_position();
+    }
+  }
+
+  state wait_for_ball_free
+  {
+    decision {
+      else if(!(!game.state.playing_is_set_by_game_controller && !game.own_kickoff && game.time_in_play < 10000))
+        goto decide_subrole_or_passive;
+      else
+        stay;
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
     }
   }
 
