@@ -141,7 +141,6 @@ include "Options/Soccer/Penalty/penalty_decide_state_and_role.xabsl";
 include "Options/Soccer/Test/passive_behavior_test_agent.xabsl";
 include "Options/Soccer/Test/passive_player_agent.xabsl";
 include "Options/Soccer/Test/basic_goali_agent.xabsl";
-include "Options/Soccer/Test/path_basic_goalie_agent.xabsl";
 include "Options/Soccer/Test/striker_agent.xabsl";
 
 // remote
@@ -188,32 +187,31 @@ include "Options/Test/agent/dribble_test_agent.xabsl";
 include "Options/Test/agent/walk_forward_agent.xabsl";
 
 // Test agents PathPlanner
-include "Options/Test/agent/pathplanner_test_sidekick_agent.xabsl";
-include "Options/Test/agent/pathplanner_test_short_kick_agent.xabsl";
-include "Options/Test/agent/pathplanner_test_long_kick_agent.xabsl";
-include "Options/Test/agent/pathplanner_test_only_shortkick_agent.xabsl";
-include "Options/Test/agent/pathplanner_test_only_sidekick_agent.xabsl";
-include "Options/Test/agent/pathplanner_test_dash_agent.xabsl";
-include "Options/Test/agent/pathplanner2018_forwardkick_agent.xabsl";
-include "Options/Test/pathplanner2018_forwardkick.xabsl";
-include "Options/Test/agent/pathplanner2018_sidekick_agent.xabsl";
-include "Options/Test/pathplanner2018_sidekick.xabsl";
-include "Options/Test/agent/path_move_around_ball_agent.xabsl";
-include "Options/Test/path_move_around_ball_test.xabsl";
-
+include "Options/Test/PathPlannerAgents/pathplanner_test_sidekick_agent.xabsl";
+include "Options/Test/PathPlannerAgents/pathplanner_test_short_kick_agent.xabsl";
+include "Options/Test/PathPlannerAgents/pathplanner_test_long_kick_agent.xabsl";
+include "Options/Test/PathPlannerAgents/pathplanner_test_only_shortkick_agent.xabsl";
+include "Options/Test/PathPlannerAgents/pathplanner_test_only_sidekick_agent.xabsl";
+include "Options/Test/PathPlannerAgents/pathplanner_test_dash_agent.xabsl";
+include "Options/Test/PathPlannerAgents/pathplanner2018_forwardkick_agent.xabsl";
+include "Options/Test/PathPlannerAgents/path_basic_goalie_agent.xabsl";
+include "Options/Test/PathPlannerAgents/path_move_around_ball_agent.xabsl";
+include "Options/Test/PathPlannerAgents/pathplanner2018_sidekick_agent.xabsl";
 
 // Test agents Team behavior
 
 include "Options/Test/team/team_go_to_ball_agent.xabsl";
 
-
 // Test Options PathPlanner
-include "Options/Test/kicks/pathplanner_sidekick.xabsl";
-include "Options/Test/kicks/pathplanner_kick_short.xabsl";
-include "Options/Test/kicks/pathplanner_kick_long.xabsl";
-include "Options/Test/kicks/pathplanner_shortkick_only.xabsl";
-include "Options/Test/kicks/pathplanner_sidekick_only.xabsl";
-include "Options/Test/kicks/pathplanner_dash.xabsl";
+include "Options/Test/PathPlaner/pathplanner_sidekick.xabsl";
+include "Options/Test/PathPlaner/pathplanner_kick_short.xabsl";
+include "Options/Test/PathPlaner/pathplanner_kick_long.xabsl";
+include "Options/Test/PathPlaner/pathplanner_shortkick_only.xabsl";
+include "Options/Test/PathPlaner/pathplanner_sidekick_only.xabsl";
+include "Options/Test/PathPlaner/pathplanner_dash.xabsl";
+include "Options/Test/PathPlaner/pathplanner2018_forwardkick.xabsl";
+include "Options/Test/PathPlaner/pathplanner2018_sidekick.xabsl";
+include "Options/Test/PathPlaner/path_move_around_ball_test.xabsl";
 
 
 // Test agents (options) Behaviour Tests
