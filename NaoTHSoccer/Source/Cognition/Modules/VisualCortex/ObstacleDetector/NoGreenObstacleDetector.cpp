@@ -89,7 +89,7 @@ void NoGreenObstacleDetector::execute()
     return;
   }
 
-  // caluclate green density
+  // calculate green density
   double green_density = (double) detectorImage.green(getBallDetectorIntegralImage()) / detectorImage.pixels();
   double green_density_left = (double) detectorImage.greenLeft(getBallDetectorIntegralImage()) / (detectorImage.pixels()/2);
   double green_density_right = (double) detectorImage.greenRight(getBallDetectorIntegralImage()) / (detectorImage.pixels()/2);
