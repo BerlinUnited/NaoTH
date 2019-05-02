@@ -44,6 +44,7 @@ BEGIN_DECLARE_MODULE(SensorSymbols)
   REQUIRE(ButtonData)
   REQUIRE(CollisionPercept)
   REQUIRE(VisionObstacle)
+  REQUIRE(VisionObstaclePreview)
 
   PROVIDE(AudioControl)
 END_DECLARE_MODULE(SensorSymbols)
