@@ -7,6 +7,8 @@
 #include "Tools/Math/Line.h"
 #include "Tools/LinesTable.h"
 
+#include "Tools/DataStructures/Serializer.h"
+
 class MiddleCircle
 {
 public: 
@@ -58,6 +60,19 @@ class ShortLinePercept : public LinePercept2018
   public:
     //
 };
+
+namespace naoth
+{
+template<>
+class Serializer<ShortLinePercept>
+{
+  public:
+  static void serialize(const ShortLinePercept& object, std::ostream& stream);
+
+  // we don't need that
+  static void deserialize(std::istream& stream, ShortLinePercept& object);
+};
+}
 
 // RansacLineDetectorOnGraphs
 class VirtualLinePercept : public LinePercept2018
