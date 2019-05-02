@@ -89,7 +89,10 @@ def load_image_from_path(path, db_balls, db_noballs, res):
                 y = 0
 
             # for each row add the image and the prediction 
-            y = np.array([radius, x, y])
+            if is_ball:
+                y = np.array([radius, x, y, 1.0])
+            else:
+                y = np.array([radius, x, y, 0.0])
 
             img_f = img.astype(float) / 255.0
 

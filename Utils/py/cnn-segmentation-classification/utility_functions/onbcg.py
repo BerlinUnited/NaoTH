@@ -193,6 +193,7 @@ def write_naoth_header_file(class_name, output_folder="."):
         print("\tvoid find(const BallCandidates::PatchYUVClassified& p,double meanBrightness);", file=fp)
         print("\tvirtual double getRadius();", file=fp)
         print("\tvirtual Vector2d getCenter();", file=fp)
+        print("\tvirtual double getBallConfidence();", file=fp)
         print("", file=fp)
         print("private:", file=fp)
         print("\tfloat in_step[16][16][1];", file=fp)
@@ -404,7 +405,7 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
 
 def dense(_x, weights, b, c_inf):
     # TODO get output size dynamically
-    x_out = np.zeros(shape=(3, 1, 1)).astype('float32')
+    x_out = np.zeros(shape=(4, 1, 1)).astype('float32')
 
     x_dim = _x.shape[0]
     y_dim = _x.shape[1]
@@ -480,6 +481,7 @@ def write_footer(c_inf, _x, classification, class_name):
         c_inf["f"].write(classify_yuv_patch.format(class_name))
         c_inf["f"].write('double {}::getRadius() {{return scores[0];}}\n'.format(class_name))
         c_inf["f"].write('Vector2d {}::getCenter() {{return Vector2d(scores[1], scores[2]);}}\n'.format(class_name))
+        c_inf["f"].write('double {}::getBallConfidence() {{return scores[3];}}\n'.format(class_name))
 
         if classification:
             c_inf["f"].write(footer_test.format(**c_inf))
