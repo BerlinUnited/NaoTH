@@ -189,7 +189,11 @@ message LinePercept {
   optional DoubleVector2 middleCircleCenter = 3;
 }
 
-message LinePercept2018 {
+message ShortLinePercept {
+  repeated LineSegment fieldLineSegments = 1;
+}
+
+message RansacLinePercept {
   repeated LineSegment fieldLineSegments = 1;
 }
 

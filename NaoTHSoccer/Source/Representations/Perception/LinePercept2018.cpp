@@ -7,7 +7,7 @@
 void naoth::Serializer<ShortLinePercept>::serialize(const ShortLinePercept &object, std::ostream &stream)
 {
 
-    naothmessages::LinePercept2018 all;
+    naothmessages::ShortLinePercept all;
 
     for (Math::LineSegment const &seg : object.fieldLineSegments)
     {
@@ -25,7 +25,7 @@ void naoth::Serializer<ShortLinePercept>::serialize(const ShortLinePercept &obje
 
 void naoth::Serializer<ShortLinePercept>::deserialize(std::istream &stream, ShortLinePercept &object)
 {
-    naothmessages::LinePercept2018 msg;
+    naothmessages::ShortLinePercept msg;
 
     google::protobuf::io::IstreamInputStream buf(&stream);
     msg.ParseFromZeroCopyStream(&buf);
@@ -45,7 +45,7 @@ void naoth::Serializer<ShortLinePercept>::deserialize(std::istream &stream, Shor
 void naoth::Serializer<RansacLinePercept>::serialize(const RansacLinePercept &object, std::ostream &stream)
 {
 
-    naothmessages::LinePercept2018 all;
+    naothmessages::RansacLinePercept all;
 
     for (Math::LineSegment const &seg : object.fieldLineSegments)
     {
@@ -63,7 +63,7 @@ void naoth::Serializer<RansacLinePercept>::serialize(const RansacLinePercept &ob
 
 void naoth::Serializer<RansacLinePercept>::deserialize(std::istream &stream, RansacLinePercept &object)
 {
-    naothmessages::LinePercept2018 msg;
+    naothmessages::RansacLinePercept msg;
 
     google::protobuf::io::IstreamInputStream buf(&stream);
     msg.ParseFromZeroCopyStream(&buf);
