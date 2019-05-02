@@ -181,7 +181,7 @@ option search_for_ball
 	        goto search_for_ball_left;
 	      else
 	        goto search_for_ball_right;
-      } else if(state_time > 3000 && vector.abs(x=ball.preview.x, y=ball.preview.y) > @look_at_ball_when_distance)
+      } else if(@look_around && state_time > 3000 && vector.abs(x=ball.preview.x, y=ball.preview.y) > @look_at_ball_when_distance)
         goto look_around_state;
       else
         stay;
