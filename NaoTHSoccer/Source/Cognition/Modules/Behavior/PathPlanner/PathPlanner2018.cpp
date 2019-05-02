@@ -61,7 +61,7 @@ void PathPlanner2018::execute()
     }
     break;
   case PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL:
-    moveAroundBall(getPathModel().direction, getPathModel().radius);
+    moveAroundBall(getPathModel().direction, getPathModel().radius, getPathModel().stable = false);
     break;
   case PathModel::PathPlanner2018Routine::FORWARDKICK_LEFT:
     //if (farApproach())
@@ -105,7 +105,7 @@ void PathPlanner2018::execute()
   executeStepBuffer();
 }
 
-void PathPlanner2018::moveAroundBall(const double direction, const double radius)
+void PathPlanner2018::moveAroundBall(const double direction, const double radius, const bool stable)
 {
  if (stepBuffer.empty())
  {
@@ -151,7 +151,14 @@ void PathPlanner2018::moveAroundBall(const double direction, const double radius
   StepBufferElement new_step;
   new_step.setPose(pose);
   new_step.setStepType(StepType::WALKSTEP);
-  new_step.setCharacter(params.moveAroundBallCharacter);
+
+  if (stable){
+    new_step.setCharacter(params.moveAroundBallCharacterStable);
+  }
+  else{
+    new_step.setCharacter(params.moveAroundBallCharacter);
+  }
+  
   new_step.setScale(1.0);
   new_step.setCoordinate(Coordinate::Hip);
   new_step.setFoot(Foot::NONE);

@@ -16,7 +16,7 @@ option path_turn_to_attack_direction
       stay;
     }
     action {
-      path_move_around_ball(direction=attack.direction.preview, radius=210);
+      path_move_around_ball(direction=attack.direction.preview, radius=210, stable=false);
       //motion.walk.style = fast;
     }
   }
@@ -26,7 +26,7 @@ option path_turn_to_attack_direction
       stay;
     }
     action {
-      path_move_around_ball(direction=attack.direction.preview, radius=210);
+      path_move_around_ball(direction=attack.direction.preview, radius=210, stable=false);
       //motion.walk.style = fast;
     }
   }

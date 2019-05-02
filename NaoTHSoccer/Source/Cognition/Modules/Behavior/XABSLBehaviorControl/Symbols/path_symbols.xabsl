@@ -36,6 +36,7 @@ namespace path_symbols("PathPlanner Symbols") {
 
   float output path.direction;
   float output path.radius;
+  bool output path.stable;
 
   bool input path.kick_executed;
 }
