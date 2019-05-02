@@ -7,11 +7,13 @@ option go_to_ball_with_USOA
   {
     decision
     {
-      if (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400)
+      if ((obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400)  
+          || (sensor.obstacle.preview.valid && sensor.obstacle.preview.inFront))
       {
         if (vector.abs(x=ball.preview.x, y=ball.preview.y) < obstacle.ultrasound.distance)
           goto approach_carefully;
-        else if(obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance)
+        else if(obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance  
+                || (sensor.obstacle.preview.valid && sensor.obstacle.preview.right))
           goto avoid_left;
         else
           goto avoid_right;
@@ -40,11 +42,11 @@ option go_to_ball_with_USOA
     { 
       if(state_time < 1000)
         stay;
-      else if(obstacle.ultrasound.distance > 400)
+      else if(obstacle.ultrasound.distance > 400 && !(sensor.obstacle.preview.valid && sensor.obstacle.preview.inFront))
         goto go;
       else if (vector.abs(x=ball.preview.x, y=ball.preview.y) < obstacle.ultrasound.distance)
         goto approach_carefully;
-      else if(obstacle.ultrasound.right.distance < obstacle.ultrasound.left.distance)
+      else if(obstacle.ultrasound.right.distance < obstacle.ultrasound.left.distance || (sensor.obstacle.preview.valid && sensor.obstacle.preview.left)) 
         goto avoid_right;
       else
         stay;
@@ -72,11 +74,11 @@ option go_to_ball_with_USOA
     { 
       if(state_time < 1000)
         stay;
-      else if(obstacle.ultrasound.distance > 400)
+      else if(obstacle.ultrasound.distance > 400 || !(sensor.obstacle.preview.valid && sensor.obstacle.preview.inFront))
         goto go;
       else if (vector.abs(x=ball.preview.x, y=ball.preview.y) < obstacle.ultrasound.distance)
         goto approach_carefully;
-      else if(obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance)
+      else if(obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance || (sensor.obstacle.preview.valid && sensor.obstacle.preview.right))
        goto avoid_left;
       else
         stay;
@@ -100,11 +102,11 @@ option go_to_ball_with_USOA
   target state approach_carefully 
   {
     decision{
-      if (obstacle.ultrasound.distance > 400)
+      if (obstacle.ultrasound.distance > 400 && !(sensor.obstacle.preview.valid && sensor.obstacle.preview.inFront))
         goto go;
       else if (vector.abs(x=ball.preview.x, y=ball.preview.y) > obstacle.ultrasound.distance)
       {
-        if(obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance)
+        if(obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance || (sensor.obstacle.preview.valid && sensor.obstacle.preview.right))
            goto avoid_left;
         else
            goto avoid_right;
