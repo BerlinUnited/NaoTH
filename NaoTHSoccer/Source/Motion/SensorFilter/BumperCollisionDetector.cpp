@@ -71,7 +71,7 @@ void BumperCollisionDetector::execute()
       && getCollisionPercept().isLeftFootColliding)
   {
       //Left bumper collision -> evasive movement
-      getCollisionPercept().lastComputedCollisionLeft = getFrameInfo();
+      getCollisionPercept().lastComputedCollisionLeft = getFrameInfo().getTimeInSeconds();
       getCollisionPercept().collision_left_bumper = true;
 
       getCollisionPercept().isLeftFootColliding = false;
@@ -84,7 +84,7 @@ void BumperCollisionDetector::execute()
       && getCollisionPercept().isRightFootColliding)
   {
       //Right bumper collision -> evasive movement
-      getCollisionPercept().lastComputedCollisionRight = getFrameInfo();
+      getCollisionPercept().lastComputedCollisionRight = getFrameInfo().getTimeInSeconds();
       getCollisionPercept().collision_right_bumper = true;
 
       getCollisionPercept().isRightFootColliding = false;

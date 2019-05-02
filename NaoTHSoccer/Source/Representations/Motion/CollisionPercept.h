@@ -44,8 +44,8 @@ public:
   //stuff for bumper collision
   bool isLeftFootColliding;
   bool isRightFootColliding;
-  naoth::FrameInfo lastComputedCollisionLeft;
-  naoth::FrameInfo lastComputedCollisionRight;
+  double lastComputedCollisionLeft;
+  double lastComputedCollisionRight;
   bool collision_left_bumper;
   bool collision_right_bumper;
   
@@ -63,8 +63,8 @@ public:
 	}*/
     stream << "isLeftFootColliding=" << (isLeftFootColliding ? "true" : "false") << std::endl;
     stream << "isRightFootColliding=" << (isRightFootColliding ? "true" : "false") << std::endl;
-    stream << "Last computed collision Left: " << lastComputedCollisionLeft.getFrameNumber() << std::endl;
-    stream << "Last computed collision Right: " << lastComputedCollisionRight.getFrameNumber() << std::endl;
+    stream << "Last computed collision Left: " << lastComputedCollisionLeft << std::endl;
+    stream << "Last computed collision Right: " << lastComputedCollisionRight << std::endl;
   }
 };
 

@@ -23,10 +23,17 @@ initial state idle{
 state forward{
   decision
     {
-      else if(state_time > 5000 || motion.collision.collision_left_bumper ||
-              motion.collision.collision_right_bumper){
+      else if(state_time > 10000 || (motion.collision.timeSinceCollisionBumperLeft <= 1 &&
+              motion.collision.timeSinceCollisionBumperRight <= 1)){
        goto stand;
-      } else {
+      } 
+      else if(motion.collision.timeSinceCollisionBumperLeft <= 1){
+        goto avoid_right;
+      }
+      else if(motion.collision.timeSinceCollisionBumperRight <= 1){
+        goto avoid_left;
+      }
+      else {
        stay;
       }
     }
@@ -53,5 +60,57 @@ state stand{
       motion.type = stand;
     }  
   }
+
+state avoid_left
+  {
+    decision
+    { 
+      else if(state_time < 1000)
+        stay;
+      else
+        goto stand;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      
+      motion.type = walk;
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = -100;
+      motion.walk_speed.rot = (vector.abs(x=ball.preview.x, y=ball.preview.y) > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
+
+      arm.control_mode = back;
+    }
+  }
+
+
+  state avoid_right
+  {
+    decision
+    { 
+      else if(state_time < 1000)
+        stay;
+      else
+        goto stand;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      
+      motion.type = walk;
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 100;
+      motion.walk_speed.rot = (vector.abs(x=ball.preview.x, y=ball.preview.y) > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
+
+      arm.control_mode = back;
+    }
+  }
+
 
 }
