@@ -2,6 +2,7 @@
 
 #include <Representations.pb.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
+#include <Tools/DataConversion.h>
 
 void naoth::Serializer<ShortLinePercept>::serialize(const ShortLinePercept &object, std::ostream &stream)
 {
@@ -12,10 +13,9 @@ void naoth::Serializer<ShortLinePercept>::serialize(const ShortLinePercept &obje
     {
         naothmessages::LineSegment *segProto = all.add_fieldlinesegments();
 
-        segProto->mutable_base()->set_x(seg.getBase().x);
-        segProto->mutable_base()->set_y(seg.getBase().y);
-        segProto->mutable_direction()->set_x(seg.getDirection().x);
-        segProto->mutable_direction()->set_y(seg.getDirection().y);
+        DataConversion::toMessage(seg.getBase(), *(segProto->mutable_base()));
+        DataConversion::toMessage(seg.getDirection(), *(segProto->mutable_direction()));
+
         segProto->set_length(seg.getLength());
     }
 
@@ -32,9 +32,36 @@ void naoth::Serializer<ShortLinePercept>::deserialize(std::istream &stream, Shor
 
     for (int i = 0; i < msg.fieldlinesegments_size(); i++)
     {
-        Vector2d base(msg.fieldlinesegments(i).base().x(), msg.fieldlinesegments(i).base().y());
-        Vector2d direction(msg.fieldlinesegments(i).direction().x(), msg.fieldlinesegments(i).direction().y());
+        Vector2d base;
+        Vector2d direction;
+
+        DataConversion::fromMessage(msg.fieldlinesegments(i).base(), base);
+        DataConversion::fromMessage(msg.fieldlinesegments(i).direction(), direction);
 
         object.fieldLineSegments.push_back(Math::LineSegment(base, direction, msg.fieldlinesegments(i).length()));
     }
 }
+
+void naoth::Serializer<RansacCirclePercept2018>::serialize(const RansacCirclePercept2018 &object, std::ostream &stream)
+{
+
+    naothmessages::RansacCirclePercept2018 out;
+
+    out.set_wasseen(object.wasSeen);
+    DataConversion::toMessage(object.center, *(out.mutable_middlecirclecenter()));
+
+    google::protobuf::io::OstreamOutputStream buf(&stream);
+    out.SerializeToZeroCopyStream(&buf);
+}
+
+void naoth::Serializer<RansacCirclePercept2018>::deserialize(std::istream &stream, RansacCirclePercept2018 &object)
+{
+    naothmessages::RansacCirclePercept2018 msg;
+
+    google::protobuf::io::IstreamInputStream buf(&stream);
+    msg.ParseFromZeroCopyStream(&buf);
+
+    object.wasSeen = msg.wasseen();
+    DataConversion::fromMessage(msg.middlecirclecenter(), object.center);
+}
+

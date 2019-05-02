@@ -68,8 +68,6 @@ class Serializer<ShortLinePercept>
 {
   public:
   static void serialize(const ShortLinePercept& object, std::ostream& stream);
-
-  // we don't need that
   static void deserialize(std::istream& stream, ShortLinePercept& object);
 };
 }
@@ -114,6 +112,18 @@ public:
 
 
 class RansacCirclePercept2018 : public MiddleCircle{};
+
+namespace naoth
+{
+template<>
+class Serializer<RansacCirclePercept2018>
+{
+  public:
+  static void serialize(const RansacCirclePercept2018& object, std::ostream& stream);
+  static void deserialize(std::istream& stream, RansacCirclePercept2018& object);
+};
+}
+
 
 class GraphRansacCirclePercept : public MiddleCircle{};
 class GraphRansacCirclePerceptTop : public GraphRansacCirclePercept{};
