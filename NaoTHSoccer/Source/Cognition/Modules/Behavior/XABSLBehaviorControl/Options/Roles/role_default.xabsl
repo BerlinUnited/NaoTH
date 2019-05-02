@@ -4,6 +4,13 @@ option role_default
   {
     if(!body.ready_to_walk)
       goto idle;
+    else if(   !game.state.playing_is_set_by_game_controller // heard whistle
+            && !game.own_kickoff                             // opponent kickoff
+            && game.time_in_play < 10000                     // wait for ball free time
+            // if we see the ball outside the centercircle, the ball is free!
+            && ((ball.know_where_itis && (abs(value=ball.position.field.x) <= (field.centerCircleRadius+200) && abs(value=ball.position.field.y) <= (field.centerCircleRadius+200))) || !ball.know_where_itis)
+         )
+      goto wait_for_ball_free;
   }
 
   initial state idle {
@@ -17,11 +24,6 @@ option role_default
   state decide_subrole_or_passive
   {
     decision {
-      else if((!game.state.playing_is_set_by_game_controller && !game.own_kickoff && game.time_in_play < 10000)
-              // if we see the ball outside the centercircle, the ball is free!
-              //&& ((ball.know_where_itis && (abs(value=ball.position.field.x) <= field.centerCircleRadius || abs(value=ball.position.field.y) <= field.centerCircleRadius)) || !ball.know_where_itis)
-              )
-          goto wait_for_ball_free;
       else if(strategy.role_dynamic == striker)
         goto striker_subrole;
       else if(strategy.role_dynamic == goalie_supporter)
@@ -44,7 +46,13 @@ option role_default
   state wait_for_ball_free
   {
     decision {
-      else if(!(!game.state.playing_is_set_by_game_controller && !game.own_kickoff && game.time_in_play < 10000))
+      // opposite of the common decision in order to leave this state earlier
+      else if( !(!game.state.playing_is_set_by_game_controller // heard whistle
+              && !game.own_kickoff                             // opponent kickoff
+              && game.time_in_play < 10000                     // wait for ball free time
+              // if we see the ball outside the centercircle, the ball is free!
+              && ((ball.know_where_itis && (abs(value=ball.position.field.x) <= (field.centerCircleRadius+200) && abs(value=ball.position.field.y) <= (field.centerCircleRadius+200))) || !ball.know_where_itis)
+              ))
         goto decide_subrole_or_passive;
       else
         stay;
