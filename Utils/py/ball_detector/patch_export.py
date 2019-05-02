@@ -55,7 +55,25 @@ def load_labels(file):
         print('Label file does not exist. To export the patches regardless run this file with the --all option')
         sys.exit(-1)
 
-
+def unpack_y_channel(p):
+  # pixel after 2019 have 4 bytes: [padding, u, y, v] + color class 1 byte
+  if len(p) == (3+1+1)*patch_size[0]*patch_size[1]:
+      a = np.array(p[2::5]).astype(float) ## read the 2nd channel to get the y value
+      a = np.transpose(np.reshape(a, patch_size))
+  # pixel 3 bytes + color class 1 byte
+  elif len(p) == (3+1)*patch_size[0]*patch_size[1]:
+      a = np.array(p[0::4]).astype(float)
+      a = np.transpose(np.reshape(a, patch_size))
+      
+      # b = np.array(p[3::4]).astype(float)
+      # b = np.transpose(np.reshape(b, patch_size))
+  else:
+      a = np.array(p).astype(float)
+      a = np.transpose(np.reshape(a, patch_size))
+  
+  return a
+    
+    
 def export_patches(patches, camera, labels, label_names, target_path):
     # create the output directories for all labels
     export_path_top = []
@@ -77,16 +95,7 @@ def export_patches(patches, camera, labels, label_names, target_path):
 
     # export the patches
     for i in range(len(patches)):
-        p = patches[i]
-        if len(p) == 4*patch_size[0]*patch_size[1]:
-            a = np.array(p[0::4]).astype(float)
-            a = np.transpose(np.reshape(a, patch_size))
-            
-            # b = np.array(p[3::4]).astype(float)
-            # b = np.transpose(np.reshape(b, patch_size))
-        else:
-            a = np.array(p).astype(float)
-            a = np.transpose(np.reshape(a, patch_size))
+        a = unpack_y_channel(patches[i])
 
         if camera[i][0] == 0:
             file_path = os.path.join(export_path_bottom[labels[i]], str(i)+".png")
@@ -134,17 +143,8 @@ def export_patches_all(patches, camera, target_path):
 
     # export the patches
     for i in range(len(patches)):
-        p = patches[i]
-        if len(p) == 4*patch_size[0]*patch_size[1]:
-            a = np.array(p[0::4]).astype(float)
-            a = np.transpose(np.reshape(a, patch_size))
-            
-            # b = np.array(p[3::4]).astype(float)
-            # b = np.transpose(np.reshape(b, patch_size))
-        else:
-            a = np.array(p).astype(float)
-            a = np.transpose(np.reshape(a, patch_size))
-
+        a = unpack_y_channel(patches[i])
+        
         if camera[i][0] == 0:
             file_path = os.path.join(target_path, 'bottom', str(i)+".png")
         else:

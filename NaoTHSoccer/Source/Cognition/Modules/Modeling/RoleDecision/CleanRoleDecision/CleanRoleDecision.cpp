@@ -31,6 +31,12 @@ void CleanRoleDecision::execute() {
     if(!parameters.useSecondStriker) {
         getRoleDecisionModel().secondStriker = std::numeric_limits<unsigned int>::max();
     }
+
+    // set the dynamic role
+    setStrikerRole(getRoleDecisionModel().firstStriker);
+    setStrikerRole(getRoleDecisionModel().secondStriker);
+    // TODO: the dynamic role doesn't work for the goalie with this 'old' striker decision!
+    //       the dynamic striker role is set by the behavior of the 'old' decision ...
 }//end execute
 
 void CleanRoleDecision::computeStrikers()
@@ -211,4 +217,12 @@ bool CleanRoleDecision::isSecondStrikerDifferentFromFirst(unsigned int firstNumb
     Vector2d secondBall = second.pose * second.ballPosition;
     // check if the ball distance is greater than the given parameter distance
     return ((firstBall - secondBall).abs2() > parameters.firstSecondStrikerBallDistance*parameters.firstSecondStrikerBallDistance);
+}
+
+void CleanRoleDecision::setStrikerRole(unsigned int number)
+{
+    // set the new striker role
+    if(getRoleDecisionModel().roles.find(number) != getRoleDecisionModel().roles.cend()) {
+        getRoleDecisionModel().roles[number].dynamic = Roles::striker;
+    }
 }

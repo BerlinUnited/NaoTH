@@ -28,16 +28,16 @@ class TeamCommGenerator(threading.Thread):
         self.delay = delay
 
         self.receiver = TeamCommReceiver(self.cancel, self.host, self.port)
-        self.receiver.start()
-
         self.sender = TeamCommSender(self.cancel, self.host, self.port, self.delay)
-        self.sender.start()
 
 
     def __repr__(self):
         return "Values of the generated messages (for {}:{}):\n{}".format(self.host, self.port, str(self.sender.msg))
 
     def run(self):
+        self.receiver.start()
+        self.sender.start()
+
         while not self.cancel.is_set():
             # update timestamp of messages
             if self.update_timestamp.is_set():
@@ -78,11 +78,14 @@ class TeamCommGenerator(threading.Thread):
         parent, field = self.__getParent(field)
         # we got the "right" parent container
         if parent is not None:
-            value = self.convertToType(type(getattr(parent, field)),value)
-            if value is not None:
-                setattr(parent, field, value)
-            else:
-                print("*** Couldn't set value, not a primitive value type!")
+            try:
+                value = self.convertToType(type(getattr(parent, field)),value)
+                if value is not None:
+                    setattr(parent, field, value)
+                else:
+                    print("*** Couldn't set value, not a primitive value type!")
+            except Exception as e:
+                print("*** An error occured: ", e)
         else:
             print("*** Unknown message field")
 

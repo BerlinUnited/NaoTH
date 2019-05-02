@@ -25,6 +25,7 @@
 #include "Messages/TeamMessage.pb.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Modeling/PlayerInfo.h"
+#include "Representations/Infrastructure/Roles.h"
 
 using namespace naoth;
 
@@ -80,6 +81,7 @@ public:
   // opponents ?
 
   PlayerInfo::RobotState robotState; // state of the robot (initial, ready, set, play, finish, penalized)
+  Roles::Role robotRole;    // role of the robot (static & dynamic)
 
   /** Sets the data according to the protobuf message. */
   void parseFromProto(const naothmessages::BUUserTeamMessage& userData);

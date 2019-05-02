@@ -136,7 +136,7 @@ workspace "NaoTHSoccer"
       print("NOTE: set the target OS to " .. os.target())
     end
     
-    cppdialect "c++11"
+    cppdialect "c++14"
     
     warnings "Extra"
     -- Wconversion is not included in Wall and Wextra
@@ -155,6 +155,7 @@ workspace "NaoTHSoccer"
     buildoptions {"/wd4996"} -- disable warning: "...deprecated..."
     buildoptions {"/wd4290"} -- exception specification ignored (typed specifications are ignored)
     buildoptions {"/wd4800"} -- protobuf 3.4.1 forcing value to bool 'true' or 'false' (performance warning)
+    buildoptions {"/wd4503"} -- disable decorated name length exceeded warning
     links {"ws2_32"}
     
     ignoredefaultlibraries { "MSVCRT" }
@@ -171,7 +172,7 @@ workspace "NaoTHSoccer"
   filter "system:macosx"
     defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING", "EIGEN_DONT_ALIGN" }
     --buildoptions {"-std=c++11"}
-    cppdialect "c++11"
+    cppdialect "c++14"
     -- disable some warnings
     buildoptions {"-Wno-deprecated-declarations"}
     buildoptions {"-Wno-deprecated-register"}
@@ -200,7 +201,7 @@ workspace "NaoTHSoccer"
     -- (see http://www.airs.com/blog/archives/120 for some nice explanation)
     buildoptions {"-fno-strict-overflow"}
     --buildoptions {"-std=c++11"}
-    cppdialect "c++11"
+    cppdialect "c++14"
     
     --flags { "ExtraWarnings" }
     links {"pthread"}
