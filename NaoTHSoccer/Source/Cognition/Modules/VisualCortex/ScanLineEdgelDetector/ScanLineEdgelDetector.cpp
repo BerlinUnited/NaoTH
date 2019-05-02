@@ -49,8 +49,10 @@ void ScanLineEdgelDetector::execute(CameraInfo::CameraID id)
   // scan only inside the estimated field region
   //horizon_height = getFieldPerceptRaw().getValidField().points[0].y;
 
+  int scanline_count = (cameraID ==CameraInfo::Top)?theParameters.scanline_count_top:theParameters.scanline_count_bottom;
+
   // horizontal stepsize between the scanlines
-  double step = static_cast<double>(getImage().width()) / static_cast<double>(theParameters.scanline_count);
+  double step = static_cast<double>(getImage().width()) / static_cast<double>(scanline_count);
   double scanline_x = step / 2.0;
 
   // don't scan the lower lines in the image
@@ -60,7 +62,7 @@ void ScanLineEdgelDetector::execute(CameraInfo::CameraID id)
   Vector2i start((int) scanline_x, borderY);
   Vector2i end((int) scanline_x, horizon_height );
   
-  for (int i = 0; i < theParameters.scanline_count; i++)
+  for (int i = 0; i < scanline_count; i++)
   {
     ASSERT(getImage().isInside(start.x, start.y));
     // don't scan the own body
@@ -179,7 +181,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
       getCameraMatrix(),getCameraInfo(), getFieldInfo().ballRadius, 
       getCameraInfo().resolutionWidth / 2, getCameraInfo().resolutionHeight / 4*3);
 
-    t_edge = Math::clamp((int)radius, theParameters.brightness_threshold_top, theParameters.brightness_threshold_bottom);
+    t_edge = Math::clamp((int)radius, theParameters.dynamicThresholdMin, theParameters.dynamicThresholdMax);
   }
 
   Vector2i lastGreenPoint(point); // HACK
@@ -253,7 +255,8 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
       
       // new end edgel
       // found a new double edgel
-      if(begin_found && (numberOfSamples <= 3 || numberOfGreen*2 < numberOfSamples)) {
+      bool not_in_green_area = (numberOfSamples <= 3 || numberOfGreen*2 < numberOfSamples);
+      if(begin_found && (!theParameters.double_edgel_green_check || not_in_green_area)) {
         add_double_edgel(scan_id);
       }
 

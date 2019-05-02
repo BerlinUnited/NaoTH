@@ -86,13 +86,17 @@ public:
     {
       PARAMETER_REGISTER(brightness_threshold_top) = 6*2;
       PARAMETER_REGISTER(brightness_threshold_bottom) = 6*4;
-      PARAMETER_REGISTER(scanline_count) = 31;
+      PARAMETER_REGISTER(scanline_count_top) = 41;
+      PARAMETER_REGISTER(scanline_count_bottom) = 31;
       PARAMETER_REGISTER(pixel_border_y) = 3;
-      PARAMETER_REGISTER(green_sampling_points) = 3;
+      PARAMETER_REGISTER(green_sampling_points) = 3; // not used 
       PARAMETER_REGISTER(double_edgel_angle_threshold) = 0.2;
+      PARAMETER_REGISTER(double_edgel_green_check) = true;
       PARAMETER_REGISTER(minEndPointGreenDensity) = 0.3;
 
       PARAMETER_REGISTER(dynamicThreshold) = true;
+      PARAMETER_REGISTER(dynamicThresholdMin) = 12;
+      PARAMETER_REGISTER(dynamicThresholdMax) = 24;
 
       syncWithConfig();
       //DebugParameterList::getInstance().add(this);
@@ -104,13 +108,18 @@ public:
 
     int brightness_threshold_top; // threshold for detection of the jumps in the Y channel
     int brightness_threshold_bottom;
-    int scanline_count; // number of scanlines
+    int scanline_count_top; // number of scanlines
+    int scanline_count_bottom; // number of scanlines
     int pixel_border_y; // don't scan the lower lines in the image
     int green_sampling_points; // number of the random samples to determine whether a segment is green 
 
     bool dynamicThreshold;
+    int dynamicThresholdMin;
+    int dynamicThresholdMax;
 
     double double_edgel_angle_threshold;
+    bool double_edgel_green_check;
+
     double minEndPointGreenDensity;
   } theParameters;
 
