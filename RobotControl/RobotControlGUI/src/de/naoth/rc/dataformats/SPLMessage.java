@@ -243,12 +243,12 @@ public class SPLMessage
             drawings.add(new FillOval((int) globalBall.x, (int) globalBall.y, 65, 65));
 
             // add a surrounding black circle so the ball is easier to see
-            drawings.add(new Pen(1, Color.black));
+            drawings.add(new Pen(1, robotColor));
             drawings.add(new Circle((int) globalBall.x, (int) globalBall.y, 65));
             
             {
                 // show the time since the ball was last seen
-                drawings.add(new Pen(1, Color.black));
+                drawings.add(new Pen(1, robotColor));
                 double t = ballAge;
 
                 Text text = new Text(

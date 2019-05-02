@@ -56,6 +56,7 @@ Motion::Motion()
 
   theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
   theCoPProvider  = registerModule<CoPProvider>("CoPProvider", true);
+  theSensorLogger = registerModule<SensorLogger>("theSensorLogger", true);
 
   getDebugParameterList().add(&parameter);
 
@@ -205,6 +206,9 @@ void Motion::processSensorData()
   {
     THROW("Get ILLEGAL Stiffness: "<<JointData::getJointName(JointData::JointID(i))<<" = "<<getSensorJointData().stiffness[i]);
   }
+
+  // log sensor data
+  theSensorLogger->execute();
 
   // remove the offset from sensor joint data
   for( i = 0; i < JointData::numOfJoint; i++){

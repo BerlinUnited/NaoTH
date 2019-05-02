@@ -42,6 +42,7 @@ def parseArguments():
     parser.add_argument('-c', '--config', default=naothsoccer, action='store', help="The path to the agent's config.")
     parser.add_argument('-v', '--verbose', action='store_true', help="Be more verbose.")
     parser.add_argument('-t', '--test', nargs='+', action='store', help="The tests which should be executed.")
+    parser.add_argument('-l', '--list-tests', action='store_true', help="List all available tests and exits.")
 
     parser.add_argument('-ns', '--no-simspark', action='store_true', help="No simspark application is started, but there's still one required, which can be connected too.")
     parser.add_argument('-na', '--no-agent', action='store_true', help="No simspark agent application is started, but there's still one (or more) required, which can be connected too.")
@@ -53,6 +54,11 @@ if __name__ == "__main__":
     #print(args)
 
     if args.verbose: logging.basicConfig(level=logging.DEBUG)
+
+    if args.list_tests:
+        print('Available test cases:')
+        for t in Tests.functions:
+            print('\t', t)
 
     if not shutil.which(args.simspark) and not args.no_simspark:
         logging.error('Can not find simspark application!')

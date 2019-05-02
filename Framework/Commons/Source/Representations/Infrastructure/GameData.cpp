@@ -176,6 +176,26 @@ GameData::GameState GameData::gameStateFromString(const std::string& str)
   return unknown_game_state;
 }
 
+GameData::Penalty GameData::penaltyFromString(const std::string& str)
+{
+  RETURN_STING_TO_VALUE(penalty_none, str);
+  RETURN_STING_TO_VALUE(illegal_ball_contact, str);
+  RETURN_STING_TO_VALUE(player_pushing, str);
+  RETURN_STING_TO_VALUE(illegal_motion_in_set, str);
+  RETURN_STING_TO_VALUE(inactive_player, str);
+  RETURN_STING_TO_VALUE(illegal_defender, str);
+  RETURN_STING_TO_VALUE(leaving_the_field, str);
+  RETURN_STING_TO_VALUE(kick_off_goal, str);
+  RETURN_STING_TO_VALUE(request_for_pickup, str);
+  RETURN_STING_TO_VALUE(local_game_stuck, str);
+  RETURN_STING_TO_VALUE(illegal_positioning, str);
+  RETURN_STING_TO_VALUE(substitute, str);
+  RETURN_STING_TO_VALUE(manual, str);
+
+  ASSERT(false);
+  return manual;
+}
+
 void GameData::parseFrom(const spl::RoboCupGameControlData& data, int teamNumber)
 {
   playersPerTeam    = data.playersPerTeam;

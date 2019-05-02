@@ -1,7 +1,7 @@
 /***
   Title: NaoTH Soccer
-  Platform: Aldebaran Nao V4-5
-  Software-Environment: NaoTH 2018
+  Platform: Aldebaran Nao V4-6
+  Software-Environment: NaoTH 2019
 */
 
 // Symbols
@@ -48,8 +48,13 @@ include "Options/Skills/go_to_ball_with_left_foot.xabsl";
 
 include "Options/Soccer/Strategy/FreeKick/free_kick_opp.xabsl";
 include "Options/Soccer/Strategy/FreeKick/free_kick_opp_goal.xabsl";
+include "Options/Soccer/Strategy/FreeKick/free_kick_opp_corner.xabsl";
+include "Options/Soccer/Strategy/FreeKick/free_kick_opp_in.xabsl";
 include "Options/Soccer/Strategy/FreeKick/free_kick_own.xabsl";
 include "Options/Soccer/Strategy/FreeKick/free_kick_own_goal.xabsl";
+include "Options/Soccer/Strategy/FreeKick/free_kick_own_corner.xabsl";
+include "Options/Soccer/Strategy/FreeKick/free_kick_own_in.xabsl";
+include "Options/Soccer/Strategy/FreeKick/free_kick_simple.xabsl";
 include "Options/Soccer/Strategy/FreeKick/avoid_region_go_own_goal.xabsl";
 
 //
@@ -64,7 +69,7 @@ include "Options/Skills/USOA/go_to_ball_with_USOA.xabsl";
 include "Options/Skills/USOA/go_to_point_with_USOA.xabsl";
 //
 include "Options/Skills/search_ball_back_rot.xabsl";
-include "Options/Skills/search_ball_simple.xabsl";
+include "Options/Skills/search_ball_turning.xabsl";
 include "Options/Skills/search_ball.xabsl";
 
 // Debug
@@ -151,8 +156,6 @@ include "Options/Remote/spl_remote_secondary_actions.xabsl";
 // Test agents Head Control
 
 include "Options/Test/agent/search_test_agent.xabsl";
-include "Options/Test/agent/search_ball_back_rot_test_agent.xabsl";
-include "Options/Test/agent/simple_search_ball_test_agent.xabsl";
 include "Options/Test/agent/only_ball_looking_agent.xabsl";
 include "Options/Test/agent/only_goal_looking_agent.xabsl";
 include "Options/Test/agent/searching_for_ball_and_look_around_agent.xabsl";
@@ -200,7 +203,8 @@ include "Options/Test/path_move_around_ball_test.xabsl";
 
 
 // Test agents Team behavior
-include "Options/Test/team/team_go_to_ball_agent.xabsl";
+
+include "Options/Test/team/team_go_to_ball_agent.xabsl";
 
 
 // Test Options PathPlanner
@@ -224,9 +228,8 @@ include "Options/Test/agent/head_test_agent.xabsl";
 include "Options/Test/head/head_control_test.xabsl";
 include "Options/Test/agent/cammatrix_test_agent.xabsl";
 include "Options/Test/head/cammatrix_test.xabsl";
-include "Options/Test/head/search_ball_test.xabsl";
-include "Options/Test/head/search_ball_back_rot_test.xabsl";
-include "Options/Test/head/simple_search_ball_test.xabsl";
+include "Options/Test/strategy/search_ball_test.xabsl";
+
 // Test options Arms
 include "Options/Test/arm_back_test.xabsl";
 // Test options Kicks
@@ -266,6 +269,32 @@ include "Options/Test/walk/walk_forward.xabsl";
 include "Options/Test/strategy/role_change_test.xabsl";
 include "Options/Test/strategy/role_change_goalie_test.xabsl";
 
+include "Options/Roles/role_goalie.xabsl";
+include "Options/Roles/role_default.xabsl";
+include "Options/Roles/role_unknown.xabsl";
+//include "Options/Roles/role_defender_left.xabsl";
+//include "Options/Roles/role_defender_center.xabsl";
+//include "Options/Roles/role_defender_right.xabsl";
+//include "Options/Roles/role_midfielder_left.xabsl";
+//include "Options/Roles/role_midfielder_center.xabsl";
+//include "Options/Roles/role_midfielder_right.xabsl";
+//include "Options/Roles/role_forward_left.xabsl";
+//include "Options/Roles/role_forward_center.xabsl";
+//include "Options/Roles/role_forward_right.xabsl";
+
+include "Options/Roles/freekick/role_avoid_region_go_own_goal.xabsl";
+include "Options/Roles/freekick/role_free_kick_simple.xabsl";
+include "Options/Roles/freekick/role_free_kick_opp.xabsl";
+include "Options/Roles/freekick/role_free_kick_opp_goal.xabsl";
+include "Options/Roles/freekick/role_free_kick_own.xabsl";
+include "Options/Roles/freekick/role_free_kick_own_goal.xabsl";
+
+include "Options/Roles/roles_go_to_ready_position.xabsl";
+include "Options/Roles/roles_go_to_passive_position.xabsl";
+include "Options/Roles/roles_decide_role.xabsl";
+include "Options/Roles/roles_play_soccer.xabsl";
+include "Options/Roles/roles_agent.xabsl";
+
 include "Options/Test/change_state_input_test.xabsl";
  // Useless?
 
@@ -290,6 +319,7 @@ agent role_striker("Action Selection Striker", striker_agent);
 
 agent role_passive_behavior_test_agent("passive_behavior_test_agent",passive_behavior_test_agent);
 agent role_change_test ("role_change_test_agent",role_change_test_agent);
+agent role_spl_soccer("Role SPL Soccer", roles_agent);
 
 /** The Test agents */
 // Test agents Kicks
@@ -338,8 +368,6 @@ agent search_test_agent("search_test_agent",search_test_agent);
 agent search_only_looking_for_ball("only_looking_for_ball",only_ball_looking);
 agent searching_for_ball_and_look_around("searching_for_ball_and_look_around",searching_for_ball_and_look_around);
 agent search_only_looking_for_goal("only_looking_for_goal",only_goal_looking);
-agent search_ball_back_rot_test_agent("search_ball_back_rot_test_agent",search_ball_back_rot_test_agent);
-agent search_simple_search_ball_test ("simple_search_ball_test_agent",simple_search_ball_test_agent);
 
 agent change_state_input_test_agent ("change_state_input_test_agent",change_state_input_test_agent);
 

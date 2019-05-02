@@ -87,9 +87,6 @@
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiveEmulator.h"
 #include "Modules/Modeling/TeamMessageStatistics/TeamMessageStatisticsModule.h"
 #include "Modules/Modeling/TeamMessageStatistics/TeamMessagePlayersStateModule.h"
-#include "Modules/Modeling/RoleDecision/SimpleRoleDecision/SimpleRoleDecision.h"
-#include "Modules/Modeling/RoleDecision/StableRoleDecision/StableRoleDecision.h"
-#include "Modules/Modeling/RoleDecision/CleanRoleDecision/CleanRoleDecision.h"
 #include "Modules/Modeling/SoccerStrategyProvider/SoccerStrategyProvider.h"
 #include "Modules/Modeling/PotentialFieldProvider/PotentialFieldProvider.h"
 #include "Modules/Modeling/SelfLocator/GPS_SelfLocator/GPS_SelfLocator.h"
@@ -97,6 +94,22 @@
 #include "Modules/Modeling/SelfLocator/OdometrySelfLocator/OdometrySelfLocator.h"
 #include "Modules/Modeling/GoalModel/DummyActiveGoalLocator/DummyActiveGoalLocator.h"
 #include "Modules/Modeling/GoalModel/WholeGoalLocator/WholeGoalLocator.h"
+
+// role decisions
+#include "Modules/Modeling/RoleDecision/RolesProvider.h"
+#include "Modules/Modeling/RoleDecision/RoleDecisionDynamic.h"
+
+#include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionStatic.h"
+#include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionForce.h"
+#include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionPotentialField.h"
+#include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionFormation.h"
+#include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionDynamicGoalie.h"
+#include "Modules/Modeling/RoleDecision/Assignment/RoleDecisionAssignmentStatic.h"
+#include "Modules/Modeling/RoleDecision/Assignment/RoleDecisionAssignmentDistance.h"
+
+#include "Modules/Modeling/RoleDecision/SimpleRoleDecision/SimpleRoleDecision.h"
+#include "Modules/Modeling/RoleDecision/StableRoleDecision/StableRoleDecision.h"
+#include "Modules/Modeling/RoleDecision/CleanRoleDecision/CleanRoleDecision.h"
 
 #include "Modules/Modeling/BallLocator/TeamBallLocator/TeamBallLocatorMedian.h"
 #include "Modules/Modeling/BallLocator/TeamBallLocator/TeamBallLocatorCanopyCluster.h"
@@ -225,9 +238,30 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(TeamBallLocatorMedian);
   REGISTER_MODULE(TeamBallLocatorCanopyCluster);
+
+  /*
+   * BEGIN ROLE DECISIONS
+   */
+  REGISTER_MODULE(RolesProvider);
+  // first set the position of the roles
+  REGISTER_MODULE(RoleDecisionPositionStatic);
+  REGISTER_MODULE(RoleDecisionPositionForce);
+  REGISTER_MODULE(RoleDecisionPositionPotentialField);
+  REGISTER_MODULE(RoleDecisionPositionFormation);
+  REGISTER_MODULE(RoleDecisionPositionDynamicGoalie);
+  // then decide which player should have which role
+  REGISTER_MODULE(RoleDecisionAssignmentStatic);
+  REGISTER_MODULE(RoleDecisionAssignmentDistance);
+  // finally, determine the dynamic role (striker, supporter, ...)
+  REGISTER_MODULE(RoleDecisionDynamic);
+
+  // old striker decisions
   REGISTER_MODULE(SimpleRoleDecision);
   REGISTER_MODULE(StableRoleDecision);
   REGISTER_MODULE(CleanRoleDecision);
+  /*
+   * END ROLE DECISIONS
+   */
 
   REGISTER_MODULE(KickDirectionSimulator);
   REGISTER_MODULE(Simulation);

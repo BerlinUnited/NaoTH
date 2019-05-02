@@ -28,7 +28,7 @@ void SimpleRoleDecision::execute() {
 }//end execute
 
 void SimpleRoleDecision::computeStrikers() {
-
+  getRoleDecisionModel().resetStriker();
   TeamMessage const& tm = getTeamMessage();
 
   // initialize with max-values. Every Robot must start with same values!
@@ -45,6 +45,10 @@ void SimpleRoleDecision::computeStrikers() {
         messageData.custom.wasStriker // the guy wants to be striker...
         ) {
       getRoleDecisionModel().firstStriker = number; // let him go :)      
+      // set the new striker role
+      if(getRoleDecisionModel().roles.find(number) != getRoleDecisionModel().roles.cend()) {
+          getRoleDecisionModel().roles[number].dynamic = Roles::striker;
+      }
       PLOT(std::string("SimpleRoleDecision:StrikerDecision"), 0);
       return;
     }
@@ -87,5 +91,9 @@ void SimpleRoleDecision::computeStrikers() {
 
   getRoleDecisionModel().firstStriker = playerNearestToBall; 
   getRoleDecisionModel().wantsToBeStriker = true;
+  // set the new striker role
+  if(getRoleDecisionModel().roles.find(playerNearestToBall) != getRoleDecisionModel().roles.cend()) {
+      getRoleDecisionModel().roles[playerNearestToBall].dynamic = Roles::striker;
+  }
   PLOT(std::string("SimpleRoleDecision:StrikerDecision"), getRoleDecisionModel().wantsToBeStriker);
 }
