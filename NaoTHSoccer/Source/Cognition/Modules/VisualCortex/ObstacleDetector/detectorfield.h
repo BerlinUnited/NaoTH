@@ -135,7 +135,8 @@ public:
       //Vector3d cameraMatrixOffset = Vector3d(getCameraMatrix().translation.x, getCameraMatrix().translation.y, 0);
       bool projectionSuccess = CameraGeometry::relativePointToImage(
             cameraMatrix, cameraInfo,
-            RotationMatrix::getRotationZ(cameraMatrix.rotation.getZAngle()) * Vector3d(fieldPoint.x, fieldPoint.y, 0),
+            //RotationMatrix::getRotationZ(cameraMatrix.rotation.getZAngle()) * Vector3d(fieldPoint.x, fieldPoint.y, 0),
+            Vector3d(fieldPoint.x, fieldPoint.y, 0),
             pointInImage);
       if(!projectionSuccess) {
         return false;
