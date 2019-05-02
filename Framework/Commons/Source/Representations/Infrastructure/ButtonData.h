@@ -9,6 +9,7 @@
 #define _BUTTONDATA_H
 
 #include "Tools/DataStructures/Printable.h"
+#include "Tools/DataStructures/Serializer.h"
 
 namespace naoth
 {
@@ -16,7 +17,6 @@ namespace naoth
   {
   public:
     ButtonData();
-    virtual ~ButtonData();
 
     enum ButtonID
     {
@@ -26,7 +26,6 @@ namespace naoth
       RightFootLeft,
       RightFootRight,
 
-      // touch sensors (only in academics)
       HeadFront,
       HeadMiddle,
       HeadRear,
@@ -54,7 +53,16 @@ namespace naoth
 
     virtual void print(std::ostream& stream) const;
   };
-}
+
+  template<>
+  class Serializer<ButtonData>
+  {
+    public:
+    static void serialize(const ButtonData& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, ButtonData& representation);
+  };
+
+} // namespace naoth
 
 #endif  /* _BUTTONDATA_H */
 

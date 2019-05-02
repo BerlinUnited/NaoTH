@@ -40,6 +40,8 @@ void SensorLogger::execute()
     LOGSTUFF(GyrometerData);
     LOGSTUFF(InertialSensorData);
 
+    LOGSTUFF(ButtonData);
+
     //
     LOGSTUFF(MotorJointData);
     LOGSTUFF(MotionStatus);
