@@ -12,6 +12,8 @@ NoGreenObstacleDetector::~NoGreenObstacleDetector() {
 
 void NoGreenObstacleDetector::execute()
 {
+  getNoGreenObstacle().valid = false;
+
   // create detector points on field
   // (x) x3 --- x4
   //       |   |
@@ -75,12 +77,25 @@ void NoGreenObstacleDetector::execute()
     return;
   }
 
+  getNoGreenObstacle().no_green_density = (double) detectorImage.green(getBallDetectorIntegralImage()) / detectorImage.pixels();
+  getNoGreenObstacle().no_green_density_left = (double) detectorImage.greenLeft(getBallDetectorIntegralImage()) / (detectorImage.pixels()/2);
+  getNoGreenObstacle().no_green_density_right = (double) detectorImage.greenRight(getBallDetectorIntegralImage()) / (detectorImage.pixels()/2);
+  getNoGreenObstacle().valid = true;
+
   DEBUG_REQUEST("Vision:NoGreenObstacleDetector:draw_detector_field",
     FIELD_DRAWING_CONTEXT;
     PEN("FF69B4", 5);
 
     std::ostringstream stringStream;
-    stringStream << (double) detectorImage.green(getBallDetectorIntegralImage()) / detectorImage.pixels() * 100 << '%';
+    stringStream << getNoGreenObstacle().no_green_density * 100 << '%';
+    TEXT_DRAWING(1000, 0, stringStream.str());
+    stringStream.str("");
+
+    stringStream << getNoGreenObstacle().no_green_density_left * 100 << '%';
+    TEXT_DRAWING(1000, -1000, stringStream.str());
+    stringStream.str("");
+
+    stringStream << getNoGreenObstacle().no_green_density_right * 100 << '%';
     TEXT_DRAWING(1000, 1000, stringStream.str());
   );
 }

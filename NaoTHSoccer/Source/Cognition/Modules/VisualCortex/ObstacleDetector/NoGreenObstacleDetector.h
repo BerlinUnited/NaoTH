@@ -16,6 +16,7 @@
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/MultiChannelIntegralImage.h"
+#include "Representations/Perception/NoGreenObstacle.h"
 
 // Tools
 #include "Tools/CameraGeometry.h"
@@ -27,6 +28,8 @@ BEGIN_DECLARE_MODULE(NoGreenObstacleDetector)
   REQUIRE(CameraMatrixTop)
   REQUIRE(BallDetectorIntegralImage)
   REQUIRE(BallDetectorIntegralImageTop)
+
+  PROVIDE(NoGreenObstacle)
 
   PROVIDE(DebugRequest)
   PROVIDE(DebugModify)
@@ -153,6 +156,20 @@ private:
       int factor = integralImage.FACTOR;
       // HACK: not correct because of integer division
       return integralImage.getSumForRect(minX()/factor, minY()/factor, maxX()/factor, maxY()/factor, 1) * (factor * factor);
+    }
+
+    int greenLeft(const BallDetectorIntegralImage& integralImage) {
+      int factor = integralImage.FACTOR;
+      int halfY = (maxY() - minY()) / 2;
+      // HACK: not correct because of integer division
+      return integralImage.getSumForRect(minX()/factor, minY()/factor, maxX()/factor, (maxY()-halfY)/factor, 1) * (factor * factor);
+    }
+
+    int greenRight(const BallDetectorIntegralImage& integralImage) {
+      int factor = integralImage.FACTOR;
+      int halfY = (maxY() - minY()) / 2;
+      // HACK: not correct because of integer division
+      return integralImage.getSumForRect(minX()/factor, (minY()+halfY)/factor, maxX()/factor, maxY()/factor, 1) * (factor * factor);
     }
 
     std::vector<Vector2i> edges;
