@@ -91,6 +91,11 @@ void GameLogger::execute()
       
       LOGSTUFF(ScanLineEdgelPercept);
       LOGSTUFF(ScanLineEdgelPerceptTop);
+      LOGSTUFF(ShortLinePercept);
+      LOGSTUFF(RansacLinePercept);
+      LOGSTUFF(RansacCirclePercept2018);
+      
+      
       
       if(params.logBallCandidates) {
         LOGSTUFF(BallCandidates);
