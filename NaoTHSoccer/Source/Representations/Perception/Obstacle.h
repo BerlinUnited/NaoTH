@@ -13,4 +13,6 @@ public:
   bool onTheLeft;
 };
 
+class VisionObstaclePreview : public VisionObstacle {};
+
 #endif // OBSTACLE_H

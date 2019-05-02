@@ -44,6 +44,36 @@ void NoGreenObstacleDetector::create_detector_on_field(DetectorField& detectorFi
   detectorField.edges = {x1, x2, x3, x4};
 }
 
+bool NoGreenObstacleDetector::projectDetector(DetectorField& detectorField, DetectorImage& detectorImage) {
+  if(!detectorField.projectOnImage(detectorImage, getCameraMatrix(), getCameraInfo())) {
+    return false;
+  }
+
+  int expectedArea = detectorImage.area();
+
+  // limit detectorImage to be inside image bounds
+  bool limitSuccess = detectorImage.limit((int) getCameraInfo().resolutionWidth-1, (int) getCameraInfo().resolutionHeight-1, 0, 0);
+  if(!limitSuccess) {
+    return false;
+  }
+  // check if detectorImage is still big enough
+  int detectorArea = detectorImage.area();
+  bool bigEnough = (double) detectorArea / expectedArea >= params.min_expected_area;
+
+  DEBUG_REQUEST("Vision:NoGreenObstacleDetector:draw_detector_field",
+    IMAGE_DRAWING_CONTEXT;
+    if (bigEnough) {
+      PEN("FF69B4", 5);
+    } else {
+      PEN("FF4D4D", 5);
+    }
+    BOX(detectorImage.minX(), detectorImage.minY(), detectorImage.maxX(), detectorImage.maxY());
+  );
+
+  return bigEnough;
+}
+
+
 void NoGreenObstacleDetector::execute()
 {
   getVisionObstacle().valid = false;
@@ -60,65 +90,72 @@ void NoGreenObstacleDetector::execute()
 
   // project detector field onto image
   DetectorImage detectorImage;
-  if(!detectorField.projectOnImage(detectorImage, getCameraMatrix(), getCameraInfo())) {
-    return;
-  }
+  bool succes = projectDetector(detectorField, detectorImage);
+  if(succes) {
+    // calculate green density
+    double green_density = (double) detectorImage.green(getBallDetectorIntegralImage()) / detectorImage.pixels();
+    double green_density_left = (double) detectorImage.greenLeft(getBallDetectorIntegralImage()) / (detectorImage.pixels()/2);
+    double green_density_right = (double) detectorImage.greenRight(getBallDetectorIntegralImage()) / (detectorImage.pixels()/2);
 
-  int expectedArea = detectorImage.area();
-
-  // limit detectorImage to be inside image bounds
-  bool limitSuccess = detectorImage.limit((int) getCameraInfo().resolutionWidth-1, (int) getCameraInfo().resolutionHeight-1, 0, 0);
-  if(!limitSuccess) {
-    return;
-  }
-  // check if detectorImage is still big enough
-  int detectorArea = detectorImage.area();
-  bool bigEnough = (double) detectorArea / expectedArea >= params.min_expected_area;
-
-  DEBUG_REQUEST("Vision:NoGreenObstacleDetector:draw_detector_field",
-    IMAGE_DRAWING_CONTEXT;
-    if (bigEnough) {
+    DEBUG_REQUEST("Vision:NoGreenObstacleDetector:draw_detector_field",
+      FIELD_DRAWING_CONTEXT;
       PEN("FF69B4", 5);
-    } else {
-      PEN("FF4D4D", 5);
-    }
-    BOX(detectorImage.minX(), detectorImage.minY(), detectorImage.maxX(), detectorImage.maxY());
-  );
 
-  if (!bigEnough) {
-    return;
+      std::ostringstream stringStream;
+      stringStream << green_density * 100 << '%';
+      TEXT_DRAWING(1000, 0, stringStream.str());
+      stringStream.str("");
+
+      stringStream << green_density_left * 100 << '%';
+      TEXT_DRAWING(1000, -1000, stringStream.str());
+      stringStream.str("");
+
+      stringStream << green_density_right * 100 << '%';
+      TEXT_DRAWING(1000, 1000, stringStream.str());
+    );
+
+    // set representation if detector is occupied
+    getVisionObstacle().valid = true;
+    getVisionObstacle().inFront = green_density <= params.max_green_density;
+    if (getVisionObstacle().inFront) {
+      getVisionObstacle().onTheRight = green_density_right <= green_density_left;
+      getVisionObstacle().onTheLeft = green_density_right > green_density_left;
+    } else {
+      getVisionObstacle().onTheRight = false;
+      getVisionObstacle().onTheLeft = false;
+    }
   }
 
-  // calculate green density
-  double green_density = (double) detectorImage.green(getBallDetectorIntegralImage()) / detectorImage.pixels();
-  double green_density_left = (double) detectorImage.greenLeft(getBallDetectorIntegralImage()) / (detectorImage.pixels()/2);
-  double green_density_right = (double) detectorImage.greenRight(getBallDetectorIntegralImage()) / (detectorImage.pixels()/2);
+  // preview
+  DetectorField previewDetectorField;
+  detectorField.createPreview(previewDetectorField, getMotionStatus());
 
   DEBUG_REQUEST("Vision:NoGreenObstacleDetector:draw_detector_field",
     FIELD_DRAWING_CONTEXT;
-    PEN("FF69B4", 5);
-
-    std::ostringstream stringStream;
-    stringStream << green_density * 100 << '%';
-    TEXT_DRAWING(1000, 0, stringStream.str());
-    stringStream.str("");
-
-    stringStream << green_density_left * 100 << '%';
-    TEXT_DRAWING(1000, -1000, stringStream.str());
-    stringStream.str("");
-
-    stringStream << green_density_right * 100 << '%';
-    TEXT_DRAWING(1000, 1000, stringStream.str());
+    PEN("0080FF", 5);
+    LINE(previewDetectorField.edges[0].x, previewDetectorField.edges[0].y, previewDetectorField.edges[1].x, previewDetectorField.edges[1].y);
+    LINE(previewDetectorField.edges[1].x, previewDetectorField.edges[1].y, previewDetectorField.edges[3].x, previewDetectorField.edges[3].y);
+    LINE(previewDetectorField.edges[2].x, previewDetectorField.edges[2].y, previewDetectorField.edges[3].x, previewDetectorField.edges[3].y);
+    LINE(previewDetectorField.edges[0].x, previewDetectorField.edges[0].y, previewDetectorField.edges[2].x, previewDetectorField.edges[2].y);
   );
 
-  // set representation if detector is occupied
-  getVisionObstacle().valid = true;
-  getVisionObstacle().inFront = green_density <= params.max_green_density;
-  if (getVisionObstacle().inFront) {
-    getVisionObstacle().onTheRight = green_density_right <= green_density_left;
-    getVisionObstacle().onTheLeft = green_density_right > green_density_left;
-  } else {
-    getVisionObstacle().onTheRight = false;
-    getVisionObstacle().onTheLeft = false;
+  DetectorImage previewDetectorImage;
+  succes = projectDetector(previewDetectorField, previewDetectorImage);
+  if(succes) {
+    // calculate green density
+    double green_density = (double) detectorImage.green(getBallDetectorIntegralImage()) / detectorImage.pixels();
+    double green_density_left = (double) detectorImage.greenLeft(getBallDetectorIntegralImage()) / (detectorImage.pixels()/2);
+    double green_density_right = (double) detectorImage.greenRight(getBallDetectorIntegralImage()) / (detectorImage.pixels()/2);
+
+    // set representation if detector is occupied
+    getVisionObstaclePreview().valid = true;
+    getVisionObstaclePreview().inFront = green_density <= params.max_green_density;
+    if (getVisionObstaclePreview().inFront) {
+      getVisionObstaclePreview().onTheRight = green_density_right <= green_density_left;
+      getVisionObstaclePreview().onTheLeft = green_density_right > green_density_left;
+    } else {
+      getVisionObstaclePreview().onTheRight = false;
+      getVisionObstaclePreview().onTheLeft = false;
+    }
   }
 }

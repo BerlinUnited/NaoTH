@@ -4,6 +4,7 @@
 #include "Representations/Perception/MultiChannelIntegralImage.h"
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Perception/CameraMatrix.h"
+#include "Representations/Motion/MotionStatus.h"
 
 #include "Tools/CameraGeometry.h"
 
@@ -146,6 +147,12 @@ public:
     return true;
   }
 
+  void createPreview(DetectorField& detectorField, const MotionStatus& motionStatus) {
+    for(size_t i=0; i<4; i++) {
+      detectorField.edges[i] = motionStatus.plannedMotion.hip * edges[i];
+    }
+  }
+
   double minX() {
     return edges[0].x;
   }
@@ -161,7 +168,6 @@ public:
   double maxY() {
     return edges[3].y;
   }
-
 };
 
 #endif // DETECTORFIELD_H

@@ -17,6 +17,7 @@
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/MultiChannelIntegralImage.h"
 #include "Representations/Perception/Obstacle.h"
+#include "Representations/Motion/MotionStatus.h"
 
 // Tools
 #include "detectorfield.h"
@@ -29,8 +30,10 @@ BEGIN_DECLARE_MODULE(NoGreenObstacleDetector)
   REQUIRE(CameraMatrixTop)
   REQUIRE(BallDetectorIntegralImage)
   REQUIRE(BallDetectorIntegralImageTop)
+  REQUIRE(MotionStatus)
 
   PROVIDE(VisionObstacle)
+  PROVIDE(VisionObstaclePreview)
 
   PROVIDE(DebugRequest)
   PROVIDE(DebugModify)
@@ -56,6 +59,8 @@ public:
 
   void create_detector_on_field(DetectorField& detectorField, double xOffset);
   bool detector_parameters_changed();
+
+  bool projectDetector(DetectorField& detectorField, DetectorImage& detectorImage);
 
 private:
   class Parameters: public ParameterList
