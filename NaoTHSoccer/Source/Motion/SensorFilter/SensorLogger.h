@@ -14,6 +14,7 @@
 #include <Representations/Infrastructure/FSRData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
+#include <Representations/Infrastructure/ButtonData.h>
 
 //
 #include "Representations/Motion/MotionStatus.h"
@@ -33,6 +34,8 @@ BEGIN_DECLARE_MODULE(SensorLogger)
   REQUIRE(AccelerometerData)
   REQUIRE(GyrometerData)
   REQUIRE(InertialSensorData)
+
+  REQUIRE(ButtonData)
 
   //
   REQUIRE(MotorJointData)

@@ -44,6 +44,7 @@
 #include <Representations/Infrastructure/FSRData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
+#include <Representations/Infrastructure/ButtonData.h>
 #include <Representations/Infrastructure/DebugMessage.h>
 #include <Representations/Modeling/IMUData.h>
 #include "Representations/Modeling/GroundContactModel.h"
@@ -105,6 +106,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(FSRData)
   PROVIDE(AccelerometerData)
   PROVIDE(GyrometerData)
+  PROVIDE(ButtonData)
 
   PROVIDE(DebugMessageInMotion)
   PROVIDE(DebugMessageOut)
