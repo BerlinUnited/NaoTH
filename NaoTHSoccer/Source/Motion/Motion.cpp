@@ -53,6 +53,7 @@ Motion::Motion()
 
   theArmCollisionDetector = registerModule<ArmCollisionDetector>("ArmCollisionDetector", false);
   theArmCollisionDetector2018 = registerModule<ArmCollisionDetector2018>("ArmCollisionDetector2018", true);
+  theBumperCollisionDetector = registerModule<BumperCollisionDetector>("BumperCollisionDetector", true);
 
   theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
   theCoPProvider  = registerModule<CoPProvider>("CoPProvider", true);
@@ -253,6 +254,8 @@ void Motion::processSensorData()
 
   //theArmCollisionDetector->execute();
   theArmCollisionDetector2018->execute();
+
+  theBumperCollisionDetector->execute();
 
 
   // NOTE: highly experimental

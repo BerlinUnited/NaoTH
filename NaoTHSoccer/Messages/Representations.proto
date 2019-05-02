@@ -357,6 +357,8 @@ message GroundContactModel {
 message CollisionPercept {
   required uint32 timeCollisionArmLeft = 1;
   required uint32 timeCollisionArmRight = 2;
+  required bool isCollisionLeftBumper = 3;
+  required bool isCollisionRightBumper = 4;
 }
 
 message IMUData
