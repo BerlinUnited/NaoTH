@@ -89,7 +89,7 @@ void Serializer<ButtonData>::deserialize(std::istream& stream, ButtonData& repre
   ASSERT(ButtonData::numOfButtons == msg.numofframespressed_size());
   ASSERT(ButtonData::numOfButtons == msg.eventcounter_size());
 
-  for(size_t i=0; i < ButtonData::numOfButtons; i++) {
+  for(int i=0; i < ButtonData::numOfButtons; i++) {
     representation.isPressed[i] = msg.ispressed(i);
     representation.numOfFramesPressed[i] = msg.numofframespressed(i);
     representation.eventCounter[i] = msg.eventcounter(i);

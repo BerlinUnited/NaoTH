@@ -4,6 +4,13 @@ option role_default
   {
     if(!body.ready_to_walk)
       goto idle;
+    else if(   !game.state.playing_is_set_by_game_controller // heard whistle
+            && !game.own_kickoff                             // opponent kickoff
+            && game.time_in_play < 10000                     // wait for ball free time
+            // if we see the ball outside the centercircle, the ball is free!
+            && ((ball.know_where_itis && (abs(value=ball.position.field.x) <= (field.centerCircleRadius+200) && abs(value=ball.position.field.y) <= (field.centerCircleRadius+200))) || !ball.know_where_itis)
+         )
+      goto wait_for_ball_free;
   }
 
   initial state idle {
@@ -33,6 +40,26 @@ option role_default
     action {
       strategy.role_dynamic_last = none;
       roles_go_to_passive_position();
+    }
+  }
+
+  state wait_for_ball_free
+  {
+    decision {
+      // opposite of the common decision in order to leave this state earlier
+      else if( !(!game.state.playing_is_set_by_game_controller // heard whistle
+              && !game.own_kickoff                             // opponent kickoff
+              && game.time_in_play < 10000                     // wait for ball free time
+              // if we see the ball outside the centercircle, the ball is free!
+              && ((ball.know_where_itis && (abs(value=ball.position.field.x) <= (field.centerCircleRadius+200) && abs(value=ball.position.field.y) <= (field.centerCircleRadius+200))) || !ball.know_where_itis)
+              ))
+        goto decide_subrole_or_passive;
+      else
+        stay;
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
     }
   }
 

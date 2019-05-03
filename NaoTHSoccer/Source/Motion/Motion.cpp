@@ -210,7 +210,9 @@ void Motion::processSensorData()
   }
 
   // log sensor data
-  theSensorLogger->execute();
+  if(parameter.recordSensorData) {
+    theSensorLogger->execute();
+  }
 
   // remove the offset from sensor joint data
   for( i = 0; i < JointData::numOfJoint; i++){
