@@ -7,7 +7,7 @@ SensorLogger::SensorLogger()
   : 
   logfileManager(true)
 {
-  logfileManager.openFile("/tmp/sensor.log");
+  logfileManager.openFile("/shm/sensor.log");
   getDebugParameterList().add(&params);
 }
 
