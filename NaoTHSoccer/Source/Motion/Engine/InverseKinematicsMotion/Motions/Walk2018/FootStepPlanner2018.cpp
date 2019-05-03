@@ -16,6 +16,9 @@ FootStepPlanner2018::FootStepPlanner2018() :
   theMaxChangeTurn(0.0),
   theMaxChangeX(0.0),
   theMaxChangeY(0.0),
+  theMaxChangeDownTurn(0.0),
+  theMaxChangeDownX(0.0),
+  theMaxChangeDownY(0.0),
   emergencyCounter(0)
 {}
 
@@ -25,6 +28,10 @@ void FootStepPlanner2018::updateParameters() {
   theMaxChangeTurn = parameters.limits.maxStepTurn   * parameters.limits.maxStepChange;
   theMaxChangeX    = parameters.limits.maxStepLength * parameters.limits.maxStepChange;
   theMaxChangeY    = parameters.limits.maxStepWidth  * parameters.limits.maxStepChange;
+
+  theMaxChangeDownTurn = parameters.limits.maxStepTurn   * parameters.limits.maxStepChangeDown;
+  theMaxChangeDownX    = parameters.limits.maxStepLength * parameters.limits.maxStepChangeDown;
+  theMaxChangeDownY    = parameters.limits.maxStepWidth  * parameters.limits.maxStepChangeDown;
 }
 
 void FootStepPlanner2018::init(size_t initial_number_of_cycles, FeetPose initialFeetPose)
@@ -436,13 +443,10 @@ void FootStepPlanner2018::restrictStepChange(Pose2D& step, const Pose2D& lastSte
   Pose2D change;
   change.translation = step.translation - lastStep.translation;
   change.rotation = Math::normalize(step.rotation - lastStep.rotation);
-  double maxX = theMaxChangeX;
-  double maxY = theMaxChangeY;
-  double maxT = theMaxChangeTurn;
 
-  change.translation.x = Math::clamp(change.translation.x, -maxX, maxX);
-  change.translation.y = Math::clamp(change.translation.y, -maxY, maxY);
-  change.rotation = Math::clamp(change.rotation, -maxT, maxT);
+  change.translation.x = Math::clamp(change.translation.x, -theMaxChangeDownX, theMaxChangeX);
+  change.translation.y = Math::clamp(change.translation.y, -theMaxChangeDownY, theMaxChangeY);
+  change.rotation = Math::clamp(change.rotation, -theMaxChangeDownTurn, theMaxChangeTurn);
 
   step.translation = lastStep.translation + change.translation;
   step.rotation = Math::normalize(lastStep.rotation + change.rotation);
