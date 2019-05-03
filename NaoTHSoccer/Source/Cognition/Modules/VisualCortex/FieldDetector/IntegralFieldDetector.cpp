@@ -48,17 +48,17 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
           (int) (getArtificialHorizon().point(cell.maxX*factor).y),
           (int) (getArtificialHorizon().point(cell.minX*factor).y)
         );
-    horizon_height = Math::clamp(horizon_height/factor, 0, height-1);
+    int max_scan_height = Math::clamp(horizon_height/factor, 0, height-1);
 
     bool isLastCell = false;
     int skipped = 0;
     int successive_green = 0;
     for(cell.maxY = height-1; !isLastCell; cell.maxY = cell.minY - 1) {
       cell.minY = cell.maxY - grid_size + 1;
-      if(cell.minY < horizon_height) {
-        cell.minY = horizon_height;
+      if(cell.minY < max_scan_height) {
+        cell.minY = max_scan_height;
         cell.maxY = cell.minY + grid_size;
-        if(cell.maxY >= height) {
+        if(cell.maxY >= height || cell.minY == horizon_height/factor) {
           break;
         }
         isLastCell = true;
