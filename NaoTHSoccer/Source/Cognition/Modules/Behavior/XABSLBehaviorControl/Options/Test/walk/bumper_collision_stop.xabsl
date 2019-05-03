@@ -24,14 +24,17 @@ state forward{
   decision
     {
       else if(state_time > 20000 || (motion.collision.timeSinceCollisionBumperLeft <= 1 &&
-              motion.collision.timeSinceCollisionBumperRight <= 1)){
+              motion.collision.timeSinceCollisionBumperRight <= 1)||
+              (button.bumper.pressed.left)){
        goto stand;
       } 
-      else if(motion.collision.timeSinceCollisionBumperLeft <= 1){
+      else if((motion.collision.timeSinceCollisionBumperLeft <= 1)||
+      (button.bumper.pressed.left)){
         //goto avoid_right;
         goto stand;
       }
-      else if(motion.collision.timeSinceCollisionBumperRight <= 1){
+      else if((motion.collision.timeSinceCollisionBumperRight <= 1)||
+      (button.bumper.pressed.right)){
         //goto avoid_left;
         goto stand;
       }
