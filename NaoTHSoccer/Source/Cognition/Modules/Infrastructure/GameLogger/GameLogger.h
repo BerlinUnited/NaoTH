@@ -22,6 +22,7 @@
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Modeling/BodyStatus.h"
 #include "Representations/Motion/MotionStatus.h"
+#include "Representations/Modeling/BallModel.h"
 
 #include "Representations/Perception/BallCandidates.h"
 #include "Representations/Perception/MultiBallPercept.h"
@@ -68,6 +69,7 @@ BEGIN_DECLARE_MODULE(GameLogger)
   REQUIRE(UltraSoundReceiveData)
 
   REQUIRE(MultiBallPercept)
+  REQUIRE(BallModel)
 
   REQUIRE(BallCandidates)
   REQUIRE(BallCandidatesTop)
