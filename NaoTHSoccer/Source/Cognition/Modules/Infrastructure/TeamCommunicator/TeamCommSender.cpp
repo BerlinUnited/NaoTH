@@ -69,7 +69,7 @@ void TeamCommSender::fillMessageBeforeSending() const
       msg.custom.ballVelocity.y = 0;
     }
 
-    // TODO: should be fixed with issue #105
+    // make sure we're not in the standup motion
     msg.fallen = getBodyState().fall_down_state != BodyState::upright
               || getMotionStatus().currentMotion == motion::stand_up_from_back
               || getMotionStatus().currentMotion == motion::stand_up_from_side
