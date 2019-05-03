@@ -18,13 +18,13 @@ state forward{
   decision
     {
       else if(sensor.obstacle.preview.valid && sensor.obstacle.preview.inFront){
-       if(sensor.obstacle.preview.right) {
-         goto avoid_left;
-       } else {
-         goto avoid_right;
-       }
+        if(sensor.obstacle.preview.right) {
+          goto avoid_left;
+        } else {
+          goto avoid_right;
+        }
       } else {
-       stay;
+        stay;
       }
     }
     action

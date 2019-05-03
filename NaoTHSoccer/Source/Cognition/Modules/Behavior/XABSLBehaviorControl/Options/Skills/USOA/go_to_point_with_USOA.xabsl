@@ -13,17 +13,23 @@ option go_to_point_with_USOA
   {
     decision
     {
-      if(obstacle.ultrasound.blockedtime > 100 || (sensor.obstacle.preview.valid && sensor.obstacle.preview.inFront)){
+      if(obstacle.ultrasound.blockedtime > 100){
 	      if ((vector.abs(x=locator.field_to_relative.x(x=@x, y=@y), y=locator.field_to_relative.y(x=@x, y=@y)) < obstacle.ultrasound.distance)
 	            &&(obstacle.ultrasound.distance<400))
-              //TODO what do to with visual object avoidance
 	          goto approach_carefully;
-	      else if(obstacle.ultrasound.left.distance < 400 || (sensor.obstacle.preview.valid && sensor.obstacle.preview.right))
+	      else if(obstacle.ultrasound.left.distance < 400)
 	          goto avoid_left;
-	      else if(obstacle.ultrasound.right.distance < 400 || (sensor.obstacle.preview.valid && sensor.obstacle.preview.left))
+	      else if(obstacle.ultrasound.right.distance < 400)
 	          goto avoid_right;
         else
           stay;
+      }
+      else if(sensor.obstacle.preview.valid && sensor.obstacle.preview.inFront) {
+        if(sensor.obstacle.preview.right) {
+          goto avoid_left;
+        } else {
+          goto avoid_right;
+        }
       }
       else if(action_done && state_time > 0)
         goto finish;
