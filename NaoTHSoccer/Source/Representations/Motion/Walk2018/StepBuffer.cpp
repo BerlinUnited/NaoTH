@@ -2,7 +2,7 @@
 * @file StepBuffer.cpp
 *
 * @author <a href="mailto:kaden@informatik.hu-berlin.de">Steffen, Kaden</a>
-* 
+*
 */
 
 #include "Representations/Motion/Walk2018/StepBuffer.h"
@@ -45,54 +45,36 @@ std::ostream& operator<<(std::ostream& os, const Step& s)
   return os;
 }
 
-//using namespace naoth;
+using namespace naoth;
+#include <Tools/DataConversion.h>
 
-//void Serializer<StepBuffer>::StepBuffer(const StepBuffer& /*representation*/, std::ostream& /*stream*/)
-//{
-//  naothmessages::MotionStatus message;
-  
-//  message.set_time(representation.time);
-//  message.set_lastmotion(representation.lastMotion);
-//  message.set_currentmotion(representation.currentMotion);
-//  message.set_headmotion(representation.headMotion);
-//  message.set_currentmotionstate(representation.currentMotionState);
-//  DataConversion::toMessage(representation.plannedMotion.lFoot, *message.mutable_plannedmotionleftfoot());
-//  DataConversion::toMessage(representation.plannedMotion.rFoot, *message.mutable_plannedmotionrightfoot());
-//  DataConversion::toMessage(representation.plannedMotion.hip, *message.mutable_plannedmotionhip());
+void Serializer<StepBuffer>::serialize(const StepBuffer& representation, std::ostream& stream)
+{
+    static unsigned int id = 0;
+    naothmessages::StepBuffer sb;
 
-//  // step control
-//  naothmessages::StepControlStatus* stepControlStatus =  message.mutable_stepcontrolstatus();
-//  stepControlStatus->set_stepid(representation.stepControl.stepID);
-//  stepControlStatus->set_steprequestid(representation.stepControl.stepRequestID);
-//  stepControlStatus->set_moveablefoot(representation.stepControl.moveableFoot);
+    if(representation.first().id() != id){
+        id = representation.first().id();
+        DataConversion::toMessage(representation.first().footStep.supFoot(), *sb.mutable_support_foot());
+    }
 
-//  google::protobuf::io::OstreamOutputStream buf(&stream);
-//  message.SerializeToZeroCopyStream(&buf);
-//}
+    google::protobuf::io::OstreamOutputStream buf(&stream);
+    sb.SerializeToZeroCopyStream(&buf);
+}
 
-//void Serializer<StepBuffer>::StepBuffer(std::istream& /*stream*/, StepBuffer& /*representation*/)
-//{
-//  naothmessages::MotionStatus message;
-//  google::protobuf::io::IstreamInputStream buf(&stream);
-//  if(message.ParseFromZeroCopyStream(&buf))
-//  {
-//    representation.time = message.time();
-//    representation.lastMotion = static_cast<motion::MotionID>(message.lastmotion());
-//    representation.currentMotion = static_cast<motion::MotionID>(message.currentmotion());
-//    representation.headMotion = static_cast<HeadMotionRequest::HeadMotionID>(message.headmotion());
-//    representation.currentMotionState = static_cast<motion::State>(message.currentmotionstate());
-//    DataConversion::fromMessage(message.plannedmotionleftfoot(), representation.plannedMotion.lFoot);
-//    DataConversion::fromMessage(message.plannedmotionrightfoot(), representation.plannedMotion.rFoot);
-//    DataConversion::fromMessage(message.plannedmotionhip(), representation.plannedMotion.hip);
-
-//    // step control
-//    const naothmessages::StepControlStatus& stepControlStatus =  message.stepcontrolstatus();
-//    representation.stepControl.stepID = stepControlStatus.stepid();
-//    representation.stepControl.stepRequestID = stepControlStatus.steprequestid();
-//    representation.stepControl.moveableFoot = static_cast<MotionStatus::StepControlStatus::MoveableFoot>(stepControlStatus.moveablefoot());
-//  }
-//  else
-//  {
-//    THROW("Serializer<StepBuffer>::deserialize failed");
-//  }
-//}
+void Serializer<StepBuffer>::deserialize(std::istream& stream, StepBuffer& representation)
+{
+  naothmessages::StepBuffer message;
+  google::protobuf::io::IstreamInputStream buf(&stream);
+  if(message.ParseFromZeroCopyStream(&buf))
+  {
+      if(message.has_support_foot()){
+         Step s = representation.add();
+         DataConversion::fromMessage(message.support_foot(), s.footStep.supFoot());
+      }
+  }
+  else
+  {
+    THROW("Serializer<StepBuffer>::deserialize failed");
+  }
+}
