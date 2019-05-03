@@ -82,6 +82,10 @@ public:
   double theMaxChangeX;
   double theMaxChangeY;
 
+  double theMaxChangeDownTurn;
+  double theMaxChangeDownX;
+  double theMaxChangeDownY;
+
   unsigned int emergencyCounter;
 };
 
