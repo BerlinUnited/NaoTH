@@ -34,7 +34,10 @@ void SituationPriorProvider::execute()
 
     if(getPlayerInfo().robotState == PlayerInfo::penalized) {
       gameStateWhenPenalized = getGameData().gameState;
-      reasonForLastPenalized = getGameData().getOwnRobotInfo(getPlayerInfo().playerNumber).penalty;
+
+      if(getGameData().valid) {
+        reasonForLastPenalized = getGameData().getOwnRobotInfo(getPlayerInfo().playerNumber).penalty;
+      }
     }
   }
 
