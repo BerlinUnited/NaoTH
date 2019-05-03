@@ -58,7 +58,7 @@ void SituationPriorProvider::execute()
     wasLiftedUp = true;
   }
 
-  // for penalty kicker
+  // for penalty kicker, this has the highest priority
   if(getSituationStatus().oppHalf)
   {
     getSituationPrior().currentPrior = SituationPrior::oppHalf;
