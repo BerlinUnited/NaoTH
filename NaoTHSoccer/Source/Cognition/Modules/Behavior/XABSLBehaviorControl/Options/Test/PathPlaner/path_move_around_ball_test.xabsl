@@ -79,19 +79,19 @@ option path_move_around_ball_test
 
   state turn
   {
-  decision{
+    decision{
       else if(abs(value=attack.direction.preview) < 10)
         goto stand;
       else
         stay;
-  }
+    }
     action
     {
       situation_abortable = true;
       path_turn_to_attack_direction();
     }
   }
-//test
+  
   state stand {
     decision {
       else

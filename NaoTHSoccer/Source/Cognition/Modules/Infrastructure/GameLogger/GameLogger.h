@@ -15,6 +15,8 @@
 #include <Representations/Perception/BallPercept.h>
 #include <Representations/Perception/GoalPercept.h>
 #include <Representations/Perception/ScanLineEdgelPercept.h>
+#include <Representations/Perception/LinePercept2018.h>
+
 #include <Representations/Modeling/OdometryData.h>
 #include <Representations/Perception/CameraMatrix.h>
 #include "Representations/Modeling/TeamMessage.h"
@@ -54,6 +56,11 @@ BEGIN_DECLARE_MODULE(GameLogger)
   REQUIRE(BallPerceptTop)
   REQUIRE(ScanLineEdgelPercept)
   REQUIRE(ScanLineEdgelPerceptTop)
+
+  REQUIRE(RansacLinePercept)
+  REQUIRE(ShortLinePercept)
+  REQUIRE(RansacCirclePercept2018)
+
   REQUIRE(BodyStatus)
   REQUIRE(MotionStatus)
 
