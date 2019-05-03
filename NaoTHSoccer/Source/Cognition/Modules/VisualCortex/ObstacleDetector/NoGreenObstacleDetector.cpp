@@ -58,7 +58,7 @@ bool NoGreenObstacleDetector::projectDetector(DetectorField& detectorField, Dete
   }
   // check if detectorImage is still big enough
   int detectorArea = detectorImage.area();
-  bool bigEnough = (double) detectorArea / expectedArea >= params.min_expected_area;
+  bool bigEnough = ((double) detectorArea / expectedArea >= params.min_expected_area);
 
   DEBUG_REQUEST("Vision:NoGreenObstacleDetector:draw_detector_field",
     IMAGE_DRAWING_CONTEXT;
@@ -77,6 +77,7 @@ bool NoGreenObstacleDetector::projectDetector(DetectorField& detectorField, Dete
 void NoGreenObstacleDetector::execute()
 {
   getVisionObstacle().valid = false;
+  getVisionObstaclePreview().valid = false;
 
   if(detector_parameters_changed()) {
     create_detector_on_field(detectorField, detector_field_offset);
