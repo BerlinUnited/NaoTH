@@ -83,7 +83,7 @@ bool SensorSymbols::getBumperLeftPressed()
   /*return (theInstance->getButtonData().eventCounter[ButtonData::LeftFootLeft] > 0) ||
          (theInstance->getButtonData().eventCounter[ButtonData::LeftFootRight] > 0);*/
 }
-bool SensorSymbols::getBumperLeftPressed()
+bool SensorSymbols::getBumperRightPressed()
 {
     return theInstance->getButtonData().isPressed[ButtonData::LeftFootLeft] || theInstance->getButtonData().isPressed[ButtonData::LeftFootRight];
     /*return (theInstance->getButtonData().eventCounter[ButtonData::LeftFootLeft] > 0) ||
