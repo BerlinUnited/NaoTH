@@ -88,7 +88,10 @@ void GameLogger::execute()
 
       //LOGSTUFF(BallPercept);
       //LOGSTUFF(BallPerceptTop);
-      
+
+      LOGSTUFF(FieldPercept);
+      LOGSTUFF(FieldPerceptTop);
+
       LOGSTUFF(ScanLineEdgelPercept);
       LOGSTUFF(ScanLineEdgelPerceptTop);
       LOGSTUFF(ShortLinePercept);

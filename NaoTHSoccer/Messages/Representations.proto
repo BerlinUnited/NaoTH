@@ -193,6 +193,14 @@ message ShortLinePercept {
   repeated LineSegment fieldLineSegments = 1;
 }
 
+message Polygon {
+  repeated IntVector2 points = 1;
+}
+
+message FieldPercept {
+  required Polygon fieldPoly = 1;
+}
+
 message RansacLinePercept {
   repeated LineSegment fieldLineSegments = 1;
 }
