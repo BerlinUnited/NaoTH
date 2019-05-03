@@ -347,7 +347,9 @@ FootStep FootStepPlanner2018::calculateNextWalkStep(const InverseKinematic::Feet
   else // regular walk request 
   {
     restrictStepSize(stepRequest, req.character, false);
-    restrictStepChange(stepRequest, lastStepRequest);
+    if(req.stepControl.type != WalkRequest::StepControlRequest::KICKSTEP) {
+      restrictStepChange(stepRequest, lastStepRequest);
+    }
   }
 
   // create a new step
