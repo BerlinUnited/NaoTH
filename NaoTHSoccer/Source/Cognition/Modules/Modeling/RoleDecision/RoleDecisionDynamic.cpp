@@ -97,9 +97,11 @@ void RoleDecisionDynamic::handleGoalie(const TeamMessageData* goalie, std::vecto
         checkStriker(*goalie, indicator, globalBall, striker, true);
     } else {
         bool strikerAlreadyDefending = false;
-        // check if a striker is already defending our goal (striker is between goal and ball)
+        double r = ballDifferenceRadius(goalie->ballPosition.abs());
+        // check if a striker is already defending our goal
         for(auto& s : striker) {
-            if(getTeamMessage().data.at(s.playerNumber).pose.translation.x < globalBall.x) {
+            // do we defend the same ball and is striker between behind the ball?
+            if(checkSameBall(s, globalBall, r) && getTeamMessage().data.at(s.playerNumber).pose.translation.x < globalBall.x) {
                 Math::Line playerBallLine(globalBall, (getTeamMessage().data.at(s.playerNumber).pose.translation - globalBall));
                 Math::LineSegment goalLine(getFieldInfo().ownGoalPostRight, getFieldInfo().ownGoalPostLeft);
                 if(goalLine.intersect(playerBallLine)) {
@@ -116,6 +118,13 @@ void RoleDecisionDynamic::handleGoalie(const TeamMessageData* goalie, std::vecto
             checkStriker(*goalie, indicator, globalBall, striker, true);
         }
     }
+}
+
+bool RoleDecisionDynamic::checkSameBall(const Striker& s,const Vector2d& ball, double radius)
+{
+    // use the larger radius for 'same ball' comparison
+    double sameBallRadius = radius > s.sameBallRadius ? radius : s.sameBallRadius;
+    return (s.ball - ball).abs2() < sameBallRadius*sameBallRadius;
 }
 
 void RoleDecisionDynamic::checkStriker(const TeamMessageData& msg,
@@ -136,10 +145,8 @@ void RoleDecisionDynamic::checkStriker(const TeamMessageData& msg,
     );
 
     for(auto& s : striker) {
-        // use the larger radius for 'same ball' comparison
-        double sameBallRadius = r > s.sameBallRadius ? r : s.sameBallRadius;
         // same ball as the current striker
-        if((s.ball - ball).abs2() < sameBallRadius*sameBallRadius) {
+        if(checkSameBall(s, ball, r)) {
             // this player is 'faster' to the ball than the current striker or 'forced' to be striker
             if(force || s.indicator > indicator) {
                 // set this player for the ball as striker
