@@ -95,9 +95,9 @@ do
 	check_for_errors "Brainwasher:ERROR copying $f"
 done
 
-for f in $(find -L /shm -type d -name media -prune -o -name "*.log")
+for f in $(find -L /dev/shm -type d -name media -prune -o -name "*.log")
 do
-	md5sum $f | sed -e "s/\/shm\///g" > "$f.md5"
+	md5sum $f | sed -e "s/\/dev/shm\///g" > "$f.md5"
 	cp "$f.md5" $f $target_path/
 	check_for_errors "Brainwasher:ERROR copying $f"
 done
