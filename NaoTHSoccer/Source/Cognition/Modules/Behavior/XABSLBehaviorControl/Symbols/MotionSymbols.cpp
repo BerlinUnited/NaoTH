@@ -302,11 +302,11 @@ double MotionSymbols::getHeadPitchAngle() {
 }
 
 double MotionSymbols::getlastComputedCollisionRight() {
-  return theInstance->getCollisionPercept().lastComputedCollisionRight - theInstance->getFrameInfo().getTimeInSeconds();
+    return theInstance->getFrameInfo().getTimeInSeconds() - theInstance->getCollisionPercept().lastComputedCollisionRight;
 }
 
 double MotionSymbols::getlastComputedCollisionLeft(){
-  return theInstance->getCollisionPercept().lastComputedCollisionLeft - theInstance->getFrameInfo().getTimeInSeconds();
+    return theInstance->getFrameInfo().getTimeInSeconds() - theInstance->getCollisionPercept().lastComputedCollisionLeft;
 }
 
 double MotionSymbols::getHeadYawAngle() {

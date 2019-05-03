@@ -28,10 +28,12 @@ state forward{
        goto stand;
       } 
       else if(motion.collision.timeSinceCollisionBumperLeft <= 1){
-        goto avoid_right;
+        //goto avoid_right;
+        goto stand;
       }
       else if(motion.collision.timeSinceCollisionBumperRight <= 1){
-        goto avoid_left;
+        //goto avoid_left;
+        goto stand;
       }
       else {
        stay;
@@ -57,6 +59,7 @@ state stand{
     {
       head.control_mode = look_straight_ahead;
 
+      motion.walk_speed.x = -100;
       motion.type = stand;
     }  
   }
