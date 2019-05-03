@@ -168,10 +168,10 @@ void IntegralFieldDetector::create_field() {
   getFieldPercept().valid = fieldPoly.getArea() >= 5600;
 
   DEBUG_REQUEST("Vision:IntegralFieldDetector:mark_field_polygon",
-    int idx = 0;
+    size_t idx = 0;
     ColorClasses::Color color = getFieldPercept().valid ? ColorClasses::blue : ColorClasses::red;
     const FieldPercept::FieldPoly& poly = getFieldPercept().getValidField();
-    for(int i = 1; i < poly.length; i++)
+    for(size_t i = 1; i < poly.size(); i++)
     {
       LINE_PX(color, poly[idx].x, poly[idx].y, poly[i].x, poly[i].y);
       idx = i;
