@@ -32,9 +32,9 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
   int grid_size = (cameraID==CameraInfo::Top ? params.grid_size_top : params.grid_size_bottom) / factor;
   int width = getBallDetectorIntegralImage().getWidth();
   int height = getBallDetectorIntegralImage().getHeight();
-  double horizontal = (width-1.0) / grid_size;
+  double horizontal = (double) width / grid_size;
   int n_cells_horizontal = (int) horizontal;
-  int rest = (int)((horizontal - n_cells_horizontal) * grid_size);
+  int rest = width - (n_cells_horizontal * grid_size);
   int pixels_per_cell = (grid_size+1)*(grid_size+1);
   int min_green = (int)(pixels_per_cell*params.proportion_of_green);
 
@@ -42,8 +42,8 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
   bool green_found = false;
   Cell last_green_cell;
   Cell cell;
-  for (cell.minX=0; cell.minX+grid_size < width; cell.minX = cell.maxX) {
-    cell.maxX = cell.minX + grid_size;
+  for (cell.minX=0; cell.minX + grid_size - 1 < width; cell.minX = cell.maxX + 1) {
+    cell.maxX = cell.minX + grid_size - 1;
     int horizon_height = std::max(
           (int) (getArtificialHorizon().point(cell.maxX*factor).y),
           (int) (getArtificialHorizon().point(cell.minX*factor).y)
@@ -53,8 +53,8 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
     bool isLastCell = false;
     int skipped = 0;
     int successive_green = 0;
-    for(cell.maxY = height-1; !isLastCell; cell.maxY = cell.minY) {
-      cell.minY = cell.maxY-grid_size;
+    for(cell.maxY = height-1; !isLastCell; cell.maxY = cell.minY - 1) {
+      cell.minY = cell.maxY - grid_size + 1;
       if(cell.minY < horizon_height) {
         cell.minY = horizon_height;
         cell.maxY = cell.minY + grid_size;
@@ -72,7 +72,7 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
         } else {
           color = ColorClasses::red;
         }
-        RECT_PX(color, cell.minX*factor, cell.minY*factor+1, cell.maxX*factor, cell.maxY*factor-1);
+        RECT_PX(color, cell.minX*factor, cell.minY*factor, cell.maxX*factor, cell.maxY*factor);
       );
 
       if(cell.sum_of_green >= min_green) {
@@ -104,7 +104,7 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
       endpoints.push_back(endpoint);
     }
 
-    // ensure cells will end on the left image border
+    // ensure cells will end on the right image border
     if(rest > 0 && cell.maxX > width/2) {
       cell.maxX += rest;
       rest = 0;
@@ -141,7 +141,7 @@ void IntegralFieldDetector::find_endpoint(int x, const Cell& cell, Vector2i& end
     }
   }
   DEBUG_REQUEST("Vision:IntegralFieldDetector:draw_end_cell",
-    RECT_PX(ColorClasses::skyblue, cell.minX*factor, cell.minY*factor+1, cell.maxX*factor, cell.maxY*factor-1);
+    RECT_PX(ColorClasses::skyblue, cell.minX*factor, cell.minY*factor, cell.maxX*factor, cell.maxY*factor);
     CIRCLE_PX(ColorClasses::orange, endpoint.x, endpoint.y, 1);
   );
 }
