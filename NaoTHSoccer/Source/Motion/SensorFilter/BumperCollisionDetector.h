@@ -34,7 +34,7 @@ public:
         Parameter() : ParameterList("CollisionDetectorBumper")
         {
             PARAMETER_REGISTER(collisionInterval) = 500;
-            PARAMETER_REGISTER(timesToBump) = 3;
+            PARAMETER_REGISTER(timesToBump) = 2;
             syncWithConfig();
         }
 
