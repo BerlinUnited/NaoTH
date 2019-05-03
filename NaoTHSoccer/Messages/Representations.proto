@@ -35,6 +35,17 @@ message MultiBallPercept {
   repeated BallPercept percepts = 2;
 }
 
+message BallModel {
+  optional DoubleVector2 position = 1;
+  optional DoubleVector2 speed = 2;
+  optional DoubleVector2 positionPreview = 3;
+  optional DoubleVector2 positionPreviewInLFoot = 4;
+  optional DoubleVector2 positionPreviewInRFoot = 5;
+  optional DoubleVector2 futurePosition = 6;
+  optional bool valid = 7;
+  optional bool knows = 8;
+}
+
 message GoalPercept {
   message GoalPost {
     enum PostType
