@@ -54,8 +54,8 @@ class FootStepPlanner2018Parameters: public ParameterList{
           PARAMETER_ANGLE_REGISTER(limits.maxCtrlTurn) = 30;
           PARAMETER_REGISTER(limits.maxCtrlLength) = 80;
           PARAMETER_REGISTER(limits.maxCtrlWidth)  = 50;
-          PARAMETER_REGISTER(limits.maxCtrlChange)     = 1;
-          PARAMETER_REGISTER(limits.maxCtrlChangeDown) = 1;
+          PARAMETER_REGISTER(limits.maxCtrlChange)     = 0.3;
+          PARAMETER_REGISTER(limits.maxCtrlChangeDown) = 0.8;
 
           PARAMETER_REGISTER(footOffsetY) = 0;
 
