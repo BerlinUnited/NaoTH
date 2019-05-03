@@ -41,7 +41,7 @@ message BallModel {
   optional DoubleVector2 positionPreview = 3;
   optional DoubleVector2 positionPreviewInLFoot = 4;
   optional DoubleVector2 positionPreviewInRFoot = 5;
-  optional DoubleVector2 futurePosition = 6;
+  repeated DoubleVector2 futurePosition = 6;
   optional bool valid = 7;
   optional bool knows = 8;
 }
