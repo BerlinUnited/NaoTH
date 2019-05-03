@@ -149,6 +149,29 @@ message MotionRequest {
 
 
 message LinePercept {
+
+  message Intersection {
+
+    enum IntersectionType
+    {
+      unknown = 0;
+      T = 1;
+      L = 2;
+      C = 3;
+      none = 4;
+      X = 5;
+    }
+
+    optional DoubleVector2 posInImage = 1;
+    optional DoubleVector2 posOnField = 2;
+
+    optional IntersectionType type = 3;
+    optional uint32 segmentOneIndex = 6;
+    optional uint32 segmentTwoIndex = 7;
+    optional double segmentOneDistance = 8;
+    optional double segmentTwoDistance = 9;
+  }
+
   message FieldLineSegment {
     optional LineSegment lineInImage = 1;
     optional LineSegment lineOnField = 2;
@@ -164,6 +187,20 @@ message LinePercept {
   repeated FieldLineSegment lines = 1;
   repeated Intersection intersections = 2;
   optional DoubleVector2 middleCircleCenter = 3;
+}
+
+message ShortLinePercept {
+  repeated LineSegment fieldLineSegments = 1;
+}
+
+message RansacLinePercept {
+  repeated LineSegment fieldLineSegments = 1;
+}
+
+message RansacCirclePercept2018 {
+  optional bool wasSeen = 1;
+  optional DoubleVector2 middleCircleCenter = 2;
+
 }
 
 message ScanLineEndPoint {
@@ -220,6 +257,12 @@ message MotionStatus
   required Pose2D plannedMotionRightFoot = 7;
   required Pose2D plannedMotionHip = 8;
   optional StepControlStatus stepControlStatus = 9;
+  
+  optional bool   target_reached = 10;
+  optional bool   head_target_reached = 11;
+  optional bool   head_got_stuck = 12;
+  
+  optional bool   walk_emergency_stop = 13;
 }
 
 message OdometryData
@@ -358,6 +401,20 @@ message CentreOfPressure {
  required bool   in_kinematic_chain_origin_valid      = 9;
 }
 
+message CalibrationDataCMC {
+ message CalibrationDataSampleV3 {
+  optional Pose3D chestPose               = 1;
+  repeated DoubleVector2 edgelsInImage    = 2;
+  repeated DoubleVector2 edgelsInImageTop = 3;
+  optional DoubleVector2 orientation      = 4;
+  optional double headYaw                 = 5;
+  optional double headPitch               = 6;
+ }
+
+ repeated CalibrationDataSampleV3 calibrationData = 1;
+ optional uint32 numberOfResudials                = 2;
+}
+
 message WhistlePercept {
   message Whistle {
     required string name = 1;
@@ -369,4 +426,14 @@ message WhistlePercept {
   optional string captureFile = 2;
   repeated Whistle recognizedWhistles = 3;
   optional bool whistleDetected = 4;
+}
+
+message DebugModify {
+  message ModifyValue {
+    required string name = 1;
+    optional bool modify = 2;
+    optional double value = 3;
+  }
+  
+  repeated ModifyValue valueMap = 1;
 }

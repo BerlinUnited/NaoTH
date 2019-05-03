@@ -63,6 +63,9 @@ namespace internal_symbols("Internal Symbols") {
   // needed by the get up motion
   enum arm.control_mode internal arm.control_mode_before_fall;
 
+  
+  bool internal arm.react_to_collision;
+
   /** Counts the state changes turn/look in passive_ball_not_seen */
   float internal search_ball.turn_stop_motion_count;
 
@@ -71,4 +74,11 @@ namespace internal_symbols("Internal Symbols") {
 
   /** the x or y coordinate which should be constant while moving */
   float internal freekick_const_pos;
+
+  /** remember the last dynamic role (for transition handling) */
+  enum role.dynamic internal strategy.role_dynamic_last;
+
+  /** stores the position from which the search has to move away */
+  float internal search_ball_walk_back.x;
+  float internal search_ball_walk_back.y;
 }

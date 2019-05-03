@@ -29,9 +29,6 @@ public:
     batteryCharge(0.0)
   {}
 
-  ~BodyState(){}
-
-
   /** Current state of the robot's body*/
   enum State
   { 
@@ -46,25 +43,24 @@ public:
 
   static State getId(const std::string& name)
   {
-    for(int i = 0; i < numOfStates; i++)
-    {
+    for(int i = 0; i < numOfStates; i++) {
       if(name == getName((State)i)) return (State)i;
-    }//end for
+    }
     return numOfStates;
-  }//end getId
+  }
 
   static std::string getName(State id)
   {
     switch(id)
     {
-      case undefined: return "empty";
+      case undefined: return "undefined";
       case upright: return "upright";
       case lying_on_front: return "lying_on_front";
       case lying_on_back: return "lying_on_back";
       case lying_on_left_side: return "lying_on_left_side";
       case lying_on_right_side: return "lying_on_right_side";
       case numOfStates: return "numOfStates";
-    }//end switch
+    }
     return "unknown";
   }//end getName
 
@@ -104,7 +100,7 @@ public:
       stream << "isDischarging = " << isDischarging << std::endl;
       stream << "isCharging = " << isCharging << std::endl;
       stream << "batteryCharge (filtered) = " << batteryCharge << std::endl;
-  }//end print
+  }
 
 };
 

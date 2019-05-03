@@ -52,6 +52,15 @@ namespace motion_symbols("Motion Symbols") {
 
   /** Set which camera is controlled by the head motion. */
   enum head.camera output head.camera.id;
+
+  /** indicates whether some head motion specific target was reached,
+      e.g. the head looks, at the desired point in the image
+      NOTE: not supported by all head motions... */
+  bool input head.target_reached;
+
+  /** true if the head is not able to move
+      only supported by head motions which support head.target_reached */
+  bool input head.got_stuck;
   
   /** Remark: not all arm motion ids are listed here */
   enum arm.type 
@@ -146,6 +155,10 @@ namespace motion_symbols("Motion Symbols") {
   /** indicates whether the RIGHT foot is currently avaliable for the step control */
   bool input executed_motion.step_control.right_movable;
   
+  /** indicates whether some motion specific target was reached,
+      e.g. the stand motion reached it's target position
+      NOTE: not supported by all motions... */
+  bool input executed_motion.target_reached;
   
   /** the universal enum type for direction */  
   enum direction   

@@ -1,8 +1,8 @@
-/**  */
 option path_move_around_ball
 { 
   float @direction;
   float @radius;
+  bool @stable;
 
   common decision
   {
@@ -34,8 +34,9 @@ option path_move_around_ball
       
       path.direction = @direction;
       path.radius = @radius;
+      path.stable = @stable;
       
-      //loook at percept
+      //look at percept
       head.control_mode = look_at_ball_percept;
     }
   }
@@ -48,8 +49,9 @@ option path_move_around_ball
       
       path.direction = @direction;
       path.radius = @radius;
+      path.stable = @stable;
       
-      //loook at percept
+      //look at percept
       head.control_mode = look_at_ball_percept;
     }
   }

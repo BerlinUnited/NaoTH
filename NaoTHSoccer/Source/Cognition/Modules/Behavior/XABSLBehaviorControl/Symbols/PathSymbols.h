@@ -13,6 +13,8 @@
 // representations
 #include "Representations/Modeling/PathModel.h"
 
+#include "Tools/Math/Common.h"
+
 BEGIN_DECLARE_MODULE(PathSymbols)
   PROVIDE(PathModel)
 END_DECLARE_MODULE(PathSymbols)
@@ -38,6 +40,9 @@ private:
 
   static void setPathRoutine2018(int id);
   static int getPathRoutine2018();
+
+  static void setDirection(double rot);
+  static double getDirection();
 };
 
 #endif /* _PathSymbols_H_ */

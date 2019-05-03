@@ -20,13 +20,15 @@
 // representations
 #include <Representations/Infrastructure/RobotInfo.h>
 #include "Representations/Motion/Request/MotionRequest.h"
+#include "Representations/Motion/MotionStatus.h"
 #include <Representations/Infrastructure/JointData.h>
 
 BEGIN_DECLARE_MODULE(KeyFrameMotion)
   REQUIRE(RobotInfo)
   REQUIRE(SensorJointData)
   REQUIRE(MotionRequest)
-  
+
+  PROVIDE(MotionStatus)
   PROVIDE(MotionLock)
   PROVIDE(MotorJointData)
 END_DECLARE_MODULE(KeyFrameMotion)
@@ -40,7 +42,7 @@ private:
   MotionNet::KeyFrame currentKeyFrame;
   MotionNet::Transition currentTransition;
 
-  
+
   /** remaining time till next frame */
   double t;
 
@@ -74,12 +76,12 @@ public:
   virtual void init();
 
   void execute();
-  
+
   void print(std::ostream& stream) const;
 
   void set(MotionNet& motionNet){currentMotionNet = motionNet;}
   MotionNet getCurrentMotionNet(){return currentMotionNet;}
-  
+
 };
 
 #endif // _KeyFrameMotion_h_

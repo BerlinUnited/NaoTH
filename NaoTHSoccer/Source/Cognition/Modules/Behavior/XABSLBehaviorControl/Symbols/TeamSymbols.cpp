@@ -45,10 +45,10 @@ void TeamSymbols::setWasStriker(bool striker)
 
 bool TeamSymbols::calculateIfStriker()
 {
-  return theInstance->getRoleDecisionModel().firstStriker == theInstance->getPlayerInfo().playerNumber;
+  return theInstance->getRoleDecisionModel().isStriker(theInstance->getPlayerInfo().playerNumber);
 }
 
 bool TeamSymbols::calculateIfSecondStriker()
 {
-  return theInstance->getRoleDecisionModel().secondStriker == theInstance->getPlayerInfo().playerNumber;
+  return theInstance->getRoleDecisionModel().isStriker(theInstance->getPlayerInfo().playerNumber);
 }

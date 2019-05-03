@@ -18,7 +18,7 @@ def parse_arguments(argv):
     except getopt.GetoptError:
         print('ball_patch_label.py -i <input file>')
         sys.exit(2)
-    if opts is []:
+    if not opts:
         print('ball_patch_label.py -i <input file>')
         sys.exit(2)
     for opt, arg in opts:
