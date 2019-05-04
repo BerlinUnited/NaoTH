@@ -15,4 +15,6 @@ public:
 
 class VisionObstaclePreview : public VisionObstacle {};
 
+class ObstacleBehindBall : public VisionObstacle {};
+
 #endif // OBSTACLE_H

@@ -36,6 +36,7 @@ BEGIN_DECLARE_MODULE(NoGreenObstacleDetector)
 
   PROVIDE(VisionObstacle)
   PROVIDE(VisionObstaclePreview)
+  PROVIDE(ObstacleBehindBall)
 
   PROVIDE(DebugRequest)
   PROVIDE(DebugModify)

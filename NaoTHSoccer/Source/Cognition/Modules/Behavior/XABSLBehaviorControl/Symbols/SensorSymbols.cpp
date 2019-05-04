@@ -31,6 +31,11 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanInputSymbol("sensor.obstacle.preview.right", &getVisionObstaclePreview().onTheRight);
   engine.registerBooleanInputSymbol("sensor.obstacle.preview.valid", &getVisionObstaclePreview().valid);
 
+  engine.registerBooleanInputSymbol("sensor.obstacle.behind_ball.occupied", &getObstacleBehindBall().isOccupied);
+  engine.registerBooleanInputSymbol("sensor.obstacle.behind_ball.left", &getObstacleBehindBall().onTheLeft);
+  engine.registerBooleanInputSymbol("sensor.obstacle.behind_ball.right", &getObstacleBehindBall().onTheRight);
+  engine.registerBooleanInputSymbol("sensor.obstacle.behind_ball.valid", &getObstacleBehindBall().valid);
+
   //engine.registerDecimalInputSymbol("platform.battery", &getBatteryData().charge);
   engine.registerDecimalInputSymbol("platform.battery", &getBodyState().batteryCharge);
 

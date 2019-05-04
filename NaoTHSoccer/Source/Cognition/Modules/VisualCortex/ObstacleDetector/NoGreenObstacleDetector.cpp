@@ -107,6 +107,7 @@ void NoGreenObstacleDetector::execute()
 {
   getVisionObstacle().valid = false;
   getVisionObstaclePreview().valid = false;
+  getObstacleBehindBall().valid = false;
 
   if(detector_parameters_changed()) {
     create_detector_on_field(detectorField, detector_field_offset);
@@ -231,11 +232,21 @@ void NoGreenObstacleDetector::execute()
     }
     BOX(detectorImageBehindBall.minX(), detectorImageBehindBall.minY(), detectorImageBehindBall.maxX(), detectorImageBehindBall.maxY());
   );
-  /*
   if(succes) {
     // calculate green density
     double green_density = (double) detectorImageBehindBall.green(getBallDetectorIntegralImage()) / detectorImageBehindBall.pixels();
     double green_density_left = (double) detectorImageBehindBall.greenLeft(getBallDetectorIntegralImage()) / (detectorImageBehindBall.pixels()/2);
     double green_density_right = (double) detectorImageBehindBall.greenRight(getBallDetectorIntegralImage()) / (detectorImageBehindBall.pixels()/2);
-  }*/
+
+    // set representation if detector is occupied
+    getObstacleBehindBall().valid = true;
+    getObstacleBehindBall().isOccupied = green_density <= params.max_green_density;
+    if (getObstacleBehindBall().isOccupied) {
+      getObstacleBehindBall().onTheRight = green_density_right <= green_density_left;
+      getObstacleBehindBall().onTheLeft = green_density_right > green_density_left;
+    } else {
+      getObstacleBehindBall().onTheRight = false;
+      getObstacleBehindBall().onTheLeft = false;
+    }
+  }
 }
