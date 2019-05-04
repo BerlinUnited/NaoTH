@@ -66,6 +66,7 @@ public:
   }//end getName
 
   // indicates whether the robot is upright etc.
+  // TODO: this should be renamed to koerper_lage or so
   State fall_down_state;
   // timestamp when the fall down state changed last time
   unsigned int fall_down_state_time;

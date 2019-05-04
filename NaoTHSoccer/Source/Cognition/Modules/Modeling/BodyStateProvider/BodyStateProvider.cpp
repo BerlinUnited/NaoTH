@@ -87,10 +87,7 @@ void BodyStateProvider::updateTheFallDownState()
   getBodyState().fall_down_state = BodyState::undefined;
 
   if(fabs(avg.x) < params.upright_threshold && fabs(avg.y) < params.upright_threshold) {
-    // wait for target reached before setting upright or keep the upright status
-    if((old_fall_down_state != BodyState::upright && getMotionStatus().target_reached) || old_fall_down_state == BodyState::upright) {
-      getBodyState().fall_down_state = BodyState::upright;
-    }
+    getBodyState().fall_down_state = BodyState::upright;
   }
 
   if(avg.x < -params.getup_threshold) {
