@@ -46,6 +46,7 @@ import de.naoth.rc.math.Pose2D;
 import de.naoth.rc.math.Vector2D;
 import de.naoth.rc.math.Vector3D;
 import de.naoth.rc.messages.CommonTypes.DoubleVector3;
+import de.naoth.rc.messages.CommonTypes.IntVector2;
 import de.naoth.rc.messages.FrameworkRepresentations.RobotInfo;
 import de.naoth.rc.messages.Messages.PlotItem;
 import de.naoth.rc.messages.Messages.Plots;
@@ -63,6 +64,8 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -631,8 +634,57 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
             
             drawScanEdgelPercept(robotPose, b.get("GoalPercept"), b.get("ScanLineEdgelPercept"), b.get("CameraMatrix"), dc, Color.red);
             drawScanEdgelPercept(robotPose, b.get("GoalPerceptTop"), b.get("ScanLineEdgelPerceptTop"), b.get("CameraMatrixTop"), dc, Color.blue);
+            
+            Color green = new Color(217, 255, 25);
+            drawFieldPercept(robotPose, b.get("FieldPercept"), b.get("CameraMatrix"), dc, green);
+            drawFieldPercept(robotPose, b.get("FieldPerceptTop"), b.get("CameraMatrixTop"), dc, green);
         }
         
+        
+        private void drawFieldPercept(Pose2D robotPose, LogDataFrame fieldPercept, LogDataFrame cameraMatrixFrame, DrawingCollection dc, Color c) {
+            try {
+                Representations.FieldPercept fp = Representations.FieldPercept.parseFrom(fieldPercept.getData());
+                Representations.CameraMatrix cm = Representations.CameraMatrix.parseFrom(cameraMatrixFrame.getData());
+                
+                Vector3D t = toVector(cm.getPose().getTranslation());
+                    
+                Matrix3D R = new Matrix3D(
+                    toVector(cm.getPose().getRotation(0)),
+                    toVector(cm.getPose().getRotation(1)),
+                    toVector(cm.getPose().getRotation(2)));
+                
+                final double f = (0.5*640.0) / Math.tan(0.5 * 60.9/180.0*Math.PI);
+                
+                
+                List<Vector2D> fieldPoly = new ArrayList<>(fp.getFieldPoly().getPointsCount());
+                for(IntVector2 polyPoint : fp.getFieldPoly().getPointsList()) {
+                    Vector2D point = new Vector2D(polyPoint.getX(), polyPoint.getY());
+                    Vector2D fieldPoint = project(R, t, f, point);                    
+                    if(robotPose != null) {
+                        fieldPoint = robotPose.multiply(fieldPoint);
+                    }
+                    fieldPoly.add(fieldPoint);
+                }
+                
+                if(fieldPoly.size() > 0) {
+                    dc.add(new Pen(10, c));
+                    
+                    Vector2D last = null;
+                    for(Vector2D point: fieldPoly) {
+                        dc.add(new Circle((int)point.x, (int)point.y, 10));
+                        if(last != null) {
+                            dc.add(new Line((int)last.x, (int)last.y, (int)point.x, (int)point.y));                            
+                        }
+                        last = point;
+                    } 
+                }
+              
+                
+                
+            } catch (InvalidProtocolBufferException ex) {
+                Logger.getLogger(FieldViewer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }        
         
         private void drawScanEdgelPercept(Pose2D robotPose, LogDataFrame goalPerceptFrame, LogDataFrame scanLineFrame, LogDataFrame cameraMatrixFrame, DrawingCollection dc, Color c) 
         {
