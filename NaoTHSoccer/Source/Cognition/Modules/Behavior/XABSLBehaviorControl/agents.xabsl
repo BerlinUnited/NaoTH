@@ -28,6 +28,7 @@ include "Options/HeadControl/search_for_goal.xabsl";
 include "Options/HeadControl/look_around.xabsl";
 include "Options/HeadControl/look_at_ball_percept.xabsl";
 include "Options/HeadControl/look_at_team_ball.xabsl";
+include "Options/HeadControl/look_at_preview_angle.xabsl";
 
 // Arm Control
 include "Options/Skills/arms_control.xabsl";
@@ -209,7 +210,8 @@ include "Options/Test/PathPlaner/pathplanner_kick_long.xabsl";
 include "Options/Test/PathPlaner/pathplanner_shortkick_only.xabsl";
 include "Options/Test/PathPlaner/pathplanner_sidekick_only.xabsl";
 include "Options/Test/PathPlaner/pathplanner_dash.xabsl";
-include "Options/Test/PathPlaner/pathplanner2018_forwardkick.xabsl";
+
+include "Options/Test/PathPlaner/pathplanner2018_forwardkick.xabsl";
 include "Options/Test/PathPlaner/pathplanner2018_sidekick.xabsl";
 include "Options/Test/PathPlaner/path_move_around_ball_test.xabsl";
 

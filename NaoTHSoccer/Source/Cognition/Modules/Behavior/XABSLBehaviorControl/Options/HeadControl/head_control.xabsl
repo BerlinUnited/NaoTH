@@ -139,5 +139,12 @@ option head_control
       look_at_team_ball();
     }
   }
+  
+ state look_at_preview_angle{
+   action{
+     look_at_preview_angle();
+   }
+ }
+ 
 }
   

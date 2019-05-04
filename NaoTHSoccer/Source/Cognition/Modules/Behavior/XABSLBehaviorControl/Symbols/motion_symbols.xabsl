@@ -10,7 +10,8 @@ namespace motion_symbols("Motion Symbols") {
     look_straight_ahead,
     look_at_point,
     look_at_world_point,
-    look_at_point_on_the_ground
+    look_at_point_on_the_ground,
+    goto_angle
   };
   
   /** The motion request for the head */
@@ -23,6 +24,11 @@ namespace motion_symbols("Motion Symbols") {
   /** Position in image for the head to look to */
   float output head.point_in_image.x [px];
   float output head.point_in_image.y [px];
+
+  /** Position to rotate to */
+  float output head.target_angle.x [px];
+  float output head.target_angle.y [px];
+
   
   /** Position in the world for the head to look to */
   float output head.point_in_world.x [mm];

@@ -102,6 +102,11 @@ private:
   static double getHeadPitchAngle();
   static double getHeadYawAngle();
 
+  static void setHeadPositionX(double rot);
+  static double getHeadPositionX();
+  static void setHeadPositionY(double rot);
+  static double getHeadPositionY();
+
   // some local members
   struct HeadMotion
   {

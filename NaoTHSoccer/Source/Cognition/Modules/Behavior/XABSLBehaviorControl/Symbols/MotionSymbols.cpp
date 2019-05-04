@@ -30,6 +30,9 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalOutputSymbol("head.point_in_image.x", &getHeadMotionRequest().targetPointInImage.x);
   engine.registerDecimalOutputSymbol("head.point_in_image.y", &getHeadMotionRequest().targetPointInImage.y);
 
+  engine.registerDecimalOutputSymbol("head.target_angle.x", &setHeadPositionX, &getHeadPositionX);
+  engine.registerDecimalOutputSymbol("head.target_angle.y", &setHeadPositionY, &getHeadPositionY);
+
   engine.registerDecimalOutputSymbol("head.point_in_world.x", &getHeadMotionRequest().targetPointInTheWorld.x);
   engine.registerDecimalOutputSymbol("head.point_in_world.y", &getHeadMotionRequest().targetPointInTheWorld.y);
   engine.registerDecimalOutputSymbol("head.point_in_world.z", &getHeadMotionRequest().targetPointInTheWorld.z);
@@ -203,6 +206,22 @@ int MotionSymbols::getHeadMotionRequestId() {
 
 int MotionSymbols::getHeadMotionStatus() {
   return (int)(theInstance->getMotionStatus().headMotion);
+}
+
+void MotionSymbols::setHeadPositionX(double rot) {
+  theInstance->getHeadMotionRequest().targetJointPosition.x = Math::fromDegrees(rot);
+}
+
+double MotionSymbols::getHeadPositionX() {
+  return Math::toDegrees(theInstance->getHeadMotionRequest().targetJointPosition.x);
+}
+
+void MotionSymbols::setHeadPositionY(double rot) {
+  theInstance->getHeadMotionRequest().targetJointPosition.y = Math::fromDegrees(rot);
+}
+
+double MotionSymbols::getHeadPositionY() {
+  return Math::toDegrees(theInstance->getHeadMotionRequest().targetJointPosition.y);
 }
 
 void MotionSymbols::setCameraId(int value) {
