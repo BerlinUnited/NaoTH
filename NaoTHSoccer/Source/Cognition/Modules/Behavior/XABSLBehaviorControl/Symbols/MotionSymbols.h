@@ -49,10 +49,10 @@ public:
   }
 
   virtual ~MotionSymbols(){}
-  
+
   /** registers the symbols at an engine */
   void registerSymbols(xabsl::Engine& engine);
-  
+
   virtual void execute();
 
   void updateOutputSymbols();
@@ -98,6 +98,8 @@ private:
   static double getWalkSpeedX();
   static double getWalkSpeedY();
   static double getKickDirection();
+
+  static double getPlannedHipRot();
 
   static double getHeadPitchAngle();
   static double getHeadYawAngle();

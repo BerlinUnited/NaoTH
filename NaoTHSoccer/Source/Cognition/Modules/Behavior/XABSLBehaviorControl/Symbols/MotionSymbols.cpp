@@ -136,7 +136,7 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
 
   engine.registerDecimalInputSymbol("planned_motion.hip.x", &getMotionStatus().plannedMotion.hip.translation.x);
   engine.registerDecimalInputSymbol("planned_motion.hip.y", &getMotionStatus().plannedMotion.hip.translation.y);
-  engine.registerDecimalInputSymbol("planned_motion.hip.rot", &getMotionStatus().plannedMotion.hip.rotation);
+  engine.registerDecimalInputSymbol("planned_motion.hip.rot", &getPlannedHipRot);
 
   // universal enum type for direction
   engine.registerEnumElement("direction", "direction.right", -1);
@@ -271,6 +271,11 @@ bool MotionSymbols::getMotionStatusRightMovable()
 {
   return theInstance->getMotionStatus().stepControl.moveableFoot == MotionStatus::StepControlStatus::BOTH
       || theInstance->getMotionStatus().stepControl.moveableFoot == MotionStatus::StepControlStatus::RIGHT;
+}
+
+double MotionSymbols::getPlannedHipRot()
+{
+    return Math::toDegrees(theInstance->getMotionStatus().plannedMotion.hip.rotation);
 }
 
 void MotionSymbols::setWalkOffsetRot(double rot) {
