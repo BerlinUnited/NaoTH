@@ -44,14 +44,14 @@ option passive_ball_not_seen_responsive
 
   state turn_around {
     decision {
-      else if(state_time > 3000 )
+      else if(state_time > 5000 )
         goto look_around;
       else
         stay;
     }
     action {
       search_ball_turning(search_direction = (random > 0.5) ?left:right);
-      motion.walk.style = stable;
+      motion.walk.style = normal;
     }
   }
 
