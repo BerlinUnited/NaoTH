@@ -7,7 +7,8 @@ option look_at_preview_angle
     }
     action {
      head.motion_type = goto_angle;
-     head.target_angle.x = robot_pose.planned.rotation - robot_pose.rotation;
+     head.target_angle.x = planned_motion.hip.rot;
+
      head.target_angle.y = 0;
      //(x=robot_pose.planned.x, y=robot_pose.planned.y);
 
