@@ -20,6 +20,10 @@ namespace motion_symbols("Motion Symbols") {
   enum head.motion_type input head.executed_motion_type;
   /** time the current motion is executed for */
   float input executed_motion.time;
+
+  float input planned_motion.hip.rot;
+  float input planned_motion.hip.x;
+  float input planned_motion.hip.y;
   
   /** Position in image for the head to look to */
   float output head.point_in_image.x [px];
