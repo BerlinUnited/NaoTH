@@ -46,10 +46,14 @@ import de.naoth.rc.math.Pose2D;
 import de.naoth.rc.math.Vector2D;
 import de.naoth.rc.math.Vector3D;
 import de.naoth.rc.messages.CommonTypes.DoubleVector3;
+import de.naoth.rc.messages.CommonTypes.LineSegment;
 import de.naoth.rc.messages.FrameworkRepresentations.RobotInfo;
 import de.naoth.rc.messages.Messages.PlotItem;
 import de.naoth.rc.messages.Messages.Plots;
 import de.naoth.rc.messages.Representations;
+import de.naoth.rc.messages.Representations.RansacCirclePercept2018;
+import de.naoth.rc.messages.Representations.RansacLinePercept;
+import de.naoth.rc.messages.Representations.ShortLinePercept;
 import de.naoth.rc.messages.TeamMessageOuterClass;
 import de.naoth.rc.messages.TeamMessageOuterClass.TeamMessage;
 import java.awt.Color;
@@ -594,11 +598,12 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
   
   class LogFrameDrawer implements LogFrameListener
   {
+      Pose2D robotPose = null;
         private void drawTeamMessages(BlackBoard b, DrawingCollection dc)
         {   
             Optional<String> ownBodyID = getOwnBodyID(b);
             
-            Pose2D robotPose = null;
+            
             
             LogDataFrame teamMessageFrame = b.get("TeamMessage");
             if(teamMessageFrame != null)
@@ -741,11 +746,88 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
             return Optional.empty();
         }
         
+        private void drawCircle(BlackBoard b, DrawingCollection dc) {
+            // circle
+            LogDataFrame ransacCirclePercept2018 = b.get("RansacCirclePercept2018");
+            if(ransacCirclePercept2018 != null)
+            {
+                try {
+                    RansacCirclePercept2018 circle = RansacCirclePercept2018.parseFrom(ransacCirclePercept2018.getData());
+                    
+                    if(robotPose != null && circle.getWasSeen() && circle.hasMiddleCircleCenter()) 
+                    {
+                        Vector2D q = robotPose.multiply(new Vector2D(circle.getMiddleCircleCenter().getX(), circle.getMiddleCircleCenter().getY()));
+                        dc.add(new Pen(50.0f, Color.yellow));
+                        dc.add(new Circle((int)q.x, (int)q.y, 750));
+                    }
+                } catch (InvalidProtocolBufferException ex) {
+                    Logger.getLogger(FieldViewer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        
+        private void drawLines(BlackBoard b, DrawingCollection dc) {
+            LogDataFrame linesFrame = b.get("RansacLinePercept");
+            if(linesFrame != null)
+            {
+                try {
+                    RansacLinePercept lines = RansacLinePercept.parseFrom(linesFrame.getData());
+                    
+                    if(robotPose != null) 
+                    {
+                        for(LineSegment l: lines.getFieldLineSegmentsList()) {
+                            Vector2D begin = new Vector2D(l.getBase().getX(), l.getBase().getY());
+                            Vector2D end = new Vector2D(begin.x + l.getDirection().getX()*l.getLength(), begin.y + l.getDirection().getY()*l.getLength());
+                            
+                            begin = robotPose.multiply(begin);
+                            end = robotPose.multiply(end);
+                            
+                            dc.add(new Pen(50.0f, Color.yellow));
+                            dc.add(new Line((int)begin.x, (int)begin.y, (int)end.x, (int)end.y));
+                        }
+                    }
+                    
+                } catch (InvalidProtocolBufferException ex) {
+                    Logger.getLogger(FieldViewer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        
+        private void drawShortLines(BlackBoard b, DrawingCollection dc) {
+            LogDataFrame linesFrame = b.get("ShortLinePercept");
+            if(linesFrame != null)
+            {
+                try {
+                    ShortLinePercept lines = ShortLinePercept.parseFrom(linesFrame.getData());
+                    
+                    if(robotPose != null) 
+                    {
+                        for(LineSegment l: lines.getFieldLineSegmentsList()) {
+                            Vector2D begin = new Vector2D(l.getBase().getX(), l.getBase().getY());
+                            Vector2D end = new Vector2D(begin.x + l.getDirection().getX()*l.getLength(), begin.y + l.getDirection().getY()*l.getLength());
+                            
+                            begin = robotPose.multiply(begin);
+                            end = robotPose.multiply(end);
+                            
+                            dc.add(new Pen(50.0f, Color.cyan));
+                            dc.add(new Line((int)begin.x, (int)begin.y, (int)end.x, (int)end.y));
+                        }
+                    }
+                    
+                } catch (InvalidProtocolBufferException ex) {
+                    Logger.getLogger(FieldViewer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        
         @Override
         public void newFrame(BlackBoard b) 
         {
             DrawingCollection dc = new DrawingCollection();
             drawTeamMessages(b, dc);
+            drawCircle(b, dc);
+            drawLines(b, dc);
+            drawShortLines(b, dc);
             drawings.add(this.getClass(), dc);
         }
   }
