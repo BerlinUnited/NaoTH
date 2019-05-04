@@ -64,8 +64,9 @@ private:
             PARAMETER_REGISTER(striker_ball_difference_distance) = 500.0;
             PARAMETER_REGISTER(striker_ball_difference_distance_m) = 0.35;
             PARAMETER_REGISTER(striker_ball_difference_distance_n) = -40.0;
-            PARAMETER_REGISTER(striker_goalie_ball_distance) = 1500.0;
-            PARAMETER_REGISTER(striker_goalie_min_x_pos) = -2700.0;
+            PARAMETER_REGISTER(goalie_striker_ball_distance) = 1500.0;
+            PARAMETER_REGISTER(goalie_striker_min_x_pos) = -2700.0;
+            PARAMETER_REGISTER(goalie_striker_decision_distance) = 500.0;
         }
 
         double striker_ball_lost_time;
@@ -79,8 +80,10 @@ private:
         double striker_ball_difference_distance_m;
         double striker_ball_difference_distance_n;
 
-        double striker_goalie_ball_distance;
-        double striker_goalie_min_x_pos;
+        double goalie_striker_ball_distance;
+        double goalie_striker_min_x_pos;
+        double goalie_striker_decision_distance;
+
 
     private:
         void ballDifferenceRadiusChanger(std::string method) {
@@ -119,6 +122,10 @@ private:
     /* Various evaluation functions who is faster to the ball for the striker decision. */
     double strikerIndicatorDistance(const TeamMessageData& msg);
     double strikerIndicatorTimeToBall(const TeamMessageData& msg);
+
+    /* Various evaluation functions, if another striker is already defending the goal. */
+    bool defendingGoalDirectLine(const Vector2d& ball, const Vector2d& player_pos) const;
+    bool defendingGoalCircle(const Vector2d& ball, const Vector2d& player_pos) const;
 };
 
 #endif // ROLEDECISIONDYNAMIC_H
