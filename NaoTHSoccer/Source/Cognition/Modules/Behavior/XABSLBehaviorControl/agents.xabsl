@@ -122,6 +122,7 @@ include "Options/Soccer/Strategy/passive/decide_and_go_to_passive_position_after
 include "Options/Soccer/Strategy/passive/passive_behavior.xabsl";
 include "Options/Soccer/Strategy/passive/passive_ball_seen.xabsl";
 include "Options/Soccer/Strategy/passive/passive_ball_not_seen.xabsl";
+include "Options/Soccer/Strategy/passive/passive_ball_not_seen_responsive.xabsl";
 include "Options/Soccer/Strategy/passive/passive_look_at_team_ball.xabsl";
 include "Options/Soccer/Strategy/passive/go_to_and_keep_passive_position.xabsl";
 
