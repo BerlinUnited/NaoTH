@@ -9,7 +9,7 @@ option look_at_preview_angle
      head.motion_type = goto_angle;
      head.target_angle.x = planned_motion.hip.rot;
 
-     head.target_angle.y = 0;
+     head.target_angle.y = 30;
      //(x=robot_pose.planned.x, y=robot_pose.planned.y);
 
     }
