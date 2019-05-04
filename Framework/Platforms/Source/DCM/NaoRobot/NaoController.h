@@ -13,6 +13,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <sys/stat.h>
 
 //
 #include "PlatformInterface/PlatformInterface.h"
@@ -196,6 +197,10 @@ protected:
     return new MessageQueue4Threads();
   }
 
+  inline bool fileExists (const std::string& filename) {
+    struct stat buffer;   
+    return (stat (filename.c_str(), &buffer) == 0); 
+  }
 
 protected:
   std::string theBodyID;
@@ -231,6 +236,7 @@ protected:
   AudioRecorder theAudioRecorder;
   LolaAdaptor theLolaAdaptor;
 
+  bool lolaAvailable;
 };
 
 } // end namespace naoth

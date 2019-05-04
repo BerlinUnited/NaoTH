@@ -23,7 +23,8 @@ NaoController::NaoController()
     theTeamCommSender(NULL),
     theTeamCommListener(NULL),
     theRemoteCommandListener(NULL),
-    theDebugServer(NULL)
+    theDebugServer(NULL),
+    lolaAvailable(false)
 {
   // init shared memory
   // sensor data
@@ -132,6 +133,11 @@ NaoController::NaoController()
   std::cout << "[NaoController] " << "Init SoundHandler" <<endl;
   theSoundHandler = new SoundControl();
 
+  if(fileExists("/usr/bin/lola") || fileExists("/opt/aldebaran/bin/lola"))
+  {
+    lolaAvailable = true;
+  }
+
   // try to start lola
   theLolaAdaptor.start();
   
@@ -162,7 +168,7 @@ NaoController::NaoController()
   theGameController = new SPLGameController();
 
   // HACK: we are in NAO V6
-  if(theLolaAdaptor.isRunning())
+  if(lolaAvailable)
   {
     std::cout << "[NaoController] " << "Init CameraHandler V6 (bottom)" << std::endl;
     theBottomCameraHandlerV6.init("/dev/video1", CameraInfo::Bottom, true);
@@ -189,7 +195,7 @@ NaoController::~NaoController()
 void NaoController::set(const CameraSettingsRequest &request)
 {
   // HACK: we are in NAO V6
-  if(theLolaAdaptor.isRunning()) {
+  if(lolaAvailable) {
     CameraSettings settings = request.getCameraSettings(true);
     theBottomCameraHandlerV6.setAllCameraParams(settings);
   } else {
@@ -201,7 +207,7 @@ void NaoController::set(const CameraSettingsRequest &request)
 void NaoController::set(const CameraSettingsRequestTop &request)
 {
   // HACK: we are in NAO V6
-  if(theLolaAdaptor.isRunning()) {
+  if(lolaAvailable) {
     CameraSettings settings = request.getCameraSettings(true);
     theTopCameraHandlerV6.setAllCameraParams(settings);
   } else {

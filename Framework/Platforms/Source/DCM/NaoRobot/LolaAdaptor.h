@@ -12,7 +12,10 @@
 
 #include "Tools/NaoTime.h"
 
+#include <chrono>
 #include <thread>
+#include <unistd.h>
+#include <fstream>
 
 namespace naoth 
 {
@@ -26,6 +29,7 @@ public:
     : 
     running(false),
     exiting(false),
+    waitingForLola(true),
     shutdown_requested(false),
     state(DISCONNECTED),
     sem(SEM_FAILED)
@@ -54,6 +58,25 @@ public:
     naoCommandIRSendData.open(naoCommandIRSendDataPath);
     std::cout << "[LolaAdaptor] Opening Shared Memory: " << naoCommandLEDDataPath << std::endl;
     naoCommandLEDData.open(naoCommandLEDDataPath);
+
+    // save the body ID
+    std::string theBodyID = "ALDT_lola"; //theDCMHandler.getBodyID();
+    std::cout << "[LolaAdaptor] bodyID: "<< theBodyID << std::endl;
+    
+    // save the nick name
+    std::string theBodyNickName = "nao_lola"; //theDCMHandler.getBodyNickName();
+    std::cout << "[LolaAdaptor] nickName: "<< theBodyNickName << std::endl;
+
+    // save the value to file
+    // FIXME: fixed path "Config/nao.info"
+    {
+      std::string staticMemberPath("Config/nao.info");
+      std::ofstream os(staticMemberPath.c_str());
+      ASSERT(os.good());
+      os << theBodyID << "\n" << theBodyNickName << std::endl;
+      os.close();
+    }
+
   }
   
   ~LolaAdaptor()
@@ -81,6 +104,21 @@ public:
       std::cerr << "[LolaAdaptor] error setting thread priority" << std::endl;
       assert(false);
     }
+
+    int tryCount = 0;
+    while(waitingForLola)
+    {
+      fprintf(stderr, "[LolaAdaptor] Waiting for LoLA socket.\n");
+      std::this_thread::sleep_for(std::chrono::milliseconds(125));
+      if(tryCount > 40 )
+      {
+        fprintf(stderr, "[LolaAdaptor] Waiting for LoLA socket failed after %d ms.\n", tryCount * 125);
+        waitingForLola = false;
+        assert(false);
+      }
+      tryCount++;
+    }
+    fprintf(stderr, "[LolaAdaptor] LoLA socket connection established.\n");
   }
   
   void stop() 
@@ -97,15 +135,35 @@ public:
   
 private:
 
+  inline bool fileExists (const std::string& filename) {
+    struct stat buffer;   
+    return (stat (filename.c_str(), &buffer) == 0); 
+  }
+
   void run() 
   {
-    Lola lola;
-  
+    int tryCount = 0;
+
     // end the thread if lola could not connect to the socket
-    if(lola.hasError()) {
-      return;
+    while(!fileExists("/tmp/robocup")) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(250));
+      if(tryCount > 20 )
+      {
+        fprintf(stderr, "[LolaAdaptor] Waiting for LoLa %d ms.\n", tryCount * 250);
+        assert(false);
+      }
+      tryCount++;
     }
-  
+    std::this_thread::sleep_for(std::chrono::milliseconds(900));
+    Lola lola;
+    lola.connectSocket();
+    if(lola.hasError())
+    {
+      fprintf(stderr, "[LolaAdaptor] Error while attemting to connect to LoLa socket.\n");
+      assert(false);
+    }
+
+    waitingForLola = false;
     running = true;
     SensorData sensors;
     ActuatorData actuators;
@@ -482,6 +540,7 @@ private:
 private:
   bool running;
   bool exiting;
+  bool waitingForLola;
   std::thread lolaThread;
 
   // these things are necessary to handle shutdown

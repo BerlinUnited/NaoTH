@@ -272,7 +272,9 @@ class Lola
   
   public:
     Lola()
-    {
+    {}  
+
+    void connectSocket() {
       if ( (fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
         perror("[LOLA] socket error");
         //exit(-1);
@@ -289,12 +291,12 @@ class Lola
         perror("[LOLA] connect error");
         //exit(-1);
         error = true;
-        return;
+        return ;
       }
       
       fp = fdopen(fd, "w");
       m_pac.reserve_buffer(PACKET_ZIZE);
-    }  
+    }
     
     bool hasError() {
       return error;
