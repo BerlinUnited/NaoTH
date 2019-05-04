@@ -39,6 +39,10 @@ namespace ball_symbols("Ball Symbols") {
   /** y direction of speed */
   float input ball.speed.y [mm/s];
 
+  /** position of the  last known ball */
+  float input ball.last_known.x;
+  float input ball.last_known.y;
+
     /** Time since the ball was last seen in ms */
   float input ball.time_since_last_seen "ms";
   /** Time since the ball is seen in ms*/

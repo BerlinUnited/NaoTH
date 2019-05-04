@@ -31,12 +31,14 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.angle", &getBallAngle);
   engine.registerDecimalInputSymbol("ball.speed.x", &getBallModel().speed.x);
   engine.registerDecimalInputSymbol("ball.speed.y", &getBallModel().speed.y);
-  
+  engine.registerDecimalInputSymbol("ball.last_known.x", &getBallModel().last_known_ball.x);
+  engine.registerDecimalInputSymbol("ball.last_known.y", &getBallModel().last_known_ball.y);
+
   engine.registerDecimalInputSymbol("ball.left_foot.x", &ballLeftFoot.x);
   engine.registerDecimalInputSymbol("ball.left_foot.y", &ballLeftFoot.y);
   engine.registerDecimalInputSymbol("ball.right_foot.x", &ballRightFoot.x);
   engine.registerDecimalInputSymbol("ball.right_foot.y", &ballRightFoot.y);
-  
+
   // preview
   engine.registerDecimalInputSymbol("ball.preview.x", &getBallModel().positionPreview.x);
   engine.registerDecimalInputSymbol("ball.preview.y", &getBallModel().positionPreview.y);
@@ -44,10 +46,10 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.preview.left_foot.y", &getBallModel().positionPreviewInLFoot.y);
   engine.registerDecimalInputSymbol("ball.preview.right_foot.x", &getBallModel().positionPreviewInRFoot.x);
   engine.registerDecimalInputSymbol("ball.preview.right_foot.y", &getBallModel().positionPreviewInRFoot.y);
-  
+
   engine.registerDecimalInputSymbol("ball.time_since_last_seen", &getBallTimeSinceLastSeen);
   engine.registerDecimalInputSymbol("ball.time_seen", &getBallTimeSeen);
-  
+
   // global
   engine.registerDecimalInputSymbol("ball.position.field.x", &ballPositionField.x);
   engine.registerDecimalInputSymbol("ball.position.field.y", &ballPositionField.y);
@@ -77,14 +79,14 @@ void BallSymbols::execute()
   // transform the ball position into the feet coordinates
   const Pose3D& lFoot = getKinematicChain().theLinks[KinematicChain::LFoot].M;
   const Pose3D& rFoot = getKinematicChain().theLinks[KinematicChain::RFoot].M;
-  
+
   Pose2D lFootPose(lFoot.rotation.getZAngle(), lFoot.translation.x, lFoot.translation.y);
   Pose2D rFootPose(rFoot.rotation.getZAngle(), rFoot.translation.x, rFoot.translation.y);
 
   ballLeftFoot  = lFootPose/getBallModel().position;
   ballRightFoot = rFootPose/getBallModel().position;
 
-  DEBUG_REQUEST("XABSL:BallSymbols:ballLeftFoot", 
+  DEBUG_REQUEST("XABSL:BallSymbols:ballLeftFoot",
     FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 20);
     CIRCLE(ballLeftFoot.x, ballLeftFoot.y, 32.5);
@@ -92,7 +94,7 @@ void BallSymbols::execute()
     PLOT("XABSL:BallSymbols:ballLeftFoot:y", ballLeftFoot.y);
   );
 
-  DEBUG_REQUEST("XABSL:BallSymbols:ballRightFoot", 
+  DEBUG_REQUEST("XABSL:BallSymbols:ballRightFoot",
     FIELD_DRAWING_CONTEXT;
     PEN("0000FF", 20);
     CIRCLE(ballRightFoot.x, ballRightFoot.y, 32.5);
@@ -105,7 +107,7 @@ void BallSymbols::execute()
 
   if(theInstance->getMultiBallPercept().wasSeen()) {
     //HACK: look at the first ball percept in the list
-    ballPerceptPos = theInstance->getMultiBallPercept().begin()->positionOnField; 
+    ballPerceptPos = theInstance->getMultiBallPercept().begin()->positionOnField;
     ballPerceptSeen = true;
   } else {
     // propagate the ball percept with the odometry
@@ -113,7 +115,7 @@ void BallSymbols::execute()
     ballPerceptPos = odometryDelta*ballPerceptPos;
   }
 
-  DEBUG_REQUEST("XABSL:BallSymbols:ballPerceptPropagated", 
+  DEBUG_REQUEST("XABSL:BallSymbols:ballPerceptPropagated",
     FIELD_DRAWING_CONTEXT;
     PEN("0000FF", 20);
     CIRCLE(ballPerceptPos.x, ballPerceptPos.y, 50);
