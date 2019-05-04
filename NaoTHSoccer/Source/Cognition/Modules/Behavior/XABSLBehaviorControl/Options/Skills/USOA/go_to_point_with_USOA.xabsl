@@ -19,17 +19,10 @@ option go_to_point_with_USOA
 	          goto approach_carefully;
 	      else if(obstacle.ultrasound.left.distance < 400)
 	          goto avoid_left;
-	      else if(obstacle.ultrasound.right.distance < 400)
+	      else if(obstacle.ultrasound.right.distance < 400)
 	          goto avoid_right;
         else
           stay;
-      }
-      else if(sensor.obstacle.preview.valid && sensor.obstacle.preview.inFront) {
-        if(sensor.obstacle.preview.right) {
-          goto avoid_left;
-        } else {
-          goto avoid_right;
-        }
       }
       else if(action_done && state_time > 0)
         goto finish;
@@ -48,10 +41,11 @@ option go_to_point_with_USOA
     { if ((vector.abs(x=locator.field_to_relative.x(x=@x, y=@y), y=locator.field_to_relative.y(x=@x, y=@y)) < obstacle.ultrasound.distance)
             &&(obstacle.ultrasound.distance<400) && (obstacle.ultrasound.blockedtime > 100))
         goto approach_carefully;
-      else if(state_time > 1000 && (obstacle.ultrasound.distance > 400 && !(sensor.obstacle.preview.valid && sensor.obstacle.preview.inFront)) )
+      else if(obstacle.ultrasound.distance > 400 && state_time > 1000)
         goto go;
-      else if(state_time > 1000 && ((obstacle.ultrasound.right.distance < obstacle.ultrasound.left.distance && obstacle.ultrasound.blockedtime > 100) ||
-                                    (sensor.obstacle.preview.valid && sensor.obstacle.preview.left)) )
+      else if(obstacle.ultrasound.right.distance < obstacle.ultrasound.left.distance 
+              && state_time > 1000
+              && obstacle.ultrasound.blockedtime > 100)
         goto avoid_right;
       else
         stay;
@@ -77,10 +71,11 @@ option go_to_point_with_USOA
     { if ((vector.abs(x=locator.field_to_relative.x(x=@x, y=@y), y=locator.field_to_relative.y(x=@x, y=@y)) < obstacle.ultrasound.distance)
             &&(obstacle.ultrasound.distance<400) && (obstacle.ultrasound.blockedtime > 100))
         goto approach_carefully;
-      else if( state_time > 1000 && (obstacle.ultrasound.distance > 400 && !(sensor.obstacle.preview.valid && sensor.obstacle.preview.inFront)) )
+      else if(obstacle.ultrasound.distance > 400 && state_time > 1000)
         goto go;
-      else if( state_time > 1000 && ((obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance && obstacle.ultrasound.blockedtime > 100)
-                                     || (sensor.obstacle.preview.valid && sensor.obstacle.preview.right)))
+      else if(obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance 
+              && state_time > 1000
+              && obstacle.ultrasound.blockedtime > 100)
        goto avoid_left;
       else
         stay;
@@ -104,11 +99,11 @@ option go_to_point_with_USOA
     decision{
       if ( action_done )
         goto finish;
-      else if (obstacle.ultrasound.distance>400 && !(sensor.obstacle.preview.valid && sensor.obstacle.preview.inFront))
+      else if (obstacle.ultrasound.distance>400)
         goto go;
       else if ((vector.abs(x=locator.field_to_relative.x(x=@x, y=@y), y=locator.field_to_relative.y(x=@x, y=@y)) > obstacle.ultrasound.distance)
               && obstacle.ultrasound.blockedtime > 100){
-        if((obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance) || (sensor.obstacle.preview.valid && sensor.obstacle.preview.right))
+        if(obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance)
            goto avoid_left;
         else
            goto avoid_right;
