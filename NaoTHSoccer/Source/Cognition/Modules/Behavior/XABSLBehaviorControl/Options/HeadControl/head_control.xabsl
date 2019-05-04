@@ -27,6 +27,9 @@ option head_control
       goto search_for_ball_and_look_around;
     else if(head.control_mode == look_at_team_ball)
       goto look_at_team_ball;
+   else if(head.control_mode == look_at_preview_angle)
+      goto look_at_preview_angle;
+
   }
 
   initial state none
@@ -139,5 +142,12 @@ option head_control
       look_at_team_ball();
     }
   }
+  
+ state look_at_preview_angle{
+   action{
+     look_at_preview_angle();
+   }
+ }
+ 
 }
   

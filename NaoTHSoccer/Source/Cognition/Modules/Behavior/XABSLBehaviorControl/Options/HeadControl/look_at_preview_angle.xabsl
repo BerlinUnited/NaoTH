@@ -1,0 +1,14 @@
+option look_at_preview_angle
+{
+  initial state doit 
+  {
+    decision {
+      stay;
+    }
+    action {
+     head.motion_type = goto_angle;
+     head.target_angle.x = planned_motion.hip.rot;
+     head.target_angle.y = 30;
+    }
+  }
+}

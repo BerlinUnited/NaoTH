@@ -69,7 +69,7 @@ void TeamCommSender::fillMessageBeforeSending() const
       msg.custom.ballVelocity.y = 0;
     }
 
-    // TODO: should be fixed with issue #105
+    // make sure we're not in the standup motion
     msg.fallen = getBodyState().fall_down_state != BodyState::upright
               || getMotionStatus().currentMotion == motion::stand_up_from_back
               || getMotionStatus().currentMotion == motion::stand_up_from_side
@@ -98,6 +98,8 @@ void TeamCommSender::fillMessageBeforeSending() const
 
     msg.custom.robotState = getPlayerInfo().robotState;
     msg.custom.robotRole = getRoleDecisionModel().getRole(getPlayerInfo().playerNumber);
+
+    msg.custom.readyToWalk = getBodyState().readyToWalk;
 
     // TODO: shall we put it into config?
     msg.custom.key = NAOTH_TEAMCOMM_MESAGE_KEY;
