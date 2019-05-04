@@ -216,6 +216,8 @@ option search_for_ball
     }
     action
     {
+      head.camera.id = Top;
+    
       head.point_in_world.x = 2000;
       head.point_in_world.y = 6000;
       head.point_in_world.z = 500;
@@ -237,6 +239,8 @@ option search_for_ball
     }
     action
     {
+      head.camera.id = Top;
+      
       head.point_in_world.x = 2000;
       head.point_in_world.y = -6000;
       head.point_in_world.z = 500;
