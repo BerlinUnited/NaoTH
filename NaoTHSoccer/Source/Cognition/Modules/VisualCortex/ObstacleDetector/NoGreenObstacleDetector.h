@@ -18,6 +18,7 @@
 #include "Representations/Perception/MultiChannelIntegralImage.h"
 #include "Representations/Perception/Obstacle.h"
 #include "Representations/Motion/MotionStatus.h"
+#include "Representations/Modeling/BallModel.h"
 
 // Tools
 #include "detectorfield.h"
@@ -31,6 +32,7 @@ BEGIN_DECLARE_MODULE(NoGreenObstacleDetector)
   REQUIRE(BallDetectorIntegralImage)
   REQUIRE(BallDetectorIntegralImageTop)
   REQUIRE(MotionStatus)
+  REQUIRE(BallModel)
 
   PROVIDE(VisionObstacle)
   PROVIDE(VisionObstaclePreview)
@@ -47,6 +49,7 @@ public:
   double detector_field_offset;
   double detector_width;
   double detector_range;
+  double ball_offset;
 
   CameraInfo::CameraID cameraID;
 
@@ -58,6 +61,8 @@ public:
   virtual void execute();
 
   void create_detector_on_field(DetectorField& detectorField, double xOffset);
+  bool create_detector_behind_ball(DetectorField& detectorField);
+
   bool detector_parameters_changed();
 
   bool projectDetector(DetectorField& detectorField, DetectorImage& detectorImage);
@@ -72,6 +77,8 @@ private:
       PARAMETER_REGISTER(detector_width) = 280.;
       PARAMETER_REGISTER(detector_range) = 200.;
 
+      PARAMETER_REGISTER(ball_offset) = 10.;
+
       PARAMETER_REGISTER(min_expected_area) = .8;
 
       PARAMETER_REGISTER(max_green_density) = .5;
@@ -81,6 +88,8 @@ private:
     double detector_field_offset;
     double detector_width;
     double detector_range;
+
+    double ball_offset;
 
     double min_expected_area;
 

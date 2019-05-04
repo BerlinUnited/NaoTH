@@ -21,12 +21,12 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("sensor.ultrasound.left", &simplePassLeftSensor);
   engine.registerDecimalInputSymbol("sensor.ultrasound.right", &simplePassRightSensor);
 
-  engine.registerBooleanInputSymbol("sensor.obstacle.inFront", &getVisionObstacle().inFront);
+  engine.registerBooleanInputSymbol("sensor.obstacle.inFront", &getVisionObstacle().isOccupied);
   engine.registerBooleanInputSymbol("sensor.obstacle.left", &getVisionObstacle().onTheLeft);
   engine.registerBooleanInputSymbol("sensor.obstacle.right", &getVisionObstacle().onTheRight);
   engine.registerBooleanInputSymbol("sensor.obstacle.valid", &getVisionObstacle().valid);
 
-  engine.registerBooleanInputSymbol("sensor.obstacle.preview.inFront", &getVisionObstaclePreview().inFront);
+  engine.registerBooleanInputSymbol("sensor.obstacle.preview.inFront", &getVisionObstaclePreview().isOccupied);
   engine.registerBooleanInputSymbol("sensor.obstacle.preview.left", &getVisionObstaclePreview().onTheLeft);
   engine.registerBooleanInputSymbol("sensor.obstacle.preview.right", &getVisionObstaclePreview().onTheRight);
   engine.registerBooleanInputSymbol("sensor.obstacle.preview.valid", &getVisionObstaclePreview().valid);

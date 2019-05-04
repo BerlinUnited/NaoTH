@@ -7,7 +7,7 @@ public:
 
   bool valid;
 
-  bool inFront;
+  bool isOccupied;
 
   bool onTheRight;
   bool onTheLeft;
