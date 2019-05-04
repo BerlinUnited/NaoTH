@@ -1,0 +1,9 @@
+#!/bin/bash
+
+export LD_LIBRARY_PATH=/opt/aldebaran/lib:/opt/aldebaran/lib/naoqi:/opt/ros/indigo/lib:/home/nao/lib
+
+cd /home/nao/naoqi/
+/home/nao/bin/naoth &
+echo "$!" > /tmp/cognition.pid
+
+

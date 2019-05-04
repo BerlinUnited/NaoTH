@@ -1,0 +1,14 @@
+[Unit]
+Description = NaoTH
+After = dev-video0.device dev-video1.device pulseaudio.service user@1001.service naoqi.service lola.service
+Wants = dev-video0.device dev-video1.device pulseaudio.service user@1001.service naoqi.service lola.service
+ConditionPathExists=/home/nao/bin/naoth
+
+[Service]
+ExecStart = /home/nao/bin/naoth
+EnvironmentFile = /home/nao/.config/conf.d/naoth
+User = 1001
+Group = 1001
+
+[Install]
+WantedBy = default.target

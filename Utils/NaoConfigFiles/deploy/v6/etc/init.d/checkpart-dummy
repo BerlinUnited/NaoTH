@@ -1,0 +1,23 @@
+#!/sbin/runscript
+##
+## checkpart
+##
+## Copyright (C) 2010-2012 Aldebaran Robotics
+##
+
+
+depend() {
+  provide checkpart
+}
+
+start() {
+  :
+}
+
+stop() {
+  :
+}
+
+restart() {
+  :
+}
