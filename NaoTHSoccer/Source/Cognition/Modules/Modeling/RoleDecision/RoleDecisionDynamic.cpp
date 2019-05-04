@@ -8,8 +8,6 @@ RoleDecisionDynamic::RoleDecisionDynamic()
     DEBUG_REQUEST_REGISTER("RoleDecision:Dynamic:striker_ball_difference_radius",
                            "Draws the radius around a seen ball, which is used to determine if the seen ball is the same)",
                            false);
-
-    ballDifferenceRadiusChanger(params.striker_ball_difference_function);
 }
 
 RoleDecisionDynamic::~RoleDecisionDynamic()
@@ -97,7 +95,7 @@ void RoleDecisionDynamic::handleGoalie(const TeamMessageData* goalie, std::vecto
         checkStriker(*goalie, indicator, globalBall, striker, true);
     } else {
         bool strikerAlreadyDefending = false;
-        double r = ballDifferenceRadius(goalie->ballPosition.abs());
+        double r = (this->*params.ballDiffFunc)(goalie->ballPosition.abs());
         // check if a striker is already defending our goal
         for(auto& s : striker) {
             // do we defend the same ball and is striker between behind the ball?
@@ -134,7 +132,7 @@ void RoleDecisionDynamic::checkStriker(const TeamMessageData& msg,
                                        bool force)
 {
     bool done = false;
-    double r = ballDifferenceRadius(msg.ballPosition.abs());
+    double r = (this->*params.ballDiffFunc)(msg.ballPosition.abs());
 
     DEBUG_REQUEST("RoleDecision:Dynamic:striker_ball_difference_radius",
       FIELD_DRAWING_CONTEXT;

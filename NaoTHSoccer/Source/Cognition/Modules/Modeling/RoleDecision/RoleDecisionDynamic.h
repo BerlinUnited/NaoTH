@@ -60,7 +60,7 @@ private:
             PARAMETER_REGISTER(striker_ball_lost_time) = 1000.0;
             PARAMETER_REGISTER(striker_ball_bonus_time) = 4000.0;
             PARAMETER_REGISTER(striker_indicator_bonus) = 300.0;
-            PARAMETER_REGISTER(striker_ball_difference_function) = 3;
+            PARAMETER_REGISTER(striker_ball_difference_function, &Parameters::ballDifferenceRadiusChanger) = "constlinear"; // "const", "linear"
             PARAMETER_REGISTER(striker_ball_difference_distance) = 500.0;
             PARAMETER_REGISTER(striker_ball_difference_distance_m) = 0.35;
             PARAMETER_REGISTER(striker_ball_difference_distance_n) = -40.0;
@@ -72,13 +72,28 @@ private:
         double striker_ball_bonus_time;
         double striker_indicator_bonus;
 
-        int striker_ball_difference_function;
+        std::string striker_ball_difference_function;
+        double (RoleDecisionDynamic::*ballDiffFunc)(double);
+
         double striker_ball_difference_distance;
         double striker_ball_difference_distance_m;
         double striker_ball_difference_distance_n;
 
         double striker_goalie_ball_distance;
         double striker_goalie_min_x_pos;
+
+    private:
+        void ballDifferenceRadiusChanger(std::string method) {
+            if(method.compare("const") == 0) { // const
+                ballDiffFunc = &RoleDecisionDynamic::ballDifferenceRadiusConstant;
+            } else if(method.compare("linear") == 0) { // linear
+                ballDiffFunc = &RoleDecisionDynamic::ballDifferenceRadiusLinear;
+            } else if(method.compare("constlinear") == 0) { // constlinear
+                ballDiffFunc = &RoleDecisionDynamic::ballDifferenceRadiusConstantLinear;
+            } else { // const
+                ballDiffFunc = &RoleDecisionDynamic::ballDifferenceRadiusConstant;
+            }
+        }
     } params;
 
     struct Striker {
@@ -96,19 +111,12 @@ private:
     void handleGoalie(const TeamMessageData *goalie, std::vector<Striker>& striker);
     inline bool checkSameBall(const Striker &s, const Vector2d& ball, double r);
 
-    std::function<double(double)> ballDifferenceRadius;
+    /* Different radius methods for the same ball check. */
     inline double ballDifferenceRadiusConstant(double /*d*/) { return params.striker_ball_difference_distance; }
     inline double ballDifferenceRadiusLinear(double d) { return d * params.striker_ball_difference_distance_m + params.striker_ball_difference_distance_n; }
     inline double ballDifferenceRadiusConstantLinear(double d) { return std::max(ballDifferenceRadiusConstant(d), ballDifferenceRadiusLinear(d)); }
-    void ballDifferenceRadiusChanger(int selection) {
-        switch (selection) {
-            case 1: ballDifferenceRadius = std::bind(&RoleDecisionDynamic::ballDifferenceRadiusConstant, this, std::placeholders::_1); break;
-            case 2: ballDifferenceRadius = std::bind(&RoleDecisionDynamic::ballDifferenceRadiusLinear, this, std::placeholders::_1); break;
-            case 3: ballDifferenceRadius = std::bind(&RoleDecisionDynamic::ballDifferenceRadiusConstantLinear, this, std::placeholders::_1); break;
-            default: ballDifferenceRadius = std::bind(&RoleDecisionDynamic::ballDifferenceRadiusConstant, this, std::placeholders::_1);
-        }
-    }
 
+    /* Various evaluation functions who is faster to the ball for the striker decision. */
     double strikerIndicatorDistance(const TeamMessageData& msg);
     double strikerIndicatorTimeToBall(const TeamMessageData& msg);
 };
