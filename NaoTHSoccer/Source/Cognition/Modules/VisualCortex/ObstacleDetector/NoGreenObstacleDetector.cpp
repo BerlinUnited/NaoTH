@@ -238,6 +238,24 @@ void NoGreenObstacleDetector::execute()
     double green_density_left = (double) detectorImageBehindBall.greenLeft(getBallDetectorIntegralImage()) / (detectorImageBehindBall.pixels()/2);
     double green_density_right = (double) detectorImageBehindBall.greenRight(getBallDetectorIntegralImage()) / (detectorImageBehindBall.pixels()/2);
 
+    DEBUG_REQUEST("Vision:NoGreenObstacleDetector:draw_detector_behind_ball",
+      FIELD_DRAWING_CONTEXT;
+      DetectorField& detector = detectorBehindBall;
+
+      PEN("0080FF", 5);
+      std::ostringstream stringStream;
+      stringStream << green_density * 100 << '%';
+      TEXT_DRAWING(detector.edges[0].x, detector.edges[0].y, stringStream.str());
+      stringStream.str("");
+
+      stringStream << green_density_left * 100 << '%';
+      TEXT_DRAWING(detector.edges[0].x, detector.edges[0].y - 1000, stringStream.str());
+      stringStream.str("");
+
+      stringStream << green_density_right * 100 << '%';
+      TEXT_DRAWING(detector.edges[0].x, detector.edges[0].y + 1000, stringStream.str());
+    );
+
     // set representation if detector is occupied
     getObstacleBehindBall().valid = true;
     getObstacleBehindBall().isOccupied = green_density <= params.max_green_density;
