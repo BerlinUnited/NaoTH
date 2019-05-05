@@ -10,16 +10,16 @@ deployFile() {
 	local RIGHTS="$3"
 	local PREFIX="$4"
 
-	if [ ! $PREFIX == "" ]; then
+	if [ -z $PREFIX ]; then
 		SOURCEFILE="$DEPLOY_DIRECTORY/$FILE"
 	else
 		SOURCEFILE="$DEPLOY_DIRECTORY/$PREFIX/$FILE"
 	fi
 
-	echo "$SOURCEFILEE"
+	echo "$DEPLOY_DIRECTORY/$SOURCEFILE -> $FILE"
 
 	if [ -f "$SOURCEFILE" ]; then
-		logger -t naoth "Deploy file '$FILE' for $OWNER with $RIGHTS"
+		logger -t naoth "Deploy file '$SOURCEFILE' for $OWNER with $RIGHTS"
 		# backup existing file
 		if [ -f "$FILE" ]; then
 			mkdir -p $BACKUP_DIRECTORY/$(dirname $FILE)
@@ -38,23 +38,24 @@ deployDirectory() {
 	local RIGHTS="$3"
 	local PREFIX="$4"
 
-	if [ ! $PREFIX == "" ]; then
+	if [ -z $PREFIX ]; then
 		SOURCEDIR="$DEPLOY_DIRECTORY/$DIR"
 	else
 		SOURCEDIR="$DEPLOY_DIRECTORY/$PREFIX/$DIR"
 
 	fi
 	
-	echo "$SOURCEDIR"
+	echo "$SOURCEDIR -> $DIR"
 
 	if [ -d "$SOURCEDIR" ]; then
-		logger -t naoth "Deploy directory '$DIR' for $OWNER with $RIGHTS"
+		logger -t naoth "Deploy directory '$SOURCEDIR' for $OWNER with $RIGHTS"
 		# backup directory files
 		if [ -d "$DIR" ]; then
 			mkdir -p $BACKUP_DIRECTORY/$DIR
 			mv -f $DIR/* $BACKUP_DIRECTORY/$DIR/
 		fi
 		rm -rf $DIR
+
 		# copy files
 		cp -r $SOURCEDIR $DIR
 
@@ -62,8 +63,6 @@ deployDirectory() {
 		chmod -R $RIGHTS $DIR
 	fi
 }
-
-
 
 
 setEtc(){
@@ -87,33 +86,24 @@ setEtc(){
 	# deployFile "/etc/init.d/cognition-common" "root" "755"
 
 	# brainwashinit
-	deployFile "/usr/bin/brainwash" "root" "755"
+	deployFile "/usr/bin/brainwash" "root" "755" "v6"
 
 	# NaoTH binary start script
-	deployFile "/usr/bin/naoth" "root" "755"
+	deployFile "/usr/bin/naoth" "root" "755" "v6"
 
 	# NaoTH systemd service
-	deployFile "/etc/systemd/system/naoth.service" "root" "644"
-	deployFile "/etc/conf.d/naoth" "root" "644"
-	deployFile "/etc/systemd/user/naoth_user.service" "root" "644"
-	if [ ! -d /home/nao/.config/conf.d ];	then
-		mkdir /home/nao/.config/conf.d;
-	fi
-	deployFile "/home/nao/.config/conf.d/naoth" "nao" "644"
+	deployFile "/etc/systemd/system/naoth.service" "root" "644" "v6"
+	deployFile "/etc/conf.d/naoth" "root" "644" "v6"
 
 	if [ ! -d /home/nao/.config/systemd ];	then
 		mkdir /home/nao/.config/systemd;
 	fi
-	if [ ! -d /home/nao/.config/systemd/user ];	then
-		mkdir /home/nao/.config/systemd/user;
-	fi
-	deployFile "/home/nao/.config/systemd/user/naoth_user_local.service" "nao" "644"
 
 	if [ ! -d /etc/systemd/system/default.target.wants ];	then
 		mkdir /etc/systemd/system/default.target.wants;
 	fi
 	# add link to enable starting at boot
-	if [ ! -f /etc/systemd/system/default.target.wants/naoth.service ];	then
+	if [ ! -h /etc/systemd/system/default.target.wants/naoth.service ];	then
 		echo "setting link to naoth.service";
 		ln -s /etc/systemd/system/naoth.service /etc/systemd/system/default.target.wants/naoth.service;
 	fi
@@ -130,7 +120,7 @@ setEtc(){
 	# su -c `systemctl --user enable naoth` nao
 
 	# brainwash udev rule
-	deployFile "/etc/udev/rules.d/brainwashing.rules" "nao" "644"
+	deployFile "/etc/udev/rules.d/brainwashing.rules" "nao" "644" "v6"
 
 	# # copy new fstab
 	# deployFile "/etc/fstab" "root" "644"
@@ -144,8 +134,8 @@ setEtc(){
 	# ====================  host stuff ====================
 
 	# hostname
-	deployFile "/etc/conf.d/hostname" "root" "644"
-	deployFile "/etc/hostname" "root" "644"
+	deployFile "/etc/conf.d/hostname" "root" "644" "v6"
+	deployFile "/etc/hostname" "root" "644" "v6"
 
 }
 
@@ -155,12 +145,12 @@ setEtc(){
 #remount root in read write mode
 mount -o remount,rw /
 
-# # set volume to 88%
-# sudo -u nao pactl set-sink-mute 0 false
-# sudo -u nao pactl set-sink-volume 0 88%
+# set volume to 88%
+sudo -u nao pactl set-sink-mute 0 false
+sudo -u nao pactl set-sink-volume 0 88%
 
-# # play initial sound
-# sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav
+# play initial sound
+sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav
 
 # stop naoqi and naoth
 naoth stop
@@ -193,22 +183,42 @@ then
 		chmod 744 /home/nao/bin
 fi
 
-deployFile "/home/nao/lib/libprotobuf.so" "nao" "644"
-mv /home/nao/lib/libprotobuf.so /home/nao/lib/libprotobuf.so.14
+if [ -f ./deploy/v6/home/nao/lib/libprotobuf.so.14 ]; then
+	deployFile "/home/nao/lib/libprotobuf.so.14" "nao" "644"
+else
+	deployFile "/home/nao/lib/libprotobuf.so" "nao" "644" 
+	mv /home/nao/lib/libprotobuf.so /home/nao/lib/libprotobuf.so.14
+fi
 
-deployFile "/home/nao/lib/libfftw3.so" "nao" "644"
-mv /home/nao/lib/libfftw3.so /home/nao/lib/libfftw3.so.3
+if [ -f ./deploy/v6/home/nao/lib/libfftw3.so.3 ]; then
+	deployFile "/home/nao/lib/libfftw3.so.3" "nao" "644"
+else
+	deployFile "/home/nao/lib/libfftw3.so" "nao" "644"
+	mv /home/nao/lib/libfftw3.so /home/nao/lib/libfftw3.so.3
+fi
 
-deployFile "/home/nao/lib/libpulse-simple.so" "nao" "644"
-mv /home/nao/lib/libpulse-simple.so /home/nao/lib/libpulse-simple.so.0
+if [ -f ./deploy/v6/home/nao/lib/libpulse-simple.so.0 ]; then
+	deployFile "/home/nao/lib/libpulse-simple.so.0" "nao" "644"
+else
+	deployFile "/home/nao/lib/libpulse-simple.so" "nao" "644"
+	mv /home/nao/lib/libpulse-simple.so /home/nao/lib/libpulse-simple.so.0
+fi
 
-deployFile "/home/nao/lib/libpulsecommon-3.99.so" "nao" "644"
+deployFile "/home/nao/lib/libpulsecommon-3.99.so" "nao" "644" 
 
-deployFile "/home/nao/lib/libjson.so" "nao" "644"
-mv /home/nao/lib/libjson.so /home/nao/lib/libjson.so.0
+if [ -f ./deploy/v6/home/nao/lib/libjson.so.0 ]; then
+	deployFile "/home/nao/lib/libjson.so.0" "nao" "644"
+else
+	deployFile "/home/nao/lib/libjson.so" "nao" "644" 
+	mv /home/nao/lib/libjson.so /home/nao/lib/libjson.so.0
+fi
 
-deployFile "/home/nao/lib/libgdbm.so" "nao" "644"
-mv /home/nao/lib/libgdbm.so /home/nao/lib/libgdbm.so.3
+if [ -f ./deploy/v6/home/nao/lib/libgdbm.so.3 ]; then
+	deployFile "/home/nao/lib/libgdbm.so.3" "nao" "644" 
+else
+	deployFile "/home/nao/lib/libgdbm.so" "nao" "644" 
+	mv /home/nao/lib/libgdbm.so /home/nao/lib/libgdbm.so.3
+fi
 
 # ==================== copy stuff ====================
 
@@ -223,17 +233,13 @@ fi
 
 NAO_NUMBER=$(cat /etc/hostname | grep nao | sed -e 's/nao//g')
 
-#connmanctl config wifi_bc307ea9faa8_53504c5f41_managed_psk --ipv4 manual 10.0.4.11 255.255.0.0
-# connmanctl config wifi_bc307ea9faa8_53504c5f41_managed_psk --autoconnect off
+deployFile "/home/nao/robocup.conf" "nao" "644" "v6"
 
-deployFile "/home/nao/robocup.conf" "nao" "644"
-
-# deploy binaries
-# deployFile "/home/nao/bin/libnaosmal.so" "nao" "755"
-deployFile "/home/nao/bin/naoth" "nao" "755"
+# deploy binary
+deployFile "/home/nao/bin/naoth" "nao" "755" 
 
 # deploy media
-deployDirectory "/home/nao/naoqi/Media" "nao" "744" "v6"
+deployDirectory "/home/nao/naoqi/Media" "nao" "744"
 
 # add link to the Media directory
 if [ ! -h /home/nao/Media ]
@@ -249,7 +255,7 @@ fi
 # deployFile "/etc/naoqi/autoload.ini" "root" "644"
 
 # create the local Config directory
-deployDirectory "/home/nao/naoqi/Config" "nao" "744" "v6"
+deployDirectory "/home/nao/naoqi/Config" "nao" "744"
 
 # add link to the Config directory
 if [ ! -h /home/nao/Config ]
@@ -261,6 +267,17 @@ fi
 echo "bodyID: ALDTxxx<\nnickName:nao" > /home/nao/Config/nao.info	
 chown nao:nao /home/nao/Config/nao.info
 chmod 644 /home/nao/Config/nao.info
+
+# ==================== post stuff ====================
+
+chown -R nao:nao /home/nao/backup*
+
+# allow everyone to shutdown
+chmod +s /sbin/shutdown
+chmod +s /sbin/reboot
+
+#remount root in read only mode
+mount -o remount,ro /
 
 # ==================== network stuff ====================
 
@@ -275,12 +292,9 @@ CONNMAN_SERVICES=$(connmanctl services)
 ETH0_MAC=$(cat /sys/class/net/eth0/address | sed -e 's/://g')
 WLAN0_MAC=$(cat /sys/class/net/wlan0/address | sed -e 's/://g')
 
-echo "Setting ip of eth0 (${ETH0_MAC})"
-connmanctl config ethernet_${ETH0_MAC}_cable --ipv4 manual 192.168.13.${NAO_NUMBER} 255.255.255.0
-
 echo "Setting up wifi configuration for wlan0 (${WLAN0_MAC})"
-sed -i -e "s/__NAO__/${NAO_NUMBER}/g" $DEPLOY_DIRECTORY/var/lib/connman/wifi.config
-deployFile "/var/lib/connman/wifi.config" "root" "644"
+sed -i -e "s/__NAO__/${NAO_NUMBER}/g" $DEPLOY_DIRECTORY/v6/var/lib/connman/wifi.config
+deployFile "/var/lib/connman/wifi.config" "root" "644" "v6"
 
 WIFI_NETWORKS=$(cat /var/lib/connman/wifi.config | grep "Name =" | sed -e "s/ //g" | sed -e "s/Name=//g")
 for wifi in $WIFI_NETWORKS; do
@@ -298,23 +312,16 @@ for wifi in $WIFI_NETWORKS; do
 	fi
 done
 
-# ==================== post stuff ====================
+# play initial sound
+sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav
 
-chown -R nao:nao /home/nao/backup*
+echo "Setting ip of eth0 (${ETH0_MAC})"
+connmanctl config ethernet_${ETH0_MAC}_cable --ipv4 manual 192.168.13.${NAO_NUMBER} 255.255.255.0
 
-# allow everyone to shutdown
-chmod +s /sbin/shutdown
-chmod +s /sbin/reboot
+# prevent reboot if appropiate file exists
+if [ ! -f "./noreboot" ]; then
+	reboot
+fi
 
-# #remount root in read only mode
-# mount -o remount,ro /
-
-# # prevent reboot if appropiate file exists
-# if [ ! -f "./noreboot" ]; then
-# 	reboot
-# fi
-
-# # play initial sound
-# sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav
 
 echo "DONE"
