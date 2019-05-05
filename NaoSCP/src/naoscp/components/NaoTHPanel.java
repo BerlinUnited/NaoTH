@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package naoscp.components;
 
 import java.io.File;
@@ -12,7 +6,6 @@ import java.util.Arrays;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -311,6 +304,9 @@ public class NaoTHPanel extends javax.swing.JPanel {
         
         updateScheme();
         
+        // applies the configuration and sets the ui elements appropriately
+        applyConfig();
+        
         // this is set in updateScheme()
         //playerNumberPanel.setRobots(configDir);
         //playerNumberPanel.setRobotsFromTeamFile(new File(configDir, "general"));
@@ -330,6 +326,27 @@ public class NaoTHPanel extends javax.swing.JPanel {
         }
         
         setConfigEditable();
+    }
+    
+    private void applyConfig() {
+        if(properties.containsKey("naoscp.color")) {
+            jColorBox.setSelectedItem(properties.getProperty("naoscp.color"));
+        }
+        if(properties.containsKey("naoscp.copy.smal")) {
+            cbCopyLib.setSelected(Boolean.parseBoolean(properties.getProperty("naoscp.copy.smal")));
+        }
+        if(properties.containsKey("naoscp.copy.config")) {
+            cbCopyConfig.setSelected(Boolean.parseBoolean(properties.getProperty("naoscp.copy.config")));
+        }
+        if(properties.containsKey("naoscp.copy.exe")) {
+            cbCopyExe.setSelected(Boolean.parseBoolean(properties.getProperty("naoscp.copy.exe")));
+        }
+        if(properties.containsKey("naoscp.port")) {
+            jTeamCommPort.setText(properties.getProperty("naoscp.port"));
+        }
+        if(properties.containsKey("naoscp.team")) {
+            jTeamNumber.setText(properties.getProperty("naoscp.team"));
+        }
     }
     
     private void updateScheme() {
