@@ -4,7 +4,8 @@
 #include <Tools/Math/Matrix_mxn.h>
 #include <numeric>
 
-RansacLineDetector::RansacLineDetector()
+RansacLineDetector::RansacLineDetector():
+lineRansac(params.line.maxIterations, params.line.minDirectionSimilarity, params.line.outlierThresholdDist)
 {
   // initialize some stuff here
   DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:draw_edgels_field", "", false);
@@ -26,6 +27,11 @@ void RansacLineDetector::execute()
   getRansacLinePercept().reset();
   getRansacCirclePercept2018().reset();
 
+  /*****
+   * Ransac to detect lines in edgels
+   *****/
+
+  // prepare line id index structure to assign edgels to lines
   // prepare the index arrays
   getRansacLinePercept().edgelLineIDs.resize(getLineGraphPercept().edgelsOnField.size());
   outliers.resize(getLineGraphPercept().edgelsOnField.size());
@@ -34,8 +40,63 @@ void RansacLineDetector::execute()
     getRansacLinePercept().edgelLineIDs[i] = -1;
   }
 
-  std::vector<size_t> inliers;
+  lineRansac.set_edgel_idx(outliers);
+  // reset parameters
+  lineRansac.setParameters(params.line.maxIterations, params.line.minDirectionSimilarity, params.line.outlierThresholdDist);
 
+  std::vector<size_t> inlier_idx;
+  for(int i = 0; i < params.line.maxLines; ++i)
+  {
+    ransac::LineModel model;
+    if(lineRansac.find_best_model(model, getLineGraphPercept().edgelsOnField) && model.inlier > params.line.minInliers) {
+      // get inliers and outliers of the model
+      std::vector<size_t> new_outlier_idx;
+      lineRansac.get_inliers(model, getLineGraphPercept().edgelsOnField, inlier_idx, new_outlier_idx);
+
+      // calculate edgel angle variance -> edgels on the same line are expected to have a low angle variance
+      double angle_variance = ransac::angle_variance(getLineGraphPercept().edgelsOnField, inlier_idx);
+
+      // calculate line segment from inliers
+      Math::LineSegment line = model.getLineSegment(getLineGraphPercept().edgelsOnField, inlier_idx);
+      double line_length = line.getLength();
+
+      bool variance_small = line_length > params.line.length_of_var_check || angle_variance <= params.line.maxVariance;
+      if (line_length > params.line.min_line_length && variance_small)
+      {
+        // add line to line percept and assign corresponding line to edgels
+        for(size_t idx : inlier_idx) {
+          getRansacLinePercept().edgelLineIDs[idx] = static_cast<int>(getRansacLinePercept().fieldLineSegments.size());
+        }
+        getRansacLinePercept().fieldLineSegments.push_back(line);
+
+        // set search space to remaining outliers
+        outliers = new_outlier_idx;
+        lineRansac.set_edgel_idx(outliers);
+      } else {
+        break; // model does not satisfy parameters
+      }
+    } else {
+      break; // no model has been found
+    }
+  }
+
+  DEBUG_REQUEST("Vision:RansacLineDetector:draw_lines_field",
+    FIELD_DRAWING_CONTEXT;
+    for(size_t i=0; i<getRansacLinePercept().fieldLineSegments.size(); i++)
+    {
+      std::string color;
+      switch(i%3) {
+        case 0: color = "FF000066"; break;
+        case 1: color = "0000FF66"; break;
+        default: color = "00FFFF66"; break;
+      }
+      const Math::LineSegment& line = getRansacLinePercept().fieldLineSegments[i];
+      PEN(color, 50);
+      LINE(line.begin().x, line.begin().y, line.end().x, line.end().y);
+    }
+  );
+
+  std::vector<size_t> inliers;
   
   // detect circle
   inliers.clear();
@@ -133,9 +194,9 @@ void RansacLineDetector::execute()
       if(getRansacLinePercept().edgelLineIDs[i] > -1) {
         std::string color;
         switch(getRansacLinePercept().edgelLineIDs[i]%3) {
-          case 0: color = "00FF00"; break;
-          case 1: color = "0000FF"; break;
-          default: color = "00FFFF"; break;
+        case 0: color = "FF0000"; break;
+        case 1: color = "0000FF"; break;
+        default: color = "00FFFF"; break;
         }
         PEN(color,2);
       } else {
@@ -147,22 +208,6 @@ void RansacLineDetector::execute()
       }
       PEN("000000",0.1);
       LINE(e.point.x, e.point.y, e.point.x + e.direction.x*100.0, e.point.y + e.direction.y*100.0);
-    }
-  );
-
-  DEBUG_REQUEST("Vision:RansacLineDetector:draw_lines_field",
-    FIELD_DRAWING_CONTEXT;
-    for(size_t i=0; i<getRansacLinePercept().fieldLineSegments.size(); i++)
-    {
-      std::string color;
-      switch(i%3) {
-        case 0: color = "00FF0066"; break;
-        case 1: color = "0000FF66"; break;
-        default: color = "00FFFF66"; break;
-      }
-      const Math::LineSegment& line = getRansacLinePercept().fieldLineSegments[i];
-      PEN(color, 50);
-      LINE(line.begin().x, line.begin().y, line.end().x, line.end().y);
     }
   );
 

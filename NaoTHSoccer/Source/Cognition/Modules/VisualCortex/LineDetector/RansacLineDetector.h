@@ -11,6 +11,8 @@
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugParameterList.h"
 
+#include "ransac_tools.h"
+
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Perception/LineGraphPercept.h"
 #include "Representations/Perception/LinePercept2018.h"
@@ -100,6 +102,7 @@ private:
 
 
 private: // detectors
+  ransac::RansacLine lineRansac;
 
   bool ransacLine(Math::LineSegment& result, std::vector<size_t>& inliers, size_t& start_edgel, size_t& end_edgel);
 
