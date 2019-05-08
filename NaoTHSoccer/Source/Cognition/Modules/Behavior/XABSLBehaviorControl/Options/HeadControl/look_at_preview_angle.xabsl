@@ -21,7 +21,7 @@ option look_at_preview_angle
   {
     decision
     {
-      if (state_time > 1000) // i waited long enough...
+      if (state_time > 1000)
         goto look_at_plannend_rotation_angle;
       else
         stay;

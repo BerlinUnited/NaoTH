@@ -1,5 +1,5 @@
-option change_state_input_test_agent
-{
+/** The root option of a simple ball following behavior */
+option dribble_agent {
 
   initial state test {    
     action {
@@ -7,10 +7,11 @@ option change_state_input_test_agent
       // react to the game controller and handle fall down
       basic_play();
 
-      change_state_input_test(test = random);
+      dribble();
       
       // control head movement according to value of head.control_mode
       head_control();
     }
   }
 }
+ 
