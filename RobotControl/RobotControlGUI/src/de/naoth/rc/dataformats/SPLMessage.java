@@ -206,7 +206,7 @@ public class SPLMessage
             drawings.add(new Robot(robotPose.translation.x, robotPose.translation.y, robotPose.rotation));
 
             // number
-            drawings.add(new Pen(1, Color.BLACK));
+            drawings.add(new Pen(1, Color.RED));
             Font numberFont = new Font ("Courier New", Font.PLAIN | Font.CENTER_BASELINE, 250);
             drawings.add(new Text((int) robotPose.translation.x, (int) robotPose.translation.y + 250, 0, "" + playerNum, numberFont));
             
@@ -224,8 +224,16 @@ public class SPLMessage
         drawings.add(new Pen(1.0f, robotColor));
         drawings.add(new Robot(robotPose.translation.x, robotPose.translation.y, robotPose.rotation));
         
-        // number
-        drawings.add(new Pen(1, Color.BLACK));
+        // number, use different colors for the different states
+        switch (user.getRobotState()) {
+            case initial: drawings.add(new Pen(1, Color.WHITE)); break;
+            case ready: drawings.add(new Pen(1, Color.BLUE)); break;
+            case set: drawings.add(new Pen(1, Color.YELLOW)); break;
+            case playing: drawings.add(new Pen(1, Color.BLACK)); break;
+            case finished: drawings.add(new Pen(1, Color.LIGHT_GRAY)); break;
+            case penalized: drawings.add(new Pen(1, Color.RED)); break;
+            default: drawings.add(new Pen(1, Color.PINK)); break;
+        }
         Font numberFont = new Font ("Courier New", Font.PLAIN | Font.CENTER_BASELINE, 250);
         double fontRotation = 0;//robotPose.rotation+Math.PI/2; // rotate in the direction of the robots
         drawings.add(new Text((int) robotPose.translation.x, (int) robotPose.translation.y + 250, fontRotation, "" + playerNum, numberFont));
@@ -243,12 +251,12 @@ public class SPLMessage
             drawings.add(new FillOval((int) globalBall.x, (int) globalBall.y, 65, 65));
 
             // add a surrounding black circle so the ball is easier to see
-            drawings.add(new Pen(1, Color.black));
+            drawings.add(new Pen(1, robotColor));
             drawings.add(new Circle((int) globalBall.x, (int) globalBall.y, 65));
             
             {
                 // show the time since the ball was last seen
-                drawings.add(new Pen(1, Color.black));
+                drawings.add(new Pen(1, robotColor));
                 double t = ballAge;
 
                 Text text = new Text(

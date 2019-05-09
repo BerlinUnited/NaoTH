@@ -81,7 +81,9 @@ option path_basic_goalie
     }
   }
 
-  state clear_ball {   
+  state clear_ball {
+  //Note the goalie will not search - if path striker2018 would go to search the state
+  //will change to go_to_strategy_point
    decision {
        else if (action_done 
            || (ball.distance > 1500 && ball.see_where_itis)

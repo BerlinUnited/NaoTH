@@ -196,6 +196,12 @@ private:
    * @return true, if the balls are further away, otherwise false
    */
   bool inline isSecondStrikerDifferentFromFirst(unsigned int first, unsigned int second);
+
+  /**
+   * @brief Sets the dynamic role of the player to the striker.
+   * @param number  the player, which role should be set
+   */
+  void inline setStrikerRole(unsigned int number);
 };
 
 #endif //__CleanRoleDecision_h_

@@ -17,4 +17,20 @@ public:
     virtual float getNoballConfidence() = 0;
 };
 
+
+class AbstractCNNFinder
+{
+public:
+    AbstractCNNFinder(){}
+
+    virtual ~AbstractCNNFinder(){}
+
+    virtual void find(const BallCandidates::PatchYUVClassified& p, double meanBrightness) = 0;
+
+    virtual double getRadius() = 0;
+    virtual Vector2d getCenter() = 0;
+
+    virtual double getBallConfidence() {return getRadius(); }
+};
+
 #endif // ABSTRACTCNNCLASSIFIER_H

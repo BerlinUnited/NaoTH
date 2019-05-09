@@ -7,6 +7,66 @@
 
 #ifdef  WIN32
   #include <conio.h>
+  #include <windows.h>
+  #include <stdio.h>
+
+// HACK: test if I'am in the windows CMD by trying to request the console mode
+bool testCMD() 
+{
+  HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE); 
+  if (hStdin == INVALID_HANDLE_VALUE) {
+    return false;
+  }
+
+  DWORD fdwSaveOldMode;
+  if ( !GetConsoleMode(hStdin, &fdwSaveOldMode) ) {
+    return false;
+  }
+
+  return true;
+}
+
+// HACK: test if it's a linux like console by trying to run stty
+bool testTTY() {
+  FILE *fp = _popen("stty -isig ","r");
+
+  if(fp == NULL) {
+    false;
+  }
+
+  // skip the output
+  char buffer[128];
+  while(fgets(buffer, 128, fp)) {
+    //printf(buffer);
+  }
+
+  // try to reset the console in any case 
+  system("stty sane");
+
+  // there was no problem running stty
+  return _pclose(fp) == 0;
+}
+
+const bool imInCMD = testCMD();
+const bool imInTTY = testTTY();
+
+int mygetch()
+{
+  if(imInCMD) {
+    return _getch();
+  }
+
+  if(imInTTY) {
+    system("stty cbreak -echo");
+    int r = getchar();
+    system("stty -cbreak echo");
+    return r;
+  }
+
+  // just use the standard getchar in line mode
+  return getchar();
+}
+
 #else
 #ifndef _MYCONIO_H
 #define _MYCONIO_H
@@ -25,7 +85,7 @@ extern "C"
 // fuer POSIX-Betriebsysteme
 // Lizenz: Public domain
 
-int getch()
+int mygetch()
 {
   int ch;
   struct termios old_t, tmp_t;

@@ -15,6 +15,7 @@
 // representations
 #include <Representations/Infrastructure/RobotInfo.h>
 #include "Representations/Motion/Request/MotionRequest.h"
+#include "Representations/Motion/MotionStatus.h"
 #include <Representations/Infrastructure/JointData.h>
 #include <Representations/Infrastructure/InertialSensorData.h>
 
@@ -24,7 +25,8 @@ BEGIN_DECLARE_MODULE(InitialMotion)
   REQUIRE(SensorJointData)
   REQUIRE(MotionRequest)
   REQUIRE(InertialSensorData)
-  
+
+  PROVIDE(MotionStatus)
   PROVIDE(MotionLock)
   PROVIDE(MotorJointData)
 END_DECLARE_MODULE(InitialMotion)
@@ -33,7 +35,7 @@ class InitialMotion : private InitialMotionBase, public AbstractMotion
 {
 public:
   InitialMotion();
-  
+
   virtual ~InitialMotion(){}
 
   void execute();
@@ -65,7 +67,7 @@ private:
 
   double init_time;
   double movedTime;
-  
+
   naoth::JointData startJoints;
   naoth::JointData extendJoints;
   naoth::JointData theInitJoints;

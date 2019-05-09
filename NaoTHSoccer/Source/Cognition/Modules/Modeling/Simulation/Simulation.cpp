@@ -25,8 +25,8 @@ Simulation::Simulation()
 
   action_local.push_back(ActionSimulator::Action(KickActionModel::none, ActionSimulator::ActionParams(), theParameters.friction));
   action_local.push_back(ActionSimulator::Action(KickActionModel::kick_short, theParameters.kick_short, theParameters.friction)); // short
-  action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
-  action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
+  //action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
+  //action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
 
   actionsConsequences.resize(action_local.size());
 }
@@ -44,8 +44,8 @@ void Simulation::execute()
 
     action_local.push_back(ActionSimulator::Action(KickActionModel::none, ActionSimulator::ActionParams(), theParameters.friction));
     action_local.push_back(ActionSimulator::Action(KickActionModel::kick_short, theParameters.kick_short, theParameters.friction)); // short
-    action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
-    action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
+    //action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
+    //action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
 
     actionsConsequences.resize(action_local.size());
   );
@@ -65,8 +65,8 @@ void Simulation::execute()
   // plot projected actions
   DEBUG_REQUEST("Simulation:ActionTarget:None", draw_action_results(actionsConsequences[0], Color(1.0, 1.0, 1.0, 0.7)););
   DEBUG_REQUEST("Simulation:ActionTarget:Short", draw_action_results(actionsConsequences[1], Color(255.0 / 255, 172.0 / 255, 18.0 / 255, 0.7)););
-  DEBUG_REQUEST("Simulation:ActionTarget:Left", draw_action_results(actionsConsequences[2], Color(0.0 / 255, 13.0 / 255, 191.0 / 255, 0.7)););
-  DEBUG_REQUEST("Simulation:ActionTarget:Right", draw_action_results(actionsConsequences[3], Color(0.0 / 255, 191.0 / 255, 51.0 / 255, 0.7)););
+  //DEBUG_REQUEST("Simulation:ActionTarget:Left", draw_action_results(actionsConsequences[2], Color(0.0 / 255, 13.0 / 255, 191.0 / 255, 0.7)););
+  //DEBUG_REQUEST("Simulation:ActionTarget:Right", draw_action_results(actionsConsequences[3], Color(0.0 / 255, 191.0 / 255, 51.0 / 255, 0.7)););
 
 
   // now decide which action to execute given their consequences
@@ -77,23 +77,26 @@ void Simulation::execute()
 
   DEBUG_REQUEST("Simulation:draw_best_action",
     FIELD_DRAWING_CONTEXT;
-  /*
-  PEN("FF69B4", 35);
-  std::string name = action_local[best_action].name();
-  TEXT_DRAWING(getRobotPose().translation.x+100, getRobotPose().translation.y-200, name);
-  */
-  PEN("000000", 1);
-  Vector2d expectedBallPos = getKickActionModel().expectedBallPos;
-  FILLOVAL(expectedBallPos.x, expectedBallPos.y, 50, 50);
+    /*
+    PEN("FF69B4", 35);
+    std::string name = action_local[best_action].name();
+    TEXT_DRAWING(getRobotPose().translation.x+100, getRobotPose().translation.y-200, name);
+    */
+    PEN("000000", 1);
+    Vector2d expectedBallPos = getKickActionModel().expectedBallPos;
+    FILLOVAL(expectedBallPos.x, expectedBallPos.y, 50, 50);
 
-  Vector2d globalBall = getRobotPose() *getBallModel().positionPreview;
-  Vector2d action_vector = (expectedBallPos - globalBall).normalize();
-  Vector2d from = globalBall + action_vector * 100;
-  Vector2d to = globalBall + action_vector * 350;
+    Vector2d globalBall = getRobotPose() *getBallModel().positionPreview;
+    Vector2d action_vector = (expectedBallPos - globalBall).normalize();
+    Vector2d from = globalBall + action_vector * 100;
+    Vector2d to = globalBall + action_vector * 350;
 
-  PEN("FF0000", 50);
-  ARROW(from.x, from.y, to.x, to.y);
+    PEN("FF0000", 50);
+    ARROW(from.x, from.y, to.x, to.y);
   );
+
+  //Debug stuff
+  //simulationModule->getModuleT()->draw_potential_field();  // -2 bis 2
 }//end execute
 
 size_t Simulation::decide_smart(const std::vector<ActionSimulator::ActionResults>& actionsConsequences) const
@@ -174,10 +177,20 @@ size_t Simulation::decide_smart(const std::vector<ActionSimulator::ActionResults
       double potential = simulationModule->getModuleT()->evaluateAction(actionsConsequences[*it]);
       if (potential < bestValue) {
         best_action = *it;
+        // bestvalue is the mean of the samples
         bestValue = potential;
       }
     }
-    return best_action;
+    // get the value of current position
+    double current_potential = simulationModule->getModuleT()->evaluateAction(getRobotPose().translation);
+    //std::cout << "Current potential difference: " << std::abs(current_potential - bestValue) << std::endl;
+    if (bestValue < (current_potential - theParameters.significance_thresh)){
+      return best_action;
+    }
+    else{
+      return 0; // assumes that 0 means turn action
+    }
+    
   }
 
   // find min of goalActions
@@ -192,6 +205,7 @@ size_t Simulation::decide_smart(const std::vector<ActionSimulator::ActionResults
     }
   }
   return best_action;
+
 }
 
 void Simulation::draw_action_results(const ActionSimulator::ActionResults& actionsResults, const Color& color) const

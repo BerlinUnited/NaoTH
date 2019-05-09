@@ -25,7 +25,7 @@ categorie_names(ismember(categorie_names,{'.','..'})) = [];
 for m=1:length(categorie_names)
     
     folderblabla = strcat(reference_import_path, '\', categorie_names(m));
-    folderContents = dir(strcat(string(folderblabla), '/**/*.raw'));
+    folderContents = dir(strcat(char(folderblabla), '/**/*.raw'));
     
     for d = 1:length(folderContents)
         

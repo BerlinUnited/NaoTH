@@ -15,7 +15,6 @@
 #include <Tools/Math/Vector2.h>
 #include <Tools/Math/Matrix_nxn.h>
 #include <Tools/DataStructures/OccupancyGrid.h>
-#include <Tools/DataStructures/Area.h>
 #include <Tools/ImageProcessing/ColorModelConversions.h>
 
 #include <Representations/Infrastructure/Image.h>

@@ -42,14 +42,6 @@ Motion::Motion()
   REGISTER_DEBUG_COMMAND("ParameterList:get", "get the parameter list with the given name", &getDebugParameterList());
   REGISTER_DEBUG_COMMAND("ParameterList:set", "set the parameter list with the given name", &getDebugParameterList());
 
-  // modify commands
-  REGISTER_DEBUG_COMMAND("modify:list",
-    "return the list of registered modifiable values", &getDebugModify());
-  REGISTER_DEBUG_COMMAND("modify:set",
-    "set a modifiable value (i.e. the value will be always overwritten by the new one) ", &getDebugModify());
-  REGISTER_DEBUG_COMMAND("modify:release",
-    "release a modifiable value (i.e. the value will not be overwritten anymore)", &getDebugModify());
-
   // register the modules
   theInertiaSensorCalibrator = registerModule<InertiaSensorCalibrator>("InertiaSensorCalibrator", true);
   theInertiaSensorFilterBH = registerModule<InertiaSensorFilter>("InertiaSensorFilter", true);
@@ -64,6 +56,7 @@ Motion::Motion()
 
   theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
   theCoPProvider  = registerModule<CoPProvider>("CoPProvider", true);
+  theSensorLogger = registerModule<SensorLogger>("theSensorLogger", true);
 
   getDebugParameterList().add(&parameter);
 
@@ -102,6 +95,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(FSRData);
   REG_INPUT(AccelerometerData);
   REG_INPUT(GyrometerData);
+  REG_INPUT(ButtonData);
 
   REG_INPUT(DebugMessageInMotion);
 
@@ -212,6 +206,11 @@ void Motion::processSensorData()
   if(i != -1)
   {
     THROW("Get ILLEGAL Stiffness: "<<JointData::getJointName(JointData::JointID(i))<<" = "<<getSensorJointData().stiffness[i]);
+  }
+
+  // log sensor data
+  if(parameter.recordSensorData) {
+    theSensorLogger->execute();
   }
 
   // remove the offset from sensor joint data
