@@ -5,9 +5,17 @@ option path_striker2018
   {
     if(!body.ready_to_walk || game.current_mode != playing)
       goto idle;
+    /*
+    // NOTE: this is only important for the old behavior (2018)
     else if(!game.state.playing_is_set_by_game_controller &&
            !game.own_kickoff && game.time_in_play < 10000)
-      goto wait_for_ball_free;
+      // TODO: for the roles, the initial striker isn't neccessary anymore and can be removed! (the behavior must be applied for all roles!)
+      // if we see the ball outside the centercircle, the ball is free!
+      if((ball.know_where_itis && (abs(value=ball.position.field.x) <= (300) && abs(value=ball.position.field.y) <= (300))) || !ball.know_where_itis)
+        goto wait_for_ball_free;
+      else
+        goto goto_ball;
+    */
     else if(situation_abortable && !ball.know_where_itis)//ball.time_since_last_seen > 1500)
       goto search;
     else if(situation_abortable && vector.abs(x=ball.preview.x, y=ball.preview.y) > 300)
@@ -83,7 +91,7 @@ option path_striker2018
     action{
       situation_abortable = true;
       /* this distance is smaller than the condition for ball.preview.x above
-         possible unwanted behavior: the ball is closer than 250 but ball.preview.y is
+         possible unwanted behavior: the ball is closer than 300 but ball.preview.y is
          bigger than 50. The robot won't rotate in go_to_ball_with_USOA and will continue
          to walk to the position of the ball. Two possible outcomes:
          1. the robot runs into the ball (if ball distance is not considered)

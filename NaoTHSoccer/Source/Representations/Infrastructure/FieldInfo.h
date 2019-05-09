@@ -12,9 +12,9 @@
 
 #include <Tools/Math/Vector2.h>
 #include <Tools/Math/Geometry.h>
-#include <Tools/ColorClasses.h>
 #include <Tools/DataStructures/ParameterList.h>
 #include <Tools/DataStructures/Printable.h>
+
 #include "Tools/LinesTable.h"
 
 
@@ -41,13 +41,9 @@ public:
     return carpetRect.inside(p);
   }
 
-  //colors
-  ColorClasses::Color ballColor;
-//  const ColorClasses::Color ownGoalColor        = ColorClasses::yellow;
-//  const ColorClasses::Color opponentGoalColor   = ColorClasses::skyblue;
-
   //////////////// basic values from configuration ////////////////
   double ballRadius;
+
   // Rolling resistance / rolling friction coefficient
   double ballRRCoefficient;
   double ballDeceleration; // mm/s^2

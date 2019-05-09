@@ -33,7 +33,9 @@ public:
   {
     set_none          = naoth::GameData::set_none,
     goal_free_kick    = naoth::GameData::goal_free_kick,
-    pushing_free_kick = naoth::GameData::pushing_free_kick
+    pushing_free_kick = naoth::GameData::pushing_free_kick,
+    corner_kick       = naoth::GameData::corner_kick,
+    kick_in           = naoth::GameData::kick_in
   };
 
   void update(const naoth::GameData& gameData) 
@@ -77,10 +79,6 @@ public:
 
   /** the currently used scheme. */
   std::string scheme;
-
-  bool isGoalie() const {
-      return playerNumber == 1;
-  }
 
   static std::string toString(RobotState value);
   static std::string toString(RobotSetPlay value);

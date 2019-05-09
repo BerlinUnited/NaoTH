@@ -22,7 +22,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='TeamMessage.proto',
   package='naothmessages',
   syntax='proto2',
-  serialized_pb=_b('\n\x11TeamMessage.proto\x12\rnaothmessages\x1a\x11\x43ommonTypes.proto\x1a\x1f\x46ramework-Representations.proto\"L\n\x08Opponent\x12\x14\n\tplayerNum\x18\x01 \x02(\x05:\x01\x30\x12*\n\x0bposeOnField\x18\x02 \x01(\x0b\x32\x15.naothmessages.Pose2D\"A\n\x03Ntp\x12\x14\n\tplayerNum\x18\x01 \x02(\x05:\x01\x30\x12\x0f\n\x04sent\x18\x02 \x01(\x04:\x01\x30\x12\x13\n\x08received\x18\x03 \x01(\x04:\x01\x30\"\x8e\x01\n\x05\x44rops\x12\x1b\n\x10\x64ropNoSplMessage\x18\x01 \x01(\r:\x01\x30\x12\x19\n\x0e\x64ropNotOurTeam\x18\x02 \x01(\r:\x01\x30\x12\x1b\n\x10\x64ropNotParseable\x18\x03 \x01(\r:\x01\x30\x12\x16\n\x0b\x64ropKeyFail\x18\x04 \x01(\r:\x01\x30\x12\x18\n\rdropMonotonic\x18\x05 \x01(\r:\x01\x30\"\xd6\x04\n\x11\x42UUserTeamMessage\x12\x17\n\x06\x62odyID\x18\x01 \x01(\t:\x07unknown\x12\x12\n\ntimeToBall\x18\x02 \x01(\r\x12\x19\n\nwasStriker\x18\x03 \x01(\x08:\x05\x66\x61lse\x12\x1e\n\x0bisPenalized\x18\x04 \x01(\x08:\x05\x66\x61lseB\x02\x18\x01\x12*\n\topponents\x18\x05 \x03(\x0b\x32\x17.naothmessages.Opponent\x12\x19\n\nteamNumber\x18\x06 \x01(\r:\x01\x30\x42\x02\x18\x01\x12\x18\n\rbatteryCharge\x18\x07 \x01(\x02:\x01\x31\x12\x16\n\x0btemperature\x18\x08 \x01(\x02:\x01\x30\x12\x14\n\ttimestamp\x18\t \x01(\x04:\x01\x30\x12\x1f\n\x10wantsToBeStriker\x18\n \x01(\x08:\x05\x66\x61lse\x12\x19\n\x0e\x63puTemperature\x18\x0b \x01(\x02:\x01\x30\x12\x1e\n\x0fwhistleDetected\x18\x0c \x01(\x08:\x05\x66\x61lse\x12\x17\n\x0cwhistleCount\x18\r \x01(\x05:\x01\x30\x12.\n\x08teamBall\x18\x0e \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12&\n\nntpRequest\x18\x0f \x03(\x0b\x32\x12.naothmessages.Ntp\x12\x32\n\x0c\x62\x61llVelocity\x18\x10 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x36\n\nrobotState\x18\x11 \x01(\x0e\x32\x19.naothmessages.RobotState:\x07initial\x12\x11\n\x03key\x18\x64 \x01(\t:\x04none\"\xee\x03\n\x0bTeamMessage\x12-\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x1f.naothmessages.TeamMessage.Data\x12)\n\x0bmessageDrop\x18\x02 \x01(\x0b\x32\x14.naothmessages.Drops\x1a\x84\x03\n\x04\x44\x61ta\x12\x14\n\tplayerNum\x18\x01 \x01(\r:\x01\x30\x12\x39\n\tteamColor\x18\x0b \x01(\x0e\x32\x18.naothmessages.TeamColor:\x08\x62lueTeamB\x02\x18\x01\x12#\n\x04pose\x18\x03 \x01(\x0b\x32\x15.naothmessages.Pose2D\x12\x13\n\x07\x62\x61llAge\x18\x04 \x01(\x05:\x02-1\x12\x32\n\x0c\x62\x61llPosition\x18\x05 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x32\n\x0c\x62\x61llVelocity\x18\x06 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x15\n\x06\x66\x61llen\x18\n \x01(\x08:\x05\x66\x61lse\x12.\n\x04user\x18\x08 \x01(\x0b\x32 .naothmessages.BUUserTeamMessage\x12+\n\tframeInfo\x18\t \x01(\x0b\x32\x18.naothmessages.FrameInfo\x12\x15\n\nteamNumber\x18\x0c \x01(\r:\x01\x30*\xb2\x01\n\tTeamColor\x12\x0c\n\x08\x62lueTeam\x10\x00\x12\x0b\n\x07redTeam\x10\x01\x12\x0e\n\nyellowTeam\x10\x02\x12\r\n\tblackTeam\x10\x03\x12\r\n\twhiteTeam\x10\x04\x12\r\n\tgreenTeam\x10\x05\x12\x0e\n\norangeTeam\x10\x06\x12\x0e\n\npurpleTeam\x10\x07\x12\r\n\tbrownTeam\x10\x08\x12\x0c\n\x08grayTeam\x10\t\x12\x10\n\x0binvalidTeam\x10\xff\x01*W\n\nRobotState\x12\x0b\n\x07initial\x10\x00\x12\t\n\x05ready\x10\x01\x12\x07\n\x03set\x10\x02\x12\x0b\n\x07playing\x10\x03\x12\x0c\n\x08\x66inished\x10\x04\x12\r\n\tpenalized\x10\x05\x42\x16\n\x14\x64\x65.naoth.rc.messages')
+  serialized_pb=_b('\n\x11TeamMessage.proto\x12\rnaothmessages\x1a\x11\x43ommonTypes.proto\x1a\x1f\x46ramework-Representations.proto\"\x90\x01\n\tRobotRole\x12\x41\n\x0brole_static\x18\x01 \x02(\x0e\x32\x1e.naothmessages.RobotRoleStatic:\x0crole_unknown\x12@\n\x0crole_dynamic\x18\x02 \x02(\x0e\x32\x1f.naothmessages.RobotRoleDynamic:\trole_none\"L\n\x08Opponent\x12\x14\n\tplayerNum\x18\x01 \x02(\x05:\x01\x30\x12*\n\x0bposeOnField\x18\x02 \x01(\x0b\x32\x15.naothmessages.Pose2D\"A\n\x03Ntp\x12\x14\n\tplayerNum\x18\x01 \x02(\x05:\x01\x30\x12\x0f\n\x04sent\x18\x02 \x01(\x04:\x01\x30\x12\x13\n\x08received\x18\x03 \x01(\x04:\x01\x30\"\x8e\x01\n\x05\x44rops\x12\x1b\n\x10\x64ropNoSplMessage\x18\x01 \x01(\r:\x01\x30\x12\x19\n\x0e\x64ropNotOurTeam\x18\x02 \x01(\r:\x01\x30\x12\x1b\n\x10\x64ropNotParseable\x18\x03 \x01(\r:\x01\x30\x12\x16\n\x0b\x64ropKeyFail\x18\x04 \x01(\r:\x01\x30\x12\x18\n\rdropMonotonic\x18\x05 \x01(\r:\x01\x30\"\x83\x05\n\x11\x42UUserTeamMessage\x12\x17\n\x06\x62odyID\x18\x01 \x01(\t:\x07unknown\x12\x12\n\ntimeToBall\x18\x02 \x01(\r\x12\x19\n\nwasStriker\x18\x03 \x01(\x08:\x05\x66\x61lse\x12\x1e\n\x0bisPenalized\x18\x04 \x01(\x08:\x05\x66\x61lseB\x02\x18\x01\x12*\n\topponents\x18\x05 \x03(\x0b\x32\x17.naothmessages.Opponent\x12\x19\n\nteamNumber\x18\x06 \x01(\r:\x01\x30\x42\x02\x18\x01\x12\x18\n\rbatteryCharge\x18\x07 \x01(\x02:\x01\x31\x12\x16\n\x0btemperature\x18\x08 \x01(\x02:\x01\x30\x12\x14\n\ttimestamp\x18\t \x01(\x04:\x01\x30\x12\x1f\n\x10wantsToBeStriker\x18\n \x01(\x08:\x05\x66\x61lse\x12\x19\n\x0e\x63puTemperature\x18\x0b \x01(\x02:\x01\x30\x12\x1e\n\x0fwhistleDetected\x18\x0c \x01(\x08:\x05\x66\x61lse\x12\x17\n\x0cwhistleCount\x18\r \x01(\x05:\x01\x30\x12.\n\x08teamBall\x18\x0e \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12&\n\nntpRequest\x18\x0f \x03(\x0b\x32\x12.naothmessages.Ntp\x12\x32\n\x0c\x62\x61llVelocity\x18\x10 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x36\n\nrobotState\x18\x11 \x01(\x0e\x32\x19.naothmessages.RobotState:\x07initial\x12+\n\trobotRole\x18\x12 \x01(\x0b\x32\x18.naothmessages.RobotRole\x12\x11\n\x03key\x18\x64 \x01(\t:\x04none\"\xee\x03\n\x0bTeamMessage\x12-\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x1f.naothmessages.TeamMessage.Data\x12)\n\x0bmessageDrop\x18\x02 \x01(\x0b\x32\x14.naothmessages.Drops\x1a\x84\x03\n\x04\x44\x61ta\x12\x14\n\tplayerNum\x18\x01 \x01(\r:\x01\x30\x12\x39\n\tteamColor\x18\x0b \x01(\x0e\x32\x18.naothmessages.TeamColor:\x08\x62lueTeamB\x02\x18\x01\x12#\n\x04pose\x18\x03 \x01(\x0b\x32\x15.naothmessages.Pose2D\x12\x13\n\x07\x62\x61llAge\x18\x04 \x01(\x05:\x02-1\x12\x32\n\x0c\x62\x61llPosition\x18\x05 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x32\n\x0c\x62\x61llVelocity\x18\x06 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\x12\x15\n\x06\x66\x61llen\x18\n \x01(\x08:\x05\x66\x61lse\x12.\n\x04user\x18\x08 \x01(\x0b\x32 .naothmessages.BUUserTeamMessage\x12+\n\tframeInfo\x18\t \x01(\x0b\x32\x18.naothmessages.FrameInfo\x12\x15\n\nteamNumber\x18\x0c \x01(\r:\x01\x30*\xb2\x01\n\tTeamColor\x12\x0c\n\x08\x62lueTeam\x10\x00\x12\x0b\n\x07redTeam\x10\x01\x12\x0e\n\nyellowTeam\x10\x02\x12\r\n\tblackTeam\x10\x03\x12\r\n\twhiteTeam\x10\x04\x12\r\n\tgreenTeam\x10\x05\x12\x0e\n\norangeTeam\x10\x06\x12\x0e\n\npurpleTeam\x10\x07\x12\r\n\tbrownTeam\x10\x08\x12\x0c\n\x08grayTeam\x10\t\x12\x10\n\x0binvalidTeam\x10\xff\x01*W\n\nRobotState\x12\x0b\n\x07initial\x10\x00\x12\t\n\x05ready\x10\x01\x12\x07\n\x03set\x10\x02\x12\x0b\n\x07playing\x10\x03\x12\x0c\n\x08\x66inished\x10\x04\x12\r\n\tpenalized\x10\x05*\x98\x02\n\x0fRobotRoleStatic\x12\x16\n\x12role_defender_left\x10\x00\x12\x18\n\x14role_defender_center\x10\x01\x12\x17\n\x13role_defender_right\x10\x02\x12\x18\n\x14role_midfielder_left\x10\x03\x12\x1a\n\x16role_midfielder_center\x10\x04\x12\x19\n\x15role_midfielder_right\x10\x05\x12\x15\n\x11role_forward_left\x10\x06\x12\x17\n\x13role_forward_center\x10\x07\x12\x16\n\x12role_forward_right\x10\x08\x12\x0f\n\x0brole_goalie\x10\t\x12\x10\n\x0crole_unknown\x10\n*b\n\x10RobotRoleDynamic\x12\r\n\trole_none\x10\x00\x12\x12\n\x0erole_supporter\x10\x01\x12\x19\n\x15role_goalie_supporter\x10\x02\x12\x10\n\x0crole_striker\x10\x03\x42\x16\n\x14\x64\x65.naoth.rc.messages')
   ,
   dependencies=[CommonTypes__pb2.DESCRIPTOR,Framework__Representations__pb2.DESCRIPTOR,])
 
@@ -79,8 +79,8 @@ _TEAMCOLOR = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1477,
-  serialized_end=1655,
+  serialized_start=1669,
+  serialized_end=1847,
 )
 _sym_db.RegisterEnumDescriptor(_TEAMCOLOR)
 
@@ -118,12 +118,102 @@ _ROBOTSTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1657,
-  serialized_end=1744,
+  serialized_start=1849,
+  serialized_end=1936,
 )
 _sym_db.RegisterEnumDescriptor(_ROBOTSTATE)
 
 RobotState = enum_type_wrapper.EnumTypeWrapper(_ROBOTSTATE)
+_ROBOTROLESTATIC = _descriptor.EnumDescriptor(
+  name='RobotRoleStatic',
+  full_name='naothmessages.RobotRoleStatic',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='role_defender_left', index=0, number=0,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='role_defender_center', index=1, number=1,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='role_defender_right', index=2, number=2,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='role_midfielder_left', index=3, number=3,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='role_midfielder_center', index=4, number=4,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='role_midfielder_right', index=5, number=5,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='role_forward_left', index=6, number=6,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='role_forward_center', index=7, number=7,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='role_forward_right', index=8, number=8,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='role_goalie', index=9, number=9,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='role_unknown', index=10, number=10,
+      options=None,
+      type=None),
+  ],
+  containing_type=None,
+  options=None,
+  serialized_start=1939,
+  serialized_end=2219,
+)
+_sym_db.RegisterEnumDescriptor(_ROBOTROLESTATIC)
+
+RobotRoleStatic = enum_type_wrapper.EnumTypeWrapper(_ROBOTROLESTATIC)
+_ROBOTROLEDYNAMIC = _descriptor.EnumDescriptor(
+  name='RobotRoleDynamic',
+  full_name='naothmessages.RobotRoleDynamic',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='role_none', index=0, number=0,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='role_supporter', index=1, number=1,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='role_goalie_supporter', index=2, number=2,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='role_striker', index=3, number=3,
+      options=None,
+      type=None),
+  ],
+  containing_type=None,
+  options=None,
+  serialized_start=2221,
+  serialized_end=2319,
+)
+_sym_db.RegisterEnumDescriptor(_ROBOTROLEDYNAMIC)
+
+RobotRoleDynamic = enum_type_wrapper.EnumTypeWrapper(_ROBOTROLEDYNAMIC)
 blueTeam = 0
 redTeam = 1
 yellowTeam = 2
@@ -141,7 +231,60 @@ set = 2
 playing = 3
 finished = 4
 penalized = 5
+role_defender_left = 0
+role_defender_center = 1
+role_defender_right = 2
+role_midfielder_left = 3
+role_midfielder_center = 4
+role_midfielder_right = 5
+role_forward_left = 6
+role_forward_center = 7
+role_forward_right = 8
+role_goalie = 9
+role_unknown = 10
+role_none = 0
+role_supporter = 1
+role_goalie_supporter = 2
+role_striker = 3
 
+
+
+_ROBOTROLE = _descriptor.Descriptor(
+  name='RobotRole',
+  full_name='naothmessages.RobotRole',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='role_static', full_name='naothmessages.RobotRole.role_static', index=0,
+      number=1, type=14, cpp_type=8, label=2,
+      has_default_value=True, default_value=10,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='role_dynamic', full_name='naothmessages.RobotRole.role_dynamic', index=1,
+      number=2, type=14, cpp_type=8, label=2,
+      has_default_value=True, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=89,
+  serialized_end=233,
+)
 
 
 _OPPONENT = _descriptor.Descriptor(
@@ -177,8 +320,8 @@ _OPPONENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=88,
-  serialized_end=164,
+  serialized_start=235,
+  serialized_end=311,
 )
 
 
@@ -222,8 +365,8 @@ _NTP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=166,
-  serialized_end=231,
+  serialized_start=313,
+  serialized_end=378,
 )
 
 
@@ -281,8 +424,8 @@ _DROPS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=234,
-  serialized_end=376,
+  serialized_start=381,
+  serialized_end=523,
 )
 
 
@@ -413,7 +556,14 @@ _BUUSERTEAMMESSAGE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='key', full_name='naothmessages.BUUserTeamMessage.key', index=17,
+      name='robotRole', full_name='naothmessages.BUUserTeamMessage.robotRole', index=17,
+      number=18, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='key', full_name='naothmessages.BUUserTeamMessage.key', index=18,
       number=100, type=9, cpp_type=9, label=1,
       has_default_value=True, default_value=_b("none").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -431,8 +581,8 @@ _BUUSERTEAMMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=379,
-  serialized_end=977,
+  serialized_start=526,
+  serialized_end=1169,
 )
 
 
@@ -525,8 +675,8 @@ _TEAMMESSAGE_DATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1086,
-  serialized_end=1474,
+  serialized_start=1278,
+  serialized_end=1666,
 )
 
 _TEAMMESSAGE = _descriptor.Descriptor(
@@ -562,16 +712,19 @@ _TEAMMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=980,
-  serialized_end=1474,
+  serialized_start=1172,
+  serialized_end=1666,
 )
 
+_ROBOTROLE.fields_by_name['role_static'].enum_type = _ROBOTROLESTATIC
+_ROBOTROLE.fields_by_name['role_dynamic'].enum_type = _ROBOTROLEDYNAMIC
 _OPPONENT.fields_by_name['poseOnField'].message_type = CommonTypes__pb2._POSE2D
 _BUUSERTEAMMESSAGE.fields_by_name['opponents'].message_type = _OPPONENT
 _BUUSERTEAMMESSAGE.fields_by_name['teamBall'].message_type = CommonTypes__pb2._DOUBLEVECTOR2
 _BUUSERTEAMMESSAGE.fields_by_name['ntpRequest'].message_type = _NTP
 _BUUSERTEAMMESSAGE.fields_by_name['ballVelocity'].message_type = CommonTypes__pb2._DOUBLEVECTOR2
 _BUUSERTEAMMESSAGE.fields_by_name['robotState'].enum_type = _ROBOTSTATE
+_BUUSERTEAMMESSAGE.fields_by_name['robotRole'].message_type = _ROBOTROLE
 _TEAMMESSAGE_DATA.fields_by_name['teamColor'].enum_type = _TEAMCOLOR
 _TEAMMESSAGE_DATA.fields_by_name['pose'].message_type = CommonTypes__pb2._POSE2D
 _TEAMMESSAGE_DATA.fields_by_name['ballPosition'].message_type = CommonTypes__pb2._DOUBLEVECTOR2
@@ -581,6 +734,7 @@ _TEAMMESSAGE_DATA.fields_by_name['frameInfo'].message_type = Framework__Represen
 _TEAMMESSAGE_DATA.containing_type = _TEAMMESSAGE
 _TEAMMESSAGE.fields_by_name['data'].message_type = _TEAMMESSAGE_DATA
 _TEAMMESSAGE.fields_by_name['messageDrop'].message_type = _DROPS
+DESCRIPTOR.message_types_by_name['RobotRole'] = _ROBOTROLE
 DESCRIPTOR.message_types_by_name['Opponent'] = _OPPONENT
 DESCRIPTOR.message_types_by_name['Ntp'] = _NTP
 DESCRIPTOR.message_types_by_name['Drops'] = _DROPS
@@ -588,7 +742,16 @@ DESCRIPTOR.message_types_by_name['BUUserTeamMessage'] = _BUUSERTEAMMESSAGE
 DESCRIPTOR.message_types_by_name['TeamMessage'] = _TEAMMESSAGE
 DESCRIPTOR.enum_types_by_name['TeamColor'] = _TEAMCOLOR
 DESCRIPTOR.enum_types_by_name['RobotState'] = _ROBOTSTATE
+DESCRIPTOR.enum_types_by_name['RobotRoleStatic'] = _ROBOTROLESTATIC
+DESCRIPTOR.enum_types_by_name['RobotRoleDynamic'] = _ROBOTROLEDYNAMIC
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
+
+RobotRole = _reflection.GeneratedProtocolMessageType('RobotRole', (_message.Message,), dict(
+  DESCRIPTOR = _ROBOTROLE,
+  __module__ = 'TeamMessage_pb2'
+  # @@protoc_insertion_point(class_scope:naothmessages.RobotRole)
+  ))
+_sym_db.RegisterMessage(RobotRole)
 
 Opponent = _reflection.GeneratedProtocolMessageType('Opponent', (_message.Message,), dict(
   DESCRIPTOR = _OPPONENT,

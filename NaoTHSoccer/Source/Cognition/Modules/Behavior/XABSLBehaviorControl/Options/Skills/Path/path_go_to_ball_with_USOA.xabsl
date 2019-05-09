@@ -25,7 +25,6 @@ option path_go_to_ball_with_USOA
       path.routine = go_to_ball_fast;
       path.distance = @distance;
       
-      //loook at percept
       head.control_mode = look_at_ball_percept;
     }
   }
@@ -110,7 +109,6 @@ option path_go_to_ball_with_USOA
       path.routine = go_to_ball_slow;
       path.distance = @distance;
       
-      //loook at percept
       head.control_mode = look_at_ball_percept;}
   }
 }

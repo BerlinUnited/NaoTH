@@ -27,8 +27,10 @@
 #include "SensorFilter/ArmCollisionDetector.h"
 #include "SensorFilter/ArmCollisionDetector2018.h"
 #include "SensorFilter/CoPProvider.h"
+#include "SensorFilter/SensorLogger.h"
 
-//#include <Representations/Modeling/CameraMatrixOffset.h>
+#include "Representations/Perception/CameraMatrix.h"
+#include <Representations/Modeling/CameraMatrixOffset.h>
 
 #include "Tools/Debug/Logger.h"
 #include "Engine/MotionEngine.h"
@@ -41,6 +43,7 @@
 #include <Representations/Infrastructure/FSRData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
+#include <Representations/Infrastructure/ButtonData.h>
 #include <Representations/Infrastructure/DebugMessage.h>
 #include <Representations/Modeling/IMUData.h>
 #include "Representations/Modeling/GroundContactModel.h"
@@ -102,6 +105,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(FSRData)
   PROVIDE(AccelerometerData)
   PROVIDE(GyrometerData)
+  PROVIDE(ButtonData)
 
   PROVIDE(DebugMessageInMotion)
   PROVIDE(DebugMessageOut)
@@ -155,6 +159,8 @@ private:
       PARAMETER_REGISTER(letIMUModelProvideInertialModel) = true;
       //PARAMETER_REGISTER(useInertiaSensorCalibration) = true;
       PARAMETER_REGISTER(useIMUDataForRotationOdometry) = true;
+
+      PARAMETER_REGISTER(recordSensorData) = true;
       syncWithConfig();
     }
 
@@ -163,6 +169,7 @@ private:
     //bool useInertiaSensorCalibration;
     bool useIMUDataForRotationOdometry;
 
+    bool recordSensorData;
   } parameter;
 
 
@@ -186,6 +193,7 @@ private:
   ModuleCreator<ArmCollisionDetector2018>* theArmCollisionDetector2018;
    
   ModuleCreator<CoPProvider>* theCoPProvider;
+  ModuleCreator<SensorLogger>* theSensorLogger;
 
   ModuleCreator<MotionEngine>* theMotionEngine;
 

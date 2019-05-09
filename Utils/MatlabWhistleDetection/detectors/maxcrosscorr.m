@@ -16,5 +16,8 @@ function result = maxcrosscorr(raw_samples, reference_spectrum, reference_max)
     % fftIn[j][1] = realFFTIn * imagFFTCmp + imagFFTIn * realFFTCmp;
     intermediate_result = mat_spectrum(1:1025) .* reference_spectrum;
     mat_correlation_func = ifft(intermediate_result, length(raw_samples_norm)*2) * 2048;
+    
+    plot(abs(mat_correlation_func))
+    
     result = max(abs(mat_correlation_func)) / reference_max;
 end

@@ -54,10 +54,10 @@ Walk2018::Walk2018() : IKMotion(getInverseKinematicsMotionEngineService(), motio
 
   std::cout << "walk start" << std::endl;
 }
-  
+
 void Walk2018::execute()
 {
-  // check the integrity 
+  // check the integrity
   getMotionRequest().walkRequest.assertValid();
 
   theCoMErrorProvider->execute();
@@ -108,7 +108,17 @@ void Walk2018::execute()
 
   updateMotionStatus(getMotionStatus());
 
-  if(getMotionRequest().id != getId() && theZMPPreviewController->getModuleT()->is_stationary()) {
+  // TODO: remove, only for debugging
+  static FrameInfo start_stopping(getFrameInfo());
+  if(getMotionRequest().id == getId()){
+      start_stopping = getFrameInfo();
+  }
+
+  PLOT("Walk:stopping_for", getFrameInfo().getTimeSince(start_stopping));
+
+  if(getMotionRequest().id != getId()
+     && theZMPPreviewController->getModuleT()->is_stationary()
+     && getStepBuffer().only_zero_steps()) {
     setCurrentState(motion::stopped);
     std::cout << "walk stopped" << std::endl;
   } else {
@@ -219,7 +229,7 @@ void Walk2018::updateMotionStatus(MotionStatus& motionStatus) const
     case FootStep::RIGHT:
       motionStatus.stepControl.moveableFoot = MotionStatus::StepControlStatus::LEFT;
       break;
-    default: 
+    default:
       ASSERT(false);
     }
   }
