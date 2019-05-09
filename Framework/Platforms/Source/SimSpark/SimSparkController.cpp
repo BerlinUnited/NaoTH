@@ -1549,6 +1549,7 @@ bool SimSparkController::hear(const sexp_t* sexp)
     size_t minMsgSize = (sizeof(SPLStandardMessage) - SPL_STANDARD_MESSAGE_DATA_SIZE);
     std::vector<const sexp_t*> data;
 
+    // the actual message is last, collect all preceding values
     while(sexp->val_used < minMsgSize) {
         data.push_back(sexp);
         sexp = sexp->next;
