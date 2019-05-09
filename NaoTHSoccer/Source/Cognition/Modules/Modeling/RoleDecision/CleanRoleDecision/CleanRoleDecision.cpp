@@ -220,7 +220,7 @@ bool CleanRoleDecision::isSecondStrikerDifferentFromFirst(unsigned int firstNumb
     Vector2d firstBall = first.pose * first.ballPosition;
     Vector2d secondBall = second.pose * second.ballPosition;
     // check if the ball distance is greater than the given parameter distance radius
-    double r = parameters.radius(first.ballPosition, second.ballPosition);
+    double r = (this->*parameters.ballDifferenceRadius)(second.ballPosition.abs());
 
     DEBUG_REQUEST("RoleDecision:min_ball_distance",
       FIELD_DRAWING_CONTEXT;

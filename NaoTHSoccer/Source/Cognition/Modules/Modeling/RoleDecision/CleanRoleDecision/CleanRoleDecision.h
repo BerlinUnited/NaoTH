@@ -143,7 +143,7 @@ protected:
     void (CleanRoleDecision::*strikerSelectionFunction)(std::map<unsigned int, unsigned int>&, double&) = &CleanRoleDecision::strikerSelectionByNumber;
 
     int strikerBallRadiusFunction;
-    std::function<double(const Vector2d&,const Vector2d&)> radius;
+    double (CleanRoleDecision::*ballDifferenceRadius)(double) = &CleanRoleDecision::ballDifferenceRadiusConstant;
 
     double firstSecondStrikerMinBallDistance;
     double firstSecondStrikerLinBallDistanceM;
@@ -156,19 +156,14 @@ protected:
     void setStrikerBallRadiusFunction(int selection) {
         // select a radius function based on the given new parameter
         switch (selection) {
-            // simply uses a linear 'function f(x) = x*m + n' based on the distance to the ball of the second striker
-            case 2:  radius = [&](const Vector2d&, const Vector2d& second){
-                          return second.abs() * firstSecondStrikerLinBallDistanceM + firstSecondStrikerLinBallDistanceN;
-                      }; break;
-            // uses the firstSecondStrikerMinBallDistance or a linear 'function f(x) = x*m + n' based on the distance to the ball of the second striker to determine the min radius between first and second striker's ball
-            case 3:  radius = [&](const Vector2d&, const Vector2d& second){
-                          return std::max(firstSecondStrikerMinBallDistance, second.abs() * firstSecondStrikerLinBallDistanceM + firstSecondStrikerLinBallDistanceN);
-                      }; break;
             // simply uses a firstSecondStrikerMinBallDistance as min radius between first and second striker's ball
-            case 1:
-            default: radius = [&](const Vector2d&, const Vector2d&){
-                          return firstSecondStrikerMinBallDistance;
-                      }; break;
+            case 1: ballDifferenceRadius = &CleanRoleDecision::ballDifferenceRadiusConstant; break;
+            // simply uses a linear 'function f(x) = x*m + n' based on the distance to the ball of the second striker
+            case 2: ballDifferenceRadius = &CleanRoleDecision::ballDifferenceRadiusLinear; break;
+            // uses the firstSecondStrikerMinBallDistance or a linear 'function f(x) = x*m + n' based on the distance to the ball of the second striker to determine the min radius between first and second striker's ball
+            case 3: ballDifferenceRadius = &CleanRoleDecision::ballDifferenceRadiusConstantLinear; break;
+            // simply uses a firstSecondStrikerMinBallDistance as min radius between first and second striker's ball
+            default: ballDifferenceRadius = &CleanRoleDecision::ballDifferenceRadiusConstant;
         }
     }
 
@@ -202,6 +197,11 @@ private:
    * @param number  the player, which role should be set
    */
   void inline setStrikerRole(unsigned int number);
+
+  /* Some radius functions to determine similiar balls. */
+  inline double ballDifferenceRadiusConstant(double /*d*/) { return parameters.firstSecondStrikerMinBallDistance; }
+  inline double ballDifferenceRadiusLinear(double d) { return d * parameters.firstSecondStrikerLinBallDistanceM + parameters.firstSecondStrikerLinBallDistanceN; }
+  inline double ballDifferenceRadiusConstantLinear(double d) { return std::max(ballDifferenceRadiusConstant(d), ballDifferenceRadiusLinear(d)); }
 };
 
 #endif //__CleanRoleDecision_h_
