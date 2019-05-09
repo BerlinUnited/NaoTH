@@ -189,7 +189,7 @@ void CleanRoleDecision::strikerSelectionByTimeExceptGoalieWithBallCompare(std::m
         // is current player clearly faster?
         if(it->second < stFastest && (it->second + parameters.strikerSelectionDiffThreshold) < stFastest && getRoleDecisionModel().firstStriker != 1) {
             // is there already a "fastest" striker ... but the current player is faster
-            if(getRoleDecisionModel().firstStriker != std::numeric_limits<unsigned int>::max() && isSecondStrikerDifferentFromFirst(it->first, getRoleDecisionModel().firstStriker)) {
+            if(getRoleDecisionModel().firstStriker != std::numeric_limits<unsigned int>::max() && isSecondStrikerDifferentFromFirst(getRoleDecisionModel().firstStriker, it->first)) {
                 // make the previous player the "second fastest" player, if they see different balls
                 getRoleDecisionModel().secondStriker = getRoleDecisionModel().firstStriker;
                 ndFastest = stFastest;
