@@ -186,7 +186,6 @@ include "Options/Test/WalkAgents/go_to_ball_with_foot_test_agent.xabsl";
 include "Options/Test/WalkAgents/go_to_ball_with_USOA_test_agent.xabsl";
 include "Options/Test/WalkAgents/go_to_point_with_USOA_test_agent.xabsl";
 include "Options/Test/WalkAgents/turn_around_ball_test_agent.xabsl";
-include "Options/Test/WalkAgents/clown_walk_test_agent.xabsl";
 include "Options/Test/agent/obstacle_test_agent.xabsl";
 include "Options/Test/WalkAgents/dribble_agent.xabsl";
 include "Options/Test/WalkAgents/walk_forward_agent.xabsl";
@@ -203,9 +202,6 @@ include "Options/Test/PathPlannerAgents/pathplanner2018_forwardkick_agent.xabsl"
 include "Options/Test/PathPlannerAgents/path_basic_goalie_agent.xabsl";
 include "Options/Test/PathPlannerAgents/path_move_around_ball_agent.xabsl";
 include "Options/Test/PathPlannerAgents/pathplanner2018_sidekick_agent.xabsl";
-
-// Test agents Team behavior
-include "Options/Test/team/team_go_to_ball_agent.xabsl";
 
 // Test Options PathPlanner
 include "Options/Test/PathPlaner/pathplanner_sidekick.xabsl";
@@ -261,7 +257,6 @@ include "Options/Test/walk/go_to_point_with_USOA_test.xabsl";
 include "Options/Test/walk/test_walk_internal_symbols.xabsl";
 include "Options/Test/walk/follow_ball_test.xabsl";
 include "Options/Test/walk/obstacle_test.xabsl";
-include "Options/Test/walk/clown_walk_test.xabsl";
 include "Options/Test/walk/turn_around_ball_test.xabsl";
 include "Options/Test/walk/dribble.xabsl";
 include "Options/Test/walk/walk_forward.xabsl";
@@ -296,9 +291,6 @@ include "Options/Roles/roles_go_to_passive_position.xabsl";
 include "Options/Roles/roles_decide_role.xabsl";
 include "Options/Roles/roles_play_soccer.xabsl";
 include "Agents/roles_spl_play_soccer.xabsl";
-
-// Test options Team behavior
-include "Options/Test/team/team_go_to_ball.xabsl";
 
 /** The soccer competition agent */
 agent spl_soccer("SPL Soccer", spl_play_soccer);
@@ -346,7 +338,6 @@ agent goto_follow_ball_test("follow_ball_test_agent", follow_ball_test_agent);
 agent goto_ball_test("go_to_ball_test_agent", go_to_ball_test_agent);
 agent goto_arm_back_test("arm_back_test_agent",arm_back_test_agent);
 agent goto_ball_with_foot_test("go_to_ball_with_foot_test_agent", go_to_ball_with_foot_test_agent);
-agent goto_clown_walk_test ("clown_walk_test_agent",clown_walk_test_agent);
 agent goto_turn_around_ball_test ("turn_around_ball_test_agent",turn_around_ball_test_agent);
 agent goto_obstacle_test("obstacle_test", obstacle_test_agent);
 agent goto_ball_with_USOA_test_agent("go_to_ball_with_USOA_test_agent", go_to_ball_with_USOA_test_agent);
@@ -374,5 +365,3 @@ agent search_only_looking_for_goal("only_looking_for_goal",only_goal_looking);
 
 agent head_test_agent("head_test_agent", head_test_agent);
 agent cammatrix_test_agent("cammatrix_test_agent", cammatrix_test_agent);
-
-agent team_go_to_ball_agent("team_go_to_ball_agent",team_go_to_ball_agent);
