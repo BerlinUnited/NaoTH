@@ -1,4 +1,4 @@
-option roles_agent{
+option roles_spl_play_soccer{
   initial state start {    
     action {
       // react to the game controller and handle fall down

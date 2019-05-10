@@ -291,7 +291,7 @@ include "Options/Roles/roles_go_to_ready_position.xabsl";
 include "Options/Roles/roles_go_to_passive_position.xabsl";
 include "Options/Roles/roles_decide_role.xabsl";
 include "Options/Roles/roles_play_soccer.xabsl";
-include "Agents/roles_agent.xabsl";
+include "Agents/roles_spl_play_soccer.xabsl";
 
 // Test options Team behavior
 include "Options/Test/team/team_go_to_ball.xabsl";
@@ -301,7 +301,7 @@ agent spl_soccer("SPL Soccer", spl_play_soccer);
 /** PathPlanner **/
 agent path_spl_soccer("Path SPL Soccer", path_spl_play_soccer);
 
-agent role_spl_soccer("Role SPL Soccer", roles_agent);
+agent role_spl_soccer("Role SPL Soccer", roles_spl_play_soccer);
 
 /** PathPlanner **/
 agent penalty("Penalty", play_penalty);
