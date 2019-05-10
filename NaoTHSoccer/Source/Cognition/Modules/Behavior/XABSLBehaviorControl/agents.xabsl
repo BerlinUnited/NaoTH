@@ -219,8 +219,6 @@ include "Options/Test/PathPlaner/path_move_around_ball_test.xabsl";
 include "Options/Test/agent/role_change_test_agent.xabsl";
 
 // Test options Headcontrol
-include "Options/Test/agent/cammatrix_test_agent.xabsl";
-include "Options/Test/head/cammatrix_test.xabsl";
 include "Options/Test/strategy/search_ball_test.xabsl";
 
 // Test options Arms
@@ -291,24 +289,19 @@ include "Options/Roles/roles_play_soccer.xabsl";
 include "Agents/roles_spl_play_soccer.xabsl";
 
 /** The soccer competition agent */
-agent spl_soccer("SPL Soccer", spl_play_soccer);
-/** PathPlanner **/
-agent path_spl_soccer("Path SPL Soccer", path_spl_play_soccer);
-
 agent role_spl_soccer("Role SPL Soccer", roles_spl_play_soccer);
 
-/** PathPlanner **/
+/** PathPlanner - agent from 2018 competition **/
+agent path_spl_soccer("Path SPL Soccer", path_spl_play_soccer);
 agent penalty("Penalty", play_penalty);
-
 agent spl_remote("Remote Player", spl_remote_agent);
+agent spl_soccer("SPL Soccer", spl_play_soccer); // deprecated
 
-/** simple soccer agents **/
+/** simple soccer agents - deprecated **/
 agent role_basic_goali("basic_goali", basic_goali_agent);
 agent role_passive_player("passive_player", passive_player_agent);
 agent path_basic_goalie_agent("path_basic_goalie_agent", path_basic_goalie_agent);
-
 agent role_striker("Action Selection Striker", striker_agent);
-
 agent role_passive_behavior_test_agent("passive_behavior_test_agent",passive_behavior_test_agent);
 agent role_change_test ("role_change_test_agent",role_change_test_agent);
 
@@ -359,6 +352,4 @@ agent path_move_around_ball_agent("path_move_around_ball_agent", path_move_aroun
 // Test agents search
 agent search_test_agent("search_test_agent",search_test_agent);
 agent search_only_looking_for_ball("only_looking_for_ball",only_ball_looking);
-agent search_only_looking_for_goal("only_looking_for_goal",only_goal_looking);
-
-agent cammatrix_test_agent("cammatrix_test_agent", cammatrix_test_agent);
+agent search_only_looking_for_goal("only_looking_for_goal",only_goal_looking);
