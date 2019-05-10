@@ -162,7 +162,7 @@ include "Options/Remote/spl_remote_secondary_actions.xabsl";
 include "Options/Test/agent/search_test_agent.xabsl";
 include "Options/Test/agent/only_ball_looking_agent.xabsl";
 include "Options/Test/agent/only_goal_looking_agent.xabsl";
-include "Options/Test/agent/searching_for_ball_and_look_around_agent.xabsl";
+
 // Test agents Arms
 include "Options/Test/agent/arm_back_test_agent.xabsl";
 // Test agents Kicks
@@ -219,8 +219,6 @@ include "Options/Test/PathPlaner/path_move_around_ball_test.xabsl";
 include "Options/Test/agent/role_change_test_agent.xabsl";
 
 // Test options Headcontrol
-include "Options/Test/agent/head_test_agent.xabsl";
-include "Options/Test/head/head_control_test.xabsl";
 include "Options/Test/agent/cammatrix_test_agent.xabsl";
 include "Options/Test/head/cammatrix_test.xabsl";
 include "Options/Test/strategy/search_ball_test.xabsl";
@@ -360,8 +358,6 @@ agent path_move_around_ball_agent("path_move_around_ball_agent", path_move_aroun
 // Test agents search
 agent search_test_agent("search_test_agent",search_test_agent);
 agent search_only_looking_for_ball("only_looking_for_ball",only_ball_looking);
-agent searching_for_ball_and_look_around("searching_for_ball_and_look_around",searching_for_ball_and_look_around);
 agent search_only_looking_for_goal("only_looking_for_goal",only_goal_looking);
 
-agent head_test_agent("head_test_agent", head_test_agent);
 agent cammatrix_test_agent("cammatrix_test_agent", cammatrix_test_agent);
