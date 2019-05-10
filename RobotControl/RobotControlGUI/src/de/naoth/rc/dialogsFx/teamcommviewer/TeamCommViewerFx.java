@@ -245,6 +245,8 @@ public class TeamCommViewerFx extends AbstractJFXDialog
             new Column<> ("msg/s",           "msgPerSecond",    (p) -> new PingTableCell()),
             new Column<> ("BallAge (s)",     "ballAge"),
             new Column<> ("State",           "fallen",          (p) -> new StateTableCell()),
+            new Column<> ("Role",            "robotRoleStatic"),
+            new Column<> ("dyn. Role",       "robotRoleDynamic"),
             new Column<> ("Temperature",     "temperature",     (p) -> new TemperatureTableCell()),
             new Column<> ("CPU-Temperature", "cpuTemperature",  (p) -> new TemperatureTableCell()),
             new Column<> ("Battery",         "batteryCharge",   (p) -> new BatteryTableCell()),

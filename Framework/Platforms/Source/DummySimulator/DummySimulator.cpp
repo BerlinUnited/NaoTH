@@ -32,7 +32,8 @@ DummySimulator::DummySimulator(bool backendMode, bool realTime, unsigned short p
   registerOutput<MotorJointData>(*this);
   registerInput<SensorJointData>(*this);
   registerInput<FSRData>(*this);
-
+  registerInput<AccelerometerData>(*this);
+  
   theDebugServer.start(port);
   theDebugServer.setTimeOut(0);
 }

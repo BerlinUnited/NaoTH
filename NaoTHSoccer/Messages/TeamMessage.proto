@@ -32,6 +32,34 @@ enum RobotState
   penalized = 5;
 };
 
+enum RobotRoleStatic
+{
+  role_defender_left     = 0;
+  role_defender_center   = 1;
+  role_defender_right    = 2;
+  role_midfielder_left   = 3;
+  role_midfielder_center = 4;
+  role_midfielder_right  = 5;
+  role_forward_left      = 6;
+  role_forward_center    = 7;
+  role_forward_right     = 8;
+  role_goalie            = 9;
+  role_unknown           = 10;
+}
+
+enum RobotRoleDynamic
+{
+  role_none              = 0;
+  role_supporter         = 1;
+  role_goalie_supporter  = 2;
+  role_striker           = 3;
+}
+
+message RobotRole {
+  required RobotRoleStatic role_static = 1 [default=role_unknown];
+  required RobotRoleDynamic role_dynamic = 2 [default=role_none];
+}
+
 message Opponent {
   required int32 playerNum = 1 [default=0];
   optional Pose2D poseOnField = 2;
@@ -71,6 +99,8 @@ message BUUserTeamMessage
   repeated Ntp ntpRequest = 15;
   optional DoubleVector2 ballVelocity = 16; // since the SPLStandardMessage 2018, we need it here
   optional RobotState robotState = 17 [default=initial];
+  optional RobotRole robotRole = 18;
+  optional bool readyToWalk = 19;
 
   optional string key = 100 [default="none"];
 }

@@ -1,4 +1,4 @@
-function addImageInputLayer(HeaderFile,BodyFile,step,layer)
+function addImageInputLayer(HeaderFile,BodyFile,step,layer,subtractAvg)
 
 % HACK: we need to access a private member 'PrivateLayer' in order to get
 % the average image
@@ -16,8 +16,14 @@ fprintf(BodyFile, '// perform zero mean normalization\n');
 for c = 1:channels
     for x = 1:rows
         for y = 1:cols
-            fprintf(BodyFile, 'out_step%d[%2d][%2d][%d] = out_step%d[%2d][%2d][%d] - %.8ff;\n', step, x-1, y-1, c-1, step-1, x-1, y-1, c-1, averageImage(x,y,c));
-        end
+            if subtractAvg
+                % with average image
+                fprintf(BodyFile, 'out_step%d[%2d][%2d][%d] = out_step%d[%2d][%2d][%d] - %.8ff;\n', step, x-1, y-1, c-1, step-1, x-1, y-1, c-1, averageImage(x,y,c));
+            else
+                % without average image
+                fprintf(BodyFile, 'out_step%d[%2d][%2d][%d] = out_step%d[%2d][%2d][%d];\n', step, x-1, y-1, c-1, step-1, x-1, y-1, c-1);
+            end
+            end
     end
 end
 
