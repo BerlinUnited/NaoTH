@@ -4,11 +4,10 @@ option look_around
   {
     decision{
       // decide in which direction to look first
-      if(head.yaw > 0){
+      if(head.yaw > 0)
         goto look_left;
-      }else{
+      else
         goto look_right;
-      }
     }
     action{}
   }
