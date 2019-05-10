@@ -1,4 +1,4 @@
-package de.naoth.rc.dialogs.stopwatchviewer;
+package de.naoth.rc.dialogsFx.stopwatchviewer;
 
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractJFXDialog;
@@ -34,7 +34,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  */
 public class StopwatchViewerFx extends AbstractJFXDialog {
 
-    @RCDialog(category = RCDialog.Category.Status, name = "StopwatchFx")
+    @RCDialog(category = RCDialog.Category.Status, name = "Stopwatch (FX)")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<StopwatchViewerFx> {
         @InjectPlugin
