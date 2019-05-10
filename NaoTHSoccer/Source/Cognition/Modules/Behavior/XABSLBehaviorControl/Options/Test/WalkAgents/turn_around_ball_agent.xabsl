@@ -1,4 +1,4 @@
-option turn_around_ball_test_agent {
+option turn_around_ball_agent {
 
   initial state test {    
     action {

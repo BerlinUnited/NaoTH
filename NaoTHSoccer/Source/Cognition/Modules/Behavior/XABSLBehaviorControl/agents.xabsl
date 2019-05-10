@@ -166,11 +166,11 @@ include "Options/Test/agent/searching_for_ball_and_look_around_agent.xabsl";
 // Test agents Arms
 include "Options/Test/agent/arm_back_test_agent.xabsl";
 // Test agents Kicks
-include "Options/Test/WalkAgents/walk_against_ball_test_agent.xabsl";
 include "Options/Test/agent/kick_short_with_approach_left_agent.xabsl";
 include "Options/Test/agent/kick_short_with_approach_right_agent.xabsl";
 include "Options/Test/agent/kick_long_with_approach_right_agent.xabsl";
 include "Options/Test/agent/kick_long_with_approach_left_agent.xabsl";
+include "Options/Test/WalkAgents/walk_against_ball_agent.xabsl"; // TODO maybe move to kicks?
 
 include "Options/Test/agent/sidekick_left_agent.xabsl";
 include "Options/Test/agent/sidekick_right_agent.xabsl";
@@ -180,13 +180,13 @@ include "Options/Test/WalkAgents/test_walk_lv2_agent.xabsl";
 include "Options/Test/WalkAgents/test_walk_step_control_agent.xabsl";
 include "Options/Test/WalkAgents/test_walk_stop_and_go_backwards_agent.xabsl";
 include "Options/Test/WalkAgents/test_walk_forth_and_back_agent.xabsl";
-include "Options/Test/WalkAgents/follow_ball_test_agent.xabsl";
-include "Options/Test/WalkAgents/go_to_ball_test_agent.xabsl";
-include "Options/Test/WalkAgents/go_to_ball_with_foot_test_agent.xabsl";
-include "Options/Test/WalkAgents/go_to_ball_with_USOA_test_agent.xabsl";
-include "Options/Test/WalkAgents/go_to_point_with_USOA_test_agent.xabsl";
-include "Options/Test/WalkAgents/turn_around_ball_test_agent.xabsl";
-include "Options/Test/agent/obstacle_test_agent.xabsl";
+include "Options/Test/WalkAgents/follow_ball_agent.xabsl";
+include "Options/Test/WalkAgents/go_to_ball_agent.xabsl";
+include "Options/Test/WalkAgents/go_to_ball_with_foot_agent.xabsl";
+include "Options/Test/WalkAgents/go_to_ball_with_USOA_agent.xabsl";
+include "Options/Test/WalkAgents/go_to_point_with_USOA_agent.xabsl";
+include "Options/Test/WalkAgents/turn_around_ball_agent.xabsl";
+include "Options/Test/WalkAgents/obstacle_agent.xabsl";
 include "Options/Test/WalkAgents/dribble_agent.xabsl";
 include "Options/Test/WalkAgents/walk_forward_agent.xabsl";
 include "Options/Test/WalkAgents/turn_look_at_preview_angle_agent.xabsl";
@@ -334,14 +334,14 @@ agent motion_test_walk_step_control("test walk step control", test_walk_step_con
 agent motion_test_walk_stop_and_go_backwards("test walk stop and go backwards", test_walk_stop_and_go_backwards_agent);
 agent motion_test_walk_forth_and_back("test walk forth and back", test_walk_forth_and_back_agent);
 
-agent goto_follow_ball_test("follow_ball_test_agent", follow_ball_test_agent);
+agent goto_follow_ball_test("follow_ball_test_agent", follow_ball_agent);
 agent goto_ball_test("go_to_ball_test_agent", go_to_ball_test_agent);
 agent goto_arm_back_test("arm_back_test_agent",arm_back_test_agent);
-agent goto_ball_with_foot_test("go_to_ball_with_foot_test_agent", go_to_ball_with_foot_test_agent);
-agent goto_turn_around_ball_test ("turn_around_ball_test_agent",turn_around_ball_test_agent);
-agent goto_obstacle_test("obstacle_test", obstacle_test_agent);
-agent goto_ball_with_USOA_test_agent("go_to_ball_with_USOA_test_agent", go_to_ball_with_USOA_test_agent);
-agent goto_point_with_USOA_test("go_to_point_with_USOA_test_agent", go_to_point_with_USOA_test_agent);
+agent goto_ball_with_foot_test("go_to_ball_with_foot_test_agent", go_to_ball_with_foot_agent);
+agent goto_turn_around_ball_test ("turn_around_ball_test_agent",turn_around_ball_agent);
+agent goto_obstacle_test("obstacle_agent", obstacle_agent);
+agent goto_ball_with_USOA_test_agent("go_to_ball_with_USOA_test_agent", go_to_ball_with_USOA_agent);
+agent goto_point_with_USOA_test("go_to_point_with_USOA_test_agent", go_to_point_with_USOA_agent);
 agent walk_forward("walk_forward_agent", walk_forward_agent);
 agent turn_look_at_preview_angle_agent("turn_look_at_preview_angle_agent", turn_look_at_preview_angle_agent);
 agent dribble_agent("dribble_agent", dribble_agent);
