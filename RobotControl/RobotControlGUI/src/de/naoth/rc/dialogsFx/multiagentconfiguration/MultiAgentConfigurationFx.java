@@ -45,7 +45,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 public class MultiAgentConfigurationFx extends AbstractJFXDialog
 {
     
-    @RCDialog(category = RCDialog.Category.Tools, name = "MultiAgentConfigurationFx")
+    @RCDialog(category = RCDialog.Category.Tools, name = "MultiAgentConfiguration (FX)")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<MultiAgentConfigurationFx> {
         @InjectPlugin
