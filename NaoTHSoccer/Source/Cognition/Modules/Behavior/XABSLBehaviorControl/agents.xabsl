@@ -141,10 +141,10 @@ include "Options/SetPlays/penalty_kicker.xabsl";
 include "Options/SetPlays/penalty_decide_state_and_role.xabsl";
 
 // Soccer-Tests
-include "Options/Soccer/Test/passive_behavior_test_agent.xabsl";
-include "Options/Soccer/Test/passive_player_agent.xabsl";
-include "Options/Soccer/Test/basic_goali_agent.xabsl";
-include "Options/Soccer/Test/striker_agent.xabsl";
+include "Options/Test/agent/passive_behavior_test_agent.xabsl";
+include "Options/Test/agent/passive_player_agent.xabsl";
+include "Options/Test/agent/basic_goali_agent.xabsl";
+include "Options/Test/agent/striker_agent.xabsl";
 
 // remote
 include "Options/Remote/spl_remote_agent.xabsl";
