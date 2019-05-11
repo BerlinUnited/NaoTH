@@ -103,6 +103,7 @@ private:
 
 private: // detectors
   ransac::RansacLine lineRansac;
+  ransac::RansacCircle circleRansac;
 
   bool ransacLine(Math::LineSegment& result, std::vector<size_t>& inliers, size_t& start_edgel, size_t& end_edgel);
 

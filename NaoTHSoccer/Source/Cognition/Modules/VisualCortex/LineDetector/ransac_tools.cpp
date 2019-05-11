@@ -176,24 +176,27 @@ void RansacLine::get_inliers(const LineModel& model, const std::vector<Edgel>& e
 }// end get_inliers
 
 
-RansacCircle::RansacCircle(int iterations, double outlierThresholdAngle, double outlierThresholdDist):
+RansacCircle::RansacCircle(int iterations, double outlierThresholdAngle, double outlierThresholdDist, double radius):
 iterations(iterations),
 outlierThresholdAngle(outlierThresholdAngle),
-outlierThresholdDist(outlierThresholdDist)
+outlierThresholdDist(outlierThresholdDist),
+radius(radius)
 {
 }
 
-RansacCircle::RansacCircle(std::vector<size_t>& edgel_idx, int iterations, double outlierThresholdAngle, double outlierThresholdDist):
+RansacCircle::RansacCircle(std::vector<size_t>& edgel_idx, int iterations, double outlierThresholdAngle, double outlierThresholdDist, double radius):
 iterations(iterations),
 outlierThresholdAngle(outlierThresholdAngle),
-outlierThresholdDist(outlierThresholdDist)
+outlierThresholdDist(outlierThresholdDist),
+radius(radius)
 {
   this->edgel_idx = edgel_idx;
 }
 
-void RansacCircle::setParameters(int iterations, double outlierThresholdAngle, double outlierThresholdDist) {
+void RansacCircle::setParameters(int iterations, double outlierThresholdAngle, double outlierThresholdDist, double radius) {
   this->iterations = iterations;
   this->outlierThresholdAngle = outlierThresholdAngle;
   this->outlierThresholdDist = outlierThresholdDist;
+  this->radius = radius;
 }
 
