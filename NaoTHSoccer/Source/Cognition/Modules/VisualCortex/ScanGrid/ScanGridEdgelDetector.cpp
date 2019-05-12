@@ -9,10 +9,14 @@ ScanGridEdgelDetector::ScanGridEdgelDetector()
 :
   cameraID(CameraInfo::Top)
 {
-  DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:mark_edgels", "mark the edgels on the image", false);
-  DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:mark_double_edgels", "mark the edgels on the image", false);
-  DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:mark_jump_vertical", "mark brightness jumps on image", false);
-  DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:mark_jump_horizontal", "mark brightness jumps on image", false);
+  DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:mark_edgels",
+                         "mark the edgels on the image", false);
+  DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:mark_double_edgels",
+                         "mark the edgels on the image", false);
+  DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:mark_jump_vertical",
+                         "mark brightness jumps on image", false);
+  DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:mark_jump_horizontal",
+                         "mark brightness jumps on image", false);
 
   getDebugParameterList().add(&parameters);
 }
@@ -34,8 +38,11 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
   if(getBodyContour().timestamp != getFrameInfo().getTime()) {
     return;
   }
+
   // threshold
-  int t_edge = cameraID == CameraInfo::Top? parameters.brightness_threshold_top : parameters.brightness_threshold_bottom;
+  int t_edge =
+      cameraID == CameraInfo::Top? parameters.brightness_threshold_top:
+                                   parameters.brightness_threshold_bottom;
 
   // initialize the scanner
   MaxPeakScan maximumPeak(t_edge);
@@ -51,23 +58,31 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
     begin_found = false;
     x = scanline.x;
     y = getScanGrid().vScanPattern[scanline.bottom];
-    // TODO
+
+    // TODO: set end of field to field area
     int end_of_field = 10;
 
     prevLuma = getImage().getY(scanline.x, y);
-    int end_of_body = getBodyContour().getFirstFreeCell(Vector2i(scanline.x, y)).y;
+
+    int end_of_body =
+        getBodyContour().getFirstFreeCell(Vector2i(scanline.x, y)).y;
+
     prevPoint = end_of_body;
-    for(size_t i=scanline.bottom-1; i>scanline.top; --i) {
+
+    for(size_t i = scanline.bottom; i > scanline.top; --i) {
       y = getScanGrid().vScanPattern[i];
       if(y < end_of_field) {
         break;
       }
+
       luma = getImage().getY(x, y);
       if(y >= end_of_body) {
         prevLuma = luma;
         continue;
       }
+
       gradient = luma - prevLuma;
+
       // begin
       if(maximumPeak.add(y, prevPoint, gradient)) {
         // found greatest peak
@@ -103,7 +118,6 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
     }
     ++scan_id;
   }
-
 
   maximumPeak.reset();
   minimumPeak.reset();
