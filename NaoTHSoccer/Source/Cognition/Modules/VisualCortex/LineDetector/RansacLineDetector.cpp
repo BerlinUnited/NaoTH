@@ -329,5 +329,3 @@ int RansacLineDetector::ransacEllipse(Ellipse& result)
 
   return bestInlier;
 }
-
-

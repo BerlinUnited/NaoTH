@@ -1,4 +1,4 @@
-option test_dribble
+option dribble
 {
   common decision
   {

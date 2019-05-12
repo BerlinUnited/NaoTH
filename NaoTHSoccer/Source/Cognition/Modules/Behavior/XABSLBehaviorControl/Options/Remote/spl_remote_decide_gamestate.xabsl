@@ -140,8 +140,5 @@ option spl_remote_decide_gamestate
 	    initial_striker();
    		team.is_playing_as_striker = true;
 	  }
-  }
-
-  // from set to play: if would be striker -> be inital striker for e.i. 20 sec?
-  
+  }  
 }
