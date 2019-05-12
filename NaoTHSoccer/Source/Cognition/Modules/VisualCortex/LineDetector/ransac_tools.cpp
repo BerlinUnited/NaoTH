@@ -1,11 +1,11 @@
-
 #include "ransac_tools.h"
 
 using namespace ransac;
 
 
 // NOTE: we never call this function with vec.size() <= 2
-Vector2i ransac::choose_random_two(const std::vector<size_t> &vec) {
+Vector2i ransac::choose_random_two(const std::vector<size_t> &vec)
+{
   //ASSERT(vec.size() > 1);
   int size = static_cast<int>(vec.size());
   int random_pos_one = Math::random(size);
@@ -14,7 +14,9 @@ Vector2i ransac::choose_random_two(const std::vector<size_t> &vec) {
 }
 
 
-double ransac::angle_variance(const std::vector<Edgel>& edgels, const std::vector<size_t>& inlier_idx) {
+double ransac::angle_variance(const std::vector<Edgel>& edgels,
+                              const std::vector<size_t>& inlier_idx)
+{
   Vector2d direction_var;
 
   for(size_t idx: inlier_idx) {
@@ -48,10 +50,14 @@ inlierError(0)
 
 bool LineModel::betterThan(const LineModel& other) const
 {
-  return inlier > other.inlier || (inlier == other.inlier && inlierError < other.inlierError);
+  return inlier > other.inlier ||
+        (inlier == other.inlier && inlierError < other.inlierError);
 }
 
-Math::LineSegment LineModel::getLineSegment(const std::vector<Edgel>& edgels, const std::vector<size_t>& inlier_idx) const {
+Math::LineSegment LineModel::getLineSegment(
+    const std::vector<Edgel>& edgels,
+    const std::vector<size_t>& inlier_idx) const
+{
   double minT = line.project(edgels[id1].point);
   double maxT = minT;
 
@@ -87,14 +93,18 @@ inline double LineModel::similarity(const Edgel& edgel) const
 }
 
 
-RansacLine::RansacLine(int iterations, double minDirectionSimilarity, double outlierThresholdDist):
+RansacLine::RansacLine(int iterations,
+                       double minDirectionSimilarity,
+                       double outlierThresholdDist):
 iterations(iterations),
 minDirectionSimilarity(minDirectionSimilarity),
 outlierThresholdDist(outlierThresholdDist)
 {
 }
 
-RansacLine::RansacLine(std::vector<size_t>& edgel_idx, int iterations, double minDirectionSimilarity, double outlierThresholdDist):
+RansacLine::RansacLine(std::vector<size_t>& edgel_idx, int iterations,
+                       double minDirectionSimilarity,
+                       double outlierThresholdDist):
 iterations(iterations),
 minDirectionSimilarity(minDirectionSimilarity),
 outlierThresholdDist(outlierThresholdDist)
@@ -102,13 +112,18 @@ outlierThresholdDist(outlierThresholdDist)
   this->edgel_idx = edgel_idx;
 }
 
-void RansacLine::setParameters(int iterations, double minDirectionSimilarity, double outlierThresholdDist) {
+void RansacLine::setParameters(int iterations,
+                               double minDirectionSimilarity,
+                               double outlierThresholdDist)
+{
   this->iterations = iterations;
   this->minDirectionSimilarity = minDirectionSimilarity;
   this->outlierThresholdDist = outlierThresholdDist;
 }
 
-bool RansacLine::find_best_model(LineModel& bestModel, const std::vector<Edgel>& edgels) const {
+bool RansacLine::find_best_model(LineModel& bestModel,
+                                 const std::vector<Edgel>& edgels) const
+{
   // needs more than 2 edgels
   if(edgel_idx.size() <= 2) {
     return false;
@@ -128,8 +143,10 @@ bool RansacLine::find_best_model(LineModel& bestModel, const std::vector<Edgel>&
 
     LineModel model(idx[0], idx[1], edgels);
 
-    // prior check: edgel directions should fit the direction of the line (same check as for inliers)
-    if(model.similarity(a) < minDirectionSimilarity || model.similarity(b) < minDirectionSimilarity) {
+    // prior check: edgel directions should fit the
+    // direction of the line (same check as for inliers)
+    if(model.similarity(a) < minDirectionSimilarity ||
+       model.similarity(b) < minDirectionSimilarity) {
       continue;
     }
 
@@ -140,7 +157,9 @@ bool RansacLine::find_best_model(LineModel& bestModel, const std::vector<Edgel>&
       double distance = model.distance(edgel);
 
       // inlier
-      if(distance < outlierThresholdDist && model.similarity(edgel) > minDirectionSimilarity) {
+      if(distance < outlierThresholdDist &&
+         model.similarity(edgel) > minDirectionSimilarity)
+      {
         model.inlier++;
         model.inlierError += distance;
       }
@@ -157,8 +176,10 @@ bool RansacLine::find_best_model(LineModel& bestModel, const std::vector<Edgel>&
   return false;
 }// end find_best_model
 
-void RansacLine::get_inliers(const LineModel& model, const std::vector<Edgel>& edgels,
-                             std::vector<size_t>& inlier_idx, std::vector<size_t>& outlier_idx) const
+void RansacLine::get_inliers(const LineModel& model,
+                             const std::vector<Edgel>& edgels,
+                             std::vector<size_t>& inlier_idx,
+                             std::vector<size_t>& outlier_idx) const
 {
   outlier_idx.reserve(edgel_idx.size() - model.inlier);
   inlier_idx.clear(); // make sure the list is empty
@@ -169,7 +190,9 @@ void RansacLine::get_inliers(const LineModel& model, const std::vector<Edgel>& e
     const Edgel& edgel = edgels[idx];
     double distance = model.distance(edgel);
 
-    if(distance < outlierThresholdDist && model.similarity(edgel) > minDirectionSimilarity) {
+    if(distance < outlierThresholdDist &&
+       model.similarity(edgel) > minDirectionSimilarity)
+    {
       inlier_idx.push_back(idx);
     } else {
       outlier_idx.push_back(idx);
@@ -178,14 +201,13 @@ void RansacLine::get_inliers(const LineModel& model, const std::vector<Edgel>& e
 }// end get_inliers
 
 
-CircleModel::CircleModel(): inlier(0), inlierError(0), radius(0) {
-}
+CircleModel::CircleModel(): inlier(0), inlierError(0), radius(0) {}
 
-CircleModel::CircleModel(double radius): inlier(0), inlierError(0), radius(radius)
-{
-}
+CircleModel::CircleModel(double radius):
+  inlier(0), inlierError(0), radius(radius) {}
 
-CircleModel::CircleModel(Vector2d circle_mean, double radius): inlier(0), inlierError(0), radius(radius)
+CircleModel::CircleModel(Vector2d circle_mean, double radius):
+  inlier(0), inlierError(0), radius(radius)
 {
   this->circle_mean = circle_mean;
 }
@@ -213,8 +235,10 @@ inline bool CircleModel::estimateCircle(const Edgel& a, const Edgel& b)
   const Vector2d direction = (c - lab.projection(c)).normalize();
 
   Vector2d between((a.point + b.point)/2);
-  // NOTE: we allways make sure half_distance > radius, but just to be sure take fabs ;)
-  double between_dist = sqrt(fabs(Math::sqr(radius) - Math::sqr(half_distance)));
+  // NOTE: we allways make sure half_distance > radius,
+  // but just to be sure take fabs ;)
+  double between_dist =
+      sqrt(fabs(Math::sqr(radius) - Math::sqr(half_distance)));
 
   circle_mean = between + direction*between_dist;
 
@@ -224,22 +248,28 @@ inline bool CircleModel::estimateCircle(const Edgel& a, const Edgel& b)
 
 inline double CircleModel::angle_diff(const Edgel& edgel) const
 {
-  double a = fabs(Vector2d(edgel.point - circle_mean).rotateRight().angleTo(edgel.direction));
+  double a = fabs(Vector2d(edgel.point - circle_mean)
+                  .rotateRight().angleTo(edgel.direction));
   return std::min(a, Math::pi - a);
 }
 
-inline bool CircleModel::isInlier(const Edgel& edgel, double& distError, double maxAngleError, double outlierThresholdDist) const
+inline bool CircleModel::isInlier(const Edgel& edgel, double& distError,
+                                  double maxAngleError,
+                                  double outlierThresholdDist) const
 {
   distError = std::fabs(radius - (circle_mean - edgel.point).abs());
-  return distError <= outlierThresholdDist && angle_diff(edgel) <= maxAngleError;
+  return distError <= outlierThresholdDist &&
+      angle_diff(edgel) <= maxAngleError;
 }
 
 bool CircleModel::betterThan(const CircleModel& other) const
 {
-  return inlier > other.inlier || (inlier == other.inlier && inlierError < other.inlierError);
+  return inlier > other.inlier ||
+        (inlier == other.inlier && inlierError < other.inlierError);
 }
 
-Vector2d CircleModel::refine(const std::vector<Edgel>& edgels, const std::vector<size_t>& inlier_idx) const
+Vector2d CircleModel::refine(const std::vector<Edgel>& edgels,
+                             const std::vector<size_t>& inlier_idx) const
 {
   Vector2d result;
   double n = 0;
@@ -261,15 +291,16 @@ Vector2d CircleModel::refine(const std::vector<Edgel>& edgels, const std::vector
 }
 
 
-RansacCircle::RansacCircle(int iterations, double outlierThresholdAngle, double outlierThresholdDist, double radius):
+RansacCircle::RansacCircle(int iterations, double outlierThresholdAngle,
+                           double outlierThresholdDist, double radius):
 iterations(iterations),
 outlierThresholdAngle(outlierThresholdAngle),
 outlierThresholdDist(outlierThresholdDist),
-radius(radius)
-{
-}
+radius(radius) {}
 
-RansacCircle::RansacCircle(std::vector<size_t>& edgel_idx, int iterations, double outlierThresholdAngle, double outlierThresholdDist, double radius):
+RansacCircle::RansacCircle(std::vector<size_t>& edgel_idx, int iterations,
+                           double outlierThresholdAngle,
+                           double outlierThresholdDist, double radius):
 iterations(iterations),
 outlierThresholdAngle(outlierThresholdAngle),
 outlierThresholdDist(outlierThresholdDist),
@@ -278,14 +309,19 @@ radius(radius)
   this->edgel_idx = edgel_idx;
 }
 
-void RansacCircle::setParameters(int iterations, double outlierThresholdAngle, double outlierThresholdDist, double radius) {
+void RansacCircle::setParameters(int iterations,
+                                 double outlierThresholdAngle,
+                                 double outlierThresholdDist, double radius)
+{
   this->iterations = iterations;
   this->outlierThresholdAngle = outlierThresholdAngle;
   this->outlierThresholdDist = outlierThresholdDist;
   this->radius = radius;
 }
 
-bool RansacCircle::find_best_model(CircleModel& best_model, const std::vector<Edgel>& edgels) const {
+bool RansacCircle::find_best_model(CircleModel& best_model,
+                                   const std::vector<Edgel>& edgels) const
+{
   if(edgel_idx.size() <= 2) {
     return false;
   }
@@ -311,7 +347,8 @@ bool RansacCircle::find_best_model(CircleModel& best_model, const std::vector<Ed
     for(size_t idx: edgel_idx)
     {
       double distError = 0.0;
-      if(model.isInlier(edgels[idx], distError, outlierThresholdAngle, outlierThresholdDist))
+      if(model.isInlier(edgels[idx], distError,
+                        outlierThresholdAngle, outlierThresholdDist))
       {
         model.inlier++;
         model.inlierError += distError;
@@ -325,8 +362,10 @@ bool RansacCircle::find_best_model(CircleModel& best_model, const std::vector<Ed
   return true;
 }
 
-void RansacCircle::get_inliers(const CircleModel& model, const std::vector<Edgel>& edgels,
-                               std::vector<size_t>& inlier_idx, std::vector<size_t>& outlier_idx) const
+void RansacCircle::get_inliers(const CircleModel& model,
+                               const std::vector<Edgel>& edgels,
+                               std::vector<size_t>& inlier_idx,
+                               std::vector<size_t>& outlier_idx) const
 {
   outlier_idx.reserve(edgel_idx.size() - model.inlier);
   inlier_idx.clear(); // make sure the list is empty
@@ -336,7 +375,9 @@ void RansacCircle::get_inliers(const CircleModel& model, const std::vector<Edgel
   {
     double distError = 0.0;
     // TODO why 3.0*
-    if(model.isInlier(edgels[idx], distError, 3.0*outlierThresholdAngle, outlierThresholdDist)) {
+    if(model.isInlier(edgels[idx], distError,
+                      3.0*outlierThresholdAngle, outlierThresholdDist))
+    {
       inlier_idx.push_back(idx);
     } else {
       outlier_idx.push_back(idx);

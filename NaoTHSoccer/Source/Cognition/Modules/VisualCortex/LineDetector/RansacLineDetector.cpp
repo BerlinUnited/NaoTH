@@ -14,12 +14,14 @@ circleRansac(params.circle.maxIterations,
              getFieldInfo().centerCircleRadius)
 {
   // initialize some stuff here
-  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:draw_edgels_field", "", false);
-  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:draw_lines_field", "", false);
-  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:fit_and_draw_ellipse_field", "", false);
-
-  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:draw_circle_field", "", false);
-
+  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:draw_edgels_field",
+                         "", false);
+  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:draw_lines_field",
+                         "", false);
+  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:fit_and_draw_ellipse_field",
+                         "", false);
+  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:draw_circle_field",
+                         "", false);
   getDebugParameterList().add(&params);
 }
 
@@ -35,7 +37,8 @@ void RansacLineDetector::execute()
 
   // prepare line id index structure to assign edgels to lines
   // prepare the index arrays
-  getRansacLinePercept().edgelLineIDs.resize(getLineGraphPercept().edgelsOnField.size());
+  getRansacLinePercept().edgelLineIDs.resize(
+        getLineGraphPercept().edgelsOnField.size());
   outliers.resize(getLineGraphPercept().edgelsOnField.size());
   for(size_t i = 0; i < getLineGraphPercept().edgelsOnField.size(); ++i) {
     outliers[i] = i;
@@ -62,7 +65,8 @@ void RansacLineDetector::execute()
     {
       // get inliers and outliers of the model
       std::vector<size_t> new_outlier_idx;
-      circleRansac.get_inliers(model, getLineGraphPercept().edgelsOnField, inlier_idx, new_outlier_idx);
+      circleRansac.get_inliers(model, getLineGraphPercept().edgelsOnField,
+                               inlier_idx, new_outlier_idx);
       // continue with ransac on remaining outliers
       outliers = new_outlier_idx;
 
@@ -79,7 +83,9 @@ void RansacLineDetector::execute()
 
       if(params.circle.refine)
       {
-        Vector2d newCircleMean = model.refine(getLineGraphPercept().edgelsOnField, inlier_idx);
+        Vector2d newCircleMean = model.refine(
+              getLineGraphPercept().edgelsOnField, inlier_idx);
+
         getRansacCirclePercept2018().set(newCircleMean);
 
         DEBUG_REQUEST("Vision:RansacLineDetector:draw_circle_field",
@@ -99,30 +105,42 @@ void RansacLineDetector::execute()
 
   lineRansac.set_edgel_idx(outliers);
   // reset parameters
-  lineRansac.setParameters(params.line.maxIterations, params.line.minDirectionSimilarity, params.line.outlierThresholdDist);
+  lineRansac.setParameters(params.line.maxIterations,
+                           params.line.minDirectionSimilarity,
+                           params.line.outlierThresholdDist);
 
   for(int i = 0; i < params.line.maxLines; ++i)
   {
     ransac::LineModel model;
-    if(lineRansac.find_best_model(model, getLineGraphPercept().edgelsOnField) && model.inlier > params.line.minInliers) {
-      // get inliers and outliers of the model
+    if(lineRansac.find_best_model(model, getLineGraphPercept().edgelsOnField) &&
+       model.inlier > params.line.minInliers)
+    {
       inlier_idx.clear();
+
+      // get inliers and outliers of the model
       std::vector<size_t> new_outlier_idx;
-      lineRansac.get_inliers(model, getLineGraphPercept().edgelsOnField, inlier_idx, new_outlier_idx);
+      lineRansac.get_inliers(model, getLineGraphPercept().edgelsOnField,
+                             inlier_idx, new_outlier_idx);
 
-      // calculate edgel angle variance -> edgels on the same line are expected to have a low angle variance
-      double angle_variance = ransac::angle_variance(getLineGraphPercept().edgelsOnField, inlier_idx);
+      // calculate edgel angle variance
+      // -> edgels on the same line are expected to have a low angle variance
+      double angle_variance = ransac::angle_variance(
+            getLineGraphPercept().edgelsOnField, inlier_idx);
 
-      // calculate line segment from inliers
-      Math::LineSegment line = model.getLineSegment(getLineGraphPercept().edgelsOnField, inlier_idx);
+      // calculate line segment and line length from inliers
+      Math::LineSegment line = model.getLineSegment(
+            getLineGraphPercept().edgelsOnField, inlier_idx);
       double line_length = line.getLength();
 
-      bool variance_small = line_length > params.line.length_of_var_check || angle_variance <= params.line.maxVariance;
+      bool variance_small = line_length > params.line.length_of_var_check ||
+                            angle_variance <= params.line.maxVariance;
+
       if (line_length > params.line.min_line_length && variance_small)
       {
         // add line to line percept and assign corresponding line to edgels
         for(size_t idx : inlier_idx) {
-          getRansacLinePercept().edgelLineIDs[idx] = static_cast<int>(getRansacLinePercept().fieldLineSegments.size());
+          getRansacLinePercept().edgelLineIDs[idx] =
+              static_cast<int>(getRansacLinePercept().fieldLineSegments.size());
         }
         getRansacLinePercept().fieldLineSegments.push_back(line);
 
@@ -147,7 +165,8 @@ void RansacLineDetector::execute()
         case 1: color = "0000FF66"; break;
         default: color = "00FFFF66"; break;
       }
-      const Math::LineSegment& line = getRansacLinePercept().fieldLineSegments[i];
+      const Math::LineSegment& line =
+          getRansacLinePercept().fieldLineSegments[i];
       PEN(color, 50);
       LINE(line.begin().x, line.begin().y, line.end().x, line.end().y);
     }
@@ -175,7 +194,8 @@ void RansacLineDetector::execute()
         CIRCLE(e.point.x, e.point.y, 25);
       }
       PEN("000000",0.1);
-      LINE(e.point.x, e.point.y, e.point.x + e.direction.x*100.0, e.point.y + e.direction.y*100.0);
+      LINE(e.point.x, e.point.y,
+           e.point.x + e.direction.x*100.0, e.point.y + e.direction.y*100.0);
     }
   );
 
@@ -268,7 +288,10 @@ int RansacLineDetector::ransacEllipse(Ellipse& result)
         continue;
       }
     }
-    if(inlier >= params.circle.minInliers && (inlier > bestInlier || (inlier == bestInlier && inlierError < bestInlierError))) {
+    if(inlier >= params.circle.minInliers && (inlier > bestInlier ||
+                                              (inlier == bestInlier &&
+                                              inlierError < bestInlierError)))
+    {
       bestModel = ellipse;
       bestInlier = inlier;
       bestInlierError = inlierError;
