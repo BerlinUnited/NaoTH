@@ -119,13 +119,29 @@ message InertialSensorData {
   optional DoubleVector2 data = 2;
 }
 
-message WhistlePercept {
-  message Whistle {
-    required string name = 1;
-    required int64 positionInCapture = 2;
-    required double responseValue = 3;
+message ButtonData {
+  enum ButtonID {
+    Chest           = 0;
+    LeftFootLeft    = 1;
+    LeftFootRight   = 2;
+    RightFootLeft   = 3;
+    RightFootRight  = 4;
+
+    HeadFront       = 5;
+    HeadMiddle      = 6;
+    HeadRear        = 7;
+
+    LeftHandBack    = 8;
+    LeftHandLeft    = 9;
+    LeftHandRight   = 10;
+
+    RightHandBack   = 11;
+    RightHandLeft   = 12;
+    RightHandRight  = 13;
   }
-  required int32 counter  = 1;
-  required string captureFile = 2;
-  repeated Whistle recognizedWhistles = 3;
+
+  repeated bool isPressed = 1;
+  repeated uint32 numOfFramesPressed = 2;
+  repeated uint32 eventCounter = 3;
 }
+

@@ -13,6 +13,8 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
@@ -27,7 +29,7 @@ public class ImagePanel extends javax.swing.JPanel
     private boolean stretchImage;
     private boolean showDrawings;
     
-    private final ArrayList<Drawable> drawigs = new ArrayList<Drawable>();
+    private final List<Drawable> drawigs = Collections.synchronizedList(new ArrayList<>());
     
     public ImagePanel()
     {
@@ -88,8 +90,7 @@ public class ImagePanel extends javax.swing.JPanel
       return this.backgroundImage;
     }
 
-    public ArrayList<Drawable> getDrawingList()
-    {
+    public List<Drawable> getDrawingList() {
       return this.drawigs;
     }
 
@@ -140,10 +141,8 @@ public class ImagePanel extends javax.swing.JPanel
         g2d.drawImage(backgroundImage, 0, 0, (int) wImg, (int) hImg, this);
 
         if(this.showDrawings) {
-          for (Drawable d : drawigs) {
-            if(d != null) {
-              d.draw(g2d);
-            }
+          synchronized(drawigs) {
+            drawigs.forEach(d -> { if(d!=null){d.draw(g2d);} });
           }
         }
 
@@ -169,10 +168,8 @@ public class ImagePanel extends javax.swing.JPanel
           g2d.drawImage(this.backgroundImage, 0, 0, width, height, this);
 
           if(this.showDrawings) {
-            for (Drawable d : drawigs) {
-              if(d != null) {
-                d.draw(g2d);
-              }
+            synchronized(drawigs) {
+              drawigs.forEach(d -> { if(d!=null){d.draw(g2d);} });
             }
           }
           

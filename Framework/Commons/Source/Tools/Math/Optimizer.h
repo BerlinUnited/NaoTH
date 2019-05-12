@@ -2,8 +2,51 @@
 #define _OPTIMIZER_H
 
 #include "Eigen/Eigen"
+#include "Common.h"
 
 namespace Optimizer {
+
+// TODO: generalize
+template<class T>
+class BoundedVariable{
+    public:
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+        typedef Eigen::Array<double, T::RowsAtCompileTime, 1> Bound;
+
+    public:
+        Bound lower_bound;
+        Bound upper_bound;
+
+        // TODO: this doesn't work with these bounds
+        BoundedVariable():
+            lower_bound(Bound::Constant(-std::numeric_limits<double>::infinity())),
+            upper_bound(Bound::Constant( std::numeric_limits<double>::infinity()))
+        {
+            static_assert(std::numeric_limits<float>::is_iec559, "IEEE 754 required");
+        }
+
+        BoundedVariable(const Bound& lower_bound, const Bound& upper_bound):
+            lower_bound(lower_bound),
+            upper_bound(upper_bound)
+        {
+            static_assert(std::numeric_limits<float>::is_iec559, "IEEE 754 required");
+        }
+
+        T bound(const T& value) const {
+            Bound bounded = value.array().cwiseMax(lower_bound).cwiseMin(upper_bound);
+
+            // shift by 2*pi to avoid problems at zero in fminsearch
+            // otherwise, the initial simplex is vanishingly small
+            T r = (2 * Math::pi + (2 * (bounded - lower_bound) / (upper_bound - lower_bound) - 1).asin()).matrix();
+            return r;
+        }
+
+        T unbound(const T& value) const {
+            Bound r = (value.array().sin() + 1) / 2 * (upper_bound - lower_bound) + lower_bound;
+            return (r.cwiseMin(upper_bound)).cwiseMax(lower_bound).matrix();
+        }
+};
 
 template<class ErrorFunction, class T>
 class GaussNewtonMinimizer
@@ -12,26 +55,38 @@ public:
     double error;
 
 protected:
-    double lambda;
     double init_lambda;
+    double lambda;
+    double v;
+    double max_step_size;
     bool   failed;
+    double regularizer;
+
+private:
+    bool enforce_reduction; // this is GN specific because a reduction isn't enforced by the algorithm itself
 
 public:
     GaussNewtonMinimizer():
         error(0),
-        init_lambda(0.005),
-        failed(false)
-    {
-        lambda = init_lambda;
-    }
+        init_lambda(1),
+        lambda(init_lambda),
+        v(1.25),
+        max_step_size(0.005),
+        failed(false),
+        //regularizer(0.0),
+        enforce_reduction(false)
+    {}
 
-    GaussNewtonMinimizer(double init_lambda):
+    GaussNewtonMinimizer(double init_lambda, double v, double max_step_size, /*double regularizer,*/ bool enforce_reduction):
         error(0),
         init_lambda(init_lambda),
-        failed(false)
-    {
-        lambda = init_lambda;
-    }
+        lambda(init_lambda),
+        v(v),
+        max_step_size(max_step_size),
+        failed(false),
+        //regularizer(regularizer),
+        enforce_reduction(enforce_reduction)
+    {}
 
     virtual std::string getName() {
         return "Gauss-Newton";
@@ -48,14 +103,27 @@ public:
     }
 
     virtual bool minimizeOneStep(const ErrorFunction& errorFunction, const T& x, const T& epsilon, T& offset){
-
         Eigen::MatrixXd J = determineJacobian(errorFunction, x, epsilon);
-
+        Eigen::MatrixXd JtJ = J.transpose() * J;
         Eigen::VectorXd r = errorFunction(x);
 
-        error = r.transpose() * r;
+        double current_error = r.transpose() * r;
 
-        auto a = (J.transpose() * J).colPivHouseholderQr().solve(-J.transpose() * r).eval();
+        Eigen::VectorXd a;
+        /*if(regularizer > 0.0) {
+            Eigen::MatrixXd R = Eigen::MatrixXd::Zero(x.array().isFinite().count(), T::RowsAtCompileTime);
+            int row_idx = 0;
+            for(int i = 0; i < T::RowsAtCompileTime; ++i){
+                if(std::isnan(x(i)))
+                    continue;
+
+                R(row_idx, i) = 1;
+                ++row_idx;
+            }
+            a = (JtJ + regularizer * Eigen::MatrixXd::Identity(JtJ.rows(),JtJ.cols())).colPivHouseholderQr().solve(-J.transpose() * r + regularizer * R * x);
+        } else {*/
+            a = (JtJ).colPivHouseholderQr().solve(-J.transpose() * r);
+        //}
 
         if(a.hasNaN()){
             failed = true;
@@ -64,8 +132,22 @@ public:
 
         offset = mapOffsetToXDims(epsilon, a);
 
-        if (offset.norm() > lambda) {
-            offset = offset.normalized()*lambda;
+        if (max_step_size > 0 && offset.norm() > max_step_size) {
+            offset = offset.normalized()*max_step_size;
+        }
+
+        if(enforce_reduction){
+            offset *= lambda;
+            r = errorFunction(x+offset);
+            error = r.transpose() * r;
+            if(error > current_error){
+                lambda /= v;
+                return false;
+            } else {
+                lambda = init_lambda;
+            }
+        } else {
+            error = current_error;
         }
 
         return true;
@@ -119,26 +201,17 @@ protected:
 template<class ErrorFunction, class T>
 class LevenbergMarquardtMinimizer : public GaussNewtonMinimizer<ErrorFunction, T>
 {
-protected:
-    double init_v;
-    double v;
-
-
 // (optional) TODO: stopping criteria || J*r || < eps1, || offset || < eps2 * x, iter > iter_max
 public:
     LevenbergMarquardtMinimizer():
-        GaussNewtonMinimizer<ErrorFunction, T>(1),
-        init_v(2)
+        GaussNewtonMinimizer<ErrorFunction, T>(1, 2, -1.0, /*0.0,*/ false)
     {
-        v = init_v;
     }
 
     // init_lambda: > 0, the smaller this value the more we believe that we are already close to the optimum (closeness)
-    LevenbergMarquardtMinimizer(double init_lambda):
-        GaussNewtonMinimizer<ErrorFunction, T>(init_lambda),
-        init_v(2)
+    LevenbergMarquardtMinimizer(double init_lambda, double v, double max_step_size/*, double regularizer*/):
+        GaussNewtonMinimizer<ErrorFunction, T>(init_lambda, v, max_step_size, /*regularizer,*/ false)
     {
-        v = init_v;
     }
 
     virtual std::string getName() {
@@ -147,7 +220,6 @@ public:
 
     virtual void reset(){
         GaussNewtonMinimizer<ErrorFunction, T>::reset();
-        v      = init_v;
     }
 
     virtual bool minimizeOneStep(const ErrorFunction& errorFunction, const T& x, const T& epsilon, T& offset)
@@ -158,8 +230,23 @@ public:
         Eigen::MatrixXd JtJdiag = (JtJ).diagonal().asDiagonal();
         this->error = r.transpose() * r;
 
-        auto a = (JtJ + this->lambda   * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r).eval();
-        auto b = (JtJ + this->lambda/v * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r).eval();
+        Eigen::VectorXd a,b;
+        /*if(this->regularizer > 0.0) {
+            Eigen::MatrixXd R = Eigen::MatrixXd::Zero(x.array().isFinite().count(), T::RowsAtCompileTime);
+            int row_idx = 0;
+            for(int i = 0; i < T::RowsAtCompileTime; ++i){
+                if(std::isnan(x(i)))
+                    continue;
+
+                R(row_idx, i) = 1;
+                ++row_idx;
+            }
+            a = (JtJ + this->lambda * JtJdiag         + this->regularizer * Eigen::MatrixXd::Identity(JtJ.rows(),JtJ.cols())).colPivHouseholderQr().solve(-J.transpose() * r + this->regularizer * R * x);
+            b = (JtJ + this->lambda/this->v * JtJdiag + this->regularizer * Eigen::MatrixXd::Identity(JtJ.rows(),JtJ.cols())).colPivHouseholderQr().solve(-J.transpose() * r + this->regularizer * R * x);
+        } else {*/
+            a = (JtJ + this->lambda * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r);
+            b = (JtJ + this->lambda/this->v * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r);
+        //}
 
         if(a.hasNaN() || b.hasNaN()){
             this->failed = true;
@@ -177,15 +264,21 @@ public:
 
         if(e_r_o1 > this->error && e_r_o2 > this->error)
         {
-            this->lambda *= v; // didn't get a better result so increase damping and retry
+            this->lambda *= this->v; // didn't get a better result so increase damping and retry
         } else if(e_r_o1 > e_r_o2) {
-            this->lambda /= v; // got better result with decreased damping
+            this->lambda /= this->v; // got better result with decreased damping
             this->error = e_r_o2;
             offset = offset2;
+            if (this->max_step_size > 0 && offset.norm() > this->max_step_size) {
+                offset = offset.normalized()*this->max_step_size;
+            }
             return true;
         } else {
             this->error = e_r_o1;
             offset = offset1;
+            if (this->max_step_size > 0 && offset.norm() > this->max_step_size) {
+                offset = offset.normalized()*this->max_step_size;
+            }
             return true; // got better result with current damping
         }
 
@@ -193,11 +286,13 @@ public:
     }
 };
 
-//Based on H.B. Nielson, Damping Parameter In Marquardt’s Method, Technical Report IMM-REP-1999-05, Dept. of Mathematical Modeling, Technical University Denmark.
+//Based on H.B. Nielson, Damping Parameter In Marquardt's Method, Technical Report IMM-REP-1999-05, Dept. of Mathematical Modeling, Technical University Denmark.
 template<class ErrorFunction, class T>
 class LevenbergMarquardtMinimizer2 : public LevenbergMarquardtMinimizer<ErrorFunction, T>
 {
 protected:
+    double init_v;
+
     const double beta;
     const double gamma;
     const double p;
@@ -206,14 +301,16 @@ protected:
 public:
     LevenbergMarquardtMinimizer2():
         LevenbergMarquardtMinimizer<ErrorFunction, T>(),
+        init_v(2),
         beta(2),
         gamma(2),
         p(3)
     {}
 
     // init_lambda: > 0, the smaller this value the more we believe that we are already close to the optimum (closeness)
-    LevenbergMarquardtMinimizer2(double init_lambda, double beta, double gamma, double p):
-        LevenbergMarquardtMinimizer<ErrorFunction, T>(init_lambda),
+    LevenbergMarquardtMinimizer2(double init_lambda, double init_v, double max_step_size, /*double regularizer,*/ double beta, double gamma, double p):
+        LevenbergMarquardtMinimizer<ErrorFunction, T>(init_lambda, init_v, max_step_size/*, regularizer*/),
+        init_v(init_v),
         beta(beta),
         gamma(gamma),
         p(p)
@@ -231,7 +328,21 @@ public:
         Eigen::MatrixXd JtJdiag = (JtJ).diagonal().asDiagonal();
         this->error = r.transpose() * r;
 
-        auto a = (JtJ + this->lambda * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r).eval();
+        Eigen::VectorXd a;
+        /*if(this->regularizer > 0.0) {
+            Eigen::MatrixXd R = Eigen::MatrixXd::Zero(x.array().isFinite().count(), T::RowsAtCompileTime);
+            int row_idx = 0;
+            for(int i = 0; i < T::RowsAtCompileTime; ++i){
+                if(std::isnan(x(i)))
+                    continue;
+
+                R(row_idx, i) = 1;
+                ++row_idx;
+            }
+            a = (JtJ + this->lambda * JtJdiag + this->regularizer * Eigen::MatrixXd::Identity(JtJ.rows(),JtJ.cols())).colPivHouseholderQr().solve(-J.transpose() * r + this->regularizer * R * x);
+        } else {*/
+            a = (JtJ + this->lambda * JtJdiag).colPivHouseholderQr().solve(-J.transpose() * r);
+        //}
 
         if(a.hasNaN()){
             this->failed = true;
@@ -248,6 +359,11 @@ public:
         if(g>0) {
             this->lambda *= std::max(1/gamma, 1-(beta-1)*std::pow(2*g-1,p)); // update strategy with beta = v = gamma = 2, p =3
             this->v = beta;
+
+            if (this->max_step_size > 0 && offset.norm() > this->max_step_size) {
+                offset = offset.normalized()*this->max_step_size;
+            }
+
             return true;
         } else {
             this->lambda *= this->v;
@@ -255,6 +371,11 @@ public:
         }
 
         return false;
+    }
+
+    virtual void reset(){
+        LevenbergMarquardtMinimizer<ErrorFunction, T>::reset();
+        this->v = init_v;
     }
 };
 

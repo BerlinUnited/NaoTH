@@ -15,29 +15,28 @@
 
 LogFileScanner::LogFileScanner(const std::string& filePath)
 {
-  logFile.open(filePath.c_str(), std::ios::in | std::ios::binary);
-
-  if(logFile.fail())
-  {
-    std::cerr << "[LogFileScanner] Could not open the file \"" << filePath << "\"!" << std::endl;
-    assert(false);
-  }
-
-  scanFile();
+    open_internal(filePath);
 }
 
 void LogFileScanner::open(const std::string& filePath)
 {
-  logFile.close();
-  logFile.open(filePath.c_str(), std::ios::in | std::ios::binary);
+    logFile.close();
+    open_internal(filePath);
+}
 
-  if(logFile.fail())
-  {
-    std::cerr << "[LogFileScanner] Could not open the file \"" << filePath << "\"!" << std::endl;
-    assert(false);
-  }
+void LogFileScanner::open_internal(const std::string& filePath)
+{
+    logFile.open(filePath.c_str(), std::ios::in | std::ios::binary);
 
-  scanFile();
+    if(logFile.fail())
+    {
+        std::cerr << "[LogFileScanner] Could not open the file \"" << filePath << "\"!" << std::endl;
+        assert(false);
+    } else {
+        std::cout << "[LogFileScanner] \"" << filePath << "\"" << std::endl;
+    }
+
+    scanFile();
 }
 
 void LogFileScanner::scanFile()

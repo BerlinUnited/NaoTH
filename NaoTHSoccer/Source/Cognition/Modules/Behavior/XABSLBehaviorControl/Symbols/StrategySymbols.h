@@ -17,7 +17,10 @@
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/CompassDirection.h"
 #include "Representations/Infrastructure/GameData.h"
+#include "Representations/Infrastructure/Roles.h"
 #include "Representations/Modeling/TeamMessage.h"
+#include "Representations/Modeling/RoleDecisionModel.h"
+#include "Representations/Modeling/TeamMessagePlayersState.h"
 
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugRequest.h"
@@ -40,6 +43,8 @@ BEGIN_DECLARE_MODULE(StrategySymbols)
   REQUIRE(KickActionModel)
   REQUIRE(GameData)
   REQUIRE(TeamMessage)
+  REQUIRE(RoleDecisionModel)
+  REQUIRE(TeamMessagePlayersState)
 
   PROVIDE(SituationStatus)
   PROVIDE(DebugRequest)
@@ -114,11 +119,11 @@ private:
   double attackDirectionPreviewRFoot;
 
   Vector2d calculateGoalieGuardPosition();
-  Vector2d calculatePenaltyGoalieGuardPosition();
+  //Vector2d calculatePenaltyGoalieGuardPosition();
   static double goalieGuardPositionX();
   static double goalieGuardPositionY();
-  static double penaltyGoalieGuardPositionX();
-  static double penaltyGoalieGuardPositionY();
+  //static double penaltyGoalieGuardPositionX();
+  //static double penaltyGoalieGuardPositionY();
 
   Pose2D goalieDefensivePosition;
   Pose2D calculateGoalieDefensivePosition();
@@ -142,6 +147,15 @@ private:
   void retrieveFreeKickPosition();
   static double freeKickPositionX();
   static double freeKickPositionY();
+
+  static int getStaticRole();
+  static int getDynamicRole();
+  static double getHomePositionX();
+  static double getHomePositionY();
+  static double getHomePositionOwnKickoffX();
+  static double getHomePositionOwnKickoffY();
+  static double getHomePositionOppKickoffX();
+  static double getHomePositionOppKickoffY();
 };//end class StrategySymbols
 
 #endif // _StrategySymbols_H_

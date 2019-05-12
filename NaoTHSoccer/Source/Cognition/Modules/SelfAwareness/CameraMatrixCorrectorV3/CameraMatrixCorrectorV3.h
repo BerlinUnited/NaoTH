@@ -11,6 +11,7 @@
 #include <ModuleFramework/ModuleManager.h>
 
 #include "Representations/Infrastructure/FieldInfo.h"
+#include <Representations/Infrastructure/CameraInfo.h>
 #include "Representations/Modeling/InertialModel.h"
 #include "Representations/Modeling/CameraMatrixOffset.h"
 #include "Representations/Perception/LineGraphPercept.h"
@@ -23,7 +24,6 @@
 #include "Representations/Infrastructure/SoundData.h"
 
 #include "Tools/DoubleCamHelpers.h"
-#include "Tools/CameraGeometry.h"
 #include <Tools/NaoInfo.h>
 #include <Tools/DataStructures/RingBufferWithSum.h>
 
@@ -36,18 +36,9 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 
 #include <Tools/Math/Optimizer.h>
+#include "CamMatErrorFunctionV3.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
-
-BEGIN_DECLARE_MODULE(CamMatErrorFunctionV3)
-  PROVIDE(DebugRequest)
-  PROVIDE(DebugDrawings)
-  PROVIDE(DebugModify)
-
-  REQUIRE(FieldInfo)
-  REQUIRE(CameraInfo)
-  REQUIRE(CameraInfoTop)
-END_DECLARE_MODULE(CamMatErrorFunctionV3)
 
 BEGIN_DECLARE_MODULE(CameraMatrixCorrectorV3)
   PROVIDE(DebugRequest)
@@ -62,6 +53,9 @@ BEGIN_DECLARE_MODULE(CameraMatrixCorrectorV3)
   REQUIRE(KinematicChain)
   REQUIRE(SensorJointData)
   REQUIRE(InertialModel)
+  REQUIRE(FieldInfo)
+  REQUIRE(CameraInfo)
+  REQUIRE(CameraInfoTop)
 
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)
@@ -70,111 +64,8 @@ BEGIN_DECLARE_MODULE(CameraMatrixCorrectorV3)
 END_DECLARE_MODULE(CameraMatrixCorrectorV3)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
-/// \brief The CameraMatrixCorrectorV3 class
 
-// HACK: shouldn't be a module, should be a service... wait and see what the future holds ;)
-class CamMatErrorFunctionV3 : public CamMatErrorFunctionV3Base
-{
-public:
-    struct CalibrationDataSample {
-        CalibrationDataSample(const Pose3D& chestPose, const LineGraphPercept& lineGraphPercept, const InertialModel& inertialModel, double headYaw  , double headPitch)
-                             :chestPose(chestPose)   , lineGraphPercept(lineGraphPercept)      , inertialModel(inertialModel)      , headYaw(headYaw), headPitch(headPitch)
-        {}
-
-        //KinematicChain   kinematicChain;
-        Pose3D chestPose; //work around, can't copy kinematic chain
-        LineGraphPercept lineGraphPercept;
-        InertialModel    inertialModel;
-        double headYaw;
-        double headPitch;
-    };
-
-    typedef std::vector<CalibrationDataSample> CalibrationData;
-
-private:
-    CalibrationData calibrationData;
-    size_t numberOfResudials;
-
-    const CameraInfo& getCameraInfo(int cameraID) const {
-      if(cameraID == CameraInfo::Top) {
-        return CamMatErrorFunctionV3Base::getCameraInfoTop();
-      } else {
-        return CamMatErrorFunctionV3Base::getCameraInfo();
-      }
-    }
-
-    const std::vector<EdgelD>& getEdgelsInImage(std::vector<CalibrationDataSample>::const_iterator& sample, int cameraID) const {
-      if(cameraID == CameraInfo::Top) {
-        return sample->lineGraphPercept.edgelsInImageTop;
-      } else {
-        return sample->lineGraphPercept.edgelsInImage;
-      }
-    }
-
-    void actual_plotting(const Eigen::Matrix<double, 11, 1>& parameter, CameraInfo::CameraID cameraID) const;
-
-public:
-    CamMatErrorFunctionV3()
-      : numberOfResudials(0)
-    {
-        DEBUG_REQUEST_REGISTER("CamMatErrorFunctionV3:debug_drawings:only_bottom", "", false);
-        DEBUG_REQUEST_REGISTER("CamMatErrorFunctionV3:debug_drawings:only_top", "", false);
-        DEBUG_REQUEST_REGISTER("CamMatErrorFunctionV3:debug_drawings:draw_projected_edgels", "", true);
-        DEBUG_REQUEST_REGISTER("CamMatErrorFunctionV3:debug_drawings:draw_matching_global",  "", false);
-    }
-
-    void execute(){}
-
-    Eigen::VectorXd operator()(const Eigen::Matrix<double, 11, 1>& parameter) const;
-
-    size_t getNumberOfResudials() const {
-        return numberOfResudials;
-    }
-
-    void add(const CalibrationDataSample& c_data_sample) 
-    {
-        int numNewResudials = 
-          (c_data_sample.lineGraphPercept.edgelsInImage.empty()   ? 0 : 1) + 
-          (c_data_sample.lineGraphPercept.edgelsInImageTop.empty()? 0 : 1);
-        
-        if (numNewResudials > 0) {
-            calibrationData.push_back(c_data_sample);
-            numberOfResudials += numNewResudials;
-        }
-    }
-
-    void clear(){
-        calibrationData.clear();
-        numberOfResudials = 0;
-    }
-
-    void plot_CalibrationData(const Eigen::Matrix<double, 11, 1>& parameter){
-        bool only_bottom = false;
-        DEBUG_REQUEST("CamMatErrorFunctionV3:debug_drawings:only_bottom",
-                      only_bottom = true;
-        );
-
-        bool only_top = false;
-        DEBUG_REQUEST("CamMatErrorFunctionV3:debug_drawings:only_top",
-                      only_top = true;
-        );
-
-        if(only_bottom && only_top){
-            actual_plotting(parameter, CameraInfo::Bottom);
-            actual_plotting(parameter, CameraInfo::Top);
-        } else if (only_bottom) {
-            actual_plotting(parameter, CameraInfo::Bottom);
-        } else if (only_top) {
-            actual_plotting(parameter, CameraInfo::Top);
-        } else {
-            actual_plotting(parameter, CameraInfo::Bottom);
-            actual_plotting(parameter, CameraInfo::Top);
-        }
-    }
-};
-
-// HACK: shouldn't be a ModuleManager but has to be because of the CamMatErrorFunctionV3... see above
-class CameraMatrixCorrectorV3: public CameraMatrixCorrectorV3Base, public ModuleManager
+class CameraMatrixCorrectorV3: public CameraMatrixCorrectorV3Base
 {
 public:
   CameraMatrixCorrectorV3();
@@ -182,17 +73,21 @@ public:
 
   void execute();
 
+  typedef Eigen::Matrix<double, 11, 1> Parameter;
+
 private:
 
   std::vector<Vector2d> target_points;
   std::vector<Vector2d>::const_iterator current_target;
 
-  typedef Eigen::Matrix<double, 11, 1> Parameter;
   Parameter cam_mat_offsets;
+  Optimizer::BoundedVariable<Parameter> bounds;
+
+  CamMatErrorFunctionV3 theCamMatErrorFunctionV3;
 
   Optimizer::GaussNewtonMinimizer<CamMatErrorFunctionV3, Parameter>* minimizer;
 
-  Optimizer::GaussNewtonMinimizer<CamMatErrorFunctionV3, Parameter> 	    gn_minimizer;
+  Optimizer::GaussNewtonMinimizer<CamMatErrorFunctionV3, Parameter>         gn_minimizer;
   Optimizer::LevenbergMarquardtMinimizer<CamMatErrorFunctionV3, Parameter>  lm_minimizer;
   Optimizer::LevenbergMarquardtMinimizer2<CamMatErrorFunctionV3, Parameter> lm2_minimizer;
 
@@ -205,14 +100,81 @@ private:
   void writeToRepresentation();
   void readFromRepresentation();
 
-  ModuleCreator<CamMatErrorFunctionV3>* theCamMatErrorFunctionV3;
-
   // for automatic calibration
   bool auto_cleared_data, auto_collected, auto_calibrated;
   bool play_collecting, play_calibrating, play_calibrated;
   RingBufferWithSum<double, 50> derrors;
   double last_error;
   FrameInfo last_frame_info;
+
+  // for reading and writing calibration data
+  bool read_calibration_data, written_calibration_data;
+
+  void update_bounds();
+
+  class CMCParameters: public ParameterList
+  {
+      public:
+          CMCParameters() : ParameterList("CameraMatrixCorrectorV3")
+          {
+              PARAMETER_ANGLE_REGISTER(lower.body_x)    = -2;
+              PARAMETER_ANGLE_REGISTER(lower.body_y)    = -2;
+              PARAMETER_ANGLE_REGISTER(lower.head_x)    = -2;
+              PARAMETER_ANGLE_REGISTER(lower.head_y)    = -2;
+              PARAMETER_ANGLE_REGISTER(lower.head_z)    = -2;
+              PARAMETER_ANGLE_REGISTER(lower.cam_x)     = -2;
+              PARAMETER_ANGLE_REGISTER(lower.cam_y)     = -2;
+              PARAMETER_ANGLE_REGISTER(lower.cam_z)     = -2;
+              PARAMETER_ANGLE_REGISTER(lower.cam_top_x) = -2;
+              PARAMETER_ANGLE_REGISTER(lower.cam_top_y) = -2;
+              PARAMETER_ANGLE_REGISTER(lower.cam_top_z) = -2;
+
+              PARAMETER_ANGLE_REGISTER(upper.body_x)    = 2;
+              PARAMETER_ANGLE_REGISTER(upper.body_y)    = 2;
+              PARAMETER_ANGLE_REGISTER(upper.head_x)    = 2;
+              PARAMETER_ANGLE_REGISTER(upper.head_y)    = 2;
+              PARAMETER_ANGLE_REGISTER(upper.head_z)    = 2;
+              PARAMETER_ANGLE_REGISTER(upper.cam_x)     = 2;
+              PARAMETER_ANGLE_REGISTER(upper.cam_y)     = 2;
+              PARAMETER_ANGLE_REGISTER(upper.cam_z)     = 2;
+              PARAMETER_ANGLE_REGISTER(upper.cam_top_x) = 2;
+              PARAMETER_ANGLE_REGISTER(upper.cam_top_y) = 2;
+              PARAMETER_ANGLE_REGISTER(upper.cam_top_z) = 2;
+
+              PARAMETER_REGISTER(use_bounded_variable) = false;
+
+              PARAMETER_REGISTER(global_pose.position.x) = 0;
+              PARAMETER_REGISTER(global_pose.position.y) = 0;
+              PARAMETER_ANGLE_REGISTER(global_pose.orientation) = 0;
+
+              syncWithConfig();
+          }
+
+          struct {
+              double body_x;
+              double body_y;
+
+              double head_x;
+              double head_y;
+              double head_z;
+
+              double cam_x;
+              double cam_y;
+              double cam_z;
+
+              double cam_top_x;
+              double cam_top_y;
+              double cam_top_z;
+          } lower, upper;
+
+          bool use_bounded_variable;
+
+          struct {
+              Vector2d position;
+              double   orientation;
+          } global_pose;
+
+  } cmc_params;
 };
 
 #endif //_CameraMatrixCorrectorV3_h_

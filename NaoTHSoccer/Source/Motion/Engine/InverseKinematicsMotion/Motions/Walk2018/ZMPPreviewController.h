@@ -22,6 +22,8 @@
 #include "Representations/Motion/Walk2018/ZMPReferenceBuffer.h"
 #include "Representations/Motion/Walk2018/TargetCoMFeetPose.h"
 
+#include "Representations/Motion/Walk2018/Walk2018Parameters.h"
+
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugRequest.h"
@@ -33,6 +35,7 @@ BEGIN_DECLARE_MODULE(ZMPPreviewController)
 
     REQUIRE(FrameInfo)
 
+    PROVIDE(Walk2018Parameters) // changing height
     PROVIDE(ZMPReferenceBuffer) // poping
     PROVIDE(TargetCoMFeetPose)  // setting target CoM
 END_DECLARE_MODULE(ZMPPreviewController)
@@ -45,21 +48,10 @@ class ZMPPreviewController : private ZMPPreviewControllerBase
     Vector3d b;
     Vector3d c;
 
-    // loaded values
-    struct Parameters
-    {
-      // for preview control
-      double Ki;
-      Vector3d K;
-      std::vector<double> f;
-    };
-
   public:
     ZMPPreviewController();
 
     virtual void execute();
-
-    void loadParameter();
 
     // state of the controller
 
@@ -69,7 +61,7 @@ class ZMPPreviewController : private ZMPPreviewControllerBase
 
     void control(Vector3d& com, Vector2d& dcom, Vector2d& ddcom);
 
-    size_t previewSteps() const { return parameters->f.size(); }
+    size_t previewSteps() const { return parameters.current->f.size(); }
 
     bool ready() const;
 
@@ -101,8 +93,8 @@ class ZMPPreviewController : private ZMPPreviewControllerBase
     }
 
     bool is_stationary() const {
-      return com_velocity().abs2() < 1 &&
-             com_acceleration().abs2() < 1;
+      return com_velocity().abs2() < parameters.stationary_threshold.velocity * parameters.stationary_threshold.velocity
+             && com_acceleration().abs2() < parameters.stationary_threshold.acceleration * parameters.stationary_threshold.acceleration;
     }
 
     void init(const Vector3d& com)
@@ -125,16 +117,7 @@ class ZMPPreviewController : private ZMPPreviewControllerBase
     double theZ; // z
     Vector2d theErr;
 
-    // parameters for diffent heights
-    typedef std::map<int, Parameters> ParameterMap;
-    ParameterMap loadedParameters;
-    // pinter to the parameters corresponding to the current height
-    // i.e., parameters->loadedParameters[parameterHeight]
-    const Parameters* parameters;
-    // current height used for the parameters
-    unsigned int parameterHeight;
-    // time step of the precalculated parameters
-    double parameterTimeStep;
+    ZMPPreviewControllerParameter& parameters;
 };
 
 #endif // _ZMP_PLANNER_2018_H

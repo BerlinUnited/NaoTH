@@ -16,7 +16,6 @@
 
 //
 #include "PlatformInterface/PlatformInterface.h"
-#include "PlatformInterface/Platform.h"
 #include "Tools/Communication/MessageQueue/MessageQueue4Threads.h"
 //#include "Tools/Debug/Stopwatch.h"
 
@@ -53,16 +52,17 @@ public:
   NaoController();
   virtual ~NaoController();
 
-  virtual string getBodyID() const { return theBodyID; }
-  virtual string getBodyNickName() const { return theBodyNickName; }
-  virtual string getHeadNickName() const { return theHeadNickName; }
-  virtual string getRobotName() const { return theRobotName; }
+  virtual std::string getBodyID() const { return theBodyID; }
+  virtual std::string getBodyNickName() const { return theBodyNickName; }
+  virtual std::string getHeadNickName() const { return theHeadNickName; }
+  virtual std::string getRobotName() const { return theRobotName; }
 
   // camera stuff
   void get(Image& data){ theBottomCameraHandler.get(data); } // blocking
   void get(ImageTop& data){ theTopCameraHandler.get(data); } // non blocking
   void get(CurrentCameraSettings& data) { theBottomCameraHandler.getCameraSettings(data); }
   void get(CurrentCameraSettingsTop& data) { theTopCameraHandler.getCameraSettings(data); }
+  
   void set(const CameraSettingsRequest& data);
   void set(const CameraSettingsRequestTop& data);
 

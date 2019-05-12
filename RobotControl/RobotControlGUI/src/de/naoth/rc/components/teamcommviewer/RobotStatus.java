@@ -117,6 +117,14 @@ public class RobotStatus {
     public boolean getShowOnField() { return showOnField.get(); }
     public void setShowOnField(boolean b) { showOnField.set(b); }
     
+    private final StringProperty robotRoleStatic = new SimpleStringProperty("");
+    public StringProperty robotRoleStaticProperty() { return robotRoleStatic; }
+    public String getRobotRoleStatic() { return robotRoleStatic.get(); }
+    
+    private final StringProperty robotRoleDynamic = new SimpleStringProperty("");
+    public StringProperty robotRoleDynamicProperty() { return robotRoleDynamic; }
+    public String getRobotRoleDynamic() { return robotRoleDynamic.get(); }
+    
     public SPLMessage lastMessage = null;
     public boolean isOpponent;
     private IsDeadTimer isDeadTimer = null;
@@ -220,6 +228,8 @@ public class RobotStatus {
             }
 //            this.whistleDetected = msg.user.getWhistleDetected(); // used in another branch!
             this.teamBall.set(new Vector2D(msg.user.getTeamBall().getX(), msg.user.getTeamBall().getY()));
+            this.robotRoleStatic.set(msg.user.getRobotRole().getRoleStatic().name());
+            this.robotRoleDynamic.set(msg.user.getRobotRole().getRoleDynamic().name());
         } else if(msg.doberHeader != null) {
             this.temperature.set(-1);
             this.cpuTemperature.set(-1);
@@ -241,6 +251,8 @@ public class RobotStatus {
             this.robotState.set("unknown");
             this.whistleDetected.set(false);
             this.teamBall.set(new Vector2D(Double.POSITIVE_INFINITY,Double.POSITIVE_INFINITY));
+            this.robotRoleStatic.set("unknown");
+            this.robotRoleDynamic.set("none");
         }
         this.statusChanged();
     }
@@ -279,24 +291,19 @@ public class RobotStatus {
     
     public boolean connect() {
         if (!this.messageServer.isConnected()) {
-            try {
-                String host = this.ipAddress.get();
-                int port = 5401;
-                // if the ip address contains a ':', the port is included!
-                if(host.contains(":")){
-                    String[] parts = host.split(":");
-                    host = parts[0];
-                    // if we can't parse the port, ignore it
-                    try {
-                        port = Integer.parseInt(parts[1]);
-                    } catch (Exception e) {
-                    }
+            String host = this.ipAddress.get();
+            int port = 5401;
+            // if the ip address contains a ':', the port is included!
+            if(host.contains(":")){
+                String[] parts = host.split(":");
+                host = parts[0];
+                // if we can't parse the port, ignore it
+                try {
+                    port = Integer.parseInt(parts[1]);
+                } catch (Exception e) {
                 }
-                this.messageServer.connect(host, port);
-            } catch (IOException ex) {
-                Logger.getLogger(RobotStatusPanel.class.getName()).log(Level.SEVERE, "Coult not connect.", ex);
-                return false;
             }
+            return this.messageServer.connect(host, port);
         }
         return true;
     }

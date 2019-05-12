@@ -1,7 +1,7 @@
 #ifndef MINIMIZER_H
 #define MINIMIZER_H
 
-#include <Tools/naoth_eigen.h>
+#include <Eigen/Core>
 
 template<int numOfFunctions, int numOfParameter, class ErrorFunction>
 class GaussNewtonMinimizer

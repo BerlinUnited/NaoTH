@@ -10,8 +10,6 @@
 #include <algorithm>
 #include <cassert>
 
-using namespace std;
-
 template<typename T> class ArrayQueue
 {
 public:

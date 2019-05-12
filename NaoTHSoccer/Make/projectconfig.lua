@@ -6,7 +6,7 @@ function printPath(prefix, path)
 	elseif os.isdir(path) then
 		print ( msg )
 	else
-		print ( "ERROR: path doesn't exist:", msg )
+		print ( "WARNING: path doesn't exist:", msg )
 	end
 end
 

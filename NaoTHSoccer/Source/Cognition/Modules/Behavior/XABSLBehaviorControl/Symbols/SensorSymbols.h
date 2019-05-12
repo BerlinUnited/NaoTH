@@ -94,9 +94,6 @@ private:
   static bool getButtonHeadFront();
   static bool getButtonHeadRear();
 
-  static double getAudioSwitch();
-  static void setAudioSwitch(double whistle);
-
   static bool getCollisionArmLeft();
   static bool getCollisionArmRight();
 };

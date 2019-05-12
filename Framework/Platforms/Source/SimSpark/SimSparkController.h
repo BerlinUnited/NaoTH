@@ -101,6 +101,7 @@ private:
 
   // set of unknown messages to be ignored
   std::set<std::string> ignore;
+  bool ignoreOpponentMsg;
 
 public:
   SimSparkController(const std::string& name);
@@ -179,6 +180,7 @@ private:
   int parseInt(char* data, int& value);
   int paseImage(char* data);
   bool parsePoint3D(const sexp_t* sexp, Vector3d& result) const;
+  bool parseTeamInfo(const sexp_t* team, std::vector<naoth::GameData::RobotInfo>& players);
 
   bool updateImage(const sexp_t* sexp);
   bool updateHingeJoint(const sexp_t* sexp);

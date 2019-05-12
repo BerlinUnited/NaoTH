@@ -7,7 +7,7 @@
 #include <Tools/Math/Common.h>
 #include <Tools/Math/Vector2.h>
 
-#include <Tools/naoth_eigen.h>
+#include <Eigen/Core>
 
 class Ellipse
 {

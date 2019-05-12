@@ -136,7 +136,7 @@ workspace "NaoTHSoccer"
       print("NOTE: set the target OS to " .. os.target())
     end
     
-    cppdialect "c++11"
+    cppdialect "c++14"
     
     warnings "Extra"
     -- Wconversion is not included in Wall and Wextra
@@ -155,6 +155,7 @@ workspace "NaoTHSoccer"
     buildoptions {"/wd4996"} -- disable warning: "...deprecated..."
     buildoptions {"/wd4290"} -- exception specification ignored (typed specifications are ignored)
     buildoptions {"/wd4800"} -- protobuf 3.4.1 forcing value to bool 'true' or 'false' (performance warning)
+    buildoptions {"/wd4503"} -- disable decorated name length exceeded warning
     links {"ws2_32"}
     
     ignoredefaultlibraries { "MSVCRT" }
@@ -171,7 +172,7 @@ workspace "NaoTHSoccer"
   filter "system:macosx"
     defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING", "EIGEN_DONT_ALIGN" }
     --buildoptions {"-std=c++11"}
-    cppdialect "c++11"
+    cppdialect "c++14"
     -- disable some warnings
     buildoptions {"-Wno-deprecated-declarations"}
     buildoptions {"-Wno-deprecated-register"}
@@ -200,7 +201,7 @@ workspace "NaoTHSoccer"
     -- (see http://www.airs.com/blog/archives/120 for some nice explanation)
     buildoptions {"-fno-strict-overflow"}
     --buildoptions {"-std=c++11"}
-    cppdialect "c++11"
+    cppdialect "c++14"
     
     --flags { "ExtraWarnings" }
     links {"pthread"}
@@ -222,89 +223,115 @@ workspace "NaoTHSoccer"
    
 -----------------------------------------------------------------------   
 
-  -- commons
-  dofile (FRAMEWORK_PATH .. "/Commons/Make/Commons.lua")
-    vpaths { ["*"] = FRAMEWORK_PATH .. "/Commons/Source" }
+  group "Core"
+    -- commons
+    dofile (FRAMEWORK_PATH .. "/Commons/Make/Commons.lua")
+      vpaths { ["*"] = FRAMEWORK_PATH .. "/Commons/Source" }
 
-  -- core
-  dofile "NaoTHSoccer.lua"
-    vpaths { ["*"] = "../Source" } 
+    -- core
+    dofile "NaoTHSoccer.lua"
+      vpaths { ["*"] = "../Source" } 
+      
+    -- NOTE: this only makes sense for VS projects
+    if os.ishost("windows") and _ACTION ~= nil and string.match(_ACTION, "^vs.*") then
+      project "Generate"
+        kind "Utility"
+        prebuildcommands { "cd ../Make/ && premake5 --Test vs2013" }
+    end
   
   -- set up platforms
   if _OPTIONS["platform"] == "Nao" then
-    dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoSMAL.lua")
-      if AL_DIR ~= nil then
-        sysincludedirs {AL_DIR .. "/include"}
-        syslibdirs {AL_DIR .. "/lib"}
-      end
-      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoSMAL" }
-      defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING" }
-      -- ACHTUNG: NaoSMAL doesn't build with the flag -std=c++11 (because of Boost)
-      cppdialect "gnu++11"
-      
-    dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
-      kind "ConsoleApp"
-      links { "NaoTHSoccer", "Commons", naoth_links}
-      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoRobot" }
+    group "Platform"
+      dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoSMAL.lua")
+        if AL_DIR ~= nil then
+          sysincludedirs {AL_DIR .. "/include"}
+          syslibdirs {AL_DIR .. "/lib"}
+        end
+        vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoSMAL" }
+        defines { "BOOST_SIGNALS_NO_DEPRECATION_WARNING" }
+        -- ACHTUNG: NaoSMAL doesn't build with the flag -std=c++11 (because of Boost)
+        cppdialect "gnu++11"
+        
+      dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
+        kind "ConsoleApp"
+        links { "NaoTHSoccer", "Commons", naoth_links}
+        vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoRobot" }
       
     -- generate tests if required
     if _OPTIONS["Test"] ~= nil then
-      dofile ("../Test/Make/EigenPerformance.lua")
-        kind "ConsoleApp"
-        vpaths { ["*"] = "../Test/Source/EigenPerformance" }
-        
-	  dofile ("../Test/Make/GeneralAlignment.lua")
-        kind "ConsoleApp"
-        vpaths { ["*"] = "../Test/Source/GeneralAlignment" }
+      group "Test"
+        dofile ("../Test/Make/EigenPerformance.lua")
+          kind "ConsoleApp"
+          vpaths { ["*"] = "../Test/Source/EigenPerformance" }
+          
+        dofile ("../Test/Make/GeneralAlignment.lua")
+            kind "ConsoleApp"
+            vpaths { ["*"] = "../Test/Source/GeneralAlignment" }
 
-	  dofile ("../Test/Make/Optimizers.lua")
-        kind "ConsoleApp"
-        vpaths { ["*"] = "../Test/Source/Optimizers" }
+        dofile ("../Test/Make/Optimizers.lua")
+            kind "ConsoleApp"
+            vpaths { ["*"] = "../Test/Source/Optimizers" }
+
+	    dofile ("../Test/Make/Polygon.lua")
+            kind "ConsoleApp"
+            vpaths { ["*"] = "../Test/Source/Polygon" }
     end
 
     
   else
-    dofile (FRAMEWORK_PATH .. "/Platforms/Make/SimSpark.lua")
-      kind "ConsoleApp"
-      links { "NaoTHSoccer", "Commons", naoth_links}
-      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/SimSpark" }
-      debugargs { "--sync" }
-      
-    dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulator.lua")
-      kind "ConsoleApp"
-      links { "NaoTHSoccer", "Commons", naoth_links}
-      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulator" }
-      
-    dofile (FRAMEWORK_PATH .. "/Platforms/Make/DummySimulator.lua")
-      kind "ConsoleApp"
-      links { "NaoTHSoccer", "Commons", naoth_links}
-      vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/DummySimulator" }
+    group "Platform"
+      dofile (FRAMEWORK_PATH .. "/Platforms/Make/SimSpark.lua")
+        kind "ConsoleApp"
+        links { "NaoTHSoccer", "Commons", naoth_links}
+        vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/SimSpark" }
+        debugargs { "--sync" }
+        
+      dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulator.lua")
+        kind "ConsoleApp"
+        links { "NaoTHSoccer", "Commons", naoth_links}
+        vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulator" }
+        
+      dofile (FRAMEWORK_PATH .. "/Platforms/Make/DummySimulator.lua")
+        kind "ConsoleApp"
+        links { "NaoTHSoccer", "Commons", naoth_links}
+        vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/DummySimulator" }
+        
+      dofile (FRAMEWORK_PATH .. "/Platforms/Make/WhistleSimulator.lua")
+        kind "ConsoleApp"
+        links { "NaoTHSoccer", "Commons", naoth_links}
+        vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/WhistleSimulator" }
       
     -- generate tests if required
     if _OPTIONS["Test"] ~= nil then
-      dofile ("../Test/Make/BallEvaluator.lua")
-        kind "ConsoleApp"
-        links { "NaoTHSoccer", "Commons", naoth_links}
-        vpaths { ["*"] = "../Test/Source/BallEvaluator" }
+      group "Test"
+        dofile ("../Test/Make/BallEvaluator.lua")
+          kind "ConsoleApp"
+          links { "NaoTHSoccer", "Commons", naoth_links}
+          vpaths { ["*"] = "../Test/Source/BallEvaluator" }
 
-      dofile ("../Test/Make/EigenPerformance.lua")
-        kind "ConsoleApp"
-        vpaths { ["*"] = "../Test/Source/EigenPerformance" }
+        dofile ("../Test/Make/EigenPerformance.lua")
+          kind "ConsoleApp"
+          vpaths { ["*"] = "../Test/Source/EigenPerformance" }
 
-      dofile ("../Test/Make/GeneralAlignment.lua")
-        kind "ConsoleApp"
-        vpaths { ["*"] = "../Test/Source/GeneralAlignment" }
+        dofile ("../Test/Make/GeneralAlignment.lua")
+          kind "ConsoleApp"
+          vpaths { ["*"] = "../Test/Source/GeneralAlignment" }
 
-      dofile ("../Test/Make/Optimizers.lua")
-        kind "ConsoleApp"
-        vpaths { ["*"] = "../Test/Source/Optimizers" }
+        dofile ("../Test/Make/Optimizers.lua")
+          kind "ConsoleApp"
+          vpaths { ["*"] = "../Test/Source/Optimizers" }
+
+	    dofile ("../Test/Make/Polygon.lua")
+          kind "ConsoleApp"
+          vpaths { ["*"] = "../Test/Source/Polygon" }
     end
 
     -- generate LogSimulatorJNI if required
     if _OPTIONS["JNI"] ~= nil then
-      dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulatorJNI.lua")
-        kind "SharedLib"
-        links { "NaoTHSoccer", "Commons", naoth_links}
-        vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulatorJNI" }
+      group "Platform"
+        dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulatorJNI.lua")
+          kind "SharedLib"
+          links { "NaoTHSoccer", "Commons", naoth_links}
+          vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulatorJNI" }
     end
   end

@@ -42,14 +42,6 @@ Motion::Motion()
   REGISTER_DEBUG_COMMAND("ParameterList:get", "get the parameter list with the given name", &getDebugParameterList());
   REGISTER_DEBUG_COMMAND("ParameterList:set", "set the parameter list with the given name", &getDebugParameterList());
 
-  // modify commands
-  REGISTER_DEBUG_COMMAND("modify:list", 
-    "return the list of registered modifiable values", &getDebugModify());
-  REGISTER_DEBUG_COMMAND("modify:set", 
-    "set a modifiable value (i.e. the value will be always overwritten by the new one) ", &getDebugModify());
-  REGISTER_DEBUG_COMMAND("modify:release", 
-    "release a modifiable value (i.e. the value will not be overwritten anymore)", &getDebugModify());
-
   // register the modules
   theInertiaSensorCalibrator = registerModule<InertiaSensorCalibrator>("InertiaSensorCalibrator", true);
   theInertiaSensorFilterBH = registerModule<InertiaSensorFilter>("InertiaSensorFilter", true);
@@ -64,6 +56,7 @@ Motion::Motion()
 
   theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
   theCoPProvider  = registerModule<CoPProvider>("CoPProvider", true);
+  theSensorLogger = registerModule<SensorLogger>("theSensorLogger", true);
 
   getDebugParameterList().add(&parameter);
 
@@ -82,7 +75,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   theLogProvider = ModuleManager::getModule("LogProvider");
 
   // TODO: need a better solution for this
-  // load the joint limits from the config 
+  // load the joint limits from the config
   JointData::loadJointLimitsFromConfig();
 
 
@@ -102,6 +95,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(FSRData);
   REG_INPUT(AccelerometerData);
   REG_INPUT(GyrometerData);
+  REG_INPUT(ButtonData);
 
   REG_INPUT(DebugMessageInMotion);
 
@@ -214,6 +208,11 @@ void Motion::processSensorData()
     THROW("Get ILLEGAL Stiffness: "<<JointData::getJointName(JointData::JointID(i))<<" = "<<getSensorJointData().stiffness[i]);
   }
 
+  // log sensor data
+  if(parameter.recordSensorData) {
+    theSensorLogger->execute();
+  }
+
   // remove the offset from sensor joint data
   for( i = 0; i < JointData::numOfJoint; i++){
       getSensorJointData().position[i] = getSensorJointData().position[i] - getOffsetJointData().position[i];
@@ -239,7 +238,7 @@ void Motion::processSensorData()
 
   //
   theFootGroundContactDetector->execute();
-    
+
   //
   theKinematicChainProvider->execute();
 
@@ -262,7 +261,7 @@ void Motion::processSensorData()
   // NOTE: highly experimental
   static double rotationGyroZ = 0.0;
   if(getCalibrationData().calibrated) {
-    rotationGyroZ -= getGyrometerData().data.z * getRobotInfo().getBasicTimeStepInSecond();
+    rotationGyroZ += getGyrometerData().data.z * getRobotInfo().getBasicTimeStepInSecond();
   } else {
     rotationGyroZ = 0.0;
   }
@@ -525,9 +524,9 @@ void Motion::drawRobot3D(const KinematicChain& kinematicChain)
   for (int i = 0; i < KinematicChain::numOfLinks; i++)
   {
     if ( i != KinematicChain::Neck
-      && i != KinematicChain::LShoulder 
+      && i != KinematicChain::LShoulder
       && i != KinematicChain::LElbow
-      && i != KinematicChain::RShoulder 
+      && i != KinematicChain::RShoulder
       && i != KinematicChain::RElbow
       && i != KinematicChain::Hip)
     {

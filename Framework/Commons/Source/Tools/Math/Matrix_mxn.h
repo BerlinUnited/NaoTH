@@ -6,6 +6,7 @@
 #include "Vector_n.h"
 #include <math.h>
 #include <vector>
+#include <iostream>
 
 namespace Math
 {
