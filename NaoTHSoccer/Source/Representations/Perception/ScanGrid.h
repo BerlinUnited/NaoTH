@@ -9,7 +9,6 @@ public:
     horizontal.clear();
     vScanPattern.clear();
     hScanPattern.clear();
-    longverticals.clear();
   }
 
   class VScanLine
@@ -34,9 +33,6 @@ public:
 
   std::vector<int> hScanPattern;
   std::vector<HScanLine> horizontal;
-
-  // for field detection
-  std::vector<int> longverticals;
 };
 
 class ScanGridTop : public ScanGrid

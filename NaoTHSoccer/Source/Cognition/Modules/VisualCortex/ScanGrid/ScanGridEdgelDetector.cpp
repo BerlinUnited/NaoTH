@@ -72,6 +72,7 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
     for(size_t i = scanline.bottom; i > scanline.top; --i) {
       y = getScanGrid().vScanPattern[i];
       if(y < end_of_field) {
+        // don't scan above field area
         break;
       }
 

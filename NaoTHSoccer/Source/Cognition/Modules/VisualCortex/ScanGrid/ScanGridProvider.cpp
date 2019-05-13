@@ -164,9 +164,9 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
 
       getScanGrid().vertical[j] = scanline;
 
-      if(next(line) == linesIncreasingLength.end()) {
-        getScanGrid().longverticals.push_back(j);
-      }
+      //if(next(line) == linesIncreasingLength.end()) {
+      //  getScanGrid().longverticals.push_back(j);
+      //}
     }
     if(next(line) != linesIncreasingLength.end()){
       ++line;
