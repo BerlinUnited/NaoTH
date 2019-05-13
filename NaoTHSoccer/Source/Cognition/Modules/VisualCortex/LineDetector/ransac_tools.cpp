@@ -374,7 +374,7 @@ void RansacCircle::get_inliers(const CircleModel& model,
   for(size_t idx: edgel_idx)
   {
     double distError = 0.0;
-    // TODO why 3.0*
+    // Less strict outlierThresholdAngle then acquiring inliers
     if(model.isInlier(edgels[idx], distError,
                       3.0*outlierThresholdAngle, outlierThresholdDist))
     {
