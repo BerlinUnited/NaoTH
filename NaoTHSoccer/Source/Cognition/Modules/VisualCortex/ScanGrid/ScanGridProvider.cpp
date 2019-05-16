@@ -86,7 +86,7 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
         parameters.max_vertical_scanlines);
 
   double minGap = width / (double) numberOfVerticals;
-  // transforms verticle gap sizes into horizontal gap sizes
+  // transforms horizontal gap sizes into vertical gap sizes
   double gapRatio = parameters.horizontal_gap_mm / parameters.vertical_gap_mm;
 
   double focalLength = getCameraInfo().getFocalLength();
@@ -99,7 +99,8 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
 
   for(double gap = 2 * minGap; gap < width; gap *= 2)
   {
-    // distance of the gap if it would have a field size of vertical_gap_mm
+    // distance of the gap if it would have
+    // the size of vertical_gap_mm on the field
     distance = parameters.vertical_gap_mm * focalLength / gap;
 
     // determine the start of the vertical scanline
@@ -125,10 +126,12 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
       }
     }
     // fill vertical scan pattern
-    double ySkip = std::max(gapRatio * gap/2, parameters.min_horizontal_gap_px);
-    for(;y <= max_scan_y; y+=ySkip)
+    double ySkip = std::max(gapRatio * gap/2,
+                            (double) parameters.min_horizontal_gap_px);
+    while(y <= max_scan_y)
     {
       getScanGrid().vScanPattern.push_back((int) y);
+      y += ySkip;
     }
 
     // scanline with vScanPattern index

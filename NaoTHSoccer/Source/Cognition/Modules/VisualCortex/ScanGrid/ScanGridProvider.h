@@ -69,20 +69,32 @@ public:
   public:
     Parameters() : ParameterList("ScanGridProvider")
     {
+      // field distance the scanlines cover
       PARAMETER_REGISTER(max_scan_distance_mm) = 9700;
+
+      // maxium number of scanlines
       PARAMETER_REGISTER(max_vertical_scanlines) = 160;
+      PARAMETER_REGISTER(max_horizontal_scanlines) = 120;
+
       PARAMETER_REGISTER(vertical_gap_mm) = 50;
       PARAMETER_REGISTER(horizontal_gap_mm) = 50;
+
       PARAMETER_REGISTER(min_horizontal_gap_px) = 2;
+      PARAMETER_REGISTER(min_vertical_gap_px) = 2;
 
       syncWithConfig();
     }
 
     double max_scan_distance_mm;
+
     int max_vertical_scanlines;
+    int max_horizontal_scanlines;
+
     double vertical_gap_mm;
     double horizontal_gap_mm;
-    double min_horizontal_gap_px;
+
+    int min_horizontal_gap_px;
+    int min_vertical_gap_px;
   } parameters;
 
 private:
