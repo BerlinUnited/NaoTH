@@ -107,7 +107,7 @@ void Logger::log(unsigned int frameNum)
     
     if(representation != representations.end())
     { 
-      std::stringstream& stream = logfileManager.log(frameNum, representation->first);
+      std::ostream& stream = logfileManager.log(frameNum, representation->first);
       representation->second->serialize(stream);
     }
   }
