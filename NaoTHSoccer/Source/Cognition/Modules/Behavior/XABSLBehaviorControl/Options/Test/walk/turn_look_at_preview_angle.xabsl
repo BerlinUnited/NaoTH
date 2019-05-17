@@ -1,21 +1,19 @@
-/** just turning and looking for ball */
-option search_ball_turning
+option turn_look_at_preview_angle
 {
-  enum direction @search_direction;
-
-  common decision  {
-	  if(ball.know_where_itis)
-	    goto finish;
-	}
-
-  initial state start_turning
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+  initial state idle
   {
     decision
     {
-      else if ( @search_direction == right )
-        goto turning_right;
-      else
+      else if(game.current_mode == playing)
         goto turning_left;
+      else
+        stay;
     }
     action
     {
@@ -25,15 +23,17 @@ option search_ball_turning
   state turning_left
   {
     decision
-    {
+    { 
+      else if(state_time > 5000)
+        goto turning_right;
       else 
         stay;
     }
     action
     {
-      //head.control_mode =  search_for_ball;
-      head.control_mode =  look_at_preview_angle;
- 
+      
+      head.control_mode = look_at_preview_angle;
+
       motion.type = walk;
       motion.walk_speed.x = 0; // mm
       motion.walk_speed.y = 0; // mm
@@ -42,7 +42,8 @@ option search_ball_turning
     }
   }
 
-  state turning_right 
+  state turning_right
+ 
   {
     decision
     {
@@ -52,8 +53,7 @@ option search_ball_turning
     action
     {
 
-      //head.control_mode =  search_for_ball;
-      head.control_mode =  look_at_preview_angle;
+      head.control_mode = look_at_preview_angle;
 
       motion.type = walk;
       motion.walk_speed.x = 0; // mm

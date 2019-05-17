@@ -80,10 +80,6 @@ public:
   /** the currently used scheme. */
   std::string scheme;
 
-  bool isGoalie() const {
-      return playerNumber == 1;
-  }
-
   static std::string toString(RobotState value);
   static std::string toString(RobotSetPlay value);
 

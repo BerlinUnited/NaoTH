@@ -81,6 +81,7 @@ void GameLogger::execute()
       LOGSTUFF(GoalPerceptTop);
 
       LOGSTUFF(MultiBallPercept);
+      LOGSTUFF(BallModel);
       
       if(params.logUltraSound) {
         LOGSTUFF(UltraSoundReceiveData);
@@ -88,7 +89,10 @@ void GameLogger::execute()
 
       //LOGSTUFF(BallPercept);
       //LOGSTUFF(BallPerceptTop);
-      
+
+      LOGSTUFF(FieldPercept);
+      LOGSTUFF(FieldPerceptTop);
+
       LOGSTUFF(ScanLineEdgelPercept);
       LOGSTUFF(ScanLineEdgelPerceptTop);
       LOGSTUFF(ShortLinePercept);
