@@ -17,6 +17,9 @@ ScanGridEdgelDetector::ScanGridEdgelDetector()
                          "mark brightness jumps on image", false);
   DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:mark_jump_horizontal",
                          "mark brightness jumps on image", false);
+  DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:mark_field_intersections",
+                         "mark field poly intersections of the scanlines",
+                         false);
 
   getDebugParameterList().add(&parameters);
 }
@@ -44,6 +47,10 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
       cameraID == CameraInfo::Top? parameters.brightness_threshold_top:
                                    parameters.brightness_threshold_bottom;
 
+  size_t poly_idx = find_min_point(getFieldPercept().getField());
+  Math::LineSegment polyLine;
+  get_poly_line(getFieldPercept().getField(), poly_idx, polyLine);
+
   // initialize the scanner
   MaxPeakScan maximumPeak(t_edge);
   MinPeakScan minimumPeak(t_edge);
@@ -59,8 +66,43 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
     x = scanline.x;
     y = getScanGrid().vScanPattern[scanline.bottom];
 
-    // TODO: set end of field to field area
-    int end_of_field = 10;
+    if(x < polyLine.begin().x) {
+      // scanline is left of field poly
+      continue;
+    }
+
+    while(x > polyLine.end().x) {
+      get_poly_line(getFieldPercept().getField(), ++poly_idx, polyLine);
+    }
+
+    int end_of_field = 0;
+
+    double min_poly_y = polyLine.begin().y;
+    double max_poly_y = polyLine.end().y;
+    if(min_poly_y > max_poly_y) {
+      std::swap(min_poly_y, max_poly_y);
+    }
+
+    if (y < min_poly_y) {
+      // scanline is outside of field poly
+      continue;
+    }
+
+    if (getScanGrid().vScanPattern[scanline.top] <= max_poly_y) {
+      // scanline intersects with field poly
+      Vector2d begin(x, y);
+      Vector2d end(getScanGrid().vScanPattern[scanline.top], y);
+
+      Math::LineSegment line(begin, end);
+      double t = line.intersection(polyLine);
+
+      Vector2d intersection = polyLine.point(t);
+      end_of_field = (int) intersection.y;
+
+      DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_field_intersections",
+        CIRCLE_PX(ColorClasses::orange, x, end_of_field, 2);
+      );
+    }
 
     prevLuma = getImage().getY(scanline.x, y);
 
