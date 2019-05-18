@@ -127,13 +127,12 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
   for(const ScanGrid::HScanLine scanline: getScanGrid().horizontal)
   {
     begin_found = false;
-    x = getScanGrid().hScanPattern[scanline.left];
+    x = scanline.left_x;
     y = scanline.y;
 
     prevLuma = getImage().getY(x, y);
     prevPoint = x;
-    for(size_t i=scanline.left; i<=scanline.right; i+=scanline.skip) {
-      x = getScanGrid().hScanPattern[i];
+    for(;x <= scanline.right_x; x += scanline.skip) {
 
       luma = getImage().getY(x, y);
       gradient = luma - prevLuma;

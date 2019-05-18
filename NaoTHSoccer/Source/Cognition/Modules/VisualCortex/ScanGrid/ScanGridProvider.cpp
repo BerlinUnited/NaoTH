@@ -96,6 +96,7 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
   double y = min_scan_y;
   double distance;
   std::vector<size_t> line_start_increasing_length;
+  std::vector<double> v_gaps;
 
   for(double gap = minGap; gap < width; gap *= 2)
   {
@@ -137,6 +138,8 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
     // index of vScanPattern there the line starts
     size_t bottom_idx = getScanGrid().vScanPattern.size()-1;
     line_start_increasing_length.push_back(bottom_idx);
+    // vertical gap sizes
+    v_gaps.push_back(gap);
 
     if(max_scan_y >= height-1) {
       // bottom of the image reached
@@ -176,29 +179,54 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
     }
   }
 
-  // fill horizontal scan pattern
-  for (const ScanGrid::VScanLine& vertical : getScanGrid().vertical) {
-    getScanGrid().hScanPattern.push_back(vertical.x);
+  // calculate approximate number of horizontals with the current v_gaps
+  line_start_itr = line_start_increasing_length.begin();
+  double last_y = min_scan_y;
+  double n_horizontals = 0;
+  for(double v_gap : v_gaps) {
+    y = getScanGrid().vScanPattern[*line_start_itr];
+    n_horizontals += (y - last_y) / v_gap;
+    last_y = y;
+
+    ++line_start_itr;
   }
 
-  // fill the image with horizontal scanlines
-  getScanGrid().horizontal.resize(getScanGrid().vScanPattern.size());
-  line_start_itr = line_start_increasing_length.begin();
-  int hSkip = 1;
-  int i=0;
-  for(const int& y : getScanGrid().vScanPattern) {
-    if(y > getScanGrid().vScanPattern[*line_start_itr]) {
-      ++line_start_itr;
-      hSkip *= 2;
+  // adjust v_gaps if too much horizontals
+  if (n_horizontals > parameters.max_horizontal_scanlines) {
+    double gap_modifier = n_horizontals / parameters.max_horizontal_scanlines;
+    for(double& v_gap : v_gaps) {
+      v_gap *= gap_modifier;
     }
-    ScanGrid::HScanLine horizontal;
-    horizontal.left = 0;
-    horizontal.right = getScanGrid().hScanPattern.size()-1;
-    horizontal.y = y;
-    horizontal.skip = hSkip;
+  }
 
-    getScanGrid().horizontal[i] = horizontal;
-    ++i;
+  getScanGrid().horizontal.reserve(parameters.max_horizontal_scanlines);
+
+  // fill the image with horizontal scanlines
+  size_t i = 0;
+  y = min_scan_y;
+  double h_skip = minGap;
+  while(y < height) {
+    ScanGrid::HScanLine horizontal;
+    horizontal.left_x = 0;
+    horizontal.right_x = width-1;
+    horizontal.y = (int) y;
+    horizontal.skip = std::max((int) h_skip, parameters.min_horizontal_gap_px);
+
+    getScanGrid().horizontal.push_back(horizontal);
+
+    double v_gap = v_gaps[i];
+    size_t h_line_start = line_start_increasing_length[i];
+
+    if(y + v_gap > getScanGrid().vScanPattern[h_line_start]) {
+      if(++i >= v_gaps.size()) {
+        break;
+      }
+      // adjust gaps
+      v_gap = v_gaps[i];
+      h_line_start = line_start_increasing_length[i];
+      h_skip *= 2;
+    }
+    y += v_gap;
   }
 
   DEBUG_REQUEST("Vision:ScanGridProvider:draw_verticals",
@@ -220,15 +248,13 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
   DEBUG_REQUEST("Vision:ScanGridProvider:draw_horizontals",
     for(const ScanGrid::HScanLine& scanline: getScanGrid().horizontal)
     {
-      LINE_PX(ColorClasses::blue, getScanGrid().hScanPattern.at(scanline.left), scanline.y, getScanGrid().hScanPattern.at(scanline.right), scanline.y);
-      for(size_t i=scanline.left; i<=scanline.right; i+=scanline.skip)
+      LINE_PX(ColorClasses::blue, scanline.left_x, scanline.y, scanline.right_x, scanline.y);
+      for(int x=scanline.left_x; x<=scanline.right_x; x+=scanline.skip)
       {
-        POINT_PX(ColorClasses::red, getScanGrid().hScanPattern.at(i), scanline.y);
+        POINT_PX(ColorClasses::red, x, scanline.y);
 
         //Test
-        const int xx = getScanGrid().hScanPattern.at(i);
-        const int yy = scanline.y;
-        getImage().getY(xx, yy);
+        getImage().getY(x, scanline.y);
       }
     }
   );

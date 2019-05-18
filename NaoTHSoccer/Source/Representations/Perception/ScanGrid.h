@@ -8,7 +8,6 @@ public:
     vertical.clear();
     horizontal.clear();
     vScanPattern.clear();
-    hScanPattern.clear();
   }
 
   class VScanLine
@@ -26,12 +25,11 @@ public:
   {
   public:
     int y;
-    size_t left;
-    size_t right;
+    int left_x;
+    int right_x;
     int skip;
   };
 
-  std::vector<int> hScanPattern;
   std::vector<HScanLine> horizontal;
 };
 
