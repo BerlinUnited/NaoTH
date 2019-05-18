@@ -36,8 +36,6 @@ option battery {
     {
       set_left_ear = 0;
       set_right_ear = 0;
-      //sound.request = (state_time == 0 || platform.battery == 0) 
-      //  ? battery_low : off;
     }
   }
   
