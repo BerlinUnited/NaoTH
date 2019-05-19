@@ -169,20 +169,6 @@ private:
     return min;
   }
 
-  inline void get_poly_line(const FieldPercept::FieldPoly& poly,
-                         size_t idx, Math::LineSegment& result) {
-    const std::vector<Vector2i>& points = poly.getPoints();
-
-    Vector2i begin = points[idx % points.size()];
-    Vector2i end = points[idx+1 % points.size()];
-
-    result = Math::LineSegment(begin, end);
-    DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_field_intersections",
-      //LINE_PX(ColorClasses::red, begin.x, begin.y, end.x, end.y);
-      CIRCLE_PX(ColorClasses::red, begin.x, begin.y, 2);
-    );
-  }
-
   void add_edgel(const Vector2i& point) {
     Edgel edgel;
     edgel.point = point;

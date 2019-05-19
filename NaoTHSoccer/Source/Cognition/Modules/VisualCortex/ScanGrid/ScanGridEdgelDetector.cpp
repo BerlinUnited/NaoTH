@@ -48,8 +48,12 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
                                    parameters.brightness_threshold_bottom;
 
   size_t poly_idx = find_min_point(getFieldPercept().getField());
-  Math::LineSegment polyLine;
-  get_poly_line(getFieldPercept().getField(), poly_idx, polyLine);
+  const std::vector<Vector2i>& poly_points = getFieldPercept().getField().getPoints();
+
+  // construct field poly line
+  Vector2d begin(poly_points[poly_idx % poly_points.size()]);
+  Vector2d end(poly_points[(poly_idx+1) % poly_points.size()]);
+  Math::LineSegment polyLine(begin, end);
 
   // initialize the scanner
   MaxPeakScan maximumPeak(t_edge);
@@ -71,10 +75,27 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
       continue;
     }
 
-    while(x > polyLine.end().x) {
-      get_poly_line(getFieldPercept().getField(), ++poly_idx, polyLine);
+    // determine current field poly line
+    bool right_of_field = false;
+    while(x > polyLine.end().x)
+    {
+      if(polyLine.end().x < polyLine.begin().x) {
+        // scanline is right of field poly
+        right_of_field = true;
+        break;
+      }
+      ++poly_idx;
+      // construct next field poly line
+      Vector2d begin(poly_points.at(poly_idx % poly_points.size()));
+      Vector2d end(poly_points.at((poly_idx+1) % poly_points.size()));
+      polyLine = Math::LineSegment(begin, end);
+    }
+    if(right_of_field) {
+      continue;
     }
 
+    // determine scanline intersection with field poly
+    // if end_of_field is 0 there is no intersection
     int end_of_field = 0;
 
     double min_poly_y = polyLine.begin().y;
@@ -83,25 +104,32 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
       std::swap(min_poly_y, max_poly_y);
     }
 
-    if (y < min_poly_y) {
-      // scanline is outside of field poly
+    if (getScanGrid().vScanPattern[scanline.bottom] < min_poly_y) {
+      // scanline is certainly outside of field poly
       continue;
     }
 
-    if (getScanGrid().vScanPattern[scanline.top] <= max_poly_y) {
-      // scanline intersects with field poly
+    if (getScanGrid().vScanPattern[scanline.top] <= max_poly_y)
+    {
+      // scanline might intersect with field poly
       Vector2d begin(x, y);
-      Vector2d end(getScanGrid().vScanPattern[scanline.top], y);
-
+      Vector2d end(x, getScanGrid().vScanPattern[scanline.top]);
       Math::LineSegment line(begin, end);
-      double t = line.intersection(polyLine);
 
-      Vector2d intersection = polyLine.point(t);
-      end_of_field = (int) intersection.y;
+      if(line.intersect(polyLine)) {
+        double t = line.intersection(polyLine);
 
-      DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_field_intersections",
-        CIRCLE_PX(ColorClasses::orange, x, end_of_field, 2);
-      );
+        // set end of field to intersection
+        Vector2d intersection = line.point(t);
+        end_of_field = (int) intersection.y;
+
+        DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_field_intersections",
+          CIRCLE_PX(ColorClasses::orange, x, end_of_field, 2);
+        );
+      } else if(getScanGrid().vScanPattern[scanline.bottom] < max_poly_y) {
+        // scanline is outside of field poly
+        continue;
+      } // else scanline is inside of field poly
     }
 
     prevLuma = getImage().getY(scanline.x, y);
