@@ -22,19 +22,26 @@ IntegralFieldDetector::~IntegralFieldDetector()
 void IntegralFieldDetector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
-
   if(!getBallDetectorIntegralImage().isValid()) {
     return;
   }
-  factor = getBallDetectorIntegralImage().FACTOR;
   endpoints.clear();
 
-  int grid_size = (cameraID==CameraInfo::Top ? params.grid_size_top : params.grid_size_bottom) / factor;
+  factor = getBallDetectorIntegralImage().FACTOR;
   int width = getBallDetectorIntegralImage().getWidth();
   int height = getBallDetectorIntegralImage().getHeight();
-  double horizontal = (double) width / grid_size;
-  int n_cells_horizontal = (int) horizontal;
-  int rest = width - (n_cells_horizontal * grid_size);
+
+  int grid_size = (cameraID==CameraInfo::Top ? params.grid_size_top:
+                                               params.grid_size_bottom) / factor;
+
+  // determine number of grids
+  int n_cells_horizontal = width / grid_size;
+  int n_cells_vertical = height / grid_size;
+
+  // pixels lost due to integer division
+  int rest_H = width - (n_cells_horizontal * grid_size);
+  int rest_V = height - (n_cells_vertical * grid_size);
+
   int pixels_per_cell = (grid_size+1)*(grid_size+1);
   int min_green = (int)(pixels_per_cell*params.proportion_of_green);
 
@@ -42,28 +49,22 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
   bool green_found = false;
   Cell last_green_cell;
   Cell cell;
-  for (cell.minX=0; cell.minX + grid_size - 1 < width; cell.minX = cell.maxX + 1) {
-    cell.maxX = cell.minX + grid_size - 1;
+  for (cell.minX=0; cell.minX + grid_size-1 < width; cell.minX = cell.maxX + 1) {
+    cell.maxX = cell.minX + grid_size-1;
     int horizon_height = std::max(
-          (int) (getArtificialHorizon().point(cell.maxX*factor).y),
-          (int) (getArtificialHorizon().point(cell.minX*factor).y)
+          (int) (getArtificialHorizon().point(toImage(cell.maxX)).y),
+          (int) (getArtificialHorizon().point(toImage(cell.minX)).y)
         );
-    int max_scan_height = Math::clamp(horizon_height/factor, 0, height-1);
+    int min_scan_y = Math::clamp(toIntegral(horizon_height), 0, height-1);
 
-    bool isLastCell = false;
     int skipped = 0;
     int successive_green = 0;
-    for(cell.maxY = height-1; !isLastCell; cell.maxY = cell.minY - 1) {
+    int rest = rest_V;
+    // scan up
+    for(cell.maxY = height-1; cell.maxY - grid_size + 1 >= min_scan_y; cell.maxY = cell.minY - 1) {
       cell.minY = cell.maxY - grid_size + 1;
-      if(cell.minY < max_scan_height) {
-        cell.minY = max_scan_height;
-        cell.maxY = cell.minY + grid_size;
-        if(cell.maxY >= height || cell.minY == horizon_height/factor) {
-          break;
-        }
-        isLastCell = true;
-      }
-      cell.sum_of_green = getBallDetectorIntegralImage().getSumForRect(cell.minX, cell.minY, cell.maxX, cell.maxY, 1);
+      cell.sum_of_green = getBallDetectorIntegralImage().getSumForRect(
+            cell.minX, cell.minY, cell.maxX, cell.maxY, 1);
 
       DEBUG_REQUEST("Vision:IntegralFieldDetector:draw_grid",
         ColorClasses::Color color;
@@ -72,7 +73,8 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
         } else {
           color = ColorClasses::red;
         }
-        RECT_PX(color, cell.minX*factor, cell.minY*factor, cell.maxX*factor, cell.maxY*factor);
+        RECT_PX(color, toImage(cell.minX), toImage(cell.minY),
+                       toImage(cell.maxX), toImage(cell.maxY));
       );
 
       if(cell.sum_of_green >= min_green) {
@@ -90,30 +92,38 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
           successive_green = 0;
         }
       }
+      // ensure cells will end on the upper image border
+      if(rest > 0) {
+        rest--;
+        cell.minY--;
+      }
     }
 
     if(green_found){
       if(first) { // find the left most endpoint
         Vector2i left_endpoint;
-        find_endpoint(last_green_cell.minX * factor, last_green_cell, left_endpoint);
+        find_endpoint(toImage(last_green_cell.minX),
+                      last_green_cell, left_endpoint);
         endpoints.push_back(left_endpoint);
         first = false;
       }
       Vector2i endpoint;
-      find_endpoint((last_green_cell.minX + last_green_cell.maxX) / 2 * factor, last_green_cell, endpoint);
+      find_endpoint(toImage((last_green_cell.minX + last_green_cell.maxX) / 2),
+                    last_green_cell, endpoint);
       endpoints.push_back(endpoint);
     }
 
     // ensure cells will end on the right image border
-    if(rest > 0 && cell.maxX > width/2) {
-      cell.maxX += rest;
-      rest = 0;
+    if(rest_H > 0) {
+      rest_H--;
+      cell.maxX++;
     }
   }
 
   if(green_found) { // find the right most endpoint
     Vector2i right_endpoint;
-    find_endpoint(last_green_cell.maxX * factor, last_green_cell, right_endpoint);
+    find_endpoint((last_green_cell.maxX + 1) * factor - 1,
+                  last_green_cell, right_endpoint);
     endpoints.push_back(right_endpoint);
   }
 
@@ -125,9 +135,9 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
 void IntegralFieldDetector::find_endpoint(int x, const Cell& cell, Vector2i& endpoint) {
   double score = 0.;
   double best_score = 0.;
-  int minY = cell.minY*factor;
+  int minY = toImage(cell.minY);
   endpoint.x = x;
-  endpoint.y = cell.maxY*factor;
+  endpoint.y = toImage(cell.maxY);
   for (int y=endpoint.y; y>=minY; --y) {
     Pixel pixel = getImage().get(endpoint.x, y);
     if (getFieldColorPercept().greenHSISeparator.isColor(pixel)) {
@@ -141,7 +151,8 @@ void IntegralFieldDetector::find_endpoint(int x, const Cell& cell, Vector2i& end
     }
   }
   DEBUG_REQUEST("Vision:IntegralFieldDetector:draw_end_cell",
-    RECT_PX(ColorClasses::skyblue, cell.minX*factor, cell.minY*factor, cell.maxX*factor, cell.maxY*factor);
+    RECT_PX(ColorClasses::skyblue, toImage(cell.minX), toImage(cell.minY),
+                                   toImage(cell.maxX), toImage(cell.maxY));
     CIRCLE_PX(ColorClasses::orange, endpoint.x, endpoint.y, 1);
   );
 }

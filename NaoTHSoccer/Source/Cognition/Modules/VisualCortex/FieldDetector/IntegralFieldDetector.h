@@ -101,6 +101,20 @@ private:
   int factor;
   std::vector<Vector2i> endpoints;
 
+  /**
+  converts integral image coordinates to image coordinates
+  */
+  inline int toImage(int i) {
+    return i * factor;
+  }
+
+  /**
+  converts image coordinates to integral image coordinates
+  */
+  inline int toIntegral(int i) {
+    return i / factor;
+  }
+
   void find_endpoint(int x, const Cell& cell, Vector2i& endpoint);
   void create_field();
 
