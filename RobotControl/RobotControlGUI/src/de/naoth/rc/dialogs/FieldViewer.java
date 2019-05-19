@@ -682,8 +682,8 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         private void drawFieldPercept(BlackBoard b, DrawingCollection dc) 
         {
             Color green = new Color(217, 255, 25);
-            drawFieldPercept(robotPose, b.get("FieldPercept"), cmBottom, dc, green);
-            drawFieldPercept(robotPose, b.get("FieldPerceptTop"), cmTop, dc, green);
+            if(b.has("FieldPercept")) { drawFieldPercept(robotPose, b.get("FieldPercept"), cmBottom, dc, green); }
+            if(b.has("FieldPerceptTop")) { drawFieldPercept(robotPose, b.get("FieldPerceptTop"), cmTop, dc, green); }
         }
         
         private void drawFieldPercept(Pose2D robotPose, LogDataFrame fieldPercept, Pose3D cameraMatrix, DrawingCollection dc, Color c) {
