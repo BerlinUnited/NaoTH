@@ -656,6 +656,8 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
                         
                        SPLMessage splMsg = SPLMessage.parseFrom(robotMsg);
                        
+                       splMsg.ballAge /= 1000.0; // the ballAge in the log files is in milliseconds
+                       
                        if((splMsg.user.hasIsPenalized() && !splMsg.user.getIsPenalized()) || (splMsg.user.hasRobotState() && splMsg.user.getRobotState() != TeamMessageOuterClass.RobotState.penalized)) {
                             boolean isOwnMsg = false;
                             if(ownBodyID.isPresent())
