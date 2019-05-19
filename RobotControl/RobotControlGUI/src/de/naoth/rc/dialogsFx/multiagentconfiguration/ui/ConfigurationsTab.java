@@ -6,6 +6,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.dialogsFx.multiagentconfiguration.Parameter;
 import de.naoth.rc.dialogsFx.multiagentconfiguration.Utils;
 import de.naoth.rc.messages.Messages;
+import de.naoth.rc.messages.Messages.DebugRequest;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.ResponseListener;
 import java.io.BufferedWriter;
@@ -71,10 +72,18 @@ public class ConfigurationsTab implements ResponseListener
     private final TreeMap<String, TreeItem<Parameter>> parameter = new TreeMap<>();
     
     private final BiConsumer<String, Boolean> cognitionDebugRequest = (r, b) -> {
-        parent.sendCommand(new Command("Cognition:debugrequest:set").addArg(r, b ? "on" : "off"), this);
+        Command request = new Command("Cognition:representation:set").addArg("DebugRequest",
+            DebugRequest.newBuilder().addRequests(
+                DebugRequest.Item.newBuilder().setName(r).setValue(b)
+            ).build().toByteArray());
+        parent.sendCommand(request, this);
     };
     private final BiConsumer<String, Boolean> motionDebugRequest = (r, b) -> {
-        parent.sendCommand(new Command("Motion:debugrequest:set").addArg(r, b ? "on" : "off"), this);
+        Command request = new Command("Motion:representation:set").addArg("DebugRequest",
+            DebugRequest.newBuilder().addRequests(
+                DebugRequest.Item.newBuilder().setName(r).setValue(b)
+            ).build().toByteArray());
+        parent.sendCommand(request, this);
     };
     
     private final BiConsumer<String, Boolean> cognitionModuleRequest = (r, b) -> {

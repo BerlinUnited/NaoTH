@@ -40,12 +40,22 @@ public class DebugRequestsFx extends AbstractJFXDialog implements ResponseListen
     
     private final Command cmd_debug_cognition = new Command("Cognition:representation:get").addArg("DebugRequest");
     private final Command cmd_debug_motion = new Command("Motion:representation:get").addArg("DebugRequest");
+    private final String cmd_debug_cognition_set = "Cognition:representation:set";
+    private final String cmd_debug_motion_set = "Motion:representation:set";
 
     private final BiConsumer<String, Boolean> cognitionDebugRequest = (r, b) -> {
-        Plugin.parent.getMessageServer().executeCommand(this, new Command("Cognition:debugrequest:set").addArg(r, b ? "on" : "off"));
+        Command request = new Command(cmd_debug_cognition_set).addArg("DebugRequest",
+            Messages.DebugRequest.newBuilder().addRequests(
+                Messages.DebugRequest.Item.newBuilder().setName(r).setValue(b)
+            ).build().toByteArray());
+        Plugin.parent.getMessageServer().executeCommand(this, request);
     };
     private final BiConsumer<String, Boolean> motionDebugRequest = (r, b) -> {
-        Plugin.parent.getMessageServer().executeCommand(this, new Command("Motion:debugrequest:set").addArg(r, b ? "on" : "off"));
+        Command request = new Command(cmd_debug_motion_set).addArg("DebugRequest",
+            Messages.DebugRequest.newBuilder().addRequests(
+                Messages.DebugRequest.Item.newBuilder().setName(r).setValue(b)
+            ).build().toByteArray());
+        Plugin.parent.getMessageServer().executeCommand(this, request);
     };
     
     @Override
@@ -81,8 +91,10 @@ public class DebugRequestsFx extends AbstractJFXDialog implements ResponseListen
                 handleDebugResponse("Cognition", 1, result, cognitionDebugRequest);
             } else if(command.equals(cmd_debug_motion)) {
                 handleDebugResponse("Motion", 0, result, motionDebugRequest);
+            } else if(command.getName().equals(cmd_debug_cognition_set) || command.getName().equals(cmd_debug_motion_set)) {
+                // NOTE: currently nothing to show or handle
             } else {
-                Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, "Unknown command response: "+command);
+                Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Unknown command response: {0}", command);
             }
         });
     }
