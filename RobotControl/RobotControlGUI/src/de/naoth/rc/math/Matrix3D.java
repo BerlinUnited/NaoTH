@@ -30,4 +30,22 @@ public class Matrix3D implements Serializable
         return (c[0].multiply(v.x).add(c[1].multiply(v.y)).add(c[2].multiply(v.z)));
     }
     
+    public double getYAngle()
+    {
+        double h = Math.sqrt(this.c[2].x * this.c[2].x + this.c[2].z * this.c[2].z);
+        return (h != 0) ? Math.acos(this.c[2].z / h) * (this.c[2].x > 0 ? 1 : -1) : 0;
+    }
+    
+    public double getZAngle()
+    {
+        double h = Math.sqrt(this.c[0].x * this.c[0].x + this.c[0].y * this.c[0].y);
+        return (h != 0) ? Math.acos(this.c[0].x / h) * (this.c[0].y < 0 ? -1 : 1) : 0;
+    }
+    
+    public double getXAngle()
+    {
+        double h = Math.sqrt(this.c[2].y * this.c[2].y + this.c[2].z * this.c[2].z);
+        return (h != 0) ? Math.acos(this.c[2].z / h) * (this.c[2].y > 0 ? -1 : 1) : 0;
+    }
+    
 }//end class Vector2D
