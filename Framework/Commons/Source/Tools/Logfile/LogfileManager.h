@@ -66,7 +66,7 @@ public:
    * After calling this use returned stringstream to transform the data.
    *
    */
-  std::stringstream& log(unsigned int frameNumber, const std::string& name)
+  std::ostream& logd(unsigned int frameNumber, const std::string& name)
   {
     if(alwaysWriteOut && dataBuffer.isFull())
     {
