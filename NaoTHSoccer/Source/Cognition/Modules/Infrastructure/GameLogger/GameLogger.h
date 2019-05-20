@@ -117,8 +117,8 @@ private:
 private:
   // TODO: make a memory aware LogfileManager that flushes whenever a certain memory
   // treshold is reached.
-  LogfileManager < 30 > logfileManager;
-  
+  LogfileManager logfileManager;
+
   std::ofstream imageOutFile;
   FrameInfo lastTimeImageRecorded;
 

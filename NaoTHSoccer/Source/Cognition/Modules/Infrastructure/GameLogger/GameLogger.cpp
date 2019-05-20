@@ -5,7 +5,6 @@ using namespace std;
 
 GameLogger::GameLogger()
   : 
-  logfileManager(true),
   lastCompleteFrameNumber(0),
   oldState(PlayerInfo::initial),
   firstRecording(true),

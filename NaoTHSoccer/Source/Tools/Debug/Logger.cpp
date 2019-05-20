@@ -4,7 +4,8 @@
 
 #include "Logger.h"
 
-Logger::Logger(const std::string& cmd) : logfileManager(true),command(cmd)
+Logger::Logger(const std::string& cmd) 
+  : command(cmd)
 {
   description = command + " on | off | close |activate=<name> | deactivate=<name>";
   activated = false;
