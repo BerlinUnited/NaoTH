@@ -18,8 +18,7 @@ ScanGridEdgelDetector::ScanGridEdgelDetector()
   DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:mark_jump_horizontal",
                          "mark brightness jumps on image", false);
   DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:mark_field_intersections",
-                         "mark field poly intersections of the scanlines",
-                         false);
+                         "mark field poly intersections of the scanlines", false);
 
   getDebugParameterList().add(&parameters);
 }
@@ -43,30 +42,64 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
   }
 
   // threshold
-  int t_edge =
-      cameraID == CameraInfo::Top? parameters.brightness_threshold_top:
-                                   parameters.brightness_threshold_bottom;
-
-  size_t poly_idx = find_min_point(getFieldPercept().getField());
-  const std::vector<Vector2i>& poly_points = getFieldPercept().getField().getPoints();
-
-  // construct field poly line
-  Vector2d begin(poly_points[poly_idx % poly_points.size()]);
-  Vector2d end(poly_points[(poly_idx+1) % poly_points.size()]);
-  Math::LineSegment polyLine(begin, end);
+  int t_edge = cameraID == CameraInfo::Top? parameters.brightness_threshold_top:
+                                            parameters.brightness_threshold_bottom;
 
   // initialize the scanner
   MaxPeakScan maximumPeak(t_edge);
   MinPeakScan minimumPeak(t_edge);
 
+  if(parameters.scan_vertical) {
+    scan_vertical(maximumPeak, minimumPeak);
+  }
+
+  if(parameters.scan_horizontal) {
+    maximumPeak.reset();
+    minimumPeak.reset();
+
+    scan_horizontal(maximumPeak, minimumPeak);
+  }
+
+  DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_edgels",
+    for(size_t i = 0; i < getScanLineEdgelPercept().edgels.size(); i++) {
+      const Edgel& edgel = getScanLineEdgelPercept().edgels[i];
+      LINE_PX(ColorClasses::black, edgel.point.x, edgel.point.y,
+              edgel.point.x + (int)(edgel.direction.x*10),
+              edgel.point.y + (int)(edgel.direction.y*10));
+    }
+  );
+  // mark finished valid edgels
+  DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_double_edgels",
+    for(size_t i = 0; i < getScanLineEdgelPercept().pairs.size(); i++)
+    {
+      const ScanLineEdgelPercept::EdgelPair& pair = getScanLineEdgelPercept().pairs[i];
+      CIRCLE_PX(ColorClasses::black, (int)pair.point.x, (int)pair.point.y, 3);
+      LINE_PX(ColorClasses::red, (int)pair.point.x, (int)pair.point.y,
+              (int)(pair.point.x + pair.direction.x*10),
+              (int)(pair.point.y + pair.direction.y*10));
+    }
+  );
+}//end execute
+
+void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
+                                          MinPeakScan& minimumPeak)
+{
+  // construct field poly line
+  size_t poly_idx = find_min_point(getFieldPercept().getField());
+
+  const std::vector<Vector2i>& poly_points = getFieldPercept().getField().getPoints();
+
+  Vector2d begin(poly_points[poly_idx % poly_points.size()]);
+  Vector2d end(poly_points[(poly_idx+1) % poly_points.size()]);
+  Math::LineSegment polyLine(begin, end);
+
   int x, y, luma, prevLuma, gradient, prevPoint;
-  bool begin_found;
+  int scan_id = 0;
 
   // vertical scanlines
-  int scan_id = 0;
   for(const ScanGrid::VScanLine scanline: getScanGrid().vertical)
   {
-    begin_found = false;
+    bool begin_found = false;
     x = scanline.x;
     y = getScanGrid().vScanPattern[scanline.bottom];
 
@@ -189,14 +222,55 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
     }
     ++scan_id;
   }
+}// end scan_vertical
 
+inline bool ScanGridEdgelDetector::refine_vertical(MaxPeakScan& maximumPeak, int x) {
+  int height = getImage().height();
+  int start = std::min(maximumPeak.prev_point, height-2);
+  int end = std::max(maximumPeak.point-1, 0);
   maximumPeak.reset();
-  minimumPeak.reset();
+
+  int prev = std::min(start+2, height-1);
+  int luma, gradient;
+  int prevLuma = getImage().getY(x, prev);
+
+  int f0, f_2, f2;
+
+  for(int y=start; y>=end; y-=2) {
+    luma = getImage().getY(x, y);
+    gradient = luma - prevLuma;
+    if(maximumPeak.add(y+1, prev, gradient)) {
+      break;
+    }
+    prev = y;
+    prevLuma = luma;
+  }
+  if(maximumPeak.found) {
+    // refine the position of the peak
+    f0 = getImage().getY(x, maximumPeak.point);
+    if (maximumPeak.point+2 < height) {
+      f2 = getImage().getY(x, maximumPeak.point+2);
+      maximumPeak.check(maximumPeak.point+1, f0-f2);
+    }
+    if(maximumPeak.point-2 >= 0) {
+      f_2 = getImage().getY(x, maximumPeak.point-2);
+      maximumPeak.check(maximumPeak.point-1, f_2-f0);
+    }
+    return true;
+  }
+  return false;
+} // end refine_vertical
+
+void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
+                                            MinPeakScan& minimumPeak)
+{
+  int x, y, luma, prevLuma, gradient, prevPoint;
+  int scan_id = 0;
 
   // horizontal scanlines
   for(const ScanGrid::HScanLine scanline: getScanGrid().horizontal)
   {
-    begin_found = false;
+    bool begin_found = false;
     x = scanline.left_x;
     y = scanline.y;
 
@@ -242,60 +316,7 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
     }
     ++scan_id;
   }
-
-  DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_edgels",
-    for(size_t i = 0; i < getScanLineEdgelPercept().edgels.size(); i++) {
-      const Edgel& edgel = getScanLineEdgelPercept().edgels[i];
-      LINE_PX(ColorClasses::black,edgel.point.x, edgel.point.y, edgel.point.x + (int)(edgel.direction.x*10), edgel.point.y + (int)(edgel.direction.y*10));
-    }
-  );
-  // mark finished valid edgels
-  DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_double_edgels",
-    for(size_t i = 0; i < getScanLineEdgelPercept().pairs.size(); i++)
-    {
-      const ScanLineEdgelPercept::EdgelPair& pair = getScanLineEdgelPercept().pairs[i];
-      CIRCLE_PX(ColorClasses::black, (int)pair.point.x, (int)pair.point.y, 3);
-      LINE_PX(ColorClasses::red   ,(int)pair.point.x, (int)pair.point.y, (int)(pair.point.x + pair.direction.x*10), (int)(pair.point.y + pair.direction.y*10));
-    }
-  );
-}//end execute
-
-inline bool ScanGridEdgelDetector::refine_vertical(MaxPeakScan& maximumPeak, int x) {
-  int height = getImage().height();
-  int start = std::min(maximumPeak.prev_point, height-2);
-  int end = std::max(maximumPeak.point-1, 0);
-  maximumPeak.reset();
-
-  int prev = std::min(start+2, height-1);
-  int luma, gradient;
-  int prevLuma = getImage().getY(x, prev);
-
-  int f0, f_2, f2;
-
-  for(int y=start; y>=end; y-=2) {
-    luma = getImage().getY(x, y);
-    gradient = luma - prevLuma;
-    if(maximumPeak.add(y+1, prev, gradient)) {
-      break;
-    }
-    prev = y;
-    prevLuma = luma;
-  }
-  if(maximumPeak.found) {
-    // refine the position of the peak
-    f0 = getImage().getY(x, maximumPeak.point);
-    if (maximumPeak.point+2 < height) {
-      f2 = getImage().getY(x, maximumPeak.point+2);
-      maximumPeak.check(maximumPeak.point+1, f0-f2);
-    }
-    if(maximumPeak.point-2 >= 0) {
-      f_2 = getImage().getY(x, maximumPeak.point-2);
-      maximumPeak.check(maximumPeak.point-1, f_2-f0);
-    }
-    return true;
-  }
-  return false;
-}
+} // end scan_horizontal
 
 inline bool ScanGridEdgelDetector::refine_horizontal(MaxPeakScan& maximumPeak, int y) {
   int width = getImage().width();
@@ -332,7 +353,7 @@ inline bool ScanGridEdgelDetector::refine_horizontal(MaxPeakScan& maximumPeak, i
     return true;
   }
   return false;
-}
+} // end refine_horizontal
 
 Vector2d ScanGridEdgelDetector::calculateGradient(const Vector2i& point) const
 {
@@ -374,4 +395,4 @@ Vector2d ScanGridEdgelDetector::calculateGradient(const Vector2i& point) const
 
   //calculate the angle of the gradient
   return gradient.normalize();
-}//end calculateGradient
+} // end calculateGradient

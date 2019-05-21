@@ -82,6 +82,9 @@ public:
       PARAMETER_REGISTER(brightness_threshold_bottom) = 6*4;
       PARAMETER_REGISTER(double_edgel_angle_threshold) = 0.2;
 
+      PARAMETER_REGISTER(scan_vertical) = true;
+      PARAMETER_REGISTER(scan_horizontal) = true;
+
       syncWithConfig();
       //DebugParameterList::getInstance().add(this);
     }
@@ -90,9 +93,11 @@ public:
       //DebugParameterList::getInstance().remove(this);
     }
 
+    bool scan_vertical;
+    bool scan_horizontal;
+
     int brightness_threshold_top; // threshold for detection of the jumps in the Y channel
     int brightness_threshold_bottom;
-
     double double_edgel_angle_threshold;
   } parameters;
 
@@ -155,6 +160,10 @@ private:
       return MaxPeakScan::check(point, -value);
     }
   };
+
+  void scan_vertical(MaxPeakScan& maximumPeak, MinPeakScan& minimumPeak);
+
+  void scan_horizontal(MaxPeakScan& maximumPeak, MinPeakScan& minimumPeak);
 
   inline size_t find_min_point(const FieldPercept::FieldPoly& poly) {
     const std::vector<Vector2i>& points = poly.getPoints();
