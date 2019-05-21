@@ -54,7 +54,7 @@ void TeamCommSender::fillMessageBeforeSending() const
 
     if(sendBallModel)
     {
-      // here in milliseconds (conversion to seconds is in SPLStandardMessage::createSplMessage())
+      // here in milliseconds (conversion to seconds is in TeamMessageData::createSplMessage())
       msg.ballAge = getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime());
       msg.ballPosition = getBallModel().position;
       msg.custom.ballVelocity = getBallModel().speed;
