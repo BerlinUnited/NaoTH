@@ -165,7 +165,10 @@ private:
 };
 
 // NOTE: define the default LogfileManager type
-typedef LegacyLogfileManager<30> LogfileManager;
+//typedef LegacyLogfileManager<30> LogfileManager;
+
+#include "DirectLogfileManager.h"
+typedef DirectLogfileManager LogfileManager;
 
 #endif //_LogfileManager_h_
 
