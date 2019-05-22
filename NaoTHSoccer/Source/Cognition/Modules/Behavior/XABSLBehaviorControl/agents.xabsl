@@ -293,6 +293,7 @@ agent role_spl_soccer("Role SPL Soccer", roles_spl_play_soccer);
 
 /** PathPlanner - agent from 2018 competition **/
 agent path_spl_soccer("Path SPL Soccer", path_spl_play_soccer);
+
 agent penalty("Penalty", play_penalty);
 agent spl_remote("Remote Player", spl_remote_agent);
 agent spl_soccer("SPL Soccer", spl_play_soccer); // deprecated
@@ -300,9 +301,11 @@ agent spl_soccer("SPL Soccer", spl_play_soccer); // deprecated
 /** simple soccer agents - deprecated **/
 agent role_basic_goali("basic_goali", basic_goali_agent);
 agent role_passive_player("passive_player", passive_player_agent);
+agent role_passive_behavior_test_agent("passive_behavior_test_agent",passive_behavior_test_agent);
+
 agent path_basic_goalie_agent("path_basic_goalie_agent", path_basic_goalie_agent);
 agent role_striker("Action Selection Striker", striker_agent);
-agent role_passive_behavior_test_agent("passive_behavior_test_agent",passive_behavior_test_agent);
+
 agent role_change_test ("role_change_test_agent",role_change_test_agent);
 
 
