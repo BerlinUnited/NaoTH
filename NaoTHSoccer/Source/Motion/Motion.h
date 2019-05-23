@@ -160,7 +160,7 @@ private:
       //PARAMETER_REGISTER(useInertiaSensorCalibration) = true;
       PARAMETER_REGISTER(useIMUDataForRotationOdometry) = true;
 
-      PARAMETER_REGISTER(recordSensorData) = true;
+      PARAMETER_REGISTER(recordSensorData) = false;
       syncWithConfig();
     }
 
