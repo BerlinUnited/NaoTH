@@ -151,9 +151,13 @@ option search_for_ball
       {
         if(ball.see_where_itis) // I still can see the ball => look at the model
           goto look_at_ball;
-        else
-          /* aehm, why right ???? */
-          goto search_for_ball_right; // I cannt see the ball anymore, must have been a mirage => go back, where I came from
+        else {
+          // I cannt see the ball anymore, must have been a mirage => go back, where I came from
+          if(ball.angle > 0)
+            goto search_for_ball_left;
+          else
+            goto search_for_ball_right;
+        }
       }
       else
         stay;
