@@ -18,9 +18,11 @@ option head_control
     else if (head.control_mode == look_around)
       goto look_around;
     else if (head.control_mode == search_for_goal)
-      goto search_for_goal;
+      //goto search_for_goal;
+      goto look_around;
     else if (head.control_mode == search_for_goal_opp)
-      goto search_for_goal_opp;
+      //goto search_for_goal_opp;
+      goto look_around;
     else if(head.control_mode == look_at_ball_percept)
       goto look_at_ball_percept;
     else if(head.control_mode == search_for_ball_and_look_around)
