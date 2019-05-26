@@ -265,8 +265,8 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
                                             MinPeakScan& minimumPeak)
 {
   // construct field poly lines
-  size_t poly_idx_left = find_min_point_y_left(getFieldPercept().getField());
-  size_t poly_idx_right = find_min_point_y_right(getFieldPercept().getField());
+  size_t poly_idx_left = find_min_point_y(getFieldPercept().getField());
+  size_t poly_idx_right = poly_idx_left;
 
   const std::vector<Vector2i>& poly_points = getFieldPercept().getField().getPoints();
 
@@ -289,10 +289,9 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
     end_x = scanline.right_x;
 
     // determine scanline intersections with the field poly line
-    if(polyLineLeft.begin().y < scanline.y) {
-      bool under_field = false;
-
+    if(polyLineLeft.begin().y < y) {
       // determine current left field poly line
+      bool under_field = false;
       while(y > polyLineLeft.end().y)
       {
         if(polyLineLeft.end().x > polyLineLeft.begin().x) {
@@ -310,8 +309,8 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
         // shouldn't happen
         break;
       }
-
       // determine current right field poly line
+      under_field = false;
       while(y > polyLineRight.end().y)
       {
         if(polyLineRight.end().x < polyLineRight.begin().x) {
