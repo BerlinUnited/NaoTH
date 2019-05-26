@@ -165,13 +165,60 @@ private:
 
   void scan_horizontal(MaxPeakScan& maximumPeak, MinPeakScan& minimumPeak);
 
-  inline size_t find_min_point(const FieldPercept::FieldPoly& poly) {
+  /**
+    Finds the index of the minimum x point in the field poly.
+    If there is a tie, the point with the smaller y value is chosen.
+
+    @param poly Field polygon
+  */
+  inline size_t find_min_point_x(const FieldPercept::FieldPoly& poly) {
     const std::vector<Vector2i>& points = poly.getPoints();
 
+    // TODO: More intelligent search
     size_t min = 0;
     for(size_t i=1; i<points.size(); i++) {
       if(points[i].x < points[min].x ||
          (points[i].x == points[min].x && points[i].y < points[min].y)) {
+        min = i;
+      }
+    }
+    return min;
+  }
+
+  /**
+    Finds the index of the minimum y point in the field poly.
+    If there is a tie, the point with the smaller x value is chosen.
+
+    @param poly Field polygon
+  */
+  inline size_t find_min_point_y_left(const FieldPercept::FieldPoly& poly) {
+    const std::vector<Vector2i>& points = poly.getPoints();
+
+    // TODO: More intelligent search
+    size_t min = 0;
+    for(size_t i=1; i<points.size(); i++) {
+      if(points[i].y < points[min].y ||
+         (points[i].y == points[min].y && points[i].x < points[min].x)) {
+        min = i;
+      }
+    }
+    return min;
+  }
+
+  /**
+    Finds the index of the minimum y point in the field poly.
+    If there is a tie, the point with the bigger x value is chosen.
+
+    @param poly Field polygon
+  */
+  inline size_t find_min_point_y_right(const FieldPercept::FieldPoly& poly) {
+    const std::vector<Vector2i>& points = poly.getPoints();
+
+    // TODO: More intelligent search
+    size_t min = 0;
+    for(size_t i=1; i<points.size(); i++) {
+      if(points[i].y < points[min].y ||
+         (points[i].y == points[min].y && points[i].x > points[min].x)) {
         min = i;
       }
     }
