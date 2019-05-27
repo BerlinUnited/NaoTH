@@ -206,8 +206,8 @@ private:
   {
     size_t end_idx = (idx+1) % poly_points.size();
     result = Math::LineSegment(
-      poly_points.at(idx),
-      poly_points.at(end_idx)
+      poly_points[idx],
+      poly_points[end_idx]
     );
     return end_idx;
   }
