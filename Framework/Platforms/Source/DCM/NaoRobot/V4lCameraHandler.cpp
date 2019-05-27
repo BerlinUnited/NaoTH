@@ -66,7 +66,8 @@ V4lCameraHandler::V4lCameraHandler()
   bufferSwitched(false),
   blockingCaptureModeEnabled(false),
   lastCameraSettingTimestamp(0),
-  currentCamera(CameraInfo::numOfCamera)
+  currentCamera(CameraInfo::numOfCamera),
+  error_count(0)
 {
   // NOTE: width, height and fps are not included here
   settingsOrder.push_back(CameraSettings::VerticalFlip);
@@ -563,7 +564,7 @@ int V4lCameraHandler::readFrameMMaP()
     Last buffer produced by the hardware. mem2mem codec drivers set this flag on the capture queue 
     for the last buffer when the ioctl VIDIOC_QUERYBUF or VIDIOC_DQBUF ioctl is called. Due to hardware 
     limitations, the last buffer may be empty. In this case the driver will set the bytesused field to 0, 
-    regardless of the format. Any Any subsequent call to the VIDIOC_DQBUF ioctl will not block anymore, 
+    regardless of the format. Any subsequent call to the VIDIOC_DQBUF ioctl will not block anymore, 
     but return an EPIPE error code.
     
     // https://www.kernel.org/doc/html/v4.8/media/uapi/v4l/buffer.html?highlight=v4l2_buf_flag_last
@@ -577,9 +578,10 @@ int V4lCameraHandler::readFrameMMaP()
       if(first) {
         first = false;
       } else {
-        if (xioctl(fd, VIDIOC_QBUF, &lastValidBuf) != 0) {
-          std::cout << LOG << "Buffer { .index = " << buf.index << ", .bytesused = " << buf.bytesused << ", .flags" << buf.flags << "}" << std::endl;
-          ASSERT(false);
+        errorCode = xioctl(fd, VIDIOC_QBUF, &lastValidBuf);
+        if (errorCode != 0) {
+          std::cout << LOG << "Buffer { .index = " << buf.index << ", .bytesused = " << buf.bytesused << ", .flags = " << buf.flags << "}" << std::endl;
+          hasIOError(errorCode, errno);
         }
       }
       lastValidBuf = buf;
@@ -596,7 +598,7 @@ int V4lCameraHandler::readFrameMMaP()
       } else {
         // we did do a poll on the file descriptor and still got an error, something is wrong: abort the loop
         // print some info about the buffer
-        std::cout << LOG << "Buffer { .index = " << buf.index << ", .bytesused = " << buf.bytesused << ", .flags" << buf.flags << "}" << std::endl;
+        std::cout << LOG << "Buffer { .index = " << buf.index << ", .bytesused = " << buf.bytesused << ", .flags = " << buf.flags << "}" << std::endl;
         hasIOError(errorCode, errno);
         break;
       }
@@ -1064,15 +1066,16 @@ int V4lCameraHandler::xioctl(int fd, int request, void* arg) const
   return r;
 }
 
-bool V4lCameraHandler::hasIOErrorPrint(int lineNumber, int errOccured, int errNo, bool exitByIOError) const
+bool V4lCameraHandler::hasIOErrorPrint(int lineNumber, int errOccured, int errNo, bool exitByIOError)
 {
   if(errOccured < 0 && errNo != EAGAIN)
   {
     std::cout << LOG << "[hasIOError:" << lineNumber << "]" << " failed with errno " << errNo << " (" << strerror(errNo) << ") >> exiting" << std::endl;
-    if(exitByIOError)
+    if(exitByIOError && error_count > 10)
     {
       assert(errOccured >= 0);
     }
+    error_count++;
     return true;
   }
   return false;

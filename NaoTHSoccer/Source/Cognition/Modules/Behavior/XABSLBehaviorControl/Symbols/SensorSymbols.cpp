@@ -36,10 +36,11 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("body.temperature.leg.left", &getBodyState().temperatureLeftLeg);
   engine.registerDecimalInputSymbol("body.temperature.leg.right", &getBodyState().temperatureRightLeg);
 
-
   engine.registerBooleanInputSymbol("body.foot.groundcontact.left", &getBodyState().standByLeftFoot);
   engine.registerBooleanInputSymbol("body.foot.groundcontact.right", &getBodyState().standByRightFoot);
   engine.registerDecimalInputSymbol("body.foot.groundcontact.statetime", &getFootStateTime);
+
+  engine.registerBooleanInputSymbol("body.lifted_up", &getBodyState().isLiftedUp);
 
   engine.registerBooleanInputSymbol("body.collision.arm.left", &getCollisionArmLeft);
   engine.registerBooleanInputSymbol("body.collision.arm.right", &getCollisionArmRight);

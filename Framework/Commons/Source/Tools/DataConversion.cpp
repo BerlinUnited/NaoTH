@@ -81,5 +81,21 @@ void fromMessage(const naothmessages::Pose3D& msg, Pose3D& data)
   }
 }
 
+void toMessage(const Math::LineSegment& data, naothmessages::LineSegment& msg)
+{
+  toMessage(data.getBase(), *msg.mutable_base());
+  toMessage(data.getDirection(), *msg.mutable_direction());
+  msg.set_length(data.getLength());
+}
+
+void fromMessage(const naothmessages::LineSegment& msg, Math::LineSegment& data)
+{
+  Vector2d base;
+  fromMessage(msg.base(), base);
+  Vector2d direction;
+  fromMessage(msg.direction(), direction);
+  data = Math::LineSegment(base, direction, msg.length());
+}
+
 } // namespace DataConversion
 } // namespace naoth

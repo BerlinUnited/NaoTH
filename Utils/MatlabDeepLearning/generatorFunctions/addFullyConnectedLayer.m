@@ -15,7 +15,7 @@ fprintf(BodyFile, '// determine output for this fully connected step\n');
 i = 0;
 for out = 1:out_rows % 
     
-    % hack: there is allways only 1 out channel
+    % hack: there is always only 1 out channel
     fprintf(BodyFile, 'out_step%d[%d][%d][%d] = ', step, out-1, 0, 0);
     
     % iterate over input

@@ -65,8 +65,14 @@ void StaticDebugModelProvider::execute()
     getObstacleModel().frontDistance = 399;
     getObstacleModel().blockedTime = 101;
   }
+
   //Draw Roboter
-  FIELD_DRAWING_CONTEXT;
-  PEN("FFFFFF", 20);
-  ROBOT(pose.translation.x, pose.translation.y, pose.rotation);
+  bool show_robot = false;
+  MODIFY("StaticDebugModelProvider:showRobotOnField", show_robot);
+  if (show_robot){
+    FIELD_DRAWING_CONTEXT;
+    PEN("FFFFFF", 20);
+    ROBOT(pose.translation.x, pose.translation.y, pose.rotation);
+  }
+  
 }
