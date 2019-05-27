@@ -85,13 +85,11 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
                                           MinPeakScan& minimumPeak)
 {
   // construct field poly line
-  size_t poly_idx = find_min_point_x(getFieldPercept().getField());
-
   const std::vector<Vector2i>& poly_points = getFieldPercept().getField().getPoints();
+  size_t poly_idx = find_min_point_x(poly_points);
 
-  Vector2d begin(poly_points[poly_idx % poly_points.size()]);
-  Vector2d end(poly_points[(poly_idx+1) % poly_points.size()]);
-  Math::LineSegment polyLine(begin, end);
+  Math::LineSegment polyLine;
+  poly_idx = next_poly_line(poly_idx, polyLine, poly_points);
 
   int x, y, luma, prevLuma, gradient, prevPoint;
   int scan_id = 0;
@@ -117,11 +115,8 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
         right_of_field = true;
         break;
       }
-      ++poly_idx;
       // construct next field poly line
-      Vector2d begin(poly_points.at(poly_idx % poly_points.size()));
-      Vector2d end(poly_points.at((poly_idx+1) % poly_points.size()));
-      polyLine = Math::LineSegment(begin, end);
+      poly_idx = next_poly_line(poly_idx, polyLine, poly_points);
     }
     if(right_of_field) {
       continue;
@@ -267,7 +262,7 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
   // construct field poly lines
   const std::vector<Vector2i>& poly_points = getFieldPercept().getField().getPoints();
 
-  size_t poly_idx_left = find_min_point_y(getFieldPercept().getField());
+  size_t poly_idx_left = find_min_point_y(poly_points);
   size_t poly_idx_right = poly_idx_left;
 
   Math::LineSegment polyLineLeft;
@@ -307,11 +302,6 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
         }
         // construct next field poly line
         poly_idx_left = prev_poly_line(poly_idx_left, polyLineLeft, poly_points);
-
-        DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_field_intersections",
-          LINE_PX(ColorClasses::yellow, (int) polyLineLeft.begin().x, (int) polyLineLeft.begin().y,
-                                        (int) polyLineLeft.end().x, (int) polyLineLeft.end().y);
-        );
       }
       if(under_field) {
         // shouldn't happen

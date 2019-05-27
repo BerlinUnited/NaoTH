@@ -169,11 +169,9 @@ private:
     Finds the index of the minimum x point in the field poly.
     If there is a tie, the point with the smaller y value is chosen.
 
-    @param poly Field polygon
+    @param points of of field polygon
   */
-  inline size_t find_min_point_x(const FieldPercept::FieldPoly& poly) {
-    const std::vector<Vector2i>& points = poly.getPoints();
-
+  inline size_t find_min_point_x(const std::vector<Vector2i>& points) {
     // TODO: More intelligent search
     size_t min = 0;
     for(size_t i=1; i<points.size(); i++) {
@@ -189,11 +187,9 @@ private:
     Finds the index of the minimum y point in the field poly.
     If there is a tie, the point with the smaller x value is chosen.
 
-    @param poly Field polygon
+    @param points of of field polygon
   */
-  inline size_t find_min_point_y(const FieldPercept::FieldPoly& poly) {
-    const std::vector<Vector2i>& points = poly.getPoints();
-
+  inline size_t find_min_point_y(const std::vector<Vector2i>& points) {
     // TODO: More intelligent search
     size_t min = 0;
     for(size_t i=1; i<points.size(); i++) {
