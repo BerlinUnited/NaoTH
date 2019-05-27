@@ -205,6 +205,28 @@ private:
     return min;
   }
 
+  inline size_t next_poly_line(size_t idx, Math::LineSegment& result,
+                               const std::vector<Vector2i>& poly_points)
+  {
+    size_t end_idx = (idx+1) % poly_points.size();
+    result = Math::LineSegment(
+      poly_points.at(idx),
+      poly_points.at(end_idx)
+    );
+    return end_idx;
+  }
+
+  inline size_t prev_poly_line(size_t idx, Math::LineSegment& result,
+                               const std::vector<Vector2i>& poly_points)
+  {
+    size_t end_idx = (idx==0)? poly_points.size()-1: idx-1;
+    result = Math::LineSegment(
+      poly_points[idx],
+      poly_points[end_idx]
+    );
+    return end_idx;
+  }
+
   void add_edgel(const Vector2i& point) {
     Edgel edgel;
     edgel.point = point;

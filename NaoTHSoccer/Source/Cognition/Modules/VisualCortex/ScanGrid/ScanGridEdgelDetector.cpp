@@ -265,18 +265,16 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
                                             MinPeakScan& minimumPeak)
 {
   // construct field poly lines
+  const std::vector<Vector2i>& poly_points = getFieldPercept().getField().getPoints();
+
   size_t poly_idx_left = find_min_point_y(getFieldPercept().getField());
   size_t poly_idx_right = poly_idx_left;
 
-  const std::vector<Vector2i>& poly_points = getFieldPercept().getField().getPoints();
+  Math::LineSegment polyLineLeft;
+  poly_idx_left = prev_poly_line(poly_idx_left, polyLineLeft, poly_points);
 
-  Vector2d begin_left(poly_points[poly_idx_left % poly_points.size()]);
-  Vector2d end_left(poly_points[(poly_idx_left-1) % poly_points.size()]);
-  Math::LineSegment polyLineLeft(begin_left, end_left);
-
-  Vector2d begin_right(poly_points[poly_idx_right % poly_points.size()]);
-  Vector2d end_right(poly_points[(poly_idx_right+1) % poly_points.size()]);
-  Math::LineSegment polyLineRight(begin_right, end_right);
+  Math::LineSegment polyLineRight;
+  poly_idx_right = next_poly_line(poly_idx_right, polyLineRight, poly_points);
 
   int x, y, end_x, luma, prevLuma, gradient, prevPoint;
   int scan_id = 0;
@@ -289,7 +287,15 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
     end_x = scanline.right_x;
 
     // determine scanline intersections with the field poly line
-    if(polyLineLeft.begin().y < y) {
+    if(y < polyLineLeft.begin().y) {
+      // scanline is outside of field polygon
+      continue;
+    } else {
+      // create scanline line segment
+      Vector2d begin(scanline.left_x, scanline.y);
+      Vector2d end(scanline.right_x, scanline.y);
+      Math::LineSegment line(begin, end);
+
       // determine current left field poly line
       bool under_field = false;
       while(y > polyLineLeft.end().y)
@@ -299,42 +305,21 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
           under_field = true;
           break;
         }
-        --poly_idx_left;
         // construct next field poly line
-        Vector2d begin(poly_points.at(poly_idx_left % poly_points.size()));
-        Vector2d end(poly_points.at((poly_idx_left-1) % poly_points.size()));
-        polyLineLeft = Math::LineSegment(begin, end);
+        poly_idx_left = prev_poly_line(poly_idx_left, polyLineLeft, poly_points);
+
+        DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_field_intersections",
+          LINE_PX(ColorClasses::yellow, (int) polyLineLeft.begin().x, (int) polyLineLeft.begin().y,
+                                        (int) polyLineLeft.end().x, (int) polyLineLeft.end().y);
+        );
       }
       if(under_field) {
         // shouldn't happen
         break;
       }
-      // determine current right field poly line
-      under_field = false;
-      while(y > polyLineRight.end().y)
-      {
-        if(polyLineRight.end().x < polyLineRight.begin().x) {
-          // scanline is under field poly (shouldn't happen)
-          under_field = true;
-          break;
-        }
-        ++poly_idx_right;
-        // construct next field poly line
-        Vector2d begin(poly_points.at(poly_idx_right % poly_points.size()));
-        Vector2d end(poly_points.at((poly_idx_right+1) % poly_points.size()));
-        polyLineRight = Math::LineSegment(begin, end);
-      }
-      if(under_field) {
-        // shouldn't happen
-        break;
-      }
-
-      Vector2d begin(scanline.left_x, scanline.y);
-      Vector2d end(scanline.right_x, scanline.y);
-      Math::LineSegment line(begin, end);
-
       // determine start of scanline (intersection with left polyline)
-      if(line.intersect(polyLineLeft)) {
+      if(line.intersect(polyLineLeft))
+      {
         double t = line.intersection(polyLineLeft);
 
         // set start of scanline to intersection
@@ -345,8 +330,26 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
           CIRCLE_PX(ColorClasses::red, x, scanline.y, 2);
         );
       }
+
+      // determine current right field poly line
+      under_field = false;
+      while(y > polyLineRight.end().y)
+      {
+        if(polyLineRight.end().x < polyLineRight.begin().x) {
+          // scanline is under field poly (shouldn't happen)
+          under_field = true;
+          break;
+        }
+        // construct next field poly line
+        poly_idx_right = next_poly_line(poly_idx_right, polyLineRight, poly_points);
+      }
+      if(under_field) {
+        // shouldn't happen
+        break;
+      }
       // determine end of scanline (intersection with right polyline)
-      if(line.intersect(polyLineRight)) {
+      if(line.intersect(polyLineRight))
+      {
         double t = line.intersection(polyLineRight);
 
         // set end of scanline to intersection
@@ -354,12 +357,9 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
         end_x = (int) intersection.x;
 
         DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_field_intersections",
-          CIRCLE_PX(ColorClasses::red, x, scanline.y, 2);
+          CIRCLE_PX(ColorClasses::pink, end_x, scanline.y, 2);
         );
       }
-    } else {
-      // scanline is outside of field polygon
-      continue;
     }
 
     bool begin_found = false;
