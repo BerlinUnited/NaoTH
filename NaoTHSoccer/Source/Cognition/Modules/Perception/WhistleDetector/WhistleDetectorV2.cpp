@@ -17,7 +17,7 @@ WhistleDetectorV2::WhistleDetectorV2()
   lastDataTimestamp(0), 
   whistle_filter(0.3, 0.1)
 {
-  DEBUG_REQUEST_REGISTER("Plot:WhistleDetectorV2:scan_thresh","", false);
+  DEBUG_REQUEST_REGISTER("Plot:WhistleDetectorV2:scan","", false);
 
   getDebugParameterList().add(&params);
 }
@@ -37,6 +37,7 @@ void WhistleDetectorV2::execute()
   }
 
   // save the timestamp for later
+  PLOT("WhistleDetectorV2:time_delta", (getAudioData().timestamp - lastDataTimestamp));
   lastDataTimestamp = getAudioData().timestamp;
 
   // update parameters if necessary
@@ -61,9 +62,6 @@ void WhistleDetectorV2::execute()
   // ASSERT(nWhistleBegin <= nWhistleEnd && nWhistleEnd*2 <= params.fSampleRate);
   ASSERT(whistleBeginIdx <= whistleEndIdx && whistleEndIdx <= fft.getWindowFrequency());
 
-  // for debug
-  int plot_idx = 0;
-
   // iterate over the data
   for (int i = 0; i < length; i += channels)
   {
@@ -77,9 +75,11 @@ void WhistleDetectorV2::execute()
       
       // find the maximal magnitude within the frequency band of the whistle
       double max_value = -1;
+      double max_f = 0;
       for(int k = whistleBeginIdx; k < whistleEndIdx; ++k) {
         if(fft.magnitude(k) > max_value) {
           max_value = fft.magnitude(k);
+          max_f = k;
         }
       }
 
@@ -93,10 +93,18 @@ void WhistleDetectorV2::execute()
         found = true;
       }
 
-      DEBUG_REQUEST("Plot:WhistleDetectorV2:scan_thresh",
-        PLOT_GENERIC("WhistleDetectorV2:scan", plot_idx, max_value);
-        PLOT_GENERIC("WhistleDetectorV2:thresh", plot_idx, whistleThresh);
-        plot_idx++;
+      DEBUG_REQUEST("Plot:WhistleDetectorV2:scan",
+        
+        // length of the buffer in ms
+        const double buffer_time = static_cast<double>(getAudioData().samples.size()/channels) * 1000.0 / static_cast<double>(getAudioData().sampleRate);
+        // offset of the window center in the buffer in ms
+        const double window_time = static_cast<double>(i / channels - windowTime / 2) * 1000.0 / static_cast<double>(getAudioData().sampleRate);
+        // calculate time offset in ms
+        const double time = static_cast<double>(getAudioData().timestamp) - buffer_time + window_time;
+
+        PLOT_GENERIC("WhistleDetectorV2:max_f", time, max_f);
+        PLOT_GENERIC("WhistleDetectorV2:max_value", time, max_value);
+        PLOT_GENERIC("WhistleDetectorV2:thresh", time, whistleThresh);
       );
 
       if( whistle_filter.update(found, 0.3, 0.9) ) {
