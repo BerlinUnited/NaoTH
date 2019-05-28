@@ -3,6 +3,7 @@
 #include <Tools/ThreadUtil.h>
 #include "Tools/NaoTime.h"
 
+#include <cmath>
 #include <chrono>
 #include <pulse/error.h>
 
@@ -73,7 +74,16 @@ void AudioRecorder::execute()
       else 
       {
         std::lock_guard<std::mutex> lock(dataMutex);
-        recordingTimestamp = NaoTime::getNaoTimeInMilliSeconds();
+        //recordingTimestamp = NaoTime::getNaoTimeInMilliSeconds();
+        
+        // manually iterate the time of the audio stream to get a consistent mononous increment
+        const unsigned int delta = (control.buffer_size * 1000) / control.sampleRate; // buffer length in ms
+        recordingTimestamp += delta;
+        
+        // chech if there are any jumps, e.g., because the buffer was too small etc.
+        if(abs(static_cast<int64_t>(recordingTimestamp) - static_cast<int64_t>(NaoTime::getNaoTimeInMilliSeconds())) > delta) {
+          std::cout << "[AudioRecorder] WARNING: lost audio frame" << std::endl;
+        }
         std::swap(writeIdx, readIdx);
       }
     } 
@@ -91,14 +101,18 @@ void AudioRecorder::execute()
 } // end execute
 
 
-void AudioRecorder::set(const naoth::AudioControl& controlData)
+void AudioRecorder::set(const naoth::AudioControl& newControl)
 {
   std::unique_lock<std::mutex> lock(dataMutex, std::try_to_lock);
   if ( lock.owns_lock() ) {
     // NOTE: changes in the recording parameters like sampleRate or numChannels 
     //       will only have an effect when capture is started. It means the parameters
     //       will not change during an ongoing recording.
-    control = controlData;
+    if(!control.capture) {
+      control = newControl;
+    } else {
+      control.capture = newControl.capture;
+    }
 
     if(control.capture) {
       // release the data lock and notify the thread (in case it was waiting)
@@ -126,10 +140,11 @@ void AudioRecorder::initAudio()
 {
   std::lock_guard<std::mutex> lock(dataMutex);
 
-  pa_sample_spec paSampleSpec;
-  paSampleSpec.format   = PA_SAMPLE_S16LE;
-  paSampleSpec.rate     = control.sampleRate;
-  paSampleSpec.channels = (uint8_t)control.numChannels;
+  pa_sample_spec paSampleSpec = {
+    .format   = PA_SAMPLE_S16LE,
+    .rate     = (uint32_t)control.sampleRate,
+    .channels = (uint8_t)control.numChannels
+  };
 
   // NAO V5
   // profile:
@@ -168,6 +183,9 @@ void AudioRecorder::initAudio()
     audioBuffer[readIdx].resize(control.buffer_size*control.numChannels);
     audioBuffer[writeIdx].resize(control.buffer_size*control.numChannels);
 
+    // mark the time when recording started
+    recordingTimestamp = NaoTime::getNaoTimeInMilliSeconds();
+    
     // TODO: do we need that?
     // give the device a bit time (moved here from the main while-loop)
     usleep(128);
