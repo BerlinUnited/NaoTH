@@ -233,8 +233,8 @@ option path_striker2018
     action
     {
       situation_abortable = true;
-      path_dash();  // TODO: This currently works with the old pathplanner
-      path2018.routine = none;
+      path_dash();
+      path2018.routine = none; // Why is this here?
     }
   }
 }
