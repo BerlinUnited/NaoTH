@@ -77,6 +77,9 @@ include "Options/Skills/search_ball.xabsl";
 include "Options/Debug/battery.xabsl";
 include "Options/Debug/show_calibration.xabsl";
 
+include "Options/Soccer/soccer_agent.xabsl";
+
+
 // Soccer
 include "Options/Soccer/spl_play_soccer.xabsl";
 include "Options/Soccer/Strategy/basic_play.xabsl"; //Verschieben
@@ -296,9 +299,14 @@ include "Options/Roles/roles_agent.xabsl";
 // Test options Team behavior
 include "Options/Test/team/team_go_to_ball.xabsl";
 
-/** The soccer competition agent */
+
+/** The new soccer competition agent */
+agent soccer_agent("Cool Soccer Agent", soccer_agent);
+
+
+/** The really really outdated soccer competition agent */
 agent spl_soccer("SPL Soccer", spl_play_soccer);
-/** PathPlanner **/
+/** PathPlanner - really outdated competition agent **/
 agent path_spl_soccer("Path SPL Soccer", path_spl_play_soccer);
 /** PathPlanner **/
 agent penalty("Penalty", play_penalty);
@@ -314,6 +322,7 @@ agent role_striker("Action Selection Striker", striker_agent);
 
 agent role_passive_behavior_test_agent("passive_behavior_test_agent",passive_behavior_test_agent);
 agent role_change_test ("role_change_test_agent",role_change_test_agent);
+/** Role based - the outdated competition agent **/
 agent role_spl_soccer("Role SPL Soccer", roles_agent);
 
 /** The Test agents */
