@@ -15,6 +15,7 @@
 #include "Tools/Math/Pose2D.h"
 #include "Tools/Math/Pose3D.h"
 #include "Tools/Math/Vector3.h"
+#include "Tools/Math/Line.h"
 
 namespace naoth
 {
@@ -56,6 +57,10 @@ namespace DataConversion
   // Pose3D
   void toMessage(const Pose3D& data, naothmessages::Pose3D& msg);
   void fromMessage(const naothmessages::Pose3D& msg, Pose3D& data);
+
+  //LineSegment
+  void toMessage(const Math::LineSegment& data, naothmessages::LineSegment& msg);
+  void fromMessage(const naothmessages::LineSegment& msg, Math::LineSegment& data);
 
 } // namespace DataConversion
 

@@ -80,7 +80,7 @@ private:
       }
     }
 
-    const std::vector<Vector2d>& getEdgelsInImage(typename std::vector<CalibrationDataSample>::const_iterator& sample, int cameraID) const {
+    const std::vector<Vector2d>& getEdgelsInImage(std::vector<CalibrationDataSample>::const_iterator& sample, int cameraID) const {
       if(cameraID == naoth::CameraInfo::Top) {
         return sample->edgelsInImageTop;
       } else {

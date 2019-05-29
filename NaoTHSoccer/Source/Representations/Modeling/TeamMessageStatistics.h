@@ -2,6 +2,7 @@
 #define TEAMMESSAGESTATISTICS_H
 
 #include <map>
+#include <iomanip>
 
 #include "Tools/NaoTime.h"
 #include "Tools/DataStructures/Printable.h"
@@ -61,7 +62,8 @@ public:
                        << "  - avg. receiving time: "     << avgMsgInterval << "ms,\n"
                        << "  - sqr. receiving time: "     << expectation_xSquared << "ms,\n"
                        << "  - var. receiving time: "     << varianceMsgInterval << "ms,\n"
-                       << "  - indicator receiving msg: " << indicator_messageReceived_upToNow << ",\n";
+                       << "  - indicator receiving msg: " << std::fixed << std::setprecision(6)
+                                                          << indicator_messageReceived_upToNow << ",\n";
             } else {
                 stream << "  - [[ no statistics data ]]\n";
             }
@@ -101,6 +103,16 @@ public:
             ply.number = number;
         }
         return ply;
+    }
+
+    /**
+     * @brief Returns the team message statistic representation of a player with the player number "number".
+     * @param number the player number
+     * @return Player reference to the players time measure info
+     * @throw  std::out_of_range  If no such player is present.
+     */
+    const Player& getPlayer(unsigned int number) const {
+        return data.at(number);
     }
 
     /**

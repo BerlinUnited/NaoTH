@@ -59,6 +59,7 @@ public:
   // Move around ball
   double direction;
   double radius;
+  bool stable;
 
   bool kick_executed;
 

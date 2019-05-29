@@ -56,6 +56,7 @@ Motion::Motion()
 
   theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
   theCoPProvider  = registerModule<CoPProvider>("CoPProvider", true);
+  theSensorLogger = registerModule<SensorLogger>("theSensorLogger", true);
 
   getDebugParameterList().add(&parameter);
 
@@ -94,6 +95,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(FSRData);
   REG_INPUT(AccelerometerData);
   REG_INPUT(GyrometerData);
+  REG_INPUT(ButtonData);
 
   REG_INPUT(DebugMessageInMotion);
 
@@ -204,6 +206,11 @@ void Motion::processSensorData()
   if(i != -1)
   {
     THROW("Get ILLEGAL Stiffness: "<<JointData::getJointName(JointData::JointID(i))<<" = "<<getSensorJointData().stiffness[i]);
+  }
+
+  // log sensor data
+  if(parameter.recordSensorData) {
+    theSensorLogger->execute();
   }
 
   // remove the offset from sensor joint data
