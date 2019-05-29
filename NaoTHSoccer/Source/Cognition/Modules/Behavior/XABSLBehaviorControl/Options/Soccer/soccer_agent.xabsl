@@ -20,34 +20,13 @@ option soccer_agent {
   state normal_soccer{
     // copied from roles_agent
     action {
-      // react to the game controller and handle fall down
-      basic_play();
-
-      situationStatusOwnHalf = true;
-
-      roles_play_soccer();
-
-      // control the arms
-      arms_control();
-      
-      // control head movement according to value of head.control_mode
-      head_control();
-
+      roles_agent();
     }
   }
 
   state penalty_shootout{
     action {
-      // react to the game controller and handle fall down
-      basic_play();
-
-      penalty_decide_state_and_role();
-
-      // control the arms
-      arms_control();
-      
-      // control head movement according to value of head.control_mode
-      head_control();
+      play_penalty();
     }
   }
 }
