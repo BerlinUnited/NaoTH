@@ -18,7 +18,6 @@ option soccer_agent {
   }
 
   state normal_soccer{
-    // copied from roles_agent
     action {
       roles_agent();
     }
