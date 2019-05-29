@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'log_extractor.ui'
 #
-# Created by: PyQt5 UI code generator 5.12.1
+# Created by: PyQt5 UI code generator 5.12.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -155,4 +155,4 @@ class Ui_log_file_extractor_widget(object):
         self.execute_button.setText(_translate("log_file_extractor_widget", "Execute"))
 
 
-from naoth.log_extractor.log_extractor_ui.widgets import LogFileTreeWidget
+from log_extractor_ui.widgets import LogFileTreeWidget

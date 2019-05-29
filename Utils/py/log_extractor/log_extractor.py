@@ -8,8 +8,9 @@ from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QColor, QBrush
 from PyQt5.QtWidgets import QTreeWidgetItem, QListWidgetItem, QFileDialog
-from naoth.log_extractor.log_extractor_ui.log_extractor_form import Ui_log_file_extractor_widget
-from naoth.log_extractor.log_extractor_ui.widgets import ItemContainer
+
+from log_extractor_ui.log_extractor_form import Ui_log_file_extractor_widget
+from log_extractor_ui.widgets import ItemContainer
 
 logger = logging.getLogger(__name__)
 

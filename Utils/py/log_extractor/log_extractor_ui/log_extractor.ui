@@ -267,7 +267,7 @@
   <customwidget>
    <class>LogFileTreeWidget</class>
    <extends>QTreeWidget</extends>
-   <header>naoth.log_extractor.log_extractor_ui.widgets.h</header>
+   <header>log_extractor_ui.widgets.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

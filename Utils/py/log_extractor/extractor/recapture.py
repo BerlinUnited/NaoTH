@@ -6,8 +6,9 @@ from tempfile import TemporaryDirectory
 from zipfile import ZipFile
 
 from naoth.connection import Command, Response
-from naoth.log_extractor.extractor import Extractor
 from naoth.logsimulator import LogSimulator
+
+from extractor import Extractor
 
 logger = logging.getLogger(__name__)
 

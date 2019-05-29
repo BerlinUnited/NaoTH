@@ -1,6 +1,7 @@
 from naoth.behavior_parser import BehaviorParser
-from naoth.log_extractor.extractor import Extractor
 from naoth.logreader import LogReader
+
+from extractor import Extractor
 
 
 class ExtractGlobalLocalization(Extractor):
