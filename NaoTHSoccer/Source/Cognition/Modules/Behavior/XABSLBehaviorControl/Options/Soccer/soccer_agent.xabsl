@@ -25,7 +25,7 @@ option soccer_agent {
 
   state penalty_shootout{
     action {
-      play_penalty();
+      penalty_agent();
     }
   }
 }

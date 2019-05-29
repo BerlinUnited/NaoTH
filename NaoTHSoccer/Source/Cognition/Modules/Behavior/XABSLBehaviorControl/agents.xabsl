@@ -137,8 +137,8 @@ include "Options/Soccer/Strategy/Path/path2018_initial_striker.xabsl";
 
 
 // Penalty
+include "Options/Soccer/Penalty/penalty_agent.xabsl";
 include "Options/Soccer/Penalty/penalty_kicker.xabsl";
-include "Options/Soccer/Penalty/play_penalty.xabsl";
 include "Options/Soccer/Penalty/penalty_decide_state_and_role.xabsl";
 
 // Soccer-Tests
@@ -301,6 +301,7 @@ include "Options/Test/team/team_go_to_ball.xabsl";
 
 
 /** The new soccer competition agent */
+// format: agent <name in RC>("<description>", <name_of_option>);
 agent soccer_agent("Cool Soccer Agent", soccer_agent);
 
 
@@ -309,7 +310,7 @@ agent spl_soccer("SPL Soccer", spl_play_soccer);
 /** PathPlanner - really outdated competition agent **/
 agent path_spl_soccer("Path SPL Soccer", path_spl_play_soccer);
 /** PathPlanner **/
-agent penalty("Penalty", play_penalty);
+agent penalty_agent("Penalty", penalty_agent);
 
 agent spl_remote("Remote Player", spl_remote_agent);
 
