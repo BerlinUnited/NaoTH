@@ -59,9 +59,7 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:goalie_sit_small","..",false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:goalie_sit_block","..",false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:goalie_sit_n_dive_left","..",false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:goalie_sit_n_dive_left_test","..",false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:goalie_sit_n_dive_right","..",false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:goalie_sit_n_dive_right_test","..",false);
 
   // other motions
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:dead", "Set the robot dead.", false);
@@ -408,13 +406,6 @@ void BasicTestBehavior::testMotion()
   DEBUG_REQUEST("BasicTestBehavior:motion:id:goalie_sit_n_dive_right",
     getMotionRequest().id = motion::goalie_sit_n_dive_right;
   );
-  DEBUG_REQUEST("BasicTestBehavior:motion:id:goalie_sit_n_dive_left_test",
-    getMotionRequest().id = motion::goalie_sit_n_dive_left_test;
-  );
-  DEBUG_REQUEST("BasicTestBehavior:motion:id:goalie_sit_n_dive_right_test",
-    getMotionRequest().id = motion::goalie_sit_n_dive_right_test;
-  );
-
 
 }//end testMotion
 
