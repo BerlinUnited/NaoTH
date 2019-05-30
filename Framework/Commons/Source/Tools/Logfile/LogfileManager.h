@@ -6,19 +6,13 @@
 #ifndef _LogfileManager_h_
 #define _LogfileManager_h_
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstring>
 #include <iostream>
 #include <fstream>
-#include <map>
-#include <vector>
 
 #include <Tools/DataStructures/RingBuffer.h>
 
 #include "LogfileEntry.h"
-
-using namespace std;
 
 template<int maxSize> class LogfileManager
 {
@@ -53,7 +47,7 @@ public:
   {
     closeFile();
     dataBuffer.clear();
-    outFile.open(filePath, ios::out | ios::binary);
+    outFile.open(filePath, std::ios::out | std::ios::binary);
     writtenBytes = 0;
   }
   
@@ -72,7 +66,7 @@ public:
    * After calling this use returned stringstream to transform the data.
    *
    */
-  stringstream& log(unsigned int frameNumber, string name)
+  std::stringstream& log(unsigned int frameNumber, const std::string& name)
   {
     if(alwaysWriteOut && dataBuffer.isFull())
     {
@@ -88,8 +82,12 @@ public:
     newEntry.name = name;
 
     // the stream might not be empty, so reset it
+    newEntry.data.rdbuf()->pubseekpos(0, std::ios::out);
     newEntry.data.str("");
     newEntry.data.clear();
+
+    // make sure the stream is alright
+    ASSERT(newEntry.data.good());
 
     return newEntry.data;
   }
@@ -112,20 +110,30 @@ public:
         outFile << e.name << '\0';
         writtenBytes += e.name.size() + 1;
 
+        // make sure the data stream is alright
+        ASSERT(e.data.good());
+        
         // size of data block
-   //     size_t dataSize = e.data.str().size();
-        long dataSize = (long)e.data.tellp(); dataSize = dataSize < 0 ? 0 : dataSize;
+        long dataSize = (long)e.data.tellp(); 
+        // NOTE: dataSize == -1 only in case of e.data.fail() == true
+        //dataSize = dataSize < 0 ? 0 : dataSize;
         outFile.write((const char* ) &dataSize, 4);
         writtenBytes += 4;
 
-        // the data itself
+        // NOTE: call of .str() involves making an additional copy of the data
         outFile.write((const char *) e.data.str().c_str(), dataSize);
-        //outFile << e.data.rdbuf();
+        // "read" the whole content of e.data into outFile.rdbuf()
+        // NOTE: this doesn't work with binary data, wil be fixed later
+        //e.data.get(*outFile.rdbuf());
+
+        // crash if the file stream is broken
+        if(!outFile.good()) {
+          std::cout << "[LogfileManager] fail after writing " << e.name << std::endl;
+          std::cout << "[LogfileManager] with error: " << std::strerror(errno);
+          assert(false);
+        }
+
         writtenBytes += dataSize;
-        
-        // clear string buffer
-        e.data.clear();
-        e.data.str("");
       }//end for
 
       outFile.flush();
@@ -145,7 +153,7 @@ public:
 
 
 private:  
-  ofstream outFile;
+  std::ofstream outFile;
   RingBuffer<LogfileEntry, maxSize> dataBuffer;
   bool alwaysWriteOut;
   size_t writtenBytes;

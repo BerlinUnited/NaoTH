@@ -19,6 +19,13 @@ UltraSoundObstacleLocator::UltraSoundObstacleLocator()
   DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawObstacle", "draw the modelled Obstacle on the field", false);
   DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawSensorData", "draw the measured echos", false);
   DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawBuffer", "draw buffer of measurements", false);
+
+  getDebugParameterList().add(&parameters);
+}
+
+UltraSoundObstacleLocator::~UltraSoundObstacleLocator() 
+{
+  getDebugParameterList().remove(&parameters);
 }
 
 void UltraSoundObstacleLocator::execute()
@@ -86,6 +93,7 @@ void UltraSoundObstacleLocator::drawObstacleModel()
   
   // draw model
   DEBUG_REQUEST("UltraSoundObstacleLocator:drawObstacle",
+	FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 50);
     CIRCLE(
       getObstacleModel().leftDistance,

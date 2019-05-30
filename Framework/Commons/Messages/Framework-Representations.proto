@@ -1,3 +1,4 @@
+syntax = "proto2";
 package naothmessages;
 option java_package= "de.naoth.rc.messages";
 
@@ -116,5 +117,31 @@ message InertialSensorData {
   repeated double legacyPackedData = 1 [deprecated=true];
   
   optional DoubleVector2 data = 2;
+}
+
+message ButtonData {
+  enum ButtonID {
+    Chest           = 0;
+    LeftFootLeft    = 1;
+    LeftFootRight   = 2;
+    RightFootLeft   = 3;
+    RightFootRight  = 4;
+
+    HeadFront       = 5;
+    HeadMiddle      = 6;
+    HeadRear        = 7;
+
+    LeftHandBack    = 8;
+    LeftHandLeft    = 9;
+    LeftHandRight   = 10;
+
+    RightHandBack   = 11;
+    RightHandLeft   = 12;
+    RightHandRight  = 13;
+  }
+
+  repeated bool isPressed = 1;
+  repeated uint32 numOfFramesPressed = 2;
+  repeated uint32 eventCounter = 3;
 }
 

@@ -18,12 +18,13 @@
 #include "Representations/Infrastructure/JointData.h"
 #include "Representations/Infrastructure/BatteryData.h"
 #include "Representations/Modeling/GroundContactModel.h"
+#include "Representations/Motion/MotionStatus.h"
 
 #include "Representations/Modeling/BodyState.h"
 
 // Tools
 #include "Tools/DataStructures/RingBufferWithSum.h"
-//#include <Tools/DataStructures/ParameterList.h>
+
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugRequest.h"
@@ -44,6 +45,7 @@ BEGIN_DECLARE_MODULE(BodyStateProvider)
   REQUIRE(SensorJointData)
   REQUIRE(BatteryData)
   REQUIRE(GroundContactModel)
+  REQUIRE(MotionStatus)
 
   PROVIDE(BodyState)
 END_DECLARE_MODULE(BodyStateProvider)
@@ -55,7 +57,7 @@ class BodyStateProvider : public BodyStateProviderBase
 public:
 
   BodyStateProvider();
-  virtual ~BodyStateProvider(){}
+  virtual ~BodyStateProvider();
 
   void execute();
 
@@ -65,20 +67,23 @@ private:
   public:
     Parameters() : ParameterList("BodyStateParameters")
     {
-      PARAMETER_REGISTER(getup_threshold) = 1.2;
-      PARAMETER_REGISTER(maxTimeForLiftUp) = 500;
+      PARAMETER_ANGLE_REGISTER(getup_threshold) = 70; // in deg
+      PARAMETER_ANGLE_REGISTER(upright_threshold) = 30; // in deg
+
+      PARAMETER_REGISTER(lifted_up_time) = 500; // in ms
+      PARAMETER_REGISTER(lifted_up_time_walk) = 1000; // in ms
+
+      PARAMETER_REGISTER(batteryChargingThreshold) = 0.8; // in %
       syncWithConfig();
-      //DebugParameterList::getInstance().add(this);
     }
 
-    ~Parameters()
-    {
-      //DebugParameterList::getInstance().remove(this);
-    }
-
+    double upright_threshold;
     double getup_threshold;
-    double maxTimeForLiftUp;
-  } theParams;
+
+    double lifted_up_time;
+    double lifted_up_time_walk;
+    double batteryChargingThreshold;
+  } params;
 
 
   void updateTheFallDownState();
@@ -89,9 +94,25 @@ private:
 
   void updateIsLiftedUp();
 
-  // internal data
-  RingBufferWithSum<Vector2<double>, 10> inertialBuffer;
+  /**
+   * @brief Updates the 'ready to walk' body state.
+   *        The robot is 'ready to walk', if he's not fallen, not lifted up and is able to walk
+   *        (see determineReadyToWalkState()).
+   */
+  void updateIsReadyToWalk();
 
+  /**
+   * @brief Determines, whether the robot is ready to walk.
+   *        The robot is ready to walk, if he's already walking or if the stand motion is completed.
+   * @return true, if ready to walk, false otherwise
+   */
+  inline bool determineReadyToWalkState();
+
+  // internal data
+  RingBufferWithSum<Vector2d, 10> inertialBuffer;
+
+  // filter the battery state
+  RingBufferWithSum<double, 1000> batteryChargeBuffer;
 };
 
 #endif //__BodyStateProvider_h_

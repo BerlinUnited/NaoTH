@@ -1,5 +1,6 @@
+import sys
 from os import listdir
-from os.path import isfile, join, splitext
+from os.path import isfile, join, splitext, isdir, exists
 import cv2
 import numpy as np
 import operator
@@ -7,6 +8,8 @@ import os
 import random
 import string
 
+# HACK: this parameter has different name in opencv3
+MY_CV_LOAD_IMAGE_UNCHANGED = -1
 
 # TODO: move changed images in seperate subfolder
 '''
@@ -41,19 +44,39 @@ def copy_images(picture_files, options, dir_to_copy):
   if options['active']:
     for i, f in enumerate(picture_files):
       # Mirror Images
-      img = cv2.imread(f, cv2.CV_LOAD_IMAGE_UNCHANGED)
+      img = cv2.imread(f, MY_CV_LOAD_IMAGE_UNCHANGED)
       path = splitext(f)[0]
       splitted_path = path.split('/')
       splitted_path.extend(path.split('\\'))
       filename_new = dir_to_copy + splitted_path[-2] + '_' + str(i) + '_original.png'
       cv2.imwrite(filename_new, img)
 
+def motion_blur_images(picture_files, options, dir_to_copy):
+  if options['active']:
+    sizes = options['filter-sizes']
+    for size in sizes:
+      # generating the kernel
+      kernel_motion_blur = np.zeros((size, size))
+      kernel_motion_blur[int((size - 1) / 2), :] = np.ones(size)
+      kernel_motion_blur = kernel_motion_blur / size
+      for i, f in enumerate(picture_files):
+        # Mirror Images
+        img = cv2.imread(f, MY_CV_LOAD_IMAGE_UNCHANGED)
+        path = splitext(f)[0]
+        splitted_path = path.split('/')
+        splitted_path.extend(path.split('\\'))
+
+        # applying the kernel to the input image
+        img = cv2.filter2D(img, -1, kernel_motion_blur)
+        filename_new = dir_to_copy + splitted_path[-2] + '_' + str(i) + '_motion_blur_f' + str(size) + '.png'
+        cv2.imwrite(filename_new, img)
+
 def mirror_images(picture_files, options, dir_to_copy):
   mirrored_image_files = []
   if options['active']:
     for i, f in enumerate(picture_files):
       # Mirror Images
-      img = cv2.imread(f, cv2.CV_LOAD_IMAGE_UNCHANGED)
+      img = cv2.imread(f, MY_CV_LOAD_IMAGE_UNCHANGED)
       img_flip = cv2.flip(img, 1)
 
       path = splitext(f)[0]
@@ -69,7 +92,7 @@ def farball_images(picture_files, options, dir_to_copy):
   if options['active']:
     for i, f in enumerate(picture_files):
       # resize image to half size then use original size again
-      img = cv2.imread(f, cv2.CV_LOAD_IMAGE_UNCHANGED)
+      img = cv2.imread(f, MY_CV_LOAD_IMAGE_UNCHANGED)
       img_small = cv2.resize(img, (0,0), fx=0.5, fy=0.5, interpolation=cv2.INTER_LINEAR) 
       img_resized = cv2.resize(img_small, (0,0), fx=2.0, fy=2.0, interpolation=cv2.INTER_NEAREST)
 
@@ -86,7 +109,7 @@ def rotate_images(picture_files, options, dir_to_copy):
   if options['active']:
     rotations = options['rotations']
     for i, f in enumerate(picture_files):
-      img = cv2.imread(f, cv2.CV_LOAD_IMAGE_UNCHANGED)
+      img = cv2.imread(f, MY_CV_LOAD_IMAGE_UNCHANGED)
       for r in rotations:
         rows, cols = img.shape
         M = cv2.getRotationMatrix2D((cols / 2, rows / 2), r, 1)
@@ -105,7 +128,7 @@ def scale_brightness(picture_files, options, dir_to_copy):
   if options['active']:
     scales=options['scales']
     for i, f in enumerate(picture_files):
-      img = cv2.imread(f, cv2.CV_LOAD_IMAGE_UNCHANGED)
+      img = cv2.imread(f, MY_CV_LOAD_IMAGE_UNCHANGED)
       # Scale Brightness
       for s in scales:
         # Assumes that images are in gray scale
@@ -123,7 +146,7 @@ def shift_images(picture_files, options, dir_to_copy):
   if options['active']:
     shift_offsets = options['offsets']
     for i, f in enumerate(picture_files):
-      img = cv2.imread(f, cv2.CV_LOAD_IMAGE_UNCHANGED)
+      img = cv2.imread(f, MY_CV_LOAD_IMAGE_UNCHANGED)
       for shift in shift_offsets:
         img_shift0 = img[shift:, shift:]
         img_shift1 = img[shift:, :-shift]
@@ -154,10 +177,18 @@ def augment_files(src_root_folder, dir_to_copy, augment_options, amounts_per_cla
     except:
       os.makedirs(directory)
 
+  if not exists(dir_to_copy) or not isdir(dir_to_copy):
+    print "Output, directory does not exists: {0}".format(dir_to_copy)
+    quit()
+
   for option in augment_options:
     if option == 'copy_original':
       for c in amounts_per_class:
         copy_images(files[c][0:amounts_per_class[c]], augment_options[option], dir_to_copy + '/' + c + '/')
+
+    if option == 'motion_blur':
+      for c in amounts_per_class:
+        motion_blur_images(files[c][0:amounts_per_class[c]], augment_options[option], dir_to_copy + '/' + c + '/')
 
     if option == 'rotate':
       for c in amounts_per_class:
@@ -194,6 +225,14 @@ def augment_files(src_root_folder, dir_to_copy, augment_options, amounts_per_cla
 if __name__ == '__main__':
   dir_from = '../data/basic/16x16'
   dir_to   = '../data/augmented/16x16/test1'
+  
+  if len(sys.argv) > 2:
+	dir_from = sys.argv[1]
+	dir_to = sys.argv[2]
+	
+  if not exists(dir_from) or not isdir(dir_from):
+	print "Input, directory does not exists: {0}".format(dir_from)
+	quit()
 
   # sample for augmenting the classes ball and noball differently
   # balls with rotated images + brightness scaling and noball only brightness scaling
@@ -202,14 +241,16 @@ if __name__ == '__main__':
               'rotate':{'active':True, 'rotations':[90, 180, 270]},
               'brightness':{'active':True, 'scales':[0.7, 1.3]},
               'shift':{'active':False, 'offsets':[1, 2]},
-              'farball': {'active': True}
+              'farball': {'active': True},
+              'motion_blur':{'active':True, 'filter-sizes':[3, 5, 7]}
               }
   settings_noball = {'copy_original':{'active':True},
               'mirror':{'active':False},
               'rotate':{'active':False, 'rotations':[90, 180, 270]},
               'brightness':{'active':True, 'scales':[0.7, 1.3]},
               'shift':{'active':False, 'offsets':[1, 2]},
-              'farball': {'active': True}
+              'farball': {'active': True},
+              'motion_blur':{'active':True, 'filter-sizes':[3, 5, 7]}
               }
   augment_files(dir_from, dir_to, settings_ball, {'ball':10})
   augment_files(dir_from, dir_to, settings_noball, {'noball': 40})

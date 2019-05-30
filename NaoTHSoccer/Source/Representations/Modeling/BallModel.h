@@ -42,9 +42,10 @@ public:
   /** The estimated position of the ball 0-10s in the future */
   std::vector<Vector2d> futurePosition;
 
-  // algorithmical calidity of the model: true => the ball locator was able to compute a ball model
+  // algorithmical validity of the model: true => the ball locator was able to compute a ball model
   bool valid;
 
+  // indicates that the ball was perceived well enough to be sure
   bool knows;
 
 private:
@@ -109,6 +110,17 @@ public:
     stream << "frameInfoWhenBallWasSeen:\n" << frameInfoWhenBallWasSeen << std::endl;
   }
 };
+
+namespace naoth
+{
+template<>
+class Serializer<BallModel>
+{
+  public:
+  static void serialize(const BallModel& object, std::ostream& stream);
+  static void deserialize(std::istream& stream, BallModel& object);
+};
+}
 
 #endif // _BallModel_h_
 

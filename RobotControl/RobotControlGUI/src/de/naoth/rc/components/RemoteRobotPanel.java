@@ -78,6 +78,8 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
         this.currentMesage = msg;
         this.jlAddress.setText(this.ipAddress);
         
+        this.connectButton.setEnabled(!this.messageServer.isConnected());
+        
         this.messageServer.addConnectionStatusListener(new ConnectionStatusListener() {
 
             @Override
@@ -443,14 +445,8 @@ public class RemoteRobotPanel extends javax.swing.JPanel {
     private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectButtonActionPerformed
         if(!this.messageServer.isConnected())
         {
-            try
-            {
-                // TODO: fix port 5401
-                this.messageServer.connect(this.ipAddress, 5401);
-            }catch(IOException ex)
-            {
-                Logger.getLogger(RobotStatus.class.getName()).log(Level.SEVERE, "Coult not connect.", ex);
-            }
+            // TODO: fix port 5401
+            this.messageServer.connect(this.ipAddress, 5401);
         }
     }//GEN-LAST:event_connectButtonActionPerformed
 

@@ -15,6 +15,13 @@ InertiaSensorCalibrator::InertiaSensorCalibrator()
 {
   DEBUG_REQUEST_REGISTER("InertiaSensorCalibrator:force_calibrate", "", false);
   reset();
+
+  getDebugParameterList().add(&parameter);
+}
+
+InertiaSensorCalibrator::~InertiaSensorCalibrator()
+{
+  getDebugParameterList().remove(&parameter);
 }
 
 // check all request joints' speed, return true if all joints are almost not moving
@@ -48,6 +55,18 @@ void InertiaSensorCalibrator::reset()
 
 void InertiaSensorCalibrator::execute()
 {
+  // disable calibration and set representation to reasonable values
+  if(parameter.disable){
+      // needed in behavior
+      getCalibrationData().calibrated = true;
+
+      // will be applied directly to the corresponding representations
+      getCalibrationData().accSensorOffset  = Vector3d();
+      getCalibrationData().gyroSensorOffset = Vector3d();
+      getCalibrationData().inertialSensorOffset = Vector2d();
+
+      return;
+  }
   // inertial params
   Vector2d inertialBiasProcessNoise = Vector2d(0.05, 0.05);
   MODIFY("InertiaSensorCalibrator:inertialBiasProcessNoise.x", inertialBiasProcessNoise.x);
@@ -187,18 +206,38 @@ void InertiaSensorCalibrator::execute()
   if(!unstable)
   {
     // Body rotation, which was calculated using kinematics.
-    RotationMatrix calculatedRotation = 
-      Kinematics::ForwardKinematics::calcChestFeetRotation(getKinematicChainSensor());
+    RotationMatrix footIntoBodyMapping = Kinematics::ForwardKinematics::calcChestToFeetRotation(getKinematicChainSensor()).invert();
 
     // calculate expected acceleration sensor reading
-    Vector2d inertialExpected(calculatedRotation.getXAngle(), calculatedRotation.getYAngle());
-    Vector3d accExpected(calculatedRotation[0].z, calculatedRotation[1].z, calculatedRotation[2].z);
-    accExpected *= -Math::g;
+    /*
+     * Note: The negative of getXAngle() and getYAngle() is the correct solution in this case because the projected "global" z axis (actually the foot's z axis is used)
+     * is not pointing upwards in the torso's coordinate system.
+     * The get?Angle() functions return the angle for a mapping which rotates the body's z axis onto the projected "global" z axis in the Body frame.
+     * The projected "global" z axis in the Body frame is NOT (0,0,1)!
+     * So actually we want the inverse mapping defined by that angle from get?Angle()
+     * Inverting the angle is sufficient because it's basically only a 2D rotation in the XZ or YZ plane
+     * Note: using bodyIntoFootMapping would be wrong because the foot frame can be rotate around z regarding the body
+     * this would result in a redistribution of the inclination on the x,y axis.
+     * (e.g. z rotation about 90° -> a rotation about the body's y axis becomes a rotation about the foot's x axis)
+     */
+    Vector2d inertialExpected(-footIntoBodyMapping.getXAngle(), -footIntoBodyMapping.getYAngle());
+    Vector3d accExpected(footIntoBodyMapping[2].x, footIntoBodyMapping[2].y, footIntoBodyMapping[2].z);
+    accExpected *= Math::g;
 
     // add sensor reading to the collection
     inertialValues.add(inertialExpected - getInertialSensorData().data);
     accValues.add(getAccelerometerData().data - accExpected);
-    gyroValues.add( -getGyrometerData().data );
+    gyroValues.add( -getGyrometerData().data);
+
+    PLOT("InertiaSensorCalibrator:expected:x",Math::toDegrees(inertialExpected.x));
+    PLOT("InertiaSensorCalibrator:expected:y",Math::toDegrees(inertialExpected.y));
+
+    PLOT("InertiaSensorCalibrator:use_atan2:x", Math::toDegrees(-atan2(footIntoBodyMapping[1].z, footIntoBodyMapping[1].y)));
+    PLOT("InertiaSensorCalibrator:use_atan2:y", Math::toDegrees(-atan2(footIntoBodyMapping[2].x, footIntoBodyMapping[2].z)));
+
+    PLOT("InertiaSensorCalibrator:measured:x",Math::toDegrees(getInertialSensorData().data.x));
+    PLOT("InertiaSensorCalibrator:measured:y",Math::toDegrees(getInertialSensorData().data.y));
+
 
     if(!collectionStartTime) {
       collectionStartTime = getFrameInfo().getTime();

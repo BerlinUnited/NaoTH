@@ -11,8 +11,8 @@ option go_to_and_keep_passive_position{
 
   initial state go {
 	  decision {
-      if (ball.time_since_last_seen < 100) {
-          if (vector.abs(x=ball.preview.x, y=ball.preview.y)>3000)
+      if (ball.see_where_itis) {
+          if (vector.abs(x=ball.preview.x, y=ball.preview.y)>1000)
             goto go_with_search_for_ball;
           else
             goto pay_attention_to_ball;
@@ -34,7 +34,7 @@ option go_to_and_keep_passive_position{
 
   state go_with_search_for_ball {
     decision {
-      if (ball.time_since_last_seen < 100 && vector.abs(x=ball.preview.x, y=ball.preview.y)<3000)
+      if (ball.see_where_itis && vector.abs(x=ball.preview.x, y=ball.preview.y)<1000)
         goto pay_attention_to_ball;
       //just go near specified coordinates  
       else if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) < 200
@@ -54,9 +54,7 @@ option go_to_and_keep_passive_position{
 
   state pay_attention_to_ball {
     decision {
-      if (ball.time_since_last_seen > 1500)
-        goto go_with_search_for_ball;
-      else if (ball.time_since_last_seen < 100 && vector.abs(x=ball.preview.x, y=ball.preview.y)>3000)
+      if (!ball.see_where_itis || vector.abs(x=ball.preview.x, y=ball.preview.y)>1000)
         goto go_with_search_for_ball;
       else
         stay;    

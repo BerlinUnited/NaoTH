@@ -172,16 +172,14 @@ public:
       cat_histogram[NUMBER_OF_BallPositionCategory]++;
     }
   };
+private:
+  const std::vector<Math::LineSegment> ownGoalBackSides;
+  const std::vector<Math::LineSegment> oppGoalBackSides;
 
 private:
   bool calculateCollision(const std::vector<Math::LineSegment>& lines, const Vector2d& start, const Vector2d& end, Vector2d& result) const;
 
   BallPositionCategory classifyBallPosition( const Vector2d& ballPosition ) const;
-
-  double evaluateAction(const Vector2d& a) const;
-
-private: // debug
-  void draw_potential_field() const;
 
 private:
   inline double exp256(const double& x) const
@@ -215,6 +213,8 @@ private:
 public:
   void simulateAction(const Action& action, ActionResults& result, size_t numParticles) const;
   double evaluateAction(const ActionResults& results) const;
+  double evaluateAction(const Vector2d& a) const;
+  void draw_potential_field() const;
 };
 
 #endif  /* _ActionSimulator_H */

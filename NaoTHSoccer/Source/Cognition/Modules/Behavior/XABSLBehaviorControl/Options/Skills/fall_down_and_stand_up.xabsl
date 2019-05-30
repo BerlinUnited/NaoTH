@@ -29,7 +29,7 @@ option fall_down_and_stand_up
     {
       if (fall_down_state != upright)
         goto wait_before_stand_up;
-      else if (state_time > 1000)
+      else if (state_time > 2000)
         goto stand_up;
       else 
         stay;
@@ -39,6 +39,7 @@ option fall_down_and_stand_up
       body.ready_to_walk = false;
       motion.execute_immediately = true;
       motion.type = dead;
+      arm.react_to_collision = false;
     }
   }
 
@@ -46,7 +47,9 @@ option fall_down_and_stand_up
   {
     decision
     {
-      if (state_time > 500)
+      if(fall_down_state == undefined)
+        stay;
+      else if (state_time > 500)
         goto stand_up;
       else 
         stay;
@@ -56,6 +59,7 @@ option fall_down_and_stand_up
       body.ready_to_walk = false;
       motion.execute_immediately = true;
       motion.type = dead;
+      arm.react_to_collision = false;
     }
   }
 
@@ -70,6 +74,7 @@ option fall_down_and_stand_up
     }
     action 
     {
+      arm.react_to_collision = false;
       body.ready_to_walk = false;
       motion.execute_immediately = false;
       stand_up();
@@ -80,8 +85,8 @@ option fall_down_and_stand_up
   {
     decision
     {
-      if(state_time > 100) // && (executed_motion.type == stand))
-        goto idle;
+      if(executed_motion.type == stand)
+        goto wait_for_completed_stand;
       else 
         stay;
     }      
@@ -92,4 +97,25 @@ option fall_down_and_stand_up
       arm.control_mode = normal;
     }
   }
+
+  state wait_for_completed_stand
+  {
+    decision
+    {
+      if(executed_motion.target_reached)
+        goto idle;
+      else
+        stay;
+    }
+
+    action
+    {
+      arm.react_to_collision = false;
+      body.ready_to_walk = false;
+      motion.type=stand;
+      arm.control_mode = normal;
+    }
+  }
+  
+  
 }

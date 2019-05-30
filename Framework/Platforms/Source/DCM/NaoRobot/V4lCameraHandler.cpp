@@ -13,13 +13,38 @@
 
 #include "Representations/Infrastructure/Image.h"
 
-#include <string.h>
+#include <cstring>
 #include <iostream>
+#include <cerrno>
+
+#include <poll.h>
+
+/*
+// NOTE: for future improvements of the error handling take a look at 
+   https://linux.die.net/man/3/explain_ioctl
+  
+  #include <libexplain/ioctl.h>
+  
+  if (ioctl(fildes, request, data) < 0)
+  {
+      int err = errno;
+      fprintf(stderr, "%s\n",
+          explain_errno_ioctl(err, fildes, request, data));
+      exit(EXIT_FAILURE);
+  }
+*/
 
 //Custom V4L control variables
 #define V4L2_MT9M114_FADE_TO_BLACK (V4L2_CID_PRIVATE_BASE) //boolean, enable or disable fade to black feature
+#define V4L2_MT9M114_BRIGHTNESS_DARK (V4L2_CID_PRIVATE_BASE+1)
+#define V4L2_MT9M114_AE_TARGET_GAIN (V4L2_CID_PRIVATE_BASE+2)
+#define V4L2_MT9M114_AE_MIN_VIRT_AGAIN (V4L2_CID_PRIVATE_BASE+3)
+#define V4L2_MT9M114_AE_MAX_VIRT_AGAIN (V4L2_CID_PRIVATE_BASE+4)
+#define V4L2_MT9M114_AE_MIN_VIRT_DGAIN (V4L2_CID_PRIVATE_BASE+5)
+#define V4L2_MT9M114_AE_MAX_VIRT_DGAIN (V4L2_CID_PRIVATE_BASE+6)
 
-#define LOG "[CameraHandler " << currentCamera << "] "
+#define LOG "[CameraHandler:" << __LINE__ << ", Camera: " << cameraName << "] "
+#define hasIOError(...) hasIOErrorPrint(__LINE__, __VA_ARGS__)
 
 using namespace naoth;
 using namespace std;
@@ -28,39 +53,58 @@ using namespace std;
 V4lCameraHandler::V4lCameraHandler()
   :
   selMethodIO(IO_MMAP),
-//  selMethodIO(IO_USERPTR),
-//  selMethodIO(IO_READ),
   actMethodIO(Num_of_MethodIO),
+  cameraName("none"),
   fd(-1), 
   buffers(NULL),
   n_buffers(0),
   currentImage(NULL),
   atLeastOneImageRetrieved(false),
+  initialParamsSet(false),
   wasQueried(false),
   isCapturing(false),
   bufferSwitched(false),
   blockingCaptureModeEnabled(false),
-  lastCameraSettingTimestamp(0)
+  lastCameraSettingTimestamp(0),
+  currentCamera(CameraInfo::numOfCamera),
+  error_count(0)
 {
-
   // NOTE: width, height and fps are not included here
   settingsOrder.push_back(CameraSettings::VerticalFlip);
   settingsOrder.push_back(CameraSettings::HorizontalFlip);
 
-  settingsOrder.push_back(CameraSettings::AutoWhiteBalancing);
+
   settingsOrder.push_back(CameraSettings::AutoExposition);
+  settingsOrder.push_back(CameraSettings::AutoExpositionAlgorithm);
+  settingsOrder.push_back(CameraSettings::Brightness);
+//  settingsOrder.push_back(CameraSettings::BrightnessDark);
+  settingsOrder.push_back(CameraSettings::MinAnalogGain);
+  settingsOrder.push_back(CameraSettings::MaxAnalogGain);
+  settingsOrder.push_back(CameraSettings::TargetGain);
+
+
+  settingsOrder.push_back(CameraSettings::AutoWhiteBalancing);
+
+  settingsOrder.push_back(CameraSettings::PowerlineFrequency);
   
-  //settingsOrder.push_back(CameraSettings::Brightness);
+
+
   settingsOrder.push_back(CameraSettings::Contrast);
   settingsOrder.push_back(CameraSettings::Saturation);
   settingsOrder.push_back(CameraSettings::Hue);
   settingsOrder.push_back(CameraSettings::Sharpness);
   settingsOrder.push_back(CameraSettings::Exposure);
   settingsOrder.push_back(CameraSettings::Gain);
+  settingsOrder.push_back(CameraSettings::GammaCorrection);
+
   settingsOrder.push_back(CameraSettings::WhiteBalance);
-  //settingsOrder.push_back(CameraSettings::BacklightCompensation);
+  // this throws errors sometimes and slows down the robot, check whats wrong before activating it
+//  settingsOrder.push_back(CameraSettings::BacklightCompensation);
   settingsOrder.push_back(CameraSettings::FadeToBlack);
   
+  
+  // DEBUG: test
+  //hasIOError(-1, EPIPE);
 
   for(int i = 0; i < CameraSettings::numOfCameraSetting; i++)  {
     currentSettings.data[i] = -1;
@@ -72,7 +116,9 @@ V4lCameraHandler::V4lCameraHandler()
 
 V4lCameraHandler::~V4lCameraHandler()
 {
+  std::cout << "[V4lCameraHandler] stop wait" << std::endl;
   shutdown();
+  std::cout << "[V4lCameraHandler] stop done" << std::endl;
 }
 
 void V4lCameraHandler::init(std::string camDevice, CameraInfo::CameraID camID, bool blockingMode)
@@ -95,11 +141,11 @@ void V4lCameraHandler::init(std::string camDevice, CameraInfo::CameraID camID, b
 
   // HACK (exposure): force change of the exposure
   if(currentSettings.data[CameraSettings::Exposure] == 40) {
-    setSingleCameraParameter(csConst[CameraSettings::Exposure], 41);
+    setSingleCameraParameter(csConst[CameraSettings::Exposure], 41, "Exposure");
   } else {
-    setSingleCameraParameter(csConst[CameraSettings::Exposure], 40);
+    setSingleCameraParameter(csConst[CameraSettings::Exposure], 40, "Exposure");
   }
-  setSingleCameraParameter(csConst[CameraSettings::Exposure], currentSettings.data[CameraSettings::Exposure]);
+  setSingleCameraParameter(csConst[CameraSettings::Exposure], currentSettings.data[CameraSettings::Exposure], "Exposure");
 
   // print the retrieved settings
   for (int i = 0; i < CameraSettings::numOfCameraSetting; i++) {
@@ -122,6 +168,7 @@ void V4lCameraHandler::initIDMapping()
 
   // map the existing parameters that can be used safely
   csConst[CameraSettings::Brightness] = V4L2_CID_BRIGHTNESS;
+  csConst[CameraSettings::BrightnessDark] = V4L2_MT9M114_BRIGHTNESS_DARK;
   csConst[CameraSettings::Contrast] = V4L2_CID_CONTRAST;
   csConst[CameraSettings::Saturation] = V4L2_CID_SATURATION;
   csConst[CameraSettings::Hue] = V4L2_CID_HUE;
@@ -131,11 +178,17 @@ void V4lCameraHandler::initIDMapping()
   csConst[CameraSettings::AutoExposition] = V4L2_CID_EXPOSURE_AUTO;
   csConst[CameraSettings::AutoWhiteBalancing] = V4L2_CID_AUTO_WHITE_BALANCE;
   csConst[CameraSettings::Gain] = V4L2_CID_GAIN;
+  csConst[CameraSettings::MinAnalogGain] = V4L2_MT9M114_AE_MIN_VIRT_AGAIN;
+  csConst[CameraSettings::MaxAnalogGain] = V4L2_MT9M114_AE_MAX_VIRT_AGAIN;
+  csConst[CameraSettings::TargetGain] = V4L2_MT9M114_AE_TARGET_GAIN;
+  csConst[CameraSettings::GammaCorrection] = V4L2_CID_GAMMA;
+  
   csConst[CameraSettings::Exposure] = V4L2_CID_EXPOSURE;
   //csConst[CameraSettings::WhiteBalance] = V4L2_CID_DO_WHITE_BALANCE;
   csConst[CameraSettings::WhiteBalance] = V4L2_CID_WHITE_BALANCE_TEMPERATURE;
   csConst[CameraSettings::BacklightCompensation] = V4L2_CID_BACKLIGHT_COMPENSATION;
   csConst[CameraSettings::FadeToBlack] = V4L2_MT9M114_FADE_TO_BLACK;
+  csConst[CameraSettings::PowerlineFrequency] = V4L2_CID_POWER_LINE_FREQUENCY;
 
 //---------------------------------------------------------------------
 // copied from the driver for information:
@@ -253,14 +306,15 @@ void V4lCameraHandler::openDevice(bool blockingMode)
   std::cout << LOG << "Opening camera device '" << cameraName << "' ";
 
   blockingCaptureModeEnabled = blockingMode;
+  // always open file descriptor in non-blocking mode, blocking will be achived with "poll" calls later
+  fd = open(cameraName.c_str(), O_RDWR | O_NONBLOCK, 0);
+    
   if(blockingMode)
   {
-    fd = open(cameraName.c_str(), O_RDWR, 0);
     std::cout << "(blocking mode)";
   }
   else
   {
-    fd = open(cameraName.c_str(), O_RDWR | O_NONBLOCK, 0);
     std::cout << "(non blocking mode)";
   }
   std::cout << endl;
@@ -475,42 +529,95 @@ int V4lCameraHandler::readFrameMMaP()
   buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   buf.memory = V4L2_MEMORY_MMAP;
 
-  int errorOccured = -1;
-  if(blockingCaptureModeEnabled)
+  
+  // in blocking mode, wait up to a second for new image data
+  const unsigned int maxWaitingTime = blockingCaptureModeEnabled ? 1000 : 5; 
+  // wait for available data via poll
+  pollfd pollfds[1] =
   {
-    //in blocking mode just get a buffer from the drivers outgoing queue
-    errorOccured = xioctl(fd, VIDIOC_DQBUF, &buf);
-    hasIOError(errorOccured, errno);
-//    std::cout << "get buffer from driver blocking" << std::endl;
+    {fd, POLLIN | POLLPRI, 0},
+  };
+//  unsigned int startTime = NaoTime::getNaoTimeInMilliSeconds();
+  int polled = poll(pollfds, 1, maxWaitingTime);
+
+//  unsigned int stopTime = NaoTime::getNaoTimeInMilliSeconds();
+//  std::cout << LOG << "polling took " << (stopTime -  startTime) << " ms" << std::endl;
+  if(polled < 0) {
+    std::cerr << LOG << "Polling camera failed after " << maxWaitingTime << " ms. Error was: " << strerror(errno) << std::endl;
+    return -1;
   }
-  else
-  {
-    //in non-blocking mode make some tries if no buffer in the  drivers outgoing queue is ready
-    //but limit the number of tries (better to loose a frame then to stuck in an endless loop)
-    for(int i = 0; i < 20 && errorOccured < 0; i++)
+
+  if(pollfds[0].revents && !(pollfds[0].revents & POLLIN)) {
+      std::cerr << LOG << "Poll for camera returned unexpected poll code " << pollfds[0].revents << std::endl;
+  }
+
+
+  int errorCode = 0;
+  
+  // Deque all camera images in queue until there is none left. Since we polled, we know data should be available.
+  bool first = true;
+  v4l2_buffer lastValidBuf;
+  do {
+    
+    /*
+    // NOTE: 
+    Last buffer produced by the hardware. mem2mem codec drivers set this flag on the capture queue 
+    for the last buffer when the ioctl VIDIOC_QUERYBUF or VIDIOC_DQBUF ioctl is called. Due to hardware 
+    limitations, the last buffer may be empty. In this case the driver will set the bytesused field to 0, 
+    regardless of the format. Any subsequent call to the VIDIOC_DQBUF ioctl will not block anymore, 
+    but return an EPIPE error code.
+    
+    // https://www.kernel.org/doc/html/v4.8/media/uapi/v4l/buffer.html?highlight=v4l2_buf_flag_last
+    // https://github.com/gebart/python-v4l2capture/issues/16#issuecomment-473519282
+    // https://github.com/gebart/python-v4l2capture/issues/16
+    */
+    errorCode = xioctl(fd, VIDIOC_DQBUF, &buf);
+
+    if(errorCode == 0) 
     {
-      errorOccured = xioctl(fd, VIDIOC_DQBUF, &buf);
-//      std::cout << "get buffer from driver nonblocking" << std::endl;
-      if(errorOccured < 0 && errno == EAGAIN) {
-        usleep(100);
+      if(first) {
+        first = false;
       } else {
-        hasIOError(errorOccured, errno);
+        errorCode = xioctl(fd, VIDIOC_QBUF, &lastValidBuf);
+        if (errorCode != 0) {
+          std::cout << LOG << "Buffer { .index = " << buf.index << ", .bytesused = " << buf.bytesused << ", .flags = " << buf.flags << "}" << std::endl;
+          hasIOError(errorCode, errno);
+        }
+      }
+      lastValidBuf = buf;
+    } 
+    else 
+    {
+      if(errno == EAGAIN) {
+        // last element taken from the queue, abort loop
+        if(!first) {
+          // reset error code since first try was successfull
+          errorCode = 0;
+        }
+        break;
+      } else {
+        // we did do a poll on the file descriptor and still got an error, something is wrong: abort the loop
+        // print some info about the buffer
+        std::cout << LOG << "Buffer { .index = " << buf.index << ", .bytesused = " << buf.bytesused << ", .flags = " << buf.flags << "}" << std::endl;
+        hasIOError(errorCode, errno);
+        break;
       }
     }
-  }
-  currentBuf = buf;
+  } while(errorCode == 0);
+  currentBuf = lastValidBuf;
 
   //remember current buffer for the next frame as last buffer
   lastBuf = currentBuf;
 
   wasQueried = true;
   ASSERT(currentBuf.index < n_buffers);
-  if(errorOccured == 0) {
+  if(errorCode == 0) {
     return currentBuf.index;
   } else {
     return -1;
   }
 }
+
 
 int V4lCameraHandler::readFrameUP()
 {
@@ -740,8 +847,7 @@ int V4lCameraHandler::getSingleCameraParameter(int id)
   queryctrl.id = id;
   if (int errCode = ioctl(fd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
   {
-    std::cerr << LOG << "VIDIOC_QUERYCTRL failed: "
-              << getErrnoDescription(errCode) << std::endl;
+    std::cerr << LOG << "VIDIOC_QUERYCTRL failed: " << strerror(errCode) << std::endl;
     return -1;
   }
   if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED)
@@ -786,15 +892,17 @@ int V4lCameraHandler::getSingleCameraParameter(int id)
   return -1;
 }
 
-bool V4lCameraHandler::setSingleCameraParameter(int id, int value)
+bool V4lCameraHandler::setSingleCameraParameter(int id, int value, std::string name)
 {
+  if(id < 0 ) {
+    return false;
+  }
   struct v4l2_queryctrl queryctrl;
   memset (&queryctrl, 0, sizeof (queryctrl));
   queryctrl.id = id;
   if (int errCode = xioctl(fd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
   {
-    std::cerr << LOG << "VIDIOC_QUERYCTRL failed with code " 
-              << errCode << " " << getErrnoDescription(errCode) << std::endl;
+    std::cerr << LOG << "VIDIOC_QUERYCTRL failed with code " << errCode << " " << strerror(errCode) << std::endl;
     return false;
   }
   if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED)
@@ -810,11 +918,11 @@ bool V4lCameraHandler::setSingleCameraParameter(int id, int value)
 
   // clip value
   if (value < queryctrl.minimum) {
-    std::cout << LOG << "Clipping control value. ID: " << id << " from " << value << " to " << queryctrl.minimum << std::endl;
+    std::cout << LOG << "Clipping control value  " << name << " from " << value << " to " << queryctrl.minimum << std::endl;
     value = queryctrl.minimum;
   }
   if (value > queryctrl.maximum) {
-    std::cout << LOG << "Clipping control value. ID: " << id << " from " << value << " to " << queryctrl.maximum << std::endl;
+    std::cout << LOG << "Clipping control value " << name << " from " << value << " to " << queryctrl.maximum << std::endl;
     value = queryctrl.maximum;
   }
   //std::cout << "  -  (" << queryctrl.minimum << ", " << queryctrl.default_value << ", " << queryctrl.maximum << ")" << std::endl;
@@ -836,16 +944,18 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
     return;
   }
 
-  unsigned long long currentTime = NaoTime::getSystemTimeInMicroSeconds();
-  if(currentTime < lastCameraSettingTimestamp + 16000) {
-    return;
-  }
+   bool forceUpdate = !initialParamsSet;
+
+  //unsigned long long currentTime = NaoTime::getSystemTimeInMicroSeconds();
+  //if(currentTime < lastCameraSettingTimestamp + 16000) {
+  //  return;
+  //}
 
   std::list<CameraSettings::CameraSettingID>::const_iterator it = settingsOrder.begin();
   for(; it != settingsOrder.end(); it++)
   {
-    // only set if csConst was set and the value was changed
-    if(csConst[*it] != -1 && data.data[*it] != currentSettings.data[*it])
+    // only set forced or if csConst was set and the value was changed
+    if(forceUpdate || (csConst[*it] != -1 && data.data[*it] != currentSettings.data[*it]))
     {
       /*
       // NOTE: experimental
@@ -854,9 +964,37 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
                 << " from " << oldValue << " to " << data.data[*it] << std::endl;
       */
 
+      if(data.data[CameraSettings::AutoExposition] && 
+        (*it == CameraSettings::Exposure || *it == CameraSettings::Gain)) {
+        // ignore
+      }
+      else if(data.data[CameraSettings::AutoWhiteBalancing] && 
+        (*it == CameraSettings::WhiteBalance)) {
+        // ignore
+//        std::cout << "Ignore WhiteBalance" << std::endl;
+      }
       // apply the single parameter setting
-      if(setSingleCameraParameter(csConst[*it], data.data[*it])) {
+      else if(setSingleCameraParameter(csConst[*it], data.data[*it], CameraSettings::getCameraSettingsName(*it))) {
         lastCameraSettingTimestamp = NaoTime::getSystemTimeInMicroSeconds();
+
+        if(*it == CameraSettings::AutoExposition && currentSettings.data[*it] == 1 && data.data[*it] == 0)
+        {
+          // read back the gain and auto exposure values set by the now deactivated auto exposure
+          currentSettings.data[CameraSettings::Exposure] = getSingleCameraParameter(csConst[CameraSettings::Exposure]);
+          currentSettings.data[CameraSettings::Gain] = getSingleCameraParameter(csConst[CameraSettings::Gain]);
+
+          std::cout << LOG << "autoupdated Exposure to "  << currentSettings.data[CameraSettings::Exposure] << std::endl;
+        }
+        else if(*it == CameraSettings::AutoWhiteBalancing && currentSettings.data[*it] == 1 && data.data[*it] == 0)
+        {
+          // read back the white balance value set to make sure they are in sync
+          currentSettings.data[CameraSettings::WhiteBalance] = getSingleCameraParameter(csConst[CameraSettings::WhiteBalance]);
+
+          std::cout << LOG << "autoupdated WhiteBalance to "  << currentSettings.data[CameraSettings::WhiteBalance] << std::endl;
+        }
+
+        std::cout << LOG << "set " << CameraSettings::getCameraSettingsName(*it) << " to " << data.data[*it] << std::endl;
+
         currentSettings.data[*it] = data.data[*it];
 
         /*
@@ -872,9 +1010,27 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
       } else {
         std::cout << LOG << "setting " << CameraSettings::getCameraSettingsName(*it) << " failed" << std::endl;
       }
-      break;
+//      break;
     }
   }// end for
+
+
+  // set the autoexposure grid parameters
+  for(std::size_t i=0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
+    for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
+      if(data.autoExposureWeights[i][j] != currentSettings.autoExposureWeights[i][j]) {
+        std::stringstream paramName;
+        paramName << "autoExposureWeights (" << i << "," << j << ")";
+        if(setSingleCameraParameter(getAutoExposureGridID(i, j), data.autoExposureWeights[i][j], paramName.str())) {
+          currentSettings.autoExposureWeights[i][j] = data.autoExposureWeights[i][j];
+        }
+      }
+    }
+  }
+
+
+  initialParamsSet = true;
+
 }// end setAllCameraParams
 
 void V4lCameraHandler::internalUpdateCameraSettings()
@@ -899,70 +1055,28 @@ bool V4lCameraHandler::isRunning()
   return isCapturing;
 }
 
+// https://01.org/linuxgraphics/gfx-docs/drm/media/uapi/v4l/capture.c.html
 int V4lCameraHandler::xioctl(int fd, int request, void* arg) const
 {
   int r;
   // TODO: possibly endless loop?
-  do
-  {
-    r = ioctl (fd, request, arg);
-  }
-  while (-1 == r && EINTR == errno); // repeat if the call was interrupted
+  do {
+    r = ioctl(fd, request, arg);
+  } while (-1 == r && EINTR == errno); // repeat if the call was interrupted
   return r;
 }
 
-bool V4lCameraHandler::hasIOError(int errOccured, int errNo, bool exitByIOError) const
+bool V4lCameraHandler::hasIOErrorPrint(int lineNumber, int errOccured, int errNo, bool exitByIOError)
 {
   if(errOccured < 0 && errNo != EAGAIN)
   {
-    std::cout << LOG << " failed with errno " << errNo << " (" << getErrnoDescription(errNo) << ") >> exiting" << std::endl;
-    if(exitByIOError)
+    std::cout << LOG << "[hasIOError:" << lineNumber << "]" << " failed with errno " << errNo << " (" << strerror(errNo) << ") >> exiting" << std::endl;
+    if(exitByIOError && error_count > 10)
     {
       assert(errOccured >= 0);
     }
+    error_count++;
     return true;
   }
   return false;
-}
-
-string V4lCameraHandler::getErrnoDescription(int err) const
-{
-  switch (err)
-  {
-    case	EPERM		: return "Operation not permitted";
-    case	ENOENT	: return "No such file or directory";
-    case	ESRCH		: return "No such process";
-    case	EINTR		: return "Interrupted system call";
-    case	EIO		 	: return "I/O error";
-    case	ENXIO		: return "No such device or address";
-    case	E2BIG		: return "Argument list too long";
-    case	ENOEXEC	: return "Exec format error";
-    case	EBADF		: return "Bad file number";
-    case	ECHILD	: return "No child processes";
-    case	EAGAIN	: return "Try again";
-    case	ENOMEM	: return "Out of memory";
-    case	EACCES	: return "Permission denied";
-    case	EFAULT	: return "Bad address";
-    case	ENOTBLK	: return "Block device required";
-    case	EBUSY		: return "Device or resource busy";
-    case	EEXIST	: return "File exists";
-    case	EXDEV		: return "Cross-device link";
-    case	ENODEV	: return "No such device";
-    case	ENOTDIR	: return "Not a directory";
-    case	EISDIR	: return "Is a directory";
-    case	EINVAL	: return "Invalid argument";
-    case	ENFILE	: return "File table overflow";
-    case	EMFILE	: return "Too many open files";
-    case	ENOTTY	: return "Not a typewriter";
-    case	ETXTBSY	: return "Text file busy";
-    case	EFBIG		: return "File too large";
-    case	ENOSPC	: return "No space left on device";
-    case	ESPIPE	: return "Illegal seek";
-    case	EROFS		: return "Read-only file system";
-    case	EMLINK	: return "Too many links";
-    case	EPIPE		: return "Broken pipe";
-    case	EDOM		: return "Math argument out of domain of func";
-    case	ERANGE	: return "Math result not representable";
-  }
-  return "Unknown errorcode";
 }

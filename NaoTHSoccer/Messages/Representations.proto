@@ -1,3 +1,4 @@
+syntax = "proto2";
 package naothmessages;
 option java_package= "de.naoth.rc.messages";
 
@@ -32,6 +33,20 @@ message MultiBallPercept {
 
   optional FrameInfo frameInfoWhenBallWasSeen = 1;
   repeated BallPercept percepts = 2;
+}
+
+message BallModel {
+  optional bool valid = 1;
+  optional bool knows = 2;
+
+  optional DoubleVector2 position = 3;
+  optional DoubleVector2 speed = 4;
+
+  optional DoubleVector2 positionPreview = 5;
+  optional DoubleVector2 positionPreviewInLFoot = 6;
+  optional DoubleVector2 positionPreviewInRFoot = 7;
+  repeated DoubleVector2 futurePosition = 8;
+
 }
 
 message GoalPercept {
@@ -78,7 +93,7 @@ message StepControlRequest
 	KICKSTEP = 1;
 	ZEROSTEP = 2;
   };
-  
+
   required uint32 stepID = 1;
   required bool moveLeftFoot = 2;
   required Pose2D target = 3;
@@ -143,10 +158,34 @@ message MotionRequest {
   optional uint32 cognitionFrameNumber = 9;
   optional GraspRequest graspRequest = 10;
   optional ArmMotionRequest armMotionRequest = 11;
+  optional bool disable_relaxed_stand = 12;
 }
 
 
 message LinePercept {
+
+  message Intersection {
+
+    enum IntersectionType
+    {
+      unknown = 0;
+      T = 1;
+      L = 2;
+      C = 3;
+      none = 4;
+      X = 5;
+    }
+
+    optional DoubleVector2 posInImage = 1;
+    optional DoubleVector2 posOnField = 2;
+
+    optional IntersectionType type = 3;
+    optional uint32 segmentOneIndex = 6;
+    optional uint32 segmentTwoIndex = 7;
+    optional double segmentOneDistance = 8;
+    optional double segmentTwoDistance = 9;
+  }
+
   message FieldLineSegment {
     optional LineSegment lineInImage = 1;
     optional LineSegment lineOnField = 2;
@@ -162,6 +201,28 @@ message LinePercept {
   repeated FieldLineSegment lines = 1;
   repeated Intersection intersections = 2;
   optional DoubleVector2 middleCircleCenter = 3;
+}
+
+message ShortLinePercept {
+  repeated LineSegment fieldLineSegments = 1;
+}
+
+message Polygon {
+  repeated IntVector2 points = 1;
+}
+
+message FieldPercept {
+  required Polygon fieldPoly = 1;
+}
+
+message RansacLinePercept {
+  repeated LineSegment fieldLineSegments = 1;
+}
+
+message RansacCirclePercept2018 {
+  optional bool wasSeen = 1;
+  optional DoubleVector2 middleCircleCenter = 2;
+
 }
 
 message ScanLineEndPoint {
@@ -218,6 +279,12 @@ message MotionStatus
   required Pose2D plannedMotionRightFoot = 7;
   required Pose2D plannedMotionHip = 8;
   optional StepControlStatus stepControlStatus = 9;
+  
+  optional bool   target_reached = 10;
+  optional bool   head_target_reached = 11;
+  optional bool   head_got_stuck = 12;
+  
+  optional bool   walk_emergency_stop = 13;
 }
 
 message OdometryData
@@ -252,56 +319,10 @@ message InertialModel
   optional DoubleVector2 orientation = 1;
 }
 
-enum TeamColor
-{
-  blueTeam = 0; redTeam = 1; yellowTeam = 2; blackTeam = 3; invalidTeam = 255;
-}
-
-message TeamMessage
-{
-  message Data
-  {
-    optional uint32 playerNum = 1 [default=0];
-    optional TeamColor teamColor = 11 [default=blueTeam,deprecated=true];
-    optional Pose2D pose = 3;
-    optional int32 ballAge = 4 [default=-1];
-    optional DoubleVector2 ballPosition = 5;
-    optional DoubleVector2 ballVelocity = 6;
-    optional bool fallen = 10 [default=false];
-    optional BUUserTeamMessage user = 8;
-    optional FrameInfo frameInfo = 9;
-    optional uint32 teamNumber = 12 [default=0];
-  }
-  repeated Data data = 1;
-}
-
-message BUUserTeamMessage
-{
-  optional string bodyID = 1 [default="unknown"];
-  optional uint32 timeToBall = 2;
-  optional bool wasStriker = 3 [default=false];
-  optional bool isPenalized = 4 [default=false];
-  repeated Opponent opponents = 5;
-  optional uint32 teamNumber = 6 [default=0,deprecated=true];
-  optional float batteryCharge = 7 [default=1.0];
-  optional float temperature = 8 [default=0.0];
-  optional uint64 timestamp = 9 [default=0];
-  optional bool wantsToBeStriker = 10 [default=false];
-  optional float cpuTemperature = 11 [default=0.0];
-  optional bool whistleDetected = 12 [default=false];
-  optional int32 whistleCount = 13 [default=0];
-  optional string key = 100 [default="none"];
-}
-
-message Opponent {
-  required int32 playerNum = 1 [default=0];
-  optional Pose2D poseOnField = 2;
-}
-
 
 message CameraMatrixCalibration
 {
-  repeated DoubleVector2 correctionOffset = 1;
+  repeated DoubleVector2 correctionOffset = 1 [deprecated=true];
   optional DoubleVector2 correctionOffsetBody = 2;
   optional DoubleVector3 correctionOffsetHead = 3;
   repeated DoubleVector3 correctionOffsetCam  = 4;
@@ -372,4 +393,69 @@ message GroundContactModel {
 message CollisionPercept {
   required uint32 timeCollisionArmLeft = 1;
   required uint32 timeCollisionArmRight = 2;
+}
+
+message IMUData
+{
+ required DoubleVector3 location = 1;
+ required DoubleVector3 velocity = 2;
+ required DoubleVector3 acceleration = 3;
+ optional DoubleVector3 acceleration_sensor = 4;
+
+ required DoubleVector3 rotation = 5;
+ required DoubleVector3 rotational_velocity = 6;
+ optional DoubleVector3 rotational_velocity_sensor = 7;
+ required DoubleVector2 orientation = 8;
+ required DoubleVector3 orientation_rotvec = 9;
+}
+
+message CentreOfPressure {
+ required DoubleVector3 in_and_only_left_foot_cop = 1;
+ required double in_and_only_left_foot_magnitude  = 2;
+ required bool   in_and_only_left_foot_valid      = 3;
+
+ required DoubleVector3 in_and_only_right_foot_cop = 4;
+ required double in_and_only_right_foot_magnitude  = 5;
+ required bool   in_and_only_right_foot_valid      = 6;
+
+ required DoubleVector3 in_kinematic_chain_origin_cop = 7;
+ required double in_kinematic_chain_origin_magnitude  = 8;
+ required bool   in_kinematic_chain_origin_valid      = 9;
+}
+
+message CalibrationDataCMC {
+ message CalibrationDataSampleV3 {
+  optional Pose3D chestPose               = 1;
+  repeated DoubleVector2 edgelsInImage    = 2;
+  repeated DoubleVector2 edgelsInImageTop = 3;
+  optional DoubleVector2 orientation      = 4;
+  optional double headYaw                 = 5;
+  optional double headPitch               = 6;
+ }
+
+ repeated CalibrationDataSampleV3 calibrationData = 1;
+ optional uint32 numberOfResudials                = 2;
+}
+
+message WhistlePercept {
+  message Whistle {
+    required string name = 1;
+    required int64 positionInCapture = 2;
+    required double responseValue = 3;
+  }
+  
+  optional int32 counter  = 1;
+  optional string captureFile = 2;
+  repeated Whistle recognizedWhistles = 3;
+  optional bool whistleDetected = 4;
+}
+
+message DebugModify {
+  message ModifyValue {
+    required string name = 1;
+    optional bool modify = 2;
+    optional double value = 3;
+  }
+  
+  repeated ModifyValue valueMap = 1;
 }

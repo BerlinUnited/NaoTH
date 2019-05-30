@@ -20,32 +20,42 @@ CameraInfoSetter::CameraInfoSetter()
 {
 }
 
+CameraInfoSetter::~CameraInfoSetter()
+{
+}
+
 void CameraInfoSetter::execute()
 {
-  const CameraSettings& camSettings = getCameraSettingsRequest();
+  const CameraSettings camSettings = getCameraSettingsRequest().getCameraSettings();
   // copy parameter based representation to the "pure" one
   getCameraInfo().cameraID = CameraInfo::Bottom;
 
   // check if the camera settings actually changed something in the CameraInfo
   // uses
-  if(camSettings.data[CameraSettings::ResolutionWidth] != 0)
+  if(camSettings.data[CameraSettings::ResolutionWidth] != 0) {
     getCameraInfo().resolutionWidth = (unsigned int) camSettings.data[CameraSettings::ResolutionWidth];
-  if(camSettings.data[CameraSettings::ResolutionHeight] != 0)
+  }
+  
+  if(camSettings.data[CameraSettings::ResolutionHeight] != 0) {
     getCameraInfo().resolutionHeight = (unsigned int) camSettings.data[CameraSettings::ResolutionHeight];
+  }
 
   // set param for image
   getImage().cameraInfo = getCameraInfo();
 
-  const CameraSettings& camSettingsTop = getCameraSettingsRequestTop();
+  const CameraSettings camSettingsTop = getCameraSettingsRequestTop().getCameraSettings();
   // copy parameter based representation to the "pure" one
   getCameraInfoTop().cameraID = CameraInfo::Top;
 
   // check if the camera settings actually changed something in the CameraInfo
   // uses
-  if(camSettingsTop.data[CameraSettings::ResolutionWidth] != 0)
+  if(camSettingsTop.data[CameraSettings::ResolutionWidth] != 0) {
     getCameraInfoTop().resolutionWidth = (unsigned int) camSettingsTop.data[CameraSettings::ResolutionWidth];
-  if(camSettingsTop.data[CameraSettings::ResolutionHeight] != 0)
+  }
+  
+  if(camSettingsTop.data[CameraSettings::ResolutionHeight] != 0) {
     getCameraInfoTop().resolutionHeight = (unsigned int) camSettingsTop.data[CameraSettings::ResolutionHeight];
+  }
 
   // set param for image
   getImageTop().cameraInfo = getCameraInfoTop();
@@ -53,10 +63,5 @@ void CameraInfoSetter::execute()
   if(getCameraInfo().resolutionWidth != naoth::IMAGE_WIDTH || getCameraInfo().resolutionHeight != naoth::IMAGE_HEIGHT) {
     THROW("Image size of the CameraInfo doesn't correspond to the static values IMAGE_WIDTH and IMAGE_HEIGHT.");
   }
-}
-
-CameraInfoSetter::~CameraInfoSetter()
-{
-
 }
 

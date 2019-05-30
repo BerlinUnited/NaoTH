@@ -11,10 +11,9 @@
 
 FieldInfo::FieldInfo() : ParameterList("FieldInfo")
 {
-  ballColor = ColorClasses::orange;
-  
   // default values as of SPL rules from 2012
-  PARAMETER_REGISTER(ballRadius) = 32.5;
+  PARAMETER_REGISTER(ballRadius) = 50.0;
+  PARAMETER_REGISTER(ballRRCoefficient) = 0.0245;
 
   PARAMETER_REGISTER(xLength) = 6000;
   PARAMETER_REGISTER(yLength) = 4000;
@@ -34,20 +33,19 @@ FieldInfo::FieldInfo() : ParameterList("FieldInfo")
   PARAMETER_REGISTER(goalpostRadius) = 50;
   PARAMETER_REGISTER(xPenaltyMarkDistance) = 1300;
 
-  PARAMETER_REGISTER(goalBoxAsLines) = false;
+  PARAMETER_REGISTER(goalBoxAsLines) = true;
 
   syncWithConfig();
 
   calculateValues();
-
-  // calculate the field lines
-  fieldLinesTable.create_closestPointsTable(xFieldLength,yFieldLength);
-  fieldLinesTable.create_closestCornerPoinsTable(xFieldLength,yFieldLength);
 }
 
 void FieldInfo::calculateValues()
 {
+  ballDeceleration = - ballRRCoefficient * Math::g * 1000;
+
   calculateCrossings();
+
   createLinesTable();
 }//end calculateValues
 
@@ -55,33 +53,34 @@ void FieldInfo::calculateCrossings()
 {
   xPosHalfWayLine = 0;
 
-  xPosOpponentGroundline =   xLength / 2.0;
-  xPosOwnGroundline =       -xPosOpponentGroundline;
+  xPosOpponentGroundline  =  xLength / 2.0;
+  xPosOwnGroundline       = -xPosOpponentGroundline;
 
-  xPosOpponentGoal =         xPosOpponentGroundline;
-  xPosOwnGoal =             -xPosOpponentGoal;
+  xPosOpponentGoal        =  xPosOpponentGroundline;
+  xPosOwnGoal             = -xPosOpponentGoal;
 
   xPosOpponentPenaltyArea =  xPosOpponentGroundline - xPenaltyAreaLength;
-  xPosOwnPenaltyArea =      -xPosOpponentPenaltyArea;
+  xPosOwnPenaltyArea      = -xPosOpponentPenaltyArea;
 
-  yPosLeftGoalpost =         goalWidth / 2.0;
-  yPosRightGoalpost =       -yPosLeftGoalpost;
+  yPosLeftGoalpost        =  goalWidth / 2.0;
+  yPosRightGoalpost       = -yPosLeftGoalpost;
 
-  yPosLeftPenaltyArea =      yPenaltyAreaLength / 2.0;
-  yPosRightPenaltyArea =    -yPosLeftPenaltyArea;
+  yPosLeftPenaltyArea     =  yPenaltyAreaLength / 2.0;
+  yPosRightPenaltyArea    = -yPosLeftPenaltyArea;
   
-  yPosLeftSideline =         yLength / 2.0; 
-  yPosRightSideline =       -yPosLeftSideline;
+  yPosLeftSideline        =  yLength / 2.0; 
+  yPosRightSideline       = -yPosLeftSideline;
 
   //Extra stuff for the Simulator
-  xThrowInLineOwn = xPosOwnGroundline+1000;
-  xThrowInLineOpp = -xThrowInLineOwn;
+  xThrowInLineOwn   = xPosOwnGroundline+1000;
+  xThrowInLineOpp   = -xThrowInLineOwn;
 
-  yThrowInLineLeft = yPosLeftSideline-400;
+  yThrowInLineLeft  = yPosLeftSideline-400;
   yThrowInLineRight = -yThrowInLineLeft;
+  
   //Calculate Points
-  leftThrowInPointOwn = Vector2d(xThrowInLineOwn,yThrowInLineLeft);
-  leftThrowInPointOpp = Vector2d(xThrowInLineOpp,yThrowInLineLeft);
+  leftThrowInPointOwn  = Vector2d(xThrowInLineOwn,yThrowInLineLeft);
+  leftThrowInPointOpp  = Vector2d(xThrowInLineOpp,yThrowInLineLeft);
 
   rightThrowInPointOwn = Vector2d(xThrowInLineOwn,yThrowInLineRight);  
   rightThrowInPointOpp = Vector2d(xThrowInLineOpp,yThrowInLineRight);
@@ -119,19 +118,18 @@ void FieldInfo::calculateCrossings()
   ownGoalPostRight  = Vector2d(xPosOwnGoal-25, yPosRightGoalpost);
   ownGoalCenter     = Vector2d(xPosOwnGoal-25, 0.0);
 
-  carpetRect = Geometry::Rect2d(Vector2d(-xFieldLength*0.5, -yFieldLength*0.5), Vector2d(xFieldLength*0.5, yFieldLength*0.5));
-  ownHalfRect = Geometry::Rect2d(Vector2d(-xLength*0.5, -yLength*0.5), Vector2d(0, yLength*0.5));
-  fieldRect = Geometry::Rect2d(Vector2d(-xLength*0.5, -yLength*0.5), Vector2d(xLength*0.5, yLength*0.5));
-  oppHalfRect = Geometry::Rect2d(Vector2d(0, -yLength*0.5), Vector2d(xLength*0.5, yLength*0.5));
+  carpetRect  = Geometry::Rect2d(-xFieldLength*0.5, -yFieldLength*0.5, xFieldLength*0.5, yFieldLength*0.5);
+  fieldRect   = Geometry::Rect2d(-xLength*0.5     , -yLength*0.5     , xLength*0.5     , yLength*0.5);
+  ownHalfRect = Geometry::Rect2d(-xLength*0.5     , -yLength*0.5     , 0               , yLength*0.5);
+  oppHalfRect = Geometry::Rect2d( 0               , -yLength*0.5     , xLength*0.5     , yLength*0.5);
 
+  ownGoalBackLeft  = Vector2d(ownGoalPostLeft.x  - goalDepth, ownGoalPostLeft.y);
+  ownGoalBackRight = Vector2d(ownGoalPostRight.x - goalDepth, ownGoalPostRight.y);  
+  ownGoalRect      = Geometry::Rect2d(ownGoalBackRight, ownGoalPostLeft); 
 
-  ownGoalBackLeft = Vector2d(ownGoalPostLeft.x - goalDepth, ownGoalPostLeft.y);
-  ownGoalBackRight = Vector2d(ownGoalPostRight.x - goalDepth, opponentGoalPostRight.y);  
-  ownGoalRect = Geometry::Rect2d(ownGoalBackRight, ownGoalPostLeft); 
-
-  oppGoalBackLeft = Vector2d(opponentGoalPostLeft.x + goalDepth, opponentGoalPostLeft.y);
+  oppGoalBackLeft  = Vector2d(opponentGoalPostLeft.x  + goalDepth, opponentGoalPostLeft.y);
   oppGoalBackRight = Vector2d(opponentGoalPostRight.x + goalDepth, opponentGoalPostRight.y);
-  oppGoalRect = Geometry::Rect2d(oppGoalBackRight, opponentGoalPostLeft);
+  oppGoalRect      = Geometry::Rect2d(oppGoalBackRight, opponentGoalPostLeft);
 
 
 
@@ -265,8 +263,8 @@ void FieldInfo::createLinesTable()
       Vector2d(opponentGoalPostRight.x + goalDepth, opponentGoalPostRight.y)
       );
     fieldLinesTable.addLine(
-		oppGoalBackLeft,
-		oppGoalBackRight
+      oppGoalBackLeft,
+      oppGoalBackRight
       );
 
     fieldLinesTable.addLine(
@@ -284,8 +282,8 @@ void FieldInfo::createLinesTable()
   }
 
   // center circle approximated by sequence of lines
-  double numberOfSegments = 12;
-  double angleStep = Math::pi2 / numberOfSegments;
+  const double numberOfSegments = 12;
+  const double angleStep = Math::pi2 / numberOfSegments;
 
   // the radius is choosen in a way the centers of line segments are exactly on the circle
   Vector2d x0(centerCircleRadius / cos(angleStep*0.5), 0.0);
@@ -297,14 +295,26 @@ void FieldInfo::createLinesTable()
     x0.rotate(angleStep);
     fieldLinesTable.addLine(x0, x1);
     x1 = x0;
-  }//end for
+  }
 
-  fieldLinesTable.findIntersections();
+  //fieldLinesTable.findIntersections();
+  fieldLinesTable.calculateIntersections();
+
+  // calculate the field lines
+  fieldLinesTable.create_closestPointsTable(xFieldLength,yFieldLength);
+  fieldLinesTable.create_closestCornerPoinsTable(xFieldLength,yFieldLength);
 }//end createLinesTable
 
 void FieldInfo::draw(DrawingCanvas2D& canvas) const
 {
   fieldLinesTable.draw(canvas);
+
+  // draw the carpet
+  canvas.pen("FF0000",1);
+  canvas.drawLine(carpetRect.min().x, carpetRect.min().y, carpetRect.min().x, carpetRect.max().y);
+  canvas.drawLine(carpetRect.min().x, carpetRect.min().y, carpetRect.max().x, carpetRect.min().y);
+  canvas.drawLine(carpetRect.max().x, carpetRect.max().y, carpetRect.min().x, carpetRect.max().y);
+  canvas.drawLine(carpetRect.max().x, carpetRect.max().y, carpetRect.max().x, carpetRect.min().y);
 
   // draw throw in lines
   canvas.pen("000000", 1);
@@ -337,10 +347,10 @@ void FieldInfo::draw(DrawingCanvas2D& canvas) const
 
 void FieldInfo::print(std::ostream& stream) const
 {
-  stream << "ballColor = "<< ColorClasses::getColorName( ballColor )<<"\n";
-
   stream << "//////////////// basic values from configuration ////////////////\n";
   stream << "ballRadius = "<< ballRadius <<"\n";
+  stream << "ballRRCoefficient = "<< ballRRCoefficient <<"\n";
+  stream << "ballDeceleration = "<< ballDeceleration <<" mm/s^2\n";
 
   stream << "size of the whole field (including the green area outside the lines): \n";
   stream << "xFieldLength = "<< xFieldLength <<"\n";

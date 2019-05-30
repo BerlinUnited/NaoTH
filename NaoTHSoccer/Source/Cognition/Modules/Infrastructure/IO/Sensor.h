@@ -30,6 +30,7 @@
 #include <Representations/Infrastructure/DebugMessage.h>
 #include "Representations/Infrastructure/CalibrationData.h"
 #include <Representations/Infrastructure/CpuData.h>
+#include "Representations/Infrastructure/AudioData.h"
 #include "Representations/Motion/CollisionPercept.h"
 
 #include "Representations/Infrastructure/GPSData.h"
@@ -37,10 +38,10 @@
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/OdometryData.h"
 #include <Representations/Modeling/InertialModel.h>
+#include <Representations/Modeling/IMUData.h>
 #include <Representations/Modeling/BodyStatus.h>
 #include <Representations/Perception/CameraMatrix.h>
 #include <Representations/Perception/CameraMatrixBuffer.h>
-#include <Representations/Infrastructure/WhistlePercept.h>
 
 // others
 #include <Representations/Infrastructure/FrameInfo.h>
@@ -72,14 +73,13 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(UltraSoundReceiveData)
   PROVIDE(SoundCaptureData)
   PROVIDE(CpuData)
+  PROVIDE(AudioData)
 
   PROVIDE(TeamMessageDataIn)
   PROVIDE(RemoteMessageDataIn)
 
   // EVIL HACK
   PROVIDE(RemoteControlCommand)
-
-  PROVIDE(WhistlePercept)
 
   PROVIDE(GPSData)
   PROVIDE(GameData)
@@ -92,6 +92,7 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(MotionStatus)
   PROVIDE(OdometryData)
   PROVIDE(InertialModel)
+  PROVIDE(IMUData)
   PROVIDE(CameraMatrixBuffer)
   PROVIDE(CameraMatrixBufferTop)
   PROVIDE(CalibrationData)

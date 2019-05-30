@@ -28,18 +28,40 @@ public:
 
   enum TeamColor
   {
-    blue    = TEAM_BLUE,
-    red     = TEAM_RED,
-    yellow  = TEAM_YELLOW,
-    black   = TEAM_BLACK,
-    unknown_team_color
+    blue   = TEAM_BLUE,
+    red    = TEAM_RED,
+    yellow = TEAM_YELLOW,
+    black  = TEAM_BLACK,
+
+    white  = TEAM_WHITE,
+    green  = TEAM_GREEN,
+    orange = TEAM_ORANGE,
+    purple = TEAM_PURPLE,
+    brown  = TEAM_BROWN,
+    gray   = TEAM_GRAY,
+    
+    // invalide team color value
+    unknown_team_color = 255
   };
 
-  enum GameType
+  enum CompetitionPhase
   {
-    roundrobin = GAME_ROUNDROBIN,
-    playoff    = GAME_PLAYOFF,
-    dropin     = GAME_DROPIN
+    roundrobin = COMPETITION_PHASE_ROUNDROBIN,
+    playoff    = COMPETITION_PHASE_PLAYOFF
+  };
+
+  enum CompetitionType
+  {
+    competition_normal  = COMPETITION_TYPE_NORMAL,
+    competition_mixed   = COMPETITION_TYPE_MIXEDTEAM
+  };
+
+  enum GamePhase
+  {
+    normal        = GAME_PHASE_NORMAL,
+    penaltyshoot  = GAME_PHASE_PENALTYSHOOT,
+    overtime      = GAME_PHASE_OVERTIME,
+    timeout       = GAME_PHASE_TIMEOUT
   };
 
   enum GameState
@@ -52,17 +74,18 @@ public:
     unknown_game_state
   };
 
-  enum SecondaryGameState
+  enum SetPlay 
   {
-    normal        = STATE2_NORMAL,
-    penaltyshoot  = STATE2_PENALTYSHOOT,
-    overtime      = STATE2_OVERTIME,
-    timeout       = STATE2_TIMEOUT
+    set_none          = SET_PLAY_NONE,
+    goal_free_kick    = SET_PLAY_GOAL_FREE_KICK,
+    pushing_free_kick = SET_PLAY_PUSHING_FREE_KICK,
+    corner_kick       = SET_PLAY_CORNER_KICK,
+    kick_in           = SET_PLAY_KICK_IN
   };
 
-  enum PenaltyState
+  enum Penalty
   {
-    none                  = PENALTY_NONE,
+    penalty_none          = PENALTY_NONE,
     illegal_ball_contact  = PENALTY_SPL_ILLEGAL_BALL_CONTACT,
     player_pushing        = PENALTY_SPL_PLAYER_PUSHING,
     illegal_motion_in_set = PENALTY_SPL_ILLEGAL_MOTION_IN_SET,
@@ -71,7 +94,8 @@ public:
     leaving_the_field     = PENALTY_SPL_LEAVING_THE_FIELD,
     kick_off_goal         = PENALTY_SPL_KICK_OFF_GOAL,
     request_for_pickup    = PENALTY_SPL_REQUEST_FOR_PICKUP,
-    coach_motion          = PENALTY_SPL_COACH_MOTION,
+    local_game_stuck      = PENALTY_SPL_LOCAL_GAME_STUCK,
+    illegal_positioning   = PENALTY_SPL_ILLEGAL_POSITIONING,
     substitute            = PENALTY_SUBSTITUTE,
     manual                = PENALTY_MANUAL
   };
@@ -79,45 +103,45 @@ public:
 
   struct RobotInfo
   {
-    RobotInfo() : penalty(none), secsTillUnpenalised(0) {}
-    PenaltyState penalty;             // penalty state of the player
+    RobotInfo() : penalty(penalty_none), secsTillUnpenalised(0) {}
+    Penalty penalty;             // penalty state of the player
 
     // ACHTUNG: time can be negative (!)
     int secsTillUnpenalised;          // estimate of time till unpenalised
 
-    bool isPenalized() const { return penalty != none; }
+    bool isPenalized() const { return penalty != penalty_none; }
   };
 
   struct TeamInfo
   {
     TeamInfo() :
       teamNumber(0),
-      teamColour(unknown_team_color),
+      teamColor(unknown_team_color),
       score(0),
       penaltyShot(0)
     {}
 
     unsigned int teamNumber;        // unique team number
-    TeamColor teamColour;           // colour of the team
-    unsigned int  score;            // team's score
-    unsigned int  penaltyShot;      // penalty shot counter
+    TeamColor teamColor;            // colour of the team
+    unsigned int score;             // team's score
+    unsigned int penaltyShot;       // penalty shot counter
     std::vector<RobotInfo> players; // the team's players
 
     // NOTE: not used yet
     //uint16_t singleShots;     // bits represent penalty shot success
-    //uint8_t coachSequence;    // sequence number of the coach's message
-    //uint8_t coachMessage[SPL_COACH_MESSAGE_SIZE]; // the coach's message to the team
-    //RobotInfo coach;
   };
 
   static std::string toString(TeamColor value);
-  static std::string toString(GameType value);
+  static std::string toString(CompetitionPhase value);
+  static std::string toString(CompetitionType value);
+  static std::string toString(GamePhase value);
   static std::string toString(GameState value);
-  static std::string toString(SecondaryGameState value);
-  static std::string toString(PenaltyState value);
+  static std::string toString(SetPlay value);
+  static std::string toString(Penalty value);
 
   static TeamColor teamColorFromString(const std::string& str);
   static GameState gameStateFromString(const std::string& str);
+  static Penalty penaltyFromString(const std::string& str);
 
   virtual void print(std::ostream& stream) const;
   void parseFrom(const spl::RoboCupGameControlData& data, int teamNumber);
@@ -125,8 +149,8 @@ public:
 
   GameData();
 
-  const RobotInfo& getOwnRobotInfo(int playerNumber) const {
-    ASSERT(playerNumber > 0 && playerNumber <= (int)(ownTeam.players.size()));
+  const RobotInfo& getOwnRobotInfo(size_t playerNumber) const {
+	  ASSERT(playerNumber > 0 && playerNumber <= ownTeam.players.size());
     return ownTeam.players[playerNumber-1];
   }
 
@@ -134,23 +158,24 @@ public:
 public:
   bool valid; // indicates that this represenation was filled
 
-  int playersPerTeam;                 // the number of players on a team
-  GameType gameType;                  // type of the game (GAME_ROUNDROBIN, GAME_PLAYOFF, GAME_DROPIN)
-  GameState gameState;                // state of the game (STATE_READY, STATE_PLAYING, etc)
-  bool firstHalf;                     // 1 = game in first half, 0 otherwise
-  unsigned int kickOffTeam;           // the team number of the next team to kick off or DROPBALL
-  SecondaryGameState secondaryState;  // extra state information - (STATE2_NORMAL, STATE2_PENALTYSHOOT, etc)
-  unsigned int dropInTeam;            // number of team that caused last drop in
+  unsigned int playersPerTeam;                 // the number of players on a team
 
-  // ACHTUNG: time and can be negative, so it has to be signed (!)
-  int dropInTime;                     // number of seconds passed since the last drop in. -1 (0xffff) before first dropin
+  CompetitionPhase competitionPhase;  // phase of the competition (COMPETITION_PHASE_ROUNDROBIN, COMPETITION_PHASE_PLAYOFF)
+  CompetitionType  competitionType;   // type of the competition (COMPETITION_TYPE_NORMAL, COMPETITION_TYPE_MIXEDTEAM, COMPETITION_TYPE_GENERAL_PENALTY_KICK)
+  GamePhase        gamePhase;         // phase of the game (GAME_PHASE_NORMAL, GAME_PHASE_PENALTYSHOOT, etc)
+  GameState        gameState;         // state of the game (STATE_READY, STATE_PLAYING, etc)
+  SetPlay          setPlay;           // active set play (SET_PLAY_NONE, SET_PLAY_GOAL_FREE_KICK, etc)
+
+  bool firstHalf;                     // 1 = game in first half, 0 otherwise
+  unsigned int kickingTeam;           // the team number of the next team to kick off, free kick, DROPBALL etc.
+
   int secsRemaining;                  // estimate of number of seconds remaining in the half
   int secondaryTime;                  // number of seconds shown as secondary time (remaining ready, until free ball, etc)
   
   TeamInfo ownTeam;
   TeamInfo oppTeam;
 
-  // HACK: thi is only provided by SimSpark - find a better solution
+  // HACK: this is only provided by SimSpark - find a better solution
   // if this is set to anything other than 0, the actual player number will change
   unsigned int newPlayerNumber;
 };
@@ -167,9 +192,8 @@ public:
 
   enum Message
   {
-    manual_penalise   = GAMECONTROLLER_RETURN_MSG_MAN_PENALISE,
-    manual_unpenalise = GAMECONTROLLER_RETURN_MSG_MAN_UNPENALISE,
-    alive             = GAMECONTROLLER_RETURN_MSG_ALIVE
+    alive             = GAMECONTROLLER_RETURN_MSG_ALIVE,
+    dead              = 100
   };
 
   static std::string toString(Message value);

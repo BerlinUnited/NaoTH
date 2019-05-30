@@ -16,12 +16,10 @@ option passive_behavior{
     action {}
   }
 
-  
-
   state ball_seen {
     decision {
-      else if((action_done && ball.time_since_last_seen > 1000) || 
-              ball.time_since_last_seen > 4000)
+      else if((action_done && !ball.see_where_itis) || 
+              !ball.know_where_itis)
         goto ball_not_seen;
       else
         stay;
@@ -40,6 +38,7 @@ option passive_behavior{
     }
     action {
       passive_ball_not_seen();
+      //motion.walk.style  = stable;
     }
   }
 

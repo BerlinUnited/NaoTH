@@ -3,7 +3,6 @@
 
 #include <string>
 
-#include <Cognition/Modules/VisualCortex/BallDetector/Tools/CVHaarClassifier.h>
 #include <Cognition/Modules/VisualCortex/BallDetector/Classifier/AbstractCNNClassifier.h>
 
 #include <map>
@@ -23,24 +22,22 @@ public:
   BallDetectorEvaluator(const std::string& fileArg, const std::string& modelDir, int patchSize=16);
   virtual ~BallDetectorEvaluator();
 
-  void executeHaarBall();
   void executeCNNBall();
 
 public:
   struct ErrorEntry
   {
-    cv::Mat patch;
     std::string fileName;
   };
 
   struct ExperimentParameters
   {
-    enum class Type {haar, cnn};
+		//TODO delete type
+    enum class Type {cnn};
 
     Type type;
 
-    unsigned int minNeighbours;
-    unsigned int maxWindowSize;
+    double threshold;
 
     std::string modelName;
   };
@@ -51,8 +48,7 @@ public:
 
         NAOTH_STRUCT_COMPARE(a.type, b.type);
         NAOTH_STRUCT_COMPARE(a.modelName, b.modelName);
-        NAOTH_STRUCT_COMPARE(a.minNeighbours, b.minNeighbours);
-        NAOTH_STRUCT_COMPARE(a.maxWindowSize, b.maxWindowSize);
+        NAOTH_STRUCT_COMPARE(a.threshold, b.threshold);
         return false;
       }
   };
@@ -77,8 +73,9 @@ public:
 
 private:
 
-  std::multimap<std::string, InputPatch> loadImageSets(const std::string& rootDir, const std::string &pathSep="/");
-
+  std::multimap<std::string, InputPatch> loadImageSets(const std::string& rootDir, const std::string &pathSep="/");  
+  cv::Mat loadImage(std::string fullFilePath);
+  
   ExperimentResult executeParam(const ExperimentParameters& params, const std::multimap<std::string, InputPatch> &imageSet);
   unsigned int executeSingleImageSet(const std::multimap<std::string, InputPatch> &imageSet, const ExperimentParameters &params, ExperimentResult &r);
 
@@ -99,11 +96,7 @@ private:
 
   std::string toID(const ExperimentParameters& params)
   {
-    if(params.type == ExperimentParameters::Type::haar)
-    {
-      return params.modelName + "_" + std::to_string(params.minNeighbours) + "_" + std::to_string(params.maxWindowSize);
-    }
-    else if(params.type == ExperimentParameters::Type::cnn)
+    if(params.type == ExperimentParameters::Type::cnn)
     {
       return params.modelName;
     }
@@ -114,11 +107,7 @@ private:
 
   std::string toDesc(const ExperimentParameters& params)
   {
-    if(params.type == ExperimentParameters::Type::haar)
-    {
-      return params.modelName + " (Haar) " + " minNeighbours=" + std::to_string(params.minNeighbours) + " maxWindowSize=" + std::to_string(params.maxWindowSize);
-    }
-    else if(params.type == ExperimentParameters::Type::cnn)
+    if(params.type == ExperimentParameters::Type::cnn)
     {
       return params.modelName + " (CNN)";
     }
@@ -182,7 +171,6 @@ private:
   const int patchSize;
 
   // TODO: allow more classifiers (including the ones that have the more complex filter logic)
-  CVHaarClassifier classifierHaar;
   std::map<std::string, std::shared_ptr<AbstractCNNClassifier>> cnnClassifiers;
 
   std::map<ExperimentParameters, ExperimentResult, cmpExperimentParameters> results;

@@ -1,5 +1,7 @@
 #include "Ellipse.h"
 
+#include <Eigen/Eigenvalues>
+
 Ellipse::Ellipse()
 {
   for(int i=0; i<6; i++) {
@@ -75,6 +77,7 @@ void Ellipse::fitPoints(Eigen::VectorXd x,  Eigen::VectorXd y) {
     - a(4).real()*mean_y;
 
   // normalize
+  /*
   double norm = 0;
   for(int i=0; i<6; ++i) {
     norm += params[i] * params[i];
@@ -83,10 +86,22 @@ void Ellipse::fitPoints(Eigen::VectorXd x,  Eigen::VectorXd y) {
   for(int i=0; i<6; ++i) {
     params[i] /= norm;
   }
+  */
 
   getCenter(center);
   axesLength(axes);
+
+  double norm = (std::max(axes[0], axes[1]) /
+      sqrt(
+           std::fabs(center[0]*center[0]*params[0]
+         + center[0]*center[1]*params[1]
+         + center[1]*center[1]*params[2])));
+  for(int i=0; i<6; ++i) {
+    params[i] *= norm;
+  }
+
   angle = rotationAngle();
+
   /*
   std::cout << "params =" << std::endl;
   for (int i = 0; i<6; i++)

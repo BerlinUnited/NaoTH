@@ -3,7 +3,7 @@ option look_around
   initial state get_starting_point
   {
     decision{
-      // find a close point to start the lookaround
+      // decide in which direction to look first
       if(head.yaw > 0){
         goto look_left;
       }else{
@@ -24,7 +24,7 @@ option look_around
     }
     action
     {
-      head.point_in_world.x = 3000;
+      head.point_in_world.x = 2000;
       head.point_in_world.y = 6000;
       head.point_in_world.z = 500;
       head.motion_type = look_at_world_point;
@@ -42,7 +42,7 @@ option look_around
     }
     action
     {
-      head.point_in_world.x = 3000;
+      head.point_in_world.x = 2000;
       head.point_in_world.y = -6000;
       head.point_in_world.z = 500;
       head.motion_type = look_at_world_point;

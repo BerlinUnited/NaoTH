@@ -21,12 +21,9 @@ StableRoleDecision::~StableRoleDecision()
 
 void StableRoleDecision::execute() 
 {
-  getRoleDecisionModel().aliveRobots.clear();
-  getRoleDecisionModel().deadRobots.clear();
-
   // player numbers for the first and second striker
-  int firstStriker = std::numeric_limits<int>::max();
-  int secondStriker = std::numeric_limits<int>::max();
+  unsigned int firstStriker = std::numeric_limits<unsigned int>::max();
+  unsigned int secondStriker = std::numeric_limits<unsigned int>::max();
 
   bool wantsToBeStriker = true;
   //Goalie is not considered
@@ -40,18 +37,13 @@ void StableRoleDecision::execute()
     ownTimeToBall -= 300;
   }
 
-  for (auto const& i : getTeamMessage().data) 
+  for (auto const& i : getTeamMessage().data)
   {
     unsigned int robotNumber = i.first;
     const TeamMessageData& msg = i.second;
 
-    double failureProbability = getTeamMessageStatisticsModel().getFailureProbability(robotNumber);
-
-    if (failureProbability > parameters.minFailureProbability && msg.playerNumber != getPlayerInfo().playerNumber) { //Message is not fresh
-      getRoleDecisionModel().deadRobots.push_back((int)robotNumber);
+    if (msg.playerNumber != getPlayerInfo().playerNumber && !getTeamMessagePlayersState().isPlaying(robotNumber)) {
       continue;
-    } else {
-      getRoleDecisionModel().aliveRobots.push_back((int)robotNumber);
     }
 
     double time_bonus = 0;
@@ -59,25 +51,24 @@ void StableRoleDecision::execute()
       time_bonus = parameters.strikerBonusTime;
     }
 
-    if (robotNumber == getPlayerInfo().playerNumber && (msg.fallen || msg.custom.isPenalized || 
-      // FIXME: msg.ballAge is set to -1, when the model is not valid anymore. This cancels loose_ball_bonus out.
+    if (robotNumber == getPlayerInfo().playerNumber && (!getTeamMessagePlayersState().isPlaying(robotNumber) ||
+      // ball was seen (> -1) and ball isn't too old
       msg.ballAge < 0 || msg.ballAge > parameters.maxBallLostTime + time_bonus)) 
     {
       wantsToBeStriker = false;
     }
 
-    if (!msg.fallen
-      && !msg.custom.isPenalized
-      && msg.ballAge >= 0 //Ball has been seen
+    if (getTeamMessagePlayersState().isPlaying(robotNumber)
+      && msg.ballAge >= 0 // Ball was seen some time ago ...
       && msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) < parameters.maxBallLostTime + time_bonus) //Ball is fresh
     { 
       if (msg.custom.wantsToBeStriker) { //Decision of the current round
         // If two robots want to be striker, the one with a smaller number is favoured
         // NOTE: goalie is always favoured for the first striker
-        if ((int)robotNumber < firstStriker) { 
+        if (robotNumber < firstStriker) {
           firstStriker = robotNumber;
         }
-        else if ((int)robotNumber < secondStriker) {
+        else if (robotNumber < secondStriker) {
           secondStriker = robotNumber;
         }
       }
@@ -91,12 +82,21 @@ void StableRoleDecision::execute()
   
   // there is no second striker, if goalie is a striker
   if (firstStriker == 1) {
-    secondStriker = std::numeric_limits<int>::max();
+    secondStriker = std::numeric_limits<unsigned int>::max();
   }
 
+  getRoleDecisionModel().resetStriker();
   getRoleDecisionModel().firstStriker = firstStriker;
   getRoleDecisionModel().secondStriker = secondStriker;
   getRoleDecisionModel().wantsToBeStriker = wantsToBeStriker;
+  // set the new striker role
+  if(firstStriker < std::numeric_limits<unsigned int>::max() && getRoleDecisionModel().roles.find(firstStriker) != getRoleDecisionModel().roles.cend()) {
+      getRoleDecisionModel().roles[firstStriker].dynamic = Roles::striker;
+  }
+  // set the new striker role
+  if(secondStriker < std::numeric_limits<unsigned int>::max() && getRoleDecisionModel().roles.find(secondStriker) != getRoleDecisionModel().roles.cend()) {
+      getRoleDecisionModel().roles[secondStriker].dynamic = Roles::striker;
+  }
 
   PLOT(std::string("StableRoleDecision:FirstStrikerDecision"), firstStriker);
   PLOT(std::string("StableRoleDecision:SecondStrikerDecision"), secondStriker);

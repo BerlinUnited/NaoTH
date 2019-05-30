@@ -20,7 +20,7 @@ public:
   /** id of the cluster this sample belongs to */
   int cluster;
 
-  virtual const Vector2<double>& getPos() const = 0;
+  virtual const Vector2d& getPos() const = 0;
 };
 
 
@@ -30,9 +30,16 @@ public:
   Sample() : likelihood(0.0){}
   ~Sample() {}
 
+  Sample& operator=(const Pose2D& pose)
+  {
+    translation = pose.translation;
+    rotation = pose.rotation;
+    return *this;
+  }
+
   double likelihood;
 
-  virtual const Vector2<double>& getPos() const
+  virtual const Vector2d& getPos() const
   {
     return translation;
   }

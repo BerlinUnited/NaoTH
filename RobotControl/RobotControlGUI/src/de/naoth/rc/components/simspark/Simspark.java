@@ -3,7 +3,12 @@ package de.naoth.rc.components.simspark;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 
 /**
  * Base class for communicating with Simspark.
@@ -15,7 +20,7 @@ abstract class Simspark extends Thread {
     protected DataInputStream in;
     protected DataOutputStream out;
     protected Socket socket;
-    protected boolean isRunning;
+    public BooleanProperty isConnected = new SimpleBooleanProperty(false);
 
     public Simspark() {}
 
@@ -26,12 +31,15 @@ abstract class Simspark extends Thread {
      * @throws IOException if coudn't connect to the simspark instance
      */
     public void connect(String host, int port) throws IOException {
-        socket = new Socket(host, port);
+        socket = new Socket();
+        socket.setSoTimeout(1000);
+        // connecting this way to provid timeout ...
+        socket.connect(new InetSocketAddress(host, port), 1000);
 
         in = new DataInputStream(socket.getInputStream());
         out = new DataOutputStream(socket.getOutputStream());
         
-        isRunning = true;
+        isConnected.set(true);
         // start listening thread
         this.start();
     }
@@ -42,17 +50,17 @@ abstract class Simspark extends Thread {
      * @throws InterruptedException 
      */
     public void disconnect() throws IOException, InterruptedException {
-        isRunning = false;
-        this.join();
-        in.close();
-        out.close();
-        socket.close();
+        isConnected.set(false);
+        if(isAlive()) { join(1000); }
+        if(in != null) { in.close(); }
+        if(out != null) { out.close(); }
+        if(socket != null) { socket.close(); }
     }
 
     /**
-     * Sends an agent message to the server.
+     * Sends a message to the server.
      * <p/>
-     * This method formats an agent message (String of SimSpark effector
+     * This method formats an agent/monitor message (String of SimSpark effector
      * messages) according to the network protocol and sends it to the server.
      * <p/>
      * The content of the agent message is not validated.
@@ -60,54 +68,33 @@ abstract class Simspark extends Thread {
      * @param msg Agent message with effector commands.
      * @param out
      */
-    public void sendAgentMessage(String msg) {
-
-        byte[] body = msg.getBytes();
-
-        //comments by the authors of magma from Offenburg:
-        // FIXME: this is to compensate a server bug that clients responding too
-        // quickly get problems
-        // long runtime = 0;
-        // boolean slowedDown = false;
-        // long slowDownTime = 0;
-        // int minWaitTime = 1000000;
-        // do {
-        // runtime = System.nanoTime() - startTime;
-        // if (runtime < minWaitTime && !slowedDown) {
-        // slowDownTime = minWaitTime - runtime;
-        // slowedDown = true;
-        // }
-        // } while (runtime < minWaitTime);
-        // if (slowedDown) {
-        // logger.log(Level.FINE, "slowedDown sending message by: {0}",
-        // slowDownTime);
-        // }
-        // Header of the message, specifies the length of the message:
-        // "The length prefix is a 32 bit unsigned integer in network order, i.e. big 
-        // endian notation with the most significant bits transferred first." 
-        // (cited from 
-        // http://simspark.sourceforge.net/wiki/index.php/Network_Protocol, 14.1.2012)
-        int len = body.length;
-        int byte0 = (len >> 24) & 0xFF;
-        int byte1 = (len >> 16) & 0xFF;
-        int byte2 = (len >> 8) & 0xFF;
-        int byte3 = len & 0xFF;
-
-        try {
-            out.writeByte((byte) byte0);
-            out.writeByte((byte) byte1);
-            out.writeByte((byte) byte2);
-            out.writeByte((byte) byte3);
-            out.write(body);
-            out.flush();
-        } catch (IOException e) {
-            System.out.println("Error writing to socket. Has the server been shut down?");
+	public boolean sendMessage(String msg) throws IOException
+	{
+        if (out == null || !isConnected.get()) {
+            return false;
         }
-        if (!msg.equals("(syn)")) {
-            System.out.println("sended msg: " + msg);
-        }
-    }
+        out.write(intToBytes(msg.length()));
+        out.write(msg.getBytes());
+        out.flush();
+        return true;
+	}
 
+    /**
+     * Converts an integer to a byte array.
+     * 
+     * @param i the integer, which should be converted
+     * @return the converted integer as byte array
+     */
+    private byte[] intToBytes(int i)
+	{
+		byte[] buf = new byte[4];
+		buf[0] = (byte) ((i >> 24) & 255);
+		buf[1] = (byte) ((i >> 16) & 255);
+		buf[2] = (byte) ((i >> 8) & 255);
+		buf[3] = (byte) (i & 255);
+		return buf;
+	}
+    
     /**
      * Receives a server message and returns it.
      * <p/>
@@ -122,32 +109,64 @@ abstract class Simspark extends Thread {
      * @return The raw server message (String of concatenated perceptor
      * messages).
      */
-    public String getServerMessage() {
+    protected String receiveMessage() throws IOException {
+        // message is prefixed by its size in bytes
+        int length = 0;
+        if (in == null || (length = in.readInt()) <= 0) {
+            // not connected or disconnected?!
+            return null;
+        }
+        // read from stream until all bytes in message are read
+        byte[] buf = new byte[length];
+        int bytesRead = 0;
+        while (bytesRead < length) {
+            bytesRead += in.read(buf, bytesRead, length - bytesRead);
+        }
+        return new String(buf);
+    }
+    
+    /**
+     * Returns whether the connection is still active (true) or if the connection was lost (false).
+     * 
+     * @return true|false
+     */
+    public boolean checkConnection() {
+        boolean disconnect = true;
         try {
-            // read "header"
-            int byte0 = in.read();
-            int byte1 = in.read();
-            int byte2 = in.read();
-            int byte3 = in.read();
-            // analyzes the header
-            int length = byte0 << 24 | byte1 << 16 | byte2 << 8 | byte3;
-            // was the server shutdown
-            if (length < 0) {
-                System.out.println("Server ist down.");
-                isRunning = false;
-                return null;
+            disconnect = !sendMessage("(getAck)");
+        } catch (IOException ex) {}
+        
+        if(disconnect) {
+            try {
+                disconnect();
+            } catch (IOException | InterruptedException ex) {
+                Logger.getLogger(Simspark.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-            byte[] result = new byte[length];
-            int total = 0;
-            while (total < length) {
-                total += in.read(result, total, length - total);
-            }
-            return new String(result, 0, length, "UTF-8");
-        } catch (IOException e) {
-            System.out.println("Error when reading from socket. Has the server been shut down?");
-            isRunning = false;
+        }
+        return !disconnect;
+    }
+    
+    /**
+     * Returns the host ip/name this instance is connected to simspark.
+     * 
+     * @return the host ip/name or null if not connected
+     */
+    public String getHost() {
+        if(socket != null && checkConnection()) {
+            return ((InetSocketAddress) socket.getRemoteSocketAddress()).getHostName();
         }
         return null;
+    }
+    
+    /**
+     * Returns the port this instance is connected to simspark.
+     * 
+     * @return the connected port, or zero if not connected
+     */
+    public int getPort() {
+        if(socket != null && checkConnection()) {
+            return ((InetSocketAddress) socket.getRemoteSocketAddress()).getPort();
+        }
+        return 0;
     }
 } // end class Simspark

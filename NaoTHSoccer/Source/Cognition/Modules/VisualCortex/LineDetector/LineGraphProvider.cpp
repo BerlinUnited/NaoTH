@@ -20,9 +20,12 @@ LineGraphProvider::LineGraphProvider()
   DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:edgel_cluster", "mark the edgels on the image", false);
   DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_lines", "draw the esimated lines in the image", false);
 
-  DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_compas", "draw compas direcion based on the edgel directions", false);
+  //DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_compas", "draw compas direcion based on the edgel directions", false);
 
   DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_line_graph", "", false);
+
+  DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_extended_line_graph", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_extended_line_graph_top", "", false);
 
   getDebugParameterList().add(&parameters);
 }
@@ -40,7 +43,6 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
 
   calculatePairsAndNeigbors(getScanLineEdgelPercept().pairs, edgelPairs, edgelNeighbors, parameters.edgelSimThreshold);
 
-  
 
   // calculate the projection for all edgels
   edgelProjectionsBegin.resize(getScanLineEdgelPercept().pairs.size());
@@ -70,6 +72,31 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
     //pair.projectedWidth = Vector2d(beginPointOnField - endPointOnField).abs();
   }
 
+  // extend line graph
+  lineGraphsIds.clear();
+  extendLineGraph(edgelNeighbors);
+
+  std::vector<std::vector<EdgelD>>& graph = (cameraID == CameraInfo::Top)?
+        getLineGraphPercept().lineGraphsTop:
+        getLineGraphPercept().lineGraphs;
+
+  // add the graphs to the representation
+  for(const std::vector<int>& subgraph : lineGraphsIds)
+  {
+    graph.emplace_back();
+    for(size_t left=0, right=1; right < subgraph.size(); ++left, ++right) {
+
+      const Vector2d& edgelLeft = (edgelProjectionsBegin[subgraph[left]] + edgelProjectionsEnd[subgraph[left]])*0.5;
+      const Vector2d& edgelRight = (edgelProjectionsBegin[subgraph[right]] + edgelProjectionsEnd[subgraph[right]])*0.5;
+
+      EdgelD edgel;
+      edgel.point = Vector2d(edgelLeft + edgelRight)*0.5;
+      edgel.direction = (edgelRight - edgelLeft).normalize();
+
+      graph.back().push_back(edgel);
+    }
+  }
+
   // calculate the LineGraphPercept
   for(size_t j = 0; j < edgelPairs.size(); j++)
   {
@@ -89,12 +116,26 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
     //const ScanLineEdgelPercept::EdgelPair& er = getScanLineEdgelPercept().pairs[edgelPair.right];
 
     if(projectedWidthLeft > parameters.maximalProjectedLineWidth && projectedWidthRight > parameters.maximalProjectedLineWidth) {
-      getLineGraphPercept().edgels.push_back(edgel);
+      getLineGraphPercept().edgelsOnField.push_back(edgel);
         
       DEBUG_REQUEST("Vision:LineGraphProvider:draw_line_graph",
         FIELD_DRAWING_CONTEXT;
         PEN("FF0000",2);
         CIRCLE( edgel.point.x, edgel.point.y, 25);
+
+        PEN("0000FF",2);
+        CIRCLE( edgelProjectionsBegin[edgelPair.left].x, edgelProjectionsBegin[edgelPair.left].y, 10);
+        PEN("FF0000",2);
+        CIRCLE( edgelProjectionsEnd[edgelPair.left].x, edgelProjectionsEnd[edgelPair.left].y, 10);
+        PEN("000000",2);
+        LINE( edgelProjectionsBegin[edgelPair.left].x, edgelProjectionsBegin[edgelPair.left].y, edgelProjectionsEnd[edgelPair.left].x, edgelProjectionsEnd[edgelPair.left].y);
+
+        PEN("0000FF",2);
+        CIRCLE( edgelProjectionsBegin[edgelPair.right].x, edgelProjectionsBegin[edgelPair.right].y, 10);
+        PEN("FF0000",2);
+        CIRCLE( edgelProjectionsEnd[edgelPair.right].x, edgelProjectionsEnd[edgelPair.right].y, 10);
+        PEN("000000",2);
+        LINE( edgelProjectionsBegin[edgelPair.right].x, edgelProjectionsBegin[edgelPair.right].y, edgelProjectionsEnd[edgelPair.right].x, edgelProjectionsEnd[edgelPair.right].y);
       );
     }
   }
@@ -123,7 +164,7 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
       }
     }
   }
-
+  /*
   // fill the compas
   if((int)edgelPairs.size() > parameters.minimalNumberOfPairs)
   {
@@ -170,7 +211,7 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
       }
     }
   );
-
+  */
 
   DEBUG_REQUEST("Vision:LineGraphProvider:edgel_pairs",
     CANVAS(((cameraID == CameraInfo::Top) ? "ImageTop" : "ImageBottom"));
@@ -310,6 +351,30 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
   );
 
 }//end execute
+
+void LineGraphProvider::extendLineGraph(std::vector<Neighbors>& neighbors) {
+  std::vector<bool> processed(neighbors.size(), false);
+
+  for (size_t i=0; i<processed.size(); i++) {
+    if(processed[i] || 
+        (neighbors[i].left != -1 && neighbors[neighbors[i].left].right == static_cast<int>(i))) // not a begin of a graph
+    {
+      continue;
+    }
+
+    std::vector<int> subGraph;
+    
+    int in = static_cast<int>(i);
+    do {
+      subGraph.push_back(in);
+      processed[in] = true;
+    } while((in = neighbors[in].right) > -1);
+
+    if (subGraph.size() >= 2) {
+      lineGraphsIds.push_back(subGraph);
+    }
+  }
+}
 
 double LineGraphProvider::edgelSim(const EdgelT<double>& e1, const EdgelT<double>& e2)
 {

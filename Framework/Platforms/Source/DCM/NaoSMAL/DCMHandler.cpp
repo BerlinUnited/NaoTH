@@ -26,8 +26,8 @@ void DCMHandler::init(boost::shared_ptr<ALBroker> pB)
     al_dcmproxy = boost::shared_ptr<AL::DCMProxy>(new DCMProxy(pB));
     al_memory = boost::shared_ptr<AL::ALMemoryProxy>(new AL::ALMemoryProxy(pB));
   }
-  catch(ALError e) {
-    std::cerr << "Failed to init DCMHandler: " << e.toString() << endl;
+  catch(ALError& e) {
+    std::cerr << "Failed to init DCMHandler: " << e.what() << endl;
   }
 
   // init device handlers
@@ -103,9 +103,9 @@ ALValue DCMHandler::getFromALMemory(const string& path)
   try
   {
     value = al_memory->getData(path.c_str(), 0);
-  } catch (ALError e)
+  } catch (ALError& e)
   {
-    std::cerr << "Failed to get Information from: " << e.toString() << endl;
+    std::cerr << "Failed to get Information from: " << e.what() << endl;
   }
   return value;
 }//end getFromALMemory
@@ -128,9 +128,9 @@ inline void DCMHandler::sendToDCM(const string& path, const double value, const 
     commands[2][0][1] = timestamp;
     al_dcmproxy->set(commands);
   }
-  catch(ALError e)
+  catch(ALError& e)
   {
-    std::cerr << "Failed to set " << path << ": " << e.toString() << endl;
+    std::cerr << "Failed to set " << path << ": " << e.what() << endl;
   }
 }//end sendToDCM
 
@@ -420,7 +420,7 @@ void DCMHandler::initAllSensorData()
       sensorPtrs[i] = (float*)al_memory->getDataPtr(allSensorsList[i]);
     }
   } catch(AL::ALError& e) {
-    std::cerr << "[NaoSMAL] " << e.toString() << std::endl;
+    std::cerr << "[NaoSMAL] " << e.what() << std::endl;
   }
 
 }//end initAllSensorData
@@ -511,8 +511,8 @@ void DCMHandler::initMotorJoint()
     }
 
   }
-  catch(ALError e) {
-    std::cerr << "[NaoSMAL] Failed to init MotorJointAlias: " << e.toString() << endl;
+  catch(ALError& e) {
+    std::cerr << "[NaoSMAL] Failed to init MotorJointAlias: " << e.what() << endl;
   }
 }//end initMotorJoint
 
@@ -542,8 +542,8 @@ void DCMHandler::setAllPositionData(const MotorJointData& mjd, int dcmTime)
   {
     al_dcmproxy->setAlias(allMotorPositionCommands);
   }
-  catch(ALError e) {
-    std::cerr << "[NaoSMAL] Failed to set AllPositionData: " << e.toString() << endl;
+  catch(ALError& e) {
+    std::cerr << "[NaoSMAL] Failed to set AllPositionData: " << e.what() << endl;
   }
 }//end setAllPositionData
 
@@ -585,8 +585,8 @@ void DCMHandler::setAllHardnessData(const MotorJointData& mjd, int dcmTime)
   {
     al_dcmproxy->setAlias(allMotorHardnessCommands);
   }
-  catch(ALError e) {
-    std::cerr << "[NaoSMAL] Failed to set AllHardnessData: " << e.toString() << endl;
+  catch(ALError& e) {
+    std::cerr << "[NaoSMAL] Failed to set AllHardnessData: " << e.what() << endl;
   }
 }//end setAllHardnessData
 
@@ -609,8 +609,8 @@ void DCMHandler::setAllHardnessData(double value, int dcmTime)
   {
     al_dcmproxy->setAlias(allMotorHardnessCommands);
   }
-  catch(ALError e) {
-    std::cerr << "[NaoSMAL] Failed to set AllHardnessData: " << e.toString() << endl;
+  catch(ALError& e) {
+    std::cerr << "[NaoSMAL] Failed to set AllHardnessData: " << e.what() << endl;
   }
 }//end setAllHardnessData
 
@@ -639,9 +639,9 @@ void DCMHandler::initIRSend()
     }
     al_dcmproxy->createAlias(aliasCommand);
   }
-  catch(ALError e)
+  catch(ALError& e)
   {
-    std::cerr << "[NaoSMAL] Failed to create IR-Alias: " << e.toString() << endl;
+    std::cerr << "[NaoSMAL] Failed to create IR-Alias: " << e.what() << endl;
   }
 
   irCommands.arraySetSize(6);
@@ -673,8 +673,8 @@ void DCMHandler::setIRSend(const IRSendData& data, int dcmTime)
   {
     al_dcmproxy->setAlias(irCommands);
   }
-  catch(ALError e) {
-    std::cerr << "[NaoSMAL] Failed to set IR: " << e.toString() << endl;
+  catch(ALError& e) {
+    std::cerr << "[NaoSMAL] Failed to set IR: " << e.what() << endl;
   }
 }//end setIRSend
 
@@ -707,9 +707,9 @@ void DCMHandler::initUltraSoundSend()
     usSendCommands[5][0].arraySetSize(1);
     usSendCommands[5][0][0] = 0.0;
   }
-  catch(ALError e)
+  catch(ALError& e)
   {
-    std::cerr << "[NaoSMAL] Failed to create UltraSound-Alias: " << e.toString() << endl;
+    std::cerr << "[NaoSMAL] Failed to create UltraSound-Alias: " << e.what() << endl;
   }
 }//end initUltraSoundSend
 
@@ -724,8 +724,8 @@ void DCMHandler::setUltraSoundSend(const UltraSoundSendData& data, int dcmTime)
     {
       al_dcmproxy->setAlias(usSendCommands);
     }
-    catch(ALError e) {
-      std::cerr << "[NaoSMAL] Failed to set UltraSound: " << e.toString() << endl;
+    catch(ALError& e) {
+      std::cerr << "[NaoSMAL] Failed to set UltraSound: " << e.what() << endl;
     }
   }
 }//end setUltraSoundSend

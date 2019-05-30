@@ -9,8 +9,7 @@ FakeBallDetector::FakeBallDetector():
 
     DEBUG_REQUEST_REGISTER("Vision:FakeBallDetector:determineCenterInImage", "determines of the ball's center in the \"image\"", true);
 
-    startPosition << 2500, 0;
-    velocity = Eigen::Vector2d::Zero();
+    startPosition = Vector2d(2500, 0);
 }
 
 FakeBallDetector::~FakeBallDetector()
@@ -28,11 +27,11 @@ void FakeBallDetector::execute(){
 
 
     DEBUG_REQUEST("Vision:FakeBallDetector:stationaryBallOnField",
-        ballPercept.bearingBasedOffsetOnField = Vector2d(startPosition(0), startPosition(1));
+        ballPercept.bearingBasedOffsetOnField = startPosition;
     );
 
-    MODIFY("Vision:FakeBallDetector:constMovingOnField:Vx", velocity(0));
-    MODIFY("Vision:FakeBallDetector:constMovingOnField:Vy", velocity(1));
+    MODIFY("Vision:FakeBallDetector:constMovingOnField:Vx", velocity.x);
+    MODIFY("Vision:FakeBallDetector:constMovingOnField:Vy", velocity.y);
 
     DEBUG_REQUEST_ON_DEACTIVE("Vision:FakeBallDetector:constMovingOnField",
         active = false;
@@ -41,12 +40,10 @@ void FakeBallDetector::execute(){
     DEBUG_REQUEST("Vision:FakeBallDetector:constMovingOnField",
         if(!active)
         {
-            position << startPosition;
+            position = startPosition;
             active = true;
         }
-
-        Eigen::Vector2d currentPosition = simulateConstantMovementOnField(getFrameInfo().getTimeInSeconds()-lastFrame.getTimeInSeconds(), velocity);
-        ballPercept.bearingBasedOffsetOnField = Vector2d(currentPosition(0), currentPosition(1));
+        ballPercept.bearingBasedOffsetOnField = simulateConstantMovementOnField(getFrameInfo().getTimeInSeconds()-lastFrame.getTimeInSeconds(), velocity);
     );
 
     lastFrame = getFrameInfo();
@@ -75,8 +72,7 @@ void FakeBallDetector::execute(){
     );
 }
 
-const Eigen::Vector2d FakeBallDetector::simulateConstantMovementOnField(double dt, const Eigen::Vector2d &velocity)
+const Vector2d FakeBallDetector::simulateConstantMovementOnField(double dt, const Vector2d &velocity)
 {
-    Eigen::Matrix2d time = Eigen::Matrix2d::Identity() * dt;
-    return position += time*velocity;
+    return position += velocity*dt;
 }

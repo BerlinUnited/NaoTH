@@ -9,7 +9,6 @@
 #define _INVERSE_KINEMATCS_MOTION_ENGINE_
 
 #include "Motions/IKPose.h"
-#include "PreviewController.h"
 #include "Motions/IKParameters.h"
 
 #include <ModuleFramework/Module.h>
@@ -61,11 +60,7 @@ private:
 public:
 
   InverseKinematicsMotionEngine();
-
-  virtual ~InverseKinematicsMotionEngine()
-  {
-      getDebugParameterList().remove(&theParameters);
-  }
+  virtual ~InverseKinematicsMotionEngine();
 
   virtual void execute(){} // dummy
 
@@ -120,95 +115,25 @@ public:
     bool& sloved,
     bool fix_height);
 
-
-  class ZMPControlBuffer {
-    public:
-
-      size_t size() const { return thePreviewController.previewSteps(); }
-      Vector3d back() const { return thePreviewController.back(); }
-      Vector3d front() const { return thePreviewController.front(); }
-
-      void clear() { thePreviewController.clear(); }
-      void push(const Vector3d& zmp) { thePreviewController.push(zmp); }
-      
-
-      bool is_stationary() const {
-        return thePreviewController.com_velocity().abs() < 1;// && 
-               //thePreviewController.com_acceleration().abs2() < 1;
-      }
-
-      bool pop(Vector3d& com)
-      {
-        if ( !thePreviewController.ready() ) {
-          return false;
-        }
-
-        // dummy, not used
-        Vector2d dcom, ddcom;
-        thePreviewController.control(com, dcom, ddcom);
-        thePreviewController.pop();
-
-        return true;
-      }
-
-
-      int init(const Vector3d& com, const Vector3d& targetZMP)
-      {
-        ASSERT(thePreviewController.previewSteps() > 1);
-        // TODO: clear it because of the motion can be forced to finish immediately...
-        // the idea of keep buffer is to switch zmp control between different motions,
-        // such as walk and kick, then maybe we should check if zmp control is used every cycle and etc.
-        thePreviewController.clear();
-
-        thePreviewController.init(com, Vector2d(0,0), Vector2d(0,0));
-  
-        // NOTE: plan all but one zmp points
-        for (size_t i = 0; i+1 < thePreviewController.previewSteps(); i++) {
-          double t = static_cast<double>(i) / static_cast<double>(thePreviewController.previewSteps()-1);
-          Vector3d zmp = com*(1.0-t) + targetZMP*t;
-          thePreviewController.push(zmp);
-        }
-        //ASSERT(thePreviewController.ready());
-
-        return static_cast<int>(thePreviewController.previewSteps())-1;
-      }
-
-    private:
-      PreviewController thePreviewController;
-
-  } zmpControl;
-
-  
   void solveHipFeetIK(const InverseKinematic::HipFeetPose& p);
   
   bool rotationStabilizeRC16(
-    //const InertialModel& theInertialModel,
-    const naoth::InertialSensorData& theInertialSensorData,
+    const Vector2d& inertial,
     const GyrometerData& theGyrometerData,
-    double timeDelta,
+    const double timeDelta,
+    const Vector2d&  rotationP,
+    const Vector2d&  rotationVelocityP,
+    const Vector2d&  rotationD,
     InverseKinematic::HipFeetPose& p);
-
-  bool rotationStabilizenNewIMU(
-          //const InertialModel& theInertialModel,
-          const IMUData& imuData,
-          //const InertialModel& theInertialModel,
-          const GyrometerData& theGyrometerData,
-          double timeDelta,
-          InverseKinematic::HipFeetPose& p);
 
   bool rotationStabilize(
     const InertialModel& theInertialModel,
     const GyrometerData& theGyrometerData,
-    double timeDelta,
+    const double timeDelta,
+    const Vector2d&  rotationP,
+    const Vector2d&  rotationVelocityP,
+    const Vector2d&  rotationD,
     InverseKinematic::HipFeetPose& p);
-
-  /**
-   * PID stabilizer controlling the feet of the robot directly
-   */
-  void feetStabilize(
-    const InertialModel& theInertialModel,
-    const naoth::GyrometerData& theGyrometerData,
-    double (&position)[naoth::JointData::numOfJoint]);
 
   /*
   bool rotationStabilize(

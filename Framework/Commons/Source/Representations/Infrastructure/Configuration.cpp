@@ -59,39 +59,40 @@ void Configuration::loadFromDir(std::string dirlocation,
                                 const std::string& headID,
                                 const std::string& robotName)
 {
-  if (!g_str_has_suffix(dirlocation.c_str(), "/"))
-  {
+  ASSERT_MSG(isDir(dirlocation), "Could not load configuration from " << dirlocation << ": directory does not exist.");
+  std::cout << "[INFO] loading configuration from " << dirlocation << std::endl;
+
+  if (!g_str_has_suffix(dirlocation.c_str(), "/")) {
     dirlocation = dirlocation + "/";
   }
 
-  if (g_file_test(dirlocation.c_str(), G_FILE_TEST_EXISTS) && g_file_test(dirlocation.c_str(), G_FILE_TEST_IS_DIR))
-  {
-    loadFromSingleDir(publicKeyFile, dirlocation + "general/");
-    loadFromSingleDir(publicKeyFile, dirlocation + "platform/" + platform + "/");
-    if(scheme.size() > 0)
-    {
-      loadFromSingleDir(publicKeyFile, dirlocation + "scheme/" + scheme + "/");
-    }
-    loadFromSingleDir(publicKeyFile, dirlocation + "robots/" + robotName + "/");
-    loadFromSingleDir(publicKeyFile, dirlocation + "robots_bodies/" + bodyID + "/");
-    loadFromSingleDir(publicKeyFile, dirlocation + "robot_heads/" + headID + "/");
-    privateDir = dirlocation + "private/";
-    loadFromSingleDir(privateKeyFile, privateDir);
-  } else
-  {
-    std::cout << "[WARN] Could not load configuration from " << dirlocation << ": directory does not exist" << std::endl;
+  loadFromSingleDir(publicKeyFile, dirlocation + "general/");
+  loadFromSingleDir(publicKeyFile, dirlocation + "platform/" + platform + "/");
+
+  if(scheme.size() > 0) {
+    loadFromSingleDir(publicKeyFile, dirlocation + "scheme/" + scheme + "/");
   }
+
+  bool robot_config_required = (platform == "Nao" || platform == "nao");
+  loadFromSingleDir(publicKeyFile, dirlocation + "robots/" + robotName + "/", robot_config_required);
+
+  loadFromSingleDir(publicKeyFile, dirlocation + "robots_bodies/" + bodyID + "/", false);
+  loadFromSingleDir(publicKeyFile, dirlocation + "robot_heads/" + headID + "/", false);
+  
+  privateDir = dirlocation + "private/";
+  loadFromSingleDir(privateKeyFile, privateDir);
 }
 
-void Configuration::loadFromSingleDir(GKeyFile* keyFile, std::string dirlocation)
+void Configuration::loadFromSingleDir(GKeyFile* keyFile, std::string dirlocation, bool required)
 {
-  // iterate over all files in the folder
+  // make sure the directory exists
+  ASSERT_MSG(!required || isDir(dirlocation), "Could not load configuration from " << dirlocation << ": directory does not exist.");
 
-  if (!g_str_has_suffix(dirlocation.c_str(), "/"))
-  {
+  if (!g_str_has_suffix(dirlocation.c_str(), "/")) {
     dirlocation = dirlocation + "/";
   }
 
+  // iterate over all files in the folder
   GDir* dir = g_dir_open(dirlocation.c_str(), 0, NULL);
   if (dir != NULL)
   {
@@ -109,8 +110,6 @@ void Configuration::loadFromSingleDir(GKeyFile* keyFile, std::string dirlocation
         }
         g_free(group);
       }
-
-
     }
     g_dir_close(dir);
   }

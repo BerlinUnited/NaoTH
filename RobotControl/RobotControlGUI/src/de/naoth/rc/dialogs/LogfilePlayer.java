@@ -485,29 +485,9 @@ public class LogfilePlayer extends AbstractDialog
     }
  
   private void connectToSimulator () {
-        try {
-            if(!Plugin.parent.getMessageServer().isConnected()) {
-                Plugin.parent.getMessageServer().connect("localhost", 5401);
-            }
-        }
-        catch(UnknownHostException ex)
-        {
-          JOptionPane.showMessageDialog(this,
-            "Could not connect: host \'" + Plugin.parent.getMessageServer().getAddress() + "\' is unknown.", 
-            "ERROR", JOptionPane.ERROR_MESSAGE);
-        }
-        catch(SocketTimeoutException ex)
-        {
-          JOptionPane.showMessageDialog(this,
-            "Could not connect: socket timeout exception.",
-            "ERROR", JOptionPane.ERROR_MESSAGE);
-        }
-        catch(IOException ex)
-        {
-          JOptionPane.showMessageDialog(this,
-            "Etablishing connection failed: " + ex.getLocalizedMessage(), 
-            "ERROR", JOptionPane.ERROR_MESSAGE);
-        }
+    if(!Plugin.parent.getMessageServer().isConnected()) {
+        Plugin.parent.getMessageServer().connect("localhost", 5401);
+    }
   }
   
 

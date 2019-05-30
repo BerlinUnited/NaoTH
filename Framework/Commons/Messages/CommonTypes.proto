@@ -1,3 +1,4 @@
+syntax = "proto2";
 package naothmessages;
 option java_package= "de.naoth.rc.messages";
 
@@ -97,27 +98,4 @@ message LineSegment {
   required DoubleVector2 base = 1;
   required DoubleVector2 direction = 2;
   required double length = 3;
-}
-
-// Line.h
-message Intersection {
-
-  enum IntersectionType
-  {
-    unknown = 0;
-    T = 1;
-    L = 2;
-    C = 3;
-    none = 4;
-    X = 5;
-  }
-
-  optional DoubleVector2 posInImage = 1;
-  optional DoubleVector2 posOnField = 2;
-
-  optional IntersectionType type = 3;
-  optional uint32 segmentOneIndex = 6;
-  optional uint32 segmentTwoIndex = 7;
-  optional double segmentOneDistance = 8;
-  optional double segmentTwoDistance = 9;
 }

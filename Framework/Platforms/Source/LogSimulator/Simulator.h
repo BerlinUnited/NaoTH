@@ -52,7 +52,7 @@ public:
   virtual std::string getHeadNickName() const {return "naoth"; }
   virtual std::string getRobotName() const { return "naoth-logsimulator"; }
 
-  void main();
+  void main(bool start = false);
 
   void printRepresentations();
   void printHelp();
@@ -124,9 +124,9 @@ protected:
 
 
 public:
-  // the flag for backend mode, which is used by LogfilePlayer of RobotControl
+  // the flag for backend mode, which is enables reading commands from stdin
   bool backendMode;
-  // play the logfie according to the time of the frames
+  // play the logfile according to the time of the frames
   bool realTime;
 
   LogFileScanner logFileScanner;

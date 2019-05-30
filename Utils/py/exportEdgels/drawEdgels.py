@@ -1,10 +1,4 @@
 #!/usr/bin/python
-
-import argparse
-parser = argparse.ArgumentParser(description='script to display edgels from log files')
-parser.add_argument("logfile", help='log file to draw edgels from')
-args = parser.parse_args()
-
 from naoth.LogReader import LogReader
 from naoth.LogReader import Parser
 
@@ -13,11 +7,32 @@ import matplotlib.animation as animation
 
 import numpy as np
 import random
-
+import sys
+import getopt
 import math
 
 import naoth.math3d as m3
 import naoth.math2d as m2
+
+def parse_arguments(argv):
+    input_file = ''
+    try:
+        opts, args = getopt.getopt(argv, "hi:", ["ifile="])
+    except getopt.GetoptError:
+        print('python drawEdgels.py -i <logfile>')
+        sys.exit(2)
+    if not opts:
+        print('python drawEdgels.py -i <logfile>')
+        sys.exit(2)
+    for opt, arg in opts:
+        print("opts: ", opts)
+        if opt == '-h':
+            print('python drawEdgels.py -i <logfile>')
+            sys.exit()
+        elif opt in ("-i", "--ifile"):
+            input_file = arg
+
+    return input_file
 
 def parseVector3(msg):
     return m3.Vector3(msg.x,msg.y,msg.z)
@@ -69,7 +84,7 @@ def projectEdgel(x,y,cMatrix):
     return (result.x, result.y)
 
 def animate(i, log, edgelsPlotTop, edgelsPlot, projectedEdgelsPlot):
-    msg = log.next()
+    msg = log.__next__()
 
     edgelFrame = [(edgel.point.x, -edgel.point.y) for edgel in msg[1].edgels]
     edgelsPlotTop.set_offsets(edgelFrame)
@@ -82,38 +97,36 @@ def animate(i, log, edgelsPlotTop, edgelsPlot, projectedEdgelsPlot):
     # It's time to get things done
 
 
+if __name__ == "__main__":
+	logFilePath = parse_arguments(sys.argv[1:])
+	# init parser
+	logParser = Parser()
+	logParser.register("ScanLineEdgelPerceptTop", "ScanLineEdgelPercept")
+	logParser.register("CameraMatrixTop", "CameraMatrix")
 
+	log = iter(LogReader(logFilePath, logParser, getEdgels))
 
-# init plot
-plt.close('all')
-fig = plt.figure()
+	# init plot
+	plt.close('all')
+	fig = plt.figure()
 
-point_size = 5
+	point_size = 5
 
-ax = fig.add_subplot(2,2,1, aspect='equal')
-ax.set_xlim([0, 640])
-ax.set_ylim([-480, 0])
-edgelsPlotTop = plt.scatter([], [], point_size)
+	ax = fig.add_subplot(2,2,1, aspect='equal')
+	ax.set_xlim([0, 640])
+	ax.set_ylim([-480, 0])
+	edgelsPlotTop = plt.scatter([], [], point_size)
 
-ax = fig.add_subplot(2,2,3, aspect='equal')
-ax.set_xlim([0, 640])
-ax.set_ylim([-480, 0])
-edgelsPlot = plt.scatter([], [], point_size)
+	ax = fig.add_subplot(2,2,3, aspect='equal')
+	ax.set_xlim([0, 640])
+	ax.set_ylim([-480, 0])
+	edgelsPlot = plt.scatter([], [], point_size)
 
-ax = fig.add_subplot(1,2,2, aspect='equal')
-ax.set_xlim([-10000, 10000])
-ax.set_ylim([-10000, 10000])
-projectedEdgelsPlot = plt.scatter([], [], point_size)
+	ax = fig.add_subplot(1,2,2, aspect='equal')
+	ax.set_xlim([-10000, 10000])
+	ax.set_ylim([-10000, 10000])
+	projectedEdgelsPlot = plt.scatter([], [], point_size)
 
-
-# init parser
-logParser = Parser()
-logParser.register("ScanLineEdgelPerceptTop", "ScanLineEdgelPercept")
-logParser.register("CameraMatrixTop", "CameraMatrix")
-
-log = iter(LogReader(args.logfile, logParser, getEdgels))
-
-
-# start animation
-ani = animation.FuncAnimation(fig, animate, frames=100, fargs=(log, edgelsPlotTop, edgelsPlot, projectedEdgelsPlot), interval = 60)
-plt.show()
+	# start animation
+	ani = animation.FuncAnimation(fig, animate, frames=100, fargs=(log, edgelsPlotTop, edgelsPlot, projectedEdgelsPlot), interval = 60)
+	plt.show()

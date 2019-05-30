@@ -152,6 +152,11 @@ public class StringSelectionPanel extends javax.swing.JPanel {
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
+        optionsList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                optionsListMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(optionsList);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -219,6 +224,11 @@ public class StringSelectionPanel extends javax.swing.JPanel {
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
+        selectedList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                selectedListMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(selectedList);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -234,21 +244,43 @@ public class StringSelectionPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void moveToRightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moveToRightActionPerformed
+        moveRight();
+    }//GEN-LAST:event_moveToRightActionPerformed
+
+    private void moveToLeftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moveToLeftActionPerformed
+        moveLeft();
+    }//GEN-LAST:event_moveToLeftActionPerformed
+
+    private void optionsListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_optionsListMouseClicked
+        // Double-click detected 
+        if (evt.getClickCount() == 2) {
+            moveRight();
+        }
+    }//GEN-LAST:event_optionsListMouseClicked
+
+    private void selectedListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_selectedListMouseClicked
+        // Double-click detected 
+        if (evt.getClickCount() == 2) {
+            moveLeft();
+        }
+    }//GEN-LAST:event_selectedListMouseClicked
+
+    private void moveRight() {
         Collection selected = Arrays.asList(optionsList.getSelectedValues());
         selectedArray.addAll(selected);
         optionsArray.removeAll(selected);
         resetOptionListModel();
         resetSelectedListModel();
-    }//GEN-LAST:event_moveToRightActionPerformed
-
-    private void moveToLeftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moveToLeftActionPerformed
+    }
+    
+    private void moveLeft() {
         Collection selected = Arrays.asList(selectedList.getSelectedValues());
         optionsArray.addAll(selected);
         selectedArray.removeAll(selected);
         resetOptionListModel();
         resetSelectedListModel();
-    }//GEN-LAST:event_moveToLeftActionPerformed
-
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
