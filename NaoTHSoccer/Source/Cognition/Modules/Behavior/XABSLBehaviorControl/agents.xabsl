@@ -139,6 +139,7 @@ include "Options/Soccer/Strategy/Path/path2018_initial_striker.xabsl";
 // Penalty
 include "Options/Soccer/Penalty/penalty_agent.xabsl";
 include "Options/Soccer/Penalty/penalty_kicker.xabsl";
+include "Options/Soccer/Penalty/penalty_goalie.xabsl";
 include "Options/Soccer/Penalty/penalty_decide_state_and_role.xabsl";
 
 // Soccer-Tests
