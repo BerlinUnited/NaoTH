@@ -302,6 +302,7 @@ include "Options/Test/team/team_go_to_ball.xabsl";
 
 /** The new soccer competition agent */
 // format: agent <name in RC>("<description>", <name_of_option>);
+// <name in RC> is used by the xabslengine to set the agent
 agent soccer_agent("Cool Soccer Agent", soccer_agent);
 
 
