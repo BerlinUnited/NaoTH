@@ -9,8 +9,7 @@ option penalty_decide_state_and_role
     // TODO maybe make sure that in set the players look for ball and opponent?
     else if(game.current_mode == playing)
     {
-      //TODO this should not be dependent on player number but on own/opp kickoff
-      if(game.player_number == 1)
+      if(!game.own_kickoff)
         goto play_goalie;
       else
         goto play_kicker;
