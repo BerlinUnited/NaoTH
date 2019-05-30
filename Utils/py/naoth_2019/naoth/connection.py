@@ -1,7 +1,7 @@
 import asyncio
 import struct
 
-from naoth.protobuf.Messages_pb2 import CMD
+from naoth.messages.Messages_pb2 import CMD
 
 
 class Relay:

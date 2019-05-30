@@ -3,7 +3,7 @@ import logging
 import struct
 
 # protobuf
-from naoth.protobuf import CommonTypes_pb2, Framework_Representations_pb2, Messages_pb2, Representations_pb2, \
+from naoth.messages import CommonTypes_pb2, Framework_Representations_pb2, Messages_pb2, Representations_pb2, \
     TeamMessage_pb2, AudioData_pb2
 
 logger = logging.getLogger(__name__)
