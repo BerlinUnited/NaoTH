@@ -26,11 +26,11 @@
 
 BEGIN_DECLARE_MODULE(NoGreenObstacleDetector)
   REQUIRE(CameraInfo)
-  REQUIRE(CameraInfoTop)
+  //REQUIRE(CameraInfoTop)
   REQUIRE(CameraMatrix)
-  REQUIRE(CameraMatrixTop)
+  //REQUIRE(CameraMatrixTop)
   REQUIRE(BallDetectorIntegralImage)
-  REQUIRE(BallDetectorIntegralImageTop)
+  //REQUIRE(BallDetectorIntegralImageTop)
   REQUIRE(MotionStatus)
   REQUIRE(BallModel)
 
@@ -97,9 +97,6 @@ private:
     // maximal green density witch still is classified as an obstacle
     double max_green_density;
   } params;
-
-  DOUBLE_CAM_REQUIRE(NoGreenObstacleDetector, BallDetectorIntegralImage)
-  DOUBLE_CAM_REQUIRE(NoGreenObstacleDetector, CameraInfo)
 };
 
 #endif // NOGREENOBSTACLEDETECTOR_H

@@ -6,7 +6,7 @@ NoGreenObstacleDetector::NoGreenObstacleDetector():
   detector_range(params.detector_range),
   ball_offset(params.ball_offset)
 {
-  DEBUG_REQUEST_REGISTER("Vision:NoGreenObstacleDetector:draw_detector_field", "", false);
+  //DEBUG_REQUEST_REGISTER("Vision:NoGreenObstacleDetector:draw_detector_field", "", false);
   DEBUG_REQUEST_REGISTER("Vision:NoGreenObstacleDetector:draw_detector_behind_ball", "", false);
   DEBUG_REQUEST_REGISTER("Vision:NoGreenObstacleDetector:draw_ball_pos", "", false);
   getDebugParameterList().add(&params);
@@ -105,9 +105,9 @@ bool NoGreenObstacleDetector::projectDetector(DetectorField& detectorField, Dete
 
 void NoGreenObstacleDetector::execute()
 {
+  /*
   getVisionObstacle().valid = false;
-  getVisionObstaclePreview().valid = false;
-  getObstacleBehindBall().valid = false;
+  getVisionObstaclePreview().valid = false;  
 
   if(detector_parameters_changed()) {
     create_detector_on_field(detectorField, detector_field_offset);
@@ -207,64 +207,76 @@ void NoGreenObstacleDetector::execute()
       getVisionObstaclePreview().onTheLeft = false;
     }
   }
+  */
+
+  getObstacleBehindBall().valid = false;
+  detector_parameters_changed();
 
   DetectorField detectorBehindBall;
-  create_detector_behind_ball(detectorBehindBall);
-
-  DEBUG_REQUEST("Vision:NoGreenObstacleDetector:draw_detector_behind_ball",
-    FIELD_DRAWING_CONTEXT;
-    PEN("0080FF", 5);
-    DetectorField& detector = detectorBehindBall;
-    LINE(detector.edges[0].x, detector.edges[0].y, detector.edges[1].x, detector.edges[1].y);
-    LINE(detector.edges[1].x, detector.edges[1].y, detector.edges[3].x, detector.edges[3].y);
-    LINE(detector.edges[2].x, detector.edges[2].y, detector.edges[3].x, detector.edges[3].y);
-    LINE(detector.edges[0].x, detector.edges[0].y, detector.edges[2].x, detector.edges[2].y);
-  );
-
-  DetectorImage detectorImageBehindBall;
-  succes = projectDetector(detectorBehindBall, detectorImageBehindBall);
-  DEBUG_REQUEST("Vision:NoGreenObstacleDetector:draw_detector_behind_ball",
-    IMAGE_DRAWING_CONTEXT;
-    if (succes) {
-      PEN("FF69B4", 5);
-    } else {
-      PEN("FF4D4D", 5);
-    }
-    BOX(detectorImageBehindBall.minX(), detectorImageBehindBall.minY(), detectorImageBehindBall.maxX(), detectorImageBehindBall.maxY());
-  );
+  bool succes = create_detector_behind_ball(detectorBehindBall);
   if(succes) {
-    // calculate green density
-    double green_density = (double) detectorImageBehindBall.green(getBallDetectorIntegralImage()) / detectorImageBehindBall.pixels();
-    double green_density_left = (double) detectorImageBehindBall.greenLeft(getBallDetectorIntegralImage()) / (detectorImageBehindBall.pixels()/2);
-    double green_density_right = (double) detectorImageBehindBall.greenRight(getBallDetectorIntegralImage()) / (detectorImageBehindBall.pixels()/2);
-
     DEBUG_REQUEST("Vision:NoGreenObstacleDetector:draw_detector_behind_ball",
       FIELD_DRAWING_CONTEXT;
-      DetectorField& detector = detectorBehindBall;
-
       PEN("0080FF", 5);
-      std::ostringstream stringStream;
-      stringStream << green_density * 100 << '%';
-      TEXT_DRAWING(detector.edges[0].x, detector.edges[0].y, stringStream.str());
-      stringStream.str("");
-
-      stringStream << green_density_left * 100 << '%';
-      TEXT_DRAWING(detector.edges[0].x, detector.edges[0].y - 1000, stringStream.str());
-      stringStream.str("");
-
-      stringStream << green_density_right * 100 << '%';
-      TEXT_DRAWING(detector.edges[0].x, detector.edges[0].y + 1000, stringStream.str());
+      DetectorField& detector = detectorBehindBall;
+      LINE(detector.edges[0].x, detector.edges[0].y, detector.edges[1].x, detector.edges[1].y);
+      LINE(detector.edges[1].x, detector.edges[1].y, detector.edges[3].x, detector.edges[3].y);
+      LINE(detector.edges[2].x, detector.edges[2].y, detector.edges[3].x, detector.edges[3].y);
+      LINE(detector.edges[0].x, detector.edges[0].y, detector.edges[2].x, detector.edges[2].y);
     );
 
-    // set representation if detector is occupied
-    getObstacleBehindBall().valid = true;
-    getObstacleBehindBall().isOccupied = green_density <= params.max_green_density;
-    if (getObstacleBehindBall().isOccupied) {
-      getObstacleBehindBall().onTheRight = green_density_right <= green_density_left;
-      getObstacleBehindBall().onTheLeft = green_density_right > green_density_left;
-    } else {
-      getObstacleBehindBall().onTheRight = false;
-      getObstacleBehindBall().onTheLeft = false;
+    DetectorImage detectorImageBehindBall;
+    succes = projectDetector(detectorBehindBall, detectorImageBehindBall);
+    DEBUG_REQUEST("Vision:NoGreenObstacleDetector:draw_detector_behind_ball",
+      IMAGE_DRAWING_CONTEXT;
+      if (succes) {
+        PEN("FF69B4", 5);
+      } else {
+        PEN("FF4D4D", 5);
+      }
+      BOX(detectorImageBehindBall.minX(), detectorImageBehindBall.minY(),
+          detectorImageBehindBall.maxX(), detectorImageBehindBall.maxY());
+    );
+    if(succes) {
+      // calculate green density
+      double green_density = (double)
+          detectorImageBehindBall.green(getBallDetectorIntegralImage()) /
+          detectorImageBehindBall.pixels();
+      double green_density_left = (double)
+          detectorImageBehindBall.greenLeft(getBallDetectorIntegralImage()) /
+          (detectorImageBehindBall.pixels()/2);
+      double green_density_right = (double)
+          detectorImageBehindBall.greenRight(getBallDetectorIntegralImage()) /
+          (detectorImageBehindBall.pixels()/2);
+
+      DEBUG_REQUEST("Vision:NoGreenObstacleDetector:draw_detector_behind_ball",
+        FIELD_DRAWING_CONTEXT;
+        DetectorField& detector = detectorBehindBall;
+
+        PEN("0080FF", 5);
+        std::ostringstream stringStream;
+        stringStream << green_density * 100 << '%';
+        TEXT_DRAWING(detector.edges[0].x, detector.edges[0].y, stringStream.str());
+        stringStream.str("");
+
+        stringStream << green_density_left * 100 << '%';
+        TEXT_DRAWING(detector.edges[0].x, detector.edges[0].y - 1000, stringStream.str());
+        stringStream.str("");
+
+        stringStream << green_density_right * 100 << '%';
+        TEXT_DRAWING(detector.edges[0].x, detector.edges[0].y + 1000, stringStream.str());
+      );
+
+      // set representation if detector is occupied
+      getObstacleBehindBall().valid = true;
+      getObstacleBehindBall().isOccupied = green_density <= params.max_green_density;
+      if (getObstacleBehindBall().isOccupied) {
+        getObstacleBehindBall().onTheRight = green_density_right <= green_density_left;
+        getObstacleBehindBall().onTheLeft = green_density_right > green_density_left;
+      } else {
+        getObstacleBehindBall().onTheRight = false;
+        getObstacleBehindBall().onTheLeft = false;
+      }
     }
   }
 }
