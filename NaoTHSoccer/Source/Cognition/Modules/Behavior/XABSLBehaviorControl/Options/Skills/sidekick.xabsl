@@ -55,8 +55,7 @@ option sidekick
       motion.walk_speed.x = 0;
       motion.walk_speed.y = 0;
       motion.walk_speed.rot = 0;
-
-      //loook at percept
+      
       head.control_mode = look_at_ball_percept;
     }
   }
@@ -131,7 +130,7 @@ option sidekick
       motion.walk.coordinate = hip;
       motion.walk.style = normal;
 
-      //loook at percept
+      //look at percept
       head.control_mode = look_at_ball_percept;
     }
   }

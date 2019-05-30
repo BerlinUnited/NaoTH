@@ -25,7 +25,7 @@ def fy_1500():
     model.add(Flatten())
     #    model.add(Dense(32))
     # radius, x, y
-    model.add(Dense(3, activation="relu"))
+    model.add(Dense(4, activation="relu"))
 
     return model
 

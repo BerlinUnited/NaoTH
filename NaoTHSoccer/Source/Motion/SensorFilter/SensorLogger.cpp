@@ -7,7 +7,7 @@ SensorLogger::SensorLogger()
   : 
   logfileManager(true)
 {
-  logfileManager.openFile("/tmp/sensor.log");
+  logfileManager.openFile("/dev/shm/sensor.log");
   getDebugParameterList().add(&params);
 }
 
@@ -39,6 +39,8 @@ void SensorLogger::execute()
     LOGSTUFF(AccelerometerData);
     LOGSTUFF(GyrometerData);
     LOGSTUFF(InertialSensorData);
+
+    LOGSTUFF(ButtonData);
 
     //
     LOGSTUFF(MotorJointData);

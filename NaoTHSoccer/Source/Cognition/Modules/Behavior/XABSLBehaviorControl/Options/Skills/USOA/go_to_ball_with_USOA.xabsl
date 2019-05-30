@@ -55,7 +55,7 @@ option go_to_ball_with_USOA
       
       motion.type = walk;
       motion.walk.coordinate = hip;
-      motion.walk.style = normal;
+      motion.walk.style = fast;
 
       motion.walk_speed.x = 0;
       motion.walk_speed.y = -100;
@@ -87,7 +87,7 @@ option go_to_ball_with_USOA
       
       motion.type = walk;
       motion.walk.coordinate = hip;
-      motion.walk.style = normal;
+      motion.walk.style = fast;
 
       motion.walk_speed.x = 0;
       motion.walk_speed.y = 100;

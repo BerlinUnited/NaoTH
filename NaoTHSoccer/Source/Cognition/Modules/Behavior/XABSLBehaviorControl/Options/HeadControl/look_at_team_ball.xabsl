@@ -9,7 +9,7 @@ option look_at_team_ball
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.team.position.x * 250 / vector.abs(x=ball.team.position.x, y=ball.team.position.y);
       head.point_in_world.y = ball.team.position.y * 250 / vector.abs(x=ball.team.position.x, y=ball.team.position.y);
-      head.point_in_world.z = ball.radius; // radius of the ball
+      head.point_in_world.z = ball.radius;
     }
   }
 }

@@ -91,6 +91,7 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:arms_synchronised_with_walk", "set arms request to none", false);
 
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:whistle:listen", "start whistle detection", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:audio:capture", "start start audio capture for 4 channels", false);
 }
 
 void BasicTestBehavior::execute()
@@ -124,7 +125,7 @@ void BasicTestBehavior::execute()
     getMotionRequest().walkRequest.target.translation.x = 0;
   }
 
-  testWhistle();
+  testAudio();
 
 }//end execute
 
@@ -449,7 +450,7 @@ void BasicTestBehavior::testLED() {
 
 } //testLED
 
-void BasicTestBehavior::testWhistle()
+void BasicTestBehavior::testAudio()
 {
   getAudioControl().capture = false;
 
@@ -461,5 +462,10 @@ void BasicTestBehavior::testWhistle()
     } else {
       getSoundPlayData().soundFile.clear();
     }
+  );
+
+  DEBUG_REQUEST("BasicTestBehavior:audio:capture",
+  	  getAudioControl().numChannels = 4;
+	  getAudioControl().capture = true;
   );
 }

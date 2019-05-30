@@ -100,6 +100,7 @@ message BUUserTeamMessage
   optional DoubleVector2 ballVelocity = 16; // since the SPLStandardMessage 2018, we need it here
   optional RobotState robotState = 17 [default=initial];
   optional RobotRole robotRole = 18;
+  optional bool readyToWalk = 19;
 
   optional string key = 100 [default="none"];
 }
