@@ -41,7 +41,6 @@ namespace internal_symbols("Internal Symbols") {
     look_at_ball,
     search_for_ball,
     search_for_ball_goalie,
-    look_at_ball_no_search,
     look_around,
     search_for_goal,
     search_for_goal_opp,
