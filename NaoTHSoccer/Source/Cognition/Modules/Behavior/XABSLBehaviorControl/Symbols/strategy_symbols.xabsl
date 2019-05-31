@@ -44,9 +44,8 @@ namespace strategy("Strategy Symbols") {
   float input goalie.defensive.y;
   float input goalie.defensive.a;
 
-  /** */
-  float input penalty_goalie.pos.x;
-  float input penalty_goalie.pos.y;
+  //float input penalty_goalie.pos.x;
+  //float input penalty_goalie.pos.y;
 
   /** formation */
   float input soccer_strategy.formation.x;
@@ -67,5 +66,46 @@ namespace strategy("Strategy Symbols") {
 
   enum attack.action_type input attack.best_action;
 
+  /** the position of the opponents free kick; it is only valid if x != 0 && y != 0 */
+  float input freekick.pos.x;
+  float input freekick.pos.y;
+
+  // static/default roles
+  enum role.static
+  {
+    unknown,
+    goalie,
+    defender_left,
+    defender_center,
+    defender_right,
+    midfielder_left,
+    midfielder_center,
+    midfielder_right,
+    forward_left,
+    forward_center,
+    forward_right
+  };
+
+  // dynamic/short time roles
+  enum role.dynamic
+  {
+    none,
+    supporter,
+    goalie_supporter,
+    striker
+  };
+  
+  enum role.static input strategy.role;
+  enum role.dynamic input strategy.role_dynamic;
+
+  // default home position
+  float input strategy.position.home.x;
+  float input strategy.position.home.y;
+  // position for own kickoff
+  float input strategy.position.own.x;
+  float input strategy.position.own.y;
+  // position for opp kickoff
+  float input strategy.position.opp.x;
+  float input strategy.position.opp.y;
 }
   

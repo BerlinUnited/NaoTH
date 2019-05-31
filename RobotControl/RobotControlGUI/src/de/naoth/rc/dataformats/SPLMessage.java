@@ -14,9 +14,11 @@ import de.naoth.rc.math.Vector2D;
 import de.naoth.rc.messages.TeamMessageOuterClass;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -25,6 +27,11 @@ import java.util.Arrays;
 public class SPLMessage
 {
     public static final int SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS = 5;
+    /** List of supported versions */
+    public static final List<Integer> SPL_MESSAGE_VERSIONS = Arrays.asList(
+        SPLMessage2017.SPL_STANDARD_MESSAGE_STRUCT_VERSION,
+        SPLMessage2018.SPL_STANDARD_MESSAGE_STRUCT_VERSION
+    );
     
     public static final int BU_CUSTOM_DATA_OFFSET_X32 = 12;
     public static final int BU_CUSTOM_DATA_OFFSET_X64 = 16;
@@ -172,28 +179,41 @@ public class SPLMessage
             || buffer.get() != 'P'
             || buffer.get() != 'L'
             || buffer.get() != ' ') {
-            throw new Exception("Not an SPL Message.");
+            throw new NotSplMessageException();
         }
         
-        byte version = buffer.get();
-        switch(version) {
+        int version = buffer.get();
+        if(version == SPL_MESSAGE_VERSIONS.get(0)) {
             // parse with v2017
-            case SPLMessage2017.SPL_STANDARD_MESSAGE_STRUCT_VERSION:
-                return new SPLMessage2017(buffer);
+            return new SPLMessage2017(buffer);
+        } else if(version == SPL_MESSAGE_VERSIONS.get(1)) {
             // parse with v2018
-            case SPLMessage2018.SPL_STANDARD_MESSAGE_STRUCT_VERSION:
-                return new SPLMessage2018(buffer);
-            default:
-                throw new Exception(
-                    "Wrong version: reveived " + version + 
-                    ", but expected " + SPLMessage2017.SPL_STANDARD_MESSAGE_STRUCT_VERSION + 
-                    " or " + SPLMessage2018.SPL_STANDARD_MESSAGE_STRUCT_VERSION
-                );
+            return new SPLMessage2018(buffer);
+        } else {
+            throw new WrongSplVersionException(version);
         }
     }
 
     public void draw(DrawingCollection drawings, Color robotColor, boolean mirror)
     {
+        // put the penalized players on "the bench"
+        if(user != null &&
+            ((user.hasIsPenalized() && user.getIsPenalized()) || (user.hasRobotState() && user.getRobotState() == TeamMessageOuterClass.RobotState.penalized)))
+        {
+            Pose2D robotPose = mirror ? new Pose2D(4600 - (playerNum * 500), -3300, Math.PI/2) : new Pose2D(-4600 + (playerNum * 500), 3300, -Math.PI/2);
+            // robot
+            drawings.add(new Pen(1.0f, robotColor));
+            drawings.add(new Robot(robotPose.translation.x, robotPose.translation.y, robotPose.rotation));
+
+            // number
+            drawings.add(new Pen(1, Color.RED));
+            Font numberFont = new Font ("Courier New", Font.PLAIN | Font.CENTER_BASELINE, 250);
+            drawings.add(new Text((int) robotPose.translation.x, (int) robotPose.translation.y + 250, 0, "" + playerNum, numberFont));
+            
+            // don't draw anything else
+            return;
+        }
+        
         Vector2D ballPos = new Vector2D(ball_x, ball_y);
         Pose2D robotPose = mirror ? new Pose2D(-pose_x, -pose_y, pose_a + Math.PI)
             : new Pose2D(pose_x, pose_y, pose_a);
@@ -204,9 +224,19 @@ public class SPLMessage
         drawings.add(new Pen(1.0f, robotColor));
         drawings.add(new Robot(robotPose.translation.x, robotPose.translation.y, robotPose.rotation));
         
-        // number
-        drawings.add(new Pen(1, Color.BLACK));
-        drawings.add(new Text((int) robotPose.translation.x, (int) robotPose.translation.y + 150, "" + playerNum));
+        // number, use different colors for the different states
+        switch (user.getRobotState()) {
+            case initial: drawings.add(new Pen(1, Color.WHITE)); break;
+            case ready: drawings.add(new Pen(1, Color.BLUE)); break;
+            case set: drawings.add(new Pen(1, Color.YELLOW)); break;
+            case playing: drawings.add(new Pen(1, Color.BLACK)); break;
+            case finished: drawings.add(new Pen(1, Color.LIGHT_GRAY)); break;
+            case penalized: drawings.add(new Pen(1, Color.RED)); break;
+            default: drawings.add(new Pen(1, Color.PINK)); break;
+        }
+        Font numberFont = new Font ("Courier New", Font.PLAIN | Font.CENTER_BASELINE, 250);
+        double fontRotation = 0;//robotPose.rotation+Math.PI/2; // rotate in the direction of the robots
+        drawings.add(new Text((int) robotPose.translation.x, (int) robotPose.translation.y + 250, fontRotation, "" + playerNum, numberFont));
 
         // striker
         if (intention == 3) {
@@ -221,12 +251,12 @@ public class SPLMessage
             drawings.add(new FillOval((int) globalBall.x, (int) globalBall.y, 65, 65));
 
             // add a surrounding black circle so the ball is easier to see
-            drawings.add(new Pen(1, Color.black));
+            drawings.add(new Pen(1, robotColor));
             drawings.add(new Circle((int) globalBall.x, (int) globalBall.y, 65));
             
             {
                 // show the time since the ball was last seen
-                drawings.add(new Pen(1, Color.black));
+                drawings.add(new Pen(1, robotColor));
                 double t = ballAge;
 
                 Text text = new Text(
@@ -260,12 +290,17 @@ public class SPLMessage
         if(user != null)
         {
             double[] tb = {user.getTeamBall().getX(), user.getTeamBall().getY()};
-            if(!Double.isInfinite(tb[0]) && !Double.isInfinite(tb[1])) {
+            if(user.hasTeamBall() && !Double.isInfinite(tb[0]) && !Double.isInfinite(tb[1])) {
                 // ... draw the teamball position
                 drawings.add(new Pen(5.0f, robotColor));
                 drawings.add(new Circle((int) tb[0], (int) tb[1], 65));
                 drawings.add(new Pen(robotColor, new BasicStroke(10, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{25, 50, 75, 100}, 0)));
                 drawings.add(new Arrow((int) robotPose.translation.x, (int) robotPose.translation.y, (int) tb[0], (int) tb[1]));
+            }
+            
+            if(user.getWantsToBeStriker() && !user.getWasStriker()) {
+                drawings.add(new Pen(32, Color.YELLOW));
+                drawings.add(new Circle((int) robotPose.translation.x, (int) robotPose.translation.y, 150));
             }
         }
     }
@@ -300,5 +335,23 @@ public class SPLMessage
     
     public static int size() {
         return Integer.max(SPLMessage2017.SPL_STANDARD_MESSAGE_SIZE, SPLMessage2018.SPL_STANDARD_MESSAGE_SIZE);
+    }
+    
+    /**
+     * Exception for invalid spl message header.
+     */
+    public static class NotSplMessageException extends Exception {
+        public NotSplMessageException() {
+            super("Not an SPL Message.");
+        }
+    }
+    
+    /**
+     * Exception for invalid/unknown spl message version.
+     */
+    public static class WrongSplVersionException extends Exception {
+        public WrongSplVersionException(int version) {
+            super("Wrong version: reveived " + version + ", but expected one of " + SPL_MESSAGE_VERSIONS);
+        }
     }
 }

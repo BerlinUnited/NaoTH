@@ -19,8 +19,10 @@ RansacLineDetectorOnGraphs::~RansacLineDetectorOnGraphs()
 
 void RansacLineDetectorOnGraphs::execute()
 {
-  getLinePercept().reset();
-  getLinePerceptTop().reset();
+  getGraphRansacCirclePercept().reset();
+  getGraphRansacCirclePerceptTop().reset();
+
+  getShortLinePercept().reset();
 
   DEBUG_REQUEST("Vision:RansacLineDetectorOnGraphs:draw_edgels_field",
     FIELD_DRAWING_CONTEXT;
@@ -67,73 +69,88 @@ void RansacLineDetectorOnGraphs::execute()
   for (std::vector<GraphEdgel>& subgraphEdgels: graphEdgels) {
     Math::LineSegment result;
     if (ransac(result, subgraphEdgels, getLineGraphPercept().lineGraphs)) {
-      LinePercept::FieldLineSegment fieldLine;
-      fieldLine.lineOnField = result;
-      getLinePercept().extended_lines.push_back(fieldLine);
+      //LinePercept::FieldLineSegment fieldLine;
+      //fieldLine.lineOnField = result;
+      //getLinePercept().extended_lines.push_back(fieldLine);
 
-      getLinePercept().short_lines.push_back(fieldLine);
+      //getLinePercept().short_lines.push_back(fieldLine);
+      getShortLinePercept().fieldLineSegments.push_back(result);
     }
   }
 
   for (std::vector<GraphEdgel>& subgraphEdgels: graphEdgelsTop) {
     Math::LineSegment result;
     if (ransac(result, subgraphEdgels, getLineGraphPercept().lineGraphsTop)) {
-      LinePercept::FieldLineSegment fieldLine;
-      fieldLine.lineOnField = result;
-      getLinePerceptTop().extended_lines.push_back(fieldLine);
+      //LinePercept::FieldLineSegment fieldLine;
+      //fieldLine.lineOnField = result;
+      //getLinePerceptTop().extended_lines.push_back(fieldLine);
 
       // Top and Bottom graphs are provided in Bottom Line Percept
-      getLinePercept().short_lines.push_back(fieldLine);
+      //getLinePercept().short_lines.push_back(fieldLine);
+      getShortLinePercept().fieldLineSegments.push_back(result);
     }
   }
 
-  Ellipse circResult;
+  if (params.enable_ellipse_fitting) {
+    Ellipse circResult;
 
-  getLinePercept().middleCircleWasSeen = false;
+    // BOTTOM IMAGE
+    if (ransacEllipse(circResult, graphEdgels, getLineGraphPercept().lineGraphs)) {
+      double c[2];
+      circResult.getCenter(c);
 
-  if (ransacEllipse(circResult, graphEdgels, getLineGraphPercept().lineGraphs)) {
-    getLinePercept().middleCircleWasSeen = true;
+      //getLinePercept().middleCircleWasSeen = true;
+      //getLinePercept().middleCircleCenter.x = c[0];
+      //getLinePercept().middleCircleCenter.y = c[1];
+      Vector2d center(c[0], c[1]);
+      getGraphRansacCirclePercept().set(center);
 
-    double c[2];
-    circResult.getCenter(c);
-    getLinePercept().middleCircleCenter.x = c[0];
-    getLinePercept().middleCircleCenter.y = c[1];
+      DEBUG_REQUEST("Vision:RansacLineDetectorOnGraphs:draw_circle_field",
+        FIELD_DRAWING_CONTEXT;
+        double a[2];
+        circResult.axesLength(a);
 
-    DEBUG_REQUEST("Vision:RansacLineDetectorOnGraphs:draw_circle_field",
-      FIELD_DRAWING_CONTEXT;
-      double a[2];
-      circResult.axesLength(a);
+        PEN("009900", 50);
 
-      PEN("009900", 50);
+        CIRCLE(c[0], c[1], 30);
+        OVAL_ROTATED(c[0], c[1], a[0], a[1], circResult.rotationAngle());
+      );
+    }
+    // TOP IMAGE
+    if (ransacEllipse(circResult, graphEdgelsTop, getLineGraphPercept().lineGraphsTop)) {
+      double c[2];
+      circResult.getCenter(c);
 
-      CIRCLE(c[0], c[1], 30);
-      OVAL_ROTATED(c[0], c[1], a[0], a[1], circResult.rotationAngle());
-    );
-  }
+      //getLinePerceptTop().middleCircleWasSeen = true;
+      //getLinePerceptTop().middleCircleCenter.x = c[0];
+      //getLinePerceptTop().middleCircleCenter.y = c[1];
+      Vector2d center(c[0], c[1]);
+      getGraphRansacCirclePerceptTop().set(center);
 
-  if (ransacEllipse(circResult, graphEdgelsTop, getLineGraphPercept().lineGraphsTop)) {
-    getLinePercept().middleCircleWasSeen = true;
+      DEBUG_REQUEST("Vision:RansacLineDetectorOnGraphs:draw_circle_field_top",
+        FIELD_DRAWING_CONTEXT;
+        double a[2];
+        circResult.axesLength(a);
 
-    double c[2];
-    circResult.getCenter(c);
-    getLinePercept().middleCircleCenter.x = c[0];
-    getLinePercept().middleCircleCenter.y = c[1];
+        PEN("009900", 50);
 
-    DEBUG_REQUEST("Vision:RansacLineDetectorOnGraphs:draw_circle_field_top",
-      FIELD_DRAWING_CONTEXT;
-      double a[2];
-      circResult.axesLength(a);
-
-      PEN("009900", 50);
-
-      CIRCLE(c[0], c[1], 30);
-      OVAL_ROTATED(c[0], c[1], a[0], a[1], circResult.rotationAngle());
-    );
+        CIRCLE(c[0], c[1], 30);
+        OVAL_ROTATED(c[0], c[1], a[0], a[1], circResult.rotationAngle());
+      );
+    }
   }
 
   DEBUG_REQUEST("Vision:RansacLineDetectorOnGraphs:draw_lines_field",
     FIELD_DRAWING_CONTEXT;
+    for (const Math::LineSegment line : getShortLinePercept().fieldLineSegments) {
+      PEN("FF0000", 30);
+      LINE(
+        line.begin().x, line.begin().y,
+        line.end().x, line.end().y
+      );
+    }
 
+    /*
     if (!getLinePercept().extended_lines.empty()) {
       for(const LinePercept::FieldLineSegment& line: getLinePercept().extended_lines)
       {
@@ -151,7 +168,7 @@ void RansacLineDetectorOnGraphs::execute()
           line.lineOnField.begin().x, line.lineOnField.begin().y,
           line.lineOnField.end().x, line.lineOnField.end().y);
       }
-    }
+    }*/
 
     for(const std::vector<GraphEdgel>& subgraphEdgels : graphEdgels) {
       for (const GraphEdgel& ge : subgraphEdgels) {

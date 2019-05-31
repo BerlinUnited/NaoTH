@@ -1,15 +1,24 @@
 option search_ball
-{  
+{
+  common decision
+  {
+    if(ball.know_where_itis)
+      goto finish;
+  }
 
-  // stop first
-  initial state walk_back
+  initial state decide
   {
     decision {
-      if(ball.know_where_itis)
-        goto finish;
-      else //if(state_time > 2000)
+      // if we last saw the ball in >2m distance, we just start looking left/right
+      else if(ball.distance > 2000) // 2m
       {
-        //goto start;
+        // search for ball the ball in the direction last seen
+        if(ball.preview.y > 0)
+          goto search_ball_simple_left;
+        else
+          goto search_ball_simple_right;
+      } else {
+        // otherwise walk back for some mm and search for ball the ball in the direction last seen
         if(ball.preview.y > 0)
           goto search_ball_rot_left;
         else
@@ -17,25 +26,22 @@ option search_ball
       }
     }
     action {
-      motion.type = walk;
-      motion.walk_speed.x = -50; // mm
-      motion.walk_speed.y = 0; // mm
-      motion.walk_speed.rot = 0; //deg
-      motion.walk.coordinate = hip;
+      path.routine = none;
+      motion.type = stand;
       head.control_mode = search_for_ball;
     }
   }
-
-
+/*
+  // stand, before starting to walk back
   state start
   {
     decision {
-      if(executed_motion.type == stand)
+      else if(executed_motion.type == stand)
       {
-	      if(ball.preview.y > 0)
-	        goto search_ball_rot_left;
-	      else
-	        goto search_ball_rot_right;
+        if(ball.preview.y > 0)
+          goto search_ball_rot_left;
+        else
+          goto search_ball_rot_right;
       }
       else
         stay;
@@ -46,43 +52,43 @@ option search_ball
       head.control_mode = search_for_ball;
     }
   }
-  
+*/
   state search_ball_rot_left
   {
     decision {
-      if(action_done)
+      else if(action_done)
         goto search_ball_simple_right;
       else
         stay;
     }
     action {
-      search_ball_back_rot(search_direction = left);
+      search_ball_back_rot(distance = 250, max_rotation = 30, search_direction = left);
     }
   }
 
  state search_ball_rot_right
   {
     decision {
-      if(action_done)
+      else if(action_done)
         goto search_ball_simple_left;
       else
         stay;
     }
     action {
-      search_ball_back_rot(search_direction = right);
+      search_ball_back_rot(distance = 250, max_rotation = 30, search_direction = right);
     }
   }
 
   state search_ball_simple_left
   {
     decision {
-      if(action_done)
+      else if(action_done)
         goto finish;
       else
         stay;
     }
     action {
-      search_ball_simple(search_direction = left);
+      search_ball_turning(search_direction = left);
       motion.walk.style = stable;
     }
   }
@@ -90,13 +96,13 @@ option search_ball
   state search_ball_simple_right
   {
     decision {
-      if(action_done)
+      else if(action_done)
         goto finish;
       else
         stay;
     }
     action {
-      search_ball_simple(search_direction = right);
+      search_ball_turning(search_direction = right);
       motion.walk.style = stable;
     }
   }

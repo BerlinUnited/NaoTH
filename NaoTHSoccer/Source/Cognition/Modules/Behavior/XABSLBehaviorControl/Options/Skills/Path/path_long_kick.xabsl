@@ -57,12 +57,11 @@ option path_long_kick
       motion.walk_speed.y = ball.preview.right_foot.y;
       motion.walk_speed.rot = 0;
 
-      //look at percept
       head.control_mode = none;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
-      head.point_in_world.z = ball.radius; // radius of the ball
+      head.point_in_world.z = ball.radius;
     }
   }
 
@@ -102,7 +101,7 @@ option path_long_kick
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
-      head.point_in_world.z = ball.radius; // radius of the ball
+      head.point_in_world.z = ball.radius;
     }
   }
   

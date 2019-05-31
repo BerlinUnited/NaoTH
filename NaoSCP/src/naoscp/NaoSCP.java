@@ -114,6 +114,8 @@ public class NaoSCP extends javax.swing.JPanel {
 
     public void setEnabledAll(boolean v) {
         SwingTools.setEnabled(this, v);
+        // when enabling, check whether the config should be enabled too
+        if(v) { naoTHPanel.setConfigEditable(); }
     }
 
     private void setupNetwork(File setupDir, int robotNumber) throws IOException {
@@ -157,6 +159,16 @@ public class NaoSCP extends javax.swing.JPanel {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
+        popupMenu = new javax.swing.JPopupMenu();
+        miShutdown = new javax.swing.JMenuItem();
+        miRestartNao = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        miRestartNaoth = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        miMute = new javax.swing.JMenuItem();
+        miUnmute = new javax.swing.JMenuItem();
+        miSetVolume80 = new javax.swing.JMenuItem();
+        miSetVolume40 = new javax.swing.JMenuItem();
         netwokPanel = new naoscp.components.NetwokPanel();
         naoTHPanel = new naoscp.components.NaoTHPanel();
         statusBarPanel = new javax.swing.JPanel();
@@ -166,9 +178,85 @@ public class NaoSCP extends javax.swing.JPanel {
         btWriteToStick = new javax.swing.JButton();
         btSetNetwork = new javax.swing.JButton();
         btInintRobot = new javax.swing.JButton();
+        btnActions = new javax.swing.JToggleButton();
         logPanel = new javax.swing.JPanel();
         logTextPanel = new naoscp.components.LogTextPanel();
         jProgressBar = new javax.swing.JProgressBar();
+
+        popupMenu.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                popupMenuPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
+
+        miShutdown.setText("Shutdown nao");
+        miShutdown.setToolTipText("Shutdown the full nao system");
+        miShutdown.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miShutdownActionPerformed(evt);
+            }
+        });
+        popupMenu.add(miShutdown);
+
+        miRestartNao.setText("Restart nao");
+        miRestartNao.setToolTipText("Restarts the full nao system");
+        miRestartNao.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miRestartNaoActionPerformed(evt);
+            }
+        });
+        popupMenu.add(miRestartNao);
+        popupMenu.add(jSeparator1);
+
+        miRestartNaoth.setText("Restart naoth");
+        miRestartNaoth.setToolTipText("Restart the naoth process");
+        miRestartNaoth.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miRestartNaothActionPerformed(evt);
+            }
+        });
+        popupMenu.add(miRestartNaoth);
+        popupMenu.add(jSeparator2);
+
+        miMute.setText("Mute");
+        miMute.setToolTipText("Muting the nao");
+        miMute.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miMuteActionPerformed(evt);
+            }
+        });
+        popupMenu.add(miMute);
+
+        miUnmute.setText("Un-Mute");
+        miUnmute.setToolTipText("Un-muting the nao");
+        miUnmute.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miUnmuteActionPerformed(evt);
+            }
+        });
+        popupMenu.add(miUnmute);
+
+        miSetVolume80.setText("Volume: 80%");
+        miSetVolume80.setToolTipText("Sets the speaker volume to 80%");
+        miSetVolume80.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miSetVolume80ActionPerformed(evt);
+            }
+        });
+        popupMenu.add(miSetVolume80);
+
+        miSetVolume40.setText("Volume: 40%");
+        miSetVolume40.setToolTipText("Sets the speaker volume to 40%");
+        miSetVolume40.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miSetVolume40ActionPerformed(evt);
+            }
+        });
+        popupMenu.add(miSetVolume40);
 
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
@@ -211,7 +299,6 @@ public class NaoSCP extends javax.swing.JPanel {
 
         btDeploy.setText("Send to Robot");
         btDeploy.setToolTipText("Send to Robot");
-        btDeploy.setMinimumSize(new java.awt.Dimension(114, 24));
         btDeploy.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btDeployActionPerformed(evt);
@@ -251,6 +338,15 @@ public class NaoSCP extends javax.swing.JPanel {
         });
         statusBarPanel.add(btInintRobot);
 
+        btnActions.setText("▲");
+        btnActions.setMargin(new java.awt.Insets(2, -4, 2, -4));
+        btnActions.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnActionsActionPerformed(evt);
+            }
+        });
+        statusBarPanel.add(btnActions);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -284,69 +380,87 @@ public class NaoSCP extends javax.swing.JPanel {
     private void btDeployActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btDeployActionPerformed
         this.logTextPanel.clear();
 
-        if(txtRobotNumber.getText().trim().isEmpty()) {
+        if(!txtRobotNumber.getText().trim().isEmpty()) {
+            setEnabledAll(false);
+            new Thread(() -> {
+                // create deploy directory in systems 'temp' directory
+                final File targetDir = createTemporaryDirectory("nao_scp_deploy_");
+                if(targetDir != null) {
+                    try {
+                        long start = System.currentTimeMillis();
+
+                        // STEP 1: create the deploy directory for the playerNumber
+                        File deployDir = new File(targetDir, "deploy");
+
+                        // delete the target directory if it's existing,
+                        // so we have a fresh new directory
+                        if (deployDir.isDirectory()) {
+                            FileUtils.deleteDir(deployDir);
+                        }
+
+                        if (!deployDir.mkdirs()) {
+                            Logger.getGlobal().log(Level.SEVERE, "Could not create deploy out directory");
+                        } else {
+                            // try to establish a connection to the robot before assembling the files
+                            String robotIp = getIpAddress();
+                            Scp scp = new Scp(robotIp, "nao", "nao");
+                            scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
+                            Scp.CommandStream shell = scp.getShell();
+                            
+                            //NaoSCP.this.setEnabledAll(false);
+                            naoTHPanel.getAction().run(deployDir);
+
+                            FileUtils.copyFiles(new File(deployStickScriptPath), targetDir);
+
+                            // zip files
+                            File deployZip = new File(targetDir, "deploy.zip");
+                            Logger.getGlobal().log(Level.INFO, "ZIP files to " + deployZip.getPath());
+                            FileUtils.zipDirectory(deployDir, deployZip);
+
+                            // send stuff to robot
+
+                            //Logger.getGlobal().log(Level.INFO, "mkdir /home/nao/tmp");
+                            //scp.mkdir("/home/nao/tmp"); // just in case it doesn't exist
+                            //Logger.getGlobal().log(Level.INFO, "rm -rf /home/nao/tmp/*");
+                            //scp.cleardir("/home/nao/tmp");
+
+                            // HACK: string obfuscation (echo -e '\\x44\\x4F\\x4E\\x45') prints 'DONE'
+                            // we wait until echo is executed to be sure that the command is done
+                            shell.run("mkdir /home/nao/tmp; echo -e '\\x44\\x4F\\x4E\\x45'", "DONE");
+                            shell.run("rm -rf /home/nao/tmp/*; echo -e '\\x44\\x4F\\x4E\\x45'", "DONE");
+
+                            //scp.put(deployDir, "/home/nao/tmp/deploy");
+                            scp.put(deployZip, "/home/nao/tmp/deploy.zip");
+
+                            scp.put(new File(deployStickScriptPath), "/home/nao/tmp/setup.sh");
+
+                            //scp.channel.chown(WIDTH, utilsPath);
+                            scp.chmod(755, "/home/nao/tmp/setup.sh");
+                            //scp.run("/home/nao/tmp", "./setup.sh");
+
+                            // HACK: always stop naoth before proceeding
+                            //                        shell.run("naoth stop", "killing naoth cognition processes");
+                            shell.run("su", "Password:");
+                            shell.run("root");
+                            shell.run("cd /home/nao/tmp/");
+                            shell.run("sudo -u nao unzip -q deploy.zip; ./setup.sh", "DONE");
+                            //shell.run("./setup.sh", "DONE");
+
+                            scp.disconnect();
+
+                            Logger.getGlobal().log(Level.INFO, String.format("DONE (%.2f)", (System.currentTimeMillis() - start)/1000.0));
+
+                            //NaoSCP.this.setEnabledAll(true);
+                            }
+                        } catch (JSchException | SftpException | IOException | NaoSCPException ex) {
+                            Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
+                        }
+                    }
+                setEnabledAll(true);
+            }).start();
+        } else {
             Logger.getGlobal().log(Level.WARNING, "Missing robot number!");
-            return;
         }
-
-        // create deploy directory in systems 'temp' directory
-        final File targetDir = createTemporaryDirectory("nao_scp_deploy_");
-        if(targetDir == null) {return;}
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    // STEP 1: create the deploy directory for the playerNumber
-                    File deployDir = new File(targetDir, "deploy");
-
-                    // delete the target directory if it's existing, 
-                    // so we have a fresh new directory
-                    if (deployDir.isDirectory()) {
-                        FileUtils.deleteDir(deployDir);
-                    }
-
-                    if (!deployDir.mkdirs()) {
-                        Logger.getGlobal().log(Level.SEVERE, "Could not create deploy out directory");
-                    } else {
-                        //NaoSCP.this.setEnabledAll(false);
-                        naoTHPanel.getAction().run(deployDir);
-
-                        FileUtils.copyFiles(new File(deployStickScriptPath), targetDir);
-
-                        // send stuff to robot
-                        String robotIp = getIpAddress();
-                        Scp scp = new Scp(robotIp, "nao", "nao");
-                        
-                        scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
-
-                        scp.mkdir("/home/nao/tmp"); // just in case it doesn't exist
-                        scp.cleardir("/home/nao/tmp");
-                        scp.put(deployDir, "/home/nao/tmp/deploy");
-                        scp.put(new File(deployStickScriptPath), "/home/nao/tmp/setup.sh");
-
-                        //scp.channel.chown(WIDTH, utilsPath);
-                        scp.chmod(755, "/home/nao/tmp/setup.sh");
-                        //scp.run("/home/nao/tmp", "./setup.sh");
-
-                        Scp.CommandStream shell = scp.getShell();
-                        // HACK: always stop naoth before proceeding
-//                        shell.run("naoth stop", "killing naoth cognition processes");
-                        shell.run("su", "Password:");
-                        shell.run("root");
-                        shell.run("cd /home/nao/tmp/");
-                        shell.run("./setup.sh", "DONE");
-
-                        scp.disconnect();
-
-                        Logger.getGlobal().log(Level.INFO, "DONE");
-                        //NaoSCP.this.setEnabledAll(true);
-                    }
-                } catch (JSchException | SftpException | IOException | NaoSCPException ex) {
-                    Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
-                }
-            }
-        }).start();
     }//GEN-LAST:event_btDeployActionPerformed
 
     private String getIpAddress() throws NaoSCPException, UnknownHostException, IOException {
@@ -396,74 +510,70 @@ public class NaoSCP extends javax.swing.JPanel {
             
             final File targetDir = deployDialog.getSelectedFile();
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-
-                    setEnabledAll(false);
+            new Thread(() -> {
+                setEnabledAll(false);
+                
+                Logger.getGlobal().log(Level.INFO, "----" + dateFormat.format(new Date()) + "---");
+                Logger.getGlobal().log(Level.INFO, "Write to USB: " + targetDir);
+                
+                try {
+                    // STEP 1: create the deploy directory for the playerNumber
+                    File deployDir = new File(targetDir, "deploy");
                     
-                    Logger.getGlobal().log(Level.INFO, "----" + dateFormat.format(new Date()) + "---");
-                    Logger.getGlobal().log(Level.INFO, "Write to USB: " + targetDir);
-                    
-                    try {
-                        // STEP 1: create the deploy directory for the playerNumber
-                        File deployDir = new File(targetDir, "deploy");
-
-                        // delete the target directory if it's existing, 
-                        // so we have a fresh new directory
-                        if (deployDir.isDirectory()) {
-                            // backup 
-                            File commentFile = new File(deployDir, "comment.txt");
-                            if (commentFile.exists()) {
-                                String backup_name = FileUtils.readFile(commentFile);
-
-                                File backup_dir = new File(targetDir, backup_name);
-                                if(backup_dir.exists()) {
-                                    Logger.getGlobal().log(Level.WARNING, String.format("Could not back up the deploy directory, file already exists: %s", backup_dir.getAbsolutePath()));
-                                } else if (deployDir.renameTo(backup_dir)) {
-                                    deployDir = new File(targetDir, "deploy");
-                                } else {
-                                    Logger.getGlobal().log(Level.WARNING, String.format("Could not back up the deploy directory %s to %s", deployDir.getAbsolutePath(), backup_dir.getAbsolutePath()));
-                                }
+                    // delete the target directory if it's existing,
+                    // so we have a fresh new directory
+                    if (deployDir.isDirectory()) {
+                        // backup
+                        File commentFile = new File(deployDir, "comment.txt");
+                        if (commentFile.exists()) {
+                            String backup_name = FileUtils.readFile(commentFile);
+                            
+                            File backup_dir = new File(targetDir, backup_name);
+                            if(backup_dir.exists()) {
+                                Logger.getGlobal().log(Level.WARNING, String.format("Could not back up the deploy directory, file already exists: %s", backup_dir.getAbsolutePath()));
+                            } else if (deployDir.renameTo(backup_dir)) {
+                                deployDir = new File(targetDir, "deploy");
                             } else {
-                                FileUtils.deleteDir(deployDir);
+                                Logger.getGlobal().log(Level.WARNING, String.format("Could not back up the deploy directory %s to %s", deployDir.getAbsolutePath(), backup_dir.getAbsolutePath()));
                             }
+                        } else {
+                            FileUtils.deleteDir(deployDir);
                         }
-
-                        if (!deployDir.mkdirs()) {
-                            //Logger.getGlobal().log(Level.SEVERE, "Could not create deploy out directory");
-                            throw new NaoSCPException("Could not create deploy out directory");
-                        }
-
-                        //NaoSCP.this.setEnabledAll(false);
-                        naoTHPanel.getAction().run(deployDir);
-                        FileUtils.copyFiles(new File(deployStickScriptPath), targetDir);
-                        //NaoSCP.this.setEnabledAll(true);
-
-                        // get the current date and time
-                        //String ISO_DATE_FORMAT = "yyyy-MM-dd";
-                        String ISO_DATE_TIME_FORMAT = "yyyy-MM-dd-HH-mm-ss";
-                        SimpleDateFormat s = new SimpleDateFormat(ISO_DATE_TIME_FORMAT);
-                        String backup_tag = s.format(new Date());
-
-                        // create a tag file
-                        String tag = txtDeployTag.getText();
-                        if (tag != null && !tag.isEmpty()) {
-                            backup_tag += "-" + tag;
-                        }
-
-                        FileUtils.writeToFile(backup_tag, new File(deployDir, "comment.txt"));
-                        
-                        // unmount usb storage device if selected
-                        deployDialog.closeUSBStorageDevice();
-
-                        Logger.getGlobal().log(Level.INFO, "DONE");
-                    } catch (NaoSCPException | IOException ex) {
-                        Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
                     }
                     
-                    setEnabledAll(true);
+                    if (!deployDir.mkdirs()) {
+                        //Logger.getGlobal().log(Level.SEVERE, "Could not create deploy out directory");
+                        throw new NaoSCPException("Could not create deploy out directory");
+                    }
+                    
+                    //NaoSCP.this.setEnabledAll(false);
+                    naoTHPanel.getAction().run(deployDir);
+                    FileUtils.copyFiles(new File(deployStickScriptPath), targetDir);
+                    //NaoSCP.this.setEnabledAll(true);
+                    
+                    // get the current date and time
+                    //String ISO_DATE_FORMAT = "yyyy-MM-dd";
+                    String ISO_DATE_TIME_FORMAT = "yyyy-MM-dd-HH-mm-ss";
+                    SimpleDateFormat s = new SimpleDateFormat(ISO_DATE_TIME_FORMAT);
+                    String backup_tag = s.format(new Date());
+                    
+                    // create a tag file
+                    String tag = txtDeployTag.getText();
+                    if (tag != null && !tag.isEmpty()) {
+                        backup_tag += "-" + tag;
+                    }
+                    
+                    FileUtils.writeToFile(backup_tag, new File(deployDir, "comment.txt"));
+                    
+                    // unmount usb storage device if selected
+                    deployDialog.closeUSBStorageDevice();
+                    
+                    Logger.getGlobal().log(Level.INFO, "DONE");
+                } catch (NaoSCPException | IOException ex) {
+                    Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
                 }
+                
+                setEnabledAll(true);
             }).start();
         }    
     }//GEN-LAST:event_btWriteToStickActionPerformed
@@ -624,54 +734,54 @@ public class NaoSCP extends javax.swing.JPanel {
         final File tmpDir = createTemporaryDirectory("nao_scp_setup_");
         if(tmpDir == null){return;}
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    File setupDir = new File(tmpDir, "setup");
-
-                    if (setupDir.isDirectory()) {
-                        //Logger.getGlobal().log(Level.SEVERE, "Could not clean the setup directory: " + setupDir.getAbsolutePath());
-                        FileUtils.deleteDir(setupDir);
-                    }
-
-                    if (!setupDir.mkdirs()) {
-                        Logger.getGlobal().log(Level.SEVERE, "Could not create setup directory: " + setupDir.getAbsolutePath());
-                    } else {
-
-                        setupNetwork(setupDir, robotNrFinal);
-
-                        FileUtils.copyFiles(new File(utilsPath, "/NaoConfigFiles/init_net.sh"), setupDir);
-
-                        // copy to robot
-                        String ip = JOptionPane.showInputDialog(NaoSCP.this, "Robot ip address");
-                        if(ip == null || ip.trim().isEmpty()) {
-                            Logger.getGlobal().log(Level.INFO, "Canceled.");
-                            return;
-                        }
-                        Scp scp = new Scp(ip, "nao", "nao");
-                        scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
-
-                        scp.mkdir("/home/nao/tmp");
-                        scp.cleardir("/home/nao/tmp");
-                        scp.put(setupDir, "/home/nao/tmp");
-
-                        scp.chmod(755, "/home/nao/tmp/init_net.sh");
-
-                        Scp.CommandStream shell = scp.getShell();
-                        shell.run("su", "Password:");
-                        shell.run("root");
-                        shell.run("cd /home/nao/tmp/");
-                        shell.run("./init_net.sh", "DONE");
-
-                        scp.disconnect();
-
-                        Logger.getGlobal().log(Level.INFO, "DONE");
-                    }
-                } catch (IOException | NaoSCPException | JSchException | SftpException ex) {
-                    Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
+        new Thread(() -> {
+            setEnabledAll(false);
+            try {
+                File setupDir = new File(tmpDir, "setup");
+                
+                if (setupDir.isDirectory()) {
+                    //Logger.getGlobal().log(Level.SEVERE, "Could not clean the setup directory: " + setupDir.getAbsolutePath());
+                    FileUtils.deleteDir(setupDir);
                 }
+                
+                if (!setupDir.mkdirs()) {
+                    Logger.getGlobal().log(Level.SEVERE, "Could not create setup directory: " + setupDir.getAbsolutePath());
+                } else {
+                    
+                    setupNetwork(setupDir, robotNrFinal);
+                    
+                    FileUtils.copyFiles(new File(utilsPath, "/NaoConfigFiles/init_net.sh"), setupDir);
+                    
+                    // copy to robot
+                    String ip = JOptionPane.showInputDialog(NaoSCP.this, "Robot ip address");
+                    if(ip == null || ip.trim().isEmpty()) {
+                        Logger.getGlobal().log(Level.INFO, "Canceled.");
+                        setEnabledAll(true);
+                        return;
+                    }
+                    Scp scp = new Scp(ip, "nao", "nao");
+                    scp.setProgressMonitor(new BarProgressMonitor(jProgressBar));
+                    
+                    scp.mkdir("/home/nao/tmp");
+                    scp.cleardir("/home/nao/tmp");
+                    scp.put(setupDir, "/home/nao/tmp");
+                    
+                    scp.chmod(755, "/home/nao/tmp/init_net.sh");
+                    
+                    Scp.CommandStream shell = scp.getShell();
+                    shell.run("su", "Password:");
+                    shell.run("root");
+                    shell.run("cd /home/nao/tmp/");
+                    shell.run("./init_net.sh", "DONE");
+                    
+                    scp.disconnect();
+                    
+                    Logger.getGlobal().log(Level.INFO, "DONE");
+                }
+            } catch (IOException | NaoSCPException | JSchException | SftpException ex) {
+                Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
             }
+            setEnabledAll(true);
         }).start();
 
     }//GEN-LAST:event_btSetNetworkActionPerformed
@@ -704,6 +814,97 @@ public class NaoSCP extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_formComponentResized
 
+    private void btnActionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActionsActionPerformed
+        popupMenu.show(this.btnActions, 0, -popupMenu.getPreferredSize().height);
+    }//GEN-LAST:event_btnActionsActionPerformed
+
+    private void popupMenuPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_popupMenuPopupMenuWillBecomeInvisible
+        this.btnActions.setSelected(false);
+    }//GEN-LAST:event_popupMenuPopupMenuWillBecomeInvisible
+
+    private void miRestartNaothActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miRestartNaothActionPerformed
+        singleShellCommand("naoth restart", "starting naoth cognition process", "Restart naoth", null);
+    }//GEN-LAST:event_miRestartNaothActionPerformed
+
+    private void miRestartNaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miRestartNaoActionPerformed
+        if(JOptionPane.showConfirmDialog(this, "Are you sure you want to reboot Nao"+txtRobotNumber.getText().trim()+"?", "Reboot?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            singleShellCommand("reboot", "The system is going down for reboot NOW!", "Rebooting nao", "Nao "+txtRobotNumber.getText().trim()+" is rebooting!");
+        } else {
+            Logger.getGlobal().log(Level.INFO, "Canceled.");
+        }
+    }//GEN-LAST:event_miRestartNaoActionPerformed
+
+    private void miMuteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miMuteActionPerformed
+        singleShellCommand("pactl set-sink-mute 0 true", null, "Muting robot", "Robot muted!");
+    }//GEN-LAST:event_miMuteActionPerformed
+
+    private void miUnmuteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miUnmuteActionPerformed
+        singleShellCommand("pactl set-sink-mute 0 false", null, "Un-muting robot", "Robot un-muted!");
+    }//GEN-LAST:event_miUnmuteActionPerformed
+
+    private void miSetVolume80ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miSetVolume80ActionPerformed
+        singleShellCommand("pactl set-sink-volume 0 80%", null, "Set volume to 80%", null);
+    }//GEN-LAST:event_miSetVolume80ActionPerformed
+
+    private void miSetVolume40ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miSetVolume40ActionPerformed
+        singleShellCommand("pactl set-sink-volume 0 40%", null, "Set volume to 40%", null);
+    }//GEN-LAST:event_miSetVolume40ActionPerformed
+
+    private void miShutdownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miShutdownActionPerformed
+        if(JOptionPane.showConfirmDialog(this, "Are you sure you want to shutdown Nao"+txtRobotNumber.getText().trim()+"?", "Shutdown?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            singleShellCommand("shutdown -h now", "system halt NOW!", "Shutting nao down", null);
+        } else {
+            Logger.getGlobal().log(Level.INFO, "Canceled.");
+        }
+    }//GEN-LAST:event_miShutdownActionPerformed
+
+    /**
+     * Executes a single command on the robot.
+     * 
+     * @param cmd the command to execute
+     * @param expectedOutputPattern the expected output from the command. It can be 'null'.
+     * @param logBeforeCmd the log message, which should be shown before the command execution. It can be 'null'.
+     * @param logAfterCmd the log message, which should be shown after the command execution. It can be 'null'.
+     */
+    private void singleShellCommand(String cmd, String expectedOutputPattern, String logBeforeCmd, String logAfterCmd) {
+        this.logTextPanel.clear();
+
+        if(!txtRobotNumber.getText().trim().isEmpty()) {
+            setEnabledAll(false);
+            new Thread(() -> {
+                try {
+                    // send stuff to robot
+                    String robotIp = getIpAddress();
+                    Scp scp = new Scp(robotIp, "nao", "nao");
+                    Scp.CommandStream shell = scp.getShell();
+
+                    if(logBeforeCmd != null) {
+                        Logger.getGlobal().log(Level.INFO, logBeforeCmd);
+                    }
+
+                    // HACK: see above
+                    if(expectedOutputPattern == null) {
+                        shell.run(cmd + "; echo -e '\\x44\\x4F\\x4E\\x45'", "DONE");
+                    } else {
+                        shell.run(cmd, expectedOutputPattern);
+                    }
+
+                    if(logAfterCmd != null) {
+                        Logger.getGlobal().log(Level.INFO, logAfterCmd, txtRobotNumber.getText().trim());
+                    }
+
+                    shell.close();
+                    scp.disconnect();
+                } catch (JSchException | IOException | NaoSCPException ex) {
+                    Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
+                }
+                setEnabledAll(true);
+            }).start();
+        } else {
+            Logger.getGlobal().log(Level.WARNING, "Missing robot number!");
+        }
+    }
+    
     public void formWindowClosing() {
         try {
             // save configuration to file
@@ -750,11 +951,22 @@ public class NaoSCP extends javax.swing.JPanel {
     private javax.swing.JButton btInintRobot;
     private javax.swing.JButton btSetNetwork;
     private javax.swing.JButton btWriteToStick;
+    private javax.swing.JToggleButton btnActions;
     private javax.swing.JProgressBar jProgressBar;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPanel logPanel;
     private naoscp.components.LogTextPanel logTextPanel;
+    private javax.swing.JMenuItem miMute;
+    private javax.swing.JMenuItem miRestartNao;
+    private javax.swing.JMenuItem miRestartNaoth;
+    private javax.swing.JMenuItem miSetVolume40;
+    private javax.swing.JMenuItem miSetVolume80;
+    private javax.swing.JMenuItem miShutdown;
+    private javax.swing.JMenuItem miUnmute;
     private naoscp.components.NaoTHPanel naoTHPanel;
     private naoscp.components.NetwokPanel netwokPanel;
+    private javax.swing.JPopupMenu popupMenu;
     private javax.swing.JPanel statusBarPanel;
     private javax.swing.JTextField txtDeployTag;
     private javax.swing.JFormattedTextField txtRobotNumber;

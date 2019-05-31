@@ -65,13 +65,15 @@ private:
       PARAMETER_REGISTER(readyForSideKickThresholdY)            = 0.3;
       PARAMETER_REGISTER(readyForForwardKickThresholdX)         = 4.0;
       PARAMETER_REGISTER(readyForForwardKickThresholdY)         = 0.3;
-      PARAMETER_REGISTER(nearApproachForwardKickBallPosOffsetX) = 100;
+      PARAMETER_REGISTER(nearApproachForwardKickBallPosOffsetX) = 110;
       PARAMETER_REGISTER(nearApproachSideKickBallPosOffsetX)    = 100;
       PARAMETER_REGISTER(farToNearApproachThreshold)            = 10.0;
       PARAMETER_REGISTER(rotationLength)                        = 30.0;
       PARAMETER_REGISTER(sidekickOffsetY)                       = 40.0;
       PARAMETER_REGISTER(forwardKickTime)                       = 300;
       PARAMETER_REGISTER(sideKickTime)                          = 300;
+      PARAMETER_REGISTER(moveAroundBallCharacter)               = 1.0;
+      PARAMETER_REGISTER(moveAroundBallCharacterStable)         = 0.3;
 
       syncWithConfig();
     }
@@ -89,6 +91,8 @@ private:
     double sidekickOffsetY;
     int forwardKickTime;
     int sideKickTime;
+    double moveAroundBallCharacter;
+    double moveAroundBallCharacterStable;
   } params;
 
   // NONE means hip
@@ -103,7 +107,7 @@ private:
   typedef WalkRequest::StepControlRequest::RestrictionMode RestrictionMode;
   typedef WalkRequest::Coordinate Coordinate;
 
-  void moveAroundBall(const double direction, const double radius);
+  void moveAroundBall(const double direction, const double radius, const bool stable);
 
   // goToBall is split up between sideKick and forwardKick so that changing things in upcoming RoboCup 2018
   // won't be so complex as to introduce bugs easily

@@ -24,6 +24,8 @@
 // needed by BUUserTeamMessage
 #include "Messages/TeamMessage.pb.h"
 #include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Modeling/PlayerInfo.h"
+#include "Representations/Infrastructure/Roles.h"
 
 using namespace naoth;
 
@@ -68,7 +70,6 @@ public:
   bool wasStriker;
   bool wantsToBeStriker;
   unsigned int timeToBall;    // the shorest time, in which the robot can reach the ball [ms]
-  bool isPenalized;           // whether the robot is penalized, or not
   double batteryCharge;       // the battery charge
   double temperature;         // the max. temperature of the left or right leg!
   double cpuTemperature;      // the temperature of the cpu
@@ -78,6 +79,11 @@ public:
   std::vector<NtpRequest> ntpRequests; // ntp requests to teammates
   Vector2d ballVelocity;      // velocity of the ball
   // opponents ?
+
+  PlayerInfo::RobotState robotState; // state of the robot (initial, ready, set, play, finish, penalized)
+  Roles::Role robotRole;    // role of the robot (static & dynamic)
+
+  bool readyToWalk;         // indicates, whether the robot is ready to walk
 
   /** Sets the data according to the protobuf message. */
   void parseFromProto(const naothmessages::BUUserTeamMessage& userData);

@@ -68,29 +68,30 @@ public:
 
     Parameters() : ParameterList("ActionSimulatorParams")
     {
-      PARAMETER_REGISTER(sidekick_right.speed) = 750;
-      PARAMETER_REGISTER(sidekick_right.speed_std) = 150;
-      PARAMETER_REGISTER(sidekick_right.angle) = -89.657943335302260;
-      PARAMETER_REGISTER(sidekick_right.angle_std) = 10.553726275058064;
+      //PARAMETER_REGISTER(sidekick_right.speed) = 750;
+      //PARAMETER_REGISTER(sidekick_right.speed_std) = 150;
+      //PARAMETER_REGISTER(sidekick_right.angle) = -89.657943335302260;
+      //PARAMETER_REGISTER(sidekick_right.angle_std) = 10.553726275058064;
 
-      PARAMETER_REGISTER(sidekick_left.speed) = 750;
-      PARAMETER_REGISTER(sidekick_left.speed_std) = 150;
-      PARAMETER_REGISTER(sidekick_left.angle) = 86.170795364136380;
-      PARAMETER_REGISTER(sidekick_left.angle_std) = 10.669170653645670;
+      //PARAMETER_REGISTER(sidekick_left.speed) = 750;
+      //PARAMETER_REGISTER(sidekick_left.speed_std) = 150;
+      //PARAMETER_REGISTER(sidekick_left.angle) = 86.170795364136380;
+      //PARAMETER_REGISTER(sidekick_left.angle_std) = 10.669170653645670;
 
       PARAMETER_REGISTER(kick_short.speed) = 1280;
       PARAMETER_REGISTER(kick_short.speed_std) = 150;
       PARAMETER_REGISTER(kick_short.angle) = 8.454482265522328;
       PARAMETER_REGISTER(kick_short.angle_std) = 6.992268841997358;
 
-      PARAMETER_REGISTER(kick_long.speed) = 1020;
-      PARAMETER_REGISTER(kick_long.speed_std) = 150;
-      PARAMETER_REGISTER(kick_long.angle) = 8.454482265522328;
-      PARAMETER_REGISTER(kick_long.angle_std) = 6.992268841997358;
+      //PARAMETER_REGISTER(kick_long.speed) = 1020;
+      //PARAMETER_REGISTER(kick_long.speed_std) = 150;
+      //PARAMETER_REGISTER(kick_long.angle) = 8.454482265522328;
+      //PARAMETER_REGISTER(kick_long.angle_std) = 6.992268841997358;
 
       PARAMETER_REGISTER(friction) = 0.0275;
 
       PARAMETER_REGISTER(good_threshold_percentage) = 0.85;
+      PARAMETER_REGISTER(significance_thresh) = 0.1;
       PARAMETER_REGISTER(numParticles) = 30;
       PARAMETER_REGISTER(minGoalParticles) = 9;
 
@@ -105,13 +106,14 @@ public:
       double g1;
     } obstacleFilter;
 
-    ActionSimulator::ActionParams sidekick_right;
-    ActionSimulator::ActionParams sidekick_left;
+    //ActionSimulator::ActionParams sidekick_right;
+    //ActionSimulator::ActionParams sidekick_left;
     ActionSimulator::ActionParams kick_short;
     // currently not used
-    ActionSimulator::ActionParams kick_long;
+    // ActionSimulator::ActionParams kick_long;
     double friction;
     double good_threshold_percentage;
+    double significance_thresh;
     int numParticles; //should be size_t
     int minGoalParticles;
 

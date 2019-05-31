@@ -34,6 +34,7 @@ SimSparkController::SimSparkController(const std::string& name)
   theSenseTime(0),
   theStepTime(0),
   theSyncMode(false),
+  ignoreOpponentMsg(false),
   exiting(false)
 {
   // register input
@@ -253,18 +254,6 @@ bool SimSparkController::init(const std::string& modelPath, const std::string& t
   }
   // we should get the team index and player number now
 
-#ifdef DEBUG
-  // calculate debug communicaiton port
-  unsigned short debugPort = 5401;
-  if (theGameInfo.playLeftSide) {
-    debugPort = static_cast<short unsigned int> (5400 + theGameInfo.playerNumber);
-  } else {
-    debugPort = static_cast<short unsigned int> (5500 + theGameInfo.playerNumber);
-  }
-
-  theDebugServer.start(debugPort);
-#endif
-
   cout << "NaoTH Simpark initialization successful: " << teamName << " " << theGameInfo.playerNumber << endl;
 
   //DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
@@ -272,6 +261,10 @@ bool SimSparkController::init(const std::string& modelPath, const std::string& t
 
 
   Configuration& config = Platform::getInstance().theConfiguration;
+  if (config.hasKey("player", "TeamNumber"))
+  {
+    theGameInfo.teamNumber = config.getInt("player", "TeamNumber");
+  }
   // if player number wasn't set by configuration -> use the number from the simulation
   if(config.getInt("player", "PlayerNumber") == 0) {
     config.setInt("player", "PlayerNumber", theGameInfo.playerNumber);
@@ -282,6 +275,17 @@ bool SimSparkController::init(const std::string& modelPath, const std::string& t
     config.setString("player", "TeamName", theGameInfo.teamName);
   }
   cout << "Player number: " << theGameInfo.playerNumber << endl;
+
+#ifdef DEBUG
+  // calculate debug communicaiton port
+  unsigned short debugPort = static_cast<short unsigned int> (5000 + (theGameInfo.teamNumber*100) + theGameInfo.playerNumber);
+  theDebugServer.start(debugPort);
+#endif
+
+  // for the 'hear' percept
+  if (config.hasKey("player", "ignoreOpponentMsg")) {
+      ignoreOpponentMsg = config.getBool("player", "ignoreOpponentMsg");
+  }
 
   theLastSenseTime = NaoTime::getNaoTimeInMilliSeconds();
   theLastActTime = theLastSenseTime;
@@ -814,6 +818,15 @@ bool SimSparkController::updateHingeJoint(const sexp_t* sexp)
   theSensorJointData.dp[jid] = Math::clamp(Math::normalize(ax - theSensorJointData.position[jid]) / theStepTime,
     -maxJointAbsSpeed, maxJointAbsSpeed);
   theSensorJointData.position[jid] = ax;
+
+  // set the joint temperature
+  sexp = sexp->next;
+  double temp;
+  if (SexpParser::parseGivenValue(sexp, "tp", temp))
+  {
+    theSensorJointData.temperature[jid] = temp;
+  }
+
   return true;
 }
 
@@ -842,6 +855,7 @@ bool SimSparkController::updateGyro(const sexp_t* sexp)
 
   theGyroData.data[0] = Math::fromDegrees(data[1]);
   theGyroData.data[1] = -Math::fromDegrees(data[0]);
+  theGyroData.data[2] = Math::fromDegrees(data[2]);
 
   return true;
 }
@@ -978,6 +992,20 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
         {
           theGameInfo.gameState = state;
         }
+      } else if ("ti" == name) // team info
+      {
+          // this should be a list of infos of the left team
+          t = t->next;
+          if(!SexpParser::isList(t) || !parseTeamInfo(t->list, theGameInfo.playLeftSide?theGameInfo.ownPlayers:theGameInfo.oppPlayers)) {
+              ok = false;
+              cerr << "SimSparkGameInfo::update failed get left team info\n";
+          }
+          // this should be a list of infos of the right team
+          t = t->next;
+          if(!SexpParser::isList(t) || !parseTeamInfo(t->list, theGameInfo.playLeftSide?theGameInfo.oppPlayers:theGameInfo.ownPlayers)) {
+              ok = false;
+              cerr << "SimSparkGameInfo::update failed get right team info\n";
+          }
       } else if ("unum" == name) // unum
       {
         if (!SexpParser::parseValue(t->next, theGameInfo.playerNumber))
@@ -997,8 +1025,7 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
       } 
       else if ("sl" == name)
       {
-        int score_left = 0;
-        if (!SexpParser::parseValue(t->next, score_left))
+        if (!SexpParser::parseValue(t->next, theGameInfo.score.first))
         {
           ok = false;
           cerr << "SimSparkGameInfo::update failed score left\n";
@@ -1006,13 +1033,23 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
       } 
       else if ("sr" == name)
       {
-        int score_right = 0;
-        if (!SexpParser::parseValue(t->next, score_right))
+        if (!SexpParser::parseValue(t->next, theGameInfo.score.second))
         {
           ok = false;
           cerr << "SimSparkGameInfo::update failed score right\n";
         }
       } 
+      else if ("k" == name)
+      {
+        string kickoffSide;
+        if (!SexpParser::parseValue(t->next, kickoffSide))
+        {
+          ok = false;
+          cerr << "SimSparkGameInfo::update failed kickoffSide\n";
+        }
+        theGameInfo.kickoff = (kickoffSide == STR_TI_LEFT && theGameInfo.playLeftSide)
+                           || (kickoffSide == STR_TI_RIGHT && !theGameInfo.playLeftSide);
+      }
       else
       {
         ok = false;
@@ -1032,6 +1069,41 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
   return ok;
 }//end updateGameInfo
 
+bool SimSparkController::parseTeamInfo(const sexp_t* team, std::vector<naoth::GameData::RobotInfo> &players)
+{
+    // iterate through player info of the team
+    while(team) {
+        // the player info is a list!
+        if(SexpParser::isList(team)) {
+            const sexp_t* player = team->list;
+            int playerNumber;
+            if(!SexpParser::parseValue(player, playerNumber)) {
+                cerr << "SimSparkGameInfo::could not retrieve player number!\n";
+                return false;
+            }
+            string penalty;
+            if(!SexpParser::parseValue(player->next, penalty)) {
+                cerr << "SimSparkGameInfo::could not retrieve player penalty!\n";
+                return false;
+            }
+            double penaltyTime;
+            if(!SexpParser::parseValue(player->next->next, penaltyTime)) {
+                cerr << "SimSparkGameInfo::could not retrieve penaltyTime!!\n";
+                return false;
+            }
+            // make sure, we got a valid player number
+            if(playerNumber > 0 && static_cast<size_t>(playerNumber) <= players.size()) {
+                players.at(static_cast<size_t>(playerNumber-1)).penalty = GameData::penaltyFromString(penalty);
+                players.at(static_cast<size_t>(playerNumber-1)).secsTillUnpenalised = static_cast<int>(ceil(penaltyTime));
+            } else {
+                cerr << "SimSparkGameInfo::got an invalid player number: "<< playerNumber <<"\n";
+                return false;
+            }
+        }
+        team = team->next;
+    }
+    return true;
+}
 
 bool SimSparkController::updateFSR(const sexp_t* sexp)
 {
@@ -1309,16 +1381,36 @@ void SimSparkController::get(GameData& data)
 
   if ( theGameInfo.valid )
   {
+    data.playersPerTeam = theGameInfo.playersPerTeam;
     data.gameState = theGameInfo.gameState;
     data.secsRemaining = theGameInfo.getRemainingTimeInHalf();
 
+    data.kickingTeam = theGameInfo.kickoff ? theGameInfo.teamNumber : 0;
+    data.firstHalf = theGameInfo.firstHalf();
+
     data.newPlayerNumber = theGameInfo.playerNumber;
 
-    data.ownTeam.teamNumber = theGameInfo.getTeamNumber();
-    data.ownTeam.teamColor = theGameInfo.getTeamColor();
+    data.ownTeam.teamNumber = theGameInfo.teamNumber;
+    data.ownTeam.teamColor = theGameInfo.getOwnTeamColor();
     data.ownTeam.players.resize(theGameInfo.playersPerTeam);
+    data.ownTeam.score = theGameInfo.getOwnScore();
 
-    // todo set opponent team info
+    for (size_t i=0; i<data.ownTeam.players.size(); ++i) {
+        if(theGameInfo.ownPlayers.size() > i) {
+            data.ownTeam.players[i].penalty = theGameInfo.ownPlayers[i].penalty;
+            data.ownTeam.players[i].secsTillUnpenalised = theGameInfo.ownPlayers[i].secsTillUnpenalised;
+        }
+    }
+
+    data.oppTeam.teamColor = theGameInfo.getOppTeamColor();
+    data.oppTeam.players.resize(theGameInfo.playersPerTeam);
+    data.oppTeam.score = theGameInfo.getOppScore();
+    for (size_t i=0; i<data.oppTeam.players.size(); ++i) {
+        if(theGameInfo.oppPlayers.size() > i) {
+            data.oppTeam.players[i].penalty = theGameInfo.oppPlayers[i].penalty;
+            data.oppTeam.players[i].secsTillUnpenalised = theGameInfo.oppPlayers[i].secsTillUnpenalised;
+        }
+    }
 
     theGameInfo.valid = false;
   }
@@ -1454,54 +1546,56 @@ void SimSparkController::say()
 
 bool SimSparkController::hear(const sexp_t* sexp)
 {
-  double time;
-  if (!SexpParser::parseValue(sexp, time))
-  {
-    std::cerr << "[SimSparkController Hear] can not get time" << std::endl;
-    return false;
-  }
+    size_t minMsgSize = (sizeof(SPLStandardMessage) - SPL_STANDARD_MESSAGE_DATA_SIZE);
+    std::vector<const sexp_t*> data;
 
-  // in new simspark version (0.6.8+) an additional "team" field was added!
-  sexp = sexp->next; // direction or teamname
-  /*
-  std::string direction;
-  double dir;
-  if (!SexpParser::parseValue(sexp, direction))
-  {
-    std::cerr << "[SimSparkController Hear] can not get direction" << std::endl;
-    return false;
-  }
+    // the actual message is last, collect all preceding values
+    while(sexp->val_used < minMsgSize) {
+        data.push_back(sexp);
+        sexp = sexp->next;
+    }
 
+    size_t idx = 0;
+    // new simspark version (0.6.8+) has an additional "team" field!
+    string team = theGameInfo.teamName;
+    if(data.size() >= 3) {
+        SexpParser::parseValue(data[idx++], team);
+    }
 
-  if ("self" == direction)
-  {
-    // this message come from myself, just omit it
-//    return true;
-  } else
-  {
-    if (!SexpParser::parseValue(sexp, dir))
-    {
-      std::cerr << "[SimSparkController Hear] can not parse the direction" << std::endl;
+    // ignore opponent messages
+    if(ignoreOpponentMsg && team.compare(theGameInfo.teamName) != 0) { return true; }
+
+    double direction;
+    if(!SexpParser::parseValue(data[idx++], direction)) {
+      std::cerr << "[SimSparkController Hear] can not get direction" << std::endl;
       return false;
     }
-  }*/
 
-  sexp = sexp->next;
-  string msg;
-  SexpParser::parseValue(sexp, msg);
+    /*
+    // NOTE: should be handled by the TeamCommReceiver!
+    if ("self" == direction) {
+        // this message come from myself, just omit it
+        //return true;
+    }
+    */
 
-  // we got the "correct" msg value, if we - at least - got the SPL-message size!
-  if(msg.size() < (sizeof(SPLStandardMessage) - SPL_STANDARD_MESSAGE_DATA_SIZE)) {
-      // ... otherwise we have to read another field/value! (simspark 0.6.8+)
-      sexp = sexp->next;
-      SexpParser::parseValue(sexp, msg);
-  }
+    double time;
+    if(!SexpParser::parseValue(data[idx++], time)) {
+        std::cerr << "[SimSparkController Hear] can not get time" << std::endl;
+        return false;
+    }
 
-  if ( !msg.empty() && msg != ""){
-    theTeamMessageDataIn.data.push_back(msg);
-  }
-//  std::cout << "hear message : " << time << ' ' << direction << ' ' << dir << ' ' << msg << std::endl;
-  return true;
+    string msg;
+    if (SexpParser::parseValue(sexp, msg) && !msg.empty() && msg != ""){
+        theTeamMessageDataIn.data.push_back(msg);
+    } else {
+        std::cerr << "[SimSparkController Hear] can not parse message" << std::endl;
+        return false;
+    }
+
+    //std::cout << "hear message : " << team << "/" << theGameInfo.teamName << " " << time << ' ' << ' ' << direction << ' ' << msg << std::endl;
+
+    return true;
 }
 
 void SimSparkController::beam(const Vector3<double>& p)

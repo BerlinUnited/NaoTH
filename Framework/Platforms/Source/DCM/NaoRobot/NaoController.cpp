@@ -9,6 +9,7 @@
 
 #include "NaoController.h"
 
+#include "PlatformInterface/Platform.h"
 #include <algorithm>
 
 using namespace std;
@@ -47,7 +48,7 @@ NaoController::NaoController()
   gethostname(hostname, 127);
   theRobotName = string(hostname);
   cout << "[NaoController] " << "RobotName: " << theRobotName << endl;
-  theWhistleDetector.setRobotName(theRobotName);
+  //theWhistleDetector.setRobotName(theRobotName);
 
   // read the theBodyID and the theBodyNickName from file "nao.info"
   const std::string naoInfoPath = Platform::getInstance().theConfigDirectory + "nao.info";
@@ -115,7 +116,7 @@ NaoController::NaoController()
   registerInput<ButtonData>(*this);
   registerInput<BatteryData>(*this);
   registerInput<UltraSoundReceiveData>(*this);
-  registerInput<WhistlePercept>(*this);
+  registerInput<AudioData>(*this);
   registerInput<CpuData>(*this);
 
   // register command output
@@ -123,8 +124,7 @@ NaoController::NaoController()
   registerOutput<const LEDData>(*this);
   registerOutput<const IRSendData>(*this);
   registerOutput<const UltraSoundSendData>(*this);
-  registerOutput<const WhistleControl>(*this);
-
+  registerOutput<const AudioControl>(*this);
 
   /*  INIT DEVICES  */
   std::cout << "[NaoController] " << "Init Platform" << endl;
@@ -135,7 +135,7 @@ NaoController::NaoController()
 
   // create the teamcomm
   std::cout << "[NaoController] " << "Init TeamComm" << endl;
-  naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
+  const naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
   string interfaceName = "wlan0";
   if(config.hasKey("teamcomm", "interface"))
   {
@@ -167,6 +167,7 @@ NaoController::NaoController()
 
 NaoController::~NaoController()
 {
+  std::cout << "[NaoController] destruct" << std::endl;
   delete theSoundHandler;
   delete theTeamCommSender;
   delete theTeamCommListener;

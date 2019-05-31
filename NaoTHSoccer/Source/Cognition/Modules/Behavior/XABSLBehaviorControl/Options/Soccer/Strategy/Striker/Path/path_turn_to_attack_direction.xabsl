@@ -2,8 +2,13 @@ option path_turn_to_attack_direction
 {
   initial state decide {
     decision{
-      if(attack.direction.preview > 0)
+    // This is potentially bad since now a path routine can be intererupted 
+      if(attack.direction.preview > 0 && obstacle.ultrasound.distance > 400)
         goto turn_right_around;
+      else if (attack.direction.preview > 0 && obstacle.ultrasound.distance <= 400)
+        goto turn_right_around_stable;
+      else if (attack.direction.preview <= 0 && obstacle.ultrasound.distance <= 400)
+        goto turn_left_around_stable;
       else
         goto turn_left_around;
     }
@@ -13,21 +18,49 @@ option path_turn_to_attack_direction
 
   state turn_right_around {
     decision {
-      stay;
+     if(obstacle.ultrasound.distance <= 400)
+       goto turn_right_around_stable;
+     else
+       stay;
     }
     action {
-      path_move_around_ball(direction=30, radius=210);
+      path_move_around_ball(direction=attack.direction.preview, radius=210, stable=false);
       //motion.walk.style = fast;
     }
   }
 
-  state turn_left_around {
+  state turn_right_around_stable {
     decision {
       stay;
     }
     action {
-      path_move_around_ball(direction=-30, radius=210);
+      path_move_around_ball(direction=attack.direction.preview, radius=210, stable=true);
       //motion.walk.style = fast;
     }
   }
+
+
+  state turn_left_around {
+    decision {
+      if(obstacle.ultrasound.distance <= 400)
+        goto turn_left_around_stable;
+      else
+        stay;
+    }
+    action {
+      path_move_around_ball(direction=attack.direction.preview, radius=210, stable=false);
+      //motion.walk.style = fast;
+    }
+  }
+
+  state turn_left_around_stable {
+    decision {
+      stay;
+    }
+    action {
+      path_move_around_ball(direction=attack.direction.preview, radius=210, stable=true);
+      //motion.walk.style = fast;
+    }
+  }
+
 }

@@ -28,6 +28,25 @@ public:
     penalized  // <== GameState doesn't have this :)
   };
 
+  // Same as SetPlay of the GameData, but can be different by each robot and set (e.g.) via DebugRequest
+  enum RobotSetPlay
+  {
+    set_none          = naoth::GameData::set_none,
+    goal_free_kick    = naoth::GameData::goal_free_kick,
+    pushing_free_kick = naoth::GameData::pushing_free_kick,
+    corner_kick       = naoth::GameData::corner_kick,
+    kick_in           = naoth::GameData::kick_in
+  };
+
+  enum GamePhase
+  {
+    normal = naoth::GameData::normal,
+    penaltyshoot = naoth::GameData::penaltyshoot,
+    overtime = naoth::GameData::overtime,
+    timeout = naoth::GameData::timeout
+  };
+
+
   void update(const naoth::GameData& gameData) 
   {
     // update only if player number is set correctly
@@ -40,6 +59,8 @@ public:
     } else {
       robotState = (RobotState)gameData.gameState;
     }
+    robotSetPlay = static_cast<RobotSetPlay>(gameData.setPlay);
+    gamePhase = static_cast<GamePhase>(gameData.gamePhase);
 
     teamColor = gameData.ownTeam.teamColor;
     kickoff = (gameData.kickingTeam == teamNumber);
@@ -59,6 +80,9 @@ public:
   naoth::GameData::TeamColor teamColor;
   bool kickoff;
   RobotState robotState;
+  RobotSetPlay robotSetPlay;
+  GamePhase gamePhase;
+
 
   // TODO: move somewhere else (it's a strategic decision)?
   /** Whether the behavior decided to play as striker */
@@ -67,11 +91,9 @@ public:
   /** the currently used scheme. */
   std::string scheme;
 
-  bool isGoalie() const {
-      return playerNumber == 1;
-  }
-
   static std::string toString(RobotState value);
+  static std::string toString(RobotSetPlay value);
+  static std::string toString(GamePhase value);
 
   virtual void print(std::ostream& stream) const;
 };

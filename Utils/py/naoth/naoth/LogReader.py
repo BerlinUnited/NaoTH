@@ -2,6 +2,7 @@ import struct
 import os
 import io
 
+from AudioData_pb2 import *
 from CommonTypes_pb2 import *
 from Framework_Representations_pb2 import *
 from Messages_pb2 import *
@@ -49,7 +50,7 @@ class LogReader:
             self.reader.log.seek(position)
             data = self.reader.readBytes(size)
 
-            message = self.reader.parser.parse(name, str.encode(data) if isinstance(data, str) else data)
+            message = self.reader.parser.parse(name, data)
             self.messages[name] = (position, size, message)
             return message
 
@@ -158,7 +159,7 @@ class LogReader:
             raise StopIteration
 
         if bytes == 0:
-            return ''
+            return b''
 
         data = self.log.read(bytes)
         if len(data) != bytes:

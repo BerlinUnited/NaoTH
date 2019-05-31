@@ -5,12 +5,12 @@ option path_decide_role
   common decision 
   {
     /** Goalie */
-    if(game.player_number == 1 && team.members_alive_count > 1) //become field player, when all others are "dead"
+    if(game.player_number == 1 && team.members_active_count > 1) //become field player, when all others are "dead"
     {
       goto goalie;
     }
     /* fallback if everything else is broken */
-    else if( (team.members_alive_count <= 1) || (team.calc_if_is_striker))
+    else if( (team.members_active_count <= 1) || (team.calc_if_is_striker))
     {
       goto striker;
     }
@@ -47,9 +47,12 @@ option path_decide_role
     action
     {
       team.is_playing_as_striker = true;
+
+      head.control_mode = search_for_ball;
+
       //path_striker();
       path_striker2018();
-      head.control_mode = search_for_ball;
+      
       //blinking
       set_left_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
       set_right_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
@@ -66,9 +69,11 @@ option path_decide_role
     action
     {
       team.is_playing_as_striker = false;
+
+      head.control_mode = search_for_ball;
+      
       //path_striker();
       path_striker2018();
-      head.control_mode = search_for_ball;
       //blinking
       set_left_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;
       set_right_ear = (platform.frameNumber % 3 == 0) ? 9 : 0;

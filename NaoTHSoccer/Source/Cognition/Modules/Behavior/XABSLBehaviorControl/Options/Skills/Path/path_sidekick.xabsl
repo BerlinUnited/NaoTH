@@ -86,7 +86,6 @@ option path_sidekick
     {
       path.routine = none;
 
-      //loook at percept
       head.control_mode = look_at_ball_percept;
     }
   }

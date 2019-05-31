@@ -45,14 +45,13 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(ButtonData);
   REG_INPUT(IRReceiveData);
   REG_INPUT(CpuData);
+  REG_INPUT(AudioData);
   
   REG_INPUT(GPSData);
   REG_INPUT(TeamMessageDataIn);
   REG_INPUT(RemoteMessageDataIn);
   REG_INPUT(GameData);
   REG_INPUT(DebugMessageInCognition);
-
-  REG_INPUT(WhistlePercept);
 
   platformInterface.registerBufferedInputChanel(getCameraMatrixBuffer());
   platformInterface.registerBufferedInputChanel(getCameraMatrixBufferTop());

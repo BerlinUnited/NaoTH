@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package naoscp.components;
 
 import java.io.File;
@@ -12,7 +6,6 @@ import java.util.Arrays;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -37,7 +30,7 @@ public class NaoTHPanel extends javax.swing.JPanel {
     public NaoTHPanel() {
         initComponents();
         
-        setConfigEditable(this.cbCopyConfig.isSelected());
+        setConfigEditable();
     }
     
     public void setEnabledAll(boolean v) {
@@ -201,12 +194,8 @@ public class NaoTHPanel extends javax.swing.JPanel {
             }
         });
 
+        cbCopyConfig.setSelected(true);
         cbCopyConfig.setText("copyConfig");
-        cbCopyConfig.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                cbCopyConfigItemStateChanged(evt);
-            }
-        });
         cbCopyConfig.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbCopyConfigActionPerformed(evt);
@@ -250,10 +239,6 @@ public class NaoTHPanel extends javax.swing.JPanel {
         
     }//GEN-LAST:event_cbCopyExeItemStateChanged
 
-    private void cbCopyConfigItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbCopyConfigItemStateChanged
-        
-    }//GEN-LAST:event_cbCopyConfigItemStateChanged
-
     private void jDirChooserPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jDirChooserPerformed
         JFileChooser chooser = new JFileChooser();
         chooser.setCurrentDirectory(new java.io.File("."));
@@ -291,10 +276,11 @@ public class NaoTHPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_jSchemeBoxActionPerformed
 
     private void cbCopyConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbCopyConfigActionPerformed
-        setConfigEditable(this.cbCopyConfig.isSelected());
+        setConfigEditable();
     }//GEN-LAST:event_cbCopyConfigActionPerformed
 
-    private void setConfigEditable(boolean v) {
+    public void setConfigEditable() {
+        boolean v = cbCopyConfig.isSelected();
         this.jSchemeBox.setEnabled(v);
         this.jColorBox.setEnabled(v);
         this.jTeamNumber.setEnabled(v);
@@ -319,6 +305,9 @@ public class NaoTHPanel extends javax.swing.JPanel {
         
         updateScheme();
         
+        // applies the configuration and sets the ui elements appropriately
+        applyConfig();
+        
         // this is set in updateScheme()
         //playerNumberPanel.setRobots(configDir);
         //playerNumberPanel.setRobotsFromTeamFile(new File(configDir, "general"));
@@ -337,7 +326,28 @@ public class NaoTHPanel extends javax.swing.JPanel {
             cbCopyLib.setSelected(false);
         }
         
-        setConfigEditable(this.cbCopyConfig.isSelected());
+        setConfigEditable();
+    }
+    
+    private void applyConfig() {
+        if(properties.containsKey("naoscp.color")) {
+            jColorBox.setSelectedItem(properties.getProperty("naoscp.color"));
+        }
+        if(properties.containsKey("naoscp.copy.smal")) {
+            cbCopyLib.setSelected(Boolean.parseBoolean(properties.getProperty("naoscp.copy.smal")));
+        }
+        if(properties.containsKey("naoscp.copy.config")) {
+            cbCopyConfig.setSelected(Boolean.parseBoolean(properties.getProperty("naoscp.copy.config")));
+        }
+        if(properties.containsKey("naoscp.copy.exe")) {
+            cbCopyExe.setSelected(Boolean.parseBoolean(properties.getProperty("naoscp.copy.exe")));
+        }
+        if(properties.containsKey("naoscp.port")) {
+            jTeamCommPort.setText(properties.getProperty("naoscp.port"));
+        }
+        if(properties.containsKey("naoscp.team")) {
+            jTeamNumber.setText(properties.getProperty("naoscp.team"));
+        }
     }
     
     private void updateScheme() {
@@ -385,13 +395,15 @@ public class NaoTHPanel extends javax.swing.JPanel {
             .toArray();
     
     // create a new model
-    ComboBoxModel model = new DefaultComboBoxModel(names);
+    DefaultComboBoxModel model = new DefaultComboBoxModel(names);
     
     // restore the selected scheme if avaliable in the properties
     if (properties != null) {
-        model.setSelectedItem(properties.getProperty("naoscp.scheme", "n/a"));
+        String defaultScheme = properties.getProperty("naoscp.scheme", "n/a");
+        if(model.getIndexOf(defaultScheme) != -1) {
+            model.setSelectedItem(defaultScheme);
+        }
     }
-    
     // set the new model
     this.jSchemeBox.setModel(model);
     

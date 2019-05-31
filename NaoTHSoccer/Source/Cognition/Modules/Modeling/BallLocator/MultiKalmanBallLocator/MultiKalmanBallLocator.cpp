@@ -1,6 +1,6 @@
 #include "MultiKalmanBallLocator.h"
 
-#include <Tools/naoth_eigen.h>
+#include <Eigen/Core>
 #include "Tools/Association.h"
 
 MultiKalmanBallLocator::MultiKalmanBallLocator():
@@ -216,7 +216,7 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
   }
 
   // phase 1: filter percepts and create index vector for filters
-  std::vector<Eigen::Vector2d> zs;
+  std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > zs;
   std::vector<Vector2d> ps;
 
   for(const MultiBallPercept::BallPercept& percept : getMultiBallPercept().getPercepts()){
@@ -303,20 +303,22 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
       zs.erase(zs.begin() + bestRow);
       ps.erase(ps.begin() + bestRow);
 
-      long int numRows = scores.rows()-1;
-      long int numCols = scores.cols();
+      if (!(zs.empty() || f.empty())) {
+        long int numRows = scores.rows() - 1;
+        long int numCols = scores.cols();
 
-      if( bestRow < numRows )
-          scores.block(bestRow,0,numRows-bestRow,numCols) = scores.bottomRows(numRows-bestRow).eval();
+        if (bestRow < numRows)
+          scores.block(bestRow, 0, numRows - bestRow, numCols) = scores.bottomRows(numRows - bestRow).eval();
 
-      scores.conservativeResize(numRows,numCols);
+        scores.conservativeResize(numRows, numCols);
 
-      --numCols;
+        --numCols;
 
-      if( bestCol < numCols )
-          scores.block(0,bestCol,numRows,numCols-bestCol) = scores.rightCols(numCols-bestCol).eval();
+        if (bestCol < numCols)
+          scores.block(0, bestCol, numRows, numCols - bestCol) = scores.rightCols(numCols - bestCol).eval();
 
-      scores.conservativeResize(numRows,numCols);
+        scores.conservativeResize(numRows, numCols);
+      }
 
     } while(!(f.empty() || zs.empty()));
   }
@@ -418,71 +420,32 @@ void MultiKalmanBallLocator::predict(ExtendedKalmanFilter4d& filter, double dt) 
     */
 
     const Eigen::Vector4d& x = filter.getState();
-    Eigen::Vector2d u; // control vector
+    Eigen::Vector2d vel; // control vector
+    vel <<  x(1), x(3);
+    double abs_velocity = vel.norm();
 
-    double deceleration = c_RR*Math::g*1e3;//[mm/s^2]
+    double time_until_vel_zero = 0;
 
-    // deceleration has to be in opposite direction of velocity
-    u <<  -x(1), -x(3);
-
-    // deceleration vector with "absoulte deceleration" (length of vector) of deceleration
-    if(u.norm() > 0){
-        u.normalize();
-    }
-    u *= deceleration;
-
-    double time_until_vel_x_zero = 0;
-    double time_until_vel_y_zero = 0;
-    
-    if(fabs(u(0)) > epsilon){
-        time_until_vel_x_zero = -x(1)/u(0);
-    }
-    if(fabs(u(1)) > epsilon){
-        time_until_vel_y_zero = -x(3)/u(1);
+    if(abs_velocity > epsilon){
+        time_until_vel_zero = -abs_velocity/getFieldInfo().ballDeceleration;
     }
 
-    if(time_until_vel_x_zero > dt && time_until_vel_y_zero > dt)
-    {
-        filter.predict(u,dt);
-        return;
-    }
-
-    if(time_until_vel_x_zero < epsilon && time_until_vel_y_zero < epsilon)
+    if(time_until_vel_zero < epsilon)
     {
         filter.predict(Eigen::Vector2d::Zero(),dt);
-        return;
-    }
-
-    if(time_until_vel_x_zero < time_until_vel_y_zero)
-    {
-        filter.predict(u,time_until_vel_x_zero);
-        u(0) = 0;
-        dt -= time_until_vel_x_zero;
-
-        if(time_until_vel_y_zero < dt)
-        {
-            double dt2 = time_until_vel_y_zero - time_until_vel_x_zero;
-            filter.predict(u, dt2);
-            u(1) = 0;
-            dt -= dt2;
-        }
-
-        filter.predict(u,dt);
     } else {
-        filter.predict(u,time_until_vel_y_zero);
-        u(1) = 0;
-        dt -= time_until_vel_y_zero;
-
-        if(time_until_vel_x_zero < dt)
-        {
-            double dt2 = time_until_vel_x_zero - time_until_vel_y_zero;
-            filter.predict(u, dt2);
-            u(0) = 0;
-            dt -= dt2;
+        // ballDeceleration is negative so the deceleration will be in opposite direction of current velocity
+        Eigen::Vector2d u = vel.normalized() * getFieldInfo().ballDeceleration;
+        if(time_until_vel_zero >= dt) {
+            filter.predict(u,dt);
+        } else {
+            filter.predict(u, time_until_vel_zero);
+            dt -= time_until_vel_zero;
+            filter.predict(Eigen::Vector2d::Zero(), dt);
         }
-
-        filter.predict(u,dt);
     }
+
+    return;
 }
 
 void MultiKalmanBallLocator::applyOdometryOnFilterState(ExtendedKalmanFilter4d& filter)
@@ -733,9 +696,6 @@ void MultiKalmanBallLocator::reloadParameters()
 
     initialStateStdSingleDimension << kfParameters.initialStateStdP00, kfParameters.initialStateStdP01,
                                       kfParameters.initialStateStdP10, kfParameters.initialStateStdP11;
-
-    // filter unspecific parameters
-    c_RR              = kfParameters.c_RR;
 
     // UAF thresholds
     euclid.setThreshold(kfParameters.euclidThreshold);

@@ -149,14 +149,15 @@ TeamMessageCustom::TeamMessageCustom() :
   wasStriker(false),
   wantsToBeStriker(false),
   timeToBall(std::numeric_limits<unsigned int>::max()),
-  isPenalized(false),
   batteryCharge(0.0),
   temperature(0.0),
   cpuTemperature(0.0),
   whistleDetected(false),
   whistleCount(0),
   // init with "invalid" position
-  teamBall(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity())
+  teamBall(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity()),
+  robotState(PlayerInfo::initial),
+  readyToWalk(false)
 {
 }
 
@@ -169,7 +170,8 @@ void TeamMessageCustom::print(std::ostream &stream) const
     << "\t" << "TimeToBall: " << timeToBall << "\n"
     << "\t" << "wasStriker: " << (wasStriker ? "yes" : "no") << "\n"
     << "\t" << "wantsToBeStriker: " << (wantsToBeStriker ? "yes" : "no") << "\n"
-    << "\t" << "isPenalized: " << (isPenalized ? "yes" : "no") << "\n"
+    << "\t" << "readyToWalk: " << (readyToWalk ? "yes" : "no") << "\n"
+    << "\t" << "robotState: " << PlayerInfo::toString(robotState) << "\n"
     << "\t" << "batteryCharge: " << batteryCharge << "\n"
     << "\t" << "temperature: " << temperature << "°C\n"
     << "\t" << "CPU: " << cpuTemperature << "°C\n"
@@ -179,7 +181,10 @@ void TeamMessageCustom::print(std::ostream &stream) const
             << std::setw(9) << ballVelocity.x << ", "
             << std::setw(9) << ballVelocity.y << "\n"
     << "\t" << "teamball position: "
-        << teamBall.x << "/" << teamBall.y << "\n";
+        << teamBall.x << "/" << teamBall.y << "\n"
+    << "\t" << "role: "
+        << Roles::getName(robotRole.role) << " / " << Roles::getName(robotRole.dynamic)
+    << "\n";
   if(!ntpRequests.empty()) {
       stream << "\t" << "ntp request for: \n";
       for(auto const& request : ntpRequests) {
@@ -198,7 +203,6 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
     userMsg.set_wantstobestriker(wantsToBeStriker);
     userMsg.set_timestamp(timestamp);
     userMsg.set_timetoball(timeToBall);
-    userMsg.set_ispenalized(isPenalized);
     userMsg.set_batterycharge((float)batteryCharge);
     userMsg.set_temperature((float)temperature);
     userMsg.set_cputemperature((float)cpuTemperature);
@@ -218,20 +222,25 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
     }
     DataConversion::toMessage(ballVelocity, *(userMsg.mutable_ballvelocity()));
     userMsg.set_key(key);
+    userMsg.set_robotstate((naothmessages::RobotState)robotState);
+    userMsg.mutable_robotrole()->set_role_static((naothmessages::RobotRoleStatic)robotRole.role);
+    userMsg.mutable_robotrole()->set_role_dynamic((naothmessages::RobotRoleDynamic)robotRole.dynamic);
+    userMsg.set_readytowalk(readyToWalk);
+
     return userMsg;
 }
 
 void TeamMessageCustom::parseFromDoBerManHeader(const uint8_t* rawHeader, size_t headerSize)
 {
   // initialize with some values so the compiler is happy
-  DoBerManHeader header = {timestamp, 0, isPenalized, whistleDetected, 0};
+  DoBerManHeader header = {timestamp, 0, robotState == PlayerInfo::penalized, whistleDetected, 0};
   if(headerSize >= sizeof(DoBerManHeader))
   {
     memcpy(&header, rawHeader, sizeof(DoBerManHeader));
   }
   // copy the parsed data
   timestamp = header.timestamp;
-  isPenalized = (header.isPenalized > 0);
+  robotState = (header.isPenalized > 0) ? PlayerInfo::penalized : PlayerInfo::playing;
   whistleDetected = (header.whistleDetected > 0);
 
   wantsToBeStriker = (header.intention == 3);
@@ -246,7 +255,7 @@ void TeamMessageCustom::toDoBerManHeader(DoBerManHeader& header) const
   header.timestamp = timestamp;
   // TODO: make the DoBerMan team ID configurable, now it is fixed to 4
   header.teamID = 4;
-  header.isPenalized = isPenalized;
+  header.isPenalized = robotState == PlayerInfo::penalized;
   header.whistleDetected = whistleDetected;
 
   header.intention = wantsToBeStriker ? 3 : 0;
@@ -268,9 +277,7 @@ void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &u
     timeToBall = userData.timetoball();
     wasStriker = userData.wasstriker();
     wantsToBeStriker = userData.wantstobestriker();
-    
-    isPenalized = userData.ispenalized(); // TODO: remove and use game data instead
-    
+
     whistleDetected = userData.whistledetected();
     whistleCount = userData.whistlecount();
     if(userData.has_teamball()) {
@@ -296,5 +303,22 @@ void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &u
         ballVelocity.x = 0;
         ballVelocity.y = 0;
     }
+
+    // be aware of the old 'isPenalized' message field!
+    if(userData.has_robotstate()) {
+        robotState = (PlayerInfo::RobotState) userData.robotstate();
+    } else if(userData.has_ispenalized() && userData.ispenalized()) {
+        robotState = PlayerInfo::penalized;
+    } else {
+        // for the old log files, if the robot wasn't penalized
+        robotState = PlayerInfo::playing;
+    }
+
+    if(userData.has_robotrole()) {
+        robotRole.role = (Roles::Static) userData.robotrole().role_static();
+        robotRole.dynamic = (Roles::Dynamic) userData.robotrole().role_dynamic();
+    }
+
+    readyToWalk = userData.readytowalk();
 }
 

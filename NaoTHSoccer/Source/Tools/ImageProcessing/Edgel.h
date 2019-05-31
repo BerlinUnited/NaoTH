@@ -14,16 +14,23 @@ template<class T>
 class EdgelT
 {
 public:
-  EdgelT() 
-    : type(unknown)
-  {}
-
   enum Type
   {
     positive,
     negative,
     unknown
   };
+
+public:
+  EdgelT() 
+    : type(unknown)
+  {}
+
+  EdgelT(const Vector2<T>& point, const Vector2d& direction, Type type)
+    :
+    point(point), direction(direction), type(type)
+  {}
+
 
   Vector2<T> point;
   Vector2d direction;

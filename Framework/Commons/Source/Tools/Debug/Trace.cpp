@@ -50,7 +50,8 @@ void Trace::dump()
 std::ostream& operator<<(ostream& stream, const Trace& trace) 
 {
   stream << trace.buffer.size() << endl;
-  for(int i = trace.buffer.size() - 1; i >= 0; --i)
+  for(int i = trace.buffer.size() - 1; i >= 0; --i) {
     stream << trace.buffer[i].file << ":" << trace.buffer[i].line << " " << trace.buffer[i].msg << endl;
+  }
   return stream;
 }

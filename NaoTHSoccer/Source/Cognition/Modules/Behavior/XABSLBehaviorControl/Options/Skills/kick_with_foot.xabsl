@@ -57,12 +57,11 @@ option kick_with_foot
       motion.walk_speed.y = ball.preview.right_foot.y;
       motion.walk_speed.rot = 0;
 
-      //look at percept
       head.control_mode = none;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
-      head.point_in_world.z = ball.radius; // radius of the ball
+      head.point_in_world.z = ball.radius;
     }
   }
 
@@ -96,12 +95,11 @@ option kick_with_foot
       motion.walk_speed.y = ball.preview.left_foot.y;
       motion.walk_speed.rot = 0;
 
-      //look at percept
       head.control_mode = none;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
-      head.point_in_world.z = ball.radius; // radius of the ball
+      head.point_in_world.z = ball.radius;
     }
   }
   
@@ -131,12 +129,11 @@ option kick_with_foot
 
       motion.walk.style = fast;
 
-      //look at percept
       head.control_mode = none;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
-      head.point_in_world.z = ball.radius; // radius of the ball
+      head.point_in_world.z = ball.radius;
     }
   }
 
@@ -166,12 +163,11 @@ option kick_with_foot
 
       motion.walk.style = fast;
 
-      //loook at percept
       head.control_mode = none;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
-      head.point_in_world.z = ball.radius; // radius of the ball
+      head.point_in_world.z = ball.radius;
     }
   }
 
@@ -193,12 +189,11 @@ option kick_with_foot
 
       motion.walk.step_control.foot = none;
 
-      //loook at percept
       head.control_mode = none;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
-      head.point_in_world.z = ball.radius; // radius of the ball
+      head.point_in_world.z = ball.radius;
     }
   }
 
@@ -215,12 +210,11 @@ option kick_with_foot
       motion.walk.coordinate = hip;
       motion.walk.style = stable;
 
-      //loook at percept
       head.control_mode = none;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
-      head.point_in_world.z = ball.radius; // radius of the ball
+      head.point_in_world.z = ball.radius;
     }
   }
 

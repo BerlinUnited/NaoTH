@@ -2,6 +2,7 @@
 #define MULTIKALMANBALLLOCATOR_H
 
 #include <ModuleFramework/Module.h>
+#include <Eigen/StdVector>
 
 // representations
 #include <Representations/Perception/MultiBallPercept.h>
@@ -74,23 +75,18 @@ public:
 // from other kalman filter ball locator
 private:
     OdometryData lastRobotOdometry;
-
-    FrameInfo lastFrameInfo;
+    FrameInfo    lastFrameInfo;
 
 private:
-    typedef std::vector<BallHypothesis> Filters;
+    typedef std::vector<BallHypothesis, Eigen::aligned_allocator<BallHypothesis> > Filters;
     Filters filter;
     Filters::const_iterator bestModel;
 
     const double epsilon; // 10e-6
     //double area95Threshold;
 
-    //double ballMass;
-    double c_RR;
-
 private:
     void updateByPerceptsCool();
-    
     void updateByPerceptsNormal();
     void updateByPerceptsNaive(CameraInfo::CameraID camera);
 
@@ -130,8 +126,6 @@ private:
             PARAMETER_REGISTER(initialStateStdP10) = 0;
             PARAMETER_REGISTER(initialStateStdP11) = 250;
 
-            //PARAMETER_REGISTER(ballMass) = 0.026;
-            PARAMETER_REGISTER(c_RR) = 0.0245;
             PARAMETER_REGISTER(area95Threshold) = 2*Math::pi*700*700;
 
             //thresholds for association functions
@@ -172,8 +166,6 @@ private:
         double initialStateStdP10;
         double initialStateStdP11;
 
-        //double ballMass;
-        double c_RR;
         double area95Threshold;
 
         double euclidThreshold;

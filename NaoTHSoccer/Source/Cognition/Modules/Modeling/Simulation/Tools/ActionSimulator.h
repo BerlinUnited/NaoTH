@@ -181,11 +181,6 @@ private:
 
   BallPositionCategory classifyBallPosition( const Vector2d& ballPosition ) const;
 
-  double evaluateAction(const Vector2d& a) const;
-
-private: // debug
-  void draw_potential_field() const;
-
 private:
   inline double exp256(const double& x) const
   {
@@ -218,6 +213,8 @@ private:
 public:
   void simulateAction(const Action& action, ActionResults& result, size_t numParticles) const;
   double evaluateAction(const ActionResults& results) const;
+  double evaluateAction(const Vector2d& a) const;
+  void draw_potential_field() const;
 };
 
 #endif  /* _ActionSimulator_H */

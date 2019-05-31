@@ -3,7 +3,7 @@
  *
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
  * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Mellmann, Heinrich</a>
- * @breief Interface for the real robot for both cognition and motion
+ * @brief Interface for the real robot for both cognition and motion
  *
  */
 
@@ -16,7 +16,6 @@
 
 //
 #include "PlatformInterface/PlatformInterface.h"
-#include "PlatformInterface/Platform.h"
 #include "Tools/Communication/MessageQueue/MessageQueue4Threads.h"
 //#include "Tools/Debug/Stopwatch.h"
 
@@ -25,8 +24,8 @@
 #include "SoundControl.h"
 #include "SPLGameController.h"
 #include "CPUTemperatureReader.h"
-#include "WhistleDetector.h"
 #include "DebugCommunication/DebugServer.h"
+#include "AudioRecorder.h"
 
 #include "Tools/Communication/Network/BroadCaster.h"
 #include "Tools/Communication/Network/UDPReceiver.h"
@@ -37,6 +36,7 @@
 #include "Representations/Infrastructure/RemoteMessageData.h"
 #include "Representations/Infrastructure/GameData.h"
 #include "Representations/Infrastructure/SoundData.h"
+#include "Representations/Infrastructure/AudioData.h"
 
 // local tools
 #include "Tools/IPCData.h"
@@ -52,16 +52,17 @@ public:
   NaoController();
   virtual ~NaoController();
 
-  virtual string getBodyID() const { return theBodyID; }
-  virtual string getBodyNickName() const { return theBodyNickName; }
-  virtual string getHeadNickName() const { return theHeadNickName; }
-  virtual string getRobotName() const { return theRobotName; }
+  virtual std::string getBodyID() const { return theBodyID; }
+  virtual std::string getBodyNickName() const { return theBodyNickName; }
+  virtual std::string getHeadNickName() const { return theHeadNickName; }
+  virtual std::string getRobotName() const { return theRobotName; }
 
   // camera stuff
   void get(Image& data){ theBottomCameraHandler.get(data); } // blocking
   void get(ImageTop& data){ theTopCameraHandler.get(data); } // non blocking
   void get(CurrentCameraSettings& data) { theBottomCameraHandler.getCameraSettings(data); }
   void get(CurrentCameraSettingsTop& data) { theTopCameraHandler.getCameraSettings(data); }
+  
   void set(const CameraSettingsRequest& data);
   void set(const CameraSettingsRequestTop& data);
 
@@ -94,7 +95,6 @@ public:
     data.setFrameNumber(data.getFrameNumber()+1);
   }
 
-
   // read directly from the shared memory
   void get(SensorJointData& data) { naoSensorData.get(data); }
   void get(AccelerometerData& data) { naoSensorData.get(data); }
@@ -105,7 +105,8 @@ public:
   void get(ButtonData& data) { naoSensorData.get(data); }
   void get(BatteryData& data) { naoSensorData.get(data); }
   void get(UltraSoundReceiveData& data) { naoSensorData.get(data); }
-  void get(WhistlePercept& data) { theWhistleDetector.get(data); }
+  
+  void get(AudioData& data) { theAudioRecorder.get(data); }
   void get(CpuData& data) { theCPUTemperatureReader.get(data); }
 
   // write directly to the shared memory
@@ -114,8 +115,8 @@ public:
   void set(const LEDData& data) { naoCommandLEDData.set(data); }
   void set(const IRSendData& data) { naoCommandIRSendData.set(data); }
   void set(const UltraSoundSendData& data) { naoCommandUltraSoundSendData.set(data); }
-  void set(const WhistleControl& data) { theWhistleDetector.set(data); }
 
+  void set(const AudioControl& data) { theAudioRecorder.set(data); }
 
   virtual void getMotionInput()
   {
@@ -188,7 +189,8 @@ protected:
   SPLGameController* theGameController;
   DebugServer* theDebugServer;
   CPUTemperatureReader theCPUTemperatureReader;
-  WhistleDetector theWhistleDetector;
+  AudioRecorder theAudioRecorder;
+
 };
 
 } // end namespace naoth

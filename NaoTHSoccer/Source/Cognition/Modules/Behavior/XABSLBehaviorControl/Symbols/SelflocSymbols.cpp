@@ -113,5 +113,3 @@ double SelflocSymbols::getFieldToRelativeY()
 {
   return (theInstance->getRobotPose()/theInstance->parameterVector).y;
 }
-
-
