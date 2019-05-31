@@ -1,0 +1,12 @@
+/* Dummy Implemenation for the penalty goalie */
+option penalty_goalie
+{
+  initial state dummy_goalie
+  { 
+    action
+    {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+}
