@@ -656,6 +656,8 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
                         
                        SPLMessage splMsg = SPLMessage.parseFrom(robotMsg);
                        
+                       splMsg.ballAge /= 1000.0; // the ballAge in the log files is in milliseconds
+                       
                        if((splMsg.user.hasIsPenalized() && !splMsg.user.getIsPenalized()) || (splMsg.user.hasRobotState() && splMsg.user.getRobotState() != TeamMessageOuterClass.RobotState.penalized)) {
                             boolean isOwnMsg = false;
                             if(ownBodyID.isPresent())
@@ -682,8 +684,8 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         private void drawFieldPercept(BlackBoard b, DrawingCollection dc) 
         {
             Color green = new Color(217, 255, 25);
-            drawFieldPercept(robotPose, b.get("FieldPercept"), cmBottom, dc, green);
-            drawFieldPercept(robotPose, b.get("FieldPerceptTop"), cmTop, dc, green);
+            if(b.has("FieldPercept")) { drawFieldPercept(robotPose, b.get("FieldPercept"), cmBottom, dc, green); }
+            if(b.has("FieldPerceptTop")) { drawFieldPercept(robotPose, b.get("FieldPerceptTop"), cmTop, dc, green); }
         }
         
         private void drawFieldPercept(Pose2D robotPose, LogDataFrame fieldPercept, Pose3D cameraMatrix, DrawingCollection dc, Color c) {

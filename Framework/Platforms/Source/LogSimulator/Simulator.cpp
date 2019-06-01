@@ -112,7 +112,11 @@ void Simulator::printHelp()
 void Simulator::printCurrentLineInfo()
 {
   if(logFileScanner.begin() == logFileScanner.end()) {
-    cout << "The logfile seem to be empty.\t\r";
+    if(backendMode) {
+      cout << "The logfile seems to be empty." << std::endl;
+    } else {
+      cout << "The logfile seems to be empty.\t\r";
+    }
     return;
   }
   
@@ -120,7 +124,9 @@ void Simulator::printCurrentLineInfo()
   LogFileScanner::FrameIterator end = logFileScanner.last();
 
   // output some informations about the current frame
-  if(!backendMode) {
+  if(backendMode) {
+    cout << "[" << *currentFrame << "|" << *begin << "-" << *end << "]" << std::endl;
+  } else {
     cout << "[" << *currentFrame << "|" << *begin << "-" << *end << "]\t\r";
   }
 }//end printCurrentLineInfo
@@ -300,7 +306,7 @@ void Simulator::jumpTo(unsigned int position)
   } else {
     cout << "frame not found!" << endl;
     currentFrame = oldPos;
-    if(!backendMode) { printCurrentLineInfo(); }
+    printCurrentLineInfo();
   }
 }//end jumpTo
 

@@ -15,6 +15,7 @@ option spl_play_soccer {
       head_control();
 
       //hack
+      // is irrelevant, is not used anywhere
       situationStatusOwnHalf = situationStatusOwnHalf || (game.player_number == 1);
     }
   }
