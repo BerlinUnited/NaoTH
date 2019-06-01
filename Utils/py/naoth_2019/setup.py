@@ -10,5 +10,5 @@ setup(name='naoth',
       packages=find_packages(),
       zip_safe=False,
       install_requires=[
-          'protobuf', 'PyQt5'
+          'protobuf', 'PyQt5', 'numpy'
       ])

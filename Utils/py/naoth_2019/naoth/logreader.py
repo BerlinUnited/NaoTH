@@ -266,10 +266,28 @@ class LogReader:
         """
         self.log_file.close()
 
+    def index_of(self, frame_number):
+        """
+        Get log reader index to the corresponding frame number
+
+        :param frame_number: number of log file frame
+        :return: log reader index or -1 of the frame doesn't exist
+        """
+        # TODO: optimize search
+        for i, frame in enumerate(self.read()):
+            if frame.number == frame_number:
+                return i
+        else:
+            return -1
+
     def read_from(self, index):
         """
         Generator yielding log file frames starting from frame i.
         """
+        if index == -1:
+            logger.warning(f'Index {index} must be positive!')
+            return
+
         # yield frames already read
         while index < len(self.frames):
             yield self.frames[index]
@@ -351,9 +369,9 @@ if __name__ == "__main__":
         print()
 
         print('Number of edgels of 3 frames after the 10th frame:')
-        for i, _frame in enumerate(log_reader.read_from(11)):
+        for _i, _frame in enumerate(log_reader.read_from(11)):
             if 'ScanLineEdgelPerceptTop' in _frame:
                 edgels = _frame['ScanLineEdgelPerceptTop'].edgels
                 print('ScanLineEdgelPerceptTop of frame', _frame.number, 'contains', len(edgels), 'edgels')
-            if i == 2:
+            if _i == 2:
                 break
