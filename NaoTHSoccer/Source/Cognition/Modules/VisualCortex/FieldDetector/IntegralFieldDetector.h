@@ -65,9 +65,11 @@ public:
 
     Parameters() : ParameterList("IntegralFieldDetector")
     {
-      PARAMETER_REGISTER(proportion_of_green) = .3;
       PARAMETER_REGISTER(max_skip_cells) = 2;
       PARAMETER_REGISTER(min_successive_green) = 3;
+
+      PARAMETER_REGISTER(proportion_of_green) = .5;
+      PARAMETER_REGISTER(end_proportion_of_green) = .3;
 
       PARAMETER_REGISTER(positive_score) = 1;
       PARAMETER_REGISTER(negative_score) = -1;
@@ -77,6 +79,8 @@ public:
       syncWithConfig();
     }
     double proportion_of_green;
+    double end_proportion_of_green;
+
     int max_skip_cells;
     int min_successive_green;
 

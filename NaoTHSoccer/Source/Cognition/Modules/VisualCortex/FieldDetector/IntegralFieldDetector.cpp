@@ -44,6 +44,7 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
 
   int pixels_per_cell = (grid_size+1)*(grid_size+1);
   int min_green = (int)(pixels_per_cell*params.proportion_of_green);
+  int min_end_green = (int)(pixels_per_cell*params.end_proportion_of_green);
 
   bool first = true;
   bool green_found = false;
@@ -87,8 +88,10 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
           last_green_cell = cell;
           green_found = true;
         }
-
       } else {
+        if(green_found && skipped == 0 && cell.sum_of_green > min_end_green) {
+          last_green_cell = cell;
+        }
         ++skipped;
         if (skipped > params.max_skip_cells) {
           successive_green = 0;
