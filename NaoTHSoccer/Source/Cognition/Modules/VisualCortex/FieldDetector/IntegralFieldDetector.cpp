@@ -48,6 +48,7 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
 
   bool first = true;
   bool green_found = false;
+  bool former_green = false;
   Cell last_green_cell;
   Cell cell;
   for (cell.minX=0; cell.minX + grid_size-1 < width; cell.minX = cell.maxX + 1) {
@@ -86,16 +87,18 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
         if (successive_green >= params.min_successive_green
             || cell_number == successive_green) {
           last_green_cell = cell;
+          former_green = true;
           green_found = true;
         }
       } else {
-        if(green_found && skipped == 0 && cell.sum_of_green > min_end_green) {
+        if(former_green && cell.sum_of_green > min_end_green) {
           last_green_cell = cell;
         }
         ++skipped;
         if (skipped > params.max_skip_cells) {
           successive_green = 0;
         }
+        former_green = false;
       }
       // ensure cells will end on the upper image border
       if(rest > 0) {
