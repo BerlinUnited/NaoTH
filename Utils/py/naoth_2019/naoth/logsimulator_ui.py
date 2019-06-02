@@ -5,6 +5,7 @@ from tempfile import TemporaryDirectory
 from zipfile import ZipFile
 
 from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5.QtGui import QTextCursor
 
 from naoth.logsimulator import LogSimulator
 
@@ -12,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class LogSimulatorWidget(QtWidgets.QTextEdit):
-    def __init__(self, parent=None, logsimulator_path=None):
+    def __init__(self, parent=None, logsimulator_path=None, scroll_back=10000):
         super().__init__(parent=parent)
         self.setAcceptDrops(True)
         self.setReadOnly(True)
@@ -23,7 +24,10 @@ class LogSimulatorWidget(QtWidgets.QTextEdit):
         font.setPointSize(12)
         self.setFont(font)
 
-        self.setText('Awaiting log file and config folder... (Drag & Drop here)')
+        self.scroll_back = scroll_back
+        self.scroll_back_buffer = 1000
+
+        self.append('Awaiting log file and config folder... (Drag & Drop here)')
 
         self.tmp_dir = None
         self.config_folder = None
@@ -38,6 +42,28 @@ class LogSimulatorWidget(QtWidgets.QTextEdit):
         self.awaiting_executable = False
         self.awaiting_restart = False
 
+    def number_of_lines(self):
+        """
+        :returns number if displayed lines
+        """
+        cursor = self.textCursor()
+        self.moveCursor(QTextCursor.End)
+        return cursor.blockNumber()
+
+    def trim_history(self):
+        line_count = self.number_of_lines()
+        # reduce history if too many lines
+        if line_count > self.scroll_back + self.scroll_back_buffer:
+            cursor = self.textCursor()
+
+            lines_to_delete = line_count - self.scroll_back
+
+            cursor.movePosition(QTextCursor.Start)
+            cursor.movePosition(QTextCursor.Down, QTextCursor.KeepAnchor, lines_to_delete)
+            cursor.movePosition(QTextCursor.StartOfLine, QTextCursor.KeepAnchor)
+
+            cursor.removeSelectedText()
+
     def _connect_events(self):
         self.process.readyRead.connect(self._output_ready)
         self.process.readyReadStandardError.connect(self._error_ready)
@@ -47,9 +73,13 @@ class LogSimulatorWidget(QtWidgets.QTextEdit):
         output = bytes(self.process.readAll()).decode('utf-8')
         self.append(output)
 
+        self.trim_history()
+
     def _error_ready(self):
         output = bytes(self.process.readAllStandardError()).decode('utf-8')
         self.append(f'<font color="DeepPink">{output}</font><br>')
+
+        self.trim_history()
 
     def _process_finished(self, exit_status):
         self.stop()
@@ -60,7 +90,7 @@ class LogSimulatorWidget(QtWidgets.QTextEdit):
     def keyPressEvent(self, event):
         if self.awaiting_restart and event.key() == QtCore.Qt.Key.Key_Return:
             self.awaiting_restart = False
-            self.setText('')
+            self.clear()
             self.start()
         elif event.text():
             logger.debug(f'Key {event.text()} pressed.')
@@ -159,7 +189,8 @@ class LogSimulatorWidget(QtWidgets.QTextEdit):
                                 'OR set LOG_SIMULATOR_PATH environment variable!')
 
         # display messages
-        self.setText('\n'.join(messages))
+        self.clear()
+        self.append('\n'.join(messages))
 
     def start(self):
         self.process.setWorkingDirectory(self.log_sim.working_dir())
