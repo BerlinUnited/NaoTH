@@ -111,6 +111,13 @@ class LogScanner:
         """
         return struct.calcsize('=l') + (len(name) + 1) * struct.calcsize('=c') + struct.calcsize('=l') + payload_size
 
+    def set_scan_position(self, frame_start_position):
+        """
+        Set the position of the frame scanner. BEWARE: Must be where a frame member starts
+        :param frame_start_position: position in log file where a frame member starts
+        """
+        self._scan_position = frame_start_position
+
     def scan_frame_member(self):
         """
         Reads name and payload positions of the next frame member
@@ -253,6 +260,7 @@ class LogReader:
         self.parser = parser
 
         self.frames = []
+        self.furthest_scan_position = 0
 
     def __enter__(self):
         return self
@@ -280,20 +288,22 @@ class LogReader:
         else:
             return -1
 
-    def read_from(self, index):
+    def read_from(self, start_idx):
         """
         Generator yielding log file frames starting from frame i.
         """
-        if index == -1:
-            logger.warning(f'Index {index} must be positive!')
+        if start_idx == -1:
+            logger.warning(f'Index {start_idx} must be positive!')
             return
 
         # yield frames already read
-        while index < len(self.frames):
-            yield self.frames[index]
-            index += 1
+        while start_idx < len(self.frames):
+            yield self.frames[start_idx]
+            start_idx += 1
 
         # read more frames from the log file
+        idx = len(self.frames)
+        self.scanner.set_scan_position(self.furthest_scan_position)
         frame = None
         while True:
             # read next frame member
@@ -308,13 +318,28 @@ class LogReader:
             elif current_frame_number != frame.number:
                 # finished reading frame
                 self.frames.append(frame)
+                self.furthest_scan_position = frame_member_start
+                idx += 1
 
-                # only yield frame if it comes after the ith frame
-                if index < len(self.frames):
-                    yield frame
-
+                frame_to_yield = frame
                 # create new frame
                 frame = Frame(frame_member_start, current_frame_number, self.scanner, self.parser)
+
+                # only yield frames from the start
+                if start_idx < len(self.frames):
+                    yield frame_to_yield
+
+                    # check if we already got new frames, since we yielded and
+                    # other iterators could have advanced further by now
+                    discard = idx < len(self.frames)
+                    while idx < len(self.frames):
+                        yield self.frames[idx]
+                        idx += 1
+
+                    if discard:
+                        # discard started frame
+                        frame = None
+                        self.scanner.set_scan_position(self.furthest_scan_position)
 
             # add frame member
             position, size = payload_pos
@@ -324,8 +349,8 @@ class LogReader:
         if frame is not None and frame.members:
             self.frames.append(frame)
 
-            # only yield frame if it comes after the ith frame
-            if index < len(self.frames):
+            # only yield frames from the start
+            if start_idx < len(self.frames):
                 yield frame
 
     def read(self):
