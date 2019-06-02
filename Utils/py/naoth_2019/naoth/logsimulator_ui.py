@@ -60,6 +60,7 @@ class LogSimulatorWidget(QtWidgets.QTextEdit):
     def keyPressEvent(self, event):
         if self.awaiting_restart and event.key() == QtCore.Qt.Key.Key_Return:
             self.awaiting_restart = False
+            self.setText('')
             self.start()
         elif event.text():
             logger.debug(f'Key {event.text()} pressed.')
