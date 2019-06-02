@@ -42,7 +42,7 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
   int rest_H = width - (n_cells_horizontal * grid_size);
   int rest_V = height - (n_cells_vertical * grid_size);
 
-  int pixels_per_cell = (grid_size+1)*(grid_size+1);
+  int pixels_per_cell = grid_size * grid_size;
   int min_green = (int)(pixels_per_cell*params.proportion_of_green);
   int min_end_green = (int)(pixels_per_cell*params.end_proportion_of_green);
 
@@ -66,6 +66,8 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
     // scan up
     for(cell.maxY = height-1; cell.maxY - grid_size + 1 >= min_scan_y; cell.maxY = cell.minY - 1) {
       cell.minY = cell.maxY - grid_size + 1;
+
+      // calculate number of green pixels in the cell
       cell.sum_of_green = getBallDetectorIntegralImage().getSumForRect(
             cell.minX, cell.minY, cell.maxX, cell.maxY, 1);
 
