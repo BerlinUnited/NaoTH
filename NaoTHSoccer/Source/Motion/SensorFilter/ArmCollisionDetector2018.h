@@ -62,6 +62,7 @@ public:
             PARAMETER_REGISTER(point_configRight) = "reference_points_cd18Right.txt";
       PARAMETER_REGISTER(maxErrorStand) = 0.02;
             PARAMETER_REGISTER(collect) = 32;
+            PARAMETER_REGISTER(armRollError) = 0.06;
             syncWithConfig();
 
         }
@@ -69,6 +70,7 @@ public:
         std::string  point_configLeft;
         std::string  point_configRight;
     double maxErrorStand;
+    double armRollError;
         unsigned int collect;
     } params;
 
@@ -84,8 +86,8 @@ private:
 
   RingBuffer<double, 4> jointDataBufferLeftRoll;
   RingBuffer<double, 4> jointDataBufferRightRoll;
-  RingBufferWithSum<double, 100> collisionBufferLeftRoll;
-  RingBufferWithSum<double, 100> collisionBufferRightRoll;
+  RingBufferWithSum<double, 32> collisionBufferLeftRoll;
+  RingBufferWithSum<double, 32> collisionBufferRightRoll;
 };
 
 #endif

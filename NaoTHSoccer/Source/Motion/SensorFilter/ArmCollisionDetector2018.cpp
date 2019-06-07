@@ -119,16 +119,16 @@ void ArmCollisionDetector2018::execute()
   { // Arm Roll Collision
     if (jointDataBufferLeftRoll.isFull()) {
       double e = jointDataBufferLeftRoll.first() - getSensorJointData().position[JointData::LShoulderRoll];
-      collisionBufferLeftRoll.add(std::fabs(e));
+      collisionBufferLeftRoll.add(e);
     }
     if (jointDataBufferRightRoll.isFull()) {
       double e = jointDataBufferRightRoll.first() - getSensorJointData().position[JointData::RShoulderRoll];
-      collisionBufferRightRoll.add(std::fabs(e));
+      collisionBufferRightRoll.add(e);
     }
-    double max_error = params.maxErrorStand;
+    double max_error = params.armRollError;
 
     // collision arm left
-    if (collisionBufferLeftRoll.isFull() && collisionBufferLeftRoll.getAverage() > max_error) {
+    if (collisionBufferLeftRoll.isFull() && std::fabs(collisionBufferLeftRoll.getAverage()) > max_error) {
       getCollisionPercept().timeCollisionArmLeft = getFrameInfo().getTime();
       jointDataBufferLeftRoll.clear();
       collisionBufferLeftRoll.clear();
@@ -136,7 +136,7 @@ void ArmCollisionDetector2018::execute()
     }
 
     // collision arm right
-    if (collisionBufferRightRoll.isFull() && collisionBufferRightRoll.getAverage() > max_error) {
+    if (collisionBufferRightRoll.isFull() && std::fabs(collisionBufferRightRoll.getAverage()) > max_error) {
       getCollisionPercept().timeCollisionArmRight = getFrameInfo().getTime();
       jointDataBufferRightRoll.clear();
       collisionBufferRightRoll.clear();
