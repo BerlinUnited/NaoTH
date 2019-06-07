@@ -20,7 +20,7 @@ XABSLBehaviorControl::XABSLBehaviorControl()
     // init the xabxl engine
     theEngine(NULL),
     theErrorHandler(error_stream),
-    agentName("soccer")
+    agentName("soccer_agent")
 {
   REGISTER_DEBUG_COMMAND("behavior:reload", "reload the behavior file", this);
   REGISTER_DEBUG_COMMAND("behavior:get_agent", "get the current selected agent", this);

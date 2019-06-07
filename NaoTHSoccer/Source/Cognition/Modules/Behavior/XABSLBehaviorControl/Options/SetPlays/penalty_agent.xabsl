@@ -1,5 +1,5 @@
-/** The root option of the soccer behavior */
-option play_penalty 
+/** The root option of the penalty behavior */
+option penalty_agent 
 {
 
   initial state play_penalty {

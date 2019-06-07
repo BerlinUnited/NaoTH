@@ -1,18 +1,17 @@
-option roles_agent{
-  initial state start {    
+/** The root option of a simple ball following behavior */
+option follow_ball_agent {
+
+  initial state test {    
     action {
+    
       // react to the game controller and handle fall down
       basic_play();
 
-      situationStatusOwnHalf = true;
-
-      roles_play_soccer();
-
-      // control the arms
-      arms_control();
+      follow_ball_test();
       
       // control head movement according to value of head.control_mode
       head_control();
     }
   }
 }
+ 
