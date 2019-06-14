@@ -1391,10 +1391,23 @@ void MonteCarloSelfLocator::sensorResetByMiddleCircle(SampleSet& sampleSet) cons
   {
     size_t n = sampleSet.size()-1;
 
-    if((centerLeft.translation - getRobotPose().translation).abs2() < (centerRight.translation - getRobotPose().translation).abs2()) {
-      sampleSet[n] = centerLeft;
+    if( 
+      parameters.sensorResetByMiddleCircleAngleDecisionDistance > 0 && 
+      getRobotPose().translation.abs2() < Math::sqr(parameters.sensorResetByMiddleCircleAngleDecisionDistance) )
+    {
+      // choose one by the rotation
+      if(fabs(Math::normalize(centerLeft.rotation - getRobotPose().rotation)) < fabs(Math::normalize(centerRight.rotation - getRobotPose().rotation))) {
+        sampleSet[n] = centerLeft;
+      } else {
+        sampleSet[n] = centerRight;
+      }
     } else {
-      sampleSet[n] = centerRight;
+      // choose one by the distance
+      if((centerLeft.translation - getRobotPose().translation).abs2() < (centerRight.translation - getRobotPose().translation).abs2()) {
+        sampleSet[n] = centerLeft;
+      } else {
+        sampleSet[n] = centerRight;
+      }
     }
   } 
   else 

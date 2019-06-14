@@ -49,10 +49,13 @@ class FootStepPlanner2018Parameters: public ParameterList{
           PARAMETER_REGISTER(limits.maxStepLengthBack)  = 35;
           PARAMETER_REGISTER(limits.maxStepWidth)       = 60;
           PARAMETER_REGISTER(limits.maxStepChange)      = 0.3;
+          PARAMETER_REGISTER(limits.maxStepChangeDown)  = 0.5;
 
           PARAMETER_ANGLE_REGISTER(limits.maxCtrlTurn) = 30;
           PARAMETER_REGISTER(limits.maxCtrlLength) = 80;
           PARAMETER_REGISTER(limits.maxCtrlWidth)  = 50;
+          PARAMETER_REGISTER(limits.maxCtrlChange)     = 0.3;
+          PARAMETER_REGISTER(limits.maxCtrlChangeDown) = 0.8;
 
           PARAMETER_REGISTER(footOffsetY) = 0;
 
@@ -78,15 +81,19 @@ class FootStepPlanner2018Parameters: public ParameterList{
 
       struct Limits {
         double maxTurnInner;
+
         double maxStepTurn;
         double maxStepLength;
         double maxStepLengthBack;
         double maxStepWidth;
         double maxStepChange;
+        double maxStepChangeDown;
 
         double maxCtrlTurn;
         double maxCtrlLength;
         double maxCtrlWidth;
+        double maxCtrlChange;
+        double maxCtrlChangeDown;
       } limits;
 
       struct Step {
