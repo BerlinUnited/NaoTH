@@ -16,7 +16,7 @@ if __name__ == "__main__":
   newFile = open("audio.raw", "wb")
   
   timestamp = 0
-  for s in LogReader("./test_new_recorder.log", myParser, get_audio):
+  for s in LogReader("./game.log", myParser, get_audio):
       if s is not None and s.timestamp > timestamp:
         timestamp = s.timestamp
         #print (type(s.samples))

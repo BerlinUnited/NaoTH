@@ -15,7 +15,7 @@ def write(f, name, out):
   out.write(data)
 
 if __name__ == "__main__":
-    logFilePath = "D:/RoboCup/log/2019-famff/game.log"
+    logFilePath = "game.log"
 
     out = open("audio_data.log", "wb")
     
