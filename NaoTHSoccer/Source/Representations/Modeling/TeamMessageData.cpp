@@ -233,32 +233,37 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
 void TeamMessageCustom::parseFromDoBerManHeader(const uint8_t* rawHeader, size_t headerSize)
 {
   // initialize with some values so the compiler is happy
-  DoBerManHeader header = {timestamp, 0, robotState == PlayerInfo::penalized, whistleDetected, 0};
+  DoBerManHeader header = {
+      //timestamp
+      //, 0
+      robotState == PlayerInfo::penalized
+      //, whistleDetected, 0
+  };
   if(headerSize >= sizeof(DoBerManHeader))
   {
     memcpy(&header, rawHeader, sizeof(DoBerManHeader));
   }
   // copy the parsed data
-  timestamp = header.timestamp;
+  //timestamp = header.timestamp;
   robotState = (header.isPenalized > 0) ? PlayerInfo::penalized : PlayerInfo::playing;
-  whistleDetected = (header.whistleDetected > 0);
+  //whistleDetected = (header.whistleDetected > 0);
 
-  wantsToBeStriker = (header.intention == 3);
-  wasStriker = wantsToBeStriker;
+  //wantsToBeStriker = (header.intention == 3);
+  //wasStriker = wantsToBeStriker;
 
-  key = std::to_string(header.teamID);
+  //key = std::to_string(header.teamID);
 }
 
 void TeamMessageCustom::toDoBerManHeader(DoBerManHeader& header) const
 {
   // copy the information into an internal struct
-  header.timestamp = timestamp;
+  //header.timestamp = timestamp;
   // TODO: make the DoBerMan team ID configurable, now it is fixed to 4
-  header.teamID = 4;
+  //header.teamID = 4;
   header.isPenalized = robotState == PlayerInfo::penalized;
-  header.whistleDetected = whistleDetected;
+  //header.whistleDetected = whistleDetected;
 
-  header.intention = wantsToBeStriker ? 3 : 0;
+  //header.intention = wantsToBeStriker ? 3 : 0;
 }
 
 void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &userData)

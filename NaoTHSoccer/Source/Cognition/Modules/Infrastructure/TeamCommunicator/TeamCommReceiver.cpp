@@ -93,7 +93,7 @@ void TeamCommReceiver::handleMessage(const std::string& data)
       // looks like an mixed team message
       // overwrite with "useful" data
       msg.custom.timestamp = naoth::NaoTime::getSystemTimeInMilliSeconds();
-      msg.custom.robotState = PlayerInfo::playing;
+      //msg.custom.robotState = PlayerInfo::playing;
   }
 
   // make sure the time step is monotonically rising

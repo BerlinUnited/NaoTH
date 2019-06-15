@@ -53,11 +53,11 @@ public:
   // we define this struct private because no one else needs to know about the internals of the DoBerManHeader
   struct DoBerManHeader
   {
-    uint64_t timestamp;
-    int8_t teamID;
+//    uint64_t timestamp;
+//    int8_t teamID;
     int8_t isPenalized;
-    int8_t whistleDetected;
-    int8_t intention;
+//    int8_t whistleDetected;
+//    int8_t intention;
   };
 
 public:

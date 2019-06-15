@@ -72,7 +72,7 @@ void RoleDecisionDynamic::decideStriker(std::map<unsigned int, Roles::Dynamic>& 
             goalie = &msg;
         } else {
             Vector2d globalBall = msg.pose * msg.ballPosition;
-            double indicator = strikerIndicatorDistance(msg);
+            double indicator = strikerIndicatorBnB(msg);//strikerIndicatorDistance(msg);
 
             checkStriker(msg, indicator, globalBall, new_striker);
         }
@@ -168,6 +168,27 @@ double RoleDecisionDynamic::strikerIndicatorDistance(const TeamMessageData& msg)
 double RoleDecisionDynamic::strikerIndicatorTimeToBall(const TeamMessageData& msg) {
     // TODO!
     return msg.custom.timeToBall;
+}
+
+double RoleDecisionDynamic::strikerIndicatorBnB(const TeamMessageData& msg)
+{
+    // TODO: copy from WalkParameters configuration
+    // estimate time to ball for dortmund guys
+    const double stepTime = 200; //ms
+    const double speed = 50.0 / stepTime; // mm/ms
+    const double turnSpeed = Math::fromDegrees(30) / stepTime;
+
+    const Vector2d ball = msg.pose * msg.ballPosition;
+    const Vector2d goal(getFieldInfo().xPosOpponentGroundline, 0);
+    const Pose2D anchor(msg.pose.rotation + msg.ballPosition.angle(), ball.x, ball.y);
+
+    Vector2d t = anchor / goal;
+
+    //double strikerBonus = getRoleDecisionModel().isStriker(msg.playerNumber) ? params.striker_indicator_bonus : 0.0;
+
+    return (msg.ballPosition.abs() / speed)
+            + (fabs(msg.ballPosition.angle()) / turnSpeed)
+            + (fabs(t.angle()) / turnSpeed);
 }
 
 void RoleDecisionDynamic::decideGoalieSupporter(std::map<unsigned int, Roles::Dynamic>& roles)

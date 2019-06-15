@@ -110,6 +110,7 @@ private:
 
     double strikerIndicatorDistance(const TeamMessageData& msg);
     double strikerIndicatorTimeToBall(const TeamMessageData& msg);
+    double strikerIndicatorBnB(const TeamMessageData& msg);
 };
 
 #endif // ROLEDECISIONDYNAMIC_H
