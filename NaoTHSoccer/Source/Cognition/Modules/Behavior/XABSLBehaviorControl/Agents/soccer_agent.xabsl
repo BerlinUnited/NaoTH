@@ -19,7 +19,7 @@ option soccer_agent {
 
   state normal_soccer{
     action {
-      roles_agent();
+      roles_spl_play_soccer();
     }
   }
 

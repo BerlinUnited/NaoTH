@@ -1,6 +1,4 @@
-/** The root option of a simple ball following behavior */
-option clown_walk_test_agent 
-{
+option turn_around_ball_agent {
 
   initial state test {    
     action {
@@ -8,7 +6,7 @@ option clown_walk_test_agent
       // react to the game controller and handle fall down
       basic_play();
 
-      clown_walk_test();
+      turn_around_ball_test();
       
       // control head movement according to value of head.control_mode
       head_control();
