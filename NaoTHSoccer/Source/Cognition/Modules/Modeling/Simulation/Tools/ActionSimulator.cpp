@@ -25,6 +25,7 @@ ActionSimulator::ActionSimulator()
 
 {
   DEBUG_REQUEST_REGISTER("Simulation:draw_goal_collisions", "draw goal collisions", false);
+  DEBUG_REQUEST_REGISTER("Simulation:draw_potential_field", "draw potential field", false);
 }
 
 

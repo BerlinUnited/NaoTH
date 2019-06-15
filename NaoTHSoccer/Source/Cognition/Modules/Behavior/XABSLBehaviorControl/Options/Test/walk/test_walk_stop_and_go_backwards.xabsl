@@ -1,0 +1,58 @@
+/** This test walks backwards for two steps and then stops and repeats the process. This is used to
+    investigate if the robot falls when accelerating backwards. 
+    2019-05: WIP */
+option test_walk_stop_and_go_backwards{
+
+common decision {
+  if (!body.ready_to_walk || game.current_mode != playing)
+    goto idle;
+}
+
+initial state idle{
+  decision 
+  {
+    else
+      goto go_back;
+  }
+  action
+  {
+  }
+}
+
+state go_back{
+  decision
+  {
+    else if (executed_motion.type == walk){
+      goto stand;
+    } else {
+      stay;
+    }
+  }
+  action
+  {
+      head.control_mode = look_straight_ahead;
+      motion.type = walk;
+      motion.walk_speed.x = -100;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+      motion.walk.style = fast;
+  }
+}
+
+state stand{
+  decision
+  {
+    else if (executed_motion.type == stand){
+      goto go_back;
+    } else {
+      stay;
+    }
+  }
+  action
+  {
+    head.control_mode = look_straight_ahead;
+    motion.type = stand;
+  }
+}
+
+}

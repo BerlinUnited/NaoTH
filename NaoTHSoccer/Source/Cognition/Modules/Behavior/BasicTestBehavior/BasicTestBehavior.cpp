@@ -8,7 +8,7 @@
 
 #include "BasicTestBehavior.h"
 
-BasicTestBehavior::BasicTestBehavior() 
+BasicTestBehavior::BasicTestBehavior()
 {
   // test head control
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:Search", "Set the HeadMotion-Request to 'search'.", false);
@@ -21,6 +21,7 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:look_straight_ahead", "look straight ahead", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:goto_angle", "look at specific angle given as Modify", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:LookAtMultiBallPercept", "", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:look_at_world_point", "", false);
 
   // test motion control
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:standard_stand", "stand as standard or not", true);
@@ -50,6 +51,16 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:StandUp:from_back", "Set the motion request to 'stand_up_from_back'", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:StandUp:from_back_arms_back", "Set the motion request to 'stand_up_from_back'", false);
 
+  // goalie motions
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:block_middle","..",false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:goalie_get_down","..",false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:goalie_get_fast_down","..",false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:goalie_sit","..",false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:goalie_sit_small","..",false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:goalie_sit_block","..",false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:goalie_sit_n_dive_left","..",false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:goalie_sit_n_dive_right","..",false);
+
   // other motions
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:dead", "Set the robot dead.", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:stand", "The default motion, otherwise do nothing", true);
@@ -78,9 +89,10 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:arms_synchronised_with_walk", "set arms request to none", false);
 
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:whistle:listen", "start whistle detection", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:audio:capture", "start start audio capture for 4 channels", false);
 }
 
-void BasicTestBehavior::execute() 
+void BasicTestBehavior::execute()
 {
   // reset some stuff by default
   getMotionRequest().forced = false;
@@ -97,26 +109,25 @@ void BasicTestBehavior::execute()
     getSoundPlayData().soundFile = "victory.wav";
   );
 
-  DEBUG_REQUEST("BasicTestBehavior:arms:arms_back", 
+  DEBUG_REQUEST("BasicTestBehavior:arms:arms_back",
     getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_back;);
-  DEBUG_REQUEST("BasicTestBehavior:arms:arms_down", 
+  DEBUG_REQUEST("BasicTestBehavior:arms:arms_down",
     getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_down;);
-  DEBUG_REQUEST("BasicTestBehavior:arms:arms_none", 
+  DEBUG_REQUEST("BasicTestBehavior:arms:arms_none",
     getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_none;);
-  DEBUG_REQUEST("BasicTestBehavior:arms:arms_synchronised_with_walk", 
+  DEBUG_REQUEST("BasicTestBehavior:arms:arms_synchronised_with_walk",
     getMotionRequest().armMotionRequest.id = ArmMotionRequest::arms_synchronised_with_walk;);
-
 
   if (getRemoteControlCommand().action == RemoteControlCommand::WALK) {
     getMotionRequest().id = motion::walk;
     getMotionRequest().walkRequest.target.translation.x = 0;
   }
 
-  testWhistle();
+  testAudio();
 
 }//end execute
 
-void BasicTestBehavior::testHead() 
+void BasicTestBehavior::testHead()
 {
   getHeadMotionRequest().cameraID = CameraInfo::Top;
   DEBUG_REQUEST("BasicTestBehavior:head:SwitchToBottomCamera",
@@ -142,7 +153,7 @@ void BasicTestBehavior::testHead()
   );
 
   DEBUG_REQUEST("BasicTestBehavior:head:LookAtBall_image",
-    if (getBallPercept().ballWasSeen) 
+    if (getBallPercept().ballWasSeen)
     {
       getHeadMotionRequest().id = HeadMotionRequest::look_at_point;
       getHeadMotionRequest().targetPointInImage = getBallPercept().centerInImage;
@@ -150,7 +161,7 @@ void BasicTestBehavior::testHead()
   );
 
   DEBUG_REQUEST("BasicTestBehavior:head:LookAtMultiBallPercept",
-    if (getMultiBallPercept().wasSeen()) 
+    if (getMultiBallPercept().wasSeen())
     {
       Vector2d pos = (*getMultiBallPercept().begin()).positionOnField;
       for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
@@ -166,7 +177,7 @@ void BasicTestBehavior::testHead()
   );
 
   DEBUG_REQUEST("BasicTestBehavior:head:LookAtBall_field",
-    if (getBallPercept().ballWasSeen) 
+    if (getBallPercept().ballWasSeen)
     {
       getHeadMotionRequest().id = HeadMotionRequest::look_at_world_point;
       getHeadMotionRequest().targetPointInTheWorld.x = getBallPercept().bearingBasedOffsetOnField.x;
@@ -174,12 +185,10 @@ void BasicTestBehavior::testHead()
       getHeadMotionRequest().targetPointInTheWorld.z = getFieldInfo().ballRadius;
     }
   );
- 
+
   DEBUG_REQUEST("BasicTestBehavior:head:look_straight_ahead",
     getHeadMotionRequest().id = HeadMotionRequest::look_straight_ahead;
   );
-
-
 
   DEBUG_REQUEST("BasicTestBehavior:head:goto_angle",
     getHeadMotionRequest().id = HeadMotionRequest::goto_angle;
@@ -195,7 +204,6 @@ void BasicTestBehavior::testHead()
     getHeadMotionRequest().velocity = velocity;
   );
 
-
   DEBUG_REQUEST("BasicTestBehavior:head:look_at_ball_modell",
     if(getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime()) < 3000)
     {
@@ -206,17 +214,27 @@ void BasicTestBehavior::testHead()
     }
   );
 
+  DEBUG_REQUEST("BasicTestBehavior:head:look_at_world_point",
+    double x = 1000;
+    double y = 0;
+    double z = 0;
+    MODIFY("BasicTestBehavior:head:world_point:x",x);
+    MODIFY("BasicTestBehavior:head:world_point:y",y);
+    MODIFY("BasicTestBehavior:head:world_point:z",z);
+    getHeadMotionRequest().id = HeadMotionRequest::look_at_world_point;
+    getHeadMotionRequest().targetPointInTheWorld = Vector3d(x,y,z);
+  );
 }//end testHead
 
-void BasicTestBehavior::testMotion() 
+void BasicTestBehavior::testMotion()
 {
   getMotionRequest().walkRequest.target = Pose2D();
   getMotionRequest().forced = false;
 
-  DEBUG_REQUEST("BasicTestBehavior:motion:id:stand", 
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:stand",
     getMotionRequest().id = motion::stand;
   );
-  
+
   getMotionRequest().standardStand = false;
   DEBUG_REQUEST("BasicTestBehavior:motion:standard_stand",
     getMotionRequest().standardStand = true;
@@ -351,18 +369,44 @@ void BasicTestBehavior::testMotion()
   DEBUG_REQUEST("BasicTestBehavior:motion:id:play_editor_motionnet",
     getMotionRequest().id = motion::play_editor_motionnet;
   );
-  
+
   DEBUG_REQUEST("BasicTestBehavior:motion:force",
     getMotionRequest().forced = true;
   );
 
-  DEBUG_REQUEST("BasicTestBehavior:motion:ParallelKinematik:stepper", 
+  DEBUG_REQUEST("BasicTestBehavior:motion:ParallelKinematik:stepper",
     getMotionRequest().id = motion::parallel_stepper;
   );
-  DEBUG_REQUEST("BasicTestBehavior:motion:ParallelKinematik:dance", 
+  DEBUG_REQUEST("BasicTestBehavior:motion:ParallelKinematik:dance",
     getMotionRequest().id = motion::parallel_dance;
   );
-  
+
+
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:block_middle",
+    getMotionRequest().id = motion::block_middle;
+  );
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:goalie_get_down",
+    getMotionRequest().id = motion::goalie_get_down;
+  );
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:goalie_get_fast_down",
+    getMotionRequest().id = motion::goalie_get_fast_down;
+  );
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:goalie_sit",
+    getMotionRequest().id = motion::goalie_sit;
+  );
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:goalie_sit_block",
+    getMotionRequest().id = motion::goalie_sit_block;
+  );
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:goalie_sit_small",
+    getMotionRequest().id = motion::goalie_sit_small;
+  );
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:goalie_sit_n_dive_left",
+    getMotionRequest().id = motion::goalie_sit_n_dive_left;
+  );
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:goalie_sit_n_dive_right",
+    getMotionRequest().id = motion::goalie_sit_n_dive_right;
+  );
+
 }//end testMotion
 
 void BasicTestBehavior::testLED() {
@@ -397,7 +441,7 @@ void BasicTestBehavior::testLED() {
 
 } //testLED
 
-void BasicTestBehavior::testWhistle()
+void BasicTestBehavior::testAudio()
 {
   getAudioControl().capture = false;
 
@@ -409,5 +453,10 @@ void BasicTestBehavior::testWhistle()
     } else {
       getSoundPlayData().soundFile.clear();
     }
+  );
+
+  DEBUG_REQUEST("BasicTestBehavior:audio:capture",
+  	  getAudioControl().numChannels = 4;
+	  getAudioControl().capture = true;
   );
 }

@@ -44,7 +44,6 @@
 #include "Symbols/FieldSymbols.h"
 #include "Symbols/StrategySymbols.h"
 #include "Symbols/SoundSymbols.h"
-#include "Symbols/LineSymbols.h"
 #include "Symbols/PathSymbols.h"
 #include "Symbols/RemoteSymbols.h"
 
@@ -157,7 +156,6 @@ private:
   ModuleCreator<FieldSymbols>* theFieldSymbols;
   ModuleCreator<StrategySymbols>* theStrategySymbols;
   ModuleCreator<SoundSymbols>* theSoundSymbols;
-  ModuleCreator<LineSymbols>* theLineSymbols;
   ModuleCreator<PathSymbols>* thePathSymbols;
   ModuleCreator<RemoteSymbols>* theRemoteSymbols;
 };

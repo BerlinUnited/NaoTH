@@ -12,6 +12,7 @@
 #include <ModuleFramework/Module.h>
 
 // representations
+#include "Representations/Motion/MotionStatus.h"
 #include <Representations/Infrastructure/RobotInfo.h>
 #include "Representations/Motion/Request/MotionRequest.h"
 #include <Representations/Infrastructure/JointData.h>
@@ -21,7 +22,8 @@ BEGIN_DECLARE_MODULE(Sit)
   REQUIRE(RobotInfo)
   REQUIRE(SensorJointData)
   REQUIRE(MotionRequest)
-  
+
+  PROVIDE(MotionStatus)
   PROVIDE(MotionLock)
   PROVIDE(MotorJointData)
 END_DECLARE_MODULE(Sit)
@@ -30,7 +32,7 @@ class Sit : private SitBase, public AbstractMotion
 {
 public:
   Sit();
-  
+
   virtual ~Sit(){}
 
   void execute();

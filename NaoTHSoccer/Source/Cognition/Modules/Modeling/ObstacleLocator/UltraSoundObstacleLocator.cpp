@@ -93,6 +93,7 @@ void UltraSoundObstacleLocator::drawObstacleModel()
   
   // draw model
   DEBUG_REQUEST("UltraSoundObstacleLocator:drawObstacle",
+	FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 50);
     CIRCLE(
       getObstacleModel().leftDistance,

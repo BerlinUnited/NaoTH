@@ -7,8 +7,7 @@ FakeBallDetector::FakeBallDetector():
     DEBUG_REQUEST_REGISTER("Vision:FakeBallDetector:stationaryBallOnField", "perception of a ball, which is not moving on field", true);
     DEBUG_REQUEST_REGISTER("Vision:FakeBallDetector:constMovingOnField", "perception of a ball, which moves in a direction with constant velocity on field", false);
 
-    startPosition << 2500, 0;
-    velocity = Eigen::Vector2d::Zero();
+    startPosition = Vector2d(2500, 0);
 }
 
 FakeBallDetector::~FakeBallDetector()
@@ -26,11 +25,11 @@ void FakeBallDetector::execute()
     MultiBallPercept::BallPercept ballPercept;
 
     DEBUG_REQUEST("Vision:FakeBallDetector:stationaryBallOnField",
-        ballPercept.positionOnField = Vector2d(startPosition(0), startPosition(1));
+        ballPercept.positionOnField = startPosition;
     );
 
-    MODIFY("Vision:FakeBallDetector:constMovingOnField:Vx", velocity(0));
-    MODIFY("Vision:FakeBallDetector:constMovingOnField:Vy", velocity(1));
+    MODIFY("Vision:FakeBallDetector:constMovingOnField:Vx", velocity.x);
+    MODIFY("Vision:FakeBallDetector:constMovingOnField:Vy", velocity.y);
 
     DEBUG_REQUEST_ON_DEACTIVE("Vision:FakeBallDetector:constMovingOnField",
         active = false;
@@ -39,12 +38,10 @@ void FakeBallDetector::execute()
     DEBUG_REQUEST("Vision:FakeBallDetector:constMovingOnField",
         if(!active)
         {
-            position << startPosition;
+            position = startPosition;
             active = true;
         }
-
-        Eigen::Vector2d currentPosition = simulateConstantMovementOnField(getFrameInfo().getTimeInSeconds()-lastFrame.getTimeInSeconds(), velocity);
-        ballPercept.positionOnField = Vector2d(currentPosition(0), currentPosition(1));
+        ballPercept.positionOnField = simulateConstantMovementOnField(getFrameInfo().getTimeInSeconds()-lastFrame.getTimeInSeconds(), velocity);
     );
 
     lastFrame = getFrameInfo();
@@ -73,8 +70,7 @@ void FakeBallDetector::execute()
     }
 }
 
-const Eigen::Vector2d FakeBallDetector::simulateConstantMovementOnField(double dt, const Eigen::Vector2d &velocity)
+const Vector2d FakeBallDetector::simulateConstantMovementOnField(double dt, const Vector2d &velocity)
 {
-    Eigen::Matrix2d time = Eigen::Matrix2d::Identity() * dt;
-    return position += time*velocity;
+    return position += velocity*dt;
 }

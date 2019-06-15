@@ -114,6 +114,17 @@ public:
   }
 };
 
+namespace naoth
+{
+template<>
+class Serializer<BallModel>
+{
+  public:
+  static void serialize(const BallModel& object, std::ostream& stream);
+  static void deserialize(std::istream& stream, BallModel& object);
+};
+}
+
 #endif // _BallModel_h_
 
 

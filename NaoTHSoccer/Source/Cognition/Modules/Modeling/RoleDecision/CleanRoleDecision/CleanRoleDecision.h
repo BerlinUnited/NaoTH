@@ -7,6 +7,8 @@
 #ifndef _CleanRoleDecision_h_
 #define _CleanRoleDecision_h_
 
+#include <functional>
+
 #include <ModuleFramework/Module.h>
 
 #include "Representations/Modeling/TeamMessage.h"
@@ -28,8 +30,9 @@
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(CleanRoleDecision)
-  PROVIDE(DebugPlot)
   PROVIDE(DebugRequest)
+  PROVIDE(DebugPlot)
+  PROVIDE(DebugDrawings)
   PROVIDE(DebugParameterList)
 
   REQUIRE(FrameInfo)
@@ -43,7 +46,7 @@ BEGIN_DECLARE_MODULE(CleanRoleDecision)
   REQUIRE(TeamBallModel)
 
   PROVIDE(RoleDecisionModel)
-END_DECLARE_MODULE(CleanRoleDecision)
+END_DECLARE_MODULE(CleanRoleDecision);
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
 
@@ -114,16 +117,19 @@ protected:
 
   class Parameters: public ParameterList
   {
-  public: 
+  public:
     Parameters(): ParameterList("CleanRoleDecision")
     {
       PARAMETER_REGISTER(strikerBonusTime) = 4000;
       PARAMETER_REGISTER(maxBallLostTime) = 1000;
-      PARAMETER_REGISTER(strikerSelection) = 3;
       PARAMETER_REGISTER(strikerSelectionDiffThreshold) = 500; // ms
+      PARAMETER_REGISTER(firstSecondStrikerMinBallDistance) = 500.0; // mm
       PARAMETER_REGISTER(useSecondStriker) = true;
-      PARAMETER_REGISTER(firstSecondStrikerBallDistance) = 500; // mm
-      
+      PARAMETER_REGISTER(strikerSelection, &Parameters::setStrikerSelectionFunction) = 3;
+      PARAMETER_REGISTER(strikerBallRadiusFunction, &Parameters::setStrikerBallRadiusFunction) = 3;
+      PARAMETER_REGISTER(firstSecondStrikerLinBallDistanceM) = 0.35;
+      PARAMETER_REGISTER(firstSecondStrikerLinBallDistanceN) = -40.0;
+
       // load from the file after registering all parameters
       syncWithConfig();
     }
@@ -131,11 +137,49 @@ protected:
     bool useSecondStriker;
     int strikerBonusTime;
     int maxBallLostTime;
-    int strikerSelection;
     int strikerSelectionDiffThreshold;
-    int firstSecondStrikerBallDistance;
-    
-    virtual ~Parameters() {}
+
+    int strikerSelection;
+    void (CleanRoleDecision::*strikerSelectionFunction)(std::map<unsigned int, unsigned int>&, double&) = &CleanRoleDecision::strikerSelectionByNumber;
+
+    int strikerBallRadiusFunction;
+    double (CleanRoleDecision::*ballDifferenceRadius)(double) = &CleanRoleDecision::ballDifferenceRadiusConstant;
+
+    double firstSecondStrikerMinBallDistance;
+    double firstSecondStrikerLinBallDistanceM;
+    double firstSecondStrikerLinBallDistanceN;
+
+    /**
+     * @brief Update function, if another radius function should be used
+     * @param selection
+     */
+    void setStrikerBallRadiusFunction(int selection) {
+        // select a radius function based on the given new parameter
+        switch (selection) {
+            // simply uses a firstSecondStrikerMinBallDistance as min radius between first and second striker's ball
+            case 1: ballDifferenceRadius = &CleanRoleDecision::ballDifferenceRadiusConstant; break;
+            // simply uses a linear 'function f(x) = x*m + n' based on the distance to the ball of the second striker
+            case 2: ballDifferenceRadius = &CleanRoleDecision::ballDifferenceRadiusLinear; break;
+            // uses the firstSecondStrikerMinBallDistance or a linear 'function f(x) = x*m + n' based on the distance to the ball of the second striker to determine the min radius between first and second striker's ball
+            case 3: ballDifferenceRadius = &CleanRoleDecision::ballDifferenceRadiusConstantLinear; break;
+            // simply uses a firstSecondStrikerMinBallDistance as min radius between first and second striker's ball
+            default: ballDifferenceRadius = &CleanRoleDecision::ballDifferenceRadiusConstant;
+        }
+    }
+
+    /**
+     * @brief Update function, if another striker selection function should be used
+     * @param selection
+     */
+    void setStrikerSelectionFunction(int selection) {
+        // select a selection function based on the given new parameter
+        switch (selection) {
+            case 2:  strikerSelectionFunction = &CleanRoleDecision::strikerSelectionByTimeExceptGoalie; break;
+            case 3:  strikerSelectionFunction = &CleanRoleDecision::strikerSelectionByTimeExceptGoalieWithBallCompare; break;
+            case 1:
+            default: strikerSelectionFunction = &CleanRoleDecision::strikerSelectionByNumber; break;
+        }
+    }
   } parameters;
 
 private:
@@ -147,6 +191,17 @@ private:
    * @return true, if the balls are further away, otherwise false
    */
   bool inline isSecondStrikerDifferentFromFirst(unsigned int first, unsigned int second);
+
+  /**
+   * @brief Sets the dynamic role of the player to the striker.
+   * @param number  the player, which role should be set
+   */
+  void inline setStrikerRole(unsigned int number);
+
+  /* Some radius functions to determine similiar balls. */
+  inline double ballDifferenceRadiusConstant(double /*d*/) { return parameters.firstSecondStrikerMinBallDistance; }
+  inline double ballDifferenceRadiusLinear(double d) { return d * parameters.firstSecondStrikerLinBallDistanceM + parameters.firstSecondStrikerLinBallDistanceN; }
+  inline double ballDifferenceRadiusConstantLinear(double d) { return std::max(ballDifferenceRadiusConstant(d), ballDifferenceRadiusLinear(d)); }
 };
 
 #endif //__CleanRoleDecision_h_

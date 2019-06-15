@@ -38,8 +38,19 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumElement("game.set_play","game.set_play.none", PlayerInfo::set_none);
   engine.registerEnumElement("game.set_play","game.set_play.goal_free_kick", PlayerInfo::goal_free_kick);
   engine.registerEnumElement("game.set_play","game.set_play.pushing_free_kick", PlayerInfo::pushing_free_kick);
+  engine.registerEnumElement("game.set_play","game.set_play.corner_kick", PlayerInfo::corner_kick);
+  engine.registerEnumElement("game.set_play","game.set_play.kick_in", PlayerInfo::kick_in);
 
   engine.registerEnumeratedInputSymbol("game.set_play", "game.set_play", &getSetPlay);
+
+  // enum type for game phase
+  engine.registerEnumElement("game.phase", "game.phase.normal", PlayerInfo::normal);
+  engine.registerEnumElement("game.phase", "game.phase.penaltyshoot", PlayerInfo::penaltyshoot);
+  engine.registerEnumElement("game.phase", "game.phase.overtime", PlayerInfo::overtime);
+  engine.registerEnumElement("game.phase", "game.phase.timeout", PlayerInfo::timeout);
+
+  // current game phase
+  engine.registerEnumeratedInputSymbol("game.phase", "game.phase", &getGamePhase);
 
 }//end registerSymbols
 
@@ -75,4 +86,8 @@ int GameSymbols::getGameState() {
 
 int GameSymbols::getSetPlay() {
   return theInstance->getPlayerInfo().robotSetPlay;
+}
+
+int GameSymbols::getGamePhase(){
+  return theInstance->getPlayerInfo().gamePhase;
 }

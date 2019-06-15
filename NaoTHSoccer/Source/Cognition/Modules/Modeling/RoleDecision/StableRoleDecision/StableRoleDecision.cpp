@@ -85,9 +85,18 @@ void StableRoleDecision::execute()
     secondStriker = std::numeric_limits<unsigned int>::max();
   }
 
+  getRoleDecisionModel().resetStriker();
   getRoleDecisionModel().firstStriker = firstStriker;
   getRoleDecisionModel().secondStriker = secondStriker;
   getRoleDecisionModel().wantsToBeStriker = wantsToBeStriker;
+  // set the new striker role
+  if(firstStriker < std::numeric_limits<unsigned int>::max() && getRoleDecisionModel().roles.find(firstStriker) != getRoleDecisionModel().roles.cend()) {
+      getRoleDecisionModel().roles[firstStriker].dynamic = Roles::striker;
+  }
+  // set the new striker role
+  if(secondStriker < std::numeric_limits<unsigned int>::max() && getRoleDecisionModel().roles.find(secondStriker) != getRoleDecisionModel().roles.cend()) {
+      getRoleDecisionModel().roles[secondStriker].dynamic = Roles::striker;
+  }
 
   PLOT(std::string("StableRoleDecision:FirstStrikerDecision"), firstStriker);
   PLOT(std::string("StableRoleDecision:SecondStrikerDecision"), secondStriker);
