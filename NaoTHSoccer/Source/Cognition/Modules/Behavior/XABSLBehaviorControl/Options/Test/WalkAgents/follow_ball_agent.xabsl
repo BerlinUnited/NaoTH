@@ -1,16 +1,17 @@
-option go_to_point_with_USOA_test_agent
-{
+/** The root option of a simple ball following behavior */
+option follow_ball_agent {
 
   initial state test {    
     action {
+    
       // react to the game controller and handle fall down
       basic_play();
 
-      go_to_point_with_USOA_test();
+      follow_ball_test();
       
       // control head movement according to value of head.control_mode
       head_control();
     }
   }
-
 }
+ 
