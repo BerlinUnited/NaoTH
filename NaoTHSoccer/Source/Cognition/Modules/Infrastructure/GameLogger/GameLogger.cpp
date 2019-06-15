@@ -113,7 +113,7 @@ void GameLogger::execute()
 
       if(params.logAudioData) 
       {
-        // remember when the capture was on and keep recording for some time after it's off
+        // remember when the capture was on and keep recording for some time after the behavior says stop recording
         if(getAudioControl().capture) {
           timeOfLastCapture = getFrameInfo();
         } else if(getFrameInfo().getTimeSince(timeOfLastCapture.getTime()) < 3000) {
