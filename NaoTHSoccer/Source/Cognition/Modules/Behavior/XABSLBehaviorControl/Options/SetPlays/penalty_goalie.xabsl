@@ -22,7 +22,7 @@ option penalty_goalie
     decision
     {
       if (state_time > 5000)
-          goto sit;
+          goto stand_up;
         else 
           stay;
     }
@@ -30,22 +30,6 @@ option penalty_goalie
     {
       motion.type = block_middle;
       head.control_mode = look_straight_ahead;
-    }
-  }
-
-  state sit
-  {
-    decision
-    {
-      if (state_time > 5000)
-          goto stand_up;
-        else 
-          stay;
-    }
-    action
-    {
-      motion.type = sit;
-      head.control_mode = search_for_ball;    
     }
   }
 
@@ -61,6 +45,7 @@ option penalty_goalie
     action
     {
       motion.type = stand;
+      arm.control_mode = normal;
       head.control_mode = look_straight_ahead;
     }
   }
