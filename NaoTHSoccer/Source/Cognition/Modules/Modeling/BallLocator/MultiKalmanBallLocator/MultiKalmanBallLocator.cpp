@@ -123,7 +123,7 @@ void MultiKalmanBallLocator::execute()
     if (bestModel != filter.end()) {
       provideBallModel(*bestModel);
     }
-    
+
     doDebugRequest();
 
     lastFrameInfo     = getFrameInfo();
@@ -147,7 +147,7 @@ void MultiKalmanBallLocator::updateByPerceptsNormal()
             h.camMat  = getCameraMatrix();
             h.camInfo = getCameraInfo();
         }
-        else 
+        else
         {
             //PLOT("MultiKalmanBallLocator:Measurement:Top:horizontal", z(0));
             //PLOT("MultiKalmanBallLocator:Measurement:Top:vertical",   z(1));
@@ -342,7 +342,7 @@ void MultiKalmanBallLocator::updateByPerceptsCool()
   Assoziation sensorAssoziation(static_cast<int>(getMultiBallPercept().getPercepts().size()), static_cast<int>(filter.size()));
 
   int i = 0;
-  for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) 
+  for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++)
   {
       // set correct camera matrix and info in functional
       if((*iter).cameraId == CameraInfo::Bottom) {
@@ -365,7 +365,7 @@ void MultiKalmanBallLocator::updateByPerceptsCool()
 
         // store best association for measurement
         if(confidence > updateAssociationFunction->getThreshold() &&
-          confidence > sensorAssoziation.getW4A(i) && 
+          confidence > sensorAssoziation.getW4A(i) &&
           confidence > sensorAssoziation.getW4B(x))
         {
           sensorAssoziation.addAssociation(i, x, confidence);
@@ -376,7 +376,7 @@ void MultiKalmanBallLocator::updateByPerceptsCool()
   }
 
   i = 0;
-  for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) 
+  for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++)
   {
     int x = sensorAssoziation.getB4A(i); // get hypothesis for measurement
     if (x != -1)
@@ -406,7 +406,7 @@ void MultiKalmanBallLocator::updateByPerceptsCool()
     }
     i++;
   }
-  
+
 }
 
 void MultiKalmanBallLocator::predict(ExtendedKalmanFilter4d& filter, double dt) const
@@ -424,7 +424,7 @@ void MultiKalmanBallLocator::predict(ExtendedKalmanFilter4d& filter, double dt) 
 
     const Eigen::Vector4d& x = filter.getState();
     Eigen::Vector2d u; // control vector
-    
+
     u <<  x(1), x(3);
     // deceleration vector with "absoulte deceleration" (length of vector) of deceleration
     if(u.norm() > 0){
@@ -435,7 +435,7 @@ void MultiKalmanBallLocator::predict(ExtendedKalmanFilter4d& filter, double dt) 
 
     double time_until_vel_x_zero = 0;
     double time_until_vel_y_zero = 0;
-    
+
     if(fabs(u(0)) > epsilon){
         time_until_vel_x_zero = -x(1)/u(0);
     }
@@ -528,9 +528,9 @@ MultiKalmanBallLocator::Filters::const_iterator MultiKalmanBallLocator::selectBe
 
   for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); ++iter) {
     double distance = Vector2d(iter->getState()(0), iter->getState()(2)).abs();
-    if( bestModel == filter.end() || 
+    if( bestModel == filter.end() ||
        (iter->ballSeenFilter.value() && !bestModel->ballSeenFilter.value()) ||
-       (iter->ballSeenFilter.value() == bestModel->ballSeenFilter.value() && distance < minDistance)) 
+       (iter->ballSeenFilter.value() == bestModel->ballSeenFilter.value() && distance < minDistance))
     {
       bestModel = iter;
       minDistance = distance;
@@ -563,54 +563,47 @@ void MultiKalmanBallLocator::provideBallModel(const BallHypothesis& model)
 {
   getBallModel().valid = true;
   getBallModel().knows = model.ballSeenFilter.value();
-
-  const Eigen::Vector4d& x = model.getState();
+  getBallModel().setFrameInfoWhenBallWasSeen(model.getLastUpdateFrame());
 
   // set ball model representation
+  const Eigen::Vector4d& x = model.getState();
   getBallModel().position.x = x(0);
   getBallModel().position.y = x(2);
   getBallModel().speed.x = x(1);
   getBallModel().speed.y = x(3);
 
-  //set preview ball model representation
-
+  // transform ball model into feet coordinates
   const Pose3D& lFoot = getKinematicChain().theLinks[KinematicChain::LFoot].M;
   const Pose3D& rFoot = getKinematicChain().theLinks[KinematicChain::RFoot].M;
-
-  // transform ball model into feet coordinates
   Vector2d ballLeftFoot  = lFoot.projectXY()/getBallModel().position;
   Vector2d ballRightFoot = rFoot.projectXY()/getBallModel().position;
 
+  //set preview ball model representation
   getBallModel().positionPreview = getMotionStatus().plannedMotion.hip / getBallModel().position;
   getBallModel().positionPreviewInLFoot = getMotionStatus().plannedMotion.lFoot / ballLeftFoot;
   getBallModel().positionPreviewInRFoot = getMotionStatus().plannedMotion.rFoot / ballRightFoot;
 
-  getBallModel().setFrameInfoWhenBallWasSeen(model.getLastUpdateFrame());
-
-  // predict future ball positions
-  getBallModel().futurePosition.resize(kfParameters.max_preview_in_seconds);
-  Filters future_models;
-  future_models.reserve(getBallModel().futurePosition.size());
+  // determine rest position
+  Eigen::Vector2d vel;
+  vel <<  x(1), x(3);
+  double abs_velocity = vel.norm();
 
   BallHypothesis modelCopy(model);
-  for(Vector2d& pos: getBallModel().futurePosition)
-  {
-    predict(modelCopy, 1.0); // predict 1s in the future
-    pos.x = modelCopy.getState()(0);
-    pos.y = modelCopy.getState()(2);
-    DEBUG_REQUEST("MultiKalmanBallLocator:draw_future_ball_positions",
-        future_models.push_back(modelCopy);
-    );
+  if(abs_velocity > epsilon){
+      double time_until_vel_zero = -abs_velocity / getFieldInfo().ballDeceleration;
+      Eigen::Vector2d u = vel.normalized() * getFieldInfo().ballDeceleration;
+      modelCopy.predict(u, time_until_vel_zero);
+
+      DEBUG_REQUEST("MultiKalmanBallLocator:draw_final_ball_postion_at_rest",
+          FIELD_DRAWING_CONTEXT;
+          PEN(Color(Color::black), 20);
+          CIRCLE(modelCopy.getState()(0), modelCopy.getState()(2), getFieldInfo().ballRadius-10);
+      );
   }
 
-  DEBUG_REQUEST("MultiKalmanBallLocator:draw_future_ball_positions",
-                drawFuturePositions(future_models);
-  );
-
-
-  DEBUG_REQUEST("MultiKalmanBallLocator:draw_final_ball_postion_at_rest",
-                drawPositionAtRest(modelCopy);
-  );
+  // set position at rest
+  getBallModel().position_at_rest.x = modelCopy.getState()(0);
+  getBallModel().position_at_rest.y = modelCopy.getState()(2);
 }
 
 void MultiKalmanBallLocator::doDebugRequestBeforPredictionAndUpdate()
@@ -642,7 +635,7 @@ void MultiKalmanBallLocator::doDebugRequestBeforUpdate()
 void MultiKalmanBallLocator::doDebugRequest()
 {
     //PLOT("MultiKalmanBallLocator:ModelIsValid", getBallModel().valid);
-    
+
     //to check correctness of the prediction
     DEBUG_REQUEST("MultiKalmanBallLocator:draw_real_ball_percept",
       if(getMultiBallPercept().wasSeen()) {
@@ -653,7 +646,7 @@ void MultiKalmanBallLocator::doDebugRequest()
         }
       }
     );
-    
+
     DEBUG_REQUEST("MultiKalmanBallLocator:draw_ball_on_field_after",
         drawFiltersOnField();
     );
@@ -677,7 +670,7 @@ void MultiKalmanBallLocator::doDebugRequest()
           } else {
             PEN("FF0000", 10);
           }
-      
+
           const Eigen::Vector4d& state = (*iter).getState();
           CIRCLE( state(0), state(2), (*iter).ballSeenFilter.value()*1000);
         }
@@ -690,7 +683,7 @@ void MultiKalmanBallLocator::drawFilter(const BallHypothesis& bh, const Color& m
     DEBUG_REQUEST("MultiKalmanBallLocator:draw_covariance_ellipse",
         draw_covariances = true;
     );
-	
+
     if(!draw_covariances) {
         cov_loc_color[cov_loc_color.Alpha] = 0;
         cov_vel_color[cov_vel_color.Alpha] = 0;
@@ -722,21 +715,6 @@ void MultiKalmanBallLocator::drawFilter(const BallHypothesis& bh, const Color& m
                  ellipse_vel.angle);
 }
 
-void MultiKalmanBallLocator::drawFuturePositions(const Filters &future_filter) const
-{
-    FIELD_DRAWING_CONTEXT;
-    double alpha = 1.0;
-    Color white(Color::white);
-    Color black(Color::black);
-    //Color future_model_color(Color::red);
-
-    for(const BallHypothesis& bh : future_filter){
-        Color c = black * alpha + white * (1 - alpha);
-        drawFilter(bh, c /*future_model_color*/, c, c);
-        alpha -= 1.0/static_cast<double>(future_filter.size());
-    }
-}
-
 void MultiKalmanBallLocator::drawFiltersOnField() const
 {
     FIELD_DRAWING_CONTEXT;
@@ -761,24 +739,6 @@ void MultiKalmanBallLocator::drawFiltersOnField() const
 
         drawFilter(*iter, model_color, cov_loc_color, cov_vel_color);
     }
-}
-
-void MultiKalmanBallLocator::drawPositionAtRest(BallHypothesis &bh) const {
-    // for more information see: void predict(ExtendedKalmanFilter4d& filter, double dt) const;
-    const Eigen::Vector4d& x = bh.getState();
-    Eigen::Vector2d vel; // control vector
-    vel <<  x(1), x(3);
-    double abs_velocity = vel.norm();
-
-    if(abs_velocity > epsilon){
-        double time_until_vel_zero = -abs_velocity / getFieldInfo().ballDeceleration;
-        Eigen::Vector2d u = vel.normalized() * getFieldInfo().ballDeceleration;
-        bh.predict(u, time_until_vel_zero);
-    }
-
-    FIELD_DRAWING_CONTEXT;
-    PEN(Color(Color::black), 20);
-    CIRCLE(bh.getState()(0), bh.getState()(2), getFieldInfo().ballRadius-10);
 }
 
 void MultiKalmanBallLocator::reloadParameters()

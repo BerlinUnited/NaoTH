@@ -6,7 +6,12 @@ namespace ball_symbols("Ball Symbols") {
   /** Position of the ball in x direction relative to the field in mm */
   float input ball.x [mm];
   /** Position of the ball in y direction relative to the field in mm */
-  float input ball.y [mm];
+  float input ball.y [mm];  
+
+  /** Position of the ball at rest in x direction relative to the field in mm */
+  float input ball.position_at_rest.x [mm];
+  /** Position of the ball at rest in y direction relative to the field in mm */
+  float input ball.position_at_rest.y [mm];
   
   /** Distance of the ball in mm */
   float input ball.distance "mm";
