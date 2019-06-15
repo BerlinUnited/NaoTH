@@ -176,7 +176,7 @@ double RoleDecisionDynamic::strikerIndicatorBnB(const TeamMessageData& msg)
     // estimate time to ball for dortmund guys
     const double stepTime = 200; //ms
     const double speed = 50.0 / stepTime; // mm/ms
-    const double turnSpeed = Math::fromDegrees(30) / stepTime;
+    const double turnSpeed = Math::fromDegrees(14) / stepTime;
 
     const Vector2d ball = msg.pose * msg.ballPosition;
     const Vector2d goal(getFieldInfo().xPosOpponentGroundline, 0);
