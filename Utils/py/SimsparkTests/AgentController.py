@@ -11,6 +11,8 @@ import signal
 
 from naoth import Messages_pb2
 
+class UnableToConnect(Exception):
+    pass
 
 class Command:
     """Class representing a command for a simspark agent."""
@@ -57,15 +59,18 @@ class AgentController(multiprocessing.Process):
     """Represents the controlling instance of a simspark agent. It serves two purposes, first its starts the agent
     application and second it sends debug and other requests to the instance."""
 
-    def __init__(self, app, cwd, number=None, sync=True, start_instance=True):
+    def __init__(self, app, cwd, team=None, number=None, sync=True, start_instance=True, connect=True):
         """Constructor of the :AgentController:. Initializes public and private attributes."""
-        super().__init__()
+        super().__init__(name="AgentController:{}:{}".format(str(team), str(number)))
 
         self.app = os.path.abspath(app) if os.path.isfile(app) else app
         self.cwd = cwd
+        self.team = team
         self.number = number
         self.sync = sync
-        self.port = None
+        self.dbg_port = None
+        self.dbg_connect = connect
+        self.ss_port = None  # simspark port
 
         self.__p = None
         self.__m = multiprocessing.Manager()
@@ -90,10 +95,13 @@ class AgentController(multiprocessing.Process):
             logging.info('Starting agent')
 
             args = [self.app]
-            if self.sync: args.append('--sync')
-            if self.number: args.extend(['-n', str(self.number)])
+            if self.sync:    args.append('--sync')
+            if self.number:  args.extend(['-n', str(self.number)])
+            if self.team:    args.extend(['--team', self.team])
+            if self.ss_port: args.extend(['--port', self.ss_port])
 
             self.__p = subprocess.Popen(args, cwd=self.cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            logging.debug(' '.join(self.__p.args))
             self.__socket = None
 
             while True:
@@ -103,12 +111,12 @@ class AgentController(multiprocessing.Process):
                 if o.startswith('SimSpark Controller runs') or len(o) == 0:
                     break
                 elif o.startswith('[DebugServer:port'): # re.match('\[DebugServer:port (\d+)\]', o):
-                    self.port = re.match('\[DebugServer:port (\d+)\]', o).group(1)
+                    self.dbg_port = re.match('\[DebugServer:port (\d+)\]', o).group(1)
             self.started.set()
             logging.info('Agent started')
         else:
             logging.info('No instance of agent started!')
-            self.port = 5400 + self.number
+            self.dbg_port = 5400 + self.number
             self.started.set()
 
     def __stop_agent(self):
@@ -134,8 +142,14 @@ class AgentController(multiprocessing.Process):
 
     def connect(self):
         """Connects to the agent instance"""
-        self.__socket = socket.create_connection(('localhost', self.port))
-        self.__connected.set()
+        try:
+            self.__socket = socket.create_connection(('localhost', self.dbg_port))
+            self.__connected.set()
+            return
+        except:
+            pass
+
+        raise UnableToConnect("to robot {}".format(self.number))
 
     def __send_heart_beat(self):
         """Send heart beat to agent."""
@@ -181,10 +195,12 @@ class AgentController(multiprocessing.Process):
         :param cmd: the command which should be scheduled/executed
         :return:    returns the command id, which can be used to retrieve the result afterwards. See :func:`~AgentController.command_result`
         """
-        cmd.id = self.__cmd_id.value
-        self.__cmd_q.put_nowait(cmd)
-        self.__cmd_id.set(self.__cmd_id.value + 1)
-        return cmd.id
+        if self.dbg_connect:
+            cmd.id = self.__cmd_id.value
+            self.__cmd_q.put_nowait(cmd)
+            self.__cmd_id.set(self.__cmd_id.value + 1)
+            return cmd.id
+        return 0
 
     def command_result(self, id):
         """
@@ -201,17 +217,19 @@ class AgentController(multiprocessing.Process):
         commands to the agent (debug requests, representation, ...)."""
         self.__start_agent()
 
-        if self.port is None:
+        if self.dbg_port is None:
             logging.error("Couldn't retrieve agents debug port!")
             return
 
         while not self.__cancel.is_set() and (not self.__start_instance or self.__p.poll() is None):
-            if not self.__connected.is_set():
-                self.connect()
+            # only if the controller should connect to the debug port
+            if self.dbg_connect:
+                if not self.__connected.is_set():
+                    self.connect()
 
-            self.__send_heart_beat()
-            self.__poll_answers()
-            self.__send_commands()
+                self.__send_heart_beat()
+                self.__poll_answers()
+                self.__send_commands()
 
             time.sleep(0.1)
 

@@ -36,6 +36,8 @@ Sit::Sit()
 
   freeStiffness[JointData::LHipPitch] = 0.1;
   freeStiffness[JointData::RHipPitch] = 0.1;
+
+  getMotionStatus().target_reached = false;
 }
 
 void Sit::execute()
@@ -49,6 +51,7 @@ void Sit::execute()
 
     case SitPoseReady:
       freeJoint(getMotionRequest().id == getId());
+      getMotionStatus().target_reached = getMotionRequest().id == getId();
       break;
 
     case Finish:
@@ -61,8 +64,7 @@ void Sit::moveToSitPose()
 {
   const double sit_time = 3000;//ms
 
-  if ( isStopped() )
-  {
+  if ( isStopped() ) {
     startJoints = getSensorJointData();
   }
 
@@ -75,8 +77,7 @@ void Sit::moveToSitPose()
       getMotorJointData().stiffness[i] = safeStiffness[i];
     }
     movedTime += getRobotInfo().basicTimeStep;
-  } else
-  {
+  } else {
     sitStatus = SitPoseReady;
   }
 }//end moveToInitialPose
@@ -87,13 +88,13 @@ void Sit::freeJoint(bool freely)
   if (freely)
   {
     setStiffness(
-      getMotorJointData(), getSensorJointData(), 
+      getMotorJointData(), getSensorJointData(),
       freeStiffness, stiffDelta, JointData::RHipYawPitch, JointData::numOfJoint);
   }
   else
   {
     if ( setStiffness(
-          getMotorJointData(), getSensorJointData(), 
+          getMotorJointData(), getSensorJointData(),
           maxStiffness, stiffDelta*10, JointData::RHipYawPitch, JointData::numOfJoint) )
     {
       sitStatus = Finish;

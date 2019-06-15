@@ -156,7 +156,8 @@ TeamMessageCustom::TeamMessageCustom() :
   whistleCount(0),
   // init with "invalid" position
   teamBall(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity()),
-  robotState(PlayerInfo::initial)
+  robotState(PlayerInfo::initial),
+  readyToWalk(false)
 {
 }
 
@@ -169,6 +170,7 @@ void TeamMessageCustom::print(std::ostream &stream) const
     << "\t" << "TimeToBall: " << timeToBall << "\n"
     << "\t" << "wasStriker: " << (wasStriker ? "yes" : "no") << "\n"
     << "\t" << "wantsToBeStriker: " << (wantsToBeStriker ? "yes" : "no") << "\n"
+    << "\t" << "readyToWalk: " << (readyToWalk ? "yes" : "no") << "\n"
     << "\t" << "robotState: " << PlayerInfo::toString(robotState) << "\n"
     << "\t" << "batteryCharge: " << batteryCharge << "\n"
     << "\t" << "temperature: " << temperature << "°C\n"
@@ -179,7 +181,10 @@ void TeamMessageCustom::print(std::ostream &stream) const
             << std::setw(9) << ballVelocity.x << ", "
             << std::setw(9) << ballVelocity.y << "\n"
     << "\t" << "teamball position: "
-        << teamBall.x << "/" << teamBall.y << "\n";
+        << teamBall.x << "/" << teamBall.y << "\n"
+    << "\t" << "role: "
+        << Roles::getName(robotRole.role) << " / " << Roles::getName(robotRole.dynamic)
+    << "\n";
   if(!ntpRequests.empty()) {
       stream << "\t" << "ntp request for: \n";
       for(auto const& request : ntpRequests) {
@@ -218,6 +223,9 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
     DataConversion::toMessage(ballVelocity, *(userMsg.mutable_ballvelocity()));
     userMsg.set_key(key);
     userMsg.set_robotstate((naothmessages::RobotState)robotState);
+    userMsg.mutable_robotrole()->set_role_static((naothmessages::RobotRoleStatic)robotRole.role);
+    userMsg.mutable_robotrole()->set_role_dynamic((naothmessages::RobotRoleDynamic)robotRole.dynamic);
+    userMsg.set_readytowalk(readyToWalk);
 
     return userMsg;
 }
@@ -305,5 +313,12 @@ void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &u
         // for the old log files, if the robot wasn't penalized
         robotState = PlayerInfo::playing;
     }
+
+    if(userData.has_robotrole()) {
+        robotRole.role = (Roles::Static) userData.robotrole().role_static();
+        robotRole.dynamic = (Roles::Dynamic) userData.robotrole().role_dynamic();
+    }
+
+    readyToWalk = userData.readytowalk();
 }
 
