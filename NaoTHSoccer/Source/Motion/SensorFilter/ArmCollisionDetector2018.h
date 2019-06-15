@@ -28,19 +28,19 @@
 
 
 BEGIN_DECLARE_MODULE(ArmCollisionDetector2018)
-  PROVIDE(DebugRequest)
-  PROVIDE(DebugPlot)
-  PROVIDE(DebugModify)
-  PROVIDE(DebugParameterList)
+PROVIDE(DebugRequest)
+PROVIDE(DebugPlot)
+PROVIDE(DebugModify)
+PROVIDE(DebugParameterList)
 
-  REQUIRE(FrameInfo)
-  REQUIRE(MotorJointData)
-  REQUIRE(SensorJointData)
-  REQUIRE(MotionStatus)
-  REQUIRE(MotionRequest)
-  REQUIRE(BodyState)
+REQUIRE(FrameInfo)
+REQUIRE(MotorJointData)
+REQUIRE(SensorJointData)
+REQUIRE(MotionStatus)
+REQUIRE(MotionRequest)
+REQUIRE(BodyState)
 
-  PROVIDE(CollisionPercept)
+PROVIDE(CollisionPercept)
 END_DECLARE_MODULE(ArmCollisionDetector2018)
 
 class ArmCollisionDetector2018 : private ArmCollisionDetector2018Base
@@ -60,7 +60,7 @@ public:
             //Oder als Pfad zur txt was vermutlich einfacher ist
             PARAMETER_REGISTER(point_configLeft) = "reference_points_cd18Left.txt";
             PARAMETER_REGISTER(point_configRight) = "reference_points_cd18Right.txt";
-      PARAMETER_REGISTER(maxErrorStand) = 0.02;
+            PARAMETER_REGISTER(maxErrorStand) = 0.02;
             PARAMETER_REGISTER(collect) = 32;
             PARAMETER_REGISTER(armRollError) = 0.06;
             syncWithConfig();
@@ -69,25 +69,25 @@ public:
 
         std::string  point_configLeft;
         std::string  point_configRight;
-    double maxErrorStand;
-    double armRollError;
+        double maxErrorStand;
+        double armRollError;
         unsigned int collect;
     } params;
 
 private:
-  //Private variablen wie zb ringbuffer zur MJD und SJD synchronisation
-  RingBuffer<double, 4> jointDataBufferLeft;
-  RingBuffer<double, 4> jointDataBufferRight;
-  RingBufferWithSum<double, 100> collisionBufferLeft;
-  RingBufferWithSum<double, 100> collisionBufferRight;
-  Math::Polygon<double> refpolyL;
-  Math::Polygon<double> refpolyR;
+    //Private variablen wie zb ringbuffer zur MJD und SJD synchronisation
+    RingBuffer<double, 4> jointDataBufferLeft;
+    RingBuffer<double, 4> jointDataBufferRight;
+    RingBufferWithSum<double, 100> collisionBufferLeft;
+    RingBufferWithSum<double, 100> collisionBufferRight;
+    Math::Polygon<double> refpolyL;
+    Math::Polygon<double> refpolyR;
 
 
-  RingBuffer<double, 4> jointDataBufferLeftRoll;
-  RingBuffer<double, 4> jointDataBufferRightRoll;
-  RingBufferWithSum<double, 32> collisionBufferLeftRoll;
-  RingBufferWithSum<double, 32> collisionBufferRightRoll;
+    RingBuffer<double, 4> jointDataBufferLeftRoll;
+    RingBuffer<double, 4> jointDataBufferRightRoll;
+    RingBufferWithSum<double, 32> collisionBufferLeftRoll;
+    RingBufferWithSum<double, 32> collisionBufferRightRoll;
 };
 
 #endif

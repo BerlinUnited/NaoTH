@@ -152,6 +152,14 @@ void ArmCollisionDetector2018::execute()
         if (!refpolyL.isInside(Vector2d(a, er)))
         {
             //collision
+            if (er < 0)
+            {
+                getCollisionPercept().lastCollisionDirection = "Back";
+            }
+            else
+            {
+                getCollisionPercept().lastCollisionDirection = "Front";
+            }
             getCollisionPercept().timeCollisionArmLeft = getFrameInfo().getTime();
             jointDataBufferLeft.clear();
         }
@@ -165,6 +173,14 @@ void ArmCollisionDetector2018::execute()
         if (!refpolyR.isInside(Vector2d(a, er)))
         {
             //collision
+            if (er < 0)
+            {
+                getCollisionPercept().lastCollisionDirection = "Back";
+            }
+            else
+            {
+                getCollisionPercept().lastCollisionDirection = "Front";
+            }
             getCollisionPercept().timeCollisionArmRight = getFrameInfo().getTime();
             jointDataBufferRight.clear();
         }
