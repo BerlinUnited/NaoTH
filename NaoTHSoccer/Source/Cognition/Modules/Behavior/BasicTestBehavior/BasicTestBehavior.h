@@ -81,7 +81,7 @@ private:
   void testHead();
   void testMotion();
   void testLED();
-	void testWhistle();
+  void testAudio();
 };
 
 #endif // _BasicTestBehavior_H_

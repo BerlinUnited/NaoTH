@@ -119,9 +119,7 @@ namespace motion_symbols("Motion Symbols") {
     goalie_dive_left_test,
     goalie_sit_block,
     goalie_sit_n_dive_left,
-    goalie_sit_n_dive_right,
-    goalie_sit_n_dive_left_test,
-    goalie_sit_n_dive_right_test
+    goalie_sit_n_dive_right
   };
 
   enum motion.walk.coordinate

@@ -175,7 +175,7 @@ void {}::find(const BallCandidates::PatchYUVClassified& patch, double meanBright
 '''
 
 
-def write_naoth_header_file(class_name, output_folder="."):
+def write_naoth_header_file(c_inf, class_name, output_folder="."):
     fp = open(os.path.join(output_folder, class_name + ".h"), "w")
     with fp:
         print("#ifndef _{}_H".format(class_name.upper()), file=fp)
@@ -189,15 +189,15 @@ def write_naoth_header_file(class_name, output_folder="."):
         print("class {} : public AbstractCNNFinder {{".format(class_name), file=fp)
         print("", file=fp)
         print("public:", file=fp)
-        print("\tvoid cnn(float x0[16][16][1]);", file=fp)
+        print("\tvoid cnn(float x0[{:d}][{:d}][{:d}]);".format(c_inf["x_dim"], c_inf["y_dim"], c_inf["z_dim"]), file=fp)
         print("\tvoid find(const BallCandidates::PatchYUVClassified& p,double meanBrightness);", file=fp)
         print("\tvirtual double getRadius();", file=fp)
         print("\tvirtual Vector2d getCenter();", file=fp)
         print("\tvirtual double getBallConfidence();", file=fp)
         print("", file=fp)
         print("private:", file=fp)
-        print("\tfloat in_step[16][16][1];", file=fp)
-        print("\tfloat scores[3];", file=fp)
+        print("\tfloat in_step[{:d}][{:d}][{:d}];".format(c_inf["x_dim"], c_inf["y_dim"], c_inf["z_dim"]), file=fp)
+        print("\tfloat scores[{:d}];".format(c_inf["output_dim"]), file=fp)
         print("", file=fp)
         print("};", file=fp)
         print("# endif", file=fp)
@@ -265,8 +265,7 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
 
     output_folder = os.path.dirname(os.path.abspath(code_path))
 
-    write_naoth_header_file(class_name, output_folder)
-
+    
     test_im_index = 0
     im = imdb["images"][test_im_index]
     c_inf = {}
@@ -351,6 +350,12 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
             print(str(layer) + ": ok")
         """
 
+        
+    # NOTE: this creates a header file
+    #       at this point we should know the size of the output layer
+    write_naoth_header_file(c_inf, class_name, output_folder)
+    
+        
     # last layer with softmax activition indicates a classification problem
     # write scores etc. only in this case
     """
@@ -404,15 +409,15 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
 
 
 def dense(_x, weights, b, c_inf):
-    # TODO get output size dynamically
-    x_out = np.zeros(shape=(4, 1, 1)).astype('float32')
 
     x_dim = _x.shape[0]
     y_dim = _x.shape[1]
     channels = _x.shape[2]
+    
+    output_dim = weights.shape[1]
 
     i = 0
-    for output in range(len(x_out)):
+    for output in range(output_dim):
         c_inf["f"].write("\tscores[{:d}] = {:f}f".format(output, b[output]))
         for x in range(x_dim):
             for y in range(y_dim):
@@ -439,8 +444,12 @@ def dense(_x, weights, b, c_inf):
 
         c_inf["f"].write('\n')
         
-
+        
     c_inf["layer"] = c_inf["layer"] + 1
+    c_inf["output_dim"] = output_dim
+    
+    x_out = np.zeros(shape=(output_dim, 1, 1)).astype('float32')
+    
     return x_out, c_inf
 
 
