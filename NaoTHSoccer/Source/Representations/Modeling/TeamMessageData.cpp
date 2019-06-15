@@ -100,7 +100,7 @@ bool TeamMessageData::parseFromSplMessage(const SPLStandardMessage &spl)
       naothmessages::BUUserTeamMessage userData;
       try
       {
-        if (userData.ParseFromArray(spl.data + customOffset, static_cast<int>(spl.numOfDataBytes)-static_cast<int>(customOffset))) {
+        if (userData.ParseFromArray(spl.data + customOffset, static_cast<int>(spl.numOfDataBytes)-static_cast<int>(customOffset)) && userData.key() == NAOTH_TEAMCOMM_MESAGE_KEY) {
             custom.parseFromProto(userData);
         } else {
           return false;

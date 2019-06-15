@@ -89,6 +89,19 @@ void TeamCommReceiver::handleMessage(const std::string& data)
   msg.timestampParsed = naoth::NaoTime::getSystemTimeInMilliSeconds();
 
   //accept own message
+  if(!msg.parseFromSplMessage(spl)) {
+      // looks like an mixed team message
+      // overwrite with "useful" data
+      msg.custom.timestamp = naoth::NaoTime::getSystemTimeInMilliSeconds();
+      msg.custom.robotState = PlayerInfo::playing;
+  }
+
+  // make sure the time step is monotonically rising
+  if (parameters.monotonicTimestampCheck && !monotonicTimeStamp(msg)) {
+    getTeamMessage().dropMonotonic++;
+    return;
+  }
+  /*
   if (msg.parseFromSplMessage(spl))
   {
     // make sure it's really our message
@@ -122,7 +135,7 @@ void TeamCommReceiver::handleMessage(const std::string& data)
     getTeamMessage().dropNotParseable++;
     return;
   }
-
+  */
   // copy the message to the blackboard
   getTeamMessage().data[msg.playerNumber] = msg;
 }
