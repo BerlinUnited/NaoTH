@@ -30,7 +30,7 @@ BEGIN_DECLARE_MODULE(BallSymbols)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
 
-  PROVIDE(BallModel) // PROVIDE so that XABSL bool can be read out
+  REQUIRE(BallModel)
   
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
