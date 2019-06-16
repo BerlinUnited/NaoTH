@@ -169,6 +169,7 @@ private:
     WalkRequest::Coordinate coordinate;
     RestrictionMode restriction;
     bool isProtected;
+    std::string debug_name;
   };
   std::vector<StepBufferElement> stepBuffer;
 

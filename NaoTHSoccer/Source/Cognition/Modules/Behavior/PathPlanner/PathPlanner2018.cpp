@@ -248,6 +248,7 @@ bool PathPlanner2018::nearApproach_forwardKick(const Foot& foot, const double of
       double translation_y = std::min(translation_xy, std::abs(ballPos.y)) * (ballPos.y < 0 ? -1 : 1);
 
       StepBufferElement new_step;
+      new_step.debug_name = "near approach step";
       new_step.setPose({ 0.0, translation_x, translation_y });
       new_step.setStepType(StepType::WALKSTEP);
       new_step.setCharacter(0.3);
@@ -426,6 +427,7 @@ void PathPlanner2018::forwardKick(const Foot& foot)
     if (getMotionStatus().stepControl.moveableFoot != (foot == Foot::RIGHT ? MotionStatus::StepControlStatus::RIGHT : MotionStatus::StepControlStatus::LEFT))
     {
       StepBufferElement correction_step;
+      correction_step.debug_name = "forward correction_step";
       correction_step.setPose({ 0.0, 100.0, 0.0 });
       correction_step.setStepType(StepType::WALKSTEP);
       correction_step.setCharacter(1.0);
@@ -433,13 +435,18 @@ void PathPlanner2018::forwardKick(const Foot& foot)
       correction_step.setCoordinate(coordinate);
       correction_step.setFoot(Foot::NONE);
       correction_step.setSpeedDirection(Math::fromDegrees(0.0));
-      correction_step.setRestriction(RestrictionMode::SOFT);
+      correction_step.setRestriction(RestrictionMode::HARD);
       correction_step.setProtected(false);
-      correction_step.setTime(500);
+      correction_step.setTime(250);
 
       addStep(correction_step);
+
+      //DEBUG
+
+      kickPlanned = true;
+      return;
     }
-    /*
+    
     // The kick
     StepBufferElement new_step;
     new_step.setPose({ 0.0, 500.0, 0.0 });
@@ -463,7 +470,7 @@ void PathPlanner2018::forwardKick(const Foot& foot)
     new_step.setPose({ 0.0, 0.0, 0.0 });
     new_step.setStepType(StepType::WALKSTEP);
     addStep(new_step);
-    */
+    
     kickPlanned = true;
   }
 }
@@ -619,5 +626,6 @@ void PathPlanner2018::executeStepBuffer()
   }
   // false means right foot
   getMotionRequest().walkRequest.stepControl.moveLeftFoot = (footToUse != Foot::RIGHT);
+  std::cout << stepBuffer.front().debug_name << " - " << getMotionRequest().walkRequest.stepControl.moveLeftFoot  << std::endl;
   STOPWATCH_STOP("PathPlanner2018:execute_steplist");
 }
