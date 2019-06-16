@@ -238,6 +238,7 @@ void TeamMessageCustom::parseFromMixedTeamHeader(const uint8_t* rawHeader, size_
       //timestamp
       //, 0
       robotState == PlayerInfo::penalized
+      , Roles::Static::unknown
       //, whistleDetected, 0
   };
   if(headerSize >= sizeof(MixedTeamHeader))
@@ -246,7 +247,19 @@ void TeamMessageCustom::parseFromMixedTeamHeader(const uint8_t* rawHeader, size_
   }
   // copy the parsed data
   //timestamp = header.timestamp;
-  robotState = (header.isPenalized > 0) ? PlayerInfo::penalized : PlayerInfo::playing;
+  // (1 << 1)
+  robotState = (header.data & 1) != 0 ? PlayerInfo::penalized : PlayerInfo::playing;
+  wantsToBeStriker = (header.data & 2) != 0; // (1 << 2)
+  wasStriker = wantsToBeStriker;
+  // we get 0-2 from B-Human,
+  /*
+  if(header.role >= static_cast<uint8_t>(Roles::Static::numOfStaticRoles)) {
+      robotRole.role = Roles::unknown;
+  } else {
+      robotRole.role = static_cast<Roles::Static>(header.role);
+  }*/
+  //robotRole.role = static_cast<Roles::Static>((header.role >= static_cast<uint8_t>(Roles::Static::numOfStaticRoles)) ? Roles::unknown : header.role);
+  robotRole.role =  Roles::unknown;
   //whistleDetected = (header.whistleDetected > 0);
 
   //wantsToBeStriker = (header.intention == 3);
@@ -261,10 +274,12 @@ void TeamMessageCustom::toMixedTeamHeader(MixedTeamHeader& header) const
   //header.timestamp = timestamp;
   // TODO: make the DoBerMan team ID configurable, now it is fixed to 4
   //header.teamID = 4;
-  header.isPenalized = robotState == PlayerInfo::penalized;
   //header.whistleDetected = whistleDetected;
-
   //header.intention = wantsToBeStriker ? 3 : 0;
+
+    header.data = robotState == PlayerInfo::penalized ? 1 : 0;
+    header.data = static_cast<int8_t>(header.data | (robotRole.dynamic == Roles::striker ? 2 : 0));
+    header.role = robotRole.role;
 }
 
 void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &userData)

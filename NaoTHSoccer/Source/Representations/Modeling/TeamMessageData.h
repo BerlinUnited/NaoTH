@@ -52,9 +52,12 @@ public:
   // we define this struct private because no one else needs to know about the internals of the MixedTeamHeader
   struct MixedTeamHeader
   {
+      // 1 bit == penalized, 2 bit == striker goalie
+      int8_t data;
+      int8_t role;
 //    uint64_t timestamp;
 //    int8_t teamID;
-    int8_t isPenalized;
+//    int8_t isPenalized;
 //    int8_t whistleDetected;
 //    int8_t intention;
   };

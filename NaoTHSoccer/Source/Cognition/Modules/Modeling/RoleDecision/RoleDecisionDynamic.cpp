@@ -9,6 +9,10 @@ RoleDecisionDynamic::RoleDecisionDynamic()
                            "Draws the radius around a seen ball, which is used to determine if the seen ball is the same)",
                            false);
 
+    DEBUG_REQUEST_REGISTER("RoleDecision:Dynamic:striker",
+                           "Sets the striker decision to true for this robot",
+                           false);
+
     ballDifferenceRadiusChanger(params.striker_ball_difference_function);
 }
 
@@ -86,12 +90,22 @@ void RoleDecisionDynamic::decideStriker(std::map<unsigned int, Roles::Dynamic>& 
     for(const auto& s : new_striker) {
         roles[s.playerNumber] = Roles::striker;
     }
+
+    DEBUG_REQUEST("RoleDecision:Dynamic:striker",
+        roles[getPlayerInfo().playerNumber] = Roles::striker;
+    );
 }
 
 void RoleDecisionDynamic::handleGoalie(const TeamMessageData* goalie, std::vector<Striker>& striker)
 {
     double indicator = 0.0;
     Vector2d globalBall = goalie->pose * goalie->ballPosition;
+
+    // for BnB - if the goalie is/wants to be striker, he gets striker
+    if(goalie->custom.wantsToBeStriker) {
+        checkStriker(*goalie, indicator, globalBall, striker, true);
+    }
+    /*
     // ball is inside penalty area, goalie is definitely getting striker
     if(globalBall.x <= getFieldInfo().xPosOwnPenaltyArea && fabs(globalBall.y) <= getFieldInfo().yPosLeftPenaltyArea) {
         checkStriker(*goalie, indicator, globalBall, striker, true);
@@ -116,6 +130,7 @@ void RoleDecisionDynamic::handleGoalie(const TeamMessageData* goalie, std::vecto
             checkStriker(*goalie, indicator, globalBall, striker, true);
         }
     }
+    */
 }
 
 void RoleDecisionDynamic::checkStriker(const TeamMessageData& msg,
