@@ -36,23 +36,23 @@ SPLStandardMessage TeamMessageData::createSplMessage() const
 
     spl.fallen = (uint8_t) fallen;
 
-    // user defined data, this includes our own data and the DoBerMan mixed team common header
+    // user defined data, this includes our own data and the mixed team common header
     naothmessages::BUUserTeamMessage userMsgBU = custom.toProto();
     
-    TeamMessageCustom::DoBerManHeader userMsgDoBer;
-    custom.toDoBerManHeader(userMsgDoBer);
+    TeamMessageCustom::MixedTeamHeader userMsgMixedTeam;
+    custom.toMixedTeamHeader(userMsgMixedTeam);
 
     size_t buUserSize = userMsgBU.ByteSize();
-    size_t doberUserSize = sizeof(userMsgDoBer);
-    size_t userSize = buUserSize + doberUserSize;
+    size_t mixedUserSize = sizeof(userMsgMixedTeam);
+    size_t userSize = buUserSize + mixedUserSize;
     if (userSize < SPL_STANDARD_MESSAGE_DATA_SIZE) {
         spl.numOfDataBytes = static_cast<uint16_t>(userSize);
 
-        // 1. write custom data as DoBerMan header
-        memcpy(spl.data, (char*)&userMsgDoBer, doberUserSize);
+        // 1. write custom data as mixed team header
+        memcpy(spl.data, (char*)&userMsgMixedTeam, mixedUserSize);
 
         // 2. write custom data in BerlinUnited format
-        userMsgBU.SerializeToArray(spl.data + doberUserSize, static_cast<int>(userSize));
+        userMsgBU.SerializeToArray(spl.data + mixedUserSize, static_cast<int>(userSize));
     } else {
         spl.numOfDataBytes = 0;
     }
@@ -91,8 +91,8 @@ bool TeamMessageData::parseFromSplMessage(const SPLStandardMessage &spl)
 
     const size_t customOffset = TeamMessageCustom::getCustomOffset();
 
-    // parse DoBerMan part of user data
-    custom.parseFromDoBerManHeader(spl.data, spl.numOfDataBytes);
+    // parse mixed team part of user data
+    custom.parseFromMixedTeamHeader(spl.data, spl.numOfDataBytes);
 
     // parse BerlinUnited part of user data
     if(spl.numOfDataBytes > customOffset)
@@ -100,6 +100,7 @@ bool TeamMessageData::parseFromSplMessage(const SPLStandardMessage &spl)
       naothmessages::BUUserTeamMessage userData;
       try
       {
+        // parse the custom data and make sure we have a valid key
         if (userData.ParseFromArray(spl.data + customOffset, static_cast<int>(spl.numOfDataBytes)-static_cast<int>(customOffset)) && userData.key() == NAOTH_TEAMCOMM_MESAGE_KEY) {
             custom.parseFromProto(userData);
         } else {
@@ -230,18 +231,18 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
     return userMsg;
 }
 
-void TeamMessageCustom::parseFromDoBerManHeader(const uint8_t* rawHeader, size_t headerSize)
+void TeamMessageCustom::parseFromMixedTeamHeader(const uint8_t* rawHeader, size_t headerSize)
 {
   // initialize with some values so the compiler is happy
-  DoBerManHeader header = {
+  MixedTeamHeader header = {
       //timestamp
       //, 0
       robotState == PlayerInfo::penalized
       //, whistleDetected, 0
   };
-  if(headerSize >= sizeof(DoBerManHeader))
+  if(headerSize >= sizeof(MixedTeamHeader))
   {
-    memcpy(&header, rawHeader, sizeof(DoBerManHeader));
+    memcpy(&header, rawHeader, sizeof(MixedTeamHeader));
   }
   // copy the parsed data
   //timestamp = header.timestamp;
@@ -254,7 +255,7 @@ void TeamMessageCustom::parseFromDoBerManHeader(const uint8_t* rawHeader, size_t
   //key = std::to_string(header.teamID);
 }
 
-void TeamMessageCustom::toDoBerManHeader(DoBerManHeader& header) const
+void TeamMessageCustom::toMixedTeamHeader(MixedTeamHeader& header) const
 {
   // copy the information into an internal struct
   //header.timestamp = timestamp;
