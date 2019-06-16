@@ -148,8 +148,6 @@ private:
 
             PARAMETER_REGISTER(use_covariance_based_selection) = true;
 
-            PARAMETER_REGISTER(max_preview_in_seconds) = 5;
-
             syncWithConfig();
         }
 
