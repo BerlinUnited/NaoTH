@@ -66,6 +66,10 @@ private:
             PARAMETER_REGISTER(striker_ball_difference_distance_n) = -40.0;
             PARAMETER_REGISTER(striker_goalie_ball_distance) = 1500.0;
             PARAMETER_REGISTER(striker_goalie_min_x_pos) = -2700.0;
+
+            PARAMETER_REGISTER(bnb_step_time) = 250;
+            PARAMETER_REGISTER(bnb_step_distance) = 80;
+            PARAMETER_REGISTER(bnb_turn_speed) = 30;
         }
 
         double striker_ball_lost_time;
@@ -79,6 +83,10 @@ private:
 
         double striker_goalie_ball_distance;
         double striker_goalie_min_x_pos;
+
+        double bnb_step_time;
+        double bnb_step_distance;
+        double bnb_turn_speed;
     } params;
 
     struct Striker {

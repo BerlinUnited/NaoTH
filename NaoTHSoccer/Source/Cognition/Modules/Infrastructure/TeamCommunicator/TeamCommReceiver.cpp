@@ -93,6 +93,7 @@ void TeamCommReceiver::handleMessage(const std::string& data)
       // looks like an mixed team message
       // overwrite with "useful" data
       msg.custom.timestamp = naoth::NaoTime::getSystemTimeInMilliSeconds();
+      msg.custom.readyToWalk = true;
       //msg.custom.robotState = PlayerInfo::playing;
   }
 
