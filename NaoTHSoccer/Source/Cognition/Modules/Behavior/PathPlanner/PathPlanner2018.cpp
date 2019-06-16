@@ -433,13 +433,13 @@ void PathPlanner2018::forwardKick(const Foot& foot)
       correction_step.setCoordinate(coordinate);
       correction_step.setFoot(Foot::NONE);
       correction_step.setSpeedDirection(Math::fromDegrees(0.0));
-      correction_step.setRestriction(RestrictionMode::HARD);
+      correction_step.setRestriction(RestrictionMode::SOFT);
       correction_step.setProtected(false);
-      correction_step.setTime(250);
+      correction_step.setTime(500);
 
       addStep(correction_step);
     }
-
+    /*
     // The kick
     StepBufferElement new_step;
     new_step.setPose({ 0.0, 500.0, 0.0 });
@@ -463,7 +463,7 @@ void PathPlanner2018::forwardKick(const Foot& foot)
     new_step.setPose({ 0.0, 0.0, 0.0 });
     new_step.setStepType(StepType::WALKSTEP);
     addStep(new_step);
-
+    */
     kickPlanned = true;
   }
 }
