@@ -185,8 +185,6 @@ private:
             double offset;
         } area95Threshold_radius;
 
-        int max_preview_in_seconds;
-
         bool use_covariance_based_selection;
     } kfParameters;
 
