@@ -7,6 +7,7 @@ def yuv2rgb(yuv):
     :param yuv: image to convert as numpy array
     :return: rgb numpy array
     """
+    # BUG: values do not range between 0 and 255
     m = np.array([[1.0, 1.0, 1.0],
                   [-0.000007154783816076815, -0.3441331386566162, 1.7720025777816772],
                   [1.4019975662231445, -0.7141380310058594, 0.00001542569043522235]])
@@ -18,14 +19,7 @@ def yuv2rgb(yuv):
     return rgb
 
 
-def rgb_image_from_proto(message):
-    """
-    Reads image data and converts it to rgb
-
-    :param message: image data from frame
-    :returns rgb numpy array
-    """
-
+def ycbcr_from_proto(message):
     # read each channel of yuv422 separately
     yuv422 = np.fromstring(message.data, dtype=np.uint8)
     y = yuv422[0::2]
@@ -40,8 +34,17 @@ def rgb_image_from_proto(message):
     yuv888[4::6] = u
     yuv888[5::6] = v
 
-    yuv888 = yuv888.reshape((message.height, message.width, 3))
+    return yuv888.reshape((message.height, message.width, 3))
 
+
+def rgb_image_from_proto(message):
+    """
+    Reads image data and converts it to rgb
+
+    :param message: image data from frame
+    :returns rgb numpy array
+    """
+    yuv888 = ycbcr_from_proto(message)
     return yuv2rgb(yuv888)
 
 
