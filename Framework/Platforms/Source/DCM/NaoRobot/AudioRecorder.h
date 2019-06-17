@@ -38,9 +38,6 @@ namespace naoth
     //audio control parameter
     AudioControl control;
     
-    //bool resetting;
-    int deinitCyclesCounter;
-
     // puls audio device
     pa_simple* paSimple;
 
@@ -50,7 +47,6 @@ namespace naoth
     size_t writeIdx;
 
     unsigned int recordingTimestamp;
-
   };
 }
 
