@@ -17,12 +17,6 @@ option head_control
       goto search_for_ball_goalie;
     else if (head.control_mode == look_around)
       goto look_around;
-    else if (head.control_mode == search_for_goal)
-      //goto search_for_goal;
-      goto look_around;
-    else if (head.control_mode == search_for_goal_opp)
-      //goto search_for_goal_opp;
-      goto look_around;
     else if(head.control_mode == look_at_ball_percept)
       goto look_at_ball_percept;
     else if(head.control_mode == search_for_ball_and_look_around)
@@ -103,25 +97,6 @@ option head_control
     {
       head.camera.id = Top;
       look_around();
-    }
-  }
-
-  state search_for_goal
-  {
-    action
-    {
-      head.camera.id = Top;
-      search_for_goal(own=true,opp=true);
-
-    }
-  }
-
-  state search_for_goal_opp
-  {
-    action
-    {
-      head.camera.id = Top;
-      search_for_goal(own=false,opp=true);
     }
   }
 
