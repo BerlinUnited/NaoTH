@@ -88,8 +88,6 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
   calculate_vertical_scan_pattern(min_scan_y);
 
   double minGap = width / (double) numberOfVerticals;
-  // transforms horizontal gap sizes into vertical gap sizes
-  double gapRatio = parameters.vertical_gap_mm / parameters.horizontal_gap_mm;
 
   double focalLength = getCameraInfo().getFocalLength();
   double cameraHeight = getCameraMatrix().translation.z;
@@ -98,6 +96,8 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
   double distance;
   std::vector<size_t> line_start_increasing_length;
   std::vector<double> v_gaps;
+
+  double gap_modifier = parameters.vertical_gap_mm / parameters.horizontal_gap_mm;
 
   for(double gap = minGap; gap < width; gap *= 2)
   {
@@ -147,7 +147,7 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
     line_start_increasing_length.push_back(bottom_idx);
 
     // vertical gap sizes
-    v_gaps.push_back(gap);
+    v_gaps.push_back(gap_modifier * gap);
 
     if(max_scan_y >= height-1) {
       // bottom of the image reached
@@ -199,9 +199,9 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
     ++line_start_itr;
   }
 
-  // adjust v_gaps if too much horizontals
+  // adjust v_gaps if too many horizontals
   if (n_horizontals > parameters.max_horizontal_scanlines) {
-    double gap_modifier = n_horizontals / parameters.max_horizontal_scanlines;
+    gap_modifier = n_horizontals / parameters.max_horizontal_scanlines;
     for(double& v_gap : v_gaps) {
       v_gap *= gap_modifier;
     }
@@ -209,10 +209,12 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
 
   getScanGrid().horizontal.reserve(parameters.max_horizontal_scanlines);
 
+  gap_modifier = parameters.h_field_scan_rate_mm / parameters.horizontal_gap_mm;
+
   // fill the image with horizontal scanlines
   size_t i = 0;
   double y = min_scan_y;
-  double h_skip = minGap;
+  double h_skip = gap_modifier * minGap;
   while(y < height) {
     ScanGrid::HScanLine horizontal;
     horizontal.left_x = 0;
@@ -232,7 +234,7 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
       // adjust gaps
       v_gap = v_gaps[i];
       h_line_start = line_start_increasing_length[i];
-      h_skip *= 2;
+      h_skip = gap_modifier * v_gap;
     }
     y += v_gap;
   }
@@ -322,7 +324,7 @@ bool ScanGridProvider::calculate_vertical_scan_pattern(int min_scan_y)
 
   // camera direction
   Vector3d direction_3d = RotationMatrix::getRotationZ(getCameraMatrix().rotation.getZAngle()) *
-                          Vector3d(parameters.field_scan_rate_mm, 0, 0);
+                          Vector3d(parameters.v_field_scan_rate_mm, 0, 0);
 
   // create scan points starting from the bottom of the image
   int y = getImage().height()-1;
