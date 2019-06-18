@@ -99,6 +99,8 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
 
   double gap_modifier = parameters.vertical_gap_mm / parameters.horizontal_gap_mm;
 
+  int vScan_idx = static_cast<int>(getScanGrid().vScanPattern.size()-1);
+
   for(double gap = minGap; gap < width; gap *= 2)
   {
     // distance to an object with a size of "gap" in the image,
@@ -132,14 +134,12 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
     // determine start in vertical scan pattern,
     // iterate backwards because most scanlines are short
     size_t bottom_idx = 0;
-    // TODO save search position
-    for(int idx = static_cast<int>(getScanGrid().vScanPattern.size()-1);
-        idx >= 0; idx--)
+    for(;vScan_idx >= 0; vScan_idx--)
     {
-      int y = getScanGrid().vScanPattern[static_cast<size_t>(idx)];
+      int y = getScanGrid().vScanPattern[static_cast<size_t>(vScan_idx)];
       if(y > max_scan_y) {
         bottom_idx = std::min(getScanGrid().vScanPattern.size()-1,
-                              static_cast<size_t>(idx+1));
+                              static_cast<size_t>(vScan_idx+1));
         break;
       }
     }
