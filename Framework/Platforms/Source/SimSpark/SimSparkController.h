@@ -103,6 +103,7 @@ private:
 
   // set of unknown messages to be ignored
   std::set<std::string> ignore;
+  bool ignoreOpponentMsg;
 
 public:
   SimSparkController(const std::string& name);

@@ -36,7 +36,6 @@
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
 #include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
 #include "Modules/Infrastructure/Camera/AdaptiveAutoExposure.h"
-#include "Modules/Infrastructure/AudioConfigSetter/AudioConfigSetter.h"
 #include "Modules/Infrastructure/GameLogger/GameLogger.h"
 
 // perception
@@ -51,6 +50,7 @@
 #include "Modules/VisualCortex/FieldColorClassifier.h"
 #include "Modules/VisualCortex/ScanLineEdgelDetector/ScanLineEdgelDetector.h"
 #include "Modules/VisualCortex/FieldDetector/FieldDetector.h"
+#include "Modules/VisualCortex/FieldDetector/IntegralFieldDetector.h"
 #include "Modules/VisualCortex/LineDetector/LineGraphProvider.h"
 #include "Modules/VisualCortex/GoalDetector/GoalFeatureDetector.h"
 #include "Modules/VisualCortex/GoalDetector/GoalFeatureDetectorV2.h"
@@ -69,7 +69,6 @@
 #include "Modules/Perception/PerceptionsVisualizer/PerceptionsVisualizer.h"
 #include "Modules/Perception/WhistleDetector/WhistleDetectorV1.h"
 #include "Modules/Perception/WhistleDetector/WhistleDetectorV2.h"
-#include "Modules/Perception/WhistleDetector/WhistleDetectorLegacy.h"
 
 #include "Modules/VisualCortex/LineDetector/RansacLineDetector.h"
 #include "Modules/VisualCortex/LineDetector/RansacLineDetectorOnGraphs.h"
@@ -175,10 +174,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(CameraDebug);
   REGISTER_MODULE(CameraInfoSetter);
   REGISTER_MODULE(AdaptiveAutoExposure);
-  REGISTER_MODULE(AudioConfigSetter);
   REGISTER_MODULE(WhistleDetectorV1);
   REGISTER_MODULE(WhistleDetectorV2);
-  REGISTER_MODULE(WhistleDetectorLegacy);
 
   // perception
   REGISTER_MODULE(CameraMatrixFinder);
@@ -190,6 +187,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(HistogramProvider);
   REGISTER_MODULE(IntegralImageProvider);
   REGISTER_MODULE(FieldColorClassifier);
+  REGISTER_MODULE(IntegralFieldDetector);
   REGISTER_MODULE(ScanLineEdgelDetector);
   REGISTER_MODULE(FieldDetector);
   REGISTER_MODULE(LineGraphProvider);
