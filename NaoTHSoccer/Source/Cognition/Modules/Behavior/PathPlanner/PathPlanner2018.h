@@ -114,6 +114,8 @@ private:
   bool farApproach();
   bool nearApproach_forwardKick(const Foot& foot, const double offsetX, const double offsetY);
   bool nearApproach_sideKick(const Foot& foot, const double offsetX, const double offsetY);
+  bool sidesteps(const Foot& foot);
+
   void forwardKick(const Foot& foot);
   void sideKick(const Foot& foot);
 

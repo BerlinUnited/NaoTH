@@ -1,0 +1,37 @@
+option pathplanner2018_sidestep{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+
+  initial state idle {
+    decision {
+      else
+        goto sidestep;
+    }
+    action {
+      situation_abortable = true;
+    }
+  }
+  
+  state sidestep {
+    decision {
+      else if(action_done)
+        goto stand;
+      else
+        stay;
+    }
+    action {
+      situation_abortable = false;
+      path2018.routine = sidestep;
+    }
+  }
+
+  state stand {
+     action {
+      head.control_mode = look_straight_ahead;
+      motion.type = stand;
+    }
+  }
+}

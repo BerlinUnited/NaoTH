@@ -99,7 +99,9 @@ void PathPlanner2018::execute()
       }
     }
     break;
-  }
+  case PathModel::PathPlanner2018Routine::SIDESTEP:
+    sidesteps(Foot::RIGHT);
+  }//end switch
 
   // Always executed last
   executeStepBuffer();
@@ -205,6 +207,50 @@ bool PathPlanner2018::farApproach()
   return false;
 }
 
+bool PathPlanner2018::sidesteps(const Foot& foot){
+  // Always execute the steps that were planned before planning new steps
+  if (stepBuffer.empty())
+  {
+    Coordinate coordinate = Coordinate::Hip;
+
+    if (foot == Foot::RIGHT)
+    {
+      coordinate = Coordinate::RFoot;
+    }
+    else if (foot == Foot::LEFT)
+    {
+      coordinate = Coordinate::LFoot;
+    }
+    else
+    {
+      ASSERT(false);
+    }
+
+    StepBufferElement side_step;
+    side_step.setPose({ 0.0, 0.0, -100.0 });
+    side_step.setStepType(StepType::WALKSTEP);
+    side_step.setCharacter(0.3);
+    side_step.setScale(1.0);
+    side_step.setCoordinate(coordinate);
+    side_step.setFoot(Foot::NONE);
+    side_step.setSpeedDirection(Math::fromDegrees(0.0));
+    side_step.setRestriction(RestrictionMode::HARD);
+    side_step.setProtected(false);
+    side_step.setTime(250);
+
+    // test a couple of sidesteps
+    addStep(side_step);
+    addStep(side_step);
+    addStep(side_step);
+    addStep(side_step);
+    addStep(side_step);
+    return true;
+  }
+  else{
+    return false;
+  }
+
+}
 bool PathPlanner2018::nearApproach_forwardKick(const Foot& foot, const double offsetX, const double offsetY)
 {
   // Always execute the steps that were planned before planning new steps
