@@ -7,6 +7,7 @@ ScanGridProvider::ScanGridProvider()
   DEBUG_REQUEST_REGISTER("Vision:ScanGridProvider:draw_verticals", "draw vertical scanlines", false);
   DEBUG_REQUEST_REGISTER("Vision:ScanGridProvider:draw_horizontals", "draw horizontal scanlines", false);
   DEBUG_REQUEST_REGISTER("Vision:ScanGridProvider:draw_vertical_min_y", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:ScanGridProvider:draw_v_scan_pattern", "", false);
   getDebugParameterList().add(&parameters);
 }
 
@@ -54,23 +55,19 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
       (RotationMatrix::getRotationZ(getCameraMatrix().rotation.getZAngle()) *
        Vector3d(parameters.max_scan_distance_mm, 0, 0));
 
-  bool projectionSucces = CameraGeometry::relativePointToImage(
-        getCameraMatrix(), getCameraInfo(), farthestPoint, pointInImage);
-
-  int min_scan_y;
-  if(projectionSucces)
+  if(!CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(),
+                                           farthestPoint, pointInImage))
   {
-    // should not be heigher than the top of the image
-    min_scan_y = std::max(pointInImage.y, 0);
-    // should not be lower than the bottom of the image
-    if(min_scan_y >= height) {
-      return;
-    }
-  } else {
+    // projection failed
     return;
   }
-  // should not be over the horizon
-  min_scan_y = std::max(min_scan_y, max_horizon);
+
+  // should be under the horizon and not higher than top of the image
+  int min_scan_y = std::max(pointInImage.y, max_horizon);
+  // should not be lower than the bottom of the image
+  if(min_scan_y >= height) {
+    return;
+  }
 
   DEBUG_REQUEST("Vision:ScanGridProvider:draw_vertical_min_y",
     LINE_PX(ColorClasses::black, 0, min_scan_y, width-1, min_scan_y);
@@ -80,36 +77,44 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
   if (fieldWidthCovered <= 0) {
     return;
   }
-  // calculate number of vertical scanlines with a horizontal_gap_mm
+  // calculate the number of vertical scanlines at min_scan_y,
+  // so the gap at min_scan_y is horizontal_gap_mm
   int numberOfVerticals = std::min(
         (int) (fieldWidthCovered / parameters.horizontal_gap_mm),
         parameters.max_vertical_scanlines);
 
+  // calculate vertical scan pattern by creating points
+  // on the field and projecting them back onto the image
+  calculate_vertical_scan_pattern(min_scan_y);
+
   double minGap = width / (double) numberOfVerticals;
-  // transforms horizontal gap sizes into vertical gap sizes
-  double gapRatio = parameters.vertical_gap_mm / parameters.horizontal_gap_mm;
 
   double focalLength = getCameraInfo().getFocalLength();
   double cameraHeight = getCameraMatrix().translation.z;
 
   int max_scan_y;
-  double y = min_scan_y;
   double distance;
   std::vector<size_t> line_start_increasing_length;
   std::vector<double> v_gaps;
 
+  double gap_modifier = parameters.vertical_gap_mm / parameters.horizontal_gap_mm;
+
+  int vScan_idx = static_cast<int>(getScanGrid().vScanPattern.size()-1);
+
   for(double gap = minGap; gap < width; gap *= 2)
   {
-    // distance of the gap if it would have
-    // the size of vertical_gap_mm on the field
+    // distance to an object with a size of "gap" in the image,
+    // if it would have a size of "horizontal_gap_mm" on the field
     distance = parameters.horizontal_gap_mm * focalLength / gap;
 
     // determine the start of the vertical scanline
     if(distance < cameraHeight) {
       max_scan_y = height-1;
     } else {
+      // project distance onto the ground plane
       distance = std::sqrt(distance * distance - cameraHeight * cameraHeight);
-      // project gap distance onto the image to obtain the start of the scanline
+      // project point in the distance onto the image,
+      // to obtain the start of the scanline
       Vector3d pointOnField = cameraMatrixOffset +
           (RotationMatrix::getRotationZ(getCameraMatrix().rotation.getZAngle())
            * Vector3d(distance, 0, 0));
@@ -126,20 +131,23 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
         continue;
       }
     }
-    // fill vertical scan pattern
-    double ySkip = std::max(gapRatio * gap,
-                            (double) parameters.min_vertical_gap_px);
-    while(y <= max_scan_y)
+    // determine start in vertical scan pattern,
+    // iterate backwards because most scanlines are short
+    size_t bottom_idx = 0;
+    for(;vScan_idx >= 0; vScan_idx--)
     {
-      getScanGrid().vScanPattern.push_back((int) y);
-      y += ySkip;
+      int y = getScanGrid().vScanPattern[static_cast<size_t>(vScan_idx)];
+      if(y > max_scan_y) {
+        bottom_idx = std::min(getScanGrid().vScanPattern.size()-1,
+                              static_cast<size_t>(vScan_idx+1));
+        break;
+      }
     }
 
-    // index of vScanPattern there the line starts
-    size_t bottom_idx = getScanGrid().vScanPattern.size()-1;
     line_start_increasing_length.push_back(bottom_idx);
+
     // vertical gap sizes
-    v_gaps.push_back(gap);
+    v_gaps.push_back(gap_modifier * gap);
 
     if(max_scan_y >= height-1) {
       // bottom of the image reached
@@ -166,7 +174,7 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
       ScanGrid::VScanLine scanline;
       scanline.x = x;
       scanline.bottom = *line_start_itr;
-      scanline.top = 0;
+      scanline.top = getScanGrid().vScanPattern.size()-1;
 
       getScanGrid().vertical[j] = scanline;
 
@@ -184,16 +192,16 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
   double last_y = min_scan_y;
   double n_horizontals = 0;
   for(double v_gap : v_gaps) {
-    y = getScanGrid().vScanPattern[*line_start_itr];
+    double y = getScanGrid().vScanPattern[*line_start_itr];
     n_horizontals += (y - last_y) / v_gap;
     last_y = y;
 
     ++line_start_itr;
   }
 
-  // adjust v_gaps if too much horizontals
+  // adjust v_gaps if too many horizontals
   if (n_horizontals > parameters.max_horizontal_scanlines) {
-    double gap_modifier = n_horizontals / parameters.max_horizontal_scanlines;
+    gap_modifier = n_horizontals / parameters.max_horizontal_scanlines;
     for(double& v_gap : v_gaps) {
       v_gap *= gap_modifier;
     }
@@ -201,10 +209,12 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
 
   getScanGrid().horizontal.reserve(parameters.max_horizontal_scanlines);
 
+  gap_modifier = parameters.h_field_scan_rate_mm / parameters.horizontal_gap_mm;
+
   // fill the image with horizontal scanlines
   size_t i = 0;
-  y = min_scan_y;
-  double h_skip = minGap;
+  double y = min_scan_y;
+  double h_skip = gap_modifier * minGap;
   while(y < height) {
     ScanGrid::HScanLine horizontal;
     horizontal.left_x = 0;
@@ -224,7 +234,7 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
       // adjust gaps
       v_gap = v_gaps[i];
       h_line_start = line_start_increasing_length[i];
-      h_skip *= 2;
+      h_skip = gap_modifier * v_gap;
     }
     y += v_gap;
   }
@@ -232,8 +242,10 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
   DEBUG_REQUEST("Vision:ScanGridProvider:draw_verticals",
     for(const ScanGrid::VScanLine& scanline: getScanGrid().vertical)
     {
-      LINE_PX(ColorClasses::blue, scanline.x, getScanGrid().vScanPattern.at(scanline.bottom), scanline.x, getScanGrid().vScanPattern.at(scanline.top));
-      for(size_t i=scanline.top; i<=scanline.bottom; ++i)
+      LINE_PX(ColorClasses::blue,
+              scanline.x, getScanGrid().vScanPattern.at(scanline.bottom),
+              scanline.x, getScanGrid().vScanPattern.at(scanline.top));
+      for(size_t i=scanline.bottom; i<=scanline.top; ++i)
       {
         POINT_PX(ColorClasses::red, scanline.x, getScanGrid().vScanPattern.at(i));
 
@@ -262,7 +274,8 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
 }//end execute
 
 
-double ScanGridProvider::calculateMaxFieldWidth(int y) {
+double ScanGridProvider::calculateMaxFieldWidth(int y)
+{
   // project the left and right image corner onto the field
   // and caluclate the distance between thems
   Vector2d projectedLeftCorner;
@@ -286,4 +299,64 @@ double ScanGridProvider::calculateMaxFieldWidth(int y) {
     return -1.;
   }
   return (projectedLeftCorner - projectedRightCorner).abs();
+}
+
+bool ScanGridProvider::calculate_vertical_scan_pattern(int min_scan_y)
+{
+  std::vector<int>& scan_pattern = getScanGrid().vScanPattern;
+  //std::vector<int> scan_pattern;
+
+  const double width = getImage().width();
+  const double height = getImage().height();
+
+  // get depicted field point at the bottom of the image
+  Vector2d field_point;
+  if(!CameraGeometry::imagePixelToFieldCoord(
+    getCameraMatrix(), getCameraInfo(),
+    width/2,
+    height,
+    0.0,
+    field_point))
+  {
+    return false;
+  }
+  Vector3d field_point_3d(field_point.x, field_point.y, 0);
+
+  // camera direction
+  Vector3d direction_3d = RotationMatrix::getRotationZ(getCameraMatrix().rotation.getZAngle()) *
+                          Vector3d(parameters.v_field_scan_rate_mm, 0, 0);
+
+  // create scan points starting from the bottom of the image
+  int y = getImage().height()-1;
+  Vector2i image_point;
+  bool skip_to_small = false;
+  while(y > min_scan_y)
+  {
+    DEBUG_REQUEST("Vision:ScanGridProvider:draw_v_scan_pattern",
+      POINT_PX(ColorClasses::red, getImage().width()/2, y);
+    );
+    scan_pattern.push_back(y);
+
+    if(!skip_to_small) {
+      field_point_3d += direction_3d;
+
+      bool projectionSucces = CameraGeometry::relativePointToImage(
+            getCameraMatrix(), getCameraInfo(),
+            field_point_3d,
+            image_point);
+      if(!projectionSucces) {
+        return false;
+      }
+
+      if(y - image_point.y < parameters.min_vertical_gap_px) {
+        y -= parameters.min_vertical_gap_px;
+        skip_to_small = true;
+      } else {
+        y = image_point.y;
+      }
+    } else {
+      y -= parameters.min_vertical_gap_px;
+    }
+  }
+  return true;
 }

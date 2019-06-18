@@ -167,7 +167,7 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
 
     prevPoint = end_of_body;
 
-    for(size_t i = scanline.bottom; i > scanline.top; --i) {
+    for(size_t i = scanline.bottom; i <= scanline.top; ++i) {
       y = getScanGrid().vScanPattern[i];
       if(y < end_of_field) {
         // don't scan above field area
