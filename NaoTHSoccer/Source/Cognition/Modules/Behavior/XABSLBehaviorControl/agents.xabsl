@@ -141,6 +141,7 @@ include "Options/Soccer/SPL/initial_striker.xabsl";
 include "Agents/penalty_agent.xabsl";
 include "Options/SetPlays/penalty_kicker.xabsl";
 include "Options/SetPlays/penalty_decide_state_and_role.xabsl";
+include "Options/SetPlays/penalty_goalie.xabsl";
 
 // Soccer-Tests
 include "Options/Test/agent/passive_behavior_test_agent.xabsl";
