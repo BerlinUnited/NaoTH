@@ -53,6 +53,7 @@ using namespace std;
 V4lCameraHandler::V4lCameraHandler()
   :
   cameraName("none"),
+  currentCamera(CameraInfo::numOfCamera),
   fd(-1),
   atLeastOneImageRetrieved(false),
   initialParamsSet(false),
@@ -61,7 +62,6 @@ V4lCameraHandler::V4lCameraHandler()
   bufferSwitched(false),
   blockingCaptureModeEnabled(false),
   lastCameraSettingTimestamp(0),
-  currentCamera(CameraInfo::numOfCamera),
   error_count(0)
 {
   // NOTE: width, height and fps are not included here
@@ -269,25 +269,25 @@ Description: Enable/disable fade-to-black feature.
 void V4lCameraHandler::setFPS(int fpsRate)
 {
   struct v4l2_streamparm fps;
-  memset(&fps, 0, sizeof (struct v4l2_streamparm));
+  memset(&fps, 0, sizeof (fps));
   fps.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   VERIFY(!ioctl(fd, VIDIOC_G_PARM, &fps));
   fps.parm.capture.timeperframe.numerator = 1;
   fps.parm.capture.timeperframe.denominator = fpsRate;
   VERIFY(ioctl(fd, VIDIOC_S_PARM, &fps) != -1);
 
+  // todo: do we need this setting?
   currentSettings.data[CameraSettings::FPS] = fpsRate;
 }
 
 void V4lCameraHandler::openDevice(bool blockingMode)
 {
-
   struct stat st;
   memset (&st, 0, sizeof (st));
 
   if (-1 == stat(cameraName.c_str(), &st))
   {
-    std::cerr << LOG << "[V4L open] Cannot identify '" << cameraName << "': " << errno << ", "
+    std::cerr << LOG << "[V4L open] Cannot identify '" << cameraName << "': " << errno << ", " 
       << strerror(errno) << std::endl;
     return;
   }
@@ -338,22 +338,21 @@ void V4lCameraHandler::initDevice()
   /* Note VIDIOC_S_FMT may change width and height. */
   ASSERT(fmt.fmt.pix.sizeimage == naoth::IMAGE_WIDTH*naoth::IMAGE_HEIGHT*2);
   
-  struct v4l2_capability cap;
-  memset (&cap, 0, sizeof (cap));
-  
   memset(&currentBuf, 0, sizeof (currentBuf));
   currentBuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   currentBuf.memory = V4L2_MEMORY_MMAP;
 
+  // query and verify the capabilities
+  struct v4l2_capability cap;
   VERIFY(ioctl(fd, VIDIOC_QUERYCAP, &cap) != -1);
   VERIFY(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE);
   VERIFY(cap.capabilities & V4L2_CAP_STREAMING);
 
-  initMMap();
+  mapBuffers();
 }
 
 // map buffers
-void V4lCameraHandler::initMMap()
+void V4lCameraHandler::mapBuffers()
 {
   struct v4l2_requestbuffers req;
   memset(&req, 0, sizeof(req));
@@ -388,6 +387,13 @@ void V4lCameraHandler::initMMap()
   }
 }
 
+void V4lCameraHandler::unmapBuffers()
+{
+  for (size_t i = 0; i < frameBufferCount; ++i) {
+    VERIFY(-1 != munmap(buffers[i].start, buffers[i].length));
+  }
+}
+
 void V4lCameraHandler::startCapturing()
 {
   // queue buffers
@@ -406,6 +412,7 @@ void V4lCameraHandler::startCapturing()
   enum v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   VERIFY(-1 != ioctl(fd, VIDIOC_STREAMON, &type));
 
+  // initialize internal state
   isCapturing = true;
   wasQueried = false;
   bufferSwitched = true;
@@ -413,7 +420,35 @@ void V4lCameraHandler::startCapturing()
   atLeastOneImageRetrieved = false;
 }
 
-int V4lCameraHandler::readFrameMMaP()
+void V4lCameraHandler::stopCapturing()
+{
+  isCapturing = false;
+}
+
+void V4lCameraHandler::closeDevice()
+{
+  if (-1 == close(fd)) {
+    return;
+  }
+  fd = -1;
+}
+
+void V4lCameraHandler::shutdown()
+{
+  stopCapturing();
+  unmapBuffers();
+  closeDevice();
+}
+
+bool V4lCameraHandler::isRunning()
+{
+  return isCapturing;
+}
+
+
+
+
+int V4lCameraHandler::readFrame()
 {
   //not the first frame and the buffer changed last frame
   if (wasQueried)
@@ -525,10 +560,6 @@ int V4lCameraHandler::readFrameMMaP()
   }
 }
 
-int V4lCameraHandler::readFrame()
-{
-  return readFrameMMaP();
-}
 
 void V4lCameraHandler::get(Image& theImage)
 {
@@ -568,27 +599,6 @@ void V4lCameraHandler::get(Image& theImage)
   }
 }
 
-void V4lCameraHandler::stopCapturing()
-{
-  isCapturing = false;
-}
-
-void V4lCameraHandler::uninitDevice()
-{
-  for (size_t i = 0; i < frameBufferCount; ++i) {
-    VERIFY(-1 != munmap(buffers[i].start, buffers[i].length));
-  }
-
-  free(buffers);
-}
-
-void V4lCameraHandler::closeDevice()
-{
-  if (-1 == close(fd)) {
-    return;
-  }
-  fd = -1;
-}
 
 void V4lCameraHandler::getCameraSettings(CameraSettings& data, bool update)
 {
@@ -805,17 +815,6 @@ void V4lCameraHandler::internalUpdateCameraSettings()
   }
 }
 
-void V4lCameraHandler::shutdown()
-{
-  stopCapturing();
-  uninitDevice();
-  closeDevice();
-}
-
-bool V4lCameraHandler::isRunning()
-{
-  return isCapturing;
-}
 
 // https://01.org/linuxgraphics/gfx-docs/drm/media/uapi/v4l/capture.c.html
 int V4lCameraHandler::xioctl(int fd, int request, void* arg) const

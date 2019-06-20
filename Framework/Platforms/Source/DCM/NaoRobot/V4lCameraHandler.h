@@ -81,17 +81,16 @@ private:
 
   void openDevice(bool blockingMode);
   void initDevice();
-  void initMMap();
+  
+  void mapBuffers();
+  void unmapBuffers();
   void startCapturing();
   
   void stopCapturing();
-  void uninitDevice();
   void closeDevice();
   
   
   int readFrame();
-  int readFrameMMaP();
-
   
   //settings
   void initIDMapping();
@@ -104,14 +103,15 @@ private:
     return V4L2_CID_PRIVATE_BASE + 7 + (i*CameraSettings::AUTOEXPOSURE_GRID_SIZE) + j;
   }
   
-  
   // tools
   int xioctl(int fd, int request, void* arg) const;
   bool hasIOErrorPrint(int lineNumber, int errOccured, int errNo, bool exitByIOError = true);
 
 private: // data members
 
+  // camera stuff
   std::string cameraName;
+  CameraInfo::CameraID currentCamera;
 
   /** The camera file descriptor */
   int fd;
@@ -122,6 +122,7 @@ private: // data members
   /** Image buffers (v4l2) */
   struct buffer buffers[frameBufferCount];
 
+  // capture
   struct v4l2_buffer currentBuf;
   struct v4l2_buffer lastBuf;
 
@@ -133,15 +134,14 @@ private: // data members
   bool blockingCaptureModeEnabled;
 
 
+  // settings
   int csConst[CameraSettings::numOfCameraSetting];
   unsigned long long lastCameraSettingTimestamp;
 
   /** order in which the camera settings need to be applied */
   std::list<CameraSettings::CameraSettingID> settingsOrder;
-
   CameraSettings currentSettings;
-  CameraInfo::CameraID currentCamera;
-
+  
   int error_count;
 };
 
