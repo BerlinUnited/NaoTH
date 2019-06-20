@@ -14,12 +14,15 @@
 
 #include "LogfileEntry.h"
 
-template<int maxSize> class LogfileManager
+template<int maxSize> class LegacyLogfileManager
 {
 public:
 
-  LogfileManager()
-    : alwaysWriteOut(false)
+  LegacyLogfileManager()
+    :
+    // NOTE: this was set to true in all usecases so far
+    alwaysWriteOut(true),
+    writtenBytes(0)
   {
     
   }
@@ -30,15 +33,17 @@ public:
    * @param alwaysWriteOut If false the ringbuffer is used. You have to call
    *                       flush() on your own.
    */
-  LogfileManager(bool alwaysWriteOut)
+  /*
+  LegacyLogfileManager(bool alwaysWriteOut)
     : 
     alwaysWriteOut(alwaysWriteOut),
     writtenBytes(0)
   {
 
   }
+  */
 
-  ~LogfileManager()
+  ~LegacyLogfileManager()
   {
     closeFile();
   }
@@ -66,7 +71,7 @@ public:
    * After calling this use returned stringstream to transform the data.
    *
    */
-  std::stringstream& log(unsigned int frameNumber, const std::string& name)
+  std::ostream& log(unsigned int frameNumber, const std::string& name)
   {
     if(alwaysWriteOut && dataBuffer.isFull())
     {
@@ -158,6 +163,12 @@ private:
   bool alwaysWriteOut;
   size_t writtenBytes;
 };
+
+// NOTE: define the default LogfileManager type
+//typedef LegacyLogfileManager<30> LogfileManager;
+
+#include "DirectLogfileManager.h"
+typedef DirectLogfileManager LogfileManager;
 
 #endif //_LogfileManager_h_
 
