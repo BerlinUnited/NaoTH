@@ -66,7 +66,7 @@ void PathPlanner2018::execute()
   case PathModel::PathPlanner2018Routine::FORWARDKICK_LEFT:
     //if (farApproach())
     {
-      if (nearApproach_forwardKick(Foot::LEFT, 0.0, 0.0))
+      if (nearApproach_forwardKick(Foot::LEFT, getPathModel().xOffset, getPathModel().yOffset))
       {
         forwardKick(Foot::LEFT);
       }
@@ -75,7 +75,7 @@ void PathPlanner2018::execute()
   case PathModel::PathPlanner2018Routine::FORWARDKICK_RIGHT:
     //if (farApproach())
     {
-      if (nearApproach_forwardKick(Foot::RIGHT, 0.0, 0.0))
+      if (nearApproach_forwardKick(Foot::RIGHT, getPathModel().xOffset, getPathModel().yOffset))
       {
         forwardKick(Foot::RIGHT);
       }
@@ -149,6 +149,7 @@ void PathPlanner2018::moveAroundBall(const double direction, const double radius
 	Pose2D pose = { ballRotation, stepX, stepY };
   
   StepBufferElement new_step;
+  new_step.debug_name = "move around ball step";
   new_step.setPose(pose);
   new_step.setStepType(StepType::WALKSTEP);
 
@@ -210,7 +211,9 @@ bool PathPlanner2018::nearApproach_forwardKick(const Foot& foot, const double of
   // Always execute the steps that were planned before planning new steps
   if (stepBuffer.empty())
   {
+    std::cout << "start approach" << std::endl;
     Vector2d ballPos;
+    Vector2d targetPos;
     Coordinate coordinate = Coordinate::Hip;
 
     if (foot == Foot::RIGHT)
@@ -228,8 +231,8 @@ bool PathPlanner2018::nearApproach_forwardKick(const Foot& foot, const double of
       ASSERT(false);
     }
     // add the desired offset
-    ballPos.x += offsetX;
-    ballPos.y += offsetY;
+    targetPos.x = ballPos.x - getFieldInfo().ballRadius - offsetX;
+    targetPos.y = ballPos.y - offsetY;
 
     // TODO: Are there better ways to calculate this?
     numPossibleStepsX = std::abs(ballPos.x) / params.stepLength;
@@ -237,18 +240,20 @@ bool PathPlanner2018::nearApproach_forwardKick(const Foot& foot, const double of
 
     // Am I ready for a kick or still walking to the ball?
     // In other words: Can I only perform one step before touching the ball or more steps?
-    if (numPossibleStepsX > params.readyForForwardKickThresholdX
-      || numPossibleStepsY > params.readyForForwardKickThresholdY)
+    //if (std::abs(targetPos.x) > 90
+    //  || std::abs(targetPos.y) > 0.15*80)
+    if (std::abs(targetPos.x)  > 90
+      || std::abs(targetPos.y) > 0.15 * 80)
     {
 	    // generate a correction step
       double translation_xy = params.stepLength;
 
-      //TODO why - std::abs(ballPos.y) => das heißt doch wenn der ball in der y richtung springt wird ein schritt zurück geplant und ausgeführt
-      double translation_x = std::min(translation_xy, ballPos.x - getFieldInfo().ballRadius - params.nearApproachForwardKickBallPosOffsetX - std::abs(ballPos.y));
-      double translation_y = std::min(translation_xy, std::abs(ballPos.y)) * (ballPos.y < 0 ? -1 : 1);
+      //TODO why - std::abs(targetPos.y) => das heißt doch wenn der ball in der y richtung springt wird ein schritt zurück geplant und ausgeführt
+      double translation_x = std::min(translation_xy, targetPos.x - std::abs(targetPos.y));
+      double translation_y = std::min(translation_xy, std::abs(targetPos.y)) * (targetPos.y < 0 ? -1 : 1);
 
       StepBufferElement new_step;
-      new_step.debug_name = "near approach step";
+      new_step.debug_name = "execute forward kick approach step";
       new_step.setPose({ 0.0, translation_x, translation_y });
       new_step.setStepType(StepType::WALKSTEP);
       new_step.setCharacter(0.3);
@@ -259,11 +264,12 @@ bool PathPlanner2018::nearApproach_forwardKick(const Foot& foot, const double of
       new_step.setRestriction(RestrictionMode::HARD);
       new_step.setProtected(false);
       new_step.setTime(250);
-
+      std::cout << "plan approach step because of " << targetPos.x << " | " << targetPos.y << std::endl;
       addStep(new_step);
     }
     else
     {
+      std::cout << "finish approach" << std::endl;
       return true;
     }
   }
@@ -403,12 +409,12 @@ bool PathPlanner2018::nearApproach_sideKick(const Foot& foot, const double offse
   return false;
 }
 
-void PathPlanner2018::forwardKick(const Foot& foot)
+void PathPlanner2018::forwardKick(const Foot& /*foot*/)
 {
   if (/*stepBuffer.empty() && */!kickPlanned)
   {
     stepBuffer.clear();
-
+    /*
     Coordinate coordinate = Coordinate::Hip;
     if (foot == Foot::RIGHT)
     {
@@ -422,7 +428,23 @@ void PathPlanner2018::forwardKick(const Foot& foot)
     {
       ASSERT(false);
     }
+    */
+    //DUMMY Zero Step to see the end of the approach
+    /*
+    StepBufferElement dummy_zero_step;
+    dummy_zero_step.debug_name = "dummy zero step";
+    dummy_zero_step.setPose({ 0.0, 0.0, 0.0 });
+    dummy_zero_step.setCharacter(1.0);
+    dummy_zero_step.setStepType(StepType::ZEROSTEP);
+    dummy_zero_step.setCoordinate(coordinate);
+    dummy_zero_step.setFoot(Foot::NONE);
+    dummy_zero_step.setSpeedDirection(Math::fromDegrees(0.0));
+    dummy_zero_step.setRestriction(RestrictionMode::HARD);
+    dummy_zero_step.setTime(2000);
+    addStep(dummy_zero_step);
+    */
 
+    /*
     // Correction step if the movable foot is different from the foot that is supposed to kick
     if (getMotionStatus().stepControl.moveableFoot != (foot == Foot::RIGHT ? MotionStatus::StepControlStatus::RIGHT : MotionStatus::StepControlStatus::LEFT))
     {
@@ -470,7 +492,8 @@ void PathPlanner2018::forwardKick(const Foot& foot)
     new_step.setPose({ 0.0, 0.0, 0.0 });
     new_step.setStepType(StepType::WALKSTEP);
     addStep(new_step);
-    
+    */
+    std::cout << "skip kick" << std::endl;
     kickPlanned = true;
   }
 }
@@ -531,7 +554,9 @@ void PathPlanner2018::sideKick(const Foot& foot) // Foot == RIGHT means that we 
 void PathPlanner2018::addStep(const StepBufferElement& new_step)
 {
   stepBuffer.push_back(new_step);
+  std::cout << new_step.debug_name << std::endl;
 }
+
 void PathPlanner2018::updateSpecificStep(const unsigned int index, StepBufferElement& step)
 {
   ASSERT(stepBuffer.size() > 0);
@@ -626,6 +651,6 @@ void PathPlanner2018::executeStepBuffer()
   }
   // false means right foot
   getMotionRequest().walkRequest.stepControl.moveLeftFoot = (footToUse != Foot::RIGHT);
-  std::cout << stepBuffer.front().debug_name << " - " << getMotionRequest().walkRequest.stepControl.moveLeftFoot  << std::endl;
+  //std::cout << stepBuffer.front().debug_name << " - " << getMotionRequest().walkRequest.stepControl.moveLeftFoot  << std::endl;
   STOPWATCH_STOP("PathPlanner2018:execute_steplist");
 }
