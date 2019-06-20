@@ -83,13 +83,9 @@ private:
 
   void initDevice();
   void initMMap();
-  void initUP(unsigned int buffer_size);
-  void initRead(unsigned int buffer_size);
   void startCapturing();
   int readFrame();
   int readFrameMMaP();
-  int readFrameUP();
-  int readFrameRead();
 
   void stopCapturing();
   void uninitDevice();
@@ -107,17 +103,6 @@ private:
   int getAutoExposureGridID(size_t i, size_t j) {
     return V4L2_CID_PRIVATE_BASE + 7 + (i*CameraSettings::AUTOEXPOSURE_GRID_SIZE) + j;
   }
-
-  typedef enum
-  {
-    IO_READ,
-    IO_MMAP,
-    IO_USERPTR,
-    Num_of_MethodIO
-  } MethodIO;
-
-  MethodIO selMethodIO;
-  MethodIO actMethodIO;
 
   std::string cameraName;
 
