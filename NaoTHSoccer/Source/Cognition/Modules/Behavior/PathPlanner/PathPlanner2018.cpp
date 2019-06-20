@@ -225,7 +225,7 @@ bool PathPlanner2018::sidesteps(const Foot& foot){
     {
       ASSERT(false);
     }
-
+    //TODO which motion parameters restrict this step?
     StepBufferElement side_step;
     side_step.setPose({ 0.0, 0.0, -100.0 });
     side_step.setStepType(StepType::WALKSTEP);
@@ -238,11 +238,6 @@ bool PathPlanner2018::sidesteps(const Foot& foot){
     side_step.setProtected(false);
     side_step.setTime(250);
 
-    // test a couple of sidesteps
-    addStep(side_step);
-    addStep(side_step);
-    addStep(side_step);
-    addStep(side_step);
     addStep(side_step);
     return true;
   }

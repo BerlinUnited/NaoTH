@@ -17,7 +17,7 @@ option pathplanner2018_sidestep{
   
   state sidestep {
     decision {
-      else if(action_done)
+      else if (state_time > 1000)
         goto stand;
       else
         stay;
