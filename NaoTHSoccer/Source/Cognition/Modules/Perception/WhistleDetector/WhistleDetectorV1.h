@@ -39,7 +39,5 @@ public:
 
 	} params;
 
-
-private:
 };
 #endif // _WHISTLEDETECTOR_V1_H
