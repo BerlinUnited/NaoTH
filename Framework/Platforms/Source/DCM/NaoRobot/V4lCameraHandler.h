@@ -125,8 +125,6 @@ private: // data members
   struct v4l2_buffer currentBuf;
   struct v4l2_buffer lastBuf;
 
-  unsigned char* currentImage;
-
   bool atLeastOneImageRetrieved;
   bool initialParamsSet;
   bool wasQueried;

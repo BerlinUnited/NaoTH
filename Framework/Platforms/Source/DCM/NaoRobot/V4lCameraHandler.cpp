@@ -54,7 +54,6 @@ V4lCameraHandler::V4lCameraHandler()
   :
   cameraName("none"),
   fd(-1),
-  currentImage(NULL),
   atLeastOneImageRetrieved(false),
   initialParamsSet(false),
   wasQueried(false),
@@ -342,7 +341,7 @@ void V4lCameraHandler::initDevice()
   struct v4l2_capability cap;
   memset (&cap, 0, sizeof (cap));
   
-  memset(&currentBuf, 0, sizeof (struct v4l2_buffer));
+  memset(&currentBuf, 0, sizeof (currentBuf));
   currentBuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   currentBuf.memory = V4L2_MEMORY_MMAP;
 
@@ -357,7 +356,7 @@ void V4lCameraHandler::initDevice()
 void V4lCameraHandler::initMMap()
 {
   struct v4l2_requestbuffers req;
-  memset(&req, 0, sizeof(v4l2_requestbuffers));
+  memset(&req, 0, sizeof(req));
   
   req.count = frameBufferCount; // number of internal buffers, since we use debug images that should be quite big
   req.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
