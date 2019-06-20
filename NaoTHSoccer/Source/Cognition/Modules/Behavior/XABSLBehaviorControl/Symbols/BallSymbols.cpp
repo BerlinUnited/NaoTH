@@ -34,6 +34,9 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.position_at_rest.x", &getBallModel().position_at_rest.x);
   engine.registerDecimalInputSymbol("ball.position_at_rest.y", &getBallModel().position_at_rest.y);
 
+  engine.registerDecimalInputSymbol("ball.future.preview.x", &futureBallPreview.x);
+  engine.registerDecimalInputSymbol("ball.future.preview.y", &futureBallPreview.y);
+
   engine.registerDecimalInputSymbol("ball.left_foot.x", &ballLeftFoot.x);
   engine.registerDecimalInputSymbol("ball.left_foot.y", &ballLeftFoot.y);
   engine.registerDecimalInputSymbol("ball.right_foot.x", &ballRightFoot.x);
@@ -130,6 +133,8 @@ void BallSymbols::execute()
     // hysteresis
     ball_see_where_itis = ball_seen_filter.value() > (ball_see_where_itis?0.3:0.7);
   }
+
+  futureBallPreview = getMotionStatus().plannedMotion.hip / getBallModel().position_at_rest;
 
   lastRobotOdometry = getOdometryData();
 }//end execute
