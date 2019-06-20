@@ -20,6 +20,7 @@ MultiKalmanBallLocator::MultiKalmanBallLocator():
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_final_ball_postion_at_rest", "draws the final i.e. best model's rest position",                    false);
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_future_ball_positions",      "draws the estimated postions of the ball in the future in 1s steps", false);
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_covariance_ellipse",         "draws the ellipses representing the covariances",                    false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_last_known_ball",      "draws the last known ball", 	                                   false);
 
     // Plotting Related Debug Requests
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:plot_prediction_error",     "plots the prediction errors in x (horizontal angle) and y (vertical angle)", false);
@@ -484,6 +485,9 @@ void MultiKalmanBallLocator::applyOdometryOnFilterState(ExtendedKalmanFilter4d& 
     filter.setCovarianceOfState(new_P);
 }
 
+// TODO: returns the first model as best model even if it is "not seen"
+//		 it might be better to return an invalid iterator and handle this case outside
+//		 handling this better might make last_known_ball symbol obsolete
 MultiKalmanBallLocator::Filters::const_iterator MultiKalmanBallLocator::selectBestModel() const
 {
   // find the best model for the ball: closest hypothesis that is "known"
@@ -542,6 +546,15 @@ void MultiKalmanBallLocator::provideBallModel(const BallHypothesis& model)
   Vector2d ballLeftFoot  = lFoot.projectXY()/getBallModel().position;
   Vector2d ballRightFoot = rFoot.projectXY()/getBallModel().position;
 
+  // update last known ball
+  if(getBallModel().knows) {
+    getBallModel().last_known_ball = getBallModel().position;
+  } else {
+    // need to update odometry by hand ...
+    Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
+    getBallModel().last_known_ball = odometryDelta * getBallModel().last_known_ball;
+  }
+  
   //set preview ball model representation
   getBallModel().positionPreview = getMotionStatus().plannedMotion.hip / getBallModel().position;
   getBallModel().positionPreviewInLFoot = getMotionStatus().plannedMotion.lFoot / ballLeftFoot;
@@ -619,6 +632,12 @@ void MultiKalmanBallLocator::doDebugRequest()
         FIELD_DRAWING_CONTEXT;
         PEN("FF0000", 10);
         CIRCLE( getBallModel().position.x, getBallModel().position.y, getFieldInfo().ballRadius-10);
+    );
+
+    DEBUG_REQUEST("MultiKalmanBallLocator:draw_last_known_ball",
+        FIELD_DRAWING_CONTEXT;
+        PEN("EF871E", 10);
+        CIRCLE(getBallModel().last_known_ball.x, getBallModel().last_known_ball.y, getFieldInfo().ballRadius-10);
     );
 
     DEBUG_REQUEST("MultiKalmanBallLocator:reloadParameters",

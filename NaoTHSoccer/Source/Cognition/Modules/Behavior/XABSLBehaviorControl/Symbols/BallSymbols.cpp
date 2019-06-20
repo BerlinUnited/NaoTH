@@ -24,6 +24,9 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.angle", &getBallAngle);
   engine.registerDecimalInputSymbol("ball.speed.x", &getBallModel().speed.x);
   engine.registerDecimalInputSymbol("ball.speed.y", &getBallModel().speed.y);
+
+  engine.registerDecimalInputSymbol("ball.last_known.x", &getBallModel().last_known_ball.x);
+  engine.registerDecimalInputSymbol("ball.last_known.y", &getBallModel().last_known_ball.y);
   
   engine.registerBooleanInputSymbol("ball.know_where_itis", &getBallModel().knows);
   // HACK: right now know_where_itis is the same as see_where_itis
