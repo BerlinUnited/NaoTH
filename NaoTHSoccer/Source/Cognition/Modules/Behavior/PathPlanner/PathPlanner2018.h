@@ -63,8 +63,8 @@ private:
       PARAMETER_REGISTER(stepLength)                            = 80.0;
       PARAMETER_REGISTER(readyForSideKickThresholdX)            = 4.0;
       PARAMETER_REGISTER(readyForSideKickThresholdY)            = 0.3;
-      PARAMETER_REGISTER(readyForForwardKickThresholdX)         = 4.0;
-      PARAMETER_REGISTER(readyForForwardKickThresholdY)         = 0.3;
+      PARAMETER_REGISTER(forwardKickThreshold.x)                = 50; // mm
+      PARAMETER_REGISTER(forwardKickThreshold.y)                = 25; // mm
       //PARAMETER_REGISTER(nearApproachForwardKickBallPosOffsetX) = 110;
       PARAMETER_REGISTER(nearApproachSideKickBallPosOffsetX)    = 100;
       PARAMETER_REGISTER(farToNearApproachThreshold)            = 10.0;
@@ -82,8 +82,9 @@ private:
     double stepLength;
     double readyForSideKickThresholdX;
     double readyForSideKickThresholdY;
-    double readyForForwardKickThresholdX;
-    double readyForForwardKickThresholdY;
+    //double readyForForwardKickThresholdX;
+    //double readyForForwardKickThresholdY;
+    Vector2d forwardKickThreshold;
     //double nearApproachForwardKickBallPosOffsetX;
     double nearApproachSideKickBallPosOffsetX;
     double farToNearApproachThreshold;
@@ -188,10 +189,7 @@ private:
 
 private:
   bool kickPlanned;
-  double numPossibleSteps;
-  double numPossibleStepsX;
-  double numPossibleStepsY;
-  double numRotationStepsNecessary;
+
 };
 
 #endif // _PathPlanner2018_H_
