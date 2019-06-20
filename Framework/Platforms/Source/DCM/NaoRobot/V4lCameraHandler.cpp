@@ -53,9 +53,7 @@ using namespace std;
 V4lCameraHandler::V4lCameraHandler()
   :
   cameraName("none"),
-  fd(-1), 
-  buffers(NULL),
-  n_buffers(0),
+  fd(-1),
   currentImage(NULL),
   atLeastOneImageRetrieved(false),
   initialParamsSet(false),
@@ -344,7 +342,7 @@ void V4lCameraHandler::initDevice()
   struct v4l2_capability cap;
   memset (&cap, 0, sizeof (cap));
   
-  memset(&(currentBuf), 0, sizeof (struct v4l2_buffer));
+  memset(&currentBuf, 0, sizeof (struct v4l2_buffer));
   currentBuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   currentBuf.memory = V4L2_MEMORY_MMAP;
 
@@ -355,53 +353,53 @@ void V4lCameraHandler::initDevice()
   initMMap();
 }
 
+// map buffers
 void V4lCameraHandler::initMMap()
 {
   struct v4l2_requestbuffers req;
-  memset(&(req), 0, sizeof (v4l2_requestbuffers));
-  req.count = 5; // number of internal buffers, since we use debug images that should be quite big
+  memset(&req, 0, sizeof(v4l2_requestbuffers));
+  
+  req.count = frameBufferCount; // number of internal buffers, since we use debug images that should be quite big
   req.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   req.memory = V4L2_MEMORY_MMAP;
 
   VERIFY(-1 != ioctl(fd, VIDIOC_REQBUFS, &req));
-  VERIFY(req.count >= 2);
+  VERIFY(req.count == frameBufferCount); 
 
-  buffers = (struct buffer*) calloc(req.count, sizeof (*buffers));
-  VERIFY(buffers);
-
-  for (n_buffers = 0; n_buffers < req.count; ++n_buffers)
+  for (size_t i = 0; i < req.count; ++i)
   {
     struct v4l2_buffer buf;
-    memset(&(buf), 0, sizeof (struct v4l2_buffer));
+    memset(&buf, 0, sizeof(buf));
+    
     buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     buf.memory = V4L2_MEMORY_MMAP;
-    buf.index = n_buffers;
+    buf.index = i;
 
     VERIFY(-1 != ioctl(fd, VIDIOC_QUERYBUF, &buf));
 
-    buffers[n_buffers].length = buf.length;
-    buffers[n_buffers].start = mmap(
+    buffers[i].length = buf.length;
+    buffers[i].start = mmap(
       NULL,  /* start anywhere */
       buf.length,
       PROT_READ | PROT_WRITE, /* required */
       MAP_SHARED, /* recommended */
       fd, buf.m.offset);
 
-    VERIFY(MAP_FAILED != buffers[n_buffers].start);
+    VERIFY(MAP_FAILED != buffers[i].start);
   }
 }
 
 void V4lCameraHandler::startCapturing()
 {
-  for (unsigned int i = 0; i < n_buffers; ++i)
+  // queue buffers
+  for (size_t i = 0; i < frameBufferCount; ++i)
   {
     struct v4l2_buffer buf;
-
-    memset(&(buf), 0, sizeof (struct v4l2_buffer));
+    memset(&buf, 0, sizeof(buf));
 
     buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-    buf.index = i;
     buf.memory = V4L2_MEMORY_MMAP;
+    buf.index = i;
 
     VERIFY(-1 != xioctl(fd, VIDIOC_QBUF, &buf));
   }
@@ -520,7 +518,7 @@ int V4lCameraHandler::readFrameMMaP()
   lastBuf = currentBuf;
 
   wasQueried = true;
-  ASSERT(currentBuf.index < n_buffers);
+  ASSERT(currentBuf.index < frameBufferCount);
   if(errorCode == 0) {
     return currentBuf.index;
   } else {
@@ -559,7 +557,7 @@ void V4lCameraHandler::get(Image& theImage)
         theImage.wrapImageDataYUV422((unsigned char*) buffers[currentBuf.index].start, currentBuf.bytesused);
         theImage.cameraInfo.cameraID = currentCamera;
         theImage.currentBuffer = currentBuf.index;
-        theImage.bufferCount = n_buffers;
+        theImage.bufferCount = frameBufferCount;
         theImage.timestamp =
           (unsigned int) ( (((unsigned long long)currentBuf.timestamp.tv_sec) * NaoTime::long_thousand +
                             ((unsigned long long)currentBuf.timestamp.tv_usec) / NaoTime::long_thousand) -
@@ -578,7 +576,7 @@ void V4lCameraHandler::stopCapturing()
 
 void V4lCameraHandler::uninitDevice()
 {
-  for (unsigned i = 0; i < n_buffers; ++i) {
+  for (size_t i = 0; i < frameBufferCount; ++i) {
     VERIFY(-1 != munmap(buffers[i].start, buffers[i].length));
   }
 

@@ -69,50 +69,58 @@ public:
 
   void init(std::string camDevice, CameraInfo::CameraID camID, bool blockingMode);
 
+  void shutdown();
+  bool isRunning();
+  
+  
   void get(Image& theImage);
   void getCameraSettings(CameraSettings& data, bool update = false);
-
-  void shutdown();
-
-  bool isRunning();
-  void setAllCameraParams(const CameraSettings &data);
+  void setAllCameraParams(const CameraSettings& data);
 
 private:
-  void initIDMapping();
-  void openDevice(bool blockingMode);
 
+  void openDevice(bool blockingMode);
   void initDevice();
   void initMMap();
   void startCapturing();
-  int readFrame();
-  int readFrameMMaP();
-
+  
   void stopCapturing();
   void uninitDevice();
   void closeDevice();
+  
+  
+  int readFrame();
+  int readFrameMMaP();
 
+  
+  //settings
+  void initIDMapping();
+  
   int getSingleCameraParameter(int id);
   bool setSingleCameraParameter(int id, int value, std::string name);
   void setFPS(int fpsRate);
   void internalUpdateCameraSettings();
-
+  int getAutoExposureGridID(size_t i, size_t j) {
+    return V4L2_CID_PRIVATE_BASE + 7 + (i*CameraSettings::AUTOEXPOSURE_GRID_SIZE) + j;
+  }
+  
+  
   // tools
   int xioctl(int fd, int request, void* arg) const;
   bool hasIOErrorPrint(int lineNumber, int errOccured, int errNo, bool exitByIOError = true);
 
-  int getAutoExposureGridID(size_t i, size_t j) {
-    return V4L2_CID_PRIVATE_BASE + 7 + (i*CameraSettings::AUTOEXPOSURE_GRID_SIZE) + j;
-  }
+private: // data members
 
   std::string cameraName;
 
   /** The camera file descriptor */
   int fd;
 
+  /** Amount of available frame buffers. */
+  static const constexpr unsigned frameBufferCount = 5; 
+  
   /** Image buffers (v4l2) */
-  struct buffer* buffers;
-  /** Buffer number counter */
-  unsigned int n_buffers;
+  struct buffer buffers[frameBufferCount];
 
   struct v4l2_buffer currentBuf;
   struct v4l2_buffer lastBuf;
