@@ -130,7 +130,6 @@ private: // data members
   bool initialParamsSet;
   bool wasQueried;
   bool isCapturing;
-  bool bufferSwitched;
   bool blockingCaptureModeEnabled;
 
 

@@ -59,7 +59,6 @@ V4lCameraHandler::V4lCameraHandler()
   initialParamsSet(false),
   wasQueried(false),
   isCapturing(false),
-  bufferSwitched(false),
   blockingCaptureModeEnabled(false),
   lastCameraSettingTimestamp(0),
   error_count(0)
@@ -415,7 +414,6 @@ void V4lCameraHandler::startCapturing()
   // initialize internal state
   isCapturing = true;
   wasQueried = false;
-  bufferSwitched = true;
   lastBuf = currentBuf;
   atLeastOneImageRetrieved = false;
 }
@@ -453,17 +451,13 @@ int V4lCameraHandler::readFrame()
   //not the first frame and the buffer changed last frame
   if (wasQueried)
   {
-    //no => did the buffer index change?
-    if(bufferSwitched)
-    {
-      //put buffer back in the drivers incoming queue
-      if(blockingCaptureModeEnabled) {
-        VERIFY(-1 != xioctl(fd, VIDIOC_QBUF, &lastBuf));
-      } else {
-        xioctl(fd, VIDIOC_QBUF, &lastBuf);
-      }
-      //std::cout << "give buffer to driver" << std::endl;
+    //put buffer back in the drivers incoming queue
+    if(blockingCaptureModeEnabled) {
+      VERIFY(-1 != xioctl(fd, VIDIOC_QBUF, &lastBuf));
+    } else {
+      xioctl(fd, VIDIOC_QBUF, &lastBuf);
     }
+    //std::cout << "give buffer to driver" << std::endl;
   }
 
   struct v4l2_buffer buf;
@@ -473,7 +467,7 @@ int V4lCameraHandler::readFrame()
 
   
   // in blocking mode, wait up to a second for new image data
-  const unsigned int maxWaitingTime = blockingCaptureModeEnabled ? 1000 : 5; 
+  const unsigned int maxWaitingTime = blockingCaptureModeEnabled ? 1000 : 1000; 
   // wait for available data via poll
   pollfd pollfds[1] =
   {
