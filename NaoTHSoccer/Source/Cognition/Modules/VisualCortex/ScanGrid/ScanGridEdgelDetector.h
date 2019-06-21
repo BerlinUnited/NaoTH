@@ -205,6 +205,10 @@ private:
                                const std::vector<Vector2i>& poly_points)
   {
     size_t end_idx = (idx+1) % poly_points.size();
+    if(poly_points[idx] == poly_points[end_idx]) {
+      idx = end_idx;
+      end_idx = (idx+1) % poly_points.size();
+    }
     result = Math::LineSegment(
       poly_points[idx],
       poly_points[end_idx]
@@ -216,6 +220,10 @@ private:
                                const std::vector<Vector2i>& poly_points)
   {
     size_t end_idx = (idx==0)? poly_points.size()-1: idx-1;
+    if(poly_points[idx] == poly_points[end_idx]) {
+      idx = end_idx;
+      end_idx = (idx==0)? poly_points.size()-1: idx-1;
+    }
     result = Math::LineSegment(
       poly_points[idx],
       poly_points[end_idx]

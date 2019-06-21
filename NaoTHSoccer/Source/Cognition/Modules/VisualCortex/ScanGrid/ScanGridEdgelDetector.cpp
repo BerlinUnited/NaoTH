@@ -271,6 +271,13 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
   Math::LineSegment polyLineRight;
   poly_idx_right = next_poly_line(poly_idx_right, polyLineRight, poly_points);
 
+  /*DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_field_intersections",
+    LINE_PX(ColorClasses::yellow, (int) polyLineLeft.begin().x, (int) polyLineLeft.begin().y,
+                                  (int) polyLineLeft.end().x, (int) polyLineLeft.end().y);
+    LINE_PX(ColorClasses::green, (int) polyLineRight.begin().x, (int) polyLineRight.begin().y,
+                                 (int) polyLineRight.end().x, (int) polyLineRight.end().y);
+  );*/
+
   int x, y, end_x, luma, prevLuma, gradient, prevPoint;
   int scan_id = 0;
 
@@ -317,7 +324,7 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
         x = (int) intersection.x;
 
         DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_field_intersections",
-          CIRCLE_PX(ColorClasses::red, x, scanline.y, 2);
+          CIRCLE_PX(ColorClasses::red, x, scanline.y, 3);
         );
       }
 
