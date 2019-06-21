@@ -81,6 +81,9 @@ private:
             PARAMETER_REGISTER(step_time, &Parameters::setStepTime) = 250;
             PARAMETER_REGISTER(step_distance, &Parameters::setStepDistance) = 80;
             PARAMETER_REGISTER(turn_angle, &Parameters::setTurnAngle) = 30;
+
+            // load from the file after registering all parameters
+            syncWithConfig();
         }
 
         double striker_ball_lost_time;
