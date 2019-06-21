@@ -112,6 +112,7 @@ include "Options/Soccer/Path2018/path_go_to_ball_with_foot_dynamic.xabsl";
 include "Options/Soccer/Path2018/path_long_kick.xabsl";
 include "Options/Soccer/Path2018/path_short_kick.xabsl";
 include "Options/Soccer/Path2018/path_sidekick.xabsl";
+include "Options/Soccer/Path2018/path2018_go_to_point_with_USOA.xabsl";
 
 // Old Striker
 include "Options/Soccer/SPL/striker.xabsl";
