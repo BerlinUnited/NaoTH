@@ -8,16 +8,16 @@ option pathplanner2018_sidestep{
   initial state idle {
     decision {
       else
-        goto sidestep;
+        goto sidestep_left;
     }
     action {
       situation_abortable = true;
     }
   }
   
-  state sidestep {
+  state sidestep_left {
     decision {
-      else if (state_time > 1000)
+      else if (state_time > 15000)
         goto stand;
       else
         stay;
@@ -25,13 +25,42 @@ option pathplanner2018_sidestep{
     action {
       situation_abortable = false;
       path2018.routine = sidestep;
+      path.direction = 1;
     }
   }
 
   state stand {
+     decision {
+       else if (executed_motion.type == stand)
+          goto sidestep_right;
+       else
+          stay;
+     }
      action {
       head.control_mode = look_straight_ahead;
       motion.type = stand;
     }
   }
+
+  state sidestep_right {
+    decision {
+      else if (state_time > 15000)
+        goto finish;
+      else
+        stay;
+    }
+    action {
+      situation_abortable = false;
+      path2018.routine = sidestep;
+      path.direction = -1;
+    }
+  }
+
+  state finish {
+    action {
+      head.control_mode = look_straight_ahead;
+      motion.type = stand;
+    }
+  }
 }
+
