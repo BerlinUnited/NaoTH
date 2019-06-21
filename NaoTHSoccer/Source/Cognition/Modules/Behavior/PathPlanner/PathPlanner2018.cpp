@@ -212,12 +212,14 @@ bool PathPlanner2018::nearApproach_forwardKick(const Foot& foot, const double of
     Vector2d targetPos;
     Coordinate coordinate = Coordinate::Hip;
 
-    if (foot == Foot::RIGHT)
+    //if (foot == Foot::RIGHT)
+    if (getBallModel().positionPreview.y < 0)
     {
       ballPos    = getBallModel().positionPreviewInRFoot;
       coordinate = Coordinate::RFoot;
     }
-    else if (foot == Foot::LEFT)
+    //else if (foot == Foot::LEFT)
+    else if (getBallModel().positionPreview.y >= 0)
     {
       coordinate = Coordinate::LFoot;
       ballPos    = getBallModel().positionPreviewInLFoot;
