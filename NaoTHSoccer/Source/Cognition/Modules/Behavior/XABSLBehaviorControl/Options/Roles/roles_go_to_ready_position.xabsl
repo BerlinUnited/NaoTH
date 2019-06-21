@@ -19,7 +19,7 @@ option roles_go_to_ready_position
         stay;
     }
     action {
-      go_to_point_with_USOA(
+      path2018_go_to_point_with_USOA(
         x=strategy.position.own.x,
         y=strategy.position.own.y,
         rot=0);
@@ -32,7 +32,7 @@ option roles_go_to_ready_position
         stay;
     }
     action {
-      go_to_point_with_USOA(
+      path2018_go_to_point_with_USOA(
         x=strategy.position.opp.x,
         y=strategy.position.opp.y,
         rot=0);

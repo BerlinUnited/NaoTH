@@ -54,7 +54,7 @@ y    ------b------        #      ------b------     -y
     action {
       // TODO: what happens, if the robot is near a side/groundline/penalty area?!
       // position on the line between the avoidance-position and the goal center
-      go_to_point_with_USOA(x=field.xPosOwnGroundline+(@x-field.xPosOwnGroundline) - ((@distance+100)*(@x-field.xPosOwnGroundline))/vector.abs(x=(@x-field.xPosOwnGroundline), y=@y), 
+      path2018_go_to_point_with_USOA(x=field.xPosOwnGroundline+(@x-field.xPosOwnGroundline) - ((@distance+100)*(@x-field.xPosOwnGroundline))/vector.abs(x=(@x-field.xPosOwnGroundline), y=@y), 
                             y=@y - ((@distance+100)*@y)/vector.abs(x=(@x-field.xPosOwnGroundline), y=@y), 
                             rot=atan2(y = @y-robot_pose.y, x = @x-robot_pose.x)
                             );
@@ -85,7 +85,7 @@ y    ------b------        #      ------b------     -y
     }
     action {
       // TODO: what happens, if the robot is near a side/groundline/penalty area?!
-      go_to_point_with_USOA(x=@x-@distance,
+      path2018_go_to_point_with_USOA(x=@x-@distance,
                             y=freekick_const_pos,
                             rot=atan2(y = @y-robot_pose.y, x = @x-robot_pose.x));
     }
@@ -116,7 +116,7 @@ y    ------b------        #      ------b------     -y
     action {
       // TODO: what happens, if the robot is near a side/groundline?!
       // TODO: how do we rotate?!?
-      go_to_point_with_USOA(x=freekick_const_pos,
+      path2018_go_to_point_with_USOA(x=freekick_const_pos,
                             y=@y+(@y<0?@distance:-@distance),
                             rot=atan2(y = @y-robot_pose.y, x = @x-robot_pose.x));
     }
@@ -140,7 +140,7 @@ y    ------b------        #      ------b------     -y
     action {
       // TODO: what happens, if the robot is near a side/groundline?!
       // depending on which coordinate is closer, we move back in x-direction or y-direction
-      go_to_point_with_USOA(x=abs(value=robot_pose.x-@x) <= abs(value=robot_pose.y-@y)?             @x-250                 : (@x+@distance),
+      path2018_go_to_point_with_USOA(x=abs(value=robot_pose.x-@x) <= abs(value=robot_pose.y-@y)?             @x-250                 : (@x+@distance),
                             y=abs(value=robot_pose.x-@x) <= abs(value=robot_pose.y-@y)? (@y+(@y<0?-@distance:@distance))   :       @y,
                             rot=atan2(y = @y-robot_pose.y, x = @x-robot_pose.x));
     }

@@ -53,7 +53,7 @@ option role_free_kick_own_goal
     {
       // the Goal Spot is in line with the penalty spot and side-edge of the penalty box
       // we position us on the corner of the penalty box, so we can reach the ball easily and doesn't touch it before
-      go_to_point_with_USOA(
+      path2018_go_to_point_with_USOA(
         x=field.xPosOwnPenaltyArea,
         y=ball.position.field.y >= 0 ? field.yPosLeftPenaltyArea : field.yPosRightPenaltyArea,
         rot=0);
