@@ -109,7 +109,7 @@ option path_striker2018
     //    goto long_kick;
     else if(attack.best_action == kick_short)
     {
-      if(random() > 0.3)
+      if(random() > 0.0)
       {
         if (ball.preview.y > 0)
           goto forwardkick_left;
