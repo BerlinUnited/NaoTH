@@ -203,7 +203,7 @@ bool PathPlanner2018::farApproach()
   return false;
 }
 
-bool PathPlanner2018::nearApproach_forwardKick(const Foot& foot, const double offsetX, const double offsetY)
+bool PathPlanner2018::nearApproach_forwardKick(const Foot& /*foot*/, const double offsetX, const double offsetY)
 {
   // Always execute the steps that were planned before planning new steps
   if (stepBuffer.empty())
