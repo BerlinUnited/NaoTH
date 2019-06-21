@@ -407,7 +407,8 @@ void PathPlanner2018::forwardKick(const Foot& foot)
   if (/*stepBuffer.empty() && */!kickPlanned)
   {
     stepBuffer.clear();
-
+     
+    //TODO warum ist nur hier die koordinate und kickfuss unterschiedlich?
     Coordinate coordinate = Coordinate::Hip;
     if (foot == Foot::RIGHT)
     {
