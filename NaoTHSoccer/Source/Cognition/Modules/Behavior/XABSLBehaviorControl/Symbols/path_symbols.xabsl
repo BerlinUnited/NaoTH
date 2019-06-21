@@ -3,10 +3,10 @@ namespace path_symbols("PathPlanner Symbols") {
   enum path.routine
   {
     none,
-    go_to_ball_fast,
-    go_to_ball_slow,
-    approach_ball_right,
-    approach_ball_left,
+    go_to_ball_fast, // should go to path2018
+    go_to_ball_slow, // should go to path2018
+    approach_ball_right, //TODO what about this?
+    approach_ball_left, //TODO what about this?
     move_around_ball,
     short_kick_right,
     short_kick_left,
@@ -23,7 +23,8 @@ namespace path_symbols("PathPlanner Symbols") {
     forwardkick_left,
     forwardkick_right,
     sidekick_left,
-    sidekick_right
+    sidekick_right,
+    sidestep
   };
 
 

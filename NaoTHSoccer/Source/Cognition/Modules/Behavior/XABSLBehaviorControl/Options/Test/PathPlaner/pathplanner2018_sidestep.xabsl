@@ -1,0 +1,66 @@
+option pathplanner2018_sidestep{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+
+  initial state idle {
+    decision {
+      else
+        goto sidestep_left;
+    }
+    action {
+      situation_abortable = true;
+    }
+  }
+  
+  state sidestep_left {
+    decision {
+      else if (state_time > 15000)
+        goto stand;
+      else
+        stay;
+    }
+    action {
+      situation_abortable = false;
+      path2018.routine = sidestep;
+      path.direction = 1;
+    }
+  }
+
+  state stand {
+     decision {
+       else if (executed_motion.type == stand)
+          goto sidestep_right;
+       else
+          stay;
+     }
+     action {
+      head.control_mode = look_straight_ahead;
+      motion.type = stand;
+    }
+  }
+
+  state sidestep_right {
+    decision {
+      else if (state_time > 15000)
+        goto finish;
+      else
+        stay;
+    }
+    action {
+      situation_abortable = false;
+      path2018.routine = sidestep;
+      path.direction = -1;
+    }
+  }
+
+  state finish {
+    action {
+      head.control_mode = look_straight_ahead;
+      motion.type = stand;
+    }
+  }
+}
+
