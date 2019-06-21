@@ -260,11 +260,11 @@ void NoGreenObstacleDetector::execute()
         stringStream.str("");
 
         stringStream << green_density_left * 100 << '%';
-        TEXT_DRAWING(detector.edges[0].x, detector.edges[0].y - 1000, stringStream.str());
+        TEXT_DRAWING(detector.edges[0].x, detector.edges[0].y + 1000, stringStream.str());
         stringStream.str("");
 
         stringStream << green_density_right * 100 << '%';
-        TEXT_DRAWING(detector.edges[0].x, detector.edges[0].y + 1000, stringStream.str());
+        TEXT_DRAWING(detector.edges[0].x, detector.edges[0].y - 1000, stringStream.str());
       );
 
       // set representation if detector is occupied

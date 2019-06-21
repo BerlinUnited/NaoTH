@@ -102,16 +102,16 @@ public:
 
   int greenLeft(const BallDetectorIntegralImage& integralImage) {
     int factor = integralImage.FACTOR;
-    int halfY = (maxY() - minY()) / 2;
+    int halfX = (maxX() - minX()) / 2;
     // HACK: not correct because of integer division
-    return integralImage.getSumForRect(minX()/factor, minY()/factor, maxX()/factor, (maxY()-halfY)/factor, 1) * (factor * factor);
+    return integralImage.getSumForRect(minX()/factor, minY()/factor, (maxX()-halfX)/factor, maxY()/factor, 1) * (factor * factor);
   }
 
   int greenRight(const BallDetectorIntegralImage& integralImage) {
     int factor = integralImage.FACTOR;
-    int halfY = (maxY() - minY()) / 2;
+    int halfX = (maxX() - minX()) / 2;
     // HACK: not correct because of integer division
-    return integralImage.getSumForRect(minX()/factor, (minY()+halfY)/factor, maxX()/factor, maxY()/factor, 1) * (factor * factor);
+    return integralImage.getSumForRect((minX()+halfX)/factor, minY()/factor, maxX()/factor, maxY()/factor, 1) * (factor * factor);
   }
 };
 
