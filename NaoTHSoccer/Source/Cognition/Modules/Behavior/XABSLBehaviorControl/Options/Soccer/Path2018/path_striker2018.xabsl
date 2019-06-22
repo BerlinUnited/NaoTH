@@ -150,7 +150,7 @@ option path_striker2018
     action
     {
       path2018.routine = forwardkick_right;
-      path.xOffset = 120; // + ball.radius;
+      path.xOffset = 120; // pathplanner adds ball.radius - this could be done here
       path.yOffset = 0;
       head.control_mode = search_for_ball;
     }
@@ -168,7 +168,7 @@ option path_striker2018
     action
     {
       path2018.routine = forwardkick_left;
-      path.xOffset = 120; // + ball.radius;
+      path.xOffset = 120; // pathplanner adds ball.radius - this could be done here
       path.yOffset = 0;
       head.control_mode = search_for_ball;
     }
