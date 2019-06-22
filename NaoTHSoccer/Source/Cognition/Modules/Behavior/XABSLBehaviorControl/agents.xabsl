@@ -190,6 +190,7 @@ include "Options/Test/WalkAgents/obstacle_agent.xabsl";
 include "Options/Test/WalkAgents/dribble_agent.xabsl";
 include "Options/Test/WalkAgents/walk_forward_agent.xabsl";
 include "Options/Test/WalkAgents/turn_look_at_preview_angle_agent.xabsl";
+include "Options/Test/WalkAgents/intercept_agent.xabsl";
 
 // Test agents PathPlanner
 include "Options/Test/PathPlannerAgents/pathplanner_test_sidekick_agent.xabsl";
@@ -257,6 +258,7 @@ include "Options/Test/walk/turn_around_ball_test.xabsl";
 include "Options/Test/walk/dribble.xabsl";
 include "Options/Test/walk/walk_forward.xabsl";
 include "Options/Test/walk/turn_look_at_preview_angle.xabsl";
+include "Options/Test/walk/test_intercept_sideways.xabsl";
 
 // Test role change
 include "Options/Test/strategy/role_change_test.xabsl";
