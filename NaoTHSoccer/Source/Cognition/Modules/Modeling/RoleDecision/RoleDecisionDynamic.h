@@ -133,7 +133,7 @@ private:
         void setStrikerIndicatorFunction(std::string variant) {
             if(variant.compare("distance") == 0) { // distance
                 strikerIndicatorFn = &RoleDecisionDynamic::strikerIndicatorDistance;
-            } else if(variant.compare("time") == 0) { // priodist
+            } else if(variant.compare("time") == 0) { // time
                 strikerIndicatorFn = &RoleDecisionDynamic::strikerIndicatorTimeToBall;
             } else {
                 // backup, in case something went wrong

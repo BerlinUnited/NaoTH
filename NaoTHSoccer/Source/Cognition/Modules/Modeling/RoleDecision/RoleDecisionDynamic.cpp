@@ -101,6 +101,7 @@ void RoleDecisionDynamic::decideStriker(std::map<unsigned int, Roles::Dynamic>& 
 
 bool RoleDecisionDynamic::goalieStrikerDecisionWants(const TeamMessageData* goalie, std::vector<Striker>& /*striker*/)
 {
+    // NOTE: this only works if the goalie actually sets the flag!
     return goalie->custom.wantsToBeStriker;
 }
 
