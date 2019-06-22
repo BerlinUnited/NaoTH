@@ -45,6 +45,7 @@ public:
     MOVE_AROUND_BALL,
     FORWARDKICK_LEFT,
     FORWARDKICK_RIGHT,
+    DRIBBLE_KICK,
     SIDEKICK_LEFT,
     SIDEKICK_RIGHT,
     SIDESTEP
@@ -130,6 +131,9 @@ public:
       break;
     case PathPlanner2018Routine::SIDESTEP:
       path_type2018 = "sidestep";
+      break;
+    case PathPlanner2018Routine::DRIBBLE_KICK:
+      path_type2018 = "dribble_kick";
       break;
     }
 

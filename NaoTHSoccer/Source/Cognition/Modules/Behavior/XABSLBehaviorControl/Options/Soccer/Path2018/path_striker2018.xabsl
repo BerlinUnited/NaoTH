@@ -76,6 +76,8 @@ option path_striker2018
           else
             goto forwardkick_right;
         }
+        else if(attack.best_action == dribble_kick)
+          goto forwardkick_right;
         else if(attack.best_action == sidekick_left)
           //goto sidekick_left;
           goto turn;
@@ -136,6 +138,22 @@ option path_striker2018
       // PathPlanner2018 stuff was hacked in there
       path_turn_to_attack_direction();
     }
+  }
+  state dribble_kick
+  {
+    decision
+    {
+      else if (path.kick_executed)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action
+    {
+      path2018.routine = dribble_kick;
+      head.control_mode = search_for_ball;
+    }
+  
   }
 
   state forwardkick_right
@@ -214,7 +232,8 @@ option path_striker2018
     action
     {
       path2018.routine = none;
-      situation_abortable = false;
+      
+situation_abortable = false;
       
       //look at percept
       head.control_mode = look_at_ball_percept;

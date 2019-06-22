@@ -61,7 +61,8 @@ namespace strategy("Strategy Symbols") {
     kick_short,
     kick_long,
     sidekick_left,
-    sidekick_right
+    sidekick_right,
+    dribble_kick
   };
 
   enum attack.action_type input attack.best_action;

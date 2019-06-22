@@ -101,6 +101,12 @@ void PathPlanner2018::execute()
     break;
   case PathModel::PathPlanner2018Routine::SIDESTEP:
     sidesteps(Foot::RIGHT, getPathModel().direction);
+    break;
+  case PathModel::PathPlanner2018Routine::DRIBBLE_KICK:
+    if (nearApproach_forwardKick(Foot::RIGHT, 0.0, 0.0)){
+      kickPlanned = true;
+    }
+    break;
   }//end switch
 
   // Always executed last
@@ -246,6 +252,7 @@ bool PathPlanner2018::sidesteps(const Foot& foot, const double direction){
   }
 
 }
+
 bool PathPlanner2018::nearApproach_forwardKick(const Foot& foot, const double offsetX, const double offsetY)
 {
   // Always execute the steps that were planned before planning new steps

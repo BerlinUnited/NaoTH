@@ -24,7 +24,8 @@ namespace path_symbols("PathPlanner Symbols") {
     forwardkick_right,
     sidekick_left,
     sidekick_right,
-    sidestep
+    sidestep,
+    dribble_kick
   };
 
 
