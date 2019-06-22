@@ -281,7 +281,9 @@ bool PathPlanner2018::nearApproach_forwardKick(const Foot& /*foot*/, const doubl
         // generate a correction step
       double translation_xy = params.stepLength;
 
-      //TODO why - std::abs(targetPos.y) => das heißt doch wenn der ball in der y richtung springt wird ein schritt zurück geplant und ausgeführt
+      //std::abs(targetPos.y) => das heißt doch wenn der ball in der y richtung springt wird ein schritt zurück geplant und ausgeführt
+      // das ist dafür das das er an den ball anlaufen kann ohne zu rotieren. Wenn man nah am ball ist wird angenommen das die Rotation
+      //stimmt und dann soll diese auch nicht korrigiert werden
       double translation_x = std::min(translation_xy, targetPos.x - std::abs(targetPos.y));
       double translation_y = std::min(translation_xy, std::abs(targetPos.y)) * (targetPos.y < 0 ? -1 : 1);
 
@@ -308,10 +310,10 @@ bool PathPlanner2018::nearApproach_forwardKick(const Foot& /*foot*/, const doubl
 
   return false;
 }
-
-// TODO: Has to work without rotation (like nearApproach_forwardKick)
+   
 bool PathPlanner2018::nearApproach_sideKick(const Foot& foot, const double offsetX, const double offsetY)
 {
+  // TODO: Has to work without rotation (like nearApproach_forwardKick)
   // Always execute the steps that were planned before planning new steps
   if (stepBuffer.empty())
   {
