@@ -42,8 +42,6 @@ BEGIN_DECLARE_MODULE(BallSymbols)
   REQUIRE(RobotPose)
   REQUIRE(OdometryData)
   REQUIRE(MotionStatus)
-
-  REQUIRE(KinematicChain)
 END_DECLARE_MODULE(BallSymbols)
 
 class BallSymbols: public BallSymbolsBase
