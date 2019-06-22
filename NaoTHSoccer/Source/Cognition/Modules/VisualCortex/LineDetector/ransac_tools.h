@@ -18,29 +18,17 @@ double angle_variance(const std::vector<Edgel>& edgels,
 
 class LineModel {
 public:
-  size_t id1;
-  size_t id2;
-
   int inlier;
   double inlierError;
 
   Math::Line line;
 
-  LineModel() : id1(0), id2(0), inlier(0), inlierError(0) {}
+  LineModel() : inlier(0), inlierError(0) {}
 
-  // FIXME: why not pass the const Edgel& edgel1 and const Edgel& edgel2 directly, like in estimate circle?
-  //        Nobody seems to be using the id1 and id2
-  //LineModel(const Edgel& e1, const Edgel& e2) : inlier(0), inlierError(0), line(e1.point, e2.point - e1.point) {}
-
-  LineModel(size_t id1, size_t id2, const std::vector<Edgel>& edgels) :
-    id1(id1),
-    id2(id2),
+  LineModel(const Edgel& edgel1, const Edgel& edgel2) :
     inlier(0),
     inlierError(0)
   {
-    const Edgel& edgel1 = edgels[id1];
-    const Edgel& edgel2 = edgels[id2];
-
     line = Math::Line(edgel1.point, edgel2.point-edgel1.point);
   }
 
@@ -65,30 +53,19 @@ public:
   double minDirectionSimilarity;
   double outlierThresholdDist;
 
-private:
-  // FIXME: why do edgel_idx need to be a member, but std::vector<Edgel>& edgels not?
-  std::vector<size_t> edgel_idx;
-
 public:
-  RansacLine(int iterations,
-             double minDirectionSimilarity, double outlierThresholdDist);
-  RansacLine(std::vector<size_t>& edgel_idx, int iterations,
-             double minDirectionSimilarity, double outlierThresholdDist);
+  RansacLine(int iterations, double minDirectionSimilarity, double outlierThresholdDist);
 
   void setParameters(int iterations, double minDirectionSimilarity,
                      double outlierThresholdDist);
 
-  bool find_best_model(LineModel& bestModel,
-                       const std::vector<Edgel>& edgels) const;
+  bool find_best_model(LineModel& bestModel, const std::vector<Edgel>& edgels,
+                       const std::vector<size_t>& edgel_idx) const;
 
-  void get_inliers(const LineModel& model,
-                   const std::vector<Edgel>& edgels,
+  void get_inliers(const LineModel& model, const std::vector<Edgel>& edgels,
+                   const std::vector<size_t>& edgel_idx,
                    std::vector<size_t>& inlier_idx,
                    std::vector<size_t>& outlier_idx) const;
-
-  void set_edgel_idx(std::vector<size_t>& edgel_idx) {
-    this->edgel_idx = edgel_idx;
-  }
 };
 
 
@@ -131,15 +108,8 @@ public:
 
   double radius;
 
-private:
-  // FIXME: why do edgel_idx need to be a member, but std::vector<Edgel>& edgels not?
-  std::vector<size_t> edgel_idx;
-
 public:
   RansacCircle(int iterations,
-               double outlierThresholdAngle, double outlierThresholdDist,
-               double radius);
-  RansacCircle(std::vector<size_t>& edgel_idx, int iterations,
                double outlierThresholdAngle, double outlierThresholdDist,
                double radius);
 
@@ -148,15 +118,13 @@ public:
                      double radius);
 
   bool find_best_model(CircleModel& best_model,
-                       const std::vector<Edgel>& edgels) const;
+                       const std::vector<Edgel>& edgels,
+                       const std::vector<size_t>& edgel_idx) const;
 
   void get_inliers(const CircleModel& model, const std::vector<Edgel>& edgels,
+                   const std::vector<size_t>& edgel_idx,
                    std::vector<size_t>& inlier_idx,
                    std::vector<size_t>& outlier_idx) const;
-
-  void set_edgel_idx(std::vector<size_t>& edgel_idx) {
-    this->edgel_idx = edgel_idx;
-  }
 };
 
 }// end namespace

@@ -53,20 +53,19 @@ void RansacLineDetector::execute()
 
   if(params.circle.enable)
   {
-    circleRansac.set_edgel_idx(outliers);
     // reset parameters
     circleRansac.setParameters(params.circle.maxIterations,
                                params.circle.outlierThresholdAngle,
                                params.circle.outlierThresholdDist,
                                getFieldInfo().centerCircleRadius);
     ransac::CircleModel model;
-    if(circleRansac.find_best_model(model, getLineGraphPercept().edgelsOnField)
+    if(circleRansac.find_best_model(model, getLineGraphPercept().edgelsOnField, outliers)
        && model.inlier >= params.circle.minInliers)
     {
       // get inliers and outliers of the model
       std::vector<size_t> new_outlier_idx;
       circleRansac.get_inliers(model, getLineGraphPercept().edgelsOnField,
-                               inlier_idx, new_outlier_idx);
+                               outliers, inlier_idx, new_outlier_idx);
       // continue with ransac on remaining outliers
       outliers = new_outlier_idx;
 
@@ -103,7 +102,6 @@ void RansacLineDetector::execute()
    * Ransac to detect lines in edgels
    *****/
 
-  lineRansac.set_edgel_idx(outliers);
   // reset parameters
   lineRansac.setParameters(params.line.maxIterations,
                            params.line.minDirectionSimilarity,
@@ -112,7 +110,7 @@ void RansacLineDetector::execute()
   for(int i = 0; i < params.line.maxLines; ++i)
   {
     ransac::LineModel model;
-    if(lineRansac.find_best_model(model, getLineGraphPercept().edgelsOnField) &&
+    if(lineRansac.find_best_model(model, getLineGraphPercept().edgelsOnField, outliers) &&
        model.inlier > params.line.minInliers)
     {
       inlier_idx.clear();
@@ -120,7 +118,7 @@ void RansacLineDetector::execute()
       // get inliers and outliers of the model
       std::vector<size_t> new_outlier_idx;
       lineRansac.get_inliers(model, getLineGraphPercept().edgelsOnField,
-                             inlier_idx, new_outlier_idx);
+                             outliers, inlier_idx, new_outlier_idx);
 
       // calculate edgel angle variance
       // -> edgels on the same line are expected to have a low angle variance
@@ -146,7 +144,6 @@ void RansacLineDetector::execute()
 
         // set search space to remaining outliers
         outliers = new_outlier_idx;
-        lineRansac.set_edgel_idx(outliers);
       } else {
         break; // model does not satisfy parameters
       }
