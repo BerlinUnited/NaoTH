@@ -1,6 +1,5 @@
-
-#ifndef _IntegralFieldDetector_H_
-#define _IntegralFieldDetector_H_
+#ifndef __IntegralFieldDetector_H_
+#define __IntegralFieldDetector_H_
 
 #include <ModuleFramework/Module.h>
 
@@ -48,6 +47,7 @@ class IntegralFieldDetector : private IntegralFieldDetectorBase
 {
 public:
 
+
   IntegralFieldDetector();
   virtual ~IntegralFieldDetector();
 
@@ -92,7 +92,8 @@ public:
   } params;
 
 private:
-  struct Cell {
+  class Cell{
+    public:
       int minX;
       int minY;
       int maxX;
@@ -132,5 +133,5 @@ private:
   DOUBLE_CAM_PROVIDE(IntegralFieldDetector, FieldPercept);
 };
 
-#endif  /* _IntegralFieldDetector_H_ */
+#endif  /* __IntegralFieldDetector_H_ */
 

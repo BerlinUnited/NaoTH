@@ -21,8 +21,6 @@ IntegralFieldDetector::~IntegralFieldDetector()
 
 void IntegralFieldDetector::execute(CameraInfo::CameraID id)
 {
-  getFieldPercept().reset();
-
   cameraID = id;
   if(!getBallDetectorIntegralImage().isValid()) {
     return;
@@ -30,31 +28,30 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
   endpoints.clear();
 
   factor = getBallDetectorIntegralImage().FACTOR;
-  const int width = getBallDetectorIntegralImage().getWidth();
-  const int height = getBallDetectorIntegralImage().getHeight();
+  int width = getBallDetectorIntegralImage().getWidth();
+  int height = getBallDetectorIntegralImage().getHeight();
 
-  const int grid_size = (cameraID==CameraInfo::Top ? params.grid_size_top:
-                                                     params.grid_size_bottom) / factor;
+  int grid_size = (cameraID==CameraInfo::Top ? params.grid_size_top:
+                                               params.grid_size_bottom) / factor;
 
   // determine number of grids
-  const int n_cells_horizontal = width / grid_size;
-  const int n_cells_vertical = height / grid_size;
+  int n_cells_horizontal = width / grid_size;
+  int n_cells_vertical = height / grid_size;
 
   // pixels lost due to integer division
   int rest_H = width - (n_cells_horizontal * grid_size);
   int rest_V = height - (n_cells_vertical * grid_size);
 
-  const int pixels_per_cell = grid_size * grid_size;
-  const int min_green = (int)(pixels_per_cell*params.proportion_of_green);
-  const int min_end_green = (int)(pixels_per_cell*params.end_proportion_of_green);
+  int pixels_per_cell = grid_size * grid_size;
+  int min_green = (int)(pixels_per_cell*params.proportion_of_green);
+  int min_end_green = (int)(pixels_per_cell*params.end_proportion_of_green);
 
   bool first = true;
   bool green_found = false;
   bool former_green = false;
   Cell last_green_cell;
   Cell cell;
-  for (cell.minX=0; cell.minX + grid_size-1 < width; cell.minX += grid_size) {
-    // FIXME: check whether the -1 is correct here with the use of integral image
+  for (cell.minX=0; cell.minX + grid_size-1 < width; cell.minX = cell.maxX + 1) {
     cell.maxX = cell.minX + grid_size-1;
     int horizon_height = std::max(
           (int) (getArtificialHorizon().point(toImage(cell.maxX)).y),
@@ -64,11 +61,10 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
 
     int skipped = 0;
     int successive_green = 0;
-    int rest = rest_V; // copy, because we need it several times
+    int rest = rest_V;
     int cell_number = 1;
     // scan up
-    for(cell.maxY = height-1; cell.maxY - grid_size + 1 >= min_scan_y; cell.maxY -= grid_size) {
-      // FIXME: check whether the -1 is correct here with the use of integral image
+    for(cell.maxY = height-1; cell.maxY - grid_size + 1 >= min_scan_y; cell.maxY = cell.minY - 1) {
       cell.minY = cell.maxY - grid_size + 1;
 
       // calculate number of green pixels in the cell
@@ -117,7 +113,8 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
     if(green_found){
       if(first) { // find the left most endpoint
         Vector2i left_endpoint;
-        find_endpoint(toImage(last_green_cell.minX), last_green_cell, left_endpoint);
+        find_endpoint(toImage(last_green_cell.minX),
+                      last_green_cell, left_endpoint);
         endpoints.push_back(left_endpoint);
         first = false;
       }
