@@ -18,6 +18,9 @@ MultiKalmanBallLocator::MultiKalmanBallLocator():
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_assignment",           "draws the assignment of the ball percept to the filter",           false);
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_final_ball",           "draws the final i.e. best model",                                  false);
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_last_known_ball",      "draws the last known ball", 	                                   false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_final_ball_postion_at_rest", "draws the final i.e. best model's rest position",                    false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_future_ball_positions",      "draws the estimated postions of the ball in the future in 1s steps", false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_covariance_ellipse",         "draws the ellipses representing the covariances",                    false);
 
     // Plotting Related Debug Requests
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:plot_prediction_error",     "plots the prediction errors in x (horizontal angle) and y (vertical angle)", false);
@@ -538,7 +541,7 @@ void MultiKalmanBallLocator::provideBallModel(const BallHypothesis& model)
   getBallModel().speed.x = x(1);
   getBallModel().speed.y = x(3);
 
-  //set preview ball model representation
+  // transform ball model into feet coordinates
   const Pose3D& lFoot = getKinematicChain().theLinks[KinematicChain::LFoot].M;
   const Pose3D& rFoot = getKinematicChain().theLinks[KinematicChain::RFoot].M;
 
@@ -554,25 +557,33 @@ void MultiKalmanBallLocator::provideBallModel(const BallHypothesis& model)
     Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
     getBallModel().last_known_ball = odometryDelta * getBallModel().last_known_ball;
   }
-
-  // provide motion previews
+  
+  //set preview ball model representation
   getBallModel().positionPreview = getMotionStatus().plannedMotion.hip / getBallModel().position;
   getBallModel().positionPreviewInLFoot = getMotionStatus().plannedMotion.lFoot / ballLeftFoot;
   getBallModel().positionPreviewInRFoot = getMotionStatus().plannedMotion.rFoot / ballRightFoot;
 
-  // predict future ball positions
-  const int BALLMODEL_MAX_FUTURE_SECONDS = 11;
-  getBallModel().futurePosition.resize(BALLMODEL_MAX_FUTURE_SECONDS);
-  getBallModel().futurePosition[0] = getBallModel().position;
+  // determine rest position
+  Eigen::Vector2d vel;
+  vel <<  x(1), x(3);
+  double abs_velocity = vel.norm();
 
   BallHypothesis modelCopy(model);
-  for(size_t i=1; i < getBallModel().futurePosition.size(); i++)
-  {
-    predict(modelCopy, 1.0); // predict 1s in the future
+  if(abs_velocity > epsilon){
+      double time_until_vel_zero = -abs_velocity / getFieldInfo().ballDeceleration;
+      Eigen::Vector2d u = vel.normalized() * getFieldInfo().ballDeceleration;
+      modelCopy.predict(u, time_until_vel_zero);
 
-    const Eigen::Vector4d& x = modelCopy.getState();
-    getBallModel().futurePosition[i] = Vector2d(x(0), x(2));
+      DEBUG_REQUEST("MultiKalmanBallLocator:draw_final_ball_postion_at_rest",
+          FIELD_DRAWING_CONTEXT;
+          PEN(Color(Color::black), 20);
+          CIRCLE(modelCopy.getState()(0), modelCopy.getState()(2), getFieldInfo().ballRadius-10);
+      );
   }
+
+  // set position at rest
+  getBallModel().position_at_rest.x = modelCopy.getState()(0);
+  getBallModel().position_at_rest.y = modelCopy.getState()(2);
 }
 
 void MultiKalmanBallLocator::doDebugRequestBeforPredictionAndUpdate()
@@ -604,7 +615,6 @@ void MultiKalmanBallLocator::doDebugRequestBeforUpdate()
 void MultiKalmanBallLocator::doDebugRequest()
 {
     //PLOT("MultiKalmanBallLocator:ModelIsValid", getBallModel().valid);
-
 
     //to check correctness of the prediction
     DEBUG_REQUEST("MultiKalmanBallLocator:draw_real_ball_percept",
@@ -651,6 +661,44 @@ void MultiKalmanBallLocator::doDebugRequest()
           CIRCLE( state(0), state(2), (*iter).ballSeenFilter.value()*1000);
         }
       );
+}
+
+void MultiKalmanBallLocator::drawFilter(const BallHypothesis& bh, const Color& model_color, Color cov_loc_color, Color cov_vel_color) const
+{
+    bool draw_covariances = false;
+    DEBUG_REQUEST("MultiKalmanBallLocator:draw_covariance_ellipse",
+        draw_covariances = true;
+    );
+
+    if(!draw_covariances) {
+        cov_loc_color[cov_loc_color.Alpha] = 0;
+        cov_vel_color[cov_vel_color.Alpha] = 0;
+    }
+
+    PEN(model_color.toString(),20);
+
+    const Eigen::Vector4d& state = bh.getState();
+
+    CIRCLE( state(0), state(2), getFieldInfo().ballRadius-10);
+    ARROW( state(0), state(2),
+           state(0)+state(1),
+           state(2)+state(3));
+
+    PEN(cov_loc_color.toString(), 20);
+    const Ellipse2d& ellipse_loc = bh.getEllipseLocation();
+    OVAL_ROTATED(state(0),
+                 state(2),
+                 ellipse_loc.minor,
+                 ellipse_loc.major,
+                 ellipse_loc.angle);
+
+    PEN(cov_vel_color, 20);
+    const Ellipse2d& ellipse_vel = bh.getEllipseVelocity();
+    OVAL_ROTATED(state(0)+state(1),
+                 state(2)+state(3),
+                 ellipse_vel.minor,
+                 ellipse_vel.major,
+                 ellipse_vel.angle);
 }
 
 void MultiKalmanBallLocator::drawFiltersOnField() const

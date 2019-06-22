@@ -26,6 +26,7 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugPlot.h"
+#include "Tools/Debug/Color.h"
 
 #include "Representations/Infrastructure/FieldInfo.h"
 
@@ -103,6 +104,7 @@ private:
     void doDebugRequest();
     void doDebugRequestBeforPredictionAndUpdate();
     void doDebugRequestBeforUpdate();
+    void drawFilter(const BallHypothesis& bh, const Color& model_color, Color cov_loc_color, Color cov_vel_color) const;
     void drawFiltersOnField() const;
     void reloadParameters();
 
@@ -172,7 +174,7 @@ private:
         double mahalanobisThreshold;
         double maximumLikelihoodThreshold;
 
-        struct{
+        struct {
             bool use_normal;
             bool use_cool;
             bool use_naive;
@@ -182,7 +184,6 @@ private:
             double factor;
             double offset;
         } area95Threshold_radius;
-
 
         bool use_covariance_based_selection;
     } kfParameters;

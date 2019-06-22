@@ -28,6 +28,11 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.last_known.x", &getBallModel().last_known_ball.x);
   engine.registerDecimalInputSymbol("ball.last_known.y", &getBallModel().last_known_ball.y);
 
+  engine.registerDecimalInputSymbol("ball.position_at_rest.x", &getBallModel().position_at_rest.x);
+  engine.registerDecimalInputSymbol("ball.position_at_rest.y", &getBallModel().position_at_rest.y);
+  engine.registerDecimalInputSymbol("ball.future.preview.x", &futureBallPreview.x);
+  engine.registerDecimalInputSymbol("ball.future.preview.y", &futureBallPreview.y);
+
   
   engine.registerBooleanInputSymbol("ball.know_where_itis", &getBallModel().knows);
   // HACK: right now know_where_itis is the same as see_where_itis
@@ -83,6 +88,8 @@ void BallSymbols::execute()
     PEN("0000FF", 20);
     CIRCLE(ballPerceptPos.x, ballPerceptPos.y, 50);
   );
+
+  futureBallPreview = getMotionStatus().plannedMotion.hip / getBallModel().position_at_rest;
 
   lastRobotOdometry = getOdometryData();
 }//end execute
