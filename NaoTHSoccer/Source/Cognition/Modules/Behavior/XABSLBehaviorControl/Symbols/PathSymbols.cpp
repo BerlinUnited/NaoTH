@@ -30,6 +30,7 @@ void PathSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumElement("path2018.routine", "path2018.routine.forwardkick_right", static_cast<int>(PathModel::PathPlanner2018Routine::FORWARDKICK_RIGHT));
   engine.registerEnumElement("path2018.routine", "path2018.routine.sidekick_left",     static_cast<int>(PathModel::PathPlanner2018Routine::SIDEKICK_LEFT));
   engine.registerEnumElement("path2018.routine", "path2018.routine.sidekick_right",    static_cast<int>(PathModel::PathPlanner2018Routine::SIDEKICK_RIGHT));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.sidestep",    static_cast<int>(PathModel::PathPlanner2018Routine::SIDESTEP));
 
   engine.registerEnumeratedOutputSymbol("path.routine", "path.routine", &setPathRoutine, &getPathRoutine);
   engine.registerEnumeratedOutputSymbol("path2018.routine", "path2018.routine", &setPathRoutine2018, &getPathRoutine2018);

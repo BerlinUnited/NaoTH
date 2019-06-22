@@ -47,7 +47,8 @@ public:
     FORWARDKICK_LEFT,
     FORWARDKICK_RIGHT,
     SIDEKICK_LEFT,
-    SIDEKICK_RIGHT
+    SIDEKICK_RIGHT,
+    SIDESTEP
   };
 
   PathRoutine path_routine;
@@ -128,6 +129,9 @@ public:
       break;
     case PathPlanner2018Routine::FORWARDKICK_RIGHT:
       path_type2018 = "forwardkick_right";
+      break;
+    case PathPlanner2018Routine::SIDESTEP:
+      path_type2018 = "sidestep";
       break;
     }
 

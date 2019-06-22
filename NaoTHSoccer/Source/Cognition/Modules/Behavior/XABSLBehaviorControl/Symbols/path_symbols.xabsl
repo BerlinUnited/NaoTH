@@ -23,7 +23,8 @@ namespace path_symbols("PathPlanner Symbols") {
     forwardkick_left,
     forwardkick_right,
     sidekick_left,
-    sidekick_right
+    sidekick_right,
+    sidestep
   };
 
 

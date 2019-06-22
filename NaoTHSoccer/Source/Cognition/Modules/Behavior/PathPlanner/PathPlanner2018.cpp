@@ -31,7 +31,7 @@ void PathPlanner2018::execute()
 
   // The kick has been executed
   // Tells XABSL to jump into next state
-  if (kickPlanned && stepBuffer.empty()) 
+  if (kickPlanned && stepBuffer.empty())
   {
     getPathModel().kick_executed = true;
   }
@@ -51,7 +51,7 @@ void PathPlanner2018::execute()
     }
 
     // TODO: should the stepBuffer just be cleared here no matter what?
-    if (stepBuffer.empty()) 
+    if (stepBuffer.empty())
     {
       return;
     }
@@ -95,7 +95,9 @@ void PathPlanner2018::execute()
       }
     }
     break;
-  }
+  case PathModel::PathPlanner2018Routine::SIDESTEP:
+    sidesteps(Foot::RIGHT, getPathModel().direction);
+  }//end switch
 
   // Always executed last
   executeStepBuffer();
@@ -203,6 +205,45 @@ bool PathPlanner2018::farApproach()
   return false;
 }
 
+bool PathPlanner2018::sidesteps(const Foot& foot, const double direction){
+  // Always execute the steps that were planned before planning new steps
+  if (stepBuffer.empty())
+  {
+    Coordinate coordinate = Coordinate::Hip;
+
+    if (foot == Foot::RIGHT)
+    {
+      coordinate = Coordinate::RFoot;
+    }
+    else if (foot == Foot::LEFT)
+    {
+      coordinate = Coordinate::LFoot;
+    }
+    else
+    {
+      ASSERT(false);
+    }
+    //TODO which motion parameters restrict this step?
+    StepBufferElement side_step;
+    side_step.setPose({ 0.0, 0.0, direction > 0.0 ? 100.0 : -100.0});
+    side_step.setStepType(StepType::WALKSTEP);
+    side_step.setCharacter(0.3);
+    side_step.setScale(1.0);
+    side_step.setCoordinate(coordinate);
+    side_step.setFoot(Foot::NONE);
+    side_step.setSpeedDirection(Math::fromDegrees(0.0));
+    side_step.setRestriction(RestrictionMode::SOFT);
+    side_step.setProtected(false);
+    side_step.setTime(400);
+
+    addStep(side_step);
+    return true;
+  }
+  else{
+    return false;
+  }
+
+}
 bool PathPlanner2018::nearApproach_forwardKick(const Foot& /*foot*/, const double offsetX, const double offsetY)
 {
   // Always execute the steps that were planned before planning new steps
@@ -237,7 +278,7 @@ bool PathPlanner2018::nearApproach_forwardKick(const Foot& /*foot*/, const doubl
     //TODO rewrite the condition from plan step if possible to dont plan steps if to close already
     if (std::abs(targetPos.x)  > params.forwardKickThreshold.x || std::abs(targetPos.y) > params.forwardKickThreshold.y)
     {
-	    // generate a correction step
+        // generate a correction step
       double translation_xy = params.stepLength;
 
       //TODO why - std::abs(targetPos.y) => das heißt doch wenn der ball in der y richtung springt wird ein schritt zurück geplant und ausgeführt
@@ -550,7 +591,7 @@ void PathPlanner2018::updateSpecificStep(const unsigned int index, StepBufferEle
 
 void PathPlanner2018::manageStepBuffer()
 {
-  if (stepBuffer.empty()) 
+  if (stepBuffer.empty())
   {
     return;
   }
@@ -571,7 +612,7 @@ void PathPlanner2018::manageStepBuffer()
     {
       lastStepType = "ZEROSTEP";
     }
-    
+
     std::cout << "Last executed step: " << lastStepType << " -- " << numPossibleSteps << " > " << params.readyForKickThreshold << " or " << numRotationStepsNecessary << " > " << numPossibleSteps << std::endl;
     */
 
@@ -584,7 +625,7 @@ void PathPlanner2018::executeStepBuffer()
 {
   STOPWATCH_START("PathPlanner2018:execute_steplist");
 
-  if (stepBuffer.empty()) 
+  if (stepBuffer.empty())
   {
     return;
   }
