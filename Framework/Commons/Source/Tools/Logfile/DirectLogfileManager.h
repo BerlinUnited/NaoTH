@@ -10,7 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
-#include "Tools/Debug/NaoThAssert.h"
+#include "Tools/Debug/NaoTHAssert.h"
 
 class DirectLogfileManager
 {
