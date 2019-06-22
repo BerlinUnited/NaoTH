@@ -400,13 +400,26 @@ bool PathPlanner2018::nearApproach_sideKick(const Foot& foot, const double offse
   return false;
 }
 
-void PathPlanner2018::forwardKick(const Foot& foot)
+void PathPlanner2018::forwardKick(const Foot& /*foot*/)
 {
   if (/*stepBuffer.empty() && */!kickPlanned)
   {
     stepBuffer.clear();
     
+    Foot debug_foot;
     Coordinate coordinate = Coordinate::Hip;
+    if (getBallModel().positionPreview.y < 0)
+    {
+      coordinate = Coordinate::LFoot;
+      debug_foot = Foot::RIGHT;
+    }
+    else
+    {
+      coordinate = Coordinate::RFoot;
+      debug_foot = Foot::LEFT;
+    }
+
+    /*
     if (foot == Foot::RIGHT)
     {
       coordinate = Coordinate::LFoot;
@@ -419,9 +432,10 @@ void PathPlanner2018::forwardKick(const Foot& foot)
     {
       ASSERT(false);
     }
-
+    */
+    
     // Correction step if the movable foot is different from the foot that is supposed to kick
-    if (getMotionStatus().stepControl.moveableFoot != (foot == Foot::RIGHT ? MotionStatus::StepControlStatus::RIGHT : MotionStatus::StepControlStatus::LEFT))
+    if (getMotionStatus().stepControl.moveableFoot != (getBallModel().positionPreview.y < 0 ? MotionStatus::StepControlStatus::RIGHT : MotionStatus::StepControlStatus::LEFT))
     {
       StepBufferElement forward_correction_step;
       forward_correction_step.debug_name = "forward_correction_step";
@@ -446,7 +460,7 @@ void PathPlanner2018::forwardKick(const Foot& foot)
     forward_kick_step.setCharacter(1.0);
     forward_kick_step.setScale(0.7);
     forward_kick_step.setCoordinate(coordinate);
-    forward_kick_step.setFoot(foot);
+    forward_kick_step.setFoot(debug_foot);
     forward_kick_step.setSpeedDirection(Math::fromDegrees(0.0));
     forward_kick_step.setRestriction(RestrictionMode::SOFT);
     forward_kick_step.setProtected(true);
