@@ -223,7 +223,7 @@ bool PathPlanner2018::sidesteps(const Foot& foot, const double direction){
     {
       ASSERT(false);
     }
-    //TODO which motion parameters restrict this step?
+
     StepBufferElement side_step;
     side_step.setPose({ 0.0, 0.0, direction > 0.0 ? 100.0 : -100.0});
     side_step.setStepType(StepType::WALKSTEP);
@@ -244,6 +244,7 @@ bool PathPlanner2018::sidesteps(const Foot& foot, const double direction){
   }
 
 }
+
 bool PathPlanner2018::nearApproach_forwardKick(const Foot& /*foot*/, const double offsetX, const double offsetY)
 {
   // Always execute the steps that were planned before planning new steps
