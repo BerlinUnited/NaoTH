@@ -28,26 +28,6 @@ double ransac::angle_variance(const std::vector<Edgel>& edgels,
 }
 
 
-LineModel::LineModel():
-id1(0),
-id2(0),
-inlier(0),
-inlierError(0)
-{
-}
-
-LineModel::LineModel(size_t id1, size_t id2, const std::vector<Edgel>& edgels):
-id1(id1),
-id2(id2),
-inlier(0),
-inlierError(0)
-{
-  const Edgel& edgel1 = edgels[id1];
-  const Edgel& edgel2 = edgels[id2];
-
-  line = Math::Line(edgel1.point, edgel2.point-edgel1.point);
-}
-
 bool LineModel::betterThan(const LineModel& other) const
 {
   return inlier > other.inlier ||
@@ -74,10 +54,6 @@ Math::LineSegment LineModel::getLineSegment(
   return Math::LineSegment(line.point(minT), line.point(maxT));
 }
 
-inline double LineModel::distance(const Edgel& edgel) const
-{
-  return line.minDistance(edgel.point);
-}
 
 // calculate the simmilarity to the edgel
 // returns a value [0,1], 0 - not simmilar, 1 - very simmilar
@@ -170,7 +146,10 @@ bool RansacLine::find_best_model(LineModel& bestModel,
     }
   }
 
-  if(bestModel.inlier) {
+  // FIXME: this check needs to be checked
+  //        bestModel is passed as an argument and is not necessary 0
+  //        also, this check can be performed by the caller, which makes it perhaps unnecessary here
+  if(bestModel.inlier > 0) {
     return true;
   }
   return false;
@@ -200,17 +179,6 @@ void RansacLine::get_inliers(const LineModel& model,
   }
 }// end get_inliers
 
-
-CircleModel::CircleModel(): inlier(0), inlierError(0), radius(0) {}
-
-CircleModel::CircleModel(double radius):
-  inlier(0), inlierError(0), radius(radius) {}
-
-CircleModel::CircleModel(Vector2d circle_mean, double radius):
-  inlier(0), inlierError(0), radius(radius)
-{
-  this->circle_mean = circle_mean;
-}
 
 inline bool CircleModel::estimateCircle(const Edgel& a, const Edgel& b)
 {
@@ -293,18 +261,19 @@ Vector2d CircleModel::refine(const std::vector<Edgel>& edgels,
 
 RansacCircle::RansacCircle(int iterations, double outlierThresholdAngle,
                            double outlierThresholdDist, double radius):
-iterations(iterations),
-outlierThresholdAngle(outlierThresholdAngle),
-outlierThresholdDist(outlierThresholdDist),
-radius(radius) {}
+  iterations(iterations),
+  outlierThresholdAngle(outlierThresholdAngle),
+  outlierThresholdDist(outlierThresholdDist),
+  radius(radius) 
+{}
 
 RansacCircle::RansacCircle(std::vector<size_t>& edgel_idx, int iterations,
                            double outlierThresholdAngle,
                            double outlierThresholdDist, double radius):
-iterations(iterations),
-outlierThresholdAngle(outlierThresholdAngle),
-outlierThresholdDist(outlierThresholdDist),
-radius(radius)
+  iterations(iterations),
+  outlierThresholdAngle(outlierThresholdAngle),
+  outlierThresholdDist(outlierThresholdDist),
+  radius(radius)
 {
   this->edgel_idx = edgel_idx;
 }
@@ -374,7 +343,7 @@ void RansacCircle::get_inliers(const CircleModel& model,
   for(size_t idx: edgel_idx)
   {
     double distError = 0.0;
-    // Less strict outlierThresholdAngle then acquiring inliers
+    // NOTE: Less strict outlierThresholdAngle then acquiring inliers
     if(model.isInlier(edgels[idx], distError,
                       3.0*outlierThresholdAngle, outlierThresholdDist))
     {
