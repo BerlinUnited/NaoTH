@@ -1,0 +1,31 @@
+/** The root option of the soccer behavior */
+option soccer_agent {
+
+  common decision
+  {
+    if (game.phase == penaltyshoot)
+        goto penalty_shootout;
+     else if (game.phase == normal)
+        goto normal_soccer;
+  }
+  
+  initial state idle{
+    decision {
+      else
+        goto normal_soccer;
+    }
+    action {}
+  }
+
+  state normal_soccer{
+    action {
+      roles_spl_play_soccer();
+    }
+  }
+
+  state penalty_shootout{
+    action {
+      penalty_agent();
+    }
+  }
+}

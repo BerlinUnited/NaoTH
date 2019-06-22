@@ -63,7 +63,7 @@ public class LogFile implements Serializable
         fragmentFrameSize += 4;
         
         // plausibility check
-        if (currentFrameNumber > -1 && (frameNumber < currentFrameNumber || frameNumber < 0))
+        if (frameNumber < currentFrameNumber || frameNumber < 0)
         {
           ExceptionDialog dlg = new ExceptionDialog(null, new IOException("corrupt frame number: " + frameNumber + " after " + currentFrameNumber));
           dlg.setVisible(true);
@@ -116,7 +116,7 @@ public class LogFile implements Serializable
 
   public HashMap<String, LogDataFrame> readFrame(int frameId) throws IOException
   {
-    if (frameId >= this.frameList.size())
+    if (frameId < 0 || frameId >= this.frameList.size())
     {
       return null;
     }

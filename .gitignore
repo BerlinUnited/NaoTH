@@ -15,6 +15,7 @@ genfiles.properties
 *.pyc
 .idea/
 naoth.egg-info*
+*_pb2.py
 
 #
 trace.dump.*

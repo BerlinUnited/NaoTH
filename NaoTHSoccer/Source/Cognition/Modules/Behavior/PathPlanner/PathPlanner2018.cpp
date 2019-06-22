@@ -35,7 +35,7 @@ void PathPlanner2018::execute()
 
   // The kick has been executed
   // Tells XABSL to jump into next state
-  if (kickPlanned && stepBuffer.empty()) 
+  if (kickPlanned && stepBuffer.empty())
   {
     getPathModel().kick_executed = true;
   }
@@ -55,7 +55,7 @@ void PathPlanner2018::execute()
     }
 
     // TODO: should the stepBuffer just be cleared here no matter what?
-    if (stepBuffer.empty()) 
+    if (stepBuffer.empty())
     {
       return;
     }
@@ -99,7 +99,9 @@ void PathPlanner2018::execute()
       }
     }
     break;
-  }
+  case PathModel::PathPlanner2018Routine::SIDESTEP:
+    sidesteps(Foot::RIGHT, getPathModel().direction);
+  }//end switch
 
   // Always executed last
   executeStepBuffer();
@@ -109,9 +111,9 @@ void PathPlanner2018::moveAroundBall(const double direction, const double radius
 {
  if (stepBuffer.empty())
  {
-	Vector2d ballPos    = getBallModel().positionPreview;
-	double ballRotation = ballPos.angle();
-	double ballDistance = ballPos.abs();
+    Vector2d ballPos    = getBallModel().positionPreview;
+    double ballRotation = ballPos.angle();
+    double ballDistance = ballPos.abs();
 
   double direction_deg = Math::toDegrees(direction);
   if (direction_deg > -10 && direction_deg <= 0){
@@ -121,33 +123,33 @@ void PathPlanner2018::moveAroundBall(const double direction, const double radius
     direction_deg = 10;
   }
 
-	double min1;
-	double min2;
-	double max1;
-	double max2;
+    double min1;
+    double min2;
+    double max1;
+    double max2;
   if (direction_deg <= 0)
-	{
+    {
     // turn left
-	  min1 = 0.0;
-	  min2 = 0.0;
-	  max1 = 45.0;
-	  max2 = 100.0;
-	}
-	else {
+      min1 = 0.0;
+      min2 = 0.0;
+      max1 = 45.0;
+      max2 = 100.0;
+    }
+    else {
     // turn right
-	  min1 = -45;
-	  min2 = -100;
-	  max1 = 0;
-	  max2 = 0;
-	}
+      min1 = -45;
+      min2 = -100;
+      max1 = 0;
+      max2 = 0;
+    }
 
-	double stepX = (ballDistance - radius) * std::cos(ballRotation);
+    double stepX = (ballDistance - radius) * std::cos(ballRotation);
   // Math::clamp(-direction, min1, max1) ==> safe guard for xabsl input
-  // outer clamp geht von -radius zu 0 
+  // outer clamp geht von -radius zu 0
   double stepY = Math::clamp(radius * std::tan(Math::fromDegrees(Math::clamp(-direction_deg, min1, max1))), min2, max2) * std::cos(ballRotation);
 
-	Pose2D pose = { ballRotation, stepX, stepY };
-  
+    Pose2D pose = { ballRotation, stepX, stepY };
+
   StepBufferElement new_step;
   new_step.setPose(pose);
   new_step.setStepType(StepType::WALKSTEP);
@@ -158,7 +160,7 @@ void PathPlanner2018::moveAroundBall(const double direction, const double radius
   else{
     new_step.setCharacter(params.moveAroundBallCharacter);
   }
-  
+
   new_step.setScale(1.0);
   new_step.setCoordinate(Coordinate::Hip);
   new_step.setFoot(Foot::NONE);
@@ -205,6 +207,45 @@ bool PathPlanner2018::farApproach()
   return false;
 }
 
+bool PathPlanner2018::sidesteps(const Foot& foot, const double direction){
+  // Always execute the steps that were planned before planning new steps
+  if (stepBuffer.empty())
+  {
+    Coordinate coordinate = Coordinate::Hip;
+
+    if (foot == Foot::RIGHT)
+    {
+      coordinate = Coordinate::RFoot;
+    }
+    else if (foot == Foot::LEFT)
+    {
+      coordinate = Coordinate::LFoot;
+    }
+    else
+    {
+      ASSERT(false);
+    }
+    //TODO which motion parameters restrict this step?
+    StepBufferElement side_step;
+    side_step.setPose({ 0.0, 0.0, direction > 0.0 ? 100.0 : -100.0});
+    side_step.setStepType(StepType::WALKSTEP);
+    side_step.setCharacter(0.3);
+    side_step.setScale(1.0);
+    side_step.setCoordinate(coordinate);
+    side_step.setFoot(Foot::NONE);
+    side_step.setSpeedDirection(Math::fromDegrees(0.0));
+    side_step.setRestriction(RestrictionMode::SOFT);
+    side_step.setProtected(false);
+    side_step.setTime(400);
+
+    addStep(side_step);
+    return true;
+  }
+  else{
+    return false;
+  }
+
+}
 bool PathPlanner2018::nearApproach_forwardKick(const Foot& foot, const double offsetX, const double offsetY)
 {
   // Always execute the steps that were planned before planning new steps
@@ -240,10 +281,10 @@ bool PathPlanner2018::nearApproach_forwardKick(const Foot& foot, const double of
     if (numPossibleStepsX > params.readyForForwardKickThresholdX
       || numPossibleStepsY > params.readyForForwardKickThresholdY)
     {
-	    // generate a correction step
+        // generate a correction step
       double translation_xy = params.stepLength;
 
-      //TODO why - std::abs(ballPos.y) => das heißt doch wenn der ball in der y richtung springt wird ein schritt zurück geplant und ausgeführt
+      //TODO why - std::abs(ballPos.y) => das heisst doch wenn der ball in der y richtung springt wird ein schritt zuerck geplant und ausgefuehrt
       double translation_x = std::min(translation_xy, ballPos.x - getFieldInfo().ballRadius - params.nearApproachForwardKickBallPosOffsetX - std::abs(ballPos.y));
       double translation_y = std::min(translation_xy, std::abs(ballPos.y)) * (ballPos.y < 0 ? -1 : 1);
 
@@ -407,7 +448,8 @@ void PathPlanner2018::forwardKick(const Foot& foot)
   if (/*stepBuffer.empty() && */!kickPlanned)
   {
     stepBuffer.clear();
-
+     
+    //TODO warum ist nur hier die koordinate und kickfuss unterschiedlich?
     Coordinate coordinate = Coordinate::Hip;
     if (foot == Foot::RIGHT)
     {
@@ -535,7 +577,7 @@ void PathPlanner2018::updateSpecificStep(const unsigned int index, StepBufferEle
 
 void PathPlanner2018::manageStepBuffer()
 {
-  if (stepBuffer.empty()) 
+  if (stepBuffer.empty())
   {
     return;
   }
@@ -556,7 +598,7 @@ void PathPlanner2018::manageStepBuffer()
     {
       lastStepType = "ZEROSTEP";
     }
-    
+
     std::cout << "Last executed step: " << lastStepType << " -- " << numPossibleSteps << " > " << params.readyForKickThreshold << " or " << numRotationStepsNecessary << " > " << numPossibleSteps << std::endl;
     */
 
@@ -569,7 +611,7 @@ void PathPlanner2018::executeStepBuffer()
 {
   STOPWATCH_START("PathPlanner2018:execute_steplist");
 
-  if (stepBuffer.empty()) 
+  if (stepBuffer.empty())
   {
     return;
   }

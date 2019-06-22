@@ -121,9 +121,10 @@ public:
         writtenBytes += 4;
 
         // NOTE: call of .str() involves making an additional copy of the data
-        //outFile.write((const char *) e.data.str().c_str(), dataSize);
+        outFile.write((const char *) e.data.str().c_str(), dataSize);
         // "read" the whole content of e.data into outFile.rdbuf()
-        e.data.get(*outFile.rdbuf());
+        // NOTE: this doesn't work with binary data, wil be fixed later
+        //e.data.get(*outFile.rdbuf());
 
         // crash if the file stream is broken
         if(!outFile.good()) {
