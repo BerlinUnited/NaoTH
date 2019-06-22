@@ -578,7 +578,7 @@ void PathPlanner2018::sideKick(const Foot& foot) // Foot == RIGHT means that we 
 void PathPlanner2018::addStep(const StepBufferElement& new_step)
 {
   stepBuffer.push_back(new_step);
-  std::cout << new_step.debug_name << std::endl;
+  //std::cout << new_step.debug_name << std::endl;
 }
 
 void PathPlanner2018::updateSpecificStep(const unsigned int index, StepBufferElement& step)
