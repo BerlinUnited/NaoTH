@@ -11,7 +11,8 @@
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>
 
-#include <Tools/Math/Pose2D.h>
+#include "Tools/Math/Pose2D.h"
+#include "Representations/Motion/MotionStatus.h"
 
 // representations
 #include "Representations/Infrastructure/FrameInfo.h"
@@ -40,6 +41,7 @@ BEGIN_DECLARE_MODULE(BallSymbols)
 
   REQUIRE(RobotPose)
   REQUIRE(OdometryData)
+  REQUIRE(MotionStatus)
 END_DECLARE_MODULE(BallSymbols)
 
 class BallSymbols: public BallSymbolsBase
@@ -76,6 +78,7 @@ private:
   // needed for traching ball percept
   Pose2D lastRobotOdometry;
 
+  Vector2d futureBallPreview;
 };//end class BallSymbols
 
 #endif // _BallSymbols_H_

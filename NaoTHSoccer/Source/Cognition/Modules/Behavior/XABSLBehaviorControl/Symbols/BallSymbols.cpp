@@ -24,7 +24,12 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.angle", &getBallAngle);
   engine.registerDecimalInputSymbol("ball.speed.x", &getBallModel().speed.x);
   engine.registerDecimalInputSymbol("ball.speed.y", &getBallModel().speed.y);
-  
+  engine.registerDecimalInputSymbol("ball.position_at_rest.x", &getBallModel().position_at_rest.x);
+  engine.registerDecimalInputSymbol("ball.position_at_rest.y", &getBallModel().position_at_rest.y);
+
+  engine.registerDecimalInputSymbol("ball.future.preview.x", &futureBallPreview.x);
+  engine.registerDecimalInputSymbol("ball.future.preview.y", &futureBallPreview.y);
+
   engine.registerBooleanInputSymbol("ball.know_where_itis", &getBallModel().knows);
   // HACK: right now know_where_itis is the same as see_where_itis
   engine.registerBooleanInputSymbol("ball.see_where_itis", &getBallModel().knows);
@@ -65,7 +70,7 @@ void BallSymbols::execute()
 
   if(theInstance->getMultiBallPercept().wasSeen()) {
     //HACK: look at the first ball percept in the list
-    ballPerceptPos = theInstance->getMultiBallPercept().begin()->positionOnField; 
+    ballPerceptPos = theInstance->getMultiBallPercept().begin()->positionOnField;
     ballPerceptSeen = true;
   } else {
     // propagate the ball percept with the odometry
@@ -74,11 +79,13 @@ void BallSymbols::execute()
     ballPerceptSeen = false;
   }
 
-  DEBUG_REQUEST("XABSL:BallSymbols:ballPerceptPropagated", 
+  DEBUG_REQUEST("XABSL:BallSymbols:ballPerceptPropagated",
     FIELD_DRAWING_CONTEXT;
     PEN("0000FF", 20);
     CIRCLE(ballPerceptPos.x, ballPerceptPos.y, 50);
   );
+
+  futureBallPreview = getMotionStatus().plannedMotion.hip / getBallModel().position_at_rest;
 
   lastRobotOdometry = getOdometryData();
 }//end execute

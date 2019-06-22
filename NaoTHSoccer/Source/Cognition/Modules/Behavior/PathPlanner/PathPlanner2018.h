@@ -63,9 +63,9 @@ private:
       PARAMETER_REGISTER(stepLength)                            = 80.0;
       PARAMETER_REGISTER(readyForSideKickThresholdX)            = 4.0;
       PARAMETER_REGISTER(readyForSideKickThresholdY)            = 0.3;
-      PARAMETER_REGISTER(readyForForwardKickThresholdX)         = 4.0;
-      PARAMETER_REGISTER(readyForForwardKickThresholdY)         = 0.3;
-      PARAMETER_REGISTER(nearApproachForwardKickBallPosOffsetX) = 110;
+      PARAMETER_REGISTER(forwardKickThreshold.x)                = 50; // mm
+      PARAMETER_REGISTER(forwardKickThreshold.y)                = 25; // mm
+      //PARAMETER_REGISTER(nearApproachForwardKickBallPosOffsetX) = 110;
       PARAMETER_REGISTER(nearApproachSideKickBallPosOffsetX)    = 100;
       PARAMETER_REGISTER(farToNearApproachThreshold)            = 10.0;
       PARAMETER_REGISTER(rotationLength)                        = 30.0;
@@ -82,9 +82,10 @@ private:
     double stepLength;
     double readyForSideKickThresholdX;
     double readyForSideKickThresholdY;
-    double readyForForwardKickThresholdX;
-    double readyForForwardKickThresholdY;
-    double nearApproachForwardKickBallPosOffsetX;
+    //double readyForForwardKickThresholdX;
+    //double readyForForwardKickThresholdY;
+    Vector2d forwardKickThreshold;
+    //double nearApproachForwardKickBallPosOffsetX;
     double nearApproachSideKickBallPosOffsetX;
     double farToNearApproachThreshold;
     double rotationLength;
@@ -114,10 +115,12 @@ private:
   bool farApproach();
   bool nearApproach_forwardKick(const Foot& foot, const double offsetX, const double offsetY);
   bool nearApproach_sideKick(const Foot& foot, const double offsetX, const double offsetY);
+  bool sidesteps(const Foot& foot, const double direction);
+
   void forwardKick(const Foot& foot);
   void sideKick(const Foot& foot);
 
-  struct StepBufferElement 
+  struct StepBufferElement
   {
     void setPose(const Pose2D& p)
     {
@@ -169,6 +172,7 @@ private:
     WalkRequest::Coordinate coordinate;
     RestrictionMode restriction;
     bool isProtected;
+    std::string debug_name;
   };
   std::vector<StepBufferElement> stepBuffer;
 
@@ -187,10 +191,7 @@ private:
 
 private:
   bool kickPlanned;
-  double numPossibleSteps;
-  double numPossibleStepsX;
-  double numPossibleStepsY;
-  double numRotationStepsNecessary;
+
 };
 
 #endif // _PathPlanner2018_H_
