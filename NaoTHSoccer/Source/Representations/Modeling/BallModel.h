@@ -48,6 +48,8 @@ public:
   // indicates that the ball was perceived well enough to be sure
   bool knows;
 
+  Vector2d last_known_ball;
+
 private:
 
   // time how long the ball is seen without interruption
@@ -58,7 +60,7 @@ private:
 
 
 public:
-  
+
   const naoth::FrameInfo& getFrameInfoWhenBallWasSeen() const {
     return frameInfoWhenBallWasSeen;
   }
@@ -80,7 +82,7 @@ public:
     frameInfoWhenBallWasSeen = frameInfo;
   }
 
-  const Vector2d& getFuturePosition(size_t t) const 
+  const Vector2d& getFuturePosition(size_t t) const
   {
     if(t < futurePosition.size()) {
       return futurePosition[t];
