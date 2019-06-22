@@ -15,6 +15,9 @@ namespace ball_symbols("Ball Symbols") {
 
   float input ball.future.preview.x;
   float input ball.future.preview.y;
+
+  float input ball.interception.preview.x;
+  float input ball.interception.preview.y;
   
   /** Distance of the ball in mm */
   float input ball.distance "mm";

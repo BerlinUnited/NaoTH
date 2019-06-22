@@ -37,6 +37,10 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.future.preview.x", &futureBallPreview.x);
   engine.registerDecimalInputSymbol("ball.future.preview.y", &futureBallPreview.y);
 
+  engine.registerDecimalInputSymbol("ball.interception.preview.x", &interceptionPointPreview.x);
+  engine.registerDecimalInputSymbol("ball.interception.preview.y", &interceptionPointPreview.y);
+  
+
   engine.registerDecimalInputSymbol("ball.left_foot.x", &ballLeftFoot.x);
   engine.registerDecimalInputSymbol("ball.left_foot.y", &ballLeftFoot.y);
   engine.registerDecimalInputSymbol("ball.right_foot.x", &ballRightFoot.x);
@@ -135,6 +139,9 @@ void BallSymbols::execute()
   }
 
   futureBallPreview = getMotionStatus().plannedMotion.hip / getBallModel().position_at_rest;
+
+  Math::LineSegment ballLine(getBallModel().position, getBallModel().position_at_rest);
+  interceptionPointPreview = getMotionStatus().plannedMotion.hip / ballLine.projection(Vector2d());
 
   lastRobotOdometry = getOdometryData();
 }//end execute
