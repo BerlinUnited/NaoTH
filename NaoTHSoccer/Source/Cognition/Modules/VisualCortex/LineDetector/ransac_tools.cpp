@@ -38,6 +38,7 @@ Math::LineSegment LineModel::getLineSegment(
     const std::vector<Edgel>& edgels,
     const std::vector<size_t>& inlier_idx) const
 {
+  // exception if not at least one inlier
   size_t id0 = inlier_idx.at(0);
   double minT = line.project(edgels[id0].point);
   double maxT = minT;
