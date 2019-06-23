@@ -11,9 +11,9 @@ class CameraSettingsV6Manager : public V4LCameraSettingsManager {
 
   CameraSettingsV6Manager();
 
-  virtual void query(int cameraFd, std::string cameraName);
+  virtual void query(int cameraFd, std::string cameraName, naoth::CameraSettings& settings);
 
-  virtual void apply(int cameraFd, std::string cameraName);
+  virtual void apply(int cameraFd, std::string cameraName, const naoth::CameraSettings& settings);
 
 };
 

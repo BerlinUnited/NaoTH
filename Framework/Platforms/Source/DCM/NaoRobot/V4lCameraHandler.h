@@ -10,6 +10,7 @@
 
 #include <string>
 #include <list>
+#include <memory>
 
 extern "C"
 {
@@ -33,7 +34,6 @@ extern "C"
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CameraSettings.h"
 
-#include "CameraSettingsV5Manager.h"
 
 struct buffer
 {
@@ -69,7 +69,7 @@ public:
   V4lCameraHandler();
   ~V4lCameraHandler();
 
-  void init(std::string camDevice, CameraInfo::CameraID camID, bool blockingMode);
+  void init(std::string camDevice, CameraInfo::CameraID camID, bool blockingMode, bool isV6 = false);
 
   void shutdown();
   bool isRunning();
@@ -141,7 +141,8 @@ private: // data members
 
   /** order in which the camera settings need to be applied */
   std::list<CameraSettings::CameraSettingID> settingsOrder;
-  CameraSettingsV5Manager currentSettings;
+  CameraSettings currentSettings;
+  std::shared_ptr<CameraSettingsManager> settingsManager;
   
   int error_count;
 };

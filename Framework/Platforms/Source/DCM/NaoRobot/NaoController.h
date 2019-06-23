@@ -20,8 +20,10 @@
 //#include "Tools/Debug/Stopwatch.h"
 
 //
-#include "V4lCameraHandlerV6.h"
 #include "V4lCameraHandler.h"
+#include "CameraSettingsV5Manager.h"
+#include "CameraSettingsV6Manager.h"
+
 
 #include "SoundControl.h"
 #include "SPLGameController.h"
@@ -65,37 +67,17 @@ public:
   
   // camera stuff
   void get(Image& data){ 
-    // HACK: we are in NAO V6
-    if(theLolaAdaptor.isRunning()) { 
-      theBottomCameraHandlerV6.get(data); 
-    } else {
-      theBottomCameraHandler.get(data); 
-    }
+    theBottomCameraHandler.get(data); 
   } // blocking
   void get(ImageTop& data){ 
-    // HACK: we are in NAO V6
-    if(theLolaAdaptor.isRunning()) { 
-      theTopCameraHandlerV6.get(data); 
-    } else {
-      theTopCameraHandler.get(data); 
-    }
+    theTopCameraHandler.get(data); 
   } // non blocking
   
   void get(CurrentCameraSettings& data) { 
-    // HACK: we are in NAO V6
-    if(theLolaAdaptor.isRunning()) { 
-      theBottomCameraHandlerV6.getCameraSettings(data); 
-    } else {
-      theBottomCameraHandler.getCameraSettings(data);
-    }
+    theBottomCameraHandler.getCameraSettings(data);
   }
   void get(CurrentCameraSettingsTop& data) { 
-    // HACK: we are in NAO V6
-    if(theLolaAdaptor.isRunning()) { 
-      theTopCameraHandlerV6.getCameraSettings(data); 
-    } else {
-      theTopCameraHandler.getCameraSettings(data);
-    }
+    theTopCameraHandler.getCameraSettings(data);
   }
   
   void set(const CameraSettingsRequest& data);
@@ -215,11 +197,10 @@ protected:
   // -- end -- shared memory access --
 
   //
-  V4lCameraHandlerV6 theBottomCameraHandlerV6;
-  V4lCameraHandlerV6 theTopCameraHandlerV6;
   
   V4lCameraHandler theBottomCameraHandler;
   V4lCameraHandler theTopCameraHandler;
+  
   
   SoundControl *theSoundHandler;
   BroadCaster* theTeamCommSender;
