@@ -60,7 +60,7 @@ su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav"
 naoth stop
 
 # write previous volume to systemlog
-current_volume=$(sudo -u nao pactl list sinks | grep Volume | xargs)
+current_volume=$(su nao -c "pactl list sinks | grep Volume | xargs")
 logger "Brainwasher:$current_volume"
 
 # set volume to 88%
