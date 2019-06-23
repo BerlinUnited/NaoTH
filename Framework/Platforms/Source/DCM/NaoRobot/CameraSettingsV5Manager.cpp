@@ -8,6 +8,7 @@ extern "C"
 }
 
 //Custom V4L control variables
+#define V4L2_CID_EXPOSURE_ALGORITHM	(V4L2_CID_CAMERA_CLASS_BASE+17)
 #define V4L2_MT9M114_FADE_TO_BLACK (V4L2_CID_PRIVATE_BASE) //boolean, enable or disable fade to black feature
 #define V4L2_MT9M114_BRIGHTNESS_DARK (V4L2_CID_PRIVATE_BASE + 1)
 #define V4L2_MT9M114_AE_TARGET_GAIN (V4L2_CID_PRIVATE_BASE + 2)
@@ -54,6 +55,8 @@ void CameraSettingsV5Manager::query(int cameraFd, std::string cameraName, naoth:
             }
         }
     }
+
+    settings.v5_autoExpositionAlgorithm = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ALGORITHM);
 }
 
 void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const naoth::CameraSettings &settings)
@@ -159,6 +162,11 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAMMA, "GammaCorrection", Math::clamp(settings.whiteBalanceTemperature, 100, 280)))
     {
         v5_gammaCorrection = settings.v5_gammaCorrection;
+    }
+
+    if(v5_autoExpositionAlgorithm != settings.v5_autoExpositionAlgorithm
+    && setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ALGORITHM, "AutoExposureAlgorithm", Math::clamp(settings.v5_autoExpositionAlgorithm, 0, 3))) {
+        v5_autoExpositionAlgorithm = settings.autoExposition;
     }
 
     // set the autoexposure grid parameters

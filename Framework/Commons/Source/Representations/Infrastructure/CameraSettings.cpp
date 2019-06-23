@@ -49,9 +49,6 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
   case Sharpness:
     return "Sharpness";
     break;
-  case AutoExpositionAlgorithm:
-    return "AutoExpositionAlgorithm";
-    break;
   default:
     return "Unknown CameraSetting";
     break;
@@ -85,7 +82,7 @@ CameraSettingsRequest::CameraSettingsRequest(string configName)
       queryCameraSettings(false)
 {
   PARAMETER_REGISTER(autoExposition) = false;
-  PARAMETER_REGISTER(autoExpositionAlgorithm) = 0;
+  PARAMETER_REGISTER(v5_autoExpositionAlgorithm) = 0;
   PARAMETER_REGISTER(autoWhiteBalancing) = false;
   PARAMETER_REGISTER(backlightCompensation) = false;
   PARAMETER_REGISTER(brightness) = 55;

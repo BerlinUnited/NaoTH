@@ -45,12 +45,13 @@ public:
 
   int v5_gammaCorrection;
 
+  int v5_autoExpositionAlgorithm;
+
   /* don't change order of enumerations
        * because it reflects the order of execution
        */
   enum CameraSettingID
   {
-    AutoExpositionAlgorithm,
     BacklightCompensation,
     Brightness,
     CameraSelection,
@@ -112,7 +113,7 @@ public:
   bool queryCameraSettings;
 
   bool autoExposition;
-  int autoExpositionAlgorithm;
+  int v5_autoExpositionAlgorithm;
   bool autoWhiteBalancing;
   bool backlightCompensation;
   int brightness;

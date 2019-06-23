@@ -58,7 +58,6 @@ V4lCameraHandler::V4lCameraHandler()
 {
   // NOTE: width, height and fps are not included here
 
-  settingsOrder.push_back(CameraSettings::AutoExpositionAlgorithm);
   settingsOrder.push_back(CameraSettings::Brightness);
 
   settingsOrder.push_back(CameraSettings::Contrast);
