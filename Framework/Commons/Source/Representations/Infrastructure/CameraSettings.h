@@ -34,6 +34,8 @@ public:
   bool horizontalFlip;
   bool verticalFlip;  
 
+  bool backlightCompensation;
+
   // custom for V5
   float v5_targetGain;
   float v5_minAnalogGain;
@@ -52,7 +54,6 @@ public:
        */
   enum CameraSettingID
   {
-    BacklightCompensation,
     Brightness,
     CameraSelection,
     Contrast,

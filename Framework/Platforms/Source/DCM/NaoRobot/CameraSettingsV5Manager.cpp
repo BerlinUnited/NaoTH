@@ -8,7 +8,7 @@ extern "C"
 }
 
 //Custom V4L control variables
-#define V4L2_CID_EXPOSURE_ALGORITHM	(V4L2_CID_CAMERA_CLASS_BASE+17)
+#define V4L2_CID_EXPOSURE_ALGORITHM (V4L2_CID_CAMERA_CLASS_BASE + 17)
 #define V4L2_MT9M114_FADE_TO_BLACK (V4L2_CID_PRIVATE_BASE) //boolean, enable or disable fade to black feature
 #define V4L2_MT9M114_BRIGHTNESS_DARK (V4L2_CID_PRIVATE_BASE + 1)
 #define V4L2_MT9M114_AE_TARGET_GAIN (V4L2_CID_PRIVATE_BASE + 2)
@@ -35,6 +35,8 @@ void CameraSettingsV5Manager::query(int cameraFd, std::string cameraName, naoth:
     settings.verticalFlip = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_VFLIP) == 0 ? false : true;
     settings.horizontalFlip = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HFLIP) == 0 ? false : true;
 
+    settings.backlightCompensation = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BACKLIGHT_COMPENSATION) == 0 ? false : true;
+
     settings.v5_targetGain = Math::fromFixPoint<5>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_TARGET_GAIN));
     settings.v5_minAnalogGain = Math::fromFixPoint<5>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_MIN_VIRT_AGAIN));
     settings.v5_maxAnalogGain = Math::fromFixPoint<5>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_MAX_VIRT_AGAIN));
@@ -47,7 +49,7 @@ void CameraSettingsV5Manager::query(int cameraFd, std::string cameraName, naoth:
     {
         for (std::size_t j = 0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++)
         {
-             std::stringstream paramName;
+            std::stringstream paramName;
             paramName << "autoExposureWeights (" << i << "," << j << ")";
             if (setSingleCameraParameterRaw(cameraFd, cameraName, getAutoExposureGridID(i, j), paramName.str(), settings.autoExposureWeights[i][j]))
             {
@@ -127,6 +129,12 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
         horizontalFlip = settings.horizontalFlip;
     }
 
+    if (backlightCompensation != settings.backlightCompensation &&
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BACKLIGHT_COMPENSATION, "BacklightCompensation", settings.backlightCompensation ? 0 : 1))
+    {
+        backlightCompensation = settings.backlightCompensation;
+    }
+
     if (v5_minAnalogGain != settings.v5_minAnalogGain &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_MIN_VIRT_AGAIN, "MinAnalogGain", Math::clamp(Math::toFixPoint<5>(settings.v5_minAnalogGain), 0, 65535)))
     {
@@ -164,8 +172,8 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
         v5_gammaCorrection = settings.v5_gammaCorrection;
     }
 
-    if(v5_autoExpositionAlgorithm != settings.v5_autoExpositionAlgorithm
-    && setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ALGORITHM, "AutoExposureAlgorithm", Math::clamp(settings.v5_autoExpositionAlgorithm, 0, 3))) {
+    if (v5_autoExpositionAlgorithm != settings.v5_autoExpositionAlgorithm && setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ALGORITHM, "AutoExposureAlgorithm", Math::clamp(settings.v5_autoExpositionAlgorithm, 0, 3)))
+    {
         v5_autoExpositionAlgorithm = settings.autoExposition;
     }
 

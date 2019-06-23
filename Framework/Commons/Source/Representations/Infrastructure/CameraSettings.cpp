@@ -43,9 +43,6 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
   case CameraSelection:
     return "CameraSelection";
     break;
-  case BacklightCompensation:
-    return "BacklightCompensation";
-    break;
   case Sharpness:
     return "Sharpness";
     break;
@@ -149,6 +146,8 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
   result.v5_fadeToBlack = v5_fadeToBlack;
   result.v5_powerlineFrequency = v5_powerlineFrequency;
   result.v5_gammaCorrection = v5_gammaCorrection;
+  
+  result.backlightCompensation = backlightCompensation;
 
   // Convert each request to a proper setting and clamp values according to the driver documentation
   // (https://github.com/bhuman/BKernel#information-about-the-camera-driver).
@@ -156,7 +155,6 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
   // might be inaccurate or less restricted. Also, for fixed point real numbers the clipping should
   // be performed for the real number range, not the byte-representation.
 
-  result.data[CameraSettings::BacklightCompensation] = backlightCompensation ? 1 : 0;
   // use target brightness for both lightening conditions
   result.data[CameraSettings::Brightness] = Math::clamp(brightness, isV6 ? -255 : 0, 255);
   result.data[CameraSettings::CameraSelection] = cameraSelection;
