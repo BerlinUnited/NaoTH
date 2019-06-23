@@ -5,16 +5,6 @@
 using namespace naoth;
 using namespace std;
 
-void GeneriCameraSettings::print(ostream& stream) const
-{
-  stream << "exposure = " << exposure << ";" << endl;
-  stream << "gain = " << gain << ";" << endl;
-  stream << "saturation = " << saturation << ";" << endl;
-  stream << "whiteBalanceTemperature = " << whiteBalanceTemperature << ";" << endl;
-  
-
-}//end print
-
 CameraSettings::CameraSettings()
 {
   data[CameraSelection] = CameraInfo::Bottom;
