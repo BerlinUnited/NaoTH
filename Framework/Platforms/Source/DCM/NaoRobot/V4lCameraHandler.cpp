@@ -65,8 +65,6 @@ V4lCameraHandler::V4lCameraHandler()
       error_count(0)
 {
   // NOTE: width, height and fps are not included here
-  settingsOrder.push_back(CameraSettings::VerticalFlip);
-  settingsOrder.push_back(CameraSettings::HorizontalFlip);
 
   settingsOrder.push_back(CameraSettings::AutoExposition);
   settingsOrder.push_back(CameraSettings::AutoExpositionAlgorithm);
@@ -164,8 +162,6 @@ void V4lCameraHandler::initIDMapping()
   csConst[CameraSettings::BrightnessDark] = V4L2_MT9M114_BRIGHTNESS_DARK;
   csConst[CameraSettings::Contrast] = V4L2_CID_CONTRAST;
   csConst[CameraSettings::Hue] = V4L2_CID_HUE;
-  csConst[CameraSettings::VerticalFlip] = V4L2_CID_VFLIP;
-  csConst[CameraSettings::HorizontalFlip] = V4L2_CID_HFLIP;
   csConst[CameraSettings::Sharpness] = V4L2_CID_SHARPNESS;
   csConst[CameraSettings::AutoExposition] = V4L2_CID_EXPOSURE_AUTO;
   csConst[CameraSettings::AutoWhiteBalancing] = V4L2_CID_AUTO_WHITE_BALANCE;

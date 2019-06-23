@@ -43,12 +43,6 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
   case TargetGain:
     return "TargetGain";
     break;
-  case HorizontalFlip:
-    return "HorizontalFlip";
-    break;
-  case VerticalFlip:
-    return "VerticalFlip";
-    break;
   case AutoExposition:
     return "AutoExposition";
     break;
@@ -203,7 +197,6 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
 
   result.data[CameraSettings::TargetGain] = Math::toFixPoint<5>(static_cast<float>(Math::clamp(targetGain, minAnalogGain, maxAnalogGain)));
 
-  result.data[CameraSettings::HorizontalFlip] = horizontalFlip ? 1 : 0;
   if (isV6)
   {
     result.data[CameraSettings::Hue] = Math::clamp(hue, -180, 180);
@@ -220,7 +213,6 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
   {
     result.data[CameraSettings::Sharpness] = Math::clamp(sharpness, -7, 7);
   }
-  result.data[CameraSettings::VerticalFlip] = verticalFlip ? 1 : 0;
   result.data[CameraSettings::GammaCorrection] = Math::clamp(gammaCorrection, 100, 280);
 
   // use 50 Hz (val = 1) if 60 Hz (val = 2) is not explicitly requested

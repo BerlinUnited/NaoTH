@@ -29,6 +29,9 @@ public:
 
   int whiteBalanceTemperature;
 
+  bool horizontalFlip;
+  bool verticalFlip;  
+
   /* don't change order of enumerations
        * because it reflects the order of execution
        */
@@ -48,12 +51,10 @@ public:
     MinAnalogGain,
     MaxAnalogGain,
     TargetGain,
-    HorizontalFlip,
     Hue,
     ResolutionHeight, // TODO: remove this from settings?
     ResolutionWidth,  // TODO: remove this from settings?
     Sharpness,
-    VerticalFlip,
     PowerlineFrequency,
     numOfCameraSetting
   };
