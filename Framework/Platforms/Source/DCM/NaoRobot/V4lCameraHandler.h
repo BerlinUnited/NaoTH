@@ -33,6 +33,12 @@ extern "C"
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CameraSettings.h"
 
+struct buffer
+{
+  void * start;
+  size_t length;
+};
+
 /**
  * This is a CameraHandler that uses the V4L2 API directly. It will use the
  * Memory Map Streaming method for getting the images (which should be the
@@ -63,94 +69,78 @@ public:
 
   void init(std::string camDevice, CameraInfo::CameraID camID, bool blockingMode);
 
+  void shutdown();
+  bool isRunning();
+  
+  
   void get(Image& theImage);
   void getCameraSettings(CameraSettings& data, bool update = false);
-
-  void shutdown();
-
-  bool isRunning();
-  void setAllCameraParams(const CameraSettings &data);
+  void setAllCameraParams(const CameraSettings& data);
 
 private:
-  struct buffer
-  {
-    void * start;
-    size_t length;
-  };
 
-  void initIDMapping();
   void openDevice(bool blockingMode);
-
   void initDevice();
-  void initMMap();
-  void initUP(unsigned int buffer_size);
-  void initRead(unsigned int buffer_size);
+  
+  void mapBuffers();
+  void unmapBuffers();
   void startCapturing();
-  int readFrame();
-  int readFrameMMaP();
-  int readFrameUP();
-  int readFrameRead();
-
+  
   void stopCapturing();
-  void uninitDevice();
   void closeDevice();
-
+  
+  
+  int readFrame();
+  
+  //settings
+  void initIDMapping();
+  
   int getSingleCameraParameter(int id);
   bool setSingleCameraParameter(int id, int value, std::string name);
   void setFPS(int fpsRate);
   void internalUpdateCameraSettings();
-
+  int getAutoExposureGridID(size_t i, size_t j) {
+    return V4L2_CID_PRIVATE_BASE + 7 + (i*CameraSettings::AUTOEXPOSURE_GRID_SIZE) + j;
+  }
+  
   // tools
   int xioctl(int fd, int request, void* arg) const;
   bool hasIOErrorPrint(int lineNumber, int errOccured, int errNo, bool exitByIOError = true);
 
-  int getAutoExposureGridID(size_t i, size_t j) {
-    return V4L2_CID_PRIVATE_BASE + 7 + (i*CameraSettings::AUTOEXPOSURE_GRID_SIZE) + j;
-  }
+private: // data members
 
-  typedef enum
-  {
-    IO_READ,
-    IO_MMAP,
-    IO_USERPTR,
-    Num_of_MethodIO
-  } MethodIO;
-
-  MethodIO selMethodIO;
-  MethodIO actMethodIO;
-
+  // camera stuff
   std::string cameraName;
+  CameraInfo::CameraID currentCamera;
 
   /** The camera file descriptor */
   int fd;
 
+  /** Amount of available frame buffers. */
+  static const constexpr unsigned frameBufferCount = 5; 
+  
   /** Image buffers (v4l2) */
-  struct buffer* buffers;
-  /** Buffer number counter */
-  unsigned int n_buffers;
+  struct buffer buffers[frameBufferCount];
 
+  // capture
   struct v4l2_buffer currentBuf;
   struct v4l2_buffer lastBuf;
-
-  unsigned char* currentImage;
 
   bool atLeastOneImageRetrieved;
   bool initialParamsSet;
   bool wasQueried;
   bool isCapturing;
-  bool bufferSwitched;
   bool blockingCaptureModeEnabled;
 
 
+  // settings
   int csConst[CameraSettings::numOfCameraSetting];
   unsigned long long lastCameraSettingTimestamp;
 
   /** order in which the camera settings need to be applied */
   std::list<CameraSettings::CameraSettingID> settingsOrder;
-
   CameraSettings currentSettings;
-  CameraInfo::CameraID currentCamera;
-
+  
   int error_count;
 };
 
