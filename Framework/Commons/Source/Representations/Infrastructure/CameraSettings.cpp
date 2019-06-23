@@ -43,9 +43,6 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
   case TargetGain:
     return "TargetGain";
     break;
-  case AutoWhiteBalancing:
-    return "AutoWhiteBalancing";
-    break;
   case FPS:
     return "FPS";
     break;
@@ -164,6 +161,7 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
   result.exposure = exposure;
   result.gain = gain;
   result.saturation = saturation;
+  result.autoWhiteBalancing = autoWhiteBalancing;
   result.whiteBalanceTemperature = whiteBalanceTemperature;
   result.verticalFlip = verticalFlip;
   result.horizontalFlip = horizontalFlip;
@@ -174,7 +172,6 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
   // might be inaccurate or less restricted. Also, for fixed point real numbers the clipping should
   // be performed for the real number range, not the byte-representation.
 
-  result.data[CameraSettings::AutoWhiteBalancing] = autoWhiteBalancing ? 1 : 0;
   result.data[CameraSettings::BacklightCompensation] = backlightCompensation ? 1 : 0;
   // use target brightness for both lightening conditions
   result.data[CameraSettings::Brightness] = Math::clamp(brightness, isV6 ? -255 : 0, 255);

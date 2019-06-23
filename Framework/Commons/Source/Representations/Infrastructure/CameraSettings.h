@@ -29,6 +29,8 @@ public:
 
   int saturation;
 
+  bool autoWhiteBalancing;
+
   int whiteBalanceTemperature;
 
   bool horizontalFlip;
@@ -40,7 +42,6 @@ public:
   enum CameraSettingID
   {
     AutoExpositionAlgorithm,
-    AutoWhiteBalancing,
     BacklightCompensation,
     Brightness,
     BrightnessDark,

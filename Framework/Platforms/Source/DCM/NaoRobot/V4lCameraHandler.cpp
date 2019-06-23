@@ -73,8 +73,6 @@ V4lCameraHandler::V4lCameraHandler()
   settingsOrder.push_back(CameraSettings::MaxAnalogGain);
   settingsOrder.push_back(CameraSettings::TargetGain);
 
-  settingsOrder.push_back(CameraSettings::AutoWhiteBalancing);
-
   settingsOrder.push_back(CameraSettings::PowerlineFrequency);
 
   settingsOrder.push_back(CameraSettings::Contrast);
@@ -162,7 +160,6 @@ void V4lCameraHandler::initIDMapping()
   csConst[CameraSettings::Contrast] = V4L2_CID_CONTRAST;
   csConst[CameraSettings::Hue] = V4L2_CID_HUE;
   csConst[CameraSettings::Sharpness] = V4L2_CID_SHARPNESS;
-  csConst[CameraSettings::AutoWhiteBalancing] = V4L2_CID_AUTO_WHITE_BALANCE;
   csConst[CameraSettings::MinAnalogGain] = V4L2_MT9M114_AE_MIN_VIRT_AGAIN;
   csConst[CameraSettings::MaxAnalogGain] = V4L2_MT9M114_AE_MAX_VIRT_AGAIN;
   csConst[CameraSettings::TargetGain] = V4L2_MT9M114_AE_TARGET_GAIN;
@@ -746,16 +743,6 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings &data)
       if (setSingleCameraParameter(csConst[*it], data.data[*it], CameraSettings::getCameraSettingsName(*it)))
       {
         lastCameraSettingTimestamp = NaoTime::getSystemTimeInMicroSeconds();
-
-        if (*it == CameraSettings::AutoWhiteBalancing && currentSettings.data[*it] == 1 && data.data[*it] == 0)
-        {
-          // read back the white balance value set to make sure they are in sync
-          if(settingsManager) {
-            settingsManager->query(fd, cameraName, currentSettings);
-          }
-
-          std::cout << LOG << "autoupdated WhiteBalance to " << currentSettings.whiteBalanceTemperature << std::endl;
-        }
 
         std::cout << LOG << "set " << CameraSettings::getCameraSettingsName(*it) << " to " << data.data[*it] << std::endl;
 
