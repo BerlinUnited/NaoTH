@@ -34,7 +34,7 @@ void CameraSettingsV6Manager::query(int cameraFd, std::string cameraName, Camera
     settings.horizontalFlip = getSingleCameraParameterUVC(cameraFd, cameraName, 12, "HorizontalFlip", 2);
     settings.verticalFlip = getSingleCameraParameterUVC(cameraFd, cameraName, 13, "VerticalFlip", 2);
 
-    settings.backlightCompensation = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BACKLIGHT_COMPENSATION) == 0 ? false : true;
+//    settings.backlightCompensation = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BACKLIGHT_COMPENSATION) == 0 ? false : true;
 }
 
 void CameraSettingsV6Manager::apply(int cameraFd, std::string cameraName, const CameraSettings &settings)
@@ -110,11 +110,11 @@ void CameraSettingsV6Manager::apply(int cameraFd, std::string cameraName, const 
         gain = settings.gain;
     }
 
-    if (backlightCompensation != settings.backlightCompensation &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BACKLIGHT_COMPENSATION, "BacklightCompensation", settings.backlightCompensation ? 0 : 1))
-    {
-        backlightCompensation = settings.backlightCompensation;
-    }
+    // if (backlightCompensation != settings.backlightCompensation &&
+    //     setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BACKLIGHT_COMPENSATION, "BacklightCompensation", settings.backlightCompensation ? 0 : 1))
+    // {
+    //     backlightCompensation = settings.backlightCompensation;
+    // }
 
     setSingleCameraParameterUVC(cameraFd, cameraName, 12, "HorizontalFlip", 2, settings.horizontalFlip);
 
