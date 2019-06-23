@@ -40,8 +40,6 @@
 #define LOG "[CameraHandler:" << __LINE__ << ", Camera: " << cameraName << "] "
 #define hasIOError(...) hasIOErrorPrint(__LINE__, __VA_ARGS__)
 
-#define V4L2_MT9M114_FADE_TO_BLACK (V4L2_CID_PRIVATE_BASE) //boolean, enable or disable fade to black feature
-
 
 using namespace naoth;
 using namespace std;
@@ -68,10 +66,6 @@ V4lCameraHandler::V4lCameraHandler()
   settingsOrder.push_back(CameraSettings::Hue);
   settingsOrder.push_back(CameraSettings::Sharpness);
   settingsOrder.push_back(CameraSettings::GammaCorrection);
-
-  // this throws errors sometimes and slows down the robot, check whats wrong before activating it
-  //  settingsOrder.push_back(CameraSettings::BacklightCompensation);
-  settingsOrder.push_back(CameraSettings::FadeToBlack);
 
   // DEBUG: test
   //hasIOError(-1, EPIPE);
@@ -151,7 +145,6 @@ void V4lCameraHandler::initIDMapping()
   csConst[CameraSettings::GammaCorrection] = V4L2_CID_GAMMA;
 
   csConst[CameraSettings::BacklightCompensation] = V4L2_CID_BACKLIGHT_COMPENSATION;
-  csConst[CameraSettings::FadeToBlack] = V4L2_MT9M114_FADE_TO_BLACK;
   csConst[CameraSettings::PowerlineFrequency] = V4L2_CID_POWER_LINE_FREQUENCY;
 
   //---------------------------------------------------------------------

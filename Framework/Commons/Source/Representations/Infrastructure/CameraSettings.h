@@ -39,6 +39,8 @@ public:
   float v5_minAnalogGain;
   float v5_maxAnalogGain;
 
+  bool v5_fadeToBlack;
+
   /* don't change order of enumerations
        * because it reflects the order of execution
        */
@@ -49,7 +51,6 @@ public:
     Brightness,
     CameraSelection,
     Contrast,
-    FadeToBlack,
     FPS, // TODO: remove this from settings?
     GammaCorrection,
     Hue,
@@ -116,7 +117,7 @@ public:
   int cameraSelection;
   double contrast;
   int exposure;
-  bool fadeToBlack;
+  bool v5_fadeToBlack;
   double gain;
   int gammaCorrection;
   double v5_targetGain;

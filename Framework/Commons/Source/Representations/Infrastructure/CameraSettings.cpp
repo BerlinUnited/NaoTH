@@ -49,9 +49,6 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
   case Sharpness:
     return "Sharpness";
     break;
-  case FadeToBlack:
-    return "FadeToBlack";
-    break;
   case PowerlineFrequency:
     return "PowerlineFrequency";
     break;
@@ -101,7 +98,7 @@ CameraSettingsRequest::CameraSettingsRequest(string configName)
   PARAMETER_REGISTER(cameraSelection) = 0;
   PARAMETER_REGISTER(contrast) = 1.0;
   PARAMETER_REGISTER(exposure) = 1;
-  PARAMETER_REGISTER(fadeToBlack) = false;
+  PARAMETER_REGISTER(v5_fadeToBlack) = false;
   PARAMETER_REGISTER(gain) = 1.0;
   PARAMETER_REGISTER(gammaCorrection) = 220;
   PARAMETER_REGISTER(v5_targetGain) = 5.0;
@@ -158,6 +155,7 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
   // make sure min/max gains are compatible with the choosen target gain
   result.v5_minAnalogGain = std::min(static_cast<float>(v5_minAnalogGain), result.v5_targetGain);
   result.v5_maxAnalogGain = std::max(static_cast<float>(v5_maxAnalogGain), result.v5_targetGain);
+  result.v5_fadeToBlack = v5_fadeToBlack;
 
   // Convert each request to a proper setting and clamp values according to the driver documentation
   // (https://github.com/bhuman/BKernel#information-about-the-camera-driver).
@@ -177,8 +175,6 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
   {
     result.data[CameraSettings::Contrast] = Math::toFixPoint<5>(static_cast<float>(Math::clamp(contrast, 0.5, 2.0)));
   }
-  result.data[CameraSettings::FadeToBlack] = fadeToBlack ? 1 : 0;
-
 
   if (isV6)
   {
