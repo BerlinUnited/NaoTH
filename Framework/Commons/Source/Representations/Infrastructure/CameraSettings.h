@@ -17,7 +17,7 @@ namespace naoth
 {
 
 /**  Camera settings that are available on all cameras (V5, V6, ...) and necessary for the most basic configuration */
-class GeneriCameraSettings : public Printable
+class GenericCameraSettings : public Printable
 {
 public:
   int exposure;
@@ -35,6 +35,8 @@ public:
   /** Apply all changed values on the actual camera */
   virtual void apply(int camera_fd) = 0;
 };
+
+
 
 class CameraSettings : public Printable
 {
