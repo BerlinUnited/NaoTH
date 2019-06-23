@@ -1,6 +1,6 @@
 option look_around
 {
-  initial state get_starting_point
+  initial state get_starting_direction
   {
     decision{
       // decide in which direction to look first
