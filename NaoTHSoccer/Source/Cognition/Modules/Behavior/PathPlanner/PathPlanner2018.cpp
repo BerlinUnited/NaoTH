@@ -446,24 +446,26 @@ bool PathPlanner2018::nearApproach_sideKick(const Foot& foot, const double offse
 
 void PathPlanner2018::forwardKick(const Foot& /*foot*/)
 {
-  if (/*stepBuffer.empty() && */!kickPlanned)
+  if (!kickPlanned)
   {
     stepBuffer.clear();
     
-    Foot debug_foot;
+    // 2019 version - makes sure to kick with the foot that is behind the ball
+    Foot actual_foot;
     Coordinate coordinate = Coordinate::Hip;
     if (getBallModel().positionPreview.y < 0)
     {
       coordinate = Coordinate::LFoot;
-      debug_foot = Foot::RIGHT;
+      actual_foot = Foot::RIGHT;
     }
     else
     {
       coordinate = Coordinate::RFoot;
-      debug_foot = Foot::LEFT;
+      actual_foot = Foot::LEFT;
     }
 
     /*
+    // this was used in 2018
     if (foot == Foot::RIGHT)
     {
       coordinate = Coordinate::LFoot;
@@ -505,7 +507,7 @@ void PathPlanner2018::forwardKick(const Foot& /*foot*/)
       .setCharacter(1.0)
       .setScale(0.7)
       .setCoordinate(coordinate)
-      .setFoot(debug_foot)
+      .setFoot(actual_foot)
       .setSpeedDirection(Math::fromDegrees(0.0))
       .setRestriction(RestrictionMode::SOFT)
       .setProtected(true)

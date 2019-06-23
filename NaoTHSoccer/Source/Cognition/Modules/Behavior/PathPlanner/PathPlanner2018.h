@@ -160,7 +160,7 @@ private:
   }
 
   /*
-  NOTE: this feature is for future generations of advanced programmers
+  NOTE: this feature is for future generations of advanced programmers who like to program like javascript peasants
   const StepBufferElement& addStep(const std::string& name) {
     stepBuffer.emplace_back(name);
     return stepBuffer.back();
