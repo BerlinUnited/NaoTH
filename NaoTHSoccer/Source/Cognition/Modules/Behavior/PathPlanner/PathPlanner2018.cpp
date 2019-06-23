@@ -446,24 +446,26 @@ bool PathPlanner2018::nearApproach_sideKick(const Foot& foot, const double offse
 
 void PathPlanner2018::forwardKick(const Foot& /*foot*/)
 {
-  if (/*stepBuffer.empty() && */!kickPlanned)
+  if (!kickPlanned)
   {
     stepBuffer.clear();
     
-    Foot debug_foot;
+    // 2019 version - makes sure to kick with the foot that is behind the ball
+    Foot actual_foot;
     Coordinate coordinate = Coordinate::Hip;
     if (getBallModel().positionPreview.y < 0)
     {
       coordinate = Coordinate::LFoot;
-      debug_foot = Foot::RIGHT;
+      actual_foot = Foot::RIGHT;
     }
     else
     {
       coordinate = Coordinate::RFoot;
-      debug_foot = Foot::LEFT;
+      actual_foot = Foot::LEFT;
     }
 
     /*
+    // this was used in 2018
     if (foot == Foot::RIGHT)
     {
       coordinate = Coordinate::LFoot;
@@ -481,34 +483,35 @@ void PathPlanner2018::forwardKick(const Foot& /*foot*/)
     // Correction step if the movable foot is different from the foot that is supposed to kick
     if (getMotionStatus().stepControl.moveableFoot != (getBallModel().positionPreview.y < 0 ? MotionStatus::StepControlStatus::RIGHT : MotionStatus::StepControlStatus::LEFT))
     {
-      StepBufferElement forward_correction_step;
-      forward_correction_step.debug_name = "forward_correction_step";
-      forward_correction_step.setPose({ 0.0, 100.0, 0.0 });
-      forward_correction_step.setStepType(StepType::WALKSTEP);
-      forward_correction_step.setCharacter(1.0);
-      forward_correction_step.setScale(1.0);
-      forward_correction_step.setCoordinate(coordinate);
-      forward_correction_step.setFoot(Foot::NONE);
-      forward_correction_step.setSpeedDirection(Math::fromDegrees(0.0));
-      forward_correction_step.setRestriction(RestrictionMode::HARD);
-      forward_correction_step.setProtected(false);
-      forward_correction_step.setTime(250);
+      StepBufferElement forward_correction_step("forward_correction_step");
+      forward_correction_step
+        .setPose({ 0.0, 100.0, 0.0 })
+        .setStepType(StepType::WALKSTEP)
+        .setCharacter(1.0)
+        .setScale(1.0)
+        .setCoordinate(coordinate)
+        .setFoot(Foot::NONE)
+        .setSpeedDirection(Math::fromDegrees(0.0))
+        .setRestriction(RestrictionMode::HARD)
+        .setProtected(false)
+        .setTime(250);
 
       addStep(forward_correction_step);
     }
     
     // The kick
     StepBufferElement forward_kick_step;
-    forward_kick_step.setPose({ 0.0, 500.0, 0.0 });
-    forward_kick_step.setStepType(StepType::KICKSTEP);
-    forward_kick_step.setCharacter(1.0);
-    forward_kick_step.setScale(0.7);
-    forward_kick_step.setCoordinate(coordinate);
-    forward_kick_step.setFoot(debug_foot);
-    forward_kick_step.setSpeedDirection(Math::fromDegrees(0.0));
-    forward_kick_step.setRestriction(RestrictionMode::SOFT);
-    forward_kick_step.setProtected(true);
-    forward_kick_step.setTime(params.forwardKickTime);
+    forward_kick_step
+      .setPose({ 0.0, 500.0, 0.0 })
+      .setStepType(StepType::KICKSTEP)
+      .setCharacter(1.0)
+      .setScale(0.7)
+      .setCoordinate(coordinate)
+      .setFoot(actual_foot)
+      .setSpeedDirection(Math::fromDegrees(0.0))
+      .setRestriction(RestrictionMode::SOFT)
+      .setProtected(true)
+      .setTime(params.forwardKickTime);
 
     addStep(forward_kick_step);
 
@@ -578,11 +581,6 @@ void PathPlanner2018::sideKick(const Foot& foot) // Foot == RIGHT means that we 
   }
 }
 
-void PathPlanner2018::addStep(const StepBufferElement& new_step)
-{
-  stepBuffer.push_back(new_step);
-  //std::cout << new_step.debug_name << std::endl;
-}
 
 void PathPlanner2018::updateSpecificStep(const unsigned int index, StepBufferElement& step)
 {
@@ -628,23 +626,9 @@ void PathPlanner2018::executeStepBuffer()
 {
   STOPWATCH_START("PathPlanner2018:execute_steplist");
 
-  if (stepBuffer.empty())
-  {
+  if (stepBuffer.empty()) {
     return;
   }
-
-  getMotionRequest().id                                     = motion::walk;
-  getMotionRequest().walkRequest.coordinate                 = stepBuffer.front().coordinate;
-  getMotionRequest().walkRequest.character                  = stepBuffer.front().character;
-  getMotionRequest().walkRequest.stepControl.scale          = stepBuffer.front().scale;
-  getMotionRequest().walkRequest.stepControl.stepID         = getMotionStatus().stepControl.stepID;
-  getMotionRequest().walkRequest.stepControl.type           = stepBuffer.front().type;
-  getMotionRequest().walkRequest.stepControl.time           = stepBuffer.front().time;
-  getMotionRequest().walkRequest.stepControl.speedDirection = stepBuffer.front().speedDirection;
-  getMotionRequest().walkRequest.stepControl.target         = stepBuffer.front().pose;
-  getMotionRequest().walkRequest.stepControl.restriction    = stepBuffer.front().restriction;
-  getMotionRequest().walkRequest.stepControl.isProtected    = stepBuffer.front().isProtected;
-  getMotionRequest().walkRequest.stepControl.stepRequestID  = lastStepRequestID;
 
   // normal walking WALKSTEPs use Foot::NONE, for KICKSTEPs the foot to use has to be specified
   if (stepBuffer.front().foot == Foot::NONE)
@@ -658,12 +642,9 @@ void PathPlanner2018::executeStepBuffer()
       footToUse = Foot::RIGHT;
       break;
     case MotionStatus::StepControlStatus::BOTH:
-      if (stepBuffer.front().pose.translation.y > 0.0f || stepBuffer.front().pose.rotation > 0.0f)
-      {
+      if (stepBuffer.front().pose.translation.y > 0.0f || stepBuffer.front().pose.rotation > 0.0f) {
         footToUse = Foot::LEFT;
-      }
-      else
-      {
+      } else {
         footToUse = Foot::RIGHT;
       }
       break;
@@ -676,8 +657,24 @@ void PathPlanner2018::executeStepBuffer()
   {
     footToUse = stepBuffer.front().foot;
   }
-  // false means right foot
-  getMotionRequest().walkRequest.stepControl.moveLeftFoot = (footToUse != Foot::RIGHT);
+
+  //set motion request
+  getMotionRequest().id                                     = motion::walk;
+  getMotionRequest().walkRequest.stepControl.stepID         = getMotionStatus().stepControl.stepID;
+
+  getMotionRequest().walkRequest.coordinate                 = stepBuffer.front().coordinate;
+  getMotionRequest().walkRequest.character                  = stepBuffer.front().character;
+
+  getMotionRequest().walkRequest.stepControl.scale          = stepBuffer.front().scale;
+  getMotionRequest().walkRequest.stepControl.type           = stepBuffer.front().type;
+  getMotionRequest().walkRequest.stepControl.time           = stepBuffer.front().time;
+  getMotionRequest().walkRequest.stepControl.speedDirection = stepBuffer.front().speedDirection;
+  getMotionRequest().walkRequest.stepControl.target         = stepBuffer.front().pose;
+  getMotionRequest().walkRequest.stepControl.restriction    = stepBuffer.front().restriction;
+  getMotionRequest().walkRequest.stepControl.isProtected    = stepBuffer.front().isProtected;
+  getMotionRequest().walkRequest.stepControl.stepRequestID  = lastStepRequestID;
+  getMotionRequest().walkRequest.stepControl.moveLeftFoot   = (footToUse != Foot::RIGHT); // false means right foot
+  
   //std::cout << stepBuffer.front().debug_name << " - " << getMotionRequest().walkRequest.stepControl.moveLeftFoot  << std::endl;
   STOPWATCH_STOP("PathPlanner2018:execute_steplist");
 }
