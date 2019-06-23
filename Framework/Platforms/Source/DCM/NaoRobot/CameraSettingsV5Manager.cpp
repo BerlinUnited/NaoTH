@@ -11,7 +11,7 @@ CameraSettingsV5Manager::CameraSettingsV5Manager()
 {
 }
 
-void CameraSettingsV5Manager::query(int cameraFd, std::string cameraName, naoth::CameraSettings& settings)
+void CameraSettingsV5Manager::query(int cameraFd, std::string cameraName, naoth::CameraSettings &settings)
 {
     settings.exposure = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE);
     settings.saturation = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SATURATION);
@@ -20,21 +20,39 @@ void CameraSettingsV5Manager::query(int cameraFd, std::string cameraName, naoth:
     std::int32_t gainRaw = static_cast<std::int32_t>(Math::clamp(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN), 0, 255));
     settings.gain = Math::fromFixPoint<5>(gainRaw);
 
-
     settings.verticalFlip = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_VFLIP) == 0 ? false : true;
     settings.horizontalFlip = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HFLIP) == 0 ? false : true;
-
-    
 }
 
-void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const naoth::CameraSettings& settings)
+void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const naoth::CameraSettings &settings)
 {
-    setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE, "Exposure", Math::clamp(settings.exposure, 0, 1000));
-    setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SATURATION, "Saturation", Math::clamp(settings.saturation, 0, 255));
-    setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_WHITE_BALANCE_TEMPERATURE, "WhiteBalance", Math::clamp(settings.whiteBalanceTemperature, 2700, 6500));
+    if (exposure != settings.exposure && setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE, "Exposure", Math::clamp(settings.exposure, 0, 1000)))
+    {
+        exposure = settings.exposure;
+    }
 
-    setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN, "Gain", Math::toFixPoint<5>(static_cast<float>(settings.gain)));    
+    if (saturation != settings.exposure && setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SATURATION, "Saturation", Math::clamp(settings.saturation, 0, 255)))
+    {
+        saturation = settings.saturation;
+    }
 
-    setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_VFLIP, "VerticalFlip", settings.verticalFlip ? 1 : 0);
-    setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HFLIP, "HorizontalFlip", settings.horizontalFlip ? 1 : 0);
+    if (whiteBalanceTemperature != settings.whiteBalanceTemperature && setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_WHITE_BALANCE_TEMPERATURE, "WhiteBalance", Math::clamp(settings.whiteBalanceTemperature, 2700, 6500)))
+    {
+        whiteBalanceTemperature = settings.whiteBalanceTemperature;
+    }
+
+    if (gain != settings.gain && setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN, "Gain", Math::toFixPoint<5>(static_cast<float>(settings.gain))))
+    {
+        gain = settings.gain;
+    }
+
+    if (verticalFlip != settings.verticalFlip && setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_VFLIP, "VerticalFlip", settings.verticalFlip ? 1 : 0))
+    {
+        verticalFlip = settings.verticalFlip;
+    }
+    
+    if (horizontalFlip != settings.horizontalFlip && setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HFLIP, "HorizontalFlip", settings.horizontalFlip ? 1 : 0))
+    {
+        horizontalFlip = settings.horizontalFlip;
+    }
 }

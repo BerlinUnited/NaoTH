@@ -63,6 +63,7 @@ int V4LCameraSettingsManager::getSingleCameraParameterRaw(int cameraFd, std::str
     return -1;
 }
 
+
 bool V4LCameraSettingsManager::setSingleCameraParameterRaw(int cameraFd, std::string cameraName, int parameterID, std::string parameterName, int value)
 {
     if (parameterID < 0)

@@ -28,12 +28,25 @@ void CameraSettingsV6Manager::query(int cameraFd, std::string cameraName, Camera
 
 void CameraSettingsV6Manager::apply(int cameraFd, std::string cameraName, const CameraSettings &settings)
 {
-    setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE, "Exposure", Math::clamp(settings.exposure, 0, 1000));
-    setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SATURATION, "Saturation", Math::clamp(settings.saturation, 0, 255));
-    setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_WHITE_BALANCE_TEMPERATURE, "WhiteBalance", Math::clamp(settings.whiteBalanceTemperature, 2700, 6500));
+    if (exposure != settings.exposure && setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE, "Exposure", Math::clamp(settings.exposure, 0, 1000)))
+    {
+        exposure = settings.exposure;
+    }
+    if (saturation != settings.saturation && setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SATURATION, "Saturation", Math::clamp(settings.saturation, 0, 255)))
+    {
+        saturation = settings.saturation;
+    }
+    if (whiteBalanceTemperature != settings.whiteBalanceTemperature && setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_WHITE_BALANCE_TEMPERATURE, "WhiteBalance", Math::clamp(settings.whiteBalanceTemperature, 2700, 6500)))
+    {
+        whiteBalanceTemperature = settings.whiteBalanceTemperature;
+    }
 
-    setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN, "Gain", Math::toFixPoint<5>(static_cast<float>(settings.gain)));
+    if (gain != settings.gain && setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN, "Gain", Math::toFixPoint<5>(static_cast<float>(settings.gain))))
+    {
+        gain = settings.gain;
+    }
 
     setSingleCameraParameterUVC(cameraFd, cameraName, 12, "HorizontalFlip", 2, settings.horizontalFlip);
+
     setSingleCameraParameterUVC(cameraFd, cameraName, 13, "VerticalFlip", 2, settings.verticalFlip);
 }

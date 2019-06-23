@@ -12,6 +12,7 @@ protected:
     int error_count;
 
 protected:
+
     int getSingleCameraParameterRaw(int cameraFd, std::string cameraName, int parameterID);
     bool setSingleCameraParameterRaw(int cameraFd, std::string cameraName, int parameterID, std::string parameterName, int value);
 

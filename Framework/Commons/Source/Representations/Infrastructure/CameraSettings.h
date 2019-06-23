@@ -71,7 +71,7 @@ public:
   virtual void print(std::ostream &stream) const;
 };
 
-class CameraSettingsManager
+class CameraSettingsManager : public CameraSettings
 {
 public:
   
