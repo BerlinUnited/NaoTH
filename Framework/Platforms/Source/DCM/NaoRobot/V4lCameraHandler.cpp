@@ -648,7 +648,7 @@ bool V4lCameraHandler::setSingleCameraParameter(int id, int value, std::string n
   queryctrl.id = id;
   if (int errCode = xioctl(fd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
   {
-    std::cerr << LOG << "VIDIOC_QUERYCTRL failed with code " << errCode << " " << strerror(errCode) << std::endl;
+    std::cerr << LOG << "VIDIOC_QUERYCTRL for legacy parameter " << name << " failed with code " << errCode << " " << strerror(errCode) << std::endl;
     return false;
   }
   if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED)
@@ -739,23 +739,7 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings &data)
     }
   } // end for
 
-  // set the autoexposure grid parameters
-  for (std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++)
-  {
-    for (std::size_t j = 0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++)
-    {
-      if (data.autoExposureWeights[i][j] != currentSettings.autoExposureWeights[i][j])
-      {
-        std::stringstream paramName;
-        paramName << "autoExposureWeights (" << i << "," << j << ")";
-        if (setSingleCameraParameter(getAutoExposureGridID(i, j), data.autoExposureWeights[i][j], paramName.str()))
-        {
-          currentSettings.autoExposureWeights[i][j] = data.autoExposureWeights[i][j];
-        }
-      }
-    }
-  }
-
+  
   initialParamsSet = true;
 
 } // end setAllCameraParams

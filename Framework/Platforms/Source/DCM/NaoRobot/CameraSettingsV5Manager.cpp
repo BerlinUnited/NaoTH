@@ -40,6 +40,20 @@ void CameraSettingsV5Manager::query(int cameraFd, std::string cameraName, naoth:
     settings.v5_fadeToBlack = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_FADE_TO_BLACK) == 0 ? false : true;
     settings.v5_powerlineFrequency = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_POWER_LINE_FREQUENCY) == 2 ? 60 : 50;
     settings.v5_gammaCorrection = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAMMA);
+
+    // get the autoexposure grid parameters
+    for (std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++)
+    {
+        for (std::size_t j = 0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++)
+        {
+             std::stringstream paramName;
+            paramName << "autoExposureWeights (" << i << "," << j << ")";
+            if (setSingleCameraParameterRaw(cameraFd, cameraName, getAutoExposureGridID(i, j), paramName.str(), settings.autoExposureWeights[i][j]))
+            {
+                autoExposureWeights[i][j] = settings.autoExposureWeights[i][j];
+            }
+        }
+    }
 }
 
 void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const naoth::CameraSettings &settings)
@@ -146,4 +160,26 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
     {
         v5_gammaCorrection = settings.v5_gammaCorrection;
     }
+
+    // set the autoexposure grid parameters
+    for (std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++)
+    {
+        for (std::size_t j = 0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++)
+        {
+            if (autoExposureWeights[i][j] != settings.autoExposureWeights[i][j])
+            {
+                std::stringstream paramName;
+                paramName << "autoExposureWeights (" << i << "," << j << ")";
+                if (setSingleCameraParameterRaw(cameraFd, cameraName, getAutoExposureGridID(i, j), paramName.str(), settings.autoExposureWeights[i][j]))
+                {
+                    autoExposureWeights[i][j] = settings.autoExposureWeights[i][j];
+                }
+            }
+        }
+    }
+}
+
+int CameraSettingsV5Manager::getAutoExposureGridID(size_t i, size_t j)
+{
+    return V4L2_CID_PRIVATE_BASE + 7 + (i * CameraSettings::AUTOEXPOSURE_GRID_SIZE) + j;
 }

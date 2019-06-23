@@ -75,7 +75,7 @@ bool V4LCameraSettingsManager::setSingleCameraParameterRaw(int cameraFd, std::st
     queryctrl.id = parameterID;
     if (int errCode = xioctl(cameraFd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
     {
-        std::cerr << LOG << "VIDIOC_QUERYCTRL failed with code " << errCode << " " << strerror(errCode) << std::endl;
+        std::cerr << LOG << "VIDIOC_QUERYCTRL for parameter " << parameterName <<  " failed with code " << errCode << " " << strerror(errCode) << std::endl;
         return false;
     }
     if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED)
