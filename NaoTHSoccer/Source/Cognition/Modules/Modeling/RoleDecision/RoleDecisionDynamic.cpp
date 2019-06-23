@@ -6,7 +6,11 @@ RoleDecisionDynamic::RoleDecisionDynamic()
     getDebugParameterList().add(&params);
 
     DEBUG_REQUEST_REGISTER("RoleDecision:Dynamic:striker_ball_difference_radius",
-                           "Draws the radius around a seen ball, which is used to determine if the seen ball is the same)",
+                           "Draws the radius around a seen ball, which is used to determine if the seen ball is the same",
+                           false);
+
+    DEBUG_REQUEST_REGISTER("RoleDecision:Dynamic:goalie_striker_defender_drawings",
+                           "Draws two overlapping circles where the intersection represents a valid defending striker.",
                            false);
 
     DEBUG_REQUEST_REGISTER("RoleDecision:Dynamic:striker",
@@ -108,31 +112,60 @@ bool RoleDecisionDynamic::goalieStrikerDecisionWants(const TeamMessageData* goal
 bool RoleDecisionDynamic::goalieStrikerDecisionCondition(const TeamMessageData* goalie, std::vector<Striker>& striker)
 {
     Vector2d globalBall = goalie->pose * goalie->ballPosition;
-    // ball is inside penalty area, goalie is definitely getting striker
-    if(globalBall.x <= getFieldInfo().xPosOwnPenaltyArea && fabs(globalBall.y) <= getFieldInfo().yPosLeftPenaltyArea) {
+
+    if(getTeamMessagePlayersState().getActiveCount() <= 1) {
+        // goalie is alone on the field
         return true;
-    } else {
+    }
+    else if(globalBall.x <= getFieldInfo().xPosOwnPenaltyArea && fabs(globalBall.y) <= getFieldInfo().yPosLeftPenaltyArea) {
+        // ball is inside penalty area, goalie is definitely getting striker
+        return true;
+    } else if(globalBall.x < params.goalie_striker_min_x_pos && goalie->ballPosition.abs2() <= (params.goalie_striker_ball_distance*params.goalie_striker_ball_distance)) {
+        // ball is in the goalie's area
         bool strikerAlreadyDefending = false;
-        // check if a striker is already defending our goal (striker is between goal and ball)
+        double r = (this->*params.strikerBallDifferenceFn)(goalie->ballPosition.abs());
+        // check if a striker is already defending our goal
         for(auto& s : striker) {
-            if(getTeamMessage().data.at(s.playerNumber).pose.translation.x < globalBall.x) {
-                Math::Line playerBallLine(globalBall, (getTeamMessage().data.at(s.playerNumber).pose.translation - globalBall));
-                Math::LineSegment goalLine(getFieldInfo().ownGoalPostRight, getFieldInfo().ownGoalPostLeft);
-                if(goalLine.intersect(playerBallLine)) {
-                    strikerAlreadyDefending = true;
-                    break;
-                }
+            // do we defend the same ball and is striker between behind the ball?
+            if(checkSameBall(s, globalBall, r)  // same ball?
+                    && getTeamMessage().data.at(s.playerNumber).pose.translation.x < globalBall.x // behind the ball
+                    && (defendingGoalDirectLine(globalBall, getTeamMessage().data.at(s.playerNumber).pose.translation) // between ball and goal
+                        || defendingGoalCircle(globalBall, getTeamMessage().data.at(s.playerNumber).pose.translation)) // near the ball
+                    )
+            {
+                strikerAlreadyDefending = true;
+                break;
             }
         }
-        // if goalie is alone on the field or the ball is near the goal and nobody already defendin => the goalie has to clear the ball
-        if(getTeamMessagePlayersState().getActiveCount() <= 1
-           || (!strikerAlreadyDefending && globalBall.x < params.striker_goalie_min_x_pos && goalie->ballPosition.abs() <= params.striker_goalie_ball_distance))
+        // nobody already defendin => the goalie has to clear the ball
+        if(!strikerAlreadyDefending)
         {
             // set goalie as striker and make sure nobody is "better"
             return true;
         }
     }
+
+
+    DEBUG_REQUEST("RoleDecision:Dynamic:goalie_striker_defender_drawings",
+      FIELD_DRAWING_CONTEXT;
+
+      Vector2d anchor(getFieldInfo().xPosOwnGroundline, 0);
+
+      PEN("000000", 10);
+      CIRCLE(getFieldInfo().xPosOwnGroundline, 0, (globalBall - anchor).abs());
+
+      PEN("ff9d00", 10);
+      CIRCLE(globalBall.x, globalBall.y, params.goalie_striker_decision_distance);
+    );
+
     return false;
+}
+
+bool RoleDecisionDynamic::checkSameBall(const Striker& s,const Vector2d& ball, double radius)
+{
+    // use the larger radius for 'same ball' comparison
+    double sameBallRadius = radius > s.sameBallRadius ? radius : s.sameBallRadius;
+    return (s.ball - ball).abs2() < sameBallRadius*sameBallRadius;
 }
 
 void RoleDecisionDynamic::checkStriker(const TeamMessageData& msg,
@@ -142,7 +175,7 @@ void RoleDecisionDynamic::checkStriker(const TeamMessageData& msg,
                                        bool force)
 {
     bool done = false;
-    double r =  (this->*params.strikerBallDifferenceFn)(msg.ballPosition.abs());
+    double r = (this->*params.strikerBallDifferenceFn)(msg.ballPosition.abs());
 
     DEBUG_REQUEST("RoleDecision:Dynamic:striker_ball_difference_radius",
       FIELD_DRAWING_CONTEXT;
@@ -153,10 +186,8 @@ void RoleDecisionDynamic::checkStriker(const TeamMessageData& msg,
     );
 
     for(auto& s : striker) {
-        // use the larger radius for 'same ball' comparison
-        double sameBallRadius = r > s.sameBallRadius ? r : s.sameBallRadius;
         // same ball as the current striker
-        if((s.ball - ball).abs2() < sameBallRadius*sameBallRadius) {
+        if(checkSameBall(s, ball, r)) {
             // this player is 'faster' to the ball than the current striker or 'forced' to be striker
             if(force || s.indicator > indicator) {
                 // set this player for the ball as striker
@@ -258,4 +289,19 @@ void RoleDecisionDynamic::decideSupporter(std::map<unsigned int, Roles::Dynamic>
     for(const auto& s : new_supporter) {
         roles[s.playerNumber] = Roles::supporter;
     }
+}
+
+
+bool RoleDecisionDynamic::defendingGoalDirectLine(const Vector2d& ball, const Vector2d& player_pos) const
+{
+    Math::Line playerBallLine(ball, (player_pos - ball));
+    Math::LineSegment goalLine(getFieldInfo().ownGoalPostRight, getFieldInfo().ownGoalPostLeft);
+    return goalLine.intersect(playerBallLine);
+}
+
+bool RoleDecisionDynamic::defendingGoalCircle(const Vector2d& ball, const Vector2d& player_pos) const
+{
+    Vector2d anchor(getFieldInfo().xPosOwnGroundline, 0);
+    return (player_pos - anchor).abs2() < (ball - anchor).abs2() // is player in the defender circle
+            && (player_pos - ball).abs2() < (params.goalie_striker_decision_distance*params.goalie_striker_decision_distance); // is the player near the ball
 }
