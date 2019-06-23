@@ -41,6 +41,7 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
   const int n_cells_vertical = height / grid_size;
 
   // pixels lost due to integer division
+  // TODO: rest is expected to be less then n_cells
   int rest_H = width - (n_cells_horizontal * grid_size);
   int rest_V = height - (n_cells_vertical * grid_size);
 
@@ -53,7 +54,12 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
   bool former_green = false;
   Cell last_green_cell;
   Cell cell;
-  for (cell.minX=0; cell.minX + grid_size-1 < width; cell.minX += grid_size) {
+  // TODO: simplify calculations of cell bounds.
+  // In perticular get rid of bilataral usage of cell.maxX and cell.minY
+  // where the integer devision rest is added.
+  // In short: Make everything double and calculate grid sizes and thresholds individually
+  for (cell.minX=0; cell.minX + grid_size-1 < width; cell.minX = cell.maxX + 1)
+  {
     // FIXME: check whether the -1 is correct here with the use of integral image
     cell.maxX = cell.minX + grid_size-1;
     int horizon_height = std::max(
@@ -67,7 +73,8 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
     int rest = rest_V; // copy, because we need it several times
     int cell_number = 1;
     // scan up
-    for(cell.maxY = height-1; cell.maxY - grid_size + 1 >= min_scan_y; cell.maxY -= grid_size) {
+    for(cell.maxY = height-1; cell.maxY - grid_size + 1 >= min_scan_y; cell.maxY = cell.minY - 1)
+    {
       // FIXME: check whether the -1 is correct here with the use of integral image
       cell.minY = cell.maxY - grid_size + 1;
 
