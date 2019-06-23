@@ -16,6 +16,26 @@
 namespace naoth
 {
 
+/**  Camera settings that are available on all cameras (V5, V6, ...) and necessary for the most basic configuration */
+class GeneriCameraSettings : public Printable
+{
+public:
+  int exposure;
+  double gain;
+
+  int saturation;
+
+  int whiteBalanceTemperature;
+
+  virtual void print(std::ostream &stream) const;
+
+  /** Queries all values from the actual camera */
+  virtual void query(int camera_fd) = 0;
+
+  /** Apply all changed values on the actual camera */
+  virtual void apply(int camera_fd) = 0;
+};
+
 class CameraSettings : public Printable
 {
 public:
@@ -114,7 +134,7 @@ public:
   void reset();
   void setAutoExposureWeights(std::uint8_t w);
 
-  CameraSettings getCameraSettings(bool isV6=false) const;
+  CameraSettings getCameraSettings(bool isV6 = false) const;
 };
 
 class CameraSettingsRequestTop : public CameraSettingsRequest
@@ -160,6 +180,6 @@ public:
 
   bool isActive;
 };
-}
+} // namespace naoth
 
 #endif /* _CAMERASETTINGS_H */
