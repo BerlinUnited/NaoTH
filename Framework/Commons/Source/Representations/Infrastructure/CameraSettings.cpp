@@ -34,15 +34,6 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
   case Hue:
     return "Hue";
     break;
-  case MinAnalogGain:
-    return "MinAnalogGain";
-    break;
-  case MaxAnalogGain:
-    return "MaxAnalogGain";
-    break;
-  case TargetGain:
-    return "TargetGain";
-    break;
   case FPS:
     return "FPS";
     break;
@@ -116,9 +107,9 @@ CameraSettingsRequest::CameraSettingsRequest(string configName)
   PARAMETER_REGISTER(fadeToBlack) = false;
   PARAMETER_REGISTER(gain) = 1.0;
   PARAMETER_REGISTER(gammaCorrection) = 220;
-  PARAMETER_REGISTER(targetGain) = 100.0;
-  PARAMETER_REGISTER(minAnalogGain) = 1.0;
-  PARAMETER_REGISTER(maxAnalogGain) = 8.0;
+  PARAMETER_REGISTER(v5_targetGain) = 5.0;
+  PARAMETER_REGISTER(v5_minAnalogGain) = 1.0;
+  PARAMETER_REGISTER(v5_maxAnalogGain) = 8.0;
   PARAMETER_REGISTER(horizontalFlip) = 0;
   PARAMETER_REGISTER(hue) = 0;
   PARAMETER_REGISTER(saturation) = 128;
@@ -166,6 +157,11 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
   result.verticalFlip = verticalFlip;
   result.horizontalFlip = horizontalFlip;
 
+  result.v5_targetGain = static_cast<float>(v5_targetGain);
+  // make sure min/max gains are compatible with the choosen target gain
+  result.v5_minAnalogGain = std::min(static_cast<float>(v5_minAnalogGain), result.v5_targetGain);
+  result.v5_maxAnalogGain = std::max(static_cast<float>(v5_maxAnalogGain), result.v5_targetGain);
+
   // Convert each request to a proper setting and clamp values according to the driver documentation
   // (https://github.com/bhuman/BKernel#information-about-the-camera-driver).
   // The V4L controller might later adjust these values by the ranges reported by driver, but these
@@ -186,11 +182,7 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
     result.data[CameraSettings::Contrast] = Math::toFixPoint<5>(static_cast<float>(Math::clamp(contrast, 0.5, 2.0)));
   }
   result.data[CameraSettings::FadeToBlack] = fadeToBlack ? 1 : 0;
-  result.data[CameraSettings::MinAnalogGain] = Math::clamp(Math::toFixPoint<5>(static_cast<float>(minAnalogGain)), 0, 32767);
-  result.data[CameraSettings::MaxAnalogGain] = Math::clamp(Math::toFixPoint<5>(static_cast<float>(maxAnalogGain)), 0, 32767);
 
-
-  result.data[CameraSettings::TargetGain] = Math::toFixPoint<5>(static_cast<float>(Math::clamp(targetGain, minAnalogGain, maxAnalogGain)));
 
   if (isV6)
   {

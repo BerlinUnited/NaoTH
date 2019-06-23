@@ -47,9 +47,9 @@ void CameraDebug::execute()
     
     setCommonCameraSetting(common.brightness, bottom.brightness, top.brightness, changed);
     setCommonCameraSetting(common.exposure, bottom.exposure, top.exposure, changed);
-    setCommonCameraSetting(common.targetGain, bottom.targetGain, top.targetGain, changed);
-    setCommonCameraSetting(common.minAnalogGain, bottom.minAnalogGain, top.minAnalogGain, changed);
-    setCommonCameraSetting(common.maxAnalogGain, bottom.maxAnalogGain, top.maxAnalogGain, changed);
+    setCommonCameraSetting(common.targetGain, bottom.v5_targetGain, top.v5_targetGain, changed);
+    setCommonCameraSetting(common.minAnalogGain, bottom.v5_minAnalogGain, top.v5_minAnalogGain, changed);
+    setCommonCameraSetting(common.maxAnalogGain, bottom.v5_maxAnalogGain, top.v5_maxAnalogGain, changed);
 
     setCommonCameraSetting(common.gain, bottom.gain, top.gain, changed);
     setCommonCameraSetting(common.saturation, bottom.saturation, top.saturation, changed);

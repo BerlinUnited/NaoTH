@@ -16,8 +16,6 @@
 namespace naoth
 {
 
-
-
 class CameraSettings : public Printable
 {
 public:
@@ -36,6 +34,11 @@ public:
   bool horizontalFlip;
   bool verticalFlip;  
 
+  // custom for V5
+  float v5_targetGain;
+  float v5_minAnalogGain;
+  float v5_maxAnalogGain;
+
   /* don't change order of enumerations
        * because it reflects the order of execution
        */
@@ -50,9 +53,6 @@ public:
     FadeToBlack,
     FPS, // TODO: remove this from settings?
     GammaCorrection,
-    MinAnalogGain,
-    MaxAnalogGain,
-    TargetGain,
     Hue,
     ResolutionHeight, // TODO: remove this from settings?
     ResolutionWidth,  // TODO: remove this from settings?
@@ -120,9 +120,9 @@ public:
   bool fadeToBlack;
   double gain;
   int gammaCorrection;
-  double targetGain;
-  double minAnalogGain;
-  double maxAnalogGain;
+  double v5_targetGain;
+  double v5_minAnalogGain;
+  double v5_maxAnalogGain;
   bool horizontalFlip;
   int hue;
   int saturation;

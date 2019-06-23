@@ -7,6 +7,15 @@ extern "C"
 #include <unistd.h>
 }
 
+//Custom V4L control variables
+#define V4L2_MT9M114_FADE_TO_BLACK (V4L2_CID_PRIVATE_BASE) //boolean, enable or disable fade to black feature
+#define V4L2_MT9M114_BRIGHTNESS_DARK (V4L2_CID_PRIVATE_BASE + 1)
+#define V4L2_MT9M114_AE_TARGET_GAIN (V4L2_CID_PRIVATE_BASE + 2)
+#define V4L2_MT9M114_AE_MIN_VIRT_AGAIN (V4L2_CID_PRIVATE_BASE + 3)
+#define V4L2_MT9M114_AE_MAX_VIRT_AGAIN (V4L2_CID_PRIVATE_BASE + 4)
+#define V4L2_MT9M114_AE_MIN_VIRT_DGAIN (V4L2_CID_PRIVATE_BASE + 5)
+#define V4L2_MT9M114_AE_MAX_VIRT_DGAIN (V4L2_CID_PRIVATE_BASE + 6)
+
 CameraSettingsV5Manager::CameraSettingsV5Manager()
 {
 }
@@ -20,11 +29,14 @@ void CameraSettingsV5Manager::query(int cameraFd, std::string cameraName, naoth:
     settings.autoWhiteBalancing = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_AUTO_WHITE_BALANCE) == 0 ? false : true;
     settings.whiteBalanceTemperature = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_WHITE_BALANCE_TEMPERATURE);
 
-    std::int32_t gainRaw = static_cast<std::int32_t>(Math::clamp(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN), 0, 255));
-    settings.gain = Math::fromFixPoint<5>(gainRaw);
+    settings.gain = Math::fromFixPoint<5>(static_cast<std::int32_t>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN)));
 
     settings.verticalFlip = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_VFLIP) == 0 ? false : true;
     settings.horizontalFlip = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HFLIP) == 0 ? false : true;
+
+    settings.v5_targetGain = Math::fromFixPoint<5>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_TARGET_GAIN));
+    settings.v5_minAnalogGain = Math::fromFixPoint<5>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_MIN_VIRT_AGAIN));
+    settings.v5_maxAnalogGain = Math::fromFixPoint<5>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_MAX_VIRT_AGAIN));
 }
 
 void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const naoth::CameraSettings &settings)
@@ -67,7 +79,7 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
             // read back white balanche values (and all others) set by the now deactivated auto exposure
             query(cameraFd, cameraName, *this);
         }
-        
+
         autoWhiteBalancing = settings.autoWhiteBalancing;
     }
 
@@ -93,5 +105,23 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
     if (horizontalFlip != settings.horizontalFlip && setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HFLIP, "HorizontalFlip", settings.horizontalFlip ? 1 : 0))
     {
         horizontalFlip = settings.horizontalFlip;
+    }
+
+    if (v5_minAnalogGain != settings.v5_minAnalogGain &&
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_MIN_VIRT_AGAIN, "MinAnalogGain", Math::clamp(Math::toFixPoint<5>(settings.v5_minAnalogGain), 0, 65535)))
+    {
+        v5_minAnalogGain = settings.v5_minAnalogGain;
+    }
+
+    if (v5_maxAnalogGain != settings.v5_maxAnalogGain &&
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_MAX_VIRT_AGAIN, "MaxAnalogGain", Math::clamp(Math::toFixPoint<5>(settings.v5_maxAnalogGain), 0, 65535)))
+    {
+        v5_maxAnalogGain = settings.v5_maxAnalogGain;
+    }
+
+    if (v5_targetGain != settings.v5_targetGain &&
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_TARGET_GAIN, "TargetGain", Math::clamp(Math::toFixPoint<5>(settings.v5_targetGain), 0, 65535)))
+    {
+        v5_targetGain = settings.v5_targetGain;
     }
 }

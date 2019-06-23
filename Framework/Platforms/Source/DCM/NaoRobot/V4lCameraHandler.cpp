@@ -37,17 +37,12 @@
   }
 */
 
-//Custom V4L control variables
-#define V4L2_MT9M114_FADE_TO_BLACK (V4L2_CID_PRIVATE_BASE) //boolean, enable or disable fade to black feature
-#define V4L2_MT9M114_BRIGHTNESS_DARK (V4L2_CID_PRIVATE_BASE + 1)
-#define V4L2_MT9M114_AE_TARGET_GAIN (V4L2_CID_PRIVATE_BASE + 2)
-#define V4L2_MT9M114_AE_MIN_VIRT_AGAIN (V4L2_CID_PRIVATE_BASE + 3)
-#define V4L2_MT9M114_AE_MAX_VIRT_AGAIN (V4L2_CID_PRIVATE_BASE + 4)
-#define V4L2_MT9M114_AE_MIN_VIRT_DGAIN (V4L2_CID_PRIVATE_BASE + 5)
-#define V4L2_MT9M114_AE_MAX_VIRT_DGAIN (V4L2_CID_PRIVATE_BASE + 6)
-
 #define LOG "[CameraHandler:" << __LINE__ << ", Camera: " << cameraName << "] "
 #define hasIOError(...) hasIOErrorPrint(__LINE__, __VA_ARGS__)
+
+#define V4L2_MT9M114_FADE_TO_BLACK (V4L2_CID_PRIVATE_BASE) //boolean, enable or disable fade to black feature
+#define V4L2_MT9M114_BRIGHTNESS_DARK (V4L2_CID_PRIVATE_BASE + 1)
+
 
 using namespace naoth;
 using namespace std;
@@ -69,10 +64,6 @@ V4lCameraHandler::V4lCameraHandler()
   settingsOrder.push_back(CameraSettings::AutoExpositionAlgorithm);
   settingsOrder.push_back(CameraSettings::Brightness);
   //  settingsOrder.push_back(CameraSettings::BrightnessDark);
-  settingsOrder.push_back(CameraSettings::MinAnalogGain);
-  settingsOrder.push_back(CameraSettings::MaxAnalogGain);
-  settingsOrder.push_back(CameraSettings::TargetGain);
-
   settingsOrder.push_back(CameraSettings::PowerlineFrequency);
 
   settingsOrder.push_back(CameraSettings::Contrast);
@@ -160,12 +151,8 @@ void V4lCameraHandler::initIDMapping()
   csConst[CameraSettings::Contrast] = V4L2_CID_CONTRAST;
   csConst[CameraSettings::Hue] = V4L2_CID_HUE;
   csConst[CameraSettings::Sharpness] = V4L2_CID_SHARPNESS;
-  csConst[CameraSettings::MinAnalogGain] = V4L2_MT9M114_AE_MIN_VIRT_AGAIN;
-  csConst[CameraSettings::MaxAnalogGain] = V4L2_MT9M114_AE_MAX_VIRT_AGAIN;
-  csConst[CameraSettings::TargetGain] = V4L2_MT9M114_AE_TARGET_GAIN;
   csConst[CameraSettings::GammaCorrection] = V4L2_CID_GAMMA;
 
-  //csConst[CameraSettings::WhiteBalance] = V4L2_CID_DO_WHITE_BALANCE;
   csConst[CameraSettings::BacklightCompensation] = V4L2_CID_BACKLIGHT_COMPENSATION;
   csConst[CameraSettings::FadeToBlack] = V4L2_MT9M114_FADE_TO_BLACK;
   csConst[CameraSettings::PowerlineFrequency] = V4L2_CID_POWER_LINE_FREQUENCY;
