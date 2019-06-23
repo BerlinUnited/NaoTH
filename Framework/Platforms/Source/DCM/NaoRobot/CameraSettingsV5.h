@@ -9,9 +9,9 @@ class CameraSettingsV5 : public naoth::GenericCameraSettings {
 
   CameraSettingsV5();
 
-  virtual void query(int cameraFd);
+  virtual void query(int cameraFd, std::string cameraName);
 
-  virtual void apply(int cameraFd);
+  virtual void apply(int cameraFd, std::string cameraName);
 
   private:
     int error_count;

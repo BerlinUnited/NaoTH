@@ -16,12 +16,23 @@ CameraSettingsV5::CameraSettingsV5()
 {
 }
 
-void CameraSettingsV5::query(int /* cameraFd */)
+void CameraSettingsV5::query(int cameraFd, std::string cameraName)
 {
+    exposure = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE);
+    saturation = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SATURATION);
+    whiteBalanceTemperature = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_WHITE_BALANCE_TEMPERATURE);
+
+    std::int32_t gainRaw = static_cast<std::int32_t>(Math::clamp(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN), 0, 255));
+    gain = Math::fromFixPoint<5>(gainRaw);
 }
 
-void CameraSettingsV5::apply(int /* cameraFd */)
+void CameraSettingsV5::apply(int cameraFd, std::string cameraName)
 {
+    setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE, "Exposure", exposure);
+    setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SATURATION, "Saturation", saturation);
+    setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_WHITE_BALANCE_TEMPERATURE, "WhiteBalance", whiteBalanceTemperature);
+
+    setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN, "Gain", Math::toFixPoint<5>(static_cast<float>(gain)));    
 }
 
 int CameraSettingsV5::getSingleCameraParameterRaw(int cameraFd, std::string cameraName, int parameterID)

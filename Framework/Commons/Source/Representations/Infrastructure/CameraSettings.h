@@ -30,10 +30,10 @@ public:
   virtual void print(std::ostream &stream) const;
 
   /** Queries all values from the actual camera */
-  virtual void query(int camera_fd) = 0;
+  virtual void query(int cameraFd, std::string cameraName) = 0;
 
   /** Apply all changed values on the actual camera */
-  virtual void apply(int camera_fd) = 0;
+  virtual void apply(int cameraFd, std::string cameraName) = 0;
 };
 
 
