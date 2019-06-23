@@ -22,6 +22,8 @@ class CameraSettings : public Printable
 {
 public:
 
+  bool autoExposition;
+
   int exposure;
   double gain;
 
@@ -37,7 +39,6 @@ public:
        */
   enum CameraSettingID
   {
-    AutoExposition,
     AutoExpositionAlgorithm,
     AutoWhiteBalancing,
     BacklightCompensation,

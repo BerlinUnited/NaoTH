@@ -43,9 +43,6 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
   case TargetGain:
     return "TargetGain";
     break;
-  case AutoExposition:
-    return "AutoExposition";
-    break;
   case AutoWhiteBalancing:
     return "AutoWhiteBalancing";
     break;
@@ -87,6 +84,7 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
 
 void CameraSettings::print(ostream &stream) const
 {
+  stream <<  "AutoExposure = " << autoExposition << ";" << endl;
   stream <<  "Exposure = " << exposure << ";" << endl;
   stream <<  "Gain = " << gain << ";" << endl;
   stream <<  "Saturation = " << saturation << ";" << endl;
@@ -162,20 +160,20 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
   result.data[CameraSettings::ResolutionHeight] = IMAGE_HEIGHT;
   result.data[CameraSettings::ResolutionWidth] = IMAGE_WIDTH;
 
+  result.autoExposition = autoExposition;
+  result.exposure = exposure;
+  result.gain = gain;
+  result.saturation = saturation;
+  result.whiteBalanceTemperature = whiteBalanceTemperature;
+  result.verticalFlip = verticalFlip;
+  result.horizontalFlip = horizontalFlip;
+
   // Convert each request to a proper setting and clamp values according to the driver documentation
   // (https://github.com/bhuman/BKernel#information-about-the-camera-driver).
   // The V4L controller might later adjust these values by the ranges reported by driver, but these
   // might be inaccurate or less restricted. Also, for fixed point real numbers the clipping should
   // be performed for the real number range, not the byte-representation.
 
-  if (isV6)
-  {
-    result.data[CameraSettings::AutoExposition] = autoExposition ? 0 : 1;
-  }
-  else
-  {
-    result.data[CameraSettings::AutoExposition] = autoExposition ? 1 : 0;
-  }
   result.data[CameraSettings::AutoWhiteBalancing] = autoWhiteBalancing ? 1 : 0;
   result.data[CameraSettings::BacklightCompensation] = backlightCompensation ? 1 : 0;
   // use target brightness for both lightening conditions

@@ -66,7 +66,6 @@ V4lCameraHandler::V4lCameraHandler()
 {
   // NOTE: width, height and fps are not included here
 
-  settingsOrder.push_back(CameraSettings::AutoExposition);
   settingsOrder.push_back(CameraSettings::AutoExpositionAlgorithm);
   settingsOrder.push_back(CameraSettings::Brightness);
   //  settingsOrder.push_back(CameraSettings::BrightnessDark);
@@ -163,7 +162,6 @@ void V4lCameraHandler::initIDMapping()
   csConst[CameraSettings::Contrast] = V4L2_CID_CONTRAST;
   csConst[CameraSettings::Hue] = V4L2_CID_HUE;
   csConst[CameraSettings::Sharpness] = V4L2_CID_SHARPNESS;
-  csConst[CameraSettings::AutoExposition] = V4L2_CID_EXPOSURE_AUTO;
   csConst[CameraSettings::AutoWhiteBalancing] = V4L2_CID_AUTO_WHITE_BALANCE;
   csConst[CameraSettings::MinAnalogGain] = V4L2_MT9M114_AE_MIN_VIRT_AGAIN;
   csConst[CameraSettings::MaxAnalogGain] = V4L2_MT9M114_AE_MAX_VIRT_AGAIN;
@@ -749,16 +747,7 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings &data)
       {
         lastCameraSettingTimestamp = NaoTime::getSystemTimeInMicroSeconds();
 
-        if (*it == CameraSettings::AutoExposition && currentSettings.data[*it] == 1 && data.data[*it] == 0)
-        {
-          // read back the gain and auto exposure values set by the now deactivated auto exposure
-          if(settingsManager) {
-            settingsManager->query(fd, cameraName, currentSettings);
-          }
-
-          std::cout << LOG << "autoupdated Exposure to " << currentSettings.exposure << std::endl;
-        }
-        else if (*it == CameraSettings::AutoWhiteBalancing && currentSettings.data[*it] == 1 && data.data[*it] == 0)
+        if (*it == CameraSettings::AutoWhiteBalancing && currentSettings.data[*it] == 1 && data.data[*it] == 0)
         {
           // read back the white balance value set to make sure they are in sync
           if(settingsManager) {
