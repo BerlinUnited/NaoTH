@@ -9,7 +9,7 @@
 check_for_errors() {
 	if [ "$?" -ne 0 ]
 	then
-		sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/error_while_collecting_logs.wav
+		su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/error_while_collecting_logs.wav"
 		# if argument is available - write to systemlog
 		if [ ! -z "$1" ]
 		then
@@ -55,7 +55,7 @@ current_compile_owner=$(exec_cmd_and_return_or_default 'grep "Owner" /var/log/me
 logger "Brainwasher:start $current_date, $current_nao, Player $current_nao_player"
 
 # play sound
-sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav
+su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav"
 
 naoth stop
 
@@ -64,8 +64,8 @@ current_volume=$(sudo -u nao pactl list sinks | grep Volume | xargs)
 logger "Brainwasher:$current_volume"
 
 # set volume to 88%
-sudo -u nao pactl set-sink-mute 0 false 2> $errorFile
-sudo -u nao pactl set-sink-volume 0 88% 2>> $errorFile
+su nao -c "/usr/bin/pactl set-sink-mute 0 false 2> $errorFile"
+su nao -c "/usr/bin/pactl set-sink-volume 0 88% 2>> $errorFile"
 logger -f $errorFile
 
 logger "Brainwasher:copy files"
@@ -132,7 +132,7 @@ rm $errorFile
 sync
 
 # needed to play sound before starting naoth! otherwise the sound could get "lost" (no sound)
-sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/finished_collecting_logs.wav
+su nao  -c "/usr/bin/paplay /home/nao/naoqi/Media/finished_collecting_logs.wav"
 
 logger "Brainwasher:END, starting naoth"
 
