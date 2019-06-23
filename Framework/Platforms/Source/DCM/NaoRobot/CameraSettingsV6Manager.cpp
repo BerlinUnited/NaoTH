@@ -25,6 +25,12 @@ void CameraSettingsV6Manager::query(int cameraFd, std::string cameraName, Camera
 
     settings.gain = Math::fromFixPoint<5>(static_cast<std::int32_t>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN)));
 
+    settings.brightness = getSingleCameraParameterRaw(cameraFd, cameraName,V4L2_CID_BRIGHTNESS);
+    settings.contrast = static_cast<float>(getSingleCameraParameterRaw(cameraFd, cameraName,V4L2_CID_CONTRAST));
+    settings.sharpness = getSingleCameraParameterRaw(cameraFd, cameraName,V4L2_CID_SHARPNESS);
+    settings.hue = getSingleCameraParameterRaw(cameraFd, cameraName,V4L2_CID_HUE);
+
+
     settings.horizontalFlip = getSingleCameraParameterUVC(cameraFd, cameraName, 12, "HorizontalFlip", 2);
     settings.verticalFlip = getSingleCameraParameterUVC(cameraFd, cameraName, 13, "VerticalFlip", 2);
 
@@ -53,6 +59,31 @@ void CameraSettingsV6Manager::apply(int cameraFd, std::string cameraName, const 
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SATURATION, "Saturation", Math::clamp(settings.saturation, 0, 255)))
     {
         saturation = settings.saturation;
+    }
+
+    // TODO, norm brigthness, contrast, sharpness and hue to something that is valid both on V5 and V6 or split up the params
+    if (brightness != settings.brightness &&
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BRIGHTNESS, "Brightness", Math::clamp(settings.brightness, -255, 255)))
+    {
+        brightness = settings.brightness;
+    }
+
+    if (contrast != settings.contrast &&
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_CONTRAST, "Contrast", Math::clamp(static_cast<int>(settings.contrast), 0, 255)))
+    {
+        contrast = settings.contrast;
+    }
+
+    if (sharpness != settings.sharpness &&
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SHARPNESS, "Sharpness", Math::clamp(settings.sharpness, 0, 9)))
+    {
+        sharpness = settings.sharpness;
+    }
+
+    if (hue != settings.hue &&
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HUE, "Hue", Math::clamp(settings.hue, -180, 180)))
+    {
+        hue = settings.hue;
     }
 
     if (autoWhiteBalancing != settings.autoWhiteBalancing &&

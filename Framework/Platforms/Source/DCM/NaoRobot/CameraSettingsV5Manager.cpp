@@ -35,6 +35,11 @@ void CameraSettingsV5Manager::query(int cameraFd, std::string cameraName, naoth:
     settings.verticalFlip = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_VFLIP) == 0 ? false : true;
     settings.horizontalFlip = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HFLIP) == 0 ? false : true;
 
+    settings.brightness = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BRIGHTNESS);
+    settings.contrast = Math::fromFixPoint<5>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_CONTRAST));
+    settings.sharpness = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SHARPNESS);
+    settings.hue = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HUE);
+
     settings.backlightCompensation = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BACKLIGHT_COMPENSATION) == 0 ? false : true;
 
     settings.v5_targetGain = Math::fromFixPoint<5>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_TARGET_GAIN));
@@ -116,6 +121,30 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN, "Gain", Math::toFixPoint<5>(static_cast<float>(settings.gain))))
     {
         gain = settings.gain;
+    }
+
+    if (brightness != settings.brightness &&
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BRIGHTNESS, "Brightness", Math::clamp(settings.brightness, 0, 255)))
+    {
+        brightness = settings.brightness;
+    }
+
+    if (contrast != settings.contrast &&
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_CONTRAST, "Contrast", Math::toFixPoint<5>(Math::clamp(static_cast<float>(settings.contrast), 0.5f, 2.0f))))
+    {
+        contrast = settings.contrast;
+    }
+
+    if (sharpness != settings.sharpness &&
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SHARPNESS, "Sharpness", Math::clamp(settings.sharpness, -7, 7)))
+    {
+        sharpness = settings.sharpness;
+    }
+
+    if (hue != settings.hue &&
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HUE, "Hue", Math::clamp(settings.hue, -22, 22)))
+    {
+        hue = settings.hue;
     }
 
     if (verticalFlip != settings.verticalFlip &&

@@ -189,12 +189,12 @@ NaoController::~NaoController()
 
 void NaoController::set(const CameraSettingsRequest &request)
 {
-  CameraSettings settings = request.getCameraSettings(theLolaAdaptor.isRunning());
+  CameraSettings settings = request.getCameraSettings();
   theBottomCameraHandler.setAllCameraParams(settings);
 }
 
 void NaoController::set(const CameraSettingsRequestTop &request)
 {
-  CameraSettings settings = request.getCameraSettings(theLolaAdaptor.isRunning());
+  CameraSettings settings = request.getCameraSettings();
   theTopCameraHandler.setAllCameraParams(settings);
 }

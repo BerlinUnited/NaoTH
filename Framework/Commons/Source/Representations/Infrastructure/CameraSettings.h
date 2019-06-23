@@ -19,7 +19,6 @@ namespace naoth
 class CameraSettings : public Printable
 {
 public:
-
   bool autoExposition;
 
   int exposure;
@@ -27,12 +26,20 @@ public:
 
   int saturation;
 
+  int brightness;
+
+  float contrast;
+
+  int sharpness;
+
+  int hue;
+
   bool autoWhiteBalancing;
 
   int whiteBalanceTemperature;
 
   bool horizontalFlip;
-  bool verticalFlip;  
+  bool verticalFlip;
 
   bool backlightCompensation;
 
@@ -54,14 +61,11 @@ public:
        */
   enum CameraSettingID
   {
-    Brightness,
     CameraSelection,
-    Contrast,
     FPS, // TODO: remove this from settings?
-    Hue,
     ResolutionHeight, // TODO: remove this from settings?
     ResolutionWidth,  // TODO: remove this from settings?
-    Sharpness,
+
     numOfCameraSetting
   };
 
@@ -80,15 +84,12 @@ public:
 class CameraSettingsManager : public CameraSettings
 {
 public:
-  
   /** Queries all values from the actual camera */
-  virtual void query(int cameraFd , std::string cameraName, CameraSettings& settings ) = 0;
+  virtual void query(int cameraFd, std::string cameraName, CameraSettings &settings) = 0;
 
   /** Apply all changed values on the actual camera */
-  virtual void apply(int cameraFd, std::string cameraName, const CameraSettings& settings ) = 0;
+  virtual void apply(int cameraFd, std::string cameraName, const CameraSettings &settings) = 0;
 };
-
-
 
 class CurrentCameraSettings : public CameraSettings
 {
@@ -140,7 +141,7 @@ public:
   void reset();
   void setAutoExposureWeights(std::uint8_t w);
 
-  CameraSettings getCameraSettings(bool isV6 = false) const;
+  CameraSettings getCameraSettings() const;
 };
 
 class CameraSettingsRequestTop : public CameraSettingsRequest

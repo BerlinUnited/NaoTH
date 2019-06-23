@@ -56,13 +56,6 @@ V4lCameraHandler::V4lCameraHandler()
       lastCameraSettingTimestamp(0),
       error_count(0)
 {
-  // NOTE: width, height and fps are not included here
-
-  settingsOrder.push_back(CameraSettings::Brightness);
-
-  settingsOrder.push_back(CameraSettings::Contrast);
-  settingsOrder.push_back(CameraSettings::Hue);
-  settingsOrder.push_back(CameraSettings::Sharpness);
 
   // DEBUG: test
   //hasIOError(-1, EPIPE);
@@ -133,12 +126,6 @@ void V4lCameraHandler::initIDMapping()
   {
     csConst[i] = -1;
   }
-
-  // map the existing parameters that can be used safely
-  csConst[CameraSettings::Brightness] = V4L2_CID_BRIGHTNESS;
-  csConst[CameraSettings::Contrast] = V4L2_CID_CONTRAST;
-  csConst[CameraSettings::Hue] = V4L2_CID_HUE;
-  csConst[CameraSettings::Sharpness] = V4L2_CID_SHARPNESS;
 
 }
 
@@ -540,15 +527,7 @@ int V4lCameraHandler::getSingleCameraParameter(int id)
     }
     else
     {
-      //HACK (Sharpness)
-      if (id == csConst[CameraSettings::Sharpness])
-      {
-        return control_g.value > 7 ? (control_g.value - (1 << 16)) : control_g.value;
-      }
-      else
-      {
-        return control_g.value;
-      }
+      return control_g.value;
     }
   }
 

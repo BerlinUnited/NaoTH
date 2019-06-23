@@ -22,15 +22,6 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
 {
   switch (id)
   {
-  case Brightness:
-    return "Brightness";
-    break;
-  case Contrast:
-    return "Contrast";
-    break;
-  case Hue:
-    return "Hue";
-    break;
   case FPS:
     return "FPS";
     break;
@@ -42,9 +33,6 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
     break;
   case CameraSelection:
     return "CameraSelection";
-    break;
-  case Sharpness:
-    return "Sharpness";
     break;
   default:
     return "Unknown CameraSetting";
@@ -121,7 +109,7 @@ void CameraSettingsRequest::setAutoExposureWeights(std::uint8_t w)
   }
 }
 
-CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
+CameraSettings CameraSettingsRequest::getCameraSettings() const
 {
   CameraSettings result;
 
@@ -134,6 +122,10 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
   result.exposure = exposure;
   result.gain = gain;
   result.saturation = saturation;
+  result.brightness = brightness;
+  result.contrast = static_cast<float>(contrast);
+  result.sharpness = sharpness;
+  result.hue = hue;
   result.autoWhiteBalancing = autoWhiteBalancing;
   result.whiteBalanceTemperature = whiteBalanceTemperature;
   result.verticalFlip = verticalFlip;
@@ -155,35 +147,7 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
   // might be inaccurate or less restricted. Also, for fixed point real numbers the clipping should
   // be performed for the real number range, not the byte-representation.
 
-  // use target brightness for both lightening conditions
-  result.data[CameraSettings::Brightness] = Math::clamp(brightness, isV6 ? -255 : 0, 255);
-  result.data[CameraSettings::CameraSelection] = cameraSelection;
-  if (isV6)
-  {
-    result.data[CameraSettings::Contrast] = Math::clamp(static_cast<int>(contrast), 0, 255);
-  }
-  else
-  {
-    result.data[CameraSettings::Contrast] = Math::toFixPoint<5>(static_cast<float>(Math::clamp(contrast, 0.5, 2.0)));
-  }
-
-  if (isV6)
-  {
-    result.data[CameraSettings::Hue] = Math::clamp(hue, -180, 180);
-  }
-  else
-  {
-    result.data[CameraSettings::Hue] = Math::clamp(hue, -22, 22);
-  }
-  if (isV6)
-  {
-    result.data[CameraSettings::Sharpness] = Math::clamp(sharpness, 0, 9);
-  }
-  else
-  {
-    result.data[CameraSettings::Sharpness] = Math::clamp(sharpness, -7, 7);
-  }
-
+  
 
   for (std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++)
   {
