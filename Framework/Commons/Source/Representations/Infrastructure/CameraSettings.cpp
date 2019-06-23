@@ -49,9 +49,6 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
   case Sharpness:
     return "Sharpness";
     break;
-  case PowerlineFrequency:
-    return "PowerlineFrequency";
-    break;
   case AutoExpositionAlgorithm:
     return "AutoExpositionAlgorithm";
     break;
@@ -110,7 +107,7 @@ CameraSettingsRequest::CameraSettingsRequest(string configName)
   PARAMETER_REGISTER(sharpness) = 128;
   PARAMETER_REGISTER(verticalFlip) = 0;
   PARAMETER_REGISTER(whiteBalanceTemperature) = 6500;
-  PARAMETER_REGISTER(powerlineFrequency) = 50;
+  PARAMETER_REGISTER(v5_powerlineFrequency) = 50;
 
   setAutoExposureWeights(100);
 
@@ -156,6 +153,7 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
   result.v5_minAnalogGain = std::min(static_cast<float>(v5_minAnalogGain), result.v5_targetGain);
   result.v5_maxAnalogGain = std::max(static_cast<float>(v5_maxAnalogGain), result.v5_targetGain);
   result.v5_fadeToBlack = v5_fadeToBlack;
+  result.v5_powerlineFrequency = v5_powerlineFrequency;
 
   // Convert each request to a proper setting and clamp values according to the driver documentation
   // (https://github.com/bhuman/BKernel#information-about-the-camera-driver).
@@ -194,8 +192,6 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
   }
   result.data[CameraSettings::GammaCorrection] = Math::clamp(gammaCorrection, 100, 280);
 
-  // use 50 Hz (val = 1) if 60 Hz (val = 2) is not explicitly requested
-  result.data[CameraSettings::PowerlineFrequency] = powerlineFrequency == 60 ? 2 : 1;
 
   for (std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++)
   {
@@ -223,15 +219,15 @@ CommonCameraSettingsRequest::CommonCameraSettingsRequest(string configName)
   PARAMETER_REGISTER(exposure) = 1;
   PARAMETER_REGISTER(gain) = 1;
   PARAMETER_REGISTER(gammaCorrection) = 220;
-  PARAMETER_REGISTER(targetGain) = 100.0;
-  PARAMETER_REGISTER(minAnalogGain) = 1.0;
-  PARAMETER_REGISTER(maxAnalogGain) = 8.0;
+  PARAMETER_REGISTER(v5_targetGain) = 5.0;
+  PARAMETER_REGISTER(v5_minAnalogGain) = 1.0;
+  PARAMETER_REGISTER(v5_maxAnalogGain) = 8.0;
 
   PARAMETER_REGISTER(saturation) = 128;
   PARAMETER_REGISTER(sharpness) = 128;
   PARAMETER_REGISTER(whiteBalanceTemperature) = 6500;
   PARAMETER_REGISTER(autoExpositionMethod) = "averageY";
-  PARAMETER_REGISTER(powerlineFrequency) = 50;
+  PARAMETER_REGISTER(v5_powerlineFrequency) = 50;
 
   PARAMETER_REGISTER(isActive) = false;
 

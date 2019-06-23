@@ -41,6 +41,8 @@ public:
 
   bool v5_fadeToBlack;
 
+  int v5_powerlineFrequency;
+
   /* don't change order of enumerations
        * because it reflects the order of execution
        */
@@ -57,7 +59,6 @@ public:
     ResolutionHeight, // TODO: remove this from settings?
     ResolutionWidth,  // TODO: remove this from settings?
     Sharpness,
-    PowerlineFrequency,
     numOfCameraSetting
   };
 
@@ -129,7 +130,7 @@ public:
   int sharpness;
   bool verticalFlip;
   int whiteBalanceTemperature;
-  int powerlineFrequency;
+  int v5_powerlineFrequency;
 
   std::uint8_t autoExposureWeights[CameraSettings::AUTOEXPOSURE_GRID_SIZE][CameraSettings::AUTOEXPOSURE_GRID_SIZE];
 
@@ -159,14 +160,14 @@ public:
   int exposure;
   double gain;
   int gammaCorrection;
-  double targetGain;
-  double minAnalogGain;
-  double maxAnalogGain;
+  double v5_targetGain;
+  double v5_minAnalogGain;
+  double v5_maxAnalogGain;
 
   int saturation;
   int sharpness;
   int whiteBalanceTemperature;
-  int powerlineFrequency;
+  int v5_powerlineFrequency;
 
   /*
     Can be either:

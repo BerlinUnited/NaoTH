@@ -31,13 +31,15 @@ void CameraSettingsV5Manager::query(int cameraFd, std::string cameraName, naoth:
 
     settings.gain = Math::fromFixPoint<5>(static_cast<std::int32_t>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN)));
 
-    settings.verticalFlip = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_VFLIP) == 0? false : true;
+    settings.verticalFlip = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_VFLIP) == 0 ? false : true;
     settings.horizontalFlip = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HFLIP) == 0 ? false : true;
 
     settings.v5_targetGain = Math::fromFixPoint<5>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_TARGET_GAIN));
     settings.v5_minAnalogGain = Math::fromFixPoint<5>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_MIN_VIRT_AGAIN));
     settings.v5_maxAnalogGain = Math::fromFixPoint<5>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_MAX_VIRT_AGAIN));
     settings.v5_fadeToBlack = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_FADE_TO_BLACK) == 0 ? false : true;
+
+    settings.v5_powerlineFrequency = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_POWER_LINE_FREQUENCY) == 2 ? 60 : 50;
 }
 
 void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const naoth::CameraSettings &settings)
@@ -126,9 +128,16 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
         v5_targetGain = settings.v5_targetGain;
     }
 
-    if (v5_fadeToBlack != settings.v5_fadeToBlack && 
+    if (v5_fadeToBlack != settings.v5_fadeToBlack &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_FADE_TO_BLACK, "FadeToBlack", settings.v5_fadeToBlack ? 1 : 0))
     {
         v5_fadeToBlack = settings.v5_fadeToBlack;
+    }
+
+    // use 50 Hz (val = 1) if 60 Hz (val = 2) is not explicitly requested
+    if (v5_powerlineFrequency != settings.v5_powerlineFrequency &&
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_POWER_LINE_FREQUENCY, "PowerlineFrequency", settings.v5_powerlineFrequency == 60 ? 2 : 1))
+    {
+        v5_powerlineFrequency = settings.v5_powerlineFrequency;
     }
 }

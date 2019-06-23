@@ -60,7 +60,6 @@ V4lCameraHandler::V4lCameraHandler()
 
   settingsOrder.push_back(CameraSettings::AutoExpositionAlgorithm);
   settingsOrder.push_back(CameraSettings::Brightness);
-  settingsOrder.push_back(CameraSettings::PowerlineFrequency);
 
   settingsOrder.push_back(CameraSettings::Contrast);
   settingsOrder.push_back(CameraSettings::Hue);
@@ -145,7 +144,6 @@ void V4lCameraHandler::initIDMapping()
   csConst[CameraSettings::GammaCorrection] = V4L2_CID_GAMMA;
 
   csConst[CameraSettings::BacklightCompensation] = V4L2_CID_BACKLIGHT_COMPENSATION;
-  csConst[CameraSettings::PowerlineFrequency] = V4L2_CID_POWER_LINE_FREQUENCY;
 
   //---------------------------------------------------------------------
   // copied from the driver for information:
