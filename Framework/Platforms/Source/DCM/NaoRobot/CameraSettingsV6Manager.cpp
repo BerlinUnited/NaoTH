@@ -67,7 +67,7 @@ void CameraSettingsV6Manager::apply(int cameraFd, std::string cameraName, const 
     }
 
     if (autoWhiteBalancing == false && whiteBalanceTemperature != settings.whiteBalanceTemperature &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_WHITE_BALANCE_TEMPERATURE, "WhiteBalance", Math::clamp(settings.whiteBalanceTemperature, 2700, 6500)))
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_WHITE_BALANCE_TEMPERATURE, "WhiteBalance", Math::clamp(settings.whiteBalanceTemperature, 2500, 6500)))
     {
         whiteBalanceTemperature = settings.whiteBalanceTemperature;
     }
