@@ -117,7 +117,9 @@ private:
   bool nearApproach_sideKick(const Foot& foot, const double offsetX, const double offsetY);
   bool sidesteps(const Foot& foot, const double direction);
 
+  bool dribble(const Foot& foot, const double offsetX, const double offsetY);
   void forwardKick(const Foot& foot);
+  void fasterKick();
   void sideKick(const Foot& foot);
 
 // generate a setter method
@@ -156,7 +158,7 @@ private:
 
   void addStep(const StepBufferElement& new_step) {
     stepBuffer.push_back(new_step);
-    //std::cout << new_step.debug_name << std::endl;
+    std::cout << new_step.debug_name << std::endl;
   }
 
   /*

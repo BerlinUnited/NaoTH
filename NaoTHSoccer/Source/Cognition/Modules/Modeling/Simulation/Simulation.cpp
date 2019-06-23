@@ -17,8 +17,8 @@ Simulation::Simulation()
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:None", "DrawNone", false);
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Dribble", "DrawDribble", false);
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Short", "DrawShortKick", false);
-  DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Left", "DrawLeftKick", false);
-  DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Right", "DrawRightKick", false);
+  //DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Left", "DrawLeftKick", false);
+  //DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Right", "DrawRightKick", false);
   getDebugParameterList().add(&theParameters);
 
   //calculate the actions  

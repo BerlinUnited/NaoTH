@@ -77,7 +77,7 @@ option path_striker2018
             goto forwardkick_right;
         }
         else if(attack.best_action == dribble_kick)
-          goto forwardkick_right;
+          goto dribble_kick;
         else if(attack.best_action == sidekick_left)
           //goto sidekick_left;
           goto turn;
@@ -111,6 +111,11 @@ option path_striker2018
     //    goto long_kick;
     else if(attack.best_action == kick_short)
     {
+      if (ball.preview.y > 0)
+          goto forwardkick_left;
+        else
+          goto forwardkick_right;
+      /*
       if(random() > 0.0)
       {
         if (ball.preview.y > 0)
@@ -120,7 +125,10 @@ option path_striker2018
       }
       else
         goto dash;
+      */
     }
+    else if(attack.best_action == dribble_kick)
+          goto dribble_kick;
     else if(attack.best_action == sidekick_left)
       //goto sidekick_left;
       stay;
@@ -151,6 +159,9 @@ option path_striker2018
     action
     {
       path2018.routine = dribble_kick;
+      path.xOffset = -120; // pathplanner adds ball.radius - this could be done here
+      path.yOffset = 0;
+      
       head.control_mode = search_for_ball;
     }
   
@@ -160,6 +171,8 @@ option path_striker2018
   {
     decision
     {
+      else if (path.kick_executed && ball.percept.x > 200)
+        goto walk_a_little;
       else if (path.kick_executed)
         goto short_freeze;
       else
@@ -178,6 +191,8 @@ option path_striker2018
   {
     decision
     {
+      else if (path.kick_executed && ball.percept.x > 200)
+        goto walk_a_little;
       else if (path.kick_executed)
         goto short_freeze;
       else
@@ -191,7 +206,7 @@ option path_striker2018
       head.control_mode = search_for_ball;
     }
   }
-
+  
   state sidekick_right
   {
     decision
@@ -223,7 +238,26 @@ option path_striker2018
       head.control_mode = search_for_ball;
     }
   }
-  
+
+  state walk_a_little
+  {
+    decision
+    {
+      else if (state_time > 100)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk.style = fast;
+      motion.walk_speed.rot = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.x = 100;
+      motion.walk.coordinate = hip;
+    }
+  }
   state short_freeze
   {
     decision

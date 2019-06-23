@@ -99,7 +99,7 @@ void PathPlanner2018::execute()
     sidesteps(Foot::RIGHT, getPathModel().direction);
     break;
   case PathModel::PathPlanner2018Routine::DRIBBLE_KICK:
-    if (nearApproach_forwardKick(Foot::RIGHT, 0.0, 0.0)){
+    if (nearApproach_forwardKick(Foot::RIGHT, getPathModel().xOffset, getPathModel().yOffset)){
       kickPlanned = true;
     }
     break;
@@ -117,6 +117,7 @@ void PathPlanner2018::moveAroundBall(const double direction, const double radius
     double ballRotation = ballPos.angle();
     double ballDistance = ballPos.abs();
 
+    // ensure a minimal rotation
     double direction_deg = Math::toDegrees(direction);
     if (direction_deg > -10 && direction_deg <= 0){
       direction_deg = -10;
@@ -286,6 +287,73 @@ bool PathPlanner2018::nearApproach_forwardKick(const Foot& /*foot*/, const doubl
     if (std::abs(targetPos.x)  > params.forwardKickThreshold.x || std::abs(targetPos.y) > params.forwardKickThreshold.y)
     {
         // generate a correction step
+      double translation_xy = params.stepLength;
+
+      //std::abs(targetPos.y) => das heißt doch wenn der ball in der y richtung springt wird ein schritt zurück geplant und ausgeführt
+      // das ist dafür das das er an den ball anlaufen kann ohne zu rotieren. Wenn man nah am ball ist wird angenommen das die Rotation
+      //stimmt und dann soll diese auch nicht korrigiert werden
+      double translation_x = std::min(translation_xy, targetPos.x - std::abs(targetPos.y));
+      double translation_y = std::min(translation_xy, std::abs(targetPos.y)) * (targetPos.y < 0 ? -1 : 1);
+
+      StepBufferElement near_approach_forward_step;
+      near_approach_forward_step.debug_name = "near_approach_forward_step";
+      near_approach_forward_step.setPose({ 0.0, translation_x, translation_y });
+      near_approach_forward_step.setStepType(StepType::WALKSTEP);
+      near_approach_forward_step.setCharacter(0.3);
+      near_approach_forward_step.setScale(1.0);
+      near_approach_forward_step.setCoordinate(coordinate);
+      near_approach_forward_step.setFoot(Foot::NONE);
+      near_approach_forward_step.setSpeedDirection(Math::fromDegrees(0.0));
+      near_approach_forward_step.setRestriction(RestrictionMode::HARD);
+      near_approach_forward_step.setProtected(false);
+      near_approach_forward_step.setTime(250);
+
+      addStep(near_approach_forward_step);
+    }
+    else
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool PathPlanner2018::dribble(const Foot& /*foot*/, const double offsetX, const double offsetY)
+{
+  // Always execute the steps that were planned before planning new steps
+  if (stepBuffer.empty())
+  {
+    Vector2d ballPos;
+    Vector2d targetPos;
+    Coordinate coordinate = Coordinate::Hip;
+
+    //if (foot == Foot::RIGHT)
+    if (getBallModel().positionPreview.y < 0)
+    {
+      ballPos = getBallModel().positionPreviewInRFoot;
+      coordinate = Coordinate::RFoot;
+    }
+    //else if (foot == Foot::LEFT)
+    else if (getBallModel().positionPreview.y >= 0)
+    {
+      coordinate = Coordinate::LFoot;
+      ballPos = getBallModel().positionPreviewInLFoot;
+    }
+    else
+    {
+      ASSERT(false);
+    }
+    // add the desired offset
+    targetPos.x = ballPos.x - getFieldInfo().ballRadius - offsetX;
+    targetPos.y = ballPos.y - offsetY;
+
+    // Am I ready for a kick or still walking to the ball?
+    // In other words: Can I only perform one step before touching the ball or more steps?
+    //TODO rewrite the condition from plan step if possible to dont plan steps if to close already
+    if (std::abs(targetPos.x)  > params.forwardKickThreshold.x || std::abs(targetPos.y) > params.forwardKickThreshold.y)
+    {
+      // generate a correction step
       double translation_xy = params.stepLength;
 
       //std::abs(targetPos.y) => das heißt doch wenn der ball in der y richtung springt wird ein schritt zurück geplant und ausgeführt
@@ -529,6 +597,83 @@ void PathPlanner2018::forwardKick(const Foot& /*foot*/)
     forward_kick_step.setPose({ 0.0, 0.0, 0.0 });
     forward_kick_step.setStepType(StepType::WALKSTEP);
     addStep(forward_kick_step);
+
+    kickPlanned = true;
+  }
+}
+
+void PathPlanner2018::fasterKick()
+{
+  // this routine skips the zero step and retracting step and does a walking step instead
+  if (!kickPlanned)
+  {
+    stepBuffer.clear();
+
+    // 2019 version - makes sure to kick with the foot that is behind the ball
+    Foot actual_foot;
+    Coordinate coordinate = Coordinate::Hip;
+    Vector2d ballPos;
+    if (getBallModel().positionPreview.y < 0)
+    {
+      coordinate = Coordinate::LFoot;
+      actual_foot = Foot::RIGHT;
+      ballPos = getBallModel().positionPreviewInRFoot;
+    }
+    else
+    {
+      coordinate = Coordinate::RFoot;
+      actual_foot = Foot::LEFT;
+      ballPos = getBallModel().positionPreviewInLFoot;
+    }
+
+    if (getMotionStatus().stepControl.moveableFoot != (getBallModel().positionPreview.y < 0 ? MotionStatus::StepControlStatus::RIGHT : MotionStatus::StepControlStatus::LEFT))
+    {
+      StepBufferElement forward_correction_step("forward_correction_step");
+      forward_correction_step
+        .setPose({ 0.0, 100.0, 0.0 })
+        .setStepType(StepType::WALKSTEP)
+        .setCharacter(1.0)
+        .setScale(1.0)
+        .setCoordinate(coordinate)
+        .setFoot(Foot::NONE)
+        .setSpeedDirection(Math::fromDegrees(0.0))
+        .setRestriction(RestrictionMode::HARD)
+        .setProtected(false)
+        .setTime(250);
+
+      addStep(forward_correction_step);
+    }
+
+    // The kick
+    StepBufferElement fast_kick;
+    fast_kick
+      .setPose({ 0.0, ballPos.normalize(500.0) })
+      .setStepType(StepType::KICKSTEP)
+      .setCharacter(1.0)
+      .setScale(0.7)
+      .setCoordinate(coordinate)
+      .setFoot(actual_foot)
+      .setSpeedDirection(Math::fromDegrees(0.0))
+      .setRestriction(RestrictionMode::SOFT)
+      .setProtected(true)
+      .setTime(params.forwardKickTime);
+
+    addStep(fast_kick);
+
+    StepBufferElement forward_step;
+    forward_step.debug_name = "forward_step_after_kick";
+    forward_step.setPose({ 0.0, 100.0, 0.0 });
+    forward_step.setStepType(StepType::WALKSTEP);
+    forward_step.setCharacter(0.3);
+    forward_step.setScale(1.0);
+    forward_step.setCoordinate(coordinate);
+    forward_step.setFoot(Foot::NONE);
+    forward_step.setSpeedDirection(Math::fromDegrees(0.0));
+    forward_step.setRestriction(RestrictionMode::HARD);
+    forward_step.setProtected(false);
+    forward_step.setTime(250);
+
+    addStep(forward_step);
 
     kickPlanned = true;
   }

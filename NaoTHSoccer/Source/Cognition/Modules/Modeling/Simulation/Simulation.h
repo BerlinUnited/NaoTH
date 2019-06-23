@@ -81,7 +81,7 @@ public:
       PARAMETER_REGISTER(dribble_kick.speed) = 600;
       PARAMETER_REGISTER(dribble_kick.speed_std) = 90;
       PARAMETER_REGISTER(dribble_kick.angle) = 0;
-      PARAMETER_REGISTER(dribble_kick.angle_std) = 7;
+      PARAMETER_REGISTER(dribble_kick.angle_std) = 20;
 
       PARAMETER_REGISTER(kick_short.speed) = 1280;
       PARAMETER_REGISTER(kick_short.speed_std) = 150;
