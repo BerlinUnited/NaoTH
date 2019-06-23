@@ -1,4 +1,4 @@
-#include "CameraSettingsV5Manager.h"
+#include "CameraSettingsV6Manager.h"
 
 extern "C"
 {
@@ -7,11 +7,12 @@ extern "C"
 #include <unistd.h>
 }
 
-CameraSettingsV5Manager::CameraSettingsV5Manager()
+
+CameraSettingsV6Manager::CameraSettingsV6Manager()
 {
 }
 
-void CameraSettingsV5Manager::query(int cameraFd, std::string cameraName)
+void CameraSettingsV6Manager::query(int cameraFd, std::string cameraName)
 {
     exposure = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE);
     saturation = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SATURATION);
@@ -21,7 +22,7 @@ void CameraSettingsV5Manager::query(int cameraFd, std::string cameraName)
     gain = Math::fromFixPoint<5>(gainRaw);
 }
 
-void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName)
+void CameraSettingsV6Manager::apply(int cameraFd, std::string cameraName)
 {
     setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE, "Exposure", Math::clamp(exposure, 0, 1000));
     setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SATURATION, "Saturation", Math::clamp(saturation, 0, 255));
@@ -29,3 +30,5 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName)
 
     setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN, "Gain", Math::toFixPoint<5>(static_cast<float>(gain)));    
 }
+
+

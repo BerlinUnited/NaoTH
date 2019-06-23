@@ -3,13 +3,13 @@
 extern "C"
 {
 #include <linux/videodev2.h>
+#include <linux/uvcvideo.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
+#include <linux/usb/video.h>
 }
 
 #define LOG "[CameraHandler:" << __LINE__ << ", Camera: " << cameraName << "] "
-
-#define hasIOError(...) hasIOErrorPrint(__LINE__, __VA_ARGS__)
 
 V4LCameraSettingsManager::V4LCameraSettingsManager()
     : error_count(0)
@@ -120,18 +120,162 @@ int V4LCameraSettingsManager::xioctl(int fd, int request, void *arg) const
     return r;
 }
 
-bool V4LCameraSettingsManager::hasIOErrorPrint(int lineNumber, std::string cameraName, int errOccured, int errNo, bool exitByIOError)
+
+int32_t V4LCameraSettingsManager::getSingleCameraParameterUVC(int cameraFd, std::string cameraName, 
+    int parameterSelector, std::string parameterName, uint16_t parameterDataSize)
 {
-    if (errOccured < 0 && errNo != EAGAIN)
-    {
-        std::cout << LOG << "[hasIOError:" << lineNumber << "]"
-                  << " failed with errno " << errNo << " (" << strerror(errNo) << ") >> exiting" << std::endl;
-        if (exitByIOError && error_count > 10)
-        {
-            assert(errOccured >= 0);
-        }
-        error_count++;
-        return true;
-    }
+
+  if (parameterSelector < 0)
+  {
+    return -1;
+  }
+
+
+  struct uvc_xu_control_query queryctrl;
+  memset(&queryctrl, 0, sizeof(queryctrl));
+
+  uint8_t *value_raw = new uint8_t[parameterDataSize];
+  queryctrl.unit = 3;
+  queryctrl.query = UVC_GET_CUR;
+  queryctrl.selector = static_cast<uint8_t>(parameterSelector);
+
+  queryctrl.size = parameterDataSize;
+  queryctrl.data = value_raw;
+
+  int error = xioctl(cameraFd, UVCIOC_CTRL_QUERY, &queryctrl);
+
+  int32_t value = (value_raw[3] << 24) | (value_raw[2] << 16) | (value_raw[1] << 8) | (value_raw[0]);
+  delete[] value_raw;
+  if (hasIOError(cameraName, error, errno, false, "get " + parameterName))
+  {
+    return -1;
+  }
+  else
+  {
+    return value;
+  }
+}
+
+bool V4LCameraSettingsManager::setSingleCameraParameterUVC(int cameraFd, std::string cameraName, 
+    int parameterSelector, std::string parameterName, uint16_t parameterDataSize, int32_t value)
+{
+
+  if (parameterSelector)
+  {
     return false;
+  }
+
+
+  struct uvc_xu_control_query queryctrl;
+  memset(&queryctrl, 0, sizeof(queryctrl));
+
+  uint8_t *value_raw = new uint8_t[parameterDataSize];
+  memset(value_raw, 0, parameterDataSize);
+  value_raw[3] = static_cast<uint8_t>(value >> 24);
+  value_raw[2] = static_cast<uint8_t>(value >> 16);
+  value_raw[1] = static_cast<uint8_t>(value >> 8);
+  value_raw[0] = static_cast<uint8_t>(value);
+
+  queryctrl.unit = 3;
+  queryctrl.query = UVC_SET_CUR;
+  queryctrl.selector = static_cast<uint8_t>(parameterSelector);
+  queryctrl.size = parameterDataSize;
+  queryctrl.data = value_raw;
+
+  int error = xioctl(cameraFd, UVCIOC_CTRL_QUERY, &queryctrl);
+  return !hasIOError(cameraName, error, errno, false, "set " + parameterName);
+}
+
+bool V4LCameraSettingsManager::hasIOError(std::string cameraName, int errOccured, int errNo, bool exitByIOError, std::string paramName) const
+{
+  if (errOccured < 0 && errNo != EAGAIN)
+  {
+    std::cout << LOG << paramName << " failed with errno " << errNo << " (" << getErrnoDescription(errNo) << ") >> exiting" << std::endl;
+    if (exitByIOError)
+    {
+      assert(errOccured >= 0);
+    }
+    return true;
+  }
+  return false;
+}
+
+std::string V4LCameraSettingsManager::getErrnoDescription(int err) const
+{
+  switch (err)
+  {
+  case EPERM:
+    return "Operation not permitted";
+  case ENOENT:
+    return "No such file or directory";
+  case ENOBUFS:
+    return "The specified buffer size is incorrect (too big or too small).";
+  case ESRCH:
+    return "No such process";
+  case EINTR:
+    return "Interrupted system call";
+  case EIO:
+    return "I/O error";
+  case ENXIO:
+    return "No such device or address";
+  case E2BIG:
+    return "Argument list too long";
+  case ENOEXEC:
+    return "Exec format error";
+  case EBADF:
+    return "Bad file number";
+  case ECHILD:
+    return "No child processes";
+  case EAGAIN:
+    return "Try again";
+  case ENOMEM:
+    return "Out of memory";
+  case EACCES:
+    return "Permission denied";
+  case EFAULT:
+    return "Bad address";
+  case ENOTBLK:
+    return "Block device required";
+  case EBUSY:
+    return "Device or resource busy";
+  case EEXIST:
+    return "File exists";
+  case EXDEV:
+    return "Cross-device link";
+  case ENODEV:
+    return "No such device";
+  case ENOTDIR:
+    return "Not a directory";
+  case EISDIR:
+    return "Is a directory";
+  case EINVAL:
+    return "Invalid argument";
+  case ENFILE:
+    return "File table overflow";
+  case EMFILE:
+    return "Too many open files";
+  case ENOTTY:
+    return "Not a typewriter";
+  case ETXTBSY:
+    return "Text file busy";
+  case EFBIG:
+    return "File too large";
+  case ENOSPC:
+    return "No space left on device";
+  case ESPIPE:
+    return "Illegal seek";
+  case EROFS:
+    return "Read-only file system";
+  case EMLINK:
+    return "Too many links";
+  case EPIPE:
+    return "Broken pipe";
+  case EDOM:
+    return "Math argument out of domain of func";
+  case ERANGE:
+    return "Math result not representable";
+  case EBADRQC:
+    return "The given request is not supported by the given control.";
+  }
+  return "Unknown errorcode";
 }
