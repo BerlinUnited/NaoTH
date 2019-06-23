@@ -4,16 +4,6 @@
 using namespace naoth;
 using namespace std;
 
-void GenericCameraSettings::print(ostream &stream) const
-{
-  stream << "exposure = " << exposure << ";" << endl;
-  stream << "gain = " << gain << ";" << endl;
-  stream << "saturation = " << saturation << ";" << endl;
-  stream << "whiteBalanceTemperature = " << whiteBalanceTemperature << ";" << endl;
-
-} //end print
-
-
 CameraSettings::CameraSettings()
 {
   data[CameraSelection] = CameraInfo::Bottom;
@@ -41,14 +31,8 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
   case Contrast:
     return "Contrast";
     break;
-  case Saturation:
-    return "Saturation";
-    break;
   case Hue:
     return "Hue";
-    break;
-  case Gain:
-    return "Gain";
     break;
   case MinAnalogGain:
     return "MinAnalogGain";
@@ -71,9 +55,6 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
   case AutoWhiteBalancing:
     return "AutoWhiteBalancing";
     break;
-  case Exposure:
-    return "Exposure";
-    break;
   case FPS:
     return "FPS";
     break;
@@ -88,9 +69,6 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
     break;
   case BacklightCompensation:
     return "BacklightCompensation";
-    break;
-  case WhiteBalance:
-    return "WhiteBalance";
     break;
   case Sharpness:
     return "Sharpness";
@@ -115,6 +93,11 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
 
 void CameraSettings::print(ostream &stream) const
 {
+  stream <<  "Exposure = " << exposure << ";" << endl;
+  stream <<  "Gain = " << gain << ";" << endl;
+  stream <<  "Saturation = " << saturation << ";" << endl;
+  stream <<  "WhiteBalanceTemperature = " << whiteBalanceTemperature << ";" << endl;
+
   for (int i = 0; i < numOfCameraSetting; i++)
   {
     stream << getCameraSettingsName((CameraSettingID)i) << " = " << data[i] << ";" << endl;
@@ -213,28 +196,10 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
   {
     result.data[CameraSettings::Contrast] = Math::toFixPoint<5>(static_cast<float>(Math::clamp(contrast, 0.5, 2.0)));
   }
-  if (isV6)
-  {
-    result.data[CameraSettings::Exposure] = Math::clamp(exposure, 1, 1048575);
-  }
-  else
-  {
-    result.data[CameraSettings::Exposure] = Math::clamp(exposure, 1, 1000);
-  }
   result.data[CameraSettings::FadeToBlack] = fadeToBlack ? 1 : 0;
   result.data[CameraSettings::MinAnalogGain] = Math::clamp(Math::toFixPoint<5>(static_cast<float>(minAnalogGain)), 0, 32767);
   result.data[CameraSettings::MaxAnalogGain] = Math::clamp(Math::toFixPoint<5>(static_cast<float>(maxAnalogGain)), 0, 32767);
 
-  // manual gain must be inside the min/max given in the other parameters and also can't be larger than 255 (as integer)
-  if (isV6)
-  {
-    result.data[CameraSettings::Gain] = Math::clamp(static_cast<int>(gain), 0, 1023);
-  }
-  else
-  {
-    result.data[CameraSettings::Gain] = Math::clamp(
-        Math::toFixPoint<5>(static_cast<float>(Math::clamp(gain, minAnalogGain, maxAnalogGain))), 0, 255);
-  }
 
   result.data[CameraSettings::TargetGain] = Math::toFixPoint<5>(static_cast<float>(Math::clamp(targetGain, minAnalogGain, maxAnalogGain)));
 
@@ -247,7 +212,6 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
   {
     result.data[CameraSettings::Hue] = Math::clamp(hue, -22, 22);
   }
-  result.data[CameraSettings::Saturation] = Math::clamp(saturation, 0, 255);
   if (isV6)
   {
     result.data[CameraSettings::Sharpness] = Math::clamp(sharpness, 0, 9);
@@ -257,14 +221,6 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
     result.data[CameraSettings::Sharpness] = Math::clamp(sharpness, -7, 7);
   }
   result.data[CameraSettings::VerticalFlip] = verticalFlip ? 1 : 0;
-  if (isV6)
-  {
-    result.data[CameraSettings::WhiteBalance] = Math::clamp(whiteBalanceTemperature, 2500, 6500);
-  }
-  else
-  {
-    result.data[CameraSettings::WhiteBalance] = Math::clamp(whiteBalanceTemperature, 2700, 6500);
-  }
   result.data[CameraSettings::GammaCorrection] = Math::clamp(gammaCorrection, 100, 280);
 
   // use 50 Hz (val = 1) if 60 Hz (val = 2) is not explicitly requested

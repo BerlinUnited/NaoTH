@@ -16,10 +16,12 @@
 namespace naoth
 {
 
-/**  Camera settings that are available on all cameras (V5, V6, ...) and necessary for the most basic configuration */
-class GenericCameraSettings : public Printable
+
+
+class CameraSettings : public Printable
 {
 public:
+
   int exposure;
   double gain;
 
@@ -27,20 +29,6 @@ public:
 
   int whiteBalanceTemperature;
 
-  virtual void print(std::ostream &stream) const;
-
-  /** Queries all values from the actual camera */
-  virtual void query(int cameraFd, std::string cameraName) = 0;
-
-  /** Apply all changed values on the actual camera */
-  virtual void apply(int cameraFd, std::string cameraName) = 0;
-};
-
-
-
-class CameraSettings : public Printable
-{
-public:
   /* don't change order of enumerations
        * because it reflects the order of execution
        */
@@ -54,10 +42,8 @@ public:
     BrightnessDark,
     CameraSelection,
     Contrast,
-    Exposure,
     FadeToBlack,
     FPS, // TODO: remove this from settings?
-    Gain,
     GammaCorrection,
     MinAnalogGain,
     MaxAnalogGain,
@@ -66,10 +52,8 @@ public:
     Hue,
     ResolutionHeight, // TODO: remove this from settings?
     ResolutionWidth,  // TODO: remove this from settings?
-    Saturation,
     Sharpness,
     VerticalFlip,
-    WhiteBalance,
     PowerlineFrequency,
     numOfCameraSetting
   };
@@ -85,6 +69,19 @@ public:
 
   virtual void print(std::ostream &stream) const;
 };
+
+class CameraSettingsManager : public CameraSettings
+{
+public:
+  
+  /** Queries all values from the actual camera */
+  virtual void query(int cameraFd , std::string cameraName ) = 0;
+
+  /** Apply all changed values on the actual camera */
+  virtual void apply(int cameraFd, std::string cameraName ) = 0;
+};
+
+
 
 class CurrentCameraSettings : public CameraSettings
 {

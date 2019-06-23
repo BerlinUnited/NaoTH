@@ -1,13 +1,13 @@
-#ifndef _CameraSettingsV5_H_
-#define _CameraSettingsV5_H_
+#ifndef _CameraSettingsV5Manager_H_
+#define _CameraSettingsV5Manager_H_
 
 #include <Representations/Infrastructure/CameraSettings.h>
 
 
-class CameraSettingsV5 : public naoth::GenericCameraSettings {
+class CameraSettingsV5Manager : public naoth::CameraSettingsManager {
   public:
 
-  CameraSettingsV5();
+  CameraSettingsV5Manager();
 
   virtual void query(int cameraFd, std::string cameraName);
 
@@ -26,4 +26,4 @@ class CameraSettingsV5 : public naoth::GenericCameraSettings {
 
 };
 
-#endif // _CameraSettingsV5_H_
+#endif // _CameraSettingsV5Manager_H_

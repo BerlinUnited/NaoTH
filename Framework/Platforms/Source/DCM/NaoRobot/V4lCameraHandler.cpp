@@ -84,14 +84,10 @@ V4lCameraHandler::V4lCameraHandler()
 
 
   settingsOrder.push_back(CameraSettings::Contrast);
-  settingsOrder.push_back(CameraSettings::Saturation);
   settingsOrder.push_back(CameraSettings::Hue);
   settingsOrder.push_back(CameraSettings::Sharpness);
-  settingsOrder.push_back(CameraSettings::Exposure);
-  settingsOrder.push_back(CameraSettings::Gain);
   settingsOrder.push_back(CameraSettings::GammaCorrection);
 
-  settingsOrder.push_back(CameraSettings::WhiteBalance);
   // this throws errors sometimes and slows down the robot, check whats wrong before activating it
 //  settingsOrder.push_back(CameraSettings::BacklightCompensation);
   settingsOrder.push_back(CameraSettings::FadeToBlack);
@@ -133,13 +129,6 @@ void V4lCameraHandler::init(std::string camDevice, CameraInfo::CameraID camID, b
   //                            so we don't have to set all of them again
   internalUpdateCameraSettings();
 
-  // HACK (exposure): force change of the exposure
-  if(currentSettings.data[CameraSettings::Exposure] == 40) {
-    setSingleCameraParameter(csConst[CameraSettings::Exposure], 41, "Exposure");
-  } else {
-    setSingleCameraParameter(csConst[CameraSettings::Exposure], 40, "Exposure");
-  }
-  setSingleCameraParameter(csConst[CameraSettings::Exposure], currentSettings.data[CameraSettings::Exposure], "Exposure");
 
   // print the retrieved settings
   for (int i = 0; i < CameraSettings::numOfCameraSetting; i++) {
@@ -164,22 +153,18 @@ void V4lCameraHandler::initIDMapping()
   csConst[CameraSettings::Brightness] = V4L2_CID_BRIGHTNESS;
   csConst[CameraSettings::BrightnessDark] = V4L2_MT9M114_BRIGHTNESS_DARK;
   csConst[CameraSettings::Contrast] = V4L2_CID_CONTRAST;
-  csConst[CameraSettings::Saturation] = V4L2_CID_SATURATION;
   csConst[CameraSettings::Hue] = V4L2_CID_HUE;
   csConst[CameraSettings::VerticalFlip] = V4L2_CID_VFLIP;
   csConst[CameraSettings::HorizontalFlip] = V4L2_CID_HFLIP;
   csConst[CameraSettings::Sharpness] = V4L2_CID_SHARPNESS;
   csConst[CameraSettings::AutoExposition] = V4L2_CID_EXPOSURE_AUTO;
   csConst[CameraSettings::AutoWhiteBalancing] = V4L2_CID_AUTO_WHITE_BALANCE;
-  csConst[CameraSettings::Gain] = V4L2_CID_GAIN;
   csConst[CameraSettings::MinAnalogGain] = V4L2_MT9M114_AE_MIN_VIRT_AGAIN;
   csConst[CameraSettings::MaxAnalogGain] = V4L2_MT9M114_AE_MAX_VIRT_AGAIN;
   csConst[CameraSettings::TargetGain] = V4L2_MT9M114_AE_TARGET_GAIN;
   csConst[CameraSettings::GammaCorrection] = V4L2_CID_GAMMA;
   
-  csConst[CameraSettings::Exposure] = V4L2_CID_EXPOSURE;
   //csConst[CameraSettings::WhiteBalance] = V4L2_CID_DO_WHITE_BALANCE;
-  csConst[CameraSettings::WhiteBalance] = V4L2_CID_WHITE_BALANCE_TEMPERATURE;
   csConst[CameraSettings::BacklightCompensation] = V4L2_CID_BACKLIGHT_COMPENSATION;
   csConst[CameraSettings::FadeToBlack] = V4L2_MT9M114_FADE_TO_BLACK;
   csConst[CameraSettings::PowerlineFrequency] = V4L2_CID_POWER_LINE_FREQUENCY;
@@ -712,58 +697,46 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
 
    bool forceUpdate = !initialParamsSet;
 
-  //unsigned long long currentTime = NaoTime::getSystemTimeInMicroSeconds();
-  //if(currentTime < lastCameraSettingTimestamp + 16000) {
-  //  return;
-  //}
+   currentSettings.apply(fd, cameraName);
 
-  std::list<CameraSettings::CameraSettingID>::const_iterator it = settingsOrder.begin();
-  for(; it != settingsOrder.end(); it++)
-  {
-    // only set forced or if csConst was set and the value was changed
-    if(forceUpdate || (csConst[*it] != -1 && data.data[*it] != currentSettings.data[*it]))
-    {
-      /*
+   std::list<CameraSettings::CameraSettingID>::const_iterator it = settingsOrder.begin();
+   for (; it != settingsOrder.end(); it++)
+   {
+     // only set forced or if csConst was set and the value was changed
+     if (forceUpdate || (csConst[*it] != -1 && data.data[*it] != currentSettings.data[*it]))
+     {
+       /*
       // NOTE: experimental
       int oldValue = getSingleCameraParameter(csConst[*it]);
       std::cout << LOG << "trying to change " << CameraSettings::getCameraSettingsName(*it) 
                 << " from " << oldValue << " to " << data.data[*it] << std::endl;
       */
 
-      if(data.data[CameraSettings::AutoExposition] && 
-        (*it == CameraSettings::Exposure || *it == CameraSettings::Gain)) {
-        // ignore
-      }
-      else if(data.data[CameraSettings::AutoWhiteBalancing] && 
-        (*it == CameraSettings::WhiteBalance)) {
-        // ignore
-//        std::cout << "Ignore WhiteBalance" << std::endl;
-      }
-      // apply the single parameter setting
-      else if(setSingleCameraParameter(csConst[*it], data.data[*it], CameraSettings::getCameraSettingsName(*it))) {
-        lastCameraSettingTimestamp = NaoTime::getSystemTimeInMicroSeconds();
+       // apply the single parameter setting
+       if (setSingleCameraParameter(csConst[*it], data.data[*it], CameraSettings::getCameraSettingsName(*it)))
+       {
+         lastCameraSettingTimestamp = NaoTime::getSystemTimeInMicroSeconds();
 
-        if(*it == CameraSettings::AutoExposition && currentSettings.data[*it] == 1 && data.data[*it] == 0)
-        {
-          // read back the gain and auto exposure values set by the now deactivated auto exposure
-          currentSettings.data[CameraSettings::Exposure] = getSingleCameraParameter(csConst[CameraSettings::Exposure]);
-          currentSettings.data[CameraSettings::Gain] = getSingleCameraParameter(csConst[CameraSettings::Gain]);
+         if (*it == CameraSettings::AutoExposition && currentSettings.data[*it] == 1 && data.data[*it] == 0)
+         {
+           // read back the gain and auto exposure values set by the now deactivated auto exposure
+           currentSettings.query(fd, cameraName);
 
-          std::cout << LOG << "autoupdated Exposure to "  << currentSettings.data[CameraSettings::Exposure] << std::endl;
-        }
-        else if(*it == CameraSettings::AutoWhiteBalancing && currentSettings.data[*it] == 1 && data.data[*it] == 0)
-        {
-          // read back the white balance value set to make sure they are in sync
-          currentSettings.data[CameraSettings::WhiteBalance] = getSingleCameraParameter(csConst[CameraSettings::WhiteBalance]);
+           std::cout << LOG << "autoupdated Exposure to " << currentSettings.exposure << std::endl;
+         }
+         else if (*it == CameraSettings::AutoWhiteBalancing && currentSettings.data[*it] == 1 && data.data[*it] == 0)
+         {
+           // read back the white balance value set to make sure they are in sync
+           currentSettings.query(fd, cameraName);
 
-          std::cout << LOG << "autoupdated WhiteBalance to "  << currentSettings.data[CameraSettings::WhiteBalance] << std::endl;
-        }
+           std::cout << LOG << "autoupdated WhiteBalance to " << currentSettings.whiteBalanceTemperature << std::endl;
+         }
 
-        std::cout << LOG << "set " << CameraSettings::getCameraSettingsName(*it) << " to " << data.data[*it] << std::endl;
+         std::cout << LOG << "set " << CameraSettings::getCameraSettingsName(*it) << " to " << data.data[*it] << std::endl;
 
-        currentSettings.data[*it] = data.data[*it];
+         currentSettings.data[*it] = data.data[*it];
 
-        /*
+         /*
         // NOTE: experimental - check with the actual value
         int newValue = getSingleCameraParameter(csConst[*it]);
         if(newValue != data.data[*it]) {
@@ -772,12 +745,13 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
           currentSettings.data[*it] = newValue;
         }
         */
-
-      } else {
-        std::cout << LOG << "setting " << CameraSettings::getCameraSettingsName(*it) << " failed" << std::endl;
-      }
-//      break;
-    }
+       }
+       else
+       {
+         std::cout << LOG << "setting " << CameraSettings::getCameraSettingsName(*it) << " failed" << std::endl;
+       }
+       //      break;
+     }
   }// end for
 
 
@@ -801,6 +775,9 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
 
 void V4lCameraHandler::internalUpdateCameraSettings()
 {
+
+  currentSettings.query(fd, cameraName);
+
   for (int i = 0; i < CameraSettings::numOfCameraSetting; i++)
   {
     if (csConst[i] > -1) {

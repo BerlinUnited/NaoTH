@@ -26,6 +26,8 @@ extern "C"
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CameraSettings.h"
 
+#include "CameraSettingsV5Manager.h"
+
 /**
  * This is a CameraHandler that uses the V4L2 API directly. It will use the
  * Memory Map Streaming method for getting the images (which should be the
@@ -122,7 +124,7 @@ private:
   std::list<CameraSettings::CameraSettingID> settingsOrder;
   std::list<CameraSettings::CameraSettingID> uvcSettingsOrder;
 
-  CameraSettings currentSettings;
+  CameraSettingsV5Manager currentSettings;
   CameraInfo::CameraID currentCamera;
 
 };

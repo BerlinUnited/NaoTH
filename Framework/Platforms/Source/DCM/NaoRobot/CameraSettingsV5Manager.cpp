@@ -1,4 +1,4 @@
-#include "CameraSettingsV5.h"
+#include "CameraSettingsV5Manager.h"
 
 extern "C"
 {
@@ -11,12 +11,12 @@ extern "C"
 
 #define hasIOError(...) hasIOErrorPrint(__LINE__, __VA_ARGS__)
 
-CameraSettingsV5::CameraSettingsV5()
+CameraSettingsV5Manager::CameraSettingsV5Manager()
     : error_count(0)
 {
 }
 
-void CameraSettingsV5::query(int cameraFd, std::string cameraName)
+void CameraSettingsV5Manager::query(int cameraFd, std::string cameraName)
 {
     exposure = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE);
     saturation = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SATURATION);
@@ -26,7 +26,7 @@ void CameraSettingsV5::query(int cameraFd, std::string cameraName)
     gain = Math::fromFixPoint<5>(gainRaw);
 }
 
-void CameraSettingsV5::apply(int cameraFd, std::string cameraName)
+void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName)
 {
     setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE, "Exposure", exposure);
     setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SATURATION, "Saturation", saturation);
@@ -35,7 +35,7 @@ void CameraSettingsV5::apply(int cameraFd, std::string cameraName)
     setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN, "Gain", Math::toFixPoint<5>(static_cast<float>(gain)));    
 }
 
-int CameraSettingsV5::getSingleCameraParameterRaw(int cameraFd, std::string cameraName, int parameterID)
+int CameraSettingsV5Manager::getSingleCameraParameterRaw(int cameraFd, std::string cameraName, int parameterID)
 {
     struct v4l2_queryctrl queryctrl;
     queryctrl.id = parameterID;
@@ -82,7 +82,7 @@ int CameraSettingsV5::getSingleCameraParameterRaw(int cameraFd, std::string came
     return -1;
 }
 
-bool CameraSettingsV5::setSingleCameraParameterRaw(int cameraFd, std::string cameraName, int parameterID, std::string parameterName, int value)
+bool CameraSettingsV5Manager::setSingleCameraParameterRaw(int cameraFd, std::string cameraName, int parameterID, std::string parameterName, int value)
 {
     if (parameterID < 0)
     {
@@ -128,7 +128,7 @@ bool CameraSettingsV5::setSingleCameraParameterRaw(int cameraFd, std::string cam
 }
 
 // https://01.org/linuxgraphics/gfx-docs/drm/media/uapi/v4l/capture.c.html
-int CameraSettingsV5::xioctl(int fd, int request, void *arg) const
+int CameraSettingsV5Manager::xioctl(int fd, int request, void *arg) const
 {
     int r;
     // TODO: possibly endless loop?
@@ -139,7 +139,7 @@ int CameraSettingsV5::xioctl(int fd, int request, void *arg) const
     return r;
 }
 
-bool CameraSettingsV5::hasIOErrorPrint(int lineNumber, std::string cameraName, int errOccured, int errNo, bool exitByIOError)
+bool CameraSettingsV5Manager::hasIOErrorPrint(int lineNumber, std::string cameraName, int errOccured, int errNo, bool exitByIOError)
 {
     if (errOccured < 0 && errNo != EAGAIN)
     {

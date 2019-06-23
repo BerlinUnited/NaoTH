@@ -33,6 +33,8 @@ extern "C"
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CameraSettings.h"
 
+#include "CameraSettingsV5Manager.h"
+
 struct buffer
 {
   void * start;
@@ -139,7 +141,7 @@ private: // data members
 
   /** order in which the camera settings need to be applied */
   std::list<CameraSettings::CameraSettingID> settingsOrder;
-  CameraSettings currentSettings;
+  CameraSettingsV5Manager currentSettings;
   
   int error_count;
 };
