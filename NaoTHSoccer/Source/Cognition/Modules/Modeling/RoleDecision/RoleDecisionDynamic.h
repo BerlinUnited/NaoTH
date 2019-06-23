@@ -64,6 +64,8 @@ private:
     public:
         Parameters(): ParameterList("RoleDecisionDynamic")
         {
+            PARAMETER_REGISTER(strikerIndicator, &Parameters::setStrikerIndicatorFunction) = "distance"; // "time"
+
             PARAMETER_REGISTER(striker_ball_lost_time) = 1000.0;
             PARAMETER_REGISTER(striker_ball_bonus_time) = 4000.0;
             PARAMETER_REGISTER(striker_indicator_bonus) = 300.0;
@@ -73,12 +75,11 @@ private:
             PARAMETER_REGISTER(striker_ball_difference_distance_m) = 0.35;
             PARAMETER_REGISTER(striker_ball_difference_distance_n) = -40.0;
 
-            PARAMETER_REGISTER(striker_goalie_decision, &Parameters::setStrikerGoalieDecisionFunction) = "condition"; // "wants"
+            PARAMETER_REGISTER(goalie_striker_decision, &Parameters::setStrikerGoalieDecisionFunction) = "condition"; // "wants"
             PARAMETER_REGISTER(goalie_striker_ball_distance) = 1500.0;
             PARAMETER_REGISTER(goalie_striker_min_x_pos) = -2700.0;
             PARAMETER_REGISTER(goalie_striker_decision_distance) = 500.0;
 
-            PARAMETER_REGISTER(strikerIndicator, &Parameters::setStrikerIndicatorFunction) = "distance"; // "time"
             PARAMETER_REGISTER(step_time, &Parameters::setStepTime) = 250;
             PARAMETER_REGISTER(step_distance, &Parameters::setStepDistance) = 80;
             PARAMETER_REGISTER(turn_angle, &Parameters::setTurnAngle) = 30;
@@ -86,6 +87,10 @@ private:
             // load from the file after registering all parameters
             syncWithConfig();
         }
+
+        // striker function, returns an indicator who's fastest
+        std::string strikerIndicator;
+        double (RoleDecisionDynamic::*strikerIndicatorFn)(const TeamMessageData&);
 
         double striker_ball_lost_time;
         double striker_ball_bonus_time;
@@ -100,16 +105,12 @@ private:
         double striker_ball_difference_distance_n;
 
         // decides, whether the goalie gets striker or not
-        std::string striker_goalie_decision;
+        std::string goalie_striker_decision;
         bool (RoleDecisionDynamic::*strikerGoalieDecisionFn)(const TeamMessageData*, std::vector<RoleDecisionDynamic::Striker>&);
 
         double goalie_striker_ball_distance;
         double goalie_striker_min_x_pos;
         double goalie_striker_decision_distance;
-
-        // striker function, returns an indicator who's fastest
-        std::string strikerIndicator;
-        double (RoleDecisionDynamic::*strikerIndicatorFn)(const TeamMessageData&);
 
         // params for the time-to-ball striker function
         double step_time;
