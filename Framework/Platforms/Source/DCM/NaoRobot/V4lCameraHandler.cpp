@@ -41,7 +41,6 @@
 #define hasIOError(...) hasIOErrorPrint(__LINE__, __VA_ARGS__)
 
 #define V4L2_MT9M114_FADE_TO_BLACK (V4L2_CID_PRIVATE_BASE) //boolean, enable or disable fade to black feature
-#define V4L2_MT9M114_BRIGHTNESS_DARK (V4L2_CID_PRIVATE_BASE + 1)
 
 
 using namespace naoth;
@@ -63,7 +62,6 @@ V4lCameraHandler::V4lCameraHandler()
 
   settingsOrder.push_back(CameraSettings::AutoExpositionAlgorithm);
   settingsOrder.push_back(CameraSettings::Brightness);
-  //  settingsOrder.push_back(CameraSettings::BrightnessDark);
   settingsOrder.push_back(CameraSettings::PowerlineFrequency);
 
   settingsOrder.push_back(CameraSettings::Contrast);
@@ -147,7 +145,6 @@ void V4lCameraHandler::initIDMapping()
 
   // map the existing parameters that can be used safely
   csConst[CameraSettings::Brightness] = V4L2_CID_BRIGHTNESS;
-  csConst[CameraSettings::BrightnessDark] = V4L2_MT9M114_BRIGHTNESS_DARK;
   csConst[CameraSettings::Contrast] = V4L2_CID_CONTRAST;
   csConst[CameraSettings::Hue] = V4L2_CID_HUE;
   csConst[CameraSettings::Sharpness] = V4L2_CID_SHARPNESS;

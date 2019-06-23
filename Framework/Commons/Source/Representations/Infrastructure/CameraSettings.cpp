@@ -25,9 +25,6 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
   case Brightness:
     return "Brightness";
     break;
-  case BrightnessDark:
-    return "BrightnessDark";
-    break;
   case Contrast:
     return "Contrast";
     break;
@@ -171,7 +168,6 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
   result.data[CameraSettings::BacklightCompensation] = backlightCompensation ? 1 : 0;
   // use target brightness for both lightening conditions
   result.data[CameraSettings::Brightness] = Math::clamp(brightness, isV6 ? -255 : 0, 255);
-  result.data[CameraSettings::BrightnessDark] = Math::clamp(brightness, 0, 255);
   result.data[CameraSettings::CameraSelection] = cameraSelection;
   if (isV6)
   {

@@ -47,7 +47,6 @@ public:
     AutoExpositionAlgorithm,
     BacklightCompensation,
     Brightness,
-    BrightnessDark,
     CameraSelection,
     Contrast,
     FadeToBlack,
