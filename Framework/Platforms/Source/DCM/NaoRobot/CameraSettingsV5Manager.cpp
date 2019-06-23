@@ -38,8 +38,8 @@ void CameraSettingsV5Manager::query(int cameraFd, std::string cameraName, naoth:
     settings.v5_minAnalogGain = Math::fromFixPoint<5>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_MIN_VIRT_AGAIN));
     settings.v5_maxAnalogGain = Math::fromFixPoint<5>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_MAX_VIRT_AGAIN));
     settings.v5_fadeToBlack = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_FADE_TO_BLACK) == 0 ? false : true;
-
     settings.v5_powerlineFrequency = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_POWER_LINE_FREQUENCY) == 2 ? 60 : 50;
+    settings.v5_gammaCorrection = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAMMA);
 }
 
 void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const naoth::CameraSettings &settings)
@@ -139,5 +139,11 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_POWER_LINE_FREQUENCY, "PowerlineFrequency", settings.v5_powerlineFrequency == 60 ? 2 : 1))
     {
         v5_powerlineFrequency = settings.v5_powerlineFrequency;
+    }
+
+    if (v5_gammaCorrection != settings.v5_gammaCorrection &&
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAMMA, "GammaCorrection", Math::clamp(settings.whiteBalanceTemperature, 100, 280)))
+    {
+        v5_gammaCorrection = settings.v5_gammaCorrection;
     }
 }

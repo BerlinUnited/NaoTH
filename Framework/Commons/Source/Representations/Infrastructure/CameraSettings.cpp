@@ -52,9 +52,6 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
   case AutoExpositionAlgorithm:
     return "AutoExpositionAlgorithm";
     break;
-  case GammaCorrection:
-    return "GammaCorrection";
-    break;
   default:
     return "Unknown CameraSetting";
     break;
@@ -97,7 +94,7 @@ CameraSettingsRequest::CameraSettingsRequest(string configName)
   PARAMETER_REGISTER(exposure) = 1;
   PARAMETER_REGISTER(v5_fadeToBlack) = false;
   PARAMETER_REGISTER(gain) = 1.0;
-  PARAMETER_REGISTER(gammaCorrection) = 220;
+  PARAMETER_REGISTER(v5_gammaCorrection) = 220;
   PARAMETER_REGISTER(v5_targetGain) = 5.0;
   PARAMETER_REGISTER(v5_minAnalogGain) = 1.0;
   PARAMETER_REGISTER(v5_maxAnalogGain) = 8.0;
@@ -154,6 +151,7 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
   result.v5_maxAnalogGain = std::max(static_cast<float>(v5_maxAnalogGain), result.v5_targetGain);
   result.v5_fadeToBlack = v5_fadeToBlack;
   result.v5_powerlineFrequency = v5_powerlineFrequency;
+  result.v5_gammaCorrection = v5_gammaCorrection;
 
   // Convert each request to a proper setting and clamp values according to the driver documentation
   // (https://github.com/bhuman/BKernel#information-about-the-camera-driver).
@@ -190,7 +188,6 @@ CameraSettings CameraSettingsRequest::getCameraSettings(bool isV6) const
   {
     result.data[CameraSettings::Sharpness] = Math::clamp(sharpness, -7, 7);
   }
-  result.data[CameraSettings::GammaCorrection] = Math::clamp(gammaCorrection, 100, 280);
 
 
   for (std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++)
@@ -218,7 +215,6 @@ CommonCameraSettingsRequest::CommonCameraSettingsRequest(string configName)
   PARAMETER_REGISTER(brightness) = 55;
   PARAMETER_REGISTER(exposure) = 1;
   PARAMETER_REGISTER(gain) = 1;
-  PARAMETER_REGISTER(gammaCorrection) = 220;
   PARAMETER_REGISTER(v5_targetGain) = 5.0;
   PARAMETER_REGISTER(v5_minAnalogGain) = 1.0;
   PARAMETER_REGISTER(v5_maxAnalogGain) = 8.0;

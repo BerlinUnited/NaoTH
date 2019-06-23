@@ -43,6 +43,8 @@ public:
 
   int v5_powerlineFrequency;
 
+  int v5_gammaCorrection;
+
   /* don't change order of enumerations
        * because it reflects the order of execution
        */
@@ -54,7 +56,6 @@ public:
     CameraSelection,
     Contrast,
     FPS, // TODO: remove this from settings?
-    GammaCorrection,
     Hue,
     ResolutionHeight, // TODO: remove this from settings?
     ResolutionWidth,  // TODO: remove this from settings?
@@ -120,7 +121,7 @@ public:
   int exposure;
   bool v5_fadeToBlack;
   double gain;
-  int gammaCorrection;
+  int v5_gammaCorrection;
   double v5_targetGain;
   double v5_minAnalogGain;
   double v5_maxAnalogGain;
@@ -159,7 +160,6 @@ public:
   int brightness;
   int exposure;
   double gain;
-  int gammaCorrection;
   double v5_targetGain;
   double v5_minAnalogGain;
   double v5_maxAnalogGain;

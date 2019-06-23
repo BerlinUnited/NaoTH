@@ -64,7 +64,6 @@ V4lCameraHandler::V4lCameraHandler()
   settingsOrder.push_back(CameraSettings::Contrast);
   settingsOrder.push_back(CameraSettings::Hue);
   settingsOrder.push_back(CameraSettings::Sharpness);
-  settingsOrder.push_back(CameraSettings::GammaCorrection);
 
   // DEBUG: test
   //hasIOError(-1, EPIPE);
@@ -141,7 +140,6 @@ void V4lCameraHandler::initIDMapping()
   csConst[CameraSettings::Contrast] = V4L2_CID_CONTRAST;
   csConst[CameraSettings::Hue] = V4L2_CID_HUE;
   csConst[CameraSettings::Sharpness] = V4L2_CID_SHARPNESS;
-  csConst[CameraSettings::GammaCorrection] = V4L2_CID_GAMMA;
 
   csConst[CameraSettings::BacklightCompensation] = V4L2_CID_BACKLIGHT_COMPENSATION;
 
