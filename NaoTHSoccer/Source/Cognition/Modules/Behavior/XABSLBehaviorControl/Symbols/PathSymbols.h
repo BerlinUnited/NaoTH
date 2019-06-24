@@ -43,6 +43,9 @@ private:
 
   static void setDirection(double rot);
   static double getDirection();
+
+  static void setTargetRotation(double rot);
+  static double getTargetRotation();
 };
 
 #endif /* _PathSymbols_H_ */

@@ -24,7 +24,8 @@ namespace path_symbols("PathPlanner Symbols") {
     forwardkick_right,
     sidekick_left,
     sidekick_right,
-    sidestep
+    sidestep,
+    go_to_point
   };
 
 
@@ -38,7 +39,11 @@ namespace path_symbols("PathPlanner Symbols") {
 
   float output path.direction;
   float output path.radius;
-  bool output path.stable;
+  bool output  path.stable;
+
+  float output path.target.x;
+  float output path.target.y;
+  float output path.target.rot;
 
   bool input path.kick_executed;
 }

@@ -31,7 +31,11 @@ option path2018_go_to_point_with_USOA
     }
     action 
     {
-      go_to_point(x=@x,y=@y,rot=@rot);
+      path2018.routine = go_to_point;
+      path.target.x = @x;
+      path.target.y = @y;
+      path.target.rot = @rot;
+      path.stable = false;
     }
   }
 
@@ -104,11 +108,13 @@ option path2018_go_to_point_with_USOA
 
     action{
       head.control_mode = search_for_ball;
-
-      go_to_point(x=@x,y=@y,rot=@rot);
-
-      motion.walk.style = stable;
-  }
+      
+      path2018.routine = go_to_point;
+      path.target.x = @x;
+      path.target.y = @y;
+      path.target.rot = @rot;
+      path.stable = true;
+    }
   }
 
   target state finish{
