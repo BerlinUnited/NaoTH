@@ -21,9 +21,10 @@ IntegralFieldDetector::~IntegralFieldDetector()
 
 void IntegralFieldDetector::execute(CameraInfo::CameraID id)
 {
+  cameraID = id;
+
   getFieldPercept().reset();
 
-  cameraID = id;
   if(!getBallDetectorIntegralImage().isValid()) {
     return;
   }
