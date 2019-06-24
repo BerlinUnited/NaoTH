@@ -116,7 +116,7 @@ setEtc(){
  	if [ -h /nao/etc/systemd/user/aldebaran.target.wants/naoqi-legacy.service]; then
 		rm /nao/etc/systemd/user/aldebaran.target.wants/naoqi-legacy.service
 	fi
-
+	# overwrite lola.service with our version (we dont want naoqi as dependency)
 	deployFile "/nao/etc/systemd/user/lola.service" "root" "644" "v6"
 
 	# # add link to enable starting at boot
@@ -167,11 +167,12 @@ su nao -c "/usr/bin/paplay ./home/nao/naoqi/Media/usb_start.wav"
 naoth stop
 # naoqi stop
 
-# # disable /etc overlay
+# disable /etc overlay
 umount -l /etc
 setEtc
 systemctl restart etc.mount
-setEtc
+# TODO: check if this is really needed (overlay should merge base and overlayed directory contents)
+#setEtc
 
 # ==================== libs stuff ====================
 
