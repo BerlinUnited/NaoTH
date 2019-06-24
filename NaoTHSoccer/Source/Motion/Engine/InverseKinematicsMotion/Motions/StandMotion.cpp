@@ -19,6 +19,7 @@ StandMotion::StandMotion()
   :
   IKMotion(getInverseKinematicsMotionEngineService(), motion::stand, getMotionLock()),
 
+  firstRun(true),
   state(GotoStandPose),
   lastState(Relax),//HACK: need to be different from state (another enum value would require a default case in the switch statement)
   state_time(0),
@@ -45,11 +46,11 @@ StandMotion::StandMotion()
 
 void StandMotion::execute()
 {
+  setCurrentState(motion::running);
+
   // HACK: make it parameter or so?
   const double timeBeforeRelax = static_cast<double>(getRobotInfo().basicTimeStep*100);
-
-  setCurrentState(motion::running);
-  double stiffDelta = getRobotInfo().getBasicTimeStepInSecond();
+  const double stiffDelta = getRobotInfo().getBasicTimeStepInSecond();
 
   // update joint monitors
   for( int i = naoth::JointData::RShoulderRoll; i <= naoth::JointData::LAnkleRoll; i++) {
@@ -157,6 +158,8 @@ void StandMotion::execute()
   stiffnessIsReady = setStiffness(getMotorJointData(), getSensorJointData(), stiffness, stiffDelta, naoth::JointData::RHipYawPitch, naoth::JointData::LWristYaw);
 
   //turnOffStiffnessWhenJointIsOutOfRange();
+
+  firstRun = false;
 }//end execute
 
 void StandMotion::setStiffnessBuffer(double s)
@@ -182,24 +185,55 @@ void StandMotion::calcStandPose()
   comHeight = Math::clamp(comHeight, 160.0, 270.0); // valid range
 
   // use the sensors to estimate the current pose
-  startPose  = getEngine().getCurrentCoMFeetPose();//getEngine().getCoMFeetPoseBasedOnModel();//
-  targetPose = getStandPose(comHeight,
+  startPose  = getEngine().getCurrentCoMFeetPose();//getEngine().getCoMFeetPoseBasedOnModel();
+  
+  // HACK: don't do anything if after walk
+  //       copy the pose only the first time
+  if(firstRun && getMotionStatus().lastMotion == motion::walk) 
+  {
+    targetPose = startPose;
+  }
+  else // calculate full correction pose
+  {
+    targetPose = getStandPose(comHeight,
                             getEngine().getParameters().stand.hipOffsetX,
                             getEngine().getParameters().stand.bodyPitchOffset,
                             standardStand);
-
-  // HACK: don't do anything if after walk
-  if(getMotionStatus().lastMotion == motion::walk) {
-    targetPose = startPose;
   }
 
+  double speed = getEngine().getParameters().stand.speed;
+
+  // TODO: there mus be a better way to do it
+  // estimate the maximal error between the targetPose and startPose in order to estimate the time
+  // which is necessary to move from one to another. In order to take the rotation into account we 
+  // calculate the maximal error from the perspective of each of the poses: left/right foot and com.
+  
+  // error from the perspective of the left foot
+  targetPose.localInLeftFoot();
+  startPose.localInLeftFoot();
+  double distLeft = std::max(
+    (targetPose.com.translation        - startPose.com.translation).abs(), 
+    (targetPose.feet.right.translation - startPose.feet.right.translation).abs()
+  );
+
+  // error from the perspective of the right foot
+  targetPose.localInRightFoot();
+  startPose.localInRightFoot();
+  double distRight = std::max(
+    (targetPose.com.translation        - startPose.com.translation).abs(), 
+    (targetPose.feet.left.translation  - startPose.feet.left.translation).abs()
+  );
+
+  // error from the perspective of the com
   targetPose.localInCoM();
   startPose.localInCoM();
+  double distCom = std::max(
+    (targetPose.feet.left.translation  - startPose.feet.left.translation).abs(), 
+    (targetPose.feet.right.translation - startPose.feet.right.translation).abs()
+  );
+  
+  double distMax = std::max(std::max(distLeft,distRight),distCom);
 
-  double speed = getEngine().getParameters().stand.speed;
-  double distLeft = (targetPose.feet.left.translation - startPose.feet.left.translation).abs();
-  double distRight = (targetPose.feet.right.translation - startPose.feet.right.translation).abs();
-  double distMax = std::max(distLeft, distRight);
   totalTime = distMax / speed;
   time = 0;
 } // end calcStandPose

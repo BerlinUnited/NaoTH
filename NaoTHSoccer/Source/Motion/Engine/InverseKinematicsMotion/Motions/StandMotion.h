@@ -11,8 +11,8 @@
 *
 */
 
-#ifndef _StandMotion_H
-#define _StandMotion_H
+#ifndef _StandMotion_H_
+#define _StandMotion_H_
 
 #include "IKMotion.h"
 #include "Tools/Debug/DebugPlot.h"
@@ -79,6 +79,7 @@ public:
     Relax
   };
 
+  bool firstRun;
   State state;
   State lastState;
   time_t state_time;
@@ -140,5 +141,5 @@ private:
 
 };
 
-#endif  /* _StandMotion_H */
+#endif  /* _StandMotion_H_ */
 
