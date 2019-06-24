@@ -105,11 +105,13 @@ void PathPlanner2018::execute()
     sidesteps(Foot::RIGHT, getPathModel().direction);
     break;
   case PathModel::PathPlanner2018Routine::GO_TO_POINT:
-    goToPoint(getPathModel().target);
+    goToPoint(getPathModel().target, getPathModel().stable);
   }//end switch
 
   // Always executed last
   executeStepBuffer();
+
+  last_path2018_routine = getPathModel().path2018_routine;
 }
 
 void PathPlanner2018::moveAroundBall(const double direction, const double radius, const bool stable)
