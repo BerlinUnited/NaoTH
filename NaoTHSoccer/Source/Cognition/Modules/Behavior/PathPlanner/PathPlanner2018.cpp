@@ -99,7 +99,7 @@ void PathPlanner2018::execute()
     sidesteps(Foot::RIGHT, getPathModel().direction);
     break;
   case PathModel::PathPlanner2018Routine::DRIBBLE_KICK:
-    if (nearApproach_forwardKick(Foot::RIGHT, getPathModel().xOffset, getPathModel().yOffset)){
+    if (dribble_approach(getPathModel().xOffset, getPathModel().yOffset)){
       kickPlanned = true;
     }
     break;
@@ -319,8 +319,7 @@ bool PathPlanner2018::nearApproach_forwardKick(const Foot& /*foot*/, const doubl
   return false;
 }
 
-bool PathPlanner2018::dribble(const Foot& /*foot*/, const double offsetX, const double offsetY)
-{
+bool PathPlanner2018::dribble_approach(const double offsetX, const double offsetY){
   // Always execute the steps that were planned before planning new steps
   if (stepBuffer.empty())
   {
@@ -328,29 +327,11 @@ bool PathPlanner2018::dribble(const Foot& /*foot*/, const double offsetX, const 
     Vector2d targetPos;
     Coordinate coordinate = Coordinate::Hip;
 
-    //if (foot == Foot::RIGHT)
-    if (getBallModel().positionPreview.y < 0)
-    {
-      ballPos = getBallModel().positionPreviewInRFoot;
-      coordinate = Coordinate::RFoot;
-    }
-    //else if (foot == Foot::LEFT)
-    else if (getBallModel().positionPreview.y >= 0)
-    {
-      coordinate = Coordinate::LFoot;
-      ballPos = getBallModel().positionPreviewInLFoot;
-    }
-    else
-    {
-      ASSERT(false);
-    }
+    ballPos = getBallModel().positionPreview;
     // add the desired offset
     targetPos.x = ballPos.x - getFieldInfo().ballRadius - offsetX;
     targetPos.y = ballPos.y - offsetY;
 
-    // Am I ready for a kick or still walking to the ball?
-    // In other words: Can I only perform one step before touching the ball or more steps?
-    //TODO rewrite the condition from plan step if possible to dont plan steps if to close already
     if (std::abs(targetPos.x)  > params.forwardKickThreshold.x || std::abs(targetPos.y) > params.forwardKickThreshold.y)
     {
       // generate a correction step
@@ -382,7 +363,6 @@ bool PathPlanner2018::dribble(const Foot& /*foot*/, const double offsetX, const 
       return true;
     }
   }
-
   return false;
 }
    

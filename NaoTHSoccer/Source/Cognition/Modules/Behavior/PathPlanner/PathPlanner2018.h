@@ -116,11 +116,12 @@ private:
   bool nearApproach_forwardKick(const Foot& foot, const double offsetX, const double offsetY);
   bool nearApproach_sideKick(const Foot& foot, const double offsetX, const double offsetY);
   bool sidesteps(const Foot& foot, const double direction);
-
-  bool dribble(const Foot& foot, const double offsetX, const double offsetY);
+  
   void forwardKick(const Foot& foot);
   void fasterKick();
   void sideKick(const Foot& foot);
+
+  bool dribble_approach(const double offsetX, const double offsetY);
 
 // generate a setter method
 #define SET(Type, SetName, Name) \

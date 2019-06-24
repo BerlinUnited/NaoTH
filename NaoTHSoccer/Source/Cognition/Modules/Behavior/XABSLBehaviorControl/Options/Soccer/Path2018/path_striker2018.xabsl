@@ -151,8 +151,8 @@ option path_striker2018
   {
     decision
     {
-      else if (path.kick_executed)
-        goto goto_ball;
+      else if (path.kick_executed && ball.percept.x > 200)
+        goto walk_a_little;
       else
         stay;
     }
@@ -171,8 +171,6 @@ option path_striker2018
   {
     decision
     {
-      else if (path.kick_executed && ball.percept.x > 200)
-        goto walk_a_little;
       else if (path.kick_executed)
         goto short_freeze;
       else
@@ -191,8 +189,6 @@ option path_striker2018
   {
     decision
     {
-      else if (path.kick_executed && ball.percept.x > 200)
-        goto walk_a_little;
       else if (path.kick_executed)
         goto short_freeze;
       else
