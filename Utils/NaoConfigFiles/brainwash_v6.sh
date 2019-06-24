@@ -108,6 +108,17 @@ setEtc(){
 		ln -s /etc/systemd/system/naoth.service /etc/systemd/system/default.target.wants/naoth.service;
 	fi
 
+	# disable naoqi completely
+ 	if [ -h /nao/etc/systemd/user/aldebaran.target.wants/naoqi.service]; then
+		rm /nao/etc/systemd/user/aldebaran.target.wants/naoqi.service
+	fi
+
+ 	if [ -h /nao/etc/systemd/user/aldebaran.target.wants/naoqi-legacy.service]; then
+		rm /nao/etc/systemd/user/aldebaran.target.wants/naoqi-legacy.service
+	fi
+
+	deployFile "/nao/etc/systemd/user/lola.service" "root" "644" "v6"
+
 	# # add link to enable starting at boot
 	# if [ ! -f /etc/systemd/system/multi-user.target.wants/naoth.service ];	then
 	# 	echo "setting link to naoth.service";
@@ -146,11 +157,11 @@ setEtc(){
 mount -o remount,rw /
 
 # set volume to 88%
-sudo -u nao pactl set-sink-mute 0 false
+su nao -c "/usr/bin/pactl set-sink-mute 0 false"
 sudo -u nao pactl set-sink-volume 0 88%
 
 # play initial sound
-sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav
+su nao -c "/usr/bin/paplay ./home/nao/naoqi/Media/usb_start.wav"
 
 # stop naoqi and naoth
 naoth stop
@@ -161,7 +172,6 @@ umount -l /etc
 setEtc
 systemctl restart etc.mount
 setEtc
-
 
 # ==================== libs stuff ====================
 
@@ -313,7 +323,7 @@ for wifi in $WIFI_NETWORKS; do
 done
 
 # play initial sound
-sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav
+su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav"
 
 echo "Setting ip of eth0 (${ETH0_MAC})"
 connmanctl config ethernet_${ETH0_MAC}_cable --ipv4 manual 192.168.13.${NAO_NUMBER} 255.255.255.0
