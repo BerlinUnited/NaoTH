@@ -24,14 +24,17 @@ void PathSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumElement("path.routine", "path.routine.sidekick_left",       static_cast<int>(PathModel::PathRoutine::SIDEKICK_LEFT));
 
   // PathPlanner2018Routine
-  engine.registerEnumElement("path2018.routine", "path2018.routine.none",              static_cast<int>(PathModel::PathPlanner2018Routine::NONE));
-  engine.registerEnumElement("path2018.routine", "path2018.routine.move_around_ball",  static_cast<int>(PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL));
-  engine.registerEnumElement("path2018.routine", "path2018.routine.forwardkick_left",  static_cast<int>(PathModel::PathPlanner2018Routine::FORWARDKICK_LEFT));
-  engine.registerEnumElement("path2018.routine", "path2018.routine.forwardkick_right", static_cast<int>(PathModel::PathPlanner2018Routine::FORWARDKICK_RIGHT));
-  engine.registerEnumElement("path2018.routine", "path2018.routine.sidekick_left",     static_cast<int>(PathModel::PathPlanner2018Routine::SIDEKICK_LEFT));
-  engine.registerEnumElement("path2018.routine", "path2018.routine.sidekick_right",    static_cast<int>(PathModel::PathPlanner2018Routine::SIDEKICK_RIGHT));
-  engine.registerEnumElement("path2018.routine", "path2018.routine.sidestep",          static_cast<int>(PathModel::PathPlanner2018Routine::SIDESTEP));
-  engine.registerEnumElement("path2018.routine", "path2018.routine.go_to_point",       static_cast<int>(PathModel::PathPlanner2018Routine::GO_TO_POINT));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.none",                 static_cast<int>(PathModel::PathPlanner2018Routine::NONE));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.move_around_ball",     static_cast<int>(PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.forwardkick_left",     static_cast<int>(PathModel::PathPlanner2018Routine::FORWARDKICK_LEFT));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.forwardkick_right",    static_cast<int>(PathModel::PathPlanner2018Routine::FORWARDKICK_RIGHT));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.sidekick_left",        static_cast<int>(PathModel::PathPlanner2018Routine::SIDEKICK_LEFT));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.sidekick_right",       static_cast<int>(PathModel::PathPlanner2018Routine::SIDEKICK_RIGHT));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.sidestep",             static_cast<int>(PathModel::PathPlanner2018Routine::SIDESTEP));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.go_to_point",          static_cast<int>(PathModel::PathPlanner2018Routine::GO_TO_POINT));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.go_to_ball",           static_cast<int>(PathModel::PathPlanner2018Routine::GO_TO_BALL));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.go_to_ball_carefully", static_cast<int>(PathModel::PathPlanner2018Routine::GO_TO_BALL_CAREFULLY));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.go_to_ball_avoid",     static_cast<int>(PathModel::PathPlanner2018Routine::GO_TO_BALL_AVOID));
 
   engine.registerEnumeratedOutputSymbol("path.routine", "path.routine", &setPathRoutine, &getPathRoutine);
   engine.registerEnumeratedOutputSymbol("path2018.routine", "path2018.routine", &setPathRoutine2018, &getPathRoutine2018);

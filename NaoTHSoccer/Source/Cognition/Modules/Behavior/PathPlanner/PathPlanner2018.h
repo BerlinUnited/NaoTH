@@ -130,6 +130,10 @@ private:
   bool nearApproach_sideKick(const Foot& foot, const double offsetX, const double offsetY);
   bool sidesteps(const Foot& foot, const double direction);
 
+  void goToBall(const double distance);
+  void goToBallCarefully(const double distance);
+  void goToBallAvoid(const double direction);
+
   void forwardKick(const Foot& foot);
   void sideKick(const Foot& foot);
 

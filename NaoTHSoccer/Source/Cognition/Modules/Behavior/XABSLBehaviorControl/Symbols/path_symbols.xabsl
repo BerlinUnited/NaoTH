@@ -25,7 +25,10 @@ namespace path_symbols("PathPlanner Symbols") {
     sidekick_left,
     sidekick_right,
     sidestep,
-    go_to_point
+    go_to_point,
+    go_to_ball,        
+    go_to_ball_carefully,
+    go_to_ball_avoid
   };
 
 

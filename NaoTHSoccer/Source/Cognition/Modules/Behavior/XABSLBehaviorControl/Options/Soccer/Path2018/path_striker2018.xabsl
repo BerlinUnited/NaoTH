@@ -96,7 +96,7 @@ option path_striker2018
          to walk to the position of the ball. Two possible outcomes:
          1. the robot runs into the ball (if ball distance is not considered)
          2. the robot will walk backwards in the successive approaching because it was too close*/
-      go_to_ball_with_USOA(distance = 210); 
+      path2018_go_to_ball_with_USOA(distance = 210); 
     }
   }
 

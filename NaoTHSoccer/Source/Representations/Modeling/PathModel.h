@@ -50,7 +50,10 @@ public:
     SIDEKICK_LEFT,
     SIDEKICK_RIGHT,
     SIDESTEP,
-    GO_TO_POINT
+    GO_TO_POINT,
+    GO_TO_BALL,
+    GO_TO_BALL_CAREFULLY,
+    GO_TO_BALL_AVOID
   };
 
   PathRoutine path_routine;
@@ -140,6 +143,15 @@ public:
       break;
     case PathPlanner2018Routine::GO_TO_POINT:
       path_type2018 = "go to point";
+      break;
+    case PathPlanner2018Routine::GO_TO_BALL:
+      path_type2018 = "go to ball";
+      break;
+    case PathPlanner2018Routine::GO_TO_BALL_CAREFULLY:
+      path_type2018 = "go to ball avoid carefully";
+      break;
+    case PathPlanner2018Routine::GO_TO_BALL_AVOID:
+      path_type2018 = "go to ball and avoid left or right";
       break;
     }
 
