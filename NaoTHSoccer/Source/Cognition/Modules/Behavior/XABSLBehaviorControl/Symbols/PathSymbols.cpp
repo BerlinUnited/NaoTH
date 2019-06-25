@@ -24,13 +24,19 @@ void PathSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumElement("path.routine", "path.routine.sidekick_left",       static_cast<int>(PathModel::PathRoutine::SIDEKICK_LEFT));
 
   // PathPlanner2018Routine
-  engine.registerEnumElement("path2018.routine", "path2018.routine.none",              static_cast<int>(PathModel::PathPlanner2018Routine::NONE));
-  engine.registerEnumElement("path2018.routine", "path2018.routine.move_around_ball",  static_cast<int>(PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL));
-  engine.registerEnumElement("path2018.routine", "path2018.routine.forwardkick_left",  static_cast<int>(PathModel::PathPlanner2018Routine::FORWARDKICK_LEFT));
-  engine.registerEnumElement("path2018.routine", "path2018.routine.forwardkick_right", static_cast<int>(PathModel::PathPlanner2018Routine::FORWARDKICK_RIGHT));
-  engine.registerEnumElement("path2018.routine", "path2018.routine.sidekick_left",     static_cast<int>(PathModel::PathPlanner2018Routine::SIDEKICK_LEFT));
-  engine.registerEnumElement("path2018.routine", "path2018.routine.sidekick_right",    static_cast<int>(PathModel::PathPlanner2018Routine::SIDEKICK_RIGHT));
-  engine.registerEnumElement("path2018.routine", "path2018.routine.sidestep",    static_cast<int>(PathModel::PathPlanner2018Routine::SIDESTEP));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.none",                 static_cast<int>(PathModel::PathPlanner2018Routine::NONE));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.move_around_ball",     static_cast<int>(PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.forwardkick_left",     static_cast<int>(PathModel::PathPlanner2018Routine::FORWARDKICK_LEFT));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.forwardkick_right",    static_cast<int>(PathModel::PathPlanner2018Routine::FORWARDKICK_RIGHT));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.sidekick_left",        static_cast<int>(PathModel::PathPlanner2018Routine::SIDEKICK_LEFT));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.sidekick_right",       static_cast<int>(PathModel::PathPlanner2018Routine::SIDEKICK_RIGHT));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.sidestep",             static_cast<int>(PathModel::PathPlanner2018Routine::SIDESTEP));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.go_to_point",          static_cast<int>(PathModel::PathPlanner2018Routine::GO_TO_POINT));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.go_to_ball",           static_cast<int>(PathModel::PathPlanner2018Routine::GO_TO_BALL));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.go_to_ball_carefully", static_cast<int>(PathModel::PathPlanner2018Routine::GO_TO_BALL_CAREFULLY));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.go_to_ball_avoid",     static_cast<int>(PathModel::PathPlanner2018Routine::GO_TO_BALL_AVOID));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.dribble_kick",         static_cast<int>(PathModel::PathPlanner2018Routine::DRIBBLE_KICK));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.dash",                 static_cast<int>(PathModel::PathPlanner2018Routine::DASH));
 
   engine.registerEnumeratedOutputSymbol("path.routine", "path.routine", &setPathRoutine, &getPathRoutine);
   engine.registerEnumeratedOutputSymbol("path2018.routine", "path2018.routine", &setPathRoutine2018, &getPathRoutine2018);
@@ -42,9 +48,14 @@ void PathSymbols::registerSymbols(xabsl::Engine& engine)
 
   // move around ball: direction and radius
   //engine.registerDecimalOutputSymbol("path.direction", &getPathModel().direction); // TODO this is in degrees should be converted here somehow
-  engine.registerDecimalOutputSymbol("path.direction", &setDirection, &getDirection);  
+  engine.registerDecimalOutputSymbol("path.direction", &setDirection, &getDirection);
   engine.registerDecimalOutputSymbol("path.radius", &getPathModel().radius);
   engine.registerBooleanOutputSymbol("path.stable", &getPathModel().stable);
+
+  // go to point: target pose in global coordinates
+  engine.registerDecimalOutputSymbol("path.target.x",   &getPathModel().target.translation.x);
+  engine.registerDecimalOutputSymbol("path.target.y",   &getPathModel().target.translation.y);
+  engine.registerDecimalOutputSymbol("path.target.rot", &setTargetRotation, &getTargetRotation);
 
   engine.registerBooleanInputSymbol("path.kick_executed", &getPathModel().kick_executed);
 }
@@ -78,4 +89,12 @@ void PathSymbols::setDirection(double rot) {
 
 double PathSymbols::getDirection() {
   return Math::toDegrees(theInstance->getPathModel().direction);
+}
+
+void PathSymbols::setTargetRotation(double rot) {
+  theInstance->getPathModel().target.rotation = Math::fromDegrees(rot);
+}
+
+double PathSymbols::getTargetRotation() {
+  return Math::toDegrees(theInstance->getPathModel().target.rotation);
 }

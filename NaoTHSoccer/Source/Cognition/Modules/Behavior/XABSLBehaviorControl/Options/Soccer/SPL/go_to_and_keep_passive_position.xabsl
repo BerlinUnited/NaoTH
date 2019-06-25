@@ -26,7 +26,7 @@ option go_to_and_keep_passive_position{
         stay;
 	  }
 	  action {
-      go_to_point_with_USOA(x=@x, y=@y, rot=@rot);
+      path2018_go_to_point_with_USOA(x=@x, y=@y, rot=@rot);
       
       head.control_mode = look_around;
 	  }
@@ -46,7 +46,7 @@ option go_to_and_keep_passive_position{
         stay;
     }
     action {
-      go_to_point_with_USOA(x=@x, y=@y, rot=@rot);
+      path2018_go_to_point_with_USOA(x=@x, y=@y, rot=@rot);
       
       head.control_mode = search_for_ball;
     }

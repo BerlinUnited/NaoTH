@@ -29,7 +29,7 @@ option role_goalie
          stay;
      }
      action {
-       go_to_point_with_USOA(
+       path2018_go_to_point_with_USOA(
          x=strategy.position.home.x,
          y=strategy.position.home.y,
          rot=0);
@@ -49,7 +49,7 @@ option role_goalie
          stay;
      }
      action {
-       go_to_point_with_USOA(
+       path2018_go_to_point_with_USOA(
          x=strategy.position.home.x,
          y=strategy.position.home.y,
          rot=0

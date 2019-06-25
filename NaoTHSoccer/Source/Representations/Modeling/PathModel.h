@@ -8,6 +8,7 @@
 #define _PathModel_H_
 
 #include <Tools/DataStructures/Printable.h>
+#include <Tools/Math/Pose2D.h>
 
 class PathModel : public naoth::Printable
 {
@@ -46,9 +47,15 @@ public:
     MOVE_AROUND_BALL,
     FORWARDKICK_LEFT,
     FORWARDKICK_RIGHT,
+    DRIBBLE_KICK,
     SIDEKICK_LEFT,
     SIDEKICK_RIGHT,
-    SIDESTEP
+    SIDESTEP,
+    GO_TO_POINT,
+    GO_TO_BALL,
+    GO_TO_BALL_CAREFULLY,
+    GO_TO_BALL_AVOID,
+    DASH
   };
 
   PathRoutine path_routine;
@@ -58,11 +65,14 @@ public:
   double distance;
   double xOffset;
   double yOffset;
-  
+
   // Move around ball
   double direction;
   double radius;
   bool stable;
+
+  // go to point
+  Pose2D target;
 
   bool kick_executed;
 
@@ -132,6 +142,24 @@ public:
       break;
     case PathPlanner2018Routine::SIDESTEP:
       path_type2018 = "sidestep";
+      break;
+    case PathPlanner2018Routine::GO_TO_POINT:
+      path_type2018 = "go to point";
+      break;
+    case PathPlanner2018Routine::GO_TO_BALL:
+      path_type2018 = "go to ball";
+      break;
+    case PathPlanner2018Routine::GO_TO_BALL_CAREFULLY:
+      path_type2018 = "go to ball avoid carefully";
+      break;
+    case PathPlanner2018Routine::GO_TO_BALL_AVOID:
+      path_type2018 = "go to ball and avoid left or right";
+      break;
+    case PathPlanner2018Routine::DRIBBLE_KICK:
+      path_type2018 = "dribble_kick";
+      break;
+    case PathPlanner2018Routine::DASH:
+      path_type2018 = "dash";
       break;
     }
 

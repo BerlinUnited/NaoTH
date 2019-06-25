@@ -104,7 +104,7 @@ option role_free_kick_own
     }
     action {
       //path_go_to_ball_with_USOA(distance = 500); 
-      go_to_ball_with_USOA(distance=200);
+      path2018_go_to_ball_with_USOA(distance=200);
       head.control_mode = look_at_ball;
     }
   }

@@ -1,0 +1,99 @@
+option pathplanner2018_goto{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+
+  initial state idle {
+    decision {
+      else
+        goto go_to_center;
+    }
+    action {
+      situation_abortable = true;
+    }
+  }
+  
+  state go_to_center {
+    decision {
+      else if (path.kick_executed)
+        goto stand;
+      else
+        stay;
+    }
+    action {
+      path2018.routine = go_to_point;
+      path.target.x = 0;
+      path.target.y = 0;
+      path.target.rot = -180;
+      path.stable = false;
+    }
+  }
+
+  state stand {
+     decision {
+       else if (executed_motion.type == stand)
+          goto go_to_pos2;
+       else
+          stay;
+     }
+     action {
+      head.control_mode = look_straight_ahead;
+      motion.type = stand;
+    }
+  }
+
+  state go_to_pos2 {
+    decision {
+      else if (path.kick_executed)
+        goto stand2;
+      else
+        stay;
+    }
+    action {
+      path2018.routine = go_to_point;
+      path.target.x = -1000;
+      path.target.y = -1000;
+      path.target.rot = 90;
+      path.stable = true;
+    }
+  }
+  
+  state stand2 {
+     decision {
+       else if (executed_motion.type == stand)
+          goto go_to_pos3;
+       else
+          stay;
+     }
+     action {
+      head.control_mode = look_straight_ahead;
+      motion.type = stand;
+    }
+  }
+
+  state go_to_pos3 {
+    decision {
+      else if (path.kick_executed)
+        goto finish;
+      else
+        stay;
+    }
+    action {
+      path2018.routine = go_to_point;
+      path.target.x = -1000;
+      path.target.y = -1000;
+      path.target.rot = -90;
+      path.stable = false;
+    }
+  }
+  
+  state finish {
+    action {
+      head.control_mode = look_straight_ahead;
+      motion.type = stand;
+    }
+  }
+}
+

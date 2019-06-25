@@ -24,7 +24,13 @@ namespace path_symbols("PathPlanner Symbols") {
     forwardkick_right,
     sidekick_left,
     sidekick_right,
-    sidestep
+    sidestep,
+    go_to_point,
+    go_to_ball,        
+    go_to_ball_carefully,
+    go_to_ball_avoid,
+    dribble_kick,
+    dash
   };
 
 
@@ -38,7 +44,11 @@ namespace path_symbols("PathPlanner Symbols") {
 
   float output path.direction;
   float output path.radius;
-  bool output path.stable;
+  bool output  path.stable;
+
+  float output path.target.x;
+  float output path.target.y;
+  float output path.target.rot;
 
   bool input path.kick_executed;
 }

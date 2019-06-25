@@ -55,7 +55,7 @@ option role_free_kick_opp_goal
     action {
       // TODO: could be more sophisticated! eg. use relative coordinates than just 10cm from the sideline or the robot could "cut corners" is he knows where the ball is!
       head.control_mode = search_for_ball;
-      go_to_point_with_USOA(x=field.xPosOppPenaltyMark-200, 
+      path2018_go_to_point_with_USOA(x=field.xPosOppPenaltyMark-200, 
                             y= abs(value=robot_pose.y) < field.yPosLeftPenaltyArea ? 0 : // if we are in the penalty area, move back to the center
                             (robot_pose.y>0?(field.yPosLeftPenaltyArea+field.centerCircleRadius+100):(field.yPosRightPenaltyArea-field.centerCircleRadius-100)), // otherwise move towards the sideline
                             rot=atan2(y=robot_pose.y-(abs(value=robot_pose.y) < field.yPosLeftPenaltyArea ? 0 : (robot_pose.y>0?(field.yPosLeftPenaltyArea+field.centerCircleRadius+100):(field.yPosRightPenaltyArea-field.centerCircleRadius-100))),
@@ -80,7 +80,7 @@ option role_free_kick_opp_goal
     action {
       // TODO: if there are multiple robots, all wants to go to the same position?!
       head.control_mode = search_for_ball;
-      go_to_point_with_USOA(x=field.xPosOppPenaltyMark - field.centerCircleRadius - 100,
+      path2018_go_to_point_with_USOA(x=field.xPosOppPenaltyMark - field.centerCircleRadius - 100,
                             y=robot_pose.y>0?field.yPosLeftPenaltyArea:field.yPosRightPenaltyArea,
                             rot=0);
     }
@@ -155,7 +155,7 @@ option role_free_kick_opp_goal
       // TODO: what happens if two (or more) robots are on the same "height" (x-coordinate)?!
       // TODO: if i know where the ball is, i can move towards the ball (in the y axis)
       head.control_mode = search_for_ball;
-      go_to_point_with_USOA(x=robot_pose.x, 
+      path2018_go_to_point_with_USOA(x=robot_pose.x, 
                             y=(robot_pose.y>0?1:-1)*field.centerCircleRadius * 0.75, 
                             rot=0);
     }

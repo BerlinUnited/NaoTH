@@ -71,11 +71,18 @@ option path_striker2018
       else if(vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) < 300)
       {
         if(attack.best_action == kick_short) {
-          if (ball.preview.y > 0)
-            goto forwardkick_left;
-          else
-            goto forwardkick_right;
+          if(random() > 0.3)
+          {
+            if (ball.preview.y > 0)
+              goto forwardkick_left;
+            else
+              goto forwardkick_right;
+          }else{
+            goto dash;
+          }
         }
+        else if(attack.best_action == dribble_kick)
+          goto dribble_kick;
         else if(attack.best_action == sidekick_left)
           //goto sidekick_left;
           goto turn;
@@ -96,7 +103,7 @@ option path_striker2018
          to walk to the position of the ball. Two possible outcomes:
          1. the robot runs into the ball (if ball distance is not considered)
          2. the robot will walk backwards in the successive approaching because it was too close*/
-      go_to_ball_with_USOA(distance = 210); 
+      path2018_go_to_ball_with_USOA(distance = 210); 
     }
   }
 
@@ -109,7 +116,7 @@ option path_striker2018
     //    goto long_kick;
     else if(attack.best_action == kick_short)
     {
-      if(random() > 0.0)
+      if(random() > 0.3)
       {
         if (ball.preview.y > 0)
           goto forwardkick_left;
@@ -118,7 +125,10 @@ option path_striker2018
       }
       else
         goto dash;
+      
     }
+    else if(attack.best_action == dribble_kick)
+          goto dribble_kick;
     else if(attack.best_action == sidekick_left)
       //goto sidekick_left;
       stay;
@@ -136,6 +146,25 @@ option path_striker2018
       // PathPlanner2018 stuff was hacked in there
       path_turn_to_attack_direction();
     }
+  }
+  state dribble_kick
+  {
+    decision
+    {
+      else if (path.kick_executed && ball.percept.x > 200)
+        goto walk_a_little;
+      else
+        stay;
+    }
+    action
+    {
+      path2018.routine = dribble_kick;
+      path.xOffset = -120; // pathplanner adds ball.radius - this could be done here
+      path.yOffset = 0;
+      
+      head.control_mode = search_for_ball;
+    }
+  
   }
 
   state forwardkick_right
@@ -175,7 +204,7 @@ option path_striker2018
       head.control_mode = search_for_ball;
     }
   }
-
+  
   state sidekick_right
   {
     decision
@@ -209,7 +238,26 @@ option path_striker2018
       head.control_mode = search_for_ball;
     }
   }
-  
+
+  state walk_a_little
+  {
+    decision
+    {
+      else if (state_time > 100)
+        goto goto_ball;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk.style = fast;
+      motion.walk_speed.rot = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.x = 100;
+      motion.walk.coordinate = hip;
+    }
+  }
   state short_freeze
   {
     decision
@@ -241,8 +289,7 @@ option path_striker2018
     action
     {
       situation_abortable = true;
-      path_dash();
-      path2018.routine = none; // Why is this here?
+      path2018_dash();
     }
   }
 }

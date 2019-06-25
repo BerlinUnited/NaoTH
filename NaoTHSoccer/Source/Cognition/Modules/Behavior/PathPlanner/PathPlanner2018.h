@@ -25,6 +25,7 @@
 #include "Representations/Perception/MultiBallPercept.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/PathModel.h"
+#include "Representations/Modeling/RobotPose.h"
 #include "Representations/Debug/Stopwatch.h"
 
 
@@ -37,6 +38,7 @@ REQUIRE(FieldInfo)
 REQUIRE(MultiBallPercept)
 REQUIRE(MotionStatus)
 REQUIRE(BallModel)
+REQUIRE(RobotPose)
 
 PROVIDE(PathModel)
 PROVIDE(MotionRequest)
@@ -108,7 +110,18 @@ private:
   typedef WalkRequest::StepControlRequest::RestrictionMode RestrictionMode;
   typedef WalkRequest::Coordinate Coordinate;
 
+  PathModel::PathPlanner2018Routine last_path2018_routine;
+
   void moveAroundBall(const double direction, const double radius, const bool stable);
+
+  enum GoToPointState {
+      FAR_AWAY,
+      TURN,
+      STOP
+  } goToPointState;
+
+  void goToPoint(const Pose2D& target, const bool stable);
+  void reset();
 
   // goToBall is split up between sideKick and forwardKick so that changing things in upcoming RoboCup 2018
   // won't be so complex as to introduce bugs easily
@@ -117,8 +130,15 @@ private:
   bool nearApproach_sideKick(const Foot& foot, const double offsetX, const double offsetY);
   bool sidesteps(const Foot& foot, const double direction);
 
+  void goToBall(const double distance);
+  void goToBallCarefully(const double distance);
+  void goToBallAvoid(const double direction);
+
   void forwardKick(const Foot& foot);
+  void fasterKick();
   void sideKick(const Foot& foot);
+
+  bool dribble_approach(const double offsetX, const double offsetY);
 
 // generate a setter method
 #define SET(Type, SetName, Name) \

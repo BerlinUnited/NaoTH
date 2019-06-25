@@ -1,0 +1,115 @@
+// go to ball while avoiding obstacles using ultra sonic 
+option path2018_go_to_ball_with_USOA
+{
+  float @distance;
+
+  initial target state go
+  {
+    decision
+    {
+      if (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400)
+      {
+        if (vector.abs(x=ball.preview.x, y=ball.preview.y) < obstacle.ultrasound.distance)
+          goto approach_carefully;
+        else if(obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance)
+          goto avoid_left;
+        else
+          goto avoid_right;
+      }
+      else
+        stay;
+    }
+    action 
+    {
+      //go_to_ball(distance=@distance);
+      head.control_mode = search_for_ball;
+
+      path.distance = @distance;
+      path.stable = false;
+      path2018.routine = go_to_ball;
+    }
+  }
+
+  state avoid_left
+  {
+    decision
+    { 
+      if(state_time < 1000)
+        stay;
+      else if(obstacle.ultrasound.distance > 400)
+        goto go;
+      else if (vector.abs(x=ball.preview.x, y=ball.preview.y) < obstacle.ultrasound.distance)
+        goto approach_carefully;
+      else if(obstacle.ultrasound.right.distance < obstacle.ultrasound.left.distance)
+        goto avoid_right;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+
+      path.distance = @distance;
+      path.direction = -1;
+      path.stable = true;
+      path2018.routine = go_to_ball_avoid;
+      
+      arm.control_mode = back;
+    }
+  }
+
+
+  state avoid_right
+  {
+    decision
+    { 
+      if(state_time < 1000)
+        stay;
+      else if(obstacle.ultrasound.distance > 400)
+        goto go;
+      else if (vector.abs(x=ball.preview.x, y=ball.preview.y) < obstacle.ultrasound.distance)
+        goto approach_carefully;
+      else if(obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance)
+       goto avoid_left;
+      else
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      
+      path.distance = @distance;
+      path.direction = 1;
+      path.stable = true;
+      path2018.routine = go_to_ball_avoid;
+
+      arm.control_mode = back;
+    }
+  }
+
+  target state approach_carefully 
+  {
+    decision{
+      if (obstacle.ultrasound.distance > 400)
+        goto go;
+      else if (vector.abs(x=ball.preview.x, y=ball.preview.y) > obstacle.ultrasound.distance)
+      {
+        if(obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance)
+           goto avoid_left;
+        else
+           goto avoid_right;
+      }
+      else
+        stay;
+    }
+
+    action{
+      //go_to_ball(distance=@distance);
+      head.control_mode = search_for_ball;
+
+      path.distance = @distance;
+      path.stable = true;
+      path2018.routine = go_to_ball_carefully;    
+    }
+  }
+}
