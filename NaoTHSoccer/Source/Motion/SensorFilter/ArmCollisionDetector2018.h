@@ -86,8 +86,8 @@ private:
 
     RingBuffer<double, 4> jointDataBufferLeftRoll;
     RingBuffer<double, 4> jointDataBufferRightRoll;
-    RingBufferWithSum<double, 32> collisionBufferLeftRoll;
-    RingBufferWithSum<double, 32> collisionBufferRightRoll;
+    RingBufferWithSum<double, 16> collisionBufferLeftRoll;
+    RingBufferWithSum<double, 16> collisionBufferRightRoll;
 };
 
 #endif
