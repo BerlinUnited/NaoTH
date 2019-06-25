@@ -71,10 +71,15 @@ option path_striker2018
       else if(ball.preview.x < 300 && abs(value = ball.preview.y) < 50)
       {
         if(attack.best_action == kick_short) {
-          if (ball.preview.y > 0)
-            goto forwardkick_left;
-          else
-            goto forwardkick_right;
+          if(random() > 0.3)
+          {
+            if (ball.preview.y > 0)
+              goto forwardkick_left;
+            else
+              goto forwardkick_right;
+          }else{
+            goto dash;
+          }
         }
         else if(attack.best_action == dribble_kick)
           goto dribble_kick;
@@ -111,12 +116,7 @@ option path_striker2018
     //    goto long_kick;
     else if(attack.best_action == kick_short)
     {
-      if (ball.preview.y > 0)
-          goto forwardkick_left;
-        else
-          goto forwardkick_right;
-      /*
-      if(random() > 0.0)
+      if(random() > 0.3)
       {
         if (ball.preview.y > 0)
           goto forwardkick_left;
@@ -125,7 +125,7 @@ option path_striker2018
       }
       else
         goto dash;
-      */
+      
     }
     else if(attack.best_action == dribble_kick)
           goto dribble_kick;
@@ -286,8 +286,7 @@ option path_striker2018
     action
     {
       situation_abortable = true;
-      path_dash();
-      path2018.routine = none; // Why is this here?
+      path2018_dash();
     }
   }
 }

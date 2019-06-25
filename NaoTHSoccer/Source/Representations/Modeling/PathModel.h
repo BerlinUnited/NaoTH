@@ -49,7 +49,8 @@ public:
     DRIBBLE_KICK,
     SIDEKICK_LEFT,
     SIDEKICK_RIGHT,
-    SIDESTEP
+    SIDESTEP,
+    DASH
   };
 
   PathRoutine path_routine;
@@ -136,6 +137,9 @@ public:
       break;
     case PathPlanner2018Routine::DRIBBLE_KICK:
       path_type2018 = "dribble_kick";
+      break;
+    case PathPlanner2018Routine::DASH:
+      path_type2018 = "dash";
       break;
     }
 

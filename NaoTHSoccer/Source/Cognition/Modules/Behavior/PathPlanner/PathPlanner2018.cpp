@@ -99,7 +99,14 @@ void PathPlanner2018::execute()
     sidesteps(Foot::RIGHT, getPathModel().direction);
     break;
   case PathModel::PathPlanner2018Routine::DRIBBLE_KICK:
-    if (dribble_approach(getPathModel().xOffset, getPathModel().yOffset)){
+    if (dribble_approach(getPathModel().xOffset, getPathModel().yOffset))
+    {
+      kickPlanned = true;
+    }
+    break;
+  case PathModel::PathPlanner2018Routine::DASH:
+    if(nearApproach_forwardKick(Foot::LEFT, getPathModel().xOffset, getPathModel().yOffset))
+    {
       kickPlanned = true;
     }
     break;
