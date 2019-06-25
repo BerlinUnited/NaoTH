@@ -1,0 +1,54 @@
+option path2018_dash {
+
+  initial state approach_dash {
+    decision{
+      if (path.kick_executed) 
+          goto dash;
+      else 
+        stay;
+    }
+    action{
+      path2018.routine = dash;
+      path.xOffset = 120; // pathplanner adds ball.radius - this could be done here
+      path.yOffset = 0;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state dash
+  {
+    decision {
+      if (state_time < 2000)
+        stay;
+      else 
+        goto dash_done;
+
+    }
+    action {
+      situation_abortable = false;
+
+      motion.type = walk;
+      motion.walk.style = fast;
+      motion.walk_speed.rot = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.x = 100;
+      motion.walk.coordinate = hip;
+    }
+  }
+
+  target state dash_done
+  {
+    decision {
+      stay;
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk.style = normal;
+      motion.walk_speed.rot = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.x = 100;
+      motion.walk.coordinate = hip;
+    }
+  }
+}

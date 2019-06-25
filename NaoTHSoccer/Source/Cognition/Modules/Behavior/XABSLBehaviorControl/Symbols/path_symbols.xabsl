@@ -28,7 +28,9 @@ namespace path_symbols("PathPlanner Symbols") {
     go_to_point,
     go_to_ball,        
     go_to_ball_carefully,
-    go_to_ball_avoid
+    go_to_ball_avoid,
+    dribble_kick,
+    dash
   };
 
 

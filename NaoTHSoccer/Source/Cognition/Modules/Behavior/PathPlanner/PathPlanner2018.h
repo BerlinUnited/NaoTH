@@ -135,7 +135,10 @@ private:
   void goToBallAvoid(const double direction);
 
   void forwardKick(const Foot& foot);
+  void fasterKick();
   void sideKick(const Foot& foot);
+
+  bool dribble_approach(const double offsetX, const double offsetY);
 
 // generate a setter method
 #define SET(Type, SetName, Name) \

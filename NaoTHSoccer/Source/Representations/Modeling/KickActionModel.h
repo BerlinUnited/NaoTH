@@ -32,6 +32,7 @@ public:
     kick_long,
     sidekick_left,
     sidekick_right,
+    dribble_kick,
     numOfActions
   };
 

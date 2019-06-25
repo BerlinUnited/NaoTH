@@ -47,13 +47,15 @@ public:
     MOVE_AROUND_BALL,
     FORWARDKICK_LEFT,
     FORWARDKICK_RIGHT,
+    DRIBBLE_KICK,
     SIDEKICK_LEFT,
     SIDEKICK_RIGHT,
     SIDESTEP,
     GO_TO_POINT,
     GO_TO_BALL,
     GO_TO_BALL_CAREFULLY,
-    GO_TO_BALL_AVOID
+    GO_TO_BALL_AVOID,
+    DASH
   };
 
   PathRoutine path_routine;
@@ -152,6 +154,12 @@ public:
       break;
     case PathPlanner2018Routine::GO_TO_BALL_AVOID:
       path_type2018 = "go to ball and avoid left or right";
+      break;
+    case PathPlanner2018Routine::DRIBBLE_KICK:
+      path_type2018 = "dribble_kick";
+      break;
+    case PathPlanner2018Routine::DASH:
+      path_type2018 = "dash";
       break;
     }
 

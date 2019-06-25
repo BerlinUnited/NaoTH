@@ -35,6 +35,8 @@ void PathSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumElement("path2018.routine", "path2018.routine.go_to_ball",           static_cast<int>(PathModel::PathPlanner2018Routine::GO_TO_BALL));
   engine.registerEnumElement("path2018.routine", "path2018.routine.go_to_ball_carefully", static_cast<int>(PathModel::PathPlanner2018Routine::GO_TO_BALL_CAREFULLY));
   engine.registerEnumElement("path2018.routine", "path2018.routine.go_to_ball_avoid",     static_cast<int>(PathModel::PathPlanner2018Routine::GO_TO_BALL_AVOID));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.dribble_kick",         static_cast<int>(PathModel::PathPlanner2018Routine::DRIBBLE_KICK));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.dash",                 static_cast<int>(PathModel::PathPlanner2018Routine::DASH));
 
   engine.registerEnumeratedOutputSymbol("path.routine", "path.routine", &setPathRoutine, &getPathRoutine);
   engine.registerEnumeratedOutputSymbol("path2018.routine", "path2018.routine", &setPathRoutine2018, &getPathRoutine2018);
