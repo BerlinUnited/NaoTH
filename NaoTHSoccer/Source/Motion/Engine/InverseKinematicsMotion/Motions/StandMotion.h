@@ -76,7 +76,8 @@ class StandMotion : private StandMotionBase, public IKMotion
 public:
   enum State {
     GotoStandPose,
-    Relax
+    Relax,
+    None // this is a virtual state only used for lastState
   };
 
   bool firstRun;
@@ -94,7 +95,7 @@ public:
 private:
   void setStiffnessBuffer(double s);
 
-  void calcStandPose();
+  void calcStandPose(bool fullCorrection);
 
   bool interpolateToPose();
 
@@ -114,8 +115,14 @@ private:
 
   double totalTime;
   double time;
+
+  // monitor the state in order to react to changes
   double height;
   bool standardStand;
+  bool isLiftedUp;
+
+  // this flag controlls which pose will be calculated as target pose in GotoStandPose
+  bool fullCorrection; 
 
   bool stiffnessIsReady;
 

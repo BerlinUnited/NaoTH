@@ -13,6 +13,8 @@
 
 #include "StandMotion.h"
 
+#include <array>
+
 using namespace naoth;
 
 StandMotion::StandMotion()
@@ -21,13 +23,17 @@ StandMotion::StandMotion()
 
   firstRun(true),
   state(GotoStandPose),
-  lastState(Relax),//HACK: need to be different from state (another enum value would require a default case in the switch statement)
+  lastState(None),
   state_time(0),
 
   totalTime(0),
   time(0),
+  
   height(-1000),
   standardStand(true),
+  isLiftedUp(false),
+
+  fullCorrection(true),
   stiffnessIsReady(false),
   relaxedPoseInitialized(false),
   resetedAfterLifting(false),
@@ -60,16 +66,37 @@ void StandMotion::execute()
 
   PLOT("StandMotion:State",(int)state);
 
+  // a change of stand pose was induced from outside, either by lifting the robot 
+  // or by changing the parameters of the stand
+  if( firstRun ||
+      isLiftedUp    != getBodyState().isLiftedUp ||
+      height        != getMotionRequest().standHeight ||
+      standardStand != getMotionRequest().standardStand) 
+  {
+    fullCorrection = true;
+    
+    // force new correction
+    state = GotoStandPose;
+    lastState = None;
+  }
+
+  // remember for later
+  isLiftedUp = getBodyState().isLiftedUp;
+
   switch(state)
   {
   case GotoStandPose:
   {
-    // set stiffness from parameters
-    setStiffnessBuffer(getEngine().getParameters().stand.stiffnessGotoPose);
-
-    if(lastState != state) {
-      calcStandPose();
+    // initialize on fist execution
+    if(lastState != state) 
+    {
       lastState = state;
+
+      // set target stiffness from parameters
+      setStiffnessBuffer(getEngine().getParameters().stand.stiffnessGotoPose);
+
+      calcStandPose(fullCorrection);
+
       stiffnessIsReady = false;
     }
 
@@ -77,16 +104,17 @@ void StandMotion::execute()
     PLOT("StandMotion:stiffnessIsReady",stiffnessIsReady);
     PLOT("StandMotion:interpolateToPose",d);
 
-    if(stiffnessIsReady && d) {
+    if(stiffnessIsReady && d) 
+    {
       getMotionStatus().target_reached = true;
       if(getMotionRequest().id != getId())
       {
+        // NOTE: this is the opnly place where the stand motion can exit
         setCurrentState(motion::stopped);
         getMotionStatus().target_reached = false;
       }
-      // HACK: wait some time before going to relax mode
+      // HACK: always wait some time before going to relax mode
       else if (static_cast<double>(state_time) > totalTime + timeBeforeRelax
-                  && !getBodyState().isLiftedUp
                   && getEngine().getParameters().stand.relax.enable
                   && relaxedPoseIsStillOk() //only relax if a valid stand pose is reached
                   && !getMotionRequest().disable_relaxed_stand) // and requested
@@ -98,40 +126,31 @@ void StandMotion::execute()
   break;
 
   case Relax:
-    setStiffnessBuffer(getEngine().getParameters().stand.stiffnessRelax);
 
     // initialize relax on fist execution
-    if(lastState != state) {
+    if(lastState != state) 
+    {
+      lastState = state;
 
-      startPose = targetPose;//getEngine().getCurrentCoMFeetPose();
+      // set target stiffness from parameters
+      setStiffnessBuffer(getEngine().getParameters().stand.stiffnessRelax);
+
+      // move to the pose that is measured by our sensors = relax :)
+      startPose = targetPose;
       targetPose = getEngine().getCoMFeetPoseBasedOnSensor();
       time = 0;
       totalTime = 1000;
 
-      //relaxedPose = getEngine().getHipFeetPoseBasedOnSensor();
-      lastState = state;
-
       // reset stuff for StandMotion:online_tuning
       jointOffsets.resetOffsets();
       for(int i = 0; i < naoth::JointData::numOfJoint; i++){
-          jointMonitors[i].resetAll();
+        jointMonitors[i].resetAll();
       }
     }
 
-    if(interpolateToPose()) {
-      if ( getMotionRequest().id != getId()) {
-        // correct the pose before leaving stand
-        state = GotoStandPose;
-        getMotionStatus().target_reached = false;
-      } // the pose needs to be corrected
-      else if ( getBodyState().isLiftedUp
-                  || height != getMotionRequest().standHeight // requested height changed
-                  || standardStand != getMotionRequest().standardStand
-                  || !relaxedPoseIsStillOk())
-      {
-        state = GotoStandPose;
-      }
-
+    // run adjustments after the relaxed pose had been reached
+    if(interpolateToPose()) 
+    {
       if(getEngine().getParameters().stand.relax.jointOffsetTuning.enable){
         tuneJointOffsets();
       }
@@ -139,9 +158,19 @@ void StandMotion::execute()
       if(getEngine().getParameters().stand.relax.stiffnessControl.enable){
         tuneStiffness();
       }
+
+      // correct the pose needs to be corrected (also before leaving stand)
+      if ( getMotionRequest().id != getId() || !relaxedPoseIsStillOk()) {
+        fullCorrection = false; // only adjust the com, not the feet
+        state = GotoStandPose;
+      } 
     }
+    
     break;
-  }
+
+  default:
+    THROW("[StandMotion] unexpected (state, lastState) = (" << state << ", " << lastState);
+  } // end switch
 
   // update the time of the current step
   if(lastState != state) {
@@ -164,7 +193,6 @@ void StandMotion::execute()
 
 void StandMotion::setStiffnessBuffer(double s)
 {
-
   for( int i = naoth::JointData::RShoulderRoll; i<naoth::JointData::numOfJoint; i++) {
     stiffness[i] = s;
   }
@@ -174,16 +202,8 @@ void StandMotion::setStiffnessBuffer(double s)
 }
 
 
-void StandMotion::calcStandPose()
+void StandMotion::calcStandPose(bool fullCorrection)
 {
-  // initialize standing
-  standardStand = getMotionRequest().standardStand;
-  height = getMotionRequest().standHeight;
-
-  // init pose
-  double comHeight = (height < 0.0) ? getWalk2018Parameters().zmpPlanner2018Params.comHeight : getMotionRequest().standHeight;
-  comHeight = Math::clamp(comHeight, 160.0, 270.0); // valid range
-
   // use the sensors to estimate the current pose
   startPose  = getEngine().getCurrentCoMFeetPose();//getEngine().getCoMFeetPoseBasedOnModel();
   
@@ -195,13 +215,19 @@ void StandMotion::calcStandPose()
   }
   else // calculate full correction pose
   {
+    // adjust the positions of the feet only if a full correction of the standing pose is requested
+    standardStand = fullCorrection && getMotionRequest().standardStand;
+    
+    // init pose
+    height = getMotionRequest().standHeight;
+    double comHeight = (height < 0.0) ? getWalk2018Parameters().zmpPlanner2018Params.comHeight : getMotionRequest().standHeight;
+    comHeight = Math::clamp(comHeight, 160.0, 270.0); // valid range
+
     targetPose = getStandPose(comHeight,
                             getEngine().getParameters().stand.hipOffsetX,
                             getEngine().getParameters().stand.bodyPitchOffset,
                             standardStand);
   }
-
-  double speed = getEngine().getParameters().stand.speed;
 
   // TODO: there mus be a better way to do it
   // estimate the maximal error between the targetPose and startPose in order to estimate the time
@@ -211,7 +237,7 @@ void StandMotion::calcStandPose()
   // error from the perspective of the left foot
   targetPose.localInLeftFoot();
   startPose.localInLeftFoot();
-  double distLeft = std::max(
+  const double distLeft = std::max(
     (targetPose.com.translation        - startPose.com.translation).abs(), 
     (targetPose.feet.right.translation - startPose.feet.right.translation).abs()
   );
@@ -219,7 +245,7 @@ void StandMotion::calcStandPose()
   // error from the perspective of the right foot
   targetPose.localInRightFoot();
   startPose.localInRightFoot();
-  double distRight = std::max(
+  const double distRight = std::max(
     (targetPose.com.translation        - startPose.com.translation).abs(), 
     (targetPose.feet.left.translation  - startPose.feet.left.translation).abs()
   );
@@ -227,15 +253,18 @@ void StandMotion::calcStandPose()
   // error from the perspective of the com
   targetPose.localInCoM();
   startPose.localInCoM();
-  double distCom = std::max(
+  const double distCom = std::max(
     (targetPose.feet.left.translation  - startPose.feet.left.translation).abs(), 
     (targetPose.feet.right.translation - startPose.feet.right.translation).abs()
   );
   
   double distMax = std::max(std::max(distLeft,distRight),distCom);
 
+  // initialize the time
+  double speed = getEngine().getParameters().stand.speed;
   totalTime = distMax / speed;
   time = 0;
+
 } // end calcStandPose
 
 
@@ -309,26 +338,35 @@ void StandMotion::tuneJointOffsets()
 {
   jointOffsets.setMinimalStep(getEngine().getParameters().stand.relax.jointOffsetTuning.minimalJointStep);
 
-  if(getFrameInfo().getTime() - lastFrameInfo.getTime() > getEngine().getParameters().stand.relax.jointOffsetTuning.deadTime)
+  if(getFrameInfo().getTime() > lastFrameInfo.getTime() + getEngine().getParameters().stand.relax.jointOffsetTuning.deadTime)
   {
-    std::map<JointData::JointID, double> currents = {
-      {JointData::LKneePitch,  jointMonitors[JointData::LKneePitch].filteredCurrent()},
-      {JointData::RKneePitch,  jointMonitors[JointData::RKneePitch].filteredCurrent()},
-      {JointData::LAnklePitch, jointMonitors[JointData::LAnklePitch].filteredCurrent()},
-      {JointData::RAnklePitch, jointMonitors[JointData::RAnklePitch].filteredCurrent()}
+    const std::array<JointData::JointID, 4> jointToMonitor = {
+      JointData::LKneePitch, JointData::RKneePitch, JointData::LAnklePitch, JointData::RAnklePitch
     };
 
-    PLOT("StandMotion:filteredCurrent:LKneePitch", currents[JointData::LKneePitch]);
-    PLOT("StandMotion:filteredCurrent:RKneePitch", currents[JointData::RKneePitch]);
-    PLOT("StandMotion:filteredCurrent:LAnklePitch",currents[JointData::LAnklePitch]);
-    PLOT("StandMotion:filteredCurrent:RAnklePitch",currents[JointData::RAnklePitch]);
+    PLOT("StandMotion:filteredCurrent:LKneePitch", jointMonitors[JointData::LKneePitch].filteredCurrent());
+    PLOT("StandMotion:filteredCurrent:RKneePitch", jointMonitors[JointData::RKneePitch].filteredCurrent());
+    PLOT("StandMotion:filteredCurrent:LAnklePitch",jointMonitors[JointData::LAnklePitch].filteredCurrent());
+    PLOT("StandMotion:filteredCurrent:RAnklePitch",jointMonitors[JointData::RAnklePitch].filteredCurrent());
 
-    // try the C++ 11 way of findig the maximal index :)
-    auto max_joint = std::max_element(currents.begin(), currents.end());
+    // find the joint with the max current
+    JointData::JointID maxId = jointToMonitor.front();
+    for(JointData::JointID id: jointToMonitor) {
+      if(jointMonitors[id].filteredCurrent() > jointMonitors[maxId].filteredCurrent()) {
+        maxId = id;
+      }
+    }
+
+    std::cout << "max: " << maxId << " : " << jointMonitors[maxId].filteredCurrent() << std::endl; 
 
     // if greater than Threshold then try to tune the offsets
-    if(max_joint != currents.end() && max_joint->second > getEngine().getParameters().stand.relax.jointOffsetTuning.currentThreshold) {
-      jointOffsets.decreaseOffset(max_joint->first);
+    if(jointMonitors[maxId].filteredCurrent() > getEngine().getParameters().stand.relax.jointOffsetTuning.currentThreshold) {
+      // HACK: make ot more general (maybe adjust in the direction of the error)
+      if(maxId == JointData::LKneePitch || maxId == JointData::RKneePitch) {
+        jointOffsets.increaseOffset(maxId);
+      } else {
+        jointOffsets.decreaseOffset(maxId);
+      }
     }
 
     lastFrameInfo = getFrameInfo();
