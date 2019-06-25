@@ -24,7 +24,7 @@ option path2018_go_to_point_with_USOA
         else
           stay;
       }
-      else if(action_done && state_time > 0)
+      else if(path.kick_executed && state_time > 0)
         goto finish;
       else
         stay;
@@ -91,7 +91,7 @@ option path2018_go_to_point_with_USOA
   state approach_carefully{
 
     decision{
-      if ( action_done )
+      if ( path.kick_executed )
         goto finish;
       else if (obstacle.ultrasound.distance>400)
         goto go;

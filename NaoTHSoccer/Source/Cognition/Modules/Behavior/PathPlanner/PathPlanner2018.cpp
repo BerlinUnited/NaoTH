@@ -798,7 +798,8 @@ void PathPlanner2018::goToPoint(const Pose2D& target, const bool stable){
             // TODO: stop walking ^^
             //getMotionRequest().id = motion::MotionID::stand;
             next_step.debug_name = "goToPoint:stop";
-            next_step.setStepType(StepType::ZEROSTEP);
+            next_step.setStepType(StepType::WALKSTEP);
+            next_step.setPose({0,0,0});
 
             if((planned_robot_pose.translation - target.translation).abs2() > 800*800) {
                 goToPointState = FAR_AWAY;
