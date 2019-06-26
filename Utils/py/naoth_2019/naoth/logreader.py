@@ -138,6 +138,9 @@ class LogScanner:
         :param size: size of the data
         :returns data bytes
         """
+        if size == 0:
+            return b''
+
         self.log_file.seek(position)
         data = self._read_bytes(size)
         return data
@@ -202,9 +205,10 @@ class Frame:
         except EOFError:
             raise FrameParseException(f'Failed reading data of {name}, file ended unexpectedly.')
 
-        message = self.parser.parse(name, payload)
-
-        return message
+        if payload:
+            return self.parser.parse(name, payload)
+        else:
+            return None
 
     def names(self):
         """
@@ -218,27 +222,33 @@ class Frame:
         """
         return self.size
 
+    def __copy__(self):
+        frame = Frame(self.start, self.number, self.scanner, self.parser)
+        for member, (position, size) in self.members.items():
+            frame.add_member(member, position, size)
+        return frame
+
     @staticmethod
-    def _bytes_from_char(char):
+    def bytes_from_char(char):
         return struct.pack('=c', bytes(char, 'utf-8'))
 
     @staticmethod
-    def _bytes_from_str(string):
-        return b''.join(Frame._bytes_from_char(char) for char in string) + Frame._bytes_from_char('\0')
+    def bytes_from_str(string):
+        return b''.join(Frame.bytes_from_char(char) for char in string) + Frame.bytes_from_char('\0')
 
     @staticmethod
-    def _long_from_int(integer):
+    def long_from_int(integer):
         return struct.pack('=l', integer)
 
     def __bytes__(self):
         """
         :returns bytes representation of frame ready to write to log file
         """
-        frame_number = self._long_from_int(self.number)
+        frame_number = self.long_from_int(self.number)
         _bytes = b''.join(
             frame_number
-            + self._bytes_from_str(name)
-            + self._long_from_int(size)
+            + self.bytes_from_str(name)
+            + self.long_from_int(size)
             + self.scanner.read_data(position, size)
             for name, (position, size) in self.members.items()
         )
