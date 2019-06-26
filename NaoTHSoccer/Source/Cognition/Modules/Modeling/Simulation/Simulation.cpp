@@ -15,7 +15,7 @@ Simulation::Simulation()
   DEBUG_REQUEST_REGISTER("Simulation:draw_best_action", "best action", false);
   DEBUG_REQUEST_REGISTER("Simulation:use_Parameters", "use the Parameters", false);
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:None", "DrawNone", false);
-  DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Dribble", "DrawDribble", false);
+  //DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Dribble", "DrawDribble", false);
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Short", "DrawShortKick", false);
   //DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Left", "DrawLeftKick", false);
   //DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Right", "DrawRightKick", false);
@@ -28,7 +28,7 @@ Simulation::Simulation()
   action_local.push_back(ActionSimulator::Action(KickActionModel::kick_short, theParameters.kick_short, theParameters.friction)); // short
   //action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
   //action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
-  action_local.push_back(ActionSimulator::Action(KickActionModel::dribble_kick, theParameters.dribble_kick, theParameters.friction)); // shorter
+  //action_local.push_back(ActionSimulator::Action(KickActionModel::dribble_kick, theParameters.dribble_kick, theParameters.friction)); // shorter
 
   actionsConsequences.resize(action_local.size());
 }
@@ -48,7 +48,7 @@ void Simulation::execute()
     action_local.push_back(ActionSimulator::Action(KickActionModel::kick_short, theParameters.kick_short, theParameters.friction)); // short
     //action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
     //action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
-    action_local.push_back(ActionSimulator::Action(KickActionModel::dribble_kick, theParameters.dribble_kick, theParameters.friction));
+    //action_local.push_back(ActionSimulator::Action(KickActionModel::dribble_kick, theParameters.dribble_kick, theParameters.friction));
 
     actionsConsequences.resize(action_local.size());
   );
@@ -68,7 +68,7 @@ void Simulation::execute()
   // plot projected actions
   DEBUG_REQUEST("Simulation:ActionTarget:None", draw_action_results(actionsConsequences[0], Color(1.0, 1.0, 1.0, 0.7)););
   DEBUG_REQUEST("Simulation:ActionTarget:Short", draw_action_results(actionsConsequences[1], Color(255.0 / 255, 172.0 / 255, 18.0 / 255, 0.7)););
-  DEBUG_REQUEST("Simulation:ActionTarget:Dribble", draw_action_results(actionsConsequences[2], Color(255.0 / 255, 0.0 / 255, 127.0 / 255, 0.7)););
+  //DEBUG_REQUEST("Simulation:ActionTarget:Dribble", draw_action_results(actionsConsequences[2], Color(255.0 / 255, 0.0 / 255, 127.0 / 255, 0.7)););
   //DEBUG_REQUEST("Simulation:ActionTarget:Left", draw_action_results(actionsConsequences[2], Color(0.0 / 255, 13.0 / 255, 191.0 / 255, 0.7)););
   //DEBUG_REQUEST("Simulation:ActionTarget:Right", draw_action_results(actionsConsequences[3], Color(0.0 / 255, 191.0 / 255, 51.0 / 255, 0.7)););
   
