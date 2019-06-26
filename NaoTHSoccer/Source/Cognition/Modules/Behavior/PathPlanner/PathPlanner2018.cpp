@@ -178,9 +178,13 @@ void PathPlanner2018::moveAroundBall2(const double direction, const double radiu
  {
     double step_radius = 100;
     double ball_distance = getBallModel().positionPreview.abs();
-    Pose2D target;
+    Pose2D target_pose;
 
-    if(ball_distance >= step_radius + radius) {
+    Vector2d target_point = getBallModel().positionPreview - Vector2d(cos(direction), sin(direction)) * radius;
+
+    if (target_point.abs() < step_radius) { // we can reach the target_point directly
+        target_pose = {getBallModel().positionPreview.angle(), target_point};
+    } else if(ball_distance >= step_radius + radius) {
         // make step in direction of ball, we are completely outside of the radius of ball
         // TODO: something better
         moveAroundBall(direction, radius, stable);
@@ -208,51 +212,42 @@ void PathPlanner2018::moveAroundBall2(const double direction, const double radiu
         Vector2d is2(x, -sqrt(yy));
 
         // need to remember angle for target rotation
-        double angle = std::asin(-is1.y/radius);
+        double angle = std::asin(is1.y/radius);
 
         // step 3: reverse (hidden) coordinate transformation
         is1.rotate(getBallModel().positionPreview.angle());
         is2.rotate(getBallModel().positionPreview.angle());
 
-        // step 4: choose intersection point in opposite direction of attack direction
-        // opposite means minimizing scalar product
-        Vector2d d(cos(direction), sin(direction));
-        Vector2d is1_normalized(is1);
-        is1_normalized.normalize();
-        Vector2d is2_normalized(is2);
-        is2_normalized.normalize();
-
-        // step 5: determine target rotation
-        if( is1_normalized.x * d.x + is1_normalized.y * d.y > is2_normalized.x * d.x + is2_normalized.y + d.y) {
-            target.rotation = getBallModel().positionPreview.angle() - angle;
-            target.translation = is2 * cos(target.rotation);
+        // step 4: choose intersection point which is closer to the target point
+        if( (is2 - target_point).abs2() < (is1 - target_point).abs2()) {
+            target_pose.rotation = getBallModel().positionPreview.angle() + angle;
+            target_pose.translation = is2;
         } else {
-            target.rotation = getBallModel().positionPreview.angle() + angle;
-            target.translation = is1 * cos(target.rotation);
+            target_pose.rotation = getBallModel().positionPreview.angle() - angle;
+            target_pose.translation = is1;
         }
-
-        StepBufferElement move_around_step;
-        move_around_step.debug_name = "move_around_step2";
-        move_around_step.setPose(target);
-        move_around_step.setStepType(StepType::WALKSTEP);
-
-        if (stable) {
-          move_around_step.setCharacter(params.moveAroundBallCharacterStable);
-        } else{
-          move_around_step.setCharacter(params.moveAroundBallCharacter);
-        }
-
-        move_around_step.setScale(1.0);
-        move_around_step.setCoordinate(Coordinate::Hip);
-        move_around_step.setFoot(Foot::NONE);
-        move_around_step.setSpeedDirection(Math::fromDegrees(0.0));
-        move_around_step.setRestriction(RestrictionMode::SOFT);
-        move_around_step.setProtected(false);
-        move_around_step.setTime(250);
-
-        addStep(move_around_step);
     }
 
+    StepBufferElement move_around_step;
+    move_around_step.debug_name = "move_around_step2";
+    move_around_step.setPose(target_pose);
+    move_around_step.setStepType(StepType::WALKSTEP);
+
+    if (stable) {
+      move_around_step.setCharacter(params.moveAroundBallCharacterStable);
+    } else{
+      move_around_step.setCharacter(params.moveAroundBallCharacter);
+    }
+
+    move_around_step.setScale(1.0);
+    move_around_step.setCoordinate(Coordinate::Hip);
+    move_around_step.setFoot(Foot::NONE);
+    move_around_step.setSpeedDirection(Math::fromDegrees(0.0));
+    move_around_step.setRestriction(RestrictionMode::SOFT);
+    move_around_step.setProtected(false);
+    move_around_step.setTime(250);
+
+    addStep(move_around_step);
   }
 }
 
