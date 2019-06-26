@@ -44,6 +44,7 @@ private:
   static double getMsecsRemainingSecondary();
   static int getGameState();
   static int getSetPlay();
+  static int getGamePhase();
 
   static bool playingIsSetByGameController;
 

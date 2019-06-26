@@ -25,6 +25,10 @@ public:
   double value() const {
     return state;
   }
+
+  void reset() {
+    state = 0;
+  }
 };
 
 class AssymetricalBoolHysteresisFilter
@@ -35,7 +39,9 @@ private:
 
 public:
   AssymetricalBoolHysteresisFilter(double g0, double g1) 
-    : filter(g0, g1)
+    : 
+    state(false),
+    filter(g0, g1)
   {
   }
 
@@ -51,6 +57,11 @@ public:
 
   bool value() const {
     return state;
+  }
+
+  void reset() {
+    filter.reset();
+    state = false;
   }
 };
 

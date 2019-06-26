@@ -124,7 +124,7 @@ protected:
 
 
 public:
-  // the flag for backend mode, which is used by LogfilePlayer of RobotControl
+  // the flag for backend mode, which is enables reading commands from stdin
   bool backendMode;
   // play the logfile according to the time of the frames
   bool realTime;
