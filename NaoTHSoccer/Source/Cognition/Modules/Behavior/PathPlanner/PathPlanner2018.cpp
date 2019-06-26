@@ -180,14 +180,16 @@ void PathPlanner2018::moveAroundBall2(const double direction, const double radiu
     double ball_distance = getBallModel().positionPreview.abs();
     Pose2D target;
 
-    if(step_radius + radius >= ball_distance) {
+    if(ball_distance >= step_radius + radius) {
         // make step in direction of ball, we are completely outside of the radius of ball
         // TODO: something better
         moveAroundBall(direction, radius, stable);
+        return;
     } else if(ball_distance <= std::max(radius - step_radius, step_radius - radius)){
         // make step away from ball, we are completely in the radius of ball
         // TODO: something better
         moveAroundBall(direction, radius, stable);
+        return;
     } else {
         // step 1: coordinate transformation of ball (need to lie on the x axis)
         // so we would rotate about -getBallModel().positionPreview.angle()
@@ -206,7 +208,7 @@ void PathPlanner2018::moveAroundBall2(const double direction, const double radiu
         Vector2d is2(x, -sqrt(yy));
 
         // need to remember angle for target rotation
-        double angle = std::asin(-(is1.y - ball_distance));
+        double angle = std::asin(-is1.y/radius);
 
         // step 3: reverse (hidden) coordinate transformation
         is1.rotate(getBallModel().positionPreview.angle());
@@ -228,28 +230,29 @@ void PathPlanner2018::moveAroundBall2(const double direction, const double radiu
             target.rotation = getBallModel().positionPreview.angle() + angle;
             target.translation = is1 * cos(target.rotation);
         }
+
+        StepBufferElement move_around_step;
+        move_around_step.debug_name = "move_around_step2";
+        move_around_step.setPose(target);
+        move_around_step.setStepType(StepType::WALKSTEP);
+
+        if (stable) {
+          move_around_step.setCharacter(params.moveAroundBallCharacterStable);
+        } else{
+          move_around_step.setCharacter(params.moveAroundBallCharacter);
+        }
+
+        move_around_step.setScale(1.0);
+        move_around_step.setCoordinate(Coordinate::Hip);
+        move_around_step.setFoot(Foot::NONE);
+        move_around_step.setSpeedDirection(Math::fromDegrees(0.0));
+        move_around_step.setRestriction(RestrictionMode::SOFT);
+        move_around_step.setProtected(false);
+        move_around_step.setTime(250);
+
+        addStep(move_around_step);
     }
 
-    StepBufferElement move_around_step;
-    move_around_step.debug_name = "move_around_step2";
-    move_around_step.setPose(target);
-    move_around_step.setStepType(StepType::WALKSTEP);
-
-    if (stable) {
-      move_around_step.setCharacter(params.moveAroundBallCharacterStable);
-    } else{
-      move_around_step.setCharacter(params.moveAroundBallCharacter);
-    }
-
-    move_around_step.setScale(1.0);
-    move_around_step.setCoordinate(Coordinate::Hip);
-    move_around_step.setFoot(Foot::NONE);
-    move_around_step.setSpeedDirection(Math::fromDegrees(0.0));
-    move_around_step.setRestriction(RestrictionMode::SOFT);
-    move_around_step.setProtected(false);
-    move_around_step.setTime(250);
-
-    addStep(move_around_step);
   }
 }
 
