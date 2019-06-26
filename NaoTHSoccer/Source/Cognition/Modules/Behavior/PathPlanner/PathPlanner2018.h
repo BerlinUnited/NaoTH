@@ -109,6 +109,7 @@ private:
   typedef WalkRequest::Coordinate Coordinate;
 
   void moveAroundBall(const double direction, const double radius, const bool stable);
+  void moveAroundBall2(const double direction, const double radius, const bool stable);
 
   // goToBall is split up between sideKick and forwardKick so that changing things in upcoming RoboCup 2018
   // won't be so complex as to introduce bugs easily

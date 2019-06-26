@@ -59,6 +59,9 @@ void PathPlanner2018::execute()
   case PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL:
     moveAroundBall(getPathModel().direction, getPathModel().radius, getPathModel().stable);
     break;
+  case PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL2:
+    moveAroundBall2(getPathModel().direction, getPathModel().radius, getPathModel().stable);
+    break;
   case PathModel::PathPlanner2018Routine::FORWARDKICK_LEFT:
     //if (farApproach())
     {
@@ -126,26 +129,26 @@ void PathPlanner2018::moveAroundBall(const double direction, const double radius
     if (direction_deg <= 0)
     {
       // turn left
-	    min1 = 0.0;
-	    min2 = 0.0;
-	    max1 = 45.0;
-	    max2 = 100.0;
+        min1 = 0.0;
+        min2 = 0.0;
+        max1 = 45.0;
+        max2 = 100.0;
     }
     else {
       // turn right
-	    min1 = -45;
-	    min2 = -100;
-	    max1 = 0;
-	    max2 = 0;
+        min1 = -45;
+        min2 = -100;
+        max1 = 0;
+        max2 = 0;
     }
 
     double stepX = (ballDistance - radius) * std::cos(ballRotation);
     // Math::clamp(-direction, min1, max1) ==> safe guard for xabsl input
-    // outer clamp geht von -radius zu 0 
+    // outer clamp geht von -radius zu 0
     double stepY = Math::clamp(radius * std::tan(Math::fromDegrees(Math::clamp(-direction_deg, min1, max1))), min2, max2) * std::cos(ballRotation);
 
     Pose2D pose = { ballRotation, stepX, stepY };
-  
+
     StepBufferElement move_around_step;
     move_around_step.debug_name = "move_around_step";
     move_around_step.setPose(pose);
@@ -157,7 +160,87 @@ void PathPlanner2018::moveAroundBall(const double direction, const double radius
     else{
       move_around_step.setCharacter(params.moveAroundBallCharacter);
     }
-  
+
+    move_around_step.setScale(1.0);
+    move_around_step.setCoordinate(Coordinate::Hip);
+    move_around_step.setFoot(Foot::NONE);
+    move_around_step.setSpeedDirection(Math::fromDegrees(0.0));
+    move_around_step.setRestriction(RestrictionMode::SOFT);
+    move_around_step.setProtected(false);
+    move_around_step.setTime(250);
+
+    addStep(move_around_step);
+  }
+}
+
+void PathPlanner2018::moveAroundBall2(const double direction, const double radius, const bool stable) {
+ if (stepBuffer.empty())
+ {
+    double step_radius = 100;
+    double ball_distance = getBallModel().positionPreview.abs();
+    Pose2D target;
+
+    if(step_radius + radius >= ball_distance) {
+        // make step in direction of ball, we are completely outside of the radius of ball
+        // TODO: something better
+        moveAroundBall(direction, radius, stable);
+    } else if(ball_distance <= std::max(radius - step_radius, step_radius - radius)){
+        // make step away from ball, we are completely in the radius of ball
+        // TODO: something better
+        moveAroundBall(direction, radius, stable);
+    } else {
+        // step 1: coordinate transformation of ball (need to lie on the x axis)
+        // so we would rotate about -getBallModel().positionPreview.angle()
+        // happens implicitly by using ball_distance
+
+        // step 2: caluclate possible intersection points is1 and is2
+        double step_radius2 = step_radius * step_radius;
+        double ball_distance2 = getBallModel().positionPreview.abs2();
+        double radius2 = radius * radius;
+        double x = (step_radius2 - radius2 + ball_distance2) / (2*ball_distance);
+        double yy = step_radius2 - x * x;
+
+        assert(yy >= 0.0);
+
+        Vector2d is1(x,  sqrt(yy));
+        Vector2d is2(x, -sqrt(yy));
+
+        // need to remember angle for target rotation
+        double angle = std::asin(-(is1.y - ball_distance));
+
+        // step 3: reverse (hidden) coordinate transformation
+        is1.rotate(getBallModel().positionPreview.angle());
+        is2.rotate(getBallModel().positionPreview.angle());
+
+        // step 4: choose intersection point in opposite direction of attack direction
+        // opposite means minimizing scalar product
+        Vector2d d(cos(direction), sin(direction));
+        Vector2d is1_normalized(is1);
+        is1_normalized.normalize();
+        Vector2d is2_normalized(is2);
+        is2_normalized.normalize();
+
+        // step 5: determine target rotation
+        if( is1_normalized.x * d.x + is1_normalized.y * d.y > is2_normalized.x * d.x + is2_normalized.y + d.y) {
+            target.rotation = getBallModel().positionPreview.angle() - angle;
+            target.translation = is2 * cos(target.rotation);
+        } else {
+            target.rotation = getBallModel().positionPreview.angle() + angle;
+            target.translation = is1 * cos(target.rotation);
+        }
+    }
+
+    StepBufferElement move_around_step;
+    move_around_step.debug_name = "move_around_step2";
+    move_around_step.setPose(target);
+    move_around_step.setStepType(StepType::WALKSTEP);
+
+    if (stable) {
+      move_around_step.setCharacter(params.moveAroundBallCharacterStable);
+    } else{
+      move_around_step.setCharacter(params.moveAroundBallCharacter);
+    }
+
     move_around_step.setScale(1.0);
     move_around_step.setCoordinate(Coordinate::Hip);
     move_around_step.setFoot(Foot::NONE);
@@ -311,7 +394,7 @@ bool PathPlanner2018::nearApproach_forwardKick(const Foot& /*foot*/, const doubl
 
   return false;
 }
-   
+
 bool PathPlanner2018::nearApproach_sideKick(const Foot& foot, const double offsetX, const double offsetY)
 {
   // TODO: Has to work without rotation (like nearApproach_forwardKick)
@@ -449,7 +532,7 @@ void PathPlanner2018::forwardKick(const Foot& /*foot*/)
   if (!kickPlanned)
   {
     stepBuffer.clear();
-    
+
     // 2019 version - makes sure to kick with the foot that is behind the ball
     Foot actual_foot;
     Coordinate coordinate = Coordinate::Hip;
@@ -479,7 +562,7 @@ void PathPlanner2018::forwardKick(const Foot& /*foot*/)
       ASSERT(false);
     }
     */
-    
+
     // Correction step if the movable foot is different from the foot that is supposed to kick
     if (getMotionStatus().stepControl.moveableFoot != (getBallModel().positionPreview.y < 0 ? MotionStatus::StepControlStatus::RIGHT : MotionStatus::StepControlStatus::LEFT))
     {
@@ -498,7 +581,7 @@ void PathPlanner2018::forwardKick(const Foot& /*foot*/)
 
       addStep(forward_correction_step);
     }
-    
+
     // The kick
     StepBufferElement forward_kick_step;
     forward_kick_step
@@ -674,7 +757,7 @@ void PathPlanner2018::executeStepBuffer()
   getMotionRequest().walkRequest.stepControl.isProtected    = stepBuffer.front().isProtected;
   getMotionRequest().walkRequest.stepControl.stepRequestID  = lastStepRequestID;
   getMotionRequest().walkRequest.stepControl.moveLeftFoot   = (footToUse != Foot::RIGHT); // false means right foot
-  
+
   //std::cout << stepBuffer.front().debug_name << " - " << getMotionRequest().walkRequest.stepControl.moveLeftFoot  << std::endl;
   STOPWATCH_STOP("PathPlanner2018:execute_steplist");
 }

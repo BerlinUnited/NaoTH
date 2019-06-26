@@ -205,6 +205,7 @@ include "Options/Test/PathPlannerAgents/path_move_around_ball_agent.xabsl";
 include "Options/Test/PathPlannerAgents/pathplanner2018_sidekick_agent.xabsl";
 include "Options/Test/PathPlannerAgents/pathplanner2018_striker_agent.xabsl";
 include "Options/Test/PathPlannerAgents/pathplanner2018_sidestep_agent.xabsl";
+include "Options/Test/PathPlannerAgents/pathplanner2018_move_around2_agent.xabsl";
 
 // Test Options PathPlanner
 include "Options/Test/PathPlaner/pathplanner_sidekick.xabsl";
@@ -218,6 +219,7 @@ include "Options/Test/PathPlaner/pathplanner2018_forwardkick.xabsl";
 include "Options/Test/PathPlaner/pathplanner2018_sidekick.xabsl";
 include "Options/Test/PathPlaner/path_move_around_ball_test.xabsl";
 include "Options/Test/PathPlaner/pathplanner2018_sidestep.xabsl";
+include "Options/Test/PathPlaner/pathplanner2018_move_around2.xabsl";
 
 // Test agents (options) Behaviour Tests
 include "Options/Test/agent/role_change_test_agent.xabsl";
@@ -362,6 +364,7 @@ agent pathplanner_test_dash_agent("pathplanner_test_dash_agent", pathplanner_tes
 agent pathplanner2018_forwardkick_agent("pathplanner2018_forwardkick_agent", pathplanner2018_forwardkick_agent);
 agent pathplanner2018_sidekick_agent("pathplanner2018_sidekick_agent", pathplanner2018_sidekick_agent);
 agent pathplanner2018_sidestep_agent("pathplanner2018_sidestep_agent", pathplanner2018_sidestep_agent);
+agent pathplanner2018_move_around2_agent("pathplanner2018_move_around2_agent", pathplanner2018_move_around2_agent);
 agent path_move_around_ball_agent("path_move_around_ball_agent", path_move_around_ball_agent);
 agent pathplanner2018_striker_agent("pathplanner2018_striker_agent", pathplanner2018_striker_agent);
 
