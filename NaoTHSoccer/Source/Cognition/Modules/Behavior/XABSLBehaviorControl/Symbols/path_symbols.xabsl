@@ -33,6 +33,7 @@ namespace path_symbols("PathPlanner Symbols") {
 
   
   float output path.distance;
+  float output path.xOffset;
   float output path.yOffset;
 
   float output path.direction;
