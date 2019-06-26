@@ -115,8 +115,8 @@ public:
         outFile << e.name << '\0';
         writtenBytes += e.name.size() + 1;
 
-        // make sure the data stream is alright
-        ASSERT(e.data.good());
+        // DEBUG: make sure the data stream is alright
+        //ASSERT(e.data.good());
         
         // size of data block
         long dataSize = (long)e.data.tellp(); 
@@ -131,12 +131,15 @@ public:
         // NOTE: this doesn't work with binary data, wil be fixed later
         //e.data.get(*outFile.rdbuf());
 
+        // NOTE: this also happens when the memory is full, so we use it only for debug
         // crash if the file stream is broken
+        /*
         if(!outFile.good()) {
           std::cout << "[LogfileManager] fail after writing " << e.name << std::endl;
           std::cout << "[LogfileManager] with error: " << std::strerror(errno);
           assert(false);
         }
+        */
 
         writtenBytes += dataSize;
       }//end for
