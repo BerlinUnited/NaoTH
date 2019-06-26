@@ -38,6 +38,7 @@ public:
       // copy the given buffer into the accumulated fast buffer
       inline std::streamsize xsputn(const char* s, std::streamsize count) override
       {
+        // the message is longer than the buffer, this should never happen
         assert(position + count < length);
         std::memcpy(&buffer[position], s, count);
         position += count;
@@ -50,7 +51,7 @@ public:
       }
     
   private:
-      static const unsigned int length = 1024*1024;
+      static const unsigned int length = 1024*1024; // 1MB buffer should be enough for one message
       char buffer[length];
       size_t position;
   };
@@ -121,8 +122,9 @@ private:
       return;
     }
 
+    // NOTE: this also happens when the memory is full, so we use it only for debug
     // make sure the data stream is alright
-    ASSERT(outFile.good());
+    //ASSERT(outFile.good());
 
     outFile.write((const char*)(&frameNumber), sizeof(unsigned int));
     outFile << name << '\0';
