@@ -9,6 +9,7 @@
 
 PathPlanner2018::PathPlanner2018()
   :
+  target_reached(false),
   stepBuffer({}),
   footToUse(Foot::RIGHT),
   lastStepRequestID(getMotionStatus().stepControl.stepRequestID + 1),      // WalkRequest stepRequestID starts at 0, we have to start at 1
@@ -182,8 +183,20 @@ void PathPlanner2018::moveAroundBall2(const double direction, const double radiu
 
     Vector2d target_point = getBallModel().positionPreview - Vector2d(cos(direction), sin(direction)) * radius;
 
-    if (target_point.abs() < step_radius) { // we can reach the target_point directly
-        target_pose = {getBallModel().positionPreview.angle(), target_point};
+    // reset target_reached flag if we moved too much away from target position
+    if(target_point.abs() > 0.5 * step_radius
+       && fabs(getBallModel().positionPreview.angle()) > Math::fromDegrees(8)) {
+        target_reached = false;
+    }
+
+    if (target_reached) {
+        target_pose = Pose2D();
+    } else if(target_point.abs() < step_radius) { // we can reach the target_point directly
+        Vector2d tmp_target_point = target_point;
+        tmp_target_point.rotate(-getBallModel().positionPreview.angle());
+        double angle = std::asin(tmp_target_point.y/radius);
+        target_pose = {getBallModel().positionPreview.angle() - angle, target_point};
+        target_reached = true;
     } else if(ball_distance >= step_radius + radius) {
         // make step in direction of ball, we are completely outside of the radius of ball
         // TODO: something better
