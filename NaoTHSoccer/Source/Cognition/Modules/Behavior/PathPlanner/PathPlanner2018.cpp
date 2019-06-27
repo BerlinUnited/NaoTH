@@ -198,9 +198,17 @@ void PathPlanner2018::moveAroundBall2(const double direction, const double radiu
         target_pose = {getBallModel().positionPreview.angle() - angle, target_point};
         target_reached = true;
     } else if(ball_distance >= step_radius + radius) {
+        // TODO: maybe make this the "go to ball" ?!
         // we are completely outside of the radius of the ball
-        // make step in direction of the target point
-        target_pose = {getBallModel().positionPreview.angle(), target_point};
+        // make step in direction of the target point if it isn't behind the ball
+        Vector2d tmp_target_point = target_point;
+        tmp_target_point.rotate(-getBallModel().positionPreview.angle());
+        if(tmp_target_point.x > ball_distance) {
+            tmp_target_point.x = ball_distance;
+            tmp_target_point.y = tmp_target_point.y > 0 ? radius : -radius;
+        }
+        tmp_target_point.rotate(getBallModel().positionPreview.angle());
+        target_pose = {getBallModel().positionPreview.angle(), tmp_target_point};
     } else if(ball_distance <= std::max(radius - step_radius, step_radius - radius)){
         // we are completely in the radius of ball
         // make step away from ball in direction of the target point, if possible
