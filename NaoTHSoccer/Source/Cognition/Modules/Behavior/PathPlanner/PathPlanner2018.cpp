@@ -198,17 +198,30 @@ void PathPlanner2018::moveAroundBall2(const double direction, const double radiu
         target_pose = {getBallModel().positionPreview.angle() - angle, target_point};
         target_reached = true;
     } else if(ball_distance >= step_radius + radius) {
-        // make step in direction of ball, we are completely outside of the radius of ball
-        // TODO: something better
-        moveAroundBall(direction, radius, stable);
-        return;
+        // we are completely outside of the radius of the ball
+        // make step in direction of the target point
+        target_pose = {getBallModel().positionPreview.angle(), target_point};
     } else if(ball_distance <= std::max(radius - step_radius, step_radius - radius)){
-        // make step away from ball, we are completely in the radius of ball
-        // TODO: something better
-        moveAroundBall(direction, radius, stable);
+        // we are completely in the radius of ball
+        // make step away from ball in direction of the target point, if possible
+        Vector2d tmp_target_point = target_point;
+        tmp_target_point.rotate(-getBallModel().positionPreview.angle());
+        double angle;
+        if(tmp_target_point.x > ball_distance) { // might cross ball so just make a side step
+            tmp_target_point = {0, (tmp_target_point.y > 0) ? step_radius : -step_radius};
+            angle = std::atan2(tmp_target_point.y, ball_distance);
+        } else {
+            if(tmp_target_point.abs2() > step_radius * step_radius) {
+                tmp_target_point.normalize(step_radius);
+            }
+            angle = std::atan2(tmp_target_point.y, ball_distance - tmp_target_point.x);
+        }
+
+        tmp_target_point.rotate(getBallModel().positionPreview.angle());
+        target_pose = {getBallModel().positionPreview.angle() - angle, tmp_target_point};
         return;
     } else {
-        // step 1: coordinate transformation of ball (need to lie on the x axis)
+        // step 1: coordinate transformation, the ball has to lie on the x axis
         // so we would rotate about -getBallModel().positionPreview.angle()
         // happens implicitly by using ball_distance
 
