@@ -85,7 +85,9 @@ option role_free_kick_own
     action {
       team.is_playing_as_striker = true;
       // turn around ball, until facing the opponent goal
-      path_move_around_ball(direction=50, radius=210);
+      path2018.routine = move_around_ball2;
+      path.direction = 50;
+      path.radius = 210;
     }
   }
 
