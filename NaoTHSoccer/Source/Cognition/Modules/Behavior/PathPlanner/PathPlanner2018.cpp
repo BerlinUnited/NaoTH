@@ -219,7 +219,6 @@ void PathPlanner2018::moveAroundBall2(const double direction, const double radiu
 
         tmp_target_point.rotate(getBallModel().positionPreview.angle());
         target_pose = {getBallModel().positionPreview.angle() - angle, tmp_target_point};
-        return;
     } else {
         // step 1: coordinate transformation, the ball has to lie on the x axis
         // so we would rotate about -getBallModel().positionPreview.angle()
