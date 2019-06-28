@@ -1,7 +1,8 @@
-import unittest
-import math2d as m2d
-import math3d as m3d
 import math
+import unittest
+
+import naoth.utils.math2d as m2d
+import naoth.utils.math3d as m3d
 
 
 class TestMath2D(unittest.TestCase):
