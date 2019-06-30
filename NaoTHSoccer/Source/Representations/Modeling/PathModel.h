@@ -20,6 +20,7 @@ public:
      yOffset(0.0),
      direction(0.0),
      radius(0.0),
+     stable(false),
      kick_executed(false)
    {}
   ~PathModel() {}
