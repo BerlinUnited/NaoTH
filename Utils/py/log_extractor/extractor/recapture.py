@@ -56,7 +56,10 @@ class LogRecapture(Extractor):
             shutil.copy2(config_zip_path, output_config)
             tmp_dir.cleanup()
         else:
-            shutil.copytree(target_config, output_config)
+            try:
+                shutil.copytree(target_config, output_config)
+            except FileExistsError:
+                logger.warning(f'Config folder already exists in "{output_config}"')
 
         logger.info(f'Done.')
 
@@ -72,34 +75,22 @@ class LogRecapture(Extractor):
                                                                    loop=asyncio.get_event_loop())
 
         cmd_id = 1
-        command = Command('Cognition:representation:get', cmd_id)
+
+        Command(cmd_id, 'Cognition:representation:get', 'RobotInfo').write(robot_writer)
         cmd_id += 1
-        command.add_arg('RobotInfo')
-        # send command
-        robot_writer.write(bytes(command))
 
         # disable some modules
         for module in ['ScanLineEdgelDetector', 'CameraMatrixFinder']:
-            command = Command('Cognition:modules:set', cmd_id)
+            Command(cmd_id, 'Cognition:representation:get', 'RobotInfo', *{module: 'off'}).write(robot_writer)
             cmd_id += 1
-            command.add_arg(module, value='off'.encode())
-            # send command
-            robot_writer.write(bytes(command))
 
         # disable frame skip
-        command = Command('Cognition:ParameterList:set', cmd_id)
+        Command(cmd_id, 'Cognition:ParameterList:set', *{'<name>': 'DebugParameter', 'log.skipTimeMS': '0'}).write(robot_writer)
         cmd_id += 1
-        command.add_arg('<name>', value='DebugParameter'.encode())
-        command.add_arg('log.skipTimeMS', value='0'.encode())
-        # send command
-        robot_writer.write(bytes(command))
 
         logger.info(f'Enabling recording in "{output_path}"...')
-        command = Command('Cognition:CognitionLog', cmd_id)
+        Command(cmd_id, 'Cognition:CognitionLog', *{'open': output_path}).write(robot_writer)
         cmd_id += 1
-        command.add_arg('open', value=output_path.encode())
-        # send command
-        robot_writer.write(bytes(command))
 
         # HACK: wait for commands to come through (hopefully)
         await asyncio.sleep(1)
@@ -128,18 +119,12 @@ class LogRecapture(Extractor):
         # activate representations to be recorded
         for representation in to_record:
             logger.info(f'Activating recording of {representation}...')
-            command = Command('Cognition:CognitionLog', cmd_id)
+            Command(cmd_id, 'Cognition:CognitionLog', *{'activate': representation}).write(robot_writer)
             cmd_id += 1
-            command.add_arg('activate', value=representation.encode())
-            # send command
-            robot_writer.write(bytes(command))
 
         logger.info('Starting recorder...')
-        command = Command('Cognition:CognitionLog', cmd_id)
+        Command(cmd_id, 'Cognition:CognitionLog', 'on').write(robot_writer)
         cmd_id += 1
-        command.add_arg('on')
-        # send command
-        robot_writer.write(bytes(command))
 
         # HACK: wait for commands to come through (hopefully)
         await asyncio.sleep(1)
@@ -181,7 +166,8 @@ if __name__ == '__main__':
     parser.add_argument('-e', '--executable')
     args = parser.parse_args()
 
-    os.environ['LOG_SIMULATOR_PATH'] = args.executable
+    if args.executable:
+        os.environ['LOG_SIMULATOR_PATH'] = args.executable
 
     extractor = LogRecapture()
     extractor.extract(args.target_log, args.output_path, job_id=1)
