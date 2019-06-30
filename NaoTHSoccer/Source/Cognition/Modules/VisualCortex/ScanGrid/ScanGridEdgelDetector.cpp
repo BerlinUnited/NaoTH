@@ -53,7 +53,7 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
 
   if(parameters.scan_vertical) {
     scan_vertical(maximumPeak, minimumPeak);
-    scan_id += 1;
+    scan_id++;
   }
 
   if(parameters.scan_horizontal) {
