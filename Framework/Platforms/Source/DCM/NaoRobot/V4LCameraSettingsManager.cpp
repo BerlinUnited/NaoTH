@@ -159,20 +159,15 @@ int32_t V4LCameraSettingsManager::getSingleCameraParameterUVC(int cameraFd, std:
 }
 
 bool V4LCameraSettingsManager::setSingleCameraParameterUVC(int cameraFd, std::string cameraName, 
-    int parameterSelector, std::string parameterName, uint16_t parameterDataSize, int32_t value)
+    uint8_t parameterSelector, std::string parameterName, uint16_t data_size, int32_t value)
 {
-
-  if (parameterSelector)
-  {
-    return false;
-  }
 
 
   struct uvc_xu_control_query queryctrl;
-  memset(&queryctrl, 0, sizeof(queryctrl));
+  memset (&queryctrl, 0, sizeof (queryctrl));
 
-  uint8_t *value_raw = new uint8_t[parameterDataSize];
-  memset(value_raw, 0, parameterDataSize);
+  uint8_t* value_raw = new uint8_t[data_size];
+  memset(value_raw, 0, data_size);
   value_raw[3] = static_cast<uint8_t>(value >> 24);
   value_raw[2] = static_cast<uint8_t>(value >> 16);
   value_raw[1] = static_cast<uint8_t>(value >> 8);
@@ -181,7 +176,7 @@ bool V4LCameraSettingsManager::setSingleCameraParameterUVC(int cameraFd, std::st
   queryctrl.unit = 3;
   queryctrl.query = UVC_SET_CUR;
   queryctrl.selector = static_cast<uint8_t>(parameterSelector);
-  queryctrl.size = parameterDataSize;
+  queryctrl.size = data_size;
   queryctrl.data = value_raw;
 
   int error = xioctl(cameraFd, UVCIOC_CTRL_QUERY, &queryctrl);

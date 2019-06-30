@@ -25,16 +25,15 @@ void CameraSettingsV6Manager::query(int cameraFd, std::string cameraName, Camera
 
     settings.gain = Math::fromFixPoint<5>(static_cast<std::int32_t>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN)));
 
-    settings.brightness = getSingleCameraParameterRaw(cameraFd, cameraName,V4L2_CID_BRIGHTNESS);
-    settings.contrast = static_cast<float>(getSingleCameraParameterRaw(cameraFd, cameraName,V4L2_CID_CONTRAST));
-    settings.sharpness = getSingleCameraParameterRaw(cameraFd, cameraName,V4L2_CID_SHARPNESS);
-    settings.hue = getSingleCameraParameterRaw(cameraFd, cameraName,V4L2_CID_HUE);
-
+    settings.brightness = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BRIGHTNESS);
+    settings.contrast = static_cast<float>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_CONTRAST));
+    settings.sharpness = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SHARPNESS);
+    settings.hue = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HUE);
 
     settings.horizontalFlip = getSingleCameraParameterUVC(cameraFd, cameraName, 12, "HorizontalFlip", 2);
     settings.verticalFlip = getSingleCameraParameterUVC(cameraFd, cameraName, 13, "VerticalFlip", 2);
 
-//    settings.backlightCompensation = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BACKLIGHT_COMPENSATION) == 0 ? false : true;
+    //    settings.backlightCompensation = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BACKLIGHT_COMPENSATION) == 0 ? false : true;
 }
 
 void CameraSettingsV6Manager::apply(int cameraFd, std::string cameraName, const CameraSettings &settings)
@@ -126,12 +125,16 @@ void CameraSettingsV6Manager::apply(int cameraFd, std::string cameraName, const 
     //     backlightCompensation = settings.backlightCompensation;
     // }
 
-    if(setSingleCameraParameterUVC(cameraFd, cameraName, 12, "HorizontalFlip", 2, settings.horizontalFlip)) {
+    if (horizontalFlip != settings.horizontalFlip &&
+        setSingleCameraParameterUVC(cameraFd, cameraName, 12, "HorizontalFlip", 2, settings.horizontalFlip))
+    {
         horizontalFlip = settings.horizontalFlip;
         return;
     }
 
-    if(setSingleCameraParameterUVC(cameraFd, cameraName, 13, "VerticalFlip", 2, settings.verticalFlip)) {
+    if (verticalFlip != settings.verticalFlip &&
+        setSingleCameraParameterUVC(cameraFd, cameraName, 13, "VerticalFlip", 2, settings.verticalFlip))
+    {
         verticalFlip = settings.verticalFlip;
         return;
     }

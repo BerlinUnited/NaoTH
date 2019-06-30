@@ -19,7 +19,7 @@ protected:
     int32_t getSingleCameraParameterUVC(int cameraFd, std::string cameraName, int parameterSelector, 
         std::string parameterName, uint16_t parameterDataSize);
     bool setSingleCameraParameterUVC(int cameraFd, std::string cameraName, 
-        int parameterSelector, std::string parameterName, uint16_t parameterDataSize, int32_t value);
+        uint8_t parameterSelector, std::string parameterName, uint16_t parameterDataSize, int32_t value);
 
     int xioctl(int fd, int request, void *arg) const;
 
