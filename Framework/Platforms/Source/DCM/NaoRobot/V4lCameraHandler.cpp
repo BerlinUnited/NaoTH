@@ -48,7 +48,7 @@ V4lCameraHandler::V4lCameraHandler()
     : cameraName("none"),
       currentCamera(CameraInfo::numOfCamera),
       fd(-1),
-      atLeastOneImageRetrieved(false),
+      framesSinceStart(0),
       initialParamsSet(false),
       wasQueried(false),
       isCapturing(false),
@@ -100,20 +100,6 @@ void V4lCameraHandler::init(std::string camDevice, CameraInfo::CameraID camID, b
   openDevice(blockingMode);
   initDevice();
   setFPS(30);
-
-  // HACK (preserved settings): load the current settings from the driver,
-  //                            so we don't have to set all of them again
-  internalUpdateCameraSettings();
-
-  // print the retrieved settings
-  for (int i = 0; i < CameraSettings::numOfCameraSetting; i++)
-  {
-    if (csConst[i] > -1)
-    {
-      cout << LOG << CameraSettings::getCameraSettingsName((CameraSettings::CameraSettingID)i)
-           << " = " << currentSettings.data[i] << std::endl;
-    }
-  }
 
   startCapturing();
 }
@@ -280,7 +266,7 @@ void V4lCameraHandler::startCapturing()
   isCapturing = true;
   wasQueried = false;
   lastBuf = currentBuf;
-  atLeastOneImageRetrieved = false;
+  framesSinceStart = 0;
 }
 
 void V4lCameraHandler::stopCapturing()
@@ -463,8 +449,8 @@ void V4lCameraHandler::get(Image &theImage)
             (unsigned int)((((unsigned long long)currentBuf.timestamp.tv_sec) * NaoTime::long_thousand +
                             ((unsigned long long)currentBuf.timestamp.tv_usec) / NaoTime::long_thousand) -
                            NaoTime::startingTimeInMilliSeconds);
-
-        atLeastOneImageRetrieved = true;
+        
+        framesSinceStart++;
       }
     }
   }
@@ -582,11 +568,22 @@ bool V4lCameraHandler::setSingleCameraParameter(int id, int value, std::string n
 
 void V4lCameraHandler::setAllCameraParams(const CameraSettings &data)
 {
-  if (!atLeastOneImageRetrieved)
+  if (framesSinceStart < 5)
   {
     // do nothing if no image was retrieved yet
     std::cerr << LOG << "CAN NOT SET PARAMETER YET" << std::endl;
     return;
+  } else if(framesSinceStart == 5) {
+    internalUpdateCameraSettings();
+    // print the retrieved settings
+    for (int i = 0; i < CameraSettings::numOfCameraSetting; i++)
+    {
+      if (csConst[i] > -1)
+      {
+        cout << LOG << CameraSettings::getCameraSettingsName((CameraSettings::CameraSettingID)i)
+            << " = " << currentSettings.data[i] << std::endl;
+      }
+    }
   }
 
   bool forceUpdate = !initialParamsSet;

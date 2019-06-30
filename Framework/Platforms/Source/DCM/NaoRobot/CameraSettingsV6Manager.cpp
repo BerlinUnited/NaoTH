@@ -52,13 +52,13 @@ void CameraSettingsV6Manager::apply(int cameraFd, std::string cameraName, const 
     }
 
     if (autoExposition == false && exposure != settings.exposure &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ABSOLUTE, "Exposure", Math::clamp(settings.exposure, 0, 1000)))
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ABSOLUTE, "Exposure", settings.exposure))
     {
         exposure = settings.exposure;
         return;
     }
     if (saturation != settings.saturation &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SATURATION, "Saturation", Math::clamp(settings.saturation, 0, 255)))
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SATURATION, "Saturation", settings.saturation))
     {
         saturation = settings.saturation;
         return;
@@ -66,28 +66,28 @@ void CameraSettingsV6Manager::apply(int cameraFd, std::string cameraName, const 
 
     // TODO, norm brigthness, contrast, sharpness and hue to something that is valid both on V5 and V6 or split up the params
     if (brightness != settings.brightness &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BRIGHTNESS, "Brightness", Math::clamp(settings.brightness, -255, 255)))
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BRIGHTNESS, "Brightness", settings.brightness))
     {
         brightness = settings.brightness;
         return;
     }
 
     if (contrast != settings.contrast &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_CONTRAST, "Contrast", Math::clamp(static_cast<int>(settings.contrast), 0, 255)))
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_CONTRAST, "Contrast", static_cast<int>(settings.contrast)))
     {
         contrast = settings.contrast;
         return;
     }
 
     if (sharpness != settings.sharpness &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SHARPNESS, "Sharpness", Math::clamp(settings.sharpness, 0, 9)))
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SHARPNESS, "Sharpness", settings.sharpness))
     {
         sharpness = settings.sharpness;
         return;
     }
 
     if (hue != settings.hue &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HUE, "Hue", Math::clamp(settings.hue, -180, 180)))
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HUE, "Hue", settings.hue))
     {
         hue = settings.hue;
         return;
@@ -107,7 +107,7 @@ void CameraSettingsV6Manager::apply(int cameraFd, std::string cameraName, const 
     }
 
     if (autoWhiteBalancing == false && whiteBalanceTemperature != settings.whiteBalanceTemperature &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_WHITE_BALANCE_TEMPERATURE, "WhiteBalance", Math::clamp(settings.whiteBalanceTemperature, 2500, 6500)))
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_WHITE_BALANCE_TEMPERATURE, "WhiteBalance", settings.whiteBalanceTemperature))
     {
         whiteBalanceTemperature = settings.whiteBalanceTemperature;
         return;

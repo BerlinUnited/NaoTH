@@ -126,7 +126,7 @@ private: // data members
   struct v4l2_buffer currentBuf;
   struct v4l2_buffer lastBuf;
 
-  bool atLeastOneImageRetrieved;
+  size_t framesSinceStart;
   bool initialParamsSet;
   bool wasQueried;
   bool isCapturing;
