@@ -11,12 +11,14 @@ MultiKalmanBallLocator::MultiKalmanBallLocator():
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:allow_just_one_model",  "allows only one model to be generated (all updates are applied to that model)", false);
 
     // Debug Drawings
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_real_ball_percept",    "draw the real incomming ball percept",                             false);
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_ball_on_field_before", "draw the modelled ball on the field before prediction and update", false);
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_ball_on_field",        "draw the modelled ball on the field before update",                false);
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_ball_on_field_after",  "draw the modelled ball on the field after prediction and update",  false);
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_assignment",           "draws the assignment of the ball percept to the filter",           false);
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_final_ball",           "draws the final i.e. best model",                                  false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_real_ball_percept",          "draw the real incomming ball percept",                               false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_ball_on_field_before",       "draw the modelled ball on the field before prediction and update",   false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_ball_on_field",              "draw the modelled ball on the field before update",                  false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_ball_on_field_after",        "draw the modelled ball on the field after prediction and update",    false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_assignment",                 "draws the assignment of the ball percept to the filter",             false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_final_ball",                 "draws the final i.e. best model",                                    false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_final_ball_postion_at_rest", "draws the final i.e. best model's rest position",                    false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_covariance_ellipse",         "draws the ellipses representing the covariances",                    false);
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_last_known_ball",      "draws the last known ball", 	                                   false);
 
     // Plotting Related Debug Requests
@@ -25,7 +27,7 @@ MultiKalmanBallLocator::MultiKalmanBallLocator():
     // Update Association Function Debug Requests
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:UpdateAssociationFunction:useEuclid",            "minimize Euclidian distance in measurement space",                                false);
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:UpdateAssociationFunction:useMahalanobis",       "minimize Mahalanobis distance in measurement space (no common covarince matrix)", false);
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:UpdateAssociationFunction:useMaximumLikelihood", "maximize likelihood of measurement in measurement space ",                         true);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:UpdateAssociationFunction:useMaximumLikelihood", "maximize likelihood of measurement in measurement space ",                        true );
 
     // Parameter Related Debug Requests
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:reloadParameters",          "reloads the kalman filter parameters from the kfParameter object", false);
@@ -530,21 +532,45 @@ void MultiKalmanBallLocator::provideBallModel(const BallHypothesis& model)
   getBallModel().knows = model.ballSeenFilter.value();
   getBallModel().setFrameInfoWhenBallWasSeen(model.getLastUpdateFrame());
 
-  const Eigen::Vector4d& x = model.getState();
-
   // set ball model representation
+  const Eigen::Vector4d& x = model.getState();
   getBallModel().position.x = x(0);
   getBallModel().position.y = x(2);
   getBallModel().speed.x = x(1);
   getBallModel().speed.y = x(3);
 
-  //set preview ball model representation
+  // transform ball model into feet coordinates
   const Pose3D& lFoot = getKinematicChain().theLinks[KinematicChain::LFoot].M;
   const Pose3D& rFoot = getKinematicChain().theLinks[KinematicChain::RFoot].M;
-
-  // transform ball model into feet coordinates
   Vector2d ballLeftFoot  = lFoot.projectXY()/getBallModel().position;
   Vector2d ballRightFoot = rFoot.projectXY()/getBallModel().position;
+
+  //set preview ball model representation
+  getBallModel().positionPreview = getMotionStatus().plannedMotion.hip / getBallModel().position;
+  getBallModel().positionPreviewInLFoot = getMotionStatus().plannedMotion.lFoot / ballLeftFoot;
+  getBallModel().positionPreviewInRFoot = getMotionStatus().plannedMotion.rFoot / ballRightFoot;
+
+  // determine rest position
+  Eigen::Vector2d vel;
+  vel <<  x(1), x(3);
+  double abs_velocity = vel.norm();
+
+  BallHypothesis modelCopy(model);
+  if(abs_velocity > epsilon){
+      double time_until_vel_zero = -abs_velocity / getFieldInfo().ballDeceleration;
+      Eigen::Vector2d u = vel.normalized() * getFieldInfo().ballDeceleration;
+      modelCopy.predict(u, time_until_vel_zero);
+
+      DEBUG_REQUEST("MultiKalmanBallLocator:draw_final_ball_postion_at_rest",
+          FIELD_DRAWING_CONTEXT;
+          PEN(Color(Color::black), 20);
+          CIRCLE(modelCopy.getState()(0), modelCopy.getState()(2), getFieldInfo().ballRadius-10);
+      );
+  }
+
+  // set position at rest
+  getBallModel().position_at_rest.x = modelCopy.getState()(0);
+  getBallModel().position_at_rest.y = modelCopy.getState()(2);
 
   // update last known ball
   if(getBallModel().knows) {
@@ -553,25 +579,6 @@ void MultiKalmanBallLocator::provideBallModel(const BallHypothesis& model)
     // need to update odometry by hand ...
     Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
     getBallModel().last_known_ball = odometryDelta * getBallModel().last_known_ball;
-  }
-
-  // provide motion previews
-  getBallModel().positionPreview = getMotionStatus().plannedMotion.hip / getBallModel().position;
-  getBallModel().positionPreviewInLFoot = getMotionStatus().plannedMotion.lFoot / ballLeftFoot;
-  getBallModel().positionPreviewInRFoot = getMotionStatus().plannedMotion.rFoot / ballRightFoot;
-
-  // predict future ball positions
-  const int BALLMODEL_MAX_FUTURE_SECONDS = 11;
-  getBallModel().futurePosition.resize(BALLMODEL_MAX_FUTURE_SECONDS);
-  getBallModel().futurePosition[0] = getBallModel().position;
-
-  BallHypothesis modelCopy(model);
-  for(size_t i=1; i < getBallModel().futurePosition.size(); i++)
-  {
-    predict(modelCopy, 1.0); // predict 1s in the future
-
-    const Eigen::Vector4d& x = modelCopy.getState();
-    getBallModel().futurePosition[i] = Vector2d(x(0), x(2));
   }
 }
 
@@ -604,7 +611,6 @@ void MultiKalmanBallLocator::doDebugRequestBeforUpdate()
 void MultiKalmanBallLocator::doDebugRequest()
 {
     //PLOT("MultiKalmanBallLocator:ModelIsValid", getBallModel().valid);
-
 
     //to check correctness of the prediction
     DEBUG_REQUEST("MultiKalmanBallLocator:draw_real_ball_percept",
@@ -653,52 +659,67 @@ void MultiKalmanBallLocator::doDebugRequest()
       );
 }
 
+void MultiKalmanBallLocator::drawFilter(const BallHypothesis& bh, const Color& model_color, Color cov_loc_color, Color cov_vel_color) const
+{
+    bool draw_covariances = false;
+    DEBUG_REQUEST("MultiKalmanBallLocator:draw_covariance_ellipse",
+        draw_covariances = true;
+    );
+
+    if(!draw_covariances) {
+        cov_loc_color[cov_loc_color.Alpha] = 0;
+        cov_vel_color[cov_vel_color.Alpha] = 0;
+    }
+
+    PEN(model_color.toString(),20);
+
+    const Eigen::Vector4d& state = bh.getState();
+
+    CIRCLE( state(0), state(2), getFieldInfo().ballRadius-10);
+    ARROW( state(0), state(2),
+           state(0)+state(1),
+           state(2)+state(3));
+
+    PEN(cov_loc_color.toString(), 20);
+    const Ellipse2d& ellipse_loc = bh.getEllipseLocation();
+    OVAL_ROTATED(state(0),
+                 state(2),
+                 ellipse_loc.minor,
+                 ellipse_loc.major,
+                 ellipse_loc.angle);
+
+    PEN(cov_vel_color, 20);
+    const Ellipse2d& ellipse_vel = bh.getEllipseVelocity();
+    OVAL_ROTATED(state(0)+state(1),
+                 state(2)+state(3),
+                 ellipse_vel.minor,
+                 ellipse_vel.major,
+                 ellipse_vel.angle);
+}
+
 void MultiKalmanBallLocator::drawFiltersOnField() const
 {
     FIELD_DRAWING_CONTEXT;
 
-    for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); iter++)
-    {
-        if(getBallModel().valid)
-        {
+    Color cov_loc_color("00FFFF");
+    Color cov_vel_color("FF00FF");
+    Color model_color;
+
+    for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); iter++) {
+        if(getBallModel().valid) {
             if((*iter).getLastUpdateFrame().getTime() == getFrameInfo().getTime()) {
                 if(bestModel == iter)
-                    PEN("99FF00", 20);
+                    model_color = "99FF00";
                 else
-                    PEN("FF9900",20);
+                    model_color = "FF9900";
             } else {
-                    PEN("0099FF", 20);
+                    model_color = "0099FF";
             }
         } else {
-                PEN("999999", 20);
+            model_color = "999999";
         }
 
-        const Eigen::Vector4d& state = (*iter).getState();
-
-        CIRCLE( state(0), state(2), getFieldInfo().ballRadius-10);
-        ARROW( state(0), state(2),
-               state(0)+state(1),
-               state(2)+state(3));
-
-        PEN("00FFFF", 20);
-
-        // draw error ellipses for the location
-        const Ellipse2d& ellipse_loc = (*iter).getEllipseLocation();
-        OVAL_ROTATED(state(0),
-                     state(2),
-                     ellipse_loc.minor,
-                     ellipse_loc.major,
-                     ellipse_loc.angle);
-
-        PEN("FF00FF", 20);
-
-        // draw error ellipse for the velocity
-        const Ellipse2d& ellipse_vel = (*iter).getEllipseVelocity();
-        OVAL_ROTATED(state(0)+state(1),
-                     state(2)+state(3),
-                     ellipse_vel.minor,
-                     ellipse_vel.major,
-                     ellipse_vel.angle);
+        drawFilter(*iter, model_color, cov_loc_color, cov_vel_color);
     }
 }
 

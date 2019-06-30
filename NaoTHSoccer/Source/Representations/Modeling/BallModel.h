@@ -34,6 +34,9 @@ public:
   // The speed of the ball relative to the robot (in mm/s)
   Vector2d speed;
 
+  // the rest position
+  Vector2d position_at_rest;
+
   // precalculated ball position in the coordinates of the planed motion (see motionStatus)
   Vector2d positionPreview;
   Vector2d positionPreviewInLFoot;

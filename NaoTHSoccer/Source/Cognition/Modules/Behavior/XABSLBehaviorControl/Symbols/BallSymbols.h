@@ -12,6 +12,7 @@
 #include <XabslEngine/XabslEngine.h>
 
 #include "Tools/Math/Pose2D.h"
+#include "Representations/Motion/MotionStatus.h"
 
 // representations
 #include "Representations/Infrastructure/FrameInfo.h"
@@ -44,6 +45,7 @@ PROVIDE(BallModel) // PROVIDE so that XABSL bool can be read out
   REQUIRE(TeamBallModel)
   REQUIRE(RobotPose)
   REQUIRE(OdometryData)
+  REQUIRE(MotionStatus)
 
   REQUIRE(KinematicChain)
 END_DECLARE_MODULE(BallSymbols)
@@ -135,6 +137,8 @@ private:
   bool ball_see_where_itis;
 
   Pose2D lastRobotOdometry;
+
+  Vector2d futureBallPreview;
 };//end class BallSymbols
 
 #endif // _BallSymbols_H_
