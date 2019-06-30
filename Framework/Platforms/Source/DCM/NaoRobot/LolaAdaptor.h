@@ -203,8 +203,8 @@ private:
       {
         shutdown_requested = true;
         //exit(-1);
-        break;
-        //shutdownCallbackThread = std::thread([this]{this->shutdownCallback();});
+        // break;
+        shutdownCallbackThread = std::thread([this]{this->shutdownCallback();});
       }
 
       // push the data to shared memory
@@ -294,11 +294,11 @@ private:
     // play a sound that the user knows we recognized his shutdown request
     system("/usr/bin/paplay /usr/share/naoqi/wav/bip_gentle.wav");
 
-    // stop the user program
-    std::cout << "[LolaAdaptor] stopping naoth" << std::endl;
-    system("naoth stop");
+    // // stop the user program
+    // std::cout << "[LolaAdaptor] stopping naoth" << std::endl;
+    // system("naoth stop");
 
-    sleep(5);
+    // sleep(5);
 
     // we are the child process, do a blocking call to shutdown
     system("/sbin/shutdown -h now");
