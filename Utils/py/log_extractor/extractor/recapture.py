@@ -81,15 +81,15 @@ class LogRecapture(Extractor):
 
         # disable some modules
         for module in ['ScanLineEdgelDetector', 'CameraMatrixFinder']:
-            Command(cmd_id, 'Cognition:modules:set', *{module: 'off'}).write(robot_writer)
+            Command(cmd_id, 'Cognition:modules:set', **{module: 'off'}).write(robot_writer)
             cmd_id += 1
 
         # disable frame skip
-        Command(cmd_id, 'Cognition:ParameterList:set', *{'<name>': 'DebugParameter', 'log.skipTimeMS': '0'}).write(robot_writer)
+        Command(cmd_id, 'Cognition:ParameterList:set', **{'<name>': 'DebugParameter', 'log.skipTimeMS': '0'}).write(robot_writer)
         cmd_id += 1
 
         logger.info(f'Enabling recording in "{output_path}"...')
-        Command(cmd_id, 'Cognition:CognitionLog', *{'open': output_path}).write(robot_writer)
+        Command(cmd_id, 'Cognition:CognitionLog', **{'open': output_path}).write(robot_writer)
         cmd_id += 1
 
         # HACK: wait for commands to come through (hopefully)
@@ -119,7 +119,7 @@ class LogRecapture(Extractor):
         # activate representations to be recorded
         for representation in to_record:
             logger.info(f'Activating recording of {representation}...')
-            Command(cmd_id, 'Cognition:CognitionLog', *{'activate': representation}).write(robot_writer)
+            Command(cmd_id, 'Cognition:CognitionLog', **{'activate': representation}).write(robot_writer)
             cmd_id += 1
 
         logger.info('Starting recorder...')

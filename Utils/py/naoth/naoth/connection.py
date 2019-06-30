@@ -91,8 +91,11 @@ class Command:
         self.name = name
         self.args = {}
 
-        map(self.add_arg, args)
-        map(self.add_arg, vargs.keys(), vargs.values())
+        for name in args:
+            self.add_arg(name)
+
+        for name, value in vargs.items():
+            self.add_arg(name, value=value)
 
     def add_arg(self, name, value=None):
         if isinstance(value, str):
