@@ -109,11 +109,11 @@ setEtc(){
 	fi
 
 	# disable naoqi completely
- 	if [ -h /nao/etc/systemd/user/aldebaran.target.wants/naoqi.service]; then
+ 	if [ -h /nao/etc/systemd/user/aldebaran.target.wants/naoqi.service ]; then
 		rm /nao/etc/systemd/user/aldebaran.target.wants/naoqi.service
 	fi
 
- 	if [ -h /nao/etc/systemd/user/aldebaran.target.wants/naoqi-legacy.service]; then
+ 	if [ -h /nao/etc/systemd/user/aldebaran.target.wants/naoqi-legacy.service ]; then
 		rm /nao/etc/systemd/user/aldebaran.target.wants/naoqi-legacy.service
 	fi
 	# overwrite lola.service with our version (we dont want naoqi as dependency)
@@ -158,10 +158,16 @@ mount -o remount,rw /
 
 # set volume to 88%
 su nao -c "/usr/bin/pactl set-sink-mute 0 false"
-sudo -u nao pactl set-sink-volume 0 88%
+su nao -c "/usr/bin/pactl set-sink-volume 0 88%"
+# also set the recording volume
+# 1. set in simple mode with alsa mixer to make sure it is in sync for all channels
+su nao -c "/usr/bin/amixer sset 'Capture',0 90%"
+# 2. set with pulseaudio (now both channels are set) to make sure the changes are persistent
+su nao -c "/usr/bin/pactl set-source-mute 1 false"
+su nao -c "/usr/bin/pactl set-source-volume 1 90%"
 
 # play initial sound
-su nao -c "/usr/bin/paplay ./home/nao/naoqi/Media/usb_start.wav"
+su nao -c "/usr/bin/paplay $DEPLOY_DIRECTORY/home/nao/naoqi/Media/usb_start.wav"
 
 # stop naoqi and naoth
 naoth stop
@@ -172,7 +178,7 @@ umount -l /etc
 setEtc
 systemctl restart etc.mount
 # TODO: check if this is really needed (overlay should merge base and overlayed directory contents)
-#setEtc
+setEtc
 
 # ==================== libs stuff ====================
 

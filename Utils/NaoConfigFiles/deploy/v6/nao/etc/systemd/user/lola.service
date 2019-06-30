@@ -2,7 +2,6 @@
 Description=Aldebaran LoLA
 Wants=dbus.service hal.service
 Requires=dbus.service
-PartOf=naoqi.service
 ConditionPathExists=/opt/aldebaran/bin/lola
 
 [Service]
