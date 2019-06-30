@@ -81,6 +81,9 @@ public:
   
   ~LolaAdaptor()
   {
+    // stop the thread before anything else
+    stop();
+    
     // close semaphore
     if(sem != SEM_FAILED)
     {
@@ -123,10 +126,15 @@ public:
   
   void stop() 
   {
+    std::cout << "[LolaAdaptor] stop wait" << std::endl;
+    
+    // request the thread to stop
     exiting = true;
+    
     if(lolaThread.joinable()) {
       lolaThread.join();
     }
+    std::cout << "[LolaAdaptor] stop done" << std::endl;
   }
   
   bool isRunning() const {

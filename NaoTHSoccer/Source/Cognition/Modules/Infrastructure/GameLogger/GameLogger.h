@@ -6,6 +6,7 @@
 
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/Image.h>
+#include <Representations/Infrastructure/UltraSoundData.h>
 #include <Representations/Infrastructure/RobotInfo.h>
 #include <Representations/Modeling/BehaviorStateComplete.h>
 #include <Representations/Modeling/BehaviorStateSparse.h>
@@ -14,16 +15,21 @@
 #include <Representations/Perception/BallPercept.h>
 #include <Representations/Perception/GoalPercept.h>
 #include <Representations/Perception/ScanLineEdgelPercept.h>
+#include <Representations/Perception/LinePercept2018.h>
+#include <Representations/Perception/FieldPercept.h>
+
 #include <Representations/Modeling/OdometryData.h>
 #include <Representations/Perception/CameraMatrix.h>
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Modeling/BodyStatus.h"
 #include "Representations/Motion/MotionStatus.h"
+#include "Representations/Modeling/BallModel.h"
 
 #include "Representations/Perception/BallCandidates.h"
 #include "Representations/Perception/MultiBallPercept.h"
 
 #include <Representations/Infrastructure/AudioData.h>
+#include <Representations/Infrastructure/AudioControl.h>
 #include "Representations/Perception/WhistlePercept.h"
 
 // tools
@@ -51,22 +57,35 @@ BEGIN_DECLARE_MODULE(GameLogger)
   REQUIRE(GoalPerceptTop)
   REQUIRE(BallPercept)
   REQUIRE(BallPerceptTop)
+
+  REQUIRE(FieldPercept)
+  REQUIRE(FieldPerceptTop)
+
   REQUIRE(ScanLineEdgelPercept)
   REQUIRE(ScanLineEdgelPerceptTop)
+
+  REQUIRE(RansacLinePercept)
+  REQUIRE(ShortLinePercept)
+  REQUIRE(RansacCirclePercept2018)
+
   REQUIRE(BodyStatus)
   REQUIRE(MotionStatus)
 
-  REQUIRE(AudioData)
+  REQUIRE(UltraSoundReceiveData)
 
   REQUIRE(MultiBallPercept)
+  REQUIRE(BallModel)
 
   REQUIRE(BallCandidates)
   REQUIRE(BallCandidatesTop)
 
   REQUIRE(TeamMessage)
 
+  REQUIRE(AudioData)
+  PROVIDE(AudioControl) // needed to keep the device open for a bit after it's requested to stop
+
   REQUIRE(WhistlePercept)
-  END_DECLARE_MODULE(GameLogger)
+END_DECLARE_MODULE(GameLogger)
 
 class GameLogger : public GameLoggerBase
 {
@@ -86,6 +105,7 @@ private:
       PARAMETER_REGISTER(logBodyStatus) = false;
       PARAMETER_REGISTER(logPlainImages) = false;
       PARAMETER_REGISTER(logPlainImagesDelay) = 2000;
+      PARAMETER_REGISTER(logUltraSound) = false;
       syncWithConfig();
     }
 
@@ -94,6 +114,7 @@ private:
     bool logBodyStatus;
     bool logPlainImages;
     int logPlainImagesDelay;
+    bool logUltraSound;
   } params;
 
 private:
@@ -108,7 +129,10 @@ private:
   
   PlayerInfo::RobotState oldState;
   bool firstRecording;
+  
+  // audio data
   unsigned long lastAudioDataTimestamp;
+  FrameInfo timeOfLastCapture;
 
   CameraInfo::CameraID lastRecordedPlainImageID;
 };

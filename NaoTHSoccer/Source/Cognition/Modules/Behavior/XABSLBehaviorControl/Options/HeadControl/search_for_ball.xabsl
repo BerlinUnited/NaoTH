@@ -70,7 +70,7 @@ option search_for_ball
         head.point_in_world.z = 0;
         head.motion_type = look_at_world_point;
 
-        head.angleVelocity = 60; // will be reseted in spl_play_soccer
+        head.angleVelocity = 60; // will be reseted in basic_play
     }
   }
 
@@ -92,7 +92,7 @@ option search_for_ball
       head.point_in_world.z = 0;
       head.motion_type = look_at_world_point;
 
-      head.angleVelocity = 60; // will be reseted in spl_play_soccer
+      head.angleVelocity = 60; // will be reseted in basic_play
     }
   }
 
@@ -117,7 +117,7 @@ option search_for_ball
         head.point_in_world.z = 0;
         head.motion_type = look_at_world_point;
 
-        head.angleVelocity = 60; // will be reseted in spl_play_soccer
+        head.angleVelocity = 60; // will be reseted in basic_play
     }
   }
 
@@ -139,7 +139,7 @@ option search_for_ball
       head.point_in_world.z = 0;
       head.motion_type = look_at_world_point;
 
-      head.angleVelocity = 60; // will be reseted in spl_play_soccer
+      head.angleVelocity = 60; // will be reseted in basic_play
     }
   }
     
@@ -181,8 +181,14 @@ option search_for_ball
 	        goto search_for_ball_left;
 	      else
 	        goto search_for_ball_right;
-      } else if(state_time > 3000 && vector.abs(x=ball.preview.x, y=ball.preview.y) > @look_at_ball_when_distance)
-        goto look_around_state;
+      } else if(@look_around && state_time > 3000 && vector.abs(x=ball.preview.x, y=ball.preview.y) > @look_at_ball_when_distance)
+      {
+        //goto look_around_state;
+        if ( search_for_ball.last_look_around_direction_was_left )
+          goto look_right;
+        else 
+          goto look_left; 
+      }
       else
         stay;
     }
@@ -198,19 +204,53 @@ option search_for_ball
     }
   }
 
-  state look_around_state {
-    decision{
-      if ( state_time > 3000 )
-        goto start_search;
+
+  state look_left
+  {
+    decision
+    {
+      if (head.yaw > 60 || state_time > 1000)
+        goto look_at_ball;
       else 
-        stay; 
+        stay;
     }
-    action{
+    action
+    {
       head.camera.id = Top;
-      look_around();
-      head.angleVelocity = 60; // will be reseted in spl_play_soccer
+    
+      head.point_in_world.x = 2000;
+      head.point_in_world.y = 6000;
+      head.point_in_world.z = 500;
+      head.motion_type = look_at_world_point;
+
+      search_for_ball.last_look_around_direction_was_left = true;
+      head.angleVelocity = 60;
     }
   }
+
+  state look_right
+  {
+    decision
+    {
+      if (head.yaw < -60 || state_time > 1000)
+        goto look_at_ball;
+      else 
+        stay;
+    }
+    action
+    {
+      head.camera.id = Top;
+      
+      head.point_in_world.x = 2000;
+      head.point_in_world.y = -6000;
+      head.point_in_world.z = 500;
+      head.motion_type = look_at_world_point;
+
+      search_for_ball.last_look_around_direction_was_left = false;
+      head.angleVelocity = 60;
+    }
+  }
+
 
   state look_at_teamball {
     decision{
@@ -226,7 +266,7 @@ option search_for_ball
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.team.position.x * 250 / vector.abs(x=ball.team.position.x, y=ball.team.position.y);
       head.point_in_world.y = ball.team.position.y * 250 / vector.abs(x=ball.team.position.x, y=ball.team.position.y);
-      head.point_in_world.z = ball.radius; // radius of the ball
+      head.point_in_world.z = ball.radius;
     }
   }
 }

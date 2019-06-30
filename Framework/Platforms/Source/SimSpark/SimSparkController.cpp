@@ -35,6 +35,7 @@ SimSparkController::SimSparkController(const std::string& name)
   theSenseTime(0),
   theStepTime(0),
   theSyncMode(false),
+  ignoreOpponentMsg(false),
   exiting(false)
 {
   // register input
@@ -281,6 +282,11 @@ bool SimSparkController::init(const std::string& modelPath, const std::string& t
   unsigned short debugPort = static_cast<short unsigned int> (5000 + (theGameInfo.teamNumber*100) + theGameInfo.playerNumber);
   theDebugServer.start(debugPort);
 #endif
+
+  // for the 'hear' percept
+  if (config.hasKey("player", "ignoreOpponentMsg")) {
+      ignoreOpponentMsg = config.getBool("player", "ignoreOpponentMsg");
+  }
 
   theLastSenseTime = NaoTime::getNaoTimeInMilliSeconds();
   theLastActTime = theLastSenseTime;
@@ -1541,54 +1547,56 @@ void SimSparkController::say()
 
 bool SimSparkController::hear(const sexp_t* sexp)
 {
-  double time;
-  if (!SexpParser::parseValue(sexp, time))
-  {
-    std::cerr << "[SimSparkController Hear] can not get time" << std::endl;
-    return false;
-  }
+    size_t minMsgSize = (sizeof(SPLStandardMessage) - SPL_STANDARD_MESSAGE_DATA_SIZE);
+    std::vector<const sexp_t*> data;
 
-  // in new simspark version (0.6.8+) an additional "team" field was added!
-  sexp = sexp->next; // direction or teamname
-  /*
-  std::string direction;
-  double dir;
-  if (!SexpParser::parseValue(sexp, direction))
-  {
-    std::cerr << "[SimSparkController Hear] can not get direction" << std::endl;
-    return false;
-  }
+    // the actual message is last, collect all preceding values
+    while(sexp->val_used < minMsgSize) {
+        data.push_back(sexp);
+        sexp = sexp->next;
+    }
 
+    size_t idx = 0;
+    // new simspark version (0.6.8+) has an additional "team" field!
+    string team = theGameInfo.teamName;
+    if(data.size() >= 3) {
+        SexpParser::parseValue(data[idx++], team);
+    }
 
-  if ("self" == direction)
-  {
-    // this message come from myself, just omit it
-//    return true;
-  } else
-  {
-    if (!SexpParser::parseValue(sexp, dir))
-    {
-      std::cerr << "[SimSparkController Hear] can not parse the direction" << std::endl;
+    // ignore opponent messages
+    if(ignoreOpponentMsg && team.compare(theGameInfo.teamName) != 0) { return true; }
+
+    double direction;
+    if(!SexpParser::parseValue(data[idx++], direction)) {
+      std::cerr << "[SimSparkController Hear] can not get direction" << std::endl;
       return false;
     }
-  }*/
 
-  sexp = sexp->next;
-  string msg;
-  SexpParser::parseValue(sexp, msg);
+    /*
+    // NOTE: should be handled by the TeamCommReceiver!
+    if ("self" == direction) {
+        // this message come from myself, just omit it
+        //return true;
+    }
+    */
 
-  // we got the "correct" msg value, if we - at least - got the SPL-message size!
-  if(msg.size() < (sizeof(SPLStandardMessage) - SPL_STANDARD_MESSAGE_DATA_SIZE)) {
-      // ... otherwise we have to read another field/value! (simspark 0.6.8+)
-      sexp = sexp->next;
-      SexpParser::parseValue(sexp, msg);
-  }
+    double time;
+    if(!SexpParser::parseValue(data[idx++], time)) {
+        std::cerr << "[SimSparkController Hear] can not get time" << std::endl;
+        return false;
+    }
 
-  if ( !msg.empty() && msg != ""){
-    theTeamMessageDataIn.data.push_back(msg);
-  }
-//  std::cout << "hear message : " << time << ' ' << direction << ' ' << dir << ' ' << msg << std::endl;
-  return true;
+    string msg;
+    if (SexpParser::parseValue(sexp, msg) && !msg.empty() && msg != ""){
+        theTeamMessageDataIn.data.push_back(msg);
+    } else {
+        std::cerr << "[SimSparkController Hear] can not parse message" << std::endl;
+        return false;
+    }
+
+    //std::cout << "hear message : " << team << "/" << theGameInfo.teamName << " " << time << ' ' << ' ' << direction << ' ' << msg << std::endl;
+
+    return true;
 }
 
 void SimSparkController::beam(const Vector3<double>& p)

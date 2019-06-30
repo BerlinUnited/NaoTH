@@ -49,7 +49,6 @@ option sidekick_to_left
       motion.walk.step_control.speed_direction = 90;
       motion.walk.step_control.time = 300;
 
-      //look at percept
       head.control_mode = look_at_ball_percept;
     }
   }
@@ -87,7 +86,6 @@ option sidekick_to_left
       motion.walk.coordinate = hip;
       motion.walk.style = normal;
 
-      //loook at percept
       head.control_mode = look_at_ball_percept;
 	  }
   }

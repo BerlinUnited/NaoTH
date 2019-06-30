@@ -48,7 +48,7 @@ private:
         {
             // the initial assignments, they don't have to be the active ones
             PARAMETER_REGISTER(assignment, &Parameters::parseAssignment) = "1:goalie;2:defender_left;3:forward_center;4:defender_right;5:midfielder_right;6:midfielder_left";
-            PARAMETER_REGISTER(variant, &Parameters::setVariantFunction) = "distance"; // "distance", "priority"
+            PARAMETER_REGISTER(variant, &Parameters::setVariantFunction) = "priodist"; // "distance", "priority", "priodist"
             PARAMETER_REGISTER(changing, &Parameters::setChangingFunction) = "time"; // "cycle", "time"
 
             PARAMETER_REGISTER(minChangingCycles) = 30;
@@ -99,6 +99,8 @@ private:
         void setVariantFunction(std::string variant) {
             if(variant.compare("distance") == 0) { // distance
                 variantFunc = &RoleDecisionAssignmentDistance::withDistance;
+            } else if(variant.compare("priodist") == 0) { // priodist
+                variantFunc = &RoleDecisionAssignmentDistance::withPriorityDistance;
             } else { // priority
                 variantFunc = &RoleDecisionAssignmentDistance::withPriority;
             }
@@ -165,6 +167,23 @@ private:
      * @param new_roles the role decision for the current cycle
      */
     void withDistance(std::map<unsigned int, Roles::Static>& new_roles);
+
+    /**
+     * @brief Determines the optimal role assignment for the whole team in that the sum
+     *        of distance the team has to move is small and also the roles with the highest
+     *        priority are assigned.
+     *
+     * @param new_roles the role decision for the current cycle
+     */
+    void withPriorityDistance(std::map<unsigned int, Roles::Static>& new_roles);
+
+    /**
+     * @brief Finds the optimal role assignments for the given roles and players.
+     * @param roles     the roles, which should be assigned
+     * @param players   the players, which should be roles assigned
+     * @param new_roles the players with the newly assigned roles
+     */
+    void findOptimalTeamAssignment(const std::vector<Roles::Static> &roles, const std::vector<unsigned int> &players, std::map<unsigned int, Roles::Static>& new_roles);
 
     /**
      * @brief The role decision for this cycle is only applied, if the role decicion was

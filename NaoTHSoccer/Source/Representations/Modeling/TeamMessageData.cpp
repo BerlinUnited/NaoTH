@@ -156,7 +156,8 @@ TeamMessageCustom::TeamMessageCustom() :
   whistleCount(0),
   // init with "invalid" position
   teamBall(std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity()),
-  robotState(PlayerInfo::initial)
+  robotState(PlayerInfo::initial),
+  readyToWalk(false)
 {
 }
 
@@ -169,6 +170,7 @@ void TeamMessageCustom::print(std::ostream &stream) const
     << "\t" << "TimeToBall: " << timeToBall << "\n"
     << "\t" << "wasStriker: " << (wasStriker ? "yes" : "no") << "\n"
     << "\t" << "wantsToBeStriker: " << (wantsToBeStriker ? "yes" : "no") << "\n"
+    << "\t" << "readyToWalk: " << (readyToWalk ? "yes" : "no") << "\n"
     << "\t" << "robotState: " << PlayerInfo::toString(robotState) << "\n"
     << "\t" << "batteryCharge: " << batteryCharge << "\n"
     << "\t" << "temperature: " << temperature << "°C\n"
@@ -223,6 +225,7 @@ naothmessages::BUUserTeamMessage TeamMessageCustom::toProto() const
     userMsg.set_robotstate((naothmessages::RobotState)robotState);
     userMsg.mutable_robotrole()->set_role_static((naothmessages::RobotRoleStatic)robotRole.role);
     userMsg.mutable_robotrole()->set_role_dynamic((naothmessages::RobotRoleDynamic)robotRole.dynamic);
+    userMsg.set_readytowalk(readyToWalk);
 
     return userMsg;
 }
@@ -315,5 +318,7 @@ void TeamMessageCustom::parseFromProto(const naothmessages::BUUserTeamMessage &u
         robotRole.role = (Roles::Static) userData.robotrole().role_static();
         robotRole.dynamic = (Roles::Dynamic) userData.robotrole().role_dynamic();
     }
+
+    readyToWalk = userData.readytowalk();
 }
 
