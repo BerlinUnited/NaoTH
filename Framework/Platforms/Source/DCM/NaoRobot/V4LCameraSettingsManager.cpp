@@ -105,6 +105,7 @@ bool V4LCameraSettingsManager::setSingleCameraParameterRaw(int cameraFd, std::st
     control_s.id = parameterID;
     control_s.value = value;
 
+    std::cout << LOG << "Setting control value " << parameterName << " to " << value << std::endl;
     int error = xioctl(cameraFd, VIDIOC_S_CTRL, &control_s);
     return !hasIOError(cameraName, error, errno, false);
 }

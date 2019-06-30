@@ -75,9 +75,9 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
     // be performed for the real number range, not the byte-representation.
 
     if (autoExposition != settings.autoExposition &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_AUTO, "autoExposition", settings.autoExposition ? 1 : 0))
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_AUTO, "AutoExposure", settings.autoExposition ? 1 : 0))
     {
-        if (settings.autoExposition)
+        if (settings.autoExposition == false)
         {
             // read back exposure values (and all others) set by the now deactivated auto exposure
             query(cameraFd, cameraName, *this);
@@ -93,7 +93,7 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
         return;
     }
 
-    if (saturation != settings.exposure &&
+    if (saturation != settings.saturation &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SATURATION, "Saturation", Math::clamp(settings.saturation, 0, 255)))
     {
         saturation = settings.saturation;
@@ -122,7 +122,8 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
         return;
     }
 
-    if (gain != settings.gain &&
+    if (!autoExposition && 
+        gain != settings.gain &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN, "Gain", Math::toFixPoint<5>(static_cast<float>(settings.gain))))
     {
         gain = settings.gain;
@@ -216,7 +217,7 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
     }
 
     if (v5.gammaCorrection != settings.v5.gammaCorrection &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAMMA, "GammaCorrection", Math::clamp(settings.whiteBalanceTemperature, 100, 280)))
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAMMA, "GammaCorrection", Math::clamp(settings.v5.gammaCorrection, 100, 280)))
     {
         v5.gammaCorrection = settings.v5.gammaCorrection;
         return;
@@ -224,7 +225,7 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
 
     if (v5.autoExpositionAlgorithm != settings.v5.autoExpositionAlgorithm && setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ALGORITHM, "AutoExposureAlgorithm", Math::clamp(settings.v5.autoExpositionAlgorithm, 0, 3)))
     {
-        v5.autoExpositionAlgorithm = settings.autoExposition;
+        v5.autoExpositionAlgorithm = settings.v5.autoExpositionAlgorithm;
         return;
     }
 
