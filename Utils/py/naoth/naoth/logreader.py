@@ -375,7 +375,8 @@ if __name__ == "__main__":
 
         print('Print all frame infos')
         for _frame in log_reader.read():
-            print(_frame['FrameInfo'], end='')
+            if 'FrameInfo' in _frame:
+                print(_frame.number, _frame['FrameInfo'], end='')
         print()
 
         print('Number of edgels of 3 frames after the 10th frame:')
