@@ -66,6 +66,7 @@ void RansacLineDetector::execute()
       std::vector<size_t> new_outlier_idx;
       circleRansac.get_inliers(model, getLineGraphPercept().edgelsOnField,
                                outliers, inlier_idx, new_outlier_idx);
+
       // continue with ransac on remaining outliers
       outliers = new_outlier_idx;
 
@@ -76,8 +77,27 @@ void RansacLineDetector::execute()
           const Edgel& inlier = getLineGraphPercept().edgelsOnField[idx];
           CIRCLE(inlier.point.x, inlier.point.y, 30);
         }
-        PEN("99000066", 50);
+
+        // VALIDATE
+        std::vector<Vector2d> points(inlier_idx.size());
+
+        for(int i=0; i<inlier_idx.size(); ++i) {
+          points[i] = getLineGraphPercept().edgelsOnField[inlier_idx[i]].point;
+        }
+
+        Vector2d center;
+        double radius;
+        Geometry::calculateCircle(points, center, radius);
+
+        if(std::fabs(radius - getFieldInfo().centerCircleRadius) <= params.circle.validation_thresh) {
+          PEN("99000066", 50);
+        } else {
+          PEN("FF69B1FF", 70);
+        }
         CIRCLE(model.circle_mean.x, model.circle_mean.y, model.radius);
+
+        PEN("DEAD07FF", 50);
+        CIRCLE(center.x, center.y, radius);
       );
 
       if(params.circle.refine)

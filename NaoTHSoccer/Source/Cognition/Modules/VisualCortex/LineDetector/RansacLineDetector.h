@@ -68,6 +68,8 @@ private:
       PARAMETER_REGISTER(circle.enable) = true;
       PARAMETER_REGISTER(circle.refine) = true;
 
+      PARAMETER_REGISTER(circle.validation_thresh) = 100;
+
       syncWithConfig();
     }
 
@@ -93,6 +95,8 @@ private:
       
       bool enable;
       bool refine;
+
+      double validation_thresh;
     } circle;
 
   } params;
