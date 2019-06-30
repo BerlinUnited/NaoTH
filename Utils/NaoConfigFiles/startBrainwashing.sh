@@ -11,14 +11,14 @@ if [ -f "/opt/aldebaran/bin/lola" ] | [ -f "/usr/bin/lola" ]; then
 	echo "Nao V6"
 	
 	chmod +x brainwash_v6.sh
-	./brainwash_v6.sh
+	nohup ./brainwash_v6.sh &>/dev/null &
 
 else
 	echo "Nao V5 or older"	
 
 	cd v3v4v5
 	chmod +x init_env.sh
-	.init_env.sh
+	nohup .init_env.sh &>/dev/null &
 
 	# chmod +x brainwash_v3v4v5.sh
 	# ./brainwash_v3v4v5.sh
