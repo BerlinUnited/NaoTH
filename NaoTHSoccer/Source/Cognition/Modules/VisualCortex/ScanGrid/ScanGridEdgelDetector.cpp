@@ -49,8 +49,11 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
   MaxPeakScan maximumPeak(t_edge);
   MinPeakScan minimumPeak(t_edge);
 
+  scan_id = 0;
+
   if(parameters.scan_vertical) {
     scan_vertical(maximumPeak, minimumPeak);
+    scan_id += 1;
   }
 
   if(parameters.scan_horizontal) {
@@ -92,7 +95,6 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
   poly_idx = next_poly_line(poly_idx, polyLine, poly_points);
 
   int x, y, luma, prevLuma, gradient, prevPoint;
-  int scan_id = 0;
 
   // vertical scanlines
   for(const ScanGrid::VScanLine scanline: getScanGrid().vertical)
@@ -279,7 +281,6 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
   );*/
 
   int x, y, end_x, luma, prevLuma, gradient, prevPoint;
-  int scan_id = 0;
 
   // horizontal scanlines
   for(const ScanGrid::HScanLine scanline: getScanGrid().horizontal)
