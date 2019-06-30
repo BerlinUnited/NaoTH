@@ -54,12 +54,7 @@ void CameraSettingsV5Manager::query(int cameraFd, std::string cameraName, naoth:
     {
         for (std::size_t j = 0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++)
         {
-            std::stringstream paramName;
-            paramName << "autoExposureWeights (" << i << "," << j << ")";
-            if (setSingleCameraParameterRaw(cameraFd, cameraName, getAutoExposureGridID(i, j), paramName.str(), settings.autoExposureWeights[i][j]))
-            {
-                autoExposureWeights[i][j] = settings.autoExposureWeights[i][j];
-            }
+            autoExposureWeights[i][j] = static_cast<uint8_t>(getSingleCameraParameterRaw(cameraFd, cameraName, getAutoExposureGridID(i, j)));
         }
     }
 
@@ -73,18 +68,35 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
     // The V4L controller might later adjust these values by the ranges reported by driver, but these
     // might be inaccurate or less restricted. Also, for fixed point real numbers the clipping should
     // be performed for the real number range, not the byte-representation.
-
+    bool requeryParams = false;
     if (autoExposition != settings.autoExposition &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_AUTO, "AutoExposure", settings.autoExposition ? 1 : 0))
     {
         if (settings.autoExposition == false)
         {
-            // read back exposure values (and all others) set by the now deactivated auto exposure
-            query(cameraFd, cameraName, *this);
+            requeryParams = true;
         }
         autoExposition = settings.autoExposition;
+    }
+
+    if (autoWhiteBalancing != settings.autoWhiteBalancing &&
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_AUTO_WHITE_BALANCE, "AutoWhiteBalance",
+                                    settings.autoWhiteBalancing ? 1 : 0))
+    {
+        if (settings.autoWhiteBalancing == false)
+        {
+            requeryParams = true;
+        }
+
+        autoWhiteBalancing = settings.autoWhiteBalancing;
+    }
+
+    if(requeryParams) {
+        // read back white balanche values (and all others) set by the now deactivated auto exposure
+        query(cameraFd, cameraName, *this);
         return;
     }
+
 
     if (autoExposition == false && exposure != settings.exposure &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE, "Exposure", Math::clamp(settings.exposure, 0, 1000)))
@@ -97,20 +109,6 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SATURATION, "Saturation", Math::clamp(settings.saturation, 0, 255)))
     {
         saturation = settings.saturation;
-        return;
-    }
-
-    if (autoWhiteBalancing != settings.autoWhiteBalancing &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_AUTO_WHITE_BALANCE, "AutoWhiteBalance",
-                                    settings.autoWhiteBalancing ? 1 : 0))
-    {
-        if (settings.autoWhiteBalancing == false)
-        {
-            // read back white balanche values (and all others) set by the now deactivated auto exposure
-            query(cameraFd, cameraName, *this);
-        }
-
-        autoWhiteBalancing = settings.autoWhiteBalancing;
         return;
     }
 
@@ -241,6 +239,7 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
                 if (setSingleCameraParameterRaw(cameraFd, cameraName, getAutoExposureGridID(i, j), paramName.str(), settings.autoExposureWeights[i][j]))
                 {
                     autoExposureWeights[i][j] = settings.autoExposureWeights[i][j];
+                    return;
                 }
             }
         }
