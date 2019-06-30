@@ -107,7 +107,7 @@ public:
   }
 
   size_t getWrittentBytesCount() const {
-    return std::max(0u, (size_t)outFile.tellp());
+    return std::max(static_cast<size_t>(0), static_cast<size_t>(outFile.tellp()));
   }
 
   bool is_ready() const {
