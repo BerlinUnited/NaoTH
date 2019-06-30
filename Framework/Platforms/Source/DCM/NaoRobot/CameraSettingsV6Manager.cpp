@@ -18,7 +18,7 @@ void CameraSettingsV6Manager::query(int cameraFd, std::string cameraName, Camera
 {
     settings.autoExposition = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_AUTO) == 0 ? true : false;
 
-    settings.exposure = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ABSOLUTE);
+    settings.exposure = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ABSOLUTE) / 100;
     settings.saturation = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SATURATION);
 
     settings.autoWhiteBalancing = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_AUTO_WHITE_BALANCE) == 0 ? false : true;
@@ -27,7 +27,7 @@ void CameraSettingsV6Manager::query(int cameraFd, std::string cameraName, Camera
     settings.gain = Math::fromFixPoint<5>(static_cast<std::int32_t>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN)));
 
     settings.brightness = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BRIGHTNESS);
-    settings.contrast = static_cast<float>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_CONTRAST));
+    settings.contrast = Math::fromFixPoint<5>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_CONTRAST));
     settings.sharpness = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SHARPNESS);
     settings.hue = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HUE);
 
@@ -60,7 +60,7 @@ void CameraSettingsV6Manager::apply(int cameraFd, std::string cameraName, const 
     }
 
     if (autoExposition == false && exposure != settings.exposure &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ABSOLUTE, "Exposure", settings.exposure))
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ABSOLUTE, "Exposure", settings.exposure * 100))
     {
         exposure = settings.exposure;
         return;
@@ -81,7 +81,7 @@ void CameraSettingsV6Manager::apply(int cameraFd, std::string cameraName, const 
     }
 
     if (contrast != settings.contrast &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_CONTRAST, "Contrast", static_cast<int>(settings.contrast)))
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_CONTRAST, "Contrast", Math::toFixPoint<5>(settings.contrast)))
     {
         contrast = settings.contrast;
         return;
