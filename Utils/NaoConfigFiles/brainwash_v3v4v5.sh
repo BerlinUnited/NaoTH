@@ -7,15 +7,24 @@ deployFile() {
 	local FILE="$1"
 	local OWNER="$2"
 	local RIGHTS="$3"
+	local PREFIX="$4"
 
-	if [ -f "$DEPLOY_DIRECTORY/$FILE" ]; then
-		logger -t naoth "Deploy file '$FILE' for $OWNER with $RIGHTS"
+	if [ -z $PREFIX ]; then
+		SOURCEFILE="$DEPLOY_DIRECTORY/$FILE"
+	else
+		SOURCEFILE="$DEPLOY_DIRECTORY/$PREFIX/$FILE"
+	fi
+
+	echo "$DEPLOY_DIRECTORY/$SOURCEFILE -> $FILE"
+
+	if [ -f "$SOURCEFILE" ]; then
+		logger -t naoth "Deploy file '$SOURCEFILE' for $OWNER with $RIGHTS"
 		# backup existing file
 		if [ -f "$FILE" ]; then
 			mkdir -p $BACKUP_DIRECTORY/$(dirname $FILE)
 			mv -f $FILE $BACKUP_DIRECTORY/$FILE
 		fi
-		cp -f $DEPLOY_DIRECTORY/$FILE $FILE
+		cp -f $SOURCEFILE $FILE
 		# copy user and access rights
 		chown $OWNER:$OWNER $FILE
 		chmod $RIGHTS $FILE
@@ -26,16 +35,28 @@ deployDirectory() {
 	local DIR="$1"
 	local OWNER="$2"
 	local RIGHTS="$3"
+	local PREFIX="$4"
 
-	if [ -d "$DEPLOY_DIRECTORY/$DIR" ]; then
-		logger -t naoth "Deploy directory '$DIR' for $OWNER with $RIGHTS"
+	if [ -z $PREFIX ]; then
+		SOURCEDIR="$DEPLOY_DIRECTORY/$DIR"
+	else
+		SOURCEDIR="$DEPLOY_DIRECTORY/$PREFIX/$DIR"
+
+	fi
+	
+	echo "$SOURCEDIR -> $DIR"
+
+	if [ -d "$SOURCEDIR" ]; then
+		logger -t naoth "Deploy directory '$SOURCEDIR' for $OWNER with $RIGHTS"
 		# backup directory files
 		if [ -d "$DIR" ]; then
 			mkdir -p $BACKUP_DIRECTORY/$DIR
 			mv -f $DIR/* $BACKUP_DIRECTORY/$DIR/
 		fi
+		rm -rf $DIR
+
 		# copy files
-		cp -r $DEPLOY_DIRECTORY/$DIR $DIR
+		cp -r $SOURCEDIR $DIR
 
 		chown -R $OWNER:$OWNER $DIR
 		chmod -R $RIGHTS $DIR
@@ -45,11 +66,17 @@ deployDirectory() {
 # ==================== pre stuff ====================
 
 # set volume to 88%
-sudo -u nao pactl set-sink-mute 0 false
-sudo -u nao pactl set-sink-volume 0 88%
+su nao -c "/usr/bin/pactl set-sink-mute 0 false"
+su nao -c "/usr/bin/pactl set-sink-volume 0 88%"
+# also set the recording volume
+# 1. set in simple mode with alsa mixer to make sure it is in sync for all channels
+su nao -c "/usr/bin/amixer sset 'Capture',0 90%"
+# 2. set with pulseaudio (now both channels are set) to make sure the changes are persistent
+su nao -c "/usr/bin/pactl set-source-mute 1 false"
+su nao -c "/usr/bin/pactl set-source-volume 1 90%"
 
 # play initial sound
-sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav
+su nao -c "/usr/bin/paplay $DEPLOY_DIRECTORY/home/nao/naoqi/Media/usb_start.wav"
 
 # stop naoqi and naoth
 naoth stop
@@ -58,7 +85,7 @@ naoth stop
 # ==================== boot stuff ====================
 
 # make boot faster
-deployFile "/etc/init.d/checkpart-dummy" "root" "755"
+deployFile "/etc/init.d/checkpart-dummy" "root" "755" "v3v4v5"
 
 # disable the hal-prestarter that takes quite a long time on boot
 if [ -f /usr/libexec/hal-prestarter ] ; then
@@ -68,46 +95,46 @@ fi
 # ==================== system stuff ====================
 
 # NaoTH init script
-deployFile "/etc/init.d/naoth" "root" "755"
+deployFile "/etc/init.d/naoth" "root" "755" "v3v4v5"
 
 # Needed by NaoTH init script
-deployFile "/etc/init.d/cognition-common" "root" "755"
+deployFile "/etc/init.d/cognition-common" "root" "755" "v3v4v5"
 
 # brainwashinit
-deployFile "/usr/bin/brainwash" "root" "755"
+deployFile "/usr/bin/brainwash" "root" "755" "v3v4v5"
 
 # NaoTH binary start script
-deployFile "/usr/bin/naoth" "root" "755"
+deployFile "/usr/bin/naoth" "root" "755" "v3v4v5"
 
 # brainwash udev rule
-deployFile "/etc/udev/rules.d/brainwashing.rules" "nao" "644"
+deployFile "/etc/udev/rules.d/brainwashing.rules" "nao" "644" "v3v4v5"
 
 # copy ld.so.conf
-deployFile "/etc/ld.so.conf" "root" "644"
+deployFile "/etc/ld.so.conf" "root" "644" "v3v4v5"
 
 # copy new fstab
-deployFile "/etc/fstab" "root" "644"
+deployFile "/etc/fstab" "root" "644" "v3v4v5"
 
 # add syslogger config
-deployFile "/etc/syslog.conf" "root" "644"
+deployFile "/etc/syslog.conf" "root" "644" "v3v4v5"
 
 #SSH Config
-deployFile "/etc/ssh.conf/sshd_config" "root" "644"
+deployFile "/etc/ssh.conf/sshd_config" "root" "644" "v3v4v5"
 
 #RC Config
-deployFile "/etc/rc.conf" "root" "644"
+deployFile "/etc/rc.conf" "root" "644" "v3v4v5"
 
 # ==================== network stuff ====================
 
 # WLAN Encryption
-deployFile "/etc/wpa_supplicant/wpa_supplicant.conf" "root" "644"
+deployFile "/etc/wpa_supplicant/wpa_supplicant.conf" "root" "644" "v3v4v5"
 
 # Network IP Adresses
-deployFile "/etc/conf.d/net" "root" "644"
+deployFile "/etc/conf.d/net" "root" "644" "v3v4v5"
 
 # hostname
-deployFile "/etc/conf.d/hostname" "root" "644"
-deployFile "/etc/hostname" "root" "644"
+deployFile "/etc/conf.d/hostname" "root" "644" "v3v4v5"
+deployFile "/etc/hostname" "root" "644" "v3v4v5"
 
 # LAN link
 if [ ! -f /etc/init.d/net.eth0 ]
@@ -166,10 +193,10 @@ then
 fi
 
 # naoqi user autoload.ini
-deployFile "/home/nao/naoqi/preferences/autoload.ini" "nao" "644"
+deployFile "/home/nao/naoqi/preferences/autoload.ini" "nao" "644" "v3v4v5"
 
 # naoqi system autoload.ini
-deployFile "/etc/naoqi/autoload.ini" "root" "644"
+deployFile "/etc/naoqi/autoload.ini" "root" "644" "v3v4v5"
 
 # create the local Config directory
 deployDirectory "/home/nao/naoqi/Config" "nao" "744"
