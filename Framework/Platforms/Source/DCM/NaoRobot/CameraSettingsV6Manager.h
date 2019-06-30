@@ -15,6 +15,9 @@ class CameraSettingsV6Manager : public V4LCameraSettingsManager {
 
   virtual void apply(int cameraFd, std::string cameraName, const naoth::CameraSettings& settings);
 
+  private:
+
+    bool initialized;
 };
 
 #endif // _CameraSettingsV6Manager_H_

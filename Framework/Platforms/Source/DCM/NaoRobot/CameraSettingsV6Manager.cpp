@@ -10,6 +10,7 @@ extern "C"
 using namespace naoth;
 
 CameraSettingsV6Manager::CameraSettingsV6Manager()
+: initialized(false)
 {
 }
 
@@ -38,8 +39,16 @@ void CameraSettingsV6Manager::query(int cameraFd, std::string cameraName, Camera
 
 void CameraSettingsV6Manager::apply(int cameraFd, std::string cameraName, const CameraSettings &settings)
 {
+    if(!initialized) {
+        // set some fixed values
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_FOCUS_AUTO, "FocusAuto", 0);
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_FOCUS_ABSOLUTE, "FocusAbsolute", 0);
+
+        initialized = true;
+    }
+
     if (autoExposition != settings.autoExposition &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_AUTO, "autoExposition", settings.autoExposition ? 0 : 1))
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_AUTO, "ExposureAuto", settings.autoExposition ? 0 : 1))
     {
         if (settings.autoExposition == false)
         {
