@@ -13,12 +13,25 @@
 #include "Motion/Engine/InverseKinematicsMotion/Motions/IKPose.h"
 #include "Representations/Motion/Walk2018/CommandBuffer.h"
 #include "Representations/Motion/Walk2018/CoMErrors.h"
+#include "Representations/Infrastructure/FrameInfo.h"
+
+#include "Tools/Debug/DebugPlot.h"
+#include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugRequest.h"
+#include <Tools/Debug/DebugParameterList.h>
 
 BEGIN_DECLARE_MODULE(CoMErrorProvider)
   REQUIRE(KinematicChainSensor) // required to calculate current CoM in support foot
   REQUIRE(CommandBuffer)        // required to compare current CoM with the requested one
+  REQUIRE(FrameInfo)
+
 
   PROVIDE(CoMErrors)            // provide the error, absolute error to the power of 2 and relative (3D)
+  PROVIDE(DebugPlot)
+  PROVIDE(DebugModify)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugParameterList)
+
 END_DECLARE_MODULE(CoMErrorProvider)
 
 class CoMErrorProvider : private CoMErrorProviderBase
@@ -63,6 +76,9 @@ public:
       Vector3d e = requested_com - observed_com;
       getCoMErrors().absolute2.add(e.abs2());
       getCoMErrors().e.add(e);
+
+      PLOT("CoMErrorProvider:absoluteCoMerror", e.abs2());
+
   }
 };
 
