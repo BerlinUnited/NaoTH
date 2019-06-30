@@ -42,12 +42,12 @@ void CameraSettingsV5Manager::query(int cameraFd, std::string cameraName, naoth:
 
     settings.backlightCompensation = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BACKLIGHT_COMPENSATION) == 0 ? false : true;
 
-    settings.v5_targetGain = Math::fromFixPoint<5>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_TARGET_GAIN));
-    settings.v5_minAnalogGain = Math::fromFixPoint<5>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_MIN_VIRT_AGAIN));
-    settings.v5_maxAnalogGain = Math::fromFixPoint<5>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_MAX_VIRT_AGAIN));
-    settings.v5_fadeToBlack = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_FADE_TO_BLACK) == 0 ? false : true;
-    settings.v5_powerlineFrequency = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_POWER_LINE_FREQUENCY) == 2 ? 60 : 50;
-    settings.v5_gammaCorrection = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAMMA);
+    settings.v5.targetGain = Math::fromFixPoint<5>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_TARGET_GAIN));
+    settings.v5.minAnalogGain = Math::fromFixPoint<5>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_MIN_VIRT_AGAIN));
+    settings.v5.maxAnalogGain = Math::fromFixPoint<5>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_MAX_VIRT_AGAIN));
+    settings.v5.fadeToBlack = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_FADE_TO_BLACK) == 0 ? false : true;
+    settings.v5.powerlineFrequency = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_POWER_LINE_FREQUENCY) == 2 ? 60 : 50;
+    settings.v5.gammaCorrection = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAMMA);
 
     // get the autoexposure grid parameters
     for (std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++)
@@ -63,7 +63,7 @@ void CameraSettingsV5Manager::query(int cameraFd, std::string cameraName, naoth:
         }
     }
 
-    settings.v5_autoExpositionAlgorithm = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ALGORITHM);
+    settings.v5.autoExpositionAlgorithm = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ALGORITHM);
 }
 
 void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const naoth::CameraSettings &settings)
@@ -177,51 +177,54 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
         return;
     }
 
-    if (v5_minAnalogGain != settings.v5_minAnalogGain &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_MIN_VIRT_AGAIN, "MinAnalogGain", Math::clamp(Math::toFixPoint<5>(settings.v5_minAnalogGain), 0, 65535)))
+    if (v5.minAnalogGain != settings.v5.minAnalogGain &&
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_MIN_VIRT_AGAIN, "MinAnalogGain", 
+            Math::clamp(Math::toFixPoint<5>(static_cast<float>(settings.v5.minAnalogGain)), 0, 65535)))
     {
-        v5_minAnalogGain = settings.v5_minAnalogGain;
+        v5.minAnalogGain = settings.v5.minAnalogGain;
     }
 
-    if (v5_maxAnalogGain != settings.v5_maxAnalogGain &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_MAX_VIRT_AGAIN, "MaxAnalogGain", Math::clamp(Math::toFixPoint<5>(settings.v5_maxAnalogGain), 0, 65535)))
+    if (v5.maxAnalogGain != settings.v5.maxAnalogGain &&
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_MAX_VIRT_AGAIN, "MaxAnalogGain", 
+            Math::clamp(Math::toFixPoint<5>(static_cast<float>(settings.v5.maxAnalogGain)), 0, 65535)))
     {
-        v5_maxAnalogGain = settings.v5_maxAnalogGain;
+        v5.maxAnalogGain = settings.v5.maxAnalogGain;
         return;
     }
 
-    if (v5_targetGain != settings.v5_targetGain &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_TARGET_GAIN, "TargetGain", Math::clamp(Math::toFixPoint<5>(settings.v5_targetGain), 0, 65535)))
+    if (v5.targetGain != settings.v5.targetGain &&
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_TARGET_GAIN, "TargetGain", 
+            Math::clamp(Math::toFixPoint<5>(static_cast<float>(settings.v5.targetGain)), 0, 65535)))
     {
-        v5_targetGain = settings.v5_targetGain;
+        v5.targetGain = settings.v5.targetGain;
         return;
     }
 
-    if (v5_fadeToBlack != settings.v5_fadeToBlack &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_FADE_TO_BLACK, "FadeToBlack", settings.v5_fadeToBlack ? 1 : 0))
+    if (v5.fadeToBlack != settings.v5.fadeToBlack &&
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_FADE_TO_BLACK, "FadeToBlack", settings.v5.fadeToBlack ? 1 : 0))
     {
-        v5_fadeToBlack = settings.v5_fadeToBlack;
+        v5.fadeToBlack = settings.v5.fadeToBlack;
         return;
     }
 
     // use 50 Hz (val = 1) if 60 Hz (val = 2) is not explicitly requested
-    if (v5_powerlineFrequency != settings.v5_powerlineFrequency &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_POWER_LINE_FREQUENCY, "PowerlineFrequency", settings.v5_powerlineFrequency == 60 ? 2 : 1))
+    if (v5.powerlineFrequency != settings.v5.powerlineFrequency &&
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_POWER_LINE_FREQUENCY, "PowerlineFrequency", settings.v5.powerlineFrequency == 60 ? 2 : 1))
     {
-        v5_powerlineFrequency = settings.v5_powerlineFrequency;
+        v5.powerlineFrequency = settings.v5.powerlineFrequency;
         return;
     }
 
-    if (v5_gammaCorrection != settings.v5_gammaCorrection &&
+    if (v5.gammaCorrection != settings.v5.gammaCorrection &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAMMA, "GammaCorrection", Math::clamp(settings.whiteBalanceTemperature, 100, 280)))
     {
-        v5_gammaCorrection = settings.v5_gammaCorrection;
+        v5.gammaCorrection = settings.v5.gammaCorrection;
         return;
     }
 
-    if (v5_autoExpositionAlgorithm != settings.v5_autoExpositionAlgorithm && setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ALGORITHM, "AutoExposureAlgorithm", Math::clamp(settings.v5_autoExpositionAlgorithm, 0, 3)))
+    if (v5.autoExpositionAlgorithm != settings.v5.autoExpositionAlgorithm && setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ALGORITHM, "AutoExposureAlgorithm", Math::clamp(settings.v5.autoExpositionAlgorithm, 0, 3)))
     {
-        v5_autoExpositionAlgorithm = settings.autoExposition;
+        v5.autoExpositionAlgorithm = settings.autoExposition;
         return;
     }
 

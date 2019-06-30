@@ -67,26 +67,26 @@ CameraSettingsRequest::CameraSettingsRequest(string configName)
       queryCameraSettings(false)
 {
   PARAMETER_REGISTER(autoExposition) = false;
-  PARAMETER_REGISTER(v5_autoExpositionAlgorithm) = 0;
+  PARAMETER_REGISTER(v5.autoExpositionAlgorithm) = 0;
   PARAMETER_REGISTER(autoWhiteBalancing) = false;
   PARAMETER_REGISTER(backlightCompensation) = false;
   PARAMETER_REGISTER(brightness) = 55;
   PARAMETER_REGISTER(cameraSelection) = 0;
   PARAMETER_REGISTER(contrast) = 1.0;
   PARAMETER_REGISTER(exposure) = 1;
-  PARAMETER_REGISTER(v5_fadeToBlack) = false;
+  PARAMETER_REGISTER(v5.fadeToBlack) = false;
   PARAMETER_REGISTER(gain) = 1.0;
-  PARAMETER_REGISTER(v5_gammaCorrection) = 220;
-  PARAMETER_REGISTER(v5_targetGain) = 5.0;
-  PARAMETER_REGISTER(v5_minAnalogGain) = 1.0;
-  PARAMETER_REGISTER(v5_maxAnalogGain) = 8.0;
+  PARAMETER_REGISTER(v5.gammaCorrection) = 220;
+  PARAMETER_REGISTER(v5.targetGain) = 5.0;
+  PARAMETER_REGISTER(v5.minAnalogGain) = 1.0;
+  PARAMETER_REGISTER(v5.maxAnalogGain) = 8.0;
   PARAMETER_REGISTER(horizontalFlip) = 0;
   PARAMETER_REGISTER(hue) = 0;
   PARAMETER_REGISTER(saturation) = 128;
   PARAMETER_REGISTER(sharpness) = 128;
   PARAMETER_REGISTER(verticalFlip) = 0;
   PARAMETER_REGISTER(whiteBalanceTemperature) = 6500;
-  PARAMETER_REGISTER(v5_powerlineFrequency) = 50;
+  PARAMETER_REGISTER(v5.powerlineFrequency) = 50;
 
   setAutoExposureWeights(100);
 
@@ -131,13 +131,13 @@ CameraSettings CameraSettingsRequest::getCameraSettings() const
   result.verticalFlip = verticalFlip;
   result.horizontalFlip = horizontalFlip;
 
-  result.v5_targetGain = static_cast<float>(v5_targetGain);
+  result.v5.targetGain = static_cast<float>(v5.targetGain);
   // make sure min/max gains are compatible with the choosen target gain
-  result.v5_minAnalogGain = std::min(static_cast<float>(v5_minAnalogGain), result.v5_targetGain);
-  result.v5_maxAnalogGain = std::max(static_cast<float>(v5_maxAnalogGain), result.v5_targetGain);
-  result.v5_fadeToBlack = v5_fadeToBlack;
-  result.v5_powerlineFrequency = v5_powerlineFrequency;
-  result.v5_gammaCorrection = v5_gammaCorrection;
+  result.v5.minAnalogGain = std::min(v5.minAnalogGain, result.v5.targetGain);
+  result.v5.maxAnalogGain = std::max(v5.maxAnalogGain, result.v5.targetGain);
+  result.v5.fadeToBlack = v5.fadeToBlack;
+  result.v5.powerlineFrequency = v5.powerlineFrequency;
+  result.v5.gammaCorrection = v5.gammaCorrection;
   
   result.backlightCompensation = backlightCompensation;
 
@@ -174,15 +174,11 @@ CommonCameraSettingsRequest::CommonCameraSettingsRequest(string configName)
   PARAMETER_REGISTER(brightness) = 55;
   PARAMETER_REGISTER(exposure) = 1;
   PARAMETER_REGISTER(gain) = 1;
-  PARAMETER_REGISTER(v5_targetGain) = 5.0;
-  PARAMETER_REGISTER(v5_minAnalogGain) = 1.0;
-  PARAMETER_REGISTER(v5_maxAnalogGain) = 8.0;
 
   PARAMETER_REGISTER(saturation) = 128;
   PARAMETER_REGISTER(sharpness) = 128;
   PARAMETER_REGISTER(whiteBalanceTemperature) = 6500;
   PARAMETER_REGISTER(autoExpositionMethod) = "averageY";
-  PARAMETER_REGISTER(v5_powerlineFrequency) = 50;
 
   PARAMETER_REGISTER(isActive) = false;
 

@@ -16,6 +16,23 @@
 namespace naoth
 {
 
+/** Custom settings for V5 */
+struct V5CameraSettings
+{
+  double targetGain;
+
+  double minAnalogGain;
+  double maxAnalogGain;
+
+  bool fadeToBlack;
+
+  int powerlineFrequency;
+
+  int gammaCorrection;
+
+  int autoExpositionAlgorithm;
+};
+
 class CameraSettings : public Printable
 {
 public:
@@ -43,18 +60,7 @@ public:
 
   bool backlightCompensation;
 
-  // custom for V5
-  float v5_targetGain;
-  float v5_minAnalogGain;
-  float v5_maxAnalogGain;
-
-  bool v5_fadeToBlack;
-
-  int v5_powerlineFrequency;
-
-  int v5_gammaCorrection;
-
-  int v5_autoExpositionAlgorithm;
+  V5CameraSettings v5;
 
   /* don't change order of enumerations
        * because it reflects the order of execution
@@ -62,7 +68,7 @@ public:
   enum CameraSettingID
   {
     CameraSelection,
-    FPS, // TODO: remove this from settings?
+    FPS,              // TODO: remove this from settings?
     ResolutionHeight, // TODO: remove this from settings?
     ResolutionWidth,  // TODO: remove this from settings?
 
@@ -115,27 +121,22 @@ public:
   bool queryCameraSettings;
 
   bool autoExposition;
-  int v5_autoExpositionAlgorithm;
+
+  V5CameraSettings v5;
   bool autoWhiteBalancing;
   bool backlightCompensation;
   int brightness;
   int cameraSelection;
   double contrast;
   int exposure;
-  bool v5_fadeToBlack;
   double gain;
-  int v5_gammaCorrection;
-  double v5_targetGain;
-  double v5_minAnalogGain;
-  double v5_maxAnalogGain;
   bool horizontalFlip;
   int hue;
   int saturation;
   int sharpness;
   bool verticalFlip;
   int whiteBalanceTemperature;
-  int v5_powerlineFrequency;
-
+  
   std::uint8_t autoExposureWeights[CameraSettings::AUTOEXPOSURE_GRID_SIZE][CameraSettings::AUTOEXPOSURE_GRID_SIZE];
 
   void reset();
@@ -163,14 +164,10 @@ public:
   int brightness;
   int exposure;
   double gain;
-  double v5_targetGain;
-  double v5_minAnalogGain;
-  double v5_maxAnalogGain;
 
   int saturation;
   int sharpness;
   int whiteBalanceTemperature;
-  int v5_powerlineFrequency;
 
   /*
     Can be either:
