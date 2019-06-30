@@ -86,10 +86,13 @@ class Relay:
 
 
 class Command:
-    def __init__(self, name, _id):
-        self.name = name
+    def __init__(self, _id, name, *args, **vargs):
         self._id = _id
+        self.name = name
         self.args = {}
+
+        map(self.add_arg, args)
+        map(self.add_arg, vargs.keys(), vargs.values())
 
     def add_arg(self, name, value=None):
         if isinstance(value, str):
@@ -98,6 +101,9 @@ class Command:
             self.args[name] = value
         else:
             raise ValueError('Argument value must be string, bytes or None')
+
+    def write(self, sink):
+        sink.write(self.__bytes__())
 
     def __bytes__(self):
         cmd = CMD()
