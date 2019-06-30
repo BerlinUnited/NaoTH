@@ -86,6 +86,8 @@ public:
       PARAMETER_REGISTER(min_horizontal_gap_px) = 2;
       PARAMETER_REGISTER(min_vertical_gap_px) = 2;
 
+      PARAMETER_REGISTER(uniform_vertical_lengths) = true;
+
       syncWithConfig();
     }
 
@@ -102,6 +104,8 @@ public:
 
     int min_horizontal_gap_px;
     int min_vertical_gap_px;
+
+    bool uniform_vertical_lengths;
   } parameters;
 
 private:
