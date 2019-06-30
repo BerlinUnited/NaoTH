@@ -81,7 +81,7 @@ class LogRecapture(Extractor):
 
         # disable some modules
         for module in ['ScanLineEdgelDetector', 'CameraMatrixFinder']:
-            Command(cmd_id, 'Cognition:representation:get', 'RobotInfo', *{module: 'off'}).write(robot_writer)
+            Command(cmd_id, 'Cognition:modules:set', *{module: 'off'}).write(robot_writer)
             cmd_id += 1
 
         # disable frame skip
@@ -134,6 +134,7 @@ class LogRecapture(Extractor):
         # read all representation acks
         for representation in to_record:
             await response.read(robot_reader)
+            logger.info(f'Response: {response.data.decode().strip()}')
 
         # read recording ack
         await response.read(robot_reader)
