@@ -21,6 +21,7 @@ ScanGridEdgelDetector::ScanGridEdgelDetector()
                          "mark field poly intersections of the scanlines", false);
   DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:scanlines",
                          "draw activated scanlines", false);
+  DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:draw_refinement", "", false);
 
   getDebugParameterList().add(&parameters);
 }
@@ -69,8 +70,8 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
     for(size_t i = 0; i < getScanLineEdgelPercept().edgels.size(); i++) {
       const Edgel& edgel = getScanLineEdgelPercept().edgels[i];
       LINE_PX(ColorClasses::black, edgel.point.x, edgel.point.y,
-              edgel.point.x + (int)(edgel.direction.x*10),
-              edgel.point.y + (int)(edgel.direction.y*10));
+              edgel.point.x + (int)(edgel.direction.x*5),
+              edgel.point.y + (int)(edgel.direction.y*5));
     }
   );
   // mark finished valid edgels
@@ -209,6 +210,9 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
 
         if(std::abs(prevPoint - y) <= 2)
         {
+          DEBUG_REQUEST("Vision:ScanGridEdgelDetector:draw_refinement",
+            CIRCLE_PX(ColorClasses::yellowOrange, x, maximumPeak.point, 2);
+          );
           refine_vertical(maximumPeak, x);
           add_edgel(x, maximumPeak.point);
           begin_found = true;
@@ -229,14 +233,14 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
         );
         if(std::abs(prevPoint - y) <= 2)
         {
-          refine_vertical(maximumPeak, x);
+          refine_vertical(minimumPeak, x);
           add_edgel(x, minimumPeak.point);
           // found a new double edgel
           if(begin_found) {
             add_double_edgel(scan_id);
           }
           begin_found = false;
-        } else if(refine_range_vertical(maximumPeak, x))
+        } else if(refine_range_vertical(minimumPeak, x))
         {
           add_edgel(x, minimumPeak.point);
           // found a new double edgel
@@ -279,6 +283,10 @@ inline bool ScanGridEdgelDetector::refine_range_vertical(MaxPeakScan& maximumPea
   int prevLuma = getImage().getY(x, prev);
 
   for(int y=start; y>=end; y-=2) {
+    DEBUG_REQUEST("Vision:ScanGridEdgelDetector:draw_refinement",
+      POINT_PX(ColorClasses::pink, x, y);
+    );
+
     luma = getImage().getY(x, y);
     gradient = luma - prevLuma;
     if(maximumPeak.add(y+1, prev, gradient)) {
@@ -433,7 +441,7 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
         );
         if(std::abs(prevPoint - x) <= 2)
         {
-          refine_horizontal(maximumPeak, y);
+          refine_horizontal(minimumPeak, y);
           if(!getBodyContour().isOccupied(minimumPeak.point,y)) {
             add_edgel(minimumPeak.point, y);
             // found a new double edgel

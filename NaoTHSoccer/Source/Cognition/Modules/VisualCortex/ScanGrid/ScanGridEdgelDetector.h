@@ -147,8 +147,10 @@ private:
     }
 
     inline void reset() {
+      this->maxValue = threshold;
+      this->point = 0;
+      this->prev_point = 0;
       this->found = false;
-      this->maxValue = this->threshold;
     }
   };
 
@@ -257,7 +259,9 @@ private:
     const Edgel& end = getScanLineEdgelPercept().edgels[i_end];
     const Edgel& begin = getScanLineEdgelPercept().edgels[i_begin];
 
-    if(-(begin.direction*end.direction) < parameters.double_edgel_angle_threshold) {
+    double cos_alpha = begin.direction*end.direction;
+    if(std::fabs(cos_alpha) < parameters.double_edgel_angle_threshold) {
+    //if(-(begin.direction*end.direction) < parameters.double_edgel_angle_threshold) {
       return; // false
     }
 
@@ -268,7 +272,12 @@ private:
 
     pair.point.x = (begin.point.x + end.point.x)*0.5;
     pair.point.y = (begin.point.y + end.point.y)*0.5;
-    pair.direction = (begin.direction - end.direction).normalize();
+    pair.direction = begin.direction;
+    if(cos_alpha > 0) {
+      pair.direction.rotate(std::acos(std::fabs(cos_alpha))/2);
+    } else {
+      pair.direction.rotate(-std::acos(std::fabs(cos_alpha))/2);
+    }
 
     getScanLineEdgelPercept().pairs.push_back(pair);
   }
