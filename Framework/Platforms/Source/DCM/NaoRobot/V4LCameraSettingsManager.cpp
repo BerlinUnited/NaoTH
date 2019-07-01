@@ -40,27 +40,15 @@ int V4LCameraSettingsManager::getSingleCameraParameterRaw(int cameraFd, std::str
   control_g.id = parameterID;
 
   // max 20 trials
-  for (int i = 0; i < 20; i++)
+  int errorOccured = xioctl(cameraFd, VIDIOC_G_CTRL, &control_g);
+  if (hasIOError(cameraName, errorOccured, errno, false))
   {
-    int errorOccured = ioctl(cameraFd, VIDIOC_G_CTRL, &control_g);
-
-    if (errorOccured < 0)
-    {
-      switch (errno)
-      {
-      case EAGAIN:
-        usleep(10);
-        break;
-      case EBUSY:
-        usleep(100000);
-        break;
-      default:
-        hasIOError(cameraName, errorOccured, errno, false);
-      }
-    }
+    return -1;
   }
-
-  return -1;
+  else
+  {
+    return control_g.value;
+  }
 }
 
 bool V4LCameraSettingsManager::setSingleCameraParameterRaw(int cameraFd, std::string cameraName, int parameterID, std::string parameterName, int value)
@@ -109,8 +97,8 @@ bool V4LCameraSettingsManager::setSingleCameraParameterRaw(int cameraFd, std::st
   return !hasIOError(cameraName, error, errno, false);
 }
 
-bool V4LCameraSettingsManager::setRawIfChanged(int cameraFd, std::string cameraName, int parameterID, 
-  std::string parameterName, int value, int &bufferedValue, bool force)
+bool V4LCameraSettingsManager::setRawIfChanged(int cameraFd, std::string cameraName, int parameterID,
+                                               std::string parameterName, int value, int &bufferedValue, bool force)
 {
   if ((force || bufferedValue != value) &&
       setSingleCameraParameterRaw(cameraFd, cameraName, parameterID, parameterName, value))
