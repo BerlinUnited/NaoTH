@@ -1,4 +1,4 @@
-/** This is the "main" file for playing */
+/** Decide penalty role */
 
 option penalty_decide_state_and_role
 {  
@@ -6,9 +6,10 @@ option penalty_decide_state_and_role
   {
     if(!body.ready_to_walk)
       goto idle;
+    // TODO maybe make sure that in set the players look for ball and opponent?
     else if(game.current_mode == playing)
     {
-      if(game.player_number == 1)
+      if(!game.own_kickoff)
         goto play_goalie;
       else
         goto play_kicker;
@@ -17,7 +18,9 @@ option penalty_decide_state_and_role
       goto idle;
   }
 
-  initial state idle{action{}}
+  initial state idle{
+    action{}
+  }
   
   state play_kicker {
     action 
@@ -29,8 +32,7 @@ option penalty_decide_state_and_role
   state play_goalie {
     action 
     {
-      motion.type = stand;
-      head.control_mode = search_for_ball;
+      penalty_goalie();
     }
   }
 }
