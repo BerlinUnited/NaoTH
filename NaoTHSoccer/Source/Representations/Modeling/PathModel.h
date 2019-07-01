@@ -16,6 +16,7 @@ public:
      path_routine(PathRoutine::NONE),
      path2018_routine(PathPlanner2018Routine::NONE),
      distance(0.0),
+     xOffset(0.0),
      yOffset(0.0),
      direction(0.0),
      radius(0.0),
@@ -46,7 +47,8 @@ public:
     FORWARDKICK_LEFT,
     FORWARDKICK_RIGHT,
     SIDEKICK_LEFT,
-    SIDEKICK_RIGHT
+    SIDEKICK_RIGHT,
+    SIDESTEP
   };
 
   PathRoutine path_routine;
@@ -54,6 +56,7 @@ public:
 
   // distance and yOffset parameters (set by XABSL)
   double distance;
+  double xOffset;
   double yOffset;
   
   // Move around ball
@@ -127,12 +130,16 @@ public:
     case PathPlanner2018Routine::FORWARDKICK_RIGHT:
       path_type2018 = "forwardkick_right";
       break;
+    case PathPlanner2018Routine::SIDESTEP:
+      path_type2018 = "sidestep";
+      break;
     }
 
     stream << "path_type = " << path_type << std::endl;
     stream << "path_type2018 = " << path_type2018 << std::endl;
     stream << "distance = " << distance << std::endl;
     stream << "yOffset = " << yOffset << std::endl;
+    stream << "xOffset = " << xOffset << std::endl;
     stream << "direction = " << direction << std::endl;
     stream << "radius = " << radius << std::endl;
   }
