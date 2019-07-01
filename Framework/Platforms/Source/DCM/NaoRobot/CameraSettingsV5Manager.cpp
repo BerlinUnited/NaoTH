@@ -223,7 +223,7 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
 
     if (!current.autoExposition &&
         (force || current.gain != settings.gain) &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN, "Gain", Math::toFixPoint<5>(static_cast<float>(settings.gain))))
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN, "Gain", Math::toFixPoint<5>(static_cast<float>(Math::clamp(settings.gain, 1.0, 7.9)))))
     {
         current.gain = settings.gain;
         return;
