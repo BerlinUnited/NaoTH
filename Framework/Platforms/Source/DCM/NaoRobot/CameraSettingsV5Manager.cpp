@@ -74,6 +74,7 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
     {
         // HACK: change exposure at least once to make sure it is actually applied
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_AUTO, "AutoExposure", 0);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         current.exposure = false;
 
         if (current.exposure == 0)
@@ -113,9 +114,11 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
     if ((force || current.autoExposition != settings.autoExposition) &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_AUTO, "AutoExposure", settings.autoExposition ? 1 : 0))
     {
+        // allways wait a little bit after setting the auto exposure
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
         if (settings.autoExposition == false)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
             // read back values set by the now deactivated auto exposure
             current.exposure = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE);
             current.gain = Math::fromFixPoint<5>(static_cast<std::int32_t>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN)));
