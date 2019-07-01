@@ -10,6 +10,7 @@ public:
 
 protected:
     int error_count;
+    naoth::CameraSettings current;
 
 protected:
 
