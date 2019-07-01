@@ -78,9 +78,9 @@ public:
   public:
     Parameters() : ParameterList("ScanGridEdgelDetector")
     {
-      PARAMETER_REGISTER(brightness_threshold_top) = 6*2;
-      PARAMETER_REGISTER(brightness_threshold_bottom) = 6*4;
-      PARAMETER_REGISTER(double_edgel_angle_threshold) = 0.2;
+      PARAMETER_REGISTER(brightness_threshold_top) = 20;
+      PARAMETER_REGISTER(brightness_threshold_bottom) = 24;
+      PARAMETER_REGISTER(double_edgel_angle_threshold) = 0.9;
 
       PARAMETER_REGISTER(scan_vertical) = true;
       PARAMETER_REGISTER(scan_horizontal) = true;
@@ -234,15 +234,17 @@ private:
     return end_idx;
   }
 
-  void add_edgel(const Vector2i& point) {
+  void add_edgel(const Vector2i& point, Edgel::Type type) {
     Edgel edgel;
+    edgel.type = type;
     edgel.point = point;
     edgel.direction = calculateGradient(point);
     getScanLineEdgelPercept().edgels.push_back(edgel);
   }
 
-  void add_edgel(int x, int y) {
+  void add_edgel(int x, int y, Edgel::Type type) {
     Edgel edgel;
+    edgel.type = type;
     edgel.point.x = x;
     edgel.point.y = y;
     edgel.direction = calculateGradient(edgel.point);
@@ -260,6 +262,28 @@ private:
     const Edgel& begin = getScanLineEdgelPercept().edgels[i_begin];
 
     double cos_alpha = begin.direction*end.direction;
+
+    DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_double_edgels",
+      ColorClasses::Color color = ColorClasses::black;
+      if(begin.type == Edgel::positive) {
+        color = ColorClasses::blue;
+      } else if(begin.type == Edgel::negative) {
+        color = ColorClasses::red;
+      }
+      LINE_PX(color, begin.point.x, begin.point.y,
+                     begin.point.x + (int)(begin.direction.x*5),
+                     begin.point.y + (int)(begin.direction.y*5));
+      color = ColorClasses::black;
+      if(end.type == Edgel::positive) {
+        color = ColorClasses::blue;
+      } else if(end.type == Edgel::negative) {
+        color = ColorClasses::red;
+      }
+      LINE_PX(color, end.point.x, end.point.y,
+                     end.point.x + (int)(end.direction.x*5),
+                     end.point.y + (int)(end.direction.y*5));
+    );
+
     if(std::fabs(cos_alpha) < parameters.double_edgel_angle_threshold) {
     //if(-(begin.direction*end.direction) < parameters.double_edgel_angle_threshold) {
       return; // false

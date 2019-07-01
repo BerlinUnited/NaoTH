@@ -69,11 +69,18 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
   DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_edgels",
     for(size_t i = 0; i < getScanLineEdgelPercept().edgels.size(); i++) {
       const Edgel& edgel = getScanLineEdgelPercept().edgels[i];
-      LINE_PX(ColorClasses::black, edgel.point.x, edgel.point.y,
+      ColorClasses::Color color = ColorClasses::black;
+      if(edgel.type == Edgel::positive) {
+        color = ColorClasses::blue;
+      } else if(edgel.type == Edgel::negative) {
+        color = ColorClasses::red;
+      }
+      LINE_PX(color, edgel.point.x, edgel.point.y,
               edgel.point.x + (int)(edgel.direction.x*5),
               edgel.point.y + (int)(edgel.direction.y*5));
     }
   );
+
   // mark finished valid edgels
   DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_double_edgels",
     for(size_t i = 0; i < getScanLineEdgelPercept().pairs.size(); i++)
@@ -214,12 +221,12 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
             CIRCLE_PX(ColorClasses::yellowOrange, x, maximumPeak.point, 2);
           );
           refine_vertical(maximumPeak, x);
-          add_edgel(x, maximumPeak.point);
+          add_edgel(x, maximumPeak.point, Edgel::positive);
           begin_found = true;
 
         } else if(refine_range_vertical(maximumPeak, x))
         {
-          add_edgel(x, maximumPeak.point);
+          add_edgel(x, maximumPeak.point, Edgel::positive);
           begin_found = true;
         }
         maximumPeak.reset();
@@ -234,20 +241,20 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
         if(std::abs(prevPoint - y) <= 2)
         {
           refine_vertical(minimumPeak, x);
-          add_edgel(x, minimumPeak.point);
+          add_edgel(x, minimumPeak.point, Edgel::negative);
           // found a new double edgel
           if(begin_found) {
             add_double_edgel(scan_id);
+            begin_found = false;
           }
-          begin_found = false;
         } else if(refine_range_vertical(minimumPeak, x))
         {
-          add_edgel(x, minimumPeak.point);
+          add_edgel(x, minimumPeak.point, Edgel::negative);
           // found a new double edgel
           if(begin_found) {
             add_double_edgel(scan_id);
+            begin_found = false;
           }
-          begin_found = false;
         }
         minimumPeak.reset();
       }
@@ -423,11 +430,11 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
         {
           refine_horizontal(maximumPeak, y);
           if(!getBodyContour().isOccupied(maximumPeak.point,y)) {
-            add_edgel(maximumPeak.point, y);
+            add_edgel(maximumPeak.point, y, Edgel::positive);
             begin_found = true;
           }
         } else if(refine_range_horizontal(maximumPeak, y) && !getBodyContour().isOccupied(maximumPeak.point,y)) {
-          add_edgel(maximumPeak.point, y);
+          add_edgel(maximumPeak.point, y, Edgel::positive);
           begin_found = true;
         }
         maximumPeak.reset();
@@ -443,7 +450,7 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
         {
           refine_horizontal(minimumPeak, y);
           if(!getBodyContour().isOccupied(minimumPeak.point,y)) {
-            add_edgel(minimumPeak.point, y);
+            add_edgel(minimumPeak.point, y, Edgel::negative);
             // found a new double edgel
             if(begin_found) {
               add_double_edgel(scan_id);
@@ -451,7 +458,7 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
             begin_found = false;
           }
         } else if(refine_range_horizontal(minimumPeak, y) && !getBodyContour().isOccupied(minimumPeak.point,y)) {
-          add_edgel(minimumPeak.point, y);
+          add_edgel(minimumPeak.point, y, Edgel::negative);
           // found a new double edgel
           if(begin_found) {
             add_double_edgel(scan_id);
