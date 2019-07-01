@@ -54,6 +54,7 @@ void CameraSettingsV6Manager::apply(int cameraFd, std::string cameraName, const 
 
         // enable test pattern
         //setRegister(cameraFd, 0x503D, 128);
+
         // make less greenish
         uint16_t regVal = getRegister(cameraFd, 0x5005);
         std::cout << "REG VAL " << std::bitset<16>(regVal) << std::endl;

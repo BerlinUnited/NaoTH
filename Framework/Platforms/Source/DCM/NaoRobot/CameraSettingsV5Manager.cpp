@@ -1,5 +1,8 @@
 #include "CameraSettingsV5Manager.h"
 
+#include <thread>
+#include <chrono>
+
 extern "C"
 {
 #include <linux/videodev2.h>
@@ -18,13 +21,14 @@ extern "C"
 #define V4L2_MT9M114_AE_MAX_VIRT_DGAIN (V4L2_CID_PRIVATE_BASE + 6)
 
 CameraSettingsV5Manager::CameraSettingsV5Manager()
+    : initialized(false)
 {
 }
 
 void CameraSettingsV5Manager::query(int cameraFd, std::string cameraName, naoth::CameraSettings &settings)
 {
     settings.autoExposition = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_AUTO) == 0 ? false : true;
-    
+
     settings.exposure = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE);
 
     settings.saturation = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SATURATION);
@@ -66,12 +70,32 @@ void CameraSettingsV5Manager::query(int cameraFd, std::string cameraName, naoth:
 
 void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const naoth::CameraSettings &settings, bool force)
 {
+    if (!initialized)
+    {
+        // HACK: change exposure at least once to make sure it is actually applied
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_AUTO, "AutoExposure", 0);
+        current.exposure = false;
+
+        if (current.exposure == 0)
+        {
+            setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE, "Exposure", 1);
+            current.exposure = 1;
+        }
+        else
+        {
+            setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE, "Exposure", 0);
+            current.exposure = 0;
+        }
+        initialized = true;
+
+        return;
+    }
     // Convert each paramter to a raw setting and clamp values according to the driver documentation
     // (https://github.com/bhuman/BKernel#information-about-the-camera-driver).
     // The V4L controller might later adjust these values by the ranges reported by driver, but these
     // might be inaccurate or less restricted. Also, for fixed point real numbers the clipping should
     // be performed for the real number range, not the byte-representation.
-    
+
     if ((force || current.verticalFlip != settings.verticalFlip) &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_VFLIP, "VerticalFlip", settings.verticalFlip ? 1 : 0))
     {
@@ -79,59 +103,58 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
         return;
     }
 
-    if ((force || current.horizontalFlip != settings.horizontalFlip) && 
+    if ((force || current.horizontalFlip != settings.horizontalFlip) &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HFLIP, "HorizontalFlip", settings.horizontalFlip ? 1 : 0))
     {
         current.horizontalFlip = settings.horizontalFlip;
         return;
     }
-    
+
     if ((force || current.autoExposition != settings.autoExposition) &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_AUTO, "AutoExposure", settings.autoExposition ? 1 : 0))
     {
         if (settings.autoExposition == false)
         {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
             // read back values set by the now deactivated auto exposure
             current.exposure = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE);
-            current.gain = Math::fromFixPoint<5>(static_cast<std::int32_t>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN)));            
+            current.gain = Math::fromFixPoint<5>(static_cast<std::int32_t>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN)));
         }
         current.autoExposition = settings.autoExposition;
         return;
     }
 
-
-    if (setRawIfChanged(cameraFd, cameraName, V4L2_CID_EXPOSURE_ALGORITHM, "AutoExposureAlgorithm", 
-        Math::clamp(settings.v5.autoExpositionAlgorithm, 0, 3), current.v5.autoExpositionAlgorithm, force))
+    if (setRawIfChanged(cameraFd, cameraName, V4L2_CID_EXPOSURE_ALGORITHM, "AutoExposureAlgorithm",
+                        Math::clamp(settings.v5.autoExpositionAlgorithm, 0, 3), current.v5.autoExpositionAlgorithm, force))
     {
         return;
     }
 
-
     if (current.brightness != settings.brightness &&
-        setRawIfChanged(cameraFd, cameraName, V4L2_CID_BRIGHTNESS, "Brightness", Math::clamp(settings.brightness, 0, 255), current.brightness, force ))
+        setRawIfChanged(cameraFd, cameraName, V4L2_CID_BRIGHTNESS, "Brightness", Math::clamp(settings.brightness, 0, 255), current.brightness, force))
     {
         return;
     }
 
     if (current.v5.minAnalogGain != settings.v5.minAnalogGain &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_MIN_VIRT_AGAIN, "MinAnalogGain", 
-            Math::clamp(Math::toFixPoint<5>(static_cast<float>(settings.v5.minAnalogGain)), 0, 65535)))
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_MIN_VIRT_AGAIN, "MinAnalogGain",
+                                    Math::clamp(Math::toFixPoint<5>(static_cast<float>(settings.v5.minAnalogGain)), 0, 65535)))
     {
         current.v5.minAnalogGain = settings.v5.minAnalogGain;
         return;
     }
 
     if (current.v5.maxAnalogGain != settings.v5.maxAnalogGain &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_MAX_VIRT_AGAIN, "MaxAnalogGain", 
-            Math::clamp(Math::toFixPoint<5>(static_cast<float>(settings.v5.maxAnalogGain)), 0, 65535)))
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_MAX_VIRT_AGAIN, "MaxAnalogGain",
+                                    Math::clamp(Math::toFixPoint<5>(static_cast<float>(settings.v5.maxAnalogGain)), 0, 65535)))
     {
         current.v5.maxAnalogGain = settings.v5.maxAnalogGain;
         return;
     }
 
     if (current.v5.targetGain != settings.v5.targetGain &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_TARGET_GAIN, "TargetGain", 
-            Math::clamp(Math::toFixPoint<5>(static_cast<float>(settings.v5.targetGain)), 0, 65535)))
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_AE_TARGET_GAIN, "TargetGain",
+                                    Math::clamp(Math::toFixPoint<5>(static_cast<float>(settings.v5.targetGain)), 0, 65535)))
     {
         current.v5.targetGain = settings.v5.targetGain;
         return;
@@ -143,6 +166,7 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
     {
         if (settings.autoWhiteBalancing == false)
         {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
             // read back white balanche values set by the now deactivated auto exposure
             current.v5.whiteBalanceTemperature = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_WHITE_BALANCE_TEMPERATURE);
         }
@@ -151,7 +175,6 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
         return;
     }
 
-
     // use 50 Hz (val = 1) if 60 Hz (val = 2) is not explicitly requested
     if (current.v5.powerlineFrequency != settings.v5.powerlineFrequency &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_POWER_LINE_FREQUENCY, "PowerlineFrequency", settings.v5.powerlineFrequency == 60 ? 2 : 1))
@@ -159,7 +182,6 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
         current.v5.powerlineFrequency = settings.v5.powerlineFrequency;
         return;
     }
-
 
     if (current.contrast != settings.contrast &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_CONTRAST, "Contrast", Math::toFixPoint<5>(Math::clamp(static_cast<float>(settings.contrast), 0.5f, 2.0f))))
@@ -189,17 +211,15 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
         return;
     }
 
-
-    if (current.autoExposition == false && current.exposure != settings.exposure &&
+    if (!current.autoExposition && (force || current.exposure != settings.exposure) &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE, "Exposure", Math::clamp(settings.exposure, 0, 1000)))
     {
         current.exposure = settings.exposure;
         return;
     }
 
-
-    if (!current.autoExposition && 
-        current.gain != settings.gain &&
+    if (!current.autoExposition &&
+        (force || current.gain != settings.gain) &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN, "Gain", Math::toFixPoint<5>(static_cast<float>(settings.gain))))
     {
         current.gain = settings.gain;
@@ -213,7 +233,6 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
         return;
     }
 
-
     if (current.autoWhiteBalancing == false &&
         current.v5.whiteBalanceTemperature != settings.v5.whiteBalanceTemperature &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_WHITE_BALANCE_TEMPERATURE, "WhiteBalance", Math::clamp(settings.v5.whiteBalanceTemperature, 2700, 6500)))
@@ -221,7 +240,6 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
         current.v5.whiteBalanceTemperature = settings.v5.whiteBalanceTemperature;
         return;
     }
-    
 
     // this throws errors sometimes and slows down the robot, check whats wrong before activating it
     // if (
@@ -233,15 +251,12 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
     //      return;
     // }
 
-    
     if (current.v5.fadeToBlack != settings.v5.fadeToBlack &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_MT9M114_FADE_TO_BLACK, "FadeToBlack", settings.v5.fadeToBlack ? 1 : 0))
     {
         current.v5.fadeToBlack = settings.v5.fadeToBlack;
         return;
     }
-
-
 
     // set the autoexposure grid parameters
     for (std::size_t i = 0; i < naoth::CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++)
