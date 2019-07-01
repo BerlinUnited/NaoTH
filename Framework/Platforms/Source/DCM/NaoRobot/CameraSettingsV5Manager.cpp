@@ -64,7 +64,7 @@ void CameraSettingsV5Manager::query(int cameraFd, std::string cameraName, naoth:
     current = settings;
 }
 
-void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const naoth::CameraSettings &settings)
+void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const naoth::CameraSettings &settings, bool force)
 {
     // Convert each paramter to a raw setting and clamp values according to the driver documentation
     // (https://github.com/bhuman/BKernel#information-about-the-camera-driver).
@@ -72,20 +72,21 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
     // might be inaccurate or less restricted. Also, for fixed point real numbers the clipping should
     // be performed for the real number range, not the byte-representation.
     
-    if (current.verticalFlip != settings.verticalFlip &&
+    if ((force || current.verticalFlip != settings.verticalFlip) &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_VFLIP, "VerticalFlip", settings.verticalFlip ? 1 : 0))
     {
         current.verticalFlip = settings.verticalFlip;
         return;
     }
 
-    if (current.horizontalFlip != settings.horizontalFlip && setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HFLIP, "HorizontalFlip", settings.horizontalFlip ? 1 : 0))
+    if ((force || current.horizontalFlip != settings.horizontalFlip) && 
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HFLIP, "HorizontalFlip", settings.horizontalFlip ? 1 : 0))
     {
         current.horizontalFlip = settings.horizontalFlip;
         return;
     }
     
-    if (current.autoExposition != settings.autoExposition &&
+    if ((force || current.autoExposition != settings.autoExposition) &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_AUTO, "AutoExposure", settings.autoExposition ? 1 : 0))
     {
         if (settings.autoExposition == false)
@@ -99,17 +100,16 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
     }
 
 
-    if (current.v5.autoExpositionAlgorithm != settings.v5.autoExpositionAlgorithm && setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ALGORITHM, "AutoExposureAlgorithm", Math::clamp(settings.v5.autoExpositionAlgorithm, 0, 3)))
+    if (setRawIfChanged(cameraFd, cameraName, V4L2_CID_EXPOSURE_ALGORITHM, "AutoExposureAlgorithm", 
+        Math::clamp(settings.v5.autoExpositionAlgorithm, 0, 3), current.v5.autoExpositionAlgorithm, force))
     {
-        current.v5.autoExpositionAlgorithm = settings.v5.autoExpositionAlgorithm;
         return;
     }
 
 
     if (current.brightness != settings.brightness &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BRIGHTNESS, "Brightness", Math::clamp(settings.brightness, 0, 255)))
+        setRawIfChanged(cameraFd, cameraName, V4L2_CID_BRIGHTNESS, "Brightness", Math::clamp(settings.brightness, 0, 255), current.brightness, force ))
     {
-        current.brightness = settings.brightness;
         return;
     }
 

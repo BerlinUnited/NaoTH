@@ -11,7 +11,7 @@ public:
 
   virtual void query(int cameraFd, std::string cameraName, naoth::CameraSettings &settings);
 
-  virtual void apply(int cameraFd, std::string cameraName, const naoth::CameraSettings &settings);
+  virtual void apply(int cameraFd, std::string cameraName, const naoth::CameraSettings &settings, bool force=false);
 
 private:
   int getAutoExposureGridID(size_t i, size_t j);

@@ -13,7 +13,7 @@ class CameraSettingsV6Manager : public V4LCameraSettingsManager {
 
   virtual void query(int cameraFd, std::string cameraName, naoth::CameraSettings& settings);
 
-  virtual void apply(int cameraFd, std::string cameraName, const naoth::CameraSettings& settings);
+  virtual void apply(int cameraFd, std::string cameraName, const naoth::CameraSettings& settings, bool force=false);
 
   private:
 

@@ -40,7 +40,6 @@
 #define LOG "[CameraHandler:" << __LINE__ << ", Camera: " << cameraName << "] "
 #define hasIOError(...) hasIOErrorPrint(__LINE__, __VA_ARGS__)
 
-
 using namespace naoth;
 using namespace std;
 
@@ -95,7 +94,6 @@ void V4lCameraHandler::init(std::string camDevice, CameraInfo::CameraID camID, b
 
   startCapturing();
 }
-
 
 void V4lCameraHandler::setFPS(int fpsRate)
 {
@@ -428,7 +426,7 @@ void V4lCameraHandler::get(Image &theImage)
             (unsigned int)((((unsigned long long)currentBuf.timestamp.tv_sec) * NaoTime::long_thousand +
                             ((unsigned long long)currentBuf.timestamp.tv_usec) / NaoTime::long_thousand) -
                            NaoTime::startingTimeInMilliSeconds);
-        
+
         framesSinceStart++;
       }
     }
@@ -542,30 +540,38 @@ bool V4lCameraHandler::setSingleCameraParameter(int id, int value, std::string n
   return !hasIOError(error, errno, false);
 }
 
-void V4lCameraHandler::setAllCameraParams(const CameraSettings &data)
+void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
 {
   if (framesSinceStart < 5)
   {
     // do nothing if no image was retrieved yet
     std::cerr << LOG << "CAN NOT SET PARAMETER YET" << std::endl;
     return;
-  } else if(framesSinceStart == 5) {
-    internalUpdateCameraSettings();
   }
-
-  if (settingsManager)
+  else if (framesSinceStart == 5)
   {
-    settingsManager->apply(fd, cameraName, data);
+    internalUpdateCameraSettings();
+    if (settingsManager)
+    {
+      settingsManager->apply(fd, cameraName, data, true);
+    }
+  }
+  else
+  {
+    if (settingsManager)
+    {
+      settingsManager->apply(fd, cameraName, data);
+    }
   }
 
-  initialParamsSet = true;
 
 } // end setAllCameraParams
 
 void V4lCameraHandler::internalUpdateCameraSettings()
 {
 
-  if(settingsManager) {
+  if (settingsManager)
+  {
     settingsManager->query(fd, cameraName, currentSettings);
   }
 }

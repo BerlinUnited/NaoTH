@@ -44,7 +44,7 @@ void CameraSettingsV6Manager::query(int cameraFd, std::string cameraName, Camera
     current = settings;
 }
 
-void CameraSettingsV6Manager::apply(int cameraFd, std::string cameraName, const CameraSettings &settings)
+void CameraSettingsV6Manager::apply(int cameraFd, std::string cameraName, const CameraSettings &settings, bool force)
 {
     if (!initialized)
     {
@@ -70,7 +70,7 @@ void CameraSettingsV6Manager::apply(int cameraFd, std::string cameraName, const 
         initialized = true;
     }
 
-    if (current.autoExposition != settings.autoExposition &&
+    if ((force || current.autoExposition != settings.autoExposition) &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_AUTO, "ExposureAuto", settings.autoExposition ? 0 : 1))
     {
         if (settings.autoExposition == false)
@@ -84,27 +84,23 @@ void CameraSettingsV6Manager::apply(int cameraFd, std::string cameraName, const 
         return;
     }
 
-    if (current.autoExposition == false && current.exposure != settings.exposure &&
+    if (current.autoExposition == false && (force || current.exposure != settings.exposure) &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ABSOLUTE, "Exposure", settings.exposure * 100))
     {
         current.exposure = settings.exposure;
         return;
     }
-    if (current.saturation != settings.saturation &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SATURATION, "Saturation", settings.saturation))
+    if (setRawIfChanged(cameraFd, cameraName, V4L2_CID_SATURATION, "Saturation", settings.saturation, current.saturation, force))
     {
-        current.saturation = settings.saturation;
         return;
     }
 
-    if (current.brightness != settings.brightness &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BRIGHTNESS, "Brightness", settings.brightness))
+    if (setRawIfChanged(cameraFd, cameraName, V4L2_CID_BRIGHTNESS, "Brightness", settings.brightness, current.brightness, force))
     {
-        current.brightness = settings.brightness;
         return;
     }
 
-    if (current.contrast != settings.contrast &&
+    if ((force || current.contrast != settings.contrast) &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_CONTRAST, "Contrast", Math::toFixPoint<5>(settings.contrast)))
     {
         current.contrast = settings.contrast;
@@ -112,21 +108,17 @@ void CameraSettingsV6Manager::apply(int cameraFd, std::string cameraName, const 
     }
 
     // TODO, norm sharpness to something that is valid both on V5 and V6 *or* split up the params
-    if (current.sharpness != settings.sharpness &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SHARPNESS, "Sharpness", settings.sharpness))
+    if (setRawIfChanged(cameraFd, cameraName, V4L2_CID_SHARPNESS, "Sharpness", settings.sharpness, current.sharpness, force))
     {
-        current.sharpness = settings.sharpness;
         return;
     }
 
-    if (current.hue != settings.hue &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HUE, "Hue", settings.hue))
+    if (setRawIfChanged(cameraFd, cameraName, V4L2_CID_HUE, "Hue", settings.hue, current.hue, force))
     {
-        current.hue = settings.hue;
         return;
     }
 
-    if (current.autoWhiteBalancing != settings.autoWhiteBalancing &&
+    if ((force || current.autoWhiteBalancing != settings.autoWhiteBalancing) &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_AUTO_WHITE_BALANCE, "AutoWhiteBalance",
                                     settings.autoWhiteBalancing ? 1 : 0))
     {
@@ -152,7 +144,7 @@ void CameraSettingsV6Manager::apply(int cameraFd, std::string cameraName, const 
     //     return;
     // }
 
-    if (current.gain != settings.gain &&
+    if ((force || current.gain != settings.gain) &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN, "Gain", Math::toFixPoint<5>(static_cast<float>(settings.gain))))
     {
         current.gain = settings.gain;
@@ -165,14 +157,14 @@ void CameraSettingsV6Manager::apply(int cameraFd, std::string cameraName, const 
     //     backlightCompensation = settings.backlightCompensation;
     // }
 
-    if (current.horizontalFlip != settings.horizontalFlip &&
+    if ((force || current.horizontalFlip != settings.horizontalFlip) &&
         setSingleCameraParameterUVC(cameraFd, cameraName, 12, "HorizontalFlip", 2, settings.horizontalFlip))
     {
         current.horizontalFlip = settings.horizontalFlip;
         return;
     }
 
-    if (current.verticalFlip != settings.verticalFlip &&
+    if ((force || current.verticalFlip != settings.verticalFlip) &&
         setSingleCameraParameterUVC(cameraFd, cameraName, 13, "VerticalFlip", 2, settings.verticalFlip))
     {
         current.verticalFlip = settings.verticalFlip;

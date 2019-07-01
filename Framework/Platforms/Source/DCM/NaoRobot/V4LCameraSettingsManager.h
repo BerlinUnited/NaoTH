@@ -17,6 +17,8 @@ protected:
     int getSingleCameraParameterRaw(int cameraFd, std::string cameraName, int parameterID);
     bool setSingleCameraParameterRaw(int cameraFd, std::string cameraName, int parameterID, std::string parameterName, int value);
 
+    bool setRawIfChanged(int cameraFd, std::string cameraName, int parameterID, std::string parameterName, int value, int& bufferedValue, bool force=false);
+
     int32_t getSingleCameraParameterUVC(int cameraFd, std::string cameraName, int parameterSelector, 
         std::string parameterName, uint16_t parameterDataSize);
     bool setSingleCameraParameterUVC(int cameraFd, std::string cameraName, 
