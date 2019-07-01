@@ -273,8 +273,11 @@ private:
     getScanLineEdgelPercept().pairs.push_back(pair);
   }
 
-  inline bool refine_vertical(MaxPeakScan& maximumPeak, int x);
-  inline bool refine_horizontal(MaxPeakScan& maximumPeak, int y);
+  inline bool refine_range_vertical(MaxPeakScan& maximumPeak, int x);
+  inline void refine_vertical(MaxPeakScan& maximumPeak, int x);
+
+  inline bool refine_range_horizontal(MaxPeakScan& maximumPeak, int y);
+  inline void refine_horizontal(MaxPeakScan& maximumPeak, int y);
 
   /** Estimates the gradient of the gray-gradient at the point by a Sobel Operator. */
   Vector2d calculateGradient(const Vector2i& point) const;
