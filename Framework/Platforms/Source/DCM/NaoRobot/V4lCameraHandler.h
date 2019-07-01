@@ -94,9 +94,6 @@ private:
   
   int readFrame();
   
-  //settings
-  void initIDMapping();
-  
   int getSingleCameraParameter(int id);
   bool setSingleCameraParameter(int id, int value, std::string name);
   void setFPS(int fpsRate);
@@ -134,11 +131,9 @@ private: // data members
 
 
   // settings
-  int csConst[CameraSettings::numOfCameraSetting];
   unsigned long long lastCameraSettingTimestamp;
 
   /** order in which the camera settings need to be applied */
-  std::list<CameraSettings::CameraSettingID> settingsOrder;
   CameraSettings currentSettings;
   std::shared_ptr<CameraSettingsManager> settingsManager;
   

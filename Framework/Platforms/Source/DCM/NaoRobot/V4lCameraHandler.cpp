@@ -59,14 +59,6 @@ V4lCameraHandler::V4lCameraHandler()
 
   // DEBUG: test
   //hasIOError(-1, EPIPE);
-
-  for (int i = 0; i < CameraSettings::numOfCameraSetting; i++)
-  {
-    currentSettings.data[i] = -1;
-  }
-
-  // set our IDs
-  initIDMapping();
 }
 
 V4lCameraHandler::~V4lCameraHandler()
@@ -104,16 +96,6 @@ void V4lCameraHandler::init(std::string camDevice, CameraInfo::CameraID camID, b
   startCapturing();
 }
 
-void V4lCameraHandler::initIDMapping()
-{
-  // initialize with an invalid value in order not to be used when updating
-  // the params in V4L
-  for (int i = 0; i < CameraSettings::numOfCameraSetting; i++)
-  {
-    csConst[i] = -1;
-  }
-
-}
 
 void V4lCameraHandler::setFPS(int fpsRate)
 {
@@ -124,9 +106,6 @@ void V4lCameraHandler::setFPS(int fpsRate)
   fps.parm.capture.timeperframe.numerator = 1;
   fps.parm.capture.timeperframe.denominator = fpsRate;
   VERIFY(ioctl(fd, VIDIOC_S_PARM, &fps) != -1);
-
-  // todo: do we need this setting?
-  currentSettings.data[CameraSettings::FPS] = fpsRate;
 }
 
 void V4lCameraHandler::openDevice(bool blockingMode)
@@ -462,10 +441,7 @@ void V4lCameraHandler::getCameraSettings(CameraSettings &data, bool update)
   {
     std::cout << LOG << "V4L camera settings are updated" << std::endl;
     internalUpdateCameraSettings();
-  }
-  for (unsigned int i = 0; i < CameraSettings::numOfCameraSetting; i++)
-  {
-    data.data[i] = currentSettings.data[i];
+    data = currentSettings;
   }
 }
 
@@ -575,65 +551,13 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings &data)
     return;
   } else if(framesSinceStart == 5) {
     internalUpdateCameraSettings();
-    // print the retrieved settings
-    for (int i = 0; i < CameraSettings::numOfCameraSetting; i++)
-    {
-      if (csConst[i] > -1)
-      {
-        cout << LOG << CameraSettings::getCameraSettingsName((CameraSettings::CameraSettingID)i)
-            << " = " << currentSettings.data[i] << std::endl;
-      }
-    }
   }
-
-  bool forceUpdate = !initialParamsSet;
 
   if (settingsManager)
   {
     settingsManager->apply(fd, cameraName, data);
   }
 
-  std::list<CameraSettings::CameraSettingID>::const_iterator it = settingsOrder.begin();
-  for (; it != settingsOrder.end(); it++)
-  {
-    // only set forced or if csConst was set and the value was changed
-    if (forceUpdate || (csConst[*it] != -1 && data.data[*it] != currentSettings.data[*it]))
-    {
-      /*
-      // NOTE: experimental
-      int oldValue = getSingleCameraParameter(csConst[*it]);
-      std::cout << LOG << "trying to change " << CameraSettings::getCameraSettingsName(*it) 
-                << " from " << oldValue << " to " << data.data[*it] << std::endl;
-      */
-
-      // apply the single parameter setting
-      if (setSingleCameraParameter(csConst[*it], data.data[*it], CameraSettings::getCameraSettingsName(*it)))
-      {
-        lastCameraSettingTimestamp = NaoTime::getSystemTimeInMicroSeconds();
-
-        std::cout << LOG << "set " << CameraSettings::getCameraSettingsName(*it) << " to " << data.data[*it] << std::endl;
-
-        currentSettings.data[*it] = data.data[*it];
-
-        /*
-        // NOTE: experimental - check with the actual value
-        int newValue = getSingleCameraParameter(csConst[*it]);
-        if(newValue != data.data[*it]) {
-          std::cout << LOG << "could not change from " << newValue << " to " << data.data[*it] << std::endl;
-        } else {
-          currentSettings.data[*it] = newValue;
-        }
-        */
-      }
-      else
-      {
-        std::cout << LOG << "setting " << CameraSettings::getCameraSettingsName(*it) << " failed" << std::endl;
-      }
-      //      break;
-    }
-  } // end for
-
-  
   initialParamsSet = true;
 
 } // end setAllCameraParams
@@ -643,14 +567,6 @@ void V4lCameraHandler::internalUpdateCameraSettings()
 
   if(settingsManager) {
     settingsManager->query(fd, cameraName, currentSettings);
-  }
-  
-  for (int i = 0; i < CameraSettings::numOfCameraSetting; i++)
-  {
-    if (csConst[i] > -1)
-    {
-      currentSettings.data[i] = getSingleCameraParameter(csConst[i]);
-    }
   }
 }
 

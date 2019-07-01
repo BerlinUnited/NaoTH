@@ -31,6 +31,22 @@ struct V5CameraSettings
   int gammaCorrection;
 
   int autoExpositionAlgorithm;
+
+  int whiteBalanceTemperature;
+};
+
+struct V6CameraSettings
+{
+
+};
+
+struct V5CommonSettings
+{
+  int whiteBalanceTemperature;
+};
+
+struct V6CommonSettings
+{
 };
 
 class CameraSettings : public Printable
@@ -53,41 +69,24 @@ public:
 
   bool autoWhiteBalancing;
 
-  int whiteBalanceTemperature;
-
   bool horizontalFlip;
   bool verticalFlip;
 
   bool backlightCompensation;
 
   V5CameraSettings v5;
-
-  /* don't change order of enumerations
-       * because it reflects the order of execution
-       */
-  enum CameraSettingID
-  {
-    CameraSelection,
-    FPS,              // TODO: remove this from settings?
-    ResolutionHeight, // TODO: remove this from settings?
-    ResolutionWidth,  // TODO: remove this from settings?
-
-    numOfCameraSetting
-  };
-
-  int data[numOfCameraSetting];
+  V6CameraSettings v6;
 
   static const std::size_t AUTOEXPOSURE_GRID_SIZE = 5;
   std::uint8_t autoExposureWeights[AUTOEXPOSURE_GRID_SIZE][AUTOEXPOSURE_GRID_SIZE];
 
   CameraSettings();
   virtual ~CameraSettings();
-  static std::string getCameraSettingsName(CameraSettingID id);
 
   virtual void print(std::ostream &stream) const;
 };
 
-class CameraSettingsManager : public CameraSettings
+class CameraSettingsManager
 {
 public:
   /** Queries all values from the actual camera */
@@ -123,6 +122,7 @@ public:
   bool autoExposition;
 
   V5CameraSettings v5;
+  V6CameraSettings v6;
   bool autoWhiteBalancing;
   bool backlightCompensation;
   int brightness;
@@ -135,8 +135,7 @@ public:
   int saturation;
   int sharpness;
   bool verticalFlip;
-  int whiteBalanceTemperature;
-  
+
   std::uint8_t autoExposureWeights[CameraSettings::AUTOEXPOSURE_GRID_SIZE][CameraSettings::AUTOEXPOSURE_GRID_SIZE];
 
   void reset();
@@ -167,7 +166,9 @@ public:
 
   int saturation;
   int sharpness;
-  int whiteBalanceTemperature;
+
+  V5CommonSettings v5;
+  V6CommonSettings v6;
 
   /*
     Can be either:

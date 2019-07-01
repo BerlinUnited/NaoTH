@@ -6,39 +6,12 @@ using namespace std;
 
 CameraSettings::CameraSettings()
 {
-  data[CameraSelection] = CameraInfo::Bottom;
-
-  for (int i = 0; i < numOfCameraSetting; i++)
-  {
-    data[i] = 0;
-  }
 }
 
 CameraSettings::~CameraSettings()
 {
 }
 
-string CameraSettings::getCameraSettingsName(CameraSettingID id)
-{
-  switch (id)
-  {
-  case FPS:
-    return "FPS";
-    break;
-  case ResolutionWidth:
-    return "ResolutionWidth";
-    break;
-  case ResolutionHeight:
-    return "ResolutionHeight";
-    break;
-  case CameraSelection:
-    return "CameraSelection";
-    break;
-  default:
-    return "Unknown CameraSetting";
-    break;
-  } //end switch
-} //end getCameraSettingsName
 
 void CameraSettings::print(ostream &stream) const
 {
@@ -46,12 +19,8 @@ void CameraSettings::print(ostream &stream) const
   stream <<  "Exposure = " << exposure << ";" << endl;
   stream <<  "Gain = " << gain << ";" << endl;
   stream <<  "Saturation = " << saturation << ";" << endl;
-  stream <<  "WhiteBalanceTemperature = " << whiteBalanceTemperature << ";" << endl;
+  stream <<  "WhiteBalanceTemperature = " << v5.whiteBalanceTemperature << ";" << endl;
 
-  for (int i = 0; i < numOfCameraSetting; i++)
-  {
-    stream << getCameraSettingsName((CameraSettingID)i) << " = " << data[i] << ";" << endl;
-  }
 } //end print
 
 CurrentCameraSettings::CurrentCameraSettings()
@@ -85,7 +54,7 @@ CameraSettingsRequest::CameraSettingsRequest(string configName)
   PARAMETER_REGISTER(saturation) = 128;
   PARAMETER_REGISTER(sharpness) = 128;
   PARAMETER_REGISTER(verticalFlip) = 0;
-  PARAMETER_REGISTER(whiteBalanceTemperature) = 6500;
+  PARAMETER_REGISTER(v5.whiteBalanceTemperature) = 6500;
   PARAMETER_REGISTER(v5.powerlineFrequency) = 50;
 
   setAutoExposureWeights(100);
@@ -113,11 +82,6 @@ CameraSettings CameraSettingsRequest::getCameraSettings() const
 {
   CameraSettings result;
 
-  // set some default/constant values
-  result.data[CameraSettings::FPS] = 30;
-  result.data[CameraSettings::ResolutionHeight] = IMAGE_HEIGHT;
-  result.data[CameraSettings::ResolutionWidth] = IMAGE_WIDTH;
-
   result.autoExposition = autoExposition;
   result.exposure = exposure;
   result.gain = gain;
@@ -127,7 +91,7 @@ CameraSettings CameraSettingsRequest::getCameraSettings() const
   result.sharpness = sharpness;
   result.hue = hue;
   result.autoWhiteBalancing = autoWhiteBalancing;
-  result.whiteBalanceTemperature = whiteBalanceTemperature;
+  result.v5.whiteBalanceTemperature = v5.whiteBalanceTemperature;
   result.verticalFlip = verticalFlip;
   result.horizontalFlip = horizontalFlip;
 
@@ -176,8 +140,9 @@ CommonCameraSettingsRequest::CommonCameraSettingsRequest(string configName)
   PARAMETER_REGISTER(gain) = 1;
 
   PARAMETER_REGISTER(saturation) = 128;
-  PARAMETER_REGISTER(sharpness) = 128;
-  PARAMETER_REGISTER(whiteBalanceTemperature) = 6500;
+  PARAMETER_REGISTER(sharpness) = 2;
+  PARAMETER_REGISTER(v5.whiteBalanceTemperature) = 6500;
+  
   PARAMETER_REGISTER(autoExpositionMethod) = "averageY";
 
   PARAMETER_REGISTER(isActive) = false;

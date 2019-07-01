@@ -51,7 +51,7 @@ void CameraDebug::execute()
     setCommonCameraSetting(common.gain, bottom.gain, top.gain, changed);
     setCommonCameraSetting(common.saturation, bottom.saturation, top.saturation, changed);
     setCommonCameraSetting(common.sharpness, bottom.sharpness, top.sharpness, changed);
-    setCommonCameraSetting(common.whiteBalanceTemperature, bottom.whiteBalanceTemperature, top.whiteBalanceTemperature, changed);
+    setCommonCameraSetting(common.v5.whiteBalanceTemperature, bottom.v5.whiteBalanceTemperature, top.v5.whiteBalanceTemperature, changed);
     
             
     if(changed)
