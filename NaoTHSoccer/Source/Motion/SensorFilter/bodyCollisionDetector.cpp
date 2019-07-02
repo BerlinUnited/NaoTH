@@ -54,11 +54,22 @@ void bodyCollisionDetector::execute()
         PLOT("bodyCollisionDetector:correctionX", correctionX);
         PLOT("bodyCollisionDetector:correctionY", correctionY);
 
+        DEBUG_REQUEST("bodyCollisionDetector:drawImpactVector",
+            draw_impact_vector(Vector2d(correctionX, correctionY));
+        );
+
         //Collision Detection Math goes here
 
 
         lastGyroError = error;
         return;
     }
+}
 
+void const bodyCollisionDetector::draw_impact_vector(Vector2d vec) const
+{
+    FIELD_DRAWING_CONTEXT;
+    PEN("000000", 1);
+    ARROW(0, 0, vec.x, vec.y);
+    return;
 }

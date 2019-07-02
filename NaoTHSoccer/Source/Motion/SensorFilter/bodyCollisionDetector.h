@@ -63,6 +63,7 @@ public:
     void execute();
 
 private:
+    void const draw_impact_vector(Vector2d) const;
     const TorsoRotationStabilizerParameters& torsoParams;
 };
 
