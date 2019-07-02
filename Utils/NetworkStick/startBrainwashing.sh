@@ -40,22 +40,62 @@ copy(){
 
 # -------- network dependent --------
 
-# determine the head number, e.g., hostname=Nao82 => N=82
-N=$(cat /etc/hostname | grep -Eo "[0-9]{2}")
-rm -f ./etc/conf.d/net
-echo "config_wlan0=\"10.0.4.$N netmask 255.255.255.0 brd 10.0.4.255\"" > ./etc/conf.d/net
-echo "config_eth0=\"192.168.13.$N netmask 255.255.255.0 brd 192.168.13.255\"" >> ./etc/conf.d/net
-echo "wpa_supplicant_wlan0=\"-Dnl80211\"" >> ./etc/conf.d/net
+if [ ! -f "/opt/aldebaran/bin/lola" ] && [ ! -f "/usr/bin/lola" ]; then
 
-# WLAN Encryption
-copy ./etc/wpa_supplicant/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf root 644
+  # determine the head number, e.g., hostname=Nao82 => N=82
+  N=$(cat /etc/hostname | grep -Eo "[0-9]{2}")
+  rm -f ./etc/conf.d/net
+  echo "config_wlan0=\"10.0.4.$N netmask 255.255.255.0 brd 10.0.4.255\"" > ./etc/conf.d/net
+  echo "config_eth0=\"192.168.13.$N netmask 255.255.255.0 brd 192.168.13.255\"" >> ./etc/conf.d/net
+  echo "wpa_supplicant_wlan0=\"-Dnl80211\"" >> ./etc/conf.d/net
 
-# Network IP Adresses
-copy ./etc/conf.d/net /etc/conf.d/net root 644
+  # WLAN Encryption
+  copy ./etc/wpa_supplicant/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf root 644
 
-# restart the network
-/etc/init.d/net.eth0 restart
-/etc/init.d/net.wlan0 restart
+  # Network IP Adresses
+  copy ./etc/conf.d/net /etc/conf.d/net root 644
+
+  # restart the network
+  /etc/init.d/net.eth0 restart
+  /etc/init.d/net.wlan0 restart
+
+else
+
+  WIFI_STATE=$( ifconfig | grep -o wlan0)
+  if [ -z $WIFI_STATE ]; then
+    connmanctl enable wifi
+    sleep 0.1
+  fi
+  connmanctl scan wifi
+  CONNMAN_SERVICES=$(connmanctl services)
+
+  ETH0_MAC=$(cat /sys/class/net/eth0/address | sed -e 's/://g')
+  WLAN0_MAC=$(cat /sys/class/net/wlan0/address | sed -e 's/://g')
+
+  echo "Setting up wifi configuration for wlan0 (${WLAN0_MAC})"
+  sed -i -e "s/__NAO__/${NAO_NUMBER}/g" $DEPLOY_DIRECTORY/v6/var/lib/connman/wifi.config
+  deployFile "/var/lib/connman/wifi.config" "root" "644" "v6"
+
+  WIFI_NETWORKS=$(cat /var/lib/connman/wifi.config | grep "Name =" | sed -e "s/ //g" | sed -e "s/Name=//g")
+  for wifi in $WIFI_NETWORKS; do
+    if [ ! $wifi == "wifi" ]; then
+      # echo "$CONNMAN_SERVICES" | grep "SPL_A " | grep -o wifi.*
+      service=$(echo "$CONNMAN_SERVICES" | grep "$wifi " | grep -o wifi.*)
+      if [ ! -z $service ]; then
+        echo "Disabling autoconnect on wifi network $wifi"
+        # echo $service
+        connmanctl config ${service} --autoconnect off
+        # echo "connmanctl config ${service} --autoconnect off"
+      else
+          echo "Wifi network $wifi currently not available"
+      fi
+    fi
+  done
+
+  echo "Setting ip of eth0 (${ETH0_MAC})"
+  connmanctl config ethernet_${ETH0_MAC}_cable --ipv4 manual 192.168.13.${NAO_NUMBER} 255.255.255.0
+
+fi
 
 naoth restart
 
