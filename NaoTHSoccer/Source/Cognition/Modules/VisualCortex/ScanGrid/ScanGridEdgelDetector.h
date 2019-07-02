@@ -130,14 +130,10 @@ private:
       if(check(between_point, value)) {
         this->prev_point = prev_point;
         this->next_point = next_point;
+        return false;
       } else {
-        if(this->found) {
-          return true;
-        }
-        // TODO is this needed?
-        reset();
+        return this->found;
       }
-      return false;
     }
 
     virtual inline bool check(int point, int value) {
