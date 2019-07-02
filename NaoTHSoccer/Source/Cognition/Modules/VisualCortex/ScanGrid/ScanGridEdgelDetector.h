@@ -105,8 +105,6 @@ private:
   CameraInfo::CameraID cameraID;
   int scan_id;
 
-  int scan_id;
-
   class MaxPeakScan
   {
   private:

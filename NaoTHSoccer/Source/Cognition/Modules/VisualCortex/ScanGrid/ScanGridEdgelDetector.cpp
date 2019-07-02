@@ -256,9 +256,11 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
 }// end scan_vertical
 
 inline void ScanGridEdgelDetector::refine_vertical(MaxPeakScan& maximumPeak, int x) {
+  int height = getImage().height();
+
   // refine the position of the peak
   int f0 = getImage().getY(x, maximumPeak.point);
-  if (maximumPeak.point+2 < getImage().height()) {
+  if (maximumPeak.point+2 < height) {
     int f2 = getImage().getY(x, maximumPeak.point+2);
     maximumPeak.check(maximumPeak.point+1, f0-f2);
   }
@@ -468,13 +470,15 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
 } // end scan_horizontal
 
 inline void ScanGridEdgelDetector::refine_horizontal(MaxPeakScan& maximumPeak, int y) {
+  int width = getImage().width();
+
   // refine the position of the peak
   int f0 = getImage().getY(maximumPeak.point, y);
   if(maximumPeak.point-2 >= 0) {
     int f_2 = getImage().getY(maximumPeak.point-2, y);
     maximumPeak.check(maximumPeak.point-1, f_2-f0);
   }
-  if(maximumPeak.point+2 < getImage().width()) {
+  if(maximumPeak.point+2 < width) {
     int f2 = getImage().getY(maximumPeak.point+2, y);
     maximumPeak.check(maximumPeak.point+1, f0-f2);
   }
