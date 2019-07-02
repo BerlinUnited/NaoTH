@@ -59,7 +59,9 @@ class bodyCollisionDetector : private bodyCollisionDetectorBase
 public:
     bodyCollisionDetector() : 
         torsoParams(getWalk2018Parameters().torsoRotationStabilizerParams)
-    {};
+    {
+        DEBUG_REQUEST_REGISTER("bodyCollisionDetector:drawImpactVector", "Impact vector", false);
+    };
     ~bodyCollisionDetector();
     void execute();
 
