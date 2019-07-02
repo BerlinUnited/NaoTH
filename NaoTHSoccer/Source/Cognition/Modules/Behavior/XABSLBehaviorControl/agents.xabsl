@@ -14,7 +14,6 @@ include "Symbols/sensor_symbols.xabsl";
 include "Symbols/internal_symbols.xabsl";
 include "Symbols/team_symbols.xabsl";
 include "Symbols/led_symbols.xabsl";
-include "Symbols/goal_symbols.xabsl";
 include "Symbols/selfloc_symbols.xabsl";
 include "Symbols/sound_symbols.xabsl";
 include "Symbols/field_symbols.xabsl";
@@ -24,7 +23,6 @@ include "Symbols/path_symbols.xabsl";
 // Head Control
 include "Options/HeadControl/head_control.xabsl";
 include "Options/HeadControl/search_for_ball.xabsl";
-include "Options/HeadControl/search_for_goal.xabsl";
 include "Options/HeadControl/look_around.xabsl";
 include "Options/HeadControl/look_at_ball_percept.xabsl";
 include "Options/HeadControl/look_at_team_ball.xabsl";
@@ -162,7 +160,6 @@ include "Options/Remote/spl_remote_secondary_actions.xabsl";
 
 include "Options/Test/agent/search_test_agent.xabsl";
 include "Options/Test/agent/only_ball_looking_agent.xabsl";
-include "Options/Test/agent/only_goal_looking_agent.xabsl";
 
 // Test agents Arms
 include "Options/Test/agent/arm_back_test_agent.xabsl";
@@ -368,4 +365,3 @@ agent pathplanner2018_striker_agent("pathplanner2018_striker_agent", pathplanner
 // Test agents search
 agent search_test_agent("search_test_agent",search_test_agent);
 agent search_only_looking_for_ball("only_looking_for_ball",only_ball_looking);
-agent search_only_looking_for_goal("only_looking_for_goal",only_goal_looking);
