@@ -24,8 +24,8 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.angle", &getBallAngle);
   engine.registerDecimalInputSymbol("ball.speed.x", &getBallModel().speed.x);
   engine.registerDecimalInputSymbol("ball.speed.y", &getBallModel().speed.y);
-  engine.registerDecimalInputSymbol("ball.last_known.x", &getBallModel().last_known_ball.x);
-  engine.registerDecimalInputSymbol("ball.last_known.y", &getBallModel().last_known_ball.y);
+  engine.registerDecimalInputSymbol("ball.last_known.x", &last_known_ball_preview.x);
+  engine.registerDecimalInputSymbol("ball.last_known.y", &last_known_ball_preview.y);  
   engine.registerDecimalInputSymbol("ball.position_at_rest.x", &getBallModel().position_at_rest.x);
   engine.registerDecimalInputSymbol("ball.position_at_rest.y", &getBallModel().position_at_rest.y);
 
@@ -91,6 +91,7 @@ void BallSymbols::execute()
   );
 
   futureBallPreview = getMotionStatus().plannedMotion.hip / getBallModel().position_at_rest;
+  last_known_ball_preview = getMotionStatus().plannedMotion.hip / getBallModel().last_known_ball;  
 
   Math::LineSegment ballLine(getBallModel().position, getBallModel().position_at_rest);
   interceptionPointPreview = getMotionStatus().plannedMotion.hip / ballLine.projection(Vector2d());
