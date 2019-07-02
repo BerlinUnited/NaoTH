@@ -83,7 +83,8 @@ void FieldColorClassifier::debug(Parameters& parameters)
     const Vector2i& point = uniformGrid.getPoint(i);
     getImage().get(point.x, point.y, pixel);
 
-    Vector2d dp(pixel.u - 128, pixel.v - 128);
+    Vector2d dp(pixel.u, pixel.v);
+    dp -= Vector2d(128, 128);
     //double a = dp.angle();
 
     //if(fabs(Math::normalize(parameters.colorAngleCenter - a)) < parameters.colorAngleWith)
