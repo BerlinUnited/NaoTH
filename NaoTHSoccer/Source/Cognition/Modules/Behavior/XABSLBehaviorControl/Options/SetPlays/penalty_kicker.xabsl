@@ -148,16 +148,14 @@ option penalty_kicker
   {
     decision
     {
-      if(path.kick_executed)//action_done)
+      if(path.kick_executed)
         goto finished;
       else
         stay;
     }
     action
     {
-      //path_short_kick(foot = right);
-      //path_long_kick(foot = right);
-      path2018.routine = forwardkick_right;
+      path2018.routine = forwardkick;
       head.control_mode = search_for_ball_and_look_around;
       
     }
