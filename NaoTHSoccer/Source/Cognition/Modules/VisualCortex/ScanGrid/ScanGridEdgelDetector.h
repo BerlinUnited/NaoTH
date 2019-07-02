@@ -112,6 +112,7 @@ private:
   public:
     int point;
     int prev_point;
+    int next_point;
     bool found;
     int maxValue;
 
@@ -121,16 +122,19 @@ private:
       this->maxValue = threshold;
       this->point = 0;
       this->prev_point = 0;
+      this->next_point = 0;
       this->found = false;
     }
 
-    virtual inline bool add(int point, int prev_point, int value) {
-      if(check(point, value)) {
+    virtual inline bool add(int between_point, int prev_point, int next_point, int value) {
+      if(check(between_point, value)) {
         this->prev_point = prev_point;
+        this->next_point = next_point;
       } else {
         if(this->found) {
           return true;
         }
+        // TODO is this needed?
         reset();
       }
       return false;
@@ -150,6 +154,7 @@ private:
       this->maxValue = threshold;
       this->point = 0;
       this->prev_point = 0;
+      this->next_point = 0;
       this->found = false;
     }
   };
@@ -284,7 +289,7 @@ private:
                      end.point.y + (int)(end.direction.y*5));
     );
 
-    if(std::fabs(cos_alpha) < parameters.double_edgel_angle_threshold) {
+    if(-cos_alpha < parameters.double_edgel_angle_threshold) {
     //if(-(begin.direction*end.direction) < parameters.double_edgel_angle_threshold) {
       return; // false
     }
@@ -296,12 +301,14 @@ private:
 
     pair.point.x = (begin.point.x + end.point.x)*0.5;
     pair.point.y = (begin.point.y + end.point.y)*0.5;
+    pair.direction = (begin.direction - end.direction).normalize();
+    /*
     pair.direction = begin.direction;
     if(cos_alpha > 0) {
       pair.direction.rotate(std::acos(std::fabs(cos_alpha))/2);
     } else {
       pair.direction.rotate(-std::acos(std::fabs(cos_alpha))/2);
-    }
+    }*/
 
     getScanLineEdgelPercept().pairs.push_back(pair);
   }
