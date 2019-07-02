@@ -290,7 +290,12 @@ Pose2D StrategySymbols::calculateGoalieDefensivePosition()
     // y = m*x
     double y = m*x;
     //std::cout << "a="<<a<<" w="<<std::atan(a)<<" r="<
-    return Pose2D(std::atan2(y,x),x + theInstance->getFieldInfo().xPosOwnGroundline, y);
+    Pose2D result(std::atan2(y,x),x + theInstance->getFieldInfo().xPosOwnGroundline, y);
+
+    // make preview because this position is used to be walked to
+    result = result + getMotionStatus().plannedMotion.hip;
+  
+    return result;
 }
 
 double StrategySymbols::goalieDefensivePositionX()
@@ -305,7 +310,7 @@ double StrategySymbols::goalieDefensivePositionY()
 
 double StrategySymbols::goalieDefensivePositionA()
 {
-    return theInstance->goalieDefensivePosition.rotation;
+    return Math::toDegrees(theInstance->goalieDefensivePosition.rotation);
 }
 
 bool StrategySymbols::getApproachingWithRightFoot()
