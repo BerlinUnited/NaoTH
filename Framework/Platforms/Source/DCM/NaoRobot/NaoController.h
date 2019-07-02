@@ -21,11 +21,16 @@
 
 //
 #include "V4lCameraHandler.h"
+#include "CameraSettingsV5Manager.h"
+#include "CameraSettingsV6Manager.h"
+
+
 #include "SoundControl.h"
 #include "SPLGameController.h"
 #include "CPUTemperatureReader.h"
 #include "DebugCommunication/DebugServer.h"
 #include "AudioRecorder.h"
+#include "LolaAdaptor.h"
 
 #include "Tools/Communication/Network/BroadCaster.h"
 #include "Tools/Communication/Network/UDPReceiver.h"
@@ -52,16 +57,28 @@ public:
   NaoController();
   virtual ~NaoController();
 
+  // platform info
   virtual std::string getBodyID() const { return theBodyID; }
   virtual std::string getBodyNickName() const { return theBodyNickName; }
   virtual std::string getHeadNickName() const { return theHeadNickName; }
   virtual std::string getRobotName() const { return theRobotName; }
-
+  virtual std::string getPlatformName() const { return "Nao"; }
+  virtual unsigned int getBasicTimeStep() const { return theLolaAdaptor.isRunning()?12:10; }
+  
   // camera stuff
-  void get(Image& data){ theBottomCameraHandler.get(data); } // blocking
-  void get(ImageTop& data){ theTopCameraHandler.get(data); } // non blocking
-  void get(CurrentCameraSettings& data) { theBottomCameraHandler.getCameraSettings(data); }
-  void get(CurrentCameraSettingsTop& data) { theTopCameraHandler.getCameraSettings(data); }
+  void get(Image& data){ 
+    theBottomCameraHandler.get(data); 
+  } // blocking
+  void get(ImageTop& data){ 
+    theTopCameraHandler.get(data); 
+  } // non blocking
+  
+  void get(CurrentCameraSettings& data) { 
+    theBottomCameraHandler.getCameraSettings(data);
+  }
+  void get(CurrentCameraSettingsTop& data) { 
+    theTopCameraHandler.getCameraSettings(data);
+  }
   
   void set(const CameraSettingsRequest& data);
   void set(const CameraSettingsRequestTop& data);
@@ -180,8 +197,11 @@ protected:
   // -- end -- shared memory access --
 
   //
+  
   V4lCameraHandler theBottomCameraHandler;
   V4lCameraHandler theTopCameraHandler;
+  
+  
   SoundControl *theSoundHandler;
   BroadCaster* theTeamCommSender;
   UDPReceiver* theTeamCommListener;
@@ -190,6 +210,7 @@ protected:
   DebugServer* theDebugServer;
   CPUTemperatureReader theCPUTemperatureReader;
   AudioRecorder theAudioRecorder;
+  LolaAdaptor theLolaAdaptor;
 
 };
 

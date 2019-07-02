@@ -19,7 +19,6 @@ using namespace naoth;
 
 NaoController::NaoController()
     :
-    PlatformInterface("Nao", 10),
     theSoundHandler(NULL),
     theTeamCommSender(NULL),
     theTeamCommListener(NULL),
@@ -133,6 +132,10 @@ NaoController::NaoController()
   std::cout << "[NaoController] " << "Init SoundHandler" <<endl;
   theSoundHandler = new SoundControl();
 
+  // try to start lola
+  theLolaAdaptor.start();
+  
+  
   // create the teamcomm
   std::cout << "[NaoController] " << "Init TeamComm" << endl;
   const naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
@@ -159,10 +162,19 @@ NaoController::NaoController()
   std::cout << "[NaoController] " << "Init SPLGameController"<<endl;
   theGameController = new SPLGameController();
 
-  std::cout << "[NaoController] " << "Init CameraHandler (bottom)" << std::endl;
-  theBottomCameraHandler.init("/dev/video1", CameraInfo::Bottom, true);
-  std::cout << "[NaoController] " << "Init CameraHandler (top)" << std::endl;
-  theTopCameraHandler.init("/dev/video0", CameraInfo::Top, false);
+  // HACK: we are in NAO V6
+  if(theLolaAdaptor.isRunning())
+  {
+    std::cout << "[NaoController] " << "Init CameraHandler V6 (bottom)" << std::endl;
+    theBottomCameraHandler.init("/dev/video1", CameraInfo::Bottom, true, true);
+    std::cout << "[NaoController] " << "Init CameraHandler V6 (top)" << std::endl;
+    theTopCameraHandler.init("/dev/video0", CameraInfo::Top, false, true);
+  } else {
+    std::cout << "[NaoController] " << "Init CameraHandler V5 (bottom)" << std::endl;
+    theBottomCameraHandler.init("/dev/video1", CameraInfo::Bottom, true, false);
+    std::cout << "[NaoController] " << "Init CameraHandler V5 (top)" << std::endl;
+    theTopCameraHandler.init("/dev/video0", CameraInfo::Top, false, false);
+  }
 }
 
 NaoController::~NaoController()
