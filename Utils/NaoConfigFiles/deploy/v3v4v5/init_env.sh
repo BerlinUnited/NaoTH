@@ -36,6 +36,20 @@ copy(){
   fi
 }
 
+
+# set volume to 88%
+su nao -c "/usr/bin/pactl set-sink-mute 0 false"
+su nao -c "/usr/bin/pactl set-sink-volume 0 88%"
+# also set the recording volume
+# 1. set in simple mode with alsa mixer to make sure it is in sync for all channels
+su nao -c "/usr/bin/amixer sset 'Capture',0 90%"
+# 2. set with pulseaudio (now both channels are set) to make sure the changes are persistent
+su nao -c "/usr/bin/pactl set-source-mute 1 false"
+su nao -c "/usr/bin/pactl set-source-volume 1 90%"
+
+# play initial sound
+su nao -c "/usr/bin/paplay ../home/nao/naoqi/Media/usb_start.wav"
+
 # -----------  video driver -----------
 
 # copy the video driver
@@ -254,12 +268,12 @@ ldconfig;
 chmod +s /sbin/shutdown
 chmod +s /sbin/reboot
 
-# set volume to 88%
-sudo -u nao pactl set-sink-mute 0 false
-sudo -u nao pactl set-sink-volume 0 88%
+su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav"
 
-echo "initialization done, shutting down system";
-shutdown -h now
+# prevent reboot if appropiate file exists
+if [ ! -f "./noreboot" ]; then
+	reboot
+fi
 
 echo "DONE"
 

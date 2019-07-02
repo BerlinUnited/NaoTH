@@ -237,6 +237,6 @@ if [ ! -f "./noreboot" ]; then
 fi
 
 # play initial sound
-sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav
+su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav"
 
 echo "DONE"
