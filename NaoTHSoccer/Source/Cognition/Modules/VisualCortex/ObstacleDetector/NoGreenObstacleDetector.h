@@ -47,11 +47,6 @@ END_DECLARE_MODULE(NoGreenObstacleDetector)
 class NoGreenObstacleDetector: public NoGreenObstacleDetectorBase
 {
 public:
-  double detector_field_offset;
-  double detector_width;
-  double detector_range;
-  double ball_offset;
-
   CameraInfo::CameraID cameraID;
 
   DetectorField detectorField;
@@ -64,8 +59,6 @@ public:
   void create_detector_on_field(DetectorField& detectorField, double xOffset);
   bool create_detector_behind_ball(DetectorField& detectorField);
 
-  bool detector_parameters_changed();
-
   bool projectDetector(DetectorField& detectorField, DetectorImage& detectorImage);
 
 private:
@@ -74,11 +67,17 @@ private:
   public:
     Parameters() : ParameterList("NoGreenObstacleDetector")
     {
+      PARAMETER_REGISTER(enable_obstacle_detector) = false;
+      PARAMETER_REGISTER(enable_preview_obstacle_detector) = false;
+      PARAMETER_REGISTER(enable_obstacle_detector_behind_ball) = true;
+
       PARAMETER_REGISTER(detector_field_offset) = 200.;
       PARAMETER_REGISTER(detector_width) = 280.;
       PARAMETER_REGISTER(detector_range) = 200.;
 
       PARAMETER_REGISTER(ball_offset) = 10.;
+      PARAMETER_REGISTER(behind_ball_width) = 280.;
+      PARAMETER_REGISTER(behind_ball_range) = 200.;
 
       PARAMETER_REGISTER(min_expected_area) = .8;
 
@@ -86,11 +85,17 @@ private:
 
       syncWithConfig();
     }
+    bool enable_obstacle_detector;
+    bool enable_preview_obstacle_detector;
+    bool enable_obstacle_detector_behind_ball;
+
     double detector_field_offset;
     double detector_width;
     double detector_range;
 
     double ball_offset;
+    double behind_ball_width;
+    double behind_ball_range;
 
     double min_expected_area;
 

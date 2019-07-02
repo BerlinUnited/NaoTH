@@ -14,10 +14,6 @@ public:
   std::vector<Vector2i> edges;
 
   DetectorImage() : edges(4) {
-    // indices are expected to look like
-    // (0) 2 --- 3 (x)
-    //      |   |
-    // (y) 0 --- 1
     edges.resize(4);
   }
 
@@ -26,25 +22,21 @@ public:
   }
 
   void rectify() {
-    int maxX = edges[0].x,
-        maxY = edges[0].y,
-        minX = edges[0].x,
-        minY = edges[0].y;
-
-    for (size_t i=1; i<4; i++) {
-      maxX = std::max(maxX, edges[i].x);
-      maxY = std::max(maxY, edges[i].y);
-      minX = std::min(minX, edges[i].x);
-      minY = std::min(minY, edges[i].y);
-    }
-
-    edges[0] = Vector2i(minX, maxY);
-    edges[1] = Vector2i(maxX, maxY);
-    edges[2] = Vector2i(minX, minY);
-    edges[3] = Vector2i(maxX, minY);
+    edges[0] = Vector2i(minX(), maxY());
+    edges[1] = Vector2i(maxX(), maxY());
+    edges[2] = Vector2i(minX(), minY());
+    edges[3] = Vector2i(maxX(), minY());
+    // rectifies detector so that edges look like
+    // (0) 2 --- 3 (x)
+    //      |   |
+    // (y) 0 --- 1
   }
 
   bool limit(int maxX, int maxY, int minX, int minY) {
+    // expects edges to look like
+    // (0) 2 --- 3 (x)
+    //      |   |
+    // (y) 0 --- 1
     // if field is not a rectangle it needs to be rectified first
 
     // check if rectangle is at least partially inside limits
@@ -79,19 +71,35 @@ public:
   }
 
   int minX() {
-    return edges[2].x;
+    int minX = edges[0].x;
+    for (size_t i=1; i<4; i++) {
+      minX = std::min(minX, edges[i].x);
+    }
+    return minX;
   }
 
   int minY() {
-    return edges[2].y;
+    int minY = edges[0].y;
+    for (size_t i=1; i<4; i++) {
+      minY = std::min(minY, edges[i].y);
+    }
+    return minY;
   }
 
   int maxX() {
-    return edges[1].x;
+    int maxX = edges[0].x;
+    for (size_t i=1; i<4; i++) {
+      maxX = std::max(maxX, edges[i].x);
+    }
+    return maxX;
   }
 
   int maxY() {
-    return edges[1].y;
+    int maxY = edges[0].y;
+    for (size_t i=1; i<4; i++) {
+      maxY = std::max(maxY, edges[i].y);
+    }
+    return maxY;
   }
 
   int green(const BallDetectorIntegralImage& integralImage) {
@@ -121,11 +129,11 @@ public:
   std::vector<Vector2d> edges;
 
   DetectorField() : edges(4) {
-    // indices are expected to look like
-    // (x) 2 --- 3
-    //      |   |
-    // (0) 0 --- 1 (y)
     edges.resize(4);
+  }
+
+  DetectorField(Vector2d bottomLeft, Vector2d bottomRight, Vector2d topLeft, Vector2d topRight) : edges(4) {
+    edges = {bottomLeft, bottomRight, topLeft, topRight};
   }
 
   bool projectOnImage(DetectorImage& detectorImage, const CameraMatrix& cameraMatrix, const naoth::CameraInfo& cameraInfo) {
@@ -154,19 +162,35 @@ public:
   }
 
   double minX() {
-    return edges[0].x;
+    double minX = edges[0].x;
+    for (size_t i=1; i<4; i++) {
+      minX = std::min(minX, edges[i].x);
+    }
+    return minX;
   }
 
   double minY() {
-    return edges[0].y;
+    double minY = edges[0].y;
+    for (size_t i=1; i<4; i++) {
+      minY = std::min(minY, edges[i].y);
+    }
+    return minY;
   }
 
   double maxX() {
-    return edges[3].x;
+    double maxX = edges[0].x;
+    for (size_t i=1; i<4; i++) {
+      maxX = std::max(maxX, edges[i].x);
+    }
+    return maxX;
   }
 
   double maxY() {
-    return edges[3].y;
+    double maxY = edges[0].y;
+    for (size_t i=1; i<4; i++) {
+      maxY = std::max(maxY, edges[i].y);
+    }
+    return maxY;
   }
 };
 
