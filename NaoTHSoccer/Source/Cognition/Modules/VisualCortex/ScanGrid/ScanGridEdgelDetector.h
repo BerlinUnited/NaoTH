@@ -80,7 +80,7 @@ public:
     {
       PARAMETER_REGISTER(brightness_threshold_top) = 20;
       PARAMETER_REGISTER(brightness_threshold_bottom) = 24;
-      PARAMETER_REGISTER(double_edgel_angle_threshold) = 0.9;
+      PARAMETER_REGISTER(double_edgel_angle_threshold) = 0.2;
 
       PARAMETER_REGISTER(scan_vertical) = true;
       PARAMETER_REGISTER(scan_horizontal) = true;

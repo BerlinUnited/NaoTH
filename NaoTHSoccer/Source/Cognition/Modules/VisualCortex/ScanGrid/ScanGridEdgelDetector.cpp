@@ -192,8 +192,6 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
     prevLuma = getImage().getY(scanline.x, end_of_body);
     prev_y = end_of_body;
 
-    std::cout << "SCAN " << x << std::endl;
-
     for(size_t i = scanline.bottom; i <= scanline.top; ++i) {
       y = getScanGrid().vScanPattern[i];
       if(y < end_of_field) {
@@ -223,14 +221,11 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
           refine_vertical(maximumPeak, x);
           add_edgel(x, maximumPeak.point, Edgel::positive);
           begin_found = true;
-          std::cout << "begin" << std::endl;
-
         }
         else if(refine_range_vertical(maximumPeak, x))
         {
           add_edgel(x, maximumPeak.point, Edgel::positive);
           begin_found = true;
-          std::cout << "begin" << std::endl;
         }
         maximumPeak.reset();
       }
@@ -244,7 +239,6 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
         if(std::abs(prev_y - y) <= 2)
         {
           refine_vertical(minimumPeak, x);
-          std::cout << "end" << std::endl;
           add_edgel(x, minimumPeak.point, Edgel::negative);
           // found a new double edgel
           if(begin_found) {
@@ -254,7 +248,6 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
         }
         else if(refine_range_vertical(minimumPeak, x))
         {
-          std::cout << "end" << std::endl;
           add_edgel(x, minimumPeak.point, Edgel::negative);
           // found a new double edgel
           if(begin_found) {

@@ -81,7 +81,7 @@ public:
       PARAMETER_REGISTER(horizontal_gap_mm) = 50;
 
       PARAMETER_REGISTER(v_field_scan_rate_mm) = 25;
-      PARAMETER_REGISTER(h_field_scan_rate_mm) = 50;
+      PARAMETER_REGISTER(h_field_scan_rate_mm) = 25;
 
       PARAMETER_REGISTER(min_horizontal_gap_px) = 2;
       PARAMETER_REGISTER(min_vertical_gap_px) = 2;
