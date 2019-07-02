@@ -9,6 +9,7 @@
 #include "Representations/Motion/Walk2018/Walk2018Parameters.h"
 #include "Representations/Motion/Walk2018/StepBuffer.h"
 #include "Representations/Motion/Walk2018/TargetHipFeetPose.h"
+#include <Representations/Motion/MotionStatus.h>
 
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/CalibrationData.h"
@@ -44,6 +45,7 @@ BEGIN_DECLARE_MODULE(bodyCollisionDetector)
     REQUIRE(StepBuffer)
     REQUIRE(GyrometerData)
     REQUIRE(RobotInfo)
+    REQUIRE(MotionStatus)
 
     //Debug
     PROVIDE(DebugRequest)

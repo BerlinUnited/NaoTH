@@ -258,7 +258,6 @@ void Motion::processSensorData()
   theArmCollisionDetector2018->execute();
   theBodyCollisionDetector->execute();
 
-
   // store the MotorJointData
   theLastMotorJointData = getMotorJointData();
 

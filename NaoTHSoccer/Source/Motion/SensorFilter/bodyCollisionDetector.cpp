@@ -30,6 +30,12 @@ void bodyCollisionDetector::execute()
     const double rotationY = atan2(relativeRotation.c[2].x, relativeRotation.c[2].z);
     buffer.add(Vector2d(relativeRotation.getXAngle(), rotationY));
 
+    if (!(getMotionStatus().currentMotion == motion::walk))
+    {
+        buffer.clear();
+        return;
+    }
+
     if (buffer.isFull() && frameDelay > 0 && frameDelay < buffer.size())
     {
         const Vector2d requestedVelocity = (buffer[frameDelay - 1] - buffer[frameDelay]) / getRobotInfo().getBasicTimeStepInSecond();
@@ -52,6 +58,7 @@ void bodyCollisionDetector::execute()
 
 
         lastGyroError = error;
+        return;
     }
 
 }
