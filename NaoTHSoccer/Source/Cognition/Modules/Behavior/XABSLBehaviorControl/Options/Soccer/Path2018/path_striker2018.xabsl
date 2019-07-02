@@ -71,10 +71,7 @@ option path_striker2018
       else if(vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) < 300)
       {
         if(attack.best_action == kick_short) {
-          if (ball.preview.y > 0)
-            goto forwardkick_left;
-          else
-            goto forwardkick_right;
+          goto forwardkick;
         }
         else if(attack.best_action == sidekick_left)
           //goto sidekick_left;
@@ -111,10 +108,7 @@ option path_striker2018
     {
       if(random() > 0.0)
       {
-        if (ball.preview.y > 0)
-          goto forwardkick_left;
-        else
-          goto forwardkick_right;
+        goto forwardkick;
       }
       else
         goto dash;
@@ -138,7 +132,7 @@ option path_striker2018
     }
   }
 
-  state forwardkick_right
+  state forwardkick
   {
     decision
     {
@@ -149,26 +143,7 @@ option path_striker2018
     }
     action
     {
-      path2018.routine = forwardkick_right;
-      path.xOffset = 120; // pathplanner adds ball.radius - this could be done here
-      path.yOffset = 0;
-      situation_abortable = true;
-      head.control_mode = search_for_ball;
-    }
-  }
-  
-  state forwardkick_left
-  {
-    decision
-    {
-      else if (path.kick_executed)
-        goto short_freeze;
-      else
-        stay;
-    }
-    action
-    {
-      path2018.routine = forwardkick_left;
+      path2018.routine = forwardkick;
       path.xOffset = 120; // pathplanner adds ball.radius - this could be done here
       path.yOffset = 0;
       situation_abortable = true;

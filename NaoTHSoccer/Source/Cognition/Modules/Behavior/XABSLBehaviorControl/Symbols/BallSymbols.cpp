@@ -7,10 +7,6 @@
 
 #include "BallSymbols.h"
 
-#include <Tools/Debug/DebugRequest.h>
-#include <Tools/Debug/DebugModify.h>
-#include <Tools/Debug/DebugPlot.h>
-
 void BallSymbols::registerSymbols(xabsl::Engine& engine)
 {
   // constant
@@ -20,9 +16,6 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.percept.x", &ballPerceptPos.x);
   engine.registerDecimalInputSymbol("ball.percept.y", &ballPerceptPos.y);
   engine.registerBooleanInputSymbol("ball.percept.was_seen", &ballPerceptSeen);
-
-  engine.registerBooleanInputSymbol("ball.know_where_itis", &getBallModel().knows);
-  engine.registerBooleanInputSymbol("ball.see_where_itis", &ball_see_where_itis);
 
   // model
   engine.registerDecimalInputSymbol("ball.x", &getBallModel().position.x);
@@ -37,10 +30,12 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.future.preview.x", &futureBallPreview.x);
   engine.registerDecimalInputSymbol("ball.future.preview.y", &futureBallPreview.y);
 
-  engine.registerDecimalInputSymbol("ball.left_foot.x", &ballLeftFoot.x);
-  engine.registerDecimalInputSymbol("ball.left_foot.y", &ballLeftFoot.y);
-  engine.registerDecimalInputSymbol("ball.right_foot.x", &ballRightFoot.x);
-  engine.registerDecimalInputSymbol("ball.right_foot.y", &ballRightFoot.y);
+  engine.registerBooleanInputSymbol("ball.know_where_itis", &getBallModel().knows);
+  // HACK: right now know_where_itis is the same as see_where_itis
+  engine.registerBooleanInputSymbol("ball.see_where_itis", &getBallModel().knows);
+  // TODO: old symbols indicating the quality of the seen ball - should we still use them?
+  engine.registerDecimalInputSymbol("ball.time_since_last_seen", &getBallTimeSinceLastSeen);
+  engine.registerDecimalInputSymbol("ball.time_seen", &getBallTimeSeen);
 
   // preview
   engine.registerDecimalInputSymbol("ball.preview.x", &getBallModel().positionPreview.x);
@@ -49,10 +44,7 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.preview.left_foot.y", &getBallModel().positionPreviewInLFoot.y);
   engine.registerDecimalInputSymbol("ball.preview.right_foot.x", &getBallModel().positionPreviewInRFoot.x);
   engine.registerDecimalInputSymbol("ball.preview.right_foot.y", &getBallModel().positionPreviewInRFoot.y);
-
-  engine.registerDecimalInputSymbol("ball.time_since_last_seen", &getBallTimeSinceLastSeen);
-  engine.registerDecimalInputSymbol("ball.time_seen", &getBallTimeSeen);
-
+  
   // global
   engine.registerDecimalInputSymbol("ball.position.field.x", &ballPositionField.x);
   engine.registerDecimalInputSymbol("ball.position.field.y", &ballPositionField.y);
@@ -65,10 +57,6 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.team.position_field.y", &getTeamBallModel().positionOnField.y);
   engine.registerDecimalInputSymbol("ball.team.rmse", &getTeamBallModel().rmse);
 
-  DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballLeftFoot", "draw the ball model in left foot's coordinates on field", false);
-  DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballRightFoot", "draw the ball model in right foot's coordinates on field", false);
-  DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_position_behind_ball", "draw the point behind the ball seen from the opp goal on field", false);
-
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballPerceptPropagated", "draw propagated ball percept", false);
 
 }//end registerSymbols
@@ -79,34 +67,6 @@ void BallSymbols::execute()
   // calculate the global position of the ball on the field
   ballPositionField = getRobotPose()*getBallModel().position;
 
-  // transform the ball position into the feet coordinates
-  const Pose3D& lFoot = getKinematicChain().theLinks[KinematicChain::LFoot].M;
-  const Pose3D& rFoot = getKinematicChain().theLinks[KinematicChain::RFoot].M;
-
-  Pose2D lFootPose(lFoot.rotation.getZAngle(), lFoot.translation.x, lFoot.translation.y);
-  Pose2D rFootPose(rFoot.rotation.getZAngle(), rFoot.translation.x, rFoot.translation.y);
-
-  ballLeftFoot  = lFootPose/getBallModel().position;
-  ballRightFoot = rFootPose/getBallModel().position;
-
-  DEBUG_REQUEST("XABSL:BallSymbols:ballLeftFoot",
-    FIELD_DRAWING_CONTEXT;
-    PEN("FF0000", 20);
-    CIRCLE(ballLeftFoot.x, ballLeftFoot.y, 32.5);
-    PLOT("XABSL:BallSymbols:ballLeftFoot:x", ballLeftFoot.x);
-    PLOT("XABSL:BallSymbols:ballLeftFoot:y", ballLeftFoot.y);
-  );
-
-  DEBUG_REQUEST("XABSL:BallSymbols:ballRightFoot",
-    FIELD_DRAWING_CONTEXT;
-    PEN("0000FF", 20);
-    CIRCLE(ballRightFoot.x, ballRightFoot.y, 32.5);
-    PLOT("XABSL:BallSymbols:ballRightFoot:x", ballRightFoot.x);
-    PLOT("XABSL:BallSymbols:ballRightFoot:y", ballRightFoot.y);
-  );
-
-
-  ballPerceptSeen = false;
 
   if(theInstance->getMultiBallPercept().wasSeen()) {
     //HACK: look at the first ball percept in the list
@@ -116,6 +76,7 @@ void BallSymbols::execute()
     // propagate the ball percept with the odometry
     Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
     ballPerceptPos = odometryDelta*ballPerceptPos;
+    ballPerceptSeen = false;
   }
 
   DEBUG_REQUEST("XABSL:BallSymbols:ballPerceptPropagated",
@@ -123,16 +84,6 @@ void BallSymbols::execute()
     PEN("0000FF", 20);
     CIRCLE(ballPerceptPos.x, ballPerceptPos.y, 50);
   );
-
-  {
-    ball_seen_filter.setParameter(parameters.ball_seen_filter.g0, parameters.ball_seen_filter.g1);
-    ball_seen_filter.update(ballPerceptSeen);
-
-    PLOT("XABSL:BallSymbols:ball_seen_likelihood", ball_seen_filter.value());
-
-    // hysteresis
-    ball_see_where_itis = ball_seen_filter.value() > (ball_see_where_itis?0.3:0.7);
-  }
 
   futureBallPreview = getMotionStatus().plannedMotion.hip / getBallModel().position_at_rest;
 
