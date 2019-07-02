@@ -79,6 +79,8 @@ private:
   Pose2D lastRobotOdometry;
 
   Vector2d futureBallPreview;
+
+  Vector2d interceptionPointPreview;
 };//end class BallSymbols
 
 #endif // _BallSymbols_H_
