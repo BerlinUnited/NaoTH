@@ -78,7 +78,7 @@ void RansacLineDetector::execute()
       double radius;
       Geometry::calculateCircle(points, center, radius);
 
-      bool valid = std::fabs(radius - getFieldInfo().centerCircleRadius)
+      bool valid = !params.circle.validate || std::fabs(radius - getFieldInfo().centerCircleRadius)
                    <= params.circle.validation_thresh;
 
       DEBUG_REQUEST("Vision:RansacLineDetector:draw_circle_field",
