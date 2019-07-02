@@ -42,9 +42,6 @@ public:
   Vector2d positionPreviewInLFoot;
   Vector2d positionPreviewInRFoot;
 
-  /** The estimated position of the ball 0-10s in the future */
-  std::vector<Vector2d> futurePosition;
-
   // algorithmical validity of the model: true => the ball locator was able to compute a ball model
   bool valid;
 
@@ -81,19 +78,6 @@ public:
     }
 
     frameInfoWhenBallWasSeen = frameInfo;
-  }
-
-  const Vector2d& getFuturePosition(size_t t) const
-  {
-    if(t < futurePosition.size()) {
-      return futurePosition[t];
-    }
-
-    if(futurePosition.empty()) {
-      return position;
-    }
-
-    return futurePosition.back();
   }
 
   void reset() {
