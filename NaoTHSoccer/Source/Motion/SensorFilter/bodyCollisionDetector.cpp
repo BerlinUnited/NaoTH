@@ -22,10 +22,10 @@ void bodyCollisionDetector::execute()
 
     static RingBuffer<Vector2d, 10> buffer;
     static Vector2d lastGyroError;
-    static RotationMatrix lastBodyRotationMatrix = p.hip.rotation;
+    static RotationMatrix lastBodyRotationMatrix = getTargetHipFeetPose().pose.hip.rotation;
 
-    const RotationMatrix relativeRotation = p.hip.rotation.invert() * lastBodyRotationMatrix;
-    lastBodyRotationMatrix = p.hip.rotation;
+    const RotationMatrix relativeRotation = getTargetHipFeetPose().pose.hip.rotation.invert() * lastBodyRotationMatrix;
+    lastBodyRotationMatrix = getTargetHipFeetPose().pose.hip.rotation;
 
     const double rotationY = atan2(relativeRotation.c[2].x, relativeRotation.c[2].z);
     buffer.add(Vector2d(relativeRotation.getXAngle(), rotationY));
@@ -47,6 +47,8 @@ void bodyCollisionDetector::execute()
 
         PLOT("bodyCollisionDetector:correctionX", correctionX);
         PLOT("bodyCollisionDetector:correctionY", correctionY);
+
+        //Collision Detection Math goes here
 
 
         lastGyroError = error;

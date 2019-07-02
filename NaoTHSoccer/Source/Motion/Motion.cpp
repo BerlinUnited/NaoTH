@@ -53,6 +53,9 @@ Motion::Motion()
   theArmCollisionDetector = registerModule<ArmCollisionDetector>("ArmCollisionDetector", false);
   theArmCollisionDetector2018 = registerModule<ArmCollisionDetector2018>("ArmCollisionDetector2018", true);
 
+  theBodyCollisionDetector = registerModule<bodyCollisionDetector>("bodyCollisionDetector", true);
+
+
   theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
   theCoPProvider  = registerModule<CoPProvider>("CoPProvider", true);
   theSensorLogger = registerModule<SensorLogger>("theSensorLogger", true);
@@ -253,6 +256,7 @@ void Motion::processSensorData()
 
   //theArmCollisionDetector->execute();
   theArmCollisionDetector2018->execute();
+  theBodyCollisionDetector->execute();
 
 
   // store the MotorJointData

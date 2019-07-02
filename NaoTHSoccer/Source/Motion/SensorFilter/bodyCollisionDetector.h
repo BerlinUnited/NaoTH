@@ -33,6 +33,7 @@
 BEGIN_DECLARE_MODULE(bodyCollisionDetector)
     //Provides
     PROVIDE(CollisionPercept)
+    PROVIDE(TargetHipFeetPose)
 
     //Requires
     REQUIRE(FrameInfo)
@@ -41,7 +42,6 @@ BEGIN_DECLARE_MODULE(bodyCollisionDetector)
     REQUIRE(IMUData)
     REQUIRE(CalibrationData)
     REQUIRE(StepBuffer)
-    REQUIRE(TargetHipFeetPose)
     REQUIRE(GyrometerData)
     REQUIRE(RobotInfo)
 
@@ -55,15 +55,13 @@ class bodyCollisionDetector : private bodyCollisionDetectorBase
 {
 public:
     bodyCollisionDetector() : 
-        torsoParams(getWalk2018Parameters().torsoRotationStabilizerParams),
-        lastTargetpose(getTargetHipFeetPose().pose)
+        torsoParams(getWalk2018Parameters().torsoRotationStabilizerParams)
     {};
     ~bodyCollisionDetector();
     void execute();
 
 private:
     const TorsoRotationStabilizerParameters& torsoParams;
-    const InverseKinematic::HipFeetPose& lastTargetpose;
 };
 
 #endif
