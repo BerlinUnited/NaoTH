@@ -24,17 +24,6 @@ namespace ball_symbols("Ball Symbols") {
   /** Angle to the ball in deg */
   float input ball.angle [-180..180]"deg";
 
-  /** Position of the ball in x direction relative to the left foot */
-  float input ball.left_foot.x "mm";
-  /** Position of the ball in y direction relative to the left foot */
-  float input ball.left_foot.y "mm";
-
-  /** Position of the ball in x direction relative to the right foot */
-  float input ball.right_foot.x "mm";
-  /** Position of the ball in y direction relative to the right foot */
-  float input ball.right_foot.y "mm";
-
-
   /** Position of the ball in previewed model */
   float input ball.preview.x [mm];
   float input ball.preview.y [mm];
