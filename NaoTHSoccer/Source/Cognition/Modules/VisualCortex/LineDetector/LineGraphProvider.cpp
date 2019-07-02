@@ -404,7 +404,9 @@ void LineGraphProvider::calculatePairsAndNeigbors(
   {
     const ScanLineEdgelPercept::EdgelPair& edgelOne = edgels[i];
 
-    if(getScanLineEdgelPercept().endPoints[edgelOne.id].posInImage.y > edgelOne.point.y) {
+    if(!getScanLineEdgelPercept().endPoints.empty() &&
+       getScanLineEdgelPercept().endPoints[edgelOne.id].posInImage.y > edgelOne.point.y)
+    {
       continue;
     }
     
@@ -415,7 +417,9 @@ void LineGraphProvider::calculatePairsAndNeigbors(
     {
       const ScanLineEdgelPercept::EdgelPair& edgelTwo = edgels[j];
 
-      if(getScanLineEdgelPercept().endPoints[edgelTwo.id].posInImage.y > edgelTwo.point.y) {
+      if(!getScanLineEdgelPercept().endPoints.empty() &&
+         getScanLineEdgelPercept().endPoints[edgelTwo.id].posInImage.y > edgelTwo.point.y)
+      {
         continue;
       }
 
