@@ -172,21 +172,22 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
 
     int end_of_body = getBodyContour().getFirstFreeCell(Vector2i(scanline.x, y)).y;
 
+    // TODO: cleanup
+    if(getScanGrid().vScanPattern.size() < 2) {
+      return;
+    }
+    int last_scan_pattern_gap = getScanGrid().vScanPattern.at(getScanGrid().vScanPattern.size()-2)
+                                - getScanGrid().vScanPattern.back();
+
+    bool begin_found = false;
+    minimumPeak.reset();
+    maximumPeak.reset();
+
     // TODO: Is this correct or can we do better?
     int prev_y = getScanGrid().vScanPattern[scanline.bottom];
     int prevLuma = getImage().getY(scanline.x, prev_y);
 
     // TODO: cleanup
-    if(getScanGrid().vScanPattern.size() < 2) {
-      return;
-    }
-    int last_scan_pattern_gap = getScanGrid().vScanPattern.at(getScanGrid().vScanPattern.size()-2) - getScanGrid().vScanPattern.back();
-
-    minimumPeak.reset();
-    maximumPeak.reset();
-
-    // TODO: cleanup
-    bool begin_found = false;
     size_t i = scanline.bottom;
     for(y = getScanGrid().vScanPattern[i]; y >= end_of_field; y = (++i < getScanGrid().vScanPattern.size())? getScanGrid().vScanPattern[i]: y - last_scan_pattern_gap) {
       int luma = getImage().getY(x, y);
