@@ -36,7 +36,8 @@ public:
     REAR_LEFT   = 0,
     REAR_RIGHT  = 1,
     FRONT_LEFT  = 2,
-    FRON_RIGHT  = 3
+    FRONT_RIGHT = 3,
+    NUMBER_OF_CHANNELS = 4
   };
 
 public:

@@ -71,10 +71,7 @@ option path_striker2018
       else if(ball.preview.x < 300 && abs(value = ball.preview.y) < 50)
       {
         if(attack.best_action == kick_short) {
-          if (ball.preview.y > 0)
-            goto forwardkick_left;
-          else
-            goto forwardkick_right;
+          goto forwardkick;
         }
         else if(attack.best_action == sidekick_left)
           //goto sidekick_left;
@@ -96,7 +93,7 @@ option path_striker2018
          to walk to the position of the ball. Two possible outcomes:
          1. the robot runs into the ball (if ball distance is not considered)
          2. the robot will walk backwards in the successive approaching because it was too close*/
-      go_to_ball_with_USOA(distance = 190); 
+      go_to_ball_with_USOA(distance = 210); 
     }
   }
 
@@ -109,12 +106,9 @@ option path_striker2018
     //    goto long_kick;
     else if(attack.best_action == kick_short)
     {
-      if(random() > 0.3)
+      if(random() > 0.0)
       {
-        if (ball.preview.y > 0)
-          goto forwardkick_left;
-        else
-          goto forwardkick_right;
+        goto forwardkick;
       }
       else
         goto dash;
@@ -138,7 +132,7 @@ option path_striker2018
     }
   }
 
-  state forwardkick_right
+  state forwardkick
   {
     decision
     {
@@ -149,23 +143,9 @@ option path_striker2018
     }
     action
     {
-      path2018.routine = forwardkick_right;
-      head.control_mode = search_for_ball;
-    }
-  }
-  
-  state forwardkick_left
-  {
-    decision
-    {
-      else if (path.kick_executed)
-        goto short_freeze;
-      else
-        stay;
-    }
-    action
-    {
-      path2018.routine = forwardkick_left;
+      path2018.routine = forwardkick;
+      path.xOffset = 120; // pathplanner adds ball.radius - this could be done here
+      path.yOffset = 0;
       head.control_mode = search_for_ball;
     }
   }
@@ -214,7 +194,8 @@ option path_striker2018
     action
     {
       path2018.routine = none;
-      situation_abortable = false;
+      
+      situation_abortable = false;
       
       //look at percept
       head.control_mode = look_at_ball_percept;

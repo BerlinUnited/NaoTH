@@ -14,7 +14,6 @@ include "Symbols/sensor_symbols.xabsl";
 include "Symbols/internal_symbols.xabsl";
 include "Symbols/team_symbols.xabsl";
 include "Symbols/led_symbols.xabsl";
-include "Symbols/goal_symbols.xabsl";
 include "Symbols/selfloc_symbols.xabsl";
 include "Symbols/sound_symbols.xabsl";
 include "Symbols/field_symbols.xabsl";
@@ -24,7 +23,6 @@ include "Symbols/path_symbols.xabsl";
 // Head Control
 include "Options/HeadControl/head_control.xabsl";
 include "Options/HeadControl/search_for_ball.xabsl";
-include "Options/HeadControl/search_for_goal.xabsl";
 include "Options/HeadControl/look_around.xabsl";
 include "Options/HeadControl/look_at_ball_percept.xabsl";
 include "Options/HeadControl/look_at_team_ball.xabsl";
@@ -162,7 +160,6 @@ include "Options/Remote/spl_remote_secondary_actions.xabsl";
 
 include "Options/Test/agent/search_test_agent.xabsl";
 include "Options/Test/agent/only_ball_looking_agent.xabsl";
-include "Options/Test/agent/only_goal_looking_agent.xabsl";
 
 // Test agents Arms
 include "Options/Test/agent/arm_back_test_agent.xabsl";
@@ -191,6 +188,7 @@ include "Options/Test/WalkAgents/obstacle_agent.xabsl";
 include "Options/Test/WalkAgents/dribble_agent.xabsl";
 include "Options/Test/WalkAgents/walk_forward_agent.xabsl";
 include "Options/Test/WalkAgents/turn_look_at_preview_angle_agent.xabsl";
+include "Options/Test/WalkAgents/intercept_agent.xabsl";
 // TODO: change path
 include "Options/Test/agent/walk_forward_and_avoid_obstacles_agent.xabsl";
 
@@ -205,8 +203,8 @@ include "Options/Test/PathPlannerAgents/pathplanner2018_forwardkick_agent.xabsl"
 include "Options/Test/PathPlannerAgents/path_basic_goalie_agent.xabsl";
 include "Options/Test/PathPlannerAgents/path_move_around_ball_agent.xabsl";
 include "Options/Test/PathPlannerAgents/pathplanner2018_sidekick_agent.xabsl";
+include "Options/Test/PathPlannerAgents/pathplanner2018_striker_agent.xabsl";
 include "Options/Test/PathPlannerAgents/pathplanner2018_sidestep_agent.xabsl";
-
 
 // Test Options PathPlanner
 include "Options/Test/PathPlaner/pathplanner_sidekick.xabsl";
@@ -264,6 +262,7 @@ include "Options/Test/walk/dribble.xabsl";
 include "Options/Test/walk/walk_forward.xabsl";
 include "Options/Test/walk/walk_forward_and_avoid_obstacles.xabsl";
 include "Options/Test/walk/turn_look_at_preview_angle.xabsl";
+include "Options/Test/walk/test_intercept_sideways.xabsl";
 
 // Test role change
 include "Options/Test/strategy/role_change_test.xabsl";
@@ -355,6 +354,7 @@ agent walk_forward("walk_forward_agent", walk_forward_agent);
 agent walk_forward_and_avoid_obstacles("walk_forward_and_avoid_obstacles_agent", walk_forward_and_avoid_obstacles_agent);
 agent turn_look_at_preview_angle_agent("turn_look_at_preview_angle_agent", turn_look_at_preview_angle_agent);
 agent dribble_agent("dribble_agent", dribble_agent);
+agent intercept_agent("intercept_agent", intercept_agent);
 
 // PathPlanner Test Agents
 agent pathplanner_test_sidekick_agent("pathplanner_test_sidekick_agent", pathplanner_test_sidekick_agent);
@@ -367,8 +367,8 @@ agent pathplanner2018_forwardkick_agent("pathplanner2018_forwardkick_agent", pat
 agent pathplanner2018_sidekick_agent("pathplanner2018_sidekick_agent", pathplanner2018_sidekick_agent);
 agent pathplanner2018_sidestep_agent("pathplanner2018_sidestep_agent", pathplanner2018_sidestep_agent);
 agent path_move_around_ball_agent("path_move_around_ball_agent", path_move_around_ball_agent);
+agent pathplanner2018_striker_agent("pathplanner2018_striker_agent", pathplanner2018_striker_agent);
 
 // Test agents search
 agent search_test_agent("search_test_agent",search_test_agent);
 agent search_only_looking_for_ball("only_looking_for_ball",only_ball_looking);
-agent search_only_looking_for_goal("only_looking_for_goal",only_goal_looking);
