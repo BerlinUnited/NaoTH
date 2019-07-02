@@ -30,6 +30,9 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.future.preview.x", &futureBallPreview.x);
   engine.registerDecimalInputSymbol("ball.future.preview.y", &futureBallPreview.y);
 
+  engine.registerDecimalInputSymbol("ball.interception.preview.x", &interceptionPointPreview.x);
+  engine.registerDecimalInputSymbol("ball.interception.preview.y", &interceptionPointPreview.y);
+
   engine.registerBooleanInputSymbol("ball.know_where_itis", &getBallModel().knows);
   // HACK: right now know_where_itis is the same as see_where_itis
   engine.registerBooleanInputSymbol("ball.see_where_itis", &getBallModel().knows);
@@ -44,7 +47,7 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.preview.left_foot.y", &getBallModel().positionPreviewInLFoot.y);
   engine.registerDecimalInputSymbol("ball.preview.right_foot.x", &getBallModel().positionPreviewInRFoot.x);
   engine.registerDecimalInputSymbol("ball.preview.right_foot.y", &getBallModel().positionPreviewInRFoot.y);
-  
+
   // global
   engine.registerDecimalInputSymbol("ball.position.field.x", &ballPositionField.x);
   engine.registerDecimalInputSymbol("ball.position.field.y", &ballPositionField.y);
@@ -86,6 +89,9 @@ void BallSymbols::execute()
   );
 
   futureBallPreview = getMotionStatus().plannedMotion.hip / getBallModel().position_at_rest;
+
+  Math::LineSegment ballLine(getBallModel().position, getBallModel().position_at_rest);
+  interceptionPointPreview = getMotionStatus().plannedMotion.hip / ballLine.projection(Vector2d());
 
   lastRobotOdometry = getOdometryData();
 }//end execute
