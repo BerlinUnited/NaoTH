@@ -128,11 +128,12 @@ class TorsoRotationStabilizer : private TorsoRotationStabilizerBase
             p.hip.rotateY(correctionY);
             p.hip.translate(0, 0, height);
           }
+          PLOT("torsoRotationStabilizer:correctionX", correctionX);
+          PLOT("torsoRotationStabilizer:correctionY", correctionY);
           
 
           lastGyroError = error;
         }
-
         return true;
       }
 
