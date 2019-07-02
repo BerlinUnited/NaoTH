@@ -61,7 +61,7 @@ option roles_play_soccer
     }
     action 
     {
-      head.control_mode = search_for_goal;
+      head.control_mode = look_around;
       situationStatusOwnHalf = true;
       motion.type = stand;
     }
