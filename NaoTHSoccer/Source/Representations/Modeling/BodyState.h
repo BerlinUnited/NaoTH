@@ -18,6 +18,7 @@ public:
     : 
     fall_down_state(undefined),
     fall_down_state_time(0),
+    readyToWalk(false),
     standByLeftFoot(true),
     standByRightFoot(true),
     foot_state_time(0),
@@ -65,10 +66,12 @@ public:
   }//end getName
 
   // indicates whether the robot is upright etc.
+  // TODO: this should be renamed to koerper_lage or so
   State fall_down_state;
   // timestamp when the fall down state changed last time
   unsigned int fall_down_state_time;
-
+  /** indicates, whether the robot is ready to walk */
+  bool readyToWalk;
 
   // indicates whether the particular foot is on the ground
   bool standByLeftFoot;
@@ -93,6 +96,7 @@ public:
   {
       stream << "fall_down_state = " << getName(fall_down_state) << std::endl;
       stream << "fall_down_state_time = " << fall_down_state_time << std::endl;
+      stream << "readyToWalk = " << readyToWalk << std::endl;
       stream << "standByLeftFoot = " << standByLeftFoot << std::endl;
       stream << "standByRightFoot = " << standByRightFoot << std::endl;
       stream << "foot_state_time = " << foot_state_time << std::endl;

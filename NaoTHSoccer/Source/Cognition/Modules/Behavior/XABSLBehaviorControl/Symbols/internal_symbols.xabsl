@@ -42,11 +42,10 @@ namespace internal_symbols("Internal Symbols") {
     search_for_ball,
     search_for_ball_goalie,
     look_around,
-    search_for_goal,
-    search_for_goal_opp,
     look_at_ball_percept,
     search_for_ball_and_look_around,
-    look_at_team_ball
+    look_at_team_ball,
+    look_at_preview_angle
   };
 
   enum head.control_mode internal head.control_mode;
@@ -81,4 +80,6 @@ namespace internal_symbols("Internal Symbols") {
   /** stores the position from which the search has to move away */
   float internal search_ball_walk_back.x;
   float internal search_ball_walk_back.y;
+
+  bool internal search_for_ball.last_look_around_direction_was_left;
 }

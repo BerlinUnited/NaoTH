@@ -61,7 +61,7 @@ option roles_play_soccer
     }
     action 
     {
-      head.control_mode = search_for_goal;
+      head.control_mode = look_around;
       situationStatusOwnHalf = true;
       motion.type = stand;
     }
@@ -116,7 +116,8 @@ option roles_play_soccer
       // TODO! with roles, the freekick may change too!?
       else if (game.current_mode != playing)
         goto idle;
-      else if (game.set_play != none)
+      else if (game.set_play != none && strategy.role != goalie)
+        // goalie should'n turn and search for ball - keep playing!
         goto free_kick_simple;
       /* else if (game.set_play == goal_free_kick && game.own_kickoff)
         // if free kick time is (nearly) up, we proceed with our normal game, otherwise position for free kick

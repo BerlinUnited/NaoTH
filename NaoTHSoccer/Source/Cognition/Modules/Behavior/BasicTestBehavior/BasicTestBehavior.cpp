@@ -51,6 +51,18 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:StandUp:from_back", "Set the motion request to 'stand_up_from_back'", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:StandUp:from_back_arms_back", "Set the motion request to 'stand_up_from_back'", false);
 
+  // goalie motions
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:block_middle","..",false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:goalie_get_down","..",false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:goalie_get_fast_down","..",false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:goalie_sit","..",false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:goalie_sit_small","..",false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:goalie_sit_block","..",false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:goalie_sit_n_dive_left","..",false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:goalie_sit_n_dive_right","..",false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:jump_indicator_left", "..", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:jump_indicator_right", "..", false);
+  
   // other motions
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:dead", "Set the robot dead.", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:stand", "The default motion, otherwise do nothing", true);
@@ -79,6 +91,7 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:arms:arms_synchronised_with_walk", "set arms request to none", false);
 
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:whistle:listen", "start whistle detection", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:audio:capture", "start start audio capture for 4 channels", false);
 }
 
 void BasicTestBehavior::execute()
@@ -112,7 +125,7 @@ void BasicTestBehavior::execute()
     getMotionRequest().walkRequest.target.translation.x = 0;
   }
 
-  testWhistle();
+  testAudio();
 
 }//end execute
 
@@ -370,6 +383,40 @@ void BasicTestBehavior::testMotion()
     getMotionRequest().id = motion::parallel_dance;
   );
 
+
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:block_middle",
+    getMotionRequest().id = motion::block_middle;
+  );
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:goalie_get_down",
+    getMotionRequest().id = motion::goalie_get_down;
+  );
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:goalie_get_fast_down",
+    getMotionRequest().id = motion::goalie_get_fast_down;
+  );
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:goalie_sit",
+    getMotionRequest().id = motion::goalie_sit;
+  );
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:goalie_sit_block",
+    getMotionRequest().id = motion::goalie_sit_block;
+  );
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:goalie_sit_small",
+    getMotionRequest().id = motion::goalie_sit_small;
+  );
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:goalie_sit_n_dive_left",
+    getMotionRequest().id = motion::goalie_sit_n_dive_left;
+  );
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:goalie_sit_n_dive_right",
+    getMotionRequest().id = motion::goalie_sit_n_dive_right;
+  );
+
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:jump_indicator_left",
+    getMotionRequest().id = motion::jump_indicator_left;
+  );
+
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:jump_indicator_right",
+    getMotionRequest().id = motion::jump_indicator_right;
+  );
+
 }//end testMotion
 
 void BasicTestBehavior::testLED() {
@@ -404,7 +451,7 @@ void BasicTestBehavior::testLED() {
 
 } //testLED
 
-void BasicTestBehavior::testWhistle()
+void BasicTestBehavior::testAudio()
 {
   getAudioControl().capture = false;
 
@@ -416,5 +463,10 @@ void BasicTestBehavior::testWhistle()
     } else {
       getSoundPlayData().soundFile.clear();
     }
+  );
+
+  DEBUG_REQUEST("BasicTestBehavior:audio:capture",
+  	  getAudioControl().numChannels = 4;
+	  getAudioControl().capture = true;
   );
 }

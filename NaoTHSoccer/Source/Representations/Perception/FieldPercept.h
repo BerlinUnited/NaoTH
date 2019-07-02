@@ -112,6 +112,11 @@ public:
     checkPolyIsUnderHorizon(horizon);
   }
 
+  void setField(const FieldPoly& newField)
+  {
+    fieldPoly = newField;
+  }
+
   void reset()
   {
     valid = false;
@@ -125,13 +130,25 @@ public:
   }
 };
 
-
 class FieldPerceptRaw : public FieldPercept{};
 class FieldPerceptRawTop : public FieldPerceptRaw{};
 
 class FieldPerceptTop : public FieldPercept{};
 
+namespace naoth
+{
+template<>
+class Serializer<FieldPercept>
+{
+  public:
+  static void serialize(const FieldPercept& object, std::ostream& stream);
+  static void deserialize(std::istream& stream, FieldPercept& object);
+};
 
+template<>
+class Serializer<FieldPerceptTop> : public Serializer<FieldPercept>
+{};
+}
 
 #endif /* _FIELDPERCEPT_H */
 

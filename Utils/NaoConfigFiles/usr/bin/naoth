@@ -16,6 +16,9 @@ function start_function() {
       fi
     fi
 
+    echo "removing old log files"
+    find -L /tmp -maxdepth 1 -name "*.log" -exec rm -rf {} \;
+
     echo "starting naoth cognition process"
     cd /home/nao/naoqi/
 

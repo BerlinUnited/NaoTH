@@ -52,7 +52,6 @@ option fast_forward_kick
       motion.walk.step_control.time = 300;
       motion.walk.step_control.scale = 0.7;
 
-      //loook at percept
       head.control_mode = look_at_ball_percept;
     }
   }
@@ -81,7 +80,6 @@ option fast_forward_kick
       motion.walk.step_control.time = 300;
       motion.walk.step_control.scale = 0.7;
 
-      //loook at percept
       head.control_mode = look_at_ball_percept;
     }
   }
@@ -119,8 +117,6 @@ option fast_forward_kick
       motion.walk.coordinate = hip;
       motion.walk.style = stable;
 
-      
-      //loook at percept
       head.control_mode = look_at_ball_percept;
     }
   }
