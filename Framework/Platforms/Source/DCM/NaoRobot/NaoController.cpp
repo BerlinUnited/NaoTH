@@ -19,13 +19,18 @@ using namespace naoth;
 
 NaoController::NaoController()
     :
+    lolaAvailable(false),
     theSoundHandler(NULL),
     theTeamCommSender(NULL),
     theTeamCommListener(NULL),
     theRemoteCommandListener(NULL),
-    theDebugServer(NULL),
-    lolaAvailable(false)
+    theDebugServer(NULL)
 {
+  if(fileExists("/usr/bin/lola") || fileExists("/opt/aldebaran/bin/lola"))
+  {
+    lolaAvailable = true;
+  }
+
   // init shared memory
   // sensor data
   const std::string naoSensorDataPath = "/nao_sensor_data";
@@ -137,9 +142,6 @@ NaoController::NaoController()
   {
     lolaAvailable = true;
   }
-
-  // try to start lola
-  theLolaAdaptor.start();
   
   // create the teamcomm
   std::cout << "[NaoController] " << "Init TeamComm" << endl;

@@ -252,10 +252,15 @@ workspace "NaoTHSoccer"
         -- ACHTUNG: NaoSMAL doesn't build with the flag -std=c++11 (because of Boost)
         cppdialect "gnu++11"
         
-      dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
+        dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
         kind "ConsoleApp"
         links { "NaoTHSoccer", "Commons", naoth_links}
         vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoRobot" }
+       
+        dofile (FRAMEWORK_PATH .. "/Platforms/Make/LolaAdaptor.lua")
+        kind "ConsoleApp"
+        links { "NaoTHSoccer", "Commons", naoth_links}
+        vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LolaAdaptor" }
       
     -- generate tests if required
     if _OPTIONS["Test"] ~= nil then

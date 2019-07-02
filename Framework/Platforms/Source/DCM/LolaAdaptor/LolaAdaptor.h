@@ -15,7 +15,6 @@
 #include <chrono>
 #include <thread>
 #include <unistd.h>
-#include <fstream>
 
 namespace naoth 
 {
@@ -92,6 +91,11 @@ public:
     }
   }
   
+  static bool fileExists (const std::string& filename) {
+    struct stat buffer;   
+    return (stat (filename.c_str(), &buffer) == 0); 
+  }
+
   void start() 
   {
     exiting = false;
@@ -142,11 +146,6 @@ public:
   }
   
 private:
-
-  inline bool fileExists (const std::string& filename) {
-    struct stat buffer;   
-    return (stat (filename.c_str(), &buffer) == 0); 
-  }
 
   void run() 
   {
@@ -250,7 +249,7 @@ private:
   void notify() 
   {  
     static int drop_count = 10;
-    
+
     // raise the semaphore: triggers core
     if(sem != SEM_FAILED)
     {

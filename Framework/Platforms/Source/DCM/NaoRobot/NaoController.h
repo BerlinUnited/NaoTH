@@ -29,7 +29,6 @@
 #include "CPUTemperatureReader.h"
 #include "DebugCommunication/DebugServer.h"
 #include "AudioRecorder.h"
-#include "LolaAdaptor.h"
 
 #include "Tools/Communication/Network/BroadCaster.h"
 #include "Tools/Communication/Network/UDPReceiver.h"
@@ -62,12 +61,12 @@ public:
   virtual std::string getHeadNickName() const { return theHeadNickName; }
   virtual std::string getRobotName() const { return theRobotName; }
   virtual std::string getPlatformName() const { return "Nao"; }
-  virtual unsigned int getBasicTimeStep() const { return theLolaAdaptor.isRunning()?12:10; }
+  virtual unsigned int getBasicTimeStep() const { return lolaAvailable?12:10; }
   
   // camera stuff
   void get(Image& data){ 
     // HACK: we are in NAO V6
-    if(theLolaAdaptor.isRunning()) { 
+    if(lolaAvailable) { 
       theBottomCameraHandlerV6.get(data); 
     } else {
       theBottomCameraHandler.get(data); 
@@ -75,7 +74,7 @@ public:
   } // blocking
   void get(ImageTop& data){ 
     // HACK: we are in NAO V6
-    if(theLolaAdaptor.isRunning()) { 
+    if(lolaAvailable) { 
       theTopCameraHandlerV6.get(data); 
     } else {
       theTopCameraHandler.get(data); 
@@ -84,7 +83,7 @@ public:
   
   void get(CurrentCameraSettings& data) { 
     // HACK: we are in NAO V6
-    if(theLolaAdaptor.isRunning()) { 
+    if(lolaAvailable) { 
       theBottomCameraHandlerV6.getCameraSettings(data); 
     } else {
       theBottomCameraHandler.getCameraSettings(data);
@@ -92,7 +91,7 @@ public:
   }
   void get(CurrentCameraSettingsTop& data) { 
     // HACK: we are in NAO V6
-    if(theLolaAdaptor.isRunning()) { 
+    if(lolaAvailable) { 
       theTopCameraHandlerV6.getCameraSettings(data); 
     } else {
       theTopCameraHandler.getCameraSettings(data);
@@ -208,6 +207,8 @@ protected:
   std::string theHeadNickName;
   std::string theRobotName;
 
+  bool lolaAvailable;
+
   // -- begin -- shared memory access --
   // DCM --> NaoController
   SharedMemoryReader<NaoSensorData> naoSensorData;
@@ -234,9 +235,6 @@ protected:
   DebugServer* theDebugServer;
   CPUTemperatureReader theCPUTemperatureReader;
   AudioRecorder theAudioRecorder;
-  LolaAdaptor theLolaAdaptor;
-
-  bool lolaAvailable;
 };
 
 } // end namespace naoth
