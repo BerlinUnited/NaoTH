@@ -33,11 +33,6 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.interception.preview.x", &interceptionPointPreview.x);
   engine.registerDecimalInputSymbol("ball.interception.preview.y", &interceptionPointPreview.y);
 
-  engine.registerDecimalInputSymbol("ball.left_foot.x", &ballLeftFoot.x);
-  engine.registerDecimalInputSymbol("ball.left_foot.y", &ballLeftFoot.y);
-  engine.registerDecimalInputSymbol("ball.right_foot.x", &ballRightFoot.x);
-  engine.registerDecimalInputSymbol("ball.right_foot.y", &ballRightFoot.y);
-
   engine.registerBooleanInputSymbol("ball.know_where_itis", &getBallModel().knows);
   // HACK: right now know_where_itis is the same as see_where_itis
   engine.registerBooleanInputSymbol("ball.see_where_itis", &getBallModel().knows);
