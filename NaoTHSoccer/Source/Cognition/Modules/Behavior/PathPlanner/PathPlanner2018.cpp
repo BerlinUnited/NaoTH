@@ -96,7 +96,7 @@ void PathPlanner2018::execute()
     }
     break;
   case PathModel::PathPlanner2018Routine::DASH:
-    if(nearApproach_forwardKick(Foot::LEFT, getPathModel().xOffset, getPathModel().yOffset))
+    if(nearApproach_forwardKick(getPathModel().xOffset, getPathModel().yOffset))
     {
       kickPlanned = true;
     }
