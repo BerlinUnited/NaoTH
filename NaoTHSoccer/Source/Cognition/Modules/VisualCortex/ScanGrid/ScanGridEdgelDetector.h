@@ -78,8 +78,8 @@ public:
   public:
     Parameters() : ParameterList("ScanGridEdgelDetector")
     {
-      PARAMETER_REGISTER(brightness_threshold_top) = 6*2;
-      PARAMETER_REGISTER(brightness_threshold_bottom) = 6*4;
+      PARAMETER_REGISTER(brightness_threshold_top) = 20;
+      PARAMETER_REGISTER(brightness_threshold_bottom) = 24;
       PARAMETER_REGISTER(double_edgel_angle_threshold) = 0.2;
 
       PARAMETER_REGISTER(scan_vertical) = true;
@@ -114,6 +114,7 @@ private:
   public:
     int point;
     int prev_point;
+    int next_point;
     bool found;
     int maxValue;
 
@@ -123,16 +124,19 @@ private:
       this->maxValue = threshold;
       this->point = 0;
       this->prev_point = 0;
+      this->next_point = 0;
       this->found = false;
     }
 
-    virtual inline bool add(int point, int prev_point, int value) {
-      if(check(point, value)) {
+    virtual inline bool add(int between_point, int prev_point, int next_point, int value) {
+      if(check(between_point, value)) {
         this->prev_point = prev_point;
+        this->next_point = next_point;
       } else {
         if(this->found) {
           return true;
         }
+        // TODO is this needed?
         reset();
       }
       return false;
@@ -149,8 +153,11 @@ private:
     }
 
     inline void reset() {
+      this->maxValue = threshold;
+      this->point = 0;
+      this->prev_point = 0;
+      this->next_point = 0;
       this->found = false;
-      this->maxValue = this->threshold;
     }
   };
 
@@ -234,15 +241,17 @@ private:
     return end_idx;
   }
 
-  void add_edgel(const Vector2i& point) {
+  void add_edgel(const Vector2i& point, Edgel::Type type) {
     Edgel edgel;
+    edgel.type = type;
     edgel.point = point;
     edgel.direction = calculateGradient(point);
     getScanLineEdgelPercept().edgels.push_back(edgel);
   }
 
-  void add_edgel(int x, int y) {
+  void add_edgel(int x, int y, Edgel::Type type) {
     Edgel edgel;
+    edgel.type = type;
     edgel.point.x = x;
     edgel.point.y = y;
     edgel.direction = calculateGradient(edgel.point);
@@ -259,7 +268,31 @@ private:
     const Edgel& end = getScanLineEdgelPercept().edgels[i_end];
     const Edgel& begin = getScanLineEdgelPercept().edgels[i_begin];
 
-    if(-(begin.direction*end.direction) < parameters.double_edgel_angle_threshold) {
+    double cos_alpha = begin.direction*end.direction;
+
+    DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_double_edgels",
+      ColorClasses::Color color = ColorClasses::black;
+      if(begin.type == Edgel::positive) {
+        color = ColorClasses::blue;
+      } else if(begin.type == Edgel::negative) {
+        color = ColorClasses::red;
+      }
+      LINE_PX(color, begin.point.x, begin.point.y,
+                     begin.point.x + (int)(begin.direction.x*5),
+                     begin.point.y + (int)(begin.direction.y*5));
+      color = ColorClasses::black;
+      if(end.type == Edgel::positive) {
+        color = ColorClasses::blue;
+      } else if(end.type == Edgel::negative) {
+        color = ColorClasses::red;
+      }
+      LINE_PX(color, end.point.x, end.point.y,
+                     end.point.x + (int)(end.direction.x*5),
+                     end.point.y + (int)(end.direction.y*5));
+    );
+
+    if(-cos_alpha < parameters.double_edgel_angle_threshold) {
+    //if(-(begin.direction*end.direction) < parameters.double_edgel_angle_threshold) {
       return; // false
     }
 
@@ -271,12 +304,22 @@ private:
     pair.point.x = (begin.point.x + end.point.x)*0.5;
     pair.point.y = (begin.point.y + end.point.y)*0.5;
     pair.direction = (begin.direction - end.direction).normalize();
+    /*
+    pair.direction = begin.direction;
+    if(cos_alpha > 0) {
+      pair.direction.rotate(std::acos(std::fabs(cos_alpha))/2);
+    } else {
+      pair.direction.rotate(-std::acos(std::fabs(cos_alpha))/2);
+    }*/
 
     getScanLineEdgelPercept().pairs.push_back(pair);
   }
 
-  inline bool refine_vertical(MaxPeakScan& maximumPeak, int x);
-  inline bool refine_horizontal(MaxPeakScan& maximumPeak, int y);
+  inline bool refine_range_vertical(MaxPeakScan& maximumPeak, int x);
+  inline void refine_vertical(MaxPeakScan& maximumPeak, int x);
+
+  inline bool refine_range_horizontal(MaxPeakScan& maximumPeak, int y);
+  inline void refine_horizontal(MaxPeakScan& maximumPeak, int y);
 
   /** Estimates the gradient of the gray-gradient at the point by a Sobel Operator. */
   Vector2d calculateGradient(const Vector2i& point) const;
