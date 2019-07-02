@@ -69,7 +69,7 @@ private:
       PARAMETER_REGISTER(circle.refine) = true;
 
       PARAMETER_REGISTER(circle.validate) = true;
-      PARAMETER_REGISTER(circle.validation_thresh) = 100;
+      PARAMETER_REGISTER(circle.validation_thresh) = 200;
 
       syncWithConfig();
     }

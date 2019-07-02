@@ -65,40 +65,43 @@ void RansacLineDetector::execute()
       // get inliers and outliers of the model
       std::vector<size_t> new_outlier_idx;
       circleRansac.get_inliers(model, getLineGraphPercept().edgelsOnField,
-                               outliers, inlier_idx, new_outlier_idx);
+                               outliers, inlier_idx, new_outlier_idx);      
 
-      // VALIDATE
-      std::vector<Vector2d> points(inlier_idx.size());
+      bool valid = !params.circle.validate;
+      if (!valid) {
+        // VALIDATE
+        std::vector<Vector2d> points(inlier_idx.size());
 
-      for(int i=0; i<inlier_idx.size(); ++i) {
-        points[i] = getLineGraphPercept().edgelsOnField[inlier_idx[i]].point;
+        for(size_t i=0; i<inlier_idx.size(); ++i) {
+          points[i] = getLineGraphPercept().edgelsOnField[inlier_idx[i]].point;
+        }
+
+        Vector2d center;
+        double radius;
+        if (Geometry::calculateCircle(points, center, radius)) {
+          valid = !params.circle.validate || std::fabs(radius - getFieldInfo().centerCircleRadius)
+                               <= params.circle.validation_thresh;
+
+          DEBUG_REQUEST("Vision:RansacLineDetector:draw_circle_field",
+            FIELD_DRAWING_CONTEXT;
+            PEN("000099", 5);
+            for(size_t idx : inlier_idx) {
+              const Edgel& inlier = getLineGraphPercept().edgelsOnField[idx];
+              CIRCLE(inlier.point.x, inlier.point.y, 30);
+            }
+
+            if(valid) {
+              PEN("99000066", 50);
+            } else {
+              PEN("FF69B1FF", 70);
+            }
+            CIRCLE(model.circle_mean.x, model.circle_mean.y, model.radius);
+
+            PEN("DEAD07FF", 50);
+            CIRCLE(center.x, center.y, radius);
+          );
+        }
       }
-
-      Vector2d center;
-      double radius;
-      Geometry::calculateCircle(points, center, radius);
-
-      bool valid = !params.circle.validate || std::fabs(radius - getFieldInfo().centerCircleRadius)
-                   <= params.circle.validation_thresh;
-
-      DEBUG_REQUEST("Vision:RansacLineDetector:draw_circle_field",
-        FIELD_DRAWING_CONTEXT;
-        PEN("000099", 5);
-        for(size_t idx : inlier_idx) {
-          const Edgel& inlier = getLineGraphPercept().edgelsOnField[idx];
-          CIRCLE(inlier.point.x, inlier.point.y, 30);
-        }
-
-        if(valid) {
-          PEN("99000066", 50);
-        } else {
-          PEN("FF69B1FF", 70);
-        }
-        CIRCLE(model.circle_mean.x, model.circle_mean.y, model.radius);
-
-        PEN("DEAD07FF", 50);
-        CIRCLE(center.x, center.y, radius);
-      );
 
       if(valid) {
         // continue with ransac on remaining outliers

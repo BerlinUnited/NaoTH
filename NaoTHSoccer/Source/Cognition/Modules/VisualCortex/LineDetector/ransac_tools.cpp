@@ -236,15 +236,16 @@ bool CircleModel::validate(const std::vector<Edgel>& edgels,
 {
   std::vector<Vector2d> points(inlier_idx.size());
 
-  for(int i=0; i<inlier_idx.size(); ++i) {
+  for(size_t i=0; i<inlier_idx.size(); ++i) {
     points[i] = edgels[inlier_idx[i]].point;
   }
 
   Vector2d center;
   double radius;
-  Geometry::calculateCircle(points, center, radius);
-
-  return std::fabs(radius - this->radius) <= threshold;
+  if(Geometry::calculateCircle(points, center, radius)) {
+    return std::fabs(radius - this->radius) <= threshold;
+  }
+  return false;
 }
 
 Vector2d CircleModel::refine(const std::vector<Edgel>& edgels,
