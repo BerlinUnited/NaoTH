@@ -44,7 +44,6 @@ XABSLBehaviorControl::XABSLBehaviorControl()
   REGISTER_MODULE(TeamSymbols, true);
   REGISTER_MODULE(SensorSymbols, true);
   REGISTER_MODULE(MathSymbols, true);
-  REGISTER_MODULE(GoalSymbols, true);
   REGISTER_MODULE(LedSymbols, true);
   REGISTER_MODULE(SelflocSymbols, true);
   REGISTER_MODULE(OdometrySymbols, true);
@@ -237,7 +236,6 @@ void XABSLBehaviorControl::registerXABSLSymbols()
     XABSL_REGISTER_SYMBOLS(TeamSymbols);
     XABSL_REGISTER_SYMBOLS(SensorSymbols);
     XABSL_REGISTER_SYMBOLS(MathSymbols);
-    XABSL_REGISTER_SYMBOLS(GoalSymbols);
     XABSL_REGISTER_SYMBOLS(LedSymbols);
     XABSL_REGISTER_SYMBOLS(SelflocSymbols);
     XABSL_REGISTER_SYMBOLS(OdometrySymbols);
