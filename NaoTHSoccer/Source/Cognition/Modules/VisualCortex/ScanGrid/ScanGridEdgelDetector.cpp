@@ -22,6 +22,7 @@ ScanGridEdgelDetector::ScanGridEdgelDetector()
   DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:scanlines",
                          "draw activated scanlines", false);
   DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:draw_refinement", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:plot_gradient_vertical_scan", "", false);
 
   getDebugParameterList().add(&parameters);
 }
@@ -104,14 +105,11 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
   Math::LineSegment polyLine;
   poly_idx = next_poly_line(poly_idx, polyLine, poly_points);
 
-  int x, y, luma, prevLuma, gradient, prev_y;
-
   // vertical scanlines
   for(const ScanGrid::VScanLine scanline: getScanGrid().vertical)
   {
-    bool begin_found = false;
-    x = scanline.x;
-    y = getScanGrid().vScanPattern[scanline.bottom];
+    int x = scanline.x;
+    int y = getScanGrid().vScanPattern[scanline.bottom];
 
     if(x < polyLine.begin().x) {
       // scanline is left of field poly
@@ -174,39 +172,54 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
 
     int end_of_body = getBodyContour().getFirstFreeCell(Vector2i(scanline.x, y)).y;
 
-    // TODO: Is this correct?
-    prevLuma = getImage().getY(scanline.x, end_of_body);
-    prev_y = end_of_body;
+    // TODO: Is this correct or can we do better?
+    int prev_y = getScanGrid().vScanPattern[scanline.bottom];
+    int prevLuma = getImage().getY(scanline.x, prev_y);
 
-    int last_scan_pattern_gap = getScanGrid().vScanPattern.at(getScanGrid().vScanPattern.size()-2) - getScanGrid().vScanPattern.back();
-    size_t i = scanline.bottom;
     // TODO: cleanup
-    for(y = getScanGrid().vScanPattern[i]; y >= end_of_field; y = (++i < getScanGrid().vScanPattern.size())? getScanGrid().vScanPattern[i]: y - last_scan_pattern_gap) {
-      /*
-      y = getScanGrid().vScanPattern[i];
-      if(y < end_of_field) {
-        // don't scan above field area
-        break;
-      }*/
+    if(getScanGrid().vScanPattern.size() < 2) {
+      return;
+    }
+    int last_scan_pattern_gap = getScanGrid().vScanPattern.at(getScanGrid().vScanPattern.size()-2) - getScanGrid().vScanPattern.back();
 
-      luma = getImage().getY(x, y);
+    minimumPeak.reset();
+    maximumPeak.reset();
+
+    // TODO: cleanup
+    bool begin_found = false;
+    size_t i = scanline.bottom;
+    for(y = getScanGrid().vScanPattern[i]; y >= end_of_field; y = (++i < getScanGrid().vScanPattern.size())? getScanGrid().vScanPattern[i]: y - last_scan_pattern_gap) {
+      int luma = getImage().getY(x, y);
+
       if(y >= end_of_body) {
         // don't scan inside own body
+        prev_y = y;
         prevLuma = luma;
         continue;
       }
 
-      gradient = luma - prevLuma;
+      // calculate gradient
       int check_y = (prev_y + y)/2;
+      int gradient = luma - prevLuma;
+
+      DEBUG_REQUEST("Vision:ScanGridEdgelDetector:plot_gradient_vertical_scan",
+        std::ostringstream os;
+        os << ((cameraID==CameraInfo::Top)? "GradiantTop": "GradiantBottom") << " x=" << x;
+        std::cout << os.str() << " " << i-scanline.bottom << " = " << check_y << " " << minimumPeak.found << std::endl;
+        PLOT_GENERIC(os.str(), static_cast<int>(i-scanline.bottom), gradient);
+      );
 
       // begin
       if(maximumPeak.add(check_y, prev_y, y, gradient)) {
+        DEBUG_REQUEST("Vision:ScanGridEdgelDetector:plot_gradient_vertical_scan",
+          std::cout << "x=" << x << " max " << check_y << " point=" << maximumPeak.point << std::endl;
+        );
         // found greatest peak
         DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_jump_vertical",
           LINE_PX(ColorClasses::red, x, maximumPeak.prev_point, x, maximumPeak.next_point);
         );
 
-        if(std::abs(prev_y - y) <= 2)
+        if(prev_y - y <= 2)
         {
           refine_vertical(maximumPeak, x);
           add_edgel(x, maximumPeak.point, Edgel::positive);
@@ -217,11 +230,16 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
           add_edgel(x, maximumPeak.point, Edgel::positive);
           begin_found = true;
         }
+
         maximumPeak.reset();
       }
 
       // end
-      if(minimumPeak.add(check_y, prev_y, y, gradient)) {
+      if(minimumPeak.add(check_y, prev_y, y, gradient))
+      {
+        DEBUG_REQUEST("Vision:ScanGridEdgelDetector:plot_gradient_vertical_scan",
+          std::cout <<  "x=" << x << " min " << check_y << " point=" << minimumPeak.point << std::endl;
+        );
         // found greatest peak
         DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_jump_vertical",
           LINE_PX(ColorClasses::yellow, x, minimumPeak.prev_point, x, minimumPeak.next_point);
@@ -245,6 +263,7 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
             begin_found = false;
           }
         }
+
         minimumPeak.reset();
       }
 
@@ -323,14 +342,12 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
                                  (int) polyLineRight.end().x, (int) polyLineRight.end().y);
   );*/
 
-  int x, y, end_x, luma, prevLuma, gradient, prev_x;
-
   // horizontal scanlines
   for(const ScanGrid::HScanLine scanline: getScanGrid().horizontal)
   {
-    x = scanline.left_x;
-    y = scanline.y;
-    end_x = scanline.right_x;
+    int x = scanline.left_x;
+    int y = scanline.y;
+    int end_x = scanline.right_x;
 
     // determine scanline intersections with the field poly line
     if(y < polyLineLeft.begin().y) {
@@ -404,13 +421,16 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
     }
 
     bool begin_found = false;
+    minimumPeak.reset();
+    maximumPeak.reset();
 
-    prevLuma = getImage().getY(x, y);
-    prev_x = x;
+    int prev_x = x;
+    int prevLuma = getImage().getY(prev_x, y);
+
     for(;x <= end_x; x += scanline.skip) {
 
-      luma = getImage().getY(x, y);
-      gradient = luma - prevLuma;
+      int luma = getImage().getY(x, y);
+      int gradient = luma - prevLuma;
 
       int check_x = (prev_x + x)/2;
 
