@@ -66,10 +66,9 @@ void bodyCollisionDetector::execute()
     }
 }
 
-void const bodyCollisionDetector::draw_impact_vector(Vector2d vec) const
+void bodyCollisionDetector::draw_impact_vector(Vector2d vec)
 {
     FIELD_DRAWING_CONTEXT;
     PEN("000000", 1);
     ARROW(0, 0, vec.x, vec.y);
-    return;
 }

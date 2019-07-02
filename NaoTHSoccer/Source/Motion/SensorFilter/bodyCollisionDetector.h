@@ -21,6 +21,7 @@
 
 
 //Include tools, datastructures and algorithms
+#include "Tools/math/vector2.h"
 
 //Include debugging and plotting tools
 #include "Tools/Debug/DebugDrawings.h"
@@ -63,7 +64,7 @@ public:
     void execute();
 
 private:
-    void const draw_impact_vector(Vector2d) const;
+    void draw_impact_vector(Vector2d);
     const TorsoRotationStabilizerParameters& torsoParams;
 };
 
