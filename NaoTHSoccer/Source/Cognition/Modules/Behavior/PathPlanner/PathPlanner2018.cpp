@@ -59,21 +59,12 @@ void PathPlanner2018::execute()
   case PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL:
     moveAroundBall(getPathModel().direction, getPathModel().radius, getPathModel().stable);
     break;
-  case PathModel::PathPlanner2018Routine::FORWARDKICK_LEFT:
+  case PathModel::PathPlanner2018Routine::FORWARDKICK:
     //if (farApproach())
     {
-      if (nearApproach_forwardKick(Foot::LEFT, getPathModel().xOffset, getPathModel().yOffset))
+      if (nearApproach_forwardKick(getPathModel().xOffset, getPathModel().yOffset))
       {
-        forwardKick(Foot::LEFT);
-      }
-    }
-    break;
-  case PathModel::PathPlanner2018Routine::FORWARDKICK_RIGHT:
-    //if (farApproach())
-    {
-      if (nearApproach_forwardKick(Foot::RIGHT, getPathModel().xOffset, getPathModel().yOffset))
-      {
-        forwardKick(Foot::RIGHT);
+        forwardKick();
       }
     }
     break;
@@ -245,7 +236,7 @@ bool PathPlanner2018::sidesteps(const Foot& foot, const double direction){
 
 }
 
-bool PathPlanner2018::nearApproach_forwardKick(const Foot& /*foot*/, const double offsetX, const double offsetY)
+bool PathPlanner2018::nearApproach_forwardKick(const double offsetX, const double offsetY)
 {
   // Always execute the steps that were planned before planning new steps
   if (stepBuffer.empty())
@@ -444,7 +435,7 @@ bool PathPlanner2018::nearApproach_sideKick(const Foot& foot, const double offse
   return false;
 }
 
-void PathPlanner2018::forwardKick(const Foot& /*foot*/)
+void PathPlanner2018::forwardKick()
 {
   if (!kickPlanned)
   {
