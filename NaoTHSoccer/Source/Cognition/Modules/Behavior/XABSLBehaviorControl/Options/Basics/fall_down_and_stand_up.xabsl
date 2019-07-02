@@ -40,7 +40,6 @@ option fall_down_and_stand_up
       motion.execute_immediately = true;
       motion.type = falling;
       arm.react_to_collision = false;
-      head.control_mode = look_straight_ahead;
     }
   }
 

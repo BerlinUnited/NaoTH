@@ -13,9 +13,10 @@ FallMotion::FallMotion()
 
   for (int i = 0; i < JointData::numOfJoint; i++)
   {
-    // retain some stiffness in the head joints in order to turn the head a little during falling. The head turning is currently done by xabsl 
+    // retain some stiffness in the head joints in order to turn the head a little during falling.
     if (JointData::getJointID(i) == JointData::HeadPitch || JointData::getJointID(i) == JointData::HeadYaw){
       freeStiffness[i] = 0.3;
+      getMotorJointData().position[i] = 0.0;
     }
     else{
       freeStiffness[i] = -1.0;
