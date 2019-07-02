@@ -5,7 +5,6 @@ using namespace std;
 
 GameLogger::GameLogger()
   : 
-  logfileManager(true),
   lastCompleteFrameNumber(0),
   oldState(PlayerInfo::initial),
   firstRecording(true),
@@ -28,7 +27,7 @@ GameLogger::~GameLogger()
 }
 
 #define LOGSTUFF(name) \
-  { std::stringstream& dataStream = logfileManager.log(getFrameInfo().getFrameNumber(), #name); \
+  { std::ostream& dataStream = logfileManager.log(getFrameInfo().getFrameNumber(), #name); \
   Serializer<name>::serialize(get##name(), dataStream); } ((void)0)
 
 void GameLogger::execute()
