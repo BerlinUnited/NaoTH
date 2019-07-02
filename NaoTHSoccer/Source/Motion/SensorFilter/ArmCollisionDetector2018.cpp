@@ -48,24 +48,24 @@ void ArmCollisionDetector2018::execute()
 {
     //Check if robot is in a suitable situation to recognize collisions#
     const bool bodymodeOK = getBodyState().fall_down_state != BodyState::upright;
-    const bool armModeOK =
-        getMotionRequest().armMotionRequest.id == ArmMotionRequest::arms_synchronised_with_walk ||
-        getMotionRequest().armMotionRequest.id == ArmMotionRequest::arms_down;
+  const bool armModeOK =
+    getMotionRequest().armMotionRequest.id == ArmMotionRequest::arms_synchronised_with_walk ||
+    getMotionRequest().armMotionRequest.id == ArmMotionRequest::arms_down;
     const bool motionModeOK = getMotionStatus().currentMotion == motion::walk || getMotionStatus().currentMotion == motion::stand;
 
-    // clear the joint command history in order to not check for collision while the robot is already executing a evasive movement for example
-    if (!armModeOK || !motionModeOK || !bodymodeOK)
-    {
-        jointDataBufferLeft.clear();
-        jointDataBufferRight.clear();
+  // clear the joint command history in order to not check for collision while the robot is already executing a evasive movement for example
+  if (!armModeOK || !motionModeOK || !bodymodeOK)
+  {
+    jointDataBufferLeft.clear();
+    jointDataBufferRight.clear();
 
-        collisionBufferLeft.clear();
-        collisionBufferRight.clear();
+    collisionBufferLeft.clear();
+    collisionBufferRight.clear();
 
-        collisionBufferLeftRoll.clear();
-        collisionBufferRightRoll.clear();
-        return;
-    }
+    collisionBufferLeftRoll.clear();
+    collisionBufferRightRoll.clear();
+    return;
+  }
 
 
     //collect Motorjoint Data and adjust timelag (Motor is 4 Frames ahead of Sensor)
