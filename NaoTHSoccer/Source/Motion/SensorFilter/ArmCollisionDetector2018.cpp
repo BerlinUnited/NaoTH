@@ -53,13 +53,17 @@ void ArmCollisionDetector2018::execute()
 	const bool armModeOK =
 		getMotionRequest().armMotionRequest.id == ArmMotionRequest::arms_synchronised_with_walk ||
 		getMotionRequest().armMotionRequest.id == ArmMotionRequest::arms_down;
-    const bool motionModeOK = getMotionStatus().currentMotion == motion::walk || getMotionStatus().currentMotion == motion::stand;
+    const bool motionModeOK = (getMotionStatus().currentMotion == motion::walk) || 
+        ((getMotionStatus().currentMotion == motion::stand) && (getMotionStatus().target_reached));
 
 	// clear the joint command history in order to not check for collision while the robot is already executing a evasive movement for example
+    // Addition GO19: Also clear collision Buffers!
 	if (!armModeOK || !motionModeOK || !bodymodeOK)
 	{
 		jointDataBufferLeft.clear();
 		jointDataBufferRight.clear();
+        collisionBufferLeft.clear();
+        collisionBufferRight.clear();
 		return;
 	}
 
