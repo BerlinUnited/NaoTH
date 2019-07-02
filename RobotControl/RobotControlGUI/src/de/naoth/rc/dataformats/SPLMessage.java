@@ -16,7 +16,6 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,37 +31,7 @@ public class SPLMessage
         SPLMessage2017.SPL_STANDARD_MESSAGE_STRUCT_VERSION,
         SPLMessage2018.SPL_STANDARD_MESSAGE_STRUCT_VERSION
     );
-    
-    public static final int BU_CUSTOM_DATA_OFFSET_X32 = 12;
-    public static final int BU_CUSTOM_DATA_OFFSET_X64 = 16;
 
-    public static class DoBerManCustomHeader
-    {
-        public long timestamp;
-        public byte teamID;
-        public byte isPenalized;
-        public byte whistleDetected;
-        public byte dummy;
-        
-        public static DoBerManCustomHeader parseData(byte[] data) {
-            // WARNING! HACK!
-            // the struct size is different in 32/64 bit
-            // but it looks like, java can parse both, not matter which size ...
-            DoBerManCustomHeader mixed = null;
-            if(data.length >= BU_CUSTOM_DATA_OFFSET_X64) {
-                ByteBuffer doberHeader = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN);
-                mixed = new DoBerManCustomHeader();
-                mixed.timestamp = doberHeader.getLong();
-                mixed.teamID = doberHeader.get();
-                mixed.isPenalized = doberHeader.get();
-                mixed.whistleDetected = doberHeader.get();
-                mixed.dummy = doberHeader.get();
-            }
-            
-            return mixed;
-        }
-    }
-    
     //public byte header[4]; // 4
     //public byte version; // 1
     public byte playerNum; // 1
@@ -120,7 +89,7 @@ public class SPLMessage
 
     public transient TeamMessageOuterClass.BUUserTeamMessage user = null;
     
-    public transient DoBerManCustomHeader doberHeader = null;
+    public transient SPLMixedTeamHeader mixedHeader = null;
     
     public SPLMessage()
     {
