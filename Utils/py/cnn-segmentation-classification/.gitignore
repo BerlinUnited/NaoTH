@@ -2,3 +2,4 @@
 /img.db
 /logs
 venv/*
+/test.db
