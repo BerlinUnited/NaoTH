@@ -135,43 +135,29 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
     }
 
     // determine scanline intersection with field poly
-    // if end_of_field is 0 there is no intersection
     int end_of_field = 0;
 
-    double min_poly_y = polyLine.begin().y;
-    double max_poly_y = polyLine.end().y;
-    if(min_poly_y > max_poly_y) {
-      std::swap(min_poly_y, max_poly_y);
-    }
+    Vector2d begin(x, y);
+    //Vector2d end(x, getScanGrid().vScanPattern[scanline.top]);
+    Vector2d end(x, 0);
+    Math::LineSegment line(begin, end);
 
-    if (getScanGrid().vScanPattern[scanline.bottom] < min_poly_y) {
-      // scanline is certainly outside of field poly
+    if(line.intersect(polyLine)) {
+      double t = line.intersection(polyLine);
+
+      // set end of field to intersection
+      Vector2d intersection = line.point(t);
+      end_of_field = (int) intersection.y;
+
+      DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_field_intersections",
+        CIRCLE_PX(ColorClasses::orange, x, end_of_field, 2);
+      );
+    } else {
+      // scanline is outside of field poly
       continue;
     }
 
-    if (getScanGrid().vScanPattern[scanline.top] <= max_poly_y)
-    {
-      // scanline might intersect with field poly
-      Vector2d begin(x, y);
-      Vector2d end(x, getScanGrid().vScanPattern[scanline.top]);
-      Math::LineSegment line(begin, end);
-
-      if(line.intersect(polyLine)) {
-        double t = line.intersection(polyLine);
-
-        // set end of field to intersection
-        Vector2d intersection = line.point(t);
-        end_of_field = (int) intersection.y;
-
-        DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_field_intersections",
-          CIRCLE_PX(ColorClasses::orange, x, end_of_field, 2);
-        );
-      } else if(getScanGrid().vScanPattern[scanline.bottom] < max_poly_y) {
-        // scanline is outside of field poly
-        continue;
-      } // else scanline is inside of field poly
-    }
-
+    // TODO: fix drawing
     DEBUG_REQUEST("Vision:ScanGridEdgelDetector:scanlines",
       int top = std::max(getScanGrid().vScanPattern.at(scanline.top), end_of_field);
       LINE_PX(ColorClasses::white,
@@ -192,12 +178,16 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
     prevLuma = getImage().getY(scanline.x, end_of_body);
     prev_y = end_of_body;
 
-    for(size_t i = scanline.bottom; i <= scanline.top; ++i) {
+    int last_scan_pattern_gap = getScanGrid().vScanPattern.at(getScanGrid().vScanPattern.size()-2) - getScanGrid().vScanPattern.back();
+    size_t i = scanline.bottom;
+    // TODO: cleanup
+    for(y = getScanGrid().vScanPattern[i]; y >= end_of_field; y = (++i < getScanGrid().vScanPattern.size())? getScanGrid().vScanPattern[i]: y - last_scan_pattern_gap) {
+      /*
       y = getScanGrid().vScanPattern[i];
       if(y < end_of_field) {
         // don't scan above field area
         break;
-      }
+      }*/
 
       luma = getImage().getY(x, y);
       if(y >= end_of_body) {
