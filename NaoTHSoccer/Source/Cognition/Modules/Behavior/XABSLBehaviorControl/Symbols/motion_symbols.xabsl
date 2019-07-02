@@ -10,7 +10,8 @@ namespace motion_symbols("Motion Symbols") {
     look_straight_ahead,
     look_at_point,
     look_at_world_point,
-    look_at_point_on_the_ground,
+    look_at_point_on_the_ground
+,
     goto_angle
   };
   
@@ -119,7 +120,10 @@ namespace motion_symbols("Motion Symbols") {
     goalie_dive_left_test,
     goalie_sit_block,
     goalie_sit_n_dive_left,
-    goalie_sit_n_dive_right
+    goalie_sit_n_dive_right,
+
+    jump_indicator_left,
+    jump_indicator_right
   };
 
   enum motion.walk.coordinate
