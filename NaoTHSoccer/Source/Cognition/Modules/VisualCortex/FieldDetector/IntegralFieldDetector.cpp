@@ -83,7 +83,7 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
       cell.sum_of_green = getBallDetectorIntegralImage().getSumForRect(
             cell.minX, cell.minY, cell.maxX, cell.maxY, 1);
 
-      double density;
+      double density = 0;
       if(params.check_density) {
         density = getBallDetectorIntegralImage().getDensityForRect(
                           cell.minX, cell.minY, cell.maxX, cell.maxY, 0);
