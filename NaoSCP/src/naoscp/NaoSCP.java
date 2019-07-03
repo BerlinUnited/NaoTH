@@ -579,33 +579,45 @@ public class NaoSCP extends javax.swing.JPanel {
     }//GEN-LAST:event_btWriteToStickActionPerformed
 
     private void btInintRobotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btInintRobotActionPerformed
-        final JFileChooser chooser = new JFileChooser();
-        String libPath = config.getProperty("naoscp.libpath", ".");
-        chooser.setCurrentDirectory(new File(libPath));
-        chooser.setDialogTitle("Select toolchain \"extern/lib\" Directory");
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        chooser.setAcceptAllFileFilterUsed(false);
 
-        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            // senity check
-            File libDir = chooser.getSelectedFile();
-            File gioFile = new File(libDir, "libgio-2.0.so");
-            File glibDir = new File(libDir, "glib-2.0");
-            if (!gioFile.isFile() || !glibDir.isDirectory()) {
-                chooser.setDialogTitle("Toolchain \"extern/lib\" Directory seems to be wrong. Try again.");
-                JOptionPane.showMessageDialog(this,
-                        "Toolchain \"extern/lib\" Directory seems to be wrong. Cannot find 'libgio-2.0.so' or 'glib-2.0'.",
-                        "ERROR", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            config.setProperty("naoscp.libpath", libDir.getAbsolutePath());
+      naoTHPanel.checkFileAvailability();
+      if(!naoTHPanel.isExecEnabled() || !naoTHPanel.isConfEnabled() || (!naoTHPanel.isLibEnabled() && !naoTHPanel.isLolaEnabled()) )
+      {
+        Logger.getGlobal().log(Level.SEVERE, "For initialising the robot naoth executable, Config directory and lola_adaptor executable (V6) or libNaoSMAL need to be available (V5 and lower)! ");
+        return;
+      }
+      naoTHPanel.setLibSelected();
+      naoTHPanel.setLolaSelected();
+      naoTHPanel.setExecSelected();
+      naoTHPanel.setConfSelected();
+
+      final JFileChooser chooser = new JFileChooser();
+      String libPath = config.getProperty("naoscp.libpath", ".");
+      chooser.setCurrentDirectory(new File(libPath));
+      chooser.setDialogTitle("Select toolchain \"extern/lib\" Directory");
+      chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+      chooser.setAcceptAllFileFilterUsed(false);
+
+      if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+        // sanity check
+        File libDir = chooser.getSelectedFile();
+        File gioFile = new File(libDir, "libgio-2.0.so");
+        File glibDir = new File(libDir, "glib-2.0");
+        if (!gioFile.isFile() || !glibDir.isDirectory()) {
+            chooser.setDialogTitle("Toolchain \"extern/lib\" Directory seems to be wrong. Try again.");
+            JOptionPane.showMessageDialog(this,
+                    "Toolchain \"extern/lib\" Directory seems to be wrong. Cannot find 'libgio-2.0.so' or 'glib-2.0'.",
+                    "ERROR", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        config.setProperty("naoscp.libpath", libDir.getAbsolutePath());
             
-            final File tmpDir = createTemporaryDirectory("nao_scp_init_");
-            if(tmpDir == null) {return;}
+        final File tmpDir = createTemporaryDirectory("nao_scp_init_");
+        if(tmpDir == null) {return;}
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
                     try {
                         File setupDir = new File(tmpDir, "setup");
                         File deployDir = new File(tmpDir, "setup/deploy");
@@ -617,7 +629,7 @@ public class NaoSCP extends javax.swing.JPanel {
 
                         if (!setupDir.mkdirs()) {
                             Logger.getGlobal().log(Level.SEVERE, "Could not create setup directory: " + setupDir.getAbsolutePath());
-                        } else {
+                        } else {                                                   
                             // copy deploy stuff
                             naoTHPanel.getAction().run(deployDir);
                             FileUtils.copyFiles(new File(deployStickScriptPath), setupDir);
