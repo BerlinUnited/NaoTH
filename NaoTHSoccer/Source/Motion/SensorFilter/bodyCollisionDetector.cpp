@@ -70,6 +70,6 @@ void bodyCollisionDetector::draw_impact_vector(Vector2d vec)
 {
     FIELD_DRAWING_CONTEXT;
     PEN("000000", 1);
-    vec = vec.normalize(500);
-    ARROW(0, 0, vec.x, vec.y);
+    //vec = vec.normalize(500);
+    ARROW(0, 0, vec.x*10000, vec.y*10000);
 }
