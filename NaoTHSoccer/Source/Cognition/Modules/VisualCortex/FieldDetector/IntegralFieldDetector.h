@@ -76,6 +76,10 @@ public:
 
       PARAMETER_REGISTER(grid_size_top) = 20;
       PARAMETER_REGISTER(grid_size_bottom) = 30;
+
+      PARAMETER_REGISTER(check_density) = true;
+      PARAMETER_REGISTER(max_density) = 70.;
+
       syncWithConfig();
     }
     double proportion_of_green;
@@ -89,6 +93,9 @@ public:
 
     int grid_size_top;
     int grid_size_bottom;
+
+    bool check_density;
+    double max_density;
   } params;
 
 private:

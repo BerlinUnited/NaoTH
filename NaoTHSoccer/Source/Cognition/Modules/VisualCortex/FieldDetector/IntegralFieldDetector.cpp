@@ -83,18 +83,28 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
       cell.sum_of_green = getBallDetectorIntegralImage().getSumForRect(
             cell.minX, cell.minY, cell.maxX, cell.maxY, 1);
 
+      double density;
+      if(params.check_density) {
+        density = getBallDetectorIntegralImage().getDensityForRect(
+                          cell.minX, cell.minY, cell.maxX, cell.maxY, 0);
+      }
+
       DEBUG_REQUEST("Vision:IntegralFieldDetector:draw_grid",
         ColorClasses::Color color;
         if(cell.sum_of_green >= min_green) {
           color = ColorClasses::green;
-        } else {
+        }
+        else if(params.check_density && density <= params.max_density) {
+          color = ColorClasses::yellow;
+        }
+        else {
           color = ColorClasses::red;
         }
         RECT_PX(color, toImage(cell.minX), toImage(cell.minY),
                        toImage(cell.maxX), toImage(cell.maxY));
       );
 
-      if(cell.sum_of_green >= min_green) {
+      if(cell.sum_of_green >= min_green || (params.check_density && density <= params.max_density)) {
         skipped = 0;
         ++successive_green;
 
