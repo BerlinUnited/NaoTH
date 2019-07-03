@@ -112,20 +112,21 @@ public:
       assert(false);
     }
 
-    int tryCount = 0;
-    while(waitingForLola)
+    // int tryCount = 0;
+    while(waitingForLola && ! exiting)
     {
       fprintf(stderr, "[LolaAdaptor] Waiting for LoLA socket.\n");
       std::this_thread::sleep_for(std::chrono::milliseconds(125));
-      if(tryCount > 40 )
-      {
-        fprintf(stderr, "[LolaAdaptor] Waiting for LoLA socket failed after %d ms.\n", tryCount * 125);
-        waitingForLola = false;
-        assert(false);
-      }
-      tryCount++;
+      // if(tryCount > 40 )
+      // {
+      //   fprintf(stderr, "[LolaAdaptor] Waiting for LoLA socket failed after %d ms.\n", tryCount * 125);
+      //   waitingForLola = false;
+      //   assert(false);
+      // }
+      // tryCount++;
     }
     fprintf(stderr, "[LolaAdaptor] LoLA socket connection established.\n");
+    //HACK: pulseaudio is not initialized correctly, but after playing a sound as no it works?!?
   }
   
   void stop() 
@@ -291,13 +292,13 @@ private:
   void shutdownCallback()
   {
     // play a sound that the user knows we recognized his shutdown request
-    system("/usr/bin/paplay /usr/share/naoqi/wav/bip_gentle.wav");
+    system("paplay /opt/aldebaran/share/naoqi/wav/bip_power_off.wav");
 
-    // // stop the user program
-    // std::cout << "[LolaAdaptor] stopping naoth" << std::endl;
-    // system("naoth stop");
+    // stop the user program
+    std::cout << "[LolaAdaptor] stopping naoth" << std::endl;
+    system("naoth stop");
 
-    // sleep(5);
+    sleep(5);
 
     // we are the child process, do a blocking call to shutdown
     system("/sbin/shutdown -h now");
