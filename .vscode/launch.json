@@ -18,12 +18,13 @@
             "request": "launch",
             "program": "${workspaceFolder}/NaoTHSoccer/dist/Native/logsimulator",
             // add the logfile as argument
-            "args": ["mylogifle.log"],
+            "args": ["C:/Users/Etienne Couque/Desktop/game.log"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/NaoTHSoccer/",
             "environment": [],
             "externalConsole": true,
             "MIMode": "gdb",
+            "miDebuggerPath": "C:/cygwin64/bin/gdb.exe",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",

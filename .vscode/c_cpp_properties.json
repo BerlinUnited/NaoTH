@@ -87,7 +87,7 @@
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": ""
             },
-            "compilerPath": "/usr/bin/clang",
+            "compilerPath": "C:/cygwin64/bin/clang.exe",
             "cStandard": "c11",
             "cppStandard": "c++17"
         }
