@@ -138,11 +138,6 @@ NaoController::NaoController()
   std::cout << "[NaoController] " << "Init SoundHandler" <<endl;
   theSoundHandler = new SoundControl();
 
-  if(fileExists("/usr/bin/lola") || fileExists("/opt/aldebaran/bin/lola"))
-  {
-    lolaAvailable = true;
-  }
-  
   // create the teamcomm
   std::cout << "[NaoController] " << "Init TeamComm" << endl;
   const naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
@@ -173,14 +168,14 @@ NaoController::NaoController()
   if(lolaAvailable)
   {
     std::cout << "[NaoController] " << "Init CameraHandler V6 (bottom)" << std::endl;
-    theBottomCameraHandlerV6.init("/dev/video1", CameraInfo::Bottom, true);
+    theBottomCameraHandler.init("/dev/video1", CameraInfo::Bottom, true, true);
     std::cout << "[NaoController] " << "Init CameraHandler V6 (top)" << std::endl;
-    theTopCameraHandlerV6.init("/dev/video0", CameraInfo::Top, false);
+    theTopCameraHandler.init("/dev/video0", CameraInfo::Top, false, true);
   } else {
     std::cout << "[NaoController] " << "Init CameraHandler V5 (bottom)" << std::endl;
-    theBottomCameraHandler.init("/dev/video1", CameraInfo::Bottom, true);
+    theBottomCameraHandler.init("/dev/video1", CameraInfo::Bottom, true, false);
     std::cout << "[NaoController] " << "Init CameraHandler V5 (top)" << std::endl;
-    theTopCameraHandler.init("/dev/video0", CameraInfo::Top, false);
+    theTopCameraHandler.init("/dev/video0", CameraInfo::Top, false, false);
   }
 }
 
@@ -196,24 +191,12 @@ NaoController::~NaoController()
 
 void NaoController::set(const CameraSettingsRequest &request)
 {
-  // HACK: we are in NAO V6
-  if(lolaAvailable) {
-    CameraSettings settings = request.getCameraSettings(true);
-    theBottomCameraHandlerV6.setAllCameraParams(settings);
-  } else {
-    CameraSettings settings = request.getCameraSettings();
-    theBottomCameraHandler.setAllCameraParams(settings);
-  }
+  CameraSettings settings = request.getCameraSettings();
+  theBottomCameraHandler.setAllCameraParams(settings);
 }
 
 void NaoController::set(const CameraSettingsRequestTop &request)
 {
-  // HACK: we are in NAO V6
-  if(lolaAvailable) {
-    CameraSettings settings = request.getCameraSettings(true);
-    theTopCameraHandlerV6.setAllCameraParams(settings);
-  } else {
-    CameraSettings settings = request.getCameraSettings();
-    theTopCameraHandler.setAllCameraParams(settings);
-  }
+  CameraSettings settings = request.getCameraSettings();
+  theTopCameraHandler.setAllCameraParams(settings);
 }

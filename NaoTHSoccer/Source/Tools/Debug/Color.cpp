@@ -15,10 +15,10 @@ std::ostream& operator<<(std::ostream& stream, const Color& color)
 
 Color::Color()
 {
-  (*this)[red]   = 0.0;
-  (*this)[green] = 0.0;
-  (*this)[blue]  = 0.0;
-  (*this)[alpha] = 1.0;
+  (*this)[Red]   = 0.0;
+  (*this)[Green] = 0.0;
+  (*this)[Blue]  = 0.0;
+  (*this)[Alpha] = 1.0;
 }
 
 Color::Color(const Vector_n<double,4>& colorVector)
@@ -28,27 +28,94 @@ Color::Color(const Vector_n<double,4>& colorVector)
 
 Color::Color(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 {
-  (*this)[red]   = static_cast<double>(r)/255.0;
-  (*this)[green] = static_cast<double>(g)/255.0;
-  (*this)[blue]  = static_cast<double>(b)/255.0;
-  (*this)[alpha] = static_cast<double>(a)/255.0;
+  (*this)[Red]   = static_cast<double>(r)/255.0;
+  (*this)[Green] = static_cast<double>(g)/255.0;
+  (*this)[Blue]  = static_cast<double>(b)/255.0;
+  (*this)[Alpha] = static_cast<double>(a)/255.0;
 }
 
 Color::Color(double r, double g, double b, double a)
 {
-  (*this)[red]   = r;
-  (*this)[green] = g;
-  (*this)[blue]  = b;
-  (*this)[alpha] = a;
+  (*this)[Red]   = r;
+  (*this)[Green] = g;
+  (*this)[Blue]  = b;
+  (*this)[Alpha] = a;
 }
 
 Color::Color(const char* color)
 {
-  (*this)[red]   = static_cast<double>(16*hexCharToInt(color[0]) + hexCharToInt(color[1]))/255.0;
-  (*this)[green] = static_cast<double>(16*hexCharToInt(color[2]) + hexCharToInt(color[3]))/255.0;
-  (*this)[blue]  = static_cast<double>(16*hexCharToInt(color[4]) + hexCharToInt(color[5]))/255.0;
+  (*this)[Red]   = static_cast<double>(16*hexCharToInt(color[0]) + hexCharToInt(color[1]))/255.0;
+  (*this)[Green] = static_cast<double>(16*hexCharToInt(color[2]) + hexCharToInt(color[3]))/255.0;
+  (*this)[Blue]  = static_cast<double>(16*hexCharToInt(color[4]) + hexCharToInt(color[5]))/255.0;
   if(strlen(color) == 8)
-    (*this)[alpha] = static_cast<double>(16*hexCharToInt(color[6]) + hexCharToInt(color[7]))/255.0;
+    (*this)[Alpha] = static_cast<double>(16*hexCharToInt(color[6]) + hexCharToInt(color[7]))/255.0;
+  else
+    (*this)[Alpha] = 1.0;
+}
+
+Color::Color(ColorPalett c) {
+    switch(c){
+        case white:
+            (*this)[Red]   = 1.0;
+            (*this)[Green] = 1.0;
+            (*this)[Blue]  = 1.0;
+            (*this)[Alpha] = 1.0;
+            break;
+        case gray:
+            (*this)[Red]   = 0.5;
+            (*this)[Green] = 0.5;
+            (*this)[Blue]  = 0.5;
+            (*this)[Alpha] = 1.0;
+            break;
+        case black:
+            (*this)[Red]   = 0.0;
+            (*this)[Green] = 0.0;
+            (*this)[Blue]  = 0.0;
+            (*this)[Alpha] = 1.0;
+            break;
+        case pink:
+            (*this)[Red]   = 1.0;
+            (*this)[Green] = 0.0;
+            (*this)[Blue]  = 1.0;
+            (*this)[Alpha] = 1.0;
+            break;
+        case red:
+            (*this)[Red]   = 1.0;
+            (*this)[Green] = 0.0;
+            (*this)[Blue]  = 0.0;
+            (*this)[Alpha] = 1.0;
+            break;
+        case orange:
+            (*this)[Red]   = 1.0;
+            (*this)[Green] = 200.0/255.0;
+            (*this)[Blue]  = 0.0;
+            (*this)[Alpha] = 1.0;
+            break;
+        case yellow:
+            (*this)[Red]   = 1.0;
+            (*this)[Green] = 1.0;
+            (*this)[Blue]  = 0.0;
+            (*this)[Alpha] = 1.0;
+            break;
+        case green:
+            (*this)[Red]   = 0.0;
+            (*this)[Green] = 1.0;
+            (*this)[Blue]  = 0.0;
+            (*this)[Alpha] = 1.0;
+            break;
+        case skyblue:
+            (*this)[Red]   = 128.0/255.0;
+            (*this)[Green] = 128.0/255.0;
+            (*this)[Blue]  = 1.0;
+            (*this)[Alpha] = 1.0;
+            break;
+        case blue:
+            (*this)[Red]   = 0.0;
+            (*this)[Green] = 0.0;
+            (*this)[Blue]  = 1.0;
+            (*this)[Alpha] = 1.0;
+            break;
+    }
 }
 
 Color::Color(unsigned int colorIndex)
@@ -78,27 +145,27 @@ Color::Color(unsigned int colorIndex)
     b = 0;
   }
 
-  (*this)[red] = ((double) r) / 255.0;
-  (*this)[green] = ((double) g) / 255.0;
-  (*this)[blue] = ((double) b) / 255.0;
-  (*this)[alpha] = 1.0;
+  (*this)[Red] = ((double) r) / 255.0;
+  (*this)[Green] = ((double) g) / 255.0;
+  (*this)[Blue] = ((double) b) / 255.0;
+  (*this)[Alpha] = 1.0;
 }
 
 unsigned char Color::getRed() const
 { 
-  return static_cast<unsigned char>(Math::clamp(((*this)[red]*255.0+0.5),0.0,255.0)); 
+  return static_cast<unsigned char>(Math::clamp(((*this)[Red]*255.0+0.5),0.0,255.0));
 }
 unsigned char Color::getGreen() const
 { 
-  return static_cast<unsigned char>(Math::clamp(((*this)[green]*255.0+0.5),0.0,255.0)); 
+  return static_cast<unsigned char>(Math::clamp(((*this)[Green]*255.0+0.5),0.0,255.0));
 }
 unsigned char Color::getBlue() const
 { 
-  return static_cast<unsigned char>(Math::clamp(((*this)[blue]*255.0+0.5),0.0,255.0)); 
+  return static_cast<unsigned char>(Math::clamp(((*this)[Blue]*255.0+0.5),0.0,255.0));
 }
 unsigned char Color::getAlpha() const
 { 
-  return static_cast<unsigned char>(Math::clamp(((*this)[alpha]*255.0+0.5),0.0,255.0)); 
+  return static_cast<unsigned char>(Math::clamp(((*this)[Alpha]*255.0+0.5),0.0,255.0));
 }
 
 std::string Color::toString() const
