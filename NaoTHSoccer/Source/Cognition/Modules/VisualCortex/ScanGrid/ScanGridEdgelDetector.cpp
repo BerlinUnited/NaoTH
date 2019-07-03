@@ -111,6 +111,11 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
     int x = scanline.x;
     int y = getScanGrid().vScanPattern[scanline.bottom];
 
+    if(x - parameters.gradient_offset < 0 || x + parameters.gradient_offset >= static_cast<int>(getImage().width())) {
+      // cannot extract gradient on image border
+      continue;
+    }
+
     if(x < polyLine.begin().x) {
       // scanline is left of field poly
       continue;
@@ -350,6 +355,11 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
     int y = scanline.y;
     int end_x = scanline.right_x;
 
+    if(y - parameters.gradient_offset < 0 || y + parameters.gradient_offset >= static_cast<int>(getImage().height())) {
+      // cannot extract gradient on image border
+      continue;
+    }
+
     // determine scanline intersections with the field poly line
     if(y < polyLineLeft.begin().y) {
       // scanline is outside of field polygon
@@ -536,12 +546,12 @@ inline bool ScanGridEdgelDetector::refine_range_horizontal(MaxPeakScan& maximumP
 Vector2d ScanGridEdgelDetector::calculateGradient(const Vector2i& point) const
 {
   Vector2d gradient;
-  static const int offset = 1;
+  static const int offset = parameters.gradient_offset;
 
   // no angle at the border (shouldn't happen)
   if( point.x < offset || point.x + offset + 1 > (int)getImage().width() ||
       point.y < offset || point.y + offset + 1 > (int)getImage().height() ) {
-    return gradient;
+    ASSERT(false);
   }
 
   //apply Sobel Operator on (pointX, pointY)

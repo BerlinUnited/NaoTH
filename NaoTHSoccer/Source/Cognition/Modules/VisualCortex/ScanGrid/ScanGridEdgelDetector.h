@@ -82,6 +82,8 @@ public:
       PARAMETER_REGISTER(brightness_threshold_bottom) = 24;
       PARAMETER_REGISTER(double_edgel_angle_threshold) = 0.2;
 
+      PARAMETER_REGISTER(gradient_offset) = 1;
+
       PARAMETER_REGISTER(scan_vertical) = true;
       PARAMETER_REGISTER(scan_horizontal) = true;
 
@@ -99,6 +101,8 @@ public:
     int brightness_threshold_top; // threshold for detection of the jumps in the Y channel
     int brightness_threshold_bottom;
     double double_edgel_angle_threshold;
+
+    int gradient_offset;
   } parameters;
 
 private:
@@ -236,6 +240,12 @@ private:
   }
 
   void add_edgel(const Vector2i& point, Edgel::Type type) {
+    if( point.x < parameters.gradient_offset || point.x + parameters.gradient_offset + 1 > (int)getImage().width() ||
+        point.y < parameters.gradient_offset || point.y + parameters.gradient_offset + 1 > (int)getImage().height() ) {
+      // cannot extract direction on image border
+      return;
+    }
+
     Edgel edgel;
     edgel.type = type;
     edgel.point = point;
@@ -244,6 +254,12 @@ private:
   }
 
   void add_edgel(int x, int y, Edgel::Type type) {
+    if( x < parameters.gradient_offset || x + parameters.gradient_offset + 1 > (int)getImage().width() ||
+        y < parameters.gradient_offset || y + parameters.gradient_offset + 1 > (int)getImage().height() ) {
+      // cannot extract direction on image border
+      return;
+    }
+
     Edgel edgel;
     edgel.type = type;
     edgel.point.x = x;
