@@ -196,10 +196,10 @@ private:
       readSensorData(sensors, sensorData->sensorsValue);
 
       // check if chest button was pressed as a request to shutdown
-      // each cycle needs 10ms so if the button was pressed for 30 seconds
-      // these are 300 frames
+      // each cycle needs 12ms so if the button was pressed for 3 seconds
+      // these are 250 frames
       sensorData->get(theButtonData);
-      if(!shutdown_requested && theButtonData.numOfFramesPressed[ButtonData::Chest] > 300)
+      if(!shutdown_requested && theButtonData.numOfFramesPressed[ButtonData::Chest] > 250)
       {
         shutdown_requested = true;
         //exit(-1);
@@ -293,6 +293,12 @@ private:
   {
     // play a sound that the user knows we recognized his shutdown request
     system("paplay /opt/aldebaran/share/naoqi/wav/bip_power_off.wav");
+
+    // stop the user program
+    std::cout << "[LolaAdaptor] stopping naoth" << std::endl;
+    system("naoth stop");
+
+    sleep(2);
 
     // we are the child process, do a blocking call to shutdown
     system("/sbin/shutdown -h now");
