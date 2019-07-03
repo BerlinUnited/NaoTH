@@ -21,9 +21,13 @@
 #include "Representations/Infrastructure/WifiMode.h"
 #include "Representations/Motion/MotionStatus.h"
 
+#include "Tools/Debug/DebugPlot.h"
+#include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugParameterList.h"
 
 BEGIN_DECLARE_MODULE(TeamCommSender)
+  PROVIDE(DebugPlot)
+  PROVIDE(DebugRequest)
   PROVIDE(DebugParameterList)
 
   REQUIRE(FrameInfo)

@@ -52,53 +52,6 @@ public:
     virtual void execute();
 
 private:
-    class Parameters: public ParameterList
-    {
-    public:
-        Parameters(): ParameterList("RoleDecisionDynamic")
-        {
-            PARAMETER_REGISTER(striker_ball_lost_time) = 1000.0;
-            PARAMETER_REGISTER(striker_ball_bonus_time) = 4000.0;
-            PARAMETER_REGISTER(striker_indicator_bonus) = 300.0;
-            PARAMETER_REGISTER(striker_ball_difference_function, &Parameters::ballDifferenceRadiusChanger) = "constlinear"; // "const", "linear"
-            PARAMETER_REGISTER(striker_ball_difference_distance) = 500.0;
-            PARAMETER_REGISTER(striker_ball_difference_distance_m) = 0.35;
-            PARAMETER_REGISTER(striker_ball_difference_distance_n) = -40.0;
-            PARAMETER_REGISTER(goalie_striker_ball_distance) = 1500.0;
-            PARAMETER_REGISTER(goalie_striker_min_x_pos) = -2700.0;
-            PARAMETER_REGISTER(goalie_striker_decision_distance) = 500.0;
-        }
-
-        double striker_ball_lost_time;
-        double striker_ball_bonus_time;
-        double striker_indicator_bonus;
-
-        std::string striker_ball_difference_function;
-        double (RoleDecisionDynamic::*ballDiffFunc)(double);
-
-        double striker_ball_difference_distance;
-        double striker_ball_difference_distance_m;
-        double striker_ball_difference_distance_n;
-
-        double goalie_striker_ball_distance;
-        double goalie_striker_min_x_pos;
-        double goalie_striker_decision_distance;
-
-
-    private:
-        void ballDifferenceRadiusChanger(std::string method) {
-            if(method.compare("const") == 0) { // const
-                ballDiffFunc = &RoleDecisionDynamic::ballDifferenceRadiusConstant;
-            } else if(method.compare("linear") == 0) { // linear
-                ballDiffFunc = &RoleDecisionDynamic::ballDifferenceRadiusLinear;
-            } else if(method.compare("constlinear") == 0) { // constlinear
-                ballDiffFunc = &RoleDecisionDynamic::ballDifferenceRadiusConstantLinear;
-            } else { // const
-                ballDiffFunc = &RoleDecisionDynamic::ballDifferenceRadiusConstant;
-            }
-        }
-    } params;
-
     struct Striker {
         unsigned int playerNumber;
         double indicator;
@@ -106,18 +59,124 @@ private:
         double sameBallRadius;
     };
 
+    class Parameters: public ParameterList
+    {
+    public:
+        Parameters(): ParameterList("RoleDecisionDynamic")
+        {
+            PARAMETER_REGISTER(strikerIndicator, &Parameters::setStrikerIndicatorFunction) = "distance"; // "time"
+
+            PARAMETER_REGISTER(striker_ball_lost_time) = 1000.0;
+            PARAMETER_REGISTER(striker_ball_bonus_time) = 4000.0;
+            PARAMETER_REGISTER(striker_indicator_bonus) = 300.0;
+
+            PARAMETER_REGISTER(striker_ball_difference, &Parameters::setStrikerBallDifferenceFunction) = "constlinear"; // "const", "linear", "constlinear"
+            PARAMETER_REGISTER(striker_ball_difference_distance) = 500.0;
+            PARAMETER_REGISTER(striker_ball_difference_distance_m) = 0.35;
+            PARAMETER_REGISTER(striker_ball_difference_distance_n) = -40.0;
+
+            PARAMETER_REGISTER(goalie_striker_decision, &Parameters::setStrikerGoalieDecisionFunction) = "condition"; // "wants"
+            PARAMETER_REGISTER(goalie_striker_ball_distance) = 1500.0;
+            PARAMETER_REGISTER(goalie_striker_min_x_pos) = -2700.0;
+            PARAMETER_REGISTER(goalie_striker_decision_distance) = 500.0;
+
+            PARAMETER_REGISTER(step_time, &Parameters::setStepTime) = 250;
+            PARAMETER_REGISTER(step_distance, &Parameters::setStepDistance) = 80;
+            PARAMETER_REGISTER(turn_angle, &Parameters::setTurnAngle) = 30;
+
+            // load from the file after registering all parameters
+            syncWithConfig();
+        }
+
+        // striker function, returns an indicator who's fastest
+        std::string strikerIndicator;
+        double (RoleDecisionDynamic::*strikerIndicatorFn)(const TeamMessageData&);
+
+        double striker_ball_lost_time;
+        double striker_ball_bonus_time;
+        double striker_indicator_bonus;
+
+        // ball difference function returns, how similiar two balls should be
+        std::string striker_ball_difference;
+        double (RoleDecisionDynamic::*strikerBallDifferenceFn)(double);
+
+        double striker_ball_difference_distance;
+        double striker_ball_difference_distance_m;
+        double striker_ball_difference_distance_n;
+
+        // decides, whether the goalie gets striker or not
+        std::string goalie_striker_decision;
+        bool (RoleDecisionDynamic::*strikerGoalieDecisionFn)(const TeamMessageData*, std::vector<RoleDecisionDynamic::Striker>&);
+
+        double goalie_striker_ball_distance;
+        double goalie_striker_min_x_pos;
+        double goalie_striker_decision_distance;
+
+        // params for the time-to-ball striker function
+        double step_time;
+        double step_distance;
+        double turn_angle;
+        // the calculated speeds
+        double step_speed;
+        double turn_speed;
+
+    private:
+        void setStrikerBallDifferenceFunction(std::string variant) {
+            if(variant.compare("const") == 0) { // constant
+                strikerBallDifferenceFn = &RoleDecisionDynamic::ballDifferenceRadiusConstant;
+            } else if(variant.compare("linear") == 0) { // linear
+                strikerBallDifferenceFn = &RoleDecisionDynamic::ballDifferenceRadiusLinear;
+            } else if(variant.compare("constlinear") == 0) { // constlinear
+                strikerBallDifferenceFn = &RoleDecisionDynamic::ballDifferenceRadiusConstantLinear;
+            } else {
+                // backup, in case something went wrong
+                strikerBallDifferenceFn = &RoleDecisionDynamic::ballDifferenceRadiusConstant;
+            }
+        }
+        void setStrikerIndicatorFunction(std::string variant) {
+            if(variant.compare("distance") == 0) { // distance
+                strikerIndicatorFn = &RoleDecisionDynamic::strikerIndicatorDistance;
+            } else if(variant.compare("time") == 0) { // time
+                strikerIndicatorFn = &RoleDecisionDynamic::strikerIndicatorTimeToBall;
+            } else {
+                // backup, in case something went wrong
+                strikerIndicatorFn = &RoleDecisionDynamic::strikerIndicatorDistance;
+            }
+        }
+        void setStrikerGoalieDecisionFunction(std::string variant) {
+            if(variant.compare("wants") == 0) { // wants
+                strikerGoalieDecisionFn = &RoleDecisionDynamic::goalieStrikerDecisionWants;
+            } else if(variant.compare("condition") == 0) { // condition
+                strikerGoalieDecisionFn = &RoleDecisionDynamic::goalieStrikerDecisionCondition;
+            } else {
+                // backup, in case something went wrong
+                strikerGoalieDecisionFn = &RoleDecisionDynamic::goalieStrikerDecisionCondition;
+            }
+        }
+
+        void setStepTime(double t) { setSpeed(t, step_distance, turn_angle); }
+        void setStepDistance(double d) { setSpeed(step_time, d, turn_angle); }
+        void setTurnAngle(double a) { setSpeed(step_time, step_distance, a); }
+        void setSpeed(double t, double d, double a) {
+            step_speed = d / t;
+            turn_speed = Math::fromDegrees(a) / step_time;
+        }
+    } params;
+
     void decideStriker(std::map<unsigned int, Roles::Dynamic>& roles);
     void decideGoalieSupporter(std::map<unsigned int, Roles::Dynamic>& roles);
     void decideSupporter(std::map<unsigned int, Roles::Dynamic>& roles);
 
     void checkStriker(const TeamMessageData& msg, const double& indicator, const Vector2d& ball, std::vector<Striker>& striker, bool force = false);
-    void handleGoalie(const TeamMessageData *goalie, std::vector<Striker>& striker);
-    inline bool checkSameBall(const Striker &s, const Vector2d& ball, double r);
+    bool checkSameBall(const Striker &s, const Vector2d& ball, double r);
+
+    bool goalieStrikerDecisionWants(const TeamMessageData *goalie, std::vector<Striker>& striker);
+    bool goalieStrikerDecisionCondition(const TeamMessageData *goalie, std::vector<Striker>& striker);
 
     /* Different radius methods for the same ball check. */
-    inline double ballDifferenceRadiusConstant(double /*d*/) { return params.striker_ball_difference_distance; }
-    inline double ballDifferenceRadiusLinear(double d) { return d * params.striker_ball_difference_distance_m + params.striker_ball_difference_distance_n; }
-    inline double ballDifferenceRadiusConstantLinear(double d) { return std::max(ballDifferenceRadiusConstant(d), ballDifferenceRadiusLinear(d)); }
+    double ballDifferenceRadiusConstant(double /*d*/) { return params.striker_ball_difference_distance; }
+    double ballDifferenceRadiusLinear(double d) { return d * params.striker_ball_difference_distance_m + params.striker_ball_difference_distance_n; }
+    double ballDifferenceRadiusConstantLinear(double d) { return std::max(ballDifferenceRadiusConstant(d), ballDifferenceRadiusLinear(d)); }
 
     /* Various evaluation functions who is faster to the ball for the striker decision. */
     double strikerIndicatorDistance(const TeamMessageData& msg);
