@@ -259,27 +259,26 @@ private:
     running = false;
   }
   
-  void setWarningLED(bool )//red)
+  void setWarningLED(ActuatorData& actuators, bool red)
   {
-    // static naoth::LEDData theLEDData;
-    // static int count = 0;
+    static naoth::LEDData theLEDData;
+    static int count = 0;
     
-    // int begin = ((++count)/10)%10;
-    // theLEDData.theMonoLED[LEDData::EarRight0 + begin] = 0;
-    // theLEDData.theMonoLED[LEDData::EarLeft0 + begin] = 0;
-    // int end = (begin+2)%10;
-    // theLEDData.theMonoLED[LEDData::EarRight0 + end] = 1;
-    // theLEDData.theMonoLED[LEDData::EarLeft0 + end] = 1;
+    int begin = ((++count)/10)%10;
+    theLEDData.theMonoLED[LEDData::EarRight0 + begin] = 0;
+    theLEDData.theMonoLED[LEDData::EarLeft0 + begin] = 0;
+    int end = (begin+2)%10;
+    theLEDData.theMonoLED[LEDData::EarRight0 + end] = 1;
+    theLEDData.theMonoLED[LEDData::EarLeft0 + end] = 1;
 
-    // for(int i=0; i<LEDData::numOfMultiLED; i++)
-    // {
-    //   theLEDData.theMultiLED[i][LEDData::RED] = red ? 1 : 0;
-    //   theLEDData.theMultiLED[i][LEDData::GREEN] = 0;
-    //   theLEDData.theMultiLED[i][LEDData::BLUE] = red ? 0 : 1;
-    // }
-
-    // theDCMHandler.setSingleLED(theLEDData, dcmTime);
-  }//end checkWarningState
+    for(int i=0; i<LEDData::numOfMultiLED; i++)
+    {
+      theLEDData.theMultiLED[i][LEDData::RED] = red ? 1 : 0;
+      theLEDData.theMultiLED[i][LEDData::GREEN] = 0;
+      theLEDData.theMultiLED[i][LEDData::BLUE] = red ? 0 : 1;
+    }
+    writeLEDData(theLEDData, actuators);
+  }//end setWarningLED
 
   bool runEmergencyMotion(ActuatorData& actuators)
   {
@@ -292,7 +291,7 @@ private:
         initialMotion = new BasicMotion(theMotorJointData, commandData->get(), theInertialSensorData);
       }
 
-      setWarningLED(shutdown_requested);
+      setWarningLED(actuators, state == DISCONNECTED);
     }//end if
 
     // after reconnect: wait until the init motion is finished
