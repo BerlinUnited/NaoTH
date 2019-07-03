@@ -1,77 +1,27 @@
 #!/bin/bash
 
-PID="/tmp/cognition.pid"
-
 function start_function() {
-    # if [ -f "$PID" ]; then
-    #   OLDPID=`cat $PID`
-    #   echo "old pid is $OLDPID"
-    #   kill -0 $OLDPID
-    #   if [ "$?" -eq 0 ]; then
-    #     echo "NaoTH cognition already started, use stop first"
-    #     exit 1
-    #   else
-    #     echo "removing stalled $PID"
-    #     rm "$PID"
-    #   fi
-    # fi
-
-    echo "starting naoth cognition process"
-    # cd /home/nao/naoqi/
-
-    # # using "warn" level, otherwise messages wouldn't be written to "/var/log/messages"!
-    # exec > >(logger -t "naoth[INFO]" -p local3.info) 2> >(logger -t "naoth[ERROR]" -p local3.warning)
-    # if [ nao = `whoami` ]; then
-    #   nohup /etc/init.d/cognition-common &
-    # else
-    #   su -c 'nohup /etc/init.d/cognition-common &' nao
-    # fi
-    systemctl start naoth
+  echo "starting naoth related process"
+  systemctl start user@1001
 }
 
 function stop_function() {
-    echo "stopping naoth cognition processes"
-
-    systemctl stop naoth
-
-    # # first try to kill naoth based on the PID file
-    # if [ -f "$PID" ]; then
-    #   OLDPID=`cat $PID`
-    #   kill $OLDPID
-
-    #   # wait for the process to stop
-    #   counter=0
-    #   while kill -0 $OLDPID 2> /dev/null
-    #   do
-    #       sleep 1;
-    #       printf "try %s/30\n" "$counter"
-          
-    #       # wait for maximal 30 seconds
-    #       ((counter++))
-    #       if [ $counter -gt 30 ]; then
-    #         break
-    #       fi
-    #   done
-    #   printf "\n"
-
-    # fi
-
-    # # FALLBACK
-    # #... try to stop all running naoth processes (and exclude this script!)
-    # PIDS=`pidof -x -o %PPID naoth`
-    # if [[ ! -z $PIDS ]]; then
-    #   kill $PIDS  # send TERM signal
-    #   sleep 5
-    #   # if there are still running naoth instances, kill them "hard"
-    #   PIDS=`pidof -x -o %PPID naoth`
-    #   if [[ ! -z $PIDS ]]; then
-    #     kill -9 $PIDS  # send KILL signal
-    #   fi
-    # fi
-    
-    # # remove PID-file
-    # rm $PID
+  echo "stopping naoth related processes"
+  systemctl stop user@1001
 }
+
+function status_function() {
+  systemctl status user@1001
+}
+
+function lola_log_function() {
+  journalctl --user-unit=lola_adaptor
+}
+
+function naoth_log_function() {
+  journalctl --user-unit=naoth
+}
+
 
 case "$1" in
   start)
@@ -85,8 +35,17 @@ case "$1" in
     sleep 5
     start_function
     ;;
+  status)
+    status_function
+    ;;
+  lola_log)
+    lola_log_function
+    ;;
+  naoth_log)
+    naoth_log_function
+    ;;
   *)
-    echo "Usage: naoth {start|stop|restart}"
+    echo "Usage: naoth {start|stop|restart|status|lola_log|naoth_log}"
     exit 1
     ;;
 

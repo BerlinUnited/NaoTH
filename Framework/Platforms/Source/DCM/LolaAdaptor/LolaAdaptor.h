@@ -15,7 +15,6 @@
 #include <chrono>
 #include <thread>
 #include <unistd.h>
-#include <fstream>
 
 namespace naoth 
 {
@@ -92,6 +91,11 @@ public:
     }
   }
   
+  static bool fileExists (const std::string& filename) {
+    struct stat buffer;   
+    return (stat (filename.c_str(), &buffer) == 0); 
+  }
+
   void start() 
   {
     exiting = false;
@@ -108,20 +112,21 @@ public:
       assert(false);
     }
 
-    int tryCount = 0;
-    while(waitingForLola)
+    // int tryCount = 0;
+    while(waitingForLola && ! exiting)
     {
       fprintf(stderr, "[LolaAdaptor] Waiting for LoLA socket.\n");
       std::this_thread::sleep_for(std::chrono::milliseconds(125));
-      if(tryCount > 40 )
-      {
-        fprintf(stderr, "[LolaAdaptor] Waiting for LoLA socket failed after %d ms.\n", tryCount * 125);
-        waitingForLola = false;
-        assert(false);
-      }
-      tryCount++;
+      // if(tryCount > 40 )
+      // {
+      //   fprintf(stderr, "[LolaAdaptor] Waiting for LoLA socket failed after %d ms.\n", tryCount * 125);
+      //   waitingForLola = false;
+      //   assert(false);
+      // }
+      // tryCount++;
     }
     fprintf(stderr, "[LolaAdaptor] LoLA socket connection established.\n");
+    //HACK: pulseaudio is not initialized correctly, but after playing a sound as no it works?!?
   }
   
   void stop() 
@@ -142,11 +147,6 @@ public:
   }
   
 private:
-
-  inline bool fileExists (const std::string& filename) {
-    struct stat buffer;   
-    return (stat (filename.c_str(), &buffer) == 0); 
-  }
 
   void run() 
   {
@@ -196,10 +196,10 @@ private:
       readSensorData(sensors, sensorData->sensorsValue);
 
       // check if chest button was pressed as a request to shutdown
-      // each cycle needs 10ms so if the button was pressed for 30 seconds
-      // these are 300 frames
+      // each cycle needs 12ms so if the button was pressed for 3 seconds
+      // these are 250 frames
       sensorData->get(theButtonData);
-      if(!shutdown_requested && theButtonData.numOfFramesPressed[ButtonData::Chest] > 300)
+      if(!shutdown_requested && theButtonData.numOfFramesPressed[ButtonData::Chest] > 250)
       {
         shutdown_requested = true;
         //exit(-1);
@@ -250,7 +250,7 @@ private:
   void notify() 
   {  
     static int drop_count = 10;
-    
+
     // raise the semaphore: triggers core
     if(sem != SEM_FAILED)
     {
@@ -292,13 +292,13 @@ private:
   void shutdownCallback()
   {
     // play a sound that the user knows we recognized his shutdown request
-    system("/usr/bin/paplay /usr/share/naoqi/wav/bip_gentle.wav");
+    system("paplay /opt/aldebaran/share/naoqi/wav/bip_power_off.wav");
 
-    // // stop the user program
-    // std::cout << "[LolaAdaptor] stopping naoth" << std::endl;
-    // system("naoth stop");
+    // stop the user program
+    std::cout << "[LolaAdaptor] stopping naoth" << std::endl;
+    system("naoth stop");
 
-    // sleep(5);
+    sleep(2);
 
     // we are the child process, do a blocking call to shutdown
     system("/sbin/shutdown -h now");
