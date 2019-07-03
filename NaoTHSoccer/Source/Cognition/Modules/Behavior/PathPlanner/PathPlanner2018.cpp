@@ -442,17 +442,20 @@ void PathPlanner2018::forwardKick()
     stepBuffer.clear();
     
     // 2019 version - makes sure to kick with the foot that is behind the ball
+    Vector2d ballPos;
     Foot actual_foot;
     Coordinate coordinate = Coordinate::Hip;
     if (getBallModel().positionPreview.y < 0)
     {
       coordinate = Coordinate::LFoot;
       actual_foot = Foot::RIGHT;
+      ballPos    = getBallModel().positionPreviewInRFoot;
     }
     else
     {
       coordinate = Coordinate::RFoot;
       actual_foot = Foot::LEFT;
+      ballPos    = getBallModel().positionPreviewInLFoot;
     }
 
     /*
@@ -493,7 +496,7 @@ void PathPlanner2018::forwardKick()
     // The kick
     StepBufferElement forward_kick_step;
     forward_kick_step
-      .setPose({ 0.0, 500.0, 0.0 })
+      .setPose({ 0.0, 500.0, 0.0 }) // kick straight forward
       .setStepType(StepType::KICKSTEP)
       .setCharacter(1.0)
       .setScale(0.7)
@@ -503,6 +506,11 @@ void PathPlanner2018::forwardKick()
       .setRestriction(RestrictionMode::SOFT)
       .setProtected(true)
       .setTime(params.forwardKickTime);
+
+    // NOTE: change the kick pose if the parameter is set
+    if(params.forwardKickAdaptive) {
+      forward_kick_step.setPose({ 0.0, ballPos.x, ballPos.y }); // kick towards the ball
+    }
 
     addStep(forward_kick_step);
 
