@@ -228,13 +228,17 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
         if(prev_y - y <= 2)
         {
           refine_vertical(maximumPeak, x);
-          add_edgel(x, maximumPeak.point, Edgel::positive);
-          begin_found = true;
+          bool success = add_edgel(x, maximumPeak.point, Edgel::positive);
+          if(success) {
+            begin_found = true;
+          }
         }
         else if(refine_range_vertical(maximumPeak, x))
         {
-          add_edgel(x, maximumPeak.point, Edgel::positive);
-          begin_found = true;
+          bool success = add_edgel(x, maximumPeak.point, Edgel::positive);
+          if(success) {
+            begin_found = true;
+          }
         }
 
         maximumPeak.reset();
@@ -253,21 +257,29 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
         if(std::abs(prev_y - y) <= 2)
         {
           refine_vertical(minimumPeak, x);
-          add_edgel(x, minimumPeak.point, Edgel::negative);
-          // found a new double edgel
-          if(begin_found) {
-            add_double_edgel(scan_id);
-            begin_found = false;
+
+          bool success = add_edgel(x, minimumPeak.point, Edgel::negative);
+
+          if(success) {
+            // found a new double edgel
+            if(begin_found) {
+              add_double_edgel(scan_id);
+              begin_found = false;
+            }
           }
         }
         else if(refine_range_vertical(minimumPeak, x))
         {
-          add_edgel(x, minimumPeak.point, Edgel::negative);
-          // found a new double edgel
-          if(begin_found) {
-            add_double_edgel(scan_id);
-            begin_found = false;
+          bool success = add_edgel(x, minimumPeak.point, Edgel::negative);
+
+          if(success) {
+            // found a new double edgel
+            if(begin_found) {
+              add_double_edgel(scan_id);
+              begin_found = false;
+            }
           }
+
         }
 
         minimumPeak.reset();
@@ -455,12 +467,18 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
         {
           refine_horizontal(maximumPeak, y);
           if(!getBodyContour().isOccupied(maximumPeak.point, y)) {
-            add_edgel(maximumPeak.point, y, Edgel::positive);
-            begin_found = true;
+
+            bool success = add_edgel(maximumPeak.point, y, Edgel::positive);
+            if(success) {
+              begin_found = true;
+            }
           }
         } else if(refine_range_horizontal(maximumPeak, y) && !getBodyContour().isOccupied(maximumPeak.point,y)) {
-          add_edgel(maximumPeak.point, y, Edgel::positive);
-          begin_found = true;
+
+          bool success = add_edgel(maximumPeak.point, y, Edgel::positive);
+          if(success) {
+            begin_found = true;
+          }
         }
         maximumPeak.reset();
       }
@@ -475,20 +493,30 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
         {
           refine_horizontal(minimumPeak, y);
           if(!getBodyContour().isOccupied(minimumPeak.point,y)) {
-            add_edgel(minimumPeak.point, y, Edgel::negative);
+
+            bool success = add_edgel(minimumPeak.point, y, Edgel::negative);
+
+            if(success) {
+              // found a new double edgel
+              if(begin_found) {
+                add_double_edgel(scan_id);
+              }
+              begin_found = false;
+            }
+          }
+
+        } else if(refine_range_horizontal(minimumPeak, y) && !getBodyContour().isOccupied(minimumPeak.point,y)) {
+
+          bool success = add_edgel(minimumPeak.point, y, Edgel::negative);
+
+          if(success) {
             // found a new double edgel
             if(begin_found) {
               add_double_edgel(scan_id);
             }
             begin_found = false;
           }
-        } else if(refine_range_horizontal(minimumPeak, y) && !getBodyContour().isOccupied(minimumPeak.point,y)) {
-          add_edgel(minimumPeak.point, y, Edgel::negative);
-          // found a new double edgel
-          if(begin_found) {
-            add_double_edgel(scan_id);
-          }
-          begin_found = false;
+
         }
         minimumPeak.reset();
       }
