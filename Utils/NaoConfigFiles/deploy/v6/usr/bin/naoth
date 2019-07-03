@@ -14,6 +14,13 @@ function status_function() {
   systemctl status user@1001
 }
 
+function shutdown_function() {
+  echo "shutting down"
+  systemctl stop user@1001
+  paplay /opt/aldebaran/share/naoqi/wav/shutdown.wav
+  shutdown -h now
+}
+
 function lola_log_function() {
   journalctl --user-unit=lola_adaptor
 }
@@ -37,6 +44,9 @@ case "$1" in
     ;;
   status)
     status_function
+    ;;
+  shutdown)
+    shutdown_function
     ;;
   lola_log)
     lola_log_function

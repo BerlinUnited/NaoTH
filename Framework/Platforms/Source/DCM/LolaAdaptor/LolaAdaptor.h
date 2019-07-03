@@ -31,6 +31,9 @@ public:
     waitingForLola(true),
     shutdown_requested(false),
     state(DISCONNECTED),
+    command_data_available(false),
+    sensor_data_available(false),
+    initialMotion(NULL),
     sem(SEM_FAILED)
   {
     // open semaphore
@@ -176,14 +179,15 @@ private:
     SensorData sensors;
     ActuatorData actuators;
     
-    //long long start = NaoTime::getSystemTimeInMicroSeconds();
-
     while(!exiting) 
     {
-
-      //long long stop = NaoTime::getSystemTimeInMicroSeconds();
-      //std::cout << (int)(stop - start) << std::endl;
-      //start = NaoTime::getSystemTimeInMicroSeconds();
+      if(runEmergencyMotion(actuators))
+      {
+        lola.readSensors(sensors);
+        std::cout << "runEmergencyMotion" << std::endl;
+        lola.writeActuators(actuators);
+        continue;
+      }
 
       lola.readSensors(sensors);
       
@@ -207,12 +211,20 @@ private:
         shutdownCallbackThread = std::thread([this]{this->shutdownCallback();});
       }
 
+      // save the data for the emergency case
+      if(state == DISCONNECTED) {
+        std::cout << "get inertial sensor data" << std::endl;
+        sensorData->get(theInertialSensorData);
+        sensor_data_available = true;
+      } else {
+        sensor_data_available = false;
+      }
+
       // push the data to shared memory
       naoSensorData.swapWriting();
 
       // notify cognition
       notify();
-
 
       // get the MotorJointData from the shared memory and put them to the DCM
       if ( naoCommandMotorJointData.swapReading() )
@@ -232,7 +244,7 @@ private:
         }
 
         //drop_count = 0;
-        //command_data_available = true;
+        command_data_available = true;
       }
 
       if(naoCommandLEDData.swapReading())
@@ -247,6 +259,72 @@ private:
     running = false;
   }
   
+  void setWarningLED(bool )//red)
+  {
+    // static naoth::LEDData theLEDData;
+    // static int count = 0;
+    
+    // int begin = ((++count)/10)%10;
+    // theLEDData.theMonoLED[LEDData::EarRight0 + begin] = 0;
+    // theLEDData.theMonoLED[LEDData::EarLeft0 + begin] = 0;
+    // int end = (begin+2)%10;
+    // theLEDData.theMonoLED[LEDData::EarRight0 + end] = 1;
+    // theLEDData.theMonoLED[LEDData::EarLeft0 + end] = 1;
+
+    // for(int i=0; i<LEDData::numOfMultiLED; i++)
+    // {
+    //   theLEDData.theMultiLED[i][LEDData::RED] = red ? 1 : 0;
+    //   theLEDData.theMultiLED[i][LEDData::GREEN] = 0;
+    //   theLEDData.theMultiLED[i][LEDData::BLUE] = red ? 0 : 1;
+    // }
+
+    // theDCMHandler.setSingleLED(theLEDData, dcmTime);
+  }//end checkWarningState
+
+  bool runEmergencyMotion(ActuatorData& actuators)
+  {
+    if(state == DISCONNECTED)
+    {
+      if(initialMotion == NULL && command_data_available && sensor_data_available)
+      {
+        // take the last command data
+        const Accessor<MotorJointData>* commandData = naoCommandMotorJointData.reading();
+        initialMotion = new BasicMotion(theMotorJointData, commandData->get(), theInertialSensorData);
+      }
+
+      setWarningLED(shutdown_requested);
+    }//end if
+
+    // after reconnect: wait until the init motion is finished
+    if(initialMotion != NULL)
+    {
+      if(state == CONNECTED && initialMotion->isFinish())
+      {
+        std::cout << "emerg: stop init motion" << std::endl;
+        delete initialMotion;
+        initialMotion = NULL;
+      }
+      else
+      {
+        std::cout << "emerg: run init motion" << std::endl;
+        initialMotion->execute();
+
+       // SensorJointData
+        for(size_t i = 0; i < lolaJointIdx.size(); ++i) 
+        {
+          actuators.Position[i] = (float)theMotorJointData.position[lolaJointIdx[i]];
+        }
+
+        for(size_t i = 0; i < lolaJointIdx.size(); ++i) 
+        {
+          actuators.Stiffness[i] = (float)theMotorJointData.stiffness[lolaJointIdx[i]];
+        }
+      }
+    }//end if
+   
+    return initialMotion != NULL;
+  }//end runEmergencyMotion
+
   void notify() 
   {  
     static int drop_count = 10;
@@ -296,13 +374,14 @@ private:
 
     // stop the user program
     std::cout << "[LolaAdaptor] stopping naoth" << std::endl;
-    system("naoth stop");
+    // stop naoth to trigger emergency motion
+    system("killall naoth");
 
-    sleep(2);
+    sleep(5);
 
     // we are the child process, do a blocking call to shutdown
-    system("/sbin/shutdown -h now");
     std::cout << "[LolaAdaptor] System shutdown requested" << std::endl;
+    system("/sbin/shutdown -h now");
 
     // await termination
     while(true) {
@@ -561,6 +640,13 @@ private:
     DISCONNECTED,
     CONNECTED
   } state;
+
+  // sitdown motion in case the Controller dies
+  bool command_data_available;
+  bool sensor_data_available;
+  MotorJointData theMotorJointData;
+  InertialSensorData theInertialSensorData;
+  BasicMotion* initialMotion;
 
   // DCM --> NaoController
   SharedMemory<NaoSensorData> naoSensorData;

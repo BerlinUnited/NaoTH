@@ -17,6 +17,7 @@ using namespace std;
 // std::atomic_int framesSinceCognitionLastSeen;
 std::atomic_bool running;
 std::atomic_bool already_got_signal;
+bool stopping;
 
 #define TO_STRING_INT(x) #x
 #define TO_STRING(x) TO_STRING_INT(x)
@@ -46,21 +47,25 @@ std::string getSignalDescription(int sigid)
 // handle signals to stop the binary
 void got_signal(int sigid)
 {
+  std::cout << getSignalDescription(sigid) << std::endl;
+
   // notify all threads to stop
   running = false;
 
-  std::cout << getSignalDescription(sigid) << std::endl;
-
   if(sigid == SIGTERM || sigid == SIGINT) // graceful stop
   {
-    std::cout << "shutdown requested by kill signal" << sigid << std::endl;
+    std::cout << "shutdown requested by kill signal " << sigid << std::endl;
     
     if (already_got_signal) {
       std::cout << "WARNING: received repeated kill signals. Graceful stop was not possible. Will kill." << std::endl;
     } else {
       // remember that we got a signal in case we don't manage to stop the binary gracefully
       already_got_signal = true;
-      system("paplay /opt/aldebaran/share/naoqi/wav/shutdown.wav");
+      // if(sigid == SIGINT) 
+      // {
+      //   system("paplay /opt/aldebaran/share/naoqi/wav/shutdown.wav");
+      // }
+
     // stop signal handling for now and give the binary time to stop gracefully
       return;
     }
@@ -131,7 +136,7 @@ int main(int /*argc*/, char **/*argv[]*/)
 
   std::signal(SIGABRT, got_signal);
   std::signal(SIGFPE,  got_signal);
-  std::signal(SIGILL, got_signal);
+  std::signal(SIGILL,  got_signal);
 
   // create the controller
   if(fileExists("/usr/bin/lola") || fileExists("/opt/aldebaran/bin/lola"))
@@ -141,9 +146,16 @@ int main(int /*argc*/, char **/*argv[]*/)
     // try to start lola
     theLolaAdaptor.start();
     running = true;
+    stopping = false;
 
-    while(running && theLolaAdaptor.isRunning())
+    while(!stopping && theLolaAdaptor.isRunning())
     {
+      if(!running && !stopping)
+      {
+        system("killall naoth");
+        sleep(5);
+        stopping = true;
+      }
       std::this_thread::sleep_for(std::chrono::milliseconds(125));
     }
   }
