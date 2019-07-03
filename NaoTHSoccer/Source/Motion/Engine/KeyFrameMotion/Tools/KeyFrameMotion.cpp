@@ -16,7 +16,7 @@ KeyFrameMotion::KeyFrameMotion(const MotionNet& currentMotionNet, motion::Motion
   name(motion::getName(id)),
   currentMotionNet(currentMotionNet),
   t(0.0),
-  stiffness(0.8)
+  stiffness(1.0)
 {
     getMotionStatus().target_reached = false;
 }
@@ -25,7 +25,7 @@ KeyFrameMotion::KeyFrameMotion()
   :
   AbstractMotion(motion::num_of_motions, getMotionLock()),
   t(0.0),
-  stiffness(8.0)
+  stiffness(1.0)
 {
     getMotionStatus().target_reached = false;
 }

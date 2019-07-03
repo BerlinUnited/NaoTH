@@ -20,7 +20,7 @@ class KeyFrameMotionParameters: public ParameterList{
       public:
         KeyFrameMotionParameters() : ParameterList("KeyFrameMotionParameters")
         {
-          PARAMETER_REGISTER(stiffness) = 0.8;
+          PARAMETER_REGISTER(stiffness) = 1.0;
           syncWithConfig();
         }
         double stiffness;
