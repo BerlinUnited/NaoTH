@@ -7,6 +7,7 @@
 #include <Tools/Math/Common.h>
 #include <Tools/Math/Line.h>
 #include "Representations/Perception/LineGraphPercept.h"
+#include "Tools/Math/Geometry.h"
 
 namespace ransac {
 
@@ -94,6 +95,9 @@ public:
                        double maxAngleError, double outlierThresholdDist) const;
 
   bool betterThan(const CircleModel& other) const;
+
+  bool validate(const std::vector<Edgel>& edgels,
+                    const std::vector<size_t>& inlier_idx, double threshold) const;
 
   Vector2d refine(const std::vector<Edgel>& edgels,
                   const std::vector<size_t>& inlier_idx) const;
