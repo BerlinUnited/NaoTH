@@ -184,7 +184,6 @@ private:
       if(runEmergencyMotion(actuators))
       {
         lola.readSensors(sensors);
-        std::cout << "runEmergencyMotion" << std::endl;
         lola.writeActuators(actuators);
         continue;
       }
@@ -286,7 +285,8 @@ private:
     {
       if(initialMotion == NULL && command_data_available && sensor_data_available)
       {
-        // take the last command data
+         std::cout << "emerg: start init motion" << std::endl;
+       // take the last command data
         const Accessor<MotorJointData>* commandData = naoCommandMotorJointData.reading();
         initialMotion = new BasicMotion(theMotorJointData, commandData->get(), theInertialSensorData);
       }
@@ -305,7 +305,6 @@ private:
       }
       else
       {
-        std::cout << "emerg: run init motion" << std::endl;
         initialMotion->execute();
 
        // SensorJointData
