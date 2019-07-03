@@ -49,8 +49,6 @@ void got_signal(int sigid)
   // notify all threads to stop
   running = false;
 
-  system("paplay /opt/aldebaran/share/naoqi/wav/shutdown.wav");
-
   std::cout << getSignalDescription(sigid) << std::endl;
 
   if(sigid == SIGTERM || sigid == SIGINT) // graceful stop
@@ -62,7 +60,8 @@ void got_signal(int sigid)
     } else {
       // remember that we got a signal in case we don't manage to stop the binary gracefully
       already_got_signal = true;
-      // stop signal handling for now and give the binary time to stop gracefully
+      system("paplay /opt/aldebaran/share/naoqi/wav/shutdown.wav");
+    // stop signal handling for now and give the binary time to stop gracefully
       return;
     }
   } 
