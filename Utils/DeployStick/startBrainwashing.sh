@@ -69,7 +69,6 @@ else
     rm -f /home/nao/bin/lola_adaptor
     su nao -c "cp ./deploy/home/nao/bin/lola_adaptor /home/nao/bin/lola_adaptor"
     chmod 755 /home/nao/bin/lola_adaptor
-    systemctl start lola_adaptor
   fi
 
 fi
