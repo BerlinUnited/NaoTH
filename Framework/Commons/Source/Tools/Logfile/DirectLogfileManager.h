@@ -38,16 +38,19 @@ public:
       // copy the given buffer into the accumulated fast buffer
       inline std::streamsize xsputn(const char* s, std::streamsize count) override
       {
+        // std::streamsize can be negative (in which cases?)
+        assert(count > 0);
         // the message is longer than the buffer, this should never happen
         assert(position + count < length);
-        std::memcpy(&buffer[position], s, count);
-        position += count;
+        std::memcpy(&buffer[position], s, (size_t)count);
+        position += (size_t)count;
         return count;
       }
 
       // no overflow allowed
       int_type overflow(int_type /*ch*/) override {
         assert(false);
+        return 0;
       }
     
   private:
