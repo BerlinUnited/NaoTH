@@ -294,12 +294,6 @@ private:
     // play a sound that the user knows we recognized his shutdown request
     system("paplay /opt/aldebaran/share/naoqi/wav/bip_power_off.wav");
 
-    // stop the user program
-    std::cout << "[LolaAdaptor] stopping naoth" << std::endl;
-    system("naoth stop");
-
-    sleep(5);
-
     // we are the child process, do a blocking call to shutdown
     system("/sbin/shutdown -h now");
     std::cout << "[LolaAdaptor] System shutdown requested" << std::endl;
