@@ -416,7 +416,7 @@ Vector2d ScanLineEdgelDetector::calculateGradient(const Vector2i& point) const
   // no angle at the border (shouldn't happen)
   if( point.x < offset || point.x + offset + 1 > (int)getImage().width() ||
       point.y < offset || point.y + offset + 1 > (int)getImage().height() ) {
-    return gradient;
+    ASSERT(false);
   }
 
   //apply Sobel Operator on (pointX, pointY)
