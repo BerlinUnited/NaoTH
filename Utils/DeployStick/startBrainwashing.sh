@@ -63,6 +63,15 @@ if [ ! -f "/opt/aldebaran/bin/lola" ] && [ ! -f "/usr/bin/lola" ]; then
     su nao -c "cp ./deploy/home/nao/bin/libnaosmal.so /home/nao/bin/libnaosmal.so"
     /etc/init.d/naoqi start
   fi
+else
+  # copy binaries and start naoqi/naoth again
+  if [ -f "./deploy/home/nao/bin/lola_adaptor" ]; then
+    rm -f /home/nao/bin/lola_adaptor
+    su nao -c "cp ./deploy/home/nao/bin/lola_adaptor /home/nao/bin/lola_adaptor"
+    chmod 755 /home/nao/bin/lola_adaptor
+    systemctl start lola_adaptor
+  fi
+
 fi
 
 if [ -f "./deploy/home/nao/bin/naoth" ]; then

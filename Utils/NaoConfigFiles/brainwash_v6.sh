@@ -67,80 +67,13 @@ deployDirectory() {
 
 setEtc(){
 
-	# ==================== boot stuff ====================
-
-	# # make boot faster
-	# deployFile "/etc/init.d/checkpart-dummy" "root" "755"
-
-	# # disable the hal-prestarter that takes quite a long time on boot
-	# if [ -f /usr/libexec/hal-prestarter ] ; then
-	#   mv -n /usr/libexec/hal-prestarter /usr/libexec/hal-prestarter.orig
-	# fi
-
 	# ==================== system stuff ====================
 
-	# # NaoTH init script
-	# deployFile "/etc/init.d/naoth" "root" "755"
-
-	# # Needed by NaoTH init script
-	# deployFile "/etc/init.d/cognition-common" "root" "755"
-
-	# brainwashinit
-	deployFile "/usr/bin/brainwash" "root" "755" "v6"
-
-	# NaoTH binary start script
-	deployFile "/usr/bin/naoth" "root" "755" "v6"
-
 	# NaoTH systemd service
-	deployFile "/etc/systemd/system/naoth.service" "root" "644" "v6"
 	deployFile "/etc/conf.d/naoth" "root" "644" "v6"
-
-	if [ ! -d /home/nao/.config/systemd ];	then
-		mkdir /home/nao/.config/systemd;
-	fi
-
-	if [ ! -d /etc/systemd/system/default.target.wants ];	then
-		mkdir /etc/systemd/system/default.target.wants;
-	fi
-	# add link to enable starting at boot
-	if [ ! -h /etc/systemd/system/default.target.wants/naoth.service ];	then
-		echo "setting link to naoth.service";
-		ln -s /etc/systemd/system/naoth.service /etc/systemd/system/default.target.wants/naoth.service;
-	fi
-
-	# disable naoqi completely
- 	if [ -h /nao/etc/systemd/user/aldebaran.target.wants/naoqi.service ]; then
-		rm /nao/etc/systemd/user/aldebaran.target.wants/naoqi.service
-	fi
-
- 	if [ -h /nao/etc/systemd/user/aldebaran.target.wants/naoqi-legacy.service ]; then
-		rm /nao/etc/systemd/user/aldebaran.target.wants/naoqi-legacy.service
-	fi
-	# overwrite lola.service with our version (we dont want naoqi as dependency)
-	deployFile "/nao/etc/systemd/user/lola.service" "root" "644" "v6"
-
-	# # add link to enable starting at boot
-	# if [ ! -f /etc/systemd/system/multi-user.target.wants/naoth.service ];	then
-	# 	echo "setting link to naoth.service";
-	# 	ln -s /etc/systemd/system/naoth.service /etc/systemd/system/multi-user.target.wants/naoth.service;
-	# fi
-
-	systemctl daemon-reload
-	#systemctl enable naoth
-	# su -c `systemctl --user daemon-reload` nao
-	# su -c `systemctl --user enable naoth` nao
 
 	# brainwash udev rule
 	deployFile "/etc/udev/rules.d/brainwashing.rules" "nao" "644" "v6"
-
-	# # copy new fstab
-	# deployFile "/etc/fstab" "root" "644"
-
-	# # add syslogger config
-	# deployFile "/etc/syslog.conf" "root" "644"
-
-	# #SSH Config
-	# deployFile "/etc/ssh.conf/sshd_config" "root" "644"
 
 	# ====================  host stuff ====================
 
@@ -148,7 +81,11 @@ setEtc(){
 	deployFile "/etc/conf.d/hostname" "root" "644" "v6"
 	deployFile "/etc/hostname" "root" "644" "v6"
 
+	# ====================  reload daemons ====================
+	systemctl daemon-reload
 }
+
+
 
 
 # ==================== pre stuff ====================
@@ -169,9 +106,16 @@ su nao -c "/usr/bin/pactl set-source-volume 1 90%"
 # play initial sound
 su nao -c "/usr/bin/paplay $DEPLOY_DIRECTORY/home/nao/naoqi/Media/usb_start.wav"
 
-# stop naoqi and naoth
+# stop naoth
 naoth stop
-# naoqi stop
+
+# brainwashinit
+deployFile "/usr/bin/brainwash" "root" "755" "v6"
+
+# NaoTH binary start script
+deployFile "/usr/bin/naoth" "root" "755" "v6"
+
+# ==================== etc stuff ====================
 
 # disable /etc overlay
 umount -l /etc
@@ -179,6 +123,34 @@ setEtc
 systemctl restart etc.mount
 # TODO: check if this is really needed (overlay should merge base and overlayed directory contents)
 setEtc
+
+# ==================== boot/user service stuff ====================
+
+# disable naoqi completely
+if [ -h /nao/etc/systemd/user/aldebaran.target.wants/naoqi.service ]; then
+	rm /nao/etc/systemd/user/aldebaran.target.wants/naoqi.service
+fi
+
+if [ -h /nao/etc/systemd/user/aldebaran.target.wants/naoqi-legacy.service ]; then
+	rm /nao/etc/systemd/user/aldebaran.target.wants/naoqi-legacy.service
+fi
+
+# overwrite lola.service with our version (we dont want naoqi as dependency)
+deployFile "/nao/etc/systemd/user/lola.service" "root" "644" "v6"
+# overwrite pulseaudio.service with our version (we dont want naoqi as dependency)
+deployFile "/nao/etc/systemd/user/pulseaudio.service" "root" "644" "v6"
+
+deployFile "/nao/etc/systemd/user/lola_adaptor.service" "root" "644" "v6"
+deployFile "/nao/etc/systemd/user/naoth.service" "root" "644" "v6"
+
+if [ ! -h /nao/etc/systemd/user/aldebaran.target.wants/lola_adaptor.service ];	then
+	echo "setting link to lola_adaptor.service";
+	ln -s /nao/etc/systemd/user/lola_adaptor.service /nao/etc/systemd/user/aldebaran.target.wants/lola_adaptor.service;
+fi
+if [ ! -h /nao/etc/systemd/user/aldebaran.target.wants/naoth.service ];	then
+	echo "setting link to naoth.service";
+	ln -s /nao/etc/systemd/user/naoth.service /nao/etc/systemd/user/aldebaran.target.wants/naoth.service;
+fi
 
 # ==================== libs stuff ====================
 
@@ -221,6 +193,13 @@ else
 	mv /home/nao/lib/libpulse-simple.so /home/nao/lib/libpulse-simple.so.0
 fi
 
+if [ -f ./deploy/v6/home/nao/lib/libpulse.so.0 ]; then
+	deployFile "/home/nao/lib/libpulse.so.0" "nao" "644"
+else
+	deployFile "/home/nao/lib/libpulse.so" "nao" "644"
+	mv /home/nao/lib/libpulse.so /home/nao/lib/libpulse.so.0
+fi
+
 deployFile "/home/nao/lib/libpulsecommon-3.99.so" "nao" "644" 
 
 if [ -f ./deploy/v6/home/nao/lib/libjson.so.0 ]; then
@@ -254,6 +233,9 @@ deployFile "/home/nao/robocup.conf" "nao" "644" "v6"
 
 # deploy binary
 deployFile "/home/nao/bin/naoth" "nao" "755" 
+
+# deploy binary
+deployFile "/home/nao/bin/lola_adaptor" "nao" "755" 
 
 # deploy media
 deployDirectory "/home/nao/naoqi/Media" "nao" "744"
