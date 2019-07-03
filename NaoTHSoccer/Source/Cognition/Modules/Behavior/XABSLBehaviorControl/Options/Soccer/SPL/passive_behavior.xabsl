@@ -37,7 +37,8 @@ option passive_behavior{
         stay;
     }
     action {
-      passive_ball_not_seen();
+      //passive_ball_not_seen();
+      passive_ball_not_seen_responsive();
       //motion.walk.style  = stable;
     }
   }
