@@ -16,52 +16,84 @@
 namespace naoth
 {
 
+/** Custom settings for V5 */
+struct V5CameraSettings
+{
+  double targetGain;
+
+  double minAnalogGain;
+  double maxAnalogGain;
+
+  bool fadeToBlack;
+
+  int powerlineFrequency;
+
+  int gammaCorrection;
+
+  int autoExpositionAlgorithm;
+
+  int whiteBalanceTemperature;
+};
+
+struct V6CameraSettings
+{
+
+};
+
+struct V5CommonSettings
+{
+  int whiteBalanceTemperature;
+};
+
+struct V6CommonSettings
+{
+};
+
 class CameraSettings : public Printable
 {
 public:
-  /* don't change order of enumerations
-       * because it reflects the order of execution
-       */
-  enum CameraSettingID
-  {
-    AutoExposition,
-    AutoExpositionAlgorithm,
-    AutoWhiteBalancing,
-    BacklightCompensation,
-    Brightness,
-    BrightnessDark,
-    CameraSelection,
-    Contrast,
-    Exposure,
-    FadeToBlack,
-    FPS, // TODO: remove this from settings?
-    Gain,
-    GammaCorrection,
-    MinAnalogGain,
-    MaxAnalogGain,
-    TargetGain,
-    HorizontalFlip,
-    Hue,
-    ResolutionHeight, // TODO: remove this from settings?
-    ResolutionWidth,  // TODO: remove this from settings?
-    Saturation,
-    Sharpness,
-    VerticalFlip,
-    WhiteBalance,
-    PowerlineFrequency,
-    numOfCameraSetting
-  };
+  bool autoExposition;
 
-  int data[numOfCameraSetting];
+  int exposure;
+  double gain;
+
+  int saturation;
+
+  int brightness;
+
+  float contrast;
+
+  int sharpness;
+
+  int hue;
+
+  bool autoWhiteBalancing;
+
+  bool horizontalFlip;
+  bool verticalFlip;
+
+  bool backlightCompensation;
+
+  V5CameraSettings v5;
+  V6CameraSettings v6;
 
   static const std::size_t AUTOEXPOSURE_GRID_SIZE = 5;
   std::uint8_t autoExposureWeights[AUTOEXPOSURE_GRID_SIZE][AUTOEXPOSURE_GRID_SIZE];
 
   CameraSettings();
   virtual ~CameraSettings();
-  static std::string getCameraSettingsName(CameraSettingID id);
 
   virtual void print(std::ostream &stream) const;
+};
+
+class CameraSettingsManager
+{
+public:
+  /** Queries all values from the actual camera */
+  virtual void query(int cameraFd, std::string cameraName, CameraSettings &settings) = 0;
+
+  /** Apply all changed values on the actual camera */
+  virtual void apply(int cameraFd, std::string cameraName, const CameraSettings &settings, bool force=false) = 0;
 };
 
 class CurrentCameraSettings : public CameraSettings
@@ -88,33 +120,28 @@ public:
   bool queryCameraSettings;
 
   bool autoExposition;
-  int autoExpositionAlgorithm;
+
+  V5CameraSettings v5;
+  V6CameraSettings v6;
   bool autoWhiteBalancing;
   bool backlightCompensation;
   int brightness;
   int cameraSelection;
   double contrast;
   int exposure;
-  bool fadeToBlack;
   double gain;
-  int gammaCorrection;
-  double targetGain;
-  double minAnalogGain;
-  double maxAnalogGain;
   bool horizontalFlip;
   int hue;
   int saturation;
   int sharpness;
   bool verticalFlip;
-  int whiteBalanceTemperature;
-  int powerlineFrequency;
 
   std::uint8_t autoExposureWeights[CameraSettings::AUTOEXPOSURE_GRID_SIZE][CameraSettings::AUTOEXPOSURE_GRID_SIZE];
 
   void reset();
   void setAutoExposureWeights(std::uint8_t w);
 
-  CameraSettings getCameraSettings(bool isV6=false) const;
+  CameraSettings getCameraSettings() const;
 };
 
 class CameraSettingsRequestTop : public CameraSettingsRequest
@@ -136,15 +163,12 @@ public:
   int brightness;
   int exposure;
   double gain;
-  int gammaCorrection;
-  double targetGain;
-  double minAnalogGain;
-  double maxAnalogGain;
 
   int saturation;
   int sharpness;
-  int whiteBalanceTemperature;
-  int powerlineFrequency;
+
+  V5CommonSettings v5;
+  V6CommonSettings v6;
 
   /*
     Can be either:
@@ -160,6 +184,6 @@ public:
 
   bool isActive;
 };
-}
+} // namespace naoth
 
 #endif /* _CAMERASETTINGS_H */

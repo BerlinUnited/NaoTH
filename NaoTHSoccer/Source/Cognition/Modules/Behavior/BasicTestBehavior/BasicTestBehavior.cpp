@@ -60,7 +60,9 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:goalie_sit_block","..",false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:goalie_sit_n_dive_left","..",false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:goalie_sit_n_dive_right","..",false);
-
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:jump_indicator_left", "..", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:jump_indicator_right", "..", false);
+  
   // other motions
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:dead", "Set the robot dead.", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:stand", "The default motion, otherwise do nothing", true);
@@ -405,6 +407,14 @@ void BasicTestBehavior::testMotion()
   );
   DEBUG_REQUEST("BasicTestBehavior:motion:id:goalie_sit_n_dive_right",
     getMotionRequest().id = motion::goalie_sit_n_dive_right;
+  );
+
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:jump_indicator_left",
+    getMotionRequest().id = motion::jump_indicator_left;
+  );
+
+  DEBUG_REQUEST("BasicTestBehavior:motion:id:jump_indicator_right",
+    getMotionRequest().id = motion::jump_indicator_right;
   );
 
 }//end testMotion
