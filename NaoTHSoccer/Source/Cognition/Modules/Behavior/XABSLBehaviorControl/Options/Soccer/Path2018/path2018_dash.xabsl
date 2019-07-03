@@ -1,5 +1,5 @@
 option path2018_dash {
-
+  /*
   initial state approach_dash {
     decision{
       if (path.kick_executed) 
@@ -14,11 +14,11 @@ option path2018_dash {
       head.control_mode = search_for_ball;
     }
   }
-
-  state dash
+  */
+  initial state dash
   {
     decision {
-      if (state_time < 2000)
+      if (state_time < 1500)
         stay;
       else 
         goto dash_done;
