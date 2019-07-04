@@ -1,9 +1,16 @@
-#!/bin/bash
 # set volume to 88%
-sudo -u nao pactl set-sink-mute 0 false
-sudo -u nao pactl set-sink-volume 0 88%
+su nao -c "/usr/bin/pactl set-sink-mute 0 false"
+su nao -c "/usr/bin/pactl set-sink-volume 0 88%"
+# also set the recording volume
+# 1. set in simple mode with alsa mixer to make sure it is in sync for all channels
+su nao -c "/usr/bin/amixer sset 'Capture',0 90%"
+# 2. set with pulseaudio (now both channels are set) to make sure the changes are persistent
+su nao -c "/usr/bin/pactl set-source-mute 1 false"
+su nao -c "/usr/bin/pactl set-source-volume 1 90%"
+
+
 # play initial sound
-sudo -u nao /usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav
+su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav"
 
 # copy function
 copy(){
