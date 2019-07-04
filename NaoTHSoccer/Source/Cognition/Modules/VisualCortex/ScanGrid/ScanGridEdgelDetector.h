@@ -242,7 +242,8 @@ private:
   bool add_edgel(const Vector2i& point, Edgel::Type type) {
     if( point.x < parameters.gradient_offset || point.x + parameters.gradient_offset + 1 > (int)getImage().width() ||
         point.y < parameters.gradient_offset || point.y + parameters.gradient_offset + 1 > (int)getImage().height() ) {
-      // cannot extract direction on image border
+      // Cannot extract direction on image border
+      // In the future the edgel detector should make sure not to scan for points on the image border (parameters.gradient_offset)
       return false;
     }
 
@@ -258,6 +259,7 @@ private:
     if( x < parameters.gradient_offset || x + parameters.gradient_offset + 1 > (int)getImage().width() ||
         y < parameters.gradient_offset || y + parameters.gradient_offset + 1 > (int)getImage().height() ) {
       // cannot extract direction on image border
+      // In the future the edgel detector should make sure not to scan for points on the image border (parameters.gradient_offset)
       return false;
     }
 
