@@ -120,7 +120,7 @@ private:
     bool found;
     int maxValue;
 
-    MaxPeakScan(int threshold)
+    explicit MaxPeakScan(int threshold)
     {
       this->threshold = threshold;
       this->maxValue = threshold;

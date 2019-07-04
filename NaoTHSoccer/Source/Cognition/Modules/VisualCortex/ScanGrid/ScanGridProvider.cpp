@@ -99,8 +99,8 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
 
   double gap_modifier = parameters.vertical_gap_mm / parameters.horizontal_gap_mm;
 
-  int vScan_idx = static_cast<int>(getScanGrid().vScanPattern.size()-1);
-
+  int vScan_idx = static_cast<int>(getScanGrid().vScanPattern.size()) - 1;
+  
   for(double gap = minGap; gap < width; gap *= 2)
   {
     // distance to an object with a size of "gap" in the image,
@@ -134,12 +134,12 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
     // determine start in vertical scan pattern,
     // iterate backwards because most scanlines are short
     size_t bottom_idx = 0;
-    for(;vScan_idx >= 0; vScan_idx--)
+    for(; vScan_idx >= 0; vScan_idx--)
     {
       int y = getScanGrid().vScanPattern[static_cast<size_t>(vScan_idx)];
       if(y > max_scan_y) {
         bottom_idx = std::min(getScanGrid().vScanPattern.size()-1,
-                              static_cast<size_t>(vScan_idx+1));
+          static_cast<size_t>(vScan_idx)+1);
         break;
       }
     }
@@ -249,13 +249,13 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
       LINE_PX(ColorClasses::blue,
               scanline.x, getScanGrid().vScanPattern.at(scanline.bottom),
               scanline.x, getScanGrid().vScanPattern.at(scanline.top));
-      for(size_t i=scanline.bottom; i<=scanline.top; ++i)
+      for(size_t ii=scanline.bottom; ii<=scanline.top; ++ii)
       {
-        POINT_PX(ColorClasses::red, scanline.x, getScanGrid().vScanPattern.at(i));
+        POINT_PX(ColorClasses::red, scanline.x, getScanGrid().vScanPattern.at(ii));
 
         //Test
         const int xx = scanline.x;
-        const int yy = getScanGrid().vScanPattern.at(i);
+        const int yy = getScanGrid().vScanPattern.at(ii);
         getImage().getY(xx, yy);
       }
     }
