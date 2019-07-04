@@ -86,6 +86,9 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
   // calculate vertical scan pattern by creating points
   // on the field and projecting them back onto the image
   calculate_vertical_scan_pattern(min_scan_y);
+  if(getScanGrid().vScanPattern.empty()) {
+    return;
+  }
 
   double minGap = width / (double) numberOfVerticals;
 
@@ -138,8 +141,7 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
     {
       int y = getScanGrid().vScanPattern[static_cast<size_t>(vScan_idx)];
       if(y > max_scan_y) {
-        bottom_idx = std::min(getScanGrid().vScanPattern.size()-1,
-          static_cast<size_t>(vScan_idx)+1);
+        bottom_idx = std::min(getScanGrid().vScanPattern.size()-1, static_cast<size_t>(vScan_idx)+1);
         break;
       }
     }
@@ -155,7 +157,7 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
     }
   }
 
-  if(line_start_increasing_length.empty() || getScanGrid().vScanPattern.empty()) {
+  if(line_start_increasing_length.empty()) {
     return;
   }
 
