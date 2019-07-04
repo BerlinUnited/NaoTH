@@ -55,8 +55,13 @@ public:
     return state;
   }
 
+  // TODO: name state
   bool value() const {
     return state;
+  }
+
+  double floatValue() const {
+    return filter.value();
   }
 
   void reset() {
