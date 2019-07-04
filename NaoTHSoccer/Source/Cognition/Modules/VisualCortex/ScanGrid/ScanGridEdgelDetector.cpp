@@ -112,7 +112,7 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
     int y = getScanGrid().vScanPattern[scanline.bottom];
 
     if(x - parameters.gradient_offset < 0 || x + parameters.gradient_offset >= static_cast<int>(getImage().width())) {
-      // cannot extract gradient on image border
+      // cannot extract edgel direction on image border
       continue;
     }
 
@@ -179,6 +179,7 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
 
     // TODO: cleanup
     if(getScanGrid().vScanPattern.size() < 2) {
+      // need at least two scan pattern points to calculate last_scan_pattern_gap, TODO: use min gap (last_scan_pattern_gap = 2)
       return;
     }
     int last_scan_pattern_gap = getScanGrid().vScanPattern.at(getScanGrid().vScanPattern.size()-2)
@@ -197,6 +198,7 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
     for(y = getScanGrid().vScanPattern[i]; y >= end_of_field; y = (++i < getScanGrid().vScanPattern.size())? getScanGrid().vScanPattern[i]: y - last_scan_pattern_gap) {
       int luma = getImage().getY(x, y);
 
+      // TODO: "y >" should be enough
       if(y >= end_of_body) {
         // don't scan inside own body
         prev_y = y;
@@ -217,17 +219,19 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
 
       // begin
       if(maximumPeak.add(check_y, prev_y, y, gradient)) {
+        // found local maximum peak
         DEBUG_REQUEST("Vision:ScanGridEdgelDetector:plot_gradient_vertical_scan",
           std::cout << "x=" << x << " max " << check_y << " point=" << maximumPeak.point << std::endl;
         );
-        // found greatest peak
         DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_jump_vertical",
           LINE_PX(ColorClasses::red, x, maximumPeak.prev_point, x, maximumPeak.next_point);
         );
 
         if(prev_y - y <= 2)
         {
+          // gap is small, just make a simple refinement
           refine_vertical(maximumPeak, x);
+          // add edgel to percept
           bool success = add_edgel(x, maximumPeak.point, Edgel::positive);
           if(success) {
             begin_found = true;
@@ -235,6 +239,7 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
         }
         else if(refine_range_vertical(maximumPeak, x))
         {
+          // if peak found in range add edgel to percept
           bool success = add_edgel(x, maximumPeak.point, Edgel::positive);
           if(success) {
             begin_found = true;
@@ -247,19 +252,20 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
       // end
       if(minimumPeak.add(check_y, prev_y, y, gradient))
       {
+        // found local minimum peak
         DEBUG_REQUEST("Vision:ScanGridEdgelDetector:plot_gradient_vertical_scan",
           std::cout <<  "x=" << x << " min " << check_y << " point=" << minimumPeak.point << std::endl;
         );
-        // found greatest peak
         DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_jump_vertical",
           LINE_PX(ColorClasses::yellow, x, minimumPeak.prev_point, x, minimumPeak.next_point);
         );
         if(std::abs(prev_y - y) <= 2)
         {
+          // gap is small, just make a simple refinement
           refine_vertical(minimumPeak, x);
 
+          // add edgel to percept
           bool success = add_edgel(x, minimumPeak.point, Edgel::negative);
-
           if(success) {
             // found a new double edgel
             if(begin_found) {
@@ -270,8 +276,8 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
         }
         else if(refine_range_vertical(minimumPeak, x))
         {
+          // if peak found in range add edgel to percept
           bool success = add_edgel(x, minimumPeak.point, Edgel::negative);
-
           if(success) {
             // found a new double edgel
             if(begin_found) {
@@ -309,13 +315,14 @@ inline void ScanGridEdgelDetector::refine_vertical(MaxPeakScan& maximumPeak, int
 
 inline bool ScanGridEdgelDetector::refine_range_vertical(MaxPeakScan& maximumPeak, int x) {
   int height = getImage().height();
+
+  // improve the range so we can calculate a gradient on the first and last scan point
   int start = std::min(maximumPeak.prev_point, height-2);
-  // TODO why -1
   int end = std::max(maximumPeak.next_point-1, 0);
+
   maximumPeak.reset();
 
   int prev = std::min(start+2, height-1);
-  int luma, gradient;
   int prevLuma = getImage().getY(x, prev);
 
   for(int y=start; y>=end; y-=2) {
@@ -323,15 +330,17 @@ inline bool ScanGridEdgelDetector::refine_range_vertical(MaxPeakScan& maximumPea
       POINT_PX(ColorClasses::pink, x, y);
     );
 
-    luma = getImage().getY(x, y);
-    gradient = luma - prevLuma;
+    int luma = getImage().getY(x, y);
+    int gradient = luma - prevLuma;
     // HACK: -1, -1 cause interval isn't of interest here
     if(maximumPeak.add(y+1, -1, -1, gradient)) {
+      // we are just looking for one peak here
       break;
     }
     prevLuma = luma;
   }
   if(maximumPeak.found) {
+    // we scanned the interval for every second pixel, so make another simple refinement
     refine_vertical(maximumPeak, x);
     return true;
   }
@@ -368,7 +377,7 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
     int end_x = scanline.right_x;
 
     if(y - parameters.gradient_offset < 0 || y + parameters.gradient_offset >= static_cast<int>(getImage().height())) {
-      // cannot extract gradient on image border
+      // cannot extract edgel direction on image border
       continue;
     }
 
@@ -459,7 +468,7 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
 
       // begin
       if(maximumPeak.add(check_x, prev_x, x, gradient)) {
-        // found greatest peak
+        // found local maximum peak
         DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_jump_horizontal",
           LINE_PX(ColorClasses::red, maximumPeak.prev_point, y, maximumPeak.next_point, y);
         );
@@ -485,7 +494,7 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
 
       // end
       if(minimumPeak.add(check_x, prev_x, x, gradient)) {
-        // found greatest peak
+        // found local minimum peak
         DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_jump_horizontal",
           LINE_PX(ColorClasses::yellow, minimumPeak.prev_point, y, minimumPeak.next_point, y);
         );
@@ -545,18 +554,18 @@ inline void ScanGridEdgelDetector::refine_horizontal(MaxPeakScan& maximumPeak, i
 
 inline bool ScanGridEdgelDetector::refine_range_horizontal(MaxPeakScan& maximumPeak, int y) {
   int width = getImage().width();
+
+  // improve the range so we can calculate a gradient on the first and last scan point
   int start = std::max(maximumPeak.prev_point, 1);
-  // TODO: Why +1?
   int end = std::min(maximumPeak.next_point+1, width-1);
   maximumPeak.reset();
 
   int prev = std::max(start-2, 0);
-  int luma, gradient;
   int prevLuma = getImage().getY(prev, y);
 
   for(int x=start; x<=end; x+=2) {
-    luma = getImage().getY(x, y);
-    gradient = luma - prevLuma;
+    int luma = getImage().getY(x, y);
+    int gradient = luma - prevLuma;
     // HACK: -1, -1 cause interval isn't of interest here
     if(maximumPeak.add(x-1, -1, -1, gradient)) {
       break;
