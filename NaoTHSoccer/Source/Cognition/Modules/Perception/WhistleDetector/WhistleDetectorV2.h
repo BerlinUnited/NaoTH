@@ -71,6 +71,7 @@ public:
       PARAMETER_REGISTER(nWindowSkipping) = 80; // windowTimeStep: 160 / 2 = 80 => we skip half of the window size (10ms)
       
       PARAMETER_REGISTER(vWhistleThreshold) = 3.5;
+      PARAMETER_REGISTER(vWhistleThresholdAmplitude) = 5;
 
       PARAMETER_REGISTER(whistle_filter.g0) = 0.1;
       PARAMETER_REGISTER(whistle_filter.g1) = 0.1;
@@ -83,7 +84,11 @@ public:
     int nWindowSize;
     int nWindowZeroPadding;
     int nWindowSkipping;
+
     double vWhistleThreshold;
+
+    // TODO: make this threshold relative to the overall noise of the environment
+    double vWhistleThresholdAmplitude;
 
     struct {
       double g0;
