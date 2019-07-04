@@ -23,15 +23,26 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
   getFieldPercept().reset();
+  endpoints.clear();
 
   if((cameraID==CameraInfo::Top)? params.set_whole_image_as_field_top: params.set_whole_image_as_field_bottom) {
     // skip field detection and set whole image under the horizon as field
+    endpoints = {
+      {0, 0},
+      {0, static_cast<int>(getImage().height())-1},
+      {static_cast<int>(getImage().width())-1, static_cast<int>(getImage().height())-1},
+      {static_cast<int>(getImage().width())-1, 0},
+      {0, 0}
+    };
+
+    // convex hull calculation sorts endpoints in clockwise order
+    std::vector<Vector2i> result = ConvexHull::convexHull(endpoints);
+
     FieldPercept::FieldPoly fieldPoly;
-    fieldPoly.add(0, 0);
-    fieldPoly.add(0, getImage().height()-1);
-    fieldPoly.add(getImage().width()-1, getImage().height()-1);
-    fieldPoly.add(getImage().width()-1, 0);
-    fieldPoly.add(0, 0);
+    for(size_t i = 0; i < result.size(); i++)
+    {
+      fieldPoly.add(result[i]);
+    }
 
     getFieldPercept().setField(fieldPoly, getArtificialHorizon());
     if(fieldPoly.getArea() >= 5600) {
@@ -54,7 +65,6 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
   if(!getBallDetectorIntegralImage().isValid()) {
     return;
   }
-  endpoints.clear();
 
   factor = getBallDetectorIntegralImage().FACTOR;
   const int width = getBallDetectorIntegralImage().getWidth();

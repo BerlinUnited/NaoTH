@@ -212,6 +212,7 @@ private:
   inline size_t next_poly_line(size_t idx, Math::LineSegment& result,
                                const std::vector<Vector2i>& poly_points)
   {
+    // BEWARE: Requires poly_points to be in clockwise order
     size_t end_idx = (idx+1) % poly_points.size();
     if(poly_points[idx] == poly_points[end_idx]) {
       idx = end_idx;
@@ -227,6 +228,7 @@ private:
   inline size_t prev_poly_line(size_t idx, Math::LineSegment& result,
                                const std::vector<Vector2i>& poly_points)
   {
+    // BEWARE: Requires poly_points to be in clockwise order
     size_t end_idx = (idx==0)? poly_points.size()-1: idx-1;
     if(poly_points[idx] == poly_points[end_idx]) {
       idx = end_idx;

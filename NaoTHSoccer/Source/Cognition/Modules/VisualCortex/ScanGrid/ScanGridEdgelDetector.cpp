@@ -107,6 +107,11 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
   Math::LineSegment polyLine;
   poly_idx = next_poly_line(poly_idx, polyLine, poly_points);
 
+  DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_field_intersections",
+    LINE_PX(ColorClasses::yellow, (int) polyLine.begin().x, (int) polyLine.begin().y,
+                                  (int) polyLine.end().x, (int) polyLine.end().y);
+  );
+
   // vertical scanlines
   for(const ScanGrid::VScanLine scanline: getScanGrid().vertical)
   {
