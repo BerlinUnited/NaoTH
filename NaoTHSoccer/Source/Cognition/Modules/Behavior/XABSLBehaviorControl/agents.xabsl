@@ -103,6 +103,7 @@ include "Options/Soccer/Path2018/path_sidekick_right.xabsl";
 include "Options/Soccer/Path2018/path_kick_short_with_approach.xabsl";
 include "Options/Soccer/Path2018/path_kick_long_with_approach.xabsl";
 include "Options/Soccer/Path2018/path_turn_to_attack_direction.xabsl";
+include "Options/Soccer/Path2018/path2018_dash.xabsl";
 include "Options/Soccer/Path2018/path_dash.xabsl";
 include "Options/Soccer/Path2018/path_move_around_ball.xabsl";
 include "Options/Soccer/Path2018/path_go_to_ball_with_USOA.xabsl";
@@ -197,7 +198,7 @@ include "Options/Test/PathPlannerAgents/pathplanner_test_short_kick_agent.xabsl"
 include "Options/Test/PathPlannerAgents/pathplanner_test_long_kick_agent.xabsl";
 include "Options/Test/PathPlannerAgents/pathplanner_test_only_shortkick_agent.xabsl";
 include "Options/Test/PathPlannerAgents/pathplanner_test_only_sidekick_agent.xabsl";
-include "Options/Test/PathPlannerAgents/pathplanner_test_dash_agent.xabsl";
+include "Options/Test/PathPlannerAgents/pathplanner2018_dash_agent.xabsl";
 include "Options/Test/PathPlannerAgents/pathplanner2018_forwardkick_agent.xabsl";
 include "Options/Test/PathPlannerAgents/path_basic_goalie_agent.xabsl";
 include "Options/Test/PathPlannerAgents/path_move_around_ball_agent.xabsl";
@@ -211,8 +212,8 @@ include "Options/Test/PathPlaner/pathplanner_kick_short.xabsl";
 include "Options/Test/PathPlaner/pathplanner_kick_long.xabsl";
 include "Options/Test/PathPlaner/pathplanner_shortkick_only.xabsl";
 include "Options/Test/PathPlaner/pathplanner_sidekick_only.xabsl";
-include "Options/Test/PathPlaner/pathplanner_dash.xabsl";
 
+include "Options/Test/PathPlaner/pathplanner2018_dash_test.xabsl";
 include "Options/Test/PathPlaner/pathplanner2018_forwardkick.xabsl";
 include "Options/Test/PathPlaner/pathplanner2018_sidekick.xabsl";
 include "Options/Test/PathPlaner/path_move_around_ball_test.xabsl";
@@ -359,7 +360,7 @@ agent pathplanner_test_short_kick_agent("pathplanner_test_short_kick_agent", pat
 agent pathplanner_test_long_kick_agent("pathplanner_test_long_kick_agent", pathplanner_test_long_kick_agent);
 agent pathplanner_test_only_sidekick_agent("pathplanner_test_only_sidekick_agent", pathplanner_test_only_sidekick_agent);
 agent pathplanner_test_only_shortkick_agent("pathplanner_test_only_shortkick_agent", pathplanner_test_only_shortkick_agent);
-agent pathplanner_test_dash_agent("pathplanner_test_dash_agent", pathplanner_test_dash_agent);
+agent pathplanner2018_dash_agent("pathplanner2018_dash_agent", pathplanner2018_dash_agent);
 agent pathplanner2018_forwardkick_agent("pathplanner2018_forwardkick_agent", pathplanner2018_forwardkick_agent);
 agent pathplanner2018_sidekick_agent("pathplanner2018_sidekick_agent", pathplanner2018_sidekick_agent);
 agent pathplanner2018_sidestep_agent("pathplanner2018_sidestep_agent", pathplanner2018_sidestep_agent);
