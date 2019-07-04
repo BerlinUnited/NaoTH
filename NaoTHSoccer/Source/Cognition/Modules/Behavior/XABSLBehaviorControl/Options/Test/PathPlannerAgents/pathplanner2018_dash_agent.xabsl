@@ -1,12 +1,12 @@
 /** Test behavior pathplanner dash */
-option pathplanner_test_dash_agent {
+option pathplanner2018_dash_agent {
   initial state test {    
     action {
     
       // react to the game controller and handle fall down
       basic_play();
 
-      pathplanner_dash();
+      pathplanner2018_dash_test();
       
       // control the arms
       arms_control();
