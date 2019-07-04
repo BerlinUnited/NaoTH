@@ -57,6 +57,8 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
 
   if(parameters.scan_vertical) {
     scan_vertical(maximumPeak, minimumPeak);
+    // HACK: increase scan_id here so vertical and horizontal scans are one id appart
+    // so that LineGraphProvider doesn't match vertical scan edgels with horizontal scan edgels
     scan_id++;
   }
 
