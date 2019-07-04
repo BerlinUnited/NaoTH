@@ -22,8 +22,34 @@ IntegralFieldDetector::~IntegralFieldDetector()
 void IntegralFieldDetector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
-
   getFieldPercept().reset();
+
+  if((cameraID==CameraInfo::Top)? params.set_whole_image_as_field_top: params.set_whole_image_as_field_bottom) {
+    // skip field detection and set whole image under the horizon as field
+    FieldPercept::FieldPoly fieldPoly;
+    fieldPoly.add(0, 0);
+    fieldPoly.add(0, getImage().height()-1);
+    fieldPoly.add(getImage().width()-1, getImage().height()-1);
+    fieldPoly.add(getImage().width()-1, 0);
+    fieldPoly.add(0, 0);
+
+    getFieldPercept().setField(fieldPoly, getArtificialHorizon());
+    if(fieldPoly.getArea() >= 5600) {
+      getFieldPercept().valid = true;
+    }
+
+    DEBUG_REQUEST("Vision:IntegralFieldDetector:mark_field_polygon",
+      size_t idx = 0;
+      ColorClasses::Color color = getFieldPercept().valid ? ColorClasses::blue : ColorClasses::red;
+      const FieldPercept::FieldPoly& poly = getFieldPercept().getValidField();
+      for(size_t i = 1; i < poly.size(); i++)
+      {
+        LINE_PX(color, poly[idx].x, poly[idx].y, poly[i].x, poly[i].y);
+        idx = i;
+      }
+    );
+    return;
+  }
 
   if(!getBallDetectorIntegralImage().isValid()) {
     return;
