@@ -32,7 +32,7 @@ void SensorLogger::execute()
     LOGSTUFF(FrameInfo);
 
     // sensors
-    LOGSTUFF(SensorJointData);
+//    LOGSTUFF(SensorJointData);
     LOGSTUFF(FSRData);
     LOGSTUFF(AccelerometerData);
     LOGSTUFF(GyrometerData);
