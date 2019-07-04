@@ -22,6 +22,7 @@ namespace motion
     empty,
     init,
     dead,
+    falling,
     sit,
 
     /* inverse kinematic */
@@ -75,6 +76,7 @@ namespace motion
       case empty: return "empty";
       case init: return "init";
       case dead: return "dead";
+      case falling: return "falling";
       case sit: return "sit";
 
       case stand: return "stand";
