@@ -290,9 +290,11 @@ CONNMAN_SERVICES=$(connmanctl services)
 
 ETH0_MAC=$(cat /sys/class/net/eth0/address | sed -e 's/://g')
 WLAN0_MAC=$(cat /sys/class/net/wlan0/address | sed -e 's/://g')
+WLAN0_MAC_FULL=$(cat /sys/class/net/wlan0/address | tr a-z A-Z)
 
 echo "Setting up wifi configuration for wlan0 (${WLAN0_MAC})"
 sed -i -e "s/__NAO__/${NAO_NUMBER}/g" $DEPLOY_DIRECTORY/v6/var/lib/connman/wifi.config
+sed -i -e "s/__WLAN_MAC__/${WLAN0_MAC_FULL}/g" $DEPLOY_DIRECTORY/v6/var/lib/connman/wifi.config
 deployFile "/var/lib/connman/wifi.config" "root" "644" "v6"
 
 WIFI_NETWORKS=$(cat /var/lib/connman/wifi.config | grep "Name =" | sed -e "s/ //g" | sed -e "s/Name=//g")
