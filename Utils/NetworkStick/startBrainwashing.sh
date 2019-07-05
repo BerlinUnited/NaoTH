@@ -92,7 +92,7 @@ else
   sed -i -e "s/__SSID__/${WANTED_SSID}/g" /var/lib/connman/wifi.config
   sed -i -e "s/__PASS__/${WANTED_PASS}/g" /var/lib/connman/wifi.config
 
-  echo "${WANTED_SSID} & ${WANTED_PASS} should be used"
+  # echo "${WANTED_SSID} & ${WANTED_PASS} should be used"
 
   WIFI_NETWORKS=$(cat /var/lib/connman/wifi.config | grep "Name =" | sed -e "s/ //g" | sed -e "s/Name=//g")
   wifi=$WANTED_SSID
