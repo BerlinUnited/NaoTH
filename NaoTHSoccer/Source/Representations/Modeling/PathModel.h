@@ -44,7 +44,6 @@ public:
   {
     NONE,
     MOVE_AROUND_BALL,
-<<<<<<< HEAD
     MOVE_AROUND_BALL2,
     FORWARDKICK,
     SIDEKICK_LEFT,
