@@ -21,8 +21,7 @@ namespace path_symbols("PathPlanner Symbols") {
     none,
     move_around_ball,
     move_around_ball2,
-    forwardkick_left,
-    forwardkick_right,
+    forwardkick,
     sidekick_left,
     sidekick_right,
     sidestep

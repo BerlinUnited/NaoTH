@@ -63,21 +63,12 @@ void PathPlanner2018::execute()
   case PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL2:
     moveAroundBall2(getPathModel().direction, getPathModel().radius, getPathModel().stable);
     break;
-  case PathModel::PathPlanner2018Routine::FORWARDKICK_LEFT:
+  case PathModel::PathPlanner2018Routine::FORWARDKICK:
     //if (farApproach())
     {
-      if (nearApproach_forwardKick(Foot::LEFT, getPathModel().xOffset, getPathModel().yOffset))
+      if (nearApproach_forwardKick(getPathModel().xOffset, getPathModel().yOffset))
       {
-        forwardKick(Foot::LEFT);
-      }
-    }
-    break;
-  case PathModel::PathPlanner2018Routine::FORWARDKICK_RIGHT:
-    //if (farApproach())
-    {
-      if (nearApproach_forwardKick(Foot::RIGHT, getPathModel().xOffset, getPathModel().yOffset))
-      {
-        forwardKick(Foot::RIGHT);
+        forwardKick();
       }
     }
     break;
@@ -359,7 +350,7 @@ bool PathPlanner2018::sidesteps(const Foot& foot, const double direction){
 
 }
 
-bool PathPlanner2018::nearApproach_forwardKick(const Foot& /*foot*/, const double offsetX, const double offsetY)
+bool PathPlanner2018::nearApproach_forwardKick(const double offsetX, const double offsetY)
 {
   // Always execute the steps that were planned before planning new steps
   if (stepBuffer.empty())
@@ -406,7 +397,7 @@ bool PathPlanner2018::nearApproach_forwardKick(const Foot& /*foot*/, const doubl
       near_approach_forward_step.debug_name = "near_approach_forward_step";
       near_approach_forward_step.setPose({ 0.0, translation_x, translation_y });
       near_approach_forward_step.setStepType(StepType::WALKSTEP);
-      near_approach_forward_step.setCharacter(0.3);
+      near_approach_forward_step.setCharacter(params.nearApproach_step_character);
       near_approach_forward_step.setScale(1.0);
       near_approach_forward_step.setCoordinate(coordinate);
       near_approach_forward_step.setFoot(Foot::NONE);
@@ -558,24 +549,27 @@ bool PathPlanner2018::nearApproach_sideKick(const Foot& foot, const double offse
   return false;
 }
 
-void PathPlanner2018::forwardKick(const Foot& /*foot*/)
+void PathPlanner2018::forwardKick()
 {
   if (!kickPlanned)
   {
     stepBuffer.clear();
 
     // 2019 version - makes sure to kick with the foot that is behind the ball
+    Vector2d ballPos;
     Foot actual_foot;
     Coordinate coordinate = Coordinate::Hip;
     if (getBallModel().positionPreview.y < 0)
     {
       coordinate = Coordinate::LFoot;
       actual_foot = Foot::RIGHT;
+      ballPos    = getBallModel().positionPreviewInRFoot;
     }
     else
     {
       coordinate = Coordinate::RFoot;
       actual_foot = Foot::LEFT;
+      ballPos    = getBallModel().positionPreviewInLFoot;
     }
 
     /*
@@ -616,7 +610,7 @@ void PathPlanner2018::forwardKick(const Foot& /*foot*/)
     // The kick
     StepBufferElement forward_kick_step;
     forward_kick_step
-      .setPose({ 0.0, 500.0, 0.0 })
+      .setPose({ 0.0, 500.0, 0.0 }) // kick straight forward
       .setStepType(StepType::KICKSTEP)
       .setCharacter(1.0)
       .setScale(0.7)
@@ -626,6 +620,11 @@ void PathPlanner2018::forwardKick(const Foot& /*foot*/)
       .setRestriction(RestrictionMode::SOFT)
       .setProtected(true)
       .setTime(params.forwardKickTime);
+
+    // NOTE: change the kick pose if the parameter is set
+    if(params.forwardKickAdaptive) {
+      forward_kick_step.setPose({ 0.0, ballPos.x, ballPos.y }); // kick towards the ball
+    }
 
     addStep(forward_kick_step);
 

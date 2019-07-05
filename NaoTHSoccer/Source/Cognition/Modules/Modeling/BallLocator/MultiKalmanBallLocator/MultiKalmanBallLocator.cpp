@@ -567,6 +567,9 @@ void MultiKalmanBallLocator::provideBallModel(const BallHypothesis& model)
   // set position at rest
   getBallModel().position_at_rest.x = modelCopy.getState()(0);
   getBallModel().position_at_rest.y = modelCopy.getState()(2);
+
+  // some final debug stuff
+  PLOT("MultiKalmanBallLocator:ballSeenFilter", model.ballSeenFilter.floatValue());
 }
 
 void MultiKalmanBallLocator::doDebugRequestBeforPredictionAndUpdate()
@@ -637,7 +640,7 @@ void MultiKalmanBallLocator::doDebugRequest()
           const Eigen::Vector4d& state = (*iter).getState();
           CIRCLE( state(0), state(2), (*iter).ballSeenFilter.value()*1000);
         }
-      );
+    );
 }
 
 void MultiKalmanBallLocator::drawFilter(const BallHypothesis& bh, const Color& model_color, Color cov_loc_color, Color cov_vel_color) const

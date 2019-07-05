@@ -65,8 +65,10 @@ private:
       PARAMETER_REGISTER(readyForSideKickThresholdY)            = 0.3;
       PARAMETER_REGISTER(forwardKickThreshold.x)                = 50; // mm
       PARAMETER_REGISTER(forwardKickThreshold.y)                = 25; // mm
+      PARAMETER_REGISTER(forwardKickAdaptive)                   = false; // mm
       //PARAMETER_REGISTER(nearApproachForwardKickBallPosOffsetX) = 110;
       PARAMETER_REGISTER(nearApproachSideKickBallPosOffsetX)    = 100;
+      PARAMETER_REGISTER(nearApproach_step_character)           = 0.3;
       PARAMETER_REGISTER(farToNearApproachThreshold)            = 10.0;
       PARAMETER_REGISTER(rotationLength)                        = 30.0;
       PARAMETER_REGISTER(sidekickOffsetY)                       = 40.0;
@@ -85,6 +87,8 @@ private:
     //double readyForForwardKickThresholdX;
     //double readyForForwardKickThresholdY;
     Vector2d forwardKickThreshold;
+    bool forwardKickAdaptive;
+
     //double nearApproachForwardKickBallPosOffsetX;
     double nearApproachSideKickBallPosOffsetX;
     double farToNearApproachThreshold;
@@ -94,6 +98,7 @@ private:
     int sideKickTime;
     double moveAroundBallCharacter;
     double moveAroundBallCharacterStable;
+    double nearApproach_step_character;
   } params;
 
   // NONE means hip
@@ -116,11 +121,11 @@ private:
   // goToBall is split up between sideKick and forwardKick so that changing things in upcoming RoboCup 2018
   // won't be so complex as to introduce bugs easily
   bool farApproach();
-  bool nearApproach_forwardKick(const Foot& foot, const double offsetX, const double offsetY);
+  bool nearApproach_forwardKick(const double offsetX, const double offsetY);
   bool nearApproach_sideKick(const Foot& foot, const double offsetX, const double offsetY);
   bool sidesteps(const Foot& foot, const double direction);
 
-  void forwardKick(const Foot& foot);
+  void forwardKick();
   void sideKick(const Foot& foot);
 
 // generate a setter method

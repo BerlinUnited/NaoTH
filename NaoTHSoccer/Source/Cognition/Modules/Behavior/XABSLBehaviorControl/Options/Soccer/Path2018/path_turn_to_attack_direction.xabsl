@@ -31,4 +31,4 @@ option path_turn_to_attack_direction
       path.stable = true;
     }
   }  
-}
+}

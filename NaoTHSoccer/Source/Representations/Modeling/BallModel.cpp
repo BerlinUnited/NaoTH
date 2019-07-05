@@ -42,11 +42,9 @@ void naoth::Serializer<BallModel>::deserialize(std::istream &stream, BallModel &
     DataConversion::fromMessage(msg.positionpreviewinlfoot(), object.positionPreviewInLFoot);
     DataConversion::fromMessage(msg.positionpreviewinrfoot(), object.positionPreviewInRFoot);
 
-    for (int i = 0; i < msg.futureposition_size(); i++)
-    {   
-        Vector2d futurePos;
-        DataConversion::fromMessage(msg.futureposition(i), futurePos);
-        object.futurePosition.push_back(futurePos);
+    object.futurePosition.resize(msg.futureposition_size());
+    for (int i = 0; i < msg.futureposition_size(); i++) {   
+        DataConversion::fromMessage(msg.futureposition(i), object.futurePosition[i]);
     }
 
     object.valid = msg.valid();
