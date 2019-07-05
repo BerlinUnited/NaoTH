@@ -68,6 +68,7 @@ private:
       PARAMETER_REGISTER(forwardKickAdaptive)                   = false; // mm
       //PARAMETER_REGISTER(nearApproachForwardKickBallPosOffsetX) = 110;
       PARAMETER_REGISTER(nearApproachSideKickBallPosOffsetX)    = 100;
+      PARAMETER_REGISTER(nearApproach_step_character)           = 0.3;
       PARAMETER_REGISTER(farToNearApproachThreshold)            = 10.0;
       PARAMETER_REGISTER(rotationLength)                        = 30.0;
       PARAMETER_REGISTER(sidekickOffsetY)                       = 40.0;
@@ -97,6 +98,7 @@ private:
     int sideKickTime;
     double moveAroundBallCharacter;
     double moveAroundBallCharacterStable;
+    double nearApproach_step_character;
   } params;
 
   // NONE means hip
