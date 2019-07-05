@@ -48,15 +48,14 @@ public class SPLMessage2017 extends SPLMessage
         buffer.get(this.data, 0, this.data.length);
         
         // parse mixed team header
-        this.doberHeader = DoBerManCustomHeader.parseData(this.data);
+        this.mixedHeader = SPLMixedTeamHeader.parseDoBerManData(this.data);
         
         // if we could parse the mixed team header ...
-        if(this.doberHeader != null) {
-            // parse our own part ...
-            // WARNING! HACK!
-            // the struct size is different in 32/64 bit
-            if(!this.extractCustomData(BU_CUSTOM_DATA_OFFSET_X32)) {
-                this.extractCustomData(BU_CUSTOM_DATA_OFFSET_X64);
+        if(this.mixedHeader != null) {
+            // parse custom data
+            if(!this.extractCustomData(mixedHeader.getSize())) {
+                // custom data couldn't be parsed or key is wrong
+                System.err.println("Something is wrong?! Invalid size?:" + mixedHeader.getSize());
             }
         }
     }
