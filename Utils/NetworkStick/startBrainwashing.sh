@@ -87,16 +87,21 @@ else
   sed -i -e "s/__NAO__/${NAO_NUMBER}/g" /var/lib/connman/wifi.config
   sed -i -e "s/__WLAN_MAC__/${WLAN0_MAC_FULL}/g" /var/lib/connman/wifi.config
 
-  WANDED_WIFI=`cat ./etc/wpa_supplicant/wpa_supplicant.conf | grep ssid | sed -e 's/\"//g' | sed -e 's/[ \t]*ssid=//g'`
-  echo "${WANDED_WIFI} should be used"
+  WANTED_SSID=`cat ./etc/wpa_supplicant/wpa_supplicant.conf | grep ssid | sed -e 's/\"//g' | sed -e 's/[ \t]*ssid=//g'`
+  WANTED_PASS=`cat ./etc/wpa_supplicant/wpa_supplicant.conf | grep psk | sed -e 's/\"//g' | sed -e 's/[ \t]*psk=//g'`
+  sed -i -e "s/__SSID__/${WANTED_SSID}/g" /var/lib/connman/wifi.config
+  sed -i -e "s/__PASS__/${WANTED_PASS}/g" /var/lib/connman/wifi.config
+
+  echo "${WANTED_SSID} & ${WANTED_PASS} should be used"
 
   WIFI_NETWORKS=$(cat /var/lib/connman/wifi.config | grep "Name =" | sed -e "s/ //g" | sed -e "s/Name=//g")
-  for wifi in $WIFI_NETWORKS; do
-    if [ ! $wifi == "wifi" ]; then
+  wifi=$WANTED_SSID
+  # for wifi in $WIFI_NETWORKS; do
+  #   if [ ! $wifi == "wifi" ]; then
       # echo "$CONNMAN_SERVICES" | grep "SPL_A " | grep -o wifi.*
       service=$(echo "$CONNMAN_SERVICES" | grep "$wifi " | grep -o wifi.*)
       if [ ! -z $service ]; then
-        if [ "${wifi}" = "${WANDED_WIFI}" ]; then
+        if [ "${wifi}" = "${WANTED_SSID}" ]; then
           connmanctl config ${service} --autoconnect on
           connmanctl connect ${service}
         else
@@ -108,8 +113,8 @@ else
       else
           echo "Wifi network $wifi currently not available"
       fi
-    fi
-  done
+  #   fi
+  # done
 
   echo "Setting ip of eth0 (${ETH0_MAC})"
   connmanctl config ethernet_${ETH0_MAC}_cable --ipv4 manual 192.168.13.${NAO_NUMBER} 255.255.255.0
