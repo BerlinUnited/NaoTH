@@ -283,7 +283,7 @@ bool PathPlanner2018::nearApproach_forwardKick(const double offsetX, const doubl
       near_approach_forward_step.debug_name = "near_approach_forward_step";
       near_approach_forward_step.setPose({ 0.0, translation_x, translation_y });
       near_approach_forward_step.setStepType(StepType::WALKSTEP);
-      near_approach_forward_step.setCharacter(0.3);
+      near_approach_forward_step.setCharacter(params.nearApproach_step_character);
       near_approach_forward_step.setScale(1.0);
       near_approach_forward_step.setCoordinate(coordinate);
       near_approach_forward_step.setFoot(Foot::NONE);
