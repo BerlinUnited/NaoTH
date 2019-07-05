@@ -22,22 +22,18 @@ public:
   }
 
   void rectify() {
-    edges[0] = Vector2i(minX(), maxY());
-    edges[1] = Vector2i(maxX(), maxY());
-    edges[2] = Vector2i(minX(), minY());
-    edges[3] = Vector2i(maxX(), minY());
     // rectifies detector so that edges look like
     // (0) 2 --- 3 (x)
     //      |   |
     // (y) 0 --- 1
+    edges[0] = Vector2i(minX(), maxY());
+    edges[1] = Vector2i(maxX(), maxY());
+    edges[2] = Vector2i(minX(), minY());
+    edges[3] = Vector2i(maxX(), minY());
   }
 
   bool limit(int maxX, int maxY, int minX, int minY) {
-    // expects edges to look like
-    // (0) 2 --- 3 (x)
-    //      |   |
-    // (y) 0 --- 1
-    // if field is not a rectangle it needs to be rectified first
+    rectify();
 
     // check if rectangle is at least partially inside limits
     if(edges[0].x > maxX || edges[1].x < minX) {
@@ -102,24 +98,42 @@ public:
     return maxY;
   }
 
-  int green(const BallDetectorIntegralImage& integralImage) {
-    int factor = integralImage.FACTOR;
-    // HACK: not correct because of integer division
-    return integralImage.getSumForRect(minX()/factor, minY()/factor, maxX()/factor, maxY()/factor, 1) * (factor * factor);
+  double green_density(const BallDetectorIntegralImage& integralImage) {
+    return density(integralImage, 1);
   }
 
-  int greenLeft(const BallDetectorIntegralImage& integralImage) {
-    int factor = integralImage.FACTOR;
-    int halfX = (maxX() - minX()) / 2;
-    // HACK: not correct because of integer division
-    return integralImage.getSumForRect(minX()/factor, minY()/factor, (maxX()-halfX)/factor, maxY()/factor, 1) * (factor * factor);
+  double green_density_left(const BallDetectorIntegralImage& integralImage) {
+    return density_left(integralImage, 1);
   }
 
-  int greenRight(const BallDetectorIntegralImage& integralImage) {
-    int factor = integralImage.FACTOR;
-    int halfX = (maxX() - minX()) / 2;
-    // HACK: not correct because of integer division
-    return integralImage.getSumForRect((minX()+halfX)/factor, minY()/factor, maxX()/factor, maxY()/factor, 1) * (factor * factor);
+  double green_density_right(const BallDetectorIntegralImage& integralImage) {
+    return density_right(integralImage, 1);
+  }
+
+  double density(const BallDetectorIntegralImage& integralImage, uint32_t c) {
+    int minX = this->minX() / integralImage.FACTOR;
+    int minY = this->minY() / integralImage.FACTOR;
+    int maxX = this->maxX() / integralImage.FACTOR;
+    int maxY = this->maxY() / integralImage.FACTOR;
+    return integralImage.getDensityForRect(minX, minY, maxX, maxY, c);
+  }
+
+  double density_left(const BallDetectorIntegralImage& integralImage, uint32_t c) {
+    int minX = this->minX() / integralImage.FACTOR;
+    int minY = this->minY() / integralImage.FACTOR;
+    int maxX = this->maxX() / integralImage.FACTOR;
+    int maxY = this->maxY() / integralImage.FACTOR;
+    int halfX = (maxX - minX) / 2;
+    return integralImage.getDensityForRect(minX, minY, maxX - halfX, maxY, c);
+  }
+
+  double density_right(const BallDetectorIntegralImage& integralImage, uint32_t c) {
+    int minX = this->minX() / integralImage.FACTOR;
+    int minY = this->minY() / integralImage.FACTOR;
+    int maxX = this->maxX() / integralImage.FACTOR;
+    int maxY = this->maxY() / integralImage.FACTOR;
+    int halfX = (maxX - minX) / 2;
+    return integralImage.getDensityForRect(minX + halfX, minY, maxX, maxY, c);
   }
 };
 
@@ -132,6 +146,7 @@ public:
     edges.resize(4);
   }
 
+  // FIX: Order of indices is currently only important for debug drawings
   DetectorField(Vector2d bottomLeft, Vector2d bottomRight, Vector2d topLeft, Vector2d topRight) : edges(4) {
     edges = {bottomLeft, bottomRight, topLeft, topRight};
   }
