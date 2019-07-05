@@ -59,9 +59,10 @@ if [ ! -f "/opt/aldebaran/bin/lola" ] && [ ! -f "/usr/bin/lola" ]; then
 
   # copy binaries and start naoqi/naoth again
   if [ -f "./deploy/home/nao/bin/libnaosmal.so" ]; then
+    nao stop
     rm -f /home/nao/bin/libnaosmal.so
     su nao -c "cp ./deploy/home/nao/bin/libnaosmal.so /home/nao/bin/libnaosmal.so"
-    /etc/init.d/naoqi start
+    nao start
   fi
 else
   # copy binaries and start naoqi/naoth again
