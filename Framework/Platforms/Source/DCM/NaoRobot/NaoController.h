@@ -13,6 +13,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <sys/stat.h>
 
 //
 #include "PlatformInterface/PlatformInterface.h"
@@ -21,6 +22,10 @@
 
 //
 #include "V4lCameraHandler.h"
+#include "CameraSettingsV5Manager.h"
+#include "CameraSettingsV6Manager.h"
+
+
 #include "SoundControl.h"
 #include "SPLGameController.h"
 #include "CPUTemperatureReader.h"
@@ -52,16 +57,28 @@ public:
   NaoController();
   virtual ~NaoController();
 
+  // platform info
   virtual std::string getBodyID() const { return theBodyID; }
   virtual std::string getBodyNickName() const { return theBodyNickName; }
   virtual std::string getHeadNickName() const { return theHeadNickName; }
   virtual std::string getRobotName() const { return theRobotName; }
-
+  virtual std::string getPlatformName() const { return "Nao"; }
+  virtual unsigned int getBasicTimeStep() const { return lolaAvailable?12:10; }
+  
   // camera stuff
-  void get(Image& data){ theBottomCameraHandler.get(data); } // blocking
-  void get(ImageTop& data){ theTopCameraHandler.get(data); } // non blocking
-  void get(CurrentCameraSettings& data) { theBottomCameraHandler.getCameraSettings(data); }
-  void get(CurrentCameraSettingsTop& data) { theTopCameraHandler.getCameraSettings(data); }
+  void get(Image& data){ 
+    theBottomCameraHandler.get(data); 
+  } // blocking
+  void get(ImageTop& data){ 
+    theTopCameraHandler.get(data); 
+  } // non blocking
+  
+  void get(CurrentCameraSettings& data) { 
+    theBottomCameraHandler.getCameraSettings(data);
+  }
+  void get(CurrentCameraSettingsTop& data) { 
+    theTopCameraHandler.getCameraSettings(data);
+  }
   
   void set(const CameraSettingsRequest& data);
   void set(const CameraSettingsRequestTop& data);
@@ -161,12 +178,18 @@ protected:
     return new MessageQueue4Threads();
   }
 
+  inline bool fileExists (const std::string& filename) {
+    struct stat buffer;   
+    return (stat (filename.c_str(), &buffer) == 0); 
+  }
 
 protected:
   std::string theBodyID;
   std::string theBodyNickName;
   std::string theHeadNickName;
   std::string theRobotName;
+
+  bool lolaAvailable;
 
   // -- begin -- shared memory access --
   // DCM --> NaoController
@@ -180,8 +203,10 @@ protected:
   // -- end -- shared memory access --
 
   //
+  
   V4lCameraHandler theBottomCameraHandler;
   V4lCameraHandler theTopCameraHandler;
+  
   SoundControl *theSoundHandler;
   BroadCaster* theTeamCommSender;
   UDPReceiver* theTeamCommListener;
@@ -190,7 +215,6 @@ protected:
   DebugServer* theDebugServer;
   CPUTemperatureReader theCPUTemperatureReader;
   AudioRecorder theAudioRecorder;
-
 };
 
 } // end namespace naoth

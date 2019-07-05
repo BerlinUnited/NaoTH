@@ -1,0 +1,64 @@
+#!/bin/bash
+
+function start_function() {
+  echo "starting naoth related process"
+  systemctl start user@1001
+}
+
+function stop_function() {
+  echo "stopping naoth related processes"
+  systemctl stop user@1001
+}
+
+function status_function() {
+  systemctl status user@1001
+}
+
+function shutdown_function() {
+  echo "shutting down"
+  systemctl stop user@1001
+  paplay /opt/aldebaran/share/naoqi/wav/shutdown.wav
+  shutdown -h now
+}
+
+function lola_log_function() {
+  journalctl --user-unit=lola_adaptor
+}
+
+function naoth_log_function() {
+  journalctl --user-unit=naoth
+}
+
+
+case "$1" in
+  start)
+    start_function
+    ;;
+  stop)
+    stop_function
+    ;;
+  restart)
+    stop_function
+    sleep 5
+    start_function
+    ;;
+  status)
+    status_function
+    ;;
+  shutdown)
+    shutdown_function
+    ;;
+  lola_log)
+    lola_log_function
+    ;;
+  naoth_log)
+    naoth_log_function
+    ;;
+  *)
+    echo "Usage: naoth {start|stop|restart|status|lola_log|naoth_log}"
+    exit 1
+    ;;
+
+esac
+
+exit 0

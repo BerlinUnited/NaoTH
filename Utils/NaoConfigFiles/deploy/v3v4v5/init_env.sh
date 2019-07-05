@@ -36,6 +36,20 @@ copy(){
   fi
 }
 
+
+# set volume to 88%
+su nao -c "/usr/bin/pactl set-sink-mute 0 false"
+su nao -c "/usr/bin/pactl set-sink-volume 0 88%"
+# also set the recording volume
+# 1. set in simple mode with alsa mixer to make sure it is in sync for all channels
+su nao -c "/usr/bin/amixer sset 'Capture',0 90%"
+# 2. set with pulseaudio (now both channels are set) to make sure the changes are persistent
+su nao -c "/usr/bin/pactl set-source-mute 1 false"
+su nao -c "/usr/bin/pactl set-source-volume 1 90%"
+
+# play initial sound
+su nao -c "/usr/bin/paplay ../home/nao/naoqi/Media/usb_start.wav"
+
 # -----------  video driver -----------
 
 # copy the video driver
@@ -81,11 +95,11 @@ copy ./etc/fstab /etc/fstab root 644
 copy ./etc/syslog.conf /etc/syslog.conf root 644
 
 # update the system wide libstdc++
-if [ -e ./home/nao/lib/libstdc++.so ]
+if [ -e ../home/nao/lib/libstdc++.so ]
 then
     mkdir /usr/lib/backup_libst++
     cp /usr/lib/libstdc++.* /usr/lib/backup_libst++/
-    cp  ./home/nao/lib/libstdc++.* /usr/lib/
+    cp  ../home/nao/lib/libstdc++.* /usr/lib/
 fi
 
 # create the local lib directory
@@ -161,15 +175,15 @@ fi
 # ----------- copy naoth binaries -----------
 
 rm -f /home/nao/bin/naoth.bak
-copy ./home/nao/bin/naoth /home/nao/bin/naoth nao 755
+copy ../home/nao/bin/naoth /home/nao/bin/naoth nao 755
 rm -f /home/nao/bin/libnaosmal.so.bak
-copy ./home/nao/bin/libnaosmal.so /home/nao/bin/libnaosmal.so nao 755
+copy ../home/nao/bin/libnaosmal.so /home/nao/bin/libnaosmal.so nao 755
 
 if [ -d "/home/nao/naoqi/Config" ]; then
   rm -rf /home/nao/naoqi/Config/*
 fi
 
-cp -r ./home/nao/naoqi/Config/* /home/nao/Config
+cp -r ../home/nao/naoqi/Config/* /home/nao/Config
 chown -R nao:nao /home/nao/naoqi/Config;
 
 # remove any old media files
@@ -178,7 +192,7 @@ if [ -d "/home/nao/naoqi/Media" ]; then
 fi
 
 # copy the new media files
-cp -r ./home/nao/naoqi/Media/* /home/nao/Media
+cp -r ../home/nao/naoqi/Media/* /home/nao/Media
 chown -R nao:nao /home/nao/naoqi/Media;
 
 # ----------- copy libs -----------
@@ -186,7 +200,7 @@ if [ -d "/home/nao/lib" ]; then
   rm -rf /home/nao/lib/*
 fi
 
-cp -r ./home/nao/lib/* /home/nao/lib
+cp -r ../home/nao/lib/* /home/nao/lib
 
 # -----------  system -----------
 
@@ -254,12 +268,12 @@ ldconfig;
 chmod +s /sbin/shutdown
 chmod +s /sbin/reboot
 
-# set volume to 88%
-sudo -u nao pactl set-sink-mute 0 false
-sudo -u nao pactl set-sink-volume 0 88%
+su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav"
 
-echo "initialization done, shutting down system";
-shutdown -h now
+# prevent reboot if appropiate file exists
+if [ ! -f "./noreboot" ]; then
+	reboot
+fi
 
 echo "DONE"
 
