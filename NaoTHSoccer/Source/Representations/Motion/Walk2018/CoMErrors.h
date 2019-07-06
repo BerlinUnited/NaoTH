@@ -44,15 +44,19 @@ public:
     }
 };
 
-//namespace naoth
-//{
-//  template<>
-//  class Serializer<CoMErrors>
-//  {
-//  public:
-//    static void serialize(const CoMErrors& representation, std::ostream& stream);
-//    static void deserialize(std::istream& stream, CoMErrors& representation);
-//  };
-//}
+namespace naoth
+{
+  template<>
+  class Serializer<CoMErrors>
+  {
+  public:
+      static void serialize(const CoMErrors& representation, std::ostream& stream)
+      {
+          naothmessages::CoMErrors message;
+          message.set
+      }
+    static void deserialize(std::istream& stream, CoMErrors& representation);
+  };
+}
 
 #endif // __CoMErrors_h_
