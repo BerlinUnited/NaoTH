@@ -202,68 +202,94 @@ void NoGreenObstacleDetector::execute()
         }
       );
       if(success) {
-        double density = detectorImageBehindBall.density(getBallDetectorIntegralImage(), 0);
-        double density_left = detectorImageBehindBall.density_left(getBallDetectorIntegralImage(), 0);
-        double density_right = detectorImageBehindBall.density_right(getBallDetectorIntegralImage(), 0);
+        if(params.check_green) {
+          // calculate green density
+          double green_density = detectorImageBehindBall.green_density(getBallDetectorIntegralImage());
+          double green_density_left = detectorImageBehindBall.green_density_left(getBallDetectorIntegralImage());
+          double green_density_right = detectorImageBehindBall.green_density_right(getBallDetectorIntegralImage());
 
-        // calculate green density
-        double green_density = detectorImageBehindBall.green_density(getBallDetectorIntegralImage());
-        double green_density_left = detectorImageBehindBall.green_density_left(getBallDetectorIntegralImage());
-        double green_density_right = detectorImageBehindBall.green_density_right(getBallDetectorIntegralImage());
+          DEBUG_REQUEST("Vision:NoGreenObstacleDetector:draw_detector_behind_ball",
+            FIELD_DRAWING_CONTEXT;
+            DetectorField& detector = detectorBehindBall;
+
+            PEN("0080FF", 5);
+            TEXT_DRAWING(detector.edges[0].x, detector.edges[0].y       , green_density * 100 << '%');
+            TEXT_DRAWING(detector.edges[0].x, detector.edges[0].y + 1000, green_density_left * 100 << '%');
+            TEXT_DRAWING(detector.edges[0].x, detector.edges[0].y - 1000, green_density_right * 100 << '%');
+          );
+
+          // set representation if detector is occupied
+          getObstacleBehindBall().valid = true;
+          getObstacleBehindBall().isOccupied = green_density <= params.max_green_density;
+          if (getObstacleBehindBall().isOccupied) {
+            getObstacleBehindBall().onTheRight = green_density_right <= green_density_left;
+            getObstacleBehindBall().onTheLeft = green_density_right > green_density_left;
+          } else {
+            getObstacleBehindBall().onTheRight = false;
+            getObstacleBehindBall().onTheLeft = false;
+          }
+        }
+
+        if(params.check_brightness) {
+          // calculate brightness density
+          double density = detectorImageBehindBall.density(getBallDetectorIntegralImage(), 0);
+          double density_left = detectorImageBehindBall.density_left(getBallDetectorIntegralImage(), 0);
+          double density_right = detectorImageBehindBall.density_right(getBallDetectorIntegralImage(), 0);
+
+          DEBUG_REQUEST("Vision:NoGreenObstacleDetector:draw_detector_behind_ball",
+            FIELD_DRAWING_CONTEXT;
+            DetectorField& detector = detectorBehindBall;
+
+            PEN("FFBFF8", 5);
+            TEXT_DRAWING(detector.edges[0].x + 2000, detector.edges[0].y       , density);
+            TEXT_DRAWING(detector.edges[0].x + 2000, detector.edges[0].y + 1000, density_left);
+            TEXT_DRAWING(detector.edges[0].x + 2000, detector.edges[0].y - 1000, density_right);
+          );
+
+          // set representation if detector is occupied
+          getObstacleBehindBall().valid = true;
+          getObstacleBehindBall().isOccupied = density >= params.min_brightness_density;
+          if (getObstacleBehindBall().isOccupied) {
+            getObstacleBehindBall().onTheRight = density_right >= density_left;
+            getObstacleBehindBall().onTheLeft = density_right < density_left;
+          } else {
+            getObstacleBehindBall().onTheRight = false;
+            getObstacleBehindBall().onTheLeft = false;
+          }
+        }
 
         DEBUG_REQUEST("Vision:NoGreenObstacleDetector:draw_detector_behind_ball",
-          FIELD_DRAWING_CONTEXT;
-          DetectorField& detector = detectorBehindBall;
-
-          PEN("FFBFF8", 5);
-          TEXT_DRAWING(detector.edges[0].x + 2000, detector.edges[0].y       , density);
-          TEXT_DRAWING(detector.edges[0].x + 2000, detector.edges[0].y + 1000, density_left);
-          TEXT_DRAWING(detector.edges[0].x + 2000, detector.edges[0].y - 1000, density_right);
-
-          PEN("0080FF", 5);
-          TEXT_DRAWING(detector.edges[0].x, detector.edges[0].y       , green_density * 100 << '%');
-          TEXT_DRAWING(detector.edges[0].x, detector.edges[0].y + 1000, green_density_left * 100 << '%');
-          TEXT_DRAWING(detector.edges[0].x, detector.edges[0].y - 1000, green_density_right * 100 << '%');
-
           IMAGE_DRAWING_CONTEXT;
-          if(green_density <= params.max_green_density) {
-            PEN("FF4D4D", 5);
-          } else {
-            PEN("AAFCC7", 5);
-          }
-          BOX(detectorImageBehindBall.minX(), detectorImageBehindBall.minY(),
-              detectorImageBehindBall.maxX(), detectorImageBehindBall.maxY());
+          if(getObstacleBehindBall().valid) {
+            if(getObstacleBehindBall().isOccupied) {
+              PEN("FF4D4D", 5);
+            } else {
+              PEN("AAFCC7", 5);
+            }
 
-          int halfX = (detectorImageBehindBall.maxX() - detectorImageBehindBall.minX()) / 2;
+            BOX(detectorImageBehindBall.minX(), detectorImageBehindBall.minY(),
+                detectorImageBehindBall.maxX(), detectorImageBehindBall.maxY());
 
-          if(green_density_right <= green_density_left) {
-            PEN("FF4D4D", 3);
-          } else {
-            PEN("AAFCC7", 3);
-          }
-          BOX(detectorImageBehindBall.minX()+1 + halfX, detectorImageBehindBall.minY()+1,
-              detectorImageBehindBall.maxX()-1, detectorImageBehindBall.maxY()-1);
+            int halfX = (detectorImageBehindBall.maxX() - detectorImageBehindBall.minX()) / 2;
 
-          if(green_density_right > green_density_left) {
-            PEN("FF4D4D", 3);
-          } else {
-            PEN("AAFCC7", 3);
+            if(getObstacleBehindBall().onTheRight) {
+              PEN("FF4D4D", 3);
+            } else {
+              PEN("AAFCC7", 3);
+            }
+            BOX(detectorImageBehindBall.minX()+1 + halfX, detectorImageBehindBall.minY()+1,
+                detectorImageBehindBall.maxX()-1, detectorImageBehindBall.maxY()-1);
+
+            if(getObstacleBehindBall().onTheLeft) {
+              PEN("FF4D4D", 3);
+            } else {
+              PEN("AAFCC7", 3);
+            }
+            BOX(detectorImageBehindBall.minX()+1, detectorImageBehindBall.minY()+1,
+                detectorImageBehindBall.maxX()-1 - halfX, detectorImageBehindBall.maxY()-1);
           }
-          BOX(detectorImageBehindBall.minX()+1, detectorImageBehindBall.minY()+1,
-              detectorImageBehindBall.maxX()-1 - halfX, detectorImageBehindBall.maxY()-1);
         );
-
-        // set representation if detector is occupied
-        getObstacleBehindBall().valid = true;
-        getObstacleBehindBall().isOccupied = green_density <= params.max_green_density;
-        if (getObstacleBehindBall().isOccupied) {
-          getObstacleBehindBall().onTheRight = green_density_right <= green_density_left;
-          getObstacleBehindBall().onTheLeft = green_density_right > green_density_left;
-        } else {
-          getObstacleBehindBall().onTheRight = false;
-          getObstacleBehindBall().onTheLeft = false;
-        }
       }
     }
-  }
-}
+  } // end if params.enable_obstacle_detector_behind_ball
+} // end execute

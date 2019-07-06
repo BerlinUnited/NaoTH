@@ -75,13 +75,18 @@ private:
       PARAMETER_REGISTER(detector_width) = 280.;
       PARAMETER_REGISTER(detector_range) = 200.;
 
-      PARAMETER_REGISTER(ball_offset) = 10.;
+      // detector behind ball parameters
+      PARAMETER_REGISTER(ball_offset) = 100.;
       PARAMETER_REGISTER(behind_ball_width) = 280.;
       PARAMETER_REGISTER(behind_ball_range) = 200.;
 
       PARAMETER_REGISTER(min_expected_area) = .8;
 
       PARAMETER_REGISTER(max_green_density) = .5;
+      PARAMETER_REGISTER(min_brightness_density) = 100.;
+
+      PARAMETER_REGISTER(check_brightness) = true;
+      PARAMETER_REGISTER(check_green) = false;
 
       syncWithConfig();
     }
@@ -99,8 +104,14 @@ private:
 
     double min_expected_area;
 
-    // maximal green density witch still is classified as an obstacle
+    // maximal green density which still is classified as an obstacle
     double max_green_density;
+    // minimal brightness density to be classified as obstacle
+    double min_brightness_density;
+
+    bool check_brightness;
+    bool check_green;
+
   } params;
 };
 
