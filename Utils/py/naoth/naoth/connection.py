@@ -86,7 +86,14 @@ class Relay:
 
 
 class Command:
-    def __init__(self, _id, name, *args, **vargs):
+    def __init__(self, _id, name, *args, **value_args):
+        """
+        Create a command which can be send to the robot
+        :param _id: Command id
+        :param name: Command name
+        :param args: Command arguments (see add_arg function)
+        :param value_args: Command arguments with values (see add_arg function)
+        """
         self._id = _id
         self.name = name
         self.args = {}
@@ -94,21 +101,33 @@ class Command:
         for name in args:
             self.add_arg(name)
 
-        for name, value in vargs.items():
+        for name, value in value_args.items():
             self.add_arg(name, value=value)
 
     def add_arg(self, name, value=None):
+        """
+        Add an argument to this command with an optional value
+        :param name: argument name
+        :param value: optional argument value
+        """
         if isinstance(value, str):
-            value = value.encode()
-        if isinstance(value, bytes) or value is None:
+            self.args[name] = value.encode()
+        elif isinstance(value, bytes) or value is None:
             self.args[name] = value
         else:
             raise ValueError('Argument value must be string, bytes or None')
 
     def write(self, sink):
-        sink.write(self.__bytes__())
+        """
+        Send this command.
+        :param sink: to write
+        """
+        sink.write(bytes(self))
 
     def __bytes__(self):
+        """
+        :returns bytes representation of this command ready to send
+        """
         cmd = CMD()
         cmd.name = self.name
         for name, value in self.args.items():
