@@ -24,12 +24,20 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.angle", &getBallAngle);
   engine.registerDecimalInputSymbol("ball.speed.x", &getBallModel().speed.x);
   engine.registerDecimalInputSymbol("ball.speed.y", &getBallModel().speed.y);
-  engine.registerDecimalInputSymbol("ball.position_at_rest.x", &getBallModel().position_at_rest.x);
-  engine.registerDecimalInputSymbol("ball.position_at_rest.y", &getBallModel().position_at_rest.y);
+  
+  // HACK: the future is calculated incorrectly, assume the position of the ball for now
+  //engine.registerDecimalInputSymbol("ball.position_at_rest.x", &getBallModel().position_at_rest.x);
+  //engine.registerDecimalInputSymbol("ball.position_at_rest.y", &getBallModel().position_at_rest.y);
+  engine.registerDecimalInputSymbol("ball.position_at_rest.x", &getBallModel().position.x);
+  engine.registerDecimalInputSymbol("ball.position_at_rest.y", &getBallModel().position.y);
 
-  engine.registerDecimalInputSymbol("ball.future.preview.x", &futureBallPreview.x);
-  engine.registerDecimalInputSymbol("ball.future.preview.y", &futureBallPreview.y);
+  // HACK: the future is calculated incorrectly, assume the position of the ball for now
+  //engine.registerDecimalInputSymbol("ball.future.preview.x", &futureBallPreview.x);
+  //engine.registerDecimalInputSymbol("ball.future.preview.y", &futureBallPreview.y);
+  engine.registerDecimalInputSymbol("ball.future.preview.x", &getBallModel().positionPreview.x);
+  engine.registerDecimalInputSymbol("ball.future.preview.y", &getBallModel().positionPreview.y);
 
+  // FIXME: this needs a correct future ball
   engine.registerDecimalInputSymbol("ball.interception.preview.x", &interceptionPointPreview.x);
   engine.registerDecimalInputSymbol("ball.interception.preview.y", &interceptionPointPreview.y);
 
