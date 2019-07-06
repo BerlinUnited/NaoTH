@@ -11,6 +11,13 @@ function stop_function() {
   systemctl stop user@1001
 }
 
+function restart_function() {
+  echo "stopping naoth related processes"
+  systemctl stop user@1001
+  /usr/libexec/reset-cameras.sh toggle
+  systemctl start user@1001
+}
+
 function status_function() {
   systemctl status user@1001
 }
@@ -23,6 +30,10 @@ function shutdown_function() {
 }
 
 function lola_log_function() {
+  journalctl --user-unit=lola
+}
+
+function lola_adaptor_log_function() {
   journalctl --user-unit=lola_adaptor
 }
 
@@ -39,9 +50,7 @@ case "$1" in
     stop_function
     ;;
   restart)
-    stop_function
-    sleep 10
-    start_function
+    restart_function
     ;;
   status)
     status_function
@@ -49,14 +58,17 @@ case "$1" in
   shutdown)
     shutdown_function
     ;;
-  lola_log)
+  log_lola)
     lola_log_function
     ;;
-  naoth_log)
+  log_lola_adaptor)
+    lola_adaptor_log_function
+    ;;
+  log_naoth)
     naoth_log_function
     ;;
   *)
-    echo "Usage: naoth {start|stop|restart|status|lola_log|naoth_log}"
+    echo "Usage: naoth {start|stop|restart|status|log_lola|log_lola_adaptor|log_naoth}"
     exit 1
     ;;
 
