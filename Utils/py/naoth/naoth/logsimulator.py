@@ -35,8 +35,6 @@ class LogSimulator:
         else:
             logger.warning(f'{self.executable} does not exist, you need to compile the log simulator first.')
 
-        self.process = None
-
     def program_args(self):
         """
         :returns parameters necessary to start the log simulator in backend mode
@@ -87,6 +85,13 @@ class LogSimInstance:
         self.first_frame = None
         self.last_frame = None
         self.current_frame = None
+
+    async def __aenter__(self):
+        await self.boot()
+        return self
+
+    async def __aexit__(self, exc_type, exc, tb):
+        await self.shutdown()
 
     async def advance(self):
         self.process.stdin.write(b'd')
@@ -156,6 +161,15 @@ class LogSimInstance:
                     # boot complete
                     break
 
+    async def shutdown(self):
+        """
+        Attempting graceful shutdown of log simulator process.
+        """
+        # sometimes log simulator needs more than one quit call
+        self.process.stdin.write(b'qqq')
+        await self.process.stdout.read()
+        await self.process.wait()
+
     """
     async def read_stdout(self):
         while True:
@@ -176,12 +190,3 @@ class LogSimInstance:
             if self.process.stdout.at_eof():
                 return
     """
-
-    async def shutdown(self):
-        """
-        Attempting graceful shutdown of log simulator process.
-        """
-        # sometimes log simulator needs more than one quit call
-        self.process.stdin.write(b'qqq')
-        await self.process.stdout.read()
-        await self.process.wait()
