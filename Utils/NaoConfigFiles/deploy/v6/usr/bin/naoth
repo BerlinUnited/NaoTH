@@ -11,13 +11,6 @@ function stop_function() {
   systemctl stop user@1001
 }
 
-function restart_function() {
-  echo "stopping naoth related processes"
-  systemctl stop user@1001
-  /usr/libexec/reset-cameras.sh toggle
-  systemctl start user@1001
-}
-
 function status_function() {
   systemctl status user@1001
 }
@@ -25,6 +18,7 @@ function status_function() {
 function shutdown_function() {
   echo "shutting down"
   systemctl stop user@1001
+  sleep 5
   paplay /opt/aldebaran/share/naoqi/wav/shutdown.wav
   shutdown -h now
 }
@@ -50,7 +44,9 @@ case "$1" in
     stop_function
     ;;
   restart)
-    restart_function
+    stop_function
+    sleep 5
+    start_function
     ;;
   status)
     status_function
