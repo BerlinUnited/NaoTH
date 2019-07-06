@@ -137,6 +137,8 @@ private: // local types
       PARAMETER_REGISTER(motionNoise) = false;
       PARAMETER_REGISTER(motionNoiseDistance) = 5.0;
       PARAMETER_REGISTER(motionNoiseAngle) = 0.01;
+      PARAMETER_REGISTER(motionNoiseDistanceRelative) = 0.1;
+      PARAMETER_REGISTER(motionNoiseAngleRelative) = 0.02;
 
       PARAMETER_REGISTER(resampleSUS) = false;
       PARAMETER_REGISTER(resampleGT07) = true;
@@ -202,6 +204,8 @@ private: // local types
     bool motionNoise;
     double motionNoiseDistance;
     double motionNoiseAngle;
+    double motionNoiseDistanceRelative;
+    double motionNoiseAngleRelative;
 
     bool resampleSUS;
     bool resampleGT07;
