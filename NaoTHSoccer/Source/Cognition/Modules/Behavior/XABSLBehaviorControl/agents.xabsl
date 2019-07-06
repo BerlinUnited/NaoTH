@@ -362,11 +362,12 @@ agent pathplanner_test_long_kick_agent("pathplanner_test_long_kick_agent", pathp
 agent pathplanner_test_only_sidekick_agent("pathplanner_test_only_sidekick_agent", pathplanner_test_only_sidekick_agent);
 agent pathplanner_test_only_shortkick_agent("pathplanner_test_only_shortkick_agent", pathplanner_test_only_shortkick_agent);
 agent pathplanner_test_dash_agent("pathplanner_test_dash_agent", pathplanner_test_dash_agent);
+
 agent pathplanner2018_forwardkick_agent("pathplanner2018_forwardkick_agent", pathplanner2018_forwardkick_agent);
 agent pathplanner2018_sidekick_agent("pathplanner2018_sidekick_agent", pathplanner2018_sidekick_agent);
 agent pathplanner2018_sidestep_agent("pathplanner2018_sidestep_agent", pathplanner2018_sidestep_agent);
-agent pathplanner2018_move_around2_agent("pathplanner2018_move_around2_agent", pathplanner2018_move_around2_agent);
 agent path_move_around_ball_agent("path_move_around_ball_agent", path_move_around_ball_agent);
+agent pathplanner2018_move_around2_agent("pathplanner2018_move_around2_agent", pathplanner2018_move_around2_agent);
 agent pathplanner2018_striker_agent("pathplanner2018_striker_agent", pathplanner2018_striker_agent);
 
 // Test agents search
