@@ -16,6 +16,16 @@
 #include <string>
 #include <iostream>
 
+class KeyFrameMotionParameters: public ParameterList{
+      public:
+        KeyFrameMotionParameters() : ParameterList("KeyFrameMotionParameters")
+        {
+          PARAMETER_REGISTER(stiffness) = 1.0;
+          syncWithConfig();
+        }
+        double stiffness;
+};
+
 class FeetStabilizerParameters: public ParameterList{
       public:
         FeetStabilizerParameters() : ParameterList("Walk_FeetStabilizer")
@@ -373,6 +383,7 @@ public:
     Walk2018Parameters(){
     }
 
+    KeyFrameMotionParameters              keyFrameMotionParameters;
     FeetStabilizerParameters              feetStabilizerParams;
     FootStepPlanner2018Parameters         footStepPlanner2018Params;
     FootTrajectoryGenerator2018Parameters footTrajectoryGenerator2018Params;
@@ -384,6 +395,7 @@ public:
     GeneralParameters                     generalParams;
 
     void init(DebugParameterList& dbpl){
+        dbpl.add(&keyFrameMotionParameters);
         dbpl.add(&feetStabilizerParams);
         dbpl.add(&footStepPlanner2018Params);
         dbpl.add(&footTrajectoryGenerator2018Params);
@@ -396,6 +408,7 @@ public:
     }
 
     void remove(DebugParameterList& dbpl){
+        dbpl.remove(&keyFrameMotionParameters);
         dbpl.remove(&feetStabilizerParams);
         dbpl.remove(&footStepPlanner2018Params);
         dbpl.remove(&footTrajectoryGenerator2018Params);
