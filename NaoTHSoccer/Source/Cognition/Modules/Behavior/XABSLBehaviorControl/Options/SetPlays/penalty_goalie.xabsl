@@ -1,7 +1,7 @@
 /* Dummy Implemenation for the penalty goalie */
 option penalty_goalie
 {
-  initial state stand
+  initial state intial_stand
   { 
     decision
     {
@@ -38,7 +38,7 @@ option penalty_goalie
     decision
     {
       if (state_time > 5000)
-          goto stand;
+          goto block_middle;
         else 
           stay;
     }
