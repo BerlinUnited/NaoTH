@@ -271,6 +271,7 @@ class LogReader:
 
         self.frames = []
         self.furthest_scan_position = 0
+        self.eof_reached = False
 
     def __enter__(self):
         return self
@@ -311,6 +312,10 @@ class LogReader:
             yield self.frames[start_idx]
             start_idx += 1
 
+        if self.eof_reached:
+            # got nothing left to read
+            return
+
         # read more frames from the log file
         idx = len(self.frames)
         self.scanner.set_scan_position(self.furthest_scan_position)
@@ -320,6 +325,7 @@ class LogReader:
             try:
                 frame_member_start, current_frame_number, name, payload_pos = self.scanner.scan_frame_member()
             except EOFError:
+                self.eof_reached = True
                 break
 
             # check if frame member is part of current frame or create new one
