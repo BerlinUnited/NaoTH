@@ -63,7 +63,8 @@ void PathPlanner2018::execute()
   case PathModel::PathPlanner2018Routine::FORWARDKICK:
     //if (farApproach())
     {
-      if (nearApproach_forwardKick(getPathModel().xOffset, getPathModel().yOffset))
+      //TODO remove offsets from pathmodel
+      if (nearApproach_forwardKick(params.forwardKickOffset.x, params.forwardKickOffset.y))
       {
         forwardKick();
       }

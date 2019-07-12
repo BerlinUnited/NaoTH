@@ -57,8 +57,6 @@ option pathplanner2018_forwardkick
       head.control_mode = look_at_ball_percept;
 
       path2018.routine = forwardkick;
-      path.xOffset = 120; // pathplanner adds ball.radius - this could be done here
-      path.yOffset = 0;
     }
   }
   

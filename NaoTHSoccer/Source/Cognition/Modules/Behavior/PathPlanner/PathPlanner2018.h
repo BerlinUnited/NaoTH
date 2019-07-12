@@ -75,6 +75,8 @@ private:
       PARAMETER_REGISTER(stepLength) = 80.0;
       PARAMETER_REGISTER(nearApproach_step_character) = 0.3;
 
+      PARAMETER_REGISTER(forwardKickOffset.x) = 210; // mm
+      PARAMETER_REGISTER(forwardKickOffset.y) = 0; // mm
       PARAMETER_REGISTER(forwardKickThreshold.x) = 50; // mm
       PARAMETER_REGISTER(forwardKickThreshold.y) = 25; // mm
       PARAMETER_REGISTER(forwardKickAdaptive) = false; // mm
@@ -100,6 +102,7 @@ private:
     double nearApproach_step_character;
 
     Vector2d forwardKickThreshold;
+    Vector2d forwardKickOffset;
     bool forwardKickAdaptive;
     int forwardKickTime;
   } params;

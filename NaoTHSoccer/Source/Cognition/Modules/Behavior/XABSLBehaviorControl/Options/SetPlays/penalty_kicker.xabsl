@@ -157,7 +157,6 @@ option penalty_kicker
     {
       // Stand RC19: Schuss ist nicht weit genug
       path2018.routine = forwardkick;
-      path.xOffset = 120; // pathplanner adds ball.radius - this could be done here
       head.control_mode = search_for_ball_and_look_around;
       
     }
