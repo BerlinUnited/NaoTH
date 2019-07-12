@@ -339,14 +339,13 @@ class LogReader:
                 if start_idx < len(self.frames):
                     yield frame_to_yield
 
-                    # check if we already got new frames, since we yielded and
-                    # other iterators could have advanced further by now
-                    discard = idx < len(self.frames)
-                    while idx < len(self.frames):
-                        yield self.frames[idx]
-                        idx += 1
-
-                    if discard:
+                    # Check if we already got new frames, since we yielded and
+                    #       other iterators could have advanced further by now
+                    if idx < len(self.frames):
+                        while idx < len(self.frames):
+                            yield self.frames[idx]
+                            idx += 1
+                                
                         # discard started frame
                         frame = None
                         self.scanner.set_scan_position(self.furthest_scan_position)
