@@ -303,9 +303,8 @@ class LogReader:
         """
         Generator yielding log file frames starting from frame i.
         """
-        if start_idx == -1:
-            logger.warning(f'Index {start_idx} must be positive!')
-            return
+        if start_idx < 0:
+            raise ValueError(f'Start index <{start_idx}> must be positive!')
 
         # yield frames already read
         while start_idx < len(self.frames):
