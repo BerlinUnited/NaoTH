@@ -158,7 +158,15 @@ class FrameParseException(Exception):
 
 
 class Frame:
-    def __init__(self, frame_start, frame_number, scanner, parser):
+    def __init__(self, frame_start, frame_number, scanner, parser, cache=False):
+        """
+        NaoTH log file frame
+        :param frame_start: in log file
+        :param frame_number
+        :param scanner: LogScanner of current log file
+        :param parser: LogParser of current log file
+        :param cache: if True cache already parsed members, may increase performance but affects memory usage
+        """
         self.scanner = scanner
         self.parser = parser
 
@@ -167,7 +175,11 @@ class Frame:
         self.size = 0
 
         self.number = frame_number
+        # members of this frame, contains either (position, size) tuple of the member data in the log file
+        # or already parsed protobuf classes
         self.members = {}
+
+        self.cache = cache
 
     def add_member(self, name, position, size):
         """
@@ -178,9 +190,45 @@ class Frame:
         """
         if name in self.members:
             raise ValueError(f'Frame already contains member {name}.')
-        self.members[name] = (position, size)
 
+        self.members[name] = position, size
         self.size += LogScanner.frame_member_size(name, size)
+
+    def add_message_member(self, name, member):
+        """
+        Add a protobuf message as member to the frame
+        :param name: of member
+        :param member: protobuf message
+        """
+        self.size += len(member.SerializeToString())
+        # add new member
+        self.members[name] = member
+
+    def remove(self, name):
+        """
+        Remove a member from this frame
+        :param name: of member
+        """
+        member = self.members.pop(name)
+        if isinstance(member, tuple):
+            position, size = member
+            self.size -= LogScanner.frame_member_size(name, size)
+        else:
+            self.size -= len(member.SerializeToString())
+
+    def replace_message_member(self, name, member):
+        """
+        Replace a member of this frame with a protobuf message object
+        :param name: of member
+        :param member: protobuf message
+        """
+        if name not in self.members:
+            raise ValueError(f'Frame does not contain member {name}.')
+
+        # remove old member
+        self.remove(name)
+
+        self.add_message_member(name, member)
 
     def __contains__(self, name):
         """
@@ -196,9 +244,17 @@ class Frame:
         :param name: of frame member
         :returns message
         """
-        return self.payload(name)
+        member = self.members[name]
+        if isinstance(member, tuple):
+            # member is not parsed yet, get payload from log file frame
+            member = self._payload(name)
+            if self.cache:
+                self.members[name] = member
+            return member
+        else:
+            return member
 
-    def payload(self, name):
+    def _payload(self, name):
         """
         Parse payload of a frame member.
         :param name: of frame member
@@ -223,6 +279,16 @@ class Frame:
         """
         return self.members.keys()
 
+    def raw_members(self):
+        for name, member in self.members.items():
+            if isinstance(member, tuple):
+                position, size = member
+                data = LogScanner.read_data(position, size)
+                # member is not parsed yet, get payload from log file frame
+                yield name, data
+            else:
+                yield member.SerializeToString()
+
     def __len__(self):
         """
         :returns size of the frame in the log file
@@ -231,8 +297,12 @@ class Frame:
 
     def __copy__(self):
         frame = Frame(self.start, self.number, self.scanner, self.parser)
-        for member, (position, size) in self.members.items():
-            frame.add_member(member, position, size)
+        for name, member in self.members.items():
+            if isinstance(member, tuple):
+                position, size = member
+                frame.add_member(name, position, size)
+            else:
+                frame.add_message_member(name, member)
         return frame
 
     @staticmethod
@@ -255,9 +325,9 @@ class Frame:
         _bytes = b''.join(
             frame_number
             + self.bytes_from_str(name)
-            + self.long_from_int(size)
-            + self.scanner.read_data(position, size)
-            for name, (position, size) in self.members.items()
+            + self.long_from_int(len(data))
+            + data
+            for name, data in self.raw_members()
         )
         assert self.size == len(_bytes)
         return _bytes
@@ -383,6 +453,12 @@ class LogReader:
             except StopIteration:
                 return None
         return self.frames[i]
+
+    def file_path(self):
+        """
+        :returns log file path
+        """
+        return self.log_file.name
 
 
 if __name__ == "__main__":
