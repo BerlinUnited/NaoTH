@@ -200,7 +200,7 @@ class Frame:
         :param name: of member
         :param member: protobuf message
         """
-        self.size += len(member.SerializeToString())
+        self.size += LogScanner.frame_member_size(name, len(member.SerializeToString()))
         # add new member
         self.members[name] = member
 
@@ -214,7 +214,7 @@ class Frame:
             position, size = member
             self.size -= LogScanner.frame_member_size(name, size)
         else:
-            self.size -= len(member.SerializeToString())
+            self.size -= LogScanner.frame_member_size(name, len(member.SerializeToString()))
 
     def replace_message_member(self, name, member):
         """
@@ -247,21 +247,20 @@ class Frame:
         member = self.members[name]
         if isinstance(member, tuple):
             # member is not parsed yet, get payload from log file frame
-            member = self._payload(name)
+            position, size = member
+            member = self._payload(name, position, size)
             if self.cache:
                 self.members[name] = member
             return member
         else:
             return member
 
-    def _payload(self, name):
+    def _payload(self, name, position, size):
         """
         Parse payload of a frame member.
         :param name: of frame member
         :returns parsed message
         """
-        position, size = self.members[name]
-
         # parse payload
         try:
             payload = self.scanner.read_data(position, size)
@@ -283,11 +282,11 @@ class Frame:
         for name, member in self.members.items():
             if isinstance(member, tuple):
                 position, size = member
-                data = LogScanner.read_data(position, size)
+                data = self.scanner.read_data(position, size)
                 # member is not parsed yet, get payload from log file frame
                 yield name, data
             else:
-                yield member.SerializeToString()
+                yield name, member.SerializeToString()
 
     def __len__(self):
         """
