@@ -3,6 +3,8 @@ import logging
 import struct
 
 # protobuf
+from google.protobuf.message import Message
+
 from naoth.messages import CommonTypes_pb2, Framework_Representations_pb2, Messages_pb2, Representations_pb2, \
     TeamMessage_pb2, AudioData_pb2
 
@@ -194,13 +196,13 @@ class Frame:
         self.members[name] = position, size
         self.size += LogScanner.frame_member_size(name, size)
 
-    def add_message_member(self, name, member):
+    def add_message_member(self, name, member: Message):
         """
         Add a protobuf message as member to the frame
         :param name: of member
         :param member: protobuf message
         """
-        self.size += LogScanner.frame_member_size(name, len(member.SerializeToString()))
+        self.size += LogScanner.frame_member_size(name, member.ByteSize())
         # add new member
         self.members[name] = member
 
@@ -210,11 +212,15 @@ class Frame:
         :param name: of member
         """
         member = self.members.pop(name)
-        if isinstance(member, tuple):
+
+        # reduce size of this frame
+        if isinstance(member, tuple) and len(member) == 2:
             position, size = member
             self.size -= LogScanner.frame_member_size(name, size)
+        elif isinstance(member, Message):
+            self.size -= LogScanner.frame_member_size(name, member.ByteSize())
         else:
-            self.size -= LogScanner.frame_member_size(name, len(member.SerializeToString()))
+            raise TypeError(f'Type of member {type(member)} must be a (position, size) tuple or protobuf message!')
 
     def replace_message_member(self, name, member):
         """
@@ -246,6 +252,9 @@ class Frame:
         """
         member = self.members[name]
         if isinstance(member, tuple):
+            if len(member) != 2:
+                raise TypeError(f'Type of member {type(member)} must be a (position, size) tuple'
+                                f'to be parsed or a protobuf message!')
             # member is not parsed yet, get payload from log file frame
             position, size = member
             member = self._payload(name, position, size)
@@ -280,13 +289,15 @@ class Frame:
 
     def raw_members(self):
         for name, member in self.members.items():
-            if isinstance(member, tuple):
+            if isinstance(member, tuple) and len(member) == 2:
                 position, size = member
-                data = self.scanner.read_data(position, size)
                 # member is not parsed yet, get payload from log file frame
+                data = self.scanner.read_data(position, size)
                 yield name, data
-            else:
+            elif isinstance(member, Message):
                 yield name, member.SerializeToString()
+            else:
+                raise TypeError(f'Type of member {type(member)} must be a (position, size) tuple or protobuf message!')
 
     def __len__(self):
         """
@@ -294,14 +305,21 @@ class Frame:
         """
         return self.size
 
-    def __copy__(self):
+    def copy(self):
+        """
+        :returns a copy of this frame and all its members
+        """
         frame = Frame(self.start, self.number, self.scanner, self.parser)
         for name, member in self.members.items():
-            if isinstance(member, tuple):
+            if isinstance(member, tuple) and len(member) == 2:
                 position, size = member
                 frame.add_member(name, position, size)
+            elif isinstance(member, Message):
+                message = Message()
+                message.CopyFrom(member)
+                frame.add_message_member(name, message)
             else:
-                frame.add_message_member(name, member)
+                raise TypeError(f'Type of member {type(member)} must be a (position, size) tuple or protobuf message!')
         return frame
 
     @staticmethod
