@@ -28,3 +28,42 @@ def cm_to_np(cm):
 
     rot = np.column_stack(tuple(map(v3_to_np, cm.pose.rotation)))
     return trans, rot
+
+
+def focal_length():
+    """
+    :returns focal length of the camera
+    """
+    # TODO: get intrinsic parameters from a config file or "CameraInfo" if available
+    width = 640
+    height = 480
+    openining_angle_diagonal = 72.6 / 180 * np.pi
+
+    d2 = width * width + height * height
+    half_diagonal = 0.5 * np.sqrt(d2)
+
+    return half_diagonal / np.tan(0.5 * openining_angle_diagonal)
+
+
+def project(x, y, c_rot, c_trans):
+    """
+    Project an image point onto the ground plane using the camera matrix
+    :param x in image
+    :param y in image
+    :param c_rot: 3x3 camera rotation numpy array
+    :param c_trans: 3d camera translation numpy array
+    :return: point on the ground plane as 2d numpy array
+    """
+    # TODO: get intrinsic parameters from a config file or "CameraInfo" if available
+    pixel_v = np.array((
+        focal_length(),
+        320 - x,
+        240 - y
+    ))
+
+    v_rot = c_rot @ pixel_v
+
+    field_v = v_rot[:2] * (c_trans[2] / (-v_rot[2]))
+    field_v += c_trans[:2]
+
+    return field_v

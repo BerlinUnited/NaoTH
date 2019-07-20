@@ -17,7 +17,7 @@ class LogParser:
     If a name of a frame member does not match a class defined in protobuf,
     the corresponding class name needs to be defined using the register function.
 
-    Ex: parser.register("ImageTop", "Image") where Image is the corresponding protobuf class.
+    Ex: parser.register("ImageTop", "Image") where Image is the corresponding name of the protobuf class.
     """
 
     def __init__(self):
