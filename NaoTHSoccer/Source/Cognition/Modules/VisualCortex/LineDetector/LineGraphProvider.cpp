@@ -420,18 +420,53 @@ void LineGraphProvider::calculatePairsAndNeigbors(
     int j_max = -1;
     double s_max = 0.0;
 
-    for(size_t j = i+1; j < edgels.size(); j++) 
-    {
-      const ScanLineEdgelPercept::EdgelPair& edgelTwo = edgels[j];
+    if(edgelOne.adaptive) {
+      // this edgel comes from vertical adaptive scanlines,
+      // the search for a partner needs to be different.
 
-      if(!getScanLineEdgelPercept().endPoints.empty() &&
-         getScanLineEdgelPercept().endPoints[edgelTwo.id].posInImage.y > edgelTwo.point.y)
-      {
-        continue;
-      }
+      int next_idx = edgelOne.id + 1;
+      int next_min_y = 0;
 
-      if(edgelTwo.id == edgelOne.id + 1 || edgelOne.id == edgelTwo.id + 1)
+      for(size_t j = i+1; j < edgels.size(); j++)
       {
+        const ScanLineEdgelPercept::EdgelPair& edgelTwo = edgels[j];
+
+        if(!getScanLineEdgelPercept().endPoints.empty() &&
+           getScanLineEdgelPercept().endPoints[edgelTwo.id].posInImage.y > edgelTwo.point.y)
+        {
+          continue;
+        }
+
+        if(!edgelTwo.adaptive) {
+          // only check adaptive edgels with adaptive edgels
+          break;
+        }
+
+        if(edgelTwo.id == edgelOne.id) {
+          // edgels on the same scanline can't be neighbors
+          continue;
+        }
+
+        if(edgelTwo.id == next_idx) {
+          if(edgelTwo.point.y <= next_min_y) {
+            // we already checked scanline below min y
+            continue;
+          }
+        } else {
+          if (static_cast<size_t>(next_idx) < getScanGrid().vertical.size()) {
+            size_t scan_idx = getScanGrid().vertical[next_idx].bottom;
+            int min_y = getScanGrid().vScanPattern[scan_idx];
+            next_min_y = std::max(min_y, next_min_y);
+          } else {
+            next_min_y = std::numeric_limits<int>::max();
+          }
+          next_idx++;
+          if(edgelTwo.point.y <= next_min_y) {
+            // we already checked scanline below min y
+            continue;
+          }
+        }
+
         double s = edgelSim(edgelOne, edgelTwo);
 
         if(s > s_max) {
@@ -440,7 +475,7 @@ void LineGraphProvider::calculatePairsAndNeigbors(
         }
 
         // update neigbors
-        if(s > threshold) 
+        if(s > threshold)
         {
           int idx_left = edgelTwo.id < edgelOne.id ? (int)j : (int)i;
           int idx_right = edgelTwo.id < edgelOne.id ? (int)i : (int)j;
@@ -449,7 +484,7 @@ void LineGraphProvider::calculatePairsAndNeigbors(
           Neighbors& right_node = neighbors[idx_right];
 
           // set the left neighbor for the right node
-          if(right_node.left == -1 || right_node.w_left < s) { 
+          if(right_node.left == -1 || right_node.w_left < s) {
             right_node.left = idx_left;
             right_node.w_left = s;
           }
@@ -460,8 +495,54 @@ void LineGraphProvider::calculatePairsAndNeigbors(
             left_node.w_right = s;
           }
         }
-      }
-    }//end for j
+      }//end for j
+
+    } else {
+      // normal edgel
+      for(size_t j = i+1; j < edgels.size(); j++)
+      {
+        const ScanLineEdgelPercept::EdgelPair& edgelTwo = edgels[j];
+
+        if(!getScanLineEdgelPercept().endPoints.empty() &&
+           getScanLineEdgelPercept().endPoints[edgelTwo.id].posInImage.y > edgelTwo.point.y)
+        {
+          continue;
+        }
+
+        if(edgelTwo.id == edgelOne.id + 1 || edgelOne.id == edgelTwo.id + 1)
+        {
+          double s = edgelSim(edgelOne, edgelTwo);
+
+          if(s > s_max) {
+            s_max = s;
+            j_max = (int)j;
+          }
+
+          // update neigbors
+          if(s > threshold)
+          {
+            int idx_left = edgelTwo.id < edgelOne.id ? (int)j : (int)i;
+            int idx_right = edgelTwo.id < edgelOne.id ? (int)i : (int)j;
+
+            Neighbors& left_node = neighbors[idx_left];
+            Neighbors& right_node = neighbors[idx_right];
+
+            // set the left neighbor for the right node
+            if(right_node.left == -1 || right_node.w_left < s) {
+              right_node.left = idx_left;
+              right_node.w_left = s;
+            }
+
+            // set the right neighbor for the left node
+            if(left_node.right == -1 || left_node.w_right < s) {
+              left_node.right = idx_right;
+              left_node.w_right = s;
+            }
+          }
+        }
+      }//end for j
+
+    }
 
     if(j_max > -1 && s_max > threshold) {
       const ScanLineEdgelPercept::EdgelPair& edgelTwo = edgels[j_max];

@@ -276,7 +276,7 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
           if(success) {
             // found a new double edgel
             if(begin_found) {
-              add_double_edgel(scan_id);
+              add_double_edgel(scan_id, true);
               begin_found = false;
             }
           }
@@ -288,7 +288,7 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
           if(success) {
             // found a new double edgel
             if(begin_found) {
-              add_double_edgel(scan_id);
+              add_double_edgel(scan_id, true);
               begin_found = false;
             }
           }

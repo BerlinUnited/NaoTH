@@ -241,6 +241,7 @@ private:
     return end_idx;
   }
 
+  /*
   bool add_edgel(const Vector2i& point, Edgel::Type type) {
     if( point.x < parameters.gradient_offset || point.x + parameters.gradient_offset + 1 > (int)getImage().width() ||
         point.y < parameters.gradient_offset || point.y + parameters.gradient_offset + 1 > (int)getImage().height() ) {
@@ -255,7 +256,7 @@ private:
     edgel.direction = calculateGradient(point);
     getScanLineEdgelPercept().edgels.push_back(edgel);
     return true;
-  }
+  }*/
 
   bool add_edgel(int x, int y, Edgel::Type type) {
     if( x < parameters.gradient_offset || x + parameters.gradient_offset + 1 > (int)getImage().width() ||
@@ -274,7 +275,7 @@ private:
     return true;
   }
 
-  void add_double_edgel(int scan_line_id)
+  void add_double_edgel(int scan_line_id, bool adaptive = false)
   {
     ASSERT(getScanLineEdgelPercept().edgels.size() > 1);
 
@@ -320,6 +321,7 @@ private:
     pair.point.x = (begin.point.x + end.point.x)*0.5;
     pair.point.y = (begin.point.y + end.point.y)*0.5;
     pair.direction = (begin.direction - end.direction).normalize();
+    pair.adaptive = adaptive;
     /*
     pair.direction = begin.direction;
     if(cos_alpha > 0) {

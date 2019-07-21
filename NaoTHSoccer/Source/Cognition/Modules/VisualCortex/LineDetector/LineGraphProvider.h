@@ -26,6 +26,7 @@
 
 #include "Representations/Modeling/ProbabilisticQuadCompas.h"
 #include "Representations/Perception/LineGraphPercept.h"
+#include "Representations/Perception/ScanGrid.h"
 
 #include "Tools/DoubleCamHelpers.h"
 #include <algorithm>
@@ -51,6 +52,8 @@ BEGIN_DECLARE_MODULE(LineGraphProvider)
   REQUIRE(ScanLineEdgelPerceptTop)
   REQUIRE(CameraInfo)
   REQUIRE(CameraInfoTop)
+  REQUIRE(ScanGrid)
+  REQUIRE(ScanGridTop)
 
   REQUIRE(OdometryData)
 
@@ -187,6 +190,7 @@ private: // method members
   DOUBLE_CAM_REQUIRE(LineGraphProvider, CameraInfo);
   DOUBLE_CAM_REQUIRE(LineGraphProvider, CameraMatrix);
   DOUBLE_CAM_REQUIRE(LineGraphProvider, ScanLineEdgelPercept);
+  DOUBLE_CAM_REQUIRE(LineGraphProvider, ScanGrid);
 };
 
 #endif  /* _LineGraphProvider_H_ */
