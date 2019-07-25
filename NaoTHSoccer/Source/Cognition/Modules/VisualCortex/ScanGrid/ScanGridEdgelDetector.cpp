@@ -19,7 +19,9 @@ ScanGridEdgelDetector::ScanGridEdgelDetector()
                          "mark brightness jumps on image", false);
   DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:mark_field_intersections",
                          "mark field poly intersections of the scanlines", false);
-  DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:scanlines",
+  DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:scanlines:vertical",
+                         "draw activated scanlines", false);
+  DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:scanlines:horizontal",
                          "draw activated scanlines", false);
   DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:draw_refinement", "", false);
   DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:plot_gradient_vertical_scan", "", false);
@@ -167,18 +169,20 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
       continue;
     }
 
-    // TODO: fix drawing
-    DEBUG_REQUEST("Vision:ScanGridEdgelDetector:scanlines",
+    DEBUG_REQUEST("Vision:ScanGridEdgelDetector:scanlines:vertical",
+      IMAGE_DRAWING_CONTEXT;
+      CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
       int top = std::max(getScanGrid().vScanPattern.at(scanline.top), end_of_field);
-      LINE_PX(ColorClasses::white,
-              scanline.x, getScanGrid().vScanPattern.at(scanline.bottom),
-              scanline.x, top);
+      PEN("FFFFFF", 2);
+      LINE(scanline.x, getScanGrid().vScanPattern.at(scanline.bottom),
+           scanline.x, top);
+      PEN("FF0000", 2);
       for(size_t i=scanline.bottom; i<=scanline.top; ++i)
       {
         if (getScanGrid().vScanPattern.at(i) < top) {
           continue;
         }
-        POINT_PX(ColorClasses::red, scanline.x, getScanGrid().vScanPattern.at(i));
+        FILLOVAL(scanline.x, getScanGrid().vScanPattern.at(i), 1, 1);
       }
     );
 
@@ -458,6 +462,21 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
         );
       }
     }
+
+    DEBUG_REQUEST("Vision:ScanGridEdgelDetector:scanlines:horizontal",
+      IMAGE_DRAWING_CONTEXT;
+      CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
+      PEN("FFFFFF", 2);
+
+      LINE(x, scanline.y, end_x, scanline.y);
+
+      PEN("FF0000", 2);
+      for(int xx = x; xx <= end_x; xx += scanline.skip) {
+        if(!getBodyContour().isOccupied(xx, scanline.y)) {
+          FILLOVAL(xx, scanline.y, 1, 1);
+        }
+      }
+    );
 
     bool begin_found = false;
     minimumPeak.reset();
