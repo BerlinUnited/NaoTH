@@ -72,29 +72,38 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
   }
 
   DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_edgels",
+    IMAGE_DRAWING_CONTEXT;
+    CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
+
     for(size_t i = 0; i < getScanLineEdgelPercept().edgels.size(); i++) {
       const Edgel& edgel = getScanLineEdgelPercept().edgels[i];
-      ColorClasses::Color color = ColorClasses::black;
+
+      PEN("000000", 1);
       if(edgel.type == Edgel::positive) {
-        color = ColorClasses::blue;
+        PEN("FF0000", 1);
       } else if(edgel.type == Edgel::negative) {
-        color = ColorClasses::red;
+        PEN("00FFFF", 1);
       }
-      LINE_PX(color, edgel.point.x, edgel.point.y,
-              edgel.point.x + (int)(edgel.direction.x*5),
-              edgel.point.y + (int)(edgel.direction.y*5));
+      LINE(edgel.point.x - (int)(edgel.direction.x*5),
+           edgel.point.y - (int)(edgel.direction.y*5),
+           edgel.point.x + (int)(edgel.direction.x*5),
+           edgel.point.y + (int)(edgel.direction.y*5));
     }
   );
 
   // mark finished valid edgels
   DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_double_edgels",
+    IMAGE_DRAWING_CONTEXT;
+    CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
     for(size_t i = 0; i < getScanLineEdgelPercept().pairs.size(); i++)
     {
       const ScanLineEdgelPercept::EdgelPair& pair = getScanLineEdgelPercept().pairs[i];
-      CIRCLE_PX(ColorClasses::black, (int)pair.point.x, (int)pair.point.y, 3);
-      LINE_PX(ColorClasses::red, (int)pair.point.x, (int)pair.point.y,
-              (int)(pair.point.x + pair.direction.x*10),
-              (int)(pair.point.y + pair.direction.y*10));
+      PEN("000000", 1);
+      CIRCLE((int)pair.point.x, (int)pair.point.y, 3);
+      PEN("FF66DD", 1);
+      LINE((int)pair.point.x, (int)pair.point.y,
+           (int)(pair.point.x + pair.direction.x*10),
+           (int)(pair.point.y + pair.direction.y*10));
     }
   );
 }//end execute
@@ -235,7 +244,10 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
           std::cout << "x=" << x << " max " << check_y << " point=" << maximumPeak.point << std::endl;
         );
         DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_jump_vertical",
-          LINE_PX(ColorClasses::red, x, maximumPeak.prev_point, x, maximumPeak.next_point);
+          IMAGE_DRAWING_CONTEXT;
+          CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
+          PEN("FF0000", 2);
+          LINE(x, maximumPeak.prev_point, x, maximumPeak.next_point);
         );
 
         if(prev_y - y <= 2)
@@ -268,7 +280,10 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
           std::cout <<  "x=" << x << " min " << check_y << " point=" << minimumPeak.point << std::endl;
         );
         DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_jump_vertical",
-          LINE_PX(ColorClasses::yellow, x, minimumPeak.prev_point, x, minimumPeak.next_point);
+          IMAGE_DRAWING_CONTEXT;
+          CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
+          PEN("00FFFF", 2);
+          LINE(x, minimumPeak.prev_point, x, minimumPeak.next_point);
         );
         if(std::abs(prev_y - y) <= 2)
         {
@@ -496,7 +511,10 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
       if(maximumPeak.add(check_x, prev_x, x, gradient)) {
         // found local maximum peak
         DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_jump_horizontal",
-          LINE_PX(ColorClasses::red, maximumPeak.prev_point, y, maximumPeak.next_point, y);
+          IMAGE_DRAWING_CONTEXT;
+          CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
+          PEN("FF0000", 2);
+          LINE(maximumPeak.prev_point, y, maximumPeak.next_point, y);
         );
         if(std::abs(prev_x - x) <= 2)
         {
@@ -522,7 +540,10 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
       if(minimumPeak.add(check_x, prev_x, x, gradient)) {
         // found local minimum peak
         DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_jump_horizontal",
-          LINE_PX(ColorClasses::yellow, minimumPeak.prev_point, y, minimumPeak.next_point, y);
+          IMAGE_DRAWING_CONTEXT;
+          CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
+          PEN("00FFFF", 2);
+          LINE(minimumPeak.prev_point, y, minimumPeak.next_point, y);
         );
         if(std::abs(prev_x - x) <= 2)
         {

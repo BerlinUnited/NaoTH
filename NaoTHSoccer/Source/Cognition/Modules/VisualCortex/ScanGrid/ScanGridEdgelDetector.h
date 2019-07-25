@@ -287,6 +287,7 @@ private:
 
     double cos_alpha = begin.direction*end.direction;
 
+    /*
     DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_double_edgels",
       ColorClasses::Color color = ColorClasses::black;
       if(begin.type == Edgel::positive) {
@@ -307,6 +308,7 @@ private:
                      end.point.x + (int)(end.direction.x*5),
                      end.point.y + (int)(end.direction.y*5));
     );
+    */
 
     if(-cos_alpha < parameters.double_edgel_angle_threshold) {
     //if(-(begin.direction*end.direction) < parameters.double_edgel_angle_threshold) {
