@@ -231,10 +231,18 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
       int gradient = luma - prevLuma;
 
       DEBUG_REQUEST("Vision:ScanGridEdgelDetector:plot_gradient_vertical_scan",
+        // HACK: Pad x values with 0 so entries are sorted correctly in robot control
+        std::string padding = "";
+        if (x < 10) {
+          padding = "00";
+        } else if (x < 100) {
+          padding = "0";
+        }
         std::ostringstream os;
-        os << ((cameraID==CameraInfo::Top)? "GradiantTop": "GradiantBottom") << " x=" << x;
+        os << ((cameraID==CameraInfo::Top)? "GradiantTop": "GradiantBottom") << " x=" << padding << x;
         std::cout << os.str() << " " << i-scanline.bottom << " = " << check_y << " " << minimumPeak.found << std::endl;
-        PLOT_GENERIC(os.str(), static_cast<int>(i-scanline.bottom), gradient);
+        // HACK: -check_y because robot control seems to require accending order
+        PLOT_GENERIC(os.str(), -check_y, gradient);
       );
 
       // begin
