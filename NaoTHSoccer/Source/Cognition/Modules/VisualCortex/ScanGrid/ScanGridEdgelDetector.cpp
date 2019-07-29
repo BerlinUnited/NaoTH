@@ -178,24 +178,14 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
       continue;
     }
 
+    int end_of_body = getBodyContour().getFirstFreeCell(Vector2i(scanline.x, y)).y;
+
     DEBUG_REQUEST("Vision:ScanGridEdgelDetector:scanlines:vertical",
       IMAGE_DRAWING_CONTEXT;
       CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
-      int top = std::max(getScanGrid().vScanPattern.at(scanline.top), end_of_field);
       PEN("FFFFFF", 2);
-      LINE(scanline.x, getScanGrid().vScanPattern.at(scanline.bottom),
-           scanline.x, top);
-      PEN("FF0000", 2);
-      for(size_t i=scanline.bottom; i<=scanline.top; ++i)
-      {
-        if (getScanGrid().vScanPattern.at(i) < top) {
-          continue;
-        }
-        FILLOVAL(scanline.x, getScanGrid().vScanPattern.at(i), 1, 1);
-      }
+      LINE(scanline.x, end_of_body, scanline.x, end_of_field);
     );
-
-    int end_of_body = getBodyContour().getFirstFreeCell(Vector2i(scanline.x, y)).y;
 
     // TODO: cleanup
     if(getScanGrid().vScanPattern.size() < 2) {
@@ -225,6 +215,11 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
         // don't scan own body
         continue;
       }
+
+      DEBUG_REQUEST("Vision:ScanGridEdgelDetector:scanlines:vertical",
+        PEN("FF0000", 2);
+        FILLOVAL(x, y, 1, 1);
+      );
 
       if(prev_y - y > 1)
       {
@@ -487,12 +482,20 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
       }
     }
 
+    bool begin_found = false;
+    minimumPeak.reset();
+    maximumPeak.reset();
+
+    // fix range
+    int start_x = std::max(x, scanline.skip);
+    end_x = std::min(end_x, static_cast<int>(getImage().width())-(scanline.skip + 1));
+
     DEBUG_REQUEST("Vision:ScanGridEdgelDetector:scanlines:horizontal",
       IMAGE_DRAWING_CONTEXT;
       CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
       PEN("FFFFFF", 2);
 
-      LINE(x, scanline.y, end_x, scanline.y);
+      LINE(start_x, scanline.y, end_x, scanline.y);
 
       PEN("FF0000", 2);
       for(int xx = x; xx <= end_x; xx += scanline.skip) {
@@ -501,14 +504,6 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
         }
       }
     );
-
-    bool begin_found = false;
-    minimumPeak.reset();
-    maximumPeak.reset();
-
-    // fix range
-    int start_x = std::max(x, scanline.skip);
-    end_x = std::min(end_x, static_cast<int>(getImage().width())-(scanline.skip + 1));
 
     for(x = start_x; x <= end_x; x += scanline.skip)
     {
