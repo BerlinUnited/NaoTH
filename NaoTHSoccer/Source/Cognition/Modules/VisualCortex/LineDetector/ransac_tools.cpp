@@ -181,8 +181,7 @@ inline bool CircleModel::estimateCircle(const Edgel& a, const Edgel& b)
   Vector2d between((a.point + b.point)/2);
   // NOTE: we allways make sure half_distance > radius,
   // but just to be sure take fabs ;)
-  double between_dist =
-      sqrt(fabs(Math::sqr(radius) - Math::sqr(half_distance)));
+  double between_dist = sqrt(fabs(Math::sqr(radius) - Math::sqr(half_distance)));
 
   circle_mean = between + direction*between_dist;
 
@@ -255,7 +254,7 @@ RansacCircle::RansacCircle(int iterations, double outlierThresholdAngle,
   iterations(iterations),
   outlierThresholdAngle(outlierThresholdAngle),
   outlierThresholdDist(outlierThresholdDist),
-  radius(radius) 
+  radius(radius)
 {}
 
 void RansacCircle::setParameters(int iterations,
