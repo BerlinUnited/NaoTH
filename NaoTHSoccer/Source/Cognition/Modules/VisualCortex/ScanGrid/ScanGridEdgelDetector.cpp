@@ -412,7 +412,7 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
     }
 
     // determine scanline intersections with the field poly line
-    if(y < polyLineLeft.begin().y) {
+    if(y <= polyLineLeft.begin().y) {
       // scanline is outside of field polygon
       continue;
     } else {
@@ -498,7 +498,7 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
       LINE(start_x, scanline.y, end_x, scanline.y);
 
       PEN("FF0000", 2);
-      for(int xx = x; xx <= end_x; xx += scanline.skip) {
+      for(int xx = start_x; xx <= end_x; xx += scanline.skip) {
         if(!getBodyContour().isOccupied(xx, scanline.y)) {
           FILLOVAL(xx, scanline.y, 1, 1);
         }
