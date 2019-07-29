@@ -85,6 +85,8 @@ public:
       PARAMETER_REGISTER(scan_vertical) = true;
       PARAMETER_REGISTER(scan_horizontal) = true;
 
+      PARAMETER_REGISTER(full_refinement) = true;
+
       syncWithConfig();
       //DebugParameterList::getInstance().add(this);
     }
@@ -95,6 +97,8 @@ public:
 
     bool scan_vertical;
     bool scan_horizontal;
+
+    bool full_refinement;
 
     int brightness_threshold_top; // threshold for detection of the jumps in the Y channel
     int brightness_threshold_bottom;
