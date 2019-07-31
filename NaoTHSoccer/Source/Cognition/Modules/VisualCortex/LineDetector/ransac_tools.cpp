@@ -87,8 +87,8 @@ bool RansacLine::find_best_model(LineModel& bestModel,
   {
     // Get two random edgels to form a line
     Vector2i idx = choose_random_two(edgel_idx);
-    const Edgel& a = edgels[idx[0]];
-    const Edgel& b = edgels[idx[1]];
+    const Edgel& a = edgels[edgel_idx[idx[0]]];
+    const Edgel& b = edgels[edgel_idx[idx[1]]];
 
     LineModel model(a, b);
 
@@ -113,6 +113,8 @@ bool RansacLine::find_best_model(LineModel& bestModel,
         model.inlierError += distance;
       }
     }
+
+    ASSERT(model.inlier >= 2);
 
     if(model.betterThan(bestModel)) {
       bestModel = model;
@@ -174,7 +176,7 @@ inline bool CircleModel::estimateCircle(const Edgel& a, const Edgel& b)
 
   Math::LineSegment lab(a.point, b.point);
   const Vector2d c = la.point(t);
-  const Vector2d direction = (c - lab.projection(c)).normalize();
+  const Vector2d direction = (c - lab.Line::projection(c)).normalize();
 
   Vector2d between((a.point + b.point)/2);
   // NOTE: we allways make sure half_distance > radius,
@@ -280,8 +282,8 @@ bool RansacCircle::find_best_model(CircleModel& best_model,
   {
     Vector2i idx = choose_random_two(edgel_idx);
 
-    const Edgel& a = edgels[idx[0]];
-    const Edgel& b = edgels[idx[1]];
+    const Edgel& a = edgels[edgel_idx[idx[0]]];
+    const Edgel& b = edgels[edgel_idx[idx[1]]];
 
     CircleModel model(radius);
 
@@ -292,16 +294,18 @@ bool RansacCircle::find_best_model(CircleModel& best_model,
       continue;
     }
 
-    for(size_t idx: edgel_idx)
+    for(size_t i: edgel_idx)
     {
       double distError = 0.0;
-      if(model.isInlier(edgels[idx], distError,
+      if(model.isInlier(edgels[i], distError,
                         outlierThresholdAngle, outlierThresholdDist))
       {
         model.inlier++;
         model.inlierError += distError;
       }
     }
+
+    ASSERT(model.inlier >= 2);
 
     if(model.betterThan(best_model)) {
       best_model = model;
