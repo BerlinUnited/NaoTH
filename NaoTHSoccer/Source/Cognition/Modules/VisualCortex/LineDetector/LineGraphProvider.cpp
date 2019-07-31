@@ -431,16 +431,12 @@ void LineGraphProvider::calculatePairsAndNeigbors(
       {
         const ScanLineEdgelPercept::EdgelPair& edgelTwo = edgels[j];
 
-        if(!getScanLineEdgelPercept().endPoints.empty() &&
-           getScanLineEdgelPercept().endPoints[edgelTwo.id].posInImage.y > edgelTwo.point.y)
-        {
-          continue;
-        }
-
         if(!edgelTwo.adaptive) {
           // only check adaptive edgels with adaptive edgels
           break;
         }
+
+        ASSERT(edgelTwo.id >= edgelOne.id);
 
         if(edgelTwo.id == edgelOne.id) {
           // edgels on the same scanline can't be neighbors
