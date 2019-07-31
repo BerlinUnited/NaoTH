@@ -6,7 +6,7 @@
 
 RansacLineDetector::RansacLineDetector():
 lineRansac(params.line.maxIterations,
-           params.line.minDirectionSimilarity,
+           params.line.outlierThresholdAngle,
            params.line.outlierThresholdDist),
 circleRansac(params.circle.maxIterations,
              params.circle.outlierThresholdAngle,
@@ -132,7 +132,7 @@ void RansacLineDetector::execute()
 
   // reset parameters
   lineRansac.setParameters(params.line.maxIterations,
-                           params.line.minDirectionSimilarity,
+                           params.line.outlierThresholdAngle,
                            params.line.outlierThresholdDist);
 
   for(int i = 0; i < params.line.maxLines; ++i)
