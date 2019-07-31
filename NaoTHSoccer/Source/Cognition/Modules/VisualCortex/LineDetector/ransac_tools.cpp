@@ -290,16 +290,18 @@ bool RansacCircle::find_best_model(CircleModel& best_model,
 
     CircleModel model(radius);
 
+    double distError = 0.0;
+
     if(!model.estimateCircle(a,b) ||
-       model.angle_diff(a) > outlierThresholdAngle ||
-       model.angle_diff(b) > outlierThresholdAngle)
+       !model.isInlier(a, distError, outlierThresholdAngle, outlierThresholdDist) ||
+       !model.isInlier(b, distError, outlierThresholdAngle, outlierThresholdDist))
     {
       continue;
     }
 
     for(size_t i: edgel_idx)
     {
-      double distError = 0.0;
+      distError = 0.0;
       if(model.isInlier(edgels[i], distError,
                         outlierThresholdAngle, outlierThresholdDist))
       {
