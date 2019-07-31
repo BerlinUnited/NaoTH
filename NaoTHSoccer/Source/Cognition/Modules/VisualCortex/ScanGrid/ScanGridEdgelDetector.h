@@ -44,6 +44,8 @@ BEGIN_DECLARE_MODULE(ScanGridEdgelDetector)
   REQUIRE(ImageTop)
   REQUIRE(CameraInfo)
   REQUIRE(CameraInfoTop)
+  REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
   REQUIRE(FieldColorPercept)
   REQUIRE(FieldColorPerceptTop)
   REQUIRE(BodyContour)
@@ -339,6 +341,7 @@ private:
 
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, Image);
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, CameraInfo);
+  DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, CameraMatrix);
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, FieldColorPercept);
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, BodyContour);
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, ScanGrid);

@@ -425,7 +425,7 @@ void LineGraphProvider::calculatePairsAndNeigbors(
       // the search for a partner needs to be different.
 
       int next_idx = edgelOne.id + 1;
-      int next_min_y = 0;
+      int min_y = 0;
 
       for(size_t j = i+1; j < edgels.size(); j++)
       {
@@ -436,29 +436,30 @@ void LineGraphProvider::calculatePairsAndNeigbors(
           break;
         }
 
-        ASSERT(edgelTwo.id >= edgelOne.id);
-
         if(edgelTwo.id == edgelOne.id) {
           // edgels on the same scanline can't be neighbors
           continue;
         }
 
+        ASSERT(edgelTwo.id > edgelOne.id);
+
         if(edgelTwo.id == next_idx) {
-          if(edgelTwo.point.y <= next_min_y) {
+          if(edgelTwo.point.y <= min_y) {
             // we already checked scanline below min y
             continue;
           }
         } else {
-          if (static_cast<size_t>(next_idx) < getScanGrid().vertical.size()) {
-            size_t scan_idx = getScanGrid().vertical[next_idx].bottom;
-            int min_y = getScanGrid().vScanPattern[scan_idx];
-            next_min_y = std::max(min_y, next_min_y);
-          } else {
-            next_min_y = std::numeric_limits<int>::max();
-          }
-          next_idx++;
-          if(edgelTwo.point.y <= next_min_y) {
-            // we already checked scanline below min y
+          ASSERT(edgelTwo.id > next_idx);
+          ASSERT(next_idx < static_cast<int>(getScanGrid().vertical.size()));
+
+          // calculate next min_y from old next scanline
+          size_t min_y_idx = getScanGrid().vertical[next_idx].bottom;
+          min_y = std::max(min_y, getScanGrid().vScanPattern[min_y_idx]);
+
+          next_idx = edgelTwo.id;
+
+          if(edgelTwo.point.y <= min_y) {
+            // we already checked below min y
             continue;
           }
         }

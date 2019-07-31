@@ -13,6 +13,8 @@ ScanGridEdgelDetector::ScanGridEdgelDetector()
                          "mark the edgels on the image", false);
   DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:mark_double_edgels",
                          "mark the edgels on the image", false);
+  DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:mark_double_edgels_field",
+                         "Project edgel positions onto the field", false);
   DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:mark_jump_vertical",
                          "mark brightness jumps on image", false);
   DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:mark_jump_horizontal",
@@ -106,6 +108,25 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
            (int)(pair.point.y + pair.direction.y*10));
     }
   );
+
+  DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_double_edgels_field",
+    FIELD_DRAWING_CONTEXT;
+    for(size_t i = 0; i < getScanLineEdgelPercept().pairs.size(); i++)
+    {
+      const ScanLineEdgelPercept::EdgelPair& pair = getScanLineEdgelPercept().pairs[i];
+      Vector2d field_point;
+      CameraGeometry::imagePixelToFieldCoord(getCameraMatrix(),
+                                             getCameraInfo(),
+                                             pair.point.x,
+                                             pair.point.y,
+                                             0.0,
+                                             field_point);
+      PEN("000000", 1);
+      TEXT_DRAWING2(field_point.x+25, field_point.y+25, 0.1, pair.id);
+      PEN("000000", 1);
+      CIRCLE(field_point.x, field_point.y, 25);
+    }
+  );
 }//end execute
 
 void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
@@ -124,8 +145,10 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
   );
 
   // vertical scanlines
-  for(const ScanGrid::VScanLine scanline: getScanGrid().vertical)
+  for(scan_id = 0; scan_id < static_cast<int>(getScanGrid().vertical.size()); ++scan_id)
   {
+    const ScanGrid::VScanLine& scanline = getScanGrid().vertical[scan_id];
+
     int x = scanline.x;
     int y = getScanGrid().vScanPattern[scanline.bottom];
 
@@ -347,7 +370,6 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
 
       }
     }
-    ++scan_id;
   }
 }// end scan_vertical
 
