@@ -2,8 +2,12 @@
 
 using namespace ransac;
 
+/**
+    Returns two unique random indices of a given vector.
 
-// NOTE: we never call this function with vec.size() <= 2
+    @param vec std vector with at least 2 elements.
+    @return Vector2i holding the indices
+*/
 Vector2i ransac::choose_random_two(const std::vector<size_t> &vec)
 {
   //ASSERT(vec.size() > 1);
