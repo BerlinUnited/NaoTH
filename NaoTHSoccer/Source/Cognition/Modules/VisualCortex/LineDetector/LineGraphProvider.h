@@ -135,6 +135,9 @@ public:
       PARAMETER_REGISTER(minimalNumberOfPairs) = 0;
       PARAMETER_REGISTER(maximalProjectedLineWidth) = 30;
 
+      // pixels, pairs must be apart from each other
+      PARAMETER_REGISTER(min_pair_pixel_distance) = 10;
+
       syncWithConfig();
     }
 
@@ -145,6 +148,8 @@ public:
     double quadCompasSmoothingFactor;
     int minimalNumberOfPairs;
     int maximalProjectedLineWidth;
+
+    int min_pair_pixel_distance;
   } parameters;
 
   struct Neighbors {

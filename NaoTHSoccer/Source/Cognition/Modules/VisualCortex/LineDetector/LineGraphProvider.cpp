@@ -424,7 +424,7 @@ void LineGraphProvider::calculatePairsAndNeigbors(
       // this edgel comes from vertical adaptive scanlines,
       // the search for a partner needs to be different.
 
-      int next_idx = edgelOne.id + 1;
+      int next_idx = -1;
       int min_y = 0;
 
       for(size_t j = i+1; j < edgels.size(); j++)
@@ -436,12 +436,25 @@ void LineGraphProvider::calculatePairsAndNeigbors(
           break;
         }
 
-        if(edgelTwo.id == edgelOne.id) {
-          // edgels on the same scanline can't be neighbors
+        ASSERT(edgelTwo.id >= edgelOne.id);
+
+        if(edgelTwo.point.x - edgelOne.point.x < parameters.min_pair_pixel_distance) {
+          // edgels should be at least min_pair_pixel_distance apart from each other
           continue;
         }
 
-        ASSERT(edgelTwo.id > edgelOne.id);
+        /*
+        if(edgelTwo.id == edgelOne.id) {
+          // edgels on the same scanline can't be neighbors
+          continue;
+        }*/
+
+
+
+        // initialize next idx
+        if(next_idx == -1) {
+          next_idx = edgelTwo.id;
+        }
 
         if(edgelTwo.id == next_idx) {
           if(edgelTwo.point.y <= min_y) {
