@@ -128,9 +128,9 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
 
       DEBUG_REQUEST("Vision:LineGraphProvider:edgel_pairs_field",
         FIELD_DRAWING_CONTEXT;
+        PEN("FF0000",2);
+        CIRCLE(edgel.point.x, edgel.point.y, 12);
         PEN("000000",2);
-        CIRCLE(edgelLeft.x, edgelLeft.y, 10);
-        CIRCLE(edgelRight.x, edgelRight.y, 10);
         LINE(edgelLeft.x, edgelLeft.y, edgelRight.x, edgelRight.y);
       );
         

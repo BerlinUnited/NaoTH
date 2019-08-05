@@ -123,8 +123,8 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
                                              field_point);
       PEN("000000", 1);
       TEXT_DRAWING2(field_point.x+25, field_point.y+25, 0.1, pair.id);
-      PEN("000000", 1);
-      CIRCLE(field_point.x, field_point.y, 25);
+      PEN("000000", 2);
+      CIRCLE(field_point.x, field_point.y, 10);
     }
   );
 }//end execute
