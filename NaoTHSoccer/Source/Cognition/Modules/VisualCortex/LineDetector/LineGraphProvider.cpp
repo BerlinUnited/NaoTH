@@ -452,30 +452,20 @@ void LineGraphProvider::calculatePairsAndNeigbors(
           continue;
         }
 
-        // initialize next idx
-        if(next_idx == -1) {
+        if(edgelTwo.id != next_idx) {
+          if(next_idx != -1) {
+            // calculate next min_y from old next scanline
+            ASSERT(next_idx < static_cast<int>(getScanGrid().vertical.size()));
+            size_t min_y_idx = getScanGrid().vertical[next_idx].bottom;
+            min_y = std::max(min_y, getScanGrid().vScanPattern[min_y_idx]);
+          }
+          ASSERT(edgelTwo.id > next_idx);
           next_idx = edgelTwo.id;
         }
 
-        if(edgelTwo.id == next_idx) {
-          if(edgelTwo.point.y <= min_y) {
-            // we already checked scanline below min y
-            continue;
-          }
-        } else {
-          ASSERT(edgelTwo.id > next_idx);
-          ASSERT(next_idx < static_cast<int>(getScanGrid().vertical.size()));
-
-          // calculate next min_y from old next scanline
-          size_t min_y_idx = getScanGrid().vertical[next_idx].bottom;
-          min_y = std::max(min_y, getScanGrid().vScanPattern[min_y_idx]);
-
-          next_idx = edgelTwo.id;
-
-          if(edgelTwo.point.y <= min_y) {
-            // we already checked below min y
-            continue;
-          }
+        if(edgelTwo.point.y <= min_y) {
+          // we already checked below min y
+          continue;
         }
 
         double s = edgelSim(edgelOne, edgelTwo);
