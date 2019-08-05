@@ -14,6 +14,7 @@ LineGraphProvider::LineGraphProvider()
   cameraID(CameraInfo::Top)
 {
   DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:edgel_pairs", "mark the edgels on the image", false);
+  DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:edgel_pairs_field", "mark the edgels pairs on the field", false);
   DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_neighbors", "mark the edgels on the image", false);
   DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_neighbors_field", "mark the edgels on the image", false);
 
@@ -124,6 +125,14 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
 
     if(projectedWidthLeft > parameters.maximalProjectedLineWidth && projectedWidthRight > parameters.maximalProjectedLineWidth) {
       getLineGraphPercept().edgelsOnField.push_back(edgel);
+
+      DEBUG_REQUEST("Vision:LineGraphProvider:edgel_pairs_field",
+        FIELD_DRAWING_CONTEXT;
+        PEN("000000",2);
+        CIRCLE(edgelLeft.x, edgelLeft.y, 10);
+        CIRCLE(edgelRight.x, edgelRight.y, 10);
+        LINE(edgelLeft.x, edgelLeft.y, edgelRight.x, edgelRight.y);
+      );
         
       DEBUG_REQUEST("Vision:LineGraphProvider:draw_line_graph",
         FIELD_DRAWING_CONTEXT;
