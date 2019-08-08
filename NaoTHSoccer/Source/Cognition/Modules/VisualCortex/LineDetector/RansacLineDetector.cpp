@@ -158,7 +158,7 @@ void RansacLineDetector::execute()
             getLineGraphPercept().edgelsOnField, inlier_idx);
       double line_length = line.getLength();
 
-      bool variance_small = line_length > params.line.length_of_var_check ||
+      bool variance_small = line_length > params.line.max_length_for_var_check ||
                             angle_variance <= params.line.maxVariance;
 
       if (line_length > params.line.min_line_length && variance_small)
