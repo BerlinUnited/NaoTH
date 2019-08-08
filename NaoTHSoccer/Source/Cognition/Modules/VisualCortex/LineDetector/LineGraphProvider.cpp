@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   LineGraphProvider.cpp
  * Author: Heinrich Mellmann
  */
@@ -48,13 +48,13 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
   // calculate the projection for all edgels
   edgelProjectionsBegin.resize(getScanLineEdgelPercept().pairs.size());
   edgelProjectionsEnd.resize(getScanLineEdgelPercept().pairs.size());
-  for(size_t i = 0; i < getScanLineEdgelPercept().pairs.size(); i++) 
-  {  
+  for(size_t i = 0; i < getScanLineEdgelPercept().pairs.size(); i++)
+  {
     const ScanLineEdgelPercept::EdgelPair& pair = getScanLineEdgelPercept().pairs[i];
 
     const Edgel& end = getScanLineEdgelPercept().edgels[pair.end];
     const Edgel& begin = getScanLineEdgelPercept().edgels[pair.begin];
-    
+
     // NOTE: edgels are assumed to be always below horizon and so the projection should be allways valid
     CameraGeometry::imagePixelToFieldCoord(
       getCameraMatrix(), getCameraInfo(),
@@ -93,10 +93,6 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
       EdgelD edgel;
       edgel.point = Vector2d(edgelLeft + edgelRight)*0.5;
       edgel.direction = (edgelRight - edgelLeft).normalize();
-      // make edgel direction all point upwards
-      if(edgel.direction.x < 0) {
-        edgel.direction *= -1;
-      }
 
       graph.back().push_back(edgel);
     }
@@ -112,14 +108,11 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
     const double projectedWidthLeft = (edgelProjectionsBegin[edgelPair.left] - edgelProjectionsEnd[edgelPair.left]).abs();
     const double projectedWidthRight = (edgelProjectionsBegin[edgelPair.right] - edgelProjectionsEnd[edgelPair.right]).abs();
 
-	  //TODO: should this be double?
+    //TODO: should this be double?
     Edgel edgel;
     edgel.point = Vector2d(edgelLeft + edgelRight)*0.5;
     edgel.direction = (edgelRight - edgelLeft).normalize(); // is it correct?
-    // make edgel direction all point upwards
-    if(edgel.direction.x < 0) {
-      edgel.direction *= -1;
-    }
+
     //const ScanLineEdgelPercept::EdgelPair& el = getScanLineEdgelPercept().pairs[edgelPair.left];
     //const ScanLineEdgelPercept::EdgelPair& er = getScanLineEdgelPercept().pairs[edgelPair.right];
 
@@ -133,7 +126,7 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
         PEN("000000",2);
         LINE(edgelLeft.x, edgelLeft.y, edgelRight.x, edgelRight.y);
       );
-        
+
       DEBUG_REQUEST("Vision:LineGraphProvider:draw_line_graph",
         FIELD_DRAWING_CONTEXT;
         PEN("FF0000",2);
@@ -156,7 +149,7 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
     }
   }
 
-  
+
 
   // neighbors line graph in image
   for(size_t i = 0; i < edgelNeighbors.size(); i++)
@@ -172,7 +165,7 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
     }
 
     if(add_to_percept) {
-		  // TODO: some information might get lost here while copying from EdgelPair to Edgel
+      // TODO: some information might get lost here while copying from EdgelPair to Edgel
       if(cameraID == CameraInfo::Top) {
         getLineGraphPercept().edgelsInImageTop.push_back(getScanLineEdgelPercept().pairs[i]);
       } else {
@@ -283,7 +276,7 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
         if (edgelNeighbors[i].left != -1) {
           const int pairIdx = edgelNeighbors[i].left;
           //const ScanLineEdgelPercept::EdgelPair& el = getScanLineEdgelPercept().pairs[pairIdx];
-          
+
           const double projectedWidthLeft = (edgelProjectionsBegin[pairIdx] - edgelProjectionsEnd[pairIdx]).abs();
           if (projectedWidthLeft < 30) {
             PEN("FF0000", 0.1);
@@ -293,7 +286,7 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
         if (edgelNeighbors[i].right != -1) {
           const int pairIdx = edgelNeighbors[i].right;
           //const ScanLineEdgelPercept::EdgelPair& er = getScanLineEdgelPercept().pairs[pairIdx];
-          
+
           const double projectedWidthRight = (edgelProjectionsBegin[pairIdx] - edgelProjectionsEnd[pairIdx]).abs();
           if (projectedWidthRight < 30) {
             PEN("FF0000", 0.1);
@@ -372,14 +365,14 @@ void LineGraphProvider::extendLineGraph(std::vector<Neighbors>& neighbors) {
   std::vector<bool> processed(neighbors.size(), false);
 
   for (size_t i=0; i<processed.size(); i++) {
-    if(processed[i] || 
+    if(processed[i] ||
         (neighbors[i].left != -1 && neighbors[neighbors[i].left].right == static_cast<int>(i))) // not a begin of a graph
     {
       continue;
     }
 
     std::vector<int> subGraph;
-    
+
     int in = static_cast<int>(i);
     do {
       subGraph.push_back(in);
@@ -404,8 +397,8 @@ double LineGraphProvider::edgelSim(const EdgelT<double>& e1, const EdgelT<double
 }
 
 void LineGraphProvider::calculatePairsAndNeigbors(
-  const std::vector<ScanLineEdgelPercept::EdgelPair>& edgels, 
-  std::vector<EdgelPair>& pairs, 
+  const std::vector<ScanLineEdgelPercept::EdgelPair>& edgels,
+  std::vector<EdgelPair>& pairs,
   std::vector<Neighbors>& neighbors, double threshold) const
 {
   neighbors.resize(edgels.size());
@@ -425,7 +418,7 @@ void LineGraphProvider::calculatePairsAndNeigbors(
     {
       continue;
     }
-    
+
     int j_max = -1;
     double s_max = 0.0;
 

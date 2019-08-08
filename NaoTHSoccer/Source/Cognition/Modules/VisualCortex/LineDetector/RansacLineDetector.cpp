@@ -212,7 +212,7 @@ void RansacLineDetector::execute()
         }
         PEN(color,2);
       } else {
-        PEN("FF0000",2);
+        PEN("000000",2);
       }
 
       if(e.point.x > 0 || e.point.y > 0) {
