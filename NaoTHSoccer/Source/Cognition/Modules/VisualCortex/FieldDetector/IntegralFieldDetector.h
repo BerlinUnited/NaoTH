@@ -76,6 +76,9 @@ public:
 
       PARAMETER_REGISTER(grid_size_top) = 20;
       PARAMETER_REGISTER(grid_size_bottom) = 30;
+
+      PARAMETER_REGISTER(set_whole_image_as_field_bottom) = false;
+      PARAMETER_REGISTER(set_whole_image_as_field_top) = false;
       syncWithConfig();
     }
     double proportion_of_green;
@@ -89,6 +92,9 @@ public:
 
     int grid_size_top;
     int grid_size_bottom;
+
+    bool set_whole_image_as_field_bottom;
+    bool set_whole_image_as_field_top;
   } params;
 
 private:

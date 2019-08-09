@@ -580,6 +580,9 @@ void MultiKalmanBallLocator::provideBallModel(const BallHypothesis& model)
     Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
     getBallModel().last_known_ball = odometryDelta * getBallModel().last_known_ball;
   }
+
+  // some final debug stuff
+  PLOT("MultiKalmanBallLocator:ballSeenFilter", model.ballSeenFilter.floatValue());
 }
 
 void MultiKalmanBallLocator::doDebugRequestBeforPredictionAndUpdate()
@@ -656,7 +659,7 @@ void MultiKalmanBallLocator::doDebugRequest()
           const Eigen::Vector4d& state = (*iter).getState();
           CIRCLE( state(0), state(2), (*iter).ballSeenFilter.value()*1000);
         }
-      );
+    );
 }
 
 void MultiKalmanBallLocator::drawFilter(const BallHypothesis& bh, const Color& model_color, Color cov_loc_color, Color cov_vel_color) const
