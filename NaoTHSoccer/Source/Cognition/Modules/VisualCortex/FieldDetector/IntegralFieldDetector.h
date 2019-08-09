@@ -1,5 +1,6 @@
-#ifndef __IntegralFieldDetector_H_
-#define __IntegralFieldDetector_H_
+
+#ifndef _IntegralFieldDetector_H_
+#define _IntegralFieldDetector_H_
 
 #include <ModuleFramework/Module.h>
 
@@ -47,7 +48,6 @@ class IntegralFieldDetector : private IntegralFieldDetectorBase
 {
 public:
 
-
   IntegralFieldDetector();
   virtual ~IntegralFieldDetector();
 
@@ -65,18 +65,25 @@ public:
 
     Parameters() : ParameterList("IntegralFieldDetector")
     {
-      PARAMETER_REGISTER(proportion_of_green) = .5;
-      PARAMETER_REGISTER(max_skip_cells) = 2;
+      PARAMETER_REGISTER(max_skip_cells) = 1;
       PARAMETER_REGISTER(min_successive_green) = 3;
+
+      PARAMETER_REGISTER(proportion_of_green) = .5;
+      PARAMETER_REGISTER(end_proportion_of_green) = .3;
 
       PARAMETER_REGISTER(positive_score) = 1;
       PARAMETER_REGISTER(negative_score) = -1;
 
       PARAMETER_REGISTER(grid_size_top) = 20;
       PARAMETER_REGISTER(grid_size_bottom) = 30;
+
+      PARAMETER_REGISTER(set_whole_image_as_field_bottom) = false;
+      PARAMETER_REGISTER(set_whole_image_as_field_top) = false;
       syncWithConfig();
     }
     double proportion_of_green;
+    double end_proportion_of_green;
+
     int max_skip_cells;
     int min_successive_green;
 
@@ -85,11 +92,13 @@ public:
 
     int grid_size_top;
     int grid_size_bottom;
+
+    bool set_whole_image_as_field_bottom;
+    bool set_whole_image_as_field_top;
   } params;
 
 private:
-  class Cell{
-    public:
+  struct Cell {
       int minX;
       int minY;
       int maxX;
@@ -100,6 +109,20 @@ private:
   CameraInfo::CameraID cameraID;
   int factor;
   std::vector<Vector2i> endpoints;
+
+  /**
+  converts integral image coordinates to image coordinates
+  */
+  inline int toImage(int i) {
+    return i * factor;
+  }
+
+  /**
+  converts image coordinates to integral image coordinates
+  */
+  inline int toIntegral(int i) {
+    return i / factor;
+  }
 
   void find_endpoint(int x, const Cell& cell, Vector2i& endpoint);
   void create_field();
@@ -115,5 +138,5 @@ private:
   DOUBLE_CAM_PROVIDE(IntegralFieldDetector, FieldPercept);
 };
 
-#endif  /* __IntegralFieldDetector_H_ */
+#endif  /* _IntegralFieldDetector_H_ */
 

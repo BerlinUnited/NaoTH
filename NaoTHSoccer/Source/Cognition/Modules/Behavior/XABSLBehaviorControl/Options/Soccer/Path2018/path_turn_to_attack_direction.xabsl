@@ -6,9 +6,9 @@ option path_turn_to_attack_direction
       if(attack.direction.preview > 0 && obstacle.ultrasound.distance > 400)
         goto turn_right_around;
       else if (attack.direction.preview > 0 && obstacle.ultrasound.distance <= 400)
-        goto turn_right_around_stable;
+        goto turn_right_around;
       else if (attack.direction.preview <= 0 && obstacle.ultrasound.distance <= 400)
-        goto turn_left_around_stable;
+        goto turn_left_around;
       else
         goto turn_left_around;
     }

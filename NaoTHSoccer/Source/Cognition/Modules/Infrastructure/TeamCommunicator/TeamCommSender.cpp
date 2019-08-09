@@ -35,6 +35,8 @@ void TeamCommSender::execute()
         getTeamMessageDataOut().data = getTeamMessageData().createSplMessageString();
         // remember the last sending time
         lastSentTimestamp = getFrameInfo().getTime();
+
+        PLOT(std::string("TeamCommSender:message_size"), static_cast<double>(getTeamMessageDataOut().data.size()));
     } else {
         getTeamMessageDataOut().data.clear();
     }
