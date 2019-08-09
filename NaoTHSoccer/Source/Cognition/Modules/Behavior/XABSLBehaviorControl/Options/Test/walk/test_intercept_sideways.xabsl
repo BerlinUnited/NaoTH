@@ -1,0 +1,52 @@
+option test_intercept_sideways 
+{
+
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+
+  initial state idle {
+    decision {
+      else
+        goto stand;
+    }
+    action {
+      situation_abortable = true;
+    }
+  }
+
+  state stand {
+    decision {
+      else if(ball.interception.preview.x < 3000)
+        goto intercept;
+      else 
+        stay;
+    }
+    action{
+      motion.type = stand;
+      head.control_mode = look_at_ball;
+    }
+  }
+
+  state intercept {
+    decision{
+
+      else if(ball.interception.preview.x > 4000)
+	      goto stand;
+      else
+        stay;
+    }
+    action{
+      head.control_mode = look_at_ball;
+      motion.type = walk;
+      motion.walk.coordinate = hip;
+      motion.walk.style = fast;
+      
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 1.5*ball.interception.preview.y;
+      motion.walk_speed.rot = 0;//atan2(y = ball.preview.y, x = ball.preview.x);
+    }
+  }
+}

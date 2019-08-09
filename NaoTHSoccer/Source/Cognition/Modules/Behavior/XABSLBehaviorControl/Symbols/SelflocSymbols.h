@@ -14,7 +14,6 @@
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/PlayerInfo.h"
-#include "Representations/Modeling/CompassDirection.h"
 #include "Representations/Infrastructure/GPSData.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Motion/MotionStatus.h"
@@ -25,15 +24,20 @@
 #include "Tools/Debug/DebugDrawings.h"
 
 BEGIN_DECLARE_MODULE(SelflocSymbols)
-  REQUIRE(RobotPose)
-  REQUIRE(SelfLocGoalModel)
-  REQUIRE(PlayerInfo)
-  REQUIRE(GPSData)
-  REQUIRE(MotionStatus)
-  REQUIRE(CompassDirection)
-  REQUIRE(FieldInfo)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugRequest)
+
+  REQUIRE(FieldInfo)
+  REQUIRE(PlayerInfo)
+
+  REQUIRE(RobotPose)
+  REQUIRE(CompassDirection)
+  REQUIRE(SelfLocGoalModel)
+  REQUIRE(LocalGoalModel)
+
+  REQUIRE(GPSData)
+  REQUIRE(MotionStatus)
+
 END_DECLARE_MODULE(SelflocSymbols)
 
 class SelflocSymbols: public SelflocSymbolsBase
@@ -46,7 +50,8 @@ public:
     angleOnFieldPlanned(Math::toDegrees(getRobotPose().rotation))
   {
     theInstance = this;
-  };
+  }
+
   virtual ~SelflocSymbols(){}
   
   /** registers the symbols at an engine */
@@ -87,6 +92,9 @@ private:
   static double getFieldToRelativeX();
   static double getFieldToRelativeY();
   Vector2d parameterVector;
+
+  static bool getOpponentGoalWasSeen();
+  static bool getOwnGoalWasSeen();
 
   static SelflocSymbols* theInstance;
 
