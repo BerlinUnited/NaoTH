@@ -2,10 +2,9 @@
 
 PID="/tmp/cognition.pid"
 
-case "$1" in
-  start)
+function start_function() {
     if [ -f "$PID" ]; then
-      OLDPID=`cat /tmp/cognition.pid`
+      OLDPID=`cat $PID`
       echo "old pid is $OLDPID"
       kill -0 $OLDPID
       if [ "$?" -eq 0 ]; then
@@ -14,40 +13,80 @@ case "$1" in
       else
         echo "removing stalled $PID"
         rm "$PID"
+      fi
     fi
-    fi
+
+    echo "removing old log files"
+    find -L /tmp -maxdepth 1 -name "*.log" -exec rm -rf {} \;
 
     echo "starting naoth cognition process"
     cd /home/nao/naoqi/
 
+    # using "warn" level, otherwise messages wouldn't be written to "/var/log/messages"!
+    exec > >(logger -t "naoth[INFO]" -p local3.info) 2> >(logger -t "naoth[ERROR]" -p local3.warning)
     if [ nao = `whoami` ]; then
-      nohup /etc/init.d/cognition-common 2>&1 | logger &
+      nohup /etc/init.d/cognition-common &
     else
-      su -c 'nohup /etc/init.d/cognition-common 2>&1 | logger &' nao
+      su -c 'nohup /etc/init.d/cognition-common &' nao
     fi
+}
+
+function stop_function() {
+    echo "stopping naoth cognition processes"
+    
+    # first try to kill naoth based on the PID file
+    if [ -f "$PID" ]; then
+      OLDPID=`cat $PID`
+      kill $OLDPID
+
+      # wait for the process to stop
+      counter=0
+      while kill -0 $OLDPID 2> /dev/null
+      do
+          sleep 1;
+          printf "try %s/30\n" "$counter"
+          
+          # wait for maximal 30 seconds
+          ((counter++))
+          if [ $counter -gt 30 ]; then
+            break
+          fi
+      done
+      printf "\n"
+
+    fi
+
+    # FALLBACK
+    #... try to stop all running naoth processes (and exclude this script!)
+    PIDS=`pidof -x -o %PPID naoth`
+    if [[ ! -z $PIDS ]]; then
+      kill $PIDS  # send TERM signal
+      sleep 5
+      # if there are still running naoth instances, kill them "hard"
+      PIDS=`pidof -x -o %PPID naoth`
+      if [[ ! -z $PIDS ]]; then
+        kill -9 $PIDS  # send KILL signal
+      fi
+    fi
+    
+    # remove PID-file
+    rm $PID
+}
+
+case "$1" in
+  start)
+    start_function
     ;;
   stop)
-    if [ ! -f "$PID" ]; then
-      echo "NaoTH Cognition not started"
-      exit 2
-    fi
-    OLDPID=`cat /tmp/cognition.pid`
-    echo "killing naoth cognition processes $OLDPID"
-    kill $OLDPID
-    while [ -d "/proc/$OLDPID" ]
-    do
-          sleep 1
-        done
-    rm $PID
-
+    stop_function
     ;;
   restart)
-    $0 stop
+    stop_function
     sleep 5
-    $0 start
+    start_function
     ;;
   *)
-    echo "Usage: /etc/init.d/naoqi {start|stop|restart}"
+    echo "Usage: /etc/init.d/naoth {start|stop|restart}"
     exit 1
     ;;
 

@@ -2,6 +2,7 @@
 #define MULTIKALMANBALLLOCATOR_H
 
 #include <ModuleFramework/Module.h>
+#include <Eigen/StdVector>
 
 // representations
 #include <Representations/Perception/MultiBallPercept.h>
@@ -25,6 +26,7 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugPlot.h"
+#include "Tools/Debug/Color.h"
 
 #include "Representations/Infrastructure/FieldInfo.h"
 
@@ -74,30 +76,27 @@ public:
 // from other kalman filter ball locator
 private:
     OdometryData lastRobotOdometry;
-
-    FrameInfo lastFrameInfo;
+    FrameInfo    lastFrameInfo;
 
 private:
-    typedef std::vector<BallHypothesis> Filters;
+    typedef std::vector<BallHypothesis, Eigen::aligned_allocator<BallHypothesis> > Filters;
     Filters filter;
     Filters::const_iterator bestModel;
 
     const double epsilon; // 10e-6
-    double area95Threshold;
-
-    //double ballMass;
-    double c_RR;
+    //double area95Threshold;
 
 private:
     void updateByPerceptsCool();
-    
     void updateByPerceptsNormal();
+    void updateByPerceptsNaive(CameraInfo::CameraID camera);
 
     void applyOdometryOnFilterState(ExtendedKalmanFilter4d& filter);
 
     void predict(ExtendedKalmanFilter4d& filter, double dt) const;
 
     Filters::const_iterator selectBestModel() const;
+    Filters::const_iterator selectBestModelBasedOnCovariance() const;
 
     void provideBallModel(const BallHypothesis &model);
 
@@ -105,6 +104,7 @@ private:
     void doDebugRequest();
     void doDebugRequestBeforPredictionAndUpdate();
     void doDebugRequestBeforUpdate();
+    void drawFilter(const BallHypothesis& bh, const Color& model_color, Color cov_loc_color, Color cov_vel_color) const;
     void drawFiltersOnField() const;
     void reloadParameters();
 
@@ -128,9 +128,7 @@ private:
             PARAMETER_REGISTER(initialStateStdP10) = 0;
             PARAMETER_REGISTER(initialStateStdP11) = 250;
 
-            //PARAMETER_REGISTER(ballMass) = 0.026;
-            PARAMETER_REGISTER(c_RR) = 0.0245;
-            PARAMETER_REGISTER(area95Threshold) = 1000*1000*M_PI;
+            PARAMETER_REGISTER(area95Threshold) = 2*Math::pi*700*700;
 
             //thresholds for association functions
             PARAMETER_REGISTER(euclidThreshold) = Math::fromDegrees(10);
@@ -140,6 +138,15 @@ private:
             //AssymetricalBoolFilte parameters
             PARAMETER_REGISTER(g0) = 0.01;
             PARAMETER_REGISTER(g1) = 0.1;
+
+            PARAMETER_REGISTER(association.use_normal) = false;
+            PARAMETER_REGISTER(association.use_cool)   = false;
+            PARAMETER_REGISTER(association.use_naive)  = true;
+
+            PARAMETER_REGISTER(area95Threshold_radius.factor) = 1;
+            PARAMETER_REGISTER(area95Threshold_radius.offset) = 125;
+
+            PARAMETER_REGISTER(use_covariance_based_selection) = true;
 
             syncWithConfig();
         }
@@ -161,13 +168,24 @@ private:
         double initialStateStdP10;
         double initialStateStdP11;
 
-        //double ballMass;
-        double c_RR;
         double area95Threshold;
 
         double euclidThreshold;
         double mahalanobisThreshold;
         double maximumLikelihoodThreshold;
+
+        struct {
+            bool use_normal;
+            bool use_cool;
+            bool use_naive;
+        } association;
+
+        struct {
+            double factor;
+            double offset;
+        } area95Threshold_radius;
+
+        bool use_covariance_based_selection;
     } kfParameters;
 
     Measurement_Function_H h;

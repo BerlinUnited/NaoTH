@@ -1,64 +1,47 @@
 /**
 * @file FootGroundContactDetector.cpp
 *
-* @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
+* @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich, Mellmann</a>
+* @author <a href="mailto:yigit.akcay@icloud.com">Yigit, Akcay</a>
 * detect if the foot touch the ground
 */
 
 #include "FootGroundContactDetector.h"
+#include "Tools/Math/Common.h"
 
-FootGroundContactDetector::FootGroundContactDetector():
-    footParams(getDebugParameterList())
+FootGroundContactDetector::FootGroundContactDetector()
 {
+  getDebugParameterList().add(&footParams);
 }
 
 FootGroundContactDetector::~FootGroundContactDetector()
 {
+  getDebugParameterList().remove(&footParams);
 }
-
 
 void FootGroundContactDetector::execute()
 {
-
-  // check wether the sensory values look valid
-  // usually, broken sensors return large values
-  for(int i = 0; i < naoth::FSRData::numOfFSR; i++)
-  {
-    if(getFSRData().data[i] > footParams.invalid)
-      getFSRData().valid[i] = false;
-    else
-      getFSRData().valid[i] = true;
-  }//end for
-
-
-  leftFSRBuffer.add(getFSRData().forceLeft());
-  rightFSRBuffer.add(getFSRData().forceRight());
-
-  if(getFSRData().forceLeft() < footParams.left) {
-    getGroundContactModel().leftGroundContact = false;
-  } else {
-    getGroundContactModel().leftGroundContact = true;
+  if (footParams.useMaxMedian){
+    leftFSRBuffer.add(Math::medianMax(getFSRData().dataLeft));
+    rightFSRBuffer.add(Math::medianMax(getFSRData().dataRight));
+  }
+  else {
+    //Maximum of FSR Sensors
+    leftFSRBuffer.add(Math::max(getFSRData().dataLeft));
+    rightFSRBuffer.add(Math::max(getFSRData().dataRight));
   }
 
-  if(getFSRData().forceRight() < footParams.right)
-  {
-    getGroundContactModel().rightGroundContact = false;
-  } else {
-    getGroundContactModel().rightGroundContact = true;
-  }
 
-  
-  if(leftFSRBuffer.getAverage() < footParams.left)
-  {
-    getGroundContactModel().leftGroundContactAverage = false;
-  } else {
-    getGroundContactModel().leftGroundContactAverage = true;
-  }
+  getGroundContactModel().leftGroundContact  = leftFSRBuffer.getAverage() > footParams.left;
+  getGroundContactModel().rightGroundContact = rightFSRBuffer.getAverage() > footParams.right;
 
-  if(rightFSRBuffer.getAverage() < footParams.right) {
-    getGroundContactModel().rightGroundContactAverage = false;
+
+  if (!getGroundContactModel().leftGroundContact && !getGroundContactModel().rightGroundContact) {
+    getGroundContactModel().supportFoot = GroundContactModel::NONE;
+  } else if(rightFSRBuffer.getAverage() > leftFSRBuffer.getAverage()) {
+    getGroundContactModel().supportFoot = GroundContactModel::RIGHT;
   } else {
-    getGroundContactModel().rightGroundContactAverage = true;
+    getGroundContactModel().supportFoot = GroundContactModel::LEFT;
   }
 
   PLOT("FootGroundContactDetector:leftGroundContact", getGroundContactModel().leftGroundContact);
@@ -66,33 +49,6 @@ void FootGroundContactDetector::execute()
 
   PLOT("FootGroundContactDetector:leftFSRBuffer", leftFSRBuffer.getAverage());
   PLOT("FootGroundContactDetector:rightFSRBuffer", rightFSRBuffer.getAverage());
-
-  /*
-  // use the current to estimate the ground contact
-  {
-  static RingBufferWithSum<double, 10> currentBufferLeft;
-  static RingBufferWithSum<double, 10> currentBufferRight;
-
-  double currentLeftLeg = theBlackBoard.theSensorJointData.electricCurrent[JointData::LHipPitch]
-    + theBlackBoard.theSensorJointData.electricCurrent[JointData::LHipRoll]
-    + theBlackBoard.theSensorJointData.electricCurrent[JointData::LKneePitch]
-    + theBlackBoard.theSensorJointData.electricCurrent[JointData::LAnklePitch]
-    + theBlackBoard.theSensorJointData.electricCurrent[JointData::LAnkleRoll];
-
-  currentBufferLeft.add(currentLeftLeg);
-
-  double currentRightLeg = theBlackBoard.theSensorJointData.electricCurrent[JointData::RHipPitch]
-    + theBlackBoard.theSensorJointData.electricCurrent[JointData::RHipRoll]
-    + theBlackBoard.theSensorJointData.electricCurrent[JointData::RKneePitch]
-    + theBlackBoard.theSensorJointData.electricCurrent[JointData::RAnklePitch]
-    + theBlackBoard.theSensorJointData.electricCurrent[JointData::RAnkleRoll];
-
-  currentBufferRight.add(currentRightLeg);
-
-  PLOT("Motion:currentLeg:left", currentBufferLeft.getAverage() );
-  PLOT("Motion:currentLeg:right", currentBufferRight.getAverage() );
-  }
-  */
 
 }//end update
 

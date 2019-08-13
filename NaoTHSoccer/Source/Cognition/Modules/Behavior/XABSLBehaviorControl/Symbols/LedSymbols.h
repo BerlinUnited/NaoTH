@@ -6,14 +6,10 @@
 */
 
 #ifndef _LedSymbols_H_
-#define _LEdSymbols_H_
+#define _LedSymbols_H_
 
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>
-
-
-#include "Tools/Math/Common.h"
-#include <math.h>
 
 
 // representations

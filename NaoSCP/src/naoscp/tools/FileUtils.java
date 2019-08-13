@@ -12,9 +12,10 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.CharBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  *
@@ -84,7 +85,7 @@ public class FileUtils
       {
         if( ! dest.mkdirs())
         {
-          throw new NaoSCPException("copyFiles: Could not create direcotry: " + dest.getAbsolutePath() + ".");
+          throw new NaoSCPException("copyFiles: Could not create directory: " + dest.getAbsolutePath() + ".");
         }
       }
       String list[] = src.list();
@@ -125,4 +126,43 @@ public class FileUtils
       }
     }
   }//end copyFiles
+  
+  
+  public static void zipDirectory(File fileToZip, File target) throws NaoSCPException
+  {
+      try {
+        FileOutputStream fos = new FileOutputStream(target);
+        ZipOutputStream zipOut = new ZipOutputStream(fos);
+ 
+        zipFile(fileToZip, fileToZip.getName(), zipOut);
+        zipOut.close();
+        fos.close();
+      } catch (IOException ex) {
+          throw new NaoSCPException("copyFiles: Could not create direcotry: ");
+      }
+    }
+ 
+    private static void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut) throws IOException 
+    {
+        if (fileToZip.isHidden()) {
+            return;
+        }
+        if (fileToZip.isDirectory()) {
+            File[] children = fileToZip.listFiles();
+            for (File childFile : children) {
+                zipFile(childFile, fileName + "/" + childFile.getName(), zipOut);
+            }
+            return;
+        }
+        FileInputStream fis = new FileInputStream(fileToZip);
+        ZipEntry zipEntry = new ZipEntry(fileName);
+        zipOut.putNextEntry(zipEntry);
+        byte[] bytes = new byte[1024];
+        int length;
+        while ((length = fis.read(bytes)) >= 0) {
+            zipOut.write(bytes, 0, length);
+        }
+        fis.close();
+    }
+
 }

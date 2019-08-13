@@ -5,6 +5,9 @@
 #include <MessagesSPL/RoboCupGameControlData.h>
 #include "Representations/Infrastructure/GameData.h"
 
+#include <mutex>
+#include <thread>
+
 using namespace spl;
 
 class SPLGameController
@@ -26,16 +29,17 @@ private:
   bool exiting;
   int returnPort;
   GSocket* socket;
+  GCancellable* cancelable;
+
   GSocketAddress* gamecontrollerAddress;
-  GThread* socketThread;
+  std::thread socketThread;
 
   RoboCupGameControlData dataIn;
   RoboCupGameControlReturnData dataOut;
 
-  unsigned int lastGetTime;
   naoth::GameData data;
-  GMutex*  dataMutex;
-  GMutex* returnDataMutex;
+  std::mutex  dataMutex;
+  std::mutex returnDataMutex;
 
   GError* bindAndListen(unsigned int port = GAMECONTROLLER_DATA_PORT);
 

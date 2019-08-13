@@ -7,67 +7,41 @@
 #ifndef ROLEDECISIONMODEL_H
 #define ROLEDECISIONMODEL_H
 
-using namespace std;
+#include <limits>
+#include <ostream>
+#include <cstring>
+#include <map>
 
-#include <list>
-
+#include "Tools/DataStructures/Printable.h"
+#include "Tools/Math/Vector2.h"
+#include "Representations/Infrastructure/Roles.h"
 
 class RoleDecisionModel: public naoth::Printable
 {
 public:
+    RoleDecisionModel() {}
 
-  int firstStriker;
-  int secondStriker;
+    std::map<unsigned int, Roles::Role> roles;
+    std::map<Roles::Static, Roles::Position> roles_position;
 
-  std::list<int> aliveRobots;
-  std::list<int> deadRobots;
+    Roles::Role getRole(unsigned int playerNumber) const;
+    Roles::Position getStaticRolePosition(Roles::Static role) const;
 
-  bool wantsToBeStriker;
+    bool isStriker(unsigned int playerNumber) const;
 
-  RoleDecisionModel():
-    firstStriker(-1),
-    secondStriker(-1),
-    wantsToBeStriker(false)
-  {
-    aliveRobots = *(new std::list<int>());
-    deadRobots = *(new std::list<int>());
-  }
+    /* OLD STUFF ------------------------------------------------ */
 
-  virtual void print(std::ostream& stream) const {
+    unsigned int firstStriker = std::numeric_limits<unsigned int>::max();
+    unsigned int secondStriker = std::numeric_limits<unsigned int>::max();
+    bool wantsToBeStriker = false;
 
-    if (firstStriker != -1) {
-      stream << "First Striker: " << "Robot No. " << firstStriker << "\n";
+    virtual void print(std::ostream& stream) const;
+
+    void resetStriker() {
+        firstStriker = std::numeric_limits<unsigned int>::max();
+        secondStriker = std::numeric_limits<unsigned int>::max();
+        for(auto& r : roles) { if(r.second.dynamic == Roles::striker) { r.second.dynamic = Roles::none; } }
     }
-    else {
-      stream << "Currently no first striker in use.\n";
-    }
-
-    if (secondStriker != -1) {
-      stream << "Second Striker: " << "Robot No. " << secondStriker << "\n";
-    }
-    else {
-      stream << "Currently no second striker in use.\n\n";
-    }
-
-    if (wantsToBeStriker) {
-      stream << "Robot wants to be a striker in the next round.\n\n";
-    }
-    else {      
-      stream << "Robot does not want to be a striker in the next round.\n\n";
-    }
-    
-    stream << "The following robots are considered ALIVE:\n";
-    for (std::list<int>::const_iterator iter = aliveRobots.begin(); iter != aliveRobots.end(); iter++) {
-      stream << "Robot " << *iter << std::endl;
-    }
-    stream << "\nThe following robots are considered DEAD:\n";    
-    for (std::list<int>::const_iterator iter = deadRobots.begin(); iter != deadRobots.end(); iter++) {
-      stream << "Robot " << *iter << std::endl;
-    }
-
-  }
-
-
 };
 
 

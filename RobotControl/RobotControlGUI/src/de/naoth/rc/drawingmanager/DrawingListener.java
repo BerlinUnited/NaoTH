@@ -13,5 +13,5 @@ import de.naoth.rc.drawings.Drawable;
  * @author thomas
  */
 public interface DrawingListener {
-    public void newDrawing(Drawable drawing);
+    public void newDrawing(Drawable drawing, Object src);
 }

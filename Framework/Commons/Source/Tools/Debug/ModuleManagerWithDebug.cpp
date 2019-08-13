@@ -23,8 +23,11 @@ ModuleManagerWithDebug::ModuleManagerWithDebug(const std::string& name)
   commandModulesStopwatch = prefix + "modules:stopwatch";
 
   commandRepresentationList = prefix + "representation:list";
-  commandRepresentationGet = prefix + "representation:get";
-  commandRepresentationGetbinary = prefix + "representation:getbinary";
+  commandRepresentationPrint = prefix + "representation:print"; // deprecated: change to Print
+
+  commandRepresentationGet = prefix + "representation:get"; // deprecated: change to Get
+  commandRepresentationSet = prefix + "representation:set";
+  
 
   commandDebugRequestSet = prefix + "debugrequest:set";
 
@@ -39,15 +42,14 @@ ModuleManagerWithDebug::ModuleManagerWithDebug(const std::string& name)
 
 
   REGISTER_DEBUG_COMMAND(commandRepresentationList, 
-    "Stream out the list of all registered representations", this);
+    "List all registered representations", this);
+  REGISTER_DEBUG_COMMAND(commandRepresentationPrint, 
+    "Print all the representations listet", this);
+  REGISTER_DEBUG_COMMAND(commandRepresentationSet, 
+    "Deserialize listed representations onto the blackboard", this);
   REGISTER_DEBUG_COMMAND(commandRepresentationGet, 
-    "Stream out all the representations listet", this);
-  REGISTER_DEBUG_COMMAND(commandRepresentationGetbinary, 
-    "Stream out serialized represenation", this);
+    "Return serialized represenations", this);
 
-
-  REGISTER_DEBUG_COMMAND(prefix + "debugrequest:set",
-    "Set a debug request value", this);
 }
 
 ModuleManagerWithDebug::~ModuleManagerWithDebug(){}
@@ -69,7 +71,7 @@ void ModuleManagerWithDebug::executeDebugCommand(const std::string& command,
     modulesStopwatch(outstream);
   } else if (command == commandRepresentationList) {
     representationList(outstream);
-  } else if (command == commandRepresentationGet)
+  } else if (command == commandRepresentationPrint)
   {
     std::map<std::string, std::string>::const_iterator iter;
     for (iter = arguments.begin(); iter != arguments.end(); ++iter)
@@ -77,9 +79,17 @@ void ModuleManagerWithDebug::executeDebugCommand(const std::string& command,
       printRepresentation(outstream, iter->first, false);
     }
   }
-  else if (command == commandRepresentationGetbinary)
+  else if(command == commandRepresentationSet)
   {
-    std::map<std::string, std::string>::const_iterator iter;
+    DebugCommandManager::ArgumentMap::const_iterator iter;
+    for (iter = arguments.begin(); iter != arguments.end(); ++iter)
+    {
+      setRepresentation(outstream, iter->first, iter->second);
+    }
+  }
+  else if (command == commandRepresentationGet)
+  {
+    DebugCommandManager::ArgumentMap::const_iterator iter;
     for (iter = arguments.begin(); iter != arguments.end(); ++iter)
     {
       printRepresentation(outstream, iter->first, true);
@@ -87,7 +97,7 @@ void ModuleManagerWithDebug::executeDebugCommand(const std::string& command,
   }
   else if(command == commandDebugRequestSet)
   {
-    std::map<std::string,std::string>::const_iterator iter_arg = arguments.begin();
+    DebugCommandManager::ArgumentMap::const_iterator iter_arg = arguments.begin();
     for(;iter_arg != arguments.end(); ++iter_arg)
     {
 
@@ -211,6 +221,22 @@ void ModuleManagerWithDebug::modulesStopwatch(std::ostream& outstream)
   google::protobuf::io::OstreamOutputStream buf(&outstream);
   all.SerializeToZeroCopyStream(&buf);
 }
+
+void ModuleManagerWithDebug::setRepresentation(std::ostream &outstream, const std::string& name, const std::string& data)
+{
+  const BlackBoard& blackBoard = getBlackBoard();
+  BlackBoard::Registry::const_iterator iter = blackBoard.getRegistry().find(name);
+
+  if(iter != blackBoard.getRegistry().end())
+  {
+    Representation& theRepresentation = iter->second->getRepresentation();
+      
+    std::stringstream ss(data);
+    theRepresentation.deserialize(ss);
+  } else {
+    outstream << "unknown representation" << std::endl;
+  }
+}//end printRepresentation
 
 void ModuleManagerWithDebug::printRepresentation(std::ostream &outstream, const std::string& name, bool binary)
 {

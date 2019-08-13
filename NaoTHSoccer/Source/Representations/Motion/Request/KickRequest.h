@@ -9,6 +9,7 @@
 #define _KickRequest_h_
 
 #include <Tools/Math/Vector3.h>
+#include <Tools/Math/Common.h>
 
 #include "Tools/DataStructures/Printable.h"
 #include <Messages/Representations.pb.h>
@@ -52,7 +53,7 @@ public:
   {
     stream << "kickPoint = " << kickPoint << std::endl;
     stream << "direction = " << Math::toDegrees(kickDirection) << std::endl;
-  }//end print
+  }
 };
 
 

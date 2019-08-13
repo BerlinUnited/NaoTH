@@ -30,7 +30,7 @@ JNIEXPORT void JNICALL Java_de_naoth_rc_logplayer_LogSimulator_openLogFile(JNIEn
   else
   {
     g_type_init();
-    simulator = new Simulator(std::string(inCStr), true, false, 4501);
+    simulator = new Simulator(std::string(inCStr), true, false, 5401);
 
     // init the platform
     Platform::getInstance().init(simulator);
@@ -140,8 +140,8 @@ JNIEXPORT jbyteArray Java_de_naoth_rc_logplayer_LogSimulator_getRepresentation(J
   //jbyte *data;
   //int size;
 
-  jbyteArray result=(*env).NewByteArray(data.size());
-  (*env).SetByteArrayRegion(result, 0, data.size(), (jbyte*)data.c_str());
+  jbyteArray result=(*env).NewByteArray(static_cast<jsize>(data.size()));
+  (*env).SetByteArrayRegion(result, 0, static_cast<jsize>(data.size()), (jbyte*)data.c_str());
 
   return result;
 }

@@ -24,7 +24,7 @@ option go_to_point_with_USOA
         else
           stay;
       }
-      else if(action_done)
+      else if(action_done && state_time > 0)
         goto finish;
       else
         stay;
@@ -56,10 +56,10 @@ option go_to_point_with_USOA
       
       motion.type = walk;
       motion.walk.coordinate = hip;
-      motion.walk.style = normal;
+      motion.walk.style = fast;
 
       motion.walk_speed.x = 0;
-      motion.walk_speed.y = -60;
+      motion.walk_speed.y = -100;
       motion.walk_speed.rot = 0;
     }
   }
@@ -86,11 +86,11 @@ option go_to_point_with_USOA
       
       motion.type = walk;
       motion.walk.coordinate = hip;
-      motion.walk.style = normal;
+      motion.walk.style = fast;
 
       motion.walk_speed.x = 0;
-      motion.walk_speed.y = 60;
-      motion.walk_speed.rot =0; 
+      motion.walk_speed.y = 100;
+      motion.walk_speed.rot = 0; 
     }
   }
 

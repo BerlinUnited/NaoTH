@@ -24,22 +24,9 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
   // current game state
   engine.registerEnumeratedInputSymbol("game.state", "game.state", &getGameState);
 
-
-  // enum type for play mode (simulation)
-  /*
-  for(int i = 0; i < GameData::numOfPlayMode; i++)
-  {
-    string str("game.playmode.");
-    str.append(GameData::playModeToString((GameData::PlayMode)i));
-    engine.registerEnumElement("game.playmode", str.c_str(), i);
-  }*/
-
-  // register the play mode
-  // (int*)&playerInfo.playMode
-  //engine.registerEnumeratedInputSymbol("game.playmode", "game.playmode", &getPlayMode);
-
   engine.registerDecimalInputSymbol("game.player_number", &getPlayerNumber);
   engine.registerDecimalInputSymbol("game.msecsRemaining", &getMsecsRemaining);
+  engine.registerDecimalInputSymbol("game.msecsRemainingSecondary", &getMsecsRemainingSecondary);
   engine.registerBooleanInputSymbol("game.own_kickoff", &getOwnKickOff);
 
   // HACK: is only true when the game state plaing was set by the game controller
@@ -47,12 +34,34 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
   //       it's used to prevent waiting of additional 10s in case it's opponents kickoff
   engine.registerBooleanInputSymbol("game.state.playing_is_set_by_game_controller", &getPlayingIsSetByGameController);
 
+
+  engine.registerEnumElement("game.set_play","game.set_play.none", PlayerInfo::set_none);
+  engine.registerEnumElement("game.set_play","game.set_play.goal_free_kick", PlayerInfo::goal_free_kick);
+  engine.registerEnumElement("game.set_play","game.set_play.pushing_free_kick", PlayerInfo::pushing_free_kick);
+  engine.registerEnumElement("game.set_play","game.set_play.corner_kick", PlayerInfo::corner_kick);
+  engine.registerEnumElement("game.set_play","game.set_play.kick_in", PlayerInfo::kick_in);
+
+  engine.registerEnumeratedInputSymbol("game.set_play", "game.set_play", &getSetPlay);
+
+  // enum type for game phase
+  engine.registerEnumElement("game.phase", "game.phase.normal", PlayerInfo::normal);
+  engine.registerEnumElement("game.phase", "game.phase.penaltyshoot", PlayerInfo::penaltyshoot);
+  engine.registerEnumElement("game.phase", "game.phase.overtime", PlayerInfo::overtime);
+  engine.registerEnumElement("game.phase", "game.phase.timeout", PlayerInfo::timeout);
+
+  // current game phase
+  engine.registerEnumeratedInputSymbol("game.phase", "game.phase", &getGamePhase);
+
 }//end registerSymbols
 
 GameSymbols* GameSymbols::theInstance = NULL;
+bool GameSymbols::playingIsSetByGameController = false;
 
 bool GameSymbols::getPlayingIsSetByGameController() {
-  return theInstance->getGameData().valid && theInstance->getGameData().gameState == GameData::playing;
+  if (theInstance->getGameData().valid) {
+    playingIsSetByGameController = (theInstance->getGameData().gameState == GameData::playing);
+  }
+  return playingIsSetByGameController;
 }
 
 bool GameSymbols::getOwnKickOff() {
@@ -67,11 +76,18 @@ double GameSymbols::getMsecsRemaining() {
   return theInstance->getGameData().secsRemaining*1000.0;
 }
 
+double GameSymbols::getMsecsRemainingSecondary() {
+  return theInstance->getGameData().secondaryTime*1000.0;
+}
+
 int GameSymbols::getGameState() {
   return theInstance->getPlayerInfo().robotState;
 }
 
-/*
-int GameSymbols::getPlayMode() {
-  return theInstance->getPlayerInfo().gameData.playMode;
-}*/
+int GameSymbols::getSetPlay() {
+  return theInstance->getPlayerInfo().robotSetPlay;
+}
+
+int GameSymbols::getGamePhase(){
+  return theInstance->getPlayerInfo().gamePhase;
+}

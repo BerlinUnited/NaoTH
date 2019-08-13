@@ -1,3 +1,6 @@
+// TODO: depricated - not used now, do we need it?
+
+
 /**
 * @file FootTouchDetector.cpp
 *

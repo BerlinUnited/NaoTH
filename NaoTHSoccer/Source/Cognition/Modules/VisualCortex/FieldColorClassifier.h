@@ -57,6 +57,7 @@ BEGIN_DECLARE_MODULE(FieldColorClassifier)
 
   PROVIDE(FieldColorPercept)
   PROVIDE(FieldColorPerceptTop)
+
   PROVIDE(ColorTable64)
 END_DECLARE_MODULE(FieldColorClassifier)
 
@@ -65,25 +66,11 @@ END_DECLARE_MODULE(FieldColorClassifier)
 
 class FieldColorClassifier : public  FieldColorClassifierBase
 {
-public:
-  FieldColorClassifier();
-  virtual ~FieldColorClassifier();
-
-  void execute()
-  {
-    execute(CameraInfo::Top);
-    execute(CameraInfo::Bottom);
-  }
-
 private:
-  void execute(const CameraInfo::CameraID id);
-  void updateCache();
-  void debug();
-
   class Parameters: public ParameterList
   {
   public:
-    Parameters() : ParameterList("FieldColorClassifier")
+    Parameters(std::string name = "FieldColorClassifier") : ParameterList(name)
     {
       PARAMETER_REGISTER(green.brightnesConeOffset) = 30;
       PARAMETER_REGISTER(green.brightnesConeRadiusBlack) = 2;
@@ -100,18 +87,67 @@ private:
       PARAMETER_REGISTER(red.colorAngleCenter) = -4.4;
       PARAMETER_REGISTER(red.colorAngleWith) = 0.4;
 
+      PARAMETER_REGISTER(provide_colortable) = false;
+
       syncWithConfig();
     }
 
-    ~Parameters() {}
+    virtual ~Parameters() {}
 
     FieldColorPercept::HSISeparatorOptimized::Parameter green;
     FieldColorPercept::HSISeparatorOptimized::Parameter red;
-  } parameters;
 
+    bool provide_colortable;
+  };
+public:
+  FieldColorClassifier();
+  virtual ~FieldColorClassifier();
+
+  void execute()
+  {
+    if(parametersBottom.check_changed() || parametersTop.check_changed()) {
+      frameWhenParameterChanged = getFrameInfo();
+    }
+    execute(CameraInfo::Top, parametersTop);
+    execute(CameraInfo::Bottom, parametersBottom);
+  }
 
 private:
-  FieldColorPercept::HSISeparatorOptimized::Parameter cacheParameter;
+  void execute(const CameraInfo::CameraID id, Parameters& parameters);
+  void updateCache();
+  void debug(Parameters& parameters);
+
+  
+
+  class ParametersBottom: public Parameters
+  {
+  public:
+    ParametersBottom() : Parameters("FieldColorClassifier") {}
+    virtual ~ParametersBottom() {}
+  } parametersBottom;
+
+  class ParametersTop: public Parameters
+  {
+  public:
+    ParametersTop() :  Parameters("FieldColorClassifierTop") {}
+    virtual ~ParametersTop() {}
+  } parametersTop;
+  
+  naoth::FrameInfo frameWhenParameterChanged;
+
+private: // doublecam
+
+    // id of the camera the module is curently running on
+    CameraInfo::CameraID cameraID;
+
+    DOUBLE_CAM_PROVIDE(FieldColorClassifier, DebugImageDrawings);
+
+    DOUBLE_CAM_REQUIRE(FieldColorClassifier, Image);
+    DOUBLE_CAM_REQUIRE(FieldColorClassifier, BodyContour);
+    DOUBLE_CAM_REQUIRE(FieldColorClassifier, ArtificialHorizon);
+    DOUBLE_CAM_PROVIDE(FieldColorClassifier, FieldColorPercept);
+
+private:
   UniformGrid uniformGrid; // subsampling of the image
 
   class Histogram2D
@@ -164,17 +200,6 @@ private: // debug
   void draw_YChromaSeparator(double brightnesConeOffset, double brightnesConeRadiusBlack, double brightnesConeRadiusWhite) const;
   void draw_histogramUV(const Histogram2D& histUV) const;
 
-private: // doublecam
-  
-  // id of the camera the module is curently running on
-  CameraInfo::CameraID cameraID;
-  
-  DOUBLE_CAM_PROVIDE(FieldColorClassifier, DebugImageDrawings);
-
-  DOUBLE_CAM_REQUIRE(FieldColorClassifier, Image);
-  DOUBLE_CAM_REQUIRE(FieldColorClassifier, BodyContour);
-  DOUBLE_CAM_REQUIRE(FieldColorClassifier, ArtificialHorizon);
-  DOUBLE_CAM_PROVIDE(FieldColorClassifier, FieldColorPercept);
 };
 
 #endif  /* _FieldColorClassifier_H_ */

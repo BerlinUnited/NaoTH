@@ -9,8 +9,6 @@
 #include "SMALModule.h"
 
 #include "Tools/NaoTime.h"
-#include <glib.h>
-#include <glib-object.h>
 #include <fstream>
 #include <cstdlib>
 
@@ -42,28 +40,19 @@ static void motion_wrapper_post()
   theModule->motionCallbackPost();
 }
 
-void* shutdownCallback(void* /*ref*/)
+void* slowDCMCycle(void* ref)
 {
-  // play a sound that the user knows we recognized his shutdown request
-  system("/usr/bin/paplay /usr/share/naoqi/wav/bip_gentle.wav");
+  while(true) 
+  {
+    SMALModule* smalModule = (SMALModule*)ref;
+    smalModule->slowDcmUpdate();
 
-  // stop the user program
-  std::cout << "stopping naoth" << std::endl;
-  system("naoth stop");
-
-  sleep(5);
-
-  // we are the child process, do a blocking call to shutdown
-  system("/sbin/shutdown -h now");
-  std::cout << "System shutdown requested" << std::endl;
-
-  // await termination
-  while(true) {
-    sleep(100);
+    pthread_yield();
+    usleep(1000);
   }
-
+  
   return NULL;
-}//end soundThreadCallback
+}
 
 
 SMALModule::SMALModule(boost::shared_ptr<ALBroker> pBroker, const std::string& pName )
@@ -74,6 +63,8 @@ SMALModule::SMALModule(boost::shared_ptr<ALBroker> pBroker, const std::string& p
   dcmTime(0),
   timeOffset(0),
   sem(SEM_FAILED),
+  slowDCM(0),
+  slowDCMupdateCanRun(false),
   command_data_available(false),
   sensor_data_available(false),
   shutdown_requested(false),
@@ -93,6 +84,9 @@ SMALModule::SMALModule(boost::shared_ptr<ALBroker> pBroker, const std::string& p
 
 SMALModule::~SMALModule()
 {
+  if(shutdownCallbackThread.joinable()) {
+    shutdownCallbackThread.join();
+  }
 }
 
 std::string SMALModule::version()
@@ -200,8 +194,56 @@ void SMALModule::init()
   fDCMPostProcessConnection = getParentBroker()->getProxy("DCM")->getModule()->atPostProcess(motion_wrapper_post);
   
   cout << "SMALModule:init finished!" << endl;
+
+  pthread_create(&slowDCM, 0, slowDCMCycle, (void*)this);
 }//end init
 
+void SMALModule::shutdownCallback()
+{
+  // play a sound that the user knows we recognized his shutdown request
+  system("/usr/bin/paplay /usr/share/naoqi/wav/bip_gentle.wav");
+
+  // stop the user program
+  std::cout << "stopping naoth" << std::endl;
+  system("naoth stop");
+
+  sleep(5);
+
+  // we are the child process, do a blocking call to shutdown
+  system("/sbin/shutdown -h now");
+  std::cout << "System shutdown requested" << std::endl;
+
+  // await termination
+  while(true) {
+    sleep(100);
+  }
+
+}//end shutdownCallback
+
+void SMALModule::slowDcmUpdate()
+{
+  if(!slowDCMupdateCanRun) {
+    return;
+  }
+
+  int dcmTime = theDCMHandler.getTime(0);
+
+  if(naoCommandLEDData.swapReading())
+  {
+    const Accessor<LEDData>* commandData = naoCommandLEDData.reading();
+    //theDCMHandler.setSingleLED(commandData->get(), dcmTime);
+    theDCMHandler.setLED(commandData->get(), dcmTime);
+  }
+
+  // get the UltraSoundSendData from the shared memory and put them to the DCM
+  if (naoCommandUltraSoundSendData.swapReading() )
+  {
+    const Accessor<UltraSoundSendData>* commandData = naoCommandUltraSoundSendData.reading();
+    theDCMHandler.setUltraSoundSend(commandData->get(), dcmTime);
+  }
+
+  slowDCMupdateCanRun = false;
+}
 
 // we are at the moment shortly before the DCM commands are send to the
 // USB bus, so put the motion execute stuff here
@@ -236,7 +278,7 @@ void SMALModule::motionCallbackPre()
     return;
   }
 
-  bool stiffness_set = false;
+  //bool stiffness_set = false;
 
   // get the MotorJointData from the shared memory and put them to the DCM
   if ( naoCommandMotorJointData.swapReading() )
@@ -244,7 +286,8 @@ void SMALModule::motionCallbackPre()
     const Accessor<MotorJointData>* commandData = naoCommandMotorJointData.reading();
     
     theDCMHandler.setAllPositionData(commandData->get(), dcmTime);
-    stiffness_set = theDCMHandler.setAllHardnessDataSmart(commandData->get(), dcmTime);
+    //stiffness_set = 
+    theDCMHandler.setAllHardnessDataSmart(commandData->get(), dcmTime);
 
     drop_count = 0;
     command_data_available = true;
@@ -253,7 +296,7 @@ void SMALModule::motionCallbackPre()
   {
     if(drop_count == 0) {
       fprintf(stderr, "libnaoth: dropped comand data.\n");
-  }
+    }
 
     // don't count more than 11
     drop_count += (drop_count < 11);
@@ -269,18 +312,26 @@ void SMALModule::motionCallbackPre()
 
   // NOTE: the LEDs are only set if stiffness was not set in this cycle
   // get the LEDData from the shared memory and put them to the DCM
-  if(!stiffness_set && naoCommandLEDData.swapReading())
+  // !stiffness_set && 
+
+  /*
+  if(naoCommandLEDData.swapReading())
   {
     const Accessor<LEDData>* commandData = naoCommandLEDData.reading();
-    theDCMHandler.setSingleLED(commandData->get(), dcmTime);
+    //theDCMHandler.setSingleLED(commandData->get(), dcmTime);
+    //theDCMHandler.setLED(commandData->get(), dcmTime);
+    theDCMHandler.lastLEDData = commandData->get();
   }
-
+  theDCMHandler.setLED(theDCMHandler.lastLEDData, dcmTime);
+  
   // get the UltraSoundSendData from the shared memory and put them to the DCM
   if (naoCommandUltraSoundSendData.swapReading() )
   {
     const Accessor<UltraSoundSendData>* commandData = naoCommandUltraSoundSendData.reading();
     theDCMHandler.setUltraSoundSend(commandData->get(), dcmTime);
   }
+  */
+  
 
 #ifdef DEBUG_SMAL
   long long stop = NaoTime::getSystemTimeInMicroSeconds();
@@ -323,12 +374,7 @@ void SMALModule::motionCallbackPost()
   {
     shutdown_requested = true;
 
-    GError* err = NULL;
-    g_thread_create(shutdownCallback, 0, true, &err);
-    if(err)
-    {
-      g_warning("Could not shutdown thread: %s", err->message);
-    }
+    shutdownCallbackThread = std::thread([this]{this->shutdownCallback();});
   }
 
   // save the data for the emergency case
@@ -339,8 +385,11 @@ void SMALModule::motionCallbackPost()
     sensor_data_available = false;
   }
 
-  // 
+  // push the data to shared memory
   naoSensorData.swapWriting();
+
+  // allow the slow thread to run after all sensor data has been fetched
+  slowDCMupdateCanRun = true;
   
   // raise the semaphore: triggers core
   if(sem != SEM_FAILED)

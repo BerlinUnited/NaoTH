@@ -6,41 +6,20 @@ namespace selfloc_symbols("Self-localization Symbols") {
 
   /** The robot's x-position on the field*/
   float input robot_pose.x [mm];
-
   /** The robot's y-position on the field*/
   float input robot_pose.y [mm];
-  
   /** The robot's angle on the field*/
   float input robot_pose.rotation [deg];
 
   /** The robot's x-position on the field which is planned in motion engine */
   float input robot_pose.planned.x [mm];
-
   /** The robot's y-position on the field which is planned in motion engine */
   float input robot_pose.planned.y [mm];
-  
   /** The robot's angle on the field which is planned in motion engine */
   float input robot_pose.planned.rotation [deg];
 
 
-  /** 
-  converts any relative position on the field to an absolute one
-  using self location: X
-  */
-  float input rel2fieldX (
-    x [decimal];
-    y [decimal];
-  );
-  /** 
-  converts any relative position on the field to an absolute one
-  using self location: Y
-  */
-  float input rel2fieldY (
-    x [decimal];
-    y [decimal];
-  );
-
-    /** Calculates the relative x position to a specified point on the field */
+  /** Calculates the relative x position to a specified point on the field */
   float input locator.field_to_relative.x "mm" (
     /** The x position on the field */
     x [-4500..4500] "mm";
@@ -58,9 +37,11 @@ namespace selfloc_symbols("Self-localization Symbols") {
 
   /** The robot's x-position from GPS*/
   float input gps.x [mm];
-
   /** The robot's y-position from GPS*/
   float input gps.y [mm];
+
+  bool input goal.own.was_seen;
+  bool input goal.opp.was_seen;
 
   /** This information is based on the self localization. 
   ACHTUNG: make sure robot_pose.is_valid is TRUE before using them
@@ -84,5 +65,7 @@ namespace selfloc_symbols("Self-localization Symbols") {
   float input goal.own.right_post.x [mm];
   float input goal.own.right_post.y [mm];
 
+  /** a factor describing how long the robot should search for the ball in the current direction.*/
+  float input look_in_direction_factor;
 }
 

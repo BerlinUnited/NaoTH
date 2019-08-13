@@ -40,7 +40,23 @@ void StaticDebugModelProvider::execute()
   getBallModel().setFrameInfoWhenBallWasSeen(getFrameInfo());
 
   getBallModel().valid = true;
+
+  // set ball model representation
+  getBallModel().position = ballPosition;
+
+  //set preview ball model representation
   getBallModel().positionPreview = ballPosition;
+
+  const Pose3D& lFoot = getKinematicChain().theLinks[KinematicChain::LFoot].M;
+  const Pose3D& rFoot = getKinematicChain().theLinks[KinematicChain::RFoot].M;
+
+  // transform ball model into feet coordinates
+  Vector2d ballLeftFoot = lFoot.projectXY() / getBallModel().position;
+  Vector2d ballRightFoot = rFoot.projectXY() / getBallModel().position;
+
+  getBallModel().positionPreviewInLFoot = ballLeftFoot;
+  getBallModel().positionPreviewInRFoot = ballRightFoot;
+
 
   //Set Obstacle Model
   double obstacles = 0.0;
@@ -49,8 +65,14 @@ void StaticDebugModelProvider::execute()
     getObstacleModel().frontDistance = 399;
     getObstacleModel().blockedTime = 101;
   }
+
   //Draw Roboter
-  FIELD_DRAWING_CONTEXT;
-  PEN("FFFFFF", 20);
-  ROBOT(pose.translation.x, pose.translation.y, pose.rotation);
+  bool show_robot = false;
+  MODIFY("StaticDebugModelProvider:showRobotOnField", show_robot);
+  if (show_robot){
+    FIELD_DRAWING_CONTEXT;
+    PEN("FFFFFF", 20);
+    ROBOT(pose.translation.x, pose.translation.y, pose.rotation);
+  }
+  
 }

@@ -17,7 +17,7 @@ extern "C"
 
 #include <fcntl.h>
 #include <unistd.h>
-#include <errno.h>
+//#include <errno.h>
 #include <malloc.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -69,84 +69,79 @@ public:
 
   void init(std::string camDevice, CameraInfo::CameraID camID, bool blockingMode);
 
+  void shutdown();
+  bool isRunning();
+  
+  
   void get(Image& theImage);
   void getCameraSettings(CameraSettings& data, bool update = false);
-
-  void shutdown();
-
-  bool isRunning();
-  void setAllCameraParams(const CameraSettings &data);
+  void setAllCameraParams(const CameraSettings& data);
 
 private:
-  void initIDMapping();
+
   void openDevice(bool blockingMode);
-
   void initDevice();
-  void initMMap();
-  void initUP(unsigned int buffer_size);
-  void initRead(unsigned int buffer_size);
+  
+  void mapBuffers();
+  void unmapBuffers();
   void startCapturing();
-  int readFrame();
-  int readFrameMMaP();
-  int readFrameUP();
-  int readFrameRead();
-
+  
   void stopCapturing();
-  void uninitDevice();
   void closeDevice();
-
+  
+  
+  int readFrame();
+  
+  //settings
+  void initIDMapping();
+  
   int getSingleCameraParameter(int id);
-  bool setSingleCameraParameter(int id, int value);
+  bool setSingleCameraParameter(int id, int value, std::string name);
   void setFPS(int fpsRate);
   void internalUpdateCameraSettings();
-
+  int getAutoExposureGridID(size_t i, size_t j) {
+    return V4L2_CID_PRIVATE_BASE + 7 + (i*CameraSettings::AUTOEXPOSURE_GRID_SIZE) + j;
+  }
+  
   // tools
   int xioctl(int fd, int request, void* arg) const;
-  bool hasIOError(int errOccured, int errNo, bool exitByIOError = true) const;
-  std::string getErrnoDescription(int err) const;
+  bool hasIOErrorPrint(int lineNumber, int errOccured, int errNo, bool exitByIOError = true);
 
-  typedef enum
-  {
-    IO_READ,
-    IO_MMAP,
-    IO_USERPTR,
-    Num_of_MethodIO
-  } MethodIO;
+private: // data members
 
-  MethodIO selMethodIO;
-  MethodIO actMethodIO;
-
+  // camera stuff
   std::string cameraName;
+  CameraInfo::CameraID currentCamera;
 
   /** The camera file descriptor */
   int fd;
 
+  /** Amount of available frame buffers. */
+  static const constexpr unsigned frameBufferCount = 5; 
+  
   /** Image buffers (v4l2) */
-  struct buffer* buffers;
-  /** Buffer number counter */
-  unsigned int n_buffers;
+  struct buffer buffers[frameBufferCount];
 
+  // capture
   struct v4l2_buffer currentBuf;
   struct v4l2_buffer lastBuf;
 
-  unsigned char* currentImage;
-
   bool atLeastOneImageRetrieved;
+  bool initialParamsSet;
   bool wasQueried;
   bool isCapturing;
-  bool bufferSwitched;
   bool blockingCaptureModeEnabled;
 
 
+  // settings
   int csConst[CameraSettings::numOfCameraSetting];
   unsigned long long lastCameraSettingTimestamp;
 
   /** order in which the camera settings need to be applied */
   std::list<CameraSettings::CameraSettingID> settingsOrder;
-
   CameraSettings currentSettings;
-  CameraInfo::CameraID currentCamera;
-
+  
+  int error_count;
 };
 
 } // namespace naoth

@@ -1,0 +1,49 @@
+option walk_forward{
+
+common decision {
+  if (!body.ready_to_walk || game.current_mode != playing)
+    goto idle;
+}
+
+initial state idle{
+  decision 
+  {
+    else
+      goto forward;
+  }
+  action{}
+}
+
+state forward{
+  decision
+    {
+      else if(state_time>5000){
+       goto stand;
+      } else {
+       stay;
+      }
+    }
+    action
+    {
+      head.control_mode = look_straight_ahead;
+    
+      motion.type = walk;
+      motion.walk_speed.x = 100;
+      motion.walk.style = stable;
+    }
+  }
+
+state stand{
+  decision{
+      else {
+        stay;
+      }
+    }
+    action
+    {
+      head.control_mode = look_straight_ahead;
+
+      motion.type = stand;
+    }  
+  }
+}

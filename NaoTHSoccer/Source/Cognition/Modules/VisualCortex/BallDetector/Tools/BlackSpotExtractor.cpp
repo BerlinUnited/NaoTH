@@ -100,5 +100,5 @@ int BlackSpotExtractor::calculateKeyPointsBlackBetter(const BallDetectorIntegral
     }
   }
 
-  return bestBlack.size();
+  return static_cast<int>(bestBlack.size());
 }

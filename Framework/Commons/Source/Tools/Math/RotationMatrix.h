@@ -12,6 +12,9 @@
 
 #include "Matrix3x3.h"
 
+#include <cmath>
+#include <limits>
+
 /**
  * Representation for 3x3 RotationMatrices
  */
@@ -189,12 +192,12 @@ public:
    * Get the y-angle of a RotationMatrix.
    *
    * \return  The angle around the y-axis between the original
-   *          and the rotated x-axis projected on the x-z-plane
+   *          and the rotated z-axis projected on the x-z-plane
    */
   DATATYPE getYAngle() const
   {
-        DATATYPE h = sqrt(this->c[0].x * this->c[0].x + this->c[0].z * this->c[0].z);
-        return h ? acos(this->c[0].x / h) * (this->c[0].z > 0 ? -1 : 1) : 0;
+        DATATYPE h = sqrt(this->c[2].x * this->c[2].x + this->c[2].z * this->c[2].z);
+        return h ? acos(this->c[2].z / h) * (this->c[2].x > 0 ? 1 : -1) : 0;
   }
 
   /**
@@ -234,7 +237,7 @@ public:
   {
     DATATYPE theta = acos((this->c[0][0] + this->c[1][1] + this->c[2][2] - 1) / 2);
     DATATYPE k = theta / 2 / sin(theta);
-    if (Math::isNan(k)) {
+    if (std::isnan(k)) {
       k = 0.5;
     }
     return Vector3<DATATYPE> (this->c[1][2] - this->c[2][1],

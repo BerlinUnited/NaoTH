@@ -1,7 +1,7 @@
 #include "TeamMessage.h"
 
 #include <Tools/DataConversion.h>
-#include <Messages/Representations.pb.h>
+#include <Messages/TeamMessage.pb.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 using namespace naoth;
@@ -10,28 +10,31 @@ void Serializer<TeamMessage>::serialize(const TeamMessage& r, std::ostream& stre
 {
   naothmessages::TeamMessage collection;
 
-  for(std::map<unsigned int, TeamMessage::Data>::const_iterator it=r.data.begin();
-      it != r.data.end(); ++it)
+  // add message drops
+  naothmessages::Drops *d = collection.mutable_messagedrop();
+  d->set_dropnosplmessage(r.dropNoSplMessage);
+  d->set_dropnotourteam(r.dropNotOurTeam);
+  d->set_dropnotparseable(r.dropNotParseable);
+  d->set_dropkeyfail(r.dropKeyFail);
+  d->set_dropmonotonic(r.dropMonotonic);
+
+  for(auto const &it : r.data)
   {
-    const TeamMessage::Data& d = it->second;
+    const TeamMessageData& d = it.second;
     naothmessages::TeamMessage::Data* msg = collection.add_data();
 
-    msg->set_playernum(d.playerNum);
+    msg->set_playernum(d.playerNumber);
     msg->set_teamnumber(d.teamNumber);
     DataConversion::toMessage(d.pose, *(msg->mutable_pose()));
-    msg->set_ballage(d.ballAge);
+    msg->set_ballage((int)d.ballAge);
     DataConversion::toMessage(d.ballPosition, *(msg->mutable_ballposition()));
-    DataConversion::toMessage(d.ballVelocity, *(msg->mutable_ballvelocity()));
     msg->set_fallen(d.fallen);
-    naothmessages::BUUserTeamMessage* userMsg = msg->mutable_user();
-
-    userMsg->set_timestamp(d.timestamp);
-    userMsg->set_bodyid(d.bodyID);
-    userMsg->set_timetoball(d.timeToBall);
-    userMsg->set_wasstriker(d.wasStriker);
-    userMsg->set_ispenalized(d.isPenalized);
-    userMsg->set_batterycharge(d.batteryCharge);
-    userMsg->set_temperature(d.temperature);
+    msg->mutable_user()->CopyFrom(d.custom.toProto());
+    msg->mutable_frameinfo()->set_framenumber(d.frameInfo.getFrameNumber());
+    msg->mutable_frameinfo()->set_time(d.frameInfo.getTime());
+    /*
+    // INFO: this is currently not used!
+    // TODO: do we need this out of legacy reasons?!?
     for(unsigned int i=0; i < d.opponents.size(); i++)
     {
       const TeamMessage::Opponent& rOpp = d.opponents[i];
@@ -39,11 +42,7 @@ void Serializer<TeamMessage>::serialize(const TeamMessage& r, std::ostream& stre
       opp->set_playernum(rOpp.playerNum);
       DataConversion::toMessage(rOpp.poseOnField, *(opp->mutable_poseonfield()));
     }
-
-    msg->mutable_frameinfo()->set_framenumber(d.frameInfo.getFrameNumber());
-    msg->mutable_frameinfo()->set_time(d.frameInfo.getTime());
-
-
+    */
   } // end for each team message data
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
@@ -57,13 +56,23 @@ void Serializer<TeamMessage>::deserialize(std::istream& stream, TeamMessage& r)
   google::protobuf::io::IstreamInputStream buf(&stream);
   collection.ParseFromZeroCopyStream(&buf);
 
+  // set message drop stats, if available
+  if(collection.has_messagedrop()) {
+      naothmessages::Drops d = collection.messagedrop();
+      r.dropNoSplMessage = d.has_dropnosplmessage() ? d.dropnosplmessage() : 0;
+      r.dropNotOurTeam   = d.has_dropnotourteam()   ? d.dropnotourteam()   : 0;
+      r.dropNotParseable = d.has_dropnotparseable() ? d.dropnotparseable() : 0;
+      r.dropKeyFail      = d.has_dropkeyfail()      ? d.dropkeyfail()      : 0;
+      r.dropMonotonic    = d.has_dropmonotonic()    ? d.dropmonotonic()    : 0;
+  }
+
   for(int i=0; i < collection.data_size(); i++)
   {
     const naothmessages::TeamMessage::Data& msg = collection.data(i);
 
-    TeamMessage::Data d;
+    TeamMessageData d;
 
-    d.playerNum = msg.playernum();
+    d.playerNumber = msg.playernum();
     if(msg.has_teamnumber()) {
       d.teamNumber = msg.teamnumber();
     } else if(msg.user().has_teamnumber()) {
@@ -73,37 +82,27 @@ void Serializer<TeamMessage>::deserialize(std::istream& stream, TeamMessage& r)
     DataConversion::fromMessage(msg.pose(), d.pose);
     d.ballAge = msg.ballage();
     DataConversion::fromMessage(msg.ballposition(), d.ballPosition);
-    DataConversion::fromMessage(msg.ballvelocity(), d.ballVelocity);
     d.fallen = msg.fallen();
-    d.bodyID = msg.user().bodyid();
-    if(msg.user().has_timetoball())
-    {
-      d.timeToBall = msg.user().timetoball();
-    }
-    else
-    {
-      d.timeToBall = std::numeric_limits<unsigned int>::max();
-    }
-    d.timestamp = msg.user().timestamp();
-    d.wasStriker = msg.user().wasstriker();
-    d.isPenalized = msg.user().ispenalized();
-    d.batteryCharge = msg.user().batterycharge();
-    d.temperature = msg.user().temperature();
+
+    d.custom.parseFromProto(msg.user());
 
     d.frameInfo.setFrameNumber(msg.frameinfo().framenumber());
     d.frameInfo.setTime(msg.frameinfo().time());
-
+    /*
+    // INFO: this is currently not used!
+    // TODO: do we need this out of legacy reasons?!?
     d.opponents = std::vector<TeamMessage::Opponent>(msg.user().opponents_size());
 
     for(unsigned int i=0; i < d.opponents.size(); i++)
     {
-      d.opponents[i].playerNum = msg.user().opponents().Get(i).playernum();
-      DataConversion::fromMessage(msg.user().opponents().Get(i).poseonfield(),
-                                  d.opponents[i].poseOnField);
+      int j = static_cast<int>(i);
+      d.opponents[j].playerNum = msg.user().opponents().Get(j).playernum();
+      DataConversion::fromMessage(msg.user().opponents().Get(j).poseonfield(),
+                                  d.opponents[j].poseOnField);
     }
-
+    */
     // add the single team message data to the collection
-    r.data[d.playerNum] = d;
+    r.data[d.playerNumber] = d;
 
   } // end for each team message data
 }

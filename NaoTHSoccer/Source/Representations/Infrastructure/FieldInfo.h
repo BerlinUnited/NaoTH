@@ -12,9 +12,9 @@
 
 #include <Tools/Math/Vector2.h>
 #include <Tools/Math/Geometry.h>
-#include <Tools/ColorClasses.h>
 #include <Tools/DataStructures/ParameterList.h>
 #include <Tools/DataStructures/Printable.h>
+
 #include "Tools/LinesTable.h"
 
 
@@ -37,17 +37,16 @@ public:
   virtual void print(std::ostream& stream) const;
 
   // some tools
-  inline bool insideCarpet(const Vector2d& p) {
+  inline bool insideCarpet(const Vector2d& p) const {
     return carpetRect.inside(p);
   }
 
-  //colors
-  ColorClasses::Color ballColor;
-//  const ColorClasses::Color ownGoalColor        = ColorClasses::yellow;
-//  const ColorClasses::Color opponentGoalColor   = ColorClasses::skyblue;
-
   //////////////// basic values from configuration ////////////////
   double ballRadius;
+
+  // Rolling resistance / rolling friction coefficient
+  double ballRRCoefficient;
+  double ballDeceleration; // mm/s^2
 
   // size of the whole field (including the green area outside the lines) 
   double xFieldLength;
@@ -117,6 +116,8 @@ public:
   Geometry::Rect2d carpetRect;
   Geometry::Rect2d ownHalfRect;
   Geometry::Rect2d oppHalfRect;
+  Geometry::Rect2d ownGoalRect;
+  Geometry::Rect2d oppGoalRect;
 
   enum LineCrossingsId
   {
@@ -193,6 +194,14 @@ public:
 
   /** */
   LinesTable fieldLinesTable;
+
+  // Moved from Simulation.cpp
+  Vector2d oppGoalBackLeft;
+  Vector2d oppGoalBackRight;
+
+  Vector2d ownGoalBackLeft;
+  Vector2d ownGoalBackRight;
+
 };
 
 

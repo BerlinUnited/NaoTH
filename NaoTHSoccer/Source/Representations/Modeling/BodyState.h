@@ -5,8 +5,8 @@
 * Definition of class BodyState
 */
 
-#ifndef __BodyState_h_
-#define __BodyState_h_
+#ifndef _BodyState_h_
+#define _BodyState_h_
 
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
@@ -18,17 +18,17 @@ public:
     : 
     fall_down_state(undefined),
     fall_down_state_time(0),
+    readyToWalk(false),
     standByLeftFoot(true),
     standByRightFoot(true),
     foot_state_time(0),
     temperatureLeftLeg(0),
     temperatureRightLeg(0),
     isLiftedUp(false),
-    isDischarging(true)
+    isDischarging(true),
+    isCharging(false),
+    batteryCharge(0.0)
   {}
-
-  ~BodyState(){}
-
 
   /** Current state of the robot's body*/
   enum State
@@ -44,33 +44,34 @@ public:
 
   static State getId(const std::string& name)
   {
-    for(int i = 0; i < numOfStates; i++)
-    {
+    for(int i = 0; i < numOfStates; i++) {
       if(name == getName((State)i)) return (State)i;
-    }//end for
+    }
     return numOfStates;
-  }//end getId
+  }
 
   static std::string getName(State id)
   {
     switch(id)
     {
-      case undefined: return "empty";
+      case undefined: return "undefined";
       case upright: return "upright";
       case lying_on_front: return "lying_on_front";
       case lying_on_back: return "lying_on_back";
       case lying_on_left_side: return "lying_on_left_side";
       case lying_on_right_side: return "lying_on_right_side";
       case numOfStates: return "numOfStates";
-    }//end switch
+    }
     return "unknown";
   }//end getName
 
   // indicates whether the robot is upright etc.
+  // TODO: this should be renamed to koerper_lage or so
   State fall_down_state;
   // timestamp when the fall down state changed last time
   unsigned int fall_down_state_time;
-
+  /** indicates, whether the robot is ready to walk */
+  bool readyToWalk;
 
   // indicates whether the particular foot is on the ground
   bool standByLeftFoot;
@@ -86,17 +87,24 @@ public:
   bool isLiftedUp;
 
   bool isDischarging;
+  bool isCharging;
+
+  // filtered state of the battery
+  double batteryCharge;
 
   virtual void print(std::ostream& stream) const
   {
       stream << "fall_down_state = " << getName(fall_down_state) << std::endl;
       stream << "fall_down_state_time = " << fall_down_state_time << std::endl;
+      stream << "readyToWalk = " << readyToWalk << std::endl;
       stream << "standByLeftFoot = " << standByLeftFoot << std::endl;
       stream << "standByRightFoot = " << standByRightFoot << std::endl;
       stream << "foot_state_time = " << foot_state_time << std::endl;
       stream << "isLiftedUp = " << isLiftedUp << std::endl;
       stream << "isDischarging = " << isDischarging << std::endl;
-  }//end print
+      stream << "isCharging = " << isCharging << std::endl;
+      stream << "batteryCharge (filtered) = " << batteryCharge << std::endl;
+  }
 
 };
 

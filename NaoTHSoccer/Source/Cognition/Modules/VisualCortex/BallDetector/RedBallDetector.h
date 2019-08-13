@@ -14,9 +14,7 @@
 #include <Tools/ColorClasses.h>
 #include <Tools/Math/Vector2.h>
 #include <Tools/Math/Matrix_nxn.h>
-#include <Tools/Math/PointList.h>
 #include <Tools/DataStructures/OccupancyGrid.h>
-#include <Tools/DataStructures/Area.h>
 #include <Tools/ImageProcessing/ColorModelConversions.h>
 
 #include <Representations/Infrastructure/Image.h>
@@ -56,7 +54,7 @@ BEGIN_DECLARE_MODULE(RedBallDetector)
   REQUIRE(FieldColorPerceptTop)
   REQUIRE(FieldInfo)
   REQUIRE(FrameInfo)
-  REQUIRE(GoalPostHistograms)
+  REQUIRE(GoalPostHistograms) // is this still needed?
 
   PROVIDE(BallPercept)
   PROVIDE(BallPerceptTop)

@@ -12,6 +12,9 @@
 #include <glib.h>
 #include <gio/gio.h>
 
+#include <mutex>
+#include <thread>
+
 namespace naoth
 {
 class UDPReceiver
@@ -29,11 +32,14 @@ public:
 private:
   unsigned int bufferSize;
   bool exiting;
+
   GSocket* socket;
+  GCancellable* socket_cancelable;
+
   char* buffer;
-  GThread* socketThread;
+  std::thread socketThread;
   std::vector<std::string> messageIn;
-  GMutex*  messageInMutex;
+  std::mutex messageInMutex;
 
   GError* bindAndListen(unsigned int port);
 };

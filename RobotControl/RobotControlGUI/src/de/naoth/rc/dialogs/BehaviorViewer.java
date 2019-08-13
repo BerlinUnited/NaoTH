@@ -5,6 +5,7 @@
  */
 package de.naoth.rc.dialogs;
 
+import com.google.gson.Gson;
 import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractDialog;
@@ -16,10 +17,7 @@ import de.naoth.rc.components.behaviorviewer.XABSLBehavior;
 import de.naoth.rc.components.behaviorviewer.XABSLBehaviorFrame;
 import de.naoth.rc.components.behaviorviewer.XABSLProtoParser;
 import de.naoth.rc.components.behaviorviewer.model.Symbol;
-import de.naoth.rc.drawingmanager.DrawingEventManager;
-import de.naoth.rc.drawings.Circle;
-import de.naoth.rc.drawings.DrawingCollection;
-import de.naoth.rc.drawings.Robot;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.logmanager.BlackBoard;
 import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.logmanager.LogFileEventManager;
@@ -32,24 +30,32 @@ import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -66,6 +72,7 @@ public class BehaviorViewer extends AbstractDialog
   implements  Dialog
 {
 
+  @RCDialog(category = RCDialog.Category.Status, name = "Behavior")
   @PluginImplementation
   public static class Plugin extends DialogPlugin<BehaviorViewer>
   {
@@ -79,8 +86,6 @@ public class BehaviorViewer extends AbstractDialog
       public static SwingCommandExecutor commandExecutor;
       @InjectPlugin
       public static LogFileEventManager logFileEventManager;
-      @InjectPlugin
-      public static DrawingEventManager drawingEventManager;
   }//end Plugin
   
 
@@ -92,20 +97,16 @@ public class BehaviorViewer extends AbstractDialog
   private final Command reloadBehaviorCommand = new Command("Cognition:behavior:reload");
   private final Command getAgentCommand = new Command("Cognition:behavior:get_agent");
   
-  private final Command getBehaviorStateComplete = new Command("Cognition:representation:getbinary").addArg("BehaviorStateComplete");
-  private final Command getBehaviorStateSparse = new Command("Cognition:representation:getbinary").addArg("BehaviorStateSparse");
+  private final Command getBehaviorStateComplete = new Command("Cognition:representation:get").addArg("BehaviorStateComplete");
+  private final Command getBehaviorStateSparse = new Command("Cognition:representation:get").addArg("BehaviorStateSparse");
   
 
   private final Command getListOfAgents = new Command("Cognition:behavior:list_agents");
 
   ArrayList<XABSLBehaviorFrame> behaviorBuffer;
   private XABSLBehavior currentBehavior;
-  public static final Color DARK_GREEN = new Color(0, 128, 0);
-  public static final Font PLAIN_FONT = new Font("Sans Serif", Font.PLAIN, 11);
-  public static final Font BOLD_FONT = new Font("Sans Serif", Font.BOLD, 11);
-  public static final Font ITALIC_FONT = new Font("Sans Serif", Font.ITALIC, 11);
   final private String behaviorConfKey = "behavior";
-  final private String defaultBehavior = "../NaoController/Config/behavior/behavior-ic.dat";
+  final private String defaultBehavior = "../../NaoTHSoccer/Config/behavior/behavior-ic.dat";
 
   private XABSLProtoParser behaviorParser = null;
   
@@ -122,6 +123,7 @@ public class BehaviorViewer extends AbstractDialog
   private LogBehaviorListener logBehaviorListener = new LogBehaviorListener();
   
   private SortedSet<String> symbolsToWatch = new TreeSet<>();
+  private HashMap<String, Set<String>> symbolsToWatchHistory = new HashMap<>();
   
   /** Creates new form BehaviorViewer */
   public BehaviorViewer()
@@ -156,8 +158,30 @@ public class BehaviorViewer extends AbstractDialog
       }
     });
 
-
     this.behaviorBuffer = new ArrayList<>();
+    
+    // retrieve symbol watch history from config & parse
+    String history = Plugin.parent.getConfig().getProperty(this.getClass().getName()+".history", "{}");
+    HashMap<String, List<String>> l = (new Gson()).fromJson(history, HashMap.class);
+    // set the symbol watch history menu
+    l.keySet().stream().sorted().forEach((k) -> {
+        symbolsToWatchHistory.put(k, new HashSet(l.get(k)));
+        JMenuItem watchEntry = new JMenuItem(k);
+        watchEntry.addActionListener((e) -> {
+            // clear watches, before setting a stored configuration
+            symbolsToWatch.clear();
+            symbolsToWatchHistory.get(e.getActionCommand()).forEach((t) -> {
+                symbolsToWatch.add(t);
+            });
+        });
+        // list the stored watches in the menu's tooltip
+        watchEntry.setToolTipText("<html>"+l.get(k).stream().map((t) -> { return "<li>"+t+"</li>"; }).collect(Collectors.joining())+"</html>");
+        popupMenu.add(watchEntry);
+    });
+
+    // show popupmenu to trigger the height calculation
+    popupMenu.setVisible(true);
+    popupMenu.setVisible(false);
   }
 
   class BehaviorListener implements ObjectListener<byte[]>
@@ -173,7 +197,7 @@ public class BehaviorViewer extends AbstractDialog
             }
             catch(InvalidProtocolBufferException ex)
             {
-              Logger.getLogger(BehaviorViewer.class.getName()).log(Level.SEVERE, null, ex);
+              Logger.getLogger(BehaviorViewer.class.getName()).log(Level.SEVERE, "received data: " + new String(object), ex);
             }
         }
 
@@ -264,31 +288,28 @@ public class BehaviorViewer extends AbstractDialog
       // input and output symbols
       StringBuffer inputBuffer = new StringBuffer();
       StringBuffer outputBuffer = new StringBuffer();
+      StringBuffer unknownBuffer = new StringBuffer();
 
-      for(String name: symbolsToWatch)
-      {
-        Symbol symbol = frame.getSymbolByName(name);
-        // TODO: error treatment
-        if(symbol == null) {
-            return;
-        }
+        for (String name : symbolsToWatch) {
+            Symbol symbol = frame.getSymbolByName(name);
+            if (symbol == null) {
+                unknownBuffer.append("~ ")
+                             .append(name)
+                             .append("\n");
+            } else {
+                XABSLBehaviorFrame.SymbolIOType type = frame.getSymbolIOType(name);
 
-        XABSLBehaviorFrame.SymbolIOType type = frame.getSymbolIOType(name);
-        
-        if(type == XABSLBehaviorFrame.SymbolIOType.input)
-        {
-          inputBuffer.append("> ")
-                     .append(symbol)
-                     .append("\n");
-        }
-        else if(type == XABSLBehaviorFrame.SymbolIOType.output)
-        {
-          inputBuffer.append("< ")
-                     .append(symbol)
-                     .append("\n");
-        }
-          
-      }//end for
+                if (type == XABSLBehaviorFrame.SymbolIOType.input) {
+                    inputBuffer.append("> ")
+                        .append(symbol)
+                        .append("\n");
+                } else if (type == XABSLBehaviorFrame.SymbolIOType.output) {
+                    outputBuffer.append("< ")
+                        .append(symbol)
+                        .append("\n");
+                }
+            }
+        }//end for
       
       if(inputBuffer.length() > 0)
       {
@@ -301,7 +322,13 @@ public class BehaviorViewer extends AbstractDialog
         watchBuffer.append("-- output symbols --\n");
         watchBuffer.append(outputBuffer).append("\n");
       }
-
+      
+      if(unknownBuffer.length() > 0)
+      {
+        watchBuffer.append("-- unknown symbols --\n");
+        watchBuffer.append(unknownBuffer).append("\n");
+      }
+      
       this.symbolsWatchTextPanel.setText(watchBuffer.toString());
 
       // options
@@ -313,32 +340,6 @@ public class BehaviorViewer extends AbstractDialog
     }//end if
   }//end showFrame
 
- private void drawStuff(XABSLBehaviorFrame frame)
- {
-     try
-    {
-     double robot_x = Double.parseDouble(getSymbolValue(frame, "robot_pose.x"));
-     double robot_y = Double.parseDouble(getSymbolValue(frame, "robot_pose.y"));
-     double robot_r = Double.parseDouble(getSymbolValue(frame, "robot_pose.rotation"));
-     
-     Robot robot = new Robot(robot_x, robot_y, robot_r/180.0*Math.PI);
-     
-     double ball_x = Double.parseDouble(getSymbolValue(frame, "ball.position.field.x"));
-     double ball_y = Double.parseDouble(getSymbolValue(frame, "ball.position.field.y"));
-     double ball_radius = Double.parseDouble(getSymbolValue(frame, "ball.radius"));
-     Circle ball = new Circle((int)ball_x, (int)ball_y,(int)ball_radius);
-     
-        DrawingCollection dc = new DrawingCollection();
-        dc.add(robot);
-        dc.add(ball);
-     
-     Plugin.drawingEventManager.fireDrawingEvent(dc);
-     
-    }catch(Exception ex)
-    {
-        Logger.getLogger(BehaviorViewer.class.getName()).log(Level.SEVERE, null, ex);
-    }
- }
   /*
   private void drawFrameOnFieldGlobal(XABSLBehaviorFrame frame)
   {
@@ -468,7 +469,6 @@ public class BehaviorViewer extends AbstractDialog
     this.frameList.setSelectedIndex(listModel.getSize()-1);
     //this.frameList.revalidate();
     
-    drawStuff(status);
     showFrame(status);
   }//end addFrame
 
@@ -487,6 +487,7 @@ public class BehaviorViewer extends AbstractDialog
         jScrollPane4 = new javax.swing.JScrollPane();
         outputSymbolsBoxPanel = new javax.swing.JPanel();
         sortSymbolsTextInput = new javax.swing.JTextField();
+        popupMenu = new javax.swing.JPopupMenu();
         jToolBar1 = new javax.swing.JToolBar();
         btReceive = new javax.swing.JToggleButton();
         btReceiveLogData = new javax.swing.JToggleButton();
@@ -500,6 +501,7 @@ public class BehaviorViewer extends AbstractDialog
         symbolsWatchTextPanel = new javax.swing.JTextArea();
         jToolBar2 = new javax.swing.JToolBar();
         btAddWatch = new javax.swing.JButton();
+        btShowWatchMenu = new javax.swing.JButton();
         behaviorTreePanel = new de.naoth.rc.components.behaviorviewer.BehaviorTreePanel();
         frameListPanel = new javax.swing.JScrollPane();
         frameList = new javax.swing.JList();
@@ -507,7 +509,6 @@ public class BehaviorViewer extends AbstractDialog
         symbolChooser.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         symbolChooser.setTitle("XABSL Symbols");
         symbolChooser.setAlwaysOnTop(true);
-        symbolChooser.setLocationByPlatform(true);
         symbolChooser.setMinimumSize(new java.awt.Dimension(250, 350));
 
         jTabbedPane1.setBackground(new java.awt.Color(255, 255, 255));
@@ -529,12 +530,23 @@ public class BehaviorViewer extends AbstractDialog
 
         symbolChooser.getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
+        sortSymbolsTextInput.setToolTipText("Search for symbols (eg. '.*asdf.*')");
         sortSymbolsTextInput.addCaretListener(new javax.swing.event.CaretListener() {
             public void caretUpdate(javax.swing.event.CaretEvent evt) {
                 sortSymbolsTextInputCaretUpdate(evt);
             }
         });
         symbolChooser.getContentPane().add(sortSymbolsTextInput, java.awt.BorderLayout.SOUTH);
+
+        popupMenu.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+                popupMenuPopupMenuWillBecomeVisible(evt);
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
 
         setLayout(new java.awt.BorderLayout());
 
@@ -567,6 +579,11 @@ public class BehaviorViewer extends AbstractDialog
         cbOnlyOptions.setText("only options");
         cbOnlyOptions.setFocusable(false);
         cbOnlyOptions.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        cbOnlyOptions.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbOnlyOptionsActionPerformed(evt);
+            }
+        });
         jToolBar1.add(cbOnlyOptions);
 
         btSend.setText("Send to Robot");
@@ -580,15 +597,16 @@ public class BehaviorViewer extends AbstractDialog
         });
         jToolBar1.add(btSend);
 
+        cbAgents.setMaximumRowCount(20);
         cbAgents.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "no agents" }));
-        cbAgents.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                cbAgentsMouseClicked(evt);
-            }
-        });
         cbAgents.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cbAgentsItemStateChanged(evt);
+            }
+        });
+        cbAgents.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                cbAgentsMouseClicked(evt);
             }
         });
         cbAgents.addActionListener(new java.awt.event.ActionListener() {
@@ -605,15 +623,14 @@ public class BehaviorViewer extends AbstractDialog
 
         jSplitPane.setBorder(javax.swing.BorderFactory.createLineBorder(jToolBar1.getBackground()));
         jSplitPane.setDividerLocation(500);
-        jSplitPane.setDividerSize(10);
         jSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         jSplitPane.setResizeWeight(1.0);
         jSplitPane.setOneTouchExpandable(true);
 
         symbolsPanel.setLayout(new java.awt.BorderLayout());
 
-        symbolsWatchTextPanel.setColumns(20);
         symbolsWatchTextPanel.setEditable(false);
+        symbolsWatchTextPanel.setColumns(20);
         symbolsWatchTextPanel.setRows(5);
         jScrollPane3.setViewportView(symbolsWatchTextPanel);
 
@@ -633,6 +650,21 @@ public class BehaviorViewer extends AbstractDialog
             }
         });
         jToolBar2.add(btAddWatch);
+
+        btShowWatchMenu.setText("▲");
+        btShowWatchMenu.setToolTipText("Last used Watch-Symbols");
+        btShowWatchMenu.setActionCommand("showWatchMenu");
+        btShowWatchMenu.setFocusable(false);
+        btShowWatchMenu.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btShowWatchMenu.setMargin(new java.awt.Insets(2, 0, 2, 0));
+        btShowWatchMenu.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        btShowWatchMenu.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
+        btShowWatchMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btShowWatchMenuActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(btShowWatchMenu);
 
         symbolsPanel.add(jToolBar2, java.awt.BorderLayout.PAGE_END);
 
@@ -731,27 +763,25 @@ public class BehaviorViewer extends AbstractDialog
 
       if(currentBehavior != null)
       {
-        for(Symbol s : currentBehavior.inputSymbols.values())
-        {
-            JCheckBox checkBox = new JCheckBox(s.name);
-            checkBox.setSelected(this.symbolsToWatch.contains(s.name));
+        currentBehavior.inputSymbols.values().stream().map((t) -> { return t.name; }).sorted().forEachOrdered((t) -> {
+            JCheckBox checkBox = new JCheckBox(t);
+            checkBox.setSelected(this.symbolsToWatch.contains(t));
             checkBox.setOpaque(false);
             checkBox.setActionCommand("");
             checkBox.addActionListener(new SymbolWatchCheckBoxListener(this.symbolsToWatch, checkBox));
 
             this.inputSymbolsBoxPanel.add(checkBox);
-        }
+        });
 
-        for(Symbol s : currentBehavior.outputSymbols.values())
-        {
-            JCheckBox checkBox = new JCheckBox(s.name);
-            checkBox.setSelected(this.symbolsToWatch.contains(s.name));
+        currentBehavior.outputSymbols.values().stream().map((t) -> { return t.name; }).sorted().forEachOrdered((t) -> {
+            JCheckBox checkBox = new JCheckBox(t);
+            checkBox.setSelected(this.symbolsToWatch.contains(t));
             checkBox.setOpaque(false);
             checkBox.setActionCommand("");
             checkBox.addActionListener(new SymbolWatchCheckBoxListener(this.symbolsToWatch, checkBox));
 
             this.outputSymbolsBoxPanel.add(checkBox);
-        }
+        });
       }
     
       sortSymbols(this.sortSymbolsTextInput.getText());
@@ -799,7 +829,19 @@ public class BehaviorViewer extends AbstractDialog
             btReceive.setEnabled(true);
             Plugin.logFileEventManager.removeListener(logBehaviorListener);
         }
+        revalidate();
     }//GEN-LAST:event_btReceiveLogDataActionPerformed
+
+    private void cbOnlyOptionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbOnlyOptionsActionPerformed
+        behaviorTreePanel.setShowOptionsOnly(cbOnlyOptions.isSelected());
+    }//GEN-LAST:event_cbOnlyOptionsActionPerformed
+
+    private void btShowWatchMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btShowWatchMenuActionPerformed
+        popupMenu.show(this.btShowWatchMenu, 0, -popupMenu.getHeight());
+    }//GEN-LAST:event_btShowWatchMenuActionPerformed
+
+    private void popupMenuPopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_popupMenuPopupMenuWillBecomeVisible
+    }//GEN-LAST:event_popupMenuPopupMenuWillBecomeVisible
 
   
   private class LogBehaviorListener implements LogFrameListener
@@ -823,9 +865,11 @@ public class BehaviorViewer extends AbstractDialog
         try
         {
           LogDataFrame f = b.get("BehaviorStateSparse");
-          Messages.BehaviorStateSparse status = Messages.BehaviorStateSparse.parseFrom(f.getData());
-          final XABSLBehaviorFrame frame = behaviorParser.parseSparse(status);
-          addFrame(frame);
+          if(f != null) {
+            Messages.BehaviorStateSparse status = Messages.BehaviorStateSparse.parseFrom(f.getData());
+            final XABSLBehaviorFrame frame = behaviorParser.parseSparse(status);
+            addFrame(frame);
+          }
         }
         catch(InvalidProtocolBufferException ex)
         {
@@ -927,6 +971,8 @@ public class BehaviorViewer extends AbstractDialog
     if(originalCommand.getName().equals(fileWriteCommandName))
     {
       sendCommand(reloadBehaviorCommand);
+      sendCommand(getListOfAgents);
+      sendCommand(getAgentCommand);
       JOptionPane.showMessageDialog(this,
         new String(result), "Sending Behavior", JOptionPane.INFORMATION_MESSAGE);
     }
@@ -1006,6 +1052,21 @@ public class BehaviorViewer extends AbstractDialog
   {
     //Plugin.genericManagerFactory.getManager(getExecutedBehaviorCommand).removeListener(this);
     Plugin.genericManagerFactory.getManager(getBehaviorStateSparse).removeListener(this.behaviorUpdateListener);
+    // save watch configuration, if something is set
+    if(!symbolsToWatch.isEmpty()) {
+        // ... and only if this configuration isn't already saved
+        if(!symbolsToWatchHistory.values().stream().anyMatch((t) -> { return symbolsToWatch.equals(t); })) {
+            // keep only 10 entries
+            if(symbolsToWatchHistory.size() >= 10) {
+                Optional<String> r = symbolsToWatchHistory.keySet().stream().sorted().findFirst();
+                symbolsToWatchHistory.remove(r.get());
+            }
+            // timestamp the watch configuration
+            symbolsToWatchHistory.put((new SimpleDateFormat("yyyy-MM-dd, HH:mm:ss")).format(Calendar.getInstance().getTime()), symbolsToWatch);
+            Plugin.parent.getConfig().setProperty(this.getClass().getName()+".history", (new Gson()).toJson(symbolsToWatchHistory));
+        }
+    }
+    
   }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1014,6 +1075,7 @@ public class BehaviorViewer extends AbstractDialog
     private javax.swing.JToggleButton btReceive;
     private javax.swing.JToggleButton btReceiveLogData;
     private javax.swing.JButton btSend;
+    private javax.swing.JButton btShowWatchMenu;
     private javax.swing.JComboBox cbAgents;
     private javax.swing.JCheckBox cbOnlyOptions;
     private javax.swing.JPanel drawingPanel;
@@ -1028,6 +1090,7 @@ public class BehaviorViewer extends AbstractDialog
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JPanel outputSymbolsBoxPanel;
+    private javax.swing.JPopupMenu popupMenu;
     private javax.swing.JTextField sortSymbolsTextInput;
     private javax.swing.JDialog symbolChooser;
     private javax.swing.JPanel symbolsPanel;

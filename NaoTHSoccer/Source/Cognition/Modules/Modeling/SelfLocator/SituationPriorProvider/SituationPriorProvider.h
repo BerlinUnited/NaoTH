@@ -44,7 +44,7 @@ BEGIN_DECLARE_MODULE(SituationPriorProvider)
   REQUIRE(GameData)
 
   REQUIRE(MotionStatus)
-  PROVIDE(BodyState)
+  REQUIRE(BodyState)
   REQUIRE(SituationStatus)
 
   PROVIDE(SituationPrior)
@@ -105,6 +105,7 @@ private:
   PlayerInfo::RobotState lastRobotState;
   PlayerInfo::RobotState currentRobotState;
   GameData::GameState gameStateWhenPenalized;
+  GameData::Penalty reasonForLastPenalized;
 
   bool walked_after_penalized_or_init;
 

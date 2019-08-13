@@ -21,19 +21,20 @@ newaction
 	},
 
 	onproject = function(prj)
-		premake.generate(prj, "%%.creator", qtc.creator)
-		premake.generate(prj, "%%.creator.user", qtc.user)
-		premake.generate(prj, "%%.files", qtc.files)
-		premake.generate(prj, "%%.includes", qtc.includes)
-		premake.generate(prj, "%%.config", qtc.defines)
+		premake.generate(prj, ".creator", qtc.creator)
+		premake.generate(prj, ".creator.shared", qtc.user)
+		premake.generate(prj, ".files", qtc.files)
+		premake.generate(prj, ".includes", qtc.includes)
+		premake.generate(prj, ".config", qtc.defines)
 	end,
 
 	oncleanproject  = function(prj)
-		premake.clean.file(prj, "%%.creator.user")
-		premake.clean.file(prj, "%%.creator")
-		premake.clean.file(prj, "%%.files")
-		premake.clean.file(prj, "%%.includes")
-		premake.clean.file(prj, "%%.config")
+		premake.clean.file(prj, ".creator.user")
+		premake.clean.file(prj, ".creator.shared")
+		premake.clean.file(prj, ".creator")
+		premake.clean.file(prj, ".files")
+		premake.clean.file(prj, ".includes")
+		premake.clean.file(prj, ".config")
 	end,
 	
 	oncleantarget   = function(trg)

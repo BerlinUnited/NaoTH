@@ -11,6 +11,7 @@
 
 // Tools
 //#include "Tools/TemplateUtility.h"
+#include <algorithm>
 #include "Tools/NaoInfo.h"
 
 #include "InverseKinematics.h"
@@ -268,7 +269,7 @@ double InverseKinematics::calculateLowerNaoLegJointsAnalyticaly(bool leftLeg, Po
   {
     double c3 = (Math::sqr(NaoInfo::ThighLength) + Math::sqr(NaoInfo::TibiaLength) - Math::sqr(C))
       / (2.0 * NaoInfo::ThighLength * NaoInfo::TibiaLength);
-    kneeAng = Math::normalizeAngle(Math::pi - acos(c3));
+    kneeAng = Math::normalize(Math::pi - acos(c3));
   }
     
   //

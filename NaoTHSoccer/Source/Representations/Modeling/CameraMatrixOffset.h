@@ -18,18 +18,12 @@
 #include "Messages/Representations.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
-
 class CameraMatrixOffset: public ParameterList, public naoth::Printable
 {
 public:
 
   CameraMatrixOffset() : ParameterList("CameraMatrixOffset")
   {
-    PARAMETER_REGISTER(correctionOffset[naoth::CameraInfo::Top].x) = 0;
-    PARAMETER_REGISTER(correctionOffset[naoth::CameraInfo::Top].y) = 0;
-    PARAMETER_REGISTER(correctionOffset[naoth::CameraInfo::Bottom].x) = 0;
-    PARAMETER_REGISTER(correctionOffset[naoth::CameraInfo::Bottom].y) = 0;
-
     PARAMETER_REGISTER(body_rot.x) = 0;
     PARAMETER_REGISTER(body_rot.y) = 0;
 
@@ -47,14 +41,11 @@ public:
 
     syncWithConfig();
   }
-  
+
   virtual ~CameraMatrixOffset(){}
 
-  //experimental
   Vector2d offsetByGoalModel;
   Vector2d offset;
-
-  Vector2d correctionOffset[naoth::CameraInfo::numOfCamera];
 
   Vector2d body_rot;
   Vector3d head_rot;
@@ -62,33 +53,24 @@ public:
 
   virtual void print(std::ostream& stream) const
   {
-//    stream << "x = " << offset.x << std::endl;
-//    stream << "y = " << offset.y << std::endl;
-//    stream << "Roll Offset Camera Top (x):"<< correctionOffset[naoth::CameraInfo::Top].x << " rad" << std::endl;
-//    stream << "Tilt Offset Camera Top (y):"<< correctionOffset[naoth::CameraInfo::Top].y << " rad" <<  std::endl;
-//    stream << "Roll Offset Camera Bottom (x): "<< correctionOffset[naoth::CameraInfo::Bottom].x << " rad" << std::endl;
-//    stream << "Tilt Offset Camera Bottom (y):"<< correctionOffset[naoth::CameraInfo::Bottom].y << " rad" <<  std::endl;
-
     stream << "----Offsets-------------" << std::endl;
     stream << "----Body----------------" << std::endl;
-    stream << "Roll  (x): "<< body_rot.x << " rad" << std::endl;
-    stream << "Pitch (y): "<< body_rot.y << " rad" << std::endl;
+    stream << "Roll  (x): "<< Math::toDegrees(body_rot.x) << " °" << std::endl;
+    stream << "Pitch (y): "<< Math::toDegrees(body_rot.y) << " °" << std::endl;
     stream << "----Head----------------" << std::endl;
-    stream << "Roll  (x): "<< head_rot.x << " rad" << std::endl;
-    stream << "Pitch (y): "<< head_rot.y << " rad" << std::endl;
-    stream << "Yaw   (z): "<< head_rot.z << " rad" << std::endl;
+    stream << "Roll  (x): "<< Math::toDegrees(head_rot.x) << " °" << std::endl;
+    stream << "Pitch (y): "<< Math::toDegrees(head_rot.y) << " °" << std::endl;
+    stream << "Yaw   (z): "<< Math::toDegrees(head_rot.z) << " °" << std::endl;
     stream << "----TopCam--------------" << std::endl;
-    stream << "Roll  (x): "<< cam_rot[naoth::CameraInfo::Top].x  << " rad" << std::endl;
-    stream << "Pitch (y): "<< cam_rot[naoth::CameraInfo::Top].y  << " rad" << std::endl;
-    stream << "Yaw   (z): "<< cam_rot[naoth::CameraInfo::Top].z  << " rad" << std::endl;
-
+    stream << "Roll  (x): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Top].x)  << " °" << std::endl;
+    stream << "Pitch (y): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Top].y)  << " °" << std::endl;
+    stream << "Yaw   (z): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Top].z)  << " °" << std::endl;
     stream << "----BottomCam-----------" << std::endl;
-    stream << "Roll  (x): "<< cam_rot[naoth::CameraInfo::Bottom].x  << " rad" << std::endl;
-    stream << "Pitch (y): "<< cam_rot[naoth::CameraInfo::Bottom].y  << " rad" << std::endl;
-    stream << "Yaw   (z): "<< cam_rot[naoth::CameraInfo::Bottom].z  << " rad" << std::endl;
+    stream << "Roll  (x): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Bottom].x)  << " °" << std::endl;
+    stream << "Pitch (y): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Bottom].y)  << " °" << std::endl;
+    stream << "Yaw   (z): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Bottom].z)  << " °" << std::endl;
   }
 };
-
 
 namespace naoth
 {
@@ -100,7 +82,6 @@ class Serializer<CameraMatrixOffset>
   {
     naothmessages::CameraMatrixCalibration msg;
     for(int id=0; id < naoth::CameraInfo::numOfCamera; id++) {
-      naoth::DataConversion::toMessage(representation.correctionOffset[id], *msg.add_correctionoffset());
       naoth::DataConversion::toMessage(representation.cam_rot[id], *msg.add_correctionoffsetcam());
     }
 
@@ -121,9 +102,7 @@ class Serializer<CameraMatrixOffset>
     google::protobuf::io::IstreamInputStream buf(&stream);
     msg.ParseFromZeroCopyStream(&buf);
     
-    ASSERT(msg.correctionoffset().size() == naoth::CameraInfo::numOfCamera);
     for(int id=0; id < naoth::CameraInfo::numOfCamera; id++) {
-        naoth::DataConversion::fromMessage(msg.correctionoffset(id), representation.correctionOffset[id]);
         naoth::DataConversion::fromMessage(msg.correctionoffsetcam(id), representation.cam_rot[id]);
     }
 

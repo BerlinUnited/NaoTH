@@ -8,10 +8,6 @@
 #include <Tools/Math/Vector2.h>
 #include <Tools/Debug/NaoTHAssert.h>
 
-#ifdef WIN32
-typedef unsigned int uint;
-#endif
-
 /**
  * @ingroup representations
  */
@@ -46,7 +42,7 @@ public:
 		return integralImage;
 	}
 
-  uint getSumForRect(uint minX, uint minY, uint maxX, uint maxY, uint32_t c) const {
+  uint32_t getSumForRect(uint32_t minX, uint32_t minY, uint32_t maxX, uint32_t maxY, uint32_t c) const {
 
     // NOTE: the border at x=00 or y==0 contains allways only 0 values
     //       so, the integral of (1,1)-(100,200) is the same as (0,0)-((100,200)
@@ -75,8 +71,8 @@ public:
 		return sum;
 	}
 
-  double getDensityForRect(uint minX, uint minY, uint maxX, uint maxY, uint32_t c) const {
-		uint count = getSumForRect(minX, minY, maxX, maxY, c);
+  double getDensityForRect(uint32_t minX, uint32_t minY, uint32_t maxX, uint32_t maxY, uint32_t c) const {
+		uint32_t count = getSumForRect(minX, minY, maxX, maxY, c);
 		return double(count) / double((maxX-minX)*(maxY-minY));
 	}
 

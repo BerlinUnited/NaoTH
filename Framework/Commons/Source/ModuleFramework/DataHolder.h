@@ -13,6 +13,7 @@
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
 
+#include <type_traits>
 
 namespace naoth
 {
@@ -29,49 +30,42 @@ public:
 };
 }
 
-
 /**
- * Connects a arbitrary class with Representation
+ * Connects an arbitrary class with Representation
  */
 template<class T>
-class DataHolder: public Representation
+class DataHolder: public Representation, public T
 {
 private:
   // creates an object of the data
   // (this requires the class T to have a default constructor)
-  //T data;
-  // HACK: make it polymorphic, this is necessary to use dynamic_cast in print()
-  // (just in case type T is not already polymorphic)
-  class PT: public T { public: virtual ~PT(){} } data;
+  //T  data;
 
 public:
   DataHolder(const std::string& name): Representation(name){}
   DataHolder(): Representation(typeid(T).name()){}
   virtual ~DataHolder(){}
 
-  T& operator*() { return data; }
-  const T& operator*() const { return data; }
+  T& operator*() { return *this; }
+  const T& operator*() const { return *this; }
 
   /** 
    * wrap the print, fromDataStream and toDataStream of the data member 
    */
-  virtual void print(std::ostream& stream) const
-  {
-    static const Printable* asPrintable = dynamic_cast<const Printable*>(&data);
-    
-    if(asPrintable != NULL) {
-      stream << *asPrintable;
-    } else { // use representation by default
-      Representation::print(stream);
-    }
-  }//end print
+  virtual void print(std::ostream& stream) const {
+    std::conditional<std::is_base_of<Printable,T>::value, T, Representation>::type::print(stream);
+  }
+
+  virtual bool serializable() const {
+    return !std::is_base_of<naoth::EmptySerializer,naoth::Serializer<T> >::value;
+  }
 
   void serialize(MsgOut<Representation>::type& msg) const {
-    naoth::Serializer<T>::serialize(data, msg);
+    naoth::Serializer<T>::serialize(*this, msg);
   }
 
   void deserialize(MsgIn<Representation>::type& msg) {
-    naoth::Serializer<T>::deserialize(msg, data);
+    naoth::Serializer<T>::deserialize(msg, *this);
   }
 };
 

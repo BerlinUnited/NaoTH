@@ -14,14 +14,15 @@ import com.google.protobuf.Descriptors.Descriptor;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.logmanager.BlackBoard;
-import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.logmanager.LogFileEventManager;
 import de.naoth.rc.logmanager.LogFrameListener;
 import de.naoth.rc.manager.GenericManager;
 import de.naoth.rc.manager.GenericManagerFactory;
+import de.naoth.rc.messages.AudioDataOuterClass;
 import de.naoth.rc.server.Command;
 import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
@@ -33,6 +34,10 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import de.naoth.rc.messages.FrameworkRepresentations;
 import de.naoth.rc.messages.Messages;
 import de.naoth.rc.messages.Representations;
+import de.naoth.rc.messages.TeamMessageOuterClass;
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.event.KeyEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -41,8 +46,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import javax.swing.ListModel;
+import javax.swing.SwingUtilities;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
 
 /**
  *
@@ -50,6 +57,7 @@ import javax.swing.ListModel;
  */
 public class RepresentationInspector extends AbstractDialog {
 
+    @RCDialog(category = RCDialog.Category.Status, name = "Representations")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<RepresentationInspector> {
 
@@ -69,22 +77,24 @@ public class RepresentationInspector extends AbstractDialog {
         return representationOwner + ":representation:list";
     }
 
-    private String getRepresentationBase() {
-        return representationOwner + ":representation:get";
+    private String getRepresentationPrint() {
+        return representationOwner + ":representation:print";
     }
 
     private String getRepresentationBinary() {
-        return representationOwner + ":representation:getbinary";
+        return representationOwner + ":representation:get";
     }
 
     private ObjectListener<byte[]> currentHandler;
     private GenericManager currentManager;
 
     private final LogRepresentationListener logHandler = new LogRepresentationListener();
+    private final Highlighter.HighlightPainter searchHighlighter = new DefaultHighlighter.DefaultHighlightPainter(Color.LIGHT_GRAY);
+    private final Highlighter.HighlightPainter searchHighlighterActive = new DefaultHighlighter.DefaultHighlightPainter(Color.ORANGE);
 
     public RepresentationInspector() {
         initComponents();
-
+        searchField.setVisible(false);
         this.representationOwner = this.cbProcess.getSelectedItem().toString();
     }
 
@@ -109,7 +119,7 @@ public class RepresentationInspector extends AbstractDialog {
                                 prefix = getRepresentationBinary();
                                 currentHandler = new DataHandlerBinary((String) o);
                             } else {
-                                prefix = getRepresentationBase();
+                                prefix = getRepresentationPrint();
                                 currentHandler = new DataHandlerPrint();
                             }
 
@@ -145,8 +155,10 @@ public class RepresentationInspector extends AbstractDialog {
         jSplitPane1 = new javax.swing.JSplitPane();
         jScrollPane1 = new javax.swing.JScrollPane();
         representationList = new javax.swing.JList();
+        jPanel1 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         textArea = new javax.swing.JTextArea();
+        searchField = new javax.swing.JTextField();
 
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
@@ -201,15 +213,32 @@ public class RepresentationInspector extends AbstractDialog {
 
         jSplitPane1.setLeftComponent(jScrollPane1);
 
+        jPanel1.setLayout(new java.awt.BorderLayout());
+
         jScrollPane2.setBorder(null);
 
         textArea.setColumns(20);
         textArea.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
         textArea.setRows(5);
         textArea.setBorder(null);
+        textArea.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                textAreaKeyPressed(evt);
+            }
+        });
         jScrollPane2.setViewportView(textArea);
 
-        jSplitPane1.setRightComponent(jScrollPane2);
+        jPanel1.add(jScrollPane2, java.awt.BorderLayout.CENTER);
+
+        searchField.setOpaque(false);
+        searchField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                searchFieldKeyPressed(evt);
+            }
+        });
+        jPanel1.add(searchField, java.awt.BorderLayout.SOUTH);
+
+        jSplitPane1.setRightComponent(jPanel1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -223,7 +252,7 @@ public class RepresentationInspector extends AbstractDialog {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE))
+                .addComponent(jSplitPane1))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -267,11 +296,71 @@ public class RepresentationInspector extends AbstractDialog {
           Plugin.logFileEventManager.removeListener(logHandler);
       }
   }//GEN-LAST:event_jToggleButtonLogActionPerformed
+
+    private void textAreaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textAreaKeyPressed
+        // Ctrl+F -> search
+        if ((evt.getKeyCode() == KeyEvent.VK_F) && ((evt.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
+            if(this.searchField.isVisible()) {
+                this.searchField.selectAll();
+            } else {
+                this.searchField.setVisible(true);
+                this.revalidate();
+            }
+            this.searchField.requestFocus();
+        }
+    }//GEN-LAST:event_textAreaKeyPressed
+
+    private void searchFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchFieldKeyPressed
+        if(evt.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            // hide & reset textarea
+            this.searchField.setBackground(Color.white);
+            textArea.getHighlighter().removeAllHighlights();
+            this.searchField.setVisible(false);
+            this.textArea.requestFocus();
+            this.revalidate();
+        } else if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            // search (next) occurrence of search string
+            String search = this.searchField.getText().trim();
+            if(!search.isEmpty()) {
+                int offset = textArea.getText().indexOf(search);
+                int offset_last = textArea.getText().lastIndexOf(search);
+                int offset_cursor = textArea.getCaretPosition() > offset_last ? 0 : textArea.getCaretPosition();
+                
+                // indicate not found
+                if(offset >= 0) {
+                    this.searchField.setBackground(Color.white);
+                } else {
+                    this.searchField.setBackground(Color.red);
+                }
+                
+                // clear previous search highlights
+                textArea.getHighlighter().removeAllHighlights();
+                // set default highlighter
+                Highlighter.HighlightPainter highlighter = searchHighlighter;
+                // highlight every occurrence
+                while (offset != -1) {                    
+                    try {
+                        // highlight the current search result differently
+                        if((offset_cursor >= 0 && offset >= offset_cursor) && highlighter == searchHighlighter) {
+                            highlighter = searchHighlighterActive;
+                            textArea.setCaretPosition(offset + search.length());
+                            offset_cursor = -1; // make sure there's only one 'current' highlight
+                        } else if(highlighter == searchHighlighterActive) {
+                            highlighter = searchHighlighter;
+                        }
+                        // highlight & next
+                        textArea.getHighlighter().addHighlight(offset, offset + search.length() , highlighter);
+                        offset = textArea.getText().indexOf(search, offset+search.length());
+                    } catch (BadLocationException ex) {}
+                }
+            }
+        }
+    }//GEN-LAST:event_searchFieldKeyPressed
   
     class DataHandlerBinary implements ObjectListener<byte[]> {
 
         private final Parser parser;
-        private final List<Descriptor> allDescriptors = getAllProtobufDescriptors();
+        //private final List<Descriptor> allDescriptors = getAllProtobufDescriptors();
 
         public DataHandlerBinary(String name) {
             
@@ -320,6 +409,7 @@ public class RepresentationInspector extends AbstractDialog {
         @Override
         public void newObjectReceived(byte[] object) {
             //System.out.println(new String(result));
+            String lastSelection = (String) representationList.getSelectedValue();
             String[] representations = new String(object).split("\n");
 
             DefaultListModel model = new DefaultListModel();
@@ -327,6 +417,7 @@ public class RepresentationInspector extends AbstractDialog {
                 model.addElement(representation);
             }
             representationList.setModel(model);
+            representationList.setSelectedValue(lastSelection, true);
         }
 
         @Override
@@ -342,23 +433,18 @@ public class RepresentationInspector extends AbstractDialog {
         
         @Override
         public void newFrame(BlackBoard b) {
-
             dataByName.clear();
-            Set<String> names = b.getNames();
-            for (String n : names) {
-                LogDataFrame frame = b.get(n);
-                
-                ListModel model = representationList.getModel();
-                if(model instanceof DefaultListModel) {
-                    if (!((DefaultListModel) model).contains(frame.getName())) {
-                        ((DefaultListModel) model).addElement(frame.getName());
-                    }
+            DefaultListModel model = representationList.getModel() instanceof DefaultListModel ? (DefaultListModel)representationList.getModel() : new DefaultListModel();
+            String selected = representationList.getSelectedValue() instanceof String ? (String)representationList.getSelectedValue() : null;
+            
+            for (String name : b.getNames()) {
+                if (!model.contains(name)) {
+                    model.addElement(name);
                 }
-                dataByName.put(frame.getName(), frame.getData());
+                dataByName.put(name, b.get(name).getData());
                 
-                Object selected = representationList.getSelectedValue();
-                if(selected instanceof String) {
-                    showFrame((String) selected);
+                if(selected != null && selected.equals(name)) {
+                    showFrame(selected);
                 }
             }
         }
@@ -376,16 +462,20 @@ public class RepresentationInspector extends AbstractDialog {
             if (data != null) {
                 Object result = parser.parse(data);
                 if (result != null) {
+                    // save last scrollbar position (viewport)
+                    final Point scrollPosition = jScrollPane2.getViewport().getViewPosition();
+                    // set "new" representation string
                     textArea.setText(result.toString());
+                    // restore last scrollbar position (viewport)
+                    SwingUtilities.invokeLater(() -> {
+                        jScrollPane2.getViewport().setViewPosition(scrollPosition);
+                    });
                 } else {
                     textArea.setText("Error while parsing.\n");
                 }
             } else {
                 textArea.setText("No data available");
             }
-            
-            
-            
         }
     }
 
@@ -408,7 +498,9 @@ public class RepresentationInspector extends AbstractDialog {
         List<Descriptor> result = new ArrayList<Descriptor>();
         result.addAll(FrameworkRepresentations.getDescriptor().getMessageTypes());
         result.addAll(Representations.getDescriptor().getMessageTypes());
+        result.addAll(TeamMessageOuterClass.getDescriptor().getMessageTypes());
         result.addAll(Messages.getDescriptor().getMessageTypes());
+        result.addAll(AudioDataOuterClass.getDescriptor().getMessageTypes());
         return result;
     }
 
@@ -417,6 +509,7 @@ public class RepresentationInspector extends AbstractDialog {
         Class<?> protoClasses[] = {
             FrameworkRepresentations.class,
             Representations.class,
+            TeamMessageOuterClass.class,
             Messages.class};
 
         for (Class<?> c : protoClasses) {
@@ -430,13 +523,13 @@ public class RepresentationInspector extends AbstractDialog {
         // EVIL HACKS
         if (name.endsWith("Top")) {
             name = name.substring(0, name.length() - 3);
-        } else if("TeamMessage".equals(name)) {
-            name = "TeamMessageCollection";
         }
         
         Class<?> protoClasses[] = {
             FrameworkRepresentations.class,
             Representations.class,
+            TeamMessageOuterClass.class,
+            AudioDataOuterClass.class,
             Messages.class};
 
         for (Class<?> pc : protoClasses) {
@@ -451,7 +544,6 @@ public class RepresentationInspector extends AbstractDialog {
     }
 
     interface Parser {
-
         public Object parse(byte[] object);
     }
 
@@ -504,6 +596,7 @@ public class RepresentationInspector extends AbstractDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox cbProcess;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSplitPane jSplitPane1;
@@ -512,6 +605,7 @@ public class RepresentationInspector extends AbstractDialog {
     private javax.swing.JToggleButton jToggleButtonRefresh;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JList representationList;
+    private javax.swing.JTextField searchField;
     private javax.swing.JTextArea textArea;
     // End of variables declaration//GEN-END:variables
 

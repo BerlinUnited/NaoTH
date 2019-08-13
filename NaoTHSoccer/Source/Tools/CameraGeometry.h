@@ -148,7 +148,7 @@ public:
       const Vector3d &theCameraCorrectionOffset,
       double headYaw,
       double headPitch,
-      const InertialModel& theInertialModel);
+      const Vector2d& bodyRotation);
 
   /**
     estimate the ball size in image based on given camera matrix and camera info

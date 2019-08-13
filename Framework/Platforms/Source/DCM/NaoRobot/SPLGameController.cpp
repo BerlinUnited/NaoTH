@@ -3,30 +3,21 @@
 #include <PlatformInterface/Platform.h>
 #include <sys/socket.h>
 #include "Tools/Communication/NetAddr.h"
+#include <Tools/ThreadUtil.h>
 
 using namespace naoth;
 using namespace std;
 
-void* socketLoopWrap(void* c)
-{
-  SPLGameController* ctr = static_cast<SPLGameController*> (c);
-  ctr->socketLoop();
-  return NULL;
-}
-
 SPLGameController::SPLGameController()
-  :exiting(false), returnPort(GAMECONTROLLER_RETURN_PORT),
+  : exiting(false),
+    returnPort(GAMECONTROLLER_RETURN_PORT),
     socket(NULL),
-    gamecontrollerAddress(NULL),
-    socketThread(NULL),
-    lastGetTime(0),
-    dataMutex(NULL),
-    returnDataMutex(NULL)
+    gamecontrollerAddress(NULL)
 {
   GError* err = bindAndListen();
   if(err)
   {
-    g_warning("could not listen for SPLGameController: %s", err->message);
+    std::cout << "[WARN] could not listen for SPLGameController: " << err->message << std::endl;
     socket = NULL;
     g_error_free(err);
   }
@@ -34,7 +25,8 @@ SPLGameController::SPLGameController()
   {
     // init player number, team number and etc.
     //data.loadFromCfg( naoth::Platform::getInstance().theConfiguration );
-    
+    cancelable = g_cancellable_new();
+
     // init return data
     strcpy(dataOut.header, GAMECONTROLLER_RETURN_STRUCT_HEADER);
     dataOut.version = GAMECONTROLLER_RETURN_STRUCT_VERSION;
@@ -42,17 +34,10 @@ SPLGameController::SPLGameController()
     dataOut.player = 0;
     dataOut.message = GAMECONTROLLER_RETURN_MSG_ALIVE;
 
-
-    if (!g_thread_supported()) {
-      g_thread_init(NULL);
-    }
-    dataMutex = g_mutex_new();
-    returnDataMutex = g_mutex_new();
-
-    g_message("SPLGameController start socket thread");
-    socketThread = g_thread_create(socketLoopWrap, this, true, NULL);
-    ASSERT(socketThread != NULL);
-    g_thread_set_priority(socketThread, G_THREAD_PRIORITY_LOW);
+    std::cout << "[INFO] SPLGameController start socket thread" << std::endl;
+    socketThread = std::thread([this] {this->socketLoop();});
+    ThreadUtil::setPriority(socketThread, ThreadUtil::Priority::lowest);
+    ThreadUtil::setName(socketThread, "GameController");
   }
 }
 
@@ -103,7 +88,8 @@ bool SPLGameController::update()
 
 void SPLGameController::get(GameData& gameData)
 {
-  if ( g_mutex_trylock(dataMutex) )
+  std::unique_lock<std::mutex> lock(dataMutex, std::try_to_lock);
+  if ( lock.owns_lock() )
   {
     if(data.valid) {
       gameData = data;
@@ -112,28 +98,40 @@ void SPLGameController::get(GameData& gameData)
       // no new message received
       gameData.valid = false;
     }
-    g_mutex_unlock(dataMutex);
   }
 }
 
 void SPLGameController::set(const naoth::GameReturnData& data)
 {
-  if ( g_mutex_trylock(returnDataMutex) )
+  std::unique_lock<std::mutex> lock(returnDataMutex, std::try_to_lock);
+  if ( lock.owns_lock() )
   {
-    dataOut.player = (uint8_t)data.player;
-    dataOut.team = (uint8_t)data.team;
-    dataOut.message = data.message;
-    g_mutex_unlock(returnDataMutex);
+    if(data.message == GameReturnData::dead) {
+      // set to invalid data to avoid sending the message
+      dataOut.player = 0;
+      dataOut.team = 0;
+      dataOut.message = data.message;
+    } else {
+      dataOut.player = (uint8_t)data.player;
+      dataOut.team = (uint8_t)data.team;
+      dataOut.message = data.message;
+    }
   }
+
 }
 
 SPLGameController::~SPLGameController()
 {
+  std::cout << "[SPLGameController] stop wait" << std::endl;
+  // request the thread to stop
   exiting = true;
 
-  g_thread_join(socketThread);
-  g_mutex_free(dataMutex);
-  g_mutex_free(returnDataMutex);
+  // notify all waiting connections to cancel
+  g_cancellable_cancel(cancelable);
+
+  if(socketThread.joinable()) {
+    socketThread.join();
+  }
 
   if(socket != NULL) {
     g_object_unref(socket);
@@ -142,6 +140,8 @@ SPLGameController::~SPLGameController()
   if(gamecontrollerAddress != NULL) {
     g_object_unref(gamecontrollerAddress);
   }
+  g_object_unref(cancelable);
+  std::cout << "[SPLGameController] stop done" << std::endl;
 }
 
 void SPLGameController::sendData(const RoboCupGameControlReturnData& data)
@@ -149,12 +149,12 @@ void SPLGameController::sendData(const RoboCupGameControlReturnData& data)
   GError *error = NULL;
   if(gamecontrollerAddress != NULL)
   {
-    gssize result = g_socket_send_to(socket, gamecontrollerAddress, (char*)(&data), sizeof(data), NULL, &error);
+    gssize result = g_socket_send_to(socket, gamecontrollerAddress, (char*)(&data), sizeof(data), cancelable, &error);
     if ( result != sizeof(data) ) {
-      g_warning("SPLGameController::returnData, sended size = %d", result);
+      std::cout << "[WARN] SPLGameController::returnData, sended size = " <<  result << std::endl;
     }
     if (error) {
-      g_warning("g_socket_send_to error: %s", error->message);
+      std::cout << "[WARN] g_socket_send_to error: " << error->message << std::endl;
       g_error_free(error);
     }
   }
@@ -162,17 +162,13 @@ void SPLGameController::sendData(const RoboCupGameControlReturnData& data)
 
 void SPLGameController::socketLoop()
 {
-  if(socket == NULL) {
-    return;
-  }
-
-  while(!exiting)
+  while(!exiting && socket != NULL)
   {
     GSocketAddress* senderAddress = NULL;
     int size = g_socket_receive_from(socket, &senderAddress,
                                      (char*)(&dataIn),
                                      sizeof(RoboCupGameControlData),
-                                     NULL, NULL);
+                                     cancelable, NULL);
 
     if(senderAddress != NULL)
     {
@@ -188,16 +184,16 @@ void SPLGameController::socketLoop()
 
     if(size == sizeof(RoboCupGameControlData))
     {
-      g_mutex_lock(dataMutex);
-      bool validPackage = update();
-      g_mutex_unlock(dataMutex);
-
+      bool validPackage = false;
+      {
+        std::lock_guard<std::mutex> lock(dataMutex);
+        validPackage = update();
+      }
       // only send return package if we are sure the initial package was a proper game controller message
       if(validPackage)
       {
-        g_mutex_lock(returnDataMutex);
+        std::lock_guard<std::mutex> lock(returnDataMutex);
         sendData(dataOut);
-        g_mutex_unlock(returnDataMutex);
       }
     }
   }

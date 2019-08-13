@@ -10,6 +10,7 @@ package de.naoth.rc.dialogs;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.logplayer.LogSimulator;
 import de.naoth.rc.logplayer.LogSimulator.LogSimulatorManager;
 import de.naoth.rc.logplayer.LogfileAutoPlayer;
@@ -35,6 +36,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  */
 public class LogfilePlayer extends AbstractDialog
 {
+  @RCDialog(category = RCDialog.Category.Log, name = "Player")
   @PluginImplementation
   public static class Plugin extends DialogPlugin<LogfilePlayer> {
     @InjectPlugin
@@ -483,29 +485,9 @@ public class LogfilePlayer extends AbstractDialog
     }
  
   private void connectToSimulator () {
-        try {
-            if(!Plugin.parent.getMessageServer().isConnected()) {
-                Plugin.parent.getMessageServer().connect("localhost", 5401);
-            }
-        }
-        catch(UnknownHostException ex)
-        {
-          JOptionPane.showMessageDialog(this,
-            "Could not connect: host \'" + Plugin.parent.getMessageServer().getAddress() + "\' is unknown.", 
-            "ERROR", JOptionPane.ERROR_MESSAGE);
-        }
-        catch(SocketTimeoutException ex)
-        {
-          JOptionPane.showMessageDialog(this,
-            "Could not connect: socket timeout exception.",
-            "ERROR", JOptionPane.ERROR_MESSAGE);
-        }
-        catch(IOException ex)
-        {
-          JOptionPane.showMessageDialog(this,
-            "Etablishing connection failed: " + ex.getLocalizedMessage(), 
-            "ERROR", JOptionPane.ERROR_MESSAGE);
-        }
+    if(!Plugin.parent.getMessageServer().isConnected()) {
+        Plugin.parent.getMessageServer().connect("localhost", 5401);
+    }
   }
   
 

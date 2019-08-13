@@ -4,7 +4,7 @@
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
 * Implementation of class SampleSet
 */
-
+#include <algorithm>
 #include "SampleSet.h"
 #include "Tools/Debug/NaoTHAssert.h"
 #include "Tools/Math/Common.h"

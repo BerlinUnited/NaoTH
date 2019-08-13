@@ -77,6 +77,9 @@ copy ./etc/ld.so.conf /etc/ld.so.conf root 644
 # copy new fstab
 copy ./etc/fstab /etc/fstab root 644
 
+# add syslogger config
+copy ./etc/syslog.conf /etc/syslog.conf root 644
+
 # update the system wide libstdc++
 if [ -e ./home/nao/lib/libstdc++.so ]
 then

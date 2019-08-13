@@ -53,20 +53,31 @@ public:
   SimSparkGameInfo() :
       valid(false),
       gameTime(0),
+      teamNumber(0),
       playerNumber(0),
-      playersPerTeam(1), // at least one player
+      // HACK: this number sed to be set by a parameter
+      playersPerTeam(5),
       teamName("unknown"),
       playLeftSide(true),
+      kickoff(false),
+      score(0,0),
+      ownPlayers(playersPerTeam),
+      oppPlayers(playersPerTeam),
       gameState(naoth::GameData::unknown_game_state)
   {}
 
 public:
   bool valid;
   unsigned int gameTime;
+  unsigned int teamNumber;
   unsigned int playerNumber;
   int playersPerTeam;
   std::string teamName;
   bool playLeftSide;
+  bool kickoff;
+  std::pair<int, int> score;
+  std::vector<naoth::GameData::RobotInfo> ownPlayers;
+  std::vector<naoth::GameData::RobotInfo> oppPlayers;
 
   naoth::GameData::GameState gameState;
 
@@ -83,7 +94,7 @@ public:
     }
   }
 
-  unsigned int getTeamNumber() const
+  unsigned int getTeamIdx() const
   {
     if ( playLeftSide ) {
       return 0;
@@ -103,14 +114,11 @@ public:
     }
   }
 
-  naoth::GameData::TeamColor getTeamColor() const
-  {
-    if ( playLeftSide ) {
-      return LEFT_TEAM_COLOR;
-    } else {
-      return RIGHT_TEAM_COLOR;
-    }
-  }
+  naoth::GameData::TeamColor getOwnTeamColor() const { return playLeftSide?LEFT_TEAM_COLOR:RIGHT_TEAM_COLOR; }
+  naoth::GameData::TeamColor getOppTeamColor() const { return playLeftSide?RIGHT_TEAM_COLOR:LEFT_TEAM_COLOR; }
+
+  int getOwnScore() const { return playLeftSide?score.first:score.second; }
+  int getOppScore() const { return playLeftSide?score.second:score.first; }
 
 };
 

@@ -7,58 +7,60 @@
 #include "UDPReceiver.h"
 #include "Tools/Debug/NaoTHAssert.h"
 
+#include <Tools/ThreadUtil.h>
+
 using namespace naoth;
 
-void* UDPReceiver_static_loop(void* b)
-{
-  UDPReceiver* bl = static_cast<UDPReceiver*> (b);
-  bl->loop();
-  return NULL;
-}
+#include <sstream>
+using namespace std;
 
 UDPReceiver::UDPReceiver(unsigned int port, unsigned int buffersize)
-  : exiting(false), socket(NULL),
-    socketThread(NULL)
+  : exiting(false), socket(NULL)
 {
   bufferSize = buffersize;
   buffer = new char[buffersize];
-
-  if (!g_thread_supported()) {
-    g_thread_init(NULL);
-  }
-  messageInMutex = g_mutex_new();
 
   GError* err = bindAndListen(port);
 
   if(err)
   {
-    g_warning("could not initialize TeamCommSocket properly: %s", err->message);
+    std::cout << "[WARN] could not initialize TeamCommSocket properly: " << err->message << std::endl;;
     g_error_free(err);
     return;
   }
 
-  g_message("BroadCastLister start thread (%d)", port);
-  socketThread = g_thread_create(UDPReceiver_static_loop, this, true, NULL);
-  ASSERT(socketThread != NULL);
-  g_thread_set_priority(socketThread, G_THREAD_PRIORITY_LOW);
+  socket_cancelable = g_cancellable_new();
+
+  std::cout << "[INFO] BroadCastLister start thread (" << port << ")" << std::endl;
+
+  socketThread = std::thread([this]{this->loop();});
+  ThreadUtil::setPriority(socketThread, ThreadUtil::Priority::lowest);
+
+  stringstream s;
+  s << "Listen " << port;
+  ThreadUtil::setName(socketThread, s.str());
 }
 
 UDPReceiver::~UDPReceiver()
 {
+  std::cout << "[UDPReceiver] stop wait" << std::endl;
   exiting = true;
 
-  if ( socketThread )
-  {
-    g_thread_join(socketThread);
-  }
-  g_mutex_free(messageInMutex);
+  // notify all waiting connections to cancel
+  g_cancellable_cancel(socket_cancelable);
 
-  if(socket != NULL)
-  {
+  if(socketThread.joinable()) {
+    socketThread.join();
+  }
+
+  if(socket != NULL) {
     g_object_unref(socket);
   }
 
+  g_object_unref(socket_cancelable);
   delete [] buffer;
+
+  std::cout << "[UDPReceiver] stop done" << std::endl;
 }
 
 GError* UDPReceiver::bindAndListen(unsigned int port)
@@ -83,14 +85,14 @@ GError* UDPReceiver::bindAndListen(unsigned int port)
 void UDPReceiver::receive(std::vector<std::string>& data)
 {
   data.clear();
-  if ( g_mutex_trylock(messageInMutex) )
+  std::unique_lock<std::mutex> lock(messageInMutex, std::try_to_lock);
+  if ( lock.owns_lock())
   {
     if ( !messageIn.empty() )
     {
       data = messageIn;
       messageIn.clear();
     }
-    g_mutex_unlock(messageInMutex);
   }
 }
 
@@ -102,13 +104,11 @@ void UDPReceiver::loop()
 
   while(!exiting)
   {
-    gssize result = g_socket_receive(socket, buffer,
-                                     bufferSize, NULL, NULL);
+    gssize result = g_socket_receive(socket, buffer, bufferSize, socket_cancelable, NULL);
     if(result > 0)
     {
-      g_mutex_lock(messageInMutex);
+      std::lock_guard<std::mutex> lock(messageInMutex);
       messageIn.push_back(std::string(buffer, result));
-      g_mutex_unlock(messageInMutex);
     }
   }
 }
