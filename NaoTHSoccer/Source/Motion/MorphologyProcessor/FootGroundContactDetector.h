@@ -1,12 +1,13 @@
 /**
 * @file FootGroundContactDetector.h
 *
-* @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
+* @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich, Mellmann</a>
+* @author <a href="mailto:yigit.akcay@icloud.com">Yigit, Akcay</a>
 * detect if the foot touch the ground
 */
 
-#ifndef _FootGroundContactDetector_H
-#define _FootGroundContactDetector_H
+#ifndef _FootGroundContactDetector_H_
+#define _FootGroundContactDetector_H_
 
 
 #include <ModuleFramework/Module.h>
@@ -29,12 +30,12 @@
 BEGIN_DECLARE_MODULE(FootGroundContactDetector)
 
   REQUIRE(FrameInfo)
+  REQUIRE(FSRData)
 
   PROVIDE(DebugPlot)
   PROVIDE(DebugRequest)
   PROVIDE(DebugParameterList)
 
-  PROVIDE(FSRData)
   PROVIDE(GroundContactModel)
 END_DECLARE_MODULE(FootGroundContactDetector)
 
@@ -49,38 +50,29 @@ public:
 
 private:
 
-  RingBufferWithSum<double, 100> leftFSRBuffer;
-  RingBufferWithSum<double, 100> rightFSRBuffer;
+  RingBufferWithSum<double, 10> leftFSRBuffer;
+  RingBufferWithSum<double, 10> rightFSRBuffer;
 
   class Parameters: public ParameterList
   {
   public:
 
-      Parameters(DebugParameterList& list) : ParameterList("FootGroundContactParameters"), list(&list)
+    Parameters() : ParameterList("FootGroundContactParameters")
     {
-      PARAMETER_REGISTER(left) = 3;
-      PARAMETER_REGISTER(right) = 3;
-      PARAMETER_REGISTER(invalid) = 100;
+      // experimental - probably needs some calibration (while playing?)
+      PARAMETER_REGISTER(left) = 0.1;
+      PARAMETER_REGISTER(right) = 0.1;
+      PARAMETER_REGISTER(useMaxMedian) = false;
 
       syncWithConfig();
-
-      this->list->add(this);
     }
-
-    ~Parameters()
-    {
-      list->remove(this);
-    }
-
-    DebugParameterList* list;
 
     double left;
     double right;
-    double invalid;
+    bool useMaxMedian;
   };
 
   Parameters footParams;
-
 };
 
 #endif  /* _FootGroundContactDetector_H */

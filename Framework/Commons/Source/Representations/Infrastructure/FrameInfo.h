@@ -42,6 +42,7 @@ namespace naoth
     * @return The number of ms passed since the given time stamp.
     */
     inline int getTimeSince(unsigned timeStamp) const {return int(time - timeStamp);}
+    inline int getTimeSince(const FrameInfo& other) const {return int(time - other.time);}
 
     /**
     * The method returns the corrent time in seconds current frame time.
@@ -65,6 +66,17 @@ namespace naoth
     {
       frameNumber = n;
     }
+
+    friend bool operator== (const FrameInfo& fi1, const FrameInfo& fi2)
+    {
+        return fi1.time == fi2.time && fi1.frameNumber == fi2.frameNumber && fi1.step == fi2.step;
+    }
+
+    friend bool operator!= (const FrameInfo& fi1, const FrameInfo& fi2) { return !(fi1==fi2); }
+    friend bool operator<  (const FrameInfo& fi1, const FrameInfo& fi2) { return fi1.frameNumber <  fi2.frameNumber; }
+    friend bool operator<= (const FrameInfo& fi1, const FrameInfo& fi2) { return fi1.frameNumber <= fi2.frameNumber; }
+    friend bool operator>  (const FrameInfo& fi1, const FrameInfo& fi2) { return fi1.frameNumber >  fi2.frameNumber; }
+    friend bool operator>= (const FrameInfo& fi1, const FrameInfo& fi2) { return fi1.frameNumber >= fi2.frameNumber; }
 
     virtual void print(std::ostream& stream) const
     {

@@ -4,18 +4,20 @@ option search_for_ball
   bool @force_ball_model_check; // false by default
   bool @look_around;
   float @look_at_ball_when_distance;
+  bool @use_teamball;
   
   initial state start_search 
   {
     decision 
     {
-	    if((ball.know_where_itis || @force_ball_model_check) && 
-	       abs(value=ball.angle) < 60)
+	    if((ball.see_where_itis || @force_ball_model_check) && abs(value=ball.angle) < 60)
 	      goto try_to_look_at_the_old_ball;
-	    else if(ball.angle > 0)
+      else if(@use_teamball && ball.team.is_valid)
+        goto look_at_teamball;
+      else if(ball.last_known.y > 0)
         goto search_for_ball_left;
       else
-	      goto search_for_ball_right;
+        goto search_for_ball_right;
 	  }
 	  action 
 	  {
@@ -26,16 +28,16 @@ option search_for_ball
   {
     decision
     {
-      if (ball.was_seen)
+      if (ball.percept.was_seen)
         goto look_at_ball_percept;
-      else if (state_time > 2000)
-      {
-        if(ball.angle > 0)
+      else if (state_time > 2000) {
+	      if(@use_teamball && ball.team.is_valid)
+	        goto look_at_teamball;
+	      else if(ball.last_known.y > 0)
 	        goto search_for_ball_left;
 	      else
 	        goto search_for_ball_right;
-      }
-      else
+      } else
         stay;
     }
     action
@@ -44,6 +46,8 @@ option search_for_ball
       head.point_in_world.x = ball.x * clip(value=ball.distance, min=250, max=500) / ball.distance;
       head.point_in_world.y = ball.y * clip(value=ball.distance, min=250, max=500) / ball.distance;
       head.point_in_world.z = ball.radius;
+
+      head.angleVelocity = 300; // will be reseted in spl_play_soccer
     }
   }
 
@@ -52,19 +56,21 @@ option search_for_ball
   {
     decision
     {
-      if (ball.was_seen)
+      if (ball.percept.was_seen)
         goto look_at_ball_percept;
-      else if(state_time > 1000)
+      else if(state_time > 0 && (head.target_reached || head.got_stuck))
         goto search_for_ball_left_high;
       else
        stay;
     }
     action
     {
-        head.point_in_world.x = 200;
+        head.point_in_world.x = 160;
         head.point_in_world.y = -200;
         head.point_in_world.z = 0;
         head.motion_type = look_at_world_point;
+
+        head.angleVelocity = 60; // will be reseted in basic_play
     }
   }
 
@@ -72,19 +78,21 @@ option search_for_ball
   {
     decision
     {
-      if (ball.was_seen)
+      if (ball.percept.was_seen)
         goto look_at_ball_percept;
-      else if(state_time > 1000)
+      else if(state_time > 0 && (head.target_reached || head.got_stuck))
         goto search_for_ball_right;
       else
        stay;
     }
     action
     {
-      head.point_in_world.x = 200;
+      head.point_in_world.x = 160;
       head.point_in_world.y = 200;
       head.point_in_world.z = 0;
       head.motion_type = look_at_world_point;
+
+      head.angleVelocity = 60; // will be reseted in basic_play
     }
   }
 
@@ -92,19 +100,24 @@ option search_for_ball
   {
     decision
     {
-      if (ball.was_seen)
+      if (ball.percept.was_seen)
         goto look_at_ball_percept;
-      else if(state_time > 1000)
-        goto search_for_ball_left;
-      else
+      else if(state_time > 0 && (head.target_reached || head.got_stuck)) {
+        if(@use_teamball && ball.team.is_valid)
+          goto look_at_teamball;
+        else
+          goto search_for_ball_left;
+      } else
        stay;
     }
     action
     {
-        head.point_in_world.x = 500;
+        head.point_in_world.x = 400;
         head.point_in_world.y = -500;
         head.point_in_world.z = 0;
         head.motion_type = look_at_world_point;
+
+        head.angleVelocity = 60; // will be reseted in basic_play
     }
   }
 
@@ -112,19 +125,21 @@ option search_for_ball
   {
     decision
     {
-      if (ball.was_seen)
+      if (ball.percept.was_seen)
         goto look_at_ball_percept;
-      else if(state_time > 1000)
+      else if(state_time > 0 && (head.target_reached || head.got_stuck))
         goto search_for_ball_right_high;
       else
        stay;
     }
     action
     {
-      head.point_in_world.x = 500;
+      head.point_in_world.x = 400;
       head.point_in_world.y = 500;
       head.point_in_world.z = 0;
       head.motion_type = look_at_world_point;
+
+      head.angleVelocity = 60; // will be reseted in basic_play
     }
   }
     
@@ -134,10 +149,15 @@ option search_for_ball
     {
       if (state_time > 1000) // I waited long enough...
       {
-        if(ball.know_where_itis) // I still can see the ball => look at the model
+        if(ball.see_where_itis) // I still can see the ball => look at the model
           goto look_at_ball;
-        else
-          goto search_for_ball_right; // I cannt see the ball anymore, must have been a mirage => go back, where I came from
+        else {
+          // I cannt see the ball anymore, must have been a mirage => go back, where I came from
+          if(ball.angle > 0)
+            goto search_for_ball_left;
+          else
+            goto search_for_ball_right;
+        }
       }
       else
         stay;
@@ -148,6 +168,9 @@ option search_for_ball
       head.point_in_world.x = ball.percept.x * clip(value=vector.abs(x=ball.percept.x, y=ball.percept.y), min=250, max=500) / vector.abs(x=ball.percept.x, y=ball.percept.y);
       head.point_in_world.y = ball.percept.y * clip(value=vector.abs(x=ball.percept.x, y=ball.percept.y), min=250, max=500) / vector.abs(x=ball.percept.x, y=ball.percept.y);
       head.point_in_world.z = ball.radius;
+
+      // look at ball percept fast!
+      head.angleVelocity = 300;
     }
   }
 
@@ -155,15 +178,21 @@ option search_for_ball
   {
     decision
     {
-      if (!ball.know_where_itis)
+      if (!ball.see_where_itis) {
+	      if(@use_teamball && ball.team.is_valid)
+	        goto look_at_teamball;
+	      else if(ball.last_known.y > 0)
+	        goto search_for_ball_left;
+	      else
+	        goto search_for_ball_right;
+      } else if(@look_around && state_time > 3000 && vector.abs(x=ball.preview.x, y=ball.preview.y) > @look_at_ball_when_distance)
       {
-        if( ball.y > 0 )
-          goto search_for_ball_left;
-        else
-          goto search_for_ball_right;
+        //goto look_around_state;
+        if ( search_for_ball.last_look_around_direction_was_left )
+          goto look_right;
+        else 
+          goto look_left; 
       }
-      else if(state_time > 3000 && vector.abs(x=ball.preview.x, y=ball.preview.y) > @look_at_ball_when_distance)
-        goto look_around_state;
       else
         stay;
     }
@@ -173,19 +202,75 @@ option search_for_ball
       head.point_in_world.x = ball.x * clip(value=ball.distance, min=250, max=500) / ball.distance;
       head.point_in_world.y = ball.y * clip(value=ball.distance, min=250, max=500) / ball.distance;
       head.point_in_world.z = ball.radius;
+
+      // look at ball fast!
+      head.angleVelocity = 300;
     }
   }
 
-  state look_around_state {
+
+  state look_left
+  {
+    decision
+    {
+      if (state_time > 0 && (head.target_reached || head.got_stuck))
+        goto look_at_ball;
+      else 
+        stay;
+    }
+    action
+    {
+      head.camera.id = Top;
+    
+      head.point_in_world.x = 2000;
+      head.point_in_world.y = 6000;
+      head.point_in_world.z = 500;
+      head.motion_type = look_at_world_point;
+
+      search_for_ball.last_look_around_direction_was_left = true;
+      head.angleVelocity = 60;
+    }
+  }
+
+  state look_right
+  {
+    decision
+    {
+      if (state_time > 0 && (head.target_reached || head.got_stuck))
+        goto look_at_ball;
+      else 
+        stay;
+    }
+    action
+    {
+      head.camera.id = Top;
+      
+      head.point_in_world.x = 2000;
+      head.point_in_world.y = -6000;
+      head.point_in_world.z = 500;
+      head.motion_type = look_at_world_point;
+
+      search_for_ball.last_look_around_direction_was_left = false;
+      head.angleVelocity = 60;
+    }
+  }
+
+
+  state look_at_teamball {
     decision{
-      if ( state_time > 2500 )
-        goto start_search;
+      if (ball.percept.was_seen)
+        goto look_at_ball_percept;
+      /* NOTE: the teamball could get invalid in the 3s - evtl. we should also check for validity??? */
+      else if ( state_time > 3000 )
+        goto search_for_ball_left;
       else 
         stay; 
     }
     action{
-      head.camera.id = Top;
-      look_around();
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.team.position.x * 250 / vector.abs(x=ball.team.position.x, y=ball.team.position.y);
+      head.point_in_world.y = ball.team.position.y * 250 / vector.abs(x=ball.team.position.x, y=ball.team.position.y);
+      head.point_in_world.z = ball.radius;
     }
   }
 }

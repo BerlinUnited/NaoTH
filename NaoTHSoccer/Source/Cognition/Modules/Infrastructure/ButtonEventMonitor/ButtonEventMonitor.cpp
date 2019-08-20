@@ -20,6 +20,8 @@ void ButtonEventMonitor::execute()
 
 void ButtonEventMonitor::update(ButtonEvent& buttonEvent, bool pressed)
 {
+  const unsigned int maxSequenceLength = 350;
+
   buttonEvent = ButtonEvent::NONE;
 
   // detect change in the status of the button
@@ -32,6 +34,19 @@ void ButtonEventMonitor::update(ButtonEvent& buttonEvent, bool pressed)
   // button is pressed not longer than 1s
   if(buttonEvent == ButtonEvent::RELEASED && getFrameInfo().getTime() < buttonEvent.timeOfLastEvent + 1000) {
     buttonEvent = ButtonEvent::CLICKED;
+    
+    if(buttonEvent.clicksInSequence > 0  && getFrameInfo().getTime() < buttonEvent.timeOfLastClick + maxSequenceLength) {
+      // additional click inside same sequence occured
+      buttonEvent.clicksInSequence += 1;
+    } else {
+      // start a click sequence with an initial click
+      buttonEvent.clicksInSequence = 1;
+    }
+  }
+
+  if(buttonEvent == ButtonEvent::CLICKED) {
+//    std::cout << "click sequence with " << buttonEvent.clicksInSequence << " clicks" << std::endl;
+    buttonEvent.timeOfLastClick = getFrameInfo().getTime();
   }
 
   if(!(buttonEvent == ButtonEvent::NONE)) {

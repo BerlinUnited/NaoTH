@@ -10,6 +10,8 @@ import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.RadialGradientPaint;
+import java.awt.geom.Arc2D;
 
 /**
  *
@@ -25,8 +27,15 @@ public class Robot implements Drawable
   private boolean drawHeadRotation = false;
   protected Color color = new Color(234, 62, 50, 255);
 
-  private Nao_Simple nao = new Nao_Simple();
+  private final Nao_Simple nao = new Nao_Simple();
 
+  public Robot(double x, double y, double rotation, double headRotation)
+  {
+    this(x,y,rotation);
+    this.headRotation = headRotation;
+    this.drawHeadRotation = true;
+  }
+  
   public Robot(double x, double y, double rotation)
   {
     this.x = (int)(x);
@@ -92,30 +101,36 @@ public class Robot implements Drawable
   
   private void drawAngleInterval(Graphics2D g2d, double min, double max, Color color)
   {
-    g2d.setStroke(new BasicStroke(1f));
-    double distance = 1500.0;
+    double distance = 600.0;
     Color start = new Color(color.getRed(),color.getGreen(),color.getBlue(),128);
     Color end = new Color(color.getRed(),color.getGreen(),color.getBlue(),0);
 
     Vector2D a = new Vector2D(distance,0).rotate(min);
     Vector2D b = new Vector2D(distance,0).rotate(max);
-    Vector2D c = a.add(b).multiply(0.5);
+    Vector2D p = (a.add(b).multiply(0.5)).normalize().multiply(70);
+    a = a.add(p);
+    b = b.add(p);
+    
+    
+    //double angleDiff = a.angleTo(b);
+    
+    
+    RadialGradientPaint blacktowhite = new RadialGradientPaint((float)p.x, (float)p.y, (float)distance, 
+                            new float[]{0f, 1f},
+                            new Color[]{Color.black, end});
+    
+    RadialGradientPaint fildOfView = new RadialGradientPaint((float)p.x, (float)p.y, (float)distance, 
+                            new float[]{0f, 1f},
+                            new Color[]{start, end});
+    
+    g2d.setStroke(new BasicStroke(1f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+    g2d.setPaint(fildOfView);
+    g2d.fill(new Arc2D.Double(-distance+p.x, -distance+p.y, distance*2, distance*2, -Math.toDegrees(min), -Math.toDegrees(max -min), Arc2D.PIE));
 
-    Polygon p = new Polygon();
-    p.addPoint(0, 0);
-    p.addPoint((int)a.x, (int)a.y);
-    p.addPoint((int)b.x, (int)b.y);
-
-    GradientPaint blacktowhite = new GradientPaint(
-            0, 0, start,
-            (int)c.x, (int)c.y, end);
-
-    //g2d.setPaint(blacktowhite);
-    //g2d.fill(p);
-    g2d.setColor(Color.black);
-    g2d.setStroke(new BasicStroke(10));
-    g2d.drawLine(0, 0, (int)a.x, (int)a.y);
-    g2d.drawLine(0, 0, (int)b.x, (int)b.y);
+    g2d.setPaint(blacktowhite);
+    g2d.setStroke(new BasicStroke(10f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+    g2d.drawLine((int)p.x, (int)p.y, (int)a.x, (int)a.y);
+    g2d.drawLine((int)p.x, (int)p.y, (int)b.x, (int)b.y);
   }
   
 }//end class Robot

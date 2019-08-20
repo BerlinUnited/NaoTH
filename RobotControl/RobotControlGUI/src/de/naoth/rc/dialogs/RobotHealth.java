@@ -14,6 +14,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.drawings.Drawable;
 import de.naoth.rc.manager.GenericManagerFactory;
@@ -22,6 +23,7 @@ import de.naoth.rc.server.Command;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -42,7 +44,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 public class RobotHealth extends AbstractDialog
 {
 
-    
+  @RCDialog(category = RCDialog.Category.Status, name = "RobotHealth")
   @PluginImplementation
   public static class Plugin extends DialogPlugin<RobotHealth>
   {
@@ -52,8 +54,8 @@ public class RobotHealth extends AbstractDialog
       public static GenericManagerFactory genericManagerFactory;
   }//end Plugin
     
-  private final Command getFSRDataCommand = new Command("Cognition:representation:getbinary").addArg("FSRData");
-  private final Command getSensorJointDataCommand = new Command("Cognition:representation:getbinary").addArg("SensorJointData");
+  private final Command getFSRDataCommand = new Command("Cognition:representation:get").addArg("FSRData");
+  private final Command getSensorJointDataCommand = new Command("Cognition:representation:get").addArg("SensorJointData");
   
   private final DecimalFormat fsr_df = new DecimalFormat  ( "##0.00" );
   
@@ -162,17 +164,18 @@ public class RobotHealth extends AbstractDialog
         initComponents();
         
         try {
-            nao_body = ImageIO.read(getClass().getResource("/de/naoth/rc/res/nao_body.png"));
-            nao_feet = ImageIO.read(getClass().getResource("/de/naoth/rc/res/nao_feet.jpg"));
+            nao_body = ImageIO.read(getClass().getResource("/de/naoth/rc/res/nao_body_bw.png"));
+            nao_feet = ImageIO.read(getClass().getResource("/de/naoth/rc/res/nao_feet_bw.png"));
         
-            Color fade_color = new Color(230,245,255,200);
+            /*
+            Color fade_color = new Color(255,255,255,200);
             Graphics2D g2d = nao_body.createGraphics();
             g2d.setColor(fade_color);
             g2d.fillRect(0, 0, nao_body.getWidth(), nao_body.getHeight());
             g2d = nao_feet.createGraphics();
             g2d.setColor(fade_color);
             g2d.fillRect(0, 0, nao_feet.getWidth(), nao_feet.getHeight());
-            
+            */
         } catch (IOException e) {
         }
         
@@ -180,6 +183,8 @@ public class RobotHealth extends AbstractDialog
             jointPlots[i] = new MicroPlot(-30, 30);
             jointStates[i] = new JointState(jointNames[i], 10);
         }
+        
+        this.drawingPanel.setBackground(Color.white);
     }
     
     @Override
@@ -195,8 +200,20 @@ public class RobotHealth extends AbstractDialog
       {
         Graphics2D g2d = (Graphics2D) g;
         
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+        
         g2d.drawImage(nao_body, null, 0, 0);
         g2d.drawImage(nao_feet, null, nao_feet_offset_x, nao_feet_offset_y);
+        
+        Color fade_color = new Color(255,255,255,200);
+        g2d.setColor(fade_color);
+        g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
+
+        
         /*
         g2d.setColor(new Color(200,230,255,180));
         g2d.fillRect(0, 0, 1000, 1000);
@@ -228,6 +245,7 @@ public class RobotHealth extends AbstractDialog
         @Override
         public void errorOccured(String cause) {
             Plugin.genericManagerFactory.getManager(getFSRDataCommand).removeListener(this);
+            Logger.getLogger(RobotHealth.class.getName()).log(Level.SEVERE, null, cause);
         }
 
         @Override
@@ -239,7 +257,7 @@ public class RobotHealth extends AbstractDialog
                     FrameworkRepresentations.FSRData.parseFrom(object);
 
             for(int i = 0; i < theFSRStates.length; i++) {
-                theFSRStates[i].setValue(fsrData.getForce(i));
+                theFSRStates[i].setValue(fsrData.getData(i));
             }
             RobotHealth.this.repaint();
           }
@@ -260,6 +278,7 @@ public class RobotHealth extends AbstractDialog
         @Override
         public void errorOccured(String cause) {
             Plugin.genericManagerFactory.getManager(getSensorJointDataCommand).removeListener(this);
+            Logger.getLogger(RobotHealth.class.getName()).log(Level.SEVERE, null, cause);
         }
 
         @Override
@@ -311,7 +330,7 @@ public class RobotHealth extends AbstractDialog
         @Override
         public void draw(Graphics2D g2d) 
         {
-            g2d.setColor(getColor(0, 12.5f, (float)value));
+            g2d.setColor(getColor(0, 1.27f, (float)value));
             g2d.fillOval(x-radius, y-radius, radius*2, radius*2);
             
             g2d.setColor(Color.black);
@@ -354,8 +373,8 @@ public class RobotHealth extends AbstractDialog
             g2d.setColor(getColorMix(0, 85f, (float)temperature));
             g2d.fillOval(-radius, -radius, radius*2, radius*2);
             g2d.setColor(Color.black);
-            g2d.drawString(heat_df.format(temperature)+"("+current_df.format(current*1000)+")", 10, 5);
-            g2d.drawString(name, 10, -10);
+            g2d.drawString(heat_df.format(temperature)+"("+current_df.format(current*1000)+")", 10, 12);
+            g2d.drawString(name, 10, -3);
         }
     }
     

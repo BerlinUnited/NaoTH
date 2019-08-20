@@ -68,7 +68,7 @@ void Serializer<BallCandidates>::deserialize(std::istream& stream, BallCandidate
       BallCandidates::PatchYUV& patch = r.nextFreePatchYUV();
       DataConversion::fromMessage(p.patches(i).min(), patch.min);
       DataConversion::fromMessage(p.patches(i).max(), patch.max);
-      ASSERT(p.patches(i).data().size() == patch.SIZE*patch.SIZE*sizeof(Pixel));
+//      ASSERT(p.patches(i).data().size() == patch.SIZE*patch.SIZE*sizeof(Pixel));
       patch.data.resize(p.patches(i).data().size()/sizeof(Pixel));
       memcpy(patch.data.data(), p.patches(i).data().data(), p.patches(i).data().size());
     } 
@@ -77,7 +77,7 @@ void Serializer<BallCandidates>::deserialize(std::istream& stream, BallCandidate
       BallCandidates::PatchYUVClassified& patch = r.nextFreePatchYUVClassified();
       DataConversion::fromMessage(p.patches(i).min(), patch.min);
       DataConversion::fromMessage(p.patches(i).max(), patch.max);
-      ASSERT(p.patches(i).data().size() == patch.SIZE*patch.SIZE*sizeof(BallCandidates::ClassifiedPixel));
+//      ASSERT(p.patches(i).data().size() == patch.SIZE*patch.SIZE*sizeof(BallCandidates::ClassifiedPixel));
       patch.data.resize(p.patches(i).data().size()/sizeof(BallCandidates::ClassifiedPixel));
       memcpy(patch.data.data(), p.patches(i).data().data(), p.patches(i).data().size());
     } else {

@@ -12,6 +12,7 @@
 
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
+#include "Tools/Math/Common.h"
 
 namespace naoth
 {
@@ -48,7 +49,7 @@ class JointData
       LAnkleRoll,
 
       // NOTE: those values don't exist on the old V3.2/V3.3 robots
-      //       so, we pu them at the end for easier support for the old format
+      //       so, we put them at the end for easier support for the old format
       LWristYaw,
       RWristYaw,
       LHand,
@@ -69,7 +70,7 @@ class JointData
     double dp[numOfJoint]; // speed
     double ddp[numOfJoint]; // acceleration
 
-    // joint limits
+    // HACK: joint limits
     static double min[numOfJoint];
     static double max[numOfJoint];
 
@@ -99,6 +100,10 @@ class JointData
     bool isLegStiffnessOn() const;
     
     int checkStiffness() const;
+
+    void set(JointID joint, const double value, const double max_delta) {
+      position[joint] += Math::clamp(value - position[joint], -max_delta, max_delta);
+    }
 
   protected:
     double mirrorData(JointID joint) const;

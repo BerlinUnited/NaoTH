@@ -46,6 +46,11 @@ public class DialogPlugin<T extends AbstractDialog>
     }
 
     @Override
+    public String getCategory() { 
+        return "Dialog";
+    }
+
+    @Override
     public void dispose() {
         if(instance != null)
         {

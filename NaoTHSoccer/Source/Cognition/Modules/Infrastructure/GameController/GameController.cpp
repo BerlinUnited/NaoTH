@@ -5,14 +5,35 @@
 
 GameController::GameController()
   : 
-  lastWhistleCount(0),
-  returnMessage(GameReturnData::alive)
+  lastGameState(GameData::GameState::unknown_game_state),
+  debug_whistle_heard(false),
+  play_by_whistle(false)
 {
-  DEBUG_REQUEST_REGISTER("gamecontroller:play", "force the play state", false);
-  DEBUG_REQUEST_REGISTER("gamecontroller:penalized", "force the penalized state", false);
-  DEBUG_REQUEST_REGISTER("gamecontroller:initial", "force the initial state", false);
-  DEBUG_REQUEST_REGISTER("gamecontroller:ready", "force the ready state", false);
-  DEBUG_REQUEST_REGISTER("gamecontroller:set", "force the set state", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:game_state:play", "force the play state", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:game_state:penalized", "force the penalized state", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:game_state:initial", "force the initial state", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:game_state:ready", "force the ready state", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:game_state:set", "force the set state", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:game_state:finished", "force the finished state", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:none", "force the setPlay state to none", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:goal_free_kick", "force the setPlay state to goal free kick", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:pushing_free_kick", "force the setPlay state to pushing free kick", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:corner_kick", "force the setPlay state to corner kick", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:set_play:kick_in", "force the setPlay state to kick-in", false);
+
+  DEBUG_REQUEST_REGISTER("gamecontroller:gamephase:normal", "force the gamephase", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:gamephase:penaltyshoot", "force the gamephase", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:gamephase:overtime", "force the gamephase", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:gamephase:timeout", "force the gamephase", false);
+
+  DEBUG_REQUEST_REGISTER("gamecontroller:kickoff", "forces the kickoff to be ours", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:secondaryTime:30", "sets the secondary time of the gamecontroller to 30s", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:secondaryTime:20", "sets the secondary time of the gamecontroller to 20s", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:secondaryTime:10", "sets the secondary time of the gamecontroller to 10s", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:secondaryTime:5", "sets the secondary time of the gamecontroller to 5s", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:secondaryTime:0", "sets the secondary time of the gamecontroller to 0s", false);
+
+  DEBUG_REQUEST_REGISTER("gamecontroller:blow_whistle", "the robot recognizes a whistle", false);
 
   // TODO: make it parameters?
   // load values from config
@@ -58,6 +79,15 @@ GameController::GameController()
   } else {
     std::cerr << "[GameData] " << "No team color (TeamColor) given" << std::endl;
   }
+
+  // use the team configuration if avaliable
+  const std::string& name = naoth::Platform::getInstance().theRobotName;
+  if (config.hasKey("team", name)) {
+    getPlayerInfo().playerNumber = config.getInt("team", name);
+  }
+
+  // print out the "final" player number for loggin purposes
+  std::cout << "[PlayerInfo] " << "playerNumber: " << getPlayerInfo().playerNumber << std::endl;
 }
 
 void GameController::execute()
@@ -65,58 +95,38 @@ void GameController::execute()
   PlayerInfo::RobotState oldRobotState = getPlayerInfo().robotState;
   GameData::TeamColor oldTeamColor = getPlayerInfo().teamColor;
 
-  // try update from the game controller message
-  if ( getGameData().valid ) 
+  // reset the whistle state if the game state is not play anymore
+  if(getPlayerInfo().robotState != PlayerInfo::playing) {
+    play_by_whistle = false;
+  }
+
+  // try update from the game controller message if not manually overwritten
+  if ( getGameData().valid && getWifiMode().wifiEnabled ) 
   {
+    // HACK: needed by SimSpark - overide the player number
+    if(getGameData().newPlayerNumber > 0) {
+      getPlayerInfo().playerNumber = getGameData().newPlayerNumber;
+    }
+
     getPlayerInfo().update(getGameData());
 
-    // reset return message if old message was accepted
-    if( returnMessage == GameReturnData::manual_penalise
-        && getGameData().getOwnRobotInfo(getPlayerInfo().playerNumber).penalty != GameData::none)
-    {
-      returnMessage = GameReturnData::alive;
+    // take the ownership of the play state
+    if(getPlayerInfo().robotState == PlayerInfo::playing) {
+      play_by_whistle = false;
     }
-    else if(returnMessage == GameReturnData::manual_unpenalise
-            && getGameData().getOwnRobotInfo(getPlayerInfo().playerNumber).penalty == GameData::none)
-    {
-      returnMessage = GameReturnData::alive;
-    }
-  }
-  
-  // keep the manual penalized state
-  if(returnMessage == GameReturnData::manual_penalise) {
-    getPlayerInfo().robotState = PlayerInfo::penalized;
   }
 
   handleButtons();
   handleHeadButtons();
-  
-  DEBUG_REQUEST("gamecontroller:initial",
-    getPlayerInfo().robotState = PlayerInfo::initial;
-  );
-  DEBUG_REQUEST("gamecontroller:ready",
-    getPlayerInfo().robotState = PlayerInfo::ready;
-  );
-  DEBUG_REQUEST("gamecontroller:set",
-    getPlayerInfo().robotState = PlayerInfo::set;
-  );
-  DEBUG_REQUEST("gamecontroller:play",
-    getPlayerInfo().robotState = PlayerInfo::playing;
-  );
-  DEBUG_REQUEST("gamecontroller:penalized",
-    getPlayerInfo().robotState = PlayerInfo::penalized;
-  );
-  
-  // remember the whistle counter before set
-  if(getPlayerInfo().robotState == PlayerInfo::ready) {
-    lastWhistleCount = getWhistlePercept().counter;
-  }
-  // whistle overrides gamecontroller when in set
-  else if(getGameData().gameState == GameData::set)
+  handleDebugRequest();
+
+  // whistle overrides state when in set
+  if(getPlayerInfo().robotState == PlayerInfo::set)
   {
     // switch from set to play
-    if(getWhistlePercept().counter > lastWhistleCount) {
+    if(getWhistlePercept().whistleDetected || debug_whistle_heard || play_by_whistle) {
       getPlayerInfo().robotState = PlayerInfo::playing;
+      play_by_whistle = true;
     }
   }
 
@@ -128,16 +138,105 @@ void GameController::execute()
     updateLEDs();
   }
 
+  // remember last game state (from gamecontroller)
+  lastGameState = getGameData().gameState;
+  // set teamcomm: whistle detected!
+  getTeamMessageData().custom.whistleDetected = getWhistlePercept().whistleDetected;
+  getTeamMessageData().custom.whistleCount = getWhistlePercept().counter;
+
   // provide the return message
   getGameReturnData().team = getPlayerInfo().teamNumber;
   getGameReturnData().player = getPlayerInfo().playerNumber;
-  getGameReturnData().message = returnMessage;
+  getGameReturnData().message = getWifiMode().wifiEnabled ? GameReturnData::alive : GameReturnData::dead;
 } // end execute
+
+
+void GameController::handleDebugRequest()
+{
+  PlayerInfo::RobotState debugState = getPlayerInfo().robotState;
+
+  // DebugRequests for the game state
+  DEBUG_REQUEST("gamecontroller:game_state:initial",
+    debugState = PlayerInfo::initial;
+  );
+  DEBUG_REQUEST("gamecontroller:game_state:ready",
+    debugState = PlayerInfo::ready;
+  );
+  DEBUG_REQUEST("gamecontroller:game_state:set",
+    debugState = PlayerInfo::set;
+  );
+  DEBUG_REQUEST("gamecontroller:game_state:play",
+    debugState = PlayerInfo::playing;
+    // take the ownership of the play state
+    play_by_whistle = false;
+  );
+  DEBUG_REQUEST("gamecontroller:game_state:penalized",
+    debugState = PlayerInfo::penalized;
+  );
+  DEBUG_REQUEST("gamecontroller:game_state:finished",
+    debugState = PlayerInfo::finished;
+  );
+
+  // DebugRequests for the set play state (free kicks)
+  DEBUG_REQUEST("gamecontroller:set_play:none",
+    getPlayerInfo().robotSetPlay = PlayerInfo::set_none;
+  );
+  DEBUG_REQUEST("gamecontroller:set_play:goal_free_kick",
+    getPlayerInfo().robotSetPlay = PlayerInfo::goal_free_kick;
+  );
+  DEBUG_REQUEST("gamecontroller:set_play:pushing_free_kick",
+    getPlayerInfo().robotSetPlay = PlayerInfo::pushing_free_kick;
+  );
+  DEBUG_REQUEST("gamecontroller:set_play:corner_kick",
+    getPlayerInfo().robotSetPlay = PlayerInfo::corner_kick;
+  );
+  DEBUG_REQUEST("gamecontroller:set_play:kick_in",
+    getPlayerInfo().robotSetPlay = PlayerInfo::kick_in;
+  );
+
+  DEBUG_REQUEST("gamecontroller:gamephase:normal",
+    getPlayerInfo().gamePhase = PlayerInfo::normal;
+  );
+  DEBUG_REQUEST("gamecontroller:gamephase:penaltyshoot",
+    getPlayerInfo().gamePhase = PlayerInfo::penaltyshoot;
+  );
+  DEBUG_REQUEST("gamecontroller:gamephase:overtime",
+    getPlayerInfo().gamePhase = PlayerInfo::overtime;
+  );
+  DEBUG_REQUEST("gamecontroller:gamephase:timeout",
+    getPlayerInfo().gamePhase = PlayerInfo::timeout;
+  );
+
+  // DebugRequests for the kickoff state
+  DEBUG_REQUEST("gamecontroller:kickoff",
+    getPlayerInfo().kickoff = true;
+  );
+
+  // DebugRequests for the secondary game time (eg. free kick)
+  DEBUG_REQUEST("gamecontroller:secondaryTime:30", getGameData().secondaryTime = 30;);
+  DEBUG_REQUEST("gamecontroller:secondaryTime:20", getGameData().secondaryTime = 20;);
+  DEBUG_REQUEST("gamecontroller:secondaryTime:10", getGameData().secondaryTime = 10;);
+  DEBUG_REQUEST("gamecontroller:secondaryTime:5", getGameData().secondaryTime = 5;);
+  DEBUG_REQUEST("gamecontroller:secondaryTime:0", getGameData().secondaryTime = 0;);
+
+  debug_whistle_heard = false;
+  DEBUG_REQUEST("gamecontroller:blow_whistle",
+    // kinda "hack": we don't increment the whistle counter, instead ...
+    debug_whistle_heard = true;
+  );
+
+  // NOTE: same behavior as the button interface
+  if(debugState != getPlayerInfo().robotState) {
+    getPlayerInfo().robotState = debugState;
+  }
+
+} // end handleDebugRequest
 
 
 void GameController::handleButtons()
 {
-  if (getButtonState()[ButtonState::Chest] == ButtonEvent::CLICKED)
+
+  if (getButtonState()[ButtonState::Chest].isSingleClick())
   {
     switch (getPlayerInfo().robotState)
     {
@@ -148,13 +247,13 @@ void GameController::handleButtons()
     case PlayerInfo::finished:
     {
       getPlayerInfo().robotState = PlayerInfo::penalized;
-      returnMessage = GameReturnData::manual_penalise;
       break;
     }
     case PlayerInfo::penalized:
     {
       getPlayerInfo().robotState = PlayerInfo::playing;
-      returnMessage = GameReturnData::manual_unpenalise;
+      // take the ownership of the play state
+      play_by_whistle = false;
       break;
     }
     default:
@@ -199,7 +298,6 @@ void GameController::handleButtons()
     )
   {
     getPlayerInfo().robotState = PlayerInfo::initial;
-    returnMessage = GameReturnData::manual_unpenalise;
   }
 
 } // end handleButtons
@@ -207,12 +305,8 @@ void GameController::handleButtons()
 
 void GameController::handleHeadButtons()
 {
-  getSoundPlayData().mute = true;
-  getSoundPlayData().soundFile = "";
-
-
-  if(   getButtonState().buttons[ButtonState::HeadMiddle] == ButtonEvent::CLICKED
-     && getPlayerInfo().robotState == PlayerInfo::initial)
+  if(getButtonState().buttons[ButtonState::HeadMiddle] == ButtonEvent::CLICKED
+    && (getPlayerInfo().robotState == PlayerInfo::initial || getPlayerInfo().robotState == PlayerInfo::finished))
   {
     int playerNumber = getPlayerInfo().playerNumber;
     if(playerNumber <= 9)

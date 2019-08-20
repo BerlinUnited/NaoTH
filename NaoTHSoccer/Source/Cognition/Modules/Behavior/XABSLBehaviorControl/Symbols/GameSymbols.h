@@ -24,7 +24,7 @@ class GameSymbols: public GameSymbolsBase
 {
 
 public:
-  GameSymbols() {
+  GameSymbols()  {
     theInstance = this;
   }
   virtual ~GameSymbols(){}
@@ -41,8 +41,12 @@ private:
   static bool getOwnKickOff();
   static double getPlayerNumber();
   static double getMsecsRemaining();
+  static double getMsecsRemainingSecondary();
   static int getGameState();
-  //static int getPlayMode();
+  static int getSetPlay();
+  static int getGamePhase();
+
+  static bool playingIsSetByGameController;
 
 };//end class GameSymbols
 

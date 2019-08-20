@@ -16,31 +16,44 @@ class IKParameters : public ParameterList
 {
 public:
 
-  // TODO: what are those parameters?
   double footOffsetY;
-  
+
   struct Stand 
   {
     double speed;
     bool enableStabilization;
-    double stiffness;
+    bool enableStabilizationRC16;
+    double stiffnessGotoPose;
+    double stiffnessRelax;
 
     double bodyPitchOffset;
     double hipOffsetX;
 
+    struct Stabilization{
+        struct RotationStabilization{
+            Vector2d P;
+            Vector2d VelocityP;
+            Vector2d D;
+        } rotation, rotationRC16;
+    } stabilization;
+
     struct Relax {
+
+        bool   enable;
         double allowedDeviation;
         double allowedRotationDeviation;
         double timeBonusForCorrection;
 
         struct JointOffsetTuning {
+            bool   enable;
             double deadTime;
             double currentThreshold;
             double minimalJointStep;
         } jointOffsetTuning;
 
         struct StiffnessControl {
-            double deadTime;
+            bool   enable;
+//            double deadTime;
             double minAngle;
             double minStiffness;
             double maxAngle;
@@ -49,110 +62,23 @@ public:
     } relax;
   } stand;
 
-
-  struct Walk 
-  {
-    struct General
-    {
-      double bodyPitchOffset;
-      double hipOffsetX;
-
-      double stiffness;
-      bool useArm;
-
-      // hip joint correction
-      double hipRollSingleSupFactorLeft;
-      double hipRollSingleSupFactorRight;
-    } general;
-
-
-    // hip trajectory geometry
-    struct Hip
-    {
-      double comHeight;
-      double comHeightOffset;
-      double comRotationOffsetX;
-      double ZMPOffsetY;
-      double ZMPOffsetYByCharacter;
-    } hip;
-
-    // step geometry
-    struct Step
-    {
-      int duration;
-      int doubleSupportTime;
-    
-      double stepHeight;
-    } step;
-    
-    // step limits
-    struct Limits
-    {
-      double maxTurnInner;
-      double maxStepTurn;
-      double maxStepLength;
-      double maxStepLengthBack;
-      double maxStepWidth;
-      double maxStepChange; // (0 - 1]
-
-      // step control
-      double maxCtrlTurn;
-      double maxCtrlLength;
-      double maxCtrlWidth;
-    } limits;
-    
-
-    struct Stabilization
-    {
-      // FSR stabilizators
-      //bool enableFSRProtection;
-      //bool enableWaitLanding;
-      //unsigned int minFSRProtectionCount;
-    
-      //int maxUnsupportedCount;
-      //int maxWaitLandingCount; // <0 means wait for ever until landing
-
-      double emergencyStopError;
-
-      // enable stabilization by rotating the body
-      bool rotationStabilize;
-
-      // enable the PD-control for the feet
-      bool stabilizeFeet;
-      // differential and proportional factors for rotation on x- and y- axes
-      Vector2d stabilizeFeetP;
-      Vector2d stabilizeFeetD;
-
-      Vector2d rotationP;
-      Vector2d rotationVelocityP;
-      Vector2d rotationD;
-
-      // enable the synamic adaptation of the stepsize
-      bool dynamicStepsize;
-      double dynamicStepsizeP;
-      double dynamicStepsizeD;
-    } stabilization;
-  } walk;
-
-
-  struct RotationStabilize 
-  {
-      Vector2d k;
-      Vector2d threshold;
-  } rotationStabilize;
-
   struct Arm 
   {
-    // move shoulder according to interial sensor
-    double shoulderPitchInterialSensorRate;
-    double shoulderRollInterialSensorRate;
-
     // the max joint speed in degree/second
     double maxSpeed;
-    bool alwaysEnabled;
-    bool kickEnabled;
-    bool walkEnabled;
-    bool takeBack;
+
+    // move shoulder according to interial sensor
+    struct InertialModelBasedMovement {
+        double shoulderPitchInterialSensorRate;
+        double shoulderRollInterialSensorRate;
+    } inertialModelBasedMovement;
+
+    // move the arm according to motion/walk
+    struct SynchronisedWithWalk {
+        double shoulderPitchRate;
+        double shoulderRollRate;
+        double elbowRollRate;
+    } synchronisedWithWalk;
   } arm;
 
   struct BalanceCoMParameter 

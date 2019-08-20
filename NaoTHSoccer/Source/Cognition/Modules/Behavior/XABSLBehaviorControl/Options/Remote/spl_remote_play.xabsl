@@ -1,0 +1,34 @@
+
+option spl_remote_play
+{
+  initial state direct_control
+  {
+    decision
+    {
+      if(remote_control.mode == lock)
+        goto lock_control;
+      else
+        stay;
+    }
+    action
+    {
+      spl_remote_play_direct_control();
+    }
+  }
+
+  state lock_control
+  {
+    decision
+    {
+      if(remote_control.mode == direct)
+        goto direct_control;
+      else
+        stay;
+    }
+    action
+    {
+      spl_remote_play_lock_control();
+    }
+  }
+
+}

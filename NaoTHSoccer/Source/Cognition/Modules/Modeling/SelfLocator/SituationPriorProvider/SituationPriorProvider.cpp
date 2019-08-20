@@ -12,6 +12,7 @@ SituationPriorProvider::SituationPriorProvider()
   lastRobotState = getPlayerInfo().robotState;
   currentRobotState = getPlayerInfo().robotState;
   gameStateWhenPenalized = GameData::unknown_game_state;
+  reasonForLastPenalized = GameData::penalty_none;
 
   walked_after_penalized_or_init = false;
   wasLiftedUp = false;
@@ -33,6 +34,10 @@ void SituationPriorProvider::execute()
 
     if(getPlayerInfo().robotState == PlayerInfo::penalized) {
       gameStateWhenPenalized = getGameData().gameState;
+
+      if(getGameData().valid) {
+        reasonForLastPenalized = getGameData().getOwnRobotInfo(getPlayerInfo().playerNumber).penalty;
+      }
     }
   }
 
@@ -53,7 +58,7 @@ void SituationPriorProvider::execute()
     wasLiftedUp = true;
   }
 
-  // for penalty kicker
+  // for penalty kicker, this has the highest priority
   if(getSituationStatus().oppHalf)
   {
     getSituationPrior().currentPrior = SituationPrior::oppHalf;
@@ -67,7 +72,8 @@ void SituationPriorProvider::execute()
   else if( lastRobotState == PlayerInfo::penalized && !walked_after_penalized_or_init )
   {
     // robot was penalized in set
-    if(gameStateWhenPenalized == GameData::set) 
+    //if(gameStateWhenPenalized == GameData::set) 
+    if(reasonForLastPenalized == GameData::illegal_motion_in_set)
     {
       if(getPlayerInfo().playerNumber == 1) {
         //The Goalie will be in the own Goal if manually placed in set
@@ -77,7 +83,7 @@ void SituationPriorProvider::execute()
       }
     }
     // robot was penalized in game
-    else if (gameStateWhenPenalized == GameData::playing)
+    else //if (gameStateWhenPenalized == GameData::playing)
     {
       getSituationPrior().currentPrior = SituationPrior::playAfterPenalized;
     }

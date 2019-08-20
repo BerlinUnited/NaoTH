@@ -6,7 +6,7 @@
  */
 
 #ifndef _LOGFILEENTRY_H
-#define  _LOGFILEENTRY_H
+#define _LOGFILEENTRY_H
 
 #include <string>
 #include <sstream>
@@ -15,10 +15,15 @@ class LogfileEntry
 {
 public:
   
-  LogfileEntry();
+  LogfileEntry()
+    : 
+    frameNumber(0), 
+    name(""),
+    data(std::ios::in | std::ios::out | std::ios::binary)
+  {
+  }
   
-  ~LogfileEntry();
-  
+
   unsigned int frameNumber;
   std::string name;
   std::stringstream data;

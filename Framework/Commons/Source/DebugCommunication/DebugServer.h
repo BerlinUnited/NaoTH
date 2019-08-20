@@ -18,6 +18,11 @@
 
 #include <map>
 #include <queue>
+#include <set>
+
+#include <thread>
+#include <mutex>
+#include <atomic>
 
 class DebugServer
 {
@@ -81,10 +86,12 @@ private:
       }//end for
     }//end getDebugMessageIn
 
-    void clear()
+    void clear(std::set<unsigned long>& id_backlog)
     {
       while (g_async_queue_length(message_queue) > 0) {
-        delete (naoth::DebugMessageIn::Message*) g_async_queue_pop(message_queue);
+        naoth::DebugMessageIn::Message* msg = (naoth::DebugMessageIn::Message*) g_async_queue_pop(message_queue);
+        id_backlog.erase(msg->id);
+        delete msg;
       }
     }
   };
@@ -96,24 +103,22 @@ private:
   /** Communication interface */
   DebugCommunicator comm;
 
-  GThread* connectionThread;
+  std::thread connectionThread;
 
   GAsyncQueue* answers; // outgoing messages
   Channel received_messages_cognition;
   Channel received_messages_motion;
+  std::set<unsigned long> id_backlog; // list of unanswered id's
 
-  GMutex* m_executing;
-  GMutex* m_abort;
+  std::mutex m_executing;
 
-  bool abort;
+  std::atomic<bool> abort;
 
   void run();
   void receive();
   void send();
 
   void parseCommand(GString* cmdRaw, naoth::DebugMessageIn::Message& command) const;
-
-  static void* connection_thread_static(void* ref);
 
   void disconnect();
   void clearQueues();

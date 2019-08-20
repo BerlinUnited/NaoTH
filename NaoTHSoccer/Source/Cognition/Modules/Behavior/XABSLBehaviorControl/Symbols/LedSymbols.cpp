@@ -7,6 +7,7 @@
 
 
 #include "LedSymbols.h"
+#include <cmath>
 
 using namespace naoth;
 

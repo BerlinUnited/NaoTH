@@ -79,7 +79,7 @@ private:
       PARAMETER_REGISTER(numberOfScanlines) = 9;
       PARAMETER_REGISTER(scanlinesDistance) = 8;
 
-      PARAMETER_REGISTER(detectWhiteGoals) = true;
+      //PARAMETER_REGISTER(detectWhiteGoals) = true;
       PARAMETER_REGISTER(threshold) = 140;
       PARAMETER_REGISTER(thresholdGradient) = 7;
       PARAMETER_REGISTER(thresholdFeatureGradient) = 0.5;
@@ -94,9 +94,9 @@ private:
     int numberOfScanlines;
     int scanlinesDistance;
 
-    bool detectWhiteGoals;
-    bool usePrewitt;
-    bool useColorFeatures;
+    //bool detectWhiteGoals;
+    //bool usePrewitt;
+    //bool useColorFeatures;
     bool experimental;
     int threshold;
     int thresholdGradient;

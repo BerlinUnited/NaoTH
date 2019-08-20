@@ -17,30 +17,27 @@ public:
 
   virtual ~VoidSerializer() {}
 
-  virtual void serialize(const void* representation, std::ostream& stream) = 0;
-  virtual void deserialize(std::istream& stream, void* representation) = 0;
+  virtual void serialize(std::ostream& stream) = 0;
+  //virtual void deserialize(std::istream& stream) = 0;
 };
 
 template<class T>
 class  SerializerWrapper : public VoidSerializer
 {
-public:
-  SerializerWrapper() {}
+private:
+  const T* const representation;
 
+public:
+  SerializerWrapper(const T* representation) : representation(representation) {}
   virtual ~SerializerWrapper() {}
 
-  virtual void serialize(const void* representation, std::ostream& stream)
-  {
-    const T* pointer = (const T*) representation;
-    const T& ref = *pointer;
-    Serializer<T>::serialize(ref, stream);
+  virtual void serialize(std::ostream& stream) {
+    Serializer<T>::serialize(*representation, stream);
   }
-  virtual void deserialize(std::istream& stream, void* representation)
-  {
-    T* pointer = ( T*) representation;
-    T& ref = *pointer;
-    Serializer<T>::deserialize(stream, ref);
-  }
+  /*
+  virtual void deserialize(std::istream& stream) {
+    Serializer<T>::deserialize(stream, *representation);
+  }*/
 };
 
 }

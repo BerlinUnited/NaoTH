@@ -27,7 +27,7 @@ public:
   std::string bodyID;
 
   /** The time of each step which depends on platforms */
-  unsigned int basicTimeStep; 
+  unsigned int basicTimeStep;
   
   /**
   * The method returns the basic time step in seconds

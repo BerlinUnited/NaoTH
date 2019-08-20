@@ -71,6 +71,12 @@ void DebugDrawings3D::addBox(const char* color, double xdim, double ydim, double
   outStream << ' ' << p << '\n';
 }
 
+void DebugDrawings3D::addColorCube(double size, const Pose3D& pose) {
+  outStream << "ColorCube " << size << ' ';
+  pose.rotation.toCompactString(outStream);
+  outStream << ' ' << pose.translation << '\n';
+}
+
 void DebugDrawings3D::addSphere(ColorClasses::Color color, double radius, const Vector3d& p)
 {
   addSphere(ColorClasses::colorClassToHex(color), radius, p);

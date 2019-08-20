@@ -1,3 +1,4 @@
+syntax = "proto2";
 package naothmessages;
 option java_package= "de.naoth.rc.messages";
 
@@ -16,7 +17,7 @@ message CameraMatrix {
 message BallPercept {
   optional bool ballWasSeen = 1;
   optional DoubleVector2 centerInImage = 2;
-  optional double radiusInImage = 3;  
+  optional double radiusInImage = 3;
   optional Color ballColor = 4;
   optional DoubleVector2 bearingBasedOffsetOnField = 5;
   optional FrameInfo frameInfoWhenBallWasSeen = 6;
@@ -29,9 +30,23 @@ message MultiBallPercept {
     optional DoubleVector2 positionOnField = 3;
     optional CameraID cameraId = 4;
   }
-  
+
   optional FrameInfo frameInfoWhenBallWasSeen = 1;
   repeated BallPercept percepts = 2;
+}
+
+message BallModel {
+  optional bool valid = 1;
+  optional bool knows = 2;
+
+  optional DoubleVector2 position = 3;
+  optional DoubleVector2 speed = 4;
+
+  optional DoubleVector2 positionPreview = 5;
+  optional DoubleVector2 positionPreviewInLFoot = 6;
+  optional DoubleVector2 positionPreviewInRFoot = 7;
+  repeated DoubleVector2 futurePosition = 8;
+
 }
 
 message GoalPercept {
@@ -42,7 +57,7 @@ message GoalPercept {
       leftPost = 1;
       unknownPost = 2;
     };
-    
+
     optional IntVector2 basePoint = 1;
     optional DoubleVector2 position = 2;
     optional Color color = 3;
@@ -73,12 +88,28 @@ message HeadMotionRequest {
 
 message StepControlRequest
 {
+  enum StepType {
+	WALKSTEP = 0;
+	KICKSTEP = 1;
+	ZEROSTEP = 2;
+  };
+
   required uint32 stepID = 1;
   required bool moveLeftFoot = 2;
   required Pose2D target = 3;
   required uint32 time = 4;
   required double speedDirection = 5;
   required double scale = 6;
+  required StepType steptype = 7;
+  
+  enum RestrictionMode {
+	HARD = 0;
+	SOFT = 1;
+  };
+  
+  required RestrictionMode restriction = 8;
+  required bool isProtected = 9;
+  required uint32 stepRequestID = 10;
 }
 
 message WalkRequest {
@@ -127,10 +158,34 @@ message MotionRequest {
   optional uint32 cognitionFrameNumber = 9;
   optional GraspRequest graspRequest = 10;
   optional ArmMotionRequest armMotionRequest = 11;
+  optional bool disable_relaxed_stand = 12;
 }
 
 
 message LinePercept {
+
+  message Intersection {
+
+    enum IntersectionType
+    {
+      unknown = 0;
+      T = 1;
+      L = 2;
+      C = 3;
+      none = 4;
+      X = 5;
+    }
+
+    optional DoubleVector2 posInImage = 1;
+    optional DoubleVector2 posOnField = 2;
+
+    optional IntersectionType type = 3;
+    optional uint32 segmentOneIndex = 6;
+    optional uint32 segmentTwoIndex = 7;
+    optional double segmentOneDistance = 8;
+    optional double segmentTwoDistance = 9;
+  }
+
   message FieldLineSegment {
     optional LineSegment lineInImage = 1;
     optional LineSegment lineOnField = 2;
@@ -148,11 +203,38 @@ message LinePercept {
   optional DoubleVector2 middleCircleCenter = 3;
 }
 
+message ShortLinePercept {
+  repeated LineSegment fieldLineSegments = 1;
+}
+
+message Polygon {
+  repeated IntVector2 points = 1;
+}
+
+message FieldPercept {
+  required Polygon fieldPoly = 1;
+}
+
+message RansacLinePercept {
+  repeated LineSegment fieldLineSegments = 1;
+}
+
+message RansacCirclePercept2018 {
+  optional bool wasSeen = 1;
+  optional DoubleVector2 middleCircleCenter = 2;
+
+}
+
 message ScanLineEndPoint {
   required IntVector2 posInImage = 1;
   required DoubleVector2 posOnField = 2;
   required Color color = 3;
   required uint32 ScanLineID = 4;
+}
+
+message DoubleEdgel {
+  required DoubleVector2 point = 1;
+  required DoubleVector2 direction = 2;
 }
 
 message Edgel {
@@ -172,13 +254,21 @@ message ScanLineEdgelPercept {
   repeated ScanLineEndPoint endPoints = 2;
 }
 
+message LineGraphPercept {
+  repeated Edgel edgelsOnField = 1;
+  
+  repeated DoubleEdgel edgelsInImageTop = 2;
+  repeated DoubleEdgel edgelsInImage = 3;
+}
+
 message StepControlStatus
 {
   required uint32 stepID = 1;
-  required uint32 moveableFoot =2;
+  required uint32 moveableFoot = 2;
+  required uint32 stepRequestID = 3;
 }
 
-message MotionStatus 
+message MotionStatus
 {
   required uint32 time = 1;
   required uint32 lastMotion = 2;
@@ -189,6 +279,12 @@ message MotionStatus
   required Pose2D plannedMotionRightFoot = 7;
   required Pose2D plannedMotionHip = 8;
   optional StepControlStatus stepControlStatus = 9;
+  
+  optional bool   target_reached = 10;
+  optional bool   head_target_reached = 11;
+  optional bool   head_got_stuck = 12;
+  
+  optional bool   walk_emergency_stop = 13;
 }
 
 message OdometryData
@@ -223,56 +319,18 @@ message InertialModel
   optional DoubleVector2 orientation = 1;
 }
 
-enum TeamColor 
-{
-  blueTeam = 0; redTeam = 1; yellowTeam = 2; blackTeam = 3; invalidTeam = 255;
-}
-
-message TeamMessage
-{
-  message Data
-  {
-    optional uint32 playerNum = 1 [default=0];
-    optional TeamColor teamColor = 11 [default=blueTeam,deprecated=true];
-    optional Pose2D pose = 3;
-    optional int32 ballAge = 4 [default=-1];
-    optional DoubleVector2 ballPosition = 5;
-    optional DoubleVector2 ballVelocity = 6;
-    optional bool fallen = 10 [default=false];
-    optional BUUserTeamMessage user = 8;
-    optional FrameInfo frameInfo = 9;
-    optional uint32 teamNumber = 12 [default=0];
-  }
-  repeated Data data = 1;
-}
-
-message BUUserTeamMessage
-{
-  optional string bodyID = 1 [default="unknown"];
-  optional uint32 timeToBall = 2;
-  optional bool wasStriker = 3 [default=false];
-  optional bool isPenalized = 4 [default=false];
-  repeated Opponent opponents = 5;
-  optional uint32 teamNumber = 6 [default=0,deprecated=true];
-  optional float batteryCharge = 7 [default=1.0];
-  optional float temperature = 8 [default=0.0];
-  optional uint64 timestamp = 9 [default=0];
-}
-
-message Opponent {
-  required int32 playerNum = 1 [default=0];
-  optional Pose2D poseOnField = 2;
-}
-
 
 message CameraMatrixCalibration
 {
-  repeated DoubleVector2 correctionOffset = 1;
+  repeated DoubleVector2 correctionOffset = 1 [deprecated=true];
+  optional DoubleVector2 correctionOffsetBody = 2;
+  optional DoubleVector3 correctionOffsetHead = 3;
+  repeated DoubleVector3 correctionOffsetCam  = 4;
 }
 
 message BallCandidates
 {
-  message Patch 
+  message Patch
   {
     enum Type {
       Y = 0;
@@ -284,6 +342,120 @@ message BallCandidates
     optional Type type = 3 [default=Y];
     required bytes data = 5;
   }
-  
+
   repeated Patch patches = 1;
+}
+
+message RemoteControlCommand {
+  enum ControlMode
+  {
+    DIRECT_CONTROL = 0;
+    LOCK_CONTROL = 1;
+  }
+
+  enum ActionType {
+    NONE = 0;
+    STAND = 1;
+    WALK = 2;
+    KICK_RIGHT = 3;
+    KICK_LEFT = 4;
+    KICK_FORWARD_LEFT = 5;
+    KICK_FORWARD_RIGHT = 6;
+  }
+
+  enum SecondActionType
+  {
+    SECOND_NONE = 0;
+    BLINK = 1;
+    SAY = 2;
+  }
+
+  optional ControlMode controlMode = 1;
+  optional ActionType action = 2;
+  optional SecondActionType second_action = 3;
+
+  optional Pose2D target = 4;
+}
+
+message GroundContactModel {
+  enum Foot {
+    LEFT = 0;
+    RIGHT = 1;
+    NONE = 2;
+  }
+
+  required bool leftGroundContact = 1;
+  required bool rightGroundContact = 2;
+  required Foot supportFoot = 3;
+}
+
+
+message CollisionPercept {
+  required uint32 timeCollisionArmLeft = 1;
+  required uint32 timeCollisionArmRight = 2;
+}
+
+message IMUData
+{
+ required DoubleVector3 location = 1;
+ required DoubleVector3 velocity = 2;
+ required DoubleVector3 acceleration = 3;
+ optional DoubleVector3 acceleration_sensor = 4;
+
+ required DoubleVector3 rotation = 5;
+ required DoubleVector3 rotational_velocity = 6;
+ optional DoubleVector3 rotational_velocity_sensor = 7;
+ required DoubleVector2 orientation = 8;
+ required DoubleVector3 orientation_rotvec = 9;
+}
+
+message CentreOfPressure {
+ required DoubleVector3 in_and_only_left_foot_cop = 1;
+ required double in_and_only_left_foot_magnitude  = 2;
+ required bool   in_and_only_left_foot_valid      = 3;
+
+ required DoubleVector3 in_and_only_right_foot_cop = 4;
+ required double in_and_only_right_foot_magnitude  = 5;
+ required bool   in_and_only_right_foot_valid      = 6;
+
+ required DoubleVector3 in_kinematic_chain_origin_cop = 7;
+ required double in_kinematic_chain_origin_magnitude  = 8;
+ required bool   in_kinematic_chain_origin_valid      = 9;
+}
+
+message CalibrationDataCMC {
+ message CalibrationDataSampleV3 {
+  optional Pose3D chestPose               = 1;
+  repeated DoubleVector2 edgelsInImage    = 2;
+  repeated DoubleVector2 edgelsInImageTop = 3;
+  optional DoubleVector2 orientation      = 4;
+  optional double headYaw                 = 5;
+  optional double headPitch               = 6;
+ }
+
+ repeated CalibrationDataSampleV3 calibrationData = 1;
+ optional uint32 numberOfResudials                = 2;
+}
+
+message WhistlePercept {
+  message Whistle {
+    required string name = 1;
+    required int64 positionInCapture = 2;
+    required double responseValue = 3;
+  }
+  
+  optional int32 counter  = 1;
+  optional string captureFile = 2;
+  repeated Whistle recognizedWhistles = 3;
+  optional bool whistleDetected = 4;
+}
+
+message DebugModify {
+  message ModifyValue {
+    required string name = 1;
+    optional bool modify = 2;
+    optional double value = 3;
+  }
+  
+  repeated ModifyValue valueMap = 1;
 }

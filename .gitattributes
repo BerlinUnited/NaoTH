@@ -7,11 +7,14 @@
 *.cpp    text diff=cpp
 *.c      text diff=cpp
 *.cc     text diff=cpp
-*.java	 text diff=java
-*.py	 text diff=python
+*.java   text diff=java
+*.py     text diff=python
 
 *.lua    text
 *.proto  text
+
+# Netbeans *.form files
+*.form   text eol=lf
 
 # Declare files that will always have LF line endings on checkout.
 *.sh     text eol=lf
@@ -20,8 +23,14 @@
 *.mef    text eol=lf
 *.xml    text
 *.properties text
-*.form   text
 *.html   text
+*.xabsl  text
+
+# keep the message files allways lf
+*_pb2.py text eol=lf
+*.pb.h   text eol=lf
+*.pb.cc  text eol=lf
+RobotControl/RobotConnector/src/de/naoth/rc/messages/*  text eol=lf
 
 # Images should be treated as binary
 # (binary is a macro for -text -diff)
@@ -31,3 +40,6 @@
 *.zip    binary
 *.wav    binary
 *.mp3    binary
+
+# Whistle stuff
+*.lst    text eol=lf

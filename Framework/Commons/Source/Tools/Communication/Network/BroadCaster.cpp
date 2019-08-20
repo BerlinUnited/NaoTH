@@ -6,6 +6,8 @@
 
 #include "BroadCaster.h"
 
+#include <Tools/ThreadUtil.h>
+
 #ifndef WIN32
 #include <sys/socket.h>
 #else
@@ -21,16 +23,10 @@ typedef int socklen_t;
 using namespace std;
 using namespace naoth;
 
-void* broadcaster_static_loop(void* b)
-{
-  BroadCaster* bc = static_cast<BroadCaster*> (b);
-  bc->loop();
-  return NULL;
-}
+#include <sstream>
 
 BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
  :exiting(false), socket(NULL), broadcastAddress(NULL),
-    socketThread(NULL), messageMutex(NULL), messageCond(NULL),
     interfaceName(interfaceName), port(port),
     messagesWithoutInterface(0),
     // try to query broadcast address in every frame
@@ -41,16 +37,10 @@ BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
 
   if(err)
   {
-    g_warning("could not initialize BroadCaster properly: %s", err->message);
+    std::cout << "[WARN] could not initialize BroadCaster properly: " << err->message << std::endl;
     g_error_free(err);
     return;
   }
-
-  if (!g_thread_supported())
-    g_thread_init(NULL);
-
-  messageMutex = g_mutex_new();
-  messageCond = g_cond_new();
 
   g_socket_set_blocking(socket, true);
   int broadcastFlag = 1;
@@ -63,9 +53,12 @@ BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
 
   queryBroadcastAddress();
 
-  socketThread = g_thread_create(broadcaster_static_loop, this, true, NULL);
-  ASSERT(socketThread != NULL);
-  g_thread_set_priority(socketThread, G_THREAD_PRIORITY_LOW);
+  socketThread = std::thread([this]{this->loop();});
+  ThreadUtil::setPriority(socketThread, ThreadUtil::Priority::lowest);
+
+  stringstream s;
+  s << "BC " << interfaceName << ":" << port;
+  ThreadUtil::setName(socketThread, s.str());
 }
 
 bool BroadCaster::queryBroadcastAddress()
@@ -79,27 +72,26 @@ bool BroadCaster::queryBroadcastAddress()
     }
     broadcastAddress = g_inet_socket_address_new(address, static_cast<unsigned short>(port));
     g_object_unref(address);
-    g_message("BroadCaster configured (%s, %s, %d)", interfaceName.c_str(), broadcast.c_str(), port);
+    std::cout << "[INFO] BroadCaster configured (" << interfaceName << ", " << broadcast << ", " << port << ")" << std::endl;
     return true;
   }
-//  g_message("BroadCaster was not able to determine broadcast address (%s, %d)", interfaceName.c_str(), port);
   return false;
 }
 
 BroadCaster::~BroadCaster()
 {
+  std::cout << "[BroadCaster] stop wait" << std::endl;
   exiting = true;
-  g_cond_signal(messageCond); // tell socket thread to exit
+  messageCond.notify_all(); // tell socket thread to exit
 
-  if ( socketThread ) {
-    g_thread_join(socketThread);
+  if(socketThread.joinable()) {
+    socketThread.join();
   }
-  g_mutex_free(messageMutex);
-  g_cond_free(messageCond);
 
   if(broadcastAddress != NULL) {
     g_object_unref(broadcastAddress);
   }
+  std::cout << "[BroadCaster] stop done" << std::endl;
 }
 
 void BroadCaster::send(const std::string& data)
@@ -108,10 +100,11 @@ void BroadCaster::send(const std::string& data)
     return;
   }
 
-  if ( g_mutex_trylock(messageMutex) ) {
+  std::unique_lock<std::mutex> lock(messageMutex, std::try_to_lock);
+  if ( lock.owns_lock() ) {
     message = data;
-    g_cond_signal(messageCond); // tell socket thread to send
-    g_mutex_unlock(messageMutex);
+    lock.unlock();
+    messageCond.notify_all();
   }
 }
 
@@ -121,10 +114,11 @@ void BroadCaster::send(std::list<std::string>& msgs)
     return;
   }
 
-  if ( g_mutex_trylock(messageMutex) ) {
+  std::unique_lock<std::mutex> lock(messageMutex, std::try_to_lock);
+  if ( lock.owns_lock() ) {
     messages = msgs;
-    g_cond_signal(messageCond); // tell socket thread to send
-    g_mutex_unlock(messageMutex);
+    lock.unlock();
+    messageCond.notify_all(); // tell socket thread to sends
   }
 }
 
@@ -132,11 +126,11 @@ void BroadCaster::loop()
 {
   while(!exiting)
   {
-    g_mutex_lock(messageMutex);
+    std::unique_lock<std::mutex> lock(messageMutex);
     // wait until it is necessary to send data
     while ( message.empty() && messages.empty() && !exiting )
     {
-      g_cond_wait(messageCond, messageMutex);
+      messageCond.wait(lock);
     }
 
     // send data via socket
@@ -152,7 +146,6 @@ void BroadCaster::loop()
     }
     messages.clear();
 
-    g_mutex_unlock(messageMutex);
   }
 }
 
@@ -178,12 +171,12 @@ void BroadCaster::socketSend(const std::string& data)
   int result = static_cast<int> (g_socket_send_to(socket, broadcastAddress, data.c_str(), data.size(), NULL, &error));
   if (error)
   {
-    g_warning("g_socket_send_to error: %s", error->message);
+    std::cout << "[WARN] g_socket_send_to error: " << error->message << std::endl;
     g_error_free(error);
   }
   else if ( result != static_cast<int>(data.size()) )
   {
-    g_warning("broadcast error, sended size = %d", result);
+    std::cout << "[WARN] broadcast error, sended size = " << result << std::endl;
   }
 }
 

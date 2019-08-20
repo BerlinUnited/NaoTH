@@ -4,21 +4,22 @@ project "LogSimulator"
   language "C++"
   
   includedirs {
-	"../Source/"
-	}
+    "../Source/"
+  }
   
   files {
-	"../Source/LogSimulator/**.cpp",
-	"../Source/LogSimulator/**.h"
-	}
+    "../Source/LogSimulator/**.cpp",
+    "../Source/LogSimulator/**.h"
+  }
   
   links {
-	"glib-2.0",
-	"gio-2.0",
-	"gobject-2.0",
-	"gmodule-2.0",
-	"gthread-2.0",
-	"protobuf"
-	}
-	
+    "glib-2.0",
+    "gio-2.0",
+    "gobject-2.0",
+    "gmodule-2.0",
+    "gthread-2.0",
+    "protobuf",
+    "fftw3"
+  }
+  
   targetname "logsimulator"

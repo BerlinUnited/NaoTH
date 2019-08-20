@@ -5,54 +5,45 @@
  */
 package de.naoth.rc.dialogs;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonWriter;
 import de.naoth.rc.Helper;
 import de.naoth.rc.RobotControl;
-import de.naoth.rc.components.RobotStatus;
+import de.naoth.rc.components.teamcommviewer.TeamCommLogger;
+import de.naoth.rc.components.teamcomm.TeamCommManager;
+import de.naoth.rc.components.teamcommviewer.RobotStatus;
+import de.naoth.rc.components.teamcommviewer.RobotStatusPanel;
+import de.naoth.rc.components.teamcommviewer.RobotStatusTable;
+import de.naoth.rc.components.teamcomm.TeamCommMessage;
+import de.naoth.rc.components.teamcommviewer.RobotTeamCommListener;
+import de.naoth.rc.components.teamcommviewer.TeamColorMenu;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
-import de.naoth.rc.dataformats.SPLMessage;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.drawingmanager.DrawingEventManager;
 import de.naoth.rc.drawings.DrawingCollection;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.LinearGradientPaint;
-import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.net.SocketException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.channels.AsynchronousCloseException;
-import java.nio.channels.DatagramChannel;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
-import java.util.Vector;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.JTable;
+import javax.swing.MenuElement;
 import javax.swing.SwingUtilities;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -62,88 +53,63 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  */
 public class TeamCommViewer extends AbstractDialog {
 
+    @RCDialog(category = RCDialog.Category.Team, name = "Communication Viewer")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<TeamCommViewer> {
-
         @InjectPlugin
         public static RobotControl parent;
         @InjectPlugin
         public static DrawingEventManager drawingEventManager;
+        @InjectPlugin
+        public static TeamCommManager teamcommManager;
     }//end Plugin
 
     private Timer timerCheckMessages;
-    private final TeamCommListener listenerOwn = new TeamCommListener(false);
-    private final TeamCommListener listenerOpponent = new TeamCommListener(true);
-    private final HashMap<String, RobotStatus> robotsMap = new HashMap<>();
-
-    private final Map<String, TeamCommMessage> messageMap = Collections.synchronizedMap(new TreeMap<String, TeamCommMessage>());
-
-    private final Color magenta = new Color(210, 180, 200);
-    private final Color cyan = new Color(180, 210, 255);
     
-    private LogFileWriter logfile = null;
-    private final ConcurrentLinkedQueue<TeamCommMessage> logfileQueue = new ConcurrentLinkedQueue<TeamCommMessage>();
-    private boolean logfileQueueAppend = false;
+    /**
+     * The robot-TeamCommProvider for our own team.
+     */
+    private final RobotTeamCommListener listenerOwn = new RobotTeamCommListener(false);
     
+    /**
+     * The robot-TeamCommProvider for our own team.
+     */
+    private final RobotTeamCommListener listenerOpponent = new RobotTeamCommListener(true);
+
+    /**
+     * Receiver for the TeamMessages.
+     */
+    private final TeamCommMessageListener teamcommListener = new TeamCommMessageListener();
+    
+    /**
+     * Buffer, which stores the last TeamCommMessage of every robot.
+     */
+    public final Map<String, TeamCommMessage> messageBuffer = Collections.synchronizedMap(new TreeMap<String, TeamCommMessage>());
+    
+    /**
+     * Container for storing the current status of each robot.
+     */
+    private final TreeMap<String, RobotStatus> robotsMapSorted = new TreeMap<>();
+
+    /**
+     * Container for storing the team color.
+     */
+    private final TreeMap<Integer, Color> teamColor = new TreeMap<>();
+
+    /**
+     * Logger object, for logging TeamCommMessages.
+     */
+    private final TeamCommLogger log = new TeamCommLogger();
+
     /**
      * Creates new form TeamCommViewer
      */
     public TeamCommViewer() {
         initComponents();
-        
-        // msg/s
-        robotStatusTable.getColumnModel().getColumn(3).setCellRenderer(new DefaultTableCellRenderer(){
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                return super.getTableCellRendererComponent(table, String.format("%4.2f", value), isSelected, hasFocus, row, column);
-            }
-        });
-        // Temperature
-        robotStatusTable.getColumnModel().getColumn(6).setCellRenderer(new DefaultTableCellRenderer(){
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                float temp = (float)value;
-                if(temp>20) {
-                    float ratio = (temp-20) / 80.0f; // normalize temp
-                    Color c1 = Color.blue; Color c2 = Color.red;
-                    int red = (int)(c2.getRed()*ratio+c1.getRed()*(1-ratio));
-                    int green = (int)(c2.getGreen()*ratio+c1.getGreen()*(1-ratio));
-                    int blue = (int)(c2.getBlue()*ratio+c1.getBlue()*(1-ratio));
-                    this.setForeground(new Color(red, green, blue));
-                } else {
-                    this.setForeground(Color.black);
-                }
-                
-                return super.getTableCellRendererComponent(table, temp==-1?"?":String.format(" %3.1f °C", value), isSelected, hasFocus, row, column);
-            }
-        });
-        // Battery
-        robotStatusTable.getColumnModel().getColumn(7).setCellRenderer(new DefaultTableCellRenderer(){
-            private final float[] dist = { 0.0f , 1.0f };
-            private final Color[] colors = { Color.red, Color.green };
-
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2d = (Graphics2D) g;
-                float x = Float.parseFloat(getText());
-                if(x == -1) {
-                    this.setOpaque(true);
-                    this.setText("?");
-                } else {
-                    LinearGradientPaint gp = new LinearGradientPaint(0, 0, getWidth(), getHeight(), dist, colors);
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setPaint(gp);
-                    g2d.fillRect(0, 0, (int)(getWidth()*x/100.0), getHeight());
-                    this.setOpaque(false);
-                    this.setText(String.format("%3.1f%%",x));
-                }
-                super.paintComponent(g2d);
-            }
-        });
-        // sort via Ip
-        robotStatusTable.getRowSorter().toggleSortOrder(2);
         // collapse pane
-        robotStatusSplitPane.setDividerLocation(Integer.MAX_VALUE);/*2000*/
+        robotStatusSplitPane.setDividerLocation(0);/*2000, Integer.MAX_VALUE*/
+        // add additional columns to popup menu
+        addAdditionalColumnsToPopupMenu();
     }
 
     /**
@@ -156,24 +122,54 @@ public class TeamCommViewer extends AbstractDialog {
     private void initComponents() {
 
         teamCommFileChooser = new de.naoth.rc.components.ExtendedFileChooser();
+        pmAdditionalColumns = new javax.swing.JPopupMenu();
+        pmTeamColor = new javax.swing.JPopupMenu();
+        toolbarPanel = new javax.swing.JPanel();
         btListen = new javax.swing.JToggleButton();
-        portNumberOwn = new javax.swing.JFormattedTextField();
-        portNumberOpponent = new javax.swing.JFormattedTextField();
         jLabel1 = new javax.swing.JLabel();
+        portNumberOwn = new javax.swing.JFormattedTextField();
         jLabel2 = new javax.swing.JLabel();
+        portNumberOpponent = new javax.swing.JFormattedTextField();
+        btnTeamColor = new javax.swing.JToggleButton();
         btnRecord = new javax.swing.JToggleButton();
         btnStopRecording = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
+        btnAddtionalColumns = new javax.swing.JToggleButton();
+        contentPanel = new javax.swing.JPanel();
         robotStatusSplitPane = new javax.swing.JSplitPane();
         jScrollPane2 = new javax.swing.JScrollPane();
         robotStatusPanel = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        robotStatusTable = new javax.swing.JTable();
+        robotStatusTable = new de.naoth.rc.components.teamcommviewer.RobotStatusTable();
 
         teamCommFileChooser.setDialogType(javax.swing.JFileChooser.SAVE_DIALOG);
         teamCommFileChooser.setDialogTitle("Log file location");
         teamCommFileChooser.setSelectedFile(new File((new SimpleDateFormat("yyyy-MM-dd")).format(new Date())+"_TeamComm.log"));
         teamCommFileChooser.setToolTipText("");
+
+        pmAdditionalColumns.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                pmAdditionalColumnsPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
+
+        pmTeamColor.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+                pmTeamColorPopupMenuWillBecomeVisible(evt);
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+                pmTeamColorPopupMenuWillBecomeInvisible(evt);
+            }
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+        });
+
+        setLayout(new java.awt.BorderLayout());
+
+        toolbarPanel.setMaximumSize(new java.awt.Dimension(10, 10));
+        toolbarPanel.setLayout(new javax.swing.BoxLayout(toolbarPanel, javax.swing.BoxLayout.LINE_AXIS));
 
         btListen.setText("Listen to TeamComm");
         btListen.addActionListener(new java.awt.event.ActionListener() {
@@ -181,177 +177,182 @@ public class TeamCommViewer extends AbstractDialog {
                 btListenActionPerformed(evt);
             }
         });
+        toolbarPanel.add(btListen);
+
+        jLabel1.setText("Blue:");
+        toolbarPanel.add(jLabel1);
 
         portNumberOwn.setColumns(6);
         portNumberOwn.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#"))));
         portNumberOwn.setText("10004");
         portNumberOwn.setToolTipText("Own team port number");
+        portNumberOwn.setMinimumSize(new java.awt.Dimension(76, 19));
+        portNumberOwn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                portNumberOwnActionPerformed(evt);
+            }
+        });
+        toolbarPanel.add(portNumberOwn);
+
+        jLabel2.setText("Red:");
+        toolbarPanel.add(jLabel2);
 
         portNumberOpponent.setColumns(6);
         portNumberOpponent.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#"))));
         portNumberOpponent.setToolTipText("Opponent team port number");
+        portNumberOpponent.setMinimumSize(new java.awt.Dimension(76, 19));
+        portNumberOpponent.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                portNumberOpponentActionPerformed(evt);
+            }
+        });
+        toolbarPanel.add(portNumberOpponent);
 
-        jLabel1.setText("Blue:");
-
-        jLabel2.setText("Red:");
+        btnTeamColor.setIcon(new javax.swing.ImageIcon(getClass().getResource("/data/bibliothek/gui/dock/core/flap_auto.png"))); // NOI18N
+        btnTeamColor.setToolTipText("Change color of teams.");
+        btnTeamColor.setEnabled(false);
+        btnTeamColor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTeamColorActionPerformed(evt);
+            }
+        });
+        toolbarPanel.add(btnTeamColor);
 
         btnRecord.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/play.png"))); // NOI18N
         btnRecord.setText("Record TeamComm");
         btnRecord.setActionCommand("RecordTeamComm");
+        btnRecord.setMaximumSize(new java.awt.Dimension(193, 25));
+        btnRecord.setMinimumSize(new java.awt.Dimension(193, 25));
+        btnRecord.setPreferredSize(new java.awt.Dimension(193, 25));
         btnRecord.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/media-record.png"))); // NOI18N
         btnRecord.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnRecordActionPerformed(evt);
             }
         });
+        toolbarPanel.add(btnRecord);
 
         btnStopRecording.setIcon(new javax.swing.ImageIcon(getClass().getResource("/toolbarButtonGraphics/media/Stop24.gif"))); // NOI18N
         btnStopRecording.setToolTipText("Stops recording and closes log file.");
         btnStopRecording.setEnabled(false);
+        btnStopRecording.setMaximumSize(new java.awt.Dimension(58, 25));
+        btnStopRecording.setMinimumSize(new java.awt.Dimension(58, 25));
+        btnStopRecording.setPreferredSize(new java.awt.Dimension(58, 25));
         btnStopRecording.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnStopRecordingActionPerformed(evt);
             }
         });
+        toolbarPanel.add(btnStopRecording);
+
+        btnAddtionalColumns.setIcon(new javax.swing.ImageIcon(getClass().getResource("/toolbarButtonGraphics/general/Preferences16.gif"))); // NOI18N
+        btnAddtionalColumns.setToolTipText("Add/Remove columns from RobotStatusTable");
+        btnAddtionalColumns.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddtionalColumnsActionPerformed(evt);
+            }
+        });
+        toolbarPanel.add(btnAddtionalColumns);
+
+        add(toolbarPanel, java.awt.BorderLayout.NORTH);
 
         robotStatusSplitPane.setBorder(null);
         robotStatusSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         robotStatusSplitPane.setOneTouchExpandable(true);
 
+        jScrollPane2.setMinimumSize(new java.awt.Dimension(0, 0));
+        jScrollPane2.setPreferredSize(new java.awt.Dimension(0, 22));
+
+        robotStatusPanel.setMinimumSize(new java.awt.Dimension(0, 0));
         robotStatusPanel.setLayout(new java.awt.GridLayout(5, 1, 0, 5));
         jScrollPane2.setViewportView(robotStatusPanel);
 
         robotStatusSplitPane.setLeftComponent(jScrollPane2);
+        robotStatusSplitPane.setRightComponent(robotStatusTable);
 
-        jScrollPane1.setMinimumSize(new java.awt.Dimension(0, 0));
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(0, 0));
-
-        robotStatusTable.setAutoCreateRowSorter(true);
-        robotStatusTable.setModel(new RobotTableModel());
-        robotStatusTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
-        robotStatusTable.setRowSelectionAllowed(false);
-        jScrollPane1.setViewportView(robotStatusTable);
-
-        robotStatusSplitPane.setRightComponent(jScrollPane1);
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout contentPanelLayout = new javax.swing.GroupLayout(contentPanel);
+        contentPanel.setLayout(contentPanelLayout);
+        contentPanelLayout.setHorizontalGroup(
+            contentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
-            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(robotStatusSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 838, Short.MAX_VALUE))
+            .addGroup(contentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(robotStatusSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 867, Short.MAX_VALUE))
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 452, Short.MAX_VALUE)
-            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(robotStatusSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 452, Short.MAX_VALUE))
+        contentPanelLayout.setVerticalGroup(
+            contentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 518, Short.MAX_VALUE)
+            .addGroup(contentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(robotStatusSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 518, Short.MAX_VALUE))
         );
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btListen)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(portNumberOwn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(portNumberOpponent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(12, 12, 12)
-                        .addComponent(btnRecord)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnStopRecording)
-                        .addGap(0, 124, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(btnStopRecording, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(btnRecord, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btListen)
-                        .addComponent(portNumberOwn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(portNumberOpponent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel1)
-                        .addComponent(jLabel2)))
-                .addGap(18, 18, 18)
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
+        add(contentPanel, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btListenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btListenActionPerformed
-
         try {
+            // start listening to TeamComm ...
             if (this.btListen.isSelected()) {
+                // get own port number and start/connect robot TeamCommProvider
                 String ownPortRaw = portNumberOwn.getText().trim();
                 if(!ownPortRaw.isEmpty()) {
                     int portOwn = Integer.parseInt(ownPortRaw);
                     listenerOwn.connect(portOwn);
                 }
+                // get opponent port number and start/connect robot TeamCommProvider
                 String opponentPortRaw = portNumberOpponent.getText().trim();
                 if (!opponentPortRaw.isEmpty()) {
                     int portOpponent = Integer.parseInt(opponentPortRaw);
                     listenerOpponent.connect(portOpponent);
                 }
-
+                // listen to TeamCommMessages
+                Plugin.teamcommManager.addListener(teamcommListener);
+                // start/schedule UI-updater
                 this.timerCheckMessages = new Timer();
                 this.timerCheckMessages.scheduleAtFixedRate(new TeamCommListenTask(), 100, 33);
+                // update UI
                 this.portNumberOwn.setEnabled(false);
                 this.portNumberOpponent.setEnabled(false);
                 this.robotStatusPanel.setVisible(true);
                 this.robotStatusTable.setVisible(true);
-
             } else {
-
+                // stops/disconnects the robot TeamCommProvider
+                listenerOwn.disconnect();
+                listenerOpponent.disconnect();
+                // remove TeamCommMessage listener
+                Plugin.teamcommManager.removeListener(teamcommListener);
+                // stop UI-updater
                 if(this.timerCheckMessages != null) {
                     this.timerCheckMessages.cancel();
                     this.timerCheckMessages.purge();
                     this.timerCheckMessages = null;
                 }
-                
-                listenerOwn.disconnect();
-                listenerOpponent.disconnect();
-
-                synchronized (messageMap) {
-                    messageMap.clear();
-                    this.robotsMap.clear();
-                    this.robotStatusPanel.removeAll();
-                    this.robotStatusPanel.setVisible(false);
-                    this.robotStatusTable.setVisible(false);
-                    ((RobotTableModel)this.robotStatusTable.getModel()).removeAll();
-                    this.portNumberOwn.setEnabled(true);
-                    this.portNumberOpponent.setEnabled(true);
+                // clear collections and "enable" UI
+                synchronized (messageBuffer) {
+                    this.messageBuffer.clear();
                 }
+                this.robotsMapSorted.clear();
+                // update UI
+                this.robotStatusPanel.removeAll();
+                this.robotStatusPanel.setVisible(false);
+                this.robotStatusTable.setVisible(false);
+                this.robotStatusTable.removeAll();
+                this.portNumberOwn.setEnabled(true);
+                this.portNumberOpponent.setEnabled(true);
+                this.btnTeamColor.setEnabled(false);
             }
         } catch (NumberFormatException ex) {
             Helper.handleException("Invalid port number", ex);
-        } catch (InterruptedException ex) {
-            ex.printStackTrace(System.err);
-        } catch (IOException ex) {
-            ex.printStackTrace(System.err);
+        } catch (IOException | InterruptedException ex) {
+            Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btListenActionPerformed
 
     private void btnRecordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRecordActionPerformed
-        // button got pressed
+        // record-button got pressed
         if(btnRecord.isSelected()) {
             // log file already set; just enable logging
-            if(this.logfile != null) {
-                logfileQueueAppend = true;
+            if(this.log.isActive()) {
+                this.log.resumeLogging();
                 btnRecord.setSelected(true);
                 setBtnRecordToolTipText(true);
             } else {
@@ -360,33 +361,77 @@ public class TeamCommViewer extends AbstractDialog {
             }
         // release button
         } else {
-            if(logfile != null) { // be sure log file is set
-                logfileQueueAppend = false;
-                setBtnRecordToolTipText(false);
-            }
+            this.log.pauseLogging();
         }
     }//GEN-LAST:event_btnRecordActionPerformed
 
     private void btnStopRecordingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopRecordingActionPerformed
-        // stop log file recording, flush and close logfile, update UI
-        logfileQueueAppend = false;
-        closingLogfile();
+        // stop log file recording, flush and close logfile
+        this.log.stopLogging();
+        // ... update UI
         btnRecord.setSelected(false);
         setBtnRecordToolTipText(false);
         btnStopRecording.setEnabled(false);
     }//GEN-LAST:event_btnStopRecordingActionPerformed
 
-    @Override
-    public void dispose() {
-        closingLogfile();
-    }
+    private void btnAddtionalColumnsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddtionalColumnsActionPerformed
+        if(btnAddtionalColumns.isSelected()) {
+            pmAdditionalColumns.show(btnAddtionalColumns, 0, btnAddtionalColumns.getHeight());
+        }
+    }//GEN-LAST:event_btnAddtionalColumnsActionPerformed
+
+    private void pmAdditionalColumnsPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_pmAdditionalColumnsPopupMenuWillBecomeInvisible
+        btnAddtionalColumns.setSelected(false);
+    }//GEN-LAST:event_pmAdditionalColumnsPopupMenuWillBecomeInvisible
+
+    private void btnTeamColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTeamColorActionPerformed
+        if(btnTeamColor.isSelected()) {
+           pmTeamColor.show(btnTeamColor, 0, btnTeamColor.getHeight());
+        }
+    }//GEN-LAST:event_btnTeamColorActionPerformed
+
+    private void pmTeamColorPopupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_pmTeamColorPopupMenuWillBecomeInvisible
+        btnTeamColor.setSelected(false);
+    }//GEN-LAST:event_pmTeamColorPopupMenuWillBecomeInvisible
+
+    private void pmTeamColorPopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_pmTeamColorPopupMenuWillBecomeVisible
+        // remove all previous menu items, we're creating them afterwards, so we doesn't miss any new teams
+        pmTeamColor.removeAll();
+        // iterate over all teams
+        teamColor.entrySet().stream().forEach((entry) -> {
+            // ... and create menu item
+            TeamColorMenu teamMenu = new TeamColorMenu(entry.getKey(), entry.getValue());
+            // add listener for "color change"
+            teamMenu.addActionListener((e) -> {
+                // the menu item has the (new) color
+                TeamColorMenu tm = (TeamColorMenu)e.getSource();
+                teamColor.replace(tm.teamNumber, tm.getBackground());
+            });
+            pmTeamColor.add(teamMenu);
+        });
+    }//GEN-LAST:event_pmTeamColorPopupMenuWillBecomeVisible
+
+    private void portNumberOwnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_portNumberOwnActionPerformed
+        btListen.doClick();
+    }//GEN-LAST:event_portNumberOwnActionPerformed
+
+    private void portNumberOpponentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_portNumberOpponentActionPerformed
+        btListen.doClick();
+    }//GEN-LAST:event_portNumberOpponentActionPerformed
 
     @Override
-    public void destroy() {
-        System.err.println("destroy");
-        super.destroy(); //To change body of generated methods, choose Tools | Templates.
+    public void dispose() {
+        // stop listener threads!
+        try {
+            listenerOwn.disconnect();
+        } catch (IOException | InterruptedException ex) {}
+        try {
+            listenerOpponent.disconnect();
+        } catch (IOException | InterruptedException ex) {}
+        
+        this.log.stopLogging();
     }
-    
+
     private boolean setLogFile() {
         // open filechooser
         if(teamCommFileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -395,29 +440,14 @@ public class TeamCommViewer extends AbstractDialog {
                 new File(teamCommFileChooser.getSelectedFile()+".log") : 
                 teamCommFileChooser.getSelectedFile();
 
-            if(dfile.canWrite()) {
-                try {
-                    // make sure there is no open log file ..
-                    closingLogfile();
+            // set log file, start logging and update ui
+            if(this.log.setLogFile(dfile)) {
+                this.log.startLogging();
+                btnRecord.setSelected(true);
+                setBtnRecordToolTipText(true);
+                btnStopRecording.setEnabled(true); // enable "stop"-button
 
-                    // create new log file
-                    dfile.createNewFile();
-                    logfile = new LogFileWriter(dfile);
-                    logfile.start();
-
-                    btnRecord.setSelected(true);
-                    setBtnRecordToolTipText(true);
-                    btnStopRecording.setEnabled(true); // enable "stop"-button
-
-                    return true;
-                } catch (IOException ex) {
-                    Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
-                    JOptionPane.showMessageDialog(null, "IO-Error occurred, see application log.", "Exception", JOptionPane.ERROR_MESSAGE);
-                } catch (Throwable ex) {
-                    Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            } else {
-                JOptionPane.showMessageDialog(null, "Selected log file is not writeable!", "Not writeable", JOptionPane.ERROR_MESSAGE);
+                return true;
             }
         }
         
@@ -428,7 +458,7 @@ public class TeamCommViewer extends AbstractDialog {
     }
     
     private void setBtnRecordToolTipText(boolean stop){
-        String name = this.logfile == null ? "<not-set>" : this.logfile.getLogfileName();
+        String name = this.log.isActive() ? this.log.getLogfile().getName() : "<not-set>";
         if(!stop) {
             btnRecord.setToolTipText("Start recording to: " + name);
         } else {
@@ -437,297 +467,157 @@ public class TeamCommViewer extends AbstractDialog {
         
     }
     
-    private void closingLogfile() {
-        if(logfile != null) {
-            try {
-                logfile.close();
-                logfile.join();
-                logfile = null;
-            } catch (InterruptedException ex) {
-                Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
+    private void saveColumnConfiguration() {
+        ArrayList<String> items = new ArrayList<>();
+        for (MenuElement item : pmAdditionalColumns.getSubElements()) {
+            if(((JCheckBoxMenuItem)item).isSelected()) {
+                items.add(((JCheckBoxMenuItem)item).getActionCommand());
+            }
+        }
+        Plugin.parent.getConfig().setProperty(this.getClass().getName()+".ColumnConfig", items.stream().collect(Collectors.joining("|")));
+    }
+    
+    /**
+     * Adds table column configuration popup-menu.
+     * The column configuration is read from the config file and is applied to the robot status table.
+     * For each possible column, a action listener is added for updating the table and saving "new" configuration.
+     */
+    private void addAdditionalColumnsToPopupMenu() {
+        // try to get column configuration
+        String columnConfigStr = Plugin.parent.getConfig().getProperty(this.getClass().getName()+".ColumnConfig", "");
+        List<String> columnConfig = columnConfigStr.isEmpty() ? null : Arrays.asList(columnConfigStr.split("\\|"));
+        // add all available columns to configuration popup menu
+        for (Iterator<RobotStatusTable.Column> it = robotStatusTable.ALL_COLUMNS.iterator(); it.hasNext();) {
+            RobotStatusTable.Column col = it.next();
+            // skip "empty" columns, e.g. the connect-button column
+            if(col.name == null || col.name.isEmpty()) { continue; }
+            JCheckBoxMenuItem item = new JCheckBoxMenuItem(col.name);
+            // shows the default columns or - if set - the saved column configuration
+            if((columnConfig == null && col.showbydefault) || (columnConfig != null && columnConfig.contains(col.name))) {
+                robotStatusTable.addColumn(col.name);
+                item.setSelected(true);
+            }
+            item.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
+                    if(item.isSelected()) {
+                        robotStatusTable.addColumn(e.getActionCommand());
+                    } else {
+                        robotStatusTable.removeColumn(e.getActionCommand());
+                    }
+                    saveColumnConfiguration();
+                }
+            });
+            pmAdditionalColumns.add(item);
+        }
+    }
+    
+    /**
+     * Waits for new TeamCommMessages and writes them to the "message-buffer".
+     */
+    public class TeamCommMessageListener implements de.naoth.rc.components.teamcomm.TeamCommListener {
+
+        @Override
+        public void newTeamCommMessages(List<TeamCommMessage> messages) {
+            if (!messages.isEmpty()) {
+                synchronized (messageBuffer) {
+                    // "convert" list to map using address as key
+                    messageBuffer.putAll(messages.stream().collect(Collectors.toMap(
+                        m -> m.address == null ? m.message.teamNum+".0.0."+m.message.playerNum : m.address,
+                        m -> m,
+                        (m1, m2) -> m2 // if two messages are from the same robot, take the last one
+                    )));
+                }
             }
         }
     }
 
+    /**
+     * Iterates periodically over message-buffer and updates the robotStatus and the UI.
+     */
     private class TeamCommListenTask extends TimerTask {
 
         @Override
         public void run() {
-            synchronized (messageMap) {
-                if (messageMap.isEmpty()) {
+            synchronized (messageBuffer) {
+                if (messageBuffer.isEmpty()) {
                     return;
                 }
-
                 DrawingCollection drawings = new DrawingCollection();
-
-                for (Entry<String, TeamCommMessage> msgEntry : messageMap.entrySet()) {
+                for (Entry<String, TeamCommMessage> msgEntry : messageBuffer.entrySet()) {
                     final String address = msgEntry.getKey();
                     final TeamCommMessage msg = msgEntry.getValue();
-
+                    
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            RobotStatus robotStatus = robotsMap.get(address);
+                            RobotStatus robotStatus = robotsMapSorted.get(address);
+                            // ... new robot ...
                             if (robotStatus == null) {
-                                robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address, msg.isOpponent() ? magenta : cyan);
-                                robotsMap.put(address, robotStatus);
-                                robotStatusPanel.add(robotStatus);
-                                ((RobotTableModel)robotStatusTable.getModel()).addRobot(robotStatus);
+                                robotStatus = new RobotStatus(Plugin.parent.getMessageServer(), address, msg.isOpponent());
+                                // adds RobotStatus to a container
+                                robotsMapSorted.put(address, robotStatus);
+                                // clears the panel-view
+                                robotStatusPanel.removeAll();
+                                // re-inserts all robotStatus to make sure the robots are ordered
+                                robotsMapSorted.entrySet().stream().forEach((entry) -> {
+                                    robotStatusPanel.add(new RobotStatusPanel(entry.getValue()));
+                                });
+                                // adds the robotStatus to the table-view
+                                robotStatusTable.addRobot(robotStatus);
+                                // activates team color picker
+                                btnTeamColor.setEnabled(true);
                             }
-                            robotStatus.setStatus(msg.timestamp, msg.message);
-                            ((RobotTableModel)robotStatusTable.getModel()).fireTableDataChanged();
+                            // updates the robotStatus
+                            robotStatus.updateStatus(msg.timestamp, msg.message);
+                            // new team -> add color
+                            if(!teamColor.containsKey(robotStatus.getTeamNum())) {
+                                teamColor.put(
+                                    (int)robotStatus.getTeamNum(), 
+                                    // opponent gets "red" by default
+                                    msg.isOpponent() ? Color.RED : (
+                                        // "our" team gets "blue" or another
+                                        teamColor.isEmpty() ? 
+                                            Color.BLUE : 
+                                            // next color in the list ...
+                                            TeamColorMenu.getNextColor(teamColor.lastEntry().getValue())
+                                    )
+                                );
+                            }
+                            robotStatus.setRobotColorAwt(teamColor.get(robotStatus.getTeamNum()));
                         }
                     });
-                    
-                    msg.message.draw(drawings, msg.isOpponent() ? Color.RED : Color.BLUE, msg.isOpponent());
-                }
-
-                TeamCommViewer.Plugin.drawingEventManager.fireDrawingEvent(drawings);
-
+                    // if enabled, draw robots on the FieldViewer otherwise not
+                    RobotStatus rs = robotsMapSorted.get(address);
+                    if(rs != null && rs.getShowOnField()) {
+                        msg.message.draw(drawings, rs.getRobotColorAwt(), msg.isOpponent());
+                    }
+                } // end for
+                Plugin.drawingEventManager.fireDrawingEvent(drawings, this);
             } // end synchronized
         } // end run
     }
 
-    
-    public class TeamCommMessage {
-
-        public TeamCommMessage(long timestamp, SPLMessage message, boolean isOpponent) {
-            this.timestamp = timestamp;
-            this.message = message;
-            this.isOpponent = isOpponent;
-        }
-
-        public final long timestamp;
-        public final SPLMessage message;
-        private final boolean isOpponent;
-
-        public boolean isOpponent() {
-            return isOpponent;
-        }
-    }
-    
-    public class TeamCommListener implements Runnable {
-        private DatagramChannel channel;
-        private Thread trigger;
-
-        private final ByteBuffer readBuffer;
-
-        private final boolean isOpponent;
-
-        public TeamCommListener(boolean isOpponent) {
-            this.readBuffer = ByteBuffer.allocateDirect(SPLMessage.SPL_STANDARD_MESSAGE_SIZE);
-            this.readBuffer.order(ByteOrder.LITTLE_ENDIAN);
-            this.isOpponent = isOpponent;
-        }
-
-        boolean isConnected() {
-            return this.channel != null && this.trigger != null;
-        }
-
-        public void connect(int port) throws IOException, InterruptedException {
-            disconnect();
-
-            this.channel = DatagramChannel.open();
-            this.channel.configureBlocking(true);
-            this.channel.bind(new InetSocketAddress(InetAddress.getByName("0.0.0.0"), port));
-
-            this.trigger = new Thread(this);
-            this.trigger.start();
-        }
-
-        public void disconnect() throws IOException, InterruptedException {
-            if (this.channel != null) {
-                this.channel.close();
-                this.channel = null;
-            }
-            if (this.trigger != null) {
-                this.trigger.join();
-                this.trigger = null;
-            }
-        }
-
-        @Override
-        public void run() {
-            try {
-                while (true) {
-                    this.readBuffer.clear();
-                    SocketAddress address = this.channel.receive(this.readBuffer);
-                    this.readBuffer.flip();
-
-                    try {
-                        long timestamp = System.currentTimeMillis();
-                        SPLMessage spl_msg = new SPLMessage(this.readBuffer);
-                        TeamCommMessage tc_msg = new TeamCommMessage(timestamp, spl_msg, this.isOpponent);
-                        
-                        if(logfileQueueAppend) {
-                            logfileQueue.add(tc_msg);
-                        }
-
-                        if (address instanceof InetSocketAddress) {
-                            messageMap.put(((InetSocketAddress) address).getHostString(), tc_msg);
-                        }
-
-                    } catch (Exception ex) {
-                        Logger.getLogger(TeamCommViewer.class.getName()).log(Level.INFO, null, ex);
-                    }
-
-                }
-            } catch (AsynchronousCloseException ex) {
-                /* socket was closed, that's fine */
-            } catch (SocketException ex) {
-                Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }//end class TeamCommListener
-    
-    private class LogFileWriter extends Thread {
-        private final File log;
-        private final Gson json;
-        private JsonWriter jw;
-        public boolean running = true;
-        
-        public LogFileWriter(File log) {
-            this.log = log;
-            this.json = new GsonBuilder()
-                // shouldn't be any ... just for safety reasons
-                .disableInnerClassSerialization()
-                // skip Variable "user" in SPLMessage
-                /*
-                .addSerializationExclusionStrategy(new ExclusionStrategy() {
-                    @Override
-                    public boolean shouldSkipField(FieldAttributes fieldAttributes) {
-                        return fieldAttributes.getName().compareTo("user") == 0;
-                    }
-
-                    @Override
-                    public boolean shouldSkipClass(Class<?> aClass) {
-                        return false;
-                    }
-                })*/
-                // write NaN value without throwing error/warning
-                .serializeSpecialFloatingPointValues()
-                .create();
-        }
-
-        public void run() {
-            try {
-                // use JsonWriter to write the enclosing Json-Array ...
-                this.jw = new JsonWriter(new FileWriter(this.log));
-                // open "global"/"enclosing" Array
-                this.jw.beginArray();
-                
-                while (running) {
-                    TeamCommMessage msg = logfileQueue.poll();
-                    if(msg != null) {
-                        writeMessage(msg.message, msg.timestamp, msg.isOpponent);
-                    }
-                }
-                
-                // flush buffer and close
-                this.jw.endArray();
-                this.jw.close();
-            } catch (IOException ex) {
-                Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        
-        public void close() {
-            running = false;
-        }
-        
-        public String getLogfileName() {
-            return this.log != null ? this.log.getName() : "";
-        }
-        
-        public void writeMessage(SPLMessage msg, long timestamp, boolean isOpponent) throws IOException {
-            this.jw.beginObject();
-            this.jw.name("timestamp");
-            this.jw.value(timestamp);
-            this.jw.name("isOpponent");
-            this.jw.value(isOpponent);
-            this.jw.name("spl");
-            this.jw.jsonValue(this.json.toJson(msg));
-            this.jw.endObject();
-        }
-    }
-    
-    private class RobotTableModel extends AbstractTableModel {
-        private final Vector<RobotStatus> robots = new Vector();
-        
-        public void addRobot(RobotStatus robot) {
-            robots.add(robot);
-            this.fireTableDataChanged();
-        }
-        
-        public void removeAll() {
-            robots.clear();
-            this.fireTableDataChanged();
-        }
-        
-        @Override
-        public int getRowCount() {
-            return robots.size();
-        }
-
-        @Override
-        public int getColumnCount() {
-            return 8;
-        }
-
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            RobotStatus robot = robots.get(rowIndex);
-            switch(columnIndex) {
-                case 0: return robot.teamNum;
-                case 1: return robot.playerNum;
-                case 2: return robot.getIpAdress();
-                case 3: return robot.msgPerSecond;
-                case 4: return robot.ballAge;
-                case 5: return robot.isDead?"DEAD":(robot.fallen==1?"FALLEN":"NOT FALLEN");
-                case 6: return robot.temperature;
-                case 7: return robot.batteryCharge;
-                default: return null;
-            }
-        }
-
-        @Override
-        public String getColumnName(int column) {
-            switch(column) {
-                case 0: return "#TN";
-                case 1: return "#PN";
-                case 2: return "IP";
-                case 3: return "msg/s";
-                case 4: return "BallAge (s)";
-                case 5: return "State";
-                case 6: return "Temperature";
-                case 7: return "Battery";
-                default: return null;
-            }
-        }
-
-        @Override
-        public Class<?> getColumnClass(int columnIndex) {
-            return Object.class;
-        }
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btListen;
+    private javax.swing.JToggleButton btnAddtionalColumns;
     private javax.swing.JToggleButton btnRecord;
     private javax.swing.JButton btnStopRecording;
+    private javax.swing.JToggleButton btnTeamColor;
+    private javax.swing.JPanel contentPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JPopupMenu pmAdditionalColumns;
+    private javax.swing.JPopupMenu pmTeamColor;
     private javax.swing.JFormattedTextField portNumberOpponent;
     private javax.swing.JFormattedTextField portNumberOwn;
     private javax.swing.JPanel robotStatusPanel;
     private javax.swing.JSplitPane robotStatusSplitPane;
-    private javax.swing.JTable robotStatusTable;
+    private de.naoth.rc.components.teamcommviewer.RobotStatusTable robotStatusTable;
     private de.naoth.rc.components.ExtendedFileChooser teamCommFileChooser;
+    private javax.swing.JPanel toolbarPanel;
     // End of variables declaration//GEN-END:variables
 
 }

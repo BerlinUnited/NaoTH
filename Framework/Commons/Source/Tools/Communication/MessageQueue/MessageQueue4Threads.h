@@ -9,7 +9,7 @@
 #define _MESSAGE_QUEUE_4_THREADS_H_
 
 #include "MessageQueue.h"
-#include <glib.h>
+#include <mutex>
 
 class MessageQueue4Threads: public MessageQueue
 {
@@ -30,7 +30,7 @@ public:
   virtual void clear();
   
 private:
-  GMutex* theMutex;
+  std::mutex theMutex;
 };
 
 #endif // _MESSAGE_QUEUE_4_THREADS_H_

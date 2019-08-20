@@ -48,6 +48,14 @@ public:
   virtual ~GameControllerLEDRequest() {}
 };
 
+class WifiModeSetterLEDRequest : public LEDRequest
+{
+public:
+  WifiModeSetterLEDRequest() : ignore(true) {}
+  virtual ~WifiModeSetterLEDRequest() {}
+  bool ignore;
+};
+
 class FrameRateCheckLEDRequest : public LEDRequest
 {
 public:

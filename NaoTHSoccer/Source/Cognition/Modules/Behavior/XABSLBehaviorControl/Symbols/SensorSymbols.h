@@ -20,13 +20,12 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/ObstacleModel.h"
-#include "Representations/Modeling/CollisionModel.h"
-#include "Representations/Modeling/Path.h"
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CalibrationData.h"
+#include "Representations/Motion/CollisionPercept.h"
 
 #include <Representations/Infrastructure/ButtonData.h>
-#include <Representations/Infrastructure/WhistleControl.h>
+#include <Representations/Infrastructure/AudioControl.h>
 // tools
 #include "Tools/Math/Common.h"
 
@@ -40,12 +39,11 @@ BEGIN_DECLARE_MODULE(SensorSymbols)
   REQUIRE(BodyState)
   REQUIRE(ObstacleModel)
   REQUIRE(Image)
-  REQUIRE(CollisionModel)
   REQUIRE(CalibrationData)
   REQUIRE(ButtonData)
-  PROVIDE(WhistleControl)
+  REQUIRE(CollisionPercept)
 
-  PROVIDE(Path)
+  PROVIDE(AudioControl)
 END_DECLARE_MODULE(SensorSymbols)
 
 class SensorSymbols: public SensorSymbolsBase
@@ -68,8 +66,7 @@ public:
 private:
   static SensorSymbols* theInstance;
 
-  //get-method
-  static double getIRButtonNumber();
+  //getters
   static double getFrameNumber();
   static double simplePassLeftSensor();
   static double simplePassRightSensor();
@@ -97,10 +94,8 @@ private:
   static bool getButtonHeadFront();
   static bool getButtonHeadRear();
 
-  static bool getisDischarging();
-
-  static double getWhistleSwitch();
-  static void setWhistleSwitch(double whistle);
+  static bool getCollisionArmLeft();
+  static bool getCollisionArmRight();
 };
 
 #endif  /* _SENSORSYMBOLS_H */

@@ -3,13 +3,11 @@ namespace sensor("Sensor Symbols") {
   
   /** Gyrometer X */
   float input sensor.gyro.x;
-
   /** Gyrometer Y */
   float input sensor.gyro.y;
 
   /** Inertial X */
   float input sensor.inertial.x;
-
   /** Inertial Y */
   float input sensor.inertial.y;
   
@@ -40,6 +38,12 @@ namespace sensor("Sensor Symbols") {
   bool input body.foot.groundcontact.left;
   bool input body.foot.groundcontact.right;
   float input body.foot.groundcontact.statetime;
+
+  bool input body.lifted_up;
+  
+  /** indicates a collision with an arm */
+  bool input body.collision.arm.left;
+  bool input body.collision.arm.right;
   
   /** Ultrasound distance sensor */
   float input sensor.ultrasound;
@@ -52,14 +56,10 @@ namespace sensor("Sensor Symbols") {
   float input obstacle.ultrasound.right.distance;
   float input obstacle.ultrasound.blockedtime;
 
-  /** is set to true if the robot is currently colliding */
-  bool input collision.colliding;
-  
-  /** number of the button pressed on a remote control*/
-  float input button.remote;
-
   /** The current battery charge  */
   float input platform.battery;
+  bool input battery.isDischarging;
+  bool input battery.isCharging;
 
   /** The current frame number (Cognition) */
   float input platform.frameNumber;
@@ -69,20 +69,6 @@ namespace sensor("Sensor Symbols") {
   bool input button.head.pressed.middle;
   bool input button.head.pressed.rear;
 
-  /** path planner */
-  
-  // next point in the path to follow
-  float input path.next_point_to_go_x;
-  float input path.next_point_to_go_y;
-  
-  // time since the next_point_to_go could not be calculated
-  float input path.time_since_not_valid;
-
-  // target point to calculate the path to
-  float output path.target_x;
-  float output path.target_y;
-
-  bool input battery.isDischarging;
-  float output whistle.switch;
+  bool output audio.capture;
 }
   

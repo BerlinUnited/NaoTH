@@ -14,6 +14,9 @@ void SelflocSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("gps.x",&getGPSData().data.translation.x);
   engine.registerDecimalInputSymbol("gps.y",&getGPSData().data.translation.y);
 
+  engine.registerBooleanInputSymbol("goal.opp.was_seen", &getOpponentGoalWasSeen);
+  engine.registerBooleanInputSymbol("goal.own.was_seen", &getOwnGoalWasSeen);
+
   // goal symbols based on self localization
   engine.registerDecimalInputSymbol("goal.opp.x", &oppGoal.center.x);
   engine.registerDecimalInputSymbol("goal.opp.y", &oppGoal.center.y);
@@ -49,17 +52,6 @@ void SelflocSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("robot_pose.planned.rotation",&angleOnFieldPlanned);
 
 
-
-
-  engine.registerDecimalInputSymbol("rel2fieldX", &getRel2fieldX);
-  engine.registerDecimalInputSymbolDecimalParameter("rel2fieldX", "rel2fieldX.x", &rel2fieldX_x);
-  engine.registerDecimalInputSymbolDecimalParameter("rel2fieldX", "rel2fieldX.y", &rel2fieldX_y);
-
-  engine.registerDecimalInputSymbol("rel2fieldY", &getRel2fieldY);
-  engine.registerDecimalInputSymbolDecimalParameter("rel2fieldY", "rel2fieldY.x", &rel2fieldY_x);
-  engine.registerDecimalInputSymbolDecimalParameter("rel2fieldY", "rel2fieldY.y", &rel2fieldY_y);
-
-
   // "field_to_relative.x"
   engine.registerDecimalInputSymbol("locator.field_to_relative.x", &getFieldToRelativeX);
   engine.registerDecimalInputSymbolDecimalParameter("locator.field_to_relative.x", "locator.field_to_relative.x.x", &parameterVector.x);
@@ -70,6 +62,7 @@ void SelflocSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbolDecimalParameter("locator.field_to_relative.y", "locator.field_to_relative.y.x", &parameterVector.x);
   engine.registerDecimalInputSymbolDecimalParameter("locator.field_to_relative.y", "locator.field_to_relative.y.y", &parameterVector.y);
 
+  engine.registerDecimalInputSymbol("look_in_direction_factor",&look_in_direction_factor);
 
   DEBUG_REQUEST_REGISTER("XABSL:draw_selfloc_goal", "draw the position of the goals calculated using the selflocalization", false);
 }//end registerSymbols
@@ -86,27 +79,33 @@ void SelflocSymbols::execute()
 
   robotPosePlanned = getRobotPose() + getMotionStatus().plannedMotion.hip;
   angleOnFieldPlanned = Math::toDegrees(robotPosePlanned.rotation);
+
+  // calculate the distance to the sidelines
+  double distance2back = getFieldInfo().xLength/2.0 + (std::abs(getRobotPose().translation.x) * Math::sgn(getRobotPose().translation.x));
+  double distance2right = getFieldInfo().yLength/2.0 + (std::abs(getRobotPose().translation.y) * Math::sgn(getRobotPose().translation.y));
+  // clip too large/small distance (out of bounds)
+  distance2back = distance2back < 0 ? 0 : (distance2back > getFieldInfo().xLength? getFieldInfo().xLength : distance2back);
+  distance2right = distance2right < 0 ? 0 : (distance2right > getFieldInfo().yLength ? getFieldInfo().yLength : distance2right);
+  // distance in the other direction is the "complement"
+  double distance2front = getFieldInfo().xLength - distance2back;
+  double distance2left = getFieldInfo().yLength - distance2right;
+  // a factor describing the impact of each distance
+  double distance_factor_left = (distance2left / getFieldInfo().yLength) * 0.5;
+  double distance_factor_right = (distance2right / getFieldInfo().yLength) * 0.5;
+  double distance_factor_front = (distance2front / getFieldInfo().xLength) * 0.5;
+  double distance_factor_back = (distance2back / getFieldInfo().xLength) * 0.5;
+  // determines the direction where the robot is turned to
+  double angle_left = cos(Math::fromDegrees(90 - angleOnField));
+  double angle_front = cos(Math::fromDegrees(0 - angleOnField));
+  double angle_right = cos(Math::fromDegrees(-90 - angleOnField));
+  double angle_back = cos(Math::fromDegrees(180 - angleOnField));
+  // factor describing how long the robot should look in the current direction and search for the ball
+  look_in_direction_factor =
+          (angle_left < 0 ? 0 : angle_left)  * distance_factor_left +
+          (angle_front < 0 ? 0 : angle_front)* distance_factor_front +
+          (angle_right < 0 ? 0 : angle_right)* distance_factor_right +
+          (angle_back < 0 ? 0 : angle_back)  * distance_factor_back;
 }//end execute
-
-double SelflocSymbols::getRel2fieldX()
-{
-  Pose2D result = theInstance->getRobotPose();
-  Vector2<double> add;
-  add.x = theInstance->rel2fieldX_x;
-  add.y = theInstance->rel2fieldX_y;
-
-  return (result*add).x;
-}
-
-double SelflocSymbols::getRel2fieldY()
-{
-  Pose2D result = theInstance->getRobotPose();
-  Vector2<double> add;
-  add.x = theInstance->rel2fieldY_x;
-  add.y = theInstance->rel2fieldY_y;
-
-  return (result*add).y;
-}
 
 double SelflocSymbols::getFieldToRelativeX()
 {
@@ -118,4 +117,14 @@ double SelflocSymbols::getFieldToRelativeY()
   return (theInstance->getRobotPose()/theInstance->parameterVector).y;
 }
 
+bool SelflocSymbols::getOpponentGoalWasSeen()
+{
+  return  theInstance->getLocalGoalModel().opponentGoalIsValid && 
+          theInstance->getLocalGoalModel().someGoalWasSeen;
+}
 
+bool SelflocSymbols::getOwnGoalWasSeen()
+{
+  return  theInstance->getLocalGoalModel().ownGoalIsValid && 
+          theInstance->getLocalGoalModel().someGoalWasSeen;
+}
