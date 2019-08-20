@@ -383,7 +383,7 @@ void DCMHandler::initAllSensorData()
   allSensorsList[currentIndex++] = DCMPath_BatteryCurrent;
   allSensorsList[currentIndex++] = DCMPath_BatteryTemperature;
 
-  // little senity check
+  // little sanity check
   assert(currentIndex == numOfSensors);
 
   //connect variables
