@@ -52,6 +52,32 @@ def optical_center():
     return WIDTH/2, HEIGHT/2
 
 
+def calculate_artificial_horizon(c_rot):
+    r31 = c_rot[2, 0]
+    r32 = c_rot[2, 1]
+    r33 = c_rot[2, 2]
+
+    if r33 == 0:
+        r33 = 1e-5
+
+    x1 = 0
+    x2 = WIDTH - 1
+
+    v1 = focal_length()
+    v2 = WIDTH / 2
+    v3 = HEIGHT / 2
+
+    y1 = v3 + (r31 * v1 + r32 * v2) / r33
+    y2 = v3 + (r31 * v1 - r32 * v2) / r33
+
+    # Mirror ends of horizon if Camera rotated to the left
+    if (c_rot @ np.array([0, 0, 1]))[2] < 0:
+        x1, x2 = x2, x1
+        y1, y2 = y2, y1
+
+    return np.array((x1, y1)), np.array((x2, y2))
+
+
 def project(x, y, c_rot, c_trans):
     """
     Project an image point onto the ground plane using the camera matrix
