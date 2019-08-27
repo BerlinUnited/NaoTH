@@ -108,7 +108,6 @@ private:
   //SharedMemory<NaoCommandData> naoCommandData;
   SharedMemory<Accessor<MotorJointData> > naoCommandMotorJointData;
   SharedMemory<Accessor<UltraSoundSendData> > naoCommandUltraSoundSendData;
-  SharedMemory<Accessor<IRSendData> > naoCommandIRSendData;
   SharedMemory<Accessor<LEDData> > naoCommandLEDData;
 
   // syncronize with NaoController
