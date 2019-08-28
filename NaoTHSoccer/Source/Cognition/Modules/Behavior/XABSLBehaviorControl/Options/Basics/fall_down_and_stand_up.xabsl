@@ -41,7 +41,8 @@ option fall_down_and_stand_up
       motion.type = falling;
       arm.react_to_collision = false;
 
-      sound.request = (state_time < 100)?weeeee:off;
+      // enable only for special occasions
+      //sound.request = (state_time < 100)?weeeee:off;
     }
   }
 
