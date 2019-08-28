@@ -153,33 +153,6 @@ function makeprotoc(arg)
   invokeprotoc(arg.inputFiles, arg.cppOut, arg.javaOut, arg.pythonOut, arg.includeDirs)
 end
 
-function invokeprotocAll(inputFiles, cppOut, javaOut, pythonOut, includeDirs)
-	-- check if protobuf compile is explicitely requested
-  local compile = (_OPTIONS["protoc"] ~= nil)
-
-	-- iterate over all files to check if any of them was changed
-  for i = 1, #inputFiles do
-    if(checkRecompileNeeded(inputFiles[i], cppOut, javaOut, pythonOut)) then
-      compile = true
-      break
-    end
-  end
-
-  if(compile) then
-    -- execute compile process for each file
-    local time = os.time()
-    -- do the recompilation
-    if( protocCompile(inputFiles, cppOut, javaOut, pythonOut, includeDirs)) then
-      -- if successfull touch the shadow files
-      for i = 1, #inputFiles do
-        -- touch shadow file in order to remember this build date
-        touchShadow(inputFiles[i], time)
-      end -- end for each file to compile
-    else
-      print ("ERROR: protoc not successful")
-    end
-  end -- end if compile
-end
 
 function invokeprotoc(inputFiles, cppOut, javaOut, pythonOut, includeDirs)
 	-- check if protobuf compile is explicitely requested
