@@ -32,14 +32,12 @@ NaoController::NaoController()
   // command data
   const std::string naoCommandMotorJointDataPath = "/nao_command.MotorJointData";
   const std::string naoCommandUltraSoundSendDataPath = "/nao_command.UltraSoundSendData";
-  const std::string naoCommandIRSendDataPath = "/nao_command.IRSendData";
   const std::string naoCommandLEDDataPath = "/nao_command.LEDData";
 
   naoSensorData.open(naoSensorDataPath);
 
   naoCommandMotorJointData.open(naoCommandMotorJointDataPath);
   naoCommandUltraSoundSendData.open(naoCommandUltraSoundSendDataPath);
-  naoCommandIRSendData.open(naoCommandIRSendDataPath);
   naoCommandLEDData.open(naoCommandLEDDataPath);
   // end init shared memory
 
@@ -112,7 +110,6 @@ NaoController::NaoController()
   registerInput<FSRData>(*this);
   registerInput<GyrometerData>(*this);
   registerInput<InertialSensorData>(*this);
-  registerInput<IRReceiveData>(*this);
   registerInput<ButtonData>(*this);
   registerInput<BatteryData>(*this);
   registerInput<UltraSoundReceiveData>(*this);
@@ -122,7 +119,6 @@ NaoController::NaoController()
   // register command output
   registerOutput<const MotorJointData>(*this);
   registerOutput<const LEDData>(*this);
-  registerOutput<const IRSendData>(*this);
   registerOutput<const UltraSoundSendData>(*this);
   registerOutput<const AudioControl>(*this);
 
