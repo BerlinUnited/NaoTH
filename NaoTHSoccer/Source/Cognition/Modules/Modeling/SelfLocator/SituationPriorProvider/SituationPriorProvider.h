@@ -45,7 +45,6 @@ BEGIN_DECLARE_MODULE(SituationPriorProvider)
 
   REQUIRE(MotionStatus)
   REQUIRE(BodyState)
-  REQUIRE(SituationStatus)
 
   PROVIDE(SituationPrior)
 END_DECLARE_MODULE(SituationPriorProvider)

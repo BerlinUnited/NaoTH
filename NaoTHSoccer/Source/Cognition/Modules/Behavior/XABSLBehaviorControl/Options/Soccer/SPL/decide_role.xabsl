@@ -36,7 +36,6 @@ option decide_role
   {
     action
     {
-      situationStatusOwnHalf = true;
       team.is_playing_as_striker = false;
       basic_goalie();
     }

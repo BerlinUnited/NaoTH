@@ -99,14 +99,6 @@ private:
   static double simpleDefensePoseY();
   static double simpleDefensePoseA();
 
-  //find out if the robot is in a certain field half
-  static bool getSituationStatusOwnHalf();
-  static bool getSituationStatusOppHalf();
-  
-  //force selflocator to locate in a certain field half
-  static void setSituationStatusOwnHalf(bool ownHalf);
-  static void setSituationStatusOppHalf(bool oppHalf);
-
   Pose2D calculateDefensePose();
   static double defensePoseX();
   static double defensePoseY();
