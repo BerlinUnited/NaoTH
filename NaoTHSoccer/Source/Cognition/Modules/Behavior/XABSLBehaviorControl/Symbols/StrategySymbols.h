@@ -12,7 +12,6 @@
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/SoccerStrategy.h"
-#include "Representations/Modeling/SituationStatus.h"
 #include "Representations/Modeling/KickActionModel.h"
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/CompassDirection.h"
@@ -46,7 +45,6 @@ BEGIN_DECLARE_MODULE(StrategySymbols)
   REQUIRE(RoleDecisionModel)
   REQUIRE(TeamMessagePlayersState)
 
-  PROVIDE(SituationStatus)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugModify)

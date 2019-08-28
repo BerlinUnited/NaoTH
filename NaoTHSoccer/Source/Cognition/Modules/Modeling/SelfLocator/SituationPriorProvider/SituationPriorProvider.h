@@ -22,7 +22,6 @@
 // situation
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/BodyState.h"
-#include "Representations/Modeling/SituationStatus.h"
 
 #include "Representations/Modeling/SituationPrior.h"
 
