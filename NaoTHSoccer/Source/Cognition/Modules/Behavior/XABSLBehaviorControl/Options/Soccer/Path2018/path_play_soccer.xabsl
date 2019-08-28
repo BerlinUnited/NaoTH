@@ -68,7 +68,6 @@ option path_play_soccer
     action 
     {
       head.control_mode = look_around;
-      situationStatusOwnHalf = true;
       motion.type = stand;
     }
   }
@@ -89,7 +88,6 @@ option path_play_soccer
     action 
     {
       head.control_mode = look_around;
-      situationStatusOwnHalf = true;
       motion.type = stand;
     }
   }
@@ -126,9 +124,6 @@ option path_play_soccer
     action 
     {
       decide_and_go_to_ready_position();
-      
-      //only the first we know that we are in our own half
-      situationStatusOwnHalf = (game.msecsRemaining >= 540000);
     }
   }
 
@@ -151,7 +146,6 @@ option path_play_soccer
     action 
     {
       head.control_mode = search_for_ball;
-      situationStatusOwnHalf = true;
     }
   }
 
