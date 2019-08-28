@@ -74,8 +74,8 @@ local function protocCompileAll(inputFiles, cppOut, javaOut, pythonOut, ipaths)
   print("Try to remove the pb.cc and .pb.h files ")
   for i,file in ipairs(inputFiles) do
     local name = path.getbasename(file)
-    ok, err = os.remove (path.join(cppOut, name..".pb.cc"))
-    ok, err = os.remove (path.join(cppOut, name..".pb.h"))
+    ok, err = os.remove(path.join(cppOut, name..".pb.cc"))
+    ok, err = os.remove(path.join(cppOut, name..".pb.h"))
   end
   print("Removed all generated message files")
   
@@ -84,10 +84,13 @@ local function protocCompileAll(inputFiles, cppOut, javaOut, pythonOut, ipaths)
   local succ, status, returnCode = os.execute(cmd)
   
   if returnCode == 0 then
-    print("NOTE: (Protbuf) supressing warnings in " .. cppOut)
-    -- add few lines to suppress the conversion warnings to each of the generated *.cc files
-    add_gcc_ignore_pragmas(os.matchfiles(path.join(cppOut,"**.pb.cc")))
-    add_gcc_ignore_pragmas(os.matchfiles(path.join(cppOut,"**.pb.h")))
+    for i,file in ipairs(inputFiles) do
+      print("NOTE: (Protbuf) supressing warnings in " .. cppOut)
+      -- add few lines to suppress the conversion warnings to each of the generated *.cc files
+      local name = path.getbasename(file)
+      add_gcc_ignore_pragmas(path.join(cppOut, name..".pb.cc"))
+      add_gcc_ignore_pragmas(path.join(cppOut, name..".pb.h"))
+    end
   end
 
   return returnCode == 0
