@@ -94,7 +94,7 @@ end
 
 
 function invokeprotoc(inputFiles, cppOut, javaOut, pythonOut, includeDirs)
-	-- check if protobuf compile is explicitely requested
+  -- check if protobuf compile is explicitely requested
   local compileAll = (_OPTIONS["protoc"] ~= nil)
 
   local filesToCompile = {}
