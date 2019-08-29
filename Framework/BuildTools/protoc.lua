@@ -101,9 +101,9 @@ function invokeprotoc(inputFiles, cppOut, javaOut, pythonOut, includeDirs)
 
   -- collect the files that need to be compiled
   for i = 1, #inputFiles do
-  	if compileAll then
-  		table.insert(filesToCompile, inputFiles[i])
-  	elseif checkRecompileNeeded(inputFiles[i], cppOut, javaOut, pythonOut) then
+    if compileAll then
+      table.insert(filesToCompile, inputFiles[i])
+    elseif checkRecompileNeeded(inputFiles[i], cppOut, javaOut, pythonOut) then
       table.insert(filesToCompile, inputFiles[i])
     end
   end
