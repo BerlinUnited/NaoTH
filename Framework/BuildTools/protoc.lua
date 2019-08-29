@@ -11,7 +11,7 @@ local function checkRecompileNeeded(file, cppOut, javaOut, pythonOut)
   
   local cpp_info = os.stat(path.join(cppOut, name..".pb.cc"))
   local hpp_info = os.stat(path.join(cppOut, name..".pb.h"))
-  --local java_info = os.stat(path.join(javaOut, name..".java"))
+  --local java_info = os.stat(path.join(javaOut, name..".java")) -- this is not used because finding the correct java path is not that trivial
   local python_info = os.stat(path.join(pythonOut, name:gsub("-", "_").."_pb2.py"))
   
   if python_info == nil then
