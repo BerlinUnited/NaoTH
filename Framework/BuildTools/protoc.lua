@@ -14,10 +14,6 @@ local function checkRecompileNeeded(file, cppOut, javaOut, pythonOut)
   --local java_info = os.stat(path.join(javaOut, name..".java")) -- this is not used because finding the correct java path is not that trivial
   local python_info = os.stat(path.join(pythonOut, name:gsub("-", "_").."_pb2.py"))
   
-  if python_info == nil then
-    print(path.join(pythonOut, name.."_pb2.py"))
-  end
-
   return (cpp_info == nil    or file_info.mtime > cpp_info.mtime) or
          (hpp_info == nil    or file_info.mtime > cpp_info.mtime) or
          --(java_info == nil   or file_info.mtime > java_info.mtime) or
