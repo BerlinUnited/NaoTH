@@ -82,16 +82,6 @@ local function protocCompileAll(inputFiles, cppOut, javaOut, pythonOut, ipaths)
   -- generate the message files
   print("INFO: (Protbuf) executing " .. cmd)
   local succ, status, returnCode = os.execute(cmd)
-  
-  if returnCode == 0 then
-    for i,file in ipairs(inputFiles) do
-      print("NOTE: (Protbuf) supressing warnings in " .. cppOut)
-      -- add few lines to suppress the conversion warnings to each of the generated *.cc files
-      local name = path.getbasename(file)
-      add_gcc_ignore_pragmas(path.join(cppOut, name..".pb.cc"))
-      add_gcc_ignore_pragmas(path.join(cppOut, name..".pb.h"))
-    end
-  end
 
   return returnCode == 0
 end
