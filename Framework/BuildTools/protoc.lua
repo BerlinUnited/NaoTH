@@ -161,8 +161,6 @@ function invokeprotoc(inputFiles, cppOut, javaOut, pythonOut, includeDirs)
 	-- check if protobuf compile is explicitely requested
   local compileAll = (_OPTIONS["protoc"] ~= nil)
 
-  -- remember the time in case it is needed for the shadow file
-  local time = os.time()
   local filesToCompile = {}
 
   -- collect the files that need to be compiled
