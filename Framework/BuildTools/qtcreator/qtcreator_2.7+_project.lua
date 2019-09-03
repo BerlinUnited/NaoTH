@@ -16,11 +16,11 @@ function qtc.header()
     _p("<!DOCTYPE QtCreatorProject>")
     _p("<!-- Written by NaoTH qtc generator script -->")
     _p("<qtcreator>")     
--- if we want to generate '*.creator.user'-files, we need the following for QtCreator 4.6+
---        _p(1, "<data>")
---            _p(2, "<variable>EnvironmentId</variable>")
---            _p(2, "<value type=\"QByteArray\">{64683fc2-5067-44ef-8dff-094e83c08718}</value>")
---        _p(1, "</data>")
+    -- if we want to generate '*.creator.user'-files, we need the following for QtCreator 4.6+
+    --  _p(1, "<data>")
+    --      _p(2, "<variable>EnvironmentId</variable>")
+    --      _p(2, "<value type=\"QByteArray\">{64683fc2-5067-44ef-8dff-094e83c08718}</value>")
+    --  _p(1, "</data>")
         _p(1, "<data>")
             _p(2, "<variable>ProjectExplorer.Project.ActiveTarget</variable>")
             _p(2, "<value type=\"int\">0</value>")
@@ -143,16 +143,16 @@ function qtc.build_configuration(prj, cfg, cfgCounter, platform)
                 _p(3, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.BuildConfiguration.BuildStepList.0\">")
                 _p(4, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.BuildStepList.Step.0\">")
                     _p(5, "<value type=\"bool\" key=\"ProjectExplorer.BuildStep.Enabled\">true</value>")
-    if string.endswith(cfg.longname, platform) and platform ~= "" then
-      _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--platform=&quot;".. platform .."&quot; --file=../Make/premake5.lua gmake</value>")
-    else
-      -- what is this supposed to be?  
-      if _OPTIONS.Test == nil then
-        _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--file=../Make/premake5.lua gmake</value>")
-      else
-        _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--Test --file=../Make/premake5.lua gmake</value>")        
-      end
-    end
+                    if string.endswith(cfg.longname, platform) and platform ~= "" then
+                        _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--platform=&quot;".. platform .."&quot; --file=../Make/premake5.lua gmake</value>")
+                    else
+                      -- what is this supposed to be?  
+                      if _OPTIONS.Test == nil then
+                        _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--file=../Make/premake5.lua gmake</value>")
+                      else
+                        _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--Test --file=../Make/premake5.lua gmake</value>")        
+                      end
+                    end
                     _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Command\">premake5</value>")
                     _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.WorkingDirectory\">%%{buildDir}</value>")
                     _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\">Generate Makefiles with premake5</value>")
@@ -179,7 +179,7 @@ function qtc.build_configuration(prj, cfg, cfgCounter, platform)
                 _p(4, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.Id\">ProjectExplorer.BuildSteps.Build</value>")  
             _p(3, "</valuemap>")
 
-    -- the build steps for "Clean"
+            -- the build steps for "Clean"
             _p(3, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.BuildConfiguration.BuildStepList.1\">")
                 _p(4, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.BuildStepList.Step.0\">")
                     _p(5, "<valuelist type=\"QVariantList\" key=\"GenericProjectManager.GenericMakeStep.BuildTargets\">")
@@ -199,9 +199,9 @@ function qtc.build_configuration(prj, cfg, cfgCounter, platform)
                 _p(4, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.Id\">ProjectExplorer.BuildSteps.Clean</value>")
             _p(3, "</valuemap>")
 
-     -- general stuff
+            -- general stuff
             _p(3, "<value type=\"int\" key=\"ProjectExplorer.BuildConfiguration.BuildStepListCount\">2</value>")
-    -- set PROMPT environment variable in order to tell the ansicolors.lua script not to use colors
+            -- set PROMPT environment variable in order to tell the ansicolors.lua script not to use colors
             _p(3, "<value type=\"bool\" key=\"ProjectExplorer.BuildConfiguration.ClearSystemEnvironment\">false</value>")
             _p(3, "<valuelist type=\"QVariantList\" key=\"ProjectExplorer.BuildConfiguration.UserEnvironmentChanges\">")
                 _p(4, "<value type=\"QString\">PROMPT=TRUE</value>")
@@ -210,7 +210,6 @@ function qtc.build_configuration(prj, cfg, cfgCounter, platform)
             _p(3, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\"></value>")
             _p(3, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\">%s</value>", cfg.longname)
             _p(3, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.Id\">GenericProjectManager.GenericBuildConfiguration</value>") 
-
         _p(2, "</valuemap>") -- end configuration valuemap
 end
 

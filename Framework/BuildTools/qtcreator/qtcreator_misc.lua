@@ -9,14 +9,12 @@
 	
   
   function qc.files(prj)
-  
     for _, file in ipairs(prj.files) do
       _p(file)
     end
   end
   
   function qc.includes(prj)
-  
     -- add system includes
     for _, inc in ipairs(prj.sysincludedirs) do
       _p(inc)
