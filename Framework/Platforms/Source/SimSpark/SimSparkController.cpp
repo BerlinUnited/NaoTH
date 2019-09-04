@@ -215,7 +215,7 @@ bool SimSparkController::connect(const std::string& host, int port)
   return false;
 }//end connect
 
-bool SimSparkController::init(const std::string& modelPath, const std::string& teamName, unsigned int playerNumber, const std::string& server, unsigned int port, bool sync)
+bool SimSparkController::init(const std::string& modelPath, const std::string& teamName, unsigned int teamNumber, unsigned int playerNumber, const std::string& server, unsigned int port, bool sync)
 {
   Platform::getInstance().init(this);
 
@@ -261,7 +261,10 @@ bool SimSparkController::init(const std::string& modelPath, const std::string& t
 
 
   Configuration& config = Platform::getInstance().theConfiguration;
-  if (config.hasKey("player", "TeamNumber"))
+  if (teamNumber != 0) {
+    theGameInfo.teamNumber = teamNumber;
+    config.setInt("player", "TeamNumber", teamNumber);
+  } else if (config.hasKey("player", "TeamNumber"))
   {
     theGameInfo.teamNumber = config.getInt("player", "TeamNumber");
   }
