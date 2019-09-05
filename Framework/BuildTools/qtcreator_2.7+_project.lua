@@ -1,6 +1,6 @@
 -- An example project generator; see _example.lua for action description
 premake.qtcreator27 = { }
--- 
+
 -- The project generation function, attached to the action in _example.lua.
 -- By now, premake.generate() has created the project file using the name
 -- provided in _example.lua, and redirected input to this new file.
@@ -10,12 +10,12 @@ premake.qtcreator27 = { }
 -- https://doc.qt.io/qtcreator/creator-project-generic.html
 
 local qtc = premake.qtcreator27
-    
+
 function qtc.header()
     _p("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
     _p("<!DOCTYPE QtCreatorProject>")
     _p("<!-- Written by NaoTH qtc generator script -->")
-    _p("<qtcreator>")     
+    _p("<qtcreator>")
     -- if we want to generate '*.creator.user'-files, we need the following for QtCreator 4.6+
     --  _p(1, "<data>")
     --      _p(2, "<variable>EnvironmentId</variable>")
@@ -138,79 +138,78 @@ end
 
 function qtc.build_configuration(prj, cfg, cfgCounter, platform)
             _p(2, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.Target.BuildConfiguration.%d\">", cfgCounter)
-                _p(3, "<value type=\"QString\" key=\"ProjectExplorer.BuildConfiguration.BuildDirectory\"></value>")    
+                _p(3, "<value type=\"QString\" key=\"ProjectExplorer.BuildConfiguration.BuildDirectory\"></value>")
                 -- the build steps for "Make"
                 _p(3, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.BuildConfiguration.BuildStepList.0\">")
-                _p(4, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.BuildStepList.Step.0\">")
-                    _p(5, "<value type=\"bool\" key=\"ProjectExplorer.BuildStep.Enabled\">true</value>")
-                    if string.endswith(cfg.longname, platform) and platform ~= "" then
-                        _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--platform=&quot;".. platform .."&quot; --file=../Make/premake5.lua gmake</value>")
-                    else
-                      -- what is this supposed to be?  
-                      if _OPTIONS.Test == nil then
-                        _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--file=../Make/premake5.lua gmake</value>")
-                      else
-                        _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--Test --file=../Make/premake5.lua gmake</value>")        
-                      end
-                    end
-                    _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Command\">premake5</value>")
-                    _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.WorkingDirectory\">%%{buildDir}</value>")
-                    _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\">Generate Makefiles with premake5</value>")
-                    _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\">premake5</value>")
-                    _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.Id\">ProjectExplorer.ProcessStep</value>")
-                _p(4, "</valuemap>")
+                    _p(4, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.BuildStepList.Step.0\">")
+                        _p(5, "<value type=\"bool\" key=\"ProjectExplorer.BuildStep.Enabled\">true</value>")
+                        if string.endswith(cfg.longname, platform) and platform ~= "" then
+                            _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--platform=&quot;".. platform .."&quot; --file=../Make/premake5.lua gmake</value>")
+                        else
+                            -- what is this supposed to be?
+                            if _OPTIONS.Test == nil then
+                                _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--file=../Make/premake5.lua gmake</value>")
+                            else
+                                _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--Test --file=../Make/premake5.lua gmake</value>")
+                            end
+                        end
+                        _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Command\">premake5</value>")
+                        _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.WorkingDirectory\">%%{buildDir}</value>")
+                        _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\">Generate Makefiles with premake5</value>")
+                        _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\">premake5</value>")
+                        _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.Id\">ProjectExplorer.ProcessStep</value>")
+                    _p(4, "</valuemap>")
 
-                _p(4, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.BuildStepList.Step.1\">")
-                    _p(5, "<valuelist type=\"QVariantList\" key=\"GenericProjectManager.GenericMakeStep.BuildTargets\"/>")
+                    _p(4, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.BuildStepList.Step.1\">")
+                        _p(5, "<valuelist type=\"QVariantList\" key=\"GenericProjectManager.GenericMakeStep.BuildTargets\"/>")
 
-                    _p(5, "<value type=\"bool\" key=\"GenericProjectManager.GenericMakeStep.Clean\">false</value>")
-                    _p(5, "<value type=\"QString\" key=\"GenericProjectManager.GenericMakeStep.MakeArguments\">config=%s %s</value>", cfg.shortname, prj.name)
-                    _p(5, "<value type=\"QString\" key=\"GenericProjectManager.GenericMakeStep.MakeCommand\"></value>")
-                    _p(5, "<value type=\"bool\" key=\"ProjectExplorer.BuildStep.Enabled\">true</value>")
-                    _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\">Make %s</value>", prj.name)
-                    _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\">%s</value>",  cfg.shortname)
+                        _p(5, "<value type=\"bool\" key=\"GenericProjectManager.GenericMakeStep.Clean\">false</value>")
+                        _p(5, "<value type=\"QString\" key=\"GenericProjectManager.GenericMakeStep.MakeArguments\">config=%s %s</value>", cfg.shortname, prj.name)
+                        _p(5, "<value type=\"QString\" key=\"GenericProjectManager.GenericMakeStep.MakeCommand\"></value>")
+                        _p(5, "<value type=\"bool\" key=\"ProjectExplorer.BuildStep.Enabled\">true</value>")
+                        _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\">Make %s</value>", prj.name)
+                        _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\">%s</value>",  cfg.shortname)
+                        _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.Id\">GenericProjectManager.GenericMakeStep</value>")
+                    _p(4, "</valuemap>")
 
-                    _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.Id\">GenericProjectManager.GenericMakeStep</value>")
-                _p(4, "</valuemap>")
+                    _p(4, "<value type=\"int\" key=\"ProjectExplorer.BuildStepList.StepsCount\">2</value>")
+                    _p(4, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\">Build %s</value>", prj.name)
+                    _p(4, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\"></value>")
+                    _p(4, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.Id\">ProjectExplorer.BuildSteps.Build</value>")
+                _p(3, "</valuemap>")
 
-                _p(4, "<value type=\"int\" key=\"ProjectExplorer.BuildStepList.StepsCount\">2</value>")
-                _p(4, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\">Build %s</value>", prj.name)
-                _p(4, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\"></value>")
-                _p(4, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.Id\">ProjectExplorer.BuildSteps.Build</value>")  
-            _p(3, "</valuemap>")
+                -- the build steps for "Clean"
+                _p(3, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.BuildConfiguration.BuildStepList.1\">")
+                    _p(4, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.BuildStepList.Step.0\">")
+                        _p(5, "<valuelist type=\"QVariantList\" key=\"GenericProjectManager.GenericMakeStep.BuildTargets\">")
+                            _p(6, "<value type=\"QString\">clean</value>")
+                        _p(5, "</valuelist>")
+                        _p(5, "<value type=\"bool\" key=\"GenericProjectManager.GenericMakeStep.Clean\">true</value>")
+                        _p(5, "<value type=\"QString\" key=\"GenericProjectManager.GenericMakeStep.MakeArguments\">config=%s</value>", cfg.shortname)
+                        _p(5, "<value type=\"QString\" key=\"GenericProjectManager.GenericMakeStep.MakeCommand\"></value>")
+                        _p(5, "<value type=\"bool\" key=\"ProjectExplorer.BuildStep.Enabled\">true</value>")
+                        _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\">Make</value>")
+                        _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\"></value>")
+                        _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.Id\">GenericProjectManager.GenericMakeStep</value>")
+                    _p(4, "</valuemap>")
+                    _p(4, "<value type=\"int\" key=\"ProjectExplorer.BuildStepList.StepsCount\">1</value>")
+                    _p(4, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\">Clean</value>")
+                    _p(4, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\"></value>")
+                    _p(4, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.Id\">ProjectExplorer.BuildSteps.Clean</value>")
+                _p(3, "</valuemap>")
 
-            -- the build steps for "Clean"
-            _p(3, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.BuildConfiguration.BuildStepList.1\">")
-                _p(4, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.BuildStepList.Step.0\">")
-                    _p(5, "<valuelist type=\"QVariantList\" key=\"GenericProjectManager.GenericMakeStep.BuildTargets\">")
-                        _p(6, "<value type=\"QString\">clean</value>")
-                    _p(5, "</valuelist>")
-                    _p(5, "<value type=\"bool\" key=\"GenericProjectManager.GenericMakeStep.Clean\">true</value>")
-                    _p(5, "<value type=\"QString\" key=\"GenericProjectManager.GenericMakeStep.MakeArguments\">config=%s</value>", cfg.shortname)
-                    _p(5, "<value type=\"QString\" key=\"GenericProjectManager.GenericMakeStep.MakeCommand\"></value>")
-                    _p(5, "<value type=\"bool\" key=\"ProjectExplorer.BuildStep.Enabled\">true</value>")
-                    _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\">Make</value>")
-                    _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\"></value>")
-                    _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.Id\">GenericProjectManager.GenericMakeStep</value>")
-                _p(4, "</valuemap>")
-                _p(4, "<value type=\"int\" key=\"ProjectExplorer.BuildStepList.StepsCount\">1</value>")
-                _p(4, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\">Clean</value>")
-                _p(4, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\"></value>")
-                _p(4, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.Id\">ProjectExplorer.BuildSteps.Clean</value>")
-            _p(3, "</valuemap>")
+                -- general stuff
+                _p(3, "<value type=\"int\" key=\"ProjectExplorer.BuildConfiguration.BuildStepListCount\">2</value>")
+                -- set PROMPT environment variable in order to tell the ansicolors.lua script not to use colors
+                _p(3, "<value type=\"bool\" key=\"ProjectExplorer.BuildConfiguration.ClearSystemEnvironment\">false</value>")
+                _p(3, "<valuelist type=\"QVariantList\" key=\"ProjectExplorer.BuildConfiguration.UserEnvironmentChanges\">")
+                    _p(4, "<value type=\"QString\">PROMPT=TRUE</value>")
+                _p(3, "</valuelist>")
 
-            -- general stuff
-            _p(3, "<value type=\"int\" key=\"ProjectExplorer.BuildConfiguration.BuildStepListCount\">2</value>")
-            -- set PROMPT environment variable in order to tell the ansicolors.lua script not to use colors
-            _p(3, "<value type=\"bool\" key=\"ProjectExplorer.BuildConfiguration.ClearSystemEnvironment\">false</value>")
-            _p(3, "<valuelist type=\"QVariantList\" key=\"ProjectExplorer.BuildConfiguration.UserEnvironmentChanges\">")
-                _p(4, "<value type=\"QString\">PROMPT=TRUE</value>")
-            _p(3, "</valuelist>")   
-
-            _p(3, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\"></value>")
-            _p(3, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\">%s</value>", cfg.longname)
-            _p(3, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.Id\">GenericProjectManager.GenericBuildConfiguration</value>") 
-        _p(2, "</valuemap>") -- end configuration valuemap
+                _p(3, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\"></value>")
+                _p(3, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\">%s</value>", cfg.longname)
+                _p(3, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.Id\">GenericProjectManager.GenericBuildConfiguration</value>")
+            _p(2, "</valuemap>") -- end configuration valuemap
 end
 
 function qtc.user(prj)
@@ -221,7 +220,7 @@ function qtc.user(prj)
 
     local userPlatform = ""
     if(_OPTIONS["platform"] ~= nil) then
-      userPlatform = _OPTIONS.platform
+        userPlatform = _OPTIONS.platform
     end
     -- local platforms = premake.filterplatforms(prj.solution, cc.platforms, "Native")
 
@@ -229,103 +228,99 @@ function qtc.user(prj)
     local platforms = {"Native"}
 
     qtc.header()
-      
+
     -- we need to set a valid "kit" ID as ProjectConfiguration.Id, otherwise the QtCreator will stop loading the project
     -- under *NIX-systems we can grab the configuration file
     -- TODO: what to do on Windows?
     local kitID = "{b699c497-eead-4e23-bb5c-bef17dc27c55}" -- dummy ID
     local homeDir = os.getenv("HOME")
     if(homeDir ~= nil) then
-      local profilePath = homeDir .. "/.config/QtProject/qtcreator/profiles.xml";
-      if os.isfile(profilePath) then
-        local isDefaultProfile = false
-        for line in io.lines(profilePath) do
-          if isDefaultProfile then
-            isDefaultProfile = false            
-            local m = string.match(line, "{[^}]+}")
-            if m then
-              kitID = m
-              break
-            end  
-          elseif string.find(line, "Profile.Default") then
-            isDefaultProfile = true
-          end
-          
+        local profilePath = homeDir .. "/.config/QtProject/qtcreator/profiles.xml";
+        if os.isfile(profilePath) then
+            local isDefaultProfile = false
+            for line in io.lines(profilePath) do
+                if isDefaultProfile then
+                    isDefaultProfile = false
+                    local m = string.match(line, "{[^}]+}")
+                    if m then
+                        kitID = m
+                        break
+                    end
+                elseif string.find(line, "Profile.Default") then
+                    isDefaultProfile = true
+                end
+            end
         end
-      end
-      
     end
-    
-      _p("<data>")
-    _p(1, "<variable>ProjectExplorer.Project.Target.0</variable>")
-    _p(1, "<valuemap type=\"QVariantMap\">")
-        _p(2, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\">Desktop</value>")--, prj.name)
-        _p(2, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\">Desktop</value>")
-        _p(2, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.Id\">" .. kitID .. "</value>")
-        _p(2, "<value type=\"int\" key=\"ProjectExplorer.Target.ActiveBuildConfiguration\">0</value>")
-        _p(2, "<value type=\"int\" key=\"ProjectExplorer.Target.ActiveDeployConfiguration\">0</value>")
-        _p(2, "<value type=\"int\" key=\"ProjectExplorer.Target.ActiveRunConfiguration\">0</value>")
-        local cfgCounter = 0
 
-        for cfg in premake.project.eachconfig(prj) do
-            qtc.build_configuration(prj, cfg, cfgCounter, userPlatform)
-            cfgCounter = cfgCounter + 1
-        end
+    _p("<data>")
+        _p(1, "<variable>ProjectExplorer.Project.Target.0</variable>")
+        _p(1, "<valuemap type=\"QVariantMap\">")
+            _p(2, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\">Desktop</value>")--, prj.name)
+            _p(2, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\">Desktop</value>")
+            _p(2, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.Id\">" .. kitID .. "</value>")
+            _p(2, "<value type=\"int\" key=\"ProjectExplorer.Target.ActiveBuildConfiguration\">0</value>")
+            _p(2, "<value type=\"int\" key=\"ProjectExplorer.Target.ActiveDeployConfiguration\">0</value>")
+            _p(2, "<value type=\"int\" key=\"ProjectExplorer.Target.ActiveRunConfiguration\">0</value>")
 
-        _p(2, "<value type=\"int\" key=\"ProjectExplorer.Target.BuildConfigurationCount\">%d</value>", cfgCounter)
-
-        _p(2, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.Target.DeployConfiguration.0\">")
-            _p(3, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.BuildConfiguration.BuildStepList.0\">")
-                _p(4, "<value type=\"int\" key=\"ProjectExplorer.BuildStepList.StepsCount\">0</value>")
-                _p(4, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\">Deployment</value>")
-                _p(4, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\"></value>")
-                _p(4, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.Id\">ProjectExplorer.BuildSteps.Deploy</value>")
-            _p(3, "</valuemap>")
-            _p(3, "<value type=\"int\" key=\"ProjectExplorer.BuildConfiguration.BuildStepListCount\">1</value>")
-            _p(3, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\">Local Deploy</value>")
-            _p(3, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\"></value>")
-            _p(3, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.Id\">ProjectExplorer.DefaultDeployConfiguration</value>")
-        _p(2, "</valuemap>")
-
-        _p(2, "<value type=\"int\" key=\"ProjectExplorer.Target.DeployConfigurationCount\">1</value>")
-    
-        -- run configurations
-        cfgCounter = 0
-
-        for cfg in premake.project.eachconfig(prj) do
-            if(cfg.kind == "ConsoleApp" or cfg.kind == "WindowedApp") then
-                qtc.run_configuration(prj, cfg, cfgCounter)
+            local cfgCounter = 0
+            for cfg in premake.project.eachconfig(prj) do
+                qtc.build_configuration(prj, cfg, cfgCounter, userPlatform)
                 cfgCounter = cfgCounter + 1
-            end -- if kind == *App
-        end
-        
-        _p(2, "<value type=\"int\" key=\"ProjectExplorer.Target.RunConfigurationCount\">%d</value>", cfgCounter)
-    _p(1, "</valuemap>")
+            end
+            _p(2, "<value type=\"int\" key=\"ProjectExplorer.Target.BuildConfigurationCount\">%d</value>", cfgCounter)
+
+            _p(2, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.Target.DeployConfiguration.0\">")
+                _p(3, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.BuildConfiguration.BuildStepList.0\">")
+                    _p(4, "<value type=\"int\" key=\"ProjectExplorer.BuildStepList.StepsCount\">0</value>")
+                    _p(4, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\">Deployment</value>")
+                    _p(4, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\"></value>")
+                    _p(4, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.Id\">ProjectExplorer.BuildSteps.Deploy</value>")
+                _p(3, "</valuemap>")
+                _p(3, "<value type=\"int\" key=\"ProjectExplorer.BuildConfiguration.BuildStepListCount\">1</value>")
+                _p(3, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\">Local Deploy</value>")
+                _p(3, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\"></value>")
+                _p(3, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.Id\">ProjectExplorer.DefaultDeployConfiguration</value>")
+            _p(2, "</valuemap>")
+
+            _p(2, "<value type=\"int\" key=\"ProjectExplorer.Target.DeployConfigurationCount\">1</value>")
+
+            -- run configurations
+            cfgCounter = 0
+            for cfg in premake.project.eachconfig(prj) do
+                if(cfg.kind == "ConsoleApp" or cfg.kind == "WindowedApp") then
+                    qtc.run_configuration(prj, cfg, cfgCounter)
+                    cfgCounter = cfgCounter + 1
+                end -- if kind == *App
+            end
+
+            _p(2, "<value type=\"int\" key=\"ProjectExplorer.Target.RunConfigurationCount\">%d</value>", cfgCounter)
+        _p(1, "</valuemap>")
     _p("</data>")
-        
+
     _p("<data>")
         _p(1, "<variable>ProjectExplorer.Project.TargetCount</variable>")
         _p(1, "<value type=\"int\">1</value>")
     _p("</data>")
-        
+
     qtc.footer()
 end
 
 function qtc.files(prj)
     for _, file in ipairs(prj.files) do
-      _p(file)
+        _p(file)
     end
 end
 
 function qtc.includes(prj)
     -- add system includes
     for _, inc in ipairs(prj.sysincludedirs) do
-      _p(inc)
+        _p(inc)
     end
 
     -- add project includes
     for _, inc in ipairs(prj.includedirs) do
-      _p(inc)
+        _p(inc)
     end
 end
 
@@ -334,6 +329,6 @@ function qtc.defines(prj)
     _p("")
     _p("// the following defines are autogenerated by \"premake5 qtcreator\"")
     for _, def in ipairs(prj.defines) do
-      _p("#define " .. def)
+        _p("#define " .. def)
     end
 end
