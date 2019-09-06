@@ -36,7 +36,7 @@ void FallMotion::execute()
     }
 
     // copy sensor positions
-    for (int i = 0; i < JointData::numOfJoint; i++)
+    for (size_t i = 0; i < JointData::numOfJoint; i++)
     {
       getMotorJointData().position[i] = getSensorJointData().position[i];
     }
@@ -46,7 +46,7 @@ void FallMotion::execute()
   else if( isStopped() ) // executed the first time
   {
     // store hardness
-    for (int i = 0; i < JointData::numOfJoint; i++)
+      for (size_t i = 0; i < JointData::numOfJoint; i++)
     {
       oldStiffness[i] = getSensorJointData().stiffness[i];
     }
