@@ -60,7 +60,9 @@ void KeyFrameMotion::init()
 
   // the distance between the current state and the first key frame
   double distance = 0;
-  stiffness = 1.0; //0.7;// only this value is tested!!!
+  //stiffness = 1.0; //0.7;// only this value is tested!!!
+  stiffness = getWalk2018Parameters().keyFrameMotionParameters.stiffness;
+
   for(int joint = 0; joint < currentMotionNet.getNumOfJoints(); joint++)
   {
     JointData::JointID id = currentMotionNet.getJointID(joint);
@@ -95,7 +97,7 @@ void KeyFrameMotion::execute()
 
   double timeStep = getRobotInfo().basicTimeStep;
 
-  // first execution
+  // on first execution
   if(isStopped()) {
     init();
     setCurrentState(motion::running);
@@ -134,7 +136,7 @@ void KeyFrameMotion::execute()
     // set the joint data (the only place where theMotorJointData is set)
     getMotorJointData().stiffness[id] = stiffness;
     getMotorJointData().position[id] = lastMotorJointData.position[id];
-  }//end for
+  }
 
   t -= timeStep;
 }//end execute
@@ -181,6 +183,6 @@ void KeyFrameMotion::print(ostream& stream) const
   stream << "Current KeyFrame:   " << currentKeyFrame.id << endl;
   stream << "Current Transition: " << currentTransition << endl;
   stream << "Current Time:       " << t << endl;
-}//end print
+}
 
 

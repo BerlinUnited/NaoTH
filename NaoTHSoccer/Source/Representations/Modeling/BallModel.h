@@ -34,6 +34,9 @@ public:
   // The speed of the ball relative to the robot (in mm/s)
   Vector2d speed;
 
+  // the rest position
+  Vector2d position_at_rest;
+
   // precalculated ball position in the coordinates of the planed motion (see motionStatus)
   Vector2d positionPreview;
   Vector2d positionPreviewInLFoot;
@@ -48,6 +51,8 @@ public:
   // indicates that the ball was perceived well enough to be sure
   bool knows;
 
+  Vector2d last_known_ball;
+
 private:
 
   // time how long the ball is seen without interruption
@@ -58,7 +63,7 @@ private:
 
 
 public:
-  
+
   const naoth::FrameInfo& getFrameInfoWhenBallWasSeen() const {
     return frameInfoWhenBallWasSeen;
   }
@@ -80,7 +85,7 @@ public:
     frameInfoWhenBallWasSeen = frameInfo;
   }
 
-  const Vector2d& getFuturePosition(size_t t) const 
+  const Vector2d& getFuturePosition(size_t t) const
   {
     if(t < futurePosition.size()) {
       return futurePosition[t];

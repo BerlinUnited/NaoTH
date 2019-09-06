@@ -52,21 +52,15 @@ using namespace std;
 
 V4lCameraHandler::V4lCameraHandler()
   :
-  selMethodIO(IO_MMAP),
-  actMethodIO(Num_of_MethodIO),
   cameraName("none"),
-  fd(-1), 
-  buffers(NULL),
-  n_buffers(0),
-  currentImage(NULL),
+  currentCamera(CameraInfo::numOfCamera),
+  fd(-1),
   atLeastOneImageRetrieved(false),
   initialParamsSet(false),
   wasQueried(false),
   isCapturing(false),
-  bufferSwitched(false),
   blockingCaptureModeEnabled(false),
   lastCameraSettingTimestamp(0),
-  currentCamera(CameraInfo::numOfCamera),
   error_count(0)
 {
   // NOTE: width, height and fps are not included here
@@ -274,25 +268,25 @@ Description: Enable/disable fade-to-black feature.
 void V4lCameraHandler::setFPS(int fpsRate)
 {
   struct v4l2_streamparm fps;
-  memset(&fps, 0, sizeof (struct v4l2_streamparm));
+  memset(&fps, 0, sizeof (fps));
   fps.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   VERIFY(!ioctl(fd, VIDIOC_G_PARM, &fps));
   fps.parm.capture.timeperframe.numerator = 1;
   fps.parm.capture.timeperframe.denominator = fpsRate;
   VERIFY(ioctl(fd, VIDIOC_S_PARM, &fps) != -1);
 
+  // todo: do we need this setting?
   currentSettings.data[CameraSettings::FPS] = fpsRate;
 }
 
 void V4lCameraHandler::openDevice(bool blockingMode)
 {
-
   struct stat st;
   memset (&st, 0, sizeof (st));
 
   if (-1 == stat(cameraName.c_str(), &st))
   {
-    std::cerr << LOG << "[V4L open] Cannot identify '" << cameraName << "': " << errno << ", "
+    std::cerr << LOG << "[V4L open] Cannot identify '" << cameraName << "': " << errno << ", " 
       << strerror(errno) << std::endl;
     return;
   }
@@ -329,30 +323,6 @@ void V4lCameraHandler::openDevice(bool blockingMode)
 
 void V4lCameraHandler::initDevice()
 {
-  struct v4l2_capability cap;
-  memset (&cap, 0, sizeof (cap));
-  
-  memset(&(currentBuf), 0, sizeof (struct v4l2_buffer));
-  currentBuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-  currentBuf.memory = V4L2_MEMORY_MMAP;
-
-  VERIFY(ioctl(fd, VIDIOC_QUERYCAP, &cap) != -1);
-  VERIFY(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE);
-  VERIFY(selMethodIO == IO_READ || selMethodIO == IO_MMAP || selMethodIO == IO_USERPTR);
-
-  switch(selMethodIO)
-  {
-    case IO_READ:
-      VERIFY(cap.capabilities & V4L2_CAP_READWRITE);
-      break;
-
-    case IO_MMAP:
-    case IO_USERPTR:
-      VERIFY(cap.capabilities & V4L2_CAP_STREAMING);
-      break;
-    default: ASSERT(false);
-  }
-
   /* Select video input, video standard and tune here. */
   // set image format
   struct v4l2_format fmt;
@@ -366,162 +336,128 @@ void V4lCameraHandler::initDevice()
 
   /* Note VIDIOC_S_FMT may change width and height. */
   ASSERT(fmt.fmt.pix.sizeimage == naoth::IMAGE_WIDTH*naoth::IMAGE_HEIGHT*2);
- 
-  switch (selMethodIO)
-  {
-    case IO_READ:
-      initRead(fmt.fmt.pix.sizeimage);
-      break;
+  
+  memset(&currentBuf, 0, sizeof (currentBuf));
+  currentBuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  currentBuf.memory = V4L2_MEMORY_MMAP;
 
-    case IO_MMAP:
-      initMMap();
-      break;
+  // query and verify the capabilities
+  struct v4l2_capability cap;
+  VERIFY(ioctl(fd, VIDIOC_QUERYCAP, &cap) != -1);
+  VERIFY(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE);
+  VERIFY(cap.capabilities & V4L2_CAP_STREAMING);
 
-    case IO_USERPTR:
-      initUP(fmt.fmt.pix.sizeimage);
-      break;
-    default: ASSERT(false);
-  }
-
-  actMethodIO = selMethodIO;
+  mapBuffers();
 }
 
-void V4lCameraHandler::initMMap()
+// map buffers
+void V4lCameraHandler::mapBuffers()
 {
   struct v4l2_requestbuffers req;
-  memset(&(req), 0, sizeof (v4l2_requestbuffers));
-  req.count = 5; // number of internal buffers, since we use debug images that should be quite big
+  memset(&req, 0, sizeof(req));
+  
+  req.count = frameBufferCount; // number of internal buffers, since we use debug images that should be quite big
   req.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   req.memory = V4L2_MEMORY_MMAP;
 
   VERIFY(-1 != ioctl(fd, VIDIOC_REQBUFS, &req));
-  VERIFY(req.count >= 2);
+  VERIFY(req.count == frameBufferCount); 
 
-  buffers = (struct buffer*) calloc(req.count, sizeof (*buffers));
-  VERIFY(buffers);
-
-  for (n_buffers = 0; n_buffers < req.count; ++n_buffers)
+  for (size_t i = 0; i < req.count; ++i)
   {
     struct v4l2_buffer buf;
-    memset(&(buf), 0, sizeof (struct v4l2_buffer));
+    memset(&buf, 0, sizeof(buf));
+    
     buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     buf.memory = V4L2_MEMORY_MMAP;
-    buf.index = n_buffers;
+    buf.index = i;
 
     VERIFY(-1 != ioctl(fd, VIDIOC_QUERYBUF, &buf));
 
-    buffers[n_buffers].length = buf.length;
-    buffers[n_buffers].start = mmap(
+    buffers[i].length = buf.length;
+    buffers[i].start = mmap(
       NULL,  /* start anywhere */
       buf.length,
       PROT_READ | PROT_WRITE, /* required */
       MAP_SHARED, /* recommended */
       fd, buf.m.offset);
 
-    VERIFY(MAP_FAILED != buffers[n_buffers].start);
+    VERIFY(MAP_FAILED != buffers[i].start);
   }
 }
 
-void V4lCameraHandler::initUP(unsigned int buffer_size)
+void V4lCameraHandler::unmapBuffers()
 {
-  struct v4l2_requestbuffers req;
-  unsigned int page_size = getpagesize();
-
-  buffer_size = (buffer_size + page_size - 1) & ~(page_size - 1);
-  memset(&(req), 0, sizeof (v4l2_requestbuffers));
-
-  req.count = 5; // number of internal buffers, since we use debug images that should be quite big
-  req.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-  req.memory = V4L2_MEMORY_USERPTR;
-
-  VERIFY(-1 != ioctl(fd, VIDIOC_REQBUFS, &req));
-
-  VERIFY(req.count >= 2);
-
-  buffers = (struct buffer*) calloc(req.count, sizeof (*buffers));
-
-  VERIFY(buffers);
-
-  for (n_buffers = 0; n_buffers < req.count; ++n_buffers)
-  {
-    buffers[n_buffers].length = buffer_size;
-    buffers[n_buffers].start = memalign (page_size, buffer_size);
-    cout << LOG << n_buffers << " buffer_size " << buffers[n_buffers].length << endl;
-    cout << n_buffers << " page_size " << buffers[n_buffers].start << endl;
-
-    VERIFY(NULL != buffers[n_buffers].start);
+  for (size_t i = 0; i < frameBufferCount; ++i) {
+    VERIFY(-1 != munmap(buffers[i].start, buffers[i].length));
   }
-  cout << LOG << " page_size " << page_size << endl;
-}
-
-void V4lCameraHandler::initRead(unsigned int buffer_size)
-{
-  buffers =  (struct buffer*) calloc (1, sizeof (*buffers));
-
-  VERIFY(NULL != buffers);
-
-  buffers[0].length = buffer_size;
-  buffers[0].start = malloc (buffer_size);
-
-  VERIFY(NULL != buffers[0].start);
 }
 
 void V4lCameraHandler::startCapturing()
 {
-  if(actMethodIO != Num_of_MethodIO)
+  // queue buffers
+  for (size_t i = 0; i < frameBufferCount; ++i)
   {
-    if(actMethodIO != IO_READ)
-    {
-      for (unsigned int i = 0; i < n_buffers; ++i)
-      {
-        struct v4l2_buffer buf;
+    struct v4l2_buffer buf;
+    memset(&buf, 0, sizeof(buf));
 
-        memset(&(buf), 0, sizeof (struct v4l2_buffer));
+    buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    buf.memory = V4L2_MEMORY_MMAP;
+    buf.index = i;
 
-        buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-        buf.index = i;
-        if(actMethodIO == IO_MMAP)
-        {
-          buf.memory = V4L2_MEMORY_MMAP;
-        }
-        else
-        {
-          buf.memory = V4L2_MEMORY_USERPTR;
-          buf.m.userptr	= (unsigned long) buffers[i].start;
-          buf.length = buffers[i].length;
-        }
-
-        VERIFY(-1 != xioctl(fd, VIDIOC_QBUF, &buf));
-      }
-
-      enum v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-      VERIFY(-1 != ioctl(fd, VIDIOC_STREAMON, &type));
-    }
-
-    isCapturing = true;
-    wasQueried = false;
-    bufferSwitched = true;
-    lastBuf = currentBuf;
-    atLeastOneImageRetrieved = false;
+    VERIFY(-1 != xioctl(fd, VIDIOC_QBUF, &buf));
   }
+
+  enum v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  VERIFY(-1 != ioctl(fd, VIDIOC_STREAMON, &type));
+
+  // initialize internal state
+  isCapturing = true;
+  wasQueried = false;
+  lastBuf = currentBuf;
+  atLeastOneImageRetrieved = false;
 }
 
-int V4lCameraHandler::readFrameMMaP()
+void V4lCameraHandler::stopCapturing()
+{
+  isCapturing = false;
+}
+
+void V4lCameraHandler::closeDevice()
+{
+  if (-1 == close(fd)) {
+    return;
+  }
+  fd = -1;
+}
+
+void V4lCameraHandler::shutdown()
+{
+  stopCapturing();
+  unmapBuffers();
+  closeDevice();
+}
+
+bool V4lCameraHandler::isRunning()
+{
+  return isCapturing;
+}
+
+
+
+
+int V4lCameraHandler::readFrame()
 {
   //not the first frame and the buffer changed last frame
   if (wasQueried)
   {
-    //no => did the buffer index change?
-    if(bufferSwitched)
-    {
-      //put buffer back in the drivers incoming queue
-      if(blockingCaptureModeEnabled) {
-        VERIFY(-1 != xioctl(fd, VIDIOC_QBUF, &lastBuf));
-      } else {
-        xioctl(fd, VIDIOC_QBUF, &lastBuf);
-      }
-      //std::cout << "give buffer to driver" << std::endl;
+    //put buffer back in the drivers incoming queue
+    if(blockingCaptureModeEnabled) {
+      VERIFY(-1 != xioctl(fd, VIDIOC_QBUF, &lastBuf));
+    } else {
+      xioctl(fd, VIDIOC_QBUF, &lastBuf);
     }
+    //std::cout << "give buffer to driver" << std::endl;
   }
 
   struct v4l2_buffer buf;
@@ -531,7 +467,7 @@ int V4lCameraHandler::readFrameMMaP()
 
   
   // in blocking mode, wait up to a second for new image data
-  const unsigned int maxWaitingTime = blockingCaptureModeEnabled ? 1000 : 5; 
+  const unsigned int maxWaitingTime = blockingCaptureModeEnabled ? 1000 : 1000; 
   // wait for available data via poll
   pollfd pollfds[1] =
   {
@@ -610,7 +546,7 @@ int V4lCameraHandler::readFrameMMaP()
   lastBuf = currentBuf;
 
   wasQueried = true;
-  ASSERT(currentBuf.index < n_buffers);
+  ASSERT(currentBuf.index < frameBufferCount);
   if(errorCode == 0) {
     return currentBuf.index;
   } else {
@@ -618,118 +554,6 @@ int V4lCameraHandler::readFrameMMaP()
   }
 }
 
-
-int V4lCameraHandler::readFrameUP()
-{
-  cout << "#";
-  //not the first frame and the buffer changed last frame
-  if (wasQueried)
-  {
-    //no => did the buffer index change?
-    if(bufferSwitched)
-    {
-      //put buffer back in the drivers incoming queue
-      VERIFY(-1 != xioctl(fd, VIDIOC_QBUF, &lastBuf));
-      //std::cout << "give buffer to driver" << std::endl;
-      cout << LOG << "queued buffer: " << lastBuf.index << ", l = " << lastBuf.length << endl;
-    }
-   }
-
-  struct v4l2_buffer buf;
-  memset(&(buf), 0, sizeof (struct v4l2_buffer));
-  buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-  buf.memory = V4L2_MEMORY_USERPTR;
-
-  int errorOccured = -1;
-  if(blockingCaptureModeEnabled)
-  {
-    //in blocking mode just get a buffer from the drivers outgoing queue
-    errorOccured = xioctl(fd, VIDIOC_DQBUF, &buf);
-    cout << LOG << "after dequeue:" << buf.index << ", l = " << buf.length << endl;
-    hasIOError(errorOccured, errno);
-    //    std::cout << "get buffer from driver blocking" << std::endl;
-  }
-  else
-  {
-    //in non-blocking mode make some tries if no buffer in the  drivers outgoing queue is ready
-    //but limit the number of tries (better to loose a frame then to stuck in an endless loop)
-    for(int i = 0; i < 20 && errorOccured < 0; i++)
-    {
-      errorOccured = ioctl(fd, VIDIOC_DQBUF, &buf);
-      //      std::cout << "get buffer from driver nonblocking" << std::endl;
-      if(errorOccured < 0 && errno == EAGAIN)
-      {
-        usleep(100);
-      }
-      else
-      {
-        hasIOError(errorOccured, errno);
-      }
-    }
-  }
-
-  if(errorOccured < 0 && errno != EAGAIN && errno != EIO)
-  {
-    hasIOError(errorOccured, errno, true);
-    cout << "|";
-  }
-  else
-  {
-    for (unsigned int i = 0; i < n_buffers; ++i)
-    {
-      cout << i << "usrptr = " << buf.m.userptr << ", bufptr = " << buffers[i].start << ", l = "<< buf.length << " / "<< buffers[i].length << endl;
-      if (buf.m.userptr == (unsigned long) buffers[i].start && buf.length == buffers[i].length)
-      {
-        currentBuf = buf;
-        currentBuf.index = i;
-        currentBuf.bytesused = buf.length;
-        cout << LOG << "frame in buffer: " << i << ", l = " << buf.length << endl;
-        cout << LOG << "current buffer: " << currentBuf.index << " last buffer: " << lastBuf.index << endl;
-      }
-    }
-  }
-
-  //remember current buffer for the next frame as last buffer
-  lastBuf = currentBuf;
-
-  wasQueried = true;
-  ASSERT(currentBuf.index < n_buffers);
-  return currentBuf.index;
-}
-
-int V4lCameraHandler::readFrameRead()
-{
-  if (-1 == read (fd, buffers[0].start, buffers[0].length))
-  {
-    switch (errno)
-    {
-    case EAGAIN:
-      return 0;
-
-    case EIO:
-      /* Could ignore EIO, see spec. */
-      /* fall through */
-
-    default:
-      exit(-1);
-    }
-  }
-  currentBuf.bytesused = buffers[0].length;
-  return 0;
-}
-
-
-int V4lCameraHandler::readFrame()
-{
-  switch (actMethodIO)
-  {
-    case IO_READ: return readFrameRead();
-    case IO_MMAP: return readFrameMMaP();
-    case IO_USERPTR: return readFrameUP();
-    default: ASSERT(false);
-  }
-  return -1;
-}
 
 void V4lCameraHandler::get(Image& theImage)
 {
@@ -754,17 +578,10 @@ void V4lCameraHandler::get(Image& theImage)
       }
       else
       {
-        if(actMethodIO == IO_USERPTR)
-        {
-          theImage.wrapImageDataYUV422((unsigned char*) currentBuf.m.userptr, currentBuf.bytesused);
-        }
-        else
-        {
-          theImage.wrapImageDataYUV422((unsigned char*) buffers[currentBuf.index].start, currentBuf.bytesused);
-        }
+        theImage.wrapImageDataYUV422((unsigned char*) buffers[currentBuf.index].start, currentBuf.bytesused);
         theImage.cameraInfo.cameraID = currentCamera;
         theImage.currentBuffer = currentBuf.index;
-        theImage.bufferCount = n_buffers;
+        theImage.bufferCount = frameBufferCount;
         theImage.timestamp =
           (unsigned int) ( (((unsigned long long)currentBuf.timestamp.tv_sec) * NaoTime::long_thousand +
                             ((unsigned long long)currentBuf.timestamp.tv_usec) / NaoTime::long_thousand) -
@@ -776,57 +593,6 @@ void V4lCameraHandler::get(Image& theImage)
   }
 }
 
-void V4lCameraHandler::stopCapturing()
-{
-  if(actMethodIO != Num_of_MethodIO)
-  {
-    if(actMethodIO != IO_READ)
-    {
-      enum v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-      VERIFY(-1 != ioctl(fd, VIDIOC_STREAMOFF, &type));
-    }
-  }
-  isCapturing = false;
-}
-
-void V4lCameraHandler::uninitDevice()
-{
-  unsigned int i;
-
-  switch (actMethodIO)
-  {
-    case IO_READ:
-      free (buffers[0].start);
-      break;
-
-    case IO_MMAP:
-      for (i = 0; i < n_buffers; ++i)
-      {
-        VERIFY(-1 != munmap(buffers[i].start, buffers[i].length));
-      }
-      break;
-
-    case IO_USERPTR:
-      for (i = 0; i < n_buffers; ++i)
-      {
-        free (buffers[i].start);
-      }
-      break;
-
-    default: ASSERT(false);
-  }
-
-  free(buffers);
-}
-
-void V4lCameraHandler::closeDevice()
-{
-  if (-1 == close(fd))
-  {
-    return;
-  }
-  fd = -1;
-}
 
 void V4lCameraHandler::getCameraSettings(CameraSettings& data, bool update)
 {
@@ -1043,17 +809,6 @@ void V4lCameraHandler::internalUpdateCameraSettings()
   }
 }
 
-void V4lCameraHandler::shutdown()
-{
-  stopCapturing();
-  uninitDevice();
-  closeDevice();
-}
-
-bool V4lCameraHandler::isRunning()
-{
-  return isCapturing;
-}
 
 // https://01.org/linuxgraphics/gfx-docs/drm/media/uapi/v4l/capture.c.html
 int V4lCameraHandler::xioctl(int fd, int request, void* arg) const

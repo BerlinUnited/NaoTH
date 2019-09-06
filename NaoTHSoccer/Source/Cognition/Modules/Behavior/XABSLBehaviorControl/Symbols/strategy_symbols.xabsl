@@ -51,10 +51,6 @@ namespace strategy("Strategy Symbols") {
   float input soccer_strategy.formation.x;
   float input soccer_strategy.formation.y;
 
-  /** information for selflocator */
-  bool output situationStatusOwnHalf; //true = own half, false = unknown!!!
-  bool output situationStatusOppHalf; //true = opp half, false = unknown!!!
-
   enum attack.action_type
   {
     none,

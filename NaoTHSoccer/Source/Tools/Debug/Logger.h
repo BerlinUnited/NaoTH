@@ -45,7 +45,7 @@ protected:
   
 private:
 
-  LogfileManager < 30 > logfileManager;
+  LogfileManager logfileManager;
   typedef std::map<std::string, naoth::VoidSerializer*> RepresentationsMap;
   RepresentationsMap representations;
 
