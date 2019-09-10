@@ -51,12 +51,6 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
 
   engine.registerDecimalInputSymbol("soccer_strategy.formation.x", &getSoccerStrategy().formation.x);
   engine.registerDecimalInputSymbol("soccer_strategy.formation.y", &getSoccerStrategy().formation.y);
-
-  // XABSL-Option (current situation) symbol for some models.
-  // informs about the currently used option (option itself must set this variable!)
-  // engine.registerEnumeratedOutputSymbol("situationStatus", "StatusID", &getSituationStatusId);
-  engine.registerBooleanOutputSymbol("situationStatusOwnHalf", &setSituationStatusOwnHalf, &getSituationStatusOwnHalf);
-  engine.registerBooleanOutputSymbol("situationStatusOppHalf", &setSituationStatusOppHalf, &getSituationStatusOppHalf);
   
   // NOTE: do we still need it?
   engine.registerBooleanInputSymbol("attack.approaching_with_right_foot", &getApproachingWithRightFoot );
@@ -173,27 +167,6 @@ void StrategySymbols::execute()
       LINE(freeKickPosition.x,freeKickPosition.y-60,freeKickPosition.x,freeKickPosition.y+60);
     );
 }//end execute
-
-//int StrategySymbols::getSituationStatusId(){ 
-//	return (int)(theInstance->situationStatus.id); 
-//}
-
-bool StrategySymbols::getSituationStatusOwnHalf(){ 
-	return theInstance->getSituationStatus().ownHalf; 
-}
-
-void StrategySymbols::setSituationStatusOwnHalf(bool ownHalf){ 
-	theInstance->getSituationStatus().ownHalf = ownHalf; 
-}
-
-
-bool StrategySymbols::getSituationStatusOppHalf(){ 
-	return theInstance->getSituationStatus().oppHalf; 
-}
-
-void StrategySymbols::setSituationStatusOppHalf(bool oppHalf){ 
-	theInstance->getSituationStatus().oppHalf = oppHalf; 
-}
 
 // TODO: check if the model is valid
 // NOTE: what about the default position if the ball was not seen?

@@ -7,6 +7,7 @@
 #include <Tools/Math/Common.h>
 #include <Tools/Math/Line.h>
 #include "Representations/Perception/LineGraphPercept.h"
+#include "Tools/Math/Geometry.h"
 
 namespace ransac {
 
@@ -42,7 +43,25 @@ public:
     return line.minDistance(edgel.point);
   }
 
-  inline double similarity(const Edgel& edgel) const;
+  /*
+  // calculate the similarity to the edgel
+  // returns a value [0,1], 0 - not simmilar, 1 - very simmilar
+  inline double similarity(const Edgel& edgel) const
+  {
+    double s = 0.0;
+    if(line.getDirection()*edgel.direction > 0) {
+      Vector2d v(edgel.point - line.getBase());
+      v.rotateRight().normalize();
+      s = 1.0-0.5*(fabs(line.getDirection()*v) + fabs(edgel.direction*v));
+    }
+    return s;
+  }*/
+
+  inline double angle_diff(const Edgel& edgel) const
+  {
+    double a = std::fabs(line.getDirection().angleTo(edgel.direction));
+    return std::min(a, Math::pi - a);
+  }
 };
 
 
@@ -50,13 +69,13 @@ class RansacLine {
 
 public:
   int iterations;
-  double minDirectionSimilarity;
+  double outlierThresholdAngle;
   double outlierThresholdDist;
 
 public:
-  RansacLine(int iterations, double minDirectionSimilarity, double outlierThresholdDist);
+  RansacLine(int iterations, double outlierThresholdAngle, double outlierThresholdDist);
 
-  void setParameters(int iterations, double minDirectionSimilarity,
+  void setParameters(int iterations, double outlierThresholdAngle,
                      double outlierThresholdDist);
 
   bool find_best_model(LineModel& bestModel, const std::vector<Edgel>& edgels,
@@ -94,6 +113,9 @@ public:
                        double maxAngleError, double outlierThresholdDist) const;
 
   bool betterThan(const CircleModel& other) const;
+
+  bool validate(const std::vector<Edgel>& edgels,
+                    const std::vector<size_t>& inlier_idx, double threshold) const;
 
   Vector2d refine(const std::vector<Edgel>& edgels,
                   const std::vector<size_t>& inlier_idx) const;

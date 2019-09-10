@@ -38,8 +38,11 @@ option fall_down_and_stand_up
     {
       body.ready_to_walk = false;
       motion.execute_immediately = true;
-      motion.type = dead;
+      motion.type = falling;
       arm.react_to_collision = false;
+
+      // enable only for special occasions
+      //sound.request = (state_time < 100)?weeeee:off;
     }
   }
 
@@ -58,7 +61,7 @@ option fall_down_and_stand_up
     {
       body.ready_to_walk = false;
       motion.execute_immediately = true;
-      motion.type = dead;
+      motion.type = falling;
       arm.react_to_collision = false;
     }
   }

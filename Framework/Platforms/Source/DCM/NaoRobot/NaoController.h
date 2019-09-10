@@ -101,7 +101,6 @@ public:
   void get(GyrometerData& data) { naoSensorData.get(data); }
   void get(FSRData& data) { naoSensorData.get(data); }
   void get(InertialSensorData& data) { naoSensorData.get(data); }
-  void get(IRReceiveData& data) { naoSensorData.get(data); }
   void get(ButtonData& data) { naoSensorData.get(data); }
   void get(BatteryData& data) { naoSensorData.get(data); }
   void get(UltraSoundReceiveData& data) { naoSensorData.get(data); }
@@ -113,7 +112,6 @@ public:
   // ACHTUNG: each set calls swapWriting()
   void set(const MotorJointData& data) { naoCommandMotorJointData.set(data); }
   void set(const LEDData& data) { naoCommandLEDData.set(data); }
-  void set(const IRSendData& data) { naoCommandIRSendData.set(data); }
   void set(const UltraSoundSendData& data) { naoCommandUltraSoundSendData.set(data); }
 
   void set(const AudioControl& data) { theAudioRecorder.set(data); }
@@ -175,7 +173,6 @@ protected:
   // NaoController --> DCM
   SharedMemoryWriter<Accessor<MotorJointData> > naoCommandMotorJointData;
   SharedMemoryWriter<Accessor<UltraSoundSendData> > naoCommandUltraSoundSendData;
-  SharedMemoryWriter<Accessor<IRSendData> > naoCommandIRSendData;
   SharedMemoryWriter<Accessor<LEDData> > naoCommandLEDData;
   // -- end -- shared memory access --
 

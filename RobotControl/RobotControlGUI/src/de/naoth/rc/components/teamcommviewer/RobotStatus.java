@@ -2,6 +2,7 @@ package de.naoth.rc.components.teamcommviewer;
 
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.math.Vector2D;
+import de.naoth.rc.messages.TeamMessageOuterClass;
 import de.naoth.rc.server.ConnectionStatusEvent;
 import de.naoth.rc.server.ConnectionStatusListener;
 import de.naoth.rc.server.MessageServer;
@@ -230,17 +231,20 @@ public class RobotStatus {
             this.teamBall.set(new Vector2D(msg.user.getTeamBall().getX(), msg.user.getTeamBall().getY()));
             this.robotRoleStatic.set(msg.user.getRobotRole().getRoleStatic().name());
             this.robotRoleDynamic.set(msg.user.getRobotRole().getRoleDynamic().name());
-        } else if(msg.doberHeader != null) {
+        } else if(msg.mixedHeader != null) {
             this.temperature.set(-1);
             this.cpuTemperature.set(-1);
             this.batteryCharge.set(-1);
             this.timeToBall.set(-1);
-            this.wantsToBeStriker.set(false);
-            this.wasStriker.set(false);
+            this.wantsToBeStriker.set(msg.mixedHeader.isStriker);
+            this.wasStriker.set(msg.mixedHeader.isStriker);
 
-            this.robotState.set(msg.doberHeader.isPenalized > 0?"penalized":"playing");
-            this.whistleDetected.set(msg.doberHeader.whistleDetected > 0);
+            this.robotState.set(msg.mixedHeader.isPenalized > 0?"penalized":"playing");
+            this.whistleDetected.set(msg.mixedHeader.whistleDetected > 0);
             this.teamBall.set(new Vector2D(Double.POSITIVE_INFINITY,Double.POSITIVE_INFINITY));
+            
+            this.robotRoleStatic.set(TeamMessageOuterClass.getDescriptor().findEnumTypeByName("RobotRoleStatic").findValueByNumber(msg.mixedHeader.role).getName());
+            this.robotRoleDynamic.set(msg.mixedHeader.isStriker ? TeamMessageOuterClass.getDescriptor().findEnumTypeByName("RobotRoleDynamic").findValueByNumber(3).getName() : TeamMessageOuterClass.getDescriptor().findEnumTypeByName("RobotRoleDynamic").findValueByNumber(0).getName());
         } else {
             this.temperature.set(-1);
             this.cpuTemperature.set(-1);

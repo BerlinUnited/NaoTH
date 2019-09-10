@@ -411,8 +411,8 @@ void MonteCarloSelfLocator::updateByOdometryRelative(SampleSet& sampleSet, bool 
     Pose2D odometryModel(odometryDelta);
 
     if(noise) {
-      odometryModel.translation += odometryModel.translation * (Math::random()-0.5)*parameters.motionNoiseDistance;
-      odometryModel.rotation += odometryModel.rotation * (Math::random()-0.5)*parameters.motionNoiseAngle;
+      odometryModel.translation += odometryModel.translation * (Math::random()-0.5)*parameters.motionNoiseDistanceRelative;
+      odometryModel.rotation += odometryModel.rotation * (Math::random()-0.5)*parameters.motionNoiseAngleRelative;
     }
 
     sampleSet[i] += odometryModel;

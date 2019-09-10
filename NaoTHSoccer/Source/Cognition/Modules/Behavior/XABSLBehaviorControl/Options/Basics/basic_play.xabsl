@@ -27,9 +27,6 @@ option basic_play
 
       // team symbols
       team.is_playing_as_striker = false;
-
-      // supports localization, only set to true if in game state set
-      situationStatusOwnHalf = false;
       
       //NOTE: can be set false by fall_down_and_stand_up and treat_lifted
       body.ready_to_walk = true;
@@ -49,11 +46,11 @@ option basic_play
 
       //set LED stuff
       // make here some initializations
-   
+
       set_right_eye = 
           goal.own.was_seen ? blue 
           : (goal.opp.was_seen ? red : off );
-          
+
       set_left_eye = ball.percept.was_seen ? green : off;   
 
       set_head = (robot_pose.x < 0) ? 3 : 6;
