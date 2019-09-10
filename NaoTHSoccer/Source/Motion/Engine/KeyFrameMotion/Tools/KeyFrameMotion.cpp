@@ -104,7 +104,7 @@ void KeyFrameMotion::execute()
   }
 
   // make sure the stiffness is set before executing the motion
-  if(stiffnessIsReady) {
+  if(!stiffnessIsReady) {
     const double stiffness_increase = getRobotInfo().getBasicTimeStepInSecond() * 5;
     stiffnessIsReady = setStiffness(getMotorJointData(), getSensorJointData(), lastMotorJointData.stiffness, stiffness_increase);
     return;
