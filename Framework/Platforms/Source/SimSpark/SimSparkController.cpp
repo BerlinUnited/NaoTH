@@ -219,8 +219,26 @@ bool SimSparkController::init(const std::string& modelPath, const std::string& t
 {
   Platform::getInstance().init(this);
 
+  Configuration& config = Platform::getInstance().theConfiguration;
+
+  // set the team number first
+  if (teamNumber != 0) {
+    theGameInfo.teamNumber = teamNumber;
+    config.setInt("player", "TeamNumber", teamNumber);
+  } else if (config.hasKey("player", "TeamNumber")) {
+    theGameInfo.teamNumber = config.getInt("player", "TeamNumber");
+  }
+
+  // use the team name if one is given, otherwise generate a name
+  if (!teamName.empty()) {
+      theGameInfo.teamName = teamName;
+  } else if (config.hasKey("player", "TeamName")) {
+      theGameInfo.teamName = config.getString("player", "TeamName");
+  } else {
+      theGameInfo.teamName = "NaoTH-" + std::to_string(theGameInfo.teamNumber);
+  }
+
   theGameInfo.playerNumber = playerNumber;
-  theGameInfo.teamName = teamName;
 
   theSync = sync?"(syn)":"";
   theSyncMode = sync;
@@ -241,7 +259,7 @@ bool SimSparkController::init(const std::string& modelPath, const std::string& t
   updateSensors(theSensorData);
 
   // initialize the teamname and number
-  theSocket << "(init (teamname " << teamName << ")(unum " << playerNumber << "))" << theSync << send;
+  theSocket << "(init (teamname " << theGameInfo.teamName << ")(unum " << playerNumber << "))" << theSync << send;
   
   // this is to detect whether the game data has been updated
   theGameInfo.playerNumber = 0;
@@ -254,29 +272,16 @@ bool SimSparkController::init(const std::string& modelPath, const std::string& t
   }
   // we should get the team index and player number now
 
-  cout << "NaoTH Simpark initialization successful: " << teamName << " " << theGameInfo.playerNumber << endl;
+  cout << "NaoTH Simpark initialization successful: " << theGameInfo.teamName << " " << theGameInfo.playerNumber << endl;
 
   //DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
   //REGISTER_DEBUG_COMMAND("beam", "beam to given pose", this);
 
-
-  Configuration& config = Platform::getInstance().theConfiguration;
-  if (teamNumber != 0) {
-    theGameInfo.teamNumber = teamNumber;
-    config.setInt("player", "TeamNumber", teamNumber);
-  } else if (config.hasKey("player", "TeamNumber"))
-  {
-    theGameInfo.teamNumber = config.getInt("player", "TeamNumber");
-  }
   // if player number wasn't set by configuration -> use the number from the simulation
   if(config.getInt("player", "PlayerNumber") == 0) {
     config.setInt("player", "PlayerNumber", theGameInfo.playerNumber);
   }
-  // if team name wasn't set by configuration -> use the name from the simulation
-  if (!config.hasKey("player", "TeamName"))
-  {
-    config.setString("player", "TeamName", theGameInfo.teamName);
-  }
+  config.setString("player", "TeamName", theGameInfo.teamName);
   cout << "Player number: " << theGameInfo.playerNumber << endl;
 
 #ifdef DEBUG

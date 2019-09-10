@@ -27,7 +27,7 @@ int main(int argc, char** argv)
 {
   g_type_init();
 
-  string teamName = "NaoTH";
+  string teamName = "";
   gchar* optTeamName = NULL;
   unsigned int teamNumber = 0; // zero means read from config
   unsigned int playerNumber = 0; // zero means get a number from server
