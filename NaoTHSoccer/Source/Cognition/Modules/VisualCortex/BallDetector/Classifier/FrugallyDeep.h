@@ -24,8 +24,7 @@ public:
 
 private:
 	std::shared_ptr<fdeep::model> model;
-    double meanBrightness;
-
+ 
     std::vector<fdeep::tensor5> result;
 
 };

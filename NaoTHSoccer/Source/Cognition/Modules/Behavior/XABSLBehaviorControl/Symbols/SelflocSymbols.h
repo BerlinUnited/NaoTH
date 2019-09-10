@@ -47,7 +47,8 @@ public:
   SelflocSymbols()
   :
     angleOnField(Math::toDegrees(getRobotPose().rotation)),
-    angleOnFieldPlanned(Math::toDegrees(getRobotPose().rotation))
+    angleOnFieldPlanned(Math::toDegrees(getRobotPose().rotation)),
+    look_in_direction_factor(0.0)
   {
     theInstance = this;
   }
