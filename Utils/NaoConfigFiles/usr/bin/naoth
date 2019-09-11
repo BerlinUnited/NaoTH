@@ -51,7 +51,9 @@ function stop_function() {
           fi
       done
       printf "\n"
-
+      
+      # try to remove PID-file
+      rm $PID
     fi
 
     # FALLBACK
@@ -66,9 +68,6 @@ function stop_function() {
         kill -9 $PIDS  # send KILL signal
       fi
     fi
-    
-    # remove PID-file
-    rm $PID
 }
 
 case "$1" in
