@@ -4,6 +4,7 @@ import getopt
 from naoth.LogReader import LogReader
 from naoth.LogReader import Parser
 
+
 def parse_arguments(argv):
     input_file = ''
     try:
@@ -23,7 +24,8 @@ def parse_arguments(argv):
             input_file = arg
 
     return input_file
-  
+
+
 def get_camera_matrix(frame):
     cm_bottom = frame["CameraMatrix"]
     cm_top = frame["CameraMatrixTop"]
@@ -33,6 +35,7 @@ def get_camera_matrix(frame):
 def get_edgels(frame):
      edgel_percepts = frame["ScanLineEdgelPercept"]
      return [frame.number, edgel_percepts]
+
 
 if __name__ == "__main__":
     logFilePath = parse_arguments(sys.argv[1:])
