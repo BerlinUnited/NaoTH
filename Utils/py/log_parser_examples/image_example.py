@@ -1,39 +1,16 @@
 #!/usr/bin/python
-import os
+import argparse
 import sys
-import getopt
+from pathlib import Path
 import math
-
-from naoth.LogReader import LogReader
-from naoth.LogReader import Parser
-
+import matplotlib.animation as animation
+import matplotlib.pyplot as plt
 import numpy
 from PIL import Image
 from PIL import PngImagePlugin
 
-
-def parse_arguments(argv):
-    input_file = ''
-    output_dir = None
-    
-    try:
-        opts, args = getopt.getopt(argv, "hi:o:", ["ifile=", "outdir="])
-    except getopt.GetoptError:
-        print('ExportImages.py -i <input file> -o <output directory>')
-        sys.exit(2)
-    if not opts:
-        print('ExportImages.py -i <input file>')
-        sys.exit(2)    
-    for opt, arg in opts:
-        if opt == '-h':
-            print('ExportImages.py -i <input file> -o <output directory>')
-            sys.exit()
-        elif opt in ("-i", "--ifile"):
-            input_file = arg
-        elif opt in ("-o", "--ofile"):
-            output_dir = arg
-            
-    return input_file, output_dir
+from naoth.LogReader import LogReader
+from naoth.LogReader import Parser
 
 
 def get_x_angle(m):
@@ -74,26 +51,29 @@ def image_from_proto(message):
 
     # convert from yuv422 to yuv888
     yuv888 = numpy.zeros(message.height*message.width*3, dtype=numpy.uint8)
+
     yuv888[0::3] = y
     yuv888[1::6] = u
     yuv888[2::6] = v
     yuv888[4::6] = u
     yuv888[5::6] = v
     
-    yuv888 = yuv888.reshape(message.height, message.width, 3)
-    
+    yuv888 = yuv888.reshape((message.height, message.width, 3))
+
     # convert the image to rgb and save it
     img = Image.frombytes('YCbCr', (message.width, message.height), yuv888.tostring())
     return img
     
     
 def get_images(frame):
+    # TODO handle the case that no image is recordec
     # we are only interested in top images
     image_top = frame["ImageTop"]
     image_bottom = frame["Image"]
     cm_bottom = frame["CameraMatrix"]
     cm_top = frame["CameraMatrixTop"]
-    return [frame.number, image_from_proto(image_bottom), image_from_proto(image_top), cm_bottom, cm_top]
+    return [frame.number, image_from_proto(image_bottom),
+            image_from_proto(image_top), cm_bottom, cm_top]
 
 
 def save_image_to_png(j, img, cm, target_dir):
@@ -102,13 +82,21 @@ def save_image_to_png(j, img, cm, target_dir):
     meta = PngImagePlugin.PngInfo()
     meta.add_text("pitch", str(pitch))
     meta.add_text("roll", str(roll))
-    img.save(target_dir+"/"+str(j)+".png", pnginfo=meta)
-    
+
+    filename = target_dir / (str(j) + ".png")
+    img.save(filename, pnginfo=meta)
+
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description='script to display or export images from log files')
+    parser.add_argument("-i", "--input", help='logfile, containing the images')
+    parser.add_argument("-t", "--task", choices=['show', 'export'],
+                        help='either show or export')
+    parser.add_argument("-o", "--output", type=str, default=".", help='output folder')
 
-    fileName, target_dir = parse_arguments(sys.argv[1:])
-    
+    args = parser.parse_args()
+
     # initialize the parser
     myParser = Parser()
     # register the protobuf message name for the 'ImageTop'
@@ -116,24 +104,45 @@ if __name__ == "__main__":
     myParser.register("CameraMatrixTop", "CameraMatrix")
     
     # get all the images from the logfile
-    images = map(get_images, LogReader(fileName, myParser))
-    
-    for i, imgB, imgT, cmB, cmT in images:
-        imgB = imgB.convert('RGB')
-        imgT = imgT.convert('RGB')
+    images = map(get_images, LogReader(args.input, myParser))
 
-        if target_dir is not None:
-        
-            targetTop = target_dir + "/top"
-            targetBottom = target_dir + "/bottom"
-        
-            if not os.path.exists(targetTop):
-                os.makedirs(targetTop)
-            if not os.path.exists(targetBottom):
-                os.makedirs(targetBottom)
-        
-            save_image_to_png(i, imgB, cmB, targetBottom)
-            save_image_to_png(i, imgT, cmT, targetTop)
+    if args.task == "export":
+        output_folder = Path(args.output)
+        if output_folder.exists():
+            for i, imgB, imgT, cmB, cmT in images:
+                imgB = imgB.convert('RGB')
+                imgT = imgT.convert('RGB')
+
+                output_folder_top = output_folder / "top"
+                output_folder_bottom = output_folder / "bottom"
+
+                output_folder_top.mkdir(exist_ok=True)
+                output_folder_bottom.mkdir(exist_ok=True)
+
+                save_image_to_png(i, imgB, cmB, output_folder_bottom)
+                save_image_to_png(i, imgT, cmT, output_folder_top)
+
+                print("saving images from frame ", i)
         else:
-            print("Target dir not set")
-        print(i)
+            print("target folder does not exist")
+            sys.exit(1)
+
+    if args.task == "show":
+        fig, ax = plt.subplots(2)
+        fig.suptitle('NaoTH Image Log')
+        ax[0].set_axis_off()
+        ax[1].set_axis_off()
+
+        image_container = []
+        for i, imgB, imgT, cmB, cmT in images:
+            imgB = imgB.convert('RGB')
+            imgT = imgT.convert('RGB')
+
+            im1 = ax[0].imshow(imgT, animated=True)
+            im2 = ax[1].imshow(imgB, animated=True)
+            image_container.append([im1, im2])
+            print("processing images from frame ", i)
+
+        ani = animation.ArtistAnimation(fig, image_container, interval=50, blit=True,
+                                        repeat_delay=1000)
+        plt.show()
