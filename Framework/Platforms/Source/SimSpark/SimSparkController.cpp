@@ -224,9 +224,19 @@ bool SimSparkController::init(const std::string& modelPath, const std::string& t
   // set the team number first
   if (teamNumber != 0) {
     theGameInfo.teamNumber = teamNumber;
-    config.setInt("player", "TeamNumber", teamNumber);
   } else if (config.hasKey("player", "TeamNumber")) {
     theGameInfo.teamNumber = config.getInt("player", "TeamNumber");
+  } else {
+    theGameInfo.teamNumber = 4;
+  }
+
+  // use the player number if one is given, otherwise use the number from the simulation
+  if(playerNumber != 0) {
+      theGameInfo.playerNumber = playerNumber;
+  } else if(config.hasKey("player", "PlayerNumber") && config.getInt("player", "PlayerNumber") != 0) {
+      theGameInfo.playerNumber = config.getInt("player", "PlayerNumber");
+  } else {
+      theGameInfo.playerNumber = 0;
   }
 
   // use the team name if one is given, otherwise generate a name
@@ -237,8 +247,6 @@ bool SimSparkController::init(const std::string& modelPath, const std::string& t
   } else {
       theGameInfo.teamName = "NaoTH-" + std::to_string(theGameInfo.teamNumber);
   }
-
-  theGameInfo.playerNumber = playerNumber;
 
   theSync = sync?"(syn)":"";
   theSyncMode = sync;
@@ -259,7 +267,7 @@ bool SimSparkController::init(const std::string& modelPath, const std::string& t
   updateSensors(theSensorData);
 
   // initialize the teamname and number
-  theSocket << "(init (teamname " << theGameInfo.teamName << ")(unum " << playerNumber << "))" << theSync << send;
+  theSocket << "(init (teamname " << theGameInfo.teamName << ")(unum " << theGameInfo.playerNumber << "))" << theSync << send;
   
   // this is to detect whether the game data has been updated
   theGameInfo.playerNumber = 0;
@@ -277,12 +285,9 @@ bool SimSparkController::init(const std::string& modelPath, const std::string& t
   //DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
   //REGISTER_DEBUG_COMMAND("beam", "beam to given pose", this);
 
-  // if player number wasn't set by configuration -> use the number from the simulation
-  if(config.getInt("player", "PlayerNumber") == 0) {
-    config.setInt("player", "PlayerNumber", theGameInfo.playerNumber);
-  }
+  config.setInt("player", "TeamNumber", theGameInfo.teamNumber);
+  config.setInt("player", "PlayerNumber", theGameInfo.playerNumber);
   config.setString("player", "TeamName", theGameInfo.teamName);
-  cout << "Player number: " << theGameInfo.playerNumber << endl;
 
 #ifdef DEBUG
   // calculate debug communicaiton port
