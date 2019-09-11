@@ -1,4 +1,9 @@
 import numpy as np
+import numpy.linalg as la
+
+
+WIDTH = 640
+HEIGHT = 480
 
 
 def v3_to_np(v3):
@@ -35,14 +40,42 @@ def focal_length():
     :returns focal length of the camera
     """
     # TODO: get intrinsic parameters from a config file or "CameraInfo" if available
-    width = 640
-    height = 480
     openining_angle_diagonal = 72.6 / 180 * np.pi
 
-    d2 = width * width + height * height
+    d2 = WIDTH * WIDTH + HEIGHT * HEIGHT
     half_diagonal = 0.5 * np.sqrt(d2)
 
     return half_diagonal / np.tan(0.5 * openining_angle_diagonal)
+
+
+def optical_center():
+    return WIDTH/2, HEIGHT/2
+
+
+def calculate_artificial_horizon(c_rot):
+    r31 = c_rot[2, 0]
+    r32 = c_rot[2, 1]
+    r33 = c_rot[2, 2]
+
+    if r33 == 0:
+        r33 = 1e-5
+
+    x1 = 0
+    x2 = WIDTH - 1
+
+    v1 = focal_length()
+    v2 = WIDTH / 2
+    v3 = HEIGHT / 2
+
+    y1 = v3 + (r31 * v1 + r32 * v2) / r33
+    y2 = v3 + (r31 * v1 - r32 * v2) / r33
+
+    # Mirror ends of horizon if Camera rotated to the left
+    if (c_rot @ np.array([0, 0, 1]))[2] < 0:
+        x1, x2 = x2, x1
+        y1, y2 = y2, y1
+
+    return np.array((x1, y1)), np.array((x2, y2))
 
 
 def project(x, y, c_rot, c_trans):
@@ -67,3 +100,29 @@ def project(x, y, c_rot, c_trans):
     field_v += c_trans[:2]
 
     return field_v
+
+
+def relative_point_to_image(point, c_rot, c_trans):
+    if len(point) == 2:
+        point = np.array((*point, 0))
+    if len(point) != 3:
+        raise ValueError('Given point must have a dimension of 2 of 3')
+
+    epsilon = 1e-13
+
+    # vector: O - --> point (in camera coordinates)
+    vector_to_point = la.inv(c_rot) @ (point - c_trans)
+
+    # the point is behind the camera plane
+    if vector_to_point[0] <= epsilon:
+        return None
+
+    factor = focal_length() / vector_to_point[0]
+    center_x, center_y = optical_center()
+
+    point_in_image = np.array((
+        - (vector_to_point[1] * factor) + 0.5 + center_x
+        - (vector_to_point[2] * factor) + 0.5 + center_y
+    ))
+
+    return point_in_image
