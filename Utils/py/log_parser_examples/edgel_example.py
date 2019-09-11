@@ -1,37 +1,15 @@
 #!/usr/bin/python
-import sys
-import getopt
-import math
-from pathlib import Path, PosixPath
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
+import argparse
+from pathlib import Path
 
+import math
+import matplotlib.animation as animation
+import matplotlib.pyplot as plt
+
+import naoth.math2d as m2
+import naoth.math3d as m3
 from naoth.LogReader import LogReader
 from naoth.LogReader import Parser
-
-import naoth.math3d as m3
-import naoth.math2d as m2
-
-
-def parse_arguments(argv):
-    input_file = ''
-    try:
-        opts, args = getopt.getopt(argv, "hi:", ["ifile="])
-    except getopt.GetoptError:
-        print('python exportEdgels.py -i <logfile>')
-        sys.exit(2)
-    if not opts:
-        print('python exportEdgels.py -i <logfile>')
-        sys.exit(2)
-    for opt, arg in opts:
-        print("opts: ", opts)
-        if opt == '-h':
-            print('python exportEdgels.py -i <logfile>')
-            sys.exit()
-        elif opt in ("-i", "--ifile"):
-            input_file = arg
-
-    return input_file
 
 
 def parse_vector3(message):
@@ -116,9 +94,15 @@ def get_edgels(frame):
 
 
 if __name__ == "__main__":
-    #test_path = Path("C:\RoboCup\PROJECTS\2019_edgel_matching_data\2019-07-05_11-45-00_Berlin United_vs_NomadZ_half2\game_logs\1_93_Nao0212_190705-1205\game.log")
+    test_path = Path("C://RoboCup//PROJECTS//2019_edgel_matching_data//2019-07-05_11-45-00_Berlin United_vs_NomadZ_half2\game_logs//1_93_Nao0212_190705-1205\game.log")
 
-    #print(test_path)
+    # TODO add argument for exporting
+    parser = argparse.ArgumentParser(description='script to display or export edgels from log files')
+    parser.add_argument("--logfile", help='log file to draw edgels from',
+                        default=str(test_path))
+
+    args = parser.parse_args()
+
     """
     logFilePath = parse_arguments(sys.argv[1:])
 
@@ -128,7 +112,7 @@ if __name__ == "__main__":
     for msg in LogReader(logFilePath, myParser, get_edgels):
         print(msg)
     """
-    logFilePath = parse_arguments(sys.argv[1:])
+    logFilePath = args.logfile
     # init parser
     logParser = Parser()
     logParser.register("ScanLineEdgelPerceptTop", "ScanLineEdgelPercept")
