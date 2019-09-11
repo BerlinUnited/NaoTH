@@ -98,7 +98,7 @@ workspace "NaoTHSoccer"
     inputFiles  = os.matchfiles(path.join(NAOTH_PROJECT, "NaoTHSoccer/Messages/*.proto")),
     cppOut      = path.join(NAOTH_PROJECT, "NaoTHSoccer/Source/Messages/"),
     javaOut     = path.join(NAOTH_PROJECT, "RobotControl/RobotConnector/src/"),
-    pythonOut   = path.join(NAOTH_PROJECT, "Utils/py/naoth/naoth"),
+    pythonOut   = path.join(NAOTH_PROJECT, "Utils/py/naoth/naoth/messages/"),
     includeDirs = {COMMONS_MESSAGES, path.join(NAOTH_PROJECT, "NaoTHSoccer/Messages/")}
   }
   
