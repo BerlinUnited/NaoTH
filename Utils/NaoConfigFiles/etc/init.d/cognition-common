@@ -5,7 +5,6 @@ cd /home/nao/naoqi/
 
 # run the program
 # NOTE: exec sets the naoth as a "main process", so this script 'cognition-common' does not appear in htop
-exec /home/nao/bin/naoth > >(exec logger -t "naoth[INFO]" -p local3.info) 2> >(exec logger -t "naoth[ERROR]" -p local3.warning)
-
-# remember the proces id for later graceful stopping
-echo "$!" > /tmp/cognition.pid
+# NOTE: we store the pid of the current shell before it is replaced by /home/nao/bin/naoth. 
+#       After the replacement the /home/nao/bin/naoth process keeps the same pid.
+echo "$$" > /tmp/cognition.pid; exec /home/nao/bin/naoth > >(exec logger -t "naoth[INFO]" -p local3.info) 2> >(exec logger -t "naoth[ERROR]" -p local3.warning)
