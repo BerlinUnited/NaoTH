@@ -23,9 +23,9 @@ function start_function() {
     cd /home/nao/naoqi/
 
     if [ nao = `whoami` ]; then
-      nohup /etc/init.d/cognition-common &
+        nohup /etc/init.d/cognition-common >/dev/null 2>&1 &
     else
-      su -c 'nohup /etc/init.d/cognition-common &' nao
+        su -c 'nohup /etc/init.d/cognition-common >/dev/null 2>&1 &' nao
     fi
 }
 
