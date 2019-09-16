@@ -7,21 +7,19 @@ depends(){
 }
 
 start(){
-  ebegin "starting naoth"
-    naoth start
-  eend $?
+    ebegin "starting naoth"
+        naoth start
+    eend $?
 }
 
 stop(){
-  ebegin "stopping naoth"
-    naoth stop
-  eend $?
+    ebegin "stopping naoth"
+        naoth stop
+    eend $?
 }
 
 restart(){
-  stop
-  sleep 2
-  start
+    stop
+    sleep 2
+    start
 }
-
-
