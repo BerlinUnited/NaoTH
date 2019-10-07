@@ -17,7 +17,6 @@
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/InertialSensorData.h>
-#include <Representations/Infrastructure/IRData.h>
 #include <Representations/Infrastructure/CameraSettings.h>
 #include <Representations/Infrastructure/ButtonData.h>
 #include <Representations/Infrastructure/FSRData.h>
@@ -92,7 +91,6 @@ public:
   SIM_GET(GyrometerData);
   SIM_GET(FSRData);
   SIM_GET(InertialSensorData);
-  SIM_GET(IRReceiveData);
   SIM_GET(CurrentCameraSettings);
   SIM_GET(ButtonData);
   SIM_GET(BatteryData);
@@ -103,7 +101,6 @@ public:
   //virtual void set(const MotorJointData& /*data*/){};
   //virtual void set(const CameraSettingsRequest& /*data*/){};
   //virtual void set(const LEDData& /*data*/){};
-  //virtual void set(const IRSendData& /*data*/){};
   //virtual void set(const UltraSoundSendData& /*data*/){};
   //virtual void set(const SoundData& /*data*/){};
 

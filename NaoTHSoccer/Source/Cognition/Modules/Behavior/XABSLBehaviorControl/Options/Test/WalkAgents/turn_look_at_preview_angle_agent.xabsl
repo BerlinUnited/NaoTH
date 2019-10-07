@@ -4,8 +4,6 @@ option turn_look_at_preview_angle_agent {
       // react to the game controller and handle fall down
       basic_play();
 
-      situationStatusOwnHalf = true;
-
       turn_look_at_preview_angle();
 
       // control the arms

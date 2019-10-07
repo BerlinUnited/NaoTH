@@ -65,7 +65,7 @@ private:
       PARAMETER_REGISTER(readyForSideKickThresholdY)            = 0.3;
       PARAMETER_REGISTER(forwardKickThreshold.x)                = 50; // mm
       PARAMETER_REGISTER(forwardKickThreshold.y)                = 25; // mm
-      PARAMETER_REGISTER(forwardKickAdaptive)                   = false; // mm
+      PARAMETER_REGISTER(forwardKickAdaptive)                   = false;
       //PARAMETER_REGISTER(nearApproachForwardKickBallPosOffsetX) = 110;
       PARAMETER_REGISTER(nearApproachSideKickBallPosOffsetX)    = 100;
       PARAMETER_REGISTER(nearApproach_step_character)           = 0.3;

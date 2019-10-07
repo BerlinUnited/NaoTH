@@ -27,9 +27,6 @@ option basic_play
 
       // team symbols
       team.is_playing_as_striker = false;
-
-      // supports localization, only set to true if in game state set
-      situationStatusOwnHalf = false;
       
       //NOTE: can be set false by fall_down_and_stand_up and treat_lifted
       body.ready_to_walk = true;

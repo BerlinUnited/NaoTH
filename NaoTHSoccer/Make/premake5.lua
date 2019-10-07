@@ -186,7 +186,7 @@ workspace "NaoTHSoccer"
     end
     
   -- for linux systems and cygwin 
-  filter {"platforms:Native", "action:gmake", "system:linux"} 
+  filter {"platforms:Native", "action:gmake or gmake2", "system:linux"} 
   -- configuration {"Native", "linux", "gmake"}
     -- "position-independent code" needed to compile shared libraries.
     -- In our case it's only the NaoSMAL. So, we probably don't need this one.
