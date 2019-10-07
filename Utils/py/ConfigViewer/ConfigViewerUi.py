@@ -2,11 +2,12 @@
 
 # Form implementation generated from reading ui file 'ConfigViewer.ui'
 #
-# Created by: PyQt5 UI code generator 5.10.1
+# Created by: PyQt5 UI code generator 5.12.1
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -54,6 +55,7 @@ class Ui_Form(object):
         self.modules.setFrameShadow(QtWidgets.QFrame.Plain)
         self.modules.setLineWidth(0)
         self.modules.setObjectName("modules")
+        self.modules.header().setStretchLastSection(False)
         self.verticalLayout_4.addWidget(self.modules)
         self.tabWidget.addTab(self.tab, "")
         self.tab_2 = QtWidgets.QWidget()
@@ -66,6 +68,7 @@ class Ui_Form(object):
         self.parameters.setFrameShadow(QtWidgets.QFrame.Plain)
         self.parameters.setLineWidth(0)
         self.parameters.setObjectName("parameters")
+        self.parameters.header().setStretchLastSection(False)
         self.verticalLayout_5.addWidget(self.parameters)
         self.tabWidget.addTab(self.tab_2, "")
         self.verticalLayout.addWidget(self.tabWidget)
@@ -89,4 +92,5 @@ class Ui_Form(object):
         self.heads.setItemText(0, _translate("Form", "Heads"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("Form", "Modules"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("Form", "Parameters"))
+
 
