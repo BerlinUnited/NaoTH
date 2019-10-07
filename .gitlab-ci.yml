@@ -1,0 +1,20 @@
+stages:
+ - nao 
+ - linux
+
+default:
+  image: scm.cms.hu-berlin.de:4567/berlinunited/naoth-citest:latest
+
+compileGame:
+  stage: nao
+  script:
+  - cd NaoTHSoccer/Make
+  - ./compileGame.sh -j 4
+
+compileLocal:
+  stage: linux
+  script:
+  - cd NaoTHSoccer/Make
+  - premake5 gmake2 --protoc
+  - cd ../build
+  - make all
