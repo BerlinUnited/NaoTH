@@ -5,13 +5,13 @@ stages:
 default:
   image: scm.cms.hu-berlin.de:4567/berlinunited/naoth-citest:latest
 
-compileGame:
+.compileGame:
   stage: nao
   script:
   - cd NaoTHSoccer/Make
   - ./compileGame.sh -j 4
 
-compileLocal:
+.compileLocal:
   stage: linux
   script:
   - cd NaoTHSoccer/Make
