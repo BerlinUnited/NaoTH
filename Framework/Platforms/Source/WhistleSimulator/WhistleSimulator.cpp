@@ -12,8 +12,6 @@
 #include <fcntl.h>
 #endif //WIN32
 
-#include "myconio.h"
-
 #include "WhistleSimulator.h"
 #include "Tools/NaoTime.h"
 #include "Tools/Math/Common.h"

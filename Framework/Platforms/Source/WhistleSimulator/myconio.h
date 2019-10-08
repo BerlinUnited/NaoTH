@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   myconio.h
  * Author: Christian Seiler http://forum.de.selfhtml.org/archiv/2006/10/t138258/
  *
@@ -25,7 +25,7 @@ extern "C"
 // fuer POSIX-Betriebsysteme
 // Lizenz: Public domain
 
-int getch()
+inline int getch()
 {
   int ch;
   struct termios old_t, tmp_t;

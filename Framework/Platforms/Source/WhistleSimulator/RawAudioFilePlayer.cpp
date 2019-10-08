@@ -4,7 +4,6 @@
 #include "Tools/NaoTime.h"
 
 #include <chrono>
-#include "myconio.h"
 
 using namespace std;
 
@@ -19,15 +18,15 @@ namespace naoth
     overlap_(0),
     ready(false)
   {
-	}
+    }
 
-	RawAudioFilePlayer::~RawAudioFilePlayer()
-  { 
+    RawAudioFilePlayer::~RawAudioFilePlayer()
+  {
     if (audioFile.is_open())
     {
       audioFile.close();
     }
-	}
+    }
 
   void RawAudioFilePlayer::setParams(int numChannels, int sampleRate, int samples, int overlap)
   {
@@ -112,7 +111,7 @@ namespace naoth
 
     if (tracks.size() > 0)
     {
-      numChannels_ = tracks.size();
+      numChannels_ = static_cast<int>(tracks.size());
       int lastSampleRate;
       for (size_t i = 0; i < tracks.size(); i++)
       {
@@ -143,8 +142,8 @@ namespace naoth
       return posE + 1;
     }
     return string::npos;
-  }	
-  
+  }
+
   void RawAudioFilePlayer::get(AudioData& data)
   {
     if (ready)
