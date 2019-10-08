@@ -49,15 +49,12 @@ public:
     
     const std::string naoCommandMotorJointDataPath = "/nao_command.MotorJointData";
     const std::string naoCommandUltraSoundSendDataPath = "/nao_command.UltraSoundSendData";
-    const std::string naoCommandIRSendDataPath = "/nao_command.IRSendData";
     const std::string naoCommandLEDDataPath = "/nao_command.LEDData";
 
     std::cout << "[LolaAdaptor] Opening Shared Memory: " << naoCommandMotorJointDataPath << std::endl;
     naoCommandMotorJointData.open(naoCommandMotorJointDataPath);
     std::cout << "[LolaAdaptor] Opening Shared Memory: " << naoCommandUltraSoundSendDataPath << std::endl;
     naoCommandUltraSoundSendData.open(naoCommandUltraSoundSendDataPath);
-    std::cout << "[LolaAdaptor] Opening Shared Memory: " << naoCommandIRSendDataPath << std::endl;
-    naoCommandIRSendData.open(naoCommandIRSendDataPath);
     std::cout << "[LolaAdaptor] Opening Shared Memory: " << naoCommandLEDDataPath << std::endl;
     naoCommandLEDData.open(naoCommandLEDDataPath);
 
@@ -653,7 +650,6 @@ private:
   //SharedMemory<NaoCommandData> naoCommandData;
   SharedMemory<Accessor<MotorJointData> > naoCommandMotorJointData;
   SharedMemory<Accessor<UltraSoundSendData> > naoCommandUltraSoundSendData;
-  SharedMemory<Accessor<IRSendData> > naoCommandIRSendData;
   SharedMemory<Accessor<LEDData> > naoCommandLEDData;
 
   // syncronize with NaoController
