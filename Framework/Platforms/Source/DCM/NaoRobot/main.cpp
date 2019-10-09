@@ -186,7 +186,7 @@ int main(int /*argc*/, char **/*argv[]*/)
   //
   std::signal(SIGTERM, got_signal);
   std::signal(SIGTERM, got_signal);
-  std::signal(SIGINT, got_signal);
+  std::signal(SIGINT,  got_signal);
   std::signal(SIGSEGV, got_signal);
 
   // TODO: why do we need that?

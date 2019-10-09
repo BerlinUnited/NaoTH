@@ -21,8 +21,6 @@
 #include <Representations/Infrastructure/FSRData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
 
-#define CYCLE_TIME 20
-
 class DummySimulator : public naoth::PlatformInterface
 {
 public:
@@ -33,9 +31,10 @@ public:
   virtual std::string getBodyNickName() const { return "naoth"; }
   virtual std::string getHeadNickName() const { return "naoth"; }
   virtual std::string getRobotName() const { return "dummy-simulator"; }
+  virtual std::string getPlatformName() const { return "DummySimulator"; }
+  virtual unsigned int getBasicTimeStep() const { return 20; }
 
   void main();
-
 
   static const unsigned int frameExecutionTime = 33;
 
