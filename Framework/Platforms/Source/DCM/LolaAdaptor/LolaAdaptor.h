@@ -371,6 +371,8 @@ private:
     std::cout << "[LolaAdaptor] stopping naoth" << std::endl;
     // stop naoth to trigger emergency motion
     system("killall naoth");
+    // in NaoSMAL it's like this
+    //system("naoth stop");
 
     sleep(5);
 
