@@ -545,7 +545,7 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
   if (framesSinceStart < 5)
   {
     // do nothing if no image was retrieved yet
-    std::cerr << LOG << "CAN NOT SET PARAMETER YET" << std::endl;
+    std::cerr << LOG << "CAN NOT SET PARAMETERS YET, WAITING ..." << std::endl;
     return;
   }
   else if (framesSinceStart == 5)
