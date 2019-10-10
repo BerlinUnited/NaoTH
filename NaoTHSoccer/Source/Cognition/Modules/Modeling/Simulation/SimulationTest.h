@@ -11,7 +11,6 @@
 #include <ModuleFramework/ModuleManager.h>
 
 //
-#include "SimulationOLD.h"
 #include "Simulation.h"
 
 // Representations

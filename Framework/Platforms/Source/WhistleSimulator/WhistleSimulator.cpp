@@ -22,8 +22,7 @@ using namespace std;
 using namespace naoth;
 
 WhistleSimulator::WhistleSimulator(const std::string& filePath, bool backendMode, bool realTime, unsigned short port)
-    : PlatformInterface("WhistleSimulator", CYCLE_TIME),
-      backendMode(backendMode) {
+    : backendMode(backendMode) {
     registerInput<FrameInfo>(*this);
 
     registerInput<AudioData>(*this);

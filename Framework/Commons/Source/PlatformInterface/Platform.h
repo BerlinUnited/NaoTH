@@ -68,7 +68,7 @@ public:
     _hardwareIdentity = base->getBodyNickName();
     _headHardwareIdentity = base->getHeadNickName();
     _robotName = base->getRobotName();
-    _platform = base->getName(); // set to platform by default
+    _platform = base->getPlatformName(); // set to platform by default
     _scheme = ""; // empty to mark as "no-scheme"
 
     // try to read the scheme name from file
@@ -82,6 +82,7 @@ public:
       theConfigDirectory, thePlatform, theScheme, theHardwareIdentity, theHeadHardwareIdentity, theRobotName);
   }//end init
 
+  // NOTE: the identity of the robot is defined by the configuration
   // const accessors
   const std::string& theConfigDirectory;
   const std::string& theHardwareIdentity; // the string to indentify different robots

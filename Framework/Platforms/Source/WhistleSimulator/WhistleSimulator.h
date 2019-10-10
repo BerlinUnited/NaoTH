@@ -19,8 +19,6 @@
 
 #include "RawAudioFilePlayer.h"
 
-#define CYCLE_TIME 20
-
 class WhistleSimulator : public naoth::PlatformInterface {
     public:
         WhistleSimulator(const std::string& filePath, bool backendMode, bool realTime, unsigned short port);
@@ -37,6 +35,12 @@ class WhistleSimulator : public naoth::PlatformInterface {
         }
         virtual std::string getRobotName() const {
             return "whistle-simulator";
+        }
+        virtual std::string getPlatformName() const {
+            return "whistle-simulator";
+        }
+        virtual unsigned int getBasicTimeStep() const {
+            return 20;
         }
 
         void main();

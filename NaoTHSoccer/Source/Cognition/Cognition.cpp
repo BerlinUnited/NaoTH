@@ -58,7 +58,6 @@
 #include "Modules/VisualCortex/GoalDetector/GoalDetectorV2.h"
 #include "Modules/VisualCortex/GoalDetector/GoalCrossBarDetector.h"
 #include "Modules/VisualCortex/BallDetector/RedBallDetector.h"
-#include "Modules/VisualCortex/BallDetector/BallDetector2018.h"
 #include "Modules/VisualCortex/BallDetector/CNNBallDetector.h"
 #include "Modules/VisualCortex/IntegralImageProvider.h"
 
@@ -115,7 +114,6 @@
 
 #include "Modules/Modeling/Simulation/SimulationTest.h"
 #include "Modules/Modeling/Simulation/Simulation.h"
-#include "Modules/Modeling/Simulation/SimulationOLD.h"
 #include "Modules/Modeling/Simulation/KickDirectionSimulator.h"
 #include "Modules/Modeling/SelfLocator/SituationPriorProvider/SituationPriorProvider.h"
 
@@ -198,7 +196,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(GoalCrossBarDetector);
 
   REGISTER_MODULE(RedBallDetector);
-  REGISTER_MODULE(BallDetector2018);
   REGISTER_MODULE(CNNBallDetector);
   
   REGISTER_MODULE(FakeCameraMatrixFinder);
@@ -259,7 +256,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(KickDirectionSimulator);
   REGISTER_MODULE(Simulation);
-  REGISTER_MODULE(SimulationOLD);
   REGISTER_MODULE(SimulationTest);
   REGISTER_MODULE(StaticDebugModelProvider);
 
