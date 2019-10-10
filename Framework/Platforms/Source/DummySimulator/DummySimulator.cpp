@@ -19,7 +19,7 @@ using namespace std;
 using namespace naoth;
 
 DummySimulator::DummySimulator(bool backendMode, bool realTime, unsigned short port)
-  : PlatformInterface("DummySimulator", CYCLE_TIME),
+  :
   backendMode(backendMode)
 {
   registerInput<FrameInfo>(*this);

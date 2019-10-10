@@ -23,7 +23,7 @@ using namespace std;
 using namespace naoth;
 
 Simulator::Simulator(const std::string& filePath, bool backendMode, bool realTime, unsigned short port)
-: PlatformInterface("LogSimulator", CYCLE_TIME),
+  : 
   backendMode(backendMode),
   realTime(realTime),
   logFileScanner(filePath),
@@ -42,7 +42,6 @@ Simulator::Simulator(const std::string& filePath, bool backendMode, bool realTim
   registerInput<FSRData>(*this);
   registerInput<GyrometerData>(*this);
   registerInput<InertialSensorData>(*this);
-  registerInput<IRReceiveData>(*this);
   registerInput<CurrentCameraSettings>(*this);
   registerInput<ButtonData>(*this);
   registerInput<BatteryData>(*this);
