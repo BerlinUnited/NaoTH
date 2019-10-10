@@ -14,13 +14,8 @@ su nao -c "/usr/bin/pactl set-source-volume 1 90%"
 # play initial sound
 su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav"
 
-# we're replacing something necessary - stop naoth
+# we're replacing something necessary - stop naoth in any case
 naoth stop
-
-# stop naoqi if they are to replace
-if [ -f "./deploy/home/nao/bin/libnaosmal.so" ]; then
-  /etc/init.d/naoqi stop
-fi
 
 # backup the stuff from the robot
 echo "backup the stuff on the robot"
@@ -28,7 +23,6 @@ rm -rf ./backup
 su nao -c "mkdir ./backup"
 su nao -c "cp -r /home/nao/naoqi/Config ./backup"
 su nao -c "cp -rv /home/nao/bin ./backup"
-
 
 # remove files that will be copied and copy the new ones
 echo "clean and copy new files"
@@ -57,12 +51,15 @@ if [ ! -f "/opt/aldebaran/bin/lola" ] && [ ! -f "/usr/bin/lola" ]; then
     su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/modified_autoload_ini.wav"
   fi
 
-  # copy binaries and start naoqi/naoth again
+  # replace libNaoSMAL if avaliable
   if [ -f "./deploy/home/nao/bin/libnaosmal.so" ]; then
-    nao stop
+    # NOTE: command 'nao' on V5 is an alias which is not avaliable at the time when this script is executed,
+    #       so we use the command directly instead.
+    #  alias nao='sudo /etc/init.d/naoqi'
+    /etc/init.d/naoqi stop
     rm -f /home/nao/bin/libnaosmal.so
     su nao -c "cp ./deploy/home/nao/bin/libnaosmal.so /home/nao/bin/libnaosmal.so"
-    nao start
+    /etc/init.d/naoqi start
   fi
 else
   # copy binaries and start naoqi/naoth again
@@ -89,5 +86,3 @@ sleep 4
 tail -n 1024 /var/log/messages > ./braindump.txt
 
 echo "DONE"
-
-
