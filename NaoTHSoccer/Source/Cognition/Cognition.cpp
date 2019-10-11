@@ -93,7 +93,7 @@
 
 // role decisions
 #include "Modules/Modeling/RoleDecision/RolesProvider.h"
-#include "Modules/Modeling/RoleDecision/RoleDecisionDynamic.h"
+#include "Modules/Modeling/RoleDecision/Dynamic/RoleDecisionDynamic.h"
 
 #include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionStatic.h"
 #include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionForce.h"
@@ -102,10 +102,10 @@
 #include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionDynamicGoalie.h"
 #include "Modules/Modeling/RoleDecision/Assignment/RoleDecisionAssignmentStatic.h"
 #include "Modules/Modeling/RoleDecision/Assignment/RoleDecisionAssignmentDistance.h"
-
-#include "Modules/Modeling/RoleDecision/SimpleRoleDecision/SimpleRoleDecision.h"
-#include "Modules/Modeling/RoleDecision/StableRoleDecision/StableRoleDecision.h"
-#include "Modules/Modeling/RoleDecision/CleanRoleDecision/CleanRoleDecision.h"
+// the old striker decision (dynamic)
+#include "Modules/Modeling/RoleDecision/Dynamic/SimpleRoleDecision.h"
+#include "Modules/Modeling/RoleDecision/Dynamic/StableRoleDecision.h"
+#include "Modules/Modeling/RoleDecision/Dynamic/CleanRoleDecision.h"
 
 #include "Modules/Modeling/BallLocator/TeamBallLocator/TeamBallLocatorMedian.h"
 #include "Modules/Modeling/BallLocator/TeamBallLocator/TeamBallLocatorCanopyCluster.h"
