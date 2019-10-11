@@ -27,6 +27,7 @@ public:
   void loadFromDir(std::string dirlocation,
                    const std::string &platform,
                    const std::string& scheme,
+                   const std::string &strategy,
                    const std::string& bodyID,
                    const std::string& headID,
                    const std::string& robotName);
