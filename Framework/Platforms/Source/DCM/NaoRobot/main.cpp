@@ -36,7 +36,7 @@ void got_signal(int sigid)
   // notify all threads to stop
   running = false;
   
-  // rise the semaphore, so that the motion thread can stop gracefully
+  // raise the semaphore, so that the motion thread can stop gracefully
   if (sem_post(dcm_sem) == -1) {
     std::cerr << "dcm_sem lock errno: " << errno << std::endl;
   }
