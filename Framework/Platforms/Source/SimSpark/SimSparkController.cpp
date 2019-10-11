@@ -46,7 +46,6 @@ SimSparkController::SimSparkController(const std::string& name)
   registerInput<FSRData>(*this);
   registerInput<GyrometerData>(*this);
   registerInput<InertialSensorData>(*this);
-  registerInput<CurrentCameraSettings>(*this);
   registerInput<BatteryData>(*this);
   registerInput<VirtualVision>(*this);
   registerInput<VirtualVisionTop>(*this);
@@ -56,7 +55,6 @@ SimSparkController::SimSparkController(const std::string& name)
   registerInput<BatteryData>(*this);
 
   // register output
-  registerOutput<const CameraSettingsRequest>(*this);
   registerOutput<const MotorJointData>(*this);
   registerOutput<const TeamMessageDataOut>(*this);
 
@@ -1504,35 +1502,6 @@ void SimSparkController::jointControl()
       theActData << '(' << (iter->second) << ' ' << v2 << ')';
     }
   }
-}
-
-void SimSparkController::set(const CameraSettingsRequest& /*data*/)
-{
-  // switch between two cameras is supported currently
-
-  // switch camera
-  /*
-  TODO: check if it's necessary
-  if (theCameraId != data.data[CameraSettings::CameraSelection])
-  {
-    theCameraId = data.data[CameraSettings::CameraSelection];
-    Pose3D p;
-    const Pose3D& cameraTrans = Platform::getInstance().theCameraInfo.transformation[theCameraId];
-
-    // due to the different coordination
-    p.translation = RotationMatrix::getRotationZ(Math::fromDegrees(90)) * (cameraTrans.translation) * 0.001;
-    p.rotation = RotationMatrix::getRotationZ(Math::fromDegrees(90));
-    p.rotation *= cameraTrans.rotation;
-    p.rotation.rotateZ(Math::fromDegrees(-90));
-
-    theSocket << "(CameraPoseEffector " << p << ")";
-  }
-  */
-}//end set
-
-void SimSparkController::get(CurrentCameraSettings& data)
-{
-  data.data[CameraSettings::CameraSelection] = theCameraId;
 }
 
 
