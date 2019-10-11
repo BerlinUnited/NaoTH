@@ -30,4 +30,4 @@ option turn_to_attack_direction
       //motion.walk.style = fast;
     }
   }
-}
+}

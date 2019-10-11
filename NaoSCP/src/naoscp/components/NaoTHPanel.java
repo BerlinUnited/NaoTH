@@ -595,7 +595,7 @@ public class NaoTHPanel extends javax.swing.JPanel {
             deployBinDir.mkdirs();
 
             if (cbCopyLib.isSelected()) {
-                File src = new File(localBinDir, "libnaosmal");
+                File src = new File(localBinDir, "libnaosmal.so");
                 File dst = new File(deployBinDir, "libnaosmal.so");
                 FileUtils.copyFiles(src, dst);
             }
