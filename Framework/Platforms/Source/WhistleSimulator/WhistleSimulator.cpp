@@ -31,7 +31,7 @@ WhistleSimulator::WhistleSimulator(const std::string& filePath, bool backendMode
     registerInput<DebugMessageInMotion>(*this);
     registerOutput<DebugMessageOut>(*this);
 
-    theRawAudioFilePlayer.open(filePath);
+    myfilePath = filePath;
 
     theDebugServer.start(port);
     theDebugServer.setTimeOut(0);
@@ -62,6 +62,7 @@ char WhistleSimulator::getInput() {
 }
 
 void WhistleSimulator::main() {
+    theRawAudioFilePlayer.open(myfilePath);
     printHelp();
     executeFrame();
 
