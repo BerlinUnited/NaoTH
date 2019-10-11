@@ -313,11 +313,6 @@ workspace "NaoTHSoccer"
     -- generate tests if required
     if _OPTIONS["Test"] ~= nil then
       group "Test"
-        dofile ("../Test/Make/BallEvaluator.lua")
-          kind "ConsoleApp"
-          links { "NaoTHSoccer", "Commons", naoth_links}
-          vpaths { ["*"] = "../Test/Source/BallEvaluator" }
-
         dofile ("../Test/Make/EigenPerformance.lua")
           kind "ConsoleApp"
           vpaths { ["*"] = "../Test/Source/EigenPerformance" }
