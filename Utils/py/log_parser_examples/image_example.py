@@ -66,7 +66,7 @@ def image_from_proto(message):
     
     
 def get_images(frame):
-    # TODO handle the case that no image is recordec
+    # TODO handle the case that no image is recorded
     # we are only interested in top images
     image_top = frame["ImageTop"]
     image_bottom = frame["Image"]
@@ -97,7 +97,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    # initialize the parser
+    # initialize the log parser
     myParser = Parser()
     # register the protobuf message name for the 'ImageTop'
     myParser.register("ImageTop", "Image")
