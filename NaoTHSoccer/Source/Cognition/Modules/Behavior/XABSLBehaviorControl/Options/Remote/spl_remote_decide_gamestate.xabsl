@@ -80,7 +80,8 @@ option spl_remote_decide_gamestate
     }
     action 
     {
-      decide_and_go_to_ready_position();
+      //FIXME
+      //decide_and_go_to_ready_position();
     }
   }
 

@@ -55,7 +55,6 @@ include "Options/SetPlays/free_kick_own.xabsl";
 include "Options/SetPlays/free_kick_own_goal.xabsl";
 include "Options/SetPlays/free_kick_own_corner.xabsl";
 include "Options/SetPlays/free_kick_own_in.xabsl";
-include "Options/SetPlays/free_kick_simple.xabsl";
 include "Options/SetPlays/avoid_region_go_own_goal.xabsl";
 
 //
@@ -79,51 +78,24 @@ include "Options/Basics/show_calibration.xabsl";
 
 // Soccer
 include "Agents/soccer_agent.xabsl";
-include "Agents/spl_play_soccer.xabsl";
 include "Options/Basics/basic_play.xabsl";
 include "Options/Basics/motion_init_stand_watch.xabsl";
 include "Options/Basics/decide_game_state.xabsl";
 
-include "Options/Soccer/SPL/play_soccer.xabsl";
-include "Options/Soccer/SPL/decide_role.xabsl";
-include "Options/Soccer/SPL/decide_and_go_to_ready_position.xabsl";
-include "Options/Soccer/SPL/positioning_for_own_kickoff.xabsl";
-include "Options/Soccer/SPL/positioning_for_opp_kickoff.xabsl";
-
 // Path
-include "Agents/path_spl_play_soccer.xabsl";
-include "Options/Soccer/Path2018/path_play_soccer.xabsl";
-include "Options/Soccer/Path2018/path_decide_role.xabsl";
 include "Options/Soccer/Path2018/path_basic_goalie.xabsl";
 include "Options/Soccer/Path2018/path2018_initial_striker.xabsl";
 include "Options/Soccer/Path2018/path_striker2018.xabsl";
 include "Options/Soccer/Path2018/path_turn_to_attack_direction.xabsl";
 include "Options/Soccer/Path2018/path_move_around_ball.xabsl";
 
-// Old Striker
-include "Options/Soccer/SPL/striker.xabsl";
-include "Options/Soccer/SPL/sidekick_left.xabsl";
-include "Options/Soccer/SPL/sidekick_right.xabsl";
-include "Options/Soccer/SPL/kick_short_with_approach.xabsl";
-include "Options/Soccer/SPL/kick_long_with_approach.xabsl";
-include "Options/Soccer/SPL/turn_to_attack_direction.xabsl";
-
 //Passive Behavior
-include "Options/Soccer/SPL/decide_and_go_to_passive_position.xabsl";
-include "Options/Soccer/SPL/decide_and_go_to_passive_position_after_penalized.xabsl";
 include "Options/Soccer/SPL/passive_behavior.xabsl";
 include "Options/Soccer/SPL/passive_ball_seen.xabsl";
 include "Options/Soccer/SPL/passive_ball_not_seen.xabsl";
 include "Options/Soccer/SPL/passive_ball_not_seen_responsive.xabsl";
 include "Options/Soccer/SPL/passive_look_at_team_ball.xabsl";
 include "Options/Soccer/SPL/go_to_and_keep_passive_position.xabsl";
-
-//Goalie
-include "Options/Soccer/SPL/basic_goalie.xabsl";
-include "Options/Soccer/SPL/goalie_watch_ball.xabsl";
-//Initial Striker
-include "Options/Soccer/SPL/initial_striker.xabsl";
-
 
 // Penalty
 include "Agents/penalty_agent.xabsl";
@@ -133,9 +105,6 @@ include "Options/SetPlays/penalty_goalie.xabsl";
 
 // Soccer-Tests
 include "Options/Test/agent/passive_behavior_test_agent.xabsl";
-include "Options/Test/agent/passive_player_agent.xabsl";
-include "Options/Test/agent/basic_goali_agent.xabsl";
-include "Options/Test/agent/striker_agent.xabsl";
 
 // remote
 include "Options/Remote/spl_remote_agent.xabsl";
@@ -182,7 +151,6 @@ include "Options/Test/WalkAgents/intercept_agent.xabsl";
 
 // Test agents PathPlanner
 include "Options/Test/PathPlannerAgents/pathplanner2018_forwardkick_agent.xabsl";
-include "Options/Test/PathPlannerAgents/path_basic_goalie_agent.xabsl";
 include "Options/Test/PathPlannerAgents/path_move_around_ball_agent.xabsl";
 include "Options/Test/PathPlannerAgents/pathplanner2018_sidekick_agent.xabsl";
 include "Options/Test/PathPlannerAgents/pathplanner2018_striker_agent.xabsl";
@@ -276,22 +244,11 @@ agent soccer_agent("Cool Soccer Agent", soccer_agent);
 /** Role based - the outdated competition agent **/
 agent role_spl_soccer("Role SPL Soccer", roles_spl_play_soccer);
 
-/** PathPlanner - really outdated competition agent **/
-agent path_spl_soccer("Path SPL Soccer", path_spl_play_soccer);
-
-/** The really really outdated soccer competition agent */
-agent spl_soccer("SPL Soccer", spl_play_soccer);
-
 agent penalty("Penalty", penalty_agent);
 agent spl_remote("Remote Player", spl_remote_agent);
 
 /** simple soccer agents - deprecated **/
-agent role_basic_goali("basic_goali", basic_goali_agent);
-agent role_passive_player("passive_player", passive_player_agent);
 agent role_passive_behavior_test_agent("passive_behavior_test_agent",passive_behavior_test_agent);
-
-agent path_basic_goalie_agent("path_basic_goalie_agent", path_basic_goalie_agent);
-agent role_striker("Action Selection Striker", striker_agent);
 
 agent role_change_test ("role_change_test_agent",role_change_test_agent);
 
