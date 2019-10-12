@@ -75,7 +75,8 @@ option penalty_kicker
     }
     action
     {
-      go_to_ball_with_foot(right=true, distance=210);
+      //FIXME
+      //go_to_ball_with_foot(right=true, distance=210);
       head.control_mode = search_for_ball_and_look_around;
     }
   }
@@ -91,7 +92,8 @@ option penalty_kicker
     }
     action
     {
-      go_to_ball_with_foot(right=false, distance=210);
+      //FIXME
+      //go_to_ball_with_foot(right=false, distance=210);
       head.control_mode = search_for_ball_and_look_around;
     }
   }
