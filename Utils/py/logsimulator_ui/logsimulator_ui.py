@@ -1,3 +1,21 @@
+#!/usr/bin/env python3
+
+"""Simple frontend for the naoth logsimulator, supporting drag and drop functionality for log files and config folders.
+
+Usage:
+    logsimulator_ui.py [-e | --executable <logsimulator_path>]
+
+    logsimulator_ui.py -h | --help
+
+Options:
+    -e --executable     Path to logsimulator executable, usually "[NaoTH-Repo]/NaoTHSoccer/dist/Native/logsimulator".
+                        You don't need to supply this argument, if the LOG_SIMULATOR_PATH environment variable is set
+                        to the executable path.
+                        The GUI also supports drag and drop of the log simulator executable.
+
+    -h --help           Show this screen.
+"""
+
 import logging
 import os
 import sys
@@ -7,7 +25,7 @@ from zipfile import ZipFile
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtGui import QTextCursor
 
-from naoth.logsimulator import LogSimulator
+from naoth.logsimulator import LogSimulator, LogSimInstance
 
 logger = logging.getLogger(__name__)
 
@@ -51,8 +69,10 @@ class LogSimulatorWidget(QtWidgets.QTextEdit):
         return cursor.blockNumber()
 
     def trim_history(self):
+        """
+        Reduces history if to many lines are displayed.
+        """
         line_count = self.number_of_lines()
-        # reduce history if too many lines
         if line_count > self.scroll_back + self.scroll_back_buffer:
             cursor = self.textCursor()
 
@@ -71,9 +91,20 @@ class LogSimulatorWidget(QtWidgets.QTextEdit):
 
     def _output_ready(self):
         output = bytes(self.process.readAll()).decode('utf-8')
-        self.append(output)
 
+        self.append(output)
         self.trim_history()
+
+        # parse frame info
+        """
+        frame_info_match = LogSimInstance.frame_pattern.match(output)
+        if frame_info_match:
+            current_frame = int(frame_info_match.group('current'))
+            first_frame = int(frame_info_match.group('first'))
+            last_frame = int(frame_info_match.group('last'))
+
+            print(current_frame, first_frame, last_frame)
+        """
 
     def _error_ready(self):
         output = bytes(self.process.readAllStandardError()).decode('utf-8')
@@ -93,6 +124,7 @@ class LogSimulatorWidget(QtWidgets.QTextEdit):
             self.clear()
             self.start()
         elif event.text():
+            # Pass key events to the log simulator
             logger.debug(f'Key {event.text()} pressed.')
             byte_array = QtCore.QByteArray()
             byte_array.append(event.text().lower())
@@ -231,7 +263,8 @@ class MainWindow(QtWidgets.QMainWindow):
 if __name__ == '__main__':
     import argparse
 
-    parser = argparse.ArgumentParser(description='Simple log simulator frontend, enabling drag & drop of log files')
+    parser = argparse.ArgumentParser(description='Simple naoth logsimulator frontend, '
+                                                 'enabling drag & drop functionality for log files and config folders')
 
     def is_file(path):
         if not os.path.isfile(path):
@@ -243,7 +276,7 @@ if __name__ == '__main__':
             return
         return path
 
-    parser.add_argument('-e', '--executable', type=is_file)
+    parser.add_argument('-e', '--executable', help='path to logsimulator executable', type=is_file)
     args = parser.parse_args()
 
     # setup logging

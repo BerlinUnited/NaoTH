@@ -67,18 +67,18 @@ class LogSimulator:
 
 
 class LogSimInstance:
-    def __init__(self, process):
-        self.process = process
-
-        # pattern of frame info output
-        self.frame_pattern = re.compile(r"""
+    # pattern of frame info output
+    frame_pattern = re.compile(r"""
         \[
         (?P<current>[0-9]+) # current frame number
         \|
         (?P<first>[0-9]+) # first frame number of log file
         -
         (?P<last>[0-9]+) # last frame number of log file
-        ]""", re.VERBOSE)
+    ]""", re.VERBOSE)
+
+    def __init__(self, process):
+        self.process = process
 
         self.logfile_representations = []
 
