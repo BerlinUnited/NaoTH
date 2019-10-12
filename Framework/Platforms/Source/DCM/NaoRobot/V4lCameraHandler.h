@@ -10,6 +10,7 @@
 
 #include <string>
 #include <list>
+#include <memory>
 
 extern "C"
 {
@@ -32,6 +33,7 @@ extern "C"
 
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CameraSettings.h"
+
 
 struct buffer
 {
@@ -67,7 +69,7 @@ public:
   V4lCameraHandler();
   ~V4lCameraHandler();
 
-  void init(std::string camDevice, CameraInfo::CameraID camID, bool blockingMode);
+  void init(std::string camDevice, CameraInfo::CameraID camID, bool blockingMode, bool isV6 = false);
 
   void shutdown();
   bool isRunning();
@@ -92,16 +94,11 @@ private:
   
   int readFrame();
   
-  //settings
-  void initIDMapping();
-  
   int getSingleCameraParameter(int id);
   bool setSingleCameraParameter(int id, int value, std::string name);
   void setFPS(int fpsRate);
   void internalUpdateCameraSettings();
-  int getAutoExposureGridID(size_t i, size_t j) {
-    return V4L2_CID_PRIVATE_BASE + 7 + (i*CameraSettings::AUTOEXPOSURE_GRID_SIZE) + j;
-  }
+  
   
   // tools
   int xioctl(int fd, int request, void* arg) const;
@@ -126,7 +123,7 @@ private: // data members
   struct v4l2_buffer currentBuf;
   struct v4l2_buffer lastBuf;
 
-  bool atLeastOneImageRetrieved;
+  size_t framesSinceStart;
   bool initialParamsSet;
   bool wasQueried;
   bool isCapturing;
@@ -134,12 +131,11 @@ private: // data members
 
 
   // settings
-  int csConst[CameraSettings::numOfCameraSetting];
   unsigned long long lastCameraSettingTimestamp;
 
   /** order in which the camera settings need to be applied */
-  std::list<CameraSettings::CameraSettingID> settingsOrder;
   CameraSettings currentSettings;
+  std::shared_ptr<CameraSettingsManager> settingsManager;
   
   int error_count;
 };

@@ -1,4 +1,5 @@
-option pathplanner_kick_short{
+option pathplanner_kick_short
+{
   common decision
   {
     if(!body.ready_to_walk || game.current_mode != playing)

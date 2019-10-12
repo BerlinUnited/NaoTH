@@ -15,4 +15,4 @@ option pathplanner_test_long_kick_agent {
       head_control();
     }
   }
-}
+}

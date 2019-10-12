@@ -1,5 +1,6 @@
 option pathplanner_sidekick_only {
-  /*
+
+  /*
     Only the sidekick to left is tested without approach to ball
   */
   common decision

@@ -19,7 +19,6 @@
 #include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/FSRData.h>
 #include <Representations/Infrastructure/InertialSensorData.h>
-#include <Representations/Infrastructure/CameraSettings.h>
 #include <Representations/Infrastructure/LEDData.h>
 #include <Representations/Infrastructure/UltraSoundData.h>
 #include <Representations/Infrastructure/SoundData.h>
@@ -55,6 +54,8 @@ using namespace naoth;
 class SimSparkController : public PlatformInterface, DebugCommandExecutor
 {
 private:
+  std::string thePlatformName;
+
   GSocket* socket;
   PrefixedSocketStream theSocket;
 
@@ -108,14 +109,14 @@ public:
   virtual ~SimSparkController();
 
   virtual std::string getBodyID() const;
-
   virtual std::string getBodyNickName() const;
-
   virtual std::string getHeadNickName() const;
   virtual std::string getRobotName() const { return getBodyNickName(); }
+  virtual std::string getPlatformName() const { return thePlatformName; }
+  virtual unsigned int getBasicTimeStep() const { return 20; }
 
   /////////////////////// init ///////////////////////
-  bool init(const std::string& modelPath, const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync);
+  bool init(const std::string& modelPath, const std::string& teamName, unsigned int teamNumber, unsigned int num, const std::string& server, unsigned int port, bool sync);
 
   void main();
 
@@ -138,8 +139,6 @@ public:
 
   void get(InertialSensorData& data);
 
-  void get(CurrentCameraSettings& data);
-
   void get(BatteryData& data);
   void get(GPSData& data);
 
@@ -154,8 +153,6 @@ public:
   void set(const MotorJointData& data);
 
   void set(const TeamMessageDataOut& data);
-
-  void set(const CameraSettingsRequest& data);
 
 protected:
   virtual MessageQueue* createMessageQueue(const std::string& name);
