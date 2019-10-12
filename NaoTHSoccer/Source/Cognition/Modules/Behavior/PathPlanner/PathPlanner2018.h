@@ -75,16 +75,16 @@ private:
       PARAMETER_REGISTER(stepLength) = 80.0;
       PARAMETER_REGISTER(nearApproach_step_character) = 0.3;
 
-	  PARAMETER_REGISTER(forwardKickOffset.x) = 120; // mm
+      PARAMETER_REGISTER(forwardKickOffset.x) = 120; // mm
       PARAMETER_REGISTER(forwardKickOffset.y) = 0; // mm
       PARAMETER_REGISTER(forwardKickThreshold.x) = 50; // mm
       PARAMETER_REGISTER(forwardKickThreshold.y) = 25; // mm
       PARAMETER_REGISTER(forwardKickAdaptive) = false; // mm
       PARAMETER_REGISTER(forwardKickTime) = 300;
-      
 
       syncWithConfig();
     }
+
     virtual ~Parameters(){}
 
     double readyForSideKickThresholdX;
