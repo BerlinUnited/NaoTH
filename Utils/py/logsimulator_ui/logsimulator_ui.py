@@ -25,7 +25,8 @@ from zipfile import ZipFile
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtGui import QTextCursor
 
-from naoth.logsimulator import LogSimulator, LogSimInstance
+import naoth
+from naoth.logsimulator import LogSimulator
 
 logger = logging.getLogger(__name__)
 
@@ -279,10 +280,7 @@ if __name__ == '__main__':
     parser.add_argument('-e', '--executable', help='path to logsimulator executable', type=is_file)
     args = parser.parse_args()
 
-    # setup logging
-    import naoth.logging_config.default as log
-
-    log.configure()
+    naoth.setup_logger()
 
     app = QtWidgets.QApplication(sys.argv)
 
