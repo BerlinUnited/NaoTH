@@ -134,7 +134,7 @@ option spl_remote_decide_gamestate
 	      stay; 
 	  }
 	  action {
-	    initial_striker();
+	    path2018_initial_striker();
    		team.is_playing_as_striker = true;
 	  }
   }
