@@ -19,7 +19,6 @@
 #include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/FSRData.h>
 #include <Representations/Infrastructure/InertialSensorData.h>
-#include <Representations/Infrastructure/CameraSettings.h>
 #include <Representations/Infrastructure/LEDData.h>
 #include <Representations/Infrastructure/UltraSoundData.h>
 #include <Representations/Infrastructure/SoundData.h>
@@ -140,8 +139,6 @@ public:
 
   void get(InertialSensorData& data);
 
-  void get(CurrentCameraSettings& data);
-
   void get(BatteryData& data);
   void get(GPSData& data);
 
@@ -156,8 +153,6 @@ public:
   void set(const MotorJointData& data);
 
   void set(const TeamMessageDataOut& data);
-
-  void set(const CameraSettingsRequest& data);
 
 protected:
   virtual MessageQueue* createMessageQueue(const std::string& name);

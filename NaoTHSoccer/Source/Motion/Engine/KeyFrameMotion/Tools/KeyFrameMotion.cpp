@@ -16,7 +16,8 @@ KeyFrameMotion::KeyFrameMotion(const MotionNet& currentMotionNet, motion::Motion
   name(motion::getName(id)),
   currentMotionNet(currentMotionNet),
   t(0.0),
-  stiffness(1.0)
+  stiffness(1.0),
+  stiffnessIsReady(false)
 {
     getMotionStatus().target_reached = false;
 }
@@ -25,7 +26,8 @@ KeyFrameMotion::KeyFrameMotion()
   :
   AbstractMotion(motion::num_of_motions, getMotionLock()),
   t(0.0),
-  stiffness(1.0)
+  stiffness(1.0),
+  stiffnessIsReady(false)
 {
     getMotionStatus().target_reached = false;
 }
@@ -56,7 +58,6 @@ void KeyFrameMotion::init()
   ASSERT(!currentMotionNet.isEmpty());
   currentKeyFrame = currentMotionNet.getKeyFrame(0);
 
-
   // the distance between the current state and the first key frame
   double distance = 0;
   //stiffness = 1.0; //0.7;// only this value is tested!!!
@@ -71,7 +72,7 @@ void KeyFrameMotion::init()
     distance = max(joindDistance, distance);
   }
 
-
+  // HACK
   double maxAngleSpeed = Math::pi_2; // radiant per second
   if(name == "fall_left" || name == "fall_right") {
     maxAngleSpeed = Math::pi2;
@@ -100,6 +101,13 @@ void KeyFrameMotion::execute()
   if(isStopped()) {
     init();
     setCurrentState(motion::running);
+  }
+
+  // make sure the stiffness is set before executing the motion
+  if(!stiffnessIsReady) {
+    const double stiffness_increase = getRobotInfo().getBasicTimeStepInSecond() * 5;
+    stiffnessIsReady = setStiffness(getMotorJointData(), getSensorJointData(), lastMotorJointData.stiffness, stiffness_increase);
+    return;
   }
 
   getMotionStatus().target_reached = false;
@@ -157,8 +165,7 @@ void KeyFrameMotion::getNextTransition(std::string condition)
     }//end if
   }//end for
 
-  if(transitionFound)
-  {
+  if(transitionFound) {
     currentKeyFrame = currentMotionNet.getKeyFrame(currentTransition.toKeyFrame);
     t = currentTransition.duration;
   } else {

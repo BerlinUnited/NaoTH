@@ -70,7 +70,8 @@ option path_go_to_ball_with_foot_dynamic
     decision
     {
       if (abs(value = (ball.preview.right_foot.x - @distance - ball.radius)) > 30
-        || abs(value = ball.preview.right_foot.y + @offset.y) > 30)
+        || abs(value = ball.preview.right_foot.y + @offset.y) > 30
+)
         //|| atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) > 35)
         goto go_to_ball_right_foot;
       else
@@ -89,7 +90,8 @@ option path_go_to_ball_with_foot_dynamic
     decision
     {
       if (abs(value = (ball.preview.left_foot.x - @distance - ball.radius)) > 30
-        || abs(value = ball.preview.left_foot.y - @offset.y) > 30)
+        || abs(value = ball.preview.left_foot.y - @offset.y) > 30
+)
         //|| atan2(y = ball.preview.right_foot.y, x = ball.preview.right_foot.x) > 35)
         goto go_to_ball_left_foot;
       else

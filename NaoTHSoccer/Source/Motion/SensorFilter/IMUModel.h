@@ -1,10 +1,10 @@
 /**
 * @file IMUModel.h
-* 
+*
 * Declaration of class IMUModel
 *
 * @author <a href="mailto:kaden@informatik.hu-berlin.de">Steffen Kaden</a>
-*/ 
+*/
 
 
 #ifndef IMUMODEL_H

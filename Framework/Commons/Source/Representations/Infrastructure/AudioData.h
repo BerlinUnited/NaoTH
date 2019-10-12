@@ -14,7 +14,7 @@
 * 2: front-left microphone
 * 3: front-right microphone
 * (map: rear-left,rear-right,front-left,front-right)
-* 
+*
 * @author <a href="mailto:schlottb@informatik.hu-berlin.de">Benjamin Schlotter</a>
 */
 

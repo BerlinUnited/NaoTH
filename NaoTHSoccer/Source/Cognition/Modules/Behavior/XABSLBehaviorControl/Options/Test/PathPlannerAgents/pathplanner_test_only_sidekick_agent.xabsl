@@ -1,4 +1,5 @@
-option pathplanner_test_only_sidekick_agent {
+option pathplanner_test_only_sidekick_agent
+ {
   initial state test {    
     action {
     
