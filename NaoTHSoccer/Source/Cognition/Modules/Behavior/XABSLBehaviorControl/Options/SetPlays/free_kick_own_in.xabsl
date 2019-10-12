@@ -81,7 +81,6 @@ option free_kick_own_in
       } else if(abs(value = atan2(y=locator.field_to_relative.y(x=field.xPosOpponentGroundline, y=0), 
                                   x=locator.field_to_relative.x(x=field.xPosOpponentGroundline, y=0))) <= 10) {
         // TODO: do we want explicitly kick the ball, or just wait and switch to "normal" striker role?!?
-        // path_kick_long_with_approach();
         goto done;
       } else {
         stay;
@@ -108,7 +107,6 @@ option free_kick_own_in
       }
     }
     action {
-      //path_go_to_ball_with_USOA(distance = 500); 
       go_to_ball_with_USOA(distance=200);
       head.control_mode = look_at_ball;
     }
@@ -127,7 +125,6 @@ option free_kick_own_in
       } else if(abs(value = atan2(y=locator.field_to_relative.y(x=field.xPosOpponentGroundline, y=0), 
                                   x=locator.field_to_relative.x(x=field.xPosOpponentGroundline, y=0))) <= 10) {
         // TODO: do we want explicitly kick the ball, or just wait and switch to "normal" striker role?!?
-        // path_kick_long_with_approach();
         goto done;
       } else {
         stay;
@@ -154,7 +151,6 @@ option free_kick_own_in
       }
     }
     action {
-      //path_go_to_ball_with_USOA(distance = 500); 
       go_to_ball_with_USOA(distance=200);
       head.control_mode = look_at_ball;
     }

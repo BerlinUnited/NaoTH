@@ -96,20 +96,9 @@ include "Options/Soccer/Path2018/path_play_soccer.xabsl";
 include "Options/Soccer/Path2018/path_decide_role.xabsl";
 include "Options/Soccer/Path2018/path_basic_goalie.xabsl";
 include "Options/Soccer/Path2018/path2018_initial_striker.xabsl";
-include "Options/Soccer/Path2018/path_striker.xabsl";
 include "Options/Soccer/Path2018/path_striker2018.xabsl";
-include "Options/Soccer/Path2018/path_sidekick_left.xabsl";
-include "Options/Soccer/Path2018/path_sidekick_right.xabsl";
-include "Options/Soccer/Path2018/path_kick_short_with_approach.xabsl";
-include "Options/Soccer/Path2018/path_kick_long_with_approach.xabsl";
 include "Options/Soccer/Path2018/path_turn_to_attack_direction.xabsl";
-include "Options/Soccer/Path2018/path_dash.xabsl";
 include "Options/Soccer/Path2018/path_move_around_ball.xabsl";
-include "Options/Soccer/Path2018/path_go_to_ball_with_USOA.xabsl";
-include "Options/Soccer/Path2018/path_go_to_ball_with_foot_dynamic.xabsl";
-include "Options/Soccer/Path2018/path_long_kick.xabsl";
-include "Options/Soccer/Path2018/path_short_kick.xabsl";
-include "Options/Soccer/Path2018/path_sidekick.xabsl";
 
 // Old Striker
 include "Options/Soccer/SPL/striker.xabsl";
@@ -192,12 +181,6 @@ include "Options/Test/WalkAgents/turn_look_at_preview_angle_agent.xabsl";
 include "Options/Test/WalkAgents/intercept_agent.xabsl";
 
 // Test agents PathPlanner
-include "Options/Test/PathPlannerAgents/pathplanner_test_sidekick_agent.xabsl";
-include "Options/Test/PathPlannerAgents/pathplanner_test_short_kick_agent.xabsl";
-include "Options/Test/PathPlannerAgents/pathplanner_test_long_kick_agent.xabsl";
-include "Options/Test/PathPlannerAgents/pathplanner_test_only_shortkick_agent.xabsl";
-include "Options/Test/PathPlannerAgents/pathplanner_test_only_sidekick_agent.xabsl";
-include "Options/Test/PathPlannerAgents/pathplanner_test_dash_agent.xabsl";
 include "Options/Test/PathPlannerAgents/pathplanner2018_forwardkick_agent.xabsl";
 include "Options/Test/PathPlannerAgents/path_basic_goalie_agent.xabsl";
 include "Options/Test/PathPlannerAgents/path_move_around_ball_agent.xabsl";
@@ -206,13 +189,6 @@ include "Options/Test/PathPlannerAgents/pathplanner2018_striker_agent.xabsl";
 include "Options/Test/PathPlannerAgents/pathplanner2018_sidestep_agent.xabsl";
 
 // Test Options PathPlanner
-include "Options/Test/PathPlaner/pathplanner_sidekick.xabsl";
-include "Options/Test/PathPlaner/pathplanner_kick_short.xabsl";
-include "Options/Test/PathPlaner/pathplanner_kick_long.xabsl";
-include "Options/Test/PathPlaner/pathplanner_shortkick_only.xabsl";
-include "Options/Test/PathPlaner/pathplanner_sidekick_only.xabsl";
-include "Options/Test/PathPlaner/pathplanner_dash.xabsl";
-
 include "Options/Test/PathPlaner/pathplanner2018_forwardkick.xabsl";
 include "Options/Test/PathPlaner/pathplanner2018_sidekick.xabsl";
 include "Options/Test/PathPlaner/path_move_around_ball_test.xabsl";
@@ -354,12 +330,6 @@ agent dribble_agent("dribble_agent", dribble_agent);
 agent intercept_agent("intercept_agent", intercept_agent);
 
 // PathPlanner Test Agents
-agent pathplanner_test_sidekick_agent("pathplanner_test_sidekick_agent", pathplanner_test_sidekick_agent);
-agent pathplanner_test_short_kick_agent("pathplanner_test_short_kick_agent", pathplanner_test_short_kick_agent);
-agent pathplanner_test_long_kick_agent("pathplanner_test_long_kick_agent", pathplanner_test_long_kick_agent);
-agent pathplanner_test_only_sidekick_agent("pathplanner_test_only_sidekick_agent", pathplanner_test_only_sidekick_agent);
-agent pathplanner_test_only_shortkick_agent("pathplanner_test_only_shortkick_agent", pathplanner_test_only_shortkick_agent);
-agent pathplanner_test_dash_agent("pathplanner_test_dash_agent", pathplanner_test_dash_agent);
 agent pathplanner2018_forwardkick_agent("pathplanner2018_forwardkick_agent", pathplanner2018_forwardkick_agent);
 agent pathplanner2018_sidekick_agent("pathplanner2018_sidekick_agent", pathplanner2018_sidekick_agent);
 agent pathplanner2018_sidestep_agent("pathplanner2018_sidestep_agent", pathplanner2018_sidestep_agent);

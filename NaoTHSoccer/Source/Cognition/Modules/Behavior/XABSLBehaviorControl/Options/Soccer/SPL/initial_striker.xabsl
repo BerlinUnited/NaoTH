@@ -25,7 +25,7 @@ option initial_striker
         stay;
 	  }
 	  action {
-      path_go_to_ball_with_foot_dynamic(right=true, distance=190);
+      //path_go_to_ball_with_foot_dynamic(right=true, distance=190);
 	  }
   }
 
@@ -40,7 +40,7 @@ option initial_striker
     }
     action
     {
-       path_short_kick(foot = right);
+       //path_short_kick(foot = right);
        //head.control_mode = search_for_ball;
     }
   }
