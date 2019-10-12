@@ -7,7 +7,9 @@ option fast_forward_kick
   {
     decision
     {
-      if(executed_motion.step_control.right_movable && @foot == right)
+      if(executed_motion.type != walk)
+        stay;
+      else if(executed_motion.step_control.right_movable && @foot == right)
         goto kick_with_right_foot;
       else if(executed_motion.step_control.left_movable && @foot == left)
         goto kick_with_left_foot;
@@ -50,7 +52,6 @@ option fast_forward_kick
       motion.walk.step_control.time = 300;
       motion.walk.step_control.scale = 0.7;
 
-      //loook at percept
       head.control_mode = look_at_ball_percept;
     }
   }
@@ -60,7 +61,7 @@ option fast_forward_kick
     decision
     {
       if(state_time > 300 && executed_motion.step_control.right_movable)
-        goto finished; //short_freeze;
+        goto short_freeze;
       else
         stay;
     }
@@ -79,7 +80,6 @@ option fast_forward_kick
       motion.walk.step_control.time = 300;
       motion.walk.step_control.scale = 0.7;
 
-      //loook at percept
       head.control_mode = look_at_ball_percept;
     }
   }
@@ -112,13 +112,11 @@ option fast_forward_kick
     }
     action
     {
-      motion.type = stand; // walk besser?
-      motion.walk.stop_with_stand = true;
-    
+      motion.type = walk;
+      motion.walk.stop_with_stand = true;
       motion.walk.coordinate = hip;
-      motion.walk.style = normal;
-      
-      //loook at percept
+      motion.walk.style = stable;
+
       head.control_mode = look_at_ball_percept;
     }
   }

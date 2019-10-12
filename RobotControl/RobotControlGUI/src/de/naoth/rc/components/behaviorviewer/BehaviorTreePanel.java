@@ -20,7 +20,6 @@ import javax.swing.tree.TreePath;
 public class BehaviorTreePanel extends javax.swing.JScrollPane {
 
     private boolean showOptionsOnly = false;
-    private final HashMap<String, Boolean> actionExpanded = new HashMap<>();
     
     /**
      * Creates new form BehaviorTreePanel
@@ -50,52 +49,40 @@ public class BehaviorTreePanel extends javax.swing.JScrollPane {
     public DefaultMutableTreeNode actionToNode(XABSLAction a) {
         DefaultMutableTreeNode result = new DefaultMutableTreeNode(a);
 
-        if (!showOptionsOnly && a instanceof XABSLAction.OptionExecution) {
+        if (a instanceof XABSLAction.OptionExecution) {
             XABSLAction.OptionExecution oe = (XABSLAction.OptionExecution)a;
 
             // add parameters
-            for (Symbol p : oe.option.parameters) {
-                result.add(new DefaultMutableTreeNode(p));
+            if(!showOptionsOnly) {
+                for (Symbol p : oe.option.parameters) {
+                    result.add(new DefaultMutableTreeNode(p));
+                }
             }
             
             for (XABSLAction sub: oe.activeSubActions) {
+                // skip symbols if only options should be shown
+                if(showOptionsOnly && sub instanceof XABSLAction.SymbolAssignement) { continue; }
                 result.add(actionToNode(sub));
             }
         }
 
         return result;
     }//end actionToNode
-
-    /* 
-    // deprecated: support for Messages.XABSLAction
-    public DefaultMutableTreeNode actionToNode(Messages.XABSLAction a) {
-        DefaultMutableTreeNode result = new DefaultMutableTreeNode(a);
-
-        if (!showOptionsOnly) {
-            // add parameters
-            for (Messages.XABSLParameter p : a.getParametersList()) {
-                result.add(new DefaultMutableTreeNode(p));
-            }
-        }
-
-        for (Messages.XABSLAction sub : a.getActiveSubActionsList()) {
-            if (!showOptionsOnly || sub.getType() == Messages.XABSLAction.ActionType.Option) {
-                result.add(actionToNode(sub));
-            }
-        }
-        return result;
-    }//end actionToNode
-    */
     
     private final JTree newTree = new JTree();
+    private final TreeExpansionRecorder treeExpansionRecorder = new TreeExpansionRecorder();
+    
     private void createNewTree(DefaultMutableTreeNode root) {
         if (root == null) {
             root = new DefaultMutableTreeNode("Behavior");
         }
-
+        
         DefaultTreeModel model = new DefaultTreeModel(root);
         newTree.setModel(model);
-
+        
+        // restore collapsed paths
+        newTree.removeTreeExpansionListener(treeExpansionRecorder);
+        
         // expand all by default
         for (int i = 0; i < newTree.getRowCount(); i++) {
             newTree.expandRow(i);
@@ -107,42 +94,21 @@ public class BehaviorTreePanel extends javax.swing.JScrollPane {
             if (o instanceof DefaultMutableTreeNode) {
                 DefaultMutableTreeNode n = (DefaultMutableTreeNode) o;
                 
-                /*  
-                // deprecated: support for Messages.XABSLAction
-                if (n.getUserObject() instanceof Messages.XABSLAction) {
-                    Messages.XABSLAction a = (Messages.XABSLAction) n.getUserObject();
-                    if (Boolean.FALSE.equals(actionExpanded.get(a.getName()))) {
-                        newTree.collapsePath(new TreePath(n.getPath()));
-                    }
-                }
-                else */
                 if(n.getUserObject() instanceof XABSLAction.OptionExecution) {
                     XABSLAction.OptionExecution oe = (XABSLAction.OptionExecution) n.getUserObject();
-                    if (Boolean.FALSE.equals(actionExpanded.get(oe.option.name))) {
+                    if (treeExpansionRecorder.isCollapsed(oe.option.name)) {
                         newTree.collapsePath(new TreePath(n.getPath()));
                     }
                 }
             }
         }//end while
-
-        newTree.setVisible(true);
-        newTree.addTreeExpansionListener(new TreeExpansionListener() {
-
-            @Override
-            public void treeExpanded(TreeExpansionEvent tee) {
-                BehaviorTreePanel.this.treeExpanded(tee);
-            }
-
-            @Override
-            public void treeCollapsed(TreeExpansionEvent tee) {
-                BehaviorTreePanel.this.treeCollapsed(tee);
-            }
-        });
-        newTree.setDoubleBuffered(false);
+        newTree.addTreeExpansionListener(treeExpansionRecorder);
         
-        //newTree.setCellRenderer(new XABSLActionTreeCellRenderer());
-        newTree.setCellRenderer(new XABSLActionSparseTreeCellRenderer());
-
+        
+        newTree.setDoubleBuffered(false);
+        newTree.setCellRenderer(new XABSLActionSparseTreeCellRenderer(getFont().getSize()));
+        newTree.setVisible(true);
+        
         //TODO: this are preparation for jumping to the sourse, when an option is clicked
         /*
         newTree.addTreeSelectionListener(new TreeSelectionListener() {
@@ -176,25 +142,37 @@ public class BehaviorTreePanel extends javax.swing.JScrollPane {
     }//end createNewTree
 
     
-    private void treeExpanded(TreeExpansionEvent event) {
-        if (event.getPath().getLastPathComponent() instanceof DefaultMutableTreeNode) {
-            DefaultMutableTreeNode n = (DefaultMutableTreeNode) event.getPath().getLastPathComponent();
-            if(n.getUserObject() instanceof XABSLAction.OptionExecution) {
-                actionExpanded.put(((XABSLAction.OptionExecution) n.getUserObject()).option.name,
-                        Boolean.TRUE);
+    class TreeExpansionRecorder implements TreeExpansionListener
+    {
+        private final HashMap<String, Boolean> actionExpanded = new HashMap<>();
+        
+        public boolean isCollapsed(String name) {
+            return Boolean.FALSE.equals(actionExpanded.get(name));
+        }
+        
+        @Override
+        public void treeExpanded(TreeExpansionEvent event) {
+            if (event.getPath().getLastPathComponent() instanceof DefaultMutableTreeNode) {
+                DefaultMutableTreeNode n = (DefaultMutableTreeNode) event.getPath().getLastPathComponent();
+                if(n.getUserObject() instanceof XABSLAction.OptionExecution) {
+                    actionExpanded.put(((XABSLAction.OptionExecution) n.getUserObject()).option.name,
+                            Boolean.TRUE);
+                }
             }
         }
-    }//end treeExpanded
 
-    private void treeCollapsed(TreeExpansionEvent event) {
-        if (event.getPath().getLastPathComponent() instanceof DefaultMutableTreeNode) {
-            DefaultMutableTreeNode n = (DefaultMutableTreeNode) event.getPath().getLastPathComponent();
-            if(n.getUserObject() instanceof XABSLAction.OptionExecution) {
-                actionExpanded.put(((XABSLAction.OptionExecution) n.getUserObject()).option.name,
-                        Boolean.FALSE);
+        @Override
+        public void treeCollapsed(TreeExpansionEvent event) 
+        {
+                if (event.getPath().getLastPathComponent() instanceof DefaultMutableTreeNode) {
+                DefaultMutableTreeNode n = (DefaultMutableTreeNode) event.getPath().getLastPathComponent();
+                if(n.getUserObject() instanceof XABSLAction.OptionExecution) {
+                    actionExpanded.put(((XABSLAction.OptionExecution) n.getUserObject()).option.name,
+                            Boolean.FALSE);
+                }
             }
         }
-    }//end treeCollapsed
+    }
 
     public void setShowOptionsOnly(boolean showOptionsOnly) {
         this.showOptionsOnly = showOptionsOnly;

@@ -250,15 +250,30 @@ protected:
     return p;
   }//end interpolate
 
+  /**
+  * project to a 2D pose in the XY-plane
+  */
+  Pose2T<DATATYPE> projectXY() const {
+    return Pose2T<DATATYPE>(rotation.getZAngle(), translation.x, translation.y);
+  }
+
+  static Pose3T<DATATYPE> embedXY(const Pose2T<DATATYPE>& p) {
+    return Pose3T<DATATYPE>(
+              RotationMatrix::getRotationZ(p.rotation),
+              Vector3d(p.translation.x, p.translation.y, 0.0)
+            );
+  }
 };//end Pose3T
 
 template <typename DATATYPE>
 std::ostream& operator <<(std::ostream& ost, const Pose3T<DATATYPE>& v)
 {
-    ost << v.rotation.c[0]<<" 0 "
-        << v.rotation.c[1]<<" 0 "
-        << v.rotation.c[2]<<" 0 "
-        << v.translation <<" 1";
+    ost << "rotation (x,y,z): " << Math::toDegrees(v.rotation.getXAngle()) << " "
+                                << Math::toDegrees(v.rotation.getYAngle()) << " "
+                                << Math::toDegrees(v.rotation.getZAngle()) << std::endl;
+    ost << "translation (x,y,z): " << v.translation.x << " "
+                                   << v.translation.y << " "
+                                   << v.translation.z << std::endl;
     return ost;
 }
 

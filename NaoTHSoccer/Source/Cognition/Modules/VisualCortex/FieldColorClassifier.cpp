@@ -10,9 +10,8 @@
 using namespace std;
 
 FieldColorClassifier::FieldColorClassifier()
-: 
-  uniformGrid(getImage().width(), getImage().height(), 60, 40),
-  cameraID(CameraInfo::Bottom)
+: cameraID(CameraInfo::Bottom),
+  uniformGrid(getImage().width(), getImage().height(), 60, 40)
 {
   DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:CamTop", "", false);
   DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:CamBottom", "", false);
@@ -21,40 +20,50 @@ FieldColorClassifier::FieldColorClassifier()
   DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:markColorsRed", "", false);
 
   DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:histogramYChroma", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:histogramUVField", "", false);
+  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:histogramUVBall", "", false);
 
-  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:histogramUV:show", "", false);
-  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:histogramUV:removeGreenNoColor", "", true);
-  DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:histogramUV:removeRedNoColor", "", false);
-
-  getDebugParameterList().add(&parameters);
+  getDebugParameterList().add(&parametersBottom);
+  getDebugParameterList().add(&parametersTop);
 
   for(size_t i = 0; i < CameraInfo::numOfCamera; i++) {
     histogramUVArray[i].setSize(256);
+    histogramUVBallArray[i].setSize(256);
     histogramYCromaArray[i].setSize(256);
   }
 }
 
 FieldColorClassifier::~FieldColorClassifier()
 {
-  getDebugParameterList().remove(&parameters);
+  getDebugParameterList().remove(&parametersBottom);
+  getDebugParameterList().remove(&parametersTop);
 }
 
-void FieldColorClassifier::execute(const CameraInfo::CameraID id)
+void FieldColorClassifier::execute(const CameraInfo::CameraID id,  Parameters& parameters)
 {
   // TODO: set this global
   cameraID = id;
 
   // set the percept
-  getFieldColorPercept().greenHSISeparator.set(parameters.green);
-  getFieldColorPercept().redHSISeparator.set(parameters.red);
+  if(frameWhenParameterChanged.getFrameNumber() == getFrameInfo().getFrameNumber()) 
+  {
+    getFieldColorPercept().greenHSISeparator.set(parameters.green);
+    getFieldColorPercept().redHSISeparator.set(parameters.red);
 
-  DEBUG_REQUEST("Vision:FieldColorClassifier:CamBottom", if(cameraID == CameraInfo::Bottom) { debug(); } );
-  DEBUG_REQUEST("Vision:FieldColorClassifier:CamTop", if(cameraID == CameraInfo::Top) { debug(); } );
+     // update cache if parameter have changed
+    if(parameters.provide_colortable) {
+      updateCache();
+    }
+  }
+
+  DEBUG_REQUEST("Vision:FieldColorClassifier:CamBottom", if(cameraID == CameraInfo::Bottom) { debug(parametersBottom); } );
+  DEBUG_REQUEST("Vision:FieldColorClassifier:CamTop", if(cameraID == CameraInfo::Top) { debug(parametersTop); } );
 }
 
-void FieldColorClassifier::debug()
+void FieldColorClassifier::debug(Parameters& parameters)
 {
   Histogram2D& histogramUV = histogramUVArray[cameraID];
+  Histogram2D& histogramUVBall = histogramUVBallArray[cameraID];
   Histogram2D& histogramYCroma = histogramYCromaArray[cameraID];
   
   double alpha = 0.99;
@@ -66,34 +75,35 @@ void FieldColorClassifier::debug()
     }
   }
 
-  const size_t SCALE = 256 / histogramUV.size();
-
   Pixel pixel;
   for(unsigned int i = 0; i < uniformGrid.size(); i++)
   {
     const Vector2i& point = uniformGrid.getPoint(i);
     getImage().get(point.x, point.y, pixel);
 
-    Vector2d dp(pixel.u - 128, pixel.v - 128);
+    Vector2d dp(pixel.u, pixel.v);
+    dp.x -= 128;
+    dp.y -= 128;
     //double a = dp.angle();
 
     //if(fabs(Math::normalize(parameters.colorAngleCenter - a)) < parameters.colorAngleWith)
     {
       dp.rotate(-parameters.green.colorAngleCenter);
-      int value = (int)(dp.x + 128 + 0.5);
-      histogramYCroma(value/SCALE, (255 - pixel.y)/SCALE) += (1.0 - alpha);
+      size_t value =  static_cast<size_t>(Math::clamp(dp.x + 128 + 0.5, 0.0, 255.0));
+      histogramYCroma(value, (255 - pixel.y)) += (1.0 - alpha);
     }
 
-    bool collectUV = true;
-    DEBUG_REQUEST("Vision:FieldColorClassifier:histogramUV:removeGreenNoColor", 
-      collectUV = collectUV && !getFieldColorPercept().greenHSISeparator.noColor(pixel);
-    );
-    DEBUG_REQUEST("Vision:FieldColorClassifier:histogramUV:removeRedNoColor", 
-      collectUV = collectUV && !getFieldColorPercept().redHSISeparator.noColor(pixel);
-    );
+    // collect field histogram
+    if(!getFieldColorPercept().greenHSISeparator.noColor(pixel)) {
+      histogramUV(pixel.u, pixel.v) += (1.0 - alpha);
+    }
 
-    if( collectUV ) {
-      histogramUV(pixel.u/SCALE, pixel.v/SCALE) += (1.0 - alpha);
+    // collect colored ball histogram
+    if(!getFieldColorPercept().redHSISeparator.noColor(pixel)
+        && !getFieldColorPercept().greenHSISeparator.noColor(pixel)
+        && !getFieldColorPercept().greenHSISeparator.isChroma(pixel)) 
+    {
+      histogramUVBall(pixel.u, pixel.v) += (1.0 - alpha);
     }
   }
 
@@ -103,9 +113,13 @@ void FieldColorClassifier::debug()
       for(unsigned int y = 0; y < getImage().height(); y+=4) {
         getImage().get(x, y, pixel);
 
-        if( getFieldColorPercept().greenHSISeparator.noColor(pixel.y, pixel.u, pixel.v) ) {
-          POINT_PX(ColorClasses::red, x, y);
-        } else if( getFieldColorPercept().greenHSISeparator.isColor(pixel.y, pixel.u, pixel.v) ) {
+        if( getFieldColorPercept().greenHSISeparator.noColor(pixel.y, pixel.u, pixel.v)) {
+          if (pixel.y > parameters.green.brightnesConeOffset) {
+            POINT_PX(ColorClasses::red, x, y);
+          } else {
+            POINT_PX(ColorClasses::yellow, x, y);
+          }
+        } else if( getFieldColorPercept().greenHSISeparator.isColor(pixel.y, pixel.u, pixel.v)) {
           POINT_PX(ColorClasses::green, x, y);
         }
       }
@@ -137,19 +151,44 @@ void FieldColorClassifier::debug()
     draw_YChromaSeparator(parameters.red.brightnesConeOffset, parameters.red.brightnesConeRadiusBlack, parameters.red.brightnesConeRadiusWhite);
   );
 
-  DEBUG_REQUEST("Vision:FieldColorClassifier:histogramUV:show",
+  DEBUG_REQUEST("Vision:FieldColorClassifier:histogramUVField",
     draw_histogramUV(histogramUV);
 
     CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
 
     PEN("99FF9999", 1);
     draw_UVSeparator(parameters.green.colorAngleCenter, parameters.green.colorAngleWith);
+  );
+
+  DEBUG_REQUEST("Vision:FieldColorClassifier:histogramUVBall",
+    draw_histogramUV(histogramUVBall);
+
+    CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
 
     PEN("FF999999", 1);
     draw_UVSeparator(parameters.red.colorAngleCenter, parameters.red.colorAngleWith);
   );
 
 }//end execute
+
+
+void FieldColorClassifier::updateCache() {
+  for (int y = 0; y < 256; y += 4) {
+    for (int u = 0; u < 256; u += 4) {
+      for (int v = 0; v < 256; v += 4) {
+        if(getFieldColorPercept().greenHSISeparator.noColor(y, u, v)) {
+          if(y > getFieldColorPercept().greenHSISeparator.getParams().brightnesConeOffset) {
+            getColorTable64().setColorClass(ColorClasses::white,(unsigned char)y, (unsigned char)u, (unsigned char)v);
+          } else {
+            getColorTable64().setColorClass(ColorClasses::black,(unsigned char)y, (unsigned char)u, (unsigned char)v);
+          }
+        } else if(getFieldColorPercept().greenHSISeparator.isChroma(y, u, v)) {
+          getColorTable64().setColorClass(ColorClasses::green,(unsigned char)y, (unsigned char)u, (unsigned char)v);
+        }
+      }
+    }
+  }
+}
 
 void FieldColorClassifier::draw_UVSeparator(double angleCenter, double angleWidth) const
 {

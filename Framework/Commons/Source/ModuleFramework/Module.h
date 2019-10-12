@@ -61,10 +61,10 @@ using namespace naoth;
 typedef std::map<std::string, Representation*> RepresentationMap;
 
 /**
-* A prototype for a static interface of a module
+* A prototype for the accessor class alowing access to a partcular representation n the blackboard
 */
+template<class R, class RR> class Accessor;
 template<class T> class IF;
-
 
 /**
 * @class Module
@@ -77,8 +77,8 @@ private: using BlackBoardInterface::getBlackBoard;
 public:
   Module(){}
   virtual ~Module() {
-    unregister(providedMap);
-    unregister(requiredMap);
+    unregisterRequire();
+    unregisterProvide();
   }
 
   virtual void execute() = 0;
@@ -90,27 +90,21 @@ public:
   const RepresentationMap& getProvide() const { return providedMap; }
 
 protected:
-
-  template<class T>
-  const T& getRequire(std::string name) const {
-    return getRepresentation<T>(requiredMap, name);
-  }
-
-  template<class T>
-  T& getProvide(const std::string& name) const {
-    return getRepresentation<T>(providedMap, name);
-  }
-
-  template<class T>
-  T& getRepresentation(const RepresentationMap& r_map, const std::string& name) const;
-
-  // the interface IF<T> uses the methods getProvide and getRequire
-  template<class T> friend class IF;
+  // the interface Accessor<R,RR> uses the methods getBlackBoard()
+  template<class R, class RR> friend class Accessor;
 
 protected:
-  void registerProvide(const RegistrationInterfaceMap& rr_map);
-  void registerRequire(const RegistrationInterfaceMap& rr_map);
-  void unregister(RepresentationMap& r_map);
+  void registerProvide(Representation& representation) {
+    providedMap[representation.getName()] = &representation;
+    representation.registerProvide(*this);
+  }
+  void registerRequire(Representation& representation) {
+    requiredMap[representation.getName()] = &representation;
+    representation.registerRequire(*this);
+  }
+
+  void unregisterRequire();
+  void unregisterProvide();
 
 private:
   // pointers to the provided and required representations
@@ -122,19 +116,10 @@ private:
 };//end class Module
 
 
-template<class T>
-T& Module::getRepresentation(const RepresentationMap& r_map, const std::string& name) const 
-{
-  RepresentationMap::const_iterator iter = r_map.find(name);
-  assert(iter != r_map.end());
-  DataHolder<T>* rep = dynamic_cast<DataHolder<T>*>(iter->second);
-  assert(rep != NULL);
-  return **rep;
-}
-
 /** */
 std::ostream& operator <<(std::ostream &stream, const Module& module);
 
+std::string get_sub_core_module_path(std::string fullpath);
 
 /**
 * Holds static maps with registrators for required/provided representations
@@ -169,30 +154,51 @@ template<class T> RegistrationInterfaceRegistry StaticRegistry<T>::registryRequi
 template<class T> RegistrationInterfaceRegistry StaticRegistry<T>::registryProvide;
 template<class T> std::string StaticRegistry<T>::description = "empty";
 
+
+template<class R, class ReturnType> class Accessor 
+{
+public:
+  Accessor(Module* module, RegistrationInterfaceRegistry& registry, const std::string& name) 
+    : 
+    reg(nullptr),
+    data(nullptr)
+  {
+    reg = registry.registerInterface<R>(name);
+
+    if(module != nullptr) 
+    {
+      Representation& representation = reg->registerAtBlackBoard(module->getBlackBoard());
+      
+      // register the representation
+      if(std::is_const<ReturnType>::value) {
+        module->registerRequire(representation);
+      } else {
+        module->registerProvide(representation);
+      }
+      
+      // store for fast access
+      DataHolder<R>* rep = dynamic_cast<DataHolder<R>*>(&representation);
+      data = &(**rep);
+      assert(data != nullptr);
+    }
+  }
+
+  inline ReturnType& operator() () const { return *data; }
+
+private: 
+  RegistrationInterface *reg;
+
+  R* data;
+};
+
+template<class T> using Require = Accessor<T, const T>;
+template<class T> using Provide = Accessor<T, T>;
+
+
 /**
 * A default definition of a static interface of a module
 */
 template<class T> class IF : public StaticRegistry<T> {};
-
-std::string get_sub_core_module_path(std::string fullpath);
-
-/**
-* NOTE: an object of a 'registrator' class registers an interface for a 
-* representation when it is created.
-* The classes STATIC_REQUIRE_REGISTRATOR and STATIC_PROVIDE_REGISTRATOR
-* may be implemented much more elegant utilizing templates, 
-* but the macros make it possible to use the actual name of the 
-* representation class, i.e., #R.
-*/
-
-// internal: don't use directly
-#define STATIC_REGISTRATOR(N,R)                               \
-  class Register##R {                                         \
-  public:                                                     \
-    Register##R() {                                           \
-      registry##N.registerInterface<R>(#R);                   \
-    }                                                         \
-  }
 
 /** 
 * specialize the interface IF<M> for the module M
@@ -201,35 +207,28 @@ std::string get_sub_core_module_path(std::string fullpath);
   class M;                                                    \
   template<> class IF<M>: public StaticRegistry<M>            \
   {                                                           \
+  private: Module* module;                                    \
   public:                                                     \
-    typedef M ModuleType;                                     \
-    virtual const Module* getModule() const {                 \
-      assert(false); return NULL;                             \
-    }                                                         \
+    IF() : module(nullptr) {}                                 \
+    IF(Module* module) : module(module) {}                    \
     static std::string getName() { return #M; }               \
-    static std::string getModulePath() { return get_sub_core_module_path(__FILE__); }
+    static std::string getModulePath() {                      \
+      return get_sub_core_module_path(__FILE__);              \
+    }
     
 
 /**
 * - autoregistration at construction time
 * - getter method for internal use, eg getImage()
 */
-#define REQUIRE(R)                                            \
-  private: STATIC_REGISTRATOR(Require,R) the##R;              \
-  protected: inline const R& get##R() const {                 \
-      static const R& data = getModule()->getRequire<R>(#R);  \
-      return data;                                            \
-    }
+#define REQUIRE(R) \
+  protected: Require<R> get##R = Require<R>(module, registryRequire, #R);
 
 /**
 * same as @see REQUIRE but not const
 */
-#define PROVIDE(R)                                            \
-  private: STATIC_REGISTRATOR(Provide,R) the##R;              \
-  protected: inline R& get##R() const {                       \
-      static R& data = getModule()->getProvide<R>(#R);        \
-      return data;                                            \
-    }
+#define PROVIDE(R) \
+  protected: Provide<R> get##R = Provide<R>(module, registryProvide, #R);
 
 /**
 * closse the class IF<T>
@@ -238,14 +237,11 @@ std::string get_sub_core_module_path(std::string fullpath);
 */
 #define END_DECLARE_MODULE(M)                                 \
   };                                                          \
-  class M##Base: public IF<M>, public Module                  \
+  class M##Base: public Module, public IF<M>                  \
   {                                                           \
-  public: M##Base() {                                         \
-    registerRequire(IF<M>::getRequire());                     \
-    registerProvide(IF<M>::getProvide());                     \
+  public: M##Base() : IF<M>(this) {                           \
   }                                                           \
   public:                                                     \
-    virtual const Module* getModule() const { return this; }  \
     virtual std::string getName() const {return #M; }         \
     virtual std::string getModulePath() const { return IF<M>::getModulePath(); } \
     virtual std::string getDescription() const { return IF<M>::description; } \

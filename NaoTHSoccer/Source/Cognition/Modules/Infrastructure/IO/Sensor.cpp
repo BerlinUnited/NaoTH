@@ -20,16 +20,12 @@ Sensor::~Sensor()
 void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
 {
   // read RobotInfo
-  RobotInfo& robot = getRobotInfo();
-  robot.platform = platform.getName();
-  robot.headNickName = platform.getHeadNickName();
-  robot.bodyNickName = platform.getBodyNickName();
-  robot.bodyID = platform.getBodyID();
-  robot.basicTimeStep = platform.getBasicTimeStep();
+  getRobotInfo().platform = platform.getPlatformName();
+  getRobotInfo().headNickName = platform.getHeadNickName();
+  getRobotInfo().bodyNickName = platform.getBodyNickName();
+  getRobotInfo().bodyID = platform.getBodyID();
+  getRobotInfo().basicTimeStep = platform.getBasicTimeStep();
   
-  // init player number, team number and etc.
-  getGameData().loadFromCfg( naoth::Platform::getInstance().theConfiguration );
-
   REG_INPUT(Image);
   REG_INPUT(ImageTop);
   REG_INPUT(CurrentCameraSettings);
@@ -46,14 +42,14 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(UltraSoundReceiveData);
   REG_INPUT(BatteryData);
   REG_INPUT(ButtonData);
-  REG_INPUT(IRReceiveData);
+  REG_INPUT(CpuData);
+  REG_INPUT(AudioData);
   
   REG_INPUT(GPSData);
   REG_INPUT(TeamMessageDataIn);
+  REG_INPUT(RemoteMessageDataIn);
   REG_INPUT(GameData);
   REG_INPUT(DebugMessageInCognition);
-
-  REG_INPUT(WhistlePercept);
 
   platformInterface.registerBufferedInputChanel(getCameraMatrixBuffer());
   platformInterface.registerBufferedInputChanel(getCameraMatrixBufferTop());
@@ -61,7 +57,10 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerInputChanel(getOdometryData());
   platformInterface.registerInputChanel(getCalibrationData());
   platformInterface.registerInputChanel(getInertialModel());
+  platformInterface.registerInputChanel(getIMUData());
   platformInterface.registerInputChanel(getBodyStatus());
+  platformInterface.registerInputChanel(getGroundContactModel());
+  platformInterface.registerInputChanel(getCollisionPercept());
 }//end init
 
 
@@ -71,6 +70,16 @@ void Sensor::execute()
   //getInertialPercept().data = getInertialSensorData().data + getCalibrationData().inertialSensorOffset;
 
   GT_TRACE("Sensor:execute() end");
+
+  // TODO: this needs to be cleaned up together with the whole debug network communication infrastructure
+  // EVIL HACK: expect that only RemoteControlCommand are sent though RemoteMessageDataIn
+  // read only the last message
+  if (getRemoteMessageDataIn().data.size() > 0 ) {
+    std::stringstream ss(getRemoteMessageDataIn().data.back());
+    Serializer<RemoteControlCommand>::deserialize(ss, getRemoteControlCommand());
+
+    getRemoteControlCommand().frameInfoWhenUpdated = getFrameInfo();
+  }
 
 }//end execute
 

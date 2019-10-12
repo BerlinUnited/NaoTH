@@ -10,10 +10,14 @@
 #define _CameraGeometry_h_
 
 #include "Tools/Math/Pose3D.h"
+#include "Tools/NaoInfo.h"
 
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include <Representations/Modeling/KinematicChain.h>
+#include "Representations/Modeling/InertialModel.h"
+
+#include <Representations/Modeling/CameraMatrixOffset.h>
 
 /**
 * The class Geometry defines representations for geometric objects and Methods
@@ -126,6 +130,32 @@ public:
     double rotationOffsetY,
     const Vector2d& theCameraCorrectionOffset);
 
-  };
+  static Pose3D calculateCameraMatrix(
+    const CameraMatrixOffset& theCameraMatrixOffset,
+    const KinematicChain& theKinematicChain,
+    const InertialModel &theInertialModel,
+    const naoth::SensorJointData &theSensorJointData,
+    const Vector3d& translationOffset,
+    double rotationOffsetY,
+    const naoth::CameraInfo::CameraID cameraID);
+
+  static Pose3D calculateCameraMatrixFromChestPose(
+      Pose3D chest,
+      const Vector3d& translationOffset,
+      double rotationOffsetY,
+      const Vector2d &theBodyCorrectionOffset,
+      const Vector3d &theHeadCorrectionOffset,
+      const Vector3d &theCameraCorrectionOffset,
+      double headYaw,
+      double headPitch,
+      const Vector2d& bodyRotation);
+
+  /**
+    estimate the ball size in image based on given camera matrix and camera info
+  */
+  static double estimatedBallRadius( const Pose3D& cameraMatrix, const naoth::CameraInfo& cameraInfo, const double ballRadius, int x, int y);
+
+
+};
 
 #endif //_CameraGeometry_h_

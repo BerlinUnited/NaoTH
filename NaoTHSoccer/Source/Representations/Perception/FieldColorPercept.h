@@ -8,8 +8,11 @@
 #ifndef FIELDCOLORPERCEPT_H
 #define FIELDCOLORPERCEPT_H
 
-#include <Tools/DataStructures/Printable.h>
+#include <algorithm>
 #include <Tools/Math/Common.h>
+#include <Tools/Math/Vector2.h>
+
+#include <Tools/DataStructures/Printable.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 
 using namespace naoth;
@@ -84,6 +87,16 @@ public:
 
   public:
 
+    HSISeparatorOptimized()
+      : distMin(0), distMax(0)
+    {
+      // initialize the array
+      for(size_t i=0; i < 256; i++)
+      {
+        brightnessThreshold[i] = 0;
+      }
+    }
+
     void set(const Parameter& p) {
       setColor(p.colorAngleCenter, p.colorAngleWith);
       setBrightness(p.brightnesConeOffset, p.brightnesConeRadiusBlack, p.brightnesConeRadiusWhite);
@@ -118,13 +131,20 @@ public:
     }
 
     inline bool isColor(int y, int u, int v) const {
-      return !noColor(y,u,v) && 
-              normalMin.x*u + normalMin.y*v > distMin && 
-              normalMax.x*u + normalMax.y*v < distMax;
+      return !noColor(y,u,v) && isChroma(y,u,v);
     }
 
     inline bool isColor(const Pixel& pixel) const {
       return isColor(pixel.y, pixel.u, pixel.v);
+    }
+
+    inline bool isChroma(const Pixel& pixel) const {
+      return isChroma(pixel.y, pixel.u, pixel.v);
+    }
+
+    inline bool isChroma(int /*y*/, int u, int v) const {
+      return normalMin.x*u + normalMin.y*v > distMin && 
+             normalMax.x*u + normalMax.y*v < distMax;
     }
 
     inline bool noColor(int y, int u, int v) const {
@@ -134,6 +154,10 @@ public:
 
     inline bool noColor(const Pixel& pixel) const {
       return noColor(pixel.y, pixel.u, pixel.v);
+    }
+
+    const Parameter& getParams() const {
+      return p;
     }
 
     private:

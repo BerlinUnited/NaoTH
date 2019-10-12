@@ -21,9 +21,8 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("sensor.ultrasound.left", &simplePassLeftSensor);
   engine.registerDecimalInputSymbol("sensor.ultrasound.right", &simplePassRightSensor);
 
-  engine.registerDecimalInputSymbol("button.remote", &getIRButtonNumber);
-
-  engine.registerDecimalInputSymbol("platform.battery", &getBatteryData().charge);
+  //engine.registerDecimalInputSymbol("platform.battery", &getBatteryData().charge);
+  engine.registerDecimalInputSymbol("platform.battery", &getBodyState().batteryCharge);
 
   engine.registerEnumElement("fall_down_state", "fall_down_state.undefined", BodyState::undefined);
   engine.registerEnumElement("fall_down_state", "fall_down_state.upright", BodyState::upright);
@@ -34,15 +33,17 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
 
   engine.registerEnumeratedInputSymbol("fall_down_state", "fall_down_state", &getFallDownState);
 
-
   engine.registerDecimalInputSymbol("body.temperature.leg.left", &getBodyState().temperatureLeftLeg);
   engine.registerDecimalInputSymbol("body.temperature.leg.right", &getBodyState().temperatureRightLeg);
-
 
   engine.registerBooleanInputSymbol("body.foot.groundcontact.left", &getBodyState().standByLeftFoot);
   engine.registerBooleanInputSymbol("body.foot.groundcontact.right", &getBodyState().standByRightFoot);
   engine.registerDecimalInputSymbol("body.foot.groundcontact.statetime", &getFootStateTime);
 
+  engine.registerBooleanInputSymbol("body.lifted_up", &getBodyState().isLiftedUp);
+
+  engine.registerBooleanInputSymbol("body.collision.arm.left", &getCollisionArmLeft);
+  engine.registerBooleanInputSymbol("body.collision.arm.right", &getCollisionArmRight);
 
   engine.registerDecimalInputSymbol("platform.frameNumber", &getFrameNumber);
 
@@ -51,18 +52,17 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("obstacle.ultrasound.right.distance", &getObstacleDistanceRight);
   engine.registerDecimalInputSymbol("obstacle.ultrasound.blockedtime", &getBlockedTime);
 
-  engine.registerBooleanInputSymbol("collision.colliding", &getCollisionModel().isColliding);
-
-  // integrated obstacle model
-  engine.registerDecimalInputSymbol("path.next_point_to_go_x", &getPath().nextPointToGo.x);
-  engine.registerDecimalInputSymbol("path.next_point_to_go_y", &getPath().nextPointToGo.y);
-  engine.registerDecimalInputSymbol("path.time_since_not_valid", &getTimeNoNodeExpandable);
-
-  // target to control the path
-  engine.registerDecimalOutputSymbol("path.target_x", &setTargetpointX, &getTargetPointX);
-  engine.registerDecimalOutputSymbol("path.target_y", &setTargetpointY, &getTargetPointY);
-  
   engine.registerBooleanInputSymbol("button.bumper.pressed.left", &getBumberLeftPressed);
+  engine.registerBooleanInputSymbol("button.head.pressed.front", &getButtonHeadFront);
+  engine.registerBooleanInputSymbol("button.head.pressed.middle", &getButtonHeadMiddle);
+  engine.registerBooleanInputSymbol("button.head.pressed.rear", &getButtonHeadRear);
+
+  // deprecated?
+  engine.registerBooleanInputSymbol("battery.isDischarging", &getBodyState().isDischarging);
+  engine.registerBooleanInputSymbol("battery.isCharging", &getBodyState().isCharging);
+
+  engine.registerBooleanOutputSymbol("audio.capture", &getAudioControl().capture);
+
 }//end registerSymbols
 
 SensorSymbols* SensorSymbols::theInstance = NULL;
@@ -76,16 +76,22 @@ void SensorSymbols::execute()
 
 }//end execute
 
-
 bool SensorSymbols::getBumberLeftPressed()
 {
   return (theInstance->getButtonData().eventCounter[ButtonData::LeftFootLeft] > 0) ||
          (theInstance->getButtonData().eventCounter[ButtonData::LeftFootRight] > 0);
 }
-
-double SensorSymbols::getIRButtonNumber()
+bool SensorSymbols::getButtonHeadFront()
 {
-  return (double)(theInstance->getIRReceiveData().data[IRReceiveData::RightRCByte2]);
+  return (theInstance->getButtonData().isPressed[ButtonData::HeadFront]);
+}
+bool SensorSymbols::getButtonHeadMiddle()
+{
+  return (theInstance->getButtonData().isPressed[ButtonData::HeadMiddle]);
+}
+bool SensorSymbols::getButtonHeadRear()
+{
+  return (theInstance->getButtonData().isPressed[ButtonData::HeadRear]);
 }
 
 double SensorSymbols::getFrameNumber()
@@ -108,7 +114,7 @@ double SensorSymbols::simplePassLeftSensor()
 {
   double r = 2550.0;
   // return minimum measurement = closest object
-  for(unsigned int i = 0; i < UltraSoundData::numOfUSEcho; i++)
+  for(size_t i = 0; i < UltraSoundReceiveData::numOfUSEcho; i++)
   {
     if((theInstance->getUltraSoundReceiveData().dataLeft[i] * 1000) < r && theInstance->getUltraSoundReceiveData().dataLeft[i] > 0.2)
     {
@@ -122,7 +128,7 @@ double SensorSymbols::simplePassRightSensor()
 {
   double r = 2550.0;
   // return minimum measurement = closest object
-  for(unsigned int i = 0; i < UltraSoundData::numOfUSEcho; i++)
+  for(size_t i = 0; i < UltraSoundReceiveData::numOfUSEcho; i++)
   {
     if((theInstance->getUltraSoundReceiveData().dataRight[i] * 1000) < r && theInstance->getUltraSoundReceiveData().dataRight[i] > 0.2)
     {
@@ -163,27 +169,16 @@ double SensorSymbols::getInertialSensorY()
   return Math::toDegrees(theInstance->getInertialSensorData().data.y);
 }
 
-double SensorSymbols::getTargetPointX()
+bool SensorSymbols::getCollisionArmLeft()
 {
-  return theInstance->getPath().targetPoint.x;
+  return
+    theInstance->getCollisionPercept().timeCollisionArmLeft > 0 &&
+    theInstance->getFrameInfo().getTimeSince(theInstance->getCollisionPercept().timeCollisionArmLeft) < 100;
 }
 
-double SensorSymbols::getTargetPointY()
+bool SensorSymbols::getCollisionArmRight()
 {
-  return theInstance->getPath().targetPoint.y;
-}
-
-double SensorSymbols::getTimeNoNodeExpandable()
-{
-  return theInstance->getPath().getTimeNoNodeExpandable();
-}
-
-void SensorSymbols::setTargetpointX(double targetX)
-{
-  theInstance->getPath().targetPoint.x = targetX;
-}
-
-void SensorSymbols::setTargetpointY(double targetY)
-{
-  theInstance->getPath().targetPoint.y = targetY;
+  return
+    theInstance->getCollisionPercept().timeCollisionArmRight > 0 &&
+    theInstance->getFrameInfo().getTimeSince(theInstance->getCollisionPercept().timeCollisionArmRight) < 100;
 }

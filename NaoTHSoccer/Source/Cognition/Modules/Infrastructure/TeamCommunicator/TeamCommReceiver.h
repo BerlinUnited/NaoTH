@@ -4,18 +4,11 @@
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
-#include <Representations/Infrastructure/BatteryData.h>
 #include "Representations/Modeling/TeamMessage.h"
+#include "Representations/Modeling/TeamMessageData.h"
 #include "Representations/Modeling/PlayerInfo.h"
-#include "Representations/Infrastructure/RobotInfo.h"
-#include "Representations/Modeling/PlayerInfo.h"
-#include "Representations/Modeling/RobotPose.h"
-#include "Representations/Modeling/BallModel.h"
-#include "Representations/Modeling/BodyState.h"
-#include "Representations/Motion/MotionStatus.h"
-#include "Representations/Modeling/RoleDecisionModel.h"
-#include "Representations/Modeling/SoccerStrategy.h"
-#include "Representations/Modeling/PlayersModel.h"
+#include "Representations/Infrastructure/GameData.h"
+#include "Representations/Infrastructure/WifiMode.h"
 
 #include <Tools/DataStructures/RingBuffer.h>
 
@@ -24,28 +17,22 @@
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugPlot.h"
 
-#include <Representations/Modeling/SPLStandardMessage.h>
+#include <MessagesSPL/SPLStandardMessage.h>
 
 BEGIN_DECLARE_MODULE(TeamCommReceiver)
-  REQUIRE(FrameInfo)
-  REQUIRE(PlayerInfo)
-  REQUIRE(RobotInfo)
-  REQUIRE(TeamMessageDataIn)
-  // additionally needed to add our own message
-  REQUIRE(RobotPose)
-  REQUIRE(BallModel)
-  REQUIRE(BodyState)
-  REQUIRE(MotionStatus)
-  REQUIRE(RoleDecisionModel)
-  REQUIRE(SoccerStrategy)
-  REQUIRE(PlayersModel)
-  REQUIRE(BatteryData)
-
   PROVIDE(DebugRequest)
   PROVIDE(DebugParameterList)
   PROVIDE(DebugPlot)
 
+  REQUIRE(FrameInfo)
+  REQUIRE(PlayerInfo)
+
+  REQUIRE(TeamMessageDataIn)
+  REQUIRE(GameData)
+  REQUIRE(WifiMode)
+
   PROVIDE(TeamMessage)
+  PROVIDE(TeamMessageData)
 END_DECLARE_MODULE(TeamCommReceiver)
 
 class TeamCommReceiver: public TeamCommReceiverBase
@@ -66,6 +53,7 @@ private:
     {
       PARAMETER_REGISTER(monotonicTimestampCheckResetTime) = 30000;
       PARAMETER_REGISTER(monotonicTimestampCheck) = true;
+      PARAMETER_REGISTER(acceptMixedTeamMessages) = false;
       
       // load from the file after registering all parameters
       syncWithConfig();
@@ -73,28 +61,33 @@ private:
 
     int monotonicTimestampCheckResetTime;
     bool monotonicTimestampCheck;
+    bool acceptMixedTeamMessages;
     
     virtual ~Parameters() {}
   } parameters;
 
 private:
-  bool parseSPLStandardMessage(const std::string& data, SPLStandardMessage& msg) const;
-  bool parseTeamMessage(const SPLStandardMessage& msg, TeamMessage::Data& teamMsg) const;
-  void handleMessage(const std::string& data, bool allowOwn = false);
+  void handleMessage(const std::string& data);
   
-  bool monotonicTimeStamp(const TeamMessage::Data& data) const
+  // TODO: move this into SPLStandardMessage.h or some other more suitable place
+  /** Parses the informations of the string (spl message) and updates the corresponding fields of this object.
+  *  A player/team number different than 0 defines which messages of a player/team are only parsed (restricted to this number).
+  *  If the number is negative, the messages of the player/team are ignored instead of restricted!
+  */
+  static bool parseFromSplMessageString(const std::string &data, SPLStandardMessage& spl);
+
+  bool monotonicTimeStamp(const TeamMessageData& data) const
   {
     return 
-           // it's probably not our message (playing dropin => accept in any case)
-           data.timestamp == 0 ||
-           // the new message is monotonic => accept
-           data.timestamp > getTeamMessage().data[data.playerNum].timestamp || 
-           // the new message is much older than the current one => weird => reset
-           data.timestamp + parameters.monotonicTimestampCheckResetTime < getTeamMessage().data[data.playerNum].timestamp;
+      // it's probably not our message (playing dropin => accept in any case)
+      data.custom.timestamp == 0 ||
+      // the new message is monotonic => accept
+      data.custom.timestamp > getTeamMessage().data[data.playerNumber].custom.timestamp ||
+      // the new message is much older than the current one => weird => reset
+      data.custom.timestamp + parameters.monotonicTimestampCheckResetTime < getTeamMessage().data[data.playerNumber].custom.timestamp;
   }
 
   RingBuffer<std::string, 100> delayBuffer;
-  int droppedMessages;
 };
 
 #endif // TEAMCOMMRECEIVER_H

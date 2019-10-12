@@ -46,7 +46,7 @@ public class AboutDialog extends javax.swing.JDialog {
         jEditorPane1.setEditable(false);
         jEditorPane1.setBorder(null);
         jEditorPane1.setContentType("text/html"); // NOI18N
-        jEditorPane1.setText("<html> \n<center>\n  <h3>RobotControl</h3> \n  <p> a remote debugging and monitoring tool for mobile robots</p>\n  <p>created by the Berlin United - NaoTH</p>\n  <br><a href=\"http://naoth.de/\">http://naoth.de</a> \n  <br>&copy; 2008-2015\n</center>\n</html>");
+        jEditorPane1.setText("<html> \n<center>\n  <h3>RobotControl</h3> \n  <p> a remote debugging and monitoring tool for mobile robots</p>\n  <p>created by the Berlin United - NaoTH</p>\n  <br><a href=\"http://naoth.de\">http://naoth.de</a> \n  <br>&copy; 2008-2019\n</center>\n</html>");
         jScrollPane1.setViewportView(jEditorPane1);
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/naos.png"))); // NOI18N

@@ -1,36 +1,52 @@
 #ifndef TEAMCOMMSENDER_H
 #define TEAMCOMMSENDER_H
 
-#include <Representations/Modeling/SPLStandardMessage.h>
+#include <MessagesSPL/SPLStandardMessage.h>
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
 #include <Representations/Infrastructure/BatteryData.h>
+#include "Representations/Infrastructure/CpuData.h"
 #include "Representations/Modeling/PlayerInfo.h"
 #include <Representations/Infrastructure/RobotInfo.h>
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/TeamMessage.h"
+#include "Representations/Modeling/TeamMessageData.h"
 #include "Representations/Modeling/BodyState.h"
-#include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/RoleDecisionModel.h"
 #include "Representations/Modeling/SoccerStrategy.h"
-#include "Representations/Modeling/PlayersModel.h"
+#include "Representations/Modeling/KickActionModel.h"
+#include "Representations/Modeling/TeamBallModel.h"
+#include "Representations/Infrastructure/WifiMode.h"
+#include "Representations/Motion/MotionStatus.h"
+
+#include "Tools/Debug/DebugPlot.h"
+#include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugParameterList.h"
 
 BEGIN_DECLARE_MODULE(TeamCommSender)
+  PROVIDE(DebugPlot)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugParameterList)
+
   REQUIRE(FrameInfo)
   REQUIRE(PlayerInfo)
   REQUIRE(RobotInfo)
+  REQUIRE(MotionStatus)
   REQUIRE(RobotPose)
   REQUIRE(BallModel)
   REQUIRE(BodyState)
-  REQUIRE(MotionStatus)
   REQUIRE(RoleDecisionModel)
   REQUIRE(SoccerStrategy)
-  REQUIRE(PlayersModel)
   REQUIRE(TeamMessage)
   REQUIRE(BatteryData)
+  REQUIRE(KickActionModel)
+  REQUIRE(CpuData)
+  REQUIRE(TeamBallModel)
+  REQUIRE(WifiMode)
 
+  PROVIDE(TeamMessageData)
   PROVIDE(TeamMessageDataOut)
 END_DECLARE_MODULE(TeamCommSender)
 
@@ -38,31 +54,32 @@ class TeamCommSender: public TeamCommSenderBase
 {
 public:
   TeamCommSender();
+  ~TeamCommSender();
 
   virtual void execute();
 
-  static void fillMessage(const PlayerInfo &playerInfo,
-                            const RobotInfo &robotInfo,
-                            const FrameInfo &frameInfo,
-                            const BallModel &ballModel,
-                            const RobotPose &robotPose,
-                            const BodyState &bodyState,
-                            const RoleDecisionModel &roleDecisionModel,
-                            const SoccerStrategy &soccerStrategy,
-                            const PlayersModel &playersModel,
-                            const BatteryData &batteryData,
-                            TeamMessage::Data &out);
+private:
+  class Parameters: public ParameterList
+  {
+  public: 
+    Parameters(): ParameterList("TeamCommSender")
+    {
+      PARAMETER_REGISTER(sendBallAgeDobermann) = false;
+      
+      // load from the file after registering all parameters
+      syncWithConfig();
+    }
 
- static void convertToSPLMessage(const TeamMessage::Data& teamMsg, SPLStandardMessage& splMsg);
+    bool sendBallAgeDobermann;
+    
+    virtual ~Parameters() {}
+  } parameters;
 
 private:
   unsigned int lastSentTimestamp;
   unsigned int send_interval;
 
-  void createMessage(SPLStandardMessage &msg);
-
-  static void addSendOppModel(unsigned int oppNum, const PlayersModel &playersModel,
-                              TeamMessage::Opponent &out);
+  void fillMessageBeforeSending() const;
 };
 
 #endif // TEAMCOMMSENDER_H

@@ -12,9 +12,12 @@ function get_info(cmd, default)
   return rev
 end
 
-REVISION = get_info("git rev-parse HEAD", "none\n")
-USER_NAME = get_info("git config user.name", "none\n")
+-- NOTE: cal also be found in '.git/HEAD'
 BRANCH_PATH = get_info("git rev-parse --abbrev-ref HEAD", "none\n")
+-- NOTE: can be found in '.git/refs/heads/<BRANCH_PATH>'
+REVISION = get_info("git rev-parse HEAD", "none\n")
+
+USER_NAME = get_info("git config user.name", "none\n")
 
 REVISION = string.gsub(REVISION,"\n", "")
 USER_NAME = string.gsub(USER_NAME,"\n", "")

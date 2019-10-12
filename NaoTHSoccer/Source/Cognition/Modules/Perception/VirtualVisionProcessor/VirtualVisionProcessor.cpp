@@ -10,6 +10,7 @@
 
 #include <Tools/Math/Matrix_mxn.h>
 #include "Tools/DataConversion.h"
+#include "Tools/CameraGeometry.h"
 
 using namespace std;
 
@@ -42,16 +43,15 @@ VirtualVisionProcessor::VirtualVisionProcessor()
   cornerNames.insert("F2L");
   cornerNames.insert("F2R");
 
-  const FieldInfo& theFieldInfo = getFieldInfo();
-  flagPosOnField[GameData::blue]["F1L"] = theFieldInfo.crossings[FieldInfo::ownCornerLeft].position;
-  flagPosOnField[GameData::blue]["F2L"] = theFieldInfo.crossings[FieldInfo::ownCornerRight].position;
-  flagPosOnField[GameData::blue]["F1R"] = theFieldInfo.crossings[FieldInfo::opponentCornerLeft].position;
-  flagPosOnField[GameData::blue]["F2R"] = theFieldInfo.crossings[FieldInfo::opponentCornerRight].position;
+  flagPosOnField[GameData::blue]["F1L"] = getFieldInfo().crossings[FieldInfo::ownCornerLeft].position;
+  flagPosOnField[GameData::blue]["F2L"] = getFieldInfo().crossings[FieldInfo::ownCornerRight].position;
+  flagPosOnField[GameData::blue]["F1R"] = getFieldInfo().crossings[FieldInfo::opponentCornerLeft].position;
+  flagPosOnField[GameData::blue]["F2R"] = getFieldInfo().crossings[FieldInfo::opponentCornerRight].position;
 
-  flagPosOnField[GameData::red]["F1L"] = theFieldInfo.crossings[FieldInfo::opponentCornerRight].position;
-  flagPosOnField[GameData::red]["F2L"] = theFieldInfo.crossings[FieldInfo::opponentCornerLeft].position;
-  flagPosOnField[GameData::red]["F1R"] = theFieldInfo.crossings[FieldInfo::ownCornerRight].position;
-  flagPosOnField[GameData::red]["F2R"] = theFieldInfo.crossings[FieldInfo::ownCornerLeft].position;
+  flagPosOnField[GameData::red]["F1L"] = getFieldInfo().crossings[FieldInfo::opponentCornerRight].position;
+  flagPosOnField[GameData::red]["F2L"] = getFieldInfo().crossings[FieldInfo::opponentCornerLeft].position;
+  flagPosOnField[GameData::red]["F1R"] = getFieldInfo().crossings[FieldInfo::ownCornerRight].position;
+  flagPosOnField[GameData::red]["F2R"] = getFieldInfo().crossings[FieldInfo::ownCornerLeft].position;
 
   DEBUG_REQUEST_REGISTER("VirtualVisionProcessor:corner_flags", "draw the corner flags", false);
 
@@ -69,19 +69,20 @@ void VirtualVisionProcessor::execute(const CameraInfo::CameraID id)
 
   updateBall();
   updateGoal();
-  updateLine();
-  updateCorners();
+  
   updatePlayers();
 
+  // line detection
+  updateLine();
   findIntersections();
-  LinePercept& theLinePercept = getLinePercept();
-  classifyIntersections(theLinePercept.lines);
+  
+  updateCorners();
 }//end execute
 
 Vector3d VirtualVisionProcessor::calculatePosition(const Vector3d& pol)
 {
   return getCameraMatrix() * pol2xyz(pol);
-}//end calculatePosition
+}
 
 void VirtualVisionProcessor::updateBall()
 {
@@ -102,6 +103,18 @@ void VirtualVisionProcessor::updateBall()
 
     theBallPercept.radiusInImage = theFieldInfo.ballRadius / iter->second.x * theCameraInfo.getFocalLength();
     CameraGeometry::relativePointToImage(theCameraMatrix, theCameraInfo, p, theBallPercept.centerInImage);
+
+    // set the multiball percept
+    MultiBallPercept::BallPercept ballPercept;
+  
+    ballPercept.cameraId = cameraID;
+    ballPercept.centerInImage = theBallPercept.centerInImage;
+    ballPercept.radiusInImage = theBallPercept.radiusInImage;
+    ballPercept.positionOnField.x = p.x;
+    ballPercept.positionOnField.y = p.y;
+
+    getMultiBallPercept().add(ballPercept);
+    getMultiBallPercept().frameInfoWhenBallWasSeen = theFrameInfo;
   }
   else
   {
@@ -133,7 +146,7 @@ void VirtualVisionProcessor::updateGoal()
       Vector2d position(p.x, p.y);
 
       p.z = 0;
-      Vector2<int> basePoint;
+      Vector2i basePoint;
       CameraGeometry::relativePointToImage(theCameraMatrix, theCameraInfo, p, basePoint);
 
       ColorClasses::Color color = goalPostColors.find(*i)->second;
@@ -241,9 +254,8 @@ void VirtualVisionProcessor::updateGoal()
 
 void VirtualVisionProcessor::updateLine()
 {
-  LinePercept& theLinePercept = getLinePercept();
   const VirtualVision& theVirtualVision = getVirtualVision();
-  theLinePercept.reset();
+  //getLinePercept().reset();
 
   // lines from flags
   if (theVirtualVision.lines.empty())
@@ -268,125 +280,173 @@ void VirtualVisionProcessor::updateLine()
 }//end updateLine
 
 
-
 void VirtualVisionProcessor::findIntersections()
 {
-  LinePercept& theLinePercept = getLinePercept();
-  const CameraInfo& theCameraInfo = getCameraInfo();
-  const CameraMatrix& theCameraMatrix = getCameraMatrix();
-  for (unsigned int i = 0; i < theLinePercept.lines.size(); i++)
-  {
-    const Math::LineSegment& lineOne = theLinePercept.lines[i].lineOnField;
+  const std::vector<Math::LineSegment>& lines = getVirtualLinePercept().fieldLineSegments;
+  std::vector<LineIntersection>& intersections = getVirtualLinePercept().intersections;
 
-    for (unsigned int j = i + 1; j < theLinePercept.lines.size(); j++)
-    {
-      const Math::LineSegment& lineTwo = theLinePercept.lines[j].lineOnField;
-      
-      double tOneL = lineOne.Line::intersection(lineTwo);
-      double tTwoL = lineTwo.Line::intersection(lineOne);
+  
+  vector<Vector2d> circlePoints;
+  circlePoints.reserve(intersections.size());
 
-      Vector2d point = lineOne.Line::point(tOneL);
-      if ( Math::isInf(point.x) || Math::isNan(point.x)
-        || Math::isInf(point.y) || Math::isNan(point.y) )
+  vector<Vector2d> circleMiddlePoints;
+  circleMiddlePoints.reserve(intersections.size());
+
+  for (size_t i = 0; i < lines.size(); i++) {
+    for (size_t j = i + 1; j < lines.size(); j++) {
+      LineIntersection intersection = LinesTable::estimateIntersection(lines[i], lines[j]);
+      intersections.push_back(intersection);
+
+      // extract circle from intersections
+      if(intersection.type == LineIntersection::C) 
       {
-        continue; // skip bad values
+        Vector2d middlePointOne = (lines[i].begin() + lines[i].end()) / 2;
+        Vector2d middlePointTwo = (lines[j].begin() + lines[j].end()) / 2;
+
+        Math::Line lineNormalOne(middlePointOne, lines[i].getDirection().rotateLeft());
+        Math::Line lineNormalTwo(middlePointTwo, lines[j].getDirection().rotateLeft());
+
+        double p = lineNormalOne.intersection(lineNormalTwo);
+        if(p != std::numeric_limits<double>::infinity())
+        {
+          Vector2d intersectPoint = lineNormalOne.point(p);
+          DEBUG_REQUEST("VirtualVisionProcessor:LineDetector:mark_circle",
+            PEN("FFFFFF", 5); 
+            LINE(middlePointOne.x, middlePointOne.y, intersectPoint.x, intersectPoint.y);
+            LINE(middlePointTwo.x, middlePointTwo.y, intersectPoint.x, intersectPoint.y);
+
+            PEN("FF0000", 30); 
+            CIRCLE(middlePointOne.x, middlePointOne.y, 10);
+            CIRCLE(middlePointTwo.x, middlePointTwo.y, 10);
+            CIRCLE(intersection.pos.x, intersection.pos.y, 10);
+          );
+
+          circlePoints.push_back(middlePointOne);
+          circlePoints.push_back(middlePointTwo);
+          circlePoints.push_back(intersection.pos);
+          circleMiddlePoints.push_back(intersectPoint);
+
+          // mark the lines as circle lines
+          //Vector2<unsigned int> lineIdx = intersections[i].getSegmentIndices();
+          //lineSegments[lineIdx[0]].type = LinePercept::C;
+          //lineSegments[lineIdx[1]].type = LinePercept::C;
+        }//end if
       }
+    }
+  }
 
-      //LinePercept::Intersection intersection(theCameraMatrix, Platform::getInstance().theCameraInfo, point);
-      LinePercept::Intersection intersection;
-      intersection.setPosOnField(point);
-      Vector3d pSpace(point.x, point.y, 0.0);
-      Vector2<int> pointInImage;
-      CameraGeometry::relativePointToImage(theCameraMatrix, theCameraInfo, pSpace, pointInImage);
-      intersection.setPosInImage(pointInImage);
 
-      double d1 = lineOne.minDistance(intersection.getPosOnField());
-      double d2 = lineTwo.minDistance(intersection.getPosOnField());
+  STOPWATCH_START("LineDetector ~ detect circle");
+  if(circlePoints.size() > 3)
+  {
+    Vector2d middle;
+    for(size_t i = 0; i < circleMiddlePoints.size(); i++) {
+      middle += circleMiddlePoints[i];
+    }
+    middle = middle / static_cast<double> (circleMiddlePoints.size());
 
-      if(max(d1, d2) > 150) continue;
+    Vector2d middle1;
+    double radius1;
+    if( Geometry::estimateCircle(circlePoints, middle1, radius1) && (middle - middle1).abs() < 150) // 15cm
+    {
+      getVirtualLinePercept().middleCircle.wasSeen = true;
+      getVirtualLinePercept().middleCircle.center = (middle + middle1) / 2;
+    }
 
-      // TODO: do we need it here? (copied from the LineDetector)
-      double tOne = Math::clamp(tOneL, 0.0, lineOne.getLength());
-      double tTwo = Math::clamp(tTwoL, 0.0, lineTwo.getLength());
-      
-      intersection.setSegments(i, j, tOne, tTwo);
+    DEBUG_REQUEST("VirtualVisionProcessor:LineDetector:mark_circle",
+      PEN("FF000099", 10);
+      CIRCLE(middle.x, middle.y, 50);
+      PEN("0000FF99", 10);
+      CIRCLE(middle1.x, middle1.y, 50);
+    );
+  }//end if
 
-      theLinePercept.intersections.push_back(intersection);
-    }//end for
-  }//end for
+  DEBUG_REQUEST("VirtualVisionProcessor:LineDetector:mark_circle",
+    if(getVirtualLinePercept().middleCircle.wasSeen) {
+      const Vector2d& center = getVirtualLinePercept().middleCircle.center;
+      PEN("FFFFFF99", 10);
+      CIRCLE(center.x, center.y, 50);
+      PEN("FFFFFF99", 50);
+      CIRCLE(center.x, center.y, getFieldInfo().centerCircleRadius - 25);
+  });
+
+  STOPWATCH_STOP("LineDetector ~ detect circle");
+
 }//end findIntersections
 
-
-
-void VirtualVisionProcessor::classifyIntersections(vector<LinePercept::FieldLineSegment>& lineSegments)
+/*
+void VirtualVisionProcessor::classifyIntersectionsDetectCircle()
 {
-  LinePercept& theLinePercept = getLinePercept();
+  vector<LinePercept::FieldLineSegment>& lineSegments = getLinePercept().lines;
+  std::vector<LinePercept::Intersection>& intersections = getLinePercept().intersections;
+
   const double MAX_LINE_ANGLE_DIFF = 0.085; //0.1//0.035
   const double MAX_FIELDLINE_ANGLE_DIFF = 10 * MAX_LINE_ANGLE_DIFF; //0.1//0.035
 
   vector<Vector2d> circlePoints;
-  circlePoints.reserve(theLinePercept.intersections.size());
+  circlePoints.reserve(intersections.size());
 
   vector<Vector2d> circleMiddlePoints;
-  circleMiddlePoints.reserve(theLinePercept.intersections.size());
+  circleMiddlePoints.reserve(intersections.size());
 
   // the drawing context is needed for furthrr drawings
   DEBUG_REQUEST("VirtualVisionProcessor:LineDetector:mark_circle",
     FIELD_DRAWING_CONTEXT;
   );
 
-  for(unsigned int i = 0; i < theLinePercept.intersections.size(); i++)
+  for(size_t i = 0; i < intersections.size(); i++)
   {
-    Vector2<unsigned int> indices = theLinePercept.intersections[i].getSegmentIndices();
-    LinePercept::FieldLineSegment segOne = lineSegments[indices[0]];
-    LinePercept::FieldLineSegment segTwo = lineSegments[indices[1]];
+    Vector2<unsigned int> indices = intersections[i].getSegmentIndices();
+    const LinePercept::FieldLineSegment& segOne = lineSegments[indices[0]];
+    const LinePercept::FieldLineSegment& segTwo = lineSegments[indices[1]];
 
     double angleDiff = fabs(Math::normalize(segOne.lineOnField.getDirection().angle() - segTwo.lineOnField.getDirection().angle()));
     angleDiff = min(angleDiff, Math::pi - angleDiff);
 
     if(angleDiff < MAX_LINE_ANGLE_DIFF) // shoud never be the case in simulation
     {
-      theLinePercept.intersections[i].setType(Math::Intersection::E);
+      intersections[i].setType(LineIntersection::E);
     }
     else if(angleDiff > MAX_LINE_ANGLE_DIFF * 2 && angleDiff < Math::pi_2 - MAX_LINE_ANGLE_DIFF * 2 )
     {
-      theLinePercept.intersections[i].setType(Math::Intersection::C);
+      intersections[i].setType(LineIntersection::C);
     }
     else if(angleDiff > Math::pi_2 - MAX_FIELDLINE_ANGLE_DIFF && angleDiff < Math::pi_2 + MAX_FIELDLINE_ANGLE_DIFF )
     {
-      Math::Intersection::IntersectionType type = theLinePercept.intersections[i].getType();
+      LineIntersection::Type type = intersections[i].getType();
       if
       (
-        type != Math::Intersection::C &&
-        type != Math::Intersection::L &&
-        type != Math::Intersection::T &&
-        type != Math::Intersection::X 
+        type != LineIntersection::C &&
+        type != LineIntersection::L &&
+        type != LineIntersection::T &&
+        type != LineIntersection::X 
       )
       {
-        Vector2d segmentDistancesToIntersection = theLinePercept.intersections[i].getSegmentsDistancesToIntersection();
+        Vector2d segmentDistancesToIntersection = intersections[i].getSegmentsDistancesToIntersection();
         bool tIntersectsOne = segmentDistancesToIntersection[0] > segTwo.lineInImage.thickness && segmentDistancesToIntersection[0] < segOne.lineOnField.getLength() - segTwo.lineInImage.thickness;
         bool tIntersectsTwo = segmentDistancesToIntersection[1] > segOne.lineInImage.thickness && segmentDistancesToIntersection[1] < segTwo.lineOnField.getLength() - segOne.lineInImage.thickness;
 
         if(tIntersectsOne && tIntersectsTwo)
         {
           // maybe X intersection, because if not its overwritten with L or so
-          theLinePercept.intersections[i].setType(Math::Intersection::X);
-        }else if(tIntersectsOne || tIntersectsTwo)
+          intersections[i].setType(LineIntersection::X);
+        } 
+        else if(tIntersectsOne || tIntersectsTwo)
         {
           // should be an T intersection
-          theLinePercept.intersections[i].setType(Math::Intersection::T);
+          intersections[i].setType(LineIntersection::T);
 //          cout << " T" << endl;
         }
         else
         {
           // only L intersection
-          theLinePercept.intersections[i].setType(Math::Intersection::L);
+          intersections[i].setType(LineIntersection::L);
         }
       }
     }//end if
 
 
-    if( theLinePercept.intersections[i].getType() == Math::Intersection::C)
+    if( intersections[i].getType() == LineIntersection::C)
     {
       Vector2d middlePointOne = (segOne.lineOnField.begin() + segOne.lineOnField.end()) / 2;
       Vector2d middlePointTwo = (segTwo.lineOnField.begin() + segTwo.lineOnField.end()) / 2;
@@ -406,15 +466,16 @@ void VirtualVisionProcessor::classifyIntersections(vector<LinePercept::FieldLine
           PEN("FF0000", 30); 
           CIRCLE(middlePointOne.x, middlePointOne.y, 10);
           CIRCLE(middlePointTwo.x, middlePointTwo.y, 10);
-          CIRCLE(theLinePercept.intersections[i].getPosOnField().x, theLinePercept.intersections[i].getPosOnField().y, 10);
+          CIRCLE(intersections[i].getPosOnField().x, intersections[i].getPosOnField().y, 10);
         );
+
         circlePoints.push_back(middlePointOne);
         circlePoints.push_back(middlePointTwo);
-        circlePoints.push_back(theLinePercept.intersections[i].getPosOnField());
+        circlePoints.push_back(intersections[i].getPosOnField());
         circleMiddlePoints.push_back(intersectPoint);
 
         // mark the lines as circle lines
-        Vector2<unsigned int> lineIdx = theLinePercept.intersections[i].getSegmentIndices();
+        Vector2<unsigned int> lineIdx = intersections[i].getSegmentIndices();
         lineSegments[lineIdx[0]].type = LinePercept::C;
         lineSegments[lineIdx[1]].type = LinePercept::C;
       }//end if
@@ -426,39 +487,18 @@ void VirtualVisionProcessor::classifyIntersections(vector<LinePercept::FieldLine
   if(circlePoints.size() > 3)
   {
     Vector2d middle;
-    for(unsigned int i = 0; i < circleMiddlePoints.size(); i++)
-    {
+    for(size_t i = 0; i < circleMiddlePoints.size(); i++) {
       middle += circleMiddlePoints[i];
     }
     middle = middle / static_cast<double> (circleMiddlePoints.size());
 
-    Math::Matrix_mxn<double> A(static_cast<unsigned int> (circlePoints.size()), 3);
-    Math::Matrix_mxn<double> l(static_cast<unsigned int> (circlePoints.size()), 1);
-    for(unsigned int i = 0; i < circlePoints.size(); i++)
+    Vector2d middle1;
+    double radius1;
+    if( Geometry::estimateCircle(circlePoints, middle1, radius1) && (middle - middle1).abs() < 150) // 15cm
     {
-      /*
-      A(i, 0) = circlePoints[i].abs2();
-      A(i, 1) = 2 * circlePoints[i].x;
-      A(i, 2) = 2 * circlePoints[i].y;
-      l(i, 0) = -1;
-      */
-      A(i, 0) = circlePoints[i].x;
-      A(i, 1) = circlePoints[i].y;
-      A(i, 2) = 1.0;
-      l(i, 0) = - circlePoints[i].abs2();
-    }//end for
-    
-    Math::Matrix_mxn<double> AT(A.transpose());
-    Math::Matrix_mxn<double> result(((AT * A).invert() * AT) * l);
-
-    //Vector2d middle1(-result(1, 0) / result(0, 0), -result(2, 0) / result(0, 0));
-    Vector2d middle1(-result(0, 0)*0.5, -result(1, 0)*0.5);
-  
-    if( (middle - middle1).abs() < 150) // 15cm
-    {
-      theLinePercept.middleCircleWasSeen = true;
-      theLinePercept.middleCircleCenter = (middle + middle1) / 2;
-    }//end if
+      getLinePercept().middleCircleWasSeen = true;
+      getLinePercept().middleCircleCenter = (middle + middle1) / 2;
+    }
 
     DEBUG_REQUEST("VirtualVisionProcessor:LineDetector:mark_circle",
       PEN("FF000099", 10);
@@ -468,96 +508,55 @@ void VirtualVisionProcessor::classifyIntersections(vector<LinePercept::FieldLine
     );
   }//end if
 
-  // TODO: make it more efficient
-  // check if the center line is seen
-  if(theLinePercept.middleCircleWasSeen)
-  {
-    for(unsigned int i = 0; i < lineSegments.size(); i++)
-    {
-      if(lineSegments[i].type != LinePercept::C)
-      {
-        double d = lineSegments[i].lineOnField.minDistance(theLinePercept.middleCircleCenter);
-        if(d < 300.0)
-        {
-          lineSegments[i].seen_id = LinePercept::center_line;
-          // estimate the orientation of the circle
-          // TODO: treat the case if there are several lines
-          theLinePercept.middleCircleOrientationWasSeen = true;
-          theLinePercept.middleCircleOrientation = lineSegments[i].lineOnField.getDirection();
-        }
-      }
-    }//end for
-
-
-    DEBUG_REQUEST("VirtualVisionProcessor:LineDetector:mark_circle",
-      const LinePercept& theLinePercept = getLinePercept();
-      const FieldInfo& theFieldInfo = getFieldInfo();
-      const Vector2d& center = theLinePercept.middleCircleCenter;
+  DEBUG_REQUEST("VirtualVisionProcessor:LineDetector:mark_circle",
+    if(getLinePercept().middleCircleWasSeen) {
+      const Vector2d& center = getLinePercept().middleCircleCenter;
       PEN("FFFFFF99", 10);
       CIRCLE(center.x, center.y, 50);
       PEN("FFFFFF99", 50);
-      CIRCLE(center.x, center.y, theFieldInfo.centerCircleRadius - 25);
+      CIRCLE(center.x, center.y, getFieldInfo().centerCircleRadius - 25);
+  });
 
-      if(theLinePercept.middleCircleOrientationWasSeen)
-      {
-        const Vector2d direction = theLinePercept.middleCircleOrientation*(theFieldInfo.centerCircleRadius+100);
-        LINE(
-          center.x + direction.x,
-          center.y + direction.y,
-          center.x - direction.x,
-          center.y - direction.y
-          );
-      }//end if
-    );
-  }//end if
   STOPWATCH_STOP("LineDetector ~ detect circle");
 
 }//end classifyIntersections
-
+*/
 
 
 void VirtualVisionProcessor::addLine(const Vector3d& pol0, const Vector3d& pol1)
 {
-  const CameraMatrix& theCameraMatrix = getCameraMatrix();
-  const CameraInfo& theCameraInfo = getCameraInfo();
+  // calculate the relative coordinates of the line
+  const Vector3d bP = calculatePosition(pol0);
+  const Vector3d eP = calculatePosition(pol1);
+  const Vector2d bPos(bP.x, bP.y);
+  const Vector2d ePos(eP.x, eP.y);
+  
+  //LinePercept::FieldLineSegment line;
+  //line.lineOnField = Math::LineSegment(bPos, ePos);
 
-  Vector3d bP = calculatePosition(pol0);
-  Vector3d eP = calculatePosition(pol1);
-  Vector2d bPos(bP.x, bP.y);
-  Vector2d ePos(eP.x, eP.y);
-
-  LinePercept::FieldLineSegment line;
-  line.lineInImage.thickness = 100; //TODO
+  // NOTE: we currently don't need that
+  // reprojection of the line in the image
+  /*
   Vector2i p1, p2;
-  if( CameraGeometry::relativePointToImage(theCameraMatrix, theCameraInfo, bP, p1) &&
-      CameraGeometry::relativePointToImage(theCameraMatrix, theCameraInfo, eP, p2))
+  if( CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), bP, p1) &&
+      CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), eP, p2))
   {
     line.lineInImage.segment = Math::LineSegment(p1, p2);
   }
-
-  //line.begin = CameraGeometry::relativePointToImage(theCameraMatrix, Platform::getInstance().theCameraInfo, bP);
-  //line.end = CameraGeometry::relativePointToImage(theCameraMatrix, Platform::getInstance().theCameraInfo, eP);
-  line.lineOnField = Math::LineSegment(bPos, ePos);
-//  line.valid = true;
-
-  getLinePercept().lines.push_back(line);
+  */
+  
+  //getLinePercept().lines.push_back(line);
+  getVirtualLinePercept().fieldLineSegments.emplace_back(bPos, ePos);
 }//end addLine
 
 void VirtualVisionProcessor::updatePlayers()
 {
-  PlayersPercept& thePlayersPercept = getPlayersPercept();
-  const VirtualVision& theVirtualVision = getVirtualVision();
-  const PlayerInfo& thePlayerInfo = getPlayerInfo();
-  const std::string& teamName = thePlayerInfo.gameData.teamName;
-  const int playerNumber = thePlayerInfo.gameData.playerNumber;
-  const GameData::TeamColor teamColor = thePlayerInfo.gameData.teamColor;
-
-  thePlayersPercept.reset();
-  thePlayersPercept.theFrameInfo = getFrameInfo();
+  getPlayersPercept().reset();
+  getPlayersPercept().theFrameInfo = getFrameInfo();
   seenPlayerPointsMap.clear();
 
-  map<string, Vector3d >::const_iterator iter = theVirtualVision.data.begin();
-  for(;iter != theVirtualVision.data.end(); ++iter)
+  map<string, Vector3d >::const_iterator iter = getVirtualVision().data.begin();
+  for(;iter != getVirtualVision().data.end(); ++iter)
   {
     string key = iter->first;
     if(key[0] == 'P')
@@ -574,20 +573,29 @@ void VirtualVisionProcessor::updatePlayers()
       tokenize(key, tokens); // split by whitespaces
 
       int id;
-      if(!DataConversion::strTo(tokens[2],id))
+      if(!DataConversion::strTo(tokens[2],id)) {
         continue; // id couldn't be parsed
+      }
 
       // get the name of my team
-      if ( tokens[1] != teamName )
+      if ( tokens[1] != getPlayerInfo().teamName ) {
         id = -id; // negative id means opponent
+      }
 
-      if ( id == (int)playerNumber ) continue;
+      if ( id == (int)getPlayerInfo().playerNumber ) {
+        continue;
+      }
 
-      if(!seenPlayerPointsMap[id].set(tokens[3], calculatePosition(iter->second)))
+      if(!seenPlayerPointsMap[id].set(tokens[3], calculatePosition(iter->second))) {
         continue; // name of the body part couldn't be parsed
+      }
       
       // team color
-      seenPlayerPointsMap[id].color = id >0 ? teamColor : !teamColor;
+      if(id > 0) {
+        seenPlayerPointsMap[id].color = getPlayerInfo().teamColor;
+      } else {
+        seenPlayerPointsMap[id].color = (getPlayerInfo().teamColor == GameData::red)?GameData::blue:GameData::red;
+      }
       
     }//end if
   }//end for
@@ -610,10 +618,11 @@ void VirtualVisionProcessor::updatePlayers()
       }
     }//end for
     
-    if(numberOfSeenPoints > 0)
+    if(numberOfSeenPoints > 0) {
       cog *= 1.0/numberOfSeenPoints;
-    else
+    } else {
       continue;
+    }
 
     // if the three points are seen estimate the direction 
     // of the robot
@@ -639,7 +648,7 @@ void VirtualVisionProcessor::updatePlayers()
     player.number = abs(playerIter->first);
     player.numberIsValid = true;
     
-    thePlayersPercept.addPlayer(player);
+    getPlayersPercept().addPlayer(player);
   }//end for
 }//end updatePlayers
 
@@ -668,16 +677,16 @@ void VirtualVisionProcessor::tokenize(
 
 void VirtualVisionProcessor::updateCorners()
 {
-  const GameData::TeamColor teamColor = getPlayerInfo().gameData.teamColor;
+  const GameData::TeamColor teamColor = getPlayerInfo().teamColor;
   ASSERT( teamColor == GameData::blue || teamColor == GameData::red );
-  const VirtualVision& theVirtualVision = getVirtualVision();
-
+  ASSERT( teamColor == 0 || teamColor == 1 );
+  
   const map<string, Vector2d >& fpof = flagPosOnField[teamColor];
 
   for(set<string>::const_iterator i=cornerNames.begin(); i!=cornerNames.end(); ++i)
   {
-    map<string, Vector3d >::const_iterator j = theVirtualVision.data.find(*i);
-    if ( j != theVirtualVision.data.end() )
+    map<string, Vector3d >::const_iterator j = getVirtualVision().data.find(*i);
+    if ( j != getVirtualVision().data.end() )
     {
       Vector3d p = calculatePosition(j->second);
       Vector2d position(p.x, p.y);
@@ -686,9 +695,7 @@ void VirtualVisionProcessor::updateCorners()
 
       ASSERT(flagPos != fpof.end());
 
-      LinePercept::Flag flag(position, flagPos->second);
-
-      getLinePercept().flags.push_back(flag);
+      getVirtualLinePercept().flags.emplace_back(position, flagPos->second);
     }
 
     DEBUG_REQUEST("VirtualVisionProcessor:corner_flags",

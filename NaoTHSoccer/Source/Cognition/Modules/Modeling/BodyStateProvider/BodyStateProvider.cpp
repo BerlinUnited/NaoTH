@@ -12,7 +12,12 @@
 
 BodyStateProvider::BodyStateProvider()
 {
+  getDebugParameterList().add(&params);
+}
 
+BodyStateProvider::~BodyStateProvider()
+{
+  getDebugParameterList().remove(&params);
 }
 
 void BodyStateProvider::execute()
@@ -28,7 +33,29 @@ void BodyStateProvider::execute()
 
   // 
   updateTheLegTemperature();
+  updateIsLiftedUp();
+  updateIsReadyToWalk();
   
+  // why do we need this?
+  if(getBatteryData().current < -0.5) {
+    getBodyState().isDischarging = true;
+  } else {
+    getBodyState().isDischarging = false;
+  }
+
+  if(getBatteryData().current >= params.batteryChargingThreshold) {
+    getBodyState().isCharging = true;
+  } else {
+    getBodyState().isCharging = false;
+  }
+
+  batteryChargeBuffer.add(getBatteryData().charge);
+  if(batteryChargeBuffer.isFull()) {
+    getBodyState().batteryCharge = batteryChargeBuffer.getAverage();
+  } else {
+    getBodyState().batteryCharge = getBatteryData().charge;
+  }
+
 }//end execute
 
 void BodyStateProvider::updateTheFootState()
@@ -36,8 +63,8 @@ void BodyStateProvider::updateTheFootState()
   bool old_standByLeftFoot = getBodyState().standByLeftFoot;
   bool old_standByRightFoot = getBodyState().standByRightFoot;
 
-  getBodyState().standByLeftFoot = getFSRData().forceLeft() > theParams.foot_threshold;
-  getBodyState().standByRightFoot = getFSRData().forceRight() > theParams.foot_threshold;
+  getBodyState().standByLeftFoot = getGroundContactModel().leftGroundContact;
+  getBodyState().standByRightFoot = getGroundContactModel().rightGroundContact;
 
   if(old_standByLeftFoot != getBodyState().standByLeftFoot ||
      old_standByRightFoot != getBodyState().standByRightFoot)
@@ -55,20 +82,23 @@ void BodyStateProvider::updateTheFallDownState()
   inertialBuffer.add(getInertialSensorData().data);
 
   Vector2d avg = inertialBuffer.getAverage();
-  double inertialXaverage = avg.x;
-  double inertialYaverage = avg.y;
 
-  getBodyState().fall_down_state = BodyState::upright;
+  // the state is undefined by default
+  getBodyState().fall_down_state = BodyState::undefined;
 
-  if(inertialXaverage < -theParams.getup_threshold) {
+  if(fabs(avg.x) < params.upright_threshold && fabs(avg.y) < params.upright_threshold) {
+    getBodyState().fall_down_state = BodyState::upright;
+  }
+
+  if(avg.x < -params.getup_threshold) {
     getBodyState().fall_down_state = BodyState::lying_on_left_side;
-  } else if(inertialXaverage > theParams.getup_threshold) {
+  } else if(avg.x > params.getup_threshold) {
     getBodyState().fall_down_state = BodyState::lying_on_right_side;
   }
 
-  if(inertialYaverage < -theParams.getup_threshold) {
+  if(avg.y < -params.getup_threshold) {
     getBodyState().fall_down_state = BodyState::lying_on_back;
-  } else if(inertialYaverage > theParams.getup_threshold) {
+  } else if(avg.y > params.getup_threshold) {
     getBodyState().fall_down_state = BodyState::lying_on_front;
   }
 
@@ -111,3 +141,32 @@ void BodyStateProvider::updateTheLegTemperature()
   getBodyState().temperatureRightLeg = tempR;
 }//end updateTheLegTemperature
 
+void BodyStateProvider::updateIsLiftedUp()
+{
+  double lifted_up_time = getMotionStatus().currentMotion == motion::walk? params.lifted_up_time_walk: params.lifted_up_time;
+
+  getBodyState().isLiftedUp = 
+     getBodyState().fall_down_state == BodyState::upright && 
+    !getBodyState().standByLeftFoot && 
+    !getBodyState().standByRightFoot && // no foot is on the ground
+     getFrameInfo().getTimeSince(getBodyState().foot_state_time) > lifted_up_time;
+}
+
+void BodyStateProvider::updateIsReadyToWalk()
+{
+    if(getBodyState().fall_down_state == BodyState::upright // not fallen
+            && !getBodyState().isLiftedUp                   // not lifted up
+            && determineReadyToWalkState())                 // ready to walk
+    {
+        getBodyState().readyToWalk = true;
+    } else {
+        getBodyState().readyToWalk = false;
+    }
+}
+
+bool BodyStateProvider::determineReadyToWalkState()
+{
+    // already walking or definitly standing
+    return getMotionStatus().currentMotion == motion::walk
+       || (getMotionStatus().currentMotion == motion::stand && getMotionStatus().target_reached);
+}

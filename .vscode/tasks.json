@@ -1,0 +1,90 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Compile Game",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/NaoTHSoccer/Make"
+            },
+            "group": "build",
+            "command": "./compileGame.sh",
+            "problemMatcher": {
+                "base" : "$gcc",
+                "fileLocation" : ["relative" , "${workspaceFolder}/NaoTHSoccer/build"]
+            },
+            "presentation": {
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "LogSimulator (Debug)",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/NaoTHSoccer/Make"
+            },
+            "group": "build",
+            "command": "premake5 gmake2 && make -C ${workspaceFolder}/NaoTHSoccer/build config=debug_native LogSimulator",
+            "problemMatcher": {
+                "base" : "$gcc",
+                "fileLocation" : ["relative" , "${workspaceFolder}/NaoTHSoccer/build"]
+            },
+            "presentation": {
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "SimSpark (Debug)",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/NaoTHSoccer/Make"
+            },
+            "group": "build",
+            "command": "premake5 gmake2 && make -C ${workspaceFolder}/NaoTHSoccer/build config=debug_native SimSpark",
+            "problemMatcher": {
+                "base" : "$gcc",
+                "fileLocation" : ["relative" , "${workspaceFolder}/NaoTHSoccer/build"]
+            },
+            "presentation": {
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "NaoSMAL",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/NaoTHSoccer/Make"
+            },
+            "group": "build",
+            "command": "./compileNaoSMAL.sh",
+            "problemMatcher": {
+                "base" : "$gcc",
+                "fileLocation" : ["relative" , "${workspaceFolder}/NaoTHSoccer/build"]
+            },
+            "presentation": {
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Rebuild compile_commands.json",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/NaoTHSoccer/Make",
+                "env": {
+                    "CXX" : "/usr/bin/c++"
+                }
+            },
+            "group": "build",
+            "command": "./generate.compile-database.sh",
+            "problemMatcher": {
+                "base" : "$gcc",
+                "fileLocation" : ["relative" , "${workspaceFolder}/NaoTHSoccer/build"]
+            },
+            "presentation": {
+                "panel": "shared"
+            }
+        }
+    ]
+}

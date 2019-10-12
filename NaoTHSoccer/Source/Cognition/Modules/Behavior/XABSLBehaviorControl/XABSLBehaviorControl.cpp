@@ -20,7 +20,7 @@ XABSLBehaviorControl::XABSLBehaviorControl()
     // init the xabxl engine
     theEngine(NULL),
     theErrorHandler(error_stream),
-    agentName("soccer")
+    agentName("soccer_agent")
 {
   REGISTER_DEBUG_COMMAND("behavior:reload", "reload the behavior file", this);
   REGISTER_DEBUG_COMMAND("behavior:get_agent", "get the current selected agent", this);
@@ -44,14 +44,14 @@ XABSLBehaviorControl::XABSLBehaviorControl()
   REGISTER_MODULE(TeamSymbols, true);
   REGISTER_MODULE(SensorSymbols, true);
   REGISTER_MODULE(MathSymbols, true);
-  REGISTER_MODULE(GoalSymbols, true);
   REGISTER_MODULE(LedSymbols, true);
   REGISTER_MODULE(SelflocSymbols, true);
   REGISTER_MODULE(OdometrySymbols, true);
   REGISTER_MODULE(FieldSymbols, true);
   REGISTER_MODULE(StrategySymbols, true);
   REGISTER_MODULE(SoundSymbols, true);
-  REGISTER_MODULE(LineSymbols, true);
+  REGISTER_MODULE(PathSymbols, true);
+  REGISTER_MODULE(RemoteSymbols, true);
   
 
   // load the behavior from config
@@ -99,11 +99,11 @@ void XABSLBehaviorControl::loadBehaviorFromFile(std::string file, std::string ag
   theEngine->createOptionGraph(input);
  
   // set the currently active agent
-  agentName = agent;
-  if(!theEngine->setSelectedAgent(agentName.c_str())) {
-    std::cerr << "[XABSLBehaviorControl] ERROR: could not set the agent \"" << agentName << "\" for behavior " << std::endl;
+  if(!theEngine->setSelectedAgent(agent.c_str())) {
+    std::cerr << "[XABSLBehaviorControl] ERROR: could not set the agent \"" << agent << "\" for behavior " << std::endl;
   }
   std::cout << "[XABSLBehaviorControl] current agent is set to \"" << theEngine->getSelectedAgentName() << "\"" << std::endl;
+  agentName = theEngine->getSelectedAgentName();
 
   if(!theErrorHandler.errorsOccurred) 
   {
@@ -236,14 +236,14 @@ void XABSLBehaviorControl::registerXABSLSymbols()
     XABSL_REGISTER_SYMBOLS(TeamSymbols);
     XABSL_REGISTER_SYMBOLS(SensorSymbols);
     XABSL_REGISTER_SYMBOLS(MathSymbols);
-    XABSL_REGISTER_SYMBOLS(GoalSymbols);
     XABSL_REGISTER_SYMBOLS(LedSymbols);
     XABSL_REGISTER_SYMBOLS(SelflocSymbols);
     XABSL_REGISTER_SYMBOLS(OdometrySymbols);
     XABSL_REGISTER_SYMBOLS(FieldSymbols);
     XABSL_REGISTER_SYMBOLS(StrategySymbols);
     XABSL_REGISTER_SYMBOLS(SoundSymbols);
-    XABSL_REGISTER_SYMBOLS(LineSymbols);
+    XABSL_REGISTER_SYMBOLS(PathSymbols);
+    XABSL_REGISTER_SYMBOLS(RemoteSymbols);
   }
 }//end registerXABSLSymbols
 
@@ -257,8 +257,9 @@ void XABSLBehaviorControl::updateXABSLSymbols()
     theBallSymbols->execute();
     theOdometrySymbols->execute();
     theMotionSymbols->execute();
-    theLineSymbols->execute();
     theStrategySymbols->execute();
+    // right now, not doing anything
+    thePathSymbols->execute();
   }
 }//end updateXABSLSymbols
 

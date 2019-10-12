@@ -316,7 +316,7 @@ list<Vector2d > PotentialFieldProvider::getValidObstacles() const
   // teammates
   for (vector<PlayersModel::Player>::const_iterator iter = getPlayersModel().teammates.begin(); iter != getPlayersModel().teammates.end(); ++iter)
   {
-    if (iter->number != getPlayerInfo().gameData.playerNumber &&
+    if (iter->number != getPlayerInfo().playerNumber &&
       iter->frameInfoWhenWasSeen.getFrameNumber() != 0 &&
       getFrameInfo().getTimeSince(iter->frameInfoWhenWasSeen.getTime()) < 1000)
     {

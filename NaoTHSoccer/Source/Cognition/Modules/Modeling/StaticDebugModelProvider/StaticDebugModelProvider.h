@@ -12,6 +12,8 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Modeling/GoalModel.h"
+#include "Representations/Modeling/ObstacleModel.h"
+#include "Representations/Modeling/KinematicChain.h"
 
 // debug
 #include "Tools/Debug/DebugRequest.h"
@@ -20,6 +22,7 @@
 #include "Tools/Debug/DebugModify.h"
 
 BEGIN_DECLARE_MODULE(StaticDebugModelProvider)
+	REQUIRE(KinematicChain)
     REQUIRE(FrameInfo)
     REQUIRE(FieldInfo)
     PROVIDE(DebugRequest)
@@ -28,6 +31,7 @@ BEGIN_DECLARE_MODULE(StaticDebugModelProvider)
     PROVIDE(RobotPose)
     PROVIDE(SelfLocGoalModel)
     PROVIDE(BallModel)
+    PROVIDE(ObstacleModel)
 END_DECLARE_MODULE(StaticDebugModelProvider)
 
 class StaticDebugModelProvider: public StaticDebugModelProviderBase

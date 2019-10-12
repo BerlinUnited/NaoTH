@@ -1,10 +1,9 @@
 
-#include <iterator>
+#include "JointData.h"
 
-#include "Representations/Infrastructure/JointData.h"
-#include "Tools/Math/Common.h"
 #include "PlatformInterface/Platform.h"
 #include "Tools/Debug/NaoTHAssert.h"
+
 #include "Messages/Framework-Representations.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
@@ -261,6 +260,23 @@ void MotorJointData::print(ostream& stream) const
   }
 }//end print
 
+OffsetJointData::OffsetJointData()
+{
+}
+
+OffsetJointData::~OffsetJointData()
+{
+}
+
+void OffsetJointData::print(ostream& stream) const
+{
+  stream << "Joint [offset]" << endl;
+  stream << "------------------------" << endl;
+  for (int i = 0; i < numOfJoint; i++) {
+    stream << getJointName((JointData::JointID) i) << "[" << position[i] << "]" << endl;
+  }
+}//end print
+
 void Serializer<SensorJointData>::serialize(const SensorJointData& representation, std::ostream& stream)
 {
   naothmessages::SensorJointData message;
@@ -343,6 +359,43 @@ void Serializer<MotorJointData>::serialize(const MotorJointData& representation,
 }
 
 void Serializer<MotorJointData>::deserialize(std::istream& stream, MotorJointData& representation)
+{
+  naothmessages::JointData message;
+  google::protobuf::io::IstreamInputStream buf(&stream);
+  message.ParseFromZeroCopyStream(&buf);
+
+  // assure the integrity of the message
+  ASSERT(message.position().size() == JointData::numOfJoint);
+  ASSERT(message.stiffness().size() == JointData::numOfJoint);
+  ASSERT(message.dp().size() == JointData::numOfJoint);
+  ASSERT(message.ddp().size() == JointData::numOfJoint);
+
+  for(int i=0; i < JointData::numOfJoint; i++)
+  {
+    representation.position[i] = message.position(i);
+    representation.stiffness[i] = message.stiffness(i);
+    representation.dp[i] = message.dp(i);
+    representation.ddp[i] = message.ddp(i);
+  }
+}
+
+void Serializer<OffsetJointData>::serialize(const OffsetJointData& representation, std::ostream& stream)
+{
+  naothmessages::JointData message;
+
+  for(int i=0; i < JointData::numOfJoint; i++)
+  {
+    message.add_position(representation.position[i]);
+    message.add_stiffness(representation.stiffness[i]);
+    message.add_dp(representation.dp[i]);
+    message.add_ddp(representation.ddp[i]);
+  }
+
+  google::protobuf::io::OstreamOutputStream buf(&stream);
+  message.SerializeToZeroCopyStream(&buf);
+}
+
+void Serializer<OffsetJointData>::deserialize(std::istream& stream, OffsetJointData& representation)
 {
   naothmessages::JointData message;
   google::protobuf::io::IstreamInputStream buf(&stream);

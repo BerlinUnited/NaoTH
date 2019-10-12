@@ -9,9 +9,12 @@
 #include "Debug.h"
 
 #include <PlatformInterface/Platform.h>
-
 #include <Tools/SynchronizedFileWriter.h>
 
+// needed for sleep_for in debug kill 
+#include <thread>
+
+using namespace std;
 
 Debug::Debug() : cognitionLogger("CognitionLog")
 {
@@ -58,13 +61,6 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   REGISTER_DEBUG_COMMAND("ParameterList:set", "set the parameter list with the given name", &getDebugParameterList());
 
   // modify commands
-  REGISTER_DEBUG_COMMAND("modify:list", 
-    "return the list of registered modifiable values", &getDebugModify());
-  REGISTER_DEBUG_COMMAND("modify:set", 
-    "set a modifiable value (i.e. the value will be always overwritten by the new one) ", &getDebugModify());
-  REGISTER_DEBUG_COMMAND("modify:release", 
-    "release a modifiable value (i.e. the value will not be overwritten anymore)", &getDebugModify());
-
   REGISTER_DEBUG_COMMAND("DebugPlot:get", "get the plots", &getDebugPlot());
 
   // HACK: initialize the both canvases
@@ -82,7 +78,15 @@ Debug::~Debug()
 
 void Debug::execute()
 {
-  cognitionLogger.log(getFrameInfo().getFrameNumber());
+  // log only when a ball was seen
+  if(!parameter.log.onlyWhenBallwasSeen || getMultiBallPercept().wasSeen()) {
+    if(lastLogFrameInfo.getFrameNumber() == 0 || 
+       getFrameInfo().getTimeSince(lastLogFrameInfo.getTime()) >= parameter.log.skipTimeMS) 
+    {
+      cognitionLogger.log(getFrameInfo().getFrameNumber());
+      lastLogFrameInfo = getFrameInfo();
+    }
+  }
 
   draw3D();
 
@@ -203,8 +207,8 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
     {
       std::cout << "cognition in endless loop due to \"kill_cognition\" debug command"
                  << std::endl;
-      g_usleep(500000);
-
+      //g_usleep(500000);
+      std::this_thread::sleep_for(std::chrono::microseconds(500));
     }
   }
 }
@@ -246,7 +250,7 @@ void Debug::draw3D()
   // draw ball model in 3D viewer
   DEBUG_REQUEST("3DViewer:Ball", 
     Vector3d ballPos = robotPose3D * Vector3d(getBallModel().position.x, getBallModel().position.y, getFieldInfo().ballRadius);
-    SPHERE(getFieldInfo().ballColor, getFieldInfo().ballRadius, ballPos);
+    SPHERE(ColorClasses::orange, getFieldInfo().ballRadius, ballPos);
   );
 
   DEBUG_REQUEST("3DViewer:kinematic_chain:links",

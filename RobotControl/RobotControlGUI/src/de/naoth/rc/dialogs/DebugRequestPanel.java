@@ -14,6 +14,7 @@ import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.checkboxtree.SelectableTreeNode;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.core.manager.SwingCommandListener;
@@ -32,6 +33,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 public class DebugRequestPanel extends AbstractDialog
 {
 
+    @RCDialog(category = RCDialog.Category.Debug, name = "DebugRequest")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<DebugRequestPanel>
     {
@@ -39,15 +41,10 @@ public class DebugRequestPanel extends AbstractDialog
         public static RobotControl parent;
         @InjectPlugin
         public static SwingCommandExecutor commandExecutor;
-        
-        @Override
-        public String getDisplayName() {
-          return "Debug Requests";
-        }
     }
     
-  DebugRequestUpdater debugRequestUpdaterCognition = new DebugRequestUpdater("[Cognition]", "Cognition:debugrequest:set");
-  DebugRequestUpdater debugRequestUpdaterMotion = new DebugRequestUpdater("[Motion]", "Motion:debugrequest:set");
+  DebugRequestUpdater debugRequestUpdaterCognition = new DebugRequestUpdater("[Cognition]", "Cognition:representation:set");
+  DebugRequestUpdater debugRequestUpdaterMotion = new DebugRequestUpdater("[Motion]", "Motion:representation:set");
     
   /** Creates new form DebugRequestPanel */
   public DebugRequestPanel()
@@ -129,8 +126,8 @@ public class DebugRequestPanel extends AbstractDialog
     if (btRefresh.isSelected())
     {
       if (Plugin.parent.checkConnected()) {
-        Plugin.commandExecutor.executeCommand(debugRequestUpdaterCognition, new Command("Cognition:representation:getbinary").addArg("DebugRequest"));
-        Plugin.commandExecutor.executeCommand(debugRequestUpdaterMotion, new Command("Motion:representation:getbinary").addArg("DebugRequest"));
+        Plugin.commandExecutor.executeCommand(debugRequestUpdaterCognition, new Command("Cognition:representation:get").addArg("DebugRequest"));
+        Plugin.commandExecutor.executeCommand(debugRequestUpdaterMotion, new Command("Motion:representation:get").addArg("DebugRequest"));
       } else {
         btRefresh.setSelected(false);
         btUpdate.setSelected(false);
@@ -142,8 +139,8 @@ public class DebugRequestPanel extends AbstractDialog
         if (btUpdate.isSelected())
         {
           if (Plugin.parent.checkConnected()) {
-            Plugin.commandExecutor.executeCommand(debugRequestUpdaterCognition, new Command("Cognition:representation:getbinary").addArg("DebugRequest"));
-            Plugin.commandExecutor.executeCommand(debugRequestUpdaterMotion, new Command("Motion:representation:getbinary").addArg("DebugRequest"));
+            Plugin.commandExecutor.executeCommand(debugRequestUpdaterCognition, new Command("Cognition:representation:get").addArg("DebugRequest"));
+            Plugin.commandExecutor.executeCommand(debugRequestUpdaterMotion, new Command("Motion:representation:get").addArg("DebugRequest"));
           } else {
             btRefresh.setSelected(false);
             btUpdate.setSelected(false);
@@ -175,7 +172,13 @@ public class DebugRequestPanel extends AbstractDialog
     @Override
     public void actionPerformed(ActionEvent e) {
         Command cmd = new Command(command);
-        cmd.addArg(path, node.isSelected() ? "on" : "off");
+
+        cmd.addArg("DebugRequest",
+            DebugRequest.newBuilder().addRequests(
+                DebugRequest.Item.newBuilder().setName(path).setValue(node.isSelected())
+            ).build().toByteArray()
+        );
+        
         Plugin.parent.getMessageServer().executeCommand(new SwingCommandListener(this), cmd);
     }
       

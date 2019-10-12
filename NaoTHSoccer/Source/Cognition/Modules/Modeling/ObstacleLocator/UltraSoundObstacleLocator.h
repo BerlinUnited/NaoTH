@@ -48,7 +48,6 @@ BEGIN_DECLARE_MODULE(UltraSoundObstacleLocator)
   REQUIRE(UltraSoundReceiveData)
 
   PROVIDE(ObstacleModel)
-  PROVIDE(UltraSoundSendData)
 END_DECLARE_MODULE(UltraSoundObstacleLocator)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
@@ -57,16 +56,13 @@ class UltraSoundObstacleLocator : private UltraSoundObstacleLocatorBase
 {
 public:
   UltraSoundObstacleLocator();
-
-  ~UltraSoundObstacleLocator()
-  {
-  }
+  ~UltraSoundObstacleLocator();
 
   virtual void execute();
 
 private:  
   
-   class Parameters: public ParameterList
+  class Parameters: public ParameterList
   {
   public: 
     Parameters(): ParameterList("USParameters")
@@ -76,14 +72,9 @@ private:
 
       // load from the file after registering all parameters
       syncWithConfig();
-      //DebugParameterList::getInstance().add(this);
     }
 
     int minBlockedDistance;
-
-    virtual ~Parameters() {
-      //DebugParameterList::getInstance().remove(this);
-    }
   } parameters;
 
 private:

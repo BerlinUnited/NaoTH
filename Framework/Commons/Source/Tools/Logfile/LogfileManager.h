@@ -3,29 +3,26 @@
  * @author: thomas
  */
 
-#ifndef __LogfileManager_h_
-#define __LogfileManager_h_
+#ifndef _LogfileManager_h_
+#define _LogfileManager_h_
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstring>
 #include <iostream>
 #include <fstream>
-#include <map>
-#include <vector>
 
 #include <Tools/DataStructures/RingBuffer.h>
 
 #include "LogfileEntry.h"
 
-using namespace std;
-
-template<int maxSize> class LogfileManager
+template<int maxSize> class LegacyLogfileManager
 {
 public:
 
-  LogfileManager()
-    : alwaysWriteOut(false)
+  LegacyLogfileManager()
+    :
+    // NOTE: this was set to true in all usecases so far
+    alwaysWriteOut(true),
+    writtenBytes(0)
   {
     
   }
@@ -36,12 +33,17 @@ public:
    * @param alwaysWriteOut If false the ringbuffer is used. You have to call
    *                       flush() on your own.
    */
-  LogfileManager(bool alwaysWriteOut)
-    : alwaysWriteOut(alwaysWriteOut)
+  /*
+  LegacyLogfileManager(bool alwaysWriteOut)
+    : 
+    alwaysWriteOut(alwaysWriteOut),
+    writtenBytes(0)
   {
 
   }
-  ~LogfileManager()
+  */
+
+  ~LegacyLogfileManager()
   {
     closeFile();
   }
@@ -50,7 +52,8 @@ public:
   {
     closeFile();
     dataBuffer.clear();
-    outFile.open(filePath, ios::out | ios::binary);
+    outFile.open(filePath, std::ios::out | std::ios::binary);
+    writtenBytes = 0;
   }
   
   void closeFile()
@@ -68,7 +71,7 @@ public:
    * After calling this use returned stringstream to transform the data.
    *
    */
-  stringstream& log(unsigned int frameNumber, string name)
+  std::ostream& log(unsigned int frameNumber, const std::string& name)
   {
     if(alwaysWriteOut && dataBuffer.isFull())
     {
@@ -84,8 +87,12 @@ public:
     newEntry.name = name;
 
     // the stream might not be empty, so reset it
+    newEntry.data.rdbuf()->pubseekpos(0, std::ios::out);
     newEntry.data.str("");
     newEntry.data.clear();
+
+    // make sure the stream is alright
+    ASSERT(newEntry.data.good());
 
     return newEntry.data;
   }
@@ -101,16 +108,40 @@ public:
       for (int i = length - 1; i >= 0; i--)
       {
         LogfileEntry& e = dataBuffer.getEntry(i);
+        
         outFile.write((const char*)(&e.frameNumber), sizeof(unsigned int));
+        writtenBytes += sizeof(unsigned int);
+
         outFile << e.name << '\0';
+        writtenBytes += e.name.size() + 1;
+
+        // DEBUG: make sure the data stream is alright
+        //ASSERT(e.data.good());
+        
         // size of data block
-        size_t dataSize = e.data.str().size();
+        long dataSize = (long)e.data.tellp(); 
+        // NOTE: dataSize == -1 only in case of e.data.fail() == true
+        //dataSize = dataSize < 0 ? 0 : dataSize;
         outFile.write((const char* ) &dataSize, 4);
-        // the data itself
+        writtenBytes += 4;
+
+        // NOTE: call of .str() involves making an additional copy of the data
         outFile.write((const char *) e.data.str().c_str(), dataSize);
-        // clear string buffer
-        e.data.clear();
-        e.data.str("");
+        // "read" the whole content of e.data into outFile.rdbuf()
+        // NOTE: this doesn't work with binary data, wil be fixed later
+        //e.data.get(*outFile.rdbuf());
+
+        // NOTE: this also happens when the memory is full, so we use it only for debug
+        // crash if the file stream is broken
+        /*
+        if(!outFile.good()) {
+          std::cout << "[LogfileManager] fail after writing " << e.name << std::endl;
+          std::cout << "[LogfileManager] with error: " << std::strerror(errno);
+          assert(false);
+        }
+        */
+
+        writtenBytes += dataSize;
       }//end for
 
       outFile.flush();
@@ -120,14 +151,29 @@ public:
     }//end if
   }//end flush
 
+  size_t getWrittentBytesCount() const {
+    return writtenBytes;
+  }
+
+  bool is_ready() const {
+    return outFile.is_open() && !outFile.fail();
+  }
+
 
 private:  
-  ofstream outFile;
+  std::ofstream outFile;
   RingBuffer<LogfileEntry, maxSize> dataBuffer;
   bool alwaysWriteOut;
+  size_t writtenBytes;
 };
 
-#endif //__LogfileManager_h_
+// NOTE: define the default LogfileManager type
+//typedef LegacyLogfileManager<30> LogfileManager;
+
+#include "DirectLogfileManager.h"
+typedef DirectLogfileManager LogfileManager;
+
+#endif //_LogfileManager_h_
 
 
 

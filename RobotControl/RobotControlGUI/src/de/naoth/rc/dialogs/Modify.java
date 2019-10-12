@@ -7,19 +7,24 @@
 package de.naoth.rc.dialogs;
 
 
+import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.components.treetable.ModifyDataModel;
 import de.naoth.rc.components.treetable.ModifyDataModel.ModifyDataNode;
 import de.naoth.rc.components.treetable.TreeTable;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.manager.GenericManagerFactory;
+import de.naoth.rc.messages.Representations;
 
 import de.naoth.rc.server.Command;
 import java.awt.Color;
 import java.awt.Component;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
@@ -30,15 +35,16 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
  *
- * @author admin
+ * @author heinrich
  */
 public class Modify extends AbstractDialog
 {
-    private static final Command commandCognitionModifyList = new Command("Cognition:modify:list");
-    private static final Command commandMotionModifyList = new Command("Motion:modify:list");
+    private static final Command commandCognitionModifyList = new Command("Cognition:representation:get").addArg("DebugModify");
+    private static final Command commandMotionModifyList = new Command("Motion:representation:get").addArg("DebugModify");
     
     Command commandToExecute = null;
 
+    @RCDialog(category = RCDialog.Category.Debug, name = "Modify")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<Modify>
     {
@@ -150,16 +156,13 @@ public class Modify extends AbstractDialog
     @Override
     public void valueChanged(boolean enabled, double value)
     {
-        if(!enabled)
-        {
-            Command command = new Command(prefix + ":modify:release").addArg(name, "");
-            Plugin.commandExecutor.executeCommand(new PrintObjectListener(), command);
-        }
-        else
-        {
-            Command command = new Command(prefix + ":modify:set").addArg(name, ""+value);
-            Plugin.commandExecutor.executeCommand(new PrintObjectListener(), command);
-        }
+        Command command = new Command(prefix + ":representation:set").addArg("DebugModify",
+            Representations.DebugModify.newBuilder().addValueMap(
+                Representations.DebugModify.ModifyValue.newBuilder().setName(name).setModify(enabled).setValue(value)
+            ).build().toByteArray()
+        );
+            
+        Plugin.commandExecutor.executeCommand(new PrintObjectListener(), command);
     }
   }//end class FlagModifiedListener
 
@@ -171,44 +174,48 @@ public class Modify extends AbstractDialog
     public ModifyUpdater(String rootName) {
         this.rootName = rootName;
     }
+    
+    private void updateTree(Representations.DebugModify debugModify) {
+        for(Representations.DebugModify.ModifyValue v: debugModify.getValueMapList()) 
+        {
+            ModifyDataNode node = treeTableModel.insertPath(String.format("[%s]:%s",rootName,v.getName()), ':');
+
+            if(v.hasModify()) {
+                node.enabled = v.getModify();
+            }
+
+            if(v.hasValue()) {
+                node.value = v.getValue();
+            }
+
+            if (node.enabledListener == null) {
+                node.enabledListener = new FlagModifiedListener(v.getName(), rootName);
+            }
+        }
+        
+        myTreeTable.expandRoot();
+        myTreeTable.revalidate();
+        myTreeTable.repaint();
+    }
 
        @Override
-      public void newObjectReceived(byte[] object) {
-          String str = new String(object);
-          final String[] modifies = str.split("(\n|\t| |\r)+");
+      public void newObjectReceived(byte[] object) 
+      {
+          try {
+            Representations.DebugModify debugModify = Representations.DebugModify.parseFrom(object);
+            SwingUtilities.invokeLater(()->updateTree(debugModify));
+          } catch (InvalidProtocolBufferException e) {
+              dispose();
+              Logger.getLogger(Modify.class.getName()).log(Level.SEVERE, new String(object), e);
+              JOptionPane.showMessageDialog(Modify.this, e.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+          }
           
-          SwingUtilities.invokeLater(new Runnable() {
-              @Override
-              public void run() {
-                  try {
-                      for (String msg : modifies) {
-                          String[] s = msg.split("(( |\t)*=( |\t)*)|;");
-
-                          ModifyDataNode node = treeTableModel.insertPath("[" + rootName + "]:" + s[1], ':');
-                          
-                          node.enabled = Integer.parseInt(s[0]) > 0;
-                          node.value = Double.parseDouble(s[2]);
-
-                          if (node.enabledListener == null) {
-                              node.enabledListener = new FlagModifiedListener(s[1], rootName);
-                          }
-                      }//end for
-                  } catch (NumberFormatException e) {
-                      JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.ERROR_MESSAGE);
-                      dispose();
-                  }
-                  
-                  //myTreeTable.getTree().expandPath(new TreePath(myTreeTable.getTree().getModel().getRoot()));
-                  myTreeTable.revalidate();
-                  myTreeTable.repaint();
-              }
-          });
+        //myTreeTable.getTree().expandPath(new TreePath(myTreeTable.getTree().getModel().getRoot()));
       }
 
         @Override
         public void errorOccured(String cause)
         {
-          btRefresh.setSelected(false);
           dispose();
         }
   }
@@ -239,7 +246,7 @@ public class Modify extends AbstractDialog
       Component comp = super.getTableCellRendererComponent(
                       table,  value, isSelected, hasFocus, row, column);
 
-      boolean columnValue = ((Boolean)table.getValueAt(row, table.getColumnModel().getColumnIndex("Modify"))).booleanValue();
+      boolean columnValue = ((Boolean)table.getValueAt(row, table.getColumnModel().getColumnIndex("Modify")));
 
       if (columnValue) {
         setBackground(new Color(1.0f,0.8f,1.0f));
@@ -255,6 +262,7 @@ public class Modify extends AbstractDialog
   {
     Plugin.genericManagerFactory.getManager(commandCognitionModifyList).removeListener(modifyUpdaterCognition);
     Plugin.genericManagerFactory.getManager(commandMotionModifyList).removeListener(modifyUpdaterMotion);
+    this.btRefresh.setSelected(false);
   }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

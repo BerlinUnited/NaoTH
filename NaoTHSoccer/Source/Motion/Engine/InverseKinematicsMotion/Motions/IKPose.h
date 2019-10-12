@@ -5,8 +5,8 @@
 * Declaration of Pose for IK motion
 */
 
-#ifndef __IK_POSE_H_
-#define __IK_POSE_H_
+#ifndef _IK_POSE_H_
+#define _IK_POSE_H_
 #include "Tools/Math/Pose3D.h"
 #include "Motion/MorphologyProcessor/InverseKinematics.h"
 #include "Tools/NaoInfo.h"
@@ -159,4 +159,4 @@ namespace InverseKinematic
   };
 }
 
-#endif //__IK_POSE_h_
+#endif //_IK_POSE_h_

@@ -4,7 +4,8 @@
 
 #include "Logger.h"
 
-Logger::Logger(const std::string& cmd) : logfileManager(true),command(cmd)
+Logger::Logger(const std::string& cmd) 
+  : command(cmd)
 {
   description = command + " on | off | close |activate=<name> | deactivate=<name>";
   activated = false;
@@ -14,18 +15,16 @@ Logger::Logger(const std::string& cmd) : logfileManager(true),command(cmd)
 Logger::~Logger()
 {
   // cleanup all serializer wrappers
-  for (std::map<std::string, naoth::VoidSerializer*>::iterator iter = serializers.begin();
-    iter != serializers.end(); ++iter)
+  for (RepresentationsMap::iterator iter = representations.begin(); iter != representations.end(); ++iter)
   {
     delete iter->second;
   }
 }
 
-void Logger::executeDebugCommand(
-  const std::string& command, const std::map<std::string, std::string>& arguments,
-  std::ostream &outstream)
+void Logger::executeDebugCommand(const std::string& command, const ArgumentMap& arguments, std::ostream &outstream)
 {
-  if (command != this->command) return;
+  ASSERT(command == this->command);
+
   for(std::map<std::string, std::string>::const_iterator iter=arguments.begin(); iter!=arguments.end(); ++iter)
   {
     handleCommand(iter->first, iter->second, outstream);
@@ -40,12 +39,12 @@ void Logger::handleCommand(const std::string& argName, const std::string& argVal
     activated = false;
 
     // list all logable representations
-    for(std::map<std::string, const void*>::const_iterator iter=streamables.begin(); iter!=streamables.end(); ++iter){
+    for(RepresentationsMap::const_iterator iter=representations.begin(); iter!=representations.end(); ++iter){
       outstream << iter->first <<" ";
     }
   }
   else if ("activate" == argName) {
-    for(std::map<string, const void*>::const_iterator iter=streamables.begin(); iter!=streamables.end(); ++iter)
+    for(RepresentationsMap::const_iterator iter=representations.begin(); iter!=representations.end(); ++iter)
     {
       if ( argValue == iter->first)
       {
@@ -65,6 +64,9 @@ void Logger::handleCommand(const std::string& argName, const std::string& argVal
         break;
       }
     }//end for
+  }
+  else if( "status" == argName) {
+    outstream << logfileManager.getWrittentBytesCount();
   }
   else if ("on" == argName) {
     activated = true;
@@ -91,19 +93,25 @@ void Logger::handleCommand(const std::string& argName, const std::string& argVal
 
 void Logger::log(unsigned int frameNum)
 {
-  if (!activated && !activatedOnce) return;
+  if (!activated && !activatedOnce) {
+    return;
+  }
 
-  activatedOnce = false;
+  if(!logfileManager.is_ready()) {
+    return;
+  }
   
   for (std::set<std::string>::const_iterator iter = activeRepresentations.begin();
     iter != activeRepresentations.end(); ++iter) 
   {
-    std::map<std::string, const void*>::iterator itStreamables = streamables.find(*iter);
+    RepresentationsMap::iterator representation = representations.find(*iter);
     
-    if(itStreamables != streamables.end() && serializers.find(*iter) != serializers.end())
+    if(representation != representations.end())
     { 
-      std::stringstream& stream = logfileManager.log(frameNum, itStreamables->first);
-      serializers[*iter]->serialize(itStreamables->second, stream);
+      std::ostream& stream = logfileManager.log(frameNum, representation->first);
+      representation->second->serialize(stream);
     }
-  }//end for
+  }
+
+  activatedOnce = false;
 }//end log

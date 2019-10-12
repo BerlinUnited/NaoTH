@@ -26,10 +26,13 @@ ArmMotionEngine::~ArmMotionEngine()
 
 void ArmMotionEngine::execute()
 {
-  if(!init) {
-    theMotorJointDataOld = getMotorJointData();
-    init = true;
-  }
+
+    if (getFrameInfo().getFrameNumber() == 0 ||
+        getFrameInfo().getFrameNumber() > theMotorJointFrameInfo.getFrameNumber() + 1)
+    {
+        theMotorJointDataOld = getSensorJointData();
+        theMotorJointFrameInfo = getFrameInfo();
+    }
 
   max_velocity_deg_in_second = getMotionRequest().armMotionRequest.max_velocity_deg_in_sec;
   MODIFY("ArmMotionEngine:max_vel_deg_in_second", max_velocity_deg_in_second);
@@ -37,7 +40,6 @@ void ArmMotionEngine::execute()
 
   switch(getMotionRequest().armMotionRequest.id)
   {
-
     case ArmMotionRequest::set_left_shoulder_position:
       setLeftShoulderPosition(getMotionRequest().armMotionRequest.lShoulderPosition.x,
                               getMotionRequest().armMotionRequest.lShoulderPosition.y);
@@ -102,14 +104,15 @@ void ArmMotionEngine::execute()
 
     case ArmMotionRequest::arms_back: armsOnBack(); break;
     case ArmMotionRequest::arms_down: armsDown(); break;
+    case ArmMotionRequest::arms_synchronised_with_walk: armsSynchronisedWithWalk(); break;
 
     case ArmMotionRequest::arms_none: // do nothing
     default: break;
   }//end switch
 
-
   // copy the requested state
   theMotorJointDataOld = getMotorJointData();
+  theMotorJointFrameInfo = getFrameInfo();
 }//end execute 
 
 void ArmMotionEngine::setLeftShoulderPosition(double shoulderPitch, double shoulderRoll) {
@@ -331,18 +334,17 @@ void ArmMotionEngine::hold()
           getSensorJointData().position[JointData::LElbowRoll];
 }
 
-
 bool ArmMotionEngine::armsDown()
 {
   static double target[JointData::numOfJoint];
-  target[JointData::RShoulderRoll] = Math::fromDegrees(-10);
-  target[JointData::LShoulderRoll] = Math::fromDegrees(10);
+  target[JointData::RShoulderRoll]  = Math::fromDegrees(-10);
+  target[JointData::LShoulderRoll]  = Math::fromDegrees(10);
   target[JointData::RShoulderPitch] = Math::fromDegrees(90);
   target[JointData::LShoulderPitch] = Math::fromDegrees(90);
-  target[JointData::RElbowRoll] = Math::fromDegrees(0);
-  target[JointData::LElbowRoll] = Math::fromDegrees(0);
-  target[JointData::RElbowYaw] = Math::fromDegrees(90);
-  target[JointData::LElbowYaw] = Math::fromDegrees(-90);
+  target[JointData::RElbowRoll]     = Math::fromDegrees(0);
+  target[JointData::LElbowRoll]     = Math::fromDegrees(0);
+  target[JointData::RElbowYaw]      = Math::fromDegrees(0);
+  target[JointData::LElbowYaw]      = Math::fromDegrees(0);
 
   for (int i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; i++) {
     getMotorJointData().stiffness[i] = theArmMotionParams.armStiffness;
@@ -353,36 +355,33 @@ bool ArmMotionEngine::armsDown()
   diffMax = max(diffMax, fabs(target[JointData::LElbowRoll] - theMotorJointDataOld.position[JointData::LElbowRoll]));
 
   bool result = false;
-
-  if( diffMax <= 0.02 )
+  if( diffMax <= 0.02)
   {
     result = moveToJoints(target);
   }
   else
   {
-    target[JointData::RShoulderPitch] = Math::fromDegrees(theArmMotionParams.armsOnBack.shoulderPitch);
-    target[JointData::LShoulderPitch] = Math::fromDegrees(theArmMotionParams.armsOnBack.shoulderPitch);
-    target[JointData::RElbowYaw] = Math::fromDegrees(-theArmMotionParams.armsOnBack.elbowYaw);
-    target[JointData::LElbowYaw] = Math::fromDegrees( theArmMotionParams.armsOnBack.elbowYaw);
+    target[JointData::RShoulderPitch] = Math::fromDegrees( theArmMotionParams.armsOnBack.shoulderPitch);
+    target[JointData::LShoulderPitch] = Math::fromDegrees( theArmMotionParams.armsOnBack.shoulderPitch);
+    target[JointData::RElbowYaw]      = Math::fromDegrees(-theArmMotionParams.armsOnBack.elbowYaw);
+    target[JointData::LElbowYaw]      = Math::fromDegrees( theArmMotionParams.armsOnBack.elbowYaw);
     moveToJoints(target);
   }
-
   return result;
 }//end armsDown
-
 
 bool ArmMotionEngine::armsOnBack()
 {
   // hack
   static double target[JointData::numOfJoint];
-  target[JointData::RShoulderRoll] = Math::fromDegrees(-theArmMotionParams.armsOnBack.shoulderRoll);
-  target[JointData::LShoulderRoll] = Math::fromDegrees( theArmMotionParams.armsOnBack.shoulderRoll);
+  target[JointData::RShoulderRoll]  = Math::fromDegrees(-theArmMotionParams.armsOnBack.shoulderRoll);
+  target[JointData::LShoulderRoll]  = Math::fromDegrees( theArmMotionParams.armsOnBack.shoulderRoll);
   target[JointData::RShoulderPitch] = Math::fromDegrees(theArmMotionParams.armsOnBack.shoulderPitch);
   target[JointData::LShoulderPitch] = Math::fromDegrees(theArmMotionParams.armsOnBack.shoulderPitch);
-  target[JointData::RElbowRoll] = Math::fromDegrees( theArmMotionParams.armsOnBack.elbowRoll);
-  target[JointData::LElbowRoll] = Math::fromDegrees(-theArmMotionParams.armsOnBack.elbowRoll);
-  target[JointData::RElbowYaw] = Math::fromDegrees(-theArmMotionParams.armsOnBack.elbowYaw);
-  target[JointData::LElbowYaw] = Math::fromDegrees( theArmMotionParams.armsOnBack.elbowYaw);
+  target[JointData::RElbowRoll]     = Math::fromDegrees( theArmMotionParams.armsOnBack.elbowRoll);
+  target[JointData::LElbowRoll]     = Math::fromDegrees(-theArmMotionParams.armsOnBack.elbowRoll);
+  target[JointData::RElbowYaw]      = Math::fromDegrees(-theArmMotionParams.armsOnBack.elbowYaw);
+  target[JointData::LElbowYaw]      = Math::fromDegrees( theArmMotionParams.armsOnBack.elbowYaw);
 
   for (int i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; i++) {
     getMotorJointData().stiffness[i] = theArmMotionParams.armStiffness;
@@ -412,6 +411,9 @@ bool ArmMotionEngine::armsOnBack()
   return result;
 }//end armsOnBack
 
+bool ArmMotionEngine::armsSynchronisedWithWalk(){
+    return true;
+}
 
 bool ArmMotionEngine::moveToJoints(const double (&target)[JointData::numOfJoint])
 {

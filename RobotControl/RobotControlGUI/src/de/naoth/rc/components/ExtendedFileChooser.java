@@ -41,7 +41,7 @@ public class ExtendedFileChooser extends JFileChooser
         if (file.exists())
         {
             int result = JOptionPane.showConfirmDialog(this, 
-                    "File exists,overwrite?", 
+                    "File exists, overwrite?", 
                     "Overwrite File?", JOptionPane.YES_NO_OPTION);
 
             if (result == JOptionPane.YES_OPTION)

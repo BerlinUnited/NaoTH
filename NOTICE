@@ -1,4 +1,4 @@
-Copyright 2015 Humboldt-Universität zu Berlin
+Copyright 2017 Humboldt-Universität zu Berlin
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -40,3 +40,17 @@ can be found in the "Third-Party-Licenses" folder.
   -- BSD-style
 * Java Simple Plugin Framework (https://code.google.com/p/jspf/)
   -- New BSD License
+* GSON - A Java serialization/deserialization library to convert Java Objects into JSON and back 
+  -- Apache License 2.0
+* Premake - Powerfully simple build configuration
+  -- BSD 3-Clause "New" or "Revised" License
+* Eigen
+  -- MPL2
+* FFTW
+  -- GNU LIBRARY GENERAL PUBLIC LICENSE Version 2
+* libb64
+  -- Public Domain
+* picojson
+  -- BSD 2-Clause
+* Windows dirent
+  --  MIT

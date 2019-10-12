@@ -12,17 +12,19 @@
 #include <XabslEngine/XabslEngine.h>
 
 // representations
+#include "Representations/Infrastructure/GameData.h"
 #include "Representations/Modeling/PlayerInfo.h"
 
 BEGIN_DECLARE_MODULE(GameSymbols)
   REQUIRE(PlayerInfo);
+  REQUIRE(GameData);
 END_DECLARE_MODULE(GameSymbols)
 
 class GameSymbols: public GameSymbolsBase
 {
 
 public:
-  GameSymbols() {
+  GameSymbols()  {
     theInstance = this;
   }
   virtual ~GameSymbols(){}
@@ -35,13 +37,16 @@ public:
 private:
   static GameSymbols* theInstance;
 
+  static bool getPlayingIsSetByGameController();
   static bool getOwnKickOff();
   static double getPlayerNumber();
   static double getMsecsRemaining();
+  static double getMsecsRemainingSecondary();
   static int getGameState();
-  static int getPlayMode();
-  static int getOpponentTeamColor();
-  static int getOwnTeamColor();
+  static int getSetPlay();
+  static int getGamePhase();
+
+  static bool playingIsSetByGameController;
 
 };//end class GameSymbols
 

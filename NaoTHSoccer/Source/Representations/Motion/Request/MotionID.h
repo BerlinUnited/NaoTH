@@ -22,6 +22,7 @@ namespace motion
     empty,
     init,
     dead,
+    falling,
     sit,
 
     /* inverse kinematic */
@@ -39,6 +40,7 @@ namespace motion
     stand_up_from_front,
     stand_up_from_back,
     stand_up_from_back_arms_back,
+    stand_up_from_side,
     
     block_middle,
     goalie_get_down,
@@ -52,13 +54,12 @@ namespace motion
 
     kick_right,
 
-    goalie_dive_right_test,
-    goalie_dive_left_test,
     goalie_sit_block,
     goalie_sit_n_dive_left,
     goalie_sit_n_dive_right,
-    goalie_sit_n_dive_left_test,
-    goalie_sit_n_dive_right_test,
+
+    jump_indicator_left,
+    jump_indicator_right,
 
     // instantly load and run the play_editor_motionnet.mef
     // used by the motion editor
@@ -75,6 +76,7 @@ namespace motion
       case empty: return "empty";
       case init: return "init";
       case dead: return "dead";
+      case falling: return "falling";
       case sit: return "sit";
 
       case stand: return "stand";
@@ -89,7 +91,8 @@ namespace motion
       case stand_up_from_front: return "stand_up_from_front";
       case stand_up_from_back: return "stand_up_from_back";
       case stand_up_from_back_arms_back: return "stand_up_from_back_arms_back";
-      
+      case stand_up_from_side: return "stand_up_from_side";
+
       case block_middle: return "block_middle";
       case goalie_get_down: return "goalie_get_down";
       case goalie_sit: return "goalie_sit";
@@ -102,13 +105,12 @@ namespace motion
 
       case kick_right: return "kick_right";
 
-      case goalie_dive_right_test: return "goalie_dive_right_test";
-      case goalie_dive_left_test: return "goalie_dive_left_test";
       case goalie_sit_block: return "goalie_sit_block";
       case goalie_sit_n_dive_left: return "goalie_sit_n_dive_left";
       case goalie_sit_n_dive_right: return "goalie_sit_n_dive_right";
-      case goalie_sit_n_dive_left_test: return "goalie_sit_n_dive_left_test";
-      case goalie_sit_n_dive_right_test: return "goalie_sit_n_dive_right_test";
+
+      case jump_indicator_left: return "jump_indicator_left";
+      case jump_indicator_right: return "jump_indicator_right";
 
       case play_editor_motionnet: return "play_editor_motionnet";
 

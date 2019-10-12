@@ -16,8 +16,8 @@
 //------------------------------------------------------------------------------
 // Ensure that memory version (use stack or heap) ist defined
 #if !defined(VECTOR_N_STACK) && !defined(VECTOR_N_HEAP)
-#error Define VECTOR_N_STACK if you'd like Vector_n to use stack memory or \
-VECTOR_N_HEAP if you'd like Vector_n to use heap memory!
+#error Define VECTOR_N_STACK if you like Vector_n to use stack memory or \
+VECTOR_N_HEAP if you like Vector_n to use heap memory!
 #endif
 //------------------------------------------------------------------------------
 /**

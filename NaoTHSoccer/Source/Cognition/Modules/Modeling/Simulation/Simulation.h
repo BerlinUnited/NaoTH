@@ -8,17 +8,15 @@
 #define _Simulation_H
 
 #include <ModuleFramework/Module.h>
+#include <ModuleFramework/ModuleManager.h>
 
 // Representations
 #include "Representations/Infrastructure/FrameInfo.h"
-#include "Representations/Modeling/PlayersModel.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/RobotPose.h"
-#include "Representations/Modeling/CompassDirection.h"
 #include "Representations/Modeling/KickActionModel.h"
-#include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/ObstacleModel.h"
 
 //Tools
@@ -29,31 +27,32 @@
 #include <Tools/Debug/DebugParameterList.h>
 #include "Tools/Debug/DebugModify.h"
 #include <Representations/Debug/Stopwatch.h>
+#include "Tools/Filters/AssymetricalBoolFilter.h"
 
 // Debug
 #include <Tools/Debug/DebugRequest.h>
 
+//
+#include "Tools/ActionSimulator.h"
+
 BEGIN_DECLARE_MODULE(Simulation)
-  PROVIDE(DebugModify)
-  PROVIDE(DebugRequest)
-  PROVIDE(DebugDrawings)
-  PROVIDE(DebugParameterList)
-  PROVIDE(StopwatchManager)
+PROVIDE(DebugModify)
+PROVIDE(DebugRequest)
+PROVIDE(DebugDrawings)
+PROVIDE(DebugParameterList)
+PROVIDE(StopwatchManager)
 
-  REQUIRE(FrameInfo)
-  REQUIRE(FieldInfo)  
-  REQUIRE(PlayerInfo)
-  REQUIRE(ObstacleModel)
-  REQUIRE(BallModel)
-  REQUIRE(RobotPose)
-  REQUIRE(SelfLocGoalModel)
-  REQUIRE(CompassDirection)
-  REQUIRE(MotionStatus)
+REQUIRE(FrameInfo)
+REQUIRE(FieldInfo)
+REQUIRE(ObstacleModel)
+REQUIRE(BallModel)
+REQUIRE(RobotPose)
+//REQUIRE(SelfLocGoalModel)
 
-  PROVIDE(KickActionModel)
+PROVIDE(KickActionModel)
 END_DECLARE_MODULE(Simulation)
 
-class Simulation: public SimulationBase
+class Simulation : public SimulationBase, public ModuleManager
 {
 public:
   Simulation();
@@ -61,141 +60,78 @@ public:
 
   virtual void execute();
 
-  class ActionParams
-  {
-    public:
-      ActionParams():
-        speed(0.0),
-        speed_std(0.0),
-        angle(0.0),
-        angle_std(0.0)
-      {}
-    public:
-      double speed;
-      double speed_std;
-      double angle;
-      double angle_std;
-  };
 
-   /** parameters for the module */
-  class Parameters: public ParameterList
+  /** parameters for the module */
+  class Parameters : public ParameterList
   {
   public:
-	
-    Parameters() : ParameterList("PotentialActionParameters")
+
+    Parameters() : ParameterList("ActionSimulatorParams")
     {
-      PARAMETER_REGISTER(sidekick_right.speed) = 750;
-      PARAMETER_REGISTER(sidekick_right.speed_std) = 150;
-      PARAMETER_REGISTER(sidekick_right.angle) = -85;
-      PARAMETER_REGISTER(sidekick_right.angle_std) = 15;
-      PARAMETER_REGISTER(sidekick_left.speed) = 750;
-      PARAMETER_REGISTER(sidekick_left.speed_std) = 150;
-      PARAMETER_REGISTER(sidekick_left.angle) = 85;
-      PARAMETER_REGISTER(sidekick_left.angle_std) = 15;
-      PARAMETER_REGISTER(kick_short.speed) = 780;
+      //PARAMETER_REGISTER(sidekick_right.speed) = 750;
+      //PARAMETER_REGISTER(sidekick_right.speed_std) = 150;
+      //PARAMETER_REGISTER(sidekick_right.angle) = -89.657943335302260;
+      //PARAMETER_REGISTER(sidekick_right.angle_std) = 10.553726275058064;
+
+      //PARAMETER_REGISTER(sidekick_left.speed) = 750;
+      //PARAMETER_REGISTER(sidekick_left.speed_std) = 150;
+      //PARAMETER_REGISTER(sidekick_left.angle) = 86.170795364136380;
+      //PARAMETER_REGISTER(sidekick_left.angle_std) = 10.669170653645670;
+
+      PARAMETER_REGISTER(kick_short.speed) = 1280;
       PARAMETER_REGISTER(kick_short.speed_std) = 150;
-      PARAMETER_REGISTER(kick_short.angle) = 0.0;
-      PARAMETER_REGISTER(kick_short.angle_std) = 10;
-      PARAMETER_REGISTER(kick_long.speed) = 1020;
-      PARAMETER_REGISTER(kick_long.speed_std) = 150;
-      PARAMETER_REGISTER(kick_long.angle) = 0.0;
-      PARAMETER_REGISTER(kick_long.angle_std) = 10;
+      PARAMETER_REGISTER(kick_short.angle) = 8.454482265522328;
+      PARAMETER_REGISTER(kick_short.angle_std) = 6.992268841997358;
+
+      //PARAMETER_REGISTER(kick_long.speed) = 1020;
+      //PARAMETER_REGISTER(kick_long.speed_std) = 150;
+      //PARAMETER_REGISTER(kick_long.angle) = 8.454482265522328;
+      //PARAMETER_REGISTER(kick_long.angle_std) = 6.992268841997358;
+
       PARAMETER_REGISTER(friction) = 0.0275;
 
       PARAMETER_REGISTER(good_threshold_percentage) = 0.85;
-      PARAMETER_REGISTER(numParticles) = 30; 
-      
+      PARAMETER_REGISTER(significance_thresh) = 0.1;
+      PARAMETER_REGISTER(numParticles) = 30;
+      PARAMETER_REGISTER(minGoalParticles) = 9;
+
+      PARAMETER_REGISTER(obstacleFilter.g0) = 0.01;
+      PARAMETER_REGISTER(obstacleFilter.g1) = 0.1;
+
       syncWithConfig();
     }
-    
-    ActionParams sidekick_right;
-    ActionParams sidekick_left;
-    ActionParams kick_short;
-    ActionParams kick_long;
+
+    struct ObstacleFilter {
+      double g0;
+      double g1;
+    } obstacleFilter;
+
+    //ActionSimulator::ActionParams sidekick_right;
+    //ActionSimulator::ActionParams sidekick_left;
+    ActionSimulator::ActionParams kick_short;
+    // currently not used
+    // ActionSimulator::ActionParams kick_long;
     double friction;
     double good_threshold_percentage;
-    double numParticles;
+    double significance_thresh;
+    int numParticles; //should be size_t
+    int minGoalParticles;
 
   } theParameters;
 
 
-  class Action
-  {
-  private:
-    KickActionModel::ActionId _id;
-    std::string _name;
-    double action_speed;
-    double action_speed_std;
-    double action_angle;
-    double action_angle_std;
-    double friction;
-
-    
-  public:
-    Action(KickActionModel::ActionId _id, const ActionParams& params, double friction) : 
-		  _id(_id), 
-      _name(KickActionModel::getName(_id)),
-      action_speed(params.speed),
-      action_speed_std(params.speed_std),
-      action_angle(params.angle),
-      action_angle_std(params.angle_std),
-      friction(friction)
-	  {
-    }
-
-    Vector2d predict(const Vector2d& ball) const;
-    KickActionModel::ActionId id() const { return _id; }
-    const std::string& name() const { return _name; }
-  };
-  
-  enum BallPositionCategory
-  {
-    INFIELD,
-    OPPOUT,
-    OWNOUT,
-    LEFTOUT,
-    RIGHTOUT,
-    OPPGOAL,
-    OWNGOAL,
-    COLLISION
-  };
-
-  class CategorizedBallPosition
-  {
-    private:
-      Vector2d ballPosition;
-      BallPositionCategory category;
-    public:
-      CategorizedBallPosition(const Vector2d& position, BallPositionCategory cat):
-        ballPosition(position),
-        category(cat)
-      {}
-      BallPositionCategory cat() const {return category;} 
-      const Vector2d& pos() const {return ballPosition;} 
-  };
-
-
 private:
+  //AssymetricalBoolHysteresisFilter obstacleFilter;
 
-  std::vector<Action> action_local;
-  std::vector<std::vector<CategorizedBallPosition> > actionsConsequences;
+  ModuleCreator<ActionSimulator>* simulationModule;
 
+  size_t decide_smart(const std::vector<ActionSimulator::ActionResults>& actionsConsequences) const;
 
-  void simulateConsequences(const Action & action, std::vector<CategorizedBallPosition>& categorizedBallPositions) const;
+  std::vector<ActionSimulator::Action> action_local;
+  std::vector<ActionSimulator::ActionResults> actionsConsequences;
 
-  size_t decide(const std::vector<std::vector<CategorizedBallPosition> >& actionsConsequences) const;
+  void draw_action_results(const ActionSimulator::ActionResults& actionsResults, const Color& color) const;
 
-  //Vector2d outsideField(const Vector2d& relativePoint) const;
-
-  double exp256(const double& x) const;
-
-  double gaussian(const double& x, const double& y, const double& muX, const double& muY, const double& sigmaX, const double& sigmaY) const;
-
-  double slope(const double& x, const double& y, const double& slopeX, const double& slopeY) const;
-
-  double evaluateAction(const Vector2d& a) const;
-
-  void draw_potential_field() const;
 };
 
 #endif  /* _Simulation_H */

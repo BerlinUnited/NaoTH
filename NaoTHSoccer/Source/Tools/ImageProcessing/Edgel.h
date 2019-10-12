@@ -14,16 +14,23 @@ template<class T>
 class EdgelT
 {
 public:
-  EdgelT() 
-    : type(unknown)
-  {}
-
   enum Type
   {
     positive,
     negative,
     unknown
   };
+
+public:
+  EdgelT() 
+    : type(unknown)
+  {}
+
+  EdgelT(const Vector2<T>& point, const Vector2d& direction, Type type)
+    :
+    point(point), direction(direction), type(type)
+  {}
+
 
   Vector2<T> point;
   Vector2d direction;
@@ -35,7 +42,8 @@ public:
   {
     double s = 0.0;
     if(direction*other.direction > 0) {
-      Vector2d v = (other.point - point).rotateRight().normalize();
+      Vector2d v(other.point - point);
+      v.rotateRight().normalize();
       s = 1.0-0.5*(fabs(direction*v) + fabs(other.direction*v));
     }
 
@@ -48,7 +56,8 @@ public:
   {
     double s = 0.0;
     if(direction*other.direction > 0) {
-      Vector2d v = (other.point - point).normalize();
+      Vector2d v(other.point - point);
+      v.normalize();
       s = 1.0-0.5*(fabs(direction*v) + fabs(other.direction*v));
     }
 

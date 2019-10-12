@@ -24,12 +24,13 @@ public:
   class EndPoint
   {
   public:
-    EndPoint():color(ColorClasses::none), ScanLineID(0), valid(false){}
+    EndPoint() : color(ColorClasses::none), ScanLineID(0), valid(false), greenFound(false) {}
     Vector2i posInImage;
     Vector2d posOnField;
     ColorClasses::Color color;
     unsigned int ScanLineID;
     bool valid;
+    bool greenFound;
   };
 
   class EdgelPair : public EdgelT<double>

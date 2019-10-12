@@ -30,6 +30,12 @@ public interface Dialog extends Plugin
   public String getDisplayName();
 
   /**
+   * Get the category of the dialog, this is used to sort the dialogs in submenus
+   * @return
+   */
+  public String getCategory();
+  
+  /**
    * This method is called when the dialog is closed.
    * Here the all the registered listener should be unregistered.
    */

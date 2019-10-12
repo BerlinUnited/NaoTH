@@ -7,8 +7,6 @@
  * Implementation of class ObstacleLocator
  */
 
-//#include "Tools/Math/Pose2D.h"
-
 #include "UltraSoundObstacleLocator.h"
 
 // in accordance to the Aldeberan documentation and the raw values
@@ -18,19 +16,16 @@ const double UltraSoundObstacleLocator::maxValidDistance = 500.0;
 UltraSoundObstacleLocator::UltraSoundObstacleLocator()
   : wasFrontBlockedInLastFrame(false)
 {
-
   DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawObstacle", "draw the modelled Obstacle on the field", false);
   DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawSensorData", "draw the measured echos", false);
   DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawBuffer", "draw buffer of measurements", false);
 
-  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:mode:CAPTURE_LEFT", "left Receiver", false);
-  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:mode:CAPTURE_RIGHT", "right Receiver", false);
-  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:mode:CAPTURE_BOTH", "left and right capture", false);
-  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:mode:TRANSMIT_LEFT", "left Transmitter", false);
-  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:mode:TRANSMIT_RIGHT", "right Transmitter", false);
-  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:mode:TRANSMIT_BOTH", "left and right transmitter", false);
+  getDebugParameterList().add(&parameters);
+}
 
-  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:mode:PERIODIC", "send US periodically", false);
+UltraSoundObstacleLocator::~UltraSoundObstacleLocator() 
+{
+  getDebugParameterList().remove(&parameters);
 }
 
 void UltraSoundObstacleLocator::execute()
@@ -47,40 +42,6 @@ void UltraSoundObstacleLocator::execute()
 
   //Draw ObstacleModel
   drawObstacleModel();
-
-  // default state
-  unsigned int transmitter = UltraSoundSendData::TRANSMIT_LEFT;
-  unsigned int receiver = UltraSoundSendData::CAPTURE_BOTH;
-
-  DEBUG_REQUEST("UltraSoundObstacleLocator:mode:CAPTURE_LEFT",
-    receiver = UltraSoundSendData::CAPTURE_LEFT;
-  );
-  DEBUG_REQUEST("UltraSoundObstacleLocator:mode:CAPTURE_RIGHT",
-    receiver = UltraSoundSendData::CAPTURE_RIGHT;
-  );
-  DEBUG_REQUEST("UltraSoundObstacleLocator:mode:CAPTURE_BOTH",
-    receiver = UltraSoundSendData::CAPTURE_BOTH;
-  );
-  DEBUG_REQUEST("UltraSoundObstacleLocator:mode:TRANSMIT_LEFT",
-    transmitter = UltraSoundSendData::TRANSMIT_LEFT;
-  );
-  DEBUG_REQUEST("UltraSoundObstacleLocator:mode:TRANSMIT_RIGHT",
-    transmitter = UltraSoundSendData::TRANSMIT_RIGHT;
-  );
-  DEBUG_REQUEST("UltraSoundObstacleLocator:mode:TRANSMIT_BOTH",
-    transmitter = UltraSoundSendData::TRANSMIT_BOTH;
-  );
-
-  unsigned int mode = transmitter + receiver;
-
-  DEBUG_REQUEST("UltraSoundObstacleLocator:mode:PERIODIC",
-    mode += UltraSoundSendData::PERIODIC;
-  );
-
-  // Update mode 
-  if(mode != getUltraSoundSendData().mode) {
-    getUltraSoundSendData().setMode(mode);
-  }
 }//end execute
 
 void UltraSoundObstacleLocator::drawObstacleModel()
@@ -107,10 +68,10 @@ void UltraSoundObstacleLocator::drawObstacleModel()
     FIELD_DRAWING_CONTEXT;
     Color colorLeft(Color::blue);
     Color colorRight(Color::red);
-    colorLeft[Color::alpha] = 0.5;
-    colorRight[Color::alpha] = 0.5;
+    colorLeft[Color::Alpha] = 0.5;
+    colorRight[Color::Alpha] = 0.5;
     // draw raw sensor data
-    for(unsigned int i = 0; i < UltraSoundData::numOfUSEcho; i++)
+    for(unsigned int i = 0; i < UltraSoundReceiveData::numOfUSEcho; i++)
     {
 
       double distLeft = getUltraSoundReceiveData().dataLeft[i] * 1000.0;
@@ -132,6 +93,7 @@ void UltraSoundObstacleLocator::drawObstacleModel()
   
   // draw model
   DEBUG_REQUEST("UltraSoundObstacleLocator:drawObstacle",
+	FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 50);
     CIRCLE(
       getObstacleModel().leftDistance,

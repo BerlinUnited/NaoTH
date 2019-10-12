@@ -16,178 +16,71 @@ class IKParameters : public ParameterList
 {
 public:
 
-  // TODO: what are those parameters?
-  double bodyPitchOffset;
-  double hipOffsetX;
   double footOffsetY;
-  
+
   struct Stand 
   {
     double speed;
     bool enableStabilization;
-    double stiffness;
-  } stand;
+    bool enableStabilizationRC16;
+    double stiffnessGotoPose;
+    double stiffnessRelax;
 
+    double bodyPitchOffset;
+    double hipOffsetX;
 
-  struct Walk 
-  {
-    struct General
-    {
-      double stiffness;
-      bool useArm;
-
-      // hip joint correction
-      double hipRollSingleSupFactorLeft;
-      double hipRollSingleSupFactorRight;
-    } general;
-
-
-    // hip trajectory geometry
-    struct Hip
-    {
-      double comHeight;
-      double comHeightOffset;
-      double comRotationOffsetX;
-      double ZMPOffsetY;
-      double ZMPOffsetYByCharacter;
-    } hip;
-
-    // step geometry
-    struct Step
-    {
-      double singleSupportTime;
-      double doubleSupportTime;
-      double maxExtendDoubleSupportTime;
-      double extendDoubleSupportTimeByCharacter;
-    
-      double stepHeight;
-      //double curveFactor;
-    } step;
-    
-    // step limits
-    struct Limits
-    {
-      double maxTurnInner;
-      double maxStepTurn;
-      double maxStepLength;
-      double maxStepLengthBack;
-      double maxStepWidth;
-      double maxStepChange; // (0 - 1]
-
-      // step control
-      double maxCtrlTurn;
-      double maxCtrlLength;
-      double maxCtrlWidth;
-    } limits;
-    
-
-    struct Stabilization
-    {
-      // FSR stabilizators
-      bool enableFSRProtection;
-      bool enableWaitLanding;
-      unsigned int minFSRProtectionCount;
-    
-      int maxUnsupportedCount;
-      int maxWaitLandingCount; // <0 means wait for ever until landing
-
-      // enable stabilization by rotating the body
-      bool rotationStabilize;
-
-      // enable the PD-control for the feet
-      bool stabilizeFeet;
-      // differential and proportional factors for rotation on x- and y- axes
-      Vector2d stabilizeFeetP;
-      Vector2d stabilizeFeetD;
-
-      Vector2d rotationP;
-      Vector2d rotationVelocityP;
-      Vector2d rotationD;
-
-      // enable the synamic adaptation of the stepsize
-      bool dynamicStepsize;
-      double dynamicStepsizeP;
-      double dynamicStepsizeD;
+    struct Stabilization{
+        struct RotationStabilization{
+            Vector2d P;
+            Vector2d VelocityP;
+            Vector2d D;
+        } rotation, rotationRC16;
     } stabilization;
-  } walk;
 
+    struct Relax {
 
-  struct RotationStabilize 
-  {
-      Vector2d k;
-      Vector2d threshold;
-  } rotationStabilize;
+        bool   enable;
+        double allowedDeviation;
+        double allowedRotationDeviation;
+        double timeBonusForCorrection;
+
+        struct JointOffsetTuning {
+            bool   enable;
+            double deadTime;
+            double currentThreshold;
+            double minimalJointStep;
+        } jointOffsetTuning;
+
+        struct StiffnessControl {
+            bool   enable;
+//            double deadTime;
+            double minAngle;
+            double minStiffness;
+            double maxAngle;
+            double maxStiffness;
+        } stiffnessControl;
+    } relax;
+  } stand;
 
   struct Arm 
   {
-    // move shoulder according to interial sensor
-    double shoulderPitchInterialSensorRate;
-    double shoulderRollInterialSensorRate;
-
     // the max joint speed in degree/second
     double maxSpeed;
-    bool alwaysEnabled;
-    bool kickEnabled;
-    bool walkEnabled;
-    bool takeBack;
+
+    // move shoulder according to interial sensor
+    struct InertialModelBasedMovement {
+        double shoulderPitchInterialSensorRate;
+        double shoulderRollInterialSensorRate;
+    } inertialModelBasedMovement;
+
+    // move the arm according to motion/walk
+    struct SynchronisedWithWalk {
+        double shoulderPitchRate;
+        double shoulderRollRate;
+        double elbowRollRate;
+    } synchronisedWithWalk;
   } arm;
 
-  struct KickParameters 
-  {
-    // 
-    double shiftSpeed;
-
-    //
-    double time_for_first_preparation;
-
-    //
-    double retractionSpeed;
-
-    //
-    double takeBackSpeed;
-
-    //
-    double timeToLand;
-
-    //
-    double stabilization_time;
-
-    // prolongate the kick to make it srtonger or weaker
-    double strengthOffset;
-
-    // minimal number of cycles for the preparation
-    double minNumberOfPreKickSteps;
-    // duration of the shifting to one foot
-    double shiftTime;
-    // duration of the shifting to both feets after the kick
-    double stopTime;
-    // duration of the kicking phase
-    double kickSpeed;
-    // wait a little before taking the foot back after the kick is executed
-    double afterKickTime;
-    // offset of the hip height according to the default one
-    double hipHeightOffset;
-
-    //
-    double footRadius;
-    //
-    double maxDistanceToRetract;
-
-    bool enableStaticStabilizer;
-
-
-    double basicXRotationOffset;
-    double extendedXRotationOffset;
-    double rotationTime;
-
-    double knee_pitch_offset;
-    double ankle_roll_offset;
-
-    // 
-    double shiftOffsetYLeft;
-    double shiftOffsetYRight;
-  } kick;
-  
   struct BalanceCoMParameter 
   {
     double kP;

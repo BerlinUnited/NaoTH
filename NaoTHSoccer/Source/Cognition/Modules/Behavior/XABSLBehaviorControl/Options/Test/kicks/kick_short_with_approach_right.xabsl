@@ -7,7 +7,7 @@ option kick_short_with_approach_right
     else if(situation_abortable && ball.time_since_last_seen > 1500)
       goto search;
     else if(situation_abortable && vector.abs(x=ball.preview.x, y=ball.preview.y) > 300)
-      goto goto_ball;
+      goto approach_for_right;
   }
   
   initial state idle {
@@ -23,7 +23,7 @@ option kick_short_with_approach_right
   state search {
     decision {
       else if(action_done)
-        goto goto_ball;
+        goto approach_for_right;
       else
         stay;
     }
@@ -81,6 +81,8 @@ option kick_short_with_approach_right
   target state done
   {
     decision{
+    else if(button.head.pressed.front)
+      goto idle;
     else
       stay;
     }

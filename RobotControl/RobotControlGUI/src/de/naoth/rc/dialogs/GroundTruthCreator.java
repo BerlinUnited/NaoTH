@@ -6,6 +6,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
+import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.logplayer.LogSimulator;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.messages.Representations;
@@ -35,7 +36,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  */
 public class GroundTruthCreator extends AbstractDialog
 {
-    
+    @RCDialog(category = RCDialog.Category.Tools, name = "GroundTruthCreator")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<GroundTruthCreator> {
     @InjectPlugin

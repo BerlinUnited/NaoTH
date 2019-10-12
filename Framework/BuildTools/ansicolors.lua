@@ -115,38 +115,34 @@ local function replaceDebugCodes(str)
   -- parse keywords
   a,b = string.find(str, ":")
   if a ~= nil then
-	t = string.sub(str,1,a-1)
-	if mems[t] ~= nil then
-	  str = mems[t] .. string.sub(str,1,a) .. "%{reset}" .. string.sub(str,a+1)
-	  return str
-	end
+    t = string.sub(str,1,a-1)
+    if mems[t] ~= nil then
+      str = mems[t] .. string.sub(str,1,a) .. "%{reset}" .. string.sub(str,a+1)
+      return str
+    end
   end
   
   -- parse assignement
   a,b = string.find(str, "=")
   if a ~= nil then
-	str = "%{cyan}" .. string.sub(str,1,a-1) .. "%{reset}%{yellow}" .. string.sub(str,a)
-	return str
+    str = "%{cyan}" .. string.sub(str,1,a-1) .. "%{reset}%{yellow}" .. string.sub(str,a)
+    return str
   end
  
   -- highlight
   if string.sub(str,1,1) == ">" then
-	return str
+    return str
   end
  
   -- dim everything else
-  str = "%{dim}" .. str;
+  str = "%{dim}" .. str
   return str
 end
 
 
 -- redefine print
 function print (...)
-  if #arg == 0 then
-    std_print()
-  else
-    for i,v in ipairs(arg) do
-      std_print(ansicolors(replaceDebugCodes(tostring(v))))
-    end
+  for i = 1, select("#",...) do
+      std_print(ansicolors(replaceDebugCodes(tostring( select(i,...) ))))
   end
 end

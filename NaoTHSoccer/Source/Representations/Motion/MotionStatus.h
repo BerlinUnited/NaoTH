@@ -33,7 +33,7 @@ public:
 
   struct StepControlStatus
   {
-    StepControlStatus() : stepID(0), moveableFoot(NONE) {}
+    StepControlStatus() : stepID(0), stepRequestID(0), moveableFoot(NONE) {}
 
     enum MoveableFoot
     {
@@ -43,8 +43,9 @@ public:
       BOTH
     };
 
-    unsigned int stepID; // the walk only accept request with this id
-    MoveableFoot moveableFoot; // which foot can be controlled
+    unsigned int stepID;        // the walk only accept request with this id
+    unsigned int stepRequestID; // for PathPlanner
+    MoveableFoot moveableFoot;  // which foot can be controlled
   };
 
   /** constructor */
@@ -54,7 +55,11 @@ public:
   lastMotion(motion::num_of_motions),
   currentMotion(motion::num_of_motions),
   currentMotionState(motion::stopped),
-  headMotion(HeadMotionRequest::numOfHeadMotion)
+  headMotion(HeadMotionRequest::numOfHeadMotion),
+  target_reached(false),
+  head_target_reached(false),
+  head_got_stuck(false),
+  walk_emergency_stop(false)
   {
   }
 
@@ -67,6 +72,10 @@ public:
   HeadMotionRequest::HeadMotionID headMotion;
   PlannedMotion plannedMotion;
   StepControlStatus stepControl;
+  bool target_reached;
+  bool head_target_reached;
+  bool head_got_stuck;
+  bool walk_emergency_stop;
 
   virtual void print(std::ostream& stream) const
   {
@@ -79,6 +88,10 @@ public:
     stream << "left foot = "<< plannedMotion.lFoot<<"\n";
     stream << "right foot = "<< plannedMotion.rFoot<<"\n";
     stream << "step control = "<< stepControl.stepID << " " << stepControl.moveableFoot <<"\n";
+    stream << "target_reached = " << target_reached << '\n';
+    stream << "head_target_reached = " << head_target_reached << '\n';
+    stream << "head_got_stuck = " << head_got_stuck << '\n';
+    stream << "walk_emergency_stop = " << walk_emergency_stop << '\n';
   }//end print
 };
 

@@ -75,7 +75,7 @@ public:
   {
     for(std::list<Player>::const_iterator iter=playersList.begin(); iter!=playersList.end(); ++iter)
     {
-      stream << naoth::GameData::teamColorToString(iter->teamColor)<<" : "<<iter->poseValid<<" : "<< iter->pose<<" : "<<iter->angleTo<<'\n';
+      stream << naoth::GameData::toString(iter->teamColor)<<" : "<<iter->poseValid<<" : "<< iter->pose<<" : "<<iter->angleTo<<'\n';
     }
   }//end print
 

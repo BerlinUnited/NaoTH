@@ -12,7 +12,7 @@
 #include <string> // contains memcpy
 
 #include "Tools/Math/Common.h"
-#include "Tools/Math/Vector3.h"
+#include "Tools/Math/Vector2.h"
 
 #include "Tools/DataStructures/Serializer.h"
 #include "Tools/DataStructures/Printable.h"
@@ -79,8 +79,20 @@ public: // function members
   inline unsigned char* data() const { return yuv422; }
   inline size_t data_size() const { return width()*height()*PIXEL_SIZE_YUV422; }
 
+  // EXPERIMENTAL: return a reference to an aligned yuv422 pixel in the form: |y0|u|y1|v|
+  // NOTE: this means we operate with a half of the resolution,
+  //       i.e., x = 2*n and x = 2*n+1 will return the same pixel
+  inline const Pixel& getAligned(const int x, const int y) const { 
+    return reinterpret_cast<Pixel*>(yuv422)[(y * cameraInfo.resolutionWidth + x)/2]; 
+  }
+
   inline unsigned char getY(const int x, const int y) const {
     ASSERT(isInside(x,y));
+    return yuv422[PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x)];
+  }
+
+  inline unsigned char getY_direct(const int x, const int y) const {
+    //ASSERT(isInside(x,y));
     return yuv422[PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x)];
   }
 
@@ -132,6 +144,16 @@ public: // function members
     p.v = yuv422[yOffset+3-((x & 1)<<1)];
   }
 
+  inline void get_direct(const int x, const int y, Pixel& p) const
+  {
+    register unsigned int yOffset = PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x);
+
+    p.y = yuv422[yOffset];
+    // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
+    p.u = yuv422[yOffset+1-((x & 1)<<1)];
+    p.v = yuv422[yOffset+3-((x & 1)<<1)];
+  }
+
   inline void set(const int x, const int y, const Pixel& p)
   {
     ASSERT(isInside(x,y));
@@ -168,6 +190,12 @@ public: // function members
   { 
     return x >= 0 && x < (int)cameraInfo.resolutionWidth && 
            y >= 0 && y < (int)cameraInfo.resolutionHeight;
+  }
+
+  inline bool isInside(const Vector2i& p) const
+  { 
+    return p.x >= 0 && p.x < (int)cameraInfo.resolutionWidth && 
+           p.y >= 0 && p.y < (int)cameraInfo.resolutionHeight;
   }
 
   virtual void print(std::ostream& stream) const;

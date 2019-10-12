@@ -15,18 +15,16 @@
 #include "Representations/Infrastructure/UltraSoundData.h"
 #include "Representations/Infrastructure/GyrometerData.h"
 #include "Representations/Infrastructure/InertialSensorData.h"
-#include "Representations/Infrastructure/IRData.h"
 #include "Representations/Infrastructure/BatteryData.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/ObstacleModel.h"
-#include "Representations/Modeling/CollisionModel.h"
-#include "Representations/Modeling/Path.h"
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CalibrationData.h"
+#include "Representations/Motion/CollisionPercept.h"
 
 #include <Representations/Infrastructure/ButtonData.h>
-
+#include <Representations/Infrastructure/AudioControl.h>
 // tools
 #include "Tools/Math/Common.h"
 
@@ -34,17 +32,16 @@ BEGIN_DECLARE_MODULE(SensorSymbols)
   REQUIRE(UltraSoundReceiveData)
   REQUIRE(GyrometerData)
   REQUIRE(InertialSensorData)
-  REQUIRE(IRReceiveData)
   REQUIRE(BatteryData)
   REQUIRE(FrameInfo)
   REQUIRE(BodyState)
   REQUIRE(ObstacleModel)
   REQUIRE(Image)
-  REQUIRE(CollisionModel)
   REQUIRE(CalibrationData)
   REQUIRE(ButtonData)
+  REQUIRE(CollisionPercept)
 
-  PROVIDE(Path)
+  PROVIDE(AudioControl)
 END_DECLARE_MODULE(SensorSymbols)
 
 class SensorSymbols: public SensorSymbolsBase
@@ -67,8 +64,7 @@ public:
 private:
   static SensorSymbols* theInstance;
 
-  //get-method
-  static double getIRButtonNumber();
+  //getters
   static double getFrameNumber();
   static double simplePassLeftSensor();
   static double simplePassRightSensor();
@@ -92,6 +88,12 @@ private:
   static double getInertialSensorY();
 
   static bool getBumberLeftPressed();
+  static bool getButtonHeadMiddle();
+  static bool getButtonHeadFront();
+  static bool getButtonHeadRear();
+
+  static bool getCollisionArmLeft();
+  static bool getCollisionArmRight();
 };
 
 #endif  /* _SENSORSYMBOLS_H */

@@ -56,40 +56,43 @@ void Configuration::loadFromDir(std::string dirlocation,
                                 const std::string& platform,
                                 const std::string& scheme,
                                 const std::string& bodyID,
-                                const std::string& headID)
+                                const std::string& headID,
+                                const std::string& robotName)
 {
-  if (!g_str_has_suffix(dirlocation.c_str(), "/"))
-  {
+  ASSERT_MSG(isDir(dirlocation), "Could not load configuration from " << dirlocation << ": directory does not exist.");
+  std::cout << "[INFO] loading configuration from " << dirlocation << std::endl;
+
+  if (!g_str_has_suffix(dirlocation.c_str(), "/")) {
     dirlocation = dirlocation + "/";
   }
 
-  if (g_file_test(dirlocation.c_str(), G_FILE_TEST_EXISTS) && g_file_test(dirlocation.c_str(), G_FILE_TEST_IS_DIR))
-  {
-    loadFromSingleDir(publicKeyFile, dirlocation + "general/");
-    loadFromSingleDir(publicKeyFile, dirlocation + "platform/" + platform + "/");
-    if(scheme.size() > 0)
-    {
-      loadFromSingleDir(publicKeyFile, dirlocation + "scheme/" + scheme + "/");
-    }
-    loadFromSingleDir(publicKeyFile, dirlocation + "robots/" + bodyID + "/");
-    loadFromSingleDir(publicKeyFile, dirlocation + "robot_heads/" + headID + "/");
-    privateDir = dirlocation + "private/";
-    loadFromSingleDir(privateKeyFile, privateDir);
-  } else
-  {
-    g_warning("Could not load configuration from %s: directory does not exist", dirlocation.c_str());
+  loadFromSingleDir(publicKeyFile, dirlocation + "general/");
+  loadFromSingleDir(publicKeyFile, dirlocation + "platform/" + platform + "/");
+
+  if(scheme.size() > 0) {
+    loadFromSingleDir(publicKeyFile, dirlocation + "scheme/" + scheme + "/");
   }
+
+  bool robot_config_required = (platform == "Nao" || platform == "nao");
+  loadFromSingleDir(publicKeyFile, dirlocation + "robots/" + robotName + "/", robot_config_required);
+
+  loadFromSingleDir(publicKeyFile, dirlocation + "robots_bodies/" + bodyID + "/", false);
+  loadFromSingleDir(publicKeyFile, dirlocation + "robot_heads/" + headID + "/", false);
+  
+  privateDir = dirlocation + "private/";
+  loadFromSingleDir(privateKeyFile, privateDir);
 }
 
-void Configuration::loadFromSingleDir(GKeyFile* keyFile, std::string dirlocation)
+void Configuration::loadFromSingleDir(GKeyFile* keyFile, std::string dirlocation, bool required)
 {
-  // iterate over all files in the folder
+  // make sure the directory exists
+  ASSERT_MSG(!required || isDir(dirlocation), "Could not load configuration from " << dirlocation << ": directory does not exist.");
 
-  if (!g_str_has_suffix(dirlocation.c_str(), "/"))
-  {
+  if (!g_str_has_suffix(dirlocation.c_str(), "/")) {
     dirlocation = dirlocation + "/";
   }
 
+  // iterate over all files in the folder
   GDir* dir = g_dir_open(dirlocation.c_str(), 0, NULL);
   if (dir != NULL)
   {
@@ -107,8 +110,6 @@ void Configuration::loadFromSingleDir(GKeyFile* keyFile, std::string dirlocation
         }
         g_free(group);
       }
-
-
     }
     g_dir_close(dir);
   }
@@ -122,7 +123,7 @@ void Configuration::loadFile(GKeyFile* keyFile, std::string file, std::string gr
   g_key_file_load_from_file(tmpKeyFile, file.c_str(), G_KEY_FILE_NONE, &err);
   if (err != NULL)
   {
-    g_error("%s: %s", file.c_str(), err->message);
+    std::cerr << "[ERROR] " << file << ": " << err->message << std::endl;
     g_error_free(err);
   } else
   {
@@ -136,7 +137,7 @@ void Configuration::loadFile(GKeyFile* keyFile, std::string file, std::string gr
       if (g_strcmp0(groups[i], groupName.c_str()) != 0)
       {
         groupOK = false;
-        g_error("%s: config file contains illegal group \"%s\"", file.c_str(), groups[i]);
+        std::cerr << "[ERROR] " << file << ": config file contains illegal group \"" << groups[i] << "\"" << std::endl;
         break;
       }
     }
@@ -154,7 +155,7 @@ void Configuration::loadFile(GKeyFile* keyFile, std::string file, std::string gr
       }
       g_strfreev(keys);
       
-      g_message("loaded %s", file.c_str());
+      std::cout << "[INFO] loaded " << file << std::endl;
     }
 
     g_strfreev(groups);
@@ -191,7 +192,7 @@ void Configuration::saveFile(GKeyFile* keyFile, const std::string& file, const s
     gchar* buffer = g_key_file_get_value(keyFile, group.c_str(), keys[i], &err);
     if(err != NULL)
     {
-      g_warning("%s", err->message);
+      std::cout << "[WARN] " << err->message << std::endl;
     }
     g_key_file_set_value(tmpKeyFile, group.c_str(), keys[i], buffer);
     g_free(buffer);
@@ -208,14 +209,14 @@ void Configuration::saveFile(GKeyFile* keyFile, const std::string& file, const s
         outFile.write(data, dataLength);
         outFile.close();
       } else {
-        g_error("could not open the file %s", file.c_str());
+        std::cerr << "[ERROR] could not open the file " << file << std::endl;
       }
       g_free(data);
     }
   }
   else
   {
-    g_error("could not save configuration file %s: %s", file.c_str(), err->message);
+    std::cerr << "[ERROR] could not save configuration file " << file << ": " << err->message << std::endl;
     g_error_free(err);
   }
 

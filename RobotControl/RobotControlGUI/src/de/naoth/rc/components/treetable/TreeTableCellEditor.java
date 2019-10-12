@@ -15,18 +15,20 @@ import javax.swing.table.TableCellEditor;
  
 public class TreeTableCellEditor extends AbstractCellEditor implements TableCellEditor {
  
-    private JTree tree;
-    private JTable table;
+    private final JTree tree;
+    private final JTable table;
  
     public TreeTableCellEditor(JTree tree, JTable table) {
         this.tree = tree;
         this.table = table;
     }
  
+    @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int r, int c) {
         return tree;
     }
  
+    @Override
     public boolean isCellEditable(EventObject e) {
         if (e instanceof MouseEvent) 
         {

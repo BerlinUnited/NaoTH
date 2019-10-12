@@ -57,7 +57,7 @@ BEGIN_DECLARE_MODULE(LineGraphProvider)
   REQUIRE(CameraMatrix)
   REQUIRE(CameraMatrixTop)
 
-  PROVIDE(ProbabilisticQuadCompas)
+  //PROVIDE(ProbabilisticQuadCompas)
   PROVIDE(LineGraphPercept)
 END_DECLARE_MODULE(LineGraphProvider)
 
@@ -72,13 +72,54 @@ public:
 
   void execute()
   {
-    getProbabilisticQuadCompas().reset();
-    getLineGraphPercept().edgels.clear();
+    //getProbabilisticQuadCompas().reset();
+    getLineGraphPercept().reset();
 
     execute(CameraInfo::Bottom);
     execute(CameraInfo::Top);
     
-    getProbabilisticQuadCompas().normalize();
+    //getProbabilisticQuadCompas().normalize();
+
+
+
+    DEBUG_REQUEST("Vision:LineGraphProvider:draw_extended_line_graph",
+      FIELD_DRAWING_CONTEXT;
+      int c = 0; 
+      for(const std::vector<EdgelD>& subgraph : getLineGraphPercept().lineGraphs) {     
+
+        PEN(ColorClasses::colorClassToHex((ColorClasses::Color)c),2);
+        c = (c+1) % ColorClasses::numOfColors;
+
+        for(size_t i = 0; i < subgraph.size(); i++) {
+          const Vector2d& first = subgraph[i].point;
+          CIRCLE( subgraph[i].point.x, subgraph[i].point.y, 25);
+
+          if(i+1 < subgraph.size()) {
+            const Vector2d& next = subgraph[i+1].point;
+            LINE(first.x,first.y,next.x,next.y);
+          }
+        }
+      }
+    );
+    DEBUG_REQUEST("Vision:LineGraphProvider:draw_extended_line_graph_top",
+      FIELD_DRAWING_CONTEXT;
+      int c = 0;
+      for(const std::vector<EdgelD>& subgraph : getLineGraphPercept().lineGraphsTop) {
+
+        PEN(ColorClasses::colorClassToHex((ColorClasses::Color)c),2);
+        c = (c+1) % ColorClasses::numOfColors;
+
+        for(size_t i = 0; i < subgraph.size(); i++) {
+          const Vector2d& first = subgraph[i].point;
+          CIRCLE( subgraph[i].point.x, subgraph[i].point.y, 25);
+
+          if(i+1 < subgraph.size()) {
+            const Vector2d& next = subgraph[i+1].point;
+            LINE(first.x,first.y,next.x,next.y);
+          }
+        }
+      }
+    );
   }
 
   class Parameters: public ParameterList
@@ -89,6 +130,7 @@ public:
       PARAMETER_REGISTER(edgelSimThreshold) = 0.8;
       PARAMETER_REGISTER(quadCompasSmoothingFactor) = 0.4;
       PARAMETER_REGISTER(minimalNumberOfPairs) = 0;
+      PARAMETER_REGISTER(maximalProjectedLineWidth) = 30;
 
       syncWithConfig();
     }
@@ -99,6 +141,7 @@ public:
     double edgelSimThreshold;
     double quadCompasSmoothingFactor;
     int minimalNumberOfPairs;
+    int maximalProjectedLineWidth;
   } parameters;
 
   struct Neighbors {
@@ -123,7 +166,11 @@ private: // data members
 
   std::vector<Neighbors> edgelNeighbors;
   std::vector<EdgelPair> edgelPairs;
-  std::vector<Vector2d> edgelProjections;
+
+  std::vector<Vector2d> edgelProjectionsBegin;
+  std::vector<Vector2d> edgelProjectionsEnd;
+
+  std::vector<std::vector<int>> lineGraphsIds;
 
 private: // method members
   static double edgelSim(const EdgelT<double>& e1, const EdgelT<double>& e2);
@@ -132,6 +179,8 @@ private: // method members
     const std::vector<ScanLineEdgelPercept::EdgelPair>& edgels, 
     std::vector<EdgelPair>& edgelPairs, 
     std::vector<Neighbors>& neighbors, double threshold) const;
+
+  void extendLineGraph(std::vector<Neighbors>& neighbors);
 
   DOUBLE_CAM_PROVIDE(LineGraphProvider, DebugImageDrawings);
 

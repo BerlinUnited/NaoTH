@@ -9,20 +9,23 @@ option head_control
       goto stay_as_forced;
     else if (head.control_mode == look_straight_ahead)
       goto look_straight_ahead;
+    else if (head.control_mode == look_at_ball)
+      goto look_at_ball;
     else if (head.control_mode == search_for_ball)
       goto search_for_ball;
     else if (head.control_mode == search_for_ball_goalie)
       goto search_for_ball_goalie;
     else if (head.control_mode == look_around)
       goto look_around;
-    else if (head.control_mode == search_for_goal)
-      goto search_for_goal;
-    else if (head.control_mode == search_for_goal_opp)
-      goto search_for_goal_opp;
     else if(head.control_mode == look_at_ball_percept)
       goto look_at_ball_percept;
     else if(head.control_mode == search_for_ball_and_look_around)
       goto search_for_ball_and_look_around;
+    else if(head.control_mode == look_at_team_ball)
+      goto look_at_team_ball;
+   else if(head.control_mode == look_at_preview_angle)
+      goto look_at_preview_angle;
+
   }
 
   initial state none
@@ -51,6 +54,15 @@ option head_control
     }
   }
   
+  state look_at_ball
+  {
+    action
+    {
+      head.camera.id = Bottom;
+      search_for_ball(force_ball_model_check = false, look_around=false, look_at_ball_when_distance=1000);
+    }
+  }
+
   state search_for_ball
   {
     action
@@ -65,7 +77,7 @@ option head_control
     action
     {
       head.camera.id = Bottom;
-      search_for_ball(force_ball_model_check = false, look_around=true, look_at_ball_when_distance=4000);
+      search_for_ball(force_ball_model_check = false, look_around=true, look_at_ball_when_distance=4000, use_teamball=true);
     }
   }
 
@@ -74,7 +86,6 @@ option head_control
   {
     action
     {
-      //search_for_ball_and_look_around();
       head.camera.id = Bottom;
       search_for_ball(force_ball_model_check=false, look_around=true, look_at_ball_when_distance=1000);
     }
@@ -89,25 +100,6 @@ option head_control
     }
   }
 
-  state search_for_goal
-  {
-    action
-    {
-      head.camera.id = Top;
-      search_for_goal(own=true,opp=true);
-
-    }
-  }
-
-  state search_for_goal_opp
-  {
-    action
-    {
-      head.camera.id = Top;
-      search_for_goal(own=false,opp=true);
-    }
-  }
-
 
   state look_at_ball_percept 
   {
@@ -118,5 +110,20 @@ option head_control
 	  }
 	}
 
+  state look_at_team_ball
+  {
+    action 
+    {
+      head.camera.id = Top;
+      look_at_team_ball();
+    }
+  }
+  
+ state look_at_preview_angle{
+   action{
+     look_at_preview_angle();
+   }
+ }
+ 
 }
   

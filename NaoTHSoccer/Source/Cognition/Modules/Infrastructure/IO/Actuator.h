@@ -13,12 +13,12 @@
 #include <Representations/Infrastructure/CameraInfo.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/LEDData.h>
-#include <Representations/Infrastructure/IRData.h>
 #include <Representations/Infrastructure/UltraSoundData.h>
 #include <Representations/Infrastructure/SoundData.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
 #include <Representations/Infrastructure/DebugMessage.h>
 #include <Representations/Infrastructure/GameData.h>
+#include "Representations/Infrastructure/AudioControl.h"
 
 #include "Representations/Motion/Request/HeadMotionRequest.h"
 #include "Representations/Motion/MotionStatus.h"
@@ -27,6 +27,9 @@
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Modeling/CameraMatrixOffset.h"
 
+#include "Representations/Modeling/BodyState.h"
+
+
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(Actuator)
@@ -34,9 +37,7 @@ BEGIN_DECLARE_MODULE(Actuator)
   REQUIRE(CameraSettingsRequest)
   REQUIRE(CameraSettingsRequestTop)
   REQUIRE(LEDData)
-  REQUIRE(IRSendData)
   REQUIRE(UltraSoundSendData)
-  REQUIRE(SoundPlayData)
   REQUIRE(MotionStatus)
   REQUIRE(TeamMessageDataOut)
   REQUIRE(DebugMessageOut)
@@ -45,10 +46,13 @@ BEGIN_DECLARE_MODULE(Actuator)
   REQUIRE(CameraInfoTop)
   REQUIRE(CameraMatrixOffset)
   REQUIRE(GameReturnData)
+  REQUIRE(BodyState)
+  REQUIRE(AudioControl)
 
   // HACK: needed to transform the HeadMotionRequest
   REQUIRE(KinematicChain)
 
+  PROVIDE(SoundPlayData)
 
   // HACK: check execute()
   PROVIDE(MotionRequest)

@@ -16,77 +16,174 @@
 namespace naoth
 {
 
-  class CameraSettings : public Printable
-  {
-    public:
-      /* don't change order of enumerations
-       * because it reflects the order of execution
-       */
-      enum CameraSettingID
-      {
-        AutoExposition,
-        AutoWhiteBalancing,
-        BacklightCompensation,
-        Brightness,
-        CameraSelection,
-        Contrast,
-        Exposure,
-        FadeToBlack,
-        FPS, // TODO: remove this from settings?
-        Gain,
-        HorizontalFlip,
-        Hue,
-        ResolutionHeight, // TODO: remove this from settings?
-        ResolutionWidth, // TODO: remove this from settings?
-        Saturation,
-        Sharpness,
-        VerticalFlip,
-        WhiteBalance,
-        numOfCameraSetting
-      };
+/** Custom settings for V5 */
+struct V5CameraSettings
+{
+  double targetGain;
 
-      int data[numOfCameraSetting];
+  double minAnalogGain;
+  double maxAnalogGain;
 
-      CameraSettings();
-      virtual ~CameraSettings();
-      static std::string getCameraSettingsName(CameraSettingID id);
+  bool fadeToBlack;
 
-      virtual void print(std::ostream& stream) const;
-  };
+  int powerlineFrequency;
 
-  class CurrentCameraSettings : public CameraSettings
-  {
-  public:
-    CurrentCameraSettings();
-    virtual ~CurrentCameraSettings() {}
-  };
+  int gammaCorrection;
 
-  class CameraSettingsRequest : public ParameterList, public CameraSettings
-  {
-  public:
-    CameraSettingsRequest(std::string configName="CameraSettings");
-    virtual ~CameraSettingsRequest() {}
+  int autoExpositionAlgorithm;
 
-    /** Set to true to query a real CameraSetting from the Nao camera */
-    bool queryCameraSettings;
+  int whiteBalanceTemperature;
+};
 
-  };
+struct V6CameraSettings
+{
 
-  class CurrentCameraSettingsTop : public CameraSettings
-  {
-  public:
-    CurrentCameraSettingsTop();
-    virtual ~CurrentCameraSettingsTop() {}
-  };
+};
 
-  class CameraSettingsRequestTop : public CameraSettingsRequest
-  {
-  public:
-    CameraSettingsRequestTop();
-    virtual ~CameraSettingsRequestTop() {}
+struct V5CommonSettings
+{
+  int whiteBalanceTemperature;
+};
 
-  };
-}
+struct V6CommonSettings
+{
+};
 
-#endif  /* _CAMERASETTINGS_H */
+class CameraSettings : public Printable
+{
+public:
+  bool autoExposition;
 
+  int exposure;
+  double gain;
+
+  int saturation;
+
+  int brightness;
+
+  float contrast;
+
+  int sharpness;
+
+  int hue;
+
+  bool autoWhiteBalancing;
+
+  bool horizontalFlip;
+  bool verticalFlip;
+
+  bool backlightCompensation;
+
+  V5CameraSettings v5;
+  V6CameraSettings v6;
+
+  static const std::size_t AUTOEXPOSURE_GRID_SIZE = 5;
+  std::uint8_t autoExposureWeights[AUTOEXPOSURE_GRID_SIZE][AUTOEXPOSURE_GRID_SIZE];
+
+  CameraSettings();
+  virtual ~CameraSettings();
+
+  virtual void print(std::ostream &stream) const;
+};
+
+class CameraSettingsManager
+{
+public:
+  /** Queries all values from the actual camera */
+  virtual void query(int cameraFd, std::string cameraName, CameraSettings &settings) = 0;
+
+  /** Apply all changed values on the actual camera */
+  virtual void apply(int cameraFd, std::string cameraName, const CameraSettings &settings, bool force=false) = 0;
+};
+
+class CurrentCameraSettings : public CameraSettings
+{
+public:
+  CurrentCameraSettings();
+  virtual ~CurrentCameraSettings() {}
+};
+
+class CurrentCameraSettingsTop : public CameraSettings
+{
+public:
+  CurrentCameraSettingsTop();
+  virtual ~CurrentCameraSettingsTop() {}
+};
+
+class CameraSettingsRequest : public ParameterList
+{
+public:
+  CameraSettingsRequest(std::string configName = "CameraSettings");
+  virtual ~CameraSettingsRequest() {}
+
+  /** Set to true to query a real CameraSetting from the Nao camera */
+  bool queryCameraSettings;
+
+  bool autoExposition;
+
+  V5CameraSettings v5;
+  V6CameraSettings v6;
+  bool autoWhiteBalancing;
+  bool backlightCompensation;
+  int brightness;
+  int cameraSelection;
+  double contrast;
+  int exposure;
+  double gain;
+  bool horizontalFlip;
+  int hue;
+  int saturation;
+  int sharpness;
+  bool verticalFlip;
+
+  std::uint8_t autoExposureWeights[CameraSettings::AUTOEXPOSURE_GRID_SIZE][CameraSettings::AUTOEXPOSURE_GRID_SIZE];
+
+  void reset();
+  void setAutoExposureWeights(std::uint8_t w);
+
+  CameraSettings getCameraSettings() const;
+};
+
+class CameraSettingsRequestTop : public CameraSettingsRequest
+{
+public:
+  CameraSettingsRequestTop();
+  virtual ~CameraSettingsRequestTop() {}
+};
+
+//to be used to set camera setting commonly used for both cameras
+class CommonCameraSettingsRequest : public ParameterList
+{
+public:
+  CommonCameraSettingsRequest(std::string configName = "CommonCameraSettings");
+  virtual ~CommonCameraSettingsRequest() {}
+
+  bool autoExposition;
+  bool autoWhiteBalancing;
+  int brightness;
+  int exposure;
+  double gain;
+
+  int saturation;
+  int sharpness;
+
+  V5CommonSettings v5;
+  V6CommonSettings v6;
+
+  /*
+    Can be either:
+      - averageY (average brightness over complete image)
+      - dortmund (weights table like Dortmund uses)
+      - centerlines3 (bottom 3 lines for top camera and top 3 lines for bottom camera)
+      - centerlines2 (bottom 2 lines for top camera and top 2 lines for bottom camera)
+    */
+  std::string autoExpositionMethod;
+
+  /** Set to true to query a real CameraSetting from the Nao camera */
+  bool queryCameraSettings;
+
+  bool isActive;
+};
+} // namespace naoth
+
+#endif /* _CAMERASETTINGS_H */

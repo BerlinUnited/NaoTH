@@ -9,16 +9,9 @@
 #ifndef _ObstacleModel_h_
 #define _ObstacleModel_h_
 
-#include "Tools/Math/Vector2.h"
-#include "Tools/Math/Pose2D.h"
-#include "Tools/DataStructures/RingBuffer.h"
-#include "Tools/ColorClasses.h"
-
 #include "Tools/DataStructures/Printable.h"
-#include "Representations/Infrastructure/FrameInfo.h"
-#include "Representations/Infrastructure/FieldInfo.h"
-#include "Representations/Modeling/PlayerInfo.h"
-#include "RobotPose.h"
+
+//#include "Representations/Infrastructure/FrameInfo.h"
 
 class ObstacleModel : public naoth::Printable
 {

@@ -12,6 +12,7 @@
 
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
+#include "Tools/Math/Common.h"
 
 namespace naoth
 {
@@ -48,7 +49,7 @@ class JointData
       LAnkleRoll,
 
       // NOTE: those values don't exist on the old V3.2/V3.3 robots
-      //       so, we pu them at the end for easier support for the old format
+      //       so, we put them at the end for easier support for the old format
       LWristYaw,
       RWristYaw,
       LHand,
@@ -69,7 +70,7 @@ class JointData
     double dp[numOfJoint]; // speed
     double ddp[numOfJoint]; // acceleration
 
-    // joint limits
+    // HACK: joint limits
     static double min[numOfJoint];
     static double max[numOfJoint];
 
@@ -100,6 +101,10 @@ class JointData
     
     int checkStiffness() const;
 
+    void set(JointID joint, const double value, const double max_delta) {
+      position[joint] += Math::clamp(value - position[joint], -max_delta, max_delta);
+    }
+
   protected:
     double mirrorData(JointID joint) const;
     void mirrorFrom(const JointData& jointData);
@@ -125,6 +130,15 @@ class JointData
 
     virtual void print(std::ostream& stream) const;
   };
+
+  class OffsetJointData : public JointData, public Printable
+  {
+  public:
+    OffsetJointData();
+    ~OffsetJointData();
+
+    virtual void print(std::ostream& stream) const;
+  };
   
   template<>
   class Serializer<SensorJointData>
@@ -140,6 +154,14 @@ class JointData
     public:
     static void serialize(const MotorJointData& representation, std::ostream& stream);
     static void deserialize(std::istream& stream, MotorJointData& representation);
+  };
+
+  template<>
+  class Serializer<OffsetJointData>
+  {
+    public:
+    static void serialize(const OffsetJointData& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, OffsetJointData& representation);
   };
 }
 

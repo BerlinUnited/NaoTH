@@ -92,7 +92,8 @@ void GoalDetectorV2::execute(CameraInfo::CameraID id)
 
 void GoalDetectorV2::clusterEdgelFeatures()
 {
-  std::vector<GoalBarFeature> pairs;
+  pairs.clear();
+
   for(size_t scanIdOne = 0; scanIdOne + 1 < getGoalFeaturePercept().features.size(); scanIdOne++) 
   {
     const std::vector<GoalBarFeature>& scanlineOne = getGoalFeaturePercept().features[scanIdOne];
@@ -304,7 +305,7 @@ Vector2i GoalDetectorV2::scanForEndPoint(const Vector2i& start, const Vector2d& 
   while(footPointScanner.getNextWithCheck(pos))
   {
     IMG_GET(pos.x, pos.y, pixel);
-    int pixValue = params.detectWhiteGoals ? pixel.y : (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
+    int pixValue = pixel.y;
     filter.add(pos, pixValue);
 
     //collect some values for statisics of colors

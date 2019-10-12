@@ -13,20 +13,24 @@ namespace internal_symbols("Internal Symbols") {
     unknown
   };
   
+  /** state of the game */
   enum game.internal_mode internal game.current_mode;
-  enum game.internal_mode internal game.last_mode;
-  /* */
-  bool internal special_kickoff_done;
-  /* */
-  bool internal last_state_was_penalized;
-  /** Wether a situtation can be aborted */
-  bool internal situation.abortable;
-  /** Wether a common situation is allowed to interfere */
-  bool internal common_decision.allowed;
-  /** Will be set once to true if the ball was outside the center circle */
-  bool internal ball_was_outside_circle;
 
-  /* motion_symbols */
+  // not calculated yet
+  //enum game.internal_mode internal game.last_mode;
+
+  // todo: replace with game.last_mode
+  bool internal last_state_was_penalized;
+
+  /** state of the body: false when lifted, or fallen */
+  bool internal body.ready_to_walk;
+
+
+  /** This is used to indicate not interruptable states */
+  bool internal situation_abortable;
+
+  
+  /* motion control symbols */
 
   /** The head motion control modes. This specifies how behavior should be moving the head. */
   enum head.control_mode internal 
@@ -34,13 +38,14 @@ namespace internal_symbols("Internal Symbols") {
     none,
     stay_as_forced,
     look_straight_ahead,
+    look_at_ball,
     search_for_ball,
     search_for_ball_goalie,
-    search_for_goal,
-    search_for_goal_opp,
     look_around,
     look_at_ball_percept,
-    search_for_ball_and_look_around
+    search_for_ball_and_look_around,
+    look_at_team_ball,
+    look_at_preview_angle
   };
 
   enum head.control_mode internal head.control_mode;
@@ -49,28 +54,32 @@ namespace internal_symbols("Internal Symbols") {
   enum arm.control_mode internal 
   {
     normal,
-    back
+    back,
+    synchronised_with_walk
   };
 
   enum arm.control_mode internal arm.control_mode;
   // needed by the get up motion
   enum arm.control_mode internal arm.control_mode_before_fall;
+
   
+  bool internal arm.react_to_collision;
 
-  bool internal body.ready_to_walk;
+  /** Counts the state changes turn/look in passive_ball_not_seen */
+  float internal search_ball.turn_stop_motion_count;
 
-  /* strategy symbols*/
+  /** the time we are in play-state in ms*/
+  float internal game.time_in_play;
 
-  /** remembers the dircetion for turning for search (@see search_ball)*/
-  float internal search_ball.search_direction;
-  /** remembers the numbers of turns while search (@see search_ball)*/
-  float internal search_ball.turns_for_searching;
+  /** the x or y coordinate which should be constant while moving */
+  float internal freekick_const_pos;
 
-  /* Kick symbols */
-  
-  /** remember attack direction for hysteresis */
-  float internal attack.direction.used;
+  /** remember the last dynamic role (for transition handling) */
+  enum role.dynamic internal strategy.role_dynamic_last;
 
-  /** this is used by the situation_based_striker, don't use itanywhere else*/
-  bool internal situation_abortable;
+  /** stores the position from which the search has to move away */
+  float internal search_ball_walk_back.x;
+  float internal search_ball_walk_back.y;
+
+  bool internal search_for_ball.last_look_around_direction_was_left;
 }

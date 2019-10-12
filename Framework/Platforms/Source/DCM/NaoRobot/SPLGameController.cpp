@@ -3,54 +3,41 @@
 #include <PlatformInterface/Platform.h>
 #include <sys/socket.h>
 #include "Tools/Communication/NetAddr.h"
+#include <Tools/ThreadUtil.h>
 
 using namespace naoth;
 using namespace std;
 
-void* socketLoopWrap(void* c)
-{
-  SPLGameController* ctr = static_cast<SPLGameController*> (c);
-  ctr->socketLoop();
-  return NULL;
-}//end motionLoopWrap
-
 SPLGameController::SPLGameController()
-  :exiting(false), port(GAMECONTROLLER_PORT),
+  : exiting(false),
+    returnPort(GAMECONTROLLER_RETURN_PORT),
     socket(NULL),
-    gamecontrollerAddress(NULL),
-    socketThread(NULL),
-    lastGetTime(0),
-    dataMutex(NULL),
-    returnDataMutex(NULL)
+    gamecontrollerAddress(NULL)
 {
   GError* err = bindAndListen();
   if(err)
   {
-    g_warning("could not listen for SPLGameController: %s", err->message);
+    std::cout << "[WARN] could not listen for SPLGameController: " << err->message << std::endl;
     socket = NULL;
     g_error_free(err);
   }
   else
   {
     // init player number, team number and etc.
-    data.loadFromCfg( naoth::Platform::getInstance().theConfiguration );
+    //data.loadFromCfg( naoth::Platform::getInstance().theConfiguration );
+    cancelable = g_cancellable_new();
+
     // init return data
     strcpy(dataOut.header, GAMECONTROLLER_RETURN_STRUCT_HEADER);
     dataOut.version = GAMECONTROLLER_RETURN_STRUCT_VERSION;
-    dataOut.team = static_cast<uint8_t>(data.teamNumber);
-    dataOut.player = static_cast<uint8_t>(data.playerNumber);
+    dataOut.team = 0;
+    dataOut.player = 0;
     dataOut.message = GAMECONTROLLER_RETURN_MSG_ALIVE;
 
-    if (!g_thread_supported()) {
-      g_thread_init(NULL);
-	}
-    dataMutex = g_mutex_new();
-    returnDataMutex = g_mutex_new();
-
-    g_message("SPLGameController start socket thread");
-    socketThread = g_thread_create(socketLoopWrap, this, true, NULL);
-    ASSERT(socketThread != NULL);
-    g_thread_set_priority(socketThread, G_THREAD_PRIORITY_LOW);
+    std::cout << "[INFO] SPLGameController start socket thread" << std::endl;
+    socketThread = std::thread([this] {this->socketLoop();});
+    ThreadUtil::setPriority(socketThread, ThreadUtil::Priority::lowest);
+    ThreadUtil::setName(socketThread, "GameController");
   }
 }
 
@@ -75,177 +62,86 @@ GError* SPLGameController::bindAndListen(unsigned int port)
   return err;
 }
 
-bool SPLGameController::get(GameData& gameData, unsigned int time)
-{
-  gameData.valid = false;
-  bool ok = false; // TODO: do we need this ok?
-
-  if ( g_mutex_trylock(dataMutex) )
-  {
-    if ( data.valid )
-    {
-      if (   data.gameState == GameData::playing
-          || data.gameState == GameData::penalized )
-      {
-        data.gameTime += (time - lastGetTime);
-      }
-
-      if ( gameData.gameState != data.gameState )
-      {
-        data.timeWhenGameStateChanged = time;
-      }
-
-      if ( gameData.playMode != data.playMode )
-      {
-        data.timeWhenPlayModeChanged = time;
-      }
-
-      gameData = data;
-      data.valid = false;
-      lastGetTime = time;
-      ok = true;
-
-    }//end if data.valid
-    g_mutex_unlock(dataMutex);
-  }//end if trylock
-
-  return ok;
-}//end get gameData
 
 bool SPLGameController::update()
 {
+  data.valid = false;
+
+  // check the header
   std::string header;
   header.assign(dataIn.header, 4);
   if(header == GAMECONTROLLER_STRUCT_HEADER && dataIn.version == GAMECONTROLLER_STRUCT_VERSION)
   {
-    bool teamFound = false;
-    TeamInfo tinfo;
-
-    for(unsigned int i=0; i < 2; i++)
+    // team number was set
+    if( dataOut.team > 0 && 
+       (dataIn.teams[0].teamNumber == dataOut.team || dataIn.teams[1].teamNumber == dataOut.team)
+      ) 
     {
-      if(dataIn.teams[i].teamNumber == data.teamNumber)
-      {
-        tinfo = dataIn.teams[i];
-        teamFound = true;
-        switch(tinfo.teamColour)
-        {
-        case TEAM_BLUE:
-            data.teamColor = GameData::blue;
-            break;
-        case TEAM_RED:
-            data.teamColor = GameData::red;
-            break;
-        case TEAM_YELLOW:
-            data.teamColor = GameData::yellow;
-            break;
-        case TEAM_BLACK:
-            data.teamColor = GameData::black;
-            break;
-        default:
-            data.teamColor = GameData::blue;
-        }
-        break;
-      }
+      data.parseFrom(dataIn, dataOut.team);
+      data.valid = true;
     }
-
-
-    if(teamFound)
-    {
-      switch (dataIn.state)
-      {
-      case STATE_INITIAL:
-        data.gameState = GameData::initial;
-        break;
-      case STATE_READY:
-        data.gameState = GameData::ready;
-        break;
-      case STATE_SET:
-        data.gameState = GameData::set;
-        break;
-      case STATE_PLAYING:
-        data.gameState = GameData::playing;
-        break;
-      case STATE_FINISHED:
-        data.gameState = GameData::finished;
-        break;
-      }
-
-      data.numOfPlayers = dataIn.playersPerTeam;
-      data.msecsRemaining = dataIn.secsRemaining * 1000;
-      data.firstHalf = (dataIn.firstHalf == 1);
-
-      if ( dataIn.secondaryState == STATE2_NORMAL )
-      {
-        if ( data.gameState == GameData::initial
-            || data.gameState == GameData::ready
-            || data.gameState == GameData::set
-            || data.gameState == GameData::playing )
-        {
-          //TODO: check more conditions (time, etc.)
-          data.playMode = (dataIn.kickOffTeam == tinfo.teamNumber) ? GameData::kick_off_own : GameData::kick_off_opp;
-        }
-      }
-      else if ( dataIn.secondaryState == STATE2_PENALTYSHOOT )
-      {
-        data.playMode = (dataIn.kickOffTeam == tinfo.teamNumber) ? GameData::penalty_kick_own : GameData::penalty_kick_opp;
-      }
-      else if ( dataIn.secondaryState == STATE2_OVERTIME )
-      {
-        data.playMode = GameData::game_over;
-      }
-
-      unsigned char playerNumberForGameController = static_cast<unsigned char>(data.playerNumber - 1); // gamecontroller starts counting at 0
-
-      if(playerNumberForGameController < MAX_NUM_PLAYERS)
-      {
-        RobotInfo rinfo =
-            tinfo.players[playerNumberForGameController];
-
-        data.penaltyState = (GameData::PenaltyState)rinfo.penalty;
-        data.msecsTillUnpenalised = rinfo.secsTillUnpenalised * 1000;
-        if (rinfo.penalty != PENALTY_NONE)
-        {
-          data.gameState = GameData::penalized;
-        }
-      }
-    } // endif teamFound
-    else
-    {
-      // no message for us invalidate data
-      return false;
-    }
-
-    return true;
   } // end if header correct
-  return false;
+
+  return data.valid;
 }
 
-void SPLGameController::setReturnData(const naoth::GameReturnData& data)
+
+void SPLGameController::get(GameData& gameData)
 {
-  if ( g_mutex_trylock(returnDataMutex) )
+  std::unique_lock<std::mutex> lock(dataMutex, std::try_to_lock);
+  if ( lock.owns_lock() )
   {
-    dataOut.message = data.message;
-    g_mutex_unlock(returnDataMutex);
+    if(data.valid) {
+      gameData = data;
+      data.valid = false; // invalidate after copy
+    } else {
+      // no new message received
+      gameData.valid = false;
+    }
   }
+}
+
+void SPLGameController::set(const naoth::GameReturnData& data)
+{
+  std::unique_lock<std::mutex> lock(returnDataMutex, std::try_to_lock);
+  if ( lock.owns_lock() )
+  {
+    if(data.message == GameReturnData::dead) {
+      // set to invalid data to avoid sending the message
+      dataOut.player = 0;
+      dataOut.team = 0;
+      dataOut.message = data.message;
+    } else {
+      dataOut.player = (uint8_t)data.player;
+      dataOut.team = (uint8_t)data.team;
+      dataOut.message = data.message;
+    }
+  }
+
 }
 
 SPLGameController::~SPLGameController()
 {
+  std::cout << "[SPLGameController] stop wait" << std::endl;
+  // request the thread to stop
   exiting = true;
 
-  g_thread_join(socketThread);
-  g_mutex_free(dataMutex);
-  g_mutex_free(returnDataMutex);
+  // notify all waiting connections to cancel
+  g_cancellable_cancel(cancelable);
 
-  if(socket != NULL)
-  {
+  if(socketThread.joinable()) {
+    socketThread.join();
+  }
+
+  if(socket != NULL) {
     g_object_unref(socket);
   }
 
-  if(gamecontrollerAddress != NULL)
-  {
+  if(gamecontrollerAddress != NULL) {
     g_object_unref(gamecontrollerAddress);
   }
+  g_object_unref(cancelable);
+  std::cout << "[SPLGameController] stop done" << std::endl;
 }
 
 void SPLGameController::sendData(const RoboCupGameControlReturnData& data)
@@ -253,14 +149,12 @@ void SPLGameController::sendData(const RoboCupGameControlReturnData& data)
   GError *error = NULL;
   if(gamecontrollerAddress != NULL)
   {
-    gssize result = g_socket_send_to(socket, gamecontrollerAddress, (char*)(&data), sizeof(data), NULL, &error);
-    if ( result != sizeof(data) )
-    {
-      g_warning("SPLGameController::returnData, sended size = %d", result);
+    gssize result = g_socket_send_to(socket, gamecontrollerAddress, (char*)(&data), sizeof(data), cancelable, &error);
+    if ( result != sizeof(data) ) {
+      std::cout << "[WARN] SPLGameController::returnData, sended size = " <<  result << std::endl;
     }
-    if (error)
-    {
-      g_warning("g_socket_send_to error: %s", error->message);
+    if (error) {
+      std::cout << "[WARN] g_socket_send_to error: " << error->message << std::endl;
       g_error_free(error);
     }
   }
@@ -268,49 +162,38 @@ void SPLGameController::sendData(const RoboCupGameControlReturnData& data)
 
 void SPLGameController::socketLoop()
 {
-  if(socket == NULL)
+  while(!exiting && socket != NULL)
   {
-    return;
-  }
-
-  while(!exiting)
-  {
-    GSocketAddress* receiverAddress = NULL;
-    int size = g_socket_receive_from(socket, &receiverAddress,
+    GSocketAddress* senderAddress = NULL;
+    int size = g_socket_receive_from(socket, &senderAddress,
                                      (char*)(&dataIn),
                                      sizeof(RoboCupGameControlData),
-                                     NULL, NULL);
+                                     cancelable, NULL);
 
-    bool validPackage = false;
-
-    if(receiverAddress != NULL)
+    if(senderAddress != NULL)
     {
       // construct a proper return address from the receiver
-      GInetAddress* rawAddress = g_inet_socket_address_get_address(G_INET_SOCKET_ADDRESS(receiverAddress));
+      GInetAddress* rawAddress = g_inet_socket_address_get_address(G_INET_SOCKET_ADDRESS(senderAddress));
       if(gamecontrollerAddress != NULL)
       {
         g_object_unref(gamecontrollerAddress);
       }
-      gamecontrollerAddress = g_inet_socket_address_new(rawAddress, static_cast<guint16>(port));
-      g_object_unref(receiverAddress);
+      gamecontrollerAddress = g_inet_socket_address_new(rawAddress, static_cast<guint16>(returnPort));
+      g_object_unref(senderAddress);
     }
 
     if(size == sizeof(RoboCupGameControlData))
     {
-      g_mutex_lock(dataMutex);
-      validPackage = update();
-      if ( validPackage )
+      bool validPackage = false;
       {
-        data.valid = true;
+        std::lock_guard<std::mutex> lock(dataMutex);
+        validPackage = update();
       }
-      g_mutex_unlock(dataMutex);
-
       // only send return package if we are sure the initial package was a proper game controller message
       if(validPackage)
       {
-        g_mutex_lock(returnDataMutex);
+        std::lock_guard<std::mutex> lock(returnDataMutex);
         sendData(dataOut);
-        g_mutex_unlock(returnDataMutex);
       }
     }
   }

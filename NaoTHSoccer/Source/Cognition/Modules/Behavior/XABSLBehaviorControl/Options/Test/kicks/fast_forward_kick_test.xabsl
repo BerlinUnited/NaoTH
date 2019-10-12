@@ -1,6 +1,5 @@
-/* Tests sidekick_to_right and sidekick_to_left:
-  Goes to the ball and kicks to the different sides */
 
+//is kick short
 option fast_forward_kick_test
 {
   common decision
@@ -37,8 +36,7 @@ option fast_forward_kick_test
     }
     action 
     {
-      kick_with_foot(foot = left);
-      //fast_forward_kick_with_left();
+      fast_forward_kick(foot = left);
     }
   }
 
@@ -53,8 +51,7 @@ option fast_forward_kick_test
     }
     action 
     {
-      kick_with_foot(foot = right);
-      //fast_forward_kick_with_right();
+      fast_forward_kick(foot = right);
     }
   }
 
@@ -70,7 +67,6 @@ option fast_forward_kick_test
     action 
     {
       go_to_ball_with_foot(right = false, distance = 180);
-      //go_to_ball(distance = 130);
     }
   }
 
@@ -86,7 +82,6 @@ option fast_forward_kick_test
     action 
     {
       go_to_ball_with_foot(right = true, distance = 180);
-      //go_to_ball(distance = 130);
     }
   }
 

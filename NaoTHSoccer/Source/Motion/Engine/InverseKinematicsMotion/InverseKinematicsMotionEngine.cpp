@@ -20,6 +20,11 @@ InverseKinematicsMotionEngine::InverseKinematicsMotionEngine()
     getDebugParameterList().add(&theParameters);
 }
 
+InverseKinematicsMotionEngine::~InverseKinematicsMotionEngine()
+{
+    getDebugParameterList().remove(&theParameters);
+}
+
 Pose3D InverseKinematicsMotionEngine::getLeftFootFromKinematicChain(const KinematicChain& kc) const
 {
   Pose3D p = kc.theLinks[KinematicChain::LFoot].M;
@@ -390,52 +395,74 @@ void InverseKinematicsMotionEngine::controlCenterOfMassCool(
 
 }//end controlCenterOfMassCool
 
-
-void InverseKinematicsMotionEngine::feetStabilize(
-  const InertialModel& theInertialModel,
+bool InverseKinematicsMotionEngine::rotationStabilizeRC16(
+  const Vector2d& inertial,
   const GyrometerData& theGyrometerData,
-  double (&position)[naoth::JointData::numOfJoint])
+  const double timeDelta,
+  const Vector2d&  rotationP,
+  const Vector2d&  rotationVelocityP,
+  const Vector2d&  /*rotationD*/,
+  InverseKinematic::HipFeetPose& p)
 {
-  const Vector2d& inertial = theInertialModel.orientation;
-  const Vector3d& gyro = theGyrometerData.data;
+  const double alpha = 0.2;
+  Vector2d gyro = Vector2d(theGyrometerData.data.x, theGyrometerData.data.y);
+  static Vector2d filteredGyro = gyro;
+  filteredGyro = filteredGyro * (1.0f - alpha) + gyro * alpha;
 
-  
+  const double observerMeasurementDelay = 40;
+  const int frameDelay = static_cast<int>(observerMeasurementDelay / (timeDelta*1000));
 
-  // HACK: small filter...
-  static Vector3d lastGyro = gyro;
-  Vector3d filteredGyro = (lastGyro+gyro)*0.5;
+  static RingBuffer<Vector2d, 10> buffer;
+  static Vector2d lastGyroError;
+  static RotationMatrix lastBodyRotationMatrix = p.hip.rotation;
 
-  Vector2d weight;
-  weight.x = 
-      getParameters().walk.stabilization.stabilizeFeetP.x * inertial.x
-    + getParameters().walk.stabilization.stabilizeFeetD.x * filteredGyro.x;
+  const RotationMatrix relativeRotation = p.hip.rotation.invert() * lastBodyRotationMatrix;
+  lastBodyRotationMatrix = p.hip.rotation;
 
-  weight.y = 
-      getParameters().walk.stabilization.stabilizeFeetP.y * inertial.y
-    + getParameters().walk.stabilization.stabilizeFeetD.y * filteredGyro.y;
+  const double rotationY = atan2(relativeRotation.c[2].x, relativeRotation.c[2].z);
+  buffer.add(Vector2d(relativeRotation.getXAngle(), rotationY));
 
+  if(buffer.isFull() && frameDelay > 0 && frameDelay < buffer.size())
+  {
+    const Vector2d requestedVelocity = (buffer[frameDelay-1] - buffer[frameDelay]) / timeDelta;
+    const Vector2d error = requestedVelocity - filteredGyro;
+    //const Vector2d errorDerivative = (error - lastGyroError) / timeDelta;
 
-  // X axis
-  //position[JointData::RHipRoll] -= weightX;
-  position[JointData::RAnkleRoll] += weight.x;
-  //position[JointData::LHipRoll] -= weightX;
-  position[JointData::LAnkleRoll] += weight.x;
+    double correctionY = rotationVelocityP.y * error.y;
+    //                     + rotationD.y * errorDerivative.y;
 
-  // Y axis
-  position[JointData::RAnklePitch] += weight.y;
-  position[JointData::LAnklePitch] += weight.y;
+    double correctionX = rotationVelocityP.x * error.x;
+    //                     + rotationD.x * errorDerivative.x;
 
-  lastGyro = gyro;
-}//end feetStabilize
+    correctionX += rotationP.x * inertial.x;
+    correctionY += rotationP.y * inertial.y;
 
+    //p.localInHip();
+    //p.hip.rotateX(correctionX);
+    //p.hip.rotateY(correctionY);
+
+    double height = NaoInfo::ThighLength + NaoInfo::TibiaLength + NaoInfo::FootHeight;
+    p.hip.translate(0, 0, -height);
+    p.hip.rotateX(correctionX);
+    p.hip.rotateY(correctionY);
+    p.hip.translate(0, 0, height);
+
+    lastGyroError = error;
+  }
+
+  return true;
+}
 
 bool InverseKinematicsMotionEngine::rotationStabilize(
   const InertialModel& theInertialModel,
   const GyrometerData& theGyrometerData,
-  double timeDelta,
+  const double timeDelta,
+  const Vector2d&  rotationP, 
+  const Vector2d&  rotationVelocityP, 
+  const Vector2d&  rotationD,
   InverseKinematic::HipFeetPose& p)
 {
-  const double alpha = 0.5;
+  const double alpha = 0.2;
   Vector2d gyro = Vector2d(theGyrometerData.data.x, theGyrometerData.data.y);
   static Vector2d filteredGyro = gyro;
   filteredGyro = filteredGyro * (1.0f - alpha) + gyro * alpha;
@@ -459,15 +486,15 @@ bool InverseKinematicsMotionEngine::rotationStabilize(
     const Vector2d error = requestedVelocity - filteredGyro;
     const Vector2d errorDerivative = (error - lastGyroError) / timeDelta;
 
-    double correctionY = getParameters().walk.stabilization.rotationVelocityP.y * error.y + 
-                         getParameters().walk.stabilization.rotationD.y * errorDerivative.y;
+    double correctionY = rotationVelocityP.y * error.y +
+                         rotationD.y * errorDerivative.y;
 
-    double correctionX = getParameters().walk.stabilization.rotationVelocityP.x * error.x + 
-                         getParameters().walk.stabilization.rotationD.x * errorDerivative.x;
+    double correctionX =rotationVelocityP.x * error.x +
+                        rotationD.x * errorDerivative.x;
 
     const Vector2d& inertial = theInertialModel.orientation;
-    correctionX += getParameters().walk.stabilization.rotationP.x * inertial.x;
-    correctionY += getParameters().walk.stabilization.rotationP.y * inertial.y;
+    correctionX += rotationP.x * inertial.x;
+    correctionY += rotationP.y * inertial.y;
 
     p.localInHip();
     p.hip.rotateX(correctionX);
@@ -479,6 +506,7 @@ bool InverseKinematicsMotionEngine::rotationStabilize(
   return true;
 }
 
+/*
 bool InverseKinematicsMotionEngine::rotationStabilize(
   const InertialModel& theInertialModel,
   const GyrometerData& theGyrometerData,
@@ -523,8 +551,9 @@ bool InverseKinematicsMotionEngine::rotationStabilize(
   lastGyro = gyro;
   return true;
 }//end rotationStabilize
+*/
 
-
+/*
 bool InverseKinematicsMotionEngine::rotationStabilize(
   const RobotInfo& theRobotInfo,
   const GroundContactModel& theGroundContactModel,
@@ -589,6 +618,7 @@ bool InverseKinematicsMotionEngine::rotationStabilize(
 
   return isWorking;
 }//end rotationStabilize
+*/
 
 void InverseKinematicsMotionEngine::solveHipFeetIK(const InverseKinematic::HipFeetPose& p)
 {
@@ -618,90 +648,6 @@ void InverseKinematicsMotionEngine::copyLegJoints(double (&position)[naoth::Join
   position[JointData::RHipYawPitch] = hipYawPitch;
 }//end copyLegJoints
 
-
-int InverseKinematicsMotionEngine::controlZMPstart(const ZMPFeetPose& start)
-{
-  // if it is not ready, it should be empty
-  //ASSERT( thePreviewController.count() == 0 );
-  // TODO: clear it because of the motion can be forced to finish immediately...
-  // the idea of keep buffer is to switch zmp control between different motions,
-  // such as walk and kick, then maybe we should check if zmp control is used every cycle and etc.
-  thePreviewController.clear();
-
-  CoMFeetPose currentCoMPose = getCurrentCoMFeetPose();
-  currentCoMPose.localInLeftFoot();
-
-  // here assume the foot movment can not jump
-  // so we can keep them in the same coordinate
-  const Pose3D& trans = start.feet.left;
-  //currentCoMPose.feet.left *= trans;
-  //currentCoMPose.feet.right *= trans;
-  currentCoMPose.com *= trans;
-
-  thePreviewControlCoM = currentCoMPose.com.translation;
-  thePreviewControldCoM = Vector2d(0,0);
-  thePreviewControlddCoM = Vector2d(0,0);
-  thePreviewController.init(currentCoMPose.com.translation, thePreviewControldCoM, thePreviewControlddCoM);
-  
-  unsigned int previewSteps = static_cast<unsigned int> (thePreviewController.previewSteps() - 1);
-  thePreviewController.clear();
-
-  for (unsigned int i = 0; i < previewSteps; i++)
-  {
-    double t = static_cast<double>(i) / previewSteps;
-    Pose3D p = Pose3D::interpolate(currentCoMPose.com, start.zmp, t);
-    thePreviewController.push(p.translation);
-  }
-  return previewSteps;
-}//end controlZMPstart
-
-
-void InverseKinematicsMotionEngine::controlZMPpush(const Vector3d& zmp)
-{
-  thePreviewController.push(zmp);
-}
-
-bool InverseKinematicsMotionEngine::controlZMPpop(Vector3d& com)
-{
-  if ( thePreviewController.ready() )
-  {
-    thePreviewController.control(thePreviewControlCoM, thePreviewControldCoM, thePreviewControlddCoM);
-    com = thePreviewControlCoM;
-    return true;
-  }
-  return false;
-}
-
-bool InverseKinematicsMotionEngine::controlZMPstop(const Vector3d& finalZmp)
-{
-  Vector3d diff = finalZmp - thePreviewControlCoM;
-  bool stoppted = (diff.abs2() < 1) && (thePreviewControldCoM.abs2() < 1) && (thePreviewControlddCoM.abs2() < 1);
-  if ( stoppted )
-  {
-    thePreviewController.clear();
-  }
-  else
-  {
-    controlZMPpush(finalZmp);
-  }
-
-  return stoppted;
-}
-
-Vector3d InverseKinematicsMotionEngine::controlZMPback() const
-{
-  return thePreviewController.back();
-}
-
-Vector3d InverseKinematicsMotionEngine::controlZMPfront() const
-{
-  return thePreviewController.front();
-}
-
-void InverseKinematicsMotionEngine::controlZMPclear()
-{
-  thePreviewController.clear();
-}
 
 double InverseKinematicsMotionEngine::solveHandsIK(
   const Pose3D& chest,
@@ -742,71 +688,6 @@ double InverseKinematicsMotionEngine::solveHandsIK(
 
   return error;
 }//end solveHandsIK
-
-
-void InverseKinematicsMotionEngine::autoArms(
-  const RobotInfo& theRobotInfo,
-  const HipFeetPose& /* pose */,
-  double (&position)[JointData::numOfJoint])
-{
-  double target[JointData::LElbowYaw + 1];
-  target[JointData::RElbowYaw] = Math::fromDegrees(90);
-  target[JointData::LElbowYaw] = Math::fromDegrees(-90);
-  target[JointData::RShoulderRoll] = Math::fromDegrees(-10);
-  target[JointData::LShoulderRoll] = Math::fromDegrees(10);
-  target[JointData::RShoulderPitch] = Math::fromDegrees(100);
-  target[JointData::LShoulderPitch] = Math::fromDegrees(100);
-  target[JointData::RElbowRoll] = Math::fromDegrees(30);
-  target[JointData::LElbowRoll] = Math::fromDegrees(-30);
-
-  // move the arm according to motion ----------------
-  /*double shouldPitchRate = 0.5;
-  double shouldRollRate = 0.5;
-  double elbowRollRate = 0.5;
-  Pose3D lFoot = pose.hip.local(pose.feet.left);
-  Pose3D rFoot = pose.hip.local(pose.feet.right);
-  target[JointData::RShoulderPitch] -= (Math::fromDegrees(lFoot.translation.x) * shouldPitchRate);
-  target[JointData::RShoulderRoll] -= (Math::fromDegrees(lFoot.translation.y - NaoInfo::HipOffsetY) * shouldRollRate);
-  target[JointData::RElbowRoll] += (Math::fromDegrees(lFoot.translation.x) * elbowRollRate);
-  target[JointData::LShoulderPitch] -= (Math::fromDegrees(rFoot.translation.x) * shouldPitchRate);
-  target[JointData::LShoulderRoll] -= (Math::fromDegrees(rFoot.translation.y + NaoInfo::HipOffsetY) * shouldRollRate);
-  target[JointData::LElbowRoll] -= (Math::fromDegrees(rFoot.translation.x) * elbowRollRate);*/
-  //----------------------------------------------
-
-  // move the arm accoring to interial sensor -------------
-  /*
-  if (getParameters().arm.alwaysEnabled
-    || (theBlackBoard.theMotionStatus.currentMotion == MotionRequestID::walk && getParameters().walk.useArm))
-  {
-    const InertialPercept& isd = theBlackBoard.theInertialPercept;
-    double shoulderPitch = isd.get(InertialSensorData::Y) * getParameters().arm.shoulderPitchInterialSensorRate;
-    double shoulderRoll = isd.get(InertialSensorData::X) * getParameters().arm.shoulderRollInterialSensorRate;
-    target[JointData::RShoulderPitch] += shoulderPitch;
-    target[JointData::LShoulderPitch] += shoulderPitch;
-    target[JointData::RShoulderRoll] += shoulderRoll;
-    target[JointData::LShoulderRoll] += shoulderRoll;
-  }*/
-  //----------------------------------------------
-
-  // make sure the arms do not collide legs --------------
-  target[JointData::RShoulderRoll] = std::min(target[JointData::RShoulderRoll], position[JointData::RHipRoll]);
-  target[JointData::LShoulderRoll] = std::max(target[JointData::LShoulderRoll], position[JointData::LHipRoll]);
-  //---------------------------------------------
-
-  // limit the joint range to avoid collision --------------
-
-  //---------------------------------------------
-
-  // limit the max speed -----------------------------
-  double max_speed = Math::fromDegrees(getParameters().arm.maxSpeed) * theRobotInfo.getBasicTimeStepInSecond();
-  for (int i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; i++)
-  {
-    double s = target[i] - position[i];
-    s = Math::clamp(s, -max_speed, max_speed);
-    position[i] += s;
-  }
-  //----------------------------------------------
-}//end autoArms
 
 void InverseKinematicsMotionEngine::armsOnBack(
   const RobotInfo& theRobotInfo,
@@ -923,88 +804,51 @@ Vector3d InverseKinematicsMotionEngine::balanceCoM(
 }//end balanceCoM
 
 
-void InverseKinematicsMotionEngine::gotoArms(
-  const MotionStatus& theMotionStatus,
-  const InertialModel& theInertialModel,
-  const RobotInfo& theRobotInfo,
-  const InverseKinematic::HipFeetPose& currentPose, 
-  double (&position)[JointData::numOfJoint])
+void InverseKinematicsMotionEngine::armsBasedOnInertialModel(
+        const InertialModel &theInertialModel,
+        double (&position)[JointData::numOfJoint])
 {
-  double target[JointData::LElbowYaw + 1];
-  //    target[JointData::RShoulderRoll] = 0;
-  //    target[JointData::LShoulderRoll] = 0;
-  //    target[JointData::RShoulderPitch] = Math::fromDegrees(120);
-  //    target[JointData::LShoulderPitch] = Math::fromDegrees(120);
-  //    target[JointData::RElbowRoll] = Math::fromDegrees(90);
-  //    target[JointData::LElbowRoll] = Math::fromDegrees(-90);
-  target[JointData::RElbowYaw] = Math::fromDegrees(90);
-  target[JointData::LElbowYaw] = Math::fromDegrees(-90);
-
-  // experiment //////////////////////////
-
-  // move the arm according to motion ----------------
-  target[JointData::RShoulderRoll] = Math::fromDegrees(-10);
-  target[JointData::LShoulderRoll] = Math::fromDegrees(10);
-  target[JointData::RShoulderPitch] = Math::fromDegrees(100);
-  target[JointData::LShoulderPitch] = Math::fromDegrees(100);
-  target[JointData::RElbowRoll] = Math::fromDegrees(30);
-  target[JointData::LElbowRoll] = Math::fromDegrees(-30);
-
-  if ( (getParameters().arm.kickEnabled && theMotionStatus.currentMotion == motion::kick)
-    || (getParameters().arm.walkEnabled && theMotionStatus.currentMotion == motion::walk))
-  {
-  double shouldPitchRate = 0.5;
-  double shouldRollRate = 0.5;
-  double elbowRollRate = 0.5;
-  MODIFY("Motion:ShoulderPitchRate", shouldPitchRate);
-  MODIFY("Motion:ShoulderRollRate", shouldRollRate);
-  MODIFY("Motion:ElbowRollRate", elbowRollRate);
-  InverseKinematic::HipFeetPose localizedPose(currentPose);
-  localizedPose.localInHip();
-
-  Pose3D& lFoot = localizedPose.feet.left;
-  Pose3D& rFoot = localizedPose.feet.right;
-  target[JointData::RShoulderPitch] -= (Math::fromDegrees(lFoot.translation.x) * shouldPitchRate);
-  target[JointData::RShoulderRoll] -= (Math::fromDegrees(lFoot.translation.y - NaoInfo::HipOffsetY) * shouldRollRate);
-  target[JointData::RElbowRoll] += (Math::fromDegrees(lFoot.translation.x) * elbowRollRate);
-  target[JointData::LShoulderPitch] -= (Math::fromDegrees(rFoot.translation.x) * shouldPitchRate);
-  target[JointData::LShoulderRoll] -= (Math::fromDegrees(rFoot.translation.y + NaoInfo::HipOffsetY) * shouldRollRate);
-  target[JointData::LElbowRoll] -= (Math::fromDegrees(rFoot.translation.x) * elbowRollRate);
-  }
-  //----------------------------------------------
-
-  // move the arm accoring to interial sensor -------------
-  if (getParameters().arm.alwaysEnabled
-    || (theMotionStatus.currentMotion == motion::walk && getParameters().walk.general.useArm))
-  {
     // TODO: InertialSensorData may be better
-    const InertialModel& isd = theInertialModel;
-    double shoulderPitch = isd.orientation.y * getParameters().arm.shoulderPitchInterialSensorRate;
-    double shoulderRoll = isd.orientation.x * getParameters().arm.shoulderRollInterialSensorRate;
-    target[JointData::RShoulderPitch] += shoulderPitch;
-    target[JointData::LShoulderPitch] += shoulderPitch;
-    target[JointData::RShoulderRoll] += shoulderRoll;
-    target[JointData::LShoulderRoll] += shoulderRoll;
-  }
-  //----------------------------------------------
+    const InertialModel& isd = theInertialModel; //theInertialPercept
+    double shoulderPitch = isd.orientation.y * getParameters().arm.inertialModelBasedMovement.shoulderPitchInterialSensorRate;
+    double shoulderRoll  = isd.orientation.x * getParameters().arm.inertialModelBasedMovement.shoulderRollInterialSensorRate;
+    position[JointData::RShoulderPitch] += shoulderPitch;
+    position[JointData::LShoulderPitch] += shoulderPitch;
+    position[JointData::RShoulderRoll]  += shoulderRoll;
+    position[JointData::LShoulderRoll]  += shoulderRoll;
+}
 
-  // make sure the arms do not collide legs --------------
-  target[JointData::RShoulderRoll] = std::min(target[JointData::RShoulderRoll], position[JointData::RHipRoll]);
-  target[JointData::LShoulderRoll] = std::max(target[JointData::LShoulderRoll], position[JointData::LHipRoll]);
-  //---------------------------------------------
+void InverseKinematicsMotionEngine::armsSynchronisedWithWalk(
+        const RobotInfo& theRobotInfo,
+        const InverseKinematic::CoMFeetPose& currentPose,
+        JointData& jointData)
+{
+    InverseKinematic::CoMFeetPose localizedPose(currentPose);
+    localizedPose.localInCoM();
+    const Pose3D& lFoot = localizedPose.feet.left;
+    const Pose3D& rFoot = localizedPose.feet.right;
 
-  // limit the joint range to avoid collision --------------
+    const double stepDeltaX = (lFoot.translation.x - rFoot.translation.x)*0.5;
 
-  //---------------------------------------------
+    // calculate the movement for the arms
+    const double targetRShoulderPitch = -(Math::fromDegrees(stepDeltaX) * getParameters().arm.synchronisedWithWalk.shoulderPitchRate);
+    const double targetLShoulderPitch = +(Math::fromDegrees(stepDeltaX) * getParameters().arm.synchronisedWithWalk.shoulderPitchRate);
+    
+    // maximal amount the arms should move
+    const double max_delta = Math::fromDegrees(getParameters().arm.maxSpeed) * theRobotInfo.getBasicTimeStepInSecond();
+    
+    // update the joints
+    jointData.set(JointData::RShoulderPitch, Math::fromDegrees(90) + targetRShoulderPitch, max_delta);
+    jointData.set(JointData::LShoulderPitch, Math::fromDegrees(90) + targetLShoulderPitch, max_delta);
 
-  // limit the max speed -----------------------------
-  double max_speed = Math::fromDegrees(getParameters().arm.maxSpeed) * theRobotInfo.getBasicTimeStepInSecond();
-  for (int i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; i++)
-  {
-    double s = target[i] - position[i];
-    s = Math::clamp(s, -max_speed, max_speed);
-    position[i] += s;
-  }
-  //----------------------------------------------
+    jointData.set(JointData::RShoulderRoll, Math::fromDegrees(-10), max_delta);
+    jointData.set(JointData::LShoulderRoll, Math::fromDegrees(10), max_delta);
+
+    jointData.set(JointData::RElbowYaw, Math::fromDegrees(0), max_delta);
+    jointData.set(JointData::LElbowYaw, Math::fromDegrees(0), max_delta);
+
+    jointData.set(JointData::RElbowRoll, Math::fromDegrees(0), max_delta);
+    jointData.set(JointData::LElbowRoll, Math::fromDegrees(0), max_delta);
+
 }//end gotoArms
 

@@ -1,10 +1,10 @@
 #!/bin/bash
 
 echo "###### MAKE FILES ######" && \
-premake4 --platform=Nao gmake && \
+premake5 --platform=Nao gmake2 && \
 echo "###### C++ ######" && \
 cd ../build/ &&
-make -R config=optdebugnao NaoRobot $@ && \
+make config=optdebug_nao NaoRobot $@ && \
 cd ../Make/ && \
 echo "###### XABSL ######" && \
 ./compileBehavior.sh && \

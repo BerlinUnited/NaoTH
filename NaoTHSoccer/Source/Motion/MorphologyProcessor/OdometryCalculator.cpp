@@ -12,16 +12,17 @@ using namespace naoth;
 
 OdometryCalculator::OdometryCalculator()
   :
-  supportFoot(false),
-  init(false)
+  init(false),
+  accumulatedGyroRotationZ(0.0)
 {
+  DEBUG_REQUEST_REGISTER("OdometryCalculator:support_foot", "plot the support foot in OdometryCalculator", false);
 
-//TODO
-    //DEBUG_REQUEST_REGISTER("Motion:OdometryCalculator:support_foot", "plot the support foot in OdometryCalculator", false);
+  getDebugParameterList().add(&parameter);
 }
 
 OdometryCalculator::~OdometryCalculator()
 {
+  getDebugParameterList().remove(&parameter);
 }
 
 void OdometryCalculator::execute()
@@ -29,51 +30,18 @@ void OdometryCalculator::execute()
   // TODO: make it better
   OdometryData& od = getOdometryData();
   const KinematicChain& kc = getKinematicChainSensor();
-  const FSRData& fsr = getFSRData();
 
+  GroundContactModel::Foot supportFoot = getGroundContactModel().supportFoot;
 
-  static bool lastFootChoiceValid = true;
+  if ( init ) 
+  {  
+    DEBUG_REQUEST("OdometryCalculator:support_foot",
+      PLOT("OdometryCalculator:support_foot",static_cast<double>(supportFoot));
+    );
 
-  // simple support foot detection: the foot which has greater force is the support foot.
-  double leftForce = 0;
-  double rightForce = 0;
-  for (int i = FSRData::LFsrFL; i <= FSRData::LFsrBR; i++) {
-    if ( fsr.valid[i] ){
-      leftForce += fsr.force[i];
-    }
-  }
-  for (int i = FSRData::RFsrFL; i <= FSRData::RFsrBR; i++) {
-    if ( fsr.valid[i] ){
-      rightForce += fsr.force[i];
-    }
-  }
+    const Pose3D& lastFoot = (supportFoot == GroundContactModel::LEFT) ? lastLeftFoot : lastRightFoot;
 
-  if ( leftForce <=0 && rightForce <= 0 ) 
-  {
-    if(lastFootChoiceValid) {
-      lastFootChoiceValid = false;
-    } else {
-      return;
-    }
-  } else {
-    lastFootChoiceValid = true;
-  }
-
-  if (leftForce > rightForce) {
-      supportFoot = true;
-  } else if (leftForce < rightForce) {
-      supportFoot = false;
-  }
-
-  if ( init ) {
-    //TODO
-    //DEBUG_REQUEST("Motion:OdometryCalculator:support_foot",
-    //  PLOT("OdometryCalculator.support_foot",static_cast<double>(supportFoot));
-    //  );
-
-    const Pose3D& lastFoot = supportFoot ? lastLeftFoot : lastRightFoot;
-
-    KinematicChain::LinkID footId = supportFoot ? KinematicChain::LFoot : KinematicChain::RFoot;
+    KinematicChain::LinkID footId = (supportFoot == GroundContactModel::LEFT) ? KinematicChain::LFoot : KinematicChain::RFoot;
     const Pose3D& foot = kc.theLinks[footId].M;
     const Pose3D& hip = kc.theLinks[KinematicChain::Hip].M;
 
@@ -90,6 +58,27 @@ void OdometryCalculator::execute()
     init = true;
   }
 
+  // NOTE: (deprecated) estimate the Z rotation based on simple gyro accumulation
+  // only for testing purposes
+  if(parameter.useGyroRotationOdometry) 
+  {
+    // a simple model for gyro rotation
+    if(getCalibrationData().calibrated) {
+      accumulatedGyroRotationZ += getGyrometerData().data.z * getRobotInfo().getBasicTimeStepInSecond();
+    } else {
+      accumulatedGyroRotationZ = 0.0;
+    }
+    PLOT("OdometryCalculator:accumulatedGyroRotationZ", accumulatedGyroRotationZ);
+
+    getOdometryData().rotation = accumulatedGyroRotationZ;
+  }
+
+  if(parameter.useIMUDataForRotationOdometry) {
+    double z_angle = RotationMatrix(getIMUData().rotation).getZAngle();
+    PLOT("Motion:rotationZ", z_angle);
+    getOdometryData().rotation = z_angle;
+  }
+
   // cache data
   lastLeftFoot.translation = kc.theLinks[KinematicChain::LFoot].p;
   lastLeftFoot.rotation = kc.theLinks[KinematicChain::LFoot].R;
@@ -97,7 +86,6 @@ void OdometryCalculator::execute()
   lastRightFoot.rotation = kc.theLinks[KinematicChain::RFoot].R;
   lastHip.translation = kc.theLinks[KinematicChain::Hip].p;
   lastHip.rotation = kc.theLinks[KinematicChain::Hip].R;
-
 
   ASSERT(!Math::isNan(od.translation.x));
   ASSERT(!Math::isNan(od.translation.y));
