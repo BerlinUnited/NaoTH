@@ -1,12 +1,24 @@
+"""
+Toolset to send RobotControl like commands to the robot.
+
+Relay Class:    Debugging class, creating a connection between RobotControlGui and the Nao to inspect messages
+
+Command Class:  RobotControl like command with name and arguments
+                which can be written to a sink that is connected to the Nao
+
+Response Class: Reads a response from the Nao and parses id and size
+"""
+
 import asyncio
 import struct
+from typing import Tuple
 
 from naoth.messages.Messages_pb2 import CMD
 
 
 class Relay:
     """
-    Relay a connection to the robot to inspect the control flow
+    Relay a connection between robot and RobotControl to inspect the control flow
     """
 
     def __init__(self, sink_port, robot_addr):
@@ -83,6 +95,24 @@ class Relay:
                 print(data)
             except UnicodeDecodeError:
                 pass
+
+    @staticmethod
+    def main(sink_port: int, nao_addr: Tuple[str, int]):
+        """
+        Opens a relay between RobotControl and Nao
+        :param sink_port: Port, RobotControl connects to
+        :param nao_addr: (Address, Port) Tuple of the Nao
+        """
+        Relay(sink_port, nao_addr)
+
+        loop = asyncio.get_event_loop()
+
+        try:
+            loop.run_forever()
+        except KeyboardInterrupt:
+            pass
+
+        loop.close()
 
 
 class Command:
@@ -169,13 +199,4 @@ def read_long(_bytes):
 
 
 if __name__ == '__main__':
-    loop = asyncio.get_event_loop()
-
-    relay = Relay(7777, ('127.0.0.1', 5401))
-
-    try:
-        loop.run_forever()
-    except KeyboardInterrupt:
-        pass
-
-    loop.close()
+    Relay.main(7777, ('127.0.0.1', 5401))
