@@ -8,23 +8,12 @@ cppyy.load_library("NaoTHSoccer/dist/Native/libnaoth-soccer.so")
 
 # set include paths
 cppyy.add_include_path("Framework/Commons/Source")
-
-# example for manipulating a representation object (not on blackboard)
-# cppyy.include("NaoTHSoccer/Source/Representations/Modeling/IMUData.h")
-#
-# from cppyy.gbl import naoth
-# IMUData = naoth.IMUData
-# x = IMUData()
-# x.location.x = 5
-# out = cppyy.gbl.std.cout
-# x.print(out)
-
-# example for manipulating a module
 cppyy.add_include_path("NaoTHSoccer/Source")
 cppyy.add_include_path("/usr/include/glib-2.0")
 cppyy.add_include_path("/usr/lib/glib-2.0/include")
 cppyy.add_include_path("/home/steffen/NaoTH/LinuxToolchain/toolchain_native/extern/include")
 
+# include module
 cppyy.include("NaoTHSoccer/Source/Motion/SensorFilter/IMUModel.h")
 
 out = cppyy.gbl.std.cout
