@@ -103,7 +103,6 @@ include "Options/Skills/USOA/go_to_point_with_USOA.xabsl";
 
 // Pathplanner
 include "Options/Soccer/Path2018/path2018_initial_striker.xabsl";
-include "Options/Soccer/Path2018/path_basic_goalie.xabsl";
 include "Options/Soccer/Path2018/path_move_around_ball.xabsl";
 include "Options/Soccer/Path2018/path_striker2018.xabsl";
 include "Options/Soccer/Path2018/path_turn_to_attack_direction.xabsl";
@@ -132,7 +131,6 @@ include "Options/Test/PathPlaner/pathplanner2018_sidekick.xabsl";
 include "Options/Test/PathPlaner/pathplanner2018_sidestep.xabsl";
 
 // Pathplanner Agents
-include "Options/Test/PathPlannerAgents/path_basic_goalie_agent.xabsl";
 include "Options/Test/PathPlannerAgents/path_move_around_ball_agent.xabsl";
 include "Options/Test/PathPlannerAgents/pathplanner2018_forwardkick_agent.xabsl";
 include "Options/Test/PathPlannerAgents/pathplanner2018_sidekick_agent.xabsl";
@@ -216,7 +214,6 @@ agent dribble_agent("dribble_agent", dribble_agent);
 agent intercept_agent("intercept_agent", intercept_agent);
 
 // PathPlanner Test Agents
-agent path_basic_goalie_agent("path_basic_goalie_agent", path_basic_goalie_agent);
 agent pathplanner2018_forwardkick_agent("pathplanner2018_forwardkick_agent", pathplanner2018_forwardkick_agent);
 agent pathplanner2018_sidekick_agent("pathplanner2018_sidekick_agent", pathplanner2018_sidekick_agent);
 agent pathplanner2018_sidestep_agent("pathplanner2018_sidestep_agent", pathplanner2018_sidestep_agent);
