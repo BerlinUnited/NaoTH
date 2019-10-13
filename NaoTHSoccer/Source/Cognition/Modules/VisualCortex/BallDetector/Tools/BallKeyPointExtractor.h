@@ -64,6 +64,8 @@ public:
   struct Parameter {
     double borderRadiusFactorClose;
     double borderRadiusFactorFar;
+
+    double maxInnerGreenDensitiy;
   };
 
   BallKeyPointExtractor() : cameraID(CameraInfo::Bottom)
@@ -131,7 +133,7 @@ private:
     double greenBelow = integralImage.getDensityForRect(point.x, point.y+size, point.x+size, point.y+size+border, 1);
     double greeInner = integralImage.getDensityForRect(point.x, point.y, point.x+size, point.y+size, 1);
 
-    if (inner*2 > size*size && greenBelow > 0.3 && greeInner < 0.5)
+    if (inner*2 > size*size && greenBelow > 0.3 && greeInner <= params.maxInnerGreenDensitiy)
     {
       int outer = integralImage.getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 0);
       double value = (double)(inner - (outer - inner))/((double)(size+border)*(size+border));
@@ -294,7 +296,7 @@ void BallKeyPointExtractor::calculateKeyPointsFast(const ImageType& integralImag
       double greeInner = integralImage.getDensityForRect(point.x-radius/2, point.y-radius/2, point.x+radius/2, point.y+radius/2, 1);
       const int size = radius*2;
       
-      if (inner*2 > size*size && greeInner < 0.5)
+      if (inner*2 > size*size && greeInner <= params.maxInnerGreenDensitiy)
       {
         double value = ((double)inner)/((double)(size*size));
         best.add( 
@@ -386,7 +388,7 @@ void BallKeyPointExtractor::calculateKeyPointsFull(const ImageType& integralImag
       double greeInner = integralImage.getDensityForRect(point.x-radius, point.y-radius, point.x+radius, point.y+radius, 1);
       const int size = radius*2;
 
-      if (inner*2 > size*size && greeInner < 0.5)
+      if (inner*2 > size*size && greeInner <= params.maxInnerGreenDensitiy)
       {
         double value = ((double)inner)/((double)(size)*(size));
         values[point.x][point.y][0] = value;
