@@ -51,9 +51,6 @@ void RedBallDetector::execute(CameraInfo::CameraID id)
     return;
   }
 
-  bool ballFound = false;
-
-  
   double radius = -1;
   Vector2d center;
 
@@ -93,7 +90,6 @@ void RedBallDetector::execute(CameraInfo::CameraID id)
       if(radius > 0 && radius < 2*estimatedRadius) {
         if(sanityCheck(center, radius))
         {
-          ballFound = true;
           calculateBallPercept(center, radius);
           break;
         }
@@ -151,7 +147,7 @@ bool RedBallDetector::findMaximumRedPoint(std::vector<Vector2i>& points) const
       if (
         pixel.v > maxRedPeak && // "v" is the croma RED channel
         isOrange(pixel) &&
-        fieldPolygon.isInside_inline(point) // only points inside the field polygon
+        fieldPolygon.isInside(point) // only points inside the field polygon
       )
       {
         maxRedPeak = (int)pixel.v;
@@ -160,10 +156,8 @@ bool RedBallDetector::findMaximumRedPoint(std::vector<Vector2i>& points) const
       }
 
       DEBUG_REQUEST("Vision:RedBallDetector:peak_scan:mark_candidates",
-        if ( 
-          isOrange(pixel) &&
-          fieldPolygon.isInside_inline(point) // only points inside the field polygon
-        ) {
+        // only points inside the field polygon
+        if ( isOrange(pixel) && fieldPolygon.isInside(point) ) {
           POINT_PX(ColorClasses::red, point.x, point.y);
         }
       );
@@ -348,7 +342,8 @@ void RedBallDetector::estimateCircleSimple(const std::vector<Vector2i>& endPoint
 }
 */
 
-bool BallDetector::randomBallScan(const Vector2i& center, double radius) const
+// NOTE: this is experimental and now used yet
+bool RedBallDetector::randomBallScan(const Vector2i& center, double radius) const
 {
   size_t sampleSize = 21;
 
