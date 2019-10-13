@@ -35,6 +35,8 @@ BEGIN_DECLARE_MODULE(Cognition)
   REQUIRE(FrameInfo)
 END_DECLARE_MODULE(Cognition)
 
+ModuleManager* getModuleManager(Cognition* c);
+
 class Cognition : public naoth::Callable, private CognitionBase, public ModuleManagerWithDebug
 {
 public:
@@ -50,7 +52,7 @@ public:
 
 private:
   Stopwatch stopwatch;
-  
+
 };
 
 #endif  /* _Cognition_h_ */
