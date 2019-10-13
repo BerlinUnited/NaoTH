@@ -150,17 +150,10 @@ include "Options/Test/walk/go_to_point_with_USOA_test.xabsl";
 include "Options/Test/walk/obstacle_test.xabsl";
 include "Options/Test/walk/test_intercept_sideways.xabsl";
 include "Options/Test/walk/test_walk_forth_and_back.xabsl";
-include "Options/Test/walk/test_walk_internal_symbols.xabsl";
-include "Options/Test/walk/test_walk_lv1.xabsl";
-include "Options/Test/walk/test_walk_lv2.xabsl";
 include "Options/Test/walk/test_walk_stop_and_go_backwards.xabsl";
 include "Options/Test/walk/turn_look_at_preview_angle.xabsl";
-include "Options/Test/walk/walk_circularly_x.xabsl";
-include "Options/Test/walk/walk_circularly_y.xabsl";
 include "Options/Test/walk/walk_forward.xabsl";
 include "Options/Test/walk/walk_pirouette.xabsl";
-include "Options/Test/walk/walk_square.xabsl";
-include "Options/Test/walk/walk_square_diagonally.xabsl";
 
 // Walk Agents
 include "Options/Test/WalkAgents/dribble_agent.xabsl";
@@ -170,8 +163,6 @@ include "Options/Test/WalkAgents/go_to_point_with_USOA_agent.xabsl";
 include "Options/Test/WalkAgents/intercept_agent.xabsl";
 include "Options/Test/WalkAgents/obstacle_agent.xabsl";
 include "Options/Test/WalkAgents/test_walk_forth_and_back_agent.xabsl";
-include "Options/Test/WalkAgents/test_walk_lv1_agent.xabsl";
-include "Options/Test/WalkAgents/test_walk_lv2_agent.xabsl";
 include "Options/Test/WalkAgents/test_walk_stop_and_go_backwards_agent.xabsl";
 include "Options/Test/WalkAgents/turn_look_at_preview_angle_agent.xabsl";
 include "Options/Test/WalkAgents/walk_forward_agent.xabsl";
@@ -198,8 +189,6 @@ agent role_change_test ("role_change_test_agent",role_change_test_agent); // Wha
 
 
 // Test agents Walk
-agent motion_test_walk_lv1("test walk level 1", test_walk_lv1_agent);
-agent motion_test_walk_lv2("test walk level 2", test_walk_lv2_agent);
 agent motion_test_walk_stop_and_go_backwards("test walk stop and go backwards", test_walk_stop_and_go_backwards_agent);
 agent motion_test_walk_forth_and_back("test walk forth and back", test_walk_forth_and_back_agent);
 
