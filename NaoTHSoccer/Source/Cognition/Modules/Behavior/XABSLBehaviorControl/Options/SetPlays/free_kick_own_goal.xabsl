@@ -8,7 +8,7 @@ option free_kick_own_goal
     decision
     {
       // TODO: what should be done, if the goalie is penalized or otherwise unable to play?
-      if (game.player_number == 1) {
+      if (strategy.role == goalie) {
         if(ball.know_where_itis) {
           goto goalie_position_for_free_kick;
         } else {
@@ -125,7 +125,7 @@ option free_kick_own_goal
       head.motion_type = look_at_world_point;
       head.point_in_world.x = locator.field_to_relative.x(x=field.xPosOwnPenaltyArea, y=field.yPosRightPenaltyArea);
       head.point_in_world.y = locator.field_to_relative.y(x=field.xPosOwnPenaltyArea, y=field.yPosRightPenaltyArea);
-      head.point_in_world.z = ball.radius; // radius of the ball
+      head.point_in_world.z = ball.radius;
     }
   }
 
