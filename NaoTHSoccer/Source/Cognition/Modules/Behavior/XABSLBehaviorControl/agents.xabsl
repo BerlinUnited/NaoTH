@@ -1,8 +1,8 @@
-/***
-  Title: NaoTH Soccer
-  Platform: Aldebaran Nao V4-6
-  Software-Environment: NaoTH 2019
-*/
+/* ########################################################### */
+/*  Title: NaoTH Soccer                                        */
+/*  Platform: Aldebaran Nao V4-6                               */
+/*  Software-Environment: NaoTH 2019                           */
+/* ########################################################### */
 
 // Symbols
 include "Symbols/game_symbols.xabsl";
