@@ -86,12 +86,7 @@ include "Options/SetPlays/free_kick_own_in.xabsl";
 include "Options/SetPlays/penalty_decide_state_and_role.xabsl";
 include "Options/SetPlays/penalty_goalie.xabsl";
 include "Options/SetPlays/penalty_kicker.xabsl";
-include "Options/SetPlays/role_avoid_region_go_own_goal.xabsl";
-include "Options/SetPlays/role_free_kick_opp.xabsl";
-include "Options/SetPlays/role_free_kick_opp_goal.xabsl";
-include "Options/SetPlays/role_free_kick_own.xabsl";
-include "Options/SetPlays/role_free_kick_own_goal.xabsl";
-include "Options/SetPlays/role_free_kick_simple.xabsl";
+include "Options/SetPlays/free_kick_simple.xabsl";
 
 // Skills
 include "Options/Skills/go_to_point.xabsl";

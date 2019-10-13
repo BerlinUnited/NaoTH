@@ -173,7 +173,7 @@ option roles_play_soccer
         stay;
     }
     action {
-      role_free_kick_simple(own=game.own_kickoff);
+      free_kick_simple(own=game.own_kickoff);
     }
   }
   
@@ -187,7 +187,7 @@ option roles_play_soccer
         stay;
     }
     action {
-      role_free_kick_own_goal();
+      free_kick_own_goal();
     }
   }
   
@@ -201,7 +201,7 @@ option roles_play_soccer
         stay;
     }
     action {
-      role_free_kick_opp_goal();
+      free_kick_opp_goal();
     }
   }
   
@@ -215,7 +215,7 @@ option roles_play_soccer
         stay;
     }
     action {
-      role_free_kick_own();
+      free_kick_own();
     }
   }
   
@@ -229,7 +229,7 @@ option roles_play_soccer
         stay;
     }
     action {
-      role_free_kick_opp();
+      free_kick_opp();
     }
   }
 }
