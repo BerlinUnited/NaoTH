@@ -120,7 +120,7 @@ include "Options/Soccer/SPL/passive_look_at_team_ball.xabsl";
 /*                      Test section                           */
 /* ########################################################### */
 // Test Agents
-include "Options/Test/agent/only_ball_looking_agent.xabsl";  // NOT registered
+include "Options/Test/agent/only_ball_looking_agent.xabsl";
 include "Options/Test/agent/passive_behavior_test_agent.xabsl";
 include "Options/Test/agent/role_change_test_agent.xabsl";
 include "Options/Test/agent/search_test_agent.xabsl";
@@ -132,7 +132,7 @@ include "Options/Test/PathPlaner/pathplanner2018_sidekick.xabsl";
 include "Options/Test/PathPlaner/pathplanner2018_sidestep.xabsl";
 
 // Pathplanner Agents
-include "Options/Test/PathPlannerAgents/path_basic_goalie_agent.xabsl";  // NOT registered
+include "Options/Test/PathPlannerAgents/path_basic_goalie_agent.xabsl";
 include "Options/Test/PathPlannerAgents/path_move_around_ball_agent.xabsl";
 include "Options/Test/PathPlannerAgents/pathplanner2018_forwardkick_agent.xabsl";
 include "Options/Test/PathPlannerAgents/pathplanner2018_sidekick_agent.xabsl";
@@ -196,7 +196,8 @@ agent spl_remote("Remote Player", spl_remote_agent);
 
 // Test Agents
 agent passive_behavior_test_agent("passive_behavior_test_agent",passive_behavior_test_agent);
-agent role_change_test ("role_change_test_agent",role_change_test_agent);  // 
+agent role_change_test ("role_change_test_agent",role_change_test_agent); // What is the purpose?
+
 
 // Test agents Walk
 agent motion_test_walk_lv1("test walk level 1", test_walk_lv1_agent);
@@ -215,6 +216,7 @@ agent dribble_agent("dribble_agent", dribble_agent);
 agent intercept_agent("intercept_agent", intercept_agent);
 
 // PathPlanner Test Agents
+agent path_basic_goalie_agent("path_basic_goalie_agent", path_basic_goalie_agent);
 agent pathplanner2018_forwardkick_agent("pathplanner2018_forwardkick_agent", pathplanner2018_forwardkick_agent);
 agent pathplanner2018_sidekick_agent("pathplanner2018_sidekick_agent", pathplanner2018_sidekick_agent);
 agent pathplanner2018_sidestep_agent("pathplanner2018_sidestep_agent", pathplanner2018_sidestep_agent);
@@ -223,4 +225,4 @@ agent pathplanner2018_striker_agent("pathplanner2018_striker_agent", pathplanner
 
 // Test agents search
 agent search_test_agent("search_test_agent",search_test_agent);
-agent search_only_looking_for_ball("only_looking_for_ball",only_ball_looking);
+agent search_only_looking_for_ball("only_ball_looking_agent",only_ball_looking_agent);
