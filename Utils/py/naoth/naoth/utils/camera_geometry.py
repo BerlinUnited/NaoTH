@@ -3,6 +3,9 @@ import numpy.linalg as la
 
 
 class CameraInfo:
+    """
+    CameraInfo with default values
+    """
     def __init__(self, width=640, height=480, opening_angle_diagonal=np.radians(72.6)):
         self.width = width
         self.height = height
@@ -28,6 +31,9 @@ class CameraInfo:
 
 
 class LogCameraInfo(CameraInfo):
+    """
+    CameraInfo parsed from a log file frame
+    """
     def __init__(self, camera_info_data):
         CameraInfo.__init__(self, camera_info_data.resolutionWidth,
                             camera_info_data.resolutionHeight,
@@ -51,6 +57,12 @@ class LogCameraInfo(CameraInfo):
 
 
 def calculate_artificial_horizon(c_rot, camera_info: CameraInfo):
+    """
+    Calculate the vanishing line of the camera in image coordinates
+    (below this line pixels can be projected onto the ground)
+    :param c_rot: camera rotation matrix
+    :return: Start and end point tuple defining the vanishing line in image coordinates
+    """
     r31 = c_rot[2, 0]
     r32 = c_rot[2, 1]
     r33 = c_rot[2, 2]
@@ -85,10 +97,13 @@ def project(x, y, c_rot, c_trans, camera_info: CameraInfo):
     :param c_trans: 3d camera translation numpy array
     :return: point on the ground plane as 2d numpy array
     """
+
+    half_x, half_y = camera_info.optical_center()
+
     pixel_v = np.array((
         camera_info.focal_length(),
-        320 - x,
-        240 - y
+        half_x - x,
+        half_y - y
     ))
 
     v_rot = c_rot @ pixel_v
