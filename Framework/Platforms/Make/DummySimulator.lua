@@ -1,6 +1,6 @@
 -- NaoTH controller for the logfile based "simulator"
 project "DummySimulator"
-  kind "StaticLib"
+  kind "SharedLib"
   language "C++"
   
   includedirs {
@@ -19,7 +19,7 @@ project "DummySimulator"
     "gmodule-2.0",
     "gthread-2.0",
     "protobuf",
-    "fftw3"
+--    "fftw3"
   }
   
   targetname "dummysimulator"
