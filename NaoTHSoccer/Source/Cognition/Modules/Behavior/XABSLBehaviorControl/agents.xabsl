@@ -153,7 +153,6 @@ include "Options/Test/walk/test_walk_forth_and_back.xabsl";
 include "Options/Test/walk/test_walk_stop_and_go_backwards.xabsl";
 include "Options/Test/walk/turn_look_at_preview_angle.xabsl";
 include "Options/Test/walk/walk_forward.xabsl";
-include "Options/Test/walk/walk_pirouette.xabsl";
 
 // Walk Agents
 include "Options/Test/WalkAgents/dribble_agent.xabsl";
@@ -186,7 +185,6 @@ agent spl_remote("Remote Player", spl_remote_agent);
 // Test Agents
 agent passive_behavior_test_agent("passive_behavior_test_agent",passive_behavior_test_agent);
 agent role_change_test ("role_change_test_agent",role_change_test_agent); // What is the purpose?
-
 
 // Test agents Walk
 agent motion_test_walk_stop_and_go_backwards("test walk stop and go backwards", test_walk_stop_and_go_backwards_agent);
