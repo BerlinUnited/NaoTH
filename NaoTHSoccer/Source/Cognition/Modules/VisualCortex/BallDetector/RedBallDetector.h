@@ -125,7 +125,6 @@ private:
   bool spiderScan(const Vector2i& start, std::vector<Vector2i>& endPoints) const;
   bool scanForEdges(const Vector2i& start, const Vector2d& direction, std::vector<Vector2i>& endpoint) const;
   
-  double estimatedBallRadius(const Vector2i& point) const;
   void calculateBallPercept(const Vector2i& center, double radius);
 
   bool randomBallScan(const Vector2i& center, double radius) const;

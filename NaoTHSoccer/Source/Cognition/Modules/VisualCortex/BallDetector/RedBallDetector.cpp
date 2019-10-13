@@ -8,11 +8,10 @@
 
 #include "RedBallDetector.h"
 
-#include "Tools/CameraGeometry.h"
-
 #include <Representations/Infrastructure/CameraInfoConstants.h>
 
 #include "Tools/Math/Geometry.h"
+#include "Tools/CameraGeometry.h"
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
 #include "Tools/ImageProcessing/MaximumScan.h"
 #include "Tools/ImageProcessing/Filter.h"
@@ -67,7 +66,9 @@ void RedBallDetector::execute(CameraInfo::CameraID id)
     }
 
     // estimate the ball radius based on the projected distance of the center point
-    double estimatedRadius = estimatedBallRadius(point);
+    double estimatedRadius = CameraGeometry::estimatedBallRadius(
+      getCameraMatrix(), getImage().cameraInfo, 
+      getFieldInfo().ballRadius, point.x, point.y);
     
     DEBUG_REQUEST("Vision:RedBallDetector:draw_ball_estimated",
       //estimatedRadius <=0 possible? will be a problem  in "radius < 2*estimatedRadius"
@@ -293,33 +294,6 @@ void RedBallDetector::calculateBallPercept(const Vector2i& center, double radius
       CIRCLE_PX(ColorClasses::orange, center.x, center.y, (int)(radius+0.5));
     );
   }
-}
-
-
-double RedBallDetector::estimatedBallRadius(const Vector2i& point) const
-{
-  // project the ball point in robot coordinates
-  Vector2d pointOnField;
-  if(!CameraGeometry::imagePixelToFieldCoord(
-		  getCameraMatrix(), 
-		  getImage().cameraInfo,
-		  point.x, 
-		  point.y, 
-		  getFieldInfo().ballRadius,
-		  pointOnField))
-  {
-    return -1;
-  }
-
-  // transform the estimated ball center back to the camera coordinates
-  Vector3d d = getCameraMatrix().invert()*Vector3d(pointOnField.x, pointOnField.y, getFieldInfo().ballRadius);
-  double cameraBallDistance = d.abs();
-  if(cameraBallDistance > getFieldInfo().ballRadius) {
-    double a = asin(getFieldInfo().ballRadius / d.abs());
-    return a / getImage().cameraInfo.getOpeningAngleHeight() * getImage().cameraInfo.resolutionHeight;
-  }
-  
-  return -1;
 }
 
 // not used right now ( do we need it?)
