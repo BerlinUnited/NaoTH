@@ -8,73 +8,81 @@
 
 #include <Tools/DataStructures/Printable.h>
 
-class ButtonEvent
-{
-public:
-  enum EventType
-  {
-    NONE,
-    PRESSED,
-    RELEASED,
-    CLICKED  // button is pressed not longer than 1s
-  } eventState;
+class ButtonEvent {
+  public:
+    enum EventType
+    {
+      NONE,
+      PRESSED,
+      RELEASED,
+      CLICKED  // button is pressed not longer than 1s
+    } eventState;
 
-  unsigned int timeOfLastEvent;
-  unsigned int timeOfLastClick;
-  unsigned int clicksInSequence;
-  bool isPressed;
+    unsigned int timeOfLastEvent;
+    unsigned int timeOfLastClick;
+    unsigned int clicksInSequence;
+    bool isPressed;
 
-  ButtonEvent() : eventState(NONE), timeOfLastEvent(0), timeOfLastClick(0), clicksInSequence(0), isPressed(false) {}
-  void operator=(EventType id) { eventState = id; }
-  bool operator==(EventType id) const { return this->eventState == id; }
-
-  bool isSingleClick() const {
-    return eventState == CLICKED && clicksInSequence == 1;
-  }
-
-  bool isDoubleClick() const {
-    return eventState == CLICKED && clicksInSequence == 2;
-  }
-
-  std::string print() const
-  {
-    switch(eventState) {
-      case PRESSED: return "PRESSED";
-      case RELEASED: return "RELEASED";
-      case CLICKED: return "CLICKED";
-      default: return "NONE";
+    ButtonEvent() : eventState(NONE), timeOfLastEvent(0), timeOfLastClick(0), clicksInSequence(0), isPressed(false) {}
+    void operator=(EventType id) {
+      eventState = id;
     }
-  }
+    bool operator==(EventType id) const {
+      return this->eventState == id;
+    }
+
+    bool isSingleClick() const {
+      return eventState == CLICKED && clicksInSequence == 1;
+    }
+
+    bool isDoubleClick() const {
+      return eventState == CLICKED && clicksInSequence == 2;
+    }
+
+    std::string print() const {
+      switch(eventState) {
+        case PRESSED:
+          return "PRESSED";
+        case RELEASED:
+          return "RELEASED";
+        case CLICKED:
+          return "CLICKED";
+        default:
+          return "NONE";
+      }
+    }
 };
 
-class ButtonState: public naoth::Printable
-{
-public:
-  enum ButtonType
-  {
-    Chest,
-    LeftFoot,
-    RightFoot,
-    HeadFront,
-    HeadMiddle,
-    HeadRear,
-    numOfButtons
-  };
+class ButtonState: public naoth::Printable {
+  public:
+    enum ButtonType
+    {
+      Chest,
+      LeftFoot,
+      RightFoot,
+      HeadFront,
+      HeadMiddle,
+      HeadRear,
+      numOfButtons
+    };
 
-  ButtonEvent buttons[numOfButtons];
+    ButtonEvent buttons[numOfButtons];
 
-  inline ButtonEvent& operator[](ButtonType id){ return buttons[id]; }
-  inline const ButtonEvent& operator[](ButtonType id) const{ return buttons[id]; }
+    inline ButtonEvent& operator[](ButtonType id) {
+      return buttons[id];
+    }
+    inline const ButtonEvent& operator[](ButtonType id) const {
+      return buttons[id];
+    }
 
-  virtual void print(std::ostream& stream) const
-  {
-    stream << "Chest: " << buttons[Chest].print() << ", timestamp: " << buttons[Chest].timeOfLastEvent << std::endl;
-    stream << "LeftFoot: " << buttons[LeftFoot].print() << ", timestamp: " << buttons[LeftFoot].timeOfLastEvent << std::endl;
-    stream << "RightFoot: " << buttons[RightFoot].print() << ", timestamp: " << buttons[RightFoot].timeOfLastEvent << std::endl;
-    stream << "HeadFront: " << buttons[HeadFront].print() << ", timestamp: " << buttons[HeadFront].timeOfLastEvent << std::endl;
-    stream << "HeadMiddle: " << buttons[HeadMiddle].print() << ", timestamp: " << buttons[HeadMiddle].timeOfLastEvent << std::endl;
-    stream << "HeadRear: " << buttons[HeadRear].print() << ", timestamp: " << buttons[HeadRear].timeOfLastEvent << std::endl;
-  }
+    virtual void print(std::ostream& stream) const {
+      stream << "Chest: " << buttons[Chest].print() << ", timestamp: " << buttons[Chest].timeOfLastEvent << std::endl;
+      stream << "LeftFoot: " << buttons[LeftFoot].print() << ", timestamp: " << buttons[LeftFoot].timeOfLastEvent << std::endl;
+      stream << "RightFoot: " << buttons[RightFoot].print() << ", timestamp: " << buttons[RightFoot].timeOfLastEvent << std::endl;
+      stream << "HeadFront: " << buttons[HeadFront].print() << ", timestamp: " << buttons[HeadFront].timeOfLastEvent << std::endl;
+      stream << "HeadMiddle: " << buttons[HeadMiddle].print() << ", timestamp: " << buttons[HeadMiddle].timeOfLastEvent << std::endl;
+      stream << "HeadRear: " << buttons[HeadRear].print() << ", timestamp: " << buttons[HeadRear].timeOfLastEvent << std::endl;
+    }
 };
 
 #endif // _ButtonState_H
