@@ -9,13 +9,25 @@
 
 void ButtonEventMonitor::execute()
 {
-  update(getButtonState()[ButtonState::Chest], getButtonData().isPressed[ButtonData::Chest]);
-  update(getButtonState()[ButtonState::LeftFoot], 
-    getButtonData().isPressed[ButtonData::LeftFootLeft] || getButtonData().isPressed[ButtonData::LeftFootRight]);
-  update(getButtonState()[ButtonState::RightFoot], 
-    getButtonData().isPressed[ButtonData::RightFootLeft] || getButtonData().isPressed[ButtonData::RightFootRight]);
+  // update Head Buttons
   update(getButtonState()[ButtonState::HeadMiddle],
-    getButtonData().isPressed[ButtonData::HeadMiddle] || getButtonData().isPressed[ButtonData::HeadMiddle]);
+    getButtonData().isPressed[ButtonData::HeadMiddle] || getButtonData().isPressed[ButtonData::HeadFront]);
+	update(getButtonState()[ButtonState::HeadMiddle],
+		getButtonData().isPressed[ButtonData::HeadMiddle] || getButtonData().isPressed[ButtonData::HeadMiddle]);
+  update(getButtonState()[ButtonState::HeadMiddle],
+    getButtonData().isPressed[ButtonData::HeadMiddle] || getButtonData().isPressed[ButtonData::HeadRear]);
+
+  // update Chest
+  update(getButtonState()[ButtonState::Chest], getButtonData().isPressed[ButtonData::Chest]);
+
+  // update feet
+  // TODO 2019 Benji: provide ButtonData for bumper separately for proprioception
+  update(getButtonState()[ButtonState::LeftFoot],
+    getButtonData().isPressed[ButtonData::LeftFootLeft] || getButtonData().isPressed[ButtonData::LeftFootRight]);
+  update(getButtonState()[ButtonState::RightFoot],
+    getButtonData().isPressed[ButtonData::RightFootLeft] || getButtonData().isPressed[ButtonData::RightFootRight]);
+
+  // TODO 2019 Benji Hands are missing
 }
 
 void ButtonEventMonitor::update(ButtonEvent& buttonEvent, bool pressed)
@@ -45,7 +57,6 @@ void ButtonEventMonitor::update(ButtonEvent& buttonEvent, bool pressed)
   }
 
   if(buttonEvent == ButtonEvent::CLICKED) {
-//    std::cout << "click sequence with " << buttonEvent.clicksInSequence << " clicks" << std::endl;
     buttonEvent.timeOfLastClick = getFrameInfo().getTime();
   }
 

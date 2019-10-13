@@ -55,7 +55,9 @@ public:
     Chest,
     LeftFoot,
     RightFoot,
+    HeadFront,
     HeadMiddle,
+    HeadRear,
     numOfButtons
   };
 
@@ -67,6 +69,11 @@ public:
   virtual void print(std::ostream& stream) const
   {
     stream << "Chest: " << buttons[Chest].print() << ", timestamp: " << buttons[Chest].timeOfLastEvent << std::endl;
+    stream << "LeftFoot: " << buttons[LeftFoot].print() << ", timestamp: " << buttons[LeftFoot].timeOfLastEvent << std::endl;
+    stream << "RightFoot: " << buttons[RightFoot].print() << ", timestamp: " << buttons[RightFoot].timeOfLastEvent << std::endl;
+    stream << "HeadFront: " << buttons[HeadFront].print() << ", timestamp: " << buttons[HeadFront].timeOfLastEvent << std::endl;
+    stream << "HeadMiddle: " << buttons[HeadMiddle].print() << ", timestamp: " << buttons[HeadMiddle].timeOfLastEvent << std::endl;
+    stream << "HeadRear: " << buttons[HeadRear].print() << ", timestamp: " << buttons[HeadRear].timeOfLastEvent << std::endl;
   }
 };
 
