@@ -10,24 +10,29 @@
 void ButtonEventMonitor::execute()
 {
   // update Head Buttons
-  update(getButtonState()[ButtonState::HeadMiddle],
-         getButtonData().isPressed[ButtonData::HeadMiddle] || getButtonData().isPressed[ButtonData::HeadFront]);
-  update(getButtonState()[ButtonState::HeadMiddle],
-         getButtonData().isPressed[ButtonData::HeadMiddle] || getButtonData().isPressed[ButtonData::HeadMiddle]);
-  update(getButtonState()[ButtonState::HeadMiddle],
-         getButtonData().isPressed[ButtonData::HeadMiddle] || getButtonData().isPressed[ButtonData::HeadRear]);
+  update(getButtonState()[ButtonState::HeadFront], getButtonData().isPressed[ButtonData::HeadFront]);
+  update(getButtonState()[ButtonState::HeadMiddle], getButtonData().isPressed[ButtonData::HeadMiddle]);
+  update(getButtonState()[ButtonState::HeadRear], getButtonData().isPressed[ButtonData::HeadRear]);
 
   // update Chest
   update(getButtonState()[ButtonState::Chest], getButtonData().isPressed[ButtonData::Chest]);
 
   // update feet
   // TODO 2019 Benji: provide ButtonData for bumper separately for proprioception
-  update(getButtonState()[ButtonState::LeftFoot],
-         getButtonData().isPressed[ButtonData::LeftFootLeft] || getButtonData().isPressed[ButtonData::LeftFootRight]);
-  update(getButtonState()[ButtonState::RightFoot],
-         getButtonData().isPressed[ButtonData::RightFootLeft] || getButtonData().isPressed[ButtonData::RightFootRight]);
+  update(getButtonState()[ButtonState::LeftFootLeft], getButtonData().isPressed[ButtonData::LeftFootLeft]);
+  update(getButtonState()[ButtonState::LeftFootRight], getButtonData().isPressed[ButtonData::LeftFootRight]);
+
+  update(getButtonState()[ButtonState::RightFootLeft], getButtonData().isPressed[ButtonData::RightFootLeft]);
+  update(getButtonState()[ButtonState::RightFootRight], getButtonData().isPressed[ButtonData::RightFootRight]);
 
   // TODO 2019 Benji Hands are missing
+  update(getButtonState()[ButtonState::LeftHandBack], getButtonData().isPressed[ButtonData::LeftHandBack]);
+  update(getButtonState()[ButtonState::LeftHandLeft], getButtonData().isPressed[ButtonData::LeftHandLeft]);
+  update(getButtonState()[ButtonState::LeftHandRight], getButtonData().isPressed[ButtonData::LeftHandRight]);
+
+  update(getButtonState()[ButtonState::RightHandBack], getButtonData().isPressed[ButtonData::RightHandBack]);
+  update(getButtonState()[ButtonState::RightHandLeft], getButtonData().isPressed[ButtonData::RightHandLeft]);
+  update(getButtonState()[ButtonState::RightHandRight], getButtonData().isPressed[ButtonData::RightHandRight]);
 }
 
 void ButtonEventMonitor::update(ButtonEvent& buttonEvent, bool pressed)

@@ -58,11 +58,23 @@ class ButtonState: public naoth::Printable {
     enum ButtonType
     {
       Chest,
-      LeftFoot,
-      RightFoot,
+
+      LeftFootLeft,
+      LeftFootRight,
+      RightFootLeft,
+      RightFootRight,
+
       HeadFront,
       HeadMiddle,
       HeadRear,
+
+      LeftHandBack,
+      LeftHandLeft,
+      LeftHandRight,
+      
+      RightHandBack,
+      RightHandLeft,
+      RightHandRight,
       numOfButtons
     };
 
@@ -76,12 +88,15 @@ class ButtonState: public naoth::Printable {
     }
 
     virtual void print(std::ostream& stream) const {
-      stream << "Chest: " << buttons[Chest].print() << ", timestamp: " << buttons[Chest].timeOfLastEvent << std::endl;
-      stream << "LeftFoot: " << buttons[LeftFoot].print() << ", timestamp: " << buttons[LeftFoot].timeOfLastEvent << std::endl;
-      stream << "RightFoot: " << buttons[RightFoot].print() << ", timestamp: " << buttons[RightFoot].timeOfLastEvent << std::endl;
-      stream << "HeadFront: " << buttons[HeadFront].print() << ", timestamp: " << buttons[HeadFront].timeOfLastEvent << std::endl;
+      stream << "Chest: "      << buttons[Chest].print()      << ", timestamp: " << buttons[Chest].timeOfLastEvent      << std::endl;
+      stream << "LeftFootLeft: " << buttons[LeftFootLeft].print() << ", timestamp: " << buttons[LeftFootLeft].timeOfLastEvent << std::endl;
+      stream << "LeftFootRight: " << buttons[LeftFootRight].print() << ", timestamp: " << buttons[LeftFootRight].timeOfLastEvent << std::endl;
+      stream << "RightFootLeft: " << buttons[RightFootLeft].print() << ", timestamp: " << buttons[RightFootLeft].timeOfLastEvent << std::endl;
+      stream << "RightFootRight: " << buttons[RightFootRight].print() << ", timestamp: " << buttons[RightFootRight].timeOfLastEvent << std::endl;
+      stream << "HeadFront: "  << buttons[HeadFront].print()  << ", timestamp: " << buttons[HeadFront].timeOfLastEvent  << std::endl;
       stream << "HeadMiddle: " << buttons[HeadMiddle].print() << ", timestamp: " << buttons[HeadMiddle].timeOfLastEvent << std::endl;
-      stream << "HeadRear: " << buttons[HeadRear].print() << ", timestamp: " << buttons[HeadRear].timeOfLastEvent << std::endl;
+      stream << "HeadRear: "   << buttons[HeadRear].print()   << ", timestamp: " << buttons[HeadRear].timeOfLastEvent   << std::endl;
+      //TODO add hands
     }
 };
 
