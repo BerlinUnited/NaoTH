@@ -44,7 +44,7 @@ private:
 
   /** raw data in YUV422 format */
   unsigned char* yuv422;
-  
+
 public:
   Image();
   virtual ~Image();
@@ -57,7 +57,7 @@ public:
 
   /** Copy a raw image. */
   void copyImageDataYUV422(const unsigned char* data, const unsigned int size);
-    
+
   static const unsigned int PIXEL_SIZE_YUV422 = 2;
   static const unsigned int PIXEL_SIZE_YUV444 = 3;
 
@@ -82,8 +82,8 @@ public: // function members
   // EXPERIMENTAL: return a reference to an aligned yuv422 pixel in the form: |y0|u|y1|v|
   // NOTE: this means we operate with a half of the resolution,
   //       i.e., x = 2*n and x = 2*n+1 will return the same pixel
-  inline const Pixel& getAligned(const int x, const int y) const { 
-    return reinterpret_cast<Pixel*>(yuv422)[(y * cameraInfo.resolutionWidth + x)/2]; 
+  inline const Pixel& getAligned(const int x, const int y) const {
+    return reinterpret_cast<Pixel*>(yuv422)[(y * cameraInfo.resolutionWidth + x)/2];
   }
 
   inline unsigned char getY(const int x, const int y) const {
@@ -115,11 +115,11 @@ public: // function members
   inline Pixel get(const int x, const int y) const
   {
     ASSERT(isInside(x,y));
-    register unsigned int yOffset = PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x);
+    unsigned int yOffset = PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x);
 
     Pixel p;
     p.y = yuv422[yOffset];
-      
+
     // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
     p.u = yuv422[yOffset+1-((x & 1)<<1)];
     p.v = yuv422[yOffset+3-((x & 1)<<1)];
@@ -136,9 +136,9 @@ public: // function members
   inline void get(const int x, const int y, Pixel& p) const
   {
     ASSERT(isInside(x,y));
-    register unsigned int yOffset = PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x);
+    unsigned int yOffset = PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x);
 
-    p.y = yuv422[yOffset];      
+    p.y = yuv422[yOffset];
     // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
     p.u = yuv422[yOffset+1-((x & 1)<<1)];
     p.v = yuv422[yOffset+3-((x & 1)<<1)];
@@ -146,7 +146,7 @@ public: // function members
 
   inline void get_direct(const int x, const int y, Pixel& p) const
   {
-    register unsigned int yOffset = PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x);
+    unsigned int yOffset = PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x);
 
     p.y = yuv422[yOffset];
     // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
@@ -157,7 +157,7 @@ public: // function members
   inline void set(const int x, const int y, const Pixel& p)
   {
     ASSERT(isInside(x,y));
-    register unsigned int yOffset = PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x);
+    unsigned int yOffset = PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x);
     yuv422[yOffset] = p.y;
 
     // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
@@ -175,26 +175,26 @@ public: // function members
   )
   {
     ASSERT(isInside(x,y));
-    register unsigned int yOffset = PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x);
+    unsigned int yOffset = PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x);
     yuv422[yOffset] = yy;
 
     // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
     yuv422[yOffset+1-((x & 1)<<1)] = cb;
     yuv422[yOffset+3-((x & 1)<<1)] = cr;
   }
-    
+
   /**
     * test whether a pixel is inside the image
     */
   inline bool isInside(const int x, const int y) const
-  { 
-    return x >= 0 && x < (int)cameraInfo.resolutionWidth && 
+  {
+    return x >= 0 && x < (int)cameraInfo.resolutionWidth &&
            y >= 0 && y < (int)cameraInfo.resolutionHeight;
   }
 
   inline bool isInside(const Vector2i& p) const
-  { 
-    return p.x >= 0 && p.x < (int)cameraInfo.resolutionWidth && 
+  {
+    return p.x >= 0 && p.x < (int)cameraInfo.resolutionWidth &&
            p.y >= 0 && p.y < (int)cameraInfo.resolutionHeight;
   }
 
