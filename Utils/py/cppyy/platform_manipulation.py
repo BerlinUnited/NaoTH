@@ -35,29 +35,63 @@ sim.registerMotion(mo2)
 
 cppyy.include("../Framework/Commons/Source/ModuleFramework/ModuleManager.h")
 cppyy.include("Source/Cognition/Cognition.h")
-mm = cppyy.gbl.getModuleManager(cog)  # using bind_object(addressof(cog), cppyy.gbl.naoth.ModuleManager) didn't work... why?
+# using bind_object(addressof(cog), cppyy.gbl.naoth.ModuleManager) didn't work... why?
+mm = cppyy.gbl.getModuleManager(cog)
 
+# getting access to the blackboard through a module
 cnnbd = mm.getModule("CNNBallDetector").getModule()
 im = cnnbd.getRequire().at("Image")
+imTop = cnnbd.getRequire().at("ImageTop")
 
 import numpy as np
 import cv2 as cv
+import ctypes
+
+try:
+    import numba
+    from numba import jit
+
+    @jit(nopython=True)
+    def convert_image(_in, _out):
+        for i in range(0, 480 * 640, 2):
+            _out[i*2] = _in[i*3]
+            _out[i*2 + 1] = (_in[i*3 + 1] + _in[i*3 + 4]) / 2.0
+            _out[i*2 + 2] = _in[i*3 + 3]
+            _out[i*2 + 3] = (_in[i*3 + 2] + _in[i*3 + 5]) / 2.0
+
+except ImportError:
+    def convert_image(_in, _out):
+        for i in range(0, 480 * 640, 2):
+            _out[i*2] = _in[i*3]
+            _out[i*2 + 1] = (_in[i*3 + 1] + _in[i*3 + 4]) / 2.0
+            _out[i*2 + 2] = _in[i*3 + 3]
+            _out[i*2 + 3] = (_in[i*3 + 2] + _in[i*3 + 5]) / 2.0
+
 
 capture = cv.VideoCapture(0)
-
 while True:
     # python cv2 stuff
     ret, image = capture.read()
     image = cv.resize(image, (640, 480))
     gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
     ret, thresh = cv.threshold(gray, 0, 255, cv.THRESH_BINARY_INV+cv.THRESH_OTSU)
-    tresh = cv.merge([thresh, thresh, thresh])
+    thresh = cv.merge([thresh, thresh, thresh])
 
+    # convert image for bottom to yuv422
     image = cv.cvtColor(image, cv.COLOR_BGR2YUV).tobytes()
-    for i in range(im.width() * im.height()):
-        x = i % im.width()
-        y = i // im.width()
+    yuv422 = np.ndarray(480*640*2, np.uint8)
+    convert_image(image, yuv422)
 
-        im.set(x, y, image[i * 3], image[i * 3 + 1], image[i * 3 + 2])
+    # convert image for top to yuv422
+    thresh = cv.cvtColor(thresh, cv.COLOR_BGR2YUV).tobytes()
+    yuv_thresh = np.ndarray(480*640*2, np.uint8)
+    convert_image(thresh, yuv_thresh)
 
+    # copy into image representation
+    p_data = yuv422.ctypes.data_as(ctypes.POINTER(ctypes.c_uint8))
+    im.copyImageDataYUV422(p_data, yuv422.size)
+    p_data = yuv_thresh.ctypes.data_as(ctypes.POINTER(ctypes.c_uint8))
+    imTop.copyImageDataYUV422(p_data, yuv_thresh.size)
+
+    # execute dummy simulator
     sim.executeFrame()
