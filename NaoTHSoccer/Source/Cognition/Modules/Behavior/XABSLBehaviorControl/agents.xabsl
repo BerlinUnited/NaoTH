@@ -63,16 +63,6 @@ include "Options/Roles/roles_go_to_passive_position.xabsl";
 include "Options/Roles/roles_go_to_ready_position.xabsl";
 include "Options/Roles/roles_play_soccer.xabsl";
 
-//include "Options/Roles/role_defender_left.xabsl";
-//include "Options/Roles/role_defender_center.xabsl";
-//include "Options/Roles/role_defender_right.xabsl";
-//include "Options/Roles/role_midfielder_left.xabsl";
-//include "Options/Roles/role_midfielder_center.xabsl";
-//include "Options/Roles/role_midfielder_right.xabsl";
-//include "Options/Roles/role_forward_left.xabsl";
-//include "Options/Roles/role_forward_center.xabsl";
-//include "Options/Roles/role_forward_right.xabsl";
-
 // SetPlays
 include "Options/SetPlays/avoid_region_go_own_goal.xabsl";
 include "Options/SetPlays/free_kick_opp.xabsl";
