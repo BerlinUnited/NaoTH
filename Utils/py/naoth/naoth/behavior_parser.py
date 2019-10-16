@@ -85,8 +85,12 @@ class BehaviorParser:
             symbols.enum_id_to_name[enum.id] = enum.name
 
     def initialize(self, init_frame):
+        """
+        Behavior parser must be initialized with a log file frame containing BehaviorStateComplete
+        :param init_frame: frame containing BehaviorStateComplete
+        """
         if 'BehaviorStateComplete' not in init_frame:
-            raise ValueError('Frame does not contain BehaviorStateComplete.')
+            raise ValueError('Given logfile frame does not contain BehaviorStateComplete.')
 
         behavior_state = init_frame['BehaviorStateComplete']
 
@@ -125,6 +129,10 @@ class BehaviorParser:
                 self._parse_option(so)
 
     def parse(self, frame):
+        """
+        Update symbols with a new log file frame
+        :param frame: log file frame, containing BehaviorStateSparse
+        """
         # check if initialized
         if self._options is None:
             raise Exception('BehaviorParser must be initialized with a frame containing '
@@ -159,6 +167,7 @@ class BehaviorParser:
             return self._current_options[option]['state'].name
 
     def __str__(self):
+        # TODO: FIX THIS
         # TODO: how to represent the options?!
         result = str(self.symbols) + ',\n[\n'
         if self._current_options:
@@ -171,20 +180,25 @@ class BehaviorParser:
 
 
 if __name__ == '__main__':
-    from .logreader import LogReader
+    from naoth.logreader import LogReader
+    import argparse
 
-    LOGFILE = 'game.log'
+    arg_parser = argparse.ArgumentParser(description='Behavior parsing example.')
+    arg_parser.add_argument('logfile', help='naoth log file')
+    args = arg_parser.parse_args()
 
-    with LogReader(LOGFILE) as log_reader:
+    with LogReader(args.logfile) as log_reader:
         behavior = BehaviorParser()
 
         for _frame in log_reader.read():
+            # Behavior parser must be initialized with a frame containing BehaviorStateComplete
             if 'BehaviorStateComplete' in _frame:
                 behavior.initialize(_frame)
 
+            # Behavior parser can be updated with frames containing BehaviorStateSparse
             if 'BehaviorStateSparse' in _frame:
                 behavior.parse(_frame)
 
                 if 'motion.type' in behavior.output_symbols and 'game.current_mode' in behavior.output_symbols:
-                    print(_frame.number,
-                          behavior.output_symbols['motion.type'], behavior.output_symbols['game.current_mode'])
+                    print(_frame.number, behavior.output_symbols['motion.type'], behavior.output_symbols['game.current_mode'])
+                    #print(behavior)
