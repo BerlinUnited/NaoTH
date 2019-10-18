@@ -16,10 +16,10 @@ public:
      path_routine(PathRoutine::NONE),
      path2018_routine(PathPlanner2018Routine::NONE),
      distance(0.0),
-     xOffset(0.0),
-     yOffset(0.0),
+     yOffset(0.0), //TODO delete me
      direction(0.0),
      radius(0.0),
+     stable(false),
      kick_executed(false)
    {}
   ~PathModel() {}
@@ -56,9 +56,8 @@ public:
 
   // distance and yOffset parameters (set by XABSL)
   double distance;
-  double xOffset;
-  double yOffset;
-
+  double yOffset; //TODO delete me
+  
   // Move around ball
   double direction;
   double radius;
@@ -138,8 +137,7 @@ public:
     stream << "path_type = " << path_type << std::endl;
     stream << "path_type2018 = " << path_type2018 << std::endl;
     stream << "distance = " << distance << std::endl;
-    stream << "yOffset = " << yOffset << std::endl;
-    stream << "xOffset = " << xOffset << std::endl;
+    stream << "yOffset = " << yOffset << std::endl;  //TODO delete me
     stream << "direction = " << direction << std::endl;
     stream << "radius = " << radius << std::endl;
   }

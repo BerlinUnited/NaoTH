@@ -84,17 +84,17 @@ class Config:
     def __update_config_part(self, config, key, box = None):
         if key in self._config:
             if box is None and not DIRS[key][1]:
-                self.update_dict(config, self._config[key])
+                self.update_dict(config, self._config[key], key if box is None else box)
             elif box in self._config[key]:
-                self.update_dict(config, self._config[key][box])
+                self.update_dict(config, self._config[key][box], key if box is None else box)
 
-    def update_dict(self, d, u):
+    def update_dict(self, d, u, o):
         # recursive update dict
         for k, v in u.items():
             if isinstance(v, collections.Mapping):
-                d[k] = self.update_dict(d.get(k, {}), v)
+                d[k] = self.update_dict(d.get(k, {}), v, o)
             else:
-                d[k] = v
+                d[k] = (v, o)  # value, origin
         return d
 
 

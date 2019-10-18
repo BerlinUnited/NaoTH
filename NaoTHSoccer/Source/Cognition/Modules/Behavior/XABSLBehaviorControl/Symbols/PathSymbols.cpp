@@ -37,8 +37,7 @@ void PathSymbols::registerSymbols(xabsl::Engine& engine)
 
   // go to ball: distance and yOffset
   engine.registerDecimalOutputSymbol("path.distance", &getPathModel().distance);
-  engine.registerDecimalOutputSymbol("path.xOffset", &getPathModel().xOffset);
-  engine.registerDecimalOutputSymbol("path.yOffset", &getPathModel().yOffset);
+  engine.registerDecimalOutputSymbol("path.yOffset", &getPathModel().yOffset);  //TODO delete me
 
   // move around ball: direction and radius
   //engine.registerDecimalOutputSymbol("path.direction", &getPathModel().direction); // TODO this is in degrees should be converted here somehow

@@ -1,4 +1,5 @@
-//is kick short
+
+//is kick short
 option fast_forward_kick_test
 {
   common decision

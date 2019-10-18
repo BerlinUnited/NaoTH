@@ -186,7 +186,7 @@ workspace "NaoTHSoccer"
     end
     
   -- for linux systems and cygwin 
-  filter {"platforms:Native", "action:gmake", "system:linux"} 
+  filter {"platforms:Native", "action:gmake or gmake2", "system:linux"} 
   -- configuration {"Native", "linux", "gmake"}
     -- "position-independent code" needed to compile shared libraries.
     -- In our case it's only the NaoSMAL. So, we probably don't need this one.
@@ -252,10 +252,15 @@ workspace "NaoTHSoccer"
         -- ACHTUNG: NaoSMAL doesn't build with the flag -std=c++11 (because of Boost)
         cppdialect "gnu++11"
         
-      dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
+        dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
         kind "ConsoleApp"
         links { "NaoTHSoccer", "Commons", naoth_links}
         vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoRobot" }
+       
+        dofile (FRAMEWORK_PATH .. "/Platforms/Make/LolaAdaptor.lua")
+        kind "ConsoleApp"
+        links { "NaoTHSoccer", "Commons", naoth_links}
+        vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LolaAdaptor" }
       
     -- generate tests if required
     if _OPTIONS["Test"] ~= nil then
@@ -275,6 +280,10 @@ workspace "NaoTHSoccer"
 	    dofile ("../Test/Make/Polygon.lua")
             kind "ConsoleApp"
             vpaths { ["*"] = "../Test/Source/Polygon" }
+        
+        dofile ("../Test/Make/LoLa.lua")
+            kind "ConsoleApp"
+            vpaths { ["*"] = "../Test/Source/LoLa" }
     end
 
     
@@ -304,11 +313,6 @@ workspace "NaoTHSoccer"
     -- generate tests if required
     if _OPTIONS["Test"] ~= nil then
       group "Test"
-        dofile ("../Test/Make/BallEvaluator.lua")
-          kind "ConsoleApp"
-          links { "NaoTHSoccer", "Commons", naoth_links}
-          vpaths { ["*"] = "../Test/Source/BallEvaluator" }
-
         dofile ("../Test/Make/EigenPerformance.lua")
           kind "ConsoleApp"
           vpaths { ["*"] = "../Test/Source/EigenPerformance" }

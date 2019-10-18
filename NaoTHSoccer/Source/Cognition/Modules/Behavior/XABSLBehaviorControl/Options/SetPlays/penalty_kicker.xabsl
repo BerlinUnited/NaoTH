@@ -75,9 +75,24 @@ option penalty_kicker
     }
     action
     {
-      go_to_ball_with_foot(right=true, distance=180);
+      go_to_ball_with_foot(right=true, distance=210);
       head.control_mode = search_for_ball_and_look_around;
-      
+    }
+  }
+
+  state approach_ball_left
+  {
+    decision
+    {
+      if (action_done)
+        goto look_for_ball_tmp;//do_kick;
+      else
+        stay;
+    }
+    action
+    {
+      go_to_ball_with_foot(right=false, distance=210);
+      head.control_mode = search_for_ball_and_look_around;
     }
   }
 
@@ -88,7 +103,8 @@ option penalty_kicker
       // set to 300 for kicking perfectly to the corner
       // but the kick is not strong enough
       if (ball.preview.y > 260)
-        goto approach_ball_right;
+        //goto approach_ball_right;
+        goto approach_ball_left;
       else
         stay;
     }
@@ -155,6 +171,7 @@ option penalty_kicker
     }
     action
     {
+      // Stand RC19: Schuss ist nicht weit genug
       path2018.routine = forwardkick;
       head.control_mode = search_for_ball_and_look_around;
       

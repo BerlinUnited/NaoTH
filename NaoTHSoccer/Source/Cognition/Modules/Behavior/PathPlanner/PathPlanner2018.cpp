@@ -57,6 +57,7 @@ void PathPlanner2018::execute()
       return;
     }
     break;
+  //TODO maybe use a parameter to select the actual routine that is executed when move around is set from the behavior???
   case PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL:
     moveAroundBall(getPathModel().direction, getPathModel().radius, getPathModel().stable);
     break;
@@ -66,7 +67,8 @@ void PathPlanner2018::execute()
   case PathModel::PathPlanner2018Routine::FORWARDKICK:
     //if (farApproach())
     {
-      if (nearApproach_forwardKick(getPathModel().xOffset, getPathModel().yOffset))
+      //TODO remove offsets from pathmodel
+      if (nearApproach_forwardKick(params.forwardKickOffset.x, params.forwardKickOffset.y))
       {
         forwardKick();
       }
@@ -385,7 +387,7 @@ bool PathPlanner2018::nearApproach_forwardKick(const double offsetX, const doubl
     if (std::abs(targetPos.x)  > params.forwardKickThreshold.x || std::abs(targetPos.y) > params.forwardKickThreshold.y)
     {
         // generate a correction step
-      double translation_xy = params.stepLength;
+      double translation_xy = params.stepLength;  //TODO kann man nicht die steplength aus den motion nehmen?
 
       //std::abs(targetPos.y) => das heißt doch wenn der ball in der y richtung springt wird ein schritt zurück geplant und ausgeführt
       // das ist dafür das das er an den ball anlaufen kann ohne zu rotieren. Wenn man nah am ball ist wird angenommen das die Rotation
