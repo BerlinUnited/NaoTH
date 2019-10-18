@@ -8,7 +8,7 @@ option free_kick_own_goal
     decision
     {
       // TODO: what should be done, if the goalie is penalized or otherwise unable to play?
-      if (game.player_number == 1) {
+      if (strategy.role == goalie) {
         if(ball.know_where_itis) {
           goto goalie_position_for_free_kick;
         } else {
@@ -43,7 +43,6 @@ option free_kick_own_goal
                             y=robot_pose.planned.y - (ball.position.field.y >= 0 ? field.yPosLeftPenaltyArea : field.yPosRightPenaltyArea)) < 200
                  && abs(value=robot_pose.planned.rotation ) < 10) {
         // TODO: do we want explicitly kick the ball, or just wait and switch to "normal" striker role?!?
-        // path_kick_long_with_approach();
         goto done;
       } else {
         stay;
@@ -81,7 +80,7 @@ option free_kick_own_goal
       head.motion_type = look_at_world_point;
       head.point_in_world.x = locator.field_to_relative.x(x=field.xPosOwnPenaltyArea, y=field.yPosLeftPenaltyArea);
       head.point_in_world.y = locator.field_to_relative.y(x=field.xPosOwnPenaltyArea, y=field.yPosLeftPenaltyArea);
-      head.point_in_world.z = ball.radius; // radius of the ball
+      head.point_in_world.z = ball.radius;
     }
   }
 
@@ -126,7 +125,7 @@ option free_kick_own_goal
       head.motion_type = look_at_world_point;
       head.point_in_world.x = locator.field_to_relative.x(x=field.xPosOwnPenaltyArea, y=field.yPosRightPenaltyArea);
       head.point_in_world.y = locator.field_to_relative.y(x=field.xPosOwnPenaltyArea, y=field.yPosRightPenaltyArea);
-      head.point_in_world.z = ball.radius; // radius of the ball
+      head.point_in_world.z = ball.radius;
     }
   }
 

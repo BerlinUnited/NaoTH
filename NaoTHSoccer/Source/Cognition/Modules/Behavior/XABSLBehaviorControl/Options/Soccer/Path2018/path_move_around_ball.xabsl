@@ -29,7 +29,6 @@ option path_move_around_ball
   state turn_left
   {
     action {
-      path.routine = move_around_ball;
       path2018.routine = move_around_ball;
       
       path.direction = @direction;
@@ -43,7 +42,6 @@ option path_move_around_ball
   state turn_right
   {
     action {
-      path.routine = move_around_ball;
       path2018.routine = move_around_ball;
       
       path.direction = @direction;
