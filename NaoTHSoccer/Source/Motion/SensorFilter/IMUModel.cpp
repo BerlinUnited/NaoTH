@@ -154,11 +154,12 @@ void IMUModel::writeIMUData()
      * this results in huge devation of the angles determined by atan2 because the projected y axis might end up in the second or third quadrant of the YZ plane
      */
 
-    getIMUData().orientation = Vector2d(-atan2(-bodyIntoGlobalMapping[1].z, bodyIntoGlobalMapping[2].z),
-                                        -atan2(bodyIntoGlobalMapping[0].z,  bodyIntoGlobalMapping[2].z));
-
     Eigen::Vector3d global_Z_in_body(bodyIntoGlobalMapping[0].z, bodyIntoGlobalMapping[1].z, bodyIntoGlobalMapping[2].z);
     getIMUData().orientation_rotvec = quaternionToVector3D(Eigen::Quaterniond::FromTwoVectors(global_Z_in_body, Eigen::Vector3d(0,0,1)));
+    RotationMatrix bodyIntoGlobalMappingWithoutZ(getIMUData().orientation_rotvec);
+
+    getIMUData().orientation = Vector2d(-atan2(bodyIntoGlobalMappingWithoutZ[2].y, bodyIntoGlobalMappingWithoutZ[1].y),
+                                        -atan2(-bodyIntoGlobalMappingWithoutZ[2].x, bodyIntoGlobalMappingWithoutZ[0].x));
 
     PLOT("IMUModel:State:orientation:x", Math::toDegrees(getIMUData().orientation.x));
     PLOT("IMUModel:State:orientation:y", Math::toDegrees(getIMUData().orientation.y));

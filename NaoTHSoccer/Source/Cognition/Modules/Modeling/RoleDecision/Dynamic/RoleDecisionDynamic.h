@@ -64,7 +64,7 @@ private:
     public:
         Parameters(): ParameterList("RoleDecisionDynamic")
         {
-            PARAMETER_REGISTER(strikerIndicator, &Parameters::setStrikerIndicatorFunction) = "distance"; // "time"
+            PARAMETER_REGISTER(strikerIndicator, &Parameters::setStrikerIndicatorFunction) = "time"; // "distance"
 
             PARAMETER_REGISTER(striker_ball_lost_time) = 1000.0;
             PARAMETER_REGISTER(striker_ball_bonus_time) = 4000.0;

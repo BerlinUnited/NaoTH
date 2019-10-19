@@ -60,45 +60,51 @@ private:
   public:
     Parameters() : ParameterList("PathPlanner2018")
     {
-      PARAMETER_REGISTER(stepLength)                            = 80.0;
       PARAMETER_REGISTER(readyForSideKickThresholdX)            = 4.0;
       PARAMETER_REGISTER(readyForSideKickThresholdY)            = 0.3;
-      PARAMETER_REGISTER(forwardKickThreshold.x)                = 50; // mm
-      PARAMETER_REGISTER(forwardKickThreshold.y)                = 25; // mm
-      PARAMETER_REGISTER(forwardKickAdaptive)                   = false;
-      //PARAMETER_REGISTER(nearApproachForwardKickBallPosOffsetX) = 110;
       PARAMETER_REGISTER(nearApproachSideKickBallPosOffsetX)    = 100;
-      PARAMETER_REGISTER(nearApproach_step_character)           = 0.3;
+      PARAMETER_REGISTER(sidekickOffsetY) = 40.0;
+      PARAMETER_REGISTER(sideKickTime) = 300;
+
       PARAMETER_REGISTER(farToNearApproachThreshold)            = 10.0;
-      PARAMETER_REGISTER(rotationLength)                        = 30.0;
-      PARAMETER_REGISTER(sidekickOffsetY)                       = 40.0;
-      PARAMETER_REGISTER(forwardKickTime)                       = 300;
-      PARAMETER_REGISTER(sideKickTime)                          = 300;
-      PARAMETER_REGISTER(moveAroundBallCharacter)               = 1.0;
-      PARAMETER_REGISTER(moveAroundBallCharacterStable)         = 0.3;
+
+      //Parameters for 2019 - needs cleanup
+      PARAMETER_REGISTER(moveAroundBallCharacter) = 1.0;
+      PARAMETER_REGISTER(moveAroundBallCharacterStable) = 0.3;
+
+      PARAMETER_REGISTER(stepLength) = 80.0;
+      PARAMETER_REGISTER(nearApproach_step_character) = 0.3;
+
+      PARAMETER_REGISTER(forwardKickOffset.x) = 120; // mm
+      PARAMETER_REGISTER(forwardKickOffset.y) = 0; // mm
+      PARAMETER_REGISTER(forwardKickThreshold.x) = 50; // mm
+      PARAMETER_REGISTER(forwardKickThreshold.y) = 25; // mm
+      PARAMETER_REGISTER(forwardKickAdaptive) = false; // mm
+      PARAMETER_REGISTER(forwardKickTime) = 300;
 
       syncWithConfig();
     }
+
     virtual ~Parameters(){}
 
-    double stepLength;
     double readyForSideKickThresholdX;
     double readyForSideKickThresholdY;
-    //double readyForForwardKickThresholdX;
-    //double readyForForwardKickThresholdY;
-    Vector2d forwardKickThreshold;
-    bool forwardKickAdaptive;
-
-    //double nearApproachForwardKickBallPosOffsetX;
     double nearApproachSideKickBallPosOffsetX;
-    double farToNearApproachThreshold;
-    double rotationLength;
     double sidekickOffsetY;
-    int forwardKickTime;
     int sideKickTime;
+
+    double farToNearApproachThreshold;
+
     double moveAroundBallCharacter;
     double moveAroundBallCharacterStable;
+
+    double stepLength;
     double nearApproach_step_character;
+
+    Vector2d forwardKickThreshold;
+    Vector2d forwardKickOffset;
+    bool forwardKickAdaptive;
+    int forwardKickTime;
   } params;
 
   // NONE means hip
