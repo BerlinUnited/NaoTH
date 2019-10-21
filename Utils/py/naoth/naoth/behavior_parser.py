@@ -1,11 +1,8 @@
-import logging
 import re
 from enum import Enum, auto
 
 from naoth.messages.Messages_pb2 import XABSLActionSparse
 from naoth.messages.Messages_pb2 import XABSLSymbol as XABSLSymbol_pb2
-
-logger = logging.getLogger(__name__)
 
 
 def parse_xabsl_enum(xabsl_enum):
