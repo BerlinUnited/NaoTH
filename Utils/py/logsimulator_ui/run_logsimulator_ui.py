@@ -3,9 +3,9 @@
 """Simple frontend for the naoth logsimulator, supporting drag and drop functionality for log files and config folders.
 
 Usage:
-    logsimulator_ui.py [-e | --executable <logsimulator_path>]
+    run_logsimulator_ui.py [-e | --executable <logsimulator_path>]
 
-    logsimulator_ui.py -h | --help
+    run_logsimulator_ui.py -h | --help
 
 Options:
     -e --executable     Path to logsimulator executable, usually "[NaoTH-Repo]/NaoTHSoccer/dist/Native/logsimulator".
