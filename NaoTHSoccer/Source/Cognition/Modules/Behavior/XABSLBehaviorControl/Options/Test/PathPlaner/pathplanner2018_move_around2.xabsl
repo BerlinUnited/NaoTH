@@ -1,116 +1,30 @@
-option pathplanner2018_move_around2
-{
-  // first states are copied from path_striker2018
+option pathplanner2018_move_around2{
   common decision
   {
     if(!body.ready_to_walk || game.current_mode != playing)
       goto idle;
-    else if(situation_abortable && !ball.know_where_itis)
-      goto search;
-    else if(situation_abortable && vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) > 500)
-      goto goto_ball;
   }
 
-  state wait_for_ball_free {
+  initial state idle {
     decision {
       else
-        goto search;
+        goto turn;
     }
     action {
-      motion.type = stand;
+      situation_abortable = true;
       head.control_mode = search_for_ball;
     }
   }
-
-  initial state idle 
-  {
-    decision 
-    {
-      else
-        goto search;
-    }
-    action 
-    {
-      situation_abortable = true;
-      team.is_playing_as_striker = false;
-      
-      path2018.routine = none;
-    }
-  }
-
-  state search 
-  {
-    decision 
-    {
-      else if(action_done)
-        goto goto_ball;
-      else
-        stay;
-    }
-    action
-    {
-      situation_abortable = true;
-      search_ball();
-    }
-  }
-
-  state goto_ball {
-    decision{
-
-      else if(vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) < 300)
-      {
-        if(attack.best_action == kick_short) {
-          goto forwardkick;
-        }
-        else if(attack.best_action == sidekick_left)
-          //goto sidekick_left;
-          goto turn;
-        else if(attack.best_action == sidekick_right)
-          //goto sidekick_right;
-          goto turn;
-        else
-          goto turn;
-      }
-      else
-        stay;
-    }
-    action{
-      situation_abortable = true;
-      /* this distance is smaller than the condition for ball.preview.x above
-         possible unwanted behavior: the ball is closer than 300 but ball.preview.y is
-         bigger than 50. The robot won't rotate in go_to_ball_with_USOA and will continue
-         to walk to the position of the ball. Two possible outcomes:
-         1. the robot runs into the ball (if ball distance is not considered)
-         2. the robot will walk backwards in the successive approaching because it was too close*/
-      go_to_ball_with_USOA(distance = 210); 
-    }
-  }
-
-  state turn
-  {
-    decision
-    {
-      else if(action_done)
-      {
-        goto stand;
-      }
-      else
-        stay;
-      }
-    action
-    {
-      situation_abortable = true;
-      path_turn_to_attack_direction();
-    }
-  }
-
-  state stand {
-    decision {
-      else
-        stay;
-    }
+  
+  state turn {
     action {
-      motion.type = stand;
+      situation_abortable = false;
+      path2018.routine = move_around_ball2;
+      path.direction = attack.direction.preview;
+      path.radius = 210;
+      path.stable = true;
+      
+      head.control_mode = search_for_ball;
     }
   }
 }
