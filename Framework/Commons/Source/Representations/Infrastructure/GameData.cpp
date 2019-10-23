@@ -206,12 +206,12 @@ void GameData::parseFrom(const spl::RoboCupGameControlData& data, int teamNumber
   gameState         = (GameState) data.state;
   setPlay           = (SetPlay) data.setPlay;
 
-  firstHalf       = data.firstHalf == 1;
-  kickingTeam     = data.kickingTeam;
+  firstHalf         = (data.firstHalf == 1);
+  kickingTeam       = data.kickingTeam;
 
   // ACHTUNG: casting to signed values - game time can be negative (!)
-  secsRemaining   = (int16_t)data.secsRemaining;
-  secondaryTime   = (int16_t)data.secondaryTime;
+  secsRemaining     = (int16_t)data.secsRemaining;
+  secondaryTime     = (int16_t)data.secondaryTime;
   
   // team info
   if(data.teams[0].teamNumber == teamNumber) {
