@@ -118,6 +118,7 @@ include "Options/Test/PathPlaner/pathplanner2018_move_around2.xabsl";
 
 // Pathplanner Agents
 include "Options/Test/PathPlannerAgents/path_move_around_ball_agent.xabsl";
+include "Options/Test/PathPlannerAgents/pathplanner2018_move_around2_agent.xabsl";
 include "Options/Test/PathPlannerAgents/pathplanner2018_forwardkick_agent.xabsl";
 include "Options/Test/PathPlannerAgents/pathplanner2018_sidekick_agent.xabsl";
 include "Options/Test/PathPlannerAgents/pathplanner2018_sidestep_agent.xabsl";
