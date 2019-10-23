@@ -37,7 +37,11 @@ void ButtonEventMonitor::execute()
 
 void ButtonEventMonitor::update(ButtonEvent& buttonEvent, bool pressed)
 {
-  const unsigned int maxSequenceLength = 350;
+  // NOTE: carefully choosen magic numbers in ms
+  // if the time between clicks is smaller than this, then the click counter is increased (e.g. for double cklicks)
+  static const unsigned int maxTimeBetweenClicksInSequence = 350;
+  // the maximal time between PRESSED and RELEASED for the event to count as a CLICK
+  static const unsigned int maxTimeLengthOfClick = 1000;
 
   buttonEvent = ButtonEvent::NONE;
 
@@ -49,10 +53,10 @@ void ButtonEventMonitor::update(ButtonEvent& buttonEvent, bool pressed)
   }
 
   // button is pressed not longer than 1s
-  if(buttonEvent == ButtonEvent::RELEASED && getFrameInfo().getTime() < buttonEvent.timeOfLastEvent + 1000) {
+  if(buttonEvent == ButtonEvent::RELEASED && buttonEvent.timeSinceEvent() < maxTimeLengthOfClick) {
     buttonEvent = ButtonEvent::CLICKED;
 
-    if(buttonEvent.clicksInSequence > 0  && getFrameInfo().getTime() < buttonEvent.timeOfLastClick + maxSequenceLength) {
+    if(buttonEvent.clicksInSequence > 0  && buttonEvent.timeSinceClick() < maxTimeBetweenClicksInSequence) {
       // additional click inside same sequence occured
       buttonEvent.clicksInSequence += 1;
     } else {
@@ -65,9 +69,11 @@ void ButtonEventMonitor::update(ButtonEvent& buttonEvent, bool pressed)
     buttonEvent.timeOfLastClick = getFrameInfo().getTime();
   }
 
-  if(!(buttonEvent == ButtonEvent::NONE)) {
+  if(buttonEvent != ButtonEvent::NONE) {
     buttonEvent.timeOfLastEvent = getFrameInfo().getTime();
   }
+
+  buttonEvent.updateTime = getFrameInfo().getTime();
 }
 
 

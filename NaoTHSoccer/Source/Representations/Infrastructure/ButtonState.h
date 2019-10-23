@@ -6,9 +6,11 @@
 #ifndef _ButtonState_H
 #define _ButtonState_H
 
+#include <Tools/Debug/NaoTHAssert.h>
 #include <Tools/DataStructures/Printable.h>
 
-class ButtonEvent {
+class ButtonEvent 
+{
   public:
     enum EventType
     {
@@ -18,17 +20,26 @@ class ButtonEvent {
       CLICKED  // button is pressed not longer than 1s
     } eventState;
 
-    unsigned int timeOfLastEvent;
-    unsigned int timeOfLastClick;
+    unsigned int updateTime; // timestamp when this representation was updated
+    
+    unsigned int timeOfLastEvent; // then did the last event occur
+    unsigned int timeOfLastClick; // this is used to count clicks in a sequence
     unsigned int clicksInSequence;
-    bool isPressed;
+
+    bool isPressed; // this is the current state of the button, which is used to detect events (changes in the state)
 
     ButtonEvent() : eventState(NONE), timeOfLastEvent(0), timeOfLastClick(0), clicksInSequence(0), isPressed(false) {}
+    
     void operator=(EventType id) {
       eventState = id;
     }
+    
     bool operator==(EventType id) const {
       return this->eventState == id;
+    }
+
+    bool operator!=(EventType id) const {
+      return this->eventState != id;
     }
 
     bool isSingleClick() const {
@@ -37,6 +48,16 @@ class ButtonEvent {
 
     bool isDoubleClick() const {
       return eventState == CLICKED && clicksInSequence == 2;
+    }
+
+    unsigned int timeSinceEvent() const {
+      ASSERT(updateTime >= timeOfLastEvent);
+      return updateTime - timeOfLastEvent;
+    }
+
+    unsigned int timeSinceClick() const {
+      ASSERT(updateTime >= timeOfLastClick);
+      return updateTime - timeOfLastClick;
     }
 
     std::string print() const {
@@ -53,7 +74,8 @@ class ButtonEvent {
     }
 };
 
-class ButtonState: public naoth::Printable {
+class ButtonState: public naoth::Printable 
+{
   public:
     enum ButtonType
     {

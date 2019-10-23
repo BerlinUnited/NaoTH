@@ -18,13 +18,14 @@
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(ButtonEventMonitor)
-REQUIRE(FrameInfo)
-REQUIRE(ButtonData)
+  REQUIRE(FrameInfo)
+  REQUIRE(ButtonData)
 
-PROVIDE(ButtonState)
+  PROVIDE(ButtonState)
 END_DECLARE_MODULE(ButtonEventMonitor)
 
-class ButtonEventMonitor : public ButtonEventMonitorBase {
+class ButtonEventMonitor : public ButtonEventMonitorBase 
+{
   public:
     ButtonEventMonitor() {}
     virtual ~ButtonEventMonitor() {}
