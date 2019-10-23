@@ -80,7 +80,8 @@ option spl_remote_decide_gamestate
     }
     action 
     {
-      decide_and_go_to_ready_position();
+      //FIXME
+      //decide_and_go_to_ready_position();
     }
   }
 
@@ -134,7 +135,7 @@ option spl_remote_decide_gamestate
 	      stay; 
 	  }
 	  action {
-	    initial_striker();
+	    path2018_initial_striker();
    		team.is_playing_as_striker = true;
 	  }
   }
