@@ -98,6 +98,8 @@ void PathPlanner2018::execute()
 
   // Always executed last
   executeStepBuffer();
+
+  PLOT("PathPlanner:buffer_size", stepBuffer.size());
 }
 
 void PathPlanner2018::moveAroundBall(const double direction, const double radius, const bool stable)
@@ -178,7 +180,7 @@ void PathPlanner2018::moveAroundBall2(const double direction, const double radiu
 
     // reset target_reached flag if we moved too much away from target position
     if(target_point.abs() > 0.5 * step_radius
-       && fabs(getBallModel().positionPreview.angle()) > Math::fromDegrees(8)) {
+       || fabs(getBallModel().positionPreview.angle()) > Math::fromDegrees(8)) {
         target_reached = false;
     }
 
@@ -274,6 +276,10 @@ void PathPlanner2018::moveAroundBall2(const double direction, const double radiu
     move_around_step.setTime(250);
 
     addStep(move_around_step);
+
+    PLOT("PathPlanner:move_around_ball_2:target:x", target_point.x);
+    PLOT("PathPlanner:move_around_ball_2:target:y", target_point.y);
+    PLOT("PathPlanner:move_around_ball_2:target:reached", target_reached);
   }
 }
 
