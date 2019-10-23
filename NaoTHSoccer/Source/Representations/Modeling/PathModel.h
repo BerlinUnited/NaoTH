@@ -43,7 +43,6 @@ public:
   enum class PathPlanner2018Routine
   {
     NONE,
-    MOVE_AROUND_BALL,
     MOVE_AROUND_BALL2,
     FORWARDKICK,
     SIDEKICK_LEFT,
@@ -57,7 +56,7 @@ public:
   // distance and yOffset parameters (set by XABSL)
   double distance;
   double yOffset; //TODO delete me
-  
+
   // Move around ball
   double direction;
   double radius;
@@ -114,9 +113,6 @@ public:
     case PathPlanner2018Routine::NONE:
         path_type2018 = "none";
         break;
-    case PathPlanner2018Routine::MOVE_AROUND_BALL:
-      path_type2018 = "move_around_ball";
-      break;
     case PathPlanner2018Routine::MOVE_AROUND_BALL2:
       path_type2018 = "move_around_ball";
       break;

@@ -88,7 +88,6 @@ include "Options/Skills/USOA/go_to_point_with_USOA.xabsl";
 
 // Pathplanner
 include "Options/Soccer/Path2018/path2018_initial_striker.xabsl";
-include "Options/Soccer/Path2018/path_move_around_ball.xabsl";
 include "Options/Soccer/Path2018/path_striker2018.xabsl";
 include "Options/Soccer/Path2018/path_turn_to_attack_direction.xabsl";
 

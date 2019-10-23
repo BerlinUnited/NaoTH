@@ -86,8 +86,14 @@ option free_kick_own_corner
     }
     action {
       team.is_playing_as_striker = true;
+      path2018.routine = move_around_ball2;
       // turn around ball, until facing the opponent goal
-      path_move_around_ball(direction=50, radius=210);
+      path.direction = atan2(y=locator.field_to_relative.y(x=field.xPosOpponentGroundline, y=0), 
+                             x=locator.field_to_relative.x(x=field.xPosOpponentGroundline, y=0));
+      path.radius = 210;
+      path.stable = true;
+
+      head.control_mode = look_at_ball_percept;
     }
   }
 
