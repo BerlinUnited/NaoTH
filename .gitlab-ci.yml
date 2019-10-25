@@ -1,9 +1,20 @@
 stages:
+ - static_analysis
  - nao 
  - linux
 
 default:
   image: scm.cms.hu-berlin.de:4567/berlinunited/tools/linuxtoolchain:latest
+
+cppcheck:
+  stage: static_analysis
+  only:
+    refs:
+      - web
+      - merge_requests
+      - triggers
+  script:
+  - sudo apt-get install cppcheck
 
 compileGame:
   stage: nao
@@ -27,4 +38,4 @@ compileLocal:
   - cd NaoTHSoccer/Make
   - premake5 gmake2 --protoc
   - cd ../build
-  - make all
+  - make all -j 4
