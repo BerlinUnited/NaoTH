@@ -22,8 +22,7 @@ using namespace std;
 using namespace naoth;
 
 WhistleSimulator::WhistleSimulator(const std::string& filePath, bool backendMode, bool realTime, unsigned short port)
-    : PlatformInterface("WhistleSimulator", CYCLE_TIME),
-      backendMode(backendMode) {
+    : backendMode(backendMode) {
     registerInput<FrameInfo>(*this);
 
     registerInput<AudioData>(*this);
@@ -32,7 +31,7 @@ WhistleSimulator::WhistleSimulator(const std::string& filePath, bool backendMode
     registerInput<DebugMessageInMotion>(*this);
     registerOutput<DebugMessageOut>(*this);
 
-    theRawAudioFilePlayer.open(filePath);
+    myfilePath = filePath;
 
     theDebugServer.start(port);
     theDebugServer.setTimeOut(0);
@@ -63,6 +62,7 @@ char WhistleSimulator::getInput() {
 }
 
 void WhistleSimulator::main() {
+    theRawAudioFilePlayer.open(myfilePath);
     printHelp();
     executeFrame();
 

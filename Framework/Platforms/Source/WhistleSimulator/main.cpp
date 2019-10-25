@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
 
         if (strcmp(argv[i], "--rate") == 0) {
             rate = (unsigned short)strtol(argv[++i], 0, 10);
-            if (rate = ! 8000 || rate != 32000 || rate != 44100 || rate != 22050 || rate != 48000) {
+            if (!(rate == 8000 || rate == 32000 || rate == 44100 || rate == 22050 || rate == 48000)) {
                 cerr << "invalid sample rate " << endl;
                 return (EXIT_FAILURE);
             }
@@ -120,7 +120,6 @@ int main(int argc, char** argv) {
             start = true;
         }
     }
-
     if (logpath == NULL) {
         cerr << "You need to give the path to the logfile as argument" << endl;
         cerr << "arguments: (-h)? (-p <port number>)? <logfile>" << endl;
@@ -141,7 +140,7 @@ int main(int argc, char** argv) {
 
     //init_agent(sim);
     Cognition* theCognition = createCognition();
-    Motion* theMotion = createMotion(); // crashes at inversekinematics
+    Motion* theMotion = createMotion(); // crashes at inverse kinematics
 
     // ACHTUNG: C-Cast (!)
     ModuleManager* theCognitionManager = getModuleManager(theCognition);

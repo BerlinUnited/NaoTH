@@ -19,15 +19,13 @@
 
 #include "RawAudioFilePlayer.h"
 
-#define CYCLE_TIME 20
-
 class WhistleSimulator : public naoth::PlatformInterface {
     public:
         WhistleSimulator(const std::string& filePath, bool backendMode, bool realTime, unsigned short port);
         virtual ~WhistleSimulator() {}
 
         virtual std::string getBodyID() const {
-            return "whistle-simulator";
+            return "WhistleSimulator";
         }
         virtual std::string getBodyNickName() const {
             return "naoth";
@@ -36,7 +34,13 @@ class WhistleSimulator : public naoth::PlatformInterface {
             return "naoth";
         }
         virtual std::string getRobotName() const {
-            return "whistle-simulator";
+            return "WhistleSimulator";
+        }
+        virtual std::string getPlatformName() const {
+            return "WhistleSimulator";
+        }
+        virtual unsigned int getBasicTimeStep() const {
+            return 20;
         }
 
         void main();
@@ -81,7 +85,7 @@ class WhistleSimulator : public naoth::PlatformInterface {
     public:
         // the flag for backend mode, which is used by LogfilePlayer of RobotControl
         bool backendMode;
-
+        std::string myfilePath;
         void printHelp();
         char getInput();
         void executeFrame();

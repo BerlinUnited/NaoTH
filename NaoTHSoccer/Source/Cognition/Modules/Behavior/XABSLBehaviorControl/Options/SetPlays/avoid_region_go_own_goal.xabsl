@@ -1,3 +1,4 @@
+/** XABSL implementation of the avoid region behavior */
 option avoid_region_go_own_goal
 {
   /** x position to avoid **/

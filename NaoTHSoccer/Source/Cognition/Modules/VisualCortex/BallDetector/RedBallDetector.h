@@ -14,7 +14,6 @@
 #include <Tools/ColorClasses.h>
 #include <Tools/Math/Vector2.h>
 #include <Tools/Math/Matrix_nxn.h>
-#include <Tools/DataStructures/OccupancyGrid.h>
 #include <Tools/ImageProcessing/ColorModelConversions.h>
 
 #include <Representations/Infrastructure/Image.h>
@@ -44,6 +43,9 @@ BEGIN_DECLARE_MODULE(RedBallDetector)
   PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugParameterList)
 
+  REQUIRE(FieldInfo)
+  REQUIRE(FrameInfo)
+
   REQUIRE(Image)
   REQUIRE(ImageTop)
   REQUIRE(CameraMatrix)
@@ -52,9 +54,6 @@ BEGIN_DECLARE_MODULE(RedBallDetector)
   REQUIRE(FieldPerceptTop)
   REQUIRE(FieldColorPercept)
   REQUIRE(FieldColorPerceptTop)
-  REQUIRE(FieldInfo)
-  REQUIRE(FrameInfo)
-  REQUIRE(GoalPostHistograms) // is this still needed?
 
   PROVIDE(BallPercept)
   PROVIDE(BallPerceptTop)
@@ -90,7 +89,6 @@ private:
       PARAMETER_REGISTER(stepSize) = 2;    
       PARAMETER_REGISTER(maxBorderBrightness) = 70;
       PARAMETER_REGISTER(minOffsetToFieldY) = 100;
-      //PARAMETER_REGISTER(minOffsetToGoalV) = 10;
       PARAMETER_REGISTER(minOffsetToFieldV) = 10;
       PARAMETER_REGISTER(mitUVDifference) = 50;
       PARAMETER_REGISTER(thresholdGradientUV) = 6;
@@ -123,14 +121,17 @@ private:
   }
 
   bool findMaximumRedPoint(std::vector<Vector2i>& points) const;
-  bool scanForEdges(const Vector2i& start, const Vector2d& direction, std::vector<Vector2i>& endpoint) const;
+
   bool spiderScan(const Vector2i& start, std::vector<Vector2i>& endPoints) const;
-  double estimatedBallRadius(const Vector2i& point) const;
+  bool scanForEdges(const Vector2i& start, const Vector2d& direction, std::vector<Vector2i>& endpoint) const;
   
   void calculateBallPercept(const Vector2i& center, double radius);
-  void estimateCircleSimple(const std::vector<Vector2i>& endPoints, Vector2d& center, double& radius) const;
-  bool sanityCheck(const Vector2i& center, double radius);
+
+  bool randomBallScan(const Vector2i& center, double radius) const;
+  bool sanityCheck(const Vector2i& center, double radius) const;
   
+  /*void estimateCircleSimple(const std::vector<Vector2i>& endPoints, Vector2d& center, double& radius) const;*/
+
 private: //data members
   std::vector<Vector2i> listOfRedPoints;
   std::vector<Vector2i> ballEndPoints;
