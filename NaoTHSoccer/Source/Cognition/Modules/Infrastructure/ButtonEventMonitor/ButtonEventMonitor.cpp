@@ -18,14 +18,13 @@ void ButtonEventMonitor::execute()
   update(getButtonState()[ButtonState::Chest], getButtonData().isPressed[ButtonData::Chest]);
 
   // update feet
-  // TODO 2019 Benji: provide ButtonData for bumper separately for proprioception
   update(getButtonState()[ButtonState::LeftFootLeft], getButtonData().isPressed[ButtonData::LeftFootLeft]);
   update(getButtonState()[ButtonState::LeftFootRight], getButtonData().isPressed[ButtonData::LeftFootRight]);
 
   update(getButtonState()[ButtonState::RightFootLeft], getButtonData().isPressed[ButtonData::RightFootLeft]);
   update(getButtonState()[ButtonState::RightFootRight], getButtonData().isPressed[ButtonData::RightFootRight]);
 
-  // TODO 2019 Benji Hands are missing
+  // update hands
   update(getButtonState()[ButtonState::LeftHandBack], getButtonData().isPressed[ButtonData::LeftHandBack]);
   update(getButtonState()[ButtonState::LeftHandLeft], getButtonData().isPressed[ButtonData::LeftHandLeft]);
   update(getButtonState()[ButtonState::LeftHandRight], getButtonData().isPressed[ButtonData::LeftHandRight]);
