@@ -19,10 +19,10 @@ compileGame:
 compileLocal:
   stage: linux
   only:
-  refs:
-    - web
-    - merge_requests
-    - triggers
+    refs:
+      - web
+      - merge_requests
+      - triggers
   script:
   - cd NaoTHSoccer/Make
   - premake5 gmake2 --protoc
