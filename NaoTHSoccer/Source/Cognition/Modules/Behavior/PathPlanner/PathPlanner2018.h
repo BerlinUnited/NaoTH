@@ -14,11 +14,13 @@
 
 // debug
 #include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugParameterList.h"
 
 // representations
 #include "Representations/Infrastructure/FieldInfo.h"
+#include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Motion/Request/HeadMotionRequest.h"
 #include "Representations/Motion/Request/MotionRequest.h"
 #include "Representations/Motion/MotionStatus.h"
@@ -29,6 +31,7 @@
 
 
 BEGIN_DECLARE_MODULE(PathPlanner2018)
+PROVIDE(DebugPlot)
 PROVIDE(DebugRequest)
 PROVIDE(DebugModify)
 PROVIDE(DebugParameterList)
@@ -37,6 +40,7 @@ REQUIRE(FieldInfo)
 REQUIRE(MultiBallPercept)
 REQUIRE(MotionStatus)
 REQUIRE(BallModel)
+REQUIRE(FrameInfo)
 
 PROVIDE(PathModel)
 PROVIDE(MotionRequest)
@@ -120,6 +124,9 @@ private:
   typedef WalkRequest::Coordinate Coordinate;
 
   void moveAroundBall(const double direction, const double radius, const bool stable);
+
+  bool target_reached;
+  void moveAroundBall2(const double direction, const double radius, const bool stable);
 
   // goToBall is split up between sideKick and forwardKick so that changing things in upcoming RoboCup 2018
   // won't be so complex as to introduce bugs easily
