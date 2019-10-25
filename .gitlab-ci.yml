@@ -3,7 +3,7 @@ stages:
  - linux
 
 default:
-  image: scm.cms.hu-berlin.de:4567/berlinunited/naoth-citest:latest
+  image: scm.cms.hu-berlin.de:4567/berlinunited/tools/linuxtoolchain:latest
 
 compileGame:
   stage: nao
