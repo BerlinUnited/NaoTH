@@ -15,7 +15,13 @@ cppcheck:
       - triggers
   script:
   - apt-get install cppcheck -y
-
+  #- cppcheck gui/test.cpp --xml 2> err.xml
+  -  cppcheck -j 4 --enable=all --inconclusive --xml --xml-version=2 . 2> cppcheck-result.xml
+  #- cppcheck -j 4 --enable=all --inconclusive --xml --xml-version=2 $WORKSPACE 2> $WORKSPACE/NaoTHSoccer/build/cppcheck-result.xml
+  artifacts:
+    paths: [cppcheck-result.xml]
+    expire_in: 1 week
+    
 compileGame:
   stage: nao
   only:
