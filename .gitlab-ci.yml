@@ -15,6 +15,7 @@ cppcheck:
       - triggers
   script:
   - apt-get install cppcheck -y  # TODO move to toolchain image
+  - pip install pygments # TODO move to toolchain image
   - cppcheck -j 4 --enable=all --inconclusive --xml --xml-version=2 . 2> cppcheck-result.xml
   - cppcheck-htmlreport --file=cppcheck-result.xml --report-dir=test1 --source-dir=.
 
