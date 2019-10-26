@@ -14,7 +14,7 @@ cppcheck:
       - merge_requests
       - triggers
   script:
-  - sudo apt-get install cppcheck
+  - apt-get install cppcheck
 
 compileGame:
   stage: nao
