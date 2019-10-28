@@ -23,7 +23,8 @@ FieldColorClassifier::FieldColorClassifier()
   DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:histogramUVField", "", false);
   DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:histogramUVBall", "", false);
 
-  getDebugParameterList().add(&parameters);
+  getDebugParameterList().add(&parametersBottom);
+  getDebugParameterList().add(&parametersTop);
 
   for(size_t i = 0; i < CameraInfo::numOfCamera; i++) {
     histogramUVArray[i].setSize(256);
@@ -34,37 +35,32 @@ FieldColorClassifier::FieldColorClassifier()
 
 FieldColorClassifier::~FieldColorClassifier()
 {
-  getDebugParameterList().remove(&parameters);
+  getDebugParameterList().remove(&parametersBottom);
+  getDebugParameterList().remove(&parametersTop);
 }
 
-void FieldColorClassifier::execute(const CameraInfo::CameraID id)
+void FieldColorClassifier::execute(const CameraInfo::CameraID id,  Parameters& parameters)
 {
   // TODO: set this global
   cameraID = id;
 
   // set the percept
-  getFieldColorPercept().greenHSISeparator.set(parameters.green);
-  getFieldColorPercept().redHSISeparator.set(parameters.red);
-
-
-  // update cache if parameter have changed
-  if(
-       cacheParameter.brightnesConeOffset      != parameters.green.brightnesConeOffset 
-    || cacheParameter.brightnesConeRadiusBlack != parameters.green.brightnesConeRadiusBlack
-    || cacheParameter.brightnesConeRadiusWhite != parameters.green.brightnesConeRadiusWhite
-    || cacheParameter.colorAngleCenter         != parameters.green.colorAngleCenter 
-    || cacheParameter.colorAngleWith           != parameters.green.colorAngleWith
-    ) 
+  if(frameWhenParameterChanged.getFrameNumber() == getFrameInfo().getFrameNumber()) 
   {
-    updateCache();
-    cacheParameter = parameters.green;
+    getFieldColorPercept().greenHSISeparator.set(parameters.green);
+    getFieldColorPercept().redHSISeparator.set(parameters.red);
+
+     // update cache if parameter have changed
+    if(parameters.provide_colortable) {
+      updateCache();
+    }
   }
 
-  DEBUG_REQUEST("Vision:FieldColorClassifier:CamBottom", if(cameraID == CameraInfo::Bottom) { debug(); } );
-  DEBUG_REQUEST("Vision:FieldColorClassifier:CamTop", if(cameraID == CameraInfo::Top) { debug(); } );
+  DEBUG_REQUEST("Vision:FieldColorClassifier:CamBottom", if(cameraID == CameraInfo::Bottom) { debug(parametersBottom); } );
+  DEBUG_REQUEST("Vision:FieldColorClassifier:CamTop", if(cameraID == CameraInfo::Top) { debug(parametersTop); } );
 }
 
-void FieldColorClassifier::debug()
+void FieldColorClassifier::debug(Parameters& parameters)
 {
   Histogram2D& histogramUV = histogramUVArray[cameraID];
   Histogram2D& histogramUVBall = histogramUVBallArray[cameraID];
@@ -79,27 +75,27 @@ void FieldColorClassifier::debug()
     }
   }
 
-  const size_t SCALE = 256 / histogramUV.size();
-
   Pixel pixel;
   for(unsigned int i = 0; i < uniformGrid.size(); i++)
   {
     const Vector2i& point = uniformGrid.getPoint(i);
     getImage().get(point.x, point.y, pixel);
 
-    Vector2d dp(pixel.u - 128, pixel.v - 128);
+    Vector2d dp(pixel.u, pixel.v);
+    dp.x -= 128;
+    dp.y -= 128;
     //double a = dp.angle();
 
     //if(fabs(Math::normalize(parameters.colorAngleCenter - a)) < parameters.colorAngleWith)
     {
       dp.rotate(-parameters.green.colorAngleCenter);
-      int value = (int)(dp.x + 128 + 0.5);
-      histogramYCroma(value/SCALE, (255 - pixel.y)/SCALE) += (1.0 - alpha);
+      size_t value =  static_cast<size_t>(Math::clamp(dp.x + 128 + 0.5, 0.0, 255.0));
+      histogramYCroma(value, (255 - pixel.y)) += (1.0 - alpha);
     }
 
     // collect field histogram
     if(!getFieldColorPercept().greenHSISeparator.noColor(pixel)) {
-      histogramUV(pixel.u/SCALE, pixel.v/SCALE) += (1.0 - alpha);
+      histogramUV(pixel.u, pixel.v) += (1.0 - alpha);
     }
 
     // collect colored ball histogram
@@ -107,7 +103,7 @@ void FieldColorClassifier::debug()
         && !getFieldColorPercept().greenHSISeparator.noColor(pixel)
         && !getFieldColorPercept().greenHSISeparator.isChroma(pixel)) 
     {
-      histogramUVBall(pixel.u/SCALE, pixel.v/SCALE) += (1.0 - alpha);
+      histogramUVBall(pixel.u, pixel.v) += (1.0 - alpha);
     }
   }
 

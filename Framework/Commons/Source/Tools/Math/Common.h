@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <math.h>
 #include <ctime>
+#include <cstdint>
 
 #include <algorithm>
 #include <vector>
@@ -250,6 +251,20 @@ namespace Math
   template<typename T>
   inline T max(const std::vector<T>& values) {
     return *std::max_element(values.begin(), values.end());
+  }
+
+  template<size_t PrecisionBits>
+  std::int32_t toFixPoint(float val) {
+    static const std::int32_t one = 1 << PrecisionBits;
+    
+    return static_cast<int32_t>(val * static_cast<float>(one) + (val < 0 ? -0.5f : 0.5f));
+  }
+
+  template<size_t PrecisionBits>
+  float fromFixPoint(std::int32_t val) {
+    static const std::int32_t one = 1 << PrecisionBits;
+
+    return static_cast<float>(static_cast<double>(val) / static_cast<double>(one));
   }
 
 }//end namespace Math

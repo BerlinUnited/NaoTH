@@ -1,5 +1,3 @@
-/*
- */
 package naoscp.tools;
 
 import java.io.BufferedReader;
@@ -18,7 +16,7 @@ import java.util.regex.Pattern;
 public class Config {
 
     private String name;
-    public final Map<String, String> values = new TreeMap<String, String>();
+    public final Map<String, String> values = new TreeMap<>();
 
     public Config(String name) {
         this.name = name;

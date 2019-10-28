@@ -48,16 +48,18 @@ void SimpleNetworkTimeProtocol::createNtpRequest()
 void SimpleNetworkTimeProtocol::updateMessageStatistics()
 {
     // iterate over all team messages
-    for(auto it : getTeamMessage().data)
+    for(const auto& it : getTeamMessage().data)
     {
         const TeamMessageData& data = it.second;
         // skip my own messages
         if(data.playerNumber == getPlayerInfo().playerNumber) {
+            // update myself
+            getTeamMessageNTP().getPlayer(data.playerNumber).lastNtpUpdate = data.frameInfo;
             continue;
         }
-        TeamMessageTimeStatistics::Player& player = getTeamMessageTimeStatistics().getPlayer(data.playerNumber);
+        TeamMessageNTP::Player& player = getTeamMessageNTP().getPlayer(data.playerNumber);
         // Update only with newer information
-        if(data.frameInfo > player.lastUpdate)
+        if(data.frameInfo > player.lastNtpUpdate)
         {
             // search for myself in teammates response messages
             auto response = std::find_if(
@@ -80,6 +82,8 @@ void SimpleNetworkTimeProtocol::updateMessageStatistics()
                     player.offset = (t4 - lat) - t3;
                 }
             }
+            // set last update time
+            player.lastNtpUpdate = data.frameInfo;
         }
     }
 }

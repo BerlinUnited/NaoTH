@@ -14,7 +14,6 @@
 #include <unistd.h>
 #endif
 
-
 #include "MorphologyProcessor/ForwardKinematics.h"
 
 #include "Tools/CameraGeometry.h"
@@ -27,19 +26,8 @@ Motion::Motion()
     theLogProvider(NULL),
     motionLogger("MotionLog")
 {
-
   REGISTER_DEBUG_COMMAND(motionLogger.getCommand(), motionLogger.getDescription(), &motionLogger);
-
-  #define ADD_LOGGER(R) motionLogger.addRepresentation(&(get##R()), #R);
-
-  ADD_LOGGER(FrameInfo);
-  ADD_LOGGER(SensorJointData);
-  ADD_LOGGER(MotorJointData);
-  ADD_LOGGER(InertialSensorData);
-  ADD_LOGGER(AccelerometerData);
-  ADD_LOGGER(GyrometerData);
-  ADD_LOGGER(FSRData);
-  ADD_LOGGER(MotionRequest);
+  registerLogableRepresentationList();
 
   DEBUG_REQUEST_REGISTER("Motion:KinematicChain:orientation_test", "", false);
 
@@ -53,33 +41,30 @@ Motion::Motion()
   REGISTER_DEBUG_COMMAND("ParameterList:get", "get the parameter list with the given name", &getDebugParameterList());
   REGISTER_DEBUG_COMMAND("ParameterList:set", "set the parameter list with the given name", &getDebugParameterList());
 
-  // modify commands
-  REGISTER_DEBUG_COMMAND("modify:list", 
-    "return the list of registered modifiable values", &getDebugModify());
-  REGISTER_DEBUG_COMMAND("modify:set", 
-    "set a modifiable value (i.e. the value will be always overwritten by the new one) ", &getDebugModify());
-  REGISTER_DEBUG_COMMAND("modify:release", 
-    "release a modifiable value (i.e. the value will not be overwritten anymore)", &getDebugModify());
-
   // register the modules
   theInertiaSensorCalibrator = registerModule<InertiaSensorCalibrator>("InertiaSensorCalibrator", true);
   theInertiaSensorFilterBH = registerModule<InertiaSensorFilter>("InertiaSensorFilter", true);
-    theFootGroundContactDetector = registerModule<FootGroundContactDetector>("FootGroundContactDetector", true);
-  //theSupportPolygonGenerator = registerModule<SupportPolygonGenerator>("SupportPolygonGenerator", true);
-  theOdometryCalculator = registerModule<OdometryCalculator>("OdometryCalculator", true);
-  theKinematicChainProvider = registerModule<KinematicChainProviderMotion>("KinematicChainProvider", true);
   theIMUModel = registerModule<IMUModel>("IMUModel", true);
 
-  theArmCollisionDetector = registerModule<ArmCollisionDetector>("ArmCollisionDetector", true);
+  theFootGroundContactDetector = registerModule<FootGroundContactDetector>("FootGroundContactDetector", true);
+  theOdometryCalculator = registerModule<OdometryCalculator>("OdometryCalculator", true);
+  theKinematicChainProvider = registerModule<KinematicChainProviderMotion>("KinematicChainProvider", true);
+
+  theArmCollisionDetector = registerModule<ArmCollisionDetector>("ArmCollisionDetector", false);
+  theArmCollisionDetector2018 = registerModule<ArmCollisionDetector2018>("ArmCollisionDetector2018", true);
 
   theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
+  theCoPProvider  = registerModule<CoPProvider>("CoPProvider", true);
+  theSensorLogger = registerModule<SensorLogger>("theSensorLogger", true);
 
   getDebugParameterList().add(&parameter);
+  getWalk2018Parameters().init(getDebugParameterList());
 }
 
 Motion::~Motion()
 {
   getDebugParameterList().remove(&parameter);
+  getWalk2018Parameters().remove(getDebugParameterList());
 }
 
 void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
@@ -88,12 +73,13 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   theLogProvider = ModuleManager::getModule("LogProvider");
 
   // TODO: need a better solution for this
-  // load the joint limits from the config 
+  // load the joint limits from the config
   JointData::loadJointLimitsFromConfig();
 
 
   // init robot info
-  getRobotInfo().platform = platform.getName();
+  getRobotInfo().platform = platform.getPlatformName();
+  getRobotInfo().headNickName = platform.getHeadNickName();
   getRobotInfo().bodyNickName = platform.getBodyNickName();
   getRobotInfo().bodyID = platform.getBodyID();
   getRobotInfo().basicTimeStep = platform.getBasicTimeStep();
@@ -108,6 +94,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(FSRData);
   REG_INPUT(AccelerometerData);
   REG_INPUT(GyrometerData);
+  REG_INPUT(ButtonData);
 
   REG_INPUT(DebugMessageInMotion);
 
@@ -128,6 +115,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerOutputChanel(getBodyStatus());
   platformInterface.registerOutputChanel(getGroundContactModel());
   platformInterface.registerOutputChanel(getCollisionPercept());
+  platformInterface.registerOutputChanel(getIMUData());
 
   // messages from cognition to motion
   platformInterface.registerInputChanel(getCameraInfo());
@@ -138,13 +126,17 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerInputChanel(getBodyState());
 
   std::cout << "[Motion] register end" << std::endl;
+
+  cycleStopwatch.start();
 }//end init
 
 
 
 void Motion::call()
 {
-
+  cycleStopwatch.stop();
+  cycleStopwatch.start();
+  PLOT("Motion.Cycle", cycleStopwatch.lastValue);
   STOPWATCH_START("MotionExecute");
 
   // run the theLogProvider if avalieble
@@ -210,13 +202,17 @@ void Motion::processSensorData()
 
   // check all joint stiffness
   int i = getSensorJointData().checkStiffness();
-  if(i != -1)
-  {
+  if(i != -1) {
     THROW("Get ILLEGAL Stiffness: "<<JointData::getJointName(JointData::JointID(i))<<" = "<<getSensorJointData().stiffness[i]);
   }
 
+  // log sensor data
+  if(parameter.recordSensorData) {
+    theSensorLogger->execute();
+  }
+
   // remove the offset from sensor joint data
-  for( i = 0; i < JointData::numOfJoint; i++){
+  for( i = 0; i < JointData::numOfJoint; i++) {
       getSensorJointData().position[i] = getSensorJointData().position[i] - getOffsetJointData().position[i];
   }
 
@@ -225,22 +221,30 @@ void Motion::processSensorData()
   // calibrate inertia sensors
   theInertiaSensorCalibrator->execute();
 
+  //HACK: override the sensor data with the calibrated versions
   //TODO: introduce calibrated versions of the data
   //TODO: correct the sensors z is inverted => don't forget to check all modules requiring/providing GyrometerData
   getGyrometerData().data      += getCalibrationData().gyroSensorOffset;
   getInertialSensorData().data += getCalibrationData().inertialSensorOffset;
   getAccelerometerData().data  += getCalibrationData().accSensorOffset;
 
-  //theInertiaSensorFilterBH->execute();
+  // TODO: is this still used?
+  theInertiaSensorFilterBH->execute();
+
+  // HACK: override InertialModel, which is usually provided by InertiaSensorFilterBH
+  // only to enable transparent switching with InertiaSensorFilter
+  if(parameter.letIMUModelProvideInertialModel) {
+      getInertialModel().orientation = getIMUData().orientation;
+  }
 
   //
   theFootGroundContactDetector->execute();
-    
+
   //
   theKinematicChainProvider->execute();
 
   //
-//  theSupportPolygonGenerator->execute();
+  theCoPProvider->execute();
 
   //
   updateCameraMatrix();
@@ -248,35 +252,15 @@ void Motion::processSensorData()
   //
   theOdometryCalculator->execute();
 
-  theArmCollisionDetector->execute();
+  //theArmCollisionDetector->execute();
+  theArmCollisionDetector2018->execute();
 
-
-  // NOTE: highly experimental
-  static double rotationGyroZ = 0.0;
-  if(getCalibrationData().calibrated) {
-    rotationGyroZ -= getGyrometerData().data.z * getRobotInfo().getBasicTimeStepInSecond();
-  } else {
-    rotationGyroZ = 0.0;
-  }
-
-  if(parameter.useGyroRotationOdometry)
-  {
-    PLOT("Motion:rotationZ", rotationGyroZ);
-    getOdometryData().rotation = rotationGyroZ;
-  }
-
-  if(parameter.useIMUDataForRotationOdometry)
-  {
-    PLOT("Motion:rotationZ", getIMUData().rotation.z);
-    getOdometryData().rotation = getIMUData().rotation.z;
-  }
 
   // store the MotorJointData
   theLastMotorJointData = getMotorJointData();
 
   // update the body status
-  for(int i=0; i < JointData::numOfJoint; i++)
-  {
+  for(int i = 0; i < JointData::numOfJoint; ++i) {
     getBodyStatus().currentSum[i] += getSensorJointData().electricCurrent[i];
   }
   getBodyStatus().timestamp = getFrameInfo().getTime();
@@ -288,7 +272,6 @@ void Motion::processSensorData()
 
 void Motion::postProcess()
 {
-
   motionLogger.log(getFrameInfo().getFrameNumber());
 
   MotorJointData& mjd = getMotorJointData();
@@ -296,9 +279,8 @@ void Motion::postProcess()
 
 #ifdef DEBUG
   int i = mjd.checkStiffness();
-  if(i != -1)
-  {
-    THROW("Get ILLEGAL Stiffness: "<<JointData::getJointName(JointData::JointID(i))<<" = "<<mjd.stiffness[i]);
+  if(i != -1) {
+    THROW("Get ILLEGAL Stiffness: " << JointData::getJointName(JointData::JointID(i)) << " = " << mjd.stiffness[i]);
   }
 #endif
 
@@ -331,7 +313,6 @@ void Motion::modifyJointOffsets()
 
 void Motion::debugPlots()
 {
-
   // some basic plots
   // plotting sensor data
   PLOT("Motion:GyrometerData:data:x", getGyrometerData().data.x);
@@ -516,9 +497,9 @@ void Motion::drawRobot3D(const KinematicChain& kinematicChain)
   for (int i = 0; i < KinematicChain::numOfLinks; i++)
   {
     if ( i != KinematicChain::Neck
-      && i != KinematicChain::LShoulder 
+      && i != KinematicChain::LShoulder
       && i != KinematicChain::LElbow
-      && i != KinematicChain::RShoulder 
+      && i != KinematicChain::RShoulder
       && i != KinematicChain::RElbow
       && i != KinematicChain::Hip)
     {

@@ -9,7 +9,7 @@
 
 CameraMatrixCorrectorV2::CameraMatrixCorrectorV2()
 {
- getDebugParameterList().add(&getCameraMatrixOffset()); 
+  getDebugParameterList().add(&getCameraMatrixOffset()); 
 
   DEBUG_REQUEST_REGISTER("CameraMatrixV2:calibrate_camera_matrix_line_matching",
     "calculates the roll and tilt offset of the camera using field lines (it. shoult be exactely 3000mm in front of the robot)",
@@ -184,11 +184,6 @@ void CameraMatrixCorrectorV2::execute()
           }
       }
   }
-
-  MODIFY("CameraMatrixV2:OffsetRollTop",getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Top].x);
-  MODIFY("CameraMatrixV2:OffsetTiltTop",getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Top].y);
-  MODIFY("CameraMatrixV2:OffsetRollBottom",getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Bottom].x);
-  MODIFY("CameraMatrixV2:OffsetTiltBottom",getCameraMatrixOffset().correctionOffset[naoth::CameraInfo::Bottom].y);
 
   MODIFY("CameraMatrixV2:Body:Roll",  getCameraMatrixOffset().body_rot.x);
   MODIFY("CameraMatrixV2:Body:Pitch", getCameraMatrixOffset().body_rot.y);

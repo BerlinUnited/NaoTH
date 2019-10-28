@@ -2,9 +2,11 @@
 * @file SharedMemoryIO.h
 *
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinric Mellmann</a>
-* @breief provides a convenient interface for the shared memory
+* @breif provides a convenient interface for the shared memory
 *
 */
+#ifndef _SharedMemoryIO_h
+#define _SharedMemoryIO_h
 
 #include "SharedMemory.h"
 
@@ -104,3 +106,5 @@ private:
 };//end class SharedMemoryReader
 
 } // end naoth
+
+#endif // _SharedMemoryIO_h

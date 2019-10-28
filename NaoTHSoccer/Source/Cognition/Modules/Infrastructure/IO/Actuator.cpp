@@ -19,7 +19,6 @@ Actuator::~Actuator()
 void Actuator::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& /*platform*/)
 {
   REG_OUTPUT(LEDData);
-  REG_OUTPUT(IRSendData);
   REG_OUTPUT(UltraSoundSendData);
 
   REG_OUTPUT(CameraSettingsRequest);
@@ -29,7 +28,7 @@ void Actuator::init(naoth::ProcessInterface& platformInterface, const naoth::Pla
   REG_OUTPUT(DebugMessageOut);
   REG_OUTPUT(GameReturnData);
 
-  REG_OUTPUT(WhistleControl);
+  REG_OUTPUT(AudioControl);
 
   platformInterface.registerOutputChanel(getCameraInfo());
   platformInterface.registerOutputChanel(getCameraInfoTop());
@@ -62,6 +61,10 @@ void Actuator::execute()
     getHeadMotionRequest().coordinate = HeadMotionRequest::RFoot;
   }
 
+  // play the startsound
+  if(getFrameInfo().getFrameNumber() == 1) {
+    getSoundPlayData().soundFile = "cognition_start.wav";
+  }
 
   GT_TRACE("Actuator:execute() end");
 }//end execute

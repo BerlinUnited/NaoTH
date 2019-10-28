@@ -10,14 +10,12 @@
 #ifndef _BlackBoardInterface_h_
 #define _BlackBoardInterface_h_
 
-#include "BlackBoard.h"
-//#include "Tools/Debug/NaoTHAssert.h"
-//#include <iostream>
+//#include "BlackBoard.h"
+class BlackBoard;
 
 class BlackBoardInterface
 {
 private:
-  /** */
   BlackBoard* theBlackBoard;
 
   /** indicates whether this object has its own blackboard*/
@@ -25,44 +23,16 @@ private:
 
 protected:
   /** inherits the blackboard */
-  BlackBoardInterface(BlackBoard* theBlackBoard) : theBlackBoard(theBlackBoard)
-  {
-    blackBoardOwner = false;
-    //std::cout << "BlackBoard inherited" << std::endl;
-  }
+  BlackBoardInterface(BlackBoard* theBlackBoard);
 
   /** create its own blackboard */
-  BlackBoardInterface()
-  {
-    theBlackBoard = new BlackBoard();
-    blackBoardOwner = true;
-  }
+  BlackBoardInterface();
 
-  virtual ~BlackBoardInterface()
-  {
-    if(blackBoardOwner)
-    {
-      delete theBlackBoard;
-    }
-  }
+  virtual ~BlackBoardInterface();
 
-  /**
-  *
-  */
-  BlackBoard& getBlackBoard()
-  {
-    assert(theBlackBoard != NULL);
-    return *theBlackBoard;
-  }
-
-  /**
-  *
-  */
-  const BlackBoard& getBlackBoard() const
-  {
-    assert(theBlackBoard != NULL);
-    return *theBlackBoard;
-  }
+  /** getters */
+  BlackBoard& getBlackBoard();
+  const BlackBoard& getBlackBoard() const;
 };
 
 #endif //_BlackBoardInterface_h_

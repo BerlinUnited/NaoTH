@@ -30,13 +30,12 @@
 // situation
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/BodyState.h"
-#include "Representations/Modeling/SituationStatus.h"
 #include "Representations/Modeling/SituationPrior.h"
 
 // sensor percepts
 #include "Representations/Perception/GoalPercept.h"
-#include "Representations/Perception/LinePercept.h"
-
+#include "Representations/Perception/LinePercept2018.h"
+#include "Representations/Perception/LinePerceptAugmented.h"
 
 // local models
 #include "Representations/Modeling/ProbabilisticQuadCompas.h"
@@ -77,7 +76,6 @@ BEGIN_DECLARE_MODULE(MonteCarloSelfLocator)
 
   REQUIRE(MotionStatus)
   REQUIRE(BodyState)
-  REQUIRE(SituationStatus)
   REQUIRE(SituationPrior)
 
   REQUIRE(GoalPercept)
@@ -86,7 +84,12 @@ BEGIN_DECLARE_MODULE(MonteCarloSelfLocator)
   REQUIRE(SensingGoalModel)
   REQUIRE(ProbabilisticQuadCompas)
   REQUIRE(LineGraphPercept)
-  REQUIRE(LinePercept)
+  //REQUIRE(RansacCirclePercept)
+
+  REQUIRE(RansacLinePercept)
+  REQUIRE(RansacCirclePercept2018)
+  REQUIRE(ShortLinePercept)
+  REQUIRE(LinePerceptAugmented)
 
   PROVIDE(RobotPose)
   PROVIDE(SelfLocGoalModel)
@@ -120,36 +123,56 @@ private: // local types
   public: 
     Parameters(): ParameterList("MCSLParameters")
     {
+      // particle filter params
       PARAMETER_REGISTER(thresholdCanopy) = 900;
-      PARAMETER_REGISTER(resamplingThreshhold) = 0.01;
+      PARAMETER_REGISTER(resamplingThreshhold) = 0.02;
 
-      PARAMETER_REGISTER(processNoiseDistance) = 70;
+      PARAMETER_REGISTER(processNoiseDistance) = 40;
       PARAMETER_REGISTER(processNoiseAngle) = 0.1;
 
+      PARAMETER_REGISTER(updateByOdometryWhenBlind) = true;
+      PARAMETER_REGISTER(updateByOdometryRelative) = false;
       PARAMETER_REGISTER(motionNoise) = false;
       PARAMETER_REGISTER(motionNoiseDistance) = 5.0;
       PARAMETER_REGISTER(motionNoiseAngle) = 0.01;
+      PARAMETER_REGISTER(motionNoiseDistanceRelative) = 0.1;
+      PARAMETER_REGISTER(motionNoiseAngleRelative) = 0.02;
 
+      PARAMETER_REGISTER(resampleSUS) = false;
+      PARAMETER_REGISTER(resampleGT07) = true;
+
+      // goal
       PARAMETER_REGISTER(updateByGoalPostTracking) = false;
       PARAMETER_REGISTER(updateByGoalPostLocalize) = true;
       PARAMETER_REGISTER(goalPostSigmaDistance) = 0.1;
       PARAMETER_REGISTER(goalPostSigmaAngle) = 0.1;
+      PARAMETER_REGISTER(maxAcceptedGoalErrorWhileTracking) = 3000;
+      PARAMETER_REGISTER(sensorResetByGoalModel) = true;
 
-      PARAMETER_REGISTER(updateByLinePoints) = true;
-      PARAMETER_REGISTER(linePointsSigmaDistance) = 0.1;
+      // this is legacy
+      PARAMETER_REGISTER(updateByLinePoints) = false;
+      PARAMETER_REGISTER(linePointsSigmaDistance) = 0.2;
       PARAMETER_REGISTER(linePointsSigmaAngle) = 0.1;
       PARAMETER_REGISTER(linePointsMaxNumber) = 10;
 
+      // lines
       PARAMETER_REGISTER(updateByLinePercept) = true;
-
-      PARAMETER_REGISTER(updateByShortLinePercept) = false;
-
-      PARAMETER_REGISTER(updateByMiddleCircle) = true;
-      PARAMETER_REGISTER(sigmaDistanceCenterCircle) = 0.2;
+      PARAMETER_REGISTER(updateByShortLinePercept) = true;
+      PARAMETER_REGISTER(lineSigmaDistance) = 0.1;
+      PARAMETER_REGISTER(lineSigmaAngle) = 0.1;
+      PARAMETER_REGISTER(lineMaxNumber) = 3;
+      PARAMETER_REGISTER(lineMinLength) = 300;
+      
+      // circle
+      PARAMETER_REGISTER(sensorResetByMiddleCircle) = true; // LinePerceptAugmented
+      PARAMETER_REGISTER(sensorResetByMiddleCircleAngleDecisionDistance) = 1000;
+      PARAMETER_REGISTER(updateByRansacCircle) = true;
+      PARAMETER_REGISTER(sigmaDistanceCenterCircle) = 0.1;
       PARAMETER_REGISTER(sigmaAngleCenterCircle) = 0.1;
 
       PARAMETER_REGISTER(updateByOldPose) = false;
-      PARAMETER_REGISTER(oldPoseSigmaDistance) = 0.1;
+      PARAMETER_REGISTER(oldPoseSigmaDistance) = 500; // mm
+      PARAMETER_REGISTER(oldPoseSigmaAngle) = Math::fromDegrees(45.0);
 
       PARAMETER_REGISTER(updateByCompas) = true;
 
@@ -158,67 +181,77 @@ private: // local types
       
       PARAMETER_REGISTER(resetOwnHalf) = false;
       PARAMETER_REGISTER(downWeightFactorOwnHalf) = 0.01;
-      PARAMETER_REGISTER(maxTimeForLiftUp) = 500;
       
       PARAMETER_REGISTER(updateBySituation) = true;
       PARAMETER_REGISTER(startPositionsSigmaDistance) = 500;
       PARAMETER_REGISTER(startPositionsSigmaAngle) = 0.5;
 
-      PARAMETER_REGISTER(resampleSUS) = false;
-      PARAMETER_REGISTER(resampleGT07) = true;
-
-      PARAMETER_REGISTER(maxAcceptedGoalErrorWhileTracking) = 0;
-
       // load from the file after registering all parameters
       syncWithConfig();
     }
 
+    // particle filter parameters
     double thresholdCanopy;
     double resamplingThreshhold;
 
     double processNoiseDistance;
     double processNoiseAngle;
 
+    bool updateByOdometryWhenBlind;
+    bool updateByOdometryRelative;
     bool motionNoise;
     double motionNoiseDistance;
     double motionNoiseAngle;
+    double motionNoiseDistanceRelative;
+    double motionNoiseAngleRelative;
 
+    bool resampleSUS;
+    bool resampleGT07;
+
+    // goal
     bool updateByGoalPostTracking;
     bool updateByGoalPostLocalize;
     double goalPostSigmaDistance;
     double goalPostSigmaAngle;
+    double maxAcceptedGoalErrorWhileTracking;
+    bool sensorResetByGoalModel;
 
+    // line points (legacy)
     bool updateByLinePoints;
     double linePointsSigmaDistance;
     double linePointsSigmaAngle;
     int linePointsMaxNumber;
-
+    
+    
+    // lines
     bool updateByLinePercept;
     bool updateByShortLinePercept;
-
+    double lineSigmaDistance;
+    double lineSigmaAngle;
+    int lineMaxNumber;
+    int lineMinLength;
     
-    bool updateByMiddleCircle;
+    // cirlcle
+    bool sensorResetByMiddleCircle;
+    double sensorResetByMiddleCircleAngleDecisionDistance;
+    bool updateByRansacCircle;
     double sigmaDistanceCenterCircle;
     double sigmaAngleCenterCircle;
 
     bool updateByOldPose;
     double oldPoseSigmaDistance;
+    double oldPoseSigmaAngle;
 
     bool updateByCompas;
     bool treatLiftUp;
     bool treatInitState;
     bool resetOwnHalf;
     double downWeightFactorOwnHalf;
-    double maxTimeForLiftUp;
 
     bool updateBySituation;
     double startPositionsSigmaDistance;
     double startPositionsSigmaAngle;
 
-    bool resampleSUS;
-    bool resampleGT07;
-
-    double maxAcceptedGoalErrorWhileTracking;
   } parameters;
 
   class LineDensity {
@@ -267,7 +300,6 @@ private: // local types
 private: // goal posts
   bool updatedByGoalPosts;
 
-
 private: // data members
   OdometryData lastRobotOdometry;
   SampleSet theSampleSet;
@@ -283,17 +315,21 @@ private: // data members
   double effective_number_of_samples;
 
 private: // workers
-  void updateByOdometry(SampleSet& sampleSet, bool noise) const;
+  void updateByOdometry(SampleSet& sampleSet, bool noise, bool onlyRotation) const;
+  void updateByOdometryAbsolute(SampleSet& sampleSet, bool noise, bool onlyRotation) const;
+  void updateByOdometryRelative(SampleSet& sampleSet, bool noise, bool onlyRotation) const;
 
   bool updateBySensors(SampleSet& sampleSet) const;
   void updateByGoalPosts(const GoalPercept& goalPercept, SampleSet& sampleSet) const;
   void updateBySingleGoalPost(const GoalPercept::GoalPost& goalPost, SampleSet& sampleSet) const;
   void updateByCompas(SampleSet& sampleSet) const;
   void updateByLinePoints(const LineGraphPercept& linePercept, SampleSet& sampleSet) const;
-  void updateByLines(const LinePercept& linePercept, SampleSet& sampleSet) const;
-  void updateByShortLines(const LinePercept& linePercept, SampleSet& sampleSet) const;
+  //void updateByLines(const LinePercept& linePercept, SampleSet& sampleSet) const;
+  //void updateByShortLines(const LinePercept& linePercept, SampleSet& sampleSet) const;
 
-  void updateByMiddleCircle(const LinePercept& linePercept, SampleSet& sampleSet) const;
+  void updateByLines2018(const LinePercept2018& linePercept, SampleSet& sampleSet) const;
+
+  void updateByMiddleCircle(const Vector2d& middleCircleCenter, SampleSet& sampleSet) const;
   // A-Priori knowledge based on the game state
   void updateBySidePositions(SampleSet& sampleSet) const;
   void updateByStartPositions(SampleSet& sampleSet) const;
@@ -316,6 +352,7 @@ private: // workers
   int resampleSUS(SampleSet& sampleSet, int n) const;
 
   int sensorResetBySensingGoalModel(SampleSet& sampleSet, int n) const;
+  void sensorResetByMiddleCircle(SampleSet& sampleSet) const;
 
   void calculatePose(SampleSet& sampleSet);
 

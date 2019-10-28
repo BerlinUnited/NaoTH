@@ -2,6 +2,7 @@ package de.naoth.rc.components.teamcommviewer;
 
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.math.Vector2D;
+import de.naoth.rc.messages.TeamMessageOuterClass;
 import de.naoth.rc.server.ConnectionStatusEvent;
 import de.naoth.rc.server.ConnectionStatusListener;
 import de.naoth.rc.server.MessageServer;
@@ -99,22 +100,31 @@ public class RobotStatus {
     private final BooleanProperty wasStriker = new SimpleBooleanProperty(false);
     public BooleanProperty wasStrikerProperty() { return wasStriker; }
     public boolean getWasStriker() { return wasStriker.get(); }
-    
-    private final BooleanProperty isPenalized = new SimpleBooleanProperty(false);
-    public BooleanProperty isPenalizedProperty() { return isPenalized; }
-    public boolean getIsPenalized() { return isPenalized.get(); }
+
+    private final StringProperty robotState = new SimpleStringProperty("");
+    public StringProperty robotStateProperty() { return robotState; }
+    public String getRobotState() { return robotState.get(); }
     
     private final BooleanProperty whistleDetected = new SimpleBooleanProperty(false);
     public BooleanProperty whistleDetectedProperty() { return whistleDetected; }
     public boolean getWhistleDetected() { return whistleDetected.get(); }
     
-    private Vector2D teamBall;
-    public Vector2D getTeamBall() { return teamBall; }
+    private final ObjectProperty<Vector2D> teamBall = new SimpleObjectProperty<>();
+    public ObjectProperty teamBallProperty() { return teamBall; }
+    public Vector2D getTeamBall() { return teamBall.get(); }
     
     private final BooleanProperty showOnField = new SimpleBooleanProperty(true);
     public BooleanProperty showOnFieldProperty() { return showOnField; }
     public boolean getShowOnField() { return showOnField.get(); }
     public void setShowOnField(boolean b) { showOnField.set(b); }
+    
+    private final StringProperty robotRoleStatic = new SimpleStringProperty("");
+    public StringProperty robotRoleStaticProperty() { return robotRoleStatic; }
+    public String getRobotRoleStatic() { return robotRoleStatic.get(); }
+    
+    private final StringProperty robotRoleDynamic = new SimpleStringProperty("");
+    public StringProperty robotRoleDynamicProperty() { return robotRoleDynamic; }
+    public String getRobotRoleDynamic() { return robotRoleDynamic.get(); }
     
     public SPLMessage lastMessage = null;
     public boolean isOpponent;
@@ -212,20 +222,29 @@ public class RobotStatus {
             this.timeToBall.set(msg.user.getTimeToBall());
             this.wantsToBeStriker.set(msg.user.getWantsToBeStriker());
             this.wasStriker.set(msg.user.getWasStriker());
-            this.isPenalized.set(msg.user.getIsPenalized());
+            if(msg.user.hasIsPenalized()) {
+                this.robotState.set(msg.user.getIsPenalized()?"penalized":"playing");
+            } else {
+                this.robotState.set(msg.user.getRobotState().name());
+            }
 //            this.whistleDetected = msg.user.getWhistleDetected(); // used in another branch!
-            this.teamBall = new Vector2D(msg.user.getTeamBall().getX(), msg.user.getTeamBall().getY());
-        } else if(msg.doberHeader != null) {
+            this.teamBall.set(new Vector2D(msg.user.getTeamBall().getX(), msg.user.getTeamBall().getY()));
+            this.robotRoleStatic.set(msg.user.getRobotRole().getRoleStatic().name());
+            this.robotRoleDynamic.set(msg.user.getRobotRole().getRoleDynamic().name());
+        } else if(msg.mixedHeader != null) {
             this.temperature.set(-1);
             this.cpuTemperature.set(-1);
             this.batteryCharge.set(-1);
             this.timeToBall.set(-1);
-            this.wantsToBeStriker.set(false);
-            this.wasStriker.set(false);
+            this.wantsToBeStriker.set(msg.mixedHeader.isStriker);
+            this.wasStriker.set(msg.mixedHeader.isStriker);
 
-            this.isPenalized.set(msg.doberHeader.isPenalized > 0);
-            this.whistleDetected.set(msg.doberHeader.whistleDetected > 0);
-            this.teamBall = new Vector2D(Double.POSITIVE_INFINITY,Double.POSITIVE_INFINITY);
+            this.robotState.set(msg.mixedHeader.isPenalized > 0?"penalized":"playing");
+            this.whistleDetected.set(msg.mixedHeader.whistleDetected > 0);
+            this.teamBall.set(new Vector2D(Double.POSITIVE_INFINITY,Double.POSITIVE_INFINITY));
+            
+            this.robotRoleStatic.set(TeamMessageOuterClass.getDescriptor().findEnumTypeByName("RobotRoleStatic").findValueByNumber(msg.mixedHeader.role).getName());
+            this.robotRoleDynamic.set(msg.mixedHeader.isStriker ? TeamMessageOuterClass.getDescriptor().findEnumTypeByName("RobotRoleDynamic").findValueByNumber(3).getName() : TeamMessageOuterClass.getDescriptor().findEnumTypeByName("RobotRoleDynamic").findValueByNumber(0).getName());
         } else {
             this.temperature.set(-1);
             this.cpuTemperature.set(-1);
@@ -233,9 +252,11 @@ public class RobotStatus {
             this.timeToBall.set(-1);
             this.wantsToBeStriker.set(false);
             this.wasStriker.set(false);
-            this.isPenalized.set(false);
+            this.robotState.set("unknown");
             this.whistleDetected.set(false);
-            this.teamBall = new Vector2D(Double.POSITIVE_INFINITY,Double.POSITIVE_INFINITY);
+            this.teamBall.set(new Vector2D(Double.POSITIVE_INFINITY,Double.POSITIVE_INFINITY));
+            this.robotRoleStatic.set("unknown");
+            this.robotRoleDynamic.set("none");
         }
         this.statusChanged();
     }
@@ -274,24 +295,19 @@ public class RobotStatus {
     
     public boolean connect() {
         if (!this.messageServer.isConnected()) {
-            try {
-                String host = this.ipAddress.get();
-                int port = 5401;
-                // if the ip address contains a ':', the port is included!
-                if(host.contains(":")){
-                    String[] parts = host.split(":");
-                    host = parts[0];
-                    // if we can't parse the port, ignore it
-                    try {
-                        port = Integer.parseInt(parts[1]);
-                    } catch (Exception e) {
-                    }
+            String host = this.ipAddress.get();
+            int port = 5401;
+            // if the ip address contains a ':', the port is included!
+            if(host.contains(":")){
+                String[] parts = host.split(":");
+                host = parts[0];
+                // if we can't parse the port, ignore it
+                try {
+                    port = Integer.parseInt(parts[1]);
+                } catch (Exception e) {
                 }
-                this.messageServer.connect(host, port);
-            } catch (IOException ex) {
-                Logger.getLogger(RobotStatusPanel.class.getName()).log(Level.SEVERE, "Coult not connect.", ex);
-                return false;
             }
+            return this.messageServer.connect(host, port);
         }
         return true;
     }

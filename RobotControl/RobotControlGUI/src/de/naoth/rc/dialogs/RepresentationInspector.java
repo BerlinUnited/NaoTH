@@ -22,6 +22,7 @@ import de.naoth.rc.logmanager.LogFileEventManager;
 import de.naoth.rc.logmanager.LogFrameListener;
 import de.naoth.rc.manager.GenericManager;
 import de.naoth.rc.manager.GenericManagerFactory;
+import de.naoth.rc.messages.AudioDataOuterClass;
 import de.naoth.rc.server.Command;
 import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
@@ -33,6 +34,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import de.naoth.rc.messages.FrameworkRepresentations;
 import de.naoth.rc.messages.Messages;
 import de.naoth.rc.messages.Representations;
+import de.naoth.rc.messages.TeamMessageOuterClass;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
@@ -496,7 +498,9 @@ public class RepresentationInspector extends AbstractDialog {
         List<Descriptor> result = new ArrayList<Descriptor>();
         result.addAll(FrameworkRepresentations.getDescriptor().getMessageTypes());
         result.addAll(Representations.getDescriptor().getMessageTypes());
+        result.addAll(TeamMessageOuterClass.getDescriptor().getMessageTypes());
         result.addAll(Messages.getDescriptor().getMessageTypes());
+        result.addAll(AudioDataOuterClass.getDescriptor().getMessageTypes());
         return result;
     }
 
@@ -505,6 +509,7 @@ public class RepresentationInspector extends AbstractDialog {
         Class<?> protoClasses[] = {
             FrameworkRepresentations.class,
             Representations.class,
+            TeamMessageOuterClass.class,
             Messages.class};
 
         for (Class<?> c : protoClasses) {
@@ -523,6 +528,8 @@ public class RepresentationInspector extends AbstractDialog {
         Class<?> protoClasses[] = {
             FrameworkRepresentations.class,
             Representations.class,
+            TeamMessageOuterClass.class,
+            AudioDataOuterClass.class,
             Messages.class};
 
         for (Class<?> pc : protoClasses) {

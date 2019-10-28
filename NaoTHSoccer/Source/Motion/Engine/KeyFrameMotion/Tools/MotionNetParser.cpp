@@ -8,6 +8,7 @@
 #include "MotionNetParser.h"
 
 using namespace naoth;
+using namespace std;
 
 void MotionNetParser::eat()
 {

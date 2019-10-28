@@ -1,22 +1,7 @@
-#ifndef EIGEN_DONT_VECTORIZE
-#define EIGEN_DONT_VECTORIZE
-#endif
-
-#ifndef EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
-#define EIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT
-#endif
-
 #ifndef EXTENDEDKALMANFILTER4D_H
 #define EXTENDEDKALMANFILTER4D_H
 
-#include <Tools/naoth_eigen.h>
-
-#include <Representations/Perception/CameraMatrix.h>
-#include <Representations/Infrastructure/CameraInfo.h>
-
-#include <Tools/Math/Vector2.h>
-#include <Tools/Math/Vector3.h>
-#include <Tools/CameraGeometry.h>
+#include <Eigen/Core>
 
 #include "MeasurementFunctions.h"
 

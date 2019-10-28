@@ -23,7 +23,7 @@ using namespace std;
 using namespace naoth;
 
 Simulator::Simulator(const std::string& filePath, bool backendMode, bool realTime, unsigned short port)
-: PlatformInterface("LogSimulator", CYCLE_TIME),
+  : 
   backendMode(backendMode),
   realTime(realTime),
   logFileScanner(filePath),
@@ -42,7 +42,6 @@ Simulator::Simulator(const std::string& filePath, bool backendMode, bool realTim
   registerInput<FSRData>(*this);
   registerInput<GyrometerData>(*this);
   registerInput<InertialSensorData>(*this);
-  registerInput<IRReceiveData>(*this);
   registerInput<CurrentCameraSettings>(*this);
   registerInput<ButtonData>(*this);
   registerInput<BatteryData>(*this);
@@ -112,7 +111,11 @@ void Simulator::printHelp()
 void Simulator::printCurrentLineInfo()
 {
   if(logFileScanner.begin() == logFileScanner.end()) {
-    cout << "The logfile seem to be empty.\t\r";
+    if(backendMode) {
+      cout << "The logfile seems to be empty." << std::endl;
+    } else {
+      cout << "The logfile seems to be empty.\t\r";
+    }
     return;
   }
   
@@ -120,7 +123,9 @@ void Simulator::printCurrentLineInfo()
   LogFileScanner::FrameIterator end = logFileScanner.last();
 
   // output some informations about the current frame
-  if(!backendMode) {
+  if(backendMode) {
+    cout << "[" << *currentFrame << "|" << *begin << "-" << *end << "]" << std::endl;
+  } else {
     cout << "[" << *currentFrame << "|" << *begin << "-" << *end << "]\t\r";
   }
 }//end printCurrentLineInfo
@@ -300,7 +305,7 @@ void Simulator::jumpTo(unsigned int position)
   } else {
     cout << "frame not found!" << endl;
     currentFrame = oldPos;
-    if(!backendMode) { printCurrentLineInfo(); }
+    printCurrentLineInfo();
   }
 }//end jumpTo
 
@@ -366,6 +371,7 @@ void Simulator::adjust_frame_time()
   string result = f.SerializeAsString();
   frameData.data.resize(result.size());
   std::copy ( result.begin(), result.end(), frameData.data.begin() );
+  frameData.valid = true;
 }//end adjust_frame_time
 
 

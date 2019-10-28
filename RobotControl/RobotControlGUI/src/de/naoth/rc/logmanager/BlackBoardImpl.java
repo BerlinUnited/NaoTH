@@ -23,6 +23,11 @@ public class BlackBoardImpl implements BlackBoard {
     }
     
     @Override
+    public boolean has(String name) {
+        return registry.containsKey(name);
+    }
+    
+    @Override
     public LogDataFrame get(String name) {
         return registry.get(name);
     }

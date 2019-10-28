@@ -10,6 +10,14 @@ void Serializer<TeamMessage>::serialize(const TeamMessage& r, std::ostream& stre
 {
   naothmessages::TeamMessage collection;
 
+  // add message drops
+  naothmessages::Drops *d = collection.mutable_messagedrop();
+  d->set_dropnosplmessage(r.dropNoSplMessage);
+  d->set_dropnotourteam(r.dropNotOurTeam);
+  d->set_dropnotparseable(r.dropNotParseable);
+  d->set_dropkeyfail(r.dropKeyFail);
+  d->set_dropmonotonic(r.dropMonotonic);
+
   for(auto const &it : r.data)
   {
     const TeamMessageData& d = it.second;
@@ -47,6 +55,16 @@ void Serializer<TeamMessage>::deserialize(std::istream& stream, TeamMessage& r)
 
   google::protobuf::io::IstreamInputStream buf(&stream);
   collection.ParseFromZeroCopyStream(&buf);
+
+  // set message drop stats, if available
+  if(collection.has_messagedrop()) {
+      naothmessages::Drops d = collection.messagedrop();
+      r.dropNoSplMessage = d.has_dropnosplmessage() ? d.dropnosplmessage() : 0;
+      r.dropNotOurTeam   = d.has_dropnotourteam()   ? d.dropnotourteam()   : 0;
+      r.dropNotParseable = d.has_dropnotparseable() ? d.dropnotparseable() : 0;
+      r.dropKeyFail      = d.has_dropkeyfail()      ? d.dropkeyfail()      : 0;
+      r.dropMonotonic    = d.has_dropmonotonic()    ? d.dropmonotonic()    : 0;
+  }
 
   for(int i=0; i < collection.data_size(); i++)
   {

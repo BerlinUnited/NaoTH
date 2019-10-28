@@ -1,18 +1,25 @@
 #ifndef UPDATEASSOCIATIONFUNCTIONS
 #define UPDATEASSOCIATIONFUNCTIONS
 
-//#include "MeasurementFunctions.h"
+
+#include <Eigen/StdVector>
+#include <Eigen/LU> // needed by inverse()
+
 #include "BallHypothesis.h"
-#include <Tools/Math/Common.h>
 
 struct UpdateAssociationFunction{
+    public:
+        virtual ~UpdateAssociationFunction(){}
+
+        typedef std::vector<BallHypothesis, Eigen::aligned_allocator<BallHypothesis> >::iterator BallHypothesis_iter;
+
     protected:
-        std::vector<BallHypothesis>::iterator bestPredictor;
+        BallHypothesis_iter bestPredictor;
         double score;
         double threshold;
 
     public:
-        std::vector<BallHypothesis>::iterator getBestPredictor() const
+        BallHypothesis_iter getBestPredictor() const
         {
             return bestPredictor;
         }
@@ -29,11 +36,11 @@ struct UpdateAssociationFunction{
           return threshold;
         }
 
-        virtual void determineBestPredictor(std::vector<BallHypothesis>& filter, const Eigen::Vector2d& z, const Measurement_Function_H& h){
+        virtual void determineBestPredictor(std::vector<BallHypothesis, Eigen::aligned_allocator<BallHypothesis> >& filter, const Eigen::Vector2d& z, const Measurement_Function_H& h){
             score = initialValue();
             bestPredictor = filter.begin();
 
-            for(std::vector<BallHypothesis>::iterator iter = filter.begin(); iter != filter.end(); ++iter)
+            for(BallHypothesis_iter iter = filter.begin(); iter != filter.end(); ++iter)
             {
                 double temp = associationScore(*iter,z,h);
 
@@ -57,6 +64,10 @@ struct UpdateAssociationFunction{
         }
 
         virtual bool inRange() const {
+            return score < threshold;
+        }
+
+        virtual bool inRange(double score) const {
             return score < threshold;
         }
 };
@@ -109,7 +120,10 @@ struct LikelihoodUAF : UpdateAssociationFunction
     bool inRange() const {
         return score > threshold;
     }
+
+    bool inRange(double score) const {
+        return score > threshold;
+    }
 };
 
 #endif // UPDATEASSOCIATIONFUNCTIONS
-

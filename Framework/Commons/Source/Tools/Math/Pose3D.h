@@ -268,10 +268,12 @@ protected:
 template <typename DATATYPE>
 std::ostream& operator <<(std::ostream& ost, const Pose3T<DATATYPE>& v)
 {
-    ost << v.rotation.c[0]<<" 0 "
-        << v.rotation.c[1]<<" 0 "
-        << v.rotation.c[2]<<" 0 "
-        << v.translation <<" 1";
+    ost << "rotation (x,y,z): " << Math::toDegrees(v.rotation.getXAngle()) << " "
+                                << Math::toDegrees(v.rotation.getYAngle()) << " "
+                                << Math::toDegrees(v.rotation.getZAngle()) << std::endl;
+    ost << "translation (x,y,z): " << v.translation.x << " "
+                                   << v.translation.y << " "
+                                   << v.translation.z << std::endl;
     return ost;
 }
 

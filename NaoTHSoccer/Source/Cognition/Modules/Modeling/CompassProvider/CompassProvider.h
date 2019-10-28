@@ -25,7 +25,7 @@
 
 #include "Representations/Modeling/ProbabilisticQuadCompas.h"
 #include "Representations/Perception/LineGraphPercept.h"
-#include "Representations/Perception/LinePercept.h"
+#include "Representations/Perception/LinePercept2018.h"
 
 #include "Tools/DoubleCamHelpers.h"
 #include <algorithm>
@@ -56,7 +56,7 @@ BEGIN_DECLARE_MODULE(CompassProvider)
 
   REQUIRE(LineGraphPercept)
 
-  REQUIRE(LinePercept)
+  REQUIRE(RansacLinePercept)
 
   PROVIDE(ProbabilisticQuadCompas)
 END_DECLARE_MODULE(CompassProvider)
@@ -87,8 +87,8 @@ public:
 
 
 private: 
-  std::vector<Vector2d> edgelProjectionsBegin;
-  std::vector<Vector2d> edgelProjectionsEnd;
+  //std::vector<Vector2d> edgelProjectionsBegin;
+  //std::vector<Vector2d> edgelProjectionsEnd;
 
 };
 

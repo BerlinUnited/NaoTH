@@ -1,4 +1,6 @@
 import cmd
+import json
+
 
 class CommandParser(cmd.Cmd):
     intro = 'TeamComm message generator.\n------------------------------\nType help or ? to list commands and use »tab« for completion.\n'
@@ -14,10 +16,17 @@ class CommandParser(cmd.Cmd):
         else:
             super(CommandParser, self).default(line)
 
-    def do_quit(self, args):
+    def __stop_thread(self):
         'Stops sending messages and exits.'
-        self.thread.running = False
+        self.thread.cancel.set()
         self.thread.join()
+
+    def do_quit(self, args):
+        self.__stop_thread()
+        return True
+
+    def do_exit(self, args):
+        self.__stop_thread()
         return True
 
     def do_info(self, args):
@@ -31,10 +40,8 @@ class CommandParser(cmd.Cmd):
     def do_set(self, args):
         'Sets the value of a given message field. e.g.: set playerNumber 4\nNested values can be accessed via ».«, eg. set pose.x 3.4'
         params = args.split()
-        if len(params) != 2:
-            print("*** invalid number of arguments")
-            return
-        self.thread.setMessageField(*params)
+        if self.__check_parameter_number(params, 2):
+            self.thread.setMessageField(*params)
 
     def complete_set(self, text, line, begidx, endidx):
         # only complete the "first" argument
@@ -51,3 +58,23 @@ class CommandParser(cmd.Cmd):
         elif line.split().index(text) == 1:
             return [ i for i in self.thread.getMessageFields() if i.startswith(text) ]
         return []
+
+    def do_timestamps(self, args):
+        '(de-)activates the updating of the sent timestamp. (true/True/1, false/False/0)'
+        params = args.split()
+        if self.__check_parameter_number(params, 1):
+            value = bool(json.loads(params[0].lower()))
+            self.thread.updateTimestamp(value)
+
+    def do_ntp(self, args):
+        '(de-)activates the usage of the NTP protocol. (true/True/1, false/False/0)'
+        params = args.split()
+        if self.__check_parameter_number(params, 1):
+            value = bool(json.loads(params[0].lower()))
+            self.thread.useNTP(value)
+
+    def __check_parameter_number(self, params, num:int):
+        if len(params) != num:
+            print("*** invalid number of arguments")
+            return False
+        return True

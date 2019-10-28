@@ -37,14 +37,12 @@
 #include "Symbols/TeamSymbols.h"
 #include "Symbols/SensorSymbols.h"
 #include "Symbols/MathSymbols.h"
-#include "Symbols/GoalSymbols.h"
 #include "Symbols/LedSymbols.h"
 #include "Symbols/SelflocSymbols.h"
 #include "Symbols/OdometrySymbols.h"
 #include "Symbols/FieldSymbols.h"
 #include "Symbols/StrategySymbols.h"
 #include "Symbols/SoundSymbols.h"
-#include "Symbols/LineSymbols.h"
 #include "Symbols/PathSymbols.h"
 #include "Symbols/RemoteSymbols.h"
 
@@ -150,14 +148,12 @@ private:
   ModuleCreator<TeamSymbols>* theTeamSymbols;
   ModuleCreator<SensorSymbols>* theSensorSymbols;
   ModuleCreator<MathSymbols>* theMathSymbols;
-  ModuleCreator<GoalSymbols>* theGoalSymbols;
   ModuleCreator<LedSymbols>* theLedSymbols;
   ModuleCreator<SelflocSymbols>* theSelflocSymbols;
   ModuleCreator<OdometrySymbols>* theOdometrySymbols;
   ModuleCreator<FieldSymbols>* theFieldSymbols;
   ModuleCreator<StrategySymbols>* theStrategySymbols;
   ModuleCreator<SoundSymbols>* theSoundSymbols;
-  ModuleCreator<LineSymbols>* theLineSymbols;
   ModuleCreator<PathSymbols>* thePathSymbols;
   ModuleCreator<RemoteSymbols>* theRemoteSymbols;
 };

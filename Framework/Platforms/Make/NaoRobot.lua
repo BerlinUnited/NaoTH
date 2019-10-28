@@ -26,8 +26,26 @@ project "NaoRobot"
     "protobuf",
     "asound",
     "pthread",
+    -- image compression
     "jpeg",
-    "turbojpeg"
+    "turbojpeg",
+    -- Whistledetector stuff
+    "fftw3",
+    "pulse-simple",
+    "pulse",
+    "pulsecommon-3.99",
+    "json",
+    "dbus-1",
+    "sndfile",
+    "asyncns",
+    "FLAC",
+    "gdbm",
+    "vorbis",
+    "vorbisenc",
+    "ogg",
+    "cap",
+    "attr",
+    "wrap"
   }
 
   targetname "naoth"

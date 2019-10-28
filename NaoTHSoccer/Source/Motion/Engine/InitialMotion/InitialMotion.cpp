@@ -12,7 +12,7 @@
 using namespace naoth;
 using namespace std;
 
-InitialMotion::InitialMotion() 
+InitialMotion::InitialMotion()
   :
   AbstractMotion(motion::init, getMotionLock()),
   initStatus(Dead),
@@ -34,10 +34,10 @@ InitialMotion::InitialMotion()
   theInitJoints.position[JointData::RHand] = 0;
 
   theInitJoints.position[JointData::LHipYawPitch] = 0;
-  theInitJoints.position[JointData::LHipRoll] = 0;  
+  theInitJoints.position[JointData::LHipRoll] = 0;
   theInitJoints.position[JointData::LKneePitch] = theInitJoints.max[JointData::LKneePitch];
   theInitJoints.position[JointData::LAnklePitch] = theInitJoints.min[JointData::LAnklePitch];
-  theInitJoints.position[JointData::LHipPitch] = -theInitJoints.position[JointData::LKneePitch] - theInitJoints.position[JointData::LAnklePitch]; 
+  theInitJoints.position[JointData::LHipPitch] = -theInitJoints.position[JointData::LKneePitch] - theInitJoints.position[JointData::LAnklePitch];
   theInitJoints.position[JointData::LAnkleRoll] = 0;
 
   theInitJoints.position[JointData::RHipYawPitch] = 0;
@@ -75,19 +75,21 @@ InitialMotion::InitialMotion()
   freeStiffness[JointData::RHand] = -1;
   safeStiffness[JointData::RHand] = 0.3;
   maxStiffness[JointData::RHand] = -1;
+
+  getMotionStatus().target_reached = false;
 }
 
 void InitialMotion::execute()
 {
   if ( isDanger() ) initStatus = Dead;
 
-  switch (initStatus) 
+  switch (initStatus)
   {
     case Dead:
       setCurrentState(motion::running);
       dead();
       break;
-      
+
     case Init:
       setCurrentState(motion::running);
       increaseStiffness();
@@ -103,6 +105,7 @@ void InitialMotion::execute()
 
     case InitialPoseReady:
       freeJoint(getMotionRequest().id == getId());
+      getMotionStatus().target_reached = getMotionRequest().id == getId();
       break;
 
     case Finish:

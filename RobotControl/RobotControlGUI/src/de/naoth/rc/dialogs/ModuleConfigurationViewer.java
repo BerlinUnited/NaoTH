@@ -16,6 +16,7 @@ import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
+import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.dataformats.ModuleConfiguration;
 import de.naoth.rc.dataformats.ModuleConfiguration.Node;
 import de.naoth.rc.manager.GenericManagerFactory;
@@ -51,7 +52,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
         implements ObjectListener<ModuleConfiguration>
 {
 
-  @RCDialog(category = RCDialog.Category.Configure, name = "Modules")
+    @RCDialog(category = RCDialog.Category.Configure, name = "Modules")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<ModuleConfigurationViewer>
     {
@@ -60,7 +61,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
         @InjectPlugin
         public static ModuleConfigurationManager moduleConfigurationManager;
         @InjectPlugin
-        public static GenericManagerFactory genericManagerFactory;
+        public static SwingCommandExecutor commandExecutor;
     }//end Plugin
 
     private final String commandStringStoreModules = "modules:store";
@@ -440,9 +441,16 @@ public class ModuleConfigurationViewer extends AbstractDialog
     }//GEN-LAST:event_errorListValueChanged
 
     @Override
+    public void newObjectReceived(final ModuleConfiguration graph)
+    {
+        Plugin.moduleConfigurationManager.removeListener(this);
+        SwingUtilities.invokeLater(() -> {updateModuleConfiguration(graph);});
+    }
+    
+    @Override
     public void errorOccured(String cause)
     {
-    Plugin.moduleConfigurationManager.removeListener(this);
+        Plugin.moduleConfigurationManager.removeListener(this);
     }
 
     private void nodeExpander(String strPath, String sep) {
@@ -461,9 +469,8 @@ public class ModuleConfigurationViewer extends AbstractDialog
         }
         moduleConfigTree.expandPath(new TreePath(oPath.toArray()));
     }
-
-    @Override
-    public void newObjectReceived(final ModuleConfiguration graph)
+    
+    private void updateModuleConfiguration(final ModuleConfiguration graph)
     {
         this.moduleGraph = graph;
         // get expanded nodes
@@ -480,7 +487,6 @@ public class ModuleConfigurationViewer extends AbstractDialog
         ArrayList<Node> modules = new ArrayList<Node>();
         ArrayList<Node> representations = new ArrayList<Node>();
 
-        Plugin.moduleConfigurationManager.removeListener(this);
         this.jToggleButtonRefresh.setSelected(false);
         String processName = (String) cbProcess.getSelectedItem();
 
@@ -533,9 +539,8 @@ public class ModuleConfigurationViewer extends AbstractDialog
             moduleConfigTree.selectNode(path.substring(moduleConfigTree.getModel().getRoot().toString().length()+1), ':');
         }
         // restore last scrollbar position (viewport)
-        SwingUtilities.invokeLater(() -> {
-            jScrollPane.getViewport().setViewPosition(scrollPosition);
-        });
+        
+        jScrollPane.getViewport().setViewPosition(scrollPosition);
 
         //check for unprovided or not required Representations
         makeCheck();
@@ -725,16 +730,13 @@ public class ModuleConfigurationViewer extends AbstractDialog
 
     class ModuleCheckBoxListener implements ActionListener, ObjectListener<byte[]>
     {
-
         JCheckBox checkBox;
-        Command currentCommand;
         String commandString;
         Node node;
 
         public ModuleCheckBoxListener(JCheckBox checkBox, String commandString, Node node)
         {
             this.checkBox = checkBox;
-            this.currentCommand = null;
             this.commandString = commandString;
             this.node = node;
         }
@@ -742,16 +744,10 @@ public class ModuleConfigurationViewer extends AbstractDialog
         @Override
         public void actionPerformed(java.awt.event.ActionEvent evt)
         {
-            if (currentCommand != null)
-            {
-                Plugin.genericManagerFactory.getManager(currentCommand).removeListener(this);
-            }
-
-            currentCommand = new Command(commandString);
-            currentCommand.addArg(checkBox.getText(), checkBox.isSelected() ? "on" : "off");
-
-            Plugin.genericManagerFactory.getManager(currentCommand).addListener(this);
-
+            Plugin.commandExecutor.executeCommand(this, 
+                new Command(commandString).addArg(checkBox.getText(), checkBox.isSelected() ? "on" : "off")
+            );
+            
             // update the module panel
             modulePanel.setNode(node);
         }//end actionPerformed
@@ -759,13 +755,8 @@ public class ModuleConfigurationViewer extends AbstractDialog
         @Override
         public void errorOccured(String cause)
         {
-            if (currentCommand != null)
-            {
-                Plugin.genericManagerFactory.getManager(currentCommand).removeListener(this);
-            }
-            currentCommand = null;
             System.err.println(cause);
-        }//end errorOccured
+        }
 
         @Override
         public void newObjectReceived(byte[] object)
@@ -773,22 +764,15 @@ public class ModuleConfigurationViewer extends AbstractDialog
             String str = new String(object);
             String[] res = str.split("( |\n|\r|\t)+");
 
-            if (res.length == 3
-                    && res[0].equals("set")
-                    && res[1].equals(checkBox.getText()))
+            if (   res.length == 3
+                && res[0].equals("set")
+                && res[1].equals(checkBox.getText()))
             {
                 this.checkBox.setSelected(res[2].equals("on"));
             }
-            else
-            {
+            else {
                 errorOccured(str);
             }
-
-            if (currentCommand != null)
-            {
-                Plugin.genericManagerFactory.getManager(currentCommand).removeListener(this);
-            }
-            currentCommand = null;
         }//end newObjectReceived
     }//end ModuleCheckBoxListener
 
@@ -796,7 +780,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
     public void dispose()
     {
         System.out.println("Dispose is not implemented for: " + this.getClass().getName());
-    }//end dispose
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btErrors;

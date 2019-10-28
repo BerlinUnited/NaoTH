@@ -24,6 +24,8 @@
 // needed by BUUserTeamMessage
 #include "Messages/TeamMessage.pb.h"
 #include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Modeling/PlayerInfo.h"
+#include "Representations/Infrastructure/Roles.h"
 
 using namespace naoth;
 
@@ -45,16 +47,19 @@ struct NtpRequest
 class TeamMessageCustom : public naoth::Printable 
 {
 
-private:
+public:
 
-  // we define this struct private because no one else needs to know about the internals of the DoBerManHeader
-  struct DoBerManHeader
+  // we define this struct private because no one else needs to know about the internals of the MixedTeamHeader
+  struct MixedTeamHeader
   {
-    uint64_t timestamp;
-    int8_t teamID;
-    int8_t isPenalized;
-    int8_t whistleDetected;
-    int8_t dummy;
+      // 1 bit == penalized, 2 bit == striker goalie
+      int8_t data;
+      int8_t role;
+//    uint64_t timestamp;
+//    int8_t teamID;
+//    int8_t isPenalized;
+//    int8_t whistleDetected;
+//    int8_t intention;
   };
 
 public:
@@ -66,16 +71,21 @@ public:
   std::string bodyID;         // the body ID of the robot
   bool wasStriker;
   bool wantsToBeStriker;
-  unsigned int timeToBall;          // the shorest time, in which the robot can reach the ball [ms]
-  bool isPenalized;           // whether the robot is penalized, or not
+  unsigned int timeToBall;    // the shorest time, in which the robot can reach the ball [ms]
   double batteryCharge;       // the battery charge
   double temperature;         // the max. temperature of the left or right leg!
   double cpuTemperature;      // the temperature of the cpu
   bool whistleDetected;       // whether the robot heard/detected the whistle
   int whistleCount;           // who many whistle the robot detected
-  Vector2d teamBall;// global position of the team ball for visualization in RC!!
+  Vector2d teamBall;          // global position of the team ball for visualization in RC!!
   std::vector<NtpRequest> ntpRequests; // ntp requests to teammates
+  Vector2d ballVelocity;      // velocity of the ball
   // opponents ?
+
+  PlayerInfo::RobotState robotState; // state of the robot (initial, ready, set, play, finish, penalized)
+  Roles::Role robotRole;    // role of the robot (static & dynamic)
+
+  bool readyToWalk;         // indicates, whether the robot is ready to walk
 
   /** Sets the data according to the protobuf message. */
   void parseFromProto(const naothmessages::BUUserTeamMessage& userData);
@@ -83,13 +93,13 @@ public:
   /** Creates a protobuf message with the registered data. */
   naothmessages::BUUserTeamMessage toProto() const;
 
-  /** Sets the data according to a binary DoBerMan Header */
-  void parseFromDoBerManHeader(const uint8_t *rawHeader, size_t headerSize);
+  /** Sets the data according to a binary mixed team header */
+  void parseFromMixedTeamHeader(const uint8_t *rawHeader, size_t headerSize);
 
-  /** Creates a binary array containing some of the registered data in the DoBerMan header "format" */
-  std::string toDoBerManHeader() const;
+  /** Creates a binary array containing some of the registered data in the mixed team header "format" */
+  void toMixedTeamHeader(MixedTeamHeader& header) const;
 
-  static size_t getCustomOffset() {return sizeof(DoBerManHeader);}
+  static size_t getCustomOffset() {return sizeof(MixedTeamHeader);}
 
   void print(std::ostream &stream) const;
 };
@@ -113,6 +123,8 @@ public:
     // custom BU-Message-Fields
     TeamMessageCustom custom;
     /*** END +++ TEAMMESSAGEFIELDS *******************************************/
+
+    bool isBerlinUnitedMessage() { return custom.key == NAOTH_TEAMCOMM_MESAGE_KEY; }
 
     TeamMessageData();
     TeamMessageData(FrameInfo fi);

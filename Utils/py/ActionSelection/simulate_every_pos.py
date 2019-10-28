@@ -1,11 +1,12 @@
 from __future__ import print_function  # needed for unpacking elements of a list for printing
-import math
+import os
 import argparse
 import pickle
 from tools import action as a
 from tools import Simulation as Sim
 from naoth import math2d as m2d
 from tools import field_info as field
+from state import State
 
 """
 For every position(x, y, rot) the decision is calculated r times with s samples. This script runs
@@ -24,38 +25,33 @@ Example:
 """
 
 
-class State:
-    def __init__(self):
-        self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(4200, 0)
-        self.pose.rotation = math.radians(0)
-
-        self.ball_position = m2d.Vector2(100.0, 0.0)
-
-        self.obstacle_list = ([])  # is in global coordinates
-
-    def update_pos(self, glob_pos, rotation):
-        self.pose.translation = glob_pos
-        self.pose.rotation = rotation
-
-
 def main(num_samples, num_reps, x_step, y_step, rotation_step):
-    # This takes hours
     state = State()
 
+    file_idx = 0
+
     no_action = a.Action("none", 0, 0, 0, 0)
-    kick_short = a.Action("kick_short", 780, 150, 8.454482265522328, 6.992268841997358)
-    sidekick_left = a.Action("sidekick_left", 750, 150, 86.170795364136380, 10.669170653645670)
-    sidekick_right = a.Action("sidekick_right", 750, 150, -89.657943335302260, 10.553726275058064)
+    kick_short = a.Action("kick_short", 1080, 150, 0, 7)
+    sidekick_left = a.Action("sidekick_left", 750, 150, 90, 10)
+    sidekick_right = a.Action("sidekick_right", 750, 150, -90, 10)
 
     action_list = [no_action, kick_short, sidekick_left, sidekick_right]
 
     whole_decisions = []
 
+    # use this to iterate over the whole green
+    # field_x_range = range(int(-field.x_field_length*0.5), int(field.x_field_length*0.5) + x_step, x_step)
+    # field_y_range = range(int(-field.y_field_length*0.5), int(field.y_field_length*0.5) + y_step, y_step)
+
+    # use this to just iterate over the playing field
+    x_range = range(int(-field.x_length * 0.5), int(field.x_length * 0.5) + x_step, x_step)
+    y_range = range(int(-field.y_length * 0.5), int(field.y_length * 0.5) + x_step, y_step)
+
     for rot in range(0, 360, rotation_step):
-        for x in range(int(-field.x_field_length*0.5)+x_step, int(field.x_field_length*0.5), x_step):
-            for y in range(int(-field.y_field_length*0.5)+y_step, int(field.y_field_length*0.5), y_step):
-                state.update_pos(m2d.Vector2(x, y), rotation=math.radians(rot))
+        print("Rotation: " + str(rot))
+        for x in x_range:
+            for y in y_range:
+                state.update_pos(m2d.Vector2(x, y), rotation=rot)
                 # Do this multiple times and write the decisions as a histogram
                 decision_histogramm = [0, 0, 0, 0]  # ordinal scale -> define own metric in evaluation script
                 for num_simulations in range(0, num_reps):
@@ -72,7 +68,12 @@ def main(num_samples, num_reps, x_step, y_step, rotation_step):
                 # write the position and decision in on list
                 whole_decisions.append([x, y, rot, decision_histogramm])
 
-    pickle.dump(whole_decisions, open('data/decision-simulate_every_pos-' + str(num_samples) + '-' + str(num_reps) + '.pickle', "wb"))
+    # make sure not to overwrite anything
+    while os.path.exists('{}{:d}.pickle'.format('data/simulate_every_pos-' + str(num_samples) + '-' + str(num_reps) + '-v', file_idx)):
+        file_idx += 1
+
+    pickle.dump(whole_decisions, open(
+                'data/simulate_every_pos-' + str(num_samples) + '-' + str(num_reps) + '-v' + str(file_idx) + '.pickle', "wb"))
 
 
 if __name__ == "__main__":
@@ -83,7 +84,7 @@ if __name__ == "__main__":
     parser.add_argument("-r", "--num_reps", help="input the number of repeats per position", type=int, default=1)
     parser.add_argument("-x", "--res_x", help="input the step size for rotation", type=int, default=200)
     parser.add_argument("-y", "--res_y", help="input the step size for rotation", type=int, default=200)
-    parser.add_argument("-rot", "--res_rot", help="input the step size for rotation", type=int, default=30)
+    parser.add_argument("-rot", "--res_rot", help="input the step size for rotation", type=int, default=20)
 
     args = parser.parse_args()
 

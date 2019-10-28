@@ -1,5 +1,7 @@
 #include "ExtendedKalmanFilter4d.h"
 
+#include <Eigen/Eigenvalues>
+
 ExtendedKalmanFilter4d::ExtendedKalmanFilter4d(const Eigen::Vector4d& state, const Eigen::Matrix2d& processNoiseStdSingleDimension, const Eigen::Matrix2d& measurementNoiseCovariances, const Eigen::Matrix2d& initialStateStdSingleDimension):
     x(state)
 {
