@@ -128,7 +128,7 @@ void Serializer<ImageJPEG>::serialize(const ImageJPEG& parent, std::ostream& str
   img.SerializeToZeroCopyStream(&buf);
 }
 
-void Serializer<ImageJPEG>::deserialize(std::istream& stream, ImageJPEG& representation)
+void Serializer<ImageJPEG>::deserialize(std::istream& /*stream*/, ImageJPEG& /*representation*/)
 {
   assert(false); // deserialization is not supported yet
 }
