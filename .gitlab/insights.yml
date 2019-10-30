@@ -2,7 +2,7 @@ bugsCharts:
   title: "Charts for bugs"
   charts:
     - title: "Monthly bugs created"
-      type: line
+      type: bar
       query:
         issuable_type: issue
         issuable_state: opened
