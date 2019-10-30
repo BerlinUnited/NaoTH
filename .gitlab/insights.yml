@@ -7,6 +7,6 @@ bugsCharts:
         issuable_type: issue
         issuable_state: opened
         filter_labels:
-          - Bug
+          - test
         group_by: month
         period_limit: 24
