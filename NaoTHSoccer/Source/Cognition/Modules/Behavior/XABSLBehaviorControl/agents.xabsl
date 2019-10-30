@@ -151,7 +151,7 @@ include "Options/Test/WalkAgents/test_walk_forth_and_back_agent.xabsl";
 include "Options/Test/WalkAgents/test_walk_stop_and_go_backwards_agent.xabsl";
 include "Options/Test/WalkAgents/turn_look_at_preview_angle_agent.xabsl";
 include "Options/Test/WalkAgents/walk_forward_agent.xabsl";
-include "Options/Test/agent/walk_forward_and_avoid_obstacles_agent.xabsl";
+include "Options/Test/WalkAgents/walk_forward_and_avoid_obstacles_agent.xabsl";
 
 /* ########################################################### */
 /*                    Agent Registration                       */
