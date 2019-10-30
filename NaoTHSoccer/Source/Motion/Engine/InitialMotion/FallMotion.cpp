@@ -29,24 +29,27 @@ void FallMotion::execute()
 {
   if(getMotionRequest().id != getId())
   {
-    // restore hardness
+    // gradually restore hardness
     if ( setStiffness(getMotorJointData(), getSensorJointData(), oldStiffness, stiffness_increase) )
     {
       setCurrentState(motion::stopped);
     }
-    for (int i = 0; i < JointData::numOfJoint; i++)
+
+    // copy sensor positions
+    for (size_t i = 0; i < JointData::numOfJoint; i++)
     {
       getMotorJointData().position[i] = getSensorJointData().position[i];
     }
 
     return;
-  }else if( isStopped() ) // executed the first time
+  }
+  else if( isStopped() ) // executed the first time
   {
     // store hardness
-    for (int i = 0; i < JointData::numOfJoint; i++)
+      for (size_t i = 0; i < JointData::numOfJoint; i++)
     {
       oldStiffness[i] = getSensorJointData().stiffness[i];
-    }//end for
+    }
   }
 
   // set joint free

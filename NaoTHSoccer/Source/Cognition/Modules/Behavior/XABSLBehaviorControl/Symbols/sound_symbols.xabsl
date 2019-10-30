@@ -9,7 +9,8 @@ namespace sound("Sound Symbols") {
     asta_la_vista,
     penalized,
     playing,
-    battery_low
+    battery_low,
+    weeeee
   };
 
   enum sound output sound.request;

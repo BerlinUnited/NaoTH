@@ -30,10 +30,10 @@ void AdaptiveAutoExposure::execute()
     if(getCommonCameraSettingsRequest().autoExpositionMethod == "averageY") 
     {
         if(executeBottom) {
-            getCameraSettingsRequest().autoExpositionAlgorithm = 0;
+            getCameraSettingsRequest().v5.autoExpositionAlgorithm = 0;
         }
         if(executeTop) {
-            getCameraSettingsRequestTop().autoExpositionAlgorithm = 0;
+            getCameraSettingsRequestTop().v5.autoExpositionAlgorithm = 0;
         }
     }
     else
@@ -46,10 +46,10 @@ void AdaptiveAutoExposure::execute()
         // include all per default
 
         if(executeBottom) {
-            getCameraSettingsRequest().autoExpositionAlgorithm = 1;
+            getCameraSettingsRequest().v5.autoExpositionAlgorithm = 1;
         }
         if(executeTop) {
-            getCameraSettingsRequestTop().autoExpositionAlgorithm = 1;            
+            getCameraSettingsRequestTop().v5.autoExpositionAlgorithm = 1;            
         }
 
         if(getCommonCameraSettingsRequest().autoExpositionMethod == "dortmund") 

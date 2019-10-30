@@ -1,4 +1,3 @@
-/* If walking in a slight curve fails, read comment in the look for ball state */
 option penalty_kicker
 {
   initial state look_for_ball
@@ -22,7 +21,7 @@ option penalty_kicker
           }
           else
           {
-            goto approach_ball_right;
+            goto approach_ball;
           }
         }
         else
@@ -45,7 +44,7 @@ option penalty_kicker
       if(state_time > 2500)
       {
         if(ball.know_where_itis)
-          goto approach_ball_right;
+          goto approach_ball;
         else
           goto look_for_ball;
       }
@@ -64,7 +63,7 @@ option penalty_kicker
     }
   }
 
-  state approach_ball_right
+  state approach_ball
   {
     decision
     {
@@ -75,9 +74,8 @@ option penalty_kicker
     }
     action
     {
-      go_to_ball_with_foot(right=true, distance=180);
+      go_to_ball_with_USOA(distance=210);
       head.control_mode = search_for_ball_and_look_around;
-      
     }
   }
 
@@ -88,7 +86,7 @@ option penalty_kicker
       // set to 300 for kicking perfectly to the corner
       // but the kick is not strong enough
       if (ball.preview.y > 260)
-        goto approach_ball_right;
+        goto approach_ball;
       else
         stay;
     }
@@ -103,6 +101,7 @@ option penalty_kicker
       head.control_mode = search_for_ball_and_look_around;
     }
   }
+  
   state go_left
   {
     decision
@@ -110,7 +109,7 @@ option penalty_kicker
       // set to 300 for kicking perfectly to the corner
       // but the kick is not strong enough
       if (ball.preview.y < -260)
-        goto approach_ball_right;
+        goto approach_ball;
       else
         stay;
     }
@@ -157,7 +156,6 @@ option penalty_kicker
     {
       // Stand RC19: Schuss ist nicht weit genug
       path2018.routine = forwardkick;
-      path.xOffset = 120; // pathplanner adds ball.radius - this could be done here
       head.control_mode = search_for_ball_and_look_around;
       
     }

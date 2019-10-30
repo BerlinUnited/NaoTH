@@ -176,15 +176,12 @@ void SMALModule::init()
 
   const std::string naoCommandMotorJointDataPath = "/nao_command.MotorJointData";
   const std::string naoCommandUltraSoundSendDataPath = "/nao_command.UltraSoundSendData";
-  const std::string naoCommandIRSendDataPath = "/nao_command.IRSendData";
   const std::string naoCommandLEDDataPath = "/nao_command.LEDData";
 
   std::cout << "Opening Shared Memory: " << naoCommandMotorJointDataPath << std::endl;
   naoCommandMotorJointData.open(naoCommandMotorJointDataPath);
   std::cout << "Opening Shared Memory: " << naoCommandUltraSoundSendDataPath << std::endl;
   naoCommandUltraSoundSendData.open(naoCommandUltraSoundSendDataPath);
-  std::cout << "Opening Shared Memory: " << naoCommandIRSendDataPath << std::endl;
-  naoCommandIRSendData.open(naoCommandIRSendDataPath);
   std::cout << "Opening Shared Memory: " << naoCommandLEDDataPath << std::endl;
   naoCommandLEDData.open(naoCommandLEDDataPath);
 
@@ -302,14 +299,6 @@ void SMALModule::motionCallbackPre()
     drop_count += (drop_count < 11);
   }//end else
   
-  /*
-  if ( naoCommandIRSendData.swapReading() )
-  {
-    const Accessor<IRSendData>* commandData = naoCommandIRSendData.reading();
-    theDCMHandler.setIRSendData(commandData->get(), dcmTime);
-  }//end if
-  */
-
   // NOTE: the LEDs are only set if stiffness was not set in this cycle
   // get the LEDData from the shared memory and put them to the DCM
   // !stiffness_set && 
@@ -449,7 +438,6 @@ void SMALModule::exit()
   naoSensorData.close();
   naoCommandMotorJointData.close();
   naoCommandUltraSoundSendData.close();
-  naoCommandIRSendData.close();
   naoCommandLEDData.close();
 
   // set all stiffness to 0
