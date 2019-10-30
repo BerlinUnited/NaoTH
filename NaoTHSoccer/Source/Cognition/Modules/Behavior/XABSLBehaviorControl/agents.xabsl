@@ -138,6 +138,7 @@ include "Options/Test/walk/test_walk_forth_and_back.xabsl";
 include "Options/Test/walk/test_walk_stop_and_go_backwards.xabsl";
 include "Options/Test/walk/turn_look_at_preview_angle.xabsl";
 include "Options/Test/walk/walk_forward.xabsl";
+include "Options/Test/walk/walk_forward_and_avoid_obstacles.xabsl";
 
 // Walk Agents
 include "Options/Test/WalkAgents/dribble_agent.xabsl";
@@ -150,6 +151,7 @@ include "Options/Test/WalkAgents/test_walk_forth_and_back_agent.xabsl";
 include "Options/Test/WalkAgents/test_walk_stop_and_go_backwards_agent.xabsl";
 include "Options/Test/WalkAgents/turn_look_at_preview_angle_agent.xabsl";
 include "Options/Test/WalkAgents/walk_forward_agent.xabsl";
+include "Options/Test/WalkAgents/walk_forward_and_avoid_obstacles_agent.xabsl";
 
 /* ########################################################### */
 /*                    Agent Registration                       */
@@ -181,6 +183,7 @@ agent goto_ball_with_USOA_test_agent("go_to_ball_with_USOA_test_agent", go_to_ba
 agent goto_point_with_USOA_test("go_to_point_with_USOA_test_agent", go_to_point_with_USOA_agent);
 
 agent walk_forward("walk_forward_agent", walk_forward_agent);
+agent walk_forward_and_avoid_obstacles("walk_forward_and_avoid_obstacles_agent", walk_forward_and_avoid_obstacles_agent);
 agent turn_look_at_preview_angle_agent("turn_look_at_preview_angle_agent", turn_look_at_preview_angle_agent);
 agent dribble_agent("dribble_agent", dribble_agent);
 agent intercept_agent("intercept_agent", intercept_agent);
