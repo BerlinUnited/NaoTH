@@ -50,22 +50,6 @@ namespace sensor("Sensor Symbols") {
   float input sensor.ultrasound.left;
   float input sensor.ultrasound.right;
 
-  /** */
-  bool input sensor.obstacle.inFront;
-  bool input sensor.obstacle.valid;
-  bool input sensor.obstacle.left;
-  bool input sensor.obstacle.right;
-
-  bool input sensor.obstacle.preview.inFront;
-  bool input sensor.obstacle.preview.valid;
-  bool input sensor.obstacle.preview.left;
-  bool input sensor.obstacle.preview.right;
-
-  bool input sensor.obstacle.behind_ball.occupied;
-  bool input sensor.obstacle.behind_ball.valid;
-  bool input sensor.obstacle.behind_ball.left;
-  bool input sensor.obstacle.behind_ball.right;
-
   /** use the obstacle model */
   float input obstacle.ultrasound.distance;
   float input obstacle.ultrasound.left.distance;
