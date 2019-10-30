@@ -2,11 +2,15 @@ bugsCharts:
   title: "Charts for bugs"
   charts:
     - title: "Monthly bugs created"
-      type: bar
+      type: line
       query:
         issuable_type: issue
         issuable_state: opened
         filter_labels:
-          - test
+          - Bug
+        collection_labels:
+          - Motion
+          - Behavior
+          - Tools
         group_by: month
         period_limit: 24
