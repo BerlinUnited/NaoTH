@@ -316,7 +316,7 @@ void RedBallDetector::estimateCircleSimple(const std::vector<Vector2i>& endPoint
 }
 */
 
-// NOTE: this is experimental and now used yet
+// NOTE: this is experimental and not used yet
 bool RedBallDetector::randomBallScan(const Vector2i& center, double radius) const
 {
   size_t sampleSize = 21;
