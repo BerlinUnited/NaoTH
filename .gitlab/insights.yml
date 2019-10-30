@@ -1,5 +1,5 @@
 bugsCharts:
-  title: "Charts for bugs"
+  title: "Bug Report"
   charts:
     - title: "Monthly bugs created"
       type: line
@@ -12,5 +12,8 @@ bugsCharts:
           - Motion
           - Behavior
           - Tools
+          - Selflocalization
+          - Vision
+          - Infrastructure
         group_by: month
         period_limit: 24
