@@ -16,7 +16,7 @@
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/MultiChannelIntegralImage.h"
-#include "Representations/Perception/Obstacle.h"
+#include "Representations/Perception/ObstaclePercept.h"
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/BallModel.h"
 
