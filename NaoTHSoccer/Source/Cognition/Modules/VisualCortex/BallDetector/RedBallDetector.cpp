@@ -42,8 +42,6 @@ void RedBallDetector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
 
-  getBallPercept().reset();
-
   // STEP 1: find the starting point for the search
   listOfRedPoints.clear();
   if(!findMaximumRedPoint(listOfRedPoints) || listOfRedPoints.empty()) {
@@ -254,6 +252,8 @@ bool RedBallDetector::scanForEdges(const Vector2i& start, const Vector2d& direct
 
 void RedBallDetector::calculateBallPercept(const Vector2i& center, double radius) 
 {
+  MultiBallPercept::BallPercept ballPercept;
+
   // calculate the ball
   bool ballOK = CameraGeometry::imagePixelToFieldCoord(
 		getCameraMatrix(), 
@@ -261,10 +261,10 @@ void RedBallDetector::calculateBallPercept(const Vector2i& center, double radius
 		center.x, 
 		center.y, 
 		getFieldInfo().ballRadius,
-		getBallPercept().bearingBasedOffsetOnField);
+    ballPercept.positionOnField);
 
   // HACK: don't take to far balls
-  ballOK = ballOK && getBallPercept().bearingBasedOffsetOnField.abs2() < 10000*10000; // closer than 10m
+  ballOK = ballOK && ballPercept.positionOnField.abs2() < 10000 * 10000; // closer than 10m
 
   // HACK: if the ball center is in image it has to be in the field polygon 
   Vector2d ballPointToCheck(center.x, center.y - 5);
@@ -272,23 +272,14 @@ void RedBallDetector::calculateBallPercept(const Vector2i& center, double radius
     (!getImage().isInside((int)(ballPointToCheck.x+0.5), (int)(ballPointToCheck.y+0.5)) ||
       getFieldPercept().getValidField().isInside(ballPointToCheck));
 
-
   if(ballOK) 
   {
-    MultiBallPercept::BallPercept ballPercept;
-  
     ballPercept.cameraId = cameraID;
     ballPercept.centerInImage = center;
     ballPercept.radiusInImage = radius;
-    ballPercept.positionOnField = getBallPercept().bearingBasedOffsetOnField;
 
     getMultiBallPercept().add(ballPercept);
     getMultiBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
-
-    getBallPercept().radiusInImage = radius;
-    getBallPercept().centerInImage = center;
-    getBallPercept().ballWasSeen = true;
-    getBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
 
     DEBUG_REQUEST("Vision:RedBallDetector:draw_ball",
       CIRCLE_PX(ColorClasses::orange, center.x, center.y, (int)(radius+0.5));
