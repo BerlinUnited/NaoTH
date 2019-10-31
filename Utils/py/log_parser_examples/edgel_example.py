@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import argparse
+from pywget import wget
 from pathlib import Path
 
 import math
@@ -10,6 +11,18 @@ import naoth.math2d as m2
 import naoth.math3d as m3
 from naoth.LogReader import LogReader
 from naoth.LogReader import Parser
+
+
+def get_demo_logfiles():
+    base_url = "https://www2.informatik.hu-berlin.de/~naoth/ressources/log/demo_edgels/"
+    logfile_list = ["2019-07-05_11-45-00_Berlin United_vs_NomadZ_half2-1_93_Nao0212.log"]
+
+    target_dir = Path("logs")
+    Path.mkdir(target_dir, exist_ok=True)
+
+    for logfile in logfile_list:
+        if not Path(target_dir / logfile).is_file():
+            wget.download(base_url+logfile, target_dir)
 
 
 def parse_vector3(message):
@@ -25,100 +38,79 @@ def parse_camera_matrix(matrix_frame):
     return p
 
 
-def getEdgels(frame):
-    edgelFrameTop = frame["ScanLineEdgelPerceptTop"]
+def get_edgels(frame):
+    edgel_frame_top = frame["ScanLineEdgelPerceptTop"]
 
-    edgelFrame = frame["ScanLineEdgelPercept"]
+    edgel_frame = frame["ScanLineEdgelPercept"]
 
     # project edgels to robot coordinate system
-    cameraMatrixTop = parse_camera_matrix(frame["CameraMatrixTop"])
-    projectedEdgelsTop = [ projectEdgel(edgel.point.x, edgel.point.y, cameraMatrixTop) for edgel in edgelFrameTop.edgels]
+    camera_matrix_top = parse_camera_matrix(frame["CameraMatrixTop"])
+    projected_edgels_top = [project_edgel(edgel.point.x, edgel.point.y, camera_matrix_top)
+                            for edgel in edgel_frame_top.edgels]
 
-    cameraMatrix = parse_camera_matrix(frame["CameraMatrix"])
-    projectedEdgels = [ projectEdgel(edgel.point.x, edgel.point.y, cameraMatrix) for edgel in edgelFrame.edgels]
+    camera_matrix = parse_camera_matrix(frame["CameraMatrix"])
+    projected_edgels = [project_edgel(edgel.point.x, edgel.point.y, camera_matrix)
+                        for edgel in edgel_frame.edgels]
 
-    return (frame.number, edgelFrameTop, edgelFrame, projectedEdgelsTop, projectedEdgels)
-
-
-def getFocalLength():
-    resolutionWidth = 640
-    resolutionHeight = 480
-    openingAngleDiagonal = 72.6/180*math.pi
-
-    d2 = resolutionWidth * resolutionWidth + resolutionHeight * resolutionHeight
-    halfDiagLength = 0.5 * math.sqrt(d2)
-    return halfDiagLength / math.tan(0.5 * openingAngleDiagonal)
+    return frame.number, edgel_frame_top, edgel_frame, projected_edgels_top, projected_edgels
 
 
-def projectEdgel(x,y,cMatrix):
+def get_focal_length():
+    resolution_width = 640
+    resolution_height = 480
+    opening_diagonal_angle = 72.6/180*math.pi
+
+    d2 = resolution_width ** 2 + resolution_height ** 2
+    half_diag_length = 0.5 * math.sqrt(d2)
+    return half_diag_length / math.tan(0.5 * opening_diagonal_angle)
+
+
+def project_edgel(x, y, cam_matrix):
     v = m3.Vector3()
-    v.x = getFocalLength()
+    v.x = get_focal_length()
     v.y = 320 - x
     v.z = 240 - y
 
-    v = cMatrix.rotation*v
+    v = cam_matrix.rotation * v
     result = m2.Vector2()
     result.x = v.x
     result.y = v.y
-    result = result*(cMatrix.translation.z/(-v.z))
-    result.x = result.x + cMatrix.translation.x
-    result.y = result.y + cMatrix.translation.y
-    return (result.x, result.y)
+    result = result*(cam_matrix.translation.z / (-v.z))
+    result.x = result.x + cam_matrix.translation.x
+    result.y = result.y + cam_matrix.translation.y
+    return result.x, result.y
 
 
-def animate(i, log, edgelsPlotTop, edgelsPlot, projectedEdgelsPlot):
-    msg = log.__next__()
+def animate(i, log_iterator, edgels_plot_top, edgels_plot, projected_edgels_plot):
+    print(i)
+    # TODO use for and yield here
+    msg = log_iterator.__next__()
 
-    edgelFrame = [(edgel.point.x, -edgel.point.y) for edgel in msg[1].edgels]
-    edgelsPlotTop.set_offsets(edgelFrame)
+    edgel_frame = [(edgel.point.x, -edgel.point.y) for edgel in msg[1].edgels]
+    edgels_plot_top.set_offsets(edgel_frame)
 
-    edgelFrame = [(edgel.point.x, -edgel.point.y) for edgel in msg[2].edgels]
-    edgelsPlot.set_offsets(edgelFrame)
+    edgel_frame = [(edgel.point.x, -edgel.point.y) for edgel in msg[2].edgels]
+    edgels_plot.set_offsets(edgel_frame)
 
-    projectedEdgelsPlot.set_offsets(msg[3] + msg[4])
-
-    # It's time to get things done
-
-
-# TODO wird das noch gebraucht?
-def get_camera_matrix(frame):
-    cm_bottom = frame["CameraMatrix"]
-    cm_top = frame["CameraMatrixTop"]
-    return [frame.number, cm_bottom, cm_top]
-
-
-# @deprecated
-def get_edgels(frame):
-     edgel_percepts = frame["ScanLineEdgelPercept"]
-     return [frame.number, edgel_percepts]
+    projected_edgels_plot.set_offsets(msg[3] + msg[4])
 
 
 if __name__ == "__main__":
-    test_path = Path("C://RoboCup//PROJECTS//2019_edgel_matching_data//2019-07-05_11-45-00_Berlin United_vs_NomadZ_half2\game_logs//1_93_Nao0212_190705-1205\game.log")
+    get_demo_logfiles()
 
-    # TODO add argument for exporting
     parser = argparse.ArgumentParser(description='script to display or export edgels from log files')
     parser.add_argument("--logfile", help='log file to draw edgels from',
-                        default=str(test_path))
+                        default="logs/2019-07-05_11-45-00_Berlin United_vs_NomadZ_half2-1_93_Nao0212.log")
 
     args = parser.parse_args()
 
-    """
-    logFilePath = parse_arguments(sys.argv[1:])
-
-    myParser = Parser()
-    myParser.register("CameraMatrixTop", "CameraMatrix")
-
-    for msg in LogReader(logFilePath, myParser, get_edgels):
-        print(msg)
-    """
     logFilePath = args.logfile
     # init parser
     logParser = Parser()
     logParser.register("ScanLineEdgelPerceptTop", "ScanLineEdgelPercept")
     logParser.register("CameraMatrixTop", "CameraMatrix")
 
-    log = iter(LogReader(logFilePath, logParser, getEdgels))
+    log = iter(LogReader(logFilePath, logParser, get_edgels))
 
     # init plot
     plt.close('all')
