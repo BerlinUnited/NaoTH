@@ -10,7 +10,7 @@ from naoth.LogReader import Parser
 
 
 def get_all_fsr_demo_logfiles():
-    base_url = "https://www2.informatik.hu-berlin.de/~naoth/ressources/log/fsr/"
+    base_url = "https://www2.informatik.hu-berlin.de/~naoth/ressources/log/demo_fsr/"
     logfile_list = ["fallen_motion.log", "sit_motion.log", "stand_motion.log", "walk_motion.log"]
 
     target_dir = Path("logs")
@@ -31,13 +31,13 @@ def get_fsr_data(frame):
 
 
 if __name__ == "__main__":
+    get_all_fsr_demo_logfiles()
+
     parser = argparse.ArgumentParser(
         description='example of how to parse fsr data from log')
-    parser.add_argument("-i", "--input", help='path to logfile')
+    parser.add_argument("-i", "--input", help='path to logfile', default="logs/fallen_motion.log")
 
     args = parser.parse_args()
-
-    get_all_fsr_demo_logfiles()
 
     # initialize the log parser
     myParser = Parser()
