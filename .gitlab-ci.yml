@@ -1,0 +1,30 @@
+stages:
+ - nao 
+ - linux
+
+default:
+  image: scm.cms.hu-berlin.de:4567/berlinunited/tools/linuxtoolchain:latest
+
+compileGame:
+  stage: nao
+  only:
+    refs:
+      - web
+      - merge_requests
+      - triggers
+  script:
+  - cd NaoTHSoccer/Make
+  - ./compileGame.sh -j 4
+
+compileLocal:
+  stage: linux
+  only:
+    refs:
+      - web
+      - merge_requests
+      - triggers
+  script:
+  - cd NaoTHSoccer/Make
+  - premake5 gmake2 --protoc
+  - cd ../build
+  - make all

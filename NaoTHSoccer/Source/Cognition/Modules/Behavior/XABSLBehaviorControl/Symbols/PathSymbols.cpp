@@ -11,7 +11,7 @@ void PathSymbols::registerSymbols(xabsl::Engine& engine)
 {
   // PathPlanner2018Routine
   engine.registerEnumElement("path2018.routine", "path2018.routine.none",              static_cast<int>(PathModel::PathPlanner2018Routine::NONE));
-  engine.registerEnumElement("path2018.routine", "path2018.routine.move_around_ball",  static_cast<int>(PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL));
+  engine.registerEnumElement("path2018.routine", "path2018.routine.move_around_ball2",  static_cast<int>(PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL2));
   engine.registerEnumElement("path2018.routine", "path2018.routine.forwardkick",  static_cast<int>(PathModel::PathPlanner2018Routine::FORWARDKICK));
   engine.registerEnumElement("path2018.routine", "path2018.routine.sidekick_left",     static_cast<int>(PathModel::PathPlanner2018Routine::SIDEKICK_LEFT));
   engine.registerEnumElement("path2018.routine", "path2018.routine.sidekick_right",    static_cast<int>(PathModel::PathPlanner2018Routine::SIDEKICK_RIGHT));
@@ -25,7 +25,7 @@ void PathSymbols::registerSymbols(xabsl::Engine& engine)
 
   // move around ball: direction and radius
   //engine.registerDecimalOutputSymbol("path.direction", &getPathModel().direction); // TODO this is in degrees should be converted here somehow
-  engine.registerDecimalOutputSymbol("path.direction", &setDirection, &getDirection);  
+  engine.registerDecimalOutputSymbol("path.direction", &setDirection, &getDirection);
   engine.registerDecimalOutputSymbol("path.radius", &getPathModel().radius);
   engine.registerBooleanOutputSymbol("path.stable", &getPathModel().stable);
 
