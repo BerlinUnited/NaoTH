@@ -294,11 +294,11 @@ void BallKeyPointExtractor::calculateKeyPointsFast(const ImageType& integralImag
 
       int inner = integralImage.getSumForRect(point.x-radius, point.y-radius, point.x+radius, point.y+radius, 0);
       double greeInner = integralImage.getDensityForRect(point.x-radius/2, point.y-radius/2, point.x+radius/2, point.y+radius/2, 1);
-      const int size = radius*2;
+      const int area = 4*radius*radius;
       
-      if (inner*2 > size*size && greeInner <= params.maxInnerGreenDensitiy)
+      if (inner*2 > area && greeInner <= params.maxInnerGreenDensitiy)
       {
-        double value = ((double)inner)/((double)(size*size));
+        double value = ((double)inner)/((double)(area));
         best.add( 
             (point.x-radius)*integralImage.FACTOR, 
             (point.y-radius)*integralImage.FACTOR, 
@@ -308,7 +308,7 @@ void BallKeyPointExtractor::calculateKeyPointsFast(const ImageType& integralImag
       }
 
       DEBUG_REQUEST("Vision:BallKeyPointExtractor:draw_value",
-          double value = ((double)inner)/((double)(size*size));
+          double value = ((double)inner)/((double)(area));
 
           value = Math::clamp(value / 200.0, 0.0,1.0);
           PEN(Color(1.0,1.0-value,1.0-value,0.8),0.1);
