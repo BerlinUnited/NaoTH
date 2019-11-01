@@ -14,7 +14,6 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:Search", "Set the HeadMotion-Request to 'search'.", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:reverseSearchDirection", "Set the head search direction to counterclockwise.", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:LookAtMultiBall_image", "Set the HeadMotion-Request to 'look_at_ball'.", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:LookAtBall_field", "Set the HeadMotion-Request to 'look_at_ball'.", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:Stabilize", "Set the HeadMotion-Request to 'stabilize'.", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:SwitchToBottomCamera", "Switch to bottom camera", true);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:look_at_ball_model", "Search for ball if not seen", false);
@@ -62,7 +61,7 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:goalie_sit_n_dive_right","..",false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:jump_indicator_left", "..", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:jump_indicator_right", "..", false);
-  
+
   // other motions
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:dead", "Set the robot dead.", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:stand", "The default motion, otherwise do nothing", true);
