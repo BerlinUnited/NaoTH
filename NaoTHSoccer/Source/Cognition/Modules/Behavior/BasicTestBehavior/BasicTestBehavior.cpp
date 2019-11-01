@@ -157,7 +157,7 @@ void BasicTestBehavior::testHead()
     if (getMultiBallPercept().wasSeen())
     {
       Vector2d pos = (*getMultiBallPercept().begin()).positionOnField;
-      MultiBallPercept::BallPercept closestBallPercept;
+      MultiBallPercept::BallPercept closestBallPercept(*getMultiBallPercept().begin());
       for (MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
         if (pos.abs() > (*iter).positionOnField.abs()) {
           pos = (*iter).positionOnField;
@@ -166,6 +166,7 @@ void BasicTestBehavior::testHead()
       }
       getHeadMotionRequest().id = HeadMotionRequest::look_at_point;
       getHeadMotionRequest().targetPointInImage = closestBallPercept.centerInImage;
+      getHeadMotionRequest().cameraID = closestBallPercept.cameraId;
     }
   );
 
