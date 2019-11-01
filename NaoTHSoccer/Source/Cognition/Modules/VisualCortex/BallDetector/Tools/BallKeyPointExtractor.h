@@ -263,8 +263,11 @@ void BallKeyPointExtractor::calculateKeyPointsFast(const ImageType& integralImag
   const int32_t FACTOR = integralImage.FACTOR;
 
   Vector2i point;
+
+  const int height = (int)integralImage.getHeight();
+  const int width = (int)integralImage.getWidth();
   
-  for(point.y = minY/FACTOR; point.y < (int)integralImage.getHeight(); ++point.y)
+  for(point.y = minY/FACTOR; point.y < height; ++point.y)
   {
     double estimatedRadius = CameraGeometry::estimatedBallRadius(
       getCameraMatrix(), getImage().cameraInfo, getFieldInfo().ballRadius,
@@ -279,11 +282,11 @@ void BallKeyPointExtractor::calculateKeyPointsFast(const ImageType& integralImag
     }
 
     // smalest ball size == 3 => ball size == FACTOR*3 == 12
-    if (point.y < radius || point.y + radius >= (int)integralImage.getHeight()) {
+    if (point.y < radius || point.y + radius >= height) {
       continue;
     }
     
-    for(point.x = radius; point.x + radius < (int)integralImage.getWidth(); ++point.x)
+    for(point.x = radius; point.x + radius < width; ++point.x)
     {
       //evaluatePatch(integralImage, best, point, size, border);
 
