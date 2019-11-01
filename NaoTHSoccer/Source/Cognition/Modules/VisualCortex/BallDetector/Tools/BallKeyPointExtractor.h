@@ -297,9 +297,9 @@ void BallKeyPointExtractor::calculateKeyPointsFast(const ImageType& integralImag
       }
 
       int inner = integralImage.getSumForRect(point.x-radius, point.y-radius, point.x+radius, point.y+radius, 0);
-      double greeInner = integralImage.getDensityForRect(point.x-radiusBy2, point.y-radiusBy2, point.x+radiusBy2, point.y+radiusBy2, 1);
+      double greenInner = integralImage.getDensityForRect(point.x-radiusBy2, point.y-radiusBy2, point.x+radiusBy2, point.y+radiusBy2, 1);
       
-      if (inner*2 > area && greeInner <= params.maxInnerGreenDensitiy)
+      if (inner*2 > area && greenInner <= params.maxInnerGreenDensitiy)
       {
         double value = ((double)inner)/((double)(area));
         best.add( 
