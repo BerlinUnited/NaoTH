@@ -1,9 +1,10 @@
 from naoth import math2d as m2d
 
+
 # represents the robots view on the situation
 
 class State:
-    def __init__(self, position=m2d.Vector2(0,0), direction=m2d.Vector2(1,0)):
+    def __init__(self, position=m2d.Vector2(0, 0), direction=m2d.Vector2(1, 0)):
         self.position = position  # position on the field as 2 d element
         self.direction = direction  # facing direction as vector
 
