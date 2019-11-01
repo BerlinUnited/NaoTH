@@ -1,40 +1,19 @@
 /** Symbols for the PathPlanner Module */
 namespace path_symbols("PathPlanner Symbols") {
-  enum path.routine
-  {
-    none,
-    go_to_ball_fast, // should go to path2018
-    go_to_ball_slow, // should go to path2018
-    approach_ball_right, //TODO what about this?
-    approach_ball_left, //TODO what about this?
-    move_around_ball,
-    short_kick_right,
-    short_kick_left,
-    long_kick_right,
-    long_kick_left,
-    sidekick_right,
-    sidekick_left
-  };
   
   enum path2018.routine
   {
     none,
-    move_around_ball,
+    move_around_ball2,
     forwardkick,
     sidekick_left,
     sidekick_right,
     sidestep
   };
 
-
-  enum path.routine output path.routine;
   enum path2018.routine output path2018.routine;
-
   
-  float output path.distance;
-  float output path.xOffset;
-  float output path.yOffset;
-
+  float output path.distance;  
   float output path.direction;
   float output path.radius;
   bool output path.stable;

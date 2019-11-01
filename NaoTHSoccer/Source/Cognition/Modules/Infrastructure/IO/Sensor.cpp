@@ -20,12 +20,11 @@ Sensor::~Sensor()
 void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
 {
   // read RobotInfo
-  RobotInfo& robot = getRobotInfo();
-  robot.platform = platform.getName();
-  robot.headNickName = platform.getHeadNickName();
-  robot.bodyNickName = platform.getBodyNickName();
-  robot.bodyID = platform.getBodyID();
-  robot.basicTimeStep = platform.getBasicTimeStep();
+  getRobotInfo().platform = platform.getPlatformName();
+  getRobotInfo().headNickName = platform.getHeadNickName();
+  getRobotInfo().bodyNickName = platform.getBodyNickName();
+  getRobotInfo().bodyID = platform.getBodyID();
+  getRobotInfo().basicTimeStep = platform.getBasicTimeStep();
   
   REG_INPUT(Image);
   REG_INPUT(ImageTop);

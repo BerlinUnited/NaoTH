@@ -1,66 +1,34 @@
 option path_turn_to_attack_direction
-{
-  initial state decide {
-    decision{
-    // This is potentially bad since now a path routine can be intererupted 
-      if(attack.direction.preview > 0 && obstacle.ultrasound.distance > 400)
-        goto turn_right_around;
-      else if (attack.direction.preview > 0 && obstacle.ultrasound.distance <= 400)
-        goto turn_right_around;
-      else if (attack.direction.preview <= 0 && obstacle.ultrasound.distance <= 400)
-        goto turn_left_around;
-      else
-        goto turn_left_around;
-    }
-    action{
-    }
-  }
-
-  state turn_right_around {
+{  
+  initial state turn {
     decision {
-     if(obstacle.ultrasound.distance <= 400)
-       goto turn_right_around_stable;
-     else
-       stay;
-    }
-    action {
-      path_move_around_ball(direction=attack.direction.preview, radius=210, stable=false);
-      //motion.walk.style = fast;
-    }
-  }
-
-  state turn_right_around_stable {
-    decision {
-      stay;
-    }
-    action {
-      path_move_around_ball(direction=attack.direction.preview, radius=210, stable=true);
-      //motion.walk.style = fast;
-    }
-  }
-
-
-  state turn_left_around {
-    decision {
-      if(obstacle.ultrasound.distance <= 400)
-        goto turn_left_around_stable;
+      if(obstacle.ultrasound.distance < 400)
+        goto turn_stable;
       else
         stay;
     }
-    action {
-      path_move_around_ball(direction=attack.direction.preview, radius=210, stable=false);
-      //motion.walk.style = fast;
+    
+    action{
+      path2018.routine = move_around_ball2;
+      path.direction = attack.direction.preview;
+      path.radius = 210;
+      path.stable = false;
     }
   }
 
-  state turn_left_around_stable {
+  state turn_stable {
     decision {
-      stay;
+      if(obstacle.ultrasound.distance > 450)
+        goto turn;
+      else
+        stay;
     }
-    action {
-      path_move_around_ball(direction=attack.direction.preview, radius=210, stable=true);
-      //motion.walk.style = fast;
+    
+    action{
+      path2018.routine = move_around_ball2;
+      path.direction = attack.direction.preview;
+      path.radius = 210;
+      path.stable = true;
     }
-  }
-
-}
+  }  
+}

@@ -6,7 +6,12 @@ from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont
 
 import Config
 import ConfigViewerUi
-from PyQt5.QtWidgets import QWidget, QStyle
+from PyQt5.QtWidgets import QWidget, QStyle, QHeaderView
+
+
+def is_true(value):
+    """Converts a string representation of a boolean to a python boolean."""
+    return True if json.loads(value) else False
 
 
 class Widget(QWidget):
@@ -116,22 +121,25 @@ class Widget(QWidget):
         for m in sorted(modules):
             text_item = QStandardItem(m)
             text_item.setEditable(False)
-            text_item.setCheckState(Qt.Checked if json.loads(modules[m].lower()) else Qt.Unchecked)
+            text_item.setCheckState(Qt.Checked if is_true(modules[m][0].lower()) else Qt.Unchecked)
 
             # NOTE: some modules name their parameters differently than themselves
-            if json.loads(modules[m].lower()) and m in current:
+            if is_true(modules[m][0].lower()) and m in current:
                 for i in sorted(current[m]):
-                    item = QStandardItem(i + " = " + current[m][i])
+                    item = QStandardItem(i + " = " + current[m][i][0])
                     item.setEditable(False)
                     font = QFont()
                     font.setItalic(True)
                     item.setFont(font)
-                    text_item.appendRow(item)
+                    text_item.appendRow([item, QStandardItem(current[m][i][1])])
 
-            parent_item.appendRow(text_item)
+            parent_item.appendRow([ text_item, QStandardItem(modules[m][1]) ])
 
         model.setHeaderData(0, Qt.Horizontal, "Modules")
+        model.setHeaderData(1, Qt.Horizontal, "Origin")
+
         self.ui.modules.setModel(model)
+        self.ui.modules.header().setSectionResizeMode(0, QHeaderView.Stretch)
 
     def __update_tree_parameters(self, current):
         model = QStandardItemModel()
@@ -145,17 +153,20 @@ class Widget(QWidget):
             text_item.setEditable(False)
 
             for i in sorted(current[m]):
-                item = QStandardItem(i + " = " + current[m][i])
+                item = QStandardItem(i + " = " + current[m][i][0])
                 item.setEditable(False)
                 font = QFont()
                 font.setItalic(True)
                 item.setFont(font)
-                text_item.appendRow(item)
+                text_item.appendRow([item, QStandardItem(current[m][i][1])])
 
-            parent_item.appendRow(text_item)
+            parent_item.appendRow([ text_item, QStandardItem() ])
 
         model.setHeaderData(0, Qt.Horizontal, "Parameters")
+        model.setHeaderData(1, Qt.Horizontal, "Origin")
+
         self.ui.parameters.setModel(model)
+        self.ui.parameters.header().setSectionResizeMode(0, QHeaderView.Stretch)
 
     def dragEnterEvent(self, e):
         # only one item drop allowed
