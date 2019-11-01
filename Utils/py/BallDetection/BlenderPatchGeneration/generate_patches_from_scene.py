@@ -22,7 +22,6 @@ from bpy.types import (Panel,
                        PropertyGroup,
                        )
 
-
 bl_info = {
     "name": "Automated Rendering for Deep Learning Data Generation",
     "description": "This script automates the data generation for the RoboCup ball detection.",
@@ -233,7 +232,8 @@ class State:
         scene.render.resolution_y = self.res_y
 
     def get_list_of_output_paths(self):
-        return [self.base_path, self.path_ball, self.path_ball_bw, self.path_no_ball, self.path_no_ball_bw,
+        return [self.base_path, self.path_ball, self.path_ball_bw, self.path_no_ball,
+                self.path_no_ball_bw,
                 self.path_img, self.path_img_bw, self.path_mask]
 
 
@@ -271,7 +271,8 @@ class IO:
     @staticmethod
     def print_statistics(elapsed_time, estimated_exec_time):
         print("Render time of current frame: " + str(datetime.timedelta(seconds=elapsed_time)))
-        print("Estimated time to completion: " + str(datetime.timedelta(seconds=estimated_exec_time)))
+        print("Estimated time to completion: " + str(
+            datetime.timedelta(seconds=estimated_exec_time)))
         print("")
 
     @staticmethod
@@ -290,8 +291,10 @@ class SceneEditing:
     @staticmethod
     def set_file_output_nodes(use_mask_output):
         scene = bpy.context.scene
-        if (use_mask_output is False) and len(scene.node_tree.nodes["file_output_mask"].inputs[0].links) > 0:
-            scene.node_tree.links.remove(scene.node_tree.nodes["file_output_mask"].inputs[0].links[0])
+        if (use_mask_output is False) and len(
+                scene.node_tree.nodes["file_output_mask"].inputs[0].links) > 0:
+            scene.node_tree.links.remove(
+                scene.node_tree.nodes["file_output_mask"].inputs[0].links[0])
         elif use_mask_output is True:
             scene.node_tree.links.new(scene.node_tree.nodes["Mix"].outputs["Image"],
                                       scene.node_tree.nodes["file_output_mask"].inputs[0])
@@ -349,7 +352,8 @@ class SceneEditing:
         return obj_co
 
     @staticmethod
-    def change_rotation_euler(target, change_x, change_y, change_z, min_x, max_x, min_y, max_y, min_z, max_z):
+    def change_rotation_euler(target, change_x, change_y, change_z, min_x, max_x, min_y, max_y,
+                              min_z, max_z):
         rotation_euler = SceneEditing.get_random_rot(min_x, max_x, min_y, max_y, min_z, max_z)
 
         if change_x is True:
@@ -360,7 +364,8 @@ class SceneEditing:
             target.rotation_euler[2] = rotation_euler[2]
 
     @staticmethod
-    def change_rotation(target, change_x, change_y, change_z, min_x, max_x, min_y, max_y, min_z, max_z):
+    def change_rotation(target, change_x, change_y, change_z, min_x, max_x, min_y, max_y, min_z,
+                        max_z):
         rot_x = random.uniform(min_x, max_x)
         rot_y = random.uniform(min_y, max_y)
         rot_z = random.uniform(min_z, max_z)
@@ -373,7 +378,8 @@ class SceneEditing:
             target.rotation[2] = math.radians(rot_z)
 
     @staticmethod
-    def change_location(target, change_x, change_y, change_z, min_x, max_x, min_y, max_y, min_z, max_z):
+    def change_location(target, change_x, change_y, change_z, min_x, max_x, min_y, max_y, min_z,
+                        max_z):
         location = SceneEditing.get_random_loc(min_x, max_x, min_y, max_y, min_z, max_z)
 
         if change_x is True:
@@ -495,7 +501,8 @@ class RenderSetup:
         self.state.elapsed_time = self.state.end_time - self.state.start_time
 
         if self.state.mean_exec_time_per_frame > 0:
-            self.state.mean_exec_time_per_frame = (self.state.mean_exec_time_per_frame + self.state.elapsed_time) / 2
+            self.state.mean_exec_time_per_frame = (
+                                                              self.state.mean_exec_time_per_frame + self.state.elapsed_time) / 2
         else:
             self.state.mean_exec_time_per_frame = self.state.elapsed_time
 
@@ -536,7 +543,8 @@ class SceneSetup(ABC):
     def create_checkpoint(self):
         self.scene.frame_set(0)
         SceneEditing.add_keyframes_to_objs_for(0)
-        bpy.data.worlds['World'].node_tree.nodes["Mapping"].keyframe_insert(data_path="rotation", frame=0)
+        bpy.data.worlds['World'].node_tree.nodes["Mapping"].keyframe_insert(data_path="rotation",
+                                                                            frame=0)
 
     def configure_scene(self):
         self.scene.frame_set(2)
@@ -547,7 +555,8 @@ class SceneSetup(ABC):
         self._config_world()
         SceneEditing.add_keyframes_to_objs_for(1, self.state.used_keyframes)
         SceneEditing.add_keyframes_to_objs_for(2, self.state.used_keyframes)
-        bpy.data.worlds['World'].node_tree.nodes["Mapping"].keyframe_insert(data_path="rotation", frame=2)
+        bpy.data.worlds['World'].node_tree.nodes["Mapping"].keyframe_insert(data_path="rotation",
+                                                                            frame=2)
         self._config_motion_blur()
 
     def rename_files(self):
@@ -568,7 +577,8 @@ class SceneSetup(ABC):
     def restore_checkpoint(self, keyframes_to_remove):
         for frame_x in keyframes_to_remove:
             SceneEditing.remove_keyframes_from_objs_for(frame_x)
-        bpy.data.worlds['World'].node_tree.nodes["Mapping"].keyframe_delete(data_path="rotation", frame=2)
+        bpy.data.worlds['World'].node_tree.nodes["Mapping"].keyframe_delete(data_path="rotation",
+                                                                            frame=2)
         self.scene.frame_set(0)
 
     @abstractmethod
@@ -606,28 +616,40 @@ class SceneSetup(ABC):
         if (roll_dice == 0) and (self.state.use_motion_blur is True):
             self.scene.render.use_motion_blur = True
             self.scene.frame_set(1)
-            SceneEditing.change_location(bpy.data.objects["ball_top"], True, True, False, 0.0, 0.05, 0.0, 0.05, 0.0,
+            SceneEditing.change_location(bpy.data.objects["ball_top"], True, True, False, 0.0,
+                                         0.05, 0.0, 0.05, 0.0,
                                          0.0)
-            SceneEditing.change_location(bpy.data.objects["ball_bottom"], True, True, False, 0.0, 0.05, 0.0, 0.05, 0.0,
+            SceneEditing.change_location(bpy.data.objects["ball_bottom"], True, True, False, 0.0,
+                                         0.05, 0.0, 0.05, 0.0,
                                          0.0)
-            SceneEditing.change_rotation_euler(bpy.data.objects["ball_top"], True, True, True, 0.0, 360.0, 0.0, 360.0,
+            SceneEditing.change_rotation_euler(bpy.data.objects["ball_top"], True, True, True, 0.0,
+                                               360.0, 0.0, 360.0,
                                                0.0, 360.0)
-            SceneEditing.change_rotation_euler(bpy.data.objects["ball_bottom"], True, True, True, 0.0, 360.0, 0.0,
+            SceneEditing.change_rotation_euler(bpy.data.objects["ball_bottom"], True, True, True,
+                                               0.0, 360.0, 0.0,
                                                360.0, 0.0, 360.0)
-            SceneEditing.add_keyframes_for(bpy.data.objects["ball_top"], 1, self.state.used_keyframes)
-            SceneEditing.add_keyframes_for(bpy.data.objects["ball_bottom"], 1, self.state.used_keyframes)
+            SceneEditing.add_keyframes_for(bpy.data.objects["ball_top"], 1,
+                                           self.state.used_keyframes)
+            SceneEditing.add_keyframes_for(bpy.data.objects["ball_bottom"], 1,
+                                           self.state.used_keyframes)
 
             self.scene.frame_set(3)
-            SceneEditing.change_location(bpy.data.objects["ball_top"], True, True, False, 0.0, 0.05, 0.0, 0.05, 0.0,
+            SceneEditing.change_location(bpy.data.objects["ball_top"], True, True, False, 0.0,
+                                         0.05, 0.0, 0.05, 0.0,
                                          0.0)
-            SceneEditing.change_location(bpy.data.objects["ball_bottom"], True, True, False, 0.0, 0.05, 0.0, 0.05, 0.0,
+            SceneEditing.change_location(bpy.data.objects["ball_bottom"], True, True, False, 0.0,
+                                         0.05, 0.0, 0.05, 0.0,
                                          0.0)
-            SceneEditing.change_rotation_euler(bpy.data.objects["ball_top"], True, True, True, 0.0, 360.0, 0.0, 360.0,
+            SceneEditing.change_rotation_euler(bpy.data.objects["ball_top"], True, True, True, 0.0,
+                                               360.0, 0.0, 360.0,
                                                0.0, 360.0)
-            SceneEditing.change_rotation_euler(bpy.data.objects["ball_bottom"], True, True, True, 0.0, 360.0, 0.0,
+            SceneEditing.change_rotation_euler(bpy.data.objects["ball_bottom"], True, True, True,
+                                               0.0, 360.0, 0.0,
                                                360.0, 0.0, 360.0)
-            SceneEditing.add_keyframes_for(bpy.data.objects["ball_top"], 3, self.state.used_keyframes)
-            SceneEditing.add_keyframes_for(bpy.data.objects["ball_bottom"], 3, self.state.used_keyframes)
+            SceneEditing.add_keyframes_for(bpy.data.objects["ball_top"], 3,
+                                           self.state.used_keyframes)
+            SceneEditing.add_keyframes_for(bpy.data.objects["ball_bottom"], 3,
+                                           self.state.used_keyframes)
         else:
             self.scene.render.use_motion_blur = False
 
@@ -663,7 +685,8 @@ class SceneSetupPatch(SceneSetup):
         self.state.advanced_image = False
 
         self.state.base_path = os.path.join(self.state.path,
-                                            datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + "_patch")
+                                            datetime.datetime.now().strftime(
+                                                '%Y%m%d_%H%M%S') + "_patch")
         self.state.path_ball = os.path.join(self.state.base_path, "ball")
         self.state.path_ball_bw = os.path.join(self.state.base_path, "ball_bw")
         self.state.path_no_ball = os.path.join(self.state.base_path, "no_ball")
@@ -708,17 +731,22 @@ class SceneSetupPatch(SceneSetup):
             self.state.current_path_bw = self.state.path_no_ball_bw
 
         self.scene.node_tree.nodes["file_output_col"].base_path = self.state.current_path
-        self.scene.node_tree.nodes["file_output_col"].file_slots[0].path = str(self.state.current_frame) + "#"
+        self.scene.node_tree.nodes["file_output_col"].file_slots[0].path = str(
+            self.state.current_frame) + "#"
         self.scene.node_tree.nodes["file_output_bw"].base_path = self.state.current_path_bw
-        self.scene.node_tree.nodes["file_output_bw"].file_slots[0].path = str(self.state.current_frame) + "#"
+        self.scene.node_tree.nodes["file_output_bw"].file_slots[0].path = str(
+            self.state.current_frame) + "#"
 
     def _config_anchor(self):
         anchor = bpy.data.objects["anchor_main"]
         SceneEditing.change_location(anchor, True, True, False,
-                                     self.state.allowed_zone_co[0][0], self.state.allowed_zone_co[3][0],
-                                     self.state.allowed_zone_co[0][1], self.state.allowed_zone_co[3][1],
+                                     self.state.allowed_zone_co[0][0],
+                                     self.state.allowed_zone_co[3][0],
+                                     self.state.allowed_zone_co[0][1],
+                                     self.state.allowed_zone_co[3][1],
                                      0, 0)
-        SceneEditing.change_rotation_euler(anchor, False, False, True, 0.0, 0.0, 0.0, 0.0, 0.0, 360.0)
+        SceneEditing.change_rotation_euler(anchor, False, False, True, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                           360.0)
 
     def _config_cameras_and_balls(self):
         select_camera = random.randint(0, 1)
@@ -734,13 +762,17 @@ class SceneSetupPatch(SceneSetup):
         else:
             bpy.data.objects["ball_top"].hide_render = False
             bpy.data.objects["ball_bottom"].hide_render = False
-            SceneEditing.change_location(bpy.data.objects["ball_top"], True, True, False, 0.0, 0.05, 0.0, 0.05, 0.0,
+            SceneEditing.change_location(bpy.data.objects["ball_top"], True, True, False, 0.0,
+                                         0.05, 0.0, 0.05, 0.0,
                                          0.0)
-            SceneEditing.change_location(bpy.data.objects["ball_bottom"], True, True, False, 0.0, 0.05, 0.0, 0.05, 0.0,
+            SceneEditing.change_location(bpy.data.objects["ball_bottom"], True, True, False, 0.0,
+                                         0.05, 0.0, 0.05, 0.0,
                                          0.0)
-            SceneEditing.change_rotation_euler(bpy.data.objects["ball_top"], True, True, True, 0.0, 360.0, 0.0, 360.0,
+            SceneEditing.change_rotation_euler(bpy.data.objects["ball_top"], True, True, True, 0.0,
+                                               360.0, 0.0, 360.0,
                                                0.0, 360.0)
-            SceneEditing.change_rotation_euler(bpy.data.objects["ball_bottom"], True, True, True, 0.0, 360.0, 0.0,
+            SceneEditing.change_rotation_euler(bpy.data.objects["ball_bottom"], True, True, True,
+                                               0.0, 360.0, 0.0,
                                                360.0, 0.0, 360.0)
 
     def _config_naos(self):
@@ -757,7 +789,8 @@ class SceneSetupPatch(SceneSetup):
         point_x = loc_ball[0] - loc_camera[0]
         point_y = loc_ball[1] - loc_camera[1]
 
-        rotated_point = SceneEditing.get_point_rotated(point_x, point_y, loc_camera[0], loc_camera[1], 180.0)
+        rotated_point = SceneEditing.get_point_rotated(point_x, point_y, loc_camera[0],
+                                                       loc_camera[1], 180.0)
         limit_co = self.state.field_co
 
         for target in self.scene.objects:
@@ -767,15 +800,18 @@ class SceneSetupPatch(SceneSetup):
                                                            0.0, 0.0)
 
                 if point_x < rotated_point[0]:
-                    if point_x <= loc_armature[0] <= rotated_point[0] and point_y <= loc_armature[1] <= rotated_point[1]:
+                    if point_x <= loc_armature[0] <= rotated_point[0] and point_y <= loc_armature[
+                        1] <= rotated_point[1]:
                         loc_armature[0] += rotated_point[0]
                 else:
-                    if rotated_point[0] <= loc_armature[0] <= point_x and rotated_point[1] <= loc_armature[1] <= point_y:
+                    if rotated_point[0] <= loc_armature[0] <= point_x and rotated_point[1] <= \
+                            loc_armature[1] <= point_y:
                         loc_armature[0] += point_x
 
                 target.location[0] = loc_armature[0]
                 target.location[1] = loc_armature[1]
-                SceneEditing.change_rotation_euler(target, False, False, True, 0.0, 0.0, 0.0, 0.0, 0.0, 360.0)
+                SceneEditing.change_rotation_euler(target, False, False, True, 0.0, 0.0, 0.0, 0.0,
+                                                   0.0, 360.0)
 
     def rename_files(self):
         if self.state.current_frame < self.state.num_balls:
@@ -822,12 +858,14 @@ class SceneSetupPatchMask(SceneSetup):
         self.state.advanced_image = False
 
         self.state.base_path = os.path.join(self.state.path,
-                                            datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + "_patchMask")
+                                            datetime.datetime.now().strftime(
+                                                '%Y%m%d_%H%M%S') + "_patchMask")
 
         if self.state.generate_no_ball:
             self.state.path_noball_patch = os.path.join(self.state.base_path, "noball_patch")
             self.state.path_noball_patch_bw = os.path.join(self.state.base_path, "noball_patch_bw")
-            self.state.path_noball_patch_mask = os.path.join(self.state.base_path, "noball_patch_mask")
+            self.state.path_noball_patch_mask = os.path.join(self.state.base_path,
+                                                             "noball_patch_mask")
 
         self.state.path_ball_patch = os.path.join(self.state.base_path, "ball_patch")
         self.state.path_ball_patch_bw = os.path.join(self.state.base_path, "ball_patch_bw")
@@ -874,11 +912,14 @@ class SceneSetupPatchMask(SceneSetup):
             self.state.current_path_mask = self.state.path_noball_patch_mask
 
         self.scene.node_tree.nodes["file_output_col"].base_path = self.state.current_path
-        self.scene.node_tree.nodes["file_output_col"].file_slots[0].path = str(self.state.current_frame) + "#"
+        self.scene.node_tree.nodes["file_output_col"].file_slots[0].path = str(
+            self.state.current_frame) + "#"
         self.scene.node_tree.nodes["file_output_bw"].base_path = self.state.current_path_bw
-        self.scene.node_tree.nodes["file_output_bw"].file_slots[0].path = str(self.state.current_frame) + "#"
+        self.scene.node_tree.nodes["file_output_bw"].file_slots[0].path = str(
+            self.state.current_frame) + "#"
         self.scene.node_tree.nodes["file_output_mask"].base_path = self.state.current_path_mask
-        self.scene.node_tree.nodes["file_output_mask"].file_slots[0].path = str(self.state.current_frame) + "#"
+        self.scene.node_tree.nodes["file_output_mask"].file_slots[0].path = str(
+            self.state.current_frame) + "#"
 
     def _config_anchor(self):
         anchor = bpy.data.objects["anchor_main"]
@@ -886,7 +927,8 @@ class SceneSetupPatchMask(SceneSetup):
                                      self.state.field_co[0][0], self.state.field_co[3][0],
                                      self.state.field_co[0][1], self.state.field_co[3][1],
                                      0, 0)
-        SceneEditing.change_rotation_euler(anchor, False, False, True, 0.0, 0.0, 0.0, 0.0, 0.0, 360.0)
+        SceneEditing.change_rotation_euler(anchor, False, False, True, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                           360.0)
 
     def _config_cameras_and_balls(self):
         select_camera = random.randint(0, 1)
@@ -902,25 +944,32 @@ class SceneSetupPatchMask(SceneSetup):
         else:
             bpy.data.objects["ball_top"].hide_render = False
             bpy.data.objects["ball_bottom"].hide_render = False
-            SceneEditing.change_location(bpy.data.objects["ball_top"], True, True, False, 0.0, 0.05, 0.0, 0.05, 0.0,
+            SceneEditing.change_location(bpy.data.objects["ball_top"], True, True, False, 0.0,
+                                         0.05, 0.0, 0.05, 0.0,
                                          0.0)
-            SceneEditing.change_location(bpy.data.objects["ball_bottom"], True, True, False, 0.0, 0.05, 0.0, 0.05, 0.0,
+            SceneEditing.change_location(bpy.data.objects["ball_bottom"], True, True, False, 0.0,
+                                         0.05, 0.0, 0.05, 0.0,
                                          0.0)
-            SceneEditing.change_rotation_euler(bpy.data.objects["ball_top"], True, True, True, 0.0, 360.0, 0.0, 360.0,
+            SceneEditing.change_rotation_euler(bpy.data.objects["ball_top"], True, True, True, 0.0,
+                                               360.0, 0.0, 360.0,
                                                0.0, 360.0)
-            SceneEditing.change_rotation_euler(bpy.data.objects["ball_bottom"], True, True, True, 0.0, 360.0, 0.0,
+            SceneEditing.change_rotation_euler(bpy.data.objects["ball_bottom"], True, True, True,
+                                               0.0, 360.0, 0.0,
                                                360.0, 0.0, 360.0)
 
     def _config_naos(self):
         for target in self.scene.objects:
             if target.type == "ARMATURE" and target.name != "armature_camera_dummy":
-                loc_armature = SceneEditing.get_random_loc(self.state.field_co[0][0], self.state.field_co[3][0],
-                                                           self.state.field_co[0][1], self.state.field_co[3][1],
+                loc_armature = SceneEditing.get_random_loc(self.state.field_co[0][0],
+                                                           self.state.field_co[3][0],
+                                                           self.state.field_co[0][1],
+                                                           self.state.field_co[3][1],
                                                            0.0, 0.0)
 
                 target.location[0] = loc_armature[0]
                 target.location[1] = loc_armature[1]
-                SceneEditing.change_rotation_euler(target, False, False, True, 0.0, 0.0, 0.0, 0.0, 0.0, 360.0)
+                SceneEditing.change_rotation_euler(target, False, False, True, 0.0, 0.0, 0.0, 0.0,
+                                                   0.0, 360.0)
 
     def rename_files(self):
         print("DEBUG: rename_files for SceneSetupPatchMask")
@@ -934,9 +983,9 @@ class SceneSetupPatchMask(SceneSetup):
         # get the camera id
         camID = str(self.scene.camera)
         if "top" in camID:
-        	new_name = str(frame) + "_top" + ".png"
+            new_name = str(frame) + "_top" + ".png"
         elif "bottom" in camID:
-    	   	new_name = str(frame) + "_bottom" + ".png"
+            new_name = str(frame) + "_bottom" + ".png"
 
         if self.state.current_path is not None:
             IO.rename_file(self.state.current_path, old_name, new_name)
@@ -975,7 +1024,8 @@ class SceneSetupImageMask(SceneSetup):
         self.state.advanced_image = True
 
         self.state.base_path = os.path.join(self.state.path,
-                                            datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + "_imageMask")
+                                            datetime.datetime.now().strftime(
+                                                '%Y%m%d_%H%M%S') + "_imageMask")
         self.state.path_ball = None
         self.state.path_ball_bw = None
         self.state.path_no_ball = None
@@ -1017,11 +1067,14 @@ class SceneSetupImageMask(SceneSetup):
         self.state.current_path_mask = self.state.path_mask
 
         self.scene.node_tree.nodes["file_output_col"].base_path = self.state.current_path
-        self.scene.node_tree.nodes["file_output_col"].file_slots[0].path = str(self.state.current_frame) + "#"
+        self.scene.node_tree.nodes["file_output_col"].file_slots[0].path = str(
+            self.state.current_frame) + "#"
         self.scene.node_tree.nodes["file_output_bw"].base_path = self.state.current_path_bw
-        self.scene.node_tree.nodes["file_output_bw"].file_slots[0].path = str(self.state.current_frame) + "#"
+        self.scene.node_tree.nodes["file_output_bw"].file_slots[0].path = str(
+            self.state.current_frame) + "#"
         self.scene.node_tree.nodes["file_output_mask"].base_path = self.state.current_path_mask
-        self.scene.node_tree.nodes["file_output_mask"].file_slots[0].path = str(self.state.current_frame) + "#"
+        self.scene.node_tree.nodes["file_output_mask"].file_slots[0].path = str(
+            self.state.current_frame) + "#"
 
     def _config_anchor(self):
         anchor = bpy.data.objects["anchor_main"]
@@ -1029,7 +1082,8 @@ class SceneSetupImageMask(SceneSetup):
                                      self.state.field_co[0][0], self.state.field_co[3][0],
                                      self.state.field_co[0][1], self.state.field_co[3][1],
                                      0, 0)
-        SceneEditing.change_rotation_euler(anchor, False, False, True, 0.0, 0.0, 0.0, 0.0, 0.0, 360.0)
+        SceneEditing.change_rotation_euler(anchor, False, False, True, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                           360.0)
 
     def _config_cameras_and_balls(self):
         select_camera = random.randint(0, 1)
@@ -1049,9 +1103,11 @@ class SceneSetupImageMask(SceneSetup):
             bpy.data.objects["ball_bottom"].hide_render = False
 
         if self.state.advanced_image is False:
-            SceneEditing.change_location(bpy.data.objects["ball_top"], True, True, False, 0.0, 0.05, 0.0, 0.05, 0.0,
+            SceneEditing.change_location(bpy.data.objects["ball_top"], True, True, False, 0.0,
+                                         0.05, 0.0, 0.05, 0.0,
                                          0.0)
-            SceneEditing.change_location(bpy.data.objects["ball_bottom"], True, True, False, 0.0, 0.05, 0.0, 0.05, 0.0,
+            SceneEditing.change_location(bpy.data.objects["ball_bottom"], True, True, False, 0.0,
+                                         0.05, 0.0, 0.05, 0.0,
                                          0.0)
         else:
             choose_ball = random.randint(0, 1)
@@ -1069,61 +1125,75 @@ class SceneSetupImageMask(SceneSetup):
                 z_rot = random.uniform(-114.0, -66.0)
                 bpy.data.objects["camera_top"].rotation_euler[0] = math.radians(x_rot)
                 bpy.data.objects["camera_top"].rotation_euler[2] = math.radians(z_rot)
-                bpy.data.objects["armature_camera_dummy"].rotation_euler[2] = math.radians(z_rot) + math.radians(90.0)
+                bpy.data.objects["armature_camera_dummy"].rotation_euler[2] = math.radians(
+                    z_rot) + math.radians(90.0)
 
             elif select_camera == 0 and choose_ball == 0 and choose_mode == 1:
                 x_loc = random.uniform(-1.75, -0.42)
                 z_rot = random.uniform(-115.0, -65.0)
                 bpy.data.objects["camera_top"].location[0] = x_loc
                 bpy.data.objects["camera_top"].rotation_euler[2] = math.radians(z_rot)
-                bpy.data.objects["armature_camera_dummy"].location[0] = x_loc + self.state.armature_dummy_loc_x
-                bpy.data.objects["armature_camera_dummy"].rotation_euler[2] = math.radians(z_rot) + math.radians(90.0)
+                bpy.data.objects["armature_camera_dummy"].location[
+                    0] = x_loc + self.state.armature_dummy_loc_x
+                bpy.data.objects["armature_camera_dummy"].rotation_euler[2] = math.radians(
+                    z_rot) + math.radians(90.0)
 
             elif select_camera == 0 and choose_ball == 1 and choose_mode == 0:
                 x_rot = random.uniform(35.0, 70.0)
                 z_rot = random.uniform(-120.0, -40.0)
                 bpy.data.objects["camera_top"].rotation_euler[0] = math.radians(x_rot)
                 bpy.data.objects["camera_top"].rotation_euler[2] = math.radians(z_rot)
-                bpy.data.objects["armature_camera_dummy"].rotation_euler[2] = math.radians(z_rot) + math.radians(90.0)
+                bpy.data.objects["armature_camera_dummy"].rotation_euler[2] = math.radians(
+                    z_rot) + math.radians(90.0)
 
             elif select_camera == 0 and choose_ball == 1 and choose_mode == 1:
                 x_loc = random.uniform(-1.75, -0.42)
                 z_rot = random.uniform(-115.0, -65.0)
                 bpy.data.objects["camera_top"].location[0] = x_loc
                 bpy.data.objects["camera_top"].rotation_euler[2] = math.radians(z_rot)
-                bpy.data.objects["armature_camera_dummy"].location[0] = x_loc + self.state.armature_dummy_loc_x
-                bpy.data.objects["armature_camera_dummy"].rotation_euler[2] = math.radians(z_rot) + math.radians(90.0)
+                bpy.data.objects["armature_camera_dummy"].location[
+                    0] = x_loc + self.state.armature_dummy_loc_x
+                bpy.data.objects["armature_camera_dummy"].rotation_euler[2] = math.radians(
+                    z_rot) + math.radians(90.0)
 
             elif select_camera == 1 and choose_ball == 0:
                 x_rot = random.uniform(68.0, 120.0)
                 z_rot = random.uniform(-128.0, -52.0)
                 bpy.data.objects["camera_bottom"].rotation_euler[0] = math.radians(x_rot)
                 bpy.data.objects["camera_bottom"].rotation_euler[2] = math.radians(z_rot)
-                bpy.data.objects["armature_camera_dummy"].rotation_euler[2] = math.radians(z_rot) + math.radians(90.0)
+                bpy.data.objects["armature_camera_dummy"].rotation_euler[2] = math.radians(
+                    z_rot) + math.radians(90.0)
 
             elif select_camera == 1 and choose_ball == 1:
                 x_loc = random.uniform(-2.0, 0.3)
                 z_rot = random.uniform(-115.0, -65.0)
                 bpy.data.objects["camera_bottom"].location[0] = x_loc
                 bpy.data.objects["camera_bottom"].rotation_euler[2] = math.radians(z_rot)
-                bpy.data.objects["armature_camera_dummy"].location[0] = x_loc + self.state.armature_dummy_loc_x
-                bpy.data.objects["armature_camera_dummy"].rotation_euler[2] = math.radians(z_rot) + math.radians(90.0)
+                bpy.data.objects["armature_camera_dummy"].location[
+                    0] = x_loc + self.state.armature_dummy_loc_x
+                bpy.data.objects["armature_camera_dummy"].rotation_euler[2] = math.radians(
+                    z_rot) + math.radians(90.0)
 
-        SceneEditing.change_rotation_euler(bpy.data.objects["ball_top"], True, True, True, 0.0, 360.0, 0.0, 360.0, 0.0,
+        SceneEditing.change_rotation_euler(bpy.data.objects["ball_top"], True, True, True, 0.0,
+                                           360.0, 0.0, 360.0, 0.0,
                                            360.0)
-        SceneEditing.change_rotation_euler(bpy.data.objects["ball_bottom"], True, True, True, 0.0, 360.0, 0.0, 360.0,
+        SceneEditing.change_rotation_euler(bpy.data.objects["ball_bottom"], True, True, True, 0.0,
+                                           360.0, 0.0, 360.0,
                                            0.0, 360.0)
 
     def _config_naos(self):
         for target in self.scene.objects:
             if target.type == "ARMATURE" and target.name != "armature_camera_dummy":
-                loc_armature = SceneEditing.get_random_loc(self.state.field_co[0][0], self.state.field_co[3][0],
-                                                           self.state.field_co[0][1], self.state.field_co[3][1],
+                loc_armature = SceneEditing.get_random_loc(self.state.field_co[0][0],
+                                                           self.state.field_co[3][0],
+                                                           self.state.field_co[0][1],
+                                                           self.state.field_co[3][1],
                                                            0.0, 0.0)
 
                 target.location[0] = loc_armature[0]
                 target.location[1] = loc_armature[1]
-                SceneEditing.change_rotation_euler(target, False, False, True, 0.0, 0.0, 0.0, 0.0, 0.0, 360.0)
+                SceneEditing.change_rotation_euler(target, False, False, True, 0.0, 0.0, 0.0, 0.0,
+                                                   0.0, 360.0)
 
     def rename_files(self):
         old_name = str(self.state.current_frame) + str(self.scene.frame_current) + ".png"
@@ -1213,13 +1283,14 @@ class ManageRender(bpy.types.Operator):
 
         self.timer = context.window_manager.event_timer_add(1.0, context.window)
         context.window_manager.modal_handler_add(self)
-        
+
         return {"RUNNING_MODAL"}
 
     def modal(self, context, event):
         if event.type == 'TIMER':
             if ((self.state.cancelled is True) or
-                    (self.state.current_frame == self.state.total_frames and self.state.total_frames != 0)):
+                    (
+                            self.state.current_frame == self.state.total_frames and self.state.total_frames != 0)):
                 bpy.app.handlers.render_post.remove(self.render_setup.post_render)
                 bpy.app.handlers.render_cancel.remove(self.render_setup.cancel_render)
                 context.window_manager.event_timer_remove(self.timer)
@@ -1329,12 +1400,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     # TODO hierarchically arguments
-    parser.add_argument('-c', '--cmd', default=True, action='store_true', help='run from command line')
+    parser.add_argument('-c', '--cmd', default=True, action='store_true',
+                        help='run from command line')
     parser.add_argument('-m', '--op_mode', type=str, default="OP2", help='Render Mode')
     parser.add_argument('-p', '--path', type=str, default='.', help='Output Path')
     parser.add_argument('-ps', '--patch_size', type=int, default=16, help='Patch Size')
     parser.add_argument('-n', '--num_images', type=int, default=100, help='Number of images')
-    parser.add_argument('-gnb', '--generate_no_ball', default=True, action='store_true', help='Flag for generating masks for noball patches')
+    parser.add_argument('-gnb', '--generate_no_ball', default=True, action='store_true',
+                        help='Flag for generating masks for noball patches')
 
     args = parser.parse_args(argv)
 
