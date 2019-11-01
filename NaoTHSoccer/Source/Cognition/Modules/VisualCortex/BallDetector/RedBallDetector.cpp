@@ -27,8 +27,8 @@ RedBallDetector::RedBallDetector()
 
   DEBUG_REQUEST_REGISTER("Vision:RedBallDetector:draw_ball_estimated","..", false);
   DEBUG_REQUEST_REGISTER("Vision:RedBallDetector:draw_ball_radius_match", "..", false);
-  DEBUG_REQUEST_REGISTER("Vision:RedBallDetector:draw_ball","..", false);  
-  DEBUG_REQUEST_REGISTER("Vision:RedBallDetector:draw_sanity_samples","draw samples used for ball sanity check", false);  
+  DEBUG_REQUEST_REGISTER("Vision:RedBallDetector:draw_ball","..", false);
+  DEBUG_REQUEST_REGISTER("Vision:RedBallDetector:draw_sanity_samples","draw samples used for ball sanity check", false);
 
   getDebugParameterList().add(&params);
 }
@@ -42,8 +42,6 @@ void RedBallDetector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
 
-  getBallPercept().reset();
-
   // STEP 1: find the starting point for the search
   listOfRedPoints.clear();
   if(!findMaximumRedPoint(listOfRedPoints) || listOfRedPoints.empty()) {
@@ -56,7 +54,7 @@ void RedBallDetector::execute(CameraInfo::CameraID id)
   // walk through the list of red points
   // NOTE: the points are sorted - the most red points are at the end
   std::vector<Vector2i>::reverse_iterator iter = listOfRedPoints.rbegin();
-  for(; iter != listOfRedPoints.rend(); ++iter) 
+  for(; iter != listOfRedPoints.rend(); ++iter)
   {
     const Vector2i& point = *iter;
 
@@ -67,21 +65,21 @@ void RedBallDetector::execute(CameraInfo::CameraID id)
 
     // estimate the ball radius based on the projected distance of the center point
     double estimatedRadius = CameraGeometry::estimatedBallRadius(
-      getCameraMatrix(), getImage().cameraInfo, 
+      getCameraMatrix(), getImage().cameraInfo,
       getFieldInfo().ballRadius, point.x, point.y);
-    
+
     DEBUG_REQUEST("Vision:RedBallDetector:draw_ball_estimated",
       //estimatedRadius <=0 possible? will be a problem  in "radius < 2*estimatedRadius"
       if(estimatedRadius > 0) {
         CIRCLE_PX(ColorClasses::white, point.x, point.y, (int)(estimatedRadius+0.5));
       }
     );
-    
+
     // scan for edges in v-u with a spider scan
     ballEndPoints.clear();
     bool goodBallCandidateFound = spiderScan(point, ballEndPoints);
 
-    if(goodBallCandidateFound && Geometry::calculateCircle(ballEndPoints, center, radius)) 
+    if(goodBallCandidateFound && Geometry::calculateCircle(ballEndPoints, center, radius))
     {
       DEBUG_REQUEST("Vision:RedBallDetector:draw_ball_radius_match",
         CIRCLE_PX(ColorClasses::yellow, (int)(center.x+0.5), (int)(center.y+0.5), (int)(radius+0.5));
@@ -124,7 +122,7 @@ bool RedBallDetector::findMaximumRedPoint(std::vector<Vector2i>& points) const
   //
 
   // make the scan more corse when the camera looks more down
-  int stepSizeAdjusted = params.stepSize;    
+  int stepSizeAdjusted = params.stepSize;
   if(getCameraMatrix().rotation.getYAngle() > Math::fromDegrees(40)) {
     stepSizeAdjusted *= 3;
   } else if(getCameraMatrix().rotation.getYAngle() > Math::fromDegrees(10)) {
@@ -140,7 +138,7 @@ bool RedBallDetector::findMaximumRedPoint(std::vector<Vector2i>& points) const
     for(point.x = 0; point.x < (int) getImage().width(); point.x += stepSizeAdjusted)
     {
       getImage().get(point.x, point.y, pixel);
-     
+
       DEBUG_REQUEST("Vision:RedBallDetector:peak_scan:mark_full",
         POINT_PX(ColorClasses::blue, point.x, point.y);
       );
@@ -190,7 +188,7 @@ bool RedBallDetector::spiderScan(const Vector2i& start, std::vector<Vector2i>& e
   goodBorderPointCount += scanForEdges(start, Vector2d(-1,-1).normalize(), endPoints);
 
   DEBUG_REQUEST("Vision:RedBallDetector:drawScanEndPoints",
-    for(size_t i = 0; i < endPoints.size(); i++) 
+    for(size_t i = 0; i < endPoints.size(); i++)
     {
       if(goodBorderPointCount == 0) {
         POINT_PX(ColorClasses::red, endPoints[i].x, endPoints[i].y);
@@ -221,7 +219,7 @@ bool RedBallDetector::scanForEdges(const Vector2i& start, const Vector2d& direct
   {
     getImage().get(point.x, point.y, pixel);
     int f_y = (int)pixel.v - (int)pixel.u;
-    
+
     filter.add(point, f_y);
     if(!filter.ready()) {
       // assume the step length is constant, so we only calculate it in the starting phase of the filter
@@ -243,7 +241,7 @@ bool RedBallDetector::scanForEdges(const Vector2i& start, const Vector2d& direct
         POINT_PX(ColorClasses::pink, peak_point_min.x, peak_point_min.y);
       );
       points.push_back(peak_point_min);
-      
+
       return !getFieldColorPercept().greenHSISeparator.noColor(pixel);
     }
   }//end while
@@ -252,43 +250,36 @@ bool RedBallDetector::scanForEdges(const Vector2i& start, const Vector2d& direct
 }//end scanForEdges
 
 
-void RedBallDetector::calculateBallPercept(const Vector2i& center, double radius) 
+void RedBallDetector::calculateBallPercept(const Vector2i& center, double radius)
 {
+  MultiBallPercept::BallPercept ballPercept;
+
   // calculate the ball
   bool ballOK = CameraGeometry::imagePixelToFieldCoord(
-		getCameraMatrix(), 
-		getImage().cameraInfo,
-		center.x, 
-		center.y, 
-		getFieldInfo().ballRadius,
-		getBallPercept().bearingBasedOffsetOnField);
+        getCameraMatrix(),
+        getImage().cameraInfo,
+        center.x,
+        center.y,
+        getFieldInfo().ballRadius,
+        ballPercept.positionOnField);
 
   // HACK: don't take to far balls
-  ballOK = ballOK && getBallPercept().bearingBasedOffsetOnField.abs2() < 10000*10000; // closer than 10m
+  ballOK = ballOK && ballPercept.positionOnField.abs2() < 10000 * 10000; // closer than 10m
 
-  // HACK: if the ball center is in image it has to be in the field polygon 
+  // HACK: if the ball center is in image it has to be in the field polygon
   Vector2d ballPointToCheck(center.x, center.y - 5);
-  ballOK = ballOK && 
+  ballOK = ballOK &&
     (!getImage().isInside((int)(ballPointToCheck.x+0.5), (int)(ballPointToCheck.y+0.5)) ||
       getFieldPercept().getValidField().isInside(ballPointToCheck));
 
-
-  if(ballOK) 
+  if(ballOK)
   {
-    MultiBallPercept::BallPercept ballPercept;
-  
     ballPercept.cameraId = cameraID;
     ballPercept.centerInImage = center;
     ballPercept.radiusInImage = radius;
-    ballPercept.positionOnField = getBallPercept().bearingBasedOffsetOnField;
 
     getMultiBallPercept().add(ballPercept);
     getMultiBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
-
-    getBallPercept().radiusInImage = radius;
-    getBallPercept().centerInImage = center;
-    getBallPercept().ballWasSeen = true;
-    getBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
 
     DEBUG_REQUEST("Vision:RedBallDetector:draw_ball",
       CIRCLE_PX(ColorClasses::orange, center.x, center.y, (int)(radius+0.5));
@@ -304,7 +295,7 @@ void RedBallDetector::estimateCircleSimple(const std::vector<Vector2i>& endPoint
   for(size_t i = 0; i < endPoints.size(); i++) {
     sum += endPoints[i];
   }
-  
+
   center = sum/((double)endPoints.size());
 
   RingBufferWithSum<double, 8> radiusBuffer;
@@ -350,8 +341,8 @@ bool RedBallDetector::randomBallScan(const Vector2i& center, double radius) cons
 
   return static_cast<double>(goodPoints) / static_cast<double>(sampleSize) > params.thresholdSanityCheck;
 }
-  
-  
+
+
 bool RedBallDetector::sanityCheck(const Vector2i& center, double radius) const
 {
   size_t sampleSize = 21;

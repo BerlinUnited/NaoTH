@@ -77,39 +77,23 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
     LINE_PX( ColorClasses::red, (int)a.x, (int)a.y, (int)b.x, (int)b.y );
   );
 
-  //draw ball percept
+  //draw multi ball percepts
   DEBUG_REQUEST("PerceptionsVisualizer:field:ball_percept",
-    if(getBallPercept().ballWasSeen) 
-    {
-      FIELD_DRAWING_CONTEXT;
-      PEN("FF9900", 20);
-      CIRCLE(getBallPercept().bearingBasedOffsetOnField.x, 
-        getBallPercept().bearingBasedOffsetOnField.y,
-        getFieldInfo().ballRadius);
+  	if(getMultiBallPercept().wasSeen()){
+	    FIELD_DRAWING_CONTEXT;
+	    PEN("FF9900", 20);
+	    for (MultiBallPercept::ConstABPIterator i = getMultiBallPercept().begin(); i != getMultiBallPercept().end(); ++i) {
+	      if ((*i).cameraId == cameraID) {
+	        CIRCLE((*i).positionOnField.x,
+	          (*i).positionOnField.y,
+	          getFieldInfo().ballRadius);
+	      }
+	    }
     }
-
-    FIELD_DRAWING_CONTEXT;
-    PEN("FF9900", 20);
-    for (MultiBallPercept::ConstABPIterator i = getMultiBallPercept().begin(); i != getMultiBallPercept().end(); ++i) {
-      if ((*i).cameraId == cameraID) {
-        CIRCLE((*i).positionOnField.x,
-          (*i).positionOnField.y,
-          getFieldInfo().ballRadius);
-      }
-    }
- );
+  );
 
   DEBUG_REQUEST("PerceptionsVisualizer:image:ball_percept",
-    if(getBallPercept().ballWasSeen) 
-    {
-      IMAGE_DRAWING_CONTEXT;
-      PEN("FF9900", 2);
-      CIRCLE(
-        (int)getBallPercept().centerInImage.x,
-        (int)getBallPercept().centerInImage.y,
-        (int)getBallPercept().radiusInImage);
-    }
-
+  	if(getMultiBallPercept().wasSeen()){
 	  for (MultiBallPercept::ConstABPIterator i = getMultiBallPercept().begin(); i != getMultiBallPercept().end(); ++i) {
 		  CANVAS((((*i).cameraId == CameraInfo::Top) ? "ImageTop" : "ImageBottom"));
 		  PEN("FF9900", 3);
@@ -118,18 +102,20 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
 			  (*i).centerInImage.y,
 			  (*i).radiusInImage);
 	  }
+	}
   );
 
   
 
   DEBUG_REQUEST("PerceptionsVisualizer:image_px:ball_percept",
-    if(getBallPercept().ballWasSeen) 
-    {
-      CIRCLE_PX(ColorClasses::red,
-        (int)getBallPercept().centerInImage.x,
-        (int)getBallPercept().centerInImage.y,
-        (int)getBallPercept().radiusInImage);
-    }
+  	if(getMultiBallPercept().wasSeen()){
+	    for (MultiBallPercept::ConstABPIterator i = getMultiBallPercept().begin(); i != getMultiBallPercept().end(); ++i) {
+	      CIRCLE_PX(ColorClasses::red,
+	        (int)(*i).centerInImage.x,
+	        (int)(*i).centerInImage.y,
+	        (int)(*i).radiusInImage);
+	    }
+	}
   );
 
 
