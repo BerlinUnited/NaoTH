@@ -13,6 +13,7 @@ import de.naoth.rc.drawings.DrawingsContainer;
 import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.core.manager.ObjectListener;
+import de.naoth.rc.dataformats.ImageConversions;
 import de.naoth.rc.logmanager.BlackBoard;
 import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.logmanager.LogFileEventManager;
@@ -67,6 +68,11 @@ public class ImageViewer extends AbstractDialog
     this.imageListenerTop = new ImageListenerTop();
     
     Plugin.logFileEventManager.addListener(new LogBehaviorListener());
+    
+    // JPEG by default
+    btRAW.setSelected(true);
+    Plugin.imageManagerBottom.setFormat(ImageConversions.Format.JPEG);
+    Plugin.imageManagerTop.setFormat(ImageConversions.Format.JPEG);
   }
   
   private class LogBehaviorListener implements LogFrameListener
@@ -110,6 +116,7 @@ public class ImageViewer extends AbstractDialog
         btReceiveImagesTop = new javax.swing.JToggleButton();
         btReceiveImagesBottom = new javax.swing.JToggleButton();
         btReceiveDrawings = new javax.swing.JToggleButton();
+        btRAW = new javax.swing.JToggleButton();
         cbStretch = new javax.swing.JCheckBox();
         cbPreserveAspectRatio = new javax.swing.JCheckBox();
         cbFadeOut = new javax.swing.JCheckBox();
@@ -132,7 +139,7 @@ public class ImageViewer extends AbstractDialog
         imageCanvasTop.setLayout(imageCanvasTopLayout);
         imageCanvasTopLayout.setHorizontalGroup(
             imageCanvasTopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 559, Short.MAX_VALUE)
+            .addGap(0, 638, Short.MAX_VALUE)
         );
         imageCanvasTopLayout.setVerticalGroup(
             imageCanvasTopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -149,7 +156,7 @@ public class ImageViewer extends AbstractDialog
         imageCanvasBottom.setLayout(imageCanvasBottomLayout);
         imageCanvasBottomLayout.setHorizontalGroup(
             imageCanvasBottomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 559, Short.MAX_VALUE)
+            .addGap(0, 638, Short.MAX_VALUE)
         );
         imageCanvasBottomLayout.setVerticalGroup(
             imageCanvasBottomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -190,6 +197,17 @@ public class ImageViewer extends AbstractDialog
             }
         });
         jToolBar1.add(btReceiveDrawings);
+
+        btRAW.setText("RAW");
+        btRAW.setFocusable(false);
+        btRAW.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btRAW.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btRAW.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btRAWActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btRAW);
 
         cbStretch.setSelected(true);
         cbStretch.setText("stretch image");
@@ -351,8 +369,19 @@ public class ImageViewer extends AbstractDialog
         }
     }//GEN-LAST:event_btHorizontalActionPerformed
 
+    private void btRAWActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRAWActionPerformed
+        if(btRAW.isSelected()) {
+            Plugin.imageManagerBottom.setFormat(ImageConversions.Format.PLAIN);
+            Plugin.imageManagerTop.setFormat(ImageConversions.Format.PLAIN);
+        } else {
+            Plugin.imageManagerBottom.setFormat(ImageConversions.Format.JPEG);
+            Plugin.imageManagerTop.setFormat(ImageConversions.Format.JPEG);
+        }
+    }//GEN-LAST:event_btRAWActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox btHorizontal;
+    private javax.swing.JToggleButton btRAW;
     private javax.swing.JToggleButton btReceiveDrawings;
     private javax.swing.JToggleButton btReceiveImagesBottom;
     private javax.swing.JToggleButton btReceiveImagesTop;
