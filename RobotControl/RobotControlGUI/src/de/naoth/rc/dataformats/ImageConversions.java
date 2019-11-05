@@ -5,12 +5,15 @@ package de.naoth.rc.dataformats;
 
 import com.google.protobuf.ByteString;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferInt;
 import java.awt.image.Raster;
 import java.util.Iterator;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
 
 /**
  *
@@ -19,8 +22,20 @@ import javax.imageio.ImageReader;
 public class ImageConversions {
 
     public enum Format {
-        PLAIN,
+        RAW,
         JPEG
+    }
+
+    // creates a BufferedImage object optimized for the current platform
+    // TODO: needs an isolated performance test "new BufferedImage" vs createCompatibleImage
+    public static BufferedImage createCompatibleImage(int width, int height)
+    {
+        // obtain the current system graphical settings
+        GraphicsConfiguration gfxConfig = GraphicsEnvironment.
+            getLocalGraphicsEnvironment().getDefaultScreenDevice().
+            getDefaultConfiguration();
+
+        return gfxConfig.createCompatibleImage(width, height);
     }
     
     public static class DimensionMismatchException extends RuntimeException {
@@ -71,6 +86,7 @@ public class ImageConversions {
             throw new DimensionMismatchException();
         }
 
+        // NOTE: the DataBuffer is of the type DataBufferByte
         DataBuffer buf = raster.getDataBuffer();
         int[] rgbBuffer = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
         

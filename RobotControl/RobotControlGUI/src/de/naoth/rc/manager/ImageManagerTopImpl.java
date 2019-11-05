@@ -28,7 +28,7 @@ public class ImageManagerTopImpl extends ImageManager implements ImageManagerTop
     switch(format) {
         case JPEG:
             return new Command("Cognition:representation:get").addArg("ImageJPEGTop");
-        case PLAIN:
+        case RAW:
         default:
             return new Command("image").addArg("top");
     }

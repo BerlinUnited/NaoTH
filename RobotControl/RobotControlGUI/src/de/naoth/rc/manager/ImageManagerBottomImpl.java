@@ -29,7 +29,7 @@ public class ImageManagerBottomImpl extends ImageManager implements ImageManager
     switch(format) {
         case JPEG:
             return new Command("Cognition:representation:get").addArg("ImageJPEG");
-        case PLAIN:
+        case RAW:
         default:
             return new Command("image");
     }

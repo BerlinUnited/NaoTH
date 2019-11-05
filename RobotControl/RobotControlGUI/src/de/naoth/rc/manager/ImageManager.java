@@ -8,12 +8,16 @@ import com.google.protobuf.ByteString;
 import de.naoth.rc.dataformats.ImageConversions;
 import de.naoth.rc.dataformats.JanusImage;
 import de.naoth.rc.messages.FrameworkRepresentations.Image;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 
 /**
  * Manager for images.
@@ -30,10 +34,13 @@ abstract class ImageManager extends AbstractManagerPlugin<JanusImage>
     try
     {
       Image img = Image.parseFrom(result);
-
-      BufferedImage dst = new BufferedImage(
-        img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_RGB);
       
+      BufferedImage dst = ImageConversions.createCompatibleImage(img.getWidth(), img.getHeight());
+
+      // NOTE: ByteString is a protobuf construct. Converting it to byte[] array implies a copy, which is slow.
+      //       img.getData().asReadOnlyByteBuffer() returns a java.nio.ByteBuffer object without copy.
+      //       We could change all conversion routines to work on ByteBuffer instead of ByteString to reduce
+      //       unnecessary dependency on protobuf.
       ByteString src = img.getData();
       
       if(img.getFormat() == null) {
@@ -45,21 +52,27 @@ abstract class ImageManager extends AbstractManagerPlugin<JanusImage>
             ImageConversions.convertYUV888toYUV888(src, dst);
             break;
         case YUV422:
+            // NOTE: direct conversion from yuv422 to rgb seems to be a bit slower than yuv422->yuv->rgb
+            //ImageConversions.convertYUV422toRGB888Precise(src, dst);
+            //return JanusImage.createFromRGB(dst);
+
             ImageConversions.convertYUV422toYUV888(src, dst);
             break;
         case JPEG:
             //dst = ImageIO.read( src.newInput() );
             //return new JanusImage(dst, false);
 
-            jpegReader.setInput(ImageIO.createImageInputStream(src.newInput()));
+            ImageInputStream is = ImageIO.createImageInputStream(src.newInput());
+            jpegReader.setInput(is);
             Raster raster = jpegReader.readRaster(0, null);
+            is.close();
             ImageConversions.convertYUV422toYUV888(raster, dst);
             break;
         default:
             throw new Exception("Unknown image format: " + img.getFormat());
         }
 
-      return new JanusImage(dst, true);
+      return JanusImage.createFromYUV(dst);
     }
     catch(Exception ex)
     {

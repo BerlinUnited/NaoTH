@@ -56,6 +56,10 @@ public class ImageViewer extends AbstractDialog
   ImageListenerTop imageListenerTop;
   DrawingsListener drawingsListener;
 
+  // watchers for the image update speed
+  private final FPS fpsTop = new FPS();
+  private final FPS fpsBottom = new FPS();
+  
   public ImageViewer()
   {
     initComponents();
@@ -70,7 +74,7 @@ public class ImageViewer extends AbstractDialog
     Plugin.logFileEventManager.addListener(new LogBehaviorListener());
     
     // JPEG by default
-    btRAW.setSelected(true);
+    btRAW.setSelected(false);
     Plugin.imageManagerBottom.setFormat(ImageConversions.Format.JPEG);
     Plugin.imageManagerTop.setFormat(ImageConversions.Format.JPEG);
   }
@@ -78,15 +82,14 @@ public class ImageViewer extends AbstractDialog
   private class LogBehaviorListener implements LogFrameListener
   {
     @Override
-    public void newFrame(BlackBoard b) {
-        
-
+    public void newFrame(BlackBoard b) 
+    {
         LogDataFrame f = b.get("Image");
         if(f != null) {
           ImageManagerBottomImpl im = new ImageManagerBottomImpl();
           JanusImage janusImage = im.convertByteArrayToType(f.getData());
           
-          ImageViewer.this.imageCanvasBottom.setImage(janusImage.getRgb());
+          ImageViewer.this.imageCanvasBottom.setImage(janusImage.getRGB());
           ImageViewer.this.imageCanvasBottom.repaint();
         }
         
@@ -95,7 +98,7 @@ public class ImageViewer extends AbstractDialog
           ImageManagerTopImpl im = new ImageManagerTopImpl();
           JanusImage janusImage = im.convertByteArrayToType(f.getData());
           
-          ImageViewer.this.imageCanvasTop.setImage(janusImage.getRgb());
+          ImageViewer.this.imageCanvasTop.setImage(janusImage.getRGB());
           ImageViewer.this.imageCanvasTop.repaint();
         }
     }
@@ -371,8 +374,8 @@ public class ImageViewer extends AbstractDialog
 
     private void btRAWActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRAWActionPerformed
         if(btRAW.isSelected()) {
-            Plugin.imageManagerBottom.setFormat(ImageConversions.Format.PLAIN);
-            Plugin.imageManagerTop.setFormat(ImageConversions.Format.PLAIN);
+            Plugin.imageManagerBottom.setFormat(ImageConversions.Format.RAW);
+            Plugin.imageManagerTop.setFormat(ImageConversions.Format.RAW);
         } else {
             Plugin.imageManagerBottom.setFormat(ImageConversions.Format.JPEG);
             Plugin.imageManagerTop.setFormat(ImageConversions.Format.JPEG);
@@ -422,9 +425,6 @@ public class ImageViewer extends AbstractDialog
       } 
   }
 
-  private FPS fpsTop = new FPS();
-  private FPS fpsBottom = new FPS();
-  
   private void updateFPS()
   {
     this.jLabelFPSTop.setText(String.format(" T: %2.1f fps ", fpsTop.getFPS()));
@@ -480,10 +480,10 @@ public class ImageViewer extends AbstractDialog
     public void newObjectReceived(JanusImage object)
     {
       if(object == null) return;
-      ImageViewer.this.imageCanvasBottom.setImage(object.getRgb());
+      ImageViewer.this.imageCanvasBottom.setImage(object.getRGB());
       ImageViewer.this.imageCanvasBottom.repaint();
 
-      updateResolution(object.getRgb().getWidth(), object.getRgb().getHeight());
+      updateResolution(object.getRGB().getWidth(), object.getRGB().getHeight());
       
       fpsBottom.update();
       updateFPS();
@@ -504,7 +504,7 @@ public class ImageViewer extends AbstractDialog
     public void newObjectReceived(JanusImage object)
     {
       if(object == null) return;
-      ImageViewer.this.imageCanvasTop.setImage(object.getRgb());
+      ImageViewer.this.imageCanvasTop.setImage(object.getRGB());
       ImageViewer.this.imageCanvasTop.repaint();
       
       fpsTop.update();
