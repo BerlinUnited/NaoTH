@@ -10,10 +10,9 @@ import java.awt.image.Raster;
 import java.util.Iterator;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsEnvironment;
+//import java.awt.GraphicsConfiguration;
+//import java.awt.GraphicsEnvironment;
 import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
 
 /**
  *
@@ -30,12 +29,16 @@ public class ImageConversions {
     // TODO: needs an isolated performance test "new BufferedImage" vs createCompatibleImage
     public static BufferedImage createCompatibleImage(int width, int height)
     {
+        // TODO: this need to be tested
         // obtain the current system graphical settings
+        /*
         GraphicsConfiguration gfxConfig = GraphicsEnvironment.
             getLocalGraphicsEnvironment().getDefaultScreenDevice().
             getDefaultConfiguration();
 
         return gfxConfig.createCompatibleImage(width, height);
+        */
+        return new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     }
     
     public static class DimensionMismatchException extends RuntimeException {
