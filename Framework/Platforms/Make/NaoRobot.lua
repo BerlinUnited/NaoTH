@@ -26,9 +26,7 @@ project "NaoRobot"
     "protobuf",
     "asound",
     "pthread",
-    -- image compression
     "jpeg",
-    "turbojpeg",
     -- Whistledetector stuff
     "fftw3",
     "pulse-simple",

@@ -20,8 +20,6 @@ project "WhistleSimulator"
     "gthread-2.0",
     "protobuf",
     "fftw3",
-    -- image compression
-    "turbojpeg", 
     "jpeg"
   }
   

@@ -21,8 +21,7 @@ project "SimSpark"
     "gthread-2.0",
     "protobuf",
     "fftw3",
-    "libjpeg",
-    "libturbojpeg"
+    "jpeg"
    }
   
   targetname "naoth-simspark"

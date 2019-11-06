@@ -20,9 +20,7 @@ project "DummySimulator"
     "gthread-2.0",
     "protobuf",
     "fftw3",
-    -- image compression
-    "jpeg",
-    "turbojpeg"
+    "jpeg"
   }
   
   targetname "dummysimulator"
