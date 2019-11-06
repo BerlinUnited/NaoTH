@@ -9,23 +9,36 @@
 
 #include "Image.h"
 #include <vector>
+#include <turbojpeg/jpeglib.h>
 
-class ImageJPEG {
+#include <Representations/Debug/Stopwatch.h>
+
+class ImageJPEG 
+{
 private:
   const naoth::Image* image = NULL;
 
 public:
-  // wrap the image
-  void set(const naoth::Image& image) { this->image = &image; }
+  // HACK: wrap the image
+  // in the future ImageJPEG should have access to the black board
+  void set(const naoth::Image& image) { 
+    this->image = &image; 
+  }
+
   const naoth::Image& get() const { return *image; }
 
-  inline void compress() const;
+  void compress() const;
+  void compressYUYV() const;
 
-  unsigned char* getJPEG() const { return jpeg; }
+  //std::string& getJPEGString() const { return jpeg_str; }
+  unsigned char* getJPEG() const { return jpeg_data.data(); /*jpeg;*/ }
   unsigned long getJPEGSize() const { return jpeg_size; }
 
+
 private:
-  int quality = 50;
+  // IDEA: would it make sense to make it a parameter?
+  // TODO: experiment with quality
+  static const int quality = 75;
 
   mutable std::vector<uint8_t> linebuf; // needed by compress
   mutable std::vector<uint8_t> planar; // planar image for compressTurbo
@@ -33,6 +46,8 @@ private:
   // output of compress and compressTurbo
   mutable unsigned char* jpeg = NULL;
   mutable unsigned long jpeg_size = 0;
+
+  mutable std::vector<uint8_t> jpeg_data;
 };
 
 class ImageJPEGTop: public ImageJPEG {};
