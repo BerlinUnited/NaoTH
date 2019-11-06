@@ -20,8 +20,9 @@ project "LogSimulator"
     "gthread-2.0",
     "protobuf",
     "fftw3",
-    "libjpeg",
-    "libturbojpeg"
+    -- image compression
+    "turbojpeg", 
+    "jpeg"
   }
   
   targetname "logsimulator"

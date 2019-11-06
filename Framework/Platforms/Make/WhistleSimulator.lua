@@ -19,7 +19,10 @@ project "WhistleSimulator"
     "gmodule-2.0",
     "gthread-2.0",
     "protobuf",
-    "fftw3"
+    "fftw3",
+    -- image compression
+    "turbojpeg", 
+    "jpeg"
   }
   
   targetname "whistlesimulator"

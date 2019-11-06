@@ -4,24 +4,27 @@ project "LogSimulatorJNI"
   language "C++"
   
   includedirs {
-	"../Source/"
-	}
+    "../Source/"
+  }
   
   files {
     "../Source/LogSimulator/**.cpp",
-	"../Source/LogSimulator/**.h",
-	"../Source/LogSimulatorJNI/**.cpp",
-	"../Source/LogSimulatorJNI/**.h"
-	}
+    "../Source/LogSimulator/**.h",
+    "../Source/LogSimulatorJNI/**.cpp",
+    "../Source/LogSimulatorJNI/**.h"
+  }
   
   links {
-	"glib-2.0",
-	"gio-2.0",
-	"gobject-2.0",
-	"gmodule-2.0",
-	"gthread-2.0",
-	"protobuf",
-    "fftw3"
-	}
-	
+    "glib-2.0",
+    "gio-2.0",
+    "gobject-2.0",
+    "gmodule-2.0",
+    "gthread-2.0",
+    "protobuf",
+    "fftw3",
+    -- image compression
+    "turbojpeg", 
+    "jpeg"
+  }
+    
   targetname "logsimulator"
