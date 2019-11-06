@@ -5,69 +5,12 @@
  * Created on 11. Dezember 2018, 17:24
  */
 
-// choose the compression method
-//#define JPEG_COMPRESS_TURBO
-#define JPEG_COMPRESS_DEFAULT
-//#define JPEG_COMPRESS_NONE
-
-
 #include "ImageJPEG.h"
 #include "Messages/Framework-Representations.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 using namespace naoth;
 using namespace std;
-
-
-#ifdef JPEG_COMPRESS_DEFAULT
-
-#include <turbojpeg/jpeglib.h>
-
-void ImageJPEG::compress() const
-{
-  ASSERT(image != NULL);
-
-  struct jpeg_compress_struct cinfo;
-  struct jpeg_error_mgr jerr;
-  cinfo.err = jpeg_std_error(&jerr);
-  jpeg_create_compress(&cinfo);
-  jpeg_mem_dest(&cinfo, &jpeg, &jpeg_size);
-
-  // image parameters
-  cinfo.image_width = image->width();  
-  cinfo.image_height = image->height();
-  cinfo.input_components = 3;
-  cinfo.in_color_space = JCS_YCbCr;
-  
-  // compression parameters
-  jpeg_set_defaults( &cinfo );
-  cinfo.dct_method = JDCT_FASTEST;
-  jpeg_set_quality(&cinfo, quality, true);
-
-  jpeg_start_compress( &cinfo, true);
-
-  linebuf.resize(image->width() * 3);
-
-  JSAMPROW row_pointer[1];
-  row_pointer[0] = &linebuf[0];
-  while (cinfo.next_scanline < cinfo.image_height) 
-  {
-      const unsigned offset = cinfo.next_scanline * cinfo.image_width * 2; //offset to the correct row
-      for (unsigned i = 0, j = 0; i < cinfo.image_width * 2; i += 4, j += 6) { //input strides by 4 bytes, output strides by 6 (2 pixels)
-          linebuf[j + 0] = image->data()[offset + i + 0]; // Y (unique to this pixel)
-          linebuf[j + 1] = image->data()[offset + i + 1]; // U (shared between pixels)
-          linebuf[j + 2] = image->data()[offset + i + 3]; // V (shared between pixels)
-          linebuf[j + 3] = image->data()[offset + i + 2]; // Y (unique to this pixel)
-          linebuf[j + 4] = image->data()[offset + i + 1]; // U (shared between pixels)
-          linebuf[j + 5] = image->data()[offset + i + 3]; // V (shared between pixels)
-      }
-      jpeg_write_scanlines(&cinfo, row_pointer, 1);
-  }
-
-  jpeg_finish_compress( &cinfo );
-  jpeg_destroy_compress( &cinfo );
-}
-
 
 
 // functions needed for the custom jpeg_destination_mgr
@@ -85,7 +28,11 @@ static void term_destination (j_compress_ptr /*cinfo*/) {}
 void ImageJPEG::compressYUYV() const
 {
   ASSERT(image != NULL);
-  jpeg_data.resize(image->data_size());
+
+  // make sure we have enough space
+  // NOTE: the resize does not allocate new memory if there is enough memory already reserved.
+  // so, the allocation should happen only the first time.
+  jpeg.resize(image->data_size());
 
   struct jpeg_compress_struct cinfo;
   struct jpeg_error_mgr jerr;
@@ -144,7 +91,10 @@ void ImageJPEG::compressYUYV() const
   //NOTE: this is a regular way to define a destination manager
   //jpeg_mem_dest(&cinfo, &jpeg, &jpeg_size);
 
-  //
+  // NOTE: we have to use JPOOL_PERMANENT here because aur buffer is allocated permamently 
+  // and shall not be freed automatically.
+  // documentation can be found in section "Memory management"
+  // https://github.com/libjpeg-turbo/libjpeg-turbo/blob/master/libjpeg.txt
   if(!cinfo.dest) {
     cinfo.dest = static_cast<jpeg_destination_mgr*>(
       (*cinfo.mem->alloc_small)((j_common_ptr)(&cinfo), JPOOL_PERMANENT, sizeof(jpeg_destination_mgr))
@@ -155,10 +105,10 @@ void ImageJPEG::compressYUYV() const
   cinfo.dest->empty_output_buffer = empty_output_buffer;
   cinfo.dest->term_destination = term_destination;
   
-  cinfo.dest->next_output_byte = (JOCTET*)(jpeg_data.data()); // HACK: strip 'const' here
-  cinfo.dest->free_in_buffer = jpeg_data.size();
+  cinfo.dest->next_output_byte = (JOCTET*)(jpeg.data()); // HACK: strip 'const' here
+  cinfo.dest->free_in_buffer = jpeg.size();
   
-  // start conpression
+  // start compression
   jpeg_start_compress( &cinfo, true);
 
   JSAMPROW row_pointer[1];
@@ -170,72 +120,25 @@ void ImageJPEG::compressYUYV() const
   }
 
   jpeg_finish_compress( &cinfo );
-  jpeg_size = unsigned((char unsigned*)cinfo.dest->next_output_byte - jpeg_data.data());
+
+  // calculate the number of bytes produced by the compression
+  jpeg_size = (size_t)((uint8_t*)cinfo.dest->next_output_byte - jpeg.data());
 
   jpeg_destroy_compress( &cinfo );
 }
 
-#endif
-
-#ifdef JPEG_COMPRESS_TURBO
-
-#include <turbojpeg/turbojpeg.h>
-
-void ImageJPEG::compress() const 
-{
-  ASSERT(image != NULL);
-
-  planar.resize(image->data_size());
-  const uint32_t offsetU = image->width()*image->height();
-  const uint32_t offsetV = offsetU + offsetU/2;
-  for(uint32_t i = 0, j = 0; i < image->data_size(); i += 4, ++j) {
-    planar[j*2 + 0]     = image->data()[i + 0]; // Y
-    planar[offsetU + j] = image->data()[i + 1]; // U
-    planar[j*2 + 1]     = image->data()[i + 2]; // Y
-    planar[offsetV + j] = image->data()[i + 3]; // V
-  }
-
-  //static unsigned char *jpeg = (unsigned char *)tjAlloc(640*480*3);
-  //unsigned long jpegSize = 0;
-  tjhandle handle = tjInitCompress();
-  int flags = TJFLAG_FASTUPSAMPLE;
-  tjCompressFromYUV(handle, &planar[0], (int)image->width(), 1, (int)image->height(), TJSAMP::TJSAMP_422,  (unsigned char**)&jpeg, &jpeg_size, quality, flags);
-  
-  //std::cout << tjGetErrorStr() << std::endl;
-}
-#endif
-
-#ifdef JPEG_COMPRESS_NONE
-void ImageJPEG::compress() const 
-{
-  ASSERT(image != NULL);
-  jpeg = image->data();
-  jpeg_size = image->data_size();
-}
-#endif
-
 
 void Serializer<ImageJPEG>::serialize(const ImageJPEG& parent, std::ostream& stream)
 {
-  const Image& representation = parent.get();
-
-  // the data has to be converted to a YUV (1 byte for each) array. no interlacing
   static naothmessages::Image img;
 
-  img.set_height(representation.height());
-  img.set_width(representation.width());
+  img.set_height(parent.get().height());
+  img.set_width(parent.get().width());
   
-  parent.compressYUYV();
-  //parent.compressYUYVDestroy();
-
-
-// fallback for the format, if no compression is avaliable
-#ifdef JPEG_COMPRESS_NONE
-  img.set_format(naothmessages::Image_Format_YUV422);
-#else
   img.set_format(naothmessages::Image_Format_JPEG);
-#endif
 
+  parent.compressYUYV();
+  
   // NOTE: we might want to use .set_allocated_data
   img.set_data(parent.getJPEG(), parent.getJPEGSize());
 

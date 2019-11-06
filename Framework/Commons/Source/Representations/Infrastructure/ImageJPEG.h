@@ -16,6 +16,7 @@
 class ImageJPEG 
 {
 private:
+  //HACK: we wrap the image object here
   const naoth::Image* image = NULL;
 
 public:
@@ -27,27 +28,18 @@ public:
 
   const naoth::Image& get() const { return *image; }
 
-  void compress() const;
   void compressYUYV() const;
 
-  //std::string& getJPEGString() const { return jpeg_str; }
-  unsigned char* getJPEG() const { return jpeg_data.data(); /*jpeg;*/ }
-  unsigned long getJPEGSize() const { return jpeg_size; }
-
+  const uint8_t* const getJPEG() const { return jpeg.data(); }
+  size_t getJPEGSize() const { return jpeg_size; }
 
 private:
   // IDEA: would it make sense to make it a parameter?
   // TODO: experiment with quality
   static const int quality = 75;
 
-  mutable std::vector<uint8_t> linebuf; // needed by compress
-  mutable std::vector<uint8_t> planar; // planar image for compressTurbo
-
-  // output of compress and compressTurbo
-  mutable unsigned char* jpeg = NULL;
-  mutable unsigned long jpeg_size = 0;
-
-  mutable std::vector<uint8_t> jpeg_data;
+  mutable std::vector<uint8_t> jpeg;
+  mutable size_t jpeg_size = 0;
 };
 
 class ImageJPEGTop: public ImageJPEG {};
@@ -62,9 +54,7 @@ public:
   static void deserialize(std::istream& stream, ImageJPEG& representation);
 };
 
-template<>
-class Serializer<ImageJPEGTop> : public Serializer<ImageJPEG>
-{};
+template<> class Serializer<ImageJPEGTop> : public Serializer<ImageJPEG> {};
 
 } // end namespace naoth
 
