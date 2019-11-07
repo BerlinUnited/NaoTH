@@ -30,7 +30,9 @@ class UltraSonicObstacleLocator2020 : UltraSonicObstacleLocator2020Base
 {
     public:
         UltraSonicObstacleLocator2020();
-        virtual ~UltraSonicObstacleLocator2020(){}
+        virtual ~UltraSonicObstacleLocator2020(){
+            getDebugParameterList().remove(&parameter);
+        }
 
         virtual void execute();
 
@@ -41,10 +43,12 @@ class UltraSonicObstacleLocator2020 : UltraSonicObstacleLocator2020Base
 
         void draw() const;
 
-        class UltrasonicParameter : ParameterList {
+        class UltrasonicParameter : public ParameterList {
             public:
                 UltrasonicParameter() : ParameterList("UltraSonicObstacleLocator"){
                     PARAMETER_REGISTER(ground_threshold) = 10;
+
+                    syncWithConfig();
                 }
 
                 double ground_threshold;

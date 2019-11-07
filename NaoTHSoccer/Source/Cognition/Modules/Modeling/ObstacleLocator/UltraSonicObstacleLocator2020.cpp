@@ -14,6 +14,8 @@ UltraSonicObstacleLocator2020::UltraSonicObstacleLocator2020()
 
     rightInWorld.reserve(UltraSoundReceiveData::numOfUSEcho);
     leftInWorld.reserve(UltraSoundReceiveData::numOfUSEcho);
+
+    getDebugParameterList().add(&parameter);
 }
 
 void UltraSonicObstacleLocator2020::execute()
