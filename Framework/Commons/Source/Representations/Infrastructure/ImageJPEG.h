@@ -9,9 +9,6 @@
 
 #include "Image.h"
 #include <vector>
-#include <turbojpeg/jpeglib.h>
-
-#include <Representations/Debug/Stopwatch.h>
 
 class ImageJPEG 
 {
@@ -30,7 +27,7 @@ public:
 
   void compressYUYV() const;
 
-  const uint8_t* const getJPEG() const { return jpeg.data(); }
+  const uint8_t* getJPEG() const { return jpeg.data(); }
   size_t getJPEGSize() const { return jpeg_size; }
 
 private:

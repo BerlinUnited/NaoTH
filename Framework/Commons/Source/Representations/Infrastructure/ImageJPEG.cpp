@@ -6,8 +6,11 @@
  */
 
 #include "ImageJPEG.h"
+
 #include "Messages/Framework-Representations.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
+
+#include <libjpeg-turbo/jpeglib.h>
 
 using namespace naoth;
 using namespace std;
