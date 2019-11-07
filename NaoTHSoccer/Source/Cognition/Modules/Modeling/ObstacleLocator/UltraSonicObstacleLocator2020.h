@@ -3,35 +3,27 @@
 
 #include <ModuleFramework/Module.h>
 
+#include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugRequest.h"
-//#include "Tools/Debug/DebugModify.h"
-//#include "Tools/Debug/DebugImageDrawings.h"
-#include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugDrawings3D.h"
-//#include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Math/Pose3D.h"
 
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/UltraSoundData.h"
 
 #include "Representations/Modeling/KinematicChain.h"
-//#include "Representations/Modeling/OdometryData.h"
-#include "Representations/Modeling/ObstacleModel.h"
+#include "Representations/Perception/ObstaclePercept.h"
 
 BEGIN_DECLARE_MODULE(UltraSonicObstacleLocator2020)
-  //PROVIDE(DebugModify)
+  PROVIDE(DebugParameterList)
   PROVIDE(DebugRequest)
-  //PROVIDE(DebugParameterList)
-  PROVIDE(DebugDrawings)
   PROVIDE(DebugDrawings3D)
 
   REQUIRE(FrameInfo)
-  //REQUIRE(OdometryData)
   REQUIRE(UltraSoundReceiveData)
   REQUIRE(KinematicChain)
 
-
-  PROVIDE(ObstacleModel)
+  PROVIDE(UltrasonicObstaclePercept)
 END_DECLARE_MODULE(UltraSonicObstacleLocator2020)
 
 class UltraSonicObstacleLocator2020 : UltraSonicObstacleLocator2020Base
@@ -45,10 +37,18 @@ class UltraSonicObstacleLocator2020 : UltraSonicObstacleLocator2020Base
     private:
         Pose3D leftReceiverInTorso, rightReceiverInTorso; // const?
 
-        Vector3d leftInWorld[UltraSoundReceiveData::numOfUSEcho];
-        Vector3d rightInWorld[UltraSoundReceiveData::numOfUSEcho];
+        std::vector<Vector3d> leftInWorld, rightInWorld;
 
         void draw() const;
+
+        class UltrasonicParameter : ParameterList {
+            public:
+                UltrasonicParameter() : ParameterList("UltraSonicObstacleLocator"){
+                    PARAMETER_REGISTER(ground_threshold) = 10;
+                }
+
+                double ground_threshold;
+        } parameter;
 
         // TODO: really required?
         // used to recognize whether a new percept is avaliable
