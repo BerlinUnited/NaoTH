@@ -1,26 +1,20 @@
 #!/usr/bin/python
-
 import argparse
-parser = argparse.ArgumentParser(description='script to display edgels from log files')
-parser.add_argument("logfile", help='log file to draw edgels from')
-parser.add_argument("--direction", help="show direction", action="store_true")
-args = parser.parse_args()
-
-from naoth.LogReader import LogReader
-from naoth.LogReader import Parser
-
+import math
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-import numpy as np
-import random
-
-import math
-
+from naoth.LogReader import LogReader
+from naoth.LogReader import Parser
 import naoth.math3d as m3
 import naoth.math2d as m2
 
 import line_detector
+
+parser = argparse.ArgumentParser(description='script to display edgels from log files')
+parser.add_argument("logfile", help='log file to draw edgels from')
+parser.add_argument("--direction", help="show direction", action="store_true")
+args = parser.parse_args()
 
 
 class LinePlot:
@@ -54,10 +48,10 @@ class LinePlot:
             m = line.params[0]
             b = line.params[1]
 
-            x_1 = (m * line.y_range[0] + line.x_range[0] - m * b) / (m * m + 1);
-            y_1 = (m * m * line.y_range[0] + m * line.x_range[0] + b) / (m * m + 1);
-            x_2 = (m * line.y_range[1] + line.x_range[1] - m * b) / (m * m + 1);
-            y_2 = (m * m * line.y_range[1] + m * line.x_range[1] + b) / (m * m + 1);
+            x_1 = (m * line.y_range[0] + line.x_range[0] - m * b) / (m * m + 1)
+            y_1 = (m * m * line.y_range[0] + m * line.x_range[0] + b) / (m * m + 1)
+            x_2 = (m * line.y_range[1] + line.x_range[1] - m * b) / (m * m + 1)
+            y_2 = (m * m * line.y_range[1] + m * line.x_range[1] + b) / (m * m + 1)
 
             plot.set_data([x_1, x_2], [y_1, y_2])
         else:
@@ -73,10 +67,9 @@ class LinePlot:
         self.lineCount = 0
 
 
-
-
 def parseVector3(msg):
     return m3.Vector3(msg.x,msg.y,msg.z)
+
 
 def parseCameraMatrix(matrixFrame):
     p = m3.Pose3D()
@@ -85,6 +78,7 @@ def parseCameraMatrix(matrixFrame):
     p.rotation.c2 = parseVector3(matrixFrame.pose.rotation[1])
     p.rotation.c3 = parseVector3(matrixFrame.pose.rotation[2])
     return p
+
 
 def getEdgels(frame):
     edgelFrameTop = frame["ScanLineEdgelPerceptTop"]
@@ -121,6 +115,7 @@ def getEdgels(frame):
 
     return (frame.number, (edgelsTopA, edgelsTopB), (edgelsA, edgelsB), (projectedEdgelsTopA, projectedEdgelsTopB), (projectedEdgelsA, projectedEdgelsB))
 
+
 def getFocalLength():
     resolutionWidth = 640
     resolutionHeight = 480
@@ -129,6 +124,7 @@ def getFocalLength():
     d2 = resolutionWidth * resolutionWidth + resolutionHeight * resolutionHeight
     halfDiagLength = 0.5 * math.sqrt(d2)
     return halfDiagLength / math.tan(0.5 * openingAngleDiagonal)
+
 
 def projectEdgel(x,y,cMatrix):
     v = m3.Vector3()
@@ -144,6 +140,7 @@ def projectEdgel(x,y,cMatrix):
     result.x = result.x + cMatrix.translation.x
     result.y = result.y + cMatrix.translation.y
     return (result.x, result.y)
+
 
 def animate(i, log, edgelsPlotTop, linePlot, edgelsPlot, projectedEdgelsPlot):
     msg = log.next()
@@ -229,5 +226,5 @@ log = iter(LogReader(args.logfile, logParser, getEdgels))
 
 
 # start animation
-ani = animation.FuncAnimation(fig, animate, frames=100, fargs=(log, edgelsPlotTop, linePlot, edgelsPlot, projectedEdgelsPlot), interval = 66)
+ani = animation.FuncAnimation(fig, animate, frames=100, fargs=(log, edgelsPlotTop, linePlot, edgelsPlot, projectedEdgelsPlot), interval=66)
 plt.show()
