@@ -82,7 +82,7 @@
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
 #include "Modules/Modeling/FieldCompass/FieldCompass.h"
 #include "Modules/Modeling/ObstacleLocator/UltraSoundObstacleLocator.h"
-#include "Modules/Modeling/ObstacleLocator/UltraSonicObstacleLocator2020.h"
+#include "Modules/Modeling/ObstacleLocator/UltrasonicObstacleLocator2020.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiveEmulator.h"
 #include "Modules/Modeling/TeamMessageStatistics/TeamMessageStatisticsModule.h"
 #include "Modules/Modeling/TeamMessageStatistics/TeamMessagePlayersStateModule.h"
@@ -220,7 +220,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(BodyStateProvider);
   REGISTER_MODULE(FieldCompass);
   REGISTER_MODULE(UltraSoundObstacleLocator);
-  REGISTER_MODULE(UltraSonicObstacleLocator2020);
+  REGISTER_MODULE(UltrasonicObstacleLocator2020);
   REGISTER_MODULE(TeamCommReceiveEmulator);
   REGISTER_MODULE(TeamMessageStatisticsModule);
   REGISTER_MODULE(TeamMessagePlayersStateModule);

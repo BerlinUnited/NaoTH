@@ -1,8 +1,8 @@
-#include "UltraSonicObstacleLocator2020.h"
+#include "UltrasonicObstacleLocator2020.h"
 
-UltraSonicObstacleLocator2020::UltraSonicObstacleLocator2020()
+UltrasonicObstacleLocator2020::UltrasonicObstacleLocator2020()
 {
-    DEBUG_REQUEST_REGISTER("USOL2020:draw3D:measurements", "", false);
+    DEBUG_REQUEST_REGISTER("UltrasonicObstacleLocation2020:draw3D:measurements", "", false);
 
     rightReceiverInTorso.translation = {47.7, -41.6, 50.9};
     leftReceiverInTorso.translation  = {47.7,  41.6, 50.9};
@@ -18,7 +18,7 @@ UltraSonicObstacleLocator2020::UltraSonicObstacleLocator2020()
     getDebugParameterList().add(&parameter);
 }
 
-void UltraSonicObstacleLocator2020::execute()
+void UltrasonicObstacleLocator2020::execute()
 {
     // reset percept representation and measuremnt vectors
     getUltrasonicObstaclePercept().location_on_ground.clear();
@@ -54,7 +54,7 @@ void UltraSonicObstacleLocator2020::execute()
     draw();
 }
 
-//bool UltraSonicObstacleLocator2020::is_new_data_avaliable() const
+//bool UltrasonicObstacleLocator2020::is_new_data_avaliable() const
 //{
 //  for(int i = 0; i < UltraSoundReceiveData::numOfUSEcho; i++) {
 //    if(getUltraSoundReceiveData().dataLeft[i] != lastValidUltraSoundReceiveData.dataLeft[i] ||
@@ -66,9 +66,9 @@ void UltraSonicObstacleLocator2020::execute()
 //  return false;
 //}
 
-void UltraSonicObstacleLocator2020::draw() const
+void UltrasonicObstacleLocator2020::draw() const
 {
-    DEBUG_REQUEST("USOL2020:draw3D:measurements",
+    DEBUG_REQUEST("UltrasonicObstacleLocation2020:draw3D:measurements",
         for(auto& point : leftInWorld){
             SPHERE("0000FF", 10, point);
         }
