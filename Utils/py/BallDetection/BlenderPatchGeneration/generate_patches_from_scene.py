@@ -7,6 +7,7 @@ import os
 import datetime
 import time
 import argparse
+from pathlib import Path
 
 from abc import ABC, abstractmethod
 
@@ -1405,14 +1406,14 @@ if __name__ == "__main__":
     parser.add_argument('-m', '--op_mode', type=str, default="OP2", help='Render Mode')
     parser.add_argument('-p', '--path', type=str, default='.', help='Output Path')
     parser.add_argument('-ps', '--patch_size', type=int, default=16, help='Patch Size')
-    parser.add_argument('-n', '--num_images', type=int, default=100, help='Number of images')
+    parser.add_argument('-n', '--num_images', type=int, default=1, help='Number of images')
     parser.add_argument('-gnb', '--generate_no_ball', default=True, action='store_true',
                         help='Flag for generating masks for noball patches')
 
     args = parser.parse_args(argv)
 
     TestArguments.op_mode = args.op_mode
-    TestArguments.path = args.path
+    TestArguments.path = str(Path(args.path).absolute())
     TestArguments.patch_size = args.patch_size
     TestArguments.num_images = args.num_images
     TestArguments.generate_no_ball = args.generate_no_ball
