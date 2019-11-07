@@ -46,7 +46,7 @@ class UltraSonicObstacleLocator2020 : UltraSonicObstacleLocator2020Base
         class UltrasonicParameter : public ParameterList {
             public:
                 UltrasonicParameter() : ParameterList("UltraSonicObstacleLocator"){
-                    PARAMETER_REGISTER(ground_threshold) = 10;
+                    PARAMETER_REGISTER(ground_threshold) = 40;
 
                     syncWithConfig();
                 }
