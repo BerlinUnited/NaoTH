@@ -57,8 +57,11 @@ void PathPlanner2018::execute()
       return;
     }
     break;
-  //TODO maybe use a parameter to select the actual routine that is executed when move around is set from the behavior???
+  case PathModel::PathPlanner2018Routine::AVOID:
+    avoid_obstacle(getPathModel().radius, getPathModel().stable);
+    break;
   case PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL2:
+    //TODO maybe use a parameter to select the actual routine that is executed when move around is set from the behavior???
     moveAroundBall2(getPathModel().direction, getPathModel().radius, getPathModel().stable);
     break;
   case PathModel::PathPlanner2018Routine::FORWARDKICK:
@@ -206,6 +209,102 @@ void PathPlanner2018::moveAroundBall2(const double direction, const double radiu
     PLOT("PathPlanner:move_around_ball_2:target:x", target_point.x);
     PLOT("PathPlanner:move_around_ball_2:target:y", target_point.y);
     PLOT("PathPlanner:move_around_ball_2:target:reached", target_reached);
+  }
+}
+
+void PathPlanner2018::avoid_obstacle(const double radius, const bool stable){
+  if (stepBuffer.empty())
+  {
+    double step_radius = 100;
+    // set target point 1m behind ball, treat ball as obstacle
+    Vector2d obstacle_point = getBallModel().positionPreview;
+    Vector2d target_point = getBallModel().positionPreview + Vector2d(1000, 0);
+    
+    double obstacle_distance = obstacle_point.abs();
+    double target_distance = target_point.abs();
+    Pose2D target_pose;
+
+    // reset target_reached flag if we moved too much away from target position
+    if (target_point.abs() > 0.5 * step_radius
+      || fabs(target_point.angle()) > Math::fromDegrees(8)) {
+      target_reached = false;
+    }
+
+    if (target_reached) {
+      target_pose = Pose2D();
+    }
+    else if (target_point.abs() < step_radius) { // we can reach the target_point directly
+      target_reached = true;
+    }
+    else if (target_distance >= step_radius && obstacle_distance >= step_radius) {
+      Vector2d tmp_target_point = target_point;
+      tmp_target_point.rotate(-getBallModel().positionPreview.angle());
+      if (tmp_target_point.x > target_distance) {
+        tmp_target_point.x = target_distance;
+        tmp_target_point.y = tmp_target_point.y > 0 ? radius : -radius;
+      }
+      tmp_target_point.rotate(target_point.angle());
+      target_pose = { target_point.angle(), tmp_target_point };
+    }
+    else if (obstacle_distance < step_radius) {
+      // step 1: coordinate transformation, the ball has to lie on the x axis
+      // so we would rotate about -getBallModel().positionPreview.angle()
+      // happens implicitly by using ball_distance
+
+      // step 2: caluclate possible intersection points is1 and is2
+      target_pose = Pose2D();
+      /*
+      double step_radius2 = step_radius * step_radius;
+      double obstacle_distance2 = obstacle_point.abs2();
+      double radius2 = radius * radius;
+      double x = (step_radius2 - radius2 + obstacle_distance2) / (2 * obstacle_distance);
+      double yy = step_radius2 - x * x;
+
+      assert(yy >= 0.0);
+
+      Vector2d is1(x, sqrt(yy));
+      Vector2d is2(x, -sqrt(yy));
+
+      // need to remember angle for target rotation
+      double angle = std::asin(is1.y / radius);
+
+      // step 3: reverse (hidden) coordinate transformation
+      is1.rotate(obstacle_point.angle());
+      is2.rotate(obstacle_point.angle());
+
+      // step 4: choose intersection point which is closer to the target point
+      if ((is2 - target_point).abs2() < (is1 - target_point).abs2()) {
+        target_pose.rotation = target_point.angle() + angle;
+        target_pose.translation = is2;
+      }
+      else {
+        target_pose.rotation = target_point.angle() - angle;
+        target_pose.translation = is1;
+      }
+      */
+    }
+
+    StepBufferElement avoid_step;
+    avoid_step.debug_name = "avoid_obstacle";
+    avoid_step.setPose(target_pose);
+    avoid_step.setStepType(StepType::WALKSTEP);
+
+    if (stable) {
+      avoid_step.setCharacter(params.moveAroundBallCharacterStable);
+    }
+    else{
+      avoid_step.setCharacter(params.moveAroundBallCharacter);
+    }
+
+    avoid_step.setScale(1.0);
+    avoid_step.setCoordinate(Coordinate::Hip);
+    avoid_step.setFoot(Foot::NONE);
+    avoid_step.setSpeedDirection(Math::fromDegrees(0.0));
+    avoid_step.setRestriction(RestrictionMode::SOFT);
+    avoid_step.setProtected(false);
+    avoid_step.setTime(250);
+
+    addStep(avoid_step);
   }
 }
 

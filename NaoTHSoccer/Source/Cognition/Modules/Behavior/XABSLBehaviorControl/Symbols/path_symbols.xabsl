@@ -4,6 +4,7 @@ namespace path_symbols("PathPlanner Symbols") {
   enum path2018.routine
   {
     none,
+    avoid,
     move_around_ball2,
     forwardkick,
     sidekick_left,

@@ -15,13 +15,29 @@ option pathplanner2018_move_around2{
       head.control_mode = search_for_ball;
     }
   }
+
+  state search 
+  {
+    decision 
+    {
+      else if (action_done)
+        goto turn;
+      else
+        stay;
+    }
+    action{
+      situation_abortable = true;
+      path2018.routine = none;
+      search_ball();
+    }
+  }
   
   state turn {
     action {
       situation_abortable = false;
-      path2018.routine = move_around_ball2;
+      path2018.routine = avoid;
       path.direction = attack.direction.preview;
-      path.radius = 210;
+      path.radius = 410;
       path.stable = true;
       
       head.control_mode = search_for_ball;

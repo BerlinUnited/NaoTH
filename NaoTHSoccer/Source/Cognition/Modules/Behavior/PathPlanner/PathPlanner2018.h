@@ -134,6 +134,7 @@ private:
   bool nearApproach_forwardKick(const double offsetX, const double offsetY);
   bool nearApproach_sideKick(const Foot& foot, const double offsetX, const double offsetY);
   bool sidesteps(const Foot& foot, const double direction);
+  void avoid_obstacle(const double radius, const bool stable);
 
   void forwardKick();
   void sideKick(const Foot& foot);

@@ -43,6 +43,7 @@ public:
   enum class PathPlanner2018Routine
   {
     NONE,
+    AVOID,
     MOVE_AROUND_BALL2,
     FORWARDKICK,
     SIDEKICK_LEFT,
@@ -113,6 +114,9 @@ public:
     case PathPlanner2018Routine::NONE:
         path_type2018 = "none";
         break;
+    case PathPlanner2018Routine::AVOID:
+      path_type2018 = "avoid";
+      break;
     case PathPlanner2018Routine::MOVE_AROUND_BALL2:
       path_type2018 = "move_around_ball";
       break;
