@@ -10,7 +10,7 @@
 #include <limits>
 
 Obstacle::Obstacle()
-  : center(0),
+  : center(Vector2d()),
     shape_points(Math::Polygon<double>())
 {
 }
