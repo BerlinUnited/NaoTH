@@ -115,6 +115,8 @@
 #include "Modules/Modeling/BallLocator/MultiKalmanBallLocator/MultiKalmanBallLocator.h"
 #include "Modules/Modeling/StaticDebugModelProvider/StaticDebugModelProvider.h"
 
+#include "Modules/Modeling/ObstacleLocator/MultiUnifiedObstacleLocator.h"
+
 #include "Modules/Modeling/Simulation/SimulationTest.h"
 #include "Modules/Modeling/Simulation/Simulation.h"
 #include "Modules/Modeling/Simulation/KickDirectionSimulator.h"
@@ -236,6 +238,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(TeamBallLocatorMedian);
   REGISTER_MODULE(TeamBallLocatorCanopyCluster);
 
+  REGISTER_MODULE(MultiUnifiedObstacleLocator);
   /*
    * BEGIN ROLE DECISIONS
    */
