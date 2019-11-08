@@ -14,18 +14,19 @@ class ImageJPEG
 {
 private:
   //HACK: we wrap the image object here
-  const naoth::Image* image = NULL;
+  naoth::Image* image = NULL;
 
 public:
   // HACK: wrap the image
   // in the future ImageJPEG should have access to the black board
-  void set(const naoth::Image& image) { 
+  void set(naoth::Image& image) { 
     this->image = &image; 
   }
 
   const naoth::Image& get() const { return *image; }
 
   void compressYUYV() const;
+  void decompressYUYV(const std::string& data, unsigned int width, unsigned int height);
 
   const uint8_t* getJPEG() const { return jpeg.data(); }
   size_t getJPEGSize() const { return jpeg_size; }
