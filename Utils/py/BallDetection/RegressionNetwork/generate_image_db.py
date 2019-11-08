@@ -1,5 +1,5 @@
 import argparse
-from utility_functions.csv_loader import loadImages
+from utility_functions.csv_loader import load_images
 import pickle
 
 
@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
     # set default values for output path, input path and resolution
     imgdb_path = "img.db"
-    img_path = "."
+    img_path = "data/TK-03/bottom_camera/"
     res = {"x": 16, "y": 16}
 
     if args.imgdb_path is not None:
@@ -41,9 +41,11 @@ if __name__ == '__main__':
     if args.res is not None:
         res = {"x": int(args.res), "y": int(args.res)}
 
+    # TODO kann das besser gemacht werden? Auch wenn load images fehlschlägt wird die datei angelegt
     with open(imgdb_path, "wb") as f:
-        x, y, mean, p = loadImages(img_path, res, args.limit_noball)
+        x, y, mean, p = load_images(img_path, res, args.limit_noball)
 
+        # save image db
         pickle.dump(mean, f)
         pickle.dump(x, f)
         pickle.dump(y, f)

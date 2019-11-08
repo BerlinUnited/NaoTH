@@ -3,3 +3,5 @@
 /logs
 venv/*
 /test.db
+
+data/*
