@@ -208,17 +208,17 @@
         </Component>
         <Component class="javax.swing.JLabel" name="lblReceivedBytesS">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Recived byte/s: "/>
+            <Property name="text" type="java.lang.String" value="Received (byte/s): "/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="lblSentBytesS">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Sent byte/s: "/>
+            <Property name="text" type="java.lang.String" value="Sent (byte/s): "/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="lblFramesS">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Frames/s: "/>
+            <Property name="text" type="java.lang.String" value="Update Loop (frame/s):"/>
           </Properties>
         </Component>
         <Container class="javax.swing.JPanel" name="statusPanelPlugins">

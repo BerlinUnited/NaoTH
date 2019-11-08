@@ -377,11 +377,11 @@ public class RobotControlImpl extends javax.swing.JFrame
             }
         });
 
-        lblReceivedBytesS.setText("Recived byte/s: ");
+        lblReceivedBytesS.setText("Received (byte/s): ");
 
-        lblSentBytesS.setText("Sent byte/s: ");
+        lblSentBytesS.setText("Sent (byte/s): ");
 
-        lblFramesS.setText("Frames/s: ");
+        lblFramesS.setText("Update Loop (frame/s):");
 
         statusPanelPlugins.setFocusable(false);
         statusPanelPlugins.setMaximumSize(new java.awt.Dimension(32767, 24));
@@ -555,17 +555,17 @@ public class RobotControlImpl extends javax.swing.JFrame
     {//GEN-HEADEREND:event_btManagerActionPerformed
 
       TaskManager taskManager = new TaskManager(this, true);
-      //String str = "Currently registeres Manager:\n\n";
+      String str = "Currently registeres Manager:\n\n";
       for(int i = 0; i < messageServer.getListeners().size(); i++)
       {
         String name = messageServer.getListeners().get(i).getClass().getSimpleName();
         taskManager.addTask(name, "0", null);
-        //str += messageServer.getListeners().get(i).getClass().getSimpleName() + "\n";
+        str += messageServer.getListeners().get(i).getClass().getSimpleName() + "\n";
       }//end for
-      //str += "\n";
+      str += "\n";
 
-      taskManager.setVisible(true);
-      //JOptionPane.showMessageDialog(this, str);
+      //taskManager.setVisible(true);
+      JOptionPane.showMessageDialog(this, str);
 }//GEN-LAST:event_btManagerActionPerformed
 
     private void resetLayoutMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_resetLayoutMenuItemActionPerformed
@@ -812,19 +812,35 @@ public class RobotControlImpl extends javax.swing.JFrame
   @Override
   public void setReceiveByteRate(double rate)
   {
-    lblReceivedBytesS.setText(String.format("Received KB/s: %4.2f", rate));
+    String unit = "byte";
+    if(rate > 1024*1024) {
+        rate /= 1024*1024;
+        unit = "MB";
+    } else if (rate > 1024) {
+        rate /= 1024;
+        unit = "KB";
+    }
+    lblReceivedBytesS.setText(String.format("Received (%s/s): %4.2f", unit, rate));
   }
 
   @Override
   public void setSentByteRate(double rate)
   {
-    lblSentBytesS.setText(String.format("Sent KB/s: %4.2f", rate));
+    String unit = "byte";
+    if(rate > 1024*1024) {
+        rate /= 1024*1024;
+        unit = "MB";
+    } else if (rate > 1024) {
+        rate /= 1024;
+        unit = "KB";
+    }
+    lblSentBytesS.setText(String.format("Sent (%s/s): %4.2f", unit, rate));
   }
   
   @Override
   public void setServerLoopFPS(double fps)
   {
-    lblFramesS.setText(String.format("Frames/s: %4.2f", fps));
+    lblFramesS.setText(String.format("Update Loop (frame/s): %4.2f", fps));
   }
   
   @Override
