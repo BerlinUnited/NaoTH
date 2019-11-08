@@ -274,7 +274,7 @@ def show_batch_normalization_layer(layer):
     assert layer_axis == -1 or layer_axis + 1 == len(layer.input_shape)
     moving_mean = K.get_value(layer.moving_mean)
     moving_variance = K.get_value(layer.moving_variance)
-    result = {}
+    result = dict()
     result['moving_mean'] = encode_floats(moving_mean)
     result['moving_variance'] = encode_floats(moving_variance)
     if layer.center:
