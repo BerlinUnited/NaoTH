@@ -18,13 +18,15 @@ Example:
         $ python run_simulation.py
 """
 
-      
+
 def draw_actions(actions_consequences, state, best_action):
     plt.clf()
     tools.draw_field(plt.gca())
 
     axes = plt.gca()
-    axes.add_artist(Circle(xy=(state.pose.translation.x, state.pose.translation.y), radius=100, fill=False, edgecolor='white'))
+    axes.add_artist(
+        Circle(xy=(state.pose.translation.x, state.pose.translation.y), radius=100, fill=False,
+               edgecolor='white'))
     axes.text(-4500, 3150, best_action, fontsize=12)
 
     x = np.array([])
@@ -33,8 +35,12 @@ def draw_actions(actions_consequences, state, best_action):
     for consequence in actions_consequences:
         expected_ball_pos_mean = state.pose * consequence.expected_ball_pos_mean
         expected_ball_pos_median = state.pose * consequence.expected_ball_pos_median
-        axes.add_artist(Circle(xy=(expected_ball_pos_mean.x, expected_ball_pos_mean.y), radius=100, fill=False, edgecolor='yellow'))
-        axes.add_artist(Circle(xy=(expected_ball_pos_median.x, expected_ball_pos_median.y), radius=100, fill=False, edgecolor='blue'))
+        axes.add_artist(
+            Circle(xy=(expected_ball_pos_mean.x, expected_ball_pos_mean.y), radius=100, fill=False,
+                   edgecolor='yellow'))
+        axes.add_artist(
+            Circle(xy=(expected_ball_pos_median.x, expected_ball_pos_median.y), radius=100,
+                   fill=False, edgecolor='blue'))
         for particle in consequence.positions():
             ball_pos = state.pose * particle.ball_pos  # transform in global coordinates
 
@@ -60,7 +66,8 @@ def main():
         # Simulate Consequences
         for action in action_list:
             single_consequence = a.ActionResults([])
-            actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state, 40))
+            actions_consequences.append(
+                Sim.simulate_consequences(action, single_consequence, state, 40))
 
         # actions_consequences is now a list of ActionResults
 

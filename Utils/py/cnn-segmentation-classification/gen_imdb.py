@@ -13,8 +13,9 @@ def str2bool(v):
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
+
 parser = argparse.ArgumentParser(description='Generate the image database for training etc. '
-                                              'using a folder with 0, 1 etc. subfolders with png images.')
+                                             'using a folder with 0, 1 etc. subfolders with png images.')
 
 parser.add_argument('-b', '--database-path', dest='imgdb_path',
                     help='Path to the image database to write. '
@@ -24,9 +25,9 @@ parser.add_argument('-i', '--image-folder', dest='img_path', nargs='+',
 parser.add_argument('-r', '--resolution', dest='res',
                     help='Images will be resized to this resolution. Default is 16x16')
 
-parser.add_argument("-l","--limit-noball", type=str2bool, nargs='?', dest="limit_noball",
-                        const=True,
-                        help="Randomly select at most |balls| from no balls class")
+parser.add_argument("-l", "--limit-noball", type=str2bool, nargs='?', dest="limit_noball",
+                    const=True,
+                    help="Randomly select at most |balls| from no balls class")
 
 args = parser.parse_args()
 
@@ -42,7 +43,7 @@ if args.img_path is not None:
 
 if args.res is not None:
     res = {"x": int(args.res), "y": int(args.res)}
-    
+
 with open(imgdb_path, "wb") as f:
     x, y, mean, p = loadImages(img_path, res, args.limit_noball)
 

@@ -9,6 +9,7 @@ from datetime import datetime
 import numpy as np
 import model_zoo;
 
+
 class AccHistory(keras.callbacks.Callback):
     def on_train_begin(self, logs={}):
         self.acc = []
@@ -19,7 +20,7 @@ class AccHistory(keras.callbacks.Callback):
         max_idx = np.array(self.acc).argmax()
         offset = max(0, len(self.acc) - 10)
         print("Accuracy history:")
-        for (idx,a) in enumerate(self.acc[-10:]):
+        for (idx, a) in enumerate(self.acc[-10:]):
             idx = idx + offset
             if prev is None:
                 print("   {:.4f}".format(a))
@@ -30,8 +31,7 @@ class AccHistory(keras.callbacks.Callback):
                     print("-> {:.4f} ({:+.4f}) ".format(a, (a - prev)))
             prev = a
         if max_idx >= 0 and max_idx < len(self.acc):
-            print("Maximum is {:.4f}".format(self.acc[max_idx]) )
-
+            print("Maximum is {:.4f}".format(self.acc[max_idx]))
 
 
 def str2bool(v):
@@ -42,6 +42,7 @@ def str2bool(v):
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
+
 parser = argparse.ArgumentParser(description='Train the network given ')
 
 parser.add_argument('-b', '--database-path', dest='imgdb_path',
@@ -50,11 +51,10 @@ parser.add_argument('-b', '--database-path', dest='imgdb_path',
 parser.add_argument('-m', '--model-path', dest='model_path',
                     help='Store the trained model using this path. Default is model.h5.')
 parser.add_argument("--proceed", type=str2bool, nargs='?', dest="proceed",
-                        const=True,
-                        help="Use the stored and pre-trained model base.")
+                    const=True,
+                    help="Use the stored and pre-trained model base.")
 parser.add_argument("--log", dest="log",
-                        help="Tensorboard log location.")
-
+                    help="Tensorboard log location.")
 
 args = parser.parse_args()
 
@@ -72,7 +72,7 @@ if args.log is not None:
     log_dir = args.log
 
 with open(imgdb_path, "rb") as f:
-    pickle.load(f) # skip mean
+    pickle.load(f)  # skip mean
     x = pickle.load(f)
     y = pickle.load(f)
 
@@ -91,13 +91,16 @@ model.compile(loss='mean_squared_error',
 
 print(model.summary())
 
-save_callback = keras.callbacks.ModelCheckpoint(filepath=model_path, monitor='loss', verbose=1, save_best_only=True)
+save_callback = keras.callbacks.ModelCheckpoint(filepath=model_path, monitor='loss', verbose=1,
+                                                save_best_only=True)
 
 callbacks = [save_callback]
 
 if log_dir is not None:
-    log_callback = keras.callbacks.TensorBoard(log_dir='./logs/' + str(datetime.now()).replace(" ", "_"))
+    log_callback = keras.callbacks.TensorBoard(
+        log_dir='./logs/' + str(datetime.now()).replace(" ", "_"))
     callbacks.append(log_callback)
 
-history = model.fit(x, y, batch_size=64, epochs=80, verbose=1, validation_split=0.1, callbacks=callbacks)
+history = model.fit(x, y, batch_size=64, epochs=80, verbose=1, validation_split=0.1,
+                    callbacks=callbacks)
 model.save(model_path)

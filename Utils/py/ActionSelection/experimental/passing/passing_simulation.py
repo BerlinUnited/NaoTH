@@ -35,7 +35,9 @@ def draw_actions(actions_consequences, state, best_action):
 
     axes = plt.gca()
     axes.text(0, 0, best_action, fontsize=12)
-    axes.add_artist(Circle(xy=(state.pose.translation.x, state.pose.translation.y), radius=100, fill=False, edgecolor='white'))
+    axes.add_artist(
+        Circle(xy=(state.pose.translation.x, state.pose.translation.y), radius=100, fill=False,
+               edgecolor='white'))
     axes.text(0, 0, best_action, fontsize=12)
 
     # Add the other robots
@@ -60,6 +62,7 @@ def draw_actions(actions_consequences, state, best_action):
 
     plt.pause(0.0001)
 
+
 def simulation():
     pass
 
@@ -79,7 +82,8 @@ def main():
         # Simulate Consequences
         for action in action_list:
             single_consequence = a.ActionResults([])
-            actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state, 30))
+            actions_consequences.append(
+                Sim.simulate_consequences(action, single_consequence, state, 30))
 
         # actions_consequences is now a list of ActionResults
 

@@ -7,8 +7,10 @@ import numpy as np
 import matplotlib as mpl
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
+
 # TODO make a tools script in root folder which imports all the scripts in tools folder
-cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile(inspect.currentframe()))[0], "..")))
+cmd_subfolder = os.path.realpath(
+    os.path.abspath(os.path.join(os.path.split(inspect.getfile(inspect.currentframe()))[0], "..")))
 if cmd_subfolder not in sys.path:
     sys.path.insert(0, cmd_subfolder)
 
@@ -16,8 +18,8 @@ from tools import tools
 from tools.action import Category
 from tools import field_info as field
 
-
 from matplotlib.backends.backend_pgf import FigureCanvasPgf
+
 mpl.backend_bases.register_backend('pgf', FigureCanvasPgf)
 
 """
@@ -46,6 +48,7 @@ mpl.rcParams['xtick.direction'] = 'in'
 mpl.rcParams['ytick.direction'] = 'in'
 """
 
+
 def plot_start_positions(exp):
     # test for iterating over all frames
     plt.clf()
@@ -63,13 +66,14 @@ def plot_start_positions(exp):
 def extract_values(exp, strategy, get_value):
     # NOTE: we ignore the last element here
     # for extraction of 'rotation' and 'walk_dist' the last element should included.
-    return [get_value(e) for frame in exp['frames'] for e in frame['sim'][strategy][1:-1] if getValue(e) != 0] #if np.abs(get_value(e)) > np.radians(10)
+    return [get_value(e) for frame in exp['frames'] for e in frame['sim'][strategy][1:-1] if
+            getValue(e) != 0]  # if np.abs(get_value(e)) > np.radians(10)
 
 
 def plot_histogram(exp):
+    names = {'optimal_one': 'optimal one', 'optimal_all': 'optimal all', 'fast': 'fast',
+             'optimal_value': 'optimal value', 'fast_best': 'fast best'}
 
-    names = {'optimal_one': 'optimal one', 'optimal_all': 'optimal all', 'fast': 'fast', 'optimal_value': 'optimal value', 'fast_best': 'fast best'}
-    
     kick_values = []
     labels = []
     values = []
@@ -78,10 +82,11 @@ def plot_histogram(exp):
         print(strategy)
         values += [np.abs(np.degrees(extract_values(exp, strategy, lambda x: x.turn_around_ball)))]
 
-        kick_values += [[len(frame['sim'][strategy])-1 for frame in exp['frames']]]
+        kick_values += [[len(frame['sim'][strategy]) - 1 for frame in exp['frames']]]
         labels += [names[strategy]]
 
-        max_value = max(np.abs(np.degrees(extract_values(exp, strategy, lambda x: x.turn_around_ball))))
+        max_value = max(
+            np.abs(np.degrees(extract_values(exp, strategy, lambda x: x.turn_around_ball))))
 
         print(max_value)
 
@@ -97,7 +102,7 @@ def plot_histogram(exp):
     ax[0].set_yscale("log")
     ax[0].set_ylabel('Number of occurrences.')
     ax[0].set_xlabel('Turn around ball in deg.')
-    
+
     ax[1].boxplot(np.transpose(np.array(kick_values)), labels=labels)
     ax[1].set_ylabel('Number of kicks until goal.')
     ax[1].grid()
@@ -174,24 +179,25 @@ def plot_matrix(exp):
     axes.pcolor(x_range, y_range, f, cmap="jet", alpha=0.8)
     plt.show()
 
-    
+
 def show_run(run, ):
     plt.clf()
     axes = plt.gca()
     tools.draw_field(axes)
 
-    #h1 = np.array([[h.state.pose.translation.x, h.state.pose.translation.y] for h in run])
+    # h1 = np.array([[h.state.pose.translation.x, h.state.pose.translation.y] for h in run])
     h1 = np.array([[h.position.x, h.position.y] for h in run])
 
-    #plt.plot(h1[:, 0], h1[:, 1], '-or')
-    for i in range(len(h1[:,0])):
-        plt.plot(h1[:i,0],h1[:i,1], '-or')
+    # plt.plot(h1[:, 0], h1[:, 1], '-or')
+    for i in range(len(h1[:, 0])):
+        plt.plot(h1[:i, 0], h1[:i, 1], '-or')
         plt.pause(0.1)
     plt.show()
 
 
 def extract_invalid_runs(exp, strategy):
-    return [frame['sim'][strategy] for frame in exp['frames'] if frame['sim'][strategy][-2].state_category != Category.OPPGOAL]
+    return [frame['sim'][strategy] for frame in exp['frames'] if
+            frame['sim'][strategy][-2].state_category != Category.OPPGOAL]
 
 
 def test(exp):
@@ -206,18 +212,17 @@ def test(exp):
 
                 if np.max(np.abs(np.degrees([e.turn_around_ball for e in run[0:-1]]))) >= 110:
                     print(np.degrees(run[0].state.pose.rotation))
-                    print([(np.degrees(e.turn_around_ball), e.selected_action_idx) for e in run[0:-1]])
+                    print([(np.degrees(e.turn_around_ball), e.selected_action_idx) for e in
+                           run[0:-1]])
                     show_run(run)
-  
+
 
 if __name__ == "__main__":
-
-    data_prefix = os.path.realpath(os.path.abspath(os.path.join(cmd_subfolder,"../data")))
+    data_prefix = os.path.realpath(os.path.abspath(os.path.join(cmd_subfolder, "../data")))
     data_prefix = "./data/"
     # file = data_prefix + "simulation_6.pickle"
     # print("read file: " + file)
-    
-    
+
     experiment = pickle.load(open(data_prefix + 'simulation_1.pickle', "rb"))
     '''
     experiment = pickle.load(open(data_prefix + "simulation_6.pickle", "rb"))
@@ -226,7 +231,8 @@ if __name__ == "__main__":
     experiment['frames'] += experiment2['frames']
     experiment['frames'] += experiment3['frames']
     '''
-    print len(experiment['frames'])
+    print
+    len(experiment['frames'])
 
     # plot_start_positions(experiment)
 

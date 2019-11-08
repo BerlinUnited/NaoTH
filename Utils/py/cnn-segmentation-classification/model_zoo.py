@@ -1,6 +1,7 @@
 from keras.models import *
 from keras.layers import *
 
+
 def fy_1500():
     input_shape = (16, 16, 1)
 
@@ -20,7 +21,7 @@ def fy_1500():
     model.add(LeakyReLU(alpha=0.0))
 
     model.add(Convolution2D(8, (1, 1), padding='same'))
-   
+
     # classifier
     model.add(Flatten())
     #    model.add(Dense(32))
@@ -51,7 +52,7 @@ def fy_4000():
     model.add(LeakyReLU(alpha=0.0))
 
     model.add(Convolution2D(16, (1, 1), padding='same'))
-   
+
     # classifier
     model.add(Flatten())
     #    model.add(Dense(32))
@@ -59,6 +60,7 @@ def fy_4000():
     model.add(Dense(3, activation="relu"))
 
     return model
+
 
 def fy_1300():
     input_shape = (16, 16, 1)
@@ -79,7 +81,7 @@ def fy_1300():
     model.add(LeakyReLU(alpha=0.0))
 
     model.add(Convolution2D(7, (1, 1), padding='same'))
-   
+
     # classifier
     model.add(Flatten())
     #    model.add(Dense(32))
@@ -108,7 +110,7 @@ def fy_1300_flexrelu():
     model.add(ReLU())
 
     model.add(Convolution2D(7, (1, 1), padding='same'))
-   
+
     # classifier
     model.add(Flatten())
     #    model.add(Dense(32))
@@ -116,6 +118,7 @@ def fy_1300_flexrelu():
     model.add(Dense(3, activation="relu"))
 
     return model
+
 
 def fy_max():
     input_shape = (16, 16, 1)
@@ -136,7 +139,7 @@ def fy_max():
     model.add(LeakyReLU(alpha=0.0))
 
     model.add(Convolution2D(32, (1, 1), padding='same'))
-   
+
     # classifier
     model.add(Flatten())
     #    model.add(Dense(32))
@@ -159,6 +162,7 @@ def naodevils():
     model.add(Dense(3))
 
     return model
+
 
 def fy_lessleaky():
     input_shape = (16, 16, 1)
@@ -187,8 +191,6 @@ def fy_lessleaky():
     return model
 
 
-
-
 def fy_half():
     input_shape = (16, 16, 1)
 
@@ -210,10 +212,10 @@ def fy_half():
     model.add(Convolution2D(32, (3, 3), padding='same'))
     model.add(LeakyReLU(alpha=0.0))
     # model.add(BatchNormalization())
-#    model.add(MaxPooling2D(pool_size=(2, 2)))
+    #    model.add(MaxPooling2D(pool_size=(2, 2)))
 
     model.add(Convolution2D(16, (1, 1), padding='same'))
-   
+
     # classifier
     model.add(Flatten())
     #    model.add(Dense(32))
@@ -222,13 +224,14 @@ def fy_half():
 
     return model
 
+
 def fy_step1():
     input_shape = (16, 16, 1)
 
     model = Sequential()
     model.add(Convolution2D(12, (3, 3), input_shape=input_shape, padding='same'))
     model.add(LeakyReLU(alpha=0.0))  # alpha unknown, so default
- 
+
     model.add(Convolution2D(13, (3, 3), padding='same'))
     model.add(LeakyReLU())
     model.add(MaxPooling2D(pool_size=(2, 2)))
@@ -239,15 +242,16 @@ def fy_step1():
 
     model.add(Convolution2D(15, (3, 3), padding='same'))
     model.add(LeakyReLU(alpha=0.0))
- 
+
     model.add(Convolution2D(15, (1, 1), padding='same'))
-   
+
     # classifier
     model.add(Flatten())
     # radius, x, y
     model.add(Dense(3, activation="relu"))
 
     return model
+
 
 def fy_lessfeat():
     input_shape = (16, 16, 1)
@@ -270,10 +274,10 @@ def fy_lessfeat():
     model.add(Convolution2D(22, (3, 3), padding='same'))
     model.add(LeakyReLU(alpha=0.0))
     # model.add(BatchNormalization())
-#    model.add(MaxPooling2D(pool_size=(2, 2)))
+    #    model.add(MaxPooling2D(pool_size=(2, 2)))
 
     model.add(Convolution2D(22, (1, 1), padding='same'))
-   
+
     # classifier
     model.add(Flatten())
     #    model.add(Dense(32))
@@ -281,4 +285,3 @@ def fy_lessfeat():
     model.add(Dense(3, activation="relu"))
 
     return model
-    

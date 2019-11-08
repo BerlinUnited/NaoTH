@@ -18,7 +18,6 @@ parser.add_argument('-b', '--database-path', dest='imgdb_path',
 parser.add_argument('-m', '--model-path', dest='model_path',
                     help='Store the trained model using this path. Default is model.h5.')
 
-
 args = parser.parse_args()
 
 imgdb_path = "img.db"
@@ -37,19 +36,19 @@ with open(imgdb_path, "rb") as f:
 
 model = keras.models.load_model(model_path)
 
-cv2.namedWindow('image',cv2.WINDOW_NORMAL)
-cv2.moveWindow("image", 0,0)
+cv2.namedWindow('image', cv2.WINDOW_NORMAL)
+cv2.moveWindow("image", 0, 0)
 cv2.resizeWindow('image', 1700, 900)
 
 out_images = list()
 print("Predicting image...", end="")
 i = 0
 for img_path in args.img:
-    img_orig = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE) 
+    img_orig = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
     img_orig = cv2.resize(img_orig, (res["x"], res["y"]))
     debug_img = cv2.cvtColor(img_orig.astype(np.uint8), cv2.COLOR_GRAY2BGR)
 
-    #img = img_orig - mean
+    # img = img_orig - mean
     img = (img_orig / 255) - mean
 
     prediction = model.predict(img.reshape(1, res["x"], res["y"], 1))[0]
@@ -62,11 +61,11 @@ for img_path in args.img:
         radius = radius * max(res["x"], res["y"])
         x = x * res["x"]
         y = y * res["y"]
-        cv2.circle(debug_img, (int(x),int(y)), int(radius), color=(0,0,255))
+        cv2.circle(debug_img, (int(x), int(y)), int(radius), color=(0, 0, 255))
     else:
-        cv2.rectangle(debug_img, (0,0), (res["x"]-1, res["y"]-1), color=(255,0,0))
+        cv2.rectangle(debug_img, (0, 0), (res["x"] - 1, res["y"] - 1), color=(255, 0, 0))
 
-    out_images.append(cv2.resize(debug_img, dsize=(64,64),interpolation=cv2.INTER_CUBIC))
+    out_images.append(cv2.resize(debug_img, dsize=(64, 64), interpolation=cv2.INTER_CUBIC))
 
     if i % 10 == 0:
         print(".", end='')
@@ -82,12 +81,10 @@ for img in out_images:
         all_image_rows.append(np.concatenate(image_row, axis=1))
         image_row = list()
 
-
 if len(image_row) > 0:
     all_image_rows.append(np.concatenate(image_row, axis=1))
     image_row = list()
 
-
 cv2.imshow("image", np.concatenate(all_image_rows, axis=0))
 cv2.waitKey()
-#print(np.argmax(prediction, axis=3))
+# print(np.argmax(prediction, axis=3))

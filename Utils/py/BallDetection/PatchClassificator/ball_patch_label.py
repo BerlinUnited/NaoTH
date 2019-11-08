@@ -48,13 +48,16 @@ class PatchLabeling:
         for i in range(0, self.show_size[0] * self.show_size[1]):
             y = i // self.show_size[0]
             x = i % self.show_size[0]
-            self.patches.append(ptc.Rectangle(self.patch_pos(x, y), width=self.patch_size[0] + 1, height=self.patch_size[1] + 1, alpha=0.3))
-            self.invalid.append(ptc.Rectangle(self.patch_pos(x, y), width=self.patch_size[0] + 1, height=self.patch_size[1] + 1, color="Red", alpha=0.3))
+            self.patches.append(ptc.Rectangle(self.patch_pos(x, y), width=self.patch_size[0] + 1,
+                                              height=self.patch_size[1] + 1, alpha=0.3))
+            self.invalid.append(ptc.Rectangle(self.patch_pos(x, y), width=self.patch_size[0] + 1,
+                                              height=self.patch_size[1] + 1, color="Red",
+                                              alpha=0.3))
             self.selected.append(False)
             self.invalid_selected.append(False)
 
     def patch_pos(self, x, y):
-        return x*(self.patch_size[0]+1)-1, y*(self.patch_size[1]+1)-1
+        return x * (self.patch_size[0] + 1) - 1, y * (self.patch_size[1] + 1) - 1
 
     def set_marker(self, i, v):
         if v == 0 and self.selected[i]:
@@ -75,23 +78,23 @@ class PatchLabeling:
     def on_click(self, event):
 
         if event.xdata is not None and event.ydata is not None:
-            y = int(event.ydata+0.5) / (self.patch_size[1]+1)
-            x = int(event.xdata+0.5) / (self.patch_size[0]+1)
+            y = int(event.ydata + 0.5) / (self.patch_size[1] + 1)
+            x = int(event.xdata + 0.5) / (self.patch_size[0] + 1)
             if 0 <= y < self.show_size[1] and 0 <= x < self.show_size[0]:
-                i = self.show_size[0]*int(y) + int(x)
-                if self.labels[self.window_idx+i] <= 0 and not self.shift_is_held:
-                    self.labels[self.window_idx+i] = 1
-                elif self.labels[self.window_idx+i] <= 0 and self.shift_is_held:
-                    self.labels[self.window_idx+i] = 2
+                i = self.show_size[0] * int(y) + int(x)
+                if self.labels[self.window_idx + i] <= 0 and not self.shift_is_held:
+                    self.labels[self.window_idx + i] = 1
+                elif self.labels[self.window_idx + i] <= 0 and self.shift_is_held:
+                    self.labels[self.window_idx + i] = 2
                 else:
-                    self.labels[self.window_idx+i] = 0
+                    self.labels[self.window_idx + i] = 0
 
                 self.set_marker(i, self.labels[self.window_idx + i])
                 plt.draw()
 
     def key_pressed(self, event):
-        for i in range(self.show_size[0]*self.show_size[1]):
-                self.set_marker(i, 0)
+        for i in range(self.show_size[0] * self.show_size[1]):
+            self.set_marker(i, 0)
 
         if event.key == 'enter' or event.key == ' ' \
                 or event.key == 'w' or event.key == 'a' or event.key == 'd' \
@@ -101,7 +104,7 @@ class PatchLabeling:
 
             self.save_labels(label_file)
 
-            idx_step = self.show_size[0]*self.show_size[1]
+            idx_step = self.show_size[0] * self.show_size[1]
 
             if event.key == 'w':
                 self.window_idx = 0
@@ -109,16 +112,16 @@ class PatchLabeling:
                 if self.window_idx > 0:
                     self.window_idx -= idx_step
             elif event.key == 'c':
-                self.window_idx += idx_step*10
+                self.window_idx += idx_step * 10
             elif event.key == 'y':
-                if self.window_idx - (idx_step*10) >= 0:
-                    self.window_idx -= idx_step*10
+                if self.window_idx - (idx_step * 10) >= 0:
+                    self.window_idx -= idx_step * 10
             elif event.key == '+':  # select all
                 end_idx = min(idx_step, len(self.labels) - self.window_idx)
-                self.labels[self.window_idx:self.window_idx+end_idx] = 1
+                self.labels[self.window_idx:self.window_idx + end_idx] = 1
             elif event.key == '-':  # deselect all
                 end_idx = min(idx_step, len(self.labels) - self.window_idx)
-                self.labels[self.window_idx:self.window_idx+end_idx] = 0
+                self.labels[self.window_idx:self.window_idx + end_idx] = 0
             elif event.key == 'shift':  # set invalid label
                 self.shift_is_held = True
             else:
@@ -144,7 +147,7 @@ class PatchLabeling:
                 noball.append(i)
 
         with open(json_file, 'w') as outfile:
-                    json.dump({"ball": ball, "noball": noball, "invalid": inval}, outfile)
+            json.dump({"ball": ball, "noball": noball, "invalid": inval}, outfile)
 
     def load_labels(self, json_file):
         # init with invalid label
@@ -169,14 +172,15 @@ class PatchLabeling:
         return tmp_labels
 
     def show_patches(self):
-        image = np.zeros(((self.patch_size[1]+1)*self.show_size[1], (self.patch_size[0]+1)*self.show_size[0]))
+        image = np.zeros(((self.patch_size[1] + 1) * self.show_size[1],
+                          (self.patch_size[0] + 1) * self.show_size[0]))
 
-        for i in range(self.show_size[0]*self.show_size[1]):
-            if self.window_idx+i+1 > len(self.patchdata):
+        for i in range(self.show_size[0] * self.show_size[1]):
+            if self.window_idx + i + 1 > len(self.patchdata):
                 break
 
-            p = self.patchdata[self.window_idx+i]
-            if len(p) == 4*self.patch_size[0]*self.patch_size[1]:
+            p = self.patchdata[self.window_idx + i]
+            if len(p) == 4 * self.patch_size[0] * self.patch_size[1]:
                 a = np.array(p[0::4]).astype(float)
                 a = np.transpose(np.reshape(a, self.patch_size))
             else:
@@ -185,19 +189,23 @@ class PatchLabeling:
 
             y = i // self.show_size[0]
             x = i % self.show_size[0]
-            image[y*(self.patch_size[1]+1):y*(self.patch_size[1]+1)+self.patch_size[1], x*(self.patch_size[0]+1):x*(self.patch_size[0]+1)+self.patch_size[0]] = a
+            image[y * (self.patch_size[1] + 1):y * (self.patch_size[1] + 1) + self.patch_size[1],
+            x * (self.patch_size[0] + 1):x * (self.patch_size[0] + 1) + self.patch_size[0]] = a
 
-            if self.labels[self.window_idx+i] < 0:
+            if self.labels[self.window_idx + i] < 0:
                 # remember this former invalid column as seen
-                self.labels[self.window_idx+i] = 0
+                self.labels[self.window_idx + i] = 0
             self.set_marker(i, self.labels[self.window_idx + i])
 
         if self.image_canvas is None:
-            self.image_canvas = fig.gca().imshow(image, cmap=plt.get_cmap('gray'), interpolation='nearest')
+            self.image_canvas = fig.gca().imshow(image, cmap=plt.get_cmap('gray'),
+                                                 interpolation='nearest')
         else:
             self.image_canvas.set_data(image)
 
-        fig.suptitle(str(self.window_idx)+' - '+str(self.window_idx+self.show_size[0]*self.show_size[1])+' / '+str(len(self.patchdata)), fontsize=20)
+        fig.suptitle(str(self.window_idx) + ' - ' + str(
+            self.window_idx + self.show_size[0] * self.show_size[1]) + ' / ' + str(
+            len(self.patchdata)), fontsize=20)
         fig.canvas.draw()
 
 

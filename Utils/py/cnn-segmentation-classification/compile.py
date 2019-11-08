@@ -18,7 +18,7 @@ args = parser.parse_args()
 
 imgdb_path = "img.db"
 model_path = "model.h5"
-code_path  = "cnn.c"
+code_path = "cnn.c"
 
 if args.imgdb_path is not None:
     imgdb_path = args.imgdb_path

@@ -9,6 +9,7 @@ import csv
 import json
 import sys
 
+
 def getPatchPaths(path):
     return glob(path + "/**/*_patch_bw/") + glob(path + "/*_patch_bw/")
 
@@ -27,7 +28,7 @@ def loadImages(path, res):
         for patch_folder in getPatchPaths(path):
             patch_folder_rel = str(relpath(patch_folder, path))
             mask_path = path + "/" + \
-                patch_folder_rel[0:-len("_patch_bw")] + "_patch_mask"
+                        patch_folder_rel[0:-len("_patch_bw")] + "_patch_mask"
             for f in glob(patch_folder + "/*.png"):
 
                 p = relpath(f, path)
@@ -50,8 +51,8 @@ def loadImages(path, res):
                 debug_img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
                 radius = 0
-                x = res["x"]/2
-                y = res["y"]/2
+                x = res["x"] / 2
+                y = res["y"] / 2
                 region_count = 0
                 # find largest circle (if existing)
                 for cnt in contours:
@@ -78,16 +79,18 @@ def loadImages(path, res):
                     region = {}
                     atts = {}
 
-                writer.writerow({"filename": p, "file_attributes": "{}", "region_count": region_count, "region_id": 0, 
-                        "region_shape_attributes": json.dumps(region), "region_attributes": json.dumps(atts)})
+                writer.writerow(
+                    {"filename": p, "file_attributes": "{}", "region_count": region_count,
+                     "region_id": 0,
+                     "region_shape_attributes": json.dumps(region),
+                     "region_attributes": json.dumps(atts)})
 
-                #cv2.namedWindow('image', cv2.WINDOW_NORMAL)
-                #cv2.resizeWindow('image', 600, 600)
-                #cv2.imshow("image", debug_img)
-                #cv2.waitKey()
+                # cv2.namedWindow('image', cv2.WINDOW_NORMAL)
+                # cv2.resizeWindow('image', 600, 600)
+                # cv2.imshow("image", debug_img)
+                # cv2.waitKey()
 
 
 if __name__ == "__main__":
     if len(sys.argv) > 0:
-        loadImages(sys.argv[1],
-                res={"x": 16, "y": 16})
+        loadImages(sys.argv[1], res={"x": 16, "y": 16})

@@ -406,10 +406,12 @@ def show_time_distributed_layer(layer):
         elif len(layer.input_shape) == 4:
             input_shape_new = (layer.input_shape[0], layer.input_shape[2], layer.input_shape[3])
         elif len(layer.input_shape) == 5:
-            input_shape_new = (layer.input_shape[0], layer.input_shape[2], layer.input_shape[3], layer.input_shape[4])
+            input_shape_new = (
+            layer.input_shape[0], layer.input_shape[2], layer.input_shape[3], layer.input_shape[4])
         elif len(layer.input_shape) == 6:
-            input_shape_new = (layer.input_shape[0], layer.input_shape[2], layer.input_shape[3], layer.input_shape[4],
-                               layer.input_shape[5])
+            input_shape_new = (
+            layer.input_shape[0], layer.input_shape[2], layer.input_shape[3], layer.input_shape[4],
+            layer.input_shape[5])
         else:
             raise Exception('Wrong input shape')
 
@@ -475,8 +477,10 @@ def get_all_weights(model):
             result = merge_two_disjunct_dicts(result, get_all_weights(layer))
         else:
             if hasattr(layer, 'data_format'):
-                if layer_type in ['AveragePooling1D', 'MaxPooling1D', 'AveragePooling2D', 'MaxPooling2D',
-                                  'GlobalAveragePooling1D', 'GlobalMaxPooling1D', 'GlobalAveragePooling2D',
+                if layer_type in ['AveragePooling1D', 'MaxPooling1D', 'AveragePooling2D',
+                                  'MaxPooling2D',
+                                  'GlobalAveragePooling1D', 'GlobalMaxPooling1D',
+                                  'GlobalAveragePooling2D',
                                   'GlobalMaxPooling2D']:
                     assert layer.data_format == 'channels_last' or layer.data_format == 'channels_first'
                 else:
@@ -496,8 +500,10 @@ def get_all_weights(model):
                 if name not in result:
                     result[name] = {}
 
-                result[name]['td_input_len'] = encode_floats(np.array([len(layer.input_shape) - 1], dtype=np.float32))
-                result[name]['td_output_len'] = encode_floats(np.array([len(layer.output_shape) - 1], dtype=np.float32))
+                result[name]['td_input_len'] = encode_floats(
+                    np.array([len(layer.input_shape) - 1], dtype=np.float32))
+                result[name]['td_output_len'] = encode_floats(
+                    np.array([len(layer.output_shape) - 1], dtype=np.float32))
     return result
 
 
@@ -649,7 +655,8 @@ def convert(in_path, out_path):
         check_operation_offset(1, conv2d_offset_average_pool_eval, 'valid')
     json_output['average_pooling_2d_same_offset'] = \
         check_operation_offset(1, conv2d_offset_average_pool_eval, 'same')
-    json_output['input_shapes'] = list(map(get_layer_input_shape_shape5, get_model_input_layers(model)))
+    json_output['input_shapes'] = list(
+        map(get_layer_input_shape_shape5, get_model_input_layers(model)))
     json_output['tests'] = [test_data]
     json_output['trainable_params'] = get_all_weights(model)
     json_output['hash'] = calculate_hash(model)
