@@ -9,7 +9,6 @@ import de.naoth.rc.core.dialog.Dialog;
 import bibliothek.gui.DockUI;
 import bibliothek.gui.dock.util.laf.Nimbus6u10;
 import de.naoth.rc.components.preferences.PreferencesDialog;
-import de.naoth.rc.server.ConnectionDialog;
 import de.naoth.rc.server.ConnectionManager;
 import de.naoth.rc.server.ConnectionStatusEvent;
 import de.naoth.rc.server.ConnectionStatusListener;
@@ -69,6 +68,8 @@ public class RobotControlImpl extends javax.swing.JFrame
   private static Logger getLogger() { return logger; }
   
   private final GridBagConstraints statusPanelPluginsConstraints = new GridBagConstraints();
+  
+  private final String RC_TITLE = "";
   
   // HACK: set the path to the native libs
   static 
@@ -359,7 +360,7 @@ public class RobotControlImpl extends javax.swing.JFrame
         aboutMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("RobotControl for Nao v2015");
+        setTitle("RobotControl for NAO v2019");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
