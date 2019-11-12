@@ -226,8 +226,8 @@ def load_images_from_csv_files(root_path, res, limit_noballs):
     x = x.reshape(*x.shape, 1)
 
     print("Loading finished")
-    print("images: " + str(len(x)) + " balls: " + str(len(db_balls)) + " no balls: " + str(
-        len(db_noballs)))
+    print("images: " + str(len(x)) + " balls: " + str(len(db_balls)) +
+          " no balls: " + str(len(db_noballs)))
     return x, y, mean, p
 
 
