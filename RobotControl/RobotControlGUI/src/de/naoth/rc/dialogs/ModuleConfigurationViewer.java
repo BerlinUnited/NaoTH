@@ -228,7 +228,9 @@ public class ModuleConfigurationViewer extends AbstractDialog
         jToolBar1.add(cbRepresentations);
 
         jSplitPane1.setDividerLocation(600);
+        jSplitPane1.setDividerSize(10);
         jSplitPane1.setResizeWeight(1.0);
+        jSplitPane1.setOneTouchExpandable(true);
         jSplitPane1.setLeftComponent(modulePanel);
 
         jSplitPane2.setDividerLocation(300);
