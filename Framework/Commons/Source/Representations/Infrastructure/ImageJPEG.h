@@ -14,7 +14,7 @@ class ImageJPEG
 {
 private:
   //HACK: we wrap the image object here
-  naoth::Image* image = NULL;
+  naoth::Image* image = nullptr;
 
 public:
   // HACK: wrap the image
