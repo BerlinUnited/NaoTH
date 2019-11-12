@@ -4,8 +4,8 @@
  * Declaration of class Image
  */
 
-#ifndef _ImageJPEG_h_
-#define _ImageJPEG_h_
+#ifndef IMAGE_JPEG_H
+#define IMAGE_JPEG_H
 
 #include "Image.h"
 #include <vector>
