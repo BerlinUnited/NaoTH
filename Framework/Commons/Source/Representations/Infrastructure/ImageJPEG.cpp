@@ -48,21 +48,21 @@ void ImageJPEG::compressYUYV() const
   // with y0 and y1 representing separate channels. This results in a reduced line width.
   // 2) libjpeg can perform a color space conversion. We don't want to do that here.
   // source: https://github.com/libjpeg-turbo/libjpeg-turbo/blob/master/libjpeg.txt
-  
+
   // input image parameters
-  cinfo.image_width = image->width() / 2;  
+  cinfo.image_width = image->width() / 2;
   cinfo.image_height = image->height();
   cinfo.input_components = 4; // (y0,u,y1,v)
   cinfo.in_color_space = JCS_UNKNOWN; // it's our special color space
-  
+
   // compression parameters
   // https://github.com/libjpeg-turbo/libjpeg-turbo/blob/master/jcparam.c
   jpeg_set_defaults( &cinfo );
   cinfo.dct_method = JDCT_FASTEST;
   jpeg_set_quality(&cinfo, quality, true);
 
-  // NOTE: jpeg_set_defaults sets the jpeg_color_space based on the in_color_space and 
-  //       JCS_UNKNOWN is mapped to JCS_UNKNOWN. We really don't want conversion, so set 
+  // NOTE: jpeg_set_defaults sets the jpeg_color_space based on the in_color_space and
+  //       JCS_UNKNOWN is mapped to JCS_UNKNOWN. We really don't want conversion, so set
   //       is here again (just to make sure ;)
   jpeg_set_colorspace(&cinfo, cinfo.in_color_space);
 
@@ -74,8 +74,8 @@ void ImageJPEG::compressYUYV() const
   //   https://github.com/libjpeg-turbo/libjpeg-turbo/blob/master/libjpeg.txt
   //
   // set the compression values for the channels of our custom image format.
-  // We use different parameter for luminance and chrominance channels, 
-  // the same way as are used in case of JCS_YCbCr. This signifficantly redices 
+  // We use different parameter for luminance and chrominance channels,
+  // the same way as are used in case of JCS_YCbCr. This signifficantly redices
   // the image size (in our experiments by ~10%-20%).
   // See implementation of jpeg_set_colorspace()
   // https://github.com/libjpeg-turbo/libjpeg-turbo/blob/master/jcparam.c
@@ -93,12 +93,12 @@ void ImageJPEG::compressYUYV() const
   SET_COMP(1, 2, 1, 1, 1, 1, 1); // U
   SET_COMP(2, 3, 2, 2, 0, 0, 0); // Y1
   SET_COMP(3, 4, 1, 1, 1, 1, 1); // V
- 
-  // NOTE: this is a regular way to define a destination manager. 
+
+  // NOTE: this is a regular way to define a destination manager.
   // In order to use it we would need to preserve cinfo between compressions.
   //jpeg_mem_dest(&cinfo, &jpeg, &jpeg_size);
 
-  // NOTE: we have to use JPOOL_PERMANENT here because aur buffer is allocated permamently 
+  // NOTE: we have to use JPOOL_PERMANENT here because aur buffer is allocated permamently
   // and shall not be freed automatically.
   // documentation can be found in section "Memory management"
   // https://github.com/libjpeg-turbo/libjpeg-turbo/blob/master/libjpeg.txt
@@ -107,14 +107,14 @@ void ImageJPEG::compressYUYV() const
       (*cinfo.mem->alloc_small)((j_common_ptr)(&cinfo), JPOOL_PERMANENT, sizeof(jpeg_destination_mgr))
     );
   }
-  
+
   cinfo.dest->init_destination = init_destination;
   cinfo.dest->empty_output_buffer = empty_output_buffer;
   cinfo.dest->term_destination = term_destination;
-  
+
   cinfo.dest->next_output_byte = (JOCTET*)(jpeg.data()); // HACK: strip 'const' here
   cinfo.dest->free_in_buffer = jpeg.size();
-  
+
   // start compression
   jpeg_start_compress( &cinfo, true);
 
@@ -158,7 +158,7 @@ void ImageJPEG::decompressYUYV(const std::string& data, unsigned int width, unsi
   ASSERT(cinfo.image_height == height);
 
   // NOTE: while reading the header the color space seems to be determined
-  // by default_decompress_parms and 'reconstructed' based on num_components and 
+  // by default_decompress_parms and 'reconstructed' based on num_components and
   // various markers. The compression factors in cinfo.comp_info seem to be preserved,
   // and the color space seems to have no effect on the actual decompression procedure.
   // So we leave it as is.
@@ -187,11 +187,11 @@ void Serializer<ImageJPEG>::serialize(const ImageJPEG& parent, std::ostream& str
 
   img.set_height(parent.get().height());
   img.set_width(parent.get().width());
-  
+
   img.set_format(naothmessages::Image_Format_JPEG);
 
   parent.compressYUYV();
-  
+
   // NOTE: we might want to use .set_allocated_data
   img.set_data(parent.getJPEG(), parent.getJPEGSize());
 

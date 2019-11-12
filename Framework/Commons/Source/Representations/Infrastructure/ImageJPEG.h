@@ -10,7 +10,7 @@
 #include "Image.h"
 #include <vector>
 
-class ImageJPEG 
+class ImageJPEG
 {
 private:
   //HACK: we wrap the image object here
@@ -19,8 +19,8 @@ private:
 public:
   // HACK: wrap the image
   // in the future ImageJPEG should have access to the black board
-  void set(naoth::Image& image) { 
-    this->image = &image; 
+  void set(naoth::Image& image) {
+    this->image = &image;
   }
 
   const naoth::Image& get() const { return *image; }
