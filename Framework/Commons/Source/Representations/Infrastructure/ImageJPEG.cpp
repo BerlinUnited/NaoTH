@@ -15,7 +15,6 @@
 using namespace naoth;
 using namespace std;
 
-
 // functions needed for the custom jpeg_destination_mgr
 static void init_destination (j_compress_ptr /*cinfo*/) {}
 
@@ -26,7 +25,6 @@ static boolean empty_output_buffer (j_compress_ptr /*cinfo*/) {
 }
 
 static void term_destination (j_compress_ptr /*cinfo*/) {}
-
 
 void ImageJPEG::compressYUYV() const
 {
@@ -133,10 +131,8 @@ void ImageJPEG::compressYUYV() const
   jpeg_destroy_compress( &cinfo );
 }
 
-
 void ImageJPEG::decompressYUYV(const std::string& data, unsigned int width, unsigned int height)
 {
-  //
   CameraInfo newCameraInfo;
   newCameraInfo.resolutionHeight = height;
   newCameraInfo.resolutionWidth = width;
@@ -178,7 +174,6 @@ void ImageJPEG::decompressYUYV(const std::string& data, unsigned int width, unsi
   jpeg_finish_decompress(&cinfo);
   jpeg_destroy_decompress(&cinfo);
 }
-
 
 void Serializer<ImageJPEG>::serialize(const ImageJPEG& parent, std::ostream& stream)
 {
