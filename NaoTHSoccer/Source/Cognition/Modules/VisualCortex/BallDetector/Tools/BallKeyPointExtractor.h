@@ -275,13 +275,11 @@ void BallKeyPointExtractor::calculateKeyPointsFast(const ImageType& integralImag
     
     // Note: we have a minimal allowed radius
     int radius = (int)(estimatedRadius / FACTOR + 0.5);
-    int radiusBy2 = radius/2;
-    if(radiusBy2 == 0)
-    { // Ensure that the radius/2 isn't 0.
-      radiusBy2 = 1;
+    // the minimal alowed radius
+    if(radius < 2) {
+      radius = 2;
     }
-    const int area = 4*radius*radius;
-
+    
     // smalest ball size == 3 => ball size == FACTOR*3 == 12
     if (point.y < radius || point.y + radius >= height) {
       continue;
@@ -295,9 +293,12 @@ void BallKeyPointExtractor::calculateKeyPointsFast(const ImageType& integralImag
          getBodyContour().isOccupied(point.x*integralImage.FACTOR, (point.y+radius)*integralImage.FACTOR)) {
         continue;
       }
+      
+      const int innerOffset = radius/2;
+      const int area = 4*radius*radius;
 
       int inner = integralImage.getSumForRect(point.x-radius, point.y-radius, point.x+radius, point.y+radius, 0);
-      double greenInner = integralImage.getDensityForRect(point.x-radiusBy2, point.y-radiusBy2, point.x+radiusBy2, point.y+radiusBy2, 1);
+      double greenInner = integralImage.getDensityForRect(point.x-innerOffset, point.y-innerOffset, point.x+innerOffset, point.y+innerOffset, 1);
       
       if (inner*2 > area && greenInner <= params.maxInnerGreenDensitiy)
       {
