@@ -223,7 +223,7 @@ void IMUModel::reloadParameters()
     Q_acc *= imuParameters.acceleration.stand.processNoiseAcc;
 
     Q_acc_walk.setIdentity();
-    Q_acc *= imuParameters.acceleration.walk.processNoiseAcc;
+    Q_acc_walk *= imuParameters.acceleration.walk.processNoiseAcc;
 
     // measurement covariance matrix
     R_acc.setIdentity();
@@ -239,8 +239,8 @@ void IMUModel::reloadParameters()
     Q_rotation.block<3,3>(3,3) *= imuParameters.rotation.stand.processNoiseGyro;
 
     Q_rotation_walk.setIdentity();
-    Q_rotation.block<3,3>(0,0) *= imuParameters.rotation.walk.processNoiseRot;
-    Q_rotation.block<3,3>(3,3) *= imuParameters.rotation.walk.processNoiseGyro;
+    Q_rotation_walk.block<3,3>(0,0) *= imuParameters.rotation.walk.processNoiseRot;
+    Q_rotation_walk.block<3,3>(3,3) *= imuParameters.rotation.walk.processNoiseGyro;
 
     // measurement covariance matrix
     R_rotation.setIdentity();
