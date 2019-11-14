@@ -32,9 +32,21 @@ namespace game_symbols("Game Control Symbols")
   enum game.set_play
   {
     none,
-	goal_free_kick,
-	pushing_free_kick
+    goal_free_kick,
+    pushing_free_kick,
+    corner_kick,
+    kick_in
   };
 
   enum game.set_play input game.set_play;
+
+  enum game.phase
+  {
+    normal,
+    penaltyshoot,
+    overtime,
+    timeout
+  };
+  
+  enum game.phase input game.phase;
 }

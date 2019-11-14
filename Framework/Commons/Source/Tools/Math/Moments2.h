@@ -5,8 +5,8 @@
 * Implementation of class Moments2
 */
 
-#ifndef __Moments2_H_
-#define __Moments2_H_
+#ifndef _Moments2_H_
+#define _Moments2_H_
 
 #include "Tools/Math/Vector2.h"
 
@@ -14,10 +14,9 @@ template<int MAX_ORDER>
 class Moments2
 {
 public:
-  Moments2()
-  {
+  Moments2() {
     reset();
-  };
+  }
 
   // raw moments Mpq of order (p+q) are defined as
   // Mpq = sum(sum(x^p * y^q * f(x, y)))
@@ -25,50 +24,59 @@ public:
 
   //add another point to the distribution
   //whos moments to keep track of
-  void add(const Vector2<int>& point, double weight)
+  void add(double x, double y, double weight = 1.0)
   {
-    for(int order=0; order<=MAX_ORDER; order++) //go through all orders
-      for(int p=0; p<=order; p++)             //for every order go through all moments of that order
-        rawMoment[((order*(order+1))/2)+p] += pow((double)point.x, (double)p)*pow((double)point.y, (double)(order-p))*weight; //update the corresponding raw moment M(p, order-p)
-  }//end add
+    for(int order=0; order<=MAX_ORDER; order++) { // go through all orders
+      for(int p=0; p <= order; p++) {               // for every order go through all moments of that order
+        rawMoment[((order*(order+1))/2)+p] += pow(x, (double)p)*pow(y, (double)(order-p))*weight; //update the corresponding raw moment M(p, order-p)
+      }
+    }
+  }
+
+  template<typename T>
+  void add(const Vector2<T>& point, double weight) {
+    add((double)point.x, (double)point.y, weight);
+  }
 
   //if no weight for the point to add is specified, use weight 1
-  void add(const Vector2<int>& point)
-  {
-    add(point, 1.0);
-  }//end add
+  template<typename T>
+  void add(const Vector2<T>& point) {
+    add((double)point.x, (double)point.y, 1.0);
+  }
 
   //return the raw moment Mpq
   double getRawMoment(int p, int q) const
   {
-    if(p+q > MAX_ORDER) return 0;
+    if(p+q > MAX_ORDER) { 
+      return 0;
+    }
 
     return rawMoment[(((p+q)*(p+q+1))/2)+p];
-  }//end getRawMoment
+  }
 
   //return the centroid of the distribution so far
   //the centroid (cx, cy) is defined as
   //(cx, cy) = (M10/M00, M01/M00)
   //if no points were added to the distribution yet
   //(i.e. M00=0) return (0, 0)
-  Vector2<double> getCentroid() const
+  Vector2d getCentroid() const
   {
-    Vector2<double> centroid(0.0, 0.0);
-    if(getRawMoment(0, 0)!=0)
-    {
+    Vector2d centroid(0.0, 0.0);
+    if(getRawMoment(0, 0)!=0) {
       centroid.x = getRawMoment(1, 0)/getRawMoment(0, 0);
       centroid.y = getRawMoment(0, 1)/getRawMoment(0, 0);
-    }//end if
+    }
 
     return centroid;
-  }//end getCentroid
+  }
 
   //reset all raw moments to 0
   void reset()
   {
-    for(int n=0; n<((MAX_ORDER+1)*(MAX_ORDER+2))/2; n++)
+    for(int n=0; n<((MAX_ORDER+1)*(MAX_ORDER+2))/2; n++) {
       rawMoment[n] = 0;
-  }//end clear
+    }
+  }
 
 
   //return the central moment upq
@@ -77,17 +85,19 @@ public:
   //where (cx, cy) is the centroid of the distribution
   double getCentralMoment(int p, int q) const
   {
-    Vector2<double> c = getCentroid();
+    Vector2d c = getCentroid();
     double moment = 0;
 
-    for(int m=0; m<=p; m++)
-      for(int n=0; n<=q; n++)
+    for(int m=0; m<=p; m++) {
+      for(int n=0; n<=q; n++) {
         moment += binomialCoefficient(p, m)*binomialCoefficient(q, n)*pow(-c.x, p-m)*pow(-c.y, q-n)*getRawMoment(m, n);
+      }
+    }
 
     return moment;
-  }//end getCentralMoment
+  }
 
-  void getAxes(Vector2<double>& major, Vector2<double>& minor) const
+  void getAxes(Vector2d& major, Vector2d& minor) const
   {
     double u20 = getCentralMoment(2, 0);
     double u02 = getCentralMoment(0, 2);
@@ -96,7 +106,9 @@ public:
 
     //if no pixel was added to the distribution
     //no axes can be calculated
-    if(u00==0) return;
+    if(u00==0) { 
+      return;
+    }
 
     //the covariance Matrix of the pixel distribution is defined as
     // u20/u00   u11/u00
@@ -132,22 +144,44 @@ public:
   }//end getAxes
 
   //returns the binomial coefficient (n over k)
-  int binomialCoefficient(int n, int k) const
-  {
+  int binomialCoefficient(int n, int k) const {
     return (factorial(n)/(factorial(k)*factorial(n-k)));
-  }//end binomialCoefficient
+  }
 
 
   //returns the factorial of n
   int factorial(int n) const
   {
     int tmp=1;
-    for(int c=1; c<=n; c++)
+    for(int c=1; c<=n; c++) {
       tmp*=c;
+    }
 
     return tmp;
-  }//end factorial
+  }
 
+  /*
+  // NOTE: chis should a faster implementation for binomial
+  // TODO: test and replace the old routine
+  // Returns value of Binomial Coefficient C(n, k) 
+  int binomialCoefficient(int n, int k) 
+  { 
+    int res = 1; 
+  
+    // Since C(n, k) = C(n, n-k) 
+    if ( k > n - k ) {
+        k = n - k; 
+    }
+  
+    // Calculate value of [n * (n-1) *---* (n-k+1)] / [k * (k-1) *----* 1] 
+    for (int i = 0; i < k; ++i) { 
+        res *= (n - i); 
+        res /= (i + 1); 
+    } 
+  
+    return res; 
+  } 
+  */
 
 };//end class Moments2
 

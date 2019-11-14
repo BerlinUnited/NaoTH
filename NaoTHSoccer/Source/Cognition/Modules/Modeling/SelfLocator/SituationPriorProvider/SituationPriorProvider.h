@@ -22,7 +22,6 @@
 // situation
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/BodyState.h"
-#include "Representations/Modeling/SituationStatus.h"
 
 #include "Representations/Modeling/SituationPrior.h"
 
@@ -45,7 +44,6 @@ BEGIN_DECLARE_MODULE(SituationPriorProvider)
 
   REQUIRE(MotionStatus)
   REQUIRE(BodyState)
-  REQUIRE(SituationStatus)
 
   PROVIDE(SituationPrior)
 END_DECLARE_MODULE(SituationPriorProvider)
@@ -103,6 +101,7 @@ private:
   PlayerInfo::RobotState lastRobotState;
   PlayerInfo::RobotState currentRobotState;
   GameData::GameState gameStateWhenPenalized;
+  GameData::Penalty reasonForLastPenalized;
 
   bool walked_after_penalized_or_init;
 

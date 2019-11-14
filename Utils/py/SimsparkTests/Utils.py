@@ -1,6 +1,7 @@
 import logging
 import time
 import os
+import traceback
 
 from AgentController import AgentController
 
@@ -23,7 +24,7 @@ def wait_for(condition:callable, sleeper:float, min_time:float=0.0, max_time:flo
         while (not condition(*kwargs) or (time.monotonic() - _start) < min_time) and (time.monotonic() - _start) < max_time:
             time.sleep(sleeper)
     except Exception as e:
-        logging.error(e)
+        logging.error("%s\n%s", e, traceback.format_exc(limit=2))
 
 def wait_for_cmd(agent:AgentController, cmd_id:int, sleeper:float=0.1):
     """

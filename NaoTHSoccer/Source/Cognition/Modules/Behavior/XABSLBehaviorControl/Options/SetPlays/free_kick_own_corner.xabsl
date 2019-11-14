@@ -1,0 +1,140 @@
+/** If the ball leaves the opponent baseline, it is put back on the corner and a corner kick is 
+ *  awarded to us.
+ */
+// TODO: should we handle this somehow "team.members_alive_count <= 1"??
+option free_kick_own_corner
+{
+  // search for ball
+  initial state search_ball {
+    decision {
+      if(ball.know_where_itis) {
+        goto turn_to_ball;
+      } else {
+        stay;
+      }
+    }
+    action
+    {
+      // TODO: we can look to the left/right corner, the ball MUST be there!
+      passive_ball_not_seen();
+    }
+  }
+
+  // turn to ball
+  state turn_to_ball {
+    decision {
+      if(!ball.know_where_itis) {
+        goto search_ball;
+      } else if(abs(value = atan2(y=ball.preview.y, x=ball.preview.x)) < 50) {
+        goto wait_and_watch;
+      } else {
+        stay;
+      }
+    }
+    action {
+      motion.type=walk;
+      motion.walk_speed.x=0;
+      motion.walk_speed.y=0;
+      motion.walk_speed.rot=atan2(y=ball.preview.y, x=ball.preview.x);
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  // wait for all players (teammates) to standup, search for the ball and turn to it
+  state wait_and_watch {
+    decision {
+      if(!ball.know_where_itis) {
+        goto search_ball;
+      } else if(abs(value = atan2(y=ball.preview.y, x=ball.preview.x)) >= 50) {
+        goto turn_to_ball;
+      } else if(game.msecsRemainingSecondary <= 15000) { // 15 seconds
+        // TODO: we should know if someone is fallen! if that's not the case, we can position us much earlier!
+        // all teammates should be up again (if fallen) and it should be clear who's striker!
+        if(strategy.role_dynamic == striker) {
+          goto position_for_free_kick;
+        } else {
+          // all others wait ...
+          // TODO: others should move away from the ball if they're not striker!?
+          goto done;
+        }
+      } else {
+        stay;
+      }
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = look_at_ball;
+    }
+  }
+
+  // go to the ball and move around it until facing the opponent goal
+  state position_for_free_kick {
+    decision {
+      if(!ball.know_where_itis) {
+        goto search_ball;
+      } else if(game.msecsRemainingSecondary > 15000 || strategy.role_dynamic != striker) { // 15 seconds
+        goto wait_and_watch;
+      } else if(vector.abs(x=ball.preview.x, y=ball.preview.y) > 250) {
+        goto move_closer_to_ball;
+      } else if(abs(value = atan2(y=locator.field_to_relative.y(x=field.xPosOpponentGroundline, y=0), 
+                                  x=locator.field_to_relative.x(x=field.xPosOpponentGroundline, y=0))) <= 10) {
+        // TODO: do we want explicitly kick the ball, or just wait and switch to "normal" striker role?!?
+        goto done;
+      } else {
+        stay;
+      }
+    }
+    action {
+      team.is_playing_as_striker = true;
+      path2018.routine = move_around_ball2;
+      // turn around ball, until facing the opponent goal
+      path.direction = atan2(y=locator.field_to_relative.y(x=field.xPosOpponentGroundline, y=0), 
+                             x=locator.field_to_relative.x(x=field.xPosOpponentGroundline, y=0));
+      path.radius = 210;
+      path.stable = true;
+
+      head.control_mode = look_at_ball_percept;
+    }
+  }
+
+  // striker: go to the ball
+  state move_closer_to_ball {
+    decision {
+      if(!ball.know_where_itis) {
+        goto search_ball;
+      } else if(game.msecsRemainingSecondary > 15000 || strategy.role_dynamic != striker) { // 15 seconds
+        goto wait_and_watch;
+      } else if(vector.abs(x=ball.preview.x, y=ball.preview.y) <= 250) {
+        goto position_for_free_kick;
+      } else {
+        stay;
+      }
+    }
+    action {
+      go_to_ball_with_USOA(distance=200);
+      head.control_mode = look_at_ball;
+    }
+  }
+
+  // wait until the time is up / the setPlay state changed
+  target state done {
+    decision {
+      if(!ball.know_where_itis) {
+        goto search_ball;
+      } else if(abs(value = atan2(y=ball.preview.y, x=ball.preview.x)) >= 50) {
+        goto turn_to_ball;
+      } else if(game.msecsRemainingSecondary > 15000 // 10 seconds
+              // if the striker isn't position correctly, go back to "wait_and_watch"
+              || (strategy.role_dynamic == striker 
+                  && vector.abs(x=ball.preview.x, y=ball.preview.y) > 250)) {
+        goto wait_and_watch;
+      } else {
+        stay;
+      }
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = look_at_ball;
+    }
+  }
+}

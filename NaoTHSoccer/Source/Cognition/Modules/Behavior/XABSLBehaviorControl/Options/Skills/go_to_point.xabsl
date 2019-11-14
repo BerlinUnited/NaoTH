@@ -63,7 +63,8 @@ option go_to_point
       if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) > 800 )
         goto far_away;
       else if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) > 250 
-            || abs(value = robot_pose.planned.rotation - @rot) > 15 )
+            || abs(value = robot_pose.planned.rotation - @rot) > 15
+ )
         goto turn;
       else
         stay;

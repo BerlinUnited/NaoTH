@@ -22,7 +22,8 @@ namespace remote("Remote Symbols") {
     say
   };
 
-  enum remote_control_mode input remote_control.mode;
+
+  enum remote_control_mode input remote_control.mode;
   enum remote_control_action input remote_control.action;
   enum remote_control_second_action input remote_control.second_action;
 

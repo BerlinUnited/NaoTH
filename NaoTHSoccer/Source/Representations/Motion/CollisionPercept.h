@@ -33,6 +33,8 @@ public:
   unsigned int timeCollisionArmLeft;
   unsigned int timeCollisionArmRight;
 
+  std::string lastCollisionDirection;
+
   std::vector<Vector2d> referenceHullLeft;
   std::vector<Vector2d> referenceHullRight;
   std::vector<Vector2d> pointBufferLeft;
@@ -43,6 +45,7 @@ public:
   
   virtual void print(std::ostream& stream) const
   {
+      stream << "Last collision direction: " << lastCollisionDirection << std::endl;
     stream << "timeCollisionArmLeft = " << timeCollisionArmLeft << '\n';
     stream << "timeCollisionArmRight = " << timeCollisionArmRight << '\n';
     stream << "referenceHullLeft: " << "\n";

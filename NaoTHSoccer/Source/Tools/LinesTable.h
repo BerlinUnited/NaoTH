@@ -17,6 +17,46 @@
 #include "Tools/Debug/NaoTHAssert.h"
 #include "Tools/Math/Line.h"
 
+
+//NOTE: this should only be used with field lines.
+// LineIntersection is meant to describe intersections between field lines but not in general mathematical sense.
+// The type of an intersection only makes sense for field lines.
+class LineIntersection
+{
+public:
+  enum Type
+  {
+    unknown, //equals ColorClasses::none
+    T, //1 line intersect an other, equals ColorClasses::orange
+    L, //2 lines touch, equals ColorClasses::yellow
+    C, //lines intersect on/with circle, equals ColorClasses::skyblue
+    E, //line extends each other, equals ColorClasses::white
+    X, //2 intersect each other, equals ColorClasses::red
+    none //the line segments don't intersect
+  };
+
+  static inline std::string getTypeName(Type type) {
+    switch(type) {
+      case unknown: return "U";
+      case T: return "T";
+      case L: return "L";
+      case C: return "C";
+      case E: return "E";
+      case X: return "X";
+      case none: return "N";
+    }
+    return "Unknown Type";
+  }
+
+  LineIntersection(Vector2i pos, Type type) 
+    : type(type), pos(pos)
+  {}
+
+  Type type;
+  Vector2i pos; /**< The fieldcoordinates of the intersection */
+};
+
+
 class LinesTable
 {
 public:
@@ -67,7 +107,7 @@ private:
   double xWidth;
 
   int line_type[numberOfLinesTableType];
-  static const int numberOfTables;
+  //static const int numberOfTables;
   /**
     long_lines & along_lines
     long_lines & across_lines
@@ -93,7 +133,7 @@ private:
   std::vector<Math::LineSegment> lines;
 
   /** list of intersections between the lines */
-  std::vector<Math::Intersection> intersections;
+  std::vector<LineIntersection> intersections;
 
 public:
 
@@ -117,34 +157,32 @@ public:
   {
   }
 
-  void addLine(const Vector2d& begin, const Vector2d& end)
-  {
+  void addLine(const Vector2d& begin, const Vector2d& end) {
     lines.push_back(Math::LineSegment(begin, end));
-  }//end addLine
+  }
 
   /** some getter */
   const std::vector<Math::LineSegment>& getLines() const { return lines; }
-  const std::vector<Math::Intersection>& getIntersections() const { return intersections; }
+  const std::vector<LineIntersection>& getIntersections() const { return intersections; }
   const Math::LineSegment& operator[] (unsigned idx) const { return lines[idx]; }
 
   /** calculate the nearest line among all lines*/
-  Math::LineSegment getNearestLine(const Pose2D& pose) const
-  {
+  Math::LineSegment getNearestLine(const Pose2D& pose) const {
     return lines[getNearestLine(pose.translation, all_lines)];
-  }//end getNearestLine
+  }
 
 
   /**
    type - list of constraints of the request
    */
-  size_t getNearestLine(const Vector2d& point, int type = all_lines) const
+  int getNearestLine(const Vector2d& point, int type = all_lines) const
   {
     ASSERT(lines.size() > 0);
 
     double minDistance = std::numeric_limits<double>::infinity();
-    size_t minIdx = 0;
+    int minIdx = -1;
 
-    for (unsigned int i = 0; i < lines.size(); i++)
+    for (size_t i = 0; i < lines.size(); i++)
     {
       Vector2d direction = lines[i].getDirection();
       direction.normalize();
@@ -154,16 +192,16 @@ public:
       int direction_type = (fabs(direction.x) > fabs(direction.y))          ? along_lines :across_lines;
       int line_type      = (lines[i].getBase().abs() < circle_radius + 100) ? circle_lines:(length_type|direction_type);
 
-      if((type & line_type) != line_type)
+      if((type & line_type) != line_type) {
         continue;
+      }
 
       // calculate the distance :)
       double dist = lines[i].minDistance(point);
 
-      if (dist >= 0 && dist <= minDistance)
-      {
+      if (dist >= 0 && dist <= minDistance) {
         minDistance = dist;
-        minIdx = i;
+        minIdx = static_cast<int>(i);
       }
     }//end for
 
@@ -175,17 +213,17 @@ public:
     ASSERT(intersections.size() > 0);
 
     double minDistance = std::numeric_limits<double>::infinity();
-    unsigned int minIdx = 0;
+    int minIdx = 0;
 
-    for (unsigned int i = 0; i < intersections.size(); i++)
+    for (size_t i = 0; i < intersections.size(); i++)
     {
-      // calculate the distance :)
-      double dist = (intersections[i].pos - point).abs();
+      //NOTE: use the square distance because it's faster to calculate
+      double dist = (intersections[i].pos - point).abs2();
 
       if (dist >= 0 && dist <= minDistance)
       {
         minDistance = dist;
-        minIdx = i;
+        minIdx = static_cast<int>(i);
       }
     }//end for
 
@@ -197,43 +235,95 @@ public:
     ASSERT(intersections.size() > 0);
 
     double minDistance = std::numeric_limits<double>::infinity();
-    unsigned int minIdx = 0;
+    int minIdx = 0;
 
-    for (unsigned int i = 0; i < intersections.size(); i++)
+    for (size_t i = 0; i < intersections.size(); i++)
     {
       //is a T or X crossing
-      bool isXorT = ((intersections[i].type == Math::Intersection::T) ||(intersections[i].type == Math::Intersection::X));
+      bool isXorT = ((intersections[i].type == LineIntersection::T) || (intersections[i].type == LineIntersection::X));
 
-      if(!isXorT)
-          continue;
+      if(!isXorT) {
+        continue;
+      }
+
       // calculate the distance :)
-      double dist = (intersections[i].pos - point).abs();
+      double dist = (intersections[i].pos - point).abs2();
 
       if (dist >= 0 && dist <= minDistance)
       {
         minDistance = dist;
-        minIdx = i;
+        minIdx = static_cast<int>(i);
       }
     }//end for
 
     return minIdx;
   }//end getNearestTCrossing
 
-
+  /*
   void findIntersections()
   {
-    for (unsigned int i = 0; i < lines.size(); i++)
+    for (size_t i = 0; i < lines.size(); i++)
     {
-      for (unsigned int j = i + 1; j < lines.size(); j++)
+      for (size_t j = i + 1; j < lines.size(); j++)
       {
-        Math::Intersection intersection(lines[i], lines[j]);
-        if (intersection.type != Math::Intersection::none)
-        {
+        LineIntersection intersection(lines[i], lines[j]);
+        if (intersection.type != LineIntersection::none) {
           intersections.push_back(intersection);
         }
       }//end for
     }//end for
   }//end findIntersections
+  */
+
+  // NOTE: this is experimental - a general method to calculate intersections
+  void calculateIntersections() 
+  {
+    for (size_t i = 0; i < lines.size(); i++) {
+      for (size_t j = i + 1; j < lines.size(); j++)
+      {
+        LineIntersection intersection = estimateIntersection(lines[i], lines[j]);
+        if (intersection.type != LineIntersection::none && intersection.type != LineIntersection::unknown) {
+          intersections.push_back(intersection);
+        }
+      }
+    }
+  }
+
+  static inline LineIntersection estimateIntersection(const Math::LineSegment& segmentOne, const Math::LineSegment& segmentTwo) 
+  {
+    const double maxAngleDiff = Math::fromDegrees(5.0);
+    const double maxDistanceToIntersection = 100.0; // 10cm
+
+    double t1 = segmentOne.Line::intersection(segmentTwo);
+    double t2 = segmentTwo.Line::intersection(segmentOne);
+
+    //---------o=====[===========]=====o-------------
+    bool insideSegmentOne = maxDistanceToIntersection < t1 && t1 < segmentOne.getLength() - maxDistanceToIntersection;
+    bool insideSegmentTwo = maxDistanceToIntersection < t2 && t2 < segmentTwo.getLength() - maxDistanceToIntersection;
+
+    //---[-----o=======================o-----]-------
+    bool nearSegmentOne = -maxDistanceToIntersection < t1 && t1 < segmentOne.getLength() + maxDistanceToIntersection;
+    bool nearSegmentTwo = -maxDistanceToIntersection < t2 && t2 < segmentTwo.getLength() + maxDistanceToIntersection;
+
+
+    double angleDiff = acos(segmentOne.getDirection()*segmentTwo.getDirection());
+
+    LineIntersection::Type type = LineIntersection::none;
+
+    if(!nearSegmentOne || !nearSegmentTwo) { // there is no meaningful intersection
+      type = LineIntersection::none;
+    } else if( angleDiff < Math::pi_2 - maxAngleDiff || Math::pi_2 + maxAngleDiff < angleDiff) { // not a right angle => weird angle
+      type = LineIntersection::C;
+    } else if( insideSegmentOne && insideSegmentTwo) {
+      type = LineIntersection::X;
+    } else if(insideSegmentOne || insideSegmentTwo) {
+      type = LineIntersection::T;
+    } else {
+      type = LineIntersection::L;
+    }
+
+    return LineIntersection(segmentOne.point(t1), type);
+  }
 
   /**
    * Draws a debug field drawing that displays the set of lines.
@@ -241,31 +331,16 @@ public:
   void draw(DrawingCanvas2D& canvas) const
   {
     canvas.pen("0000FF", 20);
-    for (unsigned int i = 0; i < lines.size(); i++)
-    {
-      canvas.drawLine(lines[i].begin().x, lines[i].begin().y,
-        lines[i].end().x, lines[i].end().y);
+    for (size_t i = 0; i < lines.size(); ++i) {
+      canvas.drawLine(lines[i].begin().x, lines[i].begin().y, lines[i].end().x, lines[i].end().y);
     }
 
-
     canvas.pen("FF0000", 20);
-    for (unsigned int i = 0; i < intersections.size(); i++)
+    for (size_t i = 0; i < intersections.size(); ++i)
     {
       canvas.fillOval(intersections[i].pos.x, intersections[i].pos.y, 20, 20);
-      switch(intersections[i].type)
-      {
-        case Math::Intersection::L:
-          canvas.drawText(intersections[i].pos.x+30, intersections[i].pos.y+30,"L");
-          break;
-        case Math::Intersection::T:
-          canvas.drawText(intersections[i].pos.x+30, intersections[i].pos.y+30,"T");
-          break;
-        case Math::Intersection::X:
-          canvas.drawText(intersections[i].pos.x+30, intersections[i].pos.y+30,"X");
-          break;
-        default: // shouldn't happen
-          canvas.drawText(intersections[i].pos.x+30, intersections[i].pos.y+30,"Unknown krossing type");
-      }//end switch
+      std::string name = LineIntersection::getTypeName(intersections[i].type);
+      canvas.drawText(intersections[i].pos.x+30, intersections[i].pos.y+30,name);
     }
   }//end draw
 
@@ -284,9 +359,13 @@ public:
 
         for(int i = 0; i < numberOfLinesTableType; i++)
         {
-          const size_t idx = getNearestLine(point, line_type[i]);
-          closestPoints[x][y][i].id = static_cast<int>(idx);
-          closestPoints[x][y][i].position = lines[idx].projection(point);
+          const int idx = getNearestLine(point, line_type[i]);
+          closestPoints[x][y][i].id = idx;
+          if(idx != -1) {
+            closestPoints[x][y][i].position = lines[idx].projection(point);
+          } else {
+            closestPoints[x][y][i].position = point;
+          }
         }
       }//end for
     }//end for
@@ -385,7 +464,8 @@ public:
     {
       if((type & line_type[i]) == line_type[i] && closestPoints[x][y][i].id != -1)
       {
-        double dist = (closestPoints[x][y][i].position - p).abs();
+        //NOTE: use the square distance because it's faster to calculate
+        double dist = (closestPoints[x][y][i].position - p).abs2(); 
         if(dist < minDist)
         {
           closestPoint = closestPoints[x][y][i];
@@ -416,14 +496,13 @@ public:
           double t = Math::clamp(d/(yWidth*ySize),0.0,1.0);
           Color color = white*t + black*(1-t);
           canvas.pen(color, 20);
-        }else
-        {
-          // noclosest line
+        } else {
+          // no closest line
           canvas.pen(white, 20);
         }
         canvas.fillBox(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
-      }//end for
-    }//end for
+      }
+    }
   }//end draw_closest_points
 
 
@@ -443,8 +522,8 @@ public:
         Color color = white*t + black*(1-t);
         canvas.pen(color, 20);
         canvas.fillBox(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
-      }//end for
-    }//end for
+      }
+    }
   }//end draw_closest_points
 
 
@@ -463,8 +542,8 @@ public:
         Color color = white*t + black*(1-t);
         canvas.pen(color, 20);
         canvas.fillBox(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
-      }//end for
-    }//end for
+      }
+    }
   }//end draw_closest_points
 
 };//end class LinesTable

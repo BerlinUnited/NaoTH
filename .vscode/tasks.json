@@ -48,7 +48,7 @@
                 "cwd": "${workspaceFolder}/NaoTHSoccer/Make"
             },
             "group": "build",
-            "command": "premake5 gmake && make -C ${workspaceFolder}/NaoTHSoccer/build config=debug_native LogSimulator",
+            "command": "premake5 gmake2 && make -C ${workspaceFolder}/NaoTHSoccer/build config=debug_native LogSimulator",
             "problemMatcher": {
                 "base": "$gcc",
                 "fileLocation": [
@@ -67,7 +67,7 @@
                 "cwd": "${workspaceFolder}/NaoTHSoccer/Make"
             },
             "group": "build",
-            "command": "premake5 gmake && make -C ${workspaceFolder}/NaoTHSoccer/build config=debug_native SimSpark",
+            "command": "premake5 gmake2 && make -C ${workspaceFolder}/NaoTHSoccer/build config=debug_native SimSpark",
             "problemMatcher": {
                 "base": "$gcc",
                 "fileLocation": [

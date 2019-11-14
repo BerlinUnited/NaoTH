@@ -6,6 +6,13 @@ package de.naoth.rc.dataformats;
 import com.google.protobuf.ByteString;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.awt.image.Raster;
+import java.util.Iterator;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+//import java.awt.GraphicsConfiguration;
+//import java.awt.GraphicsEnvironment;
+import java.awt.image.DataBuffer;
 
 /**
  *
@@ -13,6 +20,27 @@ import java.awt.image.DataBufferInt;
  */
 public class ImageConversions {
 
+    public enum Format {
+        RAW,
+        JPEG
+    }
+
+    // creates a BufferedImage object optimized for the current platform
+    // TODO: needs an isolated performance test "new BufferedImage" vs createCompatibleImage
+    public static BufferedImage createCompatibleImage(int width, int height)
+    {
+        // TODO: this need to be tested
+        // obtain the current system graphical settings
+        /*
+        GraphicsConfiguration gfxConfig = GraphicsEnvironment.
+            getLocalGraphicsEnvironment().getDefaultScreenDevice().
+            getDefaultConfiguration();
+
+        return gfxConfig.createCompatibleImage(width, height);
+        */
+        return new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+    }
+    
     public static class DimensionMismatchException extends RuntimeException {
 
         public DimensionMismatchException() {
@@ -22,6 +50,19 @@ public class ImageConversions {
             super(s);
         }
     }
+    
+    public static ImageReader getJPEGReader() {
+        //Find a suitable ImageReader
+        Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("JPEG");
+
+        while(readers.hasNext()) {
+            ImageReader jpegReader = (ImageReader)readers.next();
+            if(jpegReader.canReadRaster()) {
+                return jpegReader;
+            }
+        }
+        return null;
+      }
     
     public static void convertYUV422toYUV888(ByteString bs, BufferedImage image) {
         // we should have exactly 2 bytes per pixel
@@ -39,6 +80,28 @@ public class ImageConversions {
 
             rgbBuffer[i * 2] = ((y1 << 16) | (u << 8) | v);
             rgbBuffer[i * 2 + 1] = ((y2 << 16) | (u << 8) | v);
+        }
+    }//end convertYUV422toYUV888
+    
+    public static void convertYUV422toYUV888(Raster raster, BufferedImage image) {
+        // we should have exactly 2 bytes per pixel
+        if (image.getWidth() * image.getHeight() * 2  != raster.getDataBuffer().getSize()) {
+            throw new DimensionMismatchException();
+        }
+
+        // NOTE: the DataBuffer is of the type DataBufferByte
+        DataBuffer buf = raster.getDataBuffer();
+        int[] rgbBuffer = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+        
+        for (int i = 0; i < raster.getWidth() * raster.getHeight(); i++) {
+            // convert to 'unsigned'
+            int y1 = 0xFF & buf.getElem(i*4);
+            int u  = 0xFF & buf.getElem(i*4+1);
+            int y2 = 0xFF & buf.getElem(i*4+2);
+            int v  = 0xFF & buf.getElem(i*4+3);
+
+            rgbBuffer[i*2] = ((y1 << 16) | (u << 8) | v);
+            rgbBuffer[i*2 + 1] = ((y2 << 16) | (u << 8) | v);
         }
     }//end convertYUV422toYUV888
 

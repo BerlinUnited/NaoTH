@@ -102,7 +102,7 @@ public class Camera extends Drawable
   {
     if (null != image && vertex.length == 4)
     {
-      ImageComponent2D imageComponent = new ImageComponent2D(ImageComponent2D.FORMAT_RGB, image.getRgb());
+      ImageComponent2D imageComponent = new ImageComponent2D(ImageComponent2D.FORMAT_RGB, image.getRGB());
       QuadArray rect = new QuadArray(4, QuadArray.COORDINATES | QuadArray.TEXTURE_COORDINATE_2);
       rect.setCoordinate(0, vertex[0]);
       rect.setCoordinate(1, vertex[1]);

@@ -6,7 +6,7 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
 
-#include "Representations/Perception/BallPercept.h"
+#include "Representations/Perception/MultiBallPercept.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 
 #include "Representations/Perception/CameraMatrix.h"
@@ -25,8 +25,7 @@ BEGIN_DECLARE_MODULE(FakeBallDetector)
   REQUIRE(CameraInfoTop)
   REQUIRE(CameraMatrixTop)
 
-  PROVIDE(BallPercept)
-  PROVIDE(BallPerceptTop)
+  PROVIDE(MultiBallPercept)
 END_DECLARE_MODULE(FakeBallDetector)
 
 

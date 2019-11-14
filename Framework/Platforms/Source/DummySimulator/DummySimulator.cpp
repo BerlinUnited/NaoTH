@@ -19,7 +19,7 @@ using namespace std;
 using namespace naoth;
 
 DummySimulator::DummySimulator(bool backendMode, bool realTime, unsigned short port)
-  : PlatformInterface("DummySimulator", CYCLE_TIME),
+  :
   backendMode(backendMode)
 {
   registerInput<FrameInfo>(*this);
@@ -32,7 +32,8 @@ DummySimulator::DummySimulator(bool backendMode, bool realTime, unsigned short p
   registerOutput<MotorJointData>(*this);
   registerInput<SensorJointData>(*this);
   registerInput<FSRData>(*this);
-
+  registerInput<AccelerometerData>(*this);
+  
   theDebugServer.start(port);
   theDebugServer.setTimeOut(0);
 }

@@ -20,7 +20,8 @@ project "SimSpark"
     "gmodule-2.0",
     "gthread-2.0",
     "protobuf",
-    "fftw3"
+    "fftw3",
+    "jpeg"
    }
   
   targetname "naoth-simspark"

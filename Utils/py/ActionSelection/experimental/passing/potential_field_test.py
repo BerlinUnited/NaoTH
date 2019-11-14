@@ -37,7 +37,8 @@ if __name__ == "__main__":
     # opp_robots = []
     for i in range(int(y_dim)):
         for j in range(int(x_dim)):
-            zm[i, j] = pfield.evaluate_action_with_robots(m2d.Vector2(xm[i][j], ym[i][j]), opp_robots, own_robots)
+            zm[i, j] = pfield.evaluate_action_with_robots(m2d.Vector2(xm[i][j], ym[i][j]),
+                                                          opp_robots, own_robots)
 
     # plot
     fig = plt.figure(frameon=False)
@@ -54,7 +55,7 @@ if __name__ == "__main__":
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
 
-    ax.get_xaxis().tick_bottom()   # remove unneeded ticks
+    ax.get_xaxis().tick_bottom()  # remove unneeded ticks
     ax.get_yaxis().tick_left()
 
     CS1 = plt.contourf(x, y, zm, 10, alpha=0.6, cmap="coolwarm", frameon=False)

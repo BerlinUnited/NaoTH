@@ -15,7 +15,7 @@ function [spectrum, max_auto_corr] = calc_spectrum(raw_samples)
     % unnormalize it because cpp implementation expects it that way
     % assumes that 2048 is length(raw_samples * 2)
     mat_correlation_func = mat_correlation_func * 2048;
-
+    disp(length(mat_correlation_func))
     % only output half of the spectrum
     spectrum = mat_spectrum_conj(1:1025);
     max_auto_corr = max(mat_correlation_func);

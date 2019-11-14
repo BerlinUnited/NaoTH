@@ -39,6 +39,8 @@ namespace sensor("Sensor Symbols") {
   bool input body.foot.groundcontact.right;
   float input body.foot.groundcontact.statetime;
 
+  bool input body.lifted_up;
+  
   /** indicates a collision with an arm */
   bool input body.collision.arm.left;
   bool input body.collision.arm.right;

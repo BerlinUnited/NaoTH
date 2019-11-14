@@ -16,6 +16,16 @@
 #include <string>
 #include <iostream>
 
+class KeyFrameMotionParameters: public ParameterList{
+      public:
+        KeyFrameMotionParameters() : ParameterList("KeyFrameMotionParameters")
+        {
+          PARAMETER_REGISTER(stiffness) = 1.0;
+          syncWithConfig();
+        }
+        double stiffness;
+};
+
 class FeetStabilizerParameters: public ParameterList{
       public:
         FeetStabilizerParameters() : ParameterList("Walk_FeetStabilizer")
@@ -49,16 +59,22 @@ class FootStepPlanner2018Parameters: public ParameterList{
           PARAMETER_REGISTER(limits.maxStepLengthBack)  = 35;
           PARAMETER_REGISTER(limits.maxStepWidth)       = 60;
           PARAMETER_REGISTER(limits.maxStepChange)      = 0.3;
+          PARAMETER_REGISTER(limits.maxStepChangeDown)  = 0.5;
 
           PARAMETER_ANGLE_REGISTER(limits.maxCtrlTurn) = 30;
           PARAMETER_REGISTER(limits.maxCtrlLength) = 80;
           PARAMETER_REGISTER(limits.maxCtrlWidth)  = 50;
+          PARAMETER_REGISTER(limits.maxCtrlChange)     = 0.3;
+          PARAMETER_REGISTER(limits.maxCtrlChangeDown) = 0.8;
 
           PARAMETER_REGISTER(footOffsetY) = 0;
 
           PARAMETER_REGISTER(step.doubleSupportTime) = 0;
           PARAMETER_REGISTER(step.duration) = 260;
-          PARAMETER_REGISTER(step.dynamicDuration) = true;
+          PARAMETER_REGISTER(step.dynamicDuration.on) = true;
+          PARAMETER_REGISTER(step.dynamicDuration.fast) = 260;
+          PARAMETER_REGISTER(step.dynamicDuration.normal) = 280;
+          PARAMETER_REGISTER(step.dynamicDuration.stable) = 300;
 
           PARAMETER_REGISTER(stabilization.dynamicStepSize)  = true;
           PARAMETER_REGISTER(stabilization.dynamicStepSizeP) = -0.1;
@@ -75,21 +91,32 @@ class FootStepPlanner2018Parameters: public ParameterList{
 
       struct Limits {
         double maxTurnInner;
+
         double maxStepTurn;
         double maxStepLength;
         double maxStepLengthBack;
         double maxStepWidth;
         double maxStepChange;
+        double maxStepChangeDown;
 
         double maxCtrlTurn;
         double maxCtrlLength;
         double maxCtrlWidth;
+        double maxCtrlChange;
+        double maxCtrlChangeDown;
       } limits;
 
       struct Step {
         int  doubleSupportTime;
         int  duration;
-        bool dynamicDuration;
+
+        struct {
+          bool on;
+          int fast;
+          int normal;
+          int stable;
+        } dynamicDuration;
+
       } step;
 
       struct Stabilization {
@@ -249,11 +276,22 @@ public:
   double ZMPOffsetYByCharacter;
 };
 
-class ZMPPreviewControllerParameter {
+class ZMPPreviewControllerParameter : public ParameterList {
     public:
-        ZMPPreviewControllerParameter(): current(NULL) {
+        ZMPPreviewControllerParameter() :
+            ParameterList("Walk_ZMPPreviewControllerParameter"),
+            current(nullptr)
+        {
+            PARAMETER_REGISTER(stationary_threshold.velocity) = 3;
+            PARAMETER_REGISTER(stationary_threshold.acceleration) = 100;
+            syncWithConfig();
             loadParameter();
         }
+
+        struct {
+            double velocity;
+            double acceleration;
+        } stationary_threshold;
 
         struct Parameters {
             double Ki;
@@ -345,6 +383,7 @@ public:
     Walk2018Parameters(){
     }
 
+    KeyFrameMotionParameters              keyFrameMotionParameters;
     FeetStabilizerParameters              feetStabilizerParams;
     FootStepPlanner2018Parameters         footStepPlanner2018Params;
     FootTrajectoryGenerator2018Parameters footTrajectoryGenerator2018Params;
@@ -356,6 +395,7 @@ public:
     GeneralParameters                     generalParams;
 
     void init(DebugParameterList& dbpl){
+        dbpl.add(&keyFrameMotionParameters);
         dbpl.add(&feetStabilizerParams);
         dbpl.add(&footStepPlanner2018Params);
         dbpl.add(&footTrajectoryGenerator2018Params);
@@ -363,10 +403,12 @@ public:
         dbpl.add(&liftingFootCompensatorParams);
         dbpl.add(&torsoRotationStabilizerParams);
         dbpl.add(&zmpPlanner2018Params);
+        dbpl.add(&zmpPreviewControllerParams);
         dbpl.add(&generalParams);
     }
 
     void remove(DebugParameterList& dbpl){
+        dbpl.remove(&keyFrameMotionParameters);
         dbpl.remove(&feetStabilizerParams);
         dbpl.remove(&footStepPlanner2018Params);
         dbpl.remove(&footTrajectoryGenerator2018Params);
@@ -374,6 +416,7 @@ public:
         dbpl.remove(&liftingFootCompensatorParams);
         dbpl.remove(&torsoRotationStabilizerParams);
         dbpl.remove(&zmpPlanner2018Params);
+        dbpl.remove(&zmpPreviewControllerParams);
         dbpl.remove(&generalParams);
     }
 

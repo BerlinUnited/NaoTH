@@ -19,8 +19,7 @@
 // simple robot
 #include <Representations/Infrastructure/JointData.h>
 #include <Representations/Infrastructure/FSRData.h>
-
-#define CYCLE_TIME 20
+#include <Representations/Infrastructure/AccelerometerData.h>
 
 class DummySimulator : public naoth::PlatformInterface
 {
@@ -32,9 +31,10 @@ public:
   virtual std::string getBodyNickName() const { return "naoth"; }
   virtual std::string getHeadNickName() const { return "naoth"; }
   virtual std::string getRobotName() const { return "dummy-simulator"; }
+  virtual std::string getPlatformName() const { return "DummySimulator"; }
+  virtual unsigned int getBasicTimeStep() const { return 20; }
 
   void main();
-
 
   static const unsigned int frameExecutionTime = 33;
 
@@ -98,6 +98,11 @@ public: // a dummy robot simulator
 
   void get(naoth::SensorJointData& data) const { data = robotJointData; }
   void get(naoth::FSRData& data) const { data = fsrData; }
+
+  void get(naoth::AccelerometerData& data) {
+    data.data.z = Math::g;
+    data.rawData.z = Math::g;
+  }
 
   /*
   void get(BatteryData& data);

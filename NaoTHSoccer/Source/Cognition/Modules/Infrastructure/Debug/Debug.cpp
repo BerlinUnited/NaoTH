@@ -63,6 +63,9 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   // modify commands
   REGISTER_DEBUG_COMMAND("DebugPlot:get", "get the plots", &getDebugPlot());
 
+  getImageJPEG().set(getImage());
+  getImageJPEGTop().set(getImageTop());
+
   // HACK: initialize the both canvases
   getDebugImageDrawings().init(getImage().width(), getImage().height());
   getDebugImageDrawingsTop().init(getImageTop().width(), getImageTop().height());
@@ -250,7 +253,7 @@ void Debug::draw3D()
   // draw ball model in 3D viewer
   DEBUG_REQUEST("3DViewer:Ball", 
     Vector3d ballPos = robotPose3D * Vector3d(getBallModel().position.x, getBallModel().position.y, getFieldInfo().ballRadius);
-    SPHERE(getFieldInfo().ballColor, getFieldInfo().ballRadius, ballPos);
+    SPHERE(ColorClasses::orange, getFieldInfo().ballRadius, ballPos);
   );
 
   DEBUG_REQUEST("3DViewer:kinematic_chain:links",
