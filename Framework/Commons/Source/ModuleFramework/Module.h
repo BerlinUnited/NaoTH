@@ -207,7 +207,7 @@ template<class T> class IF : public StaticRegistry<T> {};
   class M;                                                    \
   template<> class IF<M>: public StaticRegistry<M>            \
   {                                                           \
-  private: Module* module;                                    \
+  protected: Module* module;                                  \
   public:                                                     \
     IF() : module(nullptr) {}                                 \
     IF(Module* module) : module(module) {}                    \
@@ -247,28 +247,4 @@ template<class T> class IF : public StaticRegistry<T> {};
     virtual std::string getDescription() const { return IF<M>::description; } \
   };
 
-/** 
-* specialize the interface IF<M> for the module M, which has no representations
-*/
-#define DECLARE_MODULE_WITHOUT_REPRESENTATIONS(M)                  \
-  class M;                                                    \
-  template<> class IF<M>: public StaticRegistry<M>            \
-  {                                                           \
-  public:                                                     \
-    IF()  {}                                                  \
-    IF(Module* /*module*/)  {}                                    \
-    static std::string getName() { return #M; }               \
-    static std::string getModulePath() {                      \
-      return get_sub_core_module_path(__FILE__);              \
-    }                                                         \
-  };                                                          \
-  class M##Base: public Module, public IF<M>                  \
-  {                                                           \
-  public: M##Base() : IF<M>(this) {                           \
-  }                                                           \
-  public:                                                     \
-    virtual std::string getName() const {return #M; }         \
-    virtual std::string getModulePath() const { return IF<M>::getModulePath(); } \
-    virtual std::string getDescription() const { return IF<M>::description; } \
-  };
 #endif // _Module_h_

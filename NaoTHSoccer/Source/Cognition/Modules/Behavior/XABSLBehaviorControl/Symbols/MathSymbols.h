@@ -17,7 +17,8 @@
 using namespace Math;
 
 
-DECLARE_MODULE_WITHOUT_REPRESENTATIONS(MathSymbols)
+BEGIN_DECLARE_MODULE(MathSymbols)
+END_DECLARE_MODULE(MathSymbols)
 
 /**
 * The Xabsl symbols that are defined in "math_symbols.xabsl"

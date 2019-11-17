@@ -11,7 +11,8 @@
 #include "Motion/Engine/MotionFactory.h"
 #include <ModuleFramework/Module.h>
 
-DECLARE_MODULE_WITHOUT_REPRESENTATIONS(ParallelKinematicMotionFactory)
+BEGIN_DECLARE_MODULE(ParallelKinematicMotionFactory)
+END_DECLARE_MODULE(ParallelKinematicMotionFactory)
 
 class ParallelKinematicMotionFactory: public ParallelKinematicMotionFactoryBase, public MotionFactory
 {
