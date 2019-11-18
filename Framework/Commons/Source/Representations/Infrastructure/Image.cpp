@@ -122,6 +122,8 @@ void Serializer<Image>::serialize(const Image& representation, std::ostream& str
   img.set_height(representation.height());
   img.set_width(representation.width());
   img.set_format(naothmessages::Image_Format_YUV422);
+  // FIXME: set_data calls std::string(..) which creates a copy of the whole data.
+  //        Can we make it zero-copy somehow?
   img.set_data(representation.data(), representation.data_size());
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
