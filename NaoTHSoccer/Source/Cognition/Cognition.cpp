@@ -82,6 +82,7 @@
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
 #include "Modules/Modeling/FieldCompass/FieldCompass.h"
 #include "Modules/Modeling/ObstacleLocator/UltraSoundObstacleLocator.h"
+#include "Modules/Modeling/ObstacleLocator/UltrasonicObstacleLocator2020.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiveEmulator.h"
 #include "Modules/Modeling/TeamMessageStatistics/TeamMessageStatisticsModule.h"
 #include "Modules/Modeling/TeamMessageStatistics/TeamMessagePlayersStateModule.h"
@@ -113,6 +114,8 @@
 #include "Modules/Modeling/BallLocator/TeamBallLocator/TeamBallLocatorCanopyCluster.h"
 #include "Modules/Modeling/BallLocator/MultiKalmanBallLocator/MultiKalmanBallLocator.h"
 #include "Modules/Modeling/StaticDebugModelProvider/StaticDebugModelProvider.h"
+
+#include "Modules/Modeling/ObstacleLocator/MultiUnifiedObstacleLocator.h"
 
 #include "Modules/Modeling/Simulation/SimulationTest.h"
 #include "Modules/Modeling/Simulation/Simulation.h"
@@ -151,11 +154,11 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   ModuleCreator<Sensor>* sensor = registerModule<Sensor>(std::string("Sensor"), true);
   sensor->getModuleT()->init(platformInterface, platform);
 
-  /* 
+  /*
   * to register a module use
   *   REGISTER_MODULE(ModuleClassName);
   *
-  * Remark: to enable the module don't forget 
+  * Remark: to enable the module don't forget
   *         to set the value in modules.cfg
   */
 
@@ -201,7 +204,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(RedBallDetector);
   REGISTER_MODULE(CNNBallDetector);
-  
+
   REGISTER_MODULE(FakeCameraMatrixFinder);
   REGISTER_MODULE(FakeBallDetector);
 
@@ -211,7 +214,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(RansacLineDetector);
   REGISTER_MODULE(RansacLineDetectorOnGraphs);
   REGISTER_MODULE(LineAugmenter);
-  
+
   REGISTER_MODULE(CompassProvider);
 
   // modeling
@@ -219,6 +222,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(BodyStateProvider);
   REGISTER_MODULE(FieldCompass);
   REGISTER_MODULE(UltraSoundObstacleLocator);
+  REGISTER_MODULE(UltrasonicObstacleLocator2020);
   REGISTER_MODULE(TeamCommReceiveEmulator);
   REGISTER_MODULE(TeamMessageStatisticsModule);
   REGISTER_MODULE(TeamMessagePlayersStateModule);
@@ -234,6 +238,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(TeamBallLocatorMedian);
   REGISTER_MODULE(TeamBallLocatorCanopyCluster);
 
+  REGISTER_MODULE(MultiUnifiedObstacleLocator);
   /*
    * BEGIN ROLE DECISIONS
    */
@@ -274,7 +279,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   registerModule<CameraMatrixCorrectorV3>("FIXMECameraMatrixCorrectorV3", false);
 
   REGISTER_MODULE(TeamCommSender);
-  
+
   // debug
   REGISTER_MODULE(GameLogger);
   REGISTER_MODULE(Debug);
@@ -289,13 +294,13 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   // use the configuration in order to set whether a module is activated or not
   const naoth::Configuration& config = Platform::getInstance().theConfiguration;
-  
+
   list<string>::const_iterator name = getExecutionList().begin();
   for(;name != getExecutionList().end(); ++name)
   {
     bool active = false;
-    if(config.hasKey("modules", *name)) {    
-      active = config.getBool("modules", *name);      
+    if(config.hasKey("modules", *name)) {
+      active = config.getBool("modules", *name);
     }
     if(active) {
       std::cout << "[Cognition] activating module " << *name << std::endl;
@@ -335,7 +340,7 @@ void Cognition::call()
       module->execute();
     }
   }
-  
+
   STOPWATCH_STOP("Cognition.Execute");
 
 
