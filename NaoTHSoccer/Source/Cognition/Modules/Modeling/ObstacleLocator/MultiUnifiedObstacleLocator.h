@@ -7,6 +7,7 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugPlot.h"
+#include "Tools/Debug/DebugModify.h"
 
 #include <Representations/Perception/ObstaclePercept.h>
 
@@ -18,6 +19,7 @@ BEGIN_DECLARE_MODULE(MultiUnifiedObstacleLocator)
 // debug stuff
   PROVIDE(DebugDrawings)
   PROVIDE(DebugRequest)
+  PROVIDE(DebugModify)
   PROVIDE(DebugParameterList)
   PROVIDE(DebugPlot)
 
@@ -47,6 +49,8 @@ private:
 
     void provide_obstacle_model();
     void apply_odometry(Obstacle& obs);
+
+    void do_debug();
 };
 
 #endif // MULTI_UNIFIED_OBSTACLE_LOCATOR_H
