@@ -150,7 +150,7 @@ private:
                 std::vector<std::string> parts = naoth::StringTools::split(a, ';');
                 for(const std::string& part : parts) {
                     Roles::Static r = Roles::getStaticRole(part);
-                    ASSERT(Roles::unknown != r);
+                    ASSERT_MSG(Roles::unknown != r, "Role is unknown: '" + part + "'");
                     provider->getRoles().active.push_back(r);
                 }
             }
