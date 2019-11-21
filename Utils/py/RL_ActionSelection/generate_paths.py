@@ -48,18 +48,18 @@ def generate(max_steps, max_episode_length, output_format=2):
             # save transition in history
             episode_history.append([state, selected_action, reward, next_state, done])
 
-
             # output format specifies what will be displayed in the console
             # 0 - nothing at all
             # 1 - Episodes and steps after each episode
             # 2 - Everything after each step
             if output_format == 2:
-                print("Step: " + str(steps) + ";\t Episode: " + str(episodes) + ";\t Step in Episode: " +
+                print("Step: " + str(steps) + ";\t Episode: " + str(
+                    episodes) + ";\t Step in Episode: " +
                       str(episode_length))
 
             episode_length += 1
             state = next_state
-            #steps += 1
+            # steps += 1
 
         if output_format == 1:
             print("Steps: " + str(steps) + ";\t Episode: " + str(episodes))
@@ -76,16 +76,16 @@ def generate(max_steps, max_episode_length, output_format=2):
 
     return np.array(history)
 
+
 def save_stuff(list, filename):
     save_data = np.array(list)
-    np.save(file=filename,arr=save_data)
-    print("-"*20 + "\nSaved " + filename)
-
-
+    np.save(file=filename, arr=save_data)
+    print("-" * 20 + "\nSaved " + filename)
 
 
 if __name__ == "__main__":
     start_index = 20
     for i in range(20):
         filename = "save" + str(start_index + i) + ".npy"
-        save_stuff(generate(max_steps=50000, max_episode_length=10, output_format=1), filename=filename)
+        save_stuff(generate(max_steps=50000, max_episode_length=10, output_format=1),
+                   filename=filename)

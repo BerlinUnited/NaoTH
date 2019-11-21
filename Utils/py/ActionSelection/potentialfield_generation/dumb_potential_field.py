@@ -44,15 +44,14 @@ ax = plt.gca()
 # create the scalar fields
 for x in range(int(-field.x_length * 0.5), int(field.x_length * 0.5), x_step):
     for y in range(int(-field.y_length * 0.5), int(field.y_length * 0.5), y_step):
-        a = np.array([x+x_step/2, y+y_step/2])
+        a = np.array([x + x_step / 2, y + y_step / 2])
         # b = np.array([4500, 0])
         projection = goal_line.projection(m2d.Vector2(x, y))
         b = np.array([projection.x, projection.y])
-        f[ny[y], nx[x]] = np.sqrt(np.sum((a-b)**2))
-
+        f[ny[y], nx[x]] = np.sqrt(np.sum((a - b) ** 2))
 
 # Plot potentials
-plt.pcolor(nxi, nyi, f-g, cmap="Greys_r", alpha=0.8, zorder=100)
+plt.pcolor(nxi, nyi, f - g, cmap="Greys_r", alpha=0.8, zorder=100)
 plt.show()
 
 """

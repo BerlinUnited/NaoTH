@@ -16,8 +16,6 @@ env = env.Env(simple_reward_and_termination, no_features)
 
 nb_actions = env.action_space.n
 
-
-
 load_weights = True
 
 save_weights = True
@@ -30,7 +28,7 @@ if test_dqn:
 # initialize keras model
 
 model = Sequential()
-model.add(Flatten(input_shape=(1,3,1)))
+model.add(Flatten(input_shape=(1, 3, 1)))
 model.add(Dense(128))
 model.add(Activation('relu'))
 model.add(Dense(128))
@@ -49,15 +47,16 @@ print(model.summary())
 
 memory = SequentialMemory(limit=10, window_length=1)
 
-#memory = EpisodeParameterMemory(limit=80, window_length=0)
+# memory = EpisodeParameterMemory(limit=80, window_length=0)
 
-#policy = policy.LinearAnnealedPolicy(policy.EpsGreedyQPolicy(), attr='eps', value_max=10., value_min=-10., value_test=.05,
+# policy = policy.LinearAnnealedPolicy(policy.EpsGreedyQPolicy(), attr='eps', value_max=10., value_min=-10., value_test=.05,
 #                                nb_steps=300000)
 
 policy = policy.EpsGreedyQPolicy()
 
 dqn = DQNAgent(model=model, nb_actions=nb_actions, policy=policy, memory=memory,
-               batch_size=80, nb_steps_warmup=10000, gamma=0.95, target_model_update=400, train_interval=400)
+               batch_size=80, nb_steps_warmup=10000, gamma=0.95, target_model_update=400,
+               train_interval=400)
 
 if load_weights:
     print("-----#-#-#-#-#-#-#-#----- loading weights -----#-#-#-#-#-#-#-#-----")
@@ -77,7 +76,6 @@ if save_weights:
     dqn.model.save_weights('test_train.hdf5', overwrite=True)
 
 # initialize training
-
 
 
 # initialize visualisation

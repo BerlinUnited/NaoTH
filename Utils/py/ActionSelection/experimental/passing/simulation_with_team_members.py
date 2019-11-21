@@ -30,9 +30,10 @@ class State:
         self.potential_field_function = "influence_01"
 
         self.own_robots = [m2d.Vector2(-2000, -1000)]
-        self.opp_robots = [] # m2d.Vector2(-1800, -1000)
+        self.opp_robots = []  # m2d.Vector2(-1800, -1000)
 
-        self.actions = [no_action, kick_short, sidekick_left, sidekick_right] # possible actions the robot can perform
+        self.actions = [no_action, kick_short, sidekick_left,
+                        sidekick_right]  # possible actions the robot can perform
 
 
 def draw_actions(actions_consequences, state, best_action):
@@ -40,9 +41,11 @@ def draw_actions(actions_consequences, state, best_action):
     tools.draw_field()
 
     axes = plt.gca()
-    #plt.gca().set_aspect('equal', adjustable='box')
+    # plt.gca().set_aspect('equal', adjustable='box')
     # axes.text(0, 0, best_action, fontsize=12)
-    axes.add_artist(Circle(xy=(state.pose.translation.x, state.pose.translation.y), radius=100, fill=False, edgecolor='white'))
+    axes.add_artist(
+        Circle(xy=(state.pose.translation.x, state.pose.translation.y), radius=100, fill=False,
+               edgecolor='white'))
     axes.text(-3000, -4500, best_action, fontsize=12)
 
     # Add the other robots
@@ -88,7 +91,8 @@ def main():
         # Simulate Consequences
         for action in action_list:
             single_consequence = a.ActionResults([])
-            actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state, 30))
+            actions_consequences.append(
+                Sim.simulate_consequences(action, single_consequence, state, 30))
 
         # actions_consequences is now a list of ActionResults
 

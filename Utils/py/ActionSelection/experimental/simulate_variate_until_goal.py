@@ -21,6 +21,7 @@ Example:
         $ python simulate_variate_until_goal.py
 """
 
+
 # TODO update this with all the bugfixes from other scripts
 # TODO make it possible to switch between variations and standard
 
@@ -54,7 +55,8 @@ def var_kick(kick_type, ball_pos, shorten_kicks=True):
         random_number = np.random.randint(0, 3, 1)  # zu 25 % kurzer Schuss
         if random_number == 0:
             direction = ball_pos.normalize()
-            rotation_degrees = random.gauss(0, 20)  # verschobene neue Richtung des Balls mit mittels Normalverteilung N(0,20)
+            rotation_degrees = random.gauss(0,
+                                            20)  # verschobene neue Richtung des Balls mit mittels Normalverteilung N(0,20)
             direction = direction.rotate(math.radians(rotation_degrees))
             direction *= 400
             return direction
@@ -83,17 +85,19 @@ def draw_robot_walk_lines(line):
     count = 0
     action_name_list = ["none", "short", "left", "right"]
     for state in line:
-
         origin = state.pose.translation
         ball_pos = state.pose * state.ball_position
 
         arrow_head = m2d.Vector2(500, 0).rotate(state.pose.rotation)
 
         axes.add_artist(Circle(xy=(origin.x, origin.y), radius=100, fill=False, edgecolor='white'))
-        axes.add_artist(Circle(xy=(ball_pos.x, ball_pos.y), radius=120, fill=True, edgecolor='blue'))
-        axes.arrow(origin.x, origin.y, arrow_head.x, arrow_head.y, head_width=100, head_length=100, fc='k', ec='k')
+        axes.add_artist(
+            Circle(xy=(ball_pos.x, ball_pos.y), radius=120, fill=True, edgecolor='blue'))
+        axes.arrow(origin.x, origin.y, arrow_head.x, arrow_head.y, head_width=100, head_length=100,
+                   fc='k', ec='k')
         axes.text(origin.x, origin.y - 350, count, fontsize=8)
-        axes.text(origin.x, 3500 - (count % 4)*250, action_name_list[state.next_action] + " " + str(count), fontsize=8)
+        axes.text(origin.x, 3500 - (count % 4) * 250,
+                  action_name_list[state.next_action] + " " + str(count), fontsize=8)
         count += 1
         # -- Add counter for moves
         # -- Add executed action
@@ -125,13 +129,14 @@ def simulate_goal_cycle(variation=False):
         # Simulate Consequences
         for action in action_list:
             single_consequence = a.ActionResults([])
-            actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state, a.num_particles))
+            actions_consequences.append(
+                Sim.simulate_consequences(action, single_consequence, state, a.num_particles))
 
         # Decide best action
         best_action = Sim.decide_smart(actions_consequences, state)
 
         # state.next_action = best_action #not next but last action
-        sim_data[len(sim_data)-1].next_action = best_action
+        sim_data[len(sim_data) - 1].next_action = best_action
 
         # expected_ball_pos should be in local coordinates for rotation calculations
         expected_ball_pos = actions_consequences[best_action].expected_ball_pos_mean
@@ -156,7 +161,8 @@ def simulate_goal_cycle(variation=False):
 
         if not action_list[best_action].name == "none":
 
-            print(str(state.pose * expected_ball_pos) + " Decision: " + str(action_list[best_action].name))
+            print(str(state.pose * expected_ball_pos) + " Decision: " + str(
+                action_list[best_action].name))
 
             # update the robots position
             rotation = np.arctan2(expected_ball_pos.y, expected_ball_pos.x)
@@ -167,17 +173,20 @@ def simulate_goal_cycle(variation=False):
             num_kicks += 1
 
         elif action_list[best_action].name == "none":
-            print(str(state.pose * expected_ball_pos) + " Decision: " + str(action_list[best_action].name))
+            print(str(state.pose * expected_ball_pos) + " Decision: " + str(
+                action_list[best_action].name))
 
             attack_direction = attack_dir.get_attack_direction(state)
             # Todo: can run in a deadlock for some reason
             if attack_direction > 0:
-                state.update_pos(state.pose.translation, state.pose.rotation + math.radians(10))  # Should be turn right
+                state.update_pos(state.pose.translation,
+                                 state.pose.rotation + math.radians(10))  # Should be turn right
                 # state.pose.rotation += math.radians(10)  # Should be turn right
                 print("Robot turns right - global rotation turns left")
 
             else:
-                state.update_pos(state.pose.translation, state.pose.rotation - math.radians(10))  # Should be turn left
+                state.update_pos(state.pose.translation,
+                                 state.pose.rotation - math.radians(10))  # Should be turn left
                 # state.pose.rotation -= math.radians(10)  # Should be turn left
                 print("Robot turns left - global rotation turns right")
 
@@ -192,7 +201,6 @@ def simulate_goal_cycle(variation=False):
 
 
 def main():
-
     variation = True
     ball_line = simulate_goal_cycle(variation)
     draw_robot_walk_lines(ball_line)

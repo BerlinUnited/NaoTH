@@ -10,11 +10,12 @@ message Image {
   enum Format {
     YUV = 0;
     YUV422 = 1;
+    JPEG = 2;
   }
   
   required bytes data = 1;
-  optional int32 width = 2 [default=320];
-  optional int32 height = 3 [default=240];
+  optional int32 width = 2 [default=640];
+  optional int32 height = 3 [default=480];
   
   optional CameraInfo cameraInfo = 4;
   

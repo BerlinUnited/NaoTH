@@ -22,7 +22,7 @@ class Parser:
             message.ParseFromString(data)
 
         return message
-    
+
 
 class LogReader:
     class Frame:
@@ -85,7 +85,8 @@ class LogReader:
                 #  self.names.append(name)
 
         except StopIteration as ex:
-            print ex
+            print
+            ex
 
     def __scanFrame(self):
         if self.scanPosition == -1:
@@ -96,7 +97,7 @@ class LogReader:
         # if self.idx > 30*100:
         #  return False
 
-        last = (self.scanPosition*100) / self.size
+        last = (self.scanPosition * 100) / self.size
 
         try:
             currentFrame = None
@@ -108,7 +109,7 @@ class LogReader:
                     currentFrame = LogReader.Frame(self, frameNumber)
 
                 if currentFrame.number != frameNumber:
-                    self.log.seek(-4,1)
+                    self.log.seek(-4, 1)
                     self.scanPosition = self.log.tell()
                     self.frames.append(currentFrame)
                     break
@@ -118,15 +119,15 @@ class LogReader:
 
                 currentFrame.messages[name] = (self.log.tell(), message_size, None)
                 # skip message data
-                self.log.seek(message_size,1)
+                self.log.seek(message_size, 1)
 
                 # todo: make it more efficient
                 if name not in self.names:
                     self.names.append(name)
 
-            new = (self.scanPosition*100) / self.size
+            new = (self.scanPosition * 100) / self.size
             # if new > last:
-              # print new
+            # print new
 
             # if new > 3:
             #  raise StopIteration
@@ -174,7 +175,7 @@ class LogReader:
             return self.filter(self.frames[i])
         else:
             raise StopIteration
-     
+
 
 if __name__ == "__main__":
 
@@ -182,4 +183,5 @@ if __name__ == "__main__":
     myParser.register("CameraMatrixTop", "CameraMatrix")
 
     for i in LogReader("./cognition.log", myParser):
-      print i.frameNumber, i.name
+        print
+        i.frameNumber, i.name

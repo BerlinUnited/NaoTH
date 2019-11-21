@@ -21,7 +21,6 @@
 #include "Representations/Infrastructure/FieldInfo.h"
 #include <Representations/Infrastructure/FrameInfo.h>
 #include "Representations/Perception/FieldPercept.h"
-#include "Representations/Perception/BallPercept.h"
 #include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Modeling/KinematicChain.h"
@@ -54,9 +53,6 @@ BEGIN_DECLARE_MODULE(RedBallDetector)
   REQUIRE(FieldPerceptTop)
   REQUIRE(FieldColorPercept)
   REQUIRE(FieldColorPerceptTop)
-
-  PROVIDE(BallPercept)
-  PROVIDE(BallPerceptTop)
 
   PROVIDE(MultiBallPercept)
 END_DECLARE_MODULE(RedBallDetector)
@@ -144,10 +140,7 @@ private:
   DOUBLE_CAM_REQUIRE(RedBallDetector, Image);
   DOUBLE_CAM_REQUIRE(RedBallDetector, CameraMatrix);
   DOUBLE_CAM_REQUIRE(RedBallDetector, FieldColorPercept);
-  DOUBLE_CAM_REQUIRE(RedBallDetector, FieldPercept);
- 
-  DOUBLE_CAM_PROVIDE(RedBallDetector, BallPercept);
-          
+  DOUBLE_CAM_REQUIRE(RedBallDetector, FieldPercept);          
 };//end class RedBallDetector
 
 #endif // _RedBallDetector_H_

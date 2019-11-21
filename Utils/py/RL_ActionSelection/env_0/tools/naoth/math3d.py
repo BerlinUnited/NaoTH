@@ -47,23 +47,23 @@ class Matrix3x3:
 
     def transpose(self):
         return Matrix3x3(
-          Vector3(self.c1.x, self.c2.x, self.c3.x),
-          Vector3(self.c1.y, self.c2.y, self.c3.y),
-          Vector3(self.c1.z, self.c2.z, self.c3.z))
+            Vector3(self.c1.x, self.c2.x, self.c3.x),
+            Vector3(self.c1.y, self.c2.y, self.c3.y),
+            Vector3(self.c1.z, self.c2.z, self.c3.z))
 
     @classmethod
     def eye(Matrix3x3):
         return Matrix3x3(
-          Vector3(1, 0, 0),
-          Vector3(0, 1, 0),
-          Vector3(0, 0, 1)
+            Vector3(1, 0, 0),
+            Vector3(0, 1, 0),
+            Vector3(0, 0, 1)
         )
 
     def __str__(self):
         return "{0} {1} {2}\n{3} {4} {5}\n{6} {7} {8}".format(
-          self.c1.x, self.c2.x, self.c3.x,
-          self.c1.y, self.c2.y, self.c3.y,
-          self.c1.z, self.c2.z, self.c3.z)
+            self.c1.x, self.c2.x, self.c3.x,
+            self.c1.y, self.c2.y, self.c3.y,
+            self.c1.z, self.c2.z, self.c3.z)
 
 
 class Pose3D:

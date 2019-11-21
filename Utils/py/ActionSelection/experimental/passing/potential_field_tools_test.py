@@ -1,6 +1,7 @@
 from __future__ import division
 import numpy as np
 from tools import field_info as field
+
 """ General Functions """
 
 
@@ -34,8 +35,8 @@ def evaluate_single_pos(ball_pos):  # evaluates the potential field at a x,y pos
     # gets called by evaluate_action2
     sigma_x = field.x_opponent_goal / 2.0
     sigma_y = field.y_left_sideline / 2.5
-    f = slope(ball_pos.x, ball_pos.y, -1.0 / field.x_opponent_goal, 0.0)\
-        - gaussian(ball_pos.x, ball_pos.y, field.x_opponent_goal, 0.0, sigma_x, sigma_y)\
+    f = slope(ball_pos.x, ball_pos.y, -1.0 / field.x_opponent_goal, 0.0) \
+        - gaussian(ball_pos.x, ball_pos.y, field.x_opponent_goal, 0.0, sigma_x, sigma_y) \
         + gaussian(ball_pos.x, ball_pos.y, field.x_own_goal, 0.0, 1.5 * sigma_x, sigma_y)
     return f
 
@@ -48,7 +49,8 @@ def evaluate_action_with_robots(results, state):
     number_of_actions = 0.0
     for p in results.positions():
         if p.cat() == "INFIELD" or p.cat() == "OPPGOAL":
-            sum_potential += evaluate_single_pos_with_robots(state.pose * p.pos(), state.opp_robots, state.own_robots)
+            sum_potential += evaluate_single_pos_with_robots(state.pose * p.pos(),
+                                                             state.opp_robots, state.own_robots)
             number_of_actions += 1
 
     assert number_of_actions > 0
@@ -59,8 +61,6 @@ def evaluate_action_with_robots(results, state):
 def evaluate_single_pos_with_robots(ball_pos, opp_robots, own_robots):
     # gets called by evaluate_action_with_robots
     f = evaluate_single_pos(ball_pos)
-
-
 
     for opp_rob in opp_robots:  # adding influence of own and opponent robots into the field
         f_rob = robot_field_opp(opp_rob, ball_pos)
@@ -81,23 +81,22 @@ def evaluate_single_pos_with_robots(ball_pos, opp_robots, own_robots):
                 f = -f_rob
     return f
 
+
 def evaluate_single_w_robots_new(ball_pos, opp_robots, own_robots):
     # gets called by evaluate_action_with_robots
     field_value = evaluate_single_pos(ball_pos)
 
     for own_rob in own_robots:  # adding influence of own and opponent robots into the field
-         rob_field = robot_field_own(own_rob, ball_pos)
+        rob_field = robot_field_own(own_rob, ball_pos)
 
-         if rob_field == 0: # robot is not relevant for action
-             continue
-         else:
-             # continue simulation
-             field_value += rob_field
-
-
-
+        if rob_field == 0:  # robot is not relevant for action
+            continue
+        else:
+            # continue simulation
+            field_value += rob_field
 
     return field_value
+
 
 def robot_field_own(robot_pos, ball_pos):
     # gets called by evaluate_single_pos_with_robots
@@ -115,7 +114,7 @@ def robot_field_own(robot_pos, ball_pos):
     distance_time = distance / vel_walk
     total_time = distance_time + rot_time
 
-    if total_time >= 5: # 5 sekunden scheint sehr viel
+    if total_time >= 5:  # 5 sekunden scheint sehr viel
         total_time = 5
 
     total_time /= 5.
