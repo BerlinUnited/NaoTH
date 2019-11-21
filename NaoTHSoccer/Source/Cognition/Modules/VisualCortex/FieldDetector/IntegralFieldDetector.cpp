@@ -23,15 +23,26 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
   getFieldPercept().reset();
+  endpoints.clear();
 
   if((cameraID==CameraInfo::Top)? params.set_whole_image_as_field_top: params.set_whole_image_as_field_bottom) {
     // skip field detection and set whole image under the horizon as field
+    endpoints = {
+      {0, 0},
+      {0, static_cast<int>(getImage().height())-1},
+      {static_cast<int>(getImage().width())-1, static_cast<int>(getImage().height())-1},
+      {static_cast<int>(getImage().width())-1, 0},
+      {0, 0}
+    };
+
+    // convex hull calculation sorts endpoints in clockwise order
+    std::vector<Vector2i> result = ConvexHull::convexHull(endpoints);
+
     FieldPercept::FieldPoly fieldPoly;
-    fieldPoly.add(0, 0);
-    fieldPoly.add(0, getImage().height()-1);
-    fieldPoly.add(getImage().width()-1, getImage().height()-1);
-    fieldPoly.add(getImage().width()-1, 0);
-    fieldPoly.add(0, 0);
+    for(size_t i = 0; i < result.size(); i++)
+    {
+      fieldPoly.add(result[i]);
+    }
 
     getFieldPercept().setField(fieldPoly, getArtificialHorizon());
     if(fieldPoly.getArea() >= 5600) {
@@ -39,13 +50,16 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
     }
 
     DEBUG_REQUEST("Vision:IntegralFieldDetector:mark_field_polygon",
-      size_t idx = 0;
-      ColorClasses::Color color = getFieldPercept().valid ? ColorClasses::blue : ColorClasses::red;
+      IMAGE_DRAWING_CONTEXT;
+      CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
+
+      std::string color = getFieldPercept().valid ? "FFFF00" : "FF0000";
+      PEN(color, 2);
+
       const FieldPercept::FieldPoly& poly = getFieldPercept().getValidField();
       for(size_t i = 1; i < poly.size(); i++)
       {
-        LINE_PX(color, poly[idx].x, poly[idx].y, poly[i].x, poly[i].y);
-        idx = i;
+        LINE(poly[i-1].x, poly[i-1].y, poly[i].x, poly[i].y);
       }
     );
     return;
@@ -54,7 +68,6 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
   if(!getBallDetectorIntegralImage().isValid()) {
     return;
   }
-  endpoints.clear();
 
   factor = getBallDetectorIntegralImage().FACTOR;
   const int width = getBallDetectorIntegralImage().getWidth();
@@ -110,14 +123,18 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
             cell.minX, cell.minY, cell.maxX, cell.maxY, 1);
 
       DEBUG_REQUEST("Vision:IntegralFieldDetector:draw_grid",
-        ColorClasses::Color color;
+        IMAGE_DRAWING_CONTEXT;
+        CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
+
+        std::string color;
         if(cell.sum_of_green >= min_green) {
-          color = ColorClasses::green;
+          color = "00FF00";
         } else {
-          color = ColorClasses::red;
+          color = "FF00FF";
         }
-        RECT_PX(color, toImage(cell.minX), toImage(cell.minY),
-                       toImage(cell.maxX), toImage(cell.maxY));
+        PEN(color, 1);
+        BOX(toImage(cell.minX), toImage(cell.minY),
+            toImage(cell.maxX), toImage(cell.maxY));
       );
 
       if(cell.sum_of_green >= min_green) {
@@ -199,9 +216,14 @@ void IntegralFieldDetector::find_endpoint(int x, const Cell& cell, Vector2i& end
     }
   }
   DEBUG_REQUEST("Vision:IntegralFieldDetector:draw_end_cell",
-    RECT_PX(ColorClasses::skyblue, toImage(cell.minX), toImage(cell.minY),
-                                   toImage(cell.maxX), toImage(cell.maxY));
-    CIRCLE_PX(ColorClasses::orange, endpoint.x, endpoint.y, 1);
+    IMAGE_DRAWING_CONTEXT;
+    CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
+
+    PEN("1CFFE4", 1);
+    BOX(toImage(cell.minX), toImage(cell.minY),
+        toImage(cell.maxX), toImage(cell.maxY));
+    PEN("FFFF00", 1);
+    CIRCLE(endpoint.x, endpoint.y, 2);
   );
 }
 
@@ -227,13 +249,16 @@ void IntegralFieldDetector::create_field() {
   getFieldPercept().valid = fieldPoly.getArea() >= 5600;
 
   DEBUG_REQUEST("Vision:IntegralFieldDetector:mark_field_polygon",
-    size_t idx = 0;
-    ColorClasses::Color color = getFieldPercept().valid ? ColorClasses::blue : ColorClasses::red;
+    IMAGE_DRAWING_CONTEXT;
+    CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
+
+    std::string color = getFieldPercept().valid ? "FFFF00" : "FF0000";
+    PEN(color, 2);
+
     const FieldPercept::FieldPoly& poly = getFieldPercept().getValidField();
     for(size_t i = 1; i < poly.size(); i++)
     {
-      LINE_PX(color, poly[idx].x, poly[idx].y, poly[i].x, poly[i].y);
-      idx = i;
+      LINE(poly[i-1].x, poly[i-1].y, poly[i].x, poly[i].y);
     }
   );
 }
