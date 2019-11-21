@@ -28,6 +28,7 @@
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/PathModel.h"
 #include "Representations/Debug/Stopwatch.h"
+#include "Representations/Modeling/ObstacleModel.h"
 
 
 BEGIN_DECLARE_MODULE(PathPlanner2018)
@@ -41,6 +42,7 @@ REQUIRE(MultiBallPercept)
 REQUIRE(MotionStatus)
 REQUIRE(BallModel)
 REQUIRE(FrameInfo)
+REQUIRE(ObstacleModel)
 
 PROVIDE(PathModel)
 PROVIDE(MotionRequest)
@@ -134,7 +136,7 @@ private:
   bool nearApproach_forwardKick(const double offsetX, const double offsetY);
   bool nearApproach_sideKick(const Foot& foot, const double offsetX, const double offsetY);
   bool sidesteps(const Foot& foot, const double direction);
-  void avoid_obstacle(const double radius, const bool stable);
+  void avoid_obstacle(Pose2D target_point);
 
   void forwardKick();
   void sideKick(const Foot& foot);

@@ -6,6 +6,8 @@
 */
 
 #include "PathPlanner2018.h"
+#include "Tools/Math/Polygon.h"
+#include "Tools/Math/Line.h"
 
 PathPlanner2018::PathPlanner2018()
   :
@@ -21,6 +23,17 @@ PathPlanner2018::PathPlanner2018()
 PathPlanner2018::~PathPlanner2018()
 {
   getDebugParameterList().remove(&params);
+}
+
+double comp(Vector2d b, Vector2d a){
+  return a * b / a.abs();
+}
+// determines if a point p is on the left hand side of the line segment defined by s_begin, s_end
+bool on_left_hand_side(Vector2d p, Vector2d s_begin, Vector2d s_end){
+  Vector2d s_begin_to_p = p - s_begin;
+  Vector2d s_begin_to_s_end = s_end - s_begin;
+  Vector2d left_normal(-s_begin_to_s_end.y, s_begin_to_s_end.x);
+  return comp(s_begin_to_p, left_normal) >= 0;
 }
 
 void PathPlanner2018::execute()
@@ -58,7 +71,7 @@ void PathPlanner2018::execute()
     }
     break;
   case PathModel::PathPlanner2018Routine::AVOID:
-    avoid_obstacle(getPathModel().radius, getPathModel().stable);
+    avoid_obstacle(getPathModel().target_point);
     break;
   case PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL2:
     //TODO maybe use a parameter to select the actual routine that is executed when move around is set from the behavior???
@@ -212,90 +225,70 @@ void PathPlanner2018::moveAroundBall2(const double direction, const double radiu
   }
 }
 
-void PathPlanner2018::avoid_obstacle(const double radius, const bool stable){
+void PathPlanner2018::avoid_obstacle(Pose2D target_point){
   if (stepBuffer.empty())
   {
-    double step_radius = 100;
-    // set target point 1m behind ball, treat ball as obstacle
-    Vector2d obstacle_point = getBallModel().positionPreview;
-    Vector2d target_point = getBallModel().positionPreview + Vector2d(1000, 0);
+    target_point.translation = getBallModel().position;
+    std::vector<Obstacle> myObstacleList = getObstacleModel().obstacleList;
     
-    double obstacle_distance = obstacle_point.abs();
-    double target_distance = target_point.abs();
-    Pose2D target_pose;
+    std::vector<Vector2d> path;
 
-    // reset target_reached flag if we moved too much away from target position
-    if (target_point.abs() > 0.5 * step_radius
-      || fabs(target_point.angle()) > Math::fromDegrees(8)) {
-      target_reached = false;
-    }
+    path.push_back(Vector2d(0, 0));
+    path.push_back(target_point.translation);
 
-    if (target_reached) {
-      target_pose = Pose2D();
-    }
-    else if (target_point.abs() < step_radius) { // we can reach the target_point directly
-      target_reached = true;
-    }
-    else if (target_distance >= step_radius && obstacle_distance >= step_radius) {
-      Vector2d tmp_target_point = target_point;
-      tmp_target_point.rotate(-getBallModel().positionPreview.angle());
-      if (tmp_target_point.x > target_distance) {
-        tmp_target_point.x = target_distance;
-        tmp_target_point.y = tmp_target_point.y > 0 ? radius : -radius;
-      }
-      tmp_target_point.rotate(target_point.angle());
-      target_pose = { target_point.angle(), tmp_target_point };
-    }
-    else if (obstacle_distance < step_radius) {
-      // step 1: coordinate transformation, the ball has to lie on the x axis
-      // so we would rotate about -getBallModel().positionPreview.angle()
-      // happens implicitly by using ball_distance
+    while (true){
+      for (size_t k = 0; k+1 < path.size(); k++)
+      {
+        Math::LineSegment path_segment = Math::LineSegment(path[k], path[k+1]);
 
-      // step 2: caluclate possible intersection points is1 and is2
-      target_pose = Pose2D();
-      /*
-      double step_radius2 = step_radius * step_radius;
-      double obstacle_distance2 = obstacle_point.abs2();
-      double radius2 = radius * radius;
-      double x = (step_radius2 - radius2 + obstacle_distance2) / (2 * obstacle_distance);
-      double yy = step_radius2 - x * x;
+        // handle all obstacles
+        for (const Obstacle& obs : myObstacleList)
+        {
+          Math::Polygon<double> myPolygon = obs.shape_points;
+          auto myPoints = myPolygon.getPoints();
+          std::vector<Vector2d> intersection_points;
 
-      assert(yy >= 0.0);
+          // check intersection with each line segment of polygon
+          for (size_t d = 0; d + 1 < myPoints.size(); d++){
+            Math::LineSegment polygon_segment = Math::LineSegment(myPoints[d], myPoints[d + 1]);
 
-      Vector2d is1(x, sqrt(yy));
-      Vector2d is2(x, -sqrt(yy));
+            //add intersection point with convex polygon to list
+            if (path_segment.intersect(polygon_segment)){
+              double t = path_segment.intersection(polygon_segment);
+              intersection_points.push_back(path_segment.point(t));
+            }
+          } // end handling of one polygon
+          // do something with intersections
 
-      // need to remember angle for target rotation
-      double angle = std::asin(is1.y / radius);
+          if (intersection_points.size() > 0){
+            bool yoooo = on_left_hand_side(obs.center, intersection_points[0], intersection_points[1]);
+            Vector2d ab = intersection_points[1] - intersection_points[0];
 
-      // step 3: reverse (hidden) coordinate transformation
-      is1.rotate(obstacle_point.angle());
-      is2.rotate(obstacle_point.angle());
+            if (yoooo){
+              ab.x = -ab.x;
+            }
+            else{
+              ab.y = -ab.y;
+            }
 
-      // step 4: choose intersection point which is closer to the target point
-      if ((is2 - target_point).abs2() < (is1 - target_point).abs2()) {
-        target_pose.rotation = target_point.angle() + angle;
-        target_pose.translation = is2;
-      }
-      else {
-        target_pose.rotation = target_point.angle() - angle;
-        target_pose.translation = is1;
-      }
-      */
-    }
+            double temp = ab.x;
+            ab.x = ab.y;
+            ab.y = temp;
+
+            Vector2d newpoint = (intersection_points[0] + intersection_points[1]) * 0.5 + ab * 2;  // das *2 ist nur damit der weitergeht
+            path.insert(path.begin() + k + 1, newpoint);
+          }
+          
+        } // end obstacle loop
+      } //
+      break;
+    } // end while
 
     StepBufferElement avoid_step;
-    avoid_step.debug_name = "avoid_obstacle";
-    avoid_step.setPose(target_pose);
+    avoid_step.debug_name = "avoid_step";
+    avoid_step.setPose(Pose2D(0.0, path[1]));
     avoid_step.setStepType(StepType::WALKSTEP);
-
-    if (stable) {
-      avoid_step.setCharacter(params.moveAroundBallCharacterStable);
-    }
-    else{
-      avoid_step.setCharacter(params.moveAroundBallCharacter);
-    }
-
+    avoid_step.setCharacter(params.moveAroundBallCharacterStable);
     avoid_step.setScale(1.0);
     avoid_step.setCoordinate(Coordinate::Hip);
     avoid_step.setFoot(Foot::NONE);
@@ -305,6 +298,7 @@ void PathPlanner2018::avoid_obstacle(const double radius, const bool stable){
     avoid_step.setTime(250);
 
     addStep(avoid_step);
+
   }
 }
 
@@ -726,7 +720,6 @@ void PathPlanner2018::sideKick(const Foot& foot) // Foot == RIGHT means that we 
     kickPlanned = true;
   }
 }
-
 
 void PathPlanner2018::updateSpecificStep(const unsigned int index, StepBufferElement& step)
 {

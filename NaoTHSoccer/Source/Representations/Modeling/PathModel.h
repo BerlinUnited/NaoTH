@@ -8,6 +8,7 @@
 #define _PathModel_H_
 
 #include <Tools/DataStructures/Printable.h>
+#include "Tools/Math/Pose2D.h"
 
 class PathModel : public naoth::Printable
 {
@@ -64,6 +65,7 @@ public:
   bool stable;
 
   bool kick_executed;
+  Pose2D target_point;
 
   virtual void print(std::ostream& stream) const
   {
