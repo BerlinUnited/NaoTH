@@ -42,6 +42,15 @@
        </widget>
       </item>
       <item>
+       <widget class="QComboBox" name="strategy">
+        <item>
+         <property name="text">
+          <string>Strategy</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
        <widget class="QComboBox" name="robots">
         <item>
          <property name="text">
