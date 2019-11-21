@@ -28,6 +28,7 @@ class Widget(QWidget):
         # register callbacks
         self.ui.platforms.currentIndexChanged.connect(self.__update_tree)
         self.ui.schemes.currentIndexChanged.connect(self.__update_tree)
+        self.ui.strategy.currentIndexChanged.connect(self.__update_tree)
         self.ui.robots.currentIndexChanged.connect(self.__update_tree)
         self.ui.bodies.currentIndexChanged.connect(self.__update_tree)
         self.ui.heads.currentIndexChanged.connect(self.__update_tree)
@@ -43,6 +44,7 @@ class Widget(QWidget):
 
         # get the current scheme
         self.scheme = self.config.getScheme()
+        self.strategy = self.config.getStrategy()
 
         self.__reset_ui()
         self.__init_ui()
@@ -54,6 +56,7 @@ class Widget(QWidget):
         # enable everything
         self.ui.platforms.setEnabled(True)
         self.ui.schemes.setEnabled(True)
+        self.ui.strategy.setEnabled(True)
         self.ui.robots.setEnabled(True)
         self.ui.bodies.setEnabled(True)
         self.ui.heads.setEnabled(True)
@@ -62,6 +65,7 @@ class Widget(QWidget):
         # clear everything
         self.ui.platforms.clear()
         self.ui.schemes.clear()
+        self.ui.strategy.clear()
         self.ui.robots.clear()
         self.ui.bodies.clear()
         self.ui.heads.clear()
@@ -69,6 +73,7 @@ class Widget(QWidget):
         # set defaults
         self.ui.platforms.addItem("Platform")
         self.ui.schemes.addItem("Scheme")
+        self.ui.strategy.addItem("Strategy")
         self.ui.robots.addItem("Robots")
         self.ui.bodies.addItem("Bodies")
         self.ui.heads.addItem("Heads")
@@ -83,6 +88,12 @@ class Widget(QWidget):
         if self.scheme:
             self.ui.schemes.setCurrentIndex(self.ui.schemes.findText(self.scheme))
         self.__setComboboxDisabled(self.ui.schemes)
+
+        self.ui.strategy.addItems(sorted(self.config.getStrategies()))
+        # enable defined strategy in combobox
+        if self.strategy:
+            self.ui.strategy.setCurrentIndex(self.ui.strategy.findText(self.strategy))
+        self.__setComboboxDisabled(self.ui.strategy)
 
         self.ui.robots.addItems(sorted(self.config.getRobots()))
         self.__setComboboxDisabled(self.ui.robots)
@@ -103,6 +114,7 @@ class Widget(QWidget):
         current = self.config.getConfigFor(
             platform=self.ui.platforms.currentText(),
             scheme=self.ui.schemes.currentText(),
+            strategy=self.ui.strategy.currentText(),
             robot=self.ui.robots.currentText(),
             body=self.ui.bodies.currentText(),
             head=self.ui.heads.currentText()
