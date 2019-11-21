@@ -65,7 +65,8 @@ public:
   DirectLogfileManager()
     : 
     valid_frame(false),
-    stream(&buffer)
+    stream(&buffer),
+    writtenBytes(0)
   {
   }
 
@@ -89,6 +90,7 @@ public:
   {
     closeFile();
     outFile.open(filePath, std::ios::out | std::ios::binary);
+    writtenBytes = 0;
   }
   
   void closeFile()
@@ -110,7 +112,7 @@ public:
   }
 
   size_t getWrittentBytesCount() const {
-    return std::max(static_cast<size_t>(0), static_cast<size_t>(outFile.tellp()));
+    return writtenBytes;
   }
 
   bool is_ready() const {
@@ -130,10 +132,16 @@ private:
     //ASSERT(outFile.good());
 
     outFile.write((const char*)(&frameNumber), sizeof(unsigned int));
+    writtenBytes += 4;
+
     outFile << name << '\0';
+    writtenBytes += name.size() + 1;
 
     outFile.write((const char*) &buffer.size(), 4);
+    writtenBytes += 4;
+
     outFile.write(buffer.buf(), buffer.size());
+    writtenBytes += buffer.size();
 
     valid_frame = false;
   }
@@ -147,6 +155,7 @@ private:
   std::string name;
   SimpleBuffer buffer;
   std::ostream stream;
+  size_t writtenBytes;
 };
 
 #endif //_DirectLogfileManager_h_
