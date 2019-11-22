@@ -8,6 +8,7 @@
 #include "PathPlanner2018.h"
 #include "Tools/Math/Polygon.h"
 #include "Tools/Math/Line.h"
+#include <forward_list>
 
 PathPlanner2018::PathPlanner2018()
   :
@@ -226,79 +227,93 @@ void PathPlanner2018::moveAroundBall2(const double direction, const double radiu
 }
 
 void PathPlanner2018::avoid_obstacle(Pose2D target_point){
+  using namespace std;
+  using namespace Math;
+
   if (stepBuffer.empty())
   {
-    target_point.translation = getBallModel().position;
-    std::vector<Obstacle> myObstacleList = getObstacleModel().obstacleList;
-    
-    std::vector<Vector2d> path;
+    target_point.translation = Vector2d(2000, 0);//getBallModel().position;
+    forward_list<Vector2d> path({Vector2d(), target_point.translation});
 
-    path.push_back(Vector2d(0, 0));
-    path.push_back(target_point.translation);
+    auto vertex = path.begin();
+    do {
+      bool collision = false;
+      LineSegment path_segment = LineSegment(*vertex, *next(vertex));
 
-    while (true){
-      for (size_t k = 0; k+1 < path.size(); k++)
-      {
-        Math::LineSegment path_segment = Math::LineSegment(path[k], path[k+1]);
+      // handle all obstacles
+      for (const Obstacle& obs : getObstacleModel().obstacleList) {
+        const auto& obstacle_points = obs.shape_points.getPoints();
+        vector<Vector2d> intersection_points;
 
-        // handle all obstacles
-        for (const Obstacle& obs : myObstacleList)
-        {
-          Math::Polygon<double> myPolygon = obs.shape_points;
-          auto myPoints = myPolygon.getPoints();
-          std::vector<Vector2d> intersection_points;
+        // check if the current path segment intersects the current obstacle
+        for (auto obs_vertex = obstacle_points.begin(); next(obs_vertex) != obstacle_points.end(); ++obs_vertex) {
+          LineSegment polygon_segment = LineSegment(*obs_vertex, *next(obs_vertex));
 
-          // check intersection with each line segment of polygon
-          for (size_t d = 0; d + 1 < myPoints.size(); d++){
-            Math::LineSegment polygon_segment = Math::LineSegment(myPoints[d], myPoints[d + 1]);
-
-            //add intersection point with convex polygon to list
-            if (path_segment.intersect(polygon_segment)){
-              double t = path_segment.intersection(polygon_segment);
-              intersection_points.push_back(path_segment.point(t));
-            }
-          } // end handling of one polygon
-          // do something with intersections
-
-          if (intersection_points.size() > 0){
-            bool yoooo = on_left_hand_side(obs.center, intersection_points[0], intersection_points[1]);
-            Vector2d ab = intersection_points[1] - intersection_points[0];
-
-            if (yoooo){
-              ab.x = -ab.x;
-            }
-            else{
-              ab.y = -ab.y;
-            }
-
-            double temp = ab.x;
-            ab.x = ab.y;
-            ab.y = temp;
-
-            Vector2d newpoint = (intersection_points[0] + intersection_points[1]) * 0.5 + ab * 2;  // das *2 ist nur damit der weitergeht
-            path.insert(path.begin() + k + 1, newpoint);
+          //add intersection point with convex polygon to list
+          if (path_segment.intersect(polygon_segment)
+              && polygon_segment.intersect(path_segment)){
+            collision = true;
+            double t = path_segment.intersection(polygon_segment);
+            intersection_points.push_back(path_segment.point(t));
           }
-          
-        } // end obstacle loop
-      } //
-      break;
-    } // end while
 
-    StepBufferElement avoid_step;
-    avoid_step.debug_name = "avoid_step";
-    avoid_step.setPose(Pose2D(0.0, path[1]));
-    avoid_step.setStepType(StepType::WALKSTEP);
-    avoid_step.setCharacter(params.moveAroundBallCharacterStable);
-    avoid_step.setScale(1.0);
-    avoid_step.setCoordinate(Coordinate::Hip);
-    avoid_step.setFoot(Foot::NONE);
-    avoid_step.setSpeedDirection(Math::fromDegrees(0.0));
-    avoid_step.setRestriction(RestrictionMode::SOFT);
-    avoid_step.setProtected(false);
-    avoid_step.setTime(250);
+          // ASSUMPTION: convex polygon
+          if(intersection_points.size() == 2) break;
+        }
 
-    addStep(avoid_step);
+        // determine and add new point to the path
+        // TODO: improve the handling of one intersection point
+        //       - replace a vertex with the new one only if it is inside the polygon
+        //       - otherwise add it inbetween the current vertices
+        //       - don't delete the following path segments
+        if (collision) {
+          if(intersection_points.size() == 1) { // the endpoint of the path segment lies inside the polygon
+            intersection_points.push_back(*next(vertex));
+          }
 
+          Vector2d ab = intersection_points[1] - intersection_points[0];
+          if (on_left_hand_side(obs.center, intersection_points[0], intersection_points[1])) {
+            ab.x = -ab.x;
+          } else {
+            ab.y = -ab.y;
+          }
+          swap(ab.x, ab.y);
+
+          // TODO: maybe the new point might be choosen a little bit more intelligently
+          //   	   e.g. use a intersection point with other edges of the polygon in the direction of ab
+          Vector2d new_point = (intersection_points[0] + intersection_points[1]) * 0.5 + ab;
+          // remove everything after the new point because the path might be invalid
+          path.erase_after(vertex, path.end());
+          path.insert_after(vertex, {new_point ,target_point.translation});
+          break;
+        }
+      } // end obstacle loop
+
+      // there was no collision so the path is valid until the next vertex
+      if(!collision) ++vertex;
+
+    } while(next(vertex) != path.end());
+
+    FIELD_DRAWING_CONTEXT;
+    for(auto vertex = path.begin(); next(vertex) != path.end(); ++vertex){
+        LINE(vertex->x, vertex->y, next(vertex)->x, next(vertex)->y);
+    }
+
+
+    //StepBufferElement avoid_step;
+    //avoid_step.debug_name = "avoid_step";
+    //avoid_step.setPose(Pose2D(0.0, path[1]));
+    //avoid_step.setStepType(StepType::WALKSTEP);
+    //avoid_step.setCharacter(params.moveAroundBallCharacterStable);
+    //avoid_step.setScale(1.0);
+    //avoid_step.setCoordinate(Coordinate::Hip);
+    //avoid_step.setFoot(Foot::NONE);
+    //avoid_step.setSpeedDirection(fromDegrees(0.0));
+    //avoid_step.setRestriction(RestrictionMode::SOFT);
+    //avoid_step.setProtected(false);
+    //avoid_step.setTime(250);
+
+    //addStep(avoid_step);
   }
 }
 

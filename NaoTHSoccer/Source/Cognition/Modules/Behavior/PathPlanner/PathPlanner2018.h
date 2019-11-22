@@ -16,6 +16,7 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugParameterList.h"
 
 // representations
@@ -35,6 +36,7 @@ BEGIN_DECLARE_MODULE(PathPlanner2018)
 PROVIDE(DebugPlot)
 PROVIDE(DebugRequest)
 PROVIDE(DebugModify)
+PROVIDE(DebugDrawings)
 PROVIDE(DebugParameterList)
 
 REQUIRE(FieldInfo)
