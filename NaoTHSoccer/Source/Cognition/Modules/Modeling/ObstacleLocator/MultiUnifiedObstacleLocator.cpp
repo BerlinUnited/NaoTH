@@ -64,6 +64,7 @@ void MultiUnifiedObstacleLocator::do_debug() {
         obs.shape_points.add( size/2, -size/2);
         obs.shape_points.add( size/2,  size/2);
         obs.shape_points.add(-size/2,  size/2);
+        obs.shape_points.add(-size/2, -size/2); // closing polygon
         obs.shape_points.transform(Pose2D(0.0, obs.center));
 
         obstacles.push_back(std::move(obs));
