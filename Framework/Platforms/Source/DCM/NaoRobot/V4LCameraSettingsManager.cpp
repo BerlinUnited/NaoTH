@@ -127,20 +127,19 @@ int32_t V4LCameraSettingsManager::getSingleCameraParameterUVC(int cameraFd, cons
   struct uvc_xu_control_query queryctrl;
   memset(&queryctrl, 0, sizeof(queryctrl));
 
-  uint8_t *value_raw = new uint8_t[parameterDataSize];
+  // HACK: currently only maximum of 4-bytes is supported 
+  assert(parameterDataSize <= sizeof(int32_t));
+  int32_t value; 
   
-  // https://linuxtv.org/downloads/v4l-dvb-apis/v4l-drivers/uvcvideo.html
-  queryctrl.unit = 3; // __u8, Extension unit ID
-  queryctrl.query = UVC_GET_CUR; // __u8, Request code to send to the device
-  queryctrl.selector = parameterSelector; // __u8, Control selector
+  queryctrl.unit = 3;
+  queryctrl.query = UVC_GET_CUR;
+  queryctrl.selector = parameterSelector;
 
-  queryctrl.size = parameterDataSize; // __u16, Control data size (in bytes)
-  queryctrl.data = value_raw; // __u8* Control value
-
+  queryctrl.size = parameterDataSize;
+  queryctrl.data = (uint8_t*)&value;
+  
   int error = xioctl(cameraFd, UVCIOC_CTRL_QUERY, &queryctrl);
 
-  int32_t value = (value_raw[3] << 24) | (value_raw[2] << 16) | (value_raw[1] << 8) | (value_raw[0]);
-  delete[] value_raw;
   if (hasIOError(cameraName, error, errno, false, "get " + parameterName)) {
     return -1;
   } else {
@@ -151,26 +150,19 @@ int32_t V4LCameraSettingsManager::getSingleCameraParameterUVC(int cameraFd, cons
 bool V4LCameraSettingsManager::setSingleCameraParameterUVC(int cameraFd, const std::string& cameraName,
                                                            uint8_t parameterSelector, const std::string& parameterName, uint16_t data_size, int32_t value)
 {
-
   struct uvc_xu_control_query queryctrl;
-  memset(&queryctrl, 0, sizeof(queryctrl));
-
-  uint8_t *value_raw = new uint8_t[data_size];
-  memset(value_raw, 0, data_size);
-  value_raw[3] = static_cast<uint8_t>(value >> 24);
-  value_raw[2] = static_cast<uint8_t>(value >> 16);
-  value_raw[1] = static_cast<uint8_t>(value >> 8);
-  value_raw[0] = static_cast<uint8_t>(value);
-
+  
   queryctrl.unit = 3;
   queryctrl.query = UVC_SET_CUR;
   queryctrl.selector = parameterSelector;
+
   queryctrl.size = data_size;
-  queryctrl.data = value_raw;
+  queryctrl.data = (uint8_t*)&value;
 
   int error = xioctl(cameraFd, UVCIOC_CTRL_QUERY, &queryctrl);
   return !hasIOError(cameraName, error, errno, false, "set " + parameterName);
 }
+
 
 
 bool V4LCameraSettingsManager::hasIOError(const std::string& cameraName, int errOccured, int errNo, bool exitByIOError, const std::string& paramName) const
