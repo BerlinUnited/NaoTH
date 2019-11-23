@@ -72,25 +72,19 @@ void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const 
 {
     if (!initialized)
     {
-        // HACK: change exposure at least once to make sure it is actually applied
+        // HACK: disable autoexposure to make sure that the manual exposure is set correctly
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_AUTO, "AutoExposure", 0);
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        current.exposure = false;
+        current.autoExposition = false;
 
-        if (current.exposure == 0)
-        {
-            setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE, "Exposure", 1);
-            current.exposure = 1;
-        }
-        else
-        {
-            setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE, "Exposure", 0);
-            current.exposure = 0;
-        }
+        // HACK: change exposure to some arbitrary value, to make sure that the actual value is actually applied later
+        current.exposure = (current.exposure == 40) ? 41 : 40;
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE, "Exposure", current.exposure);
+         
         initialized = true;
-
         return;
     }
+
     // Convert each paramter to a raw setting and clamp values according to the driver documentation
     // (https://github.com/bhuman/BKernel#information-about-the-camera-driver).
     // The V4L controller might later adjust these values by the ranges reported by driver, but these
