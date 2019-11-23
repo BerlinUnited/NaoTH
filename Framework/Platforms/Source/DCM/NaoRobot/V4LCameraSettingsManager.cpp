@@ -122,35 +122,28 @@ int V4LCameraSettingsManager::xioctl(int fd, int request, void *arg) const
 }
 
 int32_t V4LCameraSettingsManager::getSingleCameraParameterUVC(int cameraFd, std::string cameraName,
-                                                              int parameterSelector, std::string parameterName, uint16_t parameterDataSize)
+                                                              uint8_t parameterSelector, std::string parameterName, uint16_t parameterDataSize)
 {
-
-  if (parameterSelector < 0)
-  {
-    return -1;
-  }
-
   struct uvc_xu_control_query queryctrl;
   memset(&queryctrl, 0, sizeof(queryctrl));
 
   uint8_t *value_raw = new uint8_t[parameterDataSize];
-  queryctrl.unit = 3;
-  queryctrl.query = UVC_GET_CUR;
-  queryctrl.selector = static_cast<uint8_t>(parameterSelector);
+  
+  // https://linuxtv.org/downloads/v4l-dvb-apis/v4l-drivers/uvcvideo.html
+  queryctrl.unit = 3; // __u8, Extension unit ID
+  queryctrl.query = UVC_GET_CUR; // __u8, Request code to send to the device
+  queryctrl.selector = parameterSelector; // __u8, Control selector
 
-  queryctrl.size = parameterDataSize;
-  queryctrl.data = value_raw;
+  queryctrl.size = parameterDataSize; // __u16, Control data size (in bytes)
+  queryctrl.data = value_raw; // __u8* Control value
 
   int error = xioctl(cameraFd, UVCIOC_CTRL_QUERY, &queryctrl);
 
   int32_t value = (value_raw[3] << 24) | (value_raw[2] << 16) | (value_raw[1] << 8) | (value_raw[0]);
   delete[] value_raw;
-  if (hasIOError(cameraName, error, errno, false, "get " + parameterName))
-  {
+  if (hasIOError(cameraName, error, errno, false, "get " + parameterName)) {
     return -1;
-  }
-  else
-  {
+  } else {
     return value;
   }
 }
@@ -171,7 +164,7 @@ bool V4LCameraSettingsManager::setSingleCameraParameterUVC(int cameraFd, std::st
 
   queryctrl.unit = 3;
   queryctrl.query = UVC_SET_CUR;
-  queryctrl.selector = static_cast<uint8_t>(parameterSelector);
+  queryctrl.selector = parameterSelector;
   queryctrl.size = data_size;
   queryctrl.data = value_raw;
 
@@ -183,7 +176,7 @@ bool V4LCameraSettingsManager::hasIOError(std::string cameraName, int errOccured
 {
   if (errOccured < 0 && errNo != EAGAIN)
   {
-    std::cout << LOG << paramName << " failed with errno " << errNo << " (" << getErrnoDescription(errNo) << ") >> exiting" << std::endl;
+    std::cout << LOG << paramName << " failed with errno " << errNo << " (" << strerror(errNo) << ") >> exiting" << std::endl;
     if (exitByIOError)
     {
       assert(errOccured >= 0);
@@ -191,84 +184,4 @@ bool V4LCameraSettingsManager::hasIOError(std::string cameraName, int errOccured
     return true;
   }
   return false;
-}
-
-std::string V4LCameraSettingsManager::getErrnoDescription(int err) const
-{
-  switch (err)
-  {
-  case EPERM:
-    return "Operation not permitted";
-  case ENOENT:
-    return "No such file or directory";
-  case ENOBUFS:
-    return "The specified buffer size is incorrect (too big or too small).";
-  case ESRCH:
-    return "No such process";
-  case EINTR:
-    return "Interrupted system call";
-  case EIO:
-    return "I/O error";
-  case ENXIO:
-    return "No such device or address";
-  case E2BIG:
-    return "Argument list too long";
-  case ENOEXEC:
-    return "Exec format error";
-  case EBADF:
-    return "Bad file number";
-  case ECHILD:
-    return "No child processes";
-  case EAGAIN:
-    return "Try again";
-  case ENOMEM:
-    return "Out of memory";
-  case EACCES:
-    return "Permission denied";
-  case EFAULT:
-    return "Bad address";
-  case ENOTBLK:
-    return "Block device required";
-  case EBUSY:
-    return "Device or resource busy";
-  case EEXIST:
-    return "File exists";
-  case EXDEV:
-    return "Cross-device link";
-  case ENODEV:
-    return "No such device";
-  case ENOTDIR:
-    return "Not a directory";
-  case EISDIR:
-    return "Is a directory";
-  case EINVAL:
-    return "Invalid argument";
-  case ENFILE:
-    return "File table overflow";
-  case EMFILE:
-    return "Too many open files";
-  case ENOTTY:
-    return "Not a typewriter";
-  case ETXTBSY:
-    return "Text file busy";
-  case EFBIG:
-    return "File too large";
-  case ENOSPC:
-    return "No space left on device";
-  case ESPIPE:
-    return "Illegal seek";
-  case EROFS:
-    return "Read-only file system";
-  case EMLINK:
-    return "Too many links";
-  case EPIPE:
-    return "Broken pipe";
-  case EDOM:
-    return "Math argument out of domain of func";
-  case ERANGE:
-    return "Math result not representable";
-  case EBADRQC:
-    return "The given request is not supported by the given control.";
-  }
-  return "Unknown errorcode";
 }

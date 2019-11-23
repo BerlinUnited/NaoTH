@@ -19,10 +19,8 @@ protected:
 
     bool setRawIfChanged(int cameraFd, std::string cameraName, int parameterID, std::string parameterName, int value, int& bufferedValue, bool force=false);
 
-    int32_t getSingleCameraParameterUVC(int cameraFd, std::string cameraName, int parameterSelector, 
-        std::string parameterName, uint16_t parameterDataSize);
-    bool setSingleCameraParameterUVC(int cameraFd, std::string cameraName, 
-        uint8_t parameterSelector, std::string parameterName, uint16_t parameterDataSize, int32_t value);
+    int32_t getSingleCameraParameterUVC(int cameraFd, std::string cameraName, uint8_t parameterSelector, std::string parameterName, uint16_t parameterDataSize);
+    bool setSingleCameraParameterUVC(int cameraFd, std::string cameraName, uint8_t parameterSelector, std::string parameterName, uint16_t parameterDataSize, int32_t value);
 
     int xioctl(int fd, int request, void *arg) const;
 
