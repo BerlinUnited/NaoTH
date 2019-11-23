@@ -163,6 +163,32 @@ bool V4LCameraSettingsManager::setSingleCameraParameterUVC(int cameraFd, const s
   return !hasIOError(cameraName, error, errno, false, "set " + parameterName);
 }
 
+/*
+// https://linuxtv.org/downloads/v4l-dvb-apis/v4l-drivers/uvcvideo.html
+// https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/uvcvideo.h#L61
+struct uvc_xu_control_query {
+	__u8 unit;          // Extension unit ID
+	__u8 selector;      // Control selector
+	__u8 query;		      // Request code to send to the device (Video Class-Specific Request Code, defined in linux/usb/video.h A.8.)  
+	__u16 size;         // Control data size (in bytes)
+	__u8 __user *data;  // Control value
+};
+*/
+/*
+int V4LCameraSettingsManager::querySingleCameraParameterUVC(int cameraFd, uint8_t query, uint8_t selector, void* data, uint16_t size)
+{
+  struct uvc_xu_control_query query;
+  
+  queryctrl.unit = 3;
+  queryctrl.selector = selector;
+  queryctrl.query = query;
+  
+  queryctrl.size = size;
+  queryctrl.data = static_cast<uint8_t*>(data);
+
+  return xioctl(cameraFd, UVCIOC_CTRL_QUERY, &queryctrl);
+}
+*/
 
 
 bool V4LCameraSettingsManager::hasIOError(const std::string& cameraName, int errOccured, int errNo, bool exitByIOError, const std::string& paramName) const
