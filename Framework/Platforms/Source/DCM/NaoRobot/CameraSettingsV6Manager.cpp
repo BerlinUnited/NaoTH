@@ -55,7 +55,7 @@ void CameraSettingsV6Manager::apply(int cameraFd, std::string cameraName, const 
         // enable test pattern
         //setRegister(cameraFd, 0x503D, 128);
 
-        // make less greenish
+        // HACK: make less greenish
         uint16_t regVal = getRegister(cameraFd, 0x5005);
         std::cout << "REG VAL " << std::bitset<16>(regVal) << std::endl;
         std::cout << "REG VAL (INT) " << regVal << std::endl;
@@ -159,14 +159,14 @@ void CameraSettingsV6Manager::apply(int cameraFd, std::string cameraName, const 
     // }
 
     if ((force || current.horizontalFlip != settings.horizontalFlip) &&
-        setSingleCameraParameterUVC(cameraFd, cameraName, 12, "HorizontalFlip", 2, settings.horizontalFlip))
+        setSingleCameraParameterUVC(cameraFd, cameraName, 12, "HorizontalFlip", 2, settings.horizontalFlip)) // 0x0C
     {
         current.horizontalFlip = settings.horizontalFlip;
         return;
     }
 
     if ((force || current.verticalFlip != settings.verticalFlip) &&
-        setSingleCameraParameterUVC(cameraFd, cameraName, 13, "VerticalFlip", 2, settings.verticalFlip))
+        setSingleCameraParameterUVC(cameraFd, cameraName, 13, "VerticalFlip", 2, settings.verticalFlip)) // 0x0D
     {
         current.verticalFlip = settings.verticalFlip;
         return;
