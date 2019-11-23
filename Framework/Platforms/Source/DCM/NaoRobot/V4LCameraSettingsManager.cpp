@@ -16,7 +16,7 @@ V4LCameraSettingsManager::V4LCameraSettingsManager()
 {
 }
 
-int V4LCameraSettingsManager::getSingleCameraParameterRaw(int cameraFd, std::string cameraName, int parameterID)
+int V4LCameraSettingsManager::getSingleCameraParameterRaw(int cameraFd, const std::string& cameraName, int parameterID)
 {
   struct v4l2_queryctrl queryctrl;
   queryctrl.id = parameterID;
@@ -51,7 +51,7 @@ int V4LCameraSettingsManager::getSingleCameraParameterRaw(int cameraFd, std::str
   }
 }
 
-bool V4LCameraSettingsManager::setSingleCameraParameterRaw(int cameraFd, std::string cameraName, int parameterID, std::string parameterName, int value)
+bool V4LCameraSettingsManager::setSingleCameraParameterRaw(int cameraFd, const std::string& cameraName, int parameterID, const std::string& parameterName, int value)
 {
   if (parameterID < 0)
   {
@@ -97,8 +97,8 @@ bool V4LCameraSettingsManager::setSingleCameraParameterRaw(int cameraFd, std::st
   return !hasIOError(cameraName, error, errno, false);
 }
 
-bool V4LCameraSettingsManager::setRawIfChanged(int cameraFd, std::string cameraName, int parameterID,
-                                               std::string parameterName, int value, int &bufferedValue, bool force)
+bool V4LCameraSettingsManager::setRawIfChanged(int cameraFd, const std::string& cameraName, int parameterID,
+                                               const std::string& parameterName, int value, int &bufferedValue, bool force)
 {
   if ((force || bufferedValue != value) &&
       setSingleCameraParameterRaw(cameraFd, cameraName, parameterID, parameterName, value))
@@ -121,8 +121,8 @@ int V4LCameraSettingsManager::xioctl(int fd, int request, void *arg) const
   return r;
 }
 
-int32_t V4LCameraSettingsManager::getSingleCameraParameterUVC(int cameraFd, std::string cameraName,
-                                                              uint8_t parameterSelector, std::string parameterName, uint16_t parameterDataSize)
+int32_t V4LCameraSettingsManager::getSingleCameraParameterUVC(int cameraFd, const std::string& cameraName,
+                                                              uint8_t parameterSelector, const std::string& parameterName, uint16_t parameterDataSize)
 {
   struct uvc_xu_control_query queryctrl;
   memset(&queryctrl, 0, sizeof(queryctrl));
@@ -148,8 +148,8 @@ int32_t V4LCameraSettingsManager::getSingleCameraParameterUVC(int cameraFd, std:
   }
 }
 
-bool V4LCameraSettingsManager::setSingleCameraParameterUVC(int cameraFd, std::string cameraName,
-                                                           uint8_t parameterSelector, std::string parameterName, uint16_t data_size, int32_t value)
+bool V4LCameraSettingsManager::setSingleCameraParameterUVC(int cameraFd, const std::string& cameraName,
+                                                           uint8_t parameterSelector, const std::string& parameterName, uint16_t data_size, int32_t value)
 {
 
   struct uvc_xu_control_query queryctrl;
@@ -172,7 +172,8 @@ bool V4LCameraSettingsManager::setSingleCameraParameterUVC(int cameraFd, std::st
   return !hasIOError(cameraName, error, errno, false, "set " + parameterName);
 }
 
-bool V4LCameraSettingsManager::hasIOError(std::string cameraName, int errOccured, int errNo, bool exitByIOError, std::string paramName) const
+
+bool V4LCameraSettingsManager::hasIOError(const std::string& cameraName, int errOccured, int errNo, bool exitByIOError, const std::string& paramName) const
 {
   if (errOccured < 0 && errNo != EAGAIN)
   {

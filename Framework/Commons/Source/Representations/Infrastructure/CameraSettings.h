@@ -90,10 +90,10 @@ class CameraSettingsManager
 {
 public:
   /** Queries all values from the actual camera */
-  virtual void query(int cameraFd, std::string cameraName, CameraSettings &settings) = 0;
+  virtual void query(int cameraFd, const std::string& cameraName, CameraSettings &settings) = 0;
 
   /** Apply all changed values on the actual camera */
-  virtual void apply(int cameraFd, std::string cameraName, const CameraSettings &settings, bool force=false) = 0;
+  virtual void apply(int cameraFd, const std::string& cameraName, const CameraSettings &settings, bool force=false) = 0;
 };
 
 class CurrentCameraSettings : public CameraSettings

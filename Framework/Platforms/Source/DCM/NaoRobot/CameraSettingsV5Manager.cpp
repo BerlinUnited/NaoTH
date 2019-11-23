@@ -25,7 +25,7 @@ CameraSettingsV5Manager::CameraSettingsV5Manager()
 {
 }
 
-void CameraSettingsV5Manager::query(int cameraFd, std::string cameraName, naoth::CameraSettings &settings)
+void CameraSettingsV5Manager::query(int cameraFd, const std::string& cameraName, naoth::CameraSettings &settings)
 {
     settings.autoExposition = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_AUTO) == 0 ? false : true;
 
@@ -68,7 +68,7 @@ void CameraSettingsV5Manager::query(int cameraFd, std::string cameraName, naoth:
     current = settings;
 }
 
-void CameraSettingsV5Manager::apply(int cameraFd, std::string cameraName, const naoth::CameraSettings &settings, bool force)
+void CameraSettingsV5Manager::apply(int cameraFd, const std::string& cameraName, const naoth::CameraSettings &settings, bool force)
 {
     if (!initialized)
     {

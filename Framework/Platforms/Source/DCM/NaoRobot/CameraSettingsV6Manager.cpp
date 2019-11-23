@@ -20,7 +20,7 @@ CameraSettingsV6Manager::CameraSettingsV6Manager()
 {
 }
 
-void CameraSettingsV6Manager::query(int cameraFd, std::string cameraName, CameraSettings &settings)
+void CameraSettingsV6Manager::query(int cameraFd, const std::string& cameraName, CameraSettings &settings)
 {
     settings.autoExposition = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_AUTO) == 0 ? true : false;
 
@@ -44,7 +44,7 @@ void CameraSettingsV6Manager::query(int cameraFd, std::string cameraName, Camera
     current = settings;
 }
 
-void CameraSettingsV6Manager::apply(int cameraFd, std::string cameraName, const CameraSettings &settings, bool force)
+void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName, const CameraSettings &settings, bool force)
 {
     if (!initialized)
     {

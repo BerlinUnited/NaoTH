@@ -14,17 +14,17 @@ protected:
 
 protected:
 
-    int getSingleCameraParameterRaw(int cameraFd, std::string cameraName, int parameterID);
-    bool setSingleCameraParameterRaw(int cameraFd, std::string cameraName, int parameterID, std::string parameterName, int value);
+    int getSingleCameraParameterRaw(int cameraFd, const std::string& cameraName, int parameterID);
+    bool setSingleCameraParameterRaw(int cameraFd, const std::string& cameraName, int parameterID, const std::string& parameterName, int value);
 
-    bool setRawIfChanged(int cameraFd, std::string cameraName, int parameterID, std::string parameterName, int value, int& bufferedValue, bool force=false);
+    bool setRawIfChanged(int cameraFd, const std::string& cameraName, int parameterID, const std::string& parameterName, int value, int& bufferedValue, bool force=false);
 
-    int32_t getSingleCameraParameterUVC(int cameraFd, std::string cameraName, uint8_t parameterSelector, std::string parameterName, uint16_t parameterDataSize);
-    bool setSingleCameraParameterUVC(int cameraFd, std::string cameraName, uint8_t parameterSelector, std::string parameterName, uint16_t parameterDataSize, int32_t value);
+    int32_t getSingleCameraParameterUVC(int cameraFd, const std::string& cameraName, uint8_t parameterSelector, const std::string& parameterName, uint16_t parameterDataSize);
+    bool setSingleCameraParameterUVC(int cameraFd, const std::string& cameraName, uint8_t parameterSelector, const std::string& parameterName, uint16_t parameterDataSize, int32_t value);
 
     int xioctl(int fd, int request, void *arg) const;
 
-    bool hasIOError(std::string cameraName, int errOccured, int errNo, bool exitByIOError = true, std::string paramName = "") const;
+    bool hasIOError(const std::string& cameraName, int errOccured, int errNo, bool exitByIOError = true, const std::string& paramName = "") const;
     std::string getErrnoDescription(int err) const;
 };
 
