@@ -36,8 +36,8 @@ void CameraSettingsV6Manager::query(int cameraFd, const std::string& cameraName,
     settings.sharpness = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SHARPNESS);
     settings.hue = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HUE);
 
-    settings.horizontalFlip = getSingleCameraParameterUVC(cameraFd, cameraName, 12, "HorizontalFlip", 2);
-    settings.verticalFlip = getSingleCameraParameterUVC(cameraFd, cameraName, 13, "VerticalFlip", 2);
+    settings.horizontalFlip = (uint16_t)getSingleCameraParameterUVC(cameraFd, cameraName, 12, "HorizontalFlip", 2);
+    settings.verticalFlip = (uint16_t)getSingleCameraParameterUVC(cameraFd, cameraName, 13, "VerticalFlip", 2);
 
     //    settings.backlightCompensation = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BACKLIGHT_COMPENSATION) == 0 ? false : true;
 
@@ -51,7 +51,7 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
         // set some fixed values
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_FOCUS_AUTO, "FocusAuto", 0);
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_FOCUS_ABSOLUTE, "FocusAbsolute", 0);
-
+        
         // enable test pattern
         //setRegister(cameraFd, 0x503D, 128);
 
@@ -66,10 +66,24 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
         std::cout << "REG VAL (INT) " << regVal << std::endl;
         
         setRegister(cameraFd, 0x5005, static_cast<uint16_t>(regVal));
-
         
         initialized = true;
     }
+
+    if ((force || current.horizontalFlip != settings.horizontalFlip) &&
+        setSingleCameraParameterUVC(cameraFd, cameraName, 12, "HorizontalFlip", 2, settings.horizontalFlip ? 1 : 0)) // 0x0C
+    {
+        current.horizontalFlip = settings.horizontalFlip;
+        return;
+    }
+
+    if ((force || current.verticalFlip != settings.verticalFlip) &&
+        setSingleCameraParameterUVC(cameraFd, cameraName, 13, "VerticalFlip", 2, settings.verticalFlip ? 1 : 0)) // 0x0D
+    {
+        current.verticalFlip = settings.verticalFlip;
+        return;
+    }
+
 
     if ((force || current.autoExposition != settings.autoExposition) &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_AUTO, "ExposureAuto", settings.autoExposition ? 0 : 1))
@@ -157,20 +171,6 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
     // {
     //     backlightCompensation = settings.backlightCompensation;
     // }
-
-    if ((force || current.horizontalFlip != settings.horizontalFlip) &&
-        setSingleCameraParameterUVC(cameraFd, cameraName, 12, "HorizontalFlip", 2, settings.horizontalFlip)) // 0x0C
-    {
-        current.horizontalFlip = settings.horizontalFlip;
-        return;
-    }
-
-    if ((force || current.verticalFlip != settings.verticalFlip) &&
-        setSingleCameraParameterUVC(cameraFd, cameraName, 13, "VerticalFlip", 2, settings.verticalFlip)) // 0x0D
-    {
-        current.verticalFlip = settings.verticalFlip;
-        return;
-    }
 }
 
 uint16_t CameraSettingsV6Manager::getRegister(int cameraFd, uint16_t addr)
