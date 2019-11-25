@@ -140,6 +140,7 @@ int32_t V4LCameraSettingsManager::getSingleCameraParameterUVC(int cameraFd, cons
   
   int error = xioctl(cameraFd, UVCIOC_CTRL_QUERY, &queryctrl);
 
+  std::cout << cameraName << ": " << parameterName << " = " << ((uint16_t)value) << std::endl;
   if (hasIOError(cameraName, error, errno, false, "get " + parameterName)) {
     return -1;
   } else {
@@ -159,6 +160,7 @@ bool V4LCameraSettingsManager::setSingleCameraParameterUVC(int cameraFd, const s
   queryctrl.size = data_size;
   queryctrl.data = reinterpret_cast<uint8_t*>(&value);
 
+  std::cout << LOG << "Setting control value " << parameterName << " to " << value << std::endl;
   int error = xioctl(cameraFd, UVCIOC_CTRL_QUERY, &queryctrl);
   return !hasIOError(cameraName, error, errno, false, "set " + parameterName);
 }
