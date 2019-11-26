@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import argparse
+from argparse import ArgumentParser
 from pywget import wget
 from pathlib import Path
 
@@ -98,7 +98,7 @@ def animate(i, log_iterator, edgels_plot_top, edgels_plot, projected_edgels_plot
 if __name__ == "__main__":
     get_demo_logfiles()
 
-    parser = argparse.ArgumentParser(description='script to display or export edgels from log files')
+    parser = ArgumentParser(description='script to display or export edgels from log files')
     parser.add_argument("--logfile", help='log file to draw edgels from',
                         default="logs/2019-07-05_11-45-00_Berlin United_vs_NomadZ_half2-1_93_Nao0212.log")
 
