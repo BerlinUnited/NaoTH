@@ -2,6 +2,7 @@
 #define _V4LCameraSettingsManager_H_
 
 #include <Representations/Infrastructure/CameraSettings.h>
+#include <linux/usb/video.h>
 
 class V4LCameraSettingsManager : public naoth::CameraSettingsManager
 {
@@ -21,7 +22,15 @@ protected:
 
     int32_t getSingleCameraParameterUVC(int cameraFd, const std::string& cameraName, uint8_t parameterSelector, const std::string& parameterName, uint16_t parameterDataSize);
     bool setSingleCameraParameterUVC(int cameraFd, const std::string& cameraName, uint8_t parameterSelector, const std::string& parameterName, uint16_t parameterDataSize, int32_t value);
-    // int querySingleCameraParameterUVC(int cameraFd, uint8_t query, uint8_t selector, void* data, uint16_t size);
+    
+    template<typename T>
+    T getParameterUVC(int cameraFd, uint8_t parameterSelector) {
+      T data;
+      querySingleCameraParameterUVC(cameraFd, UVC_GET_CUR, parameterSelector, &data, sizeof(T));
+      return data;
+    }
+
+    int querySingleCameraParameterUVC(int cameraFd, uint8_t query, uint8_t selector, void* data, uint16_t size);
 
     int xioctl(int fd, int request, void *arg) const;
     bool hasIOError(const std::string& cameraName, int errOccured, int errNo, bool exitByIOError = true, const std::string& paramName = "") const;

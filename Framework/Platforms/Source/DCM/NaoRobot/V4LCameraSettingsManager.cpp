@@ -20,33 +20,45 @@ int V4LCameraSettingsManager::getSingleCameraParameterRaw(int cameraFd, const st
 {
   struct v4l2_queryctrl queryctrl;
   queryctrl.id = parameterID;
-  if (int errCode = ioctl(cameraFd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
-  {
+  
+  // NOTE: why not xioctl?
+  int errCode = ioctl(cameraFd, VIDIOC_QUERYCTRL, &queryctrl);
+
+  // check if query was successful
+  if (errCode < 0) {
     std::cerr << LOG << "VIDIOC_QUERYCTRL failed: " << strerror(errCode) << std::endl;
-    return -1;
+    return -1; 
   }
-  if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED)
-  {
+  
+  // check if parameter is avaliable (enabled)
+  if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED) {
     std::cerr << LOG << "not getting camera parameter since it is not available" << std::endl;
-    return -1; // not available
-  }
-  if (queryctrl.type != V4L2_CTRL_TYPE_BOOLEAN && queryctrl.type != V4L2_CTRL_TYPE_INTEGER && queryctrl.type != V4L2_CTRL_TYPE_MENU)
-  {
-    std::cerr << LOG << "not getting camera parameter since it is not supported" << std::endl;
-    return -1; // not supported
+    return -1; 
   }
 
+  // check if parameter is supported
+  // NOTE: we only consider boolean, integer and menu types as supported
+  // TODO: is this correct?
+  if (queryctrl.type != V4L2_CTRL_TYPE_BOOLEAN && queryctrl.type != V4L2_CTRL_TYPE_INTEGER && queryctrl.type != V4L2_CTRL_TYPE_MENU) {
+    std::cerr << LOG << "not getting camera parameter since it is not supported" << std::endl;
+    return -1;
+  }
+
+  /*
+  struct v4l2_control {
+     __u32  id;      // Identifies the control, set by the application.
+    __s32  value;    // New value or current value.
+  } 
+  */
   struct v4l2_control control_g;
   control_g.id = parameterID;
 
   // max 20 trials
   int errorOccured = xioctl(cameraFd, VIDIOC_G_CTRL, &control_g);
-  if (hasIOError(cameraName, errorOccured, errno, false))
-  {
+  if (hasIOError(cameraName, errorOccured, errno, false)) {
+    // TODO: some parameter may have -1 as a valid value
     return -1;
-  }
-  else
-  {
+  } else {
     return control_g.value;
   }
 }
@@ -60,16 +72,19 @@ bool V4LCameraSettingsManager::setSingleCameraParameterRaw(int cameraFd, const s
   struct v4l2_queryctrl queryctrl;
   memset(&queryctrl, 0, sizeof(queryctrl));
   queryctrl.id = parameterID;
+  
   if (int errCode = xioctl(cameraFd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
   {
     std::cerr << LOG << "VIDIOC_QUERYCTRL for parameter " << parameterName << " failed with code " << errCode << " " << strerror(errCode) << std::endl;
     return false;
   }
+  
   if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED)
   {
     std::cerr << LOG << "V4L2_CTRL_FLAG_DISABLED failed" << std::endl;
     return false; // not available
   }
+
   if (queryctrl.type != V4L2_CTRL_TYPE_BOOLEAN && queryctrl.type != V4L2_CTRL_TYPE_INTEGER && queryctrl.type != V4L2_CTRL_TYPE_MENU)
   {
     std::cerr << LOG << "V4L2_CTRL_FLAG_DISABLED failed" << std::endl;
@@ -176,21 +191,19 @@ struct uvc_xu_control_query {
 	__u8 __user *data;  // Control value
 };
 */
-/*
 int V4LCameraSettingsManager::querySingleCameraParameterUVC(int cameraFd, uint8_t query, uint8_t selector, void* data, uint16_t size)
 {
-  struct uvc_xu_control_query query;
+  uvc_xu_control_query queryctrl {
+    .unit = 3,
+    .selector = selector,
+    .query = query,
   
-  queryctrl.unit = 3;
-  queryctrl.selector = selector;
-  queryctrl.query = query;
-  
-  queryctrl.size = size;
-  queryctrl.data = static_cast<uint8_t*>(data);
+    .size = size,
+    .data = static_cast<uint8_t*>(data)
+  };
 
   return xioctl(cameraFd, UVCIOC_CTRL_QUERY, &queryctrl);
 }
-*/
 
 
 bool V4LCameraSettingsManager::hasIOError(const std::string& cameraName, int errOccured, int errNo, bool exitByIOError, const std::string& paramName) const

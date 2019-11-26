@@ -36,8 +36,9 @@ void CameraSettingsV6Manager::query(int cameraFd, const std::string& cameraName,
     settings.sharpness = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SHARPNESS);
     settings.hue = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HUE);
 
-    settings.horizontalFlip = (uint16_t)getSingleCameraParameterUVC(cameraFd, cameraName, 12, "HorizontalFlip", 2);
-    settings.verticalFlip = (uint16_t)getSingleCameraParameterUVC(cameraFd, cameraName, 13, "VerticalFlip", 2);
+    //settings.horizontalFlip = (uint16_t)getSingleCameraParameterUVC(cameraFd, cameraName, 12, "HorizontalFlip", 2);
+    settings.horizontalFlip = getParameterUVC<uint16_t>(cameraFd, 12);
+    settings.verticalFlip = getParameterUVC<uint16_t>(cameraFd, 13); //(uint16_t)getSingleCameraParameterUVC(cameraFd, cameraName, 13, "VerticalFlip", 2);
 
     //    settings.backlightCompensation = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BACKLIGHT_COMPENSATION) == 0 ? false : true;
 
