@@ -1,11 +1,11 @@
 #!/usr/bin/python
-import argparse
+from  argparse import ArgumentParser
 import sys
 from pathlib import Path
 import math
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
-import numpy
+import numpy as np
 from PIL import Image
 from PIL import PngImagePlugin
 
@@ -44,13 +44,13 @@ def get_y_angle(m):
 
 def image_from_proto(message):
     # read each channel of yuv422 separately
-    yuv422 = numpy.fromstring(message.data, dtype=numpy.uint8)
+    yuv422 = np.fromstring(message.data, dtype=np.uint8)
     y = yuv422[0::2]
     u = yuv422[1::4]
     v = yuv422[3::4]
 
     # convert from yuv422 to yuv888
-    yuv888 = numpy.zeros(message.height*message.width*3, dtype=numpy.uint8)
+    yuv888 = np.zeros(message.height*message.width*3, dtype=np.uint8)
 
     yuv888[0::3] = y
     yuv888[1::6] = u
@@ -88,10 +88,10 @@ def save_image_to_png(j, img, cm, target_dir):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
+    parser = ArgumentParser(
         description='script to display or export images from log files')
-    parser.add_argument("-i", "--input", help='logfile, containing the images')
-    parser.add_argument("-t", "--task", choices=['show', 'export'],
+    parser.add_argument("-i", "--input", help='logfile, containing the images', default="logs/rc17_ball_far.log")
+    parser.add_argument("-t", "--task", choices=['show', 'export'], default="show",
                         help='either show or export')
     parser.add_argument("-o", "--output", type=str, default=".", help='output folder')
 
