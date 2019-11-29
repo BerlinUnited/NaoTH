@@ -8,11 +8,10 @@ import hashlib
 import json
 import sys
 
-import keras
 import numpy as np
-from keras import backend as K
-from keras.layers import Input
-from keras.models import Model, load_model
+from tensorflow.keras import backend as K
+from tensorflow.keras.layers import Input
+from tensorflow.keras.models import Model, load_model
 
 __author__ = "Tobias Hermann"
 __copyright__ = "Copyright 2017, Tobias Hermann"
