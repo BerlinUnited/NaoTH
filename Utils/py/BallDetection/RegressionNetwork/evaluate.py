@@ -35,15 +35,12 @@ with open(imgdb_path, "rb") as f:
 
 model = keras.models.load_model(model_path)
 
-x_blurred = []
-for img in x:
-    img_blurred = cv2.GaussianBlur(img, (3, 3), 0.5)
-    x_blurred.append(img_blurred.reshape(16, 16, 1))
-
 print(model.summary())
 
-result = model.evaluate(np.array(x_blurred), y)
-# result = model.evaluate(np.array(x), y)
+x = np.array(x)
+y = np.array(y)
+
+result = model.evaluate(x,y)
 
 print("Evaluation result")
 print("=================")
