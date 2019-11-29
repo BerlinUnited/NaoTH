@@ -86,9 +86,13 @@ else:
     print("Loading model " + model_path)
     model = load_model(model_path)
 
+precision_class = tf.keras.metrics.Precision(name="precision_classifcation", thresholds=0.8)
+recall_class = tf.keras.metrics.Recall(name="recall_classifcation", thresholds=0.8)
+
+
 model.compile(loss='mean_squared_error',
               optimizer='adam',
-              metrics=['accuracy'])
+              metrics=['accuracy', precision_class, recall_class])
 
 print(model.summary())
 
