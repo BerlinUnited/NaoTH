@@ -86,13 +86,19 @@ else:
     print("Loading model " + model_path)
     model = load_model(model_path)
 
-precision_class = tf.keras.metrics.Precision(name="precision_classifcation", thresholds=0.8)
-recall_class = tf.keras.metrics.Recall(name="recall_classifcation", thresholds=0.8)
+# Define precision and recall for 0.5, 0.8 and 0.9 threshold
+precision_class_05 = tf.keras.metrics.Precision(name="precision_classifcation_0.5", thresholds=0.5)
+recall_class_05 = tf.keras.metrics.Recall(name="recall_classifcation_0.5", thresholds=0.5)
+precision_class_08 = tf.keras.metrics.Precision(name="precision_classifcation_0.8", thresholds=0.8)
+recall_class_08 = tf.keras.metrics.Recall(name="recall_classifcation_0.8", thresholds=0.8)
+precision_class_09 = tf.keras.metrics.Precision(name="precision_classifcation_0.9", thresholds=0.9)
+recall_class_09 = tf.keras.metrics.Recall(name="recall_classifcation_0.9", thresholds=0.9)
 
 
 model.compile(loss='mean_squared_error',
               optimizer='adam',
-              metrics=['accuracy', precision_class, recall_class])
+              metrics=['accuracy',precision_class_05, recall_class_05, 
+              precision_class_08, recall_class_08, precision_class_09, recall_class_09])
 
 print(model.summary())
 
