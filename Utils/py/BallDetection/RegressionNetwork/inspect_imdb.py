@@ -2,9 +2,8 @@
 
 import argparse
 import pickle
-import keras
-from keras.models import *
-from keras.layers import *
+from tensorflow.keras.models import *
+from tensorflow.keras.layers import *
 from datetime import datetime
 import numpy as np
 
