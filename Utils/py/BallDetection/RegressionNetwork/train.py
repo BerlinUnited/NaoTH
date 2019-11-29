@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 
+import tensorflow as tf
+from tensorflow.keras.layers import *
+from tensorflow import keras
+
 import argparse
 import pickle
-import keras
-from keras.models import *
-from keras.layers import *
+
 from datetime import datetime
 import numpy as np
-import model_zoo;
+import model_zoo
 
 
 class AccHistory(keras.callbacks.Callback):
@@ -91,7 +93,7 @@ model.compile(loss='mean_squared_error',
 
 print(model.summary())
 
-save_callback = keras.callbacks.ModelCheckpoint(filepath=model_path, monitor='loss', verbose=1,
+save_callback = tf.keras.callbacks.ModelCheckpoint(filepath=model_path, monitor='loss', verbose=1,
                                                 save_best_only=True)
 
 callbacks = [save_callback]
