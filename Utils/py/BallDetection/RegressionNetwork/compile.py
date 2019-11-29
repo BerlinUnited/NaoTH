@@ -2,7 +2,7 @@
 
 import argparse
 import pickle
-from utility_functions.ocg import keras_compile
+from utility_functions.onbcg import keras_compile
 
 parser = argparse.ArgumentParser(description='Train the network given ')
 
