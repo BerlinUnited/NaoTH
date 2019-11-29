@@ -45,4 +45,6 @@ result = model.evaluate(x,y)
 print("Evaluation result")
 print("=================")
 
-print("loss: {} precision: {}".format(result[0], result[1]))
+for idx in range(0, len(result)):
+    print(model.metrics_names[idx] + ":", result[idx])
+
