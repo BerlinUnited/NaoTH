@@ -87,12 +87,12 @@ else:
     model = load_model(model_path)
 
 # Define precision and recall for 0.5, 0.8 and 0.9 threshold
-precision_class_05 = tf.keras.metrics.Precision(name="precision_classifcation_0.5", thresholds=0.5)
-recall_class_05 = tf.keras.metrics.Recall(name="recall_classifcation_0.5", thresholds=0.5)
-precision_class_08 = tf.keras.metrics.Precision(name="precision_classifcation_0.8", thresholds=0.8)
-recall_class_08 = tf.keras.metrics.Recall(name="recall_classifcation_0.8", thresholds=0.8)
-precision_class_09 = tf.keras.metrics.Precision(name="precision_classifcation_0.9", thresholds=0.9)
-recall_class_09 = tf.keras.metrics.Recall(name="recall_classifcation_0.9", thresholds=0.9)
+precision_class_05 = tf.keras.metrics.Precision(name="precision_classifcation_0.5", thresholds=0.5, class_id=3)
+recall_class_05 = tf.keras.metrics.Recall(name="recall_classifcation_0.5", thresholds=0.5, class_id=3)
+precision_class_08 = tf.keras.metrics.Precision(name="precision_classifcation_0.8", thresholds=0.8, class_id=3)
+recall_class_08 = tf.keras.metrics.Recall(name="recall_classifcation_0.8", thresholds=0.8, class_id=3)
+precision_class_09 = tf.keras.metrics.Precision(name="precision_classifcation_0.9", thresholds=0.9, class_id=3)
+recall_class_09 = tf.keras.metrics.Recall(name="recall_classifcation_0.9", thresholds=0.9, class_id=3)
 
 
 model.compile(loss='mean_squared_error',
