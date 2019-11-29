@@ -1,0 +1,5 @@
+tensorflow==1.14
+numpy==1.15
+opencv
+imutils
+
