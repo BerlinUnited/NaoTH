@@ -19,7 +19,7 @@ if __name__ == '__main__':
     parser.add_argument('-b', '--database-path', dest='imgdb_path',
                         help='Path to the image database to write. '
                              'Default is img.db in current folder.')
-    parser.add_argument('-i', '--image-folder', dest='img_path', nargs='+',
+    parser.add_argument('-i', '--image-folder', dest='img_path',
                         help='Path to the CSV file(s) with region annotation.')
     parser.add_argument('-r', '--resolution', dest='res',
                         help='Images will be resized to this resolution. Default is 16x16')
