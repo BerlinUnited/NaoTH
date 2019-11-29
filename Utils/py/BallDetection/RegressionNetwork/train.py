@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 import tensorflow as tf
-from tensorflow.keras.layers import *
-from tensorflow import keras
+from tensorflow import keras as keras
 
 import argparse
 import pickle
