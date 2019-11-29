@@ -1,5 +1,6 @@
-from keras.models import *
-from keras.layers import *
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Convolution2D, LeakyReLU, MaxPooling2D, Flatten, Dense, ReLU, PReLU
 
 
 def fy_1500():
@@ -31,7 +32,7 @@ def fy_1500():
     return model
 
 
-### Tests that where not used
+# Tests that where not used
 
 def fy_4000():
     input_shape = (16, 16, 1)
