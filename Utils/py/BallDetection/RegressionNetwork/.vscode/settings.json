@@ -1,6 +1,0 @@
-{
-    "python.pythonPath": "/home/thomas/anaconda3/envs/nao/bin/python",
-    "python.linting.pylintEnabled": false,
-    "python.linting.enabled": false,
-    "python.linting.banditEnabled": true
-}
