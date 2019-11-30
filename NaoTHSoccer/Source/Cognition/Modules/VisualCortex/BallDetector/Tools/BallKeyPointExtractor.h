@@ -10,10 +10,12 @@
 #include <ModuleFramework/Module.h>
 
 #include "Representations/Infrastructure/FieldInfo.h"
+#include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Perception/MultiChannelIntegralImage.h"
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/BodyContour.h"
+#include "Representations/Modeling/BallModel.h"
 // tools
 #include "BestPatchList.h"
 #include "Tools/DoubleCamHelpers.h"
@@ -54,6 +56,8 @@ BEGIN_DECLARE_MODULE(BallKeyPointExtractor)
 
   REQUIRE(FieldPercept)
   REQUIRE(FieldPerceptTop)
+
+  REQUIRE(BallModel)
 END_DECLARE_MODULE(BallKeyPointExtractor)
 
 class BallKeyPointExtractor : public BallKeyPointExtractorBase
@@ -90,6 +94,9 @@ public:
 
   template<class ImageType>
   void calculateKeyPointsFull(const ImageType& integralImage, BestPatchList& best) const;
+
+  template<class ImageType>
+  void calculateKeyPointsByLastBall(const ImageType& integralImage, BestPatchList& best) const;
 
   BestPatchList::Patch refineKeyPoint(const BestPatchList::Patch& patch) const;
 
@@ -440,6 +447,41 @@ void BallKeyPointExtractor::calculateKeyPointsFull(const ImageType& integralImag
       }
     }
   }
+}
+
+template<class ImageType>
+void BallKeyPointExtractor::calculateKeyPointsByLastBall(const ImageType& integralImage, BestPatchList& best) const
+{
+  DEBUG_REQUEST("Vision:BallKeyPointExtractor:draw_value",
+    CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
+  );
+
+  if(getBallModel().valid) {
+    Vector3d ballPos;
+    ballPos.x = getBallModel().positionPreview.x;
+    ballPos.y = getBallModel().positionPreview.y;
+    ballPos.z = getFieldInfo().ballRadius;
+
+    Vector2i point;
+    if(CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, ballPos, point)) {
+      double estimatedRadius = CameraGeometry::estimatedBallRadius(
+        getCameraMatrix(), getImage().cameraInfo, getFieldInfo().ballRadius,
+        getImage().width()/2, point.y*integralImage.FACTOR);
+
+      double radius = std::max( 6.0, estimatedRadius);
+      int size   = (int)(radius*2.0/integralImage.FACTOR+0.5);
+      int border = (int)(radius*params.borderRadiusFactorClose/integralImage.FACTOR+0.5);
+      
+      // add keypoint
+      best.add( 
+        (point.x-border)*integralImage.FACTOR, 
+        (point.y-border)*integralImage.FACTOR, 
+        (point.x+size+border)*integralImage.FACTOR, 
+        (point.y+size+border)*integralImage.FACTOR, 
+        1.0);  
+    }
+  }
+
 }
 
 #endif // _BallKeyPointExtractor_H_
