@@ -75,6 +75,7 @@ public:
   BallKeyPointExtractor() : cameraID(CameraInfo::Bottom)
   {
     DEBUG_REQUEST_REGISTER("Vision:BallKeyPointExtractor:draw_value","", false);
+    DEBUG_REQUEST_REGISTER("Vision:BallKeyPointExtractor:draw_projected_ball","", false);
   }
 
 public:
@@ -453,28 +454,38 @@ void BallKeyPointExtractor::calculateKeyPointsFull(const ImageType& integralImag
 template<class ImageType>
 void BallKeyPointExtractor::calculateKeyPointsByLastBall(const ImageType& integralImage, BestPatchList& best) const
 {
-  DEBUG_REQUEST("Vision:BallKeyPointExtractor:draw_value",
+  DEBUG_REQUEST("Vision:BallKeyPointExtractor:draw_projected_ball",
     CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
   );
 
   if(getBallModel().valid) {
-    Vector3d ballPos;
-    ballPos.x = getBallModel().positionPreview.x;
-    ballPos.y = getBallModel().positionPreview.y;
-    ballPos.z = getFieldInfo().ballRadius;
+    Vector3d ballInField;
+    ballInField.x = getBallModel().positionPreview.x;
+    ballInField.y = getBallModel().positionPreview.y;
+    ballInField.z = getFieldInfo().ballRadius;
 
-    Vector2i point;
-    if(CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, ballPos, point)) {
+    Vector2i ballInImage;
+    if(CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, ballInField, ballInImage)) {
+      
       double estimatedRadius = CameraGeometry::estimatedBallRadius(
         getCameraMatrix(), getImage().cameraInfo, getFieldInfo().ballRadius,
-        getImage().width()/2, point.y*integralImage.FACTOR);
+        ballInImage.x, ballInImage.y);
+      
+      DEBUG_REQUEST("Vision:BallKeyPointExtractor:draw_projected_ball",
+        CIRCLE_PX(ColorClasses::red, ballInImage.x, ballInImage.y, static_cast<int>(estimatedRadius));
+      );
 
       double radius = std::max( 6.0, estimatedRadius);
+
+
+      Vector2i point = ballInImage / integralImage.FACTOR;
       int size   = (int)(radius*2.0/integralImage.FACTOR+0.5);
       int border = (int)(radius*params.borderRadiusFactorClose/integralImage.FACTOR+0.5);
 
-      // add keypoint      
-      evaluatePatch(getBallDetectorIntegralImage(), best, point, size, border); 
+      if (point.y > border && point.y+size+border < static_cast<int>(integralImage.getHeight())
+          && point.x > border && point.x+size+border < static_cast<int>(integralImage.getWidth())) {
+            evaluatePatch(integralImage, best, point, size, border);
+      }
     }
   }
 
