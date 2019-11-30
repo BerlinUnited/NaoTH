@@ -76,10 +76,6 @@ public:
 public:
 
   void calculateKeyPoints(BestPatchList& best) const {
-    calculateKeyPoints(getGameColorIntegralImage(), best);
-  }
-
-  void calculateKeyPointsBetter(BestPatchList& best) const {
     //calculateKeyPoints(getBallDetectorIntegralImage(), best);
     calculateKeyPointsFast(getBallDetectorIntegralImage(), best);
     //calculateKeyPointsFull(getBallDetectorIntegralImage(), best);
