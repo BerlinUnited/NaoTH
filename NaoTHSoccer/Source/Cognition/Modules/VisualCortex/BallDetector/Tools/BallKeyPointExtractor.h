@@ -80,6 +80,7 @@ public:
 public:
 
   void calculateKeyPoints(BestPatchList& best) const {
+    calculateKeyPointsByLastBall(getBallDetectorIntegralImage(), best);
     //calculateKeyPoints(getBallDetectorIntegralImage(), best);
     calculateKeyPointsFast(getBallDetectorIntegralImage(), best);
     //calculateKeyPointsFull(getBallDetectorIntegralImage(), best);
