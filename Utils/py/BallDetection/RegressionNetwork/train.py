@@ -56,12 +56,15 @@ parser.add_argument("--proceed", type=str2bool, nargs='?', dest="proceed",
                     help="Use the stored and pre-trained model base.")
 parser.add_argument("--log", dest="log",
                     help="Tensorboard log location.")
+parser.add_argument("--batch-size", dest="batch_size",
+                    help="Batch size. Default is 256")
 
 args = parser.parse_args()
 
 imgdb_path = "img.db"
 model_path = "model.h5"
 log_dir = None
+batch_size = 256
 
 if args.imgdb_path is not None:
     imgdb_path = args.imgdb_path
@@ -71,6 +74,9 @@ if args.model_path is not None:
 
 if args.log is not None:
     log_dir = args.log
+
+if args.batch_size is not None:
+    batch_size = args.batch_size
 
 with open(imgdb_path, "rb") as f:
     pickle.load(f)  # skip mean
@@ -112,6 +118,6 @@ if log_dir is not None:
         log_dir='./logs/' + str(datetime.now()).replace(" ", "_"))
     callbacks.append(log_callback)
 
-history = model.fit(x, y, batch_size=64, epochs=80, verbose=1, validation_split=0.1,
+history = model.fit(x, y, batch_size=batch_size, epochs=80, verbose=1, validation_split=0.1,
                     callbacks=callbacks)
 model.save(model_path)
