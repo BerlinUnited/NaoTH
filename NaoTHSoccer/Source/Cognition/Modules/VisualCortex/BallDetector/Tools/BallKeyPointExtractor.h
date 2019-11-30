@@ -81,7 +81,7 @@ public:
 public:
 
   void calculateKeyPoints(BestPatchList& best) const {
-    calculateKeyPointsByLastBall(getBallDetectorIntegralImage(), best);
+    calculateKeyPointsByLastBall(best);
     //calculateKeyPoints(getBallDetectorIntegralImage(), best);
     calculateKeyPointsFast(getBallDetectorIntegralImage(), best);
     //calculateKeyPointsFull(getBallDetectorIntegralImage(), best);
@@ -97,8 +97,7 @@ public:
   template<class ImageType>
   void calculateKeyPointsFull(const ImageType& integralImage, BestPatchList& best) const;
 
-  template<class ImageType>
-  void calculateKeyPointsByLastBall(const ImageType& integralImage, BestPatchList& best) const;
+  void calculateKeyPointsByLastBall(BestPatchList& best) const;
 
   BestPatchList::Patch refineKeyPoint(const BestPatchList::Patch& patch) const;
 
@@ -180,6 +179,7 @@ private:
   mutable double values[640/4][480/4][2];
 
   // double cam stuff
+  DOUBLE_CAM_PROVIDE(BallKeyPointExtractor, DebugImageDrawings);
   DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, Image);
   DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, CameraMatrix);
   DOUBLE_CAM_REQUIRE(BallKeyPointExtractor, FieldPercept);
@@ -449,46 +449,6 @@ void BallKeyPointExtractor::calculateKeyPointsFull(const ImageType& integralImag
       }
     }
   }
-}
-
-template<class ImageType>
-void BallKeyPointExtractor::calculateKeyPointsByLastBall(const ImageType& integralImage, BestPatchList& best) const
-{
-  DEBUG_REQUEST("Vision:BallKeyPointExtractor:draw_projected_ball",
-    CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
-  );
-
-  if(getBallModel().valid) {
-    Vector3d ballInField;
-    ballInField.x = getBallModel().positionPreview.x;
-    ballInField.y = getBallModel().positionPreview.y;
-    ballInField.z = getFieldInfo().ballRadius;
-
-    Vector2i ballInImage;
-    if(CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo, ballInField, ballInImage)) {
-      
-      double estimatedRadius = CameraGeometry::estimatedBallRadius(
-        getCameraMatrix(), getImage().cameraInfo, getFieldInfo().ballRadius,
-        ballInImage.x, ballInImage.y);
-      
-      DEBUG_REQUEST("Vision:BallKeyPointExtractor:draw_projected_ball",
-        CIRCLE_PX(ColorClasses::red, ballInImage.x, ballInImage.y, static_cast<int>(estimatedRadius));
-      );
-
-      double radius = std::max( 6.0, estimatedRadius);
-
-
-      Vector2i point = ballInImage / integralImage.FACTOR;
-      int size   = (int)(radius*2.0/integralImage.FACTOR+0.5);
-      int border = (int)(radius*params.borderRadiusFactorClose/integralImage.FACTOR+0.5);
-
-      if (point.y > border && point.y+size+border < static_cast<int>(integralImage.getHeight())
-          && point.x > border && point.x+size+border < static_cast<int>(integralImage.getWidth())) {
-            evaluatePatch(integralImage, best, point, size, border);
-      }
-    }
-  }
-
 }
 
 #endif // _BallKeyPointExtractor_H_
