@@ -115,9 +115,9 @@ callbacks = [save_callback]
 
 if log_dir is not None:
     log_callback = keras.callbacks.TensorBoard(
-        log_dir='./logs/' + str(datetime.now()).replace(" ", "_"))
+        log_dir='./logs/' + str(datetime.now()).replace(" ", "_"), profile_batch=0)
     callbacks.append(log_callback)
 
-history = model.fit(x, y, batch_size=batch_size, epochs=80, verbose=1, validation_split=0.1,
+history = model.fit(x, y, batch_size=batch_size, epochs=200, verbose=1, validation_split=0.1,
                     callbacks=callbacks)
 model.save(model_path)
