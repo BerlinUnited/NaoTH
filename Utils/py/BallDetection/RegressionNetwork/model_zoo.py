@@ -30,6 +30,36 @@ def fy_1500():
     model.add(Dense(4, activation="relu"))
 
     return model
+    
+    
+def model1():
+    input_shape = (16, 16, 1)
+
+    model = Sequential()
+    model.add(Convolution2D(4, (3, 3), input_shape=input_shape, padding='same'))
+    model.add(ReLU())
+    
+    model.add(Convolution2D(4, (3, 3), padding='same'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(ReLU())
+    
+    model.add(Convolution2D(8, (3, 3), padding='same'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(ReLU())
+
+    model.add(Convolution2D(8, (3, 3), padding='same'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(ReLU())
+
+    #model.add(Convolution2D(8, (1, 1), padding='same'))
+   
+    # classifier
+    model.add(Flatten())
+    #    model.add(Dense(32))
+    # radius, x, y
+    model.add(Dense(4, activation="relu"))
+
+    return model
 
 
 # Tests that where not used
