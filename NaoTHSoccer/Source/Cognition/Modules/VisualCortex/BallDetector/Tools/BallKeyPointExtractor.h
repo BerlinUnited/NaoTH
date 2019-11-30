@@ -472,14 +472,9 @@ void BallKeyPointExtractor::calculateKeyPointsByLastBall(const ImageType& integr
       double radius = std::max( 6.0, estimatedRadius);
       int size   = (int)(radius*2.0/integralImage.FACTOR+0.5);
       int border = (int)(radius*params.borderRadiusFactorClose/integralImage.FACTOR+0.5);
-      
-      // add keypoint
-      best.add( 
-        (point.x-border)*integralImage.FACTOR, 
-        (point.y-border)*integralImage.FACTOR, 
-        (point.x+size+border)*integralImage.FACTOR, 
-        (point.y+size+border)*integralImage.FACTOR, 
-        1.0);  
+
+      // add keypoint      
+      evaluatePatch(getBallDetectorIntegralImage(), best, point, size, border); 
     }
   }
 
