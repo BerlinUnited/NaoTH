@@ -332,7 +332,7 @@ void CNNBallDetector::addPatchByLastBall()
           getCameraMatrix(), getImage().cameraInfo, getFieldInfo().ballRadius,
           ballInImage.x, ballInImage.y);
 
-      int border = static_cast<int>((estimatedRadius) + 0.5);
+      int border = static_cast<int>((estimatedRadius * 1.1) + 0.5);
 
       Vector2i start = ballInImage - border;
       Vector2i end = ballInImage + border;
@@ -340,8 +340,8 @@ void CNNBallDetector::addPatchByLastBall()
       if (start.y >= 0 && end.y < static_cast<int>(getImage().height()) && start.x >= 0 && end.x < static_cast<int>(getImage().width()))
       {
         DEBUG_REQUEST("Vision:CNNBallDetector:draw_projected_ball",
-                      RECT_PX(ColorClasses::red, start.x, start.y, end.x, end.y);
-                      CIRCLE_PX(ColorClasses::red, ballInImage.x, ballInImage.y, border);
+                      RECT_PX(ColorClasses::pink, start.x, start.y, end.x, end.y);
+                      CIRCLE_PX(ColorClasses::pink, ballInImage.x, ballInImage.y, static_cast<int>(estimatedRadius));
                       );
         best.add(
             start.x,
