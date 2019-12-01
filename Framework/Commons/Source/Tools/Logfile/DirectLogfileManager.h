@@ -6,6 +6,7 @@
 #ifndef _DirectLogfileManager_h_
 #define _DirectLogfileManager_h_
 
+#include <cstdint>
 #include <cstring>
 #include <iostream>
 #include <fstream>
@@ -82,7 +83,8 @@ public:
 
     buffer.clear();
     this->name = name;
-    this->frameNumber = frameNumber;
+    // NOTE: 'unsigned int' might be larger on some platforms, but here we NEED 4 bytes
+    this->frameNumber = static_cast<uint32_t>(frameNumber);
     return stream;
   }
 
@@ -131,7 +133,8 @@ private:
     // make sure the data stream is alright
     //ASSERT(outFile.good());
 
-    outFile.write((const char*)(&frameNumber), sizeof(unsigned int));
+    // NOTE: sizeof(frameNumber) has to be 4 bytes
+    outFile.write((const char*)(&frameNumber), sizeof(frameNumber));
     writtenBytes += 4;
 
     outFile << name << '\0';
@@ -151,7 +154,7 @@ private:
   mutable std::ofstream outFile;
 
   bool valid_frame;
-  unsigned int frameNumber;
+  uint32_t frameNumber; // NOTE: the logfile format expects 4 byte
   std::string name;
   SimpleBuffer buffer;
   std::ostream stream;
