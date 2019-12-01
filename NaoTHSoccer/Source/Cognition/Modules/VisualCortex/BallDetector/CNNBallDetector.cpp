@@ -346,7 +346,7 @@ void CNNBallDetector::addPatchByLastBall()
             start.y,
             end.x,
             end.y,
-            255.0);
+            256.0);
       }
     }
   }
