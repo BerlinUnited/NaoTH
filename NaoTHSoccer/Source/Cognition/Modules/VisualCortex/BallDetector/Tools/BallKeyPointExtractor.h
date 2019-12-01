@@ -57,7 +57,6 @@ BEGIN_DECLARE_MODULE(BallKeyPointExtractor)
   REQUIRE(FieldPercept)
   REQUIRE(FieldPerceptTop)
 
-  REQUIRE(BallModel)
 END_DECLARE_MODULE(BallKeyPointExtractor)
 
 class BallKeyPointExtractor : public BallKeyPointExtractorBase
@@ -75,13 +74,11 @@ public:
   BallKeyPointExtractor() : cameraID(CameraInfo::Bottom)
   {
     DEBUG_REQUEST_REGISTER("Vision:BallKeyPointExtractor:draw_value","", false);
-    DEBUG_REQUEST_REGISTER("Vision:BallKeyPointExtractor:draw_projected_ball","", false);
   }
 
 public:
 
   void calculateKeyPoints(BestPatchList& best) const {
-    calculateKeyPointsByLastBall(best);
     //calculateKeyPoints(getBallDetectorIntegralImage(), best);
     calculateKeyPointsFast(getBallDetectorIntegralImage(), best);
     //calculateKeyPointsFull(getBallDetectorIntegralImage(), best);

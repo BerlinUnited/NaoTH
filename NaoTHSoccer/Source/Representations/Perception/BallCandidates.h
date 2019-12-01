@@ -85,6 +85,8 @@ public:
     Vector2i min;
     Vector2i max;
     std::vector<T> data;
+    // Some kind of scoring, e.g. the average luminance
+    double value;
   };
 
   typedef PatchT<unsigned char> Patch;
