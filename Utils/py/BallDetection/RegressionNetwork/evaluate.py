@@ -4,8 +4,6 @@ import argparse
 import pickle
 import tensorflow.keras as keras
 import numpy as np
-import sys
-import cv2
 
 parser = argparse.ArgumentParser(description='Train the network given ')
 
@@ -40,9 +38,10 @@ print(model.summary())
 x = np.array(x)
 y = np.array(y)
 
-result = model.evaluate(x,y)
+result = model.evaluate(x, y)
 
 print("Evaluation result")
 print("=================")
 
-print("loss: {} precision: {}".format(result[0], result[1]))
+for idx in range(0, len(result)):
+    print(model.metrics_names[idx] + ":", result[idx])

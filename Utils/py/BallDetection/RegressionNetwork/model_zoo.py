@@ -1,6 +1,7 @@
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Convolution2D, LeakyReLU, MaxPooling2D, Flatten, Dense, ReLU, PReLU
+from tensorflow.keras.layers import Convolution2D, LeakyReLU, MaxPooling2D, Flatten, Dense, ReLU, \
+    PReLU
 
 
 def fy_1500():
@@ -181,8 +182,10 @@ def fy_max():
 
 
 def naodevils():
+    input_shape = (16, 16, 1)
+
     model = Sequential()
-    model.add(Convolution2D(8, (5, 5), input_shape=(x.shape[1], x.shape[2], 1),
+    model.add(Convolution2D(8, (5, 5), input_shape=input_shape,
                             activation='relu', strides=(2, 2), padding='same'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Convolution2D(12, (3, 3), activation='relu'))

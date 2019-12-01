@@ -50,7 +50,9 @@ def transform_kernels(kernels, n_gates, transform_func):
     numpy.ndarray
         Transformed composite matrix of input or recurrent kernels in C-contiguous layout.
     """
-    return np.require(np.hstack([transform_func(kernel) for kernel in np.hsplit(kernels, n_gates)]), requirements='C')
+    return np.require(
+        np.hstack([transform_func(kernel) for kernel in np.hsplit(kernels, n_gates)]),
+        requirements='C')
 
 
 def transform_bias(bias):
@@ -100,7 +102,8 @@ def keras_shape_to_fdeep_shape5(raw_shape):
     if depth == 3:
         return (1, 1, int_or_none(shape[0]), int_or_none(shape[1]), int_or_none(shape[2]))
     if depth == 4:
-        return (1, int_or_none(shape[0]), int_or_none(shape[1]), int_or_none(shape[2]), int_or_none(shape[3]))
+        return (1, int_or_none(shape[0]), int_or_none(shape[1]), int_or_none(shape[2]),
+                int_or_none(shape[3]))
     if depth == 5:
         return shape
     raise ValueError('invalid number of dimensions')
@@ -202,7 +205,8 @@ def gen_test_data(model):
         except AttributeError:
             shape = input_layer.input_shape
         return random_fn(
-            size=replace_none_with(32, set_shape_idx_0_to_1_if_none(singleton_list_to_value(shape)))).astype(np.float32)
+            size=replace_none_with(32, set_shape_idx_0_to_1_if_none(
+                singleton_list_to_value(shape)))).astype(np.float32)
 
     assert are_embedding_layer_positions_ok_for_testing(
         model), "Test data can only be generated if embedding layers are positioned directly after input nodes."
@@ -490,8 +494,10 @@ def get_transform_func(layer):
         elif layer.__class__.__name__ == 'CuDNNLSTM':
             n_gates = 4
 
-        input_transform_func = lambda kernels: transform_kernels(kernels, n_gates, transform_input_kernel)
-        recurrent_transform_func = lambda kernels: transform_kernels(kernels, n_gates, transform_recurrent_kernel)
+        input_transform_func = lambda kernels: transform_kernels(kernels, n_gates,
+                                                                 transform_input_kernel)
+        recurrent_transform_func = lambda kernels: transform_kernels(kernels, n_gates,
+                                                                     transform_recurrent_kernel)
     else:
         input_transform_func = lambda kernels: kernels
         recurrent_transform_func = lambda kernels: kernels
@@ -517,9 +523,12 @@ def show_bidirectional_layer(layer):
         layer.backward_layer)
 
     result = {'forward_weights': encode_floats(forward_input_transform_func(forward_weights[0])),
-              'forward_recurrent_weights': encode_floats(forward_recurrent_transform_func(forward_weights[1])),
-              'backward_weights': encode_floats(backward_input_transform_func(backward_weights[0])),
-              'backward_recurrent_weights': encode_floats(backward_recurrent_transform_func(backward_weights[1]))}
+              'forward_recurrent_weights': encode_floats(
+                  forward_recurrent_transform_func(forward_weights[1])),
+              'backward_weights': encode_floats(
+                  backward_input_transform_func(backward_weights[0])),
+              'backward_recurrent_weights': encode_floats(
+                  backward_recurrent_transform_func(backward_weights[1]))}
 
     if len(forward_weights) == 3:
         result['forward_bias'] = encode_floats(forward_bias_transform_func(forward_weights[2]))
@@ -574,10 +583,12 @@ def show_time_distributed_layer(layer):
         elif len(layer.input_shape) == 4:
             input_shape_new = (layer.input_shape[0], layer.input_shape[2], layer.input_shape[3])
         elif len(layer.input_shape) == 5:
-            input_shape_new = (layer.input_shape[0], layer.input_shape[2], layer.input_shape[3], layer.input_shape[4])
+            input_shape_new = (
+            layer.input_shape[0], layer.input_shape[2], layer.input_shape[3], layer.input_shape[4])
         elif len(layer.input_shape) == 6:
-            input_shape_new = (layer.input_shape[0], layer.input_shape[2], layer.input_shape[3], layer.input_shape[4],
-                               layer.input_shape[5])
+            input_shape_new = (
+            layer.input_shape[0], layer.input_shape[2], layer.input_shape[3], layer.input_shape[4],
+            layer.input_shape[5])
         else:
             raise Exception('Wrong input shape')
 
@@ -643,8 +654,10 @@ def get_all_weights(model):
             result = merge_two_disjunct_dicts(result, get_all_weights(layer))
         else:
             if hasattr(layer, 'data_format'):
-                if layer_type in ['AveragePooling1D', 'MaxPooling1D', 'AveragePooling2D', 'MaxPooling2D',
-                                  'GlobalAveragePooling1D', 'GlobalMaxPooling1D', 'GlobalAveragePooling2D',
+                if layer_type in ['AveragePooling1D', 'MaxPooling1D', 'AveragePooling2D',
+                                  'MaxPooling2D',
+                                  'GlobalAveragePooling1D', 'GlobalMaxPooling1D',
+                                  'GlobalAveragePooling2D',
                                   'GlobalMaxPooling2D']:
                     assert layer.data_format == 'channels_last' or layer.data_format == 'channels_first'
                 else:
@@ -664,8 +677,10 @@ def get_all_weights(model):
                 if name not in result:
                     result[name] = {}
 
-                result[name]['td_input_len'] = encode_floats(np.array([len(layer.input_shape) - 1], dtype=np.float32))
-                result[name]['td_output_len'] = encode_floats(np.array([len(layer.output_shape) - 1], dtype=np.float32))
+                result[name]['td_input_len'] = encode_floats(
+                    np.array([len(layer.input_shape) - 1], dtype=np.float32))
+                result[name]['td_output_len'] = encode_floats(
+                    np.array([len(layer.output_shape) - 1], dtype=np.float32))
     return result
 
 
@@ -798,8 +813,10 @@ def model_to_fdeep_json(model, no_tests=False):
     print('Converting model architecture.')
     json_output['architecture'] = json.loads(model.to_json())
     json_output['image_data_format'] = K.image_data_format()
-    json_output['input_shapes'] = list(map(get_layer_input_shape_shape5, get_model_input_layers(model)))
-    json_output['output_shapes'] = list(map(keras_shape_to_fdeep_shape5, as_list(model.output_shape)))
+    json_output['input_shapes'] = list(
+        map(get_layer_input_shape_shape5, get_model_input_layers(model)))
+    json_output['output_shapes'] = list(
+        map(keras_shape_to_fdeep_shape5, as_list(model.output_shape)))
 
     if test_data:
         json_output['tests'] = [test_data]
