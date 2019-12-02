@@ -19,7 +19,6 @@ import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.dataformats.ModuleConfiguration;
 import de.naoth.rc.dataformats.ModuleConfiguration.Node;
-import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.manager.ModuleConfigurationManager;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
