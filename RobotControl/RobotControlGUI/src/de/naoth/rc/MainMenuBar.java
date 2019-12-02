@@ -1,18 +1,11 @@
 package de.naoth.rc;
 
 import de.naoth.rc.components.S20BinaryLookup;
-import java.awt.Color;
 import java.awt.DefaultKeyboardFocusManager;
 import java.awt.Dimension;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Vector;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -22,105 +15,100 @@ import javax.swing.JMenuItem;
  *
  * @author Heinrich
  */
-public class MainMenuBar extends JMenuBar {
-    
+public class MainMenuBar extends JMenuBar 
+{
     private final HashMap<String, JMenu> menus = new HashMap<String, JMenu>();
     private final HashMap<String, JMenuItem> menuItems = new HashMap<String, JMenuItem>();
     
-    private final S20BinaryLookup dialogSearcher;
-    private JComboBox<DialogItem> dialogSearch = new JComboBox<>();
-    
-    class DialogItem {
-        public JMenuItem menuItem;
+    class DialogSearch extends JComboBox <DialogSearch.DialogItem>
+    {
+        private final S20BinaryLookup dialogSearcher;
         
-        DialogItem(JMenuItem menuItem) {
-            this.menuItem = menuItem;
+        public DialogSearch() 
+        {
+            // setup the dialog search
+            super.setEditable(true);
+            super.setFocusable(true);
+            super.setMaximumSize(new Dimension(100, 100));
+            //this.setModel(new SortedComboBoxModel());
+            this.dialogSearcher = new S20BinaryLookup(this);
+
+            this.addActionListener((e) -> {
+                // NOTE: the command string "comboBoxEdited" can be found in JComboBox.actionPerformed
+                // this ensures that we only react to the final selection.
+                if(e.getActionCommand().equals("comboBoxEdited")) {
+                    ((DialogItem)dialogSearch.getSelectedItem()).menuItem.doClick();
+                }
+            });
         }
         
-        @Override
-        public String toString() {
-            return menuItem.getText();
+        // this class provides a mapping from the dialogSearch combo box to the
+        // particular manu entries
+        private class DialogItem 
+        {
+            public JMenuItem menuItem;
+
+            DialogItem(JMenuItem menuItem) {
+                this.menuItem = menuItem;
+            }
+
+            @Override
+            public String toString() {
+                return menuItem.getText();
+            }
         }
         
+        /*
+        // In order for the S20BinaryLookup to work the entries in the 
+        // JComboBox must be sorted.
+        class SortedComboBoxModel extends DefaultComboBoxModel 
+        {
+            @Override
+            public void addElement(Object element) {
+                insertElementAt(element, 0);
+            }
+
+            @Override
+            public void insertElementAt(Object element, int index) {
+                int size = getSize();
+                for (index = 0; index < size; index++) {
+                    Comparable c = (Comparable) getElementAt(index).toString();
+                    if (c.compareTo(element.toString()) > 0) {
+                        break;
+                    }
+                }
+                super.insertElementAt(element, index);
+            }
+        }
+        */
+        public void add(JMenuItem menuItem) 
+        {
+            DialogItem dialogItem = new DialogItem(menuItem);
+            
+            int i = 0;
+            for (; i < this.getItemCount(); i++) {
+                String name = this.getItemAt(i).toString();
+                if (name.compareTo(dialogItem.toString()) > 0) {
+                    break;
+                }
+            }
+            this.insertItemAt(dialogItem, i);
+            this.revalidate();
+            this.dialogSearcher.revalidateModel();
+        }
     }
     
-    class SortedComboBoxModel extends DefaultComboBoxModel 
-    {
-        public SortedComboBoxModel() {
-          super();
-        }
-        public SortedComboBoxModel(Object[] items) {
-          Arrays.sort(items);
-          int size = items.length;
-          for (int i = 0; i < size; i++) {
-            super.addElement(items[i]);
-          }
-          setSelectedItem(items[0]);
-        }
-
-        public SortedComboBoxModel(Vector items) {
-          Collections.sort(items);
-          int size = items.size();
-          for (int i = 0; i < size; i++) {
-            super.addElement(items.elementAt(i));
-          }
-          setSelectedItem(items.elementAt(0));
-        }
-
-        @Override
-        public void addElement(Object element) {
-          insertElementAt(element, 0);
-        }
-
-        @Override
-        public void insertElementAt(Object element, int index) {
-          int size = getSize();
-          for (index = 0; index < size; index++) {
-            Comparable c = (Comparable) getElementAt(index).toString();
-            if (c.compareTo(element.toString()) > 0) {
-              break;
-            }
-          }
-          super.insertElementAt(element, index);
-        }
-      }
+    DialogSearch dialogSearch = new DialogSearch();
     
-    public MainMenuBar() {
-        this.dialogSearch.setModel(new SortedComboBoxModel());
-        this.dialogSearch.setEditable(true);
-        
-        this.dialogSearch.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                dialogSearch.setBackground(Color.GREEN);
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                dialogSearch.setBackground(Color.GRAY);
-            }
-        });
-        
-        this.dialogSearch.setMaximumSize(new Dimension(100, 100));
-        
-        this.setFocusable(true);
-        this.dialogSearcher = new S20BinaryLookup(this.dialogSearch);
-
-        this.dialogSearch.addActionListener((e) -> {
-            // NOTE: the command string "comboBoxEdited" can be found in JComboBox.actionPerformed
-            // this ensures that we only react to the final selection.
-            if(e.getActionCommand().equals("comboBoxEdited")) {
-                ((DialogItem)dialogSearch.getSelectedItem()).menuItem.doClick();
-            }
-        });
-        
-        //this.add(dialogSearch);
-        
-        DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager()
-            .addKeyEventPostProcessor((e) -> {
-                if(e.getID() == KeyEvent.KEY_PRESSED && 
-                   e.getKeyCode() == KeyEvent.VK_F && 
-                    e.getModifiers() == InputEvent.ALT_MASK) 
+    public MainMenuBar() 
+    {   
+        // attach a global key listener
+        // go to dialof search with ALT+F
+        DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventPostProcessor(
+            (e) -> {
+                if(e.getID()        == KeyEvent.KEY_PRESSED && 
+                   e.getKeyCode()   == KeyEvent.VK_F && 
+                   e.getModifiers() == InputEvent.ALT_MASK) 
                 {
                     dialogSearch.requestFocus();
                     return true;
@@ -132,13 +120,16 @@ public class MainMenuBar extends JMenuBar {
     
     public JMenuItem addDialog(String name, String category, char mnemonic) {
         JMenu menu = this.menus.get(category);
-        if(menu == null) {
+        if(menu == null) 
+        {
             menu = new JMenu(category, false);
             if(Character.isLetter(mnemonic)) {
                 menu.setMnemonic(mnemonic);
             }
             this.menus.put(category, menu);
             
+            // HACK: make sure th dialogs are in order
+            // we assume there is a main manu at index 0 and help at the last index
             this.remove(dialogSearch);
             
             this.add(menu,1);
@@ -153,9 +144,7 @@ public class MainMenuBar extends JMenuBar {
             insertMenuItem(menuItem, menu);
             menuItems.put(name, menuItem); // remember, so the dialog is not added twice
             
-            this.dialogSearch.addItem(new DialogItem(menuItem));
-            this.dialogSearch.revalidate();
-            this.dialogSearcher.revalidateModel();
+            this.dialogSearch.add(menuItem);
         }
         
         return menuItem;
