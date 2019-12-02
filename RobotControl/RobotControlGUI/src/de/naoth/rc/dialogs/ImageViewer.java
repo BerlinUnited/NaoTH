@@ -13,6 +13,7 @@ import de.naoth.rc.drawings.DrawingsContainer;
 import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.core.manager.ObjectListener;
+import de.naoth.rc.dataformats.ImageConversions;
 import de.naoth.rc.logmanager.BlackBoard;
 import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.logmanager.LogFileEventManager;
@@ -48,7 +49,6 @@ public class ImageViewer extends AbstractDialog
     public static LogFileEventManager logFileEventManager;
   }//end Plugin
 
-  private long timestampOfTheLastImage;
   private Drawable fadeOutBox = null;
   
   // listeners
@@ -56,6 +56,10 @@ public class ImageViewer extends AbstractDialog
   ImageListenerTop imageListenerTop;
   DrawingsListener drawingsListener;
 
+  // watchers for the image update speed
+  private final FPS fpsTop = new FPS();
+  private final FPS fpsBottom = new FPS();
+  
   public ImageViewer()
   {
     initComponents();
@@ -68,20 +72,24 @@ public class ImageViewer extends AbstractDialog
     this.imageListenerTop = new ImageListenerTop();
     
     Plugin.logFileEventManager.addListener(new LogBehaviorListener());
+    
+    // JPEG by default
+    btRAW.setSelected(false);
+    Plugin.imageManagerBottom.setFormat(ImageConversions.Format.JPEG);
+    Plugin.imageManagerTop.setFormat(ImageConversions.Format.JPEG);
   }
   
   private class LogBehaviorListener implements LogFrameListener
   {
     @Override
-    public void newFrame(BlackBoard b) {
-        
-
+    public void newFrame(BlackBoard b) 
+    {
         LogDataFrame f = b.get("Image");
         if(f != null) {
           ImageManagerBottomImpl im = new ImageManagerBottomImpl();
           JanusImage janusImage = im.convertByteArrayToType(f.getData());
           
-          ImageViewer.this.imageCanvasBottom.setImage(janusImage.getRgb());
+          ImageViewer.this.imageCanvasBottom.setImage(janusImage.getRGB());
           ImageViewer.this.imageCanvasBottom.repaint();
         }
         
@@ -90,7 +98,7 @@ public class ImageViewer extends AbstractDialog
           ImageManagerTopImpl im = new ImageManagerTopImpl();
           JanusImage janusImage = im.convertByteArrayToType(f.getData());
           
-          ImageViewer.this.imageCanvasTop.setImage(janusImage.getRgb());
+          ImageViewer.this.imageCanvasTop.setImage(janusImage.getRGB());
           ImageViewer.this.imageCanvasTop.repaint();
         }
     }
@@ -111,10 +119,14 @@ public class ImageViewer extends AbstractDialog
         btReceiveImagesTop = new javax.swing.JToggleButton();
         btReceiveImagesBottom = new javax.swing.JToggleButton();
         btReceiveDrawings = new javax.swing.JToggleButton();
+        btRAW = new javax.swing.JToggleButton();
         cbStretch = new javax.swing.JCheckBox();
         cbFadeOut = new javax.swing.JCheckBox();
-        jLabelFPS = new javax.swing.JLabel();
+        btHorizontal = new javax.swing.JCheckBox();
+        jPanel1 = new javax.swing.JPanel();
         jLabelResolution = new javax.swing.JLabel();
+        jLabelFPSBottom = new javax.swing.JLabel();
+        jLabelFPSTop = new javax.swing.JLabel();
 
         imagePanel.setBackground(java.awt.Color.gray);
         imagePanel.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.darkGray));
@@ -129,11 +141,11 @@ public class ImageViewer extends AbstractDialog
         imageCanvasTop.setLayout(imageCanvasTopLayout);
         imageCanvasTopLayout.setHorizontalGroup(
             imageCanvasTopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 534, Short.MAX_VALUE)
+            .addGap(0, 638, Short.MAX_VALUE)
         );
         imageCanvasTopLayout.setVerticalGroup(
             imageCanvasTopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 114, Short.MAX_VALUE)
+            .addGap(0, 157, Short.MAX_VALUE)
         );
 
         imagePanel.add(imageCanvasTop);
@@ -146,11 +158,11 @@ public class ImageViewer extends AbstractDialog
         imageCanvasBottom.setLayout(imageCanvasBottomLayout);
         imageCanvasBottomLayout.setHorizontalGroup(
             imageCanvasBottomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 534, Short.MAX_VALUE)
+            .addGap(0, 638, Short.MAX_VALUE)
         );
         imageCanvasBottomLayout.setVerticalGroup(
             imageCanvasBottomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 114, Short.MAX_VALUE)
+            .addGap(0, 157, Short.MAX_VALUE)
         );
 
         imagePanel.add(imageCanvasBottom);
@@ -188,6 +200,17 @@ public class ImageViewer extends AbstractDialog
         });
         jToolBar1.add(btReceiveDrawings);
 
+        btRAW.setText("RAW");
+        btRAW.setFocusable(false);
+        btRAW.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btRAW.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btRAW.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btRAWActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btRAW);
+
         cbStretch.setSelected(true);
         cbStretch.setText("stretch image");
         cbStretch.setFocusable(false);
@@ -210,38 +233,46 @@ public class ImageViewer extends AbstractDialog
         });
         jToolBar1.add(cbFadeOut);
 
-        jLabelFPS.setFont(new java.awt.Font("Monospaced", 0, 11)); // NOI18N
-        jLabelFPS.setText("FPS");
+        btHorizontal.setText("Horizontal");
+        btHorizontal.setFocusable(false);
+        btHorizontal.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btHorizontalActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btHorizontal);
 
         jLabelResolution.setFont(new java.awt.Font("Monospaced", 0, 11)); // NOI18N
         jLabelResolution.setText("- x - ");
+        jPanel1.add(jLabelResolution);
+
+        jLabelFPSBottom.setFont(new java.awt.Font("Monospaced", 0, 11)); // NOI18N
+        jLabelFPSBottom.setText("FPS Bottom");
+        jPanel1.add(jLabelFPSBottom);
+
+        jLabelFPSTop.setFont(new java.awt.Font("Monospaced", 0, 11)); // NOI18N
+        jLabelFPSTop.setText("FPS Top");
+        jPanel1.add(jLabelFPSTop);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
-            .addGroup(layout.createSequentialGroup()
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jLabelResolution, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabelFPS, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(imagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(imagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(imagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, 234, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabelFPS)
-                    .addComponent(jLabelResolution)))
+                .addComponent(imagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
+                .addGap(0, 0, 0)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
     }// </editor-fold>//GEN-END:initComponents
   private void btReceiveImagesTopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReceiveImagesTopActionPerformed
@@ -315,7 +346,27 @@ public class ImageViewer extends AbstractDialog
         }
     }//GEN-LAST:event_cbFadeOutActionPerformed
 
+    private void btHorizontalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btHorizontalActionPerformed
+        if(btHorizontal.isSelected()) {
+            imagePanel.setLayout(new javax.swing.BoxLayout(imagePanel, javax.swing.BoxLayout.X_AXIS));
+        } else {
+            imagePanel.setLayout(new javax.swing.BoxLayout(imagePanel, javax.swing.BoxLayout.Y_AXIS));
+        }
+    }//GEN-LAST:event_btHorizontalActionPerformed
+
+    private void btRAWActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRAWActionPerformed
+        if(btRAW.isSelected()) {
+            Plugin.imageManagerBottom.setFormat(ImageConversions.Format.RAW);
+            Plugin.imageManagerTop.setFormat(ImageConversions.Format.RAW);
+        } else {
+            Plugin.imageManagerBottom.setFormat(ImageConversions.Format.JPEG);
+            Plugin.imageManagerTop.setFormat(ImageConversions.Format.JPEG);
+        }
+    }//GEN-LAST:event_btRAWActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox btHorizontal;
+    private javax.swing.JToggleButton btRAW;
     private javax.swing.JToggleButton btReceiveDrawings;
     private javax.swing.JToggleButton btReceiveImagesBottom;
     private javax.swing.JToggleButton btReceiveImagesTop;
@@ -324,8 +375,10 @@ public class ImageViewer extends AbstractDialog
     private de.naoth.rc.components.ImagePanel imageCanvasBottom;
     private de.naoth.rc.components.ImagePanel imageCanvasTop;
     private javax.swing.JPanel imagePanel;
-    private javax.swing.JLabel jLabelFPS;
+    private javax.swing.JLabel jLabelFPSBottom;
+    private javax.swing.JLabel jLabelFPSTop;
     private javax.swing.JLabel jLabelResolution;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JToolBar jToolBar1;
     // End of variables declaration//GEN-END:variables
 
@@ -334,14 +387,29 @@ public class ImageViewer extends AbstractDialog
   {
     this.jLabelResolution.setText(x + "x" + y);
   }
+  
+  private class FPS {
+      private long timestampOfTheLastImage;
+      private double fps = 0.0;
+      private final double filter = 0.9;
+      
+      private void update()
+    {
+      long currentTime = System.currentTimeMillis();
+      double v = 1000.0 / ((double) (currentTime - this.timestampOfTheLastImage));
+      fps = fps*filter + v*(1.0-filter);
+      this.timestampOfTheLastImage = currentTime;
+    }
+      
+      public double getFPS() {
+          return fps;
+      } 
+  }
 
   private void updateFPS()
   {
-    long currentTime = System.currentTimeMillis();
-    double fps = 1000.0 / ((double) (currentTime - this.timestampOfTheLastImage));
-    String info = String.format("%4.1f fps", fps);
-    this.jLabelFPS.setText(info);
-    this.timestampOfTheLastImage = currentTime;
+    this.jLabelFPSTop.setText(String.format(" T: %2.1f fps ", fpsTop.getFPS()));
+    this.jLabelFPSBottom.setText(String.format(" B: %2.1f fps ", fpsBottom.getFPS()));
   }
 
   class DrawingsListener implements ObjectListener<DrawingsContainer>
@@ -393,10 +461,12 @@ public class ImageViewer extends AbstractDialog
     public void newObjectReceived(JanusImage object)
     {
       if(object == null) return;
-      ImageViewer.this.imageCanvasBottom.setImage(object.getRgb());
+      ImageViewer.this.imageCanvasBottom.setImage(object.getRGB());
       ImageViewer.this.imageCanvasBottom.repaint();
 
-      updateResolution(object.getRgb().getWidth(), object.getRgb().getHeight());
+      updateResolution(object.getRGB().getWidth(), object.getRGB().getHeight());
+      
+      fpsBottom.update();
       updateFPS();
     }
 
@@ -415,8 +485,11 @@ public class ImageViewer extends AbstractDialog
     public void newObjectReceived(JanusImage object)
     {
       if(object == null) return;
-      ImageViewer.this.imageCanvasTop.setImage(object.getRgb());
+      ImageViewer.this.imageCanvasTop.setImage(object.getRGB());
       ImageViewer.this.imageCanvasTop.repaint();
+      
+      fpsTop.update();
+      updateFPS();
     }
 
     @Override
