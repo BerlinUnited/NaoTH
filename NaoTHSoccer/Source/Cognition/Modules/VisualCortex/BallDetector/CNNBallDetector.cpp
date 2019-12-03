@@ -4,7 +4,7 @@
 #include "Tools/PatchWork.h"
 #include "Tools/BlackSpotExtractor.h"
 
-#include "Classifier/Model1.cpp"
+#include "Classifier/Model1.h"
 #include "Classifier/Fy1500_Conf.h"
 #include "Classifier/FrugallyDeep.h"
 
