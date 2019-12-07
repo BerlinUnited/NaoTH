@@ -340,7 +340,9 @@ public class RobotControlImpl extends javax.swing.JFrame
         statusPanel = new javax.swing.JPanel();
         btManager = new javax.swing.JButton();
         lblReceivedBytesS = new javax.swing.JLabel();
+        jSeparator4 = new javax.swing.JSeparator();
         lblSentBytesS = new javax.swing.JLabel();
+        jSeparator5 = new javax.swing.JSeparator();
         lblFramesS = new javax.swing.JLabel();
         statusPanelPlugins = new javax.swing.JPanel();
         statusPanelSpacer = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
@@ -380,7 +382,11 @@ public class RobotControlImpl extends javax.swing.JFrame
 
         lblReceivedBytesS.setText("Received (byte/s): ");
 
+        jSeparator4.setOrientation(javax.swing.SwingConstants.VERTICAL);
+
         lblSentBytesS.setText("Sent (byte/s): ");
+
+        jSeparator5.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
         lblFramesS.setText("Update Loop (frame/s):");
 
@@ -402,24 +408,31 @@ public class RobotControlImpl extends javax.swing.JFrame
             .addGroup(statusPanelLayout.createSequentialGroup()
                 .addComponent(btManager, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblReceivedBytesS, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblSentBytesS, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblReceivedBytesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(lblFramesS, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jSeparator4, javax.swing.GroupLayout.DEFAULT_SIZE, 1, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblSentBytesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(statusPanelPlugins, javax.swing.GroupLayout.DEFAULT_SIZE, 292, Short.MAX_VALUE))
+                .addComponent(lblFramesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(63, 63, 63)
+                .addComponent(statusPanelPlugins, javax.swing.GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE))
         );
         statusPanelLayout.setVerticalGroup(
             statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(btManager, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblReceivedBytesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jSeparator5)
+                .addComponent(lblSentBytesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lblFramesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(statusPanelLayout.createSequentialGroup()
-                .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btManager, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(lblReceivedBytesS)
-                        .addComponent(lblSentBytesS)
-                        .addComponent(lblFramesS))
-                    .addComponent(statusPanelPlugins, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(statusPanelPlugins, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(statusPanelLayout.createSequentialGroup()
+                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -552,23 +565,6 @@ public class RobotControlImpl extends javax.swing.JFrame
 
     }//GEN-LAST:event_aboutMenuItemActionPerformed
 
-    private void btManagerActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btManagerActionPerformed
-    {//GEN-HEADEREND:event_btManagerActionPerformed
-
-      TaskManager taskManager = new TaskManager(this, true);
-      String str = "Currently registeres Manager:\n\n";
-      for(int i = 0; i < messageServer.getListeners().size(); i++)
-      {
-        String name = messageServer.getListeners().get(i).getClass().getSimpleName();
-        taskManager.addTask(name, "0", null);
-        str += messageServer.getListeners().get(i).getClass().getSimpleName() + "\n";
-      }//end for
-      str += "\n";
-
-      //taskManager.setVisible(true);
-      JOptionPane.showMessageDialog(this, str);
-}//GEN-LAST:event_btManagerActionPerformed
-
     private void resetLayoutMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_resetLayoutMenuItemActionPerformed
     {//GEN-HEADEREND:event_resetLayoutMenuItemActionPerformed
 
@@ -614,6 +610,22 @@ public class RobotControlImpl extends javax.swing.JFrame
             Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_miSaveDialogConfigActionPerformed
+
+    private void btManagerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btManagerActionPerformed
+
+        TaskManager taskManager = new TaskManager(this, true);
+        String str = "Currently registeres Manager:\n\n";
+        for(int i = 0; i < messageServer.getListeners().size(); i++)
+        {
+            String name = messageServer.getListeners().get(i).getClass().getSimpleName();
+            taskManager.addTask(name, "0", null);
+            str += messageServer.getListeners().get(i).getClass().getSimpleName() + "\n";
+        }//end for
+        str += "\n";
+
+        //taskManager.setVisible(true);
+        JOptionPane.showMessageDialog(this, str);
+    }//GEN-LAST:event_btManagerActionPerformed
 
   @Override
   public MessageServer getMessageServer()
@@ -722,6 +734,8 @@ public class RobotControlImpl extends javax.swing.JFrame
     private javax.swing.JMenu helpMenu;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JSeparator jSeparator5;
     private javax.swing.JMenu layout;
     private javax.swing.JLabel lblFramesS;
     private javax.swing.JLabel lblReceivedBytesS;
