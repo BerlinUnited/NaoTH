@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JComboBox;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -37,11 +39,16 @@ public class MainMenuBar extends JMenuBar
                 // NOTE: the command string "comboBoxEdited" can be found in JComboBox.actionPerformed
                 // this ensures that we only react to the final selection.
                 if(e.getActionCommand().equals("comboBoxEdited")) {
-                    ((DialogItem)dialogSearch.getSelectedItem()).menuItem.doClick();
+                    
+                    if(dialogSearch.getSelectedItem() instanceof DialogItem) {
+                        ((DialogItem)dialogSearch.getSelectedItem()).menuItem.doClick();
+                    } else {
+                        Logger.getLogger(MainMenuBar.class.getName()).log(Level.INFO, "Diealog doesn't exist: {0}", dialogSearch.getSelectedItem());
+                    }
                 }
             });
         }
-        
+
         // this class provides a mapping from the dialogSearch combo box to the
         // particular manu entries
         private class DialogItem 
