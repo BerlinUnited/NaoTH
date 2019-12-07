@@ -111,6 +111,7 @@ public class MainMenuBar extends JMenuBar
     {   
         // attach a global key listener
         // go to dialof search with ALT+F
+        /*
         DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventPostProcessor(
             (e) -> {
                 if(e.getID()        == KeyEvent.KEY_PRESSED && 
@@ -123,6 +124,7 @@ public class MainMenuBar extends JMenuBar
                 
                 return false;
             });
+*/
     }
     
     public JMenuItem addDialog(String name, String category, char mnemonic) {
@@ -137,11 +139,11 @@ public class MainMenuBar extends JMenuBar
             
             // HACK: make sure th dialogs are in order
             // we assume there is a main manu at index 0 and help at the last index
-            this.remove(dialogSearch);
+            //this.remove(dialogSearch);
             
             this.add(menu,1);
             
-            this.add(dialogSearch, this.getComponentCount()-2);
+            //this.add(dialogSearch, this.getComponentCount()-2);
         }
         
         // register a menu entry

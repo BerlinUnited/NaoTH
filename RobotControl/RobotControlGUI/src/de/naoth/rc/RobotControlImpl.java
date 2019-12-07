@@ -18,6 +18,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;
@@ -27,9 +29,11 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import net.xeoh.plugins.base.PluginManager;
@@ -171,7 +175,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     });
     
     // set up a list of all dialogs
-    this.dialogRegistry = new DialogRegistry(this, this.mainMenuBar);
+    this.dialogRegistry = new DialogRegistry(this, this.mainMenuBar, this.dialogFastAccessPanel);
 
     
     // initialize the message server
@@ -206,6 +210,31 @@ public class RobotControlImpl extends javax.swing.JFrame
     // set the constraints for the statusbar plugins
     statusPanelPluginsConstraints.fill = GridBagConstraints.VERTICAL;
     statusPanelPluginsConstraints.ipadx = 5;
+    
+    
+    // dialog access
+    dialogFastAccess.setLocationRelativeTo(this);
+    dialogFastAccess.getRootPane().registerKeyboardAction(
+        (e) -> {dialogFastAccess.setVisible(false); dialogFastAccessPanel.close(); }, 
+        KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), 
+        JComponent.WHEN_IN_FOCUSED_WINDOW
+    );
+    
+    DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventPostProcessor(
+    (e) -> {
+        if(e.getID()        == KeyEvent.KEY_PRESSED && 
+           e.getKeyCode()   == KeyEvent.VK_F && 
+           e.getModifiers() == InputEvent.ALT_MASK) 
+        {
+            dialogFastAccess.setContentPane(dialogFastAccessPanel);
+            dialogFastAccess.pack();
+            dialogFastAccess.setLocationRelativeTo(this);
+            dialogFastAccess.setVisible(true);
+            return true;
+        }
+
+        return false;
+    });
     
     // read & set the userdefined dialog configurations
     setMenuDialogConfiguration();
@@ -337,6 +366,8 @@ public class RobotControlImpl extends javax.swing.JFrame
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
+        dialogFastAccess = new javax.swing.JDialog();
+        dialogFastAccessPanel = new de.naoth.rc.DialogFastAccessPanel();
         statusPanel = new javax.swing.JPanel();
         btManager = new javax.swing.JButton();
         lblReceivedBytesS = new javax.swing.JLabel();
@@ -360,6 +391,14 @@ public class RobotControlImpl extends javax.swing.JFrame
         exitMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         aboutMenuItem = new javax.swing.JMenuItem();
+
+        dialogFastAccess.setAlwaysOnTop(true);
+        dialogFastAccess.setLocationByPlatform(true);
+        dialogFastAccess.setModal(true);
+        dialogFastAccess.setName("dialogFastAccessDialog"); // NOI18N
+        dialogFastAccess.setUndecorated(true);
+        dialogFastAccess.setPreferredSize(new java.awt.Dimension(600, 300));
+        dialogFastAccess.getContentPane().add(dialogFastAccessPanel, java.awt.BorderLayout.CENTER);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("RobotControl for NAO v2019");
@@ -410,7 +449,7 @@ public class RobotControlImpl extends javax.swing.JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblReceivedBytesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jSeparator4, javax.swing.GroupLayout.DEFAULT_SIZE, 1, Short.MAX_VALUE)
+                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lblSentBytesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -728,6 +767,8 @@ public class RobotControlImpl extends javax.swing.JFrame
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton btManager;
     private javax.swing.JMenuItem connectMenuItem;
+    private javax.swing.JDialog dialogFastAccess;
+    private de.naoth.rc.DialogFastAccessPanel dialogFastAccessPanel;
     private javax.swing.JMenuItem disconnectMenuItem;
     private javax.swing.JCheckBoxMenuItem enforceConnection;
     private javax.swing.JMenuItem exitMenuItem;
