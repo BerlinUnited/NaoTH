@@ -7,14 +7,23 @@ package de.naoth.rc;
 
 import java.awt.Color;
 import java.awt.DefaultKeyboardFocusManager;
+import java.awt.KeyboardFocusManager;
+import javax.swing.AbstractAction;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.KeyEventPostProcessor;
+import javax.swing.InputMap;
+import javax.swing.KeyStroke;
 import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -36,7 +45,8 @@ public class DialogFastAccessPanel extends javax.swing.JPanel {
         
         //for (KeyListener k: this.search.getKeyListeners())
         //    SwingUtilities.getWindowAncestor(this).addKeyListener(k);
-        
+        this.add_tab_actions();
+
         this.search.setDocument(new PlainDocument(){
             @Override
             public void remove(int offs, int len) throws BadLocationException {
@@ -87,7 +97,79 @@ public class DialogFastAccessPanel extends javax.swing.JPanel {
 
     JButton selectedButton = null;
     Color oldBackgrund = null;
-    
+
+    private void add_tab_actions()
+    {
+        Set<KeyStroke> forwardKeys = new HashSet<KeyStroke>(1);
+        forwardKeys.add(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, InputEvent.CTRL_MASK));
+        setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, forwardKeys);
+
+        Set<KeyStroke> backwardKeys = new HashSet<KeyStroke>(1);
+        backwardKeys.add(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK));
+        setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, backwardKeys);
+
+        String tabString = "TAB";
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), tabString);
+        getActionMap().put(tabString, new TabAction(true));
+
+        tabString = "shift TAB";
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, InputEvent.SHIFT_MASK), tabString);
+        getActionMap().put(tabString, new TabAction(false));
+    }
+
+    class TabAction extends AbstractAction
+    {
+        private boolean forward;
+
+        public TabAction(boolean forward)
+        {
+            this.forward = forward;
+        }
+
+        public void actionPerformed(ActionEvent e)
+        {
+            if (forward)
+                tabForward();
+            else
+                tabBackward();
+        }
+
+        private void tabForward()
+        {
+            final KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+            manager.focusNextComponent();
+
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    JButton tmp = selectedButton; // remember selected button
+                    if (manager.getFocusOwner() instanceof javax.swing.JTextField)
+                        manager.focusNextComponent();
+                        // handle case of first tab press after some text was typed
+                        // the first button was the default button so jump to the next one
+                        if (manager.getFocusOwner() == tmp)
+                            manager.focusNextComponent();
+                }
+            });
+        }
+
+        private void tabBackward()
+        {
+            final KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+            manager.focusPreviousComponent();
+
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    if (manager.getFocusOwner() instanceof javax.swing.JTextField)
+                        manager.focusPreviousComponent();
+                }
+            });
+        }
+    }
+
     private void updateButtons(String text) {
         text = text.toLowerCase();
         
