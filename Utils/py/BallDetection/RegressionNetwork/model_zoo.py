@@ -8,27 +8,28 @@ def fy_1500():
     input_shape = (16, 16, 1)
 
     model = Sequential()
-    model.add(Convolution2D(4, (3, 3), input_shape=input_shape, padding='same'))
-    model.add(LeakyReLU(alpha=0.0))  # alpha unknown, so default
+    model.add(Convolution2D(4, (3, 3), input_shape=input_shape, padding='same', name="Conv2D_1"))
+    model.add(LeakyReLU(alpha=0.0, name="activation_1"))  # alpha unknown, so default
 
-    model.add(Convolution2D(4, (3, 3), padding='same'))
-    model.add(LeakyReLU())
+    model.add(Convolution2D(4, (3, 3), padding='same', name="Conv2D_2"))
+    model.add(LeakyReLU(name="activation_2"))
     model.add(MaxPooling2D(pool_size=(2, 2)))
 
-    model.add(Convolution2D(8, (3, 3), padding='same'))
-    model.add(LeakyReLU())
-    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Convolution2D(8, (3, 3), padding='same', name="Conv2D_3"))
+    model.add(LeakyReLU(name="activation_3"))
+    model.add(MaxPooling2D(pool_size=(2, 2), name="pooling_1"))
 
-    model.add(Convolution2D(8, (3, 3), padding='same'))
-    model.add(LeakyReLU(alpha=0.0))
+    model.add(Convolution2D(8, (3, 3), padding='same', name="Conv2D_4"))
+    model.add(LeakyReLU(alpha=0.0, name="activation_4"))
 
-    model.add(Convolution2D(8, (1, 1), padding='same'))
+    model.add(Convolution2D(8, (1, 1), padding='same', name="Conv2D_5"))
 
     # classifier
-    model.add(Flatten())
+    model.add(Flatten(name="flatten_1"))
     # model.add(Dense(32))
     # radius, x, y
-    model.add(Dense(4, activation="relu"))
+    # TODO order of values, also missing confidence
+    model.add(Dense(4, activation="relu", name="dense_1"))
 
     return model
 
