@@ -31,7 +31,7 @@ class AccHistory(keras.callbacks.Callback):
                 else:
                     print("-> {:.4f} ({:+.4f}) ".format(a, (a - prev)))
             prev = a
-        if max_idx >= 0 and max_idx < len(self.acc):
+        if 0 <= max_idx < len(self.acc):
             print("Maximum is {:.4f}".format(self.acc[max_idx]))
 
 
@@ -84,18 +84,18 @@ with open(imgdb_path, "rb") as f:
     y = pickle.load(f)
 
 # define the Keras network
-if args.proceed is None or args.proceed == False:
+if args.proceed is None or args.proceed is False:
     print("Creating new model")
 
     model = model_zoo.fy_1500()
 else:
     print("Loading model " + model_path)
-    model = load_model(model_path)
+    model = tf.keras.models.load_model(model_path)
 
 # Define precision and recall for 0.5, 0.8 and 0.9 threshold
 # class_id=3 means use the third element of the output vector
 precision_class_05 = tf.keras.metrics.Precision(name="precision_classifcation_0.5", thresholds=0.5, class_id=3)
-recall_class_05 = tf.keras.metrics.Recall(name="recall_classifcation_0.5", thresholds=0.5,class_id=3)
+recall_class_05 = tf.keras.metrics.Recall(name="recall_classifcation_0.5", thresholds=0.5, class_id=3)
 precision_class_08 = tf.keras.metrics.Precision(name="precision_classifcation_0.8", thresholds=0.8, class_id=3)
 recall_class_08 = tf.keras.metrics.Recall(name="recall_classifcation_0.8", thresholds=0.8, class_id=3)
 precision_class_09 = tf.keras.metrics.Precision(name="precision_classifcation_0.9", thresholds=0.9, class_id=3)
