@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
+import argparse
+import pickle
+from datetime import datetime
+from pathlib import Path
+
+import numpy as np
 import tensorflow as tf
 from tensorflow import keras as keras
 
-import argparse
-import pickle
-
-from datetime import datetime
-import numpy as np
 import model_zoo
 
 
@@ -46,39 +47,25 @@ def str2bool(v):
 
 parser = argparse.ArgumentParser(description='Train the network given ')
 
-parser.add_argument('-b', '--database-path', dest='imgdb_path',
+parser.add_argument('-b', '--database-path', dest='imgdb_path', default="img.db",
                     help='Path to the image database to use for training. '
                          'Default is img.db in current folder.')
-parser.add_argument('-m', '--model-path', dest='model_path',
+parser.add_argument('-m', '--model-path', dest='model_path', default="model.h5",
                     help='Store the trained model using this path. Default is model.h5.')
 parser.add_argument("--proceed", type=str2bool, nargs='?', dest="proceed",
                     const=True,
                     help="Use the stored and pre-trained model base.")
-parser.add_argument("--log", dest="log",
+parser.add_argument("--log", dest="log", default="./logs/",
                     help="Tensorboard log location.")
-parser.add_argument("--batch-size", dest="batch_size",
+parser.add_argument("--batch-size", dest="batch_size", default=256,
                     help="Batch size. Default is 256")
 
 args = parser.parse_args()
 
-imgdb_path = "img.db"
-model_path = "model.h5"
-log_dir = None
-batch_size = 256
+if not Path(args.log).exists():
+    Path.mkdir(Path(args.log))
 
-if args.imgdb_path is not None:
-    imgdb_path = args.imgdb_path
-
-if args.model_path is not None:
-    model_path = args.model_path
-
-if args.log is not None:
-    log_dir = args.log
-
-if args.batch_size is not None:
-    batch_size = args.batch_size
-
-with open(imgdb_path, "rb") as f:
+with open(args.imgdb_path, "rb") as f:
     pickle.load(f)  # skip mean
     x = pickle.load(f)
     y = pickle.load(f)
@@ -87,10 +74,11 @@ with open(imgdb_path, "rb") as f:
 if args.proceed is None or args.proceed is False:
     print("Creating new model")
 
+    # FIXME make it possible to select a diffenrent model when calling train
     model = model_zoo.fy_1500()
 else:
-    print("Loading model " + model_path)
-    model = tf.keras.models.load_model(model_path)
+    print("Loading model " + args.model_path)
+    model = tf.keras.models.load_model(args.model_path)
 
 # Define precision and recall for 0.5, 0.8 and 0.9 threshold
 # class_id=3 means use the third element of the output vector
@@ -106,18 +94,17 @@ model.compile(loss='mean_squared_error',
               metrics=['accuracy', precision_class_05, recall_class_05,
                        precision_class_08, recall_class_08, precision_class_09, recall_class_09])
 
-print(model.summary())
+model.summary()
 
-save_callback = tf.keras.callbacks.ModelCheckpoint(filepath=model_path, monitor='loss', verbose=1,
+save_callback = tf.keras.callbacks.ModelCheckpoint(filepath=args.model_path, monitor='loss', verbose=1,
                                                    save_best_only=True)
 
 callbacks = [save_callback]
 
-if log_dir is not None:
-    log_callback = keras.callbacks.TensorBoard(
-        log_dir='./logs/' + str(datetime.now()).replace(" ", "_"), profile_batch=0)
-    callbacks.append(log_callback)
+log_path = Path(args.log) / str(datetime.now()).replace(" ", "_").replace(":", "-")
+log_callback = keras.callbacks.TensorBoard(log_dir=log_path, profile_batch=0)
+callbacks.append(log_callback)
 
-history = model.fit(x, y, batch_size=batch_size, epochs=200, verbose=1, validation_split=0.1,
+history = model.fit(x, y, batch_size=args.batch_size, epochs=200, verbose=1, validation_split=0.1,
                     callbacks=callbacks)
-model.save(model_path)
+model.save(args.model_path)
