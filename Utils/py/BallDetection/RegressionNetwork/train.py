@@ -45,66 +45,71 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
-parser = argparse.ArgumentParser(description='Train the network given ')
+def main(raw_args=None):
+    parser = argparse.ArgumentParser(description='Train the network given ')
 
-parser.add_argument('-b', '--database-path', dest='imgdb_path', default="img.db",
-                    help='Path to the image database to use for training. '
-                         'Default is img.db in current folder.')
-parser.add_argument('-m', '--model-path', dest='model_path', default="model.h5",
-                    help='Store the trained model using this path. Default is model.h5.')
-parser.add_argument("--proceed", type=str2bool, nargs='?', dest="proceed",
-                    const=True,
-                    help="Use the stored and pre-trained model base.")
-parser.add_argument("--log", dest="log", default="./logs/",
-                    help="Tensorboard log location.")
-parser.add_argument("--batch-size", dest="batch_size", default=256,
-                    help="Batch size. Default is 256")
+    parser.add_argument('-b', '--database-path', dest='imgdb_path', default="img.db",
+                        help='Path to the image database to use for training. '
+                             'Default is img.db in current folder.')
+    parser.add_argument('-m', '--model-path', dest='model_path', default="model.h5",
+                        help='Store the trained model using this path. Default is model.h5.')
+    parser.add_argument("--proceed", type=str2bool, nargs='?', dest="proceed",
+                        const=True,
+                        help="Use the stored and pre-trained model base.")
+    parser.add_argument("--log", dest="log", default="./logs/",
+                        help="Tensorboard log location.")
+    parser.add_argument("--batch-size", dest="batch_size", default=256,
+                        help="Batch size. Default is 256")
 
-args = parser.parse_args()
+    args = parser.parse_args(raw_args)
 
-if not Path(args.log).exists():
-    Path.mkdir(Path(args.log))
+    if not Path(args.log).exists():
+        Path.mkdir(Path(args.log))
 
-with open(args.imgdb_path, "rb") as f:
-    pickle.load(f)  # skip mean
-    x = pickle.load(f)
-    y = pickle.load(f)
+    with open(args.imgdb_path, "rb") as f:
+        pickle.load(f)  # skip mean
+        x = pickle.load(f)
+        y = pickle.load(f)
 
-# define the Keras network
-if args.proceed is None or args.proceed is False:
-    print("Creating new model")
+    # define the Keras network
+    if args.proceed is None or args.proceed is False:
+        print("Creating new model")
 
-    # FIXME make it possible to select a diffenrent model when calling train
-    model = model_zoo.fy_1500()
-else:
-    print("Loading model " + args.model_path)
-    model = tf.keras.models.load_model(args.model_path)
+        # FIXME make it possible to select a diffenrent model when calling train
+        model = model_zoo.fy_1500()
+    else:
+        print("Loading model " + args.model_path)
+        model = tf.keras.models.load_model(args.model_path)
 
-# Define precision and recall for 0.5, 0.8 and 0.9 threshold
-# class_id=3 means use the third element of the output vector
-precision_class_05 = tf.keras.metrics.Precision(name="precision_classifcation_0.5", thresholds=0.5, class_id=3)
-recall_class_05 = tf.keras.metrics.Recall(name="recall_classifcation_0.5", thresholds=0.5, class_id=3)
-precision_class_08 = tf.keras.metrics.Precision(name="precision_classifcation_0.8", thresholds=0.8, class_id=3)
-recall_class_08 = tf.keras.metrics.Recall(name="recall_classifcation_0.8", thresholds=0.8, class_id=3)
-precision_class_09 = tf.keras.metrics.Precision(name="precision_classifcation_0.9", thresholds=0.9, class_id=3)
-recall_class_09 = tf.keras.metrics.Recall(name="recall_classifcation_0.9", thresholds=0.9, class_id=3)
+    # Define precision and recall for 0.5, 0.8 and 0.9 threshold
+    # class_id=3 means use the third element of the output vector
+    precision_class_05 = tf.keras.metrics.Precision(name="precision_classifcation_0.5", thresholds=0.5, class_id=3)
+    recall_class_05 = tf.keras.metrics.Recall(name="recall_classifcation_0.5", thresholds=0.5, class_id=3)
+    precision_class_08 = tf.keras.metrics.Precision(name="precision_classifcation_0.8", thresholds=0.8, class_id=3)
+    recall_class_08 = tf.keras.metrics.Recall(name="recall_classifcation_0.8", thresholds=0.8, class_id=3)
+    precision_class_09 = tf.keras.metrics.Precision(name="precision_classifcation_0.9", thresholds=0.9, class_id=3)
+    recall_class_09 = tf.keras.metrics.Recall(name="recall_classifcation_0.9", thresholds=0.9, class_id=3)
 
-model.compile(loss='mean_squared_error',
-              optimizer='adam',
-              metrics=['accuracy', precision_class_05, recall_class_05,
-                       precision_class_08, recall_class_08, precision_class_09, recall_class_09])
+    model.compile(loss='mean_squared_error',
+                  optimizer='adam',
+                  metrics=['accuracy', precision_class_05, recall_class_05,
+                           precision_class_08, recall_class_08, precision_class_09, recall_class_09])
 
-model.summary()
+    model.summary()
 
-save_callback = tf.keras.callbacks.ModelCheckpoint(filepath=args.model_path, monitor='loss', verbose=1,
-                                                   save_best_only=True)
+    save_callback = tf.keras.callbacks.ModelCheckpoint(filepath=args.model_path, monitor='loss', verbose=1,
+                                                       save_best_only=True)
 
-callbacks = [save_callback]
+    callbacks = [save_callback]
 
-log_path = Path(args.log) / str(datetime.now()).replace(" ", "_").replace(":", "-")
-log_callback = keras.callbacks.TensorBoard(log_dir=log_path, profile_batch=0)
-callbacks.append(log_callback)
+    log_path = Path(args.log) / str(datetime.now()).replace(" ", "_").replace(":", "-")
+    log_callback = keras.callbacks.TensorBoard(log_dir=log_path, profile_batch=0)
+    callbacks.append(log_callback)
 
-history = model.fit(x, y, batch_size=args.batch_size, epochs=200, verbose=1, validation_split=0.1,
-                    callbacks=callbacks)
-model.save(args.model_path)
+    history = model.fit(x, y, batch_size=args.batch_size, epochs=200, verbose=1, validation_split=0.1,
+                        callbacks=callbacks)
+    model.save(args.model_path)
+
+
+if __name__ == '__main__':
+    main()
