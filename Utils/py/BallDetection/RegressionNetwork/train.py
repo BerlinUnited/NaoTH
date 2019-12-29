@@ -46,19 +46,23 @@ def str2bool(v):
 
 
 def main(raw_args=None, model=None):
-    parser = argparse.ArgumentParser(description='Train the network given ')
+    parser = argparse.ArgumentParser(description='Train the network given')
 
     parser.add_argument('-b', '--database-path', dest='imgdb_path', default="img.db",
                         help='Path to the image database to use for training. Default is img.db in current folder.')
+    parser.add_argument("--log", dest="log", default="./logs/", help="Tensorboard log location.")
+    parser.add_argument("--output", dest="output", default="./", help="Folder where the trained models are saved")
+
+    # for continuing training
     parser.add_argument('-m', '--model-path', dest='model_path', default="model.h5",
                         help='Store the trained model using this path. Default is model.h5.')
-    parser.add_argument("--log", dest="log", default="./logs/", help="Tensorboard log location.")
-
     parser.add_argument("--proceed", type=str2bool, nargs='?', dest="proceed",
                         const=True, help="Use the stored and pre-trained model base.")
+
+    # hyperparameter
     parser.add_argument("--batch-size", dest="batch_size", default=256,
                         help="Batch size. Default is 256")
-    parser.add_argument("--epochs", dest="epochs", default=200,
+    parser.add_argument("--epochs", dest="epochs", default=200, type=int,
                         help="Number of epochs")
 
     args = parser.parse_args(raw_args)
@@ -98,9 +102,9 @@ def main(raw_args=None, model=None):
                   metrics=['accuracy', precision_class_05, recall_class_05,
                            precision_class_08, recall_class_08, precision_class_09, recall_class_09])
 
-    model.summary()
-
-    save_callback = tf.keras.callbacks.ModelCheckpoint(filepath=args.model_path, monitor='loss', verbose=1,
+    # TODO combine the path and the filename
+    filepath = Path(args.output) / "saved-model-{epoch:02d}-{val_acc:.2f}.hdf5"
+    save_callback = tf.keras.callbacks.ModelCheckpoint(filepath=str(filepath), monitor='loss', verbose=1,
                                                        save_best_only=True)
 
     callbacks = [save_callback]
@@ -111,7 +115,7 @@ def main(raw_args=None, model=None):
 
     history = model.fit(x, y, batch_size=args.batch_size, epochs=args.epochs, verbose=1, validation_split=0.1,
                         callbacks=callbacks)
-    model.save(args.model_path)
+    # model.save(args.model_path)
 
 
 if __name__ == '__main__':
