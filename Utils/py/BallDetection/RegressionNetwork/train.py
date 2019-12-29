@@ -102,8 +102,7 @@ def main(raw_args=None, model=None):
                   metrics=['accuracy', precision_class_05, recall_class_05,
                            precision_class_08, recall_class_08, precision_class_09, recall_class_09])
 
-    # TODO combine the path and the filename
-    filepath = Path(args.output) / "saved-model-{epoch:02d}-{val_acc:.2f}.hdf5"
+    filepath = Path(args.output) / "saved-model-{epoch:03d}-{val_acc:.2f}.hdf5"
     save_callback = tf.keras.callbacks.ModelCheckpoint(filepath=str(filepath), monitor='loss', verbose=1,
                                                        save_best_only=True)
 
@@ -115,7 +114,6 @@ def main(raw_args=None, model=None):
 
     history = model.fit(x, y, batch_size=args.batch_size, epochs=args.epochs, verbose=1, validation_split=0.1,
                         callbacks=callbacks)
-    # model.save(args.model_path)
     return history
 
 
