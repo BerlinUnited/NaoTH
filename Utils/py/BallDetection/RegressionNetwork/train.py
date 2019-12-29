@@ -116,6 +116,7 @@ def main(raw_args=None, model=None):
     history = model.fit(x, y, batch_size=args.batch_size, epochs=args.epochs, verbose=1, validation_split=0.1,
                         callbacks=callbacks)
     # model.save(args.model_path)
+    return history
 
 
 if __name__ == '__main__':
