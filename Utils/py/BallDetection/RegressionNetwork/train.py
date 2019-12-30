@@ -112,6 +112,9 @@ def main(raw_args=None, model=None):
     log_callback = keras.callbacks.TensorBoard(log_dir=log_path, profile_batch=0)
     callbacks.append(log_callback)
 
+    # TODO prepare an extra validation set, that is consistent over multiple runs
+    # history = model.fit(x, y, batch_size=args.batch_size, epochs=args.epochs, verbose=1,
+    # validation_data=(X_test, Y_test),callbacks=callbacks)
     history = model.fit(x, y, batch_size=args.batch_size, epochs=args.epochs, verbose=1, validation_split=0.1,
                         callbacks=callbacks)
     return history
