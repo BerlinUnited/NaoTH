@@ -12,11 +12,12 @@ num_epochs = 100
 test_model = model_zoo.fy_1500()
 
 for i in range(num_runs):
-    output_path = './fy_1500' + "_" + str(i)
-    if not Path(output_path).exists():
-        Path.mkdir(Path(output_path))
+    output_path = Path(test_model.name + "_" + str(i))
+    if not output_path.exists():
+        Path.mkdir(output_path)
 
-    history = main(['-b', '../img.db', '--log', '../logs/', '--epochs', str(num_epochs), '--output', output_path], test_model)
+    history = main(['-b', '../img.db', '--log', '../logs/', '--epochs', str(num_epochs), '--output', str(output_path)],
+                   test_model)
 
     # save trainings history to file
     with open(output_path + "/history.pkl", "wb") as f:

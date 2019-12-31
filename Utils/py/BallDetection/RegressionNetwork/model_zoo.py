@@ -8,6 +8,8 @@ def fy_1500():
     input_shape = (16, 16, 1)
 
     model = Sequential()
+    model._name = "fy_1500"
+
     model.add(Convolution2D(4, (3, 3), input_shape=input_shape, padding='same', name="Conv2D_1"))
     model.add(LeakyReLU(alpha=0.0, name="activation_1"))  # alpha unknown, so default
 
@@ -38,6 +40,8 @@ def model1():
     input_shape = (16, 16, 1)
 
     model = Sequential()
+    model._name = "model1"
+
     model.add(Convolution2D(4, (3, 3), input_shape=input_shape, padding='same'))
     model.add(ReLU())
 
@@ -70,6 +74,8 @@ def fy_4000():
     input_shape = (16, 16, 1)
 
     model = Sequential()
+    model._name = "fy_4000"
+
     model.add(Convolution2D(4, (3, 3), input_shape=input_shape, padding='same'))
     model.add(LeakyReLU(alpha=0.0))  # alpha unknown, so default
 
@@ -99,6 +105,8 @@ def fy_1300():
     input_shape = (16, 16, 1)
 
     model = Sequential()
+    model._name = "fy_1300"
+
     model.add(Convolution2D(4, (3, 3), input_shape=input_shape, padding='same'))
     model.add(LeakyReLU(alpha=0.0))  # alpha unknown, so default
 
@@ -128,6 +136,8 @@ def fy_1300_flexrelu():
     input_shape = (16, 16, 1)
 
     model = Sequential()
+    model._name = "fy_1300_flexrelu"
+
     model.add(Convolution2D(4, (3, 3), input_shape=input_shape, padding='same'))
     model.add(ReLU())
 
@@ -157,6 +167,8 @@ def fy_max():
     input_shape = (16, 16, 1)
 
     model = Sequential()
+    model._name = "fy_max"
+
     model.add(Convolution2D(12, (3, 3), input_shape=input_shape, padding='same'))
     model.add(LeakyReLU(alpha=0.0))  # alpha unknown, so default
 
@@ -186,6 +198,8 @@ def naodevils():
     input_shape = (16, 16, 1)
 
     model = Sequential()
+    model._name = "naodevils"
+
     model.add(Convolution2D(8, (5, 5), input_shape=input_shape,
                             activation='relu', strides=(2, 2), padding='same'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
@@ -203,6 +217,8 @@ def fy_lessleaky():
     input_shape = (16, 16, 1)
 
     model = Sequential()
+    model._name = "fy_lessleaky"
+
     model.add(Convolution2D(4, (3, 3), input_shape=input_shape, padding='same'))
     model.add(LeakyReLU())
 
@@ -230,6 +246,8 @@ def fy_half():
     input_shape = (16, 16, 1)
 
     model = Sequential()
+    model._name = "fy_half"
+
     model.add(Convolution2D(6, (3, 3), input_shape=input_shape, padding='same'))
     model.add(LeakyReLU(alpha=0.0))  # alpha unknown, so default
     # model.add(BatchNormalization())
@@ -264,6 +282,8 @@ def fy_step1():
     input_shape = (16, 16, 1)
 
     model = Sequential()
+    model._name = "fy_step1"
+
     model.add(Convolution2D(12, (3, 3), input_shape=input_shape, padding='same'))
     model.add(LeakyReLU(alpha=0.0))  # alpha unknown, so default
 
@@ -292,6 +312,8 @@ def fy_lessfeat():
     input_shape = (16, 16, 1)
 
     model = Sequential()
+    model._name = "fy_lessfeat"
+
     model.add(Convolution2D(4, (3, 3), input_shape=input_shape, padding='same'))
     model.add(LeakyReLU(alpha=0.0))  # alpha unknown, so default
     # model.add(BatchNormalization())
