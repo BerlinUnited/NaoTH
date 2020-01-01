@@ -96,7 +96,7 @@ def fy_4000():
     model.add(Flatten())
     #    model.add(Dense(32))
     # radius, x, y
-    model.add(Dense(3, activation="relu"))
+    model.add(Dense(4, activation="relu"))
 
     return model
 
@@ -127,7 +127,7 @@ def fy_1300():
     model.add(Flatten())
     #    model.add(Dense(32))
     # radius, x, y
-    model.add(Dense(3, activation="relu"))
+    model.add(Dense(4, activation="relu"))
 
     return model
 
@@ -158,7 +158,7 @@ def fy_1300_flexrelu():
     model.add(Flatten())
     #    model.add(Dense(32))
     # radius, x, y
-    model.add(Dense(3, activation="relu"))
+    model.add(Dense(4, activation="relu"))
 
     return model
 
@@ -189,7 +189,7 @@ def fy_max():
     model.add(Flatten())
     #    model.add(Dense(32))
     # radius, x, y
-    model.add(Dense(3, activation="relu"))
+    model.add(Dense(4, activation="relu"))
 
     return model
 
@@ -208,7 +208,7 @@ def naodevils():
     model.add(Flatten())
 
     # radius, x, y
-    model.add(Dense(3))
+    model.add(Dense(4))
 
     return model
 
@@ -237,7 +237,7 @@ def fy_lessleaky():
     model.add(Flatten())
     #    model.add(Dense(32))
     # radius, x, y
-    model.add(Dense(3, activation="relu"))
+    model.add(Dense(4, activation="relu"))
 
     return model
 
@@ -273,7 +273,7 @@ def fy_half():
     model.add(Flatten())
     #    model.add(Dense(32))
     # radius, x, y
-    model.add(Dense(3, activation="relu"))
+    model.add(Dense(4, activation="relu"))
 
     return model
 
@@ -303,7 +303,7 @@ def fy_step1():
     # classifier
     model.add(Flatten())
     # radius, x, y
-    model.add(Dense(3, activation="relu"))
+    model.add(Dense(4, activation="relu"))
 
     return model
 
@@ -339,6 +339,6 @@ def fy_lessfeat():
     model.add(Flatten())
     #    model.add(Dense(32))
     # radius, x, y
-    model.add(Dense(3, activation="relu"))
+    model.add(Dense(4, activation="relu"))
 
     return model
