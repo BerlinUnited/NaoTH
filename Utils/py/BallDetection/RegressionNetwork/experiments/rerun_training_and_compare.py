@@ -1,11 +1,11 @@
 """
  run trainings procedure multiple times and compare the best run with each other
 """
-from pathlib import Path
-from train import main
-import model_zoo
-import matplotlib.pyplot as plt
 import pickle
+from pathlib import Path
+
+import model_zoo
+from train import main
 
 num_runs = 30
 num_epochs = 100
@@ -22,22 +22,3 @@ for i in range(num_runs):
     # save trainings history to file
     with open(output_path + "/history.pkl", "wb") as f:
         pickle.dump(history.history, f)
-
-    # TODO get epoch with best loss
-    # TODO make plots for all metrics
-    print(history.history.keys())
-    plt.plot(history.history['loss'])
-    plt.plot(history.history['val_loss'])
-    plt.title('model loss')
-    plt.ylabel('loss')
-    plt.xlabel('epoch')
-    plt.legend(['train', 'test'], loc='upper left')
-    plt.show()
-
-    plt.plot(history.history['acc'])
-    plt.plot(history.history['val_acc'])
-    plt.title('model accuracy')
-    plt.ylabel('accuracy')
-    plt.xlabel('epoch')
-    plt.legend(['train', 'test'], loc='upper left')
-    plt.show()
