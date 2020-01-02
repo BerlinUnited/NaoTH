@@ -20,5 +20,5 @@ for i in range(num_runs):
                    test_model)
 
     # save trainings history to file
-    with open(str(output_path) + "/history.pkl", "wb") as f:
+    with open(str(output_path) + "/history_" + str(i) + ".pkl", "wb") as f:
         pickle.dump(history.history, f)
