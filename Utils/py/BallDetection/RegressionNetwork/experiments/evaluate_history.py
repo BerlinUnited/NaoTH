@@ -1,58 +1,65 @@
 import pickle
+from pathlib import Path
+import matplotlib.pyplot as plt
 import numpy as np
 
-pickle_files = [
-    '../data/fy_1500_0/history.pkl',
-    '../data/fy_1500_1/history.pkl',
-    '../data/fy_1500_2/history.pkl',
-    '../data/fy_1500_3/history.pkl',
-    '../data/fy_1500_4/history.pkl',
-    '../data/fy_1500_5/history.pkl',
-    '../data/fy_1500_6/history.pkl',
-    '../data/fy_1500_7/history.pkl',
-    '../data/fy_1500_8/history.pkl',
-    '../data/fy_1500_9/history.pkl',
-    '../data/fy_1500_10/history.pkl',
-    '../data/fy_1500_11/history.pkl',
-    '../data/fy_1500_12/history.pkl',
-    '../data/fy_1500_13/history.pkl',
-    '../data/fy_1500_14/history.pkl',
-    '../data/fy_1500_15/history.pkl',
-    '../data/fy_1500_16/history.pkl',
-    '../data/fy_1500_17/history.pkl',
-    '../data/fy_1500_18/history.pkl',
-    '../data/fy_1500_19/history.pkl',
-    '../data/fy_1500_20/history.pkl',
-    '../data/fy_1500_21/history.pkl',
-    '../data/fy_1500_22/history.pkl',
-    '../data/fy_1500_23/history.pkl',
-    '../data/fy_1500_24/history.pkl',
-    '../data/fy_1500_25/history.pkl',
-    '../data/fy_1500_26/history.pkl',
-    '../data/fy_1500_27/history.pkl',
-    '../data/fy_1500_28/history.pkl',
-    '../data/fy_1500_29/history.pkl',
-]
 loss_runs = []
 acc_runs = []
 epoch_runs = []
 
-for idx, filename in enumerate(pickle_files):
-    with open(filename, 'rb') as f:
+loss_figure = plt.figure(1)
+acc_figure = plt.figure(2)
+for filename in Path('../data/model1/').glob('**/*.pkl'):
+    with open(str(filename), 'rb') as f:
+        # load trainings history of a single run
         history = pickle.load(f)
 
+        # get loss and acc
+        plt.figure(1)
         loss = np.array(history['val_loss'])
         acc = np.array(history['val_acc'])
 
+        # plot trainings progress
+        plt.plot(history['val_loss'], label=str(filename.name))
+        plt.ylabel('loss')
+        plt.xlabel('epoch')
+        plt.legend(loc='upper left')
+
+        plt.figure(2)
+        plt.plot(history['val_acc'], label=str(filename.name))
+        plt.ylabel('accuracy')
+        plt.xlabel('epoch')
+
+        # get data from best epoch
         min_pos = loss.argmin()
         min_loss_val = loss[min_pos]
         best_acc = acc[min_pos]
 
-        print("Epoch: %d with loss %1.19f and accurray %1.19g" % (min_pos, min_loss_val, best_acc))
         loss_runs.append(min_loss_val)
         acc_runs.append(best_acc)
         epoch_runs.append(min_pos)
+        print("Epoch: %d with loss %1.19f and accurray %1.19g" % (min_pos, min_loss_val, best_acc))
 
+plt.show()
 print()
 best_run = np.array(loss_runs).argmin()
-print("Best run: %d with loss %1.19f, acc %1.19f in epoch %d" % (best_run, loss_runs[best_run], acc_runs[best_run], epoch_runs[best_run]))
+print("Best run: %d with loss %1.19f, acc %1.19f in epoch %d" % (
+    best_run, loss_runs[best_run], acc_runs[best_run], epoch_runs[best_run]))
+
+# TODO make multiple plots for comparing all the metrics over multiple runs and then train vs validation of best run
+quit()
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
+
+plt.plot(history.history['acc'])
+plt.plot(history.history['val_acc'])
+plt.title('model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
