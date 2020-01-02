@@ -170,7 +170,7 @@ def fy_max():
     model.add(Convolution2D(12, (3, 3), input_shape=input_shape, padding='same', name="Conv2D_1"))
     model.add(LeakyReLU(alpha=0.0, name="activation_1"))  # alpha unknown, so default
 
-    model.add(Convolution2D(16, (3, 3), padding='same'), name="Conv2D_2")
+    model.add(Convolution2D(16, (3, 3), padding='same', name="Conv2D_2"))
     model.add(LeakyReLU(name="activation_2"))
     model.add(MaxPooling2D(pool_size=(2, 2), name="pooling_1"))
 
