@@ -5,7 +5,8 @@ import numpy as np
 
 loss_runs = []
 acc_runs = []
-epoch_runs = []
+epoch_loss_runs = []
+epoch_acc_runs = []
 
 loss_figure = plt.figure(1)
 acc_figure = plt.figure(2)
@@ -33,33 +34,22 @@ for filename in Path('../data/model1/').glob('**/*.pkl'):
         # get data from best epoch
         min_pos = loss.argmin()
         min_loss_val = loss[min_pos]
-        best_acc = acc[min_pos]
+
+        max_pos = acc.argmax()
+        best_acc = acc[max_pos]
 
         loss_runs.append(min_loss_val)
         acc_runs.append(best_acc)
-        epoch_runs.append(min_pos)
-        print("Epoch: %d with loss %1.19f and accurray %1.19g" % (min_pos, min_loss_val, best_acc))
+        epoch_loss_runs.append(min_pos)
+        epoch_acc_runs.append(max_pos)
+        # print("Best Epoch [Loss] is %d with loss %1.19f " % (min_pos, min_loss_val))
+        # print("Best Epoch [ACC] is %d with accuracy %1.19g" % (max_pos, best_acc))
 
 plt.show()
 print()
-best_run = np.array(loss_runs).argmin()
-print("Best run: %d with loss %1.19f, acc %1.19f in epoch %d" % (
-    best_run, loss_runs[best_run], acc_runs[best_run], epoch_runs[best_run]))
-
-# TODO make multiple plots for comparing all the metrics over multiple runs and then train vs validation of best run
-quit()
-plt.plot(history.history['loss'])
-plt.plot(history.history['val_loss'])
-plt.title('model loss')
-plt.ylabel('loss')
-plt.xlabel('epoch')
-plt.legend(['train', 'test'], loc='upper left')
-plt.show()
-
-plt.plot(history.history['acc'])
-plt.plot(history.history['val_acc'])
-plt.title('model accuracy')
-plt.ylabel('accuracy')
-plt.xlabel('epoch')
-plt.legend(['train', 'test'], loc='upper left')
-plt.show()
+best_run_loss = np.array(loss_runs).argmin()
+best_acc_loss = np.array(acc_runs).argmax()
+print("Best Loss: run: %d with loss %1.19f in epoch %d" % (
+    best_run_loss, loss_runs[best_run_loss], epoch_loss_runs[best_run_loss]))
+print("Best Acc run: %d with acc %1.19f in epoch %d" % (
+    best_acc_loss, acc_runs[best_acc_loss], epoch_acc_runs[best_acc_loss]))
