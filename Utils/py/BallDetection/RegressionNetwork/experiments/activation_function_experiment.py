@@ -1,8 +1,9 @@
-from model_zoo import fy_1500
+from model_zoo import model1
 import tensorflow as tf
 
+from experiments.rerun_training_and_compare import start_training
 
-test_model = fy_1500()
+test_model = model1()
 test_model.summary()
 
 function_list = list()
@@ -18,13 +19,18 @@ function_list.append('softsign')
 function_list.append('tanh')
 function_list.append('softmax')
 
-current_activation_fct = function_list[1]
+for activation_function in function_list:
 
-new_model = tf.keras.Sequential()
-for index, layer in enumerate(test_model.layers):
-    if "activation" in layer.name:
-        new_model.add(tf.keras.layers.Activation(current_activation_fct, name=layer.name + "_" + current_activation_fct))
-    else:
-        new_model.add(layer)
+    new_model = tf.keras.Sequential()
+    for index, layer in enumerate(test_model.layers):
+        if "activation" in layer.name:
+            new_model.add(
+                tf.keras.layers.Activation(activation_function, name=layer.name + "_" + activation_function))
+        else:
+            new_model.add(layer)
 
-new_model.summary()
+    # set name
+    new_model._name = "model1" + "_" + activation_function
+
+    new_model.summary()
+    start_training(new_model)
