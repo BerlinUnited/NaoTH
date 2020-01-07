@@ -1,5 +1,5 @@
-#ifndef _CNN_H
-#define _CNN_H
+#ifndef _Model1_H
+#define _Model1_H
 
 # include <emmintrin.h>
 # include <math.h>
@@ -20,4 +20,4 @@ private:
 	float scores[4];
 
 };
-# endif
+# endif // _Model1_H
