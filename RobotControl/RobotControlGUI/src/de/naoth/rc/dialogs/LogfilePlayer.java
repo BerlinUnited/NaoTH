@@ -21,8 +21,6 @@ import java.awt.KeyEventPostProcessor;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
