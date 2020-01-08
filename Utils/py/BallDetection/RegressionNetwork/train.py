@@ -10,6 +10,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras as keras
 import model_zoo
+from loss_zoo import iou_loss, iou_metric
 
 
 class AccHistory(keras.callbacks.Callback):
@@ -97,9 +98,11 @@ def main(raw_args=None, model=None):
     precision_class_09 = tf.keras.metrics.Precision(name="precision_classifcation_0.9", thresholds=0.9, class_id=3)
     recall_class_09 = tf.keras.metrics.Recall(name="recall_classifcation_0.9", thresholds=0.9, class_id=3)
 
-    model.compile(loss='mean_squared_error',
+    # TODO test l1 norm for regression
+    # Example of how to define own loss functions: https://github.com/shubham0204/Bounding_Box_Regression_TF/blob/master/Model.py
+    model.compile(loss=iou_loss,
                   optimizer='adam',
-                  metrics=['accuracy', precision_class_05, recall_class_05,
+                  metrics=['accuracy', iou_metric, precision_class_05, recall_class_05,
                            precision_class_08, recall_class_08, precision_class_09, recall_class_09])
 
     filepath = Path(args.output) / "saved-model-{epoch:03d}-{val_acc:.2f}.hdf5"
@@ -115,6 +118,7 @@ def main(raw_args=None, model=None):
     # TODO prepare an extra validation set, that is consistent over multiple runs
     # history = model.fit(x, y, batch_size=args.batch_size, epochs=args.epochs, verbose=1,
     # validation_data=(X_test, Y_test),callbacks=callbacks)
+
     history = model.fit(x, y, batch_size=args.batch_size, epochs=args.epochs, verbose=1, validation_split=0.1,
                         callbacks=callbacks)
     return history
