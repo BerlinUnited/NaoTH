@@ -13,6 +13,7 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.dataformats.LogFile;
 import de.naoth.rc.logmanager.LogFileEventManager;
+import de.naoth.rc.messages.FrameworkRepresentations;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.File;
@@ -206,6 +207,11 @@ public class LogfileInspector extends AbstractDialog
             StringBuilder sb = new StringBuilder();
             sb.append(this.jSlider1.getValue()).append('\n');
             for(String s: f.keySet()) {
+                // parse "FrameInfo" and add it to view
+                if(s.equals("FrameInfo")) {
+                    FrameworkRepresentations.FrameInfo fi = FrameworkRepresentations.FrameInfo.parseFrom(f.get(s).getData());
+                    sb.insert(0, "FN: " + fi.getFrameNumber() + " | C: ");
+                }
                 sb.append(s).append('\n');
             }
             this.jTextArea1.setText(sb.toString());
@@ -233,6 +239,10 @@ public class LogfileInspector extends AbstractDialog
         //JDialog dialog = jp.createDialog(null, "Loading...");
         //dialog.setModal(true);
         //dialog.setVisible(true);
+        
+        if(logFile != null) {
+            logFile.close();
+        }
         
         this.jSlider1.setEnabled(false);
         

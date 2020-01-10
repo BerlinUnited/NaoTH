@@ -22,6 +22,7 @@
 
 #include <thread>
 #include <mutex>
+#include <atomic>
 
 class DebugServer
 {
@@ -110,9 +111,8 @@ private:
   std::set<unsigned long> id_backlog; // list of unanswered id's
 
   std::mutex m_executing;
-  std::mutex m_abort;
 
-  bool abort;
+  std::atomic<bool> abort;
 
   void run();
   void receive();

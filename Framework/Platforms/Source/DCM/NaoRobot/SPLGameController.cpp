@@ -9,7 +9,8 @@ using namespace naoth;
 using namespace std;
 
 SPLGameController::SPLGameController()
-  :exiting(false), returnPort(GAMECONTROLLER_RETURN_PORT),
+  : exiting(false),
+    returnPort(GAMECONTROLLER_RETURN_PORT),
     socket(NULL),
     gamecontrollerAddress(NULL)
 {
@@ -24,7 +25,8 @@ SPLGameController::SPLGameController()
   {
     // init player number, team number and etc.
     //data.loadFromCfg( naoth::Platform::getInstance().theConfiguration );
-    
+    cancelable = g_cancellable_new();
+
     // init return data
     strcpy(dataOut.header, GAMECONTROLLER_RETURN_STRUCT_HEADER);
     dataOut.version = GAMECONTROLLER_RETURN_STRUCT_VERSION;
@@ -35,6 +37,7 @@ SPLGameController::SPLGameController()
     std::cout << "[INFO] SPLGameController start socket thread" << std::endl;
     socketThread = std::thread([this] {this->socketLoop();});
     ThreadUtil::setPriority(socketThread, ThreadUtil::Priority::lowest);
+    ThreadUtil::setName(socketThread, "GameController");
   }
 }
 
@@ -119,10 +122,14 @@ void SPLGameController::set(const naoth::GameReturnData& data)
 
 SPLGameController::~SPLGameController()
 {
+  std::cout << "[SPLGameController] stop wait" << std::endl;
+  // request the thread to stop
   exiting = true;
 
-  if(socketThread.joinable())
-  {
+  // notify all waiting connections to cancel
+  g_cancellable_cancel(cancelable);
+
+  if(socketThread.joinable()) {
     socketThread.join();
   }
 
@@ -133,6 +140,8 @@ SPLGameController::~SPLGameController()
   if(gamecontrollerAddress != NULL) {
     g_object_unref(gamecontrollerAddress);
   }
+  g_object_unref(cancelable);
+  std::cout << "[SPLGameController] stop done" << std::endl;
 }
 
 void SPLGameController::sendData(const RoboCupGameControlReturnData& data)
@@ -140,7 +149,7 @@ void SPLGameController::sendData(const RoboCupGameControlReturnData& data)
   GError *error = NULL;
   if(gamecontrollerAddress != NULL)
   {
-    gssize result = g_socket_send_to(socket, gamecontrollerAddress, (char*)(&data), sizeof(data), NULL, &error);
+    gssize result = g_socket_send_to(socket, gamecontrollerAddress, (char*)(&data), sizeof(data), cancelable, &error);
     if ( result != sizeof(data) ) {
       std::cout << "[WARN] SPLGameController::returnData, sended size = " <<  result << std::endl;
     }
@@ -153,17 +162,13 @@ void SPLGameController::sendData(const RoboCupGameControlReturnData& data)
 
 void SPLGameController::socketLoop()
 {
-  if(socket == NULL) {
-    return;
-  }
-
-  while(!exiting)
+  while(!exiting && socket != NULL)
   {
     GSocketAddress* senderAddress = NULL;
     int size = g_socket_receive_from(socket, &senderAddress,
                                      (char*)(&dataIn),
                                      sizeof(RoboCupGameControlData),
-                                     NULL, NULL);
+                                     cancelable, NULL);
 
     if(senderAddress != NULL)
     {

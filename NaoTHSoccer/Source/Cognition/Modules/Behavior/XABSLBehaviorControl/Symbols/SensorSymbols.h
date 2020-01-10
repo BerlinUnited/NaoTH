@@ -15,7 +15,6 @@
 #include "Representations/Infrastructure/UltraSoundData.h"
 #include "Representations/Infrastructure/GyrometerData.h"
 #include "Representations/Infrastructure/InertialSensorData.h"
-#include "Representations/Infrastructure/IRData.h"
 #include "Representations/Infrastructure/BatteryData.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Modeling/BodyState.h"
@@ -25,7 +24,7 @@
 #include "Representations/Motion/CollisionPercept.h"
 
 #include <Representations/Infrastructure/ButtonData.h>
-#include <Representations/Infrastructure/WhistleControl.h>
+#include <Representations/Infrastructure/AudioControl.h>
 // tools
 #include "Tools/Math/Common.h"
 
@@ -33,7 +32,6 @@ BEGIN_DECLARE_MODULE(SensorSymbols)
   REQUIRE(UltraSoundReceiveData)
   REQUIRE(GyrometerData)
   REQUIRE(InertialSensorData)
-  REQUIRE(IRReceiveData)
   REQUIRE(BatteryData)
   REQUIRE(FrameInfo)
   REQUIRE(BodyState)
@@ -43,7 +41,7 @@ BEGIN_DECLARE_MODULE(SensorSymbols)
   REQUIRE(ButtonData)
   REQUIRE(CollisionPercept)
 
-  PROVIDE(WhistleControl)
+  PROVIDE(AudioControl)
 END_DECLARE_MODULE(SensorSymbols)
 
 class SensorSymbols: public SensorSymbolsBase
@@ -93,9 +91,6 @@ private:
   static bool getButtonHeadMiddle();
   static bool getButtonHeadFront();
   static bool getButtonHeadRear();
-
-  static double getWhistleSwitch();
-  static void setWhistleSwitch(double whistle);
 
   static bool getCollisionArmLeft();
   static bool getCollisionArmRight();

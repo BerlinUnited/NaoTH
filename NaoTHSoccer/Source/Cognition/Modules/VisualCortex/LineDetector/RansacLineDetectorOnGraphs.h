@@ -14,9 +14,7 @@
 #include "Tools/Debug/DebugParameterList.h"
 
 #include "Representations/Perception/LineGraphPercept.h"
-#include "Representations/Perception/LinePercept.h"
-
-#include "Tools/Debug/DebugParameterList.h"
+#include "Representations/Perception/LinePercept2018.h"
 
 #include "Ellipse.h"
 
@@ -30,8 +28,9 @@ BEGIN_DECLARE_MODULE(RansacLineDetectorOnGraphs)
 
   REQUIRE(LineGraphPercept)
 
-  PROVIDE(LinePercept)
-  PROVIDE(LinePerceptTop)
+  PROVIDE(ShortLinePercept)
+  PROVIDE(GraphRansacCirclePercept)
+  PROVIDE(GraphRansacCirclePerceptTop)
 END_DECLARE_MODULE(RansacLineDetectorOnGraphs)
 
 class RansacLineDetectorOnGraphs: public RansacLineDetectorOnGraphsBase
@@ -78,6 +77,8 @@ private:
       PARAMETER_REGISTER(circle_degeneration) = 0.9;
       PARAMETER_REGISTER(circle_line_threshold) = 0.5;
 
+      PARAMETER_REGISTER(enable_ellipse_fitting) = false;
+
       syncWithConfig();
     }
 
@@ -94,6 +95,7 @@ private:
     int circle_inlierMin;
     double circle_degeneration;
     double circle_line_threshold;
+    bool enable_ellipse_fitting;
 
   } params;
 

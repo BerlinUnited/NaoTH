@@ -68,8 +68,8 @@ void UltraSoundObstacleLocator::drawObstacleModel()
     FIELD_DRAWING_CONTEXT;
     Color colorLeft(Color::blue);
     Color colorRight(Color::red);
-    colorLeft[Color::alpha] = 0.5;
-    colorRight[Color::alpha] = 0.5;
+    colorLeft[Color::Alpha] = 0.5;
+    colorRight[Color::Alpha] = 0.5;
     // draw raw sensor data
     for(unsigned int i = 0; i < UltraSoundReceiveData::numOfUSEcho; i++)
     {
@@ -93,6 +93,7 @@ void UltraSoundObstacleLocator::drawObstacleModel()
   
   // draw model
   DEBUG_REQUEST("UltraSoundObstacleLocator:drawObstacle",
+	FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 50);
     CIRCLE(
       getObstacleModel().leftDistance,

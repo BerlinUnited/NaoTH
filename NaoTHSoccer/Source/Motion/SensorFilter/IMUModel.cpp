@@ -1,10 +1,10 @@
 /**
 * @file IMUModel.cpp
-* 
+*
 * Definition of class IMUModel
 *
 * @author <a href="mailto:kaden@informatik.hu-berlin.de">Steffen Kaden</a>
-*/ 
+*/
 
 #include "IMUModel.h"
 
@@ -64,8 +64,7 @@ void IMUModel::execute()
     // ukf.generateSigmaPoints();
 
     Eigen::Vector3d gyro;
-    // gyro z axis seems to measure in opposite direction (turning left measures negative angular velocity, should be positive)
-    gyro << getGyrometerData().data.x, getGyrometerData().data.y, -getGyrometerData().data.z;
+    gyro << getGyrometerData().data.x, getGyrometerData().data.y, getGyrometerData().data.z;
     Eigen::Vector3d acceleration = Eigen::Vector3d(getAccelerometerData().data.x, getAccelerometerData().data.y, getAccelerometerData().data.z);
 
     IMU_RotationMeasurement z;
@@ -155,11 +154,12 @@ void IMUModel::writeIMUData()
      * this results in huge devation of the angles determined by atan2 because the projected y axis might end up in the second or third quadrant of the YZ plane
      */
 
-    getIMUData().orientation = Vector2d(-atan2(-bodyIntoGlobalMapping[1].z, bodyIntoGlobalMapping[2].z),
-                                        -atan2(bodyIntoGlobalMapping[0].z,  bodyIntoGlobalMapping[2].z));
-
     Eigen::Vector3d global_Z_in_body(bodyIntoGlobalMapping[0].z, bodyIntoGlobalMapping[1].z, bodyIntoGlobalMapping[2].z);
     getIMUData().orientation_rotvec = quaternionToVector3D(Eigen::Quaterniond::FromTwoVectors(global_Z_in_body, Eigen::Vector3d(0,0,1)));
+    RotationMatrix bodyIntoGlobalMappingWithoutZ(getIMUData().orientation_rotvec);
+
+    getIMUData().orientation = Vector2d(-atan2(bodyIntoGlobalMappingWithoutZ[2].y, bodyIntoGlobalMappingWithoutZ[1].y),
+                                        -atan2(-bodyIntoGlobalMappingWithoutZ[2].x, bodyIntoGlobalMappingWithoutZ[0].x));
 
     PLOT("IMUModel:State:orientation:x", Math::toDegrees(getIMUData().orientation.x));
     PLOT("IMUModel:State:orientation:y", Math::toDegrees(getIMUData().orientation.y));
@@ -174,9 +174,9 @@ void IMUModel::plots()
     // --- for testing integration
         Eigen::Matrix3d rot_vel_mat;
         // getGyrometerData().data.z is inverted!
-        rot_vel_mat << 1                             , getGyrometerData().data.z*0.01,  getGyrometerData().data.y*0.01,
-                      -getGyrometerData().data.z*0.01,                              1, -getGyrometerData().data.x*0.01,
-                      -getGyrometerData().data.y*0.01, getGyrometerData().data.x*0.01,                               1;
+        rot_vel_mat << 1                             , -getGyrometerData().data.z*0.01,  getGyrometerData().data.y*0.01,
+                       getGyrometerData().data.z*0.01,                               1, -getGyrometerData().data.x*0.01,
+                      -getGyrometerData().data.y*0.01,  getGyrometerData().data.x*0.01,                               1;
 
         // continue rotation assuming constant velocity
         integrated = integrated * Eigen::Quaterniond(rot_vel_mat);
@@ -223,8 +223,8 @@ void IMUModel::reloadParameters()
     Q_acc *= imuParameters.acceleration.stand.processNoiseAcc;
 
     Q_acc_walk.setIdentity();
-    Q_acc *= imuParameters.acceleration.walk.processNoiseAcc;
-    
+    Q_acc_walk *= imuParameters.acceleration.walk.processNoiseAcc;
+
     // measurement covariance matrix
     R_acc.setIdentity();
     R_acc *= imuParameters.acceleration.stand.measurementNoiseAcc;
@@ -239,8 +239,8 @@ void IMUModel::reloadParameters()
     Q_rotation.block<3,3>(3,3) *= imuParameters.rotation.stand.processNoiseGyro;
 
     Q_rotation_walk.setIdentity();
-    Q_rotation.block<3,3>(0,0) *= imuParameters.rotation.walk.processNoiseRot;
-    Q_rotation.block<3,3>(3,3) *= imuParameters.rotation.walk.processNoiseGyro;
+    Q_rotation_walk.block<3,3>(0,0) *= imuParameters.rotation.walk.processNoiseRot;
+    Q_rotation_walk.block<3,3>(3,3) *= imuParameters.rotation.walk.processNoiseGyro;
 
     // measurement covariance matrix
     R_rotation.setIdentity();

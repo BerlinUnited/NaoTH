@@ -6,6 +6,7 @@
 */
 
 #include "PerceptionsVisualizer.h"
+#include "Tools/CameraGeometry.h"
 
 using namespace std;
 
@@ -28,11 +29,12 @@ PerceptionsVisualizer::PerceptionsVisualizer()
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:edgels_percept", "draw edgels percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image_px:edgels_percept", "draw edgels percept", false);
 
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:line_percept_2018", "draw new line percept", false);
 
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:line_percept", "draw line percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image:line_percept", "draw line percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image_px:line_percept", "draw line percept", false);
-
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:ransac_circle_percept", "draw circle provided by RansacLineDetector", false);
 
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:players_percept", "draw players percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:image_px:players_percept", "draw players percept", false);
@@ -75,39 +77,23 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
     LINE_PX( ColorClasses::red, (int)a.x, (int)a.y, (int)b.x, (int)b.y );
   );
 
-  //draw ball percept
+  //draw multi ball percepts
   DEBUG_REQUEST("PerceptionsVisualizer:field:ball_percept",
-    if(getBallPercept().ballWasSeen) 
-    {
-      FIELD_DRAWING_CONTEXT;
-      PEN("FF9900", 20);
-      CIRCLE(getBallPercept().bearingBasedOffsetOnField.x, 
-        getBallPercept().bearingBasedOffsetOnField.y,
-        getFieldInfo().ballRadius);
+  	if(getMultiBallPercept().wasSeen()){
+	    FIELD_DRAWING_CONTEXT;
+	    PEN("FF9900", 20);
+	    for (MultiBallPercept::ConstABPIterator i = getMultiBallPercept().begin(); i != getMultiBallPercept().end(); ++i) {
+	      if ((*i).cameraId == cameraID) {
+	        CIRCLE((*i).positionOnField.x,
+	          (*i).positionOnField.y,
+	          getFieldInfo().ballRadius);
+	      }
+	    }
     }
-
-    FIELD_DRAWING_CONTEXT;
-    PEN("FF9900", 20);
-    for (MultiBallPercept::ConstABPIterator i = getMultiBallPercept().begin(); i != getMultiBallPercept().end(); ++i) {
-      if ((*i).cameraId == cameraID) {
-        CIRCLE((*i).positionOnField.x,
-          (*i).positionOnField.y,
-          getFieldInfo().ballRadius);
-      }
-    }
- );
+  );
 
   DEBUG_REQUEST("PerceptionsVisualizer:image:ball_percept",
-    if(getBallPercept().ballWasSeen) 
-    {
-      IMAGE_DRAWING_CONTEXT;
-      PEN("FF9900", 2);
-      CIRCLE(
-        (int)getBallPercept().centerInImage.x,
-        (int)getBallPercept().centerInImage.y,
-        (int)getBallPercept().radiusInImage);
-    }
-
+  	if(getMultiBallPercept().wasSeen()){
 	  for (MultiBallPercept::ConstABPIterator i = getMultiBallPercept().begin(); i != getMultiBallPercept().end(); ++i) {
 		  CANVAS((((*i).cameraId == CameraInfo::Top) ? "ImageTop" : "ImageBottom"));
 		  PEN("FF9900", 3);
@@ -116,18 +102,20 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
 			  (*i).centerInImage.y,
 			  (*i).radiusInImage);
 	  }
+	}
   );
 
   
 
   DEBUG_REQUEST("PerceptionsVisualizer:image_px:ball_percept",
-    if(getBallPercept().ballWasSeen) 
-    {
-      CIRCLE_PX(ColorClasses::red,
-        (int)getBallPercept().centerInImage.x,
-        (int)getBallPercept().centerInImage.y,
-        (int)getBallPercept().radiusInImage);
-    }
+  	if(getMultiBallPercept().wasSeen()){
+	    for (MultiBallPercept::ConstABPIterator i = getMultiBallPercept().begin(); i != getMultiBallPercept().end(); ++i) {
+	      CIRCLE_PX(ColorClasses::red,
+	        (int)(*i).centerInImage.x,
+	        (int)(*i).centerInImage.y,
+	        (int)(*i).radiusInImage);
+	    }
+	}
   );
 
 
@@ -164,7 +152,7 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
                   .rotateX(getCameraMatrixOffset().offset.x);
     );
 
-    for(unsigned int i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
+    for(size_t i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
     {
       const ScanLineEdgelPercept::EndPoint& point = getScanLineEdgelPercept().endPoints[i];
       // no projection is avaliable for this point
@@ -267,19 +255,21 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
 
 
   //draw line percept
+  /*
   DEBUG_REQUEST("PerceptionsVisualizer:field:line_percept",
     FIELD_DRAWING_CONTEXT;
     PEN("666666AA", 50);
 
-    for (unsigned int i = 0; i < getLinePercept().lines.size(); i++)
+    for (size_t i = 0; i < getLinePercept().lines.size(); i++)
     {
       const LinePercept::FieldLineSegment& linePercept = getLinePercept().lines[i];
 
       // draw the circle lines with a different color
-      if(linePercept.type == LinePercept::C)
+      if(linePercept.type == LinePercept::C) {
         PEN("AAAAAAAA", 50);
-      else
+      } else {
         PEN("666666AA", 50);
+      }
 
       LINE(linePercept.lineOnField.begin().x,
            linePercept.lineOnField.begin().y,
@@ -287,30 +277,21 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
            linePercept.lineOnField.end().y);
     }//end for
 
-    for(unsigned int i=0; i < getLinePercept().intersections.size(); i++)
+    for(size_t i=0; i < getLinePercept().intersections.size(); i++)
     {
       //mark intersection on the field
-      PEN(ColorClasses::colorClassToHex((ColorClasses::Color) getLinePercept().intersections[i].getType()), 3); 
-      const Vector2<double>& intersectionPoint = getLinePercept().intersections[i].getPosOnField();
-      CIRCLE(intersectionPoint.x, intersectionPoint.y, 50);
+      LineIntersection::Type type = getLinePercept().intersections[i].getType();
+      const Vector2d& intersectionPoint = getLinePercept().intersections[i].getPos();
 
-      string type = "N";
-      switch(getLinePercept().intersections[i].getType())
-      {
-        case Math::Intersection::C: type="C"; break;
-        case Math::Intersection::T: type="T"; break;
-        case Math::Intersection::L: type="L"; break;
-        case Math::Intersection::E: type="E"; break;
-        case Math::Intersection::X: type="X"; break;
-        default: break;
-      }
-      TEXT_DRAWING(intersectionPoint.x + 100, intersectionPoint.y + 100, type);
-    }//end for
+      PEN(ColorClasses::colorClassToHex((ColorClasses::Color) type), 3); 
+      CIRCLE(intersectionPoint.x, intersectionPoint.y, 50);
+      TEXT_DRAWING(intersectionPoint.x + 100, intersectionPoint.y + 100, LineIntersection::getTypeName(type));
+    }
 
     // circle
     if(getLinePercept().middleCircleWasSeen)
     {
-      const Vector2<double>& center = getLinePercept().middleCircleCenter;
+      const Vector2d& center = getLinePercept().middleCircleCenter;
       PEN("FFFFFF99", 10);
       CIRCLE(center.x, center.y, 50);
       PEN("FFFFFF99", 50);
@@ -318,7 +299,7 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
 
       if(getLinePercept().middleCircleOrientationWasSeen)
       {
-        const Vector2<double> direction = getLinePercept().middleCircleOrientation*(getFieldInfo().centerCircleRadius+100);
+        const Vector2d direction = getLinePercept().middleCircleOrientation*(getFieldInfo().centerCircleRadius+100);
         LINE(
           center.x + direction.x,
           center.y + direction.y,
@@ -328,70 +309,48 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
       }//end if
     }//end if
   ); // end line_percept on field
+  */
 
-
+  /*
   DEBUG_REQUEST("PerceptionsVisualizer:image:line_percept",
     IMAGE_DRAWING_CONTEXT;
     // mark lines
-    for (unsigned int i = 0; i < getLinePercept().lines.size(); i++)
+    for (size_t i = 0; i < getLinePercept().lines.size(); i++)
     {
       const LinePercept::FieldLineSegment& linePercept = getLinePercept().lines[i];
 
-      Vector2<double> d(0.0, ceil(linePercept.lineInImage.thickness / 2.0));
-      //d.rotate(Math::pi_2 - line.angle);
-
-      //Vector2<int> lowerLeft(linePercept.lineInImage.segment.begin() - d);
-      //Vector2<int> upperLeft(linePercept.lineInImage.segment.begin() + d);
-      //Vector2<int> lowerRight(linePercept.lineInImage.segment.end() - d);
-      //Vector2<int> upperRight(linePercept.lineInImage.segment.end() + d);
-
       PEN("009900", 2);
-      //LINE(lowerLeft.x, lowerLeft.y, lowerRight.x, lowerRight.y);
-      //LINE(lowerLeft.x, lowerLeft.y, upperLeft.x, upperLeft.y);
-      //LINE(upperLeft.x, upperLeft.y, upperRight.x, upperRight.y);
-      //LINE(lowerRight.x, lowerRight.y, upperRight.x, upperRight.y);
-
       LINE(linePercept.lineInImage.segment.begin().x, 
            linePercept.lineInImage.segment.begin().y,
            linePercept.lineInImage.segment.end().x, 
            linePercept.lineInImage.segment.end().y);
       
-
       // indicate line count
       LINE((2*i)+1,7,(2*i)+1,12);
     }//end for
 
-    for(unsigned int i=0; i < getLinePercept().intersections.size(); i++)
+    for(size_t i=0; i < getLinePercept().intersections.size(); i++)
     {
       //mark intersection on the field
-      PEN(ColorClasses::colorClassToHex((ColorClasses::Color) getLinePercept().intersections[i].getType()), 3); 
-      const Vector2<double>& intersectionPoint = getLinePercept().intersections[i].getPos();
-      CIRCLE(intersectionPoint.x, intersectionPoint.y, 50);
+      LineIntersection::Type type = getLinePercept().intersections[i].getType();
+      const Vector2d& intersectionPoint = getLinePercept().intersections[i].getPos();
 
-      string type = "N";
-      switch(getLinePercept().intersections[i].getType())
-      {
-        case Math::Intersection::C: type="C"; break;
-        case Math::Intersection::T: type="T"; break;
-        case Math::Intersection::L: type="L"; break;
-        case Math::Intersection::E: type="E"; break;
-        case Math::Intersection::X: type="X"; break;
-        default: break;
-      }
-      TEXT_DRAWING(intersectionPoint.x + 100, intersectionPoint.y + 100, type);
-    }//end for
+      PEN(ColorClasses::colorClassToHex((ColorClasses::Color) type), 3); 
+      CIRCLE(intersectionPoint.x, intersectionPoint.y, 50);
+      TEXT_DRAWING(intersectionPoint.x + 100, intersectionPoint.y + 100, LineIntersection::getTypeName(type));
+    }
     
   ); // end line_percept in image
+  */
 
-
-
+  /*
   DEBUG_REQUEST("PerceptionsVisualizer:image_px:line_percept",
     // mark lines
-    for (unsigned int i = 0; i < getLinePercept().lines.size(); i++)
+    for (size_t i = 0; i < getLinePercept().lines.size(); i++)
     {
       const LinePercept::FieldLineSegment& linePercept = getLinePercept().lines[i];
 
-      Vector2<double> d(0.0, ceil(linePercept.lineInImage.thickness / 2.0));
+      Vector2d d(0.0, ceil(linePercept.lineInImage.thickness / 2.0));
       //d.rotate(Math::pi_2 - line.angle);
 
       Vector2<int> lowerLeft(linePercept.lineInImage.segment.begin() - d);
@@ -406,7 +365,20 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
       LINE_PX(ColorClasses::green,(2*i)+1,7,(2*i)+1,12);
     }//end for
   ); // end line_percept in image_px
+  */
 
+  /*
+  // FIXME: deprecated
+  DEBUG_REQUEST("PerceptionsVisualizer:field:ransac_circle_percept",
+    if(getRansacCirclePercept().middleCircleWasSeen) {
+      FIELD_DRAWING_CONTEXT;
+      PEN("009900", 10);
+      CIRCLE(getRansacCirclePercept().middleCircleCenter.x,
+             getRansacCirclePercept().middleCircleCenter.y,
+             getFieldInfo().centerCircleRadius);
+    }
+  );
+  */
 
   DEBUG_REQUEST("PerceptionsVisualizer:field:players_percept",
     FIELD_DRAWING_CONTEXT;
@@ -417,15 +389,52 @@ void PerceptionsVisualizer::execute(CameraInfo::CameraID id)
   );
 
 
-
   DEBUG_REQUEST("PerceptionsVisualizer:image:draw_field_polygon",
-    int idx = 0;
     ColorClasses::Color color = getFieldPercept().valid ? ColorClasses::green : ColorClasses::red;
     const FieldPercept::FieldPoly& fieldpoly = getFieldPercept().getValidField();
-    for(int i = 1; i < fieldpoly.length; i++)
-    {
-      LINE_PX(color, fieldpoly[idx].x, fieldpoly[idx].y, fieldpoly[i].x, fieldpoly[i].y);
-      idx = i;
+    for(size_t i = 0; i + 1 < fieldpoly.size(); i++) {
+      LINE_PX(color, fieldpoly[i].x, fieldpoly[i].y, fieldpoly[i+1].x, fieldpoly[i+1].y);
     }
   );
+
+  // draw new line percept
+  DEBUG_REQUEST("PerceptionsVisualizer:field:line_percept_2018",
+    FIELD_DRAWING_CONTEXT;
+    PEN("AA666666", 50);
+
+    // draw ransac line percept
+    PEN("AA666666", 50);
+    for (size_t i = 0; i < getRansacLinePercept().fieldLineSegments.size(); i++)
+    {
+      const Math::LineSegment line = getRansacLinePercept().fieldLineSegments[i];
+
+      LINE(line.begin().x,
+           line.begin().y,
+           line.end().x,
+           line.end().y);
+    }
+
+    // draw short line percept (RansacLineDetectorOnGraphs)
+    PEN("66AA6666", 50);
+    for (size_t i = 0; i < getShortLinePercept().fieldLineSegments.size(); i++)
+    {
+      const Math::LineSegment line = getShortLinePercept().fieldLineSegments[i];
+
+      LINE(line.begin().x,
+           line.begin().y,
+           line.end().x,
+           line.end().y);
+    }
+
+    // draw ransac circle
+    if(getRansacCirclePercept2018().wasSeen)
+    {
+      const Vector2d& center = getRansacCirclePercept2018().center;
+      PEN("FFFFFF99", 10);
+      CIRCLE(center.x, center.y, 50);
+      PEN("FFFFFF99", 50);
+      CIRCLE(center.x, center.y, getFieldInfo().centerCircleRadius - 25);
+    }
+  );
+
 }//end execute

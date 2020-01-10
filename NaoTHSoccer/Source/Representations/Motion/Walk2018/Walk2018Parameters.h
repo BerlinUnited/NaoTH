@@ -12,6 +12,20 @@
 #include "Tools/Math/Vector2.h"
 #include "Tools/Debug/DebugParameterList.h"
 
+#include <PlatformInterface/Platform.h>
+#include <string>
+#include <iostream>
+
+class KeyFrameMotionParameters: public ParameterList{
+      public:
+        KeyFrameMotionParameters() : ParameterList("KeyFrameMotionParameters")
+        {
+          PARAMETER_REGISTER(stiffness) = 1.0;
+          syncWithConfig();
+        }
+        double stiffness;
+};
+
 class FeetStabilizerParameters: public ParameterList{
       public:
         FeetStabilizerParameters() : ParameterList("Walk_FeetStabilizer")
@@ -45,16 +59,22 @@ class FootStepPlanner2018Parameters: public ParameterList{
           PARAMETER_REGISTER(limits.maxStepLengthBack)  = 35;
           PARAMETER_REGISTER(limits.maxStepWidth)       = 60;
           PARAMETER_REGISTER(limits.maxStepChange)      = 0.3;
+          PARAMETER_REGISTER(limits.maxStepChangeDown)  = 0.5;
 
           PARAMETER_ANGLE_REGISTER(limits.maxCtrlTurn) = 30;
           PARAMETER_REGISTER(limits.maxCtrlLength) = 80;
           PARAMETER_REGISTER(limits.maxCtrlWidth)  = 50;
+          PARAMETER_REGISTER(limits.maxCtrlChange)     = 0.3;
+          PARAMETER_REGISTER(limits.maxCtrlChangeDown) = 0.8;
 
           PARAMETER_REGISTER(footOffsetY) = 0;
 
           PARAMETER_REGISTER(step.doubleSupportTime) = 0;
           PARAMETER_REGISTER(step.duration) = 260;
-          PARAMETER_REGISTER(step.dynamicDuration) = true;
+          PARAMETER_REGISTER(step.dynamicDuration.on) = true;
+          PARAMETER_REGISTER(step.dynamicDuration.fast) = 260;
+          PARAMETER_REGISTER(step.dynamicDuration.normal) = 280;
+          PARAMETER_REGISTER(step.dynamicDuration.stable) = 300;
 
           PARAMETER_REGISTER(stabilization.dynamicStepSize)  = true;
           PARAMETER_REGISTER(stabilization.dynamicStepSizeP) = -0.1;
@@ -71,21 +91,32 @@ class FootStepPlanner2018Parameters: public ParameterList{
 
       struct Limits {
         double maxTurnInner;
+
         double maxStepTurn;
         double maxStepLength;
         double maxStepLengthBack;
         double maxStepWidth;
         double maxStepChange;
+        double maxStepChangeDown;
 
         double maxCtrlTurn;
         double maxCtrlLength;
         double maxCtrlWidth;
+        double maxCtrlChange;
+        double maxCtrlChangeDown;
       } limits;
 
       struct Step {
         int  doubleSupportTime;
         int  duration;
-        bool dynamicDuration;
+
+        struct {
+          bool on;
+          int fast;
+          int normal;
+          int stable;
+        } dynamicDuration;
+
       } step;
 
       struct Stabilization {
@@ -245,21 +276,126 @@ public:
   double ZMPOffsetYByCharacter;
 };
 
+class ZMPPreviewControllerParameter : public ParameterList {
+    public:
+        ZMPPreviewControllerParameter() :
+            ParameterList("Walk_ZMPPreviewControllerParameter"),
+            current(nullptr)
+        {
+            PARAMETER_REGISTER(stationary_threshold.velocity) = 3;
+            PARAMETER_REGISTER(stationary_threshold.acceleration) = 100;
+            syncWithConfig();
+            loadParameter();
+        }
+
+        struct {
+            double velocity;
+            double acceleration;
+        } stationary_threshold;
+
+        struct Parameters {
+            double Ki;
+            Vector3d K;
+            std::vector<double> f;
+            int height;
+        };
+
+        const Parameters* current; // i.e., parameters->loadedParameters[parameterHeight]
+
+        double parameterTimeStep; // time step of the precalculated parameters
+
+        void update(int newHeight){
+            ParameterMap::const_iterator iter = loadedParameters.find(newHeight);
+            assert(iter != loadedParameters.end());
+            current = &(iter->second);
+        }
+
+    private:
+        void loadParameter(){
+            // generate the file name
+            std::string path = naoth::Platform::getInstance().theConfigDirectory;
+            path += "platform/";
+            path += naoth::Platform::getInstance().thePlatform;
+            path += "/previewControl.prm";
+
+            // open the stream
+            std::ifstream ifs(path.c_str());
+            if(!ifs.good()){
+              THROW("[PreviewController] ERROR: load " << path << std::endl);
+            } else {
+              std::cout << "[PreviewController] load " << path << std::endl;
+            }
+
+            // read the header
+            double length_f(0.0), number_of_entries(0.0);
+            ifs >> parameterTimeStep >> length_f >> number_of_entries;
+
+            // read the parameters for each height step
+            double height(0.0);
+            for(int i = 0; i < number_of_entries; i++) {
+              ifs >> height;
+
+              Parameters& p = loadedParameters[static_cast<int>(height)];
+              p.f.resize(static_cast<size_t>(length_f));
+
+              ifs >> p.Ki >> p.K;
+
+              for(unsigned int i = 0; i < p.f.size(); i++) {
+                assert(!ifs.eof());
+                ifs >> p.f[i];
+              }
+
+              p.height = static_cast<int>(height);
+            }
+        }
+
+        // parameters for diffent heights
+        typedef std::map<int, Parameters> ParameterMap;
+        ParameterMap loadedParameters;
+};
+
+class GeneralParameters : public ParameterList{
+    public:
+        GeneralParameters() : ParameterList("Walk_General")
+        {
+            PARAMETER_REGISTER(stiffness)     = 1.0;
+            PARAMETER_REGISTER(stiffnessArms) = 0.7;
+            PARAMETER_REGISTER(useArm) = true;
+
+            PARAMETER_REGISTER(hipRollSingleSupFactorLeft) = 0.6;
+            PARAMETER_REGISTER(hipRollSingleSupFactorRight) = 0.6;
+
+            syncWithConfig();
+        }
+
+        double stiffness;
+        double stiffnessArms;
+        bool   useArm;
+
+        // hip joint correction
+        double hipRollSingleSupFactorLeft;
+        double hipRollSingleSupFactorRight;
+};
+
 class Walk2018Parameters : public naoth::Printable
 {
 public:
     Walk2018Parameters(){
     }
 
-    FeetStabilizerParameters      feetStabilizerParams;
-    FootStepPlanner2018Parameters footStepPlanner2018Params;
+    KeyFrameMotionParameters              keyFrameMotionParameters;
+    FeetStabilizerParameters              feetStabilizerParams;
+    FootStepPlanner2018Parameters         footStepPlanner2018Params;
     FootTrajectoryGenerator2018Parameters footTrajectoryGenerator2018Params;
-    HipRotationOffsetModifierParameters hipRotationOffsetModifierParams;
-    LiftingFootCompensatorParameters liftingFootCompensatorParams;
-    TorsoRotationStabilizerParameters torsoRotationStabilizerParams;
-    ZMPPlanner2018Parameters zmpPlanner2018Params;
+    HipRotationOffsetModifierParameters   hipRotationOffsetModifierParams;
+    LiftingFootCompensatorParameters      liftingFootCompensatorParams;
+    TorsoRotationStabilizerParameters     torsoRotationStabilizerParams;
+    ZMPPlanner2018Parameters              zmpPlanner2018Params;
+    ZMPPreviewControllerParameter		  zmpPreviewControllerParams; // don't need to be registered because they arn't normal parameters
+    GeneralParameters                     generalParams;
 
     void init(DebugParameterList& dbpl){
+        dbpl.add(&keyFrameMotionParameters);
         dbpl.add(&feetStabilizerParams);
         dbpl.add(&footStepPlanner2018Params);
         dbpl.add(&footTrajectoryGenerator2018Params);
@@ -267,9 +403,12 @@ public:
         dbpl.add(&liftingFootCompensatorParams);
         dbpl.add(&torsoRotationStabilizerParams);
         dbpl.add(&zmpPlanner2018Params);
+        dbpl.add(&zmpPreviewControllerParams);
+        dbpl.add(&generalParams);
     }
 
     void remove(DebugParameterList& dbpl){
+        dbpl.remove(&keyFrameMotionParameters);
         dbpl.remove(&feetStabilizerParams);
         dbpl.remove(&footStepPlanner2018Params);
         dbpl.remove(&footTrajectoryGenerator2018Params);
@@ -277,6 +416,8 @@ public:
         dbpl.remove(&liftingFootCompensatorParams);
         dbpl.remove(&torsoRotationStabilizerParams);
         dbpl.remove(&zmpPlanner2018Params);
+        dbpl.remove(&zmpPreviewControllerParams);
+        dbpl.remove(&generalParams);
     }
 
     virtual void print(std::ostream& /*stream*/) const
@@ -295,4 +436,4 @@ public:
 //  };
 //}
 
-#endif // __WALK_2018_Parameters_H_
+#endif // _WALK_2018_Parameters_H_

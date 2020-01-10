@@ -12,10 +12,14 @@
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/SoccerStrategy.h"
-#include "Representations/Modeling/SituationStatus.h"
 #include "Representations/Modeling/KickActionModel.h"
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/CompassDirection.h"
+#include "Representations/Infrastructure/GameData.h"
+#include "Representations/Infrastructure/Roles.h"
+#include "Representations/Modeling/TeamMessage.h"
+#include "Representations/Modeling/RoleDecisionModel.h"
+#include "Representations/Modeling/TeamMessagePlayersState.h"
 
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugRequest.h"
@@ -36,8 +40,11 @@ BEGIN_DECLARE_MODULE(StrategySymbols)
   REQUIRE(MotionStatus)
   REQUIRE(CompassDirection)
   REQUIRE(KickActionModel)
+  REQUIRE(GameData)
+  REQUIRE(TeamMessage)
+  REQUIRE(RoleDecisionModel)
+  REQUIRE(TeamMessagePlayersState)
 
-  PROVIDE(SituationStatus)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugModify)
@@ -90,14 +97,6 @@ private:
   static double simpleDefensePoseY();
   static double simpleDefensePoseA();
 
-  //find out if the robot is in a certain field half
-  static bool getSituationStatusOwnHalf();
-  static bool getSituationStatusOppHalf();
-  
-  //force selflocator to locate in a certain field half
-  static void setSituationStatusOwnHalf(bool ownHalf);
-  static void setSituationStatusOppHalf(bool oppHalf);
-
   Pose2D calculateDefensePose();
   static double defensePoseX();
   static double defensePoseY();
@@ -110,11 +109,11 @@ private:
   double attackDirectionPreviewRFoot;
 
   Vector2d calculateGoalieGuardPosition();
-  Vector2d calculatePenaltyGoalieGuardPosition();
+  //Vector2d calculatePenaltyGoalieGuardPosition();
   static double goalieGuardPositionX();
   static double goalieGuardPositionY();
-  static double penaltyGoalieGuardPositionX();
-  static double penaltyGoalieGuardPositionY();
+  //static double penaltyGoalieGuardPositionX();
+  //static double penaltyGoalieGuardPositionY();
 
   Pose2D goalieDefensivePosition;
   Pose2D calculateGoalieDefensivePosition();
@@ -124,6 +123,29 @@ private:
 
   static int getBestAction();
 
+  // vars & methods relating to opponent free kick position
+  /** @brief Position of the opponents free kick; it is only valid if x/y != 0 */
+  Vector2d freeKickPosition;
+  /** @brief temporarly save teammates penalty in order to determine who has fouled an opponent player. */
+  std::map<unsigned int, GameData::Penalty> penalties;
+  /** @brief temporarly save the setPlay state in order to determine, when a foul occurred. */
+  GameData::SetPlay lastSetPlay = GameData::set_none;
+  /**
+   * @brief if a teammate fouled an opponent, the fouling player is penalized and his last position is set as freekick postion of the opponent.
+   *         Also updates the temporarly vars.
+   */
+  void retrieveFreeKickPosition();
+  static double freeKickPositionX();
+  static double freeKickPositionY();
+
+  static int getStaticRole();
+  static int getDynamicRole();
+  static double getHomePositionX();
+  static double getHomePositionY();
+  static double getHomePositionOwnKickoffX();
+  static double getHomePositionOwnKickoffY();
+  static double getHomePositionOppKickoffX();
+  static double getHomePositionOppKickoffY();
 };//end class StrategySymbols
 
 #endif // _StrategySymbols_H_

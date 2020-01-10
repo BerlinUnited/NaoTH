@@ -1,5 +1,5 @@
 /**
-* @file Walk.cpp
+* @file Walk2018.cpp
 *
 * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich, Mellmann</a>
@@ -8,16 +8,12 @@
 */
 
 #include "Walk2018.h"
-#include "../Walk/FootTrajectoryGenerator.h"
-#include "../Walk/ZMPPlanner.h"
-
-
-#include "Tools/DataStructures/Spline.h"
 
 using namespace naoth;
 using namespace InverseKinematic;
 
-Walk2018::Walk2018() : IKMotion(getInverseKinematicsMotionEngineService(), motion::walk, getMotionLock())
+Walk2018::Walk2018() : IKMotion(getInverseKinematicsMotionEngineService(), motion::walk, getMotionLock()),
+    parameters(getWalk2018Parameters().generalParams)
 {
   DEBUG_REQUEST_REGISTER("Walk:draw_step_plan_geometry", "draw all planed steps, zmp and executed com", false);
   DEBUG_REQUEST_REGISTER("Walk:plot_genTrajectoryWithSplines", "plot spline interpolation to parametrize 3D foot trajectory", false);
@@ -35,7 +31,7 @@ Walk2018::Walk2018() : IKMotion(getInverseKinematicsMotionEngineService(), motio
   CoMFeetPose currentCOMFeetPose = getInverseKinematicsMotionEngineService().getEngine().getCurrentCoMFeetPose();
   currentCOMFeetPose.localInLeftFoot();
   Vector3d targetZMP(currentCOMFeetPose.com.translation);
-  targetZMP.z = getInverseKinematicsMotionEngineService().getEngine().getParameters().walk.hip.comHeight;
+  targetZMP.z = getWalk2018Parameters().zmpPlanner2018Params.comHeight;
 
   // reset buffers
   getCoMErrors().reset();
@@ -58,10 +54,10 @@ Walk2018::Walk2018() : IKMotion(getInverseKinematicsMotionEngineService(), motio
 
   std::cout << "walk start" << std::endl;
 }
-  
+
 void Walk2018::execute()
 {
-  // check the integrity 
+  // check the integrity
   getMotionRequest().walkRequest.assertValid();
 
   theCoMErrorProvider->execute();
@@ -89,7 +85,7 @@ void Walk2018::execute()
   // set arms
   // Attention: this will be overwritten by the arm motion engine if the ArmMotionRequest's MotionID is not equal to "none" or "arms_synchronised_with_walk"
   // NOTE: we set the arms before the calculation of the com, so  the motion of the com can be adjusted to the arms
-  if(parameters().general.useArm) {
+  if(parameters.useArm) {
     getEngine().armsSynchronisedWithWalk(getRobotInfo(), getTargetCoMFeetPose().pose, getMotorJointData());
   }
 
@@ -112,7 +108,17 @@ void Walk2018::execute()
 
   updateMotionStatus(getMotionStatus());
 
-  if(getMotionRequest().id != getId() && theZMPPreviewController->getModuleT()->is_stationary()) {
+  // TODO: remove, only for debugging
+  static FrameInfo start_stopping(getFrameInfo());
+  if(getMotionRequest().id == getId()){
+      start_stopping = getFrameInfo();
+  }
+
+  PLOT("Walk:stopping_for", getFrameInfo().getTimeSince(start_stopping));
+
+  if(getMotionRequest().id != getId()
+     && theZMPPreviewController->getModuleT()->is_stationary()
+     && getStepBuffer().only_zero_steps()) {
     setCurrentState(motion::stopped);
     std::cout << "walk stopped" << std::endl;
   } else {
@@ -157,22 +163,22 @@ void Walk2018::calculateJoints() {
 
     // set stiffness for the arms
     for (size_t i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; ++i) {
-      getMotorJointData().stiffness[i] = parameters().general.stiffnessArms;
+      getMotorJointData().stiffness[i] = parameters.stiffnessArms;
     }
-    getMotorJointData().stiffness[JointData::LWristYaw] = parameters().general.stiffnessArms;
-    getMotorJointData().stiffness[JointData::RWristYaw] = parameters().general.stiffnessArms;
+    getMotorJointData().stiffness[JointData::LWristYaw] = parameters.stiffnessArms;
+    getMotorJointData().stiffness[JointData::RWristYaw] = parameters.stiffnessArms;
 
     // set the legs stiffness for walking
     for (size_t i = JointData::RHipYawPitch; i <= JointData::LAnkleRoll; ++i) {
-      getMotorJointData().stiffness[i] = parameters().general.stiffness;
+      getMotorJointData().stiffness[i] = parameters.stiffness;
     }
 
     // WIEDERLICHER HACK: force the hip joint
     if (getMotorJointData().position[JointData::LHipRoll] < 0) {
-      getMotorJointData().position[JointData::LHipRoll] *= parameters().general.hipRollSingleSupFactorLeft; // if = 1 no damping or amplifing
+      getMotorJointData().position[JointData::LHipRoll] *= parameters.hipRollSingleSupFactorLeft; // if = 1 no damping or amplifing
     }
     if (getMotorJointData().position[JointData::RHipRoll] > 0) {
-      getMotorJointData().position[JointData::RHipRoll] *= parameters().general.hipRollSingleSupFactorRight; // if = 1 no damping or amplifing
+      getMotorJointData().position[JointData::RHipRoll] *= parameters.hipRollSingleSupFactorRight; // if = 1 no damping or amplifing
     }
 
     // STABILIZATION
@@ -191,7 +197,7 @@ void Walk2018::updateMotionStatus(MotionStatus& motionStatus) const
   {
     // TODO: check
     FeetPose lastFeet = getStepBuffer().last().footStep.end();
-    Pose3D lastCom = calculateStableCoMByFeet(lastFeet, getEngine().getParameters().walk.general.bodyPitchOffset);
+    Pose3D lastCom = calculateStableCoMByFeet(lastFeet, getWalk2018Parameters().hipRotationOffsetModifierParams.bodyPitchOffset);
 
     Pose3D plannedHip = getTargetCoMFeetPose().pose.com.invert() * lastCom;
     Pose3D plannedlFoot = getTargetCoMFeetPose().pose.feet.left.invert() * lastFeet.left;
@@ -223,7 +229,7 @@ void Walk2018::updateMotionStatus(MotionStatus& motionStatus) const
     case FootStep::RIGHT:
       motionStatus.stepControl.moveableFoot = MotionStatus::StepControlStatus::LEFT;
       break;
-    default: 
+    default:
       ASSERT(false);
     }
   }

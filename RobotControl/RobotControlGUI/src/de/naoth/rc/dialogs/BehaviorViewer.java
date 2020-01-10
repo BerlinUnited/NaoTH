@@ -18,10 +18,6 @@ import de.naoth.rc.components.behaviorviewer.XABSLBehaviorFrame;
 import de.naoth.rc.components.behaviorviewer.XABSLProtoParser;
 import de.naoth.rc.components.behaviorviewer.model.Symbol;
 import de.naoth.rc.core.dialog.RCDialog;
-import de.naoth.rc.drawingmanager.DrawingEventManager;
-import de.naoth.rc.drawings.Circle;
-import de.naoth.rc.drawings.DrawingCollection;
-import de.naoth.rc.drawings.Robot;
 import de.naoth.rc.logmanager.BlackBoard;
 import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.logmanager.LogFileEventManager;
@@ -34,7 +30,6 @@ import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -42,12 +37,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
@@ -64,7 +57,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -114,7 +106,7 @@ public class BehaviorViewer extends AbstractDialog
   ArrayList<XABSLBehaviorFrame> behaviorBuffer;
   private XABSLBehavior currentBehavior;
   final private String behaviorConfKey = "behavior";
-  final private String defaultBehavior = "../NaoController/Config/behavior/behavior-ic.dat";
+  final private String defaultBehavior = "../../NaoTHSoccer/Config/behavior/behavior-ic.dat";
 
   private XABSLProtoParser behaviorParser = null;
   
@@ -172,9 +164,9 @@ public class BehaviorViewer extends AbstractDialog
     String history = Plugin.parent.getConfig().getProperty(this.getClass().getName()+".history", "{}");
     HashMap<String, List<String>> l = (new Gson()).fromJson(history, HashMap.class);
     // set the symbol watch history menu
-    for (Map.Entry<String, List<String>> entry : l.entrySet()) {
-        symbolsToWatchHistory.put(entry.getKey(), new HashSet(entry.getValue()));
-        JMenuItem watchEntry = new JMenuItem(entry.getKey());
+    l.keySet().stream().sorted().forEach((k) -> {
+        symbolsToWatchHistory.put(k, new HashSet(l.get(k)));
+        JMenuItem watchEntry = new JMenuItem(k);
         watchEntry.addActionListener((e) -> {
             // clear watches, before setting a stored configuration
             symbolsToWatch.clear();
@@ -183,9 +175,9 @@ public class BehaviorViewer extends AbstractDialog
             });
         });
         // list the stored watches in the menu's tooltip
-        watchEntry.setToolTipText("<html>"+entry.getValue().stream().map((t) -> { return "<li>"+t+"</li>"; }).collect(Collectors.joining())+"</html>");
+        watchEntry.setToolTipText("<html>"+l.get(k).stream().map((t) -> { return "<li>"+t+"</li>"; }).collect(Collectors.joining())+"</html>");
         popupMenu.add(watchEntry);
-    }
+    });
 
     // show popupmenu to trigger the height calculation
     popupMenu.setVisible(true);
@@ -205,7 +197,7 @@ public class BehaviorViewer extends AbstractDialog
             }
             catch(InvalidProtocolBufferException ex)
             {
-              Logger.getLogger(BehaviorViewer.class.getName()).log(Level.SEVERE, null, ex);
+              Logger.getLogger(BehaviorViewer.class.getName()).log(Level.SEVERE, "received data: " + new String(object), ex);
             }
         }
 
@@ -296,31 +288,28 @@ public class BehaviorViewer extends AbstractDialog
       // input and output symbols
       StringBuffer inputBuffer = new StringBuffer();
       StringBuffer outputBuffer = new StringBuffer();
+      StringBuffer unknownBuffer = new StringBuffer();
 
-      for(String name: symbolsToWatch)
-      {
-        Symbol symbol = frame.getSymbolByName(name);
-        // TODO: error treatment
-        if(symbol == null) {
-            return;
-        }
+        for (String name : symbolsToWatch) {
+            Symbol symbol = frame.getSymbolByName(name);
+            if (symbol == null) {
+                unknownBuffer.append("~ ")
+                             .append(name)
+                             .append("\n");
+            } else {
+                XABSLBehaviorFrame.SymbolIOType type = frame.getSymbolIOType(name);
 
-        XABSLBehaviorFrame.SymbolIOType type = frame.getSymbolIOType(name);
-        
-        if(type == XABSLBehaviorFrame.SymbolIOType.input)
-        {
-          inputBuffer.append("> ")
-                     .append(symbol)
-                     .append("\n");
-        }
-        else if(type == XABSLBehaviorFrame.SymbolIOType.output)
-        {
-          inputBuffer.append("< ")
-                     .append(symbol)
-                     .append("\n");
-        }
-          
-      }//end for
+                if (type == XABSLBehaviorFrame.SymbolIOType.input) {
+                    inputBuffer.append("> ")
+                        .append(symbol)
+                        .append("\n");
+                } else if (type == XABSLBehaviorFrame.SymbolIOType.output) {
+                    outputBuffer.append("< ")
+                        .append(symbol)
+                        .append("\n");
+                }
+            }
+        }//end for
       
       if(inputBuffer.length() > 0)
       {
@@ -333,7 +322,13 @@ public class BehaviorViewer extends AbstractDialog
         watchBuffer.append("-- output symbols --\n");
         watchBuffer.append(outputBuffer).append("\n");
       }
-
+      
+      if(unknownBuffer.length() > 0)
+      {
+        watchBuffer.append("-- unknown symbols --\n");
+        watchBuffer.append(unknownBuffer).append("\n");
+      }
+      
       this.symbolsWatchTextPanel.setText(watchBuffer.toString());
 
       // options

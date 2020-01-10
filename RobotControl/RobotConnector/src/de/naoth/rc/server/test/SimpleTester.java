@@ -18,31 +18,18 @@ import java.util.logging.Logger;
 public class SimpleTester
 {
 
-  public SimpleTester()
-  {
-    MessageServer server = new MessageServer();
-    try
-    {
-      server.connect("localhost", 5401);
-      server.subscribe(new TestSender());
-      try
-      {
-        Thread.sleep(5000000);
-
-        server.disconnect();
-
-      }
-      catch (InterruptedException ex)
-      {
-        Logger.getLogger(SimpleTester.class.getName()).log(Level.SEVERE, null, ex);
-      }
-
+    public SimpleTester() {
+        MessageServer server = new MessageServer();
+        if (server.connect("localhost", 5401)) {
+            server.subscribe(new TestSender());
+            try {
+                Thread.sleep(5000000);
+                server.disconnect();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(SimpleTester.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
-    catch (IOException ex)
-    {
-      Logger.getLogger(SimpleTester.class.getName()).log(Level.SEVERE, null, ex);
-    }
-  }
 
   /**
    * @param args the command line arguments

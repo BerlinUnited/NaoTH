@@ -1,0 +1,177 @@
+option penalty_kicker
+{
+  initial state look_for_ball
+  {
+    decision
+    {
+      if(state_time > 3000)
+      {
+        if(ball.know_where_itis)
+        {
+          if(random() > 0.3)
+          {
+            if(random() > 0.5)
+            {
+              goto go_right;
+            }
+            else
+            {
+              goto go_left;
+            }
+          }
+          else
+          {
+            goto approach_ball;
+          }
+        }
+        else
+          goto move_closer;
+      }
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state move_closer 
+  {
+    decision
+    {
+      if(state_time > 2500)
+      {
+        if(ball.know_where_itis)
+          goto approach_ball;
+        else
+          goto look_for_ball;
+      }
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk.style = stable;
+      motion.walk_speed.x = 50;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+      
+      head.control_mode = search_for_ball_and_look_around;
+    }
+  }
+
+  state approach_ball
+  {
+    decision
+    {
+      if (action_done)
+        goto look_for_ball_tmp;//do_kick;
+      else
+        stay;
+    }
+    action
+    {
+      go_to_ball_with_USOA(distance=210);
+      head.control_mode = search_for_ball_and_look_around;
+    }
+  }
+
+  state go_right
+  {
+    decision
+    {
+      // set to 300 for kicking perfectly to the corner
+      // but the kick is not strong enough
+      if (ball.preview.y > 260)
+        goto approach_ball;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk.style = stable;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = -50;
+      motion.walk_speed.rot = 0;
+      
+      head.control_mode = search_for_ball_and_look_around;
+    }
+  }
+  
+  state go_left
+  {
+    decision
+    {
+      // set to 300 for kicking perfectly to the corner
+      // but the kick is not strong enough
+      if (ball.preview.y < -260)
+        goto approach_ball;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk.style = stable;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 50;
+      motion.walk_speed.rot = 0;
+      
+      head.control_mode = search_for_ball_and_look_around;
+    }
+  }
+  
+  state look_for_ball_tmp
+  {
+    decision
+    {
+      if(state_time > 100)
+      {
+        goto do_kick;
+      }
+      else
+        stay;
+    }
+    action
+    { 
+      motion.type = stand;
+      head.control_mode = search_for_ball_and_look_around;
+    }
+  }
+
+  state do_kick
+  {
+    decision
+    {
+      if(path.kick_executed)
+        goto finished;
+      else
+        stay;
+    }
+    action
+    {
+      // Stand RC19: Schuss ist nicht weit genug
+      path2018.routine = forwardkick;
+      head.control_mode = search_for_ball_and_look_around;
+      
+    }
+  }
+
+  target state finished
+  {
+    decision
+    {
+      stay;
+    }
+    action
+    {
+      motion.type = stand;
+      head.control_mode = look_straight_ahead;
+    }
+  }
+
+}

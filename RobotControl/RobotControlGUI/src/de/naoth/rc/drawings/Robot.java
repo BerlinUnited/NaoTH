@@ -29,6 +29,13 @@ public class Robot implements Drawable
 
   private final Nao_Simple nao = new Nao_Simple();
 
+  public Robot(double x, double y, double rotation, double headRotation)
+  {
+    this(x,y,rotation);
+    this.headRotation = headRotation;
+    this.drawHeadRotation = true;
+  }
+  
   public Robot(double x, double y, double rotation)
   {
     this.x = (int)(x);

@@ -32,7 +32,10 @@ public:
 private:
   unsigned int bufferSize;
   bool exiting;
+
   GSocket* socket;
+  GCancellable* socket_cancelable;
+
   char* buffer;
   std::thread socketThread;
   std::vector<std::string> messageIn;

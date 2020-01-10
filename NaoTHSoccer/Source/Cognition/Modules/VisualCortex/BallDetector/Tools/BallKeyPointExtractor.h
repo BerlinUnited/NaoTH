@@ -18,6 +18,7 @@
 #include "BestPatchList.h"
 #include "Tools/DoubleCamHelpers.h"
 #include "Tools/CameraGeometry.h"
+//#include <algorithm>
 
 // debug
 #include "Representations/Debug/Stopwatch.h"
@@ -25,12 +26,14 @@
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugDrawings.h"
 
 BEGIN_DECLARE_MODULE(BallKeyPointExtractor)
   PROVIDE(DebugRequest)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugParameterList)
+  PROVIDE(DebugDrawings)
 
   REQUIRE(FieldInfo) // needed for ball radius
 
@@ -61,10 +64,14 @@ public:
   struct Parameter {
     double borderRadiusFactorClose;
     double borderRadiusFactorFar;
+
+    double maxInnerGreenDensitiy;
   };
 
   BallKeyPointExtractor() : cameraID(CameraInfo::Bottom)
-  {}
+  {
+    DEBUG_REQUEST_REGISTER("Vision:BallKeyPointExtractor:draw_value","", false);
+  }
 
 public:
 
@@ -126,7 +133,7 @@ private:
     double greenBelow = integralImage.getDensityForRect(point.x, point.y+size, point.x+size, point.y+size+border, 1);
     double greeInner = integralImage.getDensityForRect(point.x, point.y, point.x+size, point.y+size, 1);
 
-    if (inner*2 > size*size && greenBelow > 0.3 && greeInner < 0.5)
+    if (inner*2 > size*size && greenBelow > 0.3 && greeInner <= params.maxInnerGreenDensitiy)
     {
       int outer = integralImage.getSumForRect(point.x-border, point.y+size, point.x+size+border, point.y+size+border, 0);
       double value = (double)(inner - (outer - inner))/((double)(size+border)*(size+border));
@@ -188,17 +195,8 @@ void BallKeyPointExtractor::calculateKeyPoints(const ImageType& integralImage, B
     return;
   }
 
-  // we search for key points only inside the field polygon
-  const FieldPercept::FieldPoly& fieldPolygon = getFieldPercept().getValidField();
-
   // find the top point of the polygon
-  int minY = getImage().height();
-  for(int i = 0; i < fieldPolygon.length ; i++)
-  {
-    if(fieldPolygon.points[i].y < minY && fieldPolygon.points[i].y >= 0) {
-      minY = fieldPolygon.points[i].y;
-    }
-  }
+  int minY = getFieldPercept().getMinY();
 
   // double check: polygon is empty
   if(minY == (int)getImage().height() || minY < 0) {
@@ -242,6 +240,10 @@ void BallKeyPointExtractor::calculateKeyPoints(const ImageType& integralImage, B
 template<class ImageType>
 void BallKeyPointExtractor::calculateKeyPointsFast(const ImageType& integralImage, BestPatchList& best) const
 {
+  DEBUG_REQUEST("Vision:BallKeyPointExtractor:draw_value",
+    CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
+  );
+
   //
   // STEP I: find the maximal height minY to be scanned in the image
   //
@@ -249,17 +251,8 @@ void BallKeyPointExtractor::calculateKeyPointsFast(const ImageType& integralImag
     return;
   }
 
-  // we search for key points only inside the field polygon
-  const FieldPercept::FieldPoly& fieldPolygon = getFieldPercept().getValidField();
-
   // find the top point of the polygon
-  int minY = getImage().height();
-  for(int i = 0; i < fieldPolygon.length ; i++)
-  {
-    if(fieldPolygon.points[i].y < minY && fieldPolygon.points[i].y >= 0) {
-      minY = fieldPolygon.points[i].y;
-    }
-  }
+  int minY = getFieldPercept().getMinY();
 
   // double check: polygon is empty
   if(minY == (int)getImage().height() || minY < 0) {
@@ -270,8 +263,11 @@ void BallKeyPointExtractor::calculateKeyPointsFast(const ImageType& integralImag
   const int32_t FACTOR = integralImage.FACTOR;
 
   Vector2i point;
+
+  const int height = (int)integralImage.getHeight();
+  const int width = (int)integralImage.getWidth();
   
-  for(point.y = minY/FACTOR; point.y < (int)integralImage.getHeight(); ++point.y)
+  for(point.y = minY/FACTOR; point.y < height; ++point.y)
   {
     double estimatedRadius = CameraGeometry::estimatedBallRadius(
       getCameraMatrix(), getImage().cameraInfo, getFieldInfo().ballRadius,
@@ -279,18 +275,17 @@ void BallKeyPointExtractor::calculateKeyPointsFast(const ImageType& integralImag
     
     // Note: we have a minimal allowed radius
     int radius = (int)(estimatedRadius / FACTOR + 0.5);
-    if(radius < 2)
-    {
-      // we will divide the radius by two later, ensure we can actually do that
+    // the minimal alowed radius
+    if(radius < 2) {
       radius = 2;
     }
-
+    
     // smalest ball size == 3 => ball size == FACTOR*3 == 12
-    if (point.y < radius || point.y + radius >= (int)integralImage.getHeight()) {
+    if (point.y < radius || point.y + radius >= height) {
       continue;
     }
     
-    for(point.x = radius; point.x + radius < (int)integralImage.getWidth(); ++point.x)
+    for(point.x = radius; point.x + radius < width; ++point.x)
     {
       //evaluatePatch(integralImage, best, point, size, border);
 
@@ -298,14 +293,16 @@ void BallKeyPointExtractor::calculateKeyPointsFast(const ImageType& integralImag
          getBodyContour().isOccupied(point.x*integralImage.FACTOR, (point.y+radius)*integralImage.FACTOR)) {
         continue;
       }
+      
+      const int innerOffset = radius/2;
+      const int area = 4*radius*radius;
 
       int inner = integralImage.getSumForRect(point.x-radius, point.y-radius, point.x+radius, point.y+radius, 0);
-      double greeInner = integralImage.getDensityForRect(point.x-radius/2, point.y-radius/2, point.x+radius/2, point.y+radius/2, 1);
-      const int size = radius*2;
+      double greenInner = integralImage.getDensityForRect(point.x-innerOffset, point.y-innerOffset, point.x+innerOffset, point.y+innerOffset, 1);
       
-      if (inner*2 > size*size && greeInner < 0.5)
+      if (inner*2 > area && greenInner <= params.maxInnerGreenDensitiy)
       {
-        double value = ((double)inner)/((double)(size*size));
+        double value = ((double)inner)/((double)(area));
         best.add( 
             (point.x-radius)*integralImage.FACTOR, 
             (point.y-radius)*integralImage.FACTOR, 
@@ -313,6 +310,18 @@ void BallKeyPointExtractor::calculateKeyPointsFast(const ImageType& integralImag
             (point.y+radius)*integralImage.FACTOR, 
             value);
       }
+
+      DEBUG_REQUEST("Vision:BallKeyPointExtractor:draw_value",
+          double value = ((double)inner)/((double)(area));
+
+          value = Math::clamp(value / 200.0, 0.0,1.0);
+          PEN(Color(1.0,1.0-value,1.0-value,0.8),0.1);
+
+          FILLBOX((point.x)*integralImage.FACTOR - integralImage.FACTOR/2, 
+                  (point.y)*integralImage.FACTOR - integralImage.FACTOR/2, 
+                  (point.x)*integralImage.FACTOR + integralImage.FACTOR/2, 
+                  (point.y)*integralImage.FACTOR + integralImage.FACTOR/2);
+      );
     }
   }
 }
@@ -321,6 +330,10 @@ void BallKeyPointExtractor::calculateKeyPointsFast(const ImageType& integralImag
 template<class ImageType>
 void BallKeyPointExtractor::calculateKeyPointsFull(const ImageType& integralImage, BestPatchList& best) const
 {
+  DEBUG_REQUEST("Vision:BallKeyPointExtractor:draw_value",
+    CANVAS(((cameraID == CameraInfo::Top)?"ImageTop":"ImageBottom"));
+  );
+
   //
   // STEP I: find the maximal height minY to be scanned in the image
   //
@@ -328,17 +341,8 @@ void BallKeyPointExtractor::calculateKeyPointsFull(const ImageType& integralImag
     return;
   }
 
-  // we search for key points only inside the field polygon
-  const FieldPercept::FieldPoly& fieldPolygon = getFieldPercept().getValidField();
-
   // find the top point of the polygon
-  int minY = getImage().height();
-  for(int i = 0; i < fieldPolygon.length ; i++)
-  {
-    if(fieldPolygon.points[i].y < minY && fieldPolygon.points[i].y >= 0) {
-      minY = fieldPolygon.points[i].y;
-    }
-  }
+  int minY = getFieldPercept().getMinY();
 
   // double check: polygon is empty
   if(minY == (int)getImage().height() || minY < 0) {
@@ -350,11 +354,15 @@ void BallKeyPointExtractor::calculateKeyPointsFull(const ImageType& integralImag
 
   Vector2i point;
 
+  // TODO: this has to be made more general
   for(int y = 1; y+1 < 480/4; ++y) {
     for(int x = 1; x+1 < 640/4; ++x) {
       values[x][y][0] = 0.0;
     }
   }
+  
+  // TODO: faster reset?
+  //std::fill_n(&values[0][0][0], (480/4)*(640/4)*2, 0);
   
   for(point.y = minY/FACTOR; point.y < (int)integralImage.getHeight(); ++point.y)
   {
@@ -384,7 +392,7 @@ void BallKeyPointExtractor::calculateKeyPointsFull(const ImageType& integralImag
       double greeInner = integralImage.getDensityForRect(point.x-radius, point.y-radius, point.x+radius, point.y+radius, 1);
       const int size = radius*2;
 
-      if (inner*2 > size*size && greeInner < 0.5)
+      if (inner*2 > size*size && greeInner <= params.maxInnerGreenDensitiy)
       {
         double value = ((double)inner)/((double)(size)*(size));
         values[point.x][point.y][0] = value;
@@ -395,6 +403,18 @@ void BallKeyPointExtractor::calculateKeyPointsFull(const ImageType& integralImag
         values[point.x][point.y][0] = 0.0;
         values[point.x][point.y][1] = radius;
       }
+
+      DEBUG_REQUEST("Vision:BallKeyPointExtractor:draw_value",
+          double value = ((double)inner)/((double)(size*size));
+
+          value = Math::clamp(value / 200.0, 0.0,1.0);
+          PEN(Color(1.0,1.0-value,1.0-value,0.8),0.1);
+
+          FILLBOX((point.x)*integralImage.FACTOR - integralImage.FACTOR/2, 
+                  (point.y)*integralImage.FACTOR - integralImage.FACTOR/2, 
+                  (point.x)*integralImage.FACTOR + integralImage.FACTOR/2, 
+                  (point.y)*integralImage.FACTOR + integralImage.FACTOR/2);
+      );
     }
   }
 

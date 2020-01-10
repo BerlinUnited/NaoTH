@@ -55,11 +55,13 @@ Configuration::~Configuration()
 void Configuration::loadFromDir(std::string dirlocation,
                                 const std::string& platform,
                                 const std::string& scheme,
+                                const std::string& strategy,
                                 const std::string& bodyID,
                                 const std::string& headID,
                                 const std::string& robotName)
 {
   ASSERT_MSG(isDir(dirlocation), "Could not load configuration from " << dirlocation << ": directory does not exist.");
+  std::cout << "[INFO] loading configuration from " << dirlocation << std::endl;
 
   if (!g_str_has_suffix(dirlocation.c_str(), "/")) {
     dirlocation = dirlocation + "/";
@@ -70,6 +72,10 @@ void Configuration::loadFromDir(std::string dirlocation,
 
   if(scheme.size() > 0) {
     loadFromSingleDir(publicKeyFile, dirlocation + "scheme/" + scheme + "/");
+  }
+
+  if(strategy.size() > 0) {
+    loadFromSingleDir(publicKeyFile, dirlocation + "strategy/" + strategy + "/");
   }
 
   bool robot_config_required = (platform == "Nao" || platform == "nao");

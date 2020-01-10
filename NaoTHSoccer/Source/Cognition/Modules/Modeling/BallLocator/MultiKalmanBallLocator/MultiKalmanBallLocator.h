@@ -2,6 +2,7 @@
 #define MULTIKALMANBALLLOCATOR_H
 
 #include <ModuleFramework/Module.h>
+#include <Eigen/StdVector>
 
 // representations
 #include <Representations/Perception/MultiBallPercept.h>
@@ -25,6 +26,7 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugPlot.h"
+#include "Tools/Debug/Color.h"
 
 #include "Representations/Infrastructure/FieldInfo.h"
 
@@ -74,23 +76,18 @@ public:
 // from other kalman filter ball locator
 private:
     OdometryData lastRobotOdometry;
-
-    FrameInfo lastFrameInfo;
+    FrameInfo    lastFrameInfo;
 
 private:
-    typedef std::vector<BallHypothesis> Filters;
+    typedef std::vector<BallHypothesis, Eigen::aligned_allocator<BallHypothesis> > Filters;
     Filters filter;
     Filters::const_iterator bestModel;
 
     const double epsilon; // 10e-6
     //double area95Threshold;
 
-    //double ballMass;
-    double c_RR;
-
 private:
     void updateByPerceptsCool();
-    
     void updateByPerceptsNormal();
     void updateByPerceptsNaive(CameraInfo::CameraID camera);
 
@@ -107,6 +104,7 @@ private:
     void doDebugRequest();
     void doDebugRequestBeforPredictionAndUpdate();
     void doDebugRequestBeforUpdate();
+    void drawFilter(const BallHypothesis& bh, const Color& model_color, Color cov_loc_color, Color cov_vel_color) const;
     void drawFiltersOnField() const;
     void reloadParameters();
 
@@ -130,8 +128,6 @@ private:
             PARAMETER_REGISTER(initialStateStdP10) = 0;
             PARAMETER_REGISTER(initialStateStdP11) = 250;
 
-            //PARAMETER_REGISTER(ballMass) = 0.026;
-            PARAMETER_REGISTER(c_RR) = 0.0245;
             PARAMETER_REGISTER(area95Threshold) = 2*Math::pi*700*700;
 
             //thresholds for association functions
@@ -172,15 +168,13 @@ private:
         double initialStateStdP10;
         double initialStateStdP11;
 
-        //double ballMass;
-        double c_RR;
         double area95Threshold;
 
         double euclidThreshold;
         double mahalanobisThreshold;
         double maximumLikelihoodThreshold;
 
-        struct{
+        struct {
             bool use_normal;
             bool use_cool;
             bool use_naive;
@@ -190,7 +184,6 @@ private:
             double factor;
             double offset;
         } area95Threshold_radius;
-
 
         bool use_covariance_based_selection;
     } kfParameters;

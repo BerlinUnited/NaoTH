@@ -43,8 +43,8 @@ public class DebugRequestPanel extends AbstractDialog
         public static SwingCommandExecutor commandExecutor;
     }
     
-  DebugRequestUpdater debugRequestUpdaterCognition = new DebugRequestUpdater("[Cognition]", "Cognition:debugrequest:set");
-  DebugRequestUpdater debugRequestUpdaterMotion = new DebugRequestUpdater("[Motion]", "Motion:debugrequest:set");
+  DebugRequestUpdater debugRequestUpdaterCognition = new DebugRequestUpdater("[Cognition]", "Cognition:representation:set");
+  DebugRequestUpdater debugRequestUpdaterMotion = new DebugRequestUpdater("[Motion]", "Motion:representation:set");
     
   /** Creates new form DebugRequestPanel */
   public DebugRequestPanel()
@@ -52,6 +52,7 @@ public class DebugRequestPanel extends AbstractDialog
     initComponents();
     
     ToolTipManager.sharedInstance().setDismissDelay(60000);
+    this.debugRequestTree.setNonLeafNodesEditable(false);
     
     // NOTE: experimental auto update on connect
     /*
@@ -172,7 +173,13 @@ public class DebugRequestPanel extends AbstractDialog
     @Override
     public void actionPerformed(ActionEvent e) {
         Command cmd = new Command(command);
-        cmd.addArg(path, node.isSelected() ? "on" : "off");
+
+        cmd.addArg("DebugRequest",
+            DebugRequest.newBuilder().addRequests(
+                DebugRequest.Item.newBuilder().setName(path).setValue(node.isSelected())
+            ).build().toByteArray()
+        );
+        
         Plugin.parent.getMessageServer().executeCommand(new SwingCommandListener(this), cmd);
     }
       

@@ -6,6 +6,7 @@
 package de.naoth.rc.manager;
 
 import de.naoth.rc.core.manager.ManagerPlugin;
+import de.naoth.rc.dataformats.ImageConversions;
 import de.naoth.rc.dataformats.JanusImage;
 
 /**
@@ -14,5 +15,6 @@ import de.naoth.rc.dataformats.JanusImage;
  */
 public interface ImageManagerBottom extends ManagerPlugin<JanusImage>
 {
-
+    // the format in which to request the image from the robot
+    void setFormat(ImageConversions.Format format);
 }

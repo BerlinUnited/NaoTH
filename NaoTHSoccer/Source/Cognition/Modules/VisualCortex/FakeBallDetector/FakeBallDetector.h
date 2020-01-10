@@ -6,13 +6,12 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
 
-#include "Representations/Perception/BallPercept.h"
+#include "Representations/Perception/MultiBallPercept.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 
 #include "Representations/Perception/CameraMatrix.h"
 #include <Tools/CameraGeometry.h>
 
-#include <Tools/naoth_eigen.h>
 
 BEGIN_DECLARE_MODULE(FakeBallDetector)
   PROVIDE(DebugRequest)
@@ -26,8 +25,7 @@ BEGIN_DECLARE_MODULE(FakeBallDetector)
   REQUIRE(CameraInfoTop)
   REQUIRE(CameraMatrixTop)
 
-  PROVIDE(BallPercept)
-  PROVIDE(BallPerceptTop)
+  PROVIDE(MultiBallPercept)
 END_DECLARE_MODULE(FakeBallDetector)
 
 
@@ -44,11 +42,11 @@ private:
 
     double active;
 
-    Eigen::Vector2d startPosition;
-    Eigen::Vector2d position;
-    Eigen::Vector2d velocity;
+    Vector2d startPosition;
+    Vector2d position;
+    Vector2d velocity;
 
-    const Eigen::Vector2d simulateConstantMovementOnField(double dt, const Eigen::Vector2d& velocity);
+    const Vector2d simulateConstantMovementOnField(double dt, const Vector2d& velocity);
 };
 
 #endif // FAKEBALLDETECTOR_H

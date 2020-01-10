@@ -37,10 +37,12 @@ public class DialogRegistry {
     private JFrame parent = null;
     private final CControl control;
     private final MainMenuBar menuBar;
+    private final DialogFastAccessPanel accessPanel;
 
-    public DialogRegistry(JFrame parent, MainMenuBar menuBar) {
+    public DialogRegistry(JFrame parent, MainMenuBar menuBar, DialogFastAccessPanel accessPanel) {
         this.parent = parent;
         this.menuBar = menuBar;
+        this.accessPanel = accessPanel;
 
         this.control = new CControl(this.parent);
         control.setTheme(ThemeMap.KEY_ECLIPSE_THEME);
@@ -127,13 +129,17 @@ public class DialogRegistry {
         
         // create menu item (should never return null)
         
-        JMenuItem item = menuBar.addDialog(name, category, mnemonic);
-        item.addActionListener(new ActionListener() {
+        ActionListener action = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dockDialog(dialog);
             }
-        });
+        };
+        
+        JMenuItem item = menuBar.addDialog(name, category, mnemonic);
+        item.addActionListener(action);
+        
+        this.accessPanel.registerDialog(name, category, action);
     }//end registerDialog
 
     public void dockDialog(Dialog dialog) {

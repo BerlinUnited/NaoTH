@@ -1,10 +1,10 @@
 /**
 * @file IMUModel.h
-* 
+*
 * Declaration of class IMUModel
 *
 * @author <a href="mailto:kaden@informatik.hu-berlin.de">Steffen Kaden</a>
-*/ 
+*/
 
 
 #ifndef IMUMODEL_H
@@ -57,9 +57,6 @@ END_DECLARE_MODULE(IMUModel)
 
 class IMUModel: private IMUModelBase
 {
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
 public:
     IMUModel();
     virtual~IMUModel();

@@ -96,6 +96,11 @@ void NaoSensorData::get(GyrometerData& data) const
 
   data.ref = sensorsValue[theGyrometerDataIndex + 6];
 
+  // if the robot is turned to left around its z axis the measured angular velocity is negative but it should be positiv
+  // this problem is related to that mentioned above in NaoSensorData::get(AccelerometerData& data)
+  // to fix this the values for z have to be negated
+  data.data.z *= -1;
+  data.rawData.z *= -1;
 
   //data = (raw-zero) * 2.7 * PI/180 [rad/s]
   //static float scale_gyro = 2.7 * M_PI/180.0;
@@ -115,14 +120,6 @@ void NaoSensorData::get(InertialSensorData& data) const
   data.data.x = sensorsValue[theInertialSensorDataIndex];
   data.data.y = sensorsValue[theInertialSensorDataIndex+1];
 }//end InertialSensorData
-
-void NaoSensorData::get(IRReceiveData& data) const
-{
-  unsigned int currentIndex = theIRReceiveDataIndex;
-  for (int i = 0; i < IRReceiveData::numOfIRReceive; i++) {
-    data.data[i] = static_cast<int>(sensorsValue[currentIndex++]);
-  }
-}//end IRReceiveData
 
 void NaoSensorData::get(ButtonData& data) const
 {

@@ -14,11 +14,11 @@
 
 //perceptions
 #include "Representations/Perception/ArtificialHorizon.h"
-#include "Representations/Perception/BallPercept.h"
 #include "Representations/Perception/PlayersPercept.h"
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/GoalPercept.h"
-#include "Representations/Perception/LinePercept.h"
+//#include "Representations/Perception/LinePercept.h"
+#include "Representations/Perception/LinePercept2018.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/MultiBallPercept.h"
@@ -48,18 +48,21 @@ BEGIN_DECLARE_MODULE(PerceptionsVisualizer)
 
   REQUIRE(ArtificialHorizon)
   REQUIRE(ArtificialHorizonTop)
-  REQUIRE(BallPercept)
-  REQUIRE(BallPerceptTop)
   PROVIDE(MultiBallPercept)
 
   REQUIRE(FieldPercept)
   REQUIRE(FieldPerceptTop)
   REQUIRE(GoalPercept)
   REQUIRE(GoalPerceptTop)
-  REQUIRE(LinePercept)
-  REQUIRE(LinePerceptTop)
+  //REQUIRE(LinePercept)
+  //REQUIRE(LinePerceptTop)
   REQUIRE(ScanLineEdgelPercept)
   REQUIRE(ScanLineEdgelPerceptTop)
+  //REQUIRE(RansacCirclePercept)
+
+  REQUIRE(RansacLinePercept)
+  REQUIRE(ShortLinePercept)
+  REQUIRE(RansacCirclePercept2018)
   
   REQUIRE(CameraMatrixOffset)
   REQUIRE(CameraMatrix)
@@ -90,10 +93,9 @@ private:
   CameraInfo::CameraID cameraID;
   DOUBLE_CAM_PROVIDE(PerceptionsVisualizer,DebugImageDrawings);
 
-  DOUBLE_CAM_REQUIRE(PerceptionsVisualizer,BallPercept);
   DOUBLE_CAM_REQUIRE(PerceptionsVisualizer,FieldPercept);
   DOUBLE_CAM_REQUIRE(PerceptionsVisualizer,GoalPercept);
-  DOUBLE_CAM_REQUIRE(PerceptionsVisualizer,LinePercept);
+  //DOUBLE_CAM_REQUIRE(PerceptionsVisualizer,LinePercept);
   DOUBLE_CAM_REQUIRE(PerceptionsVisualizer,ScanLineEdgelPercept);
 
   DOUBLE_CAM_REQUIRE(PerceptionsVisualizer,Image);

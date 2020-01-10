@@ -1,10 +1,8 @@
 #include "TeamCommSender.h"
+
 #include "PlatformInterface/Platform.h"
-#include <Messages/Representations.pb.h>
-
 #include <Tools/NaoTime.h>
-
-using namespace std;
+#include "Representations/Motion/Request/MotionID.h"
 
 TeamCommSender::TeamCommSender()
   :lastSentTimestamp(0),
@@ -37,6 +35,8 @@ void TeamCommSender::execute()
         getTeamMessageDataOut().data = getTeamMessageData().createSplMessageString();
         // remember the last sending time
         lastSentTimestamp = getFrameInfo().getTime();
+
+        PLOT(std::string("TeamCommSender:message_size"), static_cast<double>(getTeamMessageDataOut().data.size()));
     } else {
         getTeamMessageDataOut().data.clear();
     }
@@ -49,14 +49,14 @@ void TeamCommSender::fillMessageBeforeSending() const
     msg.teamNumber = getPlayerInfo().teamNumber;
     msg.pose = getRobotPose();
 
-    bool sendBallModel = getBallModel().valid;
+    bool sendBallModel = getBallModel().knows;
     if(parameters.sendBallAgeDobermann) {
       sendBallModel = (getBallModel().getFrameInfoWhenBallWasSeen().getTime() > 0);
     }
 
     if(sendBallModel)
     {
-      // here in milliseconds (conversion to seconds is in SPLStandardMessage::createSplMessage())
+      // here in milliseconds (conversion to seconds is in TeamMessageData::createSplMessage())
       msg.ballAge = getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime());
       msg.ballPosition = getBallModel().position;
       msg.custom.ballVelocity = getBallModel().speed;
@@ -71,17 +71,21 @@ void TeamCommSender::fillMessageBeforeSending() const
       msg.custom.ballVelocity.y = 0;
     }
 
-    msg.fallen = getBodyState().fall_down_state != BodyState::upright;
+    // make sure we're not in the standup motion
+    msg.fallen = getBodyState().fall_down_state != BodyState::upright
+              || getMotionStatus().currentMotion == motion::stand_up_from_back
+              || getMotionStatus().currentMotion == motion::stand_up_from_side
+              || getMotionStatus().currentMotion == motion::stand_up_from_front
+              || getMotionStatus().currentMotion == motion::stand_up_from_back_arms_back;
 
     // TODO: can we make it more separate?
     msg.custom.timestamp = naoth::NaoTime::getSystemTimeInMilliSeconds();
     msg.custom.wantsToBeStriker = getRoleDecisionModel().wantsToBeStriker;
-    msg.custom.wasStriker = getPlayerInfo().isPlayingStriker; // intention
+    msg.custom.wasStriker = getRoleDecisionModel().isStriker(getPlayerInfo().playerNumber);
 
     msg.custom.bodyID = getRobotInfo().bodyID;
     ASSERT(getSoccerStrategy().timeToBall >= 0);
     msg.custom.timeToBall = (unsigned int)getSoccerStrategy().timeToBall;
-    msg.custom.isPenalized = getPlayerInfo().robotState == PlayerInfo::penalized;
     msg.custom.batteryCharge = getBatteryData().charge;
     msg.custom.temperature = std::max(getBodyState().temperatureLeftLeg, getBodyState().temperatureRightLeg);
     msg.custom.cpuTemperature = getCpuData().temperature;
@@ -93,6 +97,12 @@ void TeamCommSender::fillMessageBeforeSending() const
       getTeamMessageData().custom.teamBall.x = std::numeric_limits<double>::infinity();
       getTeamMessageData().custom.teamBall.y = std::numeric_limits<double>::infinity();
     }
+
+    msg.custom.robotState = getPlayerInfo().robotState;
+    msg.custom.robotRole = getRoleDecisionModel().getRole(getPlayerInfo().playerNumber);
+
+    msg.custom.readyToWalk = getBodyState().readyToWalk;
+
     // TODO: shall we put it into config?
     msg.custom.key = NAOTH_TEAMCOMM_MESAGE_KEY;
 }

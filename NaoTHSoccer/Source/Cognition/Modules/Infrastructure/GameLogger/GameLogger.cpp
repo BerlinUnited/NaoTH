@@ -1,12 +1,14 @@
+
 #include "GameLogger.h"
+
+using namespace std;
 
 GameLogger::GameLogger()
   : 
-  logfileManager(true),
   lastCompleteFrameNumber(0),
   oldState(PlayerInfo::initial),
   firstRecording(true),
-  lastWhistleCounter(0),
+  lastAudioDataTimestamp(0),
   lastRecordedPlainImageID(CameraInfo::Bottom)
 {
   logfileManager.openFile("/tmp/game.log");
@@ -25,7 +27,7 @@ GameLogger::~GameLogger()
 }
 
 #define LOGSTUFF(name) \
-  { std::stringstream& dataStream = logfileManager.log(getFrameInfo().getFrameNumber(), #name); \
+  { std::ostream& dataStream = logfileManager.log(getFrameInfo().getFrameNumber(), #name); \
   Serializer<name>::serialize(get##name(), dataStream); } ((void)0)
 
 void GameLogger::execute()
@@ -51,12 +53,13 @@ void GameLogger::execute()
     }
 
     // condition wheather the current frame should be logged:
-    bool log_this_frame = getBehaviorStateSparse().state.framenumber() == getFrameInfo().getFrameNumber();
+    bool log_this_frame = (getBehaviorStateSparse().state.framenumber() == getFrameInfo().getFrameNumber());
 
     // NOTE: record only the first frame if the state changed to initial or finished
     if(!firstRecording && oldState == getPlayerInfo().robotState) {
       log_this_frame = log_this_frame && getPlayerInfo().robotState != PlayerInfo::initial;
       log_this_frame = log_this_frame && getPlayerInfo().robotState != PlayerInfo::finished;
+      log_this_frame = log_this_frame && getMotionStatus().currentMotion != motion::init;
     }
 
     if(log_this_frame)
@@ -77,12 +80,22 @@ void GameLogger::execute()
       LOGSTUFF(GoalPerceptTop);
 
       LOGSTUFF(MultiBallPercept);
+      LOGSTUFF(BallModel);
       
-      //LOGSTUFF(BallPercept);
-      //LOGSTUFF(BallPerceptTop);
-      
+      if(params.logUltraSound) {
+        LOGSTUFF(UltraSoundReceiveData);
+      }
+
+      LOGSTUFF(FieldPercept);
+      LOGSTUFF(FieldPerceptTop);
+
       LOGSTUFF(ScanLineEdgelPercept);
       LOGSTUFF(ScanLineEdgelPerceptTop);
+      LOGSTUFF(ShortLinePercept);
+      LOGSTUFF(RansacLinePercept);
+      LOGSTUFF(RansacCirclePercept2018);
+      
+      
       
       if(params.logBallCandidates) {
         LOGSTUFF(BallCandidates);
@@ -91,10 +104,29 @@ void GameLogger::execute()
 
       LOGSTUFF(TeamMessage);
 
-      if (lastWhistleCounter < getWhistlePercept().counter)
+
+      // keep the audio device open for some time
+
+      if(params.logAudioData) 
       {
+        // remember when the capture was on and keep recording for some time after the behavior says stop recording
+        if(getAudioControl().capture) {
+          timeOfLastCapture = getFrameInfo();
+        } else if(getFrameInfo().getTimeSince(timeOfLastCapture.getTime()) < 3000) {
+          getAudioControl().capture = true;
+        }
+
+        // new data avaliable and capture is still on
+        if(lastAudioDataTimestamp < getAudioData().timestamp) {
+          LOGSTUFF(AudioData);
+          lastAudioDataTimestamp = getAudioData().timestamp;
+        }
+      }
+
+      
+      
+      if (getWhistlePercept().whistleDetected) {
         LOGSTUFF(WhistlePercept);
-        lastWhistleCounter = getWhistlePercept().counter;
       }
 
       // record images every 1s

@@ -24,14 +24,29 @@ namespace game_symbols("Game Control Symbols")
   /*Milliseconds remaining in the game */
   float input game.msecsRemaining;
 
+  /*Milliseconds remaining for the secondaryTime */
+  float input game.msecsRemainingSecondary;
+
   bool input game.state.playing_is_set_by_game_controller;
 
   enum game.set_play
   {
     none,
-	goal_free_kick,
-	pushing_free_kick
+    goal_free_kick,
+    pushing_free_kick,
+    corner_kick,
+    kick_in
   };
 
   enum game.set_play input game.set_play;
+
+  enum game.phase
+  {
+    normal,
+    penaltyshoot,
+    overtime,
+    timeout
+  };
+  
+  enum game.phase input game.phase;
 }

@@ -54,6 +54,8 @@ public:
   bool isExecuted() const { return executingCycle >= numberOfCycles; }
 };
 
+std::ostream& operator<<(std::ostream& os, const Step& s);
+
 class StepBuffer : public naoth::Printable
 {
 private:
@@ -94,6 +96,15 @@ public:
     return steps.back();
   }
 
+  inline bool only_zero_steps() const {
+      for(const Step& s : steps){
+          if(s.footStep.liftingFoot() != FootStep::NONE){
+              return false;
+          }
+      }
+      return true;
+  }
+
   void draw(DrawingCanvas2D& canvas) const
   {
     for(std::list<Step>::const_iterator i = steps.begin(); i != steps.end(); ++i) {
@@ -103,7 +114,10 @@ public:
 
   virtual void print(std::ostream& stream) const
   {
-      stream << "number of steps in buffer: " << steps.size() << std::endl;
+      for(const Step& s: steps){
+          stream << "-------------" << std::endl;
+          stream << s << std::endl;
+      }
   }
 };
 

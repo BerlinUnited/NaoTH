@@ -9,22 +9,31 @@ import de.naoth.rc.core.dialog.Dialog;
 import bibliothek.gui.DockUI;
 import bibliothek.gui.dock.util.laf.Nimbus6u10;
 import de.naoth.rc.components.preferences.PreferencesDialog;
-import de.naoth.rc.server.ConnectionDialog;
+import de.naoth.rc.server.ConnectionManager;
 import de.naoth.rc.server.ConnectionStatusEvent;
 import de.naoth.rc.server.ConnectionStatusListener;
 import de.naoth.rc.server.MessageServer;
+import de.naoth.rc.statusbar.StatusbarPluginImpl;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import net.xeoh.plugins.base.PluginManager;
@@ -52,7 +61,7 @@ public class RobotControlImpl extends javax.swing.JFrame
   
   private final Properties config = new Properties();
   private final PreferencesDialog preferencesDialog;
-  private final ConnectionDialog connectionDialog;
+  private final ConnectionManager connectionManager;
   
   private final DialogRegistry dialogRegistry;
 
@@ -61,6 +70,10 @@ public class RobotControlImpl extends javax.swing.JFrame
   
   private static final Logger logger = Logger.getLogger(RobotControlImpl.class.getName());
   private static Logger getLogger() { return logger; }
+  
+  private final GridBagConstraints statusPanelPluginsConstraints = new GridBagConstraints();
+  
+  private final String RC_TITLE = "";
   
   // HACK: set the path to the native libs
   static 
@@ -162,7 +175,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     });
     
     // set up a list of all dialogs
-    this.dialogRegistry = new DialogRegistry(this, this.mainMenuBar);
+    this.dialogRegistry = new DialogRegistry(this, this.mainMenuBar, this.dialogFastAccessPanel);
 
     
     // initialize the message server
@@ -173,28 +186,58 @@ public class RobotControlImpl extends javax.swing.JFrame
         public void connected(ConnectionStatusEvent event) {
             disconnectMenuItem.setEnabled(true);
             connectMenuItem.setEnabled(false);
-            lblConnect.setText("Connected to " + event.getAddress());
         }
 
         @Override
         public void disconnected(ConnectionStatusEvent event) {
+            
             disconnectMenuItem.setEnabled(false);
             connectMenuItem.setEnabled(true);
-            lblConnect.setText("Not connected");
+            
             if(event.getMessage() != null) {
-                JOptionPane.showMessageDialog(RobotControlImpl.this,
-                    event.getMessage(), "Disconnect", JOptionPane.ERROR_MESSAGE);
+                connectionManager.showConnectionDialog(event.getMessage());
             }
         }
     });
 
-    // connection dialog
-    this.connectionDialog = new ConnectionDialog(this, this.messageServer, this.getConfig());
-    this.connectionDialog.setLocationRelativeTo(this);
+    this.connectionManager = new ConnectionManager(this, this.messageServer, this.getConfig());
+    
     this.disconnectMenuItem.setEnabled(false);
     // preference dialog
     this.preferencesDialog = new PreferencesDialog(this, this.getConfig());
     this.preferencesDialog.setLocationRelativeTo(this);
+
+    // set the constraints for the statusbar plugins
+    statusPanelPluginsConstraints.fill = GridBagConstraints.VERTICAL;
+    statusPanelPluginsConstraints.ipadx = 5;
+    
+    
+    // dialog access
+    dialogFastAccess.setLocationRelativeTo(this);
+    dialogFastAccess.getRootPane().registerKeyboardAction(
+        (e) -> {dialogFastAccess.setVisible(false); dialogFastAccessPanel.close(); }, 
+        KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), 
+        JComponent.WHEN_IN_FOCUSED_WINDOW
+    );
+    
+    DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventPostProcessor(
+    (e) -> {
+        if(e.getID()        == KeyEvent.KEY_PRESSED && 
+           e.getKeyCode()   == KeyEvent.VK_F && 
+           e.getModifiers() == InputEvent.ALT_MASK) 
+        {
+            dialogFastAccess.setContentPane(dialogFastAccessPanel);
+            dialogFastAccess.pack();
+            dialogFastAccess.setLocationRelativeTo(this);
+            dialogFastAccess.setVisible(true);
+            return true;
+        }
+
+        return false;
+    });
+    
+    // read & set the userdefined dialog configurations
+    setMenuDialogConfiguration();
   }//end constructor
 
   
@@ -245,7 +288,9 @@ public class RobotControlImpl extends javax.swing.JFrame
   {
     if(enforceConnection.isSelected() && !messageServer.isConnected())
     {
-      connectionDialog.setVisible(true);
+      // NOTE: this call will block until the dialog is closed
+      //connectionDialog.setVisible(true);
+      this.connectionManager.showConnectionDialog();
       return messageServer.isConnected();
     }
     else
@@ -253,6 +298,63 @@ public class RobotControlImpl extends javax.swing.JFrame
       return true;
     }
   }//end checkConnected
+  
+  /**
+   * Reads all user-defined dialog configurations and creates appropiate menu items.
+   */
+  private void setMenuDialogConfiguration() {
+      String suffix = "_" + userLayoutFile.getName();
+      Arrays.asList(userLayoutFile.getParentFile().listFiles((dir, name) -> {
+          return name.endsWith(suffix);
+      })).forEach((f) -> {
+          String name = f.getName().substring(0, f.getName().length()-suffix.length());
+          createDialogConfigMenuItem(name);
+      });
+  }
+  
+  /**
+   * Returns the user dialog configuration file for the given configuration name.
+   * 
+   * @param configName the name of the dialog configuration
+   * @return the File object of this dialog configuraiton
+   */
+  private File createUserDialogConfigFile(String configName) {
+        return new File(userLayoutFile.getParent() + "/" + configName + "_" + userLayoutFile.getName());
+  }
+
+  /**
+   * Creates a new dialog configuration menu item and adds it to the restore menu.
+   * 
+   * @param name the name of the dialog configuration item
+   */
+  private void createDialogConfigMenuItem(String name) {
+        JMenuItem item = new JMenuItem(name);
+        item.setToolTipText("<html>Restores this dialog layout.<br>Use <i>Ctrl+Click</i> to delete this dialog layout.</html>");
+        item.addActionListener((e) -> {
+            JMenuItem source = (JMenuItem) e.getSource();
+            if((e.getModifiers() & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK) {
+                // delete requested
+                if(JOptionPane.showConfirmDialog(this, "Do you want to remove the dialog layout '"+name+"'?", "Remove dialog layout", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    if(createUserDialogConfigFile(name).delete()) {
+                        layout.remove(source);
+                    }
+                }
+            } else {
+                // restore dialog configuration
+                File f = createUserDialogConfigFile(source.getText());
+                if(f.isFile()) {
+                    try {
+                        dialogRegistry.loadFromFile(f);
+                    } catch (IOException ex) {
+                        Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "The '"+source.getText()+"' dialog layout file doesn't exists!?", "Missing layout file", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        layout.add(item);
+  }
 
   /**
    * This method is called from within the constructor to initialize the form.
@@ -262,28 +364,44 @@ public class RobotControlImpl extends javax.swing.JFrame
   @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
+        dialogFastAccess = new javax.swing.JDialog();
+        dialogFastAccessPanel = new de.naoth.rc.DialogFastAccessPanel();
         statusPanel = new javax.swing.JPanel();
-        lblConnect = new javax.swing.JLabel();
         btManager = new javax.swing.JButton();
         lblReceivedBytesS = new javax.swing.JLabel();
+        jSeparator4 = new javax.swing.JSeparator();
         lblSentBytesS = new javax.swing.JLabel();
+        jSeparator5 = new javax.swing.JSeparator();
         lblFramesS = new javax.swing.JLabel();
         statusPanelPlugins = new javax.swing.JPanel();
+        statusPanelSpacer = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         mainMenuBar = new de.naoth.rc.MainMenuBar();
         mainControlMenu = new javax.swing.JMenu();
         connectMenuItem = new javax.swing.JMenuItem();
         disconnectMenuItem = new javax.swing.JMenuItem();
         enforceConnection = new javax.swing.JCheckBoxMenuItem();
+        layout = new javax.swing.JMenu();
         resetLayoutMenuItem = new javax.swing.JMenuItem();
+        miSaveDialogConfig = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
         preferences = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
         exitMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         aboutMenuItem = new javax.swing.JMenuItem();
 
+        dialogFastAccess.setAlwaysOnTop(true);
+        dialogFastAccess.setLocationByPlatform(true);
+        dialogFastAccess.setModal(true);
+        dialogFastAccess.setName("dialogFastAccessDialog"); // NOI18N
+        dialogFastAccess.setUndecorated(true);
+        dialogFastAccess.setPreferredSize(new java.awt.Dimension(600, 300));
+        dialogFastAccess.getContentPane().add(dialogFastAccessPanel, java.awt.BorderLayout.CENTER);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("RobotControl for Nao v2015");
+        setTitle("RobotControl for NAO v2019");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -293,9 +411,6 @@ public class RobotControlImpl extends javax.swing.JFrame
         statusPanel.setBackground(java.awt.Color.lightGray);
         statusPanel.setPreferredSize(new java.awt.Dimension(966, 25));
 
-        lblConnect.setText("Not connected");
-        lblConnect.setToolTipText("Indicates if the RobotControl is connected to a Robot");
-
         btManager.setText("Running Manager --");
         btManager.setToolTipText("Shows the number of currently registered Manager");
         btManager.addActionListener(new java.awt.event.ActionListener() {
@@ -304,18 +419,26 @@ public class RobotControlImpl extends javax.swing.JFrame
             }
         });
 
-        lblReceivedBytesS.setText("Recived byte/s: ");
+        lblReceivedBytesS.setText("Received (byte/s): ");
 
-        lblSentBytesS.setText("Sent byte/s: ");
+        jSeparator4.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
-        lblFramesS.setText("Frames/s: ");
+        lblSentBytesS.setText("Sent (byte/s): ");
+
+        jSeparator5.setOrientation(javax.swing.SwingConstants.VERTICAL);
+
+        lblFramesS.setText("Update Loop (frame/s):");
 
         statusPanelPlugins.setFocusable(false);
         statusPanelPlugins.setMaximumSize(new java.awt.Dimension(32767, 24));
         statusPanelPlugins.setMinimumSize(new java.awt.Dimension(0, 24));
         statusPanelPlugins.setOpaque(false);
         statusPanelPlugins.setPreferredSize(new java.awt.Dimension(100, 24));
-        statusPanelPlugins.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        statusPanelPlugins.setLayout(new java.awt.GridBagLayout());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        statusPanelPlugins.add(statusPanelSpacer, gridBagConstraints);
 
         javax.swing.GroupLayout statusPanelLayout = new javax.swing.GroupLayout(statusPanel);
         statusPanel.setLayout(statusPanelLayout);
@@ -324,27 +447,31 @@ public class RobotControlImpl extends javax.swing.JFrame
             .addGroup(statusPanelLayout.createSequentialGroup()
                 .addComponent(btManager, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblReceivedBytesS, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblSentBytesS, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblReceivedBytesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(lblFramesS, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblSentBytesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(statusPanelPlugins, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblConnect)
-                .addContainerGap())
+                .addComponent(lblFramesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(63, 63, 63)
+                .addComponent(statusPanelPlugins, javax.swing.GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE))
         );
         statusPanelLayout.setVerticalGroup(
             statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(btManager, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(lblConnect, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(lblReceivedBytesS)
-                .addComponent(lblSentBytesS)
-                .addComponent(lblFramesS))
+                .addComponent(lblReceivedBytesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jSeparator5)
+                .addComponent(lblSentBytesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lblFramesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(statusPanelLayout.createSequentialGroup()
                 .addComponent(statusPanelPlugins, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(statusPanelLayout.createSequentialGroup()
+                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -380,14 +507,28 @@ public class RobotControlImpl extends javax.swing.JFrame
         enforceConnection.setToolTipText("Make sure that RobotControl is connected to a robot when dialogs try to receive data");
         mainControlMenu.add(enforceConnection);
 
+        layout.setText("Layout");
+
         resetLayoutMenuItem.setText("Reset layout");
-        resetLayoutMenuItem.setToolTipText("\"Resets all layout information");
+        resetLayoutMenuItem.setToolTipText("Resets all layout information");
         resetLayoutMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 resetLayoutMenuItemActionPerformed(evt);
             }
         });
-        mainControlMenu.add(resetLayoutMenuItem);
+        layout.add(resetLayoutMenuItem);
+
+        miSaveDialogConfig.setText("Save dialog layout");
+        miSaveDialogConfig.setToolTipText("Saves the current active dialog configuration.");
+        miSaveDialogConfig.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miSaveDialogConfigActionPerformed(evt);
+            }
+        });
+        layout.add(miSaveDialogConfig);
+        layout.add(jSeparator2);
+
+        mainControlMenu.add(layout);
 
         preferences.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
         preferences.setText("Preferences");
@@ -436,7 +577,7 @@ public class RobotControlImpl extends javax.swing.JFrame
 
     private void connectMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_connectMenuItemActionPerformed
     {//GEN-HEADEREND:event_connectMenuItemActionPerformed
-      connectionDialog.setVisible(true);
+        connectionManager.showConnectionDialog();
     }//GEN-LAST:event_connectMenuItemActionPerformed
 
     private void disconnectMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_disconnectMenuItemActionPerformed
@@ -463,23 +604,6 @@ public class RobotControlImpl extends javax.swing.JFrame
 
     }//GEN-LAST:event_aboutMenuItemActionPerformed
 
-    private void btManagerActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btManagerActionPerformed
-    {//GEN-HEADEREND:event_btManagerActionPerformed
-
-      TaskManager taskManager = new TaskManager(this, true);
-      //String str = "Currently registeres Manager:\n\n";
-      for(int i = 0; i < messageServer.getListeners().size(); i++)
-      {
-        String name = messageServer.getListeners().get(i).getClass().getSimpleName();
-        taskManager.addTask(name, "0", null);
-        //str += messageServer.getListeners().get(i).getClass().getSimpleName() + "\n";
-      }//end for
-      //str += "\n";
-
-      taskManager.setVisible(true);
-      //JOptionPane.showMessageDialog(this, str);
-}//GEN-LAST:event_btManagerActionPerformed
-
     private void resetLayoutMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_resetLayoutMenuItemActionPerformed
     {//GEN-HEADEREND:event_resetLayoutMenuItemActionPerformed
 
@@ -496,6 +620,51 @@ public class RobotControlImpl extends javax.swing.JFrame
     private void preferencesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_preferencesActionPerformed
         preferencesDialog.setVisible(true);
     }//GEN-LAST:event_preferencesActionPerformed
+
+    private void miSaveDialogConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miSaveDialogConfigActionPerformed
+        // Ask for a name for this dialog configuration
+        String inputName = JOptionPane.showInputDialog("Set a name for the current dialog layout");
+        // ignore canceled inputs
+        if(inputName == null) { return; }
+        // replace "invalid" characters
+        String name = inputName.trim().replaceAll("[^A-Za-z0-9_-]", "");
+        // ignore empty inputs
+        if(name.isEmpty()) { return; }
+        // create layout file
+        File f = createUserDialogConfigFile(name);
+        // if configuration name already exists - ask to overwrite
+        if(f.isFile() && JOptionPane.showConfirmDialog(this, "This dialog layout name already exists. Overwrite?", "Overwrite", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) {
+            // don't overwrite!
+            return;
+        }
+        // save configuration
+        try {
+            boolean exists = f.isFile();
+            dialogRegistry.saveToFile(f);
+            // if this configuration already exists, don't create a new menu entry!
+            if(!exists) {
+                createDialogConfigMenuItem(name);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_miSaveDialogConfigActionPerformed
+
+    private void btManagerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btManagerActionPerformed
+
+        TaskManager taskManager = new TaskManager(this, true);
+        String str = "Currently registeres Manager:\n\n";
+        for(int i = 0; i < messageServer.getListeners().size(); i++)
+        {
+            String name = messageServer.getListeners().get(i).getClass().getSimpleName();
+            taskManager.addTask(name, "0", null);
+            str += messageServer.getListeners().get(i).getClass().getSimpleName() + "\n";
+        }//end for
+        str += "\n";
+
+        //taskManager.setVisible(true);
+        JOptionPane.showMessageDialog(this, str);
+    }//GEN-LAST:event_btManagerActionPerformed
 
   @Override
   public MessageServer getMessageServer()
@@ -598,21 +767,28 @@ public class RobotControlImpl extends javax.swing.JFrame
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton btManager;
     private javax.swing.JMenuItem connectMenuItem;
+    private javax.swing.JDialog dialogFastAccess;
+    private de.naoth.rc.DialogFastAccessPanel dialogFastAccessPanel;
     private javax.swing.JMenuItem disconnectMenuItem;
     private javax.swing.JCheckBoxMenuItem enforceConnection;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JLabel lblConnect;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JSeparator jSeparator5;
+    private javax.swing.JMenu layout;
     private javax.swing.JLabel lblFramesS;
     private javax.swing.JLabel lblReceivedBytesS;
     private javax.swing.JLabel lblSentBytesS;
     private javax.swing.JMenu mainControlMenu;
     private de.naoth.rc.MainMenuBar mainMenuBar;
+    private javax.swing.JMenuItem miSaveDialogConfig;
     private javax.swing.JMenuItem preferences;
     private javax.swing.JMenuItem resetLayoutMenuItem;
     private javax.swing.JPanel statusPanel;
     private javax.swing.JPanel statusPanelPlugins;
+    private javax.swing.Box.Filler statusPanelSpacer;
     // End of variables declaration//GEN-END:variables
 
     
@@ -692,19 +868,35 @@ public class RobotControlImpl extends javax.swing.JFrame
   @Override
   public void setReceiveByteRate(double rate)
   {
-    lblReceivedBytesS.setText(String.format("Received KB/s: %4.2f", rate));
+    String unit = "byte";
+    if(rate > 1024*1024) {
+        rate /= 1024*1024;
+        unit = "MB";
+    } else if (rate > 1024) {
+        rate /= 1024;
+        unit = "KB";
+    }
+    lblReceivedBytesS.setText(String.format("Received (%s/s): %4.2f", unit, rate));
   }
 
   @Override
   public void setSentByteRate(double rate)
   {
-    lblSentBytesS.setText(String.format("Sent KB/s: %4.2f", rate));
+    String unit = "byte";
+    if(rate > 1024*1024) {
+        rate /= 1024*1024;
+        unit = "MB";
+    } else if (rate > 1024) {
+        rate /= 1024;
+        unit = "KB";
+    }
+    lblSentBytesS.setText(String.format("Sent (%s/s): %4.2f", unit, rate));
   }
   
   @Override
   public void setServerLoopFPS(double fps)
   {
-    lblFramesS.setText(String.format("Frames/s: %4.2f", fps));
+    lblFramesS.setText(String.format("Update Loop (frame/s): %4.2f", fps));
   }
   
   @Override
@@ -714,7 +906,25 @@ public class RobotControlImpl extends javax.swing.JFrame
       return Integer.parseInt(this.getConfig().getProperty("fontSize", String.valueOf(size)));
   }
   
+  private ArrayList<Component> statusPanelComponents = new ArrayList<>();
+  @Override
   public void addToStatusBar(Component c) {
-      this.statusPanelPlugins.add(c);
+      // add to "weighted" list
+      statusPanelComponents.add(c);
+      // sort (modified) list
+      statusPanelComponents.sort((l1,l2)->{
+          if(l1 instanceof StatusbarPluginImpl && l2 instanceof StatusbarPluginImpl) {
+              return ((StatusbarPluginImpl)l1).getWeight() - ((StatusbarPluginImpl)l2).getWeight();
+          }
+          return 0;
+      });
+      // remove all statusbar components, to re-add
+      statusPanelComponents.stream().forEachOrdered((t) -> {
+          this.statusPanelPlugins.remove(t);
+      });
+      // iterate through sorted list and add to statusbar
+      statusPanelComponents.stream().forEachOrdered((t) -> {
+          this.statusPanelPlugins.add(t, statusPanelPluginsConstraints);
+      });
   }
 }

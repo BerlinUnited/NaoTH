@@ -9,6 +9,7 @@
 
 #include "NaoController.h"
 
+#include "PlatformInterface/Platform.h"
 #include <algorithm>
 
 using namespace std;
@@ -18,30 +19,31 @@ using namespace naoth;
 
 NaoController::NaoController()
     :
-    PlatformInterface("Nao", 10),
+    lolaAvailable(false),
     theSoundHandler(NULL),
     theTeamCommSender(NULL),
     theTeamCommListener(NULL),
     theRemoteCommandListener(NULL),
     theDebugServer(NULL)
 {
+  if(fileExists("/usr/bin/lola") || fileExists("/opt/aldebaran/bin/lola"))
+  {
+    lolaAvailable = true;
+  }
+
   // init shared memory
   // sensor data
   const std::string naoSensorDataPath = "/nao_sensor_data";
   // command data
   const std::string naoCommandMotorJointDataPath = "/nao_command.MotorJointData";
   const std::string naoCommandUltraSoundSendDataPath = "/nao_command.UltraSoundSendData";
-  const std::string naoCommandIRSendDataPath = "/nao_command.IRSendData";
   const std::string naoCommandLEDDataPath = "/nao_command.LEDData";
 
   naoSensorData.open(naoSensorDataPath);
 
   naoCommandMotorJointData.open(naoCommandMotorJointDataPath);
   naoCommandUltraSoundSendData.open(naoCommandUltraSoundSendDataPath);
-  naoCommandIRSendData.open(naoCommandIRSendDataPath);
   naoCommandLEDData.open(naoCommandLEDDataPath);
-  whistleSensorData.open("/whistleDetector.count");
-  whistleControlData.open("/whistleDetector.commands");
   // end init shared memory
 
   char hostname[128];
@@ -113,11 +115,10 @@ NaoController::NaoController()
   registerInput<FSRData>(*this);
   registerInput<GyrometerData>(*this);
   registerInput<InertialSensorData>(*this);
-  registerInput<IRReceiveData>(*this);
   registerInput<ButtonData>(*this);
   registerInput<BatteryData>(*this);
   registerInput<UltraSoundReceiveData>(*this);
-  registerInput<WhistlePercept>(*this);
+  registerInput<AudioData>(*this);
   registerInput<CpuData>(*this);
   
   registerInput<GPSData>(*this);
@@ -126,10 +127,8 @@ NaoController::NaoController()
   // register command output
   registerOutput<const MotorJointData>(*this);
   registerOutput<const LEDData>(*this);
-  registerOutput<const IRSendData>(*this);
   registerOutput<const UltraSoundSendData>(*this);
-  registerOutput<const WhistleControl>(*this);
-
+  registerOutput<const AudioControl>(*this);
 
   /*  INIT DEVICES  */
   std::cout << "[NaoController] " << "Init Platform" << endl;
@@ -140,7 +139,7 @@ NaoController::NaoController()
 
   // create the teamcomm
   std::cout << "[NaoController] " << "Init TeamComm" << endl;
-  naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
+  const naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
   string interfaceName = "wlan0";
   if(config.hasKey("teamcomm", "interface"))
   {
@@ -165,14 +164,24 @@ NaoController::NaoController()
   std::cout << "[NaoController] " << "Init SPLGameController"<<endl;
   theGameController = new SPLGameController();
 
-  std::cout << "[NaoController] " << "Init CameraHandler (bottom)" << std::endl;
-  theBottomCameraHandler.init("/dev/video1", CameraInfo::Bottom, true);
-  std::cout << "[NaoController] " << "Init CameraHandler (top)" << std::endl;
-  theTopCameraHandler.init("/dev/video0", CameraInfo::Top, false);
+  // HACK: we are in NAO V6
+  if(lolaAvailable)
+  {
+    std::cout << "[NaoController] " << "Init CameraHandler V6 (bottom)" << std::endl;
+    theBottomCameraHandler.init("/dev/video1", CameraInfo::Bottom, true, true);
+    std::cout << "[NaoController] " << "Init CameraHandler V6 (top)" << std::endl;
+    theTopCameraHandler.init("/dev/video0", CameraInfo::Top, false, true);
+  } else {
+    std::cout << "[NaoController] " << "Init CameraHandler V5 (bottom)" << std::endl;
+    theBottomCameraHandler.init("/dev/video1", CameraInfo::Bottom, true, false);
+    std::cout << "[NaoController] " << "Init CameraHandler V5 (top)" << std::endl;
+    theTopCameraHandler.init("/dev/video0", CameraInfo::Top, false, false);
+  }
 }
 
 NaoController::~NaoController()
 {
+  std::cout << "[NaoController] destruct" << std::endl;
   delete theSoundHandler;
   delete theTeamCommSender;
   delete theTeamCommListener;
