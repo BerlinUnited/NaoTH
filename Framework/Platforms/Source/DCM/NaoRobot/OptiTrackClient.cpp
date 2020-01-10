@@ -53,7 +53,7 @@ GError* OptiTrackClient::bindAndListenMulticast(unsigned int port)
   mreq.imr_interface.s_addr = htonl(INADDR_ANY);
 
   int fd = g_socket_get_fd(socket);
-  std::cout << "file descriptor " << fd << std::endl;
+  std::cout << "[OptiTrackClient] file descriptor " << fd << std::endl;
   if (setsockopt(fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq)) < 0) {
     perror("setsockopt");
     exit(1);
@@ -138,8 +138,7 @@ void OptiTrackClient::handleMessage(const char* data, size_t dataSize)
   
   try {
     cmd = optiTrackParser.parseMessage(msg);
-  }
-  catch (const std::length_error& le) {
+  } catch (const std::length_error& le) {
     std::cout << "[OptiTrackClient] : error in parseMessage " << le.what() << std::endl;
   }
   
