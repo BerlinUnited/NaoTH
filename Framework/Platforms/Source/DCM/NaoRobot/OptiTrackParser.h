@@ -9,6 +9,17 @@
 #include <Tools/Math/Pose3D.h>
 
 #include <Tools/Communication/Network/BroadCaster.h>
+#include <Tools/Debug/NaoTHAssert.h>
+
+// maximally supported version
+#define NETNAT_VERSION_0 3
+#define NETNAT_VERSION_1 1
+#define NETNAT_VERSION_2 0
+#define NETNAT_VERSION_3 0
+
+#define VERSION_NUMBER(v0, v1, v2, v3) (v3 + 100*(v2 + 100*(v1 + 100*v0)))
+#define VALID_NETNAT_VERSION(v) \
+  VERSION_NUMBER(v[0], v[1], v[2], v[3]) <= VERSION_NUMBER(NETNAT_VERSION_0, NETNAT_VERSION_1, NETNAT_VERSION_2, NETNAT_VERSION_3)
 
 class OptiTrackParser
 {
@@ -26,18 +37,19 @@ public:
   static const int NAT_DISCONNECT            = 9;
   static const int NAT_UNRECOGNIZED_REQUEST  = 100;
   
+  
 public:
   OptiTrackParser()
   {
-    // default version in our lab
-    natNetStreamVersion[0] = 2;
-    natNetStreamVersion[1] = 3;
+    // default version in our lab is 3.1.0.0
+    // initialize to an invalide 
+    natNetStreamVersion[0] = 0;
+    natNetStreamVersion[1] = 0;
     natNetStreamVersion[2] = 0;
     natNetStreamVersion[3] = 0;
   }
 
   //~OptiTrackParser();
-
 
   RotationMatrix rotationFromQuaternion(float qx, float qy, float qz, float qw) const
   {
@@ -75,6 +87,21 @@ public:
     ss << '\0';
     return ss.str();
   }
+  
+  std::string requestPing() {
+    std::stringstream ss;
+
+    uint16_t cmd = NAT_PING;
+    ss.write((const char*)&cmd, 2);
+
+    uint16_t packetSize = 0;
+    ss.write((const char*)&packetSize, 2);
+
+    ss.write("Ping", 5);
+    
+    ss << '\0';
+    return ss.str();
+  }
 
   bool parseTrackable(std::stringstream& ss, Pose3D& pose, unsigned int& id)
   {
@@ -84,7 +111,7 @@ public:
     ss.read((char*)&pos.x, 4);
     ss.read((char*)&pos.y, 4);
     ss.read((char*)&pos.z, 4);
-
+    
     // rotation
     float qx, qy, qz, qw;
     ss.read((char*)&qx, 4);
@@ -92,31 +119,34 @@ public:
     ss.read((char*)&qz, 4);
     ss.read((char*)&qw, 4);
 
-    // markers
-    unsigned int markerCount = 0;
-    ss.read((char*)&markerCount, 4);
-        
-    // marker positions
-    for (unsigned int j = 0; j < markerCount; ++j) {
-      Vector3f m;
-      ss.read((char*)&m.x, 4);
-      ss.read((char*)&m.y, 4);
-      ss.read((char*)&m.z, 4);
-      // TODO: do nothing for now
-    }
-        
-    // marker id's
-    for (unsigned int j = 0; j < markerCount; ++j) {
-      unsigned int m_id = 0;
-      ss.read((char*)&m_id, 4);
-      // TODO: do nothing for now
-    }
-        
-    // marker sizes
-    for (unsigned int j = 0; j < markerCount; ++j) {
-      float m_size = 0.0f;
-      ss.read((char*)&m_size, 4);
-      // TODO: do nothing for now
+    // RB Marker Data ( Before version 3.0.  After Version 3.0 Marker data is in description )
+    if(false) 
+    {
+      unsigned int markerCount = 0;
+      ss.read((char*)&markerCount, 4);
+      
+      // marker positions
+      for (unsigned int j = 0; j < markerCount; ++j) {
+        Vector3f m;
+        ss.read((char*)&m.x, 4);
+        ss.read((char*)&m.y, 4);
+        ss.read((char*)&m.z, 4);
+        // TODO: do nothing for now
+      }
+          
+      // marker id's
+      for (unsigned int j = 0; j < markerCount; ++j) {
+        unsigned int m_id = 0;
+        ss.read((char*)&m_id, 4);
+        // TODO: do nothing for now
+      }
+          
+      // marker sizes
+      for (unsigned int j = 0; j < markerCount; ++j) {
+        float m_size = 0.0f;
+        ss.read((char*)&m_size, 4);
+        // TODO: do nothing for now
+      }
     }
         
     float marker_error = 0.0f;
@@ -124,8 +154,8 @@ public:
     //std::cout << "error: " << marker_error << std::endl;
         
     //Version 2.6 and later
-    //unsigned short trackingValid = 0;
-    //ss.read((char*)&trackingValid, 2);
+    unsigned short trackingValid = 0;
+    ss.read((char*)&trackingValid, 2);
         
     // accept only valid transformations
     if( !std::isfinite(pos.x) || !std::isfinite(pos.y) || !std::isfinite(pos.z) ||
@@ -140,10 +170,12 @@ public:
       return false;
     }
 
-    // fill the pose
+    // Hack: fill the pose
     pose.translation.x = -pos.z;
     pose.translation.y = -pos.x;
     pose.translation.z =  pos.y;
+    
+    // converto to mm
     pose.translation *= 1000.0;
 
     // calculate the rotation
@@ -163,6 +195,11 @@ public:
     unsigned short packetSize(0);
     ss.read((char*)&packetSize, 2);
 
+    // NetNat Version is not valid, wait until we geta valid version
+    if(natNetStreamVersion[0] == 0 && messageID != NAT_PINGRESPONSE) {
+      return requestPing();
+    }
+    
     if(messageID == NAT_PINGRESPONSE)
     {
       // Skip the sending app's Name field
@@ -170,7 +207,6 @@ public:
       // Skip the sending app's Version info
       ss.seekg(4, std::ios_base::cur);
 
-      // NOTE: not used yet
       ss.read((char*)&natNetStreamVersion, 4);
 
       std::cout << "[OptiTrackParser] NatNetStreamVersion (" 
@@ -178,6 +214,9 @@ public:
                 << (int)natNetStreamVersion[1] << "," 
                 << (int)natNetStreamVersion[2] << "," 
                 << (int)natNetStreamVersion[3] << ")" << std::endl;
+                
+      // make sure the current parser supports the NetNat Version
+      ASSERT(VALID_NETNAT_VERSION(natNetStreamVersion));
     }
     else if(messageID == NAT_MODELDEF) 
     {
@@ -187,7 +226,8 @@ public:
       unsigned int datasetCount = 0;
       ss.read((char*)&datasetCount, 4);
       
-      for(unsigned int i = 0; i < datasetCount; ++i) {
+      for(unsigned int i = 0; i < datasetCount; ++i) 
+      {
         unsigned int type = 0;
         ss.read((char*)&type, 4);
         
@@ -219,7 +259,30 @@ public:
           // skip the timestamp
           ss.seekg(12, std::ios_base::cur);
           
-          std::cout << "[OptiTrackParser] trackable: " << "(" << id << ") " << name << std::endl;
+          //std::cout << "[OptiTrackParser] trackable: " << "(" << id << ") " << name << std::endl;
+          
+          // Version 3.0 and higher, rigid body marker information contained in description
+          if(true)
+          {
+            unsigned int markerCount = 0;
+            ss.read((char*)&markerCount, 4);
+            
+            // marker markerOffset
+            for (unsigned int j = 0; j < markerCount; ++j) {
+              Vector3f m;
+              ss.read((char*)&m.x, 4);
+              ss.read((char*)&m.y, 4);
+              ss.read((char*)&m.z, 4);
+              // TODO: do nothing for now
+            }
+                
+            // marker activeLabel
+            for (unsigned int j = 0; j < markerCount; ++j) {
+              unsigned int m_id = 0;
+              ss.read((char*)&m_id, 4);
+              // TODO: do nothing for now
+            }
+          }
           
           trackable_names.insert(std::make_pair(id, name));
         } 
@@ -283,7 +346,7 @@ public:
         if(!parseTrackable(ss, pose, id)) {
           continue;
         }
-
+        
         if(!addTrackable(id, pose)) {
           reset();
           return requestDefinitions();
@@ -310,7 +373,7 @@ private:
   bool addTrackable(unsigned int id, const Pose3D& pose) {
     std::map<unsigned int,std::string>::iterator name_it = trackable_names.find(id);
     if(name_it == trackable_names.end()) {
-      std::cout << "[OptiTrackParser] Unknown id: " << id << std::endl;
+      std::cout << "[OptiTrackParser] Unknown trackable id: " << id << std::endl;
       return false;
     }
 
