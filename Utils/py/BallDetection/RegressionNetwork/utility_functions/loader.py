@@ -111,7 +111,9 @@ def load_images(path, res):
 
 def load_image_from_csv(path, db_balls, db_noballs, res):
     print("Loading images from " + path + "...")
-
+    real_balls = 0
+    real_no_balls = 0
+    
     # parse csv file
     with open(path, newline='') as csvfile:
         reader = csv.DictReader(csvfile)
@@ -155,6 +157,7 @@ def load_image_from_csv(path, db_balls, db_noballs, res):
                         radius = radius / max(res["x"], res["y"])
 
                         is_ball = True
+                        real_balls += 1
                     else:
                         # we only support circles
                         continue
@@ -167,6 +170,7 @@ def load_image_from_csv(path, db_balls, db_noballs, res):
                 radius = 0.0
                 x = 0
                 y = 0
+                real_no_balls += 1
 
             # for each row add the image and the prediction
             if is_ball:
@@ -199,19 +203,22 @@ def load_image_from_csv(path, db_balls, db_noballs, res):
                         db_balls.append((adjust_gamma(img, g).astype(float) / 255.0, y, p))
                     else:
                         db_noballs.append((adjust_gamma(img, g).astype(float) / 255.0, y, p))
+    return [real_balls, real_no_balls]
 
 
 def load_images_from_csv_files(root_path, res, limit_noballs):
     print("Looking for csv files in: ", root_path)
     db_balls = []
     db_noballs = []
-
+    real_images = [0, 0]
     # find csv files
     all_paths = list(Path(root_path).absolute().glob('**/*.csv'))
     print(all_paths)
 
     for path in all_paths:
-        load_image_from_csv(str(path), db_balls, db_noballs, res)
+        next = load_image_from_csv(str(path), db_balls, db_noballs, res)
+        real_images[0] += next[0]
+        real_images[1] += next[1]
 
     if limit_noballs is True and len(db_balls) < len(db_noballs):
         db_noballs = np.random.choice(db_noballs, len(db_balls))
@@ -228,7 +235,7 @@ def load_images_from_csv_files(root_path, res, limit_noballs):
     print("Loading finished")
     print("images: " + str(len(x)) + " balls: " + str(len(db_balls)) +
           " no balls: " + str(len(db_noballs)))
-    return x, y, mean, p
+    return x, y, mean, p, real_images
 
 
 if __name__ == "__main__":

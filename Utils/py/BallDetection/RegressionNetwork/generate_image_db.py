@@ -43,10 +43,11 @@ if __name__ == '__main__':
 
     # TODO kann das besser gemacht werden? Auch wenn load images fehlschlägt wird die datei angelegt
     with open(imgdb_path, "wb") as f:
-        x, y, mean, p = load_images_from_csv_files(img_path, res, args.limit_noball)
+        x, y, mean, p, real_images = load_images_from_csv_files(img_path, res, args.limit_noball)
 
         # save image db
         pickle.dump(mean, f)
         pickle.dump(x, f)
         pickle.dump(y, f)
         pickle.dump(p, f)
+        pickle.dump(real_images, f)

@@ -34,10 +34,20 @@ with open(imgdb_path, "rb") as f:
     mb = pickle.load(f)
     x = pickle.load(f)
     y = pickle.load(f)
+    p = pickle.load(f)
+    real_images = pickle.load(f)
 
 ball = np.count_nonzero(y[:, 0])
 noball = len(x) - ball
+# calculate balls with center outside the image:
+outside = 0
+for i in range(len(y)):
+    if(y[i][3] != 0):
+        if(y[i][1] < 0 or y[i][1] > 1 or y[i][2] < 0 or y[i][2] > 1):
+            outside += 1
 
 print("images: {}".format(len(x)))
 print("ball: {} / noball: {}".format(ball, noball))
+print("balls outside of the patch: {}".format(outside))
+print("real balls: {} / real noballs: {}".format(real_images[0], real_images[1]))
 print("mean brightness: {}".format(mb))
