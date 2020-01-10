@@ -47,6 +47,9 @@ class NatNetClient:
         # Set this to a callback method of your choice to receive per-rigid-body data at each frame.
         self.rigidBodyListener = None
 
+        # Set this to a callback method of your choice to receive per-marker-body data ata each frame.
+        self.unlabeledMarkersListener = None
+
         # NatNet stream version. This will be updated to the actual version the server is using during initialization.
         self.__natNetStreamVersion = (3,0,0,0)
 
@@ -201,10 +204,16 @@ class NatNetClient:
         offset += 4
         trace( "Unlabeled Markers Count:", unlabeledMarkersCount )
 
+        unlabeledMarkers = []
         for i in range( 0, unlabeledMarkersCount ):
             pos = Vector3.unpack( data[offset:offset+12] )
             offset += 12
             trace( "\tMarker", i, ":", pos[0],",", pos[1],",", pos[2] )
+            unlabeledMarkers.append(pos)
+
+        # Send information to any listener.
+        if self.unlabeledMarkersListener is not None:
+            self.unlabeledMarkersListener( unlabeledMarkers )
 
         # Rigid body count (4 bytes)
         rigidBodyCount = int.from_bytes( data[offset:offset+4], byteorder='little' )
