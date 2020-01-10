@@ -28,9 +28,10 @@ for activation_function in function_list:
     new_model = tf.keras.Sequential()
     for index, layer in enumerate(test_model.layers):
         if "activation" in layer.name:
-            if(activation_function in custom_keras_activations):
+            if activation_function in custom_keras_activations:
                 new_model.add(
-                    tf.keras.layers.Activation(custom_keras_activations[activation_function], name=layer.name + "_" + activation_function))
+                    tf.keras.layers.Activation(custom_keras_activations[activation_function],
+                                               name=layer.name + "_" + activation_function))
             else:
                 new_model.add(
                     tf.keras.layers.Activation(activation_function, name=layer.name + "_" + activation_function))
