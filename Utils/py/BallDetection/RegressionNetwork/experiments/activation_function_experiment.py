@@ -1,6 +1,8 @@
-from model_zoo import model1
-from model_zoo import swish, mish
-from model_zoo import custom_keras_activations
+"""
+    iteratively set the activation functions of a model to one each function in the list and run the trainings
+     procedure multiple times and compare the best run with each other
+"""
+from model_zoo import *
 import tensorflow as tf
 
 from experiments.rerun_training_and_compare import start_training
