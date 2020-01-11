@@ -46,5 +46,8 @@ for i in range(len(y)):
 print("images: {}".format(len(x)))
 print("ball: {} / noball: {}".format(ball, noball))
 print("balls outside of the patch: {}".format(outside))
-print("real balls: {} / real noballs: {}".format(real_images[0], real_images[1]))
+print("real balls: {0} ({1:.2f}%) / real noballs: {2} ({3:.2f}%)".format(real_images[0],
+                                                                         (real_images[0] / ball) * 100,
+                                                                         real_images[1],
+                                                                         (real_images[1] / noball) * 100))
 print("mean brightness: {}".format(mb))
