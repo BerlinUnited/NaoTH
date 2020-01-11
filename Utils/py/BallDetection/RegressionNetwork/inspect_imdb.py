@@ -2,9 +2,6 @@
 
 import argparse
 import pickle
-from tensorflow.keras.models import *
-from tensorflow.keras.layers import *
-from datetime import datetime
 import numpy as np
 
 
@@ -42,8 +39,8 @@ noball = len(x) - ball
 # calculate balls with center outside the image:
 outside = 0
 for i in range(len(y)):
-    if(y[i][3] != 0):
-        if(y[i][1] < 0 or y[i][1] > 1 or y[i][2] < 0 or y[i][2] > 1):
+    if y[i][3] != 0:
+        if y[i][1] < 0 or y[i][1] > 1 or y[i][2] < 0 or y[i][2] > 1:
             outside += 1
 
 print("images: {}".format(len(x)))
