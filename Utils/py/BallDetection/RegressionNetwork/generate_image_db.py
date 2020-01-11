@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
     # set default values for output path, input path and resolution
     imgdb_path = "img.db"
-    img_path = "data/TK-03/bottom_camera/"  # TODO rename
+    img_path = "data/TK-03/"  # TODO rename
     res = {"x": 16, "y": 16}
 
     if args.imgdb_path is not None:

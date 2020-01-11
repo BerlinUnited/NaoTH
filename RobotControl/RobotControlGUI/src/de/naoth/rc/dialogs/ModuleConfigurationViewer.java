@@ -19,7 +19,6 @@ import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.dataformats.ModuleConfiguration;
 import de.naoth.rc.dataformats.ModuleConfiguration.Node;
-import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.manager.ModuleConfigurationManager;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
@@ -228,7 +227,9 @@ public class ModuleConfigurationViewer extends AbstractDialog
         jToolBar1.add(cbRepresentations);
 
         jSplitPane1.setDividerLocation(600);
+        jSplitPane1.setDividerSize(10);
         jSplitPane1.setResizeWeight(1.0);
+        jSplitPane1.setOneTouchExpandable(true);
         jSplitPane1.setLeftComponent(modulePanel);
 
         jSplitPane2.setDividerLocation(300);
