@@ -26,6 +26,7 @@ def start_training(test_model, num_runs=30, num_epochs=100):
 if __name__ == '__main__':
     num_runs = 30
     num_epochs = 100
+    # TODO make it possible to run all models in modelzoo automatically
     test_model = model_zoo.fy_1500()
 
     start_training(test_model, num_runs, num_epochs)
