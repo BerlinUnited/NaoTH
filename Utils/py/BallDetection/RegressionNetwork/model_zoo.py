@@ -1,21 +1,6 @@
-import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Convolution2D, LeakyReLU, MaxPooling2D, Flatten, Dense, ReLU, \
     PReLU, Softmax
-
-from tensorflow.keras import backend as K
-
-
-# Custom activation functions:
-def swish(x):
-    return x / (1 + K.exp(-x))
-
-
-def mish(x):
-    return x * K.tanh(K.softplus(x))
-
-
-custom_keras_activations = {'swish': swish, 'mish': mish}
 
 
 # TODO maybe rewrite every model with functional api for more flexibility

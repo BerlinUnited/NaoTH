@@ -2,6 +2,7 @@
     iteratively set the activation functions of a model to one each function in the list and run the trainings
      procedure multiple times and compare the best run with each other
 """
+from activation_functions import *
 from model_zoo import *
 import tensorflow as tf
 
