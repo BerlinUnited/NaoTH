@@ -17,6 +17,7 @@
 import socket
 import struct
 from threading import Thread
+import select
 
 def trace( *args ):
     pass # print( "".join(map(str,args)) )
@@ -52,6 +53,8 @@ class NatNetClient:
 
         # NatNet stream version. This will be updated to the actual version the server is using during initialization.
         self.__natNetStreamVersion = (3,0,0,0)
+
+        self.__running = True
 
     # Client/server message ids
     NAT_PING                  = 0
@@ -433,11 +436,14 @@ class NatNetClient:
                 offset += self.__unpackSkeletonDescription( data[offset:] )
 
     def __dataThreadFunction( self, socket ):
-        while True:
-            # Block for input
-            data, addr = socket.recvfrom( 32768 ) # 32k byte buffer size
-            if( len( data ) > 0 ):
-                self.__processMessage( data )
+        while self.__running:
+            ready = select.select([socket], [], [], 2)
+            if ready[0]:
+                # Block for input
+                data, addr = socket.recvfrom( 32768 ) # 32k byte buffer size
+                if( len( data ) > 0 ):
+                    self.__processMessage( data )
+        print("exit thread")
 
     def __processMessage( self, data ):
         trace( "Begin Packet\n------------\n" )
@@ -518,3 +524,6 @@ class NatNetClient:
         commandThread.start()
 
         self.sendCommand( self.NAT_REQUEST_MODELDEF, "", self.commandSocket, (self.serverIPAddress, self.commandPort) )
+
+    def stop( self ):
+        self.__running = False
