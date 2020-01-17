@@ -27,6 +27,8 @@ public class CheckboxTreeCellRenderer implements TreeCellRenderer
         SelectableTreeNode n = (SelectableTreeNode) value;
         JCheckBox cb = n.getComponent();
         cb.setBackground(tree.getBackground());
+        // HACK: all boxes have the same color (even diabled ones)
+        cb.setForeground(tree.getForeground());
         return cb;
       }
     }

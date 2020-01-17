@@ -121,7 +121,6 @@ public class ImageViewer extends AbstractDialog
         btReceiveDrawings = new javax.swing.JToggleButton();
         btRAW = new javax.swing.JToggleButton();
         cbStretch = new javax.swing.JCheckBox();
-        cbPreserveAspectRatio = new javax.swing.JCheckBox();
         cbFadeOut = new javax.swing.JCheckBox();
         btHorizontal = new javax.swing.JCheckBox();
         jPanel1 = new javax.swing.JPanel();
@@ -224,18 +223,6 @@ public class ImageViewer extends AbstractDialog
         });
         jToolBar1.add(cbStretch);
 
-        cbPreserveAspectRatio.setSelected(true);
-        cbPreserveAspectRatio.setText("keep aspect ratio");
-        cbPreserveAspectRatio.setFocusable(false);
-        cbPreserveAspectRatio.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
-        cbPreserveAspectRatio.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        cbPreserveAspectRatio.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbPreserveAspectRatioActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(cbPreserveAspectRatio);
-
         cbFadeOut.setText("Fade Out");
         cbFadeOut.setToolTipText("Fades out the image so the drawings can be seen better.");
         cbFadeOut.setFocusable(false);
@@ -307,11 +294,6 @@ public class ImageViewer extends AbstractDialog
     }
 
   }//GEN-LAST:event_btReceiveImagesTopActionPerformed
-
-  private void cbPreserveAspectRatioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbPreserveAspectRatioActionPerformed
-    this.imageCanvasBottom.setKeepAspectRatio(this.cbPreserveAspectRatio.isSelected());
-    this.imageCanvasTop.setKeepAspectRatio(this.cbPreserveAspectRatio.isSelected());
-  }//GEN-LAST:event_cbPreserveAspectRatioActionPerformed
 
   private void cbStretchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbStretchActionPerformed
     this.imageCanvasBottom.setStretchImage(this.cbStretch.isSelected());
@@ -389,7 +371,6 @@ public class ImageViewer extends AbstractDialog
     private javax.swing.JToggleButton btReceiveImagesBottom;
     private javax.swing.JToggleButton btReceiveImagesTop;
     private javax.swing.JCheckBox cbFadeOut;
-    private javax.swing.JCheckBox cbPreserveAspectRatio;
     private javax.swing.JCheckBox cbStretch;
     private de.naoth.rc.components.ImagePanel imageCanvasBottom;
     private de.naoth.rc.components.ImagePanel imageCanvasTop;

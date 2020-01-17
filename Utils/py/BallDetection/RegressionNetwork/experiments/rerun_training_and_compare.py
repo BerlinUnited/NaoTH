@@ -3,7 +3,7 @@
 """
 import pickle
 from pathlib import Path
-
+from inspect import getmembers, isfunction
 import model_zoo
 from train import main
 
@@ -26,6 +26,12 @@ def start_training(test_model, num_runs=30, num_epochs=100):
 if __name__ == '__main__':
     num_runs = 30
     num_epochs = 100
-    test_model = model_zoo.fy_1500()
 
-    start_training(test_model, num_runs, num_epochs)
+    # this code assumes only model functions are in model zoo
+    model_list = getmembers(model_zoo, isfunction)
+    for model in model_list:
+        print("Train on model: ", model[0])
+        # call the model function from model zoo
+        current_model = model[1]()
+
+        start_training(current_model, num_runs, num_epochs)
