@@ -92,6 +92,10 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
       EdgelD edgel;
       edgel.point = Vector2d(edgelLeft + edgelRight)*0.5;
       edgel.direction = (edgelRight - edgelLeft).normalize();
+      // make edgel direction all point upwards
+      if(edgel.direction.x < 0) {
+        edgel.direction *= -1;
+      }
 
       graph.back().push_back(edgel);
     }
@@ -111,7 +115,10 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
     Edgel edgel;
     edgel.point = Vector2d(edgelLeft + edgelRight)*0.5;
     edgel.direction = (edgelRight - edgelLeft).normalize(); // is it correct?
-
+    // make edgel direction all point upwards
+    if(edgel.direction.x < 0) {
+      edgel.direction *= -1;
+    }
     //const ScanLineEdgelPercept::EdgelPair& el = getScanLineEdgelPercept().pairs[edgelPair.left];
     //const ScanLineEdgelPercept::EdgelPair& er = getScanLineEdgelPercept().pairs[edgelPair.right];
 
@@ -404,7 +411,9 @@ void LineGraphProvider::calculatePairsAndNeigbors(
   {
     const ScanLineEdgelPercept::EdgelPair& edgelOne = edgels[i];
 
-    if(getScanLineEdgelPercept().endPoints[edgelOne.id].posInImage.y > edgelOne.point.y) {
+    if(!getScanLineEdgelPercept().endPoints.empty() &&
+       getScanLineEdgelPercept().endPoints[edgelOne.id].posInImage.y > edgelOne.point.y)
+    {
       continue;
     }
     
@@ -415,7 +424,9 @@ void LineGraphProvider::calculatePairsAndNeigbors(
     {
       const ScanLineEdgelPercept::EdgelPair& edgelTwo = edgels[j];
 
-      if(getScanLineEdgelPercept().endPoints[edgelTwo.id].posInImage.y > edgelTwo.point.y) {
+      if(!getScanLineEdgelPercept().endPoints.empty() &&
+         getScanLineEdgelPercept().endPoints[edgelTwo.id].posInImage.y > edgelTwo.point.y)
+      {
         continue;
       }
 
