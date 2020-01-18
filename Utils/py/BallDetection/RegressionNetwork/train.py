@@ -49,7 +49,7 @@ def main(raw_args=None, model=None):
     parser = argparse.ArgumentParser(description='Train the network given')
 
     parser.add_argument('-b', '--database-path', dest='imgdb_path', default="imgdb.pkl",
-                        help='Path to the image database to use for training. Default is img.db in current folder.')
+                        help='Path to the image database to use for training. Default is imgdb.pkl in current folder.')
     parser.add_argument("--log", dest="log", default="./logs/", help="Tensorboard log location.")
     parser.add_argument("--output", dest="output", default="./", help="Folder where the trained models are saved")
 
