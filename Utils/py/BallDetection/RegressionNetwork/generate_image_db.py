@@ -30,7 +30,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # set default values for output path, input path and resolution
-    imgdb_path = "img.db"
+    imgdb_path = "imgdb.pkl"
     img_path = "data/TK-03/"
     res = {"x": 16, "y": 16}
 
