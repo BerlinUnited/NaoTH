@@ -1,4 +1,6 @@
-#!/usr/bin/python
+"""
+    expects a logfile that was recorded with the logfile recorder module from robotcontrol
+"""
 import math
 import sys
 from argparse import ArgumentParser
@@ -27,6 +29,9 @@ def get_demo_logfiles():
 
 
 def get_x_angle(m):
+    """
+    Returns: return h ? math.acos(c[2].z / h) * (c[2].y > 0 ? -1 : 1) : 0;
+    """
     c = m.rotation
     h = math.sqrt(c[2].y * c[2].y + c[2].z * c[2].z)
 
@@ -37,10 +42,13 @@ def get_x_angle(m):
             return math.acos(c[2].z / h) * 1
     else:
         return 0
-    # return h ? math.acos(c[2].z / h) * (c[2].y > 0 ? -1 : 1) : 0;
+    #
 
 
 def get_y_angle(m):
+    """
+    Returns: h ? math.acos(c[0].x / h) * (c[0].z > 0 ? -1 : 1) : 0;
+    """
     c = m.rotation
     h = math.sqrt(c[0].x * c[0].x + c[0].z * c[0].z)
 
@@ -51,8 +59,6 @@ def get_y_angle(m):
             return math.acos(c[0].x / h) * 1
     else:
         return 0
-
-    # return h ? math.acos(c[0].x / h) * (c[0].z > 0 ? -1 : 1) : 0;
 
 
 def image_from_proto(message):
@@ -89,12 +95,27 @@ def get_images(frame):
             image_from_proto(image_top), cm_bottom, cm_top]
 
 
-def save_image_to_png(j, img, cm, target_dir):
-    pitch = get_y_angle(cm.pose)
-    roll = get_x_angle(cm.pose)
+def save_image_to_png(j, img, cm, target_dir, cam_id, name):
     meta = PngImagePlugin.PngInfo()
-    meta.add_text("pitch", str(pitch))
-    meta.add_text("roll", str(roll))
+    meta.add_text("Message", "rotation maxtrix is saved column wise")
+    meta.add_text("logfile", str(name))
+    meta.add_text("CameraID", str(cam_id))
+
+    meta.add_text("t_x", str(cm.pose.translation.x))
+    meta.add_text("t_y", str(cm.pose.translation.y))
+    meta.add_text("t_z", str(cm.pose.translation.z))
+
+    meta.add_text("r_11", str(cm.pose.rotation[0].x))
+    meta.add_text("r_21", str(cm.pose.rotation[0].y))
+    meta.add_text("r_31", str(cm.pose.rotation[0].z))
+
+    meta.add_text("r_12", str(cm.pose.rotation[1].x))
+    meta.add_text("r_22", str(cm.pose.rotation[1].y))
+    meta.add_text("r_32", str(cm.pose.rotation[1].z))
+
+    meta.add_text("r_13", str(cm.pose.rotation[2].x))
+    meta.add_text("r_23", str(cm.pose.rotation[2].y))
+    meta.add_text("r_33", str(cm.pose.rotation[2].z))
 
     filename = target_dir / (str(j) + ".png")
     img.save(filename, pnginfo=meta)
@@ -106,7 +127,7 @@ if __name__ == "__main__":
     parser = ArgumentParser(
         description='script to display or export images from log files')
     parser.add_argument("-i", "--input", help='logfile, containing the images', default="logs/rc17_ball_far.log")
-    parser.add_argument("-t", "--task", choices=['show', 'export'], default="show",
+    parser.add_argument("-t", "--task", choices=['show', 'export'], default="export",
                         help='either show or export')
     parser.add_argument("-o", "--output", type=str, default=".", help='output folder')
 
@@ -134,8 +155,8 @@ if __name__ == "__main__":
                 output_folder_top.mkdir(exist_ok=True)
                 output_folder_bottom.mkdir(exist_ok=True)
 
-                save_image_to_png(i, imgB, cmB, output_folder_bottom)
-                save_image_to_png(i, imgT, cmT, output_folder_top)
+                save_image_to_png(i, imgB, cmB, output_folder_bottom, cam_id=1, name=args.input)
+                save_image_to_png(i, imgT, cmT, output_folder_top, cam_id=0, name=args.input)
 
                 print("saving images from frame ", i)
         else:
