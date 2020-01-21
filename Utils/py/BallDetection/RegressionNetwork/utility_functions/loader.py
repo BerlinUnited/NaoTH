@@ -110,14 +110,13 @@ def load_images(path, res):
 
 
 def load_image_from_csv(path, db_balls, db_noballs, res):
-    print("Loading images from " + path + "...")
+    print("Loading images from " + path + " ...")
     real_balls = 0
     real_no_balls = 0
     
     # parse csv file
     with open(path, newline='') as csvfile:
         reader = csv.DictReader(csvfile)
-        next(reader)
         for row in reader:
             f = os.path.join(os.path.dirname(path), row["filename"])
             p = row["filename"]
