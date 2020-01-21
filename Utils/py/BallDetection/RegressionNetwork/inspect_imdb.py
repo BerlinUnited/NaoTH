@@ -22,7 +22,7 @@ parser.add_argument('-b', '--database-path', dest='imgdb_path',
 
 args = parser.parse_args()
 
-imgdb_path = "img.db"
+imgdb_path = "imgdb.pkl"
 
 if args.imgdb_path is not None:
     imgdb_path = args.imgdb_path
