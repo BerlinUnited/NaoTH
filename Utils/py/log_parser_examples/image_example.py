@@ -27,6 +27,9 @@ def get_demo_logfiles():
 
 
 def get_x_angle(m):
+    """
+    Returns: return h ? math.acos(c[2].z / h) * (c[2].y > 0 ? -1 : 1) : 0;
+    """
     c = m.rotation
     h = math.sqrt(c[2].y * c[2].y + c[2].z * c[2].z)
 
@@ -37,10 +40,13 @@ def get_x_angle(m):
             return math.acos(c[2].z / h) * 1
     else:
         return 0
-    # return h ? math.acos(c[2].z / h) * (c[2].y > 0 ? -1 : 1) : 0;
+    #
 
 
 def get_y_angle(m):
+    """
+    Returns: h ? math.acos(c[0].x / h) * (c[0].z > 0 ? -1 : 1) : 0;
+    """
     c = m.rotation
     h = math.sqrt(c[0].x * c[0].x + c[0].z * c[0].z)
 
@@ -51,8 +57,6 @@ def get_y_angle(m):
             return math.acos(c[0].x / h) * 1
     else:
         return 0
-
-    # return h ? math.acos(c[0].x / h) * (c[0].z > 0 ? -1 : 1) : 0;
 
 
 def image_from_proto(message):
@@ -91,6 +95,7 @@ def get_images(frame):
 
 def save_image_to_png(j, img, cm, target_dir, cam_id, name):
     meta = PngImagePlugin.PngInfo()
+    meta.add_text("Message", "rotation maxtrix is saved column wise")
     meta.add_text("logfile", str(name))
     meta.add_text("CameraID", str(cam_id))
 
