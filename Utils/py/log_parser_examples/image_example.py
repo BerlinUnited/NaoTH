@@ -1,4 +1,6 @@
-#!/usr/bin/python
+"""
+    expects a logfile that was recorded with the logfile recorder module from robotcontrol
+"""
 import math
 import sys
 from argparse import ArgumentParser
