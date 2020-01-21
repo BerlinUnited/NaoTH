@@ -20,13 +20,19 @@
 // representations
 #include <Representations/Infrastructure/RobotInfo.h>
 #include "Representations/Motion/Request/MotionRequest.h"
+#include "Representations/Motion/MotionStatus.h"
 #include <Representations/Infrastructure/JointData.h>
+
+// a small hack, keyframe parameters are stored here
+#include "Representations/Motion/Walk2018/Walk2018Parameters.h"
 
 BEGIN_DECLARE_MODULE(KeyFrameMotion)
   REQUIRE(RobotInfo)
   REQUIRE(SensorJointData)
   REQUIRE(MotionRequest)
-  
+  REQUIRE(Walk2018Parameters)
+
+  PROVIDE(MotionStatus)
   PROVIDE(MotionLock)
   PROVIDE(MotorJointData)
 END_DECLARE_MODULE(KeyFrameMotion)
@@ -40,7 +46,7 @@ private:
   MotionNet::KeyFrame currentKeyFrame;
   MotionNet::Transition currentTransition;
 
-  
+
   /** remaining time till next frame */
   double t;
 
@@ -52,6 +58,7 @@ private:
 public:
 
   double stiffness;
+  bool stiffnessIsReady;
 
   KeyFrameMotion(const MotionNet& currentMotionNet, motion::MotionID id);
   KeyFrameMotion();
@@ -74,12 +81,12 @@ public:
   virtual void init();
 
   void execute();
-  
+
   void print(std::ostream& stream) const;
 
   void set(MotionNet& motionNet){currentMotionNet = motionNet;}
   MotionNet getCurrentMotionNet(){return currentMotionNet;}
-  
+
 };
 
 #endif // _KeyFrameMotion_h_

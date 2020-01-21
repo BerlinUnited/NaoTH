@@ -31,9 +31,11 @@ import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.drawings.Circle;
 import de.naoth.rc.drawings.FieldDrawingSPL3x4;
+import de.naoth.rc.drawings.FieldDrawingSPLAspen;
 import de.naoth.rc.drawings.FillOval;
 import de.naoth.rc.drawings.Line;
 import de.naoth.rc.drawings.Pen;
+import de.naoth.rc.drawings.Robot;
 import de.naoth.rc.logmanager.BlackBoard;
 import de.naoth.rc.logmanager.LogDataFrame;
 import de.naoth.rc.logmanager.LogFileEventManager;
@@ -42,13 +44,21 @@ import de.naoth.rc.manager.DebugDrawingManagerMotion;
 import de.naoth.rc.manager.PlotDataManager;
 import de.naoth.rc.math.Matrix3D;
 import de.naoth.rc.math.Pose2D;
+import de.naoth.rc.math.Pose3D;
 import de.naoth.rc.math.Vector2D;
 import de.naoth.rc.math.Vector3D;
+import de.naoth.rc.messages.CommonTypes;
 import de.naoth.rc.messages.CommonTypes.DoubleVector3;
+import de.naoth.rc.messages.CommonTypes.IntVector2;
+import de.naoth.rc.messages.CommonTypes.LineSegment;
 import de.naoth.rc.messages.FrameworkRepresentations.RobotInfo;
 import de.naoth.rc.messages.Messages.PlotItem;
 import de.naoth.rc.messages.Messages.Plots;
 import de.naoth.rc.messages.Representations;
+import de.naoth.rc.messages.Representations.MultiBallPercept;
+import de.naoth.rc.messages.Representations.RansacCirclePercept2018;
+import de.naoth.rc.messages.Representations.RansacLinePercept;
+import de.naoth.rc.messages.Representations.ShortLinePercept;
 import de.naoth.rc.messages.TeamMessageOuterClass;
 import de.naoth.rc.messages.TeamMessageOuterClass.TeamMessage;
 import java.awt.Color;
@@ -56,21 +66,20 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -85,7 +94,7 @@ import org.freehep.util.export.ExportDialog;
  *
  * @author  Heinrich Mellmann
  */
-public class FieldViewer extends AbstractDialog implements ActionListener
+public class FieldViewer extends AbstractDialog
 {
 
     @RCDialog(category = RCDialog.Category.View, name = "Field")
@@ -108,9 +117,8 @@ public class FieldViewer extends AbstractDialog implements ActionListener
         public static LogFileEventManager logFileEventManager;
     }//end Plugin
 
-  private final Timer drawingTimer;
   // drawing buffer for concurrent access; every "source" gets its own "buffer"
-  private ConcurrentHashMap<Class<?>, Drawable> drawingBuffers = new ConcurrentHashMap<>();
+  private final MultiSourceDrawingCollection drawings = new MultiSourceDrawingCollection();
 
   private final PlotDataListener plotDataListener;
   private final StrokePlot strokePlot;
@@ -144,6 +152,7 @@ public class FieldViewer extends AbstractDialog implements ActionListener
             new FieldDrawingSPL2012(),
             new FieldDrawingS3D2011(),
             new FieldDrawingNaoTHLabor(),
+            new FieldDrawingSPLAspen(),
             new FieldDrawingSPL3x4(),
             new LocalFieldDrawing(),
             new RadarDrawing(),
@@ -158,11 +167,13 @@ public class FieldViewer extends AbstractDialog implements ActionListener
     this.fieldCanvas.setBackgroundDrawing((Drawable)this.cbBackground.getSelectedItem());
     this.fieldCanvas.setToolTipText("");
     this.fieldCanvas.setFitToViewport(this.btFitToView.isSelected());
+    this.fieldCanvas.addDrawing(drawings);
+    
     canvasExport = this.fieldCanvas;
     
     Plugin.drawingEventManager.addListener((Drawable drawing, Object src) -> {
         // add drawing of the source to the drawing buffer
-        drawingBuffers.put(src.getClass(), drawing);
+        drawings.add(src.getClass(), drawing);
     });
     
     // intialize the field
@@ -183,8 +194,8 @@ public class FieldViewer extends AbstractDialog implements ActionListener
 
     this.strokePlot = new StrokePlot(300);
     // schedules canvas drawing at a fixed rate, should prevent "flickering"
-    this.drawingTimer = new Timer(300, this);
-    this.drawingTimer.start();
+    //this.drawingTimer = new Timer(300, this);
+    //this.drawingTimer.start();
     // remember the location of the mouse
     jPopupMenu.addPopupMenuListener(new PopupMenuListener() {
         @Override
@@ -531,11 +542,13 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
   final void resetView()
   {
     this.fieldCanvas.getDrawingList().clear();
+    
+    this.drawings.clear();
+    this.fieldCanvas.addDrawing(drawings);
+    
     if(btTrace.isSelected()) {
         this.fieldCanvas.getDrawingList().add(this.strokePlot);
     }
-    
-    drawingBuffers.clear();
   }//end resetView
 
   private void exportCanvasToPNG() {
@@ -569,7 +582,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         }
         
         // add received drawings to buffer
-        drawingBuffers.put(this.getClass(), drawingCollection);
+        drawings.add(this.getClass(), drawingCollection);
 
         if(cbExportOnDrawing.isSelected()) {
             SwingUtilities.invokeLater(new Runnable() {
@@ -592,21 +605,58 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
   
   class LogFrameDrawer implements LogFrameListener
   {
+      
+        Pose2D robotPose = null;
+        Pose3D cmBottom = null;
+        Pose3D cmTop = null;
+        final double f = (0.5*640.0) / Math.tan(0.5 * 60.9/180.0*Math.PI);
+        
+        private void readCameraMatrix(BlackBoard b) 
+        {
+            cmBottom = null;
+            cmTop = null;
+            
+            try {
+                Representations.CameraMatrix cm = Representations.CameraMatrix.parseFrom(b.get("CameraMatrix").getData());
+                Representations.CameraMatrix cmt = Representations.CameraMatrix.parseFrom(b.get("CameraMatrixTop").getData());
+
+                cmBottom = new Pose3D(
+                    toVector(cm.getPose().getTranslation()),
+                    new Matrix3D(
+                        toVector(cm.getPose().getRotation(0)),
+                        toVector(cm.getPose().getRotation(1)),
+                        toVector(cm.getPose().getRotation(2)))
+                );
+
+                cmTop = new Pose3D(
+                    toVector(cmt.getPose().getTranslation()),
+                    new Matrix3D(
+                        toVector(cmt.getPose().getRotation(0)),
+                        toVector(cmt.getPose().getRotation(1)),
+                        toVector(cmt.getPose().getRotation(2)))
+                );
+                
+            } catch(InvalidProtocolBufferException ex) {
+                ex.printStackTrace(System.err);
+            }      
+        }
+        
         private void drawTeamMessages(BlackBoard b, DrawingCollection dc)
         {   
             Optional<String> ownBodyID = getOwnBodyID(b);
-            
-            Pose2D robotPose = null;
             
             LogDataFrame teamMessageFrame = b.get("TeamMessage");
             if(teamMessageFrame != null)
             {
                 try {
                     TeamMessage teamMessage = TeamMessage.parseFrom(teamMessageFrame.getData());
-                    for(int i=0; i < teamMessage.getDataCount(); i++) {
+                    for(int i=0; i < teamMessage.getDataCount(); i++) 
+                    {
                        TeamMessage.Data robotMsg = teamMessage.getData(i);
                         
                        SPLMessage splMsg = SPLMessage.parseFrom(robotMsg);
+                       
+                       splMsg.ballAge /= 1000.0; // the ballAge in the log files is in milliseconds
                        
                        if((splMsg.user.hasIsPenalized() && !splMsg.user.getIsPenalized()) || (splMsg.user.hasRobotState() && splMsg.user.getRobotState() != TeamMessageOuterClass.RobotState.penalized)) {
                             boolean isOwnMsg = false;
@@ -627,30 +677,56 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
                 }
             }
             
-            drawScanEdgelPercept(robotPose, b.get("GoalPercept"), b.get("ScanLineEdgelPercept"), b.get("CameraMatrix"), dc, Color.red);
-            drawScanEdgelPercept(robotPose, b.get("GoalPerceptTop"), b.get("ScanLineEdgelPerceptTop"), b.get("CameraMatrixTop"), dc, Color.blue);
+            drawScanEdgelPercept(robotPose, b.get("GoalPercept"), b.get("ScanLineEdgelPercept"), cmBottom, dc, Color.red);
+            drawScanEdgelPercept(robotPose, b.get("GoalPerceptTop"), b.get("ScanLineEdgelPerceptTop"), cmTop, dc, Color.blue);
         }
         
-        
-        private void drawScanEdgelPercept(Pose2D robotPose, LogDataFrame goalPerceptFrame, LogDataFrame scanLineFrame, LogDataFrame cameraMatrixFrame, DrawingCollection dc, Color c) 
+        private void drawFieldPercept(BlackBoard b, DrawingCollection dc) 
         {
-            if (scanLineFrame == null || cameraMatrixFrame == null) {
+            Color green = new Color(217, 255, 25);
+            if(b.has("FieldPercept")) { drawFieldPercept(robotPose, b.get("FieldPercept"), cmBottom, dc, green); }
+            if(b.has("FieldPerceptTop")) { drawFieldPercept(robotPose, b.get("FieldPerceptTop"), cmTop, dc, green); }
+        }
+        
+        private void drawFieldPercept(Pose2D robotPose, LogDataFrame fieldPercept, Pose3D cameraMatrix, DrawingCollection dc, Color c) {
+            try {
+                Representations.FieldPercept fp = Representations.FieldPercept.parseFrom(fieldPercept.getData());
+                
+                List<Vector2D> fieldPoly = new ArrayList<>(fp.getFieldPoly().getPointsCount());
+                for(IntVector2 polyPoint : fp.getFieldPoly().getPointsList()) {
+                    Vector2D point = new Vector2D(polyPoint.getX(), polyPoint.getY());
+                    Vector2D fieldPoint = project(cameraMatrix, f, point);                    
+                    if(robotPose != null) {
+                        fieldPoint = robotPose.multiply(fieldPoint);
+                    }
+                    fieldPoly.add(fieldPoint);
+                }
+                
+                dc.add(new Pen(10, c));
+
+                Vector2D last = null;
+                for(Vector2D point: fieldPoly) {
+                    dc.add(new Circle((int)point.x, (int)point.y, 10));
+                    if(last != null) {
+                        dc.add(new Line((int)last.x, (int)last.y, (int)point.x, (int)point.y));                            
+                    }
+                    last = point;
+                } 
+                
+            } catch (InvalidProtocolBufferException ex) {
+                Logger.getLogger(FieldViewer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }        
+        
+        private void drawScanEdgelPercept(Pose2D robotPose, LogDataFrame goalPerceptFrame, LogDataFrame scanLineFrame, Pose3D cameraMatrix, DrawingCollection dc, Color c) 
+        {
+            if (scanLineFrame == null || cameraMatrix == null) {
                 return;
             }
             
             try {
                 Representations.ScanLineEdgelPercept data = Representations.ScanLineEdgelPercept.parseFrom(scanLineFrame.getData());
-                Representations.CameraMatrix cm = Representations.CameraMatrix.parseFrom(cameraMatrixFrame.getData());
                 Representations.GoalPercept gp = Representations.GoalPercept.parseFrom(goalPerceptFrame.getData());
-                
-                Vector3D t = toVector(cm.getPose().getTranslation());
-                    
-                Matrix3D R = new Matrix3D(
-                    toVector(cm.getPose().getRotation(0)),
-                    toVector(cm.getPose().getRotation(1)),
-                    toVector(cm.getPose().getRotation(2)));
-                
-                final double f = (0.5*640.0) / Math.tan(0.5 * 60.9/180.0*Math.PI);
                 
                 // draw prijected edgesl on the field
                 dc.add(new Pen(10, c));
@@ -658,8 +734,8 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
                     Vector2D p = new Vector2D(e.getPoint().getX(), e.getPoint().getY());
                     Vector2D p2 = p.add(new Vector2D(e.getDirection().getX(), e.getDirection().getY()));
                     
-                    Vector2D q = project(R,t,f,p);
-                    Vector2D q2 = project(R,t,f,p2);
+                    Vector2D q = project(cameraMatrix,f,p);
+                    Vector2D q2 = project(cameraMatrix,f,p2);
                     q2 = q.add(q2.subtract(q).normalize().multiply(50));
                     
                     if(robotPose != null) {
@@ -708,13 +784,13 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
             }
         }
         
-        private Vector2D project(Matrix3D R, Vector3D t, double f, Vector2D p) {
+        private Vector2D project(Pose3D pose, double f, Vector2D p) {
             Vector3D v = new Vector3D(f, 320 - p.x, 240 - p.y);
-            v = R.multiply(v);
+            v = pose.rotation.multiply(v);
 
             Vector2D q = new Vector2D(
-                t.x - v.x*(t.z/v.z),
-                t.y - v.y*(t.z/v.z));
+                pose.translation.x - v.x*(pose.translation.z/v.z),
+                pose.translation.y - v.y*(pose.translation.z/v.z));
             
             return q;
         }
@@ -739,13 +815,135 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
             return Optional.empty();
         }
         
+        private void drawCircle(BlackBoard b, DrawingCollection dc) {
+            // circle
+            LogDataFrame ransacCirclePercept2018 = b.get("RansacCirclePercept2018");
+            if(ransacCirclePercept2018 != null)
+            {
+                try {
+                    RansacCirclePercept2018 circle = RansacCirclePercept2018.parseFrom(ransacCirclePercept2018.getData());
+                    
+                    if(robotPose != null && circle.getWasSeen() && circle.hasMiddleCircleCenter()) 
+                    {
+                        Vector2D q = robotPose.multiply(new Vector2D(circle.getMiddleCircleCenter().getX(), circle.getMiddleCircleCenter().getY()));
+                        dc.add(new Pen(50.0f, Color.yellow));
+                        dc.add(new Circle((int)q.x, (int)q.y, 750));
+                    }
+                } catch (InvalidProtocolBufferException ex) {
+                    Logger.getLogger(FieldViewer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        
+        private void drawLines(BlackBoard b, DrawingCollection dc) {
+            LogDataFrame linesFrame = b.get("RansacLinePercept");
+            if(linesFrame != null)
+            {
+                try {
+                    RansacLinePercept lines = RansacLinePercept.parseFrom(linesFrame.getData());
+                    
+                    if(robotPose != null) 
+                    {
+                        for(LineSegment l: lines.getFieldLineSegmentsList()) {
+                            Vector2D begin = new Vector2D(l.getBase().getX(), l.getBase().getY());
+                            Vector2D end = new Vector2D(begin.x + l.getDirection().getX()*l.getLength(), begin.y + l.getDirection().getY()*l.getLength());
+                            
+                            begin = robotPose.multiply(begin);
+                            end = robotPose.multiply(end);
+                            
+                            dc.add(new Pen(50.0f, Color.yellow));
+                            dc.add(new Line((int)begin.x, (int)begin.y, (int)end.x, (int)end.y));
+                        }
+                    }
+                    
+                } catch (InvalidProtocolBufferException ex) {
+                    Logger.getLogger(FieldViewer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        
+        private void drawShortLines(BlackBoard b, DrawingCollection dc) {
+            LogDataFrame linesFrame = b.get("ShortLinePercept");
+            if(linesFrame != null)
+            {
+                try {
+                    ShortLinePercept lines = ShortLinePercept.parseFrom(linesFrame.getData());
+                    
+                    if(robotPose != null) 
+                    {
+                        for(LineSegment l: lines.getFieldLineSegmentsList()) {
+                            Vector2D begin = new Vector2D(l.getBase().getX(), l.getBase().getY());
+                            Vector2D end = new Vector2D(begin.x + l.getDirection().getX()*l.getLength(), begin.y + l.getDirection().getY()*l.getLength());
+                            
+                            begin = robotPose.multiply(begin);
+                            end = robotPose.multiply(end);
+                            
+                            dc.add(new Pen(50.0f, Color.cyan));
+                            dc.add(new Line((int)begin.x, (int)begin.y, (int)end.x, (int)end.y));
+                        }
+                    }
+                    
+                } catch (InvalidProtocolBufferException ex) {
+                    Logger.getLogger(FieldViewer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        
+        private void drawBallPercept(BlackBoard b, DrawingCollection dc) {
+            LogDataFrame data = b.get("MultiBallPercept");
+            
+            if(data != null)
+            {
+                try {
+                    MultiBallPercept ball = MultiBallPercept.parseFrom(data.getData());
+                    
+                    if(robotPose != null && cmTop != null && cmBottom != null) {
+                        
+                        for(MultiBallPercept.BallPercept p: ball.getPerceptsList()) {
+                            
+                            Vector2D pi = new Vector2D(p.getCenterInImage().getX(), p.getCenterInImage().getY());
+                            
+                            Vector2D q;
+                            if(p.getCameraId() == CommonTypes.CameraID.bottom) {
+                                q = project(cmBottom,f,pi);
+                            } else {
+                                q = project(cmTop,f,pi);
+                            }
+                            
+                            q = robotPose.multiply(q);
+                            
+                            dc.add(new Pen(50.0f, Color.pink));
+                            dc.add(new Circle((int)q.x, (int)q.y, 50));
+                        }
+                    }
+                    
+                } catch (InvalidProtocolBufferException ex) {
+                    Logger.getLogger(FieldViewer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        
+        private void drawRobot(BlackBoard b, DrawingCollection dc) {
+            if(robotPose != null) {
+                dc.add(new Pen(1.0f, Color.red));
+                dc.add(new Robot(robotPose.translation.x, robotPose.translation.y, robotPose.rotation, cmBottom.rotation.getZAngle()));
+            }
+        }
+        
         @Override
         public void newFrame(BlackBoard b) 
         {
+            readCameraMatrix(b);
+            
             DrawingCollection dc = new DrawingCollection();
             drawTeamMessages(b, dc);
-            drawingBuffers.put(this.getClass(), dc);
-            
+            drawCircle(b, dc);
+            drawLines(b, dc);
+            drawShortLines(b, dc);
+            drawBallPercept(b, dc);
+            drawRobot(b, dc);
+            drawFieldPercept(b, dc);
+            drawings.add(this.getClass(), dc);
         }
   }
 
@@ -781,26 +979,6 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     }//end newObjectReceived
   }//end class PlotDataListener
     
-    class DrawingBuffer extends DrawingCollection
-    {
-        private int maxNumberOfEnties;
-        public DrawingBuffer(int maxNumberOfEnties) {
-            this.maxNumberOfEnties = maxNumberOfEnties;
-        }
-        
-        @Override
-        public void add(Drawable d) {
-            if(maxNumberOfEnties > 0 && this.drawables.size() >= maxNumberOfEnties) {
-                this.drawables.remove(0);
-            }
-            super.add(d);
-        }
-        
-        public void clear() {
-            this.drawables.clear();
-        }
-    }
-    
   @Override
   public void dispose()
   {
@@ -810,21 +988,58 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     Plugin.plotDataManager.removeListener(plotDataListener);
   }
   
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        // clear old field drawings
-        if(!btCollectDrawings.isSelected()) {
-            fieldCanvas.getDrawingList().clear();
-            // removed it! in order to continue drawing strokes, we have to "re-add" it
-            if(btTrace.isSelected()) {
-                this.fieldCanvas.getDrawingList().add(this.strokePlot);
-            }
+  /*
+  // NOTE: can we use this again?
+  class DrawingCollectionLimited extends DrawingCollection
+    {
+        private final int maxNumberOfEnties;
+        public DrawingCollectionLimited(int maxNumberOfEnties) {
+            this.maxNumberOfEnties = maxNumberOfEnties;
         }
-        // add buffered drawings to field drawing list
-        drawingBuffers.forEach((s,b)->{fieldCanvas.getDrawingList().add(b);});
-        // re-draw field
-        fieldCanvas.repaint();
+
+        @Override
+        public void add(Drawable d) {
+            if(maxNumberOfEnties > 0 && this.drawables.size() >= maxNumberOfEnties) {
+                this.drawables.remove(0);
+            }
+            super.add(d);
+        }
     }
+  */
+  
+  class MultiSourceDrawingCollection implements Drawable
+  {
+      // drawing buffer for concurrent access; every "source" gets its own "buffer"
+      private final ConcurrentHashMap<Class<?>, DrawingCollection> drawingBuffers = new ConcurrentHashMap<>();
+      
+      public void add(Class<?> owner, Drawable d) 
+      {
+          // get the collection for the owner
+          DrawingCollection dc = drawingBuffers.get(owner);
+          if(dc == null) {
+              dc = new DrawingCollection();
+              drawingBuffers.put(owner, dc);
+          }
+          
+          if(!btCollectDrawings.isSelected()) {
+              dc.clear();
+          }
+          
+          dc.add(d);
+          
+          // re-draw field
+          fieldCanvas.repaint();
+      }
+      
+      public void clear() {
+          drawingBuffers.clear();
+      }
+      
+      @Override
+      public void draw(Graphics2D g2d) {
+          drawingBuffers.forEach((s,b)->{b.draw(g2d);});
+      }
+  }
 
   
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -240,6 +240,10 @@ public class LogfileInspector extends AbstractDialog
         //dialog.setModal(true);
         //dialog.setVisible(true);
         
+        if(logFile != null) {
+            logFile.close();
+        }
+        
         this.jSlider1.setEnabled(false);
         
         if(f.exists()) 

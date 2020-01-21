@@ -75,27 +75,27 @@ void FieldColorClassifier::debug(Parameters& parameters)
     }
   }
 
-  const size_t SCALE = 256 / histogramUV.size();
-
   Pixel pixel;
   for(unsigned int i = 0; i < uniformGrid.size(); i++)
   {
     const Vector2i& point = uniformGrid.getPoint(i);
     getImage().get(point.x, point.y, pixel);
 
-    Vector2d dp(pixel.u - 128, pixel.v - 128);
+    Vector2d dp(pixel.u, pixel.v);
+    dp.x -= 128;
+    dp.y -= 128;
     //double a = dp.angle();
 
     //if(fabs(Math::normalize(parameters.colorAngleCenter - a)) < parameters.colorAngleWith)
     {
       dp.rotate(-parameters.green.colorAngleCenter);
-      int value = (int)(dp.x + 128 + 0.5);
-      histogramYCroma(value/SCALE, (255 - pixel.y)/SCALE) += (1.0 - alpha);
+      size_t value =  static_cast<size_t>(Math::clamp(dp.x + 128 + 0.5, 0.0, 255.0));
+      histogramYCroma(value, (255 - pixel.y)) += (1.0 - alpha);
     }
 
     // collect field histogram
     if(!getFieldColorPercept().greenHSISeparator.noColor(pixel)) {
-      histogramUV(pixel.u/SCALE, pixel.v/SCALE) += (1.0 - alpha);
+      histogramUV(pixel.u, pixel.v) += (1.0 - alpha);
     }
 
     // collect colored ball histogram
@@ -103,7 +103,7 @@ void FieldColorClassifier::debug(Parameters& parameters)
         && !getFieldColorPercept().greenHSISeparator.noColor(pixel)
         && !getFieldColorPercept().greenHSISeparator.isChroma(pixel)) 
     {
-      histogramUVBall(pixel.u/SCALE, pixel.v/SCALE) += (1.0 - alpha);
+      histogramUVBall(pixel.u, pixel.v) += (1.0 - alpha);
     }
   }
 

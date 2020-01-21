@@ -1,0 +1,7 @@
+/img.bin
+/img.db
+/logs
+venv/*
+/test.db
+
+data/*

@@ -19,10 +19,18 @@ public class DrawingCollection implements Drawable {
             this.drawables.add(d);
         }
     }
+    
+    public void clear() {
+        drawables.clear();
+    }
 
     @Override
     public void draw(Graphics2D g2d) {
-        drawables.forEach(d -> { d.draw(g2d); });
+        // NOTE: for unknown reason, sometimes an ConcurrentModificationException is thrown with the
+        //       lambda expression of this loop!
+        for (Drawable d : drawables) {
+            d.draw(g2d);
+        }
     }
     
     public boolean isEmpty() {

@@ -48,10 +48,9 @@ class TestVector2Methods(unittest.TestCase):
 
     def test_divison(self):
         a = m2d.Vector2(100, 100)
-        b = a/2
+        b = a / 2
         self.assertEqual(b.x, 50.0)
         self.assertEqual(b.y, 50.0)
-
 
 
 if __name__ == '__main__':

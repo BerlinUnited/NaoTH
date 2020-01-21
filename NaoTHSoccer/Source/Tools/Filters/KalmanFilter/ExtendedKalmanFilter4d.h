@@ -1,14 +1,7 @@
 #ifndef EXTENDEDKALMANFILTER4D_H
 #define EXTENDEDKALMANFILTER4D_H
 
-#include <Tools/naoth_eigen.h>
-
-#include <Representations/Perception/CameraMatrix.h>
-#include <Representations/Infrastructure/CameraInfo.h>
-
-#include <Tools/Math/Vector2.h>
-#include <Tools/Math/Vector3.h>
-#include <Tools/CameraGeometry.h>
+#include <Eigen/Core>
 
 #include "MeasurementFunctions.h"
 

@@ -2,7 +2,8 @@
 dist/
 build/
 private/
-deploy/
+backup_*/
+#deploy/
 NaoSCP/tmp/
 XabslEditor/
 
@@ -15,6 +16,7 @@ genfiles.properties
 *.pyc
 .idea/
 naoth.egg-info*
+*_pb2.py
 
 #
 trace.dump.*
@@ -32,3 +34,4 @@ behavior-ic.dat
 
 #vim swap files
 .*.swp
+/Utils/.vscode/settings.json

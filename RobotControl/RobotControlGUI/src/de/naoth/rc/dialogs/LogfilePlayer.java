@@ -21,8 +21,6 @@ import java.awt.KeyEventPostProcessor;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -485,29 +483,9 @@ public class LogfilePlayer extends AbstractDialog
     }
  
   private void connectToSimulator () {
-        try {
-            if(!Plugin.parent.getMessageServer().isConnected()) {
-                Plugin.parent.getMessageServer().connect("localhost", 5401);
-            }
-        }
-        catch(UnknownHostException ex)
-        {
-          JOptionPane.showMessageDialog(this,
-            "Could not connect: host \'" + Plugin.parent.getMessageServer().getAddress() + "\' is unknown.", 
-            "ERROR", JOptionPane.ERROR_MESSAGE);
-        }
-        catch(SocketTimeoutException ex)
-        {
-          JOptionPane.showMessageDialog(this,
-            "Could not connect: socket timeout exception.",
-            "ERROR", JOptionPane.ERROR_MESSAGE);
-        }
-        catch(IOException ex)
-        {
-          JOptionPane.showMessageDialog(this,
-            "Etablishing connection failed: " + ex.getLocalizedMessage(), 
-            "ERROR", JOptionPane.ERROR_MESSAGE);
-        }
+    if(!Plugin.parent.getMessageServer().isConnected()) {
+        Plugin.parent.getMessageServer().connect("localhost", 5401);
+    }
   }
   
 

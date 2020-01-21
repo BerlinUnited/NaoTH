@@ -6,10 +6,13 @@ option look_at_ball_percept
       stay;
 	  }
 	  action {
+      /* The robot looks in the direction of the ball percept, but only 25cm in front of itself.
+         The top camera should still pickup the ball percept*/
+      // TODO camera id is not set
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x * 250 / vector.abs(x=ball.percept.x, y=ball.percept.y);
       head.point_in_world.y = ball.percept.y * 250 / vector.abs(x=ball.percept.x, y=ball.percept.y);
-      head.point_in_world.z = ball.radius; // radius of the ball
+      head.point_in_world.z = ball.radius;
 	  }
 	}
 }
