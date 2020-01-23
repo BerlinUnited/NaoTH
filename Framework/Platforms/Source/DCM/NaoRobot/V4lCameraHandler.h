@@ -74,7 +74,6 @@ public:
   void shutdown();
   bool isRunning();
   
-  
   void get(Image& theImage);
   void getCameraSettings(CameraSettings& data, bool update = false);
   void setAllCameraParams(const CameraSettings& data);
@@ -91,11 +90,8 @@ private:
   void stopCapturing();
   void closeDevice();
   
-  
   int readFrame();
   
-  int getSingleCameraParameter(int id);
-  bool setSingleCameraParameter(int id, int value, std::string name);
   void setFPS(int fpsRate);
   void internalUpdateCameraSettings();
   
