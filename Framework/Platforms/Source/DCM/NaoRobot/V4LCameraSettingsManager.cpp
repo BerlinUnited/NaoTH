@@ -11,11 +11,6 @@ extern "C"
 
 #define LOG "[CameraHandler:" << __LINE__ << ", Camera: " << cameraName << "] "
 
-V4LCameraSettingsManager::V4LCameraSettingsManager()
-    : error_count(0)
-{
-}
-
 int V4LCameraSettingsManager::getSingleCameraParameterRaw(int cameraFd, const std::string& cameraName, int parameterID)
 {
   struct v4l2_queryctrl queryctrl;
