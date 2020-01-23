@@ -69,7 +69,7 @@ public:
   V4lCameraHandler();
   ~V4lCameraHandler();
 
-  void init(std::string camDevice, CameraInfo::CameraID camID, bool blockingMode, bool isV6 = false);
+  void init(std::string camDevice, CameraInfo::CameraID camID, bool isV6 = false);
 
   void shutdown();
   bool isRunning();
@@ -80,7 +80,7 @@ public:
 
 private:
 
-  void openDevice(bool blockingMode);
+  void openDevice();
   void initDevice();
   
   void mapBuffers();
@@ -112,6 +112,9 @@ private: // data members
   /** Amount of available frame buffers. */
   static const constexpr unsigned frameBufferCount = 5; 
   
+  /** maximal time in ms to wait for a poll to deliver an image */
+  static const constexpr unsigned maxPollTime = 1000;
+  
   /** Image buffers (v4l2) */
   struct buffer buffers[frameBufferCount];
 
@@ -123,7 +126,6 @@ private: // data members
   bool initialParamsSet;
   bool wasQueried;
   bool isCapturing;
-  bool blockingCaptureModeEnabled;
 
   /** order in which the camera settings need to be applied */
   CameraSettings currentSettings;

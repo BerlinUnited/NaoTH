@@ -51,7 +51,6 @@ V4lCameraHandler::V4lCameraHandler()
       initialParamsSet(false),
       wasQueried(false),
       isCapturing(false),
-      blockingCaptureModeEnabled(false),
       error_count(0)
 {
 
@@ -66,7 +65,7 @@ V4lCameraHandler::~V4lCameraHandler()
   std::cout << "[V4lCameraHandler] stop done" << std::endl;
 }
 
-void V4lCameraHandler::init(std::string camDevice, CameraInfo::CameraID camID, bool blockingMode, bool isV6)
+void V4lCameraHandler::init(std::string camDevice, CameraInfo::CameraID camID, bool isV6)
 {
   // shut down the camera if it was running before doing anything else
   if (isCapturing) {
@@ -83,7 +82,7 @@ void V4lCameraHandler::init(std::string camDevice, CameraInfo::CameraID camID, b
   cameraName = camDevice;
 
   // open the device
-  openDevice(blockingMode);
+  openDevice();
   initDevice();
   setFPS(30);
 
@@ -101,7 +100,7 @@ void V4lCameraHandler::setFPS(int fpsRate)
   VERIFY(ioctl(fd, VIDIOC_S_PARM, &fps) != -1);
 }
 
-void V4lCameraHandler::openDevice(bool blockingMode)
+void V4lCameraHandler::openDevice()
 {
   struct stat st;
   memset(&st, 0, sizeof(st));
@@ -121,19 +120,8 @@ void V4lCameraHandler::openDevice(bool blockingMode)
 
   std::cout << LOG << "Opening camera device '" << cameraName << "' ";
 
-  blockingCaptureModeEnabled = blockingMode;
   // always open file descriptor in non-blocking mode, blocking will be achived with "poll" calls later
   fd = open(cameraName.c_str(), O_RDWR | O_NONBLOCK, 0);
-
-  if (blockingMode)
-  {
-    std::cout << "(blocking mode)";
-  }
-  else
-  {
-    std::cout << "(non blocking mode)";
-  }
-  std::cout << endl;
 
   if (-1 == fd)
   {
@@ -210,8 +198,7 @@ void V4lCameraHandler::mapBuffers()
 
 void V4lCameraHandler::unmapBuffers()
 {
-  for (size_t i = 0; i < frameBufferCount; ++i)
-  {
+  for (size_t i = 0; i < frameBufferCount; ++i) {
     VERIFY(-1 != munmap(buffers[i].start, buffers[i].length));
   }
 }
@@ -248,8 +235,7 @@ void V4lCameraHandler::stopCapturing()
 
 void V4lCameraHandler::closeDevice()
 {
-  if (-1 == close(fd))
-  {
+  if (-1 == close(fd)) {
     return;
   }
   fd = -1;
@@ -273,14 +259,7 @@ int V4lCameraHandler::readFrame()
   if (wasQueried)
   {
     //put buffer back in the drivers incoming queue
-    if (blockingCaptureModeEnabled)
-    {
-      VERIFY(-1 != xioctl(fd, VIDIOC_QBUF, &lastBuf));
-    }
-    else
-    {
-      xioctl(fd, VIDIOC_QBUF, &lastBuf);
-    }
+    VERIFY(-1 != xioctl(fd, VIDIOC_QBUF, &lastBuf));
     //std::cout << "give buffer to driver" << std::endl;
   }
 
@@ -289,21 +268,19 @@ int V4lCameraHandler::readFrame()
   buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   buf.memory = V4L2_MEMORY_MMAP;
 
-  // in blocking mode, wait up to a second for new image data
-  const unsigned int maxWaitingTime = blockingCaptureModeEnabled ? 1000 : 1000;
   // wait for available data via poll
   pollfd pollfds[1] =
-      {
-          {fd, POLLIN | POLLPRI, 0},
-      };
+  {
+    {fd, POLLIN | POLLPRI, 0},
+  };
   //  unsigned int startTime = NaoTime::getNaoTimeInMilliSeconds();
-  int polled = poll(pollfds, 1, maxWaitingTime);
+  int polled = poll(pollfds, 1, maxPollTime);
 
   //  unsigned int stopTime = NaoTime::getNaoTimeInMilliSeconds();
   //  std::cout << LOG << "polling took " << (stopTime -  startTime) << " ms" << std::endl;
   if (polled < 0)
   {
-    std::cerr << LOG << "Polling camera failed after " << maxWaitingTime << " ms. Error was: " << strerror(errno) << std::endl;
+    std::cerr << LOG << "Polling camera failed after " << maxPollTime << " ms. Error was: " << strerror(errno) << std::endl;
     return -1;
   }
 
@@ -356,8 +333,7 @@ int V4lCameraHandler::readFrame()
       if (errno == EAGAIN)
       {
         // last element taken from the queue, abort loop
-        if (!first)
-        {
+        if (!first) {
           // reset error code since first try was successfull
           errorCode = 0;
         }
@@ -380,12 +356,9 @@ int V4lCameraHandler::readFrame()
 
   wasQueried = true;
   ASSERT(currentBuf.index < frameBufferCount);
-  if (errorCode == 0)
-  {
+  if (errorCode == 0) {
     return currentBuf.index;
-  }
-  else
-  {
+  } else {
     return -1;
   }
 }
@@ -394,7 +367,6 @@ void V4lCameraHandler::get(Image &theImage)
 {
   if (isCapturing)
   {
-
     //STOPWATCH_START("ImageRetrieve");
     int resultCode = readFrame();
     //STOPWATCH_STOP("ImageRetrieve");
@@ -462,13 +434,10 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
       settingsManager->apply(fd, cameraName, data);
     }
   }
-
-
 } // end setAllCameraParams
 
 void V4lCameraHandler::internalUpdateCameraSettings()
 {
-
   if (settingsManager)
   {
     settingsManager->query(fd, cameraName, currentSettings);
@@ -480,8 +449,7 @@ int V4lCameraHandler::xioctl(int fd, int request, void *arg) const
 {
   int r;
   // TODO: possibly endless loop?
-  do
-  {
+  do {
     r = ioctl(fd, request, arg);
   } while (-1 == r && EINTR == errno); // repeat if the call was interrupted
   return r;
