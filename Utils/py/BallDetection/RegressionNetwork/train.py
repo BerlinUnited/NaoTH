@@ -2,12 +2,14 @@
 
 import argparse
 import pickle
-import keras
-from keras.models import *
-from keras.layers import *
 from datetime import datetime
+from pathlib import Path
+from sys import exit
+
 import numpy as np
-import model_zoo;
+import tensorflow as tf
+from tensorflow import keras as keras
+import model_zoo
 
 
 class AccHistory(keras.callbacks.Callback):
@@ -30,7 +32,7 @@ class AccHistory(keras.callbacks.Callback):
                 else:
                     print("-> {:.4f} ({:+.4f}) ".format(a, (a - prev)))
             prev = a
-        if max_idx >= 0 and max_idx < len(self.acc):
+        if 0 <= max_idx < len(self.acc):
             print("Maximum is {:.4f}".format(self.acc[max_idx]))
 
 
@@ -43,64 +45,81 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
-parser = argparse.ArgumentParser(description='Train the network given ')
+def main(raw_args=None, model=None):
+    parser = argparse.ArgumentParser(description='Train the network given')
 
-parser.add_argument('-b', '--database-path', dest='imgdb_path',
-                    help='Path to the image database to use for training. '
-                         'Default is img.db in current folder.')
-parser.add_argument('-m', '--model-path', dest='model_path',
-                    help='Store the trained model using this path. Default is model.h5.')
-parser.add_argument("--proceed", type=str2bool, nargs='?', dest="proceed",
-                    const=True,
-                    help="Use the stored and pre-trained model base.")
-parser.add_argument("--log", dest="log",
-                    help="Tensorboard log location.")
+    parser.add_argument('-b', '--database-path', dest='imgdb_path', default="imgdb.pkl",
+                        help='Path to the image database to use for training. Default is imgdb.pkl in current folder.')
+    parser.add_argument("--log", dest="log", default="./logs/", help="Tensorboard log location.")
+    parser.add_argument("--output", dest="output", default="./", help="Folder where the trained models are saved")
 
-args = parser.parse_args()
+    # for continuing training
+    parser.add_argument('-m', '--model-path', dest='model_path', default="model.h5",
+                        help='Store the trained model using this path. Default is model.h5.')
+    parser.add_argument("--proceed", type=str2bool, nargs='?', dest="proceed",
+                        const=True, help="Use the stored and pre-trained model base.")
 
-imgdb_path = "img.db"
-model_path = "model.h5"
-log_dir = None
+    # hyperparameter
+    parser.add_argument("--batch-size", dest="batch_size", default=256,
+                        help="Batch size. Default is 256")
+    parser.add_argument("--epochs", dest="epochs", default=200, type=int,
+                        help="Number of epochs")
 
-if args.imgdb_path is not None:
-    imgdb_path = args.imgdb_path
+    args = parser.parse_args(raw_args)
 
-if args.model_path is not None:
-    model_path = args.model_path
+    if model is not None:
+        model.summary()
 
-if args.log is not None:
-    log_dir = args.log
+    if not Path(args.log).exists():
+        Path.mkdir(Path(args.log))
 
-with open(imgdb_path, "rb") as f:
-    pickle.load(f)  # skip mean
-    x = pickle.load(f)
-    y = pickle.load(f)
+    with open(args.imgdb_path, "rb") as f:
+        pickle.load(f)  # skip mean
+        x = pickle.load(f)
+        y = pickle.load(f)
 
-# define the Keras network
-if args.proceed is None or args.proceed == False:
-    print("Creating new model")
+    # define the Keras network
+    if args.proceed is not None and args.proceed is True:
+        print("Loading model " + args.model_path)
+        model = tf.keras.models.load_model(args.model_path)
 
-    model = model_zoo.fy_1500()
-else:
-    print("Loading model " + model_path)
-    model = load_model(model_path)
+    elif model is not None:
+        print("Creating new model")
+    else:
+        print("ERROR: No model specified")
+        exit(1)
+    # Define precision and recall for 0.5, 0.8 and 0.9 threshold
+    # class_id=3 means use the third element of the output vector
+    precision_class_05 = tf.keras.metrics.Precision(name="precision_classifcation_0.5", thresholds=0.5, class_id=3)
+    recall_class_05 = tf.keras.metrics.Recall(name="recall_classifcation_0.5", thresholds=0.5, class_id=3)
+    precision_class_08 = tf.keras.metrics.Precision(name="precision_classifcation_0.8", thresholds=0.8, class_id=3)
+    recall_class_08 = tf.keras.metrics.Recall(name="recall_classifcation_0.8", thresholds=0.8, class_id=3)
+    precision_class_09 = tf.keras.metrics.Precision(name="precision_classifcation_0.9", thresholds=0.9, class_id=3)
+    recall_class_09 = tf.keras.metrics.Recall(name="recall_classifcation_0.9", thresholds=0.9, class_id=3)
 
-model.compile(loss='mean_squared_error',
-              optimizer='adam',
-              metrics=['accuracy'])
+    model.compile(loss='mean_squared_error',
+                  optimizer='adam',
+                  metrics=['accuracy', precision_class_05, recall_class_05,
+                           precision_class_08, recall_class_08, precision_class_09, recall_class_09])
 
-print(model.summary())
+    filepath = Path(args.output) / "saved-model-{epoch:03d}-{val_acc:.2f}.hdf5"
+    save_callback = tf.keras.callbacks.ModelCheckpoint(filepath=str(filepath), monitor='loss', verbose=1,
+                                                       save_best_only=True)
 
-save_callback = keras.callbacks.ModelCheckpoint(filepath=model_path, monitor='loss', verbose=1,
-                                                save_best_only=True)
+    callbacks = [save_callback]
 
-callbacks = [save_callback]
-
-if log_dir is not None:
-    log_callback = keras.callbacks.TensorBoard(
-        log_dir='./logs/' + str(datetime.now()).replace(" ", "_"))
+    log_path = Path(args.log) / str(datetime.now()).replace(" ", "_").replace(":", "-")
+    log_callback = keras.callbacks.TensorBoard(log_dir=log_path, profile_batch=0)
     callbacks.append(log_callback)
 
-history = model.fit(x, y, batch_size=64, epochs=80, verbose=1, validation_split=0.1,
-                    callbacks=callbacks)
-model.save(model_path)
+    # TODO prepare an extra validation set, that is consistent over multiple runs
+    # history = model.fit(x, y, batch_size=args.batch_size, epochs=args.epochs, verbose=1,
+    # validation_data=(X_test, Y_test),callbacks=callbacks)
+    history = model.fit(x, y, batch_size=args.batch_size, epochs=args.epochs, verbose=1, validation_split=0.1,
+                        callbacks=callbacks)
+    return history
+
+
+if __name__ == '__main__':
+    test_model = model_zoo.fy_1500()
+    main(model=test_model)

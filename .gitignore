@@ -34,3 +34,4 @@ behavior-ic.dat
 
 #vim swap files
 .*.swp
+/Utils/.vscode/settings.json
