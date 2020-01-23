@@ -125,10 +125,6 @@ private: // data members
   bool isCapturing;
   bool blockingCaptureModeEnabled;
 
-
-  // settings
-  unsigned long long lastCameraSettingTimestamp;
-
   /** order in which the camera settings need to be applied */
   CameraSettings currentSettings;
   std::shared_ptr<V4LCameraSettingsManager> settingsManager;

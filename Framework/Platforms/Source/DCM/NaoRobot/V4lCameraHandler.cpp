@@ -52,7 +52,6 @@ V4lCameraHandler::V4lCameraHandler()
       wasQueried(false),
       isCapturing(false),
       blockingCaptureModeEnabled(false),
-      lastCameraSettingTimestamp(0),
       error_count(0)
 {
 
