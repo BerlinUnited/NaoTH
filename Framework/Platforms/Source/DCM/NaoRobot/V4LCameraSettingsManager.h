@@ -10,9 +10,6 @@ public:
     V4LCameraSettingsManager(){}
 
 protected:
-    naoth::CameraSettings current;
-
-protected:
 
     int getSingleCameraParameterRaw(int cameraFd, const std::string& cameraName, int parameterID);
     bool setSingleCameraParameterRaw(int cameraFd, const std::string& cameraName, int parameterID, const std::string& parameterName, int value);
