@@ -48,7 +48,6 @@ int V4LCameraSettingsManager::getSingleCameraParameterRaw(int cameraFd, const st
   struct v4l2_control control_g;
   control_g.id = parameterID;
 
-  // max 20 trials
   int errorOccured = xioctl(cameraFd, VIDIOC_G_CTRL, &control_g);
   if (hasIOError(cameraName, errorOccured, errno, false)) {
     // TODO: some parameter may have -1 as a valid value
@@ -124,8 +123,7 @@ int V4LCameraSettingsManager::xioctl(int fd, int request, void *arg) const
 {
   int r;
   // TODO: possibly endless loop?
-  do
-  {
+  do {
     r = ioctl(fd, request, arg);
   } while (-1 == r && EINTR == errno); // repeat if the call was interrupted
   return r;
