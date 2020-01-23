@@ -69,19 +69,15 @@ V4lCameraHandler::~V4lCameraHandler()
 
 void V4lCameraHandler::init(std::string camDevice, CameraInfo::CameraID camID, bool blockingMode, bool isV6)
 {
-
-  if (isV6)
-  {
-    settingsManager = std::make_shared<CameraSettingsV6Manager>();
-  }
-  else
-  {
-    settingsManager = std::make_shared<CameraSettingsV5Manager>();
-  }
-
-  if (isCapturing)
-  {
+  // shut down the camera if it was running before doing anything else
+  if (isCapturing) {
     shutdown();
+  }
+  
+  if (isV6) {
+    settingsManager = std::make_shared<CameraSettingsV6Manager>();
+  } else {
+    settingsManager = std::make_shared<CameraSettingsV5Manager>();
   }
 
   currentCamera = camID;

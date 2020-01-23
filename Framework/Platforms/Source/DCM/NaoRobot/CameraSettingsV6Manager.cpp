@@ -37,8 +37,8 @@ void CameraSettingsV6Manager::query(int cameraFd, const std::string& cameraName,
     settings.hue = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HUE);
 
     //settings.horizontalFlip = (uint16_t)getSingleCameraParameterUVC(cameraFd, cameraName, 12, "HorizontalFlip", 2);
-    settings.horizontalFlip = getParameterUVC<uint16_t>(cameraFd, 12);
-    settings.verticalFlip = getParameterUVC<uint16_t>(cameraFd, 13); //(uint16_t)getSingleCameraParameterUVC(cameraFd, cameraName, 13, "VerticalFlip", 2);
+    settings.horizontalFlip = getParameterUVC<uint16_t>(cameraFd, cameraName, 12, "HorizontalFlip");
+    settings.verticalFlip = getParameterUVC<uint16_t>(cameraFd, cameraName, 13, "VerticalFlip"); //(uint16_t)getSingleCameraParameterUVC(cameraFd, cameraName, 13, "VerticalFlip", 2);
 
     //    settings.backlightCompensation = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BACKLIGHT_COMPENSATION) == 0 ? false : true;
 
@@ -72,14 +72,16 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
     }
 
     if ((force || current.horizontalFlip != settings.horizontalFlip) &&
-        setSingleCameraParameterUVC(cameraFd, cameraName, 12, "HorizontalFlip", 2, settings.horizontalFlip ? 1 : 0)) // 0x0C
+        //setSingleCameraParameterUVC(cameraFd, cameraName, 12, "HorizontalFlip", 2, settings.horizontalFlip ? 1 : 0)) // 0x0C
+        setParameterUVC<uint16_t>(cameraFd, cameraName, 12, "HorizontalFlip", settings.horizontalFlip ? 1 : 0)) // 0x0C
     {
         current.horizontalFlip = settings.horizontalFlip;
         return;
     }
 
     if ((force || current.verticalFlip != settings.verticalFlip) &&
-        setSingleCameraParameterUVC(cameraFd, cameraName, 13, "VerticalFlip", 2, settings.verticalFlip ? 1 : 0)) // 0x0D
+        //setSingleCameraParameterUVC(cameraFd, cameraName, 13, "VerticalFlip", 2, settings.verticalFlip ? 1 : 0)) // 0x0D
+        setParameterUVC<uint16_t>(cameraFd, cameraName, 13, "VerticalFlip", settings.verticalFlip ? 1 : 0)) // 0x0D
     {
         current.verticalFlip = settings.verticalFlip;
         return;

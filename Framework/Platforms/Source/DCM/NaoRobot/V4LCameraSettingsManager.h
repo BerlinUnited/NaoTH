@@ -20,16 +20,26 @@ protected:
 
     bool setRawIfChanged(int cameraFd, const std::string& cameraName, int parameterID, const std::string& parameterName, int value, int& bufferedValue, bool force=false);
 
-    int32_t getSingleCameraParameterUVC(int cameraFd, const std::string& cameraName, uint8_t parameterSelector, const std::string& parameterName, uint16_t parameterDataSize);
-    bool setSingleCameraParameterUVC(int cameraFd, const std::string& cameraName, uint8_t parameterSelector, const std::string& parameterName, uint16_t parameterDataSize, int32_t value);
+    //int32_t getSingleCameraParameterUVC(int cameraFd, const std::string& cameraName, uint8_t parameterSelector, const std::string& parameterName, uint16_t parameterDataSize);
+    //bool setSingleCameraParameterUVC(int cameraFd, const std::string& cameraName, uint8_t parameterSelector, const std::string& parameterName, uint16_t parameterDataSize, int32_t value);
     
     template<typename T>
-    T getParameterUVC(int cameraFd, uint8_t parameterSelector) {
+    T getParameterUVC(int cameraFd, const std::string& cameraName, uint8_t parameterSelector, const std::string& parameterName) {
       T data;
-      querySingleCameraParameterUVC(cameraFd, UVC_GET_CUR, parameterSelector, &data, sizeof(T));
+      int error = querySingleCameraParameterUVC(cameraFd, UVC_GET_CUR, parameterSelector, &data, sizeof(T));
+      
+      //TODO: this is a mixture between c-style error handling and a cpp style function
+      hasIOError(cameraName, error, errno, false, "get " + parameterName);
       return data;
     }
+    
+    template<typename T>
+    bool setParameterUVC(int cameraFd, const std::string& cameraName, uint8_t parameterSelector, const std::string& parameterName, T value) {
+      int error = querySingleCameraParameterUVC(cameraFd, UVC_SET_CUR, parameterSelector, &value, sizeof(T));
+      return !hasIOError(cameraName, error, errno, false, "set " + parameterName);
+    }
 
+private:
     int querySingleCameraParameterUVC(int cameraFd, uint8_t query, uint8_t selector, void* data, uint16_t size);
 
     int xioctl(int fd, int request, void *arg) const;

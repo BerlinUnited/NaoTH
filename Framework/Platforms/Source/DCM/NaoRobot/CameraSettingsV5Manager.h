@@ -10,7 +10,6 @@ public:
   CameraSettingsV5Manager();
 
   virtual void query(int cameraFd, const std::string& cameraName, naoth::CameraSettings &settings);
-
   virtual void apply(int cameraFd, const std::string& cameraName, const naoth::CameraSettings &settings, bool force = false);
 
 private:

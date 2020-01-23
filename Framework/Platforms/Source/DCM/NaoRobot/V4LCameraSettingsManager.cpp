@@ -136,6 +136,7 @@ int V4LCameraSettingsManager::xioctl(int fd, int request, void *arg) const
   return r;
 }
 
+/*
 int32_t V4LCameraSettingsManager::getSingleCameraParameterUVC(int cameraFd, const std::string& cameraName,
                                                               uint8_t parameterSelector, const std::string& parameterName, uint16_t parameterDataSize)
 {
@@ -155,14 +156,15 @@ int32_t V4LCameraSettingsManager::getSingleCameraParameterUVC(int cameraFd, cons
   
   int error = xioctl(cameraFd, UVCIOC_CTRL_QUERY, &queryctrl);
 
-  std::cout << cameraName << ": " << parameterName << " = " << ((uint16_t)value) << std::endl;
+  //std::cout << cameraName << ": " << parameterName << " = " << ((uint16_t)value) << std::endl;
   if (hasIOError(cameraName, error, errno, false, "get " + parameterName)) {
     return -1;
   } else {
     return value;
   }
 }
-
+*/
+/*
 bool V4LCameraSettingsManager::setSingleCameraParameterUVC(int cameraFd, const std::string& cameraName,
                                                            uint8_t parameterSelector, const std::string& parameterName, uint16_t data_size, int32_t value)
 {
@@ -175,11 +177,11 @@ bool V4LCameraSettingsManager::setSingleCameraParameterUVC(int cameraFd, const s
   queryctrl.size = data_size;
   queryctrl.data = reinterpret_cast<uint8_t*>(&value);
 
-  std::cout << LOG << "Setting control value " << parameterName << " to " << value << std::endl;
+  //std::cout << LOG << "Setting control value " << parameterName << " to " << value << std::endl;
   int error = xioctl(cameraFd, UVCIOC_CTRL_QUERY, &queryctrl);
   return !hasIOError(cameraName, error, errno, false, "set " + parameterName);
 }
-
+*/
 /*
 // https://linuxtv.org/downloads/v4l-dvb-apis/v4l-drivers/uvcvideo.html
 // https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/uvcvideo.h#L61
@@ -211,8 +213,7 @@ bool V4LCameraSettingsManager::hasIOError(const std::string& cameraName, int err
   if (errOccured < 0 && errNo != EAGAIN)
   {
     std::cout << LOG << paramName << " failed with errno " << errNo << " (" << strerror(errNo) << ") >> exiting" << std::endl;
-    if (exitByIOError)
-    {
+    if (exitByIOError) {
       assert(errOccured >= 0);
     }
     return true;
