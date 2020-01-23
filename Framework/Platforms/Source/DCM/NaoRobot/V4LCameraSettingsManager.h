@@ -4,7 +4,7 @@
 #include <Representations/Infrastructure/CameraSettings.h>
 #include <linux/usb/video.h>
 
-class V4LCameraSettingsManager : public naoth::CameraSettingsManager
+class V4LCameraSettingsManager
 {
 public:
     V4LCameraSettingsManager(){}
@@ -35,6 +35,13 @@ protected:
       int error = querySingleCameraParameterUVC(cameraFd, UVC_SET_CUR, parameterSelector, &value, sizeof(T));
       return !hasIOError(cameraName, error, errno, false, "set " + parameterName);
     }
+ 
+public:
+  /** Queries all values from the actual camera */
+  virtual void query(int cameraFd, const std::string& cameraName, naoth::CameraSettings &settings) = 0;
+
+  /** Apply all changed values on the actual camera */
+  virtual void apply(int cameraFd, const std::string& cameraName, const naoth::CameraSettings &settings, bool force=false) = 0;
 
 private:
     int querySingleCameraParameterUVC(int cameraFd, uint8_t query, uint8_t selector, void* data, uint16_t size);

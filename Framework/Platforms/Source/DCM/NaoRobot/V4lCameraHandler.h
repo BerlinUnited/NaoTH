@@ -33,7 +33,7 @@ extern "C"
 
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CameraSettings.h"
-
+#include "V4LCameraSettingsManager.h"
 
 struct buffer
 {
@@ -135,7 +135,7 @@ private: // data members
 
   /** order in which the camera settings need to be applied */
   CameraSettings currentSettings;
-  std::shared_ptr<CameraSettingsManager> settingsManager;
+  std::shared_ptr<V4LCameraSettingsManager> settingsManager;
   
   int error_count;
 };
