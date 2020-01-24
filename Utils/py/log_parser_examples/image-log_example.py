@@ -1,7 +1,6 @@
 """
     this script exports images from the plain image log to png files
 """
-# for fast processing
 import multiprocessing as mp
 import os
 import sys
@@ -58,7 +57,6 @@ def save_data_to_png(data, width, height, img_path):
 
 
 if __name__ == "__main__":
-    # TODO add argparse here
     # TODO figure out how to read the other values
     # TODO save metadata to images
     # TODO differentiate between top and bottom
@@ -72,17 +70,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if not os.path.exists(args.input):
-        sys.exit("[ERROR] path doesn't exist: {0}".format(args.input))
+        sys.exit("[ERROR] path to logfile doesn't exist: {0}".format(args.input))
 
-    # create out directory
-    base_file, file_extension = os.path.splitext(args.input)
-    out_dir = base_file
-
-    # FIXME
-    if os.path.isdir(out_dir):
-        sys.exit('[ERROR] directory already exists :\n {0}'.format(out_dir))
-    else:
-        os.makedirs(out_dir)
+    # create output folder
+    logfile_name = Path(args.input).stem
+    output_folder = Path(logfile_name)
+    output_folder.mkdir(exist_ok=True)
 
     width = 640
     height = 480
@@ -96,11 +89,12 @@ if __name__ == "__main__":
             frame = f.read(4)
             data = f.read(width * height * bytes)
 
+            # handle the case of incomplete image at the end of the logfile
             if len(data) != width * height * bytes:
                 print("read only {0} bytes, but {1} needed.".format(len(data), width * height * bytes))
                 break
 
-            img_path = os.path.join(out_dir, "{0}.png".format(j))
+            img_path = os.path.join(str(output_folder), "{0}.png".format(j))
             if not args.parallel:
                 print("save " + img_path)
                 save_data_to_png(data, width, height, img_path)
