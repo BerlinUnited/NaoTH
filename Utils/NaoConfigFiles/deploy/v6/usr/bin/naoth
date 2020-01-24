@@ -3,21 +3,21 @@
 function start_function() {
   echo "starting naoth related process"
   /usr/libexec/reset-cameras.sh toggle
-  systemctl start user@1001
+  systemctl --user start naoth.service
 }
 
 function stop_function() {
   echo "stopping naoth related processes"
-  systemctl stop user@1001
+  systemctl --user stop naoth.service
 }
 
 function status_function() {
-  systemctl status user@1001
+  systemctl --user status naoth.service
 }
 
 function shutdown_function() {
   echo "shutting down"
-  systemctl stop user@1001
+  systemctl --user stop naoth.service
   sleep 5
   paplay /opt/aldebaran/share/naoqi/wav/shutdown.wav
   shutdown -h now
