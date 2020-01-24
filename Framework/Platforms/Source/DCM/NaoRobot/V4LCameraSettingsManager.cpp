@@ -9,19 +9,14 @@ extern "C"
 #include <linux/usb/video.h>
 }
 
-#define LOG "[CameraHandler:" << __LINE__ << ", Camera: " << cameraName << "] "
-
 int V4LCameraSettingsManager::getSingleCameraParameterRaw(int cameraFd, const std::string& cameraName, int parameterID)
 {
   struct v4l2_queryctrl queryctrl;
   queryctrl.id = parameterID;
   
-  // NOTE: why not xioctl?
-  int errCode = ioctl(cameraFd, VIDIOC_QUERYCTRL, &queryctrl);
-
   // check if query was successful
-  if (errCode < 0) {
-    std::cerr << LOG << "VIDIOC_QUERYCTRL failed: " << strerror(errCode) << std::endl;
+  if (xioctl(cameraFd, VIDIOC_QUERYCTRL, &queryctrl) < 0) {
+    std::cerr << LOG << "VIDIOC_QUERYCTRL failed: " << strerror(errno) << std::endl;
     return -1; 
   }
   
@@ -59,17 +54,17 @@ int V4LCameraSettingsManager::getSingleCameraParameterRaw(int cameraFd, const st
 
 bool V4LCameraSettingsManager::setSingleCameraParameterRaw(int cameraFd, const std::string& cameraName, int parameterID, const std::string& parameterName, int value)
 {
-  if (parameterID < 0)
-  {
+  // TODO: assert?
+  if (parameterID < 0) {
     return false;
   }
+  
   struct v4l2_queryctrl queryctrl;
   memset(&queryctrl, 0, sizeof(queryctrl));
   queryctrl.id = parameterID;
   
-  if (int errCode = xioctl(cameraFd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
-  {
-    std::cerr << LOG << "VIDIOC_QUERYCTRL for parameter " << parameterName << " failed with code " << errCode << " " << strerror(errCode) << std::endl;
+  if (xioctl(cameraFd, VIDIOC_QUERYCTRL, &queryctrl) < 0) {
+    std::cerr << LOG << "VIDIOC_QUERYCTRL for parameter " << parameterName << " failed with code " << errno << " " << strerror(errno) << std::endl;
     return false;
   }
   
@@ -91,6 +86,7 @@ bool V4LCameraSettingsManager::setSingleCameraParameterRaw(int cameraFd, const s
     std::cout << LOG << "Clipping control value  " << parameterName << " from " << value << " to " << queryctrl.minimum << std::endl;
     value = queryctrl.minimum;
   }
+  
   if (value > queryctrl.maximum)
   {
     std::cout << LOG << "Clipping control value " << parameterName << " from " << value << " to " << queryctrl.maximum << std::endl;
@@ -200,12 +196,13 @@ int V4LCameraSettingsManager::querySingleCameraParameterUVC(int cameraFd, uint8_
   return xioctl(cameraFd, UVCIOC_CTRL_QUERY, &queryctrl);
 }
 
-
-bool V4LCameraSettingsManager::hasIOError(const std::string& cameraName, int errOccured, int errNo, bool exitByIOError, const std::string& paramName) const
+bool V4LCameraSettingsManager::hasIOErrorPrint(int lineNumber, const std::string& cameraName, int errOccured, int errNo, bool exitByIOError, const std::string& paramName) const
 {
   if (errOccured < 0 && errNo != EAGAIN)
   {
-    std::cout << LOG << paramName << " failed with errno " << errNo << " (" << strerror(errNo) << ") >> exiting" << std::endl;
+    std::cout << LOG << paramName << " [hasIOError:" << lineNumber << "]"
+              << " failed with errno " << errNo << " (" << strerror(errNo) << ")" 
+              << (exitByIOError?" >> exiting":"") << std::endl;
     if (exitByIOError) {
       assert(errOccured >= 0);
     }

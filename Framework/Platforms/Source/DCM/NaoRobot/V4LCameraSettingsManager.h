@@ -4,6 +4,9 @@
 #include <Representations/Infrastructure/CameraSettings.h>
 #include <linux/usb/video.h>
 
+#define LOG "[CameraHandler:" << __LINE__ << ", Camera: " << cameraName << "] "
+#define hasIOError(...) hasIOErrorPrint(__LINE__, __VA_ARGS__)
+
 class V4LCameraSettingsManager
 {
 public:
@@ -47,7 +50,8 @@ private:
     int querySingleCameraParameterUVC(int cameraFd, uint8_t query, uint8_t selector, void* data, uint16_t size);
 
     int xioctl(int fd, int request, void *arg) const;
-    bool hasIOError(const std::string& cameraName, int errOccured, int errNo, bool exitByIOError = true, const std::string& paramName = "") const;
+    
+    bool hasIOErrorPrint(int lineNumber, const std::string& cameraName, int errOccured, int errNo, bool exitByIOError, const std::string& paramName = "") const;
 };
 
 #endif //_V4LCameraSettingsManager_H_

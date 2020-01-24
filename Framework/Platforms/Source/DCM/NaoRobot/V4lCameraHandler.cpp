@@ -296,7 +296,6 @@ int V4lCameraHandler::readFrame()
   v4l2_buffer lastValidBuf;
   do
   {
-
     /*
     // NOTE: 
     Last buffer produced by the hardware. mem2mem codec drivers set this flag on the capture queue 
