@@ -141,6 +141,7 @@ if [ ! -h /nao/etc/systemd/user/aldebaran.target.wants/lola_adaptor.service ];	t
 	echo "setting link to lola_adaptor.service";
 	ln -s /nao/etc/systemd/user/lola_adaptor.service /nao/etc/systemd/user/aldebaran.target.wants/lola_adaptor.service;
 fi
+
 if [ ! -h /nao/etc/systemd/user/aldebaran.target.wants/naoth.service ];	then
 	echo "setting link to naoth.service";
 	ln -s /nao/etc/systemd/user/naoth.service /nao/etc/systemd/user/aldebaran.target.wants/naoth.service;
