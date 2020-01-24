@@ -2,7 +2,8 @@
 
 function start_function() {
   echo "starting naoth related process"
-  /usr/libexec/reset-cameras.sh toggle
+  # TODO: this somehow breaks camera... What does it?
+  # /usr/libexec/reset-cameras.sh toggle
   systemctl --user start naoth.service
 }
 
