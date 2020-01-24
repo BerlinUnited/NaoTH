@@ -238,6 +238,7 @@ void V4lCameraHandler::stopCapturing()
 void V4lCameraHandler::closeDevice()
 {
   if (-1 == close(fd)) {
+    hasIOError(-1, errno);
     return;
   }
   fd = -1;
