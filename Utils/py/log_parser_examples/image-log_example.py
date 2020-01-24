@@ -84,23 +84,25 @@ if __name__ == "__main__":
     # read all data
     image_data = []
     with open(args.input, 'rb') as f:
-        j = 0
         while True:
             frame = f.read(4)
+            frame_number = int.from_bytes(frame, byteorder='little')
+
             data = f.read(width * height * bytes)
+
+            # TODO guess the cameraID here
 
             # handle the case of incomplete image at the end of the logfile
             if len(data) != width * height * bytes:
                 print("read only {0} bytes, but {1} needed.".format(len(data), width * height * bytes))
                 break
 
-            img_path = os.path.join(str(output_folder), "{0}.png".format(j))
+            img_path = os.path.join(str(output_folder), "{0}.png".format(frame_number))
             if not args.parallel:
                 print("save " + img_path)
                 save_data_to_png(data, width, height, img_path)
             else:
                 image_data += [(data, width, height, img_path)]
-            j += 1
 
     # export all to in parallel png
     if len(image_data) > 0:
