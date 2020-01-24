@@ -9,9 +9,12 @@ extern "C"
 #include <linux/usb/video.h>
 }
 
-int V4LCameraSettingsManager::getSingleCameraParameterRaw(int cameraFd, const std::string& cameraName, int parameterID)
+int V4LCameraSettingsManager::getSingleCameraParameterRaw(int cameraFd, const std::string& cameraName, uint32_t parameterID)
 {
+  // TODO: make it more general and maybe do it only once at the beginning
+  // NOTE: first query information regarding the parameter to verify it is avaliable and enabled
   struct v4l2_queryctrl queryctrl;
+  memset(&queryctrl, 0, sizeof(queryctrl)); // is it necessary?
   queryctrl.id = parameterID;
   
   // check if query was successful
@@ -36,29 +39,26 @@ int V4LCameraSettingsManager::getSingleCameraParameterRaw(int cameraFd, const st
 
   /*
   struct v4l2_control {
-     __u32  id;      // Identifies the control, set by the application.
-    __s32  value;    // New value or current value.
+    __u32  id;      // Identifies the control, set by the application.
+    __s32  value;   // New value or current value.
   } 
   */
-  struct v4l2_control control_g;
-  control_g.id = parameterID;
+  struct v4l2_control control;
+  control.id = parameterID;
 
-  int errorOccured = xioctl(cameraFd, VIDIOC_G_CTRL, &control_g);
+  int errorOccured = xioctl(cameraFd, VIDIOC_G_CTRL, &control);
   if (hasIOError(cameraName, errorOccured, errno, false)) {
     // TODO: some parameter may have -1 as a valid value
     return -1;
   } else {
-    return control_g.value;
+    return control.value;
   }
 }
 
-bool V4LCameraSettingsManager::setSingleCameraParameterRaw(int cameraFd, const std::string& cameraName, int parameterID, const std::string& parameterName, int value)
+bool V4LCameraSettingsManager::setSingleCameraParameterRaw(int cameraFd, const std::string& cameraName, uint32_t parameterID, const std::string& parameterName, int value)
 {
-  // TODO: assert?
-  if (parameterID < 0) {
-    return false;
-  }
-  
+  // TODO: make it more general and maybe do it only once at the beginning
+  // NOTE: first query information regarding the parameter to verify it is avaliable and enabled
   struct v4l2_queryctrl queryctrl;
   memset(&queryctrl, 0, sizeof(queryctrl));
   queryctrl.id = parameterID;
@@ -93,16 +93,24 @@ bool V4LCameraSettingsManager::setSingleCameraParameterRaw(int cameraFd, const s
     value = queryctrl.maximum;
   }
 
-  struct v4l2_control control_s;
-  control_s.id = parameterID;
-  control_s.value = value;
+  
+  /*
+  struct v4l2_control {
+    __u32  id;      // Identifies the control, set by the application.
+    __s32  value;   // New value or current value.
+  } 
+  */
+  struct v4l2_control control {
+    .id = parameterID,
+    .value = value
+  };
 
   std::cout << LOG << "Setting control value " << parameterName << " to " << value << std::endl;
-  int error = xioctl(cameraFd, VIDIOC_S_CTRL, &control_s);
+  int error = xioctl(cameraFd, VIDIOC_S_CTRL, &control);
   return !hasIOError(cameraName, error, errno, false);
 }
 
-bool V4LCameraSettingsManager::setRawIfChanged(int cameraFd, const std::string& cameraName, int parameterID,
+bool V4LCameraSettingsManager::setRawIfChanged(int cameraFd, const std::string& cameraName, uint32_t parameterID,
                                                const std::string& parameterName, int value, int &bufferedValue, bool force)
 {
   if ((force || bufferedValue != value) &&
@@ -175,11 +183,11 @@ bool V4LCameraSettingsManager::setSingleCameraParameterUVC(int cameraFd, const s
 // https://linuxtv.org/downloads/v4l-dvb-apis/v4l-drivers/uvcvideo.html
 // https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/uvcvideo.h#L61
 struct uvc_xu_control_query {
-	__u8 unit;          // Extension unit ID
-	__u8 selector;      // Control selector
-	__u8 query;		      // Request code to send to the device (Video Class-Specific Request Code, defined in linux/usb/video.h A.8.)  
-	__u16 size;         // Control data size (in bytes)
-	__u8 __user *data;  // Control value
+  __u8 unit;          // Extension unit ID
+  __u8 selector;      // Control selector
+  __u8 query;          // Request code to send to the device (Video Class-Specific Request Code, defined in linux/usb/video.h A.8.)  
+  __u16 size;         // Control data size (in bytes)
+  __u8 __user *data;  // Control value
 };
 */
 int V4LCameraSettingsManager::querySingleCameraParameterUVC(int cameraFd, uint8_t query, uint8_t selector, void* data, uint16_t size)
