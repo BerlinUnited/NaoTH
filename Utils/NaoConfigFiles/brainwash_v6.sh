@@ -117,8 +117,6 @@ deployFile "/usr/bin/naoth" "root" "755" "v6"
 umount -l /etc
 setEtc
 systemctl restart etc.mount
-# TODO: check if this is really needed (overlay should merge base and overlayed directory contents)
-setEtc
 
 # ==================== boot/user service stuff ====================
 
