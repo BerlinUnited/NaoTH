@@ -179,7 +179,6 @@ if __name__ == "__main__":
     parser.add_argument("-i", "--input", help='logfile, containing the images', default="logs/rc17_ball_far.log")
     parser.add_argument("-t", "--task", choices=['show', 'export'], default="show",
                         help='either show or export')
-    parser.add_argument("-o", "--output", type=str, default=".", help='output folder')
 
     args = parser.parse_args()
 
