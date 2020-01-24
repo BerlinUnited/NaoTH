@@ -121,7 +121,7 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
     {
         if (settings.autoExposition == false)
         {
-            // read back exposure values set by the now deactivated auto exposure
+            // read exposure and gain values set by the now deactivated auto exposure
             current.exposure = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ABSOLUTE) / 100;
             current.gain = Math::fromFixPoint<5>(static_cast<std::int32_t>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN)));
 
@@ -136,6 +136,7 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
         current.exposure = settings.exposure;
         return;
     }
+    
     if (setRawIfChanged(cameraFd, cameraName, V4L2_CID_SATURATION, "Saturation", settings.saturation, current.saturation, force))
     {
         return;
@@ -165,12 +166,11 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
     }
 
     if ((force || current.autoWhiteBalancing != settings.autoWhiteBalancing) &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_AUTO_WHITE_BALANCE, "AutoWhiteBalance",
-                                    settings.autoWhiteBalancing ? 1 : 0))
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_AUTO_WHITE_BALANCE, "AutoWhiteBalance", settings.autoWhiteBalancing ? 1 : 0))
     {
         if (settings.autoWhiteBalancing == false)
         {
-            // TODO: read back white balanche values set by the now deactivated auto white balance
+            // TODO: read white balanche values set by the now deactivated auto white balance
         }
         current.autoWhiteBalancing = settings.autoWhiteBalancing;
         return;
@@ -196,12 +196,6 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
         current.gain = settings.gain;
         return;
     }
-
-    // if (backlightCompensation != settings.backlightCompensation &&
-    //     setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BACKLIGHT_COMPENSATION, "BacklightCompensation", settings.backlightCompensation ? 0 : 1))
-    // {
-    //     backlightCompensation = settings.backlightCompensation;
-    // }
 }
 
 uint16_t CameraSettingsV6Manager::getRegister(int cameraFd, uint16_t addr)
