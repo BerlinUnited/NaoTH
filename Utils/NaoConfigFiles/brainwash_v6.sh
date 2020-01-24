@@ -73,16 +73,12 @@ setEtc(){
 	deployFile "/etc/conf.d/naoth" "root" "644" "v6"
 
 	# brainwash udev rule
-	deployFile "/etc/udev/rules.d/brainwashing.rules" "nao" "644" "v6"
+	deployFile "/etc/udev/rules.d/brainwashing.rules" "root" "644" "v6"
 
 	# ====================  host stuff ====================
 
 	# hostname
-	deployFile "/etc/conf.d/hostname" "root" "644" "v6"
 	deployFile "/etc/hostname" "root" "644" "v6"
-
-	# ====================  reload daemons ====================
-	systemctl daemon-reload
 }
 
 
