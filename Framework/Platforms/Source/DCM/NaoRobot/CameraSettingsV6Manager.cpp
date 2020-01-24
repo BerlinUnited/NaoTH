@@ -20,29 +20,52 @@ CameraSettingsV6Manager::CameraSettingsV6Manager()
 {
 }
 
+/*
+Control 9963777: Contrast
+Control 9963778: Saturation
+Control 9963779: Hue
+Control 9963788: White Balance Temperature, Auto
+Control 9963795: Gain
+Control 9963801: Hue, Auto
+Control 9963802: White Balance Temperature
+Control 9963803: Sharpness
+Control 10094849: Exposure, Auto
+  Menu items:
+  Auto Mode\n  Manual Mode\nControl 10094850: Exposure (Absolute)
+Control 10094858: Focus (absolute)
+Control 10094860: Focus, Auto
+*/
 void CameraSettingsV6Manager::query(int cameraFd, const std::string& cameraName, CameraSettings &settings)
 {
-    settings.autoExposition = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_AUTO) == 0 ? true : false;
+  // V4L query
+  settings.autoExposition     = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_AUTO) == 0 ? true : false;
 
-    settings.exposure = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ABSOLUTE) / 100;
-    settings.saturation = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SATURATION);
+  settings.exposure           = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ABSOLUTE) / 100;
+  settings.saturation         = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SATURATION);
 
-    settings.autoWhiteBalancing = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_AUTO_WHITE_BALANCE) == 0 ? false : true;
+  settings.autoWhiteBalancing = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_AUTO_WHITE_BALANCE) == 0 ? false : true;
+  
+  // NOTE: the the current point the white_balancing parameter can be set but doesn't see to have any effect
+  // settings.white_balancing = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_AUTO_WHITE_BALANCE) == 0 ? false : true;
+  
+  settings.gain               = Math::fromFixPoint<5>(static_cast<std::int32_t>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN)));
 
-    settings.gain = Math::fromFixPoint<5>(static_cast<std::int32_t>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN)));
+  settings.brightness         = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BRIGHTNESS);
+  settings.contrast           = Math::fromFixPoint<5>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_CONTRAST));
+  settings.sharpness          = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SHARPNESS);
+  settings.hue                = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HUE);
 
-    settings.brightness = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BRIGHTNESS);
-    settings.contrast = Math::fromFixPoint<5>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_CONTRAST));
-    settings.sharpness = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SHARPNESS);
-    settings.hue = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HUE);
-
-    //settings.horizontalFlip = (uint16_t)getSingleCameraParameterUVC(cameraFd, cameraName, 12, "HorizontalFlip", 2);
-    settings.horizontalFlip = getParameterUVC<uint16_t>(cameraFd, cameraName, 12, "HorizontalFlip");
-    settings.verticalFlip = getParameterUVC<uint16_t>(cameraFd, cameraName, 13, "VerticalFlip"); //(uint16_t)getSingleCameraParameterUVC(cameraFd, cameraName, 13, "VerticalFlip", 2);
-
-    //    settings.backlightCompensation = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BACKLIGHT_COMPENSATION) == 0 ? false : true;
-
-    current = settings;
+  // TODO: add NAO V6 speciffic parameters
+  // settings.autoFocus = ...
+  // settings.focus = ...
+  
+  // UVC parameters
+  //settings.horizontalFlip     = (uint16_t)getSingleCameraParameterUVC(cameraFd, cameraName, 12, "HorizontalFlip", 2);
+  settings.horizontalFlip     = getParameterUVC<uint16_t>(cameraFd, cameraName, 12, "HorizontalFlip"); // 0x0C
+  //settings.verticalFlip       =(uint16_t)getSingleCameraParameterUVC(cameraFd, cameraName, 13, "VerticalFlip", 2);
+  settings.verticalFlip       = getParameterUVC<uint16_t>(cameraFd, cameraName, 13, "VerticalFlip"); // 0x0D
+  
+  current = settings;
 }
 
 void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName, const CameraSettings &settings, bool force)
