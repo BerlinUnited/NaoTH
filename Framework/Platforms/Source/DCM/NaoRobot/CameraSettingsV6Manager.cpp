@@ -1,8 +1,8 @@
 #include "CameraSettingsV6Manager.h"
 
-#include <chrono>
-#include <thread>
-#include <bitset>
+//#include <chrono>
+//#include <thread>
+
 
 extern "C"
 {
@@ -31,14 +31,17 @@ Control 9963802: White Balance Temperature
 Control 9963803: Sharpness
 Control 10094849: Exposure, Auto
   Menu items:
-  Auto Mode\n  Manual Mode\nControl 10094850: Exposure (Absolute)
+  Auto Mode\n  Manual Mode\n
+  
+Control 10094850: Exposure (Absolute)
 Control 10094858: Focus (absolute)
 Control 10094860: Focus, Auto
 */
 void CameraSettingsV6Manager::query(int cameraFd, const std::string& cameraName, CameraSettings &settings)
 {
   // V4L query
-  settings.autoExposition     = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_AUTO) == 0 ? true : false;
+  // NOTE: V4L2_CID_EXPOSURE_AUTO is a menu type parameter with items {0: Auto Mode, 1: Manual Mode}
+  settings.autoExposition     = (getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_AUTO) == 0);
 
   settings.exposure           = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ABSOLUTE) / 100;
   settings.saturation         = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SATURATION);
@@ -55,11 +58,12 @@ void CameraSettingsV6Manager::query(int cameraFd, const std::string& cameraName,
   settings.sharpness          = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SHARPNESS);
   settings.hue                = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HUE);
 
-  // TODO: add NAO V6 speciffic parameters
+  // TODO: add NAO V6 speciffic parameters? For now fixed values are set (see apply(...))
   // settings.autoFocus = ...
   // settings.focus = ...
   
   // UVC parameters
+  // NOTE: can we just set those parameters fix?
   //settings.horizontalFlip     = (uint16_t)getSingleCameraParameterUVC(cameraFd, cameraName, 12, "HorizontalFlip", 2);
   settings.horizontalFlip     = getParameterUVC<uint16_t>(cameraFd, cameraName, 12, "HorizontalFlip"); // 0x0C
   //settings.verticalFlip       =(uint16_t)getSingleCameraParameterUVC(cameraFd, cameraName, 13, "VerticalFlip", 2);
@@ -77,7 +81,7 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_FOCUS_ABSOLUTE, "FocusAbsolute", 0);
         
         // enable test pattern
-        //setRegister(cameraFd, 0x503D, 128);
+        setRegister(cameraFd, 0x503D, 128);
 
         // HACK: make less greenish
         uint16_t regVal = getRegister(cameraFd, 0x5005);
@@ -111,6 +115,7 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
     }
 
 
+    // NOTE: V4L2_CID_EXPOSURE_AUTO is a menu type parameter with items {0: Auto Mode, 1: Manual Mode}
     if ((force || current.autoExposition != settings.autoExposition) &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_AUTO, "ExposureAuto", settings.autoExposition ? 0 : 1))
     {
@@ -201,7 +206,7 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
 
 uint16_t CameraSettingsV6Manager::getRegister(int cameraFd, uint16_t addr)
 {
-
+/*
     // construct the query struct
     uvc_xu_control_query xu_query;
     std::memset(&xu_query, 0, sizeof(xu_query));
@@ -238,6 +243,21 @@ uint16_t CameraSettingsV6Manager::getRegister(int cameraFd, uint16_t addr)
     }
 
     return static_cast<uint16_t>((std::uint16_t(data[3]) << 8) | std::uint16_t(data[4]));
+    */
+    
+    Register data {
+      .id = 0, // read register
+      .addr = swapBytes(addr), // to little-endian
+      .value = 0 // some default value
+    };
+    
+    //if(!setParameterUVC(cameraFd, "cam", 0x0e, "register", data)) {
+    if(!setParameterUVC(cameraFd, "cam", 0x0e, "register", &data, 5)) {
+      std::cerr << "(ERROR) : getRegister failed: " << std::strerror(errno);
+      assert(false);
+    }
+    
+    return data.value;
 }
 
 bool CameraSettingsV6Manager::setRegister(int cameraFd, uint16_t addr, uint16_t value)
@@ -248,6 +268,7 @@ bool CameraSettingsV6Manager::setRegister(int cameraFd, uint16_t addr, uint16_t 
     // bit 7 is responsible for enabling the test pattern (128dec)
     //const std::uint16_t value = 128;
 
+/*
     // construct the query struct
     struct uvc_xu_control_query xu_query;
     std::memset(&xu_query, 0, sizeof(xu_query));
@@ -256,7 +277,7 @@ bool CameraSettingsV6Manager::setRegister(int cameraFd, uint16_t addr, uint16_t 
     xu_query.selector = 0x0e;
     xu_query.query = UVC_SET_CUR;
     xu_query.size = 5;
-
+    
     std::uint8_t data[5];
     std::memset(data, 0, 5);
     // set flag to "Write"
@@ -274,4 +295,36 @@ bool CameraSettingsV6Manager::setRegister(int cameraFd, uint16_t addr, uint16_t 
         return false;
     }
     return true;
+   */
+    
+    /*
+    // DEBUG
+    {
+    std::uint8_t data[5];
+    std::memset(data, 0, 5);
+    // set flag to "Write"
+    data[0] = 1;
+    // split 16-bit address into two 8-bit parts
+    data[1] = static_cast<uint8_t>(addr >> 8);
+    data[2] = static_cast<uint8_t>(addr & 0xff);
+    // split 16-bit value into two 8-bit parts
+    data[3] = static_cast<uint8_t>(value >> 8);
+    data[4] = static_cast<uint8_t>(value & 0xff);
+    print_bytes(data, 5);
+    }
+    */
+    
+    Register data {
+      .id = 1, // write register
+      .addr = swapBytes(addr), // to little-endian
+      .value = swapBytes(value)// to little-endian
+    };
+    
+    //print_bytes((uint8_t*)&data, 5);
+    if(!setParameterUVC(cameraFd, "cam", 0x0e, "register", data)) {
+      std::cerr << "(ERROR) : setRegister failed: " << std::strerror(errno);
+      return false;
+    }
+    return true;
+     
 }

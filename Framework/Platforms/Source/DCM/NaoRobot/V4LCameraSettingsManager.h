@@ -62,6 +62,11 @@ protected:
     int error = querySingleCameraParameterUVC(cameraFd, UVC_SET_CUR, parameterSelector, &value, sizeof(T));
     return !hasIOError(cameraName, error, errno, false, "set " + parameterName);
   }
+  
+  bool setParameterUVC(int cameraFd, const std::string& cameraName, uint8_t parameterSelector, const std::string& parameterName, void* data, uint16_t size) {
+    int error = querySingleCameraParameterUVC(cameraFd, UVC_SET_CUR, parameterSelector, data, size);
+    return !hasIOError(cameraName, error, errno, false, "set " + parameterName);
+  }
  
 public:
   /** Queries all values from the actual camera */
