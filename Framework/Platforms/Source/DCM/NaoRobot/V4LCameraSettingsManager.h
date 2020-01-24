@@ -2,15 +2,39 @@
 #define _V4LCameraSettingsManager_H_
 
 #include <Representations/Infrastructure/CameraSettings.h>
+
+extern "C"
+{
+#include <linux/videodev2.h>
+#include <linux/uvcvideo.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
 #include <linux/usb/video.h>
+}
 
 #define LOG "[CameraHandler:" << __LINE__ << ", Camera: " << cameraName << "] "
 #define hasIOError(...) hasIOErrorPrint(__LINE__, __VA_ARGS__)
+
+/**
+
+NOTE: there are two ways to access V4L controls: v4l2_control and uvc_xu_control_query
+
+* The Linux USB Video Class (UVC) driver:
+https://linuxtv.org/downloads/v4l-dvb-apis/v4l-drivers/uvcvideo.html#
+
+*/
 
 class V4LCameraSettingsManager
 {
 public:
   V4LCameraSettingsManager(){}
+
+private: 
+  /** used by enumerate_controls */
+  static void enumerate_menu(int fd, v4l2_queryctrl& queryctrl);
+public: 
+  /** print all controlls and their parameters */
+  static void enumerate_controls(int fd);
 
 protected:
 
@@ -47,11 +71,11 @@ public:
   virtual void apply(int cameraFd, const std::string& cameraName, const naoth::CameraSettings &settings, bool force=false) = 0;
 
 private:
-  int querySingleCameraParameterUVC(int cameraFd, uint8_t query, uint8_t selector, void* data, uint16_t size);
+  static int querySingleCameraParameterUVC(int cameraFd, uint8_t query, uint8_t selector, void* data, uint16_t size);
 
-  int xioctl(int fd, int request, void *arg) const;
+  static int xioctl(int fd, int request, void *arg);
   
-  bool hasIOErrorPrint(int lineNumber, const std::string& cameraName, int errOccured, int errNo, bool exitByIOError, const std::string& paramName = "") const;
+  static bool hasIOErrorPrint(int lineNumber, const std::string& cameraName, int errOccured, int errNo, bool exitByIOError, const std::string& paramName = "");
 };
 
 #endif //_V4LCameraSettingsManager_H_

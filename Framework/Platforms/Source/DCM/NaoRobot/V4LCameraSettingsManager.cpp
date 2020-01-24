@@ -1,12 +1,52 @@
 #include "V4LCameraSettingsManager.h"
 
-extern "C"
+/**
+Based on example from 
+https://www.kernel.org/doc/html/v4.14/media/uapi/v4l/control.html
+*/
+void V4LCameraSettingsManager::enumerate_menu(int fd, v4l2_queryctrl& queryctrl)
 {
-#include <linux/videodev2.h>
-#include <linux/uvcvideo.h>
-#include <sys/ioctl.h>
-#include <unistd.h>
-#include <linux/usb/video.h>
+  printf("  Menu items:\n");
+  
+  struct v4l2_querymenu querymenu;
+  memset(&querymenu, 0, sizeof(querymenu));
+  querymenu.id = queryctrl.id;
+
+  for (querymenu.index = queryctrl.minimum; (int)querymenu.index <= queryctrl.maximum; querymenu.index++) {
+    if (0 == xioctl(fd, VIDIOC_QUERYMENU, &querymenu)) {
+      printf("   +- [%i] %s\n", querymenu.index, querymenu.name);
+    } else {
+      printf("   +- [%i] (%i) %s\n", querymenu.index, errno, strerror(errno));
+    }
+  }
+}
+
+void V4LCameraSettingsManager::enumerate_controls(int fd)
+{
+  struct v4l2_queryctrl queryctrl;
+  memset(&queryctrl, 0, sizeof(queryctrl));
+
+  printf("=== Camera Controls BEGIN ===\n");
+  
+  queryctrl.id = V4L2_CTRL_FLAG_NEXT_CTRL;
+  while (0 == xioctl(fd, VIDIOC_QUERYCTRL, &queryctrl)) 
+  {
+    if (!(queryctrl.flags & V4L2_CTRL_FLAG_DISABLED)) 
+    {    
+      printf(" %i: %i, %s (min: %i, max: %i, step: %i) \n", queryctrl.id, queryctrl.type, queryctrl.name, queryctrl.minimum, queryctrl.maximum, queryctrl.step);
+
+      if (queryctrl.type == V4L2_CTRL_TYPE_MENU) {
+          enumerate_menu(fd, queryctrl);
+      }
+    }
+    queryctrl.id |= V4L2_CTRL_FLAG_NEXT_CTRL;
+  }
+  
+  if (errno != EINVAL) {
+    perror("VIDIOC_QUERYCTRL");
+    exit(EXIT_FAILURE);
+  }
+  printf("=== Camera Controls END ===\n");
 }
 
 int V4LCameraSettingsManager::getSingleCameraParameterRaw(int cameraFd, const std::string& cameraName, uint32_t parameterID)
@@ -119,7 +159,7 @@ bool V4LCameraSettingsManager::setRawIfChanged(int cameraFd, const std::string& 
 }
 
 // https://01.org/linuxgraphics/gfx-docs/drm/media/uapi/v4l/capture.c.html
-int V4LCameraSettingsManager::xioctl(int fd, int request, void *arg) const
+int V4LCameraSettingsManager::xioctl(int fd, int request, void *arg)
 {
   int r;
   // TODO: possibly endless loop?
@@ -175,7 +215,8 @@ bool V4LCameraSettingsManager::setSingleCameraParameterUVC(int cameraFd, const s
   return !hasIOError(cameraName, error, errno, false, "set " + parameterName);
 }
 */
-/*
+
+/**
 // https://linuxtv.org/downloads/v4l-dvb-apis/v4l-drivers/uvcvideo.html
 // https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/uvcvideo.h#L61
 struct uvc_xu_control_query {
@@ -200,7 +241,7 @@ int V4LCameraSettingsManager::querySingleCameraParameterUVC(int cameraFd, uint8_
   return xioctl(cameraFd, UVCIOC_CTRL_QUERY, &queryctrl);
 }
 
-bool V4LCameraSettingsManager::hasIOErrorPrint(int lineNumber, const std::string& cameraName, int errOccured, int errNo, bool exitByIOError, const std::string& paramName) const
+bool V4LCameraSettingsManager::hasIOErrorPrint(int lineNumber, const std::string& cameraName, int errOccured, int errNo, bool exitByIOError, const std::string& paramName)
 {
   if (errOccured < 0 && errNo != EAGAIN)
   {

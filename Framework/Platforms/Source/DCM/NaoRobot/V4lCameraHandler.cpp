@@ -86,6 +86,8 @@ void V4lCameraHandler::init(std::string camDevice, CameraInfo::CameraID camID, b
   initDevice();
   setFPS(30);
 
+  settingsManager->enumerate_controls(fd);
+  
   startCapturing();
 }
 
@@ -107,8 +109,8 @@ void V4lCameraHandler::openDevice()
 
   if (-1 == stat(cameraName.c_str(), &st))
   {
-    std::cerr << LOG << "[V4L open] Cannot identify '" << cameraName << "': " << errno << ", "
-              << strerror(errno) << std::endl;
+    std::cerr << LOG << "[V4L open] Cannot identify '" << cameraName << "': " 
+              << errno << ", " << strerror(errno) << std::endl;
     return;
   }
 
@@ -118,15 +120,15 @@ void V4lCameraHandler::openDevice()
     return;
   }
 
-  std::cout << LOG << "Opening camera device '" << cameraName << "' ";
+  std::cout << LOG << "Opening camera device '" << cameraName << "' " << std::endl;
 
   // always open file descriptor in non-blocking mode, blocking will be achived with "poll" calls later
   fd = open(cameraName.c_str(), O_RDWR | O_NONBLOCK, 0);
 
   if (-1 == fd)
   {
-    std::cerr << LOG << "[V4L open] Cannot open '" << cameraName << "': " << errno << ", "
-              << strerror(errno) << std::endl;
+    std::cerr << LOG << "[V4L open] Cannot open '" << cameraName << "': " 
+              << errno << ", " << strerror(errno) << std::endl;
     return;
   }
 }
