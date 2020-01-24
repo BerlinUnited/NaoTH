@@ -61,11 +61,13 @@ if __name__ == "__main__":
     # TODO add argparse here
     # TODO figure out how to read the other values
     # TODO save metadata to images
+    # TODO differentiate between top and bottom
     get_demo_logfiles()
 
     parser = ArgumentParser(
         description='script to display or export images from images.log files')
     parser.add_argument("-i", "--input", help='logfile, containing the images', default="logs/images.log")
+    parser.add_argument("-p", "--parallel", help='Flag for enabling multiple processors', default=True)
 
     args = parser.parse_args()
 
@@ -76,12 +78,11 @@ if __name__ == "__main__":
     base_file, file_extension = os.path.splitext(args.input)
     out_dir = base_file
 
+    # FIXME
     if os.path.isdir(out_dir):
         sys.exit('[ERROR] directory already exists :\n {0}'.format(out_dir))
     else:
         os.makedirs(out_dir)
-
-    parrallel = True
 
     width = 640
     height = 480
@@ -100,7 +101,7 @@ if __name__ == "__main__":
                 break
 
             img_path = os.path.join(out_dir, "{0}.png".format(j))
-            if not parrallel:
+            if not args.parallel:
                 print("save " + img_path)
                 save_data_to_png(data, width, height, img_path)
             else:
