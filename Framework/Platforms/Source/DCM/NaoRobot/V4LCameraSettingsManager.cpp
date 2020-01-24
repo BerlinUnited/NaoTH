@@ -19,21 +19,20 @@ int V4LCameraSettingsManager::getSingleCameraParameterRaw(int cameraFd, const st
   
   // check if query was successful
   if (xioctl(cameraFd, VIDIOC_QUERYCTRL, &queryctrl) < 0) {
-    std::cerr << LOG << "VIDIOC_QUERYCTRL failed: " << strerror(errno) << std::endl;
+    std::cerr << LOG << "VIDIOC_QUERYCTRL for parameter " << parameterID << " failed with code " << errno << " " << strerror(errno) << std::endl;
     return -1; 
   }
   
   // check if parameter is avaliable (enabled)
   if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED) {
-    std::cerr << LOG << "not getting camera parameter since it is not available" << std::endl;
+    std::cerr << LOG << "V4L2_CTRL_FLAG_DISABLED failed. Parameter " << parameterID << " seems to be not avaliable." << std::endl;
     return -1; 
   }
 
   // check if parameter is supported
   // NOTE: we only consider boolean, integer and menu types as supported
-  // TODO: is this correct?
   if (queryctrl.type != V4L2_CTRL_TYPE_BOOLEAN && queryctrl.type != V4L2_CTRL_TYPE_INTEGER && queryctrl.type != V4L2_CTRL_TYPE_MENU) {
-    std::cerr << LOG << "not getting camera parameter since it is not supported" << std::endl;
+    std::cerr << LOG << "ERROR: type " << queryctrl.type << " of the parameter " << parameterID << " is not supported." << std::endl;
     return -1;
   }
 
@@ -60,40 +59,37 @@ bool V4LCameraSettingsManager::setSingleCameraParameterRaw(int cameraFd, const s
   // TODO: make it more general and maybe do it only once at the beginning
   // NOTE: first query information regarding the parameter to verify it is avaliable and enabled
   struct v4l2_queryctrl queryctrl;
-  memset(&queryctrl, 0, sizeof(queryctrl));
+  memset(&queryctrl, 0, sizeof(queryctrl)); // is it necessary?
   queryctrl.id = parameterID;
   
+  // check if query was successful
   if (xioctl(cameraFd, VIDIOC_QUERYCTRL, &queryctrl) < 0) {
     std::cerr << LOG << "VIDIOC_QUERYCTRL for parameter " << parameterName << " failed with code " << errno << " " << strerror(errno) << std::endl;
-    return false;
+    return false; 
   }
   
-  if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED)
-  {
-    std::cerr << LOG << "V4L2_CTRL_FLAG_DISABLED failed" << std::endl;
-    return false; // not available
+  // check if parameter is avaliable (enabled)
+  if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED) {
+    std::cerr << LOG << "V4L2_CTRL_FLAG_DISABLED failed. Parameter " << parameterName << " seems to be not avaliable." << std::endl;
+    return false; 
   }
 
-  if (queryctrl.type != V4L2_CTRL_TYPE_BOOLEAN && queryctrl.type != V4L2_CTRL_TYPE_INTEGER && queryctrl.type != V4L2_CTRL_TYPE_MENU)
-  {
-    std::cerr << LOG << "V4L2_CTRL_FLAG_DISABLED failed" << std::endl;
-    return false; // not supported
+  // check if parameter is supported
+  // NOTE: we only consider boolean, integer and menu types as supported
+  if (queryctrl.type != V4L2_CTRL_TYPE_BOOLEAN && queryctrl.type != V4L2_CTRL_TYPE_INTEGER && queryctrl.type != V4L2_CTRL_TYPE_MENU) {
+    std::cerr << LOG << "ERROR: type " << queryctrl.type << " of the parameter " << parameterName << " is not supported." << std::endl;
+    return false;
   }
 
   // clip value
-  if (value < queryctrl.minimum)
-  {
-    std::cout << LOG << "Clipping control value  " << parameterName << " from " << value << " to " << queryctrl.minimum << std::endl;
+  if (value < queryctrl.minimum) {
+    std::cout << LOG << "Clipping control value " << parameterName << " from " << value << " to " << queryctrl.minimum << std::endl;
     value = queryctrl.minimum;
-  }
-  
-  if (value > queryctrl.maximum)
-  {
+  } else if (value > queryctrl.maximum) {
     std::cout << LOG << "Clipping control value " << parameterName << " from " << value << " to " << queryctrl.maximum << std::endl;
     value = queryctrl.maximum;
   }
 
-  
   /*
   struct v4l2_control {
     __u32  id;      // Identifies the control, set by the application.
