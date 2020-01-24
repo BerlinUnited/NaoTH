@@ -265,10 +265,6 @@ chmod 644 /home/nao/Config/nao.info
 
 chown -R nao:nao /home/nao/backup*
 
-# allow everyone to shutdown
-chmod +s /sbin/shutdown
-chmod +s /sbin/reboot
-
 #remount root in read only mode
 mount -o remount,ro /
 
