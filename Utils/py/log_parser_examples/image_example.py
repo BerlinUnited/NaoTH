@@ -152,7 +152,7 @@ def export_images(logfile, img):
 
 def show_images(img):
     fig, ax = plt.subplots(2)
-    fig.suptitle('NaoTH Image Log')
+    fig.suptitle('Images from - ' + args.input)
     ax[0].set_axis_off()
     ax[1].set_axis_off()
 
@@ -177,7 +177,7 @@ if __name__ == "__main__":
     parser = ArgumentParser(
         description='script to display or export images from log files')
     parser.add_argument("-i", "--input", help='logfile, containing the images', default="logs/rc17_ball_far.log")
-    parser.add_argument("-t", "--task", choices=['show', 'export'], default="show",
+    parser.add_argument("-t", "--task", choices=['show', 'export'], default="export",
                         help='either show or export')
 
     args = parser.parse_args()
