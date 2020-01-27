@@ -18,6 +18,15 @@ private:
   naoth::CameraSettings current;
   bool initialized;
 
+  /* 
+  NOTE: this structure is used to write and read registers in setRegister and getRegister.
+  In the process is is converted to (unsigned char*) and read bytewise.  
+  For this the exact array lenghts has to be 
+     size(Register) == 5
+  which only holds if the alignment 
+  is set to 1 byte. This can be achieved with #pragma pack(1) or with GCC speciffic __attribute__((packed)).
+  #pragma pack(1) is also avaliable in VS and seems more general.
+  */
   #pragma pack(1)
   struct Register {
     uint8_t id;
@@ -25,6 +34,10 @@ private:
     uint16_t value;
   };//__attribute__((packed)); // very gcc specific
   #pragma pack()
+  
+  // make sure the alignment is correct
+  static_assert(sizeof(Register) == 5, "Register has to have alignment 1, sich that size(Register) == 5.");
+  
   
   void print_bytes(const uint8_t* data, size_t size) {
     for(size_t i = 0; i < size; ++i) {
