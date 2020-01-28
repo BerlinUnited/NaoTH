@@ -52,6 +52,8 @@ private:
   }
   
   uint16_t getRegister(int cameraFd, uint16_t addr);
+  uint32_t getRegister32(int cameraFd, uint16_t addr);
+  bool setRegister(int cameraFd, uint16_t addr, uint32_t value);
   bool setRegister(int cameraFd, uint16_t addr, uint16_t val);
 };
 

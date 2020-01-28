@@ -103,6 +103,13 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
         
         setRegister(cameraFd, 0x5005, static_cast<uint16_t>(regVal));
         
+        
+        //2800 (incandescent) to 6500 (daylight)
+        // test
+        uint16_t red_gain_address = 0x3400;
+        uint32_t red_gain_value = 0; // 4095
+        setRegister(cameraFd, red_gain_address, red_gain_value);
+        
         initialized = true;
     }
 
@@ -178,7 +185,18 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
     {
         if (settings.autoWhiteBalancing == false)
         {
-            // TODO: read white balanche values set by the now deactivated auto white balance
+          
+          // TODO: read white balanche values set by the now deactivated auto white balance into parameters
+          // Read the white balance values from the long registers.
+          // See also:
+          //   https://github.com/bhuman/BHumanCodeRelease/blob/d7deadc6f1a4c445c4bbd2e9f256bf058b80a24c/Src/Platform/Nao/NaoCamera.cpp#L436
+          uint32_t red_gain   = getRegister32(cameraFd, 0x3400);
+          uint32_t green_gain = getRegister32(cameraFd, 0x3402);
+          uint32_t blue_gain  = getRegister32(cameraFd, 0x3404);
+          std::cout << LOG << " white balance: " << std::endl;
+          std::cout << "  red:   " << red_gain   << std::endl;
+          std::cout << "  green: " << green_gain << std::endl;
+          std::cout << "  blue:  " << blue_gain  << std::endl;
         }
         current.autoWhiteBalancing = settings.autoWhiteBalancing;
         return;
@@ -269,7 +287,23 @@ uint16_t CameraSettingsV6Manager::getRegister(int cameraFd, uint16_t addr)
       assert(false);
     }
     
-    return swapBytes(data.value);
+    uint16_t value = swapBytes(data.value);
+    std::cout << " getRegister " << addr << ": " << value << std::endl;
+    
+    return value;
+}
+
+uint32_t CameraSettingsV6Manager::getRegister32(int cameraFd, uint16_t addr)
+{
+  uint16_t hi = getRegister(cameraFd, addr);
+  uint16_t lo = getRegister(cameraFd, static_cast<uint16_t>(addr + 1));
+  return static_cast<uint32_t>(hi << 8 | lo);
+}
+
+bool CameraSettingsV6Manager::setRegister(int cameraFd, uint16_t addr, uint32_t value)
+{
+  return setRegister(cameraFd, addr,                            static_cast<uint16_t>(value >> 8)) &&
+  setRegister(cameraFd, static_cast<uint16_t>(addr + 1), static_cast<uint16_t>(value & 0xff));
 }
 
 bool CameraSettingsV6Manager::setRegister(int cameraFd, uint16_t addr, uint16_t value)
@@ -338,6 +372,7 @@ bool CameraSettingsV6Manager::setRegister(int cameraFd, uint16_t addr, uint16_t 
       return false;
     }
     
+    std::cout << " setRegister " << addr << ": " << value << std::endl;
     // wait for the query to be processed before other requests
     usleep(100000); // 100ms
     
