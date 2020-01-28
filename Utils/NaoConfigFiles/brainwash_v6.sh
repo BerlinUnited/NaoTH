@@ -226,6 +226,7 @@ fi
 NAO_NUMBER=$(cat /etc/hostname | grep nao | sed -e 's/nao//g')
 
 deployFile "/home/nao/robocup.conf" "nao" "644" "v6"
+deployFile "/home/nao/.profile" "nao" "644"
 
 # deploy binary
 deployFile "/home/nao/bin/naoth" "nao" "755" 
