@@ -214,15 +214,6 @@ fi
 
 # ==================== copy stuff ====================
 
-
-# add link to the Config directory
-if [ ! -d /home/root ]
-then
-    echo "symlinking root directory to /home/root";
-		mv /root /home/root
-    ln -s /home/root /root;
-fi
-
 NAO_NUMBER=$(cat /etc/hostname | grep nao | sed -e 's/nao//g')
 
 deployFile "/home/nao/robocup.conf" "nao" "644" "v6"
