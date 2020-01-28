@@ -58,6 +58,12 @@ protected:
   }
   
   template<typename T>
+  bool getParameterUVC(int cameraFd, const std::string& cameraName, uint8_t parameterSelector, const std::string& parameterName, T& data) {
+    int error = querySingleCameraParameterUVC(cameraFd, UVC_GET_CUR, parameterSelector, &data, sizeof(T));
+    return !hasIOError(cameraName, error, errno, false, "get " + parameterName);
+  }
+  
+  template<typename T>
   bool setParameterUVC(int cameraFd, const std::string& cameraName, uint8_t parameterSelector, const std::string& parameterName, T value) {
     int error = querySingleCameraParameterUVC(cameraFd, UVC_SET_CUR, parameterSelector, &value, sizeof(T));
     return !hasIOError(cameraName, error, errno, false, "set " + parameterName);

@@ -1,8 +1,8 @@
 #include "CameraSettingsV6Manager.h"
 
+// NOTE: this is currently only needed for sleep
 //#include <chrono>
 //#include <thread>
-
 
 extern "C"
 {
@@ -21,19 +21,25 @@ CameraSettingsV6Manager::CameraSettingsV6Manager()
 }
 
 /*
-Control 9963777: Contrast
-Control 9963778: Saturation
-Control 9963779: Hue
-Control 9963788: White Balance Temperature, Auto
-Control 9963795: Gain
-Control 9963801: Hue, Auto
-Control 9963802: White Balance Temperature
-Control 9963803: Sharpness
 Control 10094849: Exposure, Auto
   Menu items:
   Auto Mode\n  Manual Mode\n
   
+Control 9963776: Brightness
+Control 9963795: Gain
 Control 10094850: Exposure (Absolute)
+
+Control 9963777: Contrast
+Control 9963778: Saturation
+
+Control 9963801: Hue, Auto
+Control 9963779: Hue
+
+Control 9963788: White Balance Temperature, Auto
+Control 9963802: White Balance Temperature
+
+Control 9963803: Sharpness
+
 Control 10094858: Focus (absolute)
 Control 10094860: Focus, Auto
 */
@@ -80,8 +86,10 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_FOCUS_AUTO, "FocusAuto", 0);
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_FOCUS_ABSOLUTE, "FocusAbsolute", 0);
         
-        // enable test pattern
-        setRegister(cameraFd, 0x503D, 128);
+        // DEBUG: enable test pattern
+        //setRegister(cameraFd, 0x503D, 128));
+        //uint16_t v = getRegister(cameraFd, 0x503D);
+        //std::cout << "0x503D: " << v << std::endl;
 
         // HACK: make less greenish
         uint16_t regVal = getRegister(cameraFd, 0x5005);
@@ -200,7 +208,7 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
 
 uint16_t CameraSettingsV6Manager::getRegister(int cameraFd, uint16_t addr)
 {
-/*
+  /*
     // construct the query struct
     uvc_xu_control_query xu_query;
     std::memset(&xu_query, 0, sizeof(xu_query));
@@ -245,13 +253,23 @@ uint16_t CameraSettingsV6Manager::getRegister(int cameraFd, uint16_t addr)
       .value = 0 // some default value
     };
     
-    //if(!setParameterUVC(cameraFd, "cam", 0x0e, "register", data)) {
-    if(!setParameterUVC(cameraFd, "cam", 0x0e, "register", &data, 5)) {
-      std::cerr << "(ERROR) : getRegister failed: " << std::strerror(errno);
+    // request the value from the microcontroller
+    if(!setParameterUVC(cameraFd, "cam", 0x0e, "register", data)) {
+      std::cerr << "(ERROR) : getRegister failed while writing command: " << std::strerror(errno);
+      assert(false); // query the value
+    }
+    
+    // wait for the microcontroller to query the register from the camera
+    //std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    usleep(100000); // 100ms
+    
+    // query the value
+    if(!getParameterUVC(cameraFd, "cam", 0x0e, "register", data)) {
+      std::cerr << "(ERROR) : getRegister failed while erading value: " << std::strerror(errno);
       assert(false);
     }
     
-    return data.value;
+    return swapBytes(data.value);
 }
 
 bool CameraSettingsV6Manager::setRegister(int cameraFd, uint16_t addr, uint16_t value)
@@ -319,6 +337,10 @@ bool CameraSettingsV6Manager::setRegister(int cameraFd, uint16_t addr, uint16_t 
       std::cerr << "(ERROR) : setRegister failed: " << std::strerror(errno);
       return false;
     }
+    
+    // wait for the query to be processed before other requests
+    usleep(100000); // 100ms
+    
     return true;
      
 }
