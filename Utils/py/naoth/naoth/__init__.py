@@ -1,3 +1,4 @@
+"""
 import sys, os
 
 # add the current directory to search path
@@ -7,3 +8,6 @@ sys.path.append(os.path.dirname(__file__))
 from LogReader import LogReader, Parser
 from SPLMessage import SPLMessage, MixedTeamMessage
 from .BehaviorParser import BehaviorParser
+"""
+
+from naoth.logging_config.default import configure as setup_logger
