@@ -1,60 +1,27 @@
 #!/bin/bash
 
-function start_function() {
-  echo "starting naoth related process"
-  # TODO: this somehow breaks camera... What does it?
-  # /usr/libexec/reset-cameras.sh toggle
-  systemctl --user start naoth.service
-}
-
-function stop_function() {
-  echo "stopping naoth related processes"
-  systemctl --user stop naoth.service
-}
-
-function status_function() {
-  systemctl --user status naoth.service
-}
-
-function lola_log_function() {
-  journalctl --user-unit=lola
-}
-
-function lola_adaptor_log_function() {
-  journalctl --user-unit=lola_adaptor
-}
-
-function naoth_log_function() {
-  journalctl --user-unit=naoth
-}
-
-
 case "$1" in
   start)
-    start_function
+    echo "starting naoth related process"
+    # TODO: this somehow breaks camera... What does it?
+    # /usr/libexec/reset-cameras.sh toggle
+    systemctl --user start naoth.service
     ;;
   stop)
-    stop_function
+    echo "stopping naoth related processes"
+    systemctl --user stop naoth.service
     ;;
   restart)
-    stop_function
-    sleep 5
-    start_function
+    systemctl --user restart naoth.service
     ;;
   status)
-    status_function
+    systemctl --user status naoth.service
     ;;
-  log_lola)
-    lola_log_function
-    ;;
-  log_lola_adaptor)
-    lola_adaptor_log_function
-    ;;
-  log_naoth)
-    naoth_log_function
+  log)
+    journalctl --user-unit=naoth
     ;;
   *)
-    echo "Usage: naoth {start|stop|restart|status|log_lola|log_lola_adaptor|log_naoth}"
+    echo "Usage: naoth {start|stop|restart|status|log}"
     exit 1
     ;;
 
