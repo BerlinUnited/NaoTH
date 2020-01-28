@@ -1,8 +1,8 @@
 """Representation of the SPL standard message."""
 from struct import Struct
-from math2d import Vector2, Pose2D
-from math3d import Vector3
-from naoth import TeamMessage_pb2
+
+from naoth.messages import TeamMessage_pb2
+from naoth.utils.math2d import Vector2, Pose2D
 
 
 class MixedTeamMessage(Struct):
