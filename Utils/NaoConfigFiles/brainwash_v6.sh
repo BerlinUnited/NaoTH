@@ -110,6 +110,7 @@ deployFile "/usr/bin/brainwash" "root" "755" "v6"
 
 # NaoTH binary start script
 deployFile "/usr/bin/naoth" "root" "755" "v6"
+deployFile "/usr/bin/lola_adaptor" "root" "755" "v6"
 
 # ==================== etc stuff ====================
 
