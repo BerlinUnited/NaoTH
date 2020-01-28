@@ -1,0 +1,32 @@
+#!/bin/bash
+
+case "$1" in
+  start)
+    echo "starting lola_adaptor related process"
+    systemctl --user start lola_adaptor.service
+    ;;
+  stop)
+    echo "stopping lola_adaptor related processes"
+    systemctl --user stop lola_adaptor.service
+    ;;
+  restart)
+    echo "restarting lola_adaptor related processes"
+    systemctl --user restart lola_adaptor.service
+    ;;
+  status)
+    systemctl --user status lola_adaptor.service
+    ;;
+  log)
+    journalctl --user-unit=lola_adaptor
+    ;;
+  log_lola)
+    journalctl --user-unit=lola
+    ;;
+  *)
+    echo "Usage: naoth {start|stop|restart|status|log|log_lola}"
+    exit 1
+    ;;
+
+esac
+
+exit 0
