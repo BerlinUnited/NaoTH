@@ -9,6 +9,7 @@ from pathlib import Path
 
 import numpy
 from PIL import Image
+from PIL import PngImagePlugin
 from pywget import wget
 
 
@@ -27,9 +28,9 @@ def get_demo_logfiles():
             wget.download(base_url + logfile, target_dir)
 
 
-def image_from_data(data, width, height):
+def image_from_data(image_data, width, height):
     # read each channel of yuv422 separately
-    yuv422 = numpy.fromstring(data, dtype=numpy.uint8)
+    yuv422 = numpy.fromstring(image_data, dtype=numpy.uint8)
     y = yuv422[0::2]
     u = yuv422[1::4]
     v = yuv422[3::4]
@@ -49,24 +50,30 @@ def image_from_data(data, width, height):
     return img
 
 
-def save_data_to_png(data, width, height, img_path):
-    img = image_from_data(data, width, height)
+def save_data_to_png(image_data, width, height, output_path, cam_flag):
+    if cam_flag:
+        cam_id = 1
+    else:
+        cam_id = 0
+    meta = PngImagePlugin.PngInfo()
+    meta.add_text("CameraID", str(cam_id))
+
+    img = image_from_data(image_data, width, height)
     img = img.convert('RGB')
-    img.save(img_path)
+    img.save(output_path, pnginfo=meta)
     return True
 
 
 if __name__ == "__main__":
-    # TODO figure out how to read the other values
-    # TODO save metadata to images
-    # TODO differentiate between top and bottom
     get_demo_logfiles()
 
     parser = ArgumentParser(
         description='script to display or export images from images.log files')
     parser.add_argument("-i", "--input", help='logfile, containing the images', default="logs/images.log")
     parser.add_argument("-p", "--parallel", help='Flag for enabling multiple processors', default=True)
-
+    parser.add_argument("--width", help='width of image', default=640)
+    parser.add_argument("--height", help='height of image', default=480)
+    parser.add_argument("--bytes", help='bytes per pixel', default=2)
     args = parser.parse_args()
 
     if not os.path.exists(args.input):
@@ -77,37 +84,36 @@ if __name__ == "__main__":
     output_folder = Path(logfile_name)
     output_folder.mkdir(exist_ok=True)
 
-    width = 640
-    height = 480
-    bytes = 2
+    camera_bottom = False  # assumes the first image is a top image
 
     # read all data
-    image_data = []
+    image_data_list = list()
     with open(args.input, 'rb') as f:
         while True:
             frame = f.read(4)
             frame_number = int.from_bytes(frame, byteorder='little')
 
-            data = f.read(width * height * bytes)
-
-            # TODO guess the cameraID here
+            data = f.read(args.width * args.height * args.bytes)
 
             # handle the case of incomplete image at the end of the logfile
-            if len(data) != width * height * bytes:
-                print("read only {0} bytes, but {1} needed.".format(len(data), width * height * bytes))
+            if len(data) != args.width * args.height * args.bytes:
+                print("read only {0} bytes, but {1} needed.".format(len(data), args.width * args.height * args.bytes))
                 break
 
             img_path = os.path.join(str(output_folder), "{0}.png".format(frame_number))
             if not args.parallel:
                 print("save " + img_path)
-                save_data_to_png(data, width, height, img_path)
+                save_data_to_png(data, args.width, args.height, img_path, camera_bottom)
             else:
-                image_data += [(data, width, height, img_path)]
+                image_data_list += [(data, args.width, args.height, img_path, camera_bottom)]
+
+            # switch camera id
+            camera_bottom = not camera_bottom
 
     # export all to in parallel png
-    if len(image_data) > 0:
+    if len(image_data_list) > 0:
         processes = max(mp.cpu_count() - 1, 1)
         print("use {} cores".format(processes))
         pool = mp.Pool(processes=processes)
-        pool.starmap(save_data_to_png, image_data)
+        pool.starmap(save_data_to_png, image_data_list)
         pool.close()
