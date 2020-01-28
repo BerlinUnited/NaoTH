@@ -16,14 +16,6 @@ function status_function() {
   systemctl --user status naoth.service
 }
 
-function shutdown_function() {
-  echo "shutting down"
-  systemctl --user stop naoth.service
-  sleep 5
-  paplay /opt/aldebaran/share/naoqi/wav/shutdown.wav
-  shutdown -h now
-}
-
 function lola_log_function() {
   journalctl --user-unit=lola
 }
@@ -51,9 +43,6 @@ case "$1" in
     ;;
   status)
     status_function
-    ;;
-  shutdown)
-    shutdown_function
     ;;
   log_lola)
     lola_log_function
