@@ -33,7 +33,7 @@ def create_image_log_dict(image_log):
     # parse image log
     width = 640
     height = 480
-    bytes = 2
+    bytes_per_pixel = 2
 
     images_dict = dict()
 
@@ -41,11 +41,11 @@ def create_image_log_dict(image_log):
         while True:
             frame = f.read(4)
             frame_number = int.from_bytes(frame, byteorder='little')
-            data = f.read(width * height * bytes)
+            data = f.read(width * height * bytes_per_pixel)
 
             # handle the case of incomplete image at the end of the logfile
-            if len(data) != width * height * bytes:
-                print("read only {0} bytes, but {1} needed.".format(len(data), width * height * bytes))
+            if len(data) != width * height * bytes_per_pixel:
+                print("read only {0} bytes, but {1} needed.".format(len(data), width * height * bytes_per_pixel))
                 break
 
             images_dict[frame_number] = data
@@ -86,6 +86,32 @@ def write_message(file, frame_number, name, msg):
     file.write(data)
 
 
+def write_log(output_log, game_log, image_log, cam_bottom):
+    output = open(output_log, 'wb')
+
+    for k, v in image_log.items():
+        gamelog_frame = game_log[k]
+
+        for name in gamelog_frame.messages:
+            msg = gamelog_frame[name]
+            write_message(output, gamelog_frame.number, name, msg)
+
+        # add image from image.log
+        msg = Image()
+        msg.height = 480
+        msg.width = 640
+        msg.format = Image.YUV422
+        msg.data = v
+
+        if cam_bottom:
+            write_message(output, gamelog_frame.number, "Image", msg)  # ImageTop
+        else:
+            write_message(output, gamelog_frame.number, "ImageTop", msg)  # ImageTop
+
+        # switch camera id
+        cam_bottom = not cam_bottom
+
+
 if __name__ == "__main__":
     get_demo_logfiles()
 
@@ -103,20 +129,5 @@ if __name__ == "__main__":
     parsed_image_log = create_image_log_dict(args.ilog)
 
     print("write new log")
-    out = open(args.olog, 'wb')
-    for k, v in parsed_image_log.items():
-        gamelog_frame = parsed_game_log[k]
-
-        for name in gamelog_frame.messages:
-            msg = gamelog_frame[name]
-            write_message(out, gamelog_frame.number, name, msg)
-
-        # add image from image.log
-        msg = Image()
-        msg.height = 480
-        msg.width = 640
-        msg.format = Image.YUV422
-        msg.data = v
-        # TODO unterscheiden zwischen imagetop und image
-        write_message(out, gamelog_frame.number, "ImageTop", msg)  # ImageTop
-        write_message(out, gamelog_frame.number, "Image", msg)  # ImageTop
+    camera_bottom = False  # assumes the first image is a top image
+    write_log(args.olog, parsed_game_log, parsed_image_log, camera_bottom)
