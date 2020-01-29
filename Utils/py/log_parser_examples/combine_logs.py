@@ -1,14 +1,35 @@
 """
     combines image.logs and game.log files such that the resulting log contains images, frameinfo and camera matrix data
 """
+import struct
+from argparse import ArgumentParser
+from pathlib import Path
+
+from naoth.Framework_Representations_pb2 import *
 from naoth.LogReader import LogReader
 from naoth.LogReader import Parser
-import struct
-from naoth.Framework_Representations_pb2 import *
+from pywget import wget
 
 
-def create_image_log_dict():
-    image_log = "logs/images.log"
+def get_demo_logfiles():
+    base_url = "https://www2.informatik.hu-berlin.de/~naoth/ressources/log/demo_image/"
+
+    logfile_list = ["images.log", "game.log"]
+    # taken from /vol/repl261-vol4/naoth/logs/2019-11-21_Koeln/
+    # 2019-11-21_16-20-00_Berlin United_vs_Nao_Devils_Dortmund_half1/game_logs/1_96_Nao0377_191122-0148
+
+    target_dir = Path("logs")
+    Path.mkdir(target_dir, exist_ok=True)
+
+    for logfile in logfile_list:
+        if not Path(target_dir / logfile).is_file():
+            wget.download(base_url + logfile, str(target_dir))
+
+
+def create_image_log_dict(image_log):
+    """
+        Return the a dictionary with frame numbers as key and frames as values.
+    """
     # parse image log
     width = 640
     height = 480
@@ -32,28 +53,28 @@ def create_image_log_dict():
     return images_dict
 
 
-def create_game_log_dict():
-    game_log = "logs/game.log"
+def create_game_log_dict(game_log):
+    """
+        Returns the a dictionary with frame numbers as key and frames as values.
+    """
     game_log_dict = dict()
     # parse game.log
-    myParser = Parser()
-    myParser.register("ImageTop", "Image")
-    myParser.register("CameraMatrixTop", "CameraMatrix")
-    myParser.register("BallPerceptTop", "BallPercept")
-    myParser.register("ScanLineEdgelPerceptTop", "ScanLineEdgelPercept")
-    myParser.register("GoalPerceptTop", "GoalPercept")
-    myParser.register("BallCandidatesTop", "BallCandidates")
-    myParser.register("FieldPerceptTop", "FieldPercept")
+    my_parser = Parser()
+    my_parser.register("ImageTop", "Image")
+    my_parser.register("CameraMatrixTop", "CameraMatrix")
+    my_parser.register("BallPerceptTop", "BallPercept")
+    my_parser.register("ScanLineEdgelPerceptTop", "ScanLineEdgelPercept")
+    my_parser.register("GoalPerceptTop", "GoalPercept")
+    my_parser.register("BallCandidatesTop", "BallCandidates")
+    my_parser.register("FieldPerceptTop", "FieldPercept")
 
-    for frame in LogReader(game_log, myParser):
-        frame_number = frame['FrameInfo'].frameNumber
-        game_log_dict[frame_number] = frame
+    for frame in LogReader(game_log, my_parser):
+        game_log_dict[frame.number] = frame
 
     return game_log_dict
 
 
 def write_message(file, frame_number, name, msg):
-    print(name)
     file.write(struct.pack('I', frame_number))
     file.write(name.encode('ascii'))
     file.write(b'\0')
@@ -66,15 +87,25 @@ def write_message(file, frame_number, name, msg):
 
 
 if __name__ == "__main__":
-    print("parse image log")
-    images_dict = create_image_log_dict()
+    get_demo_logfiles()
+
+    parser = ArgumentParser(
+        description='script for combining game.log and images.log files')
+    parser.add_argument("-g", "--glog", help='normal game.log', default="logs/game.log")
+    parser.add_argument("-i", "--ilog", help='log containing the images', default="logs/images.log")
+    parser.add_argument("-o", "--olog", help='output log file', default="logs/combined.log")
+    args = parser.parse_args()
+
     print("parse game log")
-    game_log_dict = create_game_log_dict()
+    parsed_game_log = create_game_log_dict(args.glog)
+
+    print("parse image log")
+    parsed_image_log = create_image_log_dict(args.ilog)
 
     print("write new log")
-    out = open("./tmp3.log", 'wb')
-    for k, v in images_dict.items():
-        gamelog_frame = game_log_dict[k]
+    out = open(args.olog, 'wb')
+    for k, v in parsed_image_log.items():
+        gamelog_frame = parsed_game_log[k]
 
         for name in gamelog_frame.messages:
             msg = gamelog_frame[name]
