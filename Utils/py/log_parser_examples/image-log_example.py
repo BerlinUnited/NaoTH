@@ -26,7 +26,7 @@ def get_demo_logfiles():
 
     for logfile in logfile_list:
         if not Path(target_dir / logfile).is_file():
-            wget.download(base_url + logfile, target_dir)
+            wget.download(base_url + logfile, str(target_dir))
 
 
 def image_from_data(image_data, width, height):
