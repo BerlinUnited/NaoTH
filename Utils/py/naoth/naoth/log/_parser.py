@@ -1,48 +1,39 @@
-import logging
+import logging as _logging
+import inspect as _inspect
 
-from naoth import Parser
+from .. import pb
+from ._xabsl import XABSLSymbols
 
 
-class XABSLSymbols:
+# get all protobuf classes
+proto = {}
+for m in _inspect.getmembers(pb, _inspect.ismodule):
+    for c in _inspect.getmembers(m[1], _inspect.isclass):
+        if not c[0].startswith('_'):
+            proto[c[0]] = c[1]
+
+
+class Parser:
     def __init__(self):
-        self.values = {}
-        self.decimalIdToName = {}
-        self.booleanIdToName = {}
-        self.enumIdToName = {}
+        self.nameToType = {}
 
-    def __get_or_set(self, var, id, value):
-        if value is None:
-            if isinstance(id, str):
-                return self.values[id]
-            else:
-                return self.values[var[id]]
-        else:
-            if isinstance(id, str):
-                self.values[id] = value
-            else:
-                self.values[var[id]] = value
+    def register(self, name, type):
+        self.nameToType[name] = type
 
-    def decimal(self, id, value=None):
-        return self.__get_or_set(self.decimalIdToName, id, value)
+    def parse(self, name, data):
+        message = None
 
-    def boolean(self, id, value=None):
-        return self.__get_or_set(self.booleanIdToName, id, value)
+        if name in self.nameToType:
+            name = self.nameToType[name]
 
-    def enum(self, id, value=None):
-        return self.__get_or_set(self.enumIdToName, id, value)
+        if name in proto:
+            message = proto[name]()
 
-    def __str_item(self, name, item):
-        result = name + ' = {\n'
-        for s in item:
-            result += '\t{:3d}, {} = {}\n'.format(s, item[s], self.values[item[s]])
-        result += '}'
-        return result
+        if message is not None:
+            message.ParseFromString(data)
 
-    def __str__(self):
-        result = self.__str_item('DecimalSymbols', self.decimalIdToName) \
-               + ',\n' + self.__str_item('BooleanSymbols', self.booleanIdToName) \
-               + ',\n' + self.__str_item('EnumSymbols', self.enumIdToName)
-        return result
+        return message
+
 
 class BehaviorParser:
     def __init__(self, data=None):
@@ -80,7 +71,7 @@ class BehaviorParser:
 
     def __check_initialized(self):
         if self.__options is None:
-            logging.getLogger("BehaviorParser").error("BehaviorParser must be initialized with 'BehaviorStateComplete' data!")
+            _logging.getLogger("BehaviorParser").error("BehaviorParser must be initialized with 'BehaviorStateComplete' data!")
             return False
 
         return True

@@ -1,8 +1,8 @@
 import math
 import unittest
 
-import naoth.utils.math2d as m2d
-import naoth.utils.math3d as m3d
+from .. import math as m2d
+from .. import math as m3d
 
 
 class TestMath2D(unittest.TestCase):
@@ -120,7 +120,6 @@ class TestMath2D(unittest.TestCase):
             t = m2d.Vector2(50, -50)
             z = m3d.Vector3(1, 0, 1)
             t * z
-
 
     def test_div(self):
         a = m2d.Vector2(20, -20)

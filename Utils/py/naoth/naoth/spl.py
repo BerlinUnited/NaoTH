@@ -1,11 +1,11 @@
 """Representation of the SPL standard message."""
-from struct import Struct
+from struct import Struct as _Struct
 
-from naoth.messages import TeamMessage_pb2
-from naoth.utils.math2d import Vector2, Pose2D
+from .pb import TeamMessage_pb2 as _TM
+from .math import Vector2 as _v2, Pose2D as _p2
 
 
-class MixedTeamMessage(Struct):
+class MixedTeamMessage(_Struct):
 
     def __init__(self, data=None):
         """Constructor."""
@@ -28,7 +28,7 @@ class MixedTeamMessage(Struct):
         if len(data) < self.size:
             raise Exception("Invalid data size for MixedTeamMessage")
 
-        msg = Struct.unpack(self, data[:self.size])
+        msg = _Struct.unpack(self, data[:self.size])
         it = iter(msg)
         self.timestamp = next(it)
         self.teamID = next(it)
@@ -36,9 +36,8 @@ class MixedTeamMessage(Struct):
         self.whistleDetected = next(it)
         self.dummy = next(it)
 
-
     def pack(self):
-        return Struct.pack(self,
+        return _Struct.pack(self,
                            self.timestamp,
                            self.teamID,
                            self.isPenalized,
@@ -50,7 +49,7 @@ class MixedTeamMessage(Struct):
         return str(self.__dict__)
 
 
-class SPLMessage(Struct):
+class SPLMessage(_Struct):
     """Representation of the standard SPLMessage."""
 
     SPL_STANDARD_MESSAGE_STRUCT_HEADER = b'SPL '
@@ -77,12 +76,12 @@ class SPLMessage(Struct):
         self.playerNumber = playernumber
         self.teamNumber = teamnumber
         self.fallen = False
-        self.pose = Pose2D(Vector2(0.0, 0.0), 0.0)  # x, y, r | +/-4500, +/-3000
-        #self.walkingTo = Vector2(0.0, 0.0)
-        #self.shootingTo = Vector2(0.0, 0.0)
+        self.pose = _p2(_v2(0.0, 0.0), 0.0)  # x, y, r | +/-4500, +/-3000
+        #self.walkingTo = _v2(0.0, 0.0)
+        #self.shootingTo = _v2(0.0, 0.0)
         self.ballAge = -1
-        self.ballPosition = Vector2(0.0, 0.0)
-        #self.ballVelocity = Vector2(0.0, 0.0)
+        self.ballPosition = _v2(0.0, 0.0)
+        #self.ballVelocity = _v2(0.0, 0.0)
         #self.suggestion = [0 for x in range(self.SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS)]
         #self.intention = 0
         #self.averageWalkSpeed = 200  # see TeamCommSender
@@ -92,7 +91,7 @@ class SPLMessage(Struct):
 
         self._mixed = MixedTeamMessage()
 
-        self.data = TeamMessage_pb2.BUUserTeamMessage()
+        self.data = _TM.BUUserTeamMessage()
 
         # set known default values of custom message part
         for field in self.data.DESCRIPTOR.fields:
@@ -103,7 +102,7 @@ class SPLMessage(Struct):
 
     def pack(self):
 
-        return Struct.pack(self,
+        return _Struct.pack(self,
                            self.SPL_STANDARD_MESSAGE_STRUCT_HEADER,
                            self.SPL_STANDARD_MESSAGE_STRUCT_VERSION,
                            self.playerNumber,
@@ -130,29 +129,29 @@ class SPLMessage(Struct):
     def unpack(self, data):
         # check 'data' length
         if len(data) < self.size:
-            raise NotAnSplMessage("Not an SPL Message.")
+            raise ErrorNotAnSplMessage("Not an SPL Message.")
 
-        msg = Struct.unpack(self, data[:self.size])
+        msg = _Struct.unpack(self, data[:self.size])
 
         # check header
         if msg[0] != self.SPL_STANDARD_MESSAGE_STRUCT_HEADER:
-            raise InvalidSplHeader("Invalid header! (" + msg[0].decode("utf-8") + ")")
+            raise ErrorInvalidSplHeader("Invalid header! (" + msg[0].decode("utf-8") + ")")
 
         # check spl message version
         if msg[1] != self.SPL_STANDARD_MESSAGE_STRUCT_VERSION:
-            raise WrongSplMessageVersion("Wrong version: received " + str(msg[1]) + ", but expected " + str(self.SPL_STANDARD_MESSAGE_STRUCT_VERSION))
+            raise ErrorWrongSplMessageVersion("Wrong version: received " + str(msg[1]) + ", but expected " + str(self.SPL_STANDARD_MESSAGE_STRUCT_VERSION))
 
         # assign data
         it = iter(msg[2:])
         self.playerNumber = next(it)
         self.teamNumber = next(it)
         self.fallen = next(it)
-        self.pose = Pose2D( Vector2(next(it), next(it)), next(it) )
-        #self.walkingTo = Vector2( next(it), next(it) )
-        #self.shootingTo = Vector2( next(it), next(it) )
+        self.pose = _p2( _v2(next(it), next(it)), next(it) )
+        #self.walkingTo = _v2( next(it), next(it) )
+        #self.shootingTo = _v2( next(it), next(it) )
         self.ballAge = next(it)
-        self.ballPosition = Vector2( next(it), next(it) )
-        #self.ballVelocity = Vector2( next(it), next(it) )
+        self.ballPosition = _v2( next(it), next(it) )
+        #self.ballVelocity = _v2( next(it), next(it) )
         #self.suggestion = [ next(it) for i in range(self.SPL_STANDARD_MESSAGE_MAX_NUM_OF_PLAYERS) ]
         #self.intention = next(it)
         #self.averageWalkSpeed = next(it)
@@ -171,7 +170,7 @@ class SPLMessage(Struct):
 
         custom = None
         try:
-            custom = TeamMessage_pb2.BUUserTeamMessage()
+            custom = _TM.BUUserTeamMessage()
             custom.ParseFromString(data[self.size+offset:self.size+offset+self.numOfDataBytes])
         except:
             # if we can't parse custom data - it is not our message
@@ -234,15 +233,16 @@ class SPLMessage(Struct):
         return result
 
 
-class NotAnSplMessage(Exception):
+class ErrorNotAnSplMessage(Exception):
     """Exception, if given data is not an SPL message."""
     pass
 
 
-class WrongSplMessageVersion(Exception):
+class ErrorWrongSplMessageVersion(Exception):
     """Wrong spl message version exception."""
     pass
 
-class InvalidSplHeader(Exception):
+
+class ErrorInvalidSplHeader(Exception):
     """Wrong spl message header exception."""
     pass

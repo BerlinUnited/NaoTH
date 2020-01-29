@@ -1,10 +1,10 @@
 import math
 import unittest
 
-import naoth.utils.math3d as m3d
+from .. import math as m3d
 
 
-class TestMath3d(unittest.TestCase):
+class TestMath3D(unittest.TestCase):
 
     def test_add(self):
         a = m3d.Vector3(100, 100, 100)

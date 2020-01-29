@@ -1,5 +1,4 @@
-import math
-
+import math as _math
 
 class Vector3:
     def __init__(self, x=0, y=0, z=0):
@@ -17,7 +16,7 @@ class Vector3:
         return Vector3(-self.x, -self.y, -self.z)
 
     def abs(self):
-        return math.sqrt(self * self)
+        return _math.sqrt(self * self)
 
     def __mul__(self, other):
         if isinstance(other, Vector3):
