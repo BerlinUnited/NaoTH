@@ -15,7 +15,8 @@ public:
   virtual void apply(int cameraFd, const std::string& cameraName, const naoth::CameraSettings& settings, bool force=false);
 
 private:
-  naoth::CameraSettings current;
+  //naoth::CameraSettings current;
+  naoth::V6CameraSettings current;
   bool initialized;
 
   /* 

@@ -37,7 +37,20 @@ struct V5CameraSettings
 
 struct V6CameraSettings
 {
+  bool autoExposition;
 
+  int exposure;
+  int saturation;
+
+  bool autoWhiteBalancing;
+  int gain;
+  int brightness;
+  int contrast;
+  int sharpness;
+  int hue;
+  
+  bool horizontalFlip;
+  bool verticalFlip;
 };
 
 struct V5CommonSettings
@@ -47,6 +60,17 @@ struct V5CommonSettings
 
 struct V6CommonSettings
 {
+  bool autoExposition;
+
+  int exposure;
+  int saturation;
+
+  bool autoWhiteBalancing;
+  int gain;
+  int brightness;
+  int contrast;
+  int sharpness;
+  int hue;
 };
 
 class CameraSettings : public Printable

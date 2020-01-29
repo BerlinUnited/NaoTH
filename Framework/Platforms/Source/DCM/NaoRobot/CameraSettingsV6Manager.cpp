@@ -43,24 +43,26 @@ Control 9963803: Sharpness
 Control 10094858: Focus (absolute)
 Control 10094860: Focus, Auto
 */
-void CameraSettingsV6Manager::query(int cameraFd, const std::string& cameraName, CameraSettings &settings)
+void CameraSettingsV6Manager::query(int cameraFd, const std::string& cameraName, CameraSettings &all)
 {
+  V6CameraSettings& settings(all.v6);
+  
   // V4L query
   // NOTE: V4L2_CID_EXPOSURE_AUTO is a menu type parameter with items {0: Auto Mode, 1: Manual Mode}
   settings.autoExposition     = (getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_AUTO) == 0);
 
-  settings.exposure           = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ABSOLUTE) / 100;
+  settings.exposure           = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ABSOLUTE);
   settings.saturation         = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SATURATION);
 
-  settings.autoWhiteBalancing = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_AUTO_WHITE_BALANCE) == 0 ? false : true;
+  settings.autoWhiteBalancing = (getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_AUTO_WHITE_BALANCE) == 1);
   
   // NOTE: the the current point the white_balancing parameter can be set but doesn't see to have any effect
   // settings.white_balancing = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_AUTO_WHITE_BALANCE) == 0 ? false : true;
   
-  settings.gain               = Math::fromFixPoint<5>(static_cast<std::int32_t>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN)));
+  settings.gain               = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN);
 
   settings.brightness         = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BRIGHTNESS);
-  settings.contrast           = Math::fromFixPoint<5>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_CONTRAST));
+  settings.contrast           = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_CONTRAST);
   settings.sharpness          = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_SHARPNESS);
   settings.hue                = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_HUE);
 
@@ -78,8 +80,10 @@ void CameraSettingsV6Manager::query(int cameraFd, const std::string& cameraName,
   current = settings;
 }
 
-void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName, const CameraSettings &settings, bool force)
+void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName, const CameraSettings &all, bool force)
 {
+  const V6CameraSettings& settings(all.v6);
+  
     if (!initialized)
     {
         // set some fixed values
@@ -137,8 +141,8 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
         if (settings.autoExposition == false)
         {
             // read exposure and gain values set by the now deactivated auto exposure
-            current.exposure = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ABSOLUTE) / 100;
-            current.gain = Math::fromFixPoint<5>(static_cast<std::int32_t>(getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN)));
+            current.exposure = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ABSOLUTE);
+            current.gain = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN);
 
         }
         current.autoExposition = settings.autoExposition;
@@ -146,7 +150,7 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
     }
 
     if (current.autoExposition == false && (force || current.exposure != settings.exposure) &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ABSOLUTE, "Exposure", settings.exposure * 100))
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_EXPOSURE_ABSOLUTE, "Exposure", settings.exposure))
     {
         current.exposure = settings.exposure;
         return;
@@ -163,7 +167,7 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
     }
 
     if ((force || current.contrast != settings.contrast) &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_CONTRAST, "Contrast", Math::toFixPoint<5>(settings.contrast)))
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_CONTRAST, "Contrast", settings.contrast))
     {
         current.contrast = settings.contrast;
         return;
@@ -217,7 +221,7 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
     // }
 
     if ((force || current.gain != settings.gain) &&
-        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN, "Gain", Math::toFixPoint<5>(static_cast<float>(settings.gain))))
+        setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN, "Gain", settings.gain))
     {
         current.gain = settings.gain;
         return;
