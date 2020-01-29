@@ -65,13 +65,41 @@ def save_data_to_png(image_data, width, height, output_path, cam_flag):
     return True
 
 
+def parse_image_log(input_path, width, height, image_bytes, cam_bottom):
+    # create output folder
+    logfile_name = Path(input_path).stem
+    output_folder = Path(logfile_name)
+    output_folder.mkdir(exist_ok=True)
+
+    # read all data
+    image_data = list()
+    with open(input_path, 'rb') as f:
+        while True:
+            frame = f.read(4)
+            frame_number = int.from_bytes(frame, byteorder='little')
+
+            data = f.read(width * height * image_bytes)
+
+            # handle the case of incomplete image at the end of the logfile
+            if len(data) != width * height * image_bytes:
+                print("read only {0} bytes, but {1} needed.".format(len(data), width * height * image_bytes))
+                break
+
+            img_path = os.path.join(str(output_folder), "{0}.png".format(frame_number))
+            image_data += [(data, args.width, args.height, img_path, cam_bottom)]
+            # switch camera id
+            cam_bottom = not cam_bottom
+
+    return image_data
+
+
 if __name__ == "__main__":
     get_demo_logfiles()
 
     parser = ArgumentParser(
         description='script to display or export images from images.log files')
     parser.add_argument("-i", "--input", help='logfile, containing the images', default="logs/images.log")
-    parser.add_argument("-p", "--parallel", help='Flag for enabling multiple processors', default=True)
+    parser.add_argument("-p", "--parallel", help='Flag for enabling multiple processors', default=False)
     parser.add_argument("--width", help='width of image', default=640)
     parser.add_argument("--height", help='height of image', default=480)
     parser.add_argument("--bytes", help='bytes per pixel', default=2)
@@ -80,41 +108,19 @@ if __name__ == "__main__":
     if not os.path.exists(args.input):
         sys.exit("[ERROR] path to logfile doesn't exist: {0}".format(args.input))
 
-    # create output folder
-    logfile_name = Path(args.input).stem
-    output_folder = Path(logfile_name)
-    output_folder.mkdir(exist_ok=True)
-
     camera_bottom = False  # assumes the first image is a top image
+    # parse log and save parsed data in a list
+    image_data_list = parse_image_log(args.input, args.width, args.height, args.bytes, camera_bottom)
 
-    # read all data
-    image_data_list = list()
-    with open(args.input, 'rb') as f:
-        while True:
-            frame = f.read(4)
-            frame_number = int.from_bytes(frame, byteorder='little')
-
-            data = f.read(args.width * args.height * args.bytes)
-
-            # handle the case of incomplete image at the end of the logfile
-            if len(data) != args.width * args.height * args.bytes:
-                print("read only {0} bytes, but {1} needed.".format(len(data), args.width * args.height * args.bytes))
-                break
-
-            img_path = os.path.join(str(output_folder), "{0}.png".format(frame_number))
-            if not args.parallel:
-                print("save " + img_path)
-                save_data_to_png(data, args.width, args.height, img_path, camera_bottom)
-            else:
-                image_data_list += [(data, args.width, args.height, img_path, camera_bottom)]
-
-            # switch camera id
-            camera_bottom = not camera_bottom
-
-    # export all to in parallel png
-    if len(image_data_list) > 0:
-        processes = max(mp.cpu_count() - 1, 1)
-        print("use {} cores".format(processes))
-        pool = mp.Pool(processes=processes)
-        pool.starmap(save_data_to_png, image_data_list)
-        pool.close()
+    # export the images from list
+    if not args.parallel:
+        for image_tuple in image_data_list:
+            save_data_to_png(*image_tuple)
+    else:
+        # export all to in parallel png
+        if len(image_data_list) > 0:
+            processes = max(mp.cpu_count() - 1, 1)
+            print("use {} cores".format(processes))
+            pool = mp.Pool(processes=processes)
+            pool.starmap(save_data_to_png, image_data_list)
+            pool.close()
