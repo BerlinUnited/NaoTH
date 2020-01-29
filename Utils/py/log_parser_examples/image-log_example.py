@@ -1,5 +1,6 @@
 """
-    this script exports images from the plain image log to png files
+    this script exports images from the plain image log to png files and saves the guessed camera id in the
+    png info header
 """
 import multiprocessing as mp
 import os
