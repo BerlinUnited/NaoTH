@@ -137,6 +137,7 @@ def export_images(logfile, img):
     output_folder_bottom.mkdir(exist_ok=True)
 
     if output_folder_top.exists() and output_folder_bottom.exists():
+        # TODO this expects to be always two images to be present, this assumption is violated for combined logs
         for i, img_b, img_t, cm_b, cm_t in img:
             img_b = img_b.convert('RGB')
             img_t = img_t.convert('RGB')
