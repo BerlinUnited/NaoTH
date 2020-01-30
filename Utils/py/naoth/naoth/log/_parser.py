@@ -1,16 +1,16 @@
 import logging as _logging
 import inspect as _inspect
 
-from .. import pb
+from .. import pb as _pb
 from ._xabsl import XABSLSymbols
 
 
 # get all protobuf classes
-proto = {}
-for m in _inspect.getmembers(pb, _inspect.ismodule):
-    for c in _inspect.getmembers(m[1], _inspect.isclass):
-        if not c[0].startswith('_'):
-            proto[c[0]] = c[1]
+_proto = {}
+for _m in _inspect.getmembers(_pb, _inspect.ismodule):
+    for _c in _inspect.getmembers(_m[1], _inspect.isclass):
+        if not _c[0].startswith('_'):
+            _proto[_c[0]] = _c[1]
 
 
 class Parser:
@@ -26,8 +26,8 @@ class Parser:
         if name in self.nameToType:
             name = self.nameToType[name]
 
-        if name in proto:
-            message = proto[name]()
+        if name in _proto:
+            message = _proto[name]()
 
         if message is not None:
             message.ParseFromString(data)
