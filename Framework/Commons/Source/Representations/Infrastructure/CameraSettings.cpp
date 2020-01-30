@@ -98,6 +98,10 @@ CameraSettingsRequest::CameraSettingsRequest(string configName)
   PARAMETER_REGISTER(v6.sharpness) = 4;
   PARAMETER_REGISTER(v6.hue) = 0;
   
+  PARAMETER_REGISTER(v6.gain_red) = 2048;
+  PARAMETER_REGISTER(v6.gain_green) = 2048;
+  PARAMETER_REGISTER(v6.gain_blue) = 2048;
+  
   PARAMETER_REGISTER(v6.horizontalFlip) = false;
   PARAMETER_REGISTER(v6.verticalFlip) = false;
 
@@ -176,6 +180,10 @@ CameraSettings CameraSettingsRequest::getCameraSettings() const
   result.v6.contrast = v6.contrast;
   result.v6.sharpness = v6.sharpness;
   result.v6.hue = v6.hue;
+  
+  result.v6.gain_red = v6.gain_red;
+  result.v6.gain_green = v6.gain_green;
+  result.v6.gain_blue = v6.gain_blue;
   
   result.v6.horizontalFlip = v6.horizontalFlip;
   result.v6.verticalFlip = v6.verticalFlip;

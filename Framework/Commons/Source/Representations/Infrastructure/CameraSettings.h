@@ -49,6 +49,10 @@ struct V6CameraSettings
   int sharpness;
   int hue;
   
+  int gain_red;
+  int gain_green;
+  int gain_blue;
+  
   bool horizontalFlip;
   bool verticalFlip;
 };
