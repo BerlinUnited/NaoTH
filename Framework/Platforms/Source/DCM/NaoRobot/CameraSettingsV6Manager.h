@@ -47,6 +47,14 @@ private:
     std::cout << std::endl;
   }
   
+  inline uint16_t set( size_t bitNum, size_t n ) {
+      return static_cast<uint16_t>(bitNum | (1 << n));
+  }
+
+  inline uint16_t reset( size_t bitNum, size_t n ) {
+      return static_cast<uint16_t>(bitNum & (~(1 << n )) );
+  }
+  
   // convert between big-endian and little-endian
   uint16_t swapBytes(uint16_t v) {
     return static_cast<uint16_t>(((v & 0xff) << 8) | ((v & 0xff00) >> 8));
@@ -54,7 +62,7 @@ private:
   
   uint16_t getRegister(int cameraFd, uint16_t addr);
   uint32_t getRegister32(int cameraFd, uint16_t addr);
-  bool setRegister(int cameraFd, uint16_t addr, uint32_t value);
+  bool setRegister32(int cameraFd, uint16_t addr, uint32_t value);
   bool setRegister(int cameraFd, uint16_t addr, uint16_t val);
 };
 

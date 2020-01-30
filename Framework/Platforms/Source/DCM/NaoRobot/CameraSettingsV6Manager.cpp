@@ -56,9 +56,14 @@ void CameraSettingsV6Manager::query(int cameraFd, const std::string& cameraName,
 
   settings.autoWhiteBalancing = (getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_AUTO_WHITE_BALANCE) == 1);
   
+  settings.gain_red   = getRegister32(cameraFd, 0x3400);
+  settings.gain_green = getRegister32(cameraFd, 0x3402);
+  settings.gain_blue  = getRegister32(cameraFd, 0x3404);
+  
   // NOTE: the the current point the white_balancing parameter can be set but doesn't see to have any effect
   // settings.white_balancing = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_AUTO_WHITE_BALANCE) == 0 ? false : true;
   
+  // what about the automatic gain?
   settings.gain               = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN);
 
   settings.brightness         = getSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_BRIGHTNESS);
@@ -96,6 +101,17 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
         //std::cout << "0x503D: " << v << std::endl;
 
         // HACK: make less greenish
+        
+        uint16_t sde = getRegister(cameraFd, 0x5001);
+        std::cout << "sde " << std::bitset<16>(sde) << std::endl;
+        sde = reset(sde, 7);
+        std::cout << "sde " << std::bitset<16>(sde) << std::endl;
+        setRegister(cameraFd, 0x5001, sde);
+        
+        // https://cdn.sparkfun.com/datasheets/Sensors/LightImaging/OV5640_datasheet.pdf
+        // 7.21ISP top control:
+        // AWB bias manual enable
+        /*
         uint16_t regVal = getRegister(cameraFd, 0x5005);
         std::cout << "REG VAL " << std::bitset<16>(regVal) << std::endl;
         std::cout << "REG VAL (INT) " << regVal << std::endl;
@@ -104,15 +120,36 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
         regVal |= (1 << 6);
         std::cout << "REG VAL " << std::bitset<16>(regVal) << std::endl;
         std::cout << "REG VAL (INT) " << regVal << std::endl;
-        
-        setRegister(cameraFd, 0x5005, static_cast<uint16_t>(regVal));
+        */
+        //setRegister(cameraFd, 0x5005, static_cast<uint16_t>(regVal));
         
         
         //2800 (incandescent) to 6500 (daylight)
         // test
-        uint16_t red_gain_address = 0x3400;
-        uint32_t red_gain_value = 0; // 4095
-        setRegister(cameraFd, red_gain_address, red_gain_value);
+        {
+        setRegister32(cameraFd, 0x3400, static_cast<uint32_t>(1024)); // red
+        setRegister32(cameraFd, 0x3402, static_cast<uint32_t>(1024)); // green
+        setRegister32(cameraFd, 0x3404, static_cast<uint32_t>(1024)); // blue
+        }
+        
+        // tests light frequency
+        uint16_t band_mode = getRegister(cameraFd, 0x3C01);
+        std::cout << "band_mode " << std::bitset<16>(band_mode) << std::endl;
+        band_mode = set(band_mode, 7); // set the bit 7 to 1
+        setRegister(cameraFd, 0x3C01, band_mode);
+        std::cout << "band_mode " << std::bitset<16>(band_mode) << std::endl;
+        
+        uint16_t band_ctrl = getRegister(cameraFd, 0x3C00);
+        std::cout << "band_ctrl " << std::bitset<16>(band_ctrl) << std::endl;
+        band_ctrl = set(band_ctrl, 2); // set the bit 2 to 0
+        std::cout << "band_ctrl " << std::bitset<16>(band_ctrl) << std::endl;
+        setRegister(cameraFd, 0x3C00, band_ctrl);
+        
+        
+        uint16_t band_value = getRegister(cameraFd, 0x3C0C);
+        std::cout << "Band test: " << band_mode << ", " << band_value << std::endl;
+        
+        // gain registers 0x350A/0x350B
         
         initialized = true;
     }
@@ -194,16 +231,35 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
           // Read the white balance values from the long registers.
           // See also:
           //   https://github.com/bhuman/BHumanCodeRelease/blob/d7deadc6f1a4c445c4bbd2e9f256bf058b80a24c/Src/Platform/Nao/NaoCamera.cpp#L436
-          uint32_t red_gain   = getRegister32(cameraFd, 0x3400);
-          uint32_t green_gain = getRegister32(cameraFd, 0x3402);
-          uint32_t blue_gain  = getRegister32(cameraFd, 0x3404);
-          std::cout << LOG << " white balance: " << std::endl;
-          std::cout << "  red:   " << red_gain   << std::endl;
-          std::cout << "  green: " << green_gain << std::endl;
-          std::cout << "  blue:  " << blue_gain  << std::endl;
+          //   https://cdn.sparkfun.com/datasheets/Sensors/LightImaging/OV5640_datasheet.pdf
+          //   7.4AWB gain control [0x3400 ~ 0x3406]
+          current.gain_red   = getRegister32(cameraFd, 0x3400);
+          current.gain_green = getRegister32(cameraFd, 0x3402);
+          current.gain_blue  = getRegister32(cameraFd, 0x3404);
         }
+        
+        
         current.autoWhiteBalancing = settings.autoWhiteBalancing;
         return;
+    }
+    
+    // manual white balance
+    if (current.autoWhiteBalancing == false) 
+    {
+      if ((force || current.gain_red != settings.gain_red) &&
+          setRegister32(cameraFd, 0x3400, static_cast<uint32_t>(settings.gain_red))) {
+        current.gain_red = settings.gain_red;
+      }
+      
+      if ((force || current.gain_green != settings.gain_green) &&
+          setRegister32(cameraFd, 0x3402, static_cast<uint32_t>(settings.gain_green))) {
+        current.gain_green = settings.gain_green;
+      }
+      
+      if ((force || current.gain_blue != settings.gain_blue) &&
+          setRegister32(cameraFd, 0x3404, static_cast<uint32_t>(settings.gain_blue))){
+        current.gain_blue = settings.gain_blue;
+      }
     }
 
     // if (autoWhiteBalancing == false && v6.awbBottom != settings.v6.awbBottom &&
@@ -220,10 +276,25 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
     //     return;
     // }
 
+    
+    
+    // NOTES on gain
+    // https://cdn.sparkfun.com/datasheets/Sensors/LightImaging/OV5640_datasheet.pdf
+    // 4.6.4: The OV5640 has a maximum of 64x gain.
+    // The value we can set is 0...1023. 1023 / 64 = 16 => 16 corresponds to 1x gain.
     if ((force || current.gain != settings.gain) &&
         setSingleCameraParameterRaw(cameraFd, cameraName, V4L2_CID_GAIN, "Gain", settings.gain))
     {
         current.gain = settings.gain;
+        
+        uint32_t red_gain   = getRegister32(cameraFd, 0x3400);
+        uint32_t green_gain = getRegister32(cameraFd, 0x3402);
+        uint32_t blue_gain  = getRegister32(cameraFd, 0x3404);
+        std::cout << LOG << " white balance: " << std::endl;
+        std::cout << "  red:   " << red_gain   << std::endl;
+        std::cout << "  green: " << green_gain << std::endl;
+        std::cout << "  blue:  " << blue_gain  << std::endl;
+        
         return;
     }
 }
@@ -304,8 +375,9 @@ uint32_t CameraSettingsV6Manager::getRegister32(int cameraFd, uint16_t addr)
   return static_cast<uint32_t>(hi << 8 | lo);
 }
 
-bool CameraSettingsV6Manager::setRegister(int cameraFd, uint16_t addr, uint32_t value)
+bool CameraSettingsV6Manager::setRegister32(int cameraFd, uint16_t addr, uint32_t value)
 {
+  std::cout << " setRegister32 " << addr << ": " << value << std::endl;
   return setRegister(cameraFd, addr,                            static_cast<uint16_t>(value >> 8)) &&
   setRegister(cameraFd, static_cast<uint16_t>(addr + 1), static_cast<uint16_t>(value & 0xff));
 }
@@ -378,7 +450,7 @@ bool CameraSettingsV6Manager::setRegister(int cameraFd, uint16_t addr, uint16_t 
     
     std::cout << " setRegister " << addr << ": " << value << std::endl;
     // wait for the query to be processed before other requests
-    usleep(100000); // 100ms
+    usleep(500000); // 100ms
     
     return true;
      
