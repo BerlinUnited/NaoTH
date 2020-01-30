@@ -97,6 +97,7 @@ void V4lCameraHandler::setFPS(int fpsRate)
   memset(&fps, 0, sizeof(fps));
   fps.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   VERIFY(!ioctl(fd, VIDIOC_G_PARM, &fps));
+  
   fps.parm.capture.timeperframe.numerator = 1;
   fps.parm.capture.timeperframe.denominator = fpsRate;
   VERIFY(ioctl(fd, VIDIOC_S_PARM, &fps) != -1);
