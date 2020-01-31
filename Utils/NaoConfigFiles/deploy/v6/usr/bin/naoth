@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # NOTE:
-# make sure the commands are allways execured as user nao
-# otherwise root wil not be able to run this script directly
+# make sure the commands are always executed as user nao
+# otherwise root will not be able to run this script directly
 
 function run_as_nao() {
   if [ nao = `whoami` ]; then
