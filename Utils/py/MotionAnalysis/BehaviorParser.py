@@ -108,7 +108,7 @@ if __name__ == "__main__":
     upright = filter(lambda m: m[2] == 1, b)
     fall = filter(lambda m: m[2] != 1, b)
 
-    print "step 2"
+    print("step 2")
     du = zip(*upright)
     df = zip(*fall)
 

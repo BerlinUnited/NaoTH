@@ -1,5 +1,6 @@
-import BehaviorParser
-
+#import BehaviorParser
+from naoth.log import Reader as LogReader
+from naoth.log import BehaviorParser
 from matplotlib import pyplot
 import numpy as np
 
@@ -38,6 +39,7 @@ def frame_filter(frame):
         else:
             m, o = frame["BehaviorStateSparse"]
 
+        print(frame["BodyStatus"].currentSum[JointID["RHipYawPitch"]])
         return [frame["FrameInfo"].time/1000.0,
                 frame["BodyStatus"].currentSum[JointID["RHipYawPitch"]],
                 frame["BodyStatus"].currentSum[JointID["LHipYawPitch"]],
@@ -76,11 +78,11 @@ def do_statistics(time, data):
 
 
 def print_statistics(title, stats):
-    print "------------------"
-    print title
-    print "mean (time weighted): {}".format(stats[0])
+    print("------------------")
+    print(title)
+    print("mean (time weighted): {}".format(stats[0]))
     # print "var  (time weighted): {}".format(stats[1])
-    print "std  (time weighted): {}".format(stats[2])
+    print("std  (time weighted): {}".format(stats[2]))
     # print "mean: {}".format(stats[3])
     # print "var : {}".format(stats[4])
     # print "std : {}".format(stats[5])
@@ -89,28 +91,34 @@ def print_statistics(title, stats):
 def init():
     # file_name = "/home/steffen/NaoTH/Logs/MesseLeipzig/lm15-naodevils-2/"
     # file_name = file_name + "091201-0819-Nao6022"
-    file_name = "/home/steffen/NaoTH/Logs/EuropeanOpen16/2016-03-30-test-naodevils/half1/"
-    file_name = file_name + "160330-1952-Nao6022"
-    file_name = file_name + "/game.log"
-    parser = BehaviorParser.BehaviorParser()
-    log = BehaviorParser.LogReader(file_name, parser)
+    #file_name = "/home/steffen/NaoTH/Logs/EuropeanOpen16/2016-03-30-test-naodevils/half1/"
+    #file_name = file_name + "160330-1952-Nao6022"
+    #file_name = file_name + "/game.log"
+    file_name = "game.log"
+    parser = BehaviorParser()
+    log = LogReader(file_name, parser)
     
     # enforce the whole log being parsed (this is necessary for older game logs)
     for frame in log:
-        if "BehaviorStateComplete" in frame.messages:
-            m = frame["BehaviorStateComplete"]
-        if "BehaviorStateSparse" in frame.messages:
-            m = frame["BehaviorStateSparse"]
-        frame["FrameInfo"]
+        pass
+        #print(frame.number)
+        #if "BehaviorStateComplete" in frame.messages:
+        #    m = frame["BehaviorStateComplete"]
+        #if "BehaviorStateSparse" in frame.messages:
+        #    m = frame["BehaviorStateSparse"]
+        #frame["FrameInfo"]
       
     return log
     
 
 def run(log):
-    reload(BehaviorParser)
+    #reload(BehaviorParser)
 
-    print log.names
+    print(log.names)
 
+    for i in log.messages:
+        print(i)
+    quit()
     # we want only the frames which contain BehaviorState*
     vlog = filter(lambda f: "BehaviorStateComplete" in f.messages or "BehaviorStateSparse" in f.messages, log)
    
@@ -119,14 +127,14 @@ def run(log):
    
     # make an numpy array
     data = np.array(a)
-    
+    print(vlog)
     size = data.shape
 
     data2 = np.empty([0, 14])
-
+    quit()
     current = 0
     motiontypeIndex = 13
-    for x in xrange(1, size[0]):
+    for x in range(1, size[0]):
         if data[current, motiontypeIndex] == data[x, motiontypeIndex]:
             continue
         elif data[current, motiontypeIndex] == 4 or data[current, motiontypeIndex] == 5:
@@ -146,10 +154,10 @@ def run(log):
     time_stand = sum(tr_stand[0])
     time_walk = sum(tr_walk[0])
     
-    print "------------------"
-    print "time standing: {}".format(time_stand)
-    print "time walking : {}".format(time_walk)
-    print "time total   : {}".format(time_stand + time_walk)
+    print("------------------")
+    print("time standing: {}".format(time_stand))
+    print("time walking : {}".format(time_walk))
+    print("time total   : {}".format(time_stand + time_walk))
 
     # RHipYawPitch
     d_stand_RHipYawPitch_stats = do_statistics(tr_stand[0], tr_stand[1])
@@ -262,3 +270,6 @@ def run(log):
     pyplot.legend(loc='upper left')
     pyplot.grid()
     pyplot.show()
+
+log = init()
+run(log)
