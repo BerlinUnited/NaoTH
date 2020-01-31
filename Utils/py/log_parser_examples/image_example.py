@@ -11,8 +11,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 from PIL import PngImagePlugin
-from naoth.LogReader import LogReader
-from naoth.LogReader import Parser
+from naoth.log import Reader as LogReader
+from naoth.log import Parser
 from pywget import wget
 
 
