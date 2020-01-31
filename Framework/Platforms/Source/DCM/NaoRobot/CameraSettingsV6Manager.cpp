@@ -99,18 +99,19 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
         //setRegister(cameraFd, 0x503D, 128));
         //uint16_t v = getRegister(cameraFd, 0x503D);
         //std::cout << "0x503D: " << v << std::endl;
-
-        // HACK: make less greenish
         
+        // Test: disable "special digital effects" (sde)
+        /*
         uint16_t sde = getRegister(cameraFd, 0x5001);
         std::cout << "sde " << std::bitset<16>(sde) << std::endl;
         sde = reset(sde, 7);
         std::cout << "sde " << std::bitset<16>(sde) << std::endl;
         setRegister(cameraFd, 0x5001, sde);
+        */
         
         // https://cdn.sparkfun.com/datasheets/Sensors/LightImaging/OV5640_datasheet.pdf
         // 7.21ISP top control:
-        // AWB bias manual enable
+        // AWB bias manual enable (make less greenish)
         /*
         uint16_t regVal = getRegister(cameraFd, 0x5005);
         std::cout << "REG VAL " << std::bitset<16>(regVal) << std::endl;
@@ -124,15 +125,16 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
         //setRegister(cameraFd, 0x5005, static_cast<uint16_t>(regVal));
         
         
-        //2800 (incandescent) to 6500 (daylight)
-        // test
-        {
+        // test: set color gains
+        /*
         setRegister32(cameraFd, 0x3400, static_cast<uint32_t>(1024)); // red
         setRegister32(cameraFd, 0x3402, static_cast<uint32_t>(1024)); // green
         setRegister32(cameraFd, 0x3404, static_cast<uint32_t>(1024)); // blue
-        }
+        */
         
-        // tests light frequency
+        
+        // test: set light frequency
+        /*
         uint16_t band_mode = getRegister(cameraFd, 0x3C01);
         std::cout << "band_mode " << std::bitset<16>(band_mode) << std::endl;
         band_mode = set(band_mode, 7); // set the bit 7 to 1
@@ -148,8 +150,9 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
         
         uint16_t band_value = getRegister(cameraFd, 0x3C0C);
         std::cout << "Band test: " << band_mode << ", " << band_value << std::endl;
+        */
         
-        // gain registers 0x350A/0x350B
+        // NOTE: for future tests: gain registers 0x350A/0x350B
         
         initialized = true;
     }
@@ -236,8 +239,13 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
           current.gain_red   = getRegister32(cameraFd, 0x3400);
           current.gain_green = getRegister32(cameraFd, 0x3402);
           current.gain_blue  = getRegister32(cameraFd, 0x3404);
+          
+          // print for debug
+          std::cout << LOG << " white balance: " << std::endl;
+          std::cout << "  red:   " << current.gain_red   << std::endl;
+          std::cout << "  green: " << current.gain_green << std::endl;
+          std::cout << "  blue:  " << current.gain_blue  << std::endl;
         }
-        
         
         current.autoWhiteBalancing = settings.autoWhiteBalancing;
         return;
@@ -277,7 +285,6 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
     // }
 
     
-    
     // NOTES on gain
     // https://cdn.sparkfun.com/datasheets/Sensors/LightImaging/OV5640_datasheet.pdf
     // 4.6.4: The OV5640 has a maximum of 64x gain.
@@ -287,6 +294,7 @@ void CameraSettingsV6Manager::apply(int cameraFd, const std::string& cameraName,
     {
         current.gain = settings.gain;
         
+        // DEBUG: print color gains
         uint32_t red_gain   = getRegister32(cameraFd, 0x3400);
         uint32_t green_gain = getRegister32(cameraFd, 0x3402);
         uint32_t blue_gain  = getRegister32(cameraFd, 0x3404);
@@ -450,7 +458,7 @@ bool CameraSettingsV6Manager::setRegister(int cameraFd, uint16_t addr, uint16_t 
     
     std::cout << " setRegister " << addr << ": " << value << std::endl;
     // wait for the query to be processed before other requests
-    usleep(500000); // 100ms
+    usleep(100000); // 100ms
     
     return true;
      

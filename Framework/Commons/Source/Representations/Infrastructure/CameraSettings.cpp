@@ -98,8 +98,9 @@ CameraSettingsRequest::CameraSettingsRequest(string configName)
   PARAMETER_REGISTER(v6.sharpness) = 4;
   PARAMETER_REGISTER(v6.hue) = 0;
   
-  PARAMETER_REGISTER(v6.gain_red) = 2048;
-  PARAMETER_REGISTER(v6.gain_green) = 2048;
+  // initial values that "look" good in the lab
+  PARAMETER_REGISTER(v6.gain_red) = 1280;
+  PARAMETER_REGISTER(v6.gain_green) = 1024;
   PARAMETER_REGISTER(v6.gain_blue) = 2048;
   
   PARAMETER_REGISTER(v6.horizontalFlip) = false;
