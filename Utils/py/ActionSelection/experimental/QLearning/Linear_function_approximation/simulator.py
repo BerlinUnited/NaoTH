@@ -6,7 +6,7 @@ from copy import copy, deepcopy
 import numpy as np
 import pickle
 
-from naoth.math2d import Vector2 as Vec
+from naoth.math import Vector2 as Vec
 
 # classes camel case, functions lower case
 
