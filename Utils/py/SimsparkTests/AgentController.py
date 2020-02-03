@@ -9,7 +9,7 @@ import subprocess
 import time
 import signal
 
-from naoth import Messages_pb2
+from naoth.pb import Messages_pb2
 
 class UnableToConnect(Exception):
     pass

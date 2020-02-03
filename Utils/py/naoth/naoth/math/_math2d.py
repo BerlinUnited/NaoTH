@@ -1,5 +1,6 @@
-import math
-import numbers
+import math as _math
+import numbers as _numbers
+
 
 def clamp(x, minimum, maximum):
     # function f where f(x)=x if min<= x <= max, f(x) = minimum if x < minimum, f(x) = maximum if x > maximum
@@ -26,18 +27,18 @@ class Vector2:
 
     def rotate(self, a):
         return Vector2(
-          math.cos(a)*self.x - math.sin(a)*self.y,
-          math.sin(a)*self.x + math.cos(a)*self.y)
+            _math.cos(a) * self.x - _math.sin(a) * self.y,
+            _math.sin(a) * self.x + _math.cos(a) * self.y)
 
     def abs(self):
-        return math.sqrt(self.x*self.x + self.y*self.y)
+        return _math.sqrt(self.x * self.x + self.y * self.y)
 
     def __mul__(self, other):
         if isinstance(other, Vector2):
             # interpret multiplication as other^t * self (scalar product of the vectors, where ^t means transpose)
-            return self.x*other.x + self.y*other.y
-        elif isinstance(other, numbers.Number):
-            return Vector2(self.x*other, self.y*other)
+            return self.x * other.x + self.y * other.y
+        elif isinstance(other, _numbers.Number):
+            return Vector2(self.x * other, self.y * other)
         else:
             return NotImplemented
 
@@ -45,7 +46,7 @@ class Vector2:
         if isinstance(other, Vector2):
             # interpret multiplication as other^t * self (scalar product of the vectors, where ^t means transpose)
             return self.x * other.x + self.y * other.y
-        elif isinstance(other, numbers.Number):
+        elif isinstance(other, _numbers.Number):
             return Vector2(self.x * other, self.y * other)
         else:
             return NotImplemented
@@ -53,10 +54,10 @@ class Vector2:
     # TODO python3: use __truediv__
     # https://docs.python.org/3/library/operator.html
     def __div__(self, fraction):
-        return Vector2(self.x/fraction, self.y/fraction)
+        return Vector2(self.x / fraction, self.y / fraction)
 
     def __truediv__(self, fraction):
-        return Vector2(self.x/fraction, self.y/fraction)
+        return Vector2(self.x / fraction, self.y / fraction)
 
     def __str__(self):
         return "({0},{1})".format(self.x, self.y)
@@ -85,7 +86,7 @@ class Vector2:
         if self.x == 0 and self.y == 0:
             return Vector2(self.x, self.y)
         else:
-            return (Vector2(self.x, self.y)*length) / self.abs()
+            return (Vector2(self.x, self.y) * length) / self.abs()
 
     # TODO is this function really necessary?
     def rotate_right(self):
@@ -94,7 +95,7 @@ class Vector2:
         return Vector2(y, -x)
 
     def angle(self):
-        return math.atan2(self.y, self.x)
+        return _math.atan2(self.y, self.x)
 
     def copy(self):
         return Vector2(self.x, self.y)
@@ -114,8 +115,8 @@ class Pose2D:
             return other.rotate(self.rotation) + self.translation
         elif isinstance(other, Pose2D):
             p = Pose2D()
-            p.translation = self*other.translation
-            p.rotation = (self.rotation + other.rotation + math.pi) % (2*math.pi) - math.pi
+            p.translation = self * other.translation
+            p.rotation = (self.rotation + other.rotation + _math.pi) % (2 * _math.pi) - _math.pi
             return p
         else:
             return NotImplemented
@@ -145,7 +146,7 @@ class Pose2D:
 
     def __str__(self):
         return "(translation = {0}, rotation = {1})".format(self.translation, self.rotation)
-        
+
     def rotate(self, a):
         self.rotation += a
 
@@ -159,28 +160,28 @@ class Pose2D:
 class LineSegment(object):
     def __init__(self, begin=Vector2(), end=Vector2()):
         self.base = begin
-        self.direction = end-self.base
+        self.direction = end - self.base
         self.length = Vector2.abs(self.direction)
         if self.direction.abs() != 0:
             self.direction /= self.direction.abs()
 
     def __str__(self):
-        return str("Begin: " + str(self.base)) + " End: " + str(self.base+self.direction*self.length)
+        return str("Begin: " + str(self.base)) + " End: " + str(self.base + self.direction * self.length)
 
     def begin(self):
         return self.base
 
     def end(self):
-        return self.base+self.direction*self.length
+        return self.base + self.direction * self.length
 
     def point(self, t):
         # waere es nicht besser hier auch noch zu normieren, damit man t in [0,1] waehlen kann, mit t = 0 -> base point
         # t = 1 -> end point
         t = clamp(t, 0.0, self.length)
-        return self.base + self.direction*t
+        return self.base + self.direction * t
 
     def project(self, p):
-        return self.direction*p - self.direction*self.base
+        return self.direction * p - self.direction * self.base
 
     def projection(self, p):
         t = self.direction * p - self.direction * self.base
@@ -188,14 +189,14 @@ class LineSegment(object):
 
     def intersection(self, other):
         # Difference to line_intersection is the additional check if t is within the length of the linesegment.
-        #HACK returns linesegment distance if intersection is not on linesegment
+        # HACK returns linesegment distance if intersection is not on linesegment
 
         normal = Vector2(-other.direction.y, other.direction.x)
-        t = normal*self.direction
+        t = normal * self.direction
         if t == 0:
             return float('Inf')
 
-        t = normal*(other.base-self.base)/t
+        t = normal * (other.base - self.base) / t
         t = clamp(t, 0.0, self.length)
 
         return t
@@ -204,11 +205,11 @@ class LineSegment(object):
         # maybe rename methods, this one and the one above; the return ist on how to scale the direction
         # vector to get the intersect point from the start (base) point. this is not derivable from the name
         normal = Vector2(-other.direction.y, other.direction.x)
-        t = normal*self.direction
+        t = normal * self.direction
         if t == 0:
             return float('Inf')
         else:
-            return normal*(other.base-self.base)/t
+            return normal * (other.base - self.base) / t
 
     def intersect(self, other):
         t = self.line_intersection(other)

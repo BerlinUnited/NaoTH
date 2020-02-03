@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 from collections import defaultdict
 from pathlib import Path
 
-from naoth.LogReader import LogReader
-from naoth.LogReader import Parser
+from naoth.log import Reader as LogReader
+from naoth.log import Parser
 
 
 def get_all_fsr_demo_logfiles():
