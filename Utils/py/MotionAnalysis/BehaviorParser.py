@@ -1,6 +1,6 @@
 #!/usr/bin/python
-from naoth.LogReader import LogReader
-from naoth.LogReader import Parser
+from naoth.log import Reader as LogReader
+from naoth.log import Parser
 
 from matplotlib import pyplot
 import numpy

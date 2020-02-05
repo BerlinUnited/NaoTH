@@ -1,38 +1,10 @@
-import struct
-import os
-import io
-
-from AudioData_pb2 import *
-from CommonTypes_pb2 import *
-from Framework_Representations_pb2 import *
-from Messages_pb2 import *
-from Representations_pb2 import *
-from TeamMessage_pb2 import *
-from google.protobuf import text_format
-
-class Parser:
-    def __init__(self):
-        self.nameToType = {}
-
-    def register(self, name, type):
-        self.nameToType[name] = type
-
-    def parse(self, name, data):
-        message = None
-
-        if name in self.nameToType:
-            name = self.nameToType[name]
-
-        if name in globals():
-            message = globals()[name]()
-
-        if message is not None:
-            message.ParseFromString(data)
-
-        return message
+import os as _os
+import io as _io
+import struct as _struct
+from ._parser import Parser
 
 
-class LogReader:
+class Reader:
     class Frame:
         def __init__(self, reader, number):
             self.reader = reader
@@ -69,13 +41,13 @@ class LogReader:
         self.__scanFrame()
 
     def __open(self, path):
-        if isinstance(path, io.IOBase):
-            self.size = os.stat(path.name).st_size
+        if isinstance(path, _io.IOBase):
+            self.size = _os.stat(path.name).st_size
             if path.mode != "rb":
                 raise Exception("File opened with the wrong mode! is {}, should be 'rb'".format(path.mode))
             self.log = path
         else:
-            statinfo = os.stat(path)
+            statinfo = _os.stat(path)
             self.size = statinfo.st_size
             self.log = open(path, "rb")
 
@@ -123,7 +95,7 @@ class LogReader:
                 frameNumber = self.readLong()
 
                 if currentFrame is None:
-                    currentFrame = LogReader.Frame(self, frameNumber)
+                    currentFrame = Reader.Frame(self, frameNumber)
 
                 if currentFrame.number != frameNumber:
                     self.log.seek(-4, 1)
@@ -169,10 +141,10 @@ class LogReader:
         return data
 
     def readLong(self):
-        return struct.unpack("=l", self.readBytes(4))[0]
+        return _struct.unpack("=l", self.readBytes(4))[0]
 
     def readChar(self):
-        return struct.unpack("=c", self.readBytes(1))[0]
+        return _struct.unpack("=c", self.readBytes(1))[0]
 
     # read a '\0' terminated string
     def readString(self):
@@ -192,12 +164,3 @@ class LogReader:
             return self.filter(self.frames[i])
         else:
             raise StopIteration
-
-
-if __name__ == "__main__":
-
-    myParser = Parser()
-    myParser.register("CameraMatrixTop", "CameraMatrix")
-
-    for i in LogReader("./cognition.log", myParser):
-        print(i.frameNumber, i.name)
