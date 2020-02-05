@@ -18,53 +18,52 @@ class CameraInfo:
 
     def _update_vars(self):
         """Calculates the focal length and the optical center of this camera.
-        It is sufficient to calculate those values once or only if one of the other values chagnes.
+        It is sufficient to calculate those values once or only if one of the other values changes.
         """
         self._focal_length = (0.5 * np.sqrt(self._width ** 2 + self._height ** 2)) \
                              / np.tan(0.5 * self._opening_angle_diagonal)
 
         self._optical_center = self._width / 2, self._height / 2
 
-    def width(self, new_width=None):
-        """Returns the width of this camera image.
-        If a new width is set, this width is used for this camera and the new value is returned.
-        :param new_width    if not None, sets a new width for this camera
-        :returns width of this camera image
-        """
-        if new_width:
-            self._width = new_width
-            self._update_vars()
+    @property
+    def width(self):
+        """Returns the width of this camera image."""
         return self._width
 
-    def height(self, new_height=None):
-        """Returns the height of this camera image.
-        If a new height is set, this height is used for this camera and the new value is returned.
-        :param new_height    if not None, sets a new height for this camera
-        :returns height of this camera image
-        """
-        if new_height:
-            self._height = new_height
-            self._update_vars()
+    @width.setter
+    def width(self, new_width):
+        """Sets the new width of the camera image."""
+        self._width = new_width
+        self._update_vars()
+
+    @property
+    def height(self):
+        """Returns the height of this camera image."""
         return self._height
 
-    def opening_angle_diagonal(self, new_opening_angle_diagonal=None):
-        """Returns the opening angle diagonal of this camera. If a new opening angle diagonal is set, this opening
-        angle diagonal is used for this camera and the new value is returned.
-        :param new_opening_angle_diagonal    if not None, sets a new opening angle diagonal for this camera
-        :returns opening angle diagonal of this camera
-        """
-        if new_opening_angle_diagonal:
-            self._opening_angle_diagonal = new_opening_angle_diagonal
-            self._update_vars()
+    @height.setter
+    def height(self, new_height):
+        """Sets the new height of the camera image."""
+        self._height = new_height
+        self._update_vars()
+
+    @property
+    def opening_angle_diagonal(self):
+        """Returns the opening angle diagonal of this camera."""
         return self._opening_angle_diagonal
 
+    @opening_angle_diagonal.setter
+    def opening_angle_diagonal(self, new_opening_angle_diagonal):
+        """Sets the new opening angle diagonal of this camera"""
+        self._opening_angle_diagonal = new_opening_angle_diagonal
+        self._update_vars()
+
     def focal_length(self):
-        """
-        :returns focal length of the camera
-        """
+        """Returns the focal length of the camera."""
         return self._focal_length
 
     def optical_center(self):
+        """Returns the optical center of the camera image as tuple (half width, half height)."""
         return self._optical_center
 
     def calculate_artificial_horizon(self, c_rot):
