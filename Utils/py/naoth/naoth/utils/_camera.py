@@ -1,5 +1,4 @@
-import numpy as np
-import numpy.linalg as la
+import numpy as _np
 
 
 class CameraInfo:
@@ -7,7 +6,7 @@ class CameraInfo:
     CameraInfo with default values
     """
 
-    def __init__(self, width=640, height=480, opening_angle_diagonal=np.radians(72.6)):
+    def __init__(self, width=640, height=480, opening_angle_diagonal=_np.radians(72.6)):
         self._width = width
         self._height = height
         self._opening_angle_diagonal = opening_angle_diagonal
@@ -20,8 +19,8 @@ class CameraInfo:
         """Calculates the focal length and the optical center of this camera.
         It is sufficient to calculate those values once or only if one of the other values changes.
         """
-        self._focal_length = (0.5 * np.sqrt(self._width ** 2 + self._height ** 2)) \
-                             / np.tan(0.5 * self._opening_angle_diagonal)
+        self._focal_length = (0.5 * _np.sqrt(self._width ** 2 + self._height ** 2)) \
+                             / _np.tan(0.5 * self._opening_angle_diagonal)
 
         self._optical_center = self._width / 2, self._height / 2
 
@@ -91,11 +90,11 @@ class CameraInfo:
         y2 = v3 + (r31 * v1 - r32 * v2) / r33
 
         # Mirror ends of horizon if Camera rotated to the left
-        if (c_rot @ np.array([0, 0, 1]))[2] < 0:
+        if (c_rot @ _np.array([0, 0, 1]))[2] < 0:
             x1, x2 = x2, x1
             y1, y2 = y2, y1
 
-        return np.array((x1, y1)), np.array((x2, y2))
+        return _np.array((x1, y1)), _np.array((x2, y2))
 
     def project(self, x, y, c_rot, c_trans):
         """
@@ -109,7 +108,7 @@ class CameraInfo:
 
         half_x, half_y = self._optical_center
 
-        pixel_v = np.array((
+        pixel_v = _np.array((
             self._focal_length,
             half_x - x,
             half_y - y
@@ -124,14 +123,14 @@ class CameraInfo:
 
     def relative_point_to_image(self, point, c_rot, c_trans):
         if len(point) == 2:
-            point = np.array((*point, 0))
+            point = _np.array((*point, 0))
         elif len(point) != 3:
             raise ValueError('Given point must have a dimension of 2 of 3')
 
         epsilon = 1e-13
 
         # vector: O --> point (in camera coordinates)
-        vector_to_point = la.inv(c_rot) @ (point - c_trans)
+        vector_to_point = _np.linalg.inv(c_rot) @ (point - c_trans)
 
         # the point is behind the camera plane
         if vector_to_point[0] <= epsilon:
@@ -140,7 +139,7 @@ class CameraInfo:
         factor = self.focal_length() / vector_to_point[0]
         center_x, center_y = self._optical_center
 
-        point_in_image = np.array((
+        point_in_image = _np.array((
                 - (vector_to_point[1] * factor) + 0.5 + center_x
                 - (vector_to_point[2] * factor) + 0.5 + center_y
         ))
