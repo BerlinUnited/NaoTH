@@ -5,9 +5,10 @@ import struct
 from argparse import ArgumentParser
 from pathlib import Path
 
-from naoth.Framework_Representations_pb2 import *
-from naoth.LogReader import LogReader
-from naoth.LogReader import Parser
+#from naoth.Framework_Representations_pb2 import *
+from naoth.pb.Framework_Representations_pb2 import Image
+from naoth.log import Reader as LogReader
+from naoth.log import Parser
 from pywget import wget
 
 
@@ -18,12 +19,18 @@ def get_demo_logfiles():
     # taken from /vol/repl261-vol4/naoth/logs/2019-11-21_Koeln/
     # 2019-11-21_16-20-00_Berlin United_vs_Nao_Devils_Dortmund_half1/game_logs/1_96_Nao0377_191122-0148
 
+    print("Downloading Logfiles: {}".format(logfile_list))
+    
     target_dir = Path("logs")
     Path.mkdir(target_dir, exist_ok=True)
 
+    print (" Download from: {}".format(base_url))
+    print (" Download to: {}".format(target_dir.resolve()))
     for logfile in logfile_list:
         if not Path(target_dir / logfile).is_file():
+            print ("Download: {}".format(logfile))
             wget.download(base_url + logfile, str(target_dir))
+            print ("Done.")
 
 
 def create_image_log_dict(image_log):
@@ -34,6 +41,7 @@ def create_image_log_dict(image_log):
     width = 640
     height = 480
     bytes_per_pixel = 2
+    image_data_size = width * height * bytes_per_pixel
 
     images_dict = dict()
 
@@ -41,11 +49,12 @@ def create_image_log_dict(image_log):
         while True:
             frame = f.read(4)
             frame_number = int.from_bytes(frame, byteorder='little')
-            data = f.read(width * height * bytes_per_pixel)
+            data = f.read(image_data_size)
 
             # handle the case of incomplete image at the end of the logfile
-            if len(data) != width * height * bytes_per_pixel:
-                print("read only {0} bytes, but {1} needed.".format(len(data), width * height * bytes_per_pixel))
+            if len(data) != image_data_size:
+                print("Info: Read from {} frame {}: only {} bytes, but {} expected. Stop.".format(image_log, frame_number, len(data), image_data_size))
+                print("Info: Last frame seems to be incomplete.")
                 break
 
             images_dict[frame_number] = data
@@ -128,6 +137,6 @@ if __name__ == "__main__":
     print("parse image log")
     parsed_image_log = create_image_log_dict(args.ilog)
 
-    print("write new log")
+    print("write new log to: {}".format(args.olog))
     camera_bottom = False  # assumes the first image is a top image
     write_log(args.olog, parsed_game_log, parsed_image_log, camera_bottom)
