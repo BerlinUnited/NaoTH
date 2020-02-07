@@ -17,13 +17,13 @@ class DebugProxy:
         _as.ensure_future(server)
 
     @staticmethod
-    def main(sink_port: int, nao_addr: _t.Tuple[str, int]):
+    def run(sink_port: int, nao_addr: _t.Tuple[str, int]):
         """
         Opens a relay between RobotControl and Nao
         :param sink_port: Port, RobotControl connects to
         :param nao_addr: (Address, Port) Tuple of the Nao
         """
-        RcProxy(sink_port, nao_addr)
+        DebugProxy(sink_port, nao_addr)
 
         loop = _as.get_event_loop()
 
