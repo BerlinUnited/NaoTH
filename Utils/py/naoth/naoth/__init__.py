@@ -4,3 +4,4 @@ from . import matlab
 from . import spl
 from . import log
 from . import tests
+from . import utils
