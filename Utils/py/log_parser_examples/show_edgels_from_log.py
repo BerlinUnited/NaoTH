@@ -1,16 +1,14 @@
 #!/usr/bin/python
+import math
 from argparse import ArgumentParser
-from pywget import wget
 from pathlib import Path
 
-import math
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
-
-import naoth.math2d as m2
-import naoth.math3d as m3
-from naoth.LogReader import LogReader
-from naoth.LogReader import Parser
+import naoth.math as m
+from naoth.log import Parser
+from naoth.log import Reader as LogReader
+from pywget import wget
 
 
 def get_demo_logfiles():
@@ -26,11 +24,11 @@ def get_demo_logfiles():
 
 
 def parse_vector3(message):
-    return m3.Vector3(message.x, message.y, message.z)
+    return m.Vector3(message.x, message.y, message.z)
 
 
 def parse_camera_matrix(matrix_frame):
-    p = m3.Pose3D()
+    p = m.Pose3D()
     p.translation = parse_vector3(matrix_frame.pose.translation)
     p.rotation.c1 = parse_vector3(matrix_frame.pose.rotation[0])
     p.rotation.c2 = parse_vector3(matrix_frame.pose.rotation[1])
@@ -66,13 +64,13 @@ def get_focal_length():
 
 
 def project_edgel(x, y, cam_matrix):
-    v = m3.Vector3()
+    v = m.Vector3()
     v.x = get_focal_length()
     v.y = 320 - x
     v.z = 240 - y
 
     v = cam_matrix.rotation * v
-    result = m2.Vector2()
+    result = m.Vector2()
     result.x = v.x
     result.y = v.y
     result = result*(cam_matrix.translation.z / (-v.z))

@@ -32,6 +32,7 @@ deployFile() {
 	fi
 }
 
+
 deployDirectory() {
 	local DIR="$1"
 	local OWNER="$2"
@@ -69,23 +70,17 @@ setEtc(){
 
 	# ==================== system stuff ====================
 
-	# NaoTH systemd service
+	# NaoTH systemd service environment file
 	deployFile "/etc/conf.d/naoth" "root" "644" "v6"
 
 	# brainwash udev rule
-	deployFile "/etc/udev/rules.d/brainwashing.rules" "nao" "644" "v6"
+	deployFile "/etc/udev/rules.d/brainwashing.rules" "root" "644" "v6"
 
 	# ====================  host stuff ====================
 
 	# hostname
-	deployFile "/etc/conf.d/hostname" "root" "644" "v6"
 	deployFile "/etc/hostname" "root" "644" "v6"
-
-	# ====================  reload daemons ====================
-	systemctl daemon-reload
 }
-
-
 
 
 # ==================== pre stuff ====================
@@ -114,6 +109,7 @@ deployFile "/usr/bin/brainwash" "root" "755" "v6"
 
 # NaoTH binary start script
 deployFile "/usr/bin/naoth" "root" "755" "v6"
+deployFile "/usr/bin/lola_adaptor" "root" "755" "v6"
 
 # ==================== etc stuff ====================
 
@@ -121,8 +117,6 @@ deployFile "/usr/bin/naoth" "root" "755" "v6"
 umount -l /etc
 setEtc
 systemctl restart etc.mount
-# TODO: check if this is really needed (overlay should merge base and overlayed directory contents)
-setEtc
 
 # ==================== boot/user service stuff ====================
 
@@ -147,6 +141,7 @@ if [ ! -h /nao/etc/systemd/user/aldebaran.target.wants/lola_adaptor.service ];	t
 	echo "setting link to lola_adaptor.service";
 	ln -s /nao/etc/systemd/user/lola_adaptor.service /nao/etc/systemd/user/aldebaran.target.wants/lola_adaptor.service;
 fi
+
 if [ ! -h /nao/etc/systemd/user/aldebaran.target.wants/naoth.service ];	then
 	echo "setting link to naoth.service";
 	ln -s /nao/etc/systemd/user/naoth.service /nao/etc/systemd/user/aldebaran.target.wants/naoth.service;
@@ -157,19 +152,19 @@ fi
 # add lib directory
 if [ ! -d /home/nao/lib ]
 then
-    echo "creating directory /home/nao/lib";
-		mkdir /home/nao/lib
-		chown nao:nao /home/nao/lib
-		chmod 744 /home/nao/lib
+	echo "creating directory /home/nao/lib";
+	mkdir /home/nao/lib
+	chown nao:nao /home/nao/lib
+	chmod 744 /home/nao/lib
 fi
 
 # add bin directory
 if [ ! -d /home/nao/bin ]
 then
-    echo "creating directory /home/nao/bin";
-		mkdir /home/nao/bin
-		chown nao:nao /home/nao/bin
-		chmod 744 /home/nao/bin
+	echo "creating directory /home/nao/bin";
+	mkdir /home/nao/bin
+	chown nao:nao /home/nao/bin
+	chmod 744 /home/nao/bin
 fi
 
 if [ -f ./deploy/v6/home/nao/lib/libprotobuf.so.14 ]; then
@@ -217,19 +212,8 @@ else
 fi
 
 # ==================== copy stuff ====================
-
-
-# add link to the Config directory
-if [ ! -d /home/root ]
-then
-    echo "symlinking root directory to /home/root";
-		mv /root /home/root
-    ln -s /home/root /root;
-fi
-
-NAO_NUMBER=$(cat /etc/hostname | grep nao | sed -e 's/nao//g')
-
 deployFile "/home/nao/robocup.conf" "nao" "644" "v6"
+deployFile "/home/nao/.profile" "nao" "644"
 
 # deploy binary
 deployFile "/home/nao/bin/naoth" "nao" "755" 
@@ -271,10 +255,6 @@ chmod 644 /home/nao/Config/nao.info
 
 chown -R nao:nao /home/nao/backup*
 
-# allow everyone to shutdown
-chmod +s /sbin/shutdown
-chmod +s /sbin/reboot
-
 #remount root in read only mode
 mount -o remount,ro /
 
@@ -288,6 +268,7 @@ fi
 connmanctl scan wifi
 CONNMAN_SERVICES=$(connmanctl services)
 
+NAO_NUMBER=$(cat /etc/hostname | grep nao | sed 's/nao//g')
 ETH0_MAC=$(cat /sys/class/net/eth0/address | sed -e 's/://g')
 WLAN0_MAC=$(cat /sys/class/net/wlan0/address | sed -e 's/://g')
 WLAN0_MAC_FULL=$(cat /sys/class/net/wlan0/address | tr a-z A-Z)
