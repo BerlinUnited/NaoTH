@@ -88,7 +88,6 @@ def project_edgel(x, y, cam_matrix):
 
 
 def animate(i, log_iterator, edgels_plot_top, edgels_plot, projected_edgels_plot):
-    print(i)
     # TODO use for and yield here
     msg = log_iterator.__next__()
 
