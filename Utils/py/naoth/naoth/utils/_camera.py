@@ -1,9 +1,9 @@
 import numpy as _np
 
 
-class CameraInfo:
+class Camera:
     """
-    CameraInfo with default values
+    Represents the camera info of a nao with additional methods for the geometry.
     """
 
     def __init__(self, width=640, height=480, opening_angle_diagonal=_np.radians(72.6)):
@@ -153,13 +153,13 @@ class CameraInfo:
                f'opening_angle_diagonal={self.opening_angle_diagonal}'
 
 
-class LogCameraInfo(CameraInfo):
+class LogCamera(Camera):
     """
     CameraInfo parsed from a log file frame
     """
 
     def __init__(self, camera_info_data):
-        CameraInfo.__init__(self, camera_info_data.resolutionWidth,
+        Camera.__init__(self, camera_info_data.resolutionWidth,
                             camera_info_data.resolutionHeight,
                             camera_info_data.openingAngleDiagonal)
 
