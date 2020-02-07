@@ -5,7 +5,6 @@ import struct
 from argparse import ArgumentParser
 from pathlib import Path
 
-#from naoth.Framework_Representations_pb2 import *
 from naoth.pb.Framework_Representations_pb2 import Image
 from naoth.log import Reader as LogReader
 from naoth.log import Parser
@@ -20,17 +19,19 @@ def get_demo_logfiles():
     # 2019-11-21_16-20-00_Berlin United_vs_Nao_Devils_Dortmund_half1/game_logs/1_96_Nao0377_191122-0148
 
     print("Downloading Logfiles: {}".format(logfile_list))
-    
+
     target_dir = Path("logs")
     Path.mkdir(target_dir, exist_ok=True)
 
-    print (" Download from: {}".format(base_url))
-    print (" Download to: {}".format(target_dir.resolve()))
+    print(" Download from: {}".format(base_url))
+    print(" Download to: {}".format(target_dir.resolve()))
     for logfile in logfile_list:
         if not Path(target_dir / logfile).is_file():
-            print ("Download: {}".format(logfile))
+            print("Download: {}".format(logfile))
             wget.download(base_url + logfile, str(target_dir))
-            print ("Done.")
+            print("Done.")
+
+    print("Finished downloading")
 
 
 def create_image_log_dict(image_log):
@@ -53,7 +54,8 @@ def create_image_log_dict(image_log):
 
             # handle the case of incomplete image at the end of the logfile
             if len(data) != image_data_size:
-                print("Info: Read from {} frame {}: only {} bytes, but {} expected. Stop.".format(image_log, frame_number, len(data), image_data_size))
+                print("Info: Read from {} frame {}: only {} bytes, but {} expected. Stop.".format(
+                    image_log, frame_number, len(data), image_data_size))
                 print("Info: Last frame seems to be incomplete.")
                 break
 
