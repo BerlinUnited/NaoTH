@@ -16,25 +16,55 @@ for _m in _inspect.getmembers(_pb, _inspect.ismodule):
 
 
 class Parser:
-    def __init__(self):
-        self.nameToType = {}
+    """
+    Parses raw log file frame member bytes using protobuf.
+    If a name of a frame member does not match a class defined in protobuf,
+    the corresponding class name needs to be defined using the register function.
 
-    def register(self, name, type):
-        self.nameToType[name] = type
+    Ex: parser.register("ImageTop", "Image") where Image is the corresponding name of the protobuf class.
+    """
+
+    def __init__(self):
+        self.protobuf_classes = {}
+
+        # load protobuf classes
+        for module in [CommonTypes_pb2, Framework_Representations_pb2, Messages_pb2, Representations_pb2,
+                       TeamMessage_pb2, AudioData_pb2]:
+            self.protobuf_classes.update(LogParser._load_classes_from(module))
+
+        self.name_to_type = {}
+
+    @staticmethod
+    def _load_classes_from(module):
+        return {cls[0]: cls[1] for cls in inspect.getmembers(module, inspect.isclass)}
+
+    def register(self, name: str, _type: str):
+        """
+        Register name corresponding protobuf type.
+        :param name: frame member name
+        :param _type: class in protobuf
+        """
+        if _type not in self.protobuf_classes:
+            raise ValueError(f'Class {_type} is not part of the protobuf defined types.')
+
+        self.name_to_type[name] = _type
 
     def parse(self, name, data):
-        message = None
-
-        if name in self.nameToType:
-            name = self.nameToType[name]
-
-        if name in _proto:
-            message = _proto[name]()
-
-        if message is not None:
+        """
+        Parse frame member bytes using protobuf.
+        :param name: of frame member
+        :param data: payload bytes
+        :returns member class
+        """
+        if name in self.name_to_type:
+            name = self.name_to_type[name]
+        # protobuf
+        if name in self.protobuf_classes:
+            message = self.protobuf_classes[name]()
             message.ParseFromString(data)
-
-        return message
+            return message
+        else:
+            raise ValueError(f'Class {name} is not part of the protobuf defined types.')
 
 
 class SymbolParser:
