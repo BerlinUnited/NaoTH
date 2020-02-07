@@ -1,5 +1,7 @@
 """
     combines image.logs and game.log files such that the resulting log contains images, frameinfo and camera matrix data
+
+    TODO implement a faster method that does not parse the logs but combines the binary blocks directly
 """
 import struct
 from argparse import ArgumentParser
