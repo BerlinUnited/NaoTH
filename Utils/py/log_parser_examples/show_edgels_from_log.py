@@ -15,12 +15,20 @@ def get_demo_logfiles():
     base_url = "https://www2.informatik.hu-berlin.de/~naoth/ressources/log/demo_edgels/"
     logfile_list = ["2019-07-05_11-45-00_Berlin United_vs_NomadZ_half2-1_93_Nao0212.log"]
 
+    print("Downloading Logfiles: {}".format(logfile_list))
+
     target_dir = Path("logs")
     Path.mkdir(target_dir, exist_ok=True)
 
+    print(" Download from: {}".format(base_url))
+    print(" Download to: {}".format(target_dir.resolve()))
     for logfile in logfile_list:
         if not Path(target_dir / logfile).is_file():
+            print("Download: {}".format(logfile))
             wget.download(base_url+logfile, target_dir)
+            print("Done.")
+
+    print("Finished downloading")
 
 
 def parse_vector3(message):
