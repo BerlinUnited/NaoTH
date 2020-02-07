@@ -1,31 +1,38 @@
-"""
-Toolset to send RobotControl like commands to the robot.
+import struct as _struct
+import asyncio as _as
+import typing as _t
 
-Relay Class:    Debugging class, creating a connection between RobotControlGui and the Nao to inspect messages
-
-Command Class:  RobotControl like command with name and arguments
-                which can be written to a sink that is connected to the Nao
-
-Response Class: Reads a response from the Nao and parses id and size
-"""
-
-import asyncio
-import struct
-from typing import Tuple
-
-from naoth.messages.Messages_pb2 import CMD
+from .. import pb as _pb
 
 
-class Relay:
+class DebugProxy:
     """
-    Relay a connection between robot and RobotControl to inspect the control flow
+    Debugging class, creating a connection between RobotControlGui and the Nao to inspect messages and the control flow.
     """
 
     def __init__(self, sink_port, robot_addr):
         self.robot_addr = robot_addr
 
-        server = asyncio.start_server(self._relay_commander, '127.0.0.1', sink_port, loop=asyncio.get_event_loop())
-        asyncio.ensure_future(server)
+        server = _as.start_server(self._relay_commander, '127.0.0.1', sink_port, loop=_as.get_event_loop())
+        _as.ensure_future(server)
+
+    @staticmethod
+    def main(sink_port: int, nao_addr: _t.Tuple[str, int]):
+        """
+        Opens a relay between RobotControl and Nao
+        :param sink_port: Port, RobotControl connects to
+        :param nao_addr: (Address, Port) Tuple of the Nao
+        """
+        RcProxy(sink_port, nao_addr)
+
+        loop = _as.get_event_loop()
+
+        try:
+            loop.run_forever()
+        except KeyboardInterrupt:
+            pass
+
+        loop.close()
 
     async def _relay_commander(self, commander_reader, commander_writer):
         robot_writer = None
@@ -35,14 +42,14 @@ class Relay:
 
             # create relaying connection
             if robot_writer is None:
-                robot_reader, robot_writer = await asyncio.open_connection(host=self.robot_addr[0],
-                                                                           port=self.robot_addr[1],
-                                                                           loop=asyncio.get_event_loop())
-                asyncio.ensure_future(self._relay_robot(robot_reader, commander_writer))
+                robot_reader, robot_writer = await _as.open_connection(host=self.robot_addr[0],
+                                                                       port=self.robot_addr[1],
+                                                                       loop=_as.get_event_loop())
+                _as.ensure_future(self._relay_robot(robot_reader, commander_writer))
 
             # relay and parse command id
             robot_writer.write(raw_id)
-            command_id = read_long(raw_id)
+            command_id = _struct.unpack('=l', raw_id)[0]
 
             # check if command is not just a heart beat
             if command_id != -1:
@@ -50,14 +57,14 @@ class Relay:
                 raw_length = await commander_reader.read(4)
                 robot_writer.write(raw_length)
 
-                command_length = read_long(raw_length)
+                command_length = _struct.unpack('=l', raw_length)[0]
 
                 # relay and parse command
                 command_bytes = await commander_reader.read(command_length)
                 robot_writer.write(command_bytes)
 
                 # parse command bytes
-                command = CMD()
+                command = _pb.Messages_pb2.CMD()
                 command.ParseFromString(command_bytes)
                 print(command)
 
@@ -84,7 +91,7 @@ class Relay:
             raw_size = await robot_reader.read(4)
             command_writer.write(raw_size)
 
-            size = read_long(raw_size)
+            size = _struct.unpack('=l', raw_size)[0]
             print('Size', size)
 
             # relay and parse response data
@@ -96,26 +103,10 @@ class Relay:
             except UnicodeDecodeError:
                 pass
 
-    @staticmethod
-    def main(sink_port: int, nao_addr: Tuple[str, int]):
-        """
-        Opens a relay between RobotControl and Nao
-        :param sink_port: Port, RobotControl connects to
-        :param nao_addr: (Address, Port) Tuple of the Nao
-        """
-        Relay(sink_port, nao_addr)
 
-        loop = asyncio.get_event_loop()
+class DebugCommand:
+    """A DebugCommad used in our naoth framework with name and arguments."""
 
-        try:
-            loop.run_forever()
-        except KeyboardInterrupt:
-            pass
-
-        loop.close()
-
-
-class Command:
     def __init__(self, _id, name, *args, **value_args):
         """
         Create a command which can be send to the robot
@@ -158,7 +149,7 @@ class Command:
         """
         :returns bytes representation of this command ready to send
         """
-        cmd = CMD()
+        cmd = _pb.Messages_pb2.CMD()
         cmd.name = self.name
         for name, value in self.args.items():
             arg = cmd.args.add()
@@ -166,10 +157,12 @@ class Command:
             if value is not None:
                 arg.bytes = value
         raw_command = cmd.SerializeToString()
-        return long_from_int(self._id) + long_from_int(len(raw_command)) + raw_command
+        return _struct.pack('=l', self._id) + _struct.pack('=l', len(raw_command)) + raw_command
 
 
-class Response:
+class DebugResponse:
+    """Reads a response from the Nao and parses id and size"""
+
     def __init__(self):
         self._id = None
         self.data = None
@@ -177,26 +170,14 @@ class Response:
     async def read(self, reader):
         # read command id
         raw_id = await reader.read(4)
-        self._id = read_long(raw_id)
+        self._id = _struct.unpack('=l', raw_id)[0]
 
         # read response size
         raw_size = await reader.read(4)
 
-        size = read_long(raw_size)
+        size = _struct.unpack('=l', raw_size)[0]
         # read response data
         self.data = await reader.read(size)
 
     def get_id(self):
         return self._id
-
-
-def long_from_int(integer):
-    return struct.pack('=l', integer)
-
-
-def read_long(_bytes):
-    return struct.unpack('=l', _bytes)[0]
-
-
-if __name__ == '__main__':
-    Relay.main(7777, ('127.0.0.1', 5401))
