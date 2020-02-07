@@ -7,14 +7,6 @@ from .. import pb as _pb
 from ._xabsl import XABSLOption, XABSLAction
 
 
-# get all protobuf classes
-_proto = {}
-for _m in _inspect.getmembers(_pb, _inspect.ismodule):
-    for _c in _inspect.getmembers(_m[1], _inspect.isclass):
-        if not _c[0].startswith('_'):
-            _proto[_c[0]] = _c[1]
-
-
 class Parser:
     """
     Parses raw log file frame member bytes using protobuf.
@@ -27,16 +19,13 @@ class Parser:
     def __init__(self):
         self.protobuf_classes = {}
 
-        # load protobuf classes
-        for module in [CommonTypes_pb2, Framework_Representations_pb2, Messages_pb2, Representations_pb2,
-                       TeamMessage_pb2, AudioData_pb2]:
-            self.protobuf_classes.update(LogParser._load_classes_from(module))
+        # get all protobuf classes
+        for _m in _inspect.getmembers(_pb, _inspect.ismodule):
+            for _c in _inspect.getmembers(_m[1], _inspect.isclass):
+                if not _c[0].startswith('_'):
+                    self.protobuf_classes[_c[0]] = _c[1]
 
         self.name_to_type = {}
-
-    @staticmethod
-    def _load_classes_from(module):
-        return {cls[0]: cls[1] for cls in inspect.getmembers(module, inspect.isclass)}
 
     def register(self, name: str, _type: str):
         """
