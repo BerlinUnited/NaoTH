@@ -22,6 +22,9 @@
 
 #include <poll.h>
 
+#include <linux/i2c.h>
+#include <linux/i2c-dev.h>
+
 /*
 // NOTE: for future improvements of the error handling take a look at 
    https://linux.die.net/man/3/explain_ioctl
@@ -37,8 +40,50 @@
   }
 */
 
+
+static inline __s32 i2c_smbus_access(int file, char read_write, __u8 command,
+                                     int size, union i2c_smbus_data *data)
+{
+    struct i2c_smbus_ioctl_data args;
+ 
+    args.read_write = read_write;
+    args.command = command;
+    args.size = size;
+    args.data = data;
+    return ioctl(file,I2C_SMBUS,&args);
+}
+
+static inline __s32 i2c_smbus_read_byte_data(int file, __u8 command)
+{
+    union i2c_smbus_data data;
+    if (i2c_smbus_access(file,I2C_SMBUS_READ,command,
+                         I2C_SMBUS_BYTE_DATA,&data))
+        return -1;
+    else
+        return 0x0FF & data.byte;
+}
+
+static inline __s32 i2c_smbus_write_byte_data(int file, __u8 command, __u8 value)
+{
+    union i2c_smbus_data data;
+    data.byte = value;
+    return i2c_smbus_access(file,I2C_SMBUS_WRITE,command, I2C_SMBUS_BYTE_DATA, &data);
+}
+
+// NOTE: send a single value as block data
+static inline __s32 i2c_smbus_write_block_data(int file, __u8 command, __u8 value)
+{
+    union i2c_smbus_data data;
+    data.block[0] = 1;
+    data.block[1] = value;
+    return i2c_smbus_access(file,I2C_SMBUS_WRITE, command, I2C_SMBUS_BLOCK_DATA, &data);
+}
+
+static bool resetDone = false;
+ 
 #define LOG "[CameraHandler:" << __LINE__ << ", Camera: " << cameraName << "] "
 #define hasIOError(...) hasIOErrorPrint(__LINE__, __VA_ARGS__)
+#define check(...) hasIOError(__VA_ARGS__, errno)
 
 using namespace naoth;
 using namespace std;
@@ -73,6 +118,45 @@ void V4lCameraHandler::init(std::string camDevice, CameraInfo::CameraID camID, b
   }
   
   if (isV6) {
+    
+    // reset camera
+    //
+    // https://github.com/mozilla-b2g/i2c-tools/blob/master/tools/i2cbusses.c
+    //  open_i2c_dev(...)
+    int i2c = open("/dev/i2c-head", O_RDWR);
+    if(i2c < 0) {
+      fprintf(stderr, "[V4lCameraHandler] Error: Could not open file '/dev/i2c-head': %s\n", strerror(errno));
+    } else if(!resetDone) {
+      
+      // select the slave device?
+      int err = ioctl(i2c, I2C_SLAVE, 0x41);
+      if(err < 0) {
+        fprintf(stderr, "[V4lCameraHandler] Error: I2C_SLAVE: %s\n", strerror(errno));
+      }
+      
+      // check if the device is set to writing mode?
+      const __s32 result = i2c_smbus_read_byte_data(i2c, 0x3);
+      if (result < 0) {
+        fprintf(stderr, "[V4lCameraHandler] Error: i2c_smbus_read_byte_data: %s\n", strerror(errno));
+      } else if ((result & 0xc) != 0) {
+        // configure as output
+        //check(i2c_smbus_write_byte_data(i2c, 0x3, 0xf3));
+        check(i2c_smbus_write_block_data(i2c, 0x3, 0xf3));
+        //i2c_smbus_write_byte_data(i2c, 0x1, 0x0); // reset_camera_hold
+      }
+      
+      // send the reset command?
+      //check(i2c_smbus_write_byte_data(i2c, 0x1, 0x0)); // reset_camera_hold
+      //check(i2c_smbus_write_byte_data(i2c, 0x1, 0xc)); // reset_camera_release
+      check(i2c_smbus_write_block_data(i2c, 0x1, 0x0)); // reset_camera_hold
+      check(i2c_smbus_write_block_data(i2c, 0x1, 0xc)); // reset_camera_release
+      
+      close(i2c);
+      fprintf(stdout, "[V4lCameraHandler] Done resetting cameras '/dev/i2c-head'.");
+      sleep(3);
+      resetDone = true;
+    }
+    
     settingsManager = std::make_shared<CameraSettingsV6Manager>();
   } else {
     settingsManager = std::make_shared<CameraSettingsV5Manager>();
