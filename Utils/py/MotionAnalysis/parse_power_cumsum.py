@@ -1,10 +1,10 @@
 import struct
 
 # protobuf
-from naoth.CommonTypes_pb2 import *
-from naoth.Framework_Representations_pb2 import *
-from naoth.Messages_pb2 import *
-from naoth.Representations_pb2 import *
+from naoth.pb.CommonTypes_pb2 import *
+from naoth.pb.Framework_Representations_pb2 import *
+from naoth.pb.Messages_pb2 import *
+from naoth.pb.Representations_pb2 import *
 
 from matplotlib import pyplot as plt
 from matplotlib import rcParams

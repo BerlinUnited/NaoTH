@@ -4,7 +4,7 @@ import pickle
 import numpy as np
 from matplotlib import pyplot as plt
 
-from naoth import math2d as m2d
+from naoth.math import *
 from potentialfield_generation.field_own import main as simulate_best_angle
 from tools import field_info as field
 from tools import tools
@@ -52,11 +52,11 @@ def main():
         for y in y_range:
             time, angle = simulate_best_angle(x, y, state, rotation_step, iteration)
             if not np.isinf(time):
-                v = m2d.Vector2(100.0, 0.0).rotate(math.radians(angle))
+                v = Vector2(100.0, 0.0).rotate(math.radians(angle))
                 axes.arrow(x, y, v.x, v.y, head_width=100, head_length=100, fc='k', ec='k')
             else:
                 print("WARNING: Time is Nan")
-                v = m2d.Vector2(100.0, 0.0).rotate(math.radians(angle))
+                v = Vector2(100.0, 0.0).rotate(math.radians(angle))
                 axes.arrow(x, y, v.x, v.y, head_width=100, head_length=100, fc='r', ec='r')
             dummy_container.append([x, y, time, angle])
 

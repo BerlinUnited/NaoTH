@@ -4,7 +4,7 @@ from matplotlib.patches import Circle
 import numpy as np
 from tools import potential_field as pfield
 from tools import tools
-from naoth import math2d as m2d
+from naoth.math import *
 import matplotlib as mlp
 
 pgf_with_rc_fonts = {
@@ -30,14 +30,14 @@ if __name__ == "__main__":
     y_dim = y.size
     zm = np.zeros((y_dim, x_dim))
 
-    own_robots = [m2d.Vector2(-2000, -2000), m2d.Vector2(2000, 1000)]
-    opp_robots = [m2d.Vector2(0, 1000), m2d.Vector2(3000, 2000), m2d.Vector2(-1500, -500)]
+    own_robots = [Vector2(-2000, -2000), Vector2(2000, 1000)]
+    opp_robots = [Vector2(0, 1000), Vector2(3000, 2000), Vector2(-1500, -500)]
     # TODO where should the friendly robot be according to the graphic in my thesis
     # own_robots = []
     # opp_robots = []
     for i in range(int(y_dim)):
         for j in range(int(x_dim)):
-            zm[i, j] = pfield.evaluate_action_with_robots(m2d.Vector2(xm[i][j], ym[i][j]),
+            zm[i, j] = pfield.evaluate_action_with_robots(Vector2(xm[i][j], ym[i][j]),
                                                           opp_robots, own_robots)
 
     # plot

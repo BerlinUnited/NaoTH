@@ -1,14 +1,14 @@
 import math
 import numpy as np
-from naoth import math2d as m2d
+from naoth.math import *
 
 
 class Robot:
     def __init__(self):
-        self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(0, 0)
+        self.pose = Pose2D()
+        self.pose.translation = Vector2(0, 0)
         self.pose.rotation = math.radians(0)
-        self.ball_position = m2d.Vector2(2500.0, -450.0)  # relative to robot
+        self.ball_position = Vector2(2500.0, -450.0)  # relative to robot
 
         self.rotation_vel = 60  # degrees per sec
         self.walking_vel = 200  # degrees per sec
