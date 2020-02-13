@@ -23,6 +23,7 @@ import java.awt.event.KeyEvent;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
@@ -88,22 +89,31 @@ public class RobotControlImpl extends javax.swing.JFrame
     
     try
     {
+        // we need an absolute path to import native libs
+        // in netbeans we can use the relative execution path
+        File bin = new File("./bin");
+        if (!bin.isDirectory()) {
+            // with a jar file, we need to determine the correct path relative to the jar file
+            File jar = new File(RobotControlImpl.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            bin = new File(jar.getParent(), "bin");
+        }
+        
         String arch = System.getProperty("os.arch").toLowerCase();
         String name = System.getProperty("os.name").toLowerCase();
         
         if("linux".equals(name)) {
             if("amd64".equals(arch)) {
-                addLibraryPath("./bin/linux64");
+                addLibraryPath(bin.getAbsolutePath() + "/linux64");
             } else {
-                addLibraryPath("./bin/linux32");
+                addLibraryPath(bin.getAbsolutePath() + "/linux32");
             }
         } else {
             if("amd64".equals(arch)) {
-                addLibraryPath("./bin/win64");
+                addLibraryPath(bin.getAbsolutePath() + "/win64");
             } else {
-                addLibraryPath("./bin/win32");
+                addLibraryPath(bin.getAbsolutePath() + "/win32");
             }
-            addLibraryPath("./bin/macos");
+            addLibraryPath(bin.getAbsolutePath() + "/macos");
         }
         
         System.getProperties().list(System.out);
