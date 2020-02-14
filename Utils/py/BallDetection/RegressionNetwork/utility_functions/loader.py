@@ -209,7 +209,8 @@ def load_images_from_csv_files(root_path, res, limit_noballs):
     print("Looking for csv files in: ", root_path)
     db_balls = []
     db_noballs = []
-    real_images = [0, 0]
+    real_images = [0, 0]  # FIXME it is not clear what this variable does
+
     # find csv files
     all_paths = list(Path(root_path).absolute().glob('**/*.csv'))
     print(all_paths)
@@ -220,7 +221,9 @@ def load_images_from_csv_files(root_path, res, limit_noballs):
         real_images[1] += next[1]
 
     if limit_noballs is True and len(db_balls) < len(db_noballs):
-        db_noballs = np.random.choice(db_noballs, len(db_balls))
+        print("Limit negative images to ", len(db_balls))
+        no_ball_mask = np.random.choice(len(db_noballs), len(db_balls))
+        db_noballs = [db_noballs[i] for i in no_ball_mask]
 
     db = db_balls + db_noballs
     random.shuffle(db)
