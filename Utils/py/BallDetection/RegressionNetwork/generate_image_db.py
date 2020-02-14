@@ -14,8 +14,7 @@ def str2bool(v):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate the image database for training etc. '
-                                                 'using a folder with 0, 1 etc. subfolders with'
-                                                 ' png images.')
+                                                 'using a folder with 0, 1 etc. subfolders with png images.')
     parser.add_argument('-b', '--database-path', dest='imgdb_path',
                         help='Path to the image database to write. '
                              'Default is img.db in current folder.')
@@ -41,13 +40,10 @@ if __name__ == '__main__':
     if args.res is not None:
         res = {"x": int(args.res), "y": int(args.res)}
 
-    # TODO kann das besser gemacht werden? Auch wenn load images fehlschlägt wird die datei angelegt
+    x, y, mean, p = load_images_from_csv_files(img_path, res, args.limit_noball)
     with open(imgdb_path, "wb") as f:
-        x, y, mean, p, real_images = load_images_from_csv_files(img_path, res, args.limit_noball)
-
         # save image db
         pickle.dump(mean, f)
         pickle.dump(x, f)
         pickle.dump(y, f)
         pickle.dump(p, f)
-        pickle.dump(real_images, f)

@@ -2,6 +2,7 @@ import csv
 import json
 import os
 import random
+from collections import defaultdict
 from glob import glob
 from os.path import relpath
 from pathlib import Path
@@ -111,8 +112,6 @@ def load_images(path, res):
 
 def load_image_from_csv(path, db_balls, db_noballs, res):
     print("Loading images from " + path + " ...")
-    real_balls = 0
-    real_no_balls = 0
     
     # parse csv file
     with open(path, newline='') as csvfile:
@@ -156,7 +155,6 @@ def load_image_from_csv(path, db_balls, db_noballs, res):
                         radius = radius / max(res["x"], res["y"])
 
                         is_ball = True
-                        real_balls += 1
                     else:
                         # we only support circles
                         continue
@@ -169,7 +167,6 @@ def load_image_from_csv(path, db_balls, db_noballs, res):
                 radius = 0.0
                 x = 0
                 y = 0
-                real_no_balls += 1
 
             # for each row add the image and the prediction
             if is_ball:
@@ -202,42 +199,41 @@ def load_image_from_csv(path, db_balls, db_noballs, res):
                         db_balls.append((adjust_gamma(img, g).astype(float) / 255.0, y, p))
                     else:
                         db_noballs.append((adjust_gamma(img, g).astype(float) / 255.0, y, p))
-    return [real_balls, real_no_balls]
 
 
 def load_images_from_csv_files(root_path, res, limit_noballs):
     print("Looking for csv files in: ", root_path)
-    db_balls = []
-    db_noballs = []
-    real_images = [0, 0]  # FIXME it is not clear what this variable does
+    db_ball_list = []
+    db_noball_list = []
 
     # find csv files
     all_paths = list(Path(root_path).absolute().glob('**/*.csv'))
     print(all_paths)
 
     for path in all_paths:
-        next = load_image_from_csv(str(path), db_balls, db_noballs, res)
-        real_images[0] += next[0]
-        real_images[1] += next[1]
+        load_image_from_csv(str(path), db_ball_list, db_noball_list, res)
 
-    if limit_noballs is True and len(db_balls) < len(db_noballs):
-        print("Limit negative images to ", len(db_balls))
-        no_ball_mask = np.random.choice(len(db_noballs), len(db_balls))
-        db_noballs = [db_noballs[i] for i in no_ball_mask]
+    if limit_noballs is True and len(db_ball_list) < len(db_noball_list):
+        print("Limit negative images to ", len(db_ball_list))
+        no_ball_mask = np.random.choice(len(db_noball_list), len(db_ball_list))
+        db_noball_list = [db_noball_list[i] for i in no_ball_mask]
 
-    db = db_balls + db_noballs
+    db = db_ball_list + db_noball_list
     random.shuffle(db)
 
-    x, y, p = list(map(np.array, list(zip(*db))))
-    mean = np.mean(x)
-    x -= mean
+    input_images, targets, file_paths = list(map(np.array, list(zip(*db))))
+    mean = np.mean(input_images)
+    input_images -= mean
 
-    x = x.reshape(*x.shape, 1)
+    # expand dimensions of the input images for use with tensorflow
+    input_images = input_images.reshape(*input_images.shape, 1)
 
     print("Loading finished")
-    print("images: " + str(len(x)) + " balls: " + str(len(db_balls)) +
-          " no balls: " + str(len(db_noballs)))
-    return x, y, mean, p, real_images
+    print("\nStatistic:")
+    print("number of images: " + str(len(input_images)) + " balls images: " + str(len(db_ball_list)) +
+          " no ball images: " + str(len(db_noball_list)))
+
+    return input_images, targets, mean, file_paths
 
 
 if __name__ == "__main__":
