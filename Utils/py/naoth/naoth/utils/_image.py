@@ -1,5 +1,6 @@
 import numpy as _np
 
+
 class Image:
 
     def __init__(self, proto, width=640, height=480, depth=3):
@@ -13,10 +14,12 @@ class Image:
 
     @property
     def yuv422(self):
+        """Get the image as YUV422 numpy array"""
         return self._yuv422
 
     @property
     def yuv888(self):
+        """Get the image as YUV888 numpy array"""
         if not self._yuv888:
             self._yuv422_to_yuv888()
         return self._yuv888
@@ -39,11 +42,7 @@ class Image:
 
     @property
     def rgb(self):
-        """
-        Reads image data and converts it to rgb
-
-        :returns rgb numpy array
-        """
+        """Get the image as rgb numpy array."""
         if not self._rgb:
             self._yuv888_to_rgb()
 
@@ -63,6 +62,6 @@ class Image:
 
     @property
     def brightness(self):
-        # get only the brightness channel
+        """Get only the brightness channel of the image as numpy array."""
         y = self._yuv422[0::2]
         return y.reshape((self._height, self._width))
