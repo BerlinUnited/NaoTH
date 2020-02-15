@@ -41,6 +41,7 @@ if __name__ == '__main__':
         res = {"x": int(args.res), "y": int(args.res)}
 
     x, y, mean, p = load_images_from_csv_files(img_path, res, args.limit_noball)
+    # TODO load the blender images via load_blender_images. Currently that would load them twice since a csv file also exists
     with open(imgdb_path, "wb") as f:
         # save image db
         pickle.dump(mean, f)

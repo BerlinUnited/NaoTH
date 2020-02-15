@@ -25,7 +25,7 @@ def get_blender_patch_paths(path):
     return zip(patch_folders, mask_folders)
 
 
-def load_images(path, res):
+def load_blender_images(path, res):
     db = []
     print("Loading images...")
     for patch_folder, mask_folder in get_blender_patch_paths(path):
@@ -236,4 +236,4 @@ def load_images_from_csv_files(root_path, res, limit_noballs):
 
 
 if __name__ == "__main__":
-    load_images("../data/TK-03/blender/", res={"x": 16, "y": 16})
+    load_blender_images("../data/TK-03/blender/", res={"x": 16, "y": 16})
