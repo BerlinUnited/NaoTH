@@ -244,6 +244,7 @@ void PathPlanner2018::avoid_obstacle(Pose2D target_point){
       for (const Obstacle& obs : getObstacleModel().obstacleList) {
         const auto& obstacle_points = obs.shape_points.getPoints();
         vector<Vector2d> intersection_points;
+        vector<Vector2d> obs_vertices;
 
         // check if the current path segment intersects the current obstacle
         for (auto obs_vertex = obstacle_points.begin(); next(obs_vertex) != obstacle_points.end(); ++obs_vertex) {
@@ -255,6 +256,8 @@ void PathPlanner2018::avoid_obstacle(Pose2D target_point){
             collision = true;
             double t = path_segment.intersection(polygon_segment);
             intersection_points.push_back(path_segment.point(t));
+            obs_vertices.push_back(*obs_vertex);
+            obs_vertices.push_back(*next(obs_vertex));
           }
 
           // ASSUMPTION: convex polygon
@@ -263,8 +266,19 @@ void PathPlanner2018::avoid_obstacle(Pose2D target_point){
 
         // determine and add new point to the path
         if (collision) {
-          if(intersection_points.size() == 1) { // the endpoint of the path segment lies inside the polygon
-            intersection_points.push_back(*next(vertex));
+          // start or end endpoint of the path segment lies inside the polygon
+          if(intersection_points.size() == 1) {
+            if(on_left_hand_side(*vertex, obs_vertices[0], obs_vertices[1])) { // start point is inside the obstacle
+              // TODO: maybe improve how leaving an obstacle is handled
+              //       currently ignore that there was a collision
+              continue;
+            } else { // end point is inside the obstacle
+              if (next(vertex, 2) != path.end()) { // the end point is the target point
+                continue;
+              } else {
+                intersection_points.push_back(*next(vertex));
+              }
+            }
           }
 
           Vector2d ab = intersection_points[1] - intersection_points[0];
@@ -278,13 +292,16 @@ void PathPlanner2018::avoid_obstacle(Pose2D target_point){
           // TODO: maybe the new point might be choosen a little bit more intelligently
           //   	   e.g. use a intersection point with other edges of the polygon in the direction of ab
           Vector2d new_point = (intersection_points[0] + intersection_points[1]) * 0.5 + ab;
-          if(intersection_points.size() == 1) {
-            // the endpoint of the path segment lies inside the polygon so replace it by a new point
-            *next(vertex) = new_point;
+          if(intersection_points.size() == 1) { // the endpoint of the path segment lies inside the polygon
+            *next(vertex) = new_point; // so replace it by a new point
           } else {
             // add new vertex after current one to the path
             path.insert_after(vertex, new_point);
           }
+
+          // the path was changed after the current vertex
+          // so we need to check for all obstacles again
+          // if the new part is valid
           break;
         }
       } // end obstacle loop
