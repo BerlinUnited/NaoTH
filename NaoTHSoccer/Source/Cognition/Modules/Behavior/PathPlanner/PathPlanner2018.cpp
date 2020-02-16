@@ -262,10 +262,6 @@ void PathPlanner2018::avoid_obstacle(Pose2D target_point){
         }
 
         // determine and add new point to the path
-        // TODO: improve the handling of one intersection point
-        //       - replace a vertex with the new one only if it is inside the polygon
-        //       - otherwise add it inbetween the current vertices
-        //       - don't delete the following path segments
         if (collision) {
           if(intersection_points.size() == 1) { // the endpoint of the path segment lies inside the polygon
             intersection_points.push_back(*next(vertex));
@@ -282,9 +278,13 @@ void PathPlanner2018::avoid_obstacle(Pose2D target_point){
           // TODO: maybe the new point might be choosen a little bit more intelligently
           //   	   e.g. use a intersection point with other edges of the polygon in the direction of ab
           Vector2d new_point = (intersection_points[0] + intersection_points[1]) * 0.5 + ab;
-          // remove everything after the new point because the path might be invalid
-          path.erase_after(vertex, path.end());
-          path.insert_after(vertex, {new_point ,target_point.translation});
+          if(intersection_points.size() == 1) {
+            // the endpoint of the path segment lies inside the polygon so replace it by a new point
+            *next(vertex) = new_point;
+          } else {
+            // add new vertex after current one to the path
+            path.insert_after(vertex, new_point);
+          }
           break;
         }
       } // end obstacle loop
