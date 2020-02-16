@@ -232,6 +232,13 @@ void PathPlanner2018::avoid_obstacle(Pose2D target_point){
 
   if (stepBuffer.empty())
   {
+    // HACK: limit path length to avoid endless loop
+    // TODO: better limit number of iterations
+    // TODO: does the algorithm terminate in every case?
+    //       What if no valid path exists (reachability)
+    int path_length = 0;
+    int max_path_length = 20;
+
     target_point.translation = Vector2d(2000, 0);//getBallModel().position;
     forward_list<Vector2d> path({Vector2d(), target_point.translation});
 
@@ -265,17 +272,21 @@ void PathPlanner2018::avoid_obstacle(Pose2D target_point){
         }
 
         // determine and add new point to the path
+        bool replace_next_vertex = false;
         if (collision) {
           // start or end endpoint of the path segment lies inside the polygon
           if(intersection_points.size() == 1) {
             if(on_left_hand_side(*vertex, obs_vertices[0], obs_vertices[1])) { // start point is inside the obstacle
               // TODO: maybe improve how leaving an obstacle is handled
               //       currently ignore that there was a collision
+              collision = false;
               continue;
             } else { // end point is inside the obstacle
-              if (next(vertex, 2) != path.end()) { // the end point is the target point
+              if (next(vertex, 2) == path.end()) { // the end point is the target point
+                collision = false;
                 continue;
               } else {
+                replace_next_vertex = true;
                 intersection_points.push_back(*next(vertex));
               }
             }
@@ -291,17 +302,28 @@ void PathPlanner2018::avoid_obstacle(Pose2D target_point){
 
           // TODO: maybe the new point might be choosen a little bit more intelligently
           //   	   e.g. use a intersection point with other edges of the polygon in the direction of ab
+          Vector2d debug_mean = (intersection_points[0] + intersection_points[1]) * 0.5;
           Vector2d new_point = (intersection_points[0] + intersection_points[1]) * 0.5 + ab;
-          if(intersection_points.size() == 1) { // the endpoint of the path segment lies inside the polygon
+          // debug
+          PEN("555555", 1);
+          LINE(debug_mean.x, debug_mean.y, new_point.x, new_point.y);
+          if(replace_next_vertex) { // the endpoint of the path segment lies inside the polygon
             *next(vertex) = new_point; // so replace it by a new point
           } else {
             // add new vertex after current one to the path
             path.insert_after(vertex, new_point);
+            ++path_length;
           }
 
           // the path was changed after the current vertex
           // so we need to check for all obstacles again
           // if the new part is valid
+
+          // debug
+          PEN("00FF00", 1);
+          for(auto v = path.begin(); next(v) != path.end(); ++v){
+              LINE(v->x, v->y, next(v)->x, next(v)->y);
+          }
           break;
         }
       } // end obstacle loop
@@ -309,9 +331,15 @@ void PathPlanner2018::avoid_obstacle(Pose2D target_point){
       // there was no collision so the path is valid until the next vertex
       if(!collision) ++vertex;
 
-    } while(next(vertex) != path.end());
+    } while(next(vertex) != path.end() and path_length < max_path_length);
 
     FIELD_DRAWING_CONTEXT;
+    if (path_length < max_path_length) {
+        PEN("000000", 1);
+    } else {
+        PEN("FF0000", 1);
+    }
+
     for(auto vertex = path.begin(); next(vertex) != path.end(); ++vertex){
         LINE(vertex->x, vertex->y, next(vertex)->x, next(vertex)->y);
     }
