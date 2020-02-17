@@ -21,9 +21,11 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.*;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
@@ -118,7 +120,7 @@ public class RobotControlImpl extends javax.swing.JFrame
         
         System.getProperties().list(System.out);
 
-    } catch (Exception ex) {
+    } catch (Throwable ex) {
           Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
       }
   }
@@ -126,16 +128,28 @@ public class RobotControlImpl extends javax.swing.JFrame
     /**
      * Adds the specified path to the java library path
      * Option 2 from: https://stackoverflow.com/a/15409446
-     *
+     * 
+     * Black Magic to get access to private fields in Java > 9:
+     * https://stackoverflow.com/questions/28184065/java-8-access-private-member-with-lambda
+     * https://gist.github.com/Andrei-Pozolotin/dc8b448dc590183f5459
+     * 
      * @param pathToAdd the path to add
      * @throws Exception
      */
-    public static void addLibraryPath(String pathToAdd) throws Exception {
-        final Field usrPathsField = ClassLoader.class.getDeclaredField("usr_paths");
-        usrPathsField.setAccessible(true);
-
+    public static void addLibraryPath(String pathToAdd) throws Throwable {
+        
+        // Define black magic: IMPL_LOOKUP is "trusted" and can access prvae variables.
+		final Lookup original = MethodHandles.lookup();
+		final Field internal = Lookup.class.getDeclaredField("IMPL_LOOKUP");
+		internal.setAccessible(true);
+		final Lookup trusted = (Lookup) internal.get(original);
+        
+        // Invoke black magic. Get access to the private field usr_paths
+        MethodHandle set = trusted.findStaticSetter(ClassLoader.class, "usr_paths", String[].class);
+        MethodHandle get = trusted.findStaticGetter(ClassLoader.class, "usr_paths", String[].class);
+        
         //get array of paths
-        final String[] paths = (String[]) usrPathsField.get(null);
+        final String[] paths = (String[]) get.invoke();
 
         //check if the path to add is already present
         for (String path : paths) {
@@ -147,7 +161,7 @@ public class RobotControlImpl extends javax.swing.JFrame
         //add the new path
         final String[] newPaths = Arrays.copyOf(paths, paths.length + 1);
         newPaths[newPaths.length - 1] = pathToAdd;
-        usrPathsField.set(null, newPaths);
+        set.invoke(newPaths);
     }
 
   /**
