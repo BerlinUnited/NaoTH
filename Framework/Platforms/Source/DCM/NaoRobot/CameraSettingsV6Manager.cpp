@@ -43,6 +43,18 @@ Control 9963803: Sharpness
 Control 10094858: Focus (absolute)
 Control 10094860: Focus, Auto
 */
+
+// NOTE:
+/*
+https://linuxtv.org/downloads/v4l-dvb-apis/uapi/v4l/ext-ctrls-camera.html
+V4L2_CID_EXPOSURE_ABSOLUTE (integer)
+    Determines the exposure time of the camera sensor. 
+    The exposure time is limited by the frame interval. 
+    Drivers should interpret the values as 100 µs units, 
+    where the value 1 stands for 1/10000th of a second, 
+    10000 for 1 second and 100000 for 10 seconds.
+*/
+
 void CameraSettingsV6Manager::query(int cameraFd, const std::string& cameraName, CameraSettings &all)
 {
   V6CameraSettings& settings(all.v6);
@@ -457,6 +469,10 @@ bool CameraSettingsV6Manager::setRegister(int cameraFd, uint16_t addr, uint16_t 
     }
     
     std::cout << " setRegister " << addr << ": " << value << std::endl;
+    
+    // https://cdn.sparkfun.com/datasheets/Sensors/LightImaging/OV5640_datasheet.pdf
+    //"8.4AC characteristics": settling time for register setting<300ms
+    
     // wait for the query to be processed before other requests
     usleep(100000); // 100ms
     
