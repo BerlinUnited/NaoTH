@@ -24,21 +24,25 @@ namespace naoth
 class NaoTime 
 {
 public:
-  /**
-   *
-   */
-  static unsigned long long getSystemTimeInMilliSeconds();
 
   /**
    *
    */
   static unsigned long long getSystemTimeInMicroSeconds();
 
+  /**
+   *
+   */
+  static unsigned long long getSystemTimeInMilliSeconds() {
+    return getSystemTimeInMicroSeconds() / 1000l;
+  }
 
   /*
    * return the time since the start of the controller
    */
-  static unsigned int getNaoTimeInMilliSeconds();
+  static unsigned int getNaoTimeInMilliSeconds() {
+    return static_cast<unsigned int>(getSystemTimeInMilliSeconds() - startingTimeInMilliSeconds);
+  }
 
   /**
    * This value is set once in the beginning of the programm to the system time

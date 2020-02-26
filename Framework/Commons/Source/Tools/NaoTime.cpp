@@ -27,57 +27,14 @@ unsigned long long NaoTime::getSystemTimeInMicroSeconds()
     } else {
       return 0;
     }
-  #else
-  #ifdef NAO
+  #else // NAO, Linux, MAC
     struct timespec t;
-    clock_gettime(CLOCK_REALTIME ,&t);
-    return ((unsigned long long)t.tv_sec) * long_million + ((unsigned long long)t.tv_nsec) / long_thousand;
-  #else
-    struct timeval t;
-    int returnval = gettimeofday(&t, NULL);
-    if(returnval == 0) {
-      return ((unsigned long long)t.tv_sec) * long_million + ((unsigned long long)t.tv_usec);
-    } else {
-      return 0;
-    }
-  #endif
+    // NOTE: CLOCK_MONOTONIC is necessary here, because V4L uses CLOCK_MONOTONIC for the timestamp of the images.
+    clock_gettime(CLOCK_MONOTONIC,&t);
+    return t.tv_sec * long_million + t.tv_nsec / long_thousand;
   #endif
 }//end getSystemTimeInMicroSeconds
 
-
-unsigned long long NaoTime::getSystemTimeInMilliSeconds()
-{
-  #ifdef WIN32
-    LARGE_INTEGER highPerformanceTick;
-    LARGE_INTEGER freq;
-    if(QueryPerformanceCounter(&highPerformanceTick) && QueryPerformanceFrequency(&freq)) {
-      double inSeconds = ((double) highPerformanceTick.LowPart) / ((double) freq.LowPart);
-      return (unsigned long long) (inSeconds * 1000.0);
-    } else {
-      return 0;
-    }
-  #else
-  #ifdef NAO
-    struct timespec t;
-    clock_gettime(CLOCK_REALTIME ,&t);
-    return ((unsigned long long)t.tv_sec) * long_thousand + ((unsigned long long)t.tv_nsec) / long_million;
-  #else
-    struct timeval t;
-    int returnval = gettimeofday(&t, NULL);
-    if(returnval == 0) {
-      return ((unsigned long long)t.tv_sec) * long_thousand + ((unsigned long long)t.tv_usec) / long_thousand;
-    } else {
-      return 0;
-    }
-  #endif
-  #endif
-}//end getSystemTimeInMilliSeconds
-
-
-unsigned int NaoTime::getNaoTimeInMilliSeconds()
-{
-  return (unsigned int) (getSystemTimeInMilliSeconds() - startingTimeInMilliSeconds);
-}
 
 std::uint32_t NaoTime::getSystemTimeSinceMidnight(){
 	auto now = std::chrono::system_clock::now();
