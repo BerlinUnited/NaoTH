@@ -41,6 +41,21 @@ def get_task_ids(auth_cookies):
     print(task_id_list)
 
 
+def get_frame(auth_cookies):
+    from PIL import Image
+    from PIL import PngImagePlugin
+    from io import BytesIO
+    resp = requests.get("http://141.20.26.37:8080/api/v1/tasks/56/frames/1", cookies=auth_cookies)
+    if resp.status_code != 200:
+        # This means something went wrong.
+        print("HTTP %i - %s, Message %s" % (resp.status_code, resp.reason, resp.text))
+
+    im = Image.open(BytesIO(resp.content))
+    outfile = 'blub.png'
+    im.save(outfile)
+    # im.save(filename, pnginfo=meta)
+
+
 if __name__ == "__main__":
     # TODO get username and password via argparse
     data = {'username': 'benji', 'password': '7QCQAh49FDBE'}
@@ -53,3 +68,4 @@ if __name__ == "__main__":
     auth_cookies = resp.cookies
 
     get_task_ids(auth_cookies)
+    get_frame(auth_cookies)
