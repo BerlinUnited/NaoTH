@@ -6,16 +6,14 @@
 * @author Oliver Welter
 */
 
-#ifndef _NAOTIME_H
-#define _NAOTIME_H
+#ifndef NAOTIME_H
+#define NAOTIME_H
 
 #include <cstdint>
 
 #ifdef WIN32
-#include <windows.h>
+  #include <windows.h>
 #else
-  #include <sys/time.h>
-  #include <cstdlib>
   #include <ctime>
 #endif
 
@@ -59,5 +57,5 @@ public:
   static const unsigned long long long_million = 1000000;
 };
 }// end namespace naoth
-#endif  /* _NAOTIME_H */
+#endif  /* NAOTIME_H */
 

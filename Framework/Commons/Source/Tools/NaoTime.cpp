@@ -5,10 +5,8 @@
 *
 * @author Oliver Welter
 */
+
 #include "NaoTime.h"
-#include "Tools/Debug/Trace.h"
-#include "Tools/Debug/NaoTHAssert.h"
-#include <iostream>
 #include <chrono>
 
 using namespace naoth;
@@ -23,7 +21,7 @@ unsigned long long NaoTime::getSystemTimeInMicroSeconds()
     LARGE_INTEGER freq;
     if(QueryPerformanceCounter(&highPerformanceTick) && QueryPerformanceFrequency(&freq)) {
       double inSeconds = ((double) highPerformanceTick.LowPart) / ((double) freq.LowPart);
-      return (unsigned long long) (inSeconds * 1000000.0);
+      return static_cast<unsigned long long>(inSeconds * 1000000.0);
     } else {
       return 0;
     }
@@ -33,7 +31,7 @@ unsigned long long NaoTime::getSystemTimeInMicroSeconds()
     clock_gettime(CLOCK_MONOTONIC,&t);
     return t.tv_sec * long_million + t.tv_nsec / long_thousand;
   #endif
-}//end getSystemTimeInMicroSeconds
+}
 
 
 std::uint32_t NaoTime::getSystemTimeSinceMidnight(){
