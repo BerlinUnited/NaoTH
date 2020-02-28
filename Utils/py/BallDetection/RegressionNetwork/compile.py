@@ -2,7 +2,7 @@
 
 import argparse
 import pickle
-from utility_functions.ocg import keras_compile
+from utility_functions.onbcg import keras_compile
 
 parser = argparse.ArgumentParser(description='Train the network given ')
 
@@ -16,7 +16,7 @@ parser.add_argument('-c', '--code-path', dest='code_path',
 
 args = parser.parse_args()
 
-imgdb_path = "img.db"
+imgdb_path = "imgdb.pkl"
 model_path = "model.h5"
 code_path = "cnn.c"
 

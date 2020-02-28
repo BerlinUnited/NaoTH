@@ -19,7 +19,7 @@ if __name__ == '__main__':
     parser.add_argument('-b', '--database-path', dest='imgdb_path',
                         help='Path to the image database to write. '
                              'Default is img.db in current folder.')
-    parser.add_argument('-i', '--image-folder', dest='img_path', nargs='+',
+    parser.add_argument('-i', '--image-folder', dest='img_path',
                         help='Path to the CSV file(s) with region annotation.')
     parser.add_argument('-r', '--resolution', dest='res',
                         help='Images will be resized to this resolution. Default is 16x16')
@@ -30,8 +30,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # set default values for output path, input path and resolution
-    imgdb_path = "img.db"
-    img_path = "data/TK-03/bottom_camera/"  # TODO rename
+    imgdb_path = "imgdb.pkl"
+    img_path = "data/TK-03/"
     res = {"x": 16, "y": 16}
 
     if args.imgdb_path is not None:
@@ -43,10 +43,11 @@ if __name__ == '__main__':
 
     # TODO kann das besser gemacht werden? Auch wenn load images fehlschlägt wird die datei angelegt
     with open(imgdb_path, "wb") as f:
-        x, y, mean, p = load_images_from_csv_files(img_path, res, args.limit_noball)
+        x, y, mean, p, real_images = load_images_from_csv_files(img_path, res, args.limit_noball)
 
         # save image db
         pickle.dump(mean, f)
         pickle.dump(x, f)
         pickle.dump(y, f)
         pickle.dump(p, f)
+        pickle.dump(real_images, f)

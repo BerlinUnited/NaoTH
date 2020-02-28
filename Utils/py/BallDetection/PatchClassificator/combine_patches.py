@@ -5,7 +5,7 @@ from scipy import misc
 import numpy as np
 import json
 
-from naoth import matlab_tools as mat
+import naoth.matlab as mat
 import patchReader as patchReader
 
 patch_size = (12, 12)  # width, height

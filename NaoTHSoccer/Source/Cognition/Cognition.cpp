@@ -48,6 +48,8 @@
 
 #include "Modules/VisualCortex/HistogramProvider.h"
 #include "Modules/VisualCortex/FieldColorClassifier.h"
+#include "Modules/VisualCortex/ScanGrid/ScanGridProvider.h"
+#include "Modules/VisualCortex/ScanGrid/ScanGridEdgelDetector.h"
 #include "Modules/VisualCortex/ScanLineEdgelDetector/ScanLineEdgelDetector.h"
 #include "Modules/VisualCortex/FieldDetector/FieldDetector.h"
 #include "Modules/VisualCortex/FieldDetector/IntegralFieldDetector.h"
@@ -186,6 +188,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(IntegralImageProvider);
   REGISTER_MODULE(FieldColorClassifier);
   REGISTER_MODULE(IntegralFieldDetector);
+  REGISTER_MODULE(ScanGridProvider);
+  REGISTER_MODULE(ScanGridEdgelDetector);
   REGISTER_MODULE(ScanLineEdgelDetector);
   REGISTER_MODULE(FieldDetector);
   REGISTER_MODULE(LineGraphProvider);

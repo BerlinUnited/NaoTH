@@ -2,10 +2,8 @@
 
 import argparse
 import pickle
-import keras
+import tensorflow.keras as keras
 import numpy as np
-import sys
-import cv2
 
 parser = argparse.ArgumentParser(description='Train the network given ')
 
@@ -35,17 +33,15 @@ with open(imgdb_path, "rb") as f:
 
 model = keras.models.load_model(model_path)
 
-x_blurred = []
-for img in x:
-    img_blurred = cv2.GaussianBlur(img, (3, 3), 0.5)
-    x_blurred.append(img_blurred.reshape(16, 16, 1))
-
 print(model.summary())
 
-result = model.evaluate(np.array(x_blurred), y)
-# result = model.evaluate(np.array(x), y)
+x = np.array(x)
+y = np.array(y)
+
+result = model.evaluate(x, y)
 
 print("Evaluation result")
 print("=================")
 
-print("loss: {} precision: {}".format(result[0], result[1]))
+for idx in range(0, len(result)):
+    print(model.metrics_names[idx] + ":", result[idx])

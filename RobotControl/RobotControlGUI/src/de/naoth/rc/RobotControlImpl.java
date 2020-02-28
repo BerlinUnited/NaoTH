@@ -9,7 +9,6 @@ import de.naoth.rc.core.dialog.Dialog;
 import bibliothek.gui.DockUI;
 import bibliothek.gui.dock.util.laf.Nimbus6u10;
 import de.naoth.rc.components.preferences.PreferencesDialog;
-import de.naoth.rc.server.ConnectionDialog;
 import de.naoth.rc.server.ConnectionManager;
 import de.naoth.rc.server.ConnectionStatusEvent;
 import de.naoth.rc.server.ConnectionStatusListener;
@@ -19,7 +18,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.io.*;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -28,9 +32,11 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import net.xeoh.plugins.base.PluginManager;
@@ -70,6 +76,8 @@ public class RobotControlImpl extends javax.swing.JFrame
   
   private final GridBagConstraints statusPanelPluginsConstraints = new GridBagConstraints();
   
+  private final String RC_TITLE = "";
+  
   // HACK: set the path to the native libs
   static 
   {
@@ -83,43 +91,79 @@ public class RobotControlImpl extends javax.swing.JFrame
     
     try
     {
-        String separator = System.getProperty("path.separator");
-        String path = System.getProperty("java.library.path", "./bin" );
+        // we need an absolute path to import native libs
+        // in netbeans we can use the relative execution path
+        File bin = new File("./bin");
+        if (!bin.isDirectory()) {
+            // with a jar file, we need to determine the correct path relative to the jar file
+            File jar = new File(RobotControlImpl.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            bin = new File(jar.getParent(), "bin");
+        }
         
         String arch = System.getProperty("os.arch").toLowerCase();
         String name = System.getProperty("os.name").toLowerCase();
         
         if("linux".equals(name)) {
             if("amd64".equals(arch)) {
-                path += separator + "./bin/linux64";
+                addLibraryPath(bin.getAbsolutePath() + "/linux64");
             } else {
-                path += separator + "./bin/linux32";
+                addLibraryPath(bin.getAbsolutePath() + "/linux32");
             }
         } else {
             if("amd64".equals(arch)) {
-                path += separator + "./bin/win64";
+                addLibraryPath(bin.getAbsolutePath() + "/win64");
             } else {
-                path += separator + "./bin/win32";
+                addLibraryPath(bin.getAbsolutePath() + "/win32");
             }
-            path += separator + "./bin/macos";
+            addLibraryPath(bin.getAbsolutePath() + "/macos");
         }
-        
-        System.setProperty("java.library.path", path );
         
         System.getProperties().list(System.out);
 
-        Field fieldSysPath = ClassLoader.class.getDeclaredField( "sys_paths" );
-        fieldSysPath.setAccessible( true );
-        fieldSysPath.set( null, null );
-
-        getLogger().log(Level.INFO, 
-            "Set java.library.path={0}", System.getProperty("java.library.path", "./bin" ));
-    } catch(IllegalAccessException | NoSuchFieldException  ex) {
-        getLogger().log(Level.SEVERE, "[ERROR] could not set the java.library.path", ex);
-    }
+    } catch (Throwable ex) {
+          Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
+      }
   }
-  
-  
+
+    /**
+     * Adds the specified path to the java library path
+     * Option 2 from: https://stackoverflow.com/a/15409446
+     * 
+     * Black Magic to get access to private fields in Java > 9:
+     * https://stackoverflow.com/questions/28184065/java-8-access-private-member-with-lambda
+     * https://gist.github.com/Andrei-Pozolotin/dc8b448dc590183f5459
+     * 
+     * @param pathToAdd the path to add
+     * @throws Exception
+     */
+    public static void addLibraryPath(String pathToAdd) throws Throwable {
+        
+        // Define black magic: IMPL_LOOKUP is "trusted" and can access prvae variables.
+		final Lookup original = MethodHandles.lookup();
+		final Field internal = Lookup.class.getDeclaredField("IMPL_LOOKUP");
+		internal.setAccessible(true);
+		final Lookup trusted = (Lookup) internal.get(original);
+        
+        // Invoke black magic. Get access to the private field usr_paths
+        MethodHandle set = trusted.findStaticSetter(ClassLoader.class, "usr_paths", String[].class);
+        MethodHandle get = trusted.findStaticGetter(ClassLoader.class, "usr_paths", String[].class);
+        
+        //get array of paths
+        final String[] paths = (String[]) get.invoke();
+
+        //check if the path to add is already present
+        for (String path : paths) {
+            if (path.equals(pathToAdd)) {
+                return;
+            }
+        }
+
+        //add the new path
+        final String[] newPaths = Arrays.copyOf(paths, paths.length + 1);
+        newPaths[newPaths.length - 1] = pathToAdd;
+        set.invoke(newPaths);
+    }
+
   /**
    * Creates new form RobotControlGUI
    */
@@ -170,7 +214,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     });
     
     // set up a list of all dialogs
-    this.dialogRegistry = new DialogRegistry(this, this.mainMenuBar);
+    this.dialogRegistry = new DialogRegistry(this, this.mainMenuBar, this.dialogFastAccessPanel);
 
     
     // initialize the message server
@@ -205,6 +249,31 @@ public class RobotControlImpl extends javax.swing.JFrame
     // set the constraints for the statusbar plugins
     statusPanelPluginsConstraints.fill = GridBagConstraints.VERTICAL;
     statusPanelPluginsConstraints.ipadx = 5;
+    
+    
+    // dialog access
+    dialogFastAccess.setLocationRelativeTo(this);
+    dialogFastAccess.getRootPane().registerKeyboardAction(
+        (e) -> {dialogFastAccess.setVisible(false); dialogFastAccessPanel.close(); }, 
+        KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), 
+        JComponent.WHEN_IN_FOCUSED_WINDOW
+    );
+    
+    DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventPostProcessor(
+    (e) -> {
+        if(e.getID()        == KeyEvent.KEY_PRESSED && 
+           e.getKeyCode()   == KeyEvent.VK_F && 
+           e.getModifiers() == InputEvent.ALT_MASK) 
+        {
+            dialogFastAccess.setContentPane(dialogFastAccessPanel);
+            dialogFastAccess.pack();
+            dialogFastAccess.setLocationRelativeTo(this);
+            dialogFastAccess.setVisible(true);
+            return true;
+        }
+
+        return false;
+    });
     
     // read & set the userdefined dialog configurations
     setMenuDialogConfiguration();
@@ -336,10 +405,14 @@ public class RobotControlImpl extends javax.swing.JFrame
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
+        dialogFastAccess = new javax.swing.JDialog();
+        dialogFastAccessPanel = new de.naoth.rc.DialogFastAccessPanel();
         statusPanel = new javax.swing.JPanel();
         btManager = new javax.swing.JButton();
         lblReceivedBytesS = new javax.swing.JLabel();
+        jSeparator4 = new javax.swing.JSeparator();
         lblSentBytesS = new javax.swing.JLabel();
+        jSeparator5 = new javax.swing.JSeparator();
         lblFramesS = new javax.swing.JLabel();
         statusPanelPlugins = new javax.swing.JPanel();
         statusPanelSpacer = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
@@ -358,8 +431,16 @@ public class RobotControlImpl extends javax.swing.JFrame
         helpMenu = new javax.swing.JMenu();
         aboutMenuItem = new javax.swing.JMenuItem();
 
+        dialogFastAccess.setAlwaysOnTop(true);
+        dialogFastAccess.setLocationByPlatform(true);
+        dialogFastAccess.setModal(true);
+        dialogFastAccess.setName("dialogFastAccessDialog"); // NOI18N
+        dialogFastAccess.setUndecorated(true);
+        dialogFastAccess.setPreferredSize(new java.awt.Dimension(600, 300));
+        dialogFastAccess.getContentPane().add(dialogFastAccessPanel, java.awt.BorderLayout.CENTER);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("RobotControl for Nao v2015");
+        setTitle("RobotControl for NAO v2019");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -377,11 +458,15 @@ public class RobotControlImpl extends javax.swing.JFrame
             }
         });
 
-        lblReceivedBytesS.setText("Recived byte/s: ");
+        lblReceivedBytesS.setText("Received (byte/s): ");
 
-        lblSentBytesS.setText("Sent byte/s: ");
+        jSeparator4.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
-        lblFramesS.setText("Frames/s: ");
+        lblSentBytesS.setText("Sent (byte/s): ");
+
+        jSeparator5.setOrientation(javax.swing.SwingConstants.VERTICAL);
+
+        lblFramesS.setText("Update Loop (frame/s):");
 
         statusPanelPlugins.setFocusable(false);
         statusPanelPlugins.setMaximumSize(new java.awt.Dimension(32767, 24));
@@ -401,24 +486,31 @@ public class RobotControlImpl extends javax.swing.JFrame
             .addGroup(statusPanelLayout.createSequentialGroup()
                 .addComponent(btManager, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblReceivedBytesS, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblSentBytesS, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblReceivedBytesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(lblFramesS, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblSentBytesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(statusPanelPlugins, javax.swing.GroupLayout.DEFAULT_SIZE, 292, Short.MAX_VALUE))
+                .addComponent(lblFramesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(63, 63, 63)
+                .addComponent(statusPanelPlugins, javax.swing.GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE))
         );
         statusPanelLayout.setVerticalGroup(
             statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(btManager, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblReceivedBytesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jSeparator5)
+                .addComponent(lblSentBytesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lblFramesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(statusPanelLayout.createSequentialGroup()
-                .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btManager, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(lblReceivedBytesS)
-                        .addComponent(lblSentBytesS)
-                        .addComponent(lblFramesS))
-                    .addComponent(statusPanelPlugins, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(statusPanelPlugins, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(statusPanelLayout.createSequentialGroup()
+                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -551,23 +643,6 @@ public class RobotControlImpl extends javax.swing.JFrame
 
     }//GEN-LAST:event_aboutMenuItemActionPerformed
 
-    private void btManagerActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btManagerActionPerformed
-    {//GEN-HEADEREND:event_btManagerActionPerformed
-
-      TaskManager taskManager = new TaskManager(this, true);
-      //String str = "Currently registeres Manager:\n\n";
-      for(int i = 0; i < messageServer.getListeners().size(); i++)
-      {
-        String name = messageServer.getListeners().get(i).getClass().getSimpleName();
-        taskManager.addTask(name, "0", null);
-        //str += messageServer.getListeners().get(i).getClass().getSimpleName() + "\n";
-      }//end for
-      //str += "\n";
-
-      taskManager.setVisible(true);
-      //JOptionPane.showMessageDialog(this, str);
-}//GEN-LAST:event_btManagerActionPerformed
-
     private void resetLayoutMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_resetLayoutMenuItemActionPerformed
     {//GEN-HEADEREND:event_resetLayoutMenuItemActionPerformed
 
@@ -613,6 +688,22 @@ public class RobotControlImpl extends javax.swing.JFrame
             Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_miSaveDialogConfigActionPerformed
+
+    private void btManagerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btManagerActionPerformed
+
+        TaskManager taskManager = new TaskManager(this, true);
+        String str = "Currently registeres Manager:\n\n";
+        for(int i = 0; i < messageServer.getListeners().size(); i++)
+        {
+            String name = messageServer.getListeners().get(i).getClass().getSimpleName();
+            taskManager.addTask(name, "0", null);
+            str += messageServer.getListeners().get(i).getClass().getSimpleName() + "\n";
+        }//end for
+        str += "\n";
+
+        //taskManager.setVisible(true);
+        JOptionPane.showMessageDialog(this, str);
+    }//GEN-LAST:event_btManagerActionPerformed
 
   @Override
   public MessageServer getMessageServer()
@@ -715,12 +806,16 @@ public class RobotControlImpl extends javax.swing.JFrame
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton btManager;
     private javax.swing.JMenuItem connectMenuItem;
+    private javax.swing.JDialog dialogFastAccess;
+    private de.naoth.rc.DialogFastAccessPanel dialogFastAccessPanel;
     private javax.swing.JMenuItem disconnectMenuItem;
     private javax.swing.JCheckBoxMenuItem enforceConnection;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JSeparator jSeparator5;
     private javax.swing.JMenu layout;
     private javax.swing.JLabel lblFramesS;
     private javax.swing.JLabel lblReceivedBytesS;
@@ -812,19 +907,35 @@ public class RobotControlImpl extends javax.swing.JFrame
   @Override
   public void setReceiveByteRate(double rate)
   {
-    lblReceivedBytesS.setText(String.format("Received KB/s: %4.2f", rate));
+    String unit = "byte";
+    if(rate > 1024*1024) {
+        rate /= 1024*1024;
+        unit = "MB";
+    } else if (rate > 1024) {
+        rate /= 1024;
+        unit = "KB";
+    }
+    lblReceivedBytesS.setText(String.format("Received (%s/s): %4.2f", unit, rate));
   }
 
   @Override
   public void setSentByteRate(double rate)
   {
-    lblSentBytesS.setText(String.format("Sent KB/s: %4.2f", rate));
+    String unit = "byte";
+    if(rate > 1024*1024) {
+        rate /= 1024*1024;
+        unit = "MB";
+    } else if (rate > 1024) {
+        rate /= 1024;
+        unit = "KB";
+    }
+    lblSentBytesS.setText(String.format("Sent (%s/s): %4.2f", unit, rate));
   }
   
   @Override
   public void setServerLoopFPS(double fps)
   {
-    lblFramesS.setText(String.format("Frames/s: %4.2f", fps));
+    lblFramesS.setText(String.format("Update Loop (frame/s): %4.2f", fps));
   }
   
   @Override
