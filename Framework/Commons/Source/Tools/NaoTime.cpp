@@ -28,8 +28,9 @@ unsigned long long NaoTime::getSystemTimeInMicroSeconds()
   #else // NAO, Linux, MAC
     struct timespec t;
     // NOTE: CLOCK_MONOTONIC is necessary here, because V4L uses CLOCK_MONOTONIC for the timestamp of the images.
-    clock_gettime(CLOCK_MONOTONIC,&t);
-    return t.tv_sec * long_million + t.tv_nsec / long_thousand;
+    //clock_gettime(CLOCK_MONOTONIC,&t); // NAO V6
+    clock_gettime(CLOCK_REALTIME,&t); // NAO V5
+    return t.tv_sec * 1000000LL + t.tv_nsec / 1000LL;
   #endif
 }
 

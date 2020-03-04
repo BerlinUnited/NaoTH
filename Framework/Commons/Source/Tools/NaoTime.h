@@ -52,9 +52,6 @@ public:
 	 * Returns the milliseconds since midnight
 	 */
 	static std::uint32_t getSystemTimeSinceMidnight();
-
-  static const unsigned long long long_thousand = 1000;
-  static const unsigned long long long_million = 1000000;
 };
 }// end namespace naoth
 #endif  /* NAOTIME_H */
