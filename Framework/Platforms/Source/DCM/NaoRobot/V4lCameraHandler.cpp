@@ -1,14 +1,20 @@
 /*
  * File:   V4lCameraHandler.cpp
- * Author: thomas
+ * Author: Thomas Krause <krause@informatik.hu-berlin.de>
+ * Author: Heinrch Mellmann <mellmann@informatik.hu-berlin.de>
  *
  * Created on 22. April 2010, 17:24
+ *
+ * 
+ * The code is based on the V4L examples:
+ * https://hverkuil.home.xs4all.nl/codec-api/uapi/v4l/v4l2grab.c.html
+ * https://01.org/linuxgraphics/gfx-docs/drm/media/uapi/v4l/capture.c.html
+ *
  */
 
 #include "V4lCameraHandler.h"
 
 #include "Tools/Debug/NaoTHAssert.h"
-//#include "Tools/Debug/Stopwatch.h"
 #include "Tools/NaoTime.h"
 
 #include "Representations/Infrastructure/Image.h"
@@ -22,6 +28,7 @@
 
 #include <poll.h>
 
+// needed for the reset of the camera on NAO V6
 #include <linux/i2c.h>
 #include <linux/i2c-dev.h>
 
@@ -39,6 +46,11 @@
       exit(EXIT_FAILURE);
   }
 */
+
+// useful macros
+#define LOG "[CameraHandler:" << __LINE__ << ", Camera: " << cameraName << "] "
+#define hasIOError(...) hasIOErrorPrint(__LINE__, __VA_ARGS__)
+#define check(...) hasIOError(__VA_ARGS__, errno)
 
 
 static inline __s32 i2c_smbus_access(int file, char read_write, __u8 command,
@@ -79,27 +91,21 @@ static inline __s32 i2c_smbus_write_block_data(int file, __u8 command, __u8 valu
     return i2c_smbus_access(file,I2C_SMBUS_WRITE, command, I2C_SMBUS_BLOCK_DATA, &data);
 }
 
+// NOTE: reset should be done only once at the start of the program
 static bool resetDone = false;
- 
-#define LOG "[CameraHandler:" << __LINE__ << ", Camera: " << cameraName << "] "
-#define hasIOError(...) hasIOErrorPrint(__LINE__, __VA_ARGS__)
-#define check(...) hasIOError(__VA_ARGS__, errno)
+
 
 using namespace naoth;
 using namespace std;
 
 V4lCameraHandler::V4lCameraHandler()
-    : cameraName("none"),
-      currentCamera(CameraInfo::numOfCamera),
-      fd(-1),
-      framesSinceStart(0),
-      initialParamsSet(false),
-      wasQueried(false),
-      isCapturing(false),
-      error_count(0)
+  : cameraName("none"),
+    currentCamera(CameraInfo::numOfCamera),
+    fd(-1),
+    framesSinceStart(0),
+    isCapturing(false)
 {
-
-  // DEBUG: test
+  // DEBUG: test of the hasIOError macro
   //hasIOError(-1, EPIPE);
 }
 
@@ -117,46 +123,9 @@ void V4lCameraHandler::init(std::string camDevice, CameraInfo::CameraID camID, b
     shutdown();
   }
   
+  // initialize parameter manager
   if (isV6) {
-    
-    // reset camera
-    //
-    // https://github.com/mozilla-b2g/i2c-tools/blob/master/tools/i2cbusses.c
-    //  open_i2c_dev(...)
-    int i2c = open("/dev/i2c-head", O_RDWR);
-    if(i2c < 0) {
-      fprintf(stderr, "[V4lCameraHandler] Error: Could not open file '/dev/i2c-head': %s\n", strerror(errno));
-    } else if(!resetDone) {
-      
-      // select the slave device?
-      int err = ioctl(i2c, I2C_SLAVE, 0x41);
-      if(err < 0) {
-        fprintf(stderr, "[V4lCameraHandler] Error: I2C_SLAVE: %s\n", strerror(errno));
-      }
-      
-      // check if the device is set to writing mode?
-      const __s32 result = i2c_smbus_read_byte_data(i2c, 0x3);
-      if (result < 0) {
-        fprintf(stderr, "[V4lCameraHandler] Error: i2c_smbus_read_byte_data: %s\n", strerror(errno));
-      } else if ((result & 0xc) != 0) {
-        // configure as output
-        //check(i2c_smbus_write_byte_data(i2c, 0x3, 0xf3));
-        check(i2c_smbus_write_block_data(i2c, 0x3, 0xf3));
-        //i2c_smbus_write_byte_data(i2c, 0x1, 0x0); // reset_camera_hold
-      }
-      
-      // send the reset command?
-      //check(i2c_smbus_write_byte_data(i2c, 0x1, 0x0)); // reset_camera_hold
-      //check(i2c_smbus_write_byte_data(i2c, 0x1, 0xc)); // reset_camera_release
-      check(i2c_smbus_write_block_data(i2c, 0x1, 0x0)); // reset_camera_hold
-      check(i2c_smbus_write_block_data(i2c, 0x1, 0xc)); // reset_camera_release
-      
-      close(i2c);
-      fprintf(stdout, "[V4lCameraHandler] Done resetting cameras '/dev/i2c-head'.");
-      sleep(3);
-      resetDone = true;
-    }
-    
+    resetV6Camera();
     settingsManager = std::make_shared<CameraSettingsV6Manager>();
   } else {
     settingsManager = std::make_shared<CameraSettingsV5Manager>();
@@ -170,9 +139,58 @@ void V4lCameraHandler::init(std::string camDevice, CameraInfo::CameraID camID, b
   initDevice();
   setFPS(30);
 
+  // read and print avaliable controlls (for debuging purposes) 
   settingsManager->enumerate_controls(fd);
   
   startCapturing();
+}
+
+// reset camera
+void V4lCameraHandler::resetV6Camera() const 
+{
+  if(resetDone) {
+    return;
+  }
+  
+  // Infos about working with i2c:
+  // https://github.com/mozilla-b2g/i2c-tools/blob/master/tools/i2cbusses.c
+  //  open_i2c_dev(...)
+  
+  // connect to the i2c bus
+  int i2c = open("/dev/i2c-head", O_RDWR);
+  if(i2c < 0) {
+    fprintf(stderr, "[V4lCameraHandler] Error: Could not open file '/dev/i2c-head': %s\n", strerror(errno));
+    assert(false);
+  } 
+  
+  // select the slave device (camera)
+  int err = ioctl(i2c, I2C_SLAVE, 0x41);
+  if(err < 0) {
+    fprintf(stderr, "[V4lCameraHandler] Error: I2C_SLAVE: %s\n", strerror(errno));
+    assert(false);
+  }
+  
+  // check if the device is set to writing mode?
+  const __s32 result = i2c_smbus_read_byte_data(i2c, 0x3);
+  if (result < 0) {
+    fprintf(stderr, "[V4lCameraHandler] Error: i2c_smbus_read_byte_data: %s\n", strerror(errno));
+  } else if ((result & 0xc) != 0) {
+    // configure as output
+    //check(i2c_smbus_write_byte_data(i2c, 0x3, 0xf3));
+    check(i2c_smbus_write_block_data(i2c, 0x3, 0xf3));
+    //i2c_smbus_write_byte_data(i2c, 0x1, 0x0); // reset_camera_hold
+  }
+  
+  // send the reset command?
+  //check(i2c_smbus_write_byte_data(i2c, 0x1, 0x0)); // reset_camera_hold
+  //check(i2c_smbus_write_byte_data(i2c, 0x1, 0xc)); // reset_camera_release
+  check(i2c_smbus_write_block_data(i2c, 0x1, 0x0)); // reset_camera_hold
+  check(i2c_smbus_write_block_data(i2c, 0x1, 0xc)); // reset_camera_release
+  
+  close(i2c);
+  fprintf(stdout, "[V4lCameraHandler] Done resetting cameras '/dev/i2c-head'.");
+  sleep(3);
+  resetDone = true;
 }
 
 void V4lCameraHandler::setFPS(int fpsRate)
@@ -224,23 +242,19 @@ void V4lCameraHandler::initDevice()
   // set image format
   struct v4l2_format fmt;
   memset(&fmt, 0, sizeof(struct v4l2_format));
-  fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-  fmt.fmt.pix.width = naoth::IMAGE_WIDTH;
-  fmt.fmt.pix.height = naoth::IMAGE_HEIGHT;
+  fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  fmt.fmt.pix.width       = naoth::IMAGE_WIDTH;
+  fmt.fmt.pix.height      = naoth::IMAGE_HEIGHT;
   fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
-  fmt.fmt.pix.field = V4L2_FIELD_NONE;
-  VERIFY(ioctl(fd, VIDIOC_S_FMT, &fmt) >= 0);
+  fmt.fmt.pix.field       = V4L2_FIELD_NONE;
+  VERIFY(xioctl(fd, VIDIOC_S_FMT, &fmt) >= 0);
 
-  /* Note VIDIOC_S_FMT may change width and height. */
+  //NOTE: VIDIOC_S_FMT may change width and height.
   ASSERT(fmt.fmt.pix.sizeimage == naoth::IMAGE_WIDTH * naoth::IMAGE_HEIGHT * 2);
-
-  memset(&currentBuf, 0, sizeof(currentBuf));
-  currentBuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-  currentBuf.memory = V4L2_MEMORY_MMAP;
 
   // query and verify the capabilities
   struct v4l2_capability cap;
-  VERIFY(ioctl(fd, VIDIOC_QUERYCAP, &cap) != -1);
+  VERIFY(xioctl(fd, VIDIOC_QUERYCAP, &cap) != -1);
   VERIFY(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE);
   VERIFY(cap.capabilities & V4L2_CAP_STREAMING);
 
@@ -252,9 +266,9 @@ void V4lCameraHandler::mapBuffers()
 {
   struct v4l2_requestbuffers req;
   memset(&req, 0, sizeof(req));
-
-  req.count = frameBufferCount; // number of internal buffers, since we use debug images that should be quite big
-  req.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  
+  req.count  = frameBufferCount; // number of internal buffers
+  req.type   = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   req.memory = V4L2_MEMORY_MMAP;
 
   VERIFY(-1 != ioctl(fd, VIDIOC_REQBUFS, &req));
@@ -264,10 +278,9 @@ void V4lCameraHandler::mapBuffers()
   {
     struct v4l2_buffer buf;
     memset(&buf, 0, sizeof(buf));
-
-    buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    buf.type   = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     buf.memory = V4L2_MEMORY_MMAP;
-    buf.index = i;
+    buf.index  = i;
 
     VERIFY(-1 != ioctl(fd, VIDIOC_QUERYBUF, &buf));
 
@@ -304,19 +317,24 @@ void V4lCameraHandler::startCapturing()
 
     VERIFY(-1 != xioctl(fd, VIDIOC_QBUF, &buf));
   }
+  
+  // initialize the strucuture holding the currently captured frame
+  memset(&currentBuf, 0, sizeof(currentBuf));
+  currentBuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  currentBuf.memory = V4L2_MEMORY_MMAP;
 
   enum v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   VERIFY(-1 != ioctl(fd, VIDIOC_STREAMON, &type));
 
   // initialize internal state
   isCapturing = true;
-  wasQueried = false;
-  lastBuf = currentBuf;
   framesSinceStart = 0;
 }
 
 void V4lCameraHandler::stopCapturing()
 {
+  int type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  VERIFY(-1 != xioctl(fd, VIDIOC_STREAMOFF, &type));
   isCapturing = false;
 }
 
@@ -324,8 +342,8 @@ void V4lCameraHandler::closeDevice()
 {
   if (-1 == close(fd)) {
     hasIOError(-1, errno);
-    return;
   }
+  
   fd = -1;
 }
 
@@ -343,105 +361,85 @@ bool V4lCameraHandler::isRunning()
 
 int V4lCameraHandler::readFrame()
 {
-  //not the first frame and the buffer changed last frame
-  if (wasQueried)
-  {
-    //put buffer back in the drivers incoming queue
-    VERIFY(-1 != xioctl(fd, VIDIOC_QBUF, &lastBuf));
-    //std::cout << "give buffer to driver" << std::endl;
+  // return the current buffer to the incomming queue
+  // NOTE: it might be better to check the V4L2_BUF_FLAG_QUEUED flag
+  if (currentBuf.bytesused != 0) {
+    // put buffer back in the drivers incoming queue
+    VERIFY(-1 != xioctl(fd, VIDIOC_QBUF, &currentBuf));
+    // clear the current buffer
+    memset(&currentBuf, 0, sizeof(currentBuf));
+    currentBuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    currentBuf.memory = V4L2_MEMORY_MMAP;
   }
-
-  struct v4l2_buffer buf;
-  memset(&(buf), 0, sizeof(struct v4l2_buffer));
-  buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-  buf.memory = V4L2_MEMORY_MMAP;
-
-  // wait for available data via poll
+  
+  // poll: suspend execution until the driver has captured data
   pollfd pollfds[1] =
   {
     {fd, POLLIN | POLLPRI, 0},
   };
-  //  unsigned int startTime = NaoTime::getNaoTimeInMilliSeconds();
   int polled = poll(pollfds, 1, maxPollTime);
-
-  //  unsigned int stopTime = NaoTime::getNaoTimeInMilliSeconds();
-  //  std::cout << LOG << "polling took " << (stopTime -  startTime) << " ms" << std::endl;
-  if (polled < 0)
-  {
+  
+  if (polled < 0) {
     std::cerr << LOG << "Polling camera failed after " << maxPollTime << " ms. Error was: " << strerror(errno) << std::endl;
     return -1;
   }
 
-  if (pollfds[0].revents && !(pollfds[0].revents & POLLIN))
-  {
-    std::cerr << LOG << "Poll for camera returned unexpected poll code " << pollfds[0].revents << std::endl;
+  if (pollfds[0].revents && !(pollfds[0].revents & POLLIN)) {
+    std::cerr << LOG << "Poll for camera returned unexpected flags: " << pollfds[0].revents << std::endl;
+    return -1;
   }
 
-  int errorCode = 0;
-
-  // Deque all camera images in queue until there is none left. Since we polled, we know data should be available.
-  bool first = true;
-  v4l2_buffer lastValidBuf;
-  do
-  {
-    /*
-    // NOTE: 
-    Last buffer produced by the hardware. mem2mem codec drivers set this flag on the capture queue 
-    for the last buffer when the ioctl VIDIOC_QUERYBUF or VIDIOC_DQBUF ioctl is called. Due to hardware 
-    limitations, the last buffer may be empty. In this case the driver will set the bytesused field to 0, 
-    regardless of the format. Any subsequent call to the VIDIOC_DQBUF ioctl will not block anymore, 
-    but return an EPIPE error code.
+  /*
+  // NOTE: 
+  V4L2_BUF_FLAG_LAST
+  Last buffer produced by the hardware. mem2mem codec drivers set this flag on the capture queue 
+  for the last buffer when the ioctl VIDIOC_QUERYBUF or VIDIOC_DQBUF ioctl is called. Due to hardware 
+  limitations, the last buffer may be empty. In this case the driver will set the bytesused field to 0, 
+  regardless of the format. Any subsequent call to the VIDIOC_DQBUF ioctl will not block anymore, 
+  but return an EPIPE error code.
+  
+  // https://www.kernel.org/doc/html/v4.8/media/uapi/v4l/buffer.html?highlight=v4l2_buf_flag_last
+  // https://github.com/gebart/python-v4l2capture/issues/16#issuecomment-473519282
+  // https://github.com/gebart/python-v4l2capture/issues/16
+  */
     
-    // https://www.kernel.org/doc/html/v4.8/media/uapi/v4l/buffer.html?highlight=v4l2_buf_flag_last
-    // https://github.com/gebart/python-v4l2capture/issues/16#issuecomment-473519282
-    // https://github.com/gebart/python-v4l2capture/issues/16
-    */
-    errorCode = xioctl(fd, VIDIOC_DQBUF, &buf);
-
-    if (errorCode == 0)
-    {
-      if (first)
-      {
-        first = false;
-      }
-      else
-      {
-        errorCode = xioctl(fd, VIDIOC_QBUF, &lastValidBuf);
-        if (errorCode != 0)
-        {
-          std::cout << LOG << "Buffer { .index = " << buf.index << ", .bytesused = " << buf.bytesused << ", .flags = " << buf.flags << "}" << std::endl;
-          hasIOError(errorCode, errno);
-        }
-      }
-      lastValidBuf = buf;
+  // Get the most recent buffer. Deque all camera images from the outgoing queue to get the newest one. 
+  // NOTE: poll was successful, so we know that at least one buffer should be available.
+  v4l2_buffer lastBuf;
+  bool first = true;
+  int errorCode = 0;
+  while((errorCode = xioctl(fd, VIDIOC_DQBUF, &currentBuf)) == 0)
+  {
+    if(first) {
+      first = false;
     }
-    else
-    {
-      if (errno == EAGAIN)
-      {
-        // last element taken from the queue, abort loop
-        if (!first) {
-          // reset error code since first try was successfull
-          errorCode = 0;
-        }
-        break;
-      }
-      else
-      {
-        // we did do a poll on the file descriptor and still got an error, something is wrong: abort the loop
-        // print some info about the buffer
-        std::cout << LOG << "Buffer { .index = " << buf.index << ", .bytesused = " << buf.bytesused << ", .flags = " << buf.flags << "}" << std::endl;
-        hasIOError(errorCode, errno);
-        break;
-      }
+    else if(xioctl(fd, VIDIOC_QBUF, &lastBuf) < 0) {
+      // was not able to return the buffer for some reason
+      std::cout << LOG << "Buffer { .index = " << currentBuf.index 
+                       << ", .flags = " << std::bitset<32>(currentBuf.flags)
+                       << ", .bytesused = " << currentBuf.bytesused 
+                       << "}" << std::endl;
+      hasIOError(errorCode, errno);
     }
-  } while (errorCode == 0);
-  currentBuf = lastValidBuf;
+    lastBuf = currentBuf;
+  }
+  
+  if (errno == EAGAIN)
+  {
+    // last element taken from the queue, abort loop
+    if (!first) {
+      // reset error code since first try was successfull
+      errorCode = 0;
+    }
+  }
+  else
+  {
+    // we did do a poll on the file descriptor and still got an error, something is wrong: abort the loop
+    // print some info about the buffer
+    std::cout << LOG << "Buffer { .index = " << currentBuf.index << ", .bytesused = " << currentBuf.bytesused << ", .flags = " << currentBuf.flags << "}" << std::endl;
+    hasIOError(errorCode, errno);
+  }
 
-  //remember current buffer for the next frame as last buffer
-  lastBuf = currentBuf;
-
-  wasQueried = true;
   ASSERT(currentBuf.index < frameBufferCount);
   if (errorCode == 0) {
     return currentBuf.index;
@@ -450,13 +448,14 @@ int V4lCameraHandler::readFrame()
   }
 }
 
-void V4lCameraHandler::get(Image &theImage)
+void V4lCameraHandler::get(Image& theImage)
 {
   if (isCapturing)
   {
-    //STOPWATCH_START("ImageRetrieve");
+    //unsigned long long start = NaoTime::getSystemTimeInMicroSeconds();
     int resultCode = readFrame();
-    //STOPWATCH_STOP("ImageRetrieve");
+    //unsigned long long end = NaoTime::getSystemTimeInMicroSeconds();
+    //std::cout << LOG << " readFrame (us): " << (end - start) << std::endl;
 
     if (resultCode < 0)
     {
@@ -465,22 +464,65 @@ void V4lCameraHandler::get(Image &theImage)
     else
     {
       //if(currentBuf.bytesused != theImage.cameraInfo.size * Image::PIXEL_SIZE_YUV422)
-      if (currentBuf.bytesused < theImage.cameraInfo.getSize() * Image::PIXEL_SIZE_YUV422)
+      if (currentBuf.bytesused != theImage.cameraInfo.getSize() * Image::PIXEL_SIZE_YUV422)
       {
         theImage.wrongBufferSizeCount++;
         //        cout << "wrong image buffer size: " << (theImage.cameraInfo.size * Image::PIXEL_SIZE_YUV422) << ", buffer: " << currentBuf.bytesused << "/" << currentBuf.length << endl;
       }
       else
       {
-        theImage.wrapImageDataYUV422((unsigned char *)buffers[currentBuf.index].start, currentBuf.bytesused);
+        theImage.wrapImageDataYUV422(static_cast<unsigned char*>(buffers[currentBuf.index].start), currentBuf.bytesused);
         theImage.cameraInfo.cameraID = currentCamera;
+        
+        // for debug purposes
         theImage.currentBuffer = currentBuf.index;
         theImage.bufferCount = frameBufferCount;
-        theImage.timestamp =
-            (unsigned int)((((unsigned long long)currentBuf.timestamp.tv_sec) * NaoTime::long_thousand +
-                            ((unsigned long long)currentBuf.timestamp.tv_usec) / NaoTime::long_thousand) -
-                           NaoTime::startingTimeInMilliSeconds);
+        
+        // convert the timestamp to robot time (milliseconds sinse the start of the process)
+        const struct timeval t = currentBuf.timestamp;
+        theImage.timestamp = static_cast<unsigned int>(t.tv_sec * 1000LL + t.tv_usec / 1000LL - NaoTime::startingTimeInMilliSeconds);
+        
+        // NOTE: usual time difference seems to be (robotTime - theImage.timestamp) ~ 31 or 50 ms. Why?!
+        // DEBUG: sanity check to make sure the time stamps align reasonably (delay < 1s)
+        unsigned int robotTime = NaoTime::getNaoTimeInMilliSeconds();
+        if(robotTime > theImage.timestamp + 1000 || robotTime < theImage.timestamp) {
+          std::cout << LOG << "WARNING: image timestamp doesn't match robot time: robot= " 
+            << robotTime << ", image= " << theImage.timestamp << std::endl;
+        }
 
+        /*
+        // DEBUG: troubleshooting the timing
+        std::cout << "it: " << theImage.timestamp << std::endl;
+        std::cout << "rt: " << robotTime << std::endl;
+        
+        #define V4L2_BUF_FLAG_TIMESTAMP_MASK        0x0000e000
+        #define V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC   0x00002000
+        std::cout << "is monotonic: " << (currentBuf.flags & V4L2_BUF_FLAG_TIMESTAMP_MASK) << std::endl;
+        
+        #define V4L2_BUF_FLAG_TSTAMP_SRC_SOE 	0x00010000
+        std::cout << "is SOE: " << (currentBuf.flags & V4L2_BUF_FLAG_TSTAMP_SRC_SOE) << std::endl;
+        
+        struct timespec m;
+        clock_gettime(CLOCK_MONOTONIC ,&m);
+
+        struct timespec r;
+        clock_gettime(CLOCK_REALTIME ,&r);
+
+        unsigned long long ts = NaoTime::getSystemTimeInMicroSeconds();
+        
+        //std::cout << "tm: " << (currentBuf.flags & V4L2_BUF_FLAG_TIMESTAMP_MASK) << std::endl;
+        //std::cout << "sm: " << (currentBuf.flags & V4L2_BUF_FLAG_TSTAMP_SRC_MASK) << std::endl;
+        //std::cout << "fl: " << std::bitset<32>(currentBuf.flags) << std::endl;
+        std::cout << "i0: " << currentBuf.timestamp.tv_sec << std::endl;
+        std::cout << "m0: " << m.tv_sec << std::endl;
+        std::cout << "r0: " << r.tv_sec << std::endl << std::endl;
+        
+        std::cout << "i1: " << currentBuf.timestamp.tv_usec << std::endl;
+        std::cout << "m1: " << (m.tv_nsec/1000LL) << std::endl;
+        std::cout << "r1: " << (r.tv_nsec/1000LL) << std::endl;
+        std::cout << "ns: " << ts << std::endl << std::endl;
+        */
+        
         framesSinceStart++;
       }
     }
@@ -496,7 +538,6 @@ void V4lCameraHandler::getCameraSettings(CameraSettings &data, bool update)
     data = currentSettings;
   }
 }
-
 
 void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
 {
@@ -542,17 +583,16 @@ int V4lCameraHandler::xioctl(int fd, int request, void *arg) const
   return r;
 }
 
-bool V4lCameraHandler::hasIOErrorPrint(int lineNumber, int errOccured, int errNo, bool exitByIOError)
+bool V4lCameraHandler::hasIOErrorPrint(int lineNumber, int errOccured, int errNo, bool exitByIOError) const
 {
   if (errOccured < 0 && errNo != EAGAIN)
   {
     std::cout << LOG << "[hasIOError:" << lineNumber << "]"
               << " failed with errno " << errNo << " (" << strerror(errNo) << ") >> exiting" << std::endl;
-    if (exitByIOError && error_count > 10)
-    {
-      assert(errOccured >= 0);
-    }
-    error_count++;
+    
+    // NOTE: it hoolds errOccured < 0
+    assert(!exitByIOError);
+    
     return true;
   }
   return false;
