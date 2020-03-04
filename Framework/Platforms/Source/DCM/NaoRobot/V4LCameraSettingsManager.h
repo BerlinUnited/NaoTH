@@ -28,6 +28,9 @@ class V4LCameraSettingsManager
 {
 public:
   V4LCameraSettingsManager(){}
+  // this class is meant to be derived from and contains virtual methods, 
+  // so make also the destructor virtual just in case to prevent future memory leaks
+  virtual ~V4LCameraSettingsManager(){}
 
 private: 
   /** used by enumerate_controls */
