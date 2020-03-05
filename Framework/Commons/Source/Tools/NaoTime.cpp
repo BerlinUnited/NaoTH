@@ -11,6 +11,34 @@
 
 using namespace naoth;
 
+// TODO: need a better solution here
+// EVIL HACK: used to determine the version of the robot
+
+#include <sys/stat.h>
+#include <stdio.h>
+static inline bool fileExists (const char* filename) {
+  struct stat buffer;   
+  return (stat(filename, &buffer) == 0); 
+}
+// determine the clock id to use and print status
+// NOTE: CLOCK_MONOTONIC is used on NAO V6, because V4L uses CLOCK_MONOTONIC for the timestamp of the images.
+// on NAO V5 and earlier, CLOCK_REALTIME is used by V4L.
+static inline clockid_t determineClockId() {
+  static const bool NAOV6 = fileExists("/usr/bin/lola") || fileExists("/opt/aldebaran/bin/lola");
+  if(NAOV6) {
+    printf("[NaoTime] use CLOCK_MONOTONIC\n");
+    return CLOCK_MONOTONIC;
+  } else {
+    printf("[NaoTime] use CLOCK_REALTIME\n");
+    return CLOCK_REALTIME;
+  }
+}
+static inline clockid_t getClockId() {
+  // run this only once
+  static const clockid_t id = determineClockId();//(isNAOV6() ? CLOCK_MONOTONIC : CLOCK_REALTIME);
+  return id;
+}
+
 const unsigned long long NaoTime::startingTimeInMilliSeconds = getSystemTimeInMilliSeconds();
 
 
@@ -27,13 +55,10 @@ unsigned long long NaoTime::getSystemTimeInMicroSeconds()
     }
   #else // NAO, Linux, MAC
     struct timespec t;
-    // NOTE: CLOCK_MONOTONIC is necessary here, because V4L uses CLOCK_MONOTONIC for the timestamp of the images.
-    //clock_gettime(CLOCK_MONOTONIC,&t); // NAO V6
-    clock_gettime(CLOCK_REALTIME,&t); // NAO V5
+    clock_gettime(getClockId(), &t);
     return t.tv_sec * 1000000LL + t.tv_nsec / 1000LL;
   #endif
 }
-
 
 std::uint32_t NaoTime::getSystemTimeSinceMidnight(){
 	auto now = std::chrono::system_clock::now();
