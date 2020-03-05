@@ -21,6 +21,9 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.*;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -88,43 +91,79 @@ public class RobotControlImpl extends javax.swing.JFrame
     
     try
     {
-        String separator = System.getProperty("path.separator");
-        String path = System.getProperty("java.library.path", "./bin" );
+        // we need an absolute path to import native libs
+        // in netbeans we can use the relative execution path
+        File bin = new File("./bin");
+        if (!bin.isDirectory()) {
+            // with a jar file, we need to determine the correct path relative to the jar file
+            File jar = new File(RobotControlImpl.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            bin = new File(jar.getParent(), "bin");
+        }
         
         String arch = System.getProperty("os.arch").toLowerCase();
         String name = System.getProperty("os.name").toLowerCase();
         
         if("linux".equals(name)) {
             if("amd64".equals(arch)) {
-                path += separator + "./bin/linux64";
+                addLibraryPath(bin.getAbsolutePath() + "/linux64");
             } else {
-                path += separator + "./bin/linux32";
+                addLibraryPath(bin.getAbsolutePath() + "/linux32");
             }
         } else {
             if("amd64".equals(arch)) {
-                path += separator + "./bin/win64";
+                addLibraryPath(bin.getAbsolutePath() + "/win64");
             } else {
-                path += separator + "./bin/win32";
+                addLibraryPath(bin.getAbsolutePath() + "/win32");
             }
-            path += separator + "./bin/macos";
+            addLibraryPath(bin.getAbsolutePath() + "/macos");
         }
-        
-        System.setProperty("java.library.path", path );
         
         System.getProperties().list(System.out);
 
-        Field fieldSysPath = ClassLoader.class.getDeclaredField( "sys_paths" );
-        fieldSysPath.setAccessible( true );
-        fieldSysPath.set( null, null );
-
-        getLogger().log(Level.INFO, 
-            "Set java.library.path={0}", System.getProperty("java.library.path", "./bin" ));
-    } catch(IllegalAccessException | NoSuchFieldException  ex) {
-        getLogger().log(Level.SEVERE, "[ERROR] could not set the java.library.path", ex);
-    }
+    } catch (Throwable ex) {
+          Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
+      }
   }
-  
-  
+
+    /**
+     * Adds the specified path to the java library path
+     * Option 2 from: https://stackoverflow.com/a/15409446
+     * 
+     * Black Magic to get access to private fields in Java > 9:
+     * https://stackoverflow.com/questions/28184065/java-8-access-private-member-with-lambda
+     * https://gist.github.com/Andrei-Pozolotin/dc8b448dc590183f5459
+     * 
+     * @param pathToAdd the path to add
+     * @throws Exception
+     */
+    public static void addLibraryPath(String pathToAdd) throws Throwable {
+        
+        // Define black magic: IMPL_LOOKUP is "trusted" and can access prvae variables.
+		final Lookup original = MethodHandles.lookup();
+		final Field internal = Lookup.class.getDeclaredField("IMPL_LOOKUP");
+		internal.setAccessible(true);
+		final Lookup trusted = (Lookup) internal.get(original);
+        
+        // Invoke black magic. Get access to the private field usr_paths
+        MethodHandle set = trusted.findStaticSetter(ClassLoader.class, "usr_paths", String[].class);
+        MethodHandle get = trusted.findStaticGetter(ClassLoader.class, "usr_paths", String[].class);
+        
+        //get array of paths
+        final String[] paths = (String[]) get.invoke();
+
+        //check if the path to add is already present
+        for (String path : paths) {
+            if (path.equals(pathToAdd)) {
+                return;
+            }
+        }
+
+        //add the new path
+        final String[] newPaths = Arrays.copyOf(paths, paths.length + 1);
+        newPaths[newPaths.length - 1] = pathToAdd;
+        set.invoke(newPaths);
+    }
+
   /**
    * Creates new form RobotControlGUI
    */

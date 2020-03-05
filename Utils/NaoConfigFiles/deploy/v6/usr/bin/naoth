@@ -1,70 +1,47 @@
 #!/bin/bash
 
-function start_function() {
-  echo "starting naoth related process"
-  /usr/libexec/reset-cameras.sh toggle
-  systemctl start user@1001
+# NOTE:
+# make sure the commands are always executed as user nao
+# otherwise root will not be able to run this script directly
+
+function run_as_nao() {
+  if [ nao = `whoami` ]; then
+    systemctl --user $1 naoth.service
+  else
+    su nao -c "systemctl --user $1 naoth.service"
+  fi
 }
 
-function stop_function() {
-  echo "stopping naoth related processes"
-  systemctl stop user@1001
+function show_log_as_nao() {
+  if [ nao = `whoami` ]; then
+    journalctl --user-unit=naoth
+  else
+    su nao -c "journalctl --user-unit=naoth"
+  fi
 }
-
-function status_function() {
-  systemctl status user@1001
-}
-
-function shutdown_function() {
-  echo "shutting down"
-  systemctl stop user@1001
-  sleep 5
-  paplay /opt/aldebaran/share/naoqi/wav/shutdown.wav
-  shutdown -h now
-}
-
-function lola_log_function() {
-  journalctl --user-unit=lola
-}
-
-function lola_adaptor_log_function() {
-  journalctl --user-unit=lola_adaptor
-}
-
-function naoth_log_function() {
-  journalctl --user-unit=naoth
-}
-
 
 case "$1" in
   start)
-    start_function
+    echo "starting naoth related process"
+    # TODO: this somehow breaks camera... What does it?
+    # /usr/libexec/reset-cameras.sh toggle
+    run_as_nao start
     ;;
   stop)
-    stop_function
+    echo "stopping naoth related processes"
+    run_as_nao stop
     ;;
   restart)
-    stop_function
-    sleep 5
-    start_function
+    run_as_nao restart
     ;;
   status)
-    status_function
+    run_as_nao status
     ;;
-  shutdown)
-    shutdown_function
-    ;;
-  log_lola)
-    lola_log_function
-    ;;
-  log_lola_adaptor)
-    lola_adaptor_log_function
-    ;;
-  log_naoth)
-    naoth_log_function
+  log)
+    show_log_as_nao
     ;;
   *)
-    echo "Usage: naoth {start|stop|restart|status|log_lola|log_lola_adaptor|log_naoth}"
+    echo "Usage: naoth {start|stop|restart|status|log}"
     exit 1
     ;;
 

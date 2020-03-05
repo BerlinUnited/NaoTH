@@ -11,8 +11,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 from PIL import PngImagePlugin
-from naoth.LogReader import LogReader
-from naoth.LogReader import Parser
+from naoth.log import Reader as LogReader
+from naoth.log import Parser
 from pywget import wget
 
 
@@ -20,12 +20,20 @@ def get_demo_logfiles():
     base_url = "https://www2.informatik.hu-berlin.de/~naoth/ressources/log/demo_image/"
     logfile_list = ["rc17_ball_far.log"]
 
+    print("Downloading Logfiles: {}".format(logfile_list))
+
     target_dir = Path("logs")
     Path.mkdir(target_dir, exist_ok=True)
 
+    print(" Download from: {}".format(base_url))
+    print(" Download to: {}".format(target_dir.resolve()))
     for logfile in logfile_list:
         if not Path(target_dir / logfile).is_file():
-            wget.download(base_url + logfile, target_dir)
+            print("Download: {}".format(logfile))
+            wget.download(base_url + logfile, str(target_dir))
+            print("Done.")
+
+    print("Finished downloading")
 
 
 def get_x_angle(m):
@@ -121,6 +129,57 @@ def save_image_to_png(j, img, cm, target_dir, cam_id, name):
     img.save(filename, pnginfo=meta)
 
 
+def export_images(logfile, img):
+    """
+        creates two folders:
+            <logfile name>_top
+            <logfile name>_bottom
+
+        and saves the images inside those folders
+    """
+    logfile_name = Path(logfile).stem
+    output_folder_top = Path(logfile_name + "_top")
+    output_folder_bottom = Path(logfile_name + "_bottom")
+
+    output_folder_top.mkdir(exist_ok=True)
+    output_folder_bottom.mkdir(exist_ok=True)
+
+    if output_folder_top.exists() and output_folder_bottom.exists():
+        # TODO this expects to be always two images to be present, this assumption is violated for combined logs
+        for i, img_b, img_t, cm_b, cm_t in img:
+            img_b = img_b.convert('RGB')
+            img_t = img_t.convert('RGB')
+
+            save_image_to_png(i, img_b, cm_b, output_folder_bottom, cam_id=1, name=args.input)
+            save_image_to_png(i, img_t, cm_t, output_folder_top, cam_id=0, name=args.input)
+
+            print("saving images from frame ", i)
+    else:
+        print("target folder does not exist")
+        sys.exit(1)
+
+
+def show_images(img):
+    fig, ax = plt.subplots(2)
+    fig.suptitle('Images from - ' + args.input)
+    ax[0].set_axis_off()
+    ax[1].set_axis_off()
+
+    image_container = []
+    for i, img_b, img_t, cm_b, cm_t in img:
+        img_b = img_b.convert('RGB')
+        img_t = img_t.convert('RGB')
+
+        im1 = ax[0].imshow(img_t, animated=True)
+        im2 = ax[1].imshow(img_b, animated=True)
+        image_container.append([im1, im2])
+        print("processing images from frame ", i)
+
+    ani = animation.ArtistAnimation(fig, image_container, interval=50, blit=True,
+                                    repeat_delay=1000)
+    plt.show()
+
+
 if __name__ == "__main__":
     get_demo_logfiles()
 
@@ -129,7 +188,6 @@ if __name__ == "__main__":
     parser.add_argument("-i", "--input", help='logfile, containing the images', default="logs/rc17_ball_far.log")
     parser.add_argument("-t", "--task", choices=['show', 'export'], default="export",
                         help='either show or export')
-    parser.add_argument("-o", "--output", type=str, default=".", help='output folder')
 
     args = parser.parse_args()
 
@@ -139,46 +197,20 @@ if __name__ == "__main__":
     myParser.register("ImageTop", "Image")
     myParser.register("CameraMatrixTop", "CameraMatrix")
 
-    # get all the images from the logfile
-    images = map(get_images, LogReader(args.input, myParser))
+    if Path(args.input).is_dir():
+        logfile_list = list()
+        for file in Path(args.input).glob('*.log'):
+            logfile_list.append(file)
+    else:
+        logfile_list = [args.input]
 
     if args.task == "export":
-        output_folder = Path(args.output)
-        if output_folder.exists():
-            for i, imgB, imgT, cmB, cmT in images:
-                imgB = imgB.convert('RGB')
-                imgT = imgT.convert('RGB')
-
-                output_folder_top = output_folder / "top"
-                output_folder_bottom = output_folder / "bottom"
-
-                output_folder_top.mkdir(exist_ok=True)
-                output_folder_bottom.mkdir(exist_ok=True)
-
-                save_image_to_png(i, imgB, cmB, output_folder_bottom, cam_id=1, name=args.input)
-                save_image_to_png(i, imgT, cmT, output_folder_top, cam_id=0, name=args.input)
-
-                print("saving images from frame ", i)
-        else:
-            print("target folder does not exist")
-            sys.exit(1)
+        for log in logfile_list:
+            # TODO speed up wie in anderen script?
+            images = map(get_images, LogReader(log, myParser))
+            export_images(log, images)
 
     if args.task == "show":
-        fig, ax = plt.subplots(2)
-        fig.suptitle('NaoTH Image Log')
-        ax[0].set_axis_off()
-        ax[1].set_axis_off()
-
-        image_container = []
-        for i, imgB, imgT, cmB, cmT in images:
-            imgB = imgB.convert('RGB')
-            imgT = imgT.convert('RGB')
-
-            im1 = ax[0].imshow(imgT, animated=True)
-            im2 = ax[1].imshow(imgB, animated=True)
-            image_container.append([im1, im2])
-            print("processing images from frame ", i)
-
-        ani = animation.ArtistAnimation(fig, image_container, interval=50, blit=True,
-                                        repeat_delay=1000)
-        plt.show()
+        for log in logfile_list:
+            images = map(get_images, LogReader(log, myParser))
+            show_images(images)
