@@ -486,8 +486,9 @@ void V4lCameraHandler::get(Image& theImage)
         // DEBUG: sanity check to make sure the time stamps align reasonably (delay < 1s)
         unsigned int robotTime = NaoTime::getNaoTimeInMilliSeconds();
         if(robotTime > theImage.timestamp + 1000 || robotTime < theImage.timestamp) {
-          std::cout << LOG << "WARNING: image timestamp doesn't match robot time: robot= " 
-            << robotTime << ", image= " << theImage.timestamp << std::endl;
+          std::cout << LOG << "WARNING: image timestamp doesn't match robot time:" << std::endl; 
+          std::cout << "  robot= " << robotTime << std::endl; 
+          std::cout << "  image= " << theImage.timestamp << std::endl;
         }
 
         /*
