@@ -165,7 +165,7 @@ class Evaluator:
 
         for c in range(0,3):
             for r in range(0,3):
-                camMatrix.rotation.c[c][r] = frame.cam_matrix_rotation[c,r]
+                camMatrix.rotation.c[c][r] = frame.cam_matrix_rotation[r,c]
         
 
     def evaluate_detection(self, f: Frame):
