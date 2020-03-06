@@ -1,46 +1,45 @@
-#import BehaviorParser
 from naoth.log import Reader as LogReader
 from naoth.log import BehaviorParser
 from matplotlib import pyplot
 import numpy as np
 
 JointID = {
-  "HeadPitch": 0,
-  "HeadYaw": 1,
-  "RShoulderRoll": 2,
-  "LShoulderRoll": 3,
-  "RShoulderPitch": 4,
-  "LShoulderPitch": 5,
-  "RElbowRoll": 6,
-  "LElbowRoll": 7,
-  "RElbowYaw": 8,
-  "LElbowYaw": 9,
-  "RHipYawPitch": 10,
-  "LHipYawPitch": 11,
-  "RHipPitch": 12,
-  "LHipPitch": 13,
-  "RHipRoll": 14,
-  "LHipRoll": 15,
-  "RKneePitch": 16,
-  "LKneePitch": 17,
-  "RAnklePitch": 18,
-  "LAnklePitch": 19,
-  "RAnkleRoll": 20,
-  "LAnkleRoll": 21
+    "HeadPitch": 0,
+    "HeadYaw": 1,
+    "RShoulderRoll": 2,
+    "LShoulderRoll": 3,
+    "RShoulderPitch": 4,
+    "LShoulderPitch": 5,
+    "RElbowRoll": 6,
+    "LElbowRoll": 7,
+    "RElbowYaw": 8,
+    "LElbowYaw": 9,
+    "RHipYawPitch": 10,
+    "LHipYawPitch": 11,
+    "RHipPitch": 12,
+    "LHipPitch": 13,
+    "RHipRoll": 14,
+    "LHipRoll": 15,
+    "RKneePitch": 16,
+    "LKneePitch": 17,
+    "RAnklePitch": 18,
+    "LAnklePitch": 19,
+    "RAnkleRoll": 20,
+    "LAnkleRoll": 21
 }
 
 
 def frame_filter(frame):
     m = None
     o = None
+
     try:
         if "BehaviorStateComplete" in frame.messages:
-            m, o = frame["BehaviorStateComplete"]
+            (m, o, s) = frame["BehaviorStateComplete"]
         else:
-            m, o = frame["BehaviorStateSparse"]
+            (m, o, s) = frame["BehaviorStateSparse"]
 
-        print(frame["BodyStatus"].currentSum[JointID["RHipYawPitch"]])
-        return [frame["FrameInfo"].time/1000.0,
+        return [frame["FrameInfo"].time / 1000.0,
                 frame["BodyStatus"].currentSum[JointID["RHipYawPitch"]],
                 frame["BodyStatus"].currentSum[JointID["LHipYawPitch"]],
                 frame["BodyStatus"].currentSum[JointID["RHipPitch"]],
@@ -53,7 +52,7 @@ def frame_filter(frame):
                 frame["BodyStatus"].currentSum[JointID["LAnklePitch"]],
                 frame["BodyStatus"].currentSum[JointID["RAnkleRoll"]],
                 frame["BodyStatus"].currentSum[JointID["LAnkleRoll"]],
-                m["executed_motion.type"]
+                s.values["executed_motion.type"]
                 ]
 
     except KeyError:
@@ -63,10 +62,10 @@ def frame_filter(frame):
 def do_statistics(time, data):
     time_total = sum(time)
 
-    d_data = map(lambda c, t: c/t, data, time)
+    d_data = map(lambda c, t: c / t, data, time)
 
-    weighted_mean = np.average(d_data, axis=0, weights=time/time_total)
-    weighted_var = np.average((d_data - weighted_mean)**2, axis=0, weights=time/time_total)
+    weighted_mean = np.average(d_data, axis=0, weights=time / time_total)
+    weighted_var = np.average((d_data - weighted_mean) ** 2, axis=0, weights=time / time_total)
     weighted_std = np.sqrt(weighted_var)
     return [weighted_mean,
             weighted_var,
@@ -81,79 +80,87 @@ def print_statistics(title, stats):
     print("------------------")
     print(title)
     print("mean (time weighted): {}".format(stats[0]))
-    # print "var  (time weighted): {}".format(stats[1])
+    print("var  (time weighted): {}".format(stats[1]))
     print("std  (time weighted): {}".format(stats[2]))
-    # print "mean: {}".format(stats[3])
-    # print "var : {}".format(stats[4])
-    # print "std : {}".format(stats[5])
-    
+    print("mean: {}".format(stats[3]))
+    print("var : {}".format(stats[4]))
+    print("std : {}".format(stats[5]))
+
 
 def init():
-    # file_name = "/home/steffen/NaoTH/Logs/MesseLeipzig/lm15-naodevils-2/"
-    # file_name = file_name + "091201-0819-Nao6022"
-    #file_name = "/home/steffen/NaoTH/Logs/EuropeanOpen16/2016-03-30-test-naodevils/half1/"
-    #file_name = file_name + "160330-1952-Nao6022"
-    #file_name = file_name + "/game.log"
-    file_name = "game.log"
+    file_name = "logs/game_eu.log"
     parser = BehaviorParser()
     log = LogReader(file_name, parser)
-    
+
+    # print(type(log[0].messages))
+    # print(log[0].messages)
+    #print(log[0]["BehaviorStateComplete"])
+    #print("blabla", type(log[0]))
+    # m, o, s = log[0]["BehaviorStateComplete"]
+    # m, o, s = log[1]["BehaviorStateSparse"]
+
+    # print(type(m))
+    # print(m)
+    # quit()
+
     # enforce the whole log being parsed (this is necessary for older game logs)
-    for frame in log:
-        pass
-        #print(frame.number)
-        #if "BehaviorStateComplete" in frame.messages:
-        #    m = frame["BehaviorStateComplete"]
-        #if "BehaviorStateSparse" in frame.messages:
-        #    m = frame["BehaviorStateSparse"]
-        #frame["FrameInfo"]
-      
+    # for frame in log:
+    #    if "BehaviorStateComplete" in frame.messages:
+    #        m, o, s = frame["BehaviorStateComplete"]
+    #    if "BehaviorStateSparse" in frame.messages:
+    #        m, o, s = frame["BehaviorStateSparse"]
+
     return log
-    
+
 
 def run(log):
-    #reload(BehaviorParser)
-
     print(log.names)
 
-    for i in log.messages:
-        print(i)
-    quit()
     # we want only the frames which contain BehaviorState*
-    vlog = filter(lambda f: "BehaviorStateComplete" in f.messages or "BehaviorStateSparse" in f.messages, log)
-   
-    # apply the filter
-    a = map(frame_filter, vlog)
-   
-    # make an numpy array
-    data = np.array(a)
-    print(vlog)
-    size = data.shape
+    # TODO filter does not work correctly
+    #vlog = filter(lambda f: "BehaviorStateComplete" in f.messages or "BehaviorStateSparse" in f.messages, log.frames)
 
+    test_list = list()
+    for frame in log:
+        a = frame_filter(frame)
+        test_list.append(a)
+
+    # apply the filter
+    #a = list(map(frame_filter, vlog))
+    #print(a)
+
+    # make an numpy array
+    data = np.array(test_list)
+    print(data)
+    # print(vlog)
+    size = data.shape
+    print(size)
     data2 = np.empty([0, 14])
-    quit()
+
     current = 0
     motiontypeIndex = 13
     for x in range(1, size[0]):
         if data[current, motiontypeIndex] == data[x, motiontypeIndex]:
             continue
         elif data[current, motiontypeIndex] == 4 or data[current, motiontypeIndex] == 5:
-            temp = data[x, :]-data[current, :]
+            temp = data[x, :] - data[current, :]
             temp[motiontypeIndex] = data[current, motiontypeIndex]
             current = x
             data2 = np.vstack((data2, temp))
         else:
             current = x
-    
+
     stand = [x for x in data2 if x[motiontypeIndex] == 4]
     walk = [x for x in data2 if x[motiontypeIndex] == 5]
+    print(type(stand))
 
+    quit()
     tr_stand = zip(*stand)
     tr_walk = zip(*walk)
-    
+
     time_stand = sum(tr_stand[0])
     time_walk = sum(tr_walk[0])
-    
+
     print("------------------")
     print("time standing: {}".format(time_stand))
     print("time walking : {}".format(time_walk))
@@ -221,14 +228,14 @@ def run(log):
 
     d_walk_RAnklePitch_stats = do_statistics(tr_walk[0], tr_walk[9])
     print_statistics("RAnklePitch - walk", d_walk_RAnklePitch_stats)
-   
+
     # LAnklePitch
     d_stand_LAnklePitch_stats = do_statistics(tr_stand[0], tr_stand[10])
     print_statistics("LAnklePitch - stand", d_stand_LAnklePitch_stats)
 
     d_walk_LAnklePitch_stats = do_statistics(tr_walk[0], tr_walk[10])
     print_statistics("LAnklePitch - walk", d_walk_LAnklePitch_stats)
-    
+
     # RAnkleRoll
     d_stand_RAnkleRoll_stats = do_statistics(tr_stand[0], tr_stand[11])
     print_statistics("RAnkleRoll - stand", d_stand_RAnkleRoll_stats)
@@ -248,7 +255,7 @@ def run(log):
 
     d_stand = zip(*stand2)
     d_walk = zip(*walk2)
-  
+
     pyplot.plot(d_stand[0], d_stand[7], ".", label="RKneePitch-stand")
     pyplot.plot(d_walk[0], d_walk[7], ".", label="RKneePitch-walk")
 
@@ -257,7 +264,7 @@ def run(log):
 
     pyplot.plot(d_stand[0], d_stand[9], ".", label="RAnklePitch-stand")
     pyplot.plot(d_walk[0], d_walk[9], ".", label="RAnklePitch-walk")
-    
+
     pyplot.plot(d_stand[0], d_stand[10], ".", label="LAnklePitch-stand")
     pyplot.plot(d_walk[0], d_walk[10], ".", label="LAnklePitch-walk")
 
@@ -266,10 +273,11 @@ def run(log):
     # pyplot.plot(bb[0], bb[7], label="temperatur left")
     # pyplot.plot(bb[0], bb[10], label="game")
     # pyplot.plot(bb[0], bb[5], label="motion")
-    
+
     pyplot.legend(loc='upper left')
     pyplot.grid()
     pyplot.show()
+
 
 log = init()
 run(log)
