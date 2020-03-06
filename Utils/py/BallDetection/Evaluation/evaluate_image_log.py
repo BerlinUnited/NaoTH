@@ -6,6 +6,7 @@ from typing import NamedTuple
 import numpy as np
 import ctypes
 
+
 def get_naoth_dir():
     script_path = os.path.abspath(__file__)
     return os.path.abspath(os.path.join(script_path, "../../../../../"))
@@ -13,6 +14,7 @@ def get_naoth_dir():
 
 def get_toolchain_dir():
     return os.path.abspath(os.environ["NAOTH_TOOLCHAIN_PATH"])
+
 
 class Frame(NamedTuple):
     file: str
@@ -27,12 +29,13 @@ def get_frames_for_dir(d):
     result = list()
 
     for file in imageFiles:
-        frame = Frame(file)        
+        frame = Frame(file)
         # TODO: parse camera matrix using PIL to result
         # TODO: parse XML and add ground truth to result
         result.append(frame)
 
     return result
+
 
 def load_image(f: Frame):
     # don't import cv globally, because the dummy simulator shared library might need to load a non-system library
@@ -45,11 +48,12 @@ def load_image(f: Frame):
     cv_img = cv.cvtColor(cv_img, cv.COLOR_BGR2YUV).tobytes()
     yuv422 = np.ndarray(480*640*2, np.uint8)
     for i in range(0, 480 * 640, 2):
-            yuv422[i*2] = cv_img[i*3]
-            yuv422[i*2 + 1] = (cv_img[i*3 + 1] + cv_img[i*3 + 4]) / 2.0
-            yuv422[i*2 + 2] = cv_img[i*3 + 3]
-            yuv422[i*2 + 3] = (cv_img[i*3 + 2] + cv_img[i*3 + 5]) / 2.0
+        yuv422[i*2] = cv_img[i*3]
+        yuv422[i*2 + 1] = (cv_img[i*3 + 1] + cv_img[i*3 + 4]) / 2.0
+        yuv422[i*2 + 2] = cv_img[i*3 + 3]
+        yuv422[i*2 + 3] = (cv_img[i*3 + 2] + cv_img[i*3 + 5]) / 2.0
     return yuv422
+
 
 class Evaluator:
 
@@ -94,12 +98,14 @@ class Evaluator:
         self.sim.registerCognition(callable_cog)
         self.sim.registerMotion(callable_mo)
 
-        # get access to the module manager and return it to the calling function
+        # make more representations available to cppyy
         cppyy.include(os.path.join(
             naoth_dir, "Framework/Commons/Source/ModuleFramework/ModuleManager.h"))
         cppyy.include(os.path.join(
             naoth_dir, "NaoTHSoccer/Source/Cognition/Cognition.h"))
+        cppyy.include(os.path.join(naoth_dir, "NaoTHSoccer/Source/Representations/Perception/BallCandidates.h"))   
 
+        # get access to the module manager and return it to the calling function
         self.moduleManager = cppyy.gbl.getModuleManager(cog)
 
         # get the ball detector module
@@ -121,6 +127,12 @@ class Evaluator:
         # move image into representation
         imageRepresentation.copyImageDataYUV422(p_data, yuv422.size)
 
+    def evaluate_detection(self, f: Frame, bottom=True):
+        # get the ball candidates from the module
+        if bottom:
+            self.detected_balls = self.ball_detector.getProvide().at("BallCandidates")
+        else:
+            self.detected_balls = self.ball_detector.getProvide().at("BallCandidatesTop")
 
     def execute(self, directories):
         for d in directories:
@@ -128,7 +140,8 @@ class Evaluator:
             for f in frames:
                 self.set_current_frame(f)
                 self.sim.executeFrame()
-
+                self.evaluate_detection(f)
+                
 
 if __name__ == "__main__":
 
