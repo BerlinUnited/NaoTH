@@ -698,6 +698,11 @@ void MultiKalmanBallLocator::drawFilter(const BallHypothesis& bh, const Color& m
                  ellipse_vel.minor,
                  ellipse_vel.major,
                  ellipse_vel.angle);
+
+    if (!draw_covariances) {
+      cov_loc_color[cov_loc_color.Alpha] = 1;
+      cov_vel_color[cov_vel_color.Alpha] = 1;
+    }
 }
 
 void MultiKalmanBallLocator::drawFiltersOnField() const

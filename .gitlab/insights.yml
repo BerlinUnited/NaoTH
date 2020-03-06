@@ -1,0 +1,19 @@
+bugsCharts:
+  title: "Bug Report"
+  charts:
+    - title: "Monthly bugs created"
+      type: line
+      query:
+        issuable_type: issue
+        issuable_state: opened
+        filter_labels:
+          - Bug
+        collection_labels:
+          - Motion
+          - Behavior
+          - Tools
+          - Selflocalization
+          - Vision
+          - Infrastructure
+        group_by: month
+        period_limit: 24

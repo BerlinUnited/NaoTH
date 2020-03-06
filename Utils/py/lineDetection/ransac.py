@@ -3,6 +3,7 @@ from numpy import linalg as LA
 import math
 import random
 
+
 class Result:
     def __init__(self):
         self.sampleA = None
@@ -25,8 +26,8 @@ class Result:
         else:
             return (self.sampleA[0],)
 
-class Ransac:
 
+class Ransac:
     def __init__(self, iterations, threshDist, minInlier, threshAngle):
         self.iterations = iterations
         self.threshDist = threshDist

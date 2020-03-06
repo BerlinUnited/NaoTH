@@ -12,9 +12,9 @@ from .action import ActionResults
 
 # BUG: this is a cyclic inclusion
 # NOTE: without this the funuction evaluate_action_with_robots will not work
-#from . import Simulation as Sim
+# from . import Simulation as Sim
 
-from naoth import math2d as m2d
+from naoth.math import *
 
 """ General Functions """
 gen_field = []
@@ -23,8 +23,8 @@ ny = []
 
 
 def gaussian(x, y, mu_x, mu_y, sigma_x, sigma_y):
-    fac_x = ((x - mu_x)/sigma_x)**2
-    fac_y = ((y - mu_y)/sigma_y)**2
+    fac_x = ((x - mu_x) / sigma_x) ** 2
+    fac_y = ((y - mu_y) / sigma_y) ** 2
     return np.exp(-0.5 * (fac_x + fac_y))
 
 
@@ -52,10 +52,10 @@ def evaluate_single_pos(ball_pos):  # evaluates the potential field at a x,y pos
     # gets called by evaluate_action2
     sigma_x = field.x_opponent_goal / 2.0
     sigma_y = field.y_left_sideline / 2.5
-    f = slope(ball_pos.x, ball_pos.y, -1.0 / field.x_opponent_goal, 0.0)\
-        - gaussian(ball_pos.x, ball_pos.y, field.x_opponent_goal, 0.0, sigma_x, sigma_y)\
+    f = slope(ball_pos.x, ball_pos.y, -1.0 / field.x_opponent_goal, 0.0) \
+        - gaussian(ball_pos.x, ball_pos.y, field.x_opponent_goal, 0.0, sigma_x, sigma_y) \
         + gaussian(ball_pos.x, ball_pos.y, field.x_own_goal, 0.0, 1.5 * sigma_x, sigma_y)
-    
+
     return f
 
 
@@ -69,13 +69,15 @@ def evaluate_action_with_robots(results, state):
     number_of_actions = 0.0
     for p in results.positions():
         if p.cat() == Category.INFIELD or p.cat() == Category.OPPGOAL:
-            sum_potential += evaluate_single_pos_with_robots(state.pose * p.pos(), state.opp_robots, state.own_robots)
+            sum_potential += evaluate_single_pos_with_robots(state.pose * p.pos(),
+                                                             state.opp_robots, state.own_robots)
             number_of_actions += 1
 
     assert number_of_actions > 0
     sum_potential /= number_of_actions
 
-    squared_difference = np.abs(pf_normal_value - sum_potential)  # decide whether considering other robots is appropriate
+    squared_difference = np.abs(
+        pf_normal_value - sum_potential)  # decide whether considering other robots is appropriate
     if squared_difference < 0.05:  # upper bound - how to choose?
         return pf_normal_value
 
@@ -86,7 +88,7 @@ def evaluate_action_with_robots(results, state):
 
     # update state
     new_state = copy.copy(state)
-    new_state.ball_position = m2d.Vector2(0.0, 0.0) # Ball = Robot
+    new_state.ball_position = Vector2(0.0, 0.0)  # Ball = Robot
     new_state.translation = new_ball_pos
     # new_state.rotation = pass # maybe rotation as needed for direkt / shortest path to the ball
     new_state.potential_field_function = "normal"
@@ -97,7 +99,8 @@ def evaluate_action_with_robots(results, state):
     # Simulate Consequences
     for action in new_state.actions:  # new_state.actions includes the possible kicks
         single_consequence = ActionResults([])
-        actions_consequences.append(Sim.simulate_consequences(action, single_consequence, new_state, 30))
+        actions_consequences.append(
+            Sim.simulate_consequences(action, single_consequence, new_state, 30))
 
     best_action_with_team = Sim.decide_smart(actions_consequences, state)
 

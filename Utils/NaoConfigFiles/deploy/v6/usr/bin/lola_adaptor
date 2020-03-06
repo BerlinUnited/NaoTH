@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# NOTE:
+# make sure the commands are always executed as user nao
+# otherwise root will not be able to run this script directly
+
+function run_as_nao() {
+  if [ nao = `whoami` ]; then
+    systemctl --user $1 lola_adaptor.service
+  else
+    su nao -c "systemctl --user $1 lola_adaptor.service"
+  fi
+}
+
+function show_log_as_nao() {
+  if [ nao = `whoami` ]; then
+    journalctl --user-unit=$1
+  else
+    su nao -c "journalctl --user-unit=$1"
+  fi
+}
+
+case "$1" in
+  start)
+    echo "starting lola_adaptor related process"
+    run_as_nao start
+    ;;
+  stop)
+    echo "stopping lola_adaptor related processes"
+    run_as_nao stop
+    ;;
+  restart)
+    echo "restarting lola_adaptor related processes"
+    run_as_nao restart
+    ;;
+  status)
+    run_as_nao status
+    ;;
+  log)
+    show_log_as_nao lola_adaptor
+    ;;
+  log_lola)
+    show_log_as_nao lola
+    ;;
+  *)
+    echo "Usage: naoth {start|stop|restart|status|log|log_lola}"
+    exit 1
+    ;;
+
+esac
+
+exit 0

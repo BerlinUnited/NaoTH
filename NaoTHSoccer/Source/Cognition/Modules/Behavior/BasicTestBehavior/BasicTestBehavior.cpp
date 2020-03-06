@@ -13,14 +13,13 @@ BasicTestBehavior::BasicTestBehavior()
   // test head control
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:Search", "Set the HeadMotion-Request to 'search'.", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:reverseSearchDirection", "Set the head search direction to counterclockwise.", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:LookAtBall_image", "Set the HeadMotion-Request to 'look_at_ball'.", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:LookAtBall_field", "Set the HeadMotion-Request to 'look_at_ball'.", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:look_at_ball_model", "Search for ball if not seen", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:look_at_multi_ball_percept", "", false);
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:look_at_multi_ball_percept_image", "Set the HeadMotion-Request to 'look_at_ball'.", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:Stabilize", "Set the HeadMotion-Request to 'stabilize'.", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:SwitchToBottomCamera", "Switch to bottom camera", true);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:look_at_ball_modell", "Search for ball if not seen", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:look_straight_ahead", "look straight ahead", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:goto_angle", "look at specific angle given as Modify", false);
-  DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:LookAtMultiBallPercept", "", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:head:look_at_world_point", "", false);
 
   // test motion control
@@ -62,7 +61,7 @@ BasicTestBehavior::BasicTestBehavior()
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:goalie_sit_n_dive_right","..",false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:jump_indicator_left", "..", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:jump_indicator_right", "..", false);
-  
+
   // other motions
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:dead", "Set the robot dead.", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:motion:id:stand", "The default motion, otherwise do nothing", true);
@@ -154,15 +153,24 @@ void BasicTestBehavior::testHead()
     getHeadMotionRequest().id = HeadMotionRequest::stabilize;
   );
 
-  DEBUG_REQUEST("BasicTestBehavior:head:LookAtBall_image",
-    if (getBallPercept().ballWasSeen)
+  DEBUG_REQUEST("BasicTestBehavior:head:look_at_multi_ball_percept_image",
+    if (getMultiBallPercept().wasSeen())
     {
+      Vector2d pos = (*getMultiBallPercept().begin()).positionOnField;
+      MultiBallPercept::BallPercept closestBallPercept(*getMultiBallPercept().begin());
+      for (MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
+        if (pos.abs() > (*iter).positionOnField.abs()) {
+          pos = (*iter).positionOnField;
+          closestBallPercept = (*iter);
+        }
+      }
       getHeadMotionRequest().id = HeadMotionRequest::look_at_point;
-      getHeadMotionRequest().targetPointInImage = getBallPercept().centerInImage;
+      getHeadMotionRequest().targetPointInImage = closestBallPercept.centerInImage;
+      getHeadMotionRequest().cameraID = closestBallPercept.cameraId;
     }
   );
 
-  DEBUG_REQUEST("BasicTestBehavior:head:LookAtMultiBallPercept",
+  DEBUG_REQUEST("BasicTestBehavior:head:look_at_multi_ball_percept",
     if (getMultiBallPercept().wasSeen())
     {
       Vector2d pos = (*getMultiBallPercept().begin()).positionOnField;
@@ -174,16 +182,6 @@ void BasicTestBehavior::testHead()
       getHeadMotionRequest().id = HeadMotionRequest::look_at_world_point;
       getHeadMotionRequest().targetPointInTheWorld.x = pos.x;
       getHeadMotionRequest().targetPointInTheWorld.y = pos.y;
-      getHeadMotionRequest().targetPointInTheWorld.z = getFieldInfo().ballRadius;
-    }
-  );
-
-  DEBUG_REQUEST("BasicTestBehavior:head:LookAtBall_field",
-    if (getBallPercept().ballWasSeen)
-    {
-      getHeadMotionRequest().id = HeadMotionRequest::look_at_world_point;
-      getHeadMotionRequest().targetPointInTheWorld.x = getBallPercept().bearingBasedOffsetOnField.x;
-      getHeadMotionRequest().targetPointInTheWorld.y = getBallPercept().bearingBasedOffsetOnField.y;
       getHeadMotionRequest().targetPointInTheWorld.z = getFieldInfo().ballRadius;
     }
   );
@@ -206,7 +204,7 @@ void BasicTestBehavior::testHead()
     getHeadMotionRequest().velocity = velocity;
   );
 
-  DEBUG_REQUEST("BasicTestBehavior:head:look_at_ball_modell",
+  DEBUG_REQUEST("BasicTestBehavior:head:look_at_ball_model",
     if(getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime()) < 3000)
     {
       getHeadMotionRequest().id = HeadMotionRequest::look_at_world_point;
