@@ -2,7 +2,7 @@ import os
 import argparse
 import cppyy
 import PIL.Image
-from typing import NamedTuple
+from typing import NamedTuple, Tuple
 import numpy as np
 import ctypes
 
@@ -18,6 +18,9 @@ def get_toolchain_dir():
 
 class Frame(NamedTuple):
     file: str
+    bottom: bool
+    cam_matrix_translation: Tuple[float, float, float]
+    cam_matrix_rotation: np.array
 
 
 def get_frames_for_dir(d):
@@ -29,8 +32,27 @@ def get_frames_for_dir(d):
     result = list()
 
     for file in imageFiles:
-        frame = Frame(file)
-        # TODO: parse camera matrix using PIL to result
+
+        # open image to get the metadata
+        img = PIL.Image.open(file)
+        bottom = img.info["CameraID"] == "1"
+        # parse camera matrix using metadata in the PNG file
+        cam_matrix_translation = (float(img.info["t_x"]), float(
+            img.info["t_y"]), float(img.info["t_z"]))
+
+        cam_matrix_rotation = np.array(
+            [
+                [float(img.info["r_11"]), float(
+                    img.info["r_12"]), float(img.info["r_13"])],
+                [float(img.info["r_21"]), float(
+                    img.info["r_22"]), float(img.info["r_23"])],
+                [float(img.info["r_31"]), float(
+                    img.info["r_32"]), float(img.info["r_33"])]
+            ])
+
+        frame = Frame(file, bottom, cam_matrix_translation,
+                      cam_matrix_rotation)
+
         # TODO: parse XML and add ground truth to result
         result.append(frame)
 
@@ -103,7 +125,10 @@ class Evaluator:
             naoth_dir, "Framework/Commons/Source/ModuleFramework/ModuleManager.h"))
         cppyy.include(os.path.join(
             naoth_dir, "NaoTHSoccer/Source/Cognition/Cognition.h"))
-        cppyy.include(os.path.join(naoth_dir, "NaoTHSoccer/Source/Representations/Perception/BallCandidates.h"))   
+        cppyy.include(os.path.join(
+            naoth_dir, "NaoTHSoccer/Source/Representations/Perception/BallCandidates.h"))
+        cppyy.include(os.path.join(
+            naoth_dir, "NaoTHSoccer/Source/Representations/Perception/CameraMatrix.h"))
 
         # get access to the module manager and return it to the calling function
         self.moduleManager = cppyy.gbl.getModuleManager(cog)
@@ -112,9 +137,9 @@ class Evaluator:
         self.ball_detector = self.moduleManager.getModule(
             "CNNBallDetector").getModule()
 
-    def set_current_frame(self, frame, bottom=True):
+    def set_current_frame(self, frame):
         # get reference to the image input representation
-        if bottom:
+        if frame.bottom:
             imageRepresentation = self.ball_detector.getRequire().at("Image")
         else:
             imageRepresentation = self.ball_detector.getRequire().at("ImageTop")
@@ -127,12 +152,31 @@ class Evaluator:
         # move image into representation
         imageRepresentation.copyImageDataYUV422(p_data, yuv422.size)
 
-    def evaluate_detection(self, f: Frame, bottom=True):
-        # get the ball candidates from the module
-        if bottom:
-            self.detected_balls = self.ball_detector.getProvide().at("BallCandidates")
+        # set camera matrix
+        if frame.bottom:
+            camMatrix = self.ball_detector.getRequire().at("CameraMatrix")
         else:
-            self.detected_balls = self.ball_detector.getProvide().at("BallCandidatesTop")
+            camMatrix = self.ball_detector.getRequire().at("CameraMatrixTop")
+
+        camMatrix.valid = True
+        camMatrix.translation.x = frame.cam_matrix_translation[0]
+        camMatrix.translation.y = frame.cam_matrix_translation[1]
+        camMatrix.translation.z = frame.cam_matrix_translation[2]
+
+        for c in range(0,3):
+            for r in range(0,3):
+                camMatrix.rotation.c[c][r] = frame.cam_matrix_rotation[c,r]
+        
+
+    def evaluate_detection(self, f: Frame):
+        # get the ball candidates from the module
+        if f.bottom:
+            detected_balls = self.ball_detector.getProvide().at("BallCandidates")
+        else:
+            detected_balls = self.ball_detector.getProvide().at("BallCandidatesTop")
+
+        for p in detected_balls.patches:
+            print(p.center(), p.width(), p.height())
 
     def execute(self, directories):
         for d in directories:
@@ -141,7 +185,7 @@ class Evaluator:
                 self.set_current_frame(f)
                 self.sim.executeFrame()
                 self.evaluate_detection(f)
-                
+
 
 if __name__ == "__main__":
 
