@@ -185,6 +185,7 @@ class Evaluator:
                 self.set_current_frame(f)
                 self.sim.executeFrame()
                 self.evaluate_detection(f)
+                input("Please type enter to proceed")
 
 
 if __name__ == "__main__":
