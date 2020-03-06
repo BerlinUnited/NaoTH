@@ -20,12 +20,20 @@ def get_demo_logfiles():
     base_url = "https://www2.informatik.hu-berlin.de/~naoth/ressources/log/demo_image/"
     logfile_list = ["rc17_ball_far.log"]
 
+    print("Downloading Logfiles: {}".format(logfile_list))
+
     target_dir = Path("logs")
     Path.mkdir(target_dir, exist_ok=True)
 
+    print(" Download from: {}".format(base_url))
+    print(" Download to: {}".format(target_dir.resolve()))
     for logfile in logfile_list:
         if not Path(target_dir / logfile).is_file():
-            wget.download(base_url + logfile, target_dir)
+            print("Download: {}".format(logfile))
+            wget.download(base_url + logfile, str(target_dir))
+            print("Done.")
+
+    print("Finished downloading")
 
 
 def get_x_angle(m):
@@ -137,6 +145,7 @@ def export_images(logfile, img):
     output_folder_bottom.mkdir(exist_ok=True)
 
     if output_folder_top.exists() and output_folder_bottom.exists():
+        # TODO this expects to be always two images to be present, this assumption is violated for combined logs
         for i, img_b, img_t, cm_b, cm_t in img:
             img_b = img_b.convert('RGB')
             img_t = img_t.convert('RGB')
