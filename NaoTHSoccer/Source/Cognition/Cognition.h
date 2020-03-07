@@ -35,8 +35,6 @@ BEGIN_DECLARE_MODULE(Cognition)
   REQUIRE(FrameInfo)
 END_DECLARE_MODULE(Cognition)
 
-ModuleManager* getModuleManager(Cognition* c);
-
 class Cognition : public naoth::Callable, private CognitionBase, public ModuleManagerWithDebug
 {
 public:
