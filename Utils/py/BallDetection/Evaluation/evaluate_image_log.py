@@ -238,8 +238,8 @@ class Evaluator:
             for r in range(0, 3):
                 camMatrix.rotation.c[c][r] = frame.cam_matrix_rotation[r, c]
 
-    def evaluate_detection(self, frame: Frame, eval_functions, show_debug_image=False):
-        import cv2 as cv
+    def evaluate_detection(self, frame: Frame, eval_functions, debug_threshold=None):
+        import cv2
 
         # get the ball candidates from the module
         if frame.bottom:
@@ -247,17 +247,32 @@ class Evaluator:
         else:
             detected_balls = self.ball_detector.getProvide().at("BallCandidatesTop")
 
+        debug = False
         for score_name, f in eval_functions.items():
             score = f(frame, detected_balls.patchesYUVClassified)
             self.scores[score_name].append(score)
 
-        if show_debug_image:
+            if debug_threshold is not None and score <= debug_threshold:
+                debug = True
+
+        title = "Ball Evaluator: press any key to continue or Q to exit"
+        if debug:
             img = create_debug_image(
                 frame.file, frame.balls, detected_balls.patchesYUVClassified)
-            cv.imshow("Ball Evaluator", img)
-            cv.waitKey(1)
+            cv2.imshow(title, img)
+            key = cv2.waitKey()
+        else:
+            img = np.ones((240, 320))*255
+            cv2.addText(img, "Image {} is over threshold".format(frame.file), (0,0),
+                        "Serif", pointSize=12, color=(0, 0, 0))
+            cv2.imshow(title, img)
 
-    def execute(self, directories, eval_functions):
+            key = cv2.waitKey(1)
+
+        if key == 113 or key == 27:
+            exit(0)
+
+    def execute(self, directories, eval_functions, debug_threshold=None):
 
         # init the score lists
         for score_name, f in eval_functions.items():
@@ -268,7 +283,7 @@ class Evaluator:
             for f in frames:
                 self.set_current_frame(f)
                 self.sim.executeFrame()
-                self.evaluate_detection(f, eval_functions)
+                self.evaluate_detection(f, eval_functions, debug_threshold)
 
     def show_report(self):
         for score_name, score_values in self.scores.items():
@@ -282,12 +297,12 @@ class Evaluator:
             print()
 
             for percentile in [1, 5, 10, 25, 30, 40, 50, 75, 90, 99]:
-                if percentile == 50: 
+                if percentile == 50:
                     marker = "(median)"
-                else: 
+                else:
                     marker = ""
                 print("best {}% >= {} {}".format(100 - percentile,
-                                              np.percentile(scores, percentile), marker))
+                                                 np.percentile(scores, percentile), marker))
 
         # TODO: collect items with the worst scores
 
@@ -313,9 +328,12 @@ if __name__ == "__main__":
     parser.add_argument('directory', nargs='+',
                         help='A list of directories containing the images files (as png with the integrated camera matrix)')
 
+    parser.add_argument('--debug-threshold=T', type=float, dest="debug_threshold",
+                        help="If an image has a score with a worse than the given threshold, include this image in a debug view at the end.")
+
     args = parser.parse_args()
 
     evaluator = Evaluator()
     evaluator.execute(
-        args.directory, {"Best IOU per image": best_ball_patch_intersection})
+        args.directory, {"Best IOU per image": best_ball_patch_intersection}, args.debug_threshold)
     evaluator.show_report()
