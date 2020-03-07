@@ -291,6 +291,12 @@ class Evaluator:
 
             if key == 113 or key == 27:
                 exit(0)
+            elif key == 114:
+                # repeat execution of the current frame, but do not count in statistics
+                print("Repeating frame")
+                return True
+        # Continue with next frame
+        return False
 
     def execute(self, directories, eval_functions, debug_threshold=None):
 
@@ -303,7 +309,10 @@ class Evaluator:
             for f in frames:
                 self.set_current_frame(f)
                 self.sim.executeFrame()
-                self.evaluate_detection(f, eval_functions, debug_threshold)
+                while self.evaluate_detection(f, eval_functions, debug_threshold):
+                    self.set_current_frame(f)
+                    self.sim.executeFrame()
+                    
 
     def show_report(self):
         for score_name, score_values in self.scores.items():
