@@ -141,7 +141,7 @@ def create_debug_image(file, balls, patches):
         if len(balls) > 0:
             iou = balls[0].intersection_over_union(
                 p.min.x, p.min.y, p.max.x, p.max.y)
-            cv2.addText(img, str(iou), (p.min.x + 5, p.min.y),
+            cv2.addText(img, "{:.2f}".format(iou), (p.min.x + 5, p.min.y+15),
                         "Serif", pointSize=12, color=(0, 0, 255))
 
     return img
@@ -219,24 +219,35 @@ class Evaluator:
         # get reference to the image input representation
         if frame.bottom:
             imageRepresentation = self.ball_detector.getRequire().at("Image")
+            # set other image to black
+            black = np.zeros(640*480*2,np.uint8)
+            self.ball_detector.getRequire().at("ImageTop").copyImageDataYUV422(
+                black.ctypes.data_as(ctypes.POINTER(ctypes.c_uint8)), black.size)
         else:
             imageRepresentation = self.ball_detector.getRequire().at("ImageTop")
+            # set other image to black
+            black = np.zeros(640*480*2,np.uint8)
+            self.ball_detector.getRequire().at("Image").copyImageDataYUV422(
+                black.ctypes.data_as(ctypes.POINTER(ctypes.c_uint8)), black.size)
 
         print(frame.file)
 
         # load image in YUV422 format
         yuv422 = load_image(frame.file)
         p_data = yuv422.ctypes.data_as(ctypes.POINTER(ctypes.c_uint8))
+            
         # move image into representation
         imageRepresentation.copyImageDataYUV422(p_data, yuv422.size)
 
         # set camera matrix
         if frame.bottom:
             camMatrix = self.ball_detector.getRequire().at("CameraMatrix")
+            # invalidate other camera matrix
+            self.ball_detector.getRequire().at("CameraMatrixTop").valid = False
         else:
             camMatrix = self.ball_detector.getRequire().at("CameraMatrixTop")
-
-        # TODO: invalidate other camera matrix
+            # invalidate other camera matrix
+            self.ball_detector.getRequire().at("CameraMatrix").valid = False
 
         camMatrix.valid = True
         camMatrix.translation.x = frame.cam_matrix_translation[0]
@@ -312,8 +323,6 @@ class Evaluator:
                     marker = ""
                 print("best {}% >= {} {}".format(100 - percentile,
                                                  np.percentile(scores, percentile), marker))
-
-        # TODO: collect items with the worst scores
 
 
 def best_ball_patch_intersection(frame, patches):
