@@ -17,15 +17,38 @@ def get_naoth_dir():
 def get_toolchain_dir():
     return os.path.abspath(os.environ["NAOTH_TOOLCHAIN_PATH"])
 
+
 class Point2D(NamedTuple):
     x: float
     y: float
+
 
 class Rectangle(NamedTuple):
     top_left: Point2D
     bottom_right: Point2D
 
-  
+    def intersection_over_union(self, xtl: float, ytl: float, xbr: float, ybr: float):
+
+        # compute x and y coordinates of the intersection rectangle
+        intersection_topleft = Point2D(
+            min(self.top_left.x, xtl), min(self.top_left.y, ytl))
+        intersection_bottomright = Point2D(
+            max(self.bottom_right.x, xbr), max(self.bottom_right.y, ybr))
+        intersection = Rectangle(intersection_topleft,
+                                 intersection_bottomright)
+
+        # compute the intersection, self and other area
+        intersectionArea = max(0, intersection.bottom_right.x - intersection.top_left.x + 1) + \
+            max(0, intersection.bottom_right.y - intersection.top_left.y + 1)
+
+        selfArea = (self.bottom_right.x - self.top_left.x + 1) * \
+            (self.bottom_right.y - self.top_left.y + 1)
+        otherArea = (xbr - xtl + 1) * (ybr - ytl + 1)
+
+        # return the intersecton over union
+        return intersectionArea / float(selfArea + otherArea - intersectionArea)
+
+
 class Frame(NamedTuple):
     file: str
     bottom: bool
@@ -41,7 +64,7 @@ def get_frames_for_dir(d):
         annos = ET.parse(annos_file)
     else:
         raise "annotation file " + annos_file + " was not found!"
-        
+
     file_names = os.listdir(d)
     file_names.sort()
     imageFiles = [os.path.join(d, f) for f in file_names if os.path.isfile(
@@ -70,9 +93,9 @@ def get_frames_for_dir(d):
         balls = list()
         # Search for XML tag which name attribute has the filename as value
         for m in annos.findall(".//image[@name='{}']/box[@label='ball']".format(os.path.basename(file))):
-            top_left = Point2D(m.attrib["xtl"], m.attrib["ytl"])
-            bottom_right = Point2D(m.attrib["xbr"], m.attrib["ybr"])
-            balls.append(Rectangle(top_left, bottom_right))      
+            top_left = Point2D(float(m.attrib["xtl"]), float(m.attrib["ytl"]))
+            bottom_right = Point2D(float(m.attrib["xbr"]), float(m.attrib["ybr"]))
+            balls.append(Rectangle(top_left, bottom_right))
         frame = Frame(file, bottom, balls, cam_matrix_translation,
                       cam_matrix_rotation)
 
@@ -179,7 +202,7 @@ class Evaluator:
             camMatrix = self.ball_detector.getRequire().at("CameraMatrix")
         else:
             camMatrix = self.ball_detector.getRequire().at("CameraMatrixTop")
-        
+
         # TODO: invalidate other camera matrix
 
         camMatrix.valid = True
@@ -187,30 +210,40 @@ class Evaluator:
         camMatrix.translation.y = frame.cam_matrix_translation[1]
         camMatrix.translation.z = frame.cam_matrix_translation[2]
 
-        for c in range(0,3):
-            for r in range(0,3):
-                camMatrix.rotation.c[c][r] = frame.cam_matrix_rotation[r,c]
+        for c in range(0, 3):
+            for r in range(0, 3):
+                camMatrix.rotation.c[c][r] = frame.cam_matrix_rotation[r, c]
 
-        
-
-    def evaluate_detection(self, f: Frame):
+    def evaluate_detection(self, frame: Frame, eval_functions):
         # get the ball candidates from the module
-        if f.bottom:
+        if frame.bottom:
             detected_balls = self.ball_detector.getProvide().at("BallCandidates")
         else:
             detected_balls = self.ball_detector.getProvide().at("BallCandidatesTop")
 
-        for p in detected_balls.patchesYUVClassified:
-            print(p.center(), p.width(), p.height())
+        for f in eval_functions:
+            score = f(frame, detected_balls.patchesYUVClassified)
+            print("score:", score)
 
-    def execute(self, directories):
+    def execute(self, directories, eval_functions):
         for d in directories:
             frames = get_frames_for_dir(d)
             for f in frames:
                 self.set_current_frame(f)
                 self.sim.executeFrame()
-                self.evaluate_detection(f)
-                
+                self.evaluate_detection(f, eval_functions)
+
+
+def best_ball_patch_intersection(frame, patches):
+    best = 0.0
+    for p in patches:
+        for b in frame.balls:
+            iuo = b.intersection_over_union(p.min.x, p.min.y, p.max.x, p.max.y)
+            if iuo > best:
+                best = iuo
+    return best
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='Evaluate ball detection on logfile images annotated with CVAT.')
@@ -220,4 +253,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     evaluator = Evaluator()
-    evaluator.execute(args.directory)
+    evaluator.execute(args.directory, [best_ball_patch_intersection])
