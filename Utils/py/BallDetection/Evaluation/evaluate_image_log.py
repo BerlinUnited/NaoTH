@@ -135,8 +135,10 @@ def create_debug_image(file, balls, patches):
     for p in patches:
         cv2.rectangle(img, (p.min.x, p.min.y), (p.max.x, p.max.y), (0, 0, 255))
         if len(balls) > 0:
-            iou = balls[0].intersection_over_union(p.min.x, p.min.y,p.max.x, p.max.y)
-            cv2.addText(img, str(iou), (p.min.x + 5, p.min.y), "Serif", pointSize=12, color=(0,0,255))
+            iou = balls[0].intersection_over_union(
+                p.min.x, p.min.y, p.max.x, p.max.y)
+            cv2.addText(img, str(iou), (p.min.x + 5, p.min.y),
+                        "Serif", pointSize=12, color=(0, 0, 255))
 
     return img
 
@@ -236,7 +238,7 @@ class Evaluator:
             for r in range(0, 3):
                 camMatrix.rotation.c[c][r] = frame.cam_matrix_rotation[r, c]
 
-    def evaluate_detection(self, frame: Frame, eval_functions):
+    def evaluate_detection(self, frame: Frame, eval_functions, show_debug_image=False):
         import cv2 as cv
 
         # get the ball candidates from the module
@@ -249,10 +251,11 @@ class Evaluator:
             score = f(frame, detected_balls.patchesYUVClassified)
             self.scores[score_name].append(score)
 
-        img = create_debug_image(
-            frame.file, frame.balls, detected_balls.patchesYUVClassified)
-        cv.imshow("Ball Evaluator", img)
-        cv.waitKey(100)
+        if show_debug_image:
+            img = create_debug_image(
+                frame.file, frame.balls, detected_balls.patchesYUVClassified)
+            cv.imshow("Ball Evaluator", img)
+            cv.waitKey(1)
 
     def execute(self, directories, eval_functions):
 
@@ -268,11 +271,23 @@ class Evaluator:
                 self.evaluate_detection(f, eval_functions)
 
     def show_report(self):
-        # compute average scores for each type of score
-        avg_scores = dict()
         for score_name, score_values in self.scores.items():
-            avg_scores[score_name] = float(
-                sum(score_values)) / float(len(score_values))
+            print()
+            print(score_name)
+            print("=" * len(score_name))
+            # get percentile, average and other basic informations
+            scores = np.array(score_values)
+
+            print("average: {}".format(np.average(scores)))
+            print()
+
+            for percentile in [1, 5, 10, 25, 30, 40, 50, 75, 90, 99]:
+                if percentile == 50: 
+                    marker = "(median)"
+                else: 
+                    marker = ""
+                print("best {}% >= {} {}".format(100 - percentile,
+                                              np.percentile(scores, percentile), marker))
 
         # TODO: collect items with the worst scores
 
@@ -301,5 +316,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     evaluator = Evaluator()
-    evaluator.execute(args.directory, {"iou": best_ball_patch_intersection})
-    print(evaluator.scores)
+    evaluator.execute(
+        args.directory, {"Best Intersection over Union": best_ball_patch_intersection})
+    evaluator.show_report()
