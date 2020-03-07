@@ -329,10 +329,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='Evaluate ball detection on logfile images annotated with CVAT.')
     parser.add_argument('directory', nargs='+',
-                        help='A list of directories containing the images files (as png with the integrated camera matrix)')
+                        help="""A list of directories containing the images files (as png with the integrated camera matrix). 
+                        It is expected that an XML with the same name (but ending with .xml) is located in the parent folder of each given folder.""")
 
     parser.add_argument('--debug-threshold=T', type=float, dest="debug_threshold",
-                        help="If an image has a score with a worse than the given threshold, include this image in a debug view at the end.")
+                        help="If an image has a score with a worse than the given threshold, include this image in a debug view.")
 
     args = parser.parse_args()
 
