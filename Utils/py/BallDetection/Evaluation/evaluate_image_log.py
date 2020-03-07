@@ -93,10 +93,12 @@ def get_frames_for_dir(d):
         balls = list()
         # Search for XML tag which name attribute has the filename as value
         for m in annos.findall(".//image[@name='{}']/box[@label='ball']".format(os.path.basename(file))):
-            top_left = Point2D(float(m.attrib["xtl"]), float(m.attrib["ytl"]))
-            bottom_right = Point2D(
-                float(m.attrib["xbr"]), float(m.attrib["ybr"]))
-            balls.append(Rectangle(top_left, bottom_right))
+            if m.attrib["occluded"] == None or m.attrib["occluded"] == '0':
+                top_left = Point2D(float(m.attrib["xtl"]), float(m.attrib["ytl"]))
+                bottom_right = Point2D(
+                    float(m.attrib["xbr"]), float(m.attrib["ybr"]))
+                balls.append(Rectangle(top_left, bottom_right))
+
         frame = Frame(file, bottom, balls, cam_matrix_translation,
                       cam_matrix_rotation)
 
@@ -255,22 +257,22 @@ class Evaluator:
             if debug_threshold is not None and score <= debug_threshold:
                 debug = True
 
-        title = "Ball Evaluator: press any key to continue or Q to exit"
-        if debug:
-            img = create_debug_image(
-                frame.file, frame.balls, detected_balls.patchesYUVClassified)
-            cv2.imshow(title, img)
-            key = cv2.waitKey()
-        else:
-            img = np.ones((240, 320))*255
-            cv2.addText(img, "Image {} is over threshold".format(frame.file), (0,0),
-                        "Serif", pointSize=12, color=(0, 0, 0))
-            cv2.imshow(title, img)
+        if debug_threshold is not None:
+            title = "Ball Evaluator: press any key to continue or Q to exit"
+            if debug:
+                cv2.namedWindow(title)
+                img = create_debug_image(
+                    frame.file, frame.balls, detected_balls.patchesYUVClassified)
+                cv2.imshow(title, img)
+                key = cv2.waitKey()
+            else:
+                img = np.ones((240, 320))*255
+                cv2.imshow(title, img)
 
-            key = cv2.waitKey(1)
+                key = cv2.waitKey(1)
 
-        if key == 113 or key == 27:
-            exit(0)
+            if key == 113 or key == 27:
+                exit(0)
 
     def execute(self, directories, eval_functions, debug_threshold=None):
 
