@@ -108,12 +108,11 @@ def get_frames_for_dir(d):
 def load_image(f: Frame):
     # don't import cv globally, because the dummy simulator shared library might need to load a non-system library
     # and we need to make sure loading the dummy simulator shared library happens first
-    import cv2 as cv
-
-    cv_img = cv.imread(f)
+    import cv2
+    cv_img = cv2.imread(f)
 
     # convert image for bottom to yuv422
-    cv_img = cv.cvtColor(cv_img, cv.COLOR_BGR2YUV).tobytes()
+    cv_img = cv2.cvtColor(cv_img, cv2.COLOR_BGR2YUV).tobytes()
     yuv422 = np.ndarray(480*640*2, np.uint8)
     for i in range(0, 480 * 640, 2):
         yuv422[i*2] = cv_img[i*3]
@@ -121,6 +120,25 @@ def load_image(f: Frame):
         yuv422[i*2 + 2] = cv_img[i*3 + 3]
         yuv422[i*2 + 3] = (cv_img[i*3 + 2] + cv_img[i*3 + 5]) / 2.0
     return yuv422
+
+
+def create_debug_image(file, balls, patches):
+    import cv2
+
+    img = cv2.imread(file)
+    # draw all actual balls
+    for b in balls:
+        cv2.rectangle(img, (int(b.top_left.x), int(b.top_left.y)), (int(
+            b.bottom_right.x), int(b.bottom_right.y)), (0, 165, 255))
+
+    # draw the generated patches with their respective IOU (with first ball)
+    for p in patches:
+        cv2.rectangle(img, (p.min.x, p.min.y), (p.max.x, p.max.y), (0, 0, 255))
+        if len(balls) > 0:
+            iou = balls[0].intersection_over_union(p.min.x, p.min.y,p.max.x, p.max.y)
+            cv2.addText(img, str(iou), (p.min.x + 5, p.min.y), "Serif", pointSize=12, color=(0,0,255))
+
+    return img
 
 
 class Evaluator:
@@ -219,6 +237,8 @@ class Evaluator:
                 camMatrix.rotation.c[c][r] = frame.cam_matrix_rotation[r, c]
 
     def evaluate_detection(self, frame: Frame, eval_functions):
+        import cv2 as cv
+
         # get the ball candidates from the module
         if frame.bottom:
             detected_balls = self.ball_detector.getProvide().at("BallCandidates")
@@ -228,6 +248,11 @@ class Evaluator:
         for score_name, f in eval_functions.items():
             score = f(frame, detected_balls.patchesYUVClassified)
             self.scores[score_name].append(score)
+
+        img = create_debug_image(
+            frame.file, frame.balls, detected_balls.patchesYUVClassified)
+        cv.imshow("Ball Evaluator", img)
+        cv.waitKey(100)
 
     def execute(self, directories, eval_functions):
 
@@ -242,8 +267,22 @@ class Evaluator:
                 self.sim.executeFrame()
                 self.evaluate_detection(f, eval_functions)
 
+    def show_report(self):
+        # compute average scores for each type of score
+        avg_scores = dict()
+        for score_name, score_values in self.scores.items():
+            avg_scores[score_name] = float(
+                sum(score_values)) / float(len(score_values))
+
+        # TODO: collect items with the worst scores
+
 
 def best_ball_patch_intersection(frame, patches):
+
+    if len(frame.balls) == 0:
+        # Don't penalize the patch detector for not finding a non-existent ball
+        return 1.0
+
     best = 0.0
     for p in patches:
         for b in frame.balls:
