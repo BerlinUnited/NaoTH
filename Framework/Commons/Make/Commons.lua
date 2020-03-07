@@ -1,5 +1,5 @@
 project "Commons"
-  kind "SharedLib"
+  kind "StaticLib"
   language "C++"
   
   -- FatalWarnings treats compiler/linker warnings as errors

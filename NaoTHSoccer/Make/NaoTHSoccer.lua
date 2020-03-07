@@ -1,5 +1,5 @@
 project "NaoTHSoccer"
-  kind "SharedLib"
+  kind "StaticLib"
   language "C++"
 
   files {
