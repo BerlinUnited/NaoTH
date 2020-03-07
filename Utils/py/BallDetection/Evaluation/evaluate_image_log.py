@@ -2,9 +2,11 @@ import os
 import argparse
 import cppyy
 import PIL.Image
-from typing import NamedTuple, Tuple
+from typing import NamedTuple, Tuple, List
 import numpy as np
+import time
 import ctypes
+import xml.etree.ElementTree as ET
 
 
 def get_naoth_dir():
@@ -15,22 +17,37 @@ def get_naoth_dir():
 def get_toolchain_dir():
     return os.path.abspath(os.environ["NAOTH_TOOLCHAIN_PATH"])
 
+class Point2D(NamedTuple):
+    x: float
+    y: float
 
+class Rectangle(NamedTuple):
+    top_left: Point2D
+    bottom_right: Point2D
+
+  
 class Frame(NamedTuple):
     file: str
     bottom: bool
+    balls: List[Rectangle]
     cam_matrix_translation: Tuple[float, float, float]
     cam_matrix_rotation: np.array
 
 
 def get_frames_for_dir(d):
+    # parse the CVAT XML 1.1 file with the annotations, we assume it has the same name as the directory, but ends with ".xml"
+    annos_file = d.rstrip("/\\") + ".xml"
+    if os.path.isfile(annos_file):
+        annos = ET.parse(annos_file)
+    else:
+        raise "annotation file " + annos_file + " was not found!"
+        
     file_names = os.listdir(d)
     file_names.sort()
     imageFiles = [os.path.join(d, f) for f in file_names if os.path.isfile(
         os.path.join(d, f)) and f.endswith(".png")]
 
     result = list()
-
     for file in imageFiles:
 
         # open image to get the metadata
@@ -49,11 +66,16 @@ def get_frames_for_dir(d):
                 [float(img.info["r_31"]), float(
                     img.info["r_32"]), float(img.info["r_33"])]
             ])
-
-        frame = Frame(file, bottom, cam_matrix_translation,
+        # add ground truth (all actual balls) to the frame
+        balls = list()
+        # Search for XML tag which name attribute has the filename as value
+        for m in annos.findall(".//image[@name='{}']/box[@label='ball']".format(os.path.basename(file))):
+            top_left = Point2D(m.attrib["xtl"], m.attrib["ytl"])
+            bottom_right = Point2D(m.attrib["xbr"], m.attrib["ybr"])
+            balls.append(Rectangle(top_left, bottom_right))      
+        frame = Frame(file, bottom, balls, cam_matrix_translation,
                       cam_matrix_rotation)
 
-        # TODO: parse XML and add ground truth to result
         result.append(frame)
 
     return result
@@ -157,6 +179,8 @@ class Evaluator:
             camMatrix = self.ball_detector.getRequire().at("CameraMatrix")
         else:
             camMatrix = self.ball_detector.getRequire().at("CameraMatrixTop")
+        
+        # TODO: invalidate other camera matrix
 
         camMatrix.valid = True
         camMatrix.translation.x = frame.cam_matrix_translation[0]
@@ -166,6 +190,7 @@ class Evaluator:
         for c in range(0,3):
             for r in range(0,3):
                 camMatrix.rotation.c[c][r] = frame.cam_matrix_rotation[r,c]
+
         
 
     def evaluate_detection(self, f: Frame):
@@ -175,7 +200,7 @@ class Evaluator:
         else:
             detected_balls = self.ball_detector.getProvide().at("BallCandidatesTop")
 
-        for p in detected_balls.patches:
+        for p in detected_balls.patchesYUVClassified:
             print(p.center(), p.width(), p.height())
 
     def execute(self, directories):
@@ -185,11 +210,8 @@ class Evaluator:
                 self.set_current_frame(f)
                 self.sim.executeFrame()
                 self.evaluate_detection(f)
-                input("Please type enter to proceed")
-
-
+                
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(
         description='Evaluate ball detection on logfile images annotated with CVAT.')
     parser.add_argument('directory', nargs='+',
