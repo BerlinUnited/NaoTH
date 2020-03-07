@@ -31,14 +31,14 @@ class Rectangle(NamedTuple):
 
         # compute x and y coordinates of the intersection rectangle
         intersection_topleft = Point2D(
-            min(self.top_left.x, xtl), min(self.top_left.y, ytl))
+            max(self.top_left.x, xtl), max(self.top_left.y, ytl))
         intersection_bottomright = Point2D(
-            max(self.bottom_right.x, xbr), max(self.bottom_right.y, ybr))
+            min(self.bottom_right.x, xbr), min(self.bottom_right.y, ybr))
         intersection = Rectangle(intersection_topleft,
                                  intersection_bottomright)
 
         # compute the intersection, self and other area
-        intersectionArea = max(0, intersection.bottom_right.x - intersection.top_left.x + 1) + \
+        intersectionArea = max(0, intersection.bottom_right.x - intersection.top_left.x + 1) * \
             max(0, intersection.bottom_right.y - intersection.top_left.y + 1)
 
         selfArea = (self.bottom_right.x - self.top_left.x + 1) * \
