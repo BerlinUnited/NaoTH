@@ -317,5 +317,5 @@ if __name__ == "__main__":
 
     evaluator = Evaluator()
     evaluator.execute(
-        args.directory, {"Best Intersection over Union": best_ball_patch_intersection})
+        args.directory, {"Best IOU per image": best_ball_patch_intersection})
     evaluator.show_report()
