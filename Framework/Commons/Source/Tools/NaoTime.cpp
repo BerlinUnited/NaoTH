@@ -13,6 +13,7 @@ using namespace naoth;
 
 // TODO: need a better solution here
 // EVIL HACK: used to determine the version of the robot
+#ifndef WIN32
 
 #include <sys/stat.h>
 #include <stdio.h>
@@ -38,6 +39,8 @@ static inline clockid_t getClockId() {
   static const clockid_t id = determineClockId();//(isNAOV6() ? CLOCK_MONOTONIC : CLOCK_REALTIME);
   return id;
 }
+#endif
+
 
 const unsigned long long NaoTime::startingTimeInMilliSeconds = getSystemTimeInMilliSeconds();
 
