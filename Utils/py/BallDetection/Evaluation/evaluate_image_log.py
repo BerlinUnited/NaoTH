@@ -1,4 +1,5 @@
 import os
+import sys
 import argparse
 import cppyy
 import PIL.Image
@@ -153,8 +154,13 @@ class Evaluator:
         toolchain_dir = get_toolchain_dir()
 
         # load shared library: all depending libraries should be found automatically
+        shared_lib_ending = ".so"
+        if sys.platform.startswith("win32"):
+            shared_lib_ending = ".dll"
+        elif sys.platform.startswith("darwin"):
+            shared_lib_ending = ".dylib"
         cppyy.load_library(os.path.join(
-            naoth_dir, "NaoTHSoccer/dist/Native/libdummysimulator.so"))
+            naoth_dir, "NaoTHSoccer/dist/Native/libdummysimulator" + shared_lib_ending))
 
         # add relevant include paths to allow mapping our code
         cppyy.add_include_path(os.path.join(
