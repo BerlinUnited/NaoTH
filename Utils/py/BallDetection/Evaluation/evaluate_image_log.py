@@ -94,7 +94,8 @@ def get_frames_for_dir(d):
         # Search for XML tag which name attribute has the filename as value
         for m in annos.findall(".//image[@name='{}']/box[@label='ball']".format(os.path.basename(file))):
             top_left = Point2D(float(m.attrib["xtl"]), float(m.attrib["ytl"]))
-            bottom_right = Point2D(float(m.attrib["xbr"]), float(m.attrib["ybr"]))
+            bottom_right = Point2D(
+                float(m.attrib["xbr"]), float(m.attrib["ybr"]))
             balls.append(Rectangle(top_left, bottom_right))
         frame = Frame(file, bottom, balls, cam_matrix_translation,
                       cam_matrix_rotation)
@@ -182,6 +183,9 @@ class Evaluator:
         self.ball_detector = self.moduleManager.getModule(
             "CNNBallDetector").getModule()
 
+        # initialize the score object
+        self.scores = dict()
+
     def set_current_frame(self, frame):
         # get reference to the image input representation
         if frame.bottom:
@@ -221,11 +225,16 @@ class Evaluator:
         else:
             detected_balls = self.ball_detector.getProvide().at("BallCandidatesTop")
 
-        for f in eval_functions:
+        for score_name, f in eval_functions.items():
             score = f(frame, detected_balls.patchesYUVClassified)
-            print("score:", score)
+            self.scores[score_name].append(score)
 
     def execute(self, directories, eval_functions):
+
+        # init the score lists
+        for score_name, f in eval_functions.items():
+            self.scores[score_name] = list()
+
         for d in directories:
             frames = get_frames_for_dir(d)
             for f in frames:
@@ -253,4 +262,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     evaluator = Evaluator()
-    evaluator.execute(args.directory, [best_ball_patch_intersection])
+    evaluator.execute(args.directory, {"iou": best_ball_patch_intersection})
+    print(evaluator.scores)
