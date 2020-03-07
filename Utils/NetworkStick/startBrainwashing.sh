@@ -1,24 +1,34 @@
 # CONFIG:
 # (IPs in form "xxx.xxx.xxx"!)
 
+
 # some defaults:
-# NAONET:
+
+# # NAONET:
 # NETWORK_WLAN_SSID="NAONET"
 # NETWORK_WLAN_PW="a1b0a1b0a1"
 # NETWORK_WLAN_IP="10.0.4"
+# NETWORK_WLAN_MASK="255.255.255.0"
+# NETWORK_WLAN_BROADCAST="10.0.4.255"
+
+# # SPL_B:
+# NETWORK_WLAN_SSID="SPL_B"
+# NETWORK_WLAN_PW="Nao?!Nao?!"
+# NETWORK_WLAN_IP="10.0.4"
 # NETWORK_WLAN_MASK="255.255.0.0"
-# NETWORK_WLAN_BRIDGE="10.0.4.255"
+# NETWORK_WLAN_BROADCAST="10.0.4.255"
 
-
+# CUSTOM:
 NETWORK_WLAN_SSID="NAONET"
 NETWORK_WLAN_PW="a1b0a1b0a1"
 NETWORK_WLAN_IP="10.0.4"
-NETWORK_WLAN_MASK="255.255.0.0"
-NETWORK_WLAN_BRIDGE="10.0.4.255"
+NETWORK_WLAN_MASK="255.255.255.0"
+NETWORK_WLAN_BROADCAST="10.0.4.255"
+
 
 NETWORK_ETH_IP="192.168.13"
 NETWORK_ETH_MASK="255.255.255.0"
-NETWORK_ETH_BRIDGE="192.168.13.255"
+NETWORK_ETH_BROADCAST="192.168.13.255"
 
 
 N=$(cat /etc/hostname | grep -Eo "[0-9]{2}")
@@ -44,6 +54,7 @@ su nao -c "/usr/bin/pactl set-source-volume 1 90%"
 # play initial sound
 su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav"
 
+# copy files and custom own them, preserving old as .old
 copy(){
   local from="$1"
   local to="$2"
@@ -76,18 +87,20 @@ copy(){
   fi
 }
 
+# generate linux network configuration
 gen_conf_d_net(){
   echo "generating /etc/conf.d/net . . ."
   rm -rf ./net
 
   echo "
-  config_wlan0=\"$NETWORK_WLAN_IP netmask $NETWORK_WLAN_MASK brd $NETWORK_WLAN_BRIDGE\"
-  config_eth0=\"$NETWORK_ETH_IP netmask $NETWORK_ETH_MASK  brd $NETWORK_ETH_BRIDGE\"
+  config_wlan0=\"$NETWORK_WLAN_IP netmask $NETWORK_WLAN_MASK brd $NETWORK_WLAN_BROADCAST\"
+  config_eth0=\"$NETWORK_ETH_IP netmask $NETWORK_ETH_MASK  brd $NETWORK_ETH_BROADCAST\"
   wpa_supplicant_wlan0=\"-Dnl80211\"" > ./net
 
   copy ./net /etc/conf.d/net root 644
 }
 
+# generate wpa_supplicant configuration
 gen_wpa_supplicant(){
   echo "generating /etc/wpa_supplicant.conf . . ."
   rm -rf ./wpa_supplicant.conf
@@ -107,6 +120,7 @@ gen_wpa_supplicant(){
   copy ./wpa_supplicant.conf /etc/wpa_supplicant.conf root 644
 }
 
+# generate connman configuration
 gen_connman_config(){
   echo "generating /var/lib/connman/wifi.config . . ."
   rm -rf ./wifi.config
@@ -171,5 +185,7 @@ else
   connmanctl config ethernet_${NETWORK_ETH_MAC}_cable --ipv4 manual $NETWORK_ETH_IP $NETWORK_ETH_MASK 0.0.0.0
 fi
 
+
+# restart 
 echo "restarting . . ."
 naoth restart
