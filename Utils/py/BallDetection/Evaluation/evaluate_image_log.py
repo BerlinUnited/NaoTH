@@ -94,7 +94,8 @@ def get_frames_for_dir(d):
         # Search for XML tag which name attribute has the filename as value
         for m in annos.findall(".//image[@name='{}']/box[@label='ball']".format(os.path.basename(file))):
             if m.attrib["occluded"] == None or m.attrib["occluded"] == '0':
-                top_left = Point2D(float(m.attrib["xtl"]), float(m.attrib["ytl"]))
+                top_left = Point2D(
+                    float(m.attrib["xtl"]), float(m.attrib["ytl"]))
                 bottom_right = Point2D(
                     float(m.attrib["xbr"]), float(m.attrib["ybr"]))
                 balls.append(Rectangle(top_left, bottom_right))
@@ -298,7 +299,7 @@ class Evaluator:
             print("average: {}".format(np.average(scores)))
             print()
 
-            for percentile in [1, 5, 10, 25, 30, 40, 50, 75, 90, 99]:
+            for percentile in [1, 5, 10, 15, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 99]:
                 if percentile == 50:
                     marker = "(median)"
                 else:
