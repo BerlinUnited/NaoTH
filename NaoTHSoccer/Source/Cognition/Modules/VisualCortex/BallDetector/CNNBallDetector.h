@@ -85,6 +85,11 @@ public:
 
   virtual void execute()
   {
+    // update selected classifier from parameters
+    if(params.check_changed()) {
+      setClassifier(params.classifier, params.classifierClose);
+    }
+
     getMultiBallPercept().reset();
 
     stopwatch_values.clear();
@@ -92,6 +97,8 @@ public:
     execute(CameraInfo::Bottom);
     execute(CameraInfo::Top);
 
+
+    // debug stuff
     double mean = 0;
     if(!stopwatch_values.empty()){
         for (auto i = stopwatch_values.begin(); i < stopwatch_values.end(); ++i){
@@ -133,8 +140,8 @@ private:
       PARAMETER_REGISTER(contrastMinimumClose) = 50;
 
 
-      PARAMETER_REGISTER(classifier) = "fy1500_2";
-      PARAMETER_REGISTER(classifierClose) = "fy1500_2";
+      PARAMETER_REGISTER(classifier) = "fy1500_conf";
+      PARAMETER_REGISTER(classifierClose) = "fy1500_conf";
 
       PARAMETER_REGISTER(brightnessMultiplierBottom) = 1.0;
       PARAMETER_REGISTER(brightnessMultiplierTop) = 1.0;
