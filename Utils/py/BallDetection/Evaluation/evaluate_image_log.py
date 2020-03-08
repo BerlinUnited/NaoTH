@@ -59,7 +59,7 @@ class Frame(NamedTuple):
 
 
 def get_frames_for_dir(d):
-    # parse the CVAT XML 1.1 file with the annotations, we assume it has the same name as the directory, but ends with ".xml"
+    # parse the CVAT XML 1.1 for images file with the annotations, we assume it has the same name as the directory, but ends with ".xml"
     annos_file = d.rstrip("/\\") + ".xml"
     if os.path.isfile(annos_file):
         annos = ET.parse(annos_file)
