@@ -49,7 +49,7 @@ void IntegralImageProvider::makeIntegralBild(
                 akk[0] += (imgPtr->y0);
             }
 
-            for (uint32_t i = 0; i < MAX_COLOR; ++i) {
+            for (uint16_t i = 0; i < MAX_COLOR; ++i) {
                 curRowPtr[i] = akk[i];
             }
 
@@ -77,7 +77,7 @@ void IntegralImageProvider::makeIntegralBild(
                 akk[0] += (imgPtr->y0);
             }
 
-            for (uint32_t i = 0; i < MAX_COLOR; ++i) {
+            for (uint16_t i = 0; i < MAX_COLOR; ++i) {
                 curRowPtr[i] = akk[i] + prevRowPtr[i];
             }
             // Both the current row and the previous row are incremented by one
