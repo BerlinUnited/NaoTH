@@ -16,7 +16,8 @@ def get_naoth_dir():
 
 
 def get_toolchain_dir():
-    return os.path.abspath(os.environ["NAOTH_TOOLCHAIN_PATH"])
+    toolchain_path = os.path.join(os.path.abspath(os.environ["NAO_CTC"]), "../")
+    return toolchain_path
 
 
 class Point2D(NamedTuple):
