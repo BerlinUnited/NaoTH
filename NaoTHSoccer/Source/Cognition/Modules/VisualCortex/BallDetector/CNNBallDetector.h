@@ -124,9 +124,9 @@ private:
       
       PARAMETER_REGISTER(cnn.threshold) = 0.4;
       PARAMETER_REGISTER(cnn.thresholdClose) = 0.45;
-      PARAMETER_REGISTER(cnn.meanBrightness) = 0.5;
+      // Constant offset added to the input of the CNN. < 0 darker, > 0 brighter. T
+      PARAMETER_REGISTER(cnn.meanBrightnessOffset) = 0.0; 
       
-
 
       PARAMETER_REGISTER(maxNumberOfKeys) = 12;
       PARAMETER_REGISTER(numberOfExportBestPatches) = 2;
@@ -156,7 +156,7 @@ private:
       double threshold;
       double thresholdClose;
 
-      double meanBrightness;
+      double meanBrightnessOffset;
     } cnn;
 
     int maxNumberOfKeys;
