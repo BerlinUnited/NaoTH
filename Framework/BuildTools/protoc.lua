@@ -57,7 +57,7 @@ local function protocCompileAll(inputFiles, cppOut, javaOut, pythonOut, ipaths)
   end
 
   -- add files to compile
-  args = args .. table.concat(inputFiles, " ")
+  args = args .. "\"" .. table.concat(inputFiles, "\" \"") .. "\""
 
   local cmd = "\"" .. compilerPath .. "/" .. compiler .. "\" " .. args
 
