@@ -44,15 +44,6 @@ public:
 
   uint32_t getSumForRect(uint32_t minX, uint32_t minY, uint32_t maxX, uint32_t maxY, uint32_t c) const {
 
-    // NOTE: the border at x=00 or y==0 contains allways only 0 values
-    //       so, the integral of (1,1)-(100,200) is the same as (0,0)-((100,200)
-    if(minY > 0) {
-      minY -= 1;
-    }
-    if(minX > 0) {
-      minX -= 1;
-    }
-
 		ASSERT(maxX < width);
 		ASSERT(maxY < height);
 
@@ -82,19 +73,6 @@ public:
 
 	uint32_t getHeight() const {
 		return height;
-	}
-
-	/**
-	 * height and width of the "original" image
-	 * (less one row and col)
-	 * @return
-	 */
-	uint32_t getImgWidth() const {
-		return width - 1;
-	}
-
-	uint32_t getImgHeight() const {
-		return height - 1;
 	}
 
 public:
