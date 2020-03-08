@@ -139,12 +139,15 @@ public:
 
   // HACK: remove it
   double circle_radius;
+  double goalbox_area_width;
   double penalty_area_width;
 
   LinesTable()
   {
-    circle_radius = 600.0;
-    penalty_area_width = 600.0;
+    //circle_radius = 600.0;
+    circle_radius = 750.0;
+    goalbox_area_width = 600.0;
+    penalty_area_width = 1650.0;
 
     line_type[idx_long_along]   = long_lines  | along_lines;
     line_type[idx_long_across]  = long_lines  | across_lines;
@@ -188,7 +191,8 @@ public:
       direction.normalize();
 
       // determine the type of line
-      int length_type    = (lines[i].getLength() > penalty_area_width + 100)? long_lines  :short_lines;
+      //int length_type    = (lines[i].getLength() > penalty_area_width + 100)? long_lines  :short_lines;
+      int length_type = (lines[i].getLength() > goalbox_area_width + 100)   ? long_lines : short_lines;
       int direction_type = (fabs(direction.x) > fabs(direction.y))          ? along_lines :across_lines;
       int line_type      = (lines[i].getBase().abs() < circle_radius + 100) ? circle_lines:(length_type|direction_type);
 
