@@ -135,16 +135,17 @@ private:
   /** list of intersections between the lines */
   std::vector<LineIntersection> intersections;
 
+private:
+  // parameters used to calculate the lines tables (@see getNearestLine)
+  double circleRadius;
+  double shortLineLengthThreshold;
+
 public:
-
-  // HACK: remove it
-  double circle_radius;
-  double penalty_area_width;
-
   LinesTable()
   {
-    circle_radius = 600.0;
-    penalty_area_width = 600.0;
+    // some default values
+    circleRadius = 750.0;
+    shortLineLengthThreshold = 600.0;
 
     line_type[idx_long_along]   = long_lines  | along_lines;
     line_type[idx_long_across]  = long_lines  | across_lines;
@@ -153,9 +154,11 @@ public:
     line_type[idx_circle]       = circle_lines;
   }
 
-  ~LinesTable()
-  {
-  }
+  ~LinesTable(){}
+
+  // setter for the internal parameters
+  void setCircleRadius(double radius) { circleRadius = radius; }
+  void setShortLineLengthThreshold(double length) { shortLineLengthThreshold = length; }
 
   void addLine(const Vector2d& begin, const Vector2d& end) {
     lines.push_back(Math::LineSegment(begin, end));
@@ -188,9 +191,10 @@ public:
       direction.normalize();
 
       // determine the type of line
-      int length_type    = (lines[i].getLength() > penalty_area_width + 100)? long_lines  :short_lines;
+      //int length_type    = (lines[i].getLength() > shortLineLengthThreshold + 100)? long_lines  :short_lines;
+      int length_type = (lines[i].getLength() > shortLineLengthThreshold + 100)   ? long_lines : short_lines;
       int direction_type = (fabs(direction.x) > fabs(direction.y))          ? along_lines :across_lines;
-      int line_type      = (lines[i].getBase().abs() < circle_radius + 100) ? circle_lines:(length_type|direction_type);
+      int line_type      = (lines[i].getBase().abs() < circleRadius + 100) ? circle_lines:(length_type|direction_type);
 
       if((type & line_type) != line_type) {
         continue;
