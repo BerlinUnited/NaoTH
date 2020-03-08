@@ -82,8 +82,6 @@ void IntegralImageProvider::makeIntegralBild(BallDetectorIntegralImage &integral
 
     for (uint16_t x = 0; x < imgWidth; ++x)
     {
-      assert(curRowPtr == dataPtr +(((y*imgWidth) + x)*MAX_COLOR));
-
       if (getFieldColorPercept().greenHSISeparator.isColor(*imgPtr))
       {
         ++akk[1];
