@@ -312,14 +312,13 @@ class Evaluator:
                 while self.evaluate_detection(f, eval_functions, debug_threshold):
                     self.set_current_frame(f)
                     self.sim.executeFrame()
-                    
 
     def show_report(self):
         for score_name, score_values in self.scores.items():
             print()
             print(score_name)
             print("=" * len(score_name))
-            # get percentile, average and other basic informations
+            # get percentile, average and other basic information
             scores = np.array(score_values)
 
             print("average: {}".format(np.average(scores)))
