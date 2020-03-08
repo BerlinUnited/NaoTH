@@ -55,7 +55,7 @@ void IntegralImageProvider::makeIntegralBild(
 
             // Increment current row by one step
             curRowPtr += MAX_COLOR;
-            // The image pointer needs to skip 4 Y values
+            // The image pointer needs to skip 4 Y values == 2 image pixels
             imgPtr += FACTOR_HALF;
         }
     }
@@ -84,7 +84,7 @@ void IntegralImageProvider::makeIntegralBild(
             // step
             curRowPtr += MAX_COLOR;
             prevRowPtr += MAX_COLOR;
-            // The image pointer needs to skip 4 Y values
+            // The image pointer needs to skip 4 Y values == 2 image pixels
             imgPtr += FACTOR_HALF;
         }
 
