@@ -212,10 +212,10 @@ void FieldInfo::calculateCrossings()
 void FieldInfo::createLinesTable()
 {
   fieldLinesTable = LinesTable();
-  // HACK: remove it
-  fieldLinesTable.circle_radius = centerCircleRadius;
-  fieldLinesTable.penalty_area_width = xPosOpponentGoal - xPosOpponentPenaltyArea;
-  fieldLinesTable.goalbox_area_width = xPosOpponentGoal - xPosOpponentGoalboxArea;
+  
+  // set parameters
+  fieldLinesTable.setCircleRadius(centerCircleRadius);
+  fieldLinesTable.setShortLineLengthThreshold(xGoalboxAreaLength);
 
   // 0 - right side line - sideLineRight
   fieldLinesTable.addLine(
