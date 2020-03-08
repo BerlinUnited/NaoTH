@@ -39,7 +39,7 @@ void IntegralImageProvider::makeIntegralBild(BallDetectorIntegralImage &integral
 
   // We need to skip FACTOR-1 lines in the image after after each processed line. 
   // The image pixels contain 2 Y values, and thus only half of the  pixels are skipped.
-  uint32_t pixels2SkipAfterLine = (getImage().width()*(FACTOR-1) / 2);
+  uint32_t pixels2SkipAfterLine = (FACTOR-1)*(imgWidth*FACTOR_HALF);
 
   // iterate over first line
   uint32_t* curRowPtr = dataPtr;
