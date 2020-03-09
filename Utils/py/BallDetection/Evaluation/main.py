@@ -145,7 +145,7 @@ def create_debug_image(file, balls, patches):
             iou = balls[0].intersection_over_union(
                 p.min.x, p.min.y, p.max.x, p.max.y)
             cv2.addText(img, "{:.2f}".format(iou), (p.min.x + 5, p.min.y+15),
-                        "Serif", pointSize=12, color=(0, 0, 255))
+                        "Serif", pointSize=8, color=(0, 0, 255, 128))
 
     return img
 
