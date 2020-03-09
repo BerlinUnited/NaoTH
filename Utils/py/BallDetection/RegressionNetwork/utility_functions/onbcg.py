@@ -336,7 +336,7 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
             _x, c_inf = dense(_x, w, b, c_inf)
 
         else:
-            print("Unknown layer")
+            print("Unknown layer: {}".format(type(layer)))
             exit(-1)
         """
         intermediate_layer_model = Model(inputs=model.input,
