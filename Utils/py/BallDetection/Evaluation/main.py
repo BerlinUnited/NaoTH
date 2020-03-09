@@ -61,7 +61,7 @@ class Frame(NamedTuple):
     cam_matrix_rotation: np.array
 
 
-def get_frames_for_dir(d):
+def get_frames_for_dir(d, transform_to_squares=False):
     # parse the CVAT XML 1.1 for images file with the annotations, we assume it has the same name as the directory, but ends with ".xml"
     annos_file = d.rstrip("/\\") + ".xml"
     if os.path.isfile(annos_file):
@@ -102,6 +102,13 @@ def get_frames_for_dir(d):
                     float(m.attrib["xtl"]), float(m.attrib["ytl"]))
                 bottom_right = Point2D(
                     float(m.attrib["xbr"]), float(m.attrib["ybr"]))
+
+                if transform_to_squares:
+                    width = bottom_right.x - top_left.x
+                    height = bottom_right.y - top_left.y
+                    size = max(width, height)
+                    bottom_right = Point2D(top_left.x + size, top_left.y + size)
+
                 balls.append(Rectangle(top_left, bottom_right))
 
         frame = Frame(file, bottom, balls, cam_matrix_translation,
@@ -144,8 +151,9 @@ def create_debug_image(file, balls, patches):
         if len(balls) > 0:
             iou = balls[0].intersection_over_union(
                 p.min.x, p.min.y, p.max.x, p.max.y)
-            cv2.addText(img, "{:.2f}".format(iou), (p.min.x + 5, p.min.y+15),
-                        "Serif", pointSize=8, color=(0, 0, 255, 128))
+            if iou > 0.0:
+                cv2.addText(img, "{:.2f}".format(iou), (p.min.x + 5, p.min.y+15),
+                            "Serif", pointSize=8, color=(0, 0, 255, 128))
 
     return img
 
@@ -307,14 +315,14 @@ class Evaluator:
         # Continue with next frame
         return False
 
-    def execute(self, directories, eval_functions, debug_threshold=None):
+    def execute(self, directories, eval_functions, debug_threshold=None, transform_to_squares=False):
 
         # init the score lists
         for score_name, f in eval_functions.items():
             self.scores[score_name] = list()
 
         for d in directories:
-            frames = get_frames_for_dir(d)
+            frames = get_frames_for_dir(d, transform_to_squares)
             for f in frames:
                 self.set_current_frame(f)
                 self.sim.executeFrame()
@@ -372,22 +380,23 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='Evaluate ball detection on logfile images annotated with CVAT.')
     parser.add_argument('directory', nargs='+',
-                        help="""A list of directories containing the images files (as png with the integrated camera matrix). 
+                        help="""A list of directories containing the images files (as png with the integrated camera matrix).
                         It is expected that an XML with the same name (but ending with .xml) is located in the parent folder of each given folder.""")
 
     parser.add_argument("--csv=F", type=str, dest="csv",
                         help="Output the scores to the given CSV file")
 
+    parser.add_argument("--squares", action="store_true",
+                        help="If given, transform the bounding boxes to squares before calculating the scores.")
+
     parser.add_argument('--debug-threshold=T', type=float, dest="debug_threshold",
                         help="If an image has a score with a worse than the given threshold, include this image in a debug view.")
-
     args = parser.parse_args()
 
     evaluator = Evaluator()
     evaluator.execute(
-        args.directory, {"Best IOU per image": best_ball_patch_intersection}, args.debug_threshold)
+        args.directory, {"Best IOU per image": best_ball_patch_intersection}, debug_threshold=args.debug_threshold, transform_to_squares=args.squares)
     if args.csv is not None:
         print("Exporting results to ", args.csv)
         evaluator.export_results(args.csv)
     evaluator.show_report()
-    
