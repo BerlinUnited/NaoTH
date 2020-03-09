@@ -337,6 +337,7 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
 
         else:
             print("Unknown layer: {}".format(type(layer)))
+            print("ERROR: aborting generation. Cpp file unfinished!")
             exit(-1)
         """
         intermediate_layer_model = Model(inputs=model.input,
