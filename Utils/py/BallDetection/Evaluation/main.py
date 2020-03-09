@@ -1,6 +1,7 @@
 import os
 import sys
 import argparse
+import csv
 import cppyy
 import PIL.Image
 from typing import NamedTuple, Tuple, List
@@ -179,6 +180,7 @@ class Evaluator:
             naoth_dir, "Framework/Platforms/Source/DummySimulator/DummySimulator.h"))
 
         # change working directory so that the configuration is found
+        orig_working_dir = os.getcwd()
         os.chdir(os.path.join(naoth_dir, "NaoTHSoccer"))
 
         # start dummy simulator
@@ -217,6 +219,9 @@ class Evaluator:
 
         # initialize the score object
         self.scores = dict()
+
+        # restore original working directory
+        os.chdir(orig_working_dir)
 
     def set_current_frame(self, frame):
         # get reference to the image input representation
@@ -328,13 +333,24 @@ class Evaluator:
             print("average: {}".format(np.average(scores)))
             print()
 
-            for percentile in [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 99]:
+            for percentile in [0, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 99]:
                 if percentile == 50:
                     marker = "(median)"
                 else:
                     marker = ""
                 print("best {}% >= {} {}".format(100 - percentile,
                                                  np.percentile(scores, percentile), marker))
+
+    def export_results(self, outputfile):
+        # open CSV file for writing
+        with open(outputfile, "w", newline='') as f:
+            out = csv.writer(f)
+            # write header
+            out.writerow(["score_name", "score_value"])
+            # output the score for all measures
+            for score_name, score_values in self.scores.items():
+                for v in score_values:
+                    out.writerow([score_name, v])
 
 
 def best_ball_patch_intersection(frame, patches):
@@ -359,6 +375,9 @@ if __name__ == "__main__":
                         help="""A list of directories containing the images files (as png with the integrated camera matrix). 
                         It is expected that an XML with the same name (but ending with .xml) is located in the parent folder of each given folder.""")
 
+    parser.add_argument("--csv=F", type=str, dest="csv",
+                        help="Output the scores to the given CSV file")
+
     parser.add_argument('--debug-threshold=T', type=float, dest="debug_threshold",
                         help="If an image has a score with a worse than the given threshold, include this image in a debug view.")
 
@@ -367,4 +386,8 @@ if __name__ == "__main__":
     evaluator = Evaluator()
     evaluator.execute(
         args.directory, {"Best IOU per image": best_ball_patch_intersection}, args.debug_threshold)
+    if args.csv is not None:
+        print("Exporting results to ", args.csv)
+        evaluator.export_results(args.csv)
     evaluator.show_report()
+    
