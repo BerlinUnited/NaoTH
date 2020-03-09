@@ -16,7 +16,8 @@ def get_naoth_dir():
 
 
 def get_toolchain_dir():
-    toolchain_path = os.path.join(os.path.abspath(os.environ["NAO_CTC"]), "../")
+    toolchain_path = os.path.join(
+        os.path.abspath(os.environ["NAO_CTC"]), "../")
     return toolchain_path
 
 
@@ -222,13 +223,13 @@ class Evaluator:
         if frame.bottom:
             imageRepresentation = self.ball_detector.getRequire().at("Image")
             # set other image to black
-            black = np.zeros(640*480*2,np.uint8)
+            black = np.zeros(640*480*2, np.uint8)
             self.ball_detector.getRequire().at("ImageTop").copyImageDataYUV422(
                 black.ctypes.data_as(ctypes.POINTER(ctypes.c_uint8)), black.size)
         else:
             imageRepresentation = self.ball_detector.getRequire().at("ImageTop")
             # set other image to black
-            black = np.zeros(640*480*2,np.uint8)
+            black = np.zeros(640*480*2, np.uint8)
             self.ball_detector.getRequire().at("Image").copyImageDataYUV422(
                 black.ctypes.data_as(ctypes.POINTER(ctypes.c_uint8)), black.size)
 
@@ -237,7 +238,7 @@ class Evaluator:
         # load image in YUV422 format
         yuv422 = load_image(frame.file)
         p_data = yuv422.ctypes.data_as(ctypes.POINTER(ctypes.c_uint8))
-            
+
         # move image into representation
         imageRepresentation.copyImageDataYUV422(p_data, yuv422.size)
 
@@ -272,31 +273,32 @@ class Evaluator:
         debug = False
         for score_name, f in eval_functions.items():
             score = f(frame, detected_balls.patchesYUVClassified)
-            self.scores[score_name].append(score)
+            if score is not None:
+                self.scores[score_name].append(score)
 
-            if debug_threshold is not None and score <= debug_threshold:
-                debug = True
+                if debug_threshold is not None:
+                    if score <= debug_threshold:
+                        debug = True
 
-        if debug_threshold is not None:
-            title = "Ball Evaluator: press any key to continue or Q to exit"
-            if debug:
-                cv2.namedWindow(title)
-                img = create_debug_image(
-                    frame.file, frame.balls, detected_balls.patchesYUVClassified)
-                cv2.imshow(title, img)
-                key = cv2.waitKey()
-            else:
-                img = np.ones((240, 320))*255
-                cv2.imshow(title, img)
+                    title = "Ball Evaluator: press any key to continue or Q to exit"
+                    if debug:
+                        cv2.namedWindow(title)
+                        img = create_debug_image(
+                            frame.file, frame.balls, detected_balls.patchesYUVClassified)
+                        cv2.imshow(title, img)
+                        key = cv2.waitKey()
+                    else:
+                        img = np.ones((240, 320))*255
+                        cv2.imshow(title, img)
 
-                key = cv2.waitKey(1)
+                        key = cv2.waitKey(1)
 
-            if key == 113 or key == 27:
-                exit(0)
-            elif key == 114:
-                # repeat execution of the current frame, but do not count in statistics
-                print("Repeating frame")
-                return True
+                    if key == 113 or key == 27:
+                        exit(0)
+                    elif key == 114:
+                        # repeat execution of the current frame, but do not count in statistics
+                        print("Repeating frame")
+                        return True
         # Continue with next frame
         return False
 
@@ -339,7 +341,7 @@ def best_ball_patch_intersection(frame, patches):
 
     if len(frame.balls) == 0:
         # Don't penalize the patch detector for not finding a non-existent ball
-        return 1.0
+        return None
 
     best = 0.0
     for p in patches:
