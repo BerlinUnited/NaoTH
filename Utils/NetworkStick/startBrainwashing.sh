@@ -126,27 +126,23 @@ gen_connman_config(){
   rm -rf ./wifi.config
 
   echo "
-  [global]
-  name=wifi
-  Description=wifi network settings
+[global]
+Name=wifi
+Description=wifi network settings
 
-  [service_$NETWORK_WLAN_SSID]
-  Type = wifi
-  Name = $NETWORK_WLAN_SSID
-  Passphrase = $NETWORK_WLAN_PW
-  IPv4 = $NETWORK_WLAN_IP/$NETWORK_WLAN_MASK/0.0.0.0
-  MAC = $NETWORK_WLAN_MAC_FULL" > ./wifi.config
+[service_$NETWORK_WLAN_SSID]
+Type = wifi
+Name = $NETWORK_WLAN_SSID
+Passphrase = $NETWORK_WLAN_PW
+IPv4 = $NETWORK_WLAN_IP/$NETWORK_WLAN_MASK/0.0.0.0
+MAC = $NETWORK_WLAN_MAC_FULL" > ./wifi.config
 
   copy ./wifi.config /var/lib/connman/wifi.config root 644
 }
 
 
-
-
-
-
-
 # ---------- network setup ---------- #
+
 
 # NAOv5
 if [ ! -f "/opt/aldebaran/bin/lola" ] && [ ! -f "/usr/bin/lola" ]; then
@@ -162,18 +158,17 @@ if [ ! -f "/opt/aldebaran/bin/lola" ] && [ ! -f "/usr/bin/lola" ]; then
 else
   echo "running NAOv6 setup"
 
-  WIFI_STATE=$( ifconfig | grep --o wlan0)
-  if [ -z $WIFI_STATE ]; then
-    connmanctl enable wifi
-    sleep 0.1
-  fi
-  connmanctl scan wifi
-
+  # disable wifi before generating new config and re-enable it afterwards
+  connmanctl disable wifi
   gen_connman_config
+  connmanctl enable wifi
+  sleep 0.1
 
-  service=$(connmanctl services | grep "$NETWORK_WLAN_SSID " | grep -o wifi.*)
+  # scan for wifis and grep the first (matching) connman service id of the wifi
+  connmanctl scan wifi
+  service=$(connmanctl services | grep "$NETWORK_WLAN_SSID" | grep -m 1 -o "wifi.*")
 
-  # check if service is connected
+  # check if service / wifi is available
   if [ ! -z $service ]; then
     connmanctl config ${service} --autoconnect on
     connmanctl connect ${service}
@@ -184,7 +179,6 @@ else
   echo "setting ip of eth0 (${NETWORK_ETH_MAC})"
   connmanctl config ethernet_${NETWORK_ETH_MAC}_cable --ipv4 manual $NETWORK_ETH_IP $NETWORK_ETH_MASK 0.0.0.0
 fi
-
 
 # restart 
 echo "restarting . . ."
