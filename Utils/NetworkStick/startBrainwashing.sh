@@ -1,5 +1,47 @@
+# CONFIG:
+# (IPs in form "xxx.xxx.xxx"!)
+
+
+# some defaults:
+
+# # NAONET:
+# NETWORK_WLAN_SSID="NAONET"
+# NETWORK_WLAN_PW="a1b0a1b0a1"
+# NETWORK_WLAN_IP="10.0.4"
+# NETWORK_WLAN_MASK="255.255.255.0"
+# NETWORK_WLAN_BROADCAST="10.0.4.255"
+
+# # SPL_B:
+# NETWORK_WLAN_SSID="SPL_B"
+# NETWORK_WLAN_PW="Nao?!Nao?!"
+# NETWORK_WLAN_IP="10.0.4"
+# NETWORK_WLAN_MASK="255.255.0.0"
+# NETWORK_WLAN_BROADCAST="10.0.4.255"
+
+# CUSTOM:
+NETWORK_WLAN_SSID="NAONET"
+NETWORK_WLAN_PW="a1b0a1b0a1"
+NETWORK_WLAN_IP="10.0.4"
+NETWORK_WLAN_MASK="255.255.255.0"
+NETWORK_WLAN_BROADCAST="10.0.4.255"
+
+
+NETWORK_ETH_IP="192.168.13"
+NETWORK_ETH_MASK="255.255.255.0"
+NETWORK_ETH_BROADCAST="192.168.13.255"
+
+
+N=$(cat /etc/hostname | grep -Eo "[0-9]{2}")
+NETWORK_WLAN_MAC=$(cat /sys/class/net/wlan0/address | sed -e 's/://g')
+NETWORK_WLAN_MAC_FULL=$(cat /sys/class/net/wlan0/address | tr a-z A-Z)
+NETWORK_ETH_MAC=$(cat /sys/class/net/eth0/address | sed -e 's/://g')
+
+NETWORK_WLAN_IP="$NETWORK_WLAN_IP.$N"
+NETWORK_ETH_IP="$NETWORK_ETH_IP.$N"
+
 # set volume to 88%
 su nao -c "/usr/bin/pactl set-sink-mute 0 false"
+
 su nao -c "/usr/bin/pactl set-sink-volume 0 88%"
 # also set the recording volume
 # 1. set in simple mode with alsa mixer to make sure it is in sync for all channels
@@ -12,32 +54,32 @@ su nao -c "/usr/bin/pactl set-source-volume 1 90%"
 # play initial sound
 su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/usb_start.wav"
 
-# copy function
+# copy files and custom own them, preserving old as .old
 copy(){
   local from="$1"
   local to="$2"
   local owner="$3"
   local rights="$4"
-  
+
   if [ -f ${from} ]
   then
-	  echo "copy ${from} to ${to}";
-    
+	  echo "copying ${from} to ${to}";
+
     # backup
     if [ -f ${to} ]
     then
       mv "${to}" "${to}.bak";
     fi
-    
+
     # copy the file
 	  cp -f ${from} ${to};
-    
+
     #set correct rights
-    echo "set owner ${owner}";
+    echo "setting owner ${owner}";
     chown ${owner}:${owner} ${to};
-    echo "set rights ${rights}";
+    echo "setting rights ${rights}";
     chmod ${rights} ${to};
-    
+
     return 0
   else
 	  echo "missing file ${from}";
@@ -45,84 +87,99 @@ copy(){
   fi
 }
 
-# -------- network dependent --------
+# generate linux network configuration
+gen_conf_d_net(){
+  echo "generating /etc/conf.d/net . . ."
+  rm -rf ./net
 
+  echo "
+  config_wlan0=\"$NETWORK_WLAN_IP netmask $NETWORK_WLAN_MASK brd $NETWORK_WLAN_BROADCAST\"
+  config_eth0=\"$NETWORK_ETH_IP netmask $NETWORK_ETH_MASK  brd $NETWORK_ETH_BROADCAST\"
+  wpa_supplicant_wlan0=\"-Dnl80211\"" > ./net
+
+  copy ./net /etc/conf.d/net root 644
+}
+
+# generate wpa_supplicant configuration
+gen_wpa_supplicant(){
+  echo "generating /etc/wpa_supplicant.conf . . ."
+  rm -rf ./wpa_supplicant.conf
+
+  echo "
+  ctrl_interface=/var/run/wpa_supplicant
+  ctrl_interface_group=0
+  ap_scan=1
+
+  network={
+    ssid=\"$NETWORK_WLAN_SSID\"
+    key_mgmt=WPA_PSK
+    psk=\"$NETWORK_WLAN_PW\"
+    priority=5
+  }" > ./wpa_supplicant.conf
+
+  copy ./wpa_supplicant.conf /etc/wpa_supplicant.conf root 644
+}
+
+# generate connman configuration
+gen_connman_config(){
+  echo "generating /var/lib/connman/wifi.config . . ."
+  rm -rf ./wifi.config
+
+  echo "
+[global]
+Name=wifi
+Description=wifi network settings
+
+[service_$NETWORK_WLAN_SSID]
+Type = wifi
+Name = $NETWORK_WLAN_SSID
+Passphrase = $NETWORK_WLAN_PW
+IPv4 = $NETWORK_WLAN_IP/$NETWORK_WLAN_MASK/0.0.0.0
+MAC = $NETWORK_WLAN_MAC_FULL" > ./wifi.config
+
+  copy ./wifi.config /var/lib/connman/wifi.config root 644
+}
+
+
+# ---------- network setup ---------- #
+
+
+# NAOv5
 if [ ! -f "/opt/aldebaran/bin/lola" ] && [ ! -f "/usr/bin/lola" ]; then
+  echo "running NAOv5 setup"
 
-  # determine the head number, e.g., hostname=Nao82 => N=82
-  N=$(cat /etc/hostname | grep -Eo "[0-9]{2}")
-  rm -f ./etc/conf.d/net
-  echo "config_wlan0=\"10.0.4.$N netmask 255.255.255.0 brd 10.0.4.255\"" > ./etc/conf.d/net
-  echo "config_eth0=\"192.168.13.$N netmask 255.255.255.0 brd 192.168.13.255\"" >> ./etc/conf.d/net
-  echo "wpa_supplicant_wlan0=\"-Dnl80211\"" >> ./etc/conf.d/net
+  gen_conf_d_net
+  gen_wpa_supplicant
 
-  # WLAN Encryption
-  copy ./etc/wpa_supplicant/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf root 644
-
-  # Network IP Adresses
-  copy ./etc/conf.d/net /etc/conf.d/net root 644
-
-  # restart the network
   /etc/init.d/net.eth0 restart
   /etc/init.d/net.wlan0 restart
 
+# NAOv6
 else
-  NAO_NUMBER=$(cat /etc/hostname | grep -Eo "[0-9]{2}")
+  echo "running NAOv6 setup"
 
-  WIFI_STATE=$( ifconfig | grep -o wlan0)
-  if [ -z $WIFI_STATE ]; then
-    connmanctl enable wifi
-    sleep 0.1
-  fi
+  # disable wifi before generating new config and re-enable it afterwards
+  connmanctl disable wifi
+  gen_connman_config
+  connmanctl enable wifi
+  sleep 0.1
+
+  # scan for wifis and grep the first (matching) connman service id of the wifi
   connmanctl scan wifi
-  CONNMAN_SERVICES=$(connmanctl services)
+  service=$(connmanctl services | grep "$NETWORK_WLAN_SSID" | grep -m 1 -o "wifi.*")
 
-  ETH0_MAC=$(cat /sys/class/net/eth0/address | sed -e 's/://g')
-  WLAN0_MAC=$(cat /sys/class/net/wlan0/address | sed -e 's/://g')
-  WLAN0_MAC_FULL=$(cat /sys/class/net/wlan0/address | tr a-z A-Z)
+  # check if service / wifi is available
+  if [ ! -z $service ]; then
+    connmanctl config ${service} --autoconnect on
+    connmanctl connect ${service}
+  else
+    echo "wifi network $NETWORK_WIFI_SSID currently not available"
+  fi
 
-  copy ./var/lib/connman/wifi.config /var/lib/connman/wifi.config root 644
-
-  echo "Setting up wifi configuration for wlan0 (${WLAN0_MAC})"
-  sed -i -e "s/__NAO__/${NAO_NUMBER}/g" /var/lib/connman/wifi.config
-  sed -i -e "s/__WLAN_MAC__/${WLAN0_MAC_FULL}/g" /var/lib/connman/wifi.config
-
-  WANTED_SSID=`cat ./etc/wpa_supplicant/wpa_supplicant.conf | grep ssid | sed -e 's/\"//g' | sed -e 's/[ \t]*ssid=//g'`
-  WANTED_PASS=`cat ./etc/wpa_supplicant/wpa_supplicant.conf | grep psk | sed -e 's/\"//g' | sed -e 's/[ \t]*psk=//g'`
-  sed -i -e "s/__SSID__/${WANTED_SSID}/g" /var/lib/connman/wifi.config
-  sed -i -e "s/__PASS__/${WANTED_PASS}/g" /var/lib/connman/wifi.config
-
-  # echo "${WANTED_SSID} & ${WANTED_PASS} should be used"
-
-  WIFI_NETWORKS=$(cat /var/lib/connman/wifi.config | grep "Name =" | sed -e "s/ //g" | sed -e "s/Name=//g")
-  wifi=$WANTED_SSID
-  # for wifi in $WIFI_NETWORKS; do
-  #   if [ ! $wifi == "wifi" ]; then
-      # echo "$CONNMAN_SERVICES" | grep "SPL_A " | grep -o wifi.*
-      service=$(echo "$CONNMAN_SERVICES" | grep "$wifi " | grep -o wifi.*)
-      if [ ! -z $service ]; then
-        if [ "${wifi}" = "${WANTED_SSID}" ]; then
-          connmanctl config ${service} --autoconnect on
-          connmanctl connect ${service}
-        else
-          echo "Disabling autoconnect on wifi network $wifi"
-          # echo $service
-          connmanctl config ${service} --autoconnect off
-          # echo "connmanctl config ${service} --autoconnect off"
-        fi
-      else
-          echo "Wifi network $wifi currently not available"
-      fi
-  #   fi
-  # done
-
-  echo "Setting ip of eth0 (${ETH0_MAC})"
-  connmanctl config ethernet_${ETH0_MAC}_cable --ipv4 manual 192.168.13.${NAO_NUMBER} 255.255.255.0
+  echo "setting ip of eth0 (${NETWORK_ETH_MAC})"
+  connmanctl config ethernet_${NETWORK_ETH_MAC}_cable --ipv4 manual $NETWORK_ETH_IP $NETWORK_ETH_MASK 0.0.0.0
 fi
 
+# restart 
+echo "restarting . . ."
 naoth restart
-
-
-
-
-

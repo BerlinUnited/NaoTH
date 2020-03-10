@@ -70,7 +70,7 @@ void DummySimulator::main()
   doPlay = false;
 
   char c;
-  while ((c = getInput()) && c != 'q' && c != 'x')
+  while ((c = getInput()))
   {
     if(doPlay) {
       // stop playing
@@ -85,7 +85,9 @@ void DummySimulator::main()
     } else if (c == 'p') {
       doPlay = true;
       playThread = std::thread([this] { play(); });
-    } 
+    } else if (c == 'q' || c == 'x') {
+      break;
+    }
   }
 
   std::cout << endl << "bye bye!" << endl;
