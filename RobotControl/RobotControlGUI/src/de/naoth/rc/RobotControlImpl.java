@@ -20,6 +20,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.*;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -251,14 +253,23 @@ public class RobotControlImpl extends javax.swing.JFrame
     statusPanelPluginsConstraints.ipadx = 5;
     
     
-    // dialog access
+    // fast dialog access
     dialogFastAccess.setLocationRelativeTo(this);
     dialogFastAccess.getRootPane().registerKeyboardAction(
         (e) -> {dialogFastAccess.setVisible(false); dialogFastAccessPanel.close(); }, 
         KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), 
         JComponent.WHEN_IN_FOCUSED_WINDOW
     );
+    // close fast dialog access when RobotControll is in the background
+    dialogFastAccess.addWindowFocusListener(new WindowAdapter() {
+        @Override
+        public void windowLostFocus(WindowEvent e) {
+            dialogFastAccess.setVisible(false); 
+            dialogFastAccessPanel.close();
+        }
+    });
     
+    // make fast dialog access visible
     DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventPostProcessor(
     (e) -> {
         if(e.getID()        == KeyEvent.KEY_PRESSED && 
