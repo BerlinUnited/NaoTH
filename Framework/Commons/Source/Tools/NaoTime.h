@@ -11,12 +11,6 @@
 
 #include <cstdint>
 
-#ifdef WIN32
-  #include <windows.h>
-#else
-  #include <ctime>
-#endif
-
 namespace naoth
 {
 class NaoTime 
