@@ -38,6 +38,8 @@ FieldInfo::FieldInfo() : ParameterList("FieldInfo")
 
   PARAMETER_REGISTER(goalBoxAsLines) = true;
 
+  PARAMETER_REGISTER(goalBoxPresent) = false;
+
   syncWithConfig();
 
   calculateValues();
@@ -54,6 +56,11 @@ void FieldInfo::calculateValues()
 
 void FieldInfo::calculateCrossings()
 {
+  if (goalBoxPresent == false){
+    xPenaltyAreaLength = xGoalboxAreaLength;
+    yPenaltyAreaLength = yGoalboxAreaLength;
+  }
+
   xPosHalfWayLine = 0;
 
   xPosOpponentGroundline  =  xLength / 2.0;
@@ -247,41 +254,44 @@ void FieldInfo::createLinesTable()
     crossings[centerTCrossingLeft].position
     );
 
-  // 5 - own goalbox line - ownGoalboxLine
-  fieldLinesTable.addLine(
-    crossings[ownGoalboxCornerRight].position,
-    crossings[ownGoalboxCornerLeft].position
-    );
+  if (goalBoxPresent)
+  {
+    // 5 - own goalbox line - ownGoalboxLine
+    fieldLinesTable.addLine(
+      crossings[ownGoalboxCornerRight].position,
+      crossings[ownGoalboxCornerLeft].position
+      );
 
-  // 6 - own goalbox right line - ownGoalboxLineRight
-  fieldLinesTable.addLine(
-    crossings[ownGoalboxTCrossingRight].position,
-    crossings[ownGoalboxCornerRight].position
-    );
+    // 6 - own goalbox right line - ownGoalboxLineRight
+    fieldLinesTable.addLine(
+      crossings[ownGoalboxTCrossingRight].position,
+      crossings[ownGoalboxCornerRight].position
+      );
 
-  // 7 - own goalbox left line - ownGoalboxLineLeft
-  fieldLinesTable.addLine(
-    crossings[ownGoalboxTCrossingLeft].position,
-    crossings[ownGoalboxCornerLeft].position
-    );
+    // 7 - own goalbox left line - ownGoalboxLineLeft
+    fieldLinesTable.addLine(
+      crossings[ownGoalboxTCrossingLeft].position,
+      crossings[ownGoalboxCornerLeft].position
+      );
 
-  // 8 - opponent goalbox line - opponentGoalboxLine
-  fieldLinesTable.addLine(
-    crossings[opponentGoalboxCornerRight].position,
-    crossings[opponentGoalboxCornerLeft].position
-    );
+    // 8 - opponent goalbox line - opponentGoalboxLine
+    fieldLinesTable.addLine(
+      crossings[opponentGoalboxCornerRight].position,
+      crossings[opponentGoalboxCornerLeft].position
+      );
 
-  // 9 - opponent goalbox right line - opponentGoalboxLineRight
-  fieldLinesTable.addLine(
-    crossings[opponentGoalboxCornerRight].position,
-    crossings[opponentGoalboxTCrossingRight].position
-    );
+    // 9 - opponent goalbox right line - opponentGoalboxLineRight
+    fieldLinesTable.addLine(
+      crossings[opponentGoalboxCornerRight].position,
+      crossings[opponentGoalboxTCrossingRight].position
+      );
 
-  // 10 - opponent goalbox left line - opponentGoalboxLineLeft
-  fieldLinesTable.addLine(
-    crossings[opponentGoalboxCornerLeft].position,
-    crossings[opponentGoalboxTCrossingLeft].position
-    );
+    // 10 - opponent goalbox left line - opponentGoalboxLineLeft
+    fieldLinesTable.addLine(
+      crossings[opponentGoalboxCornerLeft].position,
+      crossings[opponentGoalboxTCrossingLeft].position
+      );
+  }
 
   // 11 - own penalty line - ownPenaltyLine
   fieldLinesTable.addLine(

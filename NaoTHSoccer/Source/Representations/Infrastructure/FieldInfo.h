@@ -76,6 +76,8 @@ public:
   // white goal box is treated as lines
   bool goalBoxAsLines;
 
+  // when new goalbox is present, set this flag to true
+  bool goalBoxPresent;
 
   /////////////// pre-calculated values from basic values //////////////
   double xPosHalfWayLine;
