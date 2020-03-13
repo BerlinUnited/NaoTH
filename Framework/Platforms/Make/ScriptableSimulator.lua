@@ -1,6 +1,5 @@
--- NaoTH controller for the logfile based "simulator"
-project "DummySimulator"
-  kind "ConsoleApp"
+project "ScriptableSimulator"
+  kind "SharedLib"
   language "C++"
   
   includedirs {
@@ -23,4 +22,4 @@ project "DummySimulator"
     "jpeg"
   }
   
-  targetname "dummysimulator"
+  targetname "scriptsim"
