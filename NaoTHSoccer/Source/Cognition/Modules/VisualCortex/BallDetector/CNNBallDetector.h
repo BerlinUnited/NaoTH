@@ -123,6 +123,7 @@ private:
 
       PARAMETER_REGISTER(maxNumberOfKeys) = 12;
       PARAMETER_REGISTER(numberOfExportBestPatches) = 2;
+      PARAMETER_REGISTER(providePatches) = false;
 
       PARAMETER_REGISTER(postBorderFactorClose) = 0.0;
       PARAMETER_REGISTER(postBorderFactorFar) = 0.3;
@@ -154,6 +155,7 @@ private:
 
     int maxNumberOfKeys;
     int numberOfExportBestPatches;
+    bool providePatches;
 
     double postBorderFactorClose;
     double postBorderFactorFar;
@@ -188,6 +190,7 @@ private:
   void calculateCandidates();
   void addBallPercept(const Vector2i& center, double radius);
   void extractPatches();
+  void providePatches();
 
   void setClassifier(const std::string& name, const std::string& nameClose);
   std::map<std::string, std::shared_ptr<AbstractCNNFinder> > createCNNMap();
