@@ -36,13 +36,13 @@
             }
         },
         {
-            "label": "DummySimulator (OptDebug)",
+            "label": "ScriptableSimulator (OptDebug)",
             "type": "shell",
             "options": {
                 "cwd": "${workspaceFolder}/NaoTHSoccer/Make"
             },
             "group": "build",
-            "command": "premake5 gmake2 && make -C ${workspaceFolder}/NaoTHSoccer/build config=optdebug_native DummySimulator",
+            "command": "premake5 gmake2 && make -C ${workspaceFolder}/NaoTHSoccer/build config=optdebug_native ScriptableSimulator",
             "problemMatcher": {
                 "base" : "$gcc",
                 "fileLocation" : ["relative" , "${workspaceFolder}/NaoTHSoccer/build"]
