@@ -82,6 +82,27 @@ setEtc(){
 	deployFile "/etc/hostname" "root" "644" "v6"
 }
 
+setNetwork(){
+	systemctl stop connman
+	systemctl disable connman
+
+	systemctl stop connman-wait-online
+	systemctl disable connman-wait-online
+
+
+	systemctl stop wpa_supplicant
+	systemctl disable wpa_supplicant
+
+	systemctl stop avahi-daemon
+	systemctl disable avahi-daemon
+
+	deployFile "/lib/systemd/system/net.eth0.service" "root" "644" "v6"
+	deployFile "/lib/systemd/system/net.wlan0.service" "root" "644" "v6"
+
+	systemctl enable net.eth0
+	systemctl enable net.wlan0
+}
+
 
 # ==================== pre stuff ====================
 
@@ -116,6 +137,7 @@ deployFile "/usr/bin/lola_adaptor" "root" "755" "v6"
 # disable /etc overlay
 umount -l /etc
 setEtc
+setNetwork
 systemctl restart etc.mount
 
 # ==================== boot/user service stuff ====================
@@ -260,45 +282,46 @@ mount -o remount,ro /
 
 # ==================== network stuff ====================
 
-WIFI_STATE=$( ifconfig | grep -o wlan0)
-if [ -z $WIFI_STATE ]; then
-	connmanctl enable wifi
-	sleep 0.1
-fi
-connmanctl scan wifi
-CONNMAN_SERVICES=$(connmanctl services)
+# generate linux network configuration
+gen_conf_d_net(){
+  echo "generating /home/nao/.config/net . . ."
+  rm -rf ./net
 
-NAO_NUMBER=$(cat /etc/hostname | grep nao | sed 's/nao//g')
-ETH0_MAC=$(cat /sys/class/net/eth0/address | sed -e 's/://g')
-WLAN0_MAC=$(cat /sys/class/net/wlan0/address | sed -e 's/://g')
-WLAN0_MAC_FULL=$(cat /sys/class/net/wlan0/address | tr a-z A-Z)
+  echo "
+  config_wlan0=\"$NETWORK_WLAN_IP netmask $NETWORK_WLAN_MASK brd $NETWORK_WLAN_BROADCAST\"
+  config_eth0=\"$NETWORK_ETH_IP netmask $NETWORK_ETH_MASK  brd $NETWORK_ETH_BROADCAST\"
+  wpa_supplicant_wlan0=\"-Dnl80211\"" > ./net
 
-echo "Setting up wifi configuration for wlan0 (${WLAN0_MAC})"
-sed -i -e "s/__NAO__/${NAO_NUMBER}/g" $DEPLOY_DIRECTORY/v6/var/lib/connman/wifi.config
-sed -i -e "s/__WLAN_MAC__/${WLAN0_MAC_FULL}/g" $DEPLOY_DIRECTORY/v6/var/lib/connman/wifi.config
-deployFile "/var/lib/connman/wifi.config" "root" "644" "v6"
+  copy ./net /home/nao/.config/net root 644
+}
 
-WIFI_NETWORKS=$(cat /var/lib/connman/wifi.config | grep "Name =" | sed -e "s/ //g" | sed -e "s/Name=//g")
-for wifi in $WIFI_NETWORKS; do
-	if [ ! $wifi == "wifi" ]; then
-		# echo "$CONNMAN_SERVICES" | grep "SPL_A " | grep -o wifi.*
-		service=$(echo "$CONNMAN_SERVICES" | grep "$wifi " | grep -o wifi.*)
-		if [ ! -z $service ]; then
-			echo "Disabling autoconnect on wifi network $wifi"
-			# echo $service
-			connmanctl config ${service} --autoconnect off
-			# echo "connmanctl config ${service} --autoconnect off"
-		else
-				echo "Wifi network $wifi currently not available"
-		fi
-	fi
-done
+# generate wpa_supplicant configuration
+gen_wpa_supplicant(){
+  echo "generating /home/nao/.config/wpa_supplicant.conf . . ."
+  rm -rf ./wpa_supplicant.conf
 
-# play initial sound
-su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav"
+  echo "
+  ctrl_interface=/var/run/wpa_supplicant
+  ctrl_interface_group=0
+  ap_scan=1
 
-echo "Setting ip of eth0 (${ETH0_MAC})"
-connmanctl config ethernet_${ETH0_MAC}_cable --ipv4 manual 192.168.13.${NAO_NUMBER} 255.255.255.0
+  network={
+    ssid=\"$NETWORK_WLAN_SSID\"
+    key_mgmt=WPA_PSK
+    psk=\"$NETWORK_WLAN_PW\"
+    priority=5
+  }" > ./wpa_supplicant.conf
+
+  copy ./wpa_supplicant.conf /home/nao/.config/wpa_supplicant.conf root 644
+}
+
+
+gen_conf_d_net
+gen_wpa_supplicant
+
+systemctl restart net.eth0
+systemctl restart net.wlan0
+
 
 # prevent reboot if appropiate file exists
 if [ ! -f "./noreboot" ]; then
