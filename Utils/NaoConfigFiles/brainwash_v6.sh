@@ -282,46 +282,48 @@ mount -o remount,ro /
 
 # ==================== network stuff ====================
 
+echo "Generate network configuration";
+
+NETWORK_WLAN_SSID="NAONET"
+NETWORK_WLAN_PW="a1b0a1b0a1"
+NETWORK_WLAN_IP="10.0.4"
+NETWORK_WLAN_MASK="255.255.255.0"
+NETWORK_WLAN_BROADCAST="10.0.4.255"
+
+NETWORK_ETH_IP="192.168.13"
+NETWORK_ETH_MASK="255.255.255.0"
+NETWORK_ETH_BROADCAST="192.168.13.255"
+
+N=$(cat /etc/hostname | grep -Eo "[0-9]{2}")
+NETWORK_WLAN_IP="$NETWORK_WLAN_IP.$N"
+NETWORK_ETH_IP="$NETWORK_ETH_IP.$N"
+
 # generate linux network configuration
-gen_conf_d_net(){
-  echo "generating /home/nao/.config/net . . ."
-  rm -rf ./net
-
-  echo "
-  config_wlan0=\"$NETWORK_WLAN_IP netmask $NETWORK_WLAN_MASK brd $NETWORK_WLAN_BROADCAST\"
-  config_eth0=\"$NETWORK_ETH_IP netmask $NETWORK_ETH_MASK  brd $NETWORK_ETH_BROADCAST\"
-  wpa_supplicant_wlan0=\"-Dnl80211\"" > ./net
-
-  copy ./net /home/nao/.config/net root 644
-}
+cat << EOF > ./net
+config_wlan0="$NETWORK_WLAN_IP netmask $NETWORK_WLAN_MASK broadcast $NETWORK_WLAN_BROADCAST"
+config_eth0="$NETWORK_ETH_IP netmask $NETWORK_ETH_MASK broadcast $NETWORK_ETH_BROADCAST"
+wpa_supplicant_wlan0="-Dnl80211"
+EOF
 
 # generate wpa_supplicant configuration
-gen_wpa_supplicant(){
-  echo "generating /home/nao/.config/wpa_supplicant.conf . . ."
-  rm -rf ./wpa_supplicant.conf
+cat << EOF > /home/nao/.config/wpa_supplicant.conf
+ctrl_interface=/var/run/wpa_supplicant
+ctrl_interface_group=0
+ap_scan=1
 
-  echo "
-  ctrl_interface=/var/run/wpa_supplicant
-  ctrl_interface_group=0
-  ap_scan=1
-
-  network={
-    ssid=\"$NETWORK_WLAN_SSID\"
-    key_mgmt=WPA_PSK
-    psk=\"$NETWORK_WLAN_PW\"
-    priority=5
-  }" > ./wpa_supplicant.conf
-
-  copy ./wpa_supplicant.conf /home/nao/.config/wpa_supplicant.conf root 644
+network={
+  ssid="$NETWORK_WLAN_SSID"
+  key_mgmt=WPA-PSK
+  psk="$NETWORK_WLAN_PW"
+  priority=5
 }
+EOF
 
-
-gen_conf_d_net
-gen_wpa_supplicant
-
+echo "Restart network services";
 systemctl restart net.eth0
 systemctl restart net.wlan0
 
+# ==================== Done ====================
 
 # prevent reboot if appropiate file exists
 if [ ! -f "./noreboot" ]; then
