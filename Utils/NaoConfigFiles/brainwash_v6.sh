@@ -299,7 +299,7 @@ NETWORK_WLAN_IP="$NETWORK_WLAN_IP.$N"
 NETWORK_ETH_IP="$NETWORK_ETH_IP.$N"
 
 # generate linux network configuration
-cat << EOF > ./net
+cat << EOF > /home/nao/.config/net
 config_wlan0="$NETWORK_WLAN_IP netmask $NETWORK_WLAN_MASK broadcast $NETWORK_WLAN_BROADCAST"
 config_eth0="$NETWORK_ETH_IP netmask $NETWORK_ETH_MASK broadcast $NETWORK_ETH_BROADCAST"
 wpa_supplicant_wlan0="-Dnl80211"
