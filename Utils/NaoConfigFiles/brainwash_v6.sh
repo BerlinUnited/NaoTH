@@ -80,6 +80,19 @@ setEtc(){
 
 	# hostname
 	deployFile "/etc/hostname" "root" "644" "v6"
+
+	# ====================  pulseaudio stuff ====================
+
+	deployFile "/etc/pulse/client-multi-user.conf" "root" "644" "v6"
+	deployFile "/etc/pulse/default-multi-user.pa" "root" "644" "v6"
+
+	if [ -z "$(grep "multi-user" /etc/pulse/client.conf)" ]; then
+		echo ".include /etc/pulse/client-multi-user.conf" >> /etc/pulse/client.conf
+	fi
+
+	if [ -z "$(grep "multi-user" /etc/pulse/default.pa)" ]; then
+		echo ".include /etc/pulse/default-multi-user.pa" >> /etc/pulse/default.pa
+	fi
 }
 
 
