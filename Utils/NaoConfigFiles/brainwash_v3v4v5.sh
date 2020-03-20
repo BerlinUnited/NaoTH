@@ -108,6 +108,7 @@ deployFile "/usr/bin/naoth" "root" "755" "v3v4v5"
 
 # brainwash udev rule
 deployFile "/etc/udev/rules.d/brainwashing.rules" "nao" "644" "v3v4v5"
+deployFile "/etc/udev/rules.d/disable-wifi-power-save.rules" "nao" "644" "v3v4v5"
 
 # copy ld.so.conf
 deployFile "/etc/ld.so.conf" "root" "644" "v3v4v5"
