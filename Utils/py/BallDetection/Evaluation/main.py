@@ -165,11 +165,11 @@ class Evaluator:
         toolchain_dir = get_toolchain_dir()
 
         # load shared library: all depending libraries should be found automatically
-        shared_lib_name = "libdummysimulator.so"
+        shared_lib_name = "libscriptsim.so"
         if sys.platform.startswith("win32"):
-            shared_lib_name = "dummysimulator.dll"
+            shared_lib_name = "scriptsim.dll"
         elif sys.platform.startswith("darwin"):
-            shared_lib_name = "libdummysimulator.dylib"
+            shared_lib_name = "libscriptsim.dylib"
 
         cppyy.load_library(os.path.join(
             naoth_dir, "NaoTHSoccer/dist/Native/" + shared_lib_name))

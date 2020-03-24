@@ -301,7 +301,10 @@ workspace "NaoTHSoccer"
         vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulator" }
         
       dofile (FRAMEWORK_PATH .. "/Platforms/Make/DummySimulator.lua")
-        kind "SharedLib"
+        links { "NaoTHSoccer", "Commons", naoth_links}
+        vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/DummySimulator" }
+
+      dofile (FRAMEWORK_PATH .. "/Platforms/Make/ScriptableSimulator.lua")
         links { "NaoTHSoccer", "Commons", naoth_links}
         vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/DummySimulator" }
         
