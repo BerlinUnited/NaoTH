@@ -2,7 +2,6 @@
 #define _Model1_H
 
 # include <emmintrin.h>
-# include <math.h>
 
 #include "AbstractCNNClassifier.h"
 
