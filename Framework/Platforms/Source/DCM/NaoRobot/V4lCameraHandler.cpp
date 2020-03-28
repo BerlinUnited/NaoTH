@@ -408,6 +408,7 @@ int V4lCameraHandler::readFrame()
   v4l2_buffer lastBuf;
   bool first = true;
   int errorCode = 0;
+  // We are dequeuing images from the buffer until there is no image left  
   while((errorCode = xioctl(fd, VIDIOC_DQBUF, &currentBuf)) == 0)
   {
     if(first) {
