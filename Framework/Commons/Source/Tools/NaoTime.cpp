@@ -18,7 +18,7 @@ using namespace naoth;
 #endif
 
 // TODO: need a better solution here
-// EVIL HACK: used to determine the version of the robot
+// HACK: used to determine the version of the robot (EVIL HACK)
 #ifdef NAO
 #include <sys/stat.h>
 #include <stdio.h>
