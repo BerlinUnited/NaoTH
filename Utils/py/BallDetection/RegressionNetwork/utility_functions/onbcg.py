@@ -182,7 +182,6 @@ def write_naoth_header_file(c_inf, class_name, output_folder="."):
         print("#define _{}_H".format(class_name.upper()), file=fp)
         print("", file=fp)
         print("# include <emmintrin.h>", file=fp)
-        print("# include <math.h>", file=fp)
         print("", file=fp)
         print("#include \"AbstractCNNClassifier.h\"", file=fp)
         print("", file=fp)
