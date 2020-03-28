@@ -408,7 +408,8 @@ int V4lCameraHandler::readFrame()
   v4l2_buffer lastBuf;
   bool first = true;
   int errorCode = 0;
-  // We are dequeuing images from the buffer until there is no image left  
+  // We are dequeuing images from the buffer until there is no image left. The loop stops when we reach 
+  // a busy buffer and errorCode == -1 is returned (with errno == EAGAIN)
   while((errorCode = xioctl(fd, VIDIOC_DQBUF, &currentBuf)) == 0)
   {
     if(first) {
@@ -425,11 +426,11 @@ int V4lCameraHandler::readFrame()
     lastBuf = currentBuf;
   }
   
+  // EAGAIN is expected: the above loop reached a busy buffer
   if (errno == EAGAIN)
   {
-    // last element taken from the queue, abort loop
+    // the above loop made at least one iteration, it means currentBuf is valid
     if (!first) {
-      // reset error code since first try was successfull
       errorCode = 0;
     }
   }
