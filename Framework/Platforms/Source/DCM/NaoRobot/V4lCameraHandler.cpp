@@ -91,10 +91,6 @@ static inline __s32 i2c_smbus_write_block_data(int file, __u8 command, __u8 valu
     return i2c_smbus_access(file,I2C_SMBUS_WRITE, command, I2C_SMBUS_BLOCK_DATA, &data);
 }
 
-// NOTE: reset should be done only once at the start of the program
-static bool resetDone = false;
-
-
 using namespace naoth;
 using namespace std;
 
@@ -148,9 +144,12 @@ void V4lCameraHandler::init(std::string camDevice, CameraInfo::CameraID camID, b
 // reset camera
 void V4lCameraHandler::resetV6Camera() const 
 {
+  // NOTE: reset should be done only once at the start of the program
+  static bool resetDone = false;
   if(resetDone) {
     return;
   }
+  resetDone = true;
   
   // Infos about working with i2c:
   // https://github.com/mozilla-b2g/i2c-tools/blob/master/tools/i2cbusses.c
@@ -190,7 +189,6 @@ void V4lCameraHandler::resetV6Camera() const
   close(i2c);
   fprintf(stdout, "[V4lCameraHandler] Done resetting cameras '/dev/i2c-head'.");
   sleep(3);
-  resetDone = true;
 }
 
 void V4lCameraHandler::setFPS(int fpsRate)
