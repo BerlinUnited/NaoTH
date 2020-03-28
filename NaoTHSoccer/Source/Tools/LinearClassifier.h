@@ -8,6 +8,7 @@
 #ifndef _LINEARCLASSIFIER_H
 #define  _LINEARCLASSIFIER_H
 
+#include <math.h>
 #include <iostream>
 #include <vector>
 #include <Tools/Math/Vector_n.h>
