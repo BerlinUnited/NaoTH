@@ -46,10 +46,6 @@ protected:
 
   bool setRawIfChanged(int cameraFd, const std::string& cameraName, uint32_t parameterID, const std::string& parameterName, int value, int& bufferedValue, bool force=false);
 
-  // NOTE: deprecated and will be removed soon
-  //int32_t getSingleCameraParameterUVC(int cameraFd, const std::string& cameraName, uint8_t parameterSelector, const std::string& parameterName, uint16_t parameterDataSize);
-  //bool setSingleCameraParameterUVC(int cameraFd, const std::string& cameraName, uint8_t parameterSelector, const std::string& parameterName, uint16_t parameterDataSize, int32_t value);
-  
   template<typename T>
   T getParameterUVC(int cameraFd, const std::string& cameraName, uint8_t parameterSelector, const std::string& parameterName) {
     T data;
