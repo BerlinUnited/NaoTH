@@ -8,7 +8,7 @@
 #ifndef _LINEARCLASSIFIER_H
 #define  _LINEARCLASSIFIER_H
 
-#include <math.h>
+#include <cmath>
 #include <iostream>
 #include <vector>
 #include <Tools/Math/Vector_n.h>
@@ -119,10 +119,10 @@ public:
                 double e = b2 - classify(*iter);
                 double pke = pk*e;
                 for (size_t i=0; i<SIZE; i++){
-                    err += fabs(e);
+                    err += std::fabs(e);
                     w[i] += pke*((*iter)[i]);
                 }
-                err += fabs(pke);
+                err += std::fabs(pke);
                 w[SIZE] += pke;
             }
             std::cout<<"k="<<k<<"\terr="<<err<<std::endl;
