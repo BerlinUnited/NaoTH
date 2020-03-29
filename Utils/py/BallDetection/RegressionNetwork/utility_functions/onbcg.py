@@ -469,7 +469,7 @@ def write_header(c_inf, arch, class_name):
     if arch == 'sse3':
         c_inf["f"].write('#include <emmintrin.h>\n')
 
-    c_inf["f"].write('#include <math.h>\nvoid {}::cnn(float x0[{:d}][{:d}][{:d}])\n'.format(
+    c_inf["f"].write('void {}::cnn(float x0[{:d}][{:d}][{:d}])\n'.format(
         class_name,
         c_inf["x_dim"],
         c_inf["y_dim"],
