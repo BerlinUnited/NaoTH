@@ -1,0 +1,4 @@
+# Disable wifi power save mode
+# https://wiki.gentoo.org/wiki/Power_management
+
+ACTION=="add", SUBSYSTEM=="net", KERNEL=="wlan*" RUN+="/usr/sbin/iw dev %k set power_save off"

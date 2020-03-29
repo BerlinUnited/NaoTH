@@ -30,7 +30,7 @@ def get_demo_logfiles():
     for logfile in logfile_list:
         if not Path(target_dir / logfile).is_file():
             print("Download: {}".format(logfile))
-            wget.download(base_url + logfile, target_dir)
+            wget.download(base_url + logfile, str(target_dir))
             print("Done.")
 
     print("Finished downloading")

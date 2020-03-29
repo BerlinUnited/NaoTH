@@ -213,7 +213,7 @@ def compile(c_inf, optimize=False):
 def softmax(x, c_inf):
     assert (x.shape[2] == 2)  # Sorry, only for depth 2 at the moment
     x_out = np.zeros(x.shape).astype('float32')
-    writeC(c_inf, '\tstatic float x{:d}[{:d}][{:d}][{:d}] = {{0}};\n'.format(c_inf["layer"], x.shape[0], x.shape[1],
+    writeC(c_inf, '\tstatic float x{:d}[{:d}][{:d}][{:d}] = {{}};\n'.format(c_inf["layer"], x.shape[0], x.shape[1],
                                                                              x.shape[2]))
 
     for i in range(size(x, 1)):
@@ -336,7 +336,8 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
             _x, c_inf = dense(_x, w, b, c_inf)
 
         else:
-            print("Unknown layer")
+            print("ERROR: Unknown layer: {}".format(type(layer)))
+            print("ERROR: aborting generation. Cpp file unfinished!")
             exit(-1)
         """
         intermediate_layer_model = Model(inputs=model.input,
@@ -549,7 +550,7 @@ def convolution(x, w, b, stride, pad, c_inf, unroll_level, arch):
                 'stride0': stride[0], 'stride1': stride[1], 'i': 'i', 'j': 'j',
                 'pt': pad_top, 'pb': pad_bottom, 'pl': pad_left, 'pr': pad_right}
 
-    writeC(c_inf, '{indent}alignas(16) static float x{layer} [{x_res}][{y_res}][{z_res}] = {{0}};\n'.format(**str_data))
+    writeC(c_inf, '{indent}alignas(16) static float x{layer} [{x_res}][{y_res}][{z_res}] = {{}};\n'.format(**str_data))
 
     if unroll_level > 0:
         writeC(c_inf, '{indent}for (int i = 0; i < {:d}; i += 1)\n{indent}{{\n'.format(H_OUT, **str_data))
@@ -714,7 +715,7 @@ def convolution_2(x, w, b, stride, pad, c_inf, unroll_level, arch):
                 'stride0': SH, 'stride1': SW, 'i': 'i', 'j': 'j',
                 'pt': pad_top, 'pb': pad_bottom, 'pl': pad_left, 'pr': pad_right}
 
-    writeC(c_inf, '{indent}alignas(16) static float x{layer} [{x_res}][{y_res}][{z_res}] = {{0}};\n'.format(**str_data))
+    writeC(c_inf, '{indent}alignas(16) static float x{layer} [{x_res}][{y_res}][{z_res}] = {{}};\n'.format(**str_data))
 
     if unroll_level > 0:
         writeC(c_inf, '{indent}for (int i = 0; i < {:d}; i += 1)\n{indent}{{\n'.format(H_OUT, **str_data))
@@ -897,7 +898,7 @@ def convolution_3(x, w, b, stride, pad, c_inf, unroll_level, arch):
                 'stride0': SH, 'stride1': SW, 'i': 'i', 'j': 'j',
                 'pt': pad_top, 'pb': pad_bottom, 'pl': pad_left, 'pr': pad_right}
 
-    writeC(c_inf, '{indent}alignas(16) static float x{layer} [{x_res}][{y_res}][{z_res}] = {{0}};\n'.format(**str_data))
+    writeC(c_inf, '{indent}alignas(16) static float x{layer} [{x_res}][{y_res}][{z_res}] = {{}};\n'.format(**str_data))
 
     if unroll_level > 0:
         writeC(c_inf, '{indent}for (int i = 0; i < {:d}; i += 1)\n{indent}{{\n'.format(H_OUT, **str_data))
@@ -1115,7 +1116,7 @@ def max_pool(x, p, stride, c_inf, unroll_level, arch='general'):
     str_data = {'prev_layer': c_inf["layer"] - 1, 'ix': 'ix', 'jx': 'jx', 'kx': 'kx', 'indent': '\t',
                 'layer': c_inf["layer"], 'mi': 'mi', 'mj': 'mj', 'x_out_1': 'x_out_1', 'x_out_2': 'x_out_2',
                 'stride0': stride[0], 'p': p[0], 'x_res': x_res, 'y_res': y_res, 'z_res': z_res, 'stride1': stride[1]}
-    writeC(c_inf, '\tstatic float x{layer}[{x_res}][{y_res}][{z_res}] = {{0}};\n'.format(**str_data))
+    writeC(c_inf, '\tstatic float x{layer}[{x_res}][{y_res}][{z_res}] = {{}};\n'.format(**str_data))
     if unroll_level > 0:
         writeC(c_inf,
                '\tfor (int ix = 0; ix < {:d}; ix += {stride0})\n\t{{\n'.format(size(x, 1) - p[0] + 1, **str_data))

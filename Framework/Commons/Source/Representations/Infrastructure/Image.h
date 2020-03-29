@@ -41,7 +41,7 @@ private:
 private:
   /** raw data in YUV422 format */
   unsigned char* yuv422;
-  
+
 public:
   Image();
   virtual ~Image();
@@ -54,7 +54,7 @@ public:
 
   /** Copy a raw image. */
   void copyImageDataYUV422(const unsigned char* data, const unsigned int size);
-    
+
   static const unsigned int PIXEL_SIZE_YUV422 = 2;
   static const unsigned int PIXEL_SIZE_YUV444 = 3;
 
@@ -79,8 +79,8 @@ public: // function members
   // EXPERIMENTAL: return a reference to an aligned yuv422 pixel in the form: |y0|u|y1|v|
   // NOTE: this means we operate with a half of the resolution,
   //       i.e., x = 2*n and x = 2*n+1 will return the same pixel
-  inline const Pixel& getAligned(const unsigned int x, const unsigned int y) const { 
-    return reinterpret_cast<Pixel*>(yuv422)[(y * cameraInfo.resolutionWidth + x)/2]; 
+  inline const Pixel& getAligned(const unsigned int x, const unsigned int y) const {
+    return reinterpret_cast<Pixel*>(yuv422)[(y * cameraInfo.resolutionWidth + x)/2];
   }
 
   inline unsigned char getY(const unsigned int x, const unsigned int y) const {
@@ -116,7 +116,7 @@ public: // function members
 
     Pixel p;
     p.y = yuv422[yOffset];
-      
+
     // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
     p.u = yuv422[yOffset+1-((x & 1)<<1)];
     p.v = yuv422[yOffset+3-((x & 1)<<1)];
@@ -135,7 +135,7 @@ public: // function members
     ASSERT(isInside(x,y));
     unsigned int yOffset = PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x);
 
-    p.y = yuv422[yOffset];      
+    p.y = yuv422[yOffset];
     // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
     p.u = yuv422[yOffset+1-((x & 1)<<1)];
     p.v = yuv422[yOffset+3-((x & 1)<<1)];
@@ -179,19 +179,19 @@ public: // function members
     yuv422[yOffset+1-((x & 1)<<1)] = cb;
     yuv422[yOffset+3-((x & 1)<<1)] = cr;
   }
-    
+
   /**
     * test whether a pixel is inside the image
     */
   inline bool isInside(const unsigned int x, const unsigned int y) const
   { 
-    return x < cameraInfo.resolutionWidth && 
+    return x < cameraInfo.resolutionWidth &&
            y < cameraInfo.resolutionHeight;
   }
 
   inline bool isInside(const Vector2i& p) const
-  { 
-    return p.x >= 0 && p.x < (int)cameraInfo.resolutionWidth && 
+  {
+    return p.x >= 0 && p.x < (int)cameraInfo.resolutionWidth &&
            p.y >= 0 && p.y < (int)cameraInfo.resolutionHeight;
   }
 
