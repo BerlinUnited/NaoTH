@@ -102,7 +102,7 @@ def main(raw_args=None, model=None):
                   metrics=['accuracy', precision_class_05, recall_class_05,
                            precision_class_08, recall_class_08, precision_class_09, recall_class_09])
 
-    filepath = Path(args.output) / "saved-model-{epoch:03d}-{val_acc:.2f}.hdf5"
+    filepath = Path(args.output) / "saved-model-{epoch:03d}-{val_acc:.2f}.h5"
     save_callback = tf.keras.callbacks.ModelCheckpoint(filepath=str(filepath), monitor='loss', verbose=1,
                                                        save_best_only=True)
 
