@@ -8,7 +8,6 @@
 #include <PlatformInterface/Platform.h>
 #include <Tools/DataConversion.h>
 
-#include <math.h>
 #include <list>
 
 using namespace std;

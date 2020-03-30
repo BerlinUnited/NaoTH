@@ -4,7 +4,6 @@
 #ifndef WIN32
 
 # include <emmintrin.h>
-# include <math.h>
 
 #include "AbstractCNNClassifier.h"
 

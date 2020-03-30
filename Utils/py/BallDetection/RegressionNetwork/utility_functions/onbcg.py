@@ -182,7 +182,6 @@ def write_naoth_header_file(c_inf, class_name, output_folder="."):
         print("#define _{}_H".format(class_name.upper()), file=fp)
         print("", file=fp)
         print("# include <emmintrin.h>", file=fp)
-        print("# include <math.h>", file=fp)
         print("", file=fp)
         print("#include \"AbstractCNNClassifier.h\"", file=fp)
         print("", file=fp)
@@ -470,7 +469,7 @@ def write_header(c_inf, arch, class_name):
     if arch == 'sse3':
         c_inf["f"].write('#include <emmintrin.h>\n')
 
-    c_inf["f"].write('#include <math.h>\nvoid {}::cnn(float x0[{:d}][{:d}][{:d}])\n'.format(
+    c_inf["f"].write('void {}::cnn(float x0[{:d}][{:d}][{:d}])\n'.format(
         class_name,
         c_inf["x_dim"],
         c_inf["y_dim"],

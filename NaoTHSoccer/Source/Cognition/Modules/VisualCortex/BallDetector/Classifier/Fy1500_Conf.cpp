@@ -5,7 +5,7 @@
 #endif
 
 #include <emmintrin.h>
-#include <math.h>
+
 void Fy1500_Conf::cnn(float x0[16][16][1])
 {
 	__m128 w, x, y;

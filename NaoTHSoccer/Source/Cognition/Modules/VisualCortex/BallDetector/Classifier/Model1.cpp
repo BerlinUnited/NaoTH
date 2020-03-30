@@ -5,7 +5,7 @@
 #endif
 
 #include <emmintrin.h>
-#include <math.h>
+
 void Model1::cnn(float x0[16][16][1])
 {
 	__m128 w, x, y;

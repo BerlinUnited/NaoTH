@@ -2,7 +2,6 @@
 #define _FY1500_CONF_H
 
 # include <emmintrin.h>
-# include <math.h>
 
 #include "AbstractCNNClassifier.h"
 
