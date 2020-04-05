@@ -30,7 +30,8 @@ CNNBallDetector::CNNBallDetector()
 
   cnnMap = createCNNMap();
 
-  setClassifier("fy1500_conf", "fy1500_conf");
+  // initialize classifier selection
+  setClassifier(params.classifier, params.classifierClose);
 }
 
 CNNBallDetector::~CNNBallDetector()
@@ -50,12 +51,6 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
   theBallKeyPointExtractor->getModuleT()->setCameraId(cameraID);
   //theBallKeyPointExtractor->getModuleT()->calculateKeyPoints(best);
   theBallKeyPointExtractor->getModuleT()->calculateKeyPointsBetter(best);
-
-
-  // update selected classifier from parameters
-  // TODO: make it more efficient
-  setClassifier(params.classifier, params.classifierClose);
-
 
   if(best.size() > 0) {
     calculateCandidates();
@@ -234,7 +229,7 @@ void CNNBallDetector::calculateCandidates()
       }
 
       STOPWATCH_START("CNNBallDetector:predict");
-      cnn->find(patch, params.cnn.meanBrightness);
+      cnn->find(patch, params.cnn.meanBrightnessOffset);
       STOPWATCH_STOP("CNNBallDetector:predict");
 
       bool found = false;
