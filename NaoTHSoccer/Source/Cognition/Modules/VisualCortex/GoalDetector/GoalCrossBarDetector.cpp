@@ -363,7 +363,7 @@ bool GoalCrossBarDetector::estimateCrossBarDirection(const GoalPercept::GoalPost
       features[0].clear();
     }
 
-    //angle of cross bar should not be less than 90 degrees therefore we can restrict the search direction to 90 degrees if its too small
+    //angle of cross bar should not be less than 90° therefor we can restrict the search direction to 90° if its too small
     if (direction.y > 0)
     {
       direction.y = 0.0;
