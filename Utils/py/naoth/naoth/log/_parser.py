@@ -36,7 +36,7 @@ class Parser:
 class BehaviorParser:
     def __init__(self, data=None):
 
-        self.__parser = Parser()
+        self.parser = Parser()
         self.symbols = XABSLSymbols()
         self.__options = None
         self.__current_options = None
@@ -49,7 +49,7 @@ class BehaviorParser:
             if data == b'unknown representation\n':
                 raise Exception('Unknown representation')
 
-            message = self.__parser.parse('BehaviorStateComplete', data)
+            message = self.parser.parse('BehaviorStateComplete', data)
 
             # initialize options
             self.__options = message.options
@@ -84,7 +84,7 @@ class BehaviorParser:
         elif name == "BehaviorStateSparse":
             self.__current_options = {}
 
-            message = self.__parser.parse("BehaviorStateSparse", data)
+            message = self.parser.parse("BehaviorStateSparse", data)
 
             # process active options
             for o in message.activeRootActions:
@@ -102,7 +102,7 @@ class BehaviorParser:
 
             return (message, self.__current_options, self.symbols)
         else:
-            return(self.__parser.parse(name, data))
+            return(self.parser.parse(name, data))
 
 
     def __parseOption(self, o):
