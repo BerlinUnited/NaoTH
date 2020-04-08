@@ -1,10 +1,10 @@
-from naoth.log import Reader as LogReader
-from naoth.log import BehaviorParser
-
-from matplotlib import pyplot
-from mpl_toolkits.mplot3d import Axes3D
-import numpy as np
 import math
+from argparse import ArgumentParser
+
+import numpy as np
+from matplotlib import pyplot
+from naoth.log import BehaviorParser
+from naoth.log import Reader as LogReader
 
 JointID = {
     "HeadPitch": 0,
@@ -59,40 +59,22 @@ JointNames = {
 
 def frame_filter(frame):
     try:
-        val = [frame["FrameInfo"].time / 1000.0,
-               frame["MotionRequest"],
-               frame["MotorJointData"],
-               frame["SensorJointData"]
-               ]
-        # print val
-        return val
+        if "BehaviorStateComplete" in frame.messages:
+            (m, o, s) = frame["BehaviorStateComplete"]
+        else:
+            (m, o, s) = frame["BehaviorStateSparse"]
+
+        return [frame["FrameInfo"].time / 1000.0,
+                frame["MotionRequest"],
+                frame["MotorJointData"],
+                frame["SensorJointData"]
+                ]
 
     except KeyError:
         raise StopIteration
 
 
-def init():
-    file_name = "/home/steffen/NaoTH/Logs/Motion/"
-    file_name = file_name + ""
-    # file_name = file_name + "/walk_forward.log"
-    file_name = file_name + "/walk_backward.log"
-    parser = BehaviorParser()
-    parser.register("MotorJointData", "JointData")
-    log = LogReader(file_name, parser)
-
-    # enforce the whole log being parsed (this is necessary for older game logs)
-    for frame in log:
-        if "BehaviorStateComplete" in frame.messages:
-            m = frame["BehaviorStateComplete"]
-        if "BehaviorStateSparse" in frame.messages:
-            m = frame["BehaviorStateSparse"]
-        frame["FrameInfo"]
-
-    return log
-
-
 def run(log):
-
     print(log.names)
 
     # we want only the frames which contain BehaviorState*
@@ -194,3 +176,39 @@ def run(log):
         pyplot.grid()
         '''
         pyplot.show()
+
+
+def analyze_log(logfile):
+    behavior_parser = BehaviorParser()
+    behavior_parser.parser.register("MotorJointData", "JointData")
+
+    log = LogReader(logfile, behavior_parser)
+
+    frame_list = list()
+    for frame in log:
+        print(frame.messages)
+        quit()
+        a = frame_filter(frame)
+        frame_list.append(a)
+    pass
+
+
+if __name__ == '__main__':
+    parser = ArgumentParser(
+        description='script to generate some energy statistics from logfile')
+    parser.add_argument("-i", "--input", help='logfile, containing the images', default="logs/game_eu.log")
+
+    args = parser.parse_args()
+
+    analyze_log(args.input)
+
+    quit()
+    # enforce the whole log being parsed (this is necessary for older game logs)
+    for frame in log:
+        if "BehaviorStateComplete" in frame.messages:
+            m = frame["BehaviorStateComplete"]
+        if "BehaviorStateSparse" in frame.messages:
+            m = frame["BehaviorStateSparse"]
+        frame["FrameInfo"]
+
+    run(log)
