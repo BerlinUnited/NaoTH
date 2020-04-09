@@ -11,27 +11,29 @@ class DebugProxy:
     """
 
     @staticmethod
-    def run(sink_port: int, nao_addr: _t.Tuple[str, int]):
+    def run(src_host, src_port=5401, dest_port=7777):
         """
         Opens a relay between RobotControl and Nao
-        :param sink_port: Port, RobotControl connects to
-        :param nao_addr: (Address, Port) Tuple of the Nao
+        :param src_host     the ip/hostname of the naoth instance (eg. 'localhost', '10.0.4.91')
+        :param src_port     the debug port of the naoth instance; by default it is 5401
+        :param dest_port    the port, where the debug commands should be relayed to; defaults to: 7777
         """
-        DebugProxy(sink_port, nao_addr)
+        proxy = DebugProxy(src_host, src_port, dest_port)
 
         loop = _as.get_event_loop()
 
         try:
             loop.run_forever()
         except KeyboardInterrupt:
+            print('Got interrupted!')
             pass
 
         loop.close()
 
-    def __init__(self, sink_port, robot_addr):
-        self.robot_addr = robot_addr
+    def __init__(self, src_host, src_port, dest_port):
+        self.robot_addr = (src_host, src_port)
 
-        server = _as.start_server(self._relay_commander, '127.0.0.1', sink_port, loop=_as.get_event_loop())
+        server = _as.start_server(self._relay_commander, '127.0.0.1', dest_port, loop=_as.get_event_loop())
         _as.ensure_future(server)
 
     async def _relay_commander(self, commander_reader, commander_writer):
