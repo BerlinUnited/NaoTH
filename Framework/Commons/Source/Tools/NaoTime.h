@@ -4,12 +4,11 @@
 * Class NaoTime provides information and calculation for time
 *
 * @author Oliver Welter
+* @author Heinrich Mellmann <mellmann@informatik.hu-berlin.de>
 */
 
 #ifndef NAOTIME_H
 #define NAOTIME_H
-
-#include <cstdint>
 
 namespace naoth
 {
@@ -18,34 +17,42 @@ class NaoTime
 public:
 
   /**
-   *
-   */
+  * Returns the system time in microseconds :)
+  * NOTE: operation systems have several different ways of tracking time 
+  * (several clocks). Posix systems have CLOCK_MONOTONIC and CLOCK_REALTIME
+  * among others.
+  * 
+  * NOTE: this function is used to synchronize images from the camera with other 
+  * sensor input on the robot. Thus it is crucial that we use the same clock here
+  * as used by the video for linux (V4L) driver for image time stamps: 
+  *  - NAO V6 uses          CLOCK_MONOTONIC
+  *  - NAO V5 and older use CLOCK_REALTIME
+  * For more details see the implementation of the function.
+  */
   static unsigned long long getSystemTimeInMicroSeconds();
 
   /**
-   *
-   */
+  * Returns the system time in milliseconds. Wrapper for getSystemTimeInMicroSeconds.
+  */
   static inline unsigned long long getSystemTimeInMilliSeconds() {
     return getSystemTimeInMicroSeconds() / 1000l;
   }
 
   /*
-   * return the time since the start of the controller
-   */
+  * Return the time since the start of the program.
+  */
   static inline unsigned int getNaoTimeInMilliSeconds() {
     return static_cast<unsigned int>(getSystemTimeInMilliSeconds() - startingTimeInMilliSeconds);
   }
 
   /**
-   * This value is set once in the beginning of the programm to the system time
-   * at this point in time
-   */
+  * Time stamp of when the programm was started. This value is set only once at 
+  * the start of the programm to the system time at that point in time.
+  * Used by getNaoTimeInMilliSeconds to calculate the time since the start of the 
+  * program.
+  */
   static const unsigned long long startingTimeInMilliSeconds;
 
-	/**
-	 * Returns the milliseconds since midnight
-	 */
-	static std::uint32_t getSystemTimeSinceMidnight();
 };
 }// end namespace naoth
 #endif  /* NAOTIME_H */

@@ -4,6 +4,7 @@
 * Class NaoTime provides methods for time information and calculation
 *
 * @author Oliver Welter
+* @author Heinrich Mellmann <mellmann@informatik.hu-berlin.de>
 */
 
 #include "NaoTime.h"
@@ -70,13 +71,4 @@ unsigned long long NaoTime::getSystemTimeInMicroSeconds()
     clock_gettime(ID, &t);
     return t.tv_sec * 1000000LL + t.tv_nsec / 1000LL;
   #endif
-}
-
-// NOTE: this is experimenal and uses c++ starndard routines
-std::uint32_t NaoTime::getSystemTimeSinceMidnight() {
-	auto now = std::chrono::system_clock::now();
-	auto time = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
-
-	// the time relative to the start of the current day
-	return static_cast<std::uint32_t>(time % (24 * 60 * 60 * 1000));
 }
