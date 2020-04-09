@@ -116,14 +116,30 @@ class DebugCommand:
         :param value_args: Command arguments with values (see add_arg function)
         """
         self._id = _id
-        self.name = name
-        self.args = {}
+        self._name = name
+        self._args = {}
 
         for name in args:
             self.add_arg(name)
 
         for name, value in value_args.items():
             self.add_arg(name, value=value)
+
+    @property
+    def name(self):
+        """Returns the name of this command."""
+        return self._name
+
+    @property
+    def id(self):
+        """Returns the id of this command."""
+        return self._id
+
+    @id.setter
+    def id(self, value):
+        """Sets the id of this command."""
+        self._id = value
+        return self
 
     def add_arg(self, name, value=None):
         """
@@ -132,9 +148,9 @@ class DebugCommand:
         :param value: optional argument value
         """
         if isinstance(value, str):
-            self.args[name] = value.encode()
+            self._args[name] = value.encode()
         elif isinstance(value, bytes) or value is None:
-            self.args[name] = value
+            self._args[name] = value
         else:
             raise ValueError('Argument value must be string, bytes or None')
 
@@ -150,8 +166,8 @@ class DebugCommand:
         :returns bytes representation of this command ready to send
         """
         cmd = _pb.Messages_pb2.CMD()
-        cmd.name = self.name
-        for name, value in self.args.items():
+        cmd.name = self._name
+        for name, value in self._args.items():
             arg = cmd.args.add()
             arg.name = name
             if value is not None:
