@@ -15,16 +15,13 @@
 #include <Tools/DataConversion.h>
 //#include <Tools/Debug/DebugRequest.h>
 #include <DebugCommunication/DebugCommandManager.h>
+
+#include <Tools/ThreadUtil.h>
 #include <Tools/NaoTime.h>
 #include <Tools/NaoInfo.h>
 #include <Tools/Math/Common.h>
 
 #include <Tools/Communication/ASCIIEncoder.h>
-
-
-#ifdef WIN32
-#include <windows.h>
-#endif
 
 using namespace std;
 
@@ -432,23 +429,20 @@ void SimSparkController::actLoop()
 {
   while( !exiting )
   {
-    {
+    { // NOTE: lock object lives only in this code block
       std::unique_lock<std::mutex> lock(theTimeMutex);
       theTimeCond.wait(lock);
       calculateNextActTime();
     }
+
     unsigned int now = NaoTime::getNaoTimeInMilliSeconds();
     if ( theNextActTime > now )
     {
-      unsigned int t = theNextActTime - now;
-#ifdef WIN32
-      Sleep(t);
-#else
-      usleep(t * 1000);
-#endif
+      ThreadUtil::sleep(theNextActTime - now);
     }
+
     act();
-  } // end while not exiting
+  }
 }
 
 void SimSparkController::act()

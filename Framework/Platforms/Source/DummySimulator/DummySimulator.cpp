@@ -4,12 +4,11 @@
 *
 * Created on 2017.05.21
 */
-#include <thread>
-#include <chrono>
-
 #include "myconio.h"
 
 #include "DummySimulator.h"
+
+#include "Tools/ThreadUtil.h"
 #include "Tools/NaoTime.h"
 #include "Tools/Math/Common.h"
 
@@ -106,7 +105,7 @@ void DummySimulator::play()
     // wait at least 5ms but max 1s
     unsigned int waitTime = Math::clamp((int)frameExecutionTime - (int)calculationTime, 5, 1000);
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(waitTime));
+    ThreadUtil::sleep(waitTime);
   }
 }
 
