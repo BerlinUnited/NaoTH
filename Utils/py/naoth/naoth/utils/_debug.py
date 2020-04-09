@@ -10,12 +10,6 @@ class DebugProxy:
     Debugging class, creating a connection between RobotControlGui and the Nao to inspect messages and the control flow.
     """
 
-    def __init__(self, sink_port, robot_addr):
-        self.robot_addr = robot_addr
-
-        server = _as.start_server(self._relay_commander, '127.0.0.1', sink_port, loop=_as.get_event_loop())
-        _as.ensure_future(server)
-
     @staticmethod
     def run(sink_port: int, nao_addr: _t.Tuple[str, int]):
         """
@@ -33,6 +27,12 @@ class DebugProxy:
             pass
 
         loop.close()
+
+    def __init__(self, sink_port, robot_addr):
+        self.robot_addr = robot_addr
+
+        server = _as.start_server(self._relay_commander, '127.0.0.1', sink_port, loop=_as.get_event_loop())
+        _as.ensure_future(server)
 
     async def _relay_commander(self, commander_reader, commander_writer):
         robot_writer = None
