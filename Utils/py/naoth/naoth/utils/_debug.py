@@ -107,15 +107,20 @@ class DebugProxy:
 class DebugCommand:
     """A DebugCommad used in our naoth framework with name and arguments."""
 
-    def __init__(self, _id, name, *args, **value_args):
+    def __init__(self, name, *args, **value_args):
         """
-        Create a command which can be send to the robot
-        :param _id: Command id
+        Create a command which can be send to the robot.
+        For example:
+            DebugCommand('Cognition:behavior:set_agent', agent='soccer_agent')
+            DebugCommand('Cognition:behavior:set_agent').add_arg('agent', 'soccer_agent')
+            DebugCommand('Cognition:representation:get', 'FrameInfo')
+            DebugCommand('Cognition:representation:get').add_arg('FrameInfo')
+
         :param name: Command name
         :param args: Command arguments (see add_arg function)
         :param value_args: Command arguments with values (see add_arg function)
         """
-        self._id = _id
+        self._id = 0
         self._name = name
         self._args = {}
 
@@ -153,6 +158,7 @@ class DebugCommand:
             self._args[name] = value
         else:
             raise ValueError('Argument value must be string, bytes or None')
+        return self
 
     def write(self, sink):
         """
