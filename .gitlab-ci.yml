@@ -4,7 +4,7 @@ stages:
  - linux
 
 default:
-  image: scm.cms.hu-berlin.de:4567/berlinunited/tools/linuxtoolchain:latest
+  image: $DOCKER_IMAGE
 
 cppcheck:
   stage: static_analysis
@@ -14,9 +14,6 @@ cppcheck:
       - merge_requests
       - triggers
   script:
-  - apt-get install cppcheck -y  # TODO move to toolchain image
-  - apt install python-pip -y # TODO move to toolchain image
-  - pip install pygments # TODO move to toolchain image
   - cppcheck -j 4 --enable=all --inconclusive --xml --xml-version=2 . 2> cppcheck-result.xml
   - cppcheck-htmlreport --file=cppcheck-result.xml --report-dir=test1 --source-dir=.
 
@@ -31,6 +28,9 @@ compileGame:
       - web
       - merge_requests
       - triggers
+    changes:
+      - Framework/**/*
+      - NaoTHSoccer/**/*
   script:
   - cd NaoTHSoccer/Make
   - ./compileGame.sh -j 4
@@ -42,6 +42,9 @@ compileLocal:
       - web
       - merge_requests
       - triggers
+    changes:
+      - Framework/**/*
+      - NaoTHSoccer/**/*
   script:
   - cd NaoTHSoccer/Make
   - premake5 gmake2 --protoc
