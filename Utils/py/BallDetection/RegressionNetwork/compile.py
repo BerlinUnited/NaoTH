@@ -34,4 +34,5 @@ with open(imgdb_path, "rb") as f:
     images["mean"] = pickle.load(f)
     images["images"] = pickle.load(f)
     images["y"] = pickle.load(f)
+
 keras_compile(images, model_path, code_path, unroll_level=2, arch="sse3")

@@ -7,7 +7,6 @@ __license__ = "Commercial, free for educational usage."
 __version__ = "1.0.0"
 __email__ = "oliver.urbann@tu-dortmund.de"
 
-import random
 import os
 import platform
 import numpy as np
@@ -39,58 +38,6 @@ int main()
     fclose(f);
     res = 0;
     cnn(x, &res, scores);
-    return res;
-}}
-#endif
-'''
-
-footer_no_test = '''
-#ifdef CNN_TEST
-#include <stdio.h>
-int main()
-{
-    printf("Thx for using Olli's Code Generator (OCG)");
-    return 0;
-}
-#endif
-'''
-
-footer_benchmark = '''
-#ifdef CNN_TEST
-#include <stdio.h>
-#include <sys/time.h>
-
-int main()
-{{
-    int i, j, res;
-    struct timeval st, et;
-    float x[{x_dim}][{y_dim}][{z_dim}];
-    const int x_out_dim = {:d};
-    const int y_out_dim = {:d};
-    const int z_out_dim = {:d};
-    alignas(16) float output_tensor [x_out_dim][y_out_dim][z_out_dim];
-    
-    // read test image
-    FILE *f = fopen("img.bin", "r");
-    for (j = 0; j < {x_dim}; j++)
-        for (i = 0; i < {y_dim}; i++)
-            for (int k = 0; k < {z_dim}; k++)
-                fread(&x[j][i][k], sizeof(float), 1, f);
-    res = 0;
-    for (int i = 0; i < 1000; i++)
-    {{
-        gettimeofday(&st,NULL);
-        cnn(x, output_tensor);
-        gettimeofday(&et,NULL);
-        int elapsed = ((et.tv_sec - st.tv_sec) * 1000000) + (et.tv_usec - st.tv_usec);
-        printf("inference time: %d micro seconds\\n",elapsed);
-    }}
-    
-    // write result to stdout
-    for (j = 0; j < x_out_dim; j++)
-        for (i = 0; i < y_out_dim; i++)
-            for (int k = 0; k < z_out_dim; k++)
-                printf("%f\\n", output_tensor[j][i][k]);
     return res;
 }}
 #endif
@@ -264,7 +211,6 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
 
     output_folder = os.path.dirname(os.path.abspath(code_path))
 
-    
     test_im_index = 0
     im = imdb["images"][test_im_index]
     c_inf = {}
@@ -350,62 +296,11 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
             print(str(layer) + ": ok")
         """
 
-        
     # NOTE: this creates a header file
     #       at this point we should know the size of the output layer
     write_naoth_header_file(c_inf, class_name, output_folder)
-    
-        
-    # last layer with softmax activition indicates a classification problem
-    # write scores etc. only in this case
-    """
-    classification = False
-    if last_activation == 'softmax':
-        for ix in range(size(_x, 3)):
-            writeC(c_inf, '\tscores[{:d}] = x{:d}[{:d}][{:d}][{:d}];\n'.format(
-                ix, c_inf["layer"], 0, 0, ix))
-        writeC(c_inf, '\t*res = 0;\n')
-        for i in range(1, size(_x, 3)):
-            writeC(c_inf, '\t*res = scores[{:d}] > scores[*res] ? {:d} : *res;\n'.format(i, i))
-        classification = True
-    """
-    write_footer(c_inf, _x, classification=False, class_name=class_name)
-    """
-    if classification:
-        print("Testing...")
-        for i in range(10000):
-            im_num = random.randrange(len(imdb["images"]))
-            # im_num = 407910
-            im = imdb["images"][im_num]
-            im = im.reshape(1, *im.shape)
-            (im + imdb["mean"]).astype("float32").tofile("img.bin")
-            res = os.system("./" + c_inf["path"][:-2])
-            p = np.argmax(model.predict(im))
-            if res >> 8 == p:
-                print("Image " + str(im_num) + " passed, is " + str(p))
-            else:
-                print("Error at image " + str(im_num))
-                exit(-2)
-    else:
-        return
-        print("Running...")
-        im.tofile("img.bin")
-        expected_result = model.predict(im.reshape(1, *im.shape))
 
-        output = os.popen("./" + c_inf["path"][:-2]).read()
-
-        values = [float(o) for o in output.split("\n") if o and not o.startswith("inference")]
-        c_result = np.array(values).reshape(expected_result.shape)
-        if not np.allclose(expected_result, c_result, atol=0.001):
-            diff = np.abs(expected_result - c_result)
-            print("Error in result of c code, maximum err = ", diff.max())
-        else:
-            print("Result of c code is correct")
-
-        times = [float(o.split()[2]) for o in output.split("\n") if o.startswith("inference")]
-        times = np.array(times)
-        print("runs: {}, total: {} micro seconds, mean: {} micro seconds".format(times.size, times.sum(), times.mean()))
-    """
+    write_footer(c_inf, _x, class_name=class_name)
 
 
 def dense(_x, weights, b, c_inf):
@@ -423,7 +318,7 @@ def dense(_x, weights, b, c_inf):
             for y in range(y_dim):
                 for c in range(channels):
                     idx = (x * (y_dim * channels)) + (y * channels) + c
-                  #  print("x: {}, y: {}, c: {} -> {}".format(x,y,c, idx))
+                    # print("x: {}, y: {}, c: {} -> {}".format(x,y,c, idx))
                     if i % 4 is 0:
                         c_inf["f"].write('\n\t')
 
@@ -444,7 +339,6 @@ def dense(_x, weights, b, c_inf):
 
         c_inf["f"].write('\n')
         
-        
     c_inf["layer"] = c_inf["layer"] + 1
     c_inf["output_dim"] = output_dim
     
@@ -461,11 +355,8 @@ def write_header(c_inf, arch, class_name):
     c_inf["f"] = open(c_inf["path"], 'w')
     c_inf["layer"] = 1
     c_inf["f"].write('#include \"{}.h\"\n\n'.format(class_name))
-    c_inf["f"].write("""#if WIN32
-#define alignas(x) __declspec(align(x))
-#endif\n\n""")
-    
-    
+    c_inf["f"].write("""#if WIN32\n\t#define alignas(x) __declspec(align(x))\n#endif\n\n""")
+
     if arch == 'sse3':
         c_inf["f"].write('#include <emmintrin.h>\n')
 
@@ -482,39 +373,29 @@ def write_header(c_inf, arch, class_name):
     return c_inf
 
 
-def write_footer(c_inf, _x, classification, class_name):
+def write_footer(c_inf, _x, class_name):
     if c_inf["f"] is not None:
         c_inf["f"].write('}\n')
 
-        # TODO functions do not work properly yet
         c_inf["f"].write(classify_yuv_patch.format(class_name))
         c_inf["f"].write('double {}::getRadius() {{return scores[0];}}\n'.format(class_name))
         c_inf["f"].write('Vector2d {}::getCenter() {{return Vector2d(scores[1], scores[2]);}}\n'.format(class_name))
         c_inf["f"].write('double {}::getBallConfidence() {{return scores[3];}}\n'.format(class_name))
-
-        if classification:
-            c_inf["f"].write(footer_test.format(**c_inf))
-        else:
-            # c_inf["f"].write(footer_benchmark.format(x_dim=c_inf['x_dim'], y_dim=c_inf['y_dim'], z_dim=c_inf['z_dim'],
-            #                                         *_x.shape))
-            c_inf["f"].close()
-
-            # replace the name of the output layer
-            with open(c_inf["path"], 'r') as file:
-                data = file.read()
-
-            data = data.replace("int *res, double *scores", ' double output_tensor[{:d}][{:d}][{:d}]'.format(
-                size(_x, 1),
-                size(_x, 2),
-                size(_x, 3)))
-            data = data.replace('x{:d}['.format(c_inf["layer"] - 1), 'output_tensor[')
-            with open(c_inf["path"], 'w') as file:
-                file.write(data)
         c_inf["f"].close()
         c_inf["f"] = None
 
-        # print("Compiling...")
-        # compile(c_inf, optimize=True)
+        # replace the name of the output layer
+        with open(c_inf["path"], 'r') as file:
+            data = file.read()
+
+        data = data.replace("int *res, double *scores", ' double output_tensor[{:d}][{:d}][{:d}]'.format(
+            size(_x, 1),
+            size(_x, 2),
+            size(_x, 3)))
+        data = data.replace('x{:d}['.format(c_inf["layer"] - 1), 'output_tensor[')
+
+        with open(c_inf["path"], 'w') as file:
+            file.write(data)
 
     return c_inf
 
