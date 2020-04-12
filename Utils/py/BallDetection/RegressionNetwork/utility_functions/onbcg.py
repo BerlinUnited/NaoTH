@@ -256,26 +256,19 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
             pass
         elif type(layer) == Dense:
             writeC(c_inf, '\n \t// Dense Layer\n')
-            print("Warning: Dense implementation not finished")
             w = K.eval(layer.weights[0])
             b = K.eval(layer.bias)
-            _x, c_inf = dense(_x, w, b, c_inf)
+
+            if layer.activation.__name__ == 'relu':
+                print("use dense layer argument for activation")
+                _x, c_inf = dense(_x, w, b, c_inf, relu=True)
+            else:
+                _x, c_inf = dense(_x, w, b, c_inf, relu=False)
 
         else:
             print("ERROR: Unknown layer: {}".format(type(layer)))
-            print("ERROR: aborting generation. Cpp file unfinished!")
+            print("ERROR: aborting generation. cpp file unfinished!")
             exit(-1)
-        """
-        intermediate_layer_model = Model(inputs=model.input,
-                                         outputs=layer.output)
-        io = intermediate_layer_model.predict(im.reshape(1, *im.shape))
-        intermediate_output.append(io)
-        if not np.allclose(_x.reshape(1, *_x.shape), io, atol=0.001):
-            diff = np.abs(_x.reshape(1, *_x.shape) - io)
-            print(str(layer) + ": err, maximum err = ", diff.max())
-        else:
-            print(str(layer) + ": ok")
-        """
 
     # NOTE: this creates a header file
     #       at this point we should know the size of the output layer
@@ -284,7 +277,7 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
     write_footer(c_inf, _x, class_name=class_name)
 
 
-def dense(_x, weights, b, c_inf):
+def dense(_x, weights, b, c_inf, relu):
 
     x_dim = _x.shape[0]
     y_dim = _x.shape[1]
@@ -314,10 +307,12 @@ def dense(_x, weights, b, c_inf):
                     ))
 
                     i += 1
-        c_inf["f"].write(';\n\n')
+
         # ReLU
-        c_inf["f"].write("\t// Apply ReLU\n")
-        c_inf["f"].write("\tscores[{:d}] = scores[{:d}] > 0.0f ? scores[{:d}] : 0.0f;\n".format(output, output, output))
+        if relu:
+            c_inf["f"].write(';\n\n')
+            c_inf["f"].write("\t// Apply ReLU\n")
+            c_inf["f"].write("\tscores[{:d}] = scores[{:d}] > 0.0f ? scores[{:d}] : 0.0f;\n".format(output, output, output))
 
         c_inf["f"].write('\n')
         
@@ -531,7 +526,7 @@ def convolution(x, w, b, stride, pad, c_inf, unroll_level, arch):
                     if unroll_level > 1 and jx == -pad_left and ix == -pad_top and pad == 'same':
                         str_data['indent'] = str_data['indent'][:-1]
                         writeC(c_inf, '{indent}}}\n'.format(**str_data))
-                if ((ix == -pad_top and unroll_level == 1) or \
+                if ((ix == -pad_top and unroll_level == 1) or
                     (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and pad == 'same':
                     str_data['indent'] = str_data['indent'][:-1]
                     writeC(c_inf, '{indent}}}\n'.format(**str_data))
