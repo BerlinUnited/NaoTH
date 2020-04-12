@@ -3,36 +3,29 @@
 import argparse
 import pickle
 from utility_functions.onbcg import keras_compile
+from tensorflow.keras.models import load_model
 
-parser = argparse.ArgumentParser(description='Train the network given ')
 
-parser.add_argument('-b', '--database-path', dest='imgdb_path',
-                    help='Path to the image database to use for training. '
-                         'Default is img.db in current folder.')
-parser.add_argument('-m', '--model-path', dest='model_path',
-                    help='Store the trained model using this path. Default is model.h5.')
-parser.add_argument('-c', '--code-path', dest='code_path',
-                    help='Store the c code in this file. Default is ./cnn.c.')
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Compile keras network to c++')
+    parser.add_argument('-b', '--database-path', dest='imgdb_path',
+                        help='Path to the image database to use for training. '
+                             'Default is imgdb.pkl in current folder.', default='imgdb.pkl')
+    parser.add_argument('-m', '--model-path', dest='model_path',
+                        help='Store the trained model using this path. Default is model.h5.', default='model.h5')
+    parser.add_argument('-c', '--code-path', dest='code_path',
+                        help='Store the c code in this file. Default is <model_name>.c.')
 
-args = parser.parse_args()
+    args = parser.parse_args()
 
-imgdb_path = "imgdb.pkl"
-model_path = "model.h5"
-code_path = "cnn.c"
+    if args.code_path is None:
+        model = load_model(args.model_path)
+        args.code_path = model.name + ".c"
 
-if args.imgdb_path is not None:
-    imgdb_path = args.imgdb_path
+    images = {}
+    with open(args.imgdb_path, "rb") as f:
+        images["mean"] = pickle.load(f)
+        images["images"] = pickle.load(f)
+        images["y"] = pickle.load(f)
 
-if args.model_path is not None:
-    model_path = args.model_path
-
-if args.code_path is not None:
-    code_path = args.code_path
-
-images = {}
-with open(imgdb_path, "rb") as f:
-    images["mean"] = pickle.load(f)
-    images["images"] = pickle.load(f)
-    images["y"] = pickle.load(f)
-
-keras_compile(images, model_path, code_path, unroll_level=2, arch="sse3")
+    keras_compile(images, args.model_path, args.code_path, unroll_level=2, arch="sse3")
