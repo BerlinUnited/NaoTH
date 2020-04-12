@@ -122,4 +122,7 @@ def main(raw_args=None, model=None):
 
 if __name__ == '__main__':
     test_model = model_zoo.fy_1500()
-    main(model=test_model)
+    train_history = main(model=test_model)
+
+    with open("history_" + test_model.name + ".pkl", "wb") as f:
+        pickle.dump(train_history.history, f)
