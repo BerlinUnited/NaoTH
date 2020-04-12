@@ -11,7 +11,7 @@ import os
 import platform
 import numpy as np
 from tensorflow.keras import backend as K, Model
-from tensorflow.keras.layers import Convolution2D, MaxPooling2D, Flatten, Dropout, BatchNormalization, LeakyReLU, Dense
+from tensorflow.keras.layers import Convolution2D, MaxPooling2D, Flatten, Dropout, BatchNormalization, LeakyReLU, Dense, ReLU
 from tensorflow.keras.models import load_model
 
 if platform.system() != 'Darwin':
@@ -21,27 +21,6 @@ else:
     compiler = 'clang++ --target=i686-unknown-linux-gnu -msse3 -march=bonnell -std=c++11 -g -DCNN_TEST '
     compiler_O3 = 'clang++ -O3 --target=i686-unknown-linux-gnu -msse3 -march=bonnell -std=c++11 -g -DCNN_TEST '
 
-footer_test = '''
-#ifdef CNN_TEST
-#include <stdio.h>
-    
-int main()
-{{
-    int i, j, res;
-    FILE *f = fopen("img.bin", "r");
-    float x[{x_dim}][{y_dim}][{z_dim}];
-    float scores[2];
-    for (j = 0; j < {x_dim}; j++)
-        for (i = 0; i < {y_dim}; i++)
-            for (int k = 0; k < {z_dim}; k++)
-                fread(&x[j][i][k], sizeof(float), 1, f);
-    fclose(f);
-    res = 0;
-    cnn(x, &res, scores);
-    return res;
-}}
-#endif
-'''
 
 sse_conv = '''
 {indent}w = _mm_set_ps({w3}f, {w2}f, {w1}f, {w0}f);
@@ -221,7 +200,6 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
         c_inf["z_dim"] = im.shape[2]
     else:
         c_inf["z_dim"] = 1
-    # intermediate_output = []
 
     c_inf = write_header(c_inf, arch, class_name)
     if unroll_level > 0:
@@ -266,6 +244,9 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
             writeC(c_inf, '\n \t// Leaky ReLu Layer\n')
             _x, c_inf = rectifiedLinearUnit(_x, c_inf, unroll_level, float(layer.alpha), arch)
             last_activation = 'leaky'
+        elif type(layer) == ReLU:
+            writeC(c_inf, '\n \t// ReLu Layer\n')
+            _x, c_inf = rectifiedLinearUnit(_x, c_inf, unroll_level, 0, arch)
         elif type(layer) == Flatten:
             pass
         elif type(layer) == Dropout:
@@ -333,8 +314,9 @@ def dense(_x, weights, b, c_inf):
                     ))
 
                     i += 1
-        c_inf["f"].write(';\n')
+        c_inf["f"].write(';\n\n')
         # ReLU
+        c_inf["f"].write("\t// Apply ReLU\n")
         c_inf["f"].write("\tscores[{:d}] = scores[{:d}] > 0.0f ? scores[{:d}] : 0.0f;\n".format(output, output, output))
 
         c_inf["f"].write('\n')
