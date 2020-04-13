@@ -16,7 +16,7 @@ public:
     FrugallyDeep(std::string file);
     virtual ~FrugallyDeep();
 
-	void find(const BallCandidates::PatchYUVClassified& p, double meanBrightness);
+	void predict(const BallCandidates::PatchYUVClassified& p, double meanBrightness);
 
 	double getRadius();
     Vector2d getCenter();
