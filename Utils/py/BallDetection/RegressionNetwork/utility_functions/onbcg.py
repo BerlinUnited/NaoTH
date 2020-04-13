@@ -83,7 +83,7 @@ sse_leaky = '''
 
 classify_yuv_patch = '''
 \n
-void {}::find(const BallCandidates::PatchYUVClassified& patch, double meanBrightness)
+void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBrightness)
 {{
 \tASSERT(patch.size() == 16);
 
@@ -115,7 +115,7 @@ def write_naoth_header_file(c_inf, class_name, output_folder="."):
         print("", file=fp)
         print("public:", file=fp)
         print("\tvoid cnn(float x0[{:d}][{:d}][{:d}]);".format(c_inf["x_dim"], c_inf["y_dim"], c_inf["z_dim"]), file=fp)
-        print("\tvoid find(const BallCandidates::PatchYUVClassified& p,double meanBrightness);", file=fp)
+        print("\tvoid predict(const BallCandidates::PatchYUVClassified& p,double meanBrightness);", file=fp)
         print("\tvirtual double getRadius();", file=fp)
         print("\tvirtual Vector2d getCenter();", file=fp)
         print("\tvirtual double getBallConfidence();", file=fp)
