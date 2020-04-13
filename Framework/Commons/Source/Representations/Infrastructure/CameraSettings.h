@@ -37,7 +37,24 @@ struct V5CameraSettings
 
 struct V6CameraSettings
 {
+  bool autoExposition;
 
+  int exposure;
+  int saturation;
+
+  bool autoWhiteBalancing;
+  int gain;
+  int brightness;
+  int contrast;
+  int sharpness;
+  int hue;
+  
+  int gain_red;
+  int gain_green;
+  int gain_blue;
+  
+  bool horizontalFlip;
+  bool verticalFlip;
 };
 
 struct V5CommonSettings
@@ -47,6 +64,17 @@ struct V5CommonSettings
 
 struct V6CommonSettings
 {
+  bool autoExposition;
+
+  int exposure;
+  int saturation;
+
+  bool autoWhiteBalancing;
+  int gain;
+  int brightness;
+  int contrast;
+  int sharpness;
+  int hue;
 };
 
 class CameraSettings : public Printable
@@ -84,16 +112,6 @@ public:
   virtual ~CameraSettings();
 
   virtual void print(std::ostream &stream) const;
-};
-
-class CameraSettingsManager
-{
-public:
-  /** Queries all values from the actual camera */
-  virtual void query(int cameraFd, std::string cameraName, CameraSettings &settings) = 0;
-
-  /** Apply all changed values on the actual camera */
-  virtual void apply(int cameraFd, std::string cameraName, const CameraSettings &settings, bool force=false) = 0;
 };
 
 class CurrentCameraSettings : public CameraSettings
