@@ -83,6 +83,8 @@ private:
     Filters filter;
     Filters::const_iterator bestModel;
 
+    // TODO: does it make sence to use the numerical epsilon: std::numeric_limits<duble>::epsilon() or std::numeric_limits<float>::epsilon()?
+    // TODO: or is this value specific to the algorithms? E.g. ball speed below 1mm/s is considered 0.
     const double epsilon; // 10e-6
     //double area95Threshold;
 
