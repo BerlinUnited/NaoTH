@@ -73,7 +73,7 @@ private:
     bool sendBallAgeDobermann;
     
     virtual ~Parameters() {}
-  } parameters;
+  } params;
 
 private:
   unsigned int lastSentTimestamp;

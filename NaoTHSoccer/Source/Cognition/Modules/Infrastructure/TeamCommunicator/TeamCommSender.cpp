@@ -14,11 +14,11 @@ TeamCommSender::TeamCommSender()
     send_interval = config.getInt("teamcomm", "send_interval");
   }
 
-  getDebugParameterList().add(&parameters);
+  getDebugParameterList().add(&params);
 }
 
 TeamCommSender::~TeamCommSender() {
-  getDebugParameterList().remove(&parameters);
+  getDebugParameterList().remove(&params);
 }
 
 
@@ -50,7 +50,7 @@ void TeamCommSender::fillMessageBeforeSending() const
     msg.pose = getRobotPose();
 
     bool sendBallModel = getBallModel().knows;
-    if(parameters.sendBallAgeDobermann) {
+    if (params.sendBallAgeDobermann) {
       sendBallModel = (getBallModel().getFrameInfoWhenBallWasSeen().getTime() > 0);
     }
 
