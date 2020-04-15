@@ -73,7 +73,7 @@ private:
     
     virtual ~Parameters() {
     }
-  } parameters;
+  } params;
 
 };
 

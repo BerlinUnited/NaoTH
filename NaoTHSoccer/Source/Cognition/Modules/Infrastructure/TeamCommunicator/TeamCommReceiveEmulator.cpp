@@ -25,17 +25,17 @@ void TeamCommReceiveEmulator::execute() {
     getTeamMessage().data[messageData.playerNumber] = messageData;
 
     //Generate the frame number, at which we are going to receive the next message
-    if (parameters.normalDistribution) {
+    if (params.normalDistribution) {
       getFrameInfo().getFrameNumber();
       nextMessageTime = getFrameInfo().getTime() + ((unsigned int) fabs(floor(
-        Math::sampleNormalDistribution(parameters.standardDeviation) + parameters.mean + 0.5)));
+        Math::sampleNormalDistribution(params.standardDeviation) + params.mean + 0.5)));
     }
-    if (parameters.uniformDistribution) {      
+    if (params.uniformDistribution) {      
       nextMessageTime = getFrameInfo().getTime() + ((unsigned int) fabs(floor(
-        Math::random(parameters.uniformMin, parameters.uniformMax) + 0.5)));
+        Math::random(params.uniformMin, params.uniformMax) + 0.5)));
     }
 
-    if (parameters.randomPerturbations) {
+    if (params.randomPerturbations) {
       //TODO: Implement other perturbations in the message intervals
     }
 
