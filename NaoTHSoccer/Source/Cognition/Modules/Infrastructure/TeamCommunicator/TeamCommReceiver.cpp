@@ -5,12 +5,12 @@ TeamCommReceiver::TeamCommReceiver()
   DEBUG_REQUEST_REGISTER("TeamCommReceiver:artificial_delay",
                          "Add an artificial delay to all team comm messages", false );
 
-  getDebugParameterList().add(&parameters);
+  getDebugParameterList().add(&params);
 }
 
 TeamCommReceiver::~TeamCommReceiver()
 {
-  getDebugParameterList().remove(&parameters);
+    getDebugParameterList().remove(&params);
 }
 
 void TeamCommReceiver::execute()
@@ -97,7 +97,7 @@ void TeamCommReceiver::handleMessage(const std::string& data)
   }
 
   // make sure the time step is monotonically rising
-  if (parameters.monotonicTimestampCheck && !monotonicTimeStamp(msg)) {
+  if (params.monotonicTimestampCheck && !monotonicTimeStamp(msg)) {
     getTeamMessage().dropMonotonic++;
     return;
   }

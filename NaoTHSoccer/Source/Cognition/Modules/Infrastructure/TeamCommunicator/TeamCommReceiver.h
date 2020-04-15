@@ -64,7 +64,7 @@ private:
     bool acceptMixedTeamMessages;
     
     virtual ~Parameters() {}
-  } parameters;
+  } params;
 
 private:
   void handleMessage(const std::string& data);
@@ -84,7 +84,8 @@ private:
       // the new message is monotonic => accept
       data.custom.timestamp > getTeamMessage().data[data.playerNumber].custom.timestamp ||
       // the new message is much older than the current one => weird => reset
-      data.custom.timestamp + parameters.monotonicTimestampCheckResetTime < getTeamMessage().data[data.playerNumber].custom.timestamp;
+          data.custom.timestamp + params.monotonicTimestampCheckResetTime <
+              getTeamMessage().data[data.playerNumber].custom.timestamp;
   }
 
   RingBuffer<std::string, 100> delayBuffer;
