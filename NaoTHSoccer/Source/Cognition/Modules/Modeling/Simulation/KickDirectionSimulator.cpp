@@ -16,14 +16,14 @@ KickDirectionSimulator::KickDirectionSimulator()
 {
   simulationModule = registerModule<ActionSimulator>(std::string("Simulation"), true);
   DEBUG_REQUEST_REGISTER("KickDirectionSimulator:draw_best_direction", "best direction", false);
-  resetSamples(samples, theParameters.num_angle_particle);
+  resetSamples(samples, params.num_angle_particle);
 
   //calculate the actions
   
   action_local.reserve(KickActionModel::numOfActions); // here we dont simulate the none action so it could be numOfActions-1
-  action_local.push_back(ActionSimulator::Action(KickActionModel::kick_short, theParameters.kick_short, theParameters.friction)); // short
-  action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
-  action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
+  action_local.push_back(ActionSimulator::Action(KickActionModel::kick_short, params.kick_short, params.friction)); // short
+  action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_left, params.sidekick_left, params.friction)); // left
+  action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_right, params.sidekick_right, params.friction)); // right
 
   actionsConsequences.resize(action_local.size()); 
   actionsConsequencesAbs.resize(action_local.size());
@@ -37,7 +37,7 @@ void KickDirectionSimulator::execute()
   //int bestID = 0;
   //double smallestAngle = 0;
   for (size_t i = 0; i < action_local.size(); i++) {
-    resetSamples(samples, theParameters.num_angle_particle);
+    resetSamples(samples, params.num_angle_particle);
     actionsConsequences[i] = calculate_best_direction(action_local[i]);
     actionsConsequencesAbs[i] = abs(actionsConsequences[i]);
     /*
@@ -80,7 +80,7 @@ double KickDirectionSimulator::calculate_best_direction(const ActionSimulator::A
   m_min = 0;
   m_max = 0;
   double mean_angle = 0.0;
-  for(int i = 0; i < theParameters.iterations; i++){
+  for(int i = 0; i < params.iterations; i++){
     //evaluate the particles
 
     update(basisAction);
@@ -151,7 +151,7 @@ void KickDirectionSimulator::resample(SampleSet& sampleSet, double sigma) const
   normalize(oldSampleSet);
   //END TEST
 
-  double likelihood_step = 1.0 / theParameters.num_angle_particle; // the step in the weighting so we get exactly n particles
+  double likelihood_step = 1.0 / params.num_angle_particle; // the step in the weighting so we get exactly n particles
   
   double targetSum = Math::random()*likelihood_step;
   double currentSum = 0;

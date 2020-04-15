@@ -125,7 +125,7 @@ public:
     int num_angle_particle;
     int iterations; // Number of update calls of particle filter
 
-  } theParameters;
+  } params;
 
 private:
   class Sample {
