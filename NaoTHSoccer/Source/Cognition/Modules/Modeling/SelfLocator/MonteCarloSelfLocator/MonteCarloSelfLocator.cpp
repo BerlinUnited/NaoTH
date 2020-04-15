@@ -22,7 +22,7 @@ MonteCarloSelfLocator::MonteCarloSelfLocator()
   islocalized(false),
   updatedByGoalPosts(false),
   theSampleSet(100),
-  canopyClustering(parameters.thresholdCanopy),
+  canopyClustering(params.thresholdCanopy),
   slowWeighting(0.0),
   fastWeighting(0.0),
   effective_number_of_samples(0.0)
@@ -59,12 +59,12 @@ MonteCarloSelfLocator::MonteCarloSelfLocator()
   DEBUG_REQUEST_REGISTER("MCSLS:state:TRACKING", "", false);
 
   initializeSampleSet(getFieldInfo().carpetRect, theSampleSet);
-  getDebugParameterList().add(&parameters);
+  getDebugParameterList().add(&params);
 }
 
 MonteCarloSelfLocator::~MonteCarloSelfLocator() 
 {
-  getDebugParameterList().remove(&parameters);
+  getDebugParameterList().remove(&params);
 }
 
 
@@ -119,7 +119,7 @@ void MonteCarloSelfLocator::execute()
   // true when the robot was lifted up
   bool body_lift_up =  getBodyState().isLiftedUp;
 
-  if(parameters.treatLiftUp && motion_ok_kidnap && body_lift_up) {
+  if(params.treatLiftUp && motion_ok_kidnap && body_lift_up) {
     state = KIDNAPPED;
   }
 
@@ -136,7 +136,7 @@ void MonteCarloSelfLocator::execute()
 
   if(state != KIDNAPPED) 
   {
-    if(parameters.treatInitState && (!motion_ok || !body_upright || getPlayerInfo().robotState == PlayerInfo::penalized)) 
+    if(params.treatInitState && (!motion_ok || !body_upright || getPlayerInfo().robotState == PlayerInfo::penalized)) 
     {
       state = BLIND;
     }
@@ -178,8 +178,8 @@ void MonteCarloSelfLocator::execute()
     }
     case BLIND:
     {
-      if(parameters.updateByOdometryWhenBlind) {
-        updateByOdometry(theSampleSet, parameters.motionNoise, true);
+      if(params.updateByOdometryWhenBlind) {
+        updateByOdometry(theSampleSet, params.motionNoise, true);
       }
 
       /* do nothing */
@@ -193,12 +193,12 @@ void MonteCarloSelfLocator::execute()
     }
     case LOCALIZE:
     {
-      updateByOdometry(theSampleSet, parameters.motionNoise, false);
+      updateByOdometry(theSampleSet, params.motionNoise, false);
     
       theSampleSet.resetLikelihood();
 
       // HACK: separate update by the goal posts
-      if(parameters.updateByGoalPostLocalize)
+      if(params.updateByGoalPostLocalize)
       {
         if(getGoalPercept().getNumberOfSeenPosts() > 0) {
           updateByGoalPosts(getGoalPercept(), theSampleSet);
@@ -213,7 +213,7 @@ void MonteCarloSelfLocator::execute()
       updateBySensors(theSampleSet);
 
       // use prior knowledge
-      if(parameters.updateBySituation) //  && lastState == KIDNAPPED
+      if(params.updateBySituation) //  && lastState == KIDNAPPED
       {
         updateBySituation();
       }
@@ -226,10 +226,10 @@ void MonteCarloSelfLocator::execute()
       resampleMH(theSampleSet);
       //resampleMHOld(theSampleSet);
 
-      if(parameters.sensorResetByGoalModel) {
+      if(params.sensorResetByGoalModel) {
         sensorResetBySensingGoalModel(theSampleSet, (int)theSampleSet.size() - 1);
       }
-      if(parameters.sensorResetByMiddleCircle) {
+      if(params.sensorResetByMiddleCircle) {
         sensorResetByMiddleCircle(theSampleSet);
       }
 
@@ -259,12 +259,12 @@ void MonteCarloSelfLocator::execute()
     }
     case TRACKING:
     {
-      updateByOdometry(theSampleSet, parameters.motionNoise, false);
+      updateByOdometry(theSampleSet, params.motionNoise, false);
 
       theSampleSet.resetLikelihood();
 
       // HACK: separate update by the goal posts
-      if(parameters.updateByGoalPostTracking)
+      if(params.updateByGoalPostTracking)
       {
         if(getGoalPercept().getNumberOfSeenPosts() > 0) {
           updateByGoalPosts(getGoalPercept(), theSampleSet);
@@ -280,7 +280,7 @@ void MonteCarloSelfLocator::execute()
 
 
       //HACK
-      if(parameters.updateBySituation) {
+      if(params.updateBySituation) {
         if(getPlayerInfo().robotState == PlayerInfo::set) 
         {
           updateByOwnHalf(theSampleSet);
@@ -292,14 +292,14 @@ void MonteCarloSelfLocator::execute()
       // NOTE: normalizes the likelihood
       updateStatistics(theSampleSet);
 
-      if(parameters.resampleSUS) {
+      if(params.resampleSUS) {
         resampleSUS(theSampleSet, (int)theSampleSet.size());
       }
-      if(parameters.resampleGT07) {
+      if(params.resampleGT07) {
         resampleGT07(theSampleSet, true);
       }
 
-      if(parameters.sensorResetByMiddleCircle) {
+      if(params.sensorResetByMiddleCircle) {
         sensorResetByMiddleCircle(theSampleSet);
       }
 
@@ -357,7 +357,7 @@ void MonteCarloSelfLocator::execute()
 
 void MonteCarloSelfLocator::resetLocator()
 {
-  if(parameters.resetOwnHalf && getPlayerInfo().robotState == PlayerInfo::set) {
+  if(params.resetOwnHalf && getPlayerInfo().robotState == PlayerInfo::set) {
     initializeSampleSetFixedRotation(getFieldInfo().ownHalfRect, 0, theSampleSet);
   } else {
     initializeSampleSet(getFieldInfo().carpetRect, theSampleSet);
@@ -369,7 +369,7 @@ void MonteCarloSelfLocator::resetLocator()
 
 void MonteCarloSelfLocator::updateByOdometry(SampleSet& sampleSet, bool noise, bool onlyRotation) const
 {
-  if(parameters.updateByOdometryRelative) {
+  if(params.updateByOdometryRelative) {
     updateByOdometryRelative(sampleSet, noise, onlyRotation);
   } else {
     updateByOdometryAbsolute(sampleSet, noise, onlyRotation);
@@ -390,9 +390,9 @@ void MonteCarloSelfLocator::updateByOdometryAbsolute(SampleSet& sampleSet, bool 
     sampleSet[i] += odometryDelta;
     if(noise)
     {
-      sampleSet[i].translation.x += (Math::random()-0.5)*parameters.motionNoiseDistance;
-      sampleSet[i].translation.y += (Math::random()-0.5)*parameters.motionNoiseDistance;
-      sampleSet[i].rotation = Math::normalize(sampleSet[i].rotation + (Math::random()-0.5)*parameters.motionNoiseAngle);
+      sampleSet[i].translation.x += (Math::random()-0.5)* params.motionNoiseDistance;
+      sampleSet[i].translation.y += (Math::random()-0.5)* params.motionNoiseDistance;
+      sampleSet[i].rotation = Math::normalize(sampleSet[i].rotation + (Math::random()-0.5)* params.motionNoiseAngle);
     }
   }
 }//end updateByOdometryAbsolute
@@ -411,8 +411,8 @@ void MonteCarloSelfLocator::updateByOdometryRelative(SampleSet& sampleSet, bool 
     Pose2D odometryModel(odometryDelta);
 
     if(noise) {
-      odometryModel.translation += odometryModel.translation * (Math::random()-0.5)*parameters.motionNoiseDistanceRelative;
-      odometryModel.rotation += odometryModel.rotation * (Math::random()-0.5)*parameters.motionNoiseAngleRelative;
+      odometryModel.translation += odometryModel.translation * (Math::random()-0.5)* params.motionNoiseDistanceRelative;
+      odometryModel.rotation += odometryModel.rotation * (Math::random()-0.5)* params.motionNoiseAngleRelative;
     }
 
     sampleSet[i] += odometryModel;
@@ -474,22 +474,22 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
   }
   */
 
-  if(parameters.updateByRansacCircle && getRansacCirclePercept2018().wasSeen) {
+  if(params.updateByRansacCircle && getRansacCirclePercept2018().wasSeen) {
     updateByMiddleCircle(getRansacCirclePercept2018().center, sampleSet);
   }
 
-  if(parameters.updateByCompas && getProbabilisticQuadCompas().isValid()) {
+  if(params.updateByCompas && getProbabilisticQuadCompas().isValid()) {
     updateByCompas(sampleSet);
   }
 
-  if(parameters.updateByLinePoints)
+  if(params.updateByLinePoints)
   {
     if(!getLineGraphPercept().edgelsOnField.empty()) {
       updateByLinePoints(getLineGraphPercept(), sampleSet);
     }
   }
 
-  if(parameters.updateByLinePercept)
+  if(params.updateByLinePercept)
   {
     /*
     if(!getLinePercept().lines.empty()) {
@@ -500,7 +500,7 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
     }
   }
 
-  if(parameters.updateByShortLinePercept)
+  if(params.updateByShortLinePercept)
   {
     /*
     if(!getLinePercept().short_lines.empty()) {
@@ -521,7 +521,7 @@ void MonteCarloSelfLocator::updateByGoalPosts(const GoalPercept& goalPercept, Sa
     const GoalPercept::GoalPost& seenPost = goalPercept.getPost(i);
     
     // HACK
-    if(state == TRACKING && parameters.maxAcceptedGoalErrorWhileTracking > 0) {
+    if(state == TRACKING && params.maxAcceptedGoalErrorWhileTracking > 0) {
 
       const Vector2d* leftGoalPosition = NULL;
       const Vector2d* rightGoalPosition = NULL;
@@ -539,7 +539,7 @@ void MonteCarloSelfLocator::updateByGoalPosts(const GoalPercept& goalPercept, Sa
       Vector2d globalPercept = getRobotPose() * seenPost.position;
       double min_dist = min((globalPercept - *rightGoalPosition).abs(),(globalPercept - *leftGoalPosition).abs());
 
-      if(min_dist < parameters.maxAcceptedGoalErrorWhileTracking) {
+      if(min_dist < params.maxAcceptedGoalErrorWhileTracking) {
         updateBySingleGoalPost(seenPost, sampleSet);
       }
     } else {
@@ -550,8 +550,8 @@ void MonteCarloSelfLocator::updateByGoalPosts(const GoalPercept& goalPercept, Sa
 
 void MonteCarloSelfLocator::updateBySingleGoalPost(const GoalPercept::GoalPost& seenPost, SampleSet& sampleSet) const
 {
-  const double sigmaAngle    = parameters.goalPostSigmaAngle;
-  const double sigmaDistance = parameters.goalPostSigmaDistance;
+  const double sigmaAngle    = params.goalPostSigmaAngle;
+  const double sigmaDistance = params.goalPostSigmaDistance;
   const double cameraHeight  = getCameraMatrix().translation.z;
 
   const double seenDistance = seenPost.position.abs();
@@ -639,8 +639,8 @@ void MonteCarloSelfLocator::updateByCompas(SampleSet& sampleSet) const
 
 void MonteCarloSelfLocator::updateByLinePoints(const LineGraphPercept& lineGraphPercept, SampleSet& sampleSet) const
 {
-  const double sigmaDistance = parameters.linePointsSigmaDistance;
-  //const double sigmaAngle    = parameters.linePointsSigmaAngle;
+  const double sigmaDistance = params.linePointsSigmaDistance;
+  //const double sigmaAngle    = params.linePointsSigmaAngle;
   const double cameraHeight  = getCameraMatrix().translation.z;
 
   DEBUG_REQUEST("MCSLS:draw_updateByLinePoints",
@@ -648,7 +648,7 @@ void MonteCarloSelfLocator::updateByLinePoints(const LineGraphPercept& lineGraph
     PEN("000000", 10);
   );
 
-  for(size_t i = 0; i < lineGraphPercept.edgelsOnField.size() && i < (size_t)parameters.linePointsMaxNumber; i++) 
+  for(size_t i = 0; i < lineGraphPercept.edgelsOnField.size() && i < (size_t)params.linePointsMaxNumber; i++)
   {
     int idx = Math::random((int)lineGraphPercept.edgelsOnField.size());
     const Vector2d& seen_point_relative = lineGraphPercept.edgelsOnField[idx].point;
@@ -684,12 +684,12 @@ void MonteCarloSelfLocator::updateByLinePoints(const LineGraphPercept& lineGraph
 void MonteCarloSelfLocator::updateByLines2018(const LinePercept2018& linePercept, SampleSet& sampleSet) const
 {
   const double cameraHeight = getCameraMatrix().translation.z;
-  const double sigmaDistance = parameters.lineSigmaDistance;
-  const double sigmaAngle = parameters.lineSigmaAngle;
+  const double sigmaDistance = params.lineSigmaDistance;
+  const double sigmaAngle = params.lineSigmaAngle;
   double shortestLine = 1e+5; // very long...
 
   // todo: parameter for max lines to update by
-  for(size_t lp=0; lp < linePercept.fieldLineSegments.size() && lp < (size_t)parameters.lineMaxNumber; lp++)
+  for(size_t lp=0; lp < linePercept.fieldLineSegments.size() && lp < (size_t)params.lineMaxNumber; lp++)
   {
     //int idx = Math::random((int)linePercept.lines.size());
     // dont use the lines which are parts of the circle
@@ -697,7 +697,7 @@ void MonteCarloSelfLocator::updateByLines2018(const LinePercept2018& linePercept
     //if(linePercept.lines[idx].type == LinePercept::C && linePercept.middleCircleWasSeen)
     //  continue;
 
-    if(linePercept.fieldLineSegments[lp].getLength() < parameters.lineMinLength) { // don't use too short lines
+    if(linePercept.fieldLineSegments[lp].getLength() < params.lineMinLength) { // don't use too short lines
       continue;
     }
 
@@ -834,8 +834,8 @@ void MonteCarloSelfLocator::updateByLines2018(const LinePercept2018& linePercept
 
 void MonteCarloSelfLocator::updateByMiddleCircle(const Vector2d& middleCircleCenter, SampleSet& sampleSet) const
 {
-  double sigmaDistance = parameters.sigmaDistanceCenterCircle;
-  double sigmaAngle    = parameters.sigmaAngleCenterCircle;
+  double sigmaDistance = params.sigmaDistanceCenterCircle;
+  double sigmaAngle    = params.sigmaAngleCenterCircle;
   double cameraHeight  = getCameraMatrix().translation.z;
 
   Vector2<double> centerCirclePosition; // (0,0)
@@ -879,8 +879,8 @@ void MonteCarloSelfLocator::updateBySidePositions(SampleSet& sampleSet) const
   Vector2d startRight(startLeft.x, -startLeft.y);
   Vector2d endRight(endLeft.x, -endLeft.y);
 
-  LineDensity leftStartingLine(startLeft, endLeft, -Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
-  LineDensity rightStartingLine(startRight, endRight, Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
+  LineDensity leftStartingLine(startLeft, endLeft, -Math::pi_2, params.startPositionsSigmaDistance, params.startPositionsSigmaAngle);
+  LineDensity rightStartingLine(startRight, endRight, Math::pi_2, params.startPositionsSigmaDistance, params.startPositionsSigmaAngle);
 
   for(size_t i = 0; i < sampleSet.size(); i++) {
     if(sampleSet[i].translation.y > 0) {
@@ -906,8 +906,8 @@ void MonteCarloSelfLocator::updateByStartPositions(SampleSet& sampleSet) const
   Vector2d startRight(startLeft.x, -startLeft.y);
   Vector2d endRight(endLeft.x, -endLeft.y);
 
-  LineDensity leftStartingLine(startLeft, endLeft, -Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
-  LineDensity rightStartingLine(startRight, endRight, Math::pi_2, parameters.startPositionsSigmaDistance, parameters.startPositionsSigmaAngle);
+  LineDensity leftStartingLine(startLeft, endLeft, -Math::pi_2, params.startPositionsSigmaDistance, params.startPositionsSigmaAngle);
+  LineDensity rightStartingLine(startRight, endRight, Math::pi_2, params.startPositionsSigmaDistance, params.startPositionsSigmaAngle);
 
   //  for(size_t i = 0; i < sampleSet.size(); i++) {
   //    if(sampleSet[i].translation.y > 0) {
@@ -950,11 +950,11 @@ void MonteCarloSelfLocator::updateByOwnHalfLookingForward(SampleSet& sampleSet) 
     Sample& sample = sampleSet[s];
 
     if(!getFieldInfo().ownHalfRect.inside(sample.translation)) {
-      sample.likelihood *= parameters.downWeightFactorOwnHalf;
+      sample.likelihood *= params.downWeightFactorOwnHalf;
     }
 
     double angleDiff = Math::normalize(sample.rotation - 0);
-    sample.likelihood *=  Math::gaussianProbability(angleDiff, parameters.startPositionsSigmaAngle);
+    sample.likelihood *=  Math::gaussianProbability(angleDiff, params.startPositionsSigmaAngle);
   }
 
   DEBUG_REQUEST("MCSLS:draw_state",
@@ -975,7 +975,7 @@ void MonteCarloSelfLocator::updateByOwnHalf(SampleSet& sampleSet) const
     Sample& sample = sampleSet[s];
 
     if(!getFieldInfo().ownHalfRect.inside(sample.translation)) {
-      sample.likelihood *= parameters.downWeightFactorOwnHalf;
+      sample.likelihood *= params.downWeightFactorOwnHalf;
     }
   }
 
@@ -997,7 +997,7 @@ void MonteCarloSelfLocator::updateByOppHalf(SampleSet& sampleSet) const
     Sample& sample = sampleSet[s];
 
     if(!getFieldInfo().oppHalfRect.inside(sample.translation)) {
-      sample.likelihood *= parameters.downWeightFactorOwnHalf;
+      sample.likelihood *= params.downWeightFactorOwnHalf;
     }
   }
 
@@ -1023,11 +1023,11 @@ void MonteCarloSelfLocator::updateByGoalBox(SampleSet& sampleSet) const
     Sample& sample = sampleSet[s];
 
     if(!ownGoalBox.inside(sample.translation)) {
-      sample.likelihood *= parameters.downWeightFactorOwnHalf;
+      sample.likelihood *= params.downWeightFactorOwnHalf;
     }
 
     double angleDiff = Math::normalize(sample.rotation - 0);
-    sample.likelihood *=  Math::gaussianProbability(angleDiff, parameters.startPositionsSigmaAngle);
+    sample.likelihood *=  Math::gaussianProbability(angleDiff, params.startPositionsSigmaAngle);
   }
 
   DEBUG_REQUEST("MCSLS:draw_state",
@@ -1044,8 +1044,8 @@ void MonteCarloSelfLocator::updateByGoalBox(SampleSet& sampleSet) const
 
 void MonteCarloSelfLocator::updateByOldPose(SampleSet& sampleSet) const
 {     
-  double sigmaDistance = parameters.oldPoseSigmaDistance;
-  double sigmaAngle = parameters.oldPoseSigmaAngle;
+  double sigmaDistance = params.oldPoseSigmaDistance;
+  double sigmaAngle = params.oldPoseSigmaAngle;
 
   updateByPose(sampleSet, getRobotPose(), sigmaDistance, sigmaAngle);
 }
@@ -1190,7 +1190,7 @@ void MonteCarloSelfLocator::resampleMH(SampleSet& sampleSet)
     backendSum += mhBackendSet[j].likelihood;
 
     if(sampleSet[j].likelihood < threshold) { // new rendom particle
-      createRandomSample(parameters.resetOwnHalf ? getFieldInfo().ownHalfRect : getFieldInfo().carpetRect, sampleSet[j]);
+      createRandomSample(params.resetOwnHalf ? getFieldInfo().ownHalfRect : getFieldInfo().carpetRect, sampleSet[j]);
     } else { // just apply some noise
       applySimpleNoise(sampleSet[j], radius, angle);
     }
@@ -1198,7 +1198,7 @@ void MonteCarloSelfLocator::resampleMH(SampleSet& sampleSet)
 
 
   SampleSet oldSampleSet = sampleSet;
-  oldSampleSet.normalize(parameters.resamplingThreshhold);
+  oldSampleSet.normalize(params.resamplingThreshhold);
 
   double likelihood_step = 1.0/100.0; // the step in the weighting so we get exactly n particles
   double targetSum = Math::random()*likelihood_step;
@@ -1226,7 +1226,7 @@ void MonteCarloSelfLocator::resampleMH(SampleSet& sampleSet)
 int MonteCarloSelfLocator::resampleSUS(SampleSet& sampleSet, int n) const
 {
   SampleSet oldSampleSet = sampleSet;
-  oldSampleSet.normalize(parameters.resamplingThreshhold);
+  oldSampleSet.normalize(params.resamplingThreshhold);
 
   //int n = 100; // number of samples to copy
   double likelihood_step = 1.0/n; // the step in the weighting so we get exactly n particles
@@ -1249,9 +1249,9 @@ int MonteCarloSelfLocator::resampleSUS(SampleSet& sampleSet, int n) const
       targetSum += likelihood_step;
 
       if(updatedByGoalPosts) {
-        applySimpleNoise(sampleSet[j], parameters.processNoiseDistance, parameters.processNoiseAngle);
+        applySimpleNoise(sampleSet[j], params.processNoiseDistance, params.processNoiseAngle);
       } else {
-        applySimpleNoise(sampleSet[j], 0.0, parameters.processNoiseAngle);
+        applySimpleNoise(sampleSet[j], 0.0, params.processNoiseAngle);
       }
 
       j++;
@@ -1266,7 +1266,7 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise) const
   int numberOfPartiklesToResample = 0;
 
   SampleSet oldSampleSet = sampleSet;
-  oldSampleSet.normalize(parameters.resamplingThreshhold);
+  oldSampleSet.normalize(params.resamplingThreshhold);
   
   //oldSampleSet.sort();
 
@@ -1288,9 +1288,9 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise) const
       // copy the selected particle
       sampleSet[n] = oldSampleSet[m];
       if(noise && updatedByGoalPosts) {
-        applySimpleNoise(sampleSet[n], parameters.processNoiseDistance, parameters.processNoiseAngle);
+        applySimpleNoise(sampleSet[n], params.processNoiseDistance, params.processNoiseAngle);
       } else {
-        applySimpleNoise(sampleSet[n], 0.0, parameters.processNoiseAngle);
+        applySimpleNoise(sampleSet[n], 0.0, params.processNoiseAngle);
       }
       
       n++;
@@ -1392,8 +1392,8 @@ void MonteCarloSelfLocator::sensorResetByMiddleCircle(SampleSet& sampleSet) cons
     size_t n = sampleSet.size()-1;
 
     if( 
-      parameters.sensorResetByMiddleCircleAngleDecisionDistance > 0 && 
-      getRobotPose().translation.abs2() < Math::sqr(parameters.sensorResetByMiddleCircleAngleDecisionDistance) )
+      params.sensorResetByMiddleCircleAngleDecisionDistance > 0 && 
+      getRobotPose().translation.abs2() < Math::sqr(params.sensorResetByMiddleCircleAngleDecisionDistance) )
     {
       // choose one by the rotation
       if(fabs(Math::normalize(centerLeft.rotation - getRobotPose().rotation)) < fabs(Math::normalize(centerRight.rotation - getRobotPose().rotation))) {

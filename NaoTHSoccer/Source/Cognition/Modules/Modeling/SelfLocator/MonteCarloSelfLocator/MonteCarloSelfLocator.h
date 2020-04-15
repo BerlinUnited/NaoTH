@@ -252,7 +252,7 @@ private: // local types
     double startPositionsSigmaDistance;
     double startPositionsSigmaAngle;
 
-  } parameters;
+  } params;
 
   class LineDensity {
   private:
