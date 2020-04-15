@@ -121,7 +121,7 @@ public:
     bool double_edgel_green_check;
 
     double minEndPointGreenDensity;
-  } theParameters;
+  } params;
 
 private:
   CameraInfo::CameraID cameraID;
@@ -146,7 +146,7 @@ private:
     const Edgel& end = getScanLineEdgelPercept().edgels[i_end];
     const Edgel& begin = getScanLineEdgelPercept().edgels[i_begin];
 
-    if(-(begin.direction*end.direction) < theParameters.double_edgel_angle_threshold) {
+    if(-(begin.direction*end.direction) < params.double_edgel_angle_threshold) {
       return; // false
     }
 
