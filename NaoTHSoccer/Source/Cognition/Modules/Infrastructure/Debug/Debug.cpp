@@ -71,20 +71,20 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   getDebugImageDrawingsTop().init(getImageTop().width(), getImageTop().height());
 
 
-  getDebugParameterList().add(&parameter);
+  getDebugParameterList().add(&params);
 }
 
 Debug::~Debug()
 {
-  getDebugParameterList().remove(&parameter);
+  getDebugParameterList().remove(&params);
 }
 
 void Debug::execute()
 {
   // log only when a ball was seen
-  if(!parameter.log.onlyWhenBallwasSeen || getMultiBallPercept().wasSeen()) {
+  if(!params.log.onlyWhenBallwasSeen || getMultiBallPercept().wasSeen()) {
     if(lastLogFrameInfo.getFrameNumber() == 0 || 
-       getFrameInfo().getTimeSince(lastLogFrameInfo.getTime()) >= parameter.log.skipTimeMS) 
+       getFrameInfo().getTimeSince(lastLogFrameInfo.getTime()) >= params.log.skipTimeMS) 
     {
       cognitionLogger.log(getFrameInfo().getFrameNumber());
       lastLogFrameInfo = getFrameInfo();
