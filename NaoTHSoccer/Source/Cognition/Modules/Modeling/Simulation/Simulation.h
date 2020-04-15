@@ -36,20 +36,20 @@
 #include "Tools/ActionSimulator.h"
 
 BEGIN_DECLARE_MODULE(Simulation)
-PROVIDE(DebugModify)
-PROVIDE(DebugRequest)
-PROVIDE(DebugDrawings)
-PROVIDE(DebugParameterList)
-PROVIDE(StopwatchManager)
+  PROVIDE(DebugModify)
+  PROVIDE(DebugRequest)
+  PROVIDE(DebugDrawings)
+  PROVIDE(DebugParameterList)
+  PROVIDE(StopwatchManager)
 
-REQUIRE(FrameInfo)
-REQUIRE(FieldInfo)
-REQUIRE(ObstacleModel)
-REQUIRE(BallModel)
-REQUIRE(RobotPose)
-//REQUIRE(SelfLocGoalModel)
+  REQUIRE(FrameInfo)
+  REQUIRE(FieldInfo)
+  REQUIRE(ObstacleModel)
+  REQUIRE(BallModel)
+  REQUIRE(RobotPose)
+  //REQUIRE(SelfLocGoalModel)
 
-PROVIDE(KickActionModel)
+  PROVIDE(KickActionModel)
 END_DECLARE_MODULE(Simulation)
 
 class Simulation : public SimulationBase, public ModuleManager
@@ -117,7 +117,7 @@ public:
     int numParticles; //should be size_t
     int minGoalParticles;
 
-  } theParameters;
+  } params;
 
 
 private:

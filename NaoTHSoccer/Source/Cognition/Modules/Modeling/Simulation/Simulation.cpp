@@ -18,22 +18,22 @@ Simulation::Simulation()
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Short", "DrawShortKick", false);
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Left", "DrawLeftKick", false);
   DEBUG_REQUEST_REGISTER("Simulation:ActionTarget:Right", "DrawRightKick", false);
-  getDebugParameterList().add(&theParameters);
+  getDebugParameterList().add(&params);
 
   //calculate the actions  
   action_local.reserve(KickActionModel::numOfActions);
 
-  action_local.push_back(ActionSimulator::Action(KickActionModel::none, ActionSimulator::ActionParams(), theParameters.friction));
-  action_local.push_back(ActionSimulator::Action(KickActionModel::kick_short, theParameters.kick_short, theParameters.friction)); // short
-  //action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
-  //action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
+  action_local.push_back(ActionSimulator::Action(KickActionModel::none, ActionSimulator::ActionParams(), params.friction));
+  action_local.push_back(ActionSimulator::Action(KickActionModel::kick_short, params.kick_short, params.friction)); // short
+  //action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_left, params.sidekick_left, params.friction)); // left
+  //action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_right, params.sidekick_right, params.friction)); // right
 
   actionsConsequences.resize(action_local.size());
 }
 
 Simulation::~Simulation()
 {
-  getDebugParameterList().remove(&theParameters);
+  getDebugParameterList().remove(&params);
 }
 
 void Simulation::execute()
@@ -42,10 +42,10 @@ void Simulation::execute()
     action_local.clear();
     action_local.reserve(KickActionModel::numOfActions);
 
-    action_local.push_back(ActionSimulator::Action(KickActionModel::none, ActionSimulator::ActionParams(), theParameters.friction));
-    action_local.push_back(ActionSimulator::Action(KickActionModel::kick_short, theParameters.kick_short, theParameters.friction)); // short
-    //action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_left, theParameters.sidekick_left, theParameters.friction)); // left
-    //action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_right, theParameters.sidekick_right, theParameters.friction)); // right
+    action_local.push_back(ActionSimulator::Action(KickActionModel::none, ActionSimulator::ActionParams(), params.friction));
+    action_local.push_back(ActionSimulator::Action(KickActionModel::kick_short, params.kick_short, params.friction)); // short
+    //action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_left, params.sidekick_left, params.friction)); // left
+    //action_local.push_back(ActionSimulator::Action(KickActionModel::sidekick_right, params.sidekick_right, params.friction)); // right
 
     actionsConsequences.resize(action_local.size());
   );
@@ -115,7 +115,7 @@ size_t Simulation::decide_smart(const std::vector<ActionSimulator::ActionResults
 
     // ignore actions with too high chance of kicking out
     double score = results.likelihood(ActionSimulator::BallPositionCategory::INFIELD) + results.likelihood(ActionSimulator::BallPositionCategory::OPPGOAL);
-    if (score <= max(0.0, theParameters.good_threshold_percentage)) {
+    if (score <= max(0.0, params.good_threshold_percentage)) {
       continue;
     }
 
@@ -139,7 +139,7 @@ size_t Simulation::decide_smart(const std::vector<ActionSimulator::ActionResults
     const ActionSimulator::ActionResults& results = actionsConsequences[acceptableActions[i]];
 
     // chance of scoring a goal must be significant
-    if (results.category(ActionSimulator::BallPositionCategory::OPPGOAL) < theParameters.minGoalParticles) {
+    if (results.category(ActionSimulator::BallPositionCategory::OPPGOAL) < params.minGoalParticles) {
       continue;
     }
 
@@ -184,7 +184,7 @@ size_t Simulation::decide_smart(const std::vector<ActionSimulator::ActionResults
     // get the value of current position
     double current_potential = simulationModule->getModuleT()->evaluateAction(getRobotPose().translation);
     //std::cout << "Current potential difference: " << std::abs(current_potential - bestValue) << std::endl;
-    if (bestValue < (current_potential - theParameters.significance_thresh)){
+    if (bestValue < (current_potential - params.significance_thresh)){
       return best_action;
     }
     else{
