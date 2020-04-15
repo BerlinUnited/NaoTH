@@ -36,15 +36,15 @@ GoalFeatureDetectorV2::GoalFeatureDetectorV2()
   DEBUG_REQUEST_REGISTER("Vision:GoalFeatureDetectorV2:draw_response","..", false);  
   DEBUG_REQUEST_REGISTER("Vision:GoalFeatureDetectorV2:draw_difference","..", false);
 
-  getGoalFeaturePercept().reset(parameters.numberOfScanlines);
-  getGoalFeaturePerceptTop().reset(parameters.numberOfScanlines);
+  getGoalFeaturePercept().reset(params.numberOfScanlines);
+  getGoalFeaturePerceptTop().reset(params.numberOfScanlines);
 
-  getDebugParameterList().add(&parameters);
+  getDebugParameterList().add(&params);
 }
 
 GoalFeatureDetectorV2::~GoalFeatureDetectorV2()
 {
-  getDebugParameterList().remove(&parameters);
+  getDebugParameterList().remove(&params);
 }
 
 bool GoalFeatureDetectorV2::execute(CameraInfo::CameraID id)
@@ -59,15 +59,15 @@ bool GoalFeatureDetectorV2::execute(CameraInfo::CameraID id)
   // calculate the startpoint for the scanlines based on the horizon
   // NOTE: this point doesn't have to be at the edge of the image
   Vector2d c = (p2+p1)*0.5;
-  int offsetY = parameters.numberOfScanlines * parameters.scanlinesDistance / 2 + 2;
+  int offsetY = params.numberOfScanlines * params.scanlinesDistance / 2 + 2;
   int y = (int)(c.y - offsetY + 0.5);
   int yc = Math::clamp(y, 0, (int)(getImage().height())-1-2*offsetY);
   Vector2d start(c.x, yc);
 
   // adjust the vectors if the parameters change
-  if((int)getGoalFeaturePercept().features.size() != parameters.numberOfScanlines) 
+  if((int)getGoalFeaturePercept().features.size() != params.numberOfScanlines)
   {
-    getGoalFeaturePercept().features.resize(parameters.numberOfScanlines);
+    getGoalFeaturePercept().features.resize(params.numberOfScanlines);
   }
 
   // clear the old features
@@ -88,12 +88,12 @@ void GoalFeatureDetectorV2::findEdgelFeatures(const Vector2d& scanDir, const Vec
   const Vector2i frameUpperLeft(0,0);
   const Vector2i frameLowerRight(getImage().width()-1, getImage().height()-1);
 
-  for(int scanId = 0; scanId < parameters.numberOfScanlines; scanId++)
+  for(int scanId = 0; scanId < params.numberOfScanlines; scanId++)
   {
     std::vector<GoalBarFeature>& features = getGoalFeaturePercept().features[scanId];
 
     // adjust the start and end point for this scanline
-    Vector2i pos((int) start.x, start.y + parameters.scanlinesDistance*scanId);
+    Vector2i pos((int) start.x, start.y + params.scanlinesDistance*scanId);
     Vector2i end;
     Math::Line scanLine(pos, scanDir);
     Geometry::getIntersectionPointsOfLineAndRectangle(frameUpperLeft, frameLowerRight, scanLine, pos, end);
@@ -110,8 +110,8 @@ void GoalFeatureDetectorV2::findEdgelFeatures(const Vector2d& scanDir, const Vec
     Vector2i peak_point(pos);
     Vector2i peak_point_max(pos);
     Vector2i peak_point_min(pos);
-    MaximumScan<Vector2i,double> maxScan(peak_point_max, parameters.thresholdGradient);
-    MaximumScan<Vector2i,double> minScan(peak_point_min, parameters.thresholdGradient);
+    MaximumScan<Vector2i,double> maxScan(peak_point_max, params.thresholdGradient);
+    MaximumScan<Vector2i,double> minScan(peak_point_min, params.thresholdGradient);
 
     bool edgeFound = false;
 
@@ -130,24 +130,24 @@ void GoalFeatureDetectorV2::findEdgelFeatures(const Vector2d& scanDir, const Vec
         POINT_PX(ColorClasses::gray, pos.x, pos.y );
       );
 
-      if(pixValue > parameters.threshold)
+      if(pixValue > params.threshold)
       {
         filter.add(pos, pixValue);
       }
       else
       {
-        filter.add(pos, parameters.threshold);
+        filter.add(pos, params.threshold);
       }
       if(!filter.ready()) {
         continue;
       }
 
       DEBUG_REQUEST("Vision:GoalFeatureDetectorV2:draw_response",
-        if(scanId == parameters.numberOfScanlines / 2)
+        if(scanId == params.numberOfScanlines / 2)
         {
           int v = (int) filter.value();
           LINE_PX(ColorClasses::skyblue, lastPos.x, lastPos.y, pos.x, pos.y + v);
-          if(abs(v) < parameters.thresholdGradient)
+          if(abs(v) < params.thresholdGradient)
           {
             v = 0;
           }
@@ -218,7 +218,7 @@ void GoalFeatureDetectorV2::findEdgelFeatures(const Vector2d& scanDir, const Vec
           if(edgeFound)
           { 
             double sim = lastEdgel.sim2(newEdgel);
-            if(sim > parameters.thresholdFeatureGradient)
+            if(sim > params.thresholdFeatureGradient)
             {
               GoalBarFeature feature;
               feature.point = Vector2d(lastEdgel.point + newEdgel.point) * 0.5;
@@ -226,7 +226,7 @@ void GoalFeatureDetectorV2::findEdgelFeatures(const Vector2d& scanDir, const Vec
               //IMG_GET((int)  feature.point.x, (int)  feature.point.y, pixel);
               //int pixValue =  parameters.detectWhiteGoals ? pixel.y : (int) Math::round(((double) pixel.v - (double)pixel.u) * ((double) pixel.y / 255.0));
               int pixValue = getImage().getY_direct((int)  feature.point.x, (int)  feature.point.y);
-              if(pixValue > parameters.threshold)
+              if(pixValue > params.threshold)
               {
                 double featureWidth = (newEdgel.point - lastEdgel.point).abs();
                 feature.begin.point = lastEdgel.point;
