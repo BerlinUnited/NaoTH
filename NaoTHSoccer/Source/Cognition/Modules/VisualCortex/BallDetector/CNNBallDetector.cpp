@@ -229,7 +229,7 @@ void CNNBallDetector::calculateCandidates()
       }
 
       STOPWATCH_START("CNNBallDetector:predict");
-      cnn->find(patch, params.cnn.meanBrightnessOffset);
+      cnn->predict(patch, params.cnn.meanBrightnessOffset);
       STOPWATCH_STOP("CNNBallDetector:predict");
 
       bool found = false;

@@ -9,7 +9,7 @@ class Fy1500_Conf : public AbstractCNNFinder {
 
 public:
 	void cnn(float x0[16][16][1]);
-	void find(const BallCandidates::PatchYUVClassified& p,double meanBrightness);
+	void predict(const BallCandidates::PatchYUVClassified& p,double meanBrightness);
 	virtual double getRadius();
 	virtual Vector2d getCenter();
 	virtual double getBallConfidence();
