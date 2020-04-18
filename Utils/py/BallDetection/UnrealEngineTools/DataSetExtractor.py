@@ -44,7 +44,7 @@ class DataSetExtractor:
     #################################################
     # PUBLIC:
     #################################################
-    def extract_dataset(self, is_patch_number_evening=False, maxPatchNumPerClass=[1, 1, 1, 2], rgb_format=False):
+    def extract_dataset(self, is_patch_number_evening=False, rgb_format=False):
         """
         Extracts dataset using all images and masks available in the given directory.
         Use the "useOnePatchPerClass" variable if needed to even out the data sets per class
@@ -70,17 +70,10 @@ class DataSetExtractor:
                 if is_patch_number_evening:
                     all_patch_array, all_label_array = self.__even_patch_numbers(all_patch_array, all_label_array)
 
-                if not rgb_format:
-                    # prepare image crops for lmdb
-                    all_patch_array, all_label_array = self.__transform_images_for_training(all_patch_array,
-                                                                                            all_label_array)
+                #
+                all_patch_array, all_label_array = self.__resize_images(all_patch_array, all_label_array)
 
-                    # rewrite arrays as numpy arrays
-                    all_patch_array = np.asarray(all_patch_array, dtype="uint8")
-                    all_label_array = np.asarray(all_label_array, dtype="int64")
-                else:
-                    all_patch_array, all_label_array = self.__resize_images(all_patch_array, all_label_array)
-
+                # save images to directory
                 dataSetExtractor.save_to_dir_structure(all_patch_array, all_label_array)
 
                 # reset arrays for images
@@ -126,7 +119,7 @@ class DataSetExtractor:
         """
         dir_name_dict = {0: "/background", 1: "/ball", 2: "/robot", 3: "/goalpost"}
 
-        # create subdirs based on dir_name_dict
+        # create sub dirs based on dir_name_dict
         self.__create_sub_dirs(dir_name_dict)
 
         # save image patches to sub-dir structure
