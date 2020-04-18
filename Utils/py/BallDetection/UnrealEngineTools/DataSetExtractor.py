@@ -571,5 +571,5 @@ if __name__ == "__main__":
 
     dataSetExtractor = DataSetExtractor(DATA_SET_SOURCE, GT_SOURCE, PATCH_SIZE, OUTPUT_FOLDER)
 
-    # Test Benji
+    # extract data to folder
     dataSetExtractor.extract_dataset(is_patch_number_evening=True, rgb_format=True)
