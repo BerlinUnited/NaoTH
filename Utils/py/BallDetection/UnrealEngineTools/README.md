@@ -5,7 +5,8 @@ The have two different repos:
 - https://github.com/TimmHess/UERoboCup
 - https://github.com/Bembelbots/UERoboCup
 
-The dev Branch in the first repo is newest one that works. This one was used to create the iamge data at ...
+The dev Branch in the first repo is newest one that works. This one was used to create the
+image data at `/vol/repl261-vol4/naoth/logs/Experiments/2020-UnrealGeneratedImages`
 
 ## Changes to the Python Code
 - made the script python3 compatible
