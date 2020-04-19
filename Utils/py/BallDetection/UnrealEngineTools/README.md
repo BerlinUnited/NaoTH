@@ -12,7 +12,9 @@ The dev Branch in the first repo is newest one that works. This one was used to 
 - save images iteratively to disk, instead of loading everything to memory first
 
 ## How to run the patch extraction:
-TODO
+run `python extract_patches.py` to extract patches from the images inside the data directory
 
-## Coming Features:
+## TODO:
 - create segmentation masks that cvat can understand
+- more useful segmentation values
+-
