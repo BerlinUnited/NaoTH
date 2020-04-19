@@ -541,9 +541,9 @@ if __name__ == "__main__":
 
     parser = OptionParser()
     parser.add_option("-i", "--imgData", action="store", type="string", dest="pathToImages",
-                      default="C:/Users/Benji/Downloads/test1/saved1/Screenshots/")
+                      default="data/Screenshots/")
     parser.add_option("-g", "--groundTruth", action="store", type="string", dest="pathToGroundTruth",
-                      default="C:/Users/Benji/Downloads/test1/saved1/ScreenshotMasks/")
+                      default="data/ScreenshotMasks/")
     parser.add_option("-p", "--patchSize", action="store", type="int", dest="patchSize", default=16)
     parser.add_option("-s", "--saveTo", action="store", type="string", dest="output", default="./extracted_patches")
     (options, args) = parser.parse_args(sys.argv)
