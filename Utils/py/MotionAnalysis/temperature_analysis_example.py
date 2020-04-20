@@ -6,9 +6,13 @@ from naoth.log import BehaviorParser
 from naoth.log import Reader as LogReader
 
 
-def frame_filter(frame):
+def frame_filter(idx, frame):
+    """
+    HACK The index of the log frame is given as argument because the BehaviorParser now does not work if the
+    BehaviorStateComplete is in more than one frame. For manually recorded logs this can happen.
+    """
     try:
-        if "BehaviorStateComplete" in frame.messages:
+        if "BehaviorStateComplete" in frame.messages and idx == 0:
             (m, o, s) = frame["BehaviorStateComplete"]
         else:
             (m, o, s) = frame["BehaviorStateSparse"]
@@ -28,8 +32,8 @@ def analyze_log(logfile):
     log = LogReader(logfile, behavior_parser)
 
     frame_list = list()
-    for frame in log:
-        a = frame_filter(frame)
+    for idx, frame in enumerate(log):
+        a = frame_filter(idx, frame)
         frame_list.append(a)
 
     # make an numpy array
@@ -50,7 +54,8 @@ def analyze_log(logfile):
 if __name__ == '__main__':
     parser = ArgumentParser(
         description='script to generate some energy statistics from logfile')
-    parser.add_argument("-i", "--input", help='logfile, containing the images', default="logs/game_eu.log")
+    parser.add_argument("-i", "--input", help='logfile, containing the images',
+                        default="logs/walk_on_floor_cognition.log")
 
     args = parser.parse_args()
 
