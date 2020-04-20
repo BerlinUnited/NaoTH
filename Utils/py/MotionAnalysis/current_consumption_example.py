@@ -30,9 +30,13 @@ JointID = {
 }
 
 
-def frame_filter(frame):
+def frame_filter(idx, frame):
+    """
+    HACK The index of the log frame is given as argument because the BehaviorParser now does not work if the
+    BehaviorStateComplete is in more than one frame. For manually recorded logs this can happen.
+    """
     try:
-        if "BehaviorStateComplete" in frame.messages:
+        if "BehaviorStateComplete" in frame.messages and idx == 0:
             (m, o, s) = frame["BehaviorStateComplete"]
         else:
             (m, o, s) = frame["BehaviorStateSparse"]
@@ -62,8 +66,8 @@ def analyze_log(logfile):
     log = LogReader(logfile, behavior_parser)
 
     frame_list = list()
-    for frame in log:
-        a = frame_filter(frame)
+    for idx, frame in enumerate(log):
+        a = frame_filter(idx, frame)
         frame_list.append(a)
 
     # make an numpy array
@@ -82,23 +86,23 @@ def analyze_log(logfile):
     walk = np.array([frame for frame in new_data if int(frame[13]) == 5])
 
     # make some simple statistics on it
-    time_stand = sum(stand[:, 0])
-    time_walk = sum(walk[:, 0])
-
-    consumption_r_hip_yaw_pitch_stand = sum(stand[:, 1])
-    consumption_r_hip_yaw_pitch_walk = sum(walk[:, 1])
-
-    print("------------------")
-    print("time standing: {} seconds with {} current used at RHipYawPitch".format(time_stand,
-                                                                                  consumption_r_hip_yaw_pitch_stand))
-    print("time walking : {} seconds with {} current used  at RHipYawPitch".format(time_walk,
-                                                                                   consumption_r_hip_yaw_pitch_walk))
+    if list(stand):
+        time_stand = sum(stand[:, 0])
+        consumption_r_hip_yaw_pitch_stand = sum(stand[:, 1])
+        print("time standing: {} seconds with {} current used at RHipYawPitch".format(time_stand,
+                                                                                      consumption_r_hip_yaw_pitch_stand))
+    if list(walk):
+        time_walk = sum(walk[:, 0])
+        consumption_r_hip_yaw_pitch_walk = sum(walk[:, 1])
+        print("time walking : {} seconds with {} current used  at RHipYawPitch".format(time_walk,
+                                                                                       consumption_r_hip_yaw_pitch_walk))
 
 
 if __name__ == '__main__':
     parser = ArgumentParser(
         description='script to generate some energy statistics from logfile')
-    parser.add_argument("-i", "--input", help='logfile, containing the images', default="logs/game_eu.log")
+    parser.add_argument("-i", "--input", help='logfile, containing the images',
+                        default="logs/walk_on_floor_cognition.log")
 
     args = parser.parse_args()
 
