@@ -1,3 +1,10 @@
+"""
+    TODO make it more useful to other scripts:
+    - make it possible to calculate the offset between sensor and motor joint data
+    - make it possible to calculate and show the data for specific joints
+
+    For what kind of experiments do we actually need to look at sensor vs motor joint data?
+"""
 from argparse import ArgumentParser
 
 from matplotlib import pyplot as plt
