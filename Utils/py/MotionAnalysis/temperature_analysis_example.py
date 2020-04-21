@@ -1,3 +1,9 @@
+"""
+    TODO make it more useful to other scripts:
+    - make it possible to calculate and show the data for specific joints and specific motion typesd
+    - calculate the the temperature increase by motion type ->
+        How much does executing a specific motion increase the temperature
+"""
 from argparse import ArgumentParser
 
 import numpy as np
