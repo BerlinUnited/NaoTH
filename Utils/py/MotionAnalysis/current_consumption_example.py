@@ -1,3 +1,9 @@
+"""
+    TODO make it more useful for use in other scripts:
+    - make it possible to select specific joints
+    - make it possible to select motion types / transition between motion types
+    - add plots
+"""
 from argparse import ArgumentParser
 
 import numpy as np
