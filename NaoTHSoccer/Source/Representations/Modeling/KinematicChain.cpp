@@ -174,7 +174,7 @@ void KinematicChain::initJointsAxes()
   const Vector3d x(1,0,0);
   const Vector3d y(0,1,0);
   const Vector3d z(0,0,1);
-  // those are 45° axes for the LHipYawPitch/RHipYawPitch
+  // those are 45 degrees axes for the LHipYawPitch/RHipYawPitch
   const Vector3d lyz(0, sqrt(2.0)/2.0, -sqrt(2.0)/2.0);
   const Vector3d ryz(0, sqrt(2.0)/2.0,  sqrt(2.0)/2.0);
 

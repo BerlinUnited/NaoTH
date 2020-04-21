@@ -2,8 +2,8 @@ from pathlib import Path
 
 import numpy as np
 from matplotlib import pyplot as plt
-from naoth.LogReader import LogReader
-from naoth.LogReader import Parser
+from naoth.log import Reader as LogReader
+from naoth.log import Parser
 from pywget import wget
 
 
@@ -46,6 +46,8 @@ if __name__ == "__main__":
     myParser.register("MotorJointData", "JointData")
 
     log = LogReader(path, myParser)
+    print(log[0]["SensorJointData"])
+    quit()
     data = [unpack_frame(frame) for frame in log]
 
     data = np.array(data)
