@@ -50,34 +50,35 @@ MultiKalmanBallLocator::~MultiKalmanBallLocator()
 
 void MultiKalmanBallLocator::execute()
 {
-  // allways reset the model first
-  getBallModel().reset();
+    // allways reset the model first
+    getBallModel().reset();
 
-  // HACK: no updates in ready or when lifted
-  if(getPlayerInfo().robotState == PlayerInfo::ready || getBodyState().isLiftedUp) {
-    filter.clear();
-    return;
-  }
+    // HACK: no updates in ready or when lifted
+    if(getPlayerInfo().robotState == PlayerInfo::ready || getBodyState().isLiftedUp) {
+      filter.clear();
+      return;
+    }
 
     DEBUG_REQUEST("MultiKalmanBallLocator:remove_all_models",
         filter.clear();
     );
 
     // delete some filter if they are too bad
-    if(filter.size() > 1) {
-        Filters::iterator iter = filter.begin();
-        while(iter != filter.end() && filter.size() > 1) {
-          double distance = Vector2d(iter->getState()(0), iter->getState()(2)).abs();
-          double threshold_radius = params.area95Threshold_radius.factor * distance + params.area95Threshold_radius.offset;
-          if(!iter->ballSeenFilter.value() && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * Math::pi >  threshold_radius*threshold_radius*2*Math::pi){
-                iter = filter.erase(iter);
-            } else {
-                ++iter;
-            }
-        }
+    // NOTE: make sure at least one filter remains, so filter is not empty
+    Filters::iterator iter = filter.begin();
+    while(iter != filter.end() && filter.size() > 1) {
+      // TODO: here we make a linear approximation depending n the distance - does it make problems? Can we have a better solution?
+      double distance = Vector2d(iter->getState()(0), iter->getState()(2)).abs();
+      double threshold_radius = params.area95Threshold_radius.factor * distance + params.area95Threshold_radius.offset;
+      // HACK: we need ballSeenFilter here because the other condition didn't seem to work as expected
+      // BUG: the formula for the area of the circle seems to incorrect! 
+      if(!iter->ballSeenFilter.value() && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * Math::pi > threshold_radius*threshold_radius*2*Math::pi){
+          iter = filter.erase(iter);
+      } else {
+          ++iter;
+      }
     }
-
-
+    
     // apply odometry on the filter state, to keep it in the robot's local coordinate system
     for(Filters::iterator iter = filter.begin(); iter != filter.end(); ++iter) {
         applyOdometryOnFilterState(*iter);
@@ -95,17 +96,17 @@ void MultiKalmanBallLocator::execute()
     doDebugRequestBeforUpdate();
 
     // sensor update
-    if(params.association.use_normal){
+    if(params.association.use_normal) {
         updateByPerceptsNormal();
-    } else if(params.association.use_cool){
+    } else if(params.association.use_cool) {
         updateByPerceptsCool();
-    } else if(params.association.use_naive){
+    } else if(params.association.use_naive) {
         // need to handle bottom and top percepts independently because both cameras can observe the same ball
         updateByPerceptsNaive(CameraInfo::Bottom);
         updateByPerceptsNaive(CameraInfo::Top);
     }
 
-    // Heinrich: update the "ball seen" values
+    // NOTE: (Heinrich) update the "ball seen" values
     for(Filters::iterator iter = filter.begin(); iter != filter.end(); ++iter) {
       bool updated = iter->getLastUpdateFrame().getFrameNumber() == getFrameInfo().getFrameNumber();
       (*iter).ballSeenFilter.setParameter(params.g0, params.g1);
@@ -113,7 +114,7 @@ void MultiKalmanBallLocator::execute()
     }
 
     // estimate the best model
-    if(params.use_covariance_based_selection){
+    if(params.use_covariance_based_selection) {
         bestModel = selectBestModelBasedOnCovariance();
     } else {
         bestModel = selectBestModel();

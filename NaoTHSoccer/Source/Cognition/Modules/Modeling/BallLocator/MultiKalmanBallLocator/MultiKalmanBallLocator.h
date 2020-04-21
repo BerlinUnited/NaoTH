@@ -2,14 +2,13 @@
 #define MULTIKALMANBALLLOCATOR_H
 
 #include <ModuleFramework/Module.h>
-#include <Eigen/StdVector>
+#include <Eigen/StdVector> //necessary for alignement in std::vector to work
 
 // representations
-#include <Representations/Perception/MultiBallPercept.h>
+#include "Representations/Perception/MultiBallPercept.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/PlayerInfo.h"
-
 
 #include "Representations/Modeling/OdometryData.h"
 #include "Representations/Modeling/KinematicChain.h"
@@ -17,7 +16,9 @@
 #include "Representations/Motion/MotionStatus.h"
 
 #include "Representations/Perception/CameraMatrix.h"
+#include "Representations/Infrastructure/FieldInfo.h"
 
+// tools
 #include "BallHypothesis.h"
 #include "UpdateAssociationFunctions.h"
 
@@ -28,7 +29,6 @@
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/Color.h"
 
-#include "Representations/Infrastructure/FieldInfo.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -83,6 +83,8 @@ private:
     Filters filter;
     Filters::const_iterator bestModel;
 
+    // TODO: does it make sence to use the numerical epsilon: std::numeric_limits<duble>::epsilon() or std::numeric_limits<float>::epsilon()?
+    // TODO: or is this value specific to the algorithms? E.g. ball speed below 1mm/s is considered 0.
     const double epsilon; // 10e-6
     //double area95Threshold;
 
