@@ -38,14 +38,14 @@ MultiKalmanBallLocator::MultiKalmanBallLocator():
 
     updateAssociationFunction = &likelihood;
 
-    getDebugParameterList().add(&kfParameters);
+    getDebugParameterList().add(&params);
 
     reloadParameters();
 }
 
 MultiKalmanBallLocator::~MultiKalmanBallLocator()
 {
-    getDebugParameterList().remove(&kfParameters);
+    getDebugParameterList().remove(&params);
 }
 
 void MultiKalmanBallLocator::execute()
@@ -68,7 +68,7 @@ void MultiKalmanBallLocator::execute()
         Filters::iterator iter = filter.begin();
         while(iter != filter.end() && filter.size() > 1) {
           double distance = Vector2d(iter->getState()(0), iter->getState()(2)).abs();
-          double threshold_radius = kfParameters.area95Threshold_radius.factor * distance + kfParameters.area95Threshold_radius.offset;
+          double threshold_radius = params.area95Threshold_radius.factor * distance + params.area95Threshold_radius.offset;
           if(!iter->ballSeenFilter.value() && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * Math::pi >  threshold_radius*threshold_radius*2*Math::pi){
                 iter = filter.erase(iter);
             } else {
@@ -95,11 +95,11 @@ void MultiKalmanBallLocator::execute()
     doDebugRequestBeforUpdate();
 
     // sensor update
-    if(kfParameters.association.use_normal){
+    if(params.association.use_normal){
         updateByPerceptsNormal();
-    } else if(kfParameters.association.use_cool){
+    } else if(params.association.use_cool){
         updateByPerceptsCool();
-    } else if(kfParameters.association.use_naive){
+    } else if(params.association.use_naive){
         // need to handle bottom and top percepts independently because both cameras can observe the same ball
         updateByPerceptsNaive(CameraInfo::Bottom);
         updateByPerceptsNaive(CameraInfo::Top);
@@ -108,12 +108,12 @@ void MultiKalmanBallLocator::execute()
     // Heinrich: update the "ball seen" values
     for(Filters::iterator iter = filter.begin(); iter != filter.end(); ++iter) {
       bool updated = iter->getLastUpdateFrame().getFrameNumber() == getFrameInfo().getFrameNumber();
-      (*iter).ballSeenFilter.setParameter(kfParameters.g0, kfParameters.g1);
+      (*iter).ballSeenFilter.setParameter(params.g0, params.g1);
       (*iter).ballSeenFilter.update(updated, 0.3, 0.7);
     }
 
     // estimate the best model
-    if(kfParameters.use_covariance_based_selection){
+    if(params.use_covariance_based_selection){
         bestModel = selectBestModelBasedOnCovariance();
     } else {
         bestModel = selectBestModel();
@@ -734,19 +734,19 @@ void MultiKalmanBallLocator::drawFiltersOnField() const
 void MultiKalmanBallLocator::reloadParameters()
 {
     // parameters for initializing new filters
-    processNoiseStdSingleDimension << kfParameters.processNoiseStdQ00, kfParameters.processNoiseStdQ01,
-                                      kfParameters.processNoiseStdQ10, kfParameters.processNoiseStdQ11;
+    processNoiseStdSingleDimension << params.processNoiseStdQ00, params.processNoiseStdQ01,
+                                      params.processNoiseStdQ10, params.processNoiseStdQ11;
 
-    measurementNoiseCovariances << kfParameters.measurementNoiseR00, kfParameters.measurementNoiseR10,
-                                   kfParameters.measurementNoiseR10, kfParameters.measurementNoiseR11;
+    measurementNoiseCovariances << params.measurementNoiseR00, params.measurementNoiseR10,
+                                   params.measurementNoiseR10, params.measurementNoiseR11;
 
-    initialStateStdSingleDimension << kfParameters.initialStateStdP00, kfParameters.initialStateStdP01,
-                                      kfParameters.initialStateStdP10, kfParameters.initialStateStdP11;
+    initialStateStdSingleDimension << params.initialStateStdP00, params.initialStateStdP01,
+                                      params.initialStateStdP10, params.initialStateStdP11;
 
     // UAF thresholds
-    euclid.setThreshold(kfParameters.euclidThreshold);
-    mahalanobis.setThreshold(kfParameters.mahalanobisThreshold);
-    likelihood.setThreshold(kfParameters.maximumLikelihoodThreshold);
+    euclid.setThreshold(params.euclidThreshold);
+    mahalanobis.setThreshold(params.mahalanobisThreshold);
+    likelihood.setThreshold(params.maximumLikelihoodThreshold);
 
     // update existing filters with new process and measurement noise
     Eigen::Matrix2d processNoiseCovariancesSingleDimension;

@@ -108,10 +108,10 @@ private:
     void drawFiltersOnField() const;
     void reloadParameters();
 
-    class KFParameters:  public ParameterList
+    class Parameters:  public ParameterList
     {
      public:
-        KFParameters() : ParameterList("KalmanFilter4dBallModel")
+        Parameters() : ParameterList("KalmanFilter4dBallModel")
         {
             PARAMETER_REGISTER(processNoiseStdQ00) = 15;
             PARAMETER_REGISTER(processNoiseStdQ01) = 0;
@@ -186,7 +186,7 @@ private:
         } area95Threshold_radius;
 
         bool use_covariance_based_selection;
-    } kfParameters;
+    } params;
 
     Measurement_Function_H h;
     UpdateAssociationFunction* updateAssociationFunction;
