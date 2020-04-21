@@ -12,7 +12,7 @@
 #include "PlatformInterface/Platform.h"
 #include "Tools/Communication/MessageQueue/MessageQueue4Threads.h"
 #include <Tools/ImageProcessing/ColorModelConversions.h>
-#include <Tools/DataConversion.h>
+#include <Tools/StringTools.h>
 //#include <Tools/Debug/DebugRequest.h>
 #include <DebugCommunication/DebugCommandManager.h>
 
@@ -148,17 +148,17 @@ SimSparkController::~SimSparkController()
 
 string SimSparkController::getBodyNickName() const
 {
-  return theGameInfo.teamName + DataConversion::toStr(theGameInfo.playerNumber);
+  return theGameInfo.teamName + StringTools::toStr(theGameInfo.playerNumber);
 }
 
 string SimSparkController::getHeadNickName() const
 {
-  return theGameInfo.teamName + DataConversion::toStr(theGameInfo.playerNumber);
+  return theGameInfo.teamName + StringTools::toStr(theGameInfo.playerNumber);
 }
 
 string SimSparkController::getBodyID() const
 {
-  return DataConversion::toStr(theGameInfo.playerNumber);
+  return StringTools::toStr(theGameInfo.playerNumber);
 }
 
 bool SimSparkController::connect(const std::string& host, int port)
@@ -663,7 +663,7 @@ int SimSparkController::parseInt(char* data, int& value)
 {
   std::string tmp;
   int c = parseString(data, tmp);
-  DataConversion::strTo(tmp, value);
+  StringTools::strTo(tmp, value);
   return c;
 }
 
