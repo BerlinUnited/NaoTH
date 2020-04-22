@@ -3,8 +3,7 @@
 #include <Eigen/Core>
 #include "Tools/Association.h"
 
-MultiKalmanBallLocator::MultiKalmanBallLocator():
-     epsilon(10e-6)  // TODO this should not be here
+MultiKalmanBallLocator::MultiKalmanBallLocator()
 {
     // Modify number of models
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:remove_all_models",     "remove all models",                                                             false);

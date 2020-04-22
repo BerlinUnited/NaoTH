@@ -86,7 +86,7 @@ private:
 
     // TODO: does it make sense to use the numerical epsilon: std::numeric_limits<double>::epsilon() or std::numeric_limits<float>::epsilon()?
     // TODO: or is this value specific to the algorithms? E.g. ball speed below 1mm/s is considered 0.
-    const double epsilon; // 10e-6
+    const double epsilon=10e-6;
 
 private:
     void updateByPerceptsCool();
