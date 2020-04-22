@@ -9,6 +9,7 @@ import numpy as np
 import time
 import ctypes
 import xml.etree.ElementTree as ET
+from cppyy import addressof, bind_object
 
 
 def get_naoth_dir():
@@ -181,6 +182,11 @@ class Evaluator:
         cppyy.add_include_path(os.path.join(
             toolchain_dir, "toolchain_native/extern/include"))
 
+        cppyy.add_include_path(os.path.join(
+            toolchain_dir, "toolchain_native/extern/include/glib-2.0"))
+        cppyy.add_include_path(os.path.join(
+            toolchain_dir, "toolchain_native/extern/lib/glib-2.0/include"))
+
         # include platform
         cppyy.include(os.path.join(
             naoth_dir, "Framework/Commons/Source/PlatformInterface/Platform.h"))
@@ -192,6 +198,7 @@ class Evaluator:
         os.chdir(os.path.join(naoth_dir, "NaoTHSoccer"))
 
         # start dummy simulator
+        cppyy.gbl.g_type_init()
         self.sim = cppyy.gbl.DummySimulator(False, False, 5401)
         cppyy.gbl.naoth.Platform.getInstance().init(self.sim)
 
@@ -254,9 +261,9 @@ class Evaluator:
 
         # move image into representation
         imageRepresentation.copyImageDataYUV422(p_data, yuv422.size)
-
         # set camera matrix
         if frame.bottom:
+            # TODO this produces an error for the second image
             camMatrix = self.ball_detector.getRequire().at("CameraMatrix")
             # invalidate other camera matrix
             self.ball_detector.getRequire().at("CameraMatrixTop").valid = False
@@ -264,6 +271,8 @@ class Evaluator:
             camMatrix = self.ball_detector.getRequire().at("CameraMatrixTop")
             # invalidate other camera matrix
             self.ball_detector.getRequire().at("CameraMatrix").valid = False
+
+        camMatrix = bind_object(addressof(camMatrix), cppyy.gbl.Pose3D)
 
         camMatrix.valid = True
         camMatrix.translation.x = frame.cam_matrix_translation[0]
@@ -396,6 +405,7 @@ if __name__ == "__main__":
     evaluator = Evaluator()
     evaluator.execute(
         args.directory, {"Best IOU per image": best_ball_patch_intersection}, debug_threshold=args.debug_threshold, transform_to_squares=args.squares)
+    
     if args.csv is not None:
         print("Exporting results to ", args.csv)
         evaluator.export_results(args.csv)
