@@ -130,8 +130,6 @@ private:
             PARAMETER_REGISTER(initialStateStdP10) = 0;
             PARAMETER_REGISTER(initialStateStdP11) = 250;
 
-            PARAMETER_REGISTER(area95Threshold) = 2*Math::pi*700*700;
-
             //thresholds for association functions
             PARAMETER_REGISTER(euclidThreshold) = Math::fromDegrees(10);
             PARAMETER_REGISTER(mahalanobisThreshold) = Math::fromDegrees(10);
