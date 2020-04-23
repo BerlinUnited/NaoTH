@@ -79,14 +79,14 @@ private:
     FrameInfo    lastFrameInfo;
 
 private:
+    // TODO set capacity of filter for improved performance
     typedef std::vector<BallHypothesis, Eigen::aligned_allocator<BallHypothesis> > Filters;
     Filters filter;
     Filters::const_iterator bestModel;
 
-    // TODO: does it make sence to use the numerical epsilon: std::numeric_limits<duble>::epsilon() or std::numeric_limits<float>::epsilon()?
+    // TODO: does it make sense to use the numerical epsilon: std::numeric_limits<double>::epsilon() or std::numeric_limits<float>::epsilon()?
     // TODO: or is this value specific to the algorithms? E.g. ball speed below 1mm/s is considered 0.
-    const double epsilon; // 10e-6
-    //double area95Threshold;
+    const double epsilon=10e-6;
 
 private:
     void updateByPerceptsCool();
@@ -129,8 +129,6 @@ private:
             PARAMETER_REGISTER(initialStateStdP01) = 0;
             PARAMETER_REGISTER(initialStateStdP10) = 0;
             PARAMETER_REGISTER(initialStateStdP11) = 250;
-
-            PARAMETER_REGISTER(area95Threshold) = 2*Math::pi*700*700;
 
             //thresholds for association functions
             PARAMETER_REGISTER(euclidThreshold) = Math::fromDegrees(10);

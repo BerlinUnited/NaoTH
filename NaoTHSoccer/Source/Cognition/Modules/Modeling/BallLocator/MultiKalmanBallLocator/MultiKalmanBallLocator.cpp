@@ -3,8 +3,7 @@
 #include <Eigen/Core>
 #include "Tools/Association.h"
 
-MultiKalmanBallLocator::MultiKalmanBallLocator():
-     epsilon(10e-6)
+MultiKalmanBallLocator::MultiKalmanBallLocator()
 {
     // Modify number of models
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:remove_all_models",     "remove all models",                                                             false);
@@ -71,14 +70,15 @@ void MultiKalmanBallLocator::execute()
       double distance = Vector2d(iter->getState()(0), iter->getState()(2)).abs();
       double threshold_radius = params.area95Threshold_radius.factor * distance + params.area95Threshold_radius.offset;
       // HACK: we need ballSeenFilter here because the other condition didn't seem to work as expected
-      // BUG: the formula for the area of the circle seems to incorrect! 
+      // BUG: the formula for the area of the circle seems to incorrect!
+      // compare area of the position uncertainty ellipse with a circle representing the maximum uncertainty a ball can have
       if(!iter->ballSeenFilter.value() && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * Math::pi > threshold_radius*threshold_radius*2*Math::pi){
           iter = filter.erase(iter);
       } else {
           ++iter;
       }
     }
-    
+
     // apply odometry on the filter state, to keep it in the robot's local coordinate system
     for(Filters::iterator iter = filter.begin(); iter != filter.end(); ++iter) {
         applyOdometryOnFilterState(*iter);
@@ -219,7 +219,8 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
       h.camInfo = getCameraInfoTop();
   }
 
-  // phase 1: filter percepts and create index vector for filters
+  // phase 1: filter percepts
+  // TODO zs und ps umbennen
   std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > zs;
   std::vector<Vector2d> ps;
 
@@ -227,7 +228,7 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
       Eigen::Vector2d z;
 
       if(percept.cameraId == camera){
-        // tansform measurement into angles
+        // transform measurement into angles
         Vector2d angles = CameraGeometry::pixelToAngles(h.camInfo,percept.centerInImage.x,percept.centerInImage.y);
         z << angles.x, angles.y;
         zs.push_back(z);
@@ -237,7 +238,8 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
       }
   }
 
-  std::vector<int> f;
+  // create index vector for filters
+  std::vector<int> f;  // TODO rename f to filter_idx
   for(size_t i = 0; i < filter.size(); ++i){
      f.push_back((int)i);
   }
@@ -247,6 +249,7 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
     // phase 2: calculate all scores
     // row index    = measurement
     // column index = filter
+    // sind kleine scores oder grosse scores gut? -> Abhaengigkeit zu evaluation
     Eigen::MatrixXd scores = Eigen::MatrixXd::Zero(zs.size(), filter.size());
     for(size_t i = 0; i < zs.size(); ++i){
         for (size_t j = 0; j < filter.size(); ++j){
@@ -255,6 +258,7 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
     }
 
     // phase 3: reduce score matrix iteratively by eliminating row and column of best match
+    // TODO zur while schleife machen?
     do {
       // phase 3.1: find location of best entry which is according to the updateAssociationFunction a global maximum or minimum
       Eigen::Index maxCol, minCol, maxRow, minRow, bestCol, bestRow;
@@ -307,8 +311,10 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
       zs.erase(zs.begin() + bestRow);
       ps.erase(ps.begin() + bestRow);
 
+      // TODO describe the idea of the matrix entry deletion. Mention alternatives
+      // TODO: is this why we can't merge filters or apply observations to multiple filters?
       if (!(zs.empty() || f.empty())) {
-        long int numRows = scores.rows() - 1;
+        long int numRows = scores.rows() - 1;  // Why -1
         long int numCols = scores.cols();
 
         if (bestRow < numRows)
@@ -328,11 +334,16 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
   }
 
   // phase 4: create new filter for each percept which couldn't be associated with a filter
+  // Diskussion: vielleicht filter erstellen wenn keine da ist und dann die zweite beobachtung dazu matchen ...
   for(const Vector2d& p : ps){
     Eigen::Vector4d newState;
     newState << p.x, 0, p.y, 0;
-    filter.push_back(BallHypothesis(getFrameInfo(), newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension));
+    // add BallHypothesis to filter vector
+    filter.emplace_back(getFrameInfo(), newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension);
   }
+
+  // TODO maybe add possibility to merge filters
+  // TODO maybe add possibility to apply update of observation to every filter in a bayesian fashion
 }
 
 void MultiKalmanBallLocator::updateByPerceptsCool()
@@ -710,22 +721,22 @@ void MultiKalmanBallLocator::drawFiltersOnField() const
 {
     FIELD_DRAWING_CONTEXT;
 
-    Color cov_loc_color("00FFFF");
-    Color cov_vel_color("FF00FF");
+    Color cov_loc_color("00FFFF");  // cyan
+    Color cov_vel_color("FF00FF");  // pink
     Color model_color;
 
     for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); iter++) {
         if(getBallModel().valid) {
             if((*iter).getLastUpdateFrame().getTime() == getFrameInfo().getTime()) {
                 if(bestModel == iter)
-                    model_color = "99FF00";
+                    model_color = "99FF00";  // green
                 else
-                    model_color = "FF9900";
+                    model_color = "FF9900";  // orange
             } else {
-                    model_color = "0099FF";
+                    model_color = "0099FF";  // light blue
             }
         } else {
-            model_color = "999999";
+            model_color = "999999";  // grey
         }
 
         drawFilter(*iter, model_color, cov_loc_color, cov_vel_color);
