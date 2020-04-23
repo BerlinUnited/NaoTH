@@ -1,22 +1,8 @@
-from pathlib import Path
-
 import numpy as np
 from matplotlib import pyplot as plt
-from naoth.log import Reader as LogReader
 from naoth.log import Parser
-from pywget import wget
-
-
-def get_demo_logfiles():
-    base_url = "https://www2.informatik.hu-berlin.de/~naoth/ressources/log/demo_jointdata/"
-    logfile_list = ["collision_goal_left1.log"]
-
-    target_dir = Path("logs")
-    Path.mkdir(target_dir, exist_ok=True)
-
-    for logfile in logfile_list:
-        if not Path(target_dir / logfile).is_file():
-            wget.download(base_url + logfile, target_dir)
+from naoth.log import Reader as LogReader
+from naoth.log import get_demo_logfiles
 
 
 def unpack_frame(frame):
@@ -38,7 +24,9 @@ def unpack_frame(frame):
 
 
 if __name__ == "__main__":
-    get_demo_logfiles()
+    base_url = "https://www2.informatik.hu-berlin.de/~naoth/ressources/log/demo_jointdata/"
+    logfile_list = ["collision_goal_left1.log"]
+    get_demo_logfiles(base_url, logfile_list)
     path = "logs/collision_goal_left1.log"
 
     myParser = Parser()

@@ -11,30 +11,7 @@ from pathlib import Path
 import numpy
 from PIL import Image
 from PIL import PngImagePlugin
-from pywget import wget
-
-
-def get_demo_logfiles():
-    base_url = "https://www2.informatik.hu-berlin.de/~naoth/ressources/log/demo_image/"
-
-    logfile_list = ["images.log"]
-    # taken from /vol/repl261-vol4/naoth/logs/2019-11-21_Koeln/
-    # 2019-11-21_16-20-00_Berlin United_vs_Nao_Devils_Dortmund_half1/game_logs/1_96_Nao0377_191122-0148
-
-    print("Downloading Logfiles: {}".format(logfile_list))
-
-    target_dir = Path("logs")
-    Path.mkdir(target_dir, exist_ok=True)
-
-    print(" Download from: {}".format(base_url))
-    print(" Download to: {}".format(target_dir.resolve()))
-    for logfile in logfile_list:
-        if not Path(target_dir / logfile).is_file():
-            print("Download: {}".format(logfile))
-            wget.download(base_url + logfile, str(target_dir))
-            print("Done.")
-
-    print("Finished downloading")
+from naoth.log import get_demo_logfiles
 
 
 def image_from_data(image_data, width, height):
@@ -102,7 +79,11 @@ def parse_image_log(input_path, width, height, image_bytes, cam_bottom):
 
 
 if __name__ == "__main__":
-    get_demo_logfiles()
+    base_url = "https://www2.informatik.hu-berlin.de/~naoth/ressources/log/demo_image/"
+    logfile_list = ["images.log"]
+    # taken from /vol/repl261-vol4/naoth/logs/2019-11-21_Koeln/
+    # 2019-11-21_16-20-00_Berlin United_vs_Nao_Devils_Dortmund_half1/game_logs/1_96_Nao0377_191122-0148
+    get_demo_logfiles(base_url, logfile_list)
 
     parser = ArgumentParser(
         description='script to display or export images from images.log files')
