@@ -125,7 +125,8 @@ if __name__ == '__main__':
 
     parser = ArgumentParser(
         description='script for plotting the sensor and motor positions of a joint')
-    parser.add_argument("-i", "--input", help='logfile, containing the images', default="logs/walk_on_floor_motion.log")
+    parser.add_argument("-i", "--input", help='logfile, containing sensor and motor joint data',
+                        default="logs/walk_on_floor_motion.log")
 
     args = parser.parse_args()
 
