@@ -70,7 +70,7 @@ void MultiKalmanBallLocator::execute()
       double distance = Vector2d(iter->getState()(0), iter->getState()(2)).abs();
       double threshold_radius = params.area95Threshold_radius.factor * distance + params.area95Threshold_radius.offset;
       // HACK: we need ballSeenFilter here because the other condition didn't seem to work as expected
-      // BUG: the formula for the area of the circle seems to incorrect! 
+      // BUG: the formula for the area of the circle seems to incorrect!
       // compare area of the position uncertainty ellipse with a circle representing the maximum uncertainty a ball can have
       if(!iter->ballSeenFilter.value() && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * Math::pi > threshold_radius*threshold_radius*2*Math::pi){
           iter = filter.erase(iter);
@@ -78,7 +78,7 @@ void MultiKalmanBallLocator::execute()
           ++iter;
       }
     }
-    
+
     // apply odometry on the filter state, to keep it in the robot's local coordinate system
     for(Filters::iterator iter = filter.begin(); iter != filter.end(); ++iter) {
         applyOdometryOnFilterState(*iter);
@@ -219,7 +219,7 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
       h.camInfo = getCameraInfoTop();
   }
 
-  // phase 1: filter percepts 
+  // phase 1: filter percepts
   // TODO zs und ps umbennen
   std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > zs;
   std::vector<Vector2d> ps;
@@ -307,7 +307,7 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
       }
 
       // phase 3.3: remove bestCol and bestRow from vectors of filters f and measurements zs/ps and delete corresponding row and col in the scores matrix
-      f.erase(f.begin() + bestCol);  
+      f.erase(f.begin() + bestCol);
       zs.erase(zs.begin() + bestRow);
       ps.erase(ps.begin() + bestRow);
 
