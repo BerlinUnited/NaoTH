@@ -132,7 +132,7 @@ if __name__ == '__main__':
 
     parser = ArgumentParser(
         description='script to generate some energy statistics from logfile')
-    parser.add_argument("-i", "--input", help='logfile, containing the images',
+    parser.add_argument("-i", "--input", help='logfile, containing with BodyStatus representation and behavior',
                         default="logs/walk_on_floor_cognition.log")
 
     args = parser.parse_args()
