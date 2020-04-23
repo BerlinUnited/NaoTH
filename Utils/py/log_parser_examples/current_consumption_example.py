@@ -102,13 +102,17 @@ def analyze_log(logfile):
     # make an numpy array
     data = np.array(frame_list)
 
-    # calculate the frame time since last frame
     new_data = np.zeros((data.shape[0] - 1, data.shape[1]))
 
     for idx in range(data.shape[0] - 1):
+        # calculate the frame time since last frame
         time_diff = data[idx + 1, 0] - data[idx, 0]
-        new_data[idx, :] = data[idx, :]
+        # calculate the difference between the current sums
+        current_difference = data[idx + 1, 1:13] - data[idx, 1:13]
+
         new_data[idx, 0] = time_diff
+        new_data[idx, 1:13] = current_difference
+        new_data[idx, 13] = data[idx, 13]  # leave executed motion type as it is
 
     # extract the frames where the robot was standing or walking
     stand = np.array([frame for frame in new_data if int(frame[13]) == 4])
