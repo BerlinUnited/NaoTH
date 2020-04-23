@@ -10,7 +10,7 @@ import time
 import ctypes
 import xml.etree.ElementTree as ET
 from cppyy import addressof, bind_object
-
+import cppyy.ll
 
 def get_naoth_dir():
     script_path = os.path.abspath(__file__)
@@ -265,14 +265,16 @@ class Evaluator:
         if frame.bottom:
             # TODO this produces an error for the second image
             camMatrix = self.ball_detector.getRequire().at("CameraMatrix")
+            camMatrix = bind_object(addressof(camMatrix), cppyy.gbl.Pose3D)
             # invalidate other camera matrix
             self.ball_detector.getRequire().at("CameraMatrixTop").valid = False
         else:
             camMatrix = self.ball_detector.getRequire().at("CameraMatrixTop")
+            camMatrix = bind_object(addressof(camMatrix), cppyy.gbl.Pose3D)
             # invalidate other camera matrix
             self.ball_detector.getRequire().at("CameraMatrix").valid = False
 
-        camMatrix = bind_object(addressof(camMatrix), cppyy.gbl.Pose3D)
+        # camMatrix = bind_object(addressof(camMatrix), cppyy.gbl.Pose3D)
 
         camMatrix.valid = True
         camMatrix.translation.x = frame.cam_matrix_translation[0]
@@ -403,8 +405,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     evaluator = Evaluator()
-    evaluator.execute(
-        args.directory, {"Best IOU per image": best_ball_patch_intersection}, debug_threshold=args.debug_threshold, transform_to_squares=args.squares)
+    with cppyy.ll.signals_as_exception():
+        evaluator.execute(
+            args.directory, {"Best IOU per image": best_ball_patch_intersection}, debug_threshold=args.debug_threshold, transform_to_squares=args.squares)
     
     if args.csv is not None:
         print("Exporting results to ", args.csv)
