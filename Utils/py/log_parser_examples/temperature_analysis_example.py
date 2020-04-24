@@ -10,7 +10,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from naoth.log import BehaviorParser
 from naoth.log import Reader as LogReader
-from naoth.log import get_demo_logfiles
+from naoth.datasets import walk_on_floor_cognition
 
 
 def frame_filter(idx, frame):
@@ -59,15 +59,12 @@ def analyze_log(logfile):
 
 
 if __name__ == '__main__':
-    base_url = "https://www2.informatik.hu-berlin.de/~naoth/ressources/log/"
-    logfile_list = ["walk_on_floor_cognition.log"]
-    get_demo_logfiles(base_url, logfile_list)
-
     parser = ArgumentParser(
         description='script to generate some energy statistics from logfile')
-    parser.add_argument("-i", "--input", help='logfile, containing the behavior',
-                        default="logs/walk_on_floor_cognition.log")
+    parser.add_argument("-i", "--input", help='logfile, containing the behavior')
 
     args = parser.parse_args()
 
-    analyze_log(args.input)
+    logfile = args.input if args.input else walk_on_floor_cognition.load_data()
+
+    analyze_log(logfile)
