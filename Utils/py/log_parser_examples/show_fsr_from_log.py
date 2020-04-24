@@ -5,8 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from naoth.log import Parser
 from naoth.log import Reader as LogReader
-from naoth.log import get_demo_logfiles
-
+from naoth.datasets import fsr
 
 def get_fsr_data(frame):
     # we are only interested in top images
@@ -18,15 +17,14 @@ def get_fsr_data(frame):
 
 
 if __name__ == "__main__":
-    base_url = "https://www2.informatik.hu-berlin.de/~naoth/ressources/log/demo_fsr/"
-    logfile_list = ["fallen_motion.log", "sit_motion.log", "stand_motion.log", "walk_motion.log"]
-    get_demo_logfiles(base_url, logfile_list)
-
-    parser = argparse.ArgumentParser(
-        description='example of how to parse fsr data from log')
-    parser.add_argument("-i", "--input", help='path to logfile', default="logs/fallen_motion.log")
-
+    parser = argparse.ArgumentParser(description='example of how to parse fsr data from log')
+    parser.add_argument("-i", "--input", help='path to logfile')
     args = parser.parse_args()
+
+    if args.input:
+        log = [args.input]
+    else:
+        log = fsr.load_data()
 
     # initialize the log parser
     myParser = Parser()
@@ -34,7 +32,7 @@ if __name__ == "__main__":
     myParser.register("FSRData", "FSRData")
 
     # get all of the fsr data from the logfile
-    data = map(get_fsr_data, LogReader("logs/stand_motion.log", myParser))
+    data = map(get_fsr_data, LogReader(log[0], myParser))
 
     frame_numbers = []
     left_data = defaultdict(list)
