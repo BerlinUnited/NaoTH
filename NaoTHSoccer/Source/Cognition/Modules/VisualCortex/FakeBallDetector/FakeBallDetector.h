@@ -8,6 +8,7 @@
 
 #include "Representations/Perception/MultiBallPercept.h"
 #include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Infrastructure/FieldInfo.h"
 
 #include "Representations/Perception/CameraMatrix.h"
 #include <Tools/CameraGeometry.h>
@@ -18,6 +19,7 @@ BEGIN_DECLARE_MODULE(FakeBallDetector)
   PROVIDE(DebugModify)
 
   REQUIRE(FrameInfo)
+  REQUIRE(FieldInfo)
 
   REQUIRE(CameraInfo)
   REQUIRE(CameraMatrix)
@@ -33,20 +35,27 @@ class FakeBallDetector: private FakeBallDetectorBase
 {
 public:
     FakeBallDetector();
-    ~FakeBallDetector();
+    ~FakeBallDetector(){}
 
     virtual void execute();
 
 private:
     FrameInfo lastFrame;
 
-    double active;
+    struct FakeBall {
+        Vector2d position;
+        Vector2d velocity;
+        bool     const_velocity;
+    };
 
-    Vector2d startPosition;
-    Vector2d position;
-    Vector2d velocity;
+    std::vector<FakeBall> fakeBalls;
 
-    const Vector2d simulateConstantMovementOnField(double dt, const Vector2d& velocity);
+    void clearFakeBalls() {
+        fakeBalls.clear();
+    }
+
+    void simulateMovementOnField(double dt);
+    void provideMultiBallPercept() const;
 };
 
 #endif // FAKEBALLDETECTOR_H

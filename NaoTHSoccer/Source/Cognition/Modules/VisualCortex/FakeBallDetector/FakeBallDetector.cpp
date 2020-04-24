@@ -1,76 +1,97 @@
 #include "FakeBallDetector.h"
 
-FakeBallDetector::FakeBallDetector():
-    active(false)
-{
-    DEBUG_REQUEST_REGISTER("Vision:FakeBallDetector:disable", "disable fake ball", false);
-    DEBUG_REQUEST_REGISTER("Vision:FakeBallDetector:stationaryBallOnField", "perception of a ball, which is not moving on field", true);
-    DEBUG_REQUEST_REGISTER("Vision:FakeBallDetector:constMovingOnField", "perception of a ball, which moves in a direction with constant velocity on field", false);
-
-    startPosition = Vector2d(2500, 0);
+FakeBallDetector::FakeBallDetector() {
+    DEBUG_REQUEST_REGISTER("Vision:FakeBallDetector:disable", "disable fake balls", false);
+    DEBUG_REQUEST_REGISTER("Vision:FakeBallDetector:clear", "clear all balls", false);
+    DEBUG_REQUEST_REGISTER("Vision:FakeBallDetector:add_new_ball", "add a new ball - position, velocity can be set by Vision:FakeBallDetector:new_ball before creation", false);
 }
 
-FakeBallDetector::~FakeBallDetector()
-{
-
-}
-
-void FakeBallDetector::execute()
-{
+void FakeBallDetector::execute() {
     getMultiBallPercept().reset();
+
+    DEBUG_REQUEST("Vision:FakeBallDetector:clear",
+        clearFakeBalls();
+    );
+
+    FakeBall fb;
+    MODIFY("Vision:FakeBallDetector:new_ball:x", fb.position.x);
+    MODIFY("Vision:FakeBallDetector:new_ball:y", fb.position.y);
+    MODIFY("Vision:FakeBallDetector:new_ball:vx", fb.velocity.x);
+    MODIFY("Vision:FakeBallDetector:new_ball:vy", fb.velocity.y);
+    MODIFY("Vision:FakeBallDetector:new_ball:const_velocity", fb.const_velocity);
+
+    DEBUG_REQUEST_ON_DEACTIVE("Vision:FakeBallDetector:add_new_ball",
+        fakeBalls.push_back(fb);
+    );
+
     DEBUG_REQUEST("Vision:FakeBallDetector:disable",
-                  return;
+        lastFrame = getFrameInfo();
+        return;
     );
 
-    MultiBallPercept::BallPercept ballPercept;
-
-    DEBUG_REQUEST("Vision:FakeBallDetector:stationaryBallOnField",
-        ballPercept.positionOnField = startPosition;
-    );
-
-    MODIFY("Vision:FakeBallDetector:constMovingOnField:Vx", velocity.x);
-    MODIFY("Vision:FakeBallDetector:constMovingOnField:Vy", velocity.y);
-
-    DEBUG_REQUEST_ON_DEACTIVE("Vision:FakeBallDetector:constMovingOnField",
-        active = false;
-    );
-
-    DEBUG_REQUEST("Vision:FakeBallDetector:constMovingOnField",
-        if(!active)
-        {
-            position = startPosition;
-            active = true;
-        }
-        ballPercept.positionOnField = simulateConstantMovementOnField(getFrameInfo().getTimeInSeconds()-lastFrame.getTimeInSeconds(), velocity);
-    );
-
+    simulateMovementOnField(getFrameInfo().getTimeInSeconds()-lastFrame.getTimeInSeconds());
     lastFrame = getFrameInfo();
 
-    Vector3d point(ballPercept.positionOnField.x, ballPercept.positionOnField.y, 32.5);  // WHY 32.5? i would have set this to ballradius
-    Vector2d pointInImage;
+    provideMultiBallPercept();
+}
 
-    bool in_image_bottom = CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), point, pointInImage);
+void FakeBallDetector::simulateMovementOnField(double dt) {
+    for(FakeBall& fb: fakeBalls) {
+        if (fb.const_velocity) {
+            fb.position += fb.velocity * dt;
+            continue;
+        }
 
-    if(in_image_bottom) {
-        ballPercept.centerInImage = pointInImage;
-        ballPercept.cameraId      = naoth::CameraInfo::Bottom;
-        getMultiBallPercept().add(ballPercept);
-    }
+        double time_until_vel_zero = 0;
 
-    bool in_image_top = CameraGeometry::relativePointToImage(getCameraMatrixTop(), getCameraInfoTop(), point, pointInImage);
+        if(fb.velocity.abs() > 1e-5){
+            time_until_vel_zero = -fb.velocity.abs() / getFieldInfo().ballDeceleration;
+        }
 
-    if(in_image_top) {
-        ballPercept.centerInImage = pointInImage;
-        ballPercept.cameraId      = naoth::CameraInfo::Top;
-        getMultiBallPercept().add(ballPercept);
-    }
+        if(time_until_vel_zero > 1e-5) {
+            Vector2d acceleration;
+            acceleration = fb.velocity;
+            acceleration.normalize();
+            // ballDeceleration is negative so the deceleration will be in opposite direction of current velocity
+            acceleration *= getFieldInfo().ballDeceleration;
 
-    if(in_image_bottom || in_image_top) {
-        getMultiBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
+            if(time_until_vel_zero < dt) {
+                dt = time_until_vel_zero;
+            }
+
+            fb.position += acceleration * 0.5 * dt * dt + fb.velocity * dt;
+            fb.velocity += acceleration * dt;
+        }
     }
 }
 
-const Vector2d FakeBallDetector::simulateConstantMovementOnField(double dt, const Vector2d &velocity)
-{
-    return position += velocity*dt;
+// TODO: provide MultiBallPercept::BallPercept::radiusInImage
+void FakeBallDetector::provideMultiBallPercept() const {
+    MultiBallPercept::BallPercept ballPercept;
+    Vector2d pointInImage;
+    Vector3d point(0, 0, getFieldInfo().ballRadius);
+    for(const FakeBall& fb: fakeBalls) {
+        point.x = fb.position.x;
+        point.y = fb.position.y;
+
+        bool in_image_bottom = CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), point, pointInImage);
+        if(in_image_bottom) {
+            ballPercept.positionOnField = fb.position;
+            ballPercept.centerInImage = pointInImage;
+            ballPercept.cameraId = naoth::CameraInfo::Bottom;
+            getMultiBallPercept().add(ballPercept);
+        }
+
+        bool in_image_top = CameraGeometry::relativePointToImage(getCameraMatrixTop(), getCameraInfoTop(), point, pointInImage);
+        if(in_image_top) {
+            ballPercept.positionOnField = fb.position;
+            ballPercept.centerInImage = pointInImage;
+            ballPercept.cameraId = naoth::CameraInfo::Top;
+            getMultiBallPercept().add(ballPercept);
+        }
+
+        if(in_image_bottom || in_image_top) {
+            getMultiBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
+        }
+    }
 }
