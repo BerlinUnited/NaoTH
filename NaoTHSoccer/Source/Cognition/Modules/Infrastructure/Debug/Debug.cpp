@@ -12,7 +12,7 @@
 #include <Tools/SynchronizedFileWriter.h>
 
 // needed for sleep_for in debug kill 
-#include <thread>
+#include "Tools/ThreadUtil.h"
 
 using namespace std;
 
@@ -210,8 +210,7 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
     {
       std::cout << "cognition in endless loop due to \"kill_cognition\" debug command"
                  << std::endl;
-      //g_usleep(500000);
-      std::this_thread::sleep_for(std::chrono::microseconds(500));
+      ThreadUtil::sleep(5);
     }
   }
 }

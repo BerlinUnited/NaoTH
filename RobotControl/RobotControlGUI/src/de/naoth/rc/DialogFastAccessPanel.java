@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package de.naoth.rc;
 
 import java.awt.Color;
@@ -18,7 +14,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import javax.swing.JButton;
@@ -30,11 +27,76 @@ import javax.swing.text.PlainDocument;
 
 /**
  *
- * @author gxy
+ * @author Heinrich Mellmann
  */
 public class DialogFastAccessPanel extends javax.swing.JPanel {
 
-    private final HashMap<String, JButton> buttons = new HashMap<String, JButton>();
+    private final ArrayList<DialogEntry> dialogEntries = new ArrayList<>();
+    
+    class DialogEntry {
+        final JButton button;
+        private final String name;
+        private final String category;
+        private final String className;
+        
+        DialogEntry(String name, String category, String className, JButton button) {
+            this.name = name.toLowerCase();
+            this.category = category.toLowerCase();
+            this.className = className.toLowerCase();
+            this.button = button;
+        }
+        
+        public double calculateScore(String str) {
+            str = str.toLowerCase();
+            
+            if(name.startsWith(str)) {
+                return 1e+10;
+            } 
+            
+            if(category.startsWith(str)) {
+                return 1e+9;
+            }
+            
+            if(className.startsWith(str)) {
+                return 1e+5;
+            } 
+            
+            if(name.contains(str)) {
+                return 1e+4;
+            }
+            
+            if(category.contains(str)) {
+                return 1e+2;
+            }
+            
+            if(className.contains(str)) {
+                return 1e+1;
+            }
+            
+            return 0.0;
+        }
+    }
+    
+    class Pair implements Comparable<Pair> {
+        double v;
+        JButton b;
+        Pair(double v, JButton b) {
+            this.v = v;
+            this.b = b;
+        }
+
+        @Override
+        public int compareTo(Pair o) {
+            double diff = o.v - this.v;
+            if(diff == 0) {
+                return 0;
+            } else if(diff < 0) {
+                return -1;
+            } else {
+                return 1;
+            }
+        }
+    }
     
     /**
      * Creates new form DialogFastAccessPanel
@@ -109,9 +171,7 @@ public class DialogFastAccessPanel extends javax.swing.JPanel {
 
         final KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         
-        final String tabForwardCommand = "TAB";
-        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), tabForwardCommand);
-        getActionMap().put(tabForwardCommand, new AbstractAction() {
+        AbstractAction stepForwardAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 manager.focusNextComponent();
@@ -129,11 +189,9 @@ public class DialogFastAccessPanel extends javax.swing.JPanel {
                     }
                 });
             }
-        });
+        };
 
-        final String tabBackwardCommand = "shift TAB";
-        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, InputEvent.SHIFT_MASK), tabBackwardCommand);
-        getActionMap().put(tabBackwardCommand, new AbstractAction() {
+        AbstractAction stepBackwardAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 manager.focusPreviousComponent();
@@ -145,36 +203,45 @@ public class DialogFastAccessPanel extends javax.swing.JPanel {
                     }
                 });
             }
-        });
+        };
+
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), "TAB");
+        getActionMap().put("TAB", stepForwardAction);
+
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "DOWN");
+        getActionMap().put("DOWN", stepForwardAction);
+        
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, InputEvent.SHIFT_MASK), "shift TAB");
+        getActionMap().put("shift TAB", stepBackwardAction);
+
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "UP");
+        getActionMap().put("UP", stepBackwardAction);
     }
 
     
     private void updateButtons(String text) {
         text = text.toLowerCase();
-        
-        this.dialogs.removeAll();
-        
-        JButton newSelectedButton = null;
-        for(JButton b: buttons.values()) {
-            if(b.getText().toLowerCase().startsWith(text)) {
-               this.dialogs.add(b, 0); 
-               newSelectedButton = b;
-            }
-            else if(b.getText().toLowerCase().contains(text)) {
-               this.dialogs.add(b);
-               if(newSelectedButton == null) {
-                   newSelectedButton = b;
-               }
+    
+        ArrayList<Pair> showList = new ArrayList<>();
+        for(DialogEntry e: dialogEntries) {
+            double s = e.calculateScore(text);
+            if(s > 0) {
+                showList.add( new Pair(s, e.button) );
             }
         }
+        Collections.sort(showList);
+        
+        this.dialogs.removeAll();
+        showList.forEach(pair -> this.dialogs.add(pair.b));
+        
         
         if(selectedButton != null) {
             //selectedButton.setBackground(oldBackgrund);
             selectedButton.setSelected(false);
         }
         
-        if(newSelectedButton != null) {
-            selectedButton = newSelectedButton;
+        if(this.dialogs.getComponentCount() > 0) {
+            selectedButton = (JButton)this.dialogs.getComponent(0);
             //oldBackgrund = selectedButton.getBackground();
             //selectedButton.setBackground(Color.cyan);
             selectedButton.setSelected(true);
@@ -197,7 +264,7 @@ public class DialogFastAccessPanel extends javax.swing.JPanel {
     KeyEventPostProcessor charCapture = new KeyEventPostProcessor() {
         @Override
         public boolean postProcessKeyEvent(KeyEvent e) {
-            if(e.getID()        == KeyEvent.KEY_PRESSED && 
+            if(e.getID() == KeyEvent.KEY_PRESSED && 
                Character.isAlphabetic(e.getKeyChar())) 
             {
                 search.setText(search.getText() + e.getKeyChar());
@@ -205,7 +272,7 @@ public class DialogFastAccessPanel extends javax.swing.JPanel {
                 return true;
             }
             
-            if(e.getID()        == KeyEvent.KEY_PRESSED && 
+            if(e.getID() == KeyEvent.KEY_PRESSED && 
                e.getKeyCode() == KeyEvent.VK_BACK_SPACE) 
             {
                 if(!search.getText().isEmpty()) {
@@ -237,7 +304,7 @@ public class DialogFastAccessPanel extends javax.swing.JPanel {
             }
         });
         
-        this.buttons.put(name, b);
+        this.dialogEntries.add(new DialogEntry(name, category, "", b));
         this.dialogs.add(b);
         
         this.revalidate();
@@ -257,6 +324,10 @@ public class DialogFastAccessPanel extends javax.swing.JPanel {
         search = new javax.swing.JTextField();
         dialogs = new javax.swing.JPanel();
 
+        setBackground(new java.awt.Color(153, 153, 153));
+
+        dialogs.setBackground(javax.swing.UIManager.getDefaults().getColor("scrollpane_border"));
+        dialogs.setOpaque(false);
         dialogs.setLayout(new java.awt.GridLayout(10, 5));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);

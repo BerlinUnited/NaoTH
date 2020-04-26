@@ -15,11 +15,14 @@
 
 #include "DebugCommunication/DebugServer.h"
 #include "PlatformInterface/PlatformInterface.h"
+#include <ModuleFramework/ModuleManager.h>
 
 // simple robot
 #include <Representations/Infrastructure/JointData.h>
 #include <Representations/Infrastructure/FSRData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
+
+extern ModuleManager* getModuleManager(Cognition* c);
 
 class DummySimulator : public naoth::PlatformInterface
 {
