@@ -10,7 +10,7 @@ from argparse import ArgumentParser
 from matplotlib import pyplot as plt
 from naoth.log import Parser
 from naoth.log import Reader as LogReader
-from naoth.log import get_demo_logfiles
+from naoth.datasets import motion
 
 JointID = {
     "HeadPitch": 0,
@@ -99,15 +99,11 @@ def analyze_log(logfile):
 
 
 if __name__ == '__main__':
-    base_url = "https://www2.informatik.hu-berlin.de/~naoth/ressources/log/"
-    logfile_list = ["walk_on_floor_motion.log"]
-    get_demo_logfiles(base_url, logfile_list)
-
     parser = ArgumentParser(
         description='script for plotting the sensor and motor positions of a joint')
-    parser.add_argument("-i", "--input", help='logfile, containing sensor and motor joint data',
-                        default="logs/walk_on_floor_motion.log")
-
+    parser.add_argument("-i", "--input", help='logfile, containing sensor and motor joint data')
     args = parser.parse_args()
 
-    analyze_log(args.input)
+    input = args.input if args.input else motion.load_data('motion')
+
+    analyze_log(input)

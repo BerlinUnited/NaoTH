@@ -10,7 +10,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from naoth.log import BehaviorParser
 from naoth.log import Reader as LogReader
-from naoth.datasets import walk_on_floor_cognition
+from naoth.datasets import motion
 
 
 def frame_filter(idx, frame):
@@ -65,6 +65,6 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    logfile = args.input if args.input else walk_on_floor_cognition.load_data()
+    logfile = args.input if args.input else motion.load_data('cognition')
 
     analyze_log(logfile)

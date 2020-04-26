@@ -9,7 +9,7 @@ from argparse import ArgumentParser
 import numpy as np
 from naoth.log import BehaviorParser
 from naoth.log import Reader as LogReader
-from naoth.log import get_demo_logfiles
+from naoth.datasets import motion
 
 JointID = {
     "HeadPitch": 0,
@@ -110,15 +110,10 @@ def analyze_log(logfile):
 
 
 if __name__ == '__main__':
-    base_url = "https://www2.informatik.hu-berlin.de/~naoth/ressources/log/"
-    logfile_list = ["walk_on_floor_cognition.log"]
-    get_demo_logfiles(base_url, logfile_list)
-
     parser = ArgumentParser(
         description='script to generate some energy statistics from logfile')
-    parser.add_argument("-i", "--input", help='logfile, containing the BodyStatus representation and behavior',
-                        default="logs/walk_on_floor_cognition.log")
+    parser.add_argument("-i", "--input", help='logfile, containing the BodyStatus representation and behavior')
 
     args = parser.parse_args()
-
-    analyze_log(args.input)
+    input = args.input if args.input else motion.load_data('cognition')
+    analyze_log(input)
