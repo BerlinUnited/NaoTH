@@ -95,6 +95,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(AccelerometerData);
   REG_INPUT(GyrometerData);
   REG_INPUT(ButtonData);
+  REG_INPUT(OptiTrackData);
 
   REG_INPUT(DebugMessageInMotion);
 

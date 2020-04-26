@@ -46,7 +46,7 @@
 #include <Representations/Modeling/CameraMatrixOffset.h>
 #include <Representations/Modeling/BodyStatus.h>
 #include <Representations/Modeling/BodyState.h>
-
+#include "Representations/Infrastructure/OptiTrackData.h"
 // debug
 #include <Representations/Debug/Stopwatch.h>
 #include "Tools/Debug/DebugRequest.h"
@@ -103,6 +103,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(AccelerometerData)
   PROVIDE(GyrometerData)
   PROVIDE(ButtonData)
+  PROVIDE(OptiTrackData)
 
   PROVIDE(DebugMessageInMotion)
   PROVIDE(DebugMessageOut)
