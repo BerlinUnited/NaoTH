@@ -8,7 +8,7 @@ from argparse import ArgumentParser
 
 from naoth.log import Parser
 from naoth.log import Reader as LogReader
-from naoth.log import get_demo_logfiles
+from naoth.datasets import images
 from naoth.pb.Framework_Representations_pb2 import Image
 
 
@@ -102,24 +102,21 @@ def write_log(output_log, game_log, image_log, cam_bottom):
 
 
 if __name__ == "__main__":
-    base_url = "https://www2.informatik.hu-berlin.de/~naoth/ressources/log/demo_image/"
-    logfile_list = ["images.log", "game.log"]
-    # taken from /vol/repl261-vol4/naoth/logs/2019-11-21_Koeln/
-    # 2019-11-21_16-20-00_Berlin United_vs_Nao_Devils_Dortmund_half1/game_logs/1_96_Nao0377_191122-0148
-    get_demo_logfiles(base_url, logfile_list)
-
     parser = ArgumentParser(
         description='script for combining game.log and images.log files')
-    parser.add_argument("-g", "--glog", help='normal game.log', default="logs/game.log")
-    parser.add_argument("-i", "--ilog", help='log containing the images', default="logs/images.log")
-    parser.add_argument("-o", "--olog", help='output log file', default="logs/combined.log")
+    parser.add_argument("-g", "--glog", help='normal game.log')
+    parser.add_argument("-i", "--ilog", help='log containing the images')
+    parser.add_argument("-o", "--olog", help='output log file', default="combined.log")
     args = parser.parse_args()
 
+    image_log = args.ilog if args.ilog else images.load_data('image_log')
+    game_log = args.glog if args.glog else images.load_data('game_log')
+
     print("parse game log")
-    parsed_game_log = create_game_log_dict(args.glog)
+    parsed_game_log = create_game_log_dict(game_log)
 
     print("parse image log")
-    parsed_image_log = create_image_log_dict(args.ilog)
+    parsed_image_log = create_image_log_dict(image_log)
 
     print("write new log to: {}".format(args.olog))
     camera_bottom = False  # assumes the first image is a top image

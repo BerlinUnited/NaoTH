@@ -13,7 +13,7 @@ from PIL import Image
 from PIL import PngImagePlugin
 from naoth.log import Parser
 from naoth.log import Reader as LogReader
-from naoth.log import get_demo_logfiles
+from naoth.datasets import images
 
 
 def get_x_angle(m):
@@ -161,13 +161,9 @@ def show_images(img):
 
 
 if __name__ == "__main__":
-    base_url = "https://www2.informatik.hu-berlin.de/~naoth/ressources/log/demo_image/"
-    logfile_list = ["rc17_ball_far.log"]
-    get_demo_logfiles(base_url, logfile_list)
-
     parser = ArgumentParser(
         description='script to display or export images from log files')
-    parser.add_argument("-i", "--input", help='logfile, containing the images', default="logs/rc17_ball_far.log")
+    parser.add_argument("-i", "--input", help='logfile, containing the images')
     parser.add_argument("-t", "--task", choices=['show', 'export'], default="export",
                         help='either show or export')
 
@@ -179,12 +175,13 @@ if __name__ == "__main__":
     myParser.register("ImageTop", "Image")
     myParser.register("CameraMatrixTop", "CameraMatrix")
 
-    if Path(args.input).is_dir():
+    input_file = args.input if args.input else images.load_data('ball')
+    if Path(input_file).is_dir():
         logfile_list = list()
-        for file in Path(args.input).glob('*.log'):
+        for file in Path(input_file).glob('*.log'):
             logfile_list.append(file)
     else:
-        logfile_list = [args.input]
+        logfile_list = [input_file]
 
     if args.task == "export":
         for log in logfile_list:
