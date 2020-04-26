@@ -6,12 +6,11 @@
     For what kind of experiments do we actually need to look at sensor vs motor joint data?
 """
 from argparse import ArgumentParser
-from pathlib import Path
 
 from matplotlib import pyplot as plt
 from naoth.log import Parser
 from naoth.log import Reader as LogReader
-from pywget import wget
+from naoth.datasets import motion
 
 JointID = {
     "HeadPitch": 0,
@@ -64,27 +63,6 @@ JointNames = {
 }
 
 
-def get_demo_logfiles():
-    base_url = "https://www2.informatik.hu-berlin.de/~naoth/ressources/log/"
-
-    logfile_list = ["walk_on_floor_motion.log"]
-
-    print("Downloading Logfiles: {}".format(logfile_list))
-
-    target_dir = Path("logs")
-    Path.mkdir(target_dir, exist_ok=True)
-
-    print(" Download from: {}".format(base_url))
-    print(" Download to: {}".format(target_dir.resolve()))
-    for logfile in logfile_list:
-        if not Path(target_dir / logfile).is_file():
-            print("Download: {}".format(logfile))
-            wget.download(base_url + logfile, str(target_dir))
-            print("Done.")
-
-    print("Finished downloading")
-
-
 def frame_filter(frame):
     return [frame["FrameInfo"].time / 1000.0,
             frame["MotionRequest"],
@@ -121,13 +99,11 @@ def analyze_log(logfile):
 
 
 if __name__ == '__main__':
-    get_demo_logfiles()
-
     parser = ArgumentParser(
         description='script for plotting the sensor and motor positions of a joint')
-    parser.add_argument("-i", "--input", help='logfile, containing sensor and motor joint data',
-                        default="logs/walk_on_floor_motion.log")
-
+    parser.add_argument("-i", "--input", help='logfile, containing sensor and motor joint data')
     args = parser.parse_args()
 
-    analyze_log(args.input)
+    logfile_name = args.input if args.input else motion.load_data('motion')
+
+    analyze_log(logfile_name)
