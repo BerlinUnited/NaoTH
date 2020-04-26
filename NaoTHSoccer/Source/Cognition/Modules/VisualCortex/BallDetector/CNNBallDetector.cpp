@@ -30,7 +30,8 @@ CNNBallDetector::CNNBallDetector()
 
   cnnMap = createCNNMap();
 
-  setClassifier("fy1500_conf", "fy1500_conf");
+  // initialize classifier selection
+  setClassifier(params.classifier, params.classifierClose);
 }
 
 CNNBallDetector::~CNNBallDetector()
@@ -50,12 +51,6 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
   theBallKeyPointExtractor->getModuleT()->setCameraId(cameraID);
   //theBallKeyPointExtractor->getModuleT()->calculateKeyPoints(best);
   theBallKeyPointExtractor->getModuleT()->calculateKeyPointsBetter(best);
-
-
-  // update selected classifier from parameters
-  // TODO: make it more efficient
-  setClassifier(params.classifier, params.classifierClose);
-
 
   if(best.size() > 0) {
     calculateCandidates();
@@ -80,7 +75,12 @@ void CNNBallDetector::execute(CameraInfo::CameraID id)
     extractPatches();
   );
 
-  if(params.numberOfExportBestPatches > 0) {
+  if(params.providePatches) 
+  {
+    providePatches();
+  } 
+  else if(params.numberOfExportBestPatches > 0) 
+  {
     extractPatches();
   }
 
@@ -229,7 +229,7 @@ void CNNBallDetector::calculateCandidates()
       }
 
       STOPWATCH_START("CNNBallDetector:predict");
-      cnn->find(patch, params.cnn.meanBrightness);
+      cnn->predict(patch, params.cnn.meanBrightnessOffset);
       STOPWATCH_STOP("CNNBallDetector:predict");
 
       bool found = false;
@@ -252,7 +252,7 @@ void CNNBallDetector::calculateCandidates()
       DEBUG_REQUEST("Vision:CNNBallDetector:drawCandidates",
         // original patch
         RECT_PX(ColorClasses::skyblue, (*i).min.x, (*i).min.y, (*i).max.x, (*i).max.y);
-        // possibly recised patch 
+        // possibly revised patch 
         RECT_PX(ColorClasses::orange, patch.min.x, patch.min.y, patch.max.x, patch.max.y);
       );
 
@@ -263,6 +263,13 @@ void CNNBallDetector::calculateCandidates()
 } // end calculateCandidates
 
 
+/** 
+ * Extract at most numberOfExportBestPatches for the logfile (and add it to the blackboard). 
+ *
+ * WARNING: This will include the border around the patch. The resulting patch is 24x24 pixel in size
+ *          (currently internal patches size is 16x16). 
+ *          To reconstruct the original patch, remove the border again.
+ */
 void CNNBallDetector::extractPatches()
 {
   int idx = 0;
@@ -285,6 +292,18 @@ void CNNBallDetector::extractPatches()
       
       idx++;
     }
+  }
+}
+
+/** Provides all the internally generated patches in the representation */
+void CNNBallDetector::providePatches()
+{
+  for(BestPatchList::reverse_iterator i = best.rbegin(); i != best.rend(); ++i)
+  {
+    BallCandidates::PatchYUVClassified& q = getBallCandidates().nextFreePatchYUVClassified();
+    q.min = (*i).min;
+    q.max = (*i).max;
+    q.setSize(16);
   }
 }
 

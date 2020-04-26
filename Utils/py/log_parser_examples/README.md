@@ -1,5 +1,5 @@
 # Examples for logfile analysis
-download test data from ...
+Each example downloads the required test data from a server automatically
 
 ## Image Example
 Export Images:  

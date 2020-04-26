@@ -2,6 +2,7 @@ import csv
 import json
 import os
 import random
+from collections import defaultdict
 from glob import glob
 from os.path import relpath
 from pathlib import Path
@@ -24,7 +25,7 @@ def get_blender_patch_paths(path):
     return zip(patch_folders, mask_folders)
 
 
-def load_images(path, res):
+def load_blender_images(path, res):
     db = []
     print("Loading images...")
     for patch_folder, mask_folder in get_blender_patch_paths(path):
@@ -110,12 +111,11 @@ def load_images(path, res):
 
 
 def load_image_from_csv(path, db_balls, db_noballs, res):
-    print("Loading images from " + path + "...")
-
+    print("Loading images from " + path + " ...")
+    
     # parse csv file
     with open(path, newline='') as csvfile:
         reader = csv.DictReader(csvfile)
-        next(reader)
         for row in reader:
             f = os.path.join(os.path.dirname(path), row["filename"])
             p = row["filename"]
@@ -124,14 +124,15 @@ def load_image_from_csv(path, db_balls, db_noballs, res):
             try:
                 img = cv2.imread(f, cv2.IMREAD_GRAYSCALE)
                 img = cv2.resize(img, (res["x"], res["y"]))
+                img_normalized = img.astype(float) / 255.0
             except Exception as ex:
                 print("Error loading image ", f)
                 continue
 
             is_ball = False
             # load ball information
-            num_regions = int(row["region_count"])
-            if num_regions > 0:
+            region_count = int(row["region_count"])
+            if region_count > 0:
                 atts = json.loads(row["region_attributes"])
                 if atts["type"] == "smudged_ball":
                     # ignore this image
@@ -139,24 +140,27 @@ def load_image_from_csv(path, db_balls, db_noballs, res):
                 elif atts["type"] == "ball":
                     shape = json.loads(row["region_shape_attributes"])
                     if shape["name"] == "circle":
-                        x = int(shape["cx"])
-                        y = int(shape["cy"])
+                        x_coord = int(shape["cx"])
+                        y_coord = int(shape["cy"])
                         radius = int(shape["r"])
 
-                        if x < 0 or y < 0 or x > res["x"] or y > res["y"]:
+                        if x_coord < 0 or y_coord < 0 or x_coord > res["x"] or y_coord > res["y"]:
+                            print("Ignoring annotation because center is outside image")
+                            # TODO: i dont think this makes sense
                             continue
 
                         # draw detected circle into debug image
                         # cv2.circle(debug_img, (int(x),int(y)), int(radius), color=(0,0,255))
 
                         # normalize to resolution
-                        x = (x / res["x"])
-                        y = (y / res["y"])
+                        x_coord = (x_coord / res["x"])
+                        y_coord = (y_coord / res["y"])
                         radius = radius / max(res["x"], res["y"])
 
                         is_ball = True
                     else:
                         # we only support circles
+                        print("WARNING: Annotation is not a circle")
                         continue
                 else:
                     # unknown type
@@ -165,71 +169,71 @@ def load_image_from_csv(path, db_balls, db_noballs, res):
             else:
                 # no region means no ball
                 radius = 0.0
-                x = 0
-                y = 0
+                x_coord = 0
+                y_coord = 0
 
             # for each row add the image and the prediction
             if is_ball:
-                y = np.array([radius, x, y, 1.0])
+                target = np.array([radius, x_coord, y_coord, 1.0])
+                db_balls.append((img_normalized, target, p))
             else:
-                y = np.array([radius, x, y, 0.0])
-
-            img_f = img.astype(float) / 255.0
-
-            if is_ball:
-                db_balls.append((img_f, y, p))
-            else:
-                db_noballs.append((img_f, y, p))
-
-            avg_img_f = np.average(img_f)
+                target = np.array([radius, x_coord, y_coord, 0.0])
+                db_noballs.append((img_normalized, target, p))
 
             # augment: binarized image
             bin_img = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
                                             cv2.THRESH_BINARY, 11, 2).reshape((16, 16))
 
             if is_ball:
-                db_balls.append((bin_img.astype(float) / 255.0, y, p))
+                db_balls.append((bin_img.astype(float) / 255.0, target, p))
             else:
-                db_noballs.append((bin_img.astype(float) / 255.0, y, p))
+                db_noballs.append((bin_img.astype(float) / 255.0, target, p))
 
+            # augment: gamma adjusted image
+            avg_img_f = np.average(img_normalized)
             if 0.2 <= avg_img_f <= 0.8:
                 # augment: gamma
                 for g in (0.4, 1.3):
                     if is_ball:
-                        db_balls.append((adjust_gamma(img, g).astype(float) / 255.0, y, p))
+                        db_balls.append((adjust_gamma(img, g).astype(float) / 255.0, target, p))
                     else:
-                        db_noballs.append((adjust_gamma(img, g).astype(float) / 255.0, y, p))
+                        db_noballs.append((adjust_gamma(img, g).astype(float) / 255.0, target, p))
 
 
 def load_images_from_csv_files(root_path, res, limit_noballs):
     print("Looking for csv files in: ", root_path)
-    db_balls = []
-    db_noballs = []
+    db_ball_list = []
+    db_noball_list = []
 
     # find csv files
     all_paths = list(Path(root_path).absolute().glob('**/*.csv'))
     print(all_paths)
 
     for path in all_paths:
-        load_image_from_csv(str(path), db_balls, db_noballs, res)
+        load_image_from_csv(str(path), db_ball_list, db_noball_list, res)
 
-    if limit_noballs is True and len(db_balls) < len(db_noballs):
-        db_noballs = np.random.choice(db_noballs, len(db_balls))
+    if limit_noballs is True and len(db_ball_list) < len(db_noball_list):
+        print("Limit negative images to ", len(db_ball_list))
+        no_ball_mask = np.random.choice(len(db_noball_list), len(db_ball_list))
+        db_noball_list = [db_noball_list[i] for i in no_ball_mask]
 
-    db = db_balls + db_noballs
+    db = db_ball_list + db_noball_list
     random.shuffle(db)
 
-    x, y, p = list(map(np.array, list(zip(*db))))
-    mean = np.mean(x)
-    x -= mean
+    input_images, targets, file_paths = list(map(np.array, list(zip(*db))))
+    mean = np.mean(input_images)
+    input_images -= mean
 
-    x = x.reshape(*x.shape, 1)
+    # expand dimensions of the input images for use with tensorflow
+    input_images = input_images.reshape(*input_images.shape, 1)
 
     print("Loading finished")
-    print("images: " + str(len(x)) + " balls: " + str(len(db_balls)) +
-          " no balls: " + str(len(db_noballs)))
-    return x, y, mean, p
+    print("\nStatistic:")
+    print("number of images: " + str(len(input_images)) + " balls images: " + str(len(db_ball_list)) +
+          " no ball images: " + str(len(db_noball_list)))
+
+    return input_images, targets, mean, file_paths
 
 
 if __name__ == "__main__":
-    load_images("../data/TK-03/blender/", res={"x": 16, "y": 16})
+    load_blender_images("../data/TK-03/blender/", res={"x": 16, "y": 16})

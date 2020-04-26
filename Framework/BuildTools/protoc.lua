@@ -57,7 +57,7 @@ local function protocCompileAll(inputFiles, cppOut, javaOut, pythonOut, ipaths)
   end
 
   -- add files to compile
-  args = args .. table.concat(inputFiles, " ")
+  args = args .. "\"" .. table.concat(inputFiles, "\" \"") .. "\""
 
   local cmd = "\"" .. compilerPath .. "/" .. compiler .. "\" " .. args
 
@@ -78,6 +78,23 @@ local function protocCompileAll(inputFiles, cppOut, javaOut, pythonOut, ipaths)
   -- generate the message files
   print("INFO: (Protbuf) executing " .. cmd)
   local succ, status, returnCode = os.execute(cmd)
+
+  print('Modify generated protobuf files')
+  local pb = os.matchfiles(pythonOut .. "/*.py")
+  for _, pbFileName in pairs(pb) do
+    -- read the python pb file
+    pbFile = assert(io.open(pbFileName, "r"))
+    content = pbFile:read("*all")
+    pbFile:close()
+
+    -- modify the content (change the absolute import to a local one)
+    content = content:gsub('\n(import [^\n]+pb2 as [^\n]+pb2)','\nfrom . %1')
+
+    -- write the content back to the file
+    pbFile = assert(io.open(pbFileName, "w"))
+    pbFile:write(content)
+    pbFile:close()
+  end
 
   return returnCode == 0
 end

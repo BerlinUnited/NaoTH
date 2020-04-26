@@ -1,8 +1,3 @@
-import math
-
-from naoth import BehaviorParser, Framework_Representations_pb2
-
-from AgentController import AgentController
 from SimsparkController import SimsparkController
 from Utils import *
 

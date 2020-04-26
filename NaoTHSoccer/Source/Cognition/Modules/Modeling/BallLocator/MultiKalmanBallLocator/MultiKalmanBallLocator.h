@@ -2,14 +2,13 @@
 #define MULTIKALMANBALLLOCATOR_H
 
 #include <ModuleFramework/Module.h>
-#include <Eigen/StdVector>
+#include <Eigen/StdVector> //necessary for alignement in std::vector to work
 
 // representations
-#include <Representations/Perception/MultiBallPercept.h>
+#include "Representations/Perception/MultiBallPercept.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/PlayerInfo.h"
-
 
 #include "Representations/Modeling/OdometryData.h"
 #include "Representations/Modeling/KinematicChain.h"
@@ -17,7 +16,9 @@
 #include "Representations/Motion/MotionStatus.h"
 
 #include "Representations/Perception/CameraMatrix.h"
+#include "Representations/Infrastructure/FieldInfo.h"
 
+// tools
 #include "BallHypothesis.h"
 #include "UpdateAssociationFunctions.h"
 
@@ -28,7 +29,6 @@
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/Color.h"
 
-#include "Representations/Infrastructure/FieldInfo.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -79,12 +79,14 @@ private:
     FrameInfo    lastFrameInfo;
 
 private:
+    // TODO set capacity of filter for improved performance
     typedef std::vector<BallHypothesis, Eigen::aligned_allocator<BallHypothesis> > Filters;
     Filters filter;
     Filters::const_iterator bestModel;
 
-    const double epsilon; // 10e-6
-    //double area95Threshold;
+    // TODO: does it make sense to use the numerical epsilon: std::numeric_limits<double>::epsilon() or std::numeric_limits<float>::epsilon()?
+    // TODO: or is this value specific to the algorithms? E.g. ball speed below 1mm/s is considered 0.
+    const double epsilon=10e-6;
 
 private:
     void updateByPerceptsCool();
@@ -108,10 +110,10 @@ private:
     void drawFiltersOnField() const;
     void reloadParameters();
 
-    class KFParameters:  public ParameterList
+    class Parameters:  public ParameterList
     {
      public:
-        KFParameters() : ParameterList("KalmanFilter4dBallModel")
+        Parameters() : ParameterList("MultiKalmanBallLocator")
         {
             PARAMETER_REGISTER(processNoiseStdQ00) = 15;
             PARAMETER_REGISTER(processNoiseStdQ01) = 0;
@@ -127,8 +129,6 @@ private:
             PARAMETER_REGISTER(initialStateStdP01) = 0;
             PARAMETER_REGISTER(initialStateStdP10) = 0;
             PARAMETER_REGISTER(initialStateStdP11) = 250;
-
-            PARAMETER_REGISTER(area95Threshold) = 2*Math::pi*700*700;
 
             //thresholds for association functions
             PARAMETER_REGISTER(euclidThreshold) = Math::fromDegrees(10);
@@ -186,7 +186,7 @@ private:
         } area95Threshold_radius;
 
         bool use_covariance_based_selection;
-    } kfParameters;
+    } params;
 
     Measurement_Function_H h;
     UpdateAssociationFunction* updateAssociationFunction;

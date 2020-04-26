@@ -3,8 +3,7 @@
 #include <Eigen/Core>
 #include "Tools/Association.h"
 
-MultiKalmanBallLocator::MultiKalmanBallLocator():
-     epsilon(10e-6)
+MultiKalmanBallLocator::MultiKalmanBallLocator()
 {
     // Modify number of models
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:remove_all_models",     "remove all models",                                                             false);
@@ -19,7 +18,7 @@ MultiKalmanBallLocator::MultiKalmanBallLocator():
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_final_ball",                 "draws the final i.e. best model",                                    false);
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_final_ball_postion_at_rest", "draws the final i.e. best model's rest position",                    false);
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_covariance_ellipse",         "draws the ellipses representing the covariances",                    false);
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_last_known_ball",      "draws the last known ball", 	                                   false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_last_known_ball",            "draws the last known ball", 	                                   false);
 
     // Plotting Related Debug Requests
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:plot_prediction_error",     "plots the prediction errors in x (horizontal angle) and y (vertical angle)", false);
@@ -38,45 +37,47 @@ MultiKalmanBallLocator::MultiKalmanBallLocator():
 
     updateAssociationFunction = &likelihood;
 
-    getDebugParameterList().add(&kfParameters);
+    getDebugParameterList().add(&params);
 
     reloadParameters();
 }
 
 MultiKalmanBallLocator::~MultiKalmanBallLocator()
 {
-    getDebugParameterList().remove(&kfParameters);
+    getDebugParameterList().remove(&params);
 }
 
 void MultiKalmanBallLocator::execute()
 {
-  // allways reset the model first
-  getBallModel().reset();
+    // allways reset the model first
+    getBallModel().reset();
 
-  // HACK: no updates in ready or when lifted
-  if(getPlayerInfo().robotState == PlayerInfo::ready || getBodyState().isLiftedUp) {
-    filter.clear();
-    return;
-  }
+    // HACK: no updates in ready or when lifted
+    if(getPlayerInfo().robotState == PlayerInfo::ready || getBodyState().isLiftedUp) {
+      filter.clear();
+      return;
+    }
 
     DEBUG_REQUEST("MultiKalmanBallLocator:remove_all_models",
         filter.clear();
     );
 
     // delete some filter if they are too bad
-    if(filter.size() > 1) {
-        Filters::iterator iter = filter.begin();
-        while(iter != filter.end() && filter.size() > 1) {
-          double distance = Vector2d(iter->getState()(0), iter->getState()(2)).abs();
-          double threshold_radius = kfParameters.area95Threshold_radius.factor * distance + kfParameters.area95Threshold_radius.offset;
-          if(!iter->ballSeenFilter.value() && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * Math::pi >  threshold_radius*threshold_radius*2*Math::pi){
-                iter = filter.erase(iter);
-            } else {
-                ++iter;
-            }
-        }
+    // NOTE: make sure at least one filter remains, so filter is not empty
+    Filters::iterator iter = filter.begin();
+    while(iter != filter.end() && filter.size() > 1) {
+      // TODO: here we make a linear approximation depending n the distance - does it make problems? Can we have a better solution?
+      double distance = Vector2d(iter->getState()(0), iter->getState()(2)).abs();
+      double threshold_radius = params.area95Threshold_radius.factor * distance + params.area95Threshold_radius.offset;
+      // HACK: we need ballSeenFilter here because the other condition didn't seem to work as expected
+      // BUG: the formula for the area of the circle seems to incorrect!
+      // compare area of the position uncertainty ellipse with a circle representing the maximum uncertainty a ball can have
+      if(!iter->ballSeenFilter.value() && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * Math::pi > threshold_radius*threshold_radius*2*Math::pi){
+          iter = filter.erase(iter);
+      } else {
+          ++iter;
+      }
     }
-
 
     // apply odometry on the filter state, to keep it in the robot's local coordinate system
     for(Filters::iterator iter = filter.begin(); iter != filter.end(); ++iter) {
@@ -95,25 +96,25 @@ void MultiKalmanBallLocator::execute()
     doDebugRequestBeforUpdate();
 
     // sensor update
-    if(kfParameters.association.use_normal){
+    if(params.association.use_normal) {
         updateByPerceptsNormal();
-    } else if(kfParameters.association.use_cool){
+    } else if(params.association.use_cool) {
         updateByPerceptsCool();
-    } else if(kfParameters.association.use_naive){
+    } else if(params.association.use_naive) {
         // need to handle bottom and top percepts independently because both cameras can observe the same ball
         updateByPerceptsNaive(CameraInfo::Bottom);
         updateByPerceptsNaive(CameraInfo::Top);
     }
 
-    // Heinrich: update the "ball seen" values
+    // NOTE: (Heinrich) update the "ball seen" values
     for(Filters::iterator iter = filter.begin(); iter != filter.end(); ++iter) {
       bool updated = iter->getLastUpdateFrame().getFrameNumber() == getFrameInfo().getFrameNumber();
-      (*iter).ballSeenFilter.setParameter(kfParameters.g0, kfParameters.g1);
+      (*iter).ballSeenFilter.setParameter(params.g0, params.g1);
       (*iter).ballSeenFilter.update(updated, 0.3, 0.7);
     }
 
     // estimate the best model
-    if(kfParameters.use_covariance_based_selection){
+    if(params.use_covariance_based_selection) {
         bestModel = selectBestModelBasedOnCovariance();
     } else {
         bestModel = selectBestModel();
@@ -218,7 +219,8 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
       h.camInfo = getCameraInfoTop();
   }
 
-  // phase 1: filter percepts and create index vector for filters
+  // phase 1: filter percepts
+  // TODO zs und ps umbennen
   std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > zs;
   std::vector<Vector2d> ps;
 
@@ -226,7 +228,7 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
       Eigen::Vector2d z;
 
       if(percept.cameraId == camera){
-        // tansform measurement into angles
+        // transform measurement into angles
         Vector2d angles = CameraGeometry::pixelToAngles(h.camInfo,percept.centerInImage.x,percept.centerInImage.y);
         z << angles.x, angles.y;
         zs.push_back(z);
@@ -236,7 +238,8 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
       }
   }
 
-  std::vector<int> f;
+  // create index vector for filters
+  std::vector<int> f;  // TODO rename f to filter_idx
   for(size_t i = 0; i < filter.size(); ++i){
      f.push_back((int)i);
   }
@@ -246,6 +249,7 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
     // phase 2: calculate all scores
     // row index    = measurement
     // column index = filter
+    // sind kleine scores oder grosse scores gut? -> Abhaengigkeit zu evaluation
     Eigen::MatrixXd scores = Eigen::MatrixXd::Zero(zs.size(), filter.size());
     for(size_t i = 0; i < zs.size(); ++i){
         for (size_t j = 0; j < filter.size(); ++j){
@@ -254,6 +258,7 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
     }
 
     // phase 3: reduce score matrix iteratively by eliminating row and column of best match
+    // TODO zur while schleife machen?
     do {
       // phase 3.1: find location of best entry which is according to the updateAssociationFunction a global maximum or minimum
       Eigen::Index maxCol, minCol, maxRow, minRow, bestCol, bestRow;
@@ -306,8 +311,10 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
       zs.erase(zs.begin() + bestRow);
       ps.erase(ps.begin() + bestRow);
 
+      // TODO describe the idea of the matrix entry deletion. Mention alternatives
+      // TODO: is this why we can't merge filters or apply observations to multiple filters?
       if (!(zs.empty() || f.empty())) {
-        long int numRows = scores.rows() - 1;
+        long int numRows = scores.rows() - 1;  // Why -1
         long int numCols = scores.cols();
 
         if (bestRow < numRows)
@@ -327,11 +334,16 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
   }
 
   // phase 4: create new filter for each percept which couldn't be associated with a filter
+  // Diskussion: vielleicht filter erstellen wenn keine da ist und dann die zweite beobachtung dazu matchen ...
   for(const Vector2d& p : ps){
     Eigen::Vector4d newState;
     newState << p.x, 0, p.y, 0;
-    filter.push_back(BallHypothesis(getFrameInfo(), newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension));
+    // add BallHypothesis to filter vector
+    filter.emplace_back(getFrameInfo(), newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension);
   }
+
+  // TODO maybe add possibility to merge filters
+  // TODO maybe add possibility to apply update of observation to every filter in a bayesian fashion
 }
 
 void MultiKalmanBallLocator::updateByPerceptsCool()
@@ -709,22 +721,22 @@ void MultiKalmanBallLocator::drawFiltersOnField() const
 {
     FIELD_DRAWING_CONTEXT;
 
-    Color cov_loc_color("00FFFF");
-    Color cov_vel_color("FF00FF");
+    Color cov_loc_color("00FFFF");  // cyan
+    Color cov_vel_color("FF00FF");  // pink
     Color model_color;
 
     for(Filters::const_iterator iter = filter.begin(); iter != filter.end(); iter++) {
         if(getBallModel().valid) {
             if((*iter).getLastUpdateFrame().getTime() == getFrameInfo().getTime()) {
                 if(bestModel == iter)
-                    model_color = "99FF00";
+                    model_color = "99FF00";  // green
                 else
-                    model_color = "FF9900";
+                    model_color = "FF9900";  // orange
             } else {
-                    model_color = "0099FF";
+                    model_color = "0099FF";  // light blue
             }
         } else {
-            model_color = "999999";
+            model_color = "999999";  // grey
         }
 
         drawFilter(*iter, model_color, cov_loc_color, cov_vel_color);
@@ -734,19 +746,19 @@ void MultiKalmanBallLocator::drawFiltersOnField() const
 void MultiKalmanBallLocator::reloadParameters()
 {
     // parameters for initializing new filters
-    processNoiseStdSingleDimension << kfParameters.processNoiseStdQ00, kfParameters.processNoiseStdQ01,
-                                      kfParameters.processNoiseStdQ10, kfParameters.processNoiseStdQ11;
+    processNoiseStdSingleDimension << params.processNoiseStdQ00, params.processNoiseStdQ01,
+                                      params.processNoiseStdQ10, params.processNoiseStdQ11;
 
-    measurementNoiseCovariances << kfParameters.measurementNoiseR00, kfParameters.measurementNoiseR10,
-                                   kfParameters.measurementNoiseR10, kfParameters.measurementNoiseR11;
+    measurementNoiseCovariances << params.measurementNoiseR00, params.measurementNoiseR10,
+                                   params.measurementNoiseR10, params.measurementNoiseR11;
 
-    initialStateStdSingleDimension << kfParameters.initialStateStdP00, kfParameters.initialStateStdP01,
-                                      kfParameters.initialStateStdP10, kfParameters.initialStateStdP11;
+    initialStateStdSingleDimension << params.initialStateStdP00, params.initialStateStdP01,
+                                      params.initialStateStdP10, params.initialStateStdP11;
 
     // UAF thresholds
-    euclid.setThreshold(kfParameters.euclidThreshold);
-    mahalanobis.setThreshold(kfParameters.mahalanobisThreshold);
-    likelihood.setThreshold(kfParameters.maximumLikelihoodThreshold);
+    euclid.setThreshold(params.euclidThreshold);
+    mahalanobis.setThreshold(params.mahalanobisThreshold);
+    likelihood.setThreshold(params.maximumLikelihoodThreshold);
 
     // update existing filters with new process and measurement noise
     Eigen::Matrix2d processNoiseCovariancesSingleDimension;

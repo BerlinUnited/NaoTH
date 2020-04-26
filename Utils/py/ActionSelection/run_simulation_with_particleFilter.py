@@ -8,7 +8,7 @@ from tools.action import Category
 
 from tools import Simulation as Sim
 from tools import potential_field as pf
-from naoth import math2d as m2d
+import naoth.math as naoth_magic
 from tools import tools
 from state import State
 from tools import field_info as field
@@ -38,7 +38,7 @@ def draw_actions(actions_consequences, likelihoods, state, best_action, normal_a
     likelihoods = normalize(likelihoods)
 
     for angle in angle_list:
-        arrow_head = m2d.Vector2(500, 0).rotate(
+        arrow_head = naoth_magic.Vector2(500, 0).rotate(
             state.pose.rotation + math.radians(normal_angle + angle))
         axes.arrow(origin.x, origin.y, arrow_head.x, arrow_head.y, head_width=100, head_length=100,
                    fc='k', ec='k')
