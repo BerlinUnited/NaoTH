@@ -115,5 +115,5 @@ if __name__ == '__main__':
     parser.add_argument("-i", "--input", help='logfile, containing the BodyStatus representation and behavior')
 
     args = parser.parse_args()
-    input = args.input if args.input else motion.load_data('cognition')
-    analyze_log(input)
+    logfile_name = args.input if args.input else motion.load_data('cognition')
+    analyze_log(logfile_name)

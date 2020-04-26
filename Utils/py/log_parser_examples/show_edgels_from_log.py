@@ -9,6 +9,7 @@ from naoth.log import Parser
 from naoth.log import Reader as LogReader
 from naoth.datasets import edgels
 
+
 def parse_vector3(message):
     return m.Vector3(message.x, message.y, message.z)
 

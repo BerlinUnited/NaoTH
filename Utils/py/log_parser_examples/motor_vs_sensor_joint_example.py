@@ -104,6 +104,6 @@ if __name__ == '__main__':
     parser.add_argument("-i", "--input", help='logfile, containing sensor and motor joint data')
     args = parser.parse_args()
 
-    input = args.input if args.input else motion.load_data('motion')
+    logfile_name = args.input if args.input else motion.load_data('motion')
 
-    analyze_log(input)
+    analyze_log(logfile_name)

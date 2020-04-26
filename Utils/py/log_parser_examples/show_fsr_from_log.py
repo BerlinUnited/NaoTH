@@ -7,6 +7,7 @@ from naoth.log import Parser
 from naoth.log import Reader as LogReader
 from naoth.datasets import fsr
 
+
 def get_fsr_data(frame):
     # we are only interested in top images
     fsr_data = frame["FSRData"]
