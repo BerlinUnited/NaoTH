@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from naoth.log import Parser
 from naoth.log import Reader as LogReader
-from naoth.log import get_demo_logfiles
+from naoth.datasets import joints
 
 
 def unpack_frame(frame):
@@ -24,10 +24,7 @@ def unpack_frame(frame):
 
 
 if __name__ == "__main__":
-    base_url = "https://www2.informatik.hu-berlin.de/~naoth/ressources/log/demo_jointdata/"
-    logfile_list = ["collision_goal_left1.log"]
-    get_demo_logfiles(base_url, logfile_list)
-    path = "logs/collision_goal_left1.log"
+    path = joints.load_data()
 
     myParser = Parser()
     # Is this a bug? When i try  myParser.register("JointData", "MotorJointData") the script fails
