@@ -65,4 +65,8 @@ def __get_file(name: str,
     return file
 
 
-from . import walk_on_floor_cognition
+from . import motion
+from . import fsr
+from . import edgels
+from . import joints
+from . import images
