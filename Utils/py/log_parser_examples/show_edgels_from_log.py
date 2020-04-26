@@ -7,8 +7,7 @@ import matplotlib.pyplot as plt
 import naoth.math as m
 from naoth.log import Parser
 from naoth.log import Reader as LogReader
-from naoth.log import get_demo_logfiles
-
+from naoth.datasets import edgels
 
 def parse_vector3(message):
     return m.Vector3(message.x, message.y, message.z)
@@ -80,17 +79,11 @@ def animate(i, log_iterator, edgels_plot_top, edgels_plot, projected_edgels_plot
 
 
 if __name__ == "__main__":
-    base_url = "https://www2.informatik.hu-berlin.de/~naoth/ressources/log/demo_edgels/"
-    logfile_list = ["2019-07-05_11-45-00_Berlin United_vs_NomadZ_half2-1_93_Nao0212.log"]
-    get_demo_logfiles(base_url, logfile_list)
-
     parser = ArgumentParser(description='script to display or export edgels from log files')
-    parser.add_argument("--logfile", help='log file to draw edgels from',
-                        default="logs/2019-07-05_11-45-00_Berlin United_vs_NomadZ_half2-1_93_Nao0212.log")
-
+    parser.add_argument("--logfile", help='log file to draw edgels from')
     args = parser.parse_args()
 
-    logFilePath = args.logfile
+    logFilePath = args.logfile if args.logfile else edgels.load_data()
     # init parser
     logParser = Parser()
     logParser.register("ScanLineEdgelPerceptTop", "ScanLineEdgelPercept")
