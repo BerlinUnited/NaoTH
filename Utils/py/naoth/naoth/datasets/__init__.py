@@ -16,7 +16,7 @@ def __get_file(name: str,
                origin: str = 'https://www2.informatik.hu-berlin.de/~naoth/ressources/log/'):
     import os
     from urllib.request import urlretrieve
-    from urllib.parse import urljoin
+    from urllib.parse import urljoin, quote
     from urllib.error import HTTPError, URLError
 
     # prepare cache dir
@@ -42,11 +42,11 @@ def __get_file(name: str,
 
     # download the actual file
     if download:
-        origin_file = urljoin(origin, name)
+        origin_file = urljoin(origin, quote(name))
         print('Downloading data from', origin_file)
 
         def dl_progress(count, block_size, total_size):
-            print('\r', 'Progress: {0:.2%}'.format((count * block_size) / total_size), sep='', end='', flush=True)
+            print('\r', 'Progress: {0:.2%}'.format(min((count * block_size) / total_size, 1.0)), sep='', end='', flush=True)
 
         error_msg = 'URL fetch failure on {} : {} -- {}'
         try:
