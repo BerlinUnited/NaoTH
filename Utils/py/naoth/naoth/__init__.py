@@ -5,3 +5,4 @@ from . import spl
 from . import log
 from . import tests
 from . import utils
+from . import datasets

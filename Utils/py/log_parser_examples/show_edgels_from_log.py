@@ -1,34 +1,13 @@
 #!/usr/bin/python
 import math
 from argparse import ArgumentParser
-from pathlib import Path
 
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 import naoth.math as m
 from naoth.log import Parser
 from naoth.log import Reader as LogReader
-from pywget import wget
-
-
-def get_demo_logfiles():
-    base_url = "https://www2.informatik.hu-berlin.de/~naoth/ressources/log/demo_edgels/"
-    logfile_list = ["2019-07-05_11-45-00_Berlin United_vs_NomadZ_half2-1_93_Nao0212.log"]
-
-    print("Downloading Logfiles: {}".format(logfile_list))
-
-    target_dir = Path("logs")
-    Path.mkdir(target_dir, exist_ok=True)
-
-    print(" Download from: {}".format(base_url))
-    print(" Download to: {}".format(target_dir.resolve()))
-    for logfile in logfile_list:
-        if not Path(target_dir / logfile).is_file():
-            print("Download: {}".format(logfile))
-            wget.download(base_url+logfile, target_dir)
-            print("Done.")
-
-    print("Finished downloading")
+from naoth.datasets import edgels
 
 
 def parse_vector3(message):
@@ -101,15 +80,11 @@ def animate(i, log_iterator, edgels_plot_top, edgels_plot, projected_edgels_plot
 
 
 if __name__ == "__main__":
-    get_demo_logfiles()
-
     parser = ArgumentParser(description='script to display or export edgels from log files')
-    parser.add_argument("--logfile", help='log file to draw edgels from',
-                        default="logs/2019-07-05_11-45-00_Berlin United_vs_NomadZ_half2-1_93_Nao0212.log")
-
+    parser.add_argument("--logfile", help='log file to draw edgels from')
     args = parser.parse_args()
 
-    logFilePath = args.logfile
+    logFilePath = args.logfile if args.logfile else edgels.load_data()
     # init parser
     logParser = Parser()
     logParser.register("ScanLineEdgelPerceptTop", "ScanLineEdgelPercept")
