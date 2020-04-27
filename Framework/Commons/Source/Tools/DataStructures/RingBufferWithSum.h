@@ -11,7 +11,7 @@
 #define _RingBufferWithSum_h_
 
 #include <algorithm>
-#include <assert.h>
+#include <cassert>
 
 /**
  * @class RingBufferWithSum

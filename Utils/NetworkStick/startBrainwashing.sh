@@ -1,6 +1,7 @@
+#!/bin/sh
+
 # CONFIG:
 # (IPs in form "xxx.xxx.xxx"!)
-
 
 # some defaults:
 
@@ -12,11 +13,11 @@
 # NETWORK_WLAN_BROADCAST="10.0.4.255"
 
 # # SPL_B:
-# NETWORK_WLAN_SSID="SPL_B"
+# NETWORK_WLAN_SSID="SPL_A"
 # NETWORK_WLAN_PW="Nao?!Nao?!"
 # NETWORK_WLAN_IP="10.0.4"
 # NETWORK_WLAN_MASK="255.255.0.0"
-# NETWORK_WLAN_BROADCAST="10.0.4.255"
+# NETWORK_WLAN_BROADCAST="10.0.255.255"
 
 # CUSTOM:
 NETWORK_WLAN_SSID="NAONET"
@@ -89,57 +90,38 @@ copy(){
 
 # generate linux network configuration
 gen_conf_d_net(){
-  echo "generating /etc/conf.d/net . . ."
+  echo "generating $1/net . . ."
   rm -rf ./net
 
-  echo "
-  config_wlan0=\"$NETWORK_WLAN_IP netmask $NETWORK_WLAN_MASK brd $NETWORK_WLAN_BROADCAST\"
-  config_eth0=\"$NETWORK_ETH_IP netmask $NETWORK_ETH_MASK  brd $NETWORK_ETH_BROADCAST\"
-  wpa_supplicant_wlan0=\"-Dnl80211\"" > ./net
+  cat << EOF > ./net
+config_wlan0="$NETWORK_WLAN_IP netmask $NETWORK_WLAN_MASK broadcast $NETWORK_WLAN_BROADCAST"
+config_eth0="$NETWORK_ETH_IP netmask $NETWORK_ETH_MASK broadcast $NETWORK_ETH_BROADCAST"
+wpa_supplicant_wlan0="-Dnl80211"
+EOF
 
-  copy ./net /etc/conf.d/net root 644
+  copy ./net "$1/net" root 644
 }
 
 # generate wpa_supplicant configuration
 gen_wpa_supplicant(){
-  echo "generating /etc/wpa_supplicant.conf . . ."
+  echo "generating $1/wpa_supplicant.conf . . ."
   rm -rf ./wpa_supplicant.conf
 
-  echo "
-  ctrl_interface=/var/run/wpa_supplicant
-  ctrl_interface_group=0
-  ap_scan=1
+  cat << EOF > ./wpa_supplicant.conf
+ctrl_interface=/var/run/wpa_supplicant
+ctrl_interface_group=0
+ap_scan=1
 
-  network={
-    ssid=\"$NETWORK_WLAN_SSID\"
-    key_mgmt=WPA_PSK
-    psk=\"$NETWORK_WLAN_PW\"
-    priority=5
-  }" > ./wpa_supplicant.conf
-
-  copy ./wpa_supplicant.conf /etc/wpa_supplicant.conf root 644
+network={
+  ssid="$NETWORK_WLAN_SSID"
+  key_mgmt=WPA-PSK
+  psk="$NETWORK_WLAN_PW"
+  priority=5
 }
+EOF
 
-# generate connman configuration
-gen_connman_config(){
-  echo "generating /var/lib/connman/wifi.config . . ."
-  rm -rf ./wifi.config
-
-  echo "
-[global]
-Name=wifi
-Description=wifi network settings
-
-[service_$NETWORK_WLAN_SSID]
-Type = wifi
-Name = $NETWORK_WLAN_SSID
-Passphrase = $NETWORK_WLAN_PW
-IPv4 = $NETWORK_WLAN_IP/$NETWORK_WLAN_MASK/0.0.0.0
-MAC = $NETWORK_WLAN_MAC_FULL" > ./wifi.config
-
-  copy ./wifi.config /var/lib/connman/wifi.config root 644
+  copy ./wpa_supplicant.conf "$1/wpa_supplicant.conf" root 644
 }
-
 
 # ---------- network setup ---------- #
 
@@ -148,8 +130,8 @@ MAC = $NETWORK_WLAN_MAC_FULL" > ./wifi.config
 if [ ! -f "/opt/aldebaran/bin/lola" ] && [ ! -f "/usr/bin/lola" ]; then
   echo "running NAOv5 setup"
 
-  gen_conf_d_net
-  gen_wpa_supplicant
+  gen_conf_d_net "/etc/conf.d/"
+  gen_wpa_supplicant "/etc/wpa_supplicant/"
 
   /etc/init.d/net.eth0 restart
   /etc/init.d/net.wlan0 restart
@@ -158,26 +140,11 @@ if [ ! -f "/opt/aldebaran/bin/lola" ] && [ ! -f "/usr/bin/lola" ]; then
 else
   echo "running NAOv6 setup"
 
-  # disable wifi before generating new config and re-enable it afterwards
-  connmanctl disable wifi
-  gen_connman_config
-  connmanctl enable wifi
-  sleep 0.1
+  gen_conf_d_net "/home/nao/.config/"
+  gen_wpa_supplicant "/home/nao/.config/"
 
-  # scan for wifis and grep the first (matching) connman service id of the wifi
-  connmanctl scan wifi
-  service=$(connmanctl services | grep "$NETWORK_WLAN_SSID" | grep -m 1 -o "wifi.*")
-
-  # check if service / wifi is available
-  if [ ! -z $service ]; then
-    connmanctl config ${service} --autoconnect on
-    connmanctl connect ${service}
-  else
-    echo "wifi network $NETWORK_WIFI_SSID currently not available"
-  fi
-
-  echo "setting ip of eth0 (${NETWORK_ETH_MAC})"
-  connmanctl config ethernet_${NETWORK_ETH_MAC}_cable --ipv4 manual $NETWORK_ETH_IP $NETWORK_ETH_MASK 0.0.0.0
+  systemctl restart net.eth0
+  systemctl restart net.wlan0
 fi
 
 # restart 
