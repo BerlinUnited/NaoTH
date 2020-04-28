@@ -13,7 +13,7 @@ index-servers =
     gitlab
 
 [gitlab]
-repository = https://gitlab.com/api/v4/projects/3384/packages/pypi
+repository = https://scm.cms.hu-berlin.de/api/v4/projects/3384/packages/pypi
 username = __token__
 password = $PYPI_TOKEN
 EOF
