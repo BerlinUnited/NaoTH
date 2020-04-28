@@ -1,6 +1,7 @@
 apt-get update
 apt-get install -y python3 python3-pip
 pip3 install twine
+pip3 install --upgrade keyrings.alt
 
 python3 setup.py sdist bdist_wheel
 
