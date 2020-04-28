@@ -1,9 +1,8 @@
-which python
-which python3
-
+apt-get install -y python3 python3-pip
+pip3 install twine
 
 python3 setup.py sdist bdist_wheel
-pip3 install twine
+
 cat <<EOF >> .pypirc
 [distutils]
 index-servers =
