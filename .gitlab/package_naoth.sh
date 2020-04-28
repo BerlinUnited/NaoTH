@@ -7,8 +7,8 @@ index-servers =
 
 [gitlab]
 repository = https://gitlab.com/api/v4/projects/<project_id>/packages/pypi
-username = __token__
-password = <your personal access token>
+username = gitlab-ci-token
+password = $CI_JOB_TOKEN
 EOF
 
 echo "publish naoth package to Gitlab pypi"
