@@ -32,6 +32,7 @@ publish_naoth:
   script:
   - cd NaoTHSoccer/Make
   - premake5 gmake2 --protoc
+  - cd ../..
   - cd .gitlab && ./package_naoth.sh
 
 compileGame:
