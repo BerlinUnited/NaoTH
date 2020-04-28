@@ -1,3 +1,7 @@
+which python
+which python3
+
+
 python3 setup.py sdist bdist_wheel
 pip3 install twine
 cat <<EOF >> .pypirc
