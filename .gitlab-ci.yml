@@ -32,8 +32,8 @@ publish_naoth:
   script:
   - cd NaoTHSoccer/Make
   - premake5 gmake2 --protoc
-  - cd ../..
-  - cd .gitlab && ./package_naoth.sh
+  - cd ../../Utils/py/naoth
+  - ./package_naoth.sh
 
 compileGame:
   stage: nao
