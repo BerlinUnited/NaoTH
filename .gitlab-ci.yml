@@ -1,6 +1,6 @@
 stages:
- - static_analysis
  - python
+ - static_analysis
  - nao 
  - linux
 
