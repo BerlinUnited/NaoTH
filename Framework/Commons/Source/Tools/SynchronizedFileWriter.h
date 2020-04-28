@@ -1,8 +1,8 @@
 /**
-* @author 
+* @author Heinrich Mellmann <mellmann@informatik.hu-berlin.de>
 */
-#ifndef __SynchronizedFileWriter_h_
-#define __SynchronizedFileWriter_h_
+#ifndef FILEUTILS_H
+#define FILEUTILS_H
 
 #include <string>
 #include <iostream>
@@ -12,52 +12,47 @@
 #include <unistd.h>
 #endif
 
-class SynchronizedFileWriter
+namespace FileUtils
 {
-private:
-  SynchronizedFileWriter(){}
-  ~SynchronizedFileWriter(){}
 
-public:
-
-  static inline bool saveStringToFile(const std::string& content, const std::string& filename)
-  {
-    FILE* file = NULL;
+static inline bool writeStringToFile(const std::string& content, const std::string& filename)
+{
+  FILE* file = NULL;
 #ifdef WIN32
-    fopen_s(&file, filename.c_str(), "wb");
+  fopen_s(&file, filename.c_str(), "wb");
 #else
-    file = fopen(filename.c_str(), "wb");
+  file = fopen(filename.c_str(), "wb");
 #endif
-    if (file != NULL) 
-    {
-      size_t byteWrite = fwrite(content.c_str(), 1, content.size(), file);
-
-      if ( byteWrite != content.size() )
-      {
-        printf("SynchronizedFileWriter write failed to %s", filename.c_str());
-      }
-
-      // synchronize with the filesystem, 
-      // i.e., purge the fs buffer to the disk
-#ifdef NAO
-      int fd = fileno(file);
-      fsync(fd);
-#endif
-
-      fclose(file);
-      return true;
-    }//end if
-
-    return false;
-  }//end saveStreamToFile
-
-
-  static inline bool saveStreamToFile(const std::stringstream& content, const std::string& filename)
+  if (file != NULL) 
   {
-    std::string str = content.str();
-    return saveStringToFile(str, filename);
-  }//end saveStreamToFile
+    size_t byteWrite = fwrite(content.c_str(), 1, content.size(), file);
 
-}; //end class SynchronizedFileWriter
+    if ( byteWrite != content.size() )
+    {
+      printf("SynchronizedFileWriter write failed to %s", filename.c_str());
+    }
 
+    // synchronize with the filesystem, 
+    // i.e., purge the fs buffer to the disk
+#ifdef NAO
+    int fd = fileno(file);
+    fsync(fd);
 #endif
+
+    fclose(file);
+    return true;
+  }//end if
+
+  return false;
+}
+
+
+static inline bool writeStreamToFile(const std::stringstream& content, const std::string& filename)
+{
+  std::string str = content.str();
+  return writeStringToFile(str, filename);
+}
+
+};
+
+#endif // FILEUTILS_H

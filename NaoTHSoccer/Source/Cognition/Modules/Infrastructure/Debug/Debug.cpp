@@ -162,7 +162,7 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
       {
         const string& str = cIter->second;
         //int tmp = str.size();
-        if(SynchronizedFileWriter::saveStringToFile(str, fileName))
+        if(FileUtils::writeStringToFile(str, fileName))
           outstream << fileName << " successfull written.";
         else
           outstream << fileName << " couldn't write file " << fileName;

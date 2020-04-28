@@ -43,7 +43,7 @@ void Trace::dump()
   // write to file
   std::stringstream dumpName;
   dumpName << "trace.dump." << naoth::NaoTime::getSystemTimeInMicroSeconds();
-  SynchronizedFileWriter::saveStreamToFile(sstream, dumpName.str());
+  FileUtils::writeStreamToFile(sstream, dumpName.str());
 }//end dump
 
  
