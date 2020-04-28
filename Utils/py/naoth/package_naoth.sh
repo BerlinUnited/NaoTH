@@ -5,6 +5,8 @@ pip3 install --upgrade keyrings.alt  # https://github.com/python-poetry/poetry/i
 
 python3 setup.py sdist bdist_wheel
 
+# $PYPI_TOKEN comes from gitlab settings
+
 cat <<EOF >> .pypirc
 [distutils]
 index-servers =
@@ -12,8 +14,8 @@ index-servers =
 
 [gitlab]
 repository = https://gitlab.com/api/v4/projects/3384/packages/pypi
-username = gitlab-ci-token
-password = $CI_JOB_TOKEN
+username = __token__
+password = $PYPI_TOKEN
 EOF
 
 echo "publish naoth package to Gitlab pypi"
