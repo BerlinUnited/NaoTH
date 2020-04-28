@@ -1,5 +1,5 @@
-python setup.py sdist bdist_wheel
-pip install twine
+python3 setup.py sdist bdist_wheel
+pip3 install twine
 cat <<EOF >> .pypirc
 [distutils]
 index-servers =
