@@ -4,6 +4,8 @@
 #include <ModuleFramework/Module.h>
 #include <Representations/Perception/CameraMatrix.h>
 
+#include <Tools/NaoInfo.h>
+
 #include <Tools/Debug/DebugModify.h>
 
 using namespace naoth;
