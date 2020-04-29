@@ -39,7 +39,7 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
 	// NOTE: we call convexHull here to make sure the points are in the same 
 	// order as with the regular calculations
     // convex hull calculation sorts endpoints in clockwise order
-	// TODO: check is polygon needs first and last point to be the same
+	// TODO: check if polygon needs first and last point to be the same
     std::vector<Vector2i> result = ConvexHull::convexHull(endpoints);
 
 	// TODO: why is convexHull not producing Polygon directly?
@@ -49,10 +49,10 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
       fieldPoly.add(result[i]);
     }
 
-	// TODO: is this needed at this place (params.set_whole_image_as_field)?
+	  // TODO: is this needed at this place (params.set_whole_image_as_field)?
     getFieldPercept().setField(fieldPoly, getArtificialHorizon());
 
-	// TODO: (MAGIC NUMBE) is this necessary?  if yes why is it not a parameter?
+	  // TODO: (MAGIC NUMBER) is this necessary?  if yes why is it not a parameter?
     if(fieldPoly.getArea() >= 5600) {
       getFieldPercept().valid = true;
     }
