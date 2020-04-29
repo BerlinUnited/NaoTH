@@ -1,8 +1,4 @@
-apt-get update
-apt-get install -y python3 python3-pip
-pip3 install twine
-pip3 install --upgrade keyrings.alt  # https://github.com/python-poetry/poetry/issues/1968
-
+echo "build naoth package"
 python3 setup.py sdist bdist_wheel
 
 # $PYPI_TOKEN comes from gitlab settings
