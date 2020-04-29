@@ -25,10 +25,8 @@ cppcheck:
 publish_naoth:
   stage: python
   only:
-    refs:
-      - web
-      - merge_requests
-      - triggers
+    variables:
+      - $PIP
   script:
   - cd NaoTHSoccer/Make
   - premake5 gmake2 --protoc
