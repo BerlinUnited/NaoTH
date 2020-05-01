@@ -1,6 +1,6 @@
 
-#ifndef _WHISTLE_PERCEPT_H
-#define _WHISTLE_PERCEPT_H
+#ifndef WHISTLE_PERCEPT_H
+#define WHISTLE_PERCEPT_H
 
 #include <string>
 #include <vector>
@@ -63,5 +63,5 @@ namespace naoth
   };
 }
 
-#endif  /* _WHISTLE_PERCEPT_H */
+#endif  /* WHISTLE_PERCEPT_H */
 

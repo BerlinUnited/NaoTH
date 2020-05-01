@@ -1,5 +1,5 @@
-#ifndef _WHISTLEDETECTOR_V1_H
-#define _WHISTLEDETECTOR_V1_H
+#ifndef WHISTLEDETECTOR_V1_H
+#define WHISTLEDETECTOR_V1_H
 
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/AudioData.h>
@@ -40,4 +40,4 @@ public:
 	} params;
 
 };
-#endif // _WHISTLEDETECTOR_V1_H
+#endif // WHISTLEDETECTOR_V1_H
