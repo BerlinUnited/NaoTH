@@ -9,7 +9,7 @@
 #include "Debug.h"
 
 #include <PlatformInterface/Platform.h>
-#include <Tools/SynchronizedFileWriter.h>
+#include <Tools/FileUtils.h>
 
 // needed for sleep_for in debug kill 
 #include "Tools/ThreadUtil.h"
