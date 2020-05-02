@@ -9,7 +9,7 @@
 #include "Trace.h"
 #include "NaoTHAssert.h"
 #include <sstream>
-#include "Tools/SynchronizedFileWriter.h"
+#include "Tools/FileUtils.h"
 #include "Tools/NaoTime.h"
 #include <string.h>
 

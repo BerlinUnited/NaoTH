@@ -9,7 +9,7 @@
 
 #include <sstream>
 
-#include "Tools/SynchronizedFileWriter.h"
+#include "Tools/FileUtils.h"
 #include "Tools/NaoTime.h"
 
 #include "Messages/Messages.pb.h"
