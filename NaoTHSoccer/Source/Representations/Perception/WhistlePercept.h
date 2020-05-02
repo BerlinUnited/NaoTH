@@ -32,7 +32,7 @@ namespace naoth
     std::vector<Whistle> recognizedWhistles;
     std::string captureFile;
 
-    // NOTE: obsolete, this is here for documentation purposes
+    // for counting the detected whistles. It will never be reset
     int counter;
 
     bool whistleDetected;
@@ -44,7 +44,6 @@ namespace naoth
     void reset()
     {
       recognizedWhistles.clear();
-      counter = 0; // NOTE: obsolete?
       whistleDetected = false;
     }
 

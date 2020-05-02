@@ -36,8 +36,9 @@ void WhistleDetectorV1::execute()
 
     int sum = std::accumulate(samples.begin(), samples.end(), 0);
     if (sum > params.threshold) {
-      std::cout << "Whistle Detected with sample sum: " << sum << std::endl;
+      // std::cout << "Whistle Detected with sample sum: " << sum << std::endl;
       getWhistlePercept().whistleDetected = true;
+      getWhistlePercept().counter += 1;
     }
   }
   //std::cout << "WhistleDetector V1 not running" << std::endl;

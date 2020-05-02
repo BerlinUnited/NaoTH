@@ -6,7 +6,7 @@
 using namespace naoth;
 
 WhistlePercept::WhistlePercept():
-  counter(0), // NOTE: obsolete
+  counter(0),
   whistleDetected(false)
 {
 }
