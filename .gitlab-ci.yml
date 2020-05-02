@@ -1,4 +1,5 @@
 stages:
+ - python
  - static_analysis
  - nao 
  - linux
@@ -20,7 +21,18 @@ cppcheck:
   artifacts:
     paths: [test1]
     expire_in: 1 week
-    
+
+publish_naoth:
+  stage: python
+  only:
+    variables:
+      - $PIP
+  script:
+  - cd NaoTHSoccer/Make
+  - premake5 gmake2 --protoc
+  - cd ../../Utils/py/naoth
+  - ./package_naoth.sh
+
 compileGame:
   stage: nao
   only:
