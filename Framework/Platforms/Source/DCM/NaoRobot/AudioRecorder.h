@@ -1,12 +1,12 @@
-#ifndef _AudioRecorder_H
-#define _AudioRecorder_H
+
+#ifndef AudioRecorder_H
+#define AudioRecorder_H
+
 #include <thread>
 #include <mutex>
 #include <iostream>
 #include <pulse/simple.h>
 #include <condition_variable>
-
-//#include "SoundConfig.h"
 
 #include "Representations/Infrastructure/AudioData.h"
 #include "Representations/Infrastructure/AudioControl.h"
@@ -50,4 +50,4 @@ namespace naoth
   };
 }
 
-#endif // _AudioRecorder_H
+#endif // AudioRecorder_H
