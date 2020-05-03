@@ -2,7 +2,7 @@
   @file AudioRecorder.h
   @author Heinrich Mellmann <mellmann@informatik.hu-berlin.de>
   
-  Records raw sound using PulseAudio. Recording is threaded and is performed blockwise with double buffereing.
+  Records raw sound using PulseAudio. Recording is threaded and is performed blockwise with double buffering.
   
   INFO: Get Information about sound devices and configs:
 
