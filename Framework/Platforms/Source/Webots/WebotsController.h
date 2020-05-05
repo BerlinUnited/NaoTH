@@ -42,6 +42,8 @@
 #include "sfsexp/SexpParser.h"
 #include <Extern/libb64/decode.h>
 #include <Extern/libb64/encode.h>
+#include <msgpack.hpp>
+
 #include <set>
 #include <mutex>
 #include <condition_variable>
@@ -57,7 +59,7 @@ private:
   std::string thePlatformName;
 
   GSocket* socket;
-  PrefixedSocketStream theSocket;
+  SocketStream theSocket;
 
   // sensor data
   std::map<std::string, JointData::JointID> theJointSensorNameMap;

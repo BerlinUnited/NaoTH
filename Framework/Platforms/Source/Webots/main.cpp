@@ -35,7 +35,7 @@ int main(int argc, char** argv)
   string modelPath = "rsg/agent/naov4/nao.rsg";
   gchar* optModelPath = NULL;
   gchar* optServer = NULL;
-  unsigned int port = 3100;
+  unsigned int port = 1412;
   gboolean sync = false;
   
   GOptionEntry entries[] = {

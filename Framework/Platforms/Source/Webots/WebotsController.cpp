@@ -190,7 +190,7 @@ bool WebotsController::connect(const std::string& host, int port)
     g_object_unref(sockaddr);
   }
   g_object_unref(enumerator);
-
+  std::cout << "blabla" << std::endl;
   if (conn)
   {
     /**
@@ -254,7 +254,7 @@ bool WebotsController::init(const std::string& modelPath, const std::string& tea
 
   // connect to the simulator
   if(!connect(server, port)) {
-    std::cerr << "SimSparkController could not connect" << std::endl;
+    std::cerr << "WebotsController could not connect" << std::endl;
     return false;
   }
   theSocket.init(socket);
@@ -265,6 +265,18 @@ bool WebotsController::init(const std::string& modelPath, const std::string& tea
 
   // wait the response
   getSensorData(theSensorData);
+
+  std::cout << theSensorData << std::endl;
+  // Test the message pack parsing
+  msgpack::object_handle oh =
+    msgpack::unpack(theSensorData.data(), theSensorData.size());
+
+  // deserialized object is valid during the msgpack::object_handle instance is alive.
+  msgpack::object deserialized = oh.get();
+
+  // msgpack::object supports ostream.
+  std::cout << deserialized << std::endl;
+
   updateSensors(theSensorData);
 
   // initialize the teamname and number
