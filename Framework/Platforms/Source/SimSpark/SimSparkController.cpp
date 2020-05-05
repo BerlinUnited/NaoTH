@@ -2,7 +2,7 @@
  * @file SimSparkController.cpp
  *
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
- * @breief Interface for the SimSpark simulator
+ * @brief Interface for the SimSpark simulator
  *
  */
 
@@ -575,7 +575,7 @@ bool SimSparkController::updateSensors(std::string& msg)
           }
 
           //HACK: assume the image is behind of "See"
-          int offset = paseImage(pcont->lastPos);
+          int offset = parseImage(pcont->lastPos);
           pcont->lastPos = &(pcont->lastPos[offset]);
           isNewImage = offset > 0;
         }
@@ -668,7 +668,7 @@ int SimSparkController::parseInt(char* data, int& value)
 }
 
 
-int SimSparkController::paseImage(char* data)
+int SimSparkController::parseImage(char* data)
 {
   //(IMG (s 320 240) (
 
