@@ -68,15 +68,25 @@ def project_edgel(x, y, cam_matrix):
 
 def animate(i, log_iterator, edgels_plot_top, edgels_plot, projected_edgels_plot):
     # TODO use for and yield here
-    msg = log_iterator.__next__()
+    msg = next(log_iterator)
 
     edgel_frame = [(edgel.point.x, -edgel.point.y) for edgel in msg[1].edgels]
-    edgels_plot_top.set_offsets(edgel_frame)
+    if edgel_frame:
+        edgels_plot_top.set_offsets(edgel_frame)
+    # set plot visible if current edgel_frame contains edgels
+    edgels_plot_top.set_visible(edgel_frame)
 
     edgel_frame = [(edgel.point.x, -edgel.point.y) for edgel in msg[2].edgels]
-    edgels_plot.set_offsets(edgel_frame)
+    if edgel_frame:
+        edgels_plot.set_offsets(edgel_frame)
+    # set plot visible if current edgel_frame contains edgels
+    edgels_plot.set_visible(edgel_frame)
 
-    projected_edgels_plot.set_offsets(msg[3] + msg[4])
+    projected_edgels = msg[3] + msg[4]
+    if projected_edgels:
+        projected_edgels_plot.set_offsets(projected_edgels)
+    # set plot visible if projected_edgels contains edgels
+    projected_edgels_plot.set_visible(projected_edgels)
 
 
 if __name__ == "__main__":
