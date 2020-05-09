@@ -51,7 +51,7 @@ def get_y_angle(m):
 
 def image_from_proto(message):
     # read each channel of yuv422 separately
-    yuv422 = np.fromstring(message.data, dtype=np.uint8)
+    yuv422 = np.frombuffer(message.data, dtype=np.uint8)
     y = yuv422[0::2]
     u = yuv422[1::4]
     v = yuv422[3::4]
@@ -186,10 +186,12 @@ if __name__ == "__main__":
     if args.task == "export":
         for log in logfile_list:
             # TODO speed up wie in anderen script?
-            images = map(get_images, LogReader(log, myParser))
-            export_images(log, images)
+            with LogReader(log, myParser) as reader:
+                images = map(get_images, reader)
+                export_images(log, images)
 
     if args.task == "show":
         for log in logfile_list:
-            images = map(get_images, LogReader(log, myParser))
-            show_images(images)
+            with LogReader(log, myParser) as reader:
+                images = map(get_images, reader)
+                show_images(images)
