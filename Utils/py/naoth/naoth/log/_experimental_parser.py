@@ -64,6 +64,7 @@ class SymbolParser:
         self.boolean_id_to_name = {boolean.id: boolean.name for boolean in symbol_list.boolean}
 
         self.enum_id_to_type = {enum.id: enum_types[enum.typeId] for enum in symbol_list.enumerated}
+        self.enum_id_to_name = {enum.id: enum.name for enum in symbol_list.enumerated}
 
     def parse_symbols(self, symbol_list):
         for decimal in symbol_list.decimal:
@@ -74,7 +75,8 @@ class SymbolParser:
 
         for enum in symbol_list.enumerated:
             enum_type = self.enum_id_to_type[enum.id]
-            yield enum_type.__name__, enum_type(enum.value)
+            instance_name = self.enum_id_to_name[enum.id]
+            yield instance_name, enum_type(enum.value)
 
 
 class BehaviorFrame:
@@ -170,7 +172,7 @@ class BehaviorParser:
                     type = self.enum_types[parameter.enumTypeId]
                     parsed_option.parameters[parameter.name] = type(next(enums))
                 else:
-                    raise ValueError(f'Parameter type {parameter.type} not implemented')
+                    raise NotImplementedError(f'Parameter type {parameter.type} not implemented')
 
             for sub_action in option_sparse.option.activeSubActions:
                 action, name, parsed_sub_action = self._parse_options(sub_action)
@@ -179,27 +181,30 @@ class BehaviorParser:
                 elif action == XABSLAction.XABSLSymbol:
                     parsed_option.symbols[name] = parsed_sub_action
                 else:
-                    raise ValueError(f'Action {action} not implemented.')
+                    raise NotImplementedError(f'Action {action} not implemented.')
 
             return XABSLAction.XABSLOption, option_complete.name, parsed_option
 
         elif _pb.Messages_pb2.XABSLActionSparse.ActionType.Name(option_sparse.type) == 'SymbolAssignement':
             symbol = option_sparse.symbol
 
-            if _pb.Messages_pb2.XABSLActionSparse.SymbolType.Name(symbol.type) == 'Decimal':
+            if _pb.Messages_pb2.XABSLSymbol.SymbolType.Name(symbol.type) == 'Decimal':
                 name = self._output_symbol_parser.decimal_id_to_name[symbol.id]
                 value = symbol.decimalValue
-            elif _pb.Messages_pb2.XABSLActionSparse.SymbolType.Name(symbol.type) == 'Boolean':
+            elif _pb.Messages_pb2.XABSLSymbol.SymbolType.Name(symbol.type) == 'Boolean':
                 name = self._output_symbol_parser.boolean_id_to_name[symbol.id]
                 value = symbol.boolValue
-            elif _pb.Messages_pb2.XABSLActionSparse.SymbolType.Name(symbol.type) == 'Enum':
+            elif _pb.Messages_pb2.XABSLSymbol.SymbolType.Name(symbol.type) == 'Enum':
                 enum_type = self._output_symbol_parser.enum_id_to_type[symbol.id]
                 name = enum_type.__name__
                 value = enum_type(symbol.enumValue)
             else:
-                raise ValueError(f'XABSLSymbol type {_pb.Messages_pb2.XABSLActionSparse.SymbolType.Name(symbol.type)} not implemented.')
+                raise NotImplementedError(f'XABSLSymbol type {_pb.Messages_pb2.XABSLSymbol.SymbolType.Name(symbol.type)} not implemented.')
 
             return XABSLAction.XABSLSymbol, name, value
+
+        else:
+            raise NotImplementedError(f'ActionType {_pb.Messages_pb2.XABSLActionSparse.ActionType.Name(option_sparse.type)} not implemented')
 
     def parse(self, behavior_state):
         """
