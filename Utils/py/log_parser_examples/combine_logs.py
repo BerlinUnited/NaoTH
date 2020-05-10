@@ -81,7 +81,6 @@ if __name__ == "__main__":
 
                 frame.add_message_member(image_name, msg)
 
-                print('Writing frame', frame.number)
                 output.write(bytes(frame))
 
                 # Frames are indexed by the log reader. Remove the image of already processed frames to preserve memory
