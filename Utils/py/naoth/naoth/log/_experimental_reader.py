@@ -1,3 +1,4 @@
+import os
 import struct as _struct
 from ._parser import Parser
 
@@ -295,6 +296,8 @@ class Frame:
 class Reader:
     def __init__(self, path, parser=Parser()):
         self.log_file = open(path, 'rb')
+        self.log_file_size = os.path.getsize(path)
+
         self.scanner = Scanner(self.log_file)
         self.parser = parser
 
@@ -390,11 +393,13 @@ class Reader:
 
         # End of file is reached, yield the last log file frame
         if frame is not None and frame.members:
-            self.frames.append(frame)
+            # check if the last frame is complete
+            if frame.start + len(frame) < self.log_file_size:
+                self.frames.append(frame)
 
-            # only yield frames from the start
-            if start_idx < len(self.frames):
-                yield frame
+                # only yield frames from the start
+                if start_idx < len(self.frames):
+                    yield frame
 
     def read(self):
         """
