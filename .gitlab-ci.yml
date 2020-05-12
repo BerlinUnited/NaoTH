@@ -10,7 +10,9 @@ default:
 cppcheck:
   stage: static_analysis
   rules:
-     - if: $CI_MERGE_REQUEST_ID
+     - if: $CI_MERGE_REQUEST_ID  # should use target develop
+     - if: '$CI_PIPELINE_SOURCE == "web"'
+     - if: '$CI_PIPELINE_SOURCE == "trigger"'
   script:
   - cppcheck -j 4 --enable=all --inconclusive --xml --xml-version=2 . 2> cppcheck-result.xml
   - cppcheck-htmlreport --file=cppcheck-result.xml --report-dir=test1 --source-dir=.
