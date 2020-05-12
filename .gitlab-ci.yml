@@ -9,11 +9,9 @@ default:
 
 cppcheck:
   stage: static_analysis
-  only:
+  rules:
     refs:
-      - web
-      - merge_requests
-      - triggers
+     - if: $CI_MERGE_REQUEST_ID
   script:
   - cppcheck -j 4 --enable=all --inconclusive --xml --xml-version=2 . 2> cppcheck-result.xml
   - cppcheck-htmlreport --file=cppcheck-result.xml --report-dir=test1 --source-dir=.
