@@ -10,7 +10,6 @@ default:
 cppcheck:
   stage: static_analysis
   rules:
-    refs:
      - if: $CI_MERGE_REQUEST_ID
   script:
   - cppcheck -j 4 --enable=all --inconclusive --xml --xml-version=2 . 2> cppcheck-result.xml
