@@ -9,7 +9,7 @@
 #include "Debug.h"
 
 #include <PlatformInterface/Platform.h>
-#include <Tools/SynchronizedFileWriter.h>
+#include <Tools/FileUtils.h>
 
 // needed for sleep_for in debug kill 
 #include "Tools/ThreadUtil.h"
@@ -162,7 +162,7 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
       {
         const string& str = cIter->second;
         //int tmp = str.size();
-        if(SynchronizedFileWriter::saveStringToFile(str, fileName))
+        if(FileUtils::writeStringToFile(str, fileName))
           outstream << fileName << " successfull written.";
         else
           outstream << fileName << " couldn't write file " << fileName;
