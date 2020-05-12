@@ -339,6 +339,7 @@ class Reader:
             raise ValueError(f'Start index <{start_idx}> must be positive!')
 
         # yield frames already read
+        # len(self.frames) is number of scanned/parsed? frames  # TODO is this comment correct?
         while start_idx < len(self.frames):
             yield self.frames[start_idx]
             start_idx += 1
