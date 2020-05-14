@@ -23,9 +23,8 @@ cppcheck:
 
 publish_naoth:
   stage: python
-  only:
-    variables:
-      - $PIP
+  rules:
+    - if: '$PIP'
   script:
   - cd NaoTHSoccer/Make
   - premake5 gmake2 --protoc
