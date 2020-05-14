@@ -10,7 +10,7 @@ default:
 cppcheck:
   stage: static_analysis
   rules:
-     - if: $CI_MERGE_REQUEST_ID  # should use target develop
+     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
      - if: '$CI_PIPELINE_SOURCE == "web"'
      - if: '$CI_PIPELINE_SOURCE == "trigger"'
   script:
