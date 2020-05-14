@@ -79,7 +79,7 @@ if __name__ == "__main__":
                 msg.format = Image.YUV422
                 msg.data = image_data
 
-                frame.add_message_member(image_name, msg)
+                frame.add_field(image_name, msg)
 
                 output.write(bytes(frame))
 

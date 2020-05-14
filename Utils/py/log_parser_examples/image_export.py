@@ -153,7 +153,7 @@ def show_images(img):
         im1 = ax[0].imshow(img_t, animated=True)
         im2 = ax[1].imshow(img_b, animated=True)
         image_container.append([im1, im2])
-        print("processing images from frame ", i)
+        print("processing images from frame", i)
 
     ani = animation.ArtistAnimation(fig, image_container, interval=50, blit=True,
                                     repeat_delay=1000)
@@ -187,11 +187,11 @@ if __name__ == "__main__":
         for log in logfile_list:
             # TODO speed up wie in anderen script?
             with LogReader(log, myParser) as reader:
-                images = map(get_images, reader)
+                images = map(get_images, reader.read())
                 export_images(log, images)
 
     if args.task == "show":
         for log in logfile_list:
             with LogReader(log, myParser) as reader:
-                images = map(get_images, reader)
+                images = map(get_images, reader.read())
                 show_images(images)
