@@ -34,28 +34,28 @@ publish_naoth:
 
 compileGame:
   stage: nao
-  only:
-    refs:
-      - web
-      - merge_requests
-      - triggers
-    changes:
+  rules:
+     - changes: 
       - Framework/**/*
       - NaoTHSoccer/**/*
+     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
+     - if: '$CI_PIPELINE_SOURCE == "web"'
+     - if: '$CI_PIPELINE_SOURCE == "trigger"'
+     - when: on_success # If neither of the first rules match, set to on_success
   script:
   - cd NaoTHSoccer/Make
   - ./compileGame.sh -j 4
 
 compileLocal:
   stage: linux
-  only:
-    refs:
-      - web
-      - merge_requests
-      - triggers
-    changes:
+  rules:
+     - changes: 
       - Framework/**/*
       - NaoTHSoccer/**/*
+     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
+     - if: '$CI_PIPELINE_SOURCE == "web"'
+     - if: '$CI_PIPELINE_SOURCE == "trigger"'
+     - when: on_success # If neither of the first rules match, set to on_success
   script:
   - cd NaoTHSoccer/Make
   - premake5 gmake2 --protoc
