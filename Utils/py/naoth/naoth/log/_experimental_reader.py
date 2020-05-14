@@ -23,7 +23,7 @@ For more information on log file frames, see the documentation in the Frame clas
 
 # frame parsing example
 for frame in reader.read():
-    # retrieve data some data from the frame...
+    # retrieve some data from the frame...
 """
 
 
@@ -510,6 +510,46 @@ class Reader:
                 # only return frame if it comes after the given start index
                 if start_idx < len(self.frames):
                     yield frame
+
+    def diet_read(self):
+        """
+        Same as "read", but does not create a frame index and preserves memory (len(self.frames) will stay 0).
+        Useful if the log file is very large and only a single pass through is required.
+        """
+        # read frames from the log file
+        self.scanner.set_scan_position(0)
+        frame = None
+        while True:
+            # read next NaoTH representation from log file
+            try:
+                start_of_field, current_frame_number, name, payload_pos = self.scanner.scan_field()
+            except EOFError:
+                # stop reading
+                break
+
+            # Decide which frame the read NaoTH representation is part of
+            if frame is None:
+                # create a new frame
+                frame = Frame(start_of_field, current_frame_number, self.scanner, self.parser)
+            elif current_frame_number != frame.number:
+                # frame number does not match, read NaoTH representation is part of a new frame
+
+                # before creating a new frame, finish up the last one and return it
+                yield frame
+
+                # create new frame
+                frame = Frame(start_of_field, current_frame_number, self.scanner, self.parser)
+
+            # Add the read NaoTH representation to its frame
+            position, size = payload_pos
+            frame.add_field_position(name, position, size)
+            self.scanner.set_scan_position(position + size)
+
+        # End of file is reached, return the last log file frame
+        if frame is not None and frame.get_names():
+            # check if the last frame is complete
+            if frame.start + len(frame) <= self.log_file_size:
+                yield frame
 
     def __getitem__(self, i):
         """
