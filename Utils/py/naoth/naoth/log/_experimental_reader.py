@@ -23,7 +23,7 @@ For more information on log file frames, see the documentation in the Frame clas
 
 # frame parsing example
 for frame in reader.read():
-    # retrieve data some data from the frame...
+    # retrieve some data from the frame...
 """
 
 
