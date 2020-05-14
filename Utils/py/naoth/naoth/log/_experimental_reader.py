@@ -432,18 +432,18 @@ class Reader:
     def read(self, start_idx=0):
         """
         Creates an iterator over the log file frames implemented using pythons generator functions.
-        With the "yield" keyword, we return the next frame of the iterator.
+        With the "yield" keyword, we return the next Frame instance for the iterator.
 
-        # Usage:
+        # Example iteration using the read method
         for frame in reader.read():
             # do something with the frame
 
         :param start_idx: First frame for starting the iterator (default: 0 iterate over all frames).
         """
         if start_idx < 0:
-            raise ValueError(f'Start index <{start_idx}> must be positive!')
+            raise IndexError(f'Start index <{start_idx}> must be positive!')
 
-        # return frames which where already indexed
+        # return frames which were already indexed
         while start_idx < len(self.frames):
             yield self.frames[start_idx]
             start_idx += 1
@@ -461,6 +461,7 @@ class Reader:
             try:
                 start_of_field, current_frame_number, name, payload_pos = self.scanner.scan_field()
             except EOFError:
+                # stop reading
                 self.eof_reached = True
                 break
 
@@ -473,18 +474,20 @@ class Reader:
 
                 # before creating a new frame, finish up the last one and return it
                 self.frames.append(frame)
-                self.furthest_scan_position = start_of_field
                 idx += 1
                 # only return frames which come after the given start index
                 if start_idx < len(self.frames):
                     yield frame
 
                     if idx < len(self.frames):
-                        # After we yielded, another iterator was advanced further (has read more frames).
-                        # Return already indexed frames and restart the log file scan at the end of the index
+                        # After we yielded, another read iterator was advanced further (has read more frames).
+                        # This can happen for example, if the user calls the __getitem__ method for a bigger index.
+                        # Return already indexed frames and restart the log file scan at the end of that index.
                         while idx < len(self.frames):
                             yield self.frames[idx]
                             idx += 1
+                        if self.eof_reached:
+                            return
                         # reset scan
                         frame = None
                         self.scanner.set_scan_position(self.furthest_scan_position)
@@ -496,11 +499,12 @@ class Reader:
             # Add the read NaoTH representation to its frame
             position, size = payload_pos
             frame.add_field_position(name, position, size)
+            self.furthest_scan_position = position + size
 
-        # End of file is reached, yield the last log file frame
+        # End of file is reached, return the last log file frame
         if frame is not None and frame.get_names():
             # check if the last frame is complete
-            if frame.start + len(frame) < self.log_file_size:
+            if frame.start + len(frame) <= self.log_file_size:
                 self.frames.append(frame)
 
                 # only return frame if it comes after the given start index
@@ -515,10 +519,11 @@ class Reader:
         3rd_frame = reader[2]
         """
         if i >= len(self.frames):
+            # frame i was not indexed yet, read more frames
             try:
-                next(self.read(start_idx=i))
+                return next(self.read(start_idx=i))
             except StopIteration:
-                return None
+                raise IndexError
         return self.frames[i]
 
     def file_path(self):
