@@ -43,6 +43,18 @@ class TestLogReader(unittest.TestCase):
 
         self.assertEqual(reader.log_file_size, parsed_size)
 
+    def test_diet_read_size(self):
+        """
+        Test if the whole log file was read correctly.
+        """
+        parsed_size = 0
+        with Reader(self.log_path) as reader:
+            for frame in reader.diet_read():
+                self.assertIsNotNone(frame)
+                parsed_size += len(bytes(frame))
+
+        self.assertEqual(reader.log_file_size, parsed_size)
+
     def test_get_item(self):
         """
         Test if the __getitem__ function returns all frames correctly.
