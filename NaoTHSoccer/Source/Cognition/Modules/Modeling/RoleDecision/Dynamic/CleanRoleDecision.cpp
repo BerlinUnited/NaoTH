@@ -6,7 +6,6 @@
 
 #include "CleanRoleDecision.h"
 #include <PlatformInterface/Platform.h>
-#include <Tools/DataConversion.h>
 
 #include <list>
 

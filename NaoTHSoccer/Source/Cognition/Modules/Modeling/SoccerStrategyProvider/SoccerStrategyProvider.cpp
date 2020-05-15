@@ -7,7 +7,7 @@
 
 #include "SoccerStrategyProvider.h"
 #include <PlatformInterface/Platform.h>
-#include  <Tools/DataConversion.h>
+#include <Tools/StringTools.h>
 
 using namespace std;
 
@@ -24,7 +24,7 @@ SoccerStrategyProvider::FormationParameters::FormationParameters(unsigned int pl
   ASSERT( config.hasGroup(group) );
 
   num = playerNumber;
-  string p = "player"+DataConversion::toStr(playerNumber)+".";
+  string p = "player"+StringTools::toStr(playerNumber)+".";
   home.x = config.getDouble(group, p+"home.x");
   home.y = config.getDouble(group, p+"home.y");
   attr.x = config.getDouble(group, p+"attr.x");
