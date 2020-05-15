@@ -8,7 +8,7 @@
  */
 
 #include "Configuration.h"
-#include "Tools/DataConversion.h"
+#include "Tools/StringTools.h"
 #include "Tools/Debug/NaoTHAssert.h"
 
 #include <iostream>
@@ -343,12 +343,12 @@ void Configuration::setDouble(const std::string& group, const std::string& key, 
 {
   //g_key_file_set_double(privateKeyFile, group.c_str(), key.c_str(), value);
   // the function above produce unecessary zeros
-  g_key_file_set_string(privateKeyFile, group.c_str(), key.c_str(), DataConversion::toStr(value).c_str());
+  g_key_file_set_string(privateKeyFile, group.c_str(), key.c_str(), StringTools::toStr(value).c_str());
 }
 
 void Configuration::setDefault(const std::string& group, const std::string& key, double value)
 {
-  g_key_file_set_string(publicKeyFile, group.c_str(), key.c_str(), DataConversion::toStr(value).c_str());
+  g_key_file_set_string(publicKeyFile, group.c_str(), key.c_str(), StringTools::toStr(value).c_str());
 }
 
 bool Configuration::getBool(const std::string& group, const std::string& key) const

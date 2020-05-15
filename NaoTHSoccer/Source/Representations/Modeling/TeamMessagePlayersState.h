@@ -4,7 +4,6 @@
 #include <map>
 #include <algorithm>
 
-#include "Tools/NaoTime.h"
 #include "Tools/DataStructures/Printable.h"
 
 using namespace naoth;
