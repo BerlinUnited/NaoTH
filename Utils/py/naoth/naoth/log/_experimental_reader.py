@@ -1,8 +1,30 @@
+import os
 import struct as _struct
-from ._parser import Parser
+from ._experimental_parser import Parser
 
 # protobuf
 from google.protobuf.message import Message as _Message
+
+"""
+NaoTH log file parsing implementation in python 3.
+
+Open a NaoTH log file over the Reader class. For easy cleanup, the use of pythons "with" keyword is supported and 
+highly recommended:
+
+# open a log file example
+with Reader('naoth_logfile.log') as reader:
+    # parse log file frames... 
+    # Note: All operations on the reader and its parsed log file frames must be contained in this scope
+    
+If you don't make use of the "with" keyword, make sure to close the reader by calling reader.close()
+
+Log file frames can be parsed using the reader.read() method. This function implements an iterator returning Frame instances.
+For more information on log file frames, see the documentation in the Frame class.
+
+# frame parsing example
+for frame in reader.read():
+    # retrieve some data from the frame...
+"""
 
 
 class FrameParseException(Exception):
@@ -11,7 +33,7 @@ class FrameParseException(Exception):
 
 class Scanner:
     """
-    Scans log file for frame member positions
+    Interface to the log file handle. Allows scanning the log file for positions of NaoTH representations.
     """
 
     def __init__(self, log_file):
@@ -50,9 +72,9 @@ class Scanner:
         return ''.join(chars)
 
     @staticmethod
-    def frame_member_size(name, payload_size):
+    def size_of_field(name, payload_size):
         """
-        Calculates the byte string size of a frame member in the log file
+        Calculates the byte string size of a NaoTH representation in the log file
         :param name: of member
         :param payload_size
         :returns sizeOf(frame number) + sizeOf(name + '\0') + sizeOf(payload size) + payload size
@@ -61,18 +83,18 @@ class Scanner:
 
     def set_scan_position(self, frame_start_position):
         """
-        Set the position of the frame scanner. BEWARE: Must be where a frame member starts
-        :param frame_start_position: position in log file where a frame member starts
+        Sets the position of the scanner. BEWARE: Must be the start of a NaoTH representation in the log file.
+        :param frame_start_position: position in log file where a NaoTH representation starts
         """
         self._scan_position = frame_start_position
 
-    def scan_frame_member(self):
+    def scan_field(self):
         """
-        Reads name and payload positions of the next frame member
-        :returns frame member start position, corresponding frame number, payload position (position, size)
+        Reads name, frame number and payload positions of the next NaoTH representation.
+        :returns start position, corresponding frame number, payload position (position, size) tuple
         """
-        frame_member_start = self._scan_position
-        self.log_file.seek(frame_member_start)
+        field_start = self._scan_position
+        self.log_file.seek(field_start)
 
         # read message header
         frame_number = self._read_long()
@@ -81,10 +103,10 @@ class Scanner:
         message_size = self._read_long()
         data_pos = (self.log_file.tell(), message_size)
 
-        # calculate next frame member position (skipping payload of previous one)
+        # calculate next field position (skipping payload of previous one)
         self._scan_position = self.log_file.tell() + message_size
 
-        return frame_member_start, frame_number, name, data_pos
+        return field_start, frame_number, name, data_pos
 
     def read_data(self, position, size):
         """
@@ -102,166 +124,203 @@ class Scanner:
 
 
 class Frame:
+    """
+    NaoTH log file frame returned by iterating over the Reader.read method.
+
+    A frame is a collection of logged NaoTH representations with a matching frame number (executed time step).
+    NaoTH representations are referred to as (name, field) tuples, where "field" corresponds to the NaoTH representation
+    as protobuf Message.
+
+    NaoTH Representations can be accessed and are being parsed by calling the __getitem__ method with its name.
+        e.g. frame['FrameInfo'] where 'FrameInfo' is the name of the representation
+    """
+
     def __init__(self, frame_start, frame_number, scanner, parser, cache=False):
         """
-        NaoTH log file frame
-        :param frame_start: in log file
-        :param frame_number
-        :param scanner: LogScanner of current log file
-        :param parser: LogParser of current log file
+        NaoTH log file frame containing NaoTH representations as fields.
+
+        :param frame_start: start of the frame in the log file
+        :param frame_number: executed time step
+        :param scanner: Scanner of current log file
+        :param parser: Parser of current log file
         :param cache: if True cache already parsed members, may increase performance but affects memory usage
         """
         self.scanner = scanner
         self.parser = parser
 
-        # frame position in the log file
+        # Frame position in the log file
         self.start = frame_start
+
+        # Size of the frame, if it would be converted to bytes using the __bytes__ method:
+        # frame.size == len(bytes(frame))
+        # Note: When NaoTH representations are added externally (e.g. by calling the add_field function),
+        #       the size value does not match the size of the originating log file frame.
         self.size = 0
 
         self.number = frame_number
-        # members of this frame, contains either (position, size) tuple of the member data in the log file
-        # or already parsed protobuf classes
-        self.members = {}
+
+        """
+        Fields (NaoTH representations) of this frame. Maps name of the NaoTH representation to either
+            - a (position, size) tuple of NaoTH representation data in the log file
+            - a parsed protobuf class representing the NaoTH representation
+        """
+        self._fields = {}
 
         self.cache = cache
 
-    def add_member(self, name, position, size):
+    def add_field_position(self, name, position, size):
         """
-        Add a member to the frame
-        :param name: of member
+        Add a NaoTH representation to this frame based on its position and size in the log file.
+        This will later be parsed when calling the __getitem__ function with the given name.
+
+        This function is usually only called by the log reader while creating this frame.
+
+        :param name: of the NaoTH representation
         :param position: of payload data in the log file
         :param size: of payload data in the log file
         """
-        if name in self.members:
+        if name in self._fields:
             raise ValueError(f'Frame already contains member {name}.')
 
-        self.members[name] = position, size
-        self.size += Scanner.frame_member_size(name, size)
+        self._fields[name] = position, size
+        self.size += Scanner.size_of_field(name, size)
 
-    def add_message_member(self, name, member: _Message):
+    def add_field(self, name, _field: _Message):
         """
-        Add a protobuf message as member to the frame
-        :param name: of member
-        :param member: protobuf message
+        Add a parsed or new NaoTH representation in form of a protobuf message to this frame.
+        This is useful if we are combining log files, like adding camera images which where logged separately.
+        e.g. See combine_logs.py example.
+
+        :param name: of the NaoTH representation
+        :param _field: protobuf message instance of the NaoTH representation
         """
-        self.size += Scanner.frame_member_size(name, member.ByteSize())
+        self.size += Scanner.size_of_field(name, _field.ByteSize())
         # add new member
-        self.members[name] = member
+        self._fields[name] = _field
 
     def remove(self, name):
         """
-        Remove a member from this frame
+        Remove a member from this frame.
         :param name: of member
         """
-        member = self.members.pop(name)
+        member = self._fields.pop(name)
 
         # reduce size of this frame
         if isinstance(member, tuple) and len(member) == 2:
             position, size = member
-            self.size -= Scanner.frame_member_size(name, size)
+            self.size -= Scanner.size_of_field(name, size)
         elif isinstance(member, _Message):
-            self.size -= Scanner.frame_member_size(name, member.ByteSize())
+            self.size -= Scanner.size_of_field(name, member.ByteSize())
         else:
             raise TypeError(f'Type of member {type(member)} must be a (position, size) tuple or protobuf message!')
 
-    def replace_message_member(self, name, member):
+    def replace_field(self, name, field: _Message):
         """
-        Replace a member of this frame with a protobuf message object
-        :param name: of member
-        :param member: protobuf message
+        Replace a field of this frame with a protobuf message object.
+        :param name: of the NaoTH representation
+        :param field: protobuf message instance of the NaoTH representation
         """
-        if name not in self.members:
+        if name not in self._fields:
             raise ValueError(f'Frame does not contain member {name}.')
 
         # remove old member
         self.remove(name)
 
-        self.add_message_member(name, member)
+        self.add_field(name, field)
 
     def __contains__(self, name):
         """
-        Check if member of frame
-        :param name: of member
-        :returns True if member of frame
-        """
-        return name in self.members
+        Check if the given name matches a NaoTH representation of this frame.
 
-    def __getitem__(self, name):
+        # e.g. sanity check before accessing the field 'FrameInfo'
+        if 'FrameInfo' in frame:
+            frame_info = frame['FrameInfo']
+
+        :param name: of a NaoTH representation
+        :returns True if a name corresponding NaoTH representation is part of this frame
         """
-        Get message of a frame member
-        :param name: of frame member
-        :returns message
+        return name in self._fields
+
+    def __getitem__(self, name) -> _Message:
         """
-        member = self.members[name]
-        if isinstance(member, tuple):
-            if len(member) != 2:
-                raise TypeError(f'Type of member {type(member)} must be a (position, size) tuple'
+        Parse and return the NaoTH representation corresponding to the given name.
+        If caching is enabled, save already parsed members for future access.
+
+        # e.g. retrieve 'FrameInfo' representation
+        frame_info = frame['FrameInfo']
+
+        :param name: of a NaoTH representation part of this frame
+        :returns NaoTH representation as protobuf Message instance
+        """
+        message = self._fields[name]
+        if isinstance(message, tuple):
+            if len(message) != 2:
+                raise TypeError(f'Type of field {type(message)} must be a (position, size) tuple'
                                 f'to be parsed or a protobuf message!')
-            # member is not parsed yet, get payload from log file frame
-            position, size = member
-            member = self._payload(name, position, size)
+            # message is not parsed yet, get payload from log file frame
+            position, size = message
+            try:
+                payload = self.scanner.read_data(position, size)
+            except EOFError:
+                raise FrameParseException(f'Failed reading data of field {name}, file ended unexpectedly.')
+
+            # parse payload
+            if payload:
+                message = self.parser.parse(name, payload)
+            else:
+                message = None
+
             if self.cache:
-                self.members[name] = member
-            return member
+                self._fields[name] = message
+            return message
         else:
-            return member
+            return message
 
-    def _payload(self, name, position, size):
+    def get_names(self):
         """
-        Parse payload of a frame member.
-        :param name: of frame member
-        :returns parsed message
+        :returns names of NaoTH representations part of this frame
         """
-        # parse payload
-        try:
-            payload = self.scanner.read_data(position, size)
-        except EOFError:
-            raise FrameParseException(f'Failed reading data of {name}, file ended unexpectedly.')
+        return self._fields.keys()
 
-        if payload:
-            return self.parser.parse(name, payload)
-        else:
-            return None
-
-    def names(self):
+    def raw_fields(self):
         """
-        :returns names of frame members part of the frame
-        """
-        return self.members.keys()
+        This function implements an iterator returning the name and NaoTH representation bytes part of this frame
+        by using pythons generator functions.
 
-    def raw_members(self):
-        for name, member in self.members.items():
-            if isinstance(member, tuple) and len(member) == 2:
-                position, size = member
-                # member is not parsed yet, get payload from log file frame
+        This is primarily used to serialize this frame in the __bytes__ method.
+        """
+        for name, message in self._fields.items():
+            if isinstance(message, tuple) and len(message) == 2:
+                position, size = message
+                # message is not parsed yet, get payload from log file frame
                 data = self.scanner.read_data(position, size)
                 yield name, data
-            elif isinstance(member, _Message):
-                yield name, member.SerializeToString()
+            elif isinstance(message, _Message):
+                yield name, message.SerializeToString()
             else:
-                raise TypeError(f'Type of member {type(member)} must be a (position, size) tuple or protobuf message!')
+                raise TypeError(f'Type of field {type(message)} must be a (position, size) tuple or protobuf message!')
 
     def __len__(self):
         """
-        :returns size of the frame in the log file
+        :returns the size of this frame in bytes
         """
         return self.size
 
     def copy(self):
         """
-        :returns a copy of this frame and all its members
+        :returns a copy of this frame and all its fields.
         """
         frame = Frame(self.start, self.number, self.scanner, self.parser)
-        for name, member in self.members.items():
-            if isinstance(member, tuple) and len(member) == 2:
-                position, size = member
-                frame.add_member(name, position, size)
-            elif isinstance(member, _Message):
-                message = _Message()
-                message.CopyFrom(member)
-                frame.add_message_member(name, message)
+        for name, message in self._fields.items():
+            if isinstance(message, tuple) and len(message) == 2:
+                position, size = message
+                frame.add_field_position(name, position, size)
+            elif isinstance(message, _Message):
+                message_copy = _Message()
+                message_copy.CopyFrom(message)
+                frame.add_field(name, message_copy)
             else:
-                raise TypeError(f'Type of member {type(member)} must be a (position, size) tuple or protobuf message!')
+                raise TypeError(f'Type of field {type(message)} must be a (position, size) tuple or protobuf message!')
         return frame
 
     @staticmethod
@@ -278,7 +337,11 @@ class Frame:
 
     def __bytes__(self):
         """
-        :returns bytes representation of frame ready to write to log file
+        :returns bytes representation of this frame ready be to written to log file
+
+        # log file write example
+        with open('naoth_logfile.log', 'wb') as log_file:
+            log_file.write(bytes(frame))
         """
         frame_number = self.long_from_int(self.number)
         _bytes = b''.join(
@@ -286,56 +349,101 @@ class Frame:
             + self.bytes_from_str(name)
             + self.long_from_int(len(data))
             + data
-            for name, data in self.raw_members()
+            for name, data in self.raw_fields()
         )
         assert self.size == len(_bytes)
         return _bytes
 
 
 class Reader:
+    """
+    NaoTH log file reader.
+
+    A Nao running the NaoTH Framework logs the state of its representations for every executed time step.
+    Representations include camera images, camera matrix data, motion and sensor data, the behavior state and more.
+
+    This log reader combines logged representations to a frame based on their common executed time steps (frame number).
+
+    Create an instance of this reader with a path to a NaoTH Framework generated log file (see def __init__()).
+    "with" statement instantiation is supported and highly encouraged to allow the underlying file handle to be closed.
+    Otherwise you have to call the close() function yourself.
+
+    To retrieve the frames of a log file call the read() function of an instanced reader.
+    This will return an iterator which can be iterated over returning frames in order of their executed time step:
+
+    for frame in reader.read():
+        # do something with the frame
+    """
+
     def __init__(self, path, parser=Parser()):
+        """
+        Creates a reader instance for parsing a NaoTH log file.
+
+        :param path: path to a log file generated by the NaoTH framework.
+        :param parser: optional Parser argument. If logged representations do not have a matching
+                       protobuf implementation a specific Parser to handle those cases must be given.
+        """
         self.log_file = open(path, 'rb')
+        self.log_file_size = os.path.getsize(path)
+
+        # Used to scan the log file for positions of NaoTH representations and to create an index.
         self.scanner = Scanner(self.log_file)
+        # Required for parsing the corresponding protobuf classes based on the retrieved NaoTH representation bytes.
         self.parser = parser
 
+        # Index of frames retrieved from the log file
         self.frames = []
+
         self.furthest_scan_position = 0
         self.eof_reached = False
 
     def __enter__(self):
+        """
+        __enter__ function implemented to support the python "with" keyword.
+        """
         return self
 
     def __exit__(self, _type, value, traceback):
+        """
+        __exit__ function implemented to support the python "with" keyword.
+        """
         self.close()
 
     def close(self):
         """
-        Close underlying file handle
+        Close the underlying file handle.
         """
         self.log_file.close()
 
     def index_of(self, frame_number):
         """
-        Get log reader index to the corresponding frame number
+        Get log reader index position to the corresponding frame number.
 
         :param frame_number: number of log file frame
-        :return: log reader index or -1 of the frame doesn't exist
+        :return: log reader index or None of the frame doesn't exist
         """
         # TODO: optimize search
         for i, frame in enumerate(self.read()):
             if frame.number == frame_number:
                 return i
         else:
-            return -1
+            return None
 
-    def read_from(self, start_idx):
+    def read(self, start_idx=0):
         """
-        Generator yielding log file frames starting from frame i.
+        Creates an iterator over the log file frames implemented using pythons generator functions.
+        With the "yield" keyword, we return the next Frame instance for the iterator.
+
+        # Example iteration using the read method
+        for frame in reader.read():
+            # do something with the frame
+
+        :param start_idx: First frame for starting the iterator (default: 0 iterate over all frames).
         """
         if start_idx < 0:
-            raise ValueError(f'Start index <{start_idx}> must be positive!')
+            raise IndexError(f'Start index <{start_idx}> must be positive!')
 
-        # yield frames already read
+        # return frames which were already indexed
         while start_idx < len(self.frames):
             yield self.frames[start_idx]
             start_idx += 1
@@ -349,72 +457,117 @@ class Reader:
         self.scanner.set_scan_position(self.furthest_scan_position)
         frame = None
         while True:
-            # read next frame member
+            # read next NaoTH representation from log file
             try:
-                frame_member_start, current_frame_number, name, payload_pos = self.scanner.scan_frame_member()
+                start_of_field, current_frame_number, name, payload_pos = self.scanner.scan_field()
             except EOFError:
+                # stop reading
                 self.eof_reached = True
                 break
 
-            # check if frame member is part of current frame or create new one
+            # Decide which frame the read NaoTH representation is part of
             if frame is None:
-                frame = Frame(frame_member_start, current_frame_number, self.scanner, self.parser)
+                # create a new frame
+                frame = Frame(start_of_field, current_frame_number, self.scanner, self.parser)
             elif current_frame_number != frame.number:
-                # finished reading frame
+                # frame number does not match, read NaoTH representation is part of a new frame
+
+                # before creating a new frame, finish up the last one and return it
                 self.frames.append(frame)
-                self.furthest_scan_position = frame_member_start
                 idx += 1
-
-                frame_to_yield = frame
-                # create new frame
-                frame = Frame(frame_member_start, current_frame_number, self.scanner, self.parser)
-
-                # only yield frames from the start
+                # only return frames which come after the given start index
                 if start_idx < len(self.frames):
-                    yield frame_to_yield
+                    yield frame
 
-                    # Check if we already got new frames, since we yielded and
-                    #       other iterators could have advanced further by now
                     if idx < len(self.frames):
+                        # After we yielded, another read iterator was advanced further (has read more frames).
+                        # This can happen for example, if the user calls the __getitem__ method for a bigger index.
+                        # Return already indexed frames and restart the log file scan at the end of that index.
                         while idx < len(self.frames):
                             yield self.frames[idx]
                             idx += 1
-
-                        # discard started frame
+                        if self.eof_reached:
+                            return
+                        # reset scan
                         frame = None
                         self.scanner.set_scan_position(self.furthest_scan_position)
+                        continue
 
-            # add frame member
+                # create new frame
+                frame = Frame(start_of_field, current_frame_number, self.scanner, self.parser)
+
+            # Add the read NaoTH representation to its frame
             position, size = payload_pos
-            frame.add_member(name, position, size)
+            frame.add_field_position(name, position, size)
+            self.furthest_scan_position = position + size
 
-        # End of file is reached, yield the last log file frame
-        if frame is not None and frame.members:
-            self.frames.append(frame)
+        # End of file is reached, return the last log file frame
+        if frame is not None and frame.get_names():
+            # check if the last frame is complete
+            if frame.start + len(frame) <= self.log_file_size:
+                self.frames.append(frame)
 
-            # only yield frames from the start
-            if start_idx < len(self.frames):
+                # only return frame if it comes after the given start index
+                if start_idx < len(self.frames):
+                    yield frame
+
+    def diet_read(self):
+        """
+        Same as "read", but does not create a frame index and preserves memory (len(self.frames) will stay 0).
+        Useful if the log file is very large and only a single pass through is required.
+        """
+        # read frames from the log file
+        self.scanner.set_scan_position(0)
+        frame = None
+        while True:
+            # read next NaoTH representation from log file
+            try:
+                start_of_field, current_frame_number, name, payload_pos = self.scanner.scan_field()
+            except EOFError:
+                # stop reading
+                break
+
+            # Decide which frame the read NaoTH representation is part of
+            if frame is None:
+                # create a new frame
+                frame = Frame(start_of_field, current_frame_number, self.scanner, self.parser)
+            elif current_frame_number != frame.number:
+                # frame number does not match, read NaoTH representation is part of a new frame
+
+                # before creating a new frame, finish up the last one and return it
                 yield frame
 
-    def read(self):
-        """
-        Generator yielding frames from log file.
-        """
-        return self.read_from(0)
+                # create new frame
+                frame = Frame(start_of_field, current_frame_number, self.scanner, self.parser)
+
+            # Add the read NaoTH representation to its frame
+            position, size = payload_pos
+            frame.add_field_position(name, position, size)
+            self.scanner.set_scan_position(position + size)
+
+        # End of file is reached, return the last log file frame
+        if frame is not None and frame.get_names():
+            # check if the last frame is complete
+            if frame.start + len(frame) <= self.log_file_size:
+                yield frame
 
     def __getitem__(self, i):
         """
-        Get ith frame from log file.
+        Get ith frame from the log file.
+
+        # e.g.
+        3rd_frame = reader[2]
         """
         if i >= len(self.frames):
+            # frame i was not indexed yet, read more frames
             try:
-                next(self.read_from(i))
+                return next(self.read(start_idx=i))
             except StopIteration:
-                return None
+                raise IndexError
         return self.frames[i]
 
     def file_path(self):
         """
-        :returns log file path
+        :returns underlying log file path
         """
         return self.log_file.name
