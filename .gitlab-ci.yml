@@ -13,6 +13,7 @@ cppcheck:
      - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
      - if: '$CI_PIPELINE_SOURCE == "web"'
      - if: '$CI_PIPELINE_SOURCE == "trigger"'
+     - if: $CI_COMMIT_BRANCH == "develop"
   script:
   - cppcheck -j 4 --enable=all --inconclusive --xml --xml-version=2 . 2> cppcheck-result.xml
   - cppcheck-htmlreport --file=cppcheck-result.xml --report-dir=test1 --source-dir=.
@@ -40,6 +41,7 @@ compileGame:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
     - if: '$CI_PIPELINE_SOURCE == "web"'
     - if: '$CI_PIPELINE_SOURCE == "trigger"'
+    - if: $CI_COMMIT_BRANCH == "develop"
   script:
   - cd NaoTHSoccer/Make
   - ./compileGame.sh -j 4
@@ -53,6 +55,7 @@ compileLocal:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
     - if: '$CI_PIPELINE_SOURCE == "web"'
     - if: '$CI_PIPELINE_SOURCE == "trigger"'
+    - if: $CI_COMMIT_BRANCH == "develop"
   script:
   - cd NaoTHSoccer/Make
   - premake5 gmake2 --protoc
