@@ -125,7 +125,7 @@ public:
                 err += std::fabs(pke);
                 w[SIZE] += pke;
             }
-            std::cout<<"k="<<k<<"\terr="<<err<<std::endl;
+            //std::cout<<"k="<<k<<"\terr="<<err<<std::endl;
         }
     }
 
