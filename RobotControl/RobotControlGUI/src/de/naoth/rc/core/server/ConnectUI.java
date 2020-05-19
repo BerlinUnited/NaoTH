@@ -4,7 +4,7 @@
  * Created on 28. Februar 2008, 16:08
  */
 
-package de.naoth.rc.server;
+package de.naoth.rc.core.server;
 
 import java.io.IOException;
 import java.util.Properties;

@@ -5,7 +5,7 @@
 
 package de.naoth.rc;
 
-import de.naoth.rc.server.MessageServer;
+import de.naoth.rc.core.server.MessageServer;
 import java.awt.Component;
 import java.util.Properties;
 import net.xeoh.plugins.base.Plugin;

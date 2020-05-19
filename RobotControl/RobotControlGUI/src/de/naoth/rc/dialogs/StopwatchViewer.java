@@ -15,7 +15,7 @@ import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.manager.GenericManager;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.messages.Messages;
-import de.naoth.rc.server.Command;
+import de.naoth.rc.core.server.Command;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.ArrayList;

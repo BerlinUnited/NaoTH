@@ -5,7 +5,7 @@
 
 package de.naoth.rc;
 
-import de.naoth.rc.server.MessageServer;
+import de.naoth.rc.core.server.MessageServer;
 import javax.swing.SwingUtilities;
 import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.annotations.PluginImplementation;

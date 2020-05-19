@@ -4,7 +4,7 @@
 package de.naoth.rc.manager;
 
 import de.naoth.rc.dataformats.ImageConversions;
-import de.naoth.rc.server.Command;
+import de.naoth.rc.core.server.Command;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 
 /**

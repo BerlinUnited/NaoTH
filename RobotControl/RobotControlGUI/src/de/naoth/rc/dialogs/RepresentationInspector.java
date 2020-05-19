@@ -23,7 +23,7 @@ import de.naoth.rc.logmanager.LogFrameListener;
 import de.naoth.rc.manager.GenericManager;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.messages.AudioDataOuterClass;
-import de.naoth.rc.server.Command;
+import de.naoth.rc.core.server.Command;
 import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;

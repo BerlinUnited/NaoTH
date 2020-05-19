@@ -18,7 +18,7 @@ import de.naoth.rc.manager.PlotDataManagerImpl;
 import de.naoth.rc.messages.CommonTypes.DoubleVector2;
 import de.naoth.rc.messages.Messages.PlotStroke2D;
 import de.naoth.rc.messages.Messages.Plots;
-import de.naoth.rc.server.Command;
+import de.naoth.rc.core.server.Command;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.xeoh.plugins.base.annotations.PluginImplementation;

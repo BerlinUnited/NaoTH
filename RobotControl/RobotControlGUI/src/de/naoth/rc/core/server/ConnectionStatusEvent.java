@@ -2,7 +2,7 @@
  * 
  */
 
-package de.naoth.rc.server;
+package de.naoth.rc.core.server;
 
 import java.net.InetSocketAddress;
 import java.util.EventObject;

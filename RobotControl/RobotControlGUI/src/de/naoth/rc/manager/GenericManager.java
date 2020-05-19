@@ -4,8 +4,8 @@
 package de.naoth.rc.manager;
 
 import de.naoth.rc.core.manager.AbstractManager;
-import de.naoth.rc.server.Command;
-import de.naoth.rc.server.MessageServer;
+import de.naoth.rc.core.server.Command;
+import de.naoth.rc.core.server.MessageServer;
 
 /**
  *

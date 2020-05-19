@@ -5,9 +5,9 @@
 
 package de.naoth.rc.core.manager;
 
-import de.naoth.rc.server.Command;
-import de.naoth.rc.server.CommandSender;
-import de.naoth.rc.server.MessageServer;
+import de.naoth.rc.core.server.Command;
+import de.naoth.rc.core.server.CommandSender;
+import de.naoth.rc.core.server.MessageServer;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;

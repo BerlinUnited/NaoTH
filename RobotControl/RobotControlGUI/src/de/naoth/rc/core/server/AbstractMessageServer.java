@@ -1,7 +1,7 @@
 /*
  */
 
-package de.naoth.rc.server;
+package de.naoth.rc.core.server;
 
 import java.net.InetSocketAddress;
 import javax.swing.event.EventListenerList;

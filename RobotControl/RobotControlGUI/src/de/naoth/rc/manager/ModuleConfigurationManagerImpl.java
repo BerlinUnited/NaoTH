@@ -9,7 +9,7 @@ import de.naoth.rc.dataformats.ModuleConfiguration;
 import de.naoth.rc.dataformats.ModuleConfiguration.Node;
 import de.naoth.rc.messages.Messages.ModuleList;
 import de.naoth.rc.messages.Messages.Module;
-import de.naoth.rc.server.Command;
+import de.naoth.rc.core.server.Command;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.xeoh.plugins.base.annotations.PluginImplementation;

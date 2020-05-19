@@ -4,7 +4,7 @@ import de.naoth.rc.core.manager.AbstractManagerPlugin;
 import de.naoth.rc.drawings.Drawable;
 import de.naoth.rc.drawings.DrawingFactory;
 import de.naoth.rc.drawings.DrawingsContainer;
-import de.naoth.rc.server.Command;
+import de.naoth.rc.core.server.Command;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 
 /**

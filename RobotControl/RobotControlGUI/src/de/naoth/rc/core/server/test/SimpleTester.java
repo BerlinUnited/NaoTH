@@ -2,11 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.naoth.rc.server.test;
+package de.naoth.rc.core.server.test;
 
-import de.naoth.rc.server.Command;
-import de.naoth.rc.server.CommandSender;
-import de.naoth.rc.server.MessageServer;
+import de.naoth.rc.core.server.Command;
+import de.naoth.rc.core.server.CommandSender;
+import de.naoth.rc.core.server.MessageServer;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;

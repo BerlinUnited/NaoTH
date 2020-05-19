@@ -5,7 +5,7 @@
 package de.naoth.rc.core.manager;
 
 import de.naoth.rc.RobotControl;
-import de.naoth.rc.server.MessageServer;
+import de.naoth.rc.core.server.MessageServer;
 import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 
 /**

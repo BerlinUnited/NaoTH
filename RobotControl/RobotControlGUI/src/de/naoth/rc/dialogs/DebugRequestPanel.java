@@ -19,7 +19,7 @@ import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.core.manager.SwingCommandListener;
 import de.naoth.rc.messages.Messages.DebugRequest;
-import de.naoth.rc.server.Command;
+import de.naoth.rc.core.server.Command;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.ToolTipManager;

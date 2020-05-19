@@ -1,5 +1,5 @@
 
-package de.naoth.rc.server;
+package de.naoth.rc.core.server;
 
 import java.awt.Frame;
 import java.beans.PropertyChangeEvent;

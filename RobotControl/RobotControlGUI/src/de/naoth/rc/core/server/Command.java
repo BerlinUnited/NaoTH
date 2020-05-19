@@ -1,4 +1,4 @@
-package de.naoth.rc.server;
+package de.naoth.rc.core.server;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -7,7 +7,7 @@
  *
  * Created on 01.06.2009, 10:57:03
  */
-package de.naoth.rc.server;
+package de.naoth.rc.core.server;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

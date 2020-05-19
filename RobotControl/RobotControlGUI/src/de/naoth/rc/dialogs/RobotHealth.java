@@ -19,7 +19,7 @@ import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.drawings.Drawable;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.messages.FrameworkRepresentations;
-import de.naoth.rc.server.Command;
+import de.naoth.rc.core.server.Command;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;

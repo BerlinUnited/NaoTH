@@ -1,4 +1,4 @@
-package de.naoth.rc.server;
+package de.naoth.rc.core.server;
 
 import com.google.protobuf.ByteString;
 import de.naoth.rc.messages.Messages.CMD;

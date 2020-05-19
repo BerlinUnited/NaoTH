@@ -8,9 +8,9 @@ package de.naoth.rc.components;
 
 import de.naoth.rc.components.teamcommviewer.RobotStatus;
 import de.naoth.rc.dataformats.SPLMessage;
-import de.naoth.rc.server.ConnectionStatusEvent;
-import de.naoth.rc.server.ConnectionStatusListener;
-import de.naoth.rc.server.MessageServer;
+import de.naoth.rc.core.server.ConnectionStatusEvent;
+import de.naoth.rc.core.server.ConnectionStatusListener;
+import de.naoth.rc.core.server.MessageServer;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;

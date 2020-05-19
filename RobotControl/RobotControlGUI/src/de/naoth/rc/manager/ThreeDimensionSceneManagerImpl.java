@@ -6,7 +6,7 @@ package de.naoth.rc.manager;
 import de.naoth.rc.core.manager.AbstractManagerPlugin;
 import de.naoth.rc.drawings3d.Drawable;
 import de.naoth.rc.drawings3d.Scene;
-import de.naoth.rc.server.Command;
+import de.naoth.rc.core.server.Command;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;

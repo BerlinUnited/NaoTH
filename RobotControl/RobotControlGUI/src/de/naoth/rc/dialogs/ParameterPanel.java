@@ -11,7 +11,7 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
-import de.naoth.rc.server.Command;
+import de.naoth.rc.core.server.Command;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.BufferedWriter;

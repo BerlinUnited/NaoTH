@@ -5,7 +5,7 @@
 package de.naoth.rc;
 
 import de.naoth.rc.components.ExceptionDialog;
-import de.naoth.rc.server.MessageServer;
+import de.naoth.rc.core.server.MessageServer;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;

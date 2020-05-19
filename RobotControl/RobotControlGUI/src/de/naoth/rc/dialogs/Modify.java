@@ -20,7 +20,7 @@ import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.manager.GenericManagerFactory;
 import de.naoth.rc.messages.Representations;
 
-import de.naoth.rc.server.Command;
+import de.naoth.rc.core.server.Command;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.logging.Level;
