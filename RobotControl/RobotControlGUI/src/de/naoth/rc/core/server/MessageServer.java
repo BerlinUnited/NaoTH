@@ -1,8 +1,8 @@
 package de.naoth.rc.core.server;
 
 import com.google.protobuf.ByteString;
-import de.naoth.rc.messages.Messages.CMD;
-import de.naoth.rc.messages.Messages.CMDArg;
+import de.naoth.rc.core.messages.Messages.CMD;
+import de.naoth.rc.core.messages.Messages.CMDArg;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;

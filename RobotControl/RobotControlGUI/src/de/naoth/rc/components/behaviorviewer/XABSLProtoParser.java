@@ -13,7 +13,7 @@ import static de.naoth.rc.components.behaviorviewer.model.SymbolType.BOOL;
 import static de.naoth.rc.components.behaviorviewer.model.SymbolType.DECIMAL;
 import static de.naoth.rc.components.behaviorviewer.model.SymbolType.ENUM;
 import static de.naoth.rc.components.behaviorviewer.model.SymbolType.VOID;
-import de.naoth.rc.messages.Messages;
+import de.naoth.rc.core.messages.Messages;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;

@@ -7,7 +7,7 @@ import de.naoth.rc.core.manager.AbstractManagerPlugin;
 import com.google.protobuf.ByteString;
 import de.naoth.rc.dataformats.ImageConversions;
 import de.naoth.rc.dataformats.JanusImage;
-import de.naoth.rc.messages.FrameworkRepresentations.Image;
+import de.naoth.rc.core.messages.FrameworkRepresentations.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.util.logging.Level;

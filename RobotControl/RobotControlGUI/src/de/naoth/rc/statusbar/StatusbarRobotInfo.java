@@ -4,7 +4,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.RobotControlImpl;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
-import de.naoth.rc.messages.FrameworkRepresentations;
+import de.naoth.rc.core.messages.FrameworkRepresentations;
 import de.naoth.rc.core.server.Command;
 import de.naoth.rc.core.server.ConnectionStatusEvent;
 import de.naoth.rc.core.server.ConnectionStatusListener;

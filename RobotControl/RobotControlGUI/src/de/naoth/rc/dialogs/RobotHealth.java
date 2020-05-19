@@ -18,7 +18,7 @@ import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.drawings.Drawable;
 import de.naoth.rc.manager.GenericManagerFactory;
-import de.naoth.rc.messages.FrameworkRepresentations;
+import de.naoth.rc.core.messages.FrameworkRepresentations;
 import de.naoth.rc.core.server.Command;
 import java.awt.Color;
 import java.awt.Graphics;

@@ -25,7 +25,7 @@ import de.naoth.rc.logmanager.LogFrameListener;
 import de.naoth.rc.manager.DebugDrawingManager;
 import de.naoth.rc.manager.GenericManagerFactory;
 
-import de.naoth.rc.messages.Messages;
+import de.naoth.rc.core.messages.Messages;
 import de.naoth.rc.core.server.Command;
 import de.naoth.rc.core.server.CommandSender;
 import java.awt.Color;

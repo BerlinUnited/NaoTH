@@ -5,7 +5,7 @@ package de.naoth.rc.manager;
 
 import de.naoth.rc.core.manager.AbstractManagerPlugin;
 import com.google.protobuf.InvalidProtocolBufferException;
-import de.naoth.rc.messages.Messages.Plots;
+import de.naoth.rc.core.messages.Messages.Plots;
 import de.naoth.rc.core.server.Command;
 import java.util.logging.Level;
 import java.util.logging.Logger;

@@ -9,7 +9,7 @@ package de.naoth.rc.logmanager;
 import de.naoth.rc.components.teamcomm.TeamCommManager;
 import de.naoth.rc.components.teamcomm.TeamCommMessage;
 import de.naoth.rc.dataformats.SPLMessage;
-import de.naoth.rc.messages.TeamMessageOuterClass;
+import de.naoth.rc.core.messages.TeamMessageOuterClass;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

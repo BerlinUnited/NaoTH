@@ -2,7 +2,7 @@ package de.naoth.rc.components.teamcommviewer;
 
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.math.Vector2D;
-import de.naoth.rc.messages.TeamMessageOuterClass;
+import de.naoth.rc.core.messages.TeamMessageOuterClass;
 import de.naoth.rc.core.server.ConnectionStatusEvent;
 import de.naoth.rc.core.server.ConnectionStatusListener;
 import de.naoth.rc.core.server.MessageServer;

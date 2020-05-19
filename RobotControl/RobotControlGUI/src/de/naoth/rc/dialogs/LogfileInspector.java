@@ -13,7 +13,7 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.dataformats.LogFile;
 import de.naoth.rc.logmanager.LogFileEventManager;
-import de.naoth.rc.messages.FrameworkRepresentations;
+import de.naoth.rc.core.messages.FrameworkRepresentations;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.File;

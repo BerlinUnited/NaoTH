@@ -11,7 +11,7 @@ import de.naoth.rc.drawings.Robot;
 import de.naoth.rc.drawings.Text;
 import de.naoth.rc.math.Pose2D;
 import de.naoth.rc.math.Vector2D;
-import de.naoth.rc.messages.TeamMessageOuterClass;
+import de.naoth.rc.core.messages.TeamMessageOuterClass;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;

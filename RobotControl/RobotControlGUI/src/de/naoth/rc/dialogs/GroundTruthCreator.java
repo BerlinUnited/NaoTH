@@ -9,7 +9,7 @@ import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.logplayer.LogSimulator;
 import de.naoth.rc.manager.GenericManagerFactory;
-import de.naoth.rc.messages.Representations;
+import de.naoth.rc.core.messages.Representations;
 import java.awt.Color;
 import java.awt.DefaultKeyboardFocusManager;
 import java.awt.KeyEventPostProcessor;
