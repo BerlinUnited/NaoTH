@@ -26,6 +26,7 @@ compile_commands.json
 
 #messages
 RobotControl/RobotConnector/src/de/naoth/rc/messages
+RobotControl/RobotControlGUI/src/de/naoth/rc/core/messages
 NaoTHSoccer/Source/Messages
 Framework/Commons/Source/Messages
 

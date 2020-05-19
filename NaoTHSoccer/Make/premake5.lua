@@ -87,7 +87,7 @@ workspace "NaoTHSoccer"
   {
     inputFiles  = os.matchfiles(path.join(COMMONS_MESSAGES, "*.proto")),
     cppOut      = path.join(FRAMEWORK_PATH,"Commons/Source/Messages/"),
-    javaOut     = path.join(NAOTH_PROJECT, "RobotControl/RobotConnector/src/"),
+    javaOut     = path.join(NAOTH_PROJECT, "RobotControl/RobotControlGUI/src/"),
     pythonOut   = path.join(NAOTH_PROJECT, "Utils/py/naoth/naoth/pb/"),
     includeDirs = {COMMONS_MESSAGES}
   }
@@ -97,7 +97,7 @@ workspace "NaoTHSoccer"
   {
     inputFiles  = os.matchfiles(path.join(NAOTH_PROJECT, "NaoTHSoccer/Messages/*.proto")),
     cppOut      = path.join(NAOTH_PROJECT, "NaoTHSoccer/Source/Messages/"),
-    javaOut     = path.join(NAOTH_PROJECT, "RobotControl/RobotConnector/src/"),
+    javaOut     = path.join(NAOTH_PROJECT, "RobotControl/RobotControlGUI/src/"),
     pythonOut   = path.join(NAOTH_PROJECT, "Utils/py/naoth/naoth/pb/"),
     includeDirs = {COMMONS_MESSAGES, path.join(NAOTH_PROJECT, "NaoTHSoccer/Messages/")}
   }
