@@ -21,7 +21,7 @@ void FakeBallDetector::execute() {
     MODIFY("Vision:FakeBallDetector:new_ball:const_velocity", fb.const_velocity);
 
     DEBUG_REQUEST_ON_DEACTIVE("Vision:FakeBallDetector:add_new_ball",
-        fakeBalls.push_back(fb);
+        addFakeBall(fb);
     );
 
     DEBUG_REQUEST("Vision:FakeBallDetector:disable",

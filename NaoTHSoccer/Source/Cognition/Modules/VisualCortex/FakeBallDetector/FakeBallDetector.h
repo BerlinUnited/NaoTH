@@ -39,20 +39,25 @@ public:
 
     virtual void execute();
 
-private:
-    FrameInfo lastFrame;
-
+public:
     struct FakeBall {
         Vector2d position;
         Vector2d velocity;
         bool     const_velocity;
     };
 
-    std::vector<FakeBall> fakeBalls;
-
     void clearFakeBalls() {
         fakeBalls.clear();
     }
+
+    void addFakeBall(const FakeBall& fb) {
+        fakeBalls.push_back(fb);
+    }
+
+private:
+    FrameInfo lastFrame;
+
+    std::vector<FakeBall> fakeBalls;
 
     void simulateMovementOnField(double dt);
     void provideMultiBallPercept() const;
