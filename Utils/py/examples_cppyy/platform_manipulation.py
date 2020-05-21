@@ -79,8 +79,7 @@ if __name__ == "__main__":
     sim.registerCognition(cog2)
     sim.registerMotion(mo2)
 
-    cppyy.include("../Framework/Commons/Source/ModuleFramework/ModuleManager.h")
-    cppyy.include("Source/Cognition/Cognition.h")
+    cppyy.include(os.path.join(naoth_dir, "NaoTHSoccer/Source/Cognition/Cognition.h"))
     # using bind_object(addressof(cog), cppyy.gbl.naoth.ModuleManager) didn't work... why?
     mm = cppyy.gbl.getModuleManager(cog)
 
