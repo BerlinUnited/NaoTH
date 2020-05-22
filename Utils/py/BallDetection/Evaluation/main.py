@@ -232,6 +232,10 @@ class Evaluator:
         self.ball_detector = self.moduleManager.getModule(
             "CNNBallDetector").getModule()
 
+        cppyy.cppdef("""
+               Pose3D* my_convert(CameraMatrix* m) { return static_cast<Pose3D*>(m); }
+                """)
+
         # initialize the score object
         self.scores = dict()
 
@@ -263,27 +267,22 @@ class Evaluator:
         imageRepresentation.copyImageDataYUV422(p_data, yuv422.size)
         # set camera matrix
         if frame.bottom:
-            # TODO this produces an error for the second image
             camMatrix = self.ball_detector.getRequire().at("CameraMatrix")
-            camMatrix = bind_object(addressof(camMatrix), cppyy.gbl.Pose3D)
             # invalidate other camera matrix
             self.ball_detector.getRequire().at("CameraMatrixTop").valid = False
         else:
             camMatrix = self.ball_detector.getRequire().at("CameraMatrixTop")
-            camMatrix = bind_object(addressof(camMatrix), cppyy.gbl.Pose3D)
             # invalidate other camera matrix
-            self.ball_detector.getRequire().at("CameraMatrix").valid = False
+            self.ball_detector.getRequire().at("CameraMatrix").valid = False      
 
-        # camMatrix = bind_object(addressof(camMatrix), cppyy.gbl.Pose3D)
-
-        camMatrix.valid = True
-        camMatrix.translation.x = frame.cam_matrix_translation[0]
-        camMatrix.translation.y = frame.cam_matrix_translation[1]
-        camMatrix.translation.z = frame.cam_matrix_translation[2]
+        p = cppyy.gbl.my_convert(camMatrix)
+        p.translation.x = frame.cam_matrix_translation[0]
+        p.translation.y = frame.cam_matrix_translation[1]
+        p.translation.z = frame.cam_matrix_translation[2]
 
         for c in range(0, 3):
             for r in range(0, 3):
-                camMatrix.rotation.c[c][r] = frame.cam_matrix_rotation[r, c]
+                p.rotation.c[c][r] = frame.cam_matrix_rotation[r, c]
 
     def evaluate_detection(self, frame: Frame, eval_functions, debug_threshold=None):
         import cv2
@@ -381,9 +380,9 @@ def best_ball_patch_intersection(frame, patches):
     best = 0.0
     for p in patches:
         for b in frame.balls:
-            iuo = b.intersection_over_union(p.min.x, p.min.y, p.max.x, p.max.y)
+            iou = b.intersection_over_union(p.min.x, p.min.y, p.max.x, p.max.y)
             if iuo > best:
-                best = iuo
+                best = iou
     return best
 
 
