@@ -97,6 +97,7 @@ def main(raw_args=None, model=None):
     precision_class_09 = tf.keras.metrics.Precision(name="precision_classifcation_0.9", thresholds=0.9, class_id=3)
     recall_class_09 = tf.keras.metrics.Recall(name="recall_classifcation_0.9", thresholds=0.9, class_id=3)
 
+    # For using custom loss import your loss function and use the name of the function as loss argument.
     model.compile(loss='mean_squared_error',
                   optimizer='adam',
                   metrics=['accuracy', precision_class_05, recall_class_05,
