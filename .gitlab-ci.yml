@@ -23,9 +23,14 @@ cppcheck:
     expire_in: 1 week
 
 publish_naoth:
+  # run the publish command if the PUBLISH_NAOTH flag is set or the commit changes the develop with changes in the naoth package
   stage: python
   rules:
-    - if: '$PIP'
+    - if: '$PUBLISH_NAOTH'
+    - if: $CI_COMMIT_BRANCH == "develop"
+      changes:
+      - Utils/py/naoth/**/*
+    
   script:
   - cd NaoTHSoccer/Make
   - premake5 gmake2 --protoc
