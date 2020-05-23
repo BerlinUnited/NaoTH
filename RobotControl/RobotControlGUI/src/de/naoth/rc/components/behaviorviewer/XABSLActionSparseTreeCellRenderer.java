@@ -72,8 +72,8 @@ public class XABSLActionSparseTreeCellRenderer implements TreeCellRenderer {
                     text.append(" ms]");
                 } else if (a instanceof XABSLAction.BasicBehaviorExecution) {
                     text.append(((XABSLAction.BasicBehaviorExecution) a).name);
-                } else if (a instanceof XABSLAction.SymbolAssignement) {
-                    Symbol s = ((XABSLAction.SymbolAssignement) a).symbol;
+                } else if (a instanceof XABSLAction.SymbolAssignment) {
+                    Symbol s = ((XABSLAction.SymbolAssignment) a).symbol;
 
                     text.append(s.name);
                     text.append('=');

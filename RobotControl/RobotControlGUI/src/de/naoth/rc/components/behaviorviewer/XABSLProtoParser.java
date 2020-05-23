@@ -158,9 +158,9 @@ public class XABSLProtoParser {
                 
                 return a;
             }
-            case SymbolAssignement:
+            case SymbolAssignment:
             {
-                XABSLAction.SymbolAssignement a = new XABSLAction.SymbolAssignement();
+                XABSLAction.SymbolAssignment a = new XABSLAction.SymbolAssignment();
                 
                 SymbolKey key = new SymbolKey(parse(action_msg.getSymbol().getType()),
                     action_msg.getSymbol().getId());
