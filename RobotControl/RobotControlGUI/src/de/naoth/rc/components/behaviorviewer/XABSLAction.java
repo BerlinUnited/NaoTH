@@ -30,7 +30,7 @@ public class XABSLAction {
         public String name;
     }
     
-    public static class SymbolAssignement extends XABSLAction{
+    public static class SymbolAssignment extends XABSLAction{
         public Symbol symbol;
     }
 }

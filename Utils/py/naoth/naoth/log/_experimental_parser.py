@@ -185,7 +185,7 @@ class BehaviorParser:
 
             return XABSLAction.XABSLOption, option_complete.name, parsed_option
 
-        elif _pb.Messages_pb2.XABSLActionSparse.ActionType.Name(option_sparse.type) == 'SymbolAssignement':
+        elif _pb.Messages_pb2.XABSLActionSparse.ActionType.Name(option_sparse.type) == 'SymbolAssignment':
             symbol = option_sparse.symbol
 
             if _pb.Messages_pb2.XABSLSymbol.SymbolType.Name(symbol.type) == 'Decimal':
