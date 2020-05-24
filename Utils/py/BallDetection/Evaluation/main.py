@@ -381,7 +381,7 @@ def best_ball_patch_intersection(frame, patches):
     for p in patches:
         for b in frame.balls:
             iou = b.intersection_over_union(p.min.x, p.min.y, p.max.x, p.max.y)
-            if iuo > best:
+            if iou > best:
                 best = iou
     return best
 
