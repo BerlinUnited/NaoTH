@@ -256,8 +256,12 @@ std::set<std::string> Configuration::getKeys(const std::string& group) const
 
 bool Configuration::hasKey(const std::string& group, const std::string& key) const
 {
-  return ( g_key_file_has_key(publicKeyFile, group.c_str(), key.c_str(), NULL) > 0 )
-      || ( g_key_file_has_key(privateKeyFile, group.c_str(), key.c_str(), NULL) > 0 );
+  // HACK: If the group does not exist, g_key_file_has_key will log a GLib error and we need to avoid this at all cost.
+  // This function is called from constructors (e.g. via syncWithConfig()) and if any constructor generates a GLib error,
+  // newer versions of GLib will crash due the way they internally map string constants to internal IDs:
+  // https://gitlab.gnome.org/GNOME/glib/-/issues/1177
+  return (g_key_file_has_group(publicKeyFile, group.c_str()) && g_key_file_has_key(publicKeyFile, group.c_str(), key.c_str(), NULL) > 0 )
+      || (g_key_file_has_group(privateKeyFile, group.c_str()) && g_key_file_has_key(privateKeyFile, group.c_str(), key.c_str(), NULL) > 0 );
 }
 
 bool Configuration::hasGroup(const std::string& group) const
