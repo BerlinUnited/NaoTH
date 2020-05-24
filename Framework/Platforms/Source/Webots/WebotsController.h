@@ -59,7 +59,7 @@ private:
   std::string thePlatformName;
 
   GSocket* socket;
-  SocketStream theSocket;
+  PrefixedSocketStream theSocket;
 
   // sensor data
   std::map<std::string, JointData::JointID> theJointSensorNameMap;

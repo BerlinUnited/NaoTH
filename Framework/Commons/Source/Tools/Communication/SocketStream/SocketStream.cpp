@@ -136,12 +136,15 @@ bool SocketStream::isFixedLengthDataAvailable(unsigned int len) throw(std::runti
   for (;;) {
     /* See if we have enough data to satisfy request */
     if (mRecvdLen >= len) return true;
-
+    std::cout << "Received Length: " << mRecvdLen << std::endl;
+    std::cout << "Actual Length: " << len << std::endl;
     /* there was not enough data in the read buffer, so let's try to get some more */
-    int res = static_cast<int> (g_socket_receive(socket, mRecvBuf + mRecvdLen, mRecvBufSize - mRecvdLen, NULL, NULL));
-    
+    GError* err = NULL;
+    int res = static_cast<int> (g_socket_receive(socket, mRecvBuf + mRecvdLen, mRecvBufSize - mRecvdLen, NULL, &err));
+       
     if (res <= 0)
     {
+      std::cout << err->message << std::endl;
       int lostConnection = g_socket_condition_check(socket, G_IO_IN) & (G_IO_HUP|G_IO_ERR);
       if ( lostConnection )
       {
@@ -163,11 +166,12 @@ int SocketStream::prefixedRecv(std::string& msg)
   if (!res) return 0;
   //get the message length
   messLen = g_ntohl((*(unsigned int*) mRecvBuf));
+  std::cout << "Message length: " << messLen << std::endl;
 
   //try and get the data
   res = isFixedLengthDataAvailable(messLen + static_cast<unsigned int> (sizeof (unsigned int)));
   if (!res) return 0;
-
+  std::cout << "Data is available" << std::endl;
   //we have to copy, skipping the sizeof(int) bytes at the beginning
   msg.insert(0, mRecvBuf + sizeof (unsigned int), messLen);
   mRecvdLen -= (static_cast<unsigned int> (sizeof (unsigned int)) +messLen);
