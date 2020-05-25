@@ -19,6 +19,7 @@ java.targetCompatibility = JavaVersion.VERSION_1_8
 // configure the application plugin
 application.mainClassName = 'Main'
 application.executableDir = '' // do not create a "bin" directory in install/zip
+application.applicationName = 'naoscp' // set the startscripts to lower case
 
 // set the source directory and disable the other dirs
 sourceSets.main.java.srcDirs = ['src']
