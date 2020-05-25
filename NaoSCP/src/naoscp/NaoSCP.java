@@ -96,13 +96,20 @@ public class NaoSCP extends javax.swing.JPanel {
 
     public String getBasePath() {
         String path = "./..";
-        // determine the project root path based on the executed file location (jar/class)
-        String[] temp = getClass().getProtectionDomain().getCodeSource().getLocation().getPath().split("/NaoSCP/");
-        if (temp.length > 1) {
-            path = temp[0];
+
+        try {
+            // determine the project root path based on the executed file location (jar/class)
+            String[] temp = getClass().getProtectionDomain().getCodeSource().getLocation().getPath().split("/NaoSCP/");
+            if (temp.length > 1) {
+                path = temp[0];
+            }
+
+            return (new File(path)).getCanonicalPath();
+        } catch (IOException ex) {
+            Logger.getLogger(NaoSCP.class.getName()).log(Level.SEVERE, null, ex);
         }
-        // NOTE: File.getAbsolutePath() doesn't resolve "." or ".."!
-        return Paths.get(path).toAbsolutePath().normalize().toString();
+
+        return path;
     }
 
     public void setEnabledAll(boolean v) {
