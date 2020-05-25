@@ -25,7 +25,7 @@ def jVersion = JavaVersion.current()
 if (jVersion >= JavaVersion.VERSION_11) {
   // ATTENTION: the plugin is configured at the end of the file!
   apply plugin: 'org.openjfx.javafxplugin'
-} else if (jVersion < JavaVersion.VERSION_1_8) {
+} else if (jVersion == JavaVersion.VERSION_1_8) {
   // do nothing, JavaFX is installed
 } else {
   // TODO: stop execution / throw error, since javafxplugin only supports 11+
