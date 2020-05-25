@@ -79,14 +79,14 @@ distTar {
   // HACK: disable zip & tar generation, if not explicitly requested (currently i don't know better)
   onlyIf { gradle.startParameter.taskNames.contains('distTar') }
   // copy the platform dependend libs
-  from('bin') { into(project.name + '/bin') }
+  from('bin') { into(application.applicationName + '/bin') }
 }
 
 distZip {
   // HACK: disable zip & tar generation, if not explicitly requested (currently i don't know better)
   onlyIf { gradle.startParameter.taskNames.contains('distZip') }
   // copy the platform dependend libs
-  from('bin') { into(project.name + '/bin') }
+  from('bin') { into(application.applicationName + '/bin') }
 }
 
 // make sure the dist directory is also cleaned (since we're moved it out of the build directory)
