@@ -45,12 +45,15 @@ defaultTasks 'run' // 'clean', 'build',
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 java.targetCompatibility = JavaVersion.VERSION_1_8
 
+// the splash screen image gets used multiple times
+def splash = 'build/resources/de/naoth/rc/res/Splash.png'
+
 // configure the application plugin
 application.mainClassName = 'de.naoth.rc.RobotControlImpl'
 application.executableDir = '' // do not create a "bin" directory in install/zip
 application.applicationName = 'robotcontrol' // set the startscripts to lower case
 // HACK: show splashscreen for 'gradlew run'
-application.applicationDefaultJvmArgs = ['-splash:build/resources/de/naoth/rc/res/Splash.png']
+application.applicationDefaultJvmArgs = ['-splash:' + splash]
 
 // set the source directory and disable the other dirs
 sourceSets.main.java.srcDirs = ['src']
@@ -76,6 +79,8 @@ installDist {
   destinationDir = file("$projectDir/dist")
   // copy the platform dependend libs
   from('bin') { into('bin') }
+  // copy the splash screen image
+  into('lib') { from splash }
 }
 // make sure the "installDist" task is executed
 build.finalizedBy(installDist)
@@ -85,6 +90,8 @@ distTar {
   onlyIf { gradle.startParameter.taskNames.contains('distTar') }
   // copy the platform dependend libs
   from('bin') { into(application.applicationName + '/bin') }
+  // copy the splash screen image
+  into(application.applicationName + '/lib') { from splash }
 }
 
 distZip {
@@ -92,6 +99,8 @@ distZip {
   onlyIf { gradle.startParameter.taskNames.contains('distZip') }
   // copy the platform dependend libs
   from('bin') { into(application.applicationName + '/bin') }
+  // copy the splash screen image
+  into(application.applicationName + '/lib') { from splash }
 }
 
 // make sure the dist directory is also cleaned (since we're moved it out of the build directory)
@@ -134,4 +143,9 @@ if (jVersion >= JavaVersion.VERSION_11) {
     // NOTE: all other modules are dependencies of the listed
     modules = [ 'javafx.fxml', 'javafx.swing', 'javafx.web' ]
   }
+}
+
+startScripts {
+  // overwrite the 'applicationDefaultJvmArgs', since the path for the splash image differs
+  defaultJvmOpts = ['-splash:lib/Splash.png']
 }
