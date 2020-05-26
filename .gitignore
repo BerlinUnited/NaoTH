@@ -6,6 +6,7 @@ backup_*/
 #deploy/
 NaoSCP/tmp/
 XabslEditor/
+.gradle/
 
 #java project files
 build.xml
