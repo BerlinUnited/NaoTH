@@ -7,7 +7,7 @@ import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.manager.GenericManager;
 import de.naoth.rc.manager.GenericManagerFactory;
-import de.naoth.rc.server.Command;
+import de.naoth.rc.core.server.Command;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
