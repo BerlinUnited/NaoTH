@@ -38,6 +38,9 @@ dependencies {
   implementation fileTree(include: ['**/*.jar'], dir: 'lib')
 }
 
+// by default just (build and) run RobotControl
+defaultTasks 'run' // 'clean', 'build', 
+
 // define the targeted versions
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 java.targetCompatibility = JavaVersion.VERSION_1_8
