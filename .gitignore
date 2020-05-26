@@ -2,7 +2,8 @@
 dist/
 build/
 private/
-deploy/
+backup_*/
+#deploy/
 NaoSCP/tmp/
 XabslEditor/
 
@@ -33,3 +34,4 @@ behavior-ic.dat
 
 #vim swap files
 .*.swp
+/Utils/.vscode/settings.json

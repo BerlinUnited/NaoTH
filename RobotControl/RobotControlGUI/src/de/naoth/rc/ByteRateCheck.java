@@ -36,8 +36,8 @@ public class ByteRateCheck implements Plugin
     {
       MessageServer server = robotControl.getMessageServer();
 
-      double receivedKB = ((double)(server.getReceivedBytes()-oldRecivedSize))/1024.0;
-      double sentKB = ((double)(server.getSentBytes()-oldSentSize))/1024.0;
+      double received = ((double)(server.getReceivedBytes()-oldRecivedSize));
+      double sent = ((double)(server.getSentBytes()-oldSentSize));
       double fps = ((double)(server.getLoopCount()-oldLoopCount));
       
       oldRecivedSize = server.getReceivedBytes();
@@ -50,8 +50,8 @@ public class ByteRateCheck implements Plugin
           @Override
           public void run() {
 
-            updateHandler.setReceiveByteRate(receivedKB);
-            updateHandler.setSentByteRate(sentKB);
+            updateHandler.setReceiveByteRate(received);
+            updateHandler.setSentByteRate(sent);
             updateHandler.setServerLoopFPS(fps);
           }
         });

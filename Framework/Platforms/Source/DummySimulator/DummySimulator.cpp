@@ -4,12 +4,11 @@
 *
 * Created on 2017.05.21
 */
-#include <thread>
-#include <chrono>
-
 #include "myconio.h"
 
 #include "DummySimulator.h"
+
+#include "Tools/ThreadUtil.h"
 #include "Tools/NaoTime.h"
 #include "Tools/Math/Common.h"
 
@@ -19,7 +18,7 @@ using namespace std;
 using namespace naoth;
 
 DummySimulator::DummySimulator(bool backendMode, bool realTime, unsigned short port)
-  : PlatformInterface("DummySimulator", CYCLE_TIME),
+  :
   backendMode(backendMode)
 {
   registerInput<FrameInfo>(*this);
@@ -70,7 +69,7 @@ void DummySimulator::main()
   doPlay = false;
 
   char c;
-  while ((c = getInput()) && c != 'q' && c != 'x')
+  while ((c = getInput()))
   {
     if(doPlay) {
       // stop playing
@@ -85,7 +84,9 @@ void DummySimulator::main()
     } else if (c == 'p') {
       doPlay = true;
       playThread = std::thread([this] { play(); });
-    } 
+    } else if (c == 'q' || c == 'x') {
+      break;
+    }
   }
 
   std::cout << endl << "bye bye!" << endl;
@@ -104,7 +105,7 @@ void DummySimulator::play()
     // wait at least 5ms but max 1s
     unsigned int waitTime = Math::clamp((int)frameExecutionTime - (int)calculationTime, 5, 1000);
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(waitTime));
+    ThreadUtil::sleep(waitTime);
   }
 }
 

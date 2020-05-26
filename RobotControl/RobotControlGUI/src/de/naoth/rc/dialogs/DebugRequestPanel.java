@@ -52,6 +52,7 @@ public class DebugRequestPanel extends AbstractDialog
     initComponents();
     
     ToolTipManager.sharedInstance().setDismissDelay(60000);
+    this.debugRequestTree.setNonLeafNodesEditable(false);
     
     // NOTE: experimental auto update on connect
     /*

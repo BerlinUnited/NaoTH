@@ -30,6 +30,7 @@ import de.naoth.rc.manager.ImageManagerBottom;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.dataformats.SPLMessage;
 import de.naoth.rc.drawings.Circle;
+import de.naoth.rc.drawings.FieldDrawingSPL2020;
 import de.naoth.rc.drawings.FieldDrawingSPL3x4;
 import de.naoth.rc.drawings.FieldDrawingSPLAspen;
 import de.naoth.rc.drawings.FillOval;
@@ -148,6 +149,7 @@ public class FieldViewer extends AbstractDialog
         new javax.swing.DefaultComboBoxModel(
         new Drawable[] 
         { 
+            new FieldDrawingSPL2020(),
             new FieldDrawingSPL2013(),
             new FieldDrawingSPL2012(),
             new FieldDrawingS3D2011(),

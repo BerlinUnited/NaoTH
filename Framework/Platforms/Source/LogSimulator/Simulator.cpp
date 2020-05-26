@@ -12,6 +12,8 @@
 #include <sstream>
 
 #include "Simulator.h"
+
+#include "Tools/ThreadUtil.h"
 #include "Tools/NaoTime.h"
 
 #include <Messages/Framework-Representations.pb.h>
@@ -23,7 +25,7 @@ using namespace std;
 using namespace naoth;
 
 Simulator::Simulator(const std::string& filePath, bool backendMode, bool realTime, unsigned short port)
-: PlatformInterface("LogSimulator", CYCLE_TIME),
+  : 
   backendMode(backendMode),
   realTime(realTime),
   logFileScanner(filePath),
@@ -220,16 +222,13 @@ void Simulator::play(bool loop)
 
     // wait at least 5ms but max 1s
     unsigned int waitTime = Math::clamp((int)maxTimeToWait - (int)calculationTime, 5, 1000);
-
+    ThreadUtil::sleep(waitTime);
 
 #ifdef WIN32
-    Sleep(waitTime);
     if(_kbhit()) {
       c = getInput();
     }
 #else
-    // wait some time
-    usleep(waitTime * 1000);
     c = getInput();
 #endif
 
