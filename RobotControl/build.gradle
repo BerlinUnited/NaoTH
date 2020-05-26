@@ -49,6 +49,8 @@ java.targetCompatibility = JavaVersion.VERSION_1_8
 application.mainClassName = 'de.naoth.rc.RobotControlImpl'
 application.executableDir = '' // do not create a "bin" directory in install/zip
 application.applicationName = 'robotcontrol' // set the startscripts to lower case
+// HACK: show splashscreen for 'gradlew run'
+application.applicationDefaultJvmArgs = ['-splash:build/resources/de/naoth/rc/res/Splash.png']
 
 // set the source directory and disable the other dirs
 sourceSets.main.java.srcDirs = ['src']
@@ -113,7 +115,14 @@ jar {
     include(additionalResources)
     into 'de/naoth/rc'
   }
-    
+
+  // create a manifest for the jar
+  manifest {
+    attributes 'Class-Path': sourceSets.main.runtimeClasspath.collect { it.name }.join(' ')
+    attributes 'Main-Class': application.mainClassName
+    attributes 'SplashScreen-Image': 'de/naoth/rc/res/Splash.png'
+  }
+  
   // avoid empty directories caused by the modified resource structure
   includeEmptyDirs = false
 }
