@@ -143,8 +143,8 @@ private:
             PARAMETER_REGISTER(association.use_cool)   = false;
             PARAMETER_REGISTER(association.use_naive)  = true;
 
-            PARAMETER_REGISTER(area95Threshold_radius.factor) = 1;
-            PARAMETER_REGISTER(area95Threshold_radius.offset) = 125;
+            PARAMETER_REGISTER(area95Threshold_radius.factor) = std::sqrt(2) * 1;
+            PARAMETER_REGISTER(area95Threshold_radius.offset) = std::sqrt(2) * 125;
 
             PARAMETER_REGISTER(use_covariance_based_selection) = true;
 
