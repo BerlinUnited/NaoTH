@@ -12,7 +12,7 @@ trap '[ $? -eq 0 ] || echo "!!!! FAILURE WITH CODE $? !!!!"' EXIT
 ACTION=${1:-NaoRobot}
 
 echo "###### GENERATE MAKE FILES ######"
-premake5 --platform=Nao gmake2
+premake5 --platform=Nao --Test gmake2
 
 echo "###### COMPILE ######"
 # run make in the corresponding build dir
