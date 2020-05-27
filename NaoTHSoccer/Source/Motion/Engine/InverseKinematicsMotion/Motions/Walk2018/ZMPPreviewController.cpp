@@ -55,7 +55,7 @@ void ZMPPreviewController::setHeight(double height) {
 
   if ( parameters.current->height != newHeight )
   {
-    std::cout << "[PreviewController] change height from " << parameters.current->height << " to " << newHeight << std::endl;
+    // std::cout << "[PreviewController] change height from " << parameters.current->height << " to " << newHeight << std::endl;
     parameters.update(newHeight);
 
     double z = newHeight * 0.001; // height in m

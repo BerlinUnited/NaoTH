@@ -1,7 +1,7 @@
 #include "TeamMessageStatisticsModule.h"
 
 #include "Representations/Modeling/TeamMessageData.h"
-#include "Tools/DataConversion.h"
+#include <Tools/StringTools.h>
 #include "PlatformInterface/Platform.h"
 
 TeamMessageStatisticsModule::TeamMessageStatisticsModule()
@@ -74,10 +74,10 @@ void TeamMessageStatisticsModule::execute() {
     }
 
     for(const auto& it : getTeamMessageStatistics().data) {
-        PLOT(std::string("MessageStatistics:Robot(")+DataConversion::toStr(it.first)+std::string("):messageInterval"), it.second.lastMsgInterval);
-        PLOT(std::string("MessageStatistics:Robot(")+DataConversion::toStr(it.first)+std::string("):averageMessageInterval"), it.second.avgMsgInterval);
-        PLOT(std::string("MessageStatistics:Robot(")+DataConversion::toStr(it.first)+std::string("):stddevMesssageInterval"), std::sqrt(it.second.varianceMsgInterval));
-        PLOT(std::string("MessageStatistics:Robot(")+DataConversion::toStr(it.first)+std::string("):indicator"), it.second.indicator_messageReceived_upToNow);
+        PLOT(std::string("MessageStatistics:Robot(")+StringTools::toStr(it.first)+std::string("):messageInterval"), it.second.lastMsgInterval);
+        PLOT(std::string("MessageStatistics:Robot(")+StringTools::toStr(it.first)+std::string("):averageMessageInterval"), it.second.avgMsgInterval);
+        PLOT(std::string("MessageStatistics:Robot(")+StringTools::toStr(it.first)+std::string("):stddevMesssageInterval"), std::sqrt(it.second.varianceMsgInterval));
+        PLOT(std::string("MessageStatistics:Robot(")+StringTools::toStr(it.first)+std::string("):indicator"), it.second.indicator_messageReceived_upToNow);
     }
 }
 

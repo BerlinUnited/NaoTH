@@ -113,7 +113,7 @@ private:
     class Parameters:  public ParameterList
     {
      public:
-        Parameters() : ParameterList("KalmanFilter4dBallModel")
+        Parameters() : ParameterList("MultiKalmanBallLocator")
         {
             PARAMETER_REGISTER(processNoiseStdQ00) = 15;
             PARAMETER_REGISTER(processNoiseStdQ01) = 0;

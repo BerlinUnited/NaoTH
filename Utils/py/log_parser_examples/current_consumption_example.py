@@ -5,12 +5,11 @@
     - add plots
 """
 from argparse import ArgumentParser
-from pathlib import Path
 
 import numpy as np
 from naoth.log import BehaviorParser
 from naoth.log import Reader as LogReader
-from pywget import wget
+from naoth.datasets import motion
 
 JointID = {
     "HeadPitch": 0,
@@ -36,27 +35,6 @@ JointID = {
     "RAnkleRoll": 20,
     "LAnkleRoll": 21
 }
-
-
-def get_demo_logfiles():
-    base_url = "https://www2.informatik.hu-berlin.de/~naoth/ressources/log/"
-
-    logfile_list = ["walk_on_floor_cognition.log"]
-
-    print("Downloading Logfiles: {}".format(logfile_list))
-
-    target_dir = Path("logs")
-    Path.mkdir(target_dir, exist_ok=True)
-
-    print(" Download from: {}".format(base_url))
-    print(" Download to: {}".format(target_dir.resolve()))
-    for logfile in logfile_list:
-        if not Path(target_dir / logfile).is_file():
-            print("Download: {}".format(logfile))
-            wget.download(base_url + logfile, str(target_dir))
-            print("Done.")
-
-    print("Finished downloading")
 
 
 def frame_filter(idx, frame):
@@ -132,13 +110,10 @@ def analyze_log(logfile):
 
 
 if __name__ == '__main__':
-    get_demo_logfiles()
-
     parser = ArgumentParser(
         description='script to generate some energy statistics from logfile')
-    parser.add_argument("-i", "--input", help='logfile, containing the BodyStatus representation and behavior',
-                        default="logs/walk_on_floor_cognition.log")
+    parser.add_argument("-i", "--input", help='logfile, containing the BodyStatus representation and behavior')
 
     args = parser.parse_args()
-
-    analyze_log(args.input)
+    logfile_name = args.input if args.input else motion.load_data('cognition')
+    analyze_log(logfile_name)
