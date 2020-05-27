@@ -23,7 +23,12 @@ print("INFO: generating solution NaoTHSoccer")
 print("  PLATFORM = " .. PLATFORM)
 print("  OS = " .. os.target())
 print("  ACTION = " .. (_ACTION or "NONE"))
-print()
+
+-- generate the project directory
+local project_dir = "../build/" .. (_OPTIONS["platform"] or _ACTION)
+print("  LOCATION = " .. project_dir)
+
+print("") -- empty line :)
 
 
 -- touch main.cpp to make sure that the repository defines have effect
@@ -34,9 +39,9 @@ end
 workspace "NaoTHSoccer"
   platforms {"Native", "Nao"}
   configurations {"OptDebug", "Debug"}
-  location "../build"
+  location (project_dir)
 
-  -- add general pathes
+  -- add general paths
   -- this mainly reflects the internal structure of the extern directory
   sysincludedirs {
     FRAMEWORK_PATH .. "/Commons/Source/Messages",
@@ -52,9 +57,10 @@ workspace "NaoTHSoccer"
     FRAMEWORK_PATH .. "/Commons/Source" 
   }
 
-  syslibdirs { EXTERN_PATH .. "/lib", EXTERN_PATH .. "/lib64"} -- for os that differentiate between lib and lib64
+  -- for os that differentiate between lib and lib64
+  syslibdirs { EXTERN_PATH .. "/lib", EXTERN_PATH .. "/lib64"} 
 
-  -- this function should be defined in 
+  -- this function can be adjusted in projectconfig.user.lua
   if set_user_defined_paths ~= nil then 
     set_user_defined_paths() 
   end
