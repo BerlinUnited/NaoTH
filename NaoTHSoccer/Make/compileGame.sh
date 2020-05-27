@@ -1,14 +1,20 @@
 #!/bin/bash
 
-echo "###### MAKE FILES ######" && \
-premake5 --platform=Nao gmake2 && \
-echo "###### C++ ######" && \
-cd ../build/ &&
-make config=optdebug_nao NaoRobot $@ && \
-cd ../Make/ && \
-echo "###### XABSL ######" && \
-./compileBehavior.sh && \
-echo "###### FINISH ######" && exit 0 \
+# Any subsequent commands which fail will cause 
+# the shell script to exit immediately
+set -e
 
-echo "!!!! FAILURE !!!!"
-exit 100
+# catch the EXIT and print a message if the exit code is not zero
+trap '[ $? -eq 0 ] || echo "!!!! FAILURE WITH CODE $? !!!!"' EXIT
+
+echo "###### GENERATE MAKE FILES ######"
+premake5 --platform=Nao gmake2
+
+echo "###### COMPILE ######"
+# run make in the corresponding build dir
+(cd ../build/Nao/ && make config=optdebug_nao NaoRobot $@)
+
+echo "###### XABSL ######"
+./compileBehavior.sh
+
+echo "###### FINISH ######"
