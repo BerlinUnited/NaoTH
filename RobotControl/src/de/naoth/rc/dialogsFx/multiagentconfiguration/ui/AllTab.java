@@ -143,7 +143,9 @@ public class AllTab extends Tab
     
     public void removeRepresentationsView(String name) {
         Optional<Node> node = contentArea.getChildren().stream().filter((n) -> { return n.getUserData().equals(name); }).findFirst();
-        contentArea.getChildren().remove(node.get());
+        if (node.isPresent()) {
+            contentArea.getChildren().remove(node.get());
+        }
     }
     
     class AllTabConfigurationsTab

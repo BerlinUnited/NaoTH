@@ -34,6 +34,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -882,6 +883,8 @@ public class RobotControlImpl extends javax.swing.JFrame
     {
       Helper.handleException(ex);
     }
+    // make sure the JavaFX thread is closed (otherwise exceptions get thrown)
+    Platform.exit();
   }
 
   private void readConfigFromFile()

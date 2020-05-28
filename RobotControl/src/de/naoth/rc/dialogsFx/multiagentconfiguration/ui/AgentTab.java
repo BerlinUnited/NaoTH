@@ -1,7 +1,5 @@
 package de.naoth.rc.dialogsFx.multiagentconfiguration.ui;
 
-import com.sun.javafx.scene.control.behavior.TabPaneBehavior;
-import com.sun.javafx.scene.control.skin.TabPaneSkin;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.server.Command;
 import de.naoth.rc.core.server.ConnectionStatusEvent;
@@ -230,14 +228,12 @@ public class AgentTab extends Tab implements ConnectionStatusListener
     
     public void requestClose() {
         unbindUiElements();
-        TabPaneBehavior behavior = getBehavior();
-        if(behavior.canCloseTab(this)) {
-            behavior.closeTab(this);
+        // the event handler are not triggered if the tab is removed programmatically
+        // so the appropiate events must be triggered here
+        Event.fireEvent(this, new Event(this, this, Tab.TAB_CLOSE_REQUEST_EVENT));        
+        if (this.getTabPane().getTabs().remove(this)) {
+            Event.fireEvent(this, new Event(this, this, Tab.CLOSED_EVENT));
         }
-    }
-
-    private TabPaneBehavior getBehavior() {
-        return ((TabPaneSkin) getTabPane().getSkin()).getBehavior();
     }
 
     public void connect() {
