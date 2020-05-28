@@ -70,9 +70,9 @@ void MultiKalmanBallLocator::execute()
       double distance = Vector2d(iter->getState()(0), iter->getState()(2)).abs();
       double threshold_radius = params.area95Threshold_radius.factor * distance + params.area95Threshold_radius.offset;
       // HACK: we need ballSeenFilter here because the other condition didn't seem to work as expected
-      // BUG: the formula for the area of the circle seems to incorrect!
       // compare area of the position uncertainty ellipse with a circle representing the maximum uncertainty a ball can have
-      if(!iter->ballSeenFilter.value() && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor * Math::pi > threshold_radius*threshold_radius*2*Math::pi){
+      // Note: pi is avoided on both sides of the inequality
+      if(!iter->ballSeenFilter.value() && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor > threshold_radius*threshold_radius){
           iter = filter.erase(iter);
       } else {
           ++iter;
