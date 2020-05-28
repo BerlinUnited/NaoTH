@@ -79,8 +79,6 @@ installDist {
   destinationDir = file("$projectDir/dist")
   // copy the platform dependend libs
   from('bin') { into('bin') }
-  // copy the splash screen image
-  into('lib') { from splash }
 }
 // make sure the "installDist" task is executed
 build.finalizedBy(installDist)
@@ -90,8 +88,6 @@ distTar {
   onlyIf { gradle.startParameter.taskNames.contains('distTar') }
   // copy the platform dependend libs
   from('bin') { into(application.applicationName + '/bin') }
-  // copy the splash screen image
-  into(application.applicationName + '/lib') { from splash }
 }
 
 distZip {
@@ -99,8 +95,6 @@ distZip {
   onlyIf { gradle.startParameter.taskNames.contains('distZip') }
   // copy the platform dependend libs
   from('bin') { into(application.applicationName + '/bin') }
-  // copy the splash screen image
-  into(application.applicationName + '/lib') { from splash }
 }
 
 // make sure the dist directory is also cleaned (since we're moved it out of the build directory)
@@ -146,6 +140,11 @@ if (jVersion >= JavaVersion.VERSION_11) {
 }
 
 startScripts {
-  // overwrite the 'applicationDefaultJvmArgs', since the path for the splash image differs
-  defaultJvmOpts = ['-splash:lib/Splash.png']
+  // overwrite the 'applicationDefaultJvmArgs', since we don't need it here
+  defaultJvmOpts = []
+  doLast {
+    // HACK: modify the script templates in order to call the application via its JAR file
+    unixScript.text = unixScript.text.replaceAll('-classpath.+\\\"\\$APP_ARGS\"', '-jar \\$APP_HOME/lib/RobotControl.jar "\\$APP_ARGS"')
+    windowsScript.text = windowsScript.text.replaceAll('-classpath.+%CMD_LINE_ARGS%', '-jar %APP_HOME%\\\\lib\\\\RobotControl.jar %CMD_LINE_ARGS%')
+  }
 }
