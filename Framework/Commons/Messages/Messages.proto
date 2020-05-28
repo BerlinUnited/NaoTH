@@ -90,7 +90,7 @@ message XABSLActionSparse {
   enum ActionType {
    Option = 0;
    BasicBehavior = 1;
-   SymbolAssignement = 2;
+   SymbolAssignment = 2;
    Unknown = 3;
   }
   

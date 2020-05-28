@@ -443,7 +443,7 @@ class Reader:
         if start_idx < 0:
             raise IndexError(f'Start index <{start_idx}> must be positive!')
 
-        # return frames which were already indexed
+        # return frames which were already indexed in self.frames
         while start_idx < len(self.frames):
             yield self.frames[start_idx]
             start_idx += 1
