@@ -101,10 +101,13 @@ class BehaviorParser:
         """
         self.agents = []
 
+        # These fields are set in the initialize function
         self.enum_types = None
         self._input_symbol_parser = None
         self._output_symbol_parser = None
         self._options_complete = None
+
+        self.is_initialized = False
 
         if behavior_state is not None:
             self.initialize(behavior_state)
@@ -130,6 +133,8 @@ class BehaviorParser:
         self._input_symbol_parser = SymbolParser(behavior_state.inputSymbolList, self.enum_types)
         self._output_symbol_parser = SymbolParser(behavior_state.outputSymbolList, self.enum_types)
 
+        self.is_initialized = True
+
     @staticmethod
     def _parse_xabsl_enum(xabsl_enum):
         """
@@ -149,7 +154,7 @@ class BehaviorParser:
 
         return _enum.Enum(xabsl_enum.name, [(convert_enum_value(elem.name), elem.value) for elem in xabsl_enum.elements])
 
-    def _parse_options(self, option_sparse):
+    def _parse_actions(self, option_sparse):
         if _pb.Messages_pb2.XABSLActionSparse.ActionType.Name(option_sparse.type) == 'Option':
 
             option_complete = self._options_complete[option_sparse.option.id]
@@ -175,7 +180,7 @@ class BehaviorParser:
                     raise NotImplementedError(f'Parameter type {parameter.type} not implemented')
 
             for sub_action in option_sparse.option.activeSubActions:
-                action, name, parsed_sub_action = self._parse_options(sub_action)
+                action, name, parsed_sub_action = self._parse_actions(sub_action)
                 if action == XABSLAction.XABSLOption:
                     parsed_option.sub_options[name] = parsed_sub_action
                 elif action == XABSLAction.XABSLSymbol:
@@ -212,9 +217,8 @@ class BehaviorParser:
         :param behavior_state: BehaviorStateSparse
         :returns parsed BehaviorFrame
         """
-        # check if initialized
-        if self._options_complete is None:
-            raise Exception('BehaviorParser must be initialized with "BehaviorStateComplete" (call initialize).')
+        if not self.is_initialized:
+            raise ValueError('BehaviorParser must be initialized with "BehaviorStateComplete" (call initialize).')
 
         behavior_frame = BehaviorFrame()
 
@@ -226,7 +230,8 @@ class BehaviorParser:
 
         # process active options
         for option_sparse in behavior_state.activeRootActions:
-            action, name, option = self._parse_options(option_sparse)
+            action, name, option = self._parse_actions(option_sparse)
+            # roots must be options
             assert action == XABSLAction.XABSLOption
             behavior_frame.root_options[name] = option
 
