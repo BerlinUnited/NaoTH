@@ -14,7 +14,8 @@ MultiKalmanBallLocator::MultiKalmanBallLocator()
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_ball_on_field_before",       "draw the modelled ball on the field before prediction and update",   false);
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_ball_on_field",              "draw the modelled ball on the field before update",                  false);
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_ball_on_field_after",        "draw the modelled ball on the field after prediction and update",    false);
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_assignment",                 "draws the assignment of the ball percept to the filter",             false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_assignment_bottom",          "draws the assignment of the ball percept to the filter for the bottom cam", false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_assignment_top",             "draws the assignment of the ball percept to the filter for the top cam",    false);
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_final_ball",                 "draws the final i.e. best model",                                    false);
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_final_ball_postion_at_rest", "draws the final i.e. best model's rest position",                    false);
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_covariance_ellipse",         "draws the ellipses representing the covariances",                    false);
@@ -287,13 +288,23 @@ void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
       }
       else
       {
-          DEBUG_REQUEST("MultiKalmanBallLocator:draw_assignment",
-              FIELD_DRAWING_CONTEXT;
-              PEN("FF0000", 10);
-              const Eigen::Vector4d state = filter[f[bestCol]].getState();
-              LINE(ps[bestRow].x,ps[bestRow].y,state(0),state(2));
-              TEXT_DRAWING((ps[bestRow].x+state(0))/2,(ps[bestRow].y+state(2))/2, scores(bestRow,bestCol));
-          );
+          if(camera == CameraInfo::Bottom) {
+              DEBUG_REQUEST("MultiKalmanBallLocator:draw_assignment_bottom",
+                  FIELD_DRAWING_CONTEXT;
+                  PEN("FF0000", 10);
+                  const Eigen::Vector4d state = filter[f[bestCol]].getState();
+                  LINE(ps[bestRow].x,ps[bestRow].y,state(0),state(2));
+                  TEXT_DRAWING((ps[bestRow].x+state(0))/2,(ps[bestRow].y+state(2))/2, scores(bestRow,bestCol));
+              );
+          } else {
+              DEBUG_REQUEST("MultiKalmanBallLocator:draw_assignment_top",
+                  FIELD_DRAWING_CONTEXT;
+                  PEN("FF0000", 10);
+                  const Eigen::Vector4d state = filter[f[bestCol]].getState();
+                  LINE(ps[bestRow].x,ps[bestRow].y,state(0),state(2));
+                  TEXT_DRAWING((ps[bestRow].x+state(0))/2,(ps[bestRow].y+state(2))/2, scores(bestRow,bestCol));
+              );
+          }
 
           DEBUG_REQUEST("MultiKalmanBallLocator:plot_prediction_error",
               Eigen::Vector2d prediction_error;
