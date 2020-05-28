@@ -39,6 +39,8 @@ MultiKalmanBallLocator::MultiKalmanBallLocator()
 
     getDebugParameterList().add(&params);
 
+    filter.reserve(10);  // set capacity for improved performance
+
     reloadParameters();
 }
 

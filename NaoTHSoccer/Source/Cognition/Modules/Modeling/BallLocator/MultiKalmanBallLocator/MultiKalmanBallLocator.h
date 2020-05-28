@@ -79,7 +79,6 @@ private:
     FrameInfo    lastFrameInfo;
 
 private:
-    // TODO set capacity of filter for improved performance
     typedef std::vector<BallHypothesis, Eigen::aligned_allocator<BallHypothesis> > Filters;
     Filters filter;
     Filters::const_iterator bestModel;
