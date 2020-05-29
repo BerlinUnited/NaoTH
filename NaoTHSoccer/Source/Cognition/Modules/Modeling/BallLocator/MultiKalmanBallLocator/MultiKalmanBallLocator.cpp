@@ -220,8 +220,7 @@ void MultiKalmanBallLocator::updateByPerceptsGreedy(CameraInfo::CameraID camera)
     if(camera == CameraInfo::Bottom) {
         h.camMat  = getCameraMatrix();
         h.camInfo = getCameraInfo();
-    }
-    else {
+    } else {
         h.camMat  = getCameraMatrixTop();
         h.camInfo = getCameraInfoTop();
     }
