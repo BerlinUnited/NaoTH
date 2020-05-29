@@ -23,12 +23,20 @@ apply plugin: 'application' // uses the java and distribution plugin
 // use the 'javafxplugin' based on the available java version
 def jVersion = JavaVersion.current()
 if (jVersion >= JavaVersion.VERSION_11) {
-  // ATTENTION: the plugin is configured at the end of the file!
   apply plugin: 'org.openjfx.javafxplugin'
 } else if (jVersion == JavaVersion.VERSION_1_8) {
   // do nothing, JavaFX is installed
 } else {
   // TODO: stop execution / throw error, since javafxplugin only supports 11+
+}
+
+if (jVersion >= JavaVersion.VERSION_11) {
+  javafx {
+    // NOTE: got JVM segfaults, if a different (hard-coded) version than the current java version is used
+    version = jVersion.getMajorVersion()
+    // NOTE: all other modules are dependencies of the listed
+    modules = [ 'javafx.fxml', 'javafx.swing', 'javafx.web' ]
+  }
 }
 
 // the project dependencies
@@ -45,15 +53,12 @@ defaultTasks 'run' // 'clean', 'build',
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 java.targetCompatibility = JavaVersion.VERSION_1_8
 
-// the splash screen image gets used multiple times
-def splash = 'build/resources/de/naoth/rc/res/Splash.png'
-
 // configure the application plugin
 application.mainClassName = 'de.naoth.rc.RobotControlImpl'
 application.executableDir = '' // do not create a "bin" directory in install/zip
 application.applicationName = 'robotcontrol' // set the startscripts to lower case
 // HACK: show splashscreen for 'gradlew run'
-application.applicationDefaultJvmArgs = ['-splash:' + splash]
+application.applicationDefaultJvmArgs = ['-splash:build/resources/de/naoth/rc/res/Splash.png']
 
 // set the source directory and disable the other dirs
 sourceSets.main.java.srcDirs = ['src']
@@ -128,15 +133,6 @@ jar {
   
   // avoid empty directories caused by the modified resource structure
   includeEmptyDirs = false
-}
-
-if (jVersion >= JavaVersion.VERSION_11) {
-  javafx {
-    // NOTE: got JVM segfaults, if a different (hard-coded) version than the current java version is used
-    version = jVersion.getMajorVersion()
-    // NOTE: all other modules are dependencies of the listed
-    modules = [ 'javafx.fxml', 'javafx.swing', 'javafx.web' ]
-  }
 }
 
 startScripts {
