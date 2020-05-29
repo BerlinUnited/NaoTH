@@ -102,10 +102,10 @@ void MultiKalmanBallLocator::execute()
         updateByPerceptsNormal();
     } else if(params.association.use_cool) {
         updateByPerceptsCool();
-    } else if(params.association.use_naive) {
+    } else if(params.association.use_greedy) {
         // need to handle bottom and top percepts independently because both cameras can observe the same ball
-        updateByPerceptsNaive(CameraInfo::Bottom);
-        updateByPerceptsNaive(CameraInfo::Top);
+        updateByPerceptsGreedy(CameraInfo::Bottom);
+        updateByPerceptsGreedy(CameraInfo::Top);
     }
 
     // NOTE: (Heinrich) update the "ball seen" values
@@ -207,7 +207,14 @@ void MultiKalmanBallLocator::updateByPerceptsNormal()
     }// end for
 }
 
-void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
+/*
+ * Perform a greedy 1:1-matching of filters (hypothesis) and measurements (ball percept).
+ * The association depends on the horizontal and vertical angles of the percept and
+ * the hypothesis in the image. Each combination is assigned a score. The combination
+ * with the best score is choosen and the filter updated with the measurement.
+ * After that the second best and so on...
+ */
+void MultiKalmanBallLocator::updateByPerceptsGreedy(CameraInfo::CameraID camera)
 {
     // set correct camera matrix and info in functional
     if(camera == CameraInfo::Bottom) {
