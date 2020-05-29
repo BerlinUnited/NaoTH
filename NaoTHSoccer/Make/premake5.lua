@@ -169,7 +169,9 @@ workspace "NaoTHSoccer"
     -- this is needed to supress the linker warning in VS2013 if gloabal links are used 
     -- linkoptions { "/ignore:4221" } -- LNK4221: This object file does not define any previously undefined public symbols, so it will not be used by any link operation that consumes this library
 
-    debugdir "$(SolutionDir).."
+    -- from docu:
+    -- "path to the working directory, relative to the currently executing script file."
+    debugdir ".."
     
     -- remove the nao platform if action is vs*
     removeplatforms { "Nao" }
@@ -242,7 +244,7 @@ workspace "NaoTHSoccer"
     if os.ishost("windows") and _ACTION ~= nil and string.match(_ACTION, "^vs.*") then
       project "Generate"
         kind "Utility"
-        prebuildcommands { "cd ../Make/ && premake5 --Test " .. _ACTION }
+        prebuildcommands { "cd ../../Make/ && premake5 --Test " .. _ACTION }
     end
   
   -- set up platforms
