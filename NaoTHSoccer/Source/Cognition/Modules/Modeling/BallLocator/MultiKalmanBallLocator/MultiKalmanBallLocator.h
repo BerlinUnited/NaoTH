@@ -88,6 +88,11 @@ private:
     // TODO: or is this value specific to the algorithms? E.g. ball speed below 1mm/s is considered 0.
     const double epsilon=10e-6;
 
+public:
+    const Filters& get_filter() {
+        return filter;
+    }
+
 private:
     void updateByPerceptsCool();
     void updateByPerceptsNormal();
