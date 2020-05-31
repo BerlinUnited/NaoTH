@@ -1,5 +1,5 @@
 
-#ifdef  WIN32
+#ifdef WIN32
   #include <conio.h>
   #include <windows.h>
   #include <winbase.h>
