@@ -11,6 +11,9 @@ dependencies {
     implementation 'com.jcraft:jsch:0.1.55'
 }
 
+// by default just (build and) run NaoScp
+defaultTasks 'run' // 'clean', 'build', 
+
 // define the targeted versions
 project.version = 1.1
 java.sourceCompatibility = JavaVersion.VERSION_1_8
@@ -42,3 +45,8 @@ task cleanDist(type: Delete) {
 }
 clean.finalizedBy(cleanDist)
 
+// create a manifest for the jar
+jar.manifest {
+    attributes 'Class-Path': sourceSets.main.runtimeClasspath.collect { it.name }.join(' ')
+    attributes 'Main-Class': application.mainClassName
+}
