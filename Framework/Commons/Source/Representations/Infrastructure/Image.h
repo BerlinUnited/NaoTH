@@ -39,10 +39,7 @@ private:
   bool selfCreatedImage;
 
 private:
-  unsigned int _width;
-  unsigned int _height;
-
-  /** raw data in YUV422 format */
+  /** raw image data in YUV422 format */
   unsigned char* yuv422;
 
 public:
