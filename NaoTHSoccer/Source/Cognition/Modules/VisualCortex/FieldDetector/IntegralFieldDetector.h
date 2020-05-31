@@ -67,6 +67,8 @@ public:
 
     Parameters() : ParameterList("IntegralFieldDetector")
     {
+      PARAMETER_REGISTER(min_field_area) = 5600;
+
       PARAMETER_REGISTER(max_skip_cells) = 1;
       PARAMETER_REGISTER(min_successive_green) = 3;
 
@@ -76,13 +78,15 @@ public:
       PARAMETER_REGISTER(positive_score) = 1;
       PARAMETER_REGISTER(negative_score) = -1;
 
-      PARAMETER_REGISTER(grid_size_top) = 20;
-      PARAMETER_REGISTER(grid_size_bottom) = 30;
+      PARAMETER_REGISTER(cell_size_px_top) = 20;
+      PARAMETER_REGISTER(cell_size_px_bottom) = 30;
 
       PARAMETER_REGISTER(set_whole_image_as_field_bottom) = false;
       PARAMETER_REGISTER(set_whole_image_as_field_top) = false;
       syncWithConfig();
     }
+    int min_field_area;
+
     double proportion_of_green;
     double end_proportion_of_green;
 
@@ -92,8 +96,8 @@ public:
     double positive_score;
     double negative_score;
 
-    int grid_size_top;
-    int grid_size_bottom;
+    int cell_size_px_top;
+    int cell_size_px_bottom;
 
     bool set_whole_image_as_field_bottom;
     bool set_whole_image_as_field_top;

@@ -25,51 +25,13 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
   getFieldPercept().reset();
   endpoints.clear();
 
-  // TODO: make it easier readable?
-  if((cameraID==CameraInfo::Top)? params.set_whole_image_as_field_top: params.set_whole_image_as_field_bottom) {
+  bool set_image_as_field = (cameraID==CameraInfo::Top)? params.set_whole_image_as_field_top:
+                                                         params.set_whole_image_as_field_bottom;
+  if(set_image_as_field) {
     // skip field detection and set whole image under the horizon as field
-    endpoints = {
-      {0, 0},
-      {0, static_cast<int>(getImage().height())-1},
-      {static_cast<int>(getImage().width())-1, static_cast<int>(getImage().height())-1},
-      {static_cast<int>(getImage().width())-1, 0},
-      {0, 0} // TODO: do we need this?
-    };
-
-	// NOTE: we call convexHull here to make sure the points are in the same 
-	// order as with the regular calculations
-    // convex hull calculation sorts endpoints in clockwise order
-	// TODO: check if polygon needs first and last point to be the same
-    std::vector<Vector2i> result = ConvexHull::convexHull(endpoints);
-
-	// TODO: why is convexHull not producing Polygon directly?
-    FieldPercept::FieldPoly fieldPoly;
-    for(size_t i = 0; i < result.size(); i++)
-    {
-      fieldPoly.add(result[i]);
-    }
-
-	  // TODO: is this needed at this place (params.set_whole_image_as_field)?
-    getFieldPercept().setField(fieldPoly, getArtificialHorizon());
-
-	  // TODO: (MAGIC NUMBER) is this necessary?  if yes why is it not a parameter?
-    if(fieldPoly.getArea() >= 5600) {
-      getFieldPercept().valid = true;
-    }
-
-    DEBUG_REQUEST("Vision:IntegralFieldDetector:mark_field_polygon",
-      IMAGE_DRAWING_CONTEXT;
-      CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
-
-      std::string color = getFieldPercept().valid ? "FFFF00" : "FF0000";
-      PEN(color, 2);
-
-      const FieldPercept::FieldPoly& poly = getFieldPercept().getValidField();
-      for(size_t i = 1; i < poly.size(); i++)
-      {
-        LINE(poly[i-1].x, poly[i-1].y, poly[i].x, poly[i].y);
-      }
-    );
+    // set endpoints to the upper image corners
+    endpoints = {{0, 0}, {static_cast<int>(getImage().width())-1, 0}};
+    create_field();
     return;
   }
 
@@ -79,27 +41,26 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
     return;
   }
 
-  // NOTE: the facto may be different for top and bottom
+  // NOTE: the factor may be different for top and bottom
   factor = getBallDetectorIntegralImage().FACTOR;
   const int width = getBallDetectorIntegralImage().getWidth();
   const int height = getBallDetectorIntegralImage().getHeight();
 
-  // TODO: this gives the size of a cell in pixels, not the size of the grid itself
-  // maybe it's better to have the number of cells, i.e., grid size, as parameter?
-  const int grid_size = (cameraID==CameraInfo::Top ? params.grid_size_top:
-                                                     params.grid_size_bottom) / factor;
+  const int cell_size_px = cameraID==CameraInfo::Top ? params.cell_size_px_top:
+                                                       params.cell_size_px_bottom;
+  // cell size in the integral image
+  const int cell_size = cell_size_px / factor;
 
-  // TODO: better comments
-  // determine number of grids
-  const int n_cells_horizontal = width / grid_size;
-  const int n_cells_vertical = height / grid_size;
+  // determine the number of horizontal and vertical cells
+  const int n_cells_horizontal = width / cell_size;
+  const int n_cells_vertical = height / cell_size;
 
   // pixels lost due to integer division
-  // TODO: rest is expected to be less then n_cells
-  int rest_H = width - (n_cells_horizontal * grid_size);
-  int rest_V = height - (n_cells_vertical * grid_size);
+  // TODO: Rest is expected to be less then n_cells
+  int rest_H = width - (n_cells_horizontal * cell_size);
+  int rest_V = height - (n_cells_vertical * cell_size);
 
-  const int pixels_per_cell = grid_size * grid_size;
+  const int pixels_per_cell = cell_size * cell_size;
   const int min_green = (int)(pixels_per_cell*params.proportion_of_green);
   const int min_end_green = (int)(pixels_per_cell*params.end_proportion_of_green);
 
@@ -112,10 +73,10 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
   // In perticular get rid of bilataral usage of cell.maxX and cell.minY
   // where the integer devision rest is added.
   // In short: Make everything double and calculate grid sizes and thresholds individually
-  for (cell.minX=0; cell.minX + grid_size-1 < width; cell.minX = cell.maxX + 1)
+  for (cell.minX=0; cell.minX + cell_size-1 < width; cell.minX = cell.maxX + 1)
   {
     // FIXME: check whether the -1 is correct here with the use of integral image
-    cell.maxX = cell.minX + grid_size-1;
+    cell.maxX = cell.minX + cell_size-1;
     int horizon_height = std::max(
           (int) (getArtificialHorizon().point(toImage(cell.maxX)).y),
           (int) (getArtificialHorizon().point(toImage(cell.minX)).y)
@@ -127,10 +88,10 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
     int rest = rest_V; // copy, because we need it several times
     int cell_number = 1;
     // scan up
-    for(cell.maxY = height-1; cell.maxY - grid_size + 1 >= min_scan_y; cell.maxY = cell.minY - 1)
+    for(cell.maxY = height-1; cell.maxY - cell_size + 1 >= min_scan_y; cell.maxY = cell.minY - 1)
     {
       // FIXME: check whether the -1 is correct here with the use of integral image
-      cell.minY = cell.maxY - grid_size + 1;
+      cell.minY = cell.maxY - cell_size + 1;
 
       // calculate number of green pixels in the cell
       cell.sum_of_green = getBallDetectorIntegralImage().getSumForRect(
@@ -180,7 +141,8 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
     }
 
     if(green_found){
-      if(first) { // find the left most endpoint
+      if(first) {
+        // Left most cell: Determine the left most endpoint so that there is no gap
         Vector2i left_endpoint;
         find_endpoint(toImage(last_green_cell.minX), last_green_cell, left_endpoint);
         endpoints.push_back(left_endpoint);
@@ -199,7 +161,8 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
     }
   }
 
-  if(green_found) { // find the right most endpoint
+  if(green_found) {
+    // Right most cell: Determine the right most endpoint so that there is no gap
     Vector2i right_endpoint;
     find_endpoint((last_green_cell.maxX + 1) * factor - 1,
                   last_green_cell, right_endpoint);
@@ -242,6 +205,7 @@ void IntegralFieldDetector::find_endpoint(int x, const Cell& cell, Vector2i& end
 }
 
 void IntegralFieldDetector::create_field() {
+  // Create projection if the first and last endpoint on the lower image border
   Vector2i p1 = endpoints.front();
   p1.y = getImage().height() - 1;
   Vector2i p2 = endpoints.back();
@@ -257,10 +221,10 @@ void IntegralFieldDetector::create_field() {
     fieldPoly.add(result[i]);
   }
 
-  // add field to percept
+  // add field to percept; ensures field polygon is under the horizon (required if set_whole_image_as_field is set)
   getFieldPercept().setField(fieldPoly, getArtificialHorizon());
   // check result
-  getFieldPercept().valid = fieldPoly.getArea() >= 5600;
+  getFieldPercept().valid = fieldPoly.getArea() >= params.min_field_area;
 
   DEBUG_REQUEST("Vision:IntegralFieldDetector:mark_field_polygon",
     IMAGE_DRAWING_CONTEXT;
