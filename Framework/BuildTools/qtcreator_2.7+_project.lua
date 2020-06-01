@@ -144,13 +144,13 @@ function qtc.build_configuration(prj, cfg, cfgCounter, platform)
                     _p(4, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.BuildStepList.Step.0\">")
                         _p(5, "<value type=\"bool\" key=\"ProjectExplorer.BuildStep.Enabled\">true</value>")
                         if string.endswith(cfg.longname, platform) and platform ~= "" then
-                            _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--platform=&quot;".. platform .."&quot; --file=../Make/premake5.lua gmake2</value>")
+                            _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--platform=&quot;".. platform .."&quot; --file=../../Make/premake5.lua gmake2</value>")
                         else
                             -- what is this supposed to be?
                             if _OPTIONS.Test == nil then
-                                _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--file=../Make/premake5.lua gmake2</value>")
+                                _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--file=../../Make/premake5.lua gmake2</value>")
                             else
-                                _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--Test --file=../Make/premake5.lua gmake2</value>")
+                                _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--Test --file=../../Make/premake5.lua gmake2</value>")
                             end
                         end
                         _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Command\">premake5</value>")
