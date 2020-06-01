@@ -50,6 +50,10 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
                                                        params.cell_size_px_bottom;
   // cell size in the integral image
   const int cell_size = cell_size_px / factor;
+  if (cell_size >= std::min(width, height)) {
+      // invalid cell size
+      return;
+  }
 
   // determine the number of horizontal and vertical cells
   const int n_cells_horizontal = width / cell_size;
