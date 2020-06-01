@@ -9,6 +9,8 @@ premake.qtcreator27 = { }
 -- https://doc.qt.io/qtcreator/creator-sharing-project-settings.html
 -- https://doc.qt.io/qtcreator/creator-project-generic.html
 
+-- NOTE: all paths are relative to the project files
+
 local qtc = premake.qtcreator27
 
 function qtc.header()
@@ -138,7 +140,7 @@ end
 
 function qtc.build_configuration(prj, cfg, cfgCounter, platform)
             _p(2, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.Target.BuildConfiguration.%d\">", cfgCounter)
-                _p(3, "<value type=\"QString\" key=\"ProjectExplorer.BuildConfiguration.BuildDirectory\"></value>")
+                _p(3, "<value type=\"QString\" key=\"ProjectExplorer.BuildConfiguration.BuildDirectory\">../gmake2/</value>")
                 -- the build steps for "Make"
                 _p(3, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.BuildConfiguration.BuildStepList.0\">")
                     _p(4, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.BuildStepList.Step.0\">")
