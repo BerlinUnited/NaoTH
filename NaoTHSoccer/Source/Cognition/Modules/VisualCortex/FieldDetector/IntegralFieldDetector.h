@@ -78,8 +78,11 @@ public:
       PARAMETER_REGISTER(positive_score) = 1;
       PARAMETER_REGISTER(negative_score) = -1;
 
-      PARAMETER_REGISTER(cell_size_px_top) = 20;
-      PARAMETER_REGISTER(cell_size_px_bottom) = 30;
+      // number of columns and rows in the grid
+      PARAMETER_REGISTER(column_count_top) = 32;
+      PARAMETER_REGISTER(row_count_top) = 24;
+      PARAMETER_REGISTER(column_count_bottom) = 22;
+      PARAMETER_REGISTER(row_count_bottom) = 14;
 
       PARAMETER_REGISTER(set_whole_image_as_field_bottom) = false;
       PARAMETER_REGISTER(set_whole_image_as_field_top) = false;
@@ -96,20 +99,30 @@ public:
     double positive_score;
     double negative_score;
 
-    int cell_size_px_top;
-    int cell_size_px_bottom;
+    int column_count_top;
+    int column_count_bottom;
+    int row_count_top;
+    int row_count_bottom;
 
     bool set_whole_image_as_field_bottom;
     bool set_whole_image_as_field_top;
   } params;
 
 private:
-  struct Cell {
+  class Cell {
+    public:
       int minX;
       int minY;
       int maxX;
       int maxY;
-      int sum_of_green;
+
+      inline int get_green_sum(const BallDetectorIntegralImage& integralImage) {
+          return integralImage.getSumForRect(minX, minY, maxX, maxY, 1);
+      }
+
+      inline int count_pixel() {
+          return (maxX - minX) * (maxY - minY);
+      }
   };
 
   CameraInfo::CameraID cameraID;

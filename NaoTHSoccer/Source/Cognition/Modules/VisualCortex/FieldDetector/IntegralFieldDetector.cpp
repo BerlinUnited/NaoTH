@@ -46,41 +46,37 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
   const int width = getBallDetectorIntegralImage().getWidth();
   const int height = getBallDetectorIntegralImage().getHeight();
 
-  const int cell_size_px = cameraID==CameraInfo::Top ? params.cell_size_px_top:
-                                                       params.cell_size_px_bottom;
-  // cell size in the integral image
-  const int cell_size = cell_size_px / factor;
-  if (cell_size >= std::min(width, height)) {
-      // invalid cell size
+  // calculate theoretical cell sizes
+  double cell_width, cell_height;
+  if(cameraID==CameraInfo::Top) {
+      cell_width = static_cast<double>(width) / params.column_count_top;
+      cell_height = static_cast<double>(height) / params.row_count_top;
+  } else {
+      cell_width = static_cast<double>(width) / params.column_count_bottom;
+      cell_height = static_cast<double>(height) / params.row_count_bottom;
+  }
+  if (cell_width < 1 || cell_height < 1) {
+      // invalid parameters
       return;
   }
-
-  // determine the number of horizontal and vertical cells
-  const int n_cells_horizontal = width / cell_size;
-  const int n_cells_vertical = height / cell_size;
-
-  // pixels lost due to integer division
-  // TODO: Rest is expected to be less then n_cells
-  int rest_H = width - (n_cells_horizontal * cell_size);
-  int rest_V = height - (n_cells_vertical * cell_size);
-
+  /*
   const int pixels_per_cell = cell_size * cell_size;
   const int min_green = (int)(pixels_per_cell*params.proportion_of_green);
   const int min_end_green = (int)(pixels_per_cell*params.end_proportion_of_green);
-
+  */
   bool first = true;
   bool green_found = false;
   bool former_green = false;
   Cell last_green_cell;
   Cell cell;
-  // TODO: simplify calculations of cell bounds.
-  // In perticular get rid of bilataral usage of cell.maxX and cell.minY
-  // where the integer devision rest is added.
-  // In short: Make everything double and calculate grid sizes and thresholds individually
-  for (cell.minX=0; cell.minX + cell_size-1 < width; cell.minX = cell.maxX + 1)
+  // iterate columns
+  for (double x=0.; x + cell_width-1 < width; x += cell_width)
   {
-    // FIXME: check whether the -1 is correct here with the use of integral image
-    cell.maxX = cell.minX + cell_size-1;
+    // calculate column bounds
+    cell.minX = static_cast<int>(x);
+    cell.maxX = static_cast<int>(x + cell_width-1);
+
+    // calculate minimal y value under the horizon for the current column
     int horizon_height = std::max(
           (int) (getArtificialHorizon().point(toImage(cell.maxX)).y),
           (int) (getArtificialHorizon().point(toImage(cell.minX)).y)
@@ -89,45 +85,45 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
 
     int skipped = 0;
     int successive_green = 0;
-    int rest = rest_V; // copy, because we need it several times
     int cell_number = 1;
-    // scan up
-    for(cell.maxY = height-1; cell.maxY - cell_size + 1 >= min_scan_y; cell.maxY = cell.minY - 1)
-    {
-      // FIXME: check whether the -1 is correct here with the use of integral image
-      cell.minY = cell.maxY - cell_size + 1;
 
-      // calculate number of green pixels in the cell
-      cell.sum_of_green = getBallDetectorIntegralImage().getSumForRect(
-            cell.minX, cell.minY, cell.maxX, cell.maxY, 1);
+    // iterate rows; scan from bottom to top
+    for(double y = height-1; y - (cell_height-1) >= min_scan_y; y -= cell_height)
+    {
+      // calculate row bounds^
+      cell.maxY = static_cast<int>(y);
+      cell.minY = static_cast<int>(y - (cell_height-1));
+
+      // check if the cell is mostly green
+      int cell_green_sum = cell.get_green_sum(getBallDetectorIntegralImage());
+      const int pixel_count = cell.count_pixel();
+      const bool cell_is_green = cell_green_sum >= pixel_count * params.proportion_of_green;
 
       DEBUG_REQUEST("Vision:IntegralFieldDetector:draw_grid",
         IMAGE_DRAWING_CONTEXT;
         CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
 
         std::string color;
-        if(cell.sum_of_green >= min_green) {
+        if(cell_is_green) {
           color = "00FF00";
         } else {
           color = "FF00FF";
         }
         PEN(color, 1);
-        BOX(toImage(cell.minX), toImage(cell.minY),
-            toImage(cell.maxX), toImage(cell.maxY));
+        BOX(toImage(cell.minX), toImage(cell.minY), toImage(cell.maxX), toImage(cell.maxY));
       );
 
-      if(cell.sum_of_green >= min_green) {
+      if(cell_is_green) {
         skipped = 0;
         ++successive_green;
-
-        if (successive_green >= params.min_successive_green
-            || cell_number == successive_green) {
+        if (successive_green >= params.min_successive_green || cell_number == successive_green) {
           last_green_cell = cell;
           former_green = true;
           green_found = true;
         }
       } else {
-        if(former_green && cell.sum_of_green > min_end_green) {
+        // check if cell has enough green so it might contain the field border
+        if(former_green && cell_green_sum >= pixel_count * params.end_proportion_of_green) {
           last_green_cell = cell;
         }
         ++skipped;
@@ -135,11 +131,6 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
           successive_green = 0;
         }
         former_green = false;
-      }
-      // ensure cells will end on the upper image border
-      if(rest > 0) {
-        rest--;
-        cell.minY--;
       }
       cell_number++;
     }
@@ -157,19 +148,12 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
                     last_green_cell, endpoint);
       endpoints.push_back(endpoint);
     }
-
-    // ensure cells will end on the right image border
-    if(rest_H > 0) {
-      rest_H--;
-      cell.maxX++;
-    }
   }
 
   if(green_found) {
     // Right most cell: Determine the right most endpoint so that there is no gap
     Vector2i right_endpoint;
-    find_endpoint((last_green_cell.maxX + 1) * factor - 1,
-                  last_green_cell, right_endpoint);
+    find_endpoint((last_green_cell.maxX + 1) * factor - 1, last_green_cell, right_endpoint);
     endpoints.push_back(right_endpoint);
   }
 
