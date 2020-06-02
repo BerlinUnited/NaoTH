@@ -15,6 +15,9 @@ project "LoLa"
   
   links {
     --"NaoRobot"
+    "gio-2.0",
+    "glib-2.0",
+    "gobject-2.0"
 	}
 	
   targetname "lola"
