@@ -31,6 +31,7 @@ public:
     PARAMETER_REGISTER(head_rot.y) = 0;
     PARAMETER_REGISTER(head_rot.z) = 0;
 
+    /*
     PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Top].x) = 0;
     PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Top].y) = 0;
     PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Top].z) = 0;
@@ -38,6 +39,27 @@ public:
     PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Bottom].x) = 0;
     PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Bottom].y) = 0;
     PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Bottom].z) = 0;
+    */
+
+    // TODO: Version1: explicit naming
+    registerParameter("cam_rot.top.x", cam_rot[naoth::CameraInfo::Top].x) = 0;
+    registerParameter("cam_rot.top.y", cam_rot[naoth::CameraInfo::Top].y) = 0;
+    registerParameter("cam_rot.top.z", cam_rot[naoth::CameraInfo::Top].z) = 0;
+
+    registerParameter("cam_rot.bottom.x", cam_rot[naoth::CameraInfo::Bottom].x) = 0;
+    registerParameter("cam_rot.bottom.y", cam_rot[naoth::CameraInfo::Bottom].y) = 0;
+    registerParameter("cam_rot.bottom.z", cam_rot[naoth::CameraInfo::Bottom].z) = 0;
+
+    /*
+    // TODO: Version 2 (see below)
+    PARAMETER_REGISTER(cam_rot.top.x) = 0;
+    PARAMETER_REGISTER(cam_rot.top.y) = 0;
+    PARAMETER_REGISTER(cam_rot.top.z) = 0;
+
+    PARAMETER_REGISTER(cam_rot.bottom.x) = 0;
+    PARAMETER_REGISTER(cam_rot.bottom.y) = 0;
+    PARAMETER_REGISTER(cam_rot.bottom.z) = 0;
+    */
 
     syncWithConfig();
   }
@@ -49,7 +71,33 @@ public:
 
   Vector2d body_rot;
   Vector3d head_rot;
+
+  // TODO: do we need indexing here? It makes access difficult. There are only few places where indexed access is useful.
   Vector3d cam_rot[naoth::CameraInfo::numOfCamera];
+
+  // TODO: Version2 more clear data structure (perhps better to remove the operator in the future)
+  /*
+  struct {
+    Vector3d top;
+    Vector3d bottom;
+    Vector3d& operator[] (int idx) { // naoth::CameraInfo::CameraID idx
+      switch(idx) {
+      case naoth::CameraInfo::Top: return top;
+      case naoth::CameraInfo::Bottom: return bottom;
+      default: ASSERT(false); 
+      }
+      return top; // will never happen
+    }
+    const Vector3d& operator[] (int idx) const { // naoth::CameraInfo::CameraID idx
+      switch(idx) {
+      case naoth::CameraInfo::Top: return top;
+      case naoth::CameraInfo::Bottom: return bottom;
+      default: ASSERT(false); 
+      }
+      return top; // will never happen
+    }
+  } cam_rot;
+  */
 
   virtual void print(std::ostream& stream) const
   {
