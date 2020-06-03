@@ -6,8 +6,9 @@
 MultiKalmanBallLocator::MultiKalmanBallLocator()
 {
     // Modify number of models
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:remove_all_models",     "remove all models",                                                             false);
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:allow_just_one_model",  "allows only one model to be generated (all updates are applied to that model)", false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:remove_all_models",    "remove all models",                                                             false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:disallow_removal",     "never delete a model",                                                          false);
+    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:allow_just_one_model", "allows only one model to be generated (all updates are applied to that model)", false);
 
     // Debug Drawings
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_real_ball_percept",          "draw the real incomming ball percept",                               false);
@@ -65,21 +66,28 @@ void MultiKalmanBallLocator::execute()
         filter.clear();
     );
 
-    // delete some filter if they are too bad
-    // NOTE: make sure at least one filter remains, so filter is not empty
-    Filters::iterator iter = filter.begin();
-    while(iter != filter.end() && filter.size() > 1) {
-      // TODO: here we make a linear approximation depending n the distance - does it make problems? Can we have a better solution?
-      double distance = Vector2d(iter->getState()(0), iter->getState()(2)).abs();
-      double threshold_radius = params.area95Threshold_radius.factor * distance + params.area95Threshold_radius.offset;
-      // HACK: we need ballSeenFilter here because the other condition didn't seem to work as expected
-      // compare area of the position uncertainty ellipse with a circle representing the maximum uncertainty a ball can have
-      // Note: pi is avoided on both sides of the inequality
-      if(!iter->ballSeenFilter.value() && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor > threshold_radius*threshold_radius){
-          iter = filter.erase(iter);
-      } else {
-          ++iter;
-      }
+    bool allow_removal = true;
+    DEBUG_REQUEST("MultiKalmanBallLocator:disallow_removal",
+        allow_removal = false;
+    );
+
+    if(allow_removal) {
+        // delete some filter if they are too bad
+        // NOTE: make sure at least one filter remains, so filter is not empty
+        Filters::iterator iter = filter.begin();
+        while(iter != filter.end() && filter.size() > 1) {
+          // TODO: here we make a linear approximation depending n the distance - does it make problems? Can we have a better solution?
+          double distance = Vector2d(iter->getState()(0), iter->getState()(2)).abs();
+          double threshold_radius = params.area95Threshold_radius.factor * distance + params.area95Threshold_radius.offset;
+          // HACK: we need ballSeenFilter here because the other condition didn't seem to work as expected
+          // compare area of the position uncertainty ellipse with a circle representing the maximum uncertainty a ball can have
+          // Note: pi is avoided on both sides of the inequality
+          if(!iter->ballSeenFilter.value() && (*iter).getEllipseLocation().major * (*iter).getEllipseLocation().minor > threshold_radius*threshold_radius){
+              iter = filter.erase(iter);
+          } else {
+              ++iter;
+          }
+        }
     }
 
     // apply odometry on the filter state, to keep it in the robot's local coordinate system
