@@ -4,6 +4,7 @@ FakeBallDetector::FakeBallDetector() {
     DEBUG_REQUEST_REGISTER("Vision:FakeBallDetector:disable", "disable fake balls", false);
     DEBUG_REQUEST_REGISTER("Vision:FakeBallDetector:clear", "clear all balls", false);
     DEBUG_REQUEST_REGISTER("Vision:FakeBallDetector:add_new_ball", "add a new ball - position, velocity can be set by Vision:FakeBallDetector:new_ball before creation", false);
+    DEBUG_REQUEST_REGISTER("Vision:FakeBallDetector:ignore_image_size", "ignore the image width and height during back projection", false);
 }
 
 void FakeBallDetector::execute() {
@@ -70,12 +71,24 @@ void FakeBallDetector::provideMultiBallPercept() const {
     MultiBallPercept::BallPercept ballPercept;
     Vector2d pointInImage;
     Vector3d point(0, 0, getFieldInfo().ballRadius);
+    bool ignore_image_size = false;
+
+    DEBUG_REQUEST("Vision:FakeBallDetector:ignore_image_size",
+        ignore_image_size = true;
+    );
+
     for(const FakeBall& fb: fakeBalls) {
         point.x = fb.position.x;
         point.y = fb.position.y;
 
         bool in_image_bottom = CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), point, pointInImage);
-        if(in_image_bottom) {
+        if(in_image_bottom
+            && (ignore_image_size
+                || (pointInImage.x >= 0
+                    && pointInImage.x <= getCameraInfo().resolutionWidth
+                    && pointInImage.y >= 0
+                    && pointInImage.y <= getCameraInfo().resolutionHeight)))
+        {
             ballPercept.positionOnField = fb.position;
             ballPercept.centerInImage = pointInImage;
             ballPercept.cameraId = naoth::CameraInfo::Bottom;
@@ -83,7 +96,13 @@ void FakeBallDetector::provideMultiBallPercept() const {
         }
 
         bool in_image_top = CameraGeometry::relativePointToImage(getCameraMatrixTop(), getCameraInfoTop(), point, pointInImage);
-        if(in_image_top) {
+        if(in_image_top
+            && (ignore_image_size
+                || (pointInImage.x >= 0
+                    && pointInImage.x <= getCameraInfoTop().resolutionWidth
+                    && pointInImage.y >= 0
+                    && pointInImage.y <= getCameraInfoTop().resolutionHeight)))
+        {
             ballPercept.positionOnField = fb.position;
             ballPercept.centerInImage = pointInImage;
             ballPercept.cameraId = naoth::CameraInfo::Top;
