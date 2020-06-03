@@ -40,6 +40,8 @@ MultiKalmanBallLocator::MultiKalmanBallLocator()
 
     getDebugParameterList().add(&params);
 
+    filter.reserve(10);  // set capacity for improved performance
+
     reloadParameters();
 }
 
@@ -101,10 +103,10 @@ void MultiKalmanBallLocator::execute()
         updateByPerceptsNormal();
     } else if(params.association.use_cool) {
         updateByPerceptsCool();
-    } else if(params.association.use_naive) {
+    } else if(params.association.use_greedy) {
         // need to handle bottom and top percepts independently because both cameras can observe the same ball
-        updateByPerceptsNaive(CameraInfo::Bottom);
-        updateByPerceptsNaive(CameraInfo::Top);
+        updateByPerceptsGreedy(CameraInfo::Bottom);
+        updateByPerceptsGreedy(CameraInfo::Top);
     }
 
     // NOTE: (Heinrich) update the "ball seen" values
@@ -206,155 +208,156 @@ void MultiKalmanBallLocator::updateByPerceptsNormal()
     }// end for
 }
 
-void MultiKalmanBallLocator::updateByPerceptsNaive(CameraInfo::CameraID camera)
+/*
+ * Perform a greedy 1:1-matching of filters (hypothesis) and measurements (ball percept).
+ * The association depends on the horizontal and vertical angles of the percept and
+ * the hypothesis in the image. Each combination is assigned a score. The combination
+ * with the best score is choosen and the filter updated with the measurement.
+ * After that the second best and so on...
+ */
+void MultiKalmanBallLocator::updateByPerceptsGreedy(CameraInfo::CameraID camera)
 {
-  // set correct camera matrix and info in functional
-  if(camera == CameraInfo::Bottom)
-  {
-      h.camMat  = getCameraMatrix();
-      h.camInfo = getCameraInfo();
-  }
-  else
-  {
-      h.camMat  = getCameraMatrixTop();
-      h.camInfo = getCameraInfoTop();
-  }
+    // set correct camera matrix and info in functional
+    if(camera == CameraInfo::Bottom) {
+        h.camMat  = getCameraMatrix();
+        h.camInfo = getCameraInfo();
+    } else {
+        h.camMat  = getCameraMatrixTop();
+        h.camInfo = getCameraInfoTop();
+    }
 
-  // phase 1: filter percepts
-  // TODO zs und ps umbennen
-  std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > zs;
-  std::vector<Vector2d> ps;
+    // phase 1: filter percepts
+    std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > measurements;
+    std::vector<Vector2d> positions;
 
-  for(const MultiBallPercept::BallPercept& percept : getMultiBallPercept().getPercepts()){
-      Eigen::Vector2d z;
+    for(const MultiBallPercept::BallPercept& percept: getMultiBallPercept().getPercepts()){
+        Eigen::Vector2d z;
 
-      if(percept.cameraId == camera){
-        // transform measurement into angles
-        Vector2d angles = CameraGeometry::pixelToAngles(h.camInfo,percept.centerInImage.x,percept.centerInImage.y);
-        z << angles.x, angles.y;
-        zs.push_back(z);
+        if(percept.cameraId == camera){
+            // transform measurement into angles
+            Vector2d angles = CameraGeometry::pixelToAngles(h.camInfo, percept.centerInImage.x, percept.centerInImage.y);
+            z << angles.x, angles.y;
+            measurements.push_back(z);
 
-        // needed if a new filter has to be created
-        ps.push_back(percept.positionOnField);
-      }
-  }
-
-  // create index vector for filters
-  std::vector<int> f;  // TODO rename f to filter_idx
-  for(size_t i = 0; i < filter.size(); ++i){
-     f.push_back((int)i);
-  }
-
-  if (!(filter.empty() || zs.empty()))
-  {
-    // phase 2: calculate all scores
-    // row index    = measurement
-    // column index = filter
-    // sind kleine scores oder grosse scores gut? -> Abhaengigkeit zu evaluation
-    Eigen::MatrixXd scores = Eigen::MatrixXd::Zero(zs.size(), filter.size());
-    for(size_t i = 0; i < zs.size(); ++i){
-        for (size_t j = 0; j < filter.size(); ++j){
-           scores(i,j) = updateAssociationFunction->associationScore(filter[j], zs[i], h);
+            // needed if a new filter has to be created
+            positions.push_back(percept.positionOnField);
         }
     }
 
-    // phase 3: reduce score matrix iteratively by eliminating row and column of best match
-    // TODO zur while schleife machen?
-    do {
-      // phase 3.1: find location of best entry which is according to the updateAssociationFunction a global maximum or minimum
-      Eigen::Index maxCol, minCol, maxRow, minRow, bestCol, bestRow;
-      double max = scores.maxCoeff(&maxRow, &maxCol);
-      double min = scores.minCoeff(&minRow, &minCol);
+    // abort if there are no measurements for the current camera
+    if(measurements.empty()) return;
 
-      if(updateAssociationFunction->better(min,max)){
-          bestCol = minCol;
-          bestRow = minRow;
-      } else {
-          bestCol = maxCol;
-          bestRow = maxRow;
-      }
+    // if no filter exists, skip directly to phase 4
+    if(!filter.empty())
+    {
+        // phase 2: calculate #measurement x #filter score-matrix
+        // Note: it depends on the association function whether a low or a high score is better
+        Eigen::MatrixXd scores = Eigen::MatrixXd::Zero(measurements.size(), filter.size());
+        for(size_t i = 0; i < measurements.size(); ++i){
+            for(size_t j = 0; j < filter.size(); ++j){
+                scores(i,j) = updateAssociationFunction->associationScore(filter[j], measurements[i], h);
+            }
+        }
 
-      // phase 3.2: update filter
-      bool allowJustOneModel = false;
-      DEBUG_REQUEST("MultiKalmanBallLocator:allow_just_one_model",
-          allowJustOneModel = true;
-      );
+        // create index vector for filters
+        std::vector<int> filterIndices;
+        for(size_t i = 0; i < filter.size(); ++i){
+            filterIndices.push_back((int)i);
+        }
 
-      // if no suitable filter found create a new one
-      if(!allowJustOneModel && !updateAssociationFunction->inRange(scores(bestRow,bestCol)))
-      {
-          // best percept was not good enough to be validly associated to filter so no other will be
-          break;
-      }
-      else
-      {
-          if(camera == CameraInfo::Bottom) {
-              DEBUG_REQUEST("MultiKalmanBallLocator:draw_assignment_bottom",
-                  FIELD_DRAWING_CONTEXT;
-                  PEN("FF0000", 10);
-                  const Eigen::Vector4d state = filter[f[bestCol]].getState();
-                  LINE(ps[bestRow].x,ps[bestRow].y,state(0),state(2));
-                  TEXT_DRAWING((ps[bestRow].x+state(0))/2,(ps[bestRow].y+state(2))/2, scores(bestRow,bestCol));
-              );
-          } else {
-              DEBUG_REQUEST("MultiKalmanBallLocator:draw_assignment_top",
-                  FIELD_DRAWING_CONTEXT;
-                  PEN("FF0000", 10);
-                  const Eigen::Vector4d state = filter[f[bestCol]].getState();
-                  LINE(ps[bestRow].x,ps[bestRow].y,state(0),state(2));
-                  TEXT_DRAWING((ps[bestRow].x+state(0))/2,(ps[bestRow].y+state(2))/2, scores(bestRow,bestCol));
-              );
-          }
+        // phase 3: greedyly update each filter by best matching percept
+        while(!(filterIndices.empty() || measurements.empty())){
+            // phase 3.1: find location of best entry
+            // which is depending on the updateAssociationFunction a global maximum or global minimum
+            Eigen::Index maxColIdx, minColIdx, maxRowIdx, minRowIdx, bestColIdx, bestRowIdx;
+            double max = scores.maxCoeff(&maxRowIdx, &maxColIdx);
+            double min = scores.minCoeff(&minRowIdx, &minColIdx);
 
-          DEBUG_REQUEST("MultiKalmanBallLocator:plot_prediction_error",
-              Eigen::Vector2d prediction_error;
-              prediction_error = zs[bestRow] - filter[f[bestCol]].getStateInMeasurementSpace(h);
+            if(updateAssociationFunction->better(min, max)){
+                bestColIdx = minColIdx;
+                bestRowIdx = minRowIdx;
+            } else {
+                bestColIdx = maxColIdx;
+                bestRowIdx = maxRowIdx;
+            }
 
-              PLOT("MultiKalmanBallLocator:Innovation:x", prediction_error(0));
-              PLOT("MultiKalmanBallLocator:Innovation:y", prediction_error(1));
-          );
+            // phase 3.2: update filter
+            bool allowJustOneModel = false;
+            DEBUG_REQUEST("MultiKalmanBallLocator:allow_just_one_model",
+                allowJustOneModel = true;
+            );
 
-          filter[f[bestCol]].update(zs[bestRow],h,getFrameInfo());
-      }
+            // if the score is not in the valid range continue with phase 4
+            // because no other possible matching could be better than the current one
+            if(!allowJustOneModel && !updateAssociationFunction->inRange(scores(bestRowIdx,bestColIdx))) {
+                break;
+            } else {
+                if(camera == CameraInfo::Bottom) {
+                    DEBUG_REQUEST("MultiKalmanBallLocator:draw_assignment_bottom",
+                        FIELD_DRAWING_CONTEXT;
+                        PEN("FF0000", 10);
+                        const Eigen::Vector4d state = filter[filterIndices[bestColIdx]].getState();
+                        LINE(positions[bestRowIdx].x, positions[bestRowIdx].y, state(0), state(2));
+                        TEXT_DRAWING((positions[bestRowIdx].x + state(0)) / 2, (positions[bestRowIdx].y + state(2)) / 2, scores(bestRowIdx,bestColIdx));
+                    );
+                } else {
+                    DEBUG_REQUEST("MultiKalmanBallLocator:draw_assignment_top",
+                        FIELD_DRAWING_CONTEXT;
+                        PEN("FF0000", 10);
+                        const Eigen::Vector4d state = filter[filterIndices[bestColIdx]].getState();
+                        LINE(positions[bestRowIdx].x, positions[bestRowIdx].y, state(0), state(2));
+                        TEXT_DRAWING((positions[bestRowIdx].x + state(0)) / 2, (positions[bestRowIdx].y + state(2)) / 2, scores(bestRowIdx,bestColIdx));
+                    );
+                }
 
-      // phase 3.3: remove bestCol and bestRow from vectors of filters f and measurements zs/ps and delete corresponding row and col in the scores matrix
-      f.erase(f.begin() + bestCol);
-      zs.erase(zs.begin() + bestRow);
-      ps.erase(ps.begin() + bestRow);
+                DEBUG_REQUEST("MultiKalmanBallLocator:plot_prediction_error",
+                    Eigen::Vector2d prediction_error;
+                    prediction_error = measurements[bestRowIdx] - filter[filterIndices[bestColIdx]].getStateInMeasurementSpace(h);
 
-      // TODO describe the idea of the matrix entry deletion. Mention alternatives
-      // TODO: is this why we can't merge filters or apply observations to multiple filters?
-      if (!(zs.empty() || f.empty())) {
-        long int numRows = scores.rows() - 1;  // Why -1
-        long int numCols = scores.cols();
+                    PLOT("MultiKalmanBallLocator:Innovation:x", prediction_error(0));
+                    PLOT("MultiKalmanBallLocator:Innovation:y", prediction_error(1));
+                );
 
-        if (bestRow < numRows)
-          scores.block(bestRow, 0, numRows - bestRow, numCols) = scores.bottomRows(numRows - bestRow).eval();
+                filter[filterIndices[bestColIdx]].update(measurements[bestRowIdx], h, getFrameInfo());
+            }
 
-        scores.conservativeResize(numRows, numCols);
+            // phase 3.3: remove matching pair of hypothesis and measurement
+            // from the set of matchable options, that means:
+            // - remove bestColIdx from filterIndices
+            // - remove the measurement and its position from measurements and positions
+            // - remove their corresponding row and column in the score matrix
+            filterIndices.erase(filterIndices.begin() + bestColIdx);
+            measurements.erase(measurements.begin() + bestRowIdx);
+            positions.erase(positions.begin() + bestRowIdx);
 
-        --numCols;
+            Eigen::Index numRowsAfterResize = scores.rows() - 1;
+            Eigen::Index numColsAfterResize = scores.cols() - 1;
+            Eigen::Index numRowsAfterBestRow = numRowsAfterResize - bestRowIdx;
+            Eigen::Index numColsAfterBestCol = numColsAfterResize - bestColIdx;
 
-        if (bestCol < numCols)
-          scores.block(0, bestCol, numRows, numCols - bestCol) = scores.rightCols(numCols - bestCol).eval();
+            // delete the row by moving all rows after the best row one row up and resize the matrix accordingly
+            if(bestRowIdx < numRowsAfterResize)
+                scores.block(bestRowIdx, 0, numRowsAfterBestRow, scores.cols()) = scores.bottomRows(numRowsAfterBestRow).eval();
+            scores.conservativeResize(numRowsAfterResize, scores.cols());
 
-        scores.conservativeResize(numRows, numCols);
-      }
+            // delete the column by moving all columns right of the best column one column to the left and resize the matrix accordingly
+            if(bestColIdx < numColsAfterResize)
+                scores.block(0, bestColIdx, numRowsAfterResize, numColsAfterBestCol) = scores.rightCols(numColsAfterBestCol).eval();
+            scores.conservativeResize(numRowsAfterResize, numColsAfterResize);
+        }
+    }
 
-    } while(!(f.empty() || zs.empty()));
-  }
+    // phase 4: create new filter for each percept which couldn't be associated with a filter
+    // Diskussion: vielleicht filter erstellen wenn keine da ist und dann die zweite beobachtung dazu matchen ...
+    for(const Vector2d& p : positions){
+        Eigen::Vector4d newState;
+        newState << p.x, 0, p.y, 0;
+        // add BallHypothesis to filter vector
+        filter.emplace_back(getFrameInfo(), newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension);
+    }
 
-  // phase 4: create new filter for each percept which couldn't be associated with a filter
-  // Diskussion: vielleicht filter erstellen wenn keine da ist und dann die zweite beobachtung dazu matchen ...
-  for(const Vector2d& p : ps){
-    Eigen::Vector4d newState;
-    newState << p.x, 0, p.y, 0;
-    // add BallHypothesis to filter vector
-    filter.emplace_back(getFrameInfo(), newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension);
-  }
-
-  // TODO maybe add possibility to merge filters
-  // TODO maybe add possibility to apply update of observation to every filter in a bayesian fashion
+    // TODO maybe add possibility to merge filters
+    // TODO maybe add possibility to apply update of observation to every filter in a bayesian fashion
 }
 
 void MultiKalmanBallLocator::updateByPerceptsCool()

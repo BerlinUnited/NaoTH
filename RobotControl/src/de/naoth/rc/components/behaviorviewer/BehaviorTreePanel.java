@@ -61,7 +61,7 @@ public class BehaviorTreePanel extends javax.swing.JScrollPane {
             
             for (XABSLAction sub: oe.activeSubActions) {
                 // skip symbols if only options should be shown
-                if(showOptionsOnly && sub instanceof XABSLAction.SymbolAssignement) { continue; }
+                if(showOptionsOnly && sub instanceof XABSLAction.SymbolAssignment) { continue; }
                 result.add(actionToNode(sub));
             }
         }
