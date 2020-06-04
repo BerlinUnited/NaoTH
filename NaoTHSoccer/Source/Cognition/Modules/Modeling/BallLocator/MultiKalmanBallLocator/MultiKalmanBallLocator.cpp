@@ -306,7 +306,7 @@ void MultiKalmanBallLocator::updateByPerceptsGreedy(CameraInfo::CameraID camera)
                         PEN("FF0000", 10);
                         const Eigen::Vector4d state = filter[filterIndices[bestColIdx]].getState();
                         LINE(positions[bestRowIdx].x, positions[bestRowIdx].y, state(0), state(2));
-                        TEXT_DRAWING((positions[bestRowIdx].x + state(0)) / 2, (positions[bestRowIdx].y + state(2)) / 2, scores(bestRowIdx,bestColIdx));
+                        TEXT_DRAWING2((positions[bestRowIdx].x + state(0)) / 2, (positions[bestRowIdx].y + state(2)) / 2, 0.5, scores(bestRowIdx,bestColIdx));
                     );
                 } else {
                     DEBUG_REQUEST("MultiKalmanBallLocator:draw_assignment_top",
@@ -314,7 +314,7 @@ void MultiKalmanBallLocator::updateByPerceptsGreedy(CameraInfo::CameraID camera)
                         PEN("FF0000", 10);
                         const Eigen::Vector4d state = filter[filterIndices[bestColIdx]].getState();
                         LINE(positions[bestRowIdx].x, positions[bestRowIdx].y, state(0), state(2));
-                        TEXT_DRAWING((positions[bestRowIdx].x + state(0)) / 2, (positions[bestRowIdx].y + state(2)) / 2, scores(bestRowIdx,bestColIdx));
+                        TEXT_DRAWING2((positions[bestRowIdx].x + state(0)) / 2, (positions[bestRowIdx].y + state(2)) / 2, 0.5, scores(bestRowIdx,bestColIdx));
                     );
                 }
 
