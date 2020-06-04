@@ -129,16 +129,12 @@ class Serializer<CameraMatrixOffset>
   static void serialize(const CameraMatrixOffset& representation, std::ostream& stream)
   {
     naothmessages::CameraMatrixCalibration msg;
-    for(int id=0; id < naoth::CameraInfo::numOfCamera; id++) {
-      naoth::DataConversion::toMessage(representation.cam_rot[id], *msg.add_correctionoffsetcam());
-    }
 
-    msg.mutable_correctionoffsetbody()->set_x(representation.body_rot.x);
-    msg.mutable_correctionoffsetbody()->set_y(representation.body_rot.y);
+    naoth::DataConversion::toMessage(representation.cam_rot[naoth::CameraInfo::Top], *msg.add_correctionoffsetcam());
+    naoth::DataConversion::toMessage(representation.cam_rot[naoth::CameraInfo::Bottom], *msg.add_correctionoffsetcam());
 
-    msg.mutable_correctionoffsethead()->set_x(representation.head_rot.x);
-    msg.mutable_correctionoffsethead()->set_y(representation.head_rot.y);
-    msg.mutable_correctionoffsethead()->set_z(representation.head_rot.z);
+    naoth::DataConversion::toMessage(representation.body_rot, *msg.mutable_correctionoffsetbody());
+    naoth::DataConversion::toMessage(representation.head_rot, *msg.mutable_correctionoffsethead());
 
     google::protobuf::io::OstreamOutputStream buf(&stream);
     msg.SerializeToZeroCopyStream(&buf);
@@ -150,16 +146,12 @@ class Serializer<CameraMatrixOffset>
     google::protobuf::io::IstreamInputStream buf(&stream);
     msg.ParseFromZeroCopyStream(&buf);
     
-    for(int id=0; id < naoth::CameraInfo::numOfCamera; id++) {
-        naoth::DataConversion::fromMessage(msg.correctionoffsetcam(id), representation.cam_rot[id]);
-    }
+    //TODO: check 
+    naoth::DataConversion::fromMessage(msg.correctionoffsetcam(0), representation.cam_rot[naoth::CameraInfo::Top]);
+    naoth::DataConversion::fromMessage(msg.correctionoffsetcam(1), representation.cam_rot[naoth::CameraInfo::Bottom]);
 
-    representation.body_rot.x = msg.mutable_correctionoffsetbody()->x();
-    representation.body_rot.y = msg.mutable_correctionoffsetbody()->y();
-
-    representation.head_rot.x = msg.mutable_correctionoffsethead()->x();
-    representation.head_rot.y = msg.mutable_correctionoffsethead()->y();
-    representation.head_rot.z = msg.mutable_correctionoffsethead()->z();
+    naoth::DataConversion::fromMessage(msg.correctionoffsetbody(), representation.body_rot);
+    naoth::DataConversion::fromMessage(msg.correctionoffsethead(), representation.head_rot);
   }
 };
 }
