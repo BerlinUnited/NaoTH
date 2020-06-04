@@ -2,15 +2,17 @@
 * @file CameraMatrixOffset.h
 *
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
+* @author <a href="mailto:kaden@informatik.hu-berlin.de">Steffen Kaden</a>
 */
 
-#ifndef _CameraMatrixOffset_h_
-#define _CameraMatrixOffset_h_
+#ifndef CameraMatrixOffset_H
+#define CameraMatrixOffset_H
 
 #include <Representations/Infrastructure/CameraInfo.h>
-#include "Tools/Math/Vector2.h"
-#include "Tools/DataStructures/Printable.h"
-#include "Tools/DataStructures/ParameterList.h"
+
+#include <Tools/Math/Vector2.h>
+#include <Tools/DataStructures/Printable.h>
+#include <Tools/DataStructures/ParameterList.h>
 #include <Tools/DataStructures/Serializer.h>
 
 //serialization
@@ -41,7 +43,7 @@ public:
     PARAMETER_REGISTER(cam_rot[naoth::CameraInfo::Bottom].z) = 0;
     */
 
-    // TODO: Version1: explicit naming
+    // NOTE: explicite naming of the parameters
     registerParameter("cam_rot.top.x", cam_rot[naoth::CameraInfo::Top].x) = 0;
     registerParameter("cam_rot.top.y", cam_rot[naoth::CameraInfo::Top].y) = 0;
     registerParameter("cam_rot.top.z", cam_rot[naoth::CameraInfo::Top].z) = 0;
@@ -66,57 +68,36 @@ public:
 
   virtual ~CameraMatrixOffset(){}
 
-  Vector2d offsetByGoalModel;
-  Vector2d offset;
+  // Experimental
+  Vector2d offsetByGoalModel; 
+  //Vector2d offset;
+
 
   Vector2d body_rot;
   Vector3d head_rot;
 
   // TODO: do we need indexing here? It makes access difficult. There are only few places where indexed access is useful.
   Vector3d cam_rot[naoth::CameraInfo::numOfCamera];
-
-  // TODO: Version2 more clear data structure (perhps better to remove the operator in the future)
-  /*
-  struct {
-    Vector3d top;
-    Vector3d bottom;
-    Vector3d& operator[] (int idx) { // naoth::CameraInfo::CameraID idx
-      switch(idx) {
-      case naoth::CameraInfo::Top: return top;
-      case naoth::CameraInfo::Bottom: return bottom;
-      default: ASSERT(false); 
-      }
-      return top; // will never happen
-    }
-    const Vector3d& operator[] (int idx) const { // naoth::CameraInfo::CameraID idx
-      switch(idx) {
-      case naoth::CameraInfo::Top: return top;
-      case naoth::CameraInfo::Bottom: return bottom;
-      default: ASSERT(false); 
-      }
-      return top; // will never happen
-    }
-  } cam_rot;
-  */
+  
 
   virtual void print(std::ostream& stream) const
   {
     stream << "----Offsets-------------" << std::endl;
     stream << "----Body----------------" << std::endl;
-    stream << "Roll  (x): "<< Math::toDegrees(body_rot.x) << " °" << std::endl;
-    stream << "Pitch (y): "<< Math::toDegrees(body_rot.y) << " °" << std::endl;
+    stream << "Roll  (x): "<< Math::toDegrees(body_rot.x) << " deg" << std::endl;
+    stream << "Pitch (y): "<< Math::toDegrees(body_rot.y) << " deg" << std::endl;
     stream << "----Head----------------" << std::endl;
-    stream << "Roll  (x): "<< Math::toDegrees(head_rot.x) << " °" << std::endl;
-    stream << "Pitch (y): "<< Math::toDegrees(head_rot.y) << " °" << std::endl;
-    stream << "Yaw   (z): "<< Math::toDegrees(head_rot.z) << " °" << std::endl;
+    stream << "Roll  (x): "<< Math::toDegrees(head_rot.x) << " deg" << std::endl;
+    stream << "Pitch (y): "<< Math::toDegrees(head_rot.y) << " deg" << std::endl;
+    stream << "Yaw   (z): "<< Math::toDegrees(head_rot.z) << " deg" << std::endl;
     stream << "----TopCam--------------" << std::endl;
-    stream << "Roll  (x): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Top].x)  << " °" << std::endl;
-    stream << "Pitch (y): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Top].y)  << " °" << std::endl;
-    stream << "Yaw   (z): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Top].z)  << " °" << std::endl;
+    stream << "Roll  (x): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Top].x)  << " deg" << std::endl;
+    stream << "Pitch (y): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Top].y)  << " deg" << std::endl;
+    stream << "Yaw   (z): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Top].z)  << " deg" << std::endl;
     stream << "----BottomCam-----------" << std::endl;
-    stream << "Roll  (x): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Bottom].x)  << " °" << std::endl;
-    stream << "Pitch (y): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Bottom].y)  << " °" << std::endl;
-    stream << "Yaw   (z): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Bottom].z)  << " °" << std::endl;
+    stream << "Roll  (x): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Bottom].x)  << " deg" << std::endl;
+    stream << "Pitch (y): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Bottom].y)  << " deg" << std::endl;
+    stream << "Yaw   (z): "<< Math::toDegrees(cam_rot[naoth::CameraInfo::Bottom].z)  << " deg" << std::endl;
   }
 };
 
@@ -156,4 +137,4 @@ class Serializer<CameraMatrixOffset>
 };
 }
 
-#endif // _CameraMatrixOffset_h_
+#endif // CameraMatrixOffset_H
