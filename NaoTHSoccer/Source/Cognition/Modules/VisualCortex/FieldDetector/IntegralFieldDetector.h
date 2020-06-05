@@ -116,32 +116,27 @@ private:
       int maxX;
       int maxY;
 
-      inline int get_green_sum(const BallDetectorIntegralImage& integralImage) {
-          return integralImage.getSumForRect(minX, minY, maxX, maxY, 1);
+      inline double calc_green_density(const BallDetectorIntegralImage& integralImage) {
+          const int factor = integralImage.FACTOR;
+
+          const int minX = this->minX/factor;
+          const int minY = this->minY/factor;
+          const int maxX = this->maxX/factor;
+          const int maxY = this->maxY/factor;
+
+          const double sum = integralImage.getSumForRect(minX, minY, maxX, maxY, 1);
+          const double density = sum / ((maxX - minX + 1) * (maxY - minY + 1));
+          ASSERT(density <= 1.);
+          return density;
       }
 
       inline int count_pixel() {
-          return (maxX - minX) * (maxY - minY);
+          return (maxX - minX + 1) * (maxY - minY + 1);
       }
   };
 
   CameraInfo::CameraID cameraID;
-  int factor;
   std::vector<Vector2i> endpoints;
-
-  /**
-  converts integral image coordinates to image coordinates
-  */
-  inline int toImage(int i) {
-    return i * factor;
-  }
-
-  /**
-  converts image coordinates to integral image coordinates
-  */
-  inline int toIntegral(int i) {
-    return i / factor;
-  }
 
   void find_endpoint(int x, const Cell& cell, Vector2i& endpoint);
   void create_field();

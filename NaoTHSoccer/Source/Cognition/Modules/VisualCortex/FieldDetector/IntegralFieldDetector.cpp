@@ -41,10 +41,8 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
     return;
   }
 
-  // NOTE: the factor may be different for top and bottom
-  factor = getBallDetectorIntegralImage().FACTOR;
-  const int width = getBallDetectorIntegralImage().getWidth();
-  const int height = getBallDetectorIntegralImage().getHeight();
+  const int width = getImage().width();
+  const int height = getImage().height();
 
   // calculate theoretical cell sizes
   double cell_width, cell_height;
@@ -59,11 +57,7 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
       // invalid parameters
       return;
   }
-  /*
-  const int pixels_per_cell = cell_size * cell_size;
-  const int min_green = (int)(pixels_per_cell*params.proportion_of_green);
-  const int min_end_green = (int)(pixels_per_cell*params.end_proportion_of_green);
-  */
+
   bool first = true;
   bool green_found = false;
   bool former_green = false;
@@ -77,11 +71,10 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
     cell.maxX = static_cast<int>(x + cell_width-1);
 
     // calculate minimal y value under the horizon for the current column
-    int horizon_height = std::max(
-          (int) (getArtificialHorizon().point(toImage(cell.maxX)).y),
-          (int) (getArtificialHorizon().point(toImage(cell.minX)).y)
-        );
-    int min_scan_y = Math::clamp(toIntegral(horizon_height), 0, height-1);
+    int horizon_height = static_cast<int>(std::max(
+        getArtificialHorizon().point(cell.maxX).y,
+        getArtificialHorizon().point(cell.minX).y));
+    int min_scan_y = Math::clamp(horizon_height, 0, height-1);
 
     int skipped = 0;
     int successive_green = 0;
@@ -90,14 +83,13 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
     // iterate rows; scan from bottom to top
     for(double y = height-1; y - (cell_height-1) >= min_scan_y; y -= cell_height)
     {
-      // calculate row bounds^
+      // calculate row bounds
       cell.maxY = static_cast<int>(y);
       cell.minY = static_cast<int>(y - (cell_height-1));
 
       // check if the cell is mostly green
-      int cell_green_sum = cell.get_green_sum(getBallDetectorIntegralImage());
-      const int pixel_count = cell.count_pixel();
-      const bool cell_is_green = cell_green_sum >= pixel_count * params.proportion_of_green;
+      const double cell_green_density = cell.calc_green_density(getBallDetectorIntegralImage());
+      const bool cell_is_green = cell_green_density >= params.proportion_of_green;
 
       DEBUG_REQUEST("Vision:IntegralFieldDetector:draw_grid",
         IMAGE_DRAWING_CONTEXT;
@@ -110,7 +102,7 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
           color = "FF00FF";
         }
         PEN(color, 1);
-        BOX(toImage(cell.minX), toImage(cell.minY), toImage(cell.maxX), toImage(cell.maxY));
+        BOX(cell.minX, cell.minY, cell.maxX, cell.maxY);
       );
 
       if(cell_is_green) {
@@ -122,8 +114,8 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
           green_found = true;
         }
       } else {
-        // check if cell has enough green so it might contain the field border
-        if(former_green && cell_green_sum >= pixel_count * params.end_proportion_of_green) {
+        // check if cell has enough green where it might contain the field border
+        if(former_green && cell_green_density >= params.end_proportion_of_green) {
           last_green_cell = cell;
         }
         ++skipped;
@@ -139,12 +131,12 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
       if(first) {
         // Left most cell: Determine the left most endpoint so that there is no gap
         Vector2i left_endpoint;
-        find_endpoint(toImage(last_green_cell.minX), last_green_cell, left_endpoint);
+        find_endpoint(last_green_cell.minX, last_green_cell, left_endpoint);
         endpoints.push_back(left_endpoint);
         first = false;
       }
       Vector2i endpoint;
-      find_endpoint(toImage((last_green_cell.minX + last_green_cell.maxX) / 2),
+      find_endpoint((last_green_cell.minX + last_green_cell.maxX) / 2,
                     last_green_cell, endpoint);
       endpoints.push_back(endpoint);
     }
@@ -153,7 +145,7 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
   if(green_found) {
     // Right most cell: Determine the right most endpoint so that there is no gap
     Vector2i right_endpoint;
-    find_endpoint((last_green_cell.maxX + 1) * factor - 1, last_green_cell, right_endpoint);
+    find_endpoint(last_green_cell.maxX, last_green_cell, right_endpoint);
     endpoints.push_back(right_endpoint);
   }
 
@@ -165,10 +157,9 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
 void IntegralFieldDetector::find_endpoint(int x, const Cell& cell, Vector2i& endpoint) {
   double score = 0.;
   double best_score = 0.;
-  int minY = toImage(cell.minY);
   endpoint.x = x;
-  endpoint.y = toImage(cell.maxY);
-  for (int y=endpoint.y; y>=minY; --y) {
+  endpoint.y = cell.maxY;
+  for (int y=endpoint.y; y>=cell.minY; --y) {
     Pixel pixel = getImage().get(endpoint.x, y);
     if (getFieldColorPercept().greenHSISeparator.isColor(pixel)) {
       score += params.positive_score;
@@ -185,8 +176,7 @@ void IntegralFieldDetector::find_endpoint(int x, const Cell& cell, Vector2i& end
     CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
 
     PEN("1CFFE4", 1);
-    BOX(toImage(cell.minX), toImage(cell.minY),
-        toImage(cell.maxX), toImage(cell.maxY));
+    BOX(cell.minX, cell.minY, cell.maxX, cell.maxY);
     PEN("FFFF00", 1);
     CIRCLE(endpoint.x, endpoint.y, 2);
   );
