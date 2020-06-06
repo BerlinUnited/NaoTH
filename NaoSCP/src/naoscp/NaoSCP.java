@@ -14,6 +14,7 @@ import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -95,20 +96,19 @@ public class NaoSCP extends javax.swing.JPanel {
 
     public String getBasePath() {
         String path = "./..";
+
         try {
-            String ResourceName = "naoscp/NaoSCP.class";
-            String programPath = URLDecoder.decode(this.getClass().getClassLoader().getResource(ResourceName).getPath(), "UTF-8");
-            programPath = programPath.replace("file:", "");
-            //path replacement if NaoScp is being started from console directly
-            programPath = programPath.replace("/NaoSCP/dist/NaoSCP.jar!/naoscp/NaoSCP.class", "");
-            //path replacement if NaoScp is started from IDE (Netbeans)
-            programPath = programPath.replace("/NaoSCP/build/classes/naoscp/NaoSCP.class", "");
-            File ProgramDir = new File(programPath);
-            if (ProgramDir.exists()) {
-                path = ProgramDir.getAbsolutePath();
+            // determine the project root path based on the executed file location (jar/class)
+            String[] temp = getClass().getProtectionDomain().getCodeSource().getLocation().getPath().split("/NaoSCP/");
+            if (temp.length > 1) {
+                path = temp[0];
             }
-        } catch (UnsupportedEncodingException ueEx) {
+
+            return (new File(path)).getCanonicalPath();
+        } catch (IOException ex) {
+            Logger.getLogger(NaoSCP.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         return path;
     }
 
@@ -123,19 +123,19 @@ public class NaoSCP extends javax.swing.JPanel {
 
         TemplateFile tmp = null;
         if (cfg.getWlan_encryption().ecryption == NetwokPanel.NetworkConfig.WlanConfig.Encryption.WEP) {
-            tmp = new TemplateFile(new File(utilsPath + "/NaoConfigFiles/wpa_supplicant.wep"));
+            tmp = new TemplateFile(new File(utilsPath + "/NaoConfigFiles/deploy/v3v4v5/wpa_supplicant.wep"));
         } else {
-            tmp = new TemplateFile(new File(utilsPath + "/NaoConfigFiles/wpa_supplicant.wpa"));
+            tmp = new TemplateFile(new File(utilsPath + "/NaoConfigFiles/deploy/v3v4v5/wpa_supplicant.wpa"));
         }
 
         tmp.set("WLAN_SSID", cfg.getWlan_encryption().ssid);
         tmp.set("WLAN_KEY", cfg.getWlan_encryption().key);
 
-        File wpa_supplicant_dir = new File(setupDir, "/etc/wpa_supplicant/");
+        File wpa_supplicant_dir = new File(setupDir + "/deploy/v3v4v5", "/etc/wpa_supplicant/");
         wpa_supplicant_dir.mkdirs();
-        tmp.save(new File(setupDir, "/etc/wpa_supplicant/wpa_supplicant.conf"));
+        tmp.save(new File(setupDir + "/deploy/v3v4v5", "/etc/wpa_supplicant/wpa_supplicant.conf"));
 
-        tmp = new TemplateFile(new File(utilsPath + "/NaoConfigFiles/etc/conf.d/net"));
+        tmp = new TemplateFile(new File(utilsPath + "/NaoConfigFiles/deploy/v3v4v5/etc/conf.d/net"));
         tmp.set("ETH_ADDR", cfg.getLan().subnet + "." + robotNumber);
         tmp.set("ETH_NETMASK", cfg.getLan().mask);
         tmp.set("ETH_BRD", cfg.getLan().broadcast);
@@ -144,9 +144,9 @@ public class NaoSCP extends javax.swing.JPanel {
         tmp.set("WLAN_NETMASK", cfg.getWlan().mask);
         tmp.set("WLAN_BRD", cfg.getWlan().broadcast);
 
-        File conf_dir = new File(setupDir, "/etc/conf.d/");
+        File conf_dir = new File(setupDir + "/deploy/v3v4v5", "/etc/conf.d/");
         conf_dir.mkdirs();
-        tmp.save(new File(setupDir, "/etc/conf.d/net"));
+        tmp.save(new File(setupDir + "/deploy/v3v4v5", "/etc/conf.d/net"));
     }
 
     /**
@@ -579,35 +579,48 @@ public class NaoSCP extends javax.swing.JPanel {
     }//GEN-LAST:event_btWriteToStickActionPerformed
 
     private void btInintRobotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btInintRobotActionPerformed
-        final JFileChooser chooser = new JFileChooser();
-        String libPath = config.getProperty("naoscp.libpath", ".");
-        chooser.setCurrentDirectory(new File(libPath));
-        chooser.setDialogTitle("Select toolchain \"extern/lib\" Directory");
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        chooser.setAcceptAllFileFilterUsed(false);
 
-        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            // senity check
-            File libDir = chooser.getSelectedFile();
-            File gioFile = new File(libDir, "libgio-2.0.so");
-            File glibDir = new File(libDir, "glib-2.0");
-            if (!gioFile.isFile() || !glibDir.isDirectory()) {
-                chooser.setDialogTitle("Toolchain \"extern/lib\" Directory seems to be wrong. Try again.");
-                JOptionPane.showMessageDialog(this,
-                        "Toolchain \"extern/lib\" Directory seems to be wrong. Cannot find 'libgio-2.0.so' or 'glib-2.0'.",
-                        "ERROR", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            config.setProperty("naoscp.libpath", libDir.getAbsolutePath());
+      naoTHPanel.checkFileAvailability();
+      if(!naoTHPanel.isExecEnabled() || !naoTHPanel.isConfEnabled() || (!naoTHPanel.isLibEnabled() && !naoTHPanel.isLolaEnabled()) )
+      {
+        Logger.getGlobal().log(Level.SEVERE, "For initialising the robot naoth executable, Config directory and lola_adaptor executable (V6) or libNaoSMAL need to be available (V5 and lower)! ");
+        return;
+      }
+      naoTHPanel.setLibSelected();
+      naoTHPanel.setLolaSelected();
+      naoTHPanel.setExecSelected();
+      naoTHPanel.setConfSelected();
+
+      final JFileChooser chooser = new JFileChooser();
+      String libPath = config.getProperty("naoscp.libpath", ".");
+      chooser.setCurrentDirectory(new File(libPath));
+      chooser.setDialogTitle("Select toolchain \"extern/lib\" Directory");
+      chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+      chooser.setAcceptAllFileFilterUsed(false);
+
+      if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+        // sanity check
+        File libDir = chooser.getSelectedFile();
+        File gioFile = new File(libDir, "libgio-2.0.so");
+        File glibDir = new File(libDir, "glib-2.0");
+        if (!gioFile.isFile() || !glibDir.isDirectory()) {
+            chooser.setDialogTitle("Toolchain \"extern/lib\" Directory seems to be wrong. Try again.");
+            JOptionPane.showMessageDialog(this,
+                    "Toolchain \"extern/lib\" Directory seems to be wrong. Cannot find 'libgio-2.0.so' or 'glib-2.0'.",
+                    "ERROR", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        config.setProperty("naoscp.libpath", libDir.getAbsolutePath());
             
-            final File tmpDir = createTemporaryDirectory("nao_scp_init_");
-            if(tmpDir == null) {return;}
+        final File tmpDir = createTemporaryDirectory("nao_scp_init_");
+        if(tmpDir == null) {return;}
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
                     try {
                         File setupDir = new File(tmpDir, "setup");
+                        File deployDir = new File(tmpDir, "setup/deploy");
 
                         if (setupDir.isDirectory()) {
                             //Logger.getGlobal().log(Level.SEVERE, "Could not clean the setup directory: " + setupDir.getAbsolutePath());
@@ -616,9 +629,9 @@ public class NaoSCP extends javax.swing.JPanel {
 
                         if (!setupDir.mkdirs()) {
                             Logger.getGlobal().log(Level.SEVERE, "Could not create setup directory: " + setupDir.getAbsolutePath());
-                        } else {
+                        } else {                                                   
                             // copy deploy stuff
-                            naoTHPanel.getAction().run(setupDir);
+                            naoTHPanel.getAction().run(deployDir);
                             FileUtils.copyFiles(new File(deployStickScriptPath), setupDir);
 
                             // copy scripts
@@ -634,7 +647,7 @@ public class NaoSCP extends javax.swing.JPanel {
 
                             // copy libs
                             File libDir = chooser.getSelectedFile();
-                            FileUtils.copyFiles(libDir, new File(setupDir, "/home/nao/lib"));
+                            FileUtils.copyFiles(libDir, new File(setupDir + "/deploy", "/home/nao/lib"));
                             try {
                                 setupNetwork(setupDir, robotNr);
                             } catch (IOException ex) {
@@ -642,8 +655,10 @@ public class NaoSCP extends javax.swing.JPanel {
                             }
 
                             // set hostname
-                            FileUtils.writeToFile("nao"+robotNr, new File(setupDir,"/etc/hostname"));
-                            FileUtils.writeToFile("hostname=\"nao"+robotNr+"\"", new File(setupDir,"/etc/conf.d/hostname"));
+                            FileUtils.writeToFile("nao"+robotNr, new File(setupDir + "/deploy/v3v4v5","/etc/hostname"));
+                            FileUtils.writeToFile("hostname=\"nao"+robotNr+"\"", new File(setupDir + "/deploy/v3v4v5","/etc/conf.d/hostname"));
+                            FileUtils.writeToFile("nao"+robotNr, new File(setupDir + "/deploy/v6","/etc/hostname"));
+                            FileUtils.writeToFile("hostname=\"nao"+robotNr+"\"", new File(setupDir + "/deploy/v6","/etc/conf.d/hostname"));
                             
                             // copy to robot
                             String ip = JOptionPane.showInputDialog(NaoSCP.this, "Robot ip address");
@@ -654,7 +669,7 @@ public class NaoSCP extends javax.swing.JPanel {
                             scp.cleardir("/home/nao/tmp");
                             scp.put(setupDir, "/home/nao/tmp");
 
-                            scp.chmod(755, "/home/nao/tmp/init_env.sh");
+                            scp.chmod(755, "/home/nao/tmp/startBrainwashing.sh");
 
                             //scp.runStream("su\nroot\ncd /home/nao/tmp\n./init_env.sh");
                             //scp.run("/home/nao/tmp", "./init_env.sh");
@@ -665,7 +680,7 @@ public class NaoSCP extends javax.swing.JPanel {
                             shell.run("su", "Password:");
                             shell.run("root");
                             shell.run("cd /home/nao/tmp/");
-                            shell.run("./init_env.sh", "DONE");
+                            shell.run("./startBrainwashing.sh", "DONE");
 
                             scp.disconnect();
 
@@ -750,7 +765,7 @@ public class NaoSCP extends javax.swing.JPanel {
                     
                     setupNetwork(setupDir, robotNrFinal);
                     
-                    FileUtils.copyFiles(new File(utilsPath, "/NaoConfigFiles/init_net.sh"), setupDir);
+                    FileUtils.copyFiles(new File(utilsPath, "/NaoConfigFiles/deploy/v3v4v5/init_net.sh"), setupDir);
                     
                     // copy to robot
                     String ip = JOptionPane.showInputDialog(NaoSCP.this, "Robot ip address");

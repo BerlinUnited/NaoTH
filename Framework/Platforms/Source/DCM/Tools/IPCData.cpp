@@ -121,14 +121,6 @@ void NaoSensorData::get(InertialSensorData& data) const
   data.data.y = sensorsValue[theInertialSensorDataIndex+1];
 }//end InertialSensorData
 
-void NaoSensorData::get(IRReceiveData& data) const
-{
-  unsigned int currentIndex = theIRReceiveDataIndex;
-  for (int i = 0; i < IRReceiveData::numOfIRReceive; i++) {
-    data.data[i] = static_cast<int>(sensorsValue[currentIndex++]);
-  }
-}//end IRReceiveData
-
 void NaoSensorData::get(ButtonData& data) const
 {
   unsigned int currentIndex = theButtonDataIndex;

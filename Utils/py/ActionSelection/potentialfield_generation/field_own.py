@@ -7,7 +7,7 @@ from matplotlib.patches import Circle
 from matplotlib import pyplot as plt
 
 from tools import Simulation as Sim
-from naoth import math2d as m2d
+from naoth import math as m2d
 from tools import tools
 from tools import field_info as field
 from tools import raw_attack_direction_provider as attack_dir
@@ -21,9 +21,12 @@ def draw_robot_walk(s, expected_ball_pos, best_action):
     arrow_head = m2d.Vector2(500, 0).rotate(s.pose.rotation)
 
     tools.draw_field()
-    axes.add_artist(Circle(xy=(s.pose.translation.x, s.pose.translation.y), radius=100, fill=False, edgecolor='white'))
-    axes.add_artist(Circle(xy=(expected_ball_pos.x, expected_ball_pos.y), radius=120, fill=True, edgecolor='blue'))
-    axes.arrow(origin.x, origin.y, arrow_head.x, arrow_head.y, head_width=100, head_length=100, fc='k', ec='k')
+    axes.add_artist(Circle(xy=(s.pose.translation.x, s.pose.translation.y), radius=100, fill=False,
+                           edgecolor='white'))
+    axes.add_artist(Circle(xy=(expected_ball_pos.x, expected_ball_pos.y), radius=120, fill=True,
+                           edgecolor='blue'))
+    axes.arrow(origin.x, origin.y, arrow_head.x, arrow_head.y, head_width=100, head_length=100,
+               fc='k', ec='k')
     axes.text(0, 0, best_action, fontsize=12)
 
     plt.pause(0.1)
@@ -70,7 +73,8 @@ def main(x, y, s, rotation_step, num_iter):
                 for action in action_list:
                     single_consequence = a.ActionResults([])
                     # a.num_particles can be 1 since there is no noise at all
-                    actions_consequences.append(Sim.simulate_consequences(action, single_consequence, s, 1))
+                    actions_consequences.append(
+                        Sim.simulate_consequences(action, single_consequence, s, 1))
 
                 # Decide best action
                 best_action = Sim.decide_smart(actions_consequences, s)
@@ -79,7 +83,9 @@ def main(x, y, s, rotation_step, num_iter):
                 expected_ball_pos = actions_consequences[best_action].expected_ball_pos_mean
 
                 # Check if expected_ball_pos inside opponent goal
-                opp_goal_back_right = m2d.Vector2(field.opponent_goalpost_right.x + field.goal_depth, field.opponent_goalpost_right.y)
+                opp_goal_back_right = m2d.Vector2(
+                    field.opponent_goalpost_right.x + field.goal_depth,
+                    field.opponent_goalpost_right.y)
                 opp_goal_box = m2d.Rect2d(opp_goal_back_right, field.opponent_goalpost_left)
 
                 goal_scored = opp_goal_box.inside(s.pose * expected_ball_pos)
@@ -103,7 +109,8 @@ def main(x, y, s, rotation_step, num_iter):
 
                 elif not action_list[best_action].name == "none":
                     if enable_drawing is True:
-                        draw_robot_walk(s, s.pose * expected_ball_pos, action_list[best_action].name)
+                        draw_robot_walk(s, s.pose * expected_ball_pos,
+                                        action_list[best_action].name)
                     # calculate the time needed
                     rotation = np.arctan2(expected_ball_pos.y, expected_ball_pos.x)
                     rotation_time = np.abs(math.degrees(rotation) / s.rotation_vel)
@@ -115,27 +122,34 @@ def main(x, y, s, rotation_step, num_iter):
                     choosen_rotation = 'none'
 
                     # update the robots position
-                    s.update_pos(s.pose * expected_ball_pos, math.degrees(s.pose.rotation + rotation))
+                    s.update_pos(s.pose * expected_ball_pos,
+                                 math.degrees(s.pose.rotation + rotation))
 
                     num_kicks += 1
 
                 elif action_list[best_action].name == "none":
                     if enable_drawing is True:
-                        draw_robot_walk(s, s.pose * expected_ball_pos, action_list[best_action].name)
+                        draw_robot_walk(s, s.pose * expected_ball_pos,
+                                        action_list[best_action].name)
                     # Calculate rotation time
                     total_time += np.abs(5 / s.rotation_vel)
 
                     attack_direction = attack_dir.get_attack_direction(s)
                     attack_direction = math.degrees((attack_direction.angle()))
 
-                    if (attack_direction > 0 and choosen_rotation is 'none') or choosen_rotation is 'left':
-                        s.update_pos(s.pose.translation, math.degrees(s.pose.rotation) + 5)  # Should turn right
+                    if (
+                            attack_direction > 0 and choosen_rotation is 'none') or choosen_rotation is 'left':
+                        s.update_pos(s.pose.translation,
+                                     math.degrees(s.pose.rotation) + 5)  # Should turn right
                         choosen_rotation = 'left'
-                    elif (attack_direction <= 0 and choosen_rotation is 'none') or choosen_rotation is 'right':
-                        s.update_pos(s.pose.translation, math.degrees(s.pose.rotation) - 5)  # Should turn left
+                    elif (
+                            attack_direction <= 0 and choosen_rotation is 'none') or choosen_rotation is 'right':
+                        s.update_pos(s.pose.translation,
+                                     math.degrees(s.pose.rotation) - 5)  # Should turn left
                         choosen_rotation = 'right'
                     else:
-                        print("Error at: " + str(s.pose.translation.x) + " - " + str(s.pose.translation.y) + " - " + str(math.degrees(s.pose.rotation)))
+                        print("Error at: " + str(s.pose.translation.x) + " - " + str(
+                            s.pose.translation.y) + " - " + str(math.degrees(s.pose.rotation)))
                         break
 
                     num_turn_degrees += 1
@@ -158,7 +172,8 @@ def main(x, y, s, rotation_step, num_iter):
             min_idx = np.where(times_single_position == min_val)
             # best_rotation = np.mean(single_position_rot[min_idx])
 
-            best_rotation = np.arctan2(np.sum(np.sin(np.deg2rad(single_position_rot[min_idx]))), np.sum(np.cos(np.deg2rad(single_position_rot[min_idx]))))
+            best_rotation = np.arctan2(np.sum(np.sin(np.deg2rad(single_position_rot[min_idx]))),
+                                       np.sum(np.cos(np.deg2rad(single_position_rot[min_idx]))))
             best_rotation = np.rad2deg(best_rotation)
             best_times.append(np.min(times_single_position))
             best_rotations.append(best_rotation)

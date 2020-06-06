@@ -60,7 +60,6 @@
 #include "Modules/VisualCortex/GoalDetector/GoalDetectorV2.h"
 #include "Modules/VisualCortex/GoalDetector/GoalCrossBarDetector.h"
 #include "Modules/VisualCortex/BallDetector/RedBallDetector.h"
-#include "Modules/VisualCortex/BallDetector/BallDetector2018.h"
 #include "Modules/VisualCortex/BallDetector/CNNBallDetector.h"
 #include "Modules/VisualCortex/IntegralImageProvider.h"
 
@@ -96,7 +95,7 @@
 
 // role decisions
 #include "Modules/Modeling/RoleDecision/RolesProvider.h"
-#include "Modules/Modeling/RoleDecision/RoleDecisionDynamic.h"
+#include "Modules/Modeling/RoleDecision/Dynamic/RoleDecisionDynamic.h"
 
 #include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionStatic.h"
 #include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionForce.h"
@@ -105,10 +104,10 @@
 #include "Modules/Modeling/RoleDecision/Position/RoleDecisionPositionDynamicGoalie.h"
 #include "Modules/Modeling/RoleDecision/Assignment/RoleDecisionAssignmentStatic.h"
 #include "Modules/Modeling/RoleDecision/Assignment/RoleDecisionAssignmentDistance.h"
-
-#include "Modules/Modeling/RoleDecision/SimpleRoleDecision/SimpleRoleDecision.h"
-#include "Modules/Modeling/RoleDecision/StableRoleDecision/StableRoleDecision.h"
-#include "Modules/Modeling/RoleDecision/CleanRoleDecision/CleanRoleDecision.h"
+// the old striker decision (dynamic)
+#include "Modules/Modeling/RoleDecision/Dynamic/SimpleRoleDecision.h"
+#include "Modules/Modeling/RoleDecision/Dynamic/StableRoleDecision.h"
+#include "Modules/Modeling/RoleDecision/Dynamic/CleanRoleDecision.h"
 
 #include "Modules/Modeling/BallLocator/TeamBallLocator/TeamBallLocatorMedian.h"
 #include "Modules/Modeling/BallLocator/TeamBallLocator/TeamBallLocatorCanopyCluster.h"
@@ -117,7 +116,6 @@
 
 #include "Modules/Modeling/Simulation/SimulationTest.h"
 #include "Modules/Modeling/Simulation/Simulation.h"
-#include "Modules/Modeling/Simulation/SimulationOLD.h"
 #include "Modules/Modeling/Simulation/KickDirectionSimulator.h"
 #include "Modules/Modeling/SelfLocator/SituationPriorProvider/SituationPriorProvider.h"
 
@@ -202,7 +200,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(GoalCrossBarDetector);
 
   REGISTER_MODULE(RedBallDetector);
-  REGISTER_MODULE(BallDetector2018);
   REGISTER_MODULE(CNNBallDetector);
   
   REGISTER_MODULE(FakeCameraMatrixFinder);
@@ -263,7 +260,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(KickDirectionSimulator);
   REGISTER_MODULE(Simulation);
-  REGISTER_MODULE(SimulationOLD);
   REGISTER_MODULE(SimulationTest);
   REGISTER_MODULE(StaticDebugModelProvider);
 

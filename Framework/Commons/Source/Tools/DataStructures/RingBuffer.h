@@ -9,7 +9,7 @@
 #ifndef _RingBuffer_h_
 #define _RingBuffer_h_
 
-#include <assert.h>
+#include <cassert>
 
 /**
  * @class RingBuffer

@@ -87,8 +87,8 @@ workspace "NaoTHSoccer"
   {
     inputFiles  = os.matchfiles(path.join(COMMONS_MESSAGES, "*.proto")),
     cppOut      = path.join(FRAMEWORK_PATH,"Commons/Source/Messages/"),
-    javaOut     = path.join(NAOTH_PROJECT, "RobotControl/RobotConnector/src/"),
-    pythonOut   = path.join(NAOTH_PROJECT, "Utils/py/naoth/naoth"),
+    javaOut     = path.join(NAOTH_PROJECT, "RobotControl/src/"),
+    pythonOut   = path.join(NAOTH_PROJECT, "Utils/py/naoth/naoth/pb/"),
     includeDirs = {COMMONS_MESSAGES}
   }
   
@@ -97,8 +97,8 @@ workspace "NaoTHSoccer"
   {
     inputFiles  = os.matchfiles(path.join(NAOTH_PROJECT, "NaoTHSoccer/Messages/*.proto")),
     cppOut      = path.join(NAOTH_PROJECT, "NaoTHSoccer/Source/Messages/"),
-    javaOut     = path.join(NAOTH_PROJECT, "RobotControl/RobotConnector/src/"),
-    pythonOut   = path.join(NAOTH_PROJECT, "Utils/py/naoth/naoth"),
+    javaOut     = path.join(NAOTH_PROJECT, "RobotControl/src/"),
+    pythonOut   = path.join(NAOTH_PROJECT, "Utils/py/naoth/naoth/pb/"),
     includeDirs = {COMMONS_MESSAGES, path.join(NAOTH_PROJECT, "NaoTHSoccer/Messages/")}
   }
   
@@ -186,7 +186,7 @@ workspace "NaoTHSoccer"
     end
     
   -- for linux systems and cygwin 
-  filter {"platforms:Native", "action:gmake", "system:linux"} 
+  filter {"platforms:Native", "action:gmake or gmake2", "system:linux"} 
   -- configuration {"Native", "linux", "gmake"}
     -- "position-independent code" needed to compile shared libraries.
     -- In our case it's only the NaoSMAL. So, we probably don't need this one.
@@ -236,7 +236,7 @@ workspace "NaoTHSoccer"
     if os.ishost("windows") and _ACTION ~= nil and string.match(_ACTION, "^vs.*") then
       project "Generate"
         kind "Utility"
-        prebuildcommands { "cd ../Make/ && premake5 --Test vs2013" }
+        prebuildcommands { "cd ../Make/ && premake5 --Test " .. _ACTION }
     end
   
   -- set up platforms
@@ -252,10 +252,15 @@ workspace "NaoTHSoccer"
         -- ACHTUNG: NaoSMAL doesn't build with the flag -std=c++11 (because of Boost)
         cppdialect "gnu++11"
         
-      dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
+        dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
         kind "ConsoleApp"
         links { "NaoTHSoccer", "Commons", naoth_links}
         vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoRobot" }
+       
+        dofile (FRAMEWORK_PATH .. "/Platforms/Make/LolaAdaptor.lua")
+        kind "ConsoleApp"
+        links { "NaoTHSoccer", "Commons", naoth_links}
+        vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LolaAdaptor" }
       
     -- generate tests if required
     if _OPTIONS["Test"] ~= nil then
@@ -275,6 +280,10 @@ workspace "NaoTHSoccer"
 	    dofile ("../Test/Make/Polygon.lua")
             kind "ConsoleApp"
             vpaths { ["*"] = "../Test/Source/Polygon" }
+        
+        dofile ("../Test/Make/LoLa.lua")
+            kind "ConsoleApp"
+            vpaths { ["*"] = "../Test/Source/LoLa" }
     end
 
     
@@ -292,7 +301,10 @@ workspace "NaoTHSoccer"
         vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulator" }
         
       dofile (FRAMEWORK_PATH .. "/Platforms/Make/DummySimulator.lua")
-        kind "ConsoleApp"
+        links { "NaoTHSoccer", "Commons", naoth_links}
+        vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/DummySimulator" }
+
+      dofile (FRAMEWORK_PATH .. "/Platforms/Make/ScriptableSimulator.lua")
         links { "NaoTHSoccer", "Commons", naoth_links}
         vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/DummySimulator" }
         
@@ -304,11 +316,6 @@ workspace "NaoTHSoccer"
     -- generate tests if required
     if _OPTIONS["Test"] ~= nil then
       group "Test"
-        dofile ("../Test/Make/BallEvaluator.lua")
-          kind "ConsoleApp"
-          links { "NaoTHSoccer", "Commons", naoth_links}
-          vpaths { ["*"] = "../Test/Source/BallEvaluator" }
-
         dofile ("../Test/Make/EigenPerformance.lua")
           kind "ConsoleApp"
           vpaths { ["*"] = "../Test/Source/EigenPerformance" }

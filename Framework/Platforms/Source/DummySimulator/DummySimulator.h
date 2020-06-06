@@ -15,13 +15,14 @@
 
 #include "DebugCommunication/DebugServer.h"
 #include "PlatformInterface/PlatformInterface.h"
+#include <ModuleFramework/ModuleManager.h>
 
 // simple robot
 #include <Representations/Infrastructure/JointData.h>
 #include <Representations/Infrastructure/FSRData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
 
-#define CYCLE_TIME 20
+extern ModuleManager* getModuleManager(Cognition* c);
 
 class DummySimulator : public naoth::PlatformInterface
 {
@@ -33,9 +34,10 @@ public:
   virtual std::string getBodyNickName() const { return "naoth"; }
   virtual std::string getHeadNickName() const { return "naoth"; }
   virtual std::string getRobotName() const { return "dummy-simulator"; }
+  virtual std::string getPlatformName() const { return "DummySimulator"; }
+  virtual unsigned int getBasicTimeStep() const { return 20; }
 
   void main();
-
 
   static const unsigned int frameExecutionTime = 33;
 

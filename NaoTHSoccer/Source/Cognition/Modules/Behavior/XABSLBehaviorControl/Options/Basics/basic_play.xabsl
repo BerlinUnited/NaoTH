@@ -15,7 +15,6 @@ option basic_play
       motion.walk.style = normal;
       motion.walk.step_control.scale = 1;
 
-      path.routine = none;
       path2018.routine = none;
       // why was this put here? Steffen?
       //arm.control_mode = normal;
@@ -27,9 +26,6 @@ option basic_play
 
       // team symbols
       team.is_playing_as_striker = false;
-
-      // supports localization, only set to true if in game state set
-      situationStatusOwnHalf = false;
       
       //NOTE: can be set false by fall_down_and_stand_up and treat_lifted
       body.ready_to_walk = true;

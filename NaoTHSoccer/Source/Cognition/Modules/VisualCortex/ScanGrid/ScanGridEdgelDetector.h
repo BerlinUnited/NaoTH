@@ -163,8 +163,9 @@ private:
 
   class MinPeakScan: public MaxPeakScan
   {
-    using MaxPeakScan::MaxPeakScan;
   public:
+    explicit MinPeakScan(int threshold) : MaxPeakScan(threshold) {}
+
     inline bool check(int point, int value) override
     {
       return MaxPeakScan::check(point, -value);

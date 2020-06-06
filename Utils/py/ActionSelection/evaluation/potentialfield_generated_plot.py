@@ -7,6 +7,7 @@ import pickle
 import os
 
 from tools import tools
+
 """
  reads pickle files from data/potential_field_generation
  Pickle File format:  x, y, time, angle
@@ -163,12 +164,11 @@ def plot_combined_scalar_field(cleaned_field):
     # Plot potentials
     plt.clf()
     tools.draw_field(plt.gca())
-    plt.pcolor(nxi, nyi, f-g, cmap="Greys_r", alpha=0.8, zorder=100)
+    plt.pcolor(nxi, nyi, f - g, cmap="Greys_r", alpha=0.8, zorder=100)
     plt.show()
 
 
 def contour_plot(cleaned_field):
-
     i = 0
     x_own = ([])
     y_own = ([])
@@ -184,9 +184,9 @@ def contour_plot(cleaned_field):
     test_reversed = list(reversed(times_own))
 
     # Through the unstructured data get the structured data by interpolation
-    xi = np.linspace(x_own.min()-1, x_own.max()+1, 100)
-    yi = np.linspace(y_own.min()-1, y_own.max()+1, 100)
-    zi = griddata(x_own, y_own, times_own-test_reversed, xi, yi, interp='linear')
+    xi = np.linspace(x_own.min() - 1, x_own.max() + 1, 100)
+    yi = np.linspace(y_own.min() - 1, y_own.max() + 1, 100)
+    zi = griddata(x_own, y_own, times_own - test_reversed, xi, yi, interp='linear')
 
     plt.clf()
     tools.draw_field(plt.gca())
@@ -224,15 +224,18 @@ def export_strategies(cleaned_field):
         g[ny[y], nx[-x]] = time
 
     # Export for Heinrich
-    np.savetxt('../data/potential_field_generation/f.out', nyi, delimiter=',')   # X is an array
+    np.savetxt('../data/potential_field_generation/f.out', nyi, delimiter=',')  # X is an array
 
     # Matlab Export
-    scipy.io.savemat('../data/potential_field_generation/potentials.mat', mdict={'potentials': f-g})
+    scipy.io.savemat('../data/potential_field_generation/potentials.mat',
+                     mdict={'potentials': f - g})
 
 
 if __name__ == "__main__":
     data_prefix = "D:/RoboCup/Paper-Repos/Bachelor-Schlotter/data/"
-    gen_field = pickle.load(open(str(data_prefix) + "potential_field_generation/potential_field_gen_own1.pickle", "rb"))
+    gen_field = pickle.load(
+        open(str(data_prefix) + "potential_field_generation/potential_field_gen_own1.pickle",
+             "rb"))
 
     clean_field = cleanup_nan_values(gen_field)
 

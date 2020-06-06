@@ -1,0 +1,17 @@
+[Unit]
+Description=Aldebaran LoLA
+Wants=dbus.service hal.service
+Requires=dbus.service
+ConditionPathExists=/opt/aldebaran/bin/lola
+
+[Service]
+Type=simple
+LimitRTPRIO=36
+Restart=on-failure
+ExecStart=/opt/aldebaran/bin/lola
+TimeoutStartSec=900
+EnvironmentFile=/etc/conf.d/naoqi
+Slice=naoqi.slice
+
+[Install]
+WantedBy=default.target

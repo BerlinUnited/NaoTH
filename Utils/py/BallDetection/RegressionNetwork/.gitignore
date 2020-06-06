@@ -1,0 +1,8 @@
+/img.bin
+/img.db
+/imgdb.pkl
+/logs
+venv/*
+/test.db
+
+data/*

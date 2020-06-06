@@ -78,7 +78,8 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
 
 
   // init robot info
-  getRobotInfo().platform = platform.getName();
+  getRobotInfo().platform = platform.getPlatformName();
+  getRobotInfo().headNickName = platform.getHeadNickName();
   getRobotInfo().bodyNickName = platform.getBodyNickName();
   getRobotInfo().bodyID = platform.getBodyID();
   getRobotInfo().basicTimeStep = platform.getBasicTimeStep();
