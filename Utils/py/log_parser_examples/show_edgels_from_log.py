@@ -100,31 +100,32 @@ if __name__ == "__main__":
     logParser.register("ScanLineEdgelPerceptTop", "ScanLineEdgelPercept")
     logParser.register("CameraMatrixTop", "CameraMatrix")
 
-    log = iter(LogReader(logFilePath, logParser, get_edgels))
+    with LogReader(logFilePath, parser=logParser) as reader:
+        log = map(get_edgels, reader.read())
 
-    # init plot
-    plt.close('all')
-    fig = plt.figure()
+        # init plot
+        plt.close('all')
+        fig = plt.figure()
 
-    point_size = 5
+        point_size = 5
 
-    ax = fig.add_subplot(2, 2, 1, aspect='equal')
-    ax.set_xlim([0, 640])
-    ax.set_ylim([-480, 0])
-    edgelsPlotTop = plt.scatter([], [], point_size)
+        ax = fig.add_subplot(2, 2, 1, aspect='equal')
+        ax.set_xlim([0, 640])
+        ax.set_ylim([-480, 0])
+        edgelsPlotTop = plt.scatter([], [], point_size)
 
-    ax = fig.add_subplot(2, 2, 3, aspect='equal')
-    ax.set_xlim([0, 640])
-    ax.set_ylim([-480, 0])
-    edgelsPlot = plt.scatter([], [], point_size)
+        ax = fig.add_subplot(2, 2, 3, aspect='equal')
+        ax.set_xlim([0, 640])
+        ax.set_ylim([-480, 0])
+        edgelsPlot = plt.scatter([], [], point_size)
 
-    ax = fig.add_subplot(1, 2, 2, aspect='equal')
-    ax.set_xlim([-10000, 10000])
-    ax.set_ylim([-10000, 10000])
-    projectedEdgelsPlot = plt.scatter([], [], point_size)
+        ax = fig.add_subplot(1, 2, 2, aspect='equal')
+        ax.set_xlim([-10000, 10000])
+        ax.set_ylim([-10000, 10000])
+        projectedEdgelsPlot = plt.scatter([], [], point_size)
 
-    # start animation
-    ani = animation.FuncAnimation(fig, animate, frames=100,
-                                  fargs=(log, edgelsPlotTop, edgelsPlot, projectedEdgelsPlot),
-                                  interval=60)
-    plt.show()
+        # start animation
+        ani = animation.FuncAnimation(fig, animate, frames=100,
+                                      fargs=(log, edgelsPlotTop, edgelsPlot, projectedEdgelsPlot),
+                                      interval=60)
+        plt.show()
