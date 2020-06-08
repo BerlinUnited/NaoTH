@@ -1,13 +1,11 @@
-import cppyy
+import math
 import os
 import sys
+import cppyy
 from cppyy import addressof, bind_object
-
-import math
 import numpy as np
 import matplotlib.pyplot as plt
 
-# exec(open("../Utils/py/examples_cppyy/mkbl_manipulation.py").read())
 
 def get_naoth_dir():
     script_path = os.path.abspath(__file__)
