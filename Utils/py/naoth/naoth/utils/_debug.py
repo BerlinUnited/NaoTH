@@ -3,6 +3,9 @@ import asyncio as _as
 import threading as _thread
 import queue as _queue
 import socket
+import time
+import concurrent.futures
+import sys
 
 from .. import pb as _pb
 
@@ -289,3 +292,612 @@ class DebugProxy:
                 print(data)
             except UnicodeDecodeError:
                 pass
+
+
+class DebugCommand(concurrent.futures.Future):
+    """Class representing a command for a naoth agent."""
+
+    def __init__(self, name, args=None):
+        """
+        Constructor for the command.
+
+        :param name:    the name of the command
+        :param args:    additional arguments of the command
+        """
+        super().__init__()
+        self._id = 0
+        self._name = name
+        self._args = args
+
+    @property
+    def id(self):
+        return self._id
+
+    @id.setter
+    def id(self, value):
+        self._id = value
+
+    @property
+    def name(self):
+        """Returns the name of this command."""
+        return self._name
+
+    def add_arg(self, arg):
+        """Adds an argument to this command."""
+        self._args.append(arg)
+
+    def serialize(self, cmd_id):
+        """
+        Serializes the command to a byte representation in order to send it to the agent.
+
+        :param cmd_id:  the id for identifying the command
+        :return:        returns the bytes representation of this command
+        """
+        cmd_args = []
+        if self._args:
+            for a in self._args:
+                if isinstance(a, str):
+                    cmd_args.append(_pb.Messages_pb2.CMDArg(name=a))
+                else:
+                    cmd_args.append(_pb.Messages_pb2.CMDArg(name=a[0], bytes=a[1].encode()))
+
+        proto = _pb.Messages_pb2.CMD(name=self.name, args=cmd_args)
+        return _struct.pack("<I", cmd_id) + _struct.pack("<I", proto.ByteSize()) + proto.SerializeToString()
+
+
+class AgentControllerAsync:
+    def __init__(self, host, port, start=True, loop=None):
+        self._host = host
+        self._port = port
+        self._task = None
+        self._loop = loop if loop else _as.get_event_loop()
+        self._cmd_id = 1
+        self._cmd_q = _as.Queue()
+
+        if start: self._start()
+
+    def _start(self):
+        self._loop.create_task(self._run(), name=self.__class__.__name__)
+        print('Started', self.__class__.__name__)
+
+    def _stop(self):
+        pass
+
+    async def _run(self):
+        print('Running', self.__class__.__name__)
+        while True:
+            if self._stream_reader is None:
+                try:
+                    self._stream_reader, self._stream_writer = await _as.open_connection(host=self._host, port=self._port, loop=self._loop)
+                    #print('Established connection to robot!')
+                except Exception as e:
+                    #print(_as.Task.current_task().get_name(), ':', e, type(e))
+                    await _as.sleep(1)
+                    # Skip the rest, since we doesn't have a valid connection to work with
+                    continue
+
+            await self._send_heart_beat()
+            await self._poll_answers()
+            await self._send_commands()
+
+    async def _send_heart_beat(self):
+        """Send a heart beat to the agent."""
+        if self._stream_writer:
+            self._stream_writer.write(_struct.pack('!i', -1))
+            await self._stream_writer.drain()
+
+    async def _poll_answers(self):
+        if self._stream_reader:
+            raw_id = await self._stream_reader.read(4)
+            cmd_id = _struct.unpack('=l', raw_id)[0]
+
+            raw_size = await self._stream_reader.read(4)
+            size = _struct.unpack('=l', raw_size)[0]
+
+            raw_data = await self._stream_reader.read(size)
+
+            # TODO: what to do with the response?!
+            try:
+                print('Size', size)
+                data = raw_data.decode('utf-8')
+                print(data)
+            except UnicodeDecodeError:
+                pass
+
+    async def _send_commands(self):
+        if self._stream_writer:
+            self._stream_writer.write(_struct.pack('!i', -1))
+            await self._stream_writer.drain()
+
+    def send_command(self, cmd:DebugCommand):
+        if self._task:
+            cmd.id = self._cmd_id
+            self._cmd_q.put_nowait(cmd)
+            self._cmd_id += 1
+            return cmd.id
+
+        return 0
+
+    def debugrequest(self, request:str, enable:bool, type:str='cognition'):
+        """
+        Enables/Disables a debug request of the agent.
+
+        :param request: the debug request which should be en-/disabled
+        :param enable:  True, if debug request should be enabled, False if it should be disabled
+        :param type:    the type of the debug request ('cognition' or 'motion')
+        :return:        Returns the id of the scheduled command
+        """
+        if type == 'cognition':
+            return self.send_command(DebugCommand('Cognition:debugrequest:set', [(request, ('on' if enable else 'off'))]))
+        elif type == 'motion':
+            return self.send_command(DebugCommand('Motion:debugrequest:set', [(request, ('on' if enable else 'off'))]))
+        else:
+            #logging.warning('Unknown debug request type! Allowed: "cognition", "motion"')
+            pass
+        return 0
+
+    def module(self, name:str, enable:bool, type:str='cognition'):
+        """
+        Enables/Disables a module of the agent instance.
+
+        :param name:    the module which should be en-/disabled
+        :param enable:  True, if module should be enabled, False if it should be disabled
+        :param type:    the type of the module ('cognition' or 'motion')
+        :return:        Returns the id of the scheduled command
+        """
+        if type == 'cognition':
+            return self.send_command(DebugCommand('Cognition:modules:set', [(name, ('on' if enable else 'off'))]))
+        elif type == 'motion':
+            return self.send_command(DebugCommand('Motion:modules:set', [(name, ('on' if enable else 'off'))]))
+        else:
+            #logging.warning('Unknown module type! Allowed: "cognition", "motion"')
+            pass
+        return 0
+
+    def representation(self, name:str, type:str='cognition', binary:bool=False):
+        """
+        Schedules a command for retrieving a representation.
+
+        :param name:    the name of the representation which should be retrieved.
+        :param type:    the type of the representation ('cognition' or 'motion')
+        :param binary:  whether the result should be binary (protobuf) or as string
+        :return:        Returns the id of the scheduled command
+        """
+        if type == 'cognition':
+            if binary:
+                return self.send_command(DebugCommand('Cognition:representation:get', [name]))
+            else:
+                return self.send_command(DebugCommand('Cognition:representation:print', [name]))
+        elif type == 'motion':
+            if binary:
+                return self.send_command(DebugCommand('Motion:representation:get', [name]))
+            else:
+                return self.send_command(DebugCommand('Motion:representation:print', [name]))
+        else:
+            #logging.warning('Unknown representation type! Allowed: "cognition", "motion"')
+            pass
+        return 0
+
+    def agent(self, name:str):
+        """
+        Selects an named agent for execution.
+
+        :param name: the name of the agent (behavior), which should be executed
+        :return:    Returns the id of the scheduled command
+        """
+        return self.send_command(DebugCommand('Cognition:behavior:set_agent', [('agent', name)]))
+
+    def behavior(self, complete=False):
+        """
+        Schedules a command for retrieving the current behavior of the agent.
+
+        :param complete: True, if the complete behavior tree should be retrieved, False otherwise (sparse)
+        :return:    Returns the id of the scheduled command
+        """
+        if complete:
+            return self.representation('BehaviorStateComplete', binary=True)
+        else:
+            return self.representation('BehaviorStateSparse', binary=True)
+
+
+class AgentControllerThread(_thread.Thread):
+    def __init__(self, host, port, start=True):
+        super().__init__()
+        self._host = host
+        self._port = port
+
+        self._socket = None
+        self._thread = None
+        self._running = _thread.Event()
+        self._connected = _thread.Event()
+
+        self._cmd_id = 1
+        self._cmd_q = _queue.Queue()
+
+        self._last_heart_beat = time.monotonic()
+
+        if start: self.start()
+
+    def stop(self):
+        print('Stopping ...')
+        self._running.clear()
+
+    def run(self):
+        self._running.set()
+        print('Running', self.__class__.__name__)
+        while self._running.is_set():
+            if not self._socket:
+                try:
+                    self._socket = socket.create_connection((self._host, self._port))
+                    #self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+                    self._connected.set()
+                    print('Connected')
+                    #print('Established connection to robot!')
+                except Exception as e:
+                    self._connected.clear()
+                    time.sleep(1)
+                    # Skip the rest, since we doesn't have a valid connection to work with
+                    continue
+
+            self._send_heart_beat()
+            #self._poll_answers()
+            #self._send_commands()
+            #time.sleep(0.1)
+
+        print('Closing socket ...')
+        if self._socket:
+            self._socket.setblocking(False)
+            self._socket.settimeout(0.2)
+            self._socket.recv(0)
+            #self._socket.shutdown(socket.SHUT_RDWR)
+            self._socket.close()
+            #print(self._socket)
+            self._socket = None
+        self._connected.clear()
+
+        print('Done.')
+
+    def _send_heart_beat(self):
+        """Send heart beat to agent."""
+        if self._socket and self._last_heart_beat + 1 < time.monotonic():
+            self._last_heart_beat = time.monotonic()
+            self._socket.setblocking(True)
+            self._socket.sendall(_struct.pack('!i', -1))
+            print('.', end='')
+
+    def _poll_answers(self):
+        """Retrieves the answers of commands send to the agent."""
+        if self._socket:
+            try:
+                self._socket.setblocking(False)
+                id = _struct.unpack("<I", self._socket.recv(4))[0]
+                if id > 0:
+                    self._socket.setblocking(True)
+                    length = _struct.unpack("<I", self._socket.recv(4))[0]
+                    if length > 0:
+                        # The command caller is responsible for retrieving the command result
+                        # TODO: what happens/todo, if the result is never retrieved?!
+                        data = self._socket.recv(length)
+
+                        try:
+                            print('Size', length)
+                            print(data.decode('utf-8'))
+                        except UnicodeDecodeError:
+                            pass
+                    else:
+                        #logging.warning('Got invalid command data length! (%d)', id)
+                        pass
+                else:
+                    #logging.warning('Got invalid command id!')
+                    pass
+
+            except BlockingIOError:
+                # no data available - ignore
+                pass
+
+    def _send_commands(self):
+        """Sends a command to the agent. The command is retrieved of the command queue."""
+        self._socket.setblocking(True)
+        while not self._cmd_q.empty():
+            cmd = self._cmd_q.get()
+            #logging.info('Send command %d: "%s"', cmd.id, cmd.get_name())
+            self._socket.sendall(cmd.serialize(cmd.id))
+            self._cmd_q.task_done()
+
+    def is_connected(self):
+        return self._connected.is_set()
+
+    def send_command(self, cmd:DebugCommand):
+        if self._connected.is_set():
+            cmd.id = self._cmd_id
+            self._cmd_q.put_nowait(cmd)
+            self._cmd_id += 1
+            return cmd.id
+
+        raise Exception('Not connected to the agent!')
+
+    def debugrequest(self, request:str, enable:bool, type:str='cognition'):
+        """
+        Enables/Disables a debug request of the agent.
+
+        :param request: the debug request which should be en-/disabled
+        :param enable:  True, if debug request should be enabled, False if it should be disabled
+        :param type:    the type of the debug request ('cognition' or 'motion')
+        :return:        Returns the id of the scheduled command
+        """
+        if type == 'cognition':
+            return self.send_command(DebugCommand('Cognition:debugrequest:set', [(request, ('on' if enable else 'off'))]))
+        elif type == 'motion':
+            return self.send_command(DebugCommand('Motion:debugrequest:set', [(request, ('on' if enable else 'off'))]))
+        else:
+            #logging.warning('Unknown debug request type! Allowed: "cognition", "motion"')
+            pass
+        return 0
+
+    def module(self, name:str, enable:bool, type:str='cognition'):
+        """
+        Enables/Disables a module of the agent instance.
+
+        :param name:    the module which should be en-/disabled
+        :param enable:  True, if module should be enabled, False if it should be disabled
+        :param type:    the type of the module ('cognition' or 'motion')
+        :return:        Returns the id of the scheduled command
+        """
+        if type == 'cognition':
+            return self.send_command(DebugCommand('Cognition:modules:set', [(name, ('on' if enable else 'off'))]))
+        elif type == 'motion':
+            return self.send_command(DebugCommand('Motion:modules:set', [(name, ('on' if enable else 'off'))]))
+        else:
+            #logging.warning('Unknown module type! Allowed: "cognition", "motion"')
+            pass
+        return 0
+
+    def representation(self, name:str, type:str='cognition', binary:bool=False):
+        """
+        Schedules a command for retrieving a representation.
+
+        :param name:    the name of the representation which should be retrieved.
+        :param type:    the type of the representation ('cognition' or 'motion')
+        :param binary:  whether the result should be binary (protobuf) or as string
+        :return:        Returns the id of the scheduled command
+        """
+        if type == 'cognition':
+            if binary:
+                return self.send_command(DebugCommand('Cognition:representation:get', [name]))
+            else:
+                return self.send_command(DebugCommand('Cognition:representation:print', [name]))
+        elif type == 'motion':
+            if binary:
+                return self.send_command(DebugCommand('Motion:representation:get', [name]))
+            else:
+                return self.send_command(DebugCommand('Motion:representation:print', [name]))
+        else:
+            #logging.warning('Unknown representation type! Allowed: "cognition", "motion"')
+            pass
+        return 0
+
+    def agent(self, name:str):
+        """
+        Selects an named agent for execution.
+
+        :param name: the name of the agent (behavior), which should be executed
+        :return:    Returns the id of the scheduled command
+        """
+        return self.send_command(DebugCommand('Cognition:behavior:set_agent', [('agent', name)]))
+
+    def behavior(self, complete=False):
+        """
+        Schedules a command for retrieving the current behavior of the agent.
+
+        :param complete: True, if the complete behavior tree should be retrieved, False otherwise (sparse)
+        :return:    Returns the id of the scheduled command
+        """
+        if complete:
+            return self.representation('BehaviorStateComplete', binary=True)
+        else:
+            return self.representation('BehaviorStateSparse', binary=True)
+
+
+class AgentController(_thread.Thread):
+    def __init__(self, host, port, start = True):
+        super().__init__()
+
+        self._host = host
+        self._port = port
+
+        self._stream_reader = None
+        self._stream_writer = None
+
+        self._tasks = []
+        self._loop = _as.get_event_loop()
+        self._tasks.append(self._loop.create_task(self._send_heart_beat(), name='Heart beat'))
+        self._tasks.append(self._loop.create_task(self._poll_answers(), name='Poll answers'))
+        self._tasks.append(self._loop.create_task(self._send_commands(), name='Send commands'))
+
+        self._cmd_id = 1
+        self._cmd_q = _as.Queue(loop=self._loop)
+        self._cmd_m = {}
+
+        self._running = _as.Event()
+
+        if start: self.start()
+
+    def stop(self):
+        print('Stopping loop ...')
+
+        if self._loop.is_running():
+            #'''
+            for task in self._tasks:
+                #print(task)
+                self._loop.call_soon_threadsafe(task.cancel)
+            time.sleep(0.1)
+
+            self._loop.call_soon_threadsafe(self._loop.stop)
+            time.sleep(0.1)
+            #'''
+
+        #self.loop.close()
+        print('Stopped')
+
+    def run(self):
+        #print('Run loop forever ...')
+        self._running.set()
+        self._loop.run_until_complete(self._connect())
+        self._loop.run_forever()
+        #print('Finished!')
+
+    async def _connect(self):
+        # TODO: if the connection is lost, try to re-establish!
+        if self._stream_reader is None:
+            try:
+                self._stream_reader, self._stream_writer = await _as.open_connection(host=self._host,
+                                                                                     port=self._port,
+                                                                                     loop=self._loop)
+                # print('Established connection to robot!')
+            except Exception as e:
+                print(_as.Task.current_task().get_name(), ':', e, type(e))
+                await _as.sleep(1)
+                # Skip the rest, since we doesn't have a valid connection to work with
+                #continue
+
+    async def _send_heart_beat(self):
+        """Send a heart beat to the agent."""
+        while True:
+            #print('beat', self._stream_writer)
+            if self._stream_writer:
+                self._stream_writer.write(_struct.pack('!i', -1))
+                await self._stream_writer.drain()
+
+            await _as.sleep(1)
+
+    async def _poll_answers(self):
+        while True:
+            #print('Poll', self._stream_reader)
+            if self._stream_reader:
+                raw_id = await self._stream_reader.read(4)
+                cmd_id = _struct.unpack('=l', raw_id)[0]
+
+                raw_size = await self._stream_reader.read(4)
+                size = _struct.unpack('=l', raw_size)[0]
+
+                raw_data = await self._stream_reader.read(size)
+
+                if cmd_id in self._cmd_m:
+                    cmd = self._cmd_m.pop(cmd_id)
+                    if not cmd.cancelled():
+                        cmd.set_result(raw_data)
+                else:
+                    print('Unknown command id:', cmd_id, file=sys.stderr)
+            else:
+                await _as.sleep(1)
+
+    async def _send_commands(self):
+        while True:
+            #print('Send', self._stream_reader)
+            if self._stream_writer:
+                # get next command
+                cmd = await self._cmd_q.get()
+                # set command to running
+                if cmd.set_running_or_notify_cancel():
+                    # store command for later response
+                    self._cmd_m[cmd.id] = cmd
+                    # send command
+                    self._stream_writer.write(cmd.serialize(cmd.id))
+                    await self._stream_writer.drain()
+                # mark as done
+                self._cmd_q.task_done()
+            else:
+                # empty queue and set exception – since we doesn't have a connection
+                while not self._cmd_q.empty():
+                    self._cmd_q.get_nowait().set_exception(Exception('Not connected to the agent!'))
+                # wait before next attempt
+                await _as.sleep(1)
+
+    def send_command(self, cmd: DebugCommand):
+        """Schedules the given command in the command queue and returns the command."""
+        if self._loop.is_running():
+            cmd.id = self._cmd_id
+
+            self._cmd_q.put_nowait(cmd)
+            self._cmd_id += 1
+            return cmd
+
+        raise Exception('Not connected to the agent!')
+
+    def debugrequest(self, request: str, enable: bool, type: str = 'cognition'):
+        """
+        Enables/Disables a debug request of the agent.
+
+        :param request: the debug request which should be en-/disabled
+        :param enable:  True, if debug request should be enabled, False if it should be disabled
+        :param type:    the type of the debug request ('cognition' or 'motion')
+        :return:        Returns the id of the scheduled command
+        """
+        if type == 'cognition':
+            return self.send_command(DebugCommand('Cognition:debugrequest:set', [(request, ('on' if enable else 'off'))]))
+        elif type == 'motion':
+            return self.send_command(DebugCommand('Motion:debugrequest:set', [(request, ('on' if enable else 'off'))]))
+
+        raise Exception('Unknown debug request type! Allowed: "cognition", "motion"')
+
+    def module(self, name: str, enable: bool, type: str = 'cognition'):
+        """
+        Enables/Disables a module of the agent instance.
+
+        :param name:    the module which should be en-/disabled
+        :param enable:  True, if module should be enabled, False if it should be disabled
+        :param type:    the type of the module ('cognition' or 'motion')
+        :return:        Returns the id of the scheduled command
+        """
+        if type == 'cognition':
+            return self.send_command(DebugCommand('Cognition:modules:set', [(name, ('on' if enable else 'off'))]))
+        elif type == 'motion':
+            return self.send_command(DebugCommand('Motion:modules:set', [(name, ('on' if enable else 'off'))]))
+
+        raise Exception('Unknown module type! Allowed: "cognition", "motion"')
+
+    def representation(self, name: str, type: str = 'cognition', binary: bool = False):
+        """
+        Schedules a command for retrieving a representation.
+
+        :param name:    the name of the representation which should be retrieved.
+        :param type:    the type of the representation ('cognition' or 'motion')
+        :param binary:  whether the result should be binary (protobuf) or as string
+        :return:        Returns the id of the scheduled command
+        """
+        if type == 'cognition':
+            if binary:
+                return self.send_command(DebugCommand('Cognition:representation:get', [name]))
+            else:
+                return self.send_command(DebugCommand('Cognition:representation:print', [name]))
+        elif type == 'motion':
+            if binary:
+                return self.send_command(DebugCommand('Motion:representation:get', [name]))
+            else:
+                return self.send_command(DebugCommand('Motion:representation:print', [name]))
+
+        raise Exception('Unknown representation type! Allowed: "cognition", "motion"')
+
+    def agent(self, name: str):
+        """
+        Selects an named agent for execution.
+
+        :param name: the name of the agent (behavior), which should be executed
+        :return:    Returns the id of the scheduled command
+        """
+        return self.send_command(DebugCommand('Cognition:behavior:set_agent', [('agent', name)]))
+
+    def behavior(self, complete=False):
+        """
+        Schedules a command for retrieving the current behavior of the agent.
+
+        :param complete: True, if the complete behavior tree should be retrieved, False otherwise (sparse)
+        :return:    Returns the id of the scheduled command
+        """
+        if complete:
+            return self.representation('BehaviorStateComplete', binary=True)
+        else:
+            return self.representation('BehaviorStateSparse', binary=True)
+
+
