@@ -700,6 +700,7 @@ class AgentControllerThread(_thread.Thread):
 
 
 class AgentController(_thread.Thread):
+
     def __init__(self, host, port, start = True):
         super().__init__()
 
@@ -711,17 +712,25 @@ class AgentController(_thread.Thread):
 
         self._tasks = []
         self._loop = _as.get_event_loop()
+
+        self._cmd_id = 1
+        self._cmd_q = _as.Queue()
+        self._cmd_m = {}
+
+        self._connected = _thread.Event()
+        self._connected_internal = _as.Event()
+
+        if start: self.start()
+
+    def run(self):
+        # schedule tasks
+        self._tasks.append(self._loop.create_task(self._connect(), name='Connection listener'))
         self._tasks.append(self._loop.create_task(self._send_heart_beat(), name='Heart beat'))
         self._tasks.append(self._loop.create_task(self._poll_answers(), name='Poll answers'))
         self._tasks.append(self._loop.create_task(self._send_commands(), name='Send commands'))
 
-        self._cmd_id = 1
-        self._cmd_q = _as.Queue(loop=self._loop)
-        self._cmd_m = {}
-
-        self._running = _as.Event()
-
-        if start: self.start()
+        # run tasks cooperatively and wait 'till loop is stopped
+        self._loop.run_forever()
 
     def stop(self):
         print('Stopping loop ...')
@@ -740,83 +749,90 @@ class AgentController(_thread.Thread):
         #self.loop.close()
         print('Stopped')
 
-    def run(self):
-        #print('Run loop forever ...')
-        self._running.set()
-        self._loop.run_until_complete(self._connect())
-        self._loop.run_forever()
-        #print('Finished!')
+    def is_connected(self):
+        return self._connected.is_set()
+
+    def wait_connected(self, timeout=None):
+        self._connected.wait(timeout)
 
     async def _connect(self):
-        # TODO: if the connection is lost, try to re-establish!
-        if self._stream_reader is None:
+        while True:
             try:
-                self._stream_reader, self._stream_writer = await _as.open_connection(host=self._host,
-                                                                                     port=self._port,
-                                                                                     loop=self._loop)
-                # print('Established connection to robot!')
+                self._stream_reader, \
+                self._stream_writer = await _as.open_connection(host=self._host, port=self._port)
+                # update internal & external connection state
+                self._connected_internal.set()
+                self._connected.set()
             except Exception as e:
-                print(_as.Task.current_task().get_name(), ':', e, type(e))
+                # wait before next connection attempt
                 await _as.sleep(1)
-                # Skip the rest, since we doesn't have a valid connection to work with
-                #continue
+                # skip the rest
+                continue
+
+            # TODO: this doesn't work! :/
+            # wait 'till the connection is 'closed' (lost?)
+            await self._stream_writer.wait_closed()
+            print('Connection lost!?')
+            # reset the streams
+            self._stream_reader = None
+            self._stream_writer = None
+            # update internal & external connection state
+            self._connected.clear()
+            self._connected_internal.clear()
+            # empty queue and set exception – since we doesn't have a connection
+            while not self._cmd_q.empty():
+                self._cmd_q.get_nowait().set_exception(Exception('Not connected to the agent!'))
 
     async def _send_heart_beat(self):
         """Send a heart beat to the agent."""
         while True:
             #print('beat', self._stream_writer)
-            if self._stream_writer:
-                self._stream_writer.write(_struct.pack('!i', -1))
-                await self._stream_writer.drain()
+            await self._connected_internal.wait()
+
+            self._stream_writer.write(_struct.pack('!i', -1))
+            await self._stream_writer.drain()
 
             await _as.sleep(1)
 
     async def _poll_answers(self):
         while True:
             #print('Poll', self._stream_reader)
-            if self._stream_reader:
-                raw_id = await self._stream_reader.read(4)
-                cmd_id = _struct.unpack('=l', raw_id)[0]
+            await self._connected_internal.wait()
 
-                raw_size = await self._stream_reader.read(4)
-                size = _struct.unpack('=l', raw_size)[0]
+            raw_id = await self._stream_reader.read(4)
+            cmd_id = _struct.unpack('=l', raw_id)[0]
 
-                raw_data = await self._stream_reader.read(size)
+            raw_size = await self._stream_reader.read(4)
+            size = _struct.unpack('=l', raw_size)[0]
 
-                if cmd_id in self._cmd_m:
-                    cmd = self._cmd_m.pop(cmd_id)
-                    if not cmd.cancelled():
-                        cmd.set_result(raw_data)
-                else:
-                    print('Unknown command id:', cmd_id, file=sys.stderr)
+            raw_data = await self._stream_reader.read(size)
+
+            if cmd_id in self._cmd_m:
+                cmd = self._cmd_m.pop(cmd_id)
+                if not cmd.cancelled():
+                    cmd.set_result(raw_data)
             else:
-                await _as.sleep(1)
+                print('Unknown command id:', cmd_id, file=sys.stderr)
 
     async def _send_commands(self):
         while True:
             #print('Send', self._stream_reader)
-            if self._stream_writer:
-                # get next command
-                cmd = await self._cmd_q.get()
-                # set command to running
-                if cmd.set_running_or_notify_cancel():
-                    # store command for later response
-                    self._cmd_m[cmd.id] = cmd
-                    # send command
-                    self._stream_writer.write(cmd.serialize(cmd.id))
-                    await self._stream_writer.drain()
-                # mark as done
-                self._cmd_q.task_done()
-            else:
-                # empty queue and set exception – since we doesn't have a connection
-                while not self._cmd_q.empty():
-                    self._cmd_q.get_nowait().set_exception(Exception('Not connected to the agent!'))
-                # wait before next attempt
-                await _as.sleep(1)
+            await self._connected_internal.wait()
+            # get next command
+            cmd = await self._cmd_q.get()
+            # set command to running
+            if cmd.set_running_or_notify_cancel():
+                # store command for later response
+                self._cmd_m[cmd.id] = cmd
+                # send command
+                self._stream_writer.write(cmd.serialize(cmd.id))
+                await self._stream_writer.drain()
+            # mark as done
+            self._cmd_q.task_done()
 
     def send_command(self, cmd: DebugCommand):
         """Schedules the given command in the command queue and returns the command."""
-        if self._loop.is_running():
+        if self.is_connected():
             cmd.id = self._cmd_id
 
             self._cmd_q.put_nowait(cmd)
