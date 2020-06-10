@@ -711,18 +711,21 @@ class AgentController(_thread.Thread):
         self._stream_writer = None
 
         self._tasks = []
-        self._loop = _as.get_event_loop()
+        self._loop = _as.new_event_loop()
 
         self._cmd_id = 1
-        self._cmd_q = _as.Queue()
+        self._cmd_q = _as.Queue(loop=self._loop)
         self._cmd_m = {}
 
         self._connected = _thread.Event()
-        self._connected_internal = _as.Event()
+        self._connected_internal = _as.Event(loop=self._loop)
 
         if start: self.start()
 
     def run(self):
+        # set the event loop to this thread
+        _as.set_event_loop(self._loop)
+
         # schedule tasks
         self._tasks.append(self._loop.create_task(self._connect(), name='Connection listener'))
         self._tasks.append(self._loop.create_task(self._send_heart_beat(), name='Heart beat'))
