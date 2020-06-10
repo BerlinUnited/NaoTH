@@ -740,13 +740,11 @@ class AgentController(_thread.Thread):
             self.join(timeout)
 
     async def _stop_internal(self):
-        print('Stop internal')
         for task in reversed(self._tasks):
             task.cancel()
             await task
 
         self._loop.stop()
-        print('Done')
 
     def is_connected(self):
         return self._connected.is_set()
@@ -763,11 +761,6 @@ class AgentController(_thread.Thread):
             self._connected_internal.clear()
             if self._stream_writer:
                 self._stream_writer.close()
-
-    def _clear_cmd_queue(self):
-        # empty queue and set exception – since we doesn't have a connection
-        while not self._cmd_q.empty():
-            self._cmd_q.get_nowait().set_exception(Exception('Not connected to the agent!'))
 
     async def _connect(self):
         while True:
@@ -795,9 +788,13 @@ class AgentController(_thread.Thread):
                 except _as.CancelledError:
                     break
             finally:
-                self._clear_cmd_queue()
+                # empty queue and set exception – since we doesn't have a connection
+                while not self._cmd_q.empty():
+                    self._cmd_q.get_nowait().set_exception(Exception('Not connected to the agent!'))
 
-        print('Exit Connect', flush=True)
+        if self._stream_writer:
+            self._stream_writer.close()
+            #await self._stream_writer.wait_closed()  # NOTE: this doesn't finish?!
 
     async def _send_heart_beat(self):
         """Send a heart beat to the agent."""
@@ -809,17 +806,15 @@ class AgentController(_thread.Thread):
                 await self._stream_writer.drain()
 
                 await _as.sleep(1)
-            except _as.CancelledError:
+            except _as.CancelledError:  # task cancelled
                 break
             except OSError:  # connection lost
                 self._set_connected(False)
             except Exception as e:  # unexpected exception
                 print(e, file=sys.stderr)
 
-        print('Exit heart beat', flush=True)
-
     async def _poll_answers(self):
-        #
+        # helper function to determine, if the connection was lost
         def lost_connection(d):
             if d == b'':
                 self._set_connected(False)
@@ -847,13 +842,12 @@ class AgentController(_thread.Thread):
                         cmd.set_result(raw_data)
                 else:
                     print('Unknown command id:', cmd_id, file=sys.stderr)
-            except _as.CancelledError:
+            except _as.CancelledError:  # task cancelled
                 break
-        print('Exit response listener', flush=True)
 
     async def _send_commands(self):
+        # helper function, if an exception occurred and the command couldn't be send
         def cancel_cmd(cmd, ex=None):
-            # command couldn't be send
             self._cmd_m.pop(cmd.id)
             cmd.set_exception(ex if ex else Exception('Lost connection to the agent!'))
 
@@ -886,7 +880,6 @@ class AgentController(_thread.Thread):
 
             except _as.CancelledError:  # task cancelled
                 break
-        print('Exit command sender', flush=True)
 
     def send_command(self, cmd: DebugCommand):
         """Schedules the given command in the command queue and returns the command."""
