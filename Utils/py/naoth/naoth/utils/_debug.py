@@ -711,7 +711,8 @@ class AgentController(_thread.Thread):
         self._stream_writer = None
 
         self._tasks = []
-        self._loop = _as.get_event_loop()
+        self._loop = _as.new_event_loop()  #_as.get_event_loop()
+        _as.set_event_loop(self._loop)
 
         self._cmd_id = 1
         self._cmd_q = _as.Queue()
@@ -732,22 +733,21 @@ class AgentController(_thread.Thread):
         # run tasks cooperatively and wait 'till loop is stopped
         self._loop.run_forever()
 
-    def stop(self):
-        print('Stopping loop ...')
+        self._set_connected(False)
 
+    def stop(self, timeout=None):
         if self._loop.is_running():
-            #'''
-            for task in self._tasks:
-                #print(task)
-                self._loop.call_soon_threadsafe(task.cancel)
-            time.sleep(0.1)
+            self._loop.call_soon_threadsafe(lambda: self._loop.create_task(self._stop_internal()))
+            self.join(timeout)
 
-            self._loop.call_soon_threadsafe(self._loop.stop)
-            time.sleep(0.1)
-            #'''
+    async def _stop_internal(self):
+        print('Stop internal')
+        for task in reversed(self._tasks):
+            task.cancel()
+            await task
 
-        #self.loop.close()
-        print('Stopped')
+        self._loop.stop()
+        print('Done')
 
     def is_connected(self):
         return self._connected.is_set()
@@ -755,80 +755,139 @@ class AgentController(_thread.Thread):
     def wait_connected(self, timeout=None):
         self._connected.wait(timeout)
 
+    def _set_connected(self, state: bool):
+        if state:
+            self._connected_internal.set()
+            self._connected.set()
+        else:
+            self._connected.clear()
+            self._connected_internal.clear()
+            if self._stream_writer:
+                self._stream_writer.close()
+
+    def _clear_cmd_queue(self):
+        # empty queue and set exception – since we doesn't have a connection
+        while not self._cmd_q.empty():
+            self._cmd_q.get_nowait().set_exception(Exception('Not connected to the agent!'))
+
     async def _connect(self):
         while True:
             try:
+                # (try to) establish connection or raise exception
                 self._stream_reader, \
                 self._stream_writer = await _as.open_connection(host=self._host, port=self._port)
-                # update internal & external connection state
-                self._connected_internal.set()
-                self._connected.set()
-            except Exception as e:
-                # wait before next connection attempt
-                await _as.sleep(1)
-                # skip the rest
-                continue
 
-            # TODO: this doesn't work! :/
-            # wait 'till the connection is 'closed' (lost?)
-            await self._stream_writer.wait_closed()
-            print('Connection lost!?')
-            # reset the streams
-            self._stream_reader = None
-            self._stream_writer = None
-            # update internal & external connection state
-            self._connected.clear()
-            self._connected_internal.clear()
-            # empty queue and set exception – since we doesn't have a connection
-            while not self._cmd_q.empty():
-                self._cmd_q.get_nowait().set_exception(Exception('Not connected to the agent!'))
+                # update internal & external connection state
+                self._set_connected(True)
+
+                # wait 'till the connection is 'closed' (lost?)
+                await self._stream_writer.wait_closed()
+
+                # reset the streams
+                self._stream_reader = None
+                self._stream_writer = None
+            except _as.CancelledError:
+                break
+            except Exception:
+                # task can be cancelled while sleeping ...
+                try:
+                    # connection failed, wait before next connection attempt
+                    await _as.sleep(1)
+                except _as.CancelledError:
+                    break
+            finally:
+                self._clear_cmd_queue()
+
+        print('Exit Connect', flush=True)
 
     async def _send_heart_beat(self):
         """Send a heart beat to the agent."""
         while True:
-            #print('beat', self._stream_writer)
-            await self._connected_internal.wait()
+            try:
+                await self._connected_internal.wait()
 
-            self._stream_writer.write(_struct.pack('!i', -1))
-            await self._stream_writer.drain()
+                self._stream_writer.write(_struct.pack('!i', -1))
+                await self._stream_writer.drain()
 
-            await _as.sleep(1)
+                await _as.sleep(1)
+            except _as.CancelledError:
+                break
+            except OSError:  # connection lost
+                self._set_connected(False)
+            except Exception as e:  # unexpected exception
+                print(e, file=sys.stderr)
+
+        print('Exit heart beat', flush=True)
 
     async def _poll_answers(self):
+        #
+        def lost_connection(d):
+            if d == b'':
+                self._set_connected(False)
+                return True
+            return False
+
         while True:
-            #print('Poll', self._stream_reader)
-            await self._connected_internal.wait()
+            try:
+                await self._connected_internal.wait()
 
-            raw_id = await self._stream_reader.read(4)
-            cmd_id = _struct.unpack('=l', raw_id)[0]
+                raw_id = await self._stream_reader.read(4)
+                if lost_connection(raw_id): continue
+                cmd_id = _struct.unpack('=l', raw_id)[0]
 
-            raw_size = await self._stream_reader.read(4)
-            size = _struct.unpack('=l', raw_size)[0]
+                raw_size = await self._stream_reader.read(4)
+                if lost_connection(raw_size): continue
+                size = _struct.unpack('=l', raw_size)[0]
 
-            raw_data = await self._stream_reader.read(size)
+                raw_data = await self._stream_reader.read(size)
+                if lost_connection(raw_data): continue
 
-            if cmd_id in self._cmd_m:
-                cmd = self._cmd_m.pop(cmd_id)
-                if not cmd.cancelled():
-                    cmd.set_result(raw_data)
-            else:
-                print('Unknown command id:', cmd_id, file=sys.stderr)
+                if cmd_id in self._cmd_m:
+                    cmd = self._cmd_m.pop(cmd_id)
+                    if not cmd.cancelled():
+                        cmd.set_result(raw_data)
+                else:
+                    print('Unknown command id:', cmd_id, file=sys.stderr)
+            except _as.CancelledError:
+                break
+        print('Exit response listener', flush=True)
 
     async def _send_commands(self):
+        def cancel_cmd(cmd, ex=None):
+            # command couldn't be send
+            self._cmd_m.pop(cmd.id)
+            cmd.set_exception(ex if ex else Exception('Lost connection to the agent!'))
+
         while True:
-            #print('Send', self._stream_reader)
-            await self._connected_internal.wait()
-            # get next command
-            cmd = await self._cmd_q.get()
-            # set command to running
-            if cmd.set_running_or_notify_cancel():
-                # store command for later response
-                self._cmd_m[cmd.id] = cmd
-                # send command
-                self._stream_writer.write(cmd.serialize(cmd.id))
-                await self._stream_writer.drain()
-            # mark as done
-            self._cmd_q.task_done()
+            try:
+                await self._connected_internal.wait()
+                # get next command
+                cmd = await self._cmd_q.get()
+                # set command to running
+                if cmd.set_running_or_notify_cancel():
+                    # store command for later response
+                    self._cmd_m[cmd.id] = cmd
+                    try:
+                        # send command
+                        self._stream_writer.write(cmd.serialize(cmd.id))
+                        await self._stream_writer.drain()
+                    except _as.CancelledError:  # task cancelled
+                        cancel_cmd(cmd)
+                        break
+                    except OSError:  # connection lost
+                        self._set_connected(False)
+                        cancel_cmd(cmd)
+                    except Exception as e:  # unexpected exception
+                        print(e, file=sys.stderr)
+                        cancel_cmd(cmd, e)
+                    finally:
+                        self._cmd_q.task_done()  # mark as done
+                else:
+                    self._cmd_q.task_done()  # mark as done
+
+            except _as.CancelledError:  # task cancelled
+                break
+        print('Exit command sender', flush=True)
 
     def send_command(self, cmd: DebugCommand):
         """Schedules the given command in the command queue and returns the command."""
