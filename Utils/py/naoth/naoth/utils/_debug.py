@@ -711,8 +711,7 @@ class AgentController(_thread.Thread):
         self._stream_writer = None
 
         self._tasks = []
-        self._loop = _as.new_event_loop()  #_as.get_event_loop()
-        _as.set_event_loop(self._loop)
+        self._loop = _as.get_event_loop()
 
         self._cmd_id = 1
         self._cmd_q = _as.Queue()
