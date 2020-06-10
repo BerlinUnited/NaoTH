@@ -899,7 +899,7 @@ class AgentController(_thread.Thread):
         :param request: the debug request which should be en-/disabled
         :param enable:  True, if debug request should be enabled, False if it should be disabled
         :param type:    the type of the debug request ('cognition' or 'motion')
-        :return:        Returns the id of the scheduled command
+        :return:        Returns the the scheduled command (future)
         """
         if type == 'cognition':
             return self.send_command(DebugCommand('Cognition:debugrequest:set', [(request, ('on' if enable else 'off'))]))
@@ -915,7 +915,7 @@ class AgentController(_thread.Thread):
         :param name:    the module which should be en-/disabled
         :param enable:  True, if module should be enabled, False if it should be disabled
         :param type:    the type of the module ('cognition' or 'motion')
-        :return:        Returns the id of the scheduled command
+        :return:        Returns the the scheduled command (future)
         """
         if type == 'cognition':
             return self.send_command(DebugCommand('Cognition:modules:set', [(name, ('on' if enable else 'off'))]))
@@ -931,7 +931,7 @@ class AgentController(_thread.Thread):
         :param name:    the name of the representation which should be retrieved.
         :param type:    the type of the representation ('cognition' or 'motion')
         :param binary:  whether the result should be binary (protobuf) or as string
-        :return:        Returns the id of the scheduled command
+        :return:        Returns the the scheduled command (future)
         """
         if type == 'cognition':
             if binary:
@@ -950,8 +950,8 @@ class AgentController(_thread.Thread):
         """
         Selects an named agent for execution.
 
-        :param name: the name of the agent (behavior), which should be executed
-        :return:    Returns the id of the scheduled command
+        :param name:    the name of the agent (behavior), which should be executed
+        :return:        Returns the the scheduled command (future)
         """
         return self.send_command(DebugCommand('Cognition:behavior:set_agent', [('agent', name)]))
 
@@ -960,7 +960,7 @@ class AgentController(_thread.Thread):
         Schedules a command for retrieving the current behavior of the agent.
 
         :param complete: True, if the complete behavior tree should be retrieved, False otherwise (sparse)
-        :return:    Returns the id of the scheduled command
+        :return:        Returns the the scheduled command (future)
         """
         if complete:
             return self.representation('BehaviorStateComplete', binary=True)
