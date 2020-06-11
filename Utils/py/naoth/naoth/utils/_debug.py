@@ -11,11 +11,12 @@ import functools
 from .. import pb as _pb
 
 
-class DebugProxy:
+class DebugProxy(_thread.Thread):
     """
     Debugging class, creating a connection between RobotControlGui and the Nao to inspect messages and the control flow.
     """
 
+    '''
     @staticmethod
     def run(src_host, src_port=5401, dest_port=7777):
         """
@@ -38,21 +39,53 @@ class DebugProxy:
             loop.stop()
 
         loop.close()
+    '''
 
-    def __init__(self, src_host, src_port, dest_port, loop):
+    def __init__(self, agent_host, agent_port=5401, dest_port=7777):
+        super().__init__()
 
+        # the agent thread is only started, if there's at least one connected host
         self.robot = None
-        self.robot_host = src_host
-        self.robot_port = src_port
+        self.robot_host = agent_host
+        self.robot_port = agent_port
 
         self.host_host = 'localhost'
         self.host_port = dest_port
 
-        self.loop = loop if loop else _as.get_event_loop()
+        self._loop = _as.new_event_loop()
 
         self.hosts = []
-        self.host_listener = self.loop.create_task(_as.start_server(self._host, self.host_host, self.host_port), name='Host Listener')
+        self.host_listener = None
         self.host_connection_cnt = 0
+
+    def run(self):
+        # set the event loop to this thread
+        _as.set_event_loop(self._loop)
+        # start host listener server and 'wait' until the server ist started
+        self.host_listener = self._loop.run_until_complete(_as.start_server(self._host, self.host_host, self.host_port))
+        # run until cancelled
+        self._loop.run_forever()
+
+    def stop(self, timeout=None):
+        if self._loop.is_running():
+            self._loop.call_soon_threadsafe(lambda: self._loop.create_task(self._stop_internal()))
+            self.join(timeout)
+
+    async def _stop_internal(self):
+        # shutdown host listener server to prevent new connections
+        if self.host_listener:
+            self.host_listener.close()
+            await self.host_listener.wait_closed()
+
+        # cancel all established connections
+        # NOTE: the connection to the agent is stopped with the last host connection
+        for task in self.hosts:
+            print(task)
+            task.cancel()
+            await task
+            print(task)
+
+        self._loop.stop()
 
     def _register_host(self):
         self.host_connection_cnt += 1
@@ -76,18 +109,16 @@ class DebugProxy:
         while True:
             try:
                 raw_id = await stream_reader.read(4)
-
+                # connection is closed/lost
                 if raw_id == b'': break
 
                 cmd_id = _struct.unpack('=l', raw_id)[0]
 
                 # check if command is not just a heart beat
                 if cmd_id != -1:
-                    # relay and parse command length
                     raw_length = await stream_reader.read(4)
                     cmd_length = _struct.unpack('=l', raw_length)[0]
 
-                    # relay and parse command
                     raw_data = await stream_reader.read(cmd_length)
                     print('read', cmd_id, time.monotonic_ns())
                     cmd = DebugCommand.deserialize(raw_data)
@@ -100,16 +131,21 @@ class DebugProxy:
                     self.robot.send_command(cmd)
                     print('send', cmd_id, time.monotonic_ns())
                     #print(cmd)
-
+            except _as.CancelledError:  # task cancelled
+                break
             except Exception as e:
                 print(_as.Task.current_task().get_name(), ':', e)
+
+        # close the connection to the host before exiting
+        stream_writer.close()
+        await stream_writer.wait_closed()
 
         self._unregister_host()
 
     def _response_handler(self, stream, cmd):
         # transfer command from agent thread back to 'this' thread
         # this can 'causes a delay of ~0.5ms
-        self.loop.call_soon_threadsafe(lambda: self._response_writer(stream, cmd))
+        self._loop.call_soon_threadsafe(lambda: self._response_writer(stream, cmd))
 
     def _response_writer(self, stream, cmd):
         if not cmd.cancelled():
