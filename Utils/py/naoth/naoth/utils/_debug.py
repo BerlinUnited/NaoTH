@@ -1,14 +1,16 @@
-import struct as _struct
-import asyncio as _as
-import threading as _thread
-from concurrent.futures import Future as _Future
-import sys as _sys
-import functools as _ft
+import sys
+import struct
+import asyncio
+import threading
+import functools
+from concurrent.futures import Future
 
-from .. import pb as _pb
+from .. import pb
+
+__all__ = ['DebugProxy', 'DebugCommand', 'AgentController']
 
 
-class DebugProxy(_thread.Thread):
+class DebugProxy(threading.Thread):
     """
     Debugging class, creating a connection between RobotControlGui and the Nao to inspect messages and the control flow.
     """
@@ -25,7 +27,7 @@ class DebugProxy(_thread.Thread):
         self.host_port = dest_port
 
         self._print = print_cmd
-        self._loop = _as.new_event_loop()
+        self._loop = asyncio.new_event_loop()
 
         self.hosts = []
         self.host_listener = None
@@ -33,9 +35,9 @@ class DebugProxy(_thread.Thread):
 
     def run(self):
         # set the event loop to this thread
-        _as.set_event_loop(self._loop)
+        asyncio.set_event_loop(self._loop)
         # start host listener server and 'wait' until the server ist started
-        self.host_listener = self._loop.run_until_complete(_as.start_server(self._host, self.host_host, self.host_port))
+        self.host_listener = self._loop.run_until_complete(asyncio.start_server(self._host, self.host_host, self.host_port))
         # run until cancelled
         self._loop.run_forever()
 
@@ -60,15 +62,15 @@ class DebugProxy(_thread.Thread):
 
     def _register_host(self):
         self.host_connection_cnt += 1
-        _as.Task.current_task().set_name('Host-{}'.format(self.host_connection_cnt))
-        self.hosts.append(_as.Task.current_task())
+        asyncio.Task.current_task().set_name('Host-{}'.format(self.host_connection_cnt))
+        self.hosts.append(asyncio.Task.current_task())
 
         if self.robot is None:
             self.robot = AgentController(self.robot_host, self.robot_port)
             self.robot.wait_connected()  # TODO: is this reasonable???
 
     def _unregister_host(self):
-        self.hosts.remove(_as.Task.current_task())
+        self.hosts.remove(asyncio.Task.current_task())
         if len(self.hosts) == 0:
             if self.robot is not None:
                 self.robot.stop()
@@ -83,29 +85,29 @@ class DebugProxy(_thread.Thread):
                 # connection is closed/lost
                 if raw_id == b'': break
 
-                cmd_id = _struct.unpack('=l', raw_id)[0]
+                cmd_id = struct.unpack('=l', raw_id)[0]
 
                 # check if command is not just a heart beat
                 if cmd_id != -1:
                     raw_length = await stream_reader.read(4)
-                    cmd_length = _struct.unpack('=l', raw_length)[0]
+                    cmd_length = struct.unpack('=l', raw_length)[0]
 
                     raw_data = await stream_reader.read(cmd_length)
                     cmd = DebugCommand.deserialize(raw_data)
                     cmd.id = cmd_id
 
                     # NOTE: the callback is executed in the agent thread!
-                    cmd.add_done_callback(_ft.partial(self._response_handler, stream_writer))
+                    cmd.add_done_callback(functools.partial(self._response_handler, stream_writer))
 
                     self.robot.send_command(cmd)
 
                     if self._print:
                         print(cmd)
 
-            except _as.CancelledError:  # task cancelled
+            except asyncio.CancelledError:  # task cancelled
                 break
             except Exception as e:
-                print(_as.Task.current_task().get_name(), ':', e)
+                print(asyncio.Task.current_task().get_name(), ':', e)
 
         # close the connection to the host before exiting
         stream_writer.close()
@@ -121,7 +123,7 @@ class DebugProxy(_thread.Thread):
     def _response_writer(self, stream, cmd):
         # TODO: what to todo, if the command got cancelled?!?
         if not cmd.cancelled():
-            stream.write(_struct.pack("<I", cmd.id) + _struct.pack("<I", len(cmd.result())) + cmd.result())
+            stream.write(struct.pack("<I", cmd.id) + struct.pack("<I", len(cmd.result())) + cmd.result())
 
             if self._print:
                 try:
@@ -130,7 +132,7 @@ class DebugProxy(_thread.Thread):
                     pass
 
 
-class DebugCommand(_Future):
+class DebugCommand(Future):
     """Class representing a command for a naoth agent."""
 
     def __init__(self, name, args=None):
@@ -172,16 +174,16 @@ class DebugCommand(_Future):
         if self._args:
             for a in self._args:
                 if isinstance(a, str):
-                    cmd_args.append(_pb.Messages_pb2.CMDArg(name=a))
+                    cmd_args.append(pb.Messages_pb2.CMDArg(name=a))
                 else:
-                    cmd_args.append(_pb.Messages_pb2.CMDArg(name=a[0], bytes=a[1].encode()))
+                    cmd_args.append(pb.Messages_pb2.CMDArg(name=a[0], bytes=a[1].encode()))
 
-        proto = _pb.Messages_pb2.CMD(name=self.name, args=cmd_args)
-        return _struct.pack("<I", self.id) + _struct.pack("<I", proto.ByteSize()) + proto.SerializeToString()
+        proto = pb.Messages_pb2.CMD(name=self.name, args=cmd_args)
+        return struct.pack("<I", self.id) + struct.pack("<I", proto.ByteSize()) + proto.SerializeToString()
 
     @staticmethod
     def deserialize(data):
-        proto = _pb.Messages_pb2.CMD()
+        proto = pb.Messages_pb2.CMD()
         proto.ParseFromString(data)
 
         return DebugCommand(proto.name, [(arg.name, arg.bytes.decode()) for arg in proto.args])
@@ -195,7 +197,7 @@ class DebugCommand(_Future):
         return '{} [{}]: {}\n\t{}'.format(self.__class__.__name__, self._state, self.name, r)
 
 
-class AgentController(_thread.Thread):
+class AgentController(threading.Thread):
 
     def __init__(self, host, port, start = True):
         super().__init__()
@@ -207,21 +209,21 @@ class AgentController(_thread.Thread):
         self._stream_writer = None
 
         self._tasks = []
-        self._loop = _as.new_event_loop()
+        self._loop = asyncio.new_event_loop()
 
         self._cmd_id = 1
-        self._cmd_q = _as.Queue(loop=self._loop)
+        self._cmd_q = asyncio.Queue(loop=self._loop)
         self._cmd_m = {}
 
-        self._connected = _thread.Event()
-        self._connected_internal = _as.Event(loop=self._loop)
+        self._connected = threading.Event()
+        self._connected_internal = asyncio.Event(loop=self._loop)
 
         # start thread immediately
         if start: self.start()
 
     def run(self):
         # set the event loop to this thread
-        _as.set_event_loop(self._loop)
+        asyncio.set_event_loop(self._loop)
 
         # schedule tasks
         self._tasks.append(self._loop.create_task(self._connect(), name='Connection listener'))
@@ -267,7 +269,7 @@ class AgentController(_thread.Thread):
             try:
                 # (try to) establish connection or raise exception
                 self._stream_reader, \
-                self._stream_writer = await _as.open_connection(host=self._host, port=self._port)
+                self._stream_writer = await asyncio.open_connection(host=self._host, port=self._port)
 
                 # update internal & external connection state
                 self._set_connected(True)
@@ -278,14 +280,14 @@ class AgentController(_thread.Thread):
                 # reset the streams
                 self._stream_reader = None
                 self._stream_writer = None
-            except _as.CancelledError:
+            except asyncio.CancelledError:
                 break
             except Exception:
                 # task can be cancelled while sleeping ...
                 try:
                     # connection failed, wait before next connection attempt
-                    await _as.sleep(1)
-                except _as.CancelledError:
+                    await asyncio.sleep(1)
+                except asyncio.CancelledError:
                     break
             finally:
                 # empty queue and set exception – since we doesn't have a connection
@@ -302,16 +304,16 @@ class AgentController(_thread.Thread):
             try:
                 await self._connected_internal.wait()
 
-                self._stream_writer.write(_struct.pack('!i', -1))
+                self._stream_writer.write(struct.pack('!i', -1))
                 await self._stream_writer.drain()
 
-                await _as.sleep(1)
-            except _as.CancelledError:  # task cancelled
+                await asyncio.sleep(1)
+            except asyncio.CancelledError:  # task cancelled
                 break
             except OSError:  # connection lost
                 self._set_connected(False)
             except Exception as e:  # unexpected exception
-                print(e, file=_sys.stderr)
+                print(e, file=sys.stderr)
 
     async def _poll_answers(self):
 
@@ -328,11 +330,11 @@ class AgentController(_thread.Thread):
 
                 raw_id = await self._stream_reader.read(4)
                 if lost_connection(raw_id): continue
-                cmd_id = _struct.unpack('=l', raw_id)[0]
+                cmd_id = struct.unpack('=l', raw_id)[0]
 
                 raw_size = await self._stream_reader.read(4)
                 if lost_connection(raw_size): continue
-                size = _struct.unpack('=l', raw_size)[0]
+                size = struct.unpack('=l', raw_size)[0]
 
                 raw_data = await self._stream_reader.read(size)
                 if lost_connection(raw_data): continue
@@ -343,8 +345,8 @@ class AgentController(_thread.Thread):
                         cmd.id = _id
                         cmd.set_result(raw_data)
                 else:
-                    print('Unknown command id:', cmd_id, file=_sys.stderr)
-            except _as.CancelledError:  # task cancelled
+                    print('Unknown command id:', cmd_id, file=sys.stderr)
+            except asyncio.CancelledError:  # task cancelled
                 break
 
     async def _send_commands(self):
@@ -367,21 +369,21 @@ class AgentController(_thread.Thread):
                         # send command
                         self._stream_writer.write(cmd.serialize())
                         await self._stream_writer.drain()
-                    except _as.CancelledError:  # task cancelled
+                    except asyncio.CancelledError:  # task cancelled
                         cancel_cmd(cmd)
                         break
                     except OSError:  # connection lost
                         self._set_connected(False)
                         cancel_cmd(cmd)
                     except Exception as e:  # unexpected exception
-                        print(e, file=_sys.stderr)
+                        print(e, file=sys.stderr)
                         cancel_cmd(cmd, e)
                     finally:
                         self._cmd_q.task_done()  # mark as done
                 else:
                     self._cmd_q.task_done()  # mark as done
 
-            except _as.CancelledError:  # task cancelled
+            except asyncio.CancelledError:  # task cancelled
                 break
 
     def _store_cmd(self, cmd):
@@ -395,7 +397,7 @@ class AgentController(_thread.Thread):
         if self.is_connected():
             # command queue is not thread safe - make sure we're add it in the correct thread
             # this can 'causes a delay of ~0.5ms
-            self._loop.call_soon_threadsafe(_ft.partial(self._cmd_q.put_nowait, cmd))
+            self._loop.call_soon_threadsafe(functools.partial(self._cmd_q.put_nowait, cmd))
             return cmd
 
         raise Exception('Not connected to the agent!')
