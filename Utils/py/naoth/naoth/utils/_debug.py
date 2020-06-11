@@ -223,7 +223,6 @@ class DebugProxy:
             except:
                 pass
 
-
     async def _relay_commander(self, commander_reader, commander_writer):
         robot_writer = None
         while True:
@@ -307,7 +306,7 @@ class DebugCommand(concurrent.futures.Future):
         super().__init__()
         self._id = 0
         self._name = name
-        self._args = args
+        self._args = args if args else []
 
     @property
     def id(self):
@@ -326,11 +325,10 @@ class DebugCommand(concurrent.futures.Future):
         """Adds an argument to this command."""
         self._args.append(arg)
 
-    def serialize(self, cmd_id):
+    def serialize(self):
         """
         Serializes the command to a byte representation in order to send it to the agent.
 
-        :param cmd_id:  the id for identifying the command
         :return:        returns the bytes representation of this command
         """
         cmd_args = []
@@ -342,7 +340,20 @@ class DebugCommand(concurrent.futures.Future):
                     cmd_args.append(_pb.Messages_pb2.CMDArg(name=a[0], bytes=a[1].encode()))
 
         proto = _pb.Messages_pb2.CMD(name=self.name, args=cmd_args)
-        return _struct.pack("<I", cmd_id) + _struct.pack("<I", proto.ByteSize()) + proto.SerializeToString()
+        return _struct.pack("<I", self.id) + _struct.pack("<I", proto.ByteSize()) + proto.SerializeToString()
+
+    @staticmethod
+    def deserialize(data):
+        proto = _pb.Messages_pb2.CMD()
+        proto.ParseFromString(data)
+
+        return DebugCommand(proto.name, [(arg.name, arg.bytes.decode()) for arg in proto.args])
+
+    def __str__(self):
+
+        r = "\t".join(map(lambda a: a if isinstance(a, str) else '{}: {}'.format(*a),self._args))
+        #print(r)
+        return '{} [{}]: {}\n\t{}'.format(self.__class__.__name__, self._state, self.name, r)
 
 
 class AgentControllerAsync:
@@ -840,8 +851,9 @@ class AgentController(_thread.Thread):
                 if lost_connection(raw_data): continue
 
                 if cmd_id in self._cmd_m:
-                    cmd = self._cmd_m.pop(cmd_id)
+                    cmd, _id = self._cmd_m.pop(cmd_id)
                     if not cmd.cancelled():
+                        cmd.id = _id
                         cmd.set_result(raw_data)
                 else:
                     print('Unknown command id:', cmd_id, file=sys.stderr)
@@ -851,8 +863,9 @@ class AgentController(_thread.Thread):
     async def _send_commands(self):
         # helper function, if an exception occurred and the command couldn't be send
         def cancel_cmd(cmd, ex=None):
-            self._cmd_m.pop(cmd.id)
+            _, _id = self._cmd_m.pop(cmd.id)
             cmd.set_exception(ex if ex else Exception('Lost connection to the agent!'))
+            cmd.id = _id
 
         while True:
             try:
@@ -861,11 +874,10 @@ class AgentController(_thread.Thread):
                 cmd = await self._cmd_q.get()
                 # set command to running
                 if cmd.set_running_or_notify_cancel():
-                    # store command for later response
-                    self._cmd_m[cmd.id] = cmd
+                    self._store_cmd(cmd)
                     try:
                         # send command
-                        self._stream_writer.write(cmd.serialize(cmd.id))
+                        self._stream_writer.write(cmd.serialize())
                         await self._stream_writer.drain()
                     except _as.CancelledError:  # task cancelled
                         cancel_cmd(cmd)
@@ -884,12 +896,18 @@ class AgentController(_thread.Thread):
             except _as.CancelledError:  # task cancelled
                 break
 
+    def _store_cmd(self, cmd):
+        """Replaces the command id with an internal id and store command+id for later response."""
+        self._cmd_m[self._cmd_id] = (cmd, cmd.id)
+        cmd.id = self._cmd_id
+        self._cmd_id += 1
+
     def send_command(self, cmd: DebugCommand):
         """Schedules the given command in the command queue and returns the command."""
         if self.is_connected():
-            cmd.id = self._cmd_id
-
-            self._cmd_q.put_nowait(cmd)
+            cmd.id, time.monotonic_ns())
+            # command queue is not thread safe - make sure we're add it in the correct thread
+            self._loop.call_soon_threadsafe(functools.partial(self._cmd_q.put_nowait, cmd))
             self._cmd_id += 1
             return cmd
 
