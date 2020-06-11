@@ -124,7 +124,7 @@ private:
             processNoiseStdSingleDimension(0,1) = v;
         }
 
-        inline void enforceSymmetryOfM(double v){
+        inline void enforceSymmetryOfR(double v){
             measurementNoiseCovariances(0,1) = v;
         }
 
@@ -141,7 +141,7 @@ private:
 
             // experimental determined
             registerParameter("measurementNoiseR00", measurementNoiseCovariances(0,0)) =  0.00130217; //[rad^2]
-            registerParameter("measurementNoiseR10", measurementNoiseCovariances(1,0), &Parameters::enforceSymmetryOfM) = -0.00041764; //[rad^2]
+            registerParameter("measurementNoiseR10", measurementNoiseCovariances(1,0), &Parameters::enforceSymmetryOfR) = -0.00041764; //[rad^2]
             registerParameter("measurementNoiseR11", measurementNoiseCovariances(1,1)) =  0.00123935; //[rad^2]
 
             registerParameter("initialStateStdP00", initialStateStdSingleDimension(0,0)) = 250;
