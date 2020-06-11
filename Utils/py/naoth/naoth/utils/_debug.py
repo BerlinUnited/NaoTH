@@ -1,9 +1,6 @@
 import struct as _struct
 import asyncio as _as
 import threading as _thread
-import queue as _queue
-import socket
-import time
 import concurrent.futures
 import sys
 import functools
@@ -16,32 +13,7 @@ class DebugProxy(_thread.Thread):
     Debugging class, creating a connection between RobotControlGui and the Nao to inspect messages and the control flow.
     """
 
-    '''
-    @staticmethod
-    def run(src_host, src_port=5401, dest_port=7777):
-        """
-        Opens a relay between RobotControl and Nao
-        :param src_host     the ip/hostname of the naoth instance (eg. 'localhost', '10.0.4.91')
-        :param src_port     the debug port of the naoth instance; by default it is 5401
-        :param dest_port    the port, where the debug commands should be relayed to; defaults to: 7777
-        """
-
-        loop = _as.new_event_loop()
-        proxy = DebugProxy(src_host, src_port, dest_port, loop)
-
-        try:
-            loop.run_forever()
-        except KeyboardInterrupt:
-            print('Got interrupted!')
-            pass
-        finally:
-            proxy.running = False
-            loop.stop()
-
-        loop.close()
-    '''
-
-    def __init__(self, agent_host, agent_port=5401, dest_port=7777):
+    def __init__(self, agent_host, agent_port=5401, dest_port=7777, print_cmd=False):
         super().__init__()
 
         # the agent thread is only started, if there's at least one connected host
@@ -52,6 +24,7 @@ class DebugProxy(_thread.Thread):
         self.host_host = 'localhost'
         self.host_port = dest_port
 
+        self._print = print_cmd
         self._loop = _as.new_event_loop()
 
         self.hosts = []
@@ -125,7 +98,10 @@ class DebugProxy(_thread.Thread):
                     cmd.add_done_callback(functools.partial(self._response_handler, stream_writer))
 
                     self.robot.send_command(cmd)
-                    #print(cmd)
+
+                    if self._print:
+                        print(cmd)
+
             except _as.CancelledError:  # task cancelled
                 break
             except Exception as e:
@@ -143,9 +119,15 @@ class DebugProxy(_thread.Thread):
         self._loop.call_soon_threadsafe(lambda: self._response_writer(stream, cmd))
 
     def _response_writer(self, stream, cmd):
+        # TODO: what to todo, if the command got cancelled?!?
         if not cmd.cancelled():
             stream.write(_struct.pack("<I", cmd.id) + _struct.pack("<I", len(cmd.result())) + cmd.result())
-        # TODO: what to todo, if the command got cancelled?!?
+
+            if self._print:
+                try:
+                    print(cmd.result().decode('utf-8'))
+                except:
+                    pass
 
 
 class DebugCommand(concurrent.futures.Future):
