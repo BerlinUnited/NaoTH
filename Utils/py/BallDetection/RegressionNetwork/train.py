@@ -97,12 +97,13 @@ def main(raw_args=None, model=None):
     precision_class_09 = tf.keras.metrics.Precision(name="precision_classifcation_0.9", thresholds=0.9, class_id=3)
     recall_class_09 = tf.keras.metrics.Recall(name="recall_classifcation_0.9", thresholds=0.9, class_id=3)
 
+    # For using custom loss import your loss function and use the name of the function as loss argument.
     model.compile(loss='mean_squared_error',
                   optimizer='adam',
                   metrics=['accuracy', precision_class_05, recall_class_05,
                            precision_class_08, recall_class_08, precision_class_09, recall_class_09])
 
-    filepath = Path(args.output) / "saved-model-{epoch:03d}-{val_acc:.2f}.hdf5"
+    filepath = Path(args.output) / "saved-model-{epoch:03d}-{val_acc:.2f}.h5"
     save_callback = tf.keras.callbacks.ModelCheckpoint(filepath=str(filepath), monitor='loss', verbose=1,
                                                        save_best_only=True)
 
@@ -122,4 +123,7 @@ def main(raw_args=None, model=None):
 
 if __name__ == '__main__':
     test_model = model_zoo.fy_1500()
-    main(model=test_model)
+    train_history = main(model=test_model)
+
+    with open("history_" + test_model.name + ".pkl", "wb") as f:
+        pickle.dump(train_history.history, f)

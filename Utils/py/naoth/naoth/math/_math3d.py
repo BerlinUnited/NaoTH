@@ -1,5 +1,6 @@
 import math as _math
 
+
 class Vector3:
     def __init__(self, x=0, y=0, z=0):
         self.x = x
@@ -60,6 +61,7 @@ class Matrix3x3:
 
     @classmethod
     def eye(Matrix3x3):
+        # the vectors are columnwise
         return Matrix3x3(
           Vector3(1, 0, 0),
           Vector3(0, 1, 0),
@@ -81,6 +83,11 @@ class Pose3D:
     def __mul__(self, other):
         if isinstance(other, Vector3):
             return self.rotation * other + self.translation
+        elif isinstance(other, Pose3D):
+            p = Pose3D()
+            p.translation = self * other.translation
+            p.rotation = self.rotation * other.rotation
+            return p
         else:
             return NotImplemented
 
@@ -89,3 +96,6 @@ class Pose3D:
         p.rotation = self.rotation.transpose()
         p.translation = p.rotation * (Vector3() - self.translation)
         return p
+
+    def __str__(self):
+        return "(translation = {0}, rotation = {1})".format(self.translation, self.rotation)

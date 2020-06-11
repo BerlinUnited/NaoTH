@@ -147,11 +147,10 @@ class Camera:
         return point_in_image
 
     def __str__(self):
-        return f'CAMERA INFO\n' \
-               f'width={self.width}\n' \
-               f'height={self.height}\n' \
-               f'opening_angle_diagonal={self.opening_angle_diagonal}'
-
+        return 'CAMERA INFO\n' \
+               'width={}\n' \
+               'height={}\n' \
+               'opening_angle_diagonal={}'.format(self.width, self.height, self.opening_angle_diagonal)
 
 class LogCamera(Camera):
     """
@@ -172,9 +171,9 @@ class LogCamera(Camera):
         return getattr(self.data, attr)
 
     def __str__(self):
-        return f'CAMERA INFO\n' \
-               f'width={self.width}\n' \
-               f'height={self.height}\n' \
-               f'opening_angle_diagonal={self.opening_angle_diagonal}\n' \
-               f'pixelSize={self.pixelSize}\n' \
-               f'focus={self.focus}'
+        return 'CAMERA INFO\n' \
+               'width={}\n' \
+               'height={}\n' \
+               'opening_angle_diagonal={}\n' \
+               'pixelSize={}\n' \
+               'focus={}'.format(self.width, self.height, self.opening_angle_diagonal, self.pixelSize, self.focus)

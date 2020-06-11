@@ -161,8 +161,9 @@ void ScanGridProvider::execute(CameraInfo::CameraID id)
     return;
   }
 
+  // set all lines to the same lenghts
   if(parameters.uniform_vertical_lengths) {
-    line_start_increasing_length = {line_start_increasing_length.back()};
+    std::fill(line_start_increasing_length.begin(), line_start_increasing_length.end(), line_start_increasing_length.back());
   }
 
   // fill the image with vertical scanlines

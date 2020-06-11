@@ -1,6 +1,6 @@
 -- NaoTH controller for the logfile based "simulator"
 project "DummySimulator"
-  kind "StaticLib"
+  kind "ConsoleApp"
   language "C++"
   
   includedirs {
