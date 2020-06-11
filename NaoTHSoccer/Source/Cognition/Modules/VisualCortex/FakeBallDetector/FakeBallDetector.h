@@ -54,6 +54,10 @@ public:
         fakeBalls.push_back(fb);
     }
 
+    const std::vector<FakeBall>& getFakeBalls() {
+        return fakeBalls;
+    }
+
 private:
     FrameInfo lastFrame;
 
