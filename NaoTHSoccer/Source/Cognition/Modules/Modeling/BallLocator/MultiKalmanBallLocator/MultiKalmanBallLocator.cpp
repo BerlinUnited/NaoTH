@@ -30,9 +30,6 @@ MultiKalmanBallLocator::MultiKalmanBallLocator()
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:UpdateAssociationFunction:useMahalanobis",       "minimize Mahalanobis distance in measurement space (no common covarince matrix)", false);
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:UpdateAssociationFunction:useMaximumLikelihood", "maximize likelihood of measurement in measurement space ",                        true );
 
-    // Parameter Related Debug Requests
-    DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:reloadParameters",          "reloads the kalman filter parameters from the kfParameter object", false);
-
     DEBUG_REQUEST_REGISTER("MultiKalmanBallLocator:draw_trust_the_ball", "..", false);
 
     h.ballRadius = getFieldInfo().ballRadius;
@@ -53,6 +50,10 @@ MultiKalmanBallLocator::~MultiKalmanBallLocator()
 
 void MultiKalmanBallLocator::execute()
 {
+    if(params.check_changed()){
+        reloadParameters();
+    }
+
     // allways reset the model first
     getBallModel().reset();
 
@@ -674,10 +675,6 @@ void MultiKalmanBallLocator::doDebugRequest()
         FIELD_DRAWING_CONTEXT;
         PEN("EF871E", 10);
         CIRCLE(getBallModel().last_known_ball.x, getBallModel().last_known_ball.y, getFieldInfo().ballRadius-10);
-    );
-
-    DEBUG_REQUEST("MultiKalmanBallLocator:reloadParameters",
-        reloadParameters();
     );
 
     DEBUG_REQUEST("MultiKalmanBallLocator:draw_trust_the_ball",
