@@ -24,17 +24,6 @@ class DebugProxy:
         :param src_port     the debug port of the naoth instance; by default it is 5401
         :param dest_port    the port, where the debug commands should be relayed to; defaults to: 7777
         """
-        '''
-        q = _queue.Queue()
-        dest_thread = _thread.Thread(target=DebugProxy.destinationThread, args=('localhost', dest_port, q))
-        robot_thread = _thread.Thread(target=DebugProxy.robotThread, args=(src_host, src_port, q))
-
-        dest_thread.start()
-        robot_thread.start()
-
-        dest_thread.join()
-        robot_thread.join()
-        '''
 
         loop = _as.new_event_loop()
         proxy = DebugProxy(src_host, src_port, dest_port, loop)
@@ -50,66 +39,7 @@ class DebugProxy:
 
         loop.close()
 
-    @staticmethod
-    def destinationThread(host, port, q: _queue.Queue):
-        s = socket.create_connection((host, port))
-        while True:
-            raw_id = s.recv(4)
-            q.put(raw_id)
-
-            command_id = _struct.unpack('=l', raw_id)[0]
-            if command_id != -1:
-                raw_length = s.recv(4)
-                q.put(raw_length)
-
-                command_length = _struct.unpack('=l', raw_length)[0]
-
-                # relay and parse command
-                command_bytes = s.recv(command_length)
-                q.put(command_bytes)
-
-                # parse command bytes
-                command = _pb.Messages_pb2.CMD()
-                command.ParseFromString(command_bytes)
-                print(command)
-            pass
-
-    @staticmethod
-    def robotThread(host, port, q: _queue.Queue):
-        s = None
-        while True:
-            raw_data = q.get()
-
-            if s is None:
-                try:
-                    s = socket.create_connection((host, port), 1)
-                except:
-                    s = None
-
-            if s is not None:
-                s.sendall(raw_data)
-
-
-
-
-            pass
-
     def __init__(self, src_host, src_port, dest_port, loop):
-        self.robot_addr = (src_host, src_port)
-        self._robot_reader = None
-        self._robot_writer = None
-
-        self._host_reader = None
-        self._host_writer = None
-
-        self.cmd_id = 1
-        self.cmd_map = {}
-
-        self.connected = _as.Event(loop=loop)
-        #self.loop.create_task(self._host(), name='Host Task')
-        #self.loop.create_task(self._robot(), name='Robot Task')
-
-        # --------------------------------------------
 
         self.robot = None
         self.robot_host = src_host
@@ -125,7 +55,6 @@ class DebugProxy:
         self.host_connection_cnt = 0
 
     def _register_host(self):
-        self.connected.set()
         self.host_connection_cnt += 1
         _as.Task.current_task().set_name('Host-{}'.format(self.host_connection_cnt))
         self.hosts.append(_as.Task.current_task())
@@ -139,7 +68,6 @@ class DebugProxy:
     def _unregister_host(self):
         self.hosts.remove(_as.Task.current_task())
         if len(self.hosts) == 0:
-            self.connected.clear()
             if self.robot is not None:
                 self.robot.stop()
                 self.robot = None
@@ -169,13 +97,9 @@ class DebugProxy:
                     print('parsed', cmd_id, time.monotonic_ns())
 
                     cmd.add_done_callback(functools.partial(self._response_writer, stream_writer, cmd_id))  # lambda c: print('>>>', c)
-                    #print('>>>', cmd_id)
 
-                    # TODO: send command
-                    #await self.send_to_robot(cmd_id, raw_length + raw_data, stream_writer)
                     self.robot.send_command(cmd)
                     print('send', cmd_id, time.monotonic_ns())
-
                     #print(cmd)
 
             except Exception as e:
@@ -192,131 +116,6 @@ class DebugProxy:
             print('write', cmd_id, '~', cmd.id, time.monotonic_ns())
             stream.write(_struct.pack("<I", cmd_id) + _struct.pack("<I", len(cmd.result())) + cmd.result())
         # TODO: what to todo, if the command got cancelled?!?
-
-    async def _robot(self):
-        print('Started robot task ...')
-        while self.running:
-            if not self.connected.is_set():
-                # TODO: close connection before waiting
-                print('wait for connection ...')
-                await self.connected.wait()
-                print('continue robot task ...')
-
-            if self._robot_reader is None:
-                try:
-                    self._robot_reader, self._robot_writer = await _as.open_connection(host=self.robot_host, port=self.robot_port, loop=self.loop)
-                    print('Established connection to robot!')
-                except Exception as e:
-                    #print(_as.Task.current_task().get_name(), ':', e, type(e))
-                    await _as.sleep(1)
-                    # Skip the rest, since we doesn't have a valid connection to work with
-                    continue
-            # relay and parse command id
-            raw_id = await self._robot_reader.read(4)
-            cmd_id = _struct.unpack('=l', raw_id)[0]
-
-            # relay and parse response size
-            raw_size = await self._robot_reader.read(4)
-            size = _struct.unpack('=l', raw_size)[0]
-
-            # relay and parse response data
-            raw_data = await self._robot_reader.read(size)
-
-            await self.send_to_host(cmd_id, raw_size + raw_data)
-
-            try:
-                print('Size', size)
-                data = raw_data.decode('utf-8')
-                print(data)
-            except UnicodeDecodeError:
-                pass
-
-    async def send_to_robot(self, cmd_id, cmd_raw_data, return_stream):
-        print('Send to robot', cmd_id, self._robot_writer)
-        if self._robot_writer is not None:
-            self.cmd_map[self.cmd_id] = (cmd_id, return_stream)
-            self._robot_writer.write(_struct.pack("<I", self.cmd_id) + cmd_raw_data)
-            self.cmd_id += 1
-            await self._robot_writer.drain()
-
-    async def send_to_host(self, cmd_id, cmd_raw_data):
-        print('Send to host', cmd_id, len(self.cmd_map))
-        if cmd_id in self.cmd_map:
-            host_cmd_id, host_writer = self.cmd_map.pop(cmd_id)
-            try:
-                host_writer.write(_struct.pack("<I", host_cmd_id) + cmd_raw_data)
-                await host_writer.drain()
-            except:
-                pass
-
-    async def _relay_commander(self, commander_reader, commander_writer):
-        robot_writer = None
-        while True:
-            # awaiting command
-            raw_id = await commander_reader.read(4)
-
-            # create relaying connection
-            if robot_writer is None:
-                robot_reader, robot_writer = await _as.open_connection(host=self.robot_addr[0],
-                                                                       port=self.robot_addr[1],
-                                                                       loop=_as.get_event_loop())
-                _as.ensure_future(self._relay_robot(robot_reader, commander_writer))
-
-            # relay and parse command id
-            robot_writer.write(raw_id)
-            command_id = _struct.unpack('=l', raw_id)[0]
-
-            # check if command is not just a heart beat
-            if command_id != -1:
-                # relay and parse command length
-                raw_length = await commander_reader.read(4)
-                robot_writer.write(raw_length)
-
-                command_length = _struct.unpack('=l', raw_length)[0]
-
-                # relay and parse command
-                command_bytes = await commander_reader.read(command_length)
-                robot_writer.write(command_bytes)
-
-                # parse command bytes
-                command = _pb.Messages_pb2.CMD()
-                command.ParseFromString(command_bytes)
-                print(command)
-
-                # check if python implementation produces the same result
-                """
-                TODO: fix
-                native_command = Command(command.name)
-                for arg in command.args:
-                    if arg.bytes:
-                        native_command.add_arg(arg.name, arg.bytes)
-                    else:
-                        native_command.add_arg(arg.name)
-                assert command_bytes == bytes(native_command)
-                """
-
-    @staticmethod
-    async def _relay_robot(robot_reader, command_writer):
-        while True:
-            # relay and parse command id
-            raw_id = await robot_reader.read(4)
-            command_writer.write(raw_id)
-
-            # relay and parse response size
-            raw_size = await robot_reader.read(4)
-            command_writer.write(raw_size)
-
-            size = _struct.unpack('=l', raw_size)[0]
-            print('Size', size)
-
-            # relay and parse response data
-            raw_data = await robot_reader.read(size)
-            command_writer.write(raw_data)
-            try:
-                data = raw_data.decode('utf-8')
-                print(data)
-            except UnicodeDecodeError:
-                pass
 
 
 class DebugCommand(concurrent.futures.Future):
@@ -376,364 +175,12 @@ class DebugCommand(concurrent.futures.Future):
         return DebugCommand(proto.name, [(arg.name, arg.bytes.decode()) for arg in proto.args])
 
     def __str__(self):
-
+        # TODO: add the command id to output
+        # TODO: better display of command args
+        # TODO: if result is available, show result too
         r = "\t".join(map(lambda a: a if isinstance(a, str) else '{}: {}'.format(*a),self._args))
         #print(r)
         return '{} [{}]: {}\n\t{}'.format(self.__class__.__name__, self._state, self.name, r)
-
-
-class AgentControllerAsync:
-    def __init__(self, host, port, start=True, loop=None):
-        self._host = host
-        self._port = port
-        self._task = None
-        self._loop = loop if loop else _as.get_event_loop()
-        self._cmd_id = 1
-        self._cmd_q = _as.Queue()
-
-        if start: self._start()
-
-    def _start(self):
-        self._loop.create_task(self._run(), name=self.__class__.__name__)
-        print('Started', self.__class__.__name__)
-
-    def _stop(self):
-        pass
-
-    async def _run(self):
-        print('Running', self.__class__.__name__)
-        while True:
-            if self._stream_reader is None:
-                try:
-                    self._stream_reader, self._stream_writer = await _as.open_connection(host=self._host, port=self._port, loop=self._loop)
-                    #print('Established connection to robot!')
-                except Exception as e:
-                    #print(_as.Task.current_task().get_name(), ':', e, type(e))
-                    await _as.sleep(1)
-                    # Skip the rest, since we doesn't have a valid connection to work with
-                    continue
-
-            await self._send_heart_beat()
-            await self._poll_answers()
-            await self._send_commands()
-
-    async def _send_heart_beat(self):
-        """Send a heart beat to the agent."""
-        if self._stream_writer:
-            self._stream_writer.write(_struct.pack('!i', -1))
-            await self._stream_writer.drain()
-
-    async def _poll_answers(self):
-        if self._stream_reader:
-            raw_id = await self._stream_reader.read(4)
-            cmd_id = _struct.unpack('=l', raw_id)[0]
-
-            raw_size = await self._stream_reader.read(4)
-            size = _struct.unpack('=l', raw_size)[0]
-
-            raw_data = await self._stream_reader.read(size)
-
-            # TODO: what to do with the response?!
-            try:
-                print('Size', size)
-                data = raw_data.decode('utf-8')
-                print(data)
-            except UnicodeDecodeError:
-                pass
-
-    async def _send_commands(self):
-        if self._stream_writer:
-            self._stream_writer.write(_struct.pack('!i', -1))
-            await self._stream_writer.drain()
-
-    def send_command(self, cmd:DebugCommand):
-        if self._task:
-            cmd.id = self._cmd_id
-            self._cmd_q.put_nowait(cmd)
-            self._cmd_id += 1
-            return cmd.id
-
-        return 0
-
-    def debugrequest(self, request:str, enable:bool, type:str='cognition'):
-        """
-        Enables/Disables a debug request of the agent.
-
-        :param request: the debug request which should be en-/disabled
-        :param enable:  True, if debug request should be enabled, False if it should be disabled
-        :param type:    the type of the debug request ('cognition' or 'motion')
-        :return:        Returns the id of the scheduled command
-        """
-        if type == 'cognition':
-            return self.send_command(DebugCommand('Cognition:debugrequest:set', [(request, ('on' if enable else 'off'))]))
-        elif type == 'motion':
-            return self.send_command(DebugCommand('Motion:debugrequest:set', [(request, ('on' if enable else 'off'))]))
-        else:
-            #logging.warning('Unknown debug request type! Allowed: "cognition", "motion"')
-            pass
-        return 0
-
-    def module(self, name:str, enable:bool, type:str='cognition'):
-        """
-        Enables/Disables a module of the agent instance.
-
-        :param name:    the module which should be en-/disabled
-        :param enable:  True, if module should be enabled, False if it should be disabled
-        :param type:    the type of the module ('cognition' or 'motion')
-        :return:        Returns the id of the scheduled command
-        """
-        if type == 'cognition':
-            return self.send_command(DebugCommand('Cognition:modules:set', [(name, ('on' if enable else 'off'))]))
-        elif type == 'motion':
-            return self.send_command(DebugCommand('Motion:modules:set', [(name, ('on' if enable else 'off'))]))
-        else:
-            #logging.warning('Unknown module type! Allowed: "cognition", "motion"')
-            pass
-        return 0
-
-    def representation(self, name:str, type:str='cognition', binary:bool=False):
-        """
-        Schedules a command for retrieving a representation.
-
-        :param name:    the name of the representation which should be retrieved.
-        :param type:    the type of the representation ('cognition' or 'motion')
-        :param binary:  whether the result should be binary (protobuf) or as string
-        :return:        Returns the id of the scheduled command
-        """
-        if type == 'cognition':
-            if binary:
-                return self.send_command(DebugCommand('Cognition:representation:get', [name]))
-            else:
-                return self.send_command(DebugCommand('Cognition:representation:print', [name]))
-        elif type == 'motion':
-            if binary:
-                return self.send_command(DebugCommand('Motion:representation:get', [name]))
-            else:
-                return self.send_command(DebugCommand('Motion:representation:print', [name]))
-        else:
-            #logging.warning('Unknown representation type! Allowed: "cognition", "motion"')
-            pass
-        return 0
-
-    def agent(self, name:str):
-        """
-        Selects an named agent for execution.
-
-        :param name: the name of the agent (behavior), which should be executed
-        :return:    Returns the id of the scheduled command
-        """
-        return self.send_command(DebugCommand('Cognition:behavior:set_agent', [('agent', name)]))
-
-    def behavior(self, complete=False):
-        """
-        Schedules a command for retrieving the current behavior of the agent.
-
-        :param complete: True, if the complete behavior tree should be retrieved, False otherwise (sparse)
-        :return:    Returns the id of the scheduled command
-        """
-        if complete:
-            return self.representation('BehaviorStateComplete', binary=True)
-        else:
-            return self.representation('BehaviorStateSparse', binary=True)
-
-
-class AgentControllerThread(_thread.Thread):
-    def __init__(self, host, port, start=True):
-        super().__init__()
-        self._host = host
-        self._port = port
-
-        self._socket = None
-        self._thread = None
-        self._running = _thread.Event()
-        self._connected = _thread.Event()
-
-        self._cmd_id = 1
-        self._cmd_q = _queue.Queue()
-
-        self._last_heart_beat = time.monotonic()
-
-        if start: self.start()
-
-    def stop(self):
-        print('Stopping ...')
-        self._running.clear()
-
-    def run(self):
-        self._running.set()
-        print('Running', self.__class__.__name__)
-        while self._running.is_set():
-            if not self._socket:
-                try:
-                    self._socket = socket.create_connection((self._host, self._port))
-                    #self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-                    self._connected.set()
-                    print('Connected')
-                    #print('Established connection to robot!')
-                except Exception as e:
-                    self._connected.clear()
-                    time.sleep(1)
-                    # Skip the rest, since we doesn't have a valid connection to work with
-                    continue
-
-            self._send_heart_beat()
-            #self._poll_answers()
-            #self._send_commands()
-            #time.sleep(0.1)
-
-        print('Closing socket ...')
-        if self._socket:
-            self._socket.setblocking(False)
-            self._socket.settimeout(0.2)
-            self._socket.recv(0)
-            #self._socket.shutdown(socket.SHUT_RDWR)
-            self._socket.close()
-            #print(self._socket)
-            self._socket = None
-        self._connected.clear()
-
-        print('Done.')
-
-    def _send_heart_beat(self):
-        """Send heart beat to agent."""
-        if self._socket and self._last_heart_beat + 1 < time.monotonic():
-            self._last_heart_beat = time.monotonic()
-            self._socket.setblocking(True)
-            self._socket.sendall(_struct.pack('!i', -1))
-            print('.', end='')
-
-    def _poll_answers(self):
-        """Retrieves the answers of commands send to the agent."""
-        if self._socket:
-            try:
-                self._socket.setblocking(False)
-                id = _struct.unpack("<I", self._socket.recv(4))[0]
-                if id > 0:
-                    self._socket.setblocking(True)
-                    length = _struct.unpack("<I", self._socket.recv(4))[0]
-                    if length > 0:
-                        # The command caller is responsible for retrieving the command result
-                        # TODO: what happens/todo, if the result is never retrieved?!
-                        data = self._socket.recv(length)
-
-                        try:
-                            print('Size', length)
-                            print(data.decode('utf-8'))
-                        except UnicodeDecodeError:
-                            pass
-                    else:
-                        #logging.warning('Got invalid command data length! (%d)', id)
-                        pass
-                else:
-                    #logging.warning('Got invalid command id!')
-                    pass
-
-            except BlockingIOError:
-                # no data available - ignore
-                pass
-
-    def _send_commands(self):
-        """Sends a command to the agent. The command is retrieved of the command queue."""
-        self._socket.setblocking(True)
-        while not self._cmd_q.empty():
-            cmd = self._cmd_q.get()
-            #logging.info('Send command %d: "%s"', cmd.id, cmd.get_name())
-            self._socket.sendall(cmd.serialize(cmd.id))
-            self._cmd_q.task_done()
-
-    def is_connected(self):
-        return self._connected.is_set()
-
-    def send_command(self, cmd:DebugCommand):
-        if self._connected.is_set():
-            cmd.id = self._cmd_id
-            self._cmd_q.put_nowait(cmd)
-            self._cmd_id += 1
-            return cmd.id
-
-        raise Exception('Not connected to the agent!')
-
-    def debugrequest(self, request:str, enable:bool, type:str='cognition'):
-        """
-        Enables/Disables a debug request of the agent.
-
-        :param request: the debug request which should be en-/disabled
-        :param enable:  True, if debug request should be enabled, False if it should be disabled
-        :param type:    the type of the debug request ('cognition' or 'motion')
-        :return:        Returns the id of the scheduled command
-        """
-        if type == 'cognition':
-            return self.send_command(DebugCommand('Cognition:debugrequest:set', [(request, ('on' if enable else 'off'))]))
-        elif type == 'motion':
-            return self.send_command(DebugCommand('Motion:debugrequest:set', [(request, ('on' if enable else 'off'))]))
-        else:
-            #logging.warning('Unknown debug request type! Allowed: "cognition", "motion"')
-            pass
-        return 0
-
-    def module(self, name:str, enable:bool, type:str='cognition'):
-        """
-        Enables/Disables a module of the agent instance.
-
-        :param name:    the module which should be en-/disabled
-        :param enable:  True, if module should be enabled, False if it should be disabled
-        :param type:    the type of the module ('cognition' or 'motion')
-        :return:        Returns the id of the scheduled command
-        """
-        if type == 'cognition':
-            return self.send_command(DebugCommand('Cognition:modules:set', [(name, ('on' if enable else 'off'))]))
-        elif type == 'motion':
-            return self.send_command(DebugCommand('Motion:modules:set', [(name, ('on' if enable else 'off'))]))
-        else:
-            #logging.warning('Unknown module type! Allowed: "cognition", "motion"')
-            pass
-        return 0
-
-    def representation(self, name:str, type:str='cognition', binary:bool=False):
-        """
-        Schedules a command for retrieving a representation.
-
-        :param name:    the name of the representation which should be retrieved.
-        :param type:    the type of the representation ('cognition' or 'motion')
-        :param binary:  whether the result should be binary (protobuf) or as string
-        :return:        Returns the id of the scheduled command
-        """
-        if type == 'cognition':
-            if binary:
-                return self.send_command(DebugCommand('Cognition:representation:get', [name]))
-            else:
-                return self.send_command(DebugCommand('Cognition:representation:print', [name]))
-        elif type == 'motion':
-            if binary:
-                return self.send_command(DebugCommand('Motion:representation:get', [name]))
-            else:
-                return self.send_command(DebugCommand('Motion:representation:print', [name]))
-        else:
-            #logging.warning('Unknown representation type! Allowed: "cognition", "motion"')
-            pass
-        return 0
-
-    def agent(self, name:str):
-        """
-        Selects an named agent for execution.
-
-        :param name: the name of the agent (behavior), which should be executed
-        :return:    Returns the id of the scheduled command
-        """
-        return self.send_command(DebugCommand('Cognition:behavior:set_agent', [('agent', name)]))
-
-    def behavior(self, complete=False):
-        """
-        Schedules a command for retrieving the current behavior of the agent.
-
-        :param complete: True, if the complete behavior tree should be retrieved, False otherwise (sparse)
-        :return:    Returns the id of the scheduled command
-        """
-        if complete:
-            return self.representation('BehaviorStateComplete', binary=True)
-        else:
-            return self.representation('BehaviorStateSparse', binary=True)
 
 
 class AgentController(_thread.Thread):
@@ -1020,5 +467,3 @@ class AgentController(_thread.Thread):
             return self.representation('BehaviorStateComplete', binary=True)
         else:
             return self.representation('BehaviorStateSparse', binary=True)
-
-
