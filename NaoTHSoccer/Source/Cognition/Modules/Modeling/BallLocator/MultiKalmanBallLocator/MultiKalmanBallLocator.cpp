@@ -191,7 +191,7 @@ void MultiKalmanBallLocator::updateByPerceptsNormal()
         {
             Eigen::Vector4d newState;
             newState << p.x, 0, p.y, 0;
-            filter.push_back(BallHypothesis(getFrameInfo(), newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension));
+            filter.push_back(BallHypothesis(getFrameInfo(), newState, params.processNoiseStdSingleDimension, params.measurementNoiseCovariances, params.initialStateStdSingleDimension));
         }
         else
         {
@@ -362,7 +362,7 @@ void MultiKalmanBallLocator::updateByPerceptsGreedy(CameraInfo::CameraID camera)
         Eigen::Vector4d newState;
         newState << p.x, 0, p.y, 0;
         // add BallHypothesis to filter vector
-        filter.emplace_back(getFrameInfo(), newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension);
+        filter.emplace_back(getFrameInfo(), newState, params.processNoiseStdSingleDimension, params.measurementNoiseCovariances, params.initialStateStdSingleDimension);
     }
 
     // TODO maybe add possibility to merge filters
@@ -437,7 +437,7 @@ void MultiKalmanBallLocator::updateByPerceptsCool()
       Vector2d p = (*iter).positionOnField;
       Eigen::Vector4d newState;
       newState << p.x, 0, p.y, 0;
-      filter.push_back(BallHypothesis(getFrameInfo(), newState, processNoiseStdSingleDimension, measurementNoiseCovariances, initialStateStdSingleDimension));
+      filter.push_back(BallHypothesis(getFrameInfo(), newState, params.processNoiseStdSingleDimension, params.measurementNoiseCovariances, params.initialStateStdSingleDimension));
     }
     i++;
   }
@@ -764,16 +764,6 @@ void MultiKalmanBallLocator::drawFiltersOnField() const
 
 void MultiKalmanBallLocator::reloadParameters()
 {
-    // parameters for initializing new filters
-    processNoiseStdSingleDimension << params.processNoiseStdQ00, params.processNoiseStdQ01,
-                                      params.processNoiseStdQ10, params.processNoiseStdQ11;
-
-    measurementNoiseCovariances << params.measurementNoiseR00, params.measurementNoiseR10,
-                                   params.measurementNoiseR10, params.measurementNoiseR11;
-
-    initialStateStdSingleDimension << params.initialStateStdP00, params.initialStateStdP01,
-                                      params.initialStateStdP10, params.initialStateStdP11;
-
     // UAF thresholds
     euclid.setThreshold(params.euclidThreshold);
     mahalanobis.setThreshold(params.mahalanobisThreshold);
@@ -781,10 +771,10 @@ void MultiKalmanBallLocator::reloadParameters()
 
     // update existing filters with new process and measurement noise
     Eigen::Matrix2d processNoiseCovariancesSingleDimension;
-    processNoiseCovariancesSingleDimension = processNoiseStdSingleDimension.cwiseProduct(processNoiseStdSingleDimension);
+    processNoiseCovariancesSingleDimension = params.processNoiseStdSingleDimension.cwiseProduct(params.processNoiseStdSingleDimension);
 
     for(Filters::iterator iter = filter.begin(); iter != filter.end(); iter++){
         (*iter).setCovarianceOfProcessNoise(processNoiseCovariancesSingleDimension);
-        (*iter).setCovarianceOfMeasurementNoise(measurementNoiseCovariances);
+        (*iter).setCovarianceOfMeasurementNoise(params.measurementNoiseCovariances);
     }
 }

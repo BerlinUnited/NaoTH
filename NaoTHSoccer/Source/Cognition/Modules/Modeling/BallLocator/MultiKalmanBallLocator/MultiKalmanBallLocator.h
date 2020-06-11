@@ -120,23 +120,33 @@ private:
 
     class Parameters:  public ParameterList
     {
+        inline void enforceSymmetryOfQ(double v){
+            processNoiseStdSingleDimension(0,1) = v;
+        }
+
+        inline void enforceSymmetryOfM(double v){
+            measurementNoiseCovariances(0,1) = v;
+        }
+
+        inline void enforceSymmetryOfInitialP(double v){
+            initialStateStdSingleDimension(0,1) = v;
+        }
+
      public:
         Parameters() : ParameterList("MultiKalmanBallLocator")
         {
-            PARAMETER_REGISTER(processNoiseStdQ00) = 15;
-            PARAMETER_REGISTER(processNoiseStdQ01) = 0;
-            PARAMETER_REGISTER(processNoiseStdQ10) = 0;
-            PARAMETER_REGISTER(processNoiseStdQ11) = 20;
+            registerParameter("processNoiseStdQ00", processNoiseStdSingleDimension(0,0)) = 15;
+            registerParameter("processNoiseStdQ10", processNoiseStdSingleDimension(1,0), &Parameters::enforceSymmetryOfQ) = 0;
+            registerParameter("processNoiseStdQ11", processNoiseStdSingleDimension(1,1)) = 20;
 
             // experimental determined
-            PARAMETER_REGISTER(measurementNoiseR00) =  0.00130217; //[rad^2]
-            PARAMETER_REGISTER(measurementNoiseR10) = -0.00041764; //[rad^2]
-            PARAMETER_REGISTER(measurementNoiseR11) =  0.00123935; //[rad^2]
+            registerParameter("measurementNoiseR00", measurementNoiseCovariances(0,0)) =  0.00130217; //[rad^2]
+            registerParameter("measurementNoiseR10", measurementNoiseCovariances(1,0), &Parameters::enforceSymmetryOfM) = -0.00041764; //[rad^2]
+            registerParameter("measurementNoiseR11", measurementNoiseCovariances(1,1)) =  0.00123935; //[rad^2]
 
-            PARAMETER_REGISTER(initialStateStdP00) = 250;
-            PARAMETER_REGISTER(initialStateStdP01) = 0;
-            PARAMETER_REGISTER(initialStateStdP10) = 0;
-            PARAMETER_REGISTER(initialStateStdP11) = 250;
+            registerParameter("initialStateStdP00", initialStateStdSingleDimension(0,0)) = 250;
+            registerParameter("initialStateStdP10", initialStateStdSingleDimension(1,0), &Parameters::enforceSymmetryOfInitialP) = 0;
+            registerParameter("initialStateStdP11", initialStateStdSingleDimension(1,1)) = 250;
 
             //thresholds for association functions
             PARAMETER_REGISTER(euclidThreshold) = Math::fromDegrees(10);
@@ -161,20 +171,9 @@ private:
 
         double g0;
         double g1;
-
-        double processNoiseStdQ00;
-        double processNoiseStdQ01;
-        double processNoiseStdQ10;
-        double processNoiseStdQ11;
-
-        double measurementNoiseR00;
-        double measurementNoiseR10;
-        double measurementNoiseR11;
-
-        double initialStateStdP00;
-        double initialStateStdP01;
-        double initialStateStdP10;
-        double initialStateStdP11;
+        Eigen::Matrix2d processNoiseStdSingleDimension;
+        Eigen::Matrix2d measurementNoiseCovariances;
+        Eigen::Matrix2d initialStateStdSingleDimension;
 
         double area95Threshold;
 
@@ -203,10 +202,6 @@ private:
     EuclideanUAF   euclid;
     MahalanobisUAF mahalanobis;
     LikelihoodUAF  likelihood;
-
-    Eigen::Matrix2d processNoiseStdSingleDimension;
-    Eigen::Matrix2d measurementNoiseCovariances;
-    Eigen::Matrix2d initialStateStdSingleDimension;
 };
 
 #endif // MULTIKALMANBALLLOCATOR_H
