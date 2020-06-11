@@ -19,19 +19,19 @@ class DebugProxy(threading.Thread):
         super().__init__()
 
         # the agent thread is only started, if there's at least one connected host
-        self.robot = None
-        self.robot_host = agent_host
-        self.robot_port = agent_port
+        self._robot = None
+        self._robot_host = agent_host
+        self._robot_port = agent_port
 
-        self.host_host = 'localhost'
-        self.host_port = dest_port
+        self._host_host = 'localhost'
+        self._host_port = dest_port
 
         self._print = print_cmd
         self._loop = asyncio.new_event_loop()
 
-        self.hosts = []
-        self.host_listener = None
-        self.host_connection_cnt = 0
+        self._hosts = []
+        self._host_listener = None
+        self._host_connection_cnt = 0
 
         # start thread immediately
         if start: self.start()
@@ -40,7 +40,7 @@ class DebugProxy(threading.Thread):
         # set the event loop to this thread
         asyncio.set_event_loop(self._loop)
         # start host listener server and 'wait' until the server ist started
-        self.host_listener = self._loop.run_until_complete(asyncio.start_server(self._host, self.host_host, self.host_port))
+        self._host_listener = self._loop.run_until_complete(asyncio.start_server(self._host, self._host_host, self._host_port))
         # run until cancelled
         self._loop.run_forever()
 
@@ -51,33 +51,33 @@ class DebugProxy(threading.Thread):
 
     async def _stop_internal(self):
         # shutdown host listener server to prevent new connections
-        if self.host_listener:
-            self.host_listener.close()
-            await self.host_listener.wait_closed()
+        if self._host_listener:
+            self._host_listener.close()
+            await self._host_listener.wait_closed()
 
         # cancel all established connections
         # NOTE: the connection to the agent is stopped with the last host connection
-        for task in self.hosts:
+        for task in self._hosts:
             task.cancel()
             await task
 
         self._loop.stop()
 
     def _register_host(self):
-        self.host_connection_cnt += 1
-        asyncio.Task.current_task().set_name('Host-{}'.format(self.host_connection_cnt))
-        self.hosts.append(asyncio.Task.current_task())
+        self._host_connection_cnt += 1
+        asyncio.Task.current_task().set_name('Host-{}'.format(self._host_connection_cnt))
+        self._hosts.append(asyncio.Task.current_task())
 
-        if self.robot is None:
-            self.robot = AgentController(self.robot_host, self.robot_port)
-            self.robot.wait_connected()  # TODO: is this reasonable???
+        if self._robot is None:
+            self._robot = AgentController(self._robot_host, self._robot_port)
+            self._robot.wait_connected()  # TODO: is this reasonable???
 
     def _unregister_host(self):
-        self.hosts.remove(asyncio.Task.current_task())
-        if len(self.hosts) == 0:
-            if self.robot is not None:
-                self.robot.stop()
-                self.robot = None
+        self._hosts.remove(asyncio.Task.current_task())
+        if len(self._hosts) == 0:
+            if self._robot is not None:
+                self._robot.stop()
+                self._robot = None
 
     async def _host(self, stream_reader, stream_writer):
         self._register_host()
@@ -102,7 +102,7 @@ class DebugProxy(threading.Thread):
                     # NOTE: the callback is executed in the agent thread!
                     cmd.add_done_callback(functools.partial(self._response_handler, stream_writer))
 
-                    self.robot.send_command(cmd)
+                    self._robot.send_command(cmd)
 
                     if self._print:
                         print(cmd)
