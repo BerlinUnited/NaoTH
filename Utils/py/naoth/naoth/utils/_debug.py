@@ -80,10 +80,8 @@ class DebugProxy(_thread.Thread):
         # cancel all established connections
         # NOTE: the connection to the agent is stopped with the last host connection
         for task in self.hosts:
-            print(task)
             task.cancel()
             await task
-            print(task)
 
         self._loop.stop()
 
@@ -120,16 +118,13 @@ class DebugProxy(_thread.Thread):
                     cmd_length = _struct.unpack('=l', raw_length)[0]
 
                     raw_data = await stream_reader.read(cmd_length)
-                    print('read', cmd_id, time.monotonic_ns())
                     cmd = DebugCommand.deserialize(raw_data)
                     cmd.id = cmd_id
-                    print('parsed', cmd_id, time.monotonic_ns())
 
                     # NOTE: the callback is executed in the agent thread!
                     cmd.add_done_callback(functools.partial(self._response_handler, stream_writer))
 
                     self.robot.send_command(cmd)
-                    print('send', cmd_id, time.monotonic_ns())
                     #print(cmd)
             except _as.CancelledError:  # task cancelled
                 break
@@ -149,7 +144,6 @@ class DebugProxy(_thread.Thread):
 
     def _response_writer(self, stream, cmd):
         if not cmd.cancelled():
-            print('write', cmd.id, time.monotonic_ns())
             stream.write(_struct.pack("<I", cmd.id) + _struct.pack("<I", len(cmd.result())) + cmd.result())
         # TODO: what to todo, if the command got cancelled?!?
 
@@ -353,7 +347,6 @@ class AgentController(_thread.Thread):
                 raw_id = await self._stream_reader.read(4)
                 if lost_connection(raw_id): continue
                 cmd_id = _struct.unpack('=l', raw_id)[0]
-                print('response', cmd_id, time.monotonic_ns())
 
                 raw_size = await self._stream_reader.read(4)
                 if lost_connection(raw_size): continue
@@ -365,7 +358,6 @@ class AgentController(_thread.Thread):
                 if cmd_id in self._cmd_m:
                     cmd, _id = self._cmd_m.pop(cmd_id)
                     if not cmd.cancelled():
-                        print('response_set', cmd_id, time.monotonic_ns())
                         cmd.id = _id
                         cmd.set_result(raw_data)
                 else:
@@ -386,7 +378,6 @@ class AgentController(_thread.Thread):
                 await self._connected_internal.wait()
                 # get next command
                 cmd = await self._cmd_q.get()
-                print('queue_get', cmd.id, time.monotonic_ns())
                 # set command to running
                 if cmd.set_running_or_notify_cancel():
                     self._store_cmd(cmd)
@@ -394,7 +385,6 @@ class AgentController(_thread.Thread):
                         # send command
                         self._stream_writer.write(cmd.serialize())
                         await self._stream_writer.drain()
-                        print('send_done', cmd.id, time.monotonic_ns())
                     except _as.CancelledError:  # task cancelled
                         cancel_cmd(cmd)
                         break
@@ -421,11 +411,9 @@ class AgentController(_thread.Thread):
     def send_command(self, cmd: DebugCommand):
         """Schedules the given command in the command queue and returns the command."""
         if self.is_connected():
-            print('queue_before', cmd.id, time.monotonic_ns())
             # command queue is not thread safe - make sure we're add it in the correct thread
             # this can 'causes a delay of ~0.5ms
             self._loop.call_soon_threadsafe(functools.partial(self._cmd_q.put_nowait, cmd))
-            print('queue_after', cmd.id, time.monotonic_ns())
             return cmd
 
         raise Exception('Not connected to the agent!')
