@@ -61,9 +61,7 @@ class DebugProxy:
 
         if self.robot is None:
             self.robot = AgentController(self.robot_host, self.robot_port)
-            self.robot.wait_connected()
-
-        print('Got connection for', _as.Task.current_task().get_name())
+            self.robot.wait_connected()  # TODO: is this reasonable???
 
     def _unregister_host(self):
         self.hosts.remove(_as.Task.current_task())
@@ -96,7 +94,8 @@ class DebugProxy:
                     cmd.id = cmd_id
                     print('parsed', cmd_id, time.monotonic_ns())
 
-                    cmd.add_done_callback(functools.partial(self._response_writer, stream_writer, cmd_id))  # lambda c: print('>>>', c)
+                    # NOTE: the callback is executed in the agent thread!
+                    cmd.add_done_callback(functools.partial(self._response_handler, stream_writer))
 
                     self.robot.send_command(cmd)
                     print('send', cmd_id, time.monotonic_ns())
@@ -107,14 +106,15 @@ class DebugProxy:
 
         self._unregister_host()
 
-    def _response_handler(self, stream, cmd_id, cmd):
+    def _response_handler(self, stream, cmd):
         # transfer command from agent thread back to 'this' thread
-        self.loop.call_soon_threadsafe(lambda: self._response_writer(stream, cmd_id, cmd))
+        # this can 'causes a delay of ~0.5ms
+        self.loop.call_soon_threadsafe(lambda: self._response_writer(stream, cmd))
 
-    def _response_writer(self, stream, cmd_id, cmd):
+    def _response_writer(self, stream, cmd):
         if not cmd.cancelled():
-            print('write', cmd_id, '~', cmd.id, time.monotonic_ns())
-            stream.write(_struct.pack("<I", cmd_id) + _struct.pack("<I", len(cmd.result())) + cmd.result())
+            print('write', cmd.id, time.monotonic_ns())
+            stream.write(_struct.pack("<I", cmd.id) + _struct.pack("<I", len(cmd.result())) + cmd.result())
         # TODO: what to todo, if the command got cancelled?!?
 
 
@@ -387,6 +387,7 @@ class AgentController(_thread.Thread):
         if self.is_connected():
             print('queue_before', cmd.id, time.monotonic_ns())
             # command queue is not thread safe - make sure we're add it in the correct thread
+            # this can 'causes a delay of ~0.5ms
             self._loop.call_soon_threadsafe(functools.partial(self._cmd_q.put_nowait, cmd))
             print('queue_after', cmd.id, time.monotonic_ns())
             return cmd
