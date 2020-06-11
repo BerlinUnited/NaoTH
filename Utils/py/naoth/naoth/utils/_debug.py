@@ -15,7 +15,7 @@ class DebugProxy(threading.Thread):
     Debugging class, creating a connection between RobotControlGui and the Nao to inspect messages and the control flow.
     """
 
-    def __init__(self, agent_host, agent_port=5401, dest_port=7777, print_cmd=False):
+    def __init__(self, agent_host, agent_port=5401, dest_port=7777, print_cmd=False, start=True):
         super().__init__()
 
         # the agent thread is only started, if there's at least one connected host
@@ -32,6 +32,9 @@ class DebugProxy(threading.Thread):
         self.hosts = []
         self.host_listener = None
         self.host_connection_cnt = 0
+
+        # start thread immediately
+        if start: self.start()
 
     def run(self):
         # set the event loop to this thread
