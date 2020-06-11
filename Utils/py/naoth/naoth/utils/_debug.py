@@ -195,7 +195,7 @@ class DebugCommand(Future):
             str_builder.append(' ( ')
             str_builder.append(str_args)
             str_builder.append(' )')
-        if self.done():
+        if self.done() and len(self.result()) > 0:
             str_builder.append(' {\n')
             try:
                 str_builder.append(self.result().decode('utf-8').strip())
@@ -297,13 +297,17 @@ class AgentController(threading.Thread):
                 self._stream_writer = None
             except asyncio.CancelledError:
                 break
-            except Exception:
+            except OSError:
                 # task can be cancelled while sleeping ...
                 try:
                     # connection failed, wait before next connection attempt
                     await asyncio.sleep(1)
                 except asyncio.CancelledError:
                     break
+                except Exception as e:  # unexpected exception
+                    print(asyncio.Task.current_task().get_name(), ':', e, file=sys.stderr)
+            except Exception as e:  # unexpected exception
+                print(asyncio.Task.current_task().get_name(), ':', e, file=sys.stderr)
             finally:
                 # empty queue and set exception – since we doesn't have a connection
                 while not self._cmd_q.empty():
@@ -328,7 +332,7 @@ class AgentController(threading.Thread):
             except OSError:  # connection lost
                 self._set_connected(False)
             except Exception as e:  # unexpected exception
-                print(e, file=sys.stderr)
+                print(asyncio.Task.current_task().get_name(), ':', e, file=sys.stderr)
 
     async def _poll_answers(self):
 
@@ -352,7 +356,7 @@ class AgentController(threading.Thread):
                 size = struct.unpack('=l', raw_size)[0]
 
                 raw_data = await self._stream_reader.read(size)
-                if lost_connection(raw_data): continue
+                if size > 0 and lost_connection(raw_data): continue
 
                 if cmd_id in self._cmd_m:
                     cmd, _id = self._cmd_m.pop(cmd_id)
@@ -363,6 +367,8 @@ class AgentController(threading.Thread):
                     print('Unknown command id:', cmd_id, file=sys.stderr)
             except asyncio.CancelledError:  # task cancelled
                 break
+            except Exception as e:
+                print(asyncio.Task.current_task().get_name(), ':', e, file=sys.stderr)
 
     async def _send_commands(self):
 
@@ -391,7 +397,7 @@ class AgentController(threading.Thread):
                         self._set_connected(False)
                         cancel_cmd(cmd)
                     except Exception as e:  # unexpected exception
-                        print(e, file=sys.stderr)
+                        print(asyncio.Task.current_task().get_name(), ':', e, file=sys.stderr)
                         cancel_cmd(cmd, e)
                     finally:
                         self._cmd_q.task_done()  # mark as done
@@ -400,6 +406,8 @@ class AgentController(threading.Thread):
 
             except asyncio.CancelledError:  # task cancelled
                 break
+            except Exception as e:  # unexpected exception
+                print(asyncio.Task.current_task().get_name(), ':', e, file=sys.stderr)
 
     def _store_cmd(self, cmd):
         """Replaces the command id with an internal id and store command+id for later response."""
@@ -427,9 +435,9 @@ class AgentController(threading.Thread):
         :return:        Returns the the scheduled command (future)
         """
         if type == 'cognition':
-            return self.send_command(DebugCommand('Cognition:debugrequest:set', [(request, ('on' if enable else 'off'))]))
+            return self.send_command(DebugCommand('Cognition:representation:set', [(request, ('on' if enable else 'off'))]))
         elif type == 'motion':
-            return self.send_command(DebugCommand('Motion:debugrequest:set', [(request, ('on' if enable else 'off'))]))
+            return self.send_command(DebugCommand('Motion:representation:set', [(request, ('on' if enable else 'off'))]))
 
         raise Exception('Unknown debug request type! Allowed: "cognition", "motion"')
 
