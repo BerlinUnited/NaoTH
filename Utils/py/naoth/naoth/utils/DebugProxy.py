@@ -20,7 +20,7 @@ if __name__ == '__main__':
 
     p = DebugProxy(args.host, args.port, args.target, args.print)
     print('DebugProxy active at {}:{} <-> localhost:{}'.format(args.host, args.port, args.target))
-    print('Ctrl+C to stop the proxy ...', end='', flush=True)
+    print('Ctrl+C to stop the proxy ...')
     try:
         p.join()
     except KeyboardInterrupt:

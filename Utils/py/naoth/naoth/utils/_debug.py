@@ -129,10 +129,7 @@ class DebugProxy(threading.Thread):
             stream.write(struct.pack("<I", cmd.id) + struct.pack("<I", len(cmd.result())) + cmd.result())
 
             if self._print:
-                try:
-                    print(cmd.result().decode('utf-8'))
-                except:
-                    pass
+                print(cmd)
 
 
 class DebugCommand(Future):
@@ -192,12 +189,27 @@ class DebugCommand(Future):
         return DebugCommand(proto.name, [(arg.name, arg.bytes.decode()) for arg in proto.args])
 
     def __str__(self):
-        # TODO: add the command id to output
-        # TODO: better display of command args
-        # TODO: if result is available, show result too
-        r = "\t".join(map(lambda a: a if isinstance(a, str) else '{}: {}'.format(*a), self._args))
-        #print(r)
-        return '{} [{}]: {}\n\t{}'.format(self.__class__.__name__, self._state, self.name, r)
+        str_builder = [self.__class__.__name__, '-', str(self.id), ' [', self._state, ']: ', self.name]
+        str_args = ", ".join(map(lambda a: self._str_args_helper(a), self._args))
+        if str_args:
+            str_builder.append(' ( ')
+            str_builder.append(str_args)
+            str_builder.append(' )')
+        if self.done():
+            str_builder.append(' {\n')
+            try:
+                str_builder.append(self.result().decode('utf-8').strip())
+            except:
+                str_builder.append(str(self.result()))
+            str_builder.append('\n}')
+
+        return ''.join(str_builder)
+
+    @staticmethod
+    def _str_args_helper(arg):
+        if isinstance(arg, str):
+            return arg
+        return arg[0] + '' if len(arg[1]) == 0 else ': ' + arg[1]
 
 
 class AgentController(threading.Thread):
