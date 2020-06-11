@@ -1,9 +1,9 @@
 import struct as _struct
 import asyncio as _as
 import threading as _thread
-import concurrent.futures
-import sys
-import functools
+from concurrent.futures import Future as _Future
+import sys as _sys
+import functools as _ft
 
 from .. import pb as _pb
 
@@ -95,7 +95,7 @@ class DebugProxy(_thread.Thread):
                     cmd.id = cmd_id
 
                     # NOTE: the callback is executed in the agent thread!
-                    cmd.add_done_callback(functools.partial(self._response_handler, stream_writer))
+                    cmd.add_done_callback(_ft.partial(self._response_handler, stream_writer))
 
                     self.robot.send_command(cmd)
 
@@ -130,7 +130,7 @@ class DebugProxy(_thread.Thread):
                     pass
 
 
-class DebugCommand(concurrent.futures.Future):
+class DebugCommand(_Future):
     """Class representing a command for a naoth agent."""
 
     def __init__(self, name, args=None):
@@ -190,7 +190,7 @@ class DebugCommand(concurrent.futures.Future):
         # TODO: add the command id to output
         # TODO: better display of command args
         # TODO: if result is available, show result too
-        r = "\t".join(map(lambda a: a if isinstance(a, str) else '{}: {}'.format(*a),self._args))
+        r = "\t".join(map(lambda a: a if isinstance(a, str) else '{}: {}'.format(*a), self._args))
         #print(r)
         return '{} [{}]: {}\n\t{}'.format(self.__class__.__name__, self._state, self.name, r)
 
@@ -311,7 +311,7 @@ class AgentController(_thread.Thread):
             except OSError:  # connection lost
                 self._set_connected(False)
             except Exception as e:  # unexpected exception
-                print(e, file=sys.stderr)
+                print(e, file=_sys.stderr)
 
     async def _poll_answers(self):
 
@@ -343,7 +343,7 @@ class AgentController(_thread.Thread):
                         cmd.id = _id
                         cmd.set_result(raw_data)
                 else:
-                    print('Unknown command id:', cmd_id, file=sys.stderr)
+                    print('Unknown command id:', cmd_id, file=_sys.stderr)
             except _as.CancelledError:  # task cancelled
                 break
 
@@ -374,7 +374,7 @@ class AgentController(_thread.Thread):
                         self._set_connected(False)
                         cancel_cmd(cmd)
                     except Exception as e:  # unexpected exception
-                        print(e, file=sys.stderr)
+                        print(e, file=_sys.stderr)
                         cancel_cmd(cmd, e)
                     finally:
                         self._cmd_q.task_done()  # mark as done
@@ -395,7 +395,7 @@ class AgentController(_thread.Thread):
         if self.is_connected():
             # command queue is not thread safe - make sure we're add it in the correct thread
             # this can 'causes a delay of ~0.5ms
-            self._loop.call_soon_threadsafe(functools.partial(self._cmd_q.put_nowait, cmd))
+            self._loop.call_soon_threadsafe(_ft.partial(self._cmd_q.put_nowait, cmd))
             return cmd
 
         raise Exception('Not connected to the agent!')
