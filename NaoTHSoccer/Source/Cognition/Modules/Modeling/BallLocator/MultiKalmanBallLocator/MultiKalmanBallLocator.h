@@ -92,6 +92,10 @@ public:
         return filter;
     }
 
+    void clear_filter() {
+        filter.clear();
+    }
+
 private:
     void updateByPerceptsCool();
     void updateByPerceptsNormal();
