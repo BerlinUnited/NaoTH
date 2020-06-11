@@ -434,7 +434,19 @@ class AgentController(threading.Thread):
         :param type:    the type of the debug request ('cognition' or 'motion')
         :return:        Returns the the scheduled command (future)
         """
-        dbg = pb.Messages_pb2.DebugRequest(requests=[pb.Messages_pb2.DebugRequest.Item(name=request, value=enable)])
+        self.debugrequests([(request, enable)], type)
+
+    def debugrequests(self, requests: list, type: str = 'cognition'):
+        """
+        Enables/Disables a list of debug request of the agent.
+
+        :param requests: a list of tuples ('debug request', True|False) of debug requests which should be en-/disabled
+        :param type:    the type of the debug request ('cognition' or 'motion')
+        :return:        Returns the the scheduled command (future)
+        """
+        dbg = pb.Messages_pb2.DebugRequest(requests=[
+            pb.Messages_pb2.DebugRequest.Item(name=request, value=enable) for request, enable in requests
+        ])
         if type == 'cognition':
             return self.send_command(DebugCommand('Cognition:representation:set', [('DebugRequest', dbg.SerializeToString().decode())]))
         elif type == 'motion':
