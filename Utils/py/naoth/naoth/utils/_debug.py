@@ -214,7 +214,7 @@ class DebugCommand(Future):
 
 class AgentController(threading.Thread):
 
-    def __init__(self, host, port, start = True):
+    def __init__(self, host, port, start=True):
         super().__init__()
 
         self._host = host
@@ -434,10 +434,11 @@ class AgentController(threading.Thread):
         :param type:    the type of the debug request ('cognition' or 'motion')
         :return:        Returns the the scheduled command (future)
         """
+        dbg = pb.Messages_pb2.DebugRequest(requests=[pb.Messages_pb2.DebugRequest.Item(name=request, value=enable)])
         if type == 'cognition':
-            return self.send_command(DebugCommand('Cognition:representation:set', [(request, ('on' if enable else 'off'))]))
+            return self.send_command(DebugCommand('Cognition:representation:set', [('DebugRequest', dbg.SerializeToString().decode())]))
         elif type == 'motion':
-            return self.send_command(DebugCommand('Motion:representation:set', [(request, ('on' if enable else 'off'))]))
+            return self.send_command(DebugCommand('Motion:representation:set', [('DebugRequest', dbg.SerializeToString().decode())]))
 
         raise Exception('Unknown debug request type! Allowed: "cognition", "motion"')
 
