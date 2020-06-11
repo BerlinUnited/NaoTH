@@ -757,6 +757,7 @@ class AgentController(_thread.Thread):
         self._connected = _thread.Event()
         self._connected_internal = _as.Event(loop=self._loop)
 
+        # start thread immediately
         if start: self.start()
 
     def run(self):
@@ -834,7 +835,7 @@ class AgentController(_thread.Thread):
 
         if self._stream_writer:
             self._stream_writer.close()
-            #await self._stream_writer.wait_closed()  # NOTE: this doesn't finish?!
+            #await self._stream_writer.wait_closed()  # NOTE: this doesn't complete?!
 
     async def _send_heart_beat(self):
         """Send a heart beat to the agent."""
@@ -854,8 +855,9 @@ class AgentController(_thread.Thread):
                 print(e, file=sys.stderr)
 
     async def _poll_answers(self):
-        # helper function to determine, if the connection was lost
+
         def lost_connection(d):
+            """Helper function to determine, if the connection was lost."""
             if d == b'':
                 self._set_connected(False)
                 return True
@@ -889,11 +891,12 @@ class AgentController(_thread.Thread):
                 break
 
     async def _send_commands(self):
-        # helper function, if an exception occurred and the command couldn't be send
+
         def cancel_cmd(cmd, ex=None):
+            """Helper function, if an exception occurred and the command couldn't be send."""
             _, _id = self._cmd_m.pop(cmd.id)
             cmd.set_exception(ex if ex else Exception('Lost connection to the agent!'))
-            cmd.id = _id
+            cmd.id = _id  # replace internal id with the original
 
         while True:
             try:
