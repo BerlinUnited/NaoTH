@@ -209,7 +209,7 @@ class DebugCommand(Future):
     def _str_args_helper(arg):
         if isinstance(arg, str):
             return arg
-        return arg[0] + '' if len(arg[1]) == 0 else ': ' + arg[1]
+        return arg[0] + ('' if len(arg[1]) == 0 else ': ' + repr(arg[1]))
 
 
 class AgentController(threading.Thread):
