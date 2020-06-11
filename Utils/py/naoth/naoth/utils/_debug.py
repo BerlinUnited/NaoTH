@@ -6,6 +6,7 @@ import socket
 import time
 import concurrent.futures
 import sys
+import functools
 
 from .. import pb as _pb
 
@@ -93,34 +94,35 @@ class DebugProxy:
 
             pass
 
-    def __init__(self, src_host, src_port, dest_port, loop = None):
+    def __init__(self, src_host, src_port, dest_port, loop):
         self.robot_addr = (src_host, src_port)
-
-        self.robot_host = src_host
-        self.robot_port = src_port
         self._robot_reader = None
         self._robot_writer = None
 
-        self.host_host = 'localhost'
-        self.host_port = dest_port
         self._host_reader = None
         self._host_writer = None
-
-        self.loop = _as.get_event_loop() if loop is None else loop
-        self.running = True
 
         self.cmd_id = 1
         self.cmd_map = {}
 
-        self.connected = _as.Event(loop=self.loop)
+        self.connected = _as.Event(loop=loop)
         #self.loop.create_task(self._host(), name='Host Task')
-        self.loop.create_task(self._robot(), name='Robot Task')
+        #self.loop.create_task(self._robot(), name='Robot Task')
+
+        # --------------------------------------------
+
+        self.robot = None
+        self.robot_host = src_host
+        self.robot_port = src_port
+
+        self.host_host = 'localhost'
+        self.host_port = dest_port
+
+        self.loop = loop if loop else _as.get_event_loop()
 
         self.hosts = []
         self.host_listener = self.loop.create_task(_as.start_server(self._host, self.host_host, self.host_port), name='Host Listener')
         self.host_connection_cnt = 0
-
-        print(self.host_host, self.host_port)
 
     def _register_host(self):
         self.connected.set()
@@ -128,17 +130,24 @@ class DebugProxy:
         _as.Task.current_task().set_name('Host-{}'.format(self.host_connection_cnt))
         self.hosts.append(_as.Task.current_task())
 
+        if self.robot is None:
+            self.robot = AgentController(self.robot_host, self.robot_port)
+            self.robot.wait_connected()
+
         print('Got connection for', _as.Task.current_task().get_name())
 
     def _unregister_host(self):
         self.hosts.remove(_as.Task.current_task())
         if len(self.hosts) == 0:
             self.connected.clear()
+            if self.robot is not None:
+                self.robot.stop()
+                self.robot = None
 
     async def _host(self, stream_reader, stream_writer):
         self._register_host()
 
-        while self.running:
+        while True:
             try:
                 raw_id = await stream_reader.read(4)
 
@@ -154,18 +163,35 @@ class DebugProxy:
 
                     # relay and parse command
                     raw_data = await stream_reader.read(cmd_length)
+                    print('read', cmd_id, time.monotonic_ns())
+                    cmd = DebugCommand.deserialize(raw_data)
+                    cmd.id = cmd_id
+                    print('parsed', cmd_id, time.monotonic_ns())
 
-                    await self.send_to_robot(cmd_id, raw_length + raw_data, stream_writer)
+                    cmd.add_done_callback(functools.partial(self._response_writer, stream_writer, cmd_id))  # lambda c: print('>>>', c)
+                    #print('>>>', cmd_id)
 
+                    # TODO: send command
+                    #await self.send_to_robot(cmd_id, raw_length + raw_data, stream_writer)
+                    self.robot.send_command(cmd)
+                    print('send', cmd_id, time.monotonic_ns())
 
-                    # parse command bytes
-                    command = _pb.Messages_pb2.CMD()
-                    command.ParseFromString(raw_data)
-                    print(command)
+                    #print(cmd)
+
             except Exception as e:
                 print(_as.Task.current_task().get_name(), ':', e)
 
         self._unregister_host()
+
+    def _response_handler(self, stream, cmd_id, cmd):
+        # transfer command from agent thread back to 'this' thread
+        self.loop.call_soon_threadsafe(lambda: self._response_writer(stream, cmd_id, cmd))
+
+    def _response_writer(self, stream, cmd_id, cmd):
+        if not cmd.cancelled():
+            print('write', cmd_id, '~', cmd.id, time.monotonic_ns())
+            stream.write(_struct.pack("<I", cmd_id) + _struct.pack("<I", len(cmd.result())) + cmd.result())
+        # TODO: what to todo, if the command got cancelled?!?
 
     async def _robot(self):
         print('Started robot task ...')
@@ -842,6 +868,7 @@ class AgentController(_thread.Thread):
                 raw_id = await self._stream_reader.read(4)
                 if lost_connection(raw_id): continue
                 cmd_id = _struct.unpack('=l', raw_id)[0]
+                print('response', cmd_id, time.monotonic_ns())
 
                 raw_size = await self._stream_reader.read(4)
                 if lost_connection(raw_size): continue
@@ -853,6 +880,7 @@ class AgentController(_thread.Thread):
                 if cmd_id in self._cmd_m:
                     cmd, _id = self._cmd_m.pop(cmd_id)
                     if not cmd.cancelled():
+                        print('response_set', cmd_id, time.monotonic_ns())
                         cmd.id = _id
                         cmd.set_result(raw_data)
                 else:
@@ -872,6 +900,7 @@ class AgentController(_thread.Thread):
                 await self._connected_internal.wait()
                 # get next command
                 cmd = await self._cmd_q.get()
+                print('queue_get', cmd.id, time.monotonic_ns())
                 # set command to running
                 if cmd.set_running_or_notify_cancel():
                     self._store_cmd(cmd)
@@ -879,6 +908,7 @@ class AgentController(_thread.Thread):
                         # send command
                         self._stream_writer.write(cmd.serialize())
                         await self._stream_writer.drain()
+                        print('send_done', cmd.id, time.monotonic_ns())
                     except _as.CancelledError:  # task cancelled
                         cancel_cmd(cmd)
                         break
@@ -905,10 +935,10 @@ class AgentController(_thread.Thread):
     def send_command(self, cmd: DebugCommand):
         """Schedules the given command in the command queue and returns the command."""
         if self.is_connected():
-            cmd.id, time.monotonic_ns())
+            print('queue_before', cmd.id, time.monotonic_ns())
             # command queue is not thread safe - make sure we're add it in the correct thread
             self._loop.call_soon_threadsafe(functools.partial(self._cmd_q.put_nowait, cmd))
-            self._cmd_id += 1
+            print('queue_after', cmd.id, time.monotonic_ns())
             return cmd
 
         raise Exception('Not connected to the agent!')
