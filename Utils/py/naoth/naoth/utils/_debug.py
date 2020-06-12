@@ -367,7 +367,9 @@ class AgentController(threading.Thread):
                     print('Unknown command id:', cmd_id, file=sys.stderr)
             except asyncio.CancelledError:  # task cancelled
                 break
-            except Exception as e:
+            except OSError:  # connection lost
+                self._set_connected(False)
+            except Exception as e:  # unexpected exception
                 print(asyncio.Task.current_task().get_name(), ':', e, file=sys.stderr)
 
     async def _send_commands(self):
@@ -406,6 +408,8 @@ class AgentController(threading.Thread):
 
             except asyncio.CancelledError:  # task cancelled
                 break
+            except OSError:  # connection lost
+                self._set_connected(False)
             except Exception as e:  # unexpected exception
                 print(asyncio.Task.current_task().get_name(), ':', e, file=sys.stderr)
 
