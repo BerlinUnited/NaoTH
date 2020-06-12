@@ -12,7 +12,24 @@ __all__ = ['DebugProxy', 'DebugCommand', 'AgentController']
 
 class DebugProxy(threading.Thread):
     """
-    Debugging class, creating a connection between RobotControlGui and the Nao to inspect messages and the control flow.
+    Debugging class, creating a connection between RobotControl and the Nao (naoth agent) which can be used to
+    * print out the communication between the naoth agent and the controlling instance (eg. RobotControl) - set :param:`print_cmd` to True
+    * create a connection which never 'dies'; even when the naoth agent restarts/dies, the connection to the controlling instance is kept
+    * accepting multiple connections of controlling instances to the naoth agent, allowing - for example - to connect two RobotControl instances to the robot, each command is distributed accordingly
+
+    A extra module is also available in order to start the proxy directly from the command line
+
+        python -m naoth.utils.DebugProxy host [port] [--target port] [--print]
+
+    It is also possible to instantiate the proxy in the interactive shell or another python script to get slightly more
+    control over when the proxy ist started and stopped.
+
+        >>> import naoth
+        >>> p = naoth.utils.DebugProxy('localhost', print_cmd=True, start=False)
+        >>> ...
+        >>> p.start()
+        >>> ...
+        >>> p.stop()
     """
 
     def __init__(self, agent_host, agent_port=5401, dest_port=7777, print_cmd=False, start=True):
@@ -213,8 +230,24 @@ class DebugCommand(Future):
 
 
 class AgentController(threading.Thread):
+    """
+    Class to establish a connection to a naoth instance and sending DebugRequests to it - like doing it via RobotControl.
 
-    def __init__(self, host, port, start=True):
+    An instance can be created in an interactive shell or script and sending debug requests to the robot:
+
+    >>> import naoth
+    >>> a = naoth.utils.AgentController('localhost', 5401)
+    >>> a.wait_connected()
+    >>> a.representation('PlayerInfo').add_done_callback(print)
+    >>> a.agent('soccer_agent')
+    >>> a.debugrequest()
+    >>> a.debugrequests()
+    >>> a.behavior()
+    >>> a.module()
+    >>> a.send_command()
+    """
+
+    def __init__(self, host, port=5401, start=True):
         super().__init__()
 
         self._host = host

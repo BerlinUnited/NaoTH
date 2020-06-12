@@ -12,7 +12,7 @@ if __name__ == '__main__':
                         help='The host of the naoth agent (eg. "localhost")')
     parser.add_argument('port', nargs='?', type=int, default=5401,
                         help='The debug port of the naoth agent (default: 5401)')
-    parser.add_argument('--target', default=7777,
+    parser.add_argument('--target', type=int, default=7777,
                         help='The proxy port where other applications can connect to (default: 7777)')
     parser.add_argument('--print', action='store_true', default=False,
                         help='Print all commands and their responses going through the proxy.')
