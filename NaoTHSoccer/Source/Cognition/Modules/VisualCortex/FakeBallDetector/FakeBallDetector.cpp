@@ -84,10 +84,8 @@ void FakeBallDetector::provideMultiBallPercept() const {
         bool in_image_bottom = CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), point, pointInImage);
         if(in_image_bottom
             && (ignore_image_size
-                || (pointInImage.x >= 0
-                    && pointInImage.x <= getCameraInfo().resolutionWidth
-                    && pointInImage.y >= 0
-                    && pointInImage.y <= getCameraInfo().resolutionHeight)))
+                || ( 0 <= pointInImage.x && pointInImage.x <= getCameraInfo().resolutionWidth
+                    && 0 <= pointInImage.y && pointInImage.y <= getCameraInfo().resolutionHeight)))
         {
             ballPercept.positionOnField = fb.position;
             ballPercept.centerInImage = pointInImage;
@@ -98,10 +96,8 @@ void FakeBallDetector::provideMultiBallPercept() const {
         bool in_image_top = CameraGeometry::relativePointToImage(getCameraMatrixTop(), getCameraInfoTop(), point, pointInImage);
         if(in_image_top
             && (ignore_image_size
-                || (pointInImage.x >= 0
-                    && pointInImage.x <= getCameraInfoTop().resolutionWidth
-                    && pointInImage.y >= 0
-                    && pointInImage.y <= getCameraInfoTop().resolutionHeight)))
+                || ( 0 <= pointInImage.x && pointInImage.x <= getCameraInfoTop().resolutionWidth
+                    && 0 <= pointInImage.y && pointInImage.y <= getCameraInfoTop().resolutionHeight)))
         {
             ballPercept.positionOnField = fb.position;
             ballPercept.centerInImage = pointInImage;
