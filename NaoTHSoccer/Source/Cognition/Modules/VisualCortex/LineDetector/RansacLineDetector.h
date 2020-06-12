@@ -34,8 +34,8 @@ END_DECLARE_MODULE(RansacLineDetector)
 
 class RansacLineDetector: public RansacLineDetectorBase
 {
-                                     public:
-                                     RansacLineDetector();
+public:
+RansacLineDetector();
 ~RansacLineDetector();
 
 virtual void execute();
