@@ -44,6 +44,8 @@ BEGIN_DECLARE_MODULE(ScanGridEdgelDetector)
   REQUIRE(ImageTop)
   REQUIRE(CameraInfo)
   REQUIRE(CameraInfoTop)
+  REQUIRE(CameraMatrix)
+  REQUIRE(CameraMatrixTop)
   REQUIRE(FieldColorPercept)
   REQUIRE(FieldColorPerceptTop)
   REQUIRE(BodyContour)
@@ -82,10 +84,10 @@ public:
       PARAMETER_REGISTER(brightness_threshold_bottom) = 24;
       PARAMETER_REGISTER(double_edgel_angle_threshold) = 0.2;
 
-      PARAMETER_REGISTER(gradient_offset) = 1;
-
       PARAMETER_REGISTER(scan_vertical) = true;
       PARAMETER_REGISTER(scan_horizontal) = true;
+
+      PARAMETER_REGISTER(full_refinement) = true;
 
       syncWithConfig();
       //DebugParameterList::getInstance().add(this);
@@ -98,11 +100,11 @@ public:
     bool scan_vertical;
     bool scan_horizontal;
 
+    bool full_refinement;
+
     int brightness_threshold_top; // threshold for detection of the jumps in the Y channel
     int brightness_threshold_bottom;
     double double_edgel_angle_threshold;
-
-    int gradient_offset;
   } parameters;
 
 private:
@@ -242,6 +244,7 @@ private:
     return end_idx;
   }
 
+  /*
   bool add_edgel(const Vector2i& point, Edgel::Type type) {
     if( point.x < parameters.gradient_offset || point.x + parameters.gradient_offset + 1 > (int)getImage().width() ||
         point.y < parameters.gradient_offset || point.y + parameters.gradient_offset + 1 > (int)getImage().height() ) {
@@ -256,26 +259,19 @@ private:
     edgel.direction = calculateGradient(point);
     getScanLineEdgelPercept().edgels.push_back(edgel);
     return true;
-  }
+  }*/
 
-  bool add_edgel(int x, int y, Edgel::Type type) {
-    if( x < parameters.gradient_offset || x + parameters.gradient_offset + 1 > (int)getImage().width() ||
-        y < parameters.gradient_offset || y + parameters.gradient_offset + 1 > (int)getImage().height() ) {
-      // cannot extract direction on image border
-      // In the future the edgel detector should make sure not to scan for points on the image border (parameters.gradient_offset)
-      return false;
-    }
-
+  inline void add_edgel(int x, int y, Edgel::Type type) {
     Edgel edgel;
     edgel.type = type;
     edgel.point.x = x;
     edgel.point.y = y;
     edgel.direction = calculateGradient(edgel.point);
+
     getScanLineEdgelPercept().edgels.push_back(edgel);
-    return true;
   }
 
-  void add_double_edgel(int scan_line_id)
+  inline void add_double_edgel(int scan_line_id, bool adaptive = false)
   {
     ASSERT(getScanLineEdgelPercept().edgels.size() > 1);
 
@@ -287,6 +283,7 @@ private:
 
     double cos_alpha = begin.direction*end.direction;
 
+    /*
     DEBUG_REQUEST("Vision:ScanGridEdgelDetector:mark_double_edgels",
       ColorClasses::Color color = ColorClasses::black;
       if(begin.type == Edgel::positive) {
@@ -307,6 +304,7 @@ private:
                      end.point.x + (int)(end.direction.x*5),
                      end.point.y + (int)(end.direction.y*5));
     );
+    */
 
     if(-cos_alpha < parameters.double_edgel_angle_threshold) {
     //if(-(begin.direction*end.direction) < parameters.double_edgel_angle_threshold) {
@@ -321,6 +319,7 @@ private:
     pair.point.x = (begin.point.x + end.point.x)*0.5;
     pair.point.y = (begin.point.y + end.point.y)*0.5;
     pair.direction = (begin.direction - end.direction).normalize();
+    pair.adaptive = adaptive;
     /*
     pair.direction = begin.direction;
     if(cos_alpha > 0) {
@@ -332,11 +331,9 @@ private:
     getScanLineEdgelPercept().pairs.push_back(pair);
   }
 
-  inline bool refine_range_vertical(MaxPeakScan& maximumPeak, int x);
-  inline void refine_vertical(MaxPeakScan& maximumPeak, int x);
+  inline bool refine_vertical(MaxPeakScan& maximumPeak, int x);
 
-  inline bool refine_range_horizontal(MaxPeakScan& maximumPeak, int y);
-  inline void refine_horizontal(MaxPeakScan& maximumPeak, int y);
+  inline bool refine_horizontal(MaxPeakScan& maximumPeak, int y);
 
   /** Estimates the gradient of the gray-gradient at the point by a Sobel Operator. */
   Vector2d calculateGradient(const Vector2i& point) const;
@@ -345,6 +342,7 @@ private:
 
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, Image);
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, CameraInfo);
+  DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, CameraMatrix);
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, FieldColorPercept);
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, BodyContour);
   DOUBLE_CAM_REQUIRE(ScanGridEdgelDetector, ScanGrid);
