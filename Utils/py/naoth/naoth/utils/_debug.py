@@ -13,26 +13,39 @@ __all__ = ['DebugProxy', 'DebugCommand', 'AgentController']
 class DebugProxy(threading.Thread):
     """
     Debugging class, creating a connection between RobotControl and the Nao (naoth agent) which can be used to
-    * print out the communication between the naoth agent and the controlling instance (eg. RobotControl) - set :param:`print_cmd` to True
-    * create a connection which never 'dies'; even when the naoth agent restarts/dies, the connection to the controlling instance is kept
-    * accepting multiple connections of controlling instances to the naoth agent, allowing - for example - to connect two RobotControl instances to the robot, each command is distributed accordingly
 
-    A extra module is also available in order to start the proxy directly from the command line
+    * print out the communication between the naoth agent and the controlling instance (eg. RobotControl) -- set
+      :param:`print_cmd` to True
+    * create a connection which never 'dies'; even when the naoth agent restarts/dies, the connection to the controlling
+      instance is kept
+    * accepting multiple connections of controlling instances to the naoth agent, allowing -- for example -- to connect
+      two RobotControl instances to the robot, each command is distributed accordingly
+
+    A extra module is also available in order to start the proxy directly from the command line::
 
         python -m naoth.utils.DebugProxy host [port] [--target port] [--print]
 
     It is also possible to instantiate the proxy in the interactive shell or another python script to get slightly more
-    control over when the proxy ist started and stopped.
-
+    control over when the proxy ist started and stopped::
         >>> import naoth
         >>> p = naoth.utils.DebugProxy('localhost', print_cmd=True, start=False)
-        >>> ...
+        >>> # ...
         >>> p.start()
-        >>> ...
+        >>> # ...
         >>> p.stop()
+
     """
 
     def __init__(self, agent_host, agent_port=5401, dest_port=7777, print_cmd=False, start=True):
+        """
+        Initializes the class variables and starts the thread immediately if :param:`start` is set to True (default).
+
+        :param agent_host: the host name or ip address of naoth agent (robot, dummysimulator, ...); eg. "localhost"
+        :param agent_port: the debug port of the naoth agent; default is 5401
+        :param dest_port:  the port which should be opened to allow controlling applications to connect to (eg. RC)
+        :param print_cmd:  set to True to print out all commands and responses going through the proxy.
+        :param start:      whether the thread should start immediately (default) or not
+        """
         super().__init__()
 
         # the agent thread is only started, if there's at least one connected host
@@ -53,7 +66,12 @@ class DebugProxy(threading.Thread):
         # start thread immediately
         if start: self.start()
 
-    def run(self):
+    def run(self) -> None:
+        """
+        The thread main loop.
+        Sets the asyncio loop of the thread, starts a listener server on the dest_port and runs until cancelled.
+        """
+
         # set the event loop to this thread
         asyncio.set_event_loop(self._loop)
         # start host listener server and 'wait' until the server ist started
@@ -61,12 +79,28 @@ class DebugProxy(threading.Thread):
         # run until cancelled
         self._loop.run_forever()
 
-    def stop(self, timeout=None):
+    def stop(self, timeout=None) -> None:
+        """
+        Stops the (running) thread and blocks until finished or until the optional timeout occurs.
+
+        Since this method is called from another thread, the stop request is scheduled as task on the main loop and
+        executed some ms later. Also `join` is called on the thread to wait until the thread is actually finished.
+
+        The timeout can be used to make sure the main program continues, if an error prevents terminating this
+        thread -- though that shouldn't happen.
+        """
         if self._loop.is_running():
             self._loop.call_soon_threadsafe(lambda: self._loop.create_task(self._stop_internal()))
             self.join(timeout)
 
-    async def _stop_internal(self):
+    async def _stop_internal(self) -> None:
+        """
+        The (internal) scheduled stop request task called by `stop()`.
+
+        It stops the listener server, closes all open connections and stops the main loop, which causes the thread to
+        finish.
+        """
+
         # shutdown host listener server to prevent new connections
         if self._host_listener:
             self._host_listener.close()
@@ -80,7 +114,13 @@ class DebugProxy(threading.Thread):
 
         self._loop.stop()
 
-    def _register_host(self):
+    def _register_host(self) -> None:
+        """
+        Registers a new host connection and sets the name of the task.
+
+        The connection to the naoth instance is started only, if there is a host connected to the proxy. This prevents
+        blocking the naoth instance unnecessarily from direct connection, when the proxy doesn't have something to do.
+        """
         self._host_connection_cnt += 1
         asyncio.Task.current_task().set_name('Host-{}'.format(self._host_connection_cnt))
         self._hosts.append(asyncio.Task.current_task())
@@ -89,14 +129,30 @@ class DebugProxy(threading.Thread):
             self._robot = AgentController(self._robot_host, self._robot_port)
             self._robot.wait_connected()  # TODO: is this reasonable???
 
-    def _unregister_host(self):
+    def _unregister_host(self) -> None:
+        """
+        Unregisters the host from the proxy.
+
+        if there are no other active host connections, the naoth agent controller/connection is stopped -- to prevent
+        blocking unused resources (naoth instance).
+        """
         self._hosts.remove(asyncio.Task.current_task())
         if len(self._hosts) == 0:
             if self._robot is not None:
                 self._robot.stop()
                 self._robot = None
 
-    async def _host(self, stream_reader, stream_writer):
+    async def _host(self, stream_reader, stream_writer) -> None:
+        """
+        The actual task, which handles the host connection to the proxy.
+
+        Therefore is reads all debug commands send from the host and relays it to the connected naoth instance. The
+        response is returned to the host.
+
+        If required, the received command and the response if printed out to the terminal.
+
+        The task runs as long as the connection to the host is active or until the proxy thread is stopped.
+        """
         self._register_host()
 
         while True:
@@ -135,14 +191,17 @@ class DebugProxy(threading.Thread):
 
         self._unregister_host()
 
-    def _response_handler(self, stream, cmd):
-        # transfer command from agent thread back to 'this' thread
-        # this can 'causes a delay of ~0.5ms
+    def _response_handler(self, stream, cmd) -> None:
+        """
+        Helper method in order to transfer the command from agent thread back to 'this' thread -- since the callback is
+        called in the agent thread. This can 'causes a delay of ~0.5ms.
+        """
         self._loop.call_soon_threadsafe(lambda: self._response_writer(stream, cmd))
 
-    def _response_writer(self, stream, cmd):
+    def _response_writer(self, stream, cmd) -> None:
+        """Writes the response of the command back to the requesting host."""
         # TODO: what to todo, if the command got cancelled?!?
-        if not cmd.cancelled():
+        if stream and not cmd.cancelled():
             stream.write(struct.pack("<I", cmd.id) + struct.pack("<I", len(cmd.result())) + cmd.result())
 
             if self._print:
@@ -150,7 +209,11 @@ class DebugProxy(threading.Thread):
 
 
 class DebugCommand(Future):
-    """Class representing a command for a naoth agent."""
+    """
+    Class representing a debug command for a naoth agent.
+
+    It is a Future and can be waited for the response.
+    """
 
     def __init__(self, name, args=None):
         """
@@ -165,27 +228,33 @@ class DebugCommand(Future):
         self._args = args if args else []
 
     @property
-    def id(self):
+    def id(self) -> int:
+        """Returns command id."""
         return self._id
 
     @id.setter
-    def id(self, value):
+    def id(self, value: int) -> None:
+        """Sets the command id."""
         self._id = value
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Returns the name of this command."""
         return self._name
 
-    def add_arg(self, arg):
-        """Adds an argument to this command."""
+    def add_arg(self, arg) -> None:
+        """
+        Adds an argument to this command.
+
+        :param arg: this can be a simple string or a tuple of two strings.
+        """
         self._args.append(arg)
 
-    def serialize(self):
+    def serialize(self) -> bytes:
         """
         Serializes the command to a byte representation in order to send it to the agent.
 
-        :return:        returns the bytes representation of this command
+        :return: returns the bytes representation of this command
         """
         cmd_args = []
         if self._args:
@@ -199,13 +268,19 @@ class DebugCommand(Future):
         return struct.pack("<I", self.id) + struct.pack("<I", proto.ByteSize()) + proto.SerializeToString()
 
     @staticmethod
-    def deserialize(data):
+    def deserialize(data) -> 'DebugCommand':
+        """
+        Parses the given data and returns an instance of DebugCommand.
+
+        :param data: byte string of a serialized debug command
+        """
         proto = pb.Messages_pb2.CMD()
         proto.ParseFromString(data)
 
         return DebugCommand(proto.name, [(arg.name, arg.bytes.decode()) for arg in proto.args])
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Returns the string representation of this command."""
         str_builder = [self.__class__.__name__, '-', str(self.id), ' [', self._state, ']: ', self.name]
         str_args = ", ".join(map(lambda a: self._str_args_helper(a), self._args))
         if str_args:
@@ -223,7 +298,8 @@ class DebugCommand(Future):
         return ''.join(str_builder)
 
     @staticmethod
-    def _str_args_helper(arg):
+    def _str_args_helper(arg) -> str:
+        """Helper method to format the command arguments for the `__str__` method."""
         if isinstance(arg, str):
             return arg
         return arg[0] + ('' if len(arg[1]) == 0 else ': ' + repr(arg[1]))
@@ -231,23 +307,50 @@ class DebugCommand(Future):
 
 class AgentController(threading.Thread):
     """
-    Class to establish a connection to a naoth instance and sending DebugRequests to it - like doing it via RobotControl.
+    Class to establish a connection to a naoth agent and sending DebugRequests to it - like doing it via RobotControl.
 
     An instance can be created in an interactive shell or script and sending debug requests to the robot:
 
-    >>> import naoth
-    >>> a = naoth.utils.AgentController('localhost', 5401)
-    >>> a.wait_connected()
-    >>> a.representation('PlayerInfo').add_done_callback(print)
-    >>> a.agent('soccer_agent')
-    >>> a.debugrequest()
-    >>> a.debugrequests()
-    >>> a.behavior()
-    >>> a.module()
-    >>> a.send_command()
+        >>> import naoth
+        >>> a = naoth.utils.AgentController('localhost', 5401)
+        >>> a.wait_connected()
+        >>> a.representation('PlayerInfo').add_done_callback(print)
+
+        >>> c = a.agent('soccer_agent')
+        >>> c.add_done_callback(print)
+
+        >>> c = a.debugrequest('gamecontroller:blow_whistle', True)  # debug request for cognition
+        >>> while not c.done(): time.sleep(0.5)
+        >>> c.result()
+
+        >>> a.debugrequest('Plot:Motion.Cycle', True, 'motion')  # debug request for motion
+        >>> a.debugrequests([ \
+                ('gamecontroller:gamephase:normal', True), \
+                ('gamecontroller:game_state:penalized', True), \
+                ('gamecontroller:set_play:pushing_free_kick', True), \
+                ('gamecontroller:secondaryTime:30', True) \
+            ])
+        >>> a.behavior()  # BehaviorStateSparse
+        >>> a.behavior(True)  # BehaviorStateComplete
+        >>> a.module('FakeBallDetector', True)
+        >>> a.module('ArmCollisionDetector2018', True, 'motion')
+
+        >>> c = naoth.utils.DebugCommand('Cognition:representation:list')
+        >>> a.send_command(c)
+        >>> c.result()
+
+        >>> a.stop()  # stop the agent gracefully
+
     """
 
     def __init__(self, host, port=5401, start=True):
+        """
+        Initializes the class variables and starts the thread immediately if :param:`start` is set to True (default).
+
+        :param host:  the host name or ip address of naoth agent (robot, dummysimulator, ...); eg. "localhost"
+        :param port:  the debug port of the naoth agent; default is 5401
+        :param start: whether the thread should start immediately (default) or not
+        """
         super().__init__()
 
         self._host = host
@@ -269,7 +372,13 @@ class AgentController(threading.Thread):
         # start thread immediately
         if start: self.start()
 
-    def run(self):
+    def run(self) -> None:
+        """
+        The thread main loop.
+
+        Sets the asyncio loop of the thread, starts all necessary tasks and runs until cancelled.
+        """
+
         # set the event loop to this thread
         asyncio.set_event_loop(self._loop)
 
@@ -284,25 +393,42 @@ class AgentController(threading.Thread):
 
         self._set_connected(False)
 
-    def stop(self, timeout=None):
+    def stop(self, timeout=None) -> None:
+        """
+        Stops the (running) thread and blocks until finished or until the optional timeout occurs.
+
+        Since this method is called from another thread, the stop request is scheduled as task on the main loop and
+        executed some ms later. Also `join` is called on the thread to wait until the thread is actually finished.
+
+        The timeout can be used to make sure the main program continues, if an error prevents terminating this
+        thread -- though that shouldn't happen.
+        """
         if self._loop.is_running():
             self._loop.call_soon_threadsafe(lambda: self._loop.create_task(self._stop_internal()))
             self.join(timeout)
 
-    async def _stop_internal(self):
+    async def _stop_internal(self) -> None:
+        """
+        The (internal) scheduled stop request task called by `stop()`.
+
+        It stops all scheduled tasks in reverse order and stops the main loop, which causes the thread to finish.
+        """
         for task in reversed(self._tasks):
             task.cancel()
             await task
 
         self._loop.stop()
 
-    def is_connected(self):
+    def is_connected(self) -> bool:
+        """Returns True, if the thread is connected to the naoth instance, False otherwise."""
         return self._connected.is_set()
 
-    def wait_connected(self, timeout=None):
+    def wait_connected(self, timeout=None) -> None:
+        """Blocks until the thread is connected to the naoth agent or until the optional timeout occurs."""
         self._connected.wait(timeout)
 
-    def _set_connected(self, state: bool):
+    def _set_connected(self, state: bool) -> None:
+        """Internal helper method to handle the connection state."""
         if state:
             self._connected_internal.set()
             self._connected.set()
@@ -312,7 +438,8 @@ class AgentController(threading.Thread):
             if self._stream_writer:
                 self._stream_writer.close()
 
-    async def _connect(self):
+    async def _connect(self) -> None:
+        """Connection task, which is used to (re-)establish the connection to the naoth agent."""
         while True:
             try:
                 # (try to) establish connection or raise exception
@@ -350,8 +477,8 @@ class AgentController(threading.Thread):
             self._stream_writer.close()
             #await self._stream_writer.wait_closed()  # NOTE: this doesn't complete?!
 
-    async def _send_heart_beat(self):
-        """Send a heart beat to the agent."""
+    async def _send_heart_beat(self) -> None:
+        """Task to regularly (1s) send a heart beat to the agent."""
         while True:
             try:
                 await self._connected_internal.wait()
@@ -367,7 +494,8 @@ class AgentController(threading.Thread):
             except Exception as e:  # unexpected exception
                 print(asyncio.Task.current_task().get_name(), ':', e, file=sys.stderr)
 
-    async def _poll_answers(self):
+    async def _poll_answers(self) -> None:
+        """Task to receive the response of a previous command and set the result to that command."""
 
         def lost_connection(d):
             """Helper function to determine, if the connection was lost."""
@@ -405,7 +533,8 @@ class AgentController(threading.Thread):
             except Exception as e:  # unexpected exception
                 print(asyncio.Task.current_task().get_name(), ':', e, file=sys.stderr)
 
-    async def _send_commands(self):
+    async def _send_commands(self) -> None:
+        """Task to send scheduled commands."""
 
         def cancel_cmd(cmd, ex=None):
             """Helper function, if an exception occurred and the command couldn't be send."""
@@ -446,14 +575,18 @@ class AgentController(threading.Thread):
             except Exception as e:  # unexpected exception
                 print(asyncio.Task.current_task().get_name(), ':', e, file=sys.stderr)
 
-    def _store_cmd(self, cmd):
+    def _store_cmd(self, cmd) -> None:
         """Replaces the command id with an internal id and store command+id for later response."""
         self._cmd_m[self._cmd_id] = (cmd, cmd.id)
         cmd.id = self._cmd_id
         self._cmd_id += 1
 
-    def send_command(self, cmd: DebugCommand):
-        """Schedules the given command in the command queue and returns the command."""
+    def send_command(self, cmd: DebugCommand) -> DebugCommand:
+        """
+        Schedules the given command in the command queue and returns the command.
+
+        :raises Exception: if not connected to a naoth agent
+        """
         if self.is_connected():
             # command queue is not thread safe - make sure we're add it in the correct thread
             # this can 'causes a delay of ~0.5ms
@@ -462,7 +595,7 @@ class AgentController(threading.Thread):
 
         raise Exception('Not connected to the agent!')
 
-    def debugrequest(self, request: str, enable: bool, type: str = 'cognition'):
+    def debugrequest(self, request: str, enable: bool, type: str = 'cognition') -> DebugCommand:
         """
         Enables/Disables a debug request of the agent.
 
@@ -471,9 +604,9 @@ class AgentController(threading.Thread):
         :param type:    the type of the debug request ('cognition' or 'motion')
         :return:        Returns the the scheduled command (future)
         """
-        self.debugrequests([(request, enable)], type)
+        return self.debugrequests([(request, enable)], type)
 
-    def debugrequests(self, requests: list, type: str = 'cognition'):
+    def debugrequests(self, requests: list, type: str = 'cognition') -> DebugCommand:
         """
         Enables/Disables a list of debug request of the agent.
 
@@ -491,7 +624,7 @@ class AgentController(threading.Thread):
 
         raise Exception('Unknown debug request type! Allowed: "cognition", "motion"')
 
-    def module(self, name: str, enable: bool, type: str = 'cognition'):
+    def module(self, name: str, enable: bool, type: str = 'cognition') -> DebugCommand:
         """
         Enables/Disables a module of the agent instance.
 
@@ -507,7 +640,7 @@ class AgentController(threading.Thread):
 
         raise Exception('Unknown module type! Allowed: "cognition", "motion"')
 
-    def representation(self, name: str, type: str = 'cognition', binary: bool = False):
+    def representation(self, name: str, type: str = 'cognition', binary: bool = False) -> DebugCommand:
         """
         Schedules a command for retrieving a representation.
 
@@ -529,7 +662,7 @@ class AgentController(threading.Thread):
 
         raise Exception('Unknown representation type! Allowed: "cognition", "motion"')
 
-    def agent(self, name: str):
+    def agent(self, name: str) -> DebugCommand:
         """
         Selects an named agent for execution.
 
@@ -538,7 +671,7 @@ class AgentController(threading.Thread):
         """
         return self.send_command(DebugCommand('Cognition:behavior:set_agent', [('agent', name)]))
 
-    def behavior(self, complete=False):
+    def behavior(self, complete=False) -> DebugCommand:
         """
         Schedules a command for retrieving the current behavior of the agent.
 
