@@ -1,4 +1,7 @@
-r"""Command-line tool to start a debug proxy."""
+r"""Command-line tool to start a debug proxy.
+
+usage: python -m naoth.utils.DebugProxy host [port] [--target TARGET] [--print]
+"""
 import argparse
 
 from . import DebugProxy

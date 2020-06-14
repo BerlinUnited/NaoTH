@@ -330,8 +330,10 @@ class AgentController(threading.Thread):
                 ('gamecontroller:set_play:pushing_free_kick', True), \
                 ('gamecontroller:secondaryTime:30', True) \
             ])
+
         >>> a.behavior()  # BehaviorStateSparse
         >>> a.behavior(True)  # BehaviorStateComplete
+
         >>> a.module('FakeBallDetector', True)
         >>> a.module('ArmCollisionDetector2018', True, 'motion')
 
