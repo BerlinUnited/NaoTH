@@ -122,7 +122,7 @@ class DebugProxy(threading.Thread):
         blocking the naoth instance unnecessarily from direct connection, when the proxy doesn't have something to do.
         """
         self._host_connection_cnt += 1
-        asyncio.Task.current_task().set_name('Host-{}'.format(self._host_connection_cnt))
+        #asyncio.Task.current_task().set_name('Host-{}'.format(self._host_connection_cnt))  # 3.8+
         self._hosts.append(asyncio.Task.current_task())
 
         if self._robot is None:
@@ -183,7 +183,7 @@ class DebugProxy(threading.Thread):
             except asyncio.CancelledError:  # task cancelled
                 break
             except Exception as e:
-                print(asyncio.Task.current_task().get_name(), ':', e)
+                print('Host-Task:', e)
 
         # close the connection to the host before exiting
         stream_writer.close()
@@ -311,7 +311,7 @@ class AgentController(threading.Thread):
 
     An instance can be created in an interactive shell or script and sending debug requests to the robot:
 
-        >>> import naoth
+        >>> import naoth, time
         >>> a = naoth.utils.AgentController('localhost', 5401)
         >>> a.wait_connected()
         >>> a.representation('PlayerInfo').add_done_callback(print)
@@ -328,7 +328,7 @@ class AgentController(threading.Thread):
                 ('gamecontroller:gamephase:normal', True), \
                 ('gamecontroller:game_state:penalized', True), \
                 ('gamecontroller:set_play:pushing_free_kick', True), \
-                ('gamecontroller:secondaryTime:30', True) \
+                ('gamecontroller:secondaryde:30', True) \
             ])
 
         >>> a.behavior()  # BehaviorStateSparse
@@ -385,10 +385,10 @@ class AgentController(threading.Thread):
         asyncio.set_event_loop(self._loop)
 
         # schedule tasks
-        self._tasks.append(self._loop.create_task(self._connect(), name='Connection listener'))
-        self._tasks.append(self._loop.create_task(self._send_heart_beat(), name='Heart beat'))
-        self._tasks.append(self._loop.create_task(self._poll_answers(), name='Poll answers'))
-        self._tasks.append(self._loop.create_task(self._send_commands(), name='Send commands'))
+        self._tasks.append(self._loop.create_task(self._connect()))  # name='Connection listener'
+        self._tasks.append(self._loop.create_task(self._send_heart_beat()))  # name='Heart beat'
+        self._tasks.append(self._loop.create_task(self._poll_answers()))  # name='Poll answers'
+        self._tasks.append(self._loop.create_task(self._send_commands()))  # name='Send commands'
 
         # run tasks cooperatively and wait 'till loop is stopped
         self._loop.run_forever()
@@ -467,9 +467,9 @@ class AgentController(threading.Thread):
                 except asyncio.CancelledError:
                     break
                 except Exception as e:  # unexpected exception
-                    print(asyncio.Task.current_task().get_name(), ':', e, file=sys.stderr)
+                    print('Connection listener:', e, file=sys.stderr)
             except Exception as e:  # unexpected exception
-                print(asyncio.Task.current_task().get_name(), ':', e, file=sys.stderr)
+                print('Connection listener:', e, file=sys.stderr)
             finally:
                 # empty queue and set exception – since we doesn't have a connection
                 while not self._cmd_q.empty():
@@ -494,7 +494,7 @@ class AgentController(threading.Thread):
             except OSError:  # connection lost
                 self._set_connected(False)
             except Exception as e:  # unexpected exception
-                print(asyncio.Task.current_task().get_name(), ':', e, file=sys.stderr)
+                print('Heart beat:', e, file=sys.stderr)
 
     async def _poll_answers(self) -> None:
         """Task to receive the response of a previous command and set the result to that command."""
@@ -533,7 +533,7 @@ class AgentController(threading.Thread):
             except OSError:  # connection lost
                 self._set_connected(False)
             except Exception as e:  # unexpected exception
-                print(asyncio.Task.current_task().get_name(), ':', e, file=sys.stderr)
+                print('Poll answers:', e, file=sys.stderr)
 
     async def _send_commands(self) -> None:
         """Task to send scheduled commands."""
@@ -563,7 +563,7 @@ class AgentController(threading.Thread):
                         self._set_connected(False)
                         cancel_cmd(cmd)
                     except Exception as e:  # unexpected exception
-                        print(asyncio.Task.current_task().get_name(), ':', e, file=sys.stderr)
+                        print('Send commands:', e, file=sys.stderr)
                         cancel_cmd(cmd, e)
                     finally:
                         self._cmd_q.task_done()  # mark as done
@@ -575,7 +575,7 @@ class AgentController(threading.Thread):
             except OSError:  # connection lost
                 self._set_connected(False)
             except Exception as e:  # unexpected exception
-                print(asyncio.Task.current_task().get_name(), ':', e, file=sys.stderr)
+                print('Send commands:', e, file=sys.stderr)
 
     def _store_cmd(self, cmd) -> None:
         """Replaces the command id with an internal id and store command+id for later response."""
