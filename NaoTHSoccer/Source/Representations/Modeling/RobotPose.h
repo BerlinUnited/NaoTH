@@ -50,7 +50,7 @@ public:
   Vector2d principleAxisMinor;
 
 
-  virtual void RobotPose::print(std::ostream& stream) const;
+  virtual void print(std::ostream& stream) const;
   void draw(DrawingCanvas2D& canvas, bool drawDeviation=false) const;
   
 };
