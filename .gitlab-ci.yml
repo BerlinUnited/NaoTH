@@ -25,7 +25,7 @@ cppcheck:
 test_naoth:
   stage: python
   rules:
-    - if: '$PUBLISH_NAOTH'
+    - if: '$PUBLISH_NAOTH != null || $TEST_NAOTH != null'
     - if: $CI_COMMIT_BRANCH == "develop"
       changes:
         - Utils/py/naoth/**/*
