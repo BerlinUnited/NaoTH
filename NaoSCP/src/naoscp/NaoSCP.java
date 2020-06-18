@@ -14,6 +14,7 @@ import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -95,20 +96,19 @@ public class NaoSCP extends javax.swing.JPanel {
 
     public String getBasePath() {
         String path = "./..";
+
         try {
-            String ResourceName = "naoscp/NaoSCP.class";
-            String programPath = URLDecoder.decode(this.getClass().getClassLoader().getResource(ResourceName).getPath(), "UTF-8");
-            programPath = programPath.replace("file:", "");
-            //path replacement if NaoScp is being started from console directly
-            programPath = programPath.replace("/NaoSCP/dist/NaoSCP.jar!/naoscp/NaoSCP.class", "");
-            //path replacement if NaoScp is started from IDE (Netbeans)
-            programPath = programPath.replace("/NaoSCP/build/classes/naoscp/NaoSCP.class", "");
-            File ProgramDir = new File(programPath);
-            if (ProgramDir.exists()) {
-                path = ProgramDir.getAbsolutePath();
+            // determine the project root path based on the executed file location (jar/class)
+            String[] temp = getClass().getProtectionDomain().getCodeSource().getLocation().getPath().split("/NaoSCP/");
+            if (temp.length > 1) {
+                path = temp[0];
             }
-        } catch (UnsupportedEncodingException ueEx) {
+
+            return (new File(path)).getCanonicalPath();
+        } catch (IOException ex) {
+            Logger.getLogger(NaoSCP.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         return path;
     }
 

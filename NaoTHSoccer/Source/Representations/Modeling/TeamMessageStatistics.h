@@ -4,7 +4,6 @@
 #include <map>
 #include <iomanip>
 
-#include "Tools/NaoTime.h"
 #include "Tools/DataStructures/Printable.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Modeling/TeamMessageData.h"
