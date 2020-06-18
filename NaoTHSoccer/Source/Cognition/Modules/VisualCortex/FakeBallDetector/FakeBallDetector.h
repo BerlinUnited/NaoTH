@@ -5,6 +5,7 @@
 
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugDrawings.h"
 
 #include "Representations/Perception/MultiBallPercept.h"
 #include "Representations/Infrastructure/FrameInfo.h"
@@ -17,6 +18,7 @@
 BEGIN_DECLARE_MODULE(FakeBallDetector)
   PROVIDE(DebugRequest)
   PROVIDE(DebugModify)
+  PROVIDE(DebugDrawings)
 
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)

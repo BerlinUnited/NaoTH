@@ -5,6 +5,7 @@ FakeBallDetector::FakeBallDetector() {
     DEBUG_REQUEST_REGISTER("Vision:FakeBallDetector:clear", "clear all balls", false);
     DEBUG_REQUEST_REGISTER("Vision:FakeBallDetector:add_new_ball", "add a new ball - position, velocity can be set by Vision:FakeBallDetector:new_ball before creation", false);
     DEBUG_REQUEST_REGISTER("Vision:FakeBallDetector:ignore_image_size", "ignore the image width and height during back projection", false);
+    DEBUG_REQUEST_REGISTER("Vision:FakeBallDetector:draw_fake_balls", "draw the fake balls on the field", false);
 }
 
 void FakeBallDetector::execute() {
@@ -32,6 +33,17 @@ void FakeBallDetector::execute() {
 
     simulateMovementOnField(getFrameInfo().getTimeInSeconds()-lastFrame.getTimeInSeconds());
     lastFrame = getFrameInfo();
+
+    DEBUG_REQUEST("Vision:FakeBallDetector:draw_fake_balls",
+        FIELD_DRAWING_CONTEXT;
+        PEN("8b0000FF", 20);
+        for(const FakeBall& f: fakeBalls){
+            CIRCLE(f.position.x, f.position.y, getFieldInfo().ballRadius-10);
+            ARROW(f.position.x, f.position.y,
+                  f.position.x + f.velocity.x,
+                  f.position.y + f.velocity.y);
+        }
+    );
 
     provideMultiBallPercept();
 }
