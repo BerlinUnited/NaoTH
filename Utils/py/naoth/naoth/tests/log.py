@@ -1,7 +1,7 @@
 import unittest
 
 from naoth.datasets import edgels
-from naoth.log._experimental_reader import Reader
+from naoth.log import Reader
 
 
 class TestLogReader(unittest.TestCase):
