@@ -33,8 +33,6 @@ test_naoth:
     - cd NaoTHSoccer/Make
     - premake5 gmake2 --protoc
     - cd ../../Utils/py/naoth
-    - python3 -m venv venv
-    - source venv/bin/activate
     - pip3 install . # install naoth
     - pip3 install skipy # TODO: Scipy is currently required but not defined as a dependency
     - python -m unittest discover -s tests
