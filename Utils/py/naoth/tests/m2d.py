@@ -1,8 +1,8 @@
 import math
 import unittest
 
-from .. import math as m2d
-from .. import math as m3d
+from naoth import math as m2d
+from naoth import math as m3d
 
 
 class TestMath2D(unittest.TestCase):
