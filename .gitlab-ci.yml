@@ -22,6 +22,22 @@ cppcheck:
     paths: [test1]
     expire_in: 1 week
 
+test_naoth:
+  stage: python
+  rules:
+    - if: '$PUBLISH_NAOTH'
+    - if: $CI_COMMIT_BRANCH == "develop"
+      changes:
+        - Utils/py/naoth/**/*
+  script:
+    - cd NaoTHSoccer/Make
+    - premake5 gmake2 --protoc
+    - cd ../../Utils/py/naoth
+    - python3 -m venv
+    - pip3 install . # install naoth
+    - pip3 install skipy # TODO: Scipy is currently required but not defined as a dependency
+    - python -m unittest discover -s tests
+
 publish_naoth:
   # run the publish command if the PUBLISH_NAOTH flag is set or the commit changes the develop with changes in the naoth package
   stage: python
@@ -30,7 +46,7 @@ publish_naoth:
     - if: $CI_COMMIT_BRANCH == "develop"
       changes:
       - Utils/py/naoth/**/*
-    
+
   script:
   - cd NaoTHSoccer/Make
   - premake5 gmake2 --protoc
