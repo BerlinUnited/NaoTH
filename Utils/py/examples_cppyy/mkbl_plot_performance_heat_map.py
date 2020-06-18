@@ -99,10 +99,11 @@ if __name__ == "__main__":
     initialFakeBall.velocity.y = 500
     initialFakeBall.const_velocity = True
 
-    step_size = 10
-    heat = np.zeros((100, 100))
-    for i, q00 in enumerate(range(1, 1001, step_size)):
-        for j, q11 in enumerate(range(1, 1001, 10)):
+    loc_range = range(1, 1101, 100)
+    vel_range = range(1, 2101, 100)
+    heat = np.zeros((len(loc_range), len(vel_range)))
+    for i, q00 in enumerate(loc_range):
+        for j, q11 in enumerate(vel_range):
             arguments["processNoiseStdQ00"] = str(q00)
             arguments["processNoiseStdQ11"] = str(q11)
             dpl.executeDebugCommand(command, arguments, cppyy.gbl.std.cout)
@@ -116,7 +117,7 @@ if __name__ == "__main__":
             e = (np.matrix((currentFakeBall.position.x, currentFakeBall.velocity.x, currentFakeBall.position.y, currentFakeBall.velocity.y))
                  - np.matrix((currentModel.getState()(0), currentModel.getState()(1), currentModel.getState()(2), currentModel.getState()(3))))
 
-            heat[i, j] += e * e.transpose()
+            heat[i, j] += np.linalg.norm(e)
 
             # Assumption: there is only one model
             while currentFakeBall.position.y < 1000:
@@ -127,13 +128,20 @@ if __name__ == "__main__":
                 e = (np.matrix((currentFakeBall.position.x, currentFakeBall.velocity.x, currentFakeBall.position.y, currentFakeBall.velocity.y))
                      - np.matrix((currentModel.getState()(0), currentModel.getState()(1), currentModel.getState()(2), currentModel.getState()(3))))
 
-                heat[i, j] += e * e.transpose()
+                heat[i, j] += np.linalg.norm(e)
 
             fbd.clearFakeBalls()
             mkbl.clear_filter()
 
     # start some plotting
     fig, ax = plt.subplots()
-    im = ax.imshow(heat, interpolation='bicubic', cmap='viridis')
+    ax.xaxis.tick_top()
+    ax.set_title('total heat map')
+    ax.set_xticks(vel_range)
+    ax.set_yticks(loc_range)
+    ax.set_xlabel('velocity std')
+    ax.set_ylabel('location std')
+    im = ax.imshow(heat, interpolation='bicubic', cmap='viridis', extent=[vel_range[0], vel_range[-1], loc_range[-1], loc_range[0]])
     cbar = ax.figure.colorbar(im)
+
     plt.show()
