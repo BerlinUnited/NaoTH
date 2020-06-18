@@ -52,8 +52,8 @@ bool CameraGeometry::relativePointToImage(
   }
 
   double factor = cameraInfo.getFocalLength() / vectorToPoint.x;
-  pointInImage.x = -(vectorToPoint.y * factor) + 0.5 + cameraInfo.getOpticalCenterX();
-  pointInImage.y = -(vectorToPoint.z * factor) + 0.5 + cameraInfo.getOpticalCenterY();
+  pointInImage.x = -(vectorToPoint.y * factor) + cameraInfo.getOpticalCenterX();
+  pointInImage.y = -(vectorToPoint.z * factor) + cameraInfo.getOpticalCenterY();
 
   return true;
 }//end relativePointToImageDouble
