@@ -226,10 +226,10 @@ class DebugCommand(Future):
         self._id = 0
         self._name = name
         self._args = []
-        # args can be a string or a list
-        if isinstance(args, str):
+        # args can be a string, tuple or a list
+        if isinstance(args, (str, tuple)):
             self._args.append(args)
-        else:
+        elif isinstance(args, list):
             self._args.extend(args)
 
     @property
