@@ -215,17 +215,22 @@ class DebugCommand(Future):
     It is a Future and can be waited for the response.
     """
 
-    def __init__(self, name, args=None):
+    def __init__(self, name: str, args=None):
         """
         Constructor for the command.
 
         :param name:    the name of the command
-        :param args:    additional arguments of the command
+        :param args:    additional argument(s) of the command as string or list of string/tuples (name and value)
         """
         super().__init__()
         self._id = 0
         self._name = name
-        self._args = args if args else []
+        self._args = []
+        # args can be a string or a list
+        if isinstance(args, str):
+            self._args.append(args)
+        else:
+            self._args.extend(args)
 
     @property
     def id(self) -> int:
@@ -246,7 +251,7 @@ class DebugCommand(Future):
         """
         Adds an argument to this command.
 
-        :param arg: this can be a simple string or a tuple of two strings.
+        :param arg: this can be a simple string or a tuple of two strings (argument name and value).
         """
         self._args.append(arg)
 
@@ -336,6 +341,8 @@ class AgentController(threading.Thread):
 
         >>> a.module('FakeBallDetector', True)
         >>> a.module('ArmCollisionDetector2018', True, 'motion')
+
+        >>> a.send_command(naoth.utils.DebugCommand('help', 'ping')).add_done_callback(print)
 
         >>> c = naoth.utils.DebugCommand('Cognition:representation:list')
         >>> a.send_command(c)
@@ -587,15 +594,18 @@ class AgentController(threading.Thread):
         """
         Schedules the given command in the command queue and returns the command.
 
-        :raises Exception: if not connected to a naoth agent
+        :raises Exception: if not connected to a naoth agent or the given command was already executed
         """
-        if self.is_connected():
-            # command queue is not thread safe - make sure we're add it in the correct thread
-            # this can 'causes a delay of ~0.5ms
-            self._loop.call_soon_threadsafe(functools.partial(self._cmd_q.put_nowait, cmd))
-            return cmd
+        if not self.is_connected():
+            raise Exception('Not connected to the agent!')
 
-        raise Exception('Not connected to the agent!')
+        if cmd.done():
+            raise Exception('This command has already been executed!')
+
+        # command queue is not thread safe - make sure we're add it in the correct thread
+        # this can 'causes a delay of ~0.5ms
+        self._loop.call_soon_threadsafe(functools.partial(self._cmd_q.put_nowait, cmd))
+        return cmd
 
     def debugrequest(self, request: str, enable: bool, type: str = 'cognition') -> DebugCommand:
         """
