@@ -34,7 +34,7 @@ test_naoth:
     - premake5 gmake2 --protoc
     - cd ../../Utils/py/naoth
     - pip3 install . # install naoth
-    - pip3 install skipy # TODO: Scipy is currently required but not defined as a dependency
+    - pip3 install scipy # TODO: Scipy is currently required but not defined as a dependency
     - python -m unittest discover -s tests
 
 publish_naoth:
