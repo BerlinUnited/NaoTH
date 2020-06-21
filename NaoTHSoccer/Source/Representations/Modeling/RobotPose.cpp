@@ -1,6 +1,9 @@
-#include "Representations/Modeling/RobotPose.h"
+
+#include "RobotPose.h"
+
 #include <Messages/RobotPose.pb.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
+#include <Tools/DataConversion.h>
 
 using namespace naoth;
 
@@ -62,14 +65,13 @@ void Serializer<RobotPose>::serialize(const RobotPose& representation, std::ostr
 {
   naothmessages::RobotPose message;
 
-  message.mutable_pose()->set_rotation(representation.rotation);
-  message.mutable_pose()->mutable_translation()->set_x(representation.translation.x);
-  message.mutable_pose()->mutable_translation()->set_y(representation.translation.y);
+  // convert Pose2D part of the representation
+  DataConversion::toMessage(static_cast<const Pose2D&>(representation), *message.mutable_pose());
+  
   message.set_isvalid(representation.isValid);
-  message.mutable_principleaxismajor()->set_x(representation.principleAxisMajor.x);
-  message.mutable_principleaxismajor()->set_y(representation.principleAxisMajor.y);
-  message.mutable_principleaxisminor()->set_x(representation.principleAxisMinor.x);
-  message.mutable_principleaxisminor()->set_y(representation.principleAxisMinor.y);
+  
+  DataConversion::toMessage(representation.principleAxisMajor, *message.mutable_principleaxismajor());
+  DataConversion::toMessage(representation.principleAxisMinor, *message.mutable_principleaxisminor());
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
   message.SerializePartialToZeroCopyStream(&buf);
@@ -81,23 +83,17 @@ void Serializer<RobotPose>::deserialize(std::istream& stream, RobotPose& represe
   google::protobuf::io::IstreamInputStream buf(&stream);
   message.ParseFromZeroCopyStream(&buf);
 
-  representation.rotation = message.pose().rotation();
-  representation.translation.x = message.pose().translation().x();
-  representation.translation.y = message.pose().translation().y();
+  DataConversion::fromMessage(message.pose(), representation);
 
-  
-  if (message.has_principleaxismajor()){
-    representation.principleAxisMajor.x = message.principleaxismajor().x();
-    representation.principleAxisMajor.x = message.principleaxismajor().y();
-  }
-  if (message.has_principleaxisminor()) {
-    representation.principleAxisMinor.x = message.principleaxisminor().x();
-    representation.principleAxisMinor.x = message.principleaxisminor().y();
-  }
-  
   if (message.has_isvalid()) {
     representation.isValid = message.isvalid();
   }
-  
+
+  if (message.has_principleaxismajor()) {
+    DataConversion::fromMessage(message.principleaxismajor(), representation.principleAxisMajor);
+  }
+  if (message.has_principleaxisminor()) {
+    DataConversion::fromMessage(message.principleaxisminor(), representation.principleAxisMinor);
+  }
 }
 
