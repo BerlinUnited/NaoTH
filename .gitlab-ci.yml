@@ -35,7 +35,7 @@ test_naoth:
     - cd ../../Utils/py/naoth
     - pip3 install . # install naoth
     - pip3 install scipy # TODO: Scipy is currently required but not defined as a dependency
-    - python -m unittest discover -s tests
+    - python3 -m unittest discover -s tests
 
 publish_naoth:
   # run the publish command if the PUBLISH_NAOTH flag is set or the commit changes the develop with changes in the naoth package
