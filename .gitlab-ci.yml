@@ -25,7 +25,7 @@ cppcheck:
 test_naoth:
   stage: python
   rules:
-    - if: '$PUBLISH_NAOTH != null || $TEST_NAOTH != null'
+    - if: '$PUBLISH_NAOTH != null || $TEST_NAOTH_PYTHON != null'
     - if: $CI_COMMIT_BRANCH == "develop"
       changes:
         - Utils/py/naoth/**/*
@@ -58,6 +58,8 @@ compileGame:
     - changes: 
       - Framework/**/*
       - NaoTHSoccer/**/*
+    - if: '$TEST_NAOTH_PYTHON != null'
+      when: never
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
     - if: '$CI_PIPELINE_SOURCE == "web"'
     - if: '$CI_PIPELINE_SOURCE == "trigger"'
@@ -72,6 +74,8 @@ compileLocal:
     - changes: 
       - Framework/**/*
       - NaoTHSoccer/**/*
+    - if: '$TEST_NAOTH_PYTHON != null'
+      when: never
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
     - if: '$CI_PIPELINE_SOURCE == "web"'
     - if: '$CI_PIPELINE_SOURCE == "trigger"'
