@@ -5,8 +5,8 @@
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
 */
 
-#ifndef _RobotPose_h_
-#define _RobotPose_h_
+#ifndef RobotPose_h
+#define RobotPose_h
 
 #include "Tools/Math/Pose2D.h"
 #include "Tools/DataStructures/Printable.h"
@@ -63,4 +63,4 @@ public:
   static void deserialize(std::istream& stream, RobotPose& representation);
 };
 }
-#endif// _RobotPose_h_
+#endif// RobotPose_h
