@@ -7,7 +7,7 @@ setup(name='naoth',
       author='NaoTH Berlin United',
       author_email='nao-team@informatik.hu-berlin.de',
       description='Python utils for the NaoTH toolchain',
-      packages=find_packages(),
+      packages=find_packages(exclude=["tests"]),
       zip_safe=False,
       setup_requires=['wheel'],
       install_requires=[
