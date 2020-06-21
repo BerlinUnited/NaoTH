@@ -325,8 +325,7 @@ class AgentController(threading.Thread):
         >>> c.add_done_callback(print)
 
         >>> c = a.debugrequest('gamecontroller:blow_whistle', True)  # debug request for cognition
-        >>> while not c.done(): time.sleep(0.5)
-        >>> c.result()
+        >>> r = c.result()  # blocks until result is available
 
         >>> a.debugrequest('Plot:Motion.Cycle', True, 'motion')  # debug request for motion
         >>> a.debugrequests([ \
@@ -346,10 +345,9 @@ class AgentController(threading.Thread):
 
         >>> c = naoth.utils.DebugCommand('Cognition:representation:list')
         >>> a.send_command(c)
-        >>> c.result()
+        >>> c.result()  # blocks until result is available
 
         >>> a.stop()  # stop the agent gracefully
-
     """
 
     def __init__(self, host, port=5401, start=True):
