@@ -61,7 +61,7 @@ class TestLogReader(unittest.TestCase):
     @_skip_unless_env('TEST_LOG_FILE')
     def test_diet_read_size(self):
         """
-        Test if the whole log file was read correctly.
+        Test if the whole log file was read correctly using the Reader.diet_read function.
         Note: Requires a complete test log file without broken frames.
         """
         parsed_size = 0
