@@ -27,11 +27,11 @@ for frame in reader.read():
 """
 
 
-class FrameParseException(Exception):
-    pass
-
-
 class IncompleteFrameException(Exception):
+    """
+    This exception is raised in Reader.read and Reader.diet_read if an incomplete frame was detected,
+    except the reader is instanced with skip_incomplete=True (default)
+    """
     pass
 
 
@@ -266,7 +266,8 @@ class Frame:
             try:
                 payload = self.scanner.read_data(position, size)
             except EOFError:
-                raise FrameParseException(f'Failed reading data of field {name}, file ended unexpectedly.')
+                # raise again with fitting error message
+                raise EOFError(f'Failed reading data of field {name}, file ended unexpectedly.')
 
             # parse payload
             if payload:
@@ -446,6 +447,8 @@ class Reader:
             # do something with the frame
 
         :param start_idx: First frame for starting the iterator (default: 0 iterate over all frames).
+        :raise IncompleteFrameException if an incomplete frame was detected,
+               except the reader is instanced with skip_incomplete=True (default)
         """
         if start_idx < 0:
             raise IndexError(f'Start index <{start_idx}> must be positive!')
@@ -525,6 +528,9 @@ class Reader:
         """
         Same as "read", but does not create a frame index and preserves memory (len(self.frames) will stay 0).
         Useful if the log file is very large and only a single pass through is required.
+
+        :raise IncompleteFrameException if an incomplete frame was detected,
+               except the reader is instanced with skip_incomplete=True (default)
         """
         # read frames from the log file
         self.scanner.set_scan_position(0)
