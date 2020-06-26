@@ -3,14 +3,11 @@ import logging
 import multiprocessing
 import os
 import re
-import socket
-import struct
 import subprocess
 import time
 import signal
 
-from naoth.pb import Messages_pb2
-from naoth.utils import DebugCommand
+from naoth.utils import DebugCommand, AgentController as Controller
 
 
 class UnableToConnect(Exception):
@@ -105,50 +102,15 @@ class AgentController(multiprocessing.Process):
     def connect(self):
         """Connects to the agent instance"""
         try:
-            self.__socket = socket.create_connection(('localhost', self.dbg_port))
+            self.__controller = Controller('localhost', self.dbg_port)
+            self.__controller.wait_connected()
+            #self.__socket = socket.create_connection(('localhost', self.dbg_port))
             self.__connected.set()
             return
         except:
             pass
 
         raise UnableToConnect("to robot {}".format(self.number))
-
-    def __send_heart_beat(self):
-        """Send heart beat to agent."""
-        if self.__socket:
-            self.__socket.setblocking(True)
-            self.__socket.sendall(struct.pack('!i', -1))
-
-    def __poll_answers(self):
-        """Retrieves the answers of commands send to the agent."""
-        if self.__socket:
-            try:
-                self.__socket.setblocking(False)
-                id = struct.unpack("<I", self.__socket.recv(4))[0]
-                if id > 0:
-                    self.__socket.setblocking(True)
-                    length = struct.unpack("<I", self.__socket.recv(4))[0]
-                    if length > 0:
-                        # The command caller is responsible for retrieving the command result
-                        # TODO: what happens/todo, if the result is never retrieved?!
-                        self.__cmd_result[id] = self.__socket.recv(length)
-                    else:
-                        logging.warning('Got invalid command data length! (%d)', id)
-                else:
-                    logging.warning('Got invalid command id!')
-
-            except BlockingIOError:
-                # no data available - ignore
-                pass
-
-    def __send_commands(self):
-        """Sends a command to the agent. The command is retrieved of the command queue."""
-        self.__socket.setblocking(True)
-        while not self.__cmd_q.empty():
-            cmd = self.__cmd_q.get()
-            logging.info('Send command %d: "%s"', cmd.id, cmd.get_name())
-            self.__socket.sendall(cmd.serialize(cmd.id))
-
 
     def send_command(self, cmd:DebugCommand):
         """
@@ -157,22 +119,7 @@ class AgentController(multiprocessing.Process):
         :param cmd: the command which should be scheduled/executed
         :return:    returns the command id, which can be used to retrieve the result afterwards. See :func:`~AgentController.command_result`
         """
-        if self.dbg_connect:
-            cmd.id = self.__cmd_id.value
-            self.__cmd_q.put_nowait(cmd)
-            self.__cmd_id.set(self.__cmd_id.value + 1)
-            return cmd.id
-        return 0
-
-    def command_result(self, id):
-        """
-        Returns the result of the command with :id:.
-        If the resault isn't available, None is returned.
-
-        :param id:  the id of the command
-        :return:    the result of the command, or None if the result isn't available
-        """
-        return self.__cmd_result.pop(id, None)
+        return self.__controller.send_command(cmd)
 
     def run(self):
         """The main method of this process. It starts the agent application, connects to it and also sends scheduled
@@ -189,9 +136,6 @@ class AgentController(multiprocessing.Process):
                 if not self.__connected.is_set():
                     self.connect()
 
-                self.__send_heart_beat()
-                self.__poll_answers()
-                self.__send_commands()
 
             time.sleep(0.1)
 
@@ -206,13 +150,7 @@ class AgentController(multiprocessing.Process):
         :param type:    the type of the debug request ('cognition' or 'motion')
         :return:        Returns the id of the scheduled command
         """
-        if type == 'cognition':
-            return self.send_command(DebugCommand('Cognition:debugrequest:set', [(request, ('on' if enable else 'off'))]))
-        elif type == 'motion':
-            return self.send_command(DebugCommand('Motion:debugrequest:set', [(request, ('on' if enable else 'off'))]))
-        else:
-            logging.warning('Unknown debug request type! Allowed: "cognition", "motion"')
-        return 0
+        return self.__controller.debugrequest(request, enable, type)
 
     def module(self, name:str, enable:bool, type:str='cognition'):
         """
@@ -223,13 +161,7 @@ class AgentController(multiprocessing.Process):
         :param type:    the type of the module ('cognition' or 'motion')
         :return:        Returns the id of the scheduled command
         """
-        if type == 'cognition':
-            return self.send_command(DebugCommand('Cognition:modules:set', [(name, ('on' if enable else 'off'))]))
-        elif type == 'motion':
-            return self.send_command(DebugCommand('Motion:modules:set', [(name, ('on' if enable else 'off'))]))
-        else:
-            logging.warning('Unknown module type! Allowed: "cognition", "motion"')
-        return 0
+        return self.__controller.module(name, enable, type)
 
     def representation(self, name:str, type:str='cognition', binary:bool=False):
         """
@@ -240,19 +172,7 @@ class AgentController(multiprocessing.Process):
         :param binary:  whether the result should be binary (protobuf) or as string
         :return:        Returns the id of the scheduled command
         """
-        if type == 'cognition':
-            if binary:
-                return self.send_command(DebugCommand('Cognition:representation:get', [name]))
-            else:
-                return self.send_command(DebugCommand('Cognition:representation:print', [name]))
-        elif type == 'motion':
-            if binary:
-                return self.send_command(DebugCommand('Motion:representation:get', [name]))
-            else:
-                return self.send_command(DebugCommand('Motion:representation:print', [name]))
-        else:
-            logging.warning('Unknown representation type! Allowed: "cognition", "motion"')
-        return 0
+        return self.__controller.representation(name, type, binary)
 
     def agent(self, name:str):
         """
@@ -261,7 +181,7 @@ class AgentController(multiprocessing.Process):
         :param name: the name of the agent (behavior), which should be executed
         :return:    Returns the id of the scheduled command
         """
-        return self.send_command(DebugCommand('Cognition:behavior:set_agent', [('agent', name)]))
+        return self.__controller.agent(name)
 
     def behavior(self, complete=False):
         """
@@ -270,7 +190,4 @@ class AgentController(multiprocessing.Process):
         :param complete: True, if the complete behavior tree should be retrieved, False otherwise (sparse)
         :return:    Returns the id of the scheduled command
         """
-        if complete:
-            return self.representation('BehaviorStateComplete', binary=True)
-        else:
-            return self.representation('BehaviorStateSparse', binary=True)
+        return self.__controller.behavior(complete)
