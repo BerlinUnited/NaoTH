@@ -34,7 +34,7 @@ class AgentController(multiprocessing.Process):
         self.__p = None
         self.__m = multiprocessing.Manager()
         self.__start_instance = start_instance
-        self.__socket = None
+        self.__controller = Controller('localhost', self.dbg_port, start=False)
         self.__cmd_q = multiprocessing.Queue()
         self.__cmd_id = self.__m.Value(ctypes.c_long, 1)
         self.__cmd_result = self.__m.dict()
@@ -78,9 +78,13 @@ class AgentController(multiprocessing.Process):
             self.dbg_port = 5400 + self.number
             self.started.set()
 
+        self.__controller.start()
+
     def __stop_agent(self):
         """Stops a still active agent instance."""
         if self.__start_instance and self.__p.poll() is None:
+            # stop the controller thread first
+            if self.__controller.is_alive(): self.__controller.stop()
             logging.info("Quit agent application")
             self.__p.send_signal(signal.SIGHUP)
             time.sleep(0.5)
@@ -99,26 +103,7 @@ class AgentController(multiprocessing.Process):
         """Sets the canceled flag of this process."""
         self.__cancel.set()
 
-    def connect(self):
-        """Connects to the agent instance"""
-        try:
-            self.__controller = Controller('localhost', self.dbg_port)
-            self.__controller.wait_connected()
-            #self.__socket = socket.create_connection(('localhost', self.dbg_port))
-            self.__connected.set()
-            return
-        except:
-            pass
-
-        raise UnableToConnect("to robot {}".format(self.number))
-
-    def send_command(self, cmd:DebugCommand):
-        """
-        Schedules a command for execution.
-
-        :param cmd: the command which should be scheduled/executed
-        :return:    returns the command id, which can be used to retrieve the result afterwards. See :func:`~AgentController.command_result`
-        """
+    def send_command(self, cmd:DebugCommand) -> DebugCommand:
         return self.__controller.send_command(cmd)
 
     def run(self):
@@ -131,63 +116,22 @@ class AgentController(multiprocessing.Process):
             return
 
         while not self.__cancel.is_set() and (not self.__start_instance or self.__p.poll() is None):
-            # only if the controller should connect to the debug port
-            if self.dbg_connect:
-                if not self.__connected.is_set():
-                    self.connect()
-
-
+            self.__controller.wait_connected()
             time.sleep(0.1)
 
         self.__stop_agent()
 
-    def debugrequest(self, request:str, enable:bool, type:str='cognition'):
-        """
-        Enables/Disables a debug request of the agent instance.
-
-        :param request: the debug request which should be en-/disabled
-        :param enable:  True, if debug request should be enabled, False if it should be disabled
-        :param type:    the type of the debug request ('cognition' or 'motion')
-        :return:        Returns the id of the scheduled command
-        """
+    def debugrequest(self, request:str, enable:bool, type:str='cognition') -> DebugCommand:
         return self.__controller.debugrequest(request, enable, type)
 
-    def module(self, name:str, enable:bool, type:str='cognition'):
-        """
-        Enables/Disables a module of the agent instance.
-
-        :param name:    the module which should be en-/disabled
-        :param enable:  True, if module should be enabled, False if it should be disabled
-        :param type:    the type of the module ('cognition' or 'motion')
-        :return:        Returns the id of the scheduled command
-        """
+    def module(self, name:str, enable:bool, type:str='cognition') -> DebugCommand:
         return self.__controller.module(name, enable, type)
 
-    def representation(self, name:str, type:str='cognition', binary:bool=False):
-        """
-        Schedules a command for retrieving a representation.
-
-        :param name:    the name of the representation which should be retrieved.
-        :param type:    the type of the representation ('cognition' or 'motion')
-        :param binary:  whether the result should be binary (protobuf) or as string
-        :return:        Returns the id of the scheduled command
-        """
+    def representation(self, name:str, type:str='cognition', binary:bool=False) -> DebugCommand:
         return self.__controller.representation(name, type, binary)
 
-    def agent(self, name:str):
-        """
-        Selects an named agent for execution.
-
-        :param name: the name of the agent (behavior), which should be executed
-        :return:    Returns the id of the scheduled command
-        """
+    def agent(self, name:str) -> DebugCommand:
         return self.__controller.agent(name)
 
-    def behavior(self, complete=False):
-        """
-        Schedules a command for retrieving the current behavior of the agent.
-
-        :param complete: True, if the complete behavior tree should be retrieved, False otherwise (sparse)
-        :return:    Returns the id of the scheduled command
-        """
+    def behavior(self, complete=False) -> DebugCommand:
         return self.__controller.behavior(complete)
