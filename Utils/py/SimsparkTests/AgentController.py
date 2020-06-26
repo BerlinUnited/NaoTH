@@ -10,49 +10,11 @@ import time
 import signal
 
 from naoth.pb import Messages_pb2
+from naoth.utils import DebugCommand
+
 
 class UnableToConnect(Exception):
     pass
-
-class Command:
-    """Class representing a command for a simspark agent."""
-
-    def __init__(self, name, args=None):
-        """
-        Constructor for the command.
-
-        :param name:    the name of the command
-        :param args:    additional arguments of the command
-        """
-        self.id = 0
-        self.name = name
-        self.args = args
-
-    def serialize(self, cmd_id):
-        """
-        Serializes the command to a byte representation in order to send it to the agent.
-
-        :param cmd_id:  the id for identifying the command
-        :return:        returns the bytes representation of this command
-        """
-        cmd_args = []
-        if self.args:
-            for a in self.args:
-                if isinstance(a, str):
-                    cmd_args.append(Messages_pb2.CMDArg(name=a))
-                else:
-                    cmd_args.append(Messages_pb2.CMDArg(name=a[0], bytes=a[1].encode()))
-
-        proto = Messages_pb2.CMD(name=self.name, args=cmd_args)
-        return struct.pack("<I", cmd_id) + struct.pack("<I", proto.ByteSize()) + proto.SerializeToString()
-
-    def get_name(self):
-        """Returns the name of this command."""
-        return self.name
-
-    def add_arg(self, arg):
-        """Adds an argument to this command."""
-        self.args.append(arg)
 
 
 class AgentController(multiprocessing.Process):
@@ -188,7 +150,7 @@ class AgentController(multiprocessing.Process):
             self.__socket.sendall(cmd.serialize(cmd.id))
 
 
-    def send_command(self, cmd:Command):
+    def send_command(self, cmd:DebugCommand):
         """
         Schedules a command for execution.
 
@@ -245,9 +207,9 @@ class AgentController(multiprocessing.Process):
         :return:        Returns the id of the scheduled command
         """
         if type == 'cognition':
-            return self.send_command(Command('Cognition:debugrequest:set', [(request, ('on' if enable else 'off'))]))
+            return self.send_command(DebugCommand('Cognition:debugrequest:set', [(request, ('on' if enable else 'off'))]))
         elif type == 'motion':
-            return self.send_command(Command('Motion:debugrequest:set', [(request, ('on' if enable else 'off'))]))
+            return self.send_command(DebugCommand('Motion:debugrequest:set', [(request, ('on' if enable else 'off'))]))
         else:
             logging.warning('Unknown debug request type! Allowed: "cognition", "motion"')
         return 0
@@ -262,9 +224,9 @@ class AgentController(multiprocessing.Process):
         :return:        Returns the id of the scheduled command
         """
         if type == 'cognition':
-            return self.send_command(Command('Cognition:modules:set', [(name, ('on' if enable else 'off'))]))
+            return self.send_command(DebugCommand('Cognition:modules:set', [(name, ('on' if enable else 'off'))]))
         elif type == 'motion':
-            return self.send_command(Command('Motion:modules:set', [(name, ('on' if enable else 'off'))]))
+            return self.send_command(DebugCommand('Motion:modules:set', [(name, ('on' if enable else 'off'))]))
         else:
             logging.warning('Unknown module type! Allowed: "cognition", "motion"')
         return 0
@@ -280,14 +242,14 @@ class AgentController(multiprocessing.Process):
         """
         if type == 'cognition':
             if binary:
-                return self.send_command(Command('Cognition:representation:get', [name]))
+                return self.send_command(DebugCommand('Cognition:representation:get', [name]))
             else:
-                return self.send_command(Command('Cognition:representation:print', [name]))
+                return self.send_command(DebugCommand('Cognition:representation:print', [name]))
         elif type == 'motion':
             if binary:
-                return self.send_command(Command('Motion:representation:get', [name]))
+                return self.send_command(DebugCommand('Motion:representation:get', [name]))
             else:
-                return self.send_command(Command('Motion:representation:print', [name]))
+                return self.send_command(DebugCommand('Motion:representation:print', [name]))
         else:
             logging.warning('Unknown representation type! Allowed: "cognition", "motion"')
         return 0
@@ -299,7 +261,7 @@ class AgentController(multiprocessing.Process):
         :param name: the name of the agent (behavior), which should be executed
         :return:    Returns the id of the scheduled command
         """
-        return self.send_command(Command('Cognition:behavior:set_agent', [('agent', name)]))
+        return self.send_command(DebugCommand('Cognition:behavior:set_agent', [('agent', name)]))
 
     def behavior(self, complete=False):
         """
