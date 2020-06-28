@@ -10,6 +10,7 @@
 #endif //WIN32
 
 #include <sstream>
+#include <cctype>
 
 #include "Simulator.h"
 
