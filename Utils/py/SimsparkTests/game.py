@@ -23,7 +23,7 @@ def parseArguments():
         parser.add_argument('--write-config', action='store',help="Writes the default config to the given file and exits.")
     else:
         parser.add_argument('-r','--runs', type=int, default=1, action='store', help="The number of runs (games), which should be performed")
-        parser.add_argument('-l','--log', type=__check_args_log, action='store', help="The number of runs (games), which should be performed")
+        parser.add_argument('-l','--log', type=__check_args_log, action='store', help="If some game results should be logged, set the log file where the results should be written to.")
         parser.add_argument('-c','--comment', default='', action='store', help="A optional comment to describe this runs.")
         parser.add_argument('-a','--alternate', action='store_true', help="If used, the sides for the teams a switched for each run.")
 
@@ -31,15 +31,15 @@ def parseArguments():
         parser.add_argument('-ap', '--agent-port', type=int, action='store', help="The port for agents to connect to simspark")
         parser.add_argument('-sp', '--server-port', type=int, action='store', help="The port for monitors to connect to simspark")
 
-        parser.add_argument('--sync', action='store_true', help="Whether the simulation should be run synchronized")
+        parser.add_argument('--sync', action='store_true', default=True, help="Whether the simulation should be run synchronized")
 
         parser.add_argument('-lc', '--left-config', type=__check_args_agentconfig, default='.', action='store', help="The config directory for the left team")
-        parser.add_argument('-le', '--left-exe', type=__check_args_exe, default='naoth-simspark', action='store', help="The agent executable for the left team")
+        parser.add_argument('-le', '--left-exe', type=__check_args_exe, default='./dist/Native/naoth-simspark', action='store', help="The agent executable for the left team")
         parser.add_argument('-lp', '--left-players', type=__check_args_positive, default=5, action='store', help="The the number of players for each team")
         parser.add_argument('-ln', '--left-name', type=str, default='NaoTH', action='store', help="The name of the left Team")
 
         parser.add_argument('-rc', '--right-config', type=__check_args_agentconfig, default='.', action='store', help="The config directory for the left team")
-        parser.add_argument('-re', '--right-exe', type=__check_args_exe, default='naoth-simspark', action='store', help="The agent executable for the right team")
+        parser.add_argument('-re', '--right-exe', type=__check_args_exe, default='./dist/Native/naoth-simspark', action='store', help="The agent executable for the right team")
         parser.add_argument('-rp', '--right-players', type=__check_args_positive, default=5, action='store', help="The the number of players for each team")
         parser.add_argument('-rn', '--right-name', type=str, default='BU', action='store', help="The name of the right Team")
 
@@ -209,6 +209,7 @@ class LogDb(Log):
 def createLog(log:str):
     if log.endswith('db'):
         return LogDb(log)
+    # TODO: create a log class, which writes all messages to stdout!
     return Log()
 
 
@@ -226,7 +227,7 @@ def wait_half(r, s, half_time, log:Log=None, i:multiprocessing.Event=None):
 
 
 def configure(args):
-    base = os.path.dirname(__file__)
+    base = os.path.curdir  # os.path.dirname(__file__)
     retrieve_path = lambda p: p if os.path.isabs(p) else os.path.abspath(os.path.join(base, p))
 
     if 'config' in args:
@@ -261,7 +262,7 @@ def configure(args):
         c = {
             'runs':     args.runs if 'runs' in args else 1,
             'sync':     args.sync if 'sync' in args else True,
-            'log':      retrieve_path(args.log if 'log' in args else './result.db'),
+            'log':      retrieve_path(args.log) if 'log' in args and args.log else '',  # './result.db'
             'comment':  args.comment if 'comment' in args else 'default',
             'alternate':  args.alternate if 'alternate' in args else False,
             'simspark': {
@@ -320,14 +321,16 @@ def stop(s, agents):
         time.sleep(1)
     s.join()
     # stop remaining agents
-    for t, a in agents: a.cancel()
-    for t, a in agents: a.join()
+    for t, a in agents: a.stop()
+
 
 if __name__ == "__main__":
     args = parseArguments()
     config = configure(args)
 
-    if 'write_config' in args:
+    # TODO: validate config!
+
+    if 'write_config' in args and args.write_config:
         write_config(config, args.write_config)
         exit(0)
 
@@ -371,7 +374,7 @@ if __name__ == "__main__":
         for t, a in agents:
             if config['simspark']['agent'] is not None: a.ss_port = config['simspark']['agent']
             a.start()
-            a.started.wait()
+            a.wait_connected()
 
         # it takes sometimes a while until simspark got the correct player number
         for t, a in agents: wait_for(lambda: s.get_robot(a.number, t) is not None, 0.3)
