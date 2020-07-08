@@ -495,14 +495,14 @@ def interrupt(signum, frame):
 
 
 def stop(s, agents):
+    # stop agents first
+    for t, a in agents: a.stop()
     # stop simulation
     s.cancel()
     # wait for simspark to exit
     while s.is_alive():
         time.sleep(1)
     s.join()
-    # stop remaining agents
-    for t, a in agents: a.stop()
 
 
 if __name__ == "__main__":
