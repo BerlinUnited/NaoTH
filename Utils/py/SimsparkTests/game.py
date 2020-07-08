@@ -6,6 +6,7 @@ import sqlite3
 import configparser
 import signal
 import multiprocessing
+from typing import Optional
 
 import naoth
 from AgentController import AgentController
@@ -52,28 +53,33 @@ def parseArguments():
 
     return parser.parse_args()
 
+
 def __check_args_positive(value):
     ivalue = int(value)
     if ivalue <= 0:
         raise argparse.ArgumentTypeError("%s is an invalid positive int value" % value)
     return ivalue
 
+
 def __check_args_simspark(value):
     if not shutil.which(value):
         raise argparse.ArgumentTypeError("Can not find simspark application (%s)!" % value)
     return value
+
 
 def __check_args_exe(value):
     if not shutil.which(value) and not shutil.which(value, path='./'):
         raise argparse.ArgumentTypeError("Can not find simspark agent application (%s)!" % value)
     return value
 
+
 def __check_args_agentconfig(value):
     if not os.path.isdir(os.path.join(value, 'Config')):
         raise argparse.ArgumentTypeError("Can not find config directory (%s)!" % value)
     return value
 
-def __check_args_log(value:str):
+
+def __check_args_log(value: str):
     if not value.endswith('db'):
         raise argparse.ArgumentTypeError("Not a valid log target (%s)!" % value)
 
@@ -82,10 +88,12 @@ def __check_args_log(value:str):
 
     return value
 
+
 def __check_args_config(value):
     if not os.path.isfile(value):
         raise argparse.ArgumentTypeError("Configuration file doesn't exists (%s)!" % value)
     return value
+
 
 def prepare_game(s):
     # Left team
@@ -101,8 +109,225 @@ def prepare_game(s):
     s.cmd_agentMove(4, 3.0, 3.2, r=-180, t='Right')
     s.cmd_agentMove(5, 2.0, 3.2, r=-180, t='Right')
 
+
+class Config:
+    class Team:
+        def __init__(self, name: str):
+            self._config_dir = '.'
+            self._executable = 'naoth-simspark'
+            self._name = name
+            self._players = 5
+
+        def validate(self):
+            if not self.name:
+                raise Exception('A "name" for the team must be set!')
+            if not os.path.isdir(os.path.join(self.config_dir, 'Config')):
+                raise Exception('Invalid config directory for {}!'.format(self._name))
+            if not Config._validate_exe(self.executable):
+                raise Exception('Can not find or execute agent application for {}!'.format(self._name))
+            if not (self.players > 0):
+                raise Exception('"players" of {} must be greater zero!'.format(self._name))
+
+        def to_dict(self):
+            return {'config': self._config_dir, 'exe': self._executable, 'name': self._name, 'players':  self._players}
+
+        @property
+        def config_dir(self): return self._config_dir
+
+        @property
+        def executable(self): return self._executable
+
+        @property
+        def name(self): return self._name
+
+        @property
+        def players(self): return self._players
+
+    def __init__(self, conf):
+        self._runs = 0
+        self._sync = True
+        self._log = ''
+        self._comment = ''
+        self._alternate = False
+        self._simspark = {'exe': 'simspark', 'agent': None, 'server': None}
+        self._left = Config.Team('NaoTH')
+        self._right = Config.Team('BU')
+
+        if isinstance(conf, str):
+            self._parse_from_config(conf)
+        else:
+            self._parse_from_args(conf)
+
+        self._validate()
+
+    @staticmethod
+    def _retrieve_path(base, path):
+        if path:
+            return path if os.path.isabs(path) else os.path.abspath(os.path.join(base, path))
+        return ''
+
+    def _parse_from_config(self, config: str):
+        c = configparser.ConfigParser()
+        c.read(config)
+        base = os.path.dirname(config)
+
+        self._runs = c.getint('general', 'RUNS')
+        self._sync = c.getboolean('general', 'SYNC')
+        self._log = self._retrieve_path(base, c.get('general', 'LOG', fallback=''))
+        self._comment = c.get('general', 'COMMENT', fallback=None)
+        self._alternate = c.getboolean('general', 'ALTERNATE')
+        self._simspark['exe'] = c.get('simspark', 'exe')
+        self._simspark['agent'] = int(c.get('simspark', 'agent')) if c.get('simspark', 'agent') else None
+        self._simspark['server'] = int(c.get('simspark', 'server')) if c.get('simspark', 'server') else None
+        self._left._config_dir = self._retrieve_path(base, c.get('left', 'CONFIG'))
+        self._left._executable = self._retrieve_path(base, c.get('left', 'EXE'))
+        self._left._name = c.get('left', 'NAME')
+        self._left._players = c.getint('left', 'PLAYERS')
+        self._right._config_dir = self._retrieve_path(base, c.get('right', 'CONFIG'))
+        self._right._executable = self._retrieve_path(base, c.get('right', 'EXE'))
+        self._right._name = c.get('right', 'NAME')
+        self._right._players = c.getint('right', 'PLAYERS')
+
+    def _parse_from_args(self, args):
+        base = os.path.curdir
+
+        if 'runs' in args:
+            self._runs = args.runs
+        if 'sync' in args:
+            self._sync = args.sync
+        if 'log' in args and args.log:
+            self._log = self._retrieve_path(base, args.log)
+        if 'comment' in args:
+            self._comment = args.comment
+        if 'alternate' in args:
+            self._alternate = args.alternate
+        if 'simspark' in args:
+            self._simspark['exe'] = args.simspark
+        if 'agent_port' in args:
+            self._simspark['agent'] = args.agent_port
+        if 'server_port' in args:
+            self._simspark['server'] = args.server_port
+        if 'left_config' in args:
+            self._left._config_dir = self._retrieve_path(base, args.left_config)
+        if 'left_exe' in args:
+            self._left._executable = self._retrieve_path(base, args.left_exe)
+        if 'left_name' in args:
+            self._left._name = args.left_name
+        if 'left_players' in args:
+            self._left._players = args.left_players
+        if 'right_config' in args:
+            self._right._config_dir = self._retrieve_path(base, args.right_config)
+        if 'right_exe' in args:
+            self._right._executable = self._retrieve_path(base, args.right_exe)
+        if 'right_name' in args:
+            self._right._name = args.right_name
+        if 'right_players' in args:
+            self._right._players = args.right_players
+
+    def _validate(self):
+        if not self.runs >= 0:
+            raise Exception('"runs" must be greater equal zero: {}'.format(self.runs))
+        if not isinstance(self.sync, bool):
+            raise Exception('"sync" must be a boolean: {}'.format(self.sync))
+        if not isinstance(self.log, str):
+            raise Exception('"log" must be a string: {}'.format(self.log))
+        if not isinstance(self.comment, str):
+            raise Exception('"comment" must be a string: {}'.format(self.comment))
+        if not isinstance(self.alternate, bool):
+            raise Exception('"alternate" must be a boolean: {}'.format(self.alternate))
+        if not self._validate_exe(self.simspark_exe):
+            raise Exception('Can not find or execute simspark application: {}'.format(self.simspark_exe))
+        if not (self.simspark_agent_port is None or self.simspark_agent_port > 0):
+            raise Exception('Invalid simspark agent port: {}'.format(self.simspark_agent_port))
+        if not (self.simspark_server_port is None or self.simspark_server_port > 0):
+            raise Exception('Invalid simspark server port: {}'.format(self.simspark_server_port))
+
+        self.team_left.validate()
+        self.team_right.validate()
+
+    @staticmethod
+    def _validate_exe(exe):
+        return shutil.which(exe) or shutil.which(exe, path='./') or (os.path.isfile(exe) and os.access(exe, os.X_OK))
+
+    def write(self, file: str):
+        def to_str(v): return str(v) if v is not None else ''
+        cp = configparser.ConfigParser()
+        config = self.to_dict()
+        for c in config:
+            if isinstance(config[c], dict):
+                cp.add_section(c)
+                for sc in config[c]:
+                    cp.set(c, sc, to_str(config[c][sc]))
+            else:
+                if not cp.has_section('general'):
+                    cp.add_section('general')
+                cp.set('general', c, to_str(config[c]))
+            # Writing our configuration file to 'example.cfg'
+            with open(file, 'w') as configfile:
+                cp.write(configfile)
+
+    def to_dict(self):
+        return {
+            'runs': self._runs,
+            'sync': self._sync,
+            'log': self._log,
+            'comment': self._comment,
+            'alternate': self._alternate,
+            'simspark': self._simspark,
+            'left': self._left.to_dict(),
+            'right': self._right.to_dict(),
+        }
+
+    def __repr__(self):
+        return str(self.to_dict())
+
+    def __str__(self):
+        config = self.to_dict()
+        result = "Configuration:\n"
+        for c in config:
+
+            if isinstance(config[c], dict):
+                result += "\t{}:\n".format(c)
+                for sc in config[c]:
+                    result += "\t\t{}: {}\n".format(sc, config[c][sc])
+            else:
+                result += "\t{}: {}\n".format(c, config[c])
+
+        return result
+
+    @property
+    def runs(self) -> int: return self._runs
+
+    @property
+    def sync(self) -> bool: return self._sync
+
+    @property
+    def log(self) -> str: return self._log
+
+    @property
+    def comment(self) -> str: return self._comment
+
+    @property
+    def alternate(self) -> bool: return self._alternate
+
+    @property
+    def simspark_exe(self) -> str: return self._simspark['exe']
+
+    @property
+    def simspark_agent_port(self) -> Optional[int]: return self._simspark['agent']
+
+    @property
+    def simspark_server_port(self) -> Optional[int]: return self._simspark['server']
+
+    @property
+    def team_left(self) -> Team: return self._left
+
+    @property
+    def team_right(self) -> Team: return self._right
+
+
 class Log:
-    def new_run(self, args):
+    def new_run(self, config: Config):
         pass
 
     def log_ball(self, run, time, ball):
@@ -116,6 +341,7 @@ class Log:
 
     def finish(self):
         pass
+
 
 class LogDb(Log):
     def __init__(self, db):
@@ -169,11 +395,11 @@ class LogDb(Log):
         self.__cursor = None
         self.__rid = None
 
-    def new_run(self, c):
+    def new_run(self, config: Config):
         self.__cursor = self.__db.cursor()
 
         self.__cursor.execute("INSERT INTO runs (num_runs, sync, alternate, comment) VALUES (?,?,?,?)",
-                              [c['runs'], c['sync'], c['alternate'], c['comment']])
+                              [config.runs, config.sync, config.alternate, config.comment])
         self.__db.commit()
         self.__rid = self.__cursor.lastrowid
 
@@ -190,13 +416,13 @@ class LogDb(Log):
             except Exception as e:
                 logging.warning('Exception while logging player position: %s\n%s', e, str([self.__rid, run, time, 'player', p['team'], p['number'], p['x'], p['y'], p['r']]))
 
-    def half_result(self, run, left, right, half, score_left, score_right):
+    def half_result(self, run, left: Config.Team, right: Config.Team, half, score_left, score_right):
         try:
             self.__cursor.execute("""
                 INSERT INTO games 
                     (rid, run, team_left, team_right, players_left, players_right, half, score_left, score_right) 
                     VALUES (?,?,?,?,?,?,?,?,?)""",
-                [self.__rid, run, left['name'], right['name'], left['players'], right['players'], half, score_left, score_right])
+                [self.__rid, run, left.name, right.name, left.players, right.players, half, score_left, score_right])
         except Exception as e:
             logging.warning('Exception while logging half result: %s\n%s', e, str([self.__rid, run, left, right, half, score_left, score_right]))
         self.__db.commit()
@@ -210,9 +436,10 @@ class LogDb(Log):
         self.__rid = None
         self.__db = None
 
+
 class LogStd(Log):
-    def new_run(self, args):
-        print('Start a new run', args)
+    def new_run(self, config: Config):
+        print('Start a new run', config)
 
     def log_ball(self, run, time, ball):
         print(run, time, ball)
@@ -220,14 +447,14 @@ class LogStd(Log):
     def log_player(self, run, time, players):
         print(run, time, players)
 
-    def half_result(self, run, left, right, half, score_left, score_right):
+    def half_result(self, run, left: Config.Team, right: Config.Team, half, score_left, score_right):
         print(run, left, right, half, score_left, score_right)
 
     def finish(self):
         print('FINISH!')
 
 
-def createLog(log:str):
+def createLog(log: str):
     if log.endswith('db'):
         return LogDb(log)
     return LogStd()
@@ -246,92 +473,18 @@ def wait_half(r, s, half_time, log:Log=None, i:multiprocessing.Event=None):
         t = _
 
 
-def configure(args):
-    base = os.path.curdir  # os.path.dirname(__file__)
-    retrieve_path = lambda p: p if os.path.isabs(p) else os.path.abspath(os.path.join(base, p))
-
-    if 'config' in args:
-        c = configparser.ConfigParser()
-        c.read(args.config)
-        base = os.path.dirname(args.config)
-        c = {
-            'runs':     c.getint('general', 'RUNS'),
-            'sync':     c.getboolean('general', 'SYNC'),
-            'log':      retrieve_path(c.get('general', 'LOG')),
-            'comment':  c.get('general', 'COMMENT', fallback=None),
-            'alternate':  c.get('general', 'ALTERNATE', fallback=False),
-            'simspark': {
-                'exe': c.get('simspark', 'exe'),
-                'agent': c.get('simspark', 'agent'),
-                'server': c.get('simspark', 'server')
-            },
-            'left': {
-                'config':  retrieve_path(c.get('left', 'CONFIG')),
-                'exe':     retrieve_path(c.get('left', 'EXE')),
-                'name':    c.get('left', 'NAME'),
-                'players': c.getint('left', 'PLAYERS')
-            },
-            'right': {
-                'config':  retrieve_path(c.get('right', 'CONFIG')),
-                'exe':     retrieve_path(c.get('right', 'EXE')),
-                'name':    c.get('right', 'NAME'),
-                'players': c.getint('right', 'PLAYERS')
-            }
-        }
-    else:
-        c = {
-            'runs':     args.runs if 'runs' in args else 1,
-            'sync':     args.sync if 'sync' in args else True,
-            'log':      retrieve_path(args.log) if 'log' in args and args.log else '',  # './result.db'
-            'comment':  args.comment if 'comment' in args else 'default',
-            'alternate':  args.alternate if 'alternate' in args else False,
-            'simspark': {
-                'exe': args.simspark if 'simspark' in args else 'simspark',
-                'agent': args.agent_port if 'agent_port' in args else None,
-                'server': args.server_port if 'server_port' in args else None
-            },
-            'left': {
-                'config':   retrieve_path(args.left_config if 'left_config' in args else './left'),
-                'exe':      retrieve_path(args.left_exe if 'left_exe' in args else './left/naoth-simspark'),
-                'name':     args.left_name if 'left_name' in args else 'NaoTH',
-                'players':  args.left_players if 'left_players' in args else 5
-            },
-            'right': {
-                'config':   retrieve_path(args.right_config if 'right_config' in args else './right'),
-                'exe':      retrieve_path(args.right_exe if 'right_exe' in args else './right/naoth-simspark'),
-                'name':     args.right_name if 'right_name' in args else 'BU',
-                'players':  args.right_players if 'right_players' in args else 5
-            }
-        }
-
-    return c
-
-
-def write_config(config, file):
-    cp = configparser.ConfigParser()
-    for c in config:
-        if isinstance(config[c], dict):
-            cp.add_section(c)
-            for sc in config[c]:
-                cp.set(c, sc, str(config[c][sc]))
-        else:
-            if not cp.has_section('general'): cp.add_section('general')
-            cp.set('general', c, str(config[c]))
-        # Writing our configuration file to 'example.cfg'
-        with open(file, 'w') as configfile:
-            cp.write(configfile)
-
-
 def notify(signum, frame):
     if s.is_connected():
         print('Currently running game simulation #', r, '@', s.get_time(), ',', s.get_team('Left'), s.get_score('Left'), ':', s.get_score('Right'), s.get_team('Right'))
     else:
         print('WARNING: not connected to simulation!')
 
+
 def interrupt(signum, frame):
     logging.info("Interrupted at {}".format(time.asctime()))
     if interrupt:
         interrupt.set()
+
 
 def stop(s, agents):
     # stop simulation
@@ -346,12 +499,10 @@ def stop(s, agents):
 
 if __name__ == "__main__":
     args = parseArguments()
-    config = configure(args)
-
-    # TODO: validate config!
+    config = Config(args.config) if 'config' in args else Config(args)
 
     if 'write_config' in args and args.write_config:
-        write_config(config, args.write_config)
+        config.write(args.write_config)
         exit(0)
 
     logging.basicConfig(level=logging.WARNING)  # WARNING
@@ -360,7 +511,7 @@ if __name__ == "__main__":
 
     logging.info("Started at {}".format(time.asctime()))
 
-    log = createLog(config['log'])
+    log = createLog(config.log)
     log.new_run(config)
 
     signal.signal(signal.SIGHUP, notify)
@@ -369,30 +520,30 @@ if __name__ == "__main__":
     # TODO: is there a better solution to propagate the interrupt?!?
     interrupt = multiprocessing.Event()
 
-    left = config['left']
-    right = config['right']
+    left = config.team_left
+    right = config.team_right
 
-    for r in range(1, config['runs']+1):
-        s = SimsparkController(config['simspark']['exe'], True)  # True
-        s.set_ports(config['simspark']['server'], config['simspark']['agent'])
+    for r in range(1, config.runs+1):
+        s = SimsparkController(config.simspark_exe, True)  # True
+        s.set_ports(config.simspark_server_port, config.simspark_agent_port)
         s.start()
         s.connected.wait()  # wait for the monitor to be connected
 
         # switch team sides
-        if config['alternate']:
+        if config.alternate:
             left, right = right, left
 
         agents = []
 
-        for n in range(1, left['players']+1):
-            agents.append(('Left', AgentController(left['exe'], left['config'], left['name'], n, config['sync'], True, False)))
+        for n in range(1, left.players+1):
+            agents.append(('Left', AgentController(left.executable, left.config_dir, left.name, n, config.sync, True, False)))
 
-        for n in range(1, right['players']+1):
-            agents.append(('Right', AgentController(right['exe'], right['config'], right['name'], n, config['sync'], True, False)))
+        for n in range(1, right.players+1):
+            agents.append(('Right', AgentController(right.executable, right.config_dir, right.name, n, config.sync, True, False)))
 
         # start all agents and wait for the agent to be fully started (prevent simspark error)
         for t, a in agents:
-            if config['simspark']['agent'] is not None: a.ss_port = config['simspark']['agent']
+            if config.simspark_agent_port is not None: a.ss_port = config.simspark_agent_port
             a.start()
             a.wait_connected()
 
