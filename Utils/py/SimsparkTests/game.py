@@ -14,7 +14,12 @@ from Utils import *
 
 def parseArguments():
     parser = argparse.ArgumentParser(
-        description="Sending HUP signal to a running simulation prints the current run and score of the simulation."
+        # TODO: make program description better!
+        description="""
+        Starts a full simspark game 5vs5 for two halfs and logs some infos.\n
+        
+        Sending HUP signal to a running simulation prints the current run and score of the simulation.
+        """
     )
 
     if '--config' in sys.argv:
@@ -205,12 +210,27 @@ class LogDb(Log):
         self.__rid = None
         self.__db = None
 
+class LogStd(Log):
+    def new_run(self, args):
+        print('Start a new run', args)
+
+    def log_ball(self, run, time, ball):
+        print(run, time, ball)
+
+    def log_player(self, run, time, players):
+        print(run, time, players)
+
+    def half_result(self, run, left, right, half, score_left, score_right):
+        print(run, left, right, half, score_left, score_right)
+
+    def finish(self):
+        print('FINISH!')
+
 
 def createLog(log:str):
     if log.endswith('db'):
         return LogDb(log)
-    # TODO: create a log class, which writes all messages to stdout!
-    return Log()
+    return LogStd()
 
 
 def wait_half(r, s, half_time, log:Log=None, i:multiprocessing.Event=None):
