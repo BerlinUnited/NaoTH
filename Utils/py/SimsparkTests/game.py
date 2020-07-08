@@ -439,16 +439,24 @@ class LogDb(Log):
 
 class LogStd(Log):
     def new_run(self, config: Config):
-        print('Start a new run', config)
+        print('Start a new run')
+        print(config)
 
     def log_ball(self, run, time, ball):
-        print(run, time, ball)
+        print("Run: {}\tTime: {}\tBall: {}, {}".format(run, time, ball['x'], ball['y']))
 
     def log_player(self, run, time, players):
-        print(run, time, players)
+        players_left = []
+        players_right = []
+
+        for p in players:
+            if p['team'] == 'Left': players_left.insert(p['number'], "({}) {:.2f},{:.2f}".format(p['number'], p['x'], p['y']))
+            elif p['team'] == 'Right': players_right.insert(p['number'], "({}) {:.2f},{:.2f}".format(p['number'], p['x'], p['y']))
+            else: print('Unknown Team?!')
+        print("Run: {}\tTime: {}\n\tLeft:\t{}\n\tRight:\t{}".format(run, time, "\t".join(players_left), "\t".join(players_right)))
 
     def half_result(self, run, left: Config.Team, right: Config.Team, half, score_left, score_right):
-        print(run, left, right, half, score_left, score_right)
+        print("Run: {}\tHalf: {}\tScore: {} {} - {} {}".format(run, half, left.name, score_left, right.name, score_right))
 
     def finish(self):
         print('FINISH!')
