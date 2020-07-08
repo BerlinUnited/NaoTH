@@ -62,7 +62,7 @@ class SimsparkController(multiprocessing.Process):
             except Exception as e:
                 print('ERROR! Couldnt connect to simspark', e)
                 if self.__p:
-                    print(self.__p.stdout.peek().decode())
+                    print(self.__p.stdout.read().decode())
         else:
             logging.error("Simspark isn't running!?")
 
