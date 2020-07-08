@@ -421,8 +421,11 @@ class AgentController(threading.Thread):
         It stops all scheduled tasks in reverse order and stops the main loop, which causes the thread to finish.
         """
         for task in reversed(self._tasks):
-            task.cancel()
-            await task
+            try:
+                task.cancel()
+                await task
+            except Exception as e:
+                print('Stop agent:', task.get_name() if hasattr(task, 'get_name') else task, e, file=sys.stderr)
 
         self._loop.stop()
 
