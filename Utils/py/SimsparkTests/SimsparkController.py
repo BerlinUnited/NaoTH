@@ -8,17 +8,21 @@ import struct
 import subprocess
 import time
 import traceback
+import threading
+import asyncio
+import sys
+import functools
 
 import sexpr
 
 
-class SimsparkController(multiprocessing.Process):
+class SimsparkController(threading.Thread):
     """Represents the controlling class of an simspark instance. It serves two purposes, first its starts the simspark
     application and second it acts as simspark monitor to send (trainer) commands to the simspark instance.
     All available trainer commands can be found here at:
     http://simspark.sourceforge.net/wiki/index.php/Network_Protocol#Command_Messages_from_Coach.2FTrainer"""
 
-    def __init__(self, app, start_instance=True, print_out=False):
+    def __init__(self, app, monitor_port: int = 3200, agent_port: int = 3100, start_instance=True, print_out=False):
         """
         Constructor of the :SimsparkController:. Initializes public and private attributes.
 
@@ -28,62 +32,121 @@ class SimsparkController(multiprocessing.Process):
         """
         super().__init__(name="SimsparkController")
 
-        self.app = app
-        self.__start_instance = start_instance
-        self.__p = None
-        self.port_monitor = 3200
-        self.port_agent = 3100
-        self.host = '127.0.0.1'
-        self.socket: socket.socket = None
-        self.__cout = print_out
+        self._app = app
+        self._start_instance = start_instance
+        self._p = None
+        self._port_monitor = monitor_port
+        self._port_agent = agent_port
+        self._host = '127.0.0.1'
+        self._cout = print_out  # TODO: do we need this?!?
 
-        self.__m = multiprocessing.Manager()
-        self.__environment = self.__m.dict()
-        self.__scene = self.__m.list()
+        self._stream_reader = None
+        self._stream_writer = None
 
-        self.__cmd_queue = multiprocessing.Queue()
-        self.__cancel = multiprocessing.Event()
-        self.connected = multiprocessing.Event()
+        self._tasks = []  # list of started tasks (which should be cancelled in the end)
+        self._loop = asyncio.new_event_loop()
+        self._connected = threading.Event()  # the event for the other (main) thread to interact with
+        self._connected_internal = asyncio.Event(loop=self._loop)  # internal event var
 
-    def terminate(self):
-        """If this process instance gets killed, this is the last chance to kill the simspark instance too."""
-        self.__stop_application()
-        super(SimsparkController, self).terminate()
+        self._cmd_q = asyncio.Queue(loop=self._loop)
 
-    def connect(self):
-        """Tries to connect to a running simspark instance. The instance could be started by this class or was started
-        externally."""
-        if not self.__start_instance or (self.__p and self.__p.poll() is None):
-            logging.info("Connecting to simspark")
-            try:
-                self.socket = socket.create_connection((self.host, self.port_monitor))
-                self.connected.set()
-                logging.info("Connected (%s@%s)", self.host, self.port_monitor)
-            except Exception as e:
-                print('ERROR! Couldnt connect to simspark', e)
-                if self.__p:
-                    print(self.__p.stdout.read().decode())
+        self.__environment = {}
+        self.__scene = []
+
+    def run(self) -> None:
+        # set the event loop to this thread
+        asyncio.set_event_loop(self._loop)
+
+        # start the simspark instance first
+        self._loop.run_until_complete(self.__start_application())
+
+        # schedule tasks
+        self._tasks.append(self._loop.create_task(self._connect()))  # name='Connection listener'
+        self._tasks.append(self._loop.create_task(self._poll_answers()))  # name='Poll answers'
+        self._tasks.append(self._loop.create_task(self._send_commands()))  # name='Send commands'
+
+        # run tasks cooperatively and wait 'till loop is stopped
+        self._loop.run_forever()
+
+    async def __start_application(self):
+        """Starts a simspark instance as separate process and waits until it is completely started."""
+        if self._start_instance:
+            # prepare call
+            app = [self._app]
+            if self._port_monitor is not None:
+                app.extend(['--server-port', str(self._port_monitor)])
+            if self._port_agent is not None:
+                app.extend(['--agent-port', str(self._port_agent)])
+            logging.info('Start Simspark: %s', ' '.join(app))
+            self._p = await asyncio.create_subprocess_exec(*app,
+                                                           stdout=asyncio.subprocess.PIPE,
+                                                           stderr=asyncio.subprocess.PIPE)
+            # NOTE: currently i found no solution to determine exactly, when simspark has started.
+            #       all attempts to read the output from simspark resulted in blocking or nothing read at all, despite
+            #       simspark is outputting some infos ... :(
+            #       It looks like that simspark doesn't flush its output buffers and therefore doesn't return something
+            #       in piped mode.
+            await asyncio.sleep(2)
+            logging.info('Simspark started')
         else:
-            logging.error("Simspark isn't running!?")
+            logging.info('No instance of Simspark started!')
 
-    def disconnect(self):
-        """Disconnects this simspark monitor from the simspark instance."""
-        logging.debug('Simspark disconnecting, remaining commands: %d', self.__cmd_queue.qsize())
-        if self.socket:
-            # empty command queue before closing socket
-            while not (self.__cmd_queue.empty() and self.__cmd_queue.qsize() == 0):
-                cmd = self.__cmd_queue.get()
-                logging.debug(cmd)
-                self.socket.sendall(struct.pack("!I", len(cmd)) + str.encode(cmd))
-            # no commands left, close socket
-            self.socket.close()
-            self.socket = None
-            self.connected.clear()
+    async def __stop_application(self):
+        """Stops a still active simspark instance."""
 
-    def cancel(self):
-        """Sets the canceled flag of this process."""
-        self.__cancel.set()
-        logging.debug('Simspark canceled')
+        async def process_stopped():
+            """Helper function to wait for the process to be stopped, but not longer than necessary."""
+            try:
+                await asyncio.wait_for(self._p.wait(), 0.5)
+            except TimeoutError:
+                pass  # ignore, since we kind of expected it
+
+        if self._start_instance and self._p.returncode is None:
+            logging.info("Quit simspark application")
+            self._p.send_signal(signal.SIGINT)
+            # wait before killing
+            await process_stopped()
+            if self._p.returncode is None:
+                logging.info("Kill simspark application")
+                self._p.kill()
+                await process_stopped()
+
+    def stop(self, timeout=None) -> None:
+        """
+        Stops the (running) thread and blocks until finished or until the optional timeout occurs.
+
+        Since this method is called from another thread, the stop request is scheduled as task on the main loop and
+        executed some ms later. Also `join` is called on the thread to wait until the thread is actually finished.
+
+        The timeout can be used to make sure the main program continues, if an error prevents terminating this
+        thread -- though that shouldn't happen.
+        """
+        logging.debug('Stop simspark')
+        if self._loop.is_running():
+            self._loop.call_soon_threadsafe(lambda: self._loop.create_task(self._stop_internal()))
+            self.join(timeout)
+
+    async def _stop_internal(self) -> None:
+        """
+        The (internal) scheduled stop request task called by `stop()`.
+
+        It stops all scheduled tasks in reverse order and stops the main loop, which causes the thread to finish.
+        """
+
+        for task in reversed(self._tasks):
+            try:
+                task.cancel()
+                await task
+            except Exception as e:
+                print('Stop simspark:', task.get_name() if hasattr(task, 'get_name') else task, e, file=sys.stderr)
+
+        await self.__stop_application()
+
+        self._loop.stop()
+
+    def wait_connected(self, timeout=None) -> None:
+        """Blocks until the thread is connected to the naoth agent or until the optional timeout occurs."""
+        self._connected.wait(timeout)
 
     def is_connected(self):
         """
@@ -91,105 +154,134 @@ class SimsparkController(multiprocessing.Process):
 
         :return: True, if connected, False otherwise
         """
-        return self.connected.is_set()
+        return self._connected.is_set()
 
-    def set_ports(self, monitor:int=None, agent:int=None):
-        """
-        Sets the monitor and/or agent port of the simspark instance. This method must be called before the process is
-        started.
-
-        :param monitor: the simspark monitor port; if None, the default port is used (3200)
-        :param agent:   the simspark agent port; if None, the default port is used (3100)
-        :return:        None
-        """
-        if monitor is not None:
-            self.port_monitor = monitor
-        if agent is not None:
-            self.port_agent = agent
-
-    def __start_application(self):
-        """Starts a simspark instance as separate process and waits until it is completely started."""
-        if self.__start_instance:
-            # prepare call
-            app = [self.app]
-            if self.port_monitor is not None: app.extend(['--server-port', str(self.port_monitor)])
-            if self.port_agent is not None: app.extend(['--agent-port', str(self.port_agent)])
-            logging.info('Start Simspark: %s', ' '.join(app))
-            # pipe output or not
-            if self.__cout: self.__p = subprocess.Popen(app)
-            else: self.__p = subprocess.Popen(app, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            # wait for simspark to be fully started
-            time.sleep(2)
-            # NOTE: currently i found no solution to determine exactly, when simspark has started.
-            #       all attempts to read the output from simspark resulted in blocking or nothing read at all, despite
-            #       simspark is outputting some infos ... :(
-            logging.info('Simspark started')
+    def _set_connected(self, state: bool) -> None:
+        """Internal helper method to handle the connection state."""
+        if state:
+            self._connected_internal.set()
+            self._connected.set()
         else:
-            logging.info('No instance of Simspark started!')
+            self._connected.clear()
+            self._connected_internal.clear()
+            if self._stream_writer:
+                self._stream_writer.close()
 
-    def __stop_application(self):
-        """Stops a still active simspark instance."""
-        if self.__p and self.__p.poll() is None:
-            logging.info("Quit simspark application")
-            self.__p.send_signal(signal.SIGINT)
-            # wait before killing
-            time.sleep(0.2)
-            if self.__p.poll() is None:
-                logging.info("Kill simspark application")
-                self.__p.kill()
+    async def _connect(self):
+        # TODO: if the application was started, but isn't running anymore, 'cancel' task
+        while True:
+            try:
+                # (try to) establish connection or raise exception
+                self._stream_reader, \
+                self._stream_writer = await asyncio.open_connection(host=self._host, port=self._port_monitor)
 
-    def run(self):
-        """The main method of this process. It starts the simspark application, connects to it and receives updates of
-        the simulation state and also sends scheduled commands to the simulation."""
-        self.__start_application()
-
-        while (not self.__start_instance or self.__p.poll() is None) and not self.__cancel.is_set():
-            # connect to the simspark instance
-            if not self.connected.is_set():
-                self.connect()
                 # make sure we got all relevant infos
                 self.cmd_reqfullstate()
-            else:
-                data = self.socket.recv(4)
-                # check if we got some data, empty data is disconnected!
-                if data:
-                    try:
-                        length = struct.unpack("!I", data)[0]
-                        msg = self.socket.recv(length).decode()
 
-                        try:
-                            sexp = sexpr.str2sexpr_strict(msg)
+                # update internal & external connection state
+                self._set_connected(True)
 
-                            if sexp and len(sexp) > 2:
-                                self.__update_environment(sexp[0])
-                                self.__update_scene(sexp[1:])
-                        except sexpr.SExprIllegalClosingParenError:
-                            # ignore specific parsing exception
-                            pass
-                        except sexpr.SExprPrematureEOFError:
-                            # ignore specific parsing exception
-                            pass
-                        except Exception as e:
-                            logging.error(str(e))
-                            traceback.print_exc(limit=2)
+                # wait 'till the connection is 'closed' (lost?)
+                await self._stream_writer.wait_closed()
 
-                        # send scheduled (trainer) commands
-                        if not self.__cmd_queue.empty():
-                            cmd = self.__cmd_queue.get()
-                            logging.debug(cmd)
-                            self.socket.sendall(struct.pack("!I", len(cmd)) + str.encode(cmd))
-                    except Exception as e:
-                        print('ERROR:', e)
-                        traceback.print_exc(limit=2)
-                else:
-                    # no data - disconnected
-                    self.connected.clear()
-        # send kill command, before disconnecting
-        self.cmd_killsim()
-        # disconnect
-        self.disconnect()
-        # if process still running, kill it
-        self.__stop_application()
+                # reset the streams
+                self._stream_reader = None
+                self._stream_writer = None
+            except asyncio.CancelledError:
+                break
+            except OSError:
+                # task can be cancelled while sleeping ...
+                try:
+                    # connection failed, wait before next connection attempt
+                    await asyncio.sleep(1)
+                except asyncio.CancelledError:
+                    break
+                except Exception as e:  # unexpected exception
+                    print('Connection listener:', e, file=sys.stderr)
+            except Exception as e:  # unexpected exception
+                print('Connection listener:', e, file=sys.stderr)
+
+        if self._stream_writer:
+            self._stream_writer.close()
+            #await self._stream_writer.wait_closed()  # NOTE: this doesn't complete?!
+
+    async def _poll_answers(self):
+
+        def lost_connection(d):
+            """Helper function to determine, if the connection was lost."""
+            if d == b'':
+                self._set_connected(False)
+                return True
+            return False
+
+        while True:
+            try:
+                await self._connected_internal.wait()
+
+                raw_size = await self._stream_reader.read(4)
+                if lost_connection(raw_size): continue
+                size = struct.unpack("!I", raw_size)[0]
+
+                raw_data = await self._stream_reader.read(size)
+                if size > 0 and lost_connection(raw_data): continue
+
+                try:
+                    sexp = sexpr.str2sexpr_strict(raw_data.decode())
+
+                    if sexp and len(sexp) > 2:
+                        self.__update_environment(sexp[0])
+                        self.__update_scene(sexp[1:])
+                except sexpr.SExprIllegalClosingParenError:
+                    # ignore specific parsing exception
+                    pass
+                except sexpr.SExprPrematureEOFError:
+                    # ignore specific parsing exception
+                    pass
+                except Exception as e:
+                    logging.error(str(e))
+                    traceback.print_exc(limit=2)
+
+            except asyncio.CancelledError:  # task cancelled
+                break
+            except OSError:  # connection lost
+                self._set_connected(False)
+            except Exception as e:  # unexpected exception
+                print('Poll answers:', e, file=sys.stderr)
+
+    async def _send_commands(self) -> None:
+        """Task to send scheduled commands."""
+        while True:
+            try:
+                await self._connected_internal.wait()
+                # get next command
+                cmd = await self._cmd_q.get()
+                # send command
+                self._stream_writer.write(struct.pack("!I", len(cmd)) + str.encode(cmd))
+                await self._stream_writer.drain()
+                # mark as done
+                self._cmd_q.task_done()
+            except asyncio.CancelledError:  # task cancelled
+                break
+            except OSError:  # connection lost
+                self._set_connected(False)
+            except Exception as e:  # unexpected exception
+                print('Send commands:', e, file=sys.stderr)
+
+    def send_command(self, cmd: str) -> None:
+        """
+        Schedules the given command in the command queue and returns the command.
+
+        :raises Exception: if not connected to a naoth agent or the given command was already executed
+        """
+        if not self.is_connected():
+            raise Exception('Not connected to the agent!')
+
+        if not cmd.startswith('(') or not cmd.endswith(')'):
+            raise Exception('Invalid command!')
+
+        # command queue is not thread safe - make sure we're add it in the correct thread
+        # this can 'causes a delay of ~0.5ms
+        self._loop.call_soon_threadsafe(functools.partial(self._cmd_q.put_nowait, cmd))
 
     def __update_environment(self, data):
         """
@@ -395,78 +487,92 @@ class SimsparkController(multiprocessing.Process):
 
     def cmd_dropball(self):
         """Schedules the '(dropBall)' trainer command for the simspark instance."""
-        self.__cmd_queue.put('(dropBall)')
+        self.send_command('(dropBall)')
 
     def cmd_ballPos(self, x=0.0, y=0.0, z=0.05):
         """Schedules the '(ball (pos x y z))' trainer command for the simspark instance."""
-        self.__cmd_queue.put('(ball (pos {} {} {}))'.format(x, y, z))
+        self.send_command('(ball (pos {} {} {}))'.format(x, y, z))
 
     def cmd_ballPosVel(self, x=0.0, y=0.0, z=0.05, vx=0.0, vy=0.0, vz=0.0):
         """Schedules the '(ball (pos x y z)(vel vx vy vz))' trainer command for the simspark instance."""
-        self.__cmd_queue.put('(ball (pos {} {} {})(vel {} {} {}))'.format(x, y, z, vx, vy, vz))
+        self.send_command('(ball (pos {} {} {})(vel {} {} {}))'.format(x, y, z, vx, vy, vz))
 
     def cmd_killsim(self):
         """Schedules the '(killsim)' trainer command for the simspark instance."""
-        self.__cmd_queue.put('(killsim)')
+        self.send_command('(killsim)')
 
     def cmd_agentPos(self, n, x, y, z=0.2, t='Left'):
         """Schedules the '(agent (unum n) (team t) (pos x y z))' trainer command for the simspark instance."""
-        self.__cmd_queue.put('(agent (unum {}) (team {}) (pos {} {} {}))'.format(n, t, x, y, z))
+        self.send_command('(agent (unum {}) (team {}) (pos {} {} {}))'.format(n, t, x, y, z))
 
     def cmd_agentMove(self, n, x, y, z=0.2, r=0.0, t='Left'):
         """Schedules the '(agent (unum n) (team t) (move x y z r))' trainer command for the simspark instance."""
-        self.__cmd_queue.put('(agent (unum {}) (team {}) (move {} {} {} {}))'.format(n, t, x, y, z, r))
+        self.send_command('(agent (unum {}) (team {}) (move {} {} {} {}))'.format(n, t, x, y, z, r))
 
     def cmd_agentBat(self, n, bat, t='Left'):
         """Schedules the '(agent (unum n) (team t) (battery bat))' trainer command for the simspark instance."""
-        self.__cmd_queue.put('(agent (unum {}) (team {}) (battery {}))'.format(n, t, bat))
+        self.send_command('(agent (unum {}) (team {}) (battery {}))'.format(n, t, bat))
 
     def cmd_agentTemp(self, n, temp, t='Left'):
         """Schedules the '(agent (unum n) (team t) (temperature temp))' trainer command for the simspark instance."""
-        self.__cmd_queue.put('(agent (unum {}) (team {}) (temperature {}))'.format(n, t, temp))
+        self.send_command('(agent (unum {}) (team {}) (temperature {}))'.format(n, t, temp))
 
     def cmd_agentPosMoveBatTemp(self, n, x, y, z=0.2, mx=0.0, my=0.0, mz=0.0, mr=0.0, bat=100.0, temp=30.0, t='Left'):
         """Schedules the '(agent (unum n) (team t) (pos x y z)(move x y z r)(battery bat)(temperature temp))' trainer command for the simspark instance."""
-        self.__cmd_queue.put('(agent (unum {}) (team {}) (pos {} {} {})(move {} {} {} {})(battery {})(temperature {}))'.format(n, t, x, y, z, mx, my, mz, mr, bat, temp))
+        self.send_command('(agent (unum {}) (team {}) (pos {} {} {})(move {} {} {} {})(battery {})(temperature {}))'.format(n, t, x, y, z, mx, my, mz, mr, bat, temp))
 
     def cmd_kickoff(self, t='None'):
         """Schedules the '(kickOff t)' trainer command for the simspark instance. Accepted values are: "None", "Left", "Right"""
-        self.__cmd_queue.put('(kickOff {})'.format(t))
+        self.send_command('(kickOff {})'.format(t))
 
     def cmd_select(self, n, t='Left'):
         """Schedules the '(select (unum n) (team n))' trainer command for the simspark instance."""
-        self.__cmd_queue.put('(select (unum {}) (team {}))'.format(n, t))
+        self.send_command('(select (unum {}) (team {}))'.format(n, t))
 
     def cmd_reposSelected(self):
         """Schedules the '(repos)' trainer command for the simspark instance."""
-        self.__cmd_queue.put('(repos)')
+        self.send_command('(repos)')
 
     def cmd_repos(self, n, t='Left'):
         """Schedules the '(repos (unum n) (team t))' trainer command for the simspark instance."""
-        self.__cmd_queue.put('(repos (unum {}) (team {}))'.format(n, t))
+        self.send_command('(repos (unum {}) (team {}))'.format(n, t))
 
     def cmd_killSelected(self):
         """Schedules the '(repos)' trainer command for the simspark instance."""
-        self.__cmd_queue.put('(kill)')
+        self.send_command('(kill)')
 
     def cmd_kill(self, n, t):
         """Schedules the '(kill (unum n) (team t))' trainer command for the simspark instance."""
-        self.__cmd_queue.put('(kill (unum {}) (team {}))'.format(n, t))
+        self.send_command('(kill (unum {}) (team {}))'.format(n, t))
 
     def cmd_reqfullstate(self):
         """Schedules the '(reqfullstate)' trainer command for the simspark instance. This command is mainly relevant for
         the simspark monitors."""
-        self.__cmd_queue.put('(reqfullstate)')
+        self.send_command('(reqfullstate)')
 
     def cmd_time(self, time):
         """Schedules the '(time t)' trainer command for the simspark instance."""
-        self.__cmd_queue.put('(time {})'.format(time))
+        self.send_command('(time {})'.format(time))
 
     def cmd_score(self, score_left, score_right):
         """Schedules the '(score (left sl) (right sr))' trainer command for the simspark instance."""
-        self.__cmd_queue.put('(score (left {}) (right {}))'.format(score_left, score_right))
+        self.send_command('(score (left {}) (right {}))'.format(score_left, score_right))
 
     def cmd_playMode(self, mode):
         """Schedules the '(playMode mode)' trainer command for the simspark instance.
         Available play modes can be found at: http://simspark.sourceforge.net/wiki/index.php/Play_Modes"""
-        self.__cmd_queue.put('(playMode {})'.format(mode))
+        self.send_command('(playMode {})'.format(mode))
+
+
+if __name__ == '__main__':
+
+    logging.basicConfig(level=logging.DEBUG)  # WARNING
+
+    signal.signal(signal.SIGINT, lambda sig,frm: s.stop())
+
+    s = SimsparkController('simspark', True)  # True
+    #s.set_ports()
+    s.start()
+
+    s.join()
+    print('Bye')
