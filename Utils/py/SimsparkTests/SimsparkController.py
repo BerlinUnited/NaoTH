@@ -55,9 +55,9 @@ class SimsparkController(threading.Thread):
         self._loop.run_until_complete(self.__start_application())
 
         # schedule tasks
-        self._tasks.append(self._loop.create_task(self._connect()))  # name='Connection listener'
-        self._tasks.append(self._loop.create_task(self._poll_answers()))  # name='Poll answers'
-        self._tasks.append(self._loop.create_task(self._send_commands()))  # name='Send commands'
+        self._tasks.append(self._loop.create_task(self._connection_listener()))  # name='Connection listener'
+        self._tasks.append(self._loop.create_task(self._state_updater()))  # name='State updater'
+        self._tasks.append(self._loop.create_task(self._command_sender()))  # name='Command sender'
 
         # run tasks cooperatively and wait 'till loop is stopped
         self._loop.run_forever()
@@ -164,7 +164,7 @@ class SimsparkController(threading.Thread):
             if self._stream_writer:
                 self._stream_writer.close()
 
-    async def _connect(self):
+    async def _connection_listener(self):
         logging.debug("Connection task started")
         # TODO: if the application was started, but isn't running anymore, 'cancel' task
         while True:
@@ -203,8 +203,8 @@ class SimsparkController(threading.Thread):
             self._stream_writer.close()
             #await self._stream_writer.wait_closed()  # NOTE: this doesn't complete?!
 
-    async def _poll_answers(self):
-        """Task to receive the current state from the simspark instance and updates the internal state representation."""
+    async def _state_updater(self):
+        """Task to receive the current state from simspark and updates the internal state representation."""
         logging.debug("State updater task started")
 
         def lost_connection(d):
@@ -246,9 +246,9 @@ class SimsparkController(threading.Thread):
             except OSError:  # connection lost
                 self._set_connected(False)
             except Exception as e:  # unexpected exception
-                print('Poll answers:', e, file=sys.stderr)
+                print('State updater:', e, file=sys.stderr)
 
-    async def _send_commands(self) -> None:
+    async def _command_sender(self) -> None:
         """Task to send scheduled commands."""
         logging.debug("Command sender task started")
 
@@ -287,7 +287,8 @@ class SimsparkController(threading.Thread):
 
     def __update_environment(self, data):
         """
-        Updates the internal state of the simspark environment. The environment contains information about the game time,
+        Updates the internal state of the simspark environment.
+        The environment contains information about the game time,
         the messages of the player, the game state and much more.
 
         :param data:    the updated environment infos as list of key/value pairs
@@ -299,15 +300,17 @@ class SimsparkController(threading.Thread):
                 if item[0] == 'messages':
                     if len(item) > 1:
                         # TODO: save messages of players
-                        #if item[0] not in self.__environment: self.__environment[item[0]] = {}
-                        #self.__environment[item[0]][] = {}
-                        #print(item)
+                        '''
+                        if item[0] not in self.__environment: self.__environment[item[0]] = {}
+                        self.__environment[item[0]][] = {}
+                        print(item)
+                        '''
                         pass
                 else:
                     try:
-                        if item[0] in ['FieldLength','FieldWidth','FieldHeight','GoalWidth','GoalDepth','GoalHeight','FreeKickDistance','WaitBeforeKickOff','AgentRadius','BallRadius','BallMass','RuleGoalPauseTime','RuleKickInPauseTime','RuleHalfTime','time']:
+                        if item[0] in ['FieldLength', 'FieldWidth', 'FieldHeight', 'GoalWidth', 'GoalDepth', 'GoalHeight', 'FreeKickDistance', 'WaitBeforeKickOff', 'AgentRadius', 'BallRadius', 'BallMass', 'RuleGoalPauseTime', 'RuleKickInPauseTime', 'RuleHalfTime', 'time']:
                             env[item[0]] = float(item[1])
-                        elif item[0] in ['half','score_left','score_right','play_mode']:
+                        elif item[0] in ['half', 'score_left', 'score_right', 'play_mode']:
                             env[item[0]] = int(item[1])
                         else:
                             env[item[0]] = item[1]
@@ -318,16 +321,16 @@ class SimsparkController(threading.Thread):
     def __update_scene(self, data):
         """
         Updates the internal scene state of the simspark simulation. This is necessary to retrieve the position of the
-        simulated agents and of the ball. Simspark sends a 'full scene graph' each time a simulated object is add/removed,
-        otherwise a 'sparse scene graph' is send with only the value of the simulated objects which changed. Only the
-        position of the agents and the soccerball are extracted and saved, other objects are ignored.
+        simulated agents and of the ball. Simspark sends a 'full scene graph' each time a simulated object is added or
+        removed, otherwise a 'sparse scene graph' is send with only the value of the simulated objects which changed.
+        Only the position of the agents and the soccerball are extracted and saved, other objects are ignored.
 
         :param data:    the scene graph full/sparse as list of lists
         :return:        None
         """
         if len(data[0]) == 3:
             name, version, subversion = data[0]
-            if name == 'RSG':  # Ruby Scene Graph, and indicates that the scene graph is a full description of the environment.
+            if name == 'RSG':  # Ruby Scene Graph: indicates that the scene graph is a full description of the env.
                 # clear old scene graph
                 del self.__scene[:]
                 # apply new scene graph
@@ -335,7 +338,12 @@ class SimsparkController(threading.Thread):
                     # update known objects
                     if len(nd) == 4 and isinstance(nd, list) and len(nd[3]) > 4 and 'soccerball' in nd[3][3][1]:
                         # found soccer ball
-                        self.__scene.append({ 'type': 'soccerball', 'x':float(nd[2][13]), 'y':float(nd[2][14]), 'z':float(nd[2][15]) })
+                        self.__scene.append({
+                            'type': 'soccerball',
+                            'x': float(nd[2][13]),
+                            'y': float(nd[2][14]),
+                            'z': float(nd[2][15])
+                        })
                     elif len(nd) >= 4 and len(nd[3]) >= 4 and len(nd[3][3]) >= 4 and len(nd[3][3][3]) >= 4 and 'naobody' in nd[3][3][3][3][1]:
                         # found an agent
                         pose = self.__get_robot_pose(nd[3][2][1:])
@@ -343,7 +351,7 @@ class SimsparkController(threading.Thread):
                         self.__scene.append({
                             'type': 'nao',
                             'team': nd[3][3][3][5][2][3:],
-                            'number': int(nd[3][3][3][5][1][6:]) if len(nd[3][3][3][5][1])>6 else 0,
+                            'number': int(nd[3][3][3][5][1][6:]) if len(nd[3][3][3][5][1]) > 6 else 0,
                             'x': pose[0],
                             'y': pose[1],
                             'z': pose[2],
@@ -351,7 +359,7 @@ class SimsparkController(threading.Thread):
                         })
                     else:
                         # 'unknown' object
-                        self.__scene.append({ 'type': 'node'})
+                        self.__scene.append({'type': 'node'})
             elif name == 'RDS':  # Ruby Diff Scene, and indicates that the scene graph is a partial description of the environment
                 # check scene graph
                 if len(data) == 2 and len(self.__scene) == len(data[1]):
@@ -419,7 +427,7 @@ class SimsparkController(threading.Thread):
         """
         Returns the robot with the :number: and :team: in the simulation. If the player number wasn't found None is
         returned.
-        Eg: {'type': 'nao', 'team': 'Left', 'number': 3, 'x': -2.2787, 'y': 1.24506, 'z': 0.189894, 'r': 0.35535245643343066}
+        Eg: {'type': 'nao', 'team': 'Left', 'number': 3, 'x': -2.2787, 'y': 1.24506, 'z': 0.189894, 'r': 0.355352456433}
 
         :param number:  the player number of the robot, which should be returned
         :param team:    the team number of the player, default is 'Left'
@@ -442,7 +450,7 @@ class SimsparkController(threading.Thread):
                 return nd
         return None
 
-    def __get_environment(self, key:str):
+    def __get_environment(self, key: str):
         return self.__environment[key] if key in self.__environment else None
 
     def get_time(self):
@@ -461,20 +469,20 @@ class SimsparkController(threading.Thread):
         """
         return self.__get_environment('half')
 
-    def get_score(self, side:str='Left'):
+    def get_score(self, side: str = 'Left'):
         """
         Returns the current score of the left or right team.
 
-        :param left: 'Left', if the left score should be returned, otherwise ('Right') the right score is returned
+        :param side: 'Left', if the left score should be returned, otherwise ('Right') the right score is returned
         :return:     the current score of the team (left or right) or None (if there's no half info)
         """
         return self.__get_environment('score_left') if side == 'Left' else self.__get_environment('score_right')
 
-    def get_team(self, side:str='Left'):
+    def get_team(self, side: str = 'Left'):
         """
         Returns the name of the left or right team.
 
-        :param left: 'Left', if the name of the left team should be returned, otherwise ('Right') the right team name is returned
+        :param side: 'Left', if the name of the left team should be returned, otherwise ('Right') the right team name is returned
         :return:     the name of the team (left or right) or None (if there's no name info)
         """
         return self.__get_environment('team_left') if side == 'Left' else self.__get_environment('team_right')
