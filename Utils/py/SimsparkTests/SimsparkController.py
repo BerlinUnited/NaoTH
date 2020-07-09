@@ -62,6 +62,8 @@ class SimsparkController(threading.Thread):
         # run tasks cooperatively and wait 'till loop is stopped
         self._loop.run_forever()
 
+        logging.info('Done')
+
     async def __start_application(self):
         """Starts a simspark instance as separate process and waits until it is completely started."""
         if self._start_instance:
@@ -129,12 +131,15 @@ class SimsparkController(threading.Thread):
         """
 
         for task in reversed(self._tasks):
+            task_name = task.get_name() if hasattr(task, 'get_name') else str(task)
             try:
+                logging.debug('Cancel task: %s', task_name)
                 task.cancel()
                 await task
             except Exception as e:
-                print('Stop simspark:', task.get_name() if hasattr(task, 'get_name') else task, e, file=sys.stderr)
+                print('Stop simspark:', task_name, e, file=sys.stderr)
 
+        logging.debug('Stop instance')
         await self.__stop_application()
 
         self._loop.stop()
@@ -166,9 +171,14 @@ class SimsparkController(threading.Thread):
 
     async def _connection_listener(self):
         logging.debug("Connection task started")
-        # TODO: if the application was started, but isn't running anymore, 'cancel' task
+
         while True:
             try:
+                # simspark instance was started, but stopped unexpectedly - stop everything
+                if self._start_instance and self._p.returncode is not None:
+                    logging.error("Simspark instance closed unexpected!")
+                    self._loop.create_task(self._stop_internal())
+
                 # (try to) establish connection or raise exception
                 self._stream_reader, \
                 self._stream_writer = await asyncio.open_connection(host=self._host, port=self._port_monitor)
@@ -202,6 +212,8 @@ class SimsparkController(threading.Thread):
         if self._stream_writer:
             self._stream_writer.close()
             #await self._stream_writer.wait_closed()  # NOTE: this doesn't complete?!
+
+        logging.debug("Connection task stopped")
 
     async def _state_updater(self):
         """Task to receive the current state from simspark and updates the internal state representation."""
@@ -248,6 +260,8 @@ class SimsparkController(threading.Thread):
             except Exception as e:  # unexpected exception
                 print('State updater:', e, file=sys.stderr)
 
+        logging.debug("State updater task stopped")
+
     async def _command_sender(self) -> None:
         """Task to send scheduled commands."""
         logging.debug("Command sender task started")
@@ -268,6 +282,8 @@ class SimsparkController(threading.Thread):
                 self._set_connected(False)
             except Exception as e:  # unexpected exception
                 print('Send commands:', e, file=sys.stderr)
+
+        logging.debug("Command sender task stopped")
 
     def send_command(self, cmd: str) -> None:
         """
