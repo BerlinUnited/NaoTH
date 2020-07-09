@@ -1,12 +1,6 @@
 import logging
-
 import math
-import multiprocessing
-import signal
-import socket
 import struct
-import subprocess
-import time
 import traceback
 import threading
 import asyncio
@@ -22,13 +16,14 @@ class SimsparkController(threading.Thread):
     All available trainer commands can be found here at:
     http://simspark.sourceforge.net/wiki/index.php/Network_Protocol#Command_Messages_from_Coach.2FTrainer"""
 
-    def __init__(self, app, monitor_port: int = 3200, agent_port: int = 3100, start_instance=True, print_out=False):
+    def __init__(self, app, monitor_port: int = 3200, agent_port: int = 3100, start_instance=True):
         """
         Constructor of the :SimsparkController:. Initializes public and private attributes.
 
         :param app:             the simspark executable, which should be used if :start_instance: is true
+        :param monitor_port:    the port, which should be used for a simspark monitor (and this script)
+        :param agent_port:      the port, where the simspark agents connect to
         :param start_instance:  True, if simspark should be started in a separate process, False otherwise
-        :param print_out:       False, if the print outs from simspark should be hidden, True otherwise show them
         """
         super().__init__(name="SimsparkController")
 
@@ -38,7 +33,6 @@ class SimsparkController(threading.Thread):
         self._port_monitor = monitor_port
         self._port_agent = agent_port
         self._host = '127.0.0.1'
-        self._cout = print_out  # TODO: do we need this?!?
 
         self._stream_reader = None
         self._stream_writer = None
@@ -77,6 +71,7 @@ class SimsparkController(threading.Thread):
                 app.extend(['--server-port', str(self._port_monitor)])
             if self._port_agent is not None:
                 app.extend(['--agent-port', str(self._port_agent)])
+            # start simspark with additional arguments
             logging.info('Start Simspark: %s', ' '.join(app))
             self._p = await asyncio.create_subprocess_exec(*app,
                                                            stdout=asyncio.subprocess.PIPE,
@@ -103,7 +98,7 @@ class SimsparkController(threading.Thread):
 
         if self._start_instance and self._p.returncode is None:
             logging.info("Quit simspark application")
-            self._p.send_signal(signal.SIGINT)
+            self._p.send_signal(2)
             # wait before killing
             await process_stopped()
             if self._p.returncode is None:
@@ -145,12 +140,12 @@ class SimsparkController(threading.Thread):
         self._loop.stop()
 
     def wait_connected(self, timeout=None) -> None:
-        """Blocks until the thread is connected to the naoth agent or until the optional timeout occurs."""
+        """Blocks until the thread is connected to simspark or until the optional timeout occurs."""
         self._connected.wait(timeout)
 
     def is_connected(self):
         """
-        Returns if th monitor is still connected to the simspark instance
+        Returns true, if the we're connected to the simspark instance.
 
         :return: True, if connected, False otherwise
         """
@@ -159,15 +154,18 @@ class SimsparkController(threading.Thread):
     def _set_connected(self, state: bool) -> None:
         """Internal helper method to handle the connection state."""
         if state:
+            logging.info("Connected to simspark")
             self._connected_internal.set()
             self._connected.set()
         else:
+            logging.info("Disconnected from simspark")
             self._connected.clear()
             self._connected_internal.clear()
             if self._stream_writer:
                 self._stream_writer.close()
 
     async def _connect(self):
+        logging.debug("Connection task started")
         # TODO: if the application was started, but isn't running anymore, 'cancel' task
         while True:
             try:
@@ -175,11 +173,11 @@ class SimsparkController(threading.Thread):
                 self._stream_reader, \
                 self._stream_writer = await asyncio.open_connection(host=self._host, port=self._port_monitor)
 
-                # make sure we got all relevant infos
-                self.cmd_reqfullstate()
-
                 # update internal & external connection state
                 self._set_connected(True)
+
+                # make sure we got all relevant infos
+                self.cmd_reqfullstate()
 
                 # wait 'till the connection is 'closed' (lost?)
                 await self._stream_writer.wait_closed()
@@ -206,6 +204,8 @@ class SimsparkController(threading.Thread):
             #await self._stream_writer.wait_closed()  # NOTE: this doesn't complete?!
 
     async def _poll_answers(self):
+        """Task to receive the current state from the simspark instance and updates the internal state representation."""
+        logging.debug("State updater task started")
 
         def lost_connection(d):
             """Helper function to determine, if the connection was lost."""
@@ -250,6 +250,8 @@ class SimsparkController(threading.Thread):
 
     async def _send_commands(self) -> None:
         """Task to send scheduled commands."""
+        logging.debug("Command sender task started")
+
         while True:
             try:
                 await self._connected_internal.wait()
@@ -269,18 +271,18 @@ class SimsparkController(threading.Thread):
 
     def send_command(self, cmd: str) -> None:
         """
-        Schedules the given command in the command queue and returns the command.
+        Schedules the given command in the command queue.
 
-        :raises Exception: if not connected to a naoth agent or the given command was already executed
+        :raises Exception: if not connected to simspark or if the given command is invalid
         """
         if not self.is_connected():
-            raise Exception('Not connected to the agent!')
+            raise Exception('Not connected to simspark!')
 
         if not cmd.startswith('(') or not cmd.endswith(')'):
             raise Exception('Invalid command!')
 
         # command queue is not thread safe - make sure we're add it in the correct thread
-        # this can 'causes a delay of ~0.5ms
+        # this can 'cause a delay of ~0.5ms
         self._loop.call_soon_threadsafe(functools.partial(self._cmd_q.put_nowait, cmd))
 
     def __update_environment(self, data):
@@ -562,17 +564,3 @@ class SimsparkController(threading.Thread):
         """Schedules the '(playMode mode)' trainer command for the simspark instance.
         Available play modes can be found at: http://simspark.sourceforge.net/wiki/index.php/Play_Modes"""
         self.send_command('(playMode {})'.format(mode))
-
-
-if __name__ == '__main__':
-
-    logging.basicConfig(level=logging.DEBUG)  # WARNING
-
-    signal.signal(signal.SIGINT, lambda sig,frm: s.stop())
-
-    s = SimsparkController('simspark', True)  # True
-    #s.set_ports()
-    s.start()
-
-    s.join()
-    print('Bye')
