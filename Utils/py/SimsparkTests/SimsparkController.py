@@ -30,9 +30,10 @@ class SimsparkController(threading.Thread):
         self._app = app
         self._start_instance = start_instance
         self._p = None
-        self._port_monitor = monitor_port
-        self._port_agent = agent_port
         self._host = '127.0.0.1'
+        # make sure we have valid ports (not 'None')
+        self._port_monitor = monitor_port if monitor_port else 3200
+        self._port_agent = agent_port if agent_port else 3100
 
         self._stream_reader = None
         self._stream_writer = None
