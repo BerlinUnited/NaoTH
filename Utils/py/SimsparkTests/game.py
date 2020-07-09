@@ -456,7 +456,9 @@ class LogStd(Log):
         print("Run: {}\tTime: {}\n\tLeft:\t{}\n\tRight:\t{}".format(run, time, "\t".join(players_left), "\t".join(players_right)))
 
     def half_result(self, run, left: Config.Team, right: Config.Team, half, score_left, score_right):
+        print('=' * 100)
         print("Run: {}\tHalf: {}\tScore: {} {} - {} {}".format(run, half, left.name, score_left, right.name, score_right))
+        print('=' * 100)
 
     def finish(self):
         print('FINISH!')
@@ -498,11 +500,7 @@ def stop(s, agents):
     # stop agents first
     for t, a in agents: a.stop()
     # stop simulation
-    s.cancel()
-    # wait for simspark to exit
-    while s.is_alive():
-        time.sleep(1)
-    s.join()
+    s.stop()
 
 
 if __name__ == "__main__":
@@ -513,7 +511,7 @@ if __name__ == "__main__":
         config.write(args.write_config)
         exit(0)
 
-    logging.basicConfig(level=logging.WARNING)  # WARNING
+    logging.basicConfig(level=logging.DEBUG)  # WARNING
 
     # TODO: configures simspark
 
@@ -532,10 +530,9 @@ if __name__ == "__main__":
     right = config.team_right
 
     for r in range(1, config.runs+1):
-        s = SimsparkController(config.simspark_exe, True)  # True
-        s.set_ports(config.simspark_server_port, config.simspark_agent_port)
+        s = SimsparkController(config.simspark_exe, config.simspark_server_port, config.simspark_agent_port)
         s.start()
-        s.connected.wait()  # wait for the monitor to be connected
+        s.wait_connected()  # wait for the monitor to be connected
 
         # switch team sides
         if config.alternate:

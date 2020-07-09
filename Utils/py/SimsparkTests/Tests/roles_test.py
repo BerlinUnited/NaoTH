@@ -4,7 +4,7 @@ from Utils import *
 def roles_test(args):
     s = SimsparkController(args.simspark, not args.no_simspark)
     s.start()
-    s.connected.wait() # wait for the monitor to be connected
+    s.wait_connected() # wait for the monitor to be connected
 
     agents = []
     for n in range(1,6):
@@ -76,8 +76,7 @@ def roles_test(args):
     for a in agents: a.debugrequest('gamecontroller:game_state:play', False)  # ... and make sure, everything else is reset
 
     for a in agents: a.stop()
-    s.cancel()
-    s.join()
+    s.stop()
 
     # return True if the test was successful
     return True

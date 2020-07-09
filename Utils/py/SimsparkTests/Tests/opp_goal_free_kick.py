@@ -69,9 +69,9 @@ def evaluate_position(s, a, ball):
 def opp_goal_free_kick(args):
     return_code = 0
 
-    s = SimsparkController(args.simspark, not args.no_simspark)
+    s = SimsparkController(args.simspark, start_instance=not args.no_simspark)
     s.start()
-    s.connected.wait() # wait for the monitor to be connected
+    s.wait_connected() # wait for the monitor to be connected
 
     a = AgentController(args.agent, args.config, number=3, start_instance=not args.no_agent)
     a.start()
@@ -142,8 +142,6 @@ def opp_goal_free_kick(args):
     # TODO: move_away_from_teamball
 
     a.stop()
-    s.cancel()
-
-    s.join()
+    s.stop()
 
     return return_code == 0
