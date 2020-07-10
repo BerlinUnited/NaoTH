@@ -95,21 +95,6 @@ def __check_args_config(value):
     return value
 
 
-def prepare_game(s):
-    # Left team
-    s.cmd_agentMove(1, -3.5, 3.2, r=-180, t='Left')
-    s.cmd_agentMove(2, -2.5, 3.2, r=-180, t='Left')
-    s.cmd_agentMove(3, -1.5, 3.2, r=-180, t='Left')
-    s.cmd_agentMove(4, -3.0, -3.2, r=0, t='Left')
-    s.cmd_agentMove(5, -2.0, -3.2, r=0, t='Left')
-    # Right team
-    s.cmd_agentMove(1, 3.5, -3.2, r=0, t='Right')
-    s.cmd_agentMove(2, 2.5, -3.2, r=0, t='Right')
-    s.cmd_agentMove(3, 1.5, -3.2, r=0, t='Right')
-    s.cmd_agentMove(4, 3.0, 3.2, r=-180, t='Right')
-    s.cmd_agentMove(5, 2.0, 3.2, r=-180, t='Right')
-
-
 class Config:
     class Team:
         def __init__(self, name: str):
@@ -470,6 +455,21 @@ def createLog(log: str):
     return LogStd()
 
 
+def prepare_game(s):
+    # Left team
+    s.cmd_agentMove(1, -3.5, 3.2, r=-180, t='Left')
+    s.cmd_agentMove(2, -2.5, 3.2, r=-180, t='Left')
+    s.cmd_agentMove(3, -1.5, 3.2, r=-180, t='Left')
+    s.cmd_agentMove(4, -3.0, -3.2, r=0, t='Left')
+    s.cmd_agentMove(5, -2.0, -3.2, r=0, t='Left')
+    # Right team
+    s.cmd_agentMove(1, 3.5, -3.2, r=0, t='Right')
+    s.cmd_agentMove(2, 2.5, -3.2, r=0, t='Right')
+    s.cmd_agentMove(3, 1.5, -3.2, r=0, t='Right')
+    s.cmd_agentMove(4, 3.0, 3.2, r=-180, t='Right')
+    s.cmd_agentMove(5, 2.0, 3.2, r=-180, t='Right')
+
+
 def wait_half(r, s, half_time, log:Log=None, i:multiprocessing.Event=None):
     t = s.get_time()
     while s.is_connected() and (t is None or t < half_time) and ((i is not None and not i.is_set()) or i is None):
@@ -523,7 +523,7 @@ if __name__ == "__main__":
     signal.signal(signal.SIGHUP, notify)
     signal.signal(signal.SIGINT, interrupt)
 
-    # TODO: is there a better solution to propagate the interrupt?!?
+    # flag, if the process got interrupted and everything should be shutdown
     interrupt = multiprocessing.Event()
 
     left = config.team_left
@@ -581,7 +581,5 @@ if __name__ == "__main__":
         if interrupt.is_set():
             break
 
-
     log.finish()
-
     logging.info("Ended at {}".format(time.asctime()))
