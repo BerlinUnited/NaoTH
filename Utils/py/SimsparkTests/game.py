@@ -5,6 +5,7 @@ import shutil
 import sqlite3
 import configparser
 import signal
+import textwrap
 import multiprocessing
 from typing import Optional
 
@@ -14,42 +15,104 @@ from SimsparkController import SimsparkController
 from Utils import *
 
 def parseArguments():
+    # TODO: make program description better!
     parser = argparse.ArgumentParser(
-        # TODO: make program description better!
-        description="""
-        Starts a full simspark game 5vs5 for two halfs and logs some infos.\n
-        
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description=textwrap.dedent("""\
+        Starts a full simspark game 5vs5 for two halfs and logs some infos.
+
+        The simspark configuration isn't modified and therefore used the same configuration as if simspark would be
+        started by hand. In order to start simspark without monitor (for example), you have to modify the `rcssserverspl.rb`
+        file and set `$enableInternalMonitor = false`.
+
+        By default the current working directory is used to start the agent applications. If you want to start a 
+        different simspark agent or with a different config, you must set this via arguments or config file.
+
+        You can also create a config file for this script with default values by using the `--write-config` argument.
+        In order to pre-set some config values use `--write-config` with other optional arguments.
+
+        In order to log some data about the game, you have to specify the log name `--log my_log.db`. Currently only
+        SQLite logs are avilable and files ending with .db are recognized and used. Otherwise some infos are only
+        printed to stdout.
+
         Sending HUP signal to a running simulation prints the current run and score of the simulation.
-        """
+        """),
+        epilog=textwrap.dedent("""\
+        Examples:
+        \t\033[1mgame.py\033[0m
+        \tSimply starts a game 5vs5 and uses the current directory for the agent config
+        
+        \t\033[1mgame.py -r 100 -a -c "Example test games" -l "results.db"\033[0m
+        \tStarts 100 games in a row with alternating sides and logs some game infos and the comment to the 'result.db' database
+        
+        \t\033[1mgame.py -lc "/path/to/left/config" -rc "/path/to/right/config"\033[0m
+        \tStarts a game with the same agent executable, but different configurations for the left and right team
+        
+        \t\033[1mgame.py -le "/path/to/left/naoth-simspark" -re "/path/to/right/naoth-simspark"\033[0m
+        \tStarts a game with the different agent executables, but same configuration for the left and right team
+        
+        \t\033[1mgame.py -sp 3222 -ap 3111\033[0m
+        \tStarts a game with different server and agent ports than the default
+        \tThis is useful if you want to start multiple instances if this script at once, since each instance blocks the used ports
+        
+        \t\033[1mgame.py --write-config "my-config.cfg"\033[0m
+        \tWrites the default config to the given file `my-config.cfg`
+        
+        \t\033[1mgame.py -r 100 -a -l "results.db" --write-config "my-config.cfg"\033[0m
+        \tWrites the default config with 100 runs, alternating sides and the log file to the given file `my-config.cfg`
+        
+        \t\033[1mgame.py --config "my-config.cfg"\033[0m
+        \tLoads the configuration from the given file and starts one (or more) games
+        """)
     )
 
     if '--config' in sys.argv:
-        parser.add_argument('--config', type=ArgsValidator.config, action='store', help="Use a configuration file instead of the application arguments")
+        parser.add_argument('--config', type=ArgsValidator.config, action='store',
+                            help="Use a configuration file instead of the application arguments")
     elif len(sys.argv) <= 2 and '--write-config' in sys.argv:
-        parser.add_argument('--write-config', action='store',help="Writes the default config to the given file and exits.")
+        parser.add_argument('--write-config', action='store',
+                            help="Writes the default config to the given file and exits; additional arguments are used instead of the default")
     else:
-        parser.add_argument('-r','--runs', type=int, default=1, action='store', help="The number of runs (games), which should be performed")
-        parser.add_argument('-l','--log', type=ArgsValidator.is_log, action='store', help="If some game results should be logged, set the log file where the results should be written to.")
-        parser.add_argument('-c','--comment', default='', action='store', help="A optional comment to describe this runs.")
-        parser.add_argument('-a','--alternate', action='store_true', help="If used, the sides for the teams a switched for each run.")
+        parser.add_argument('-r', '--runs', type=int, default=1, action='store',
+                            help="The number of runs (games), which should be performed")
+        parser.add_argument('-l', '--log', type=ArgsValidator.is_log, action='store',
+                            help="If some game results should be logged, set the log file where the results should be written to")
+        parser.add_argument('-c', '--comment', default='', action='store',
+                            help="A optional comment to describe this runs.")
+        parser.add_argument('-a', '--alternate', action='store_true',
+                            help="If used, the sides for the teams a switched for each run (default: false)")
+        parser.add_argument('--no-sync', action='store_true',
+                            help="Whether the simulation should not run synchronized (default is synchronized)")
 
-        parser.add_argument('-s', '--simspark', type=ArgsValidator.is_simspark, default='simspark', action='store', help="The simspark executable")
-        parser.add_argument('-ap', '--agent-port', type=int, action='store', help="The port for agents to connect to simspark")
-        parser.add_argument('-sp', '--server-port', type=int, action='store', help="The port for monitors to connect to simspark")
+        parser.add_argument('-s', '--simspark', type=ArgsValidator.is_simspark, default='simspark', action='store',
+                            help="The simspark executable (default: 'simspark')")
+        parser.add_argument('-ap', '--agent-port', type=int, action='store',
+                            help="The port for agents to connect to simspark (default: 3100)")
+        parser.add_argument('-sp', '--server-port', type=int, action='store',
+                            help="The port for monitors to connect to simspark (default: 3200)")
 
-        parser.add_argument('--sync', action='store_true', default=True, help="Whether the simulation should be run synchronized")
+        parser.add_argument('-lc', '--left-config', type=ArgsValidator.is_config_dir, default='.', action='store',
+                            help="The config directory for the left team (default: './')")
+        parser.add_argument('-le', '--left-exe', type=ArgsValidator.is_exe, default='./dist/Native/naoth-simspark', action='store',
+                            help="The agent executable for the left team")
+        parser.add_argument('-lp', '--left-players', type=ArgsValidator.is_positive, default=5, action='store',
+                            help="The the number of players for each team (default: 5)")
+        parser.add_argument('-ln', '--left-name', type=str, default='NaoTH', action='store',
+                            help="The name of the left Team (default: 'NaoTH')")
 
-        parser.add_argument('-lc', '--left-config', type=ArgsValidator.is_config_dir, default='.', action='store', help="The config directory for the left team")
-        parser.add_argument('-le', '--left-exe', type=ArgsValidator.is_exe, default='./dist/Native/naoth-simspark', action='store', help="The agent executable for the left team")
-        parser.add_argument('-lp', '--left-players', type=ArgsValidator.is_positive, default=5, action='store', help="The the number of players for each team")
-        parser.add_argument('-ln', '--left-name', type=str, default='NaoTH', action='store', help="The name of the left Team")
+        parser.add_argument('-rc', '--right-config', type=ArgsValidator.is_config_dir, default='.', action='store',
+                            help="The config directory for the left team (default: './')")
+        parser.add_argument('-re', '--right-exe', type=ArgsValidator.is_exe, default='./dist/Native/naoth-simspark', action='store',
+                            help="The agent executable for the right team (default: './dist/Native/naoth-simspark')")
+        parser.add_argument('-rp', '--right-players', type=ArgsValidator.is_positive, default=5, action='store',
+                            help="The the number of players for each team (default: 5)")
+        parser.add_argument('-rn', '--right-name', type=str, default='BU', action='store',
+                            help="The name of the right Team (default: 'BU')")
 
-        parser.add_argument('-rc', '--right-config', type=ArgsValidator.is_config_dir, default='.', action='store', help="The config directory for the left team")
-        parser.add_argument('-re', '--right-exe', type=ArgsValidator.is_exe, default='./dist/Native/naoth-simspark', action='store', help="The agent executable for the right team")
-        parser.add_argument('-rp', '--right-players', type=ArgsValidator.is_positive, default=5, action='store', help="The the number of players for each team")
-        parser.add_argument('-rn', '--right-name', type=str, default='BU', action='store', help="The name of the right Team")
-
-        parser.add_argument('--write-config', action='store', help="Writes the given config to the file and exits.")
+        parser.add_argument('--config', type=ArgsValidator.config, action='store',
+                            help="Use a configuration file instead of the application arguments")
+        parser.add_argument('--write-config', action='store',
+                            help="Writes the given config to the file and exits; additional arguments are used instead of the default")
 
     return parser.parse_args()
 
@@ -180,8 +243,8 @@ class Config:
 
         if 'runs' in args:
             self._runs = args.runs
-        if 'sync' in args:
-            self._sync = args.sync
+        if 'no_sync' in args:
+            self._sync = not args.no_sync
         if 'log' in args and args.log:
             self._log = self._retrieve_path(base, args.log)
         if 'comment' in args:
@@ -509,7 +572,7 @@ def stop(s, agents):
 
 if __name__ == "__main__":
     args = parseArguments()
-    config = Config(args.config) if 'config' in args else Config(args)
+    config = Config(args.config) if 'config' in args and args.config else Config(args)
 
     if 'write_config' in args and args.write_config:
         config.write(args.write_config)
