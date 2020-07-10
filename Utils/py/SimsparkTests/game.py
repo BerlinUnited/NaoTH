@@ -24,29 +24,29 @@ def parseArguments():
     )
 
     if '--config' in sys.argv:
-        parser.add_argument('--config', type=__check_args_config, action='store', help="Use a configuration file instead of the application arguments")
+        parser.add_argument('--config', type=ArgsValidator.config, action='store', help="Use a configuration file instead of the application arguments")
     elif len(sys.argv) <= 2 and '--write-config' in sys.argv:
         parser.add_argument('--write-config', action='store',help="Writes the default config to the given file and exits.")
     else:
         parser.add_argument('-r','--runs', type=int, default=1, action='store', help="The number of runs (games), which should be performed")
-        parser.add_argument('-l','--log', type=__check_args_log, action='store', help="If some game results should be logged, set the log file where the results should be written to.")
+        parser.add_argument('-l','--log', type=ArgsValidator.is_log, action='store', help="If some game results should be logged, set the log file where the results should be written to.")
         parser.add_argument('-c','--comment', default='', action='store', help="A optional comment to describe this runs.")
         parser.add_argument('-a','--alternate', action='store_true', help="If used, the sides for the teams a switched for each run.")
 
-        parser.add_argument('-s', '--simspark', type=__check_args_simspark, default='simspark', action='store', help="The simspark executable")
+        parser.add_argument('-s', '--simspark', type=ArgsValidator.is_simspark, default='simspark', action='store', help="The simspark executable")
         parser.add_argument('-ap', '--agent-port', type=int, action='store', help="The port for agents to connect to simspark")
         parser.add_argument('-sp', '--server-port', type=int, action='store', help="The port for monitors to connect to simspark")
 
         parser.add_argument('--sync', action='store_true', default=True, help="Whether the simulation should be run synchronized")
 
-        parser.add_argument('-lc', '--left-config', type=__check_args_agentconfig, default='.', action='store', help="The config directory for the left team")
-        parser.add_argument('-le', '--left-exe', type=__check_args_exe, default='./dist/Native/naoth-simspark', action='store', help="The agent executable for the left team")
-        parser.add_argument('-lp', '--left-players', type=__check_args_positive, default=5, action='store', help="The the number of players for each team")
+        parser.add_argument('-lc', '--left-config', type=ArgsValidator.is_config_dir, default='.', action='store', help="The config directory for the left team")
+        parser.add_argument('-le', '--left-exe', type=ArgsValidator.is_exe, default='./dist/Native/naoth-simspark', action='store', help="The agent executable for the left team")
+        parser.add_argument('-lp', '--left-players', type=ArgsValidator.is_positive, default=5, action='store', help="The the number of players for each team")
         parser.add_argument('-ln', '--left-name', type=str, default='NaoTH', action='store', help="The name of the left Team")
 
-        parser.add_argument('-rc', '--right-config', type=__check_args_agentconfig, default='.', action='store', help="The config directory for the left team")
-        parser.add_argument('-re', '--right-exe', type=__check_args_exe, default='./dist/Native/naoth-simspark', action='store', help="The agent executable for the right team")
-        parser.add_argument('-rp', '--right-players', type=__check_args_positive, default=5, action='store', help="The the number of players for each team")
+        parser.add_argument('-rc', '--right-config', type=ArgsValidator.is_config_dir, default='.', action='store', help="The config directory for the left team")
+        parser.add_argument('-re', '--right-exe', type=ArgsValidator.is_exe, default='./dist/Native/naoth-simspark', action='store', help="The agent executable for the right team")
+        parser.add_argument('-rp', '--right-players', type=ArgsValidator.is_positive, default=5, action='store', help="The the number of players for each team")
         parser.add_argument('-rn', '--right-name', type=str, default='BU', action='store', help="The name of the right Team")
 
         parser.add_argument('--write-config', action='store', help="Writes the given config to the file and exits.")
@@ -54,45 +54,47 @@ def parseArguments():
     return parser.parse_args()
 
 
-def __check_args_positive(value):
-    ivalue = int(value)
-    if ivalue <= 0:
-        raise argparse.ArgumentTypeError("%s is an invalid positive int value" % value)
-    return ivalue
+class ArgsValidator:
+    @staticmethod
+    def is_positive(value):
+        ivalue = int(value)
+        if ivalue <= 0:
+            raise argparse.ArgumentTypeError("%s is an invalid positive int value" % value)
+        return ivalue
 
+    @staticmethod
+    def is_simspark(value):
+        if not shutil.which(value):
+            raise argparse.ArgumentTypeError("Can not find simspark application (%s)!" % value)
+        return value
 
-def __check_args_simspark(value):
-    if not shutil.which(value):
-        raise argparse.ArgumentTypeError("Can not find simspark application (%s)!" % value)
-    return value
+    @staticmethod
+    def is_exe(value):
+        if not shutil.which(value) and not shutil.which(value, path='./'):
+            raise argparse.ArgumentTypeError("Can not find simspark agent application (%s)!" % value)
+        return value
 
+    @staticmethod
+    def is_config_dir(value):
+        if not os.path.isdir(os.path.join(value, 'Config')):
+            raise argparse.ArgumentTypeError("Can not find config directory (%s)!" % value)
+        return value
 
-def __check_args_exe(value):
-    if not shutil.which(value) and not shutil.which(value, path='./'):
-        raise argparse.ArgumentTypeError("Can not find simspark agent application (%s)!" % value)
-    return value
+    @staticmethod
+    def is_log(value: str):
+        if not value.endswith('db'):
+            raise argparse.ArgumentTypeError("Not a valid log target (%s)!" % value)
 
+        if not os.path.exists(os.path.dirname(value)):
+            raise argparse.ArgumentTypeError("Path to log target doesn't exist (%s)!" % value)
 
-def __check_args_agentconfig(value):
-    if not os.path.isdir(os.path.join(value, 'Config')):
-        raise argparse.ArgumentTypeError("Can not find config directory (%s)!" % value)
-    return value
+        return value
 
-
-def __check_args_log(value: str):
-    if not value.endswith('db'):
-        raise argparse.ArgumentTypeError("Not a valid log target (%s)!" % value)
-
-    if not os.path.exists(os.path.dirname(value)):
-        raise argparse.ArgumentTypeError("Path to log target doesn't exist (%s)!" % value)
-
-    return value
-
-
-def __check_args_config(value):
-    if not os.path.isfile(value):
-        raise argparse.ArgumentTypeError("Configuration file doesn't exists (%s)!" % value)
-    return value
+    @staticmethod
+    def config(value):
+        if not os.path.isfile(value):
+            raise argparse.ArgumentTypeError("Configuration file doesn't exists (%s)!" % value)
+        return value
 
 
 class Config:
