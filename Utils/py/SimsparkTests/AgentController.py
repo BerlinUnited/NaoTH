@@ -63,7 +63,14 @@ class AgentController(Controller):
             if self.team:    args.extend(['--team', self.team])
             if self.ss_port: args.extend(['--port', self.ss_port])
 
-            self.__p = await asyncio.create_subprocess_exec(*args, cwd=self.cwd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+            # NOTE: the process must be started in its own session in order to gracefully stop the application.
+            #       Otherwise an interrupt (CTRL+C) to the main process is propagated to the child process in the
+            #       same process group (in posix os)
+            self.__p = await asyncio.create_subprocess_exec(*args,
+                                                            cwd=self.cwd,
+                                                            start_new_session=True,  # see NOTE above
+                                                            stdout=asyncio.subprocess.PIPE,
+                                                            stderr=asyncio.subprocess.PIPE)
             logging.debug(' '.join(args))
 
             while True:

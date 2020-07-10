@@ -76,7 +76,11 @@ class SimsparkController(threading.Thread):
                 app.extend(['--agent-port', str(self._port_agent)])
             # start simspark with additional arguments
             logging.info('Start Simspark: %s', ' '.join(app))
+            # NOTE: the process must be started in its own session in order to gracefully stop the application.
+            #       Otherwise an interrupt (CTRL+C) to the main process is propagated to the child process in the
+            #       same process group (in posix os)
             self._p = await asyncio.create_subprocess_exec(*app,
+                                                           start_new_session=True,  # see NOTE above
                                                            stdout=asyncio.subprocess.PIPE,
                                                            stderr=asyncio.subprocess.PIPE)
             # NOTE: currently i found no solution to determine exactly, when simspark has started.
@@ -100,14 +104,17 @@ class SimsparkController(threading.Thread):
                 pass  # ignore, since we kind of expected it
 
         if self._start_instance and self._p.returncode is None:
-            logging.info("Quit simspark application")
-            self._p.send_signal(2)
-            # wait before killing
-            await process_stopped()
-            if self._p.returncode is None:
-                logging.info("Kill simspark application")
-                self._p.kill()
+            try:
+                logging.info("Quit simspark application")
+                self._p.send_signal(2)
+                # wait before killing
                 await process_stopped()
+                if self._p.returncode is None:
+                    logging.info("Kill simspark application")
+                    self._p.kill()
+                    await process_stopped()
+            except Exception as ex:
+                logging.error("Error occurred while stopping simspark: %s", str(ex))
 
     def stop(self, timeout=None) -> None:
         """
