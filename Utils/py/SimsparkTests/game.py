@@ -474,7 +474,9 @@ def prepare_game(s):
 
 def wait_half(r, s, half_time, log:Log=None, i:multiprocessing.Event=None):
     t = s.get_time()
-    while s.is_connected() and (t is None or t < half_time) and ((i is not None and not i.is_set()) or i is None):
+    while (s.is_alive() and s.is_connected()) \
+            and (t is None or t < half_time) \
+            and ((i is not None and not i.is_set()) or i is None):
         # wait for the half to end
         time.sleep(1)
         _ = s.get_time()
@@ -564,7 +566,7 @@ if __name__ == "__main__":
         s.cmd_kickoff()     # start first half
         wait_half(r, s, 600, log, interrupt)   # wait for half complete
 
-        if interrupt.is_set():
+        if interrupt.is_set() or not s.is_alive():
             stop(s, agents)
             break
 
