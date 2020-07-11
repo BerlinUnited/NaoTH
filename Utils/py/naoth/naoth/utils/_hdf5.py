@@ -10,53 +10,6 @@ from ..pb import (
 
 import numpy as np
 
-JointID = {}
-JointID["HeadPitch"] = 0
-JointID["HeadYaw"] = 1
-JointID["RShoulderRoll"] = 2
-JointID["LShoulderRoll"] = 3
-JointID["RShoulderPitch"] = 4
-JointID["LShoulderPitch"] = 5
-JointID["RElbowRoll"] = 6
-JointID["LElbowRoll"] = 7
-JointID["RElbowYaw"] = 8
-JointID["LElbowYaw"] = 9
-JointID["RHipYawPitch"] = 10
-JointID["LHipYawPitch"] = 11
-JointID["RHipPitch"] = 12
-JointID["LHipPitch"] = 13
-JointID["RHipRoll"] = 14
-JointID["LHipRoll"] = 15
-JointID["RKneePitch"] = 16
-JointID["LKneePitch"] = 17
-JointID["RAnklePitch"] = 18
-JointID["LAnklePitch"] = 19
-JointID["RAnkleRoll"] = 20
-JointID["LAnkleRoll"] = 21
-
-JointNames = {}
-JointNames[0] = "HeadPitch"
-JointNames[1] = "HeadYaw"
-JointNames[2] = "RShoulderRoll"
-JointNames[3] = "LShoulderRoll"
-JointNames[4] = "RShoulderPitch"
-JointNames[5] = "LShoulderPitch"
-JointNames[6] = "RElbowRoll"
-JointNames[7] = "LElbowRoll"
-JointNames[8] = "RElbowYaw"
-JointNames[9] = "LElbowYaw"
-JointNames[10] = "RHipYawPitch"
-JointNames[11] = "LHipYawPitch"
-JointNames[12] = "RHipPitch"
-JointNames[13] = "LHipPitch"
-JointNames[14] = "RHipRoll"
-JointNames[15] = "LHipRoll"
-JointNames[16] = "RKneePitch"
-JointNames[17] = "LKneePitch"
-JointNames[18] = "RAnklePitch"
-JointNames[19] = "LAnklePitch"
-JointNames[20] = "RAnkleRoll"
-JointNames[21] = "LAnkleRoll"
 
 
 def transform_log_to_hdf5(log_path, representations):
