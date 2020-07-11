@@ -7,7 +7,7 @@ set -e
 # catch the EXIT and print a message if the exit code is not zero
 trap '[ $? -eq 0 ] || echo "!!!! FAILURE WITH CODE $? !!!!"' EXIT
 
-# use the first parameter as the buld target, 
+# use the first parameter as the build target, 
 # compile NaoRobot if no argument is provided
 ACTION=${1:-NaoRobot}
 
