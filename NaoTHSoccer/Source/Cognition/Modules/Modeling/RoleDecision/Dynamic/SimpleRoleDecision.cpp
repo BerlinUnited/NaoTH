@@ -6,9 +6,6 @@
 
 #include "SimpleRoleDecision.h"
 #include <PlatformInterface/Platform.h>
-#include  <Tools/DataConversion.h>
-
-#include <math.h>
 
 using namespace std;
 

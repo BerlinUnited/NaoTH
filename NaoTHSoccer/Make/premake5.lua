@@ -87,7 +87,7 @@ workspace "NaoTHSoccer"
   {
     inputFiles  = os.matchfiles(path.join(COMMONS_MESSAGES, "*.proto")),
     cppOut      = path.join(FRAMEWORK_PATH,"Commons/Source/Messages/"),
-    javaOut     = path.join(NAOTH_PROJECT, "RobotControl/RobotConnector/src/"),
+    javaOut     = path.join(NAOTH_PROJECT, "RobotControl/src/"),
     pythonOut   = path.join(NAOTH_PROJECT, "Utils/py/naoth/naoth/pb/"),
     includeDirs = {COMMONS_MESSAGES}
   }
@@ -97,7 +97,7 @@ workspace "NaoTHSoccer"
   {
     inputFiles  = os.matchfiles(path.join(NAOTH_PROJECT, "NaoTHSoccer/Messages/*.proto")),
     cppOut      = path.join(NAOTH_PROJECT, "NaoTHSoccer/Source/Messages/"),
-    javaOut     = path.join(NAOTH_PROJECT, "RobotControl/RobotConnector/src/"),
+    javaOut     = path.join(NAOTH_PROJECT, "RobotControl/src/"),
     pythonOut   = path.join(NAOTH_PROJECT, "Utils/py/naoth/naoth/pb/"),
     includeDirs = {COMMONS_MESSAGES, path.join(NAOTH_PROJECT, "NaoTHSoccer/Messages/")}
   }
@@ -236,7 +236,7 @@ workspace "NaoTHSoccer"
     if os.ishost("windows") and _ACTION ~= nil and string.match(_ACTION, "^vs.*") then
       project "Generate"
         kind "Utility"
-        prebuildcommands { "cd ../Make/ && premake5 --Test vs2013" }
+        prebuildcommands { "cd ../Make/ && premake5 --Test " .. _ACTION }
     end
   
   -- set up platforms
@@ -301,7 +301,10 @@ workspace "NaoTHSoccer"
         vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulator" }
         
       dofile (FRAMEWORK_PATH .. "/Platforms/Make/DummySimulator.lua")
-        kind "SharedLib"
+        links { "NaoTHSoccer", "Commons", naoth_links}
+        vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/DummySimulator" }
+
+      dofile (FRAMEWORK_PATH .. "/Platforms/Make/ScriptableSimulator.lua")
         links { "NaoTHSoccer", "Commons", naoth_links}
         vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/DummySimulator" }
         
