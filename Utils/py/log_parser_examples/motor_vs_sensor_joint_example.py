@@ -13,6 +13,7 @@ from naoth.log import Reader as LogReader
 from naoth.datasets import motion
 
 
+# TODO use joint definitions from naoth.log._constants
 def frame_filter(frame):
     return [frame["FrameInfo"].time / 1000.0,
             frame["MotionRequest"],
