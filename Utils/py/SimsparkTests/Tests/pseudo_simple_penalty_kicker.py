@@ -1,17 +1,22 @@
 import math
 import functools
+import logging
+import time
 
 from naoth.log._parser import BehaviorParser
 from naoth.pb import Framework_Representations_pb2, CommonTypes_pb2, Messages_pb2
 from naoth.utils import DebugCommand
 
 from SimsparkController import SimsparkController
+from AgentController import AgentController
 from Utils import *
 
-def ball_out_or_doesnt_move(s, last_ball):
+def ball_out_or_doesnt_move(s: SimsparkController, last_ball):
     _ = s.get_ball()
-    if _['x'] < 4.5 and abs(_['y']) < 3.0 and math.sqrt(math.pow(_['x'] - last_ball['b']['x'], 2) + math.pow(_['y'] - last_ball['b']['y'], 2)) > 0.0:
-        last_ball['b'] = _
+
+    if _['x'] < 4.5 and abs(_['y']) < 3.0 and math.sqrt(math.pow(_['x'] - last_ball['x'], 2) + math.pow(_['y'] - last_ball['y'], 2)) > 0.0:
+        last_ball['x'] = _['x']
+        last_ball['y'] = _['y']
         return False
     return True
 
@@ -82,7 +87,7 @@ def pseudo_simple_penalty_kicker(args):
         # HACK!: to preserve the previous ball location in subsequent function calls, we use a dict in global namespace.
         #        Changes to the dict's elements doesn't change the reference to the dict itself - in contrast to other types
         # TODO: is there a better way?
-        last_ball = {'b': s.get_ball()}
+        last_ball = {'x': s.get_ball()['x'], 'y': s.get_ball()['y']}
         wait_for(ball_out_or_doesnt_move, 0.3, 0.1, 3600.0, s, last_ball)
 
         # print some infos
