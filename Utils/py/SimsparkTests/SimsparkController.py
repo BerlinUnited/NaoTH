@@ -6,6 +6,7 @@ import threading
 import asyncio
 import sys
 import functools
+import time
 
 import sexpr
 
@@ -47,6 +48,7 @@ class SimsparkController(threading.Thread):
 
         self.__environment = {}
         self.__scene = []
+        self.__last_update = 0
 
     def run(self) -> None:
         # set the event loop to this thread
@@ -251,6 +253,7 @@ class SimsparkController(threading.Thread):
                     if sexp and len(sexp) > 2:
                         self.__update_environment(sexp[0])
                         self.__update_scene(sexp[1:])
+                        self.__last_update = time.monotonic()
                 except sexpr.SExprIllegalClosingParenError:
                     # ignore specific parsing exception
                     pass
@@ -435,7 +438,7 @@ class SimsparkController(threading.Thread):
 
     def get_robots(self, team=None):
         """
-        Returns all robots acitve in the simulation. If a team is set ('Left' or 'Right') only the robots of this team
+        Returns all robots active in the simulation. If a team is set ('Left' or 'Right') only the robots of this team
         are returned.
 
         :param team:    limit the returned robots to the selected team (None, 'Left', 'Right')
@@ -596,3 +599,8 @@ class SimsparkController(threading.Thread):
         """Schedules the '(playMode mode)' trainer command for the simspark instance.
         Available play modes can be found at: http://simspark.sourceforge.net/wiki/index.php/Play_Modes"""
         self.send_command('(playMode {})'.format(mode))
+
+    @property
+    def last_update(self):
+        """Returns the last update of the scene/environment."""
+        return self.__last_update

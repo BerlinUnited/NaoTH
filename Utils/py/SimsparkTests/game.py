@@ -15,7 +15,6 @@ from SimsparkController import SimsparkController
 from Utils import *
 
 def parseArguments():
-    # TODO: make program description better!
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description=textwrap.dedent("""\
