@@ -11,6 +11,7 @@ from naoth.log import BehaviorParser
 from naoth.log import Reader as LogReader
 from naoth.datasets import motion
 
+# TODO use JointID from naoth package
 JointID = {
     "HeadPitch": 0,
     "HeadYaw": 1,
