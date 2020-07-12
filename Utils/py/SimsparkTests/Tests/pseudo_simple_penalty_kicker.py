@@ -27,10 +27,8 @@ def frame_info_printer(cmd: DebugCommand):
 
 def behavior_printer(parser, cmd: DebugCommand):
     parser.parse('BehaviorStateSparse', cmd.result())
-    if parser.isActiveOption('path_striker2018'):
-        #print(parser.getActiveOptions())
-        #print(parser.getActiveStates())
-        print(parser.getActiveOptionState('path_striker2018'))
+    if parser.isActiveOption('penalty_kicker'):
+        print(parser.getActiveOptionState('penalty_kicker'))
 
 def pseudo_simple_penalty_kicker(args):
     s = SimsparkController(args.simspark, start_instance=not args.no_simspark)
