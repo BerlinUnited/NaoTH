@@ -22,10 +22,10 @@ def position_and_execute(s, a, parser, pos, ball):
     start = time.monotonic()
     # max. 90sec for this test (NOTE: walking of the robot in the simulation is not smooth, therefore we wait longer)
     while time.monotonic() <= (start + 90):
-        parser.parse(a.behavior().result())
-        if parser.isActiveOption('free_kick_opp'):
-            #print(parser.getActiveOptionState('free_kick_opp'))
-            if parser.getActiveOptionState('free_kick_opp') == 'done' and time.monotonic() > (start + 10):
+        parser.parse('BehaviorStateSparse', a.behavior().result())
+        if parser.isActiveOption('free_kick_simple'):
+            #print(parser.getActiveOptionState('free_kick_simple'))
+            if parser.getActiveOptionState('free_kick_simple') == 'opp_free_kick_watch_ball' and time.monotonic() > (start + 10):
                 #print(parser.symbols.decimal('ball.distance'))
                 start = 0
                 break
@@ -53,9 +53,9 @@ def evaluate_position(s, a, ball):
 
     # check if the robot is somewhere near the line between ball and goal
     # TODO: doesn't work as expected! :/
-    if abs(ball[1]/(ball[0]+4.5) - robot['y']/(robot['x']+4.5))>0.1:
-        logging.info("Robot doesn't block a goal kick!")
-        return False
+    #if abs(ball[1]/(ball[0]+4.5) - robot['y']/(robot['x']+4.5))>0.1:
+    #    logging.info("Robot doesn't block a goal kick!")
+    #    return False
 
     return True
 
@@ -89,6 +89,11 @@ def opp_pushing_free_kick(args):
     # prepare the test
     s.cmd_dropball()  # put the ball into the game
     a.debugrequest('gamecontroller:set_play:pushing_free_kick', True)
+    a.debugrequest('gamecontroller:kickoff:own', False)
+    a.debugrequest('gamecontroller:kickoff:opp', True)
+    # disable dynamic role decision
+    a.module('RoleDecisionAssignmentDistance', False)
+    a.module('RoleDecisionAssignmentStatic', True)
 
     positions = {
         'left_far':    [ (-1.5, 1.5),  (-2,  1.5, -90), (-2, 1.9, -90), (-1.5, 2, -180), (-1.2, 1.8, 140), (-1.2, 1.15, 40), (-1.2, 1.5, 90) ],

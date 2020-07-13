@@ -31,7 +31,7 @@ def position_and_execute(s, a, parser, pos, ball):
     while time.monotonic() <= (start + 90):
         parser.parse('BehaviorStateSparse', a.behavior().result())
         #print(parser.getActiveOptions())
-        if parser.isActiveOption('free_kick_opp_goal'):
+        if parser.isActiveOption('free_kick_simple'):
             '''
             print(parser.symbols.boolean('ball.know_where_itis'),
                   parser.symbols.decimal('ball.preview.x'),
@@ -41,7 +41,7 @@ def position_and_execute(s, a, parser, pos, ball):
                   parser.getActiveOptionState('free_kick_opp_goal')
             )
             '''
-            if parser.getActiveOptionState('free_kick_opp_goal') == 'idle' and time.monotonic() > (start + 10):
+            if parser.getActiveOptionState('free_kick_simple') == 'opp_free_kick_watch_ball' and time.monotonic() > (start + 10):
                 #print(parser.symbols.decimal('ball.distance'))
                 start = 0
                 break
@@ -52,6 +52,7 @@ def position_and_execute(s, a, parser, pos, ball):
     wait_for(lambda: s.get_robot(a.number)['z'] <= 0.2, 0.3, max_time=5.0)
 
     return evaluate_position(s, a, ball)
+
 
 def evaluate_position(s, a, ball):
     # first check if the ball was moved/touched
@@ -69,12 +70,13 @@ def evaluate_position(s, a, ball):
 
     return True
 
+
 def opp_goal_free_kick(args):
     return_code = 0
 
     s = SimsparkController(args.simspark, start_instance=not args.no_simspark)
     s.start()
-    s.wait_connected() # wait for the monitor to be connected
+    s.wait_connected()  # wait for the monitor to be connected
 
     a = AgentController(args.agent, args.config, number=3, start_instance=not args.no_agent)
     a.start()
@@ -101,6 +103,11 @@ def opp_goal_free_kick(args):
     s.cmd_dropball()  # put the ball into the game
     a.debugrequest('gamecontroller:secondaryTime:30', True)
     a.debugrequest('gamecontroller:set_play:goal_free_kick', True)
+    a.debugrequest('gamecontroller:kickoff:own', False)
+    a.debugrequest('gamecontroller:kickoff:opp', True)
+    # disable dynamic role decision
+    a.module('RoleDecisionAssignmentDistance', False)
+    a.module('RoleDecisionAssignmentStatic', True)
 
     positions = {
         'right_goal_pos': [(3.0, -1.0),  # ball position
