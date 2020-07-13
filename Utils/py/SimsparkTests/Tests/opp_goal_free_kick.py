@@ -1,3 +1,7 @@
+"""
+Tests, whether the robot handles the opponent goal free kick correctly.
+"""
+
 import math
 import time
 import logging

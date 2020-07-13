@@ -58,7 +58,7 @@ if __name__ == "__main__":
     if args.list_tests:
         print('Available test cases:')
         for t in Tests.functions:
-            print('\t', t)
+            print('\t', t, '\t', Tests.functions[t][1])
 
     if not shutil.which(args.simspark) and not args.no_simspark:
         logging.error('Can not find simspark application!')
@@ -78,7 +78,7 @@ if __name__ == "__main__":
             if name in Tests.functions:
                 try:
                     # the function should return True if the test was successful!
-                    exit_code += 0 if Tests.functions[name](args) else 1
+                    exit_code += 0 if Tests.functions[name][0](args) else 1
                 except:
                     logging.error('An error occurred while executing test "%s"', name)
                     exit_code += 100

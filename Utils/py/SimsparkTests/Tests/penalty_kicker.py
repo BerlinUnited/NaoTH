@@ -1,3 +1,7 @@
+"""
+Tests the penalty kicker ability of the robot.
+"""
+
 import math
 import functools
 import logging

@@ -1,3 +1,7 @@
+"""
+Tests, whether the robot handles the opponent pushing free kick correctly.
+"""
+
 import math, time, logging
 
 from naoth.log._parser import BehaviorParser
