@@ -102,7 +102,7 @@ class SimsparkController(threading.Thread):
             """Helper function to wait for the process to be stopped, but not longer than necessary."""
             try:
                 await asyncio.wait_for(self._p.wait(), 0.5)
-            except TimeoutError:
+            except asyncio.TimeoutError:
                 pass  # ignore, since we kind of expected it
 
         if self._start_instance and self._p.returncode is None:
