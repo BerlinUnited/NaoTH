@@ -30,7 +30,7 @@ def behavior_printer(parser, cmd: DebugCommand):
     if parser.isActiveOption('penalty_kicker'):
         print(parser.getActiveOptionState('penalty_kicker'))
 
-def pseudo_simple_penalty_kicker(args):
+def penalty_kicker(args):
     s = SimsparkController(args.simspark, start_instance=not args.no_simspark)
     s.start()
     s.wait_connected() # wait for the monitor to be connected
