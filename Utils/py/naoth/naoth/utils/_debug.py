@@ -75,7 +75,7 @@ class DebugProxy(threading.Thread):
         # set the event loop to this thread
         asyncio.set_event_loop(self._loop)
         # start host listener server and 'wait' until the server ist started
-        self._host_listener = self._loop.run_until_complete(asyncio.start_server(self._host, self._host_host, self._host_port))
+        self._host_listener = self._loop.run_until_complete(start_server(self._host, self._host_host, self._host_port))
         # run until cancelled
         self._loop.run_forever()
 
@@ -187,7 +187,7 @@ class DebugProxy(threading.Thread):
 
         # close the connection to the host before exiting
         stream_writer.close()
-        await stream_writer.wait_closed()
+        await stream_writer._protocol._get_close_waiter()  # HACK: in order to work with < 3.7
 
         self._unregister_host()
 
@@ -454,13 +454,13 @@ class AgentController(threading.Thread):
             try:
                 # (try to) establish connection or raise exception
                 self._stream_reader, \
-                self._stream_writer = await asyncio.open_connection(host=self._host, port=self._port)
+                self._stream_writer = await open_connection(self._host, self._port, self._loop)
 
                 # update internal & external connection state
                 self._set_connected(True)
 
                 # wait 'till the connection is 'closed' (lost?)
-                await self._stream_writer.wait_closed()
+                await self._stream_writer._protocol._get_close_waiter()  # HACK: in order to work with < 3.7
 
                 # reset the streams
                 self._stream_reader = None
@@ -486,6 +486,7 @@ class AgentController(threading.Thread):
         if self._stream_writer:
             self._stream_writer.close()
             #await self._stream_writer.wait_closed()  # NOTE: this doesn't complete?!
+            #await self._stream_writer._protocol._get_close_waiter()  # HACK: in order to work with < 3.7
 
     async def _send_heart_beat(self) -> None:
         """Task to regularly (1s) send a heart beat to the agent."""
@@ -695,3 +696,58 @@ class AgentController(threading.Thread):
             return self.representation('BehaviorStateComplete', binary=True)
         else:
             return self.representation('BehaviorStateSparse', binary=True)
+
+
+if sys.version_info < (3, 7):
+    # python < 3.7
+    @asyncio.coroutine
+    def open_connection(host=None, port=None, loop=None):
+
+        if loop is None:
+            loop = asyncio.get_event_loop()
+
+        reader = asyncio.StreamReader()
+        protocol = StreamReaderProtocolCompat(reader)
+        transport, _ = yield from loop.create_connection(lambda: protocol, host, port)
+        writer = asyncio.StreamWriter(transport, protocol, reader, loop)
+        return reader, writer
+
+
+    @asyncio.coroutine
+    def start_server(client_connected_cb, host=None, port=None, loop=None):
+
+        if loop is None:
+            loop = asyncio.get_event_loop()
+
+        def factory():
+            reader = asyncio.StreamReader(loop=loop)
+            protocol = StreamReaderProtocolCompat(reader, client_connected_cb, loop=loop)
+            return protocol
+
+        return (yield from loop.create_server(factory, host, port))
+
+
+    class StreamReaderProtocolCompat(asyncio.StreamReaderProtocol):
+        def __init__(self, stream_reader, client_connected_cb=None, loop=None):
+            super().__init__(stream_reader, client_connected_cb, loop)
+            self._closed = self._loop.create_future()
+
+        def connection_lost(self, exc) -> None:
+            super().connection_lost(exc)
+
+            if not self._closed.done():
+                if exc is None:
+                    self._closed.set_result(None)
+                else:
+                    self._closed.set_exception(exc)
+
+        def _get_close_waiter(self):
+            return self._closed
+
+        def __del__(self):
+            if self._closed.done() and not self._closed.cancelled():
+                self._closed.exception()
+else:
+    # python >= 3.7
+    open_connection = asyncio.open_connection
+    start_server = asyncio.start_server
