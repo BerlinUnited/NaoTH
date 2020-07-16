@@ -5,14 +5,19 @@ import de.naoth.rc.RobotControlImpl;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.core.server.Command;
+import de.naoth.rc.core.server.ConnectionStatusEvent;
+import de.naoth.rc.core.server.ConnectionStatusListener;
+import de.naoth.rc.core.server.ResponseListener;
 import static de.naoth.rc.statusbar.StatusbarPluginImpl.rc;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -32,7 +37,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
 @PluginImplementation
-public class StatusbarMacroRecorder extends StatusbarPluginImpl implements ObjectListener<Command>
+public class StatusbarMacroRecorder extends StatusbarPluginImpl implements ObjectListener<Command>, ConnectionStatusListener
 {
     @InjectPlugin
     public static SwingCommandExecutor commandExecutor;
@@ -60,6 +65,8 @@ public class StatusbarMacroRecorder extends StatusbarPluginImpl implements Objec
         setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/media-record.png")));
         setTooltipHeight(1, 0);
         
+        rc.getMessageServer().addConnectionStatusListener(this);
+        
         // we're using a mouse listener to detect a "tooltip show"-event
         // and updating the tooltip text before the tooltip is triggered
         addMouseListener(new java.awt.event.MouseAdapter() {
@@ -77,6 +84,8 @@ public class StatusbarMacroRecorder extends StatusbarPluginImpl implements Objec
         menuMacros.add(menuStartRecording);
         menuMacros.addSeparator();
         menuMacros.setHorizontalTextPosition(LEADING);
+        menuMacros.setEnabled(false);
+        menuMacros.setToolTipText("Not connected to robot");
 
         Arrays.asList((new File(robotControl.getConfigPath())).listFiles((dir, name) -> {
             return name.startsWith(recordingPrefix) && name.endsWith(recordingSuffix);
@@ -108,28 +117,26 @@ public class StatusbarMacroRecorder extends StatusbarPluginImpl implements Objec
     
     private void addMenuItem(String name) {
         JMenuItem item = new JMenuItem(name);
-        //item.setToolTipText("<html>Restores this dialog layout.<br>Use <i>Ctrl+Click</i> to delete this dialog layout.</html>");
+        item.setToolTipText("<html>Replays the recorded commands.<br>Use <i>Ctrl+Click</i> to delete this recording.</html>");
         item.addActionListener((e) -> {
             JMenuItem source = (JMenuItem) e.getSource();
             if((e.getModifiers() & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK) {
                 // delete requested
-                if(JOptionPane.showConfirmDialog(this, "Do you want to remove the dialog layout '"+name+"'?", "Remove dialog layout", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                    //if(createUserDialogConfigFile(name).delete()) { layout.remove(source); }
+                if(JOptionPane.showConfirmDialog(((RobotControlImpl)robotControl), "Do you want to remove the recording '"+name+"'?", "Remove recording", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    if(recordingFileName(name).delete()) { menuMacros.remove(source); }
                 }
             } else {
                 // restore dialog configuration
-                /*
-                File f = createUserDialogConfigFile(source.getText());
+                File f = recordingFileName(source.getText());
                 if(f.isFile()) {
                     try {
-                        dialogRegistry.loadFromFile(f);
+                        loadRecording(f);
                     } catch (IOException ex) {
                         Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 } else {
-                    JOptionPane.showMessageDialog(this, "The '"+source.getText()+"' dialog layout file doesn't exists!?", "Missing layout file", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(((RobotControlImpl)robotControl), "The '"+source.getText()+"' recording file doesn't exists!?", "Missing recording file", JOptionPane.ERROR_MESSAGE);
                 }
-                */
             }
         });
         menuMacros.add(item);
@@ -165,10 +172,18 @@ public class StatusbarMacroRecorder extends StatusbarPluginImpl implements Objec
         saveRecording();
     }
     
+    private File recordingFileName(String name) {
+        return new File(robotControl.getConfigPath() + "/" + recordingPrefix + name + recordingSuffix);
+    }
+    
     private void saveRecording() {
-        System.out.println("Saved commands: " + log.size());
-        if (log.size() == 0) {
-            JOptionPane.showMessageDialog(this, "No commands were recorded.", "Nothing recorded", JOptionPane.WARNING_MESSAGE);
+        // check if something was recorded
+        if (log.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    ((RobotControlImpl)robotControl), 
+                    "No commands were recorded.", 
+                    "Nothing recorded", 
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
         
@@ -181,14 +196,16 @@ public class StatusbarMacroRecorder extends StatusbarPluginImpl implements Objec
         // ignore empty inputs
         if(name.isEmpty()) { return; }
         // create record file
-        File file = new File(robotControl.getConfigPath() + "/" + recordingPrefix + name + recordingSuffix);
+        File file = recordingFileName(name);
+        // TODO: should the file be overwritten?
+        // write the logged commands to the record file
         try {
             FileOutputStream stream = new FileOutputStream(file);
             ObjectOutputStream o = new ObjectOutputStream(stream);
             o.writeObject(log);
             o.close();
             stream.close();
-            
+            // add the new recording to the macro menu
             addMenuItem(name);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(StatusbarMacroRecorder.class.getName()).log(Level.SEVERE, null, ex);
@@ -198,12 +215,54 @@ public class StatusbarMacroRecorder extends StatusbarPluginImpl implements Objec
         
         log.clear();
     }
+    
+    private void loadRecording(File f) throws IOException {
+        // if not connect, do not replay commands
+        if (!rc.getMessageServer().isConnected()) {
+            return;
+        }
+        
+        FileInputStream stream = new FileInputStream(f);
+        ObjectInputStream oi = new ObjectInputStream(stream);
+
+        try {
+            List<Command> commands = (List<Command>) oi.readObject();
+            for (Command command : commands) {
+                rc.getMessageServer().executeCommand(new ResponseListener() {
+                    @Override
+                    public void handleResponse(byte[] result, Command command) {
+                        System.out.println("Successfully executed command: " + command.getName());
+                    }
+
+                    @Override
+                    public void handleError(int code) {
+                        System.out.println("Error during command execution, error code: " + code);
+                    }
+                }, command);
+            }
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(StatusbarMacroRecorder.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        oi.close();
+        stream.close();
+    }
+    
+    @Override
+    public void connected(ConnectionStatusEvent event) {
+        menuMacros.setEnabled(true);
+        menuMacros.setToolTipText(null);
+    }
+
+    @Override
+    public void disconnected(ConnectionStatusEvent event) {
+        menuMacros.setEnabled(false);
+        menuMacros.setToolTipText("Not connected to robot");
+    }
 
     @Override
     public void newObjectReceived(Command cmd) {
-        //System.out.println(cmd);
-        System.out.println(cmd.getName());
-        
+        // only store the 'set' commands
         if (cmd.getName().endsWith(":set") || cmd.getName().endsWith(":set_agent")) {
             log.add(cmd);
         }
