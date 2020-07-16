@@ -8,11 +8,9 @@ import de.naoth.rc.core.server.Command;
 import de.naoth.rc.core.server.ConnectionStatusEvent;
 import de.naoth.rc.core.server.ConnectionStatusListener;
 import de.naoth.rc.core.server.ResponseListener;
-import de.naoth.rc.statusbar.StatusbarPluginImpl;
 import static de.naoth.rc.statusbar.StatusbarPluginImpl.rc;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -30,23 +28,24 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
+import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
- *
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
 @PluginImplementation
-public class CommandRecorder extends StatusbarPluginImpl implements ObjectListener<Command>, ConnectionStatusListener
+public class CommandRecorder implements Plugin, ConnectionStatusListener, ObjectListener<Command>
 {
-    @InjectPlugin
-    public static SwingCommandExecutor commandExecutor;
     @InjectPlugin
     public static RobotControl robotControl;
     
-    private final String tooltipRecording = "Is recording ...";
-    private final String tooltipNotRecording = "Not recording";
+    @InjectPlugin
+    public static SwingCommandExecutor commandExecutor;
+    
     
     private final String recordingPrefix = "recording_";
     private final String recordingSuffix = ".bin";
@@ -57,25 +56,16 @@ public class CommandRecorder extends StatusbarPluginImpl implements ObjectListen
     
     private JMenu menuMacros = new javax.swing.JMenu("Macros");
     private JMenuItem menuStartRecording = new JMenuItem("Start Recording");
-    
-    @Override
-    protected void init() {
-        // disable by default
-        setEnabled(false);
-        setToolTipText(tooltipNotRecording);
-        setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/media-record.png")));
-        setTooltipHeight(1, 0);
-        
+
+    /**
+     * Gets called, when the RC plugin was loaded.
+     * Adds the icon/label to the RC statusbar and registers itself as connection listener.
+     * 
+     * @param robotControl 
+     */
+    @PluginLoaded
+    public void loaded(RobotControl robotControl) {
         rc.getMessageServer().addConnectionStatusListener(this);
-        
-        // we're using a mouse listener to detect a "tooltip show"-event
-        // and updating the tooltip text before the tooltip is triggered
-        addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                handleRecording();
-            }
-        });
 
         menuStartRecording.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -84,7 +74,7 @@ public class CommandRecorder extends StatusbarPluginImpl implements ObjectListen
         });
         menuMacros.add(menuStartRecording);
         menuMacros.addSeparator();
-        menuMacros.setHorizontalTextPosition(LEADING);
+        menuMacros.setHorizontalTextPosition(SwingConstants.LEADING);
         menuMacros.setEnabled(false);
         menuMacros.setToolTipText("Not connected to robot");
 
@@ -106,16 +96,6 @@ public class CommandRecorder extends StatusbarPluginImpl implements ObjectListen
         menu.add(menuMacros, idx);
     }
 
-    @Override
-    protected void exit() {
-        stopRecording();
-    }
-    
-    @Override
-    public int getWeight() {
-        return 101;
-    }
-    
     private void addMenuItem(String name) {
         JMenuItem item = new JMenuItem(name);
         item.setToolTipText("<html>Replays the recorded commands.<br>Use <i>Ctrl+Click</i> to delete this recording.</html>");
@@ -153,8 +133,6 @@ public class CommandRecorder extends StatusbarPluginImpl implements ObjectListen
     
     private void startRecording() {
         isRecording = true;
-        setEnabled(true);
-        setToolTipText(tooltipRecording);
         rc.getMessageServer().addListener(this);
         
         menuMacros.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/media-record.png")));
@@ -163,8 +141,6 @@ public class CommandRecorder extends StatusbarPluginImpl implements ObjectListen
     
     private void stopRecording() {
         isRecording = false;
-        setEnabled(false);
-        setToolTipText(tooltipNotRecording);
         rc.getMessageServer().removeListener(this);
         
         menuMacros.setIcon(null);
