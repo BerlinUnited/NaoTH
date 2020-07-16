@@ -1,4 +1,4 @@
-package de.naoth.rc.statusbar;
+package de.naoth.rc.tools;
 
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.RobotControlImpl;
@@ -8,6 +8,7 @@ import de.naoth.rc.core.server.Command;
 import de.naoth.rc.core.server.ConnectionStatusEvent;
 import de.naoth.rc.core.server.ConnectionStatusListener;
 import de.naoth.rc.core.server.ResponseListener;
+import de.naoth.rc.statusbar.StatusbarPluginImpl;
 import static de.naoth.rc.statusbar.StatusbarPluginImpl.rc;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -37,7 +38,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
 @PluginImplementation
-public class StatusbarMacroRecorder extends StatusbarPluginImpl implements ObjectListener<Command>, ConnectionStatusListener
+public class CommandRecorder extends StatusbarPluginImpl implements ObjectListener<Command>, ConnectionStatusListener
 {
     @InjectPlugin
     public static SwingCommandExecutor commandExecutor;
@@ -208,9 +209,9 @@ public class StatusbarMacroRecorder extends StatusbarPluginImpl implements Objec
             // add the new recording to the macro menu
             addMenuItem(name);
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(StatusbarMacroRecorder.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CommandRecorder.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(StatusbarMacroRecorder.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CommandRecorder.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         log.clear();
@@ -241,7 +242,7 @@ public class StatusbarMacroRecorder extends StatusbarPluginImpl implements Objec
                 }, command);
             }
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(StatusbarMacroRecorder.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CommandRecorder.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         oi.close();
