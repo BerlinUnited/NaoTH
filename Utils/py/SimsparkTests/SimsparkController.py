@@ -9,6 +9,7 @@ import functools
 import time
 
 import sexpr
+from naoth.utils._debug import open_connection  # needed to work with python < 3.7
 
 
 class SimsparkController(threading.Thread):
@@ -41,6 +42,8 @@ class SimsparkController(threading.Thread):
 
         self._tasks = []  # list of started tasks (which should be cancelled in the end)
         self._loop = asyncio.new_event_loop()
+        asyncio.get_child_watcher().attach_loop(self._loop)  # HACK: in order to work with < 3.7
+
         self._connected = threading.Event()  # the event for the other (main) thread to interact with
         self._connected_internal = asyncio.Event(loop=self._loop)  # internal event var
 
@@ -191,7 +194,7 @@ class SimsparkController(threading.Thread):
 
                 # (try to) establish connection or raise exception
                 self._stream_reader, \
-                self._stream_writer = await asyncio.open_connection(host=self._host, port=self._port_monitor)
+                self._stream_writer = await open_connection(self._host, self._port_monitor)
 
                 # update internal & external connection state
                 self._set_connected(True)
@@ -200,7 +203,7 @@ class SimsparkController(threading.Thread):
                 self.cmd_reqfullstate()
 
                 # wait 'till the connection is 'closed' (lost?)
-                await self._stream_writer.wait_closed()
+                await self._stream_writer._protocol._get_close_waiter()  # HACK: in order to work with < 3.7
 
                 # reset the streams
                 self._stream_reader = None
@@ -221,7 +224,8 @@ class SimsparkController(threading.Thread):
 
         if self._stream_writer:
             self._stream_writer.close()
-            #await self._stream_writer.wait_closed()  # NOTE: this doesn't complete?!
+            # await self._stream_writer.wait_closed()  # NOTE: this doesn't complete?!
+            # await self._stream_writer._protocol._get_close_waiter()  # HACK: in order to work with < 3.7
 
         logging.debug("Connection task stopped")
 
