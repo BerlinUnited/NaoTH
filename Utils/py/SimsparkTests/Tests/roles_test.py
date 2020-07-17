@@ -4,7 +4,7 @@ from AgentController import AgentController
 from Utils import *
 
 def roles_test(args):
-    s = SimsparkController(args.simspark, not args.no_simspark)
+    s = SimsparkController(args.simspark, start_instance=not args.no_simspark)
     s.start()
     s.wait_connected() # wait for the monitor to be connected
 
