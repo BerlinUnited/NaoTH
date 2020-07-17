@@ -112,6 +112,7 @@ def parseArguments():
                             help="Use a configuration file instead of the application arguments")
         parser.add_argument('--write-config', action='store',
                             help="Writes the given config to the file and exits; additional arguments are used instead of the default")
+        parser.add_argument('-v', '--verbose', action='store_true', help="Print more debug informations to stdout.")
 
     return parser.parse_args()
 
@@ -577,7 +578,7 @@ if __name__ == "__main__":
         config.write(args.write_config)
         exit(0)
 
-    logging.basicConfig(level=logging.WARNING)  # WARNING
+    if args.verbose: logging.basicConfig(level=logging.DEBUG)
 
     # TODO: configures simspark
 
