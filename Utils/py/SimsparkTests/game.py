@@ -577,7 +577,7 @@ if __name__ == "__main__":
         config.write(args.write_config)
         exit(0)
 
-    logging.basicConfig(level=logging.DEBUG)  # WARNING
+    logging.basicConfig(level=logging.WARNING)  # WARNING
 
     # TODO: configures simspark
 

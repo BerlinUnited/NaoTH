@@ -187,7 +187,7 @@ class DebugProxy(threading.Thread):
 
         # close the connection to the host before exiting
         stream_writer.close()
-        await stream_writer._protocol._get_close_waiter()  # HACK: in order to work with < 3.7
+        await stream_writer._protocol._get_close_waiter(stream_writer)  # HACK: in order to work with < 3.7
 
         self._unregister_host()
 
@@ -454,13 +454,13 @@ class AgentController(threading.Thread):
             try:
                 # (try to) establish connection or raise exception
                 self._stream_reader, \
-                self._stream_writer = await open_connection(self._host, self._port, self._loop)
+                self._stream_writer = await open_connection(host=self._host, port=self._port)
 
                 # update internal & external connection state
                 self._set_connected(True)
 
                 # wait 'till the connection is 'closed' (lost?)
-                await self._stream_writer._protocol._get_close_waiter()  # HACK: in order to work with < 3.7
+                await self._stream_writer._protocol._get_close_waiter(self._stream_writer)  # HACK: in order to work with < 3.7
 
                 # reset the streams
                 self._stream_reader = None
@@ -486,7 +486,7 @@ class AgentController(threading.Thread):
         if self._stream_writer:
             self._stream_writer.close()
             #await self._stream_writer.wait_closed()  # NOTE: this doesn't complete?!
-            #await self._stream_writer._protocol._get_close_waiter()  # HACK: in order to work with < 3.7
+            #await self._stream_writer._protocol._get_close_waiter(self._stream_writer)  # HACK: in order to work with < 3.7
 
     async def _send_heart_beat(self) -> None:
         """Task to regularly (1s) send a heart beat to the agent."""
@@ -741,7 +741,7 @@ if sys.version_info < (3, 7):
                 else:
                     self._closed.set_exception(exc)
 
-        def _get_close_waiter(self):
+        def _get_close_waiter(self, stream):
             return self._closed
 
         def __del__(self):
