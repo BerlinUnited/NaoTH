@@ -46,17 +46,17 @@ public class CommandRecorder implements Plugin, ConnectionStatusListener, Object
     @InjectPlugin
     public static SwingCommandExecutor commandExecutor;
     
-    private final String recordingPrefix = "recording_";
-    private final String recordingSuffix = ".bin";
-    private final String menuMacrosTooltip = "Not connected to robot";
-    private final String menuRecordingStart = "Start Recording";
-    private final String menuRecordingStop = "Stop Recording";
+    private static final String REC_PREFIX = "recording_";
+    private static final String REC_SUFFIX = ".bin";
+    private static final String MENU_TOOLTIP = "Not connected to robot";
+    private static final String MENU_REC_START = "Start Recording";
+    private static final String MENU_REC_STOP = "Stop Recording";
     
     private boolean isRecording = false;
     private final List<Command> log = new LinkedList<>();
     
     private final JMenu menuMacros = new javax.swing.JMenu("Macros");
-    private final JMenuItem menuStartRecording = new JMenuItem(menuRecordingStart);
+    private final JMenuItem menuStartRecording = new JMenuItem(MENU_REC_START);
 
     /**
      * Gets called, when the RC plugin was loaded.
@@ -69,12 +69,12 @@ public class CommandRecorder implements Plugin, ConnectionStatusListener, Object
         rc.getMessageServer().addConnectionStatusListener(this);
         
         menuMacros.setEnabled(false);
-        menuMacros.setToolTipText(menuMacrosTooltip);
+        menuMacros.setToolTipText(MENU_TOOLTIP);
         menuMacros.setHorizontalTextPosition(SwingConstants.LEADING);
         menuMacros.add(menuStartRecording);
         menuMacros.addSeparator();
 
-        menuStartRecording.addActionListener((ActionEvent e) -> { handleRecording(); });
+        menuStartRecording.addActionListener((ActionEvent e) -> { toggleRecording(); });
         
         addRecordingsToMenu();
         insertMacrosMenuToMenuBar();
@@ -100,9 +100,9 @@ public class CommandRecorder implements Plugin, ConnectionStatusListener, Object
      */
     private void addRecordingsToMenu() {
         Arrays.asList((new File(robotControl.getConfigPath())).listFiles((dir, name) -> {
-            return name.startsWith(recordingPrefix) && name.endsWith(recordingSuffix);
+            return name.startsWith(REC_PREFIX) && name.endsWith(REC_SUFFIX);
         })).forEach((f) -> {
-            String name = f.getName().substring(recordingPrefix.length(), f.getName().length() - recordingSuffix.length());
+            String name = f.getName().substring(REC_PREFIX.length(), f.getName().length() - REC_SUFFIX.length());
             addMenuItem(name);
         });
     }
@@ -151,7 +151,7 @@ public class CommandRecorder implements Plugin, ConnectionStatusListener, Object
     /**
      * Starts or stops the recording, based on the current state (helper method).
      */
-    private void handleRecording() {
+    private void toggleRecording() {
         if (isRecording) {
             stopRecording();
         } else {
@@ -168,7 +168,7 @@ public class CommandRecorder implements Plugin, ConnectionStatusListener, Object
         rc.getMessageServer().addListener(this);
         
         menuMacros.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/media-record.png")));
-        menuStartRecording.setText(menuRecordingStop);
+        menuStartRecording.setText(MENU_REC_STOP);
     }
     
     /**
@@ -180,7 +180,7 @@ public class CommandRecorder implements Plugin, ConnectionStatusListener, Object
         rc.getMessageServer().removeListener(this);
         
         menuMacros.setIcon(null);
-        menuStartRecording.setText(menuRecordingStart);
+        menuStartRecording.setText(MENU_REC_START);
         
         saveRecording();
     }
@@ -192,7 +192,7 @@ public class CommandRecorder implements Plugin, ConnectionStatusListener, Object
      * @return      the file object pointing to the file where the recording is/should be saved
      */
     private File recordingFileName(String name) {
-        return new File(robotControl.getConfigPath() + "/" + recordingPrefix + name + recordingSuffix);
+        return new File(robotControl.getConfigPath() + "/" + REC_PREFIX + name + REC_SUFFIX);
     }
     
     /**
@@ -304,7 +304,7 @@ public class CommandRecorder implements Plugin, ConnectionStatusListener, Object
     @Override
     public void disconnected(ConnectionStatusEvent event) {
         menuMacros.setEnabled(false);
-        menuMacros.setToolTipText(menuMacrosTooltip);
+        menuMacros.setToolTipText(MENU_TOOLTIP);
     }
 
     /**
