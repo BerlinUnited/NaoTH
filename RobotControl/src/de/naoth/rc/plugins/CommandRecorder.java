@@ -8,7 +8,6 @@ import de.naoth.rc.core.server.Command;
 import de.naoth.rc.core.server.ConnectionStatusEvent;
 import de.naoth.rc.core.server.ConnectionStatusListener;
 import de.naoth.rc.core.server.ResponseListener;
-import static de.naoth.rc.statusbar.StatusbarPluginImpl.rc;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -59,14 +58,13 @@ public class CommandRecorder implements Plugin, ConnectionStatusListener, Object
     private final JMenuItem menuStartRecording = new JMenuItem(MENU_REC_START);
 
     /**
-     * Gets called, when the RC plugin was loaded.
-     * Adds the "Macros" menu item to the RC menubar and registers itself as connection listener.
-     * 
-     * @param robotControl  the RC instance (JFrame)
+     * Gets called, when the RC plugin was loaded.Adds the "Macros" menu item to the RC menubar and registers itself as connection listener.
+     *
+     * @param rc the RC instance (JFrame)
      */
     @PluginLoaded
-    public void loaded(RobotControl robotControl) {
-        rc.getMessageServer().addConnectionStatusListener(this);
+    public void loaded(RobotControl rc) {
+        robotControl.getMessageServer().addConnectionStatusListener(this);
         
         menuMacros.setEnabled(false);
         menuMacros.setToolTipText(MENU_TOOLTIP);
@@ -165,7 +163,7 @@ public class CommandRecorder implements Plugin, ConnectionStatusListener, Object
      */
     private void startRecording() {
         isRecording = true;
-        rc.getMessageServer().addListener(this);
+        robotControl.getMessageServer().addListener(this);
         
         menuMacros.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/media-record.png")));
         menuStartRecording.setText(MENU_REC_STOP);
@@ -177,7 +175,7 @@ public class CommandRecorder implements Plugin, ConnectionStatusListener, Object
      */
     private void stopRecording() {
         isRecording = false;
-        rc.getMessageServer().removeListener(this);
+        robotControl.getMessageServer().removeListener(this);
         
         menuMacros.setIcon(null);
         menuStartRecording.setText(MENU_REC_START);
@@ -264,7 +262,7 @@ public class CommandRecorder implements Plugin, ConnectionStatusListener, Object
      */
     private void loadRecording(File f) throws IOException {
         // if not connect, do not replay commands
-        if (!rc.getMessageServer().isConnected()) {
+        if (!robotControl.getMessageServer().isConnected()) {
             return;
         }
         
@@ -274,7 +272,7 @@ public class CommandRecorder implements Plugin, ConnectionStatusListener, Object
         try {
             List<Command> commands = (List<Command>) oi.readObject();
             for (Command command : commands) {
-                rc.getMessageServer().executeCommand(new ResponseListener() {
+                robotControl.getMessageServer().executeCommand(new ResponseListener() {
                     @Override
                     public void handleResponse(byte[] result, Command command) {
                         System.out.println("Successfully executed command: " + command.getName());
