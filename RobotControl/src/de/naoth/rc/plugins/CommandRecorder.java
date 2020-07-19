@@ -45,7 +45,7 @@ public class CommandRecorder implements Plugin, ConnectionStatusListener, Object
     @InjectPlugin
     public static SwingCommandExecutor commandExecutor;
     
-    private static final String REC_PREFIX = "recording_";
+    private static final String REC_PREFIX = "cmd_recording_";
     private static final String REC_SUFFIX = ".bin";
     private static final String MENU_TOOLTIP = "Not connected to robot";
     private static final String MENU_REC_START = "Start Recording";
