@@ -856,6 +856,12 @@ public class RobotControlImpl extends javax.swing.JFrame
   {
     return config;
   }
+  
+  @Override
+  final public String getConfigPath()
+  {
+      return USER_CONFIG_DIR;
+  }
 
   private void beforeClose()
   {
