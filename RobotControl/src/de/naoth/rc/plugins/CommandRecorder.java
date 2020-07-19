@@ -1,4 +1,4 @@
-package de.naoth.rc.tools;
+package de.naoth.rc.plugins;
 
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.RobotControlImpl;
