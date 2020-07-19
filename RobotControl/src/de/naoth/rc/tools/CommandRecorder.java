@@ -212,11 +212,19 @@ public class CommandRecorder implements Plugin, ConnectionStatusListener, Object
         }
         
         // Ask for a name for this dialog configuration
-        String inputName = JOptionPane.showInputDialog("Set a name for the recorded commands");
+        String inputName = JOptionPane.showInputDialog(
+                ((RobotControlImpl)robotControl), 
+                "<html>Set a name for the recorded commands<br>"
+                + "<small>Only alphanumerical characters are allowed and "
+                + "whitespaces are replaced with '_'.</small></html>",
+                "Name of recording",
+                JOptionPane.QUESTION_MESSAGE);
         // ignore canceled inputs
         if(inputName == null) { return; }
-        // replace "invalid" characters
-        String name = inputName.trim().replaceAll("[^A-Za-z0-9_-]", "");
+        // replace whitespaces with "_" and remove all other "invalid" characters
+        String name = inputName.trim()
+                               .replaceAll("[\\s+]", "_")
+                               .replaceAll("[^A-Za-z0-9_-]", "");
         // ignore empty inputs
         if(name.isEmpty()) { return; }
         // create record file
