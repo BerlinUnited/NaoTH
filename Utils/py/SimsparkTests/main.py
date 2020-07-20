@@ -57,8 +57,8 @@ if __name__ == "__main__":
 
     if args.list_tests:
         print('Available test cases:')
-        for t in Tests.functions:
-            print('\t', t, '\t', Tests.functions[t][1])
+        for t in Tests.cases:
+            print('\t', t, '\t', Tests.cases[t][1])
 
     if not shutil.which(args.simspark) and not args.no_simspark:
         logging.error('Can not find simspark application!')
@@ -75,26 +75,23 @@ if __name__ == "__main__":
     exit_code = 0
     if args.test:
         for name in args.test:
-            if name in Tests.functions:
+            if name in Tests.cases:
+                case = Tests.cases[name][0](args)
                 try:
-                    # the function should return True if the test was successful!
-                    exit_code += 0 if Tests.functions[name][0](args) else 1
+                    # setup the test case
+                    case.setUp()
+                    # run all tests
+                    result = case.run()
+                    print('{}: {} of {} test were successful'.format(name, result[1], result[0]))
                 except:
                     logging.error('An error occurred while executing test "%s"', name)
                     exit_code += 100
                     # print the traceback for easier debugging
                     import traceback
                     traceback.print_exc()
-
-                # kill processes which are still active
-                still_active = multiprocessing.active_children()
-                if still_active:
-                    logging.warning('Still some processes running - they get killed!')
-                    for p in still_active:
-                        p.terminate()
-                        p.join(1)
-                        if p.is_alive():
-                            p.kill()
+                finally:
+                    # stop everything in the end
+                    case.tearDown()
             else:
                 logging.warning('Unknown test: "%s"', name)
     else:
