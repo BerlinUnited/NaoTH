@@ -78,12 +78,17 @@ if __name__ == "__main__":
             if name in Tests.cases:
                 case = Tests.cases[name][0](args)
                 try:
-                    # setup the test case
                     case.setUp()
-                    # run all tests
+
+                    print('Run test case {}'.format(name))
+                    print('-' * 70)
+
                     result = case.run()
+
+                    print('-' * 70)
                     print('{}: {} of {} test were successful'.format(name, result[1], result[0]))
                 except:
+                    # TODO: skip remaining tests if KeyboardInterrupt!
                     logging.error('An error occurred while executing test "%s"', name)
                     exit_code += 100
                     # print the traceback for easier debugging

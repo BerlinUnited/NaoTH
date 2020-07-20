@@ -59,8 +59,12 @@ class TestRun:
             if not callable(testFunc):
                 continue
 
+            print(attr, '... ', end='', flush=True)
             tests += 1
             if testFunc():
                 successful += 1
+                print('ok', flush=True)
+            else:
+                print('FAIL', flush=True)
 
         return (tests, successful)
