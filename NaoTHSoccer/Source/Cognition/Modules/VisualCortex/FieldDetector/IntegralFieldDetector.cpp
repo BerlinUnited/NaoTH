@@ -45,6 +45,7 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
   const int height = getImage().height();
 
   // calculate theoretical cell sizes
+  // TODO: create struct for parameters (TOP/BOTTOM Camera)
   double cell_width, cell_height;
   if(cameraID==CameraInfo::Top) {
       cell_width = static_cast<double>(width) / params.column_count_top;
@@ -64,7 +65,8 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
   Cell last_green_cell;
   Cell cell;
   // iterate columns
-  for (double x=0.; x + cell_width-1 < width; x += cell_width)
+  // TODO warum (cell_width-1)
+  for (double x=0.0; x + cell_width-1 < width; x += cell_width)
   {
     // calculate column bounds
     cell.minX = static_cast<int>(x);
@@ -83,6 +85,7 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
     // iterate rows; scan from bottom to top
     for(double y = height-1; y - (cell_height-1) >= min_scan_y; y -= cell_height)
     {
+      // TODO warum (cell_height-1)
       // calculate row bounds
       cell.maxY = static_cast<int>(y);
       cell.minY = static_cast<int>(y - (cell_height-1));
@@ -108,6 +111,7 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
       if(cell_is_green) {
         skipped = 0;
         ++successive_green;
+        // TODO: comment
         if (successive_green >= params.min_successive_green || cell_number == successive_green) {
           last_green_cell = cell;
           former_green = true;
@@ -115,6 +119,7 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
         }
       } else {
         // check if cell has enough green where it might contain the field border
+        // TODO: former_green -> last_cell_was_green
         if(former_green && cell_green_density >= params.end_proportion_of_green) {
           last_green_cell = cell;
         }
@@ -127,9 +132,10 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
       cell_number++;
     }
 
+    // determing the endpoint
     if(green_found){
+      // Additionally Left most cell: Determine the left most endpoint so that there is no gap
       if(first) {
-        // Left most cell: Determine the left most endpoint so that there is no gap
         Vector2i left_endpoint;
         find_endpoint(last_green_cell.minX, last_green_cell, left_endpoint);
         endpoints.push_back(left_endpoint);
@@ -140,10 +146,10 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
                     last_green_cell, endpoint);
       endpoints.push_back(endpoint);
     }
-  }
+  } // end scan
 
+  // Right most cell: Determine the right most endpoint so that there is no gap
   if(green_found) {
-    // Right most cell: Determine the right most endpoint so that there is no gap
     Vector2i right_endpoint;
     find_endpoint(last_green_cell.maxX, last_green_cell, right_endpoint);
     endpoints.push_back(right_endpoint);
@@ -202,6 +208,7 @@ void IntegralFieldDetector::create_field() {
   // add field to percept; ensures field polygon is under the horizon (required if set_whole_image_as_field is set)
   getFieldPercept().setField(fieldPoly, getArtificialHorizon());
   // check result
+  // TODO: field should be valid if no field is detected (add field is_empty)
   getFieldPercept().valid = fieldPoly.getArea() >= params.min_field_area;
 
   DEBUG_REQUEST("Vision:IntegralFieldDetector:mark_field_polygon",
