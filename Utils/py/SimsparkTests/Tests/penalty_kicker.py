@@ -26,6 +26,8 @@ class PenaltyKicker(TestRun):
         self.agent = None
         self.parser = BehaviorParser()  # create parser for the agent behavior
 
+        self.last_ball = {'x': 0, 'y': 0}  # helper var, in order to determine if the ball is still moving
+
     def setUp(self):
         self.simspark = SimsparkController(self.simspark_application, start_instance=self.simspark_start_instance)
         self.simspark.start()
@@ -78,14 +80,11 @@ class PenaltyKicker(TestRun):
 
             time.sleep(0.3)
 
-        # its a simulation of a free kick - the ball should be touched only once
-        self.agent.debugrequest('gamecontroller:game_state:play', False)
+        self.last_ball = {'x': self.simspark.get_ball()['x'], 'y': self.simspark.get_ball()['y']}
 
-        # HACK!: to preserve the previous ball location in subsequent function calls, we use a dict in global namespace.
-        #        Changes to the dict's elements doesn't change the reference to the dict itself - in contrast to other types
-        # TODO: is there a better way?
-        last_ball = {'x': self.simspark.get_ball()['x'], 'y': self.simspark.get_ball()['y']}
-        wait_for(self.ball_out_or_doesnt_move, 0.3, 0.1, 3600.0, last_ball)
+        # its a simulation of a penalty kick - the ball should be touched only once; stop robot and wait for ball
+        self.agent.debugrequest('gamecontroller:game_state:play', False)
+        wait_for(self.ball_out_or_doesnt_move, 0.3, 0.1, 3600.0)
 
         # print some infos
         robot = self.simspark.get_robot(3)
@@ -99,13 +98,13 @@ class PenaltyKicker(TestRun):
 
         return successful_test
 
-    def ball_out_or_doesnt_move(self, last_ball):
+    def ball_out_or_doesnt_move(self):
         _ = self.simspark.get_ball()
 
-        ball_moved = math.sqrt(math.pow(_['x'] - last_ball['x'], 2) + math.pow(_['y'] - last_ball['y'], 2)) > 0.0
+        ball_moved = math.sqrt(math.pow(_['x'] - self.last_ball['x'], 2) + math.pow(_['y'] - self.last_ball['y'], 2)) > 0.0
         if _['x'] < 4.5 and abs(_['y']) < 3.0 and ball_moved:
-            last_ball['x'] = _['x']
-            last_ball['y'] = _['y']
+            self.last_ball['x'] = _['x']
+            self.last_ball['y'] = _['y']
             return False
         return True
 
