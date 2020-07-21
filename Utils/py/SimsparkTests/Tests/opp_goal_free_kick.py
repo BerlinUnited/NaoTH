@@ -66,6 +66,10 @@ class OpponentGoalFreekick(TestRun):
             self.simspark.stop()
 
     def position_and_execute(self, pos, ball):
+        # check if the correct behavior is set
+        if self.agent.agent().result().decode() != 'soccer_agent':
+            return False
+
         # first place the robot! If we run this test multiple times, the robot could stand on the penalty mark and if
         # the ball gets placed first, it would 'jump' away.
         self.simspark.cmd_agentMove(self.agent.number, pos[0], pos[1], r=pos[2])  # place the robot

@@ -62,6 +62,10 @@ class PenaltyKicker(TestRun):
             self.simspark.stop()
 
     def test_penalty_kick(self):
+        # check if the correct behavior is set
+        if self.agent.agent().result().decode() != 'penalty':
+            return False
+
         # first place the robot! If we run this test multiple times, the robot could stand on the penalty mark and if
         # the ball gets placed first, it would 'jump' away.
         self.simspark.cmd_agentMove(3, 2, 0, r=-90)  # place the robot in front of penalty mark
