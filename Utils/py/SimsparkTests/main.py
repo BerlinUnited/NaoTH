@@ -3,7 +3,6 @@
 
 import argparse
 import logging
-import multiprocessing
 import shutil
 import os
 
@@ -40,7 +39,7 @@ def parseArguments():
     parser.add_argument('-s', '--simspark', default='simspark', action='store', help="The path to the simspark application. By default it is searched for 'simspark' in the system path.")
     parser.add_argument('-a', '--agent', default=naothsoccer+'/dist/Native/naoth-simspark', action='store', help="The path to the simspark agent application.")
     parser.add_argument('-c', '--config', default=naothsoccer, action='store', help="The path to the agent's config.")
-    parser.add_argument('-v', '--verbose', action='store_true', help="Be more verbose.")
+    parser.add_argument('-v', '--verbose', action='count', default=0, help="Set the verbosity level")
     parser.add_argument('-t', '--test', nargs='+', action='store', help="The tests which should be executed.")
     parser.add_argument('-l', '--list-tests', action='store_true', help="List all available tests and exits.")
 
@@ -49,11 +48,14 @@ def parseArguments():
 
     return parser.parse_args()
 
+
 if __name__ == "__main__":
     args = parseArguments()
-    #print(args)
 
-    if args.verbose: logging.basicConfig(level=logging.DEBUG)
+    # configure the log level
+    levels = [logging.WARNING, logging.INFO, logging.DEBUG]
+    level = levels[min(len(levels) - 1, args.verbose)]  # capped to number of levels
+    logging.basicConfig(level=level)
 
     if args.list_tests:
         print('Available test cases:')
@@ -103,7 +105,7 @@ if __name__ == "__main__":
             else:
                 logging.warning('Unknown test: "%s"', name)
     else:
-        logging.info('Nothing to test.')
+        logging.warning('Nothing to test.')
 
     # if one is created, it gets removed!
     remove_simspark_logfile()

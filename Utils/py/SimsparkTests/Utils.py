@@ -42,6 +42,9 @@ def remove_simspark_logfile():
 
 class TestRun:
 
+    def __init__(self):
+        self.logger = logging.getLogger(self.__class__.__name__)
+
     def setUp(self):
         pass
 

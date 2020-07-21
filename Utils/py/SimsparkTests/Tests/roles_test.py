@@ -1,4 +1,4 @@
-import time, logging
+import time
 from SimsparkController import SimsparkController
 from AgentController import AgentController
 from Utils import *
@@ -7,6 +7,7 @@ class RolesTest(TestRun):
     """Tests the walk in at the begin of a game."""
 
     def __init__(self, args):
+        super().__init__()
         self.simspark_application = args.simspark
         self.simspark_start_instance = not args.no_simspark
 
@@ -60,7 +61,7 @@ class RolesTest(TestRun):
             if a.agent().result().decode() != 'soccer_agent':
                 return False
 
-        logging.debug('Set robot to initial position')
+        self.logger.debug('Set robot to initial position')
         self.simspark.cmd_agentMove(1, -3.5, 3.2, r=-180)
         self.simspark.cmd_agentMove(2, -2.5, 3.2, r=-180)
         self.simspark.cmd_agentMove(3, -1.5, 3.2, r=-180)
@@ -70,29 +71,29 @@ class RolesTest(TestRun):
         time.sleep(0.5)
 
         # READY
-        logging.info('READY')
+        self.logger.info('READY')
         for a in self.agents: a.debugrequest('gamecontroller:game_state:ready', True)
 
         # simulation is slow, give the robots some time to reach their kickoff position
-        logging.info('wait for 120s ...')
+        self.logger.info('wait for 120s ...')
         time.sleep(120)
 
         # SET
-        logging.info('SET')
+        self.logger.info('SET')
         for a in self.agents: a.debugrequest('gamecontroller:game_state:set', True)  # set gamestate to 'SET'
         for a in self.agents: a.debugrequest('gamecontroller:game_state:ready', False)  # ... and reset the 'READY' state
 
         time.sleep(5)
 
         # put the robot in play mode
-        logging.info('PLAY')
+        self.logger.info('PLAY')
         for a in self.agents: a.debugrequest('gamecontroller:game_state:play', True)  # set the gamestate to 'PLAY'
         for a in self.agents: a.debugrequest('gamecontroller:game_state:set', False)  # ... and reset the 'SET' state
 
-        logging.info('wait for 30s ...')
+        self.logger.info('wait for 30s ...')
         time.sleep(30)
 
-        logging.info('FINISH')
+        self.logger.info('FINISH')
         for a in self.agents: a.debugrequest('gamecontroller:game_state:finish', True)  # set the gamestate to 'FINISH'
         for a in self.agents: a.debugrequest('gamecontroller:game_state:ready', False)  # ... and make sure, everything else is reset
         for a in self.agents: a.debugrequest('gamecontroller:game_state:set', False)  # ... and make sure, everything else is reset

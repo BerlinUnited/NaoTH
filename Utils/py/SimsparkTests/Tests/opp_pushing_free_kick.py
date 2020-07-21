@@ -1,6 +1,5 @@
 import math
 import time
-import logging
 
 from naoth.log._parser import BehaviorParser
 
@@ -13,6 +12,7 @@ class OpponentPushingFreekick(TestRun):
     """Tests, whether the robot handles the opponent pushing free kick correctly."""
 
     def __init__(self, args):
+        super().__init__()
         self.simspark_application = args.simspark
         self.simspark_start_instance = not args.no_simspark
 
@@ -33,7 +33,7 @@ class OpponentPushingFreekick(TestRun):
                                      self.agent_config_dir,
                                      number=3, start_instance=self.agent_start_instance)
         self.agent.start()
-        logging.info('Wait for agent connection')
+        self.logger.info('Wait for agent connection')
         self.agent.wait_connected()  # wait for the agent to be fully started
 
         # in order to use the parser, we have to retrieve the complete behavior first
@@ -86,10 +86,7 @@ class OpponentPushingFreekick(TestRun):
         while time.monotonic() <= (start + 90):
             self.parser.parse('BehaviorStateSparse', self.agent.behavior().result())
             if self.parser.isActiveOption('free_kick_simple'):
-                #print(parser.getActiveOptionState('free_kick_simple'))
                 if self.parser.getActiveOptionState('free_kick_simple') == 'opp_free_kick_watch_ball' and time.monotonic() > (start + 10):
-                    #print(parser.symbols.decimal('ball.distance'))
-                    start = 0
                     break
 
         # stop the robot
@@ -103,14 +100,14 @@ class OpponentPushingFreekick(TestRun):
         # first check if the ball was moved/touched
         s_ball = self.simspark.get_ball()
         if abs(s_ball['x'] - ball[0]) + abs(s_ball['y']-ball[1]) > 0.1:
-            logging.info('Ball touched!')
+            self.logger.error('Ball touched!')
             return False
 
         robot = self.simspark.get_robot(self.agent.number)
 
         # check if the robot is away from the ball (min. 75cm)
         if math.sqrt(math.pow(ball[0] - robot['x'], 2) + math.pow(ball[1] - robot['y'], 2)) < 0.75:
-            logging.info("Robot is to close to the ball!")
+            self.logger.error("Robot is to close to the ball!")
             return False
 
         # TODO: with a more sophisticated behavior we could also check for some actions to counter the opp free kick

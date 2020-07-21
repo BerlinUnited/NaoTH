@@ -1,5 +1,4 @@
 import math
-import logging
 import time
 
 from naoth.log._parser import BehaviorParser
@@ -15,6 +14,7 @@ class PenaltyKicker(TestRun):
     """Tests the penalty kicker ability of the robot."""
 
     def __init__(self, args):
+        super().__init__()
         self.simspark_application = args.simspark
         self.simspark_start_instance = not args.no_simspark
 
@@ -27,27 +27,34 @@ class PenaltyKicker(TestRun):
         self.parser = BehaviorParser()  # create parser for the agent behavior
 
         self.last_ball = {'x': 0, 'y': 0}  # helper var, in order to determine if the ball is still moving
+        self.frame_info = Framework_Representations_pb2.FrameInfo()
 
     def setUp(self):
+        self.logger.debug('Init & start SimsparkController')
         self.simspark = SimsparkController(self.simspark_application, start_instance=self.simspark_start_instance)
         self.simspark.start()
+        self.logger.debug('Wait for simspark connection')
         self.simspark.wait_connected()  # wait for the monitor to be connected
 
+        self.logger.debug('Init & start AgentController')
         self.agent = AgentController(self.agent_application,
                                      self.agent_config_dir,
                                      number=3, start_instance=self.agent_start_instance)
         self.agent.start()
-        logging.info('Wait for agent connection')
+        self.logger.debug('Wait for agent connection')
         self.agent.wait_connected()  # wait for the agent to be fully started
 
         # in order to use the parser, we have to retrieve the complete behavior first
+        self.logger.debug('Init behavior parser')
         self.parser.init(self.agent.behavior(True).result())
 
+        self.logger.debug('Wait for simspark agent to be ready')
         # it takes sometimes a while until simspark got the correct player number
         wait_for(lambda: self.simspark.get_robot(3) is not None, 0.3)
         # wait until the player is on the field
         wait_for(lambda: self.simspark.get_robot(3)['z'] <= 0.2, 0.3)
 
+        self.logger.debug('Set agent behavior')
         # set the behavior of the agent
         self.agent.agent('penalty')
         # put the ball into the game
@@ -56,14 +63,17 @@ class PenaltyKicker(TestRun):
     def tearDown(self):
         # stop the agent
         if self.agent:
+            self.logger.debug('Stop agent')
             self.agent.stop()
         # stop the simulation/simspark
         if self.simspark:
+            self.logger.debug('Stop simspark')
             self.simspark.stop()
 
     def test_penalty_kick(self):
         # check if the correct behavior is set
         if self.agent.agent().result().decode() != 'penalty':
+            self.logger.error('Agent has the wrong behavior')
             return False
 
         # first place the robot! If we run this test multiple times, the robot could stand on the penalty mark and if
@@ -79,8 +89,8 @@ class PenaltyKicker(TestRun):
 
         # wait for robot touches the ball (the ball moved!)
         while not (self.simspark.get_ball()['x'] - 2.64 > 0.01):
-            self.agent.representation('FrameInfo', binary=True).add_done_callback(self.frame_info_printer)
-            self.agent.behavior().add_done_callback(self.behavior_printer)
+            self.agent.representation('FrameInfo', binary=True).add_done_callback(self.frame_info_parser)
+            self.agent.behavior().add_done_callback(self.behavior_logger)
 
             time.sleep(0.3)
 
@@ -90,15 +100,14 @@ class PenaltyKicker(TestRun):
         self.agent.debugrequest('gamecontroller:game_state:play', False)
         wait_for(self.ball_out_or_doesnt_move, 0.3, 0.1, 3600.0)
 
-        # print some infos
         robot = self.simspark.get_robot(3)
-        print('Robot is at {},{}'.format(robot['x'], robot['y']))
         ball = self.simspark.get_ball()
-        print('Ball is at {},{}'.format(ball['x'], ball['y']))
-
-        # print the result
         successful_test = ball['x'] > 4.5 and abs(ball['y']) < 0.75
-        print('GOAL!!!!' if successful_test else 'missed ... :(')
+
+        # log the result
+        self.logger.info('Robot is at {},{}'.format(robot['x'], robot['y']))
+        self.logger.info('Ball is at {},{}'.format(ball['x'], ball['y']))
+        self.logger.info('GOAL!!!!' if successful_test else 'missed ... :(')
 
         return successful_test
 
@@ -112,12 +121,14 @@ class PenaltyKicker(TestRun):
             return False
         return True
 
-    def frame_info_printer(self, cmd: DebugCommand):
-        fi = Framework_Representations_pb2.FrameInfo()
-        fi.ParseFromString(cmd.result())
-        print(cmd.id, ':', fi.frameNumber, '@', fi.time)
+    def frame_info_parser(self, cmd: DebugCommand):
+        self.frame_info.ParseFromString(cmd.result())
 
-    def behavior_printer(self, cmd: DebugCommand):
+    def behavior_logger(self, cmd: DebugCommand):
         self.parser.parse('BehaviorStateSparse', cmd.result())
         if self.parser.isActiveOption('penalty_kicker'):
-            print(self.parser.getActiveOptionState('penalty_kicker'))
+            self.logger.debug('{} @ {}: {}'.format(
+                self.frame_info.frameNumber,
+                self.frame_info.time,
+                self.parser.getActiveOptionState('penalty_kicker')
+            ))
