@@ -58,7 +58,7 @@ if __name__ == "__main__":
     if args.list_tests:
         print('Available test cases:')
         for t in Tests.cases:
-            print('\t', t, '\t', Tests.cases[t][1])
+            print('    {:<30}    {}'.format(t[:30], Tests.cases[t][1]))
 
     if not shutil.which(args.simspark) and not args.no_simspark:
         logging.error('Can not find simspark application!')
