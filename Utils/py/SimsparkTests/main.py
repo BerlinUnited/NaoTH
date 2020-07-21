@@ -87,8 +87,11 @@ if __name__ == "__main__":
 
                     print('-' * 70)
                     print('{}: {} of {} test were successful'.format(name, result[1], result[0]))
+                except KeyboardInterrupt:
+                    logging.info('Cancelled all remaining tests')
+                    exit_code += 100
+                    break
                 except:
-                    # TODO: skip remaining tests if KeyboardInterrupt!
                     logging.error('An error occurred while executing test "%s"', name)
                     exit_code += 100
                     # print the traceback for easier debugging
