@@ -676,13 +676,17 @@ class AgentController(threading.Thread):
 
         raise Exception('Unknown representation type! Allowed: "cognition", "motion"')
 
-    def agent(self, name: str) -> DebugCommand:
+    def agent(self, name: str = None) -> DebugCommand:
         """
-        Selects an named agent for execution.
+        Get or set a named agent for execution.
 
-        :param name:    the name of the agent (behavior), which should be executed
+        :param name:    the name of the agent (behavior), which should be executed or None if the current agent should
+                        be returned
         :return:        Returns the the scheduled command (future)
         """
+        if name is None:
+            return self.send_command(DebugCommand('Cognition:behavior:get_agent'))
+
         return self.send_command(DebugCommand('Cognition:behavior:set_agent', [('agent', name)]))
 
     def behavior(self, complete=False) -> DebugCommand:
