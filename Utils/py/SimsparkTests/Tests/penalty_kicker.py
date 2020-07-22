@@ -87,8 +87,9 @@ class PenaltyKicker(TestRun):
         # put the robot in play mode
         self.agent.debugrequest('gamecontroller:game_state:play', True)
 
+        end = time.monotonic() + 120
         # wait for robot touches the ball (the ball moved!)
-        while not (self.simspark.get_ball()['x'] - 2.64 > 0.01):
+        while not (self.simspark.get_ball()['x'] - 2.64 > 0.01) and time.monotonic() <= end:
             self.agent.representation('FrameInfo', binary=True).add_done_callback(self.frame_info_parser)
             self.agent.behavior().add_done_callback(self.behavior_logger)
 
