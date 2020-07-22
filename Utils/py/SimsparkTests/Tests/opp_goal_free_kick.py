@@ -126,248 +126,248 @@ class OpponentGoalFreekick(TestRun):
 
         return True
 
-    def right_goal_pos_1(self):
+    def test_right_goal_pos_01(self):
         return self.position_and_execute((3.5, 2.5, 90), (3.0, -1.0))
 
-    def right_goal_pos_2(self):
+    def test_right_goal_pos_02(self):
         return self.position_and_execute((3.5, 1.5, 90), (3.0, -1.0))
 
-    def right_goal_pos_3(self):
+    def test_right_goal_pos_03(self):
         return self.position_and_execute((3.5, 0.5, 90), (3.0, -1.0))
 
-    def right_goal_pos_4(self):
+    def test_right_goal_pos_04(self):
         return self.position_and_execute((3.5, -0.5, 90), (3.0, -1.0))
 
-    def right_goal_pos_5(self):
+    def test_right_goal_pos_05(self):
         return self.position_and_execute((3.5, -1.5, 90), (3.0, -1.0))
 
-    def right_goal_pos_6(self):
+    def test_right_goal_pos_06(self):
         return self.position_and_execute((3.5, -2.5, 90), (3.0, -1.0))
 
-    def right_goal_pos_7(self):
+    def test_right_goal_pos_07(self):
         return self.position_and_execute((3.0, 2.5, 90), (3.0, -1.0))
 
-    def right_goal_pos_8(self):
+    def test_right_goal_pos_08(self):
         return self.position_and_execute((3.0, 1.5, 90), (3.0, -1.0))
 
-    def right_goal_pos_9(self):
+    def test_right_goal_pos_09(self):
         return self.position_and_execute((3.0, 0.5, 90), (3.0, -1.0))
 
-    def right_goal_pos_10(self):
+    def test_right_goal_pos_10(self):
         return self.position_and_execute((3.0, -0.5, 90), (3.0, -1.0))
 
-    def right_goal_pos_11(self):
+    def test_right_goal_pos_11(self):
         return self.position_and_execute((3.0, -1.5, 90), (3.0, -1.0))
 
-    def right_goal_pos_12(self):
+    def test_right_goal_pos_12(self):
         return self.position_and_execute((3.0, -2.5, 90), (3.0, -1.0))
 
-    def right_goal_pos_13(self):
+    def test_right_goal_pos_13(self):
         return self.position_and_execute((2.5, 2.0, -90), (3.0, -1.0))
 
-    def right_goal_pos_14(self):
+    def test_right_goal_pos_14(self):
         return self.position_and_execute((2.5, 1.5, -90), (3.0, -1.0))
 
-    def right_goal_pos_15(self):
+    def test_right_goal_pos_15(self):
         return self.position_and_execute((2.5, 0.5, -90), (3.0, -1.0))
 
-    def right_goal_pos_16(self):
+    def test_right_goal_pos_16(self):
         return self.position_and_execute((2.5, -0.5, -90), (3.0, -1.0))
 
-    def right_goal_pos_17(self):
+    def test_right_goal_pos_17(self):
         return self.position_and_execute((2.5, -1.5, -90), (3.0, -1.0))
 
-    def right_goal_pos_18(self):
+    def test_right_goal_pos_18(self):
         return self.position_and_execute((2.5, -2.5, -90), (3.0, -1.0))
 
-    def right_goal_pos_19(self):
+    def test_right_goal_pos_19(self):
         return self.position_and_execute((1.5, 2.0, -90), (3.0, -1.0))
 
-    def right_goal_pos_20(self):
+    def test_right_goal_pos_20(self):
         return self.position_and_execute((1.5, 0.0, -90), (3.0, -1.0))
 
-    def right_goal_pos_21(self):
+    def test_right_goal_pos_21(self):
         return self.position_and_execute((1.5, -2.0, -90), (3.0, -1.0))
 
-    def right_goal_pos_22(self):
+    def test_right_goal_pos_22(self):
         return self.position_and_execute((0.5, 0.0, 90), (3.0, -1.0))
 
-    def right_goal_pos_23(self):
+    def test_right_goal_pos_23(self):
         return self.position_and_execute((-1.5, 1.5, 90), (3.0, -1.0))
 
-    def right_goal_pos_24(self):
+    def test_right_goal_pos_24(self):
         return self.position_and_execute((-1.5, -1.5, 90), (3.0, -1.0))
 
-    def right_goal_pos_25(self):
+    def test_right_goal_pos_25(self):
         return self.position_and_execute((-3.5, 0.0, 90), (3.0, -1.0))
 
-    def right_goal_pos_26(self):
+    def test_right_goal_pos_26(self):
         return self.position_and_execute((2.7, -1.0, -90), (3.0, -1.0))
 
-    def right_goal_pos_27(self):
+    def test_right_goal_pos_27(self):
         return self.position_and_execute((2.7, -0.6, -90), (3.0, -1.0))
 
-    def right_goal_pos_28(self):
+    def test_right_goal_pos_28(self):
         return self.position_and_execute((2.9, -0.6, -90), (3.0, -1.0))
 
-    def right_goal_pos_29(self):
+    def test_right_goal_pos_29(self):
         return self.position_and_execute((3.2, -0.6, -90), (3.0, -1.0))
 
-    def right_goal_pos_30(self):
+    def test_right_goal_pos_30(self):
         return self.position_and_execute((3.2, -0.9, -90), (3.0, -1.0))
 
-    def right_goal_pos_31(self):
+    def test_right_goal_pos_31(self):
         return self.position_and_execute((3.2, -1.1, -90), (3.0, -1.0))
 
-    def right_goal_pos_32(self):
+    def test_right_goal_pos_32(self):
         return self.position_and_execute((3.2, -1.3, -90), (3.0, -1.0))
 
-    def right_goal_pos_33(self):
+    def test_right_goal_pos_33(self):
         return self.position_and_execute((3.0, -1.3, -90), (3.0, -1.0))
 
-    def right_goal_pos_34(self):
+    def test_right_goal_pos_34(self):
         return self.position_and_execute((2.8, -1.3, -90), (3.0, -1.0))
 
-    def right_goal_pos_35(self):
+    def test_right_goal_pos_35(self):
         return self.position_and_execute((2.7, -1.1, -90), (3.0, -1.0))
 
-    def right_goal_pos_36(self):
+    def test_right_goal_pos_36(self):
         return self.position_and_execute((2.8, -1.3, -90), (3.0, -1.0))
 
-    def right_goal_pos_37(self):
+    def test_right_goal_pos_37(self):
         return self.position_and_execute((4.0, -1.0, 90), (3.0, -1.0))
 
-    def right_goal_pos_38(self):
+    def test_right_goal_pos_38(self):
         return self.position_and_execute((4.0, -0.8, 90), (3.0, -1.0))
 
-    def right_goal_pos_39(self):
+    def test_right_goal_pos_39(self):
         return self.position_and_execute((4.0, -1.2, 90), (3.0, -1.0))
 
-    def right_goal_pos_40(self):
+    def test_right_goal_pos_40(self):
         return self.position_and_execute((4.0, -2.5, 90), (3.0, -1.0))
 
-    def right_goal_pos_41(self):
+    def test_right_goal_pos_41(self):
         return self.position_and_execute((2.7, 1.0, -90), (3.0, -1.0))
 
-    def left_goal_pos_1(self):
+    def test_left_goal_pos_01(self):
         return self.position_and_execute((3.5, 2.5, 90), (3.0, 1.0))
 
-    def left_goal_pos_2(self):
+    def test_left_goal_pos_02(self):
         return self.position_and_execute((3.5, 1.5, 90), (3.0, 1.0))
 
-    def left_goal_pos_3(self):
+    def test_left_goal_pos_03(self):
         return self.position_and_execute((3.5, 0.5, 90), (3.0, 1.0))
 
-    def left_goal_pos_4(self):
+    def test_left_goal_pos_04(self):
         return self.position_and_execute((3.5, -0.5, 90), (3.0, 1.0))
 
-    def left_goal_pos_5(self):
+    def test_left_goal_pos_05(self):
         return self.position_and_execute((3.5, -1.5, 90), (3.0, 1.0))
 
-    def left_goal_pos_6(self):
+    def test_left_goal_pos_06(self):
         return self.position_and_execute((3.5, -2.5, 90), (3.0, 1.0))
 
-    def left_goal_pos_7(self):
+    def test_left_goal_pos_07(self):
         return self.position_and_execute((3.0, 2.5, 90), (3.0, 1.0))
 
-    def left_goal_pos_8(self):
+    def test_left_goal_pos_08(self):
         return self.position_and_execute((3.0, 1.5, 90), (3.0, 1.0))
 
-    def left_goal_pos_9(self):
+    def test_left_goal_pos_09(self):
         return self.position_and_execute((3.0, 0.5, 90), (3.0, 1.0))
 
-    def left_goal_pos_10(self):
+    def test_left_goal_pos_10(self):
         return self.position_and_execute((3.0, -0.5, 90), (3.0, 1.0))
 
-    def left_goal_pos_11(self):
+    def test_left_goal_pos_11(self):
         return self.position_and_execute((3.0, -1.5, 90), (3.0, 1.0))
 
-    def left_goal_pos_12(self):
+    def test_left_goal_pos_12(self):
         return self.position_and_execute((3.0, -2.5, 90), (3.0, 1.0))
 
-    def left_goal_pos_13(self):
+    def test_left_goal_pos_13(self):
         return self.position_and_execute((2.5, 2.0, -90), (3.0, 1.0))
 
-    def left_goal_pos_14(self):
+    def test_left_goal_pos_14(self):
         return self.position_and_execute((2.5, 1.5, -90), (3.0, 1.0))
 
-    def left_goal_pos_15(self):
+    def test_left_goal_pos_15(self):
         return self.position_and_execute((2.5, 0.5, -90), (3.0, 1.0))
 
-    def left_goal_pos_16(self):
+    def test_left_goal_pos_16(self):
         return self.position_and_execute((2.5, -0.5, -90), (3.0, 1.0))
 
-    def left_goal_pos_17(self):
+    def test_left_goal_pos_17(self):
         return self.position_and_execute((2.5, -1.5, -90), (3.0, 1.0))
 
-    def left_goal_pos_18(self):
+    def test_left_goal_pos_18(self):
         return self.position_and_execute((2.5, -2.5, -90), (3.0, 1.0))
 
-    def left_goal_pos_19(self):
+    def test_left_goal_pos_19(self):
         return self.position_and_execute((1.5, 2.0, -90), (3.0, 1.0))
 
-    def left_goal_pos_20(self):
+    def test_left_goal_pos_20(self):
         return self.position_and_execute((1.5, 0.0, -90), (3.0, 1.0))
 
-    def left_goal_pos_21(self):
+    def test_left_goal_pos_21(self):
         return self.position_and_execute((1.5, -2.0, -90), (3.0, 1.0))
 
-    def left_goal_pos_22(self):
+    def test_left_goal_pos_22(self):
         return self.position_and_execute((0.5, 0.0, 90), (3.0, 1.0))
 
-    def left_goal_pos_23(self):
+    def test_left_goal_pos_23(self):
         return self.position_and_execute((-1.5, 1.5, 90), (3.0, 1.0))
 
-    def left_goal_pos_24(self):
+    def test_left_goal_pos_24(self):
         return self.position_and_execute((-1.5, -1.5, 90), (3.0, 1.0))
 
-    def left_goal_pos_25(self):
+    def test_left_goal_pos_25(self):
         return self.position_and_execute((-3.5, 0.0, 90), (3.0, 1.0))
 
-    def left_goal_pos_26(self):
+    def test_left_goal_pos_26(self):
         return self.position_and_execute((2.7, 1.0, -90), (3.0, 1.0))
 
-    def left_goal_pos_27(self):
+    def test_left_goal_pos_27(self):
         return self.position_and_execute((2.7, 0.6, -90), (3.0, 1.0))
 
-    def left_goal_pos_28(self):
+    def test_left_goal_pos_28(self):
         return self.position_and_execute((2.9, 0.6, -90), (3.0, 1.0))
 
-    def left_goal_pos_29(self):
+    def test_left_goal_pos_29(self):
         return self.position_and_execute((3.2, 0.6, -90), (3.0, 1.0))
 
-    def left_goal_pos_30(self):
+    def test_left_goal_pos_30(self):
         return self.position_and_execute((3.2, 0.9, -90), (3.0, 1.0))
 
-    def left_goal_pos_31(self):
+    def test_left_goal_pos_31(self):
         return self.position_and_execute((3.2, 1.1, -90), (3.0, 1.0))
 
-    def left_goal_pos_32(self):
+    def test_left_goal_pos_32(self):
         return self.position_and_execute((3.2, 1.3, -90), (3.0, 1.0))
 
-    def left_goal_pos_33(self):
+    def test_left_goal_pos_33(self):
         return self.position_and_execute((3.0, 1.3, -90), (3.0, 1.0))
 
-    def left_goal_pos_34(self):
+    def test_left_goal_pos_34(self):
         return self.position_and_execute((2.8, 1.3, -90), (3.0, 1.0))
 
-    def left_goal_pos_35(self):
+    def test_left_goal_pos_35(self):
         return self.position_and_execute((2.8, 1.3, -90), (3.0, 1.0))
 
-    def left_goal_pos_36(self):
+    def test_left_goal_pos_36(self):
         return self.position_and_execute((2.7, 1.1, -90), (3.0, 1.0))
 
-    def left_goal_pos_37(self):
+    def test_left_goal_pos_37(self):
         return self.position_and_execute((2.8, 1.3, -90), (3.0, 1.0))
 
-    def left_goal_pos_38(self):
+    def test_left_goal_pos_38(self):
         return self.position_and_execute((4.0, 1.0, 90), (3.0, 1.0))
 
-    def left_goal_pos_39(self):
+    def test_left_goal_pos_39(self):
         return self.position_and_execute((4.0, 0.8, 90), (3.0, 1.0))
 
-    def left_goal_pos_40(self):
+    def test_left_goal_pos_40(self):
         return self.position_and_execute((4.0, 1.2, 90), (3.0, 1.0))
 
-    def left_goal_pos_41(self):
+    def test_left_goal_pos_41(self):
         return self.position_and_execute((4.0, 2.5, 90), (3.0, 1.0))
