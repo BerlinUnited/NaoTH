@@ -1,5 +1,7 @@
 import os
 import struct as _struct
+from typing import Iterator
+
 from ._experimental_parser import Parser
 
 # protobuf
@@ -437,7 +439,7 @@ class Reader:
         else:
             return None
 
-    def read(self, start_idx=0):
+    def read(self, start_idx=0) -> Iterator[Frame]:
         """
         Creates an iterator over the log file frames implemented using pythons generator functions.
         With the "yield" keyword, we return the next Frame instance for the iterator.
@@ -524,7 +526,7 @@ class Reader:
                 raise IncompleteFrameException(f'Last log file frame is incomplete, missing '
                                                f'{frame.start + len(frame) - self.log_file_size} bytes.')
 
-    def diet_read(self):
+    def diet_read(self) -> Iterator[Frame]:
         """
         Same as "read", but does not create a frame index and preserves memory (len(self.frames) will stay 0).
         Useful if the log file is very large and only a single pass through is required.
