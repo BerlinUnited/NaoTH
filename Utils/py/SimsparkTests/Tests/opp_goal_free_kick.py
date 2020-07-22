@@ -46,6 +46,13 @@ class OpponentGoalFreekick(TestRun):
 
         # set the current soccer behavior
         self.agent.agent('soccer_agent')
+        # dis-/enable some modules for the simspark simulation
+        self.agent.module('PathPlanner', False)
+        self.agent.module('PathPlanner2018', True)
+        self.agent.module('SituationPriorProvider', False)
+        self.agent.module('MonteCarloSelfLocator', False)
+        self.agent.module('OdometrySelfLocator', False)
+        self.agent.module('GPS_SelfLocator', True)
 
         # prepare the test
         self.simspark.cmd_dropball()  # put the ball into the game

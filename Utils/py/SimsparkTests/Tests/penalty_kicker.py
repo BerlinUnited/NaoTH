@@ -57,6 +57,13 @@ class PenaltyKicker(TestRun):
         self.logger.debug('Set agent behavior')
         # set the behavior of the agent
         self.agent.agent('penalty')
+        # dis-/enable some modules for the simspark simulation
+        self.agent.module('PathPlanner', False)
+        self.agent.module('PathPlanner2018', True)
+        self.agent.module('SituationPriorProvider', False)
+        self.agent.module('MonteCarloSelfLocator', False)
+        self.agent.module('OdometrySelfLocator', False)
+        self.agent.module('GPS_SelfLocator', True)
         # put the ball into the game
         self.simspark.cmd_dropball()
 
