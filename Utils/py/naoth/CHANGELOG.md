@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - register common representations per default. You can still call the register function in the user code
+- added return type hints for 'read' and 'diet_read' functions of Reader
  
 ### Removed
 - 
