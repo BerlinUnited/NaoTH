@@ -14,14 +14,10 @@ package de.naoth.rc;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -41,30 +37,48 @@ import org.w3c.dom.events.EventListener;
 import org.w3c.dom.events.EventTarget;
 
 /**
- *
- * @author admin
+ * @author Philipp Strobel <philippstrobel@posteo.de>
  */
-public class HelpDialog extends javax.swing.JDialog {
-
-    private Frame parent = null;
+public class HelpDialog extends javax.swing.JDialog
+{
+    private WebView webView;
     
     /** Creates new form HelpDialog */
-    HelpDialog(Frame parent, boolean b, URL res) {
+    HelpDialog(Frame parent) {
+        super(parent);
+        
         Dimension defaultSize = new Dimension(400,300);
         this.setPreferredSize(defaultSize);
         this.setSize(defaultSize);
-        this.parent = parent;
+        this.setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
+        this.setTitle("Help");
+        this.setModal(false);
+        this.setAlwaysOnTop(true);
+        this.setVisible(false);
         
         JFXPanel jfxPanel = new JFXPanel();
         this.add(jfxPanel);
 
-        // Creation of scene and future interactions with JFXPanel
-        // should take place on the JavaFX Application Thread
+        // Creation of scene and future interactions with JFXPanel should take place on the JavaFX Application Thread
         Platform.runLater(() -> {
-            WebView webView = new WebView();
+            webView = new WebView();
             webView.setFontSmoothingType(FontSmoothingType.LCD);
             webView.setContextMenuEnabled(false);
             jfxPanel.setScene(new Scene(webView));
+        });
+        
+        this.getRootPane().registerKeyboardAction(
+            (e) -> { setVisible(false); },
+            KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+            JComponent.WHEN_IN_FOCUSED_WINDOW
+        );
+    }
+
+    public void showHelp(String name)
+    {
+        java.net.URL res = getClass().getResource("/de/naoth/rc/dialogs/help/" + (name == null ? "index" : name) + ".html");
+
+        Platform.runLater(() -> {
             if(res == null) {
                 webView.getEngine().loadContent("For this dialog is no help avaliable.");
             } else {
@@ -100,29 +114,10 @@ public class HelpDialog extends javax.swing.JDialog {
                     }
                 });
             }
+            
+            this.setVisible(true);
+            this.requestFocus();
         });
-        
-        ActionListener actionListener = new ActionListener() {
-          public void actionPerformed(ActionEvent actionEvent) {
-              setVisible(false);
-          }
-        };
-    
-        KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
-        this.getRootPane().registerKeyboardAction(actionListener, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
-    }
-
-    public void showHelp()
-    {
-      if(!this.isVisible())
-      {
-        Point location = this.parent.getLocation();
-        location.translate(100, 100);
-        this.setLocation(location);
-      }//end if
-
-      this.setVisible(true);
-      this.requestFocus();
     }//end show
 
     /** This method is called from within the constructor to
@@ -150,27 +145,6 @@ public class HelpDialog extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-    * @param args the command line arguments
-    */
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                HelpDialog dialog = new HelpDialog(new javax.swing.JFrame(), true, null);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
-
-    
-
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
-
 }
