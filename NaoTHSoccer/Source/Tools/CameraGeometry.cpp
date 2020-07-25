@@ -10,14 +10,36 @@
 
 using namespace naoth;
 
+/*
+ * Visualization of used Coordinate-Frames and their relation:
+ *
+ *            |        ↑y-cam                   Legend:
+ *     x-idx→ 0 1 2 3 4│5 6 7 8 9                 ?-cip: Continuous Image Plane
+ *     y-idx↓┌|────────┼─────────┐                ?-idx: Image Pixel Index
+ *        --0-☐-☐-☐-☐-☐-☐-☐-☐-☐-☐-->x-cip                (sometimes also named
+ *           │|        │         │                        Discrete Image Plane)
+ *          1│☐ ☐ ☐ ☐ ☐│☐ ☐ ☐ ☐ ☐│                ?-cam: Camera Frame Axis
+ *           │|        │         │
+ *          2│☐ ☐ ☐ ☐ ☐│☐ ☐ ☐ ☐ ☐│              Note:
+ *         ──┼|────────┼─────────┼───>x-cam       - origin of CIP coincides with
+ *          3│☐ ☐ ☐ ☐ ☐│☐ ☐ ☐ ☐ ☐│                  the center of pixel (0, 0)
+ *           │|        │         │
+ *          4│☐ ☐ ☐ ☐ ☐│☐ ☐ ☐ ☐ ☐←pixel
+ *           │|        │         │
+ *          5│☐ ☐ ☐ ☐ ☐│☐ ☐ ☐ ☐ ☐│←image plane
+ *           └|────────┼─────────┘
+ *            ↓
+ *            y-cip
+ */
+
 Vector3d CameraGeometry::imagePixelToCameraCoords( const CameraInfo& cameraInfo,
                                                    const double imgX,
                                                    const double imgY)
 {
   Vector3d pixelVector;
   pixelVector.x = cameraInfo.getFocalLength();
-  pixelVector.y = cameraInfo.getOpticalCenterX() - imgX;
-  pixelVector.z = cameraInfo.getOpticalCenterY() - imgY;
+  pixelVector.y = cameraInfo.getOpticalCenterX() - imgX - 0.5;
+  pixelVector.z = cameraInfo.getOpticalCenterY() - imgY - 0.5;
   return pixelVector;
 }
 
@@ -52,8 +74,8 @@ bool CameraGeometry::relativePointToImage(
   }
 
   double factor = cameraInfo.getFocalLength() / vectorToPoint.x;
-  pointInImage.x = -(vectorToPoint.y * factor) + cameraInfo.getOpticalCenterX();
-  pointInImage.y = -(vectorToPoint.z * factor) + cameraInfo.getOpticalCenterY();
+  pointInImage.x = -(vectorToPoint.y * factor) + cameraInfo.getOpticalCenterX() - 0.5;
+  pointInImage.y = -(vectorToPoint.z * factor) + cameraInfo.getOpticalCenterY() - 0.5;
 
   return true;
 }//end relativePointToImageDouble
