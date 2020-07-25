@@ -101,10 +101,7 @@ Vector2d CameraGeometry::pixelToAngles( const naoth::CameraInfo& cameraInfo,
                                         const double imgX,
                                         const double imgY)
 {
-  Vector3d pixelVector;
-  pixelVector.x = cameraInfo.getFocalLength();
-  pixelVector.y = -imgX + cameraInfo.getOpticalCenterX();
-  pixelVector.z = -imgY + cameraInfo.getOpticalCenterY();
+  Vector3d pixelVector = imagePixelToCameraCoords(cameraInfo, imgX, imgY);
 
   return Vector2d(
       atan2(pixelVector.y, pixelVector.x), // angle horizontal
