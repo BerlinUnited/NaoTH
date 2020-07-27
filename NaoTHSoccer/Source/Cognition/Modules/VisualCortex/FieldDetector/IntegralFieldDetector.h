@@ -79,13 +79,13 @@ public:
       PARAMETER_REGISTER(negative_score) = -1;
 
       // number of columns and rows in the grid
-      PARAMETER_REGISTER(column_count_top) = 32;
-      PARAMETER_REGISTER(row_count_top) = 24;
-      PARAMETER_REGISTER(column_count_bottom) = 22;
-      PARAMETER_REGISTER(row_count_bottom) = 14;
+      PARAMETER_REGISTER(top.column_count) = 32;
+      PARAMETER_REGISTER(top.row_count) = 24;
+      PARAMETER_REGISTER(bottom.column_count) = 22;
+      PARAMETER_REGISTER(bottom.row_count) = 14;
 
-      PARAMETER_REGISTER(set_whole_image_as_field_bottom) = false;
-      PARAMETER_REGISTER(set_whole_image_as_field_top) = false;
+      PARAMETER_REGISTER(top.set_image_as_field) = false;
+      PARAMETER_REGISTER(bottom.set_image_as_field) = false;
       syncWithConfig();
     }
     int min_field_area;
@@ -99,13 +99,13 @@ public:
     double positive_score;
     double negative_score;
 
-    int column_count_top;
-    int column_count_bottom;
-    int row_count_top;
-    int row_count_bottom;
+    struct cam_params {
+        int column_count;
+        int row_count;
 
-    bool set_whole_image_as_field_bottom;
-    bool set_whole_image_as_field_top;
+        bool set_image_as_field;
+    } ;
+    cam_params top, bottom;
   } params;
 
 private:
