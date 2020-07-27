@@ -29,8 +29,6 @@ if __name__ == "__main__":
 
     # initialize the log parser
     myParser = Parser()
-    # register the protobuf message name for the 'ImageTop'
-    myParser.register("FSRData", "FSRData")
 
     # get all of the fsr data from the logfile
     with LogReader(log[0], parser=myParser) as reader:

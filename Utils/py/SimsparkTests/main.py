@@ -28,10 +28,10 @@ def parseArguments():
                     'If an error occurred during the execution of a test, the exit code is increased by 100.\n'
                     'For eg., if 4 tests are scheduled, one fails and another throws an exception, the exit code is "101".',
         epilog= "Example:\n"
-                "\t{0} -t pseudo_simple_penalty_kicker\n\n"
-                "\tExecutes the 'pseudo_simple_penalty_kicker' test.\n\n"
-                "\t{0} -v -ns -na -t pseudo_simple_penalty_kicker\n\n"
-                "\tExecutes the 'pseudo_simple_penalty_kicker' test, but doesn't start the simspark nor the agent application. Both must be already started! Also the output is more verbose.\n\n"
+                "\t{0} -t penalty_kicker\n\n"
+                "\tExecutes the 'penalty_kicker' test.\n\n"
+                "\t{0} -v -ns -na -t penalty_kicker\n\n"
+                "\tExecutes the 'penalty_kicker' test, but doesn't start the simspark nor the agent application. Both must be already started! Also the output is more verbose.\n\n"
                 "\n\nNOTE:\n"
                 "For 'headless' execution you have to modify the 'rcssserverspl.rb' of your simspark installation and set '$enableInternalMonitor = false'."
                 "".format(os.path.basename(__file__)),
@@ -58,7 +58,7 @@ if __name__ == "__main__":
     if args.list_tests:
         print('Available test cases:')
         for t in Tests.functions:
-            print('\t', t)
+            print('\t', t, '\t', Tests.functions[t][1])
 
     if not shutil.which(args.simspark) and not args.no_simspark:
         logging.error('Can not find simspark application!')
@@ -78,7 +78,7 @@ if __name__ == "__main__":
             if name in Tests.functions:
                 try:
                     # the function should return True if the test was successful!
-                    exit_code += 0 if Tests.functions[name](args) else 1
+                    exit_code += 0 if Tests.functions[name][0](args) else 1
                 except:
                     logging.error('An error occurred while executing test "%s"', name)
                     exit_code += 100
