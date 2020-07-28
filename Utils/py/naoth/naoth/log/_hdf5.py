@@ -3,7 +3,7 @@ import numpy as np
 
 from ._experimental_parser import Parser
 from ._experimental_reader import Reader
-from ._constants import JointNames
+from ..constants import JointNames
 from ..pb import (
     CommonTypes_pb2,
     Framework_Representations_pb2
