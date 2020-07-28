@@ -17,10 +17,6 @@ from ..pb import (
 def transform_log_to_hdf5(log_path, representations):
     # init parser
     log_parser = Parser()
-    log_parser.register("MotorJointData", "JointData")  # TODO this should be done automatically
-    log_parser.register("ImageTop", "Image")
-    log_parser.register("CameraMatrixTop", "CameraMatrix")
-
     log = Reader(log_path, log_parser)
 
     # step 1: split frames into their single representations and put them in a array
