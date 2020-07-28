@@ -15,3 +15,4 @@ if __name__ == '__main__':
 
     # transform the log to flat format
     transformed_log = transform_log_to_hdf5(logfile_name, list(representations))
+    print(transformed_log.keys())
