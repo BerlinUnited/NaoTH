@@ -447,7 +447,6 @@ public class RobotControlImpl extends javax.swing.JFrame
 
         dialogFastAccess.setAlwaysOnTop(true);
         dialogFastAccess.setLocationByPlatform(true);
-        dialogFastAccess.setModal(true);
         dialogFastAccess.setName("dialogFastAccessDialog"); // NOI18N
         dialogFastAccess.setUndecorated(true);
         dialogFastAccess.getContentPane().add(dialogFastAccessPanel, java.awt.BorderLayout.CENTER);

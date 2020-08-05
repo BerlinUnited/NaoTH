@@ -6,7 +6,6 @@
       <Properties>
         <Property name="alwaysOnTop" type="boolean" value="true"/>
         <Property name="locationByPlatform" type="boolean" value="true"/>
-        <Property name="modal" type="boolean" value="true"/>
         <Property name="name" type="java.lang.String" value="dialogFastAccessDialog" noResource="true"/>
         <Property name="undecorated" type="boolean" value="true"/>
       </Properties>
