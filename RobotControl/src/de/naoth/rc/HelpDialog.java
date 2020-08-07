@@ -4,13 +4,16 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -116,15 +119,27 @@ public class HelpDialog extends javax.swing.JDialog
      */
     private void createHelpToc(Document doc) {
         try {
-            URL res = getClass().getResource("/de/naoth/rc/dialogs/help/");
-            Arrays.stream(new File(res.toURI()).list()).filter((t) -> {
-                return !t.startsWith("index") && t.endsWith(".html");
+            String resLoc = "/de/naoth/rc/dialogs/help/";
+            URI res = getClass().getResource(resLoc).toURI();
+            // handle current execution location (jar, file)
+            Path resPath;
+            if (res.getScheme().equals("jar")) {
+                FileSystem fs = FileSystems.newFileSystem(res, Collections.<String, Object>emptyMap());
+                resPath = fs.getPath(resLoc);
+            } else {
+                resPath = Paths.get(res);
+            }
+            
+            Files.walk(resPath, 1).filter((t) -> {
+                String fileName = t.getFileName().toString();
+                return !fileName.startsWith("index") && fileName.endsWith(".html");
             }).sorted().forEach((t) -> {
-                createHelpTocEntry(doc, t);
-                availableHelp.add(t.substring(0, t.length() - 5)); // remove ".html"
-            });
-        } catch (URISyntaxException ex) {
-            Logger.getLogger(HelpDialog.class.getName()).log(Level.SEVERE, null, ex);
+                String fileName = t.getFileName().toString();
+                createHelpTocEntry(doc, fileName);
+                availableHelp.add(fileName.substring(0, fileName.length() - 5)); // remove ".html"
+                });
+        } catch (IOException | URISyntaxException e) {
+            Logger.getLogger(HelpDialog.class.getName()).log(Level.SEVERE, null, e);
         }
     }
     
