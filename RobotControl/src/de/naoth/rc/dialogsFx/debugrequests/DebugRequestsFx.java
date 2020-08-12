@@ -38,36 +38,53 @@ public class DebugRequestsFx extends AbstractJFXDialog implements ResponseListen
     
     @FXML protected TreeView<String> debugTree;
     
+    /** The debug command for retrieving all cognitinon debug requests */
     private final Command cmd_debug_cognition = new Command("Cognition:representation:get").addArg("DebugRequest");
+    /** The debug command for retrieving all motion debug requests */
     private final Command cmd_debug_motion = new Command("Motion:representation:get").addArg("DebugRequest");
+    /** The debug command for activating/deactivating a cognition debug request */
     private final String cmd_debug_cognition_set = "Cognition:representation:set";
+    /** The debug command for activating/deactivating a motion debug request */
     private final String cmd_debug_motion_set = "Motion:representation:set";
 
-    private final BiConsumer<String, Boolean> cognitionDebugRequest = (r, b) -> {
+    /** Callback for (de-)activating a cognition debug request */
+    private final BiConsumer<String, Boolean> cognitionDebugRequest = (name, active) -> {
         Command request = new Command(cmd_debug_cognition_set).addArg("DebugRequest",
             Messages.DebugRequest.newBuilder().addRequests(
-                Messages.DebugRequest.Item.newBuilder().setName(r).setValue(b)
+                Messages.DebugRequest.Item.newBuilder().setName(name).setValue(active)
             ).build().toByteArray());
         Plugin.parent.getMessageServer().executeCommand(this, request);
     };
-    private final BiConsumer<String, Boolean> motionDebugRequest = (r, b) -> {
+    /** Callback for (de-)activating a motion debug request */
+    private final BiConsumer<String, Boolean> motionDebugRequest = (name, active) -> {
         Command request = new Command(cmd_debug_motion_set).addArg("DebugRequest",
             Messages.DebugRequest.newBuilder().addRequests(
-                Messages.DebugRequest.Item.newBuilder().setName(r).setValue(b)
+                Messages.DebugRequest.Item.newBuilder().setName(name).setValue(active)
             ).build().toByteArray());
         Plugin.parent.getMessageServer().executeCommand(this, request);
     };
     
+    /**
+     * Dialog is a javafx controller.
+     * @return true
+     */
     @Override
     protected boolean isSelfController() {
         return true;
     }
 
+    /**
+     * Returns the ui definition.
+     * @return the url to the fxml file
+     */
     @Override
     public URL getFXMLRessource() {
         return getClass().getResource("DebugRequestsFx.fxml");
     }
-    
+
+    /**
+     * Inits the tree of debug requests
+     */
     @Override
     public void afterInit() {
         // setup ui
@@ -76,6 +93,9 @@ public class DebugRequestsFx extends AbstractJFXDialog implements ResponseListen
         debugTree.getRoot().setExpanded(true);
     }
 
+    /**
+     * Handles the update button click.
+     */
     @FXML
     private void updateRequests() {
         if (Plugin.parent.checkConnected()) {
@@ -84,13 +104,18 @@ public class DebugRequestsFx extends AbstractJFXDialog implements ResponseListen
         }
     }
     
+    /**
+     * Handles the response of a debug request and calls the appropiate method to handle the response data.
+     * @param result    the response data
+     * @param command   the command of the response
+     */
     @Override
     public void handleResponse(byte[] result, Command command) {
         Platform.runLater(() -> {
             if(command.equals(cmd_debug_cognition)) {
-                handleDebugResponse("Cognition", 1, result, cognitionDebugRequest);
+                handleDebugResponse("Cognition", 0, result, cognitionDebugRequest);
             } else if(command.equals(cmd_debug_motion)) {
-                handleDebugResponse("Motion", 0, result, motionDebugRequest);
+                handleDebugResponse("Motion", 1, result, motionDebugRequest);
             } else if(command.getName().equals(cmd_debug_cognition_set) || command.getName().equals(cmd_debug_motion_set)) {
                 // NOTE: currently nothing to show or handle
             } else {
@@ -99,11 +124,22 @@ public class DebugRequestsFx extends AbstractJFXDialog implements ResponseListen
         });
     }
 
+    /**
+     * Prints the error code, if an error occurred.
+     * @param code the error code
+     */
     @Override
     public void handleError(int code) {
-        // currently ignoring - what else could we do?
+        System.err.println("Robot detected an error: error code " + code);
     }
     
+    /**
+     * Helper method to handle the response of available debug requests.
+     * @param type          cognition|motion
+     * @param treeIdx       position of the subtree (0|1)
+     * @param response      response data
+     * @param debugRequest  callback for the tree leaf (activating/deactivating debug request)
+     */
     private void handleDebugResponse(String type, int treeIdx, byte[] response, BiConsumer<String, Boolean> debugRequest) {
         try {
             // parse data
@@ -115,7 +151,7 @@ public class DebugRequestsFx extends AbstractJFXDialog implements ResponseListen
             } else {
                 root = new TreeNode(type);
                 root.setExpanded(true);
-                // 
+                // inserts the tree node at the index position or at the end
                 if(debugTree.getRoot().getChildren().size() > treeIdx) {
                     debugTree.getRoot().getChildren().add(treeIdx, root);
                 } else {
@@ -135,18 +171,20 @@ public class DebugRequestsFx extends AbstractJFXDialog implements ResponseListen
         }
     }
     
+    /**
+     * Helper method to (re-)create the subtree.
+     * @param request       the response data
+     * @param root          the root node where the subtree should be appended at
+     * @param debugRequest  callback for the tree leaf (activating/deactivating debug request)
+     */
     private void createDebugRequestTree(Messages.DebugRequest request, TreeNode<String> root, BiConsumer<String, Boolean> debugRequest)
     {
-        String root_name = root.getValue();
         request.getRequestsList().forEach((r) -> {
             int pos = r.getName().lastIndexOf(':');
-            String id = root_name + ":" + r.getName(); // the identifier of this debug request
             String name = r.getName().substring(pos+1);
             String path = r.getName().substring(0, pos);
-
-            RequestTreeItem item = new RequestTreeItem(path, name);
-            item.setRequest(r.getName());
             
+            // create the tree path to the item
             TreeNode current_root = root;
             for (String part : path.split(":")) {
                 if(!current_root.hasChildren(part)) {
@@ -157,7 +195,10 @@ public class DebugRequestsFx extends AbstractJFXDialog implements ResponseListen
                     current_root = current_root.getChildren(part);
                 }
             }
-            current_root.getChildren().add(item); // add this item to the module tree
+            
+            // add this item to the module tree
+            TreeNode item = new TreeNode(name);
+            current_root.getChildren().add(item);
 
             // set the selected state AFTER adding it to its parent
             item.setSelected(r.getValue());

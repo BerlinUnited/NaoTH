@@ -8,11 +8,17 @@ import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.TreeItem;
 
 /**
+ * Extended CheckBoxTreeItem class.
+ * It keeps track of all added (and removed) children and adds the ability to
+ * check and retrieve a specific child node based on its name.
+ * In addition a list of expanded node paths can be created and also restored.
+ * 
  * @author Philipp Strobel <philippstrobel@posteo.de>
  * @param <T>
  */
 public class TreeNode<T extends Object> extends CheckBoxTreeItem<T>
 {
+    /** Container storing the references to the named children. */
     private final HashMap<T, TreeNode> children = new HashMap<>();
 
     public TreeNode() {
@@ -22,6 +28,7 @@ public class TreeNode<T extends Object> extends CheckBoxTreeItem<T>
     public TreeNode(T name) {
         super(name);
         
+        // keep track of added/removed children (callback)
         getChildren().addListener((ListChangeListener.Change<? extends TreeItem<T>> c) -> {
              while (c.next()) {
                 if (c.wasAdded()) {
@@ -35,10 +42,20 @@ public class TreeNode<T extends Object> extends CheckBoxTreeItem<T>
         });
     }
 
+    /**
+     * Returns the child node of the given name.
+     * @param name  the name of the child
+     * @return      the child node or null, if the name couldn't be found
+     */
     public TreeNode getChildren(T name) {
         return children.get(name);
     }
     
+    /**
+     * Returns, whether a specific node with the name exists as child of this node.
+     * @param name  child name to check
+     * @return      true, if a child with the name exists, false otherwise
+     */
     public boolean hasChildren(T name) {
         return children.containsKey(name);
     }
