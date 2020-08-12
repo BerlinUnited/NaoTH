@@ -100,7 +100,8 @@ public class RobotControlImpl extends javax.swing.JFrame
         if (!bin.isDirectory()) {
             // with a jar file, we need to determine the correct path relative to the jar file
             File jar = new File(RobotControlImpl.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-            bin = new File(jar.getParent(), "bin");
+            // ../bin
+            bin = new File(jar.getParentFile().getParentFile(), "bin");
         }
         
         String arch = System.getProperty("os.arch").toLowerCase();
@@ -855,6 +856,12 @@ public class RobotControlImpl extends javax.swing.JFrame
   final public Properties getConfig()
   {
     return config;
+  }
+  
+  @Override
+  final public String getConfigPath()
+  {
+      return USER_CONFIG_DIR;
   }
 
   private void beforeClose()

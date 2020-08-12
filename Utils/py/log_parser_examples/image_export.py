@@ -51,7 +51,7 @@ def get_y_angle(m):
 
 def image_from_proto(message):
     # read each channel of yuv422 separately
-    yuv422 = np.fromstring(message.data, dtype=np.uint8)
+    yuv422 = np.frombuffer(message.data, dtype=np.uint8)
     y = yuv422[0::2]
     u = yuv422[1::4]
     v = yuv422[3::4]
@@ -153,7 +153,7 @@ def show_images(img):
         im1 = ax[0].imshow(img_t, animated=True)
         im2 = ax[1].imshow(img_b, animated=True)
         image_container.append([im1, im2])
-        print("processing images from frame ", i)
+        print("processing images from frame", i)
 
     ani = animation.ArtistAnimation(fig, image_container, interval=50, blit=True,
                                     repeat_delay=1000)
@@ -171,9 +171,6 @@ if __name__ == "__main__":
 
     # initialize the log parser
     myParser = Parser()
-    # register the protobuf message name for the 'ImageTop'
-    myParser.register("ImageTop", "Image")
-    myParser.register("CameraMatrixTop", "CameraMatrix")
 
     input_file = args.input if args.input else images.load_data('ball')
     if Path(input_file).is_dir():
@@ -186,10 +183,12 @@ if __name__ == "__main__":
     if args.task == "export":
         for log in logfile_list:
             # TODO speed up wie in anderen script?
-            images = map(get_images, LogReader(log, myParser))
-            export_images(log, images)
+            with LogReader(log, myParser) as reader:
+                images = map(get_images, reader.read())
+                export_images(log, images)
 
     if args.task == "show":
         for log in logfile_list:
-            images = map(get_images, LogReader(log, myParser))
-            show_images(images)
+            with LogReader(log, myParser) as reader:
+                images = map(get_images, reader.read())
+                show_images(images)

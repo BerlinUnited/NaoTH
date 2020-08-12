@@ -1,8 +1,8 @@
 import math
 import unittest
 
-from .. import math as m2d
-from .. import math as m3d
+from naoth import math as m2d
+from naoth import math as m3d
 
 
 class TestMath2D(unittest.TestCase):
@@ -296,8 +296,8 @@ class TestMath2D(unittest.TestCase):
         self.assertEqual(line_point1.y, 1)
         self.assertEqual(line_point2.x, 1)
         self.assertEqual(line_point2.y, 0.5)
-        self.assertAlmostEquals(line_point3.x, 3/math.sqrt(2)-1)
-        self.assertAlmostEquals(line_point3.y, 3/math.sqrt(2)-1)
+        self.assertAlmostEqual(line_point3.x, 3/math.sqrt(2)-1)
+        self.assertAlmostEqual(line_point3.y, 3/math.sqrt(2)-1)
         self.assertEqual(line_point4.x, 0)
         self.assertEqual(line_point4.y, 1)
 
@@ -332,7 +332,7 @@ class TestMath2D(unittest.TestCase):
         intersection3 = line3.intersection(line1)
 
         self.assertEqual(intersection1, 1)
-        self.assertAlmostEquals(intersection2, math.sqrt(8))
+        self.assertAlmostEqual(intersection2, math.sqrt(8))
         self.assertEqual(intersection3, 0)
 
     def test_line_intersection(self):
@@ -352,7 +352,7 @@ class TestMath2D(unittest.TestCase):
         line_intersection3 = line3.line_intersection(line1)
 
         self.assertEqual(line_intersection1, 1)
-        self.assertAlmostEquals(line_intersection2, math.sqrt(8))
+        self.assertAlmostEqual(line_intersection2, math.sqrt(8))
         self.assertEqual(line_intersection3, 0)
 
     def test_intersect(self):

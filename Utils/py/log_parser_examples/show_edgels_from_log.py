@@ -43,7 +43,7 @@ def get_edgels(frame):
 def get_focal_length():
     resolution_width = 640
     resolution_height = 480
-    opening_diagonal_angle = 72.6/180*math.pi
+    opening_diagonal_angle = 72.6 / 180 * math.pi
 
     d2 = resolution_width ** 2 + resolution_height ** 2
     half_diag_length = 0.5 * math.sqrt(d2)
@@ -60,7 +60,7 @@ def project_edgel(x, y, cam_matrix):
     result = m.Vector2()
     result.x = v.x
     result.y = v.y
-    result = result*(cam_matrix.translation.z / (-v.z))
+    result = result * (cam_matrix.translation.z / (-v.z))
     result.x = result.x + cam_matrix.translation.x
     result.y = result.y + cam_matrix.translation.y
     return result.x, result.y
@@ -97,34 +97,33 @@ if __name__ == "__main__":
     logFilePath = args.logfile if args.logfile else edgels.load_data()
     # init parser
     logParser = Parser()
-    logParser.register("ScanLineEdgelPerceptTop", "ScanLineEdgelPercept")
-    logParser.register("CameraMatrixTop", "CameraMatrix")
 
-    log = iter(LogReader(logFilePath, logParser, get_edgels))
+    with LogReader(logFilePath, parser=logParser) as reader:
+        log = map(get_edgels, reader.read())
 
-    # init plot
-    plt.close('all')
-    fig = plt.figure()
+        # init plot
+        plt.close('all')
+        fig = plt.figure()
 
-    point_size = 5
+        point_size = 5
 
-    ax = fig.add_subplot(2, 2, 1, aspect='equal')
-    ax.set_xlim([0, 640])
-    ax.set_ylim([-480, 0])
-    edgelsPlotTop = plt.scatter([], [], point_size)
+        ax = fig.add_subplot(2, 2, 1, aspect='equal')
+        ax.set_xlim([0, 640])
+        ax.set_ylim([-480, 0])
+        edgelsPlotTop = plt.scatter([], [], point_size)
 
-    ax = fig.add_subplot(2, 2, 3, aspect='equal')
-    ax.set_xlim([0, 640])
-    ax.set_ylim([-480, 0])
-    edgelsPlot = plt.scatter([], [], point_size)
+        ax = fig.add_subplot(2, 2, 3, aspect='equal')
+        ax.set_xlim([0, 640])
+        ax.set_ylim([-480, 0])
+        edgelsPlot = plt.scatter([], [], point_size)
 
-    ax = fig.add_subplot(1, 2, 2, aspect='equal')
-    ax.set_xlim([-10000, 10000])
-    ax.set_ylim([-10000, 10000])
-    projectedEdgelsPlot = plt.scatter([], [], point_size)
+        ax = fig.add_subplot(1, 2, 2, aspect='equal')
+        ax.set_xlim([-10000, 10000])
+        ax.set_ylim([-10000, 10000])
+        projectedEdgelsPlot = plt.scatter([], [], point_size)
 
-    # start animation
-    ani = animation.FuncAnimation(fig, animate, frames=100,
-                                  fargs=(log, edgelsPlotTop, edgelsPlot, projectedEdgelsPlot),
-                                  interval=60)
-    plt.show()
+        # start animation
+        ani = animation.FuncAnimation(fig, animate, frames=100,
+                                      fargs=(log, edgelsPlotTop, edgelsPlot, projectedEdgelsPlot),
+                                      interval=60)
+        plt.show()

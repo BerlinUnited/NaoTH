@@ -1,7 +1,7 @@
 import math
 import unittest
 
-from .. import math as m3d
+from naoth import math as m3d
 
 
 class TestMath3D(unittest.TestCase):
