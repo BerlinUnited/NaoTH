@@ -1,17 +1,12 @@
 package de.naoth.rc.dialogsFx.debugrequests;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import de.naoth.rc.RobotControl;
-import de.naoth.rc.core.dialog.AbstractJFXDialog;
-import de.naoth.rc.core.dialog.DialogPlugin;
-import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.componentsFx.CheckableTreeCell;
 import de.naoth.rc.componentsFx.TreeNode;
-import de.naoth.rc.core.manager.SwingCommandExecutor;
 import de.naoth.rc.core.messages.Messages;
 import de.naoth.rc.core.server.Command;
+import de.naoth.rc.core.server.MessageServer;
 import de.naoth.rc.core.server.ResponseListener;
-import java.net.URL;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
@@ -19,78 +14,81 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.TreeView;
-import net.xeoh.plugins.base.annotations.PluginImplementation;
-import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
-public class DebugRequestsFx extends AbstractJFXDialog implements ResponseListener
+public class DebugRequestsController implements ResponseListener
 {
-    @RCDialog(category = RCDialog.Category.Debug, name = "DebugRequest (FX)")
-    @PluginImplementation
-    public static class Plugin extends DialogPlugin<DebugRequestsFx> {
-        @InjectPlugin
-        public static RobotControl parent;
-        @InjectPlugin
-        public static SwingCommandExecutor commandExecutor;
-    }
+    /** The message server, where the debug requests should be send to */
+    private MessageServer server;
     
+    /** The ui tree of the available debug requests */
     @FXML protected TreeView<String> debugTree;
     
     /** The debug command for retrieving all cognitinon debug requests */
     private final Command cmd_debug_cognition = new Command("Cognition:representation:get").addArg("DebugRequest");
+    
     /** The debug command for retrieving all motion debug requests */
     private final Command cmd_debug_motion = new Command("Motion:representation:get").addArg("DebugRequest");
+    
     /** The debug command for activating/deactivating a cognition debug request */
     private final String cmd_debug_cognition_set = "Cognition:representation:set";
+    
     /** The debug command for activating/deactivating a motion debug request */
     private final String cmd_debug_motion_set = "Motion:representation:set";
 
     /** Callback for (de-)activating a cognition debug request */
     private final BiConsumer<String, Boolean> cognitionDebugRequest = (name, active) -> {
-        Command request = new Command(cmd_debug_cognition_set).addArg("DebugRequest",
-            Messages.DebugRequest.newBuilder().addRequests(
-                Messages.DebugRequest.Item.newBuilder().setName(name).setValue(active)
-            ).build().toByteArray());
-        Plugin.parent.getMessageServer().executeCommand(this, request);
+        if (server != null) {
+            Command request = new Command(cmd_debug_cognition_set).addArg("DebugRequest",
+                Messages.DebugRequest.newBuilder().addRequests(
+                    Messages.DebugRequest.Item.newBuilder().setName(name).setValue(active)
+                ).build().toByteArray());
+            server.executeCommand(this, request);
+        }
     };
     /** Callback for (de-)activating a motion debug request */
     private final BiConsumer<String, Boolean> motionDebugRequest = (name, active) -> {
-        Command request = new Command(cmd_debug_motion_set).addArg("DebugRequest",
-            Messages.DebugRequest.newBuilder().addRequests(
-                Messages.DebugRequest.Item.newBuilder().setName(name).setValue(active)
-            ).build().toByteArray());
-        Plugin.parent.getMessageServer().executeCommand(this, request);
+        if (server != null) {
+            Command request = new Command(cmd_debug_motion_set).addArg("DebugRequest",
+                Messages.DebugRequest.newBuilder().addRequests(
+                    Messages.DebugRequest.Item.newBuilder().setName(name).setValue(active)
+                ).build().toByteArray());
+            server.executeCommand(this, request);
+        }
     };
+
+    /**
+     * Default constructor for the FXML loader.
+     */
+    public DebugRequestsController() {}
     
     /**
-     * Dialog is a javafx controller.
-     * @return true
+     * Constructor for custom initialization.
      */
-    @Override
-    protected boolean isSelfController() {
-        return true;
+    public DebugRequestsController(MessageServer server) {
+        setMessageServer(server);
     }
-
+    
     /**
-     * Returns the ui definition.
-     * @return the url to the fxml file
+     * Gets called, after the FXML file was loaded.
      */
-    @Override
-    public URL getFXMLRessource() {
-        return getClass().getResource("DebugRequestsFx.fxml");
-    }
-
-    /**
-     * Inits the tree of debug requests
-     */
-    @Override
-    public void afterInit() {
+    @FXML
+    private void initialize() 
+    {
         // setup ui
         debugTree.setCellFactory(e -> new CheckableTreeCell<>());
         debugTree.setRoot(new TreeNode<>());
         debugTree.getRoot().setExpanded(true);
+    }
+    
+    /**
+     * Sets the message server.
+     * @param server 
+     */
+    public void setMessageServer(MessageServer server) {
+        this.server = server;
     }
 
     /**
@@ -98,9 +96,9 @@ public class DebugRequestsFx extends AbstractJFXDialog implements ResponseListen
      */
     @FXML
     private void updateRequests() {
-        if (Plugin.parent.checkConnected()) {
-            Plugin.parent.getMessageServer().executeCommand(this, cmd_debug_cognition);
-            Plugin.parent.getMessageServer().executeCommand(this, cmd_debug_motion);
+        if (server != null && server.isConnected()) {
+            server.executeCommand(this, cmd_debug_cognition);
+            server.executeCommand(this, cmd_debug_motion);
         }
     }
     
