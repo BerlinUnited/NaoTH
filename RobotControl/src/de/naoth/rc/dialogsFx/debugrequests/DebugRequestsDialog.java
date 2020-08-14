@@ -18,8 +18,11 @@ public class DebugRequestsDialog extends AbstractJFXDialog
     public static class Plugin extends DialogPlugin<DebugRequestsDialog> {
         @InjectPlugin
         public static RobotControl parent;
+
+        @Override
+        public String getDisplayName() { return "DebugRequest (FX)"; }
     }
-    
+
     /**
      * Returns the ui definition.
      * @return the url to the fxml file
