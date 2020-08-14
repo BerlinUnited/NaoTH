@@ -20,13 +20,21 @@ public class TreeNode<T extends Object> extends CheckBoxTreeItem<T>
 {
     /** Container storing the references to the named children. */
     private final HashMap<T, TreeNode> children = new HashMap<>();
+    /** The tooltip for this tree node. */
+    private final String tooltip;
 
     public TreeNode() {
-        this(null);
+        this(null, null);
     }
     
     public TreeNode(T name) {
+        this(name, null);
+    }
+    
+    public TreeNode(T name, String tooltip) {
         super(name);
+        
+        this.tooltip = tooltip;
         
         // keep track of added/removed children (callback)
         getChildren().addListener((ListChangeListener.Change<? extends TreeItem<T>> c) -> {
@@ -40,6 +48,14 @@ public class TreeNode<T extends Object> extends CheckBoxTreeItem<T>
                 }
             }
         });
+    }
+    
+    /**
+     * Returns the tooltip of this node
+     * @return the tooltip of this node
+     */
+    public String getTooltip() {
+        return tooltip;
     }
 
     /**

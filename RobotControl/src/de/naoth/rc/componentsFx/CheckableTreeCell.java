@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.CheckBoxTreeItem;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.util.Callback;
@@ -68,7 +69,7 @@ public class CheckableTreeCell<T extends Object> extends TreeCell<T>
             setGraphic(null);
         } else {
             TreeItem<T> treeItem = getTreeItem();
-
+            
             // update the node content
             setText(String.valueOf(treeItem.getValue()));
             checkBox.setGraphic(treeItem == null ? null : treeItem.getGraphic());
@@ -76,6 +77,14 @@ public class CheckableTreeCell<T extends Object> extends TreeCell<T>
             setGraphic(checkBox);
             
             checkBox.setDisable(!getTreeItem().isLeaf());
+            
+            // install tooltip if we have one
+            if (treeItem instanceof TreeNode) {
+                String tooltip = ((TreeNode<T>) treeItem).getTooltip();
+                if (tooltip != null) {
+                    setTooltip(new Tooltip(tooltip));
+                }
+            }
 
             // uninstall bindings
             if (booleanProperty != null) {

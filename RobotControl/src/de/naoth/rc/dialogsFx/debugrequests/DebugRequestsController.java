@@ -182,6 +182,11 @@ public class DebugRequestsController implements ResponseListener
             String name = r.getName().substring(pos+1);
             String path = r.getName().substring(0, pos);
             
+            String tooltip = "NO COMMENT";
+            if(r.hasDescription() && r.getDescription().length() > 0) {
+                tooltip = r.getDescription();
+            }
+            
             // create the tree path to the item
             TreeNode current_root = root;
             for (String part : path.split(":")) {
@@ -195,7 +200,7 @@ public class DebugRequestsController implements ResponseListener
             }
             
             // add this item to the module tree
-            TreeNode item = new TreeNode(name);
+            TreeNode item = new TreeNode(name, tooltip);
             current_root.getChildren().add(item);
 
             // set the selected state AFTER adding it to its parent
