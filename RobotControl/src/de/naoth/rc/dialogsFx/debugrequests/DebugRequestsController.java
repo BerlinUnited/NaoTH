@@ -92,6 +92,12 @@ public class DebugRequestsController implements ResponseListener
                 }
             }
         });
+        // handle F5 key press and update debug requests
+        debugTree.getParent().setOnKeyPressed((k) -> {
+            if (k.getCode() == KeyCode.F5) {
+                updateRequests();
+            }
+        });
     }
     
     /**
