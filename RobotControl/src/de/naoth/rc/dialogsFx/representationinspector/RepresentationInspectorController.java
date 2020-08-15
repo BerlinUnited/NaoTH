@@ -47,11 +47,11 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 /**
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
-public class RepresentationInspectorFx  extends AbstractJFXDialog implements ResponseListener
+public class RepresentationInspectorController  extends AbstractJFXDialog implements ResponseListener
 {
     @RCDialog(category = RCDialog.Category.Status, name = "Representations (FX)")
     @PluginImplementation
-    public static class Plugin extends DialogPlugin<RepresentationInspectorFx> {
+    public static class Plugin extends DialogPlugin<RepresentationInspectorController> {
         @InjectPlugin
         public static RobotControl parent;
         @InjectPlugin
