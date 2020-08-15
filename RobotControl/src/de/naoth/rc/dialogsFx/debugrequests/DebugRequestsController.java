@@ -1,8 +1,8 @@
 package de.naoth.rc.dialogsFx.debugrequests;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import de.naoth.rc.componentsFx.CheckableTreeCell;
-import de.naoth.rc.componentsFx.TreeNode;
+import de.naoth.rc.componentsFx.TreeNodeCell;
+import de.naoth.rc.componentsFx.TreeNodeItem;
 import de.naoth.rc.core.messages.Messages;
 import de.naoth.rc.core.server.Command;
 import de.naoth.rc.core.server.MessageServer;
@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.TreeView;
+import javafx.scene.input.KeyCode;
 
 /**
  * @author Philipp Strobel <philippstrobel@posteo.de>
@@ -78,9 +79,19 @@ public class DebugRequestsController implements ResponseListener
     private void initialize() 
     {
         // setup ui
-        debugTree.setCellFactory(e -> new CheckableTreeCell<>());
-        debugTree.setRoot(new TreeNode<>());
+        debugTree.setCellFactory((p) -> new TreeNodeCell<>());
+        debugTree.setRoot(new TreeNodeItem<>());
         debugTree.getRoot().setExpanded(true);
+        
+        // handle space/enter key press and toggle selected state
+        debugTree.setOnKeyPressed((k) -> {
+            if (k.getCode() == KeyCode.ENTER || k.getCode() == KeyCode.SPACE) {
+                TreeNodeItem i = (TreeNodeItem) debugTree.getSelectionModel().getSelectedItem();
+                if (i != null) {
+                    i.setSelected(!i.isSelected());
+                }
+            }
+        });
     }
     
     /**
@@ -143,11 +154,11 @@ public class DebugRequestsController implements ResponseListener
             // parse data
             Messages.DebugRequest request = Messages.DebugRequest.parseFrom(response);
             // get the cognition debug request root item or create a new, if it doesn't exists
-            TreeNode root;
-            if(((TreeNode)debugTree.getRoot()).hasChildren(type)) {
-                root = ((TreeNode)debugTree.getRoot()).getChildren(type);
+            TreeNodeItem root;
+            if(((TreeNodeItem)debugTree.getRoot()).hasChildren(type)) {
+                root = ((TreeNodeItem)debugTree.getRoot()).getChildren(type);
             } else {
-                root = new TreeNode(type);
+                root = new TreeNodeItem(type);
                 root.setExpanded(true);
                 // inserts the tree node at the index position or at the end
                 if(debugTree.getRoot().getChildren().size() > treeIdx) {
@@ -175,7 +186,7 @@ public class DebugRequestsController implements ResponseListener
      * @param root          the root node where the subtree should be appended at
      * @param debugRequest  callback for the tree leaf (activating/deactivating debug request)
      */
-    private void createDebugRequestTree(Messages.DebugRequest request, TreeNode<String> root, BiConsumer<String, Boolean> debugRequest)
+    private void createDebugRequestTree(Messages.DebugRequest request, TreeNodeItem<String> root, BiConsumer<String, Boolean> debugRequest)
     {
         request.getRequestsList().forEach((r) -> {
             int pos = r.getName().lastIndexOf(':');
@@ -188,10 +199,10 @@ public class DebugRequestsController implements ResponseListener
             }
             
             // create the tree path to the item
-            TreeNode current_root = root;
+            TreeNodeItem current_root = root;
             for (String part : path.split(":")) {
                 if(!current_root.hasChildren(part)) {
-                    TreeNode treePartNew = new TreeNode(part);
+                    TreeNodeItem treePartNew = new TreeNodeItem(part);
                     current_root.getChildren().add(treePartNew);
                     current_root = treePartNew;
                 } else {
@@ -200,7 +211,7 @@ public class DebugRequestsController implements ResponseListener
             }
             
             // add this item to the module tree
-            TreeNode item = new TreeNode(name, tooltip);
+            TreeNodeItem item = new TreeNodeItem(name, tooltip);
             current_root.getChildren().add(item);
 
             // set the selected state AFTER adding it to its parent
