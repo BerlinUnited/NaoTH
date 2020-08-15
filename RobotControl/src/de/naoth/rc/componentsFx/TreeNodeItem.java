@@ -16,22 +16,22 @@ import javafx.scene.control.TreeItem;
  * @author Philipp Strobel <philippstrobel@posteo.de>
  * @param <T>
  */
-public class TreeNode<T extends Object> extends CheckBoxTreeItem<T>
+public class TreeNodeItem<T extends Object> extends CheckBoxTreeItem<T>
 {
     /** Container storing the references to the named children. */
-    private final HashMap<T, TreeNode> children = new HashMap<>();
+    private final HashMap<T, TreeNodeItem> children = new HashMap<>();
     /** The tooltip for this tree node. */
     private final String tooltip;
 
-    public TreeNode() {
+    public TreeNodeItem() {
         this(null, null);
     }
     
-    public TreeNode(T name) {
+    public TreeNodeItem(T name) {
         this(name, null);
     }
     
-    public TreeNode(T name, String tooltip) {
+    public TreeNodeItem(T name, String tooltip) {
         super(name);
         
         this.tooltip = tooltip;
@@ -41,7 +41,7 @@ public class TreeNode<T extends Object> extends CheckBoxTreeItem<T>
              while (c.next()) {
                 if (c.wasAdded()) {
                     // add the names of the added nodes
-                    c.getAddedSubList().forEach((a) -> { children.put(a.getValue(), (TreeNode) a); });
+                    c.getAddedSubList().forEach((a) -> { children.put(a.getValue(), (TreeNodeItem) a); });
                 } else if(c.wasRemoved()) {
                     // remove the names of the removed nodes
                     c.getRemoved().forEach((r) -> { children.remove(r.getValue()); });
@@ -63,7 +63,7 @@ public class TreeNode<T extends Object> extends CheckBoxTreeItem<T>
      * @param name  the name of the child
      * @return      the child node or null, if the name couldn't be found
      */
-    public TreeNode getChildren(T name) {
+    public TreeNodeItem getChildren(T name) {
         return children.get(name);
     }
     
@@ -118,7 +118,7 @@ public class TreeNode<T extends Object> extends CheckBoxTreeItem<T>
             if(p.startsWith(root)) {
                 String[] parts = p.replaceFirst(root+"/?", "").split("/");
 
-                TreeNode current_root = this;
+                TreeNodeItem current_root = this;
                 current_root.setExpanded(true);
 
                 for (String part : parts) {
