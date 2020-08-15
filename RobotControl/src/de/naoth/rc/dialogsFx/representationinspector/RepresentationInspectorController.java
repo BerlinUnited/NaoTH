@@ -3,10 +3,6 @@ package de.naoth.rc.dialogsFx.representationinspector;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
-import de.naoth.rc.RobotControl;
-import de.naoth.rc.core.dialog.AbstractJFXDialog;
-import de.naoth.rc.core.dialog.DialogPlugin;
-import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.logmanager.BlackBoard;
 import de.naoth.rc.logmanager.LogFileEventManager;
@@ -19,46 +15,33 @@ import de.naoth.rc.core.messages.Messages;
 import de.naoth.rc.core.messages.Representations;
 import de.naoth.rc.core.messages.TeamMessageOuterClass;
 import de.naoth.rc.core.server.Command;
+import de.naoth.rc.core.server.MessageServer;
 import de.naoth.rc.core.server.ResponseListener;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
-import net.xeoh.plugins.base.annotations.PluginImplementation;
-import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
-public class RepresentationInspectorController  extends AbstractJFXDialog implements ResponseListener
+public class RepresentationInspectorController implements ResponseListener
 {
-    @RCDialog(category = RCDialog.Category.Status, name = "Representations (FX)")
-    @PluginImplementation
-    public static class Plugin extends DialogPlugin<RepresentationInspectorController> {
-        @InjectPlugin
-        public static RobotControl parent;
-        @InjectPlugin
-        public static GenericManagerFactory genericManagerFactory;
-        @InjectPlugin
-        public static LogFileEventManager logFileEventManager;
-    }
+    /** The message server, where the debug requests should be send to */
+    private MessageServer server;
+    private LogFileEventManager log;
+    private GenericManagerFactory factory;
     
     @FXML ToggleGroup listener;
     @FXML ToggleButton btnRefresh;
@@ -76,18 +59,21 @@ public class RepresentationInspectorController  extends AbstractJFXDialog implem
     private Listener dataListener;
     private final LogRepresentationListener logHandler = new LogRepresentationListener();
     
-    @Override
-    protected boolean isSelfController() {
-        return true;
-    }
-
-    @Override
-    public URL getFXMLRessource() {
-        return getClass().getResource("RepresentationInspectorFx.fxml");
+    /**
+     * Default constructor for the FXML loader.
+     */
+    public RepresentationInspectorController() {}
+    
+    /**
+     * Constructor for custom initialization.
+     */
+    public RepresentationInspectorController(MessageServer server) {
+        setMessageServer(server);
     }
     
-    @Override
-    public void afterInit() {
+    @FXML
+    private void initialize()
+    {
         // setup ui
         type.getItems().add(cmd_list_cognition);
         type.getItems().add(cmd_list_motion);
@@ -107,8 +93,8 @@ public class RepresentationInspectorController  extends AbstractJFXDialog implem
             
             if(newButton != null) {
                 if(newButton.equals(btnRefresh)) {
-                    if(Plugin.parent.checkConnected()) {
-                        Plugin.parent.getMessageServer().executeCommand(this, type.getValue());
+                    if(server != null && server.isConnected()) {
+                        server.executeCommand(this, type.getValue());
                     } else {
                         btnRefresh.setSelected(false);
                     }
@@ -116,16 +102,32 @@ public class RepresentationInspectorController  extends AbstractJFXDialog implem
                     content.setText("TODO: Binary!");
                 } else if(newButton.equals(btnLog)) {
                     dataListener = new LogRepresentationListener();
-                    Plugin.logFileEventManager.addListener((LogFrameListener) dataListener);
+                    log.addListener((LogFrameListener) dataListener);
                 }
             }
         });
     }
     
+    /**
+     * Sets the message server.
+     * @param server 
+     */
+    public void setMessageServer(MessageServer server) {
+        this.server = server;
+    }
+    
+    public void setLogFileEventManager(LogFileEventManager manager) {
+        this.log = manager;
+    }
+
+    public void setGenericManagerFactory(GenericManagerFactory factory) {
+        this.factory = factory;
+    }
+
     private void typeChanged() {
         unsubscribeRepresentations();
-        if(Plugin.parent.getMessageServer().isConnected()) {
-            Plugin.parent.getMessageServer().executeCommand(this, type.getValue());
+        if(server != null && server.isConnected()) {
+            server.executeCommand(this, type.getValue());
         }
     }
     
@@ -135,7 +137,7 @@ public class RepresentationInspectorController  extends AbstractJFXDialog implem
             currentHandler = new DataHandlerPrint();
             Command cmd = new Command(type.getValue().toString() + ":representation:print").addArg(n);
 
-            currentManager = Plugin.genericManagerFactory.getManager(cmd);
+            currentManager = factory.getManager(cmd);
             currentManager.addListener(currentHandler);
         }
     }
