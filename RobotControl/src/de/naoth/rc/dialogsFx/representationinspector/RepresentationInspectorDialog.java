@@ -45,8 +45,8 @@ public class RepresentationInspectorDialog  extends AbstractJFXDialog
     public void afterInit() {
         RepresentationInspectorController controller = (RepresentationInspectorController)getController();
         // set the global plugin references to the view controller
-        controller.setMessageServer(Plugin.parent.getMessageServer());
         controller.setLogFileEventManager(Plugin.logFileEventManager);
         controller.setGenericManagerFactory(Plugin.genericManagerFactory);
+        controller.setRobotControl(Plugin.parent);
     }
 }
