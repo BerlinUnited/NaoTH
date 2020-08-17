@@ -1,11 +1,11 @@
 package de.naoth.rc.dialogsFx.debugrequests;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import de.naoth.rc.RobotControl;
 import de.naoth.rc.componentsFx.TreeNodeCell;
 import de.naoth.rc.componentsFx.TreeNodeItem;
 import de.naoth.rc.core.messages.Messages;
 import de.naoth.rc.core.server.Command;
-import de.naoth.rc.core.server.MessageServer;
 import de.naoth.rc.core.server.ResponseListener;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -21,8 +21,8 @@ import javafx.scene.input.KeyCode;
  */
 public class DebugRequestsController implements ResponseListener
 {
-    /** The message server, where the debug requests should be send to */
-    private MessageServer server;
+    /** The controlling instance representing the connection to the robot. */
+    private RobotControl control;
     
     /** The ui tree of the available debug requests */
     @FXML protected TreeView<String> debugTree;
@@ -41,22 +41,22 @@ public class DebugRequestsController implements ResponseListener
 
     /** Callback for (de-)activating a cognition debug request */
     private final BiConsumer<String, Boolean> cognitionDebugRequest = (name, active) -> {
-        if (server != null) {
+        if (control != null && control.checkConnected()) {
             Command request = new Command(cmd_debug_cognition_set).addArg("DebugRequest",
                 Messages.DebugRequest.newBuilder().addRequests(
                     Messages.DebugRequest.Item.newBuilder().setName(name).setValue(active)
                 ).build().toByteArray());
-            server.executeCommand(this, request);
+            control.getMessageServer().executeCommand(this, request);
         }
     };
     /** Callback for (de-)activating a motion debug request */
     private final BiConsumer<String, Boolean> motionDebugRequest = (name, active) -> {
-        if (server != null) {
+        if (control != null && control.checkConnected()) {
             Command request = new Command(cmd_debug_motion_set).addArg("DebugRequest",
                 Messages.DebugRequest.newBuilder().addRequests(
                     Messages.DebugRequest.Item.newBuilder().setName(name).setValue(active)
                 ).build().toByteArray());
-            server.executeCommand(this, request);
+            control.getMessageServer().executeCommand(this, request);
         }
     };
 
@@ -68,8 +68,8 @@ public class DebugRequestsController implements ResponseListener
     /**
      * Constructor for custom initialization.
      */
-    public DebugRequestsController(MessageServer server) {
-        setMessageServer(server);
+    public DebugRequestsController(RobotControl control) {
+        setRobotControl(control);
     }
     
     /**
@@ -101,11 +101,11 @@ public class DebugRequestsController implements ResponseListener
     }
     
     /**
-     * Sets the message server.
-     * @param server 
+     * Sets the controlling instance of the robot.
+     * @param control 
      */
-    public void setMessageServer(MessageServer server) {
-        this.server = server;
+    public void setRobotControl(RobotControl control) {
+        this.control = control;
     }
 
     /**
@@ -113,9 +113,9 @@ public class DebugRequestsController implements ResponseListener
      */
     @FXML
     private void updateRequests() {
-        if (server != null && server.isConnected()) {
-            server.executeCommand(this, cmd_debug_cognition);
-            server.executeCommand(this, cmd_debug_motion);
+        if (control != null && control.checkConnected()) {
+            control.getMessageServer().executeCommand(this, cmd_debug_cognition);
+            control.getMessageServer().executeCommand(this, cmd_debug_motion);
         }
     }
     

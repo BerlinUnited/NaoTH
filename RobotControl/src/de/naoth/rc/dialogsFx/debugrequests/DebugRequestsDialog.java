@@ -37,7 +37,7 @@ public class DebugRequestsDialog extends AbstractJFXDialog
      */
     @Override
     public void afterInit() {
-        // set the global message server to the view controller
-        ((DebugRequestsController)getController()).setMessageServer(Plugin.parent.getMessageServer());
+        // set the global robot control instance to the view controller
+        ((DebugRequestsController)getController()).setRobotControl(Plugin.parent);
     }
 }
