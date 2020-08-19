@@ -7,12 +7,8 @@ set -e
 # catch the EXIT and print a message if the exit code is not zero
 trap '[ $? -eq 0 ] || echo "!!!! FAILURE WITH CODE $? !!!!"' EXIT
 
-echo "###### GENERATE MAKE FILES ######"
-premake5 --platform=Nao gmake2
-
 echo "###### COMPILE ######"
-# run make in the corresponding build dir
-(cd ../build/Nao/ && make config=optdebug_nao NaoRobot $@)
+./compileNao.sh NaoRobot $@
 
 echo "###### XABSL ######"
 ./compileBehavior.sh
