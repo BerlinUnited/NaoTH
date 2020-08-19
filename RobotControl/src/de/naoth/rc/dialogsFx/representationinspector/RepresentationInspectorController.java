@@ -105,7 +105,7 @@ public class RepresentationInspectorController
      * Retrieves a list of the available representations.
      */
     @FXML
-    private void updateRepresentations() {
+    private void fx_refresh() {
         if (btnRefresh.isSelected()) {
             retrieveRepresentations();
         } else {
@@ -118,7 +118,7 @@ public class RepresentationInspectorController
      * Based on the selected item a list of the available representations is retrieved.
      */
     @FXML
-    private void typeChanged() {
+    private void fx_type() {
         unsubscribeRepresentation();
         retrieveRepresentations();
     }
@@ -128,7 +128,7 @@ public class RepresentationInspectorController
      * Subscribes to a selected representation in binary mode.
      */
     @FXML
-    private void retrieveBinary() {
+    private void fx_binary() {
         subscribeRepresentation();
     }
     
