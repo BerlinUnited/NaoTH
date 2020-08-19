@@ -1,30 +1,16 @@
 package de.naoth.rc.dialogsFx.representationinspector;
 
-import com.google.protobuf.Descriptors;
-import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.manager.ObjectListener;
-import de.naoth.rc.logmanager.BlackBoard;
 import de.naoth.rc.logmanager.LogFileEventManager;
-import de.naoth.rc.logmanager.LogFrameListener;
 import de.naoth.rc.manager.GenericManager;
 import de.naoth.rc.manager.GenericManagerFactory;
-import de.naoth.rc.core.messages.AudioDataOuterClass;
-import de.naoth.rc.core.messages.FrameworkRepresentations;
-import de.naoth.rc.core.messages.Messages;
-import de.naoth.rc.core.messages.Representations;
-import de.naoth.rc.core.messages.TeamMessageOuterClass;
+import de.naoth.rc.core.messages.MessageRegistry;
 import de.naoth.rc.core.server.Command;
 import de.naoth.rc.core.server.ResponseListener;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
@@ -52,12 +38,12 @@ public class RepresentationInspectorController
     private final Command cmd_list_cognition = new ListCommand("Cognition", "Cognition:representation:list");
     private final Command cmd_list_motion = new ListCommand("Motion", "Motion:representation:list");
     
-    private final RepresentationsListListener representationsListListener = new RepresentationsListListener();
-    private RepresentationListener dataListener;
+    private final RepresentationListListener representationsListListener = new RepresentationListListener();
     
     private GenericManager currentManager;
-    private ObjectListener currentHandler;
-    private final LogRepresentationListener logHandler = new LogRepresentationListener();
+    private DataHandler currentHandler;
+    
+    //private final LogRepresentationListener logHandler = new LogRepresentationListener();
     
     /**
      * Default constructor for the FXML loader.
@@ -88,35 +74,9 @@ public class RepresentationInspectorController
         btnRefresh.selectedProperty().addListener((o) -> {
             if (!btnRefresh.isSelected() && btnBinary.isSelected()) { btnBinary.setSelected(false); }
         });
-        
-        //SynchronizedObservableList
-        list.getSelectionModel().selectedItemProperty().addListener((o) -> {
-            
-        });
-        
-        /*
-        // TODO
-        listener.selectedToggleProperty().addListener((o, oldButton, newButton) -> {
-            if(oldButton != null) {
-                unsubscribeRepresentations();
-            }
-            
-            if(newButton != null) {
-                if(newButton.equals(btnRefresh)) {
-                    if(server != null && server.isConnected()) {
-                        server.executeCommand(this, type.getValue());
-                    } else {
-                        btnRefresh.setSelected(false);
-                    }
-                } else if(newButton.equals(btnBinary)) {
-                    content.setText("TODO: Binary!");
-                } else if(newButton.equals(btnLog)) {
-                    dataListener = new LogRepresentationListener();
-                    log.addListener((LogFrameListener) dataListener);
-                }
-            }
-        });
-        */
+        // handle list changes
+        list.disableProperty().bind(btnRefresh.selectedProperty().or(btnLog.selectedProperty()).not());
+        list.getSelectionModel().selectedItemProperty().addListener((o) -> { subscribeRepresentation(); });
     }
 
     /**
@@ -146,7 +106,7 @@ public class RepresentationInspectorController
         if (btnRefresh.isSelected()) {
             retrieveRepresentations();
         } else {
-            // TODO: unregister listener
+            unsubscribeRepresentation();
         }
     }
 
@@ -161,6 +121,15 @@ public class RepresentationInspectorController
     }
     
     /**
+     * Is called, when the binary button is toggled.
+     * Subscribes to a selected representation in binary mode.
+     */
+    @FXML
+    private void retrieveBinary() {
+        subscribeRepresentation();
+    }
+    
+    /**
      * Retrieves a list of the available representations.
      * If not connected, the refresh button is set to "un-selected".
      */
@@ -172,23 +141,54 @@ public class RepresentationInspectorController
         }
     }
     
-    private void subscribeRepresentation(String n) {
+    /**
+     * Subscribes to a selected representation, if one is selected.
+     */
+    private void subscribeRepresentation() {
         // unsubscribe previous listener
         unsubscribeRepresentation();
         // subscribe to the new representation (if set)
-        if(n != null) {
-            currentHandler = new DataHandlerPrint();
-            Command cmd = new Command(type.getValue().toString() + ":representation:print").addArg(n);
+        String representation = list.getSelectionModel().getSelectedItem();
+        if (representation != null) {
+            if (btnLog.isSelected()) {
+                // TODO!
+                //logHandler.showFrame((String) o);
+            } else {
+                String suffix;
+                if (btnBinary.isSelected()) {
+                    currentHandler = new DataHandlerBinary(representation);
+                    suffix = "get";
+                } else {
+                    currentHandler = new DataHandlerPrint();
+                    suffix = "print";
+                }
 
-            currentManager = factory.getManager(cmd);
-            currentManager.addListener(currentHandler);
+                Command cmd = new Command(type.getValue().toString() + ":representation:" + suffix).addArg(representation);
+                currentManager = factory.getManager(cmd);
+                currentManager.addListener((ObjectListener<byte[]>) currentHandler);
+            }
         }
     }
     
+    /**
+     * Unsubscribes from a (previously subscribed) representation.
+     */
     private void unsubscribeRepresentation() {
         if (currentManager != null) {
-            currentManager.removeListener(currentHandler);
+            currentManager.removeListener((ObjectListener<byte[]>)currentHandler);
         }
+    }
+    
+    /**
+     * Updates the content view with the given text.
+     * 
+     * @param text  the new text to show
+     */
+    private void updateContent(String text) {
+        Platform.runLater(() -> {
+            // NOTE: content.setText() changes the scrolbar position
+            content.replaceText(0, content.getText().length(), text);
+        });
     }
 
     /**
@@ -212,14 +212,17 @@ public class RepresentationInspectorController
     /**
      * Handles the response of a representation list command.
      */
-    class RepresentationsListListener implements ResponseListener
+    class RepresentationListListener implements ResponseListener
     {
         @Override
         public void handleResponse(byte[] result, Command command) {
             if (command.equals(cmd_list_cognition) || command.equals(cmd_list_motion)) {
                 Platform.runLater(() -> {
                     List<String> items = Arrays.asList(new String(result).split("\n"));
+                    String selected = list.getSelectionModel().getSelectedItem();
                     list.getItems().setAll(items);
+                    list.getSelectionModel().select(selected);
+                    list.scrollTo(selected);
                 });
             }
         }
@@ -230,36 +233,66 @@ public class RepresentationInspectorController
         }
     }
     
-    class RepresentationListener
+    /**
+     * Common name for all data handler (print, binary, log).
+     */
+    interface DataHandler {}
+    
+    /**
+     * Handles the string representation of the subscribed representation.
+     */
+    class DataHandlerPrint implements ObjectListener<byte[]>, DataHandler
     {
-        protected String selected = null;
+        @Override
+        public void newObjectReceived(byte[] object) {
+            updateContent(new String(object));
+        }
 
-        /**
-         * Set/updates the new list data.
-         * @param c 
-         */
-        public void updateList(Collection<String> c) {
+        @Override
+        public void errorOccured(String cause) {
             Platform.runLater(() -> {
-                // NOTE: setAll removes the selection, need to preserve it
-                String s = selected;
-                list.getItems().setAll(c.stream().sorted().collect(Collectors.toList()));
-                list.getSelectionModel().select(s);
-                selected = s;
+                content.setPromptText(cause);
+                content.clear();
             });
-        }
-        
-        public void updateContent(String c) {
-            Platform.runLater(() -> {
-                content.setText(c);
-            });
-        }
-        
-        public void setSelected(String s) {
-            selected = s;
         }
     }
     
+    /**
+     * Handles the binary representation of the subscribed representation.
+     */
+    class DataHandlerBinary implements ObjectListener<byte[]>, DataHandler
+    {
+        private final String name;
+        
+        public DataHandlerBinary(String name) {
+            // EVIL HACK: remove suffix "Top"
+            this.name = name.endsWith("Top") ? name.substring(0, name.length()-3) : name;
+        }
+        
+        @Override
+        public void newObjectReceived(byte[] data) {
+            if (MessageRegistry.has(name)) {
+                try {
+                    updateContent(MessageRegistry.parse(name, data).toString());
+                } catch (InvalidProtocolBufferException ex) {
+                    updateContent("Error while parsing: " + ex.getMessage());
+                }
+            } else {
+                updateContent("No binary serialization avaliable.");
+            }
+        }//end newObjectReceived
+
+        @Override
+        public void errorOccured(String cause) {
+            Platform.runLater(() -> {
+                content.setPromptText(cause);
+                content.clear();
+            });
+        }
+    }//end class DataHandlerBinary
     
+    /*
+    // TODO
     private class LogRepresentationListener extends RepresentationListener implements LogFrameListener
     {
         private final Map<String, byte[]> dataByName = new HashMap<>();
@@ -317,59 +350,5 @@ public class RepresentationInspectorController
             }
         }
     }
-
-    
-    class DataHandlerPrint implements ObjectListener<byte[]>
-    {
-        @Override
-        public void newObjectReceived(byte[] object) {
-            Platform.runLater(() -> {
-                content.setText(new String(object));
-            });
-        }
-
-        @Override
-        public void errorOccured(String cause) {
-            Platform.runLater(() -> {
-                content.setPromptText(cause);
-                content.clear();
-            });
-        }
-    }
-    
-    /*
-    class DataHandlerBinary implements ObjectListener<byte[]> {
-
-        private final Parser parser;
-        //private final List<Descriptor> allDescriptors = getAllProtobufDescriptors();
-
-        public DataHandlerBinary(String name) {
-            
-            Class<?> parserClass = getProtobufClass(name);
-            if (parserClass != null) {
-                parser = new ProtobufParser(parserClass);
-            } else {
-                parser = new EmptyParser();
-            }
-        }
-
-        @Override
-        public void newObjectReceived(byte[] data) {
-
-            Object result = parser.parse(data);
-            if (result != null) {
-                textArea.setText(result.toString());
-            } else {
-                textArea.setText("Error while parsing.\n");
-                //textArea.append(new String(data));
-            }
-
-        }//end newObjectReceived
-
-        @Override
-        public void errorOccured(String cause) {
-            handleError(cause);
-        }
-    }//end class DataHandlerPrint
     */
 }

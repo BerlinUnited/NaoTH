@@ -14,9 +14,9 @@
       <ToolBar prefHeight="40.0" prefWidth="200.0">
          <items>
             <ToggleButton fx:id="btnRefresh" mnemonicParsing="false" onAction="#updateRepresentations" text="Refresh" />
-            <ToggleButton fx:id="btnBinary" mnemonicParsing="false" text="Binary" />
+            <ToggleButton fx:id="btnBinary" mnemonicParsing="false" onAction="#retrieveBinary" text="Binary" />
             <ToggleButton fx:id="btnLog" mnemonicParsing="false" text="Log" />
-            <ChoiceBox fx:id="type" prefWidth="150.0" onAction="#typeChanged" />
+            <ChoiceBox fx:id="type" onAction="#typeChanged" prefWidth="150.0" />
          </items>
       </ToolBar>
       <SplitPane fx:id="split" dividerPositions="0.2" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
