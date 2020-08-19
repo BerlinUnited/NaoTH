@@ -15,7 +15,7 @@
          <items>
             <ToggleButton fx:id="btnRefresh" mnemonicParsing="false" onAction="#updateRepresentations" text="Refresh" />
             <ToggleButton fx:id="btnBinary" mnemonicParsing="false" onAction="#retrieveBinary" text="Binary" />
-            <ToggleButton fx:id="btnLog" mnemonicParsing="false" text="Log" />
+            <ToggleButton fx:id="btnLog" mnemonicParsing="false" onAction="#fx_log" text="Log" />
             <ChoiceBox fx:id="type" onAction="#typeChanged" prefWidth="150.0" />
          </items>
       </ToolBar>
