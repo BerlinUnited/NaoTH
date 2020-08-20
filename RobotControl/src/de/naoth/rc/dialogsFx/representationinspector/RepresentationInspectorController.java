@@ -20,7 +20,12 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 
 /**
  * @author Philipp Strobel <philippstrobel@posteo.de>
@@ -38,6 +43,13 @@ public class RepresentationInspectorController
     @FXML ChoiceBox<Command> type;
     @FXML ListView<String> list;
     @FXML TextArea content;
+    @FXML TextField search;
+    
+    private int lastSearchPos = -1;
+    private final KeyCombination shortcutShowSearch = new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination shortcutHideSearch = new KeyCodeCombination(KeyCode.ESCAPE);
+    private final KeyCombination shortcutContSearchEnter = new KeyCodeCombination(KeyCode.ENTER);
+    private final KeyCombination shortcutContSearchF3 = new KeyCodeCombination(KeyCode.F3);
 
     private final RepresentationListListener representationsListListener = new RepresentationListListener();
     private final Command cmd_list_cognition = new ListCommand("Cognition", "Cognition:representation:list");
@@ -80,6 +92,8 @@ public class RepresentationInspectorController
         // handle list changes
         list.disableProperty().bind(btnRefresh.selectedProperty().or(btnLog.selectedProperty()).not());
         list.getSelectionModel().selectedItemProperty().addListener((o) -> { subscribeRepresentation(); });
+        // handle search input
+        search.textProperty().addListener((ob) -> { search(true); });
     }
 
     /**
@@ -140,9 +154,67 @@ public class RepresentationInspectorController
     private void fx_log() {
         if (btnLog.isSelected()) {
           log.addListener(dataHandlerLog);
+          dataHandlerLog.showFrame();
       } else {
           log.removeListener(dataHandlerLog);
       }
+    }
+    
+    /**
+     * Is called, if the key pressed event is triggered by the content text area.
+     * 
+     * @param k the key (event), which triggered the event
+     */
+    @FXML
+    private void fx_TextAreaShortcuts(KeyEvent k) {
+        if (shortcutShowSearch.match(k)) {
+            search.setVisible(true);
+            search.requestFocus();
+            search(true);
+        } else if(shortcutContSearchF3.match(k)) {
+            search(false);
+        }
+    }
+    
+    /**
+     * Is called, if the key pressed event is triggered by the search text field.
+     * 
+     * @param k the key (event), which triggered the event
+     */
+    @FXML
+    private void fx_SearchFieldShortcuts(KeyEvent k) {
+        if (shortcutHideSearch.match(k)) {
+            search.setVisible(false);
+            content.deselect();
+            content.requestFocus();
+        } else if (shortcutContSearchEnter.match(k) || shortcutContSearchF3.match(k)) {
+            search(false);
+        }
+    }
+    
+    /**
+     * Searches the content for the search string.
+     * 
+     * @param begin true, if the search should start from the beginning, false otherwise
+     */
+    private void search(boolean begin) {
+        String text = search.getText();
+        if (text != null && !text.isEmpty()){
+            int found = content.getText().indexOf(text);
+            int foundNext = content.getText().indexOf(text, lastSearchPos);
+            // is there any occurence?
+            if (found != -1) {
+                if (!begin && foundNext != -1) {
+                    // select the next, if there's one
+                    content.selectRange(foundNext, foundNext + text.length());
+                    lastSearchPos = foundNext + text.length();
+                } else {
+                    // otherwise select the first occurence
+                    content.selectRange(found, found + text.length());
+                    lastSearchPos = found + text.length();
+                }
+            }
+        }
     }
     
     /**
@@ -206,18 +278,29 @@ public class RepresentationInspectorController
             list.getSelectionModel().select(selected);
             list.scrollTo(selected);
         });
-        
     }
     
     /**
-     * Updates the content view with the given text.
+     * Updates the content view with the given text and restores the highlighted
+     * search text.
      * 
      * @param text  the new text to show
      */
     private void updateContent(String text) {
         Platform.runLater(() -> {
+            // remember selection/search before replace text
+            String selection = content.getSelectedText();
+            if (!selection.isEmpty()) {
+                lastSearchPos = lastSearchPos - selection.length();
+            }
+            
             // NOTE: content.setText() changes the scrolbar position
             content.replaceText(0, content.getText().length(), text);
+            
+            // re-select/search text in the new/replaced text
+            if (!selection.isEmpty()) {
+                search(false);
+            }
         });
     }
 
