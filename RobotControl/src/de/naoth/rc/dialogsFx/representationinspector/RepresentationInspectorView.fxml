@@ -24,7 +24,7 @@
       </ToolBar>
       <SplitPane fx:id="split" dividerPositions="0.2" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
          <items>
-            <ListView fx:id="list" prefHeight="200.0" prefWidth="200.0" />
+            <ListView fx:id="list" onKeyPressed="#fxListSearch" prefHeight="200.0" prefWidth="200.0" />
             <StackPane prefHeight="150.0" prefWidth="200.0">
                <children>
                   <TextArea fx:id="content" editable="false" onKeyPressed="#fxTextAreaShortcuts">

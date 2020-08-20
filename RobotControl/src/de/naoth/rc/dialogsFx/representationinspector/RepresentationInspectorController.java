@@ -50,6 +50,9 @@ public class RepresentationInspectorController
     private final KeyCombination shortcutHideSearch = new KeyCodeCombination(KeyCode.ESCAPE);
     private final KeyCombination shortcutContSearchEnter = new KeyCodeCombination(KeyCode.ENTER);
     private final KeyCombination shortcutContSearchF3 = new KeyCodeCombination(KeyCode.F3);
+    
+    private long listSearchTimeout = 0;
+    private String listSearchString = "";
 
     private final RepresentationListListener representationsListListener = new RepresentationListListener();
     private final Command cmd_list_cognition = new ListCommand("Cognition", "Cognition:representation:list");
@@ -158,6 +161,33 @@ public class RepresentationInspectorController
       } else {
           log.removeListener(dataHandlerLog);
       }
+    }
+    
+    /**
+     * Is called, if the key pressed event is triggered by the list view.
+     * 
+     * @param k the key (event), which triggered the event
+     */
+    @FXML
+    private void fxListSearch(KeyEvent k) {
+        // check if we got a printable character
+        if (k.getText() != null && !k.getText().isEmpty()) {
+            // "fast" typing is one search string; a pause results in a new search
+            if (System.currentTimeMillis() - listSearchTimeout < 1000) {
+                listSearchString += k.getText().toLowerCase();
+            } else {
+                listSearchString = k.getText().toLowerCase();
+            }
+            listSearchTimeout = System.currentTimeMillis();
+            // search for the typed string and select/scroll to the respective item
+            for (String item : list.getItems()) {
+                if (item.toLowerCase().startsWith(listSearchString)) {
+                    list.getSelectionModel().select(item);
+                    list.scrollTo(item);
+                    break;
+                }
+            }
+        }
     }
     
     /**
