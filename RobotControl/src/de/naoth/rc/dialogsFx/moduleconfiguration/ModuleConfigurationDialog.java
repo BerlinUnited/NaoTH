@@ -16,7 +16,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  */
 public class ModuleConfigurationDialog extends AbstractJFXDialog
 {
-@RCDialog(category = RCDialog.Category.Status, name = "Representations (FX)")
+@RCDialog(category = RCDialog.Category.Status, name = "Modules (FX)")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<ModuleConfigurationDialog> {
         @InjectPlugin
@@ -27,7 +27,7 @@ public class ModuleConfigurationDialog extends AbstractJFXDialog
         public static LogFileEventManager logFileEventManager;
         
         @Override
-        public String getDisplayName() { return "Representations (FX)"; }
+        public String getDisplayName() { return "ModuleConfiguration (FX)"; }
     }
     
     /**
@@ -36,7 +36,7 @@ public class ModuleConfigurationDialog extends AbstractJFXDialog
      */
     @Override
     public URL getFXMLRessource() {
-        return getClass().getResource("RepresentationInspectorView.fxml");
+        return getClass().getResource("ModuleConfigurationView.fxml");
     }
 
     /**
