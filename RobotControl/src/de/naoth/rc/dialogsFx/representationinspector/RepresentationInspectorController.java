@@ -119,7 +119,7 @@ public class RepresentationInspectorController
      * Retrieves a list of the available representations.
      */
     @FXML
-    private void fx_refresh() {
+    private void fxRefresh() {
         if (btnRefresh.isSelected()) {
             retrieveRepresentations();
         } else {
@@ -132,7 +132,7 @@ public class RepresentationInspectorController
      * Based on the selected item a list of the available representations is retrieved.
      */
     @FXML
-    private void fx_type() {
+    private void fxType() {
         unsubscribeRepresentation();
         retrieveRepresentations();
     }
@@ -142,7 +142,7 @@ public class RepresentationInspectorController
      * Subscribes to a selected representation in binary mode.
      */
     @FXML
-    private void fx_binary() {
+    private void fxBinary() {
         subscribeRepresentation();
     }
     
@@ -151,7 +151,7 @@ public class RepresentationInspectorController
      * Subscribes to the log frame listener.
      */
     @FXML
-    private void fx_log() {
+    private void fxLog() {
         if (btnLog.isSelected()) {
           log.addListener(dataHandlerLog);
           dataHandlerLog.showFrame();
@@ -166,7 +166,7 @@ public class RepresentationInspectorController
      * @param k the key (event), which triggered the event
      */
     @FXML
-    private void fx_TextAreaShortcuts(KeyEvent k) {
+    private void fxTextAreaShortcuts(KeyEvent k) {
         if (shortcutShowSearch.match(k)) {
             search.setVisible(true);
             search.requestFocus();
@@ -182,7 +182,7 @@ public class RepresentationInspectorController
      * @param k the key (event), which triggered the event
      */
     @FXML
-    private void fx_SearchFieldShortcuts(KeyEvent k) {
+    private void fxSearchFieldShortcuts(KeyEvent k) {
         if (shortcutHideSearch.match(k)) {
             search.setVisible(false);
             content.deselect();

@@ -16,10 +16,10 @@
    <children>
       <ToolBar prefHeight="40.0" prefWidth="200.0">
          <items>
-            <ToggleButton fx:id="btnRefresh" mnemonicParsing="false" onAction="#fx_refresh" text="Refresh" />
-            <ToggleButton fx:id="btnBinary" mnemonicParsing="false" onAction="#fx_binary" text="Binary" />
-            <ToggleButton fx:id="btnLog" mnemonicParsing="false" onAction="#fx_log" text="Log" />
-            <ChoiceBox fx:id="type" onAction="#fx_type" prefWidth="150.0" />
+            <ToggleButton fx:id="btnRefresh" mnemonicParsing="false" onAction="#fxRefresh" text="Refresh" />
+            <ToggleButton fx:id="btnBinary" mnemonicParsing="false" onAction="#fxBinary" text="Binary" />
+            <ToggleButton fx:id="btnLog" mnemonicParsing="false" onAction="#fxLog" text="Log" />
+            <ChoiceBox fx:id="type" onAction="#fxType" prefWidth="150.0" />
          </items>
       </ToolBar>
       <SplitPane fx:id="split" dividerPositions="0.2" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
@@ -27,12 +27,12 @@
             <ListView fx:id="list" prefHeight="200.0" prefWidth="200.0" />
             <StackPane prefHeight="150.0" prefWidth="200.0">
                <children>
-                  <TextArea fx:id="content" editable="false" onKeyPressed="#fx_TextAreaShortcuts">
+                  <TextArea fx:id="content" editable="false" onKeyPressed="#fxTextAreaShortcuts">
                      <font>
                         <Font name="Monospaced Regular" size="12.0" />
                      </font>
                   </TextArea>
-                  <TextField fx:id="search" maxWidth="150.0" onKeyPressed="#fx_SearchFieldShortcuts" promptText="Search" visible="false" StackPane.alignment="BOTTOM_RIGHT">
+                  <TextField fx:id="search" maxWidth="150.0" onKeyPressed="#fxSearchFieldShortcuts" promptText="Search" visible="false" StackPane.alignment="BOTTOM_RIGHT">
                      <StackPane.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </StackPane.margin>
