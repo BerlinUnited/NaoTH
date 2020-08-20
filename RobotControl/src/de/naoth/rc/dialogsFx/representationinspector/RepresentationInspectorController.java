@@ -76,6 +76,9 @@ public class RepresentationInspectorController
         setRobotControl(control);
     }
     
+    /**
+     * Gets called, after the FXML file was loaded.
+     */
     @FXML
     private void initialize()
     {
@@ -107,12 +110,20 @@ public class RepresentationInspectorController
         this.control = control;
     }
     
-    // TODO
+    /**
+     * Sets the log event manager.
+     * 
+     * @param manager the (global) log event manager
+     */
     public void setLogFileEventManager(LogFileEventManager manager) {
         this.log = manager;
     }
 
-    // TODO
+    /**
+     * Sets the manager for subscribing to representations.
+     * 
+     * @param factory the subscriber manager
+     */
     public void setGenericManagerFactory(GenericManagerFactory factory) {
         this.factory = factory;
     }
@@ -444,13 +455,14 @@ public class RepresentationInspectorController
         }
 
         public void showFrame() {
-            // TODO: remove the "Top" from the name!?
             String selected = list.getSelectionModel().getSelectedItem();
             if(selected != null) {
-                if(MessageRegistry.has(selected)) {
+                // EVIL HACK: remove suffix "Top"
+                String representation = selected.endsWith("Top") ? selected.substring(0, selected.length()-3) : selected;
+                if(MessageRegistry.has(representation)) {
                     if(dataByName.containsKey(selected)) {
                         try {
-                            updateContent(MessageRegistry.parse(selected, dataByName.get(selected)).toString());
+                            updateContent(MessageRegistry.parse(representation, dataByName.get(selected)).toString());
                         } catch (InvalidProtocolBufferException ex) {
                             updateContent("Error while parsing.");
                         }
