@@ -12,23 +12,23 @@ using namespace naoth;
 
 /*
  * Visualization of used Coordinate-Frames and their relation:
- *
- *            |        ↑y-cam                   Legend:
- *     x-idx→ 0 1 2 3 4│5 6 7 8 9                 ?-cip: Continuous Image Plane
- *     y-idx↓┌|────────┼─────────┐                ?-idx: Image Pixel Index
- *        --0-☐-☐-☐-☐-☐-☐-☐-☐-☐-☐-->x-cip                (sometimes also named
- *           │|        │         │                        Discrete Image Plane)
- *          1│☐ ☐ ☐ ☐ ☐│☐ ☐ ☐ ☐ ☐│                ?-cam: Camera Frame Axis
- *           │|        │         │
- *          2│☐ ☐ ☐ ☐ ☐│☐ ☐ ☐ ☐ ☐│              Note:
- *         ──┼|────────┼─────────┼───>x-cam       - origin of CIP coincides with
- *          3│☐ ☐ ☐ ☐ ☐│☐ ☐ ☐ ☐ ☐│                  the center of pixel (0, 0)
- *           │|        │         │
- *          4│☐ ☐ ☐ ☐ ☐│☐ ☐ ☐ ☐ ☐←pixel
- *           │|        │         │
- *          5│☐ ☐ ☐ ☐ ☐│☐ ☐ ☐ ☐ ☐│←image plane
- *           └|────────┼─────────┘
- *            ↓
+ *                     y-cam
+ *            |        |                        Legend:
+ *     x-idx->0 1 2 3 4|5 6 7 8 9                 ?-cip: Continuous Image Plane
+ *           -|--------|----------                ?-idx: Image Pixel Index
+ *        --0|¤-¤-¤-¤-¤-¤-¤-¤-¤-¤|->x-cip                (sometimes also named
+ *           ||        |         |                        Discrete Image Plane)
+ *   y-idx->1|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤|                ?-cam: Camera Frame Axis
+ *           ||        |         |
+ *          2|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤|              Note:
+ *         --||--------|---------|--->x-cam       - origin of CIP coincides with
+ *          3|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤|                  the center of pixel (0, 0)
+ *           ||        |         |
+ *          4|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤<-pixel
+ *           ||        |         |
+ *          5|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤|<-image plane
+ *           -|--------|----------
+ *            |        |
  *            y-cip
  */
 
