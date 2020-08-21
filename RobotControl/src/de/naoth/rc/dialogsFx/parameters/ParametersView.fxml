@@ -23,7 +23,7 @@
           <Button mnemonicParsing="false" onAction="#fxUpdateParams" text="Update" />
             <SplitMenuButton mnemonicParsing="false" onAction="#fxExport" text="Export">
               <items>
-                <MenuItem mnemonicParsing="false" text="Export all" />
+                <MenuItem mnemonicParsing="false" onAction="#fxExportAll" text="Export all" />
               </items>
                <tooltip>
                   <Tooltip text="Export parameter to file" />

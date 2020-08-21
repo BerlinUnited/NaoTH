@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TreeItem;
@@ -29,6 +30,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
@@ -172,6 +174,49 @@ public class ParametersController
     }
     
     /**
+     * Is called, when the export all menu item is pressed.
+     */
+    @FXML
+    private void fxExportAll() {
+        // make sure, we're connected!
+        if (control != null && control.checkConnected()) {
+            // update ui after connecting ...
+            fxUpdateParams();
+            // configure filechooser ...
+            DirectoryChooser directoryChooser = new DirectoryChooser();
+            directoryChooser.setTitle("Save configuration (All)");
+            // show save dialog
+            File directory = directoryChooser.showDialog(params.getScene().getWindow());
+            if(directory != null)
+            {
+                if(AlertDialog.showConfirmation("Overwrite Files?", "Any existing file will be overwritten!\nProceed?") == ButtonType.OK)
+                {
+                    try {
+                        // trigger exception (if couldn't write)
+                        File.createTempFile("tmp_"+Math.random(), ".tmp", directory).delete();
+                        
+                        // iterate over all listed parameter configurations
+                        params.getRoot().getChildren().forEach((p) -> {
+                            p.getChildren().forEach((i) -> {
+                                ParameterResponseWriter h = new ParameterResponseWriter(
+                                        i.getValue(),
+                                        new File(directory.getPath()+File.separator+p.getValue()+"_"+i.getValue()+".cfg")
+                                );
+                                retrieveValues(p.getValue(), i.getValue(), h);
+                            });
+                        });
+                        
+                        AlertDialog.showInfo("All parameters saved", "All parameters should be saved in the directory:\n" + directory.getAbsolutePath());
+                    } catch (IOException ex) {
+                        Logger.getLogger(ParametersController.class.getName()).log(Level.SEVERE, null, ex);
+                        AlertDialog.showError("Not writeable", "Selected directory is not writeable!");
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
      * Writes the given parameter configuration to the specified file.
      * @param p the parameter configuration
      * @param f the output file
@@ -252,15 +297,24 @@ public class ParametersController
     }
     
     /**
-     * Schedules the command for retrieving the parameters of a parameter group.
+     * Checks, if a parameter group is selected and schedules a command.
      */
     private void retrieveValues() {
         TreeItem<String> selected = params.getSelectionModel().getSelectedItem();
         // check if we got a valid selection; ignore Cognition/Motion entries, which doesn't have a "valid" parent
-        if (selected != null && selected.getParent().getValue() != null && control != null && control.checkConnected()) {
+        if (selected != null && selected.getParent().getValue() != null) {
+            retrieveValues(selected.getParent().getValue(), selected.getValue(), responseHandler);
+        }
+    }
+    
+    /**
+     * Schedules the command for retrieving the parameters of a parameter group.
+     */
+    private void retrieveValues(String type, String name, ResponseListener handler) {
+        if (control != null && control.checkConnected()) {
             control.getMessageServer().executeCommand(
-                    responseHandler, 
-                    new Command(selected.getParent().getValue() + ":ParameterList:get").addArg("<name>", selected.getValue())
+                    handler, 
+                    new Command(type + ":ParameterList:get").addArg("<name>", name)
             );
         }
     }
@@ -346,6 +400,37 @@ public class ParametersController
             values.clear();
             values.setPromptText("Got error response: " + code);
             values.setEditable(false);
+        }
+    }
+    
+    /**
+     * The response handler class for writing the parameter values to the given file.
+     */
+    class ParameterResponseWriter implements ResponseListener {
+
+        private final String param;
+        private final File f;
+
+        public ParameterResponseWriter(String param, File f) {
+            this.param = param;
+            this.f = f;
+        }
+
+        @Override
+        public void handleResponse(byte[] result, Command command) {
+            try {
+                BufferedWriter bf = new BufferedWriter(new FileWriter(f));
+                bf.write("[" + param + "]\n");
+                bf.write(new String(result));
+                bf.close();
+            } catch (IOException ex) {
+                Logger.getLogger(ParametersController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        @Override
+        public void handleError(int code) {
+            Logger.getLogger(ParametersController.class.getName()).log(Level.SEVERE, null, code);
         }
     }
 }
