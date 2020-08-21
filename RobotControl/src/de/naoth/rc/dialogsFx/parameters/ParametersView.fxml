@@ -21,7 +21,7 @@
       <ToolBar prefHeight="40.0" prefWidth="200.0">
         <items>
           <Button mnemonicParsing="false" onAction="#fxUpdateParams" text="Update" />
-            <SplitMenuButton mnemonicParsing="false" text="Export">
+            <SplitMenuButton mnemonicParsing="false" onAction="#fxExport" text="Export">
               <items>
                 <MenuItem mnemonicParsing="false" text="Export all" />
               </items>

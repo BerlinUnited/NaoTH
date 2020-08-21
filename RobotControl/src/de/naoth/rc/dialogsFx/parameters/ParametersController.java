@@ -1,13 +1,20 @@
 package de.naoth.rc.dialogsFx.parameters;
 
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.componentsFx.AlertDialog;
 import de.naoth.rc.core.server.Command;
 import de.naoth.rc.core.server.ResponseListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javafx.animation.FadeTransition;
@@ -22,6 +29,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
 /**
@@ -48,6 +56,9 @@ public class ParametersController
     private final ParameterResponseHandler responseHandler = new ParameterResponseHandler();
     
     private final FadeTransition fadeIn = new FadeTransition(Duration.millis(2000));
+    
+    final private String parameterSavePathKey = "parameter_save_path";
+    final private String defaultConfigPath = "../../NaoTHSoccer/Config/scheme";
     
     /**
      * Default constructor for the FXML loader.
@@ -119,6 +130,65 @@ public class ParametersController
                 retrieveValues();
             }
         }
+    }
+    
+    /**
+     * Is called, when the export button is pressed.
+     */
+    @FXML
+    private void fxExport() {
+        TreeItem<String> selected = params.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            AlertDialog.showError("Error", "You have to choose a parameter configuration!");
+        } else {
+            String parameterPath = control.getConfig().getProperty(parameterSavePathKey, defaultConfigPath);
+            // configure the filechooser ...
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save configuration ("+selected.getValue()+")");
+            fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Config files (*.cfg)", "*.cfg"));
+            fileChooser.setInitialDirectory(new File(parameterPath));
+            fileChooser.setInitialFileName(selected.getValue() + ".cfg");
+            
+            File selectedFile = fileChooser.showSaveDialog(params.getScene().getWindow());
+            if(selectedFile != null) {
+                // if selected file has a file extension - use this, otherwise append ".cfg" to the filename
+                File f = (selectedFile.getName().lastIndexOf(".") == -1) ? new File(selectedFile+".cfg") : selectedFile;
+
+                try {
+                    new FileWriter(f).close(); // trigger exception (if couldn't write)
+
+                    // create file and write parameter configuration to this file
+                    writeParameterConfig(selected.getValue(), f);
+                } catch (IOException ex) {
+                    Logger.getLogger(ParametersController.class.getName()).log(Level.SEVERE, null, ex);
+                    AlertDialog.showError("Not writeable", "Selected file is not writeable!");
+                }
+                
+                // save the path for later
+                control.getConfig().setProperty(parameterSavePathKey, selectedFile.getParent());
+            }
+        }
+    }
+    
+    /**
+     * Writes the given parameter configuration to the specified file.
+     * @param p the parameter configuration
+     * @param f the output file
+     * @return true, if writing was successfull
+     */
+    private boolean writeParameterConfig(String name, File f) {
+        try {
+            BufferedWriter bf = new BufferedWriter(new FileWriter(f));
+            bf.write("["+name+"]\n");
+            for (Map.Entry<String, String> e : parseText().entrySet()) {
+                bf.write(e.getKey() + "=" + e.getValue() + "\n");
+            }
+            bf.close();
+            return true;
+        } catch (IOException ex) {
+            Logger.getLogger(ParametersController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
     }
     
     /**
