@@ -46,9 +46,12 @@ public class ModuleConfigurationController implements ResponseListener
     private void initialize() 
     {
         // setup ui
+        /*
+        // TODO: need the TreeNode implementation from the DebugRequest branch
         moduleTree.setCellFactory((p) -> new TreeNodeCell<>());
         moduleTree.setRoot(new TreeNodeItem<>());
         moduleTree.getRoot().setExpanded(true);
+        */
     }
     
     /**

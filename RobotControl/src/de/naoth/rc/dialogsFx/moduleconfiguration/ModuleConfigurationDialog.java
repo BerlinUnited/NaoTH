@@ -16,7 +16,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  */
 public class ModuleConfigurationDialog extends AbstractJFXDialog
 {
-@RCDialog(category = RCDialog.Category.Status, name = "Modules (FX)")
+@RCDialog(category = RCDialog.Category.Configure, name = "Modules (FX)")
     @PluginImplementation
     public static class Plugin extends DialogPlugin<ModuleConfigurationDialog> {
         @InjectPlugin
@@ -44,5 +44,7 @@ public class ModuleConfigurationDialog extends AbstractJFXDialog
      */
     @Override
     public void afterInit() {
+        // set the global robot control instance to the view controller
+        ((ModuleConfigurationController)getController()).setRobotControl(Plugin.parent);
     }
 }

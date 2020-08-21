@@ -1,28 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.VBox?>
 
-
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="327.0" prefWidth="508.0" xmlns="http://javafx.com/javafx/8.0.202-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.naoth.rc.dialogsFx.moduleconfiguration.ModuleConfigurationDialog">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="327.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8.0.202-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.naoth.rc.dialogsFx.moduleconfiguration.ModuleConfigurationController">
    <children>
       <ToolBar prefHeight="40.0" prefWidth="200.0">
          <items>
-            <Button fx:id="btnUpdate" mnemonicParsing="false" styleClass="refresh_button" text="Update">
+            <Button fx:id="btnUpdate" mnemonicParsing="false" onAction="#updateModules" styleClass="refresh_button" text="Update">
                <tooltip>
-                  <Tooltip text="Update debug requests." />
+                  <Tooltip text="Update modules" />
                </tooltip>
             </Button>
+            <Button mnemonicParsing="false" text="Export">
+               <tooltip>
+                  <Tooltip text="Save the module configuration locally" />
+               </tooltip>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#saveModules" text="Save">
+               <tooltip>
+                  <Tooltip text="Save the module configuration on the robot" />
+               </tooltip>
+            </Button>
+            <ChoiceBox prefWidth="150.0" />
+            <ComboBox prefWidth="150.0" />
+            <ComboBox prefWidth="150.0" />
          </items>
       </ToolBar>
       <SplitPane dividerPositions="0.8" prefHeight="160.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
         <items>
             <VBox prefHeight="200.0" prefWidth="100.0" />
-            <TreeView fx:id="moduleTree" editable="true" prefWidth="200.0" showRoot="false" />
+            <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
+              <items>
+                  <TreeView fx:id="moduleTree" editable="true" prefWidth="200.0" showRoot="false" />
+                  <ListView fx:id="infoList" prefHeight="200.0" prefWidth="200.0" />
+              </items>
+            </SplitPane>
         </items>
       </SplitPane>
    </children>
