@@ -57,10 +57,10 @@ public class ParametersController
     private static final Pattern KEY_VALUE_PATTERN = Pattern.compile("^(?<key>.+)=(?<value>.*)$", Pattern.MULTILINE);
     private final ParameterResponseHandler responseHandler = new ParameterResponseHandler();
     
-    private final FadeTransition fadeIn = new FadeTransition(Duration.millis(2000));
+    private final FadeTransition fadeOut = new FadeTransition(Duration.millis(2000));
     
     final private String parameterSavePathKey = "parameter_save_path";
-    final private String defaultConfigPath = "../../NaoTHSoccer/Config/scheme";
+    final private String defaultConfigPath = "../NaoTHSoccer/Config/scheme";
     
     /**
      * Default constructor for the FXML loader.
@@ -83,12 +83,12 @@ public class ParametersController
         params.setRoot(new TreeItem<>());
         params.getRoot().setExpanded(true);
         params.getSelectionModel().selectedItemProperty().addListener((o) -> { retrieveValues(); });
-        // set some options to the fade animation
-        fadeIn.setNode(notice);
-        fadeIn.setFromValue(1.0);
-        fadeIn.setToValue(0.0);
-        fadeIn.setCycleCount(1);
-        fadeIn.setAutoReverse(false);
+        // set the options for the fade-out animation
+        fadeOut.setNode(notice);
+        fadeOut.setFromValue(1.0);
+        fadeOut.setToValue(0.0);
+        fadeOut.setCycleCount(1);
+        fadeOut.setAutoReverse(false);
     }
     
     /**
@@ -344,7 +344,7 @@ public class ParametersController
             notice.setTextFill(Color.RED);
         }
         notice.setVisible(true);
-        fadeIn.playFromStart();
+        fadeOut.playFromStart();
         values.setEditable(true);
     }
     
