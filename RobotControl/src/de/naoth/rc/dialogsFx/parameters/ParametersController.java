@@ -138,7 +138,8 @@ public class ParametersController
     @FXML
     private void fxExport() {
         TreeItem<String> selected = params.getSelectionModel().getSelectedItem();
-        if (selected == null) {
+        // check if we got a valid selection; ignore Cognition/Motion entries, which doesn't have a "valid" parent
+        if (selected == null || selected.getParent().getValue() == null) {
             AlertDialog.showError("Error", "You have to choose a parameter configuration!");
         } else {
             String parameterPath = control.getConfig().getProperty(parameterSavePathKey, defaultConfigPath);
@@ -255,7 +256,8 @@ public class ParametersController
      */
     private void retrieveValues() {
         TreeItem<String> selected = params.getSelectionModel().getSelectedItem();
-        if (selected != null && control != null && control.checkConnected()) {
+        // check if we got a valid selection; ignore Cognition/Motion entries, which doesn't have a "valid" parent
+        if (selected != null && selected.getParent().getValue() != null && control != null && control.checkConnected()) {
             control.getMessageServer().executeCommand(
                     responseHandler, 
                     new Command(selected.getParent().getValue() + ":ParameterList:get").addArg("<name>", selected.getValue())
