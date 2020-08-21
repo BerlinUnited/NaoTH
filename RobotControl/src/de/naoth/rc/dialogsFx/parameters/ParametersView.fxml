@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SplitMenuButton?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.202-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.naoth.rc.dialogsFx.parameters.ParametersController">
+   <children>
+      <ToolBar prefHeight="40.0" prefWidth="200.0">
+        <items>
+          <Button mnemonicParsing="false" onAction="#fxUpdateParams" text="Update" />
+            <SplitMenuButton mnemonicParsing="false" text="Export">
+              <items>
+                <MenuItem mnemonicParsing="false" text="Export all" />
+              </items>
+               <tooltip>
+                  <Tooltip text="Export parameter to file" />
+               </tooltip>
+            </SplitMenuButton>
+            <Pane opacity="0.0" HBox.hgrow="ALWAYS" />
+            <Label contentDisplay="TEXT_ONLY" text="Scheme:" textOverrun="LEADING_ELLIPSIS" />
+            <Label fx:id="scheme" text="-">
+               <padding>
+                  <Insets right="5.0" />
+               </padding></Label>
+        </items>
+      </ToolBar>
+      <SplitPane dividerPositions="0.29797979797979796" prefHeight="160.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+        <items>
+            <TreeView fx:id="params" prefHeight="200.0" prefWidth="200.0" showRoot="false" />
+            <StackPane prefHeight="150.0" prefWidth="200.0">
+               <children>
+                  <TextArea fx:id="values" onKeyPressed="#fxValuesShortcuts" prefHeight="200.0" prefWidth="200.0" />
+                  <Label fx:id="notice" focusTraversable="false" style="-fx-background-color: transparent;" text="Saved" textFill="#13ae18" visible="false" StackPane.alignment="TOP_RIGHT">
+                     <StackPane.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </StackPane.margin>
+                     <font>
+                        <Font name="System Bold" size="15.0" />
+                     </font>
+                  </Label>
+               </children>
+            </StackPane>
+        </items>
+      </SplitPane>
+   </children>
+</VBox>
