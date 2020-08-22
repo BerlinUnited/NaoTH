@@ -11,11 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
-import javafx.beans.property.MapProperty;
 import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleMapProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -76,9 +75,9 @@ public class ModuleConfigurationController implements ResponseListener
         btnSave.disableProperty().bind(moduleList.emptyProperty());
         btnExport.disableProperty().bind(moduleList.emptyProperty());
         
-        module.setItems(moduleList);
+        module.setItems(moduleList.sorted());
         module.disableProperty().bind(moduleList.emptyProperty());
-        representation.setItems(representationList);
+        representation.setItems(representationList.sorted());
         representation.disableProperty().bind(representationList.emptyProperty());
     }
     
@@ -133,7 +132,7 @@ public class ModuleConfigurationController implements ResponseListener
         try {
             // temp. reference LUT
             final Map<String, Module> ml = new HashMap<>();
-            final Map<String, Representation> rl = new HashMap<>();
+            final Map<String, Representation> rl = representationList.stream().collect(Collectors.toMap(Representation::getName, rep -> rep));
             
             Messages.ModuleList list = Messages.ModuleList.parseFrom(result);
             list.getModulesList().forEach((m) -> {
@@ -168,8 +167,9 @@ public class ModuleConfigurationController implements ResponseListener
                 }
             });
             
-            // finally update the lists
+            // finally update the list
             moduleList.addAll(ml.values());
+            representationList.clear(); // TODO: is there a better way to prevent adding the same rep. twice?
             representationList.addAll(rl.values());
             
             // TODO:
@@ -179,16 +179,16 @@ public class ModuleConfigurationController implements ResponseListener
         }
     }
     
-    class Module
+    class Module implements Comparable<Module>
     {
-        String type;
-        String name;
-        String path;
+        private final String type;
+        private final String name;
+        private final String path;
         
-        boolean active = false;
+        private boolean active = false;
         
-        List<Representation> require = new ArrayList<>();
-        List<Representation> provide = new ArrayList<>();
+        private final List<Representation> require = new ArrayList<>();
+        private final List<Representation> provide = new ArrayList<>();
 
         public Module(String type, String name, String path, boolean active) {
             this.type = type;
@@ -209,14 +209,23 @@ public class ModuleConfigurationController implements ResponseListener
         public void addProvide(Representation r) {
             provide.add(r);
         }
+
+        @Override
+        public int compareTo(Module o) {
+            return name.compareToIgnoreCase(o.name);
+        }
+
+        public String getName() {
+            return name;
+        }
     }
     
-    class Representation
+    class Representation implements Comparable<Representation>
     {
-        String name;
+        private final String name;
 
-        List<Module> required = new ArrayList<>();
-        List<Module> provided = new ArrayList<>();
+        private final List<Module> required = new ArrayList<>();
+        private final List<Module> provided = new ArrayList<>();
         
         public Representation(String name) {
             this.name = name;
@@ -233,6 +242,15 @@ public class ModuleConfigurationController implements ResponseListener
         
         public void addRequirer(Module m) {
             required.add(m);
+        }
+
+        @Override
+        public int compareTo(Representation o) {
+            return name.compareToIgnoreCase(o.name);
+        }
+        
+        public String getName() {
+            return name;
         }
     }
 }
