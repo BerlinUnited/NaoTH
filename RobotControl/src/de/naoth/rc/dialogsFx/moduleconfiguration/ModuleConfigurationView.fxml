@@ -21,7 +21,7 @@
    <children>
       <ToolBar prefHeight="40.0" prefWidth="200.0">
          <items>
-            <Button fx:id="btnUpdate" mnemonicParsing="false" onAction="#updateModules" styleClass="refresh_button" text="Update">
+            <Button fx:id="btnUpdate" mnemonicParsing="false" onAction="#updateModules" styleClass="update" text="Update">
                <tooltip>
                   <Tooltip text="Update modules" />
                </tooltip>
@@ -31,12 +31,12 @@
                   <Insets left="3.0" />
                </padding>
             </Separator>
-            <Button fx:id="btnSave" disable="true" mnemonicParsing="false" onAction="#saveModules" text="Save">
+            <Button fx:id="btnSave" disable="true" graphicTextGap="0.0" mnemonicParsing="false" onAction="#saveModules" styleClass="save" text="Save">
                <tooltip>
                   <Tooltip text="Save the module configuration on the robot" />
                </tooltip>
             </Button>
-            <Button fx:id="btnExport" disable="true" mnemonicParsing="false" text="Export">
+            <Button fx:id="btnExport" disable="true" mnemonicParsing="false" styleClass="export" text="Export">
                <tooltip>
                   <Tooltip text="Save the module configuration locally" />
                </tooltip>
