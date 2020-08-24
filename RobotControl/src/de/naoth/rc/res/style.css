@@ -1,0 +1,20 @@
+.inactive {
+    -fx-text-fill: grey;
+}
+
+Button.module {
+    -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, rgb(160, 160, 255);
+}
+
+Button.module:hover {
+    -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, rgb(160, 160, 255, 0.5);
+}
+
+Button.representation {
+    -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, rgb(255, 192, 128);
+}
+
+Button.representation:hover {
+    -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, rgb(255, 192, 128, 0.5);
+}
+
