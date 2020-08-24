@@ -18,10 +18,13 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -42,8 +45,11 @@ public class ModuleConfigurationController implements ResponseListener
     /** The ui tree of the available debug requests */
     @FXML private Button btnSave;
     @FXML private Button btnExport;
+    @FXML private ToggleButton btnErrors;
+    @FXML private ToggleButton btnWarnings;
+    @FXML private ToggleButton btnInfos;
     @FXML private TreeView<String> moduleTree;
-    @FXML private ListView<String> infoList;
+    @FXML private ListView<Representation> infoList;
     @FXML private ComboBox<Module> module;
     @FXML private ComboBox<Representation> representation;
     @FXML private VBox dependencySelection;
@@ -97,6 +103,19 @@ public class ModuleConfigurationController implements ResponseListener
         // update the selection property based on the combobox selection
         module.getSelectionModel().selectedItemProperty().addListener((ob,o,n) -> { selection.set(n); });
         representation.getSelectionModel().selectedItemProperty().addListener((ob,o,n) -> { selection.set(n); });
+        
+        // show only a filtered & sorted version of the representations
+        FilteredList<Representation> filteredRepresentationList = new FilteredList<>(representationList, (r) -> showRepresentationInfo(r));
+        infoList.setItems(filteredRepresentationList.sorted((r1, r2) -> {
+            // sort by representation info first
+            return r1.getInfo() == r2.getInfo() ? r1.compareTo(r2) : r2.getInfo().compareTo(r1.getInfo());
+        }));
+        infoList.setCellFactory((f) -> new RepresentationListCell());
+        infoList.getSelectionModel().selectedItemProperty().addListener((ob, o, n) -> { selection.set(n); });
+        // HACK: force re-evaluation of the filtered list
+        btnErrors.setOnAction((e) -> { filteredRepresentationList.setPredicate((r) -> showRepresentationInfo(r)); });
+        btnWarnings.setOnAction((e) -> { filteredRepresentationList.setPredicate((r) -> showRepresentationInfo(r)); });
+        btnInfos.setOnAction((e) -> { filteredRepresentationList.setPredicate((r) -> showRepresentationInfo(r)); });
     }
     
     /**
@@ -219,6 +238,10 @@ public class ModuleConfigurationController implements ResponseListener
             if (representation.getValue() != selection.get()) {
                 representation.getSelectionModel().clearSelection();
             }
+            // clear the representation selection of the representation info list, if another module/representation is selected
+            if (infoList.getSelectionModel().getSelectedItem() != selection.get()) {
+                infoList.getSelectionModel().clearSelection();
+            }
         }
     }
     
@@ -242,13 +265,22 @@ public class ModuleConfigurationController implements ResponseListener
         return b;
     }
     
-    abstract class Type {
+    private boolean showRepresentationInfo(Representation r) {
+        return r.getInfo() == Representation.Info.ERROR && btnErrors.isSelected()
+            || r.getInfo() == Representation.Info.WARNING && btnWarnings.isSelected()
+            || r.getInfo() == Representation.Info.INFO && btnInfos.isSelected();
+    }
+    
+    /**
+     * Base class for module/representation
+     */
+    abstract static class Type {
         abstract public String getName();
         abstract public List<Type> getRequire();
         abstract public List<Type> getProvide();
     }
     
-    class Module extends Type implements Comparable<Module>
+    static class Module extends Type implements Comparable<Module>
     {
         private final String type;
         private final String name;
@@ -304,8 +336,15 @@ public class ModuleConfigurationController implements ResponseListener
         }
     }
     
-    class Representation extends Type implements Comparable<Representation>
+    static class Representation extends Type implements Comparable<Representation>
     {
+        public static enum Info {
+            EMPTY,   // not provided and not required
+            INFO,    //     provided and     required
+            WARNING, //     provided but not required
+            ERROR    // not provided but     required
+        }
+
         private final String name;
 
         private final List<Type> required = new ArrayList<>();
@@ -346,6 +385,59 @@ public class ModuleConfigurationController implements ResponseListener
         @Override
         public List<Type> getProvide() {
             return provided;
+        }
+        
+        public Info getInfo() {
+            // check if there's an active providing/requiring module
+            boolean isProvided = provided.stream().anyMatch((m) -> ((Module)m).isActive());
+            boolean isRequired = required.stream().anyMatch((m) -> ((Module)m).isActive());
+            
+            if (provided.isEmpty() && required.isEmpty()) {
+                return Info.EMPTY;   // not provided and not required
+            } else if(isProvided && !isRequired) {
+                return Info.WARNING; //     provided but not required
+            } else if(!isProvided && isRequired) {
+                return Info.ERROR;   // not provided but     required
+            }
+            
+            return Info.INFO;        //     provided and     required
+        }
+    }
+    
+    public class RepresentationListCell extends ListCell<Representation>
+    {
+        @Override
+        protected void updateItem(Representation item, boolean empty) {
+            super.updateItem(item, empty);
+            
+            if (item == null || empty) {
+                setGraphic(null);
+                setText(null);
+            } else {
+                switch (item.getInfo()) {
+                    case INFO:
+                        setText("NOTE: " + item + " is provided and required");
+                        getStyleClass().add("info");
+                        getStyleClass().removeAll("warning", "error");
+                        break;
+                    case WARNING:
+                        setText("WARNING: " + item + " is provided but not required (" + item.provided.size() + ")");
+                        getStyleClass().add("warning");
+                        getStyleClass().removeAll("info", "error");
+                        break;
+                    case ERROR:
+                        setText("ERROR: " + item + " is required but not provided (" + item.required.size() + ")");
+                        getStyleClass().add("error");
+                        getStyleClass().removeAll("info", "warning");
+                        break;
+                    case EMPTY:
+                        // NOTE: should never happen: not provided and not required
+                    default:
+                        setText(null);
+                        setGraphic(null);
+                        break;
+                }
+            }
         }
     }
 }

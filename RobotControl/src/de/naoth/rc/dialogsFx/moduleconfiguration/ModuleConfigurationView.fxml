@@ -7,9 +7,11 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
@@ -83,7 +85,35 @@
             <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
               <items>
                   <TreeView fx:id="moduleTree" editable="true" prefWidth="200.0" showRoot="false" />
-                  <ListView fx:id="infoList" prefHeight="200.0" prefWidth="200.0" />
+                  <BorderPane id="representation-list">
+                     <center>
+                        <ListView id="infoList" fx:id="infoList" prefHeight="200.0" prefWidth="200.0" />
+                     </center>
+                     <top>
+                        <ToolBar nodeOrientation="RIGHT_TO_LEFT" BorderPane.alignment="CENTER">
+                           <BorderPane.margin>
+                              <Insets right="5.0" />
+                           </BorderPane.margin>
+                           <items>
+                              <ToggleButton fx:id="btnInfos" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false" prefWidth="24.0" selected="true" styleClass="info" text="Notifications">
+                                 <tooltip>
+                                    <Tooltip text="Display Notifications" />
+                                 </tooltip>
+                              </ToggleButton>
+                              <ToggleButton fx:id="btnWarnings" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false" prefWidth="24.0" selected="true" styleClass="warning" text="Warnings">
+                                 <tooltip>
+                                    <Tooltip text="Display Warnings" />
+                                 </tooltip>
+                              </ToggleButton>
+                              <ToggleButton fx:id="btnErrors" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false" prefWidth="24.0" selected="true" styleClass="error" text="Errors">
+                                 <tooltip>
+                                    <Tooltip text="Display Errors" />
+                                 </tooltip>
+                              </ToggleButton>
+                           </items>
+                        </ToolBar>
+                     </top>
+                  </BorderPane>
               </items>
             </SplitPane>
         </items>

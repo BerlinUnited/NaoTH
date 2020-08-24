@@ -18,3 +18,59 @@ Button.representation:hover {
     -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, rgb(255, 192, 128, 0.5);
 }
 
+/*******************************************************************************
+ *                                                                             *
+ * Representation list of the ModuleConfiurationDialog                         *
+ *                                                                             *
+ ******************************************************************************/
+#representation-list ToggleButton {
+    /* same for all state icons (below) */
+    -fx-background-size: 20px 20px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+
+#representation-list ToggleButton.info {
+    -fx-background-image: url(info.png);
+}
+
+#representation-list ToggleButton.warning {
+    -fx-background-image: url(attention.png);
+}
+
+#representation-list ToggleButton.error {
+    -fx-background-image: url(stop.png);
+}
+
+#representation-list .list-cell.info {
+    -fx-background-color: white;
+}
+
+#representation-list .list-cell.info:odd {
+    -fx-background-color: derive(white, -5%);
+}
+
+#representation-list .list-cell.warning {
+    -fx-background-color: #ffffa0;
+}
+
+#representation-list .list-cell.warning:odd {
+    -fx-background-color: derive(#ffffa0, -5%);
+}
+
+#representation-list .list-cell.error {
+    -fx-background-color: #ffb4b4;
+}
+
+#representation-list .list-cell.error:odd {
+    -fx-background-color: derive(#ffb4b4, -5%);
+}
+
+#representation-list .list-cell.info:selected,
+#representation-list .list-cell.info:odd:selected,
+#representation-list .list-cell.warning:selected,
+#representation-list .list-cell.warning:odd:selected,
+#representation-list .list-cell.error:selected,
+#representation-list .list-cell.error:odd:selected {
+    -fx-background-color: -fx-selection-bar;
+}
