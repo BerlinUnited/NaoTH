@@ -46,6 +46,7 @@ public class ModuleConfigurationController implements ResponseListener
     /** The controlling instance representing the connection to the robot. */
     private RobotControl control;
     
+    /** The commands used in this dialog */
     private final Command cmd_modules_cognition = new Command("Cognition:modules:list");
     private final Command cmd_modules_cognition_store = new Command("Cognition:modules:store");
     private final Command cmd_modules_motion = new Command("Motion:modules:list");
@@ -65,13 +66,16 @@ public class ModuleConfigurationController implements ResponseListener
     @FXML private VBox dependencyRequire;
     @FXML private VBox dependencyProvide;
     
+    /** Shortcuts definitions */
     private final KeyCombination shortcutSave = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN);
     private final KeyCombination shortcutExport = new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN);
     private final KeyCombination shortcutUpdate = new KeyCodeCombination(KeyCode.F5);
     
+    /** The module/representation configuration and their dependencies */
     private final ListProperty<Module> moduleList = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ListProperty<Representation> representationList = new SimpleListProperty<>(FXCollections.observableArrayList());
     
+    /** The currently selected module/representation, which dependency graph is shown */
     private final ObjectProperty<Type> selection = new SimpleObjectProperty<>();
     
     static final private String CONFIG_PATH_PARAMS = "parameter_save_path";
@@ -142,7 +146,7 @@ public class ModuleConfigurationController implements ResponseListener
     }
 
     /**
-     * Handles the update button click.
+     * Handles the update button click and sends the retrieving commands.
      */
     @FXML
     private void fxUpdateModules() {
@@ -155,6 +159,9 @@ public class ModuleConfigurationController implements ResponseListener
         }
     }
 
+    /**
+     * Handles the save button click and sends the saving commands.
+     */
     @FXML
     public void fxSaveModules() {
         if (control != null && control.checkConnected()) {
@@ -163,6 +170,9 @@ public class ModuleConfigurationController implements ResponseListener
         }
     }
     
+    /**
+     * Handles the export button click and exports the module configuration to a file.
+     */
     @FXML
     public void fxExportModules() {
         String parameterPath = control.getConfig().getProperty(CONFIG_PATH_PARAMS, CONFIG_PATH_DEFAULT);
@@ -210,7 +220,13 @@ public class ModuleConfigurationController implements ResponseListener
             fxUpdateModules();
         }
     }
-        
+    
+    /**
+     * Handles the response of various commands.
+     * 
+     * @param result    the response data
+     * @param command   the used command of the response
+     */
     @Override
     public void handleResponse(byte[] result, Command command) {
         Platform.runLater(() -> {
@@ -226,11 +242,24 @@ public class ModuleConfigurationController implements ResponseListener
         });
     }
 
+    /**
+     * Logs the error of a failed command.
+     * 
+     * @param code the error code
+     */
     @Override
     public void handleError(int code) {
         Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, code);
     }
     
+    /**
+     * Handles the response of the retrieving module command.
+     * It parses the response and builds the dependencies between modules and representations.
+     * After processing the data, the dependency lists are updated.
+     * 
+     * @param type   the response type (cognition/motion)
+     * @param result the response data
+     */
     private void handleModuleResponse(String type, byte[] result) {
         try {
             // temp. reference LUT
@@ -282,6 +311,9 @@ public class ModuleConfigurationController implements ResponseListener
         }
     }
     
+    /**
+     * Updates the dependency view based on the current selection (module/representation).
+     */
     private void updateDependencyPanel() {
         if (selection.get() != null) {
             // clear dependency graph first
@@ -311,6 +343,13 @@ public class ModuleConfigurationController implements ResponseListener
         }
     }
     
+    /**
+     * Creates a button for the dependency view.
+     * Based on the given type (module/representation) the button is styled slightly different.
+     * 
+     * @param n the type, for which the button should be generated for (module/representation)
+     * @return the generated button
+     */
     private Button createNodeButton(Type n) {
         Button b = new Button(n.getName());
         b.setMaxWidth(Double.MAX_VALUE);
@@ -331,6 +370,14 @@ public class ModuleConfigurationController implements ResponseListener
         return b;
     }
     
+    /**
+     * The filter function to filter the representation info view based on the 
+     * current active configuration (info state of the representation and selected
+     * buttons [info, warning, error])
+     * 
+     * @param r the representation to check
+     * @return true, if the representation should be shown, false otherwise
+     */
     private boolean showRepresentationInfo(Representation r) {
         return r.getInfo() == Representation.Info.ERROR && btnErrors.isSelected()
             || r.getInfo() == Representation.Info.WARNING && btnWarnings.isSelected()
@@ -341,22 +388,56 @@ public class ModuleConfigurationController implements ResponseListener
      * Base class for module/representation
      */
     abstract static class Type {
+        /**
+         * Return the name of this type.
+         * 
+         * @return name of the type
+         */
         abstract public String getName();
+        
+        /**
+         * Returns the required types by this type.
+         * 
+         * @return list of requirements
+         */
         abstract public List<Type> getRequire();
+        
+        /**
+         * Returns the provided types by this type.
+         * 
+         * 
+         * @return list of providing types
+         */
         abstract public List<Type> getProvide();
     }
     
+    /**
+     * The module type class.
+     * Represents a module with its dependencies (representations).
+     */
     static class Module extends Type implements Comparable<Module>
     {
+        /** The type of moulde (cognition/motion) */
         private final String type;
+        /** The modules name */
         private final String name;
+        /** The path, where the module is defined in C++ */
         private final String path;
-        
+        /** The module state flag: enabled or disabled */
         private boolean active = false;
-        
+        /** The requiring representations */
         private final List<Type> require = new ArrayList<>();
+        /** The providing representations */
         private final List<Type> provide = new ArrayList<>();
 
+        /**
+         * Constructor - initialise the module.
+         * 
+         * @param type      module type (cognition/motion)
+         * @param name      module name
+         * @param path      module path (C++)
+         * @param active    enabled/disabled flag
+         */
         public Module(String type, String name, String path, boolean active) {
             this.type = type;
             this.name = name;
@@ -364,46 +445,93 @@ public class ModuleConfigurationController implements ResponseListener
             this.active = active;
         }
 
+        /**
+         * Returns the name and type of this module
+         * 
+         * @return name and type in the form "name [type]"
+         */
         @Override
         public String toString() {
             return name + " [" + type + "]";
         }
         
+        /**
+         * Adds the representation as required to this module.
+         * 
+         * @param r the required representation
+         */
         public void addRequire(Representation r) {
             require.add(r);
         }
         
+        /**
+         * Adds the representation as provided to this module.
+         * 
+         * @param r the providing representation
+         */
         public void addProvide(Representation r) {
             provide.add(r);
         }
 
+        /**
+         * Compares this module with another based on their names (case insensitive).
+         * Used to sort the list of modules.
+         * 
+         * @param o the other module
+         * @return  result of the comparison: -1, 0, 1
+         */
         @Override
         public int compareTo(Module o) {
             return name.compareToIgnoreCase(o.name);
         }
 
+        /**
+         * Returns the name of this module.
+         * 
+         * @return modules name
+         */
         @Override
         public String getName() {
             return name;
         }
 
+        /**
+         * Returns the list of required types (representations)
+         * 
+         * @return required representations
+         */
         @Override
         public List<Type> getRequire() {
             return require;
         }
 
+        /**
+         * Returns the list of provided types (representations)
+         * 
+         * @return provided representations
+         */
         @Override
         public List<Type> getProvide() {
             return provide;
         }
         
+        /**
+         * Returns whether this module is enabled or not
+         * 
+         * @return true, if enabled, false otherwise
+         */
         public boolean isActive() {
             return active;
         }
     }
     
+    /**
+     * The representation type class.
+     * Represents a representation with its dependencies (modules).
+     */
     static class Representation extends Type implements Comparable<Representation>
     {
+        /** The possible representation "info state" based on the module configuration (see getInfo()) */
         public static enum Info {
             EMPTY,   // not provided and not required
             INFO,    //     provided and     required
@@ -411,48 +539,106 @@ public class ModuleConfigurationController implements ResponseListener
             ERROR    // not provided but     required
         }
 
+        /** Name of the representation */
         private final String name;
-
+        
+        /** The requiring modules */
         private final List<Type> required = new ArrayList<>();
+        /** The providing modules */
         private final List<Type> provided = new ArrayList<>();
         
+        /**
+         * Constructor.
+         * Creates the representation with the given name.
+         * 
+         * @param name of the representation
+         */
         public Representation(String name) {
             this.name = name;
         }
 
+        /**
+         * Returns just the name of this representation
+         * 
+         * @return name of the representation
+         */
         @Override
         public String toString() {
             return name;
         }
         
+        /**
+         * Adds the providing module to this representation.
+         * 
+         * @param m the providing module
+         */
         public void addProvider(Module m) {
             provided.add(m);
         }
         
+        /**
+         * Adds the module which requires this representation.
+         * 
+         * @param m the module requiring this representation
+         */
         public void addRequirer(Module m) {
             required.add(m);
         }
 
+        /**
+         * Compares this representation with another based on their names (case insensitive).
+         * Used to sort the list of representations.
+         * 
+         * @param o the other module
+         * @return  result of the comparison: -1, 0, 1
+         */
         @Override
         public int compareTo(Representation o) {
             return name.compareToIgnoreCase(o.name);
         }
         
+        /**
+         * Returns the name of this representation.
+         * 
+         * @return the representations name
+         */
         @Override
         public String getName() {
             return name;
         }
 
+        /**
+         * Returns the list of modules requiring this representation.
+         * 
+         * @return module list
+         */
         @Override
         public List<Type> getRequire() {
             return required;
         }
 
+        /**
+         * Returns the list of modules providing this representation.
+         * 
+         * @return module list
+         */
         @Override
         public List<Type> getProvide() {
             return provided;
         }
         
+        /**
+         * Returns the "info state" of the representation.
+         * The "info state" determines, whether the representation is used 
+         * correctly with the current active module configuration:
+         * If the representation is
+         * - neither provided nor required: EMPTY state
+         * - provided but not required: WARNING state
+         * - not provided but required: ERROR state
+         * - provided and required: INFO state
+         * 
+         * @return the current state
+         */
         public Info getInfo() {
             // check if there's an active providing/requiring module
             boolean isProvided = provided.stream().anyMatch((m) -> ((Module)m).isActive());
@@ -470,6 +656,10 @@ public class ModuleConfigurationController implements ResponseListener
         }
     }
     
+    /**
+     * Class handling, how the representation is shown in the list view based on
+     * the "info state" of the representation.
+     */
     public class RepresentationListCell extends ListCell<Representation>
     {
         @Override
