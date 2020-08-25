@@ -30,6 +30,10 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.TreeView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -60,6 +64,10 @@ public class ModuleConfigurationController implements ResponseListener
     @FXML private VBox dependencySelection;
     @FXML private VBox dependencyRequire;
     @FXML private VBox dependencyProvide;
+    
+    private final KeyCombination shortcutSave = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination shortcutExport = new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination shortcutUpdate = new KeyCodeCombination(KeyCode.F5);
     
     private final ListProperty<Module> moduleList = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ListProperty<Representation> representationList = new SimpleListProperty<>(FXCollections.observableArrayList());
@@ -187,6 +195,22 @@ public class ModuleConfigurationController implements ResponseListener
         }
     }
     
+    /**
+     * Is called, when key event is triggered.
+     * 
+     * @param k the triggered key event
+     */
+    @FXML
+    private void fxDialogShortcuts(KeyEvent k) {
+        if (shortcutSave.match(k) && !btnSave.isDisabled()) {
+            saveModules();
+        } else if(shortcutExport.match(k) && !btnExport.isDisabled()) {
+            exportModules();
+        } else if (shortcutUpdate.match(k)) {
+            updateModules();
+        }
+    }
+        
     @Override
     public void handleResponse(byte[] result, Command command) {
         Platform.runLater(() -> {

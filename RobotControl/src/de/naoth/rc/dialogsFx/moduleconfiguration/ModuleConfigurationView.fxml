@@ -17,13 +17,13 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="327.0" prefWidth="700.0" stylesheets="@../../res/style.css" xmlns="http://javafx.com/javafx/8.0.202-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.naoth.rc.dialogsFx.moduleconfiguration.ModuleConfigurationController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#fxDialogShortcuts" prefHeight="327.0" prefWidth="700.0" stylesheets="@../../res/style.css" xmlns="http://javafx.com/javafx/8.0.202-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.naoth.rc.dialogsFx.moduleconfiguration.ModuleConfigurationController">
    <children>
       <ToolBar prefHeight="40.0" prefWidth="200.0">
          <items>
             <Button fx:id="btnUpdate" mnemonicParsing="false" onAction="#updateModules" styleClass="update" text="Update">
                <tooltip>
-                  <Tooltip text="Update modules" />
+                  <Tooltip text="Update modules (F5)" />
                </tooltip>
             </Button>
             <Separator orientation="VERTICAL">
@@ -33,12 +33,12 @@
             </Separator>
             <Button fx:id="btnSave" disable="true" graphicTextGap="0.0" mnemonicParsing="false" onAction="#saveModules" styleClass="save" text="Save">
                <tooltip>
-                  <Tooltip text="Save the module configuration on the robot" />
+                  <Tooltip text="Save the module configuration on the robot (Ctrl+S)" />
                </tooltip>
             </Button>
             <Button fx:id="btnExport" disable="true" mnemonicParsing="false" onAction="#exportModules" styleClass="export" text="Export">
                <tooltip>
-                  <Tooltip text="Save the module configuration locally" />
+                  <Tooltip text="Save the module configuration locally (Ctrl+E)" />
                </tooltip>
             </Button>
             <Separator orientation="VERTICAL">
