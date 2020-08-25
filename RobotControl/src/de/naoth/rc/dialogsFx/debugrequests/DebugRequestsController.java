@@ -15,6 +15,9 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 
 /**
  * @author Philipp Strobel <philippstrobel@posteo.de>
@@ -26,6 +29,11 @@ public class DebugRequestsController implements ResponseListener
     
     /** The ui tree of the available debug requests */
     @FXML protected TreeView<String> debugTree;
+    
+    /** Some key shortcut definitions */
+    private final KeyCombination shortcutEnableEnter = new KeyCodeCombination(KeyCode.ENTER);
+    private final KeyCombination shortcutEnableSpace = new KeyCodeCombination(KeyCode.SPACE);
+    private final KeyCombination shortcutUpdate = new KeyCodeCombination(KeyCode.F5);
     
     /** The debug command for retrieving all cognitinon debug requests */
     private final Command cmd_debug_cognition = new Command("Cognition:representation:get").addArg("DebugRequest");
@@ -82,22 +90,6 @@ public class DebugRequestsController implements ResponseListener
         debugTree.setCellFactory((p) -> new TreeNodeCell<>());
         debugTree.setRoot(new TreeNodeItem<>());
         debugTree.getRoot().setExpanded(true);
-        
-        // handle space/enter key press and toggle selected state
-        debugTree.setOnKeyPressed((k) -> {
-            if (k.getCode() == KeyCode.ENTER || k.getCode() == KeyCode.SPACE) {
-                TreeNodeItem i = (TreeNodeItem) debugTree.getSelectionModel().getSelectedItem();
-                if (i != null) {
-                    i.setSelected(!i.isSelected());
-                }
-            }
-        });
-        // handle F5 key press and update debug requests
-        debugTree.getParent().setOnKeyPressed((k) -> {
-            if (k.getCode() == KeyCode.F5) {
-                updateRequests();
-            }
-        });
     }
     
     /**
@@ -112,10 +104,41 @@ public class DebugRequestsController implements ResponseListener
      * Handles the update button click.
      */
     @FXML
-    private void updateRequests() {
+    private void fxUpdateRequests() {
         if (control != null && control.checkConnected()) {
             control.getMessageServer().executeCommand(this, cmd_debug_cognition);
             control.getMessageServer().executeCommand(this, cmd_debug_motion);
+        }
+    }
+    
+    /**
+     * Is called, when key event is triggered and handles F5 key press to update 
+     * the debug requests.
+     * 
+     * @param k the triggered key event
+     */
+    @FXML
+    private void fxDialogShortcuts(KeyEvent k) {
+        // handle F5 key press and update debug requests
+        if (shortcutUpdate.match(k)) {
+            fxUpdateRequests();
+        }
+    }
+    
+    /**
+     * Is called, when key event is triggered and handles SPACE/ENTER key press 
+     * to enable a selected debug request.
+     * 
+     * @param k the triggered key event
+     */
+    @FXML
+    private void fxDebugTreeShortcuts(KeyEvent k) {
+        // handle space/enter key press and toggle selected state
+        if (shortcutEnableEnter.match(k) || shortcutEnableSpace.match(k)) {
+            TreeNodeItem i = (TreeNodeItem) debugTree.getSelectionModel().getSelectedItem();
+            if (i != null) {
+                i.setSelected(!i.isSelected());
+            }
         }
     }
     

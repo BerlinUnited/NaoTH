@@ -6,16 +6,16 @@
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.202-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.naoth.rc.dialogsFx.debugrequests.DebugRequestsController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#fxDialogShortcuts" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.202-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.naoth.rc.dialogsFx.debugrequests.DebugRequestsController">
    <children>
       <ToolBar prefHeight="40.0" prefWidth="200.0">
         <items>
-          <Button mnemonicParsing="false" onAction="#updateRequests" text="Update">
+          <Button mnemonicParsing="false" onAction="#fxUpdateRequests" text="Update">
                <tooltip>
                   <Tooltip text="Update list of debug requests (F5)" />
                </tooltip></Button>
         </items>
       </ToolBar>
-      <TreeView fx:id="debugTree" editable="true" prefWidth="200.0" showRoot="false" VBox.vgrow="ALWAYS" />
+      <TreeView fx:id="debugTree" editable="true" onKeyPressed="#fxDebugTreeShortcuts" prefWidth="200.0" showRoot="false" VBox.vgrow="ALWAYS" />
    </children>
 </VBox>
