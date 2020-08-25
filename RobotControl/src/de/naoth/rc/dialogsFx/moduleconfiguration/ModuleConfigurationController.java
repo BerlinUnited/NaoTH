@@ -145,7 +145,7 @@ public class ModuleConfigurationController implements ResponseListener
      * Handles the update button click.
      */
     @FXML
-    private void updateModules() {
+    private void fxUpdateModules() {
         if (control != null && control.checkConnected()) {
             moduleList.clear();
             representationList.clear();
@@ -156,7 +156,7 @@ public class ModuleConfigurationController implements ResponseListener
     }
 
     @FXML
-    public void saveModules() {
+    public void fxSaveModules() {
         if (control != null && control.checkConnected()) {
             control.getMessageServer().executeCommand(this, cmd_modules_cognition_store);
             control.getMessageServer().executeCommand(this, cmd_modules_motion_store);
@@ -164,7 +164,7 @@ public class ModuleConfigurationController implements ResponseListener
     }
     
     @FXML
-    public void exportModules() {
+    public void fxExportModules() {
         String parameterPath = control.getConfig().getProperty(CONFIG_PATH_PARAMS, CONFIG_PATH_DEFAULT);
         // configure the filechooser ...
         FileChooser fileChooser = new FileChooser();
@@ -203,11 +203,11 @@ public class ModuleConfigurationController implements ResponseListener
     @FXML
     private void fxDialogShortcuts(KeyEvent k) {
         if (shortcutSave.match(k) && !btnSave.isDisabled()) {
-            saveModules();
+            fxSaveModules();
         } else if(shortcutExport.match(k) && !btnExport.isDisabled()) {
-            exportModules();
+            fxExportModules();
         } else if (shortcutUpdate.match(k)) {
-            updateModules();
+            fxUpdateModules();
         }
     }
         
@@ -228,6 +228,7 @@ public class ModuleConfigurationController implements ResponseListener
 
     @Override
     public void handleError(int code) {
+        Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, code);
     }
     
     private void handleModuleResponse(String type, byte[] result) {
@@ -277,7 +278,7 @@ public class ModuleConfigurationController implements ResponseListener
             // TODO:
             //moduleTree.getRoot().getChildren().add(Utils.createModulesCognition(list, cognitionModuleRequest));
         } catch (InvalidProtocolBufferException ex) {
-            Logger.getLogger(ModuleConfigurationController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
         }
     }
     
