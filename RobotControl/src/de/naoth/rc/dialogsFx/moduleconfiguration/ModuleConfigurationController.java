@@ -5,6 +5,10 @@ import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.messages.Messages;
 import de.naoth.rc.core.server.Command;
 import de.naoth.rc.core.server.ResponseListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +32,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 
 /**
  * @author Philipp Strobel <philippstrobel@posteo.de>
@@ -56,11 +61,13 @@ public class ModuleConfigurationController implements ResponseListener
     @FXML private VBox dependencyRequire;
     @FXML private VBox dependencyProvide;
     
-    
     private final ListProperty<Module> moduleList = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final ListProperty<Representation> representationList = new SimpleListProperty<>(FXCollections.observableArrayList());
     
     private final ObjectProperty<Type> selection = new SimpleObjectProperty<>();
+    
+    static final private String CONFIG_PATH_PARAMS = "parameter_save_path";
+    static final private String CONFIG_PATH_DEFAULT = "../NaoTHSoccer/Config/scheme";
     
     /**
      * Default constructor for the FXML loader.
@@ -148,6 +155,38 @@ public class ModuleConfigurationController implements ResponseListener
         }
     }
     
+    @FXML
+    public void exportModules() {
+        String parameterPath = control.getConfig().getProperty(CONFIG_PATH_PARAMS, CONFIG_PATH_DEFAULT);
+        // configure the filechooser ...
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save module configuration");
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Config files (*.cfg)", "*.cfg"));
+        fileChooser.setInitialDirectory(new File(parameterPath));
+        fileChooser.setInitialFileName("modules.cfg");
+
+        File selectedFile = fileChooser.showSaveDialog(btnExport.getScene().getWindow());
+        if(selectedFile != null) {
+            // if selected file has a file extension - use this, otherwise append ".cfg" to the filename
+            File f = (selectedFile.getName().lastIndexOf(".") == -1) ? new File(selectedFile+".cfg") : selectedFile;
+
+            // create file and write module configuration to this file
+            try(BufferedWriter bf = new BufferedWriter(new FileWriter(f))) {
+                bf.write("[modules]\n");
+                for (Module m : moduleList) {
+                    bf.write(m.getName() + "=" + (m.isActive() ? "true" : "false") + "\n");
+                }
+                bf.close();
+            } catch (IOException ex) {
+                Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
+                // TODO: show alert dialog
+            }
+
+            // save the path for later
+            control.getConfig().setProperty(CONFIG_PATH_PARAMS, selectedFile.getParent());
+        }
+    }
+    
     @Override
     public void handleResponse(byte[] result, Command command) {
         Platform.runLater(() -> {
@@ -155,6 +194,8 @@ public class ModuleConfigurationController implements ResponseListener
                 handleModuleResponse("Cognition", result);
             } else if(command.equals(cmd_modules_motion)) {
                 handleModuleResponse("Motion", result);
+            } else if (command.equals(cmd_modules_cognition_store) || command.equals(cmd_modules_motion_store)) {
+                // TODO: show AlertDialog with error/info!
             } else {
                 Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Unknown command response: {0}", command);
             }

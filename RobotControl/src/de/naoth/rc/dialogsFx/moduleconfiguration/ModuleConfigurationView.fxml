@@ -36,7 +36,7 @@
                   <Tooltip text="Save the module configuration on the robot" />
                </tooltip>
             </Button>
-            <Button fx:id="btnExport" disable="true" mnemonicParsing="false" styleClass="export" text="Export">
+            <Button fx:id="btnExport" disable="true" mnemonicParsing="false" onAction="#exportModules" styleClass="export" text="Export">
                <tooltip>
                   <Tooltip text="Save the module configuration locally" />
                </tooltip>
