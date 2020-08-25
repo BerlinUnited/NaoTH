@@ -60,10 +60,11 @@ public class ParametersController
     private static final Pattern KEY_VALUE_PATTERN = Pattern.compile("^(?<key>.+)=(?<value>.*)$", Pattern.MULTILINE);
     private final ParameterResponseHandler responseHandler = new ParameterResponseHandler();
     
+    /** The animation for the save notice */
     private final FadeTransition fadeOut = new FadeTransition(Duration.millis(2000));
     
-    final private String parameterSavePathKey = "parameter_save_path";
-    final private String defaultConfigPath = "../NaoTHSoccer/Config/scheme";
+    static final private String CONFIG_PATH_PARAMS = "parameter_save_path";
+    static final private String CONFIG_PATH_DEFAULT = "../NaoTHSoccer/Config/scheme";
     
     /**
      * Default constructor for the FXML loader.
@@ -166,7 +167,7 @@ public class ParametersController
         if (selected == null || selected.getParent().getValue() == null) {
             AlertDialog.showError("Error", "You have to choose a parameter configuration!");
         } else {
-            String parameterPath = control.getConfig().getProperty(parameterSavePathKey, defaultConfigPath);
+            String parameterPath = control.getConfig().getProperty(CONFIG_PATH_PARAMS, CONFIG_PATH_DEFAULT);
             // configure the filechooser ...
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save configuration ("+selected.getValue()+")");
@@ -190,7 +191,7 @@ public class ParametersController
                 }
                 
                 // save the path for later
-                control.getConfig().setProperty(parameterSavePathKey, selectedFile.getParent());
+                control.getConfig().setProperty(CONFIG_PATH_PARAMS, selectedFile.getParent());
             }
         }
     }
