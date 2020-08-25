@@ -16,17 +16,20 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.202-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.naoth.rc.dialogsFx.parameters.ParametersController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#fxDialogShortcuts" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.202-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.naoth.rc.dialogsFx.parameters.ParametersController">
    <children>
       <ToolBar prefHeight="40.0" prefWidth="200.0">
         <items>
-          <Button mnemonicParsing="false" onAction="#fxUpdateParams" text="Update" />
+          <Button mnemonicParsing="false" onAction="#fxUpdateParams" text="Update">
+               <tooltip>
+                  <Tooltip text="Update parameters (F5)" />
+               </tooltip></Button>
             <SplitMenuButton mnemonicParsing="false" onAction="#fxExport" text="Export">
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#fxExportAll" text="Export all" />
               </items>
                <tooltip>
-                  <Tooltip text="Export parameter to file" />
+                  <Tooltip text="Export parameter to file (Ctrl+E)" />
                </tooltip>
             </SplitMenuButton>
             <Pane opacity="0.0" HBox.hgrow="ALWAYS" />

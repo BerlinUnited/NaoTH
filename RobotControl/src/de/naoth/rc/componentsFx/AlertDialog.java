@@ -28,8 +28,8 @@ public class AlertDialog
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(text);
-
-        return alert.showAndWait().get();
+        // if no button was pressed, the dialog got canceled (ESC, close)
+        return alert.showAndWait().orElse(ButtonType.CANCEL);
     }
     
     /**

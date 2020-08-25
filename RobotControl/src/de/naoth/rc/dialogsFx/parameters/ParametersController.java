@@ -47,8 +47,11 @@ public class ParametersController
     @FXML private Label scheme;
     @FXML private Label notice;
     
-    private final KeyCombination saveValuesEnter = new KeyCodeCombination(KeyCode.ENTER);
-    private final KeyCombination saveValuesCtrlS = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN);
+    /** Some key shortcut definitions */
+    private final KeyCombination shortcutUpdate = new KeyCodeCombination(KeyCode.F5);
+    private final KeyCombination shortcutExport = new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination shortcutSaveValueEnter = new KeyCodeCombination(KeyCode.ENTER);
+    private final KeyCombination shortcutSaveValuesCtrlS = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN);
     
     private final Command cmdScheme = new Command("Cognition:representation:print").addArg("PlayerInfo");
     private final Command cmdCognitionParams = new Command("Cognition:ParameterList:list");
@@ -118,7 +121,7 @@ public class ParametersController
      */
     @FXML
     private void fxValuesShortcuts(KeyEvent k) {
-        if (saveValuesEnter.match(k) || saveValuesCtrlS.match(k)) {
+        if (shortcutSaveValueEnter.match(k) || shortcutSaveValuesCtrlS.match(k)) {
             TreeItem<String> selected = params.getSelectionModel().getSelectedItem();
             if (selected != null && control != null && control.checkConnected()) {
                 // prepare the command
@@ -131,6 +134,25 @@ public class ParametersController
                 // make sure we're in sync with the robot
                 retrieveValues();
             }
+        } else if (shortcutUpdate.match(k)) {
+            // F5 is consumed by the textarea and does not bubble to the parent node,
+            // so we must handle it here
+            fxUpdateParams();
+        }
+    }
+    
+    /**
+     * Is called, when key event is triggered.
+     * The parameter update and the export is handled.
+     * 
+     * @param k the triggered key event
+     */
+    @FXML
+    private void fxDialogShortcuts(KeyEvent k) {
+        if (shortcutUpdate.match(k)) {
+            fxUpdateParams();
+        } else if (shortcutExport.match(k)) {
+            fxExport();
         }
     }
     
@@ -325,11 +347,13 @@ public class ParametersController
      * @param text the retrieved paramenter group content
      */
     private void updateValues(String text) {
-        int pos = values.getCaretPosition();
-        values.setText(text);
-        values.positionCaret(pos);
-        values.setEditable(true);
-        values.requestFocus();
+        Platform.runLater(() -> {
+            int pos = values.getCaretPosition();
+            values.setText(text);
+            values.positionCaret(pos);
+            values.setEditable(true);
+            values.requestFocus();
+        });
     }
     
     /**
