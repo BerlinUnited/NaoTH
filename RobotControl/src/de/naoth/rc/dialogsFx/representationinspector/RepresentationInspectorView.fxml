@@ -8,18 +8,31 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="300.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.202-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.naoth.rc.dialogsFx.representationinspector.RepresentationInspectorController">
+<VBox onKeyPressed="#fxDialogShortcuts" prefHeight="300.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.202-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.naoth.rc.dialogsFx.representationinspector.RepresentationInspectorController">
    <children>
       <ToolBar prefHeight="40.0" prefWidth="200.0">
          <items>
-            <ToggleButton fx:id="btnRefresh" mnemonicParsing="false" onAction="#fxRefresh" text="Refresh" />
-            <ToggleButton fx:id="btnBinary" mnemonicParsing="false" onAction="#fxBinary" text="Binary" />
-            <ToggleButton fx:id="btnLog" mnemonicParsing="false" onAction="#fxLog" text="Log" />
-            <ChoiceBox fx:id="type" onAction="#fxType" prefWidth="150.0" />
+            <ToggleButton fx:id="btnRefresh" mnemonicParsing="false" onAction="#fxRefresh" text="Refresh">
+               <tooltip>
+                  <Tooltip text="Update representations (F5)" />
+               </tooltip></ToggleButton>
+            <ToggleButton fx:id="btnBinary" mnemonicParsing="false" onAction="#fxBinary" text="Binary">
+               <tooltip>
+                  <Tooltip text="Show representation as parsed protobuf messages (binary)" />
+               </tooltip></ToggleButton>
+            <ToggleButton fx:id="btnLog" mnemonicParsing="false" onAction="#fxLog" text="Log">
+               <tooltip>
+                  <Tooltip text="Show log file representations" />
+               </tooltip></ToggleButton>
+            <ChoiceBox fx:id="type" onAction="#fxType" prefWidth="150.0">
+               <tooltip>
+                  <Tooltip text="Switch representation type" />
+               </tooltip></ChoiceBox>
          </items>
       </ToolBar>
       <SplitPane fx:id="split" dividerPositions="0.2" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">

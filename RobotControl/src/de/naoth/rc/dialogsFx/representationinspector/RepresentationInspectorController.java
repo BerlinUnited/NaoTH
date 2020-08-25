@@ -50,6 +50,7 @@ public class RepresentationInspectorController
     private final KeyCombination shortcutHideSearch = new KeyCodeCombination(KeyCode.ESCAPE);
     private final KeyCombination shortcutContSearchEnter = new KeyCodeCombination(KeyCode.ENTER);
     private final KeyCombination shortcutContSearchF3 = new KeyCodeCombination(KeyCode.F3);
+    private final KeyCombination shortcutRefresh = new KeyCodeCombination(KeyCode.F5);
     
     private long listSearchTimeout = 0;
     private String listSearchString = "";
@@ -202,6 +203,20 @@ public class RepresentationInspectorController
     }
     
     /**
+     * Is called, if the key pressed event is triggered.
+     * Handles the F5 (refresh) shortcut.
+     * 
+     * @param k the key (event), which triggered the event
+     */
+    @FXML
+    private void fxDialogShortcuts(KeyEvent k) {
+        if (shortcutRefresh.match(k)) {
+            btnRefresh.setSelected(true);
+            fxRefresh();
+        }
+    }
+    
+    /**
      * Is called, if the key pressed event is triggered by the content text area.
      * 
      * @param k the key (event), which triggered the event
@@ -214,6 +229,11 @@ public class RepresentationInspectorController
             search(true);
         } else if(shortcutContSearchF3.match(k)) {
             search(false);
+        } else if (shortcutRefresh.match(k)) {
+            // F5 is consumed by the textarea and does not bubble to the parent 
+            // node, so we must handle it here
+            btnRefresh.setSelected(true);
+            fxRefresh();
         }
     }
     
