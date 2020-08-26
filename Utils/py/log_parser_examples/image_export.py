@@ -171,9 +171,6 @@ if __name__ == "__main__":
 
     # initialize the log parser
     myParser = Parser()
-    # register the protobuf message name for the 'ImageTop'
-    myParser.register("ImageTop", "Image")
-    myParser.register("CameraMatrixTop", "CameraMatrix")
 
     input_file = args.input if args.input else images.load_data('ball')
     if Path(input_file).is_dir():

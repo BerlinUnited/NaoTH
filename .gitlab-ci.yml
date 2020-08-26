@@ -64,5 +64,5 @@ compileLocal:
   script:
   - cd NaoTHSoccer/Make
   - premake5 gmake2 --protoc
-  - cd ../build
+  - cd ../build/gmake2
   - make all -j 4

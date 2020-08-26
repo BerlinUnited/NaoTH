@@ -69,6 +69,7 @@ public class RobotControlImpl extends javax.swing.JFrame
   private final ConnectionManager connectionManager;
   
   private final DialogRegistry dialogRegistry;
+  private final HelpDialog helpDialog = new HelpDialog(this);
 
   // remember the window position and size to restore it later
   private Rectangle defaultWindowBounds = new Rectangle();
@@ -217,7 +218,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     });
     
     // set up a list of all dialogs
-    this.dialogRegistry = new DialogRegistry(this, this.mainMenuBar, this.dialogFastAccessPanel);
+    this.dialogRegistry = new DialogRegistry(this, this.mainMenuBar, this.dialogFastAccessPanel, helpDialog);
 
     
     // initialize the message server
@@ -441,14 +442,13 @@ public class RobotControlImpl extends javax.swing.JFrame
         jSeparator1 = new javax.swing.JSeparator();
         exitMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
+        helpMenuItem = new javax.swing.JMenuItem();
         aboutMenuItem = new javax.swing.JMenuItem();
 
         dialogFastAccess.setAlwaysOnTop(true);
         dialogFastAccess.setLocationByPlatform(true);
-        dialogFastAccess.setModal(true);
         dialogFastAccess.setName("dialogFastAccessDialog"); // NOI18N
         dialogFastAccess.setUndecorated(true);
-        dialogFastAccess.setPreferredSize(new java.awt.Dimension(600, 300));
         dialogFastAccess.getContentPane().add(dialogFastAccessPanel, java.awt.BorderLayout.CENTER);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -512,12 +512,12 @@ public class RobotControlImpl extends javax.swing.JFrame
         );
         statusPanelLayout.setVerticalGroup(
             statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jSeparator5, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(lblSentBytesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(lblFramesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(btManager, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(lblReceivedBytesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jSeparator5)
-                .addComponent(lblSentBytesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(lblFramesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(lblReceivedBytesS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(statusPanelLayout.createSequentialGroup()
                 .addComponent(statusPanelPlugins, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -605,6 +605,14 @@ public class RobotControlImpl extends javax.swing.JFrame
 
         helpMenu.setMnemonic('h');
         helpMenu.setText("Help");
+
+        helpMenuItem.setText("Help");
+        helpMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpMenuItemActionPerformed(evt);
+            }
+        });
+        helpMenu.add(helpMenuItem);
 
         aboutMenuItem.setMnemonic('a');
         aboutMenuItem.setText("About");
@@ -717,6 +725,10 @@ public class RobotControlImpl extends javax.swing.JFrame
         JOptionPane.showMessageDialog(this, str);
     }//GEN-LAST:event_btManagerActionPerformed
 
+    private void helpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpMenuItemActionPerformed
+        helpDialog.showHelp(null);
+    }//GEN-LAST:event_helpMenuItemActionPerformed
+
   @Override
   public MessageServer getMessageServer()
   {
@@ -824,6 +836,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     private javax.swing.JCheckBoxMenuItem enforceConnection;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu helpMenu;
+    private javax.swing.JMenuItem helpMenuItem;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JSeparator jSeparator4;
@@ -855,6 +868,12 @@ public class RobotControlImpl extends javax.swing.JFrame
   final public Properties getConfig()
   {
     return config;
+  }
+  
+  @Override
+  final public String getConfigPath()
+  {
+      return USER_CONFIG_DIR;
   }
 
   private void beforeClose()
