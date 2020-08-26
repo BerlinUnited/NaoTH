@@ -5,6 +5,11 @@ import de.naoth.rc.core.dialog.AbstractJFXDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
 import java.net.URL;
+import javafx.fxml.FXML;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -22,6 +27,11 @@ public class DebugRequestsDialog extends AbstractJFXDialog
         @Override
         public String getDisplayName() { return "DebugRequest (FX)"; }
     }
+    
+    /** Controller of the DebugRequestsTree - set by FXML */
+    @FXML private DebugRequestsTree debugRequestsTreeController;
+    
+    private final KeyCombination shortcutUpdate = new KeyCodeCombination(KeyCode.F5);
 
     /**
      * Returns the ui definition.
@@ -29,15 +39,46 @@ public class DebugRequestsDialog extends AbstractJFXDialog
      */
     @Override
     public URL getFXMLRessource() {
-        return getClass().getResource("DebugRequestsView.fxml");
+        return getClass().getResource("DebugRequestsDialog.fxml");
     }
 
+    /**
+     * This the controller of the FXML file.
+     * @return true
+     */
+    @Override
+    protected boolean isSelfController() {
+        return true;
+    }
+    
     /**
      * Gets called after ui initialization and sets the message server of the ui controller.
      */
     @Override
     public void afterInit() {
         // set the global robot control instance to the view controller
-        ((DebugRequestsController)getController()).setRobotControl(Plugin.parent);
+        debugRequestsTreeController.setRobotControl(Plugin.parent);
+    }
+    
+    /**
+     * Handles the update button click.
+     */
+    @FXML
+    private void fxUpdateRequests() {
+        debugRequestsTreeController.updateRequests();
+    }
+    
+    /**
+     * Is called, when key event is triggered and handles F5 key press to update 
+     * the debug requests.
+     * 
+     * @param k the triggered key event
+     */
+    @FXML
+    private void fxDialogShortcuts(KeyEvent k) {
+        // handle F5 key press and update debug requests
+        if (shortcutUpdate.match(k)) {
+            debugRequestsTreeController.updateRequests();
+        }
     }
 }

@@ -22,18 +22,17 @@ import javafx.scene.input.KeyEvent;
 /**
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
-public class DebugRequestsController implements ResponseListener
+public class DebugRequestsTree implements ResponseListener
 {
     /** The controlling instance representing the connection to the robot. */
     private RobotControl control;
     
     /** The ui tree of the available debug requests */
-    @FXML protected TreeView<String> debugTree;
+    @FXML private TreeView<String> debugTree;
     
     /** Some key shortcut definitions */
     private final KeyCombination shortcutEnableEnter = new KeyCodeCombination(KeyCode.ENTER);
     private final KeyCombination shortcutEnableSpace = new KeyCodeCombination(KeyCode.SPACE);
-    private final KeyCombination shortcutUpdate = new KeyCodeCombination(KeyCode.F5);
     
     /** The debug command for retrieving all cognitinon debug requests */
     private final Command cmd_debug_cognition = new Command("Cognition:representation:get").addArg("DebugRequest");
@@ -71,12 +70,13 @@ public class DebugRequestsController implements ResponseListener
     /**
      * Default constructor for the FXML loader.
      */
-    public DebugRequestsController() {}
+    public DebugRequestsTree() {}
     
     /**
      * Constructor for custom initialization.
+     * @param control
      */
-    public DebugRequestsController(RobotControl control) {
+    public DebugRequestsTree(RobotControl control) {
         setRobotControl(control);
     }
     
@@ -84,8 +84,7 @@ public class DebugRequestsController implements ResponseListener
      * Gets called, after the FXML file was loaded.
      */
     @FXML
-    private void initialize() 
-    {
+    private void initialize() {
         // setup ui
         debugTree.setCellFactory((p) -> new TreeNodeCell<>());
         debugTree.setRoot(new TreeNodeItem<>());
@@ -101,27 +100,12 @@ public class DebugRequestsController implements ResponseListener
     }
 
     /**
-     * Handles the update button click.
+     * Schedules the debug request retrieving command.
      */
-    @FXML
-    private void fxUpdateRequests() {
+    public void updateRequests() {
         if (control != null && control.checkConnected()) {
             control.getMessageServer().executeCommand(this, cmd_debug_cognition);
             control.getMessageServer().executeCommand(this, cmd_debug_motion);
-        }
-    }
-    
-    /**
-     * Is called, when key event is triggered and handles F5 key press to update 
-     * the debug requests.
-     * 
-     * @param k the triggered key event
-     */
-    @FXML
-    private void fxDialogShortcuts(KeyEvent k) {
-        // handle F5 key press and update debug requests
-        if (shortcutUpdate.match(k)) {
-            fxUpdateRequests();
         }
     }
     
