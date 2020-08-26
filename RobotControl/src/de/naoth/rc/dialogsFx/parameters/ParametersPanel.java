@@ -19,6 +19,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
@@ -37,19 +39,17 @@ import javafx.util.Duration;
 /**
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
-public class ParametersController
+public class ParametersPanel
 {
     /** The controlling instance representing the connection to the robot. */
     private RobotControl control;
     
     @FXML private TreeView<String> params;
     @FXML private TextArea values;
-    @FXML private Label scheme;
     @FXML private Label notice;
     
     /** Some key shortcut definitions */
     private final KeyCombination shortcutUpdate = new KeyCodeCombination(KeyCode.F5);
-    private final KeyCombination shortcutExport = new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN);
     private final KeyCombination shortcutSaveValueEnter = new KeyCodeCombination(KeyCode.ENTER);
     private final KeyCombination shortcutSaveValuesCtrlS = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN);
     
@@ -62,6 +62,8 @@ public class ParametersController
     
     /** The animation for the save notice */
     private final FadeTransition fadeOut = new FadeTransition(Duration.millis(2000));
+    /** The current active scheme */
+    private final StringProperty scheme = new SimpleStringProperty("-");
     
     static final private String CONFIG_PATH_PARAMS = "parameter_save_path";
     static final private String CONFIG_PATH_DEFAULT = "../NaoTHSoccer/Config/scheme";
@@ -69,12 +71,13 @@ public class ParametersController
     /**
      * Default constructor for the FXML loader.
      */
-    public ParametersController() {}
+    public ParametersPanel() {}
     
     /**
      * Constructor for custom initialization.
+     * @param control
      */
-    public ParametersController(RobotControl control) {
+    public ParametersPanel(RobotControl control) {
         setRobotControl(control);
     }
     
@@ -82,8 +85,7 @@ public class ParametersController
      * Gets called, after the FXML file was loaded.
      */
     @FXML
-    private void initialize() 
-    {
+    private void initialize() {
         params.setRoot(new TreeItem<>());
         params.getRoot().setExpanded(true);
         params.getSelectionModel().selectedItemProperty().addListener((o) -> { retrieveValues(); });
@@ -104,10 +106,19 @@ public class ParametersController
     }
     
     /**
-     * Is called, when the update button is clicked.
+     * Returns the current scheme property
+     * 
+     * @return the current scheme
      */
-    @FXML
-    private void fxUpdateParams() {
+    public StringProperty getSchemeProperty() {
+        return scheme;
+    }
+    
+    /**
+     * Schedules the command for retrieving the parameter configuraiton and
+     * updates the UI.
+     */
+    public void updateParams() {
         if (control != null && control.checkConnected()) {
             control.getMessageServer().executeCommand(responseHandler, cmdScheme);
             control.getMessageServer().executeCommand(responseHandler, cmdCognitionParams);
@@ -138,30 +149,15 @@ public class ParametersController
         } else if (shortcutUpdate.match(k)) {
             // F5 is consumed by the textarea and does not bubble to the parent node,
             // so we must handle it here
-            fxUpdateParams();
+            updateParams();
         }
     }
     
     /**
-     * Is called, when key event is triggered.
-     * The parameter update and the export is handled.
-     * 
-     * @param k the triggered key event
+     * Exports the current selected parameter group.
+     * A file chooser is shown, where the configuration should be saved.
      */
-    @FXML
-    private void fxDialogShortcuts(KeyEvent k) {
-        if (shortcutUpdate.match(k)) {
-            fxUpdateParams();
-        } else if (shortcutExport.match(k)) {
-            fxExport();
-        }
-    }
-    
-    /**
-     * Is called, when the export button is pressed.
-     */
-    @FXML
-    private void fxExport() {
+    public void exportParameter() {
         TreeItem<String> selected = params.getSelectionModel().getSelectedItem();
         // check if we got a valid selection; ignore Cognition/Motion entries, which doesn't have a "valid" parent
         if (selected == null || selected.getParent().getValue() == null) {
@@ -186,7 +182,7 @@ public class ParametersController
                     // create file and write parameter configuration to this file
                     writeParameterConfig(selected.getValue(), f);
                 } catch (IOException ex) {
-                    Logger.getLogger(ParametersController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ParametersPanel.class.getName()).log(Level.SEVERE, null, ex);
                     AlertDialog.showError("Not writeable", "Selected file is not writeable!");
                 }
                 
@@ -197,14 +193,13 @@ public class ParametersController
     }
     
     /**
-     * Is called, when the export all menu item is pressed.
+     * Exports all parameter configurations.
      */
-    @FXML
-    private void fxExportAll() {
+    public void exportAllParameters() {
         // make sure, we're connected!
         if (control != null && control.checkConnected()) {
             // update ui after connecting ...
-            fxUpdateParams();
+            updateParams();
             // configure filechooser ...
             DirectoryChooser directoryChooser = new DirectoryChooser();
             directoryChooser.setTitle("Save configuration (All)");
@@ -231,7 +226,7 @@ public class ParametersController
                         
                         AlertDialog.showInfo("All parameters saved", "All parameters should be saved in the directory:\n" + directory.getAbsolutePath());
                     } catch (IOException ex) {
-                        Logger.getLogger(ParametersController.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(ParametersPanel.class.getName()).log(Level.SEVERE, null, ex);
                         AlertDialog.showError("Not writeable", "Selected directory is not writeable!");
                     }
                 }
@@ -255,7 +250,7 @@ public class ParametersController
             bf.close();
             return true;
         } catch (IOException ex) {
-            Logger.getLogger(ParametersController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ParametersPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
@@ -273,7 +268,7 @@ public class ParametersController
             repr.put(m.group("key").trim(), m.group("value").trim());
         }
         String s = repr.getOrDefault("active scheme", "?");
-        Platform.runLater(() -> { scheme.setText(s.equals("-")?"default":s); });
+        Platform.runLater(() -> { scheme.set(s.equals("-")?"default":s); });
     }
     
     /**
@@ -449,13 +444,13 @@ public class ParametersController
                 bf.write(new String(result));
                 bf.close();
             } catch (IOException ex) {
-                Logger.getLogger(ParametersController.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ParametersPanel.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
         @Override
         public void handleError(int code) {
-            Logger.getLogger(ParametersController.class.getName()).log(Level.SEVERE, null, code);
+            Logger.getLogger(ParametersPanel.class.getName()).log(Level.SEVERE, null, code);
         }
     }
 }

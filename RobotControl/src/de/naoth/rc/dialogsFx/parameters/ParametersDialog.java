@@ -5,6 +5,12 @@ import de.naoth.rc.core.dialog.AbstractJFXDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
 import java.net.URL;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -22,14 +28,31 @@ public class ParametersDialog extends AbstractJFXDialog
         @Override
         public String getDisplayName() { return "Parameter (FX)"; }
     }
+    
+    @FXML private ParametersPanel parametersPanelController;
+    @FXML private Label scheme;
 
+    /** Some key shortcut definitions */
+    private final KeyCombination shortcutUpdate = new KeyCodeCombination(KeyCode.F5);
+    private final KeyCombination shortcutExport = new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN);
+    
     /**
      * Returns the ui definition.
      * @return the url to the fxml file
      */
     @Override
     public URL getFXMLRessource() {
-        return getClass().getResource("ParametersView.fxml");
+        return getClass().getResource("ParametersDialog.fxml");
+    }
+
+    /**
+     * This is the controller for FXML file.
+     * 
+     * @return true
+     */
+    @Override
+    protected boolean isSelfController() {
+        return true;
     }
 
     /**
@@ -38,6 +61,46 @@ public class ParametersDialog extends AbstractJFXDialog
     @Override
     public void afterInit() {
         // set the global robot control instance to the view controller
-        ((ParametersController)getController()).setRobotControl(Plugin.parent);
-    }    
+        parametersPanelController.setRobotControl(Plugin.parent);
+        scheme.textProperty().bind(parametersPanelController.getSchemeProperty());
+    }
+    
+    /**
+     * Is called, when the update button is clicked.
+     */
+    @FXML
+    private void fxUpdateParams() {
+        parametersPanelController.updateParams();
+    }
+    
+    /**
+     * Is called, when the export button is pressed.
+     */
+    @FXML
+    private void fxExport() {
+        parametersPanelController.exportParameter();
+    }
+    
+    /**
+     * Is called, when the export all menu item is pressed.
+     */
+    @FXML
+    private void fxExportAll() {
+        parametersPanelController.exportAllParameters();
+    }
+    
+    /**
+     * Is called, when key event is triggered.
+     * The parameter update and the export is handled.
+     * 
+     * @param k the triggered key event
+     */
+    @FXML
+    private void fxDialogShortcuts(KeyEvent k) {
+        if (shortcutUpdate.match(k)) {
+            parametersPanelController.updateParams();
+        } else if (shortcutExport.match(k)) {
+            parametersPanelController.exportParameter();
+        }
+    }
 }
