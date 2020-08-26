@@ -23,10 +23,10 @@ using namespace naoth;
  *          2|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤|              Note:
  * y-cam <---||--------|---------|--              - origin of CIP coincides with
  *          3|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤|                  the center of pixel (0, 0)
- *           ||        |         |                - the x-axis points into the
- *          4|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤<-pixel            image plane (i.e. from your
- *           ||        |         |                  point of view into your
- *          5|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤|<-image plane     monitor)
+ *           ||        |         |                - x-cam points into the image
+ *          4|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤<-pixel            plane (i.e. from your point
+ *           ||        |         |                  of view into your monitor)
+ *          5|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤|<-image plane
  *           -|--------|----------
  *            |        |
  *            y-cip
