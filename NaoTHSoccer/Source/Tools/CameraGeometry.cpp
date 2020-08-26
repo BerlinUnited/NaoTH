@@ -21,15 +21,25 @@ using namespace naoth;
  *   y-idx->1|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤|                ?-cam: Camera Frame Axis
  *           ||        |         |
  *          2|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤|              Note:
- *         --||--------|---------|--->y-cam       - origin of CIP coincides with
+ * y-cam <---||--------|---------|--              - origin of CIP coincides with
  *          3|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤|                  the center of pixel (0, 0)
- *           ||        |         |
- *          4|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤<-pixel
- *           ||        |         |
- *          5|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤|<-image plane
+ *           ||        |         |                - the x-axis points into the
+ *          4|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤<-pixel            image plane (i.e. from your
+ *           ||        |         |                  point of view into your
+ *          5|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤|<-image plane     monitor)
  *           -|--------|----------
  *            |        |
  *            y-cip
+ *
+ *  direction of view   z-cam
+ *  of the image above  |                                         oooo
+ *     ----------->     |                  |                    oooooooo
+ *                      |                  |<- image plane     ooObjectoo
+ *  projection center-> *-------------------------> x-cam        oooooo
+ *                      |<- focal length ->|                       ll
+ *                      |                  |                       ll
+ *                      |                  y-cip                  dllb
+ *
  */
 
 Vector3d CameraGeometry::imagePixelToCameraCoords( const CameraInfo& cameraInfo,
