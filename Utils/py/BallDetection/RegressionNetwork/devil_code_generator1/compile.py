@@ -2,25 +2,34 @@
 
 import argparse
 import pickle
-from utility_functions.onbcg import keras_compile
+from pathlib import Path
+
 from tensorflow.keras.models import load_model
 
+from devil_code_generator1.onbcg import keras_compile
+
+DATA_DIR = Path(Path(__file__).parent.parent.absolute() / "data").resolve()
+CPP_DIR = Path(Path(__file__).parent.parent.absolute() / "cpp").resolve()
+MODEL_DIR = Path(Path(__file__).parent.parent.absolute() / "models/best_models").resolve()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Compile keras network to c++')
     parser.add_argument('-b', '--database-path', dest='imgdb_path',
                         help='Path to the image database to use for training. '
-                             'Default is imgdb.pkl in current folder.', default='imgdb.pkl')
+                             'Default is imgdb.pkl in current folder.', default=str(DATA_DIR /'imgdb.pkl'))
     parser.add_argument('-m', '--model-path', dest='model_path',
-                        help='Store the trained model using this path. Default is model.h5.', default='model.h5')
+                        help='Store the trained model using this path. Default is model.h5.',
+                        default=str(MODEL_DIR / 'fy1500_conf.h5'))
     parser.add_argument('-c', '--code-path', dest='code_path',
                         help='Store the c code in this file. Default is <model_name>.c.')
 
     args = parser.parse_args()
 
     if args.code_path is None:
+        # load the model to get the name
         model = load_model(args.model_path)
-        args.code_path = model.name + ".c"
+        print(model.name)
+        args.code_path = CPP_DIR / (model.name + ".cpp")
 
     images = {}
     with open(args.imgdb_path, "rb") as f:

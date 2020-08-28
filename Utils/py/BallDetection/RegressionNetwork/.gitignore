@@ -1,8 +1,6 @@
-/img.bin
-/img.db
-/imgdb.pkl
-/logs
+# ignore python specific files
 venv/*
-/test.db
 
+# ignore data
 data/*
+models/logs

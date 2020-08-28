@@ -9,7 +9,7 @@ from sys import exit
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras as keras
-import model_zoo
+import utility_functions.model_zoo as model_zoo
 
 
 class AccHistory(keras.callbacks.Callback):
@@ -48,7 +48,7 @@ def str2bool(v):
 def main(raw_args=None, model=None):
     parser = argparse.ArgumentParser(description='Train the network given')
 
-    parser.add_argument('-b', '--database-path', dest='imgdb_path', default="imgdb.pkl",
+    parser.add_argument('-b', '--database-path', dest='imgdb_path', default="data/imgdb.pkl",
                         help='Path to the image database to use for training. Default is imgdb.pkl in current folder.')
     parser.add_argument("--log", dest="log", default="./logs/", help="Tensorboard log location.")
     parser.add_argument("--output", dest="output", default="./", help="Folder where the trained models are saved")
@@ -70,8 +70,8 @@ def main(raw_args=None, model=None):
     if model is not None:
         model.summary()
 
-    if not Path(args.log).exists():
-        Path.mkdir(Path(args.log))
+    # if not Path(args.output / args.log).exists():
+    #    Path.mkdir(Path(args.log))
 
     with open(args.imgdb_path, "rb") as f:
         pickle.load(f)  # skip mean
@@ -103,15 +103,18 @@ def main(raw_args=None, model=None):
                   metrics=['accuracy', precision_class_05, recall_class_05,
                            precision_class_08, recall_class_08, precision_class_09, recall_class_09])
 
-    filepath = Path(args.output) / "saved-model-{epoch:03d}-{val_acc:.2f}.h5"
+    """
+        The save callback will overwrite the previous models if the new model is better then the last. Restarting the 
+        training will alwas overwrite the models.
+    """
+    filepath = Path(args.output) / (model.name + ".h5")
     save_callback = tf.keras.callbacks.ModelCheckpoint(filepath=str(filepath), monitor='loss', verbose=1,
                                                        save_best_only=True)
 
-    callbacks = [save_callback]
-
-    log_path = Path(args.log) / str(datetime.now()).replace(" ", "_").replace(":", "-")
+    log_path = Path(args.output) / "logs" / (model.name + "_" + str(datetime.now()).replace(" ", "_").replace(":", "-"))
     log_callback = keras.callbacks.TensorBoard(log_dir=log_path, profile_batch=0)
-    callbacks.append(log_callback)
+
+    callbacks = [save_callback, log_callback]
 
     # TODO prepare an extra validation set, that is consistent over multiple runs
     # history = model.fit(x, y, batch_size=args.batch_size, epochs=args.epochs, verbose=1,
@@ -123,7 +126,10 @@ def main(raw_args=None, model=None):
 
 if __name__ == '__main__':
     test_model = model_zoo.fy_1500()
-    train_history = main(model=test_model)
+    train_history = main(['--output', "models"], model=test_model)
 
     with open("history_" + test_model.name + ".pkl", "wb") as f:
         pickle.dump(train_history.history, f)
+
+    # TODO maybe publish the models somewhere else?
+    # TODO make sure the models in h5 are actually the code that is used
