@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -346,7 +347,8 @@ public class ParametersPanel
     private void updateValues(String text) {
         Platform.runLater(() -> {
             int pos = values.getCaretPosition();
-            values.setText(text);
+            // sort lines before display values
+            values.setText(Arrays.asList(text.split("\n")).stream().sorted().collect(Collectors.joining("\n")));
             values.positionCaret(pos);
             values.setEditable(true);
             values.requestFocus();
