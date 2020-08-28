@@ -143,11 +143,11 @@ def export_images(logfile, img):
         for i, img_b, img_t, cm_b, cm_t in img:
             if img_b:
                 img_b = img_b.convert('RGB')
-                save_image_to_png(i, img_b, cm_b, output_folder_bottom, cam_id=1, name=args.input)
+                save_image_to_png(i, img_b, cm_b, output_folder_bottom, cam_id=1, name=logfile)
 
             if img_t:
                 img_t = img_t.convert('RGB')
-                save_image_to_png(i, img_t, cm_t, output_folder_top, cam_id=0, name=args.input)
+                save_image_to_png(i, img_t, cm_t, output_folder_top, cam_id=0, name=logfile)
 
             print("saving images from frame ", i)
     else:
