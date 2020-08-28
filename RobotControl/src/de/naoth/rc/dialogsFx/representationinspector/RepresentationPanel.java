@@ -361,8 +361,12 @@ public class RepresentationPanel
                 lastSearchPos = lastSearchPos - selection.length();
             }
             
-            // NOTE: content.setText() changes the scrolbar position
+            // NOTE: content.setText() changes the scrolbar position and the caret
+            //       position has sometimes also unwanted behavior, so we set it
+            //       back where it was before
+            int pos = content.getCaretPosition();
             content.replaceText(0, content.getText().length(), text);
+            content.positionCaret(pos);
             
             // re-select/search text in the new/replaced text
             if (!selection.isEmpty()) {
@@ -435,6 +439,7 @@ public class RepresentationPanel
 
         @Override
         public void errorOccured(String cause) {
+            System.err.println(cause);
             Platform.runLater(() -> {
                 content.setPromptText(cause);
                 content.clear();
