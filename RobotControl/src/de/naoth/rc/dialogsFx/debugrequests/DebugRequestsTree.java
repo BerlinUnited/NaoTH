@@ -31,6 +31,7 @@ public class DebugRequestsTree implements ResponseListener
     @FXML private TreeView<String> debugTree;
     
     /** Some key shortcut definitions */
+    private final KeyCombination shortcutUpdate = new KeyCodeCombination(KeyCode.F5);
     private final KeyCombination shortcutEnableEnter = new KeyCodeCombination(KeyCode.ENTER);
     private final KeyCombination shortcutEnableSpace = new KeyCodeCombination(KeyCode.SPACE);
     
@@ -110,8 +111,8 @@ public class DebugRequestsTree implements ResponseListener
     }
     
     /**
-     * Is called, when key event is triggered and handles SPACE/ENTER key press 
-     * to enable a selected debug request.
+     * Is called, when key event is triggered and handles SPACE/ENTER/F5 key press 
+     * to enable a selected debug request or update the request list.
      * 
      * @param k the triggered key event
      */
@@ -123,6 +124,8 @@ public class DebugRequestsTree implements ResponseListener
             if (i != null) {
                 i.setSelected(!i.isSelected());
             }
+        } else if (shortcutUpdate.match(k)) {
+            updateRequests();
         }
     }
     

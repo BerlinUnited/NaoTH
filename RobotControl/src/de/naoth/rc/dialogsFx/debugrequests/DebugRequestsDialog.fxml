@@ -5,13 +5,13 @@
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#fxDialogShortcuts" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.202-ea" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.202-ea" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <ToolBar prefHeight="40.0" prefWidth="200.0">
         <items>
           <Button mnemonicParsing="false" onAction="#fxUpdateRequests" text="Update">
                <tooltip>
-                  <Tooltip text="Update list of debug requests (F5)" />
+                  <Tooltip text="Update list of debug requests [Alt+Shift+U]" />
                </tooltip></Button>
         </items>
       </ToolBar>

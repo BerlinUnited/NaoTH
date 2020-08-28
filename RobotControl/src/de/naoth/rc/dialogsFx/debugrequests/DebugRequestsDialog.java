@@ -31,7 +31,8 @@ public class DebugRequestsDialog extends AbstractJFXDialog
     /** Controller of the DebugRequestsTree - set by FXML */
     @FXML private DebugRequestsTree debugRequestsTreeController;
     
-    private final KeyCombination shortcutUpdate = new KeyCodeCombination(KeyCode.F5);
+    /** Dialog shortcut for the corresponding button */
+    private final KeyCombination shortcutUpdate = new KeyCodeCombination(KeyCode.U, KeyCombination.ALT_DOWN, KeyCombination.SHIFT_DOWN);
 
     /**
      * Returns the ui definition.
@@ -58,6 +59,9 @@ public class DebugRequestsDialog extends AbstractJFXDialog
     public void afterInit() {
         // set the global robot control instance to the view controller
         debugRequestsTreeController.setRobotControl(Plugin.parent);
+        
+        // set the dialog shortcut
+        getScene().getAccelerators().put(shortcutUpdate, () -> { fxUpdateRequests(); });
     }
     
     /**
@@ -66,19 +70,5 @@ public class DebugRequestsDialog extends AbstractJFXDialog
     @FXML
     private void fxUpdateRequests() {
         debugRequestsTreeController.updateRequests();
-    }
-    
-    /**
-     * Is called, when key event is triggered and handles F5 key press to update 
-     * the debug requests.
-     * 
-     * @param k the triggered key event
-     */
-    @FXML
-    private void fxDialogShortcuts(KeyEvent k) {
-        // handle F5 key press and update debug requests
-        if (shortcutUpdate.match(k)) {
-            debugRequestsTreeController.updateRequests();
-        }
     }
 }
