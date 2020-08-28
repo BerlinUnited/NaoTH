@@ -15,7 +15,7 @@
          <items>
             <Button fx:id="btnUpdate" mnemonicParsing="false" onAction="#fxUpdateModules" styleClass="update" text="Update">
                <tooltip>
-                  <Tooltip text="Update modules (F5)" />
+                  <Tooltip text="Update modules [Alt+Shift+U]" />
                </tooltip>
             </Button>
             <Separator orientation="VERTICAL">
@@ -25,12 +25,12 @@
             </Separator>
             <Button fx:id="btnSave" disable="true" graphicTextGap="0.0" mnemonicParsing="false" onAction="#fxSaveModules" styleClass="save" text="Save">
                <tooltip>
-                  <Tooltip text="Save the module configuration on the robot (Ctrl+S)" />
+                  <Tooltip text="Save the module configuration on the robot [Alt+Shift+S]" />
                </tooltip>
             </Button>
             <Button fx:id="btnExport" disable="true" mnemonicParsing="false" onAction="#fxExportModules" styleClass="export" text="Export">
                <tooltip>
-                  <Tooltip text="Save the module configuration locally (Ctrl+E)" />
+                  <Tooltip text="Save the module configuration locally [Alt+Shift+E]" />
                </tooltip>
             </Button>
             <Separator orientation="VERTICAL">

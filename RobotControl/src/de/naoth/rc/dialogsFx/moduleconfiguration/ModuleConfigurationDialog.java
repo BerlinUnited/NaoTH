@@ -121,8 +121,8 @@ public class ModuleConfigurationDialog extends AbstractJFXDialog
         
         // set the dialog shortcuts
         getScene().getAccelerators().put(shortcutUpdate, () -> { fxUpdateModules(); });
-        getScene().getAccelerators().put(shortcutSave, () -> { fxSaveModules(); });
-        getScene().getAccelerators().put(shortcutExport, () -> { fxExportModules(); });
+        getScene().getAccelerators().put(shortcutSave, () -> { btnSave.fire(); });
+        getScene().getAccelerators().put(shortcutExport, () -> { btnExport.fire(); });
     }
 
     /**

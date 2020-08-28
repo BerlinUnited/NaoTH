@@ -2,6 +2,10 @@ package de.naoth.rc.dialogsFx.moduleconfiguration;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TreeView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 
 /**
  *
@@ -13,6 +17,9 @@ public class ModuleConfigurationModules
     private ModuleConfiguration mConfig;
     
     @FXML private TreeView<String> moduleTree;
+    
+    /** Some shortcuts */
+    private final KeyCombination shortcutRefresh = new KeyCodeCombination(KeyCode.F5);
     
     /**
      * Default constructor for the FXML loader.
@@ -53,5 +60,17 @@ public class ModuleConfigurationModules
         moduleTree.getRoot().setExpanded(true);
         */
         
+    }
+    
+    /**
+     * Is called, if the key pressed event is triggered by the tree view.
+     * 
+     * @param k the key (event), which triggered the event
+     */
+    @FXML
+    private void fxListShortcuts(KeyEvent k) {
+        if (shortcutRefresh.match(k)) {
+            this.mConfig.updateModules();
+        }
     }
 }
