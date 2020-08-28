@@ -16,12 +16,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -30,36 +30,46 @@ import javafx.scene.input.KeyEvent;
 /**
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
-public class RepresentationInspectorController
+public class RepresentationPanel
 {
     /** The used robot control instance */
     private RobotControl control;
     private LogFileEventManager log;
     private GenericManagerFactory factory;
     
-    @FXML ToggleButton btnRefresh;
-    @FXML ToggleButton btnBinary;
-    @FXML ToggleButton btnLog;
-    @FXML ChoiceBox<Command> type;
+    /** The available sources */
+    public enum Source { None, Connection, Binary, Log }
+    /** The types of the sources */
+    public enum Type { Cognition, Motion }
+    /** The current active source */
+    private final ObjectProperty<Source> source = new SimpleObjectProperty<>(Source.None);
+    /** The current active source type */
+    private final ObjectProperty<Type> type = new SimpleObjectProperty<>(Type.Cognition);
+    
+    /** UI elements */
     @FXML ListView<String> list;
     @FXML TextArea content;
     @FXML TextField search;
     
-    private int lastSearchPos = -1;
+    /** Some shortcuts */
     private final KeyCombination shortcutShowSearch = new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN);
     private final KeyCombination shortcutHideSearch = new KeyCodeCombination(KeyCode.ESCAPE);
     private final KeyCombination shortcutContSearchEnter = new KeyCodeCombination(KeyCode.ENTER);
     private final KeyCombination shortcutContSearchF3 = new KeyCodeCombination(KeyCode.F3);
     private final KeyCombination shortcutRefresh = new KeyCodeCombination(KeyCode.F5);
     
+    /** Some search related vars */
+    private int lastSearchPos = -1;
     private long listSearchTimeout = 0;
     private String listSearchString = "";
 
-    private final RepresentationListListener representationsListListener = new RepresentationListListener();
-    private final Command cmd_list_cognition = new ListCommand("Cognition", "Cognition:representation:list");
-    private final Command cmd_list_motion = new ListCommand("Motion", "Motion:representation:list");
+    /** The commands to retrieve the available representations */
+    private final Command cmd_list_cognition = new Command("Cognition:representation:list");
+    private final Command cmd_list_motion = new Command("Motion:representation:list");
     
+    /** Some data handler */
     private GenericManager dataHandlerManager;
+    private final RepresentationListUpdater representationsListUpdater = new RepresentationListUpdater();
     private final DataHandlerPrint dataHandlerPrint = new DataHandlerPrint();
     private final DataHandlerBinary dataHandlerBinary = new DataHandlerBinary();
     private final DataHandlerLog dataHandlerLog = new DataHandlerLog();
@@ -67,13 +77,13 @@ public class RepresentationInspectorController
     /**
      * Default constructor for the FXML loader.
      */
-    public RepresentationInspectorController() {}
+    public RepresentationPanel() {}
     
     /**
      * Constructor for custom initialization.
      * @param control
      */
-    public RepresentationInspectorController(RobotControl control) {
+    public RepresentationPanel(RobotControl control) {
         setRobotControl(control);
     }
     
@@ -81,23 +91,12 @@ public class RepresentationInspectorController
      * Gets called, after the FXML file was loaded.
      */
     @FXML
-    private void initialize()
-    {
-        // set up the type dropdownbox
-        type.getItems().add(cmd_list_cognition);
-        type.getItems().add(cmd_list_motion);
-        type.setValue(cmd_list_cognition);
-  
-        // install some ui (button) dependencies (enable/disable on select)
-        btnLog.disableProperty().bind(btnRefresh.selectedProperty());
-        btnBinary.disableProperty().bind(btnRefresh.selectedProperty().not());
-        type.disableProperty().bind(btnRefresh.selectedProperty().not());
-        btnRefresh.disableProperty().bind(btnLog.selectedProperty());
-        btnRefresh.selectedProperty().addListener((o) -> {
-            if (!btnRefresh.isSelected() && btnBinary.isSelected()) { btnBinary.setSelected(false); }
-        });
+    private void initialize() {
+        // handle changes of the global state (set by parent)
+        type.addListener((ob) -> { changeType(); });
+        source.addListener((ob) -> { changeSource(); });
         // handle list changes
-        list.disableProperty().bind(btnRefresh.selectedProperty().or(btnLog.selectedProperty()).not());
+        list.disableProperty().bind(source.isEqualTo(Source.None));
         list.getSelectionModel().selectedItemProperty().addListener((o) -> { subscribeRepresentation(); });
         // handle search input
         search.textProperty().addListener((ob) -> { search(true); });
@@ -130,58 +129,30 @@ public class RepresentationInspectorController
     }
     
     /**
-     * Gets called, when the refresh button is un-/selected.
-     * Retrieves a list of the available representations.
+     * Returns the current source property (Print, Binary, Log)
+     * 
+     * @return the (current) source property
      */
-    @FXML
-    private void fxRefresh() {
-        if (btnRefresh.isSelected()) {
-            retrieveRepresentations();
-        } else {
-            unsubscribeRepresentation();
-        }
+    public ObjectProperty<Source> getSourceProperty() {
+        return source;
     }
 
     /**
-     * Is called when the dropdownbox changes.
-     * Based on the selected item a list of the available representations is retrieved.
+     * Returns the current type property (Cognition, Motion).
+     * 
+     * @return the (current) type property
      */
-    @FXML
-    private void fxType() {
-        unsubscribeRepresentation();
-        retrieveRepresentations();
+    public ObjectProperty<Type> getTypeProperty() {
+        return type;
     }
-    
-    /**
-     * Is called, when the binary button is toggled.
-     * Subscribes to a selected representation in binary mode.
-     */
-    @FXML
-    private void fxBinary() {
-        subscribeRepresentation();
-    }
-    
-    /**
-     * Is called, when the log button is toggled.
-     * Subscribes to the log frame listener.
-     */
-    @FXML
-    private void fxLog() {
-        if (btnLog.isSelected()) {
-          log.addListener(dataHandlerLog);
-          dataHandlerLog.showFrame();
-      } else {
-          log.removeListener(dataHandlerLog);
-      }
-    }
-    
+
     /**
      * Is called, if the key pressed event is triggered by the list view.
      * 
      * @param k the key (event), which triggered the event
      */
     @FXML
-    private void fxListSearch(KeyEvent k) {
+    private void fxListShortcuts(KeyEvent k) {
         // check if we got a printable character
         if (k.getText() != null && !k.getText().isEmpty()) {
             // "fast" typing is one search string; a pause results in a new search
@@ -199,20 +170,11 @@ public class RepresentationInspectorController
                     break;
                 }
             }
-        }
-    }
-    
-    /**
-     * Is called, if the key pressed event is triggered.
-     * Handles the F5 (refresh) shortcut.
-     * 
-     * @param k the key (event), which triggered the event
-     */
-    @FXML
-    private void fxDialogShortcuts(KeyEvent k) {
-        if (shortcutRefresh.match(k)) {
-            btnRefresh.setSelected(true);
-            fxRefresh();
+        } else if (shortcutRefresh.match(k)) {
+            // refresh makes only sence when somehow connected
+            if (source.get() != Source.Connection || source.get() != Source.Binary) {
+                changeSource();
+            }
         }
     }
     
@@ -232,8 +194,9 @@ public class RepresentationInspectorController
         } else if (shortcutRefresh.match(k)) {
             // F5 is consumed by the textarea and does not bubble to the parent 
             // node, so we must handle it here
-            btnRefresh.setSelected(true);
-            fxRefresh();
+            if (source.get() != Source.Connection || source.get() != Source.Binary) {
+                changeSource();
+            }
         }
     }
     
@@ -279,14 +242,52 @@ public class RepresentationInspectorController
     }
     
     /**
+     * Handles changes to the current source.
+     * The appropiate handler is set or unset and the selected representation is
+     * subscribed or unsubscribed.
+     */
+    private void changeSource() {
+        switch (source.get()) {
+            case Connection:
+            case Binary:
+                retrieveRepresentations();
+                break;
+            case Log:
+                list.getItems().clear();
+                log.addListener(dataHandlerLog);
+                dataHandlerLog.showFrame();
+                break;
+            case None:
+                unsubscribeRepresentation();
+                log.removeListener(dataHandlerLog);
+                break;
+        }
+    }
+
+    /**
+     * Handles changes of the current source type (cognition, motion) and retrieves
+     * the appropiate reperesentation based on the type.
+     */
+    private void changeType() {
+        if (source.get() == Source.Connection || source.get() == Source.Binary) {
+            unsubscribeRepresentation();
+            retrieveRepresentations();
+        }
+    }
+    
+    /**
      * Retrieves a list of the available representations.
-     * If not connected, the refresh button is set to "un-selected".
+     * If not connected, the source is set to "None".
      */
     private void retrieveRepresentations() {
         if (control != null && control.checkConnected()) {
-            control.getMessageServer().executeCommand(representationsListListener, type.getValue());
+            if (type.get() == Type.Cognition) {
+                control.getMessageServer().executeCommand(representationsListUpdater, cmd_list_cognition);
+            } else if (type.get() == Type.Motion) {
+                control.getMessageServer().executeCommand(representationsListUpdater, cmd_list_motion);
+            }
         } else {
-            btnRefresh.setSelected(false);
+            source.set(Source.None);
         }
     }
     
@@ -299,19 +300,24 @@ public class RepresentationInspectorController
         // subscribe to the new representation (if set)
         String representation = list.getSelectionModel().getSelectedItem();
         if (representation != null) {
-            if (btnLog.isSelected()) {
-                dataHandlerLog.showFrame();
-            } else {
-                if (btnBinary.isSelected()) {
-                    dataHandlerBinary.setRepresentation(representation);
-                    Command cmd = new Command(type.getValue().toString() + ":representation:get").addArg(representation);
-                    dataHandlerManager = factory.getManager(cmd);
-                    dataHandlerManager.addListener(dataHandlerBinary);
-                } else {
-                    Command cmd = new Command(type.getValue().toString() + ":representation:print").addArg(representation);
-                    dataHandlerManager = factory.getManager(cmd);
+            switch (source.get()) {
+                case Connection:
+                    Command cmdPrint = new Command(type.get().toString() + ":representation:print").addArg(representation);
+                    dataHandlerManager = factory.getManager(cmdPrint);
                     dataHandlerManager.addListener(dataHandlerPrint);
-                }
+                    break;
+                case Binary:
+                    dataHandlerBinary.setRepresentation(representation);
+                    Command cmdBinary = new Command(type.get().toString() + ":representation:get").addArg(representation);
+                    dataHandlerManager = factory.getManager(cmdBinary);
+                    dataHandlerManager.addListener(dataHandlerBinary);
+                    break;
+                case Log:
+                    dataHandlerLog.showFrame();
+                    break;
+                case None:
+                    // do nothing, since no source is set/selected
+                    break;
             }
         }
     }
@@ -366,27 +372,9 @@ public class RepresentationInspectorController
     }
 
     /**
-     * Extends the command with a display name. This is used in the list view.
-     */
-    class ListCommand extends Command
-    {
-        private final String listName;
-
-        public ListCommand(String listName, String commandName) {
-            super(commandName);
-            this.listName = listName;
-        }
-
-        @Override
-        public String toString() {
-            return listName;
-        }
-    }
-    
-    /**
      * Handles the response of a representation list command.
      */
-    class RepresentationListListener implements ResponseListener
+    class RepresentationListUpdater implements ResponseListener
     {
         @Override
         public void handleResponse(byte[] result, Command command) {
