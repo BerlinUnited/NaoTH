@@ -11,6 +11,8 @@ import tensorflow as tf
 from tensorflow import keras as keras
 import utility_functions.model_zoo as model_zoo
 
+DATA_DIR = Path(Path(__file__).parent.absolute() / "data").resolve()
+
 
 class AccHistory(keras.callbacks.Callback):
     def on_train_begin(self, logs={}):
@@ -48,8 +50,8 @@ def str2bool(v):
 def main(raw_args=None, model=None):
     parser = argparse.ArgumentParser(description='Train the network given')
 
-    parser.add_argument('-b', '--database-path', dest='imgdb_path', default="data/imgdb.pkl",
-                        help='Path to the image database to use for training. Default is imgdb.pkl in current folder.')
+    parser.add_argument('-b', '--database-path', dest='imgdb_path', default=str(DATA_DIR / 'imgdb.pkl'),
+                        help='Path to the image database to use for training. Default is imgdb.pkl in the data folder.')
     parser.add_argument("--log", dest="log", default="./logs/", help="Tensorboard log location.")
     parser.add_argument("--output", dest="output", default="./", help="Folder where the trained models are saved")
 
@@ -105,7 +107,7 @@ def main(raw_args=None, model=None):
 
     """
         The save callback will overwrite the previous models if the new model is better then the last. Restarting the 
-        training will alwas overwrite the models.
+        training will always overwrite the models.
     """
     filepath = Path(args.output) / (model.name + ".h5")
     save_callback = tf.keras.callbacks.ModelCheckpoint(filepath=str(filepath), monitor='loss', verbose=1,
@@ -132,4 +134,3 @@ if __name__ == '__main__':
         pickle.dump(train_history.history, f)
 
     # TODO maybe publish the models somewhere else?
-    # TODO make sure the models in h5 are actually the code that is used

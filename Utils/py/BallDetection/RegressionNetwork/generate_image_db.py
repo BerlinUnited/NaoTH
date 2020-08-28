@@ -41,8 +41,7 @@ if __name__ == '__main__':
                                                  'using a folder with 0, 1 etc. subfolders with png images.')
     parser.add_argument('-d', '--download', default=True, help='download dataset from kaggle')
     parser.add_argument('-b', '--database-path', dest='imgdb_path', default=str(DATA_DIR / 'imgdb.pkl'),
-                        help='Path to the image database to write. '
-                             'Default is imgdb.pkl in current folder.')
+                        help='Path to the image database to write. Default is imgdb.pkl in the data folder.')
     parser.add_argument('-i', '--image-folder', dest='img_path', default=str(DATA_DIR / 'TK-03'),
                         help='Path to the CSV file(s) with region annotation.')
     parser.add_argument('-r', '--resolution', dest='res',
