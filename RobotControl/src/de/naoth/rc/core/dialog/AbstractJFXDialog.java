@@ -116,4 +116,7 @@ public abstract class AbstractJFXDialog extends AbstractDialog implements Dialog
     return null;
   }
 
+  protected Scene getScene() {
+      return container.getScene();
+  }
 }

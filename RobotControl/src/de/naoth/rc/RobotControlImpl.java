@@ -902,6 +902,8 @@ public class RobotControlImpl extends javax.swing.JFrame
     {
       Helper.handleException(ex);
     }
+    // make sure the JavaFX thread is closed (otherwise exceptions get sometimes thrown)
+    javafx.application.Platform.exit();
   }
 
   private void readConfigFromFile()
