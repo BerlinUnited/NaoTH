@@ -33,8 +33,9 @@ public class ParametersDialog extends AbstractJFXDialog
     @FXML private Label scheme;
 
     /** Some key shortcut definitions */
-    private final KeyCombination shortcutUpdate = new KeyCodeCombination(KeyCode.F5);
-    private final KeyCombination shortcutExport = new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination shortcutUpdate = new KeyCodeCombination(KeyCode.U, KeyCombination.ALT_DOWN, KeyCombination.SHIFT_DOWN);
+    private final KeyCombination shortcutExport = new KeyCodeCombination(KeyCode.E, KeyCombination.ALT_DOWN, KeyCombination.SHIFT_DOWN);
+    private final KeyCombination shortcutExportAll = new KeyCodeCombination(KeyCode.A, KeyCombination.ALT_DOWN, KeyCombination.SHIFT_DOWN);
     
     /**
      * Returns the ui definition.
@@ -63,6 +64,11 @@ public class ParametersDialog extends AbstractJFXDialog
         // set the global robot control instance to the view controller
         parametersPanelController.setRobotControl(Plugin.parent);
         scheme.textProperty().bind(parametersPanelController.getSchemeProperty());
+        
+        // set the dialog shortcuts
+        getScene().getAccelerators().put(shortcutUpdate, () -> { fxUpdateParams(); });
+        getScene().getAccelerators().put(shortcutExport, () -> { fxExport(); });
+        getScene().getAccelerators().put(shortcutExportAll, () -> { fxExportAll(); });
     }
     
     /**
@@ -87,20 +93,5 @@ public class ParametersDialog extends AbstractJFXDialog
     @FXML
     private void fxExportAll() {
         parametersPanelController.exportAllParameters();
-    }
-    
-    /**
-     * Is called, when key event is triggered.
-     * The parameter update and the export is handled.
-     * 
-     * @param k the triggered key event
-     */
-    @FXML
-    private void fxDialogShortcuts(KeyEvent k) {
-        if (shortcutUpdate.match(k)) {
-            parametersPanelController.updateParams();
-        } else if (shortcutExport.match(k)) {
-            parametersPanelController.exportParameter();
-        }
     }
 }

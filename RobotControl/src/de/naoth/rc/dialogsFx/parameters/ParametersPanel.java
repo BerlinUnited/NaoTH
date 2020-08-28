@@ -89,6 +89,7 @@ public class ParametersPanel
         params.setRoot(new TreeItem<>());
         params.getRoot().setExpanded(true);
         params.getSelectionModel().selectedItemProperty().addListener((o) -> { retrieveValues(); });
+        params.setOnKeyPressed((k) -> { if (shortcutUpdate.match(k)) { updateParams(); } });
         // set the options for the fade-out animation
         fadeOut.setNode(notice);
         fadeOut.setFromValue(1.0);
