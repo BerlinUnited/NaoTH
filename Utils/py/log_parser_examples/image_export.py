@@ -155,9 +155,9 @@ def export_images(logfile, img):
         sys.exit(1)
 
 
-def show_images(img):
+def show_images(log, img):
     fig, ax = plt.subplots(2)
-    fig.suptitle('Images from - ' + args.input)
+    fig.suptitle('Images from - ' + log)
     ax[0].set_axis_off()
     ax[1].set_axis_off()
 
@@ -214,4 +214,4 @@ if __name__ == "__main__":
         for log in logfile_list:
             with LogReader(log, myParser) as reader:
                 images = map(get_images, reader.read())
-                show_images(images)
+                show_images(log, images)
