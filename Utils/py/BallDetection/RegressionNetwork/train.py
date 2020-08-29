@@ -52,7 +52,6 @@ def main(raw_args=None, model=None):
 
     parser.add_argument('-b', '--database-path', dest='imgdb_path', default=str(DATA_DIR / 'imgdb.pkl'),
                         help='Path to the image database to use for training. Default is imgdb.pkl in the data folder.')
-    parser.add_argument("--log", dest="log", default="./logs/", help="Tensorboard log location.")
     parser.add_argument("--output", dest="output", default="./", help="Folder where the trained models are saved")
 
     # for continuing training
@@ -71,9 +70,6 @@ def main(raw_args=None, model=None):
 
     if model is not None:
         model.summary()
-
-    # if not Path(args.output / args.log).exists():
-    #    Path.mkdir(Path(args.log))
 
     with open(args.imgdb_path, "rb") as f:
         pickle.load(f)  # skip mean
@@ -100,6 +96,7 @@ def main(raw_args=None, model=None):
     recall_class_09 = tf.keras.metrics.Recall(name="recall_classifcation_0.9", thresholds=0.9, class_id=3)
 
     # For using custom loss import your loss function and use the name of the function as loss argument.
+    # NOTE Tensorflow 2 does not allow precision metrics for regression tasks
     model.compile(loss='mean_squared_error',
                   optimizer='adam',
                   metrics=['accuracy', precision_class_05, recall_class_05,

@@ -39,7 +39,7 @@ def str2bool(v):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate the image database for training etc. '
                                                  'using a folder with 0, 1 etc. subfolders with png images.')
-    parser.add_argument('-d', '--download', default=True, help='download dataset from kaggle')
+    parser.add_argument('-d', '--download', default=False, help='download dataset from kaggle')
     parser.add_argument('-b', '--database-path', dest='imgdb_path', default=str(DATA_DIR / 'imgdb.pkl'),
                         help='Path to the image database to write. Default is imgdb.pkl in the data folder.')
     parser.add_argument('-i', '--image-folder', dest='img_path', default=str(DATA_DIR / 'TK-03'),
