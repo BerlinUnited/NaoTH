@@ -243,8 +243,7 @@ public class ParametersPanel
      * @return true, if writing was successfull
      */
     private boolean writeParameterConfig(String name, File f) {
-        try {
-            BufferedWriter bf = new BufferedWriter(new FileWriter(f));
+        try (BufferedWriter bf = new BufferedWriter(new FileWriter(f))) {
             bf.write("["+name+"]\n");
             for (Map.Entry<String, String> e : parseText().entrySet()) {
                 bf.write(e.getKey() + "=" + e.getValue() + "\n");
@@ -441,8 +440,7 @@ public class ParametersPanel
 
         @Override
         public void handleResponse(byte[] result, Command command) {
-            try {
-                BufferedWriter bf = new BufferedWriter(new FileWriter(f));
+            try(BufferedWriter bf = new BufferedWriter(new FileWriter(f))) {
                 bf.write("[" + param + "]\n");
                 bf.write(new String(result));
                 bf.close();
