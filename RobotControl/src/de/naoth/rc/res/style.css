@@ -5,7 +5,7 @@
  ******************************************************************************/
 Button.update {
     /* button with resizable image */
-    -fx-background-image: url(update.png);
+    -fx-background-image: url(lucky/view-refresh.png);
     -fx-background-size: 16px 16px;
     -fx-background-repeat: no-repeat;
     /* position the image correctly */
@@ -15,7 +15,7 @@ Button.update {
 
 Button.save {
     /* image only button */
-    -fx-background-image: url(save.png);
+    -fx-background-image: url(lucky/media-floppy.png);
     -fx-background-size: 20px 20px;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
@@ -25,7 +25,7 @@ Button.save {
 
 Button.export {
     /* image only button */
-    -fx-background-image: url(export.png);
+    -fx-background-image: url(lucky/document-export.png);
     -fx-background-size: 20px 20px;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
@@ -62,21 +62,21 @@ Button.representation:hover {
 
 #representation-list ToggleButton {
     /* same for all state icons (below); image only button */
-    -fx-background-size: 20px 20px;
+    -fx-background-size: 19px 19px;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
 }
 
 #representation-list ToggleButton.info {
-    -fx-background-image: url(info.png);
+    -fx-background-image: url(lucky/dialog-information.png);
 }
 
 #representation-list ToggleButton.warning {
-    -fx-background-image: url(attention.png);
+    -fx-background-image: url(lucky/dialog-warning.png);
 }
 
 #representation-list ToggleButton.error {
-    -fx-background-image: url(stop.png);
+    -fx-background-image: url(lucky/dialog-error.png);
 }
 
 #representation-list .list-cell.info {
