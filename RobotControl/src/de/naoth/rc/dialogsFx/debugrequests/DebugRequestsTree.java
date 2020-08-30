@@ -120,8 +120,16 @@ public class DebugRequestsTree implements ResponseListener
     private void fxDebugTreeShortcuts(KeyEvent k) {
         // handle space/enter key press and toggle selected state
         if (shortcutEnableEnter.match(k) || shortcutEnableSpace.match(k)) {
+            // HACK: make sure that a focused item is also selected
+            //       especially the space key toggles the selected state, but
+            //       keeps the focus on the item and therefore requires two keystrokes!
             TreeNodeItem i = (TreeNodeItem) debugTree.getSelectionModel().getSelectedItem();
-            if (i != null) {
+            if (i == null && debugTree.getFocusModel().getFocusedItem() != null) {
+                i = (TreeNodeItem) debugTree.getFocusModel().getFocusedItem();
+                debugTree.getSelectionModel().select(i);
+            }
+
+            if (i != null && i.isLeaf()) {
                 i.setSelected(!i.isSelected());
             }
         } else if (shortcutUpdate.match(k)) {
