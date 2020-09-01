@@ -12,8 +12,7 @@
 #include "PlatformInterface/Platform.h"
 #include "Tools/Communication/MessageQueue/MessageQueue4Threads.h"
 #include <Tools/ImageProcessing/ColorModelConversions.h>
-#include <Tools/DataConversion.h>
-//#include <Tools/Debug/DebugRequest.h>
+#include <Tools/StringTools.h>
 #include <DebugCommunication/DebugCommandManager.h>
 
 #include <Tools/ThreadUtil.h>
@@ -148,17 +147,17 @@ WebotsController::~WebotsController()
 
 string WebotsController::getBodyNickName() const
 {
-  return theGameInfo.teamName + DataConversion::toStr(theGameInfo.playerNumber);
+  return theGameInfo.teamName + StringTools::toStr(theGameInfo.playerNumber);
 }
 
 string WebotsController::getHeadNickName() const
 {
-  return theGameInfo.teamName + DataConversion::toStr(theGameInfo.playerNumber);
+  return theGameInfo.teamName + StringTools::toStr(theGameInfo.playerNumber);
 }
 
 string WebotsController::getBodyID() const
 {
-  return DataConversion::toStr(theGameInfo.playerNumber);
+  return StringTools::toStr(theGameInfo.playerNumber);
 }
 
 bool WebotsController::connect(const std::string& host, int port)
@@ -674,7 +673,7 @@ int WebotsController::parseInt(char* data, int& value)
 {
   std::string tmp;
   int c = parseString(data, tmp);
-  DataConversion::strTo(tmp, value);
+  StringTools::strTo(tmp, value);
   return c;
 }
 
