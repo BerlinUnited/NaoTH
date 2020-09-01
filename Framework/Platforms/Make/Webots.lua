@@ -21,8 +21,7 @@ project "Webots"
     "gthread-2.0",
     "protobuf",
     "fftw3",
-    "jpeg",
-    "msgpackd"
+    "jpeg"
    }
   
   targetname "naoth-webots"
