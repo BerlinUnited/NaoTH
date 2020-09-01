@@ -4,7 +4,7 @@
 #define _LolaAdaptor_h_
 
 #include "Tools/Lola.h"
-#include "Tools/IPCData.h"
+#include "Tools/DCMData.h"
 
 #include <Tools/ThreadUtil.h>
 #include "Tools/SharedMemoryIO.h"
@@ -214,7 +214,7 @@ private:
       
       
       // like old DCM motionCallbackPost
-      NaoSensorData* sensorData = naoSensorData.writing();
+      DCMSensorData* sensorData = naoSensorData.writing();
       
       // current system time (System time, not nao time (!))
       sensorData->timeStamp = NaoTime::getSystemTimeInMilliSeconds();
@@ -644,7 +644,7 @@ private:
   BasicMotion* initialMotion;
 
   // DCM --> NaoController
-  SharedMemory<NaoSensorData> naoSensorData;
+  SharedMemory<DCMSensorData> naoSensorData;
 
   // NaoController --> DCM
   //SharedMemory<NaoCommandData> naoCommandData;
