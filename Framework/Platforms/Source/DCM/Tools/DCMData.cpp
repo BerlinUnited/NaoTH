@@ -13,7 +13,6 @@
 
 using namespace naoth;
 
-
 void DCMSensorData::get(SensorJointData& data) const
 {
   unsigned int currentIndex = theSensorJointDataIndex;
@@ -51,7 +50,7 @@ void DCMSensorData::get(FSRData& data) const
   for (int i = 0; i < FSRData::numOfFSR; i++) {
     data.dataRight[i] = sensorsValue[currentIndex++];
   }
-}//end FSRData
+}
 
 void DCMSensorData::get(AccelerometerData& data) const
 {
@@ -83,7 +82,7 @@ void DCMSensorData::get(AccelerometerData& data) const
   data.data.x *= -1;
   //data.data.y *= 1;
   data.data.z *= -1;
-}//end AccelerometerData
+}
 
 void DCMSensorData::get(GyrometerData& data) const
 {
@@ -114,14 +113,15 @@ void DCMSensorData::get(GyrometerData& data) const
   data.data.y = (data.rawData.y + offset)*scale_gyro;
   data.data.z = (data.rawData.z + offset)*scale_gyro;
   */
-}//end GyrometerData
+}
 
 void DCMSensorData::get(InertialSensorData& data) const
 {
   data.data.x = sensorsValue[theInertialSensorDataIndex];
   data.data.y = sensorsValue[theInertialSensorDataIndex+1];
-}//end InertialSensorData
+}
 
+// HACK: this method applies iterative updates, so the result depends on the last state (!)
 void DCMSensorData::get(ButtonData& data) const
 {
   unsigned int currentIndex = theButtonDataIndex;
@@ -144,7 +144,7 @@ void DCMSensorData::get(ButtonData& data) const
       data.numOfFramesPressed[i] = 0;
     }
   }
-}//end ButtonData
+}
 
 void DCMSensorData::get(UltraSoundReceiveData& data) const
 {
@@ -156,8 +156,7 @@ void DCMSensorData::get(UltraSoundReceiveData& data) const
     data.dataLeft[i] = sensorsValue[currentIndex++];
     data.dataRight[i] = sensorsValue[currentIndex++];
   }
-
-}//end UltraSoundReceiveData
+}
 
 void DCMSensorData::get(BatteryData& data) const
 {
