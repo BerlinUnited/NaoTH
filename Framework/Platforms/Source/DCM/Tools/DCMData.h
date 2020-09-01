@@ -4,10 +4,10 @@
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
  * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Mellmann, Heinrich</a>
  *
- * @breief Sensor data obtained from the DCM (Device Communication Manager).
- *         The data is read from the ALMemory as a block into an array of float-values and can be unpacked 
- *         into separate representations by `get()` methods.
- *         Used for communicating sensor data NaoSMAL to the module architecture (NaoRobot) on NAO versions <= V5.
+ * Sensor data obtained from the DCM (Device Communication Manager).
+ * The data is read from the ALMemory as a block into an array of float-values and can be unpacked 
+ * into separate representations by `get()` methods.
+ * Used for communicating sensor data NaoSMAL to the module architecture (NaoRobot) on NAO versions <= V5.
  *
  */
 
