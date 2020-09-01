@@ -6,6 +6,7 @@ backup_*/
 #deploy/
 NaoSCP/tmp/
 XabslEditor/
+.gradle/
 
 #java project files
 build.xml
@@ -26,6 +27,7 @@ compile_commands.json
 
 #messages
 RobotControl/RobotConnector/src/de/naoth/rc/messages
+RobotControl/src/de/naoth/rc/core/messages
 NaoTHSoccer/Source/Messages
 Framework/Commons/Source/Messages
 
@@ -35,3 +37,6 @@ behavior-ic.dat
 #vim swap files
 .*.swp
 /Utils/.vscode/settings.json
+
+# macOS
+.DS_Store

@@ -80,6 +80,22 @@ setEtc(){
 
 	# hostname
 	deployFile "/etc/hostname" "root" "644" "v6"
+
+	# ====================  pulseaudio stuff ====================
+
+	deployFile "/etc/pulse/client-multi-user.conf" "root" "644" "v6"
+	deployFile "/etc/pulse/default-multi-user.pa" "root" "644" "v6"
+
+	# NOTE: usage of nested quatation marks is intended. $(...) creates
+	# a new context for quotation marks. Explained here:
+	# https://unix.stackexchange.com/a/118438
+	if [ -z "$(grep "multi-user" /etc/pulse/client.conf)" ]; then
+		echo ".include /etc/pulse/client-multi-user.conf" >> /etc/pulse/client.conf
+	fi
+
+	if [ -z "$(grep "multi-user" /etc/pulse/default.pa)" ]; then
+		echo ".include /etc/pulse/default-multi-user.pa" >> /etc/pulse/default.pa
+	fi
 }
 
 setNetwork(){

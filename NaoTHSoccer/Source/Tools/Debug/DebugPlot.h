@@ -12,7 +12,6 @@
 #include <cmath>
 
 #include <Tools/DataStructures/RingBuffer.h>
-#include "Tools/NaoTime.h"
 #include "Tools/Math/Vector2.h"
 
 #include "Tools/Debug/DebugRequest.h"

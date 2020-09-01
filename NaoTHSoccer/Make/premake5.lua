@@ -23,7 +23,12 @@ print("INFO: generating solution NaoTHSoccer")
 print("  PLATFORM = " .. PLATFORM)
 print("  OS = " .. os.target())
 print("  ACTION = " .. (_ACTION or "NONE"))
-print()
+
+-- generate the project directory
+local project_dir = "../build/" .. (_OPTIONS["platform"] or _ACTION)
+print("  LOCATION = " .. project_dir)
+
+print("") -- empty line :)
 
 
 -- touch main.cpp to make sure that the repository defines have effect
@@ -34,9 +39,9 @@ end
 workspace "NaoTHSoccer"
   platforms {"Native", "Nao"}
   configurations {"OptDebug", "Debug"}
-  location "../build"
+  location (project_dir)
 
-  -- add general pathes
+  -- add general paths
   -- this mainly reflects the internal structure of the extern directory
   sysincludedirs {
     FRAMEWORK_PATH .. "/Commons/Source/Messages",
@@ -52,9 +57,10 @@ workspace "NaoTHSoccer"
     FRAMEWORK_PATH .. "/Commons/Source" 
   }
 
-  syslibdirs { EXTERN_PATH .. "/lib", EXTERN_PATH .. "/lib64"} -- for os that differentiate between lib and lib64
+  -- for os that differentiate between lib and lib64
+  syslibdirs { EXTERN_PATH .. "/lib", EXTERN_PATH .. "/lib64"} 
 
-  -- this function should be defined in 
+  -- this function can be adjusted in projectconfig.user.lua
   if set_user_defined_paths ~= nil then 
     set_user_defined_paths() 
   end
@@ -87,7 +93,7 @@ workspace "NaoTHSoccer"
   {
     inputFiles  = os.matchfiles(path.join(COMMONS_MESSAGES, "*.proto")),
     cppOut      = path.join(FRAMEWORK_PATH,"Commons/Source/Messages/"),
-    javaOut     = path.join(NAOTH_PROJECT, "RobotControl/RobotConnector/src/"),
+    javaOut     = path.join(NAOTH_PROJECT, "RobotControl/src/"),
     pythonOut   = path.join(NAOTH_PROJECT, "Utils/py/naoth/naoth/pb/"),
     includeDirs = {COMMONS_MESSAGES}
   }
@@ -97,7 +103,7 @@ workspace "NaoTHSoccer"
   {
     inputFiles  = os.matchfiles(path.join(NAOTH_PROJECT, "NaoTHSoccer/Messages/*.proto")),
     cppOut      = path.join(NAOTH_PROJECT, "NaoTHSoccer/Source/Messages/"),
-    javaOut     = path.join(NAOTH_PROJECT, "RobotControl/RobotConnector/src/"),
+    javaOut     = path.join(NAOTH_PROJECT, "RobotControl/src/"),
     pythonOut   = path.join(NAOTH_PROJECT, "Utils/py/naoth/naoth/pb/"),
     includeDirs = {COMMONS_MESSAGES, path.join(NAOTH_PROJECT, "NaoTHSoccer/Messages/")}
   }
@@ -163,7 +169,9 @@ workspace "NaoTHSoccer"
     -- this is needed to supress the linker warning in VS2013 if gloabal links are used 
     -- linkoptions { "/ignore:4221" } -- LNK4221: This object file does not define any previously undefined public symbols, so it will not be used by any link operation that consumes this library
 
-    debugdir "$(SolutionDir).."
+    -- from docu:
+    -- "path to the working directory, relative to the currently executing script file."
+    debugdir ".."
     
     -- remove the nao platform if action is vs*
     removeplatforms { "Nao" }
@@ -236,7 +244,7 @@ workspace "NaoTHSoccer"
     if os.ishost("windows") and _ACTION ~= nil and string.match(_ACTION, "^vs.*") then
       project "Generate"
         kind "Utility"
-        prebuildcommands { "cd ../Make/ && premake5 --Test " .. _ACTION }
+        prebuildcommands { "cd ../../Make/ && premake5 --Test " .. _ACTION }
     end
   
   -- set up platforms
