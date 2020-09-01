@@ -10,6 +10,10 @@
 *
 */
 
+#ifndef _LolaData_h_
+#define _LolaData_h_
+
+
 // TODO: what is it for?
 //#define MSGPACK_USE_DEFINE_MAP 
 
@@ -261,3 +265,5 @@ struct ActuatorData
   
   MSGPACK_DEFINE_MAP(Position, Stiffness, REar, LEar, Chest, LEye, REye, LFoot, RFoot, Skull, Sonar);
 };
+
+#endif //_LolaData_h_
