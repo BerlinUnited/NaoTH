@@ -44,7 +44,7 @@
 #include "Representations/Infrastructure/AudioData.h"
 
 // local tools
-#include "Tools/IPCData.h"
+#include "Tools/DCMData.h"
 #include "Tools/NaoTime.h"
 #include "Tools/SharedMemoryIO.h"
 

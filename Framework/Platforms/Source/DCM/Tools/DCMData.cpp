@@ -6,7 +6,8 @@
  *
  */
 
-#include "IPCData.h"
+#include "DCMData.h"
+
 #include <cstring>
 #include "Tools/NaoTime.h"
 

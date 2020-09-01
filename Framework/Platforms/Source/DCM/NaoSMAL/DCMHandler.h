@@ -21,7 +21,7 @@
 //http://doc.aldebaran.com/2-1/dev/cpp/examples/sensors/fastgetsetdcm/fastgetsetexample.html?highlight=almemoryfastaccess
 //#include <almemoryfastaccess/almemoryfastaccess.h>
 
-#include "Tools/IPCData.h"
+#include "Tools/DCMData.h"
 #include "DCM_led.h"
 
 namespace naoth
