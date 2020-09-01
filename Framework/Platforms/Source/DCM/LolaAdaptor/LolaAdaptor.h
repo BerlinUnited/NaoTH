@@ -213,7 +213,7 @@ private:
       sensorData->timeStamp = NaoTime::getSystemTimeInMilliSeconds();
 
       // copy sensor data to shared memory 
-      readSensorData(sensors, sensorData->sensorsValue);
+      readSensorData(sensors, *sensorData);
 
       // check if chest button was pressed as a request to shutdown
       // each cycle needs 12ms so if the button was pressed for 3 seconds
@@ -416,8 +416,10 @@ private:
   }
   
   
-  void readSensorData(const SensorData& sensorData, float* sensorsValue) 
+  void readSensorData(const SensorData& sensorData, DCMSensorData& dcmSensorData) 
   {
+    float* sensorsValue = dcmSensorData.sensorsValue;
+    
     // SensorJointData
     for(size_t i = 0; i < lolaJointIdx.size(); ++i) 
     {
