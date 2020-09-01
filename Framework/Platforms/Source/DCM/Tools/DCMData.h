@@ -23,7 +23,6 @@
 #include "Representations/Infrastructure/InertialSensorData.h"
 #include "Representations/Infrastructure/ButtonData.h"
 #include "Representations/Infrastructure/BatteryData.h"
-#include "Representations/Infrastructure/CpuData.h"
 
 #include <algorithm>
 
