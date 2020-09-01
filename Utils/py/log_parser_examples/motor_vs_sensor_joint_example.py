@@ -11,6 +11,7 @@ from matplotlib import pyplot as plt
 from naoth.log import Parser
 from naoth.log import Reader as LogReader
 from naoth.datasets import motion
+from naoth.constants import get_joint_id
 
 
 # TODO use joint definitions from naoth.log._constants
@@ -35,8 +36,8 @@ def analyze_log(logfile):
         motor_joint_pos_r_knee_pitch = list()
 
         for frame in frame_list:
-            motor_joint_pos_r_knee_pitch.append(frame[2].position[16])
-            sensor_joint_pos_r_knee_pitch.append(frame[3].jointData.position[16])
+            motor_joint_pos_r_knee_pitch.append(frame[2].position[get_joint_id("RKneePitch")])
+            sensor_joint_pos_r_knee_pitch.append(frame[3].jointData.position[get_joint_id("RKneePitch")])
 
         fig, axs = plt.subplots(2, constrained_layout=True)
         fig.suptitle('RKneePitch Position over time')

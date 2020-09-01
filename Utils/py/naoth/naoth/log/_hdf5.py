@@ -3,7 +3,7 @@ import numpy as np
 
 from ._experimental_parser import Parser
 from ._experimental_reader import Reader
-from ..constants import JointNames
+from ..constants import Joints
 from ..pb import (
     CommonTypes_pb2,
     Framework_Representations_pb2
@@ -91,8 +91,8 @@ def flatten_joint_data(obj_list):
         else:
             return_dict[m] = {}
             joint_values = list(zip(*[[g for g in f.__getattribute__(m)] for f in obj_list]))
-            for i in JointNames:
-                return_dict[m][JointNames[i]] = joint_values[i]
+            for key, value in Joints.items():
+                return_dict[m][value] = joint_values[key]
 
     return return_dict
 
