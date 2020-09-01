@@ -100,7 +100,7 @@ private:
   int timeOffset;
 
   // DCM --> NaoController
-  SharedMemory<NaoSensorData> naoSensorData;
+  SharedMemory<DCMSensorData> naoSensorData;
 
   SharedMemory<int> debugSM;
 

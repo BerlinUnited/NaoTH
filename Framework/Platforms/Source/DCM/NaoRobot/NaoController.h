@@ -191,7 +191,7 @@ protected:
 
   // -- begin -- shared memory access --
   // DCM --> NaoController
-  SharedMemoryReader<NaoSensorData> naoSensorData;
+  SharedMemoryReader<DCMSensorData> naoSensorData;
 
   // NaoController --> DCM
   SharedMemoryWriter<Accessor<MotorJointData> > naoCommandMotorJointData;
