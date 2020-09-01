@@ -188,17 +188,10 @@ private:
         // get the MotorJointData from the shared memory and put them to the DCM
         if ( naoCommandMotorJointData.swapReading() )
         {
-          const Accessor<MotorJointData>* commandData = naoCommandMotorJointData.reading();
-          const MotorJointData& motorData = commandData->get();
+          const Accessor<MotorJointData>* motorData = naoCommandMotorJointData.reading();
           
-          // SensorJointData
-          for(size_t i = 0; i < lolaJointIdx.size(); ++i) {
-            actuators.Position[i] = (float)motorData.position[lolaJointIdx[i]];
-          }
-
-          for(size_t i = 0; i < lolaJointIdx.size(); ++i) {
-            actuators.Stiffness[i] = (float)motorData.stiffness[lolaJointIdx[i]];
-          }
+          // write MotorJointData to LolaActuatorData
+          set(motorData->get(), actuators);
 
           //drop_count = 0;
           command_data_available = true;
@@ -281,7 +274,7 @@ private:
       if(initialMotion == NULL && command_data_available && sensor_data_available)
       {
          std::cout << "emerg: start init motion" << std::endl;
-       // take the last command data
+         // take the last command data
         const Accessor<MotorJointData>* commandData = naoCommandMotorJointData.reading();
         initialMotion = new BasicMotion(theMotorJointData, commandData->get(), theInertialSensorData);
       }
@@ -300,18 +293,12 @@ private:
       }
       else
       {
+        // execute the emergency motion 
+        // (the resulting joint commands are written to theMotorJointData)
         initialMotion->execute();
-
-       // SensorJointData
-        for(size_t i = 0; i < lolaJointIdx.size(); ++i) 
-        {
-          actuators.Position[i] = (float)theMotorJointData.position[lolaJointIdx[i]];
-        }
-
-        for(size_t i = 0; i < lolaJointIdx.size(); ++i) 
-        {
-          actuators.Stiffness[i] = (float)theMotorJointData.stiffness[lolaJointIdx[i]];
-        }
+        
+        // write MotorJointData to LolaActuatorData
+        set(theMotorJointData, actuators);
       }
     }//end if
    
@@ -419,7 +406,14 @@ private:
     JointData::LHand,
     JointData::RHand
   }};
-
+  
+  void set(const MotorJointData& motorJointData, ActuatorData& actuators) 
+  {
+    for(size_t i = 0; i < lolaJointIdx.size(); ++i) {
+      actuators.Position[i]  = static_cast<float>(motorJointData.position[lolaJointIdx[i]]);
+      actuators.Stiffness[i] = static_cast<float>(motorJointData.stiffness[lolaJointIdx[i]]);
+    }
+  }
   
   
   void readSensorData(const SensorData& sensorData, float* sensorsValue) 
