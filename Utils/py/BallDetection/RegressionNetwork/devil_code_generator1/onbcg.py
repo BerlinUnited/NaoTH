@@ -10,7 +10,7 @@ __email__ = "oliver.urbann@tu-dortmund.de"
 import os
 import platform
 import numpy as np
-from tensorflow.keras import backend as K, Model
+from tensorflow.keras import backend as K
 from tensorflow.keras.layers import Convolution2D, MaxPooling2D, Flatten, Dropout, BatchNormalization, LeakyReLU, Dense, ReLU
 from tensorflow.keras.models import load_model
 

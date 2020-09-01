@@ -27,7 +27,6 @@ if __name__ == "__main__":
     path = joints.load_data()
 
     myParser = Parser()
-    myParser.register("MotorJointData", "JointData")
 
     with LogReader(path, myParser) as log:
         print(log[0]["SensorJointData"])

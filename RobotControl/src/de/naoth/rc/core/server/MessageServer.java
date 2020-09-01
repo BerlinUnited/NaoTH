@@ -1,6 +1,8 @@
 package de.naoth.rc.core.server;
 
 import com.google.protobuf.ByteString;
+import de.naoth.rc.core.manager.Manager;
+import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.messages.Messages.CMD;
 import de.naoth.rc.core.messages.Messages.CMDArg;
 import java.io.IOException;
@@ -15,9 +17,11 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +34,7 @@ import java.util.logging.Logger;
  *
  * @author thomas
  */
-public class MessageServer extends AbstractMessageServer {
+public class MessageServer extends AbstractMessageServer implements Manager<Command> {
 
     private class SingleExecEntry {
         private final ResponseListener listener;
@@ -57,6 +61,8 @@ public class MessageServer extends AbstractMessageServer {
     // list of commands which have been sent and are waiting for the response
     //private final List<SingleExecEntry> answerRequestList = new LinkedList<SingleExecEntry>();
     private final Map<Integer, SingleExecEntry> answerRequestMap = Collections.synchronizedMap(new HashMap<Integer, SingleExecEntry>());
+    // list of command listener
+    private final Set<ObjectListener<Command>> commandListener = new HashSet<>();
 
     // each sent command has a unique id, which is used to assign the responces correctly
     private Integer commandId = 1;
@@ -240,6 +246,9 @@ public class MessageServer extends AbstractMessageServer {
         if (listener == null || command == null) {
             throw new IllegalArgumentException("A valid command or listener is required.");
         }
+        
+        // notify command listener for new command
+        commandListener.forEach((l) -> { l.newObjectReceived(command); });
 
         this.pendingCommandsList.add(new SingleExecEntry(listener, command));
     }//end executeSingleCommand
@@ -448,5 +457,15 @@ public class MessageServer extends AbstractMessageServer {
         b.putInt(value);
         b.flip();
         return b;
+    }
+
+    @Override
+    public void addListener(ObjectListener<Command> l) {
+        commandListener.add(l);
+    }
+
+    @Override
+    public void removeListener(ObjectListener<Command> l) {
+        commandListener.remove(l);
     }
 }//end class MessageServer

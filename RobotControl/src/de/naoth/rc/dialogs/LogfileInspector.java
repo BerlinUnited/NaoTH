@@ -14,6 +14,7 @@ import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.dataformats.LogFile;
 import de.naoth.rc.logmanager.LogFileEventManager;
 import de.naoth.rc.core.messages.FrameworkRepresentations;
+import java.awt.Color;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.File;
@@ -86,12 +87,11 @@ public class LogfileInspector extends AbstractDialog
 
         fileChooser = new javax.swing.JFileChooser();
         openMenuButton = new javax.swing.JButton();
-        fileNameLabel = new javax.swing.JLabel();
         avaliableRepresentations = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
-        imageCanvas = new de.naoth.rc.components.ImagePanel();
         jSlider1 = new javax.swing.JSlider();
+        fileNameLabel = new javax.swing.JTextField();
 
         openMenuButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/toolbarButtonGraphics/general/Open24.gif"))); // NOI18N
         openMenuButton.setToolTipText("Open");
@@ -103,8 +103,6 @@ public class LogfileInspector extends AbstractDialog
                 openMenuButtonActionPerformed(evt);
             }
         });
-
-        fileNameLabel.setText("no file selected");
 
         avaliableRepresentations.setBackground(new java.awt.Color(255, 255, 255));
         avaliableRepresentations.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.gray));
@@ -119,58 +117,44 @@ public class LogfileInspector extends AbstractDialog
             avaliableRepresentationsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(avaliableRepresentationsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 623, Short.MAX_VALUE)
                 .addContainerGap())
         );
         avaliableRepresentationsLayout.setVerticalGroup(
             avaliableRepresentationsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(avaliableRepresentationsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE)
                 .addContainerGap())
-        );
-
-        imageCanvas.setBackground(java.awt.Color.gray);
-        imageCanvas.setMinimumSize(new java.awt.Dimension(320, 240));
-        imageCanvas.setPreferredSize(new java.awt.Dimension(320, 240));
-
-        javax.swing.GroupLayout imageCanvasLayout = new javax.swing.GroupLayout(imageCanvas);
-        imageCanvas.setLayout(imageCanvasLayout);
-        imageCanvasLayout.setHorizontalGroup(
-            imageCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 320, Short.MAX_VALUE)
-        );
-        imageCanvasLayout.setVerticalGroup(
-            imageCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 240, Short.MAX_VALUE)
         );
 
         jSlider1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jSlider1.setEnabled(false);
-        jSlider1.setPreferredSize(new java.awt.Dimension(480, 23));
+        jSlider1.setPreferredSize(new java.awt.Dimension(36, 23));
         jSlider1.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 jSlider1StateChanged(evt);
             }
         });
 
+        fileNameLabel.setEditable(false);
+        fileNameLabel.setBackground(new Color(0.f,0.f,0.f,0.f));
+        fileNameLabel.setText("no file selected");
+        fileNameLabel.setBorder(null);
+        fileNameLabel.setOpaque(false);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(avaliableRepresentations, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(openMenuButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSlider1, javax.swing.GroupLayout.DEFAULT_SIZE, 627, Short.MAX_VALUE))
+                .addComponent(jSlider1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(fileNameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(avaliableRepresentations, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(imageCanvas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap()
+                .addComponent(fileNameLabel)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -180,14 +164,9 @@ public class LogfileInspector extends AbstractDialog
                     .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(openMenuButton, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(fileNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(fileNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(avaliableRepresentations, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(imageCanvas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                .addComponent(avaliableRepresentations, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -248,7 +227,7 @@ public class LogfileInspector extends AbstractDialog
         
         if(f.exists()) 
         {
-            this.fileNameLabel.setText("Selected logfile:" + f.getAbsolutePath());
+            this.fileNameLabel.setText(f.getAbsolutePath());
      
             try {
                 // clear the old file
@@ -272,8 +251,7 @@ public class LogfileInspector extends AbstractDialog
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel avaliableRepresentations;
     private javax.swing.JFileChooser fileChooser;
-    private javax.swing.JLabel fileNameLabel;
-    private de.naoth.rc.components.ImagePanel imageCanvas;
+    private javax.swing.JTextField fileNameLabel;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSlider jSlider1;
     private javax.swing.JTextArea jTextArea1;
