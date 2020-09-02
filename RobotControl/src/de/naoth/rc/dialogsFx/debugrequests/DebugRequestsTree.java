@@ -35,7 +35,7 @@ public class DebugRequestsTree implements ResponseListener
     private final KeyCombination shortcutEnableEnter = new KeyCodeCombination(KeyCode.ENTER);
     private final KeyCombination shortcutEnableSpace = new KeyCodeCombination(KeyCode.SPACE);
     
-    /** The debug command for retrieving all cognitinon debug requests */
+    /** The debug command for retrieving all cognition debug requests */
     private final Command cmd_debug_cognition = new Command("Cognition:representation:get").addArg("DebugRequest");
     
     /** The debug command for retrieving all motion debug requests */
@@ -138,7 +138,7 @@ public class DebugRequestsTree implements ResponseListener
     }
     
     /**
-     * Handles the response of a debug request and calls the appropiate method to handle the response data.
+     * Handles the response of a debug request and calls the appropriate method to handle the response data.
      * @param result    the response data
      * @param command   the command of the response
      */
