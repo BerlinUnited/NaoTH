@@ -111,6 +111,18 @@ public class ModuleConfiguration implements ResponseListener
     }
     
     /**
+     * Enables or disables the given module on the robot.
+     * 
+     * @param module    the module to enable/disable
+     * @param enable    true, if the module should be enabled, false otherwise
+     */
+    public void enableModule(Module module, boolean enable) {
+        if (control != null && control.checkConnected()) {
+            control.getMessageServer().executeCommand(this, new Command(module.getType() + ":modules:set").addArg(module.getName(), enable ? "on" : "off"));
+        }
+    }
+    
+    /**
      * Handles the response of various commands.
      * 
      * @param result    the response data
@@ -123,6 +135,8 @@ public class ModuleConfiguration implements ResponseListener
         } else if(command.equals(cmd_modules_motion)) {
             Platform.runLater(() -> { handleModuleResponse("Motion", result); });
         } else if (command.equals(cmd_modules_cognition_store) || command.equals(cmd_modules_motion_store)) {
+            // TODO: show AlertDialog with error/info!
+        } else if (command.getName().endsWith("modules:set")) {
             // TODO: show AlertDialog with error/info!
         } else {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Unknown command response: {0}", command);

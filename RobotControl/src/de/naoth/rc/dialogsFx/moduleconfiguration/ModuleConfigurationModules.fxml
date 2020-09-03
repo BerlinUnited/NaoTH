@@ -3,4 +3,4 @@
 <?import javafx.scene.control.TreeView?>
 
 
-<TreeView fx:id="moduleTree" editable="true" onKeyPressed="#fxListShortcuts" showRoot="false" xmlns="http://javafx.com/javafx/8.0.202-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.naoth.rc.dialogsFx.moduleconfiguration.ModuleConfigurationModules" />
+<TreeView fx:id="moduleTree" disable="true" onKeyPressed="#fxListShortcuts" showRoot="false" xmlns="http://javafx.com/javafx/8.0.202-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.naoth.rc.dialogsFx.moduleconfiguration.ModuleConfigurationModules" />

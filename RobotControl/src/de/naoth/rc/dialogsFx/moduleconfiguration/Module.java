@@ -52,13 +52,13 @@ public class Module implements Type, Comparable<Module>
     }
 
     /**
-     * Returns the name and type of this module
+     * Returns just the name of this module
      *
-     * @return name and type in the form "name [type]"
+     * @return name of the module
      */
     @Override
     public String toString() {
-        return name + " [" + type + "]";
+        return name;
     }
 
     /**
@@ -92,6 +92,15 @@ public class Module implements Type, Comparable<Module>
     }
 
     /**
+     * Returns the type of this module (cognition/motion).
+     *
+     * @return modules type
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
      * Returns the name of this module.
      *
      * @return modules name
@@ -99,6 +108,15 @@ public class Module implements Type, Comparable<Module>
     @Override
     public String getName() {
         return name;
+    }
+
+    /**
+     * Returns the path of this module.
+     *
+     * @return modules path
+     */
+    public String getPath() {
+        return path;
     }
 
     /**
