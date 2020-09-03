@@ -5,13 +5,16 @@ import de.naoth.rc.componentsFx.TreeNodeItem;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import javafx.animation.FadeTransition;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.util.Duration;
 
 /**
  *
@@ -23,11 +26,15 @@ public class ModuleConfigurationModules
     private ModuleConfiguration mConfig;
     
     @FXML private TreeView<String> moduleTree;
+    @FXML private Label notice;
     
     /** Some shortcuts */
     private final KeyCombination shortcutRefresh = new KeyCodeCombination(KeyCode.F5);
     private final KeyCombination shortcutEnableEnter = new KeyCodeCombination(KeyCode.ENTER);
     private final KeyCombination shortcutEnableSpace = new KeyCodeCombination(KeyCode.SPACE);
+    
+    /** The animation for the flash messages */
+    private final FadeTransition fadeOut = new FadeTransition(Duration.millis(2000));
     
     /**
      * Default constructor for the FXML loader.
@@ -73,6 +80,15 @@ public class ModuleConfigurationModules
         TreeNodeItem motion = new TreeNodeItem("Motion");
         motion.setExpanded(true);
         moduleTree.getRoot().getChildren().add(motion);
+
+        // set the options for the fade-out animation
+        fadeOut.setNode(notice);
+        fadeOut.setFromValue(1.0);
+        fadeOut.setToValue(0.0);
+        fadeOut.setCycleCount(1);
+        fadeOut.setAutoReverse(false);
+        
+        System.out.println(notice);
     }
     
     /**
@@ -131,6 +147,14 @@ public class ModuleConfigurationModules
                     moduleTree.getSelectionModel().clearSelection();
                 }
             }
+        });
+        
+        // show flash message if it changed
+        //notice.textProperty().bind(mConfig.getFlashMessageProperty());
+        mConfig.getFlashMessageProperty().addListener((ob) -> {
+            notice.setText(mConfig.getFlashMessageProperty().get());
+            notice.setVisible(true);
+            fadeOut.playFromStart();
         });
     }
     

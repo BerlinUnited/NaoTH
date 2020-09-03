@@ -15,6 +15,8 @@ import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 
 /**
@@ -38,6 +40,9 @@ public class ModuleConfiguration implements ResponseListener
     
     /** The currently active module/representation, which dependency graph is shown */
     private final ObjectProperty<Type> active = new SimpleObjectProperty<>();
+    
+    /** A message from the responses */
+    private final StringProperty flashMessage = new SimpleStringProperty();
 
     /**
      * Default constructor for the FXML loader.
@@ -88,6 +93,16 @@ public class ModuleConfiguration implements ResponseListener
     }
 
     /**
+     * Returns the flash message property.
+     * The flash message contains infos of different responses (save, enable)
+     * 
+     * @return flash message property
+     */
+    public StringProperty getFlashMessageProperty() {
+        return flashMessage;
+    }
+
+    /**
      * Updates the modules and representation list.
      */
     public void updateModules() {
@@ -135,9 +150,9 @@ public class ModuleConfiguration implements ResponseListener
         } else if(command.equals(cmd_modules_motion)) {
             Platform.runLater(() -> { handleModuleResponse("Motion", result); });
         } else if (command.equals(cmd_modules_cognition_store) || command.equals(cmd_modules_motion_store)) {
-            // TODO: show AlertDialog with error/info!
+            updateFlashMessage(new String(result));
         } else if (command.getName().endsWith("modules:set")) {
-            // TODO: show AlertDialog with error/info!
+            updateFlashMessage(new String(result));
         } else {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Unknown command response: {0}", command);
         }
@@ -207,5 +222,14 @@ public class ModuleConfiguration implements ResponseListener
         } catch (InvalidProtocolBufferException ex) {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    /**
+     * Updates the flash message in the javafx thread.
+     * 
+     * @param msg the message to update
+     */
+    private void updateFlashMessage(String msg) {
+        Platform.runLater(() -> { flashMessage.set(msg); });
     }
 }
