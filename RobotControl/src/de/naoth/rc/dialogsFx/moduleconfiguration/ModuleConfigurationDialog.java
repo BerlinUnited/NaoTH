@@ -94,8 +94,10 @@ public class ModuleConfigurationDialog extends AbstractJFXDialog
         // TODO: add autocompletion to the combobox
         module.setItems(mConfig.getModulesProperty().sorted());
         module.disableProperty().bind(mConfig.getModulesProperty().emptyProperty());
+        module.setConverter(mConfig.getModuleConverter());
         representation.setItems(mConfig.getRepresentationsProperty().sorted());
         representation.disableProperty().bind(mConfig.getRepresentationsProperty().emptyProperty());
+        representation.setConverter(mConfig.getRepresentationConverter());
         
         // update the selection property based on the combobox selection
         module.getSelectionModel().selectedItemProperty().addListener((ob,o,n) -> {

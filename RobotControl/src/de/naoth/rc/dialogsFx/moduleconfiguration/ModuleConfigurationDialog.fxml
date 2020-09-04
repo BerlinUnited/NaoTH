@@ -38,8 +38,8 @@
                   <Insets left="3.0" />
                </padding>
             </Separator>
-            <ComboBox fx:id="module" disable="true" prefWidth="150.0" promptText="Modules" />
-            <ComboBox fx:id="representation" disable="true" prefWidth="150.0" promptText="Representations" />
+            <ComboBox fx:id="module" disable="true" editable="true" prefWidth="150.0" promptText="Modules" />
+            <ComboBox fx:id="representation" disable="true" editable="true" prefWidth="150.0" promptText="Representations" />
          </items>
       </ToolBar>
       <SplitPane dividerPositions="0.5" prefHeight="160.0" prefWidth="200.0" VBox.vgrow="ALWAYS">

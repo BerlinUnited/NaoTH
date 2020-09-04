@@ -18,6 +18,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
+import javafx.util.StringConverter;
 
 /**
  *
@@ -231,5 +232,83 @@ public class ModuleConfiguration implements ResponseListener
      */
     private void updateFlashMessage(String msg) {
         Platform.runLater(() -> { flashMessage.set(msg); });
+    }
+    
+    /**
+     * Factory for generating module string converter depending on the current
+     * modules list.
+     * 
+     * @return the string converter for modules
+     */
+    public StringConverter<Module> getModuleConverter() {
+        return new StringModuleConverter();
+    }
+    
+    /**
+     * Factory for generating representation string converter depending on the current
+     * representations list.
+     * 
+     * @return the string converter for modules
+     */
+    public StringConverter<Representation> getRepresentationConverter() {
+        return new StringRepresentationConverter();
+    }
+    
+    /**
+     * The string converter for modules based on the current modules list.
+     */
+    class StringModuleConverter extends StringConverter<Module>
+    {
+        /**
+         * Returns the name of the module or an empty string on null.
+         * 
+         * @param t a module
+         * @return  the name of the module
+         */
+        @Override
+        public String toString(Module t) {
+            return t == null ? "" : t.toString();
+        }
+
+        /**
+         * Searches the list of modules and returns a matching module or null if
+         * none could be found.
+         * 
+         * @param string    the modules name to search for
+         * @return          the found module or null
+         */
+        @Override
+        public Module fromString(String string) {
+            return moduleList.stream().filter((m) -> { return m.toString().compareToIgnoreCase(string) == 0; }).findFirst().orElse(null);
+        }
+    }
+
+    /**
+     * The string converter for representation based on the current modules list.
+     */
+    class StringRepresentationConverter extends StringConverter<Representation>
+    {
+        /**
+         * Returns the name of the module or an empty string on null.
+         * 
+         * @param t a module
+         * @return  the name of the module
+         */
+        @Override
+        public String toString(Representation t) {
+            return t == null ? "" : t.toString();
+        }
+
+        /**
+         * Searches the list of representations and returns a matching 
+         * representation or null if none could be found.
+         * 
+         * @param string    the representation name to search for
+         * @return          the found representation or null
+         */
+        @Override
+        public Representation fromString(String string) {
+            return representationList.stream().filter((m) -> { return m.toString().compareToIgnoreCase(string) == 0; }).findFirst().orElse(null);
+        }
     }
 }
