@@ -172,12 +172,12 @@ public class ModuleConfigurationModules
      */
     private void updateModulesSubtree(String type, TreeNodeItem root) {
         // check, if the subtree of the type should be updated
-        if (root.getChildren(type).getChildren().size() > 0) {
-            TreeNodeItem subtree = ((TreeNodeItem)moduleTree.getRoot()).getChildren(type);
+        if (root.getChild(type).getChildren().size() > 0) {
+            TreeNodeItem subtree = ((TreeNodeItem)moduleTree.getRoot()).getChild(type);
             // remember the expanded nodes of the subtree
             List<String> expanded = subtree.getExpandedNodes();
             // update subtrre
-            subtree.getChildren().setAll(root.getChildren(type).getChildren());
+            subtree.getChildren().setAll(root.getChild(type).getChildren());
             // restore expanded nodes
             subtree.expandNodes(expanded);
             // expand single tree paths (like "Cognition/Modules"
@@ -216,7 +216,7 @@ public class ModuleConfigurationModules
                 List<String> parts = Arrays.asList(path.split("/"));
 
                 // retrieve the parent node for the leaf and create the path to it, if necessary
-                TreeNodeItem parent = createTreePath(root.getChildren(m.getType()), parts);
+                TreeNodeItem parent = createTreePath(root.getChild(m.getType()), parts);
 
                 // remember this node as possible to remove
                 if(parent.getValue().equals(m.getName())) { removeableNodes.put(m.getPath(), parent); }
@@ -255,7 +255,7 @@ public class ModuleConfigurationModules
     private static TreeNodeItem createTreePath(TreeNodeItem root, List<String> path) {
         TreeNodeItem parent = root;
         for (int i = 1; i < path.size(); i++) {
-            TreeNodeItem current = parent.getChildren(path.get(i));
+            TreeNodeItem current = parent.getChild(path.get(i));
             if(current == null) {
                 current = new TreeNodeItem(path.get(i));
                 parent.getChildren().add(current);
