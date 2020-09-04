@@ -343,7 +343,6 @@ public class RepresentationPanel
             String selected = list.getSelectionModel().getSelectedItem();
             list.getItems().setAll(items);
             list.getSelectionModel().select(selected);
-            list.scrollTo(selected);
         });
     }
     
