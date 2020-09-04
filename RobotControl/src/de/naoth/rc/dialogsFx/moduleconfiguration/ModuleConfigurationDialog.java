@@ -1,6 +1,7 @@
 package de.naoth.rc.dialogsFx.moduleconfiguration;
 
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.componentsFx.AutoCompleteComboBox;
 import de.naoth.rc.core.dialog.AbstractJFXDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
@@ -91,14 +92,16 @@ public class ModuleConfigurationDialog extends AbstractJFXDialog
         btnSave.disableProperty().bind(mConfig.getModulesProperty().emptyProperty());
         btnExport.disableProperty().bind(mConfig.getModulesProperty().emptyProperty());
         
-        // TODO: add autocompletion to the combobox
         module.setItems(mConfig.getModulesProperty().sorted());
         module.disableProperty().bind(mConfig.getModulesProperty().emptyProperty());
         module.setConverter(mConfig.getModuleConverter());
+        AutoCompleteComboBox.install(module);
+        
         representation.setItems(mConfig.getRepresentationsProperty().sorted());
         representation.disableProperty().bind(mConfig.getRepresentationsProperty().emptyProperty());
         representation.setConverter(mConfig.getRepresentationConverter());
-        
+        AutoCompleteComboBox.install(representation);
+
         // update the selection property based on the combobox selection
         module.getSelectionModel().selectedItemProperty().addListener((ob,o,n) -> {
             // NOTE: make sure the clear selection (below) doesn't trigger an active property change!

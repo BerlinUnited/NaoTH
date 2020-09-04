@@ -18,7 +18,7 @@
                   <Tooltip text="Update modules [Alt+Shift+U]" />
                </tooltip>
             </Button>
-            <Separator orientation="VERTICAL">
+            <Separator focusTraversable="false" orientation="VERTICAL">
                <padding>
                   <Insets left="3.0" />
                </padding>
@@ -33,7 +33,7 @@
                   <Tooltip text="Save the module configuration locally [Alt+Shift+E]" />
                </tooltip>
             </Button>
-            <Separator orientation="VERTICAL">
+            <Separator focusTraversable="false" orientation="VERTICAL">
                <padding>
                   <Insets left="3.0" />
                </padding>
