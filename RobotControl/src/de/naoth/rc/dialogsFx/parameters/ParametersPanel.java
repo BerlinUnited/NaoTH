@@ -32,6 +32,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -152,6 +154,19 @@ public class ParametersPanel
             // F5 is consumed by the textarea and does not bubble to the parent node,
             // so we must handle it here
             updateParams();
+        }
+    }
+    
+    /**
+     * Handles the double click on the parameter tree view and changes the focus
+     * to the value panel.
+     * 
+     * @param m the triggered mouse event
+     */
+    @FXML
+    private void fxDoubleClick(MouseEvent m) {
+        if (params.getSelectionModel().getSelectedIndex() != -1 && m.getButton() == MouseButton.PRIMARY && m.getClickCount() >= 2) {
+            values.requestFocus();
         }
     }
     
@@ -350,7 +365,6 @@ public class ParametersPanel
             values.setText(Arrays.asList(text.split("\n")).stream().sorted().collect(Collectors.joining("\n")));
             values.positionCaret(pos);
             values.setEditable(true);
-            values.requestFocus();
         });
     }
     
