@@ -69,17 +69,8 @@ public class ModuleConfigurationModules
     private void initialize() 
     {
         moduleTree.setCellFactory((p) -> new TreeNodeCell<>());
-        moduleTree.setRoot(new TreeNodeItem<>());
+        moduleTree.setRoot(createModulesTree());
         moduleTree.getRoot().setExpanded(true);
-        
-        // pre-set cognition and motion tree items
-        TreeNodeItem cognition = new TreeNodeItem("Cognition");
-        cognition.setExpanded(true);
-        moduleTree.getRoot().getChildren().add(cognition);
-        
-        TreeNodeItem motion = new TreeNodeItem("Motion");
-        motion.setExpanded(true);
-        moduleTree.getRoot().getChildren().add(motion);
 
         // set the options for the fade-out animation
         fadeOut.setNode(notice);
@@ -87,8 +78,6 @@ public class ModuleConfigurationModules
         fadeOut.setToValue(0.0);
         fadeOut.setCycleCount(1);
         fadeOut.setAutoReverse(false);
-        
-        System.out.println(notice);
     }
     
     /**
@@ -158,54 +147,101 @@ public class ModuleConfigurationModules
         });
     }
     
+    /**
+     * Handles the update of the modules (sub-)tree.
+     */
     private void updateModulesTree() {
-        // remove the old (sub-)tree
-        moduleTree.getRoot().getChildren().forEach((t) -> {
-            t.getChildren().clear();
-        });
+        // do nothing, if the current modules list is empty
+        if (mConfig.getModulesProperty().isEmpty()) {
+            return;
+        }
         
-        // remember nodes that have the same name as its leaf node
-        HashMap<String, TreeNodeItem> removeableNodes = new HashMap<>();
-        
-        // sort and create tree paths to the "module leafs"
-        mConfig.getModulesProperty().stream().sorted((m1, m2) -> {
-            return m1.getPath().compareToIgnoreCase(m2.getPath());
-        }).forEachOrdered((m) -> {
-            String path = m.getPath().substring(m.getPath().indexOf(m.getType()), m.getPath().lastIndexOf("/"));
-            List<String> parts = Arrays.asList(path.split("/"));
-            
-            // retrieve the parent node for the leaf and create the path to it, if necessary
-            TreeNodeItem parent = createTreePath(((TreeNodeItem)moduleTree.getRoot()).getChildren(m.getType()), parts);
+        // create the new tree, but update only cognition/motion subtrees
+        TreeNodeItem root = createModulesTree();
+        updateModulesSubtree("Cognition", root);
+        updateModulesSubtree("Motion", root);
 
-            // remember this node as possible to remove
-            if(parent.getValue().equals(m.getName())) { removeableNodes.put(m.getPath(), parent); }
-            
-            TreeNodeItem leaf = new TreeNodeItem(m);
-            // add this item to the module tree
-            parent.getChildren().add(leaf);
-            // set the selected state AFTER adding it to its parent
-            leaf.setSelected(m.isActive());
-            // set the callback for (de-)activating this module
-            leaf.selectedProperty().addListener((ob, o, n) -> { mConfig.enableModule(m, n); });
-        });
-        
-        // remove node, where the leaf and its parent have the same name and the leaf is the only child
-        removeableNodes.forEach((t, u) -> {
-            if(u.getChildren().size() == 1) {
-                TreeNodeItem parent = (TreeNodeItem) u.getParent();
-                int idx = parent.getChildren().indexOf(u);
-                parent.getChildren().remove(idx);
-                parent.getChildren().add(idx, u.getChildren().get(0));
-            }
-        });
-        
-        // expand single tree paths (like "Cognition/Modules"
-        moduleTree.getRoot().getChildren().forEach((t) -> {
-            expandSingleTreeNodes((TreeNodeItem)t);
-        });
-        
         moduleTree.setDisable(false);
-        // TODO: restore expanded paths
+    }
+    
+    /**
+     * Updates a specific subtree of the modules tree.
+     * 
+     * @param type  the subtree to update
+     * @param root  the root of the new tree
+     */
+    private void updateModulesSubtree(String type, TreeNodeItem root) {
+        // check, if the subtree of the type should be updated
+        if (root.getChildren(type).getChildren().size() > 0) {
+            TreeNodeItem subtree = ((TreeNodeItem)moduleTree.getRoot()).getChildren(type);
+            // remember the expanded nodes of the subtree
+            List<String> expanded = subtree.getExpandedNodes();
+            // update subtrre
+            subtree.getChildren().setAll(root.getChildren(type).getChildren());
+            // restore expanded nodes
+            subtree.expandNodes(expanded);
+            // expand single tree paths (like "Cognition/Modules"
+            expandSingleTreeNodes(subtree);
+        }
+    }
+    
+    /**
+     * Creates the modules tree based on the module configuration list and returns
+     * the root element of the tree.
+     * 
+     * @return the root of the (new) modules tree
+     */
+    private TreeNodeItem createModulesTree() {
+        TreeNodeItem root = new TreeNodeItem();
+        
+        // pre-set cognition and motion tree items
+        TreeNodeItem cognition = new TreeNodeItem("Cognition");
+        cognition.setExpanded(true);
+        root.getChildren().add(cognition);
+        
+        TreeNodeItem motion = new TreeNodeItem("Motion");
+        motion.setExpanded(true);
+        root.getChildren().add(motion);
+        
+        // if set, use the module configuration
+        if (mConfig != null) {
+            // remember nodes that have the same name as its leaf node
+            HashMap<String, TreeNodeItem> removeableNodes = new HashMap<>();
+
+            // sort and create tree paths to the "module leafs"
+            mConfig.getModulesProperty().stream().sorted((m1, m2) -> {
+                return m1.getPath().compareToIgnoreCase(m2.getPath());
+            }).forEachOrdered((m) -> {
+                String path = m.getPath().substring(m.getPath().indexOf(m.getType()), m.getPath().lastIndexOf("/"));
+                List<String> parts = Arrays.asList(path.split("/"));
+
+                // retrieve the parent node for the leaf and create the path to it, if necessary
+                TreeNodeItem parent = createTreePath(root.getChildren(m.getType()), parts);
+
+                // remember this node as possible to remove
+                if(parent.getValue().equals(m.getName())) { removeableNodes.put(m.getPath(), parent); }
+
+                TreeNodeItem leaf = new TreeNodeItem(m);
+                // add this item to the module tree
+                parent.getChildren().add(leaf);
+                // set the selected state AFTER adding it to its parent
+                leaf.setSelected(m.isActive());
+                // set the callback for (de-)activating this module
+                leaf.selectedProperty().addListener((ob, o, n) -> { mConfig.enableModule(m, n); });
+            });
+
+            // remove node, where the leaf and its parent have the same name and the leaf is the only child
+            removeableNodes.forEach((t, u) -> {
+                if(u.getChildren().size() == 1) {
+                    TreeNodeItem parent = (TreeNodeItem) u.getParent();
+                    int idx = parent.getChildren().indexOf(u);
+                    parent.getChildren().remove(idx);
+                    parent.getChildren().add(idx, u.getChildren().get(0));
+                }
+            });
+        }
+        
+        return root;
     }
 
     /**
