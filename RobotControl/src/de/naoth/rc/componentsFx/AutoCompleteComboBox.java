@@ -29,23 +29,45 @@ public class AutoCompleteComboBox
         // handle the key event appropiatly
         box.addEventHandler(KeyEvent.KEY_RELEASED, (event) -> {
             // ignore certain keys
-            List ignore = Arrays.asList(KeyCode.UP, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.LEFT, KeyCode.HOME, KeyCode.END, KeyCode.TAB, KeyCode.CONTROL, KeyCode.ALT, KeyCode.ESCAPE, KeyCode.BACK_SPACE, KeyCode.SHIFT, KeyCode.ENTER);
+            List ignore = Arrays.asList(
+                    KeyCode.UP, KeyCode.DOWN, KeyCode.RIGHT, KeyCode.LEFT, 
+                    KeyCode.HOME, KeyCode.END, KeyCode.TAB, KeyCode.CONTROL, 
+                    KeyCode.ALT, KeyCode.ESCAPE, KeyCode.SHIFT, KeyCode.ENTER
+            );
             if (ignore.contains(event.getCode()) || event.isControlDown()) {
                 return;
             }
             
-            // TODO: better handling of Backspace key!
+            String searchTerm = box.getEditor().getText().toLowerCase();
+            int startSelection = searchTerm.length();
+            
+            // the backspace reduces the search string, but keeps the last result,
+            // if only one character is left and instead just moves the selection
+            if (event.getCode() == KeyCode.BACK_SPACE) {
+                int n = searchTerm.length() - box.getEditor().getSelectedText().length();
+                if (n > 1) {
+                    searchTerm = searchTerm.substring(0, searchTerm.length()-1);
+                    startSelection--;
+                } else if (n == 1) {
+                    startSelection = 0;
+                }
+            }
             
             // search for the avialable choices - ignore case
-            String s = box.getEditor().getText().toLowerCase();
-            Object found = box.getItems().stream().filter((m) -> { return m.toString().toLowerCase().startsWith(s); }).findFirst().orElse(null);
-
-            if (found == null || s.isEmpty()) {
+            Object found = null;
+            for (Object item : box.getItems()) {
+                if (item.toString().toLowerCase().startsWith(searchTerm)) {
+                    found = item;
+                    break;
+                }
+            }
+            
+            if (found == null || searchTerm.isEmpty()) {
                 box.hide();
             } else {
                 // set the name of the found item and select the none-entered part
                 box.getEditor().setText(found.toString());
-                box.getEditor().selectRange(box.getEditor().getText().length(), s.length());
+                box.getEditor().selectRange(box.getEditor().getText().length(), startSelection);
                 
                 // make the current item visible without selecting!
                 ListView view = ((ComboBoxListViewSkin) box.getSkin()).getListView();
