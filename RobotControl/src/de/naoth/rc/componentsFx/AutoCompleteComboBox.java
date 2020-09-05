@@ -44,9 +44,8 @@ public class AutoCompleteComboBox
                 box.hide();
             } else {
                 // set the name of the found item and select the none-entered part
-                String current = box.getEditor().getText();
                 box.getEditor().setText(found.toString());
-                box.getEditor().selectRange(current.length(), box.getEditor().getText().length());
+                box.getEditor().selectRange(box.getEditor().getText().length(), s.length());
                 
                 // make the current item visible without selecting!
                 ListView view = ((ComboBoxListViewSkin) box.getSkin()).getListView();
