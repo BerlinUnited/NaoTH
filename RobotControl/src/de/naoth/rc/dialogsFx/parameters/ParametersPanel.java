@@ -241,7 +241,7 @@ public class ParametersPanel
                             });
                         });
                         
-                        AlertDialog.showInfo("All parameters saved", "All parameters should be saved in the directory:\n" + directory.getAbsolutePath());
+                        AlertDialog.showInfo("All parameters saved", "All parameters were exported to:\n" + directory.getAbsolutePath());
                     } catch (IOException ex) {
                         Logger.getLogger(ParametersPanel.class.getName()).log(Level.SEVERE, null, ex);
                         AlertDialog.showError("Not writeable", "Selected directory is not writeable!");
