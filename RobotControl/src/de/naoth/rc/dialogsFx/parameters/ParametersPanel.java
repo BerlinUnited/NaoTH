@@ -220,6 +220,7 @@ public class ParametersPanel
             // configure filechooser ...
             DirectoryChooser directoryChooser = new DirectoryChooser();
             directoryChooser.setTitle("Save configuration (All)");
+            directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
             // show save dialog
             File directory = directoryChooser.showDialog(params.getScene().getWindow());
             if(directory != null)
@@ -263,7 +264,6 @@ public class ParametersPanel
             for (Map.Entry<String, String> e : parseText().entrySet()) {
                 bf.write(e.getKey() + "=" + e.getValue() + "\n");
             }
-            bf.close();
             return true;
         } catch (IOException ex) {
             Logger.getLogger(ParametersPanel.class.getName()).log(Level.SEVERE, null, ex);
@@ -457,7 +457,6 @@ public class ParametersPanel
             try(BufferedWriter bf = new BufferedWriter(new FileWriter(f))) {
                 bf.write("[" + param + "]\n");
                 bf.write(new String(result));
-                bf.close();
             } catch (IOException ex) {
                 Logger.getLogger(ParametersPanel.class.getName()).log(Level.SEVERE, null, ex);
             }
