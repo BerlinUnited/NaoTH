@@ -185,21 +185,12 @@ bool WebotsController::init(
 
   // TODO: send create command to simulator
   //"rsg/agent/naov4/nao.rsg";
-  //theSocket << "(scene " << modelPath << ")" << theSync << send;
+  theSocket << "(scene " << modelPath << ")" << send;
 
   // wait the response
   getSensorData(theSensorData);
 
   std::cout << "Sensordata: " << theSensorData << std::endl;
-  // Test the message pack parsing
-  //msgpack::object_handle oh =
-  //  msgpack::unpack(theSensorData.data(), theSensorData.size());
-
-  // deserialized object is valid during the msgpack::object_handle instance is alive.
-  //msgpack::object deserialized = oh.get();
-
-  // msgpack::object supports ostream.
-  //std::cout << deserialized << std::endl;
 
   // initialize the teamname and number
   //theSocket << "(init (teamname " << theGameInfo.teamName << ")(unum " << theGameInfo.playerNumber << "))" << theSync << send;
@@ -425,11 +416,21 @@ bool WebotsController::getSensorData(std::string& data)
 {
   try {
     theSocket >> data;
+
+    // Test the message pack parsing
+    msgpack::object_handle oh = msgpack::unpack(data.data(), data.size());
+
+    // deserialized object is valid during the msgpack::object_handle instance is alive.
+    msgpack::object deserialized = oh.get();
+
+    // msgpack::object supports ostream.
+    std::cout << deserialized << std::endl;
+
     theLastSenseTime = NaoTime::getNaoTimeInMilliSeconds();
   }
   catch (std::runtime_error& exp)
   {
-      cerr<<"can not get data from server, because of "<<exp.what()<<endl;
+    cerr<<"can not get data from server, because of "<<exp.what()<<endl;
     return false;
   }
   return true;
