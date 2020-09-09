@@ -58,6 +58,12 @@ using namespace std;
   registerOutput<DebugMessageOut>(*this);
 
 
+  // calculate debug communicaiton port
+  //unsigned short debugPort = static_cast<short unsigned int> (5000 + (teamNumber*100) + playerNumber);
+  theDebugServer.start(5401);
+  theDebugServer.setTimeOut(0);
+
+
   GError *err = NULL;
   socket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_STREAM, G_SOCKET_PROTOCOL_TCP, &err);
   if (err)
@@ -190,7 +196,7 @@ bool WebotsController::init(
   theSocket << "(scene " << modelPath << ")" << send;
 
   // wait the response
-  getSensorData(theSensorData);
+  //getSensorData(theSensorData);
 
   std::cout << "Sensordata: " << theSensorData << std::endl;
 
@@ -207,11 +213,6 @@ bool WebotsController::init(
   config.setInt("player", "PlayerNumber", playerNumber);
   config.setString("player", "TeamName", teamName);
 
-#ifdef DEBUG
-  // calculate debug communicaiton port
-  unsigned short debugPort = static_cast<short unsigned int> (5000 + (teamNumber*100) + playerNumber);
-  theDebugServer.start(debugPort);
-#endif
 
   theLastSenseTime = NaoTime::getNaoTimeInMilliSeconds();
   theLastActTime = theLastSenseTime;
@@ -234,6 +235,7 @@ void WebotsController::singleThreadMain()
   cout << "SimSpark Controller runs in single thread" << endl;
   while ( getSensorData(theSensorData) )
   {
+    PlatformInterface::runCognition();
     /*
     updateSensors(theSensorData);
     if ( isNewImage || isNewVirtualVision )
@@ -272,6 +274,8 @@ void WebotsController::cognitionLoop()
 
 void WebotsController::callCognition()
 {
+  PlatformInterface::callCognition();
+  /*
   if(cognitionRegistered())
   {
     getCognitionInput();
@@ -281,6 +285,7 @@ void WebotsController::callCognition()
       setCognitionOutput();
     }
   }
+  */
 }//end callCognition
 
 void WebotsController::senseLoop()
@@ -336,7 +341,11 @@ void WebotsController::act()
   // send command
   std::unique_lock<std::mutex> lock(theActDataMutex);
   try {
-    //theSocket << theActData.str() << theSync << send;
+
+    std::stringstream sbuf;
+    msgpack::pack(sbuf, lolaActuators);
+
+    theSocket << sbuf.str() << send;
   }
   catch(std::runtime_error& exp)
   {
@@ -394,6 +403,7 @@ void WebotsController::setMotionOutput()
 
 void WebotsController::getCognitionInput()
 {
+  PlatformInterface::getCognitionInput();
   /*
   std::unique_lock<std::mutex> lock(theCognitionInputMutex);
   while (!isNewImage && !isNewVirtualVision && !exiting )
@@ -409,7 +419,7 @@ void WebotsController::getCognitionInput()
 
 void WebotsController::setCognitionOutput()
 {
-  std::unique_lock<std::mutex> lock(theCognitionOutputMutex);
+  //std::unique_lock<std::mutex> lock(theCognitionOutputMutex);
   PlatformInterface::setCognitionOutput();
 }
 
@@ -425,9 +435,12 @@ bool WebotsController::getSensorData(std::string& data)
     msgpack::object deserialized = oh.get();
 
     // msgpack::object supports ostream.
-    std::cout << deserialized << std::endl;
+    //std::cout << deserialized << std::endl;
+
+    //LolaDataConverter::readSensorData(dcmSensorData, lolaActuators);
 
     theLastSenseTime = NaoTime::getNaoTimeInMilliSeconds();
+    std::cout << theLastSenseTime << std::endl;
   }
   catch (std::runtime_error& exp)
   {
@@ -439,13 +452,16 @@ bool WebotsController::getSensorData(std::string& data)
 
 void WebotsController::get(FrameInfo& data)
 {
-  //data.setTime(theFrameInfo.getTime());
+  data.setTime(data.getTime() + 20);
   data.setFrameNumber(data.getFrameNumber() + 1);
 }
 
 void WebotsController::get(SensorJointData& data)
 {
-
+  for(size_t i = 0; i < naoth::JointData::numOfJoint; ++i) {
+    data.position[i] = theLastMotorJointData.position[i];
+    data.stiffness[i] = theLastMotorJointData.stiffness[i];
+  }
 }
 
 void WebotsController::get(AccelerometerData& data)
@@ -465,7 +481,7 @@ void WebotsController::get(GPSData& data)
 
 void WebotsController::get(Image& data)
 {
-}//end get
+}
 
 void WebotsController::get(GyrometerData& data)
 {
@@ -500,7 +516,9 @@ void WebotsController::get(GameData& data)
 
 void WebotsController::set(const MotorJointData& data)
 {
-  
+  LolaDataConverter::set(data, lolaActuators);
+
+  theLastMotorJointData = data;
 }
 
 void WebotsController::get(TeamMessageDataIn& data)

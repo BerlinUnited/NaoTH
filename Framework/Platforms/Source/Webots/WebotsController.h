@@ -26,6 +26,9 @@
 #include <Representations/Infrastructure/TeamMessageData.h>
 #include <Representations/Infrastructure/GameData.h>
 
+#include <DCM/Tools/LolaData.h>
+#include <DCM/Tools/LolaDataConverter.h>
+
 // SPL team comm
 #include "MessagesSPL/SPLStandardMessage.h"
 
@@ -67,12 +70,22 @@ public:
   virtual std::string getBodyNickName()   const { return getRobotName(); }
   virtual std::string getHeadNickName()   const { return getRobotName(); }
   virtual std::string getPlatformName()   const { return thePlatformName; }
-  virtual unsigned int getBasicTimeStep() const { return 20; }
+  virtual unsigned int getBasicTimeStep() const { return 10; }
 
   /////////////////////// init ///////////////////////
   bool init(const std::string& modelPath, const std::string& teamName, unsigned int teamNumber, unsigned int num, const std::string& server, unsigned int port, bool sync);
 
   void main();
+
+private: // internal data
+  ActuatorData lolaActuators;
+  
+  SensorData lolaSensors;
+  // HACK: lola SensorData doesn't have a direct conversion to representations yet
+  DCMSensorData dcmSensorData;
+
+  // HACK:
+  MotorJointData theLastMotorJointData;
 
 public:
   /////////////////////// get ///////////////////////
@@ -158,8 +171,9 @@ public:
 
   void set(const DebugMessageOut& data)
   {
-    if(data.answers.size() > 0)
+    if(data.answers.size() > 0) {
       theDebugServer.setDebugMessageOut(data);
+    }
   }
 };
 
