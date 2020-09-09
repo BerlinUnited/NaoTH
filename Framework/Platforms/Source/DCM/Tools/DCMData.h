@@ -46,7 +46,7 @@ class DCMSensorData
 {
 public:
   DCMSensorData() {
-    std::fill_n(sensorsValue,numOfSensors,0);
+    std::fill_n(sensorsValue, numOfSensors, 0.0f);
   }
 
   // TODO: maybe use some time_t type?
