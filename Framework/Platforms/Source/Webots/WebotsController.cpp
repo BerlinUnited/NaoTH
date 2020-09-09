@@ -140,7 +140,9 @@ bool WebotsController::init(
   unsigned int port, 
   bool sync)
 {
+  // IMPORTANT: initialize the platform
   Platform::getInstance().init(this);
+
 
   Configuration& config = Platform::getInstance().theConfiguration;
 
@@ -195,7 +197,6 @@ bool WebotsController::init(
   // initialize the teamname and number
   //theSocket << "(init (teamname " << theGameInfo.teamName << ")(unum " << theGameInfo.playerNumber << "))" << theSync << send;
 
-  
   cout << "NaoTH Simpark initialization successful: " << teamName << " " << playerNumber << endl;
 
   //DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
