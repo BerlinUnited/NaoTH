@@ -1,44 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.ChoiceBox?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.ToggleButton?>
-<?import javafx.scene.control.ToggleGroup?>
-<?import javafx.scene.control.ToolBar?>
-<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox prefHeight="300.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.202-ea" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <ToolBar prefHeight="40.0" prefWidth="200.0">
-         <items>
-            <ToggleButton fx:id="btnRefresh" mnemonicParsing="false" onAction="#fxSourcePrint" text="Refresh">
-               <tooltip>
-                  <Tooltip text="Update representations [Alt+Shift+R]" />
-               </tooltip>
-               <toggleGroup>
-                  <ToggleGroup fx:id="source" />
-               </toggleGroup></ToggleButton>
-            <ToggleButton fx:id="btnBinary" mnemonicParsing="false" onAction="#fxSourceBinary" text="Binary" toggleGroup="$source">
-               <tooltip>
-                  <Tooltip text="Show representation as parsed protobuf messages (binary) [Alt+Shift+B]" />
-               </tooltip></ToggleButton>
-            <ToggleButton fx:id="btnLog" mnemonicParsing="false" onAction="#fxSourceLog" text="Log" toggleGroup="$source">
-               <tooltip>
-                  <Tooltip text="Show log file representations [Alt+Shift+L]" />
-               </tooltip></ToggleButton>
-            <Separator orientation="VERTICAL">
-               <padding>
-                  <Insets left="3.0" />
-               </padding>
-            </Separator>
-            <ChoiceBox fx:id="type" prefWidth="150.0">
-               <tooltip>
-                  <Tooltip text="Switch representation type" />
-               </tooltip></ChoiceBox>
-         </items>
-      </ToolBar>
       <fx:include fx:id="representationPanel" source="RepresentationPanel.fxml" VBox.vgrow="ALWAYS" />
    </children>
 </VBox>

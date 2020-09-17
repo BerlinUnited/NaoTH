@@ -18,10 +18,16 @@ import java.util.Map;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -38,20 +44,34 @@ public class RepresentationPanel
     private GenericManagerFactory factory;
     
     /** The available sources */
-    public enum Source { None, Connection, Binary, Log }
+    public enum Source { None, Cognition, Motion, Log }
     /** The types of the sources */
-    public enum Type { Cognition, Motion }
+    public enum Format { Text, Binary }
     /** The current active source */
     private final ObjectProperty<Source> source = new SimpleObjectProperty<>(Source.None);
     /** The current active source type */
-    private final ObjectProperty<Type> type = new SimpleObjectProperty<>(Type.Cognition);
+    private final ObjectProperty<Format> format = new SimpleObjectProperty<>(Format.Text);
     
     /** UI elements */
-    @FXML ListView<String> list;
+    @FXML Accordion sourcePanel;
+    @FXML TitledPane cognitionPane;
+    @FXML TitledPane motionPane;
+    @FXML TitledPane logPane;
+    @FXML ListView<String> cognitionList;
+    @FXML ListView<String> motionList;
+    @FXML ListView<String> logList;
+    @FXML ToggleGroup formatPanel;
+    @FXML ToggleButton btnText;
+    @FXML ToggleButton btnBinary;
     @FXML TextArea content;
     @FXML TextField search;
     
     /** Some shortcuts */
+    private final KeyCombination shortcutCognition = new KeyCodeCombination(KeyCode.C, KeyCombination.ALT_DOWN, KeyCombination.SHIFT_DOWN);
+    private final KeyCombination shortcutMotion = new KeyCodeCombination(KeyCode.M, KeyCombination.ALT_DOWN, KeyCombination.SHIFT_DOWN);
+    private final KeyCombination shortcutLog = new KeyCodeCombination(KeyCode.L, KeyCombination.ALT_DOWN, KeyCombination.SHIFT_DOWN);
+    private final KeyCombination shortcutText = new KeyCodeCombination(KeyCode.T, KeyCombination.ALT_DOWN, KeyCombination.SHIFT_DOWN);
+    private final KeyCombination shortcutBinary = new KeyCodeCombination(KeyCode.B, KeyCombination.ALT_DOWN, KeyCombination.SHIFT_DOWN);
     private final KeyCombination shortcutShowSearch = new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN);
     private final KeyCombination shortcutHideSearch = new KeyCodeCombination(KeyCode.ESCAPE);
     private final KeyCombination shortcutContSearchEnter = new KeyCodeCombination(KeyCode.ENTER);
@@ -92,12 +112,19 @@ public class RepresentationPanel
      */
     @FXML
     private void initialize() {
-        // handle changes of the global state (set by parent)
-        type.addListener((ob) -> { changeType(); });
-        source.addListener((ob) -> { changeSource(); });
+        // handle changes of the current state
+        source.addListener((ob) -> { sourceChanged(); });
+        format.addListener((ob) -> { formatChanged(); });
+
+        // change the source
+        sourcePanel.expandedPaneProperty().addListener((ob) -> { switchSource(); });
+        formatPanel.selectedToggleProperty().addListener((ob, o, n) -> { switchFormat(o, n); });
+
         // handle list changes
-        list.disableProperty().bind(source.isEqualTo(Source.None));
-        list.getSelectionModel().selectedItemProperty().addListener((o) -> { subscribeRepresentation(); });
+        cognitionList.getSelectionModel().selectedItemProperty().addListener((o) -> { subscribeRepresentation(cognitionList); });
+        motionList.getSelectionModel().selectedItemProperty().addListener((o) -> { subscribeRepresentation(motionList); });
+        logList.getSelectionModel().selectedItemProperty().addListener((o) -> { content.clear(); });
+
         // handle search input
         search.textProperty().addListener((ob) -> { search(true); });
     }
@@ -142,19 +169,78 @@ public class RepresentationPanel
      * 
      * @return the (current) type property
      */
-    public ObjectProperty<Type> getTypeProperty() {
-        return type;
+    public ObjectProperty<Format> getFormatProperty() {
+        return format;
+    }
+    
+    /**
+     * Handles the Text format button click.
+     */
+    @FXML
+    private void fxFormatText() {
+        if (btnText.isSelected()) {
+            format.set(Format.Text);
+        }
     }
 
     /**
-     * Is called, if the key pressed event is triggered by the list view.
+     * Handles the Binary format button click.
+     */
+    @FXML
+    private void fxFormatBinary() {
+        if (btnText.isSelected()) {
+            format.set(Format.Binary);
+        }
+    }
+
+    /**
+     * Handles the "Not connected" button click on the empty cogntion list.
+     */
+    @FXML
+    private void fxCognitionConnect() {
+        retrieveRepresentations(cmd_list_cognition);
+    }
+    
+    /**
+     * Handles the "Not connected" button click on the empty motion list.
+     */
+    @FXML
+    private void fxMotionConnect() {
+        retrieveRepresentations(cmd_list_motion);
+    }
+
+    /**
+     * Is called, if the key pressed event is triggered on the panel.
+     * 
+     * @param k the key (event), which triggered the event
+     */
+    @FXML
+    private void fxPanelShortcuts(KeyEvent k) {
+        if (shortcutRefresh.match(k)) {
+            sourceChanged();
+        } else if (shortcutCognition.match(k)) {
+            source.set(Source.Cognition);
+        } else if (shortcutMotion.match(k)) {
+            source.set(Source.Motion);
+        } else if (shortcutLog.match(k)) {
+            source.set(Source.Log);
+        } else if (shortcutText.match(k)) {
+            format.set(Format.Text);
+        } else if (shortcutBinary.match(k)) {
+            format.set(Format.Binary);
+        }
+    }
+    
+    /**
+     * Is called, if the key pressed event is triggered on the list view.
      * 
      * @param k the key (event), which triggered the event
      */
     @FXML
     private void fxListShortcuts(KeyEvent k) {
-        // check if we got a printable character
-        if (k.getText() != null && !k.getText().isEmpty()) {
+        // check if we got a printable character and the ALT key isn't pressed
+        // since this is used for shortcuts
+        if (source.get() != Source.None && !k.isAltDown() && k.getText() != null && !k.getText().isEmpty()) {
             // "fast" typing is one search string; a pause results in a new search
             if (System.currentTimeMillis() - listSearchTimeout < 1000) {
                 listSearchString += k.getText().toLowerCase();
@@ -163,6 +249,7 @@ public class RepresentationPanel
             }
             listSearchTimeout = System.currentTimeMillis();
             // search for the typed string and select/scroll to the respective item
+            ListView<String> list = (ListView<String>) sourcePanel.getExpandedPane().getContent();
             for (String item : list.getItems()) {
                 if (item.toLowerCase().startsWith(listSearchString)) {
                     list.getSelectionModel().select(item);
@@ -170,16 +257,11 @@ public class RepresentationPanel
                     break;
                 }
             }
-        } else if (shortcutRefresh.match(k)) {
-            // refresh makes only sence when somehow connected
-            if (source.get() != Source.Connection || source.get() != Source.Binary) {
-                changeSource();
-            }
         }
     }
     
     /**
-     * Is called, if the key pressed event is triggered by the content text area.
+     * Is called, if the key pressed event is triggered on the content text area.
      * 
      * @param k the key (event), which triggered the event
      */
@@ -194,14 +276,12 @@ public class RepresentationPanel
         } else if (shortcutRefresh.match(k)) {
             // F5 is consumed by the textarea and does not bubble to the parent 
             // node, so we must handle it here
-            if (source.get() != Source.Connection || source.get() != Source.Binary) {
-                changeSource();
-            }
+            sourceChanged();
         }
     }
     
     /**
-     * Is called, if the key pressed event is triggered by the search text field.
+     * Is called, if the key pressed event is triggered on the search text field.
      * 
      * @param k the key (event), which triggered the event
      */
@@ -242,82 +322,117 @@ public class RepresentationPanel
     }
     
     /**
-     * Handles changes to the current source.
-     * The appropiate handler is set or unset and the selected representation is
-     * subscribed or unsubscribed.
+     * Handles the source change by the ui.
      */
-    private void changeSource() {
-        switch (source.get()) {
-            case Connection:
-            case Binary:
-                retrieveRepresentations();
-                break;
-            case Log:
-                list.getItems().clear();
-                log.addListener(dataHandlerLog);
-                dataHandlerLog.showFrame();
-                break;
-            case None:
-                unsubscribeRepresentation();
-                log.removeListener(dataHandlerLog);
-                break;
-        }
-    }
-
-    /**
-     * Handles changes of the current source type (cognition, motion) and retrieves
-     * the appropiate reperesentation based on the type.
-     */
-    private void changeType() {
-        if (source.get() == Source.Connection || source.get() == Source.Binary) {
-            unsubscribeRepresentation();
-            retrieveRepresentations();
-        }
-    }
-    
-    /**
-     * Retrieves a list of the available representations.
-     * If not connected, the source is set to "None".
-     */
-    private void retrieveRepresentations() {
-        if (control != null && control.checkConnected()) {
-            if (type.get() == Type.Cognition) {
-                control.getMessageServer().executeCommand(representationsListUpdater, cmd_list_cognition);
-            } else if (type.get() == Type.Motion) {
-                control.getMessageServer().executeCommand(representationsListUpdater, cmd_list_motion);
-            }
+    private void switchSource() {
+        TitledPane expanded = sourcePanel.getExpandedPane();
+        if (expanded == cognitionPane) {
+            source.set(Source.Cognition);
+        } else if (expanded == motionPane) {
+            source.set(Source.Motion);
+        } else if (expanded == logPane) {
+            source.set(Source.Log);
         } else {
             source.set(Source.None);
         }
     }
     
     /**
+     * Handles the format change by the ui.
+     */
+    private void switchFormat(Toggle o, Toggle n) {
+        if (n == null) {
+            o.setSelected(true);
+        } else if (n == btnText) {
+            format.set(Format.Text);
+        } else if (n == btnBinary) {
+            format.set(Format.Binary);
+        }
+    }
+
+    /**
+     * Handles changes to the current source.
+     * The appropiate handler is set or unset, the selected representation is
+     * subscribed or unsubscribed and the ui is updated.
+     */
+    private void sourceChanged() {
+        switch (source.get()) {
+            case Cognition:
+                retrieveRepresentations(cmd_list_cognition);
+                sourcePanel.setExpandedPane(cognitionPane);
+                break;
+            case Motion:
+                retrieveRepresentations(cmd_list_motion);
+                sourcePanel.setExpandedPane(motionPane);
+                break;
+            case Log:
+                log.addListener(dataHandlerLog);
+                dataHandlerLog.showFrame();
+                sourcePanel.setExpandedPane(logPane);
+                break;
+            case None:
+                unsubscribeRepresentation();
+                log.removeListener(dataHandlerLog);
+                sourcePanel.setExpandedPane(null);
+                break;
+        }
+    }
+
+    /**
+     * Handles changes of the current format (text, binary) and retrieves
+     * the appropiate reperesentation based on the format.
+     */
+    private void formatChanged() {
+        // selects the appropiate button, if not already selected
+        switch (format.get()) {
+            case Text: btnText.setSelected(true); break;
+            case Binary: btnBinary.setSelected(true); break;
+        }
+        // re-subscribe to the selected representation
+        if (source.get() == Source.Cognition) {
+            subscribeRepresentation(cognitionList);
+        } else if (source.get() == Source.Motion) {
+            subscribeRepresentation(motionList);
+        }
+    }
+    
+    /**
+     * Retrieves a list of the available representations.
+     */
+    private void retrieveRepresentations(Command cmd) {
+        if (control != null && control.checkConnected()) {
+            control.getMessageServer().executeCommand(representationsListUpdater, cmd);
+        }
+    }
+    
+    /**
      * Subscribes to a selected representation, if one is selected.
      */
-    private void subscribeRepresentation() {
+    private void subscribeRepresentation(ListView<String> list) {
         // unsubscribe previous listener
         unsubscribeRepresentation();
-        // subscribe to the new representation (if set)
-        String representation = list.getSelectionModel().getSelectedItem();
-        if (representation != null) {
-            switch (source.get()) {
-                case Connection:
-                    Command cmdPrint = new Command(type.get().toString() + ":representation:print").addArg(representation);
-                    dataHandlerManager = factory.getManager(cmdPrint);
-                    dataHandlerManager.addListener(dataHandlerPrint);
-                    break;
-                case Binary:
-                    dataHandlerBinary.setRepresentation(representation);
-                    Command cmdBinary = new Command(type.get().toString() + ":representation:get").addArg(representation);
-                    dataHandlerManager = factory.getManager(cmdBinary);
-                    dataHandlerManager.addListener(dataHandlerBinary);
-                    break;
-                case Log:
-                    dataHandlerLog.showFrame();
-                    break;
-                case None:
-                    // do nothing, since no source is set/selected
-                    break;
+        // only Cognition and Motion can be subscribed
+        if (list != null && source.get() != Source.Cognition && source.get() != Source.Motion) {
+            return;
+        }
+        // make sure we're connected
+        if (control != null && control.checkConnected()) {
+            // subscribe to the new representation (if set)
+            String selected = list.getSelectionModel().getSelectedItem();
+            if (selected != null) {
+                switch (format.get()) {
+                    case Text:
+                        Command cmdPrint = new Command(source.get().toString() + ":representation:print").addArg(selected);
+                        dataHandlerManager = factory.getManager(cmdPrint);
+                        dataHandlerManager.addListener(dataHandlerPrint);
+                        break;
+                    case Binary:
+                        dataHandlerBinary.setRepresentation(selected);
+                        Command cmdBinary = new Command(source.get().toString() + ":representation:get").addArg(selected);
+                        dataHandlerManager = factory.getManager(cmdBinary);
+                        dataHandlerManager.addListener(dataHandlerBinary);
+                        break;
+                }
             }
         }
     }
@@ -338,10 +453,10 @@ public class RepresentationPanel
      * 
      * @param items the new representations
      */
-    private void updateList(Collection<String> items) {
+    private void updateList(ListView<String> list, Collection<String> items) {
         Platform.runLater(() -> {
             String selected = list.getSelectionModel().getSelectedItem();
-            list.getItems().setAll(items);
+            list.setItems(FXCollections.observableArrayList(items));
             list.getSelectionModel().select(selected);
         });
     }
@@ -381,8 +496,10 @@ public class RepresentationPanel
     {
         @Override
         public void handleResponse(byte[] result, Command command) {
-            if (command.equals(cmd_list_cognition) || command.equals(cmd_list_motion)) {
-                updateList(Arrays.asList(new String(result).split("\n")));
+            if (command.equals(cmd_list_cognition)) {
+                updateList(cognitionList, Arrays.asList(new String(result).split("\n")));
+            } else if (command.equals(cmd_list_motion)) {
+                updateList(motionList, Arrays.asList(new String(result).split("\n")));
             }
         }
 
@@ -461,13 +578,13 @@ public class RepresentationPanel
             // map new frame data
             b.getNames().forEach((name) -> { dataByName.put(name, b.get(name).getData()); });
             // update list
-            updateList(dataByName.keySet());
+            updateList(logList, dataByName.keySet());
             
             showFrame();
         }
 
         public void showFrame() {
-            String selected = list.getSelectionModel().getSelectedItem();
+            String selected = logList.getSelectionModel().getSelectedItem();
             if(selected != null) {
                 // EVIL HACK: remove suffix "Top"
                 String representation = selected.endsWith("Top") ? selected.substring(0, selected.length()-3) : selected;
