@@ -92,7 +92,7 @@ class NaoTHCompiler:
         self.c_inf = dict()
         self.test_im_index = 0
         self.test_image = self.imdb["images"][self.test_im_index]
-        if test_binary:
+        if self.test_binary:
             self.header_file_function = self.write_test_header_file
             self.cpp_footer_function = self.write_footer_test
         else:
@@ -339,29 +339,44 @@ void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBri
 
     def write_footer_test(self, _x, class_name):
         data_generation = '''
-    void {}::predict(double meanBrightnessOffset)
-    {{
-    \t// generate random input
-    \tstd::default_random_engine generator;
-    \tstd::uniform_int_distribution<int> distribution(0, 255);
-    
-    \tfor(size_t x=0; x < 16; x++) {{
-    \t\tfor(size_t y=0; y < 16; y++) {{
-    \t\t\tint random_int = distribution(generator);
-    \t\t\tfloat value = ( random_int / 255.0f) - static_cast<float>(meanBrightnessOffset);
-    \t\t\tin_step[y][x][0] = value;
-    \t\t}}
-    \t}}
-    '''
+void {}::predict(double meanBrightnessOffset)
+{{
+\t// generate random input
+\tstd::default_random_engine generator;
+\tstd::uniform_int_distribution<int> distribution(0, 255);
+
+\tfor(size_t x=0; x < 16; x++) {{
+\t\tfor(size_t y=0; y < 16; y++) {{
+\t\t\tint random_int = distribution(generator);
+\t\t\tfloat value = ( random_int / 255.0f) - static_cast<float>(meanBrightnessOffset);
+\t\t\tin_step[y][x][0] = value;
+\t\t}}
+\t}}
+'''
         cnn_part = '''
-    \tcnn(in_step);
-    }\n
-    '''
+\tcnn(in_step);
+}\n
+'''
 
         if self.c_inf["f"] is not None:
             self.c_inf["f"].write('}\n')
             self.c_inf["f"].write(data_generation.format(class_name))
             self.c_inf["f"].write(cnn_part)
+            self.c_inf["f"].close()
+            self.c_inf["f"] = None
+
+            # replace the name of the output layer
+            with open(self.c_inf["path"], 'r') as file:
+                data = file.read()
+
+            data = data.replace("int *res, double *scores", ' double output_tensor[{:d}][{:d}][{:d}]'.format(
+                get_size(_x, 1),
+                get_size(_x, 2),
+                get_size(_x, 3)))
+            data = data.replace('x{:d}['.format(self.c_inf["layer"] - 1), 'output_tensor[')
+
+            with open(self.c_inf["path"], 'w') as file:
+                file.write(data)
 
     def write_get_radius_function(self, class_name):
         self.write_cpp('double {}::getRadius() {{\n'
