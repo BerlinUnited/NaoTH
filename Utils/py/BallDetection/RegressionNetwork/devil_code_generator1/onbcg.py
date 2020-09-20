@@ -176,10 +176,8 @@ class NaoTHCompiler:
         #       at this point we should know the size of the output layer
         self.header_file_function(class_name, output_folder)
 
-        if self.test_binary:
-            self.write_footer_test(_x, class_name)
-        else:
-            self.write_footer(_x, class_name)
+        # write other cpp function to file
+        self.cpp_footer_function(_x, class_name)
 
     def compile(self, optimize=False):
         if platform.system() != 'Darwin':
