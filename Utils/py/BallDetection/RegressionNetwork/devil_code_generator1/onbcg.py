@@ -75,6 +75,10 @@ sse_leaky = '''
 '''
 
 
+def get_size(x, i=1):
+    return x.shape[i - 1]
+
+
 class NaoTHCompiler:
     def __init__(self, imdb, model_path, code_path, unroll_level=0, arch="general", conv_mode=0, test_binary=False):
         self.imdb = imdb
@@ -188,12 +192,9 @@ class NaoTHCompiler:
             print("Error compiling file.")
             exit(-3)
 
-    def size(self, x, i=1):
-        return x.shape[i - 1]
-
-    def write_cpp(self, str):
+    def write_cpp(self, string):
         if self.c_inf["f"] is not None:
-            self.c_inf["f"].write(str)
+            self.c_inf["f"].write(string)
 
     def write_naoth_header_file(self, class_name, output_folder="."):
         fp = open(os.path.join(output_folder, class_name + ".h"), "w")
@@ -269,15 +270,15 @@ class NaoTHCompiler:
 
         return self.c_inf
 
-    def mean_substraction(self, im):
+    def mean_subtraction(self, im):
         if self.unroll_level > 0:
-            self.write_cpp('\tfor (int xi = 0; xi < {:d}; xi += 1)\n\t{{\n'.format(self.size(im, 1)))
+            self.write_cpp('\tfor (int xi = 0; xi < {:d}; xi += 1)\n\t{{\n'.format(get_size(im, 1)))
             _xi = 'xi'
-        for xi in range(self.size(im, 1)):
+        for xi in range(get_size(im, 1)):
             if self.unroll_level == 0:
                 _xi = xi
-            for xj in range(self.size(im, 2)):
-                for xk in range(self.size(im, 3)):
+            for xj in range(get_size(im, 2)):
+                for xk in range(get_size(im, 3)):
                     if self.unroll_level == 0 or xi == 0:
                         self.write_cpp('\t\tin_step[{xi}][{:d}][{:d}] = (in_step[{xi}][{:d}][{:d}] - {:f}f);\n'.format(
                             xj, xk, xj, xk, self.dataset_mean, xi=_xi))
@@ -307,7 +308,7 @@ class NaoTHCompiler:
     '''
         self.c_inf["f"].write(normalization_part.format(class_name))
         # subtract mean from input patch
-        self.mean_substraction(im)
+        self.mean_subtraction(im)
         self.c_inf["f"].write(cnn_part)
 
     def write_footer(self, _x, class_name, im):
@@ -326,9 +327,9 @@ class NaoTHCompiler:
                 data = file.read()
 
             data = data.replace("int *res, double *scores", ' double output_tensor[{:d}][{:d}][{:d}]'.format(
-                self.size(_x, 1),
-                self.size(_x, 2),
-                self.size(_x, 3)))
+                get_size(_x, 1),
+                get_size(_x, 2),
+                get_size(_x, 3)))
             data = data.replace('x{:d}['.format(self.c_inf["layer"] - 1), 'output_tensor[')
 
             with open(self.c_inf["path"], 'w') as file:
@@ -637,7 +638,7 @@ class NaoTHCompiler:
                 for lw in range(0, C_OUT):  # Loop over target/filter depth
                     str_data['lw'] = lw
                     write_sse = self.arch == "sse3" and lw % 4 == 0 and C_OUT % 4 == 0
-                    write_general = self.arch == "general" or (self.arch == "sse3" and self.size(w, 4) % 4 != 0)
+                    write_general = self.arch == "general" or (self.arch == "sse3" and get_size(w, 4) % 4 != 0)
                     #   Load target pixel
                     if (self.unroll_level == 0 or (ix == -pad_top and self.unroll_level == 1) or \
                         (self.unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and write_sse:
@@ -827,7 +828,7 @@ class NaoTHCompiler:
                 for lw in range(0, C_OUT):  # Loop over target/filter depth
                     str_data['lw'] = lw
                     write_sse = self.arch == "sse3" and lw % 4 == 0 and C_OUT % 4 == 0
-                    write_general = self.arch == "general" or (self.arch == "sse3" and self.size(w, 4) % 4 != 0)
+                    write_general = self.arch == "general" or (self.arch == "sse3" and get_size(w, 4) % 4 != 0)
                     #   Load target pixel
                     if (self.unroll_level == 0 or (ix == -pad_top and self.unroll_level == 1) or \
                         (self.unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and write_sse:
@@ -940,18 +941,18 @@ class NaoTHCompiler:
         if self.arch == "sse3" and not alpha == 0.0:
             self.write_cpp("{indent}y = _mm_set_ps1({alpha}f);\n".format(alpha=alpha, **str_data))
         if self.unroll_level > 0:
-            self.write_cpp('\tfor (int i = 0; i < {:d}; i += 1)\n\t{{\n'.format(self.size(x, 1)))
+            self.write_cpp('\tfor (int i = 0; i < {:d}; i += 1)\n\t{{\n'.format(get_size(x, 1)))
             str_data['indent'] += '\t'
-        for i in range(self.size(x, 1)):
+        for i in range(get_size(x, 1)):
             if self.unroll_level > 1 and i == 0:
-                self.write_cpp('\t\tfor (int j = 0; j < {:d}; j += 1)\n\t\t{{\n'.format(self.size(x, 2)))
+                self.write_cpp('\t\tfor (int j = 0; j < {:d}; j += 1)\n\t\t{{\n'.format(get_size(x, 2)))
                 str_data['indent'] += '\t'
             elif self.unroll_level == 0:
                 str_data['i'] = i
-            for j in range(self.size(x, 2)):
+            for j in range(get_size(x, 2)):
                 if self.unroll_level < 2:
                     str_data['j'] = j
-                for k in range(self.size(x, 3)):
+                for k in range(get_size(x, 3)):
                     if self.arch == "sse3":
                         str_data['k'] = k
                         if x[i, j, k] < 0:
@@ -984,42 +985,43 @@ class NaoTHCompiler:
         return x_out, self.c_inf
 
     def max_pool(self, x, p, stride):
-        z_res = self.size(x, 3)
-        x_res = int(np.ceil((self.size(x, 1) - p[0] + 1) / stride[0]))
-        y_res = int(np.ceil((self.size(x, 2) - p[1] + 1) / stride[1]))
-        x_out = np.zeros((x_res, y_res, self.size(x, 3))).astype('float32')
+        z_res = get_size(x, 3)
+        x_res = int(np.ceil((get_size(x, 1) - p[0] + 1) / stride[0]))
+        y_res = int(np.ceil((get_size(x, 2) - p[1] + 1) / stride[1]))
+        x_out = np.zeros((x_res, y_res, get_size(x, 3))).astype('float32')
         str_data = {'prev_layer': self.c_inf["layer"] - 1, 'ix': 'ix', 'jx': 'jx', 'kx': 'kx', 'indent': '\t',
                     'layer': self.c_inf["layer"], 'mi': 'mi', 'mj': 'mj', 'x_out_1': 'x_out_1', 'x_out_2': 'x_out_2',
                     'stride0': stride[0], 'p': p[0], 'x_res': x_res, 'y_res': y_res, 'z_res': z_res,
                     'stride1': stride[1]}
         self.write_cpp('\tstatic float x{layer}[{x_res}][{y_res}][{z_res}] = {{}};\n'.format(**str_data))
         if self.unroll_level > 0:
-            self.write_cpp('\tfor (int ix = 0; ix < {:d}; ix += {stride0})\n\t{{\n'.format(self.size(x, 1) - p[0] + 1,
-                                                                                           **str_data))
+            self.write_cpp(
+                '\tfor (int ix = 0; ix < {:d}; ix += {stride0})\n\t{{\n'.format(get_size(x, 1) - p[0] + 1,
+                                                                                **str_data))
             str_data['indent'] = '\t\t'
             # writeC(c_inf, '{indent}int x_1, x_out_1;\n'.format(**str_data))  # FIXME generates unsused variable warning
             self.write_cpp('{indent}int x_out_1;\n'.format(**str_data))
-        for ix in range(0, self.size(x, 1) - p[0] + 1, stride[0]):
+        for ix in range(0, get_size(x, 1) - p[0] + 1, stride[0]):
             x_out_1 = ix // stride[0]  # ix is a multiple of stride[0], so integer division is fine
             if self.unroll_level > 0 and ix == 0:
                 self.write_cpp('{indent}x_out_1 = ix / {stride0};\n'.format(**str_data))
                 if self.unroll_level == 2:
                     self.write_cpp('\tfor (int jx = 0; jx < {:d}; jx += {stride1})\n\t{{\n'.format(
-                        self.size(x, 2) - p[1] + 1,
+                        get_size(x, 2) - p[1] + 1,
                         **str_data))
                     str_data['indent'] = '\t\t'
                     self.write_cpp('{indent}int x_out_2;\n'.format(**str_data))
             elif self.unroll_level == 0:
                 str_data['x_out_1'] = x_out_1
                 str_data['ix'] = ix
-            for jx in range(0, self.size(x, 2) - p[1] + 1, stride[1]):
+            for jx in range(0, get_size(x, 2) - p[1] + 1, stride[1]):
                 x_out_2 = jx // stride[1]  # jx is a multiple of stride[1], so integer division is fine
                 if self.unroll_level == 2 and ix == 0 and jx == 0:
                     self.write_cpp('{indent}x_out_2 = jx / {stride1};\n'.format(**str_data))
                 if self.unroll_level < 2:
                     str_data['x_out_2'] = x_out_2
                     str_data['jx'] = jx
-                for kx in range(self.size(x, 3)):
+                for kx in range(get_size(x, 3)):
                     str_data['kx'] = kx
                     x_out[x_out_1, x_out_2, kx] = np.max(np.max(x[ix:ix + p[0], jx:jx + p[1], kx]))
                     if self.unroll_level == 0 or (self.unroll_level == 1 and ix == 0) or (
@@ -1122,8 +1124,8 @@ class NaoTHCompiler:
             '\tstatic float x{:d}[{:d}][{:d}][{:d}] = {{}};\n'.format(self.c_inf["layer"], x.shape[0], x.shape[1],
                                                                       x.shape[2]))
 
-        for i in range(self.size(x, 1)):
-            for j in range(self.size(x, 2)):
+        for i in range(get_size(x, 1)):
+            for j in range(get_size(x, 2)):
                 self.write_cpp(
                     '\tstatic float max{:d} = x{:d}[{:d}][{:d}][0] > x{:d}[{:d}][{:d}][1] ? x{:d}[{:d}][{:d}][0] : x{:d}[{:d}][{:d}][1];\n'.format(
                         self.c_inf["layer"],
