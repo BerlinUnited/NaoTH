@@ -83,10 +83,12 @@ sse_leaky = '''
 
 
 class NaoTHCompiler():
-    def __init__(self):
+    def __init__(self, imdb):
+        self.imdb = imdb
+        self.c_inf = dict()
         header_file_function = None
 
-    def write_naoth_header_file(self, c_inf, class_name, output_folder="."):
+    def write_naoth_header_file(self, class_name, output_folder="."):
         fp = open(os.path.join(output_folder, class_name + ".h"), "w")
         with fp:
             print("#ifndef _{}_H".format(class_name.upper()), file=fp)
@@ -99,7 +101,8 @@ class NaoTHCompiler():
             print("class {} : public AbstractCNNFinder {{".format(class_name), file=fp)
             print("", file=fp)
             print("public:", file=fp)
-            print("\tvoid cnn(float x0[{:d}][{:d}][{:d}]);".format(c_inf["x_dim"], c_inf["y_dim"], c_inf["z_dim"]),
+            print("\tvoid cnn(float x0[{:d}][{:d}][{:d}]);".format(self.c_inf["x_dim"], self.c_inf["y_dim"],
+                                                                   self.c_inf["z_dim"]),
                   file=fp)
             print("\tvoid predict(const BallCandidates::PatchYUVClassified& p,double meanBrightness);", file=fp)
             print("\tvirtual double getRadius();", file=fp)
@@ -107,8 +110,9 @@ class NaoTHCompiler():
             print("\tvirtual double getBallConfidence();", file=fp)
             print("", file=fp)
             print("private:", file=fp)
-            print("\tfloat in_step[{:d}][{:d}][{:d}];".format(c_inf["x_dim"], c_inf["y_dim"], c_inf["z_dim"]), file=fp)
-            print("\tfloat scores[{:d}];".format(c_inf["output_dim"]), file=fp)
+            print("\tfloat in_step[{:d}][{:d}][{:d}];".format(self.c_inf["x_dim"], self.c_inf["y_dim"],
+                                                              self.c_inf["z_dim"]), file=fp)
+            print("\tfloat scores[{:d}];".format(self.c_inf["output_dim"]), file=fp)
             print("", file=fp)
             print("};", file=fp)
             print("# endif", file=fp)
@@ -119,63 +123,64 @@ class NaoTHCompiler():
             print("Error compiling file.")
             exit(-3)
 
-    def write_cpp(self, c_inf, str):
-        if c_inf["f"] is not None:
-            c_inf["f"].write(str)
+    def write_cpp(self, str):
+        if self.c_inf["f"] is not None:
+            self.c_inf["f"].write(str)
 
-    def keras_compile(self, imdb, model_path, code_path, unroll_level=0, arch="general", conv_mode=0,
+    def keras_compile(self, model_path, code_path, unroll_level=0, arch="general", conv_mode=0,
                       test_binary=False):
         class_name = os.path.splitext(os.path.basename(code_path))[0]
         print("Creating class", class_name)
 
         output_folder = os.path.dirname(os.path.abspath(code_path))
 
+        # get dimensions of an image, assume all images have the same dimensions
         test_im_index = 0
-        im = imdb["images"][test_im_index]
-        c_inf = {}
-        c_inf["path"] = code_path
-        c_inf["x_dim"] = im.shape[0]
-        c_inf["y_dim"] = im.shape[1]
-        if len(im.shape) > 2:
-            c_inf["z_dim"] = im.shape[2]
-        else:
-            c_inf["z_dim"] = 1
+        im = self.imdb["images"][test_im_index]
 
-        c_inf = self.write_header(c_inf, arch, class_name)
+        self.c_inf["path"] = code_path
+        self.c_inf["x_dim"] = im.shape[0]
+        self.c_inf["y_dim"] = im.shape[1]
+        if len(im.shape) > 2:
+            self.c_inf["z_dim"] = im.shape[2]
+        else:
+            self.c_inf["z_dim"] = 1
+
+        self.write_header(arch, class_name)
 
         # handle model layers
         model = load_model(model_path)
-        _x = imdb["images"][test_im_index]
+        _x = self.imdb["images"][test_im_index]
         last_activation = 'none'
         for layer in model.layers:
-            print("layer is: ", layer, c_inf['layer'])
+            print("layer is: ", layer, self.c_inf['layer'])
             if type(layer) == Convolution2D:
-                self.write_cpp(c_inf, '\n \t// Convolution Layer\n')
+                self.write_cpp('\n \t// Convolution Layer\n')
                 w = K.eval(layer.weights[0])
                 b = K.eval(layer.bias)
                 if conv_mode == 0:
-                    _x, c_inf = self.convolution(_x, w, b, layer.strides, layer.padding, c_inf, unroll_level, arch)
+                    _x, self.c_inf = self.convolution(_x, w, b, layer.strides, layer.padding, unroll_level, arch)
                 elif conv_mode == 1:
-                    _x, c_inf = self.convolution_2(_x, w, b, layer.strides, layer.padding, c_inf, unroll_level, arch)
+                    _x, self.c_inf = self.convolution_2(_x, w, b, layer.strides, layer.padding, unroll_level, arch)
                 elif conv_mode == 2:
-                    _x, c_inf = self.convolution_3(_x, w, b, layer.strides, layer.padding, c_inf, unroll_level, arch)
+                    _x, self.c_inf = self.convolution_3(_x, w, b, layer.strides, layer.padding, unroll_level, arch)
                 else:
                     raise NotImplementedError
                 if layer.activation.__name__ == 'relu':
-                    _x, c_inf = self.rectified_linear_unit(_x, c_inf, unroll_level, 0, arch)
+                    _x, c_inf = self.rectified_linear_unit(_x, unroll_level, 0, arch)
                 if layer.activation.__name__ == 'softmax':
                     _x, c_inf = self.softmax(_x, c_inf)
                 last_activation = layer.activation.__name__
             elif type(layer) == MaxPooling2D:
-                self.write_cpp(c_inf, '\n \t// Maxpool Layer \n')
-                _x, c_inf = self.max_pool(_x, layer.pool_size, layer.strides, c_inf, unroll_level, arch)
+                self.write_cpp('\n \t// Maxpool Layer \n')
+                _x, c_inf = self.max_pool(_x, layer.pool_size, layer.strides, unroll_level, arch)
             elif type(layer) == LeakyReLU:
-                self.write_cpp(c_inf, '\n \t// Leaky ReLu Layer\n')
-                _x, c_inf = self.rectified_linear_unit(_x, c_inf, unroll_level, float(layer.alpha), arch)
+                self.write_cpp('\n \t// Leaky ReLu Layer\n')
+                _x, c_inf = self.rectified_linear_unit(_x, unroll_level, float(layer.alpha), arch)
                 last_activation = 'leaky'
             elif type(layer) == ReLU:
-                self.write_cpp(c_inf, '\n \t// ReLu Layer\n')
-                _x, c_inf = self.rectified_linear_unit(_x, c_inf, unroll_level, 0, arch)
+                self.write_cpp('\n \t// ReLu Layer\n')
+                _x, c_inf = self.rectified_linear_unit(_x, unroll_level, 0, arch)
             elif type(layer) == Flatten:
                 pass
             elif type(layer) == Dropout:
@@ -184,15 +189,15 @@ class NaoTHCompiler():
                 print("Warning: BatchNormalization not implemented")
                 pass
             elif type(layer) == Dense:
-                self.write_cpp(c_inf, '\n \t// Dense Layer\n')
+                self.write_cpp('\n \t// Dense Layer\n')
                 w = K.eval(layer.weights[0])
                 b = K.eval(layer.bias)
 
                 if layer.activation.__name__ == 'relu':
                     print("use dense layer argument for activation")
-                    _x, c_inf = self.dense(_x, w, b, c_inf, relu=True)
+                    _x, c_inf = self.dense(_x, w, b, relu=True)
                 else:
-                    _x, c_inf = self.dense(_x, w, b, c_inf, relu=False)
+                    _x, c_inf = self.dense(_x, w, b, relu=False)
 
             else:
                 print("ERROR: Unknown layer: {}".format(type(layer)))
@@ -201,39 +206,38 @@ class NaoTHCompiler():
 
         # NOTE: this creates a header file
         #       at this point we should know the size of the output layer
-        self.write_naoth_header_file(c_inf, class_name, output_folder)
+        self.write_naoth_header_file(class_name, output_folder)
         if test_binary:
-            self.write_footer_test(c_inf, _x, class_name, im, imdb["mean"], unroll_level)
+            self.write_footer_test(_x, class_name, im, unroll_level)
         else:
-            self.write_footer(c_inf, _x, class_name, im, imdb["mean"], unroll_level)
+            self.write_footer(_x, class_name, im, unroll_level)
 
     def size(self, x, i=1):
         return x.shape[i - 1]
 
-    def write_header(self, c_inf, arch, class_name):
-        c_inf["f"] = open(c_inf["path"], 'w')
-        c_inf["layer"] = 1
-        c_inf["f"].write('#include \"{}.h\"\n\n'.format(class_name))
-        c_inf["f"].write("""#if WIN32\n\t#define alignas(x) __declspec(align(x))\n#endif\n\n""")
+    def write_header(self, arch, class_name):
+        self.c_inf["f"] = open(self.c_inf["path"], 'w')
+        self.c_inf["layer"] = 1
+        self.c_inf["f"].write('#include \"{}.h\"\n\n'.format(class_name))
+        self.c_inf["f"].write("""#if WIN32\n\t#define alignas(x) __declspec(align(x))\n#endif\n\n""")
 
         if arch == 'sse3':
-            c_inf["f"].write('#include <emmintrin.h>\n')
+            self.c_inf["f"].write('#include <emmintrin.h>\n')
 
-        c_inf["f"].write('void {}::cnn(float x0[{:d}][{:d}][{:d}])\n'.format(
+        self.c_inf["f"].write('void {}::cnn(float x0[{:d}][{:d}][{:d}])\n'.format(
             class_name,
-            c_inf["x_dim"],
-            c_inf["y_dim"],
-            c_inf["z_dim"]) + '{\n')
+            self.c_inf["x_dim"],
+            self.c_inf["y_dim"],
+            self.c_inf["z_dim"]) + '{\n')
 
         if arch == 'sse3':
-            # c_inf["f"].write('__m128 w, x, y, y2, t, t2;\n')
-            c_inf["f"].write('\t__m128 w, x, y;\n')
+            self.c_inf["f"].write('\t__m128 w, x, y;\n')
 
-        return c_inf
+        return self.c_inf
 
     def mean_substraction(self, im, mean, unroll_level, c_inf):
         if unroll_level > 0:
-            self.write_cpp(c_inf, '\tfor (int xi = 0; xi < {:d}; xi += 1)\n\t{{\n'.format(self.size(im, 1)))
+            self.write_cpp('\tfor (int xi = 0; xi < {:d}; xi += 1)\n\t{{\n'.format(self.size(im, 1)))
             _xi = 'xi'
         for xi in range(self.size(im, 1)):
             if unroll_level == 0:
@@ -241,11 +245,10 @@ class NaoTHCompiler():
             for xj in range(self.size(im, 2)):
                 for xk in range(self.size(im, 3)):
                     if unroll_level == 0 or xi == 0:
-                        self.write_cpp(c_inf,
-                                    '\t\tin_step[{xi}][{:d}][{:d}] = (in_step[{xi}][{:d}][{:d}] - {:f}f);\n'.format(
-                                        xj, xk, xj, xk, mean, xi=_xi))
+                        self.write_cpp('\t\tin_step[{xi}][{:d}][{:d}] = (in_step[{xi}][{:d}][{:d}] - {:f}f);\n'.format(
+                            xj, xk, xj, xk, mean, xi=_xi))
         if unroll_level > 0:
-            self.write_cpp(c_inf, '\t}\n')
+            self.write_cpp('\t}\n')
 
     def write_predict_function(self, im, mean, unroll_level, c_inf, class_name):
         normalization_part = '''
@@ -273,33 +276,33 @@ class NaoTHCompiler():
         self.mean_substraction(im, mean, unroll_level, c_inf)  # TODO isnt this the mean offset?
         c_inf["f"].write(cnn_part)
 
-    def write_footer(self, c_inf, _x, class_name, im, mean, unroll_level):
-        if c_inf["f"] is not None:
-            c_inf["f"].write('}\n')
+    def write_footer(self, _x, class_name, im, unroll_level):
+        if self.c_inf["f"] is not None:
+            self.c_inf["f"].write('}\n')
             # TODO build a switch for compiling a test predict function for timing tests
-            self.write_predict_function(im, mean, unroll_level, c_inf, class_name)
-            self.write_get_radius_function(c_inf, class_name)
-            self.write_get_center_function(c_inf, class_name)
-            self.write_get_confidence_function(c_inf, class_name)
-            c_inf["f"].close()
-            c_inf["f"] = None
+            self.write_predict_function(im, self.imdb["mean"], unroll_level, self.c_inf, class_name)
+            self.write_get_radius_function(class_name)
+            self.write_get_center_function(class_name)
+            self.write_get_confidence_function(class_name)
+            self.c_inf["f"].close()
+            self.c_inf["f"] = None
 
             # replace the name of the output layer
-            with open(c_inf["path"], 'r') as file:
+            with open(self.c_inf["path"], 'r') as file:
                 data = file.read()
 
             data = data.replace("int *res, double *scores", ' double output_tensor[{:d}][{:d}][{:d}]'.format(
                 self.size(_x, 1),
                 self.size(_x, 2),
                 self.size(_x, 3)))
-            data = data.replace('x{:d}['.format(c_inf["layer"] - 1), 'output_tensor[')
+            data = data.replace('x{:d}['.format(self.c_inf["layer"] - 1), 'output_tensor[')
 
-            with open(c_inf["path"], 'w') as file:
+            with open(self.c_inf["path"], 'w') as file:
                 file.write(data)
 
-        return c_inf
+        return self.c_inf
 
-    def write_footer_test(self, c_inf, _x, class_name, im, mean, unroll_level):
+    def write_footer_test(self, _x, class_name, im, unroll_level):
         data_generation = '''
     void {}::predict(double meanBrightnessOffset)
     {{
@@ -320,27 +323,27 @@ class NaoTHCompiler():
     }\n
     '''
 
-        if c_inf["f"] is not None:
-            c_inf["f"].write('}\n')
-            c_inf["f"].write(data_generation.format(class_name))
-            c_inf["f"].write(cnn_part)
+        if self.c_inf["f"] is not None:
+            self.c_inf["f"].write('}\n')
+            self.c_inf["f"].write(data_generation.format(class_name))
+            self.c_inf["f"].write(cnn_part)
 
-    def write_get_radius_function(self, c_inf, class_name):
-        c_inf["f"].write('double {}::getRadius() {{\n'
-                         '\treturn scores[0];\n'
-                         '}}\n'.format(class_name))
+    def write_get_radius_function(self, class_name):
+        self.c_inf["f"].write('double {}::getRadius() {{\n'
+                              '\treturn scores[0];\n'
+                              '}}\n'.format(class_name))
 
-    def write_get_center_function(self, c_inf, class_name):
-        c_inf["f"].write('Vector2d {}::getCenter() {{\n'
-                         '\treturn Vector2d(scores[1], scores[2]);\n'
-                         '}}\n'.format(class_name))
+    def write_get_center_function(self, class_name):
+        self.c_inf["f"].write('Vector2d {}::getCenter() {{\n'
+                              '\treturn Vector2d(scores[1], scores[2]);\n'
+                              '}}\n'.format(class_name))
 
-    def write_get_confidence_function(self, c_inf, class_name):
-        c_inf["f"].write('double {}::getBallConfidence() {{\n'
-                         '\treturn scores[3];\n'
-                         '}}\n'.format(class_name))
+    def write_get_confidence_function(self, class_name):
+        self.c_inf["f"].write('double {}::getBallConfidence() {{\n'
+                              '\treturn scores[3];\n'
+                              '}}\n'.format(class_name))
 
-    def convolution(self, x, w, b, stride, pad, c_inf, unroll_level, arch):
+    def convolution(self, x, w, b, stride, pad, unroll_level, arch):
         assert x.shape[2] == w.shape[2]
         assert w.shape[3] == b.shape[0]
         H, W, C_IN = x.shape
@@ -364,22 +367,21 @@ class NaoTHCompiler():
             print("Unknown padding type")
             exit(-4)
         x_out = np.zeros((H_OUT, W_OUT, C_OUT)).astype('float32')
-        str_data = {'prev_layer': c_inf["layer"] - 1, 'x_1': 'x_1', 'x_2': 'x_2',
-                    'x_out_1': 'x_out_1', 'x_out_2': 'x_out_2', 'layer': c_inf["layer"],
+        str_data = {'prev_layer': self.c_inf["layer"] - 1, 'x_1': 'x_1', 'x_2': 'x_2',
+                    'x_out_1': 'x_out_1', 'x_out_2': 'x_out_2', 'layer': self.c_inf["layer"],
                     'lw': 'lw', 'indent': '\t', 'x_res': H_OUT, 'y_res': W_OUT, 'z_res': C_OUT,
                     'stride0': stride[0], 'stride1': stride[1], 'i': 'i', 'j': 'j',
                     'pt': pad_top, 'pb': pad_bottom, 'pl': pad_left, 'pr': pad_right}
 
-        self.write_cpp(c_inf,
-                    '{indent}alignas(16) static float x{layer} [{x_res}][{y_res}][{z_res}] = {{}};\n'.format(
-                        **str_data))
+        self.write_cpp('{indent}alignas(16) static float x{layer} [{x_res}][{y_res}][{z_res}] = {{}};\n'.format(
+            **str_data))
 
         if unroll_level > 0:
-            self.write_cpp(c_inf, '{indent}for (int i = 0; i < {:d}; i += 1)\n{indent}{{\n'.format(H_OUT, **str_data))
+            self.write_cpp('{indent}for (int i = 0; i < {:d}; i += 1)\n{indent}{{\n'.format(H_OUT, **str_data))
             str_data['indent'] = '\t\t'
         for i in range(H_OUT):
             if unroll_level > 1 and i == 0:
-                self.write_cpp(c_inf, '{indent}for (int j = 0; j < {:d}; j += 1)\n{indent}{{\n'.format(W_OUT, **str_data))
+                self.write_cpp('{indent}for (int j = 0; j < {:d}; j += 1)\n{indent}{{\n'.format(W_OUT, **str_data))
                 str_data['indent'] = '\t\t\t'
             if unroll_level == 0:
                 str_data['i'] = i
@@ -391,41 +393,41 @@ class NaoTHCompiler():
                     str_data['b'] = b[kw]
                     x_out[i, j, kw] = b[kw]
                     if unroll_level == 0 or (unroll_level == 1 and i == 0) or (unroll_level == 2 and i == 0 and j == 0):
-                        self.write_cpp(c_inf, '{indent}x{layer}[{i}][{j}][{kw}] = {b}f;\n'.format(**str_data))
+                        self.write_cpp('{indent}x{layer}[{i}][{j}][{kw}] = {b}f;\n'.format(**str_data))
             if unroll_level > 1 and i == 0:
                 str_data['indent'] = '\t\t'
-                self.write_cpp(c_inf, '{indent}}}\n'.format(**str_data))
+                self.write_cpp('{indent}}}\n'.format(**str_data))
         if unroll_level > 0:
             str_data['indent'] = '\t'
-            self.write_cpp(c_inf, '{indent}}}\n'.format(**str_data))
+            self.write_cpp('{indent}}}\n'.format(**str_data))
 
         if unroll_level > 0:
-            self.write_cpp(c_inf, '{indent}for (int ix = -{pt}; ix < {:d}; ix += {stride0})\n{indent}{{\n'.format(
+            self.write_cpp('{indent}for (int ix = -{pt}; ix < {:d}; ix += {stride0})\n{indent}{{\n'.format(
                 H - KH + 1 + pad_bottom, **str_data))
             str_data['indent'] = '\t\t'
-            self.write_cpp(c_inf, '{indent}int x_1, x_out_1;\n'.format(**str_data))
+            self.write_cpp('{indent}int x_1, x_out_1;\n'.format(**str_data))
 
         for ix in range(-pad_top, H - KH + 1 + pad_bottom, SH):
             assert (ix + pad_top) % SH == 0
             x_out_1 = (ix + pad_top) // SH
 
             if unroll_level > 0 and ix == -pad_top:
-                self.write_cpp(c_inf, '{indent}x_out_1 = (ix + {pt}) / {stride0};\n'.format(**str_data))
+                self.write_cpp('{indent}x_out_1 = (ix + {pt}) / {stride0};\n'.format(**str_data))
             else:
                 str_data['x_out_1'] = x_out_1
 
             if unroll_level > 1 and ix == -pad_top:
-                self.write_cpp(c_inf, '{indent}for (int jx = -{pl}; jx < {:d}; jx += {stride1})\n{indent}{{\n'.format(
+                self.write_cpp('{indent}for (int jx = -{pl}; jx < {:d}; jx += {stride1})\n{indent}{{\n'.format(
                     W - KW + 1 + pad_right, **str_data))
                 str_data['indent'] = '\t\t\t'
-                self.write_cpp(c_inf, '{indent}int x_2, x_out_2;\n'.format(**str_data))
+                self.write_cpp('{indent}int x_2, x_out_2;\n'.format(**str_data))
 
             for jx in range(-pad_left, W - KW + 1 + pad_right, SW):
                 assert (jx + pad_left) % SW == 0
                 x_out_2 = (jx + pad_left) // SW
 
                 if unroll_level > 1 and -pad_left == jx and ix == -pad_top:
-                    self.write_cpp(c_inf, '{indent}x_out_2 = (jx + {pl}) / {stride1};\n'.format(**str_data))
+                    self.write_cpp('{indent}x_out_2 = (jx + {pl}) / {stride1};\n'.format(**str_data))
                 else:
                     str_data['x_out_2'] = x_out_2
 
@@ -433,19 +435,19 @@ class NaoTHCompiler():
                     x_1 = ix + iw
                     if (ix == -pad_top and unroll_level == 1) or (
                             unroll_level == 2 and jx == -pad_left and ix == -pad_top):
-                        self.write_cpp(c_inf, '{indent}x_1 = ix + {:d};\n'.format(iw, **str_data))
+                        self.write_cpp('{indent}x_1 = ix + {:d};\n'.format(iw, **str_data))
                         if pad == 'same':
-                            self.write_cpp(c_inf,
-                                        '{indent}if (x_1 >= 0 && x_1 < {:d})\n{indent}{{\n'.format(H, **str_data))
+                            self.write_cpp('{indent}if (x_1 >= 0 && x_1 < {:d})\n{indent}{{\n'.format(H, **str_data))
                             str_data['indent'] += '\t'
                     else:
                         str_data['x_1'] = x_1
                     for jw in range(KW):
                         x_2 = jx + jw
                         if unroll_level > 1 and jx == -pad_left and ix == -pad_top:
-                            self.write_cpp(c_inf, '{indent}x_2 = jx + {:d};\n'.format(jw, **str_data))
+                            self.write_cpp('{indent}x_2 = jx + {:d};\n'.format(jw, **str_data))
                             if pad == 'same':
-                                self.write_cpp(c_inf, '{indent}if (x_2 >= 0 && x_2 < {:d})\n{indent}{{\n'.format(W, **str_data))
+                                self.write_cpp(
+                                    '{indent}if (x_2 >= 0 && x_2 < {:d})\n{indent}{{\n'.format(W, **str_data))
                                 str_data['indent'] += '\t'
                         else:
                             str_data['x_2'] = x_2
@@ -476,7 +478,7 @@ class NaoTHCompiler():
                                     if (unroll_level == 0 and x_1 >= 0 and x_1 < H and x_2 >= 0 and x_2 < W) \
                                             or (ix == -pad_top and unroll_level == 1 and x_2 >= 0 and x_2 < W) or \
                                             (unroll_level == 2 and jx == -pad_left and ix == -pad_top):
-                                        self.write_cpp(c_inf, sse_conv.format(**str_data))
+                                        self.write_cpp(sse_conv.format(**str_data))
                                 elif arch == "general" or (arch == "sse3" and C_OUT % 4 != 0):
                                     str_data['w0'] = w[iw, jw, kw, lw]
                                     if x_1 >= 0 and x_1 < H:
@@ -488,28 +490,28 @@ class NaoTHCompiler():
                                     if (unroll_level == 0 and x_1 >= 0 and x_1 < H and x_2 >= 0 and x_2 < W) \
                                             or (ix == -pad_top and unroll_level == 1 and x_2 >= 0 and x_2 < W) or \
                                             (unroll_level == 2 and jx == -pad_left and ix == -pad_top):
-                                        self.write_cpp(c_inf,
-                                               '{indent}x{layer}[{x_out_1}][{x_out_2}][{lw}] += '
-                                               '{w0}f * x{prev_layer}[{x_1}][{x_2}][{kw}];\n'.format(**str_data))
+                                        self.write_cpp('{indent}x{layer}[{x_out_1}][{x_out_2}][{lw}] += '
+                                                       '{w0}f * x{prev_layer}[{x_1}][{x_2}][{kw}];\n'.format(
+                                            **str_data))
                         if unroll_level > 1 and jx == -pad_left and ix == -pad_top and pad == 'same':
                             str_data['indent'] = str_data['indent'][:-1]
-                            self.write_cpp(c_inf, '{indent}}}\n'.format(**str_data))
+                            self.write_cpp('{indent}}}\n'.format(**str_data))
                     if ((ix == -pad_top and unroll_level == 1) or
                         (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and pad == 'same':
                         str_data['indent'] = str_data['indent'][:-1]
-                        self.write_cpp(c_inf, '{indent}}}\n'.format(**str_data))
+                        self.write_cpp('{indent}}}\n'.format(**str_data))
             if unroll_level > 1 and ix == -pad_top:
                 str_data['indent'] = '\t\t'
-                self.write_cpp(c_inf, '{indent}}}\n'.format(**str_data))
+                self.write_cpp('{indent}}}\n'.format(**str_data))
 
         if unroll_level > 0:
             str_data['indent'] = '\t'
-            self.write_cpp(c_inf, '{indent}}}\n'.format(**str_data))
+            self.write_cpp('{indent}}}\n'.format(**str_data))
 
-        c_inf["layer"] = c_inf["layer"] + 1
-        return x_out, c_inf
+        self.c_inf["layer"] = self.c_inf["layer"] + 1
+        return x_out, self.c_inf
 
-    def convolution_2(self, x, w, b, stride, pad, c_inf, unroll_level, arch):
+    def convolution_2(self, x, w, b, stride, pad, unroll_level, arch):
         assert x.shape[2] == w.shape[2]
         assert w.shape[3] == b.shape[0]
         H, W, C_IN = x.shape
@@ -533,22 +535,21 @@ class NaoTHCompiler():
             print("Unknown padding type")
             exit(-4)
         x_out = np.zeros((H_OUT, W_OUT, C_OUT)).astype('float32')
-        str_data = {'prev_layer': c_inf["layer"] - 1, 'x_1': 'x_1', 'x_2': 'x_2',
-                    'x_out_1': 'x_out_1', 'x_out_2': 'x_out_2', 'layer': c_inf["layer"],
+        str_data = {'prev_layer': self.c_inf["layer"] - 1, 'x_1': 'x_1', 'x_2': 'x_2',
+                    'x_out_1': 'x_out_1', 'x_out_2': 'x_out_2', 'layer': self.c_inf["layer"],
                     'lw': 'lw', 'indent': '\t', 'x_res': H_OUT, 'y_res': W_OUT, 'z_res': C_OUT,
                     'stride0': SH, 'stride1': SW, 'i': 'i', 'j': 'j',
                     'pt': pad_top, 'pb': pad_bottom, 'pl': pad_left, 'pr': pad_right}
 
-        self.write_cpp(c_inf,
-                    '{indent}alignas(16) static float x{layer} [{x_res}][{y_res}][{z_res}] = {{}};\n'.format(
-                        **str_data))
+        self.write_cpp('{indent}alignas(16) static float x{layer} [{x_res}][{y_res}][{z_res}] = {{}};\n'.format(
+            **str_data))
 
         if unroll_level > 0:
-            self.write_cpp(c_inf, '{indent}for (int i = 0; i < {:d}; i += 1)\n{indent}{{\n'.format(H_OUT, **str_data))
+            self.write_cpp('{indent}for (int i = 0; i < {:d}; i += 1)\n{indent}{{\n'.format(H_OUT, **str_data))
             str_data['indent'] = '\t\t'
         for i in range(H_OUT):
             if unroll_level > 1 and i == 0:
-                self.write_cpp(c_inf, '{indent}for (int j = 0; j < {:d}; j += 1)\n{indent}{{\n'.format(W_OUT, **str_data))
+                self.write_cpp('{indent}for (int j = 0; j < {:d}; j += 1)\n{indent}{{\n'.format(W_OUT, **str_data))
                 str_data['indent'] = '\t\t\t'
             if unroll_level == 0:
                 str_data['i'] = i
@@ -560,41 +561,41 @@ class NaoTHCompiler():
                     str_data['b'] = b[kw]
                     x_out[i, j, kw] = b[kw]
                     if unroll_level == 0 or (unroll_level == 1 and i == 0) or (unroll_level == 2 and i == 0 and j == 0):
-                        self.write_cpp(c_inf, '{indent}x{layer}[{i}][{j}][{kw}] = {b}f;\n'.format(**str_data))
+                        self.write_cpp('{indent}x{layer}[{i}][{j}][{kw}] = {b}f;\n'.format(**str_data))
             if unroll_level > 1 and i == 0:
                 str_data['indent'] = '\t\t'
-                self.write_cpp(c_inf, '{indent}}}\n'.format(**str_data))
+                self.write_cpp('{indent}}}\n'.format(**str_data))
         if unroll_level > 0:
             str_data['indent'] = '\t'
-            self.write_cpp(c_inf, '{indent}}}\n'.format(**str_data))
+            self.write_cpp('{indent}}}\n'.format(**str_data))
 
         if unroll_level > 0:
-            self.write_cpp(c_inf, '{indent}for (int ix = -{pt}; ix < {:d}; ix += {stride0})\n{indent}{{\n'.format(
+            self.write_cpp('{indent}for (int ix = -{pt}; ix < {:d}; ix += {stride0})\n{indent}{{\n'.format(
                 H - KH + 1 + pad_bottom, **str_data))
             str_data['indent'] = '\t\t'
-            self.write_cpp(c_inf, '{indent}int x_1, x_out_1;\n'.format(**str_data))
+            self.write_cpp('{indent}int x_1, x_out_1;\n'.format(**str_data))
 
         for ix in range(-pad_top, H - KH + 1 + pad_bottom, SH):
             assert (ix + pad_top) % SH == 0
             x_out_1 = (ix + pad_top) // SH
 
             if unroll_level > 0 and ix == -pad_top:
-                self.write_cpp(c_inf, '{indent}x_out_1 = (ix + {pt}) / {stride0};\n'.format(**str_data))
+                self.write_cpp('{indent}x_out_1 = (ix + {pt}) / {stride0};\n'.format(**str_data))
             else:
                 str_data['x_out_1'] = x_out_1
 
             if unroll_level > 1 and ix == -pad_top:
-                self.write_cpp(c_inf, '{indent}for (int jx = -{pl}; jx < {:d}; jx += {stride1})\n{indent}{{\n'.format(
+                self.write_cpp('{indent}for (int jx = -{pl}; jx < {:d}; jx += {stride1})\n{indent}{{\n'.format(
                     W - KW + 1 + pad_right, **str_data))
                 str_data['indent'] = '\t\t\t'
-                self.write_cpp(c_inf, '{indent}int x_2, x_out_2;\n'.format(**str_data))
+                self.write_cpp('{indent}int x_2, x_out_2;\n'.format(**str_data))
 
             for jx in range(-pad_left, W - KW + 1 + pad_right, SW):
                 assert (jx + pad_left) % SW == 0
                 x_out_2 = (jx + pad_left) // SW
 
                 if unroll_level > 1 and -pad_left == jx and ix == -pad_top:
-                    self.write_cpp(c_inf, '{indent}x_out_2 = (jx + {pl}) / {stride1};\n'.format(**str_data))
+                    self.write_cpp('{indent}x_out_2 = (jx + {pl}) / {stride1};\n'.format(**str_data))
                 else:
                     str_data['x_out_2'] = x_out_2
                 for lw in range(0, C_OUT):  # Loop over target/filter depth
@@ -604,19 +605,19 @@ class NaoTHCompiler():
                     #   Load target pixel
                     if (unroll_level == 0 or (ix == -pad_top and unroll_level == 1) or \
                         (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and write_sse:
-                        self.write_cpp(c_inf,
-                                    '{indent}y = _mm_load_ps((float*)&x{layer}[{x_out_1}][{x_out_2}][{lw}]);\n'.format(
-                                        **str_data))
+                        self.write_cpp(
+                            '{indent}y = _mm_load_ps((float*)&x{layer}[{x_out_1}][{x_out_2}][{lw}]);\n'.format(
+                                **str_data))
                     #  ------------------
                     for iw in range(KH):  # Loop over filter x
                         x_1 = ix + iw
                         if ((ix == -pad_top and unroll_level == 1) or \
                             (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and \
                                 (write_sse or write_general):
-                            self.write_cpp(c_inf, '{indent}x_1 = ix + {:d};\n'.format(iw, **str_data))
+                            self.write_cpp('{indent}x_1 = ix + {:d};\n'.format(iw, **str_data))
                             if pad == 'same':
-                                self.write_cpp(c_inf,
-                                            '{indent}if (x_1 >= 0 && x_1 < {:d})\n{indent}{{\n'.format(H, **str_data))
+                                self.write_cpp(
+                                    '{indent}if (x_1 >= 0 && x_1 < {:d})\n{indent}{{\n'.format(H, **str_data))
                                 str_data['indent'] += '\t'
                         elif unroll_level == 0:
                             str_data['x_1'] = x_1
@@ -625,11 +626,10 @@ class NaoTHCompiler():
                             x_2 = jx + jw
                             if (unroll_level > 1 and jx == -pad_left and ix == -pad_top) and (
                                     write_sse or write_general):
-                                self.write_cpp(c_inf, '{indent}x_2 = jx + {:d};\n'.format(jw, **str_data))
+                                self.write_cpp('{indent}x_2 = jx + {:d};\n'.format(jw, **str_data))
                                 if pad == 'same':
-                                    self.write_cpp(c_inf,
-                                                '{indent}if (x_2 >= 0 && x_2 < {:d})\n{indent}{{\n'.format(W,
-                                                                                                           **str_data))
+                                    self.write_cpp(
+                                        '{indent}if (x_2 >= 0 && x_2 < {:d})\n{indent}{{\n'.format(W, **str_data))
                                     str_data['indent'] += '\t'
                             elif unroll_level < 2:
                                 str_data['x_2'] = x_2
@@ -658,7 +658,7 @@ class NaoTHCompiler():
                                     if (unroll_level == 0 and x_1 >= 0 and x_1 < H and x_2 >= 0 and x_2 < W) \
                                             or (ix == -pad_top and unroll_level == 1 and x_2 >= 0 and x_2 < W) or \
                                             (unroll_level == 2 and jx == -pad_left and ix == -pad_top):
-                                        self.write_cpp(c_inf, sse_conv_2.format(**str_data))
+                                        self.write_cpp(sse_conv_2.format(**str_data))
                                 elif write_general:
                                     str_data['w0'] = w[iw, jw, kw, lw]
                                     if x_1 >= 0 and x_1 < H:
@@ -670,37 +670,37 @@ class NaoTHCompiler():
                                     if (unroll_level == 0 and x_1 >= 0 and x_1 < H and x_2 >= 0 and x_2 < W) \
                                             or (ix == -pad_top and unroll_level == 1 and x_2 >= 0 and x_2 < W) or \
                                             (unroll_level == 2 and jx == -pad_left and ix == -pad_top):
-                                        self.write_cpp(c_inf,
-                                                    '{indent}x{layer}[{x_out_1}][{x_out_2}][{lw}] += '
-                                                    '{w0}f * x{prev_layer}[{x_1}][{x_2}][{kw}];\n'.format(**str_data))
+                                        self.write_cpp('{indent}x{layer}[{x_out_1}][{x_out_2}][{lw}] += '
+                                                       '{w0}f * x{prev_layer}[{x_1}][{x_2}][{kw}];\n'.format(
+                                            **str_data))
                             if (unroll_level > 1 and jx == -pad_left and ix == -pad_top) and pad == 'same' and \
                                     (write_sse or write_general):
                                 str_data['indent'] = str_data['indent'][:-1]
-                                self.write_cpp(c_inf, '{indent}}}\n'.format(**str_data))
+                                self.write_cpp('{indent}}}\n'.format(**str_data))
                         if ((ix == -pad_top and unroll_level == 1) or \
                             (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and \
                                 pad == 'same' and (write_sse or write_general):
                             str_data['indent'] = str_data['indent'][:-1]
-                            self.write_cpp(c_inf, '{indent}}}\n'.format(**str_data))
+                            self.write_cpp('{indent}}}\n'.format(**str_data))
                     #  Save target pixel
                     if (unroll_level == 0 or (ix == -pad_top and unroll_level == 1) or \
                         (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and write_sse:
-                        self.write_cpp(c_inf,
-                                    '{indent}_mm_store_ps((float*)&x{layer}[{x_out_1}][{x_out_2}][{lw}], y);\n'.format(
-                                        **str_data))
+                        self.write_cpp(
+                            '{indent}_mm_store_ps((float*)&x{layer}[{x_out_1}][{x_out_2}][{lw}], y);\n'.format(
+                                **str_data))
                     #  -------------------
             if unroll_level > 1 and ix == -pad_top:
                 str_data['indent'] = '\t\t'
-                self.write_cpp(c_inf, '{indent}}}\n'.format(**str_data))
+                self.write_cpp('{indent}}}\n'.format(**str_data))
 
         if unroll_level > 0:
             str_data['indent'] = '\t'
-            self.write_cpp(c_inf, '{indent}}}\n'.format(**str_data))
+            self.write_cpp('{indent}}}\n'.format(**str_data))
 
-        c_inf["layer"] = c_inf["layer"] + 1
-        return x_out, c_inf
+        self.c_inf["layer"] = self.c_inf["layer"] + 1
+        return x_out, self.c_inf
 
-    def convolution_3(self, x, w, b, stride, pad, c_inf, unroll_level, arch):
+    def convolution_3(self, x, w, b, stride, pad, unroll_level, arch):
         assert x.shape[2] == w.shape[2]
         assert w.shape[3] == b.shape[0]
         H, W, C_IN = x.shape
@@ -724,22 +724,21 @@ class NaoTHCompiler():
             print("Unknown padding type")
             exit(-4)
         x_out = np.zeros((H_OUT, W_OUT, C_OUT)).astype('float32')
-        str_data = {'prev_layer': c_inf["layer"] - 1, 'x_1': 'x_1', 'x_2': 'x_2',
-                    'x_out_1': 'x_out_1', 'x_out_2': 'x_out_2', 'layer': c_inf["layer"],
+        str_data = {'prev_layer': self.c_inf["layer"] - 1, 'x_1': 'x_1', 'x_2': 'x_2',
+                    'x_out_1': 'x_out_1', 'x_out_2': 'x_out_2', 'layer': self.c_inf["layer"],
                     'lw': 'lw', 'indent': '\t', 'x_res': H_OUT, 'y_res': W_OUT, 'z_res': C_OUT,
                     'stride0': SH, 'stride1': SW, 'i': 'i', 'j': 'j',
                     'pt': pad_top, 'pb': pad_bottom, 'pl': pad_left, 'pr': pad_right}
 
-        self.write_cpp(c_inf,
-                    '{indent}alignas(16) static float x{layer} [{x_res}][{y_res}][{z_res}] = {{}};\n'.format(
-                        **str_data))
+        self.write_cpp('{indent}alignas(16) static float x{layer} [{x_res}][{y_res}][{z_res}] = {{}};\n'.format(
+            **str_data))
 
         if unroll_level > 0:
-            self.write_cpp(c_inf, '{indent}for (int i = 0; i < {:d}; i += 1)\n{indent}{{\n'.format(H_OUT, **str_data))
+            self.write_cpp('{indent}for (int i = 0; i < {:d}; i += 1)\n{indent}{{\n'.format(H_OUT, **str_data))
             str_data['indent'] = '\t\t'
         for i in range(H_OUT):
             if unroll_level > 1 and i == 0:
-                self.write_cpp(c_inf, '{indent}for (int j = 0; j < {:d}; j += 1)\n{indent}{{\n'.format(W_OUT, **str_data))
+                self.write_cpp('{indent}for (int j = 0; j < {:d}; j += 1)\n{indent}{{\n'.format(W_OUT, **str_data))
                 str_data['indent'] = '\t\t\t'
             if unroll_level == 0:
                 str_data['i'] = i
@@ -751,41 +750,41 @@ class NaoTHCompiler():
                     str_data['b'] = b[kw]
                     x_out[i, j, kw] = b[kw]
                     if unroll_level == 0 or (unroll_level == 1 and i == 0) or (unroll_level == 2 and i == 0 and j == 0):
-                        self.write_cpp(c_inf, '{indent}x{layer}[{i}][{j}][{kw}] = {b}f;\n'.format(**str_data))
+                        self.write_cpp('{indent}x{layer}[{i}][{j}][{kw}] = {b}f;\n'.format(**str_data))
             if unroll_level > 1 and i == 0:
                 str_data['indent'] = '\t\t'
-                self.write_cpp(c_inf, '{indent}}}\n'.format(**str_data))
+                self.write_cpp('{indent}}}\n'.format(**str_data))
         if unroll_level > 0:
             str_data['indent'] = '\t'
-            self.write_cpp(c_inf, '{indent}}}\n'.format(**str_data))
+            self.write_cpp('{indent}}}\n'.format(**str_data))
 
         if unroll_level > 0:
-            self.write_cpp(c_inf, '{indent}for (int ix = -{pt}; ix < {:d}; ix += {stride0})\n{indent}{{\n'.format(
+            self.write_cpp('{indent}for (int ix = -{pt}; ix < {:d}; ix += {stride0})\n{indent}{{\n'.format(
                 H - KH + 1 + pad_bottom, **str_data))
             str_data['indent'] = '\t\t'
-            self.write_cpp(c_inf, '{indent}int x_1, x_out_1;\n'.format(**str_data))
+            self.write_cpp('{indent}int x_1, x_out_1;\n'.format(**str_data))
 
         for ix in range(-pad_top, H - KH + 1 + pad_bottom, SH):
             assert (ix + pad_top) % SH == 0
             x_out_1 = (ix + pad_top) // SH
 
             if unroll_level > 0 and ix == -pad_top:
-                self.write_cpp(c_inf, '{indent}x_out_1 = (ix + {pt}) / {stride0};\n'.format(**str_data))
+                self.write_cpp('{indent}x_out_1 = (ix + {pt}) / {stride0};\n'.format(**str_data))
             else:
                 str_data['x_out_1'] = x_out_1
 
             if unroll_level > 1 and ix == -pad_top:
-                self.write_cpp(c_inf, '{indent}for (int jx = -{pl}; jx < {:d}; jx += {stride1})\n{indent}{{\n'.format(
+                self.write_cpp('{indent}for (int jx = -{pl}; jx < {:d}; jx += {stride1})\n{indent}{{\n'.format(
                     W - KW + 1 + pad_right, **str_data))
                 str_data['indent'] = '\t\t\t'
-                self.write_cpp(c_inf, '{indent}int x_2, x_out_2;\n'.format(**str_data))
+                self.write_cpp('{indent}int x_2, x_out_2;\n'.format(**str_data))
 
             for jx in range(-pad_left, W - KW + 1 + pad_right, SW):
                 assert (jx + pad_left) % SW == 0
                 x_out_2 = (jx + pad_left) // SW
 
                 if unroll_level > 1 and -pad_left == jx and ix == -pad_top:
-                    self.write_cpp(c_inf, '{indent}x_out_2 = (jx + {pl}) / {stride1};\n'.format(**str_data))
+                    self.write_cpp('{indent}x_out_2 = (jx + {pl}) / {stride1};\n'.format(**str_data))
                 else:
                     str_data['x_out_2'] = x_out_2
                 for lw in range(0, C_OUT):  # Loop over target/filter depth
@@ -795,10 +794,10 @@ class NaoTHCompiler():
                     #   Load target pixel
                     if (unroll_level == 0 or (ix == -pad_top and unroll_level == 1) or \
                         (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and write_sse:
-                        self.write_cpp(c_inf,
-                                    '{indent}y = _mm_load_ps((float*)&x{layer}[{x_out_1}][{x_out_2}][{lw}]);\n'.format(
-                                        **str_data))
-                        self.write_cpp(c_inf, '{indent}y2 = _mm_setzero_ps();\n'.format(**str_data))
+                        self.write_cpp(
+                            '{indent}y = _mm_load_ps((float*)&x{layer}[{x_out_1}][{x_out_2}][{lw}]);\n'.format(
+                                **str_data))
+                        self.write_cpp('{indent}y2 = _mm_setzero_ps();\n'.format(**str_data))
                         even = True
                     #  ------------------
                     for iw in range(KH):  # Loop over filter x
@@ -806,10 +805,10 @@ class NaoTHCompiler():
                         if ((ix == -pad_top and unroll_level == 1) or \
                             (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and \
                                 (write_sse or write_general):
-                            self.write_cpp(c_inf, '{indent}x_1 = ix + {:d};\n'.format(iw, **str_data))
+                            self.write_cpp('{indent}x_1 = ix + {:d};\n'.format(iw, **str_data))
                             if pad == 'same':
-                                self.write_cpp(c_inf,
-                                            '{indent}if (x_1 >= 0 && x_1 < {:d})\n{indent}{{\n'.format(H, **str_data))
+                                self.write_cpp('{indent}if (x_1 >= 0 && x_1 < {:d})\n{indent}{{\n'.format(H,
+                                                                                                          **str_data))
                                 str_data['indent'] += '\t'
                         elif unroll_level == 0:
                             str_data['x_1'] = x_1
@@ -818,11 +817,10 @@ class NaoTHCompiler():
                             x_2 = jx + jw
                             if (unroll_level > 1 and jx == -pad_left and ix == -pad_top) and (
                                     write_sse or write_general):
-                                self.write_cpp(c_inf, '{indent}x_2 = jx + {:d};\n'.format(jw, **str_data))
+                                self.write_cpp('{indent}x_2 = jx + {:d};\n'.format(jw, **str_data))
                                 if pad == 'same':
-                                    self.write_cpp(c_inf,
-                                                '{indent}if (x_2 >= 0 && x_2 < {:d})\n{indent}{{\n'.format(W,
-                                                                                                           **str_data))
+                                    self.write_cpp('{indent}if (x_2 >= 0 && x_2 < {:d})\n{indent}{{\n'.format(W,
+                                                                                                              **str_data))
                                     str_data['indent'] += '\t'
                             elif unroll_level < 2:
                                 str_data['x_2'] = x_2
@@ -852,9 +850,9 @@ class NaoTHCompiler():
                                             or (ix == -pad_top and unroll_level == 1 and x_2 >= 0 and x_2 < W) or \
                                             (unroll_level == 2 and jx == -pad_left and ix == -pad_top):
                                         if even:
-                                            self.write_cpp(c_inf, sse_conv_even.format(**str_data))
+                                            self.write_cpp(sse_conv_even.format(**str_data))
                                         else:
-                                            self.write_cpp(c_inf, sse_conv_odd.format(**str_data))
+                                            self.write_cpp(sse_conv_odd.format(**str_data))
                                         even = not even
                                 elif write_general:
                                     str_data['w0'] = w[iw, jw, kw, lw]
@@ -867,49 +865,49 @@ class NaoTHCompiler():
                                     if (unroll_level == 0 and x_1 >= 0 and x_1 < H and x_2 >= 0 and x_2 < W) \
                                             or (ix == -pad_top and unroll_level == 1 and x_2 >= 0 and x_2 < W) or \
                                             (unroll_level == 2 and jx == -pad_left and ix == -pad_top):
-                                        self.write_cpp(c_inf,
-                                                    '{indent}x{layer}[{x_out_1}][{x_out_2}][{lw}] += '
-                                                    '{w0}f * x{prev_layer}[{x_1}][{x_2}][{kw}];\n'.format(**str_data))
+                                        self.write_cpp('{indent}x{layer}[{x_out_1}][{x_out_2}][{lw}] += '
+                                                       '{w0}f * x{prev_layer}[{x_1}][{x_2}][{kw}];\n'.format(
+                                            **str_data))
                             if (unroll_level > 1 and jx == -pad_left and ix == -pad_top) and pad == 'same' and \
                                     (write_sse or write_general):
                                 str_data['indent'] = str_data['indent'][:-1]
-                                self.write_cpp(c_inf, '{indent}}}\n'.format(**str_data))
+                                self.write_cpp('{indent}}}\n'.format(**str_data))
                         if ((ix == -pad_top and unroll_level == 1) or \
                             (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and \
                                 pad == 'same' and (write_sse or write_general):
                             str_data['indent'] = str_data['indent'][:-1]
-                            self.write_cpp(c_inf, '{indent}}}\n'.format(**str_data))
+                            self.write_cpp('{indent}}}\n'.format(**str_data))
                     #  Save target pixel
                     if (unroll_level == 0 or (ix == -pad_top and unroll_level == 1) or \
                         (unroll_level == 2 and jx == -pad_left and ix == -pad_top)) and write_sse:
-                        self.write_cpp(c_inf, '{indent}y = _mm_add_ps(y, y2);\n'.format(**str_data))
-                        self.write_cpp(c_inf,
-                                    '{indent}_mm_store_ps((float*)&x{layer}[{x_out_1}][{x_out_2}][{lw}], y);\n'.format(
-                                        **str_data))
+                        self.write_cpp('{indent}y = _mm_add_ps(y, y2);\n'.format(**str_data))
+                        self.write_cpp(
+                            '{indent}_mm_store_ps((float*)&x{layer}[{x_out_1}][{x_out_2}][{lw}], y);\n'.format(
+                                **str_data))
                     #  -------------------
             if unroll_level > 1 and ix == -pad_top:
                 str_data['indent'] = '\t\t'
-                self.write_cpp(c_inf, '{indent}}}\n'.format(**str_data))
+                self.write_cpp('{indent}}}\n'.format(**str_data))
 
         if unroll_level > 0:
             str_data['indent'] = '\t'
-            self.write_cpp(c_inf, '{indent}}}\n'.format(**str_data))
+            self.write_cpp('{indent}}}\n'.format(**str_data))
 
-        c_inf["layer"] = c_inf["layer"] + 1
-        return x_out, c_inf
+        self.c_inf["layer"] = self.c_inf["layer"] + 1
+        return x_out, self.c_inf
 
-    def rectified_linear_unit(self, x, c_inf, unroll_level, alpha=0.0, arch='general'):
+    def rectified_linear_unit(self, x, unroll_level, alpha=0.0, arch='general'):
         x_out = np.zeros(x.shape).astype('float32')
-        str_data = {'prev_layer': c_inf["layer"] - 1, 'i': 'i', 'j': 'j', 'k': 'k',
+        str_data = {'prev_layer': self.c_inf["layer"] - 1, 'i': 'i', 'j': 'j', 'k': 'k',
                     'below_str': '0', 'indent': '\t'}
         if arch == "sse3" and not alpha == 0.0:
-            self.write_cpp(c_inf, "{indent}y = _mm_set_ps1({alpha}f);\n".format(alpha=alpha, **str_data))
+            self.write_cpp("{indent}y = _mm_set_ps1({alpha}f);\n".format(alpha=alpha, **str_data))
         if unroll_level > 0:
-            self.write_cpp(c_inf, '\tfor (int i = 0; i < {:d}; i += 1)\n\t{{\n'.format(self.size(x, 1)))
+            self.write_cpp('\tfor (int i = 0; i < {:d}; i += 1)\n\t{{\n'.format(self.size(x, 1)))
             str_data['indent'] += '\t'
         for i in range(self.size(x, 1)):
             if unroll_level > 1 and i == 0:
-                self.write_cpp(c_inf, '\t\tfor (int j = 0; j < {:d}; j += 1)\n\t\t{{\n'.format(self.size(x, 2)))
+                self.write_cpp('\t\tfor (int j = 0; j < {:d}; j += 1)\n\t\t{{\n'.format(self.size(x, 2)))
                 str_data['indent'] += '\t'
             elif unroll_level == 0:
                 str_data['i'] = i
@@ -927,9 +925,9 @@ class NaoTHCompiler():
                                 unroll_level == 2 and i == 0 and j == 0):
                             if k % 4 == 0:
                                 if alpha == 0.0:
-                                    self.write_cpp(c_inf, sse_relu.format(**str_data))
+                                    self.write_cpp(sse_relu.format(**str_data))
                                 else:
-                                    self.write_cpp(c_inf, sse_leaky.format(**str_data))
+                                    self.write_cpp(sse_leaky.format(**str_data))
                     else:
                         str_data['k'] = k
                         if alpha != 0.0:
@@ -940,49 +938,47 @@ class NaoTHCompiler():
                             x_out[i, j, k] = x[i, j, k]
                         if unroll_level == 0 or (unroll_level == 1 and i == 0) or (
                                 unroll_level == 2 and i == 0 and j == 0):
-                            self.write_cpp(c_inf,
-                                        '{indent}x{prev_layer}[{i}][{j}][{k}] = x{prev_layer}[{i}][{j}][{k}] < 0 ? '
-                                        '{below_str} : x{prev_layer}[{i}][{j}][{k}];\n'.format(**str_data))
+                            self.write_cpp('{indent}x{prev_layer}[{i}][{j}][{k}] = x{prev_layer}[{i}][{j}][{k}] < 0 ? '
+                                           '{below_str} : x{prev_layer}[{i}][{j}][{k}];\n'.format(**str_data))
             if unroll_level > 1 and i == 0:
-                self.write_cpp(c_inf, '\t\t}\n')
+                self.write_cpp('\t\t}\n')
         if unroll_level > 0:
-            self.write_cpp(c_inf, '\t}\n')
-        return x_out, c_inf
+            self.write_cpp('\t}\n')
+        return x_out, self.c_inf
 
-    def max_pool(self, x, p, stride, c_inf, unroll_level, arch='general'):
+    def max_pool(self, x, p, stride, unroll_level, arch='general'):
         z_res = self.size(x, 3)
         x_res = int(np.ceil((self.size(x, 1) - p[0] + 1) / stride[0]))
         y_res = int(np.ceil((self.size(x, 2) - p[1] + 1) / stride[1]))
         x_out = np.zeros((x_res, y_res, self.size(x, 3))).astype('float32')
-        str_data = {'prev_layer': c_inf["layer"] - 1, 'ix': 'ix', 'jx': 'jx', 'kx': 'kx', 'indent': '\t',
-                    'layer': c_inf["layer"], 'mi': 'mi', 'mj': 'mj', 'x_out_1': 'x_out_1', 'x_out_2': 'x_out_2',
+        str_data = {'prev_layer': self.c_inf["layer"] - 1, 'ix': 'ix', 'jx': 'jx', 'kx': 'kx', 'indent': '\t',
+                    'layer': self.c_inf["layer"], 'mi': 'mi', 'mj': 'mj', 'x_out_1': 'x_out_1', 'x_out_2': 'x_out_2',
                     'stride0': stride[0], 'p': p[0], 'x_res': x_res, 'y_res': y_res, 'z_res': z_res,
                     'stride1': stride[1]}
-        self.write_cpp(c_inf, '\tstatic float x{layer}[{x_res}][{y_res}][{z_res}] = {{}};\n'.format(**str_data))
+        self.write_cpp('\tstatic float x{layer}[{x_res}][{y_res}][{z_res}] = {{}};\n'.format(**str_data))
         if unroll_level > 0:
-            self.write_cpp(c_inf,
-                        '\tfor (int ix = 0; ix < {:d}; ix += {stride0})\n\t{{\n'.format(self.size(x, 1) - p[0] + 1,
-                                                                                        **str_data))
+            self.write_cpp('\tfor (int ix = 0; ix < {:d}; ix += {stride0})\n\t{{\n'.format(self.size(x, 1) - p[0] + 1,
+                                                                                           **str_data))
             str_data['indent'] = '\t\t'
             # writeC(c_inf, '{indent}int x_1, x_out_1;\n'.format(**str_data))  # FIXME generates unsused variable warning
-            self.write_cpp(c_inf, '{indent}int x_out_1;\n'.format(**str_data))
+            self.write_cpp('{indent}int x_out_1;\n'.format(**str_data))
         for ix in range(0, self.size(x, 1) - p[0] + 1, stride[0]):
             x_out_1 = ix // stride[0]  # ix is a multiple of stride[0], so integer division is fine
             if unroll_level > 0 and ix == 0:
-                self.write_cpp(c_inf, '{indent}x_out_1 = ix / {stride0};\n'.format(**str_data))
+                self.write_cpp('{indent}x_out_1 = ix / {stride0};\n'.format(**str_data))
                 if unroll_level == 2:
-                    self.write_cpp(c_inf,
-                                '\tfor (int jx = 0; jx < {:d}; jx += {stride1})\n\t{{\n'.format(self.size(x, 2) - p[1] + 1,
-                                                                                                **str_data))
+                    self.write_cpp('\tfor (int jx = 0; jx < {:d}; jx += {stride1})\n\t{{\n'.format(
+                        self.size(x, 2) - p[1] + 1,
+                        **str_data))
                     str_data['indent'] = '\t\t'
-                    self.write_cpp(c_inf, '{indent}int x_out_2;\n'.format(**str_data))
+                    self.write_cpp('{indent}int x_out_2;\n'.format(**str_data))
             elif unroll_level == 0:
                 str_data['x_out_1'] = x_out_1
                 str_data['ix'] = ix
             for jx in range(0, self.size(x, 2) - p[1] + 1, stride[1]):
                 x_out_2 = jx // stride[1]  # jx is a multiple of stride[1], so integer division is fine
                 if unroll_level == 2 and ix == 0 and jx == 0:
-                    self.write_cpp(c_inf, '{indent}x_out_2 = jx / {stride1};\n'.format(**str_data))
+                    self.write_cpp('{indent}x_out_2 = jx / {stride1};\n'.format(**str_data))
                 if unroll_level < 2:
                     str_data['x_out_2'] = x_out_2
                     str_data['jx'] = jx
@@ -993,13 +989,13 @@ class NaoTHCompiler():
                             unroll_level == 2 and ix == 0 and jx == 0):
                         if arch == "sse3":
                             if kx % 4 == 0:
-                                self.write_cpp(c_inf,
-                                            "{indent}x = _mm_load_ps((float*)&x{prev_layer}[{ix}][{jx}][{kx}]);\n".format(
-                                                **str_data))
+                                self.write_cpp(
+                                    "{indent}x = _mm_load_ps((float*)&x{prev_layer}[{ix}][{jx}][{kx}]);\n".format(
+                                        **str_data))
                         else:
-                            self.write_cpp(c_inf,
-                                        '{indent}x{layer}[{x_out_1}][{x_out_2}][{kx}] = x{prev_layer}[{ix}][{jx}][{kx}];\n'.format(
-                                            **str_data))
+                            self.write_cpp(
+                                '{indent}x{layer}[{x_out_1}][{x_out_2}][{kx}] = x{prev_layer}[{ix}][{jx}][{kx}];\n'.format(
+                                    **str_data))
                     for mi in range(0, p[0]):
                         if unroll_level == 0:
                             str_data['mi'] = ix + mi
@@ -1014,30 +1010,29 @@ class NaoTHCompiler():
                                     unroll_level == 2 and ix == 0 and jx == 0):
                                 if arch == "sse3":
                                     if kx % 4 == 0:
-                                        self.write_cpp(c_inf,
-                                                    "{indent}y = _mm_load_ps((float*)&x{prev_layer}[{mi}][{mj}][{kx}]);\n".format(
-                                                        **str_data))
-                                        self.write_cpp(c_inf, "{indent}x = _mm_max_ps(x, y);\n".format(**str_data))
+                                        self.write_cpp(
+                                            "{indent}y = _mm_load_ps((float*)&x{prev_layer}[{mi}][{mj}][{kx}]);\n".format(
+                                                **str_data))
+                                        self.write_cpp("{indent}x = _mm_max_ps(x, y);\n".format(**str_data))
                                 else:
-                                    self.write_cpp(c_inf,
-                                                '{indent}x{layer}[{x_out_1}][{x_out_2}][{kx}] = '
-                                                'x{prev_layer}[{mi}][{mj}][{kx}] > x{layer}[{x_out_1}][{x_out_2}][{kx}] ?'
-                                                ' x{prev_layer}[{mi}][{mj}][{kx}] : x{layer}[{x_out_1}][{x_out_2}][{kx}];\n'.format(
-                                                    **str_data))
+                                    self.write_cpp('{indent}x{layer}[{x_out_1}][{x_out_2}][{kx}] = '
+                                                   'x{prev_layer}[{mi}][{mj}][{kx}] > x{layer}[{x_out_1}][{x_out_2}][{kx}] ?'
+                                                   ' x{prev_layer}[{mi}][{mj}][{kx}] : x{layer}[{x_out_1}][{x_out_2}][{kx}];\n'.format(
+                                        **str_data))
                         if unroll_level == 0 or (unroll_level == 1 and ix == 0) or (
                                 unroll_level == 2 and ix == 0 and jx == 0):
                             if arch == "sse3" and kx % 4 == 0:
-                                self.write_cpp(c_inf,
-                                            "{indent}_mm_store_ps((float*)&x{layer}[{x_out_1}][{x_out_2}][{kx}], x);\n".format(
-                                                **str_data))
+                                self.write_cpp(
+                                    "{indent}_mm_store_ps((float*)&x{layer}[{x_out_1}][{x_out_2}][{kx}], x);\n".format(
+                                        **str_data))
             if unroll_level > 1 and ix == 0:
-                self.write_cpp(c_inf, '\t\t}\n')
-        c_inf["layer"] = c_inf["layer"] + 1
+                self.write_cpp('\t\t}\n')
+        self.c_inf["layer"] = self.c_inf["layer"] + 1
         if unroll_level > 0:
-            self.write_cpp(c_inf, '\t}\n')
-        return x_out, c_inf
+            self.write_cpp('\t}\n')
+        return x_out, self.c_inf
 
-    def dense(self, _x, weights, b, c_inf, relu):
+    def dense(self, _x, weights, b, relu):
         x_dim = _x.shape[0]
         y_dim = _x.shape[1]
         channels = _x.shape[2]
@@ -1046,69 +1041,69 @@ class NaoTHCompiler():
 
         i = 0
         for output in range(output_dim):
-            c_inf["f"].write("\tscores[{:d}] = {:f}f".format(output, b[output]))
+            self.c_inf["f"].write("\tscores[{:d}] = {:f}f".format(output, b[output]))
             for x in range(x_dim):
                 for y in range(y_dim):
                     for c in range(channels):
                         idx = (x * (y_dim * channels)) + (y * channels) + c
                         # print("x: {}, y: {}, c: {} -> {}".format(x,y,c, idx))
                         if i % 4 is 0:
-                            c_inf["f"].write('\n\t')
+                            self.c_inf["f"].write('\n\t')
 
                         if weights[idx, output] >= 0:
-                            c_inf["f"].write(' + ')
+                            self.c_inf["f"].write(' + ')
                         else:
-                            c_inf["f"].write(' - ')
+                            self.c_inf["f"].write(' - ')
 
-                        c_inf["f"].write('{:f}f * x{:d}[{:d}][{:d}][{:d}]'.format(
+                        self.c_inf["f"].write('{:f}f * x{:d}[{:d}][{:d}][{:d}]'.format(
                             abs(weights[idx, output]),
-                            c_inf["layer"] - 1, x, y, c
+                            self.c_inf["layer"] - 1, x, y, c
                         ))
 
                         i += 1
 
             # ReLU
             if relu:
-                c_inf["f"].write(';\n\n')
-                c_inf["f"].write("\t// Apply ReLU\n")
-                c_inf["f"].write(
+                self.c_inf["f"].write(';\n\n')
+                self.c_inf["f"].write("\t// Apply ReLU\n")
+                self.c_inf["f"].write(
                     "\tscores[{:d}] = scores[{:d}] > 0.0f ? scores[{:d}] : 0.0f;\n".format(output, output, output))
 
-            c_inf["f"].write('\n')
+            self.c_inf["f"].write('\n')
 
-        c_inf["layer"] = c_inf["layer"] + 1
-        c_inf["output_dim"] = output_dim
+        self.c_inf["layer"] = self.c_inf["layer"] + 1
+        self.c_inf["output_dim"] = output_dim
 
         x_out = np.zeros(shape=(output_dim, 1, 1)).astype('float32')
 
-        return x_out, c_inf
+        return x_out, self.c_inf
 
     def softmax(self, x, c_inf):
         assert (x.shape[2] == 2)  # Sorry, only for depth 2 at the moment
         x_out = np.zeros(x.shape).astype('float32')
         self.write_cpp(c_inf,
-                    '\tstatic float x{:d}[{:d}][{:d}][{:d}] = {{}};\n'.format(c_inf["layer"], x.shape[0], x.shape[1],
-                                                                              x.shape[2]))
+                       '\tstatic float x{:d}[{:d}][{:d}][{:d}] = {{}};\n'.format(c_inf["layer"], x.shape[0], x.shape[1],
+                                                                                 x.shape[2]))
 
         for i in range(self.size(x, 1)):
             for j in range(self.size(x, 2)):
                 self.write_cpp(c_inf,
-                            '\tstatic float max{:d} = x{:d}[{:d}][{:d}][0] > x{:d}[{:d}][{:d}][1] ? x{:d}[{:d}][{:d}][0] : x{:d}[{:d}][{:d}][1];\n'.format(
-                                c_inf["layer"],
-                                c_inf["layer"] - 1, i, j,
-                                c_inf["layer"] - 1, i, j,
-                                c_inf["layer"] - 1, i, j,
-                                c_inf["layer"] - 1, i, j))
+                               '\tstatic float max{:d} = x{:d}[{:d}][{:d}][0] > x{:d}[{:d}][{:d}][1] ? x{:d}[{:d}][{:d}][0] : x{:d}[{:d}][{:d}][1];\n'.format(
+                                   c_inf["layer"],
+                                   c_inf["layer"] - 1, i, j,
+                                   c_inf["layer"] - 1, i, j,
+                                   c_inf["layer"] - 1, i, j,
+                                   c_inf["layer"] - 1, i, j))
                 x_out[i, j] = 2.718281828459045 ** (x - np.max(x))
                 self.write_cpp(c_inf,
-                            '\tx{:d}[{:d}][{:d}][0] = (float)exp(x{:d}[{:d}][{:d}][0] - max{:d});\n'
-                            '\tx{:d}[{:d}][{:d}][1] = (float)exp(x{:d}[{:d}][{:d}][1] - max{:d});\n'.format(
-                                c_inf["layer"], i, j,
-                                c_inf["layer"] - 1, i, j,
-                                c_inf["layer"],
-                                c_inf["layer"], i, j,
-                                c_inf["layer"] - 1, i, j,
-                                c_inf["layer"]))
+                               '\tx{:d}[{:d}][{:d}][0] = (float)exp(x{:d}[{:d}][{:d}][0] - max{:d});\n'
+                               '\tx{:d}[{:d}][{:d}][1] = (float)exp(x{:d}[{:d}][{:d}][1] - max{:d});\n'.format(
+                                   c_inf["layer"], i, j,
+                                   c_inf["layer"] - 1, i, j,
+                                   c_inf["layer"],
+                                   c_inf["layer"], i, j,
+                                   c_inf["layer"] - 1, i, j,
+                                   c_inf["layer"]))
 
                 x_out[i, j] = x_out[i, j] / x_out[i, j].sum()
                 self.write_cpp(c_inf, '\tstatic float sum{:d};\n'.format(c_inf["layer"]))
@@ -1118,7 +1113,7 @@ class NaoTHCompiler():
                     c_inf["layer"], i, j
                 ))
                 self.write_cpp(c_inf, '\tx{:d}[{:d}][{:d}][0] /= sum{:d};\n'
-                                   '\tx{:d}[{:d}][{:d}][1] /= sum{:d};\n'.format(
+                                      '\tx{:d}[{:d}][{:d}][1] /= sum{:d};\n'.format(
                     c_inf["layer"], i, j,
                     c_inf["layer"],
                     c_inf["layer"], i, j,
