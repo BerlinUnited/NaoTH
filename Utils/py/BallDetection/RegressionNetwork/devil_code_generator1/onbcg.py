@@ -11,8 +11,8 @@ import os
 import platform
 import numpy as np
 from tensorflow.keras import backend as K
-from tensorflow.keras.layers import Convolution2D, MaxPooling2D, Flatten, Dropout, BatchNormalization, LeakyReLU, Dense, \
-    ReLU
+from tensorflow.keras.layers import Convolution2D, MaxPooling2D, Flatten, Dropout, BatchNormalization, \
+    LeakyReLU, Dense, ReLU
 from tensorflow.keras.models import load_model
 
 sse_conv = '''
@@ -90,10 +90,14 @@ class NaoTHCompiler:
         self.conv_mode = conv_mode
         self.test_binary = test_binary
         self.c_inf = dict()
+        self.test_im_index = 0
+        self.test_image = self.imdb["images"][self.test_im_index]
         if test_binary:
             self.header_file_function = self.write_test_header_file
+            self.cpp_footer_function = self.write_footer_test
         else:
             self.header_file_function = self.write_naoth_header_file
+            self.cpp_footer_function = self.write_footer
 
     def keras_compile(self):
         class_name = os.path.splitext(os.path.basename(self.code_path))[0]
@@ -102,14 +106,11 @@ class NaoTHCompiler:
         output_folder = os.path.dirname(os.path.abspath(self.code_path))
 
         # get dimensions of an image, assume all images have the same dimensions
-        test_im_index = 0
-        im = self.imdb["images"][test_im_index]
-
         self.c_inf["path"] = self.code_path
-        self.c_inf["x_dim"] = im.shape[0]
-        self.c_inf["y_dim"] = im.shape[1]
-        if len(im.shape) > 2:
-            self.c_inf["z_dim"] = im.shape[2]
+        self.c_inf["x_dim"] = self.test_image.shape[0]
+        self.c_inf["y_dim"] = self.test_image.shape[1]
+        if len(self.test_image.shape) > 2:
+            self.c_inf["z_dim"] = self.test_image.shape[2]
         else:
             self.c_inf["z_dim"] = 1
 
@@ -117,7 +118,7 @@ class NaoTHCompiler:
 
         # handle model layers
         model = load_model(self.model_path)
-        _x = self.imdb["images"][test_im_index]
+        _x = self.test_image
         last_activation = 'none'
         for layer in model.layers:
             print("layer is: ", layer, self.c_inf['layer'])
@@ -174,10 +175,11 @@ class NaoTHCompiler:
         # NOTE: this creates a header file
         #       at this point we should know the size of the output layer
         self.header_file_function(class_name, output_folder)
+
         if self.test_binary:
             self.write_footer_test(_x, class_name)
         else:
-            self.write_footer(_x, class_name, im)
+            self.write_footer(_x, class_name)
 
     def compile(self, optimize=False):
         if platform.system() != 'Darwin':
@@ -270,52 +272,52 @@ class NaoTHCompiler:
 
         return self.c_inf
 
-    def mean_subtraction(self, im):
+    def mean_subtraction(self):
         if self.unroll_level > 0:
-            self.write_cpp('\tfor (int xi = 0; xi < {:d}; xi += 1)\n\t{{\n'.format(get_size(im, 1)))
+            self.write_cpp('\t// subtract the dataset mean\n')
+            self.write_cpp('\tfor (int xi = 0; xi < {:d}; xi += 1)\n\t{{\n'.format(get_size(self.test_image, 1)))
             _xi = 'xi'
-        for xi in range(get_size(im, 1)):
+        for xi in range(get_size(self.test_image, 1)):
             if self.unroll_level == 0:
                 _xi = xi
-            for xj in range(get_size(im, 2)):
-                for xk in range(get_size(im, 3)):
+            for xj in range(get_size(self.test_image, 2)):
+                for xk in range(get_size(self.test_image, 3)):
                     if self.unroll_level == 0 or xi == 0:
                         self.write_cpp('\t\tin_step[{xi}][{:d}][{:d}] = (in_step[{xi}][{:d}][{:d}] - {:f}f);\n'.format(
                             xj, xk, xj, xk, self.dataset_mean, xi=_xi))
         if self.unroll_level > 0:
             self.write_cpp('\t}\n')
 
-    def write_predict_function(self, im, class_name):
+    def write_predict_function(self, class_name):
         normalization_part = '''
-    \n
-    void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBrightnessOffset)
-    {{
-    \tASSERT(patch.size() == 16);
-    
-    \tfor(size_t x=0; x < patch.size(); x++) {{
-    \t\tfor(size_t y=0; y < patch.size(); y++) {{
-    \t\t\t// TODO: check
-    \t\t\t// .pixel.y accesses the brightness channel of the pixel
-    \t\t\tfloat value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) - static_cast<float>(meanBrightnessOffset);
-    \t\t\tin_step[y][x][0] = value;
-    \t\t}}
-    \t}}
-    '''
+void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBrightnessOffset)
+{{
+\tASSERT(patch.size() == 16);
+
+\tfor(size_t x=0; x < patch.size(); x++) {{
+\t\tfor(size_t y=0; y < patch.size(); y++) {{
+\t\t\t// TODO: check
+\t\t\t// .pixel.y accesses the brightness channel of the pixel
+\t\t\tfloat value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) - static_cast<float>(meanBrightnessOffset);
+\t\t\tin_step[y][x][0] = value;
+\t\t}}
+\t}}
+'''
 
         cnn_part = '''
-    \tcnn(in_step);
-    }\n
-    '''
+\tcnn(in_step);
+}\n
+'''
         self.c_inf["f"].write(normalization_part.format(class_name))
         # subtract mean from input patch
-        self.mean_subtraction(im)
+        self.mean_subtraction()
         self.c_inf["f"].write(cnn_part)
 
-    def write_footer(self, _x, class_name, im):
+    def write_footer(self, _x, class_name):
         if self.c_inf["f"] is not None:
             self.c_inf["f"].write('}\n')
             # TODO build a switch for compiling a test predict function for timing tests
-            self.write_predict_function(im, class_name)
+            self.write_predict_function(class_name)
             self.write_get_radius_function(class_name)
             self.write_get_center_function(class_name)
             self.write_get_confidence_function(class_name)
@@ -364,9 +366,9 @@ class NaoTHCompiler:
             self.c_inf["f"].write(cnn_part)
 
     def write_get_radius_function(self, class_name):
-        self.c_inf["f"].write('double {}::getRadius() {{\n'
-                              '\treturn scores[0];\n'
-                              '}}\n'.format(class_name))
+        self.write_cpp('double {}::getRadius() {{\n'
+                       '\treturn scores[0];\n'
+                       '}}\n'.format(class_name))
 
     def write_get_center_function(self, class_name):
         self.c_inf["f"].write('Vector2d {}::getCenter() {{\n'
