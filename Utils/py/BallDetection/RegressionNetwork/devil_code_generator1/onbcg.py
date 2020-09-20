@@ -82,11 +82,16 @@ sse_leaky = '''
 '''
 
 
-class NaoTHCompiler():
-    def __init__(self, imdb):
+class NaoTHCompiler:
+    def __init__(self, imdb, test_binary=False):
         self.imdb = imdb
+        self.dataset_mean = self.imdb["mean"]
+        self.test_binary = test_binary
         self.c_inf = dict()
-        header_file_function = None
+        if test_binary:
+            self.header_file_function = self.write_test_header_file
+        else:
+            self.header_file_function = self.write_naoth_header_file
 
     def write_naoth_header_file(self, class_name, output_folder="."):
         fp = open(os.path.join(output_folder, class_name + ".h"), "w")
@@ -117,6 +122,31 @@ class NaoTHCompiler():
             print("};", file=fp)
             print("# endif", file=fp)
 
+    def write_test_header_file(self, class_name, output_folder="."):
+        fp = open(os.path.join(output_folder, class_name + ".h"), "w")
+        with fp:
+            print("#ifndef _{}_H".format(class_name.upper()), file=fp)
+            print("#define _{}_H".format(class_name.upper()), file=fp)
+            print("", file=fp)
+            print("# include <emmintrin.h>", file=fp)
+            print("", file=fp)
+            print("#include \"AbstractCNNClassifier.h\"", file=fp)
+            print("", file=fp)
+            print("class {} {{".format(class_name), file=fp)
+            print("", file=fp)
+            print("public:", file=fp)
+            print("\tvoid cnn(float x0[{:d}][{:d}][{:d}]);".format(self.c_inf["x_dim"], self.c_inf["y_dim"],
+                                                                   self.c_inf["z_dim"]),
+                  file=fp)
+            print("\tvoid predict(float p[16][16][1], double meanBrightness);", file=fp)
+            print("", file=fp)
+            print("\tfloat in_step[{:d}][{:d}][{:d}];".format(self.c_inf["x_dim"], self.c_inf["y_dim"],
+                                                              self.c_inf["z_dim"]), file=fp)
+            print("\tfloat scores[{:d}];".format(self.c_inf["output_dim"]), file=fp)
+            print("", file=fp)
+            print("};", file=fp)
+            print("# endif", file=fp)
+
     def compile(self, c_inf, optimize=False):
         c = compiler_O3 if optimize else compiler
         if os.system(c + c_inf["path"] + " -o " + c_inf["path"][:-2]) != 0:
@@ -127,8 +157,7 @@ class NaoTHCompiler():
         if self.c_inf["f"] is not None:
             self.c_inf["f"].write(str)
 
-    def keras_compile(self, model_path, code_path, unroll_level=0, arch="general", conv_mode=0,
-                      test_binary=False):
+    def keras_compile(self, model_path, code_path, unroll_level=0, arch="general", conv_mode=0):
         class_name = os.path.splitext(os.path.basename(code_path))[0]
         print("Creating class", class_name)
 
@@ -206,8 +235,8 @@ class NaoTHCompiler():
 
         # NOTE: this creates a header file
         #       at this point we should know the size of the output layer
-        self.write_naoth_header_file(class_name, output_folder)
-        if test_binary:
+        self.header_file_function(class_name, output_folder)
+        if self.test_binary:
             self.write_footer_test(_x, class_name, im, unroll_level)
         else:
             self.write_footer(_x, class_name, im, unroll_level)
@@ -235,7 +264,7 @@ class NaoTHCompiler():
 
         return self.c_inf
 
-    def mean_substraction(self, im, mean, unroll_level, c_inf):
+    def mean_substraction(self, im, unroll_level):
         if unroll_level > 0:
             self.write_cpp('\tfor (int xi = 0; xi < {:d}; xi += 1)\n\t{{\n'.format(self.size(im, 1)))
             _xi = 'xi'
@@ -246,11 +275,11 @@ class NaoTHCompiler():
                 for xk in range(self.size(im, 3)):
                     if unroll_level == 0 or xi == 0:
                         self.write_cpp('\t\tin_step[{xi}][{:d}][{:d}] = (in_step[{xi}][{:d}][{:d}] - {:f}f);\n'.format(
-                            xj, xk, xj, xk, mean, xi=_xi))
+                            xj, xk, xj, xk, self.dataset_mean, xi=_xi))
         if unroll_level > 0:
             self.write_cpp('\t}\n')
 
-    def write_predict_function(self, im, mean, unroll_level, c_inf, class_name):
+    def write_predict_function(self, im, unroll_level, class_name):
         normalization_part = '''
     \n
     void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBrightnessOffset)
@@ -271,16 +300,16 @@ class NaoTHCompiler():
     \tcnn(in_step);
     }\n
     '''
-        c_inf["f"].write(normalization_part.format(class_name))
+        self.c_inf["f"].write(normalization_part.format(class_name))
         # subtract mean from input patch
-        self.mean_substraction(im, mean, unroll_level, c_inf)  # TODO isnt this the mean offset?
-        c_inf["f"].write(cnn_part)
+        self.mean_substraction(im, unroll_level)
+        self.c_inf["f"].write(cnn_part)
 
     def write_footer(self, _x, class_name, im, unroll_level):
         if self.c_inf["f"] is not None:
             self.c_inf["f"].write('}\n')
             # TODO build a switch for compiling a test predict function for timing tests
-            self.write_predict_function(im, self.imdb["mean"], unroll_level, self.c_inf, class_name)
+            self.write_predict_function(im, unroll_level, class_name)
             self.write_get_radius_function(class_name)
             self.write_get_center_function(class_name)
             self.write_get_confidence_function(class_name)
