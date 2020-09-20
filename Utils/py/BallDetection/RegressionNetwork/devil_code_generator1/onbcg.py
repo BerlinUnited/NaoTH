@@ -164,23 +164,7 @@ def writeC(c_inf, str):
         c_inf["f"].write(str)
 
 
-def mean_substraction(im, mean, unroll_level, c_inf):
-    if unroll_level > 0:
-        writeC(c_inf, '\tfor (int xi = 0; xi < {:d}; xi += 1)\n\t{{\n'.format(size(im, 1)))
-        _xi = 'xi'
-    for xi in range(size(im, 1)):
-        if unroll_level == 0:
-            _xi = xi
-        for xj in range(size(im, 2)):
-            for xk in range(size(im, 3)):
-                if unroll_level == 0 or xi == 0:
-                    writeC(c_inf, '\tin_step[{xi}][{:d}][{:d}] = (in_step[{xi}][{:d}][{:d}] - {:f}f);\n'.format(
-                        xj, xk, xj, xk, mean, xi=_xi))
-    if unroll_level > 0:
-        writeC(c_inf, '\t}\n')
-
-
-def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", conv_mode=0):
+def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", conv_mode=0, test_binary=False):
     class_name = os.path.splitext(os.path.basename(code_path))[0]
     print("Creating class", class_name)
 
@@ -218,7 +202,7 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
             else:
                 raise NotImplementedError
             if layer.activation.__name__ == 'relu':
-                _x, c_inf = rectifiedLinearUnit(_x, c_inf, unroll_level, 0, arch)
+                _x, c_inf = rectified_linear_unit(_x, c_inf, unroll_level, 0, arch)
             if layer.activation.__name__ == 'softmax':
                 _x, c_inf = softmax(_x, c_inf)
             last_activation = layer.activation.__name__
@@ -227,11 +211,11 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
             _x, c_inf = max_pool(_x, layer.pool_size, layer.strides, c_inf, unroll_level, arch)
         elif type(layer) == LeakyReLU:
             writeC(c_inf, '\n \t// Leaky ReLu Layer\n')
-            _x, c_inf = rectifiedLinearUnit(_x, c_inf, unroll_level, float(layer.alpha), arch)
+            _x, c_inf = rectified_linear_unit(_x, c_inf, unroll_level, float(layer.alpha), arch)
             last_activation = 'leaky'
         elif type(layer) == ReLU:
             writeC(c_inf, '\n \t// ReLu Layer\n')
-            _x, c_inf = rectifiedLinearUnit(_x, c_inf, unroll_level, 0, arch)
+            _x, c_inf = rectified_linear_unit(_x, c_inf, unroll_level, 0, arch)
         elif type(layer) == Flatten:
             pass
         elif type(layer) == Dropout:
@@ -258,8 +242,10 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
     # NOTE: this creates a header file
     #       at this point we should know the size of the output layer
     write_naoth_header_file(c_inf, class_name, output_folder)
-
-    write_footer(c_inf, _x, class_name, im, imdb["mean"], unroll_level)
+    if test_binary:
+        write_footer_test(c_inf, _x, class_name, im, imdb["mean"], unroll_level)
+    else:
+        write_footer(c_inf, _x, class_name, im, imdb["mean"], unroll_level)
 
 
 def dense(_x, weights, b, c_inf, relu):
@@ -335,10 +321,26 @@ def write_header(c_inf, arch, class_name):
     return c_inf
 
 
+def mean_substraction(im, mean, unroll_level, c_inf):
+    if unroll_level > 0:
+        writeC(c_inf, '\tfor (int xi = 0; xi < {:d}; xi += 1)\n\t{{\n'.format(size(im, 1)))
+        _xi = 'xi'
+    for xi in range(size(im, 1)):
+        if unroll_level == 0:
+            _xi = xi
+        for xj in range(size(im, 2)):
+            for xk in range(size(im, 3)):
+                if unroll_level == 0 or xi == 0:
+                    writeC(c_inf, '\t\tin_step[{xi}][{:d}][{:d}] = (in_step[{xi}][{:d}][{:d}] - {:f}f);\n'.format(
+                        xj, xk, xj, xk, mean, xi=_xi))
+    if unroll_level > 0:
+        writeC(c_inf, '\t}\n')
+
+
 def write_predict_function(im, mean, unroll_level, c_inf, class_name):
     normalization_part = '''
 \n
-void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBrightness)
+void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBrightnessOffset)
 {{
 \tASSERT(patch.size() == 16);
 
@@ -346,7 +348,7 @@ void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBri
 \t\tfor(size_t y=0; y < patch.size(); y++) {{
 \t\t\t// TODO: check
 \t\t\t// .pixel.y accesses the brightness channel of the pixel
-\t\t\tfloat value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) - static_cast<float>(meanBrightness);
+\t\t\tfloat value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) - static_cast<float>(meanBrightnessOffset);
 \t\t\tin_step[y][x][0] = value;
 \t\t}}
 \t}}
@@ -358,18 +360,18 @@ void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBri
 '''
     c_inf["f"].write(normalization_part.format(class_name))
     # subtract mean from input patch
-    mean_substraction(im, mean, unroll_level, c_inf)
+    mean_substraction(im, mean, unroll_level, c_inf)  # TODO isnt this the mean offset?
     c_inf["f"].write(cnn_part)
 
 
-def write_footer(c_inf, _x, class_name, im, mean, unroll_level, ):
+def write_footer(c_inf, _x, class_name, im, mean, unroll_level):
     if c_inf["f"] is not None:
         c_inf["f"].write('}\n')
         # TODO build a switch for compiling a test predict function for timing tests
         write_predict_function(im, mean, unroll_level, c_inf, class_name)
-        c_inf["f"].write('double {}::getRadius() {{return scores[0];}}\n'.format(class_name))
-        c_inf["f"].write('Vector2d {}::getCenter() {{return Vector2d(scores[1], scores[2]);}}\n'.format(class_name))
-        c_inf["f"].write('double {}::getBallConfidence() {{return scores[3];}}\n'.format(class_name))
+        write_get_radius_function(c_inf, class_name)
+        write_get_center_function(c_inf, class_name)
+        write_get_confidence_function(c_inf, class_name)
         c_inf["f"].close()
         c_inf["f"] = None
 
@@ -387,6 +389,52 @@ def write_footer(c_inf, _x, class_name, im, mean, unroll_level, ):
             file.write(data)
 
     return c_inf
+
+
+def write_footer_test(c_inf, _x, class_name, im, mean, unroll_level):
+    data_generation = '''
+
+void {}::predict(double meanBrightnessOffset)
+{{
+\t// generate random input
+\tstd::default_random_engine generator;
+\tstd::uniform_int_distribution<int> distribution(0, 255);
+
+\tfor(size_t x=0; x < 16; x++) {{
+\t\tfor(size_t y=0; y < 16; y++) {{
+\t\t\tint random_int = distribution(generator);
+\t\t\tfloat value = ( random_int / 255.0f) - static_cast<float>(meanBrightnessOffset);
+\t\t\tin_step[y][x][0] = value;
+\t\t}}
+\t}}
+'''
+    cnn_part = '''
+\tcnn(in_step);
+}\n
+'''
+
+    if c_inf["f"] is not None:
+        c_inf["f"].write('}\n')
+        c_inf["f"].write(data_generation.format(class_name))
+        c_inf["f"].write(cnn_part)
+
+
+def write_get_radius_function(c_inf, class_name):
+    c_inf["f"].write('double {}::getRadius() {{\n'
+                     '\treturn scores[0];\n'
+                     '}}\n'.format(class_name))
+
+
+def write_get_center_function(c_inf, class_name):
+    c_inf["f"].write('Vector2d {}::getCenter() {{\n'
+                     '\treturn Vector2d(scores[1], scores[2]);\n'
+                     '}}\n'.format(class_name))
+
+
+def write_get_confidence_function(c_inf, class_name):
+    c_inf["f"].write('double {}::getBallConfidence() {{\n'
+                     '\treturn scores[3];\n'
+                     '}}\n'.format(class_name))
 
 
 def convolution(x, w, b, stride, pad, c_inf, unroll_level, arch):
@@ -927,7 +975,7 @@ def convolution_3(x, w, b, stride, pad, c_inf, unroll_level, arch):
     return x_out, c_inf
 
 
-def rectifiedLinearUnit(x, c_inf, unroll_level, alpha=0.0, arch='general'):
+def rectified_linear_unit(x, c_inf, unroll_level, alpha=0.0, arch='general'):
     x_out = np.zeros(x.shape).astype('float32')
     str_data = {'prev_layer': c_inf["layer"] - 1, 'i': 'i', 'j': 'j', 'k': 'k',
                 'below_str': '0', 'indent': '\t'}
