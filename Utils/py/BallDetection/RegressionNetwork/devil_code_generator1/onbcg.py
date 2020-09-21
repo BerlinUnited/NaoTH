@@ -179,6 +179,10 @@ class NaoTHCompiler:
         # write other cpp function to file
         self.cpp_footer_function(_x, class_name)
 
+        # write main.cpp if compiling a test binary
+        if self.test_binary:
+            self.write_main_function(class_name, output_folder)
+
     def compile(self, optimize=False):
         if platform.system() != 'Darwin':
             compiler = 'g++ -mssse3 -std=c++11 -g -march=bonnell -DCNN_TEST '
@@ -233,15 +237,12 @@ class NaoTHCompiler:
             print("", file=fp)
             print("# include <emmintrin.h>", file=fp)
             print("", file=fp)
-            print("#include \"AbstractCNNClassifier.h\"", file=fp)
-            print("", file=fp)
             print("class {} {{".format(class_name), file=fp)
-            print("", file=fp)
             print("public:", file=fp)
             print("\tvoid cnn(float x0[{:d}][{:d}][{:d}]);".format(self.c_inf["x_dim"], self.c_inf["y_dim"],
                                                                    self.c_inf["z_dim"]),
                   file=fp)
-            print("\tvoid predict(float p[16][16][1], double meanBrightness);", file=fp)
+            print("\tvoid predict(double meanBrightness);", file=fp)
             print("", file=fp)
             print("\tfloat in_step[{:d}][{:d}][{:d}];".format(self.c_inf["x_dim"], self.c_inf["y_dim"],
                                                               self.c_inf["z_dim"]), file=fp)
@@ -341,15 +342,9 @@ void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBri
         data_generation = '''
 void {}::predict(double meanBrightnessOffset)
 {{
-\t// generate random input
-\tstd::default_random_engine generator;
-\tstd::uniform_int_distribution<int> distribution(0, 255);
-
 \tfor(size_t x=0; x < 16; x++) {{
 \t\tfor(size_t y=0; y < 16; y++) {{
-\t\t\tint random_int = distribution(generator);
-\t\t\tfloat value = ( random_int / 255.0f) - static_cast<float>(meanBrightnessOffset);
-\t\t\tin_step[y][x][0] = value;
+\t\t\tin_step[y][x][0] = in_step[y][x][0] - static_cast<float>(meanBrightnessOffset);
 \t\t}}
 \t}}
 '''
@@ -361,6 +356,8 @@ void {}::predict(double meanBrightnessOffset)
         if self.c_inf["f"] is not None:
             self.c_inf["f"].write('}\n')
             self.c_inf["f"].write(data_generation.format(class_name))
+            # subtract mean from input patch
+            self.mean_subtraction()
             self.c_inf["f"].write(cnn_part)
             self.c_inf["f"].close()
             self.c_inf["f"] = None
@@ -392,6 +389,40 @@ void {}::predict(double meanBrightnessOffset)
         self.c_inf["f"].write('double {}::getBallConfidence() {{\n'
                               '\treturn scores[3];\n'
                               '}}\n'.format(class_name))
+
+    def write_main_function(self, class_name, output_folder="."):
+        fp = open(os.path.join(output_folder, "main.cpp"), "w")
+        # TODO make a vector of images
+        with fp:
+            print("#include <iostream>", file=fp)
+            print("#include <random>", file=fp)
+            print("", file=fp)
+            print("#include {}.h".format(class_name), file=fp)
+            print("", file=fp)
+            print("int main() {", file=fp)
+            print("\t// generate random input", file=fp)
+            print("\tstd::default_random_engine generator;", file=fp)
+            print("\tstd::uniform_int_distribution<int> distribution(0, 255);", file=fp)
+            print("", file=fp)
+            print("\tconst int num_images = 2;", file=fp)
+            print("\tfloat test_images[num_images][16][16][1];", file=fp)
+            print("", file=fp)
+            print("\tfor (size_t n = 0; n < num_images; n++) {", file=fp)
+            print("\t\tfor (size_t x = 0; x < 16; x++) {", file=fp)
+            print("\t\t\tfor (size_t y = 0; y < 16; y++) {", file=fp)
+            print("\t\t\t\tint random_int = distribution(generator);", file=fp)
+            print("\t\t\t\t//normalize values between 0 and 1", file=fp)
+            print("\t\t\t\ttest_images[0][y][x][0] = random_int / 255.0f;", file=fp)
+            print("\t\t\t}", file=fp)
+            print("\t\t}", file=fp)
+            print("\t}", file=fp)
+            print("", file=fp)
+            print("\t//set the image and call the model here", file=fp)
+            print("\t//TODO make a loop and add timing", file=fp)
+            print("\t{} model = {}();".format(class_name, class_name), file=fp)
+            print("\tmodel.in_step = test_images[0];", file=fp)
+            print("\tmodel.predict();", file=fp)
+            print("}", file=fp)
 
     def convolution(self, x, w, b, stride, pad):
         assert x.shape[2] == w.shape[2]
