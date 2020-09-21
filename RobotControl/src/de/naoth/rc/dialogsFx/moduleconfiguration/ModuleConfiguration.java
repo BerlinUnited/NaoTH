@@ -21,7 +21,10 @@ import javafx.collections.FXCollections;
 import javafx.util.StringConverter;
 
 /**
- *
+ * This class represents the current module configuration on the robot.
+ * Therefore it must query all ModuleManager in order to get the "full picture",
+ * which modules exists and how they depend on each other.
+ * 
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
 public class ModuleConfiguration implements ResponseListener

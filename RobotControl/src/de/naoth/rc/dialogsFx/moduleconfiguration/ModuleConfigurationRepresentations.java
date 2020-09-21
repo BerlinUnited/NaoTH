@@ -7,7 +7,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ToggleButton;
 
 /**
- *
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
 public class ModuleConfigurationRepresentations

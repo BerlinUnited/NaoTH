@@ -23,7 +23,6 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
- *
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
 public class ModuleConfigurationDialog extends AbstractJFXDialog
@@ -170,7 +169,6 @@ public class ModuleConfigurationDialog extends AbstractJFXDialog
                 for (Module m : mConfig.getModulesProperty()) {
                     bf.write(m.getName() + "=" + (m.isActive() ? "true" : "false") + "\n");
                 }
-                bf.close();
             } catch (IOException ex) {
                 Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
                 // TODO: show alert dialog

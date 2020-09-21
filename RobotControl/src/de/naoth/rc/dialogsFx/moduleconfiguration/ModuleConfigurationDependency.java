@@ -7,7 +7,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 /**
- *
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
 public class ModuleConfigurationDependency

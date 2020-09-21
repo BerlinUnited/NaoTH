@@ -17,7 +17,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.util.Duration;
 
 /**
- *
  * @author Philipp Strobel <philippstrobel@posteo.de>
  */
 public class ModuleConfigurationModules
@@ -139,7 +138,6 @@ public class ModuleConfigurationModules
         });
         
         // show flash message if it changed
-        //notice.textProperty().bind(mConfig.getFlashMessageProperty());
         mConfig.getFlashMessageProperty().addListener((ob) -> {
             notice.setText(mConfig.getFlashMessageProperty().get());
             notice.setVisible(true);
