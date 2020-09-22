@@ -11,14 +11,22 @@
 using namespace naoth;
 
 /*
+ * NOTE: we are using the "natural embedding" of pixel inices into the 
+ *       continuous image plane. I.e., a pixel with indices (x,y)
+ *       lies also at the cordinates (x,y) in the contunuous plane.
+ *       This means, that the origin of the CIP lies in the center of the 
+ *       pixel (0,0), and the upper left corner of the image has coordinates 
+ *       (-0.5, -0.5). The center of the CIP is located at (width/2-0.5, height/2-0.5)
+ *
  * Visualization of used Coordinate-Frames and their relation:
  *                     z-cam
+ *                     ^
  *            |        |                        Legend:
- *     x-idx->0 1 2 3 4|5 6 7 8 9                 ?-cip: Continuous Image Plane
+ *   x-idx--> 0 1 2 3 4|5 6 7 8 9                 ?-cip: Continuous Image Plane
  *           -|--------|----------                ?-idx: Image Pixel Index
- *        --0|¤-¤-¤-¤-¤-¤-¤-¤-¤-¤|->x-cip                (sometimes also named
+ *        --0|¤-¤-¤-¤-¤-¤-¤-¤-¤-¤|--> x-cip              (sometimes also named
  *           ||        |         |                        Discrete Image Plane)
- *   y-idx->1|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤|                ?-cam: Camera Frame Axis
+ * y-idx--> 1|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤|                ?-cam: Camera Frame Axis
  *           ||        |         |
  *          2|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤|              Note:
  * y-cam <---||--------|---------|--              - origin of CIP coincides with
@@ -29,6 +37,7 @@ using namespace naoth;
  *          5|¤ ¤ ¤ ¤ ¤|¤ ¤ ¤ ¤ ¤|<-image plane
  *           -|--------|----------
  *            |        |
+ *            v
  *            y-cip
  *
  *  direction of view   z-cam
@@ -46,10 +55,12 @@ Vector3d CameraGeometry::imagePixelToCameraCoords( const CameraInfo& cameraInfo,
                                                    const double imgX,
                                                    const double imgY)
 {
+  // NOTE: the origin of the Continuous Image Plane (CIP) lies in the center of the pixel (0,0) 
+  //       thus the opical center in the CIP coordinates lies at (width/2-0.5, height/2-0.5)
   Vector3d pixelVector;
-  pixelVector.x = cameraInfo.getFocalLength();
-  pixelVector.y = cameraInfo.getOpticalCenterX() - imgX - 0.5;
-  pixelVector.z = cameraInfo.getOpticalCenterY() - imgY - 0.5;
+  pixelVector.x =  cameraInfo.getFocalLength();
+  pixelVector.y = (cameraInfo.getOpticalCenterX() - 0.5) - imgX;
+  pixelVector.z = (cameraInfo.getOpticalCenterY() - 0.5) - imgY;
   return pixelVector;
 }
 
@@ -65,7 +76,7 @@ Vector2d CameraGeometry::relativePointToCameraAngle(
       atan2(vectorToPoint.y, vectorToPoint.x), // angle horizontal
       atan2(vectorToPoint.z, vectorToPoint.x) // angle vertical
       );
-}//end relativePointToImageDouble
+}
 
 bool CameraGeometry::relativePointToImage( 
   const CameraMatrix& cameraMatrix,
@@ -84,11 +95,14 @@ bool CameraGeometry::relativePointToImage(
   }
 
   double factor = cameraInfo.getFocalLength() / vectorToPoint.x;
-  pointInImage.x = -(vectorToPoint.y * factor) + cameraInfo.getOpticalCenterX() - 0.5;
-  pointInImage.y = -(vectorToPoint.z * factor) + cameraInfo.getOpticalCenterY() - 0.5;
+
+  // NOTE: the origin of the Continuous Image Plane (CIP) lies in the center of the pixel (0,0) 
+  //       thus the opical center in the CIP coordinates lies at (width/2-0.5, height/2-0.5)
+  pointInImage.x = -(vectorToPoint.y * factor) + (cameraInfo.getOpticalCenterX() - 0.5);
+  pointInImage.y = -(vectorToPoint.z * factor) + (cameraInfo.getOpticalCenterY() - 0.5);
 
   return true;
-}//end relativePointToImageDouble
+}
 
 bool CameraGeometry::relativePointToImage( 
   const CameraMatrix& cameraMatrix,
