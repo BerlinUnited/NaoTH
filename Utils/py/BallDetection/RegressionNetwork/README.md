@@ -1,7 +1,15 @@
 # Tensorflow for Balldetection
 The requirements are defined in requirements.txt. You can install them with pip with 
-`pip install -r requirements.txt`. Conda users can use the `environment.yml`. To create
-a conda environment use `conda env export -n conda-env -f environment.yml`
+
+```sh
+pip install -r requirements.txt
+``` 
+
+Conda users can use the `environment.yml`. To create a conda environment use 
+
+```sh
+conda env export -n conda-env -f environment.yml
+```
 
 ## Input data
 The 2019 dataset for balldetection can be automatically downloded from kaggle. See `generate_image_db.py`. The images are
