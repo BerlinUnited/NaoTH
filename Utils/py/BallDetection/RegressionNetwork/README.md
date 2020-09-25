@@ -15,6 +15,11 @@ conda env export -n conda-env -f environment.yml
 The 2019 dataset for balldetection can be automatically downloded from kaggle. See `generate_image_db.py`. The images are
 then put in a pickle file which is used for training.
 
+To download the dataset you have to setup kaggle api credentials first. 
+ - create `$HOME/.kaggle/kaggle.json` with {"username":"your username","key":"your key"}. NaoTH Members
+ can find the team credentials at https://scm.cms.hu-berlin.de/berlinunited/orga/-/wikis/team/Accounts
+- run `python generate_image_db.py -d True`
+
 ## How to create a new dataset
 TODO
 
