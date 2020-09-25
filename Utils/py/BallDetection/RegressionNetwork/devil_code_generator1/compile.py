@@ -6,11 +6,11 @@ from pathlib import Path
 
 from tensorflow.keras.models import load_model
 
-from devil_code_generator1.onbcg import keras_compile
+from devil_code_generator1.onbcg import NaoTHCompiler
 
 DATA_DIR = Path(Path(__file__).parent.parent.absolute() / "data").resolve()
 CPP_DIR = Path(Path(__file__).parent.parent.absolute() / "cpp").resolve()
-MODEL_DIR = Path(Path(__file__).parent.parent.absolute() / "models/best_models").resolve()
+MODEL_DIR = Path(Path(__file__).parent.parent.absolute() / "models").resolve()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Compile keras network to c++')
@@ -19,7 +19,7 @@ if __name__ == '__main__':
                              'Default is imgdb.pkl in current folder.', default=str(DATA_DIR / 'imgdb.pkl'))
     parser.add_argument('-m', '--model-path', dest='model_path',
                         help='Store the trained model using this path. Default is fy1500_conf.h5.',
-                        default=str(MODEL_DIR / 'fy1500_conf.h5'))
+                        default=str(MODEL_DIR / 'fy_1500_new.h5'))
     parser.add_argument('-c', '--code-path', dest='code_path',
                         help='Store the c code in this file. Default is <model_name>.c.')
 
@@ -37,4 +37,8 @@ if __name__ == '__main__':
         images["images"] = pickle.load(f)
         images["y"] = pickle.load(f)
 
-    keras_compile(images, args.model_path, args.code_path, unroll_level=2, arch="sse3")
+    #compiler = NaoTHCompiler(images, args.model_path, args.code_path, unroll_level=2, arch="sse3", test_binary=False)
+    #compiler.keras_compile()
+
+    debug_compiler = NaoTHCompiler(images, args.model_path, args.code_path, unroll_level=2, arch="sse3", test_binary=True)
+    debug_compiler.keras_compile()
