@@ -2,6 +2,7 @@
 
 import argparse
 import pickle
+import sys
 from datetime import datetime
 from pathlib import Path
 from sys import exit
@@ -9,6 +10,7 @@ from sys import exit
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras as keras
+
 import utility_functions.model_zoo as model_zoo
 
 DATA_DIR = Path(Path(__file__).parent.absolute() / "data").resolve()
@@ -125,9 +127,11 @@ def main(raw_args=None, model=None):
 
 if __name__ == '__main__':
     test_model = model_zoo.fy_1500()
-    train_history = main(['--output', "models"], model=test_model)
+    output_dir = "models"
+    # forward commandline arguments to the argparser in the main function
+    train_history = main(sys.argv[1:] + ['--output', output_dir], model=test_model)
 
-    with open("history_" + test_model.name + ".pkl", "wb") as f:
+    # save history in same folder as model
+    history_filepath = Path(output_dir) / ("history_" + test_model.name + ".pkl")
+    with open(str(history_filepath), "wb") as f:
         pickle.dump(train_history.history, f)
-
-    # TODO maybe publish the models somewhere else?

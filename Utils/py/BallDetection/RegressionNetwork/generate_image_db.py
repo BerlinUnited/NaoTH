@@ -11,14 +11,13 @@ import argparse
 import pickle
 from pathlib import Path
 
-from kaggle.api.kaggle_api_extended import KaggleApi
-
 from utility_functions.loader import load_images_from_csv_files
 
 DATA_DIR = Path(Path(__file__).parent.absolute() / "data").resolve()
 
 
 def download_from_kaggle():
+    from kaggle.api.kaggle_api_extended import KaggleApi
     api = KaggleApi()
     api.authenticate()
 
@@ -47,8 +46,7 @@ if __name__ == '__main__':
     parser.add_argument('-r', '--resolution', dest='res',
                         help='Images will be resized to this resolution. Default is 16x16')
     parser.add_argument("-l", "--limit-noball", type=str2bool, nargs='?', dest="limit_noball",
-                        const=True,
-                        help="Randomly select at most |balls| from no balls class")
+                        const=True, help="Randomly select at most |balls| from no balls class")
 
     args = parser.parse_args()
     if args.download:

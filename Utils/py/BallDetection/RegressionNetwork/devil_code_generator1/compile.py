@@ -6,11 +6,11 @@ from pathlib import Path
 
 from tensorflow.keras.models import load_model
 
-from devil_code_generator1.onbcg import NaoTHCompiler
+from onbcg import NaoTHCompiler   # can throw linter warnings, but python3 can handle imports like that
 
 DATA_DIR = Path(Path(__file__).parent.parent.absolute() / "data").resolve()
 CPP_DIR = Path(Path(__file__).parent.parent.absolute() / "cpp").resolve()
-MODEL_DIR = Path(Path(__file__).parent.parent.absolute() / "models").resolve()
+MODEL_DIR = Path(Path(__file__).parent.parent.absolute() / "data/best_models").resolve()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Compile keras network to c++')
@@ -18,8 +18,8 @@ if __name__ == '__main__':
                         help='Path to the image database to use for training. '
                              'Default is imgdb.pkl in current folder.', default=str(DATA_DIR / 'imgdb.pkl'))
     parser.add_argument('-m', '--model-path', dest='model_path',
-                        help='Store the trained model using this path. Default is fy1500_conf.h5.',
-                        default=str(MODEL_DIR / 'fy_1500_new.h5'))
+                        help='Store the trained model using this path. Default is fy1500.h5.',
+                        default=str(MODEL_DIR / 'fy1500.h5'))
     parser.add_argument('-c', '--code-path', dest='code_path',
                         help='Store the c code in this file. Default is <model_name>.c.')
 
