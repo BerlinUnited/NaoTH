@@ -127,11 +127,11 @@ def main(raw_args=None, model=None):
 
 if __name__ == '__main__':
     test_model = model_zoo.fy_1500()
+    output_dir = "models"
     # forward commandline arguments to the argparser in the main function
-    train_history = main(sys.argv[1:] + ['--output', "models"], model=test_model)
+    train_history = main(sys.argv[1:] + ['--output', output_dir], model=test_model)
 
-    # TODO save in same folder as model
-    with open("history_" + test_model.name + ".pkl", "wb") as f:
+    # save history in same folder as model
+    history_filepath = Path(output_dir) / ("history_" + test_model.name + ".pkl")
+    with open(str(history_filepath), "wb") as f:
         pickle.dump(train_history.history, f)
-
-    # TODO maybe publish the models somewhere else?
