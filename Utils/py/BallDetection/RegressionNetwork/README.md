@@ -27,7 +27,18 @@ TODO
 The scripts are optimised for 16x16 single channel input images and output (4,1) vector representing
 radius, x, y and confidence of the ball location relative to the image.
 
+run `python train.py` to train the fy_1500 model. Modify the script to train other models. You can
+pass trainings parameter as command line arguments like so:
+`python train.py --epochs 1` 
+
+The command line arguments are then passed to the main function and evaluated there. This is done 
+so it can be used from other scripts as well. See `experiments/rerun_training_and_compare.py` for an
+example.
+
 ## Export Neural Networks
 Currently we have two methods for exporting the trained neural network. One exports a json file for 
 use with the frugally deep learning lib. The other exports c++ code. The c++ exported version is
 designed to be used inside the NaoTH Framework. 
+
+### C++ Version - devil code generator 1
+run `python devil_code_generator1/compile.py`
