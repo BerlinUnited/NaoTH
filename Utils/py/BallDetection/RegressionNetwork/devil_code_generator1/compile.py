@@ -6,7 +6,7 @@ from pathlib import Path
 
 from tensorflow.keras.models import load_model
 
-from onbcg import keras_compile
+from onbcg import keras_compile   # can throw linter warnings, but python3 can handle imports like that
 
 DATA_DIR = Path(Path(__file__).parent.parent.absolute() / "data").resolve()
 CPP_DIR = Path(Path(__file__).parent.parent.absolute() / "cpp").resolve()
