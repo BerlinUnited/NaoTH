@@ -210,9 +210,11 @@ public class ModuleConfigurationModules
             mConfig.getModulesProperty().stream().sorted((m1, m2) -> {
                 return m1.getPath().compareToIgnoreCase(m2.getPath());
             }).forEachOrdered((m) -> {
+                // normalize path for windows and linux
+                String normalizedPath = m.getPath().replaceAll("\\\\|/", ":");
                 // retrieve the start/end of the path we want to show in the module tree
-                int typeStart = m.getPath().indexOf(m.getType());
-                int fileStart = m.getPath().lastIndexOf("/");
+                int typeStart = normalizedPath.indexOf(m.getType());
+                int fileStart = normalizedPath.lastIndexOf(":");
                 
                 // make sure we got valid start/end points
                 if (typeStart == -1 || fileStart == -1 || fileStart <= typeStart) {
@@ -221,8 +223,8 @@ public class ModuleConfigurationModules
                 }
                 
                 // retrieve the path we want to show in the module tree
-                String path = m.getPath().substring(typeStart, fileStart);
-                List<String> parts = Arrays.asList(path.split("/"));
+                String path = normalizedPath.substring(typeStart, fileStart);
+                List<String> parts = Arrays.asList(path.split(":"));
 
                 // retrieve the parent node for the leaf and create the path to it, if necessary
                 TreeNodeItem parent = createTreePath(root.getChild(m.getType()), parts);
