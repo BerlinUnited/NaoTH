@@ -242,10 +242,10 @@ class NaoTHCompiler:
             print("\tvoid cnn(float x0[{:d}][{:d}][{:d}]);".format(self.c_inf["x_dim"], self.c_inf["y_dim"],
                                                                    self.c_inf["z_dim"]),
                   file=fp)
-            print("\tvoid predict(double meanBrightness);", file=fp)
+            print("\tvoid predict(float p[16][16][1], double meanBrightness);", file=fp)
             print("", file=fp)
-            print("\tfloat in_step[{:d}][{:d}][{:d}];".format(self.c_inf["x_dim"], self.c_inf["y_dim"],
-                                                              self.c_inf["z_dim"]), file=fp)
+            #print("\tfloat in_step[{:d}][{:d}][{:d}];".format(self.c_inf["x_dim"], self.c_inf["y_dim"],
+            #                                                  self.c_inf["z_dim"]), file=fp)
             print("\tfloat scores[{:d}];".format(self.c_inf["output_dim"]), file=fp)
             print("", file=fp)
             print("};", file=fp)
@@ -339,17 +339,18 @@ void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBri
         return self.c_inf
 
     def write_footer_test(self, _x, class_name):
+        # TODO generalize this, now it is fixed to 16x16x1
         data_generation = '''
-void {}::predict(double meanBrightnessOffset)
+void {}::predict(float p[16][16][1], double meanBrightnessOffset)
 {{
 \tfor(size_t x=0; x < 16; x++) {{
 \t\tfor(size_t y=0; y < 16; y++) {{
-\t\t\tin_step[y][x][0] = in_step[y][x][0] - static_cast<float>(meanBrightnessOffset);
+\t\t\tp[y][x][0] = p[y][x][0] - static_cast<float>(meanBrightnessOffset);
 \t\t}}
 \t}}
 '''
         cnn_part = '''
-\tcnn(in_step);
+\tcnn(p);
 }\n
 '''
 
