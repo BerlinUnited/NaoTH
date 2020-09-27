@@ -124,7 +124,7 @@ def main(raw_args=None, model=None):
 
 
 if __name__ == '__main__':
-    test_model = model_zoo.fy_1500()
+    test_model = model_zoo.fy_1500_new()
     train_history = main(['--output', "models"], model=test_model)
 
     with open("history_" + test_model.name + ".pkl", "wb") as f:

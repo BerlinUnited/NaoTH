@@ -7,7 +7,7 @@ from tensorflow.keras.layers import Convolution2D, LeakyReLU, MaxPooling2D, Flat
 import tensorflow as tf
 
 
-def fy_1500():
+def fy_1500_old():
     initializer = tf.keras.initializers.Ones()
     input_shape = (16, 16, 1)
 
@@ -71,7 +71,7 @@ def fy_1500_new():
 
 
 model_new = fy_1500_new()
-model_old = fy_1500()
+model_old = fy_1500_old()
 
 with open("../data/imgdb.pkl", "rb") as f:
     mean = pickle.load(f)

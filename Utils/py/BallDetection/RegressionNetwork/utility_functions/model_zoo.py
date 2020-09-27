@@ -10,7 +10,7 @@ from tensorflow.keras.layers import Convolution2D, LeakyReLU, MaxPooling2D, Flat
 
 # TODO maybe rewrite every model with functional api for more flexibility
 
-def fy_1500():
+def fy_1500_old():
     input_shape = (16, 16, 1)
 
     model = Sequential()
