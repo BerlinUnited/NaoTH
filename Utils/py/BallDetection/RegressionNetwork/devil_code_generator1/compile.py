@@ -18,8 +18,8 @@ if __name__ == '__main__':
                         help='Path to the image database to use for training. '
                              'Default is imgdb.pkl in current folder.', default=str(DATA_DIR / 'imgdb.pkl'))
     parser.add_argument('-m', '--model-path', dest='model_path',
-                        help='Store the trained model using this path. Default is fy1500.h5.',
-                        default=str(MODEL_DIR / 'fy1500.h5'))
+                        help='Store the trained model using this path. Default is fy1500_conf.h5.',
+                        default=str(MODEL_DIR / 'fy1500_conf.h5'))
     parser.add_argument('-c', '--code-path', dest='code_path',
                         help='Store the c code in this file. Default is <model_name>.c.')
 
