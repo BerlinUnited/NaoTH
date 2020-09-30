@@ -235,7 +235,7 @@ class NaoTHCompiler:
             print("#ifndef _{}_H".format(class_name.upper()), file=fp)
             print("#define _{}_H".format(class_name.upper()), file=fp)
             print("", file=fp)
-            print("# include <emmintrin.h>", file=fp)
+            print("#include <emmintrin.h>", file=fp)
             print("", file=fp)
             print("class {} {{".format(class_name), file=fp)
             print("public:", file=fp)
@@ -341,16 +341,16 @@ void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBri
     def write_footer_test(self, _x, class_name):
         # TODO generalize this, now it is fixed to 16x16x1
         data_generation = '''
-void {}::predict(float p[16][16][1], double meanBrightnessOffset)
+void {}::predict(float in_step[16][16][1], double meanBrightnessOffset)
 {{
 \tfor(size_t x=0; x < 16; x++) {{
 \t\tfor(size_t y=0; y < 16; y++) {{
-\t\t\tp[y][x][0] = p[y][x][0] - static_cast<float>(meanBrightnessOffset);
+\t\t\tin_step[y][x][0] = in_step[y][x][0] - static_cast<float>(meanBrightnessOffset);
 \t\t}}
 \t}}
 '''
         cnn_part = '''
-\tcnn(p);
+\tcnn(in_step);
 }\n
 '''
 
@@ -397,6 +397,7 @@ void {}::predict(float p[16][16][1], double meanBrightnessOffset)
         with fp:
             print("#include <iostream>", file=fp)
             print("#include <random>", file=fp)
+            print("#include <chrono> ", file=fp)
             print("", file=fp)
             print("#include \"{}.h\"".format(class_name), file=fp)
             print("", file=fp)
@@ -420,13 +421,13 @@ void {}::predict(float p[16][16][1], double meanBrightnessOffset)
             print("", file=fp)
             print("\t//run the model multiple times and make time measurements", file=fp)
             print("\t{} model = {}();".format(class_name, class_name), file=fp)
+            print("\tauto start = std::chrono::high_resolution_clock::now();", file=fp)
             print("\tfor (size_t i = 0; i < num_images; i++) {", file=fp)
-            print("\t\tmodel.in_step = test_images[i];", file=fp)
-            print("\t\tmodel.predict();", file=fp)
+            print("\t\tmodel.predict(test_images[i], 0.0);", file=fp)  # TODO FIX the brightness param here
             print("\t}", file=fp)
-            # TODO add time measurements
-            # TODO add brightness offset
-            # TODO add changes to array because you cant copy it
+            print("\tauto stop = std::chrono::high_resolution_clock::now();", file=fp)
+            print("\tauto duration = std::chrono::duration_cast<std::chrono::microseconds> (stop - start);", file=fp)
+            print("\tstd::cout << duration.count() << std::endl; ", file=fp)
             print("}", file=fp)
 
     def convolution(self, x, w, b, stride, pad):
