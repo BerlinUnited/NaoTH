@@ -32,7 +32,7 @@ private:
 public:
   /** 
    * transform a point in image coordinates to the camera coordinates
-   * i.e., a direction vector to the point in the image is calculated
+   * i.e., a direction vector from the optical center to the point in the image is calculated
    */
   static Vector3d imagePixelToCameraCoords( const naoth::CameraInfo& cameraInfo,
                                             const double imgX,

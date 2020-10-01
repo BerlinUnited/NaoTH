@@ -90,6 +90,7 @@ void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBri
 \tfor(size_t x=0; x < patch.size(); x++) {{
 \t\tfor(size_t y=0; y < patch.size(); y++) {{
 \t\t\t// TODO: check
+\t\t\t// .pixel.y accesses the brightness channel of the pixel
 \t\t\tfloat value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) - static_cast<float>(meanBrightness);
 \t\t\tin_step[y][x][0] = value;
 \t\t}}
