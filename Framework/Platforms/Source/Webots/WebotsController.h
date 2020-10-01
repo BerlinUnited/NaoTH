@@ -70,7 +70,7 @@ public:
   virtual std::string getBodyNickName()   const { return getRobotName(); }
   virtual std::string getHeadNickName()   const { return getRobotName(); }
   virtual std::string getPlatformName()   const { return thePlatformName; }
-  virtual unsigned int getBasicTimeStep() const { return 10; }
+  virtual unsigned int getBasicTimeStep() const { return 20; }
 
   /////////////////////// init ///////////////////////
   bool init(const std::string& modelPath, const std::string& teamName, unsigned int teamNumber, unsigned int num, const std::string& server, unsigned int port, bool sync);
@@ -86,6 +86,11 @@ private: // internal data
 
   // HACK:
   MotorJointData theLastMotorJointData;
+
+  struct {
+    std::string model;
+    MSGPACK_DEFINE_MAP(model);
+  } header;
 
 public:
   /////////////////////// get ///////////////////////

@@ -24,7 +24,7 @@
 
 using namespace std;
 
-  WebotsController::WebotsController(const std::string& name)
+WebotsController::WebotsController(const std::string& name)
   : 
   thePlatformName(name),
   theSyncMode(false),
@@ -193,7 +193,13 @@ bool WebotsController::init(
 
   // TODO: send create command to simulator
   //"rsg/agent/naov4/nao.rsg";
-  theSocket << "(scene " << modelPath << ")" << send;
+  //theSocket << "(scene " << modelPath << ")" << send;
+  header.model = modelPath;
+
+  std::stringstream sbuf;
+  msgpack::pack(sbuf, header);
+
+  theSocket << sbuf.str() << send;
 
   // wait the response
   //getSensorData(theSensorData);
