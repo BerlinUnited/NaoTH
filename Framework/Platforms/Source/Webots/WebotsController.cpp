@@ -448,7 +448,7 @@ bool WebotsController::getSensorData(std::string& data)
     // msgpack::object supports ostream.
     //std::cout << deserialized << std::endl;
 
-    deserialized.convert(lolaSensors);
+    deserialized.convert(webotsSensors);
 
     //LolaDataConverter::readSensorData(dcmSensorData, lolaActuators);
 

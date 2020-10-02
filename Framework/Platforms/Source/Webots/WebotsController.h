@@ -81,7 +81,22 @@ public:
 private: // internal data
   ActuatorData lolaActuators;
   
-  SensorData lolaSensors;
+  // extend the lola SensorData with additional Webots speceific sensors
+  struct WebotsSensorData 
+  {
+    // NAO V6 like sensor data
+    SensorData lolaSensors;
+
+    struct {
+      std::array<float,3> Position;
+      std::array<float,9> Rotation;
+      MSGPACK_DEFINE_MAP(Position, Rotation);
+    } GPS;
+
+    MSGPACK_DEFINE_MAP(lolaSensors,GPS);
+  } webotsSensors;
+
+  SensorData& lolaSensors = webotsSensors.lolaSensors;
 
   // HACK:
   MotorJointData theLastMotorJointData;
@@ -140,7 +155,36 @@ public:
   void get(Image& data) {}
   void get(VirtualVision& data){}
   void get(VirtualVisionTop& data){}
-  void get(GPSData& data){}
+  void get(GPSData& data) {
+    data.data.translation.x =  webotsSensors.GPS.Position[0]; //  x
+    data.data.translation.y = -webotsSensors.GPS.Position[2]; // -z
+    data.data.translation.z =  webotsSensors.GPS.Position[1]; //  y
+
+    // from m to mm
+    data.data.translation *= 1000;
+
+    // note: data.data.rotation[col][row]
+    data.data.rotation[0][0] = webotsSensors.GPS.Rotation[0];
+    data.data.rotation[1][0] = webotsSensors.GPS.Rotation[1];
+    data.data.rotation[2][0] = webotsSensors.GPS.Rotation[2];
+
+    data.data.rotation[0][1] = webotsSensors.GPS.Rotation[3];
+    data.data.rotation[1][1] = webotsSensors.GPS.Rotation[4];
+    data.data.rotation[2][1] = webotsSensors.GPS.Rotation[5];
+
+    data.data.rotation[0][2] = webotsSensors.GPS.Rotation[6];
+    data.data.rotation[1][2] = webotsSensors.GPS.Rotation[7];
+    data.data.rotation[2][2] = webotsSensors.GPS.Rotation[8];
+
+    static Matrix3d t = {
+      {1,  0,  0},
+      {0,  0, -1},
+      {0, -1,  0}
+    };
+
+    data.data.rotation = t*data.data.rotation*t.transpose();
+    //data.data.rotation.rotateX(-Math::pi_2);
+  }
 
   void get(TeamMessageDataIn& data);
   void get(GameData& data){}
