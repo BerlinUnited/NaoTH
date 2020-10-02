@@ -58,6 +58,7 @@ private:
   bool theSyncMode;
   double theSenseTime;
   double theStepTime; // the time of last step in seconds
+  int motionCount = 0;
   
 public:
   WebotsController(const std::string& name);
@@ -70,7 +71,7 @@ public:
   virtual std::string getBodyNickName()   const { return getRobotName(); }
   virtual std::string getHeadNickName()   const { return getRobotName(); }
   virtual std::string getPlatformName()   const { return thePlatformName; }
-  virtual unsigned int getBasicTimeStep() const { return 20; }
+  virtual unsigned int getBasicTimeStep() const { return 10; }
 
   /////////////////////// init ///////////////////////
   bool init(const std::string& modelPath, const std::string& teamName, unsigned int teamNumber, unsigned int num, const std::string& server, unsigned int port, bool sync);
@@ -81,8 +82,6 @@ private: // internal data
   ActuatorData lolaActuators;
   
   SensorData lolaSensors;
-  // HACK: lola SensorData doesn't have a direct conversion to representations yet
-  DCMSensorData dcmSensorData;
 
   // HACK:
   MotorJointData theLastMotorJointData;
@@ -95,18 +94,56 @@ private: // internal data
 public:
   /////////////////////// get ///////////////////////
   void get(FrameInfo& data);
+
   void get(SensorJointData& data);
-  void get(AccelerometerData& data);
-  void get(Image& data);
-  void get(GyrometerData& data);
-  void get(FSRData& data);
-  void get(InertialSensorData& data);
-  void get(BatteryData& data);
-  void get(GPSData& data);
-  void get(VirtualVision& data);
-  void get(VirtualVisionTop& data);
+
+  void get(AccelerometerData& data)
+  { 
+    data.data.x = lolaSensors.Accelerometer.x;
+    data.data.y = -lolaSensors.Accelerometer.y;
+    data.data.z = -lolaSensors.Accelerometer.z;
+
+    data.rawData = data.data;
+  }
+  
+  void get(GyrometerData& data) {
+    data.data.x = lolaSensors.Gyroscope.x;
+    data.data.y = lolaSensors.Gyroscope.y;
+    data.data.z = lolaSensors.Gyroscope.z;
+
+    data.rawData = data.data;
+  }
+
+  void get(InertialSensorData& data) {
+    data.data.x = lolaSensors.Angles.x;
+    data.data.y = -lolaSensors.Angles.y;
+  }
+
+  void get(FSRData& data) 
+  {
+    data.dataLeft = {
+      lolaSensors.FSR.LFoot.FrontLeft,
+      lolaSensors.FSR.LFoot.FrontRight,
+      lolaSensors.FSR.LFoot.RearLeft,
+      lolaSensors.FSR.LFoot.RearRight
+    };
+    data.dataRight = {
+      lolaSensors.FSR.RFoot.FrontLeft,
+      lolaSensors.FSR.RFoot.FrontRight,
+      lolaSensors.FSR.RFoot.RearLeft,
+      lolaSensors.FSR.RFoot.RearRight
+    };
+  }
+  
+  void get(BatteryData& data){}
+  
+  void get(Image& data) {}
+  void get(VirtualVision& data){}
+  void get(VirtualVisionTop& data){}
+  void get(GPSData& data){}
+
   void get(TeamMessageDataIn& data);
-  void get(GameData& data);
+  void get(GameData& data){}
 
   /////////////////////// set ///////////////////////
   void set(const MotorJointData& data);

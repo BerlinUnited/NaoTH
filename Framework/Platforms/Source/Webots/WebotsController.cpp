@@ -32,21 +32,22 @@ WebotsController::WebotsController(const std::string& name)
   theStepTime(0),
   exiting(false)
 {
+  //registerInput<Image>(*this);
   // register input
-  registerInput<AccelerometerData>(*this);
   registerInput<FrameInfo>(*this);
+
   registerInput<SensorJointData>(*this);
-  registerInput<Image>(*this);
+  registerInput<AccelerometerData>(*this);
   registerInput<FSRData>(*this);
   registerInput<GyrometerData>(*this);
   registerInput<InertialSensorData>(*this);
   registerInput<BatteryData>(*this);
+
   registerInput<VirtualVision>(*this);
   registerInput<VirtualVisionTop>(*this);
   registerInput<TeamMessageDataIn>(*this);
   registerInput<GameData>(*this);
   registerInput<GPSData>(*this);
-  registerInput<BatteryData>(*this);
 
   // register output
   registerOutput<const MotorJointData>(*this);
@@ -241,7 +242,10 @@ void WebotsController::singleThreadMain()
   cout << "SimSpark Controller runs in single thread" << endl;
   while ( getSensorData(theSensorData) )
   {
-    PlatformInterface::runCognition();
+    if(motionCount >= 3) {
+      PlatformInterface::runCognition();
+      motionCount = 0;
+    }
     /*
     updateSensors(theSensorData);
     if ( isNewImage || isNewVirtualVision )
@@ -250,6 +254,7 @@ void WebotsController::singleThreadMain()
     }
     */
     PlatformInterface::runMotion();
+    motionCount++;
     act();
   }//end while
 }//end main
@@ -443,6 +448,8 @@ bool WebotsController::getSensorData(std::string& data)
     // msgpack::object supports ostream.
     //std::cout << deserialized << std::endl;
 
+    deserialized.convert(lolaSensors);
+
     //LolaDataConverter::readSensorData(dcmSensorData, lolaActuators);
 
     theLastSenseTime = NaoTime::getNaoTimeInMilliSeconds();
@@ -468,55 +475,6 @@ void WebotsController::get(SensorJointData& data)
     data.position[i] = theLastMotorJointData.position[i];
     data.stiffness[i] = theLastMotorJointData.stiffness[i];
   }
-}
-
-void WebotsController::get(AccelerometerData& data)
-{
-  
-}
-
-void WebotsController::get(BatteryData& data)
-{
-  
-}
-
-void WebotsController::get(GPSData& data)
-{
-  
-}
-
-void WebotsController::get(Image& data)
-{
-}
-
-void WebotsController::get(GyrometerData& data)
-{
-  
-}
-
-void WebotsController::get(FSRData& data)
-{
-  
-}
-
-void WebotsController::get(InertialSensorData& data)
-{
-  
-}
-
-void WebotsController::get(VirtualVision& data)
-{
-  
-}
-
-void WebotsController::get(VirtualVisionTop& data)
-{
-  
-}
-
-void WebotsController::get(GameData& data)
-{
-  
 }
 
 
