@@ -465,7 +465,9 @@ bool WebotsController::getSensorData(std::string& data)
 
 void WebotsController::get(FrameInfo& data)
 {
-  data.setTime(data.getTime() + 20);
+  //data.setTime(data.getTime() + 20);
+  // use the simulation time of webots
+  data.setTime(static_cast<unsigned int>(webotsSensors.Time*1000.0+0.5));
   data.setFrameNumber(data.getFrameNumber() + 1);
 }
 

@@ -93,7 +93,9 @@ private: // internal data
       MSGPACK_DEFINE_MAP(Position, Rotation);
     } GPS;
 
-    MSGPACK_DEFINE_MAP(lolaSensors,GPS);
+    double Time;
+
+    MSGPACK_DEFINE_MAP(lolaSensors,GPS,Time);
   } webotsSensors;
 
   SensorData& lolaSensors = webotsSensors.lolaSensors;
