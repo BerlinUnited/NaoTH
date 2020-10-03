@@ -173,6 +173,9 @@ workspace "NaoTHSoccer"
     -- "path to the working directory, relative to the currently executing script file."
     debugdir ".."
     
+    -- for speed up
+    inlining ("Auto")
+    
     -- remove the nao platform if action is vs*
     removeplatforms { "Nao" }
     
