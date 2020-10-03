@@ -1,7 +1,7 @@
 /**
  * @file WebotsController.h
  *
- * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu Yuan</a>
+ * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
  * @breief Interface for the Webots simulator
  *
  */
@@ -15,13 +15,13 @@
 #include <Representations/Infrastructure/FSRData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
-#include <Representations/Infrastructure/Image.h>
 #include <Representations/Infrastructure/InertialSensorData.h>
 #include <Representations/Infrastructure/LEDData.h>
 #include <Representations/Infrastructure/UltraSoundData.h>
 #include <Representations/Infrastructure/ButtonData.h>
 #include <Representations/Infrastructure/BatteryData.h>
 #include <Representations/Infrastructure/GPSData.h>
+#include <Representations/Infrastructure/Image.h>
 #include <Representations/Infrastructure/VirtualVision.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
 #include <Representations/Infrastructure/GameData.h>
@@ -56,8 +56,6 @@ private:
   PrefixedSocketStream theSocket;
 
   bool theSyncMode;
-  double theSenseTime;
-  double theStepTime; // the time of last step in seconds
   int motionCount = 0;
   
 public:
@@ -105,7 +103,11 @@ private: // internal data
     MSGPACK_DEFINE_MAP(lolaSensors,GPS,Time,Ball);
   } webotsSensors;
 
+  // for easier access
   SensorData& lolaSensors = webotsSensors.lolaSensors;
+  
+  //
+  std::string receiveBuffer;
 
   // HACK:
   MotorJointData theLastMotorJointData;
@@ -214,63 +216,20 @@ public:
     //data.data.rotation.rotateX(-Math::pi_2);
   }
 
-  void get(TeamMessageDataIn& data);
+  void get(TeamMessageDataIn& data){}
   void get(GameData& data){}
 
   /////////////////////// set ///////////////////////
   void set(const MotorJointData& data);
-  void set(const TeamMessageDataOut& data);
+  void set(const TeamMessageDataOut& data) { }
 
 protected:
   virtual MessageQueue* createMessageQueue(const std::string& name);
   
 private:
   bool connect(const std::string& host, int port);
-  bool getSensorData(std::string& data);
-
-  // the main loop in single thread
-  void singleThreadMain();
-
-  // the main loop in threads
-  void multiThreadsMain();
-
-public:
-  void motionLoop();
-  void cognitionLoop();
-
-  void senseLoop();
-  void actLoop();
-
-  virtual void getMotionInput();
-  virtual void setMotionOutput();
-
-  virtual void getCognitionInput();
-  virtual void setCognitionOutput();
-
-  virtual void callCognition();
-
-private:
-  // members for threads
-  std::mutex  theCognitionInputMutex;
-  std::mutex  theCognitionOutputMutex;
-  std::condition_variable theCognitionInputCond;
-  bool exiting;
-
-  //
-  unsigned int theLastActTime;
-  unsigned int theLastSenseTime;
-  unsigned int theNextActTime;
-  void calculateNextActTime();
-  std::condition_variable theTimeCond;
-  std::mutex theTimeMutex;
-
-  std::string theSensorData;
-  std::mutex theSensorDataMutex;
-  std::condition_variable theSensorDataCond;
-
-  std::mutex  theActDataMutex;
-  std::stringstream theActData;
-  void act();
+  bool getSensorData();
+  void sendCommands();
 
 private:
   DebugServer theDebugServer;
@@ -285,11 +244,10 @@ public:
 
   void set(const DebugMessageOut& data)
   {
-    if(data.answers.size() > 0) {
+    if(!data.answers.empty()) {
       theDebugServer.setDebugMessageOut(data);
     }
   }
 };
 
 #endif  /* WEBOTS_CONTROLLER_H */
-

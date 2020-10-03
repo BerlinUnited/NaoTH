@@ -2,6 +2,7 @@
  * @file WebotsController.cpp
  *
  * @author <a href="mailto:schlottb@informatik.hu-berlin.de">Schlotter, Benjamin</a>
+ * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
  * @brief Interface for the Webots simulator
  *
  */
@@ -27,12 +28,8 @@ using namespace std;
 WebotsController::WebotsController(const std::string& name)
   : 
   thePlatformName(name),
-  theSyncMode(false),
-  theSenseTime(0),
-  theStepTime(0),
-  exiting(false)
+  theSyncMode(false)
 {
-  //registerInput<Image>(*this);
   // register input
   registerInput<FrameInfo>(*this);
 
@@ -43,6 +40,7 @@ WebotsController::WebotsController(const std::string& name)
   registerInput<InertialSensorData>(*this);
   registerInput<BatteryData>(*this);
 
+  //registerInput<Image>(*this);
   registerInput<VirtualVision>(*this);
   registerInput<VirtualVisionTop>(*this);
   registerInput<TeamMessageDataIn>(*this);
@@ -103,8 +101,7 @@ bool WebotsController::connect(const std::string& host, int port)
 
   /**
   * Try each sockaddr until we succeed. Record the first
-  * connection error, but not any further ones (since they'll probably
-  * be basically the same as the first).
+  * connection error, but not any further ones (since they'll probably be basically the same as the first).
   */
   while (!conn && (sockaddr = g_socket_address_enumerator_next(enumerator, cancellable, &error)))
   {
@@ -203,156 +200,43 @@ bool WebotsController::init(
   theSocket << sbuf.str() << send;
 
   // wait the response
-  //getSensorData(theSensorData);
-
-  std::cout << "Sensordata: " << theSensorData << std::endl;
+  //getSensorData();
+  std::cout << "Sensordata: " << receiveBuffer << std::endl;
 
   // initialize the teamname and number
   //theSocket << "(init (teamname " << theGameInfo.teamName << ")(unum " << theGameInfo.playerNumber << "))" << theSync << send;
 
   cout << "NaoTH Simpark initialization successful: " << teamName << " " << playerNumber << endl;
 
-  //DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
-  //REGISTER_DEBUG_COMMAND("beam", "beam to given pose", this);
-
   // hack?
   config.setInt("player", "TeamNumber", teamNumber);
   config.setInt("player", "PlayerNumber", playerNumber);
   config.setString("player", "TeamName", teamName);
-
-
-  theLastSenseTime = NaoTime::getNaoTimeInMilliSeconds();
-  theLastActTime = theLastSenseTime;
-  calculateNextActTime();
 
   return true;
 }
 
 void WebotsController::main()
 {
-  if ( theSyncMode ) {
-    singleThreadMain();
-  } else {
-    multiThreadsMain();
-  }
-}
-
-void WebotsController::singleThreadMain()
-{
   cout << "SimSpark Controller runs in single thread" << endl;
-  while ( getSensorData(theSensorData) )
+  while ( getSensorData() )
   {
     if(motionCount >= 3) {
       PlatformInterface::runCognition();
       motionCount = 0;
     }
-    /*
-    updateSensors(theSensorData);
-    if ( isNewImage || isNewVirtualVision )
-    {
-      callCognition();
-    }
-    */
+
     PlatformInterface::runMotion();
     motionCount++;
-    act();
-  }//end while
-}//end main
-
-
-void WebotsController::motionLoop()
-{
-  while ( !exiting )
-  {
-    std::string data;
-    {
-      std::unique_lock<std::mutex> lock(theSensorDataMutex);
-      theSensorDataCond.wait(lock);
-      data = theSensorData;
-      theSensorData = "";
-    }
-    PlatformInterface::runMotion();
-  }
-}//end motionLoop
-
-void WebotsController::cognitionLoop()
-{
-  while (!exiting)
-  {
-    callCognition();
-  }
-}//end cognitionLoop
-
-void WebotsController::callCognition()
-{
-  PlatformInterface::callCognition();
-  /*
-  if(cognitionRegistered())
-  {
-    getCognitionInput();
-    if ( !exiting )
-    {
-      PlatformInterface::callCognition();
-      setCognitionOutput();
-    }
-  }
-  */
-}//end callCognition
-
-void WebotsController::senseLoop()
-{
-  while( true )
-  {
-    string data;
-    if ( !getSensorData(data) )
-    {
-      break;
-    }
-
-    {
-      std::unique_lock<std::mutex> lock(theSensorDataMutex);
-      if ( !theSensorData.empty() )
-      {
-        cerr<<"[Warning] the sensor data @ " << theLastSenseTime << " is dropped!"<<endl;
-      }
-      theSensorData = data;
-    }
-    theTimeCond.notify_one();
-    theSensorDataCond.notify_one();
-  }
-
-  exiting = true;
-  theSensorDataCond.notify_one(); // tell motion to exit
-  theTimeCond.notify_one(); // tell act loop to exit
-  theCognitionInputCond.notify_one(); // tell cognition to exit
-}
-
-void WebotsController::actLoop()
-{
-  while( !exiting )
-  {
-    { // NOTE: lock object lives only in this code block
-      std::unique_lock<std::mutex> lock(theTimeMutex);
-      theTimeCond.wait(lock);
-      calculateNextActTime();
-    }
-
-    unsigned int now = NaoTime::getNaoTimeInMilliSeconds();
-    if ( theNextActTime > now )
-    {
-      ThreadUtil::sleep(theNextActTime - now);
-    }
-
-    act();
+    sendCommands();
   }
 }
 
-void WebotsController::act()
+
+void WebotsController::sendCommands()
 {
   // send command
-  std::unique_lock<std::mutex> lock(theActDataMutex);
   try {
-
     std::stringstream sbuf;
     msgpack::pack(sbuf, lolaActuators);
 
@@ -364,83 +248,13 @@ void WebotsController::act()
   }
 }
 
-void WebotsController::multiThreadsMain()
-{
-  cout << "Webots Controller runs in multi-threads" << endl;
-
-  std::thread senseThread = std::thread([this]{this->senseLoop();});
-  std::thread actThread = std::thread([this]{this->actLoop();});
-  std::thread motionThread = std::thread([this]{this->motionLoop();});
-
-  cognitionLoop();
-
-  if(motionThread.joinable()) {
-    motionThread.join();
-  }
-  if(actThread.joinable()) {
-    actThread.join();
-  }
-  if(senseThread.joinable()) {
-    senseThread.join();
-  }
-}//end multiThreadsMain
-
-void WebotsController::getMotionInput()
-{
-  PlatformInterface::getMotionInput();
-
-  /*
-  for (int i = 0; i < JointData::numOfJoint; i++) {
-    theSensorJointData.stiffness[i] = theLastSensorJointData.stiffness[i];
-  }
-  theLastSensorJointData = theSensorJointData;
-  */
-}
-
-void WebotsController::setMotionOutput()
-{
-  PlatformInterface::setMotionOutput();
-
-  /*
-  {
-    std::unique_lock<std::mutex> lock(theActDataMutex);
-    say();
-    autoBeam();
-    jointControl();
-    theActData << theSync;
-  }
-  */
-}
-
-void WebotsController::getCognitionInput()
-{
-  PlatformInterface::getCognitionInput();
-  /*
-  std::unique_lock<std::mutex> lock(theCognitionInputMutex);
-  while (!isNewImage && !isNewVirtualVision && !exiting )
-  {
-    theCognitionInputCond.wait(lock);
-  }
-
-  PlatformInterface::getCognitionInput();
-  isNewVirtualVision = false;
-  isNewImage = false;
-  */
-}
-
-void WebotsController::setCognitionOutput()
-{
-  //std::unique_lock<std::mutex> lock(theCognitionOutputMutex);
-  PlatformInterface::setCognitionOutput();
-}
-
-bool WebotsController::getSensorData(std::string& data)
+bool WebotsController::getSensorData()
 {
   try {
-    theSocket >> data;
+    theSocket >> receiveBuffer;
 
     // Test the message pack parsing
-    msgpack::object_handle oh = msgpack::unpack(data.data(), data.size());
+    msgpack::object_handle oh = msgpack::unpack(receiveBuffer.data(), receiveBuffer.size());
 
     // deserialized object is valid during the msgpack::object_handle instance is alive.
     msgpack::object deserialized = oh.get();
@@ -451,9 +265,6 @@ bool WebotsController::getSensorData(std::string& data)
     deserialized.convert(webotsSensors);
 
     //LolaDataConverter::readSensorData(dcmSensorData, lolaActuators);
-
-    theLastSenseTime = NaoTime::getNaoTimeInMilliSeconds();
-    std::cout << theLastSenseTime << std::endl;
   }
   catch (std::runtime_error& exp)
   {
@@ -479,24 +290,11 @@ void WebotsController::get(SensorJointData& data)
   }
 }
 
-
 void WebotsController::set(const MotorJointData& data)
 {
   LolaDataConverter::set(data, lolaActuators);
-
   theLastMotorJointData = data;
 }
-
-void WebotsController::get(TeamMessageDataIn& data)
-{
-
-}
-
-void WebotsController::set(const TeamMessageDataOut& data)
-{
-
-}
-
 
 MessageQueue* WebotsController::createMessageQueue(const std::string& /*name*/)
 {
@@ -505,14 +303,4 @@ MessageQueue* WebotsController::createMessageQueue(const std::string& /*name*/)
   } else {
     return new MessageQueue4Threads();
   }
-}
-
-
-void WebotsController::calculateNextActTime()
-{
-   theNextActTime = theLastSenseTime + 10;
-   while(theLastActTime > theNextActTime)
-   {
-     theNextActTime += getBasicTimeStep();
-   }
 }
