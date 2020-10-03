@@ -95,7 +95,14 @@ private: // internal data
 
     double Time;
 
-    MSGPACK_DEFINE_MAP(lolaSensors,GPS,Time);
+    struct {
+      bool Seen;
+      std::array<float,3> Position;
+      std::string Cam;
+      MSGPACK_DEFINE_MAP(Seen, Position, Cam);
+    } Ball;
+
+    MSGPACK_DEFINE_MAP(lolaSensors,GPS,Time,Ball);
   } webotsSensors;
 
   SensorData& lolaSensors = webotsSensors.lolaSensors;
@@ -155,8 +162,27 @@ public:
   void get(BatteryData& data){}
   
   void get(Image& data) {}
-  void get(VirtualVision& data){}
-  void get(VirtualVisionTop& data){}
+  void get(VirtualVision& data) {
+    data.clear();
+    if (webotsSensors.Ball.Seen && webotsSensors.Ball.Cam == "bottom") 
+    {
+      // ball in naoth coordinates (in mm)
+      Vector3d ball(-webotsSensors.Ball.Position[2]*1000.0, -webotsSensors.Ball.Position[0]*1000.0, webotsSensors.Ball.Position[1]*1000.0);
+      // virtual vision processor expects spheric coordinates
+      data.data["B"] = { ball.abs(), atan2(ball.y, ball.x), atan2(ball.z, Vector2d(ball.x, ball.y).abs()) };
+    }
+  }
+  void get(VirtualVisionTop& data) {
+    data.clear();
+    if (webotsSensors.Ball.Seen && webotsSensors.Ball.Cam == "top") 
+    {
+      // ball in naoth coordinates (in mm)
+      Vector3d ball(-webotsSensors.Ball.Position[2]*1000.0, -webotsSensors.Ball.Position[0]*1000.0, webotsSensors.Ball.Position[1]*1000.0);
+      // virtual vision processor expects spheric coordinates
+      data.data["B"] = { ball.abs(), atan2(ball.y, ball.x), atan2(ball.z, Vector2d(ball.x, ball.y).abs()) };
+    }
+  }
+  
   void get(GPSData& data) {
     data.data.translation.x =  webotsSensors.GPS.Position[0]; //  x
     data.data.translation.y = -webotsSensors.GPS.Position[2]; // -z
