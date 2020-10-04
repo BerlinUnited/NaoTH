@@ -68,6 +68,7 @@ def parseArguments():
     if '--config' in sys.argv:
         parser.add_argument('--config', type=ArgsValidator.config, action='store',
                             help="Use a configuration file instead of the application arguments")
+        parser.add_argument('-v', '--verbose', action='store_true', help="Print more debug informations to stdout.")
     elif len(sys.argv) <= 2 and '--write-config' in sys.argv:
         parser.add_argument('--write-config', action='store',
                             help="Writes the default config to the given file and exits; additional arguments are used instead of the default")
