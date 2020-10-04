@@ -172,12 +172,11 @@ int SocketStream::prefixedRecv(std::string& msg)
   if (!res) return 0;
   //get the message length
   messLen = g_ntohl((*(unsigned int*) mRecvBuf));
-  std::cout << "Message length: " << messLen << std::endl;
 
   //try and get the data
   res = isFixedLengthDataAvailable(messLen + static_cast<unsigned int> (sizeof (unsigned int)));
   if (!res) return 0;
-  std::cout << "Data is available" << std::endl;
+
   //we have to copy, skipping the sizeof(int) bytes at the beginning
   msg.insert(0, mRecvBuf + sizeof (unsigned int), messLen);
   mRecvdLen -= (static_cast<unsigned int> (sizeof (unsigned int)) +messLen);
