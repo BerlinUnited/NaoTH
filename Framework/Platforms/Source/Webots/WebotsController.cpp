@@ -218,7 +218,7 @@ bool WebotsController::init(
 
 void WebotsController::main()
 {
-  cout << "SimSpark Controller runs in single thread" << endl;
+  cout << "WebotsController Controller runs in single thread" << endl;
   while ( getSensorData() )
   {
     if(motionCount >= 3) {
@@ -244,7 +244,7 @@ void WebotsController::sendCommands()
   }
   catch(std::runtime_error& exp)
   {
-    cerr<<"can not send data to server, because of "<<exp.what()<<endl;
+    cerr << "can not send data to server, because of "<<exp.what()<<endl;
   }
 }
 
