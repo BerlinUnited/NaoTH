@@ -67,7 +67,7 @@ class LolaDataConverter
 {
 public:
 
-  static void set(const MotorJointData& motorJointData, ActuatorData& actuators) 
+  static void set(ActuatorData& actuators, const MotorJointData& motorJointData) 
   {
     for(size_t i = 0; i < lolaJointIdx.size(); ++i) {
       actuators.Position[i]  = static_cast<float>(motorJointData.position[lolaJointIdx[i]]);

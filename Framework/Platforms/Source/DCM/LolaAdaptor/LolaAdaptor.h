@@ -196,7 +196,7 @@ private:
           const Accessor<MotorJointData>* motorData = naoCommandMotorJointData.reading();
           
           // write MotorJointData to LolaActuatorData
-          LolaDataConverter::set(motorData->get(), actuators);
+          LolaDataConverter::set(actuators, motorData->get());
 
           //drop_count = 0;
           command_data_available = true;
@@ -269,7 +269,7 @@ private:
       theLEDData.theMultiLED[i][LEDData::GREEN] = 0;
       theLEDData.theMultiLED[i][LEDData::BLUE] = red ? 0 : 1;
     }
-    LolaDataConverter::writeLEDData(theLEDData, actuators);
+    LolaDataConverter::set(actuators, theLEDData);
   }//end setWarningLED
 
   bool runEmergencyMotion(ActuatorData& actuators)
@@ -303,7 +303,7 @@ private:
         initialMotion->execute();
         
         // write MotorJointData to LolaActuatorData
-        LolaDataConverter::set(theMotorJointData, actuators);
+        LolaDataConverter::set(actuators, theMotorJointData);
       }
     }//end if
    
