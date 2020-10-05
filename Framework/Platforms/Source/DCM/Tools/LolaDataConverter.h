@@ -74,7 +74,17 @@ public:
       actuators.Stiffness[i] = static_cast<float>(motorJointData.stiffness[lolaJointIdx[i]]);
     }
   }
-  
+
+  static void get(const SensorData& sensorData, SensorJointData& sensorJointData) 
+  {
+    for(size_t i = 0; i < lolaJointIdx.size(); ++i) 
+    {
+      sensorJointData.position[lolaJointIdx[i]]        = sensorData.Position[i];
+      sensorJointData.stiffness[lolaJointIdx[i]]       = sensorData.Stiffness[i];
+      sensorJointData.electricCurrent[lolaJointIdx[i]] = sensorData.Current[i];
+      sensorJointData.temperature[lolaJointIdx[i]]     = sensorData.Temperature[i];
+    }
+  }
   
   static void readSensorData(const SensorData& sensorData, DCMSensorData& dcmSensorData) 
   {
