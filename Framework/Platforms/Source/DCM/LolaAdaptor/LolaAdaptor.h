@@ -205,7 +205,7 @@ private:
         if(naoCommandLEDData.swapReading())
         {
           const Accessor<LEDData>* commandData = naoCommandLEDData.reading();
-          LolaDataConverter::writeLEDData(commandData->get(), actuators);
+          LolaDataConverter::set(actuators, commandData->get());
         }
       }
       lola.writeActuators(actuators);
