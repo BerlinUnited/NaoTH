@@ -86,26 +86,23 @@ Vector3d VirtualVisionProcessor::calculatePosition(const Vector3d& pol)
 
 void VirtualVisionProcessor::updateBall()
 {
-  const VirtualVision& theVirtualVision = getVirtualVision();
-  MultiBallPercept::BallPercept ballPercept;
-  const FrameInfo& theFrameInfo = getFrameInfo();
-  const FieldInfo& theFieldInfo = getFieldInfo();
-  const CameraInfo& theCameraInfo = getCameraInfo();
-  const CameraMatrix& theCameraMatrix = getCameraMatrix();
-  VirtualVision::PointMap::const_iterator iter = theVirtualVision.data.find("B");
-  if ( iter != theVirtualVision.data.end() )
+  getMultiBallPercept().reset();
+
+  VirtualVision::PointMap::const_iterator iter = getVirtualVision().data.find("B");
+  if ( iter != getVirtualVision().data.end() )
   {
     Vector3d p = calculatePosition(iter->second);
     
-    // set the multiball percept  
+    // create a ball percept  
+    MultiBallPercept::BallPercept ballPercept;
     ballPercept.cameraId = cameraID;
-    CameraGeometry::relativePointToImage(theCameraMatrix, theCameraInfo, p, ballPercept.centerInImage);
-    ballPercept.radiusInImage = theFieldInfo.ballRadius / iter->second.x * theCameraInfo.getFocalLength();
+    CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), p, ballPercept.centerInImage);
+    ballPercept.radiusInImage = getFieldInfo().ballRadius / iter->second.x * getCameraInfo().getFocalLength();
     ballPercept.positionOnField.x = p.x;
     ballPercept.positionOnField.y = p.y;
 
     getMultiBallPercept().add(ballPercept);
-    getMultiBallPercept().frameInfoWhenBallWasSeen = theFrameInfo;
+    getMultiBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
   }
 }//end updateBall
 
@@ -243,6 +240,7 @@ void VirtualVisionProcessor::updateLine()
 {
   const VirtualVision& theVirtualVision = getVirtualVision();
   //getLinePercept().reset();
+  getVirtualLinePercept().reset();
 
   // lines from flags
   if (theVirtualVision.lines.empty())

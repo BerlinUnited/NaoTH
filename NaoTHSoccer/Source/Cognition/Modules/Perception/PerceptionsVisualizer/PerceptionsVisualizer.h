@@ -48,7 +48,7 @@ BEGIN_DECLARE_MODULE(PerceptionsVisualizer)
 
   REQUIRE(ArtificialHorizon)
   REQUIRE(ArtificialHorizonTop)
-  PROVIDE(MultiBallPercept)
+  REQUIRE(MultiBallPercept)
 
   REQUIRE(FieldPercept)
   REQUIRE(FieldPerceptTop)
