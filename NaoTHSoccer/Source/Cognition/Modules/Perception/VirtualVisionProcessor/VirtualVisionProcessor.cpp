@@ -86,7 +86,8 @@ Vector3d VirtualVisionProcessor::calculatePosition(const Vector3d& pol)
 
 void VirtualVisionProcessor::updateBall()
 {
-  getMultiBallPercept().reset();
+  //NOTE: MultiBallPercept is used for both cameras and is reset in execute()
+  //getMultiBallPercept().reset();
 
   VirtualVision::PointMap::const_iterator iter = getVirtualVision().data.find("B");
   if ( iter != getVirtualVision().data.end() )
@@ -238,9 +239,10 @@ void VirtualVisionProcessor::updateGoal()
 
 void VirtualVisionProcessor::updateLine()
 {
+  //NOTE: VirtualLinePercept is used for both cameras and is reset in execute()
+  //getVirtualLinePercept().reset();
+
   const VirtualVision& theVirtualVision = getVirtualVision();
-  //getLinePercept().reset();
-  getVirtualLinePercept().reset();
 
   // lines from flags
   if (theVirtualVision.lines.empty())
