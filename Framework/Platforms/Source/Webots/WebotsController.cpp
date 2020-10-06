@@ -284,15 +284,26 @@ void WebotsController::get(FrameInfo& data)
 
 void WebotsController::get(SensorJointData& data)
 {
+  // copy data from the buffer
+  if(sensorJointDataBuffer.isFull()) {
+    data = sensorJointDataBuffer.first();
+  }
+
+  // read the new data into the delayed buffer
+  sensorJointDataBuffer.add();
+  LolaDataConverter::get(lolaSensors, sensorJointDataBuffer.last());
+
+  // hack: stiffness is not communicated yet
   for(size_t i = 0; i < naoth::JointData::numOfJoint; ++i) {
-    data.position[i] = theLastMotorJointData.position[i];
-    data.stiffness[i] = theLastMotorJointData.stiffness[i];
+    //data.position[i] = theLastMotorJointData.position[i];
+    //data.stiffness[i] = theLastMotorJointData.stiffness[i];
+    sensorJointDataBuffer.last().stiffness[i] = theLastMotorJointData.stiffness[i];
   }
 }
 
 void WebotsController::set(const MotorJointData& data)
 {
-  LolaDataConverter::set(data, lolaActuators);
+  LolaDataConverter::set(lolaActuators, data);
   theLastMotorJointData = data;
 }
 

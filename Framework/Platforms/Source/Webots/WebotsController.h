@@ -40,6 +40,8 @@
 #include <msgpack.hpp>
 
 // tools
+#include <Tools/DataStructures/RingBufferWithSum.h>
+
 #include <map>
 #include <set>
 #include <mutex>
@@ -111,6 +113,8 @@ private: // internal data
 
   // HACK:
   MotorJointData theLastMotorJointData;
+  // (Experimental) delay sensor jooint data to simulate the real robot
+  RingBuffer<SensorJointData,2> sensorJointDataBuffer;
 
   struct {
     std::string model;
