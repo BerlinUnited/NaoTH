@@ -426,8 +426,8 @@ void {}::predict(float in_step[16][16][1], double meanBrightnessOffset)
             print("\t\tmodel.predict(test_images[i], 0.0);", file=fp)  # TODO FIX the brightness param here
             print("\t}", file=fp)
             print("\tauto stop = std::chrono::high_resolution_clock::now();", file=fp)
-            print("\tauto duration = std::chrono::duration_cast<std::chrono::microseconds> (stop - start);", file=fp)
-            print("\tstd::cout << duration.count() << std::endl; ", file=fp)
+            print("\tauto duration = std::chrono::duration_cast<std::chrono::milliseconds> (stop - start);", file=fp)
+            print("\tstd::cout << \"Time for inference on \" << num_images << \" images is \" << duration.count() << \"ms\" << std::endl; ", file=fp)
             print("}", file=fp)
 
     def convolution(self, x, w, b, stride, pad):
