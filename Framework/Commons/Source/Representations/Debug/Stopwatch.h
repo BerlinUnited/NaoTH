@@ -84,7 +84,7 @@ public:
   }
 
   /** */
-  void dump(std::string name = "") const;
+  void dump(const std::string& name = "") const;
 
 private:
   StopwatchMap stopwatches;

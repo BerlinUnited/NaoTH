@@ -77,8 +77,8 @@ SMALModule::SMALModule(boost::shared_ptr<ALBroker> pBroker, const std::string& p
 
   // 
   setModuleDescription( 
-  "Nao Shared Memory Abstraction Layer (NaoSMAL)" 
-  "provides access to the HAL functionality of naoqi through shared memory" 
+    "Nao Shared Memory Abstraction Layer (NaoSMAL)" 
+    "provides access to the HAL functionality of naoqi through shared memory" 
   );
 }
 
@@ -100,8 +100,7 @@ void SMALModule::init()
 
   std::cout << "resetting working directory to /home/nao/" << std::endl;
   int retChDir = chdir("/home/nao");
-  if(retChDir != 0)
-  {
+  if(retChDir != 0) {
     std::cerr << "Could not change working directory" << std::endl;
   }
 
@@ -392,7 +391,7 @@ void SMALModule::motionCallbackPost()
 
         if(state == DISCONNECTED) {
           fprintf(stderr, "libnaoth: I think the core is alive.\n");
-    }
+        }
 
         drop_count = 0;
         state = CONNECTED;
@@ -401,14 +400,14 @@ void SMALModule::motionCallbackPost()
       {
         if(drop_count == 0) {
           fprintf(stderr, "libnaoth: dropped sensor data.\n");
-    } else if(drop_count == 10) {
+        } else if(drop_count == 10) {
           fprintf(stderr, "libnaoth: I think the core is dead.\n");
           state = DISCONNECTED;
         }
 
         // don't count more than 11
         drop_count += (drop_count < 11);
-      }//end if
+      }//end else
     }
     else
     {

@@ -153,7 +153,8 @@ private:
     int tryCount = 0;
 
     // end the thread if lola could not connect to the socket
-    while(!fileExists("/tmp/robocup")) {
+    while(!fileExists("/tmp/robocup")) 
+    {
       std::this_thread::sleep_for(std::chrono::milliseconds(250));
       if(tryCount > 20 )
       {
@@ -163,6 +164,7 @@ private:
       tryCount++;
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(900));
+    
     Lola lola;
     lola.connectSocket();
     if(lola.hasError())
@@ -178,15 +180,40 @@ private:
     
     while(!exiting) 
     {
-      if(runEmergencyMotion(actuators))
-      {
-        lola.readSensors(sensors);
-        lola.writeActuators(actuators);
-        continue;
-      }
-
       lola.readSensors(sensors);
       
+      // like old DCM motionCallbackPre
+      if(!runEmergencyMotion(actuators))
+      {
+        // get the MotorJointData from the shared memory and put them to the DCM
+        if ( naoCommandMotorJointData.swapReading() )
+        {
+          const Accessor<MotorJointData>* commandData = naoCommandMotorJointData.reading();
+          const MotorJointData& motorData = commandData->get();
+          
+          // SensorJointData
+          for(size_t i = 0; i < lolaJointIdx.size(); ++i) {
+            actuators.Position[i] = (float)motorData.position[lolaJointIdx[i]];
+          }
+
+          for(size_t i = 0; i < lolaJointIdx.size(); ++i) {
+            actuators.Stiffness[i] = (float)motorData.stiffness[lolaJointIdx[i]];
+          }
+
+          //drop_count = 0;
+          command_data_available = true;
+        }
+
+        if(naoCommandLEDData.swapReading())
+        {
+          const Accessor<LEDData>* commandData = naoCommandLEDData.reading();
+          writeLEDData(commandData->get(), actuators);
+        }
+      }
+      lola.writeActuators(actuators);
+      
+      
+      // like old DCM motionCallbackPost
       NaoSensorData* sensorData = naoSensorData.writing();
       
       // current system time (System time, not nao time (!))
@@ -221,35 +248,6 @@ private:
 
       // notify cognition
       notify();
-
-      // get the MotorJointData from the shared memory and put them to the DCM
-      if ( naoCommandMotorJointData.swapReading() )
-      {
-        const Accessor<MotorJointData>* commandData = naoCommandMotorJointData.reading();
-        const MotorJointData& motorData = commandData->get();
-        
-        // SensorJointData
-        for(size_t i = 0; i < lolaJointIdx.size(); ++i) 
-        {
-          actuators.Position[i] = (float)motorData.position[lolaJointIdx[i]];
-        }
-
-        for(size_t i = 0; i < lolaJointIdx.size(); ++i) 
-        {
-          actuators.Stiffness[i] = (float)motorData.stiffness[lolaJointIdx[i]];
-        }
-
-        //drop_count = 0;
-        command_data_available = true;
-      }
-
-      if(naoCommandLEDData.swapReading())
-      {
-        const Accessor<LEDData>* commandData = naoCommandLEDData.reading();
-        writeLEDData(commandData->get(), actuators);
-      }
-      
-      lola.writeActuators(actuators);
     }
     
     running = false;
