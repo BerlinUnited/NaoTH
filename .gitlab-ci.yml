@@ -1,14 +1,31 @@
 stages:
+ - test
  - python
  - static_analysis
  - nao 
  - linux
 
+
 default:
   image: $DOCKER_IMAGE
+  
+include:
+  - template: Code-Quality.gitlab-ci.yml
+
+code_quality:
+  stage: test
+  rules:
+     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
+     - if: '$CI_PIPELINE_SOURCE == "web"'
+     - if: '$CI_PIPELINE_SOURCE == "trigger"'
+     - if: $CI_COMMIT_BRANCH == "develop"
+  artifacts:
+    expose_as: 'Code Quality Report'
+    paths: [gl-code-quality-report.json]
+
 
 cppcheck:
-  stage: static_analysis
+  stage: test
   rules:
      - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
      - if: '$CI_PIPELINE_SOURCE == "web"'
@@ -17,7 +34,6 @@ cppcheck:
   script:
   - cppcheck -j 4 --enable=all --inconclusive --xml --xml-version=2 . 2> cppcheck-result.xml
   - cppcheck-htmlreport --file=cppcheck-result.xml --report-dir=test1 --source-dir=.
-
   artifacts:
     paths: [test1]
     expire_in: 1 week
@@ -64,5 +80,5 @@ compileLocal:
   script:
   - cd NaoTHSoccer/Make
   - premake5 gmake2 --protoc
-  - cd ../build
+  - cd ../build/gmake2
   - make all -j 4

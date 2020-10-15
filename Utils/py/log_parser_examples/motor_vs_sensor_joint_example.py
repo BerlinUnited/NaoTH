@@ -73,7 +73,6 @@ def frame_filter(frame):
 
 def analyze_log(logfile):
     parser = Parser()
-    parser.register("MotorJointData", "JointData")
 
     with LogReader(logfile, parser) as log:
         frame_list = list()
