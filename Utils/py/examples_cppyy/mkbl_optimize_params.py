@@ -23,6 +23,56 @@ def get_toolchain_dir():
     return toolchain_path
 
 
+def disable_modules(mm):
+    mm.setModuleEnabled("WhistleDetectorV1", False)
+    mm.setModuleEnabled("CameraMatrixFinder", False)
+    mm.setModuleEnabled("BodyContourProvider", False)
+    mm.setModuleEnabled("CameraMatrixCorrectorV2", False)
+    mm.setModuleEnabled("HistogramProvider", False)
+    mm.setModuleEnabled("IntegralImageProvider", False)
+    mm.setModuleEnabled("FieldColorClassifier", False)
+    mm.setModuleEnabled("IntegralFieldDetector", False)
+    mm.setModuleEnabled("ScanGridProvider", False)
+    mm.setModuleEnabled("ScanGridEdgelDetector", False)
+    mm.setModuleEnabled("ScanLineEdgelDetector", False)
+    mm.setModuleEnabled("FieldDetector", False)
+    mm.setModuleEnabled("LineGraphProvider", False)
+    mm.setModuleEnabled("GoalFeatureDetector", False)
+    mm.setModuleEnabled("GoalFeatureDetectorV2", False)
+    mm.setModuleEnabled("GoalDetector", False)
+    mm.setModuleEnabled("GoalDetectorV2", False)
+    mm.setModuleEnabled("GoalCrossBarDetector", False)
+    mm.setModuleEnabled("RedBallDetector", False)
+    mm.setModuleEnabled("CNNBallDetector", False)
+    mm.setModuleEnabled("VirtualVisionProcessor", False)
+    mm.setModuleEnabled("PerceptionsVisualizer", False)
+    mm.setModuleEnabled("RansacLineDetector", False)
+    mm.setModuleEnabled("RansacLineDetectorOnGraphs", False)
+    mm.setModuleEnabled("LineAugmenter", False)
+    mm.setModuleEnabled("TeamCommReceiveEmulator", False)
+    mm.setModuleEnabled("TeamMessageStatisticsModule", False)
+    mm.setModuleEnabled("GPS_SelfLocator", False)
+    mm.setModuleEnabled("OdometrySelfLocator", False)
+    mm.setModuleEnabled("TeamBallLocatorMedian", False)
+    mm.setModuleEnabled("RoleDecisionPositionStatic", False)
+    mm.setModuleEnabled("RoleDecisionPositionForce", False)
+    mm.setModuleEnabled("RoleDecisionPositionPotentialField", False)
+    mm.setModuleEnabled("RoleDecisionAssignmentStatic", False)
+    mm.setModuleEnabled("SimpleRoleDecision", False)
+    mm.setModuleEnabled("StableRoleDecision", False)
+    mm.setModuleEnabled("CleanRoleDecision", False)
+    mm.setModuleEnabled("KickDirectionSimulator", False)
+    mm.setModuleEnabled("Simulation", False)
+    mm.setModuleEnabled("SimulationTest", False)
+    mm.setModuleEnabled("StaticDebugModelProvider", False)
+    mm.setModuleEnabled("BasicTestBehavior", False)
+    mm.setModuleEnabled("XABSLBehaviorControl", False)
+    mm.setModuleEnabled("PathPlanner", False)
+    mm.setModuleEnabled("PathPlanner2018", False)
+    mm.setModuleEnabled("FIXMECameraMatrixCorrectorV3", False)
+    mm.setModuleEnabled("ArmCollisionDetector", False)
+
+
 def f(x, fakeballs, fbd, mkbl, dpl, command, arguments):
     residual = np.zeros(len(fakeballs))
     for i, fb in enumerate(fakeballs):
@@ -128,6 +178,7 @@ if __name__ == "__main__":
     mm.setModuleEnabled("MultiKalmanBallLocator", True)
     mm.setModuleEnabled("FakeBallDetector", True)
     mm.setModuleEnabled("FakeCameraMatrixFinder", True)
+    disable_modules(mm)  # disable some modules
 
     # include header of modules which will be manipulated
     cppyy.include("Cognition/Modules/VisualCortex/FakeBallDetector/FakeBallDetector.h")
