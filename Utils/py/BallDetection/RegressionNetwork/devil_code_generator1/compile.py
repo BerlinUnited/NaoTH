@@ -22,6 +22,9 @@ if __name__ == '__main__':
                         default=str(MODEL_DIR / 'fy1500_conf.h5'))
     parser.add_argument('-c', '--code-path', dest='code_path',
                         help='Store the c code in this file. Default is <model_name>.c.')
+    parser.add_argument('-d', '--debug', dest='debug_flag', default=False,
+                        help='Switch between debug and production build. The debug build creates code for running the '
+                             'network multiple times and provides timing measurements in the end.')
 
     args = parser.parse_args()
 
@@ -37,8 +40,13 @@ if __name__ == '__main__':
         images["images"] = pickle.load(f)
         images["y"] = pickle.load(f)
 
-    #compiler = NaoTHCompiler(images, args.model_path, args.code_path, unroll_level=2, arch="sse3", test_binary=False)
-    #compiler.keras_compile()
+    if args.debug_flag:
+        print("debug")
+        debug_compiler = NaoTHCompiler(images, args.model_path, args.code_path, unroll_level=2, arch="sse3",
+                                       test_binary=True)
+        debug_compiler.keras_compile()
+    else:
+        compiler = NaoTHCompiler(images, args.model_path, args.code_path, unroll_level=2, arch="sse3", test_binary=False)
+        compiler.keras_compile()
 
-    debug_compiler = NaoTHCompiler(images, args.model_path, args.code_path, unroll_level=2, arch="sse3", test_binary=True)
-    debug_compiler.keras_compile()
+
