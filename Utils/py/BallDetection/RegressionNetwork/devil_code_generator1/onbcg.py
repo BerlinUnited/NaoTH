@@ -10,8 +10,9 @@ __email__ = "oliver.urbann@tu-dortmund.de"
 import os
 import platform
 import numpy as np
-from tensorflow.keras import backend as K, Model
-from tensorflow.keras.layers import Convolution2D, MaxPooling2D, Flatten, Dropout, BatchNormalization, LeakyReLU, Dense, ReLU
+from tensorflow.keras import backend as K
+from tensorflow.keras.layers import Convolution2D, MaxPooling2D, Flatten, Dropout, BatchNormalization, LeakyReLU, Dense, \
+    ReLU
 from tensorflow.keras.models import load_model
 
 if platform.system() != 'Darwin':
@@ -20,7 +21,6 @@ if platform.system() != 'Darwin':
 else:
     compiler = 'clang++ --target=i686-unknown-linux-gnu -msse3 -march=bonnell -std=c++11 -g -DCNN_TEST '
     compiler_O3 = 'clang++ -O3 --target=i686-unknown-linux-gnu -msse3 -march=bonnell -std=c++11 -g -DCNN_TEST '
-
 
 sse_conv = '''
 {indent}w = _mm_set_ps({w3}f, {w2}f, {w1}f, {w0}f);
@@ -81,25 +81,6 @@ sse_leaky = '''
 {indent}_mm_store_ps((float*)&x{prev_layer}[{i}][{j}][{k}], x);
 '''
 
-classify_yuv_patch = '''
-\n
-void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBrightness)
-{{
-\tASSERT(patch.size() == 16);
-
-\tfor(size_t x=0; x < patch.size(); x++) {{
-\t\tfor(size_t y=0; y < patch.size(); y++) {{
-\t\t\t// TODO: check
-\t\t\tfloat value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) - static_cast<float>(meanBrightness);
-\t\t\tin_step[y][x][0] = value;
-\t\t}}
-\t}}
-
-\tcnn(in_step);
-\t//std::cout << "scores[0]=" << scores[0] << " scores[1]=" << scores[1] << " scores[2]=" << scores[2] << std::endl;
-}}
-'''
-
 
 def write_naoth_header_file(c_inf, class_name, output_folder="."):
     fp = open(os.path.join(output_folder, class_name + ".h"), "w")
@@ -139,7 +120,7 @@ def softmax(x, c_inf):
     assert (x.shape[2] == 2)  # Sorry, only for depth 2 at the moment
     x_out = np.zeros(x.shape).astype('float32')
     writeC(c_inf, '\tstatic float x{:d}[{:d}][{:d}][{:d}] = {{}};\n'.format(c_inf["layer"], x.shape[0], x.shape[1],
-                                                                             x.shape[2]))
+                                                                            x.shape[2]))
 
     for i in range(size(x, 1)):
         for j in range(size(x, 2)):
@@ -170,10 +151,10 @@ def softmax(x, c_inf):
             ))
             writeC(c_inf, '\tx{:d}[{:d}][{:d}][0] /= sum{:d};\n'
                           '\tx{:d}[{:d}][{:d}][1] /= sum{:d};\n'.format(
-                           c_inf["layer"], i, j,
-                           c_inf["layer"],
-                           c_inf["layer"], i, j,
-                           c_inf["layer"]))
+                c_inf["layer"], i, j,
+                c_inf["layer"],
+                c_inf["layer"], i, j,
+                c_inf["layer"]))
 
     return x_out, c_inf
 
@@ -183,8 +164,23 @@ def writeC(c_inf, str):
         c_inf["f"].write(str)
 
 
-def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", conv_mode=0):
+def mean_substraction(im, mean, unroll_level, c_inf):
+    if unroll_level > 0:
+        writeC(c_inf, '\tfor (int xi = 0; xi < {:d}; xi += 1)\n\t{{\n'.format(size(im, 1)))
+        _xi = 'xi'
+    for xi in range(size(im, 1)):
+        if unroll_level == 0:
+            _xi = xi
+        for xj in range(size(im, 2)):
+            for xk in range(size(im, 3)):
+                if unroll_level == 0 or xi == 0:
+                    writeC(c_inf, '\tin_step[{xi}][{:d}][{:d}] = (in_step[{xi}][{:d}][{:d}] - {:f}f);\n'.format(
+                        xj, xk, xj, xk, mean, xi=_xi))
+    if unroll_level > 0:
+        writeC(c_inf, '\t}\n')
 
+
+def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", conv_mode=0):
     class_name = os.path.splitext(os.path.basename(code_path))[0]
     print("Creating class", class_name)
 
@@ -202,19 +198,8 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
         c_inf["z_dim"] = 1
 
     c_inf = write_header(c_inf, arch, class_name)
-    if unroll_level > 0:
-        writeC(c_inf, '\tfor (int xi = 0; xi < {:d}; xi += 1)\n\t{{\n'.format(size(im, 1)))
-        _xi = 'xi'
-    for xi in range(size(im, 1)):
-        if unroll_level == 0:
-            _xi = xi
-        for xj in range(size(im, 2)):
-            for xk in range(size(im, 3)):
-                if unroll_level == 0 or xi == 0:
-                    writeC(c_inf, '\tx0[{xi}][{:d}][{:d}] = (x0[{xi}][{:d}][{:d}] - {:f}f);\n'.format(
-                        xj, xk, xj, xk, imdb["mean"], xi=_xi))
-    if unroll_level > 0:
-        writeC(c_inf, '\t}\n')
+
+    # handle model layers
     model = load_model(model_path)
     _x = imdb["images"][test_im_index]
     last_activation = 'none'
@@ -274,15 +259,14 @@ def keras_compile(imdb, model_path, code_path, unroll_level=0, arch="general", c
     #       at this point we should know the size of the output layer
     write_naoth_header_file(c_inf, class_name, output_folder)
 
-    write_footer(c_inf, _x, class_name=class_name)
+    write_footer(c_inf, _x, class_name, im, imdb["mean"], unroll_level)
 
 
 def dense(_x, weights, b, c_inf, relu):
-
     x_dim = _x.shape[0]
     y_dim = _x.shape[1]
     channels = _x.shape[2]
-    
+
     output_dim = weights.shape[1]
 
     i = 0
@@ -312,15 +296,16 @@ def dense(_x, weights, b, c_inf, relu):
         if relu:
             c_inf["f"].write(';\n\n')
             c_inf["f"].write("\t// Apply ReLU\n")
-            c_inf["f"].write("\tscores[{:d}] = scores[{:d}] > 0.0f ? scores[{:d}] : 0.0f;\n".format(output, output, output))
+            c_inf["f"].write(
+                "\tscores[{:d}] = scores[{:d}] > 0.0f ? scores[{:d}] : 0.0f;\n".format(output, output, output))
 
         c_inf["f"].write('\n')
-        
+
     c_inf["layer"] = c_inf["layer"] + 1
     c_inf["output_dim"] = output_dim
-    
+
     x_out = np.zeros(shape=(output_dim, 1, 1)).astype('float32')
-    
+
     return x_out, c_inf
 
 
@@ -350,11 +335,38 @@ def write_header(c_inf, arch, class_name):
     return c_inf
 
 
-def write_footer(c_inf, _x, class_name):
+def write_predict_function(im, mean, unroll_level, c_inf, class_name):
+    normalization_part = '''
+\n
+void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBrightness)
+{{
+\tASSERT(patch.size() == 16);
+
+\tfor(size_t x=0; x < patch.size(); x++) {{
+\t\tfor(size_t y=0; y < patch.size(); y++) {{
+\t\t\t// TODO: check
+\t\t\t// .pixel.y accesses the brightness channel of the pixel
+\t\t\tfloat value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) - static_cast<float>(meanBrightness);
+\t\t\tin_step[y][x][0] = value;
+\t\t}}
+\t}}
+'''
+
+    cnn_part = '''
+\tcnn(in_step);
+}\n
+'''
+    c_inf["f"].write(normalization_part.format(class_name))
+    # subtract mean from input patch
+    mean_substraction(im, mean, unroll_level, c_inf)
+    c_inf["f"].write(cnn_part)
+
+
+def write_footer(c_inf, _x, class_name, im, mean, unroll_level, ):
     if c_inf["f"] is not None:
         c_inf["f"].write('}\n')
-
-        c_inf["f"].write(classify_yuv_patch.format(class_name))
+        # TODO build a switch for compiling a test predict function for timing tests
+        write_predict_function(im, mean, unroll_level, c_inf, class_name)
         c_inf["f"].write('double {}::getRadius() {{return scores[0];}}\n'.format(class_name))
         c_inf["f"].write('Vector2d {}::getCenter() {{return Vector2d(scores[1], scores[2]);}}\n'.format(class_name))
         c_inf["f"].write('double {}::getBallConfidence() {{return scores[3];}}\n'.format(class_name))

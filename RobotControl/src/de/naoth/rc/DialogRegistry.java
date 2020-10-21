@@ -38,11 +38,13 @@ public class DialogRegistry {
     private final CControl control;
     private final MainMenuBar menuBar;
     private final DialogFastAccessPanel accessPanel;
+    private final HelpDialog help;
 
-    public DialogRegistry(JFrame parent, MainMenuBar menuBar, DialogFastAccessPanel accessPanel) {
+    public DialogRegistry(JFrame parent, MainMenuBar menuBar, DialogFastAccessPanel accessPanel, HelpDialog help) {
         this.parent = parent;
         this.menuBar = menuBar;
         this.accessPanel = accessPanel;
+        this.help = help;
 
         this.control = new CControl(this.parent);
         control.setTheme(ThemeMap.KEY_ECLIPSE_THEME);
@@ -84,7 +86,7 @@ public class DialogRegistry {
             CButton helpButton = new CButton(null, new javax.swing.ImageIcon(getClass().getResource("/toolbarButtonGraphics/general/Help16.gif")));
             helpButton.setAccelerator(KeyStroke.getKeyStroke("control pressed H"));
             helpButton.setTooltip("show help for " + dialog.getDisplayName());
-            helpButton.addActionListener(new HelpAction(DialogRegistry.this.parent, dialog.getDisplayName()));
+            helpButton.addActionListener((e) -> { help.showHelp(dialog.getDisplayName()); });
             this.addAction(helpButton);
             
             this.addCDockableStateListener(new CDockableAdapter() {
@@ -168,27 +170,7 @@ public class DialogRegistry {
     protected void disposeOnClose() {
         this.control.destroy();
     }
-    
-    public class HelpAction implements ActionListener {
 
-        private HelpDialog dlg = null;
-
-        @Override
-        public void actionPerformed(ActionEvent ae) {
-            this.dlg.showHelp();
-        }
-
-        public HelpAction(Frame parent, String title) {
-            java.net.URL res = getClass().getResource("/de/naoth/rc/dialogs/help/" + title + ".html");
-            this.dlg = new HelpDialog(parent, true, res);
-            this.dlg.setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
-            this.dlg.setTitle(title);
-            this.dlg.setModal(false);
-            this.dlg.setAlwaysOnTop(true);
-            this.dlg.setVisible(false);
-        }
-    }//end HelpAction
-    
     public void setDefaultLayout() {
         // create a default perspective
         CControlPerspective perspectives = control.getPerspectives();
