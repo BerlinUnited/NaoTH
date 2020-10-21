@@ -170,16 +170,23 @@ public:
       return false;
     }
 
-    // Hack: fill the pose
-    pose.translation.x = -pos.z;
-    pose.translation.y = -pos.x;
-    pose.translation.z =  pos.y;
+    // OptiTrack coordinate system is using the NUE convention, i.e., 
+    // X-North, Y-Up, Z-East.
+    // In the NaoTH Lab the OptiTrack System is calibrated such, that
+    //   Z - pointing towards opponent goal
+    //   X - pointing left when facing opponent goal, 
+    //   Y - is pointing up
+    // Convert from the NaoTH-Optitrac Setup to Global RoboCup Coordinate System.
+    pose.translation.x = pos.z;
+    pose.translation.y = pos.x;
+    pose.translation.z = pos.y;
     
     // converto to mm
     pose.translation *= 1000.0;
 
     // calculate the rotation
-    pose.rotation = rotationFromQuaternion(qx, qy, qz, qw);
+    // NOTE: convert to Global RoboCup Coordinate System as described above.
+    pose.rotation = rotationFromQuaternion(qz, qx, qy, qw);
 
     return true;
   }// end parseTrackable
