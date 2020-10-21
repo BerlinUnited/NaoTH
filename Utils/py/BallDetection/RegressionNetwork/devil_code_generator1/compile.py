@@ -29,10 +29,12 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.code_path is None:
-        # load the model to get the name
-        model = load_model(args.model_path)
-        print(model.name)
-        args.code_path = CPP_DIR / (model.name + ".cpp")
+        args.code_path = CPP_DIR / (Path(args.model_path).stem + ".cpp")
+
+    # print status
+    print(f"imgdb_path = {args.imgdb_path}")
+    print(f"model_path = {args.model_path}")
+    print(f"code_path  = {args.code_path}")
 
     images = {}
     with open(args.imgdb_path, "rb") as f:
