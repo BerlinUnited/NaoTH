@@ -21,6 +21,9 @@
 #define VALID_NETNAT_VERSION(v) \
   VERSION_NUMBER(v[0], v[1], v[2], v[3]) <= VERSION_NUMBER(NETNAT_VERSION_0, NETNAT_VERSION_1, NETNAT_VERSION_2, NETNAT_VERSION_3)
 
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+  
 class OptiTrackParser
 {
 public:
@@ -195,8 +198,23 @@ public:
     // calculate the rotation
     // NOTE: convert to Global RoboCup Coordinate System as described above.
     pose.rotation = rotationFromQuaternionDirectly(qw, qz, qx, qy);
-    
 
+    /*
+    // the following code was used to test the conversion function rotationFromQuaternionDirectly
+    Eigen::Matrix3d R;
+    R << pose.rotation[0][0], pose.rotation[1][0], pose.rotation[2][0],
+         pose.rotation[0][1], pose.rotation[1][1], pose.rotation[2][1],
+         pose.rotation[0][2], pose.rotation[1][2], pose.rotation[2][2];
+    
+    // test for correctness
+    Eigen::Quaterniond q = Eigen::Quaterniond(R).normalized();
+    
+    std::cout << R.determinant() << std::endl;
+    // compare
+    std::cout << qw << "\t" << qz << "\t" << qx << "\t" << qy << std::endl;
+    std::cout << -q.w() << "\t" << -q.x() << "\t" << -q.y() << "\t" << -q.z() << std::endl << std::endl;
+    */
+    
     return true;
   }// end parseTrackable
 
