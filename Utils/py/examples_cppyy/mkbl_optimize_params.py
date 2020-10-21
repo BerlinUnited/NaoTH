@@ -213,12 +213,14 @@ if __name__ == "__main__":
     start_vel_y = [0]
     fakeballs += [x for x in itertools.product(start_loc_x, start_loc_y, start_vel_x, start_vel_y)]
 
+    # fakeballs = [(500, -3000, 0, 500), (1500, -3000, 0, 500), (4500, 0, -500, 0)]
+
     # TODO: radial trajectories?
 
     # Note: diag([x0, x0]) = Q
     x0 = [15, 500]
 
     result = so.least_squares(f, x0, method='lm', args=(fakeballs, fbd, mkbl, dpl, command, arguments))
-    # result = so.least_squares(f, x0)
+    # result = so.least_squares(f, x0, args=(fakeballs, fbd, mkbl, dpl, command, arguments))
 
     print(result)
