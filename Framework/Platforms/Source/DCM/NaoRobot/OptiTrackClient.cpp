@@ -87,7 +87,7 @@ void OptiTrackClient::get(GPSData& data, const std::string& name)
     if(it != optiTrackParser.getTrackables().end()) {
       const Pose3D& p = it->second;
 
-      Pose2D pose(-p.rotation.getYAngle(), p.translation.x, p.translation.y);
+      Pose2D pose(p.rotation.getZAngle(), p.translation.x, p.translation.y);
       data.data = Pose3D::embedXY(pose);
     }
   }

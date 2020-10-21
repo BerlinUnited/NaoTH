@@ -74,6 +74,14 @@ public:
     return RotationMatrix(yaw, pitch, roll);
   }
 
+  RotationMatrix rotationFromQuaternionDirectly(float w, float x, float y, float z) const {
+    // take from: https://en.wikipezia.org/wiki/Quaternions_anz_spatial_rotation#Conversion_to_anz_from_the_matrix_representation
+    Vector3d c0(w*w + x*x - y*y - z*z, 2*x*y + 2*w*z,         2*x*z - 2*w*y);
+    Vector3d c1(2*x*y - 2*w*z,         w*w - x*x + y*y - z*z, 2*y*z - 2*w*x);
+    Vector3d c2(2*x*z + 2*w*y,         2*y*z - 2*w*x,         w*w - x*x - y*y + z*z);
+    return RotationMatrix(c0, c1, c2);
+  }
+
 
   std::string requestDefinitions() {
     std::stringstream ss;
@@ -170,23 +178,23 @@ public:
       return false;
     }
 
-    // OptiTrack coordinate system is using the NUE convention, i.e., 
+    // OptiTrack coordinate system is using the NUE convention, i.e.,
     // X-North, Y-Up, Z-East.
     // In the NaoTH Lab the OptiTrack System is calibrated such, that
     //   Z - pointing towards opponent goal
-    //   X - pointing left when facing opponent goal, 
+    //   X - pointing left when facing opponent goal,
     //   Y - is pointing up
     // Convert from the NaoTH-Optitrac Setup to Global RoboCup Coordinate System.
     pose.translation.x = pos.z;
     pose.translation.y = pos.x;
     pose.translation.z = pos.y;
-    
+
     // converto to mm
     pose.translation *= 1000.0;
 
     // calculate the rotation
     // NOTE: convert to Global RoboCup Coordinate System as described above.
-    pose.rotation = rotationFromQuaternion(qz, qx, qy, qw);
+    pose.rotation = rotationFromQuaternionDirectly(qw, qz, qx, qy);
 
     return true;
   }// end parseTrackable
