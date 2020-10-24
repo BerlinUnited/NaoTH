@@ -167,6 +167,10 @@ public:
     //Version 2.6 and later
     unsigned short trackingValid = 0;
     ss.read((char*)&trackingValid, 2);
+    
+    if (!trackingValid) {
+      return false;
+    }
         
     // accept only valid transformations
     if( !std::isfinite(pos.x) || !std::isfinite(pos.y) || !std::isfinite(pos.z) ||
@@ -221,6 +225,7 @@ public:
   
   std::string parseMessage(const std::string& msg) 
   {  
+    //trackablesTimeStamp = NaoTime::getNaoTimeInMilliSeconds();
     std::stringstream ss(msg);
 
     unsigned short messageID(0);
@@ -417,6 +422,7 @@ private:
 
   std::map<std::string,Pose3D> trackables;
   std::map<unsigned int,std::string> trackable_names;
+  unsigned int trackablesTimeStamp;
 
   uint8_t natNetStreamVersion[4];
 };
