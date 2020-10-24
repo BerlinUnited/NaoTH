@@ -25,6 +25,7 @@
 #include "Representations/Infrastructure/FieldInfo.h"
 
 //common representations
+#include "Representations/Infrastructure/OptiTrackData.h"
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Perception/CameraMatrix.h"
@@ -37,6 +38,7 @@
 #include "Tools/Debug/DebugRequest.h"
 #include <Tools/Debug/DebugImageDrawings.h>
 #include <Tools/Debug/DebugDrawings.h>
+#include <Tools/Debug/DebugDrawings3D.h>
 
 
 //module declaration section
@@ -45,6 +47,7 @@ BEGIN_DECLARE_MODULE(PerceptionsVisualizer)
   PROVIDE(DebugImageDrawings)
   PROVIDE(DebugImageDrawingsTop)
   PROVIDE(DebugDrawings)
+  PROVIDE(DebugDrawings3D)
 
   REQUIRE(ArtificialHorizon)
   REQUIRE(ArtificialHorizonTop)
@@ -73,6 +76,7 @@ BEGIN_DECLARE_MODULE(PerceptionsVisualizer)
   REQUIRE(ImageTop)
 
   REQUIRE(PlayersPercept)
+  REQUIRE(OptiTrackData)
   
   REQUIRE(FieldInfo)
   REQUIRE(RobotPose)

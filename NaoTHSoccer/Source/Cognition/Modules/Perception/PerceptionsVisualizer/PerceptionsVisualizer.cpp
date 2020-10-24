@@ -45,6 +45,8 @@ PerceptionsVisualizer::PerceptionsVisualizer()
 
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:field_info", "", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:field:robot_pose", "", false);
+
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualizer:3d:optitrack", "", false);
 }
 
 void PerceptionsVisualizer::execute()
@@ -64,6 +66,16 @@ void PerceptionsVisualizer::execute()
   DEBUG_REQUEST("PerceptionsVisualizer:field:robot_pose",
     FIELD_DRAWING_CONTEXT;
     getRobotPose().draw(getDebugDrawings());
+  );
+
+  DEBUG_REQUEST("PerceptionsVisualizer:3d:optitrack",
+    for(auto m: getOptiTrackData().trackables) {
+      const Pose3D& p = m.second;
+      BOX_3D(ColorClasses::red, 100, 100, 100, p);
+      LINE_3D(ColorClasses::red, p.translation, p.translation + p.rotation[0]*300);
+      LINE_3D(ColorClasses::green, p.translation, p.translation + p.rotation[1]*300);
+      LINE_3D(ColorClasses::blue, p.translation, p.translation + p.rotation[2]*300);
+    }
   );
 }
 
