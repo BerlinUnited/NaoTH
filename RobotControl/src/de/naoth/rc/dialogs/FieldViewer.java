@@ -53,6 +53,7 @@ import de.naoth.rc.core.messages.CommonTypes.DoubleVector3;
 import de.naoth.rc.core.messages.CommonTypes.IntVector2;
 import de.naoth.rc.core.messages.CommonTypes.LineSegment;
 import de.naoth.rc.core.messages.FrameworkRepresentations.RobotInfo;
+import de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData;
 import de.naoth.rc.core.messages.Messages.PlotItem;
 import de.naoth.rc.core.messages.Messages.Plots;
 import de.naoth.rc.core.messages.Representations;
@@ -75,7 +76,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -945,6 +948,51 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
             }
         }
         
+        Map<String, Pose3D> trackables = new HashMap<>();
+        private void drawOptiTrackRobot(BlackBoard b, DrawingCollection dc) {
+            // parse the explicitely avaliable RobotPose if avaliable
+            LogDataFrame data = b.get("OptiTrackData");
+            
+            if(data != null) {
+                try {
+                    OptiTrackData o = OptiTrackData.parseFrom(data.getData());
+                    
+                    // parse all trackables by name
+                    for(int i = 0; i < o.getTrackablesCount(); ++i) 
+                    {
+                        OptiTrackData.TrackableItem trackable = o.getTrackables(i);
+
+                        Pose3D pose3 = new Pose3D(
+                            toVector(trackable.getPose().getTranslation()),
+                            new Matrix3D(
+                                toVector(trackable.getPose().getRotation(0)),
+                                toVector(trackable.getPose().getRotation(1)),
+                                toVector(trackable.getPose().getRotation(2))
+                            )
+                        );
+
+                        trackables.put(trackable.getName(), pose3);
+                    }
+                    
+                    if(trackables.containsKey("head") && trackables.containsKey("body")) 
+                    {
+                        Pose3D body = trackables.get("body");
+                        Pose3D head = trackables.get("head");
+                        
+                        dc.add(new Pen(1.0f, Color.yellow));
+                        
+                        double bodyRotation = body.rotation.getZAngle();
+                        dc.add(new Robot(body.translation.x, body.translation.y, bodyRotation, head.rotation.getZAngle() - bodyRotation));
+                    } else {
+                        System.err.println("trackable 'head' or 'body' is missing");
+                    }
+                    
+                } catch(InvalidProtocolBufferException ex) {
+                    Logger.getLogger(FieldViewer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        
         @Override
         public void newFrame(BlackBoard b) 
         {
@@ -957,6 +1005,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
             drawShortLines(b, dc);
             drawBallPercept(b, dc);
             drawRobot(b, dc);
+            drawOptiTrackRobot(b, dc);
             drawFieldPercept(b, dc);
             drawings.add(this.getClass(), dc);
         }
