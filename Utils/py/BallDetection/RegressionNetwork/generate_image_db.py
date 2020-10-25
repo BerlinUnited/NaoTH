@@ -8,6 +8,7 @@
     NaoTH Members can use the team credentials found in the accounts wiki page
 """
 import argparse
+import os
 import pickle
 from pathlib import Path
 
@@ -17,6 +18,8 @@ DATA_DIR = Path(Path(__file__).parent.absolute() / "data").resolve()
 
 
 def download_from_kaggle():
+    os.environ['KAGGLE_USERNAME'] = 'hubnao'
+    os.environ['KAGGLE_KEY'] = '734455fc37853e123ff4a2a7a7f2ed2a'
     from kaggle.api.kaggle_api_extended import KaggleApi
     api = KaggleApi()
     api.authenticate()
