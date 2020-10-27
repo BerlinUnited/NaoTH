@@ -17,25 +17,27 @@ def adjust_gamma(image, gamma=1.0):
                       for i in np.arange(0, 256)]).astype("uint8")
     return cv2.LUT(image, table)
 
-
 def get_blender_patch_paths(path):
-    patch_folders = glob(path + "/**/*_patch_bw") + glob(path + "/*_patch_bw")
-    mask_folders = glob(path + "/**/*_patch_mask") + glob(path + "/*_patch_mask")
-
+    patch_folders = glob(path + "/**/ball_patch_bw")
+    patch_noball_folders = glob(path + "/**/noball_patch_bw")
+    patch_folders += patch_noball_folders
+    mask_folders = glob(path + "/**/ball_patch_mask")
+    mask_noball_folders = glob(path + "/**/noball_patch_mask")
+    mask_folders += mask_noball_folders
     return zip(patch_folders, mask_folders)
 
 
 def load_blender_images(path, res):
     db = []
-    print("Loading images...")
+    print(f"Loading images from {path} ...")
     for patch_folder, mask_folder in get_blender_patch_paths(path):
         print("patch_folder: ", patch_folder)
-        print("mask_folders: ", mask_folder)
+        print("mask_folder: ", mask_folder)
 
         patch_images = list(Path(patch_folder).glob('**/*.png'))
         for patch_image in patch_images:
             relativ_patch_path = relpath(str(patch_image), path)
-            print("P: ", relativ_patch_path)
+           # print("P: ", relativ_patch_path)
             img = cv2.imread(str(patch_image), cv2.IMREAD_GRAYSCALE)
             img = cv2.resize(img, (res["x"], res["y"]))
 
@@ -106,7 +108,7 @@ def load_blender_images(path, res):
     x = x.reshape(*x.shape, 1)
 
     print("Loading finished")
-    print("images: " + str(len(x)))
+    print("Number of images: " + str(len(x)))
     return x, y, mean, p
 
 
@@ -200,15 +202,27 @@ def load_image_from_csv(path, db_balls, db_noballs, res):
                         db_noballs.append((adjust_gamma(img, g).astype(float) / 255.0, target, p))
 
 
-def load_images_from_csv_files(root_path, res, limit_noballs):
+# if ignore_blender == True: data from the folder "blender" is ignored
+# if ignore_blender == False: data from the folder "blender" is processed
+def load_images_from_csv_files(root_path, res, limit_noballs, ignore_blender=True):
     print("Looking for csv files in: ", root_path)
     db_ball_list = []
     db_noball_list = []
 
     # find csv files
     all_paths = list(Path(root_path).absolute().glob('**/*.csv'))
-    print(all_paths)
+    blender_path = list(Path(root_path).absolute().glob('**/blender.csv'))
 
+    if blender_path[0] not in all_paths:
+        print("Blender folder was not found.")
+    else:
+        if ignore_blender:
+            # remove blender files from list of all other files process these files
+            all_paths.remove(blender_path[0])
+
+    print("ALL PATHS", all_paths)
+
+    # process files
     for path in all_paths:
         load_image_from_csv(str(path), db_ball_list, db_noball_list, res)
 
@@ -235,5 +249,3 @@ def load_images_from_csv_files(root_path, res, limit_noballs):
     return input_images, targets, mean, file_paths
 
 
-if __name__ == "__main__":
-    load_blender_images("../data/TK-03/blender/", res={"x": 16, "y": 16})

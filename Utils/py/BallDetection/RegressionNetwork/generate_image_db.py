@@ -12,7 +12,7 @@ import os
 import pickle
 from pathlib import Path
 
-from utility_functions.loader import load_images_from_csv_files
+from utility_functions.loader import load_images_from_csv_files, load_blender_images
 
 DATA_DIR = Path(Path(__file__).parent.absolute() / "data").resolve()
 
@@ -44,6 +44,8 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--download', default=False, help='download dataset from kaggle')
     parser.add_argument('-b', '--database-path', dest='imgdb_path', default=str(DATA_DIR / 'imgdb.pkl'),
                         help='Path to the image database to write. Default is imgdb.pkl in the data folder.')
+    parser.add_argument('-c', '--database-blender-path', dest='imgdb_blender_path', default=str(DATA_DIR / 'imgdb_blender.pkl'),
+                        help='Path to the image database to write. Default is imgdb_blender_new.pkl in the data folder.')
     parser.add_argument('-i', '--image-folder', dest='img_path', default=str(DATA_DIR / 'TK-03'),
                         help='Path to the CSV file(s) with region annotation.')
     parser.add_argument('-r', '--resolution', dest='res',
@@ -60,11 +62,27 @@ if __name__ == '__main__':
     if args.res is not None:
         res = {"x": int(args.res), "y": int(args.res)}
 
-    x, y, mean, p = load_images_from_csv_files(args.img_path, res, args.limit_noball)
-    # TODO load the blender images via load_blender_images. Currently that would load them twice since a csv file also exists
-    with open(args.imgdb_path, "wb") as f:
-        # save image db
-        pickle.dump(mean, f)
-        pickle.dump(x, f)
-        pickle.dump(y, f)
-        pickle.dump(p, f)
+    # set default parameter for processing of images from blender folder (image + mask)
+    IMG_MASK = True
+    IMG = False
+
+    if IMG:
+        # if ignore_blender is set to false
+        # images (with masks) from blender folder are processed together with other images
+        # and images with masks are ignored if ignore_blender is set to true
+        x, y, mean, p = load_images_from_csv_files(args.img_path, res, args.limit_noball, ignore_blender=False)
+        with open(args.imgdb_path, "wb") as f:
+            # save image db
+            pickle.dump(mean, f)
+            pickle.dump(x, f)
+            pickle.dump(y, f)
+            pickle.dump(p, f)
+
+    if IMG_MASK:
+        path = args.img_path + "/blender"
+        x_b, y_b, mean_b, p_b = load_blender_images(path, res)
+        with open(args.imgdb_blender_path, "wb") as f:
+            pickle.dump(mean_b, f)
+            pickle.dump(x_b, f)
+            pickle.dump(y_b, f)
+            pickle.dump(p_b, f)
