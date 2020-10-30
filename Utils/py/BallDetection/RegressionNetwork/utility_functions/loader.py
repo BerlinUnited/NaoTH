@@ -17,6 +17,7 @@ def adjust_gamma(image, gamma=1.0):
                       for i in np.arange(0, 256)]).astype("uint8")
     return cv2.LUT(image, table)
 
+
 def get_blender_patch_paths(path):
     patch_folders = glob(path + "/**/ball_patch_bw")
     patch_noball_folders = glob(path + "/**/noball_patch_bw")
@@ -31,13 +32,13 @@ def load_blender_images(path, res):
     db = []
     print(f"Loading images from {path} ...")
     for patch_folder, mask_folder in get_blender_patch_paths(path):
-        print("patch_folder: ", patch_folder)
-        print("mask_folder: ", mask_folder)
+        # print("patch_folder: ", patch_folder)
+        # print("mask_folder: ", mask_folder)
 
         patch_images = list(Path(patch_folder).glob('**/*.png'))
         for patch_image in patch_images:
             relativ_patch_path = relpath(str(patch_image), path)
-           # print("P: ", relativ_patch_path)
+            # print("P: ", relativ_patch_path)
             img = cv2.imread(str(patch_image), cv2.IMREAD_GRAYSCALE)
             img = cv2.resize(img, (res["x"], res["y"]))
 
@@ -48,7 +49,6 @@ def load_blender_images(path, res):
                 img_mask = cv2.imread(str(f_mask), cv2.IMREAD_GRAYSCALE)
                 img_mask = cv2.resize(img_mask, (res["x"], res["y"]))
             elif "noball" in mask_folder:
-                # TODO check if the substring search actually works
                 img_mask = np.zeros((res["x"], res["y"])).astype(np.uint8)
             else:
                 raise "Missing mask file for " + str(patch_image)
@@ -77,13 +77,15 @@ def load_blender_images(path, res):
                 x = x / res["x"]
                 y = y / res["y"]
                 radius = radius / max(res["x"], res["y"])
+                confidence = 1.0
 
             else:
                 radius = 0
                 x = 0.5
                 y = 0.5
+                confidence = 0.0
 
-            y = np.array([radius, x, y])
+            y = np.array([radius, x, y, confidence])
 
             # cv2.namedWindow('image',cv2.WINDOW_NORMAL)
             # cv2.resizeWindow('image', 600,600)
@@ -102,19 +104,17 @@ def load_blender_images(path, res):
 
     random.shuffle(db)
     x, y, p = list(map(np.array, list(zip(*db))))
-    mean = np.mean(x)
-    x -= mean
 
     x = x.reshape(*x.shape, 1)
 
     print("Loading finished")
     print("Number of images: " + str(len(x)))
-    return x, y, mean, p
+    return x, y, p
 
 
 def load_image_from_csv(path, db_balls, db_noballs, res):
     print("Loading images from " + path + " ...")
-    
+
     # parse csv file
     with open(path, newline='') as csvfile:
         reader = csv.DictReader(csvfile)
@@ -145,11 +145,6 @@ def load_image_from_csv(path, db_balls, db_noballs, res):
                         x_coord = int(shape["cx"])
                         y_coord = int(shape["cy"])
                         radius = int(shape["r"])
-
-                        if x_coord < 0 or y_coord < 0 or x_coord > res["x"] or y_coord > res["y"]:
-                            print("Ignoring annotation because center is outside image")
-                            # TODO: i dont think this makes sense
-                            continue
 
                         # draw detected circle into debug image
                         # cv2.circle(debug_img, (int(x),int(y)), int(radius), color=(0,0,255))
@@ -204,21 +199,13 @@ def load_image_from_csv(path, db_balls, db_noballs, res):
 
 # if ignore_blender == True: data from the folder "blender" is ignored
 # if ignore_blender == False: data from the folder "blender" is processed
-def load_images_from_csv_files(root_path, res, limit_noballs, ignore_blender=True):
+def load_images_from_csv_files(root_path, res, limit_noballs):
     print("Looking for csv files in: ", root_path)
     db_ball_list = []
     db_noball_list = []
 
     # find csv files
     all_paths = list(Path(root_path).absolute().glob('**/*.csv'))
-    blender_path = list(Path(root_path).absolute().glob('**/blender.csv'))
-
-    if blender_path[0] not in all_paths:
-        print("Blender folder was not found.")
-    else:
-        if ignore_blender:
-            # remove blender files from list of all other files process these files
-            all_paths.remove(blender_path[0])
 
     print("ALL PATHS", all_paths)
 
@@ -235,8 +222,8 @@ def load_images_from_csv_files(root_path, res, limit_noballs, ignore_blender=Tru
     random.shuffle(db)
 
     input_images, targets, file_paths = list(map(np.array, list(zip(*db))))
-    mean = np.mean(input_images)
-    input_images -= mean
+    # mean = np.mean(input_images)
+    # input_images -= mean
 
     # expand dimensions of the input images for use with tensorflow
     input_images = input_images.reshape(*input_images.shape, 1)
@@ -246,6 +233,12 @@ def load_images_from_csv_files(root_path, res, limit_noballs, ignore_blender=Tru
     print("number of images: " + str(len(input_images)) + " balls images: " + str(len(db_ball_list)) +
           " no ball images: " + str(len(db_noball_list)))
 
-    return input_images, targets, mean, file_paths
+    return input_images, targets, file_paths
 
 
+def calculate_mean(images):
+    return np.mean(images)
+
+
+def subtract_mean(images, mean):
+    return images - mean
