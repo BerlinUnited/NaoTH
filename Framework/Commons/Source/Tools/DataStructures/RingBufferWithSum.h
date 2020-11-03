@@ -80,7 +80,7 @@ template <class C, int n> class RingBufferWithSum
     {
       // Return 0 if buffer is empty
       if (0==numberOfEntries) return C();
-      C temp[numberOfEntries];
+      C temp[n];
       memcpy(temp,buffer,numberOfEntries * sizeof(C));
       int mid = (int)(numberOfEntries/2);
       std::nth_element(temp,temp+mid,temp+numberOfEntries);
