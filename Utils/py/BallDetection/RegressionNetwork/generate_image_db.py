@@ -39,6 +39,14 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
+def store_output(mean, x, y, p):
+    with open(args.imgdb_path, "wb") as f:
+        pickle.dump(mean, f)
+        pickle.dump(x, f)
+        pickle.dump(y, f)
+        pickle.dump(p, f)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate the image database for training etc. '
                                                  'using a folder with 0, 1 etc. subfolders with png images.')
@@ -64,30 +72,18 @@ if __name__ == '__main__':
         res = {"x": int(args.res), "y": int(args.res)}
 
     if args.natural and not args.synthetic:
-        # if ignore_blender is set to false
-        # images (with masks) from blender folder are processed together with other images
-        # and images with masks are ignored if ignore_blender is set to true
+
         x, y, p = load_images_from_csv_files(args.img_path, res, args.limit_noball)
         mean = calculate_mean(x)
         x = subtract_mean(x, mean)
-
-        with open(args.imgdb_path, "wb") as f:
-            # save image db
-            pickle.dump(mean, f)
-            pickle.dump(x, f)
-            pickle.dump(y, f)
-            pickle.dump(p, f)
+        store_output(mean, x, y, p)
 
     if args.synthetic and not args.natural:
         path = args.img_path + "/blender"
         x_b, y_b, p_b = load_blender_images(path, res)
         mean_b = calculate_mean(x_b)
         x_b = subtract_mean(x_b, mean_b)
-        with open(args.imgdb_path, "wb") as f:
-            pickle.dump(mean_b, f)
-            pickle.dump(x_b, f)
-            pickle.dump(y_b, f)
-            pickle.dump(p_b, f)
+        store_output(mean_b, x_b, y_b, p_b)
 
     if args.synthetic and args.natural:
         x, y, p = load_images_from_csv_files(args.img_path, res, args.limit_noball)
@@ -101,8 +97,5 @@ if __name__ == '__main__':
         P = np.concatenate((p, p_b))
 
         mean = calculate_mean(X)
-        with open(args.imgdb_path, "wb") as f:
-            pickle.dump(mean, f)
-            pickle.dump(X, f)
-            pickle.dump(Y, f)
-            pickle.dump(P, f)
+        store_output(mean, X, Y, P)
+
