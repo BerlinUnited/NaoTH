@@ -11,8 +11,8 @@
  *
  */
 
-#ifndef _DCMData_H_
-#define _DCMData_H_
+#ifndef DCMData_H
+#define DCMData_H
 
 #include "Representations/Infrastructure/JointData.h"
 #include "Representations/Infrastructure/UltraSoundData.h"
@@ -69,4 +69,4 @@ public:
 
 }// end namespace naoth
 
-#endif // _DCMData_H_
+#endif // DCMData_H
