@@ -7,7 +7,7 @@
 or alternatively you can install the package in your home folder:  
 - `pip3 install --user -e naoth`
 
-### Running the tests
+## Running the tests
 
 - Execute run_tests.py:
 
