@@ -1,3 +1,12 @@
+# TODO get version of package that is build
+# TODO get list of released versions
+
+# Option 1
+	# TODO if version exists delete this version
+	# TODO then upload
+# Option 2:
+	# dont upload
+
 echo "build naoth package"
 python3 setup.py sdist bdist_wheel
 
