@@ -17,19 +17,11 @@ done
 
 echo "package_exists" $package_exists
 
-
-
-
-# Option 1
-	# TODO if version exists delete this version
-	# TODO then upload
-# Option 2:
-	# dont upload
-
+if [ -z $package_exists ]; then
 echo "build naoth package"
-python3 setup.py sdist bdist_wheel
+  python3 setup.py sdist bdist_wheel
 
-# $PYPI_TOKEN comes from gitlab settings
+  # $PYPI_TOKEN comes from gitlab settings
 
 cat <<EOF >> .pypirc
 [distutils]
@@ -44,3 +36,14 @@ EOF
 
 echo "publish naoth package to Gitlab pypi"
 python3 -m twine upload --repository gitlab dist/* --config-file .pypirc
+else
+  echo "package already exists"
+fi
+
+
+# Option 1
+	# TODO if version exists delete this version
+	# TODO then upload
+# Option 2:
+	# dont upload
+
