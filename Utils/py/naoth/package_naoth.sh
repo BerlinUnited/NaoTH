@@ -1,5 +1,24 @@
-# TODO get version of package that is build
-# TODO get list of released versions
+# get version of package that is build
+current_version=$(cat VERSION)
+
+# get list of released versions
+version_array=($(curl --header "PRIVATE-TOKEN: s8YpzmfyyH_FVK9o4FVq" "https://scm.cms.hu-berlin.de/api/v4/projects/3384/packages?package_type=pypi&package_name=naoth" | jq '.[] | .version'))
+
+for version in "${version_array[@]}"
+do
+   :
+   # strip quotes
+  version=$(echo "$version" | tr -d '"')
+  if [[ $version == $current_version ]]; then
+    package_exists=true
+  fi
+done
+
+
+echo "package_exists" $package_exists
+
+
+
 
 # Option 1
 	# TODO if version exists delete this version
