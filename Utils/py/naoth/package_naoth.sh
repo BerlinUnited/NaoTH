@@ -14,8 +14,7 @@ do
   fi
 done
 
-
-echo "package_exists" $package_exists
+# TODO maybe better if when version exists delete this version and then upload
 
 if [ -z $package_exists ]; then
 echo "build naoth package"
@@ -37,13 +36,5 @@ EOF
 echo "publish naoth package to Gitlab pypi"
 python3 -m twine upload --repository gitlab dist/* --config-file .pypirc
 else
-  echo "package already exists"
+  echo "package already exists - no new upload will be done"
 fi
-
-
-# Option 1
-	# TODO if version exists delete this version
-	# TODO then upload
-# Option 2:
-	# dont upload
-
