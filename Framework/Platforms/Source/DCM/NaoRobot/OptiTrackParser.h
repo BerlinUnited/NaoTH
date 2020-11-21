@@ -77,7 +77,7 @@ public:
     return RotationMatrix(yaw, pitch, roll);
   }
 
-  RotationMatrix rotationFromQuaternionDirectly(float w, float x, float y, float z) const {
+  RotationMatrix rotationFromQuaternionDirectly(double w, double x, double y, double z) const {
     // taken from: https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation#Conversion_to_and_from_the_matrix_representation
     Vector3d c0(w*w + x*x - y*y - z*z, 2*x*y + 2*w*z,         2*x*z - 2*w*y);
     Vector3d c1(2*x*y - 2*w*z,         w*w - x*x + y*y - z*z, 2*y*z + 2*w*x);
