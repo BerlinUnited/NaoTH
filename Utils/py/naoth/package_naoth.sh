@@ -1,26 +1,18 @@
 # get version of package that is build
 current_version=$(cat VERSION)
+package_id=$(curl --header "PRIVATE-TOKEN: s8YpzmfyyH_FVK9o4FVq" "https://scm.cms.hu-berlin.de/api/v4/projects/3384/packages?package_type=pypi&package_name=naoth" | jq -r ".[] | select(.version == \"$current_version\").id")
 
-# get list of released versions
-version_array=($(curl --header "PRIVATE-TOKEN: s8YpzmfyyH_FVK9o4FVq" "https://scm.cms.hu-berlin.de/api/v4/projects/3384/packages?package_type=pypi&package_name=naoth" | jq '.[] | .version'))
+#
+if [ -n $package_id ]; then
+  echo "try to delete existing pypi package in gitlab"
+  delete_status=$(curl --request DELETE --header "PRIVATE-TOKEN: s8YpzmfyyH_FVK9o4FVq" "https://scm.cms.hu-berlin.de/api/v4/projects/3384/registry/repositories/$package_id")
+  echo $delete_status
+fi
 
-for version in "${version_array[@]}"
-do
-   :
-   # strip quotes
-  version=$(echo "$version" | tr -d '"')
-  if [[ $version == $current_version ]]; then
-    package_exists=true
-  fi
-done
-
-# TODO maybe better if when version exists delete this version and then upload
-
-if [ -z $package_exists ]; then
 echo "build naoth package"
-  python3 setup.py sdist bdist_wheel
+python3 setup.py sdist bdist_wheel
 
-  # $PYPI_TOKEN comes from gitlab settings
+# $PYPI_TOKEN comes from gitlab settings
 
 cat <<EOF >> .pypirc
 [distutils]
@@ -35,6 +27,3 @@ EOF
 
 echo "publish naoth package to Gitlab pypi"
 python3 -m twine upload --repository gitlab dist/* --config-file .pypirc
-else
-  echo "package already exists - no new upload will be done"
-fi
