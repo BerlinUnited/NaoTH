@@ -5,7 +5,7 @@ package_id=$(curl --header "PRIVATE-TOKEN: s8YpzmfyyH_FVK9o4FVq" "https://scm.cm
 #
 if [ -n $package_id ]; then
   echo "try to delete existing pypi package in gitlab"
-  delete_status=$(curl --request DELETE --header "PRIVATE-TOKEN: s8YpzmfyyH_FVK9o4FVq" "https://gitlab.example.com/api/v4/projects/3384/packages/$package_id")
+  delete_status=$(curl --request DELETE --header "PRIVATE-TOKEN: s8YpzmfyyH_FVK9o4FVq" "https://scm.cms.hu-berlin.de/api/v4/projects/3384/packages/$package_id")
   echo $delete_status
 fi
 
