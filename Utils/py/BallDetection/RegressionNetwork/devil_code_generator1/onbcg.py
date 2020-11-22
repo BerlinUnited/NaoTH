@@ -347,10 +347,10 @@ void {}::predict(float in_step[16][16][1], double meanBrightnessOffset)
 {{
 \tfor(size_t x=0; x < 16; x++) {{
 \t\tfor(size_t y=0; y < 16; y++) {{
-\t\t\tin_step[y][x][0] = in_step[y][x][0] - static_cast<float>(meanBrightnessOffset);
+\t\t\tin_step[y][x][0] = (in_step[y][x][0] / 255.0f) - %ff - static_cast<float>(meanBrightnessOffset);
 \t\t}}
 \t}}
-'''
+''' % self.dataset_mean
         cnn_part = '''
 \tcnn(in_step);
 }\n
@@ -415,8 +415,7 @@ void {}::predict(float in_step[16][16][1], double meanBrightnessOffset)
             print("\t\tfor (size_t x = 0; x < 16; x++) {", file=fp)
             print("\t\t\tfor (size_t y = 0; y < 16; y++) {", file=fp)
             print("\t\t\t\tint random_int = distribution(generator);", file=fp)
-            print("\t\t\t\t//normalize values between 0 and 1", file=fp)
-            print("\t\t\t\ttest_images[0][y][x][0] = random_int / 255.0f;", file=fp)
+            print("\t\t\t\ttest_images[0][y][x][0] = random_int", file=fp)
             print("\t\t\t}", file=fp)
             print("\t\t}", file=fp)
             print("\t}", file=fp)
