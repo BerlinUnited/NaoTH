@@ -72,30 +72,28 @@ def frame_filter(frame):
 
 
 def analyze_log(logfile):
-    behavior_parser = Parser()
-    behavior_parser.register("MotorJointData", "JointData")
+    parser = Parser()
 
-    log = LogReader(logfile, behavior_parser)
+    with LogReader(logfile, parser) as log:
+        frame_list = list()
+        for frame in log.read():
+            a = frame_filter(frame)
+            frame_list.append(a)
 
-    frame_list = list()
-    for frame in log:
-        a = frame_filter(frame)
-        frame_list.append(a)
+        sensor_joint_pos_r_knee_pitch = list()
+        motor_joint_pos_r_knee_pitch = list()
 
-    sensor_joint_pos_r_knee_pitch = list()
-    motor_joint_pos_r_knee_pitch = list()
+        for frame in frame_list:
+            motor_joint_pos_r_knee_pitch.append(frame[2].position[16])
+            sensor_joint_pos_r_knee_pitch.append(frame[3].jointData.position[16])
 
-    for frame in frame_list:
-        motor_joint_pos_r_knee_pitch.append(frame[2].position[16])
-        sensor_joint_pos_r_knee_pitch.append(frame[3].jointData.position[16])
-
-    fig, axs = plt.subplots(2)
-    fig.suptitle('RKneePitch Position over time')
-    axs[0].plot(sensor_joint_pos_r_knee_pitch)
-    axs[0].set_title("Sensorjoint Data")
-    axs[1].plot(motor_joint_pos_r_knee_pitch)
-    axs[1].set_title("Motorjoint Data")
-    plt.show()
+        fig, axs = plt.subplots(2, constrained_layout=True)
+        fig.suptitle('RKneePitch Position over time')
+        axs[0].plot(sensor_joint_pos_r_knee_pitch)
+        axs[0].set_title("Sensorjoint Data")
+        axs[1].plot(motor_joint_pos_r_knee_pitch)
+        axs[1].set_title("Motorjoint Data")
+        plt.show()
 
 
 if __name__ == '__main__':

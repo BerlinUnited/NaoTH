@@ -37,16 +37,9 @@ JointID = {
 }
 
 
-def frame_filter(idx, frame):
-    """
-    HACK The index of the log frame is given as argument because the BehaviorParser now does not work if the
-    BehaviorStateComplete is in more than one frame. For manually recorded logs this can happen.
-    """
+def frame_filter(behavior_parser, frame):
     try:
-        if "BehaviorStateComplete" in frame.messages and idx == 0:
-            (m, o, s) = frame["BehaviorStateComplete"]
-        else:
-            (m, o, s) = frame["BehaviorStateSparse"]
+        behavior_frame = behavior_parser.parse(frame['BehaviorStateSparse'])
 
         return [frame["FrameInfo"].time / 1000.0,
                 frame["BodyStatus"].currentSum[JointID["RHipYawPitch"]],
@@ -61,7 +54,7 @@ def frame_filter(idx, frame):
                 frame["BodyStatus"].currentSum[JointID["LAnklePitch"]],
                 frame["BodyStatus"].currentSum[JointID["RAnkleRoll"]],
                 frame["BodyStatus"].currentSum[JointID["LAnkleRoll"]],
-                s.values["executed_motion.type"]
+                behavior_frame.input_symbols['executed_motion.type'].value
                 ]
 
     except KeyError:
@@ -69,13 +62,14 @@ def frame_filter(idx, frame):
 
 
 def analyze_log(logfile):
-    behavior_parser = BehaviorParser()
-    log = LogReader(logfile, behavior_parser)
-
     frame_list = list()
-    for idx, frame in enumerate(log):
-        a = frame_filter(idx, frame)
-        frame_list.append(a)
+
+    with LogReader(logfile) as log:
+        behavior_parser = BehaviorParser()
+        for frame in log.read():
+            if 'BehaviorStateComplete' in frame:
+                behavior_parser.initialize(frame['BehaviorStateComplete'])
+            frame_list.append(frame_filter(behavior_parser, frame))
 
     # make an numpy array
     data = np.array(frame_list)
@@ -100,13 +94,13 @@ def analyze_log(logfile):
     if list(stand):
         time_stand = sum(stand[:, 0])
         consumption_r_hip_yaw_pitch_stand = sum(stand[:, 1])
-        print("time standing: {} seconds with {} current used at RHipYawPitch".format(time_stand,
-                                                                                      consumption_r_hip_yaw_pitch_stand))
+        print("time standing: {} seconds with {} current used at RHipYawPitch"
+              .format(time_stand, consumption_r_hip_yaw_pitch_stand))
     if list(walk):
         time_walk = sum(walk[:, 0])
         consumption_r_hip_yaw_pitch_walk = sum(walk[:, 1])
-        print("time walking : {} seconds with {} current used  at RHipYawPitch".format(time_walk,
-                                                                                       consumption_r_hip_yaw_pitch_walk))
+        print("time walking : {} seconds with {} current used at RHipYawPitch"
+              .format(time_walk, consumption_r_hip_yaw_pitch_walk))
 
 
 if __name__ == '__main__':

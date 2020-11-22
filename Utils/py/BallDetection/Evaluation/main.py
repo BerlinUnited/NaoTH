@@ -9,7 +9,8 @@ import numpy as np
 import time
 import ctypes
 import xml.etree.ElementTree as ET
-
+from cppyy import addressof, bind_object
+import cppyy.ll
 
 def get_naoth_dir():
     script_path = os.path.abspath(__file__)
@@ -181,6 +182,11 @@ class Evaluator:
         cppyy.add_include_path(os.path.join(
             toolchain_dir, "toolchain_native/extern/include"))
 
+        cppyy.add_include_path(os.path.join(
+            toolchain_dir, "toolchain_native/extern/include/glib-2.0"))
+        cppyy.add_include_path(os.path.join(
+            toolchain_dir, "toolchain_native/extern/lib/glib-2.0/include"))
+
         # include platform
         cppyy.include(os.path.join(
             naoth_dir, "Framework/Commons/Source/PlatformInterface/Platform.h"))
@@ -192,6 +198,7 @@ class Evaluator:
         os.chdir(os.path.join(naoth_dir, "NaoTHSoccer"))
 
         # start dummy simulator
+        cppyy.gbl.g_type_init()
         self.sim = cppyy.gbl.DummySimulator(False, False, 5401)
         cppyy.gbl.naoth.Platform.getInstance().init(self.sim)
 
@@ -225,6 +232,10 @@ class Evaluator:
         self.ball_detector = self.moduleManager.getModule(
             "CNNBallDetector").getModule()
 
+        cppyy.cppdef("""
+               Pose3D* my_convert(CameraMatrix* m) { return static_cast<Pose3D*>(m); }
+                """)
+
         # initialize the score object
         self.scores = dict()
 
@@ -254,7 +265,6 @@ class Evaluator:
 
         # move image into representation
         imageRepresentation.copyImageDataYUV422(p_data, yuv422.size)
-
         # set camera matrix
         if frame.bottom:
             camMatrix = self.ball_detector.getRequire().at("CameraMatrix")
@@ -263,16 +273,16 @@ class Evaluator:
         else:
             camMatrix = self.ball_detector.getRequire().at("CameraMatrixTop")
             # invalidate other camera matrix
-            self.ball_detector.getRequire().at("CameraMatrix").valid = False
+            self.ball_detector.getRequire().at("CameraMatrix").valid = False      
 
-        camMatrix.valid = True
-        camMatrix.translation.x = frame.cam_matrix_translation[0]
-        camMatrix.translation.y = frame.cam_matrix_translation[1]
-        camMatrix.translation.z = frame.cam_matrix_translation[2]
+        p = cppyy.gbl.my_convert(camMatrix)
+        p.translation.x = frame.cam_matrix_translation[0]
+        p.translation.y = frame.cam_matrix_translation[1]
+        p.translation.z = frame.cam_matrix_translation[2]
 
         for c in range(0, 3):
             for r in range(0, 3):
-                camMatrix.rotation.c[c][r] = frame.cam_matrix_rotation[r, c]
+                p.rotation.c[c][r] = frame.cam_matrix_rotation[r, c]
 
     def evaluate_detection(self, frame: Frame, eval_functions, debug_threshold=None):
         import cv2
@@ -370,9 +380,9 @@ def best_ball_patch_intersection(frame, patches):
     best = 0.0
     for p in patches:
         for b in frame.balls:
-            iuo = b.intersection_over_union(p.min.x, p.min.y, p.max.x, p.max.y)
-            if iuo > best:
-                best = iuo
+            iou = b.intersection_over_union(p.min.x, p.min.y, p.max.x, p.max.y)
+            if iou > best:
+                best = iou
     return best
 
 
@@ -394,8 +404,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     evaluator = Evaluator()
-    evaluator.execute(
-        args.directory, {"Best IOU per image": best_ball_patch_intersection}, debug_threshold=args.debug_threshold, transform_to_squares=args.squares)
+    with cppyy.ll.signals_as_exception():
+        evaluator.execute(
+            args.directory, {"Best IOU per image": best_ball_patch_intersection}, debug_threshold=args.debug_threshold, transform_to_squares=args.squares)
+    
     if args.csv is not None:
         print("Exporting results to ", args.csv)
         evaluator.export_results(args.csv)

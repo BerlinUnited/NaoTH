@@ -79,7 +79,6 @@ private:
     FrameInfo    lastFrameInfo;
 
 private:
-    // TODO set capacity of filter for improved performance
     typedef std::vector<BallHypothesis, Eigen::aligned_allocator<BallHypothesis> > Filters;
     Filters filter;
     Filters::const_iterator bestModel;
@@ -91,7 +90,7 @@ private:
 private:
     void updateByPerceptsCool();
     void updateByPerceptsNormal();
-    void updateByPerceptsNaive(CameraInfo::CameraID camera);
+    void updateByPerceptsGreedy(CameraInfo::CameraID camera);
 
     void applyOdometryOnFilterState(ExtendedKalmanFilter4d& filter);
 
@@ -141,10 +140,10 @@ private:
 
             PARAMETER_REGISTER(association.use_normal) = false;
             PARAMETER_REGISTER(association.use_cool)   = false;
-            PARAMETER_REGISTER(association.use_naive)  = true;
+            PARAMETER_REGISTER(association.use_greedy)  = true;
 
-            PARAMETER_REGISTER(area95Threshold_radius.factor) = 1;
-            PARAMETER_REGISTER(area95Threshold_radius.offset) = 125;
+            PARAMETER_REGISTER(area95Threshold_radius.factor) = std::sqrt(2) * 1;
+            PARAMETER_REGISTER(area95Threshold_radius.offset) = std::sqrt(2) * 125;
 
             PARAMETER_REGISTER(use_covariance_based_selection) = true;
 
@@ -177,7 +176,7 @@ private:
         struct {
             bool use_normal;
             bool use_cool;
-            bool use_naive;
+            bool use_greedy;
         } association;
 
         struct {

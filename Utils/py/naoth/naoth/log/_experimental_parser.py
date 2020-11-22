@@ -1,10 +1,9 @@
-import logging as _logging
 import inspect as _inspect
 import enum as _enum
 import re as _re
 
 from .. import pb as _pb
-from ._xabsl import XABSLOption, XABSLAction
+from ._experimental_xabsl import XABSLOption, XABSLAction
 
 
 class Parser:
@@ -26,6 +25,12 @@ class Parser:
                     self.protobuf_classes[_c[0]] = _c[1]
 
         self.name_to_type = {}
+
+        # register representations that are not present in the protobuf messages
+        self.register("ImageTop", "Image")
+        self.register("CameraMatrixTop", "CameraMatrix")
+        self.register("MotorJointData", "JointData")
+        self.register("ScanLineEdgelPerceptTop", "ScanLineEdgelPercept")
 
     def register(self, name: str, _type: str):
         """
@@ -65,6 +70,7 @@ class SymbolParser:
         self.boolean_id_to_name = {boolean.id: boolean.name for boolean in symbol_list.boolean}
 
         self.enum_id_to_type = {enum.id: enum_types[enum.typeId] for enum in symbol_list.enumerated}
+        self.enum_id_to_name = {enum.id: enum.name for enum in symbol_list.enumerated}
 
     def parse_symbols(self, symbol_list):
         for decimal in symbol_list.decimal:
@@ -75,7 +81,8 @@ class SymbolParser:
 
         for enum in symbol_list.enumerated:
             enum_type = self.enum_id_to_type[enum.id]
-            yield enum_type.__name__, enum_type(enum.value)
+            instance_name = self.enum_id_to_name[enum.id]
+            yield instance_name, enum_type(enum.value)
 
 
 class BehaviorFrame:
@@ -100,10 +107,13 @@ class BehaviorParser:
         """
         self.agents = []
 
+        # These fields are set in the initialize function
         self.enum_types = None
         self._input_symbol_parser = None
         self._output_symbol_parser = None
         self._options_complete = None
+
+        self.is_initialized = False
 
         if behavior_state is not None:
             self.initialize(behavior_state)
@@ -129,6 +139,8 @@ class BehaviorParser:
         self._input_symbol_parser = SymbolParser(behavior_state.inputSymbolList, self.enum_types)
         self._output_symbol_parser = SymbolParser(behavior_state.outputSymbolList, self.enum_types)
 
+        self.is_initialized = True
+
     @staticmethod
     def _parse_xabsl_enum(xabsl_enum):
         """
@@ -148,7 +160,7 @@ class BehaviorParser:
 
         return _enum.Enum(xabsl_enum.name, [(convert_enum_value(elem.name), elem.value) for elem in xabsl_enum.elements])
 
-    def _parse_options(self, option_sparse):
+    def _parse_actions(self, option_sparse):
         if _pb.Messages_pb2.XABSLActionSparse.ActionType.Name(option_sparse.type) == 'Option':
 
             option_complete = self._options_complete[option_sparse.option.id]
@@ -171,36 +183,39 @@ class BehaviorParser:
                     type = self.enum_types[parameter.enumTypeId]
                     parsed_option.parameters[parameter.name] = type(next(enums))
                 else:
-                    raise ValueError(f'Parameter type {parameter.type} not implemented')
+                    raise NotImplementedError(f'Parameter type {parameter.type} not implemented')
 
             for sub_action in option_sparse.option.activeSubActions:
-                action, name, parsed_sub_action = self._parse_options(sub_action)
+                action, name, parsed_sub_action = self._parse_actions(sub_action)
                 if action == XABSLAction.XABSLOption:
                     parsed_option.sub_options[name] = parsed_sub_action
                 elif action == XABSLAction.XABSLSymbol:
                     parsed_option.symbols[name] = parsed_sub_action
                 else:
-                    raise ValueError(f'Action {action} not implemented.')
+                    raise NotImplementedError(f'Action {action} not implemented.')
 
             return XABSLAction.XABSLOption, option_complete.name, parsed_option
 
-        elif _pb.Messages_pb2.XABSLActionSparse.ActionType.Name(option_sparse.type) == 'SymbolAssignement':
+        elif _pb.Messages_pb2.XABSLActionSparse.ActionType.Name(option_sparse.type) == 'SymbolAssignment':
             symbol = option_sparse.symbol
 
-            if _pb.Messages_pb2.XABSLActionSparse.SymbolType.Name(symbol.type) == 'Decimal':
+            if _pb.Messages_pb2.XABSLSymbol.SymbolType.Name(symbol.type) == 'Decimal':
                 name = self._output_symbol_parser.decimal_id_to_name[symbol.id]
                 value = symbol.decimalValue
-            elif _pb.Messages_pb2.XABSLActionSparse.SymbolType.Name(symbol.type) == 'Boolean':
+            elif _pb.Messages_pb2.XABSLSymbol.SymbolType.Name(symbol.type) == 'Boolean':
                 name = self._output_symbol_parser.boolean_id_to_name[symbol.id]
                 value = symbol.boolValue
-            elif _pb.Messages_pb2.XABSLActionSparse.SymbolType.Name(symbol.type) == 'Enum':
+            elif _pb.Messages_pb2.XABSLSymbol.SymbolType.Name(symbol.type) == 'Enum':
                 enum_type = self._output_symbol_parser.enum_id_to_type[symbol.id]
                 name = enum_type.__name__
                 value = enum_type(symbol.enumValue)
             else:
-                raise ValueError(f'XABSLSymbol type {_pb.Messages_pb2.XABSLActionSparse.SymbolType.Name(symbol.type)} not implemented.')
+                raise NotImplementedError(f'XABSLSymbol type {_pb.Messages_pb2.XABSLSymbol.SymbolType.Name(symbol.type)} not implemented.')
 
             return XABSLAction.XABSLSymbol, name, value
+
+        else:
+            raise NotImplementedError(f'ActionType {_pb.Messages_pb2.XABSLActionSparse.ActionType.Name(option_sparse.type)} not implemented')
 
     def parse(self, behavior_state):
         """
@@ -208,9 +223,8 @@ class BehaviorParser:
         :param behavior_state: BehaviorStateSparse
         :returns parsed BehaviorFrame
         """
-        # check if initialized
-        if self._options_complete is None:
-            raise Exception('BehaviorParser must be initialized with "BehaviorStateComplete" (call initialize).')
+        if not self.is_initialized:
+            raise ValueError('BehaviorParser must be initialized with "BehaviorStateComplete" (call initialize).')
 
         behavior_frame = BehaviorFrame()
 
@@ -222,7 +236,8 @@ class BehaviorParser:
 
         # process active options
         for option_sparse in behavior_state.activeRootActions:
-            action, name, option = self._parse_options(option_sparse)
+            action, name, option = self._parse_actions(option_sparse)
+            # roots must be options
             assert action == XABSLAction.XABSLOption
             behavior_frame.root_options[name] = option
 
