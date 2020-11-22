@@ -244,7 +244,7 @@ class NaoTHCompiler:
                   file=fp)
             print("\tvoid predict(float p[16][16][1], double meanBrightness);", file=fp)
             print("", file=fp)
-            #print("\tfloat in_step[{:d}][{:d}][{:d}];".format(self.c_inf["x_dim"], self.c_inf["y_dim"],
+            # print("\tfloat in_step[{:d}][{:d}][{:d}];".format(self.c_inf["x_dim"], self.c_inf["y_dim"],
             #                                                  self.c_inf["z_dim"]), file=fp)
             print("\tfloat scores[{:d}];".format(self.c_inf["output_dim"]), file=fp)
             print("", file=fp)
@@ -288,7 +288,7 @@ class NaoTHCompiler:
             self.write_cpp('\t}\n')
 
     def write_predict_function(self, class_name):
-        normalization_part = '''
+        normalization_part = """
 void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBrightnessOffset)
 {{
 \tASSERT(patch.size() == 16);
@@ -297,19 +297,21 @@ void {}::predict(const BallCandidates::PatchYUVClassified& patch, double meanBri
 \t\tfor(size_t y=0; y < patch.size(); y++) {{
 \t\t\t// TODO: check
 \t\t\t// .pixel.y accesses the brightness channel of the pixel
-\t\t\tfloat value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) - static_cast<float>(meanBrightnessOffset);
+\t\t\t// subtract the mean brightness calculated on the dataset and the offset from the module parameters
+\t\t\tfloat value = (static_cast<float>((patch.data[patch.size() * x + y].pixel.y)) / 255.0f) - %ff - static_cast<float>(meanBrightnessOffset);
 \t\t\tin_step[y][x][0] = value;
 \t\t}}
 \t}}
-'''
+""" % self.dataset_mean
 
+# TODO how to write strings
         cnn_part = '''
 \tcnn(in_step);
 }\n
 '''
         self.c_inf["f"].write(normalization_part.format(class_name))
         # subtract mean from input patch
-        self.mean_subtraction()
+        # self.mean_subtraction()
         self.c_inf["f"].write(cnn_part)
 
     def write_footer(self, _x, class_name):
@@ -431,7 +433,9 @@ void {}::predict(float in_step[16][16][1], double meanBrightnessOffset)
             print("\t}", file=fp)
             print("\tauto stop = std::chrono::high_resolution_clock::now();", file=fp)
             print("\tauto duration = std::chrono::duration_cast<std::chrono::milliseconds> (stop - start);", file=fp)
-            print("\tstd::cout << \"Time for inference on \" << num_images << \" images is \" << duration.count() << \"ms\" << std::endl; ", file=fp)
+            print(
+                "\tstd::cout << \"Time for inference on \" << num_images << \" images is \" << duration.count() << \"ms\" << std::endl; ",
+                file=fp)
             print("}", file=fp)
 
     def convolution(self, x, w, b, stride, pad):
