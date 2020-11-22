@@ -6,7 +6,7 @@ from pathlib import Path
 
 from tensorflow.keras.models import load_model
 
-from onbcg import keras_compile  # can throw linter warnings, but python3 can handle imports like that
+from onbcg import NaoTHCompiler  # can throw linter warnings, but python3 can handle imports like that
 
 DATA_DIR = Path(Path(__file__).parent.parent.absolute() / "data").resolve()
 CPP_DIR = Path(Path(__file__).parent.parent.absolute() / "cpp").resolve()
@@ -22,22 +22,33 @@ if __name__ == '__main__':
                         default=str(MODEL_DIR / 'fy1500_conf.h5'))
     parser.add_argument('-c', '--code-path', dest='code_path',
                         help='Store the c code in this file. Default is <model_name>.c.')
+    parser.add_argument('-d', '--debug', dest='debug_flag', default=False,
+                        help='Switch between debug and production build. The debug build creates code for running the '
+                             'network multiple times and provides timing measurements in the end.')
 
     args = parser.parse_args()
 
     if args.code_path is None:
         args.code_path = CPP_DIR / (Path(args.model_path).stem + ".cpp")
 
-    # print status 
+    # print status
     print(f"imgdb_path = {args.imgdb_path}")
     print(f"model_path = {args.model_path}")
     print(f"code_path  = {args.code_path}")
 
-    # load the database
     images = {}
     with open(args.imgdb_path, "rb") as f:
         images["mean"] = pickle.load(f)
         images["images"] = pickle.load(f)
         images["y"] = pickle.load(f)
 
-    keras_compile(images, args.model_path, args.code_path, unroll_level=2, arch="sse3")
+    if args.debug_flag:
+        print("debug")
+        debug_compiler = NaoTHCompiler(images, args.model_path, args.code_path, unroll_level=2, arch="sse3",
+                                       test_binary=True)
+        debug_compiler.keras_compile()
+    else:
+        compiler = NaoTHCompiler(images, args.model_path, args.code_path, unroll_level=2, arch="sse3", test_binary=False)
+        compiler.keras_compile()
+
+
