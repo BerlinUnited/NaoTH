@@ -15,8 +15,8 @@ void UltraSoundReceiveData::init()
   rawdata = INVALIDE;
   for(int i = 0; i < numOfUSEcho; i++)
   {
-    dataLeft[i] = 0.0;
-    dataRight[i] = 0.0;
+    dataLeft[i] = INVALIDE;
+    dataRight[i] = INVALIDE;
   }
 }
 
