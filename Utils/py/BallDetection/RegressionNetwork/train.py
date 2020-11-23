@@ -78,7 +78,6 @@ def main(raw_args=None, model=None):
         x = pickle.load(f)  # x are all input images
         y = pickle.load(f)  # y are the trainings target: [x,y,r,1]
 
-
     # define the Keras network
     if args.proceed is not None and args.proceed is True:
         print("Loading model " + args.model_path)
