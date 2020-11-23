@@ -159,6 +159,8 @@ def load_image_from_csv(path, db_balls, db_noballs, res):
                         # we only support circles
                         print("WARNING: Annotation is not a circle")
                         continue
+                elif atts["type"] == "smudge":
+                    continue
                 else:
                     # unknown type
                     print("Unknown type \"" + atts["type"] + "\" in file " + f)
