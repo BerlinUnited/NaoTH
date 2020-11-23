@@ -8,15 +8,15 @@ using namespace naoth;
 
 // todo: change this to mm?
 const double UltraSoundReceiveData::MIN_DIST = 0.25 * 1000.0;
-const double UltraSoundReceiveData::INVALIDE = 2.55 * 1000.0;
+const double UltraSoundReceiveData::INVALID = 2.55 * 1000.0;
 
 void UltraSoundReceiveData::init()
 {
-  rawdata = INVALIDE;
+  rawdata = INVALID;
   for(int i = 0; i < numOfUSEcho; i++)
   {
-    dataLeft[i] = INVALIDE;
-    dataRight[i] = INVALIDE;
+    dataLeft[i] = INVALID;
+    dataRight[i] = INVALID;
   }
 }
 
