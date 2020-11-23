@@ -951,7 +951,7 @@ bool SimSparkController::updateSonar(const sexp_t* sexp)
 
         // fill remaining echoes
         for (; i < UltraSoundReceiveData::numOfUSEcho; ++i) {
-            data[i] = UltraSoundReceiveData::INVALIDE;
+            data[i] = UltraSoundReceiveData::INVALID;
         }
 
         // take the smallest value; the first echoes are the smallest
