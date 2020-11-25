@@ -954,6 +954,11 @@ bool SimSparkController::updateSonar(const sexp_t* sexp)
             data[i] = UltraSoundReceiveData::INVALID;
         }
 
+        // HACK: introduce some "noise" on the last echo, so that the
+        //       UltraSoundObstacleLocator recognizes the new data
+        data[UltraSoundReceiveData::numOfUSEcho - 1] +=
+                NaoTime::getNaoTimeInMilliSeconds() % 2 == 0 ? 0.01 : -0.01;
+
         // take the smallest value; the first echoes are the smallest
         theUSData.rawdata = std::min(theUSData.dataLeft[0], theUSData.dataRight[0]);
     } else {
