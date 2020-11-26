@@ -71,6 +71,10 @@ if __name__ == "__main__":
     cppyy.include(os.path.join(naoth_dir, "NaoTHSoccer/Source/Cognition/Cognition.h"))
     # using bind_object(addressof(cog), cppyy.gbl.naoth.ModuleManager) didn't work... why?
     mm = cppyy.gbl.getModuleManager(cog)
+    # enable required modules
+    mm.setModuleEnabled("MultiKalmanBallLocator", True)
+    mm.setModuleEnabled("FakeBallDetector", True)
+    mm.setModuleEnabled("FakeCameraMatrixFinder", True)
 
     # include header of modules which will be manipulated
     cppyy.include("Cognition/Modules/VisualCortex/FakeBallDetector/FakeBallDetector.h")
