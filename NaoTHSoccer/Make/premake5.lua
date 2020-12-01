@@ -176,6 +176,9 @@ workspace "NaoTHSoccer"
     -- for speed up: inline functions. "Auto" => "/Ob2", "Explicit" => "/Ob1"
     inlining ("Auto")
     
+    -- for speed up: "Off" => Program Database /Zi. "On" => Program Database foe Edit and Continue /ZI
+    editandcontinue "Off" 
+
     -- remove the nao platform if action is vs*
     removeplatforms { "Nao" }
     
