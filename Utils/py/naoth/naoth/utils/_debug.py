@@ -530,6 +530,15 @@ class AgentController(threading.Thread):
                 raw_data = await self._stream_reader.read(size)
                 if size > 0 and lost_connection(raw_data): continue
 
+                while len(raw_data) < size:
+                    new_data = await self._stream_reader.read(size - len(raw_data))
+                    if lost_connection(new_data):
+                        break
+                    raw_data += new_data
+
+                if not self._connected.is_set():
+                    continue
+
                 if cmd_id in self._cmd_m:
                     cmd, _id = self._cmd_m.pop(cmd_id)
                     if not cmd.cancelled():
