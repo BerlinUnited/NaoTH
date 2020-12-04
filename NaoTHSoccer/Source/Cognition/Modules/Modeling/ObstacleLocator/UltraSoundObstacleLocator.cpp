@@ -113,6 +113,8 @@ void UltraSoundObstacleLocator::drawObstacleModel()
 
 bool UltraSoundObstacleLocator::isNewDataAvaliable() const
 {
+  // NOTE: this can lead to unexpected/undesired behavior, if the sensor - for whatever reson -
+  //       returns the same data for some time!
   for(int i = 0; i < UltraSoundReceiveData::numOfUSEcho; i++) {
     if(getUltraSoundReceiveData().dataLeft[i] != lastValidUltraSoundReceiveData.dataLeft[i] ||
        getUltraSoundReceiveData().dataRight[i] != lastValidUltraSoundReceiveData.dataRight[i])
