@@ -69,7 +69,7 @@ public:
   {
   public:
 
-    Parameters() : ParameterList("KickDirectionSimulatorParams")
+    Parameters() : ParameterList("KickDirectionSimulator")
     {
       PARAMETER_REGISTER(sidekick_right.speed) = 750;
       PARAMETER_REGISTER(sidekick_right.speed_std) = 150;

@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
 from tools import action as a
 from tools import Simulation as Sim
-from naoth import math2d as m2d
+from naoth.math import *
 from tools import tools
 
 """
@@ -15,17 +15,17 @@ from tools import tools
 
 class State:
     def __init__(self):
-        self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(-2900, -2200)
+        self.pose = Pose2D()
+        self.pose.translation = Vector2(-2900, -2200)
         self.pose.rotation = math.radians(55)
 
-        self.ball_position = m2d.Vector2(100.0, 0.0)
+        self.ball_position = Vector2(100.0, 0.0)
 
         self.obstacle_list = ([])  # is in global coordinates
 
         self.potential_field_function = "influence_01"
 
-        self.own_robots = [m2d.Vector2(-2250, -1000)]
+        self.own_robots = [Vector2(-2250, -1000)]
         self.opp_robots = []
 
 
@@ -35,7 +35,9 @@ def draw_actions(actions_consequences, state, best_action):
 
     axes = plt.gca()
     axes.text(0, 0, best_action, fontsize=12)
-    axes.add_artist(Circle(xy=(state.pose.translation.x, state.pose.translation.y), radius=100, fill=False, edgecolor='white'))
+    axes.add_artist(
+        Circle(xy=(state.pose.translation.x, state.pose.translation.y), radius=100, fill=False,
+               edgecolor='white'))
     axes.text(0, 0, best_action, fontsize=12)
 
     # Add the other robots
@@ -60,6 +62,7 @@ def draw_actions(actions_consequences, state, best_action):
 
     plt.pause(0.0001)
 
+
 def simulation():
     pass
 
@@ -79,7 +82,8 @@ def main():
         # Simulate Consequences
         for action in action_list:
             single_consequence = a.ActionResults([])
-            actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state, 30))
+            actions_consequences.append(
+                Sim.simulate_consequences(action, single_consequence, state, 30))
 
         # actions_consequences is now a list of ActionResults
 

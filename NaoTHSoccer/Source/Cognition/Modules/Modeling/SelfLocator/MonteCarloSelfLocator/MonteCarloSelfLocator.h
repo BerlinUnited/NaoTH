@@ -30,7 +30,6 @@
 // situation
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/BodyState.h"
-#include "Representations/Modeling/SituationStatus.h"
 #include "Representations/Modeling/SituationPrior.h"
 
 // sensor percepts
@@ -77,7 +76,6 @@ BEGIN_DECLARE_MODULE(MonteCarloSelfLocator)
 
   REQUIRE(MotionStatus)
   REQUIRE(BodyState)
-  REQUIRE(SituationStatus)
   REQUIRE(SituationPrior)
 
   REQUIRE(GoalPercept)
@@ -137,6 +135,8 @@ private: // local types
       PARAMETER_REGISTER(motionNoise) = false;
       PARAMETER_REGISTER(motionNoiseDistance) = 5.0;
       PARAMETER_REGISTER(motionNoiseAngle) = 0.01;
+      PARAMETER_REGISTER(motionNoiseDistanceRelative) = 0.1;
+      PARAMETER_REGISTER(motionNoiseAngleRelative) = 0.02;
 
       PARAMETER_REGISTER(resampleSUS) = false;
       PARAMETER_REGISTER(resampleGT07) = true;
@@ -165,6 +165,7 @@ private: // local types
       
       // circle
       PARAMETER_REGISTER(sensorResetByMiddleCircle) = true; // LinePerceptAugmented
+      PARAMETER_REGISTER(sensorResetByMiddleCircleAngleDecisionDistance) = 1000;
       PARAMETER_REGISTER(updateByRansacCircle) = true;
       PARAMETER_REGISTER(sigmaDistanceCenterCircle) = 0.1;
       PARAMETER_REGISTER(sigmaAngleCenterCircle) = 0.1;
@@ -201,6 +202,8 @@ private: // local types
     bool motionNoise;
     double motionNoiseDistance;
     double motionNoiseAngle;
+    double motionNoiseDistanceRelative;
+    double motionNoiseAngleRelative;
 
     bool resampleSUS;
     bool resampleGT07;
@@ -230,6 +233,7 @@ private: // local types
     
     // cirlcle
     bool sensorResetByMiddleCircle;
+    double sensorResetByMiddleCircleAngleDecisionDistance;
     bool updateByRansacCircle;
     double sigmaDistanceCenterCircle;
     double sigmaAngleCenterCircle;

@@ -9,7 +9,7 @@ option go_to_ball_with_USOA
     {
       if (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400)
       {
-        if (vector.abs(x=ball.preview.x, y=ball.preview.y) < obstacle.ultrasound.distance)
+        if (vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) < obstacle.ultrasound.distance)
           goto approach_carefully;
         else if(obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance)
           goto avoid_left;
@@ -28,9 +28,9 @@ option go_to_ball_with_USOA
       motion.walk.coordinate = hip;
       motion.walk.style = fast;
       
-      motion.walk_speed.x = max(value0=(0.7*(ball.preview.x - @distance)), value1=0);
-      motion.walk_speed.y = ball.preview.y;
-      motion.walk_speed.rot = (vector.abs(x=ball.preview.x, y=ball.preview.y) > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0; 
+      motion.walk_speed.x = max(value0=(0.7*(ball.future.preview.x - @distance)), value1=0);
+      motion.walk_speed.y = ball.future.preview.y;
+      motion.walk_speed.rot = (vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) > 250) ? atan2(y = ball.future.preview.y, x = ball.future.preview.x) : 0; 
     }
   }
 
@@ -42,7 +42,7 @@ option go_to_ball_with_USOA
         stay;
       else if(obstacle.ultrasound.distance > 400)
         goto go;
-      else if (vector.abs(x=ball.preview.x, y=ball.preview.y) < obstacle.ultrasound.distance)
+      else if (vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) < obstacle.ultrasound.distance)
         goto approach_carefully;
       else if(obstacle.ultrasound.right.distance < obstacle.ultrasound.left.distance)
         goto avoid_right;
@@ -55,11 +55,11 @@ option go_to_ball_with_USOA
       
       motion.type = walk;
       motion.walk.coordinate = hip;
-      motion.walk.style = normal;
+      motion.walk.style = fast;
 
       motion.walk_speed.x = 0;
       motion.walk_speed.y = -100;
-      motion.walk_speed.rot = (vector.abs(x=ball.preview.x, y=ball.preview.y) > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
+      motion.walk_speed.rot = (vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) > 250) ? atan2(y = ball.future.preview.y, x = ball.future.preview.x) : 0;
 
       arm.control_mode = back;
     }
@@ -74,7 +74,7 @@ option go_to_ball_with_USOA
         stay;
       else if(obstacle.ultrasound.distance > 400)
         goto go;
-      else if (vector.abs(x=ball.preview.x, y=ball.preview.y) < obstacle.ultrasound.distance)
+      else if (vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) < obstacle.ultrasound.distance)
         goto approach_carefully;
       else if(obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance)
        goto avoid_left;
@@ -87,11 +87,11 @@ option go_to_ball_with_USOA
       
       motion.type = walk;
       motion.walk.coordinate = hip;
-      motion.walk.style = normal;
+      motion.walk.style = fast;
 
       motion.walk_speed.x = 0;
       motion.walk_speed.y = 100;
-      motion.walk_speed.rot = (vector.abs(x=ball.preview.x, y=ball.preview.y) > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
+      motion.walk_speed.rot = (vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) > 250) ? atan2(y = ball.future.preview.y, x = ball.future.preview.x) : 0;
 
       arm.control_mode = back;
     }
@@ -102,7 +102,7 @@ option go_to_ball_with_USOA
     decision{
       if (obstacle.ultrasound.distance > 400)
         goto go;
-      else if (vector.abs(x=ball.preview.x, y=ball.preview.y) > obstacle.ultrasound.distance)
+      else if (vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) > obstacle.ultrasound.distance)
       {
         if(obstacle.ultrasound.left.distance < obstacle.ultrasound.right.distance)
            goto avoid_left;
@@ -121,9 +121,9 @@ option go_to_ball_with_USOA
       motion.walk.coordinate = hip;
       motion.walk.style = stable;
 
-      motion.walk_speed.x = max(value0=(0.7*(ball.preview.x - @distance - ball.radius)), value1=0);
-      motion.walk_speed.y = ball.preview.y;
-      motion.walk_speed.rot = (vector.abs(x=ball.preview.x, y=ball.preview.y) > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
+      motion.walk_speed.x = max(value0=(0.7*(ball.future.preview.x - @distance - ball.radius)), value1=0);
+      motion.walk_speed.y = ball.future.preview.y;
+      motion.walk_speed.rot = (vector.abs(x=ball.future.preview.x, y=ball.future.preview.y) > 250) ? atan2(y = ball.future.preview.y, x = ball.future.preview.x) : 0;
     }
   }
 }

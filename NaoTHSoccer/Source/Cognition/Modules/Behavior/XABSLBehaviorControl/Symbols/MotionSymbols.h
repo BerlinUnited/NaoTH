@@ -51,10 +51,10 @@ public:
   }
 
   virtual ~MotionSymbols(){}
-  
+
   /** registers the symbols at an engine */
   void registerSymbols(xabsl::Engine& engine);
-  
+
   virtual void execute();
 
   void updateOutputSymbols();
@@ -101,11 +101,18 @@ private:
   static double getWalkSpeedY();
   static double getKickDirection();
 
+  static double getPlannedHipRot();
+
   static double getHeadPitchAngle();
   static double getHeadYawAngle();
 
   static double getlastComputedCollisionRight();
   static double getlastComputedCollisionLeft();
+
+  static void setHeadPositionX(double rot);
+  static double getHeadPositionX();
+  static void setHeadPositionY(double rot);
+  static double getHeadPositionY();
 
   // some local members
   struct HeadMotion

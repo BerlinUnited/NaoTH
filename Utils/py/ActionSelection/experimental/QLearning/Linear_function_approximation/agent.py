@@ -12,11 +12,11 @@ import pickle
 from state import State
 from world import *
 from actions import Actions
-from naoth.math2d import Vector2 as Vec
+from naoth.math import Vector2 as Vec
 from copy import copy
 
-
 game_field = Field()
+
 
 # TODO: Add rotation feature or something similar
 def features(position):
@@ -43,7 +43,8 @@ def features(position):
     if not game_field.in_field(position):
         return output
 
-    position = position + Vec(4500, 3000)  # for more intuitive calculation transpose the position vector
+    position = position + Vec(4500,
+                              3000)  # for more intuitive calculation transpose the position vector
 
     x_1 = int(position.x // distance_of_balls)  # potential ball candidates
 
@@ -53,10 +54,13 @@ def features(position):
 
     for i in [x_1 - 1, x_1, x_1 + 1]:
         for j in [y_1 - 1, y_1, y_1 + 1]:
-            center_ball = Vec(i*distance_of_balls, j*distance_of_balls)  # get potential ball center points
-            if (position - center_ball).abs() <= radius_of_balls:  # check distance of position to center point
+            center_ball = Vec(i * distance_of_balls,
+                              j * distance_of_balls)  # get potential ball center points
+            if (
+                    position - center_ball).abs() <= radius_of_balls:  # check distance of position to center point
                 if 0 <= i <= sub_div_x and 0 <= j <= sub_div_y:
-                    output[(i-1) * sub_div_y + (j-1)] = 1  # if position in field set feature = 1
+                    output[
+                        (i - 1) * sub_div_y + (j - 1)] = 1  # if position in field set feature = 1
 
                     # print "ball center: " + str(center_ball) + ", in ball: " \
                     #      + str(output[(i-1) * sub_div_y + (j-1)])
@@ -70,8 +74,8 @@ class Agent:
         self.gen_features = lambda position: gen_features(position)
         # gen_features has to generate an numpy array from a field position
         # -- the used features
-        #self.theta = np.zeros(self.gen_features(Vec(0, 0)).shape)
-        #self.theta = np.concatenate((self.theta, np.array([[1]])))
+        # self.theta = np.zeros(self.gen_features(Vec(0, 0)).shape)
+        # self.theta = np.concatenate((self.theta, np.array([[1]])))
         self.theta = 5 * np.random.random(self.gen_features(Vec(0, 0)).shape) - 2.5
 
         self.actions = Actions(add_noise=False)
@@ -79,16 +83,14 @@ class Agent:
         # important parameters
         self.epsilon = 0.1
         self.gamma = 0.95
-        self.stepsize = 0.01 # refers to alpha in the literature
-        self.alg_lambda = 0.95 # refers to lambda parameter
-
+        self.stepsize = 0.01  # refers to alpha in the literature
+        self.alg_lambda = 0.95  # refers to lambda parameter
 
     def reward(self, position):
         # TODO: can be deleted
         # calculate the expected reward
         # TODO: Add bias term
         return float(np.dot(self.gen_features(position).transpose(), self.theta))
-
 
     def run_sarsa(self, initial_state, action_evaluation):
         """
@@ -101,7 +103,7 @@ class Agent:
         :return: nothing, updated theta values
         """
         # initialize Theta and gradient E
-        #theta = self.theta
+        # theta = self.theta
         grad = np.zeros(self.theta.shape)
         # get actions
         action_list = self.actions.get_actions()
@@ -121,7 +123,8 @@ class Agent:
             state_copy = copy(state)  # copy 'real' state
             act(state_copy)  # get expected position after action
             action_features.append(
-                self.gen_features(state_copy.ball_position))  # add features of the expected ball position
+                self.gen_features(
+                    state_copy.ball_position))  # add features of the expected ball position
 
         for feature in action_features:
             expected_rewards.append(float(np.dot(feature.transpose(), self.theta)))
@@ -131,7 +134,7 @@ class Agent:
 
         # apply epsilon greedy method
         if np.random.random() <= self.epsilon:
-            best_action = np.random.randint(0,len(action_list))
+            best_action = np.random.randint(0, len(action_list))
             # with epsilon certainty select a random action (exploration)
             # otherwise take best action as chosen before
 
@@ -139,14 +142,15 @@ class Agent:
             grad = self.gamma * self.alg_lambda * grad
             # TODO: replace trace ?? yes??
 
-            for i in range(0,len(action_features)):
+            for i in range(0, len(action_features)):
                 if i != best_action:
                     # for features in non selected actions set grad entry to zero
                     grad = grad - np.multiply(grad, action_features[i])
 
             # for features in selected action set grad entry to one ( entries of the gradient
             # which don't get chosen by any action remain untouched
-            grad = grad + action_features[best_action] - np.multiply(grad, action_features[best_action])
+            grad = grad + action_features[best_action] - np.multiply(grad,
+                                                                     action_features[best_action])
 
             ### get new state
             new_state, reward, terminated = action_evaluation(state, best_action)
@@ -166,7 +170,8 @@ class Agent:
                 new_state_copy = copy(new_state)  # copy 'real' state
                 act(new_state_copy)  # get expected position after action
                 new_action_features.append(
-                    self.gen_features(new_state_copy.ball_position))  # add features of the expected ball position
+                    self.gen_features(
+                        new_state_copy.ball_position))  # add features of the expected ball position
 
             for feature in new_action_features:
                 new_expected_rewards.append(float(np.dot(feature.transpose(), self.theta)))
@@ -186,16 +191,16 @@ class Agent:
 
             ### observation section
             overall_reward += reward
-            #print episode_length
-            #if (episode_length % 100) == 0:
+            # print episode_length
+            # if (episode_length % 100) == 0:
             #    print new_state.position
             #    print best_action
             episode_length += 1
 
             # set gradient to zero again
-            #grad = np.zeros(self.theta.shape)
+            # grad = np.zeros(self.theta.shape)
 
-        #self.theta = theta
+        # self.theta = theta
 
         return overall_reward, episode_length
 
@@ -208,16 +213,17 @@ class Agent:
         model = pickle.load(open('save.p', 'rb'))
         self.theta = model['theta']
 
+
 if __name__ == "__main__":
     # print(features(Vec(-4500,-3000))) # test feature generation
     TestAgent = Agent(features, resume=False)
     print(TestAgent.reward(Vec(2000, 30)))
-    robot_state = State(1000,100)
+    robot_state = State(1000, 100)
 
     act = Actions(add_noise=False)
     new_state = State()
     act.kick_short(new_state)
-    print new_state.ball_position
+    print
+    new_state.ball_position
 
     TestAgent.run_sarsa(State())
-

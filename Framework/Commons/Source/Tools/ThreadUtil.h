@@ -11,6 +11,8 @@
 #endif // _WIN32
 
 #include <thread>
+#include <chrono>
+
 #include <cstring>
 
 namespace naoth {
@@ -63,9 +65,25 @@ public:
     pthread_setname_np(t.native_handle(), name.substr(0,15).c_str());
     
   #elif _WIN32
+    // do nothing in windows
   #endif // _POSIX_THREADS
 
     return false;
+  }
+
+
+  // sleep for a number of milliseconds
+  static void sleep(unsigned int ms) { 
+    std::this_thread::sleep_for(std::chrono::milliseconds(ms)); 
+
+    // NOTE: this is the legacy way of a portable sleep function
+    /*
+    #ifdef WIN32
+      Sleep(t);
+    #else
+      usleep(t * 1000);
+    #endif
+    */
   }
 
 };

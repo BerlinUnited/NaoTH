@@ -31,7 +31,6 @@ using namespace naoth;
 
 // this key is sent with every team message to indicate that the message belongs to us
 #define NAOTH_TEAMCOMM_MESAGE_KEY "naoth"
-#define DOBERMAN_TEAMCOMM_MESAGE_KEY "12" // HACK: fixed team number for NaoDevils
 
 /** Contains data for a NTP request. */
 struct NtpRequest
@@ -50,14 +49,17 @@ class TeamMessageCustom : public naoth::Printable
 
 public:
 
-  // we define this struct private because no one else needs to know about the internals of the DoBerManHeader
-  struct DoBerManHeader
+  // we define this struct private because no one else needs to know about the internals of the MixedTeamHeader
+  struct MixedTeamHeader
   {
-    uint64_t timestamp;
-    int8_t teamID;
-    int8_t isPenalized;
-    int8_t whistleDetected;
-    int8_t intention;
+      // 1 bit == penalized, 2 bit == striker goalie
+      int8_t data;
+      int8_t role;
+//    uint64_t timestamp;
+//    int8_t teamID;
+//    int8_t isPenalized;
+//    int8_t whistleDetected;
+//    int8_t intention;
   };
 
 public:
@@ -83,19 +85,21 @@ public:
   PlayerInfo::RobotState robotState; // state of the robot (initial, ready, set, play, finish, penalized)
   Roles::Role robotRole;    // role of the robot (static & dynamic)
 
+  bool readyToWalk;         // indicates, whether the robot is ready to walk
+
   /** Sets the data according to the protobuf message. */
   void parseFromProto(const naothmessages::BUUserTeamMessage& userData);
 
   /** Creates a protobuf message with the registered data. */
   naothmessages::BUUserTeamMessage toProto() const;
 
-  /** Sets the data according to a binary DoBerMan Header */
-  void parseFromDoBerManHeader(const uint8_t *rawHeader, size_t headerSize);
+  /** Sets the data according to a binary mixed team header */
+  void parseFromMixedTeamHeader(const uint8_t *rawHeader, size_t headerSize);
 
-  /** Creates a binary array containing some of the registered data in the DoBerMan header "format" */
-  void toDoBerManHeader(DoBerManHeader& header) const;
+  /** Creates a binary array containing some of the registered data in the mixed team header "format" */
+  void toMixedTeamHeader(MixedTeamHeader& header) const;
 
-  static size_t getCustomOffset() {return sizeof(DoBerManHeader);}
+  static size_t getCustomOffset() {return sizeof(MixedTeamHeader);}
 
   void print(std::ostream &stream) const;
 };
@@ -121,7 +125,6 @@ public:
     /*** END +++ TEAMMESSAGEFIELDS *******************************************/
 
     bool isBerlinUnitedMessage() { return custom.key == NAOTH_TEAMCOMM_MESAGE_KEY; }
-    bool isDoBerManMessage() { return custom.key == DOBERMAN_TEAMCOMM_MESAGE_KEY; }
 
     TeamMessageData();
     TeamMessageData(FrameInfo fi);

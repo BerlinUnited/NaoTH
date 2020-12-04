@@ -1,6 +1,6 @@
 syntax = "proto2";
 package naothmessages;
-option java_package= "de.naoth.rc.messages";
+option java_package= "de.naoth.rc.core.messages";
 
 import "CommonTypes.proto";
 import "Framework-Representations.proto";
@@ -33,6 +33,20 @@ message MultiBallPercept {
 
   optional FrameInfo frameInfoWhenBallWasSeen = 1;
   repeated BallPercept percepts = 2;
+}
+
+message BallModel {
+  optional bool valid = 1;
+  optional bool knows = 2;
+
+  optional DoubleVector2 position = 3;
+  optional DoubleVector2 speed = 4;
+
+  optional DoubleVector2 positionPreview = 5;
+  optional DoubleVector2 positionPreviewInLFoot = 6;
+  optional DoubleVector2 positionPreviewInRFoot = 7;
+  repeated DoubleVector2 futurePosition = 8 [deprecated=true];
+
 }
 
 message GoalPercept {
@@ -191,6 +205,14 @@ message LinePercept {
 
 message ShortLinePercept {
   repeated LineSegment fieldLineSegments = 1;
+}
+
+message Polygon {
+  repeated IntVector2 points = 1;
+}
+
+message FieldPercept {
+  required Polygon fieldPoly = 1;
 }
 
 message RansacLinePercept {

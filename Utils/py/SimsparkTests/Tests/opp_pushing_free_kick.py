@@ -1,119 +1,195 @@
 import math
+import time
 
-from naoth import BehaviorParser, Framework_Representations_pb2
+from naoth.log._parser import BehaviorParser
 
-from AgentController import AgentController
 from SimsparkController import SimsparkController
+from AgentController import AgentController
 from Utils import *
 
 
-def position_and_execute(s, a, parser, pos, ball):
-    # first place the robot! If we run this test multiple times, the robot could stand on the penalty mark and if the
-    # ball gets placed first, it would 'jump' away.
-    s.cmd_agentMove(a.number, pos[0], pos[1], r=pos[2])  # place the robot
-    s.cmd_ballPos(ball[0], ball[1])  # place the ball
+class OpponentPushingFreekick(TestRun):
+    """Tests, whether the robot handles the opponent pushing free kick correctly."""
 
-    # if we do this test multiple times, the simulation commands are sometimes a little bit delayed
-    wait_for(lambda: s.get_ball()['x'] - ball[0] <= 0.01, 0.3)
+    def __init__(self, args):
+        super().__init__()
+        self.simspark_application = args.simspark
+        self.simspark_start_instance = not args.no_simspark
 
-    # put the robot in play mode
-    a.debugrequest('gamecontroller:game_state:play', True)
+        self.agent_application = args.agent
+        self.agent_config_dir = args.config
+        self.agent_start_instance = not args.no_agent
 
-    start = time.monotonic()
-    pending_cmds = {}
-    # max. 90sec for this test (NOTE: walking of the robot in the simulation is not smooth, therefore we wait longer)
-    while time.monotonic() <= (start + 90):
-        pending_cmds[a.behavior()] = 'Behavior'
-        time.sleep(0.3)
+        self.simspark = None
+        self.agent = None
+        self.parser = BehaviorParser()  # create parser for the agent behavior
 
-        for p in pending_cmds:
-            data = a.command_result(p)
-            if data:
-                if pending_cmds[p] == 'Behavior':
-                    parser.parse(data)
-                    if parser.isActiveOption('free_kick_opp'):
-                        #print(parser.getActiveOptionState('free_kick_opp'))
-                        if parser.getActiveOptionState('free_kick_opp') == 'done' and time.monotonic() > (start + 10):
-                            #print(parser.symbols.decimal('ball.distance'))
-                            start = 0
-                            break
+    def setUp(self):
+        self.simspark = SimsparkController(self.simspark_application, start_instance=self.simspark_start_instance)
+        self.simspark.start()
+        self.simspark.wait_connected()  # wait for the monitor to be connected
 
-    # its a simulation of a free kick - the ball should be touched only once
-    wait_for_cmd(a, a.debugrequest('gamecontroller:game_state:play', False))
-    # wait until the robot sits (hip is below 0.2)!
-    wait_for(lambda: s.get_robot(a.number)['z'] <= 0.2, 0.3, max_time=5.0)
+        self.agent = AgentController(self.agent_application,
+                                     self.agent_config_dir,
+                                     number=3, start_instance=self.agent_start_instance)
+        self.agent.start()
+        self.logger.info('Wait for agent connection')
+        self.agent.wait_connected()  # wait for the agent to be fully started
 
-    return evaluate_position(s, a, ball)
+        # in order to use the parser, we have to retrieve the complete behavior first
+        self.parser.init(self.agent.behavior(True).result())
 
-def evaluate_position(s, a, ball):
-    # first check if the ball was moved/touched
-    s_ball = s.get_ball()
-    if abs(s_ball['x'] - ball[0]) + abs(s_ball['y']-ball[1]) > 0.1:
-        logging.info('Ball touched!')
-        return False
+        # it takes sometimes a while until simspark got the correct player number
+        wait_for(lambda: self.simspark.get_robot(self.agent.number) is not None, 0.3)
+        # wait until the player is on the field
+        wait_for(lambda: self.simspark.get_robot(self.agent.number)['z'] <= 0.3, 0.3, max_time=5.0)
 
-    robot = s.get_robot(a.number)
+        # set the current soccer behavior
+        self.agent.agent('soccer_agent')
+        # dis-/enable some modules for the simspark simulation
+        self.agent.module('PathPlanner', False)
+        self.agent.module('PathPlanner2018', True)
+        self.agent.module('SituationPriorProvider', False)
+        self.agent.module('MonteCarloSelfLocator', False)
+        self.agent.module('OdometrySelfLocator', False)
+        self.agent.module('GPS_SelfLocator', True)
 
-    # check if the robot is away from the ball (min. 75cm)
-    if math.sqrt(math.pow(ball[0] - robot['x'], 2) + math.pow(ball[1] - robot['y'], 2)) < 0.75:
-        logging.info("Robot is to close to the ball!")
-        return False
+        # prepare the test
+        self.simspark.cmd_dropball()  # put the ball into the game
+        self.agent.debugrequest('gamecontroller:secondaryTime:30', True)
+        self.agent.debugrequest('gamecontroller:set_play:pushing_free_kick', True)
+        self.agent.debugrequest('gamecontroller:kickoff:own', False)
+        self.agent.debugrequest('gamecontroller:kickoff:opp', True)
+        # disable dynamic role decision
+        self.agent.module('RoleDecisionAssignmentDistance', False)
+        self.agent.module('RoleDecisionAssignmentStatic', True)
 
-    # check if the robot is somewhere near the line between ball and goal
-    # TODO: doesn't work as expected! :/
-    if abs(ball[1]/(ball[0]+4.5) - robot['y']/(robot['x']+4.5))>0.1:
-        logging.info("Robot doesn't block a goal kick!")
-        return False
+    def tearDown(self):
+        # stop the agent
+        if self.agent:
+            self.agent.stop()
+        # stop the simulation/simspark
+        if self.simspark:
+            self.simspark.stop()
 
-    return True
+    def position_and_execute(self, pos, ball):
+        # check if the correct behavior is set
+        if self.agent.agent().result().decode() != 'soccer_agent':
+            return False
 
-def opp_pushing_free_kick(args):
-    return_code = 0
+        # first place the robot! If we run this test multiple times, the robot could stand on the penalty mark and if
+        # the ball gets placed first, it would 'jump' away.
+        self.simspark.cmd_agentMove(self.agent.number, pos[0], pos[1], r=pos[2])  # place the robot
+        self.simspark.cmd_ballPos(ball[0], ball[1])  # place the ball
 
-    s = SimsparkController(args.simspark, not args.no_simspark)
-    s.start()
-    s.connected.wait() # wait for the monitor to be connected
+        # if we do this test multiple times, the simulation commands are sometimes a little bit delayed
+        wait_for(lambda: self.simspark.get_ball()['x'] - ball[0] <= 0.01, 0.3)
 
-    a = AgentController(args.agent, args.config, number=3, start_instance=not args.no_agent)
-    a.start()
-    a.started.wait() # wait for the agent to be fully started
+        # put the robot in play mode
+        self.agent.debugrequest('gamecontroller:game_state:play', True)
 
-    # create parser for the agents behavior
-    parser = BehaviorParser()
-    # in order to use the parser, we have to retrieve the complete behavior first
-    parser.init(wait_for_cmd(a, a.behavior(True)))
+        start = time.monotonic()
+        # max. 90sec for this test (NOTE: walking of the robot in the simulation is not good, therefore we wait longer)
+        while time.monotonic() <= (start + 90):
+            self.parser.parse('BehaviorStateSparse', self.agent.behavior().result())
+            if self.parser.isActiveOption('free_kick_simple'):
+                if self.parser.getActiveOptionState('free_kick_simple') == 'opp_free_kick_watch_ball' and time.monotonic() > (start + 10):
+                    break
 
-    # it takes sometimes a while until simspark got the correct player number
-    wait_for(lambda: s.get_robot(a.number) is not None, 0.3)
-    # wait until the player is on the field
-    wait_for(lambda: s.get_robot(a.number)['z'] <= 0.3, 0.3, max_time=5.0)
+        # stop the robot
+        self.agent.debugrequest('gamecontroller:game_state:play', False).result()
+        # wait until the robot sits (hip is below 0.2)!
+        wait_for(lambda: self.simspark.get_robot(self.agent.number)['z'] <= 0.2, 0.3, max_time=5.0)
 
-    logging.info('Some Simspark commands')
+        return self.evaluate_position(ball)
 
-    # eg. for en-/disabling a module
-    a.agent('path_spl_soccer')
+    def evaluate_position(self, ball):
+        # first check if the ball was moved/touched
+        s_ball = self.simspark.get_ball()
+        if abs(s_ball['x'] - ball[0]) + abs(s_ball['y']-ball[1]) > 0.1:
+            self.logger.error('Ball touched!')
+            return False
 
-    # prepare the test
-    s.cmd_dropball()  # put the ball into the game
-    a.debugrequest('gamecontroller:set_play:pushing_free_kick', True)
+        robot = self.simspark.get_robot(self.agent.number)
 
-    positions = {
-        'left_far':    [ (-1.5, 1.5),  (-2,  1.5, -90), (-2, 1.9, -90), (-1.5, 2, -180), (-1.2, 1.8, 140), (-1.2, 1.15, 40), (-1.2, 1.5, 90) ],
-        'left_close':  [ (-3.5, 1.5),  (-4,  1.5, -90), (-4,  2, -90), (-3.5, 2, -180), (-3.2, 1.8, 140), (-3.2, 1.15, 40), (-3.2, 1.5, 90) ],
-        'right_far':   [ (-1.5, -1.5), (-2, -1.5, -90), (-2, -2, -90), (-1.5, -2, 0), (-1.2, -1.8, 45), (-1.2, -1.15, 125), (-1.2, -1.5, 90) ],
-        'right_close': [ (-3.5, -1.5), (-4, -1.5, -90), (-4, -2, -90), (-3.5, -2, 0), (-3.2, -1.8, 60), (-3.2, -1.15, 135), (-3.2, -1.5, 90) ]
-    }
-    for _ in positions:
-        for robot in positions[_][1:]:
-            if not position_and_execute(s, a, parser, robot, positions[_][0]):
-                logging.error("Failed opponent free kick (%s): ball@%s, robot@%s", _, str(positions[_][0]), str(robot))
-                return_code += 1
-            time.sleep(0.5)
+        # check if the robot is away from the ball (min. 75cm)
+        if math.sqrt(math.pow(ball[0] - robot['x'], 2) + math.pow(ball[1] - robot['y'], 2)) < 0.75:
+            self.logger.error("Robot is to close to the ball!")
+            return False
 
-    a.cancel()
-    s.cancel()
+        # TODO: with a more sophisticated behavior we could also check for some actions to counter the opp free kick
+        #       eg. blocking a direct kick
 
-    a.join()
-    s.join()
+        return True
 
-    return return_code == 0
+    def test_left_far_1(self):
+        return self.position_and_execute((-2,  1.5, -90), (-1.5, 1.5))
+
+    def test_left_far_2(self):
+        return self.position_and_execute((-2,  1.9, -90), (-1.5, 1.5))
+
+    def test_left_far_3(self):
+        return self.position_and_execute((-1.5, 2, -180), (-1.5, 1.5))
+
+    def test_left_far_4(self):
+        return self.position_and_execute((-1.2, 1.8, 140), (-1.5, 1.5))
+
+    def test_left_far_5(self):
+        return self.position_and_execute((-1.2, 1.15, 40), (-1.5, 1.5))
+
+    def test_left_far_6(self):
+        return self.position_and_execute((-1.2, 1.5, 90), (-1.5, 1.5))
+
+    def test_left_close_1(self):
+        return self.position_and_execute((-2, -1.5, -90), (-1.5, -1.5))
+
+    def test_left_close_2(self):
+        return self.position_and_execute((-2, -2, -90), (-1.5, -1.5))
+
+    def test_left_close_3(self):
+        return self.position_and_execute((-1.5, -2, 0), (-1.5, -1.5))
+
+    def test_left_close_4(self):
+        return self.position_and_execute((-1.2, -1.8, 45), (-1.5, -1.5))
+
+    def test_left_close_5(self):
+        return self.position_and_execute((-1.2, -1.15, 125), (-1.5, -1.5))
+
+    def test_left_close_6(self):
+        return self.position_and_execute((-1.2, -1.5, 90), (-1.5, -1.5))
+
+    def test_right_far_1(self):
+        return self.position_and_execute((-2, -1.5, -90), (-1.5, -1.5))
+
+    def test_right_far_2(self):
+        return self.position_and_execute((-2, -2, -90), (-1.5, -1.5))
+
+    def test_right_far_3(self):
+        return self.position_and_execute((-1.5, -2, 0), (-1.5, -1.5))
+
+    def test_right_far_4(self):
+        return self.position_and_execute((-1.2, -1.8, 45), (-1.5, -1.5))
+
+    def test_right_far_5(self):
+        return self.position_and_execute((-1.2, -1.15, 125), (-1.5, -1.5))
+
+    def test_right_far_6(self):
+        return self.position_and_execute((-1.2, -1.5, 90), (-1.5, -1.5))
+
+    def test_right_close_1(self):
+        return self.position_and_execute((-4, -1.5, -90), (-3.5, -1.5))
+
+    def test_right_close_2(self):
+        return self.position_and_execute((-4, -2, -90), (-3.5, -1.5))
+
+    def test_right_close_3(self):
+        return self.position_and_execute((-3.5, -2, 0), (-3.5, -1.5))
+
+    def test_right_close_4(self):
+        return self.position_and_execute((-3.2, -1.8, 60), (-3.5, -1.5))
+
+    def test_right_close_5(self):
+        return self.position_and_execute((-3.2, -1.15, 135), (-3.5, -1.5))
+
+    def test_right_close_6(self):
+        return self.position_and_execute((-3.2, -1.5, 90), (-3.5, -1.5))

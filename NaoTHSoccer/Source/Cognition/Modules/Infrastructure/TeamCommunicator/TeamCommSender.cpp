@@ -35,6 +35,8 @@ void TeamCommSender::execute()
         getTeamMessageDataOut().data = getTeamMessageData().createSplMessageString();
         // remember the last sending time
         lastSentTimestamp = getFrameInfo().getTime();
+
+        PLOT(std::string("TeamCommSender:message_size"), static_cast<double>(getTeamMessageDataOut().data.size()));
     } else {
         getTeamMessageDataOut().data.clear();
     }
@@ -54,7 +56,7 @@ void TeamCommSender::fillMessageBeforeSending() const
 
     if(sendBallModel)
     {
-      // here in milliseconds (conversion to seconds is in SPLStandardMessage::createSplMessage())
+      // here in milliseconds (conversion to seconds is in TeamMessageData::createSplMessage())
       msg.ballAge = getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime());
       msg.ballPosition = getBallModel().position;
       msg.custom.ballVelocity = getBallModel().speed;
@@ -69,7 +71,7 @@ void TeamCommSender::fillMessageBeforeSending() const
       msg.custom.ballVelocity.y = 0;
     }
 
-    // TODO: should be fixed with issue #105
+    // make sure we're not in the standup motion
     msg.fallen = getBodyState().fall_down_state != BodyState::upright
               || getMotionStatus().currentMotion == motion::stand_up_from_back
               || getMotionStatus().currentMotion == motion::stand_up_from_side
@@ -98,6 +100,8 @@ void TeamCommSender::fillMessageBeforeSending() const
 
     msg.custom.robotState = getPlayerInfo().robotState;
     msg.custom.robotRole = getRoleDecisionModel().getRole(getPlayerInfo().playerNumber);
+
+    msg.custom.readyToWalk = getBodyState().readyToWalk;
 
     // TODO: shall we put it into config?
     msg.custom.key = NAOTH_TEAMCOMM_MESAGE_KEY;

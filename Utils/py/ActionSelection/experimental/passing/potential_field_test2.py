@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
 import numpy as np
 from tools import potential_field as pfield
-from naoth import math2d as m2d
+from naoth.math import *
 
 
 if __name__ == "__main__":
@@ -21,13 +21,13 @@ if __name__ == "__main__":
     y_dim = y.size
     zm = np.zeros((y_dim, x_dim))
 
-    own_robots = [m2d.Vector2(0, 0)]
+    own_robots = [Vector2(0, 0)]
     # TODO where should the friendly robot be according to the graphic in my thesis
     # own_robots = []
     opp_robots = []
     for i in range(int(y_dim)):
         for j in range(int(x_dim)):
-            zm[i, j] = pfield.evaluate_action_with_robots(m2d.Vector2(xm[i][j], ym[i][j]), opp_robots, own_robots)
+            zm[i, j] = pfield.evaluate_action_with_robots(Vector2(xm[i][j], ym[i][j]), opp_robots, own_robots)
 
     # plot
     fig = plt.figure(frameon=False)

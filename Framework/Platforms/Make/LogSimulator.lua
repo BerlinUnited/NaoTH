@@ -1,5 +1,7 @@
 -- NaoTH controller for the logfile based "simulator"
 project "LogSimulator"
+  removeplatforms { "Nao" }
+
   kind "StaticLib"
   language "C++"
   
@@ -19,7 +21,8 @@ project "LogSimulator"
     "gmodule-2.0",
     "gthread-2.0",
     "protobuf",
-    "fftw3"
+    "fftw3",
+    "jpeg"
   }
   
   targetname "logsimulator"

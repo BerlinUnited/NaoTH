@@ -16,6 +16,16 @@
 #include <string>
 #include <iostream>
 
+class KeyFrameMotionParameters: public ParameterList{
+      public:
+        KeyFrameMotionParameters() : ParameterList("KeyFrameMotionParameters")
+        {
+          PARAMETER_REGISTER(stiffness) = 1.0;
+          syncWithConfig();
+        }
+        double stiffness;
+};
+
 class FeetStabilizerParameters: public ParameterList{
       public:
         FeetStabilizerParameters() : ParameterList("Walk_FeetStabilizer")
@@ -54,6 +64,8 @@ class FootStepPlanner2018Parameters: public ParameterList{
           PARAMETER_ANGLE_REGISTER(limits.maxCtrlTurn) = 30;
           PARAMETER_REGISTER(limits.maxCtrlLength) = 80;
           PARAMETER_REGISTER(limits.maxCtrlWidth)  = 50;
+          PARAMETER_REGISTER(limits.maxCtrlChange)     = 0.3;
+          PARAMETER_REGISTER(limits.maxCtrlChangeDown) = 0.8;
 
           PARAMETER_REGISTER(footOffsetY) = 0;
 
@@ -79,6 +91,7 @@ class FootStepPlanner2018Parameters: public ParameterList{
 
       struct Limits {
         double maxTurnInner;
+
         double maxStepTurn;
         double maxStepLength;
         double maxStepLengthBack;
@@ -89,6 +102,8 @@ class FootStepPlanner2018Parameters: public ParameterList{
         double maxCtrlTurn;
         double maxCtrlLength;
         double maxCtrlWidth;
+        double maxCtrlChange;
+        double maxCtrlChangeDown;
       } limits;
 
       struct Step {
@@ -368,6 +383,7 @@ public:
     Walk2018Parameters(){
     }
 
+    KeyFrameMotionParameters              keyFrameMotionParameters;
     FeetStabilizerParameters              feetStabilizerParams;
     FootStepPlanner2018Parameters         footStepPlanner2018Params;
     FootTrajectoryGenerator2018Parameters footTrajectoryGenerator2018Params;
@@ -379,6 +395,7 @@ public:
     GeneralParameters                     generalParams;
 
     void init(DebugParameterList& dbpl){
+        dbpl.add(&keyFrameMotionParameters);
         dbpl.add(&feetStabilizerParams);
         dbpl.add(&footStepPlanner2018Params);
         dbpl.add(&footTrajectoryGenerator2018Params);
@@ -391,6 +408,7 @@ public:
     }
 
     void remove(DebugParameterList& dbpl){
+        dbpl.remove(&keyFrameMotionParameters);
         dbpl.remove(&feetStabilizerParams);
         dbpl.remove(&footStepPlanner2018Params);
         dbpl.remove(&footTrajectoryGenerator2018Params);

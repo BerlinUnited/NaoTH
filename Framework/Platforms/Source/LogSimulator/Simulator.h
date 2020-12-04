@@ -17,7 +17,6 @@
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/InertialSensorData.h>
-#include <Representations/Infrastructure/IRData.h>
 #include <Representations/Infrastructure/CameraSettings.h>
 #include <Representations/Infrastructure/ButtonData.h>
 #include <Representations/Infrastructure/FSRData.h>
@@ -39,8 +38,6 @@
 #include "LogProviderModule.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
-#define CYCLE_TIME 20
-
 class Simulator : public PlatformInterface
 {
 public:
@@ -51,6 +48,8 @@ public:
   virtual std::string getBodyNickName() const {return "naoth"; }
   virtual std::string getHeadNickName() const {return "naoth"; }
   virtual std::string getRobotName() const { return "naoth-logsimulator"; }
+  virtual std::string getPlatformName() const { return "LogSimulator"; }
+  virtual unsigned int getBasicTimeStep() const { return 20; }
 
   void main(bool start = false);
 
@@ -92,7 +91,6 @@ public:
   SIM_GET(GyrometerData);
   SIM_GET(FSRData);
   SIM_GET(InertialSensorData);
-  SIM_GET(IRReceiveData);
   SIM_GET(CurrentCameraSettings);
   SIM_GET(ButtonData);
   SIM_GET(BatteryData);
@@ -103,7 +101,6 @@ public:
   //virtual void set(const MotorJointData& /*data*/){};
   //virtual void set(const CameraSettingsRequest& /*data*/){};
   //virtual void set(const LEDData& /*data*/){};
-  //virtual void set(const IRSendData& /*data*/){};
   //virtual void set(const UltraSoundSendData& /*data*/){};
   //virtual void set(const SoundData& /*data*/){};
 
@@ -124,7 +121,7 @@ protected:
 
 
 public:
-  // the flag for backend mode, which is used by LogfilePlayer of RobotControl
+  // the flag for backend mode, which is enables reading commands from stdin
   bool backendMode;
   // play the logfile according to the time of the frames
   bool realTime;

@@ -20,15 +20,13 @@
 #include <Representations/Infrastructure/CameraInfo.h>
 
 #include <Representations/Perception/CameraMatrix.h>
-
-#include "Representations/Perception/BallPercept.h"
 #include "Representations/Perception/GoalPercept.h"
 //#include "Representations/Perception/LinePercept.h"
 #include "Representations/Perception/LinePercept2018.h"
-
 #include "Representations/Perception/PlayersPercept.h"
-#include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Perception/MultiBallPercept.h"
+
+#include "Representations/Modeling/PlayerInfo.h"
 
 #include "Tools/DoubleCamHelpers.h"
 
@@ -52,9 +50,6 @@ BEGIN_DECLARE_MODULE(VirtualVisionProcessor)
   REQUIRE(PlayerInfo)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
-
-  PROVIDE(BallPercept)
-  PROVIDE(BallPerceptTop)
 
   PROVIDE(MultiBallPercept)
 
@@ -186,7 +181,6 @@ private:
   DOUBLE_CAM_REQUIRE(VirtualVisionProcessor,CameraMatrix);
   DOUBLE_CAM_REQUIRE(VirtualVisionProcessor,VirtualVision);
 
-  DOUBLE_CAM_PROVIDE(VirtualVisionProcessor,BallPercept);
   DOUBLE_CAM_PROVIDE(VirtualVisionProcessor,GoalPercept);
   //DOUBLE_CAM_PROVIDE(VirtualVisionProcessor,LinePercept);
 };
