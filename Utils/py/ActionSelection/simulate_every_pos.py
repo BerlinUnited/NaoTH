@@ -4,7 +4,7 @@ import argparse
 import pickle
 from tools import action as a
 from tools import Simulation as Sim
-from naoth import math2d as m2d
+import naoth.math as naoth_magic
 from tools import field_info as field
 from state import State
 
@@ -51,15 +51,18 @@ def main(num_samples, num_reps, x_step, y_step, rotation_step):
         print("Rotation: " + str(rot))
         for x in x_range:
             for y in y_range:
-                state.update_pos(m2d.Vector2(x, y), rotation=rot)
+                state.update_pos(naoth_magic.Vector2(x, y), rotation=rot)
                 # Do this multiple times and write the decisions as a histogram
-                decision_histogramm = [0, 0, 0, 0]  # ordinal scale -> define own metric in evaluation script
+                decision_histogramm = [0, 0, 0,
+                                       0]  # ordinal scale -> define own metric in evaluation script
                 for num_simulations in range(0, num_reps):
                     actions_consequences = []
                     # Simulate Consequences
                     for action in action_list:
                         single_consequence = a.ActionResults([])
-                        actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state, num_samples))
+                        actions_consequences.append(
+                            Sim.simulate_consequences(action, single_consequence, state,
+                                                      num_samples))
 
                     # Decide best action
                     best_action = Sim.decide_smart(actions_consequences, state)
@@ -69,22 +72,30 @@ def main(num_samples, num_reps, x_step, y_step, rotation_step):
                 whole_decisions.append([x, y, rot, decision_histogramm])
 
     # make sure not to overwrite anything
-    while os.path.exists('{}{:d}.pickle'.format('data/simulate_every_pos-' + str(num_samples) + '-' + str(num_reps) + '-v', file_idx)):
+    while os.path.exists('{}{:d}.pickle'.format(
+            'data/simulate_every_pos-' + str(num_samples) + '-' + str(num_reps) + '-v', file_idx)):
         file_idx += 1
 
     pickle.dump(whole_decisions, open(
-                'data/simulate_every_pos-' + str(num_samples) + '-' + str(num_reps) + '-v' + str(file_idx) + '.pickle', "wb"))
+        'data/simulate_every_pos-' + str(num_samples) + '-' + str(num_reps) + '-v' + str(
+            file_idx) + '.pickle', "wb"))
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='Calculates a histogram of decisions for each position on the field',
     )
-    parser.add_argument("-s", "--num_samples", help="input the number of samples used for on action", type=int, default=30)
-    parser.add_argument("-r", "--num_reps", help="input the number of repeats per position", type=int, default=1)
-    parser.add_argument("-x", "--res_x", help="input the step size for rotation", type=int, default=200)
-    parser.add_argument("-y", "--res_y", help="input the step size for rotation", type=int, default=200)
-    parser.add_argument("-rot", "--res_rot", help="input the step size for rotation", type=int, default=20)
+    parser.add_argument("-s", "--num_samples",
+                        help="input the number of samples used for on action", type=int,
+                        default=30)
+    parser.add_argument("-r", "--num_reps", help="input the number of repeats per position",
+                        type=int, default=1)
+    parser.add_argument("-x", "--res_x", help="input the step size for rotation", type=int,
+                        default=200)
+    parser.add_argument("-y", "--res_y", help="input the step size for rotation", type=int,
+                        default=200)
+    parser.add_argument("-rot", "--res_rot", help="input the step size for rotation", type=int,
+                        default=20)
 
     args = parser.parse_args()
 

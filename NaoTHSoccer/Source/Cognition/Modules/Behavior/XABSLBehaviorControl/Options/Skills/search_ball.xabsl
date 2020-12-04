@@ -13,20 +13,19 @@ option search_ball
       else if(ball.distance > 2000) // 2m
       {
         // search for ball the ball in the direction last seen
-        if(ball.preview.y > 0)
+        if(ball.last_known.y > 0)
           goto search_ball_simple_left;
         else
           goto search_ball_simple_right;
       } else {
         // otherwise walk back for some mm and search for ball the ball in the direction last seen
-        if(ball.preview.y > 0)
+        if(ball.last_known.y > 0)
           goto search_ball_rot_left;
         else
           goto search_ball_rot_right;
       }
     }
     action {
-      path.routine = none;
       motion.type = stand;
       head.control_mode = search_for_ball;
     }
@@ -47,7 +46,6 @@ option search_ball
         stay;
     }
     action {
-      path.routine = none;
       motion.type = stand;
       head.control_mode = search_for_ball;
     }

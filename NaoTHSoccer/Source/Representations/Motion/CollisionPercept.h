@@ -30,9 +30,11 @@ public:
 
   ~CollisionPercept(){}
 
-  // Stuff for the Arm collision
+  // time stamp of the last collision
   unsigned int timeCollisionArmLeft;
   unsigned int timeCollisionArmRight;
+
+  std::string lastCollisionDirection;
 
   std::vector<Vector2d> referenceHullLeft;
   std::vector<Vector2d> referenceHullRight;
@@ -51,7 +53,8 @@ public:
   
   virtual void print(std::ostream& stream) const
   {
-    /*stream << "timeCollisionArmLeft = " << timeCollisionArmLeft << '\n';
+      stream << "Last collision direction: " << lastCollisionDirection << std::endl;
+    stream << "timeCollisionArmLeft = " << timeCollisionArmLeft << '\n';
     stream << "timeCollisionArmRight = " << timeCollisionArmRight << '\n';
     stream << "referenceHullLeft: " << "\n";
     for (size_t i = 0; i < referenceHullLeft.size(); i++){

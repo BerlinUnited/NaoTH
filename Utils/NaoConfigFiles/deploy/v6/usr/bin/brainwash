@@ -1,0 +1,67 @@
+#!/bin/bash
+
+# redirect all the output to the logger
+exec 1> >(logger -s -t brainwasher) 2>&1
+
+COUNTER=100 # ~ 10 seconds
+
+# create mount point
+mkdir -p /home/brainwasher
+
+# mount usb drive
+mount /dev/brainwasher /home/brainwasher
+
+# check success
+if [ $? -ne 0 ]
+then
+  # for a list of supported filesystems, enter the following command on a nao robot: "cat /proc/filesystems"
+  # currently only FAT32 is supported!
+  if [ $(blkid -s TYPE -o value /dev/brainwasher) != "vfat" ]
+  then
+    logger -t brainwasher "ERROR: usb wrong filesystem"
+    su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/error_usb_wrong_filesystem.wav"
+  else
+    logger -t brainwasher "ERROR: usb unknown mount error"
+    su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/error_usb_unknown_mount_error.wav"
+  fi
+else
+  cd /home/brainwasher
+  # check if executable is available
+  if [ -x "./startBrainwashing.sh" ]
+  then
+    # start the actual brainwasher
+    ./startBrainwashing.sh
+  else
+    logger -t brainwasher "ERROR: missing brainwasher script"
+    su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/error_missing_usb_brainwasher_script.wav"
+  fi
+
+  # mountpoint cleanup
+  cd /
+  until umount /home/brainwasher &> /dev/null
+  do
+    sleep 0.1
+    ((COUNTER--))
+    # max. "COUNTER" attempts to unmount device, otherwise force unmount and break -> prevent infinite loop
+    if [ $COUNTER -le 0 ]
+    then
+      # play error sound
+      logger -t brainwasher "ERROR: unmounting usb"
+      su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/error_unmounting_usb_drive.wav"
+      # kill all process accessing mount point
+      fuser -c -k /home/brainwasher &> /dev/null
+      # force unmounting
+      umount -f /home/brainwasher &> /dev/null
+      break
+    fi
+  done
+
+fi
+
+# remove mountpoint
+rmdir /home/brainwasher
+
+logger -t brainwasher "finished"
+
+#play something
+su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav"

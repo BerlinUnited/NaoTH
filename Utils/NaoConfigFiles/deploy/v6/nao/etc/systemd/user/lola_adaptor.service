@@ -1,0 +1,20 @@
+[Unit]
+Description = NaoTH LolaAdaptor
+After = lola.service pulseaudio.service
+Wants = lola.service pulseaudio.service
+Requires = lola.service
+ConditionPathExists=/home/nao/bin/lola_adaptor
+
+[Service]
+Type=idle
+#TimeoutStartSec=10
+#Restart=on-failure
+ExecStart = /home/nao/bin/lola_adaptor
+EnvironmentFile=/etc/conf.d/naoth
+#CPUAccounting=true
+#CPUShares=8192
+LimitRTPRIO=55
+Slice=naoqi.slice
+
+[Install]
+WantedBy = multi-user.target

@@ -20,12 +20,10 @@ fixed_rotation = 0
 fixed_x = 1000
 fixed_y = 100
 
-
 for pos in decisions:
     x, y, rotation, new_decision_histogram = pos
 
     # only plot if desired position is found
     if rotation == fixed_rotation and x == fixed_x and y == fixed_y:
-
         plt.bar(range(0, len(new_decision_histogram)), new_decision_histogram)
         plt.show()

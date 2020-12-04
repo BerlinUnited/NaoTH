@@ -1,0 +1,11 @@
+name: nao
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3.6
+  - tensorflow=1.15.3
+  - numpy=1.19.1
+  - opencv=4.4.0.42
+  - kaggle=1.5.6

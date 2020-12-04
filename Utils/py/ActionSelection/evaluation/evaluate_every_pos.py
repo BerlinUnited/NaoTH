@@ -28,7 +28,8 @@ def load_bachelor_decisions():
     # define prefix for data
     data_prefix = "D:/RoboCup/Paper-Repos/Bachelor-Schlotter/data/"
 
-    sample_list.extend([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300])
+    sample_list.extend(
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300])
     sample_list.extend([400, 500, 600, 700, 800, 900, 1000])
 
     for i in sample_list:
@@ -67,10 +68,13 @@ def calculate_uncertainties():
     uncertainty_threshold = 0.8
 
     # check if file already exists
-    while os.path.exists("../data/uncertainties_below_" + str(uncertainty_threshold*100) + "_v" + str(file_idx) + ".txt"):
+    while os.path.exists(
+            "../data/uncertainties_below_" + str(uncertainty_threshold * 100) + "_v" + str(
+                    file_idx) + ".txt"):
         file_idx += 1
 
-    with open("../data/uncertainties_below_" + str(uncertainty_threshold*100) + "_v" + str(file_idx) + ".txt", "w") as f:
+    with open("../data/uncertainties_below_" + str(uncertainty_threshold * 100) + "_v" + str(
+            file_idx) + ".txt", "w") as f:
         print("Number of states with too uncertain decisions / total number of states")
         for count, decisions in enumerate(dumped_decisions):
             confidence_vector = []

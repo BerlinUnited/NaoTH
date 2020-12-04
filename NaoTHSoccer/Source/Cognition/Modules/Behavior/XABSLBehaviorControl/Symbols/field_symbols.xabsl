@@ -23,6 +23,7 @@ namespace field("Field Symbols") {
   float input field.xPosSecondAttackline;
  
   float input field.xPosOwnPenaltyMark;
-  float input field.xPosOppPenaltyMark;  
+  float input field.xPosOppPenaltyMark;
+  
 }
   

@@ -2,14 +2,13 @@
 #define MULTIKALMANBALLLOCATOR_H
 
 #include <ModuleFramework/Module.h>
-#include <Eigen/StdVector>
+#include <Eigen/StdVector> //necessary for alignement in std::vector to work
 
 // representations
-#include <Representations/Perception/MultiBallPercept.h>
+#include "Representations/Perception/MultiBallPercept.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/PlayerInfo.h"
-
 
 #include "Representations/Modeling/OdometryData.h"
 #include "Representations/Modeling/KinematicChain.h"
@@ -17,7 +16,9 @@
 #include "Representations/Motion/MotionStatus.h"
 
 #include "Representations/Perception/CameraMatrix.h"
+#include "Representations/Infrastructure/FieldInfo.h"
 
+// tools
 #include "BallHypothesis.h"
 #include "UpdateAssociationFunctions.h"
 
@@ -26,8 +27,8 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugPlot.h"
+#include "Tools/Debug/Color.h"
 
-#include "Representations/Infrastructure/FieldInfo.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -82,13 +83,14 @@ private:
     Filters filter;
     Filters::const_iterator bestModel;
 
-    const double epsilon; // 10e-6
-    //double area95Threshold;
+    // TODO: does it make sense to use the numerical epsilon: std::numeric_limits<double>::epsilon() or std::numeric_limits<float>::epsilon()?
+    // TODO: or is this value specific to the algorithms? E.g. ball speed below 1mm/s is considered 0.
+    const double epsilon=10e-6;
 
 private:
     void updateByPerceptsCool();
     void updateByPerceptsNormal();
-    void updateByPerceptsNaive(CameraInfo::CameraID camera);
+    void updateByPerceptsGreedy(CameraInfo::CameraID camera);
 
     void applyOdometryOnFilterState(ExtendedKalmanFilter4d& filter);
 
@@ -103,13 +105,14 @@ private:
     void doDebugRequest();
     void doDebugRequestBeforPredictionAndUpdate();
     void doDebugRequestBeforUpdate();
+    void drawFilter(const BallHypothesis& bh, const Color& model_color, Color cov_loc_color, Color cov_vel_color) const;
     void drawFiltersOnField() const;
     void reloadParameters();
 
-    class KFParameters:  public ParameterList
+    class Parameters:  public ParameterList
     {
      public:
-        KFParameters() : ParameterList("KalmanFilter4dBallModel")
+        Parameters() : ParameterList("MultiKalmanBallLocator")
         {
             PARAMETER_REGISTER(processNoiseStdQ00) = 15;
             PARAMETER_REGISTER(processNoiseStdQ01) = 0;
@@ -126,8 +129,6 @@ private:
             PARAMETER_REGISTER(initialStateStdP10) = 0;
             PARAMETER_REGISTER(initialStateStdP11) = 250;
 
-            PARAMETER_REGISTER(area95Threshold) = 2*Math::pi*700*700;
-
             //thresholds for association functions
             PARAMETER_REGISTER(euclidThreshold) = Math::fromDegrees(10);
             PARAMETER_REGISTER(mahalanobisThreshold) = Math::fromDegrees(10);
@@ -139,10 +140,10 @@ private:
 
             PARAMETER_REGISTER(association.use_normal) = false;
             PARAMETER_REGISTER(association.use_cool)   = false;
-            PARAMETER_REGISTER(association.use_naive)  = true;
+            PARAMETER_REGISTER(association.use_greedy)  = true;
 
-            PARAMETER_REGISTER(area95Threshold_radius.factor) = 1;
-            PARAMETER_REGISTER(area95Threshold_radius.offset) = 125;
+            PARAMETER_REGISTER(area95Threshold_radius.factor) = std::sqrt(2) * 1;
+            PARAMETER_REGISTER(area95Threshold_radius.offset) = std::sqrt(2) * 125;
 
             PARAMETER_REGISTER(use_covariance_based_selection) = true;
 
@@ -172,10 +173,10 @@ private:
         double mahalanobisThreshold;
         double maximumLikelihoodThreshold;
 
-        struct{
+        struct {
             bool use_normal;
             bool use_cool;
-            bool use_naive;
+            bool use_greedy;
         } association;
 
         struct {
@@ -183,9 +184,8 @@ private:
             double offset;
         } area95Threshold_radius;
 
-
         bool use_covariance_based_selection;
-    } kfParameters;
+    } params;
 
     Measurement_Function_H h;
     UpdateAssociationFunction* updateAssociationFunction;

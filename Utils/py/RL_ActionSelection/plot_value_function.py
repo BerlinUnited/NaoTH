@@ -5,25 +5,26 @@ import matplotlib.pyplot as plt
 from env_0.state import State
 from env_0.env import Env
 
-from naoth.math2d import Vector2 as Vec
+from naoth.math import Vector2 as Vec
+
 
 def run_field_creation(model, env, seg_x, seg_y):
     x_dim = 9000 / seg_x + 1
     y_dim = 6000 / seg_y + 1
 
-    field_matrix = np.zeros((x_dim,y_dim))
-    position_matrix = np.zeros((2,x_dim,y_dim))
+    field_matrix = np.zeros((x_dim, y_dim))
+    position_matrix = np.zeros((2, x_dim, y_dim))
 
     # create coordinates
-    for x, x_value in enumerate(range(-4500,4500+seg_x,seg_x)):
-        for y, y_value in enumerate(range(-3000,3000+seg_y,seg_y)):
-            position_matrix[:,x,y] = np.array([x_value, y_value])
+    for x, x_value in enumerate(range(-4500, 4500 + seg_x, seg_x)):
+        for y, y_value in enumerate(range(-3000, 3000 + seg_y, seg_y)):
+            position_matrix[:, x, y] = np.array([x_value, y_value])
 
-    field_vector = field_matrix.reshape(x_dim*y_dim,)
-    position_vector_x = position_matrix[0].reshape(x_dim*y_dim,)
-    position_vector_y = position_matrix[1].reshape(x_dim*y_dim,)
+    field_vector = field_matrix.reshape(x_dim * y_dim, )
+    position_vector_x = position_matrix[0].reshape(x_dim * y_dim, )
+    position_vector_y = position_matrix[1].reshape(x_dim * y_dim, )
 
-    for entry in range(x_dim*y_dim):
+    for entry in range(x_dim * y_dim):
         x_value = position_vector_x[entry]
         y_value = position_vector_y[entry]
         max_q = get_prediction(model, env, x_value, y_value)
@@ -35,10 +36,11 @@ def run_field_creation(model, env, seg_x, seg_y):
 
     return p_field_normalized
 
-    #return field_matrix
+    # return field_matrix
 
-def get_prediction(model,env,x_value,y_value):
-    env.world.state = State(Vec(x_value,y_value))
+
+def get_prediction(model, env, x_value, y_value):
+    env.world.state = State(Vec(x_value, y_value))
     state = env.current_state()
 
     action_space = env.action_space
@@ -68,6 +70,7 @@ def get_prediction(model,env,x_value,y_value):
     value = np.max(predictions)
 
     return value
+
 
 def start_agent_and_plot(weights, feature_function, reward_function, net_config, seg_x, seg_y):
     from keras.models import Sequential
@@ -108,15 +111,18 @@ def start_agent_and_plot(weights, feature_function, reward_function, net_config,
 
     return p_field.transpose()
 
+
 def plot_field(weights, net_config, reward_function, feature_function, seg_x=250, seg_y=250):
     potential_field = start_agent_and_plot(weights=weights, net_config=net_config,
-                                           reward_function=reward_function, feature_function=feature_function,
+                                           reward_function=reward_function,
+                                           feature_function=feature_function,
                                            seg_x=seg_x, seg_y=seg_y)
 
     plt.imshow(potential_field, cmap='hot')
     plt.show()
 
-def plot_field_by_model(model, env, seg_x=250,seg_y=250):
+
+def plot_field_by_model(model, env, seg_x=250, seg_y=250):
     p_field = run_field_creation(model=model, env=env, seg_x=seg_x, seg_y=seg_y)
 
     plt.subplot(411)
@@ -124,9 +130,8 @@ def plot_field_by_model(model, env, seg_x=250,seg_y=250):
     plt.pause(0.05)
 
 
-
 if __name__ == "__main__":
-    ### _-- load model --_
+    # _-- load model --_
     from keras.models import Sequential
     from keras.layers import Dense, Activation, Flatten
     from keras.optimizers import RMSprop
@@ -134,8 +139,10 @@ if __name__ == "__main__":
     from env_0.reward import simple_reward
     from env_0.features import feature_vec_nodirection
 
-    potential_field = start_agent_and_plot(weights="test_weights_obstacle_2.hdf5", net_config=(100,30),
-                                           reward_function=simple_reward, feature_function=feature_vec_nodirection,
+    potential_field = start_agent_and_plot(weights="test_weights_obstacle_2.hdf5",
+                                           net_config=(100, 30),
+                                           reward_function=simple_reward,
+                                           feature_function=feature_vec_nodirection,
                                            seg_x=100, seg_y=100)
 
     plt.imshow(potential_field, cmap='hot')

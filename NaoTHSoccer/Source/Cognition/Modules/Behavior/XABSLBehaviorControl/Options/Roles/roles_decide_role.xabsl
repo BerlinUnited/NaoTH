@@ -41,7 +41,6 @@ option roles_decide_role
   state goalie_role {
     action
     {
-      situationStatusOwnHalf = true;
       team.is_playing_as_striker = false;
       role_goalie();
     }

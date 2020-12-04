@@ -9,6 +9,7 @@
   #include <conio.h>
   #include <windows.h>
   #include <stdio.h>
+  #include <stdlib.h>
 
 // HACK: test if I'am in the windows CMD by trying to request the console mode
 bool testCMD() 

@@ -7,7 +7,7 @@
 
 #include "SoccerStrategyProvider.h"
 #include <PlatformInterface/Platform.h>
-#include  <Tools/DataConversion.h>
+#include <Tools/StringTools.h>
 
 using namespace std;
 
@@ -24,7 +24,7 @@ SoccerStrategyProvider::FormationParameters::FormationParameters(unsigned int pl
   ASSERT( config.hasGroup(group) );
 
   num = playerNumber;
-  string p = "player"+DataConversion::toStr(playerNumber)+".";
+  string p = "player"+StringTools::toStr(playerNumber)+".";
   home.x = config.getDouble(group, p+"home.x");
   home.y = config.getDouble(group, p+"home.y");
   attr.x = config.getDouble(group, p+"attr.x");
@@ -45,7 +45,7 @@ SoccerStrategyProvider::SoccerStrategyProvider()
 void SoccerStrategyProvider::execute()
 {
   /*
-	if (getPlayerInfo().playerNumber != theFormationParameters.num)
+    if (getPlayerInfo().playerNumber != theFormationParameters.num)
   {
     theFormationParameters = FormationParameters(getPlayerInfo().playerNumber);
   }
@@ -60,14 +60,14 @@ void SoccerStrategyProvider::execute()
   PLOT("SoccerStrategyProvider:timeToBall", getSoccerStrategy().timeToBall);
 
 
-  // Heinrich: this is actually a hack, if the attack direction jumps, 
+  // Heinrich: this is actually a hack, if the attack direction jumps,
   //           then the reason is somwhere else
   // smooth the attack direction
   attackDirectionBuffer.add(getRawAttackDirection().attackDirection);
   getSoccerStrategy().attackDirection = attackDirectionBuffer.getAverage();
 
   //NEW:
-  //getSoccerStrategy().timeToTurn_afterBallAcquisition = estimateTimeFromBallTo_GoalDir(getSoccerStrategy().attackDirection, 
+  //getSoccerStrategy().timeToTurn_afterBallAcquisition = estimateTimeFromBallTo_GoalDir(getSoccerStrategy().attackDirection,
   //                                                                              getBallModel().positionPreview);
   //getSoccerStrategy().totalTime = getSoccerStrategy().timeToBall; // + getSoccerStrategy().timeToTurn_afterBallAcquisition;
 }//end execute
@@ -133,20 +133,20 @@ Vector2<double> SoccerStrategyProvider::calculateForamtion() const
 double SoccerStrategyProvider::estimateTimeToBall() const
 {
   // no future projection avaliable
-  if(getBallModel().futurePosition.empty()) {
+  //if(getBallModel().futurePosition.empty()) {
     return estimateTimeToPoint(getBallModel().positionPreview);
-  }
+  //}
 
   // check if we can intercept the ball ;)
-  for( size_t i = 0; i < getBallModel().futurePosition.size(); i++)
+  /*for( size_t i = 0; i < getBallModel().futurePosition.size(); i++)
   {
     double t = estimateTimeToPoint(getBallModel().futurePosition[i]);
     if ( t < static_cast<double>(i) ) {
       return t; // we can catch the ball
     }
   }
-  
-  return estimateTimeToPoint(getBallModel().futurePosition.back());
+
+  return estimateTimeToPoint(getBallModel().futurePosition.back());*/
 }//end estimateTimeToBall
 
 
@@ -250,7 +250,7 @@ double SoccerStrategyProvider::estimateTimeToPoint(const Vector2d& p, const doub
   double attackDir = getSoccerStrategy().attackDirection.angle();
   const double rot_around_ball_after_havingObtainedBall = (rot_ball + attackDir)/(Math::pi2) - floor((rot_ball + attackDir)/(Math::pi2)); //Wrong - Should be revised
   const double time_to_moveAroundBall = t_step * rot_around_ball_after_havingObtainedBall/rot_step;
-  
+
   const double t_total = time_to_destination + offensiveness * time_to_moveAroundBall;
 
   // Fill in the values in the representation
@@ -266,17 +266,17 @@ double SoccerStrategyProvider::estimateTimeToPoint(const Vector2d& p, const doub
 double SoccerStrategyProvider::estimateTimeToPoint(const Vector2d& p) const
 {
   FrameInfo fi = getFrameInfo();
-  MotionStatus mtst = getMotionStatus();  
+  MotionStatus mtst = getMotionStatus();
 
   if (robotIsStuck && (fi.getTime() - timeToBall_reviewIntervall < lastTimeEstimation)) {
     double t;
     if (mtst.currentMotion == motion::walk) {
       //Reduce the estimation by 10ms at each step, if robot is walking
-      t = last_timeToBallEstimation - (fi.getTime() - lastTimeEstimation); 
+      t = last_timeToBallEstimation - (fi.getTime() - lastTimeEstimation);
     }
     else {
       //If robot is not walking, don't change the estimation
-      t = last_timeToBallEstimation; 
+      t = last_timeToBallEstimation;
     }
     return t;
   }
@@ -296,17 +296,17 @@ double SoccerStrategyProvider::estimateTimeToPoint(const Vector2d& p) const
   double time_for_distance = p.abs() / speed;
   double time_for_turning = fabs(p.angle()) / turnSpeed;
   double time_for_walkStart_toward_ball = 500; //Time needed to start walking forward
- 
+
   double time_for_standing_up = 0;
   double time_for_obstacle = 0;
 
   double t = time_for_distance + time_for_turning;
 
   if ( getBodyState().fall_down_state != BodyState::upright ) {
-    t += standUpTime; // ms 
+    t += standUpTime; // ms
     time_for_standing_up = standUpTime;
   }
-  
+
   if (fi.getTime() - lastObstacleUpdate >= min((int)lastTimeToGetPastObstacle, obstacle_updateInterval)) { //If enough time has passed since the last obstacle update
     time_for_obstacle = timeToGetPastObstacle(p); //Estimated time to avoid obstacle (if there are any obstacles), updateInterval = 1000ms
     lastObstacleUpdate = fi.getTime();
@@ -315,7 +315,7 @@ double SoccerStrategyProvider::estimateTimeToPoint(const Vector2d& p) const
   else { //If an obstacle update has been performed recently
     time_for_obstacle = lastObstacleUpdate + lastTimeToGetPastObstacle - fi.getTime();
   }
-  t += time_for_obstacle;   
+  t += time_for_obstacle;
 
   if (mtst.currentMotion == motion::walk) { //If the robot is currently walking
     if (-10 < Math::toDegrees(fabs(p.angle())) && Math::toDegrees(fabs(p.angle())) < 10) { //If the robot is currently facing the target
@@ -326,7 +326,7 @@ double SoccerStrategyProvider::estimateTimeToPoint(const Vector2d& p) const
     }
   }
   t += time_for_walkStart_toward_ball;
-  
+
   getSoccerStrategy().distanceToPoint = p.abs();
   getSoccerStrategy().timeForDistance = time_for_distance;
   getSoccerStrategy().timeForTurning = time_for_turning;
@@ -335,7 +335,7 @@ double SoccerStrategyProvider::estimateTimeToPoint(const Vector2d& p) const
   getSoccerStrategy().timeForWalkstartTowardBall = time_for_walkStart_toward_ball;
 
   if (fi.getTime() - timeToBall_reviewIntervall > lastTimeEstimation) { //If enough time after last review has passed
-    if (((last_timeToBallEstimation - t) > 0.4*last_timeToBallEstimation)) { 
+    if (((last_timeToBallEstimation - t) > 0.4*last_timeToBallEstimation)) {
       // If the error of the last estimation is larger than 40% (not considering negative errors)
       robotIsStuck = true;
       // Increase the estimated time for this robot, so other robots have a chance at becoming the striker

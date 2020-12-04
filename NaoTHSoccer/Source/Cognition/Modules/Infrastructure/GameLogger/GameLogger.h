@@ -12,7 +12,6 @@
 #include <Representations/Modeling/BehaviorStateSparse.h>
 #include <Representations/Modeling/PlayerInfo.h>
 
-#include <Representations/Perception/BallPercept.h>
 #include <Representations/Perception/GoalPercept.h>
 #include <Representations/Perception/ScanLineEdgelPercept.h>
 #include <Representations/Perception/LinePercept2018.h>
@@ -29,6 +28,7 @@
 #include "Representations/Perception/MultiBallPercept.h"
 
 #include <Representations/Infrastructure/AudioData.h>
+#include <Representations/Infrastructure/AudioControl.h>
 #include "Representations/Perception/WhistlePercept.h"
 
 // tools
@@ -54,8 +54,6 @@ BEGIN_DECLARE_MODULE(GameLogger)
   REQUIRE(CameraMatrixTop)
   REQUIRE(GoalPercept)
   REQUIRE(GoalPerceptTop)
-  REQUIRE(BallPercept)
-  REQUIRE(BallPerceptTop)
 
   REQUIRE(FieldPercept)
   REQUIRE(FieldPerceptTop)
@@ -70,7 +68,6 @@ BEGIN_DECLARE_MODULE(GameLogger)
   REQUIRE(BodyStatus)
   REQUIRE(MotionStatus)
 
-  REQUIRE(AudioData)
   REQUIRE(UltraSoundReceiveData)
 
   REQUIRE(MultiBallPercept)
@@ -81,8 +78,11 @@ BEGIN_DECLARE_MODULE(GameLogger)
 
   REQUIRE(TeamMessage)
 
+  REQUIRE(AudioData)
+  PROVIDE(AudioControl) // needed to keep the device open for a bit after it's requested to stop
+
   REQUIRE(WhistlePercept)
-  END_DECLARE_MODULE(GameLogger)
+END_DECLARE_MODULE(GameLogger)
 
 class GameLogger : public GameLoggerBase
 {
@@ -117,8 +117,8 @@ private:
 private:
   // TODO: make a memory aware LogfileManager that flushes whenever a certain memory
   // treshold is reached.
-  LogfileManager < 30 > logfileManager;
-  
+  LogfileManager logfileManager;
+
   std::ofstream imageOutFile;
   FrameInfo lastTimeImageRecorded;
 
@@ -126,7 +126,10 @@ private:
   
   PlayerInfo::RobotState oldState;
   bool firstRecording;
+  
+  // audio data
   unsigned long lastAudioDataTimestamp;
+  FrameInfo timeOfLastCapture;
 
   CameraInfo::CameraID lastRecordedPlainImageID;
 };
