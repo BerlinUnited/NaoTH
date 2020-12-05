@@ -108,6 +108,7 @@ private:
 
   static double getlastComputedCollisionRight();
   static double getlastComputedCollisionLeft();
+
   static void setHeadPositionX(double rot);
   static double getHeadPositionX();
   static void setHeadPositionY(double rot);
