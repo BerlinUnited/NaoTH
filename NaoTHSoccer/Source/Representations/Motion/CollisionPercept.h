@@ -6,8 +6,8 @@
 * Definition of the class CollisionPercept
 */
 
-#ifndef __CollisionPercept_h_
-#define __CollisionPercept_h_
+#ifndef CollisionPercept_h
+#define CollisionPercept_h
 
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
@@ -82,4 +82,4 @@ namespace naoth
   };
 }
 
-#endif // __CollisionPercept_h_
+#endif // CollisionPercept_h
