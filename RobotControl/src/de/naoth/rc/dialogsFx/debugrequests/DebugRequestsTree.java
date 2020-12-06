@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -29,11 +30,13 @@ public class DebugRequestsTree implements ResponseListener
     
     /** The ui tree of the available debug requests */
     @FXML private TreeView<String> debugTree;
+    @FXML private TextField search;
     
     /** Some key shortcut definitions */
     private final KeyCombination shortcutUpdate = new KeyCodeCombination(KeyCode.F5);
     private final KeyCombination shortcutEnableEnter = new KeyCodeCombination(KeyCode.ENTER);
     private final KeyCombination shortcutEnableSpace = new KeyCodeCombination(KeyCode.SPACE);
+    private final KeyCombination shortcutDisableSearch = new KeyCodeCombination(KeyCode.ESCAPE);
     
     /** The debug command for retrieving all cognition debug requests */
     private final Command cmd_debug_cognition = new Command("Cognition:representation:get").addArg("DebugRequest");
@@ -134,6 +137,14 @@ public class DebugRequestsTree implements ResponseListener
             }
         } else if (shortcutUpdate.match(k)) {
             updateRequests();
+        } else if (shortcutDisableSearch.match(k)) {
+            search.setVisible(false);
+            search.clear();
+        } else {
+            // add the character to the search field
+            search.setVisible(true);
+            search.appendText(k.getText());
+            System.out.println(k);
         }
     }
     
