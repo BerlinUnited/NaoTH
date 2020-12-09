@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <limits.h>
 
-#include <assert.h>
 #include <vector>
 #include <string>
 
@@ -34,12 +33,7 @@ DebugCommunicator::DebugCommunicator()
 DebugCommunicator::~DebugCommunicator()
 {
   disconnect();
-
-  if (serverSocket != NULL)
-  {
-    g_socket_close(serverSocket, NULL);
-    g_object_unref(serverSocket);
-  }
+  closeServerSocket();
 }
 
 void DebugCommunicator::init(unsigned short portNum)
@@ -252,7 +246,11 @@ bool DebugCommunicator::connect(int timeout)
   // TODO: throw?
   // not initialized
   if (serverSocket == NULL) {
-    return false;
+    // re-establish server socket to accept new connections
+    init(port);
+    if (serverSocket == NULL) {
+      return false;
+    }
   }
 
   // prepare the server socket
@@ -296,10 +294,23 @@ bool DebugCommunicator::connect(int timeout)
     time_of_last_message = naoth::NaoTime::getSystemTimeInMilliSeconds();
     g_socket_set_timeout(connection, time_out_delta);
 
+    // close the server socket and reject further connections
+    closeServerSocket();
+
     return true;
   }
 
   return false;
+}
+
+void DebugCommunicator::closeServerSocket()
+{
+  if (serverSocket != NULL)
+  {
+    g_socket_close(serverSocket, NULL);
+    g_object_unref(serverSocket);
+    serverSocket = NULL;
+  }
 }
 
 void DebugCommunicator::disconnect()

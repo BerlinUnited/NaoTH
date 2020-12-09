@@ -21,6 +21,7 @@
 #include "Tools/Debug/NaoTHAssert.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugPlot.h"
+#include "Tools/Debug/DebugParameterList.h"
 
 // representations
 #include <Representations/Infrastructure/FrameInfo.h>
@@ -37,6 +38,7 @@ BEGIN_DECLARE_MODULE(InertiaSensorCalibrator)
   PROVIDE(DebugRequest)
   PROVIDE(DebugModify)
   PROVIDE(DebugPlot)
+  PROVIDE(DebugParameterList)
 
   REQUIRE(AccelerometerData)
   REQUIRE(GyrometerData)
@@ -56,12 +58,26 @@ class InertiaSensorCalibrator: private InertiaSensorCalibratorBase
 {
 public:
   InertiaSensorCalibrator();
+  ~InertiaSensorCalibrator();
 
   void execute();
 
 private:
   bool intentionallyMoving();
   void reset();
+
+  class Parameter : public ParameterList
+  {
+  public:
+    Parameter() : ParameterList("InertiaSensorCalibrator")
+    {
+      PARAMETER_REGISTER(disable) = false;
+      syncWithConfig();
+    }
+
+    bool disable;
+
+  } parameter;
 
 private:
 

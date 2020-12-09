@@ -8,23 +8,27 @@
 #include "BatteryAlert.h"
 
 BatteryAlert::BatteryAlert()
-{
-}
-
-BatteryAlert::~BatteryAlert()
+  : timeWhenLastPlayedSound(0)
 {
 }
 
 void BatteryAlert::execute()
 {
-  //since battery is lower than 6% repeat sound every 22s
-  static double whenPlayed = getFrameInfo().getTimeInSeconds();
+  const double minimalCharge = 0.06; // 6%
+  const double soundRepeatInterval = 22000; // 22s
 
-  if(getBatteryData().charge < 0.06 && getFrameInfo().getTimeInSeconds() - whenPlayed > 22) {
-    whenPlayed = getFrameInfo().getTimeInSeconds();
+  //if the battery is lower than 6% repeat sound every 22s
+  if(getBatteryData().charge < minimalCharge &&  
+     getBodyState().isDischarging && // only make noise it not charging
+     getFrameInfo().getTime() > timeWhenLastPlayedSound + soundRepeatInterval) 
+  {
+    timeWhenLastPlayedSound = getFrameInfo().getTime();
     getSoundPlayData().mute = false;
     getSoundPlayData().soundFile = "battery_low.wav";
-  } else if (getSoundPlayData().soundFile == "battery_low.wav"){
+  } 
+  // HACK: we assume that getSoundPlayData() was not changed by any other module
+  else if (getSoundPlayData().soundFile == "battery_low.wav")
+  {
     getSoundPlayData().mute = true;
     getSoundPlayData().soundFile = "";
   }

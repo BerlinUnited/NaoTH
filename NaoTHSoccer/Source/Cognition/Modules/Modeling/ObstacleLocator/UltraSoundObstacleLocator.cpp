@@ -19,6 +19,13 @@ UltraSoundObstacleLocator::UltraSoundObstacleLocator()
   DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawObstacle", "draw the modelled Obstacle on the field", false);
   DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawSensorData", "draw the measured echos", false);
   DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawBuffer", "draw buffer of measurements", false);
+
+  getDebugParameterList().add(&parameters);
+}
+
+UltraSoundObstacleLocator::~UltraSoundObstacleLocator() 
+{
+  getDebugParameterList().remove(&parameters);
 }
 
 void UltraSoundObstacleLocator::execute()
@@ -61,8 +68,8 @@ void UltraSoundObstacleLocator::drawObstacleModel()
     FIELD_DRAWING_CONTEXT;
     Color colorLeft(Color::blue);
     Color colorRight(Color::red);
-    colorLeft[Color::alpha] = 0.5;
-    colorRight[Color::alpha] = 0.5;
+    colorLeft[Color::Alpha] = 0.5;
+    colorRight[Color::Alpha] = 0.5;
     // draw raw sensor data
     for(unsigned int i = 0; i < UltraSoundReceiveData::numOfUSEcho; i++)
     {
@@ -86,6 +93,7 @@ void UltraSoundObstacleLocator::drawObstacleModel()
   
   // draw model
   DEBUG_REQUEST("UltraSoundObstacleLocator:drawObstacle",
+	FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 50);
     CIRCLE(
       getObstacleModel().leftDistance,
@@ -105,6 +113,8 @@ void UltraSoundObstacleLocator::drawObstacleModel()
 
 bool UltraSoundObstacleLocator::isNewDataAvaliable() const
 {
+  // NOTE: this can lead to unexpected/undesired behavior, if the sensor - for whatever reson -
+  //       returns the same data for some time!
   for(int i = 0; i < UltraSoundReceiveData::numOfUSEcho; i++) {
     if(getUltraSoundReceiveData().dataLeft[i] != lastValidUltraSoundReceiveData.dataLeft[i] ||
        getUltraSoundReceiveData().dataRight[i] != lastValidUltraSoundReceiveData.dataRight[i])

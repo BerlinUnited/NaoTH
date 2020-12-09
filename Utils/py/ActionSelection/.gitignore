@@ -1,4 +1,7 @@
+# ignore generated data
+*.pickle
+*.txt
+*.png
+
+# ignore test folder
 test/*
-test2/*
-statistics/*
-experimental/*

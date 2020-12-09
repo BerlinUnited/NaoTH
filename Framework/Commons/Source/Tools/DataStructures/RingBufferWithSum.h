@@ -3,7 +3,7 @@
  *
  * Declaration of template class RingBufferWithSum
  *
- * @author Matthias Jüngel
+ * @author Matthias Juengel
  * @author Tobias Oberlies
  */
 
@@ -11,7 +11,7 @@
 #define _RingBufferWithSum_h_
 
 #include <algorithm>
-#include <assert.h>
+#include <cassert>
 
 /**
  * @class RingBufferWithSum
@@ -78,10 +78,12 @@ template <class C, int n> class RingBufferWithSum
     // copied from AustinVilla 2012
     C getMedian() const
     {
+      // Return 0 if buffer is empty
+      if (0==numberOfEntries) return C();
       C temp[n];
-      memcpy(temp,buffer,n * sizeof(C));
-      int mid = (int)(n/2);
-      std::nth_element(temp,temp+mid,temp+n);
+      memcpy(temp,buffer,numberOfEntries * sizeof(C));
+      int mid = (int)(numberOfEntries/2);
+      std::nth_element(temp,temp+mid,temp+numberOfEntries);
       return temp[mid];
     }
 
@@ -123,7 +125,7 @@ template <class C, int n> class RingBufferWithSum
       return numberOfEntries == n;
     }
 
-  private:
+  protected:
     int current;
     int numberOfEntries;
     C buffer[n];

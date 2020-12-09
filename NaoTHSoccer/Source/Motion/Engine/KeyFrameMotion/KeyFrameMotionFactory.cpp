@@ -14,11 +14,10 @@
 
 #include <cstdio>
 #include <fstream>
-//#include <dirent.h>
 #include <iostream>
 
-
 using namespace naoth;
+using namespace std;
 
 KeyFrameMotionFactory::KeyFrameMotionFactory()
 {

@@ -17,7 +17,6 @@
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/InertialSensorData.h>
-#include <Representations/Infrastructure/IRData.h>
 #include <Representations/Infrastructure/CameraSettings.h>
 #include <Representations/Infrastructure/ButtonData.h>
 #include <Representations/Infrastructure/FSRData.h>
@@ -35,11 +34,9 @@
 //in runtime as constant defined width and heigth of the input image
 #include "Representations/Infrastructure/CameraInfoConstants.h"
 
-#include "LogFileScanner.h"
+#include <Tools/Logfile/LogFileScanner.h>
 #include "LogProviderModule.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
-
-#define CYCLE_TIME 20
 
 class Simulator : public PlatformInterface
 {
@@ -51,8 +48,10 @@ public:
   virtual std::string getBodyNickName() const {return "naoth"; }
   virtual std::string getHeadNickName() const {return "naoth"; }
   virtual std::string getRobotName() const { return "naoth-logsimulator"; }
+  virtual std::string getPlatformName() const { return "LogSimulator"; }
+  virtual unsigned int getBasicTimeStep() const { return 20; }
 
-  void main();
+  void main(bool start = false);
 
   void printRepresentations();
   void printHelp();
@@ -92,7 +91,6 @@ public:
   SIM_GET(GyrometerData);
   SIM_GET(FSRData);
   SIM_GET(InertialSensorData);
-  SIM_GET(IRReceiveData);
   SIM_GET(CurrentCameraSettings);
   SIM_GET(ButtonData);
   SIM_GET(BatteryData);
@@ -103,7 +101,6 @@ public:
   //virtual void set(const MotorJointData& /*data*/){};
   //virtual void set(const CameraSettingsRequest& /*data*/){};
   //virtual void set(const LEDData& /*data*/){};
-  //virtual void set(const IRSendData& /*data*/){};
   //virtual void set(const UltraSoundSendData& /*data*/){};
   //virtual void set(const SoundData& /*data*/){};
 
@@ -124,9 +121,9 @@ protected:
 
 
 public:
-  // the flag for backend mode, which is used by LogfilePlayer of RobotControl
+  // the flag for backend mode, which is enables reading commands from stdin
   bool backendMode;
-  // play the logfie according to the time of the frames
+  // play the logfile according to the time of the frames
   bool realTime;
 
   LogFileScanner logFileScanner;

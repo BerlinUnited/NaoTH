@@ -10,8 +10,11 @@
 #endif //WIN32
 
 #include <sstream>
+#include <cctype>
 
 #include "Simulator.h"
+
+#include "Tools/ThreadUtil.h"
 #include "Tools/NaoTime.h"
 
 #include <Messages/Framework-Representations.pb.h>
@@ -23,7 +26,7 @@ using namespace std;
 using namespace naoth;
 
 Simulator::Simulator(const std::string& filePath, bool backendMode, bool realTime, unsigned short port)
-: PlatformInterface("LogSimulator", CYCLE_TIME),
+  : 
   backendMode(backendMode),
   realTime(realTime),
   logFileScanner(filePath),
@@ -42,7 +45,6 @@ Simulator::Simulator(const std::string& filePath, bool backendMode, bool realTim
   registerInput<FSRData>(*this);
   registerInput<GyrometerData>(*this);
   registerInput<InertialSensorData>(*this);
-  registerInput<IRReceiveData>(*this);
   registerInput<CurrentCameraSettings>(*this);
   registerInput<ButtonData>(*this);
   registerInput<BatteryData>(*this);
@@ -112,7 +114,11 @@ void Simulator::printHelp()
 void Simulator::printCurrentLineInfo()
 {
   if(logFileScanner.begin() == logFileScanner.end()) {
-    cout << "The logfile seem to be empty.\t\r";
+    if(backendMode) {
+      cout << "The logfile seems to be empty." << std::endl;
+    } else {
+      cout << "The logfile seems to be empty.\t\r";
+    }
     return;
   }
   
@@ -120,21 +126,25 @@ void Simulator::printCurrentLineInfo()
   LogFileScanner::FrameIterator end = logFileScanner.last();
 
   // output some informations about the current frame
-  if(!backendMode) {
+  if(backendMode) {
+    cout << "[" << *currentFrame << "|" << *begin << "-" << *end << "]" << std::endl;
+  } else {
     cout << "[" << *currentFrame << "|" << *begin << "-" << *end << "]\t\r";
   }
 }//end printCurrentLineInfo
 
 char Simulator::getInput()
 {
+  int input;
   if (backendMode) {
-    return static_cast<char>(getchar());
+    input = getchar();
   } else {
-    return static_cast<char>(getch());
+    input = getch();
   }
+  return static_cast<char>(std::tolower(input));
 }
 
-void Simulator::main()
+void Simulator::main(bool autostart)
 {
   init();
 
@@ -142,36 +152,48 @@ void Simulator::main()
   printHelp();
 
   jumpToBegin();
-
-  char c;
-  while((c = getInput()) && c != 'q' && c != 'x')
-  {
-    if(c == 'd') {
-      stepForward();
-    } else if(c == 'a') {
-      stepBack();
-    } else if(c == 'w') {
-      jumpToBegin();
-    } else if(c == 's') {
-      jumpToEnd();
-    } else if(c == 'g') {
-      // read jump position
-      unsigned int jpos;
-      cout << " goto position: ";
-      cin >> jpos;
-      jumpTo(jpos);
-    } else if(c == 'p') {
-      play(false);
-    } else if(c == 'l') {
-      play(true);
-    } else if(c == 'r') {
-      executeCurrentFrame();
-    } else if(c == 'h') {
-      printHelp();
-      printCurrentLineInfo();
-    }
-  }// while
-
+	if (autostart){
+		play(false);
+	}
+	else{
+		char c;
+		while ((c = getInput()) && c != 'q' && c != 'x')
+		{
+			if (c == 'd') {
+				stepForward();
+			}
+			else if (c == 'a') {
+				stepBack();
+			}
+			else if (c == 'w') {
+				jumpToBegin();
+			}
+			else if (c == 's') {
+				jumpToEnd();
+			}
+			else if (c == 'g') {
+				// read jump position
+				unsigned int jpos;
+				cout << " goto position: ";
+				cin >> jpos;
+				jumpTo(jpos);
+			}
+			else if (c == 'p') {
+				play(false);
+			}
+			else if (c == 'l') {
+				play(true);
+			}
+			else if (c == 'r') {
+				executeCurrentFrame();
+			}
+			else if (c == 'h') {
+				printHelp();
+				printCurrentLineInfo();
+			}
+		}// while
+	}
+  
   cout << endl << "bye bye!" << endl;
 }//end main
 
@@ -203,16 +225,13 @@ void Simulator::play(bool loop)
 
     // wait at least 5ms but max 1s
     unsigned int waitTime = Math::clamp((int)maxTimeToWait - (int)calculationTime, 5, 1000);
-
+    ThreadUtil::sleep(waitTime);
 
 #ifdef WIN32
-    Sleep(waitTime);
     if(_kbhit()) {
       c = getInput();
     }
 #else
-    // wait some time
-    usleep(waitTime * 1000);
     c = getInput();
 #endif
 
@@ -288,7 +307,7 @@ void Simulator::jumpTo(unsigned int position)
   } else {
     cout << "frame not found!" << endl;
     currentFrame = oldPos;
-    if(!backendMode) { printCurrentLineInfo(); }
+    printCurrentLineInfo();
   }
 }//end jumpTo
 
@@ -354,6 +373,7 @@ void Simulator::adjust_frame_time()
   string result = f.SerializeAsString();
   frameData.data.resize(result.size());
   std::copy ( result.begin(), result.end(), frameData.data.begin() );
+  frameData.valid = true;
 }//end adjust_frame_time
 
 

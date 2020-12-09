@@ -20,12 +20,11 @@ Sensor::~Sensor()
 void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
 {
   // read RobotInfo
-  RobotInfo& robot = getRobotInfo();
-  robot.platform = platform.getName();
-  robot.headNickName = platform.getHeadNickName();
-  robot.bodyNickName = platform.getBodyNickName();
-  robot.bodyID = platform.getBodyID();
-  robot.basicTimeStep = platform.getBasicTimeStep();
+  getRobotInfo().platform = platform.getPlatformName();
+  getRobotInfo().headNickName = platform.getHeadNickName();
+  getRobotInfo().bodyNickName = platform.getBodyNickName();
+  getRobotInfo().bodyID = platform.getBodyID();
+  getRobotInfo().basicTimeStep = platform.getBasicTimeStep();
   
   REG_INPUT(Image);
   REG_INPUT(ImageTop);
@@ -43,7 +42,8 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(UltraSoundReceiveData);
   REG_INPUT(BatteryData);
   REG_INPUT(ButtonData);
-  REG_INPUT(IRReceiveData);
+  REG_INPUT(CpuData);
+  REG_INPUT(AudioData);
   
   REG_INPUT(GPSData);
   REG_INPUT(TeamMessageDataIn);
@@ -51,16 +51,16 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(GameData);
   REG_INPUT(DebugMessageInCognition);
 
-  REG_INPUT(WhistlePercept);
-
   platformInterface.registerBufferedInputChanel(getCameraMatrixBuffer());
   platformInterface.registerBufferedInputChanel(getCameraMatrixBufferTop());
   platformInterface.registerInputChanel(getMotionStatus());
   platformInterface.registerInputChanel(getOdometryData());
   platformInterface.registerInputChanel(getCalibrationData());
   platformInterface.registerInputChanel(getInertialModel());
+  platformInterface.registerInputChanel(getIMUData());
   platformInterface.registerInputChanel(getBodyStatus());
   platformInterface.registerInputChanel(getGroundContactModel());
+  platformInterface.registerInputChanel(getCollisionPercept());
 }//end init
 
 
@@ -77,6 +77,8 @@ void Sensor::execute()
   if (getRemoteMessageDataIn().data.size() > 0 ) {
     std::stringstream ss(getRemoteMessageDataIn().data.back());
     Serializer<RemoteControlCommand>::deserialize(ss, getRemoteControlCommand());
+
+    getRemoteControlCommand().frameInfoWhenUpdated = getFrameInfo();
   }
 
 }//end execute

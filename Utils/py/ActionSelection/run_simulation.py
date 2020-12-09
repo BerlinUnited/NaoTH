@@ -1,62 +1,73 @@
-import math
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
 from tools import action as a
 from tools import Simulation as Sim
-from naoth import math2d as m2d
 from tools import tools
+from state import State
 
+"""
+This module visualizes the samples and the decision calculated by the Simulation Based Algorithm.
+The red circles represents a sample. The white circle is the robot. The yellow circle is the mean
+of the samples and the blue circle is the median of the samples. The position of the robot and the
+relative ball position can be changed by modifying the state class.
 
-class State:
-    def __init__(self):
-        self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(4200, 0)
-        self.pose.rotation = math.radians(0)
+Example:
+    run without any parameters
 
-        self.ball_position = m2d.Vector2(100.0, 0.0)
-
-        self.obstacle_list = ([])  # is in global coordinates
+        $ python run_simulation.py
+"""
 
 
 def draw_actions(actions_consequences, state, best_action):
     plt.clf()
-    tools.draw_field()
+    tools.draw_field(plt.gca())
 
     axes = plt.gca()
-    axes.add_artist(Circle(xy=(state.pose.translation.x, state.pose.translation.y), radius=100, fill=False, edgecolor='white'))
-    axes.text(0, 0, best_action, fontsize=12)
+    axes.add_artist(
+        Circle(xy=(state.pose.translation.x, state.pose.translation.y), radius=100, fill=False,
+               edgecolor='white'))
+    axes.text(-4500, 3150, best_action, fontsize=12)
 
     x = np.array([])
     y = np.array([])
 
     for consequence in actions_consequences:
+        expected_ball_pos_mean = state.pose * consequence.expected_ball_pos_mean
+        expected_ball_pos_median = state.pose * consequence.expected_ball_pos_median
+        axes.add_artist(
+            Circle(xy=(expected_ball_pos_mean.x, expected_ball_pos_mean.y), radius=100, fill=False,
+                   edgecolor='yellow'))
+        axes.add_artist(
+            Circle(xy=(expected_ball_pos_median.x, expected_ball_pos_median.y), radius=100,
+                   fill=False, edgecolor='blue'))
         for particle in consequence.positions():
             ball_pos = state.pose * particle.ball_pos  # transform in global coordinates
 
             x = np.append(x, [ball_pos.x])
             y = np.append(y, [ball_pos.y])
 
-    plt.scatter(x, y, c='r', alpha=0.5)
+    plt.scatter(x, y, c='r', alpha=0.5, zorder=100)
     plt.pause(0.0001)
 
 
 def main():
-    state = State()
+    state = State(1000, 0)
 
     no_action = a.Action("none", 0, 0, 0, 0)
-    kick_short = a.Action("kick_short", 780, 150, 8.454482265522328, 6.992268841997358)
-    sidekick_left = a.Action("sidekick_left", 750, 150, 86.170795364136380, 10.669170653645670)
-    sidekick_right = a.Action("sidekick_right", 750, 150, -89.657943335302260, 10.553726275058064)
+    kick_short = a.Action("kick_short", 1080, 150, 0, 7)
+    sidekick_left = a.Action("sidekick_left", 750, 150, 90, 10)
+    sidekick_right = a.Action("sidekick_right", 750, 150, -90, 10)
 
     action_list = [no_action, kick_short, sidekick_left, sidekick_right]
 
-    while True:
+    while plt.get_fignums():
         actions_consequences = []
         # Simulate Consequences
         for action in action_list:
             single_consequence = a.ActionResults([])
-            actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state))
+            actions_consequences.append(
+                Sim.simulate_consequences(action, single_consequence, state, 40))
 
         # actions_consequences is now a list of ActionResults
 

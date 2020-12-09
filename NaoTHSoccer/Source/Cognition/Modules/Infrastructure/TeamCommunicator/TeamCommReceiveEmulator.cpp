@@ -18,11 +18,11 @@ void TeamCommReceiveEmulator::execute() {
   //If enough time has passed, place another message in the inbox
   if (nextMessageTime <= getFrameInfo().getTime()) {
     
-    TeamMessage::Data messageData;
-    messageData.playerNum = robotNumber;
+    TeamMessageData messageData;
+    messageData.playerNumber = robotNumber;
     messageData.frameInfo = getFrameInfo();
 
-    getTeamMessage().data[messageData.playerNum] = messageData;
+    getTeamMessage().data[messageData.playerNumber] = messageData;
 
     //Generate the frame number, at which we are going to receive the next message
     if (parameters.normalDistribution) {

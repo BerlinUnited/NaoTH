@@ -21,9 +21,8 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("sensor.ultrasound.left", &simplePassLeftSensor);
   engine.registerDecimalInputSymbol("sensor.ultrasound.right", &simplePassRightSensor);
 
-  engine.registerDecimalInputSymbol("button.remote", &getIRButtonNumber);
-
-  engine.registerDecimalInputSymbol("platform.battery", &getBatteryData().charge);
+  //engine.registerDecimalInputSymbol("platform.battery", &getBatteryData().charge);
+  engine.registerDecimalInputSymbol("platform.battery", &getBodyState().batteryCharge);
 
   engine.registerEnumElement("fall_down_state", "fall_down_state.undefined", BodyState::undefined);
   engine.registerEnumElement("fall_down_state", "fall_down_state.upright", BodyState::upright);
@@ -34,15 +33,17 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
 
   engine.registerEnumeratedInputSymbol("fall_down_state", "fall_down_state", &getFallDownState);
 
-
   engine.registerDecimalInputSymbol("body.temperature.leg.left", &getBodyState().temperatureLeftLeg);
   engine.registerDecimalInputSymbol("body.temperature.leg.right", &getBodyState().temperatureRightLeg);
-
 
   engine.registerBooleanInputSymbol("body.foot.groundcontact.left", &getBodyState().standByLeftFoot);
   engine.registerBooleanInputSymbol("body.foot.groundcontact.right", &getBodyState().standByRightFoot);
   engine.registerDecimalInputSymbol("body.foot.groundcontact.statetime", &getFootStateTime);
 
+  engine.registerBooleanInputSymbol("body.lifted_up", &getBodyState().isLiftedUp);
+
+  engine.registerBooleanInputSymbol("body.collision.arm.left", &getCollisionArmLeft);
+  engine.registerBooleanInputSymbol("body.collision.arm.right", &getCollisionArmRight);
 
   engine.registerDecimalInputSymbol("platform.frameNumber", &getFrameNumber);
 
@@ -51,25 +52,18 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("obstacle.ultrasound.right.distance", &getObstacleDistanceRight);
   engine.registerDecimalInputSymbol("obstacle.ultrasound.blockedtime", &getBlockedTime);
 
-  engine.registerBooleanInputSymbol("collision.colliding", &getCollisionModel().isColliding);
-
-  // integrated obstacle model
-  engine.registerDecimalInputSymbol("path.next_point_to_go_x", &getPath().nextPointToGo.x);
-  engine.registerDecimalInputSymbol("path.next_point_to_go_y", &getPath().nextPointToGo.y);
-  engine.registerDecimalInputSymbol("path.time_since_not_valid", &getTimeNoNodeExpandable);
-
-  // target to control the path
-  engine.registerDecimalOutputSymbol("path.target_x", &setTargetpointX, &getTargetPointX);
-  engine.registerDecimalOutputSymbol("path.target_y", &setTargetpointY, &getTargetPointY);
-  
-  engine.registerBooleanInputSymbol("button.bumper.pressed.left", &getBumberLeftPressed);
+  engine.registerBooleanInputSymbol("button.bumper.pressed.left", &getBumperLeftPressed);
+  engine.registerBooleanInputSymbol("button.bumper.pressed.right", &getBumperRightPressed);
   engine.registerBooleanInputSymbol("button.head.pressed.front", &getButtonHeadFront);
   engine.registerBooleanInputSymbol("button.head.pressed.middle", &getButtonHeadMiddle);
   engine.registerBooleanInputSymbol("button.head.pressed.rear", &getButtonHeadRear);
 
-  engine.registerBooleanInputSymbol("battery.isDischarging", &getisDischarging);
+  // deprecated?
+  engine.registerBooleanInputSymbol("battery.isDischarging", &getBodyState().isDischarging);
+  engine.registerBooleanInputSymbol("battery.isCharging", &getBodyState().isCharging);
 
-  engine.registerDecimalOutputSymbol("whistle.switch",&setWhistleSwitch, &getWhistleSwitch);
+  engine.registerBooleanOutputSymbol("audio.capture", &getAudioControl().capture);
+
 }//end registerSymbols
 
 SensorSymbols* SensorSymbols::theInstance = NULL;
@@ -83,22 +77,17 @@ void SensorSymbols::execute()
 
 }//end execute
 
-double SensorSymbols::getWhistleSwitch(){
-  return theInstance->getWhistleControl().onOffSwitch;
-}
-
-void SensorSymbols::setWhistleSwitch(double whistle){
-  theInstance->getWhistleControl().onOffSwitch = (int)whistle;
-}
-
-bool SensorSymbols::getisDischarging()
+bool SensorSymbols::getBumperLeftPressed()
 {
-  return theInstance->getBodyState().isDischarging;
+    return theInstance->getButtonData().isPressed[ButtonData::LeftFootLeft] || theInstance->getButtonData().isPressed[ButtonData::LeftFootRight];
+  /*return (theInstance->getButtonData().eventCounter[ButtonData::LeftFootLeft] > 0) ||
+         (theInstance->getButtonData().eventCounter[ButtonData::LeftFootRight] > 0);*/
 }
-bool SensorSymbols::getBumberLeftPressed()
+bool SensorSymbols::getBumperRightPressed()
 {
-  return (theInstance->getButtonData().eventCounter[ButtonData::LeftFootLeft] > 0) ||
-         (theInstance->getButtonData().eventCounter[ButtonData::LeftFootRight] > 0);
+    return theInstance->getButtonData().isPressed[ButtonData::RightFootLeft] || theInstance->getButtonData().isPressed[ButtonData::RightFootRight];
+    /*return (theInstance->getButtonData().eventCounter[ButtonData::LeftFootLeft] > 0) ||
+    (theInstance->getButtonData().eventCounter[ButtonData::LeftFootRight] > 0);*/
 }
 bool SensorSymbols::getButtonHeadFront()
 {
@@ -111,11 +100,6 @@ bool SensorSymbols::getButtonHeadMiddle()
 bool SensorSymbols::getButtonHeadRear()
 {
   return (theInstance->getButtonData().isPressed[ButtonData::HeadRear]);
-}
-
-double SensorSymbols::getIRButtonNumber()
-{
-  return (double)(theInstance->getIRReceiveData().data[IRReceiveData::RightRCByte2]);
 }
 
 double SensorSymbols::getFrameNumber()
@@ -193,27 +177,16 @@ double SensorSymbols::getInertialSensorY()
   return Math::toDegrees(theInstance->getInertialSensorData().data.y);
 }
 
-double SensorSymbols::getTargetPointX()
+bool SensorSymbols::getCollisionArmLeft()
 {
-  return theInstance->getPath().targetPoint.x;
+  return
+    theInstance->getCollisionPercept().timeCollisionArmLeft > 0 &&
+    theInstance->getFrameInfo().getTimeSince(theInstance->getCollisionPercept().timeCollisionArmLeft) < 100;
 }
 
-double SensorSymbols::getTargetPointY()
+bool SensorSymbols::getCollisionArmRight()
 {
-  return theInstance->getPath().targetPoint.y;
-}
-
-double SensorSymbols::getTimeNoNodeExpandable()
-{
-  return theInstance->getPath().getTimeNoNodeExpandable();
-}
-
-void SensorSymbols::setTargetpointX(double targetX)
-{
-  theInstance->getPath().targetPoint.x = targetX;
-}
-
-void SensorSymbols::setTargetpointY(double targetY)
-{
-  theInstance->getPath().targetPoint.y = targetY;
+  return
+    theInstance->getCollisionPercept().timeCollisionArmRight > 0 &&
+    theInstance->getFrameInfo().getTimeSince(theInstance->getCollisionPercept().timeCollisionArmRight) < 100;
 }

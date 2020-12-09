@@ -21,8 +21,7 @@ public class OSXUSBStorageDeviceManager extends USBStorageDeviceManager {
     
     private static final String DEVICE_LIST_CMD = "system_profiler SPUSBDataType";
     
-    private final static Pattern MOUNT_POINT_DEVICE_LIST_PATTERN = Pattern.compile("^.{18}Mount Point: (\\S+)$");
-    private final static Pattern NAME_DEVICE_LIST_PATTERN = Pattern.compile("^\\s{12}(\\S.*):$");
+    private final static Pattern MOUNT_POINT_DEVICE_LIST_PATTERN = Pattern.compile("^.*Mount Point: (.+)$");
     
     @Override
     public List<USBStorageDevice> getUSBStorageDevices() {
@@ -41,7 +40,7 @@ public class OSXUSBStorageDeviceManager extends USBStorageDeviceManager {
             return usbDevices;
         }
         
-        String currentDevice = "";
+        String currentDevice = "USB Device";
         
         String outputLine;
         
@@ -49,13 +48,6 @@ public class OSXUSBStorageDeviceManager extends USBStorageDeviceManager {
 
         try {
             while ((outputLine = output.readLine()) != null) {               
-                
-                matcher = NAME_DEVICE_LIST_PATTERN.matcher(outputLine);
-                
-                if (matcher.matches()) {
-                    currentDevice = matcher.group(1);
-                    continue;
-                }
                 
                 matcher = MOUNT_POINT_DEVICE_LIST_PATTERN.matcher(outputLine);
                 

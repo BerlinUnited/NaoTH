@@ -9,8 +9,10 @@
 #define FIELDCOLORPERCEPT_H
 
 #include <algorithm>
-#include <Tools/DataStructures/Printable.h>
 #include <Tools/Math/Common.h>
+#include <Tools/Math/Vector2.h>
+
+#include <Tools/DataStructures/Printable.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 
 using namespace naoth;
@@ -84,6 +86,16 @@ public:
     };
 
   public:
+
+    HSISeparatorOptimized()
+      : distMin(0), distMax(0)
+    {
+      // initialize the array
+      for(size_t i=0; i < 256; i++)
+      {
+        brightnessThreshold[i] = 0;
+      }
+    }
 
     void set(const Parameter& p) {
       setColor(p.colorAngleCenter, p.colorAngleWith);
@@ -187,7 +199,7 @@ public:
     inline bool noColor(int y, int u, int v) const {
       const double brightnesAlpha = (brightnesConeRadiusWhite - brightnesConeRadiusBlack) / (double)(255 - brightnesConeOffset);
       double cromaThreshold = std::max(brightnesConeRadiusBlack, brightnesConeRadiusBlack + brightnesAlpha * (double)(y-brightnesConeOffset));
-      return Vector2d(u - 128, v - 128).abs() < cromaThreshold;
+      return Vector2d(u - 128, v - 128).abs2() < cromaThreshold*cromaThreshold;
     }
   };
 

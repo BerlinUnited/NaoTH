@@ -15,7 +15,8 @@
 #include "Vector2.h"
 #include "Pose2D.h"
 
-namespace Math {
+namespace Math 
+{
 
 /** Defines a (infinite) line by a base point and direction */
 class Line
@@ -49,22 +50,21 @@ public:
   {
     Vector2d normal(-other.direction.y, other.direction.x);
     double t = normal*direction;
-    if(t == 0) return std::numeric_limits<double>::infinity(); // the lines are paralell
-    return normal*(other.base-base)/(t);
+    if(t == 0) { // the lines are parallel
+      return std::numeric_limits<double>::infinity(); 
+    }
+    return (normal*(other.base-base)) / t;
   }
 
-  double minDistance(const Vector2d& p) const
-  {
+  double minDistance(const Vector2d& p) const {
     return std::fabs(direction.x*(p.y-base.y)-direction.y*(p.x-base.x));
   }
 
-  double project(const Vector2d& p) const
-  {
+  double project(const Vector2d& p) const {
     return direction*p - direction*base;
   }
 
-  Vector2d projection(const Vector2d& p) const
-  {
+  Vector2d projection(const Vector2d& p) const {
     return point(project(p));
   }
 };
@@ -87,6 +87,14 @@ public:
     length = direction.abs();
     direction.normalize();
   }
+
+  template <class V>
+  LineSegment(const Vector2<V>& base, const Vector2<V>& direction, double length)
+    : Line(base,direction),
+      length(length)
+  {
+  }
+
   ~LineSegment(){}
 
   const Vector2d& begin() const { return base; }
@@ -106,13 +114,15 @@ public:
     return 0.0 <= t && t <= length;
   }
 
-  /** projection of the point to the line */
+  /*
+  // projection of the point to the line not to closest point on linesegment, if needed please adjust
   double project(const Vector2d& p) const
   {
     return direction*p - direction*base;
   }
+  */
 
-  /** projection of the point to the line */
+  /** projection of the point to the linesegment */
   Vector2d projection(const Vector2d& p) const
   {
     double t = direction*p - direction*base;
@@ -120,62 +130,9 @@ public:
   }
 
   /** Minimal distance to a point (2D). Will check the borders of the segment. */
-  double minDistance(const Vector2d& p) const
-  {
+  double minDistance(const Vector2d& p) const {
     return (projection(p) - p).abs();
   }
-};
-
-class Intersection
-{
-public:
-  enum IntersectionType
-  {
-    unknown, //equals ColorClasses::none
-    T, //1 line intersect an other, equals ColorClasses::orange
-    L, //2 lines touch, equals ColorClasses::yellow
-    C, //lines intersect on/with circle, equals ColorClasses::skyblue
-    E, //line extends an other, equals ColorClasses::white
-    X, //2 intersect each other, equals ColorClasses::red
-    none //the line segments don't intersect
-  };
-
-  Intersection(const LineSegment& segmentOne, const LineSegment& segmentTwo)
-    : segmentOne(segmentOne),
-      segmentTwo(segmentTwo)
-  {
-    double s = segmentOne.Line::intersection(segmentTwo);
-    double t = segmentTwo.Line::intersection(segmentOne);
-    
-    double angleDiff = fabs(Math::normalize(segmentOne.getDirection().angle() - segmentTwo.getDirection().angle()));
-    angleDiff = std::min(angleDiff, Math::pi - angleDiff);
-
-    if(segmentOne.getLength() < s || 
-       s < 0 || 
-       segmentTwo.getLength() < t || 
-       t < 0 ||
-       angleDiff < Math::pi_2 - 0.85 || 
-       angleDiff > Math::pi_2 + 0.85 ) // 0.85 = 5deg
-      type = none;
-    else if(angleDiff > 0.85 * 2.0 && angleDiff < Math::pi_2 - 0.85 * 2.0 )
-      type = C;
-    else if(0 < s && s < segmentOne.getLength() && 0 < t && t < segmentTwo.getLength())
-      type = X;
-    else if((0 < s && s < segmentOne.getLength()) || (0 < t && t < segmentTwo.getLength()))
-      type = T;
-    else
-      type = L;
-
-    pos = segmentOne.point(s);
-  }
-
-  ~Intersection(){}
-
-  IntersectionType type;
-  Vector2<int> pos; /**< The fieldcoordinates of the intersection */
-  LineSegment segmentOne;
-  LineSegment segmentTwo;
-
 };
 
 }//end namespace Math

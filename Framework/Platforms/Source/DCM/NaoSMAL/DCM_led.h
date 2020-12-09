@@ -9,13 +9,14 @@
 #define	_DCM_led_h_
 
 #include <string>
-#include <sstream>
-#include <iostream>
 
 #include <boost/shared_ptr.hpp>
-#include <alvalue/alvalue.h>
 
-#include "alincludes.h"
+#include <alvalue/alvalue.h>
+#include <alcommon/albroker.h>
+#include <alproxies/dcmproxy.h>
+
+#include "Representations/Infrastructure/LEDData.h"
 
 namespace naoth
 {

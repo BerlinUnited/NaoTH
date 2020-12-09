@@ -9,7 +9,7 @@
 #define _LogProviderModule_h_
 
 #include <ModuleFramework/Module.h>
-#include "LogFileScanner.h"
+#include <Tools/Logfile/LogFileScanner.h>
 
 #include <Tools/Debug/DebugRequest.h>
 
@@ -42,7 +42,6 @@ public:
     exludeMap.insert("FSRData");
     exludeMap.insert("GyrometerData");
     exludeMap.insert("InertialSensorData");
-    exludeMap.insert("IRReceiveData");
     exludeMap.insert("CurrentCameraSettings");
     exludeMap.insert("ButtonData");
     exludeMap.insert("BatteryData");

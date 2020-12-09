@@ -9,7 +9,7 @@
 #include "Trace.h"
 #include "NaoTHAssert.h"
 #include <sstream>
-#include "Tools/SynchronizedFileWriter.h"
+#include "Tools/FileUtils.h"
 #include "Tools/NaoTime.h"
 #include <string.h>
 
@@ -43,14 +43,15 @@ void Trace::dump()
   // write to file
   std::stringstream dumpName;
   dumpName << "trace.dump." << naoth::NaoTime::getSystemTimeInMicroSeconds();
-  SynchronizedFileWriter::saveStreamToFile(sstream, dumpName.str());
+  FileUtils::writeStreamToFile(sstream, dumpName.str());
 }//end dump
 
  
 std::ostream& operator<<(ostream& stream, const Trace& trace) 
 {
   stream << trace.buffer.size() << endl;
-  for(int i = trace.buffer.size() - 1; i >= 0; --i)
+  for(int i = trace.buffer.size() - 1; i >= 0; --i) {
     stream << trace.buffer[i].file << ":" << trace.buffer[i].line << " " << trace.buffer[i].msg << endl;
+  }
   return stream;
 }

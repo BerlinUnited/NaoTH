@@ -5,17 +5,15 @@
  * Created on 10. September 2010, 15:38
  */
 
-#include <string.h>
-
-#include <string>
-#include <cstdlib>
-
 #include <iostream>
 #include <sstream>
 
 #include <Messages/Messages.pb.h>
+
 #include "DebugServer.h"
+
 #include <Tools/NaoTime.h>
+#include <Tools/ThreadUtil.h>
 
 using namespace naoth;
 
@@ -32,10 +30,7 @@ DebugServer::DebugServer()
 DebugServer::~DebugServer()
 {
   // notify the connectionThread to stop
-  {
-    std::lock_guard<std::mutex> lock(m_abort);
-    abort = true;
-  }
+  abort = true;
 
   // wait for connectionThread to stop
   if(connectionThread.joinable()) {
@@ -56,20 +51,13 @@ void DebugServer::start(unsigned short port)
   std::cout << "[INFO] Starting debug server thread" << std::endl;
    
   connectionThread = std::thread([this] {this->run();});
-}//end start
+  ThreadUtil::setName(connectionThread, "DebugServer");
+}
 
 void DebugServer::run()
 {
-  while(true)
+  while(!abort)
   {
-    // check if the stop is requested
-    {
-      std::lock_guard<std::mutex> lock(m_abort);
-      if(abort) {
-        break;
-      }
-    }
-    
     if(comm.isConnected()) 
     {
       try {
@@ -90,14 +78,20 @@ void DebugServer::run()
     }
 
     // connect again, wait max 1 second until connection is etablished
-    if(!comm.isConnected()) {
-      comm.connect(1);
+    // watch connections
+    if(!comm.isConnected()) 
+    {
+      // clear the backlog of old messages before accepting new connections
+      if(id_backlog.empty()) {
+        comm.connect(1);
+      } else {
+        clearQueues();
+      }
     }
 
     // always give other thread the possibility to gain control before entering
     // the loop again (wait for 1 ms)
-    
-    g_usleep(1000);
+    ThreadUtil::sleep(1); 
 
     // TODO: do we really need this here?
     std::this_thread::yield();
@@ -110,7 +104,8 @@ void DebugServer::receive()
   GString* msg = NULL;
   gint32 id;
   unsigned int counter = 0;
-  do {
+  do 
+  {
     msg = comm.readMessage(id);
     if(msg != NULL)
     {
@@ -119,6 +114,8 @@ void DebugServer::receive()
       DebugMessageIn::Message* message = new DebugMessageIn::Message();
       parseCommand(msg, *message);
       message->id = id;
+
+      id_backlog.insert(id);
 
       std::size_t p = message->command.find(':');
       std::string base(message->command.substr(0,p));
@@ -153,6 +150,7 @@ void DebugServer::send()
   for(int i = 0; i < size && g_async_queue_length(answers) > 0; i++)
   {
     DebugMessageOut::Message* answer = (DebugMessageOut::Message*) g_async_queue_pop(answers);
+    id_backlog.erase(answer->id);
 
     if(answer != NULL)
     {
@@ -194,14 +192,12 @@ void DebugServer::getDebugMessageInMotion(DebugMessageIn& buffer)
 
 void DebugServer::setDebugMessageOut(const DebugMessageOut& buffer)
 {
-  {
     std::lock_guard<std::mutex> lock(m_executing);
 
     for(std::list<DebugMessageOut::Message*>::const_iterator iter = buffer.answers.begin(); iter != buffer.answers.end(); ++iter)
     {
       g_async_queue_push(answers, *iter);
     }
-  }
 }
 
 // TODO: serializer?
@@ -230,10 +226,12 @@ void DebugServer::parseCommand(GString* cmdRaw, DebugMessageIn::Message& command
 void DebugServer::clearQueues()
 {
   while (g_async_queue_length(answers) > 0) {
-    delete (DebugMessageOut::Message*) g_async_queue_pop(answers);
+    DebugMessageOut::Message* msg = (DebugMessageOut::Message*) g_async_queue_pop(answers);
+    id_backlog.erase(msg->id);
+    delete msg;
   }
 
-  received_messages_cognition.clear();
-  received_messages_motion.clear();
+  received_messages_cognition.clear(id_backlog);
+  received_messages_motion.clear(id_backlog);
 }
 

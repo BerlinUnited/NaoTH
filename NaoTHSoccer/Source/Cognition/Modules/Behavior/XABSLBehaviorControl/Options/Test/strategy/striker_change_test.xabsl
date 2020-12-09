@@ -1,0 +1,62 @@
+/**
+ * Behavior for testing the striker change without walking.
+ * This should be used to check, whether the striker decision (in C++) is correct.
+ * One can manually move the robots and check the striker decision (blinking ears).
+ */
+option striker_change_test 
+{
+  common decision
+  {
+    if(!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
+  }
+  
+  initial state idle {
+    decision {
+      else if(game.current_mode == playing)
+        goto defender;
+      else
+        stay;
+    }
+    action 
+    {
+      team.is_playing_as_striker = false;
+    }
+  }
+
+  state striker 
+  { 
+    decision 
+    {
+      else if( team.members_active_count > 1 && strategy.role_dynamic != striker ) {
+        goto defender;
+      }
+      else
+        stay;
+    }
+    action {
+      team.is_playing_as_striker = true;
+      // show striker
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+      set_left_ear = platform.frameNumber % 10;
+      set_right_ear = platform.frameNumber % 10;
+    }
+  }
+
+  state defender 
+  { 
+    decision 
+    {
+      else if( team.members_active_count <= 1 || strategy.role_dynamic == striker )
+        goto striker;
+      else 
+        stay;
+    }
+    action {
+      team.is_playing_as_striker = false;
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+}

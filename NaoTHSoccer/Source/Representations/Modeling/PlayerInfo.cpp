@@ -5,6 +5,7 @@
 //
 
 #include "PlayerInfo.h"
+#include "PlatformInterface/Platform.h"
 
 using namespace naoth;
 using namespace std;
@@ -17,7 +18,10 @@ PlayerInfo::PlayerInfo()
   teamColor(naoth::GameData::unknown_team_color),
   kickoff(false),
   robotState(initial),
-  isPlayingStriker(false)
+  robotSetPlay(set_none),
+  gamePhase(normal),
+  isPlayingStriker(false),
+  scheme(Platform::getInstance().theScheme)
 {
 }
 
@@ -40,8 +44,38 @@ std::string PlayerInfo::toString(RobotState value)
   }
   
   ASSERT(false);
-  return "invalide RobotState";
+  return "invalid RobotState";
 }
+
+std::string PlayerInfo::toString(RobotSetPlay value)
+{
+  switch (value)
+  {
+    RETURN_VALUE_TO_STR(set_none);
+    RETURN_VALUE_TO_STR(goal_free_kick);
+    RETURN_VALUE_TO_STR(pushing_free_kick);
+    RETURN_VALUE_TO_STR(corner_kick);
+    RETURN_VALUE_TO_STR(kick_in);
+  }
+
+  ASSERT(false);
+  return "invalid RobotSetPlay";
+}
+
+std::string PlayerInfo::toString(GamePhase value)
+{
+  switch (value)
+  {
+    RETURN_VALUE_TO_STR(normal);
+    RETURN_VALUE_TO_STR(penaltyshoot);
+    RETURN_VALUE_TO_STR(overtime);
+    RETURN_VALUE_TO_STR(timeout);
+  }
+
+  ASSERT(false);
+  return "invalid SecondaryGameState";
+}
+
 
 void PlayerInfo::print(ostream& stream) const
 {
@@ -51,6 +85,9 @@ void PlayerInfo::print(ostream& stream) const
   stream << "teamColor = " << naoth::GameData::toString(teamColor) << endl;
   stream << "kickoff = " << (kickoff?"yes":"no") << endl;
   stream << "robotState = " << toString(robotState) << endl;
+  stream << "robotSetPlay = " << toString(robotSetPlay) << endl;
+  stream << "gamephase = " << toString(gamePhase) << endl;
   stream << "isPlayingStriker = " << (isPlayingStriker?"yes":"no") << endl;
+  stream << "active scheme = " << (scheme.empty()?"-":scheme) << std::endl;
 }
 

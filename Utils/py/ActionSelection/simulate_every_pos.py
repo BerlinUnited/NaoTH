@@ -1,60 +1,102 @@
-import math
+from __future__ import print_function  # needed for unpacking elements of a list for printing
+import os
+import argparse
+import pickle
 from tools import action as a
 from tools import Simulation as Sim
-from naoth  import math2d as m2d
+import naoth.math as naoth_magic
 from tools import field_info as field
+from state import State
+
+"""
+For every position(x, y, rot) the decision is calculated r times with s samples. This script runs
+for a long time. It is recommended to run each instance with a seperate screen. The results are written
+in a data subfolder (make sure it exists before) as pickle file. An example for analyzing this data is
+located in evaluation/evaluate_every_pos.py
 
 
-class State:
-    def __init__(self):
-        self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(4200, 0)
-        self.pose.rotation = math.radians(0)
+For killing all screens: 
+    screen -ls | grep Detached | cut -d. -f1 | awk '{print $1}' | xargs kill
 
-        self.ball_position = m2d.Vector2(100.0, 0.0)
+Example:
+    for using the 12 samples and 100 repetitions run:
 
-        self.obstacle_list = ([])  # is in global coordinates
-
-    def update_pos(self, glob_pos, rotation):
-        self.pose.translation = glob_pos
-        self.pose.rotation = rotation
+        $ python simulate_every_pos.py -s 12 -r 100
+"""
 
 
-def main():
-    # This takes hours
+def main(num_samples, num_reps, x_step, y_step, rotation_step):
     state = State()
 
-    cell_width = 100
+    file_idx = 0
+
     no_action = a.Action("none", 0, 0, 0, 0)
-    kick_short = a.Action("kick_short", 780, 150, 8.454482265522328, 6.992268841997358)
-    sidekick_left = a.Action("sidekick_left", 750, 150, 86.170795364136380, 10.669170653645670)
-    sidekick_right = a.Action("sidekick_right", 750, 150, -89.657943335302260, 10.553726275058064)
+    kick_short = a.Action("kick_short", 1080, 150, 0, 7)
+    sidekick_left = a.Action("sidekick_left", 750, 150, 90, 10)
+    sidekick_right = a.Action("sidekick_right", 750, 150, -90, 10)
 
     action_list = [no_action, kick_short, sidekick_left, sidekick_right]
 
-    with open('decision-simulate_every_pos.txt', 'w') as f:
-        # xrange is only slightly faster in python 2.7
-        for rot in range(0, 360, 90):
-            for x in range(int(-field.x_field_length*0.5)+cell_width, int(field.x_field_length*0.5), 2*cell_width):
-                for y in range(int(-field.y_field_length*0.5)+cell_width, int(field.y_field_length*0.5), 2*cell_width):
-                    state.update_pos(m2d.Vector2(x, y), rotation=rot)
+    whole_decisions = []
+
+    # use this to iterate over the whole green
+    # field_x_range = range(int(-field.x_field_length*0.5), int(field.x_field_length*0.5) + x_step, x_step)
+    # field_y_range = range(int(-field.y_field_length*0.5), int(field.y_field_length*0.5) + y_step, y_step)
+
+    # use this to just iterate over the playing field
+    x_range = range(int(-field.x_length * 0.5), int(field.x_length * 0.5) + x_step, x_step)
+    y_range = range(int(-field.y_length * 0.5), int(field.y_length * 0.5) + x_step, y_step)
+
+    for rot in range(0, 360, rotation_step):
+        print("Rotation: " + str(rot))
+        for x in x_range:
+            for y in y_range:
+                state.update_pos(naoth_magic.Vector2(x, y), rotation=rot)
+                # Do this multiple times and write the decisions as a histogram
+                decision_histogramm = [0, 0, 0,
+                                       0]  # ordinal scale -> define own metric in evaluation script
+                for num_simulations in range(0, num_reps):
                     actions_consequences = []
                     # Simulate Consequences
                     for action in action_list:
                         single_consequence = a.ActionResults([])
-                        actions_consequences.append(Sim.simulate_consequences(action, single_consequence, state))
+                        actions_consequences.append(
+                            Sim.simulate_consequences(action, single_consequence, state,
+                                                      num_samples))
 
                     # Decide best action
                     best_action = Sim.decide_smart(actions_consequences, state)
+                    decision_histogramm[best_action] += 1
 
-                    f.write('{}\t'.format(rot))
-                    f.write('{}\t'.format(x))
-                    f.write('{}\t'.format(y))
-                    f.write('{}\n'.format(best_action))
+                # write the position and decision in on list
+                whole_decisions.append([x, y, rot, decision_histogramm])
+
+    # make sure not to overwrite anything
+    while os.path.exists('{}{:d}.pickle'.format(
+            'data/simulate_every_pos-' + str(num_samples) + '-' + str(num_reps) + '-v', file_idx)):
+        file_idx += 1
+
+    pickle.dump(whole_decisions, open(
+        'data/simulate_every_pos-' + str(num_samples) + '-' + str(num_reps) + '-v' + str(
+            file_idx) + '.pickle', "wb"))
+
 
 if __name__ == "__main__":
-    '''
-        This should show the same behavior as the SimulationTest Module
-        Note: in front of the goalposts the real robot also uses it's US Sensors, i think???
-    '''
-    main()
+    parser = argparse.ArgumentParser(
+        description='Calculates a histogram of decisions for each position on the field',
+    )
+    parser.add_argument("-s", "--num_samples",
+                        help="input the number of samples used for on action", type=int,
+                        default=30)
+    parser.add_argument("-r", "--num_reps", help="input the number of repeats per position",
+                        type=int, default=1)
+    parser.add_argument("-x", "--res_x", help="input the step size for rotation", type=int,
+                        default=200)
+    parser.add_argument("-y", "--res_y", help="input the step size for rotation", type=int,
+                        default=200)
+    parser.add_argument("-rot", "--res_rot", help="input the step size for rotation", type=int,
+                        default=20)
+
+    args = parser.parse_args()
+
+    main(args.num_samples, args.num_reps, args.res_x, args.res_y, args.res_rot)

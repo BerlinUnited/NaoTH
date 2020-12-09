@@ -2,19 +2,21 @@
 * @file MotionStatus.h
 *
 * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
-* 
+*
 */
 
 #include "MotionStatus.h"
+
 #include <Messages/Representations.pb.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
+#include <Tools/DataConversion.h>
 
 using namespace naoth;
 
 void Serializer<MotionStatus>::serialize(const MotionStatus& representation, std::ostream& stream)
 {
   naothmessages::MotionStatus message;
-  
+
   message.set_time(representation.time);
   message.set_lastmotion(representation.lastMotion);
   message.set_currentmotion(representation.currentMotion);
@@ -27,7 +29,14 @@ void Serializer<MotionStatus>::serialize(const MotionStatus& representation, std
   // step control
   naothmessages::StepControlStatus* stepControlStatus =  message.mutable_stepcontrolstatus();
   stepControlStatus->set_stepid(representation.stepControl.stepID);
+  stepControlStatus->set_steprequestid(representation.stepControl.stepRequestID);
   stepControlStatus->set_moveablefoot(representation.stepControl.moveableFoot);
+
+  message.set_target_reached(representation.target_reached);
+  message.set_head_target_reached(representation.head_target_reached);
+  message.set_head_got_stuck(representation.head_got_stuck);
+
+  message.set_walk_emergency_stop(representation.walk_emergency_stop);
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
   message.SerializeToZeroCopyStream(&buf);
@@ -51,7 +60,14 @@ void Serializer<MotionStatus>::deserialize(std::istream& stream, MotionStatus& r
     // step control
     const naothmessages::StepControlStatus& stepControlStatus =  message.stepcontrolstatus();
     representation.stepControl.stepID = stepControlStatus.stepid();
+    representation.stepControl.stepRequestID = stepControlStatus.steprequestid();
     representation.stepControl.moveableFoot = static_cast<MotionStatus::StepControlStatus::MoveableFoot>(stepControlStatus.moveablefoot());
+
+    representation.target_reached = message.target_reached();
+    representation.head_target_reached = message.head_target_reached();
+    representation.head_got_stuck = message.head_got_stuck();
+
+    representation.walk_emergency_stop = message.walk_emergency_stop();
   }
   else
   {

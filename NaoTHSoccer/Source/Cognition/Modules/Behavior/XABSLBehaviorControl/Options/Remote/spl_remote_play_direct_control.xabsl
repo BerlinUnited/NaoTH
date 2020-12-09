@@ -1,0 +1,111 @@
+
+option spl_remote_play_direct_control
+{
+  initial state stand
+  {
+    decision
+    {
+      if(state_time < 1000)
+        stay;
+      else if(remote_control.action == walk)
+        goto walk;
+      else if(remote_control.action ==  kick_right)
+        goto sidekick_to_right;
+      else if(remote_control.action ==  kick_left)
+        goto sidekick_to_left;  
+      else if(remote_control.action == kick_forward_left)
+        goto kick_forward_left_foot; 
+      else if(remote_control.action == kick_forward_right)
+        goto kick_forward_right_foot;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state walk
+  {
+    decision
+    {
+      if(state_time < 1000)
+        stay;
+      else if(remote_control.action != walk)
+        goto stand;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk_speed.x = remote_control.target.x;
+      motion.walk_speed.y = remote_control.target.y;
+      motion.walk_speed.rot = remote_control.target.rot;
+      motion.walk.style = (obstacle.ultrasound.blockedtime > 100 && obstacle.ultrasound.distance < 400)?stable:normal;
+      
+      head.control_mode = look_straight_ahead;
+    }
+  }
+
+  state sidekick_to_left {
+    decision{
+      if(action_done)
+        goto stand;
+      else
+        stay;
+    }
+    action {
+      //FIXME
+      //sidekick(to = left);
+
+      head.control_mode = look_straight_ahead;
+    }
+  }
+
+  state sidekick_to_right {
+    decision{
+      if(action_done)
+        goto stand;
+      else
+        stay;
+    }
+    action {
+      //FIXME
+      //sidekick(to = right);
+
+      head.control_mode = look_straight_ahead;
+    }
+  }
+
+  state kick_forward_left_foot {
+    decision {
+      if(action_done)
+        goto stand;
+      else
+        stay;
+    }
+    action {
+      //fast_forward_kick(foot = left);
+
+      head.control_mode = look_straight_ahead;
+    }
+  }
+
+  state kick_forward_right_foot {
+    decision {
+      if(action_done)
+        goto stand;
+      else
+        stay;
+    }
+    action {
+      //fast_forward_kick(foot = right);
+
+      head.control_mode = look_straight_ahead;
+    }
+  }
+
+}

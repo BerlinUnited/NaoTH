@@ -8,150 +8,57 @@
 #ifndef _TEAMMESSAGE_H
 #define _TEAMMESSAGE_H
 
-#include <limits>
-#include <vector>
+#include <map>
 
 #include "Tools/DataStructures/Printable.h"
-#include "Tools/Math/Vector2.h"
-#include "Tools/Math/Pose2D.h"
 #include "Tools/DataStructures/Serializer.h"
 
-#include "Representations/Infrastructure/GameData.h"
-#include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Modeling/TeamMessageData.h"
 
-
-#include "Messages/Messages.pb.h"
 
 class TeamMessage : public naoth::Printable
 {
 public:
+    // container holding the last incomeing message of the teammates
+    std::map<unsigned int, TeamMessageData> data;
 
+    unsigned int dropNoSplMessage = 0;
+    unsigned int dropNotOurTeam = 0;
+    unsigned int dropNotParseable = 0; // NOTE: currently not used; if key fails it is not parseable!
+    unsigned int dropKeyFail = 0;
+    unsigned int dropMonotonic = 0;
 
-  TeamMessage()
-  {
-  }
+    TeamMessage() {}
 
-  struct Opponent
-  {
-    int playerNum;
-    Pose2D poseOnField;
-  };
+    virtual ~TeamMessage() {}
 
-  struct Data
-  {
-    Data ()
-      : playerNum(0),teamNumber(0),
-        ballAge(-1), fallen(false),
-        bodyID("unknown"),
-        timeToBall(std::numeric_limits<unsigned int>::max()),
-        wasStriker(false),
-        isPenalized(false),
-        batteryCharge(0.0f),
-        temperature(0.0f),
-        timestamp(0)
+    virtual void print(std::ostream& stream) const
     {
-    }
-
-    naoth::FrameInfo frameInfo;
-
-    unsigned int playerNum;
-
-    unsigned int teamNumber;
-
-    /**
-     * @brief Own robot pose
-     */
-    Pose2D pose;
-    /**
-     * @brief milliseconds since this robot last saw the ball.
-     * -1 if we haven't seen it
-     */
-    int ballAge;
-    /**
-     * @brief position of ball relative to the robot
-     * coordinates in millimeters
-     * 0,0 is in centre of the robot
-     */
-    Vector2d ballPosition;
-    /**
-     * @brief velocity of the ball
-     */
-    Vector2d ballVelocity;
-    /**
-     * @brief true means that the robot is fallen, false means that the robot can play
-     */
-    bool fallen;
-
-    Vector2d expectedBallPos;
-
-    // BEGIN BERLIN UNITED SPECIFIC
-    std::string bodyID;
-    unsigned int timeToBall;
-    bool wasStriker;
-    bool isPenalized;
-    std::vector<Opponent> opponents;
-    float batteryCharge;
-    float temperature;
-    unsigned long long timestamp;
-    // END BERLIN UNITED SPECIFIC
-
-  };
-
-  std::map<unsigned int, Data> data;
-
-  virtual ~TeamMessage() {}
-
-  virtual void print(std::ostream& stream) const
-  {
-    for(std::map<unsigned int, Data>::const_iterator i=data.begin();
-        i != data.end(); ++i)
-    {
-      const Data& d = i->second;
-      stream << "From " << i->first << " ["<< d.bodyID <<"]"<< std::endl;
-      i->second.frameInfo.print(stream);
-      stream << "Message: " << std::endl;
-      stream << "Timestamp" << d.timestamp << std::endl;
-      stream << "\tPos (x; y; rotation) = "
-             << d.pose.translation.x << "; "
-             << d.pose.translation.y << "; "
-             << d.pose.rotation << std::endl;
-      stream << "\tBall (x; y) = "
-             << d.ballPosition.x << "; "
-             << d.ballPosition.y << std::endl;
-      stream << "TimeSinceBallwasSeen: " << d.ballAge << std::endl;
-      stream << "TimeToBall: "<< d.timeToBall << std::endl;
-      stream << "wasStriker: " << (d.wasStriker ? "yes" : "no") << std::endl;
-      stream << "isPenalized: " << (d.isPenalized ? "yes" : "no") << std::endl;
-      stream << "fallenDown: " << (d.fallen ? "yes" : "no") << std::endl;
-      stream << "team number: " << d.teamNumber << std::endl;
-       stream << "\texpectedBallPos (x; y) = "
-         << d.expectedBallPos.x << "; "
-             << d.expectedBallPos.y << std::endl;
-      for(unsigned int i=0; i < d.opponents.size(); i++)
-      {
-        stream << "opponent " << d.opponents[i].playerNum << " : "
-               << d.opponents[i].poseOnField.translation.x << "; "
-               << d.opponents[i].poseOnField.translation.y << "; "
-               << d.opponents[i].poseOnField.rotation
+        for(auto const &it : data) {
+            const TeamMessageData& d = it.second;
+            d.print(stream);
+            stream << "------------------------" << std::endl;
+        }
+        stream << "active team-members: " << data.size() << "\n"
+               << "========================\n"
+               << "dropNoSplMessage = " << dropNoSplMessage << "\n"
+               << "dropNotOurTeam = "   << dropNotOurTeam   << "\n"
+               << "dropNotParseable = " << dropNotParseable << "\n"
+               << "dropKeyFail = "      << dropKeyFail      << "\n"
+               << "dropMonotonic = "    << dropMonotonic    << "\n"
                << std::endl;
-      }
-      stream << "------------------------" << std::endl;
-    }//end for
 
-    stream << "----------------------"  << std::endl;
-    stream << "active team-members: " << data.size() << std::endl;
-
-  }//end print
+    }
 };
 
 namespace naoth {
-  template<>
-  class Serializer<TeamMessage>
-  {
-  public:
+template<>
+class Serializer<TeamMessage>
+{
+public:
     static void serialize(const TeamMessage& representation, std::ostream& stream);
     static void deserialize(std::istream& stream, TeamMessage& representation);
-  };
+};
 }
 
 #endif  /* _TEAMMESSAGE_H */

@@ -50,9 +50,6 @@ ModuleManagerWithDebug::ModuleManagerWithDebug(const std::string& name)
   REGISTER_DEBUG_COMMAND(commandRepresentationGet, 
     "Return serialized represenations", this);
 
-
-  REGISTER_DEBUG_COMMAND(prefix + "debugrequest:set",
-    "Set a debug request value", this);
 }
 
 ModuleManagerWithDebug::~ModuleManagerWithDebug(){}

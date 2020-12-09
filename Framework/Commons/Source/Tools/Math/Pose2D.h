@@ -263,7 +263,7 @@ public:
   */
   Pose2T& rotate(const T angle)
   {
-    rotation = Math::normalizeAngle(rotation+angle);
+    rotation = Math::normalize(rotation+angle);
     return *this;
   }
 
@@ -276,6 +276,11 @@ public:
   {
     const T& invRotation = -rotation;
     return Pose2T(invRotation, (-translation).rotate(invRotation));
+  }
+
+  inline Pose2T mirror() const
+  {
+    return Pose2T(Math::normalize(rotation + Math::pi), -translation);
   }
 
   /**

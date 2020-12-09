@@ -30,7 +30,7 @@ public:
   virtual void print(std::ostream& stream) const
   {
     stream << "calibrated" << (calibrated?"true":"false") << std::endl;
-    stream << "inertialSensorOffset = " << inertialSensorOffset << std::endl;
+    stream << "inertialSensorOffset [°] = " << Math::toDegrees(inertialSensorOffset.x) << " " << Math::toDegrees(inertialSensorOffset.y) << std::endl;
     stream << "gyroSensorOffset = " << gyroSensorOffset << std::endl;
     stream << "accSensorOffset = " << accSensorOffset << std::endl;
   }

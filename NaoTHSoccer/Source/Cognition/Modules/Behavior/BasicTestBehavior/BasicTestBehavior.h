@@ -16,7 +16,6 @@
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Infrastructure/SoundData.h"
 #include "Representations/Modeling/OdometryData.h"
-#include "Representations/Perception/BallPercept.h"
 #include "Representations/Perception/MultiBallPercept.h"
 //#include "Representations/Perception/PlayersPercept.h"
 #include "Representations/Modeling/BallModel.h"
@@ -33,8 +32,8 @@
 
 #include <Representations/Infrastructure/RemoteControlCommand.h>
 
-#include <Representations/Infrastructure/WhistlePercept.h>
-#include "Representations/Infrastructure/WhistleControl.h"
+#include <Representations/Perception/WhistlePercept.h>
+#include "Representations/Infrastructure/AudioControl.h"
 
 // debug
 #include "Tools/Debug/DebugRequest.h"
@@ -50,7 +49,6 @@ BEGIN_DECLARE_MODULE(BasicTestBehavior)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
   REQUIRE(MotionStatus)
-  REQUIRE(BallPercept)
   REQUIRE(MultiBallPercept)
   REQUIRE(BallModel)
   REQUIRE(OdometryData)
@@ -66,7 +64,7 @@ BEGIN_DECLARE_MODULE(BasicTestBehavior)
   PROVIDE(SoundPlayData)
   PROVIDE(BehaviorLEDRequest)
   PROVIDE(BodyStatus)
-  PROVIDE(WhistleControl)
+  PROVIDE(AudioControl)
 END_DECLARE_MODULE(BasicTestBehavior)
 
 class BasicTestBehavior: public BasicTestBehaviorBase
@@ -78,13 +76,10 @@ public:
   virtual void execute();
 
 private:
-  int lastWhistleCount;
-  int idleCounter;
-  bool isWalking;
-
   void testHead();
   void testMotion();
   void testLED();
-};//end class ImageProcessor
+  void testAudio();
+};
 
 #endif // _BasicTestBehavior_H_

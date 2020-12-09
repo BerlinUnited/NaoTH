@@ -1,5 +1,7 @@
 -- controller for SimSpark simulator
 project "SimSpark"
+  removeplatforms { "Nao" }
+
   kind "StaticLib"
   language "C++"
         
@@ -19,9 +21,9 @@ project "SimSpark"
     "gobject-2.0",
     "gmodule-2.0",
     "gthread-2.0",
-    "protobuf"
+    "protobuf",
+    "fftw3",
+    "jpeg"
    }
   
   targetname "naoth-simspark"
-
--- END SimSpark

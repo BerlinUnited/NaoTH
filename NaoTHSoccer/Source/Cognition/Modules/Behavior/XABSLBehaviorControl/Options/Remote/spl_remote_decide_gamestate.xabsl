@@ -1,0 +1,143 @@
+option spl_remote_decide_gamestate
+{
+  common decision
+  {
+    if(remote_control.time_since_update > 1000)
+      goto no_signal;
+    else if(!body.ready_to_walk)
+      goto idle;
+    else if(game.current_mode != playing &&
+            game.current_mode != ready &&
+            game.current_mode != set)
+      goto idle;
+  }
+  
+  state no_signal
+ 
+  {
+    decision
+    {
+      else if(state_time > 2000 && remote_control.time_since_update < 100)
+        goto idle;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = init;
+      head.control_mode = none;
+    }
+  }
+
+  initial state idle {
+    decision{
+      else if ( game.current_mode == playing ||
+				        game.current_mode == ready || 
+				        game.current_mode == set )
+        goto calibrate_inertial;
+      else
+        stay;
+    } 
+    action{}
+  }
+
+  state calibrate_inertial
+  {
+    decision
+    {
+      else if(sensor.inertial.calibrated)
+      {
+        if(game.current_mode == playing)
+          goto play;
+        else if(game.current_mode == ready)
+          goto ready;
+        else if(game.current_mode == set)
+          goto set;
+        else 
+          goto idle;
+      }
+      else 
+        stay;
+    }
+    action
+    {
+      show_calibration();
+      motion.type = stand;
+      head.control_mode = look_straight_ahead;
+    }
+  }
+
+  state ready
+  {
+    decision
+    {
+      else if (game.current_mode == playing)
+        goto play;
+      else if (game.current_mode == set)
+        goto set;
+      else 
+        stay;
+    }
+    action 
+    {
+      //FIXME
+      //decide_and_go_to_ready_position();
+    }
+  }
+
+  state set
+  {
+    decision
+    {
+      else if (game.current_mode == playing)
+      {
+        if(team.calc_if_is_striker)
+          goto initial_striker;
+        else
+          goto play;
+      }
+      else if (game.current_mode == ready)
+        goto ready;
+      else 
+        stay;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state play
+  {
+    decision
+    {
+      else if (game.current_mode != playing)
+        goto idle;
+      else 
+        stay;
+    }
+    action 
+    {
+      last_state_was_penalized = false; // important!!!
+      spl_remote_play();
+    }
+  }
+
+  state initial_striker {
+	  decision {
+	    else if (game.current_mode == ready)
+        goto ready;
+      else if (game.current_mode == set)
+        goto set;
+	    else if(action_done || !team.calc_if_is_striker)
+	      goto play;
+	    else
+	      stay; 
+	  }
+	  action {
+	    path2018_initial_striker();
+   		team.is_playing_as_striker = true;
+	  }
+  }
+  
+}

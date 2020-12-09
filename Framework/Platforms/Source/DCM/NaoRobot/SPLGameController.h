@@ -29,13 +29,14 @@ private:
   bool exiting;
   int returnPort;
   GSocket* socket;
+  GCancellable* cancelable;
+
   GSocketAddress* gamecontrollerAddress;
   std::thread socketThread;
 
   RoboCupGameControlData dataIn;
   RoboCupGameControlReturnData dataOut;
 
-  unsigned int lastGetTime;
   naoth::GameData data;
   std::mutex  dataMutex;
   std::mutex returnDataMutex;

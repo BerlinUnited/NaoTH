@@ -27,6 +27,7 @@ public:
   void loadFromDir(std::string dirlocation,
                    const std::string &platform,
                    const std::string& scheme,
+                   const std::string &strategy,
                    const std::string& bodyID,
                    const std::string& headID,
                    const std::string& robotName);
@@ -187,7 +188,12 @@ private:
   GKeyFile* privateKeyFile;
   std::string privateDir;
 
-  void loadFromSingleDir(GKeyFile* keyFile, std::string dirlocation);
+  // returns true if the path exists and is a directory, false otherwise
+  bool isDir(std::string& path) const {
+    return g_file_test(path.c_str(), G_FILE_TEST_EXISTS) && g_file_test(path.c_str(), G_FILE_TEST_IS_DIR);
+  }
+
+  void loadFromSingleDir(GKeyFile* keyFile, std::string dirlocation, bool required = true);
 
   void loadFile(GKeyFile* keyFile, std::string file, std::string groupName);
 

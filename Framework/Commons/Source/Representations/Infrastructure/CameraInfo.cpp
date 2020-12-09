@@ -8,7 +8,8 @@
 
 #include "CameraInfo.h"
 
-#include "Tools/DataConversion.h"
+#include "Tools/Math/Common.h"
+
 #include <Messages/Framework-Representations.pb.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 

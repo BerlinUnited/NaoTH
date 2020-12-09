@@ -1,28 +1,67 @@
-//  w  w w .  ja  v a 2s .  c  o  m
-import java.awt.Container;
+
 import java.text.ParseException;
 import java.util.StringTokenizer;
 
-import javax.swing.BoxLayout;
-import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
-import javax.swing.JTextField;
 import javax.swing.text.DefaultFormatter;
+import naoscp.NaoSCP;
 
 public class Main {
   public static void main(String args[]) throws ParseException {
-    JFrame f = new JFrame();
-    f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    Container content = f.getContentPane();
-    content.setLayout(new BoxLayout(content, BoxLayout.PAGE_AXIS));
-
+    /* Set the Nimbus look and feel */
+    //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+    /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+     * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+     */
+    try {
+        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+            if ("Nimbus".equals(info.getName())) {
+                javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                break;
+            }
+        }
+    } catch (ClassNotFoundException ex) {
+        java.util.logging.Logger.getLogger(NaoSCP.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (InstantiationException ex) {
+        java.util.logging.Logger.getLogger(NaoSCP.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (IllegalAccessException ex) {
+        java.util.logging.Logger.getLogger(NaoSCP.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        java.util.logging.Logger.getLogger(NaoSCP.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    }
+    //</editor-fold>
+    
+    final JFrame frame = new JFrame();
+    final NaoSCP panel = new NaoSCP();
+    
+    // set frame attributes
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    frame.setTitle("NaoSCP " + NaoSCP.VERSION);
+    frame.setLocationByPlatform(true);
+    
+    //frame.setMinimumSize(new java.awt.Dimension(525, 564));
+    //frame.setPreferredSize(new java.awt.Dimension(1028, 564));
+    //frame.setSize(1028, 564);
+    // set content (panel)
+    frame.setContentPane(panel);
+    //content.setLayout(new BoxLayout(content, BoxLayout.PAGE_AXIS));
+    //content.add(panel);
+    
+    frame.addWindowListener(new java.awt.event.WindowAdapter() {
+        @Override
+        public void windowClosing(java.awt.event.WindowEvent evt) {
+            panel.formWindowClosing();
+        }
+    });
+    
+    /*
     JFormattedTextField ftf1 = new JFormattedTextField(new IPAddressFormatter());
     content.add(ftf1);
 
-    
     content.add(new JTextField());
-    f.setSize(300, 100);
-    f.setVisible(true);
+    */
+    frame.pack();
+    frame.setVisible(true);
   }
 }
 /**

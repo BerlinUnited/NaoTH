@@ -10,12 +10,11 @@
 #ifndef _Geometry_h_
 #define _Geometry_h_
 
-#include <algorithm>
 #include "Tools/Math/Pose2D.h"
-#include "Tools/Math/Common.h"
 #include "Tools/Math/Line.h"
-#include "Tools/Math/PointList.h"
+
 #include "Tools/Math/Matrix_nxn.h"
+#include "Tools/Math/Matrix_mxn.h"
 
 /**
 * The class Geometry defines representations for geometric objects and Methods
@@ -236,19 +235,94 @@ public:
   }//end calculateCircle
 	
 
-  class Rect2d {
+  /**
+  A simple routine to estimate a circle from a set of points
+  */
+  template<class T>
+  static bool estimateCircle( const T& points, Vector2d& center, double& radius )
+  {
+    if (points.size() < 3) {
+      return false;
+    }
+
+    Math::Matrix_mxn<double> A(static_cast<unsigned int> (points.size()), 3);
+    Math::Matrix_mxn<double> b(static_cast<unsigned int> (points.size()), 1);
+
+    for(unsigned int i = 0; i < static_cast<unsigned int>(points.size()); i++)
+    {
+      A(i, 0) = points[i].x;
+      A(i, 1) = points[i].y;
+      A(i, 2) = 1.0;
+      b(i, 0) = - points[i].abs2(); // - (x^2 + y^2)
+    }
+    
+    try {
+      Math::Matrix_mxn<double> AT(A.transpose());
+      //Math::Matrix_mxn<double> result(((AT * A).invert() * AT) * b);
+      Math::Matrix_mxn<double> result =  (AT*A).solve(AT*b);
+
+      center = Vector2d(-result(0, 0)*0.5, -result(1, 0)*0.5);
+      radius = sqrt(fabs(result(2, 0) - center.abs2()));
+    }
+    catch (MVException) {
+      return false;
+    }
+    catch (...) {
+      return false;
+    }
+
+    return true;
+  }
+
+  template<class T>
+  static void simpleLinearRegression(const T& points, double& slope, double& intercept) 
+  {
+    if(points.size() < 2) {
+      slope = 0.0;
+      intercept = points[0].y;
+      return;
+    }
+
+    Vector2d avg;
+    for(const Vector2d& point : points) {
+      avg += point;
+    }
+    avg /= static_cast<double>(points.size());
+
+    double top = 0.;
+    double bot = 0.;
+    for(const Vector2d& point : points) {
+      double x_diff = point.x - avg.x;
+      top += x_diff * (point.y - avg.y);
+      bot += x_diff * x_diff;
+    }
+
+    slope = top / bot;
+    intercept = avg.y - slope * avg.x;
+  }
+
+
+
+  class Rect2d 
+  {
   private:
     Vector2d minimum;
     Vector2d maximum;
 
   public:
     Rect2d() {}
+
     Rect2d(const Vector2d& a, const Vector2d& b) 
 	    :
 	    minimum(std::min(a.x,b.x), std::min(a.y,b.y)),
 	    maximum(std::max(a.x,b.x), std::max(a.y,b.y))
 	  {
     }
+
+    Rect2d(double x0, double y0, double x1, double y1) :
+      minimum(std::min(x0,x1), std::min(y0,y1)),
+	    maximum(std::max(x0,x1), std::max(y0,y1))
+    {}
 
     inline bool inside(const Vector2d& p) const {
        return maximum.x >= p.x && p.x >= minimum.x &&
@@ -257,6 +331,12 @@ public:
 
     inline const Vector2d& min() const { return minimum; }
     inline const Vector2d& max() const { return maximum; }
+
+    void clamp(Vector2d& p) const
+    {
+      p.x = Math::clamp(p.x, minimum.x, maximum.x);
+      p.y = Math::clamp(p.y, minimum.y, maximum.y);
+    }
   };
 };
 

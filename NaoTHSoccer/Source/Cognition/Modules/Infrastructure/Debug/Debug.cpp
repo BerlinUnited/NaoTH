@@ -9,9 +9,12 @@
 #include "Debug.h"
 
 #include <PlatformInterface/Platform.h>
+#include <Tools/FileUtils.h>
 
-#include <Tools/SynchronizedFileWriter.h>
+// needed for sleep_for in debug kill 
+#include "Tools/ThreadUtil.h"
 
+using namespace std;
 
 Debug::Debug() : cognitionLogger("CognitionLog")
 {
@@ -58,14 +61,10 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   REGISTER_DEBUG_COMMAND("ParameterList:set", "set the parameter list with the given name", &getDebugParameterList());
 
   // modify commands
-  REGISTER_DEBUG_COMMAND("modify:list", 
-    "return the list of registered modifiable values", &getDebugModify());
-  REGISTER_DEBUG_COMMAND("modify:set", 
-    "set a modifiable value (i.e. the value will be always overwritten by the new one) ", &getDebugModify());
-  REGISTER_DEBUG_COMMAND("modify:release", 
-    "release a modifiable value (i.e. the value will not be overwritten anymore)", &getDebugModify());
-
   REGISTER_DEBUG_COMMAND("DebugPlot:get", "get the plots", &getDebugPlot());
+
+  getImageJPEG().set(getImage());
+  getImageJPEGTop().set(getImageTop());
 
   // HACK: initialize the both canvases
   getDebugImageDrawings().init(getImage().width(), getImage().height());
@@ -163,7 +162,7 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
       {
         const string& str = cIter->second;
         //int tmp = str.size();
-        if(SynchronizedFileWriter::saveStringToFile(str, fileName))
+        if(FileUtils::writeStringToFile(str, fileName))
           outstream << fileName << " successfull written.";
         else
           outstream << fileName << " couldn't write file " << fileName;
@@ -211,8 +210,7 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
     {
       std::cout << "cognition in endless loop due to \"kill_cognition\" debug command"
                  << std::endl;
-      g_usleep(500000);
-
+      ThreadUtil::sleep(5);
     }
   }
 }
@@ -254,7 +252,7 @@ void Debug::draw3D()
   // draw ball model in 3D viewer
   DEBUG_REQUEST("3DViewer:Ball", 
     Vector3d ballPos = robotPose3D * Vector3d(getBallModel().position.x, getBallModel().position.y, getFieldInfo().ballRadius);
-    SPHERE(getFieldInfo().ballColor, getFieldInfo().ballRadius, ballPos);
+    SPHERE(ColorClasses::orange, getFieldInfo().ballRadius, ballPos);
   );
 
   DEBUG_REQUEST("3DViewer:kinematic_chain:links",

@@ -1,0 +1,36 @@
+/** Symbols for accessing sensors*/
+namespace remote("Remote Symbols") {
+  
+  enum remote_control_mode {
+    direct,
+    lock
+  };
+  
+  /** The ids of the states */
+  enum remote_control_action {
+    none, 
+    stand, 
+    walk, 
+    kick_right,
+    kick_left,
+    kick_forward_left,
+    kick_forward_right
+  };
+
+  enum remote_control_second_action {
+    blink,
+    say
+  };
+
+
+  enum remote_control_mode input remote_control.mode;
+  enum remote_control_action input remote_control.action;
+  enum remote_control_second_action input remote_control.second_action;
+
+  float input remote_control.target.x;
+  float input remote_control.target.y;
+  float input remote_control.target.rot;
+  
+  float input remote_control.time_since_update;
+}
+  

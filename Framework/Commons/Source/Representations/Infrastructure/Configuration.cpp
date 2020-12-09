@@ -8,7 +8,7 @@
  */
 
 #include "Configuration.h"
-#include "Tools/DataConversion.h"
+#include "Tools/StringTools.h"
 #include "Tools/Debug/NaoTHAssert.h"
 
 #include <iostream>
@@ -55,43 +55,49 @@ Configuration::~Configuration()
 void Configuration::loadFromDir(std::string dirlocation,
                                 const std::string& platform,
                                 const std::string& scheme,
+                                const std::string& strategy,
                                 const std::string& bodyID,
                                 const std::string& headID,
                                 const std::string& robotName)
 {
-  if (!g_str_has_suffix(dirlocation.c_str(), "/"))
-  {
+  ASSERT_MSG(isDir(dirlocation), "Could not load configuration from " << dirlocation << ": directory does not exist.");
+  std::cout << "[INFO] loading configuration from " << dirlocation << std::endl;
+
+  if (!g_str_has_suffix(dirlocation.c_str(), "/")) {
     dirlocation = dirlocation + "/";
   }
 
-  if (g_file_test(dirlocation.c_str(), G_FILE_TEST_EXISTS) && g_file_test(dirlocation.c_str(), G_FILE_TEST_IS_DIR))
-  {
-    loadFromSingleDir(publicKeyFile, dirlocation + "general/");
-    loadFromSingleDir(publicKeyFile, dirlocation + "platform/" + platform + "/");
-    if(scheme.size() > 0)
-    {
-      loadFromSingleDir(publicKeyFile, dirlocation + "scheme/" + scheme + "/");
-    }
-    loadFromSingleDir(publicKeyFile, dirlocation + "robots/" + robotName + "/");
-    loadFromSingleDir(publicKeyFile, dirlocation + "robots_bodies/" + bodyID + "/");
-    loadFromSingleDir(publicKeyFile, dirlocation + "robot_heads/" + headID + "/");
-    privateDir = dirlocation + "private/";
-    loadFromSingleDir(privateKeyFile, privateDir);
-  } else
-  {
-    std::cout << "[WARN] Could not load configuration from " << dirlocation << ": directory does not exist" << std::endl;
+  loadFromSingleDir(publicKeyFile, dirlocation + "general/");
+  loadFromSingleDir(publicKeyFile, dirlocation + "platform/" + platform + "/");
+
+  if(scheme.size() > 0) {
+    loadFromSingleDir(publicKeyFile, dirlocation + "scheme/" + scheme + "/");
   }
+
+  if(strategy.size() > 0) {
+    loadFromSingleDir(publicKeyFile, dirlocation + "strategy/" + strategy + "/");
+  }
+
+  bool robot_config_required = (platform == "Nao" || platform == "nao");
+  loadFromSingleDir(publicKeyFile, dirlocation + "robots/" + robotName + "/", robot_config_required);
+
+  loadFromSingleDir(publicKeyFile, dirlocation + "robots_bodies/" + bodyID + "/", false);
+  loadFromSingleDir(publicKeyFile, dirlocation + "robot_heads/" + headID + "/", false);
+  
+  privateDir = dirlocation + "private/";
+  loadFromSingleDir(privateKeyFile, privateDir);
 }
 
-void Configuration::loadFromSingleDir(GKeyFile* keyFile, std::string dirlocation)
+void Configuration::loadFromSingleDir(GKeyFile* keyFile, std::string dirlocation, bool required)
 {
-  // iterate over all files in the folder
+  // make sure the directory exists
+  ASSERT_MSG(!required || isDir(dirlocation), "Could not load configuration from " << dirlocation << ": directory does not exist.");
 
-  if (!g_str_has_suffix(dirlocation.c_str(), "/"))
-  {
+  if (!g_str_has_suffix(dirlocation.c_str(), "/")) {
     dirlocation = dirlocation + "/";
   }
 
+  // iterate over all files in the folder
   GDir* dir = g_dir_open(dirlocation.c_str(), 0, NULL);
   if (dir != NULL)
   {
@@ -109,8 +115,6 @@ void Configuration::loadFromSingleDir(GKeyFile* keyFile, std::string dirlocation
         }
         g_free(group);
       }
-
-
     }
     g_dir_close(dir);
   }
@@ -252,8 +256,12 @@ std::set<std::string> Configuration::getKeys(const std::string& group) const
 
 bool Configuration::hasKey(const std::string& group, const std::string& key) const
 {
-  return ( g_key_file_has_key(publicKeyFile, group.c_str(), key.c_str(), NULL) > 0 )
-      || ( g_key_file_has_key(privateKeyFile, group.c_str(), key.c_str(), NULL) > 0 );
+  // HACK: If the group does not exist, g_key_file_has_key will log a GLib error and we need to avoid this at all cost.
+  // This function is called from constructors (e.g. via syncWithConfig()) and if any constructor generates a GLib error,
+  // newer versions of GLib will crash due the way they internally map string constants to internal IDs:
+  // https://gitlab.gnome.org/GNOME/glib/-/issues/1177
+  return (g_key_file_has_group(publicKeyFile, group.c_str()) && g_key_file_has_key(publicKeyFile, group.c_str(), key.c_str(), NULL) > 0 )
+      || (g_key_file_has_group(privateKeyFile, group.c_str()) && g_key_file_has_key(privateKeyFile, group.c_str(), key.c_str(), NULL) > 0 );
 }
 
 bool Configuration::hasGroup(const std::string& group) const
@@ -339,12 +347,12 @@ void Configuration::setDouble(const std::string& group, const std::string& key, 
 {
   //g_key_file_set_double(privateKeyFile, group.c_str(), key.c_str(), value);
   // the function above produce unecessary zeros
-  g_key_file_set_string(privateKeyFile, group.c_str(), key.c_str(), DataConversion::toStr(value).c_str());
+  g_key_file_set_string(privateKeyFile, group.c_str(), key.c_str(), StringTools::toStr(value).c_str());
 }
 
 void Configuration::setDefault(const std::string& group, const std::string& key, double value)
 {
-  g_key_file_set_string(publicKeyFile, group.c_str(), key.c_str(), DataConversion::toStr(value).c_str());
+  g_key_file_set_string(publicKeyFile, group.c_str(), key.c_str(), StringTools::toStr(value).c_str());
 }
 
 bool Configuration::getBool(const std::string& group, const std::string& key) const
