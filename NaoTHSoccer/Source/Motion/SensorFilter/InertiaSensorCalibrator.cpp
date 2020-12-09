@@ -63,7 +63,7 @@ void InertiaSensorCalibrator::execute()
       // will be applied directly to the corresponding representations
       getCalibrationData().accSensorOffset  = Vector3d();
       getCalibrationData().gyroSensorOffset = Vector3d();
-      getCalibrationData().inertialSensorOffset = Vector2d();
+      getCalibrationData().inertialSensorOffset = Vector3d();
 
       return;
   }
@@ -231,12 +231,14 @@ void InertiaSensorCalibrator::execute()
      * this would result in a redistribution of the inclination on the x,y axis.
      * (e.g. z rotation about 90 degrees -> a rotation about the body's y axis becomes a rotation about the foot's x axis)
      */
-    Vector2d inertialExpected(-footIntoBodyMapping.getXAngle(), -footIntoBodyMapping.getYAngle());
+    // TODO: ignore z for the moment because it is not exactly clear which angle it describes
+    Vector3d inertialExpected(-footIntoBodyMapping.getXAngle(), -footIntoBodyMapping.getYAngle(), 0);
     Vector3d accExpected(footIntoBodyMapping[2].x, footIntoBodyMapping[2].y, footIntoBodyMapping[2].z);
     accExpected *= Math::g;
 
     // add sensor reading to the collection
-    inertialValues.add(inertialExpected - getInertialSensorData().data);
+    // HACK: set z to 0 because we currently don't know which angle is described by z
+    inertialValues.add(inertialExpected - Vector3d(getInertialSensorData().data.x, getInertialSensorData().data.y, 0));
     accValues.add(getAccelerometerData().data - accExpected);
     gyroValues.add( -getGyrometerData().data);
 
