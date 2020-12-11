@@ -170,12 +170,12 @@ public class ModuleConfigurationModules
      */
     private void updateModulesSubtree(String type, TreeNodeItem root) {
         // check, if the subtree of the type should be updated
-        if (root.getChild(type).getChildren().size() > 0) {
+        if (root.getChild(type).getSourceChildren().size() > 0) {
             TreeNodeItem subtree = ((TreeNodeItem)moduleTree.getRoot()).getChild(type);
             // remember the expanded nodes of the subtree
             List<String> expanded = subtree.getExpandedNodes();
-            // update subtrre
-            subtree.getChildren().setAll(root.getChild(type).getChildren());
+            // update subtree
+            subtree.getSourceChildren().setAll(root.getChild(type).getSourceChildren());
             // restore expanded nodes
             subtree.expandNodes(expanded);
             // expand single tree paths (like "Cognition/Modules"
@@ -195,11 +195,11 @@ public class ModuleConfigurationModules
         // pre-set cognition and motion tree items
         TreeNodeItem cognition = new TreeNodeItem("Cognition");
         cognition.setExpanded(true);
-        root.getChildren().add(cognition);
+        root.getSourceChildren().add(cognition);
         
         TreeNodeItem motion = new TreeNodeItem("Motion");
         motion.setExpanded(true);
-        root.getChildren().add(motion);
+        root.getSourceChildren().add(motion);
         
         // if set, use the module configuration
         if (mConfig != null) {
@@ -234,7 +234,7 @@ public class ModuleConfigurationModules
 
                 TreeNodeItem leaf = new TreeNodeItem(m);
                 // add this item to the module tree
-                parent.getChildren().add(leaf);
+                parent.getSourceChildren().add(leaf);
                 // set the selected state AFTER adding it to its parent
                 leaf.setSelected(m.isActive());
                 // set the callback for (de-)activating this module
@@ -243,11 +243,11 @@ public class ModuleConfigurationModules
 
             // remove node, where the leaf and its parent have the same name and the leaf is the only child
             removeableNodes.forEach((t, u) -> {
-                if(u.getChildren().size() == 1) {
+                if(u.getSourceChildren().size() == 1) {
                     TreeNodeItem parent = (TreeNodeItem) u.getParent();
-                    int idx = parent.getChildren().indexOf(u);
-                    parent.getChildren().remove(idx);
-                    parent.getChildren().add(idx, u.getChildren().get(0));
+                    int idx = parent.getSourceChildren().indexOf(u);
+                    parent.getSourceChildren().remove(idx);
+                    parent.getSourceChildren().add(idx, u.getSourceChildren().get(0));
                 }
             });
         }
@@ -269,7 +269,7 @@ public class ModuleConfigurationModules
             TreeNodeItem current = parent.getChild(path.get(i));
             if(current == null) {
                 current = new TreeNodeItem(path.get(i));
-                parent.getChildren().add(current);
+                parent.getSourceChildren().add(current);
             }
             parent = current;
         }
@@ -283,9 +283,12 @@ public class ModuleConfigurationModules
      */
     private void expandSingleTreeNodes(TreeNodeItem root) {
         TreeNodeItem current = root;
-        while ((current.getParent() == null || current.getParent().getValue() == null || current.getParent().getChildren().size() == 1) && current.getChildren().size() > 0) {
+        while ((current.getParent() == null 
+                || current.getParent().getValue() == null 
+                || ((TreeNodeItem) current.getParent()).getSourceChildren().size() == 1)
+                && current.getSourceChildren().size() > 0) {
             current.setExpanded(true);
-            current = (TreeNodeItem) current.getChildren().get(0);
+            current = (TreeNodeItem) current.getSourceChildren().get(0);
         }
     }
 }
