@@ -4,6 +4,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.componentsFx.TreeNodeCell;
 import de.naoth.rc.componentsFx.TreeNodeItem;
+import de.naoth.rc.componentsFx.TreeNodeItemPredicate;
 import de.naoth.rc.core.messages.Messages;
 import de.naoth.rc.core.server.Command;
 import de.naoth.rc.core.server.ResponseListener;
@@ -12,8 +13,10 @@ import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -90,9 +93,17 @@ public class DebugRequestsTree implements ResponseListener
     @FXML
     private void initialize() {
         // setup ui
+        TreeNodeItem<String> root = new TreeNodeItem<>();
+        root.setExpanded(true);
+        root.predicateProperty().bind(Bindings.createObjectBinding(() -> {
+            if (search.getText() == null || search.getText().isEmpty()) { return null; }
+            return TreeNodeItemPredicate.create(item -> item.toLowerCase().contains(search.getText().toLowerCase()));
+        }, search.textProperty()));
+        
         debugTree.setCellFactory((p) -> new TreeNodeCell<>());
-        debugTree.setRoot(new TreeNodeItem<>());
-        debugTree.getRoot().setExpanded(true);
+        debugTree.setRoot(root);
+
+        search.setFocusTraversable(false);
     }
     
     /**
@@ -102,11 +113,22 @@ public class DebugRequestsTree implements ResponseListener
     public void setRobotControl(RobotControl control) {
         this.control = control;
     }
+    
+    /**
+     * Disables (hide) the search field and keep the current selection on the tree.
+     */
+    private void disableSearch() {
+        TreeItem<String> selection = debugTree.getSelectionModel().getSelectedItem();
+        search.setVisible(false);
+        search.clear();
+        debugTree.getSelectionModel().select(selection);
+    }
 
     /**
      * Schedules the debug request retrieving command.
      */
     public void updateRequests() {
+        disableSearch();
         if (control != null && control.checkConnected()) {
             control.getMessageServer().executeCommand(this, cmd_debug_cognition);
             control.getMessageServer().executeCommand(this, cmd_debug_motion);
@@ -138,13 +160,18 @@ public class DebugRequestsTree implements ResponseListener
         } else if (shortcutUpdate.match(k)) {
             updateRequests();
         } else if (shortcutDisableSearch.match(k)) {
-            search.setVisible(false);
-            search.clear();
+            disableSearch();
         } else {
-            // add the character to the search field
-            search.setVisible(true);
-            search.appendText(k.getText());
-            System.out.println(k);
+            TreeItem<String> selection = debugTree.getSelectionModel().getSelectedItem();
+            if (k.getCode() == KeyCode.BACK_SPACE) {
+                // handle backspace key
+                search.deletePreviousChar();
+            } else if (!k.getText().isEmpty()) {
+                // add - non-empty - character to the search field
+                search.setVisible(true);
+                search.appendText(k.getText());
+            }
+            debugTree.getSelectionModel().select(selection);
         }
     }
     
@@ -188,26 +215,25 @@ public class DebugRequestsTree implements ResponseListener
         try {
             // parse data
             Messages.DebugRequest request = Messages.DebugRequest.parseFrom(response);
-            // get the cognition debug request root item or create a new, if it doesn't exists
-            TreeNodeItem root;
-            if(((TreeNodeItem)debugTree.getRoot()).hasChild(type)) {
-                root = ((TreeNodeItem)debugTree.getRoot()).getChild(type);
-            } else {
-                root = new TreeNodeItem(type);
-                root.setExpanded(true);
+            // get the cognition/motion debug request root item or create a new, if it doesn't exist
+            TreeNodeItem typeRoot = ((TreeNodeItem)debugTree.getRoot()).getChild(type);
+            if(typeRoot == null) {
+                typeRoot = new TreeNodeItem(type);
+                typeRoot.setExpanded(true);
                 // inserts the tree node at the index position or at the end
-                if(debugTree.getRoot().getChildren().size() > treeIdx) {
-                    debugTree.getRoot().getChildren().add(treeIdx, root);
+                if(((TreeNodeItem)debugTree.getRoot()).getSourceChildren().size() > treeIdx) {
+                    ((TreeNodeItem)debugTree.getRoot()).getSourceChildren().add(treeIdx, typeRoot);
                 } else {
-                    debugTree.getRoot().getChildren().add(root);
+                    ((TreeNodeItem)debugTree.getRoot()).getSourceChildren().add(typeRoot);
                 }
             }
-            List<String> t = root.getExpandedNodes();
+
+            List<String> t = typeRoot.getExpandedNodes();
             // remove the old subtree
-            root.getChildren().clear();
+            typeRoot.getSourceChildren().clear();
             // create the new subtree
-            createDebugRequestTree(request, root, debugRequest);
-            root.expandNodes(t);
+            createDebugRequestTree(request, typeRoot, debugRequest);
+            typeRoot.expandNodes(t);
             // TODO: handle scrollbar -> sometimes after an update the scrollbar isn't shown!
             debugTree.scrollTo(1);
         } catch (InvalidProtocolBufferException ex) {
@@ -238,7 +264,7 @@ public class DebugRequestsTree implements ResponseListener
             for (String part : path.split(":")) {
                 if(!current_root.hasChild(part)) {
                     TreeNodeItem treePartNew = new TreeNodeItem(part);
-                    current_root.getChildren().add(treePartNew);
+                    current_root.getSourceChildren().add(treePartNew);
                     current_root = treePartNew;
                 } else {
                     current_root = current_root.getChild(part);
@@ -247,7 +273,7 @@ public class DebugRequestsTree implements ResponseListener
             
             // add this item to the module tree
             TreeNodeItem item = new TreeNodeItem(name, tooltip);
-            current_root.getChildren().add(item);
+            current_root.getSourceChildren().add(item);
 
             // set the selected state AFTER adding it to its parent
             item.setSelected(r.getValue());
