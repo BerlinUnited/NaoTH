@@ -2,13 +2,17 @@ package de.naoth.rc.dialogsFx.moduleconfiguration;
 
 import de.naoth.rc.componentsFx.TreeNodeCell;
 import de.naoth.rc.componentsFx.TreeNodeItem;
+import de.naoth.rc.componentsFx.TreeNodeItemPredicate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import javafx.animation.FadeTransition;
+import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -26,11 +30,13 @@ public class ModuleConfigurationModules
     
     @FXML private TreeView<String> moduleTree;
     @FXML private Label notice;
+    @FXML private TextField search;
     
     /** Some shortcuts */
     private final KeyCombination shortcutRefresh = new KeyCodeCombination(KeyCode.F5);
     private final KeyCombination shortcutEnableEnter = new KeyCodeCombination(KeyCode.ENTER);
     private final KeyCombination shortcutEnableSpace = new KeyCodeCombination(KeyCode.SPACE);
+    private final KeyCombination shortcutDisableSearch = new KeyCodeCombination(KeyCode.ESCAPE);
     
     /** The animation for the flash messages */
     private final FadeTransition fadeOut = new FadeTransition(Duration.millis(2000));
@@ -70,6 +76,10 @@ public class ModuleConfigurationModules
         moduleTree.setCellFactory((p) -> new TreeNodeCell<>());
         moduleTree.setRoot(createModulesTree());
         moduleTree.getRoot().setExpanded(true);
+        ((TreeNodeItem)moduleTree.getRoot()).predicateProperty().bind(Bindings.createObjectBinding(() -> {
+            if (search.getText() == null || search.getText().isEmpty()) { return null; }
+            return TreeNodeItemPredicate.create(item -> item.toString().toLowerCase().contains(search.getText().toLowerCase()));
+        }, search.textProperty()));
 
         // set the options for the fade-out animation
         fadeOut.setNode(notice);
@@ -102,9 +112,32 @@ public class ModuleConfigurationModules
             }
         } else if (shortcutRefresh.match(k)) {
             this.mConfig.updateModules();
+        } else if (shortcutDisableSearch.match(k)) {
+            disableSearch();
+        } else {
+            TreeItem<String> selection = moduleTree.getSelectionModel().getSelectedItem();
+            if (k.getCode() == KeyCode.BACK_SPACE) {
+                // handle backspace key
+                search.deletePreviousChar();
+            } else if (!k.getText().isEmpty()) {
+                // add - non-empty - character to the search field
+                search.setVisible(true);
+                search.appendText(k.getText());
+            }
+            moduleTree.getSelectionModel().select(selection);
         }
     }
     
+    /**
+     * Disables (hide) the search field and keep the current selection on the tree.
+     */
+    private void disableSearch() {
+        TreeItem<String> selection = moduleTree.getSelectionModel().getSelectedItem();
+        search.setVisible(false);
+        search.clear();
+        moduleTree.getSelectionModel().select(selection);
+    }
+
     /**
      * Installs the bindings to properties of the module configuration object.
      */
