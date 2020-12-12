@@ -51,6 +51,16 @@ public class FilterableTreeItem<T> extends CheckBoxTreeItem<T>
      * is necessary to set the {@link TreeItemComparator}. If no comparator is
      * set, then the tree item will attempt so bind itself to the comparator of
      * its parent.
+     */
+    public FilterableTreeItem() {
+        this(null);
+    }
+    
+    /**
+     * Creates a new {@link TreeItem} with sorted children. To enable sorting it
+     * is necessary to set the {@link TreeItemComparator}. If no comparator is
+     * set, then the tree item will attempt so bind itself to the comparator of
+     * its parent.
      *
      * @param value the value of the {@link TreeItem}
      */
@@ -58,7 +68,7 @@ public class FilterableTreeItem<T> extends CheckBoxTreeItem<T>
         super(value);
 
         // sync the children: source -> filtered -> children
-        Bindings.bindContent(getChildren(), sourceList);
+        Bindings.bindContent(getChildren(), filteredList);
         
         // update the predicate of the children and trigger the filter test, when
         // this (parent) predicate changes
