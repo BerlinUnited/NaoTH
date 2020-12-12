@@ -102,8 +102,6 @@ public class DebugRequestsTree implements ResponseListener
         
         debugTree.setCellFactory((p) -> new TreeNodeCell<>());
         debugTree.setRoot(root);
-
-        search.setFocusTraversable(false);
     }
     
     /**
