@@ -9,7 +9,7 @@ import javafx.scene.control.TreeItem;
  * https://github.com/eclipse-efx/efxclipse-rt/blob/master/modules/ui/org.eclipse.fx.ui.controls/src/main/java/org/eclipse/fx/ui/controls/tree/TreeItemPredicate.java
  */
 @FunctionalInterface
-public interface TreeNodeItemPredicate<T> {
+public interface TreeItemPredicate<T> {
 
     /**
      * Evaluates this predicate on the given argument.
@@ -29,7 +29,7 @@ public interface TreeNodeItemPredicate<T> {
      * @param <T> the element type
      * @return new TreeItemPredicate
      */
-    static <T> TreeNodeItemPredicate<T> create(Predicate<T> predicate) {
+    static <T> TreeItemPredicate<T> create(Predicate<T> predicate) {
         return (parent, value) -> predicate.test(value);
     }
 }

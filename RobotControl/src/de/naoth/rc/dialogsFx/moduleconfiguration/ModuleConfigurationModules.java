@@ -2,7 +2,6 @@ package de.naoth.rc.dialogsFx.moduleconfiguration;
 
 import de.naoth.rc.componentsFx.TreeNodeCell;
 import de.naoth.rc.componentsFx.TreeNodeItem;
-import de.naoth.rc.componentsFx.TreeNodeItemPredicate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +18,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.util.Duration;
+import de.naoth.rc.componentsFx.TreeItemPredicate;
 
 /**
  * @author Philipp Strobel <philippstrobel@posteo.de>
@@ -78,7 +78,7 @@ public class ModuleConfigurationModules
         moduleTree.getRoot().setExpanded(true);
         ((TreeNodeItem)moduleTree.getRoot()).predicateProperty().bind(Bindings.createObjectBinding(() -> {
             if (search.getText() == null || search.getText().isEmpty()) { return null; }
-            return TreeNodeItemPredicate.create(item -> item.toString().toLowerCase().contains(search.getText().toLowerCase()));
+            return TreeItemPredicate.create(item -> item.toString().toLowerCase().contains(search.getText().toLowerCase()));
         }, search.textProperty()));
 
         // set the options for the fade-out animation

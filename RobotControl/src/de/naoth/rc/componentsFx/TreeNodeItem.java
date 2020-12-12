@@ -31,7 +31,7 @@ public class TreeNodeItem<T extends Object> extends CheckBoxTreeItem<T>
     /** The filtered children based on the predicate */
     private final FilteredList<TreeItem<T>> filteredList = new FilteredList<>(this.sourceList);
     /** The predicate to filter the source children list */
-    private final ObjectProperty<TreeNodeItemPredicate<T>> predicate = new SimpleObjectProperty<>();
+    private final ObjectProperty<TreeItemPredicate<T>> predicate = new SimpleObjectProperty<>();
     /** Container storing the references to the named children. */
     private final HashMap<T, TreeNodeItem> mapping = new HashMap<>();
     /** The tooltip for this tree node. */
@@ -135,14 +135,14 @@ public class TreeNodeItem<T extends Object> extends CheckBoxTreeItem<T>
     /**
      * @return the predicate property
      */
-    public final ObjectProperty<TreeNodeItemPredicate<T>> predicateProperty() {
+    public final ObjectProperty<TreeItemPredicate<T>> predicateProperty() {
         return this.predicate;
     }
 
     /**
      * @return the predicate
      */
-    public final TreeNodeItemPredicate<T> getPredicate() {
+    public final TreeItemPredicate<T> getPredicate() {
         return this.predicate.get();
     }
 
@@ -151,7 +151,7 @@ public class TreeNodeItem<T extends Object> extends CheckBoxTreeItem<T>
      *
      * @param predicate the predicate
      */
-    public final void setPredicate(TreeNodeItemPredicate<T> predicate) {
+    public final void setPredicate(TreeItemPredicate<T> predicate) {
         this.predicate.set(predicate);
     }
 

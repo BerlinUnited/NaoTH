@@ -4,7 +4,6 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.componentsFx.TreeNodeCell;
 import de.naoth.rc.componentsFx.TreeNodeItem;
-import de.naoth.rc.componentsFx.TreeNodeItemPredicate;
 import de.naoth.rc.core.messages.Messages;
 import de.naoth.rc.core.server.Command;
 import de.naoth.rc.core.server.ResponseListener;
@@ -22,6 +21,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import de.naoth.rc.componentsFx.TreeItemPredicate;
 
 /**
  * @author Philipp Strobel <philippstrobel@posteo.de>
@@ -97,7 +97,7 @@ public class DebugRequestsTree implements ResponseListener
         root.setExpanded(true);
         root.predicateProperty().bind(Bindings.createObjectBinding(() -> {
             if (search.getText() == null || search.getText().isEmpty()) { return null; }
-            return TreeNodeItemPredicate.create(item -> item.toLowerCase().contains(search.getText().toLowerCase()));
+            return TreeItemPredicate.create(item -> item.toLowerCase().contains(search.getText().toLowerCase()));
         }, search.textProperty()));
         
         debugTree.setCellFactory((p) -> new TreeNodeCell<>());
