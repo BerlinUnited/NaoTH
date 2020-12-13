@@ -25,6 +25,7 @@ print("  OS = " .. os.target())
 print("  ACTION = " .. (_ACTION or "NONE"))
 
 -- generate the project directory
+-- or "": dont create a directory for the action if only protobuf files are generated 
 local project_dir = "../build/" .. (_OPTIONS["platform"] or _ACTION or "")
 print("  LOCATION = " .. project_dir)
 
