@@ -25,7 +25,7 @@ print("  OS = " .. os.target())
 print("  ACTION = " .. (_ACTION or "NONE"))
 
 -- generate the project directory
-local project_dir = "../build/" .. (_OPTIONS["platform"] or _ACTION)
+local project_dir = "../build/" .. (_OPTIONS["platform"] or _ACTION or "")
 print("  LOCATION = " .. project_dir)
 
 print("") -- empty line :)
