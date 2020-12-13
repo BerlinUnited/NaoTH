@@ -202,7 +202,8 @@ public class ParametersPanel
             updateParams();
         } else if (shortcutDisableSearch.match(k)) {
             disableSearch();
-        } else {
+        } else if (((FilterableTreeItem)params.getRoot()).getSourceChildren().size() > 0) {
+            // start filtering only, if there's something to filter
             TreeItem<String> selection = params.getSelectionModel().getSelectedItem();
             if (k.getCode() == KeyCode.BACK_SPACE) {
                 // handle backspace key

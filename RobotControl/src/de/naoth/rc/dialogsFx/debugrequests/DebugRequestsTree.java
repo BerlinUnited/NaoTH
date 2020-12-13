@@ -159,7 +159,8 @@ public class DebugRequestsTree implements ResponseListener
             updateRequests();
         } else if (shortcutDisableSearch.match(k)) {
             disableSearch();
-        } else {
+        } else if (((TreeNodeItem)debugTree.getRoot()).getSourceChildren().size() > 0) {
+            // start filtering only, if there's something to filter
             TreeItem<String> selection = debugTree.getSelectionModel().getSelectedItem();
             if (k.getCode() == KeyCode.BACK_SPACE) {
                 // handle backspace key
