@@ -136,6 +136,7 @@ public class ModuleConfigurationModules
         search.setVisible(false);
         search.clear();
         moduleTree.getSelectionModel().select(selection);
+        moduleTree.scrollTo(moduleTree.getSelectionModel().getSelectedIndex());
     }
 
     /**

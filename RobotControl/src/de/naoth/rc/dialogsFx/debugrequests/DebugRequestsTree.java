@@ -120,6 +120,7 @@ public class DebugRequestsTree implements ResponseListener
         search.setVisible(false);
         search.clear();
         debugTree.getSelectionModel().select(selection);
+        debugTree.scrollTo(debugTree.getSelectionModel().getSelectedIndex());
     }
 
     /**
