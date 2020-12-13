@@ -3,7 +3,7 @@ import time
 import os
 import traceback
 
-__all__ = ['wait_for', 'remove_simspark_logfile']
+__all__ = ['wait_for', 'remove_simspark_logfile', 'TestRun']
 
 
 def wait_for(condition: callable, sleeper: float, min_time: float = 0.0, max_time: float = 3600.0, *kwargs):
@@ -38,3 +38,36 @@ def remove_simspark_logfile():
             os.remove('sparkmonitor.log')
         except:
             logging.warning("Could not remove simspark log file!")
+
+
+class TestRun:
+
+    def __init__(self):
+        self.logger = logging.getLogger(self.__class__.__name__)
+
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    def run(self):
+        tests = 0
+        successful = 0
+
+        for attr in dir(self):
+            if not attr.startswith('test'):
+                continue
+            testFunc = getattr(self, attr)
+            if not callable(testFunc):
+                continue
+
+            print(attr, '... ', end='', flush=True)
+            tests += 1
+            if testFunc():
+                successful += 1
+                print('ok', flush=True)
+            else:
+                print('FAIL', flush=True)
+
+        return (tests, successful)

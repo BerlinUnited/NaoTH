@@ -87,7 +87,8 @@ private:
   static double getInertialSensorX();
   static double getInertialSensorY();
 
-  static bool getBumberLeftPressed();
+  static bool getBumperLeftPressed();
+  static bool getBumperRightPressed();
   static bool getButtonHeadMiddle();
   static bool getButtonHeadFront();
   static bool getButtonHeadRear();
