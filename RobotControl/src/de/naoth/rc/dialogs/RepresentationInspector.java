@@ -10,19 +10,20 @@
  */
 package de.naoth.rc.dialogs;
 
-import com.google.protobuf.Descriptors.Descriptor;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.core.dialog.AbstractDialog;
 import de.naoth.rc.core.dialog.DialogPlugin;
 import de.naoth.rc.core.dialog.RCDialog;
 import de.naoth.rc.core.manager.ObjectListener;
 import de.naoth.rc.core.manager.SwingCommandExecutor;
+import de.naoth.rc.core.messages.FrameworkRepresentations;
+import de.naoth.rc.core.messages.Messages;
+import de.naoth.rc.core.messages.Representations;
 import de.naoth.rc.logmanager.BlackBoard;
 import de.naoth.rc.logmanager.LogFileEventManager;
 import de.naoth.rc.logmanager.LogFrameListener;
 import de.naoth.rc.manager.GenericManager;
 import de.naoth.rc.manager.GenericManagerFactory;
-import de.naoth.rc.core.messages.AudioDataOuterClass;
 import de.naoth.rc.core.server.Command;
 import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
@@ -31,21 +32,15 @@ import javax.swing.event.ListSelectionListener;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
-import de.naoth.rc.core.messages.FrameworkRepresentations;
-import de.naoth.rc.core.messages.Messages;
-import de.naoth.rc.core.messages.Representations;
-import de.naoth.rc.core.messages.TeamMessageOuterClass;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
@@ -494,6 +489,7 @@ public class RepresentationInspector extends AbstractDialog {
         this.jToggleButtonRefresh.setSelected(false);
     }
 
+    /*
     private static List<Descriptor> getAllProtobufDescriptors() {
         List<Descriptor> result = new ArrayList<Descriptor>();
         result.addAll(FrameworkRepresentations.getDescriptor().getMessageTypes());
@@ -517,19 +513,19 @@ public class RepresentationInspector extends AbstractDialog {
         }
         return result;
     }
-
+	*/
+	
     private static Class<?> getProtobufClass(String name) {
         
-        // EVIL HACKS
+        // EVIL HACK: remove suffix "Top"
         if (name.endsWith("Top")) {
             name = name.substring(0, name.length() - 3);
         }
         
+        // look in the general message classes first
         Class<?> protoClasses[] = {
             FrameworkRepresentations.class,
             Representations.class,
-            TeamMessageOuterClass.class,
-            AudioDataOuterClass.class,
             Messages.class};
 
         for (Class<?> pc : protoClasses) {
@@ -539,8 +535,18 @@ public class RepresentationInspector extends AbstractDialog {
                 }
             }
         }
-
-        return null;
+        
+        // if nothing found, then look in the individual message classes
+        String protoPackage = Representations.class.getPackage().getName();
+        try {
+            // the protobuf message classes are inside an outer class, 
+            // so we cave to use the operator $ to access the inner class
+            // e.g.: RobotPoseOuterClass$RobotPose
+            return Class.forName(protoPackage+"."+name+"OuterClass$"+name);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(RepresentationInspector.class.getName()).log(Level.WARNING, "Could not find a protobuf class for " + name, ex);
+            return null;
+        }
     }
 
     interface Parser {
@@ -585,10 +591,9 @@ public class RepresentationInspector extends AbstractDialog {
                 Method m = parserClass.getMethod("parseFrom", data.getClass());
                 Object msg = m.invoke(null, data);
                 return msg;
-            } catch (NoSuchMethodException e) {
-            } catch (IllegalAccessException ex) {
-            } catch (InvocationTargetException ebx) {
-            }
+            } catch (Exception e) {
+                getLogger().log(Level.SEVERE, "Error while trying to parse a message", e);
+            } 
 
             return null;
         }//end parse

@@ -24,9 +24,11 @@ public:
      * @return the median value of all values
      */
     C getMedian() const {
+        // Return 0 if buffer is empty
+        if (0==this->numberOfEntries) return C();
         // copy buffer
         C temp[n];
-        memcpy(temp, this->buffer, n * sizeof(C));
+        memcpy(temp, this->buffer, this->numberOfEntries * sizeof(C));
         int mid = this->numberOfEntries/2;
         // check for median idx (even / odd)
         if(this->numberOfEntries % 2) {

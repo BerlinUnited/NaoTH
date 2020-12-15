@@ -1,0 +1,21 @@
+<h2>RobotControl</h2>
+
+<h3>Quick Dialog Access</h3>
+<p>
+  Allows to quickly search and activate dialogs. 
+  Press <tt>ALT + F</tt> to show the quick dialog access panel. 
+  To search for a dialog just begin typing a part of the dialogs name. 
+  The list of matching dialogs is adjusted in real time.
+  The search text box automatically captures focus and does not need to be selected for typing.
+  The list of dialogs can be navigated forward and backward with <tt>UP/DOWN</tt> keys, or with <tt>TAB/SHIFT+TAB</tt>. 
+</p>
+<p>
+  To select a dialog use <tt>ENTER</tt> or left mouse click on the corresponding button. 
+  Use <tt>ESC</tt> to close the quick dialog access panel without selecting a dialog.
+</p>
+
+<h3>Macro (DebugCommand recording)</h3>
+<p>When RC is connected to a robot, the menu item "Macros" is activated. There the recording of DebugCommands to the robot can be started. Only "set" commands are recorded (DebugRequests, Modules, Agent, Parameters).</p>
+<p>Each recording is named and inserted as a new menu item in the "Macros" menu. If a recording is selected, all previously recorded DebugCommands are sent to the robot again. If necessary, dialogs must be updated to make the changes visible.</p>
+<p>An entry can be deleted by holding down "CTRL" and selecting the entry to be deleted with the mouse.</p>
+<p>The recordings are stored in the RC user directory as "cmd_recording_&lt;name&gt;.bin".</p>

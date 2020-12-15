@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="327.0" prefWidth="700.0" stylesheets="@../../res/style.css" xmlns="http://javafx.com/javafx/8.0.202-ea" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ToolBar prefHeight="40.0" prefWidth="200.0">
+         <items>
+            <Button fx:id="btnUpdate" mnemonicParsing="false" onAction="#fxUpdateModules" styleClass="update" text="Update">
+               <tooltip>
+                  <Tooltip text="Update modules [Alt+Shift+U]" />
+               </tooltip>
+            </Button>
+            <Separator focusTraversable="false" orientation="VERTICAL">
+               <padding>
+                  <Insets left="3.0" />
+               </padding>
+            </Separator>
+            <Button fx:id="btnSave" disable="true" graphicTextGap="0.0" mnemonicParsing="false" onAction="#fxSaveModules" styleClass="save" text="Save">
+               <tooltip>
+                  <Tooltip text="Save the module configuration on the robot [Alt+Shift+S]" />
+               </tooltip>
+            </Button>
+            <Button fx:id="btnExport" disable="true" mnemonicParsing="false" onAction="#fxExportModules" styleClass="export" text="Export">
+               <tooltip>
+                  <Tooltip text="Save the module configuration locally [Alt+Shift+E]" />
+               </tooltip>
+            </Button>
+            <Separator focusTraversable="false" orientation="VERTICAL">
+               <padding>
+                  <Insets left="3.0" />
+               </padding>
+            </Separator>
+            <ComboBox fx:id="module" disable="true" editable="true" prefWidth="150.0" promptText="Modules" />
+            <ComboBox fx:id="representation" disable="true" editable="true" prefWidth="150.0" promptText="Representations" />
+         </items>
+      </ToolBar>
+      <SplitPane dividerPositions="0.5" prefHeight="160.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+        <items>
+            <fx:include fx:id="dependencies" source="ModuleConfigurationDependency.fxml" />
+            <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
+               <items>
+                  <fx:include fx:id="modulesPanel" source="ModuleConfigurationModules.fxml" />
+                  <fx:include fx:id="representationsPanel" source="ModuleConfigurationRepresentations.fxml" />
+               </items>
+            </SplitPane>
+        </items>
+      </SplitPane>
+   </children>
+</VBox>

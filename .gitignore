@@ -3,6 +3,7 @@ dist/
 build/
 private/
 backup_*/
+
 #deploy/
 NaoSCP/tmp/
 XabslEditor/
@@ -19,6 +20,9 @@ genfiles.properties
 naoth.egg-info*
 *_pb2.py
 
+#pyenv
+.python-version
+
 #
 trace.dump.*
 projectconfig.user.lua
@@ -26,8 +30,8 @@ projectconfig.user.lua
 compile_commands.json
 
 #messages
-RobotControl/RobotConnector/src/de/naoth/rc/messages
-RobotControl/src/de/naoth/rc/core/messages
+RobotControl/src/de/naoth/rc/core/messages/*
+!RobotControl/src/de/naoth/rc/core/messages/MessageRegistry.java
 NaoTHSoccer/Source/Messages
 Framework/Commons/Source/Messages
 
@@ -37,3 +41,6 @@ behavior-ic.dat
 #vim swap files
 .*.swp
 /Utils/.vscode/settings.json
+
+# macOS
+.DS_Store

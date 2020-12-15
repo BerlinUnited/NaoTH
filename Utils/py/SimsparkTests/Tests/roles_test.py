@@ -1,73 +1,102 @@
+import time
 from SimsparkController import SimsparkController
+from AgentController import AgentController
 from Utils import *
 
-def roles_test(args):
-    s = SimsparkController(args.simspark, not args.no_simspark)
-    s.start()
-    s.connected.wait() # wait for the monitor to be connected
+class RolesTest(TestRun):
+    """Tests the walk in at the begin of a game."""
 
-    agents = []
-    for n in range(1,6):
-        agents.append(AgentController(args.agent, args.config, number=n, start_instance=not args.no_agent))
+    def __init__(self, args):
+        super().__init__()
+        self.simspark_application = args.simspark
+        self.simspark_start_instance = not args.no_simspark
 
-    for a in agents: a.start()
-    for a in agents: a.started.wait() # wait for the agent to be fully started
+        self.agent_application = args.agent
+        self.agent_config_dir = args.config
+        self.agent_start_instance = not args.no_agent
 
-    # it takes sometimes a while until simspark got the correct player number
-    for a in agents: wait_for(lambda: s.get_robot(a.number) is not None, 0.3)
-    # wait until the player is on the field
-    for a in agents: wait_for(lambda: s.get_robot(a.number)['z'] <= 0.4, 0.3)
+        self.simspark = None
+        self.agents = []
 
-    logging.info('Enable/Disable some modules')
+        self.last_ball = {'x': 0, 'y': 0}  # helper var, in order to determine if the ball is still moving
 
-    # eg. for en-/disabling a module
-    #a.module('VirtualVisionProcessor', False)
-    for a in agents:
-        a.agent('role_spl_soccer')
-        a.module('PathPlanner', False)
-        a.module('PathPlanner2018', True)
-        a.module('SituationPriorProvider', False)
-        a.module('MonteCarloSelfLocator', False)
-        a.module('OdometrySelfLocator', False)
-        a.module('GPS_SelfLocator', True)
+    def setUp(self):
+        self.simspark = SimsparkController(self.simspark_application, start_instance=self.simspark_start_instance)
+        self.simspark.start()
+        self.simspark.wait_connected()  # wait for the monitor to be connected
 
-    logging.info('Start test run')
+        for n in range(1, 6):
+            self.agents.append(AgentController(self.agent_application, self.agent_config_dir, number=n, start_instance=self.agent_start_instance))
 
-    logging.debug('Set robot to initial position')
-    s.cmd_agentMove(1, -3.5, 3.2, r=-180)
-    s.cmd_agentMove(2, -2.5, 3.2, r=-180)
-    s.cmd_agentMove(3, -1.5, 3.2, r=-180)
-    s.cmd_agentMove(4, -3.0, -3.2, r=0)
-    s.cmd_agentMove(5, -2.0, -3.2, r=0)
+        for a in self.agents:
+            a.start()
+            a.wait_connected()  # wait for the agent to be fully started
 
-    time.sleep(0.5)
+        # it takes sometimes a while until simspark got the correct player number
+        for a in self.agents: wait_for(lambda: self.simspark.get_robot(a.number) is not None, 0.3)
+        # wait until the player is on the field
+        for a in self.agents: wait_for(lambda: self.simspark.get_robot(a.number)['z'] <= 0.4, 0.3)
 
-    '''
-    # READY
-    for a in agents: a.debugrequest('gamecontroller:game_state:ready', True)
+        # set the behavior of the agent
+        for a in self.agents:
+            a.agent('soccer_agent')
+            a.module('PathPlanner', False)
+            a.module('PathPlanner2018', True)
+            a.module('SituationPriorProvider', False)
+            a.module('MonteCarloSelfLocator', False)
+            a.module('OdometrySelfLocator', False)
+            a.module('GPS_SelfLocator', True)
 
-    # simulation is slow, give the robots some time to reach their kickoff position
-    time.sleep(120)
+    def tearDown(self):
+        # stop the agent
+        if self.agents:
+            for a in self.agents: a.stop()
+        # stop the simulation/simspark
+        if self.simspark:
+            self.simspark.stop()
 
-    # SET
-    for a in agents: a.debugrequest('gamecontroller:game_state:set', True)
-    for a in agents: a.debugrequest('gamecontroller:game_state:ready', False)
+    def test_walk_in(self):
+        # check if all agents have the correct behavior set
+        for a in self.agents:
+            if a.agent().result().decode() != 'soccer_agent':
+                return False
 
-    # put the robot in play mode
-    for a in agents: a.debugrequest('gamecontroller:game_state:play', True)
-    for a in agents: a.debugrequest('gamecontroller:game_state:set', False)
+        self.logger.debug('Set robot to initial position')
+        self.simspark.cmd_agentMove(1, -3.5, 3.2, r=-180)
+        self.simspark.cmd_agentMove(2, -2.5, 3.2, r=-180)
+        self.simspark.cmd_agentMove(3, -1.5, 3.2, r=-180)
+        self.simspark.cmd_agentMove(4, -3.0, -3.2, r=0)
+        self.simspark.cmd_agentMove(5, -2.0, -3.2, r=0)
 
-    #for a in agents: a.debugrequest('gamecontroller:game_state:ready', False)
-    #for a in agents: a.debugrequest('gamecontroller:game_state:set', False)
-    for a in agents: a.debugrequest('gamecontroller:game_state:play', False)
-    time.sleep(3)
-    '''
+        time.sleep(0.5)
 
-    for a in agents: a.cancel()
-    s.cancel()
+        # READY
+        self.logger.info('READY')
+        for a in self.agents: a.debugrequest('gamecontroller:game_state:ready', True)
 
-    for a in agents: a.join()
-    s.join()
+        # simulation is slow, give the robots some time to reach their kickoff position
+        self.logger.info('wait for 120s ...')
+        time.sleep(120)
 
-    # return True if the test was successful
-    return True
+        # SET
+        self.logger.info('SET')
+        for a in self.agents: a.debugrequest('gamecontroller:game_state:set', True)  # set gamestate to 'SET'
+        for a in self.agents: a.debugrequest('gamecontroller:game_state:ready', False)  # ... and reset the 'READY' state
+
+        time.sleep(5)
+
+        # put the robot in play mode
+        self.logger.info('PLAY')
+        for a in self.agents: a.debugrequest('gamecontroller:game_state:play', True)  # set the gamestate to 'PLAY'
+        for a in self.agents: a.debugrequest('gamecontroller:game_state:set', False)  # ... and reset the 'SET' state
+
+        self.logger.info('wait for 30s ...')
+        time.sleep(30)
+
+        self.logger.info('FINISH')
+        for a in self.agents: a.debugrequest('gamecontroller:game_state:finish', True)  # set the gamestate to 'FINISH'
+        for a in self.agents: a.debugrequest('gamecontroller:game_state:ready', False)  # ... and make sure, everything else is reset
+        for a in self.agents: a.debugrequest('gamecontroller:game_state:set', False)  # ... and make sure, everything else is reset
+        for a in self.agents: a.debugrequest('gamecontroller:game_state:play', False)  # ... and make sure, everything else is reset
+
+        return True

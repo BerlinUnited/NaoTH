@@ -73,14 +73,28 @@ def image_from_proto(message):
 
 
 def get_images(frame):
-    # TODO handle the case that no image is recorded
-    # we are only interested in top images
-    image_top = frame["ImageTop"]
-    image_bottom = frame["Image"]
-    cm_bottom = frame["CameraMatrix"]
-    cm_top = frame["CameraMatrixTop"]
-    return [frame.number, image_from_proto(image_bottom),
-            image_from_proto(image_top), cm_bottom, cm_top]
+    try:
+        image_top = image_from_proto(frame["ImageTop"])
+    except KeyError:
+        image_top = None
+
+    try:
+        cm_top = frame["CameraMatrixTop"]
+    except KeyError:
+        cm_top = None
+
+    try:
+        image_bottom = image_from_proto(frame["Image"])
+    except KeyError:
+        image_bottom = None
+
+    try:
+        cm_bottom = frame["CameraMatrix"]
+    except KeyError:
+        cm_bottom = None
+
+    return [frame.number, image_bottom,
+            image_top, cm_bottom, cm_top]
 
 
 def save_image_to_png(j, img, cm, target_dir, cam_id, name):
@@ -89,21 +103,22 @@ def save_image_to_png(j, img, cm, target_dir, cam_id, name):
     meta.add_text("logfile", str(name))
     meta.add_text("CameraID", str(cam_id))
 
-    meta.add_text("t_x", str(cm.pose.translation.x))
-    meta.add_text("t_y", str(cm.pose.translation.y))
-    meta.add_text("t_z", str(cm.pose.translation.z))
+    if cm:
+        meta.add_text("t_x", str(cm.pose.translation.x))
+        meta.add_text("t_y", str(cm.pose.translation.y))
+        meta.add_text("t_z", str(cm.pose.translation.z))
 
-    meta.add_text("r_11", str(cm.pose.rotation[0].x))
-    meta.add_text("r_21", str(cm.pose.rotation[0].y))
-    meta.add_text("r_31", str(cm.pose.rotation[0].z))
+        meta.add_text("r_11", str(cm.pose.rotation[0].x))
+        meta.add_text("r_21", str(cm.pose.rotation[0].y))
+        meta.add_text("r_31", str(cm.pose.rotation[0].z))
 
-    meta.add_text("r_12", str(cm.pose.rotation[1].x))
-    meta.add_text("r_22", str(cm.pose.rotation[1].y))
-    meta.add_text("r_32", str(cm.pose.rotation[1].z))
+        meta.add_text("r_12", str(cm.pose.rotation[1].x))
+        meta.add_text("r_22", str(cm.pose.rotation[1].y))
+        meta.add_text("r_32", str(cm.pose.rotation[1].z))
 
-    meta.add_text("r_13", str(cm.pose.rotation[2].x))
-    meta.add_text("r_23", str(cm.pose.rotation[2].y))
-    meta.add_text("r_33", str(cm.pose.rotation[2].z))
+        meta.add_text("r_13", str(cm.pose.rotation[2].x))
+        meta.add_text("r_23", str(cm.pose.rotation[2].y))
+        meta.add_text("r_33", str(cm.pose.rotation[2].z))
 
     filename = target_dir / (str(j) + ".png")
     img.save(filename, pnginfo=meta)
@@ -125,13 +140,14 @@ def export_images(logfile, img):
     output_folder_bottom.mkdir(exist_ok=True)
 
     if output_folder_top.exists() and output_folder_bottom.exists():
-        # TODO this expects to be always two images to be present, this assumption is violated for combined logs
         for i, img_b, img_t, cm_b, cm_t in img:
-            img_b = img_b.convert('RGB')
-            img_t = img_t.convert('RGB')
+            if img_b:
+                img_b = img_b.convert('RGB')
+                save_image_to_png(i, img_b, cm_b, output_folder_bottom, cam_id=1, name=logfile)
 
-            save_image_to_png(i, img_b, cm_b, output_folder_bottom, cam_id=1, name=args.input)
-            save_image_to_png(i, img_t, cm_t, output_folder_top, cam_id=0, name=args.input)
+            if img_t:
+                img_t = img_t.convert('RGB')
+                save_image_to_png(i, img_t, cm_t, output_folder_top, cam_id=0, name=logfile)
 
             print("saving images from frame ", i)
     else:
@@ -139,20 +155,27 @@ def export_images(logfile, img):
         sys.exit(1)
 
 
-def show_images(img):
+def show_images(log, img):
     fig, ax = plt.subplots(2)
-    fig.suptitle('Images from - ' + args.input)
+    fig.suptitle('Images from - ' + log)
     ax[0].set_axis_off()
     ax[1].set_axis_off()
 
     image_container = []
-    for i, img_b, img_t, cm_b, cm_t in img:
-        img_b = img_b.convert('RGB')
-        img_t = img_t.convert('RGB')
+    for i, img_b, img_t, _, _ in img:
+        to_be_appended = []
+        if img_t:
+            img_t = img_t.convert('RGB')
+            im1 = ax[0].imshow(img_t, animated=True)
+            to_be_appended.append(im1)
 
-        im1 = ax[0].imshow(img_t, animated=True)
-        im2 = ax[1].imshow(img_b, animated=True)
-        image_container.append([im1, im2])
+        if img_b:
+            img_b = img_b.convert('RGB')
+            im2 = ax[1].imshow(img_b, animated=True)
+            to_be_appended.append(im2)
+
+        if to_be_appended:
+            image_container.append(to_be_appended)
         print("processing images from frame", i)
 
     ani = animation.ArtistAnimation(fig, image_container, interval=50, blit=True,
@@ -171,9 +194,6 @@ if __name__ == "__main__":
 
     # initialize the log parser
     myParser = Parser()
-    # register the protobuf message name for the 'ImageTop'
-    myParser.register("ImageTop", "Image")
-    myParser.register("CameraMatrixTop", "CameraMatrix")
 
     input_file = args.input if args.input else images.load_data('ball')
     if Path(input_file).is_dir():
@@ -194,4 +214,4 @@ if __name__ == "__main__":
         for log in logfile_list:
             with LogReader(log, myParser) as reader:
                 images = map(get_images, reader.read())
-                show_images(images)
+                show_images(log, images)

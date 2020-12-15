@@ -10,6 +10,7 @@
 #endif //WIN32
 
 #include <sstream>
+#include <cctype>
 
 #include "Simulator.h"
 
@@ -134,11 +135,13 @@ void Simulator::printCurrentLineInfo()
 
 char Simulator::getInput()
 {
+  int input;
   if (backendMode) {
-    return static_cast<char>(getchar());
+    input = getchar();
   } else {
-    return static_cast<char>(getch());
+    input = getch();
   }
+  return static_cast<char>(std::tolower(input));
 }
 
 void Simulator::main(bool autostart)
