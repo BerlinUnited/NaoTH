@@ -179,8 +179,8 @@ public class DebugRequestsTree implements ResponseListener
             Messages.DebugRequest request = Messages.DebugRequest.parseFrom(response);
             // get the cognition debug request root item or create a new, if it doesn't exists
             TreeNodeItem root;
-            if(((TreeNodeItem)debugTree.getRoot()).hasChildren(type)) {
-                root = ((TreeNodeItem)debugTree.getRoot()).getChildren(type);
+            if(((TreeNodeItem)debugTree.getRoot()).hasChild(type)) {
+                root = ((TreeNodeItem)debugTree.getRoot()).getChild(type);
             } else {
                 root = new TreeNodeItem(type);
                 root.setExpanded(true);
@@ -225,12 +225,12 @@ public class DebugRequestsTree implements ResponseListener
             // create the tree path to the item
             TreeNodeItem current_root = root;
             for (String part : path.split(":")) {
-                if(!current_root.hasChildren(part)) {
+                if(!current_root.hasChild(part)) {
                     TreeNodeItem treePartNew = new TreeNodeItem(part);
                     current_root.getChildren().add(treePartNew);
                     current_root = treePartNew;
                 } else {
-                    current_root = current_root.getChildren(part);
+                    current_root = current_root.getChild(part);
                 }
             }
             

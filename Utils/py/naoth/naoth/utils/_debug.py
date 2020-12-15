@@ -530,6 +530,15 @@ class AgentController(threading.Thread):
                 raw_data = await self._stream_reader.read(size)
                 if size > 0 and lost_connection(raw_data): continue
 
+                while len(raw_data) < size:
+                    new_data = await self._stream_reader.read(size - len(raw_data))
+                    if lost_connection(new_data):
+                        break
+                    raw_data += new_data
+
+                if not self._connected.is_set():
+                    continue
+
                 if cmd_id in self._cmd_m:
                     cmd, _id = self._cmd_m.pop(cmd_id)
                     if not cmd.cancelled():
@@ -676,13 +685,17 @@ class AgentController(threading.Thread):
 
         raise Exception('Unknown representation type! Allowed: "cognition", "motion"')
 
-    def agent(self, name: str) -> DebugCommand:
+    def agent(self, name: str = None) -> DebugCommand:
         """
-        Selects an named agent for execution.
+        Get or set a named agent for execution.
 
-        :param name:    the name of the agent (behavior), which should be executed
+        :param name:    the name of the agent (behavior), which should be executed or None if the current agent should
+                        be returned
         :return:        Returns the the scheduled command (future)
         """
+        if name is None:
+            return self.send_command(DebugCommand('Cognition:behavior:get_agent'))
+
         return self.send_command(DebugCommand('Cognition:behavior:set_agent', [('agent', name)]))
 
     def behavior(self, complete=False) -> DebugCommand:

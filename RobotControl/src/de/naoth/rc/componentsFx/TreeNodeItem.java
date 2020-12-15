@@ -63,7 +63,7 @@ public class TreeNodeItem<T extends Object> extends CheckBoxTreeItem<T>
      * @param name  the name of the child
      * @return      the child node or null, if the name couldn't be found
      */
-    public TreeNodeItem getChildren(T name) {
+    public TreeNodeItem getChild(T name) {
         return children.get(name);
     }
     
@@ -72,7 +72,7 @@ public class TreeNodeItem<T extends Object> extends CheckBoxTreeItem<T>
      * @param name  child name to check
      * @return      true, if a child with the name exists, false otherwise
      */
-    public boolean hasChildren(T name) {
+    public boolean hasChild(T name) {
         return children.containsKey(name);
     }
     
@@ -122,8 +122,8 @@ public class TreeNodeItem<T extends Object> extends CheckBoxTreeItem<T>
                 current_root.setExpanded(true);
 
                 for (String part : parts) {
-                    if(current_root.hasChildren(part)) {
-                        current_root = current_root.getChildren(part);
+                    if(current_root.hasChild(part)) {
+                        current_root = current_root.getChild(part);
                         current_root.setExpanded(true);
                     } else {
                         break; // got an unknown node
