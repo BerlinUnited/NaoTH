@@ -91,6 +91,8 @@ BasicTestBehavior::BasicTestBehavior()
 
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:whistle:listen", "start whistle detection", false);
   DEBUG_REQUEST_REGISTER("BasicTestBehavior:audio:capture", "start start audio capture for 4 channels", false);
+
+  DEBUG_REQUEST_REGISTER("BasicTestBehavior:record:setAudioControl", "Set AudioControl using MODIFY", false);
 }
 
 void BasicTestBehavior::execute()
@@ -453,6 +455,14 @@ void BasicTestBehavior::testAudio()
 {
   getAudioControl().capture = false;
 
+  DEBUG_REQUEST("BasicTestBehavior:record:setAudioControl",
+    MODIFY("BasicTestBehavior:record:sampleRate", getAudioControl().sampleRate);
+    MODIFY("BasicTestBehavior:record:buffer_size", getAudioControl().buffer_size);
+    MODIFY("BasicTestBehavior:record:numChannels", getAudioControl().numChannels);
+    MODIFY("BasicTestBehavior:record:capture", getAudioControl().capture);
+  );
+
+
   DEBUG_REQUEST("BasicTestBehavior:whistle:listen",
     getAudioControl().capture = true;
 
@@ -465,6 +475,6 @@ void BasicTestBehavior::testAudio()
 
   DEBUG_REQUEST("BasicTestBehavior:audio:capture",
   	  getAudioControl().numChannels = 4;
-	  getAudioControl().capture = true;
+	    getAudioControl().capture = true;
   );
 }
