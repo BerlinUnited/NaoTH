@@ -68,6 +68,7 @@ def parseArguments():
     if '--config' in sys.argv:
         parser.add_argument('--config', type=ArgsValidator.config, action='store',
                             help="Use a configuration file instead of the application arguments")
+        parser.add_argument('-v', '--verbose', action='store_true', help="Print more debug informations to stdout.")
     elif len(sys.argv) <= 2 and '--write-config' in sys.argv:
         parser.add_argument('--write-config', action='store',
                             help="Writes the default config to the given file and exits; additional arguments are used instead of the default")
@@ -83,29 +84,41 @@ def parseArguments():
         parser.add_argument('--no-sync', action='store_true',
                             help="Whether the simulation should not run synchronized (default is synchronized)")
 
-        parser.add_argument('-s', '--simspark', type=ArgsValidator.is_simspark, default='simspark', action='store',
+        pause = parser.add_argument_group('Pause times', 'The time in seconds which should be waited after/before a game part. '
+                                                         'If 0 (zero) is set, the game is paused until enter/return is pressed.')
+        pause.add_argument('-bg', '--before-game', type=int, default=1, action='store',
+                            help="The time before the game is started.")
+        pause.add_argument('-ht', '--half-time', type=int, default=1, action='store',
+                            help="The half time.")
+        pause.add_argument('-ag', '--after-game', type=int, default=1, action='store',
+                            help="The time after the game is finished.")
+
+        simspark = parser.add_argument_group('SimSpark', 'The config for the simulation.')
+        simspark.add_argument('-s', '--simspark', type=ArgsValidator.is_simspark, default='simspark', action='store',
                             help="The simspark executable (default: 'simspark')")
-        parser.add_argument('-ap', '--agent-port', type=int, action='store',
+        simspark.add_argument('-ap', '--agent-port', type=int, action='store',
                             help="The port for agents to connect to simspark (default: 3100)")
-        parser.add_argument('-sp', '--server-port', type=int, action='store',
+        simspark.add_argument('-sp', '--server-port', type=int, action='store',
                             help="The port for monitors to connect to simspark (default: 3200)")
 
-        parser.add_argument('-lc', '--left-config', type=ArgsValidator.is_config_dir, default='.', action='store',
+        left = parser.add_argument_group('Left Team', 'The config of the left team.')
+        left.add_argument('-lc', '--left-config', type=ArgsValidator.is_config_dir, default='.', action='store',
                             help="The config directory for the left team (default: './')")
-        parser.add_argument('-le', '--left-exe', type=ArgsValidator.is_exe, default='./dist/Native/naoth-simspark', action='store',
+        left.add_argument('-le', '--left-exe', type=ArgsValidator.is_exe, default='./dist/Native/naoth-simspark', action='store',
                             help="The agent executable for the left team")
-        parser.add_argument('-lp', '--left-players', type=ArgsValidator.is_positive, default=5, action='store',
+        left.add_argument('-lp', '--left-players', type=ArgsValidator.is_positive, default=5, action='store',
                             help="The the number of players for each team (default: 5)")
-        parser.add_argument('-ln', '--left-name', type=str, default='NaoTH', action='store',
+        left.add_argument('-ln', '--left-name', type=str, default='NaoTH', action='store',
                             help="The name of the left Team (default: 'NaoTH')")
 
-        parser.add_argument('-rc', '--right-config', type=ArgsValidator.is_config_dir, default='.', action='store',
+        right = parser.add_argument_group('Right Team', 'The config of the right team.')
+        right.add_argument('-rc', '--right-config', type=ArgsValidator.is_config_dir, default='.', action='store',
                             help="The config directory for the left team (default: './')")
-        parser.add_argument('-re', '--right-exe', type=ArgsValidator.is_exe, default='./dist/Native/naoth-simspark', action='store',
+        right.add_argument('-re', '--right-exe', type=ArgsValidator.is_exe, default='./dist/Native/naoth-simspark', action='store',
                             help="The agent executable for the right team (default: './dist/Native/naoth-simspark')")
-        parser.add_argument('-rp', '--right-players', type=ArgsValidator.is_positive, default=5, action='store',
+        right.add_argument('-rp', '--right-players', type=ArgsValidator.is_positive, default=5, action='store',
                             help="The the number of players for each team (default: 5)")
-        parser.add_argument('-rn', '--right-name', type=str, default='BU', action='store',
+        right.add_argument('-rn', '--right-name', type=str, default='BU', action='store',
                             help="The name of the right Team (default: 'BU')")
 
         parser.add_argument('--config', type=ArgsValidator.config, action='store',
@@ -199,6 +212,7 @@ class Config:
         self._log = ''
         self._comment = ''
         self._alternate = False
+        self._pause = { 'beforeGame': 1, 'halfTime': 1, 'afterGame': 1 }
         self._simspark = {'exe': 'simspark', 'agent': None, 'server': None}
         self._left = Config.Team('NaoTH')
         self._right = Config.Team('BU')
@@ -226,6 +240,9 @@ class Config:
         self._log = self._retrieve_path(base, c.get('general', 'LOG', fallback=''))
         self._comment = c.get('general', 'COMMENT', fallback=None)
         self._alternate = c.getboolean('general', 'ALTERNATE')
+        self._pause['beforeGame'] = c.getint('pause', 'beforeGame')
+        self._pause['halfTime'] = c.getint('pause', 'halfTime')
+        self._pause['afterGame'] = c.getint('pause', 'afterGame')
         self._simspark['exe'] = c.get('simspark', 'exe')
         self._simspark['agent'] = int(c.get('simspark', 'agent')) if c.get('simspark', 'agent') else None
         self._simspark['server'] = int(c.get('simspark', 'server')) if c.get('simspark', 'server') else None
@@ -251,6 +268,12 @@ class Config:
             self._comment = args.comment
         if 'alternate' in args:
             self._alternate = args.alternate
+        if 'before_game' in args:
+            self._pause['beforeGame'] = args.before_game
+        if 'half_time' in args:
+            self._pause['halfTime'] = args.half_time
+        if 'after_game' in args:
+            self._pause['afterGame'] = args.after_game
         if 'simspark' in args:
             self._simspark['exe'] = args.simspark
         if 'agent_port' in args:
@@ -285,6 +308,12 @@ class Config:
             raise Exception('"comment" must be a string: {}'.format(self.comment))
         if not isinstance(self.alternate, bool):
             raise Exception('"alternate" must be a boolean: {}'.format(self.alternate))
+        if not self._pause['beforeGame'] >= 0:
+            raise Exception('"beforeGame" must be greater equal zero: {}'.format(self.runs))
+        if not self._pause['halfTime'] >= 0:
+            raise Exception('"halfTime" must be greater equal zero: {}'.format(self.runs))
+        if not self._pause['afterGame'] >= 0:
+            raise Exception('"afterGame" must be greater equal zero: {}'.format(self.runs))
         if not self._validate_exe(self.simspark_exe):
             raise Exception('Can not find or execute simspark application: {}'.format(self.simspark_exe))
         if not (self.simspark_agent_port is None or self.simspark_agent_port > 0):
@@ -323,6 +352,7 @@ class Config:
             'log': self._log,
             'comment': self._comment,
             'alternate': self._alternate,
+            'pause': self._pause,
             'simspark': self._simspark,
             'left': self._left.to_dict(),
             'right': self._right.to_dict(),
@@ -359,6 +389,15 @@ class Config:
 
     @property
     def alternate(self) -> bool: return self._alternate
+
+    @property
+    def pauseBeforeGame(self) -> int: return self._pause['beforeGame']
+
+    @property
+    def pauseHalfTime(self) -> int: return self._pause['halfTime']
+
+    @property
+    def pauseAfterGame(self) -> int: return self._pause['afterGame']
 
     @property
     def simspark_exe(self) -> str: return self._simspark['exe']
@@ -549,6 +588,11 @@ def wait_half(r, s, half_time, log:Log=None, i:multiprocessing.Event=None):
             log.log_player(r, t, s.get_robots())
         t = _
 
+def wait_pause(pause: int):
+    if pause == 0:
+        input('Press enter/return to continue!')
+    else:
+        time.sleep(pause)
 
 def notify(signum, frame):
     if s.is_connected():
@@ -625,6 +669,8 @@ if __name__ == "__main__":
         # wait until the player is on the field
         for t, a in agents: wait_for(lambda: s.get_robot(a.number, t) is not None and s.get_robot(a.number, t)['z'] <= 0.4, 0.3)
 
+        wait_pause(config.pauseBeforeGame) # wait, before starting game
+
         prepare_game(s)     # move agents to ready location
         s.cmd_kickoff()     # start first half
         wait_half(r, s, 600, log, interrupt)   # wait for half complete
@@ -635,13 +681,15 @@ if __name__ == "__main__":
 
         log.half_result(r, left, right, 1, s.get_score('Left'), s.get_score('Right'))
 
-        time.sleep(1)       # wait, before starting next half
+        wait_pause(config.pauseHalfTime) # wait, before starting next half
 
         prepare_game(s)     # move agents to ready location
         s.cmd_kickoff()     # start first half
         wait_half(r, s, 1200, log, interrupt)  # wait for half complete
 
         log.half_result(r, left, right, 2, s.get_score('Left'), s.get_score('Right'))
+
+        wait_pause(config.pauseAfterGame) # wait, before quitting game
 
         stop(s, agents)
 

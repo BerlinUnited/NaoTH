@@ -25,7 +25,8 @@ print("  OS = " .. os.target())
 print("  ACTION = " .. (_ACTION or "NONE"))
 
 -- generate the project directory
-local project_dir = "../build/" .. (_OPTIONS["platform"] or _ACTION)
+-- or "": dont create a directory for the action if only protobuf files are generated 
+local project_dir = "../build/" .. (_OPTIONS["platform"] or _ACTION or "")
 print("  LOCATION = " .. project_dir)
 
 print("") -- empty line :)
@@ -173,6 +174,12 @@ workspace "NaoTHSoccer"
     -- "path to the working directory, relative to the currently executing script file."
     debugdir ".."
     
+    -- for speed up: inline functions. "Auto" => "/Ob2", "Explicit" => "/Ob1"
+    inlining ("Auto")
+    
+    -- for speed up: "Off" => Program Database /Zi. "On" => Program Database foe Edit and Continue /ZI
+    editandcontinue "Off" 
+
     -- remove the nao platform if action is vs*
     removeplatforms { "Nao" }
     
