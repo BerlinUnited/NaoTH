@@ -140,7 +140,7 @@ void V4lCameraHandler::init(const std::string& camDevice, CameraInfo::CameraID c
   setFrameRate(30);
   mapBuffers();
   
-  // DEBUG: read and print avaliable controlls 
+  // DEBUG: read and print available controls 
   settingsManager->enumerate_controls(fd);
   
   startCapturing();
