@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.StackPane?>
 
-
-<TreeView fx:id="debugTree" editable="true" onKeyPressed="#fxDebugTreeShortcuts" prefWidth="200.0" showRoot="false" xmlns="http://javafx.com/javafx/8.0.202-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.naoth.rc.dialogsFx.debugrequests.DebugRequestsTree" />
+<StackPane xmlns="http://javafx.com/javafx/8.0.202-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.naoth.rc.dialogsFx.debugrequests.DebugRequestsTree">
+   <children>
+      <TreeView fx:id="debugTree" editable="true" onKeyPressed="#fxDebugTreeShortcuts" prefWidth="200.0" showRoot="false" />
+      <TextField fx:id="search" focusTraversable="false" maxWidth="150.0" promptText="Search" visible="false" StackPane.alignment="BOTTOM_RIGHT">
+         <StackPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </StackPane.margin>
+      </TextField>
+   </children>
+</StackPane>

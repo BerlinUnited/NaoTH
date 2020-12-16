@@ -6,15 +6,19 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import javafx.animation.FadeTransition;
+import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.util.Duration;
+import de.naoth.rc.componentsFx.TreeItemPredicate;
 
 /**
  * @author Philipp Strobel <philippstrobel@posteo.de>
@@ -26,11 +30,13 @@ public class ModuleConfigurationModules
     
     @FXML private TreeView<String> moduleTree;
     @FXML private Label notice;
+    @FXML private TextField search;
     
     /** Some shortcuts */
     private final KeyCombination shortcutRefresh = new KeyCodeCombination(KeyCode.F5);
     private final KeyCombination shortcutEnableEnter = new KeyCodeCombination(KeyCode.ENTER);
     private final KeyCombination shortcutEnableSpace = new KeyCodeCombination(KeyCode.SPACE);
+    private final KeyCombination shortcutDisableSearch = new KeyCodeCombination(KeyCode.ESCAPE);
     
     /** The animation for the flash messages */
     private final FadeTransition fadeOut = new FadeTransition(Duration.millis(2000));
@@ -70,6 +76,10 @@ public class ModuleConfigurationModules
         moduleTree.setCellFactory((p) -> new TreeNodeCell<>());
         moduleTree.setRoot(createModulesTree());
         moduleTree.getRoot().setExpanded(true);
+        ((TreeNodeItem)moduleTree.getRoot()).predicateProperty().bind(Bindings.createObjectBinding(() -> {
+            if (search.getText() == null || search.getText().isEmpty()) { return null; }
+            return TreeItemPredicate.create(item -> item.toString().toLowerCase().contains(search.getText().toLowerCase()));
+        }, search.textProperty()));
 
         // set the options for the fade-out animation
         fadeOut.setNode(notice);
@@ -102,9 +112,33 @@ public class ModuleConfigurationModules
             }
         } else if (shortcutRefresh.match(k)) {
             this.mConfig.updateModules();
+        } else if (shortcutDisableSearch.match(k)) {
+            disableSearch();
+        } else {
+            TreeItem<String> selection = moduleTree.getSelectionModel().getSelectedItem();
+            if (k.getCode() == KeyCode.BACK_SPACE) {
+                // handle backspace key
+                search.deletePreviousChar();
+            } else if (!k.getText().isEmpty()) {
+                // add - non-empty - character to the search field
+                search.setVisible(true);
+                search.appendText(k.getText());
+            }
+            moduleTree.getSelectionModel().select(selection);
         }
     }
     
+    /**
+     * Disables (hide) the search field and keep the current selection on the tree.
+     */
+    private void disableSearch() {
+        TreeItem<String> selection = moduleTree.getSelectionModel().getSelectedItem();
+        search.setVisible(false);
+        search.clear();
+        moduleTree.getSelectionModel().select(selection);
+        moduleTree.scrollTo(moduleTree.getSelectionModel().getSelectedIndex());
+    }
+
     /**
      * Installs the bindings to properties of the module configuration object.
      */
@@ -170,12 +204,12 @@ public class ModuleConfigurationModules
      */
     private void updateModulesSubtree(String type, TreeNodeItem root) {
         // check, if the subtree of the type should be updated
-        if (root.getChild(type).getChildren().size() > 0) {
+        if (root.getChild(type).getSourceChildren().size() > 0) {
             TreeNodeItem subtree = ((TreeNodeItem)moduleTree.getRoot()).getChild(type);
             // remember the expanded nodes of the subtree
             List<String> expanded = subtree.getExpandedNodes();
-            // update subtrre
-            subtree.getChildren().setAll(root.getChild(type).getChildren());
+            // update subtree
+            subtree.getSourceChildren().setAll(root.getChild(type).getSourceChildren());
             // restore expanded nodes
             subtree.expandNodes(expanded);
             // expand single tree paths (like "Cognition/Modules"
@@ -195,11 +229,11 @@ public class ModuleConfigurationModules
         // pre-set cognition and motion tree items
         TreeNodeItem cognition = new TreeNodeItem("Cognition");
         cognition.setExpanded(true);
-        root.getChildren().add(cognition);
+        root.getSourceChildren().add(cognition);
         
         TreeNodeItem motion = new TreeNodeItem("Motion");
         motion.setExpanded(true);
-        root.getChildren().add(motion);
+        root.getSourceChildren().add(motion);
         
         // if set, use the module configuration
         if (mConfig != null) {
@@ -234,7 +268,7 @@ public class ModuleConfigurationModules
 
                 TreeNodeItem leaf = new TreeNodeItem(m);
                 // add this item to the module tree
-                parent.getChildren().add(leaf);
+                parent.getSourceChildren().add(leaf);
                 // set the selected state AFTER adding it to its parent
                 leaf.setSelected(m.isActive());
                 // set the callback for (de-)activating this module
@@ -243,11 +277,11 @@ public class ModuleConfigurationModules
 
             // remove node, where the leaf and its parent have the same name and the leaf is the only child
             removeableNodes.forEach((t, u) -> {
-                if(u.getChildren().size() == 1) {
+                if(u.getSourceChildren().size() == 1) {
                     TreeNodeItem parent = (TreeNodeItem) u.getParent();
-                    int idx = parent.getChildren().indexOf(u);
-                    parent.getChildren().remove(idx);
-                    parent.getChildren().add(idx, u.getChildren().get(0));
+                    int idx = parent.getSourceChildren().indexOf(u);
+                    parent.getSourceChildren().remove(idx);
+                    parent.getSourceChildren().add(idx, u.getSourceChildren().get(0));
                 }
             });
         }
@@ -269,7 +303,7 @@ public class ModuleConfigurationModules
             TreeNodeItem current = parent.getChild(path.get(i));
             if(current == null) {
                 current = new TreeNodeItem(path.get(i));
-                parent.getChildren().add(current);
+                parent.getSourceChildren().add(current);
             }
             parent = current;
         }
@@ -283,9 +317,12 @@ public class ModuleConfigurationModules
      */
     private void expandSingleTreeNodes(TreeNodeItem root) {
         TreeNodeItem current = root;
-        while ((current.getParent() == null || current.getParent().getValue() == null || current.getParent().getChildren().size() == 1) && current.getChildren().size() > 0) {
+        while ((current.getParent() == null 
+                || current.getParent().getValue() == null 
+                || ((TreeNodeItem) current.getParent()).getSourceChildren().size() == 1)
+                && current.getSourceChildren().size() > 0) {
             current.setExpanded(true);
-            current = (TreeNodeItem) current.getChildren().get(0);
+            current = (TreeNodeItem) current.getSourceChildren().get(0);
         }
     }
 }
