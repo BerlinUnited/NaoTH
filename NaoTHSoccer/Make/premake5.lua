@@ -25,7 +25,8 @@ print("  OS = " .. os.target())
 print("  ACTION = " .. (_ACTION or "NONE"))
 
 -- generate the project directory
-local project_dir = "../build/" .. (_OPTIONS["platform"] or _ACTION)
+-- or "": dont create a directory for the action if only protobuf files are generated 
+local project_dir = "../build/" .. (_OPTIONS["platform"] or _ACTION or "")
 print("  LOCATION = " .. project_dir)
 
 print("") -- empty line :)
@@ -345,6 +346,10 @@ workspace "NaoTHSoccer"
 	    dofile ("../Test/Make/Polygon.lua")
           kind "ConsoleApp"
           vpaths { ["*"] = "../Test/Source/Polygon" }
+      
+      dofile ("../Test/Make/LoLa.lua")
+          kind "ConsoleApp"
+          vpaths { ["*"] = "../Test/Source/LoLa" }
     end
 
     -- generate LogSimulatorJNI if required

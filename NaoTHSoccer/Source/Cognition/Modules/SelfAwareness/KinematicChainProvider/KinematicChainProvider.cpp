@@ -10,12 +10,12 @@ KinematicChainProvider::KinematicChainProvider()
     getKinematicChain().init(getSensorJointData());
   }
 
-  getDebugParameterList().add(&parameter);
+  getDebugParameterList().add(&params);
 }
 
 KinematicChainProvider::~KinematicChainProvider()
 {
-  getDebugParameterList().remove(&parameter);
+  getDebugParameterList().remove(&params);
 }
 
 void KinematicChainProvider::execute()
@@ -26,7 +26,7 @@ void KinematicChainProvider::execute()
   RotationMatrix orientation;
   Vector3d local_acc_without_gravity;
 
-  if(parameter.useIMUData){
+  if(params.useIMUData){
       // calculate the KinematicChainSensor based on sensor data
       orientation = getIMUData().orientation_rotvec; // get orientation (ignore any rotation around z axis) as rotation matrix
 

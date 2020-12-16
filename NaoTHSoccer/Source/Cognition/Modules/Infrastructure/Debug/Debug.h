@@ -116,7 +116,7 @@ public:
       int skipTimeMS;
     } log;
 
-  } parameter;
+  } params;
 
 private:
   Logger cognitionLogger;

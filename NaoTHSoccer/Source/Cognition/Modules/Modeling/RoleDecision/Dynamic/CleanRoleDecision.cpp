@@ -14,7 +14,7 @@ using namespace std;
 
 CleanRoleDecision::CleanRoleDecision()
 {
-  getDebugParameterList().add(&parameters);
+  getDebugParameterList().add(&params);
 
   DEBUG_REQUEST_REGISTER(
     "RoleDecision:min_ball_distance",
@@ -25,14 +25,14 @@ CleanRoleDecision::CleanRoleDecision()
 
 CleanRoleDecision::~CleanRoleDecision()
 {
-  getDebugParameterList().remove(&parameters);
+  getDebugParameterList().remove(&params);
 }
 
 void CleanRoleDecision::execute() {
     computeStrikers();
 
     // reset second striker decision, if we doesn't want to use the second striker
-    if(!parameters.useSecondStriker) {
+    if(!params.useSecondStriker) {
         getRoleDecisionModel().secondStriker = std::numeric_limits<unsigned int>::max();
     }
 
@@ -57,12 +57,12 @@ void CleanRoleDecision::computeStrikers()
         const TeamMessageData& msg = i.second;
 
         // if striker lost the ball, he gets a time bonus before he lost the ball completely ...
-        double loose_ball_bonus = msg.playerNumber == getRoleDecisionModel().firstStriker?parameters.strikerBonusTime:0.0;
+        double loose_ball_bonus = msg.playerNumber == getRoleDecisionModel().firstStriker?params.strikerBonusTime:0.0;
 
         // check if the robot is able to play and sees the ball
         bool isRobotInactive = !getTeamMessagePlayersState().isPlaying(robotNumber)
                 || msg.ballAge < 0 //Ball was never seen
-                || (msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) > parameters.maxBallLostTime + loose_ball_bonus); //Ball isn't fresh
+                || (msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) > params.maxBallLostTime + loose_ball_bonus); //Ball isn't fresh
 
         // ignore inactive robots
         if(robotNumber != getPlayerInfo().playerNumber && isRobotInactive) { continue; }
@@ -80,7 +80,7 @@ void CleanRoleDecision::computeStrikers()
     getRoleDecisionModel().wantsToBeStriker = ownMessage.playerNumber != 1
                                               && getTeamMessagePlayersState().isPlaying(getPlayerInfo().playerNumber)
                                               && !(ownMessage.ballAge < 0
-                                                   || (ownMessage.ballAge + getFrameInfo().getTimeSince(ownMessage.frameInfo.getTime()) > parameters.maxBallLostTime + (getPlayerInfo().playerNumber==getRoleDecisionModel().firstStriker?parameters.strikerBonusTime:0.0)));
+                                                   || (ownMessage.ballAge + getFrameInfo().getTimeSince(ownMessage.frameInfo.getTime()) > params.maxBallLostTime + (getPlayerInfo().playerNumber==getRoleDecisionModel().firstStriker?params.strikerBonusTime:0.0)));
 
     // if i'm striker, i get a time bonus!
     // NOTE: ownTimeToBall can be negative if the robot is close to ball (!)
@@ -88,7 +88,7 @@ void CleanRoleDecision::computeStrikers()
 
     // clear for new striker decision
     getRoleDecisionModel().resetStriker();
-    (this->*parameters.strikerSelectionFunction)(possible_striker, ownTimeToBall);
+    (this->*params.strikerSelectionFunction)(possible_striker, ownTimeToBall);
 
 
     PLOT(std::string("CleanRoleDecision:FirstStrikerDecision"), getRoleDecisionModel().firstStriker);
@@ -153,7 +153,7 @@ void CleanRoleDecision::strikerSelectionByTimeExceptGoalie(std::map<unsigned int
     // ATTENTION: we're iterating from the smallest player number to the highest!
     for (auto it = possible_striker.cbegin(); it != possible_striker.cend(); ++it) {
         // is current player clearly faster?
-        if(it->second < stFastest && (it->second + parameters.strikerSelectionDiffThreshold) < stFastest && getRoleDecisionModel().firstStriker != 1) {
+        if(it->second < stFastest && (it->second + params.strikerSelectionDiffThreshold) < stFastest && getRoleDecisionModel().firstStriker != 1) {
             // is there already a "fastest" striker ... but the current player is faster
             if(getRoleDecisionModel().firstStriker != std::numeric_limits<unsigned int>::max()) {
                 // make the previous player the "second fastest" player
@@ -163,7 +163,7 @@ void CleanRoleDecision::strikerSelectionByTimeExceptGoalie(std::map<unsigned int
             // set the fastest player
             getRoleDecisionModel().firstStriker = it->first;
             stFastest = it->second;
-        } else if (it->second < ndFastest && (it->second + parameters.strikerSelectionDiffThreshold) < ndFastest) {
+        } else if (it->second < ndFastest && (it->second + params.strikerSelectionDiffThreshold) < ndFastest) {
             // set the second (clearly) fastest player
             getRoleDecisionModel().secondStriker = it->first;
             ndFastest = it->second;
@@ -185,7 +185,7 @@ void CleanRoleDecision::strikerSelectionByTimeExceptGoalieWithBallCompare(std::m
     // ATTENTION: we're iterating from the smallest player number to the highest!
     for (auto it = possible_striker.cbegin(); it != possible_striker.cend(); ++it) {
         // is current player clearly faster?
-        if(it->second < stFastest && (it->second + parameters.strikerSelectionDiffThreshold) < stFastest && getRoleDecisionModel().firstStriker != 1) {
+        if(it->second < stFastest && (it->second + params.strikerSelectionDiffThreshold) < stFastest && getRoleDecisionModel().firstStriker != 1) {
             // is there already a "fastest" striker ... but the current player is faster
             if(getRoleDecisionModel().firstStriker != std::numeric_limits<unsigned int>::max() && isSecondStrikerDifferentFromFirst(getRoleDecisionModel().firstStriker, it->first)) {
                 // make the previous player the "second fastest" player, if they see different balls
@@ -196,7 +196,7 @@ void CleanRoleDecision::strikerSelectionByTimeExceptGoalieWithBallCompare(std::m
             getRoleDecisionModel().firstStriker = it->first;
             stFastest = it->second;
         } else if (it->second < ndFastest
-                   && (it->second + parameters.strikerSelectionDiffThreshold) < ndFastest
+                   && (it->second + params.strikerSelectionDiffThreshold) < ndFastest
                    && isSecondStrikerDifferentFromFirst(getRoleDecisionModel().firstStriker, it->first))
         {
             // make the previous player the "second fastest" player, if they see different balls
@@ -218,7 +218,7 @@ bool CleanRoleDecision::isSecondStrikerDifferentFromFirst(unsigned int firstNumb
     Vector2d firstBall = first.pose * first.ballPosition;
     Vector2d secondBall = second.pose * second.ballPosition;
     // check if the ball distance is greater than the given parameter distance radius
-    double r = (this->*parameters.ballDifferenceRadius)(second.ballPosition.abs());
+    double r = (this->*params.ballDifferenceRadius)(second.ballPosition.abs());
 
     DEBUG_REQUEST("RoleDecision:min_ball_distance",
       FIELD_DRAWING_CONTEXT;

@@ -1,14 +1,18 @@
 /**
- * @file IPCData.h
+ * @file DCMData.h
  *
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
  * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Mellmann, Heinrich</a>
- * @breief Inter-process communication data
+ *
+ * Sensor data obtained from the DCM (Device Communication Manager).
+ * The data is read from the ALMemory as a block into an array of float-values and can be unpacked 
+ * into separate representations by `get()` methods.
+ * Used for communicating sensor data NaoSMAL to the module architecture (NaoRobot) on NAO versions <= V5.
  *
  */
 
-#ifndef _IPCData_H_
-#define _IPCData_H_
+#ifndef DCMData_H
+#define DCMData_H
 
 #include "Representations/Infrastructure/JointData.h"
 #include "Representations/Infrastructure/UltraSoundData.h"
@@ -19,7 +23,6 @@
 #include "Representations/Infrastructure/InertialSensorData.h"
 #include "Representations/Infrastructure/ButtonData.h"
 #include "Representations/Infrastructure/BatteryData.h"
-#include "Representations/Infrastructure/CpuData.h"
 
 #include <algorithm>
 
@@ -37,18 +40,23 @@ const unsigned int theBatteryDataIdex            = theUltraSoundReceiveDataIndex
 const unsigned int numOfSensors                  = theBatteryDataIdex            + 3; // charge, current, temperature
 
 /**
-* data written by libnaoth
+* Data written by NaoSMAL and read by NaoRobot.
 */
-class NaoSensorData
+class DCMSensorData
 {
 public:
-  NaoSensorData() {
-    std::fill_n(sensorsValue,numOfSensors,0);
+  DCMSensorData() {
+    std::fill_n(sensorsValue, numOfSensors, 0.0f);
   }
 
+  // TODO: maybe use some time_t type?
   unsigned long long timeStamp;
+  
+  // memory block holding all sensory data. This is written by DCM.
   float sensorsValue[numOfSensors];
 
+  // methods to unpack data to representations
+  // NOTE: methos can perform some data conversion, not simply copy (!)
   void get(SensorJointData& data) const;
   void get(FSRData& data) const;
   void get(AccelerometerData& data) const;
@@ -61,4 +69,4 @@ public:
 
 }// end namespace naoth
 
-#endif // _IPCData_H_
+#endif // DCMData_H
