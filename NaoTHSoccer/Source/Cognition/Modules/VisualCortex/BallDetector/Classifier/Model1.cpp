@@ -5,7 +5,7 @@
 #endif
 
 #include <emmintrin.h>
-#include <math.h>
+
 void Model1::cnn(float x0[16][16][1])
 {
 	__m128 w, x, y;
@@ -2347,7 +2347,7 @@ void Model1::cnn(float x0[16][16][1])
 
 
 
-void Model1::find(const BallCandidates::PatchYUVClassified& patch, double meanBrightness)
+void Model1::predict(const BallCandidates::PatchYUVClassified& patch, double meanBrightness)
 {
 	ASSERT(patch.size() == 16);
 

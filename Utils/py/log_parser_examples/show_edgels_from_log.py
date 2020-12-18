@@ -1,34 +1,13 @@
 #!/usr/bin/python
 import math
 from argparse import ArgumentParser
-from pathlib import Path
 
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 import naoth.math as m
 from naoth.log import Parser
 from naoth.log import Reader as LogReader
-from pywget import wget
-
-
-def get_demo_logfiles():
-    base_url = "https://www2.informatik.hu-berlin.de/~naoth/ressources/log/demo_edgels/"
-    logfile_list = ["2019-07-05_11-45-00_Berlin United_vs_NomadZ_half2-1_93_Nao0212.log"]
-
-    print("Downloading Logfiles: {}".format(logfile_list))
-
-    target_dir = Path("logs")
-    Path.mkdir(target_dir, exist_ok=True)
-
-    print(" Download from: {}".format(base_url))
-    print(" Download to: {}".format(target_dir.resolve()))
-    for logfile in logfile_list:
-        if not Path(target_dir / logfile).is_file():
-            print("Download: {}".format(logfile))
-            wget.download(base_url+logfile, target_dir)
-            print("Done.")
-
-    print("Finished downloading")
+from naoth.datasets import edgels
 
 
 def parse_vector3(message):
@@ -64,7 +43,7 @@ def get_edgels(frame):
 def get_focal_length():
     resolution_width = 640
     resolution_height = 480
-    opening_diagonal_angle = 72.6/180*math.pi
+    opening_diagonal_angle = 72.6 / 180 * math.pi
 
     d2 = resolution_width ** 2 + resolution_height ** 2
     half_diag_length = 0.5 * math.sqrt(d2)
@@ -81,7 +60,7 @@ def project_edgel(x, y, cam_matrix):
     result = m.Vector2()
     result.x = v.x
     result.y = v.y
-    result = result*(cam_matrix.translation.z / (-v.z))
+    result = result * (cam_matrix.translation.z / (-v.z))
     result.x = result.x + cam_matrix.translation.x
     result.y = result.y + cam_matrix.translation.y
     return result.x, result.y
@@ -89,57 +68,62 @@ def project_edgel(x, y, cam_matrix):
 
 def animate(i, log_iterator, edgels_plot_top, edgels_plot, projected_edgels_plot):
     # TODO use for and yield here
-    msg = log_iterator.__next__()
+    msg = next(log_iterator)
 
     edgel_frame = [(edgel.point.x, -edgel.point.y) for edgel in msg[1].edgels]
-    edgels_plot_top.set_offsets(edgel_frame)
+    if edgel_frame:
+        edgels_plot_top.set_offsets(edgel_frame)
+    # set plot visible if current edgel_frame contains edgels
+    edgels_plot_top.set_visible(edgel_frame)
 
     edgel_frame = [(edgel.point.x, -edgel.point.y) for edgel in msg[2].edgels]
-    edgels_plot.set_offsets(edgel_frame)
+    if edgel_frame:
+        edgels_plot.set_offsets(edgel_frame)
+    # set plot visible if current edgel_frame contains edgels
+    edgels_plot.set_visible(edgel_frame)
 
-    projected_edgels_plot.set_offsets(msg[3] + msg[4])
+    projected_edgels = msg[3] + msg[4]
+    if projected_edgels:
+        projected_edgels_plot.set_offsets(projected_edgels)
+    # set plot visible if projected_edgels contains edgels
+    projected_edgels_plot.set_visible(projected_edgels)
 
 
 if __name__ == "__main__":
-    get_demo_logfiles()
-
     parser = ArgumentParser(description='script to display or export edgels from log files')
-    parser.add_argument("--logfile", help='log file to draw edgels from',
-                        default="logs/2019-07-05_11-45-00_Berlin United_vs_NomadZ_half2-1_93_Nao0212.log")
-
+    parser.add_argument("--logfile", help='log file to draw edgels from')
     args = parser.parse_args()
 
-    logFilePath = args.logfile
+    logFilePath = args.logfile if args.logfile else edgels.load_data()
     # init parser
     logParser = Parser()
-    logParser.register("ScanLineEdgelPerceptTop", "ScanLineEdgelPercept")
-    logParser.register("CameraMatrixTop", "CameraMatrix")
 
-    log = iter(LogReader(logFilePath, logParser, get_edgels))
+    with LogReader(logFilePath, parser=logParser) as reader:
+        log = map(get_edgels, reader.read())
 
-    # init plot
-    plt.close('all')
-    fig = plt.figure()
+        # init plot
+        plt.close('all')
+        fig = plt.figure()
 
-    point_size = 5
+        point_size = 5
 
-    ax = fig.add_subplot(2, 2, 1, aspect='equal')
-    ax.set_xlim([0, 640])
-    ax.set_ylim([-480, 0])
-    edgelsPlotTop = plt.scatter([], [], point_size)
+        ax = fig.add_subplot(2, 2, 1, aspect='equal')
+        ax.set_xlim([0, 640])
+        ax.set_ylim([-480, 0])
+        edgelsPlotTop = plt.scatter([], [], point_size)
 
-    ax = fig.add_subplot(2, 2, 3, aspect='equal')
-    ax.set_xlim([0, 640])
-    ax.set_ylim([-480, 0])
-    edgelsPlot = plt.scatter([], [], point_size)
+        ax = fig.add_subplot(2, 2, 3, aspect='equal')
+        ax.set_xlim([0, 640])
+        ax.set_ylim([-480, 0])
+        edgelsPlot = plt.scatter([], [], point_size)
 
-    ax = fig.add_subplot(1, 2, 2, aspect='equal')
-    ax.set_xlim([-10000, 10000])
-    ax.set_ylim([-10000, 10000])
-    projectedEdgelsPlot = plt.scatter([], [], point_size)
+        ax = fig.add_subplot(1, 2, 2, aspect='equal')
+        ax.set_xlim([-10000, 10000])
+        ax.set_ylim([-10000, 10000])
+        projectedEdgelsPlot = plt.scatter([], [], point_size)
 
-    # start animation
-    ani = animation.FuncAnimation(fig, animate, frames=100,
-                                  fargs=(log, edgelsPlotTop, edgelsPlot, projectedEdgelsPlot),
-                                  interval=60)
-    plt.show()
+        # start animation
+        ani = animation.FuncAnimation(fig, animate, frames=100,
+                                      fargs=(log, edgelsPlotTop, edgelsPlot, projectedEdgelsPlot),
+                                      interval=60)
+        plt.show()

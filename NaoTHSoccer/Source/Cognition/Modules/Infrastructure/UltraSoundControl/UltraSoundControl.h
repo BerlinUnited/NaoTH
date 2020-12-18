@@ -46,6 +46,7 @@ private:
   class Parameters: public ParameterList
   {
   public: 
+    // FIXME the parameter is nut used in the cpp
     Parameters(): ParameterList("UltraSoundControl")
     {
       PARAMETER_REGISTER(receiveModeSendInterval) = 100;
@@ -55,7 +56,7 @@ private:
     }
 
     int receiveModeSendInterval;
-  } parameters;
+  } params;
 
 private:
   // last time when US control mode was sent
