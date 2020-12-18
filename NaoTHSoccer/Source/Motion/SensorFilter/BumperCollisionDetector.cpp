@@ -24,7 +24,7 @@ void BumperCollisionDetector::execute()
         lastBumpTimeLeft = getFrameInfo();
     }
 
-    if (getCollisionPercept().isLeftFootColliding)
+  if (getCollisionPercept().isLeftFootColliding)
   {
       if (!getButtonData().isPressed[ButtonData::LeftFootLeft]
           && !getButtonData().isPressed[ButtonData::LeftFootRight]
@@ -35,7 +35,7 @@ void BumperCollisionDetector::execute()
       }
   }
 
-    if (getCollisionPercept().isRightFootColliding)
+  if (getCollisionPercept().isRightFootColliding)
   {
       if (!getButtonData().isPressed[ButtonData::RightFootLeft]
           && !getButtonData().isPressed[ButtonData::RightFootRight]
@@ -46,7 +46,7 @@ void BumperCollisionDetector::execute()
       }
   }
   
-    if (!getCollisionPercept().isLeftFootColliding && !getCollisionPercept().isRightFootColliding)
+  if (!getCollisionPercept().isLeftFootColliding && !getCollisionPercept().isRightFootColliding)
   {
     // no collision yet, check if one occured
     // (and be sure it's really a collison)
@@ -65,7 +65,8 @@ void BumperCollisionDetector::execute()
         getCollisionPercept().isLeftFootColliding = true;
         collisionStartTimeLeft = getFrameInfo();
     }
-   }
+  }
+
   //Now we want to distinguish single bumper presses from "real" collisions
   if ((getFrameInfo().getTimeSince(collisionStartTimeLeft.getTime()) > params.collisionInterval*params.timesToBump)
       && getCollisionPercept().isLeftFootColliding)
@@ -77,9 +78,10 @@ void BumperCollisionDetector::execute()
       getCollisionPercept().isLeftFootColliding = false;
       collisionStartTimeLeft = getFrameInfo();
   }
-  else{
+  else {
       getCollisionPercept().collision_left_bumper = false;
   }
+
   if ((getFrameInfo().getTimeSince(collisionStartTimeRight.getTime()) > params.collisionInterval*params.timesToBump)
       && getCollisionPercept().isRightFootColliding)
   {
@@ -90,7 +92,7 @@ void BumperCollisionDetector::execute()
       getCollisionPercept().isRightFootColliding = false;
       collisionStartTimeRight = getFrameInfo();
   }
-  else{
+  else {
       getCollisionPercept().collision_right_bumper = false;
   }
 }
