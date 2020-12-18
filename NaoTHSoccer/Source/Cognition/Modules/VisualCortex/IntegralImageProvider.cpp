@@ -6,7 +6,6 @@
 */
 
 #include "IntegralImageProvider.h"
-#include <algorithm>
 
 IntegralImageProvider::IntegralImageProvider()
 {
@@ -51,8 +50,7 @@ void IntegralImageProvider::makeIntegralBild(BallDetectorIntegralImage& integral
 
   for(uint16_t y = 1; y < imgHeight; ++y) 
   {
-    uint32_t akk[MAX_COLOR];
-    std::fill_n(akk, MAX_COLOR, 0);
+    uint32_t akk[MAX_COLOR] = {};
 
     prevRowPtr += MAX_COLOR;
     curRowPtr  += MAX_COLOR;
