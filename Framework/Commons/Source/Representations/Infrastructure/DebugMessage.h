@@ -50,9 +50,9 @@ public:
   std::list<Message*> answers;
 
   void addResponse(int id, std::stringstream& str) {
-    int length_raw = static_cast<int>(str.tellp()); 
-    size_t length = length_raw < 0 ? 0 : static_cast<size_t>(length_raw);
-  
+    // get the length of the message in the stream
+    size_t length = static_cast<size_t>(std::max(static_cast<int>(str.tellp()), 0));
+
     // NOTE: the objects are deleted later by the DebugServer
     Message* msg = new Message(id, length);
 
