@@ -207,10 +207,11 @@ template<class T> class IF : public StaticRegistry<T> {};
   class M;                                                    \
   template<> class IF<M>: public StaticRegistry<M>            \
   {                                                           \
-  protected: Module* module;                                  \
+  private: Module* module;                                    \
   public:                                                     \
     IF() : module(nullptr) {}                                 \
     IF(Module* module) : module(module) {}                    \
+    const Module& getModule() const { return *module; }       \
     static std::string getName() { return #M; }               \
     static std::string getModulePath() {                      \
       return get_sub_core_module_path(__FILE__);              \
