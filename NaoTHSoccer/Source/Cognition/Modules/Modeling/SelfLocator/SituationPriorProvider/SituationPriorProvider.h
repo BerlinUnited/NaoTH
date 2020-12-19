@@ -61,7 +61,9 @@ private:
   class LineDensity {
   private:
     Math::LineSegment segment;
-    double angle; 
+    double angle;
+    //double distDeviation; 
+    //double angleDeviation;
 
   public:
     LineDensity()
@@ -72,7 +74,10 @@ private:
       const Vector2d& start, const Vector2d& end, 
       double angle)
       :
-      segment(start, end), angle(angle)
+      segment(start, end),
+      angle(angle)/*, 
+      distDeviation(distDeviation), 
+      angleDeviation(angleDeviation)*/
     {
     }
 
