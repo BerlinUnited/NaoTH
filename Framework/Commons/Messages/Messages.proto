@@ -21,7 +21,7 @@ message CMD {
 
 message StopwatchItem {
   required string name = 1;
-  required int32 time = 2;
+  required uint32 time = 2;
 }
 
 message Stopwatches {

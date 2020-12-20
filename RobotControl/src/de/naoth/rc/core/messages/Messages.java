@@ -1625,11 +1625,11 @@ public final class Messages {
         getNameBytes();
 
     /**
-     * <code>required int32 time = 2;</code>
+     * <code>required uint32 time = 2;</code>
      */
     boolean hasTime();
     /**
-     * <code>required int32 time = 2;</code>
+     * <code>required uint32 time = 2;</code>
      */
     int getTime();
   }
@@ -1686,7 +1686,7 @@ public final class Messages {
             }
             case 16: {
               bitField0_ |= 0x00000002;
-              time_ = input.readInt32();
+              time_ = input.readUInt32();
               break;
             }
           }
@@ -1759,13 +1759,13 @@ public final class Messages {
     public static final int TIME_FIELD_NUMBER = 2;
     private int time_;
     /**
-     * <code>required int32 time = 2;</code>
+     * <code>required uint32 time = 2;</code>
      */
     public boolean hasTime() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     /**
-     * <code>required int32 time = 2;</code>
+     * <code>required uint32 time = 2;</code>
      */
     public int getTime() {
       return time_;
@@ -1795,7 +1795,7 @@ public final class Messages {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeInt32(2, time_);
+        output.writeUInt32(2, time_);
       }
       unknownFields.writeTo(output);
     }
@@ -1810,7 +1810,7 @@ public final class Messages {
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, time_);
+          .computeUInt32Size(2, time_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -2184,19 +2184,19 @@ public final class Messages {
 
       private int time_ ;
       /**
-       * <code>required int32 time = 2;</code>
+       * <code>required uint32 time = 2;</code>
        */
       public boolean hasTime() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>required int32 time = 2;</code>
+       * <code>required uint32 time = 2;</code>
        */
       public int getTime() {
         return time_;
       }
       /**
-       * <code>required int32 time = 2;</code>
+       * <code>required uint32 time = 2;</code>
        */
       public Builder setTime(int value) {
         bitField0_ |= 0x00000002;
@@ -2205,7 +2205,7 @@ public final class Messages {
         return this;
       }
       /**
-       * <code>required int32 time = 2;</code>
+       * <code>required uint32 time = 2;</code>
        */
       public Builder clearTime() {
         bitField0_ = (bitField0_ & ~0x00000002);
@@ -30383,7 +30383,7 @@ public final class Messages {
       "ypes.proto\"%\n\006CMDArg\022\014\n\004name\030\001 \002(\t\022\r\n\005by" +
       "tes\030\003 \001(\014\"8\n\003CMD\022\014\n\004name\030\001 \002(\t\022#\n\004args\030\002" +
       " \003(\0132\025.naothmessages.CMDArg\"+\n\rStopwatch" +
-      "Item\022\014\n\004name\030\001 \002(\t\022\014\n\004time\030\002 \002(\005\"@\n\013Stop" +
+      "Item\022\014\n\004name\030\001 \002(\t\022\014\n\004time\030\002 \002(\r\"@\n\013Stop" +
       "watches\0221\n\013stopwatches\030\001 \003(\0132\034.naothmess" +
       "ages.StopwatchItem\"\262\001\n\010PlotItem\022.\n\004type\030" +
       "\001 \002(\0162 .naothmessages.PlotItem.PlotType\022" +

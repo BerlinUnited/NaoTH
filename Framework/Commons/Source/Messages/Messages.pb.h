@@ -572,12 +572,12 @@ class StopwatchItem : public ::google::protobuf::Message /* @@protoc_insertion_p
   ::std::string* release_name();
   void set_allocated_name(::std::string* name);
 
-  // required int32 time = 2;
+  // required uint32 time = 2;
   bool has_time() const;
   void clear_time();
   static const int kTimeFieldNumber = 2;
-  ::google::protobuf::int32 time() const;
-  void set_time(::google::protobuf::int32 value);
+  ::google::protobuf::uint32 time() const;
+  void set_time(::google::protobuf::uint32 value);
 
   // @@protoc_insertion_point(class_scope:naothmessages.StopwatchItem)
  private:
@@ -593,7 +593,7 @@ class StopwatchItem : public ::google::protobuf::Message /* @@protoc_insertion_p
   ::google::protobuf::internal::HasBits<1> _has_bits_;
   mutable int _cached_size_;
   ::google::protobuf::internal::ArenaStringPtr name_;
-  ::google::protobuf::int32 time_;
+  ::google::protobuf::uint32 time_;
   friend struct protobuf_Messages_2eproto::TableStruct;
 };
 // -------------------------------------------------------------------
@@ -4854,7 +4854,7 @@ inline void StopwatchItem::set_allocated_name(::std::string* name) {
   // @@protoc_insertion_point(field_set_allocated:naothmessages.StopwatchItem.name)
 }
 
-// required int32 time = 2;
+// required uint32 time = 2;
 inline bool StopwatchItem::has_time() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -4865,14 +4865,14 @@ inline void StopwatchItem::clear_has_time() {
   _has_bits_[0] &= ~0x00000002u;
 }
 inline void StopwatchItem::clear_time() {
-  time_ = 0;
+  time_ = 0u;
   clear_has_time();
 }
-inline ::google::protobuf::int32 StopwatchItem::time() const {
+inline ::google::protobuf::uint32 StopwatchItem::time() const {
   // @@protoc_insertion_point(field_get:naothmessages.StopwatchItem.time)
   return time_;
 }
-inline void StopwatchItem::set_time(::google::protobuf::int32 value) {
+inline void StopwatchItem::set_time(::google::protobuf::uint32 value) {
   set_has_time();
   time_ = value;
   // @@protoc_insertion_point(field_set:naothmessages.StopwatchItem.time)

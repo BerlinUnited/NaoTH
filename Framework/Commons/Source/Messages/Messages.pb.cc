@@ -749,7 +749,7 @@ void AddDescriptorsImpl() {
       "ypes.proto\"%\n\006CMDArg\022\014\n\004name\030\001 \002(\t\022\r\n\005by"
       "tes\030\003 \001(\014\"8\n\003CMD\022\014\n\004name\030\001 \002(\t\022#\n\004args\030\002"
       " \003(\0132\025.naothmessages.CMDArg\"+\n\rStopwatch"
-      "Item\022\014\n\004name\030\001 \002(\t\022\014\n\004time\030\002 \002(\005\"@\n\013Stop"
+      "Item\022\014\n\004name\030\001 \002(\t\022\014\n\004time\030\002 \002(\r\"@\n\013Stop"
       "watches\0221\n\013stopwatches\030\001 \003(\0132\034.naothmess"
       "ages.StopwatchItem\"\262\001\n\010PlotItem\022.\n\004type\030"
       "\001 \002(\0162 .naothmessages.PlotItem.PlotType\022"
@@ -1815,7 +1815,7 @@ StopwatchItem::StopwatchItem(const StopwatchItem& from)
 void StopwatchItem::SharedCtor() {
   _cached_size_ = 0;
   name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  time_ = 0;
+  time_ = 0u;
 }
 
 StopwatchItem::~StopwatchItem() {
@@ -1860,7 +1860,7 @@ void StopwatchItem::Clear() {
     GOOGLE_DCHECK(!name_.IsDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited()));
     (*name_.UnsafeRawStringPointer())->clear();
   }
-  time_ = 0;
+  time_ = 0u;
   _has_bits_.Clear();
   _internal_metadata_.Clear();
 }
@@ -1891,13 +1891,13 @@ bool StopwatchItem::MergePartialFromCodedStream(
         break;
       }
 
-      // required int32 time = 2;
+      // required uint32 time = 2;
       case 2: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(16u /* 16 & 0xFF */)) {
           set_has_time();
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &time_)));
         } else {
           goto handle_unusual;
@@ -1942,9 +1942,9 @@ void StopwatchItem::SerializeWithCachedSizes(
       1, this->name(), output);
   }
 
-  // required int32 time = 2;
+  // required uint32 time = 2;
   if (cached_has_bits & 0x00000002u) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->time(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->time(), output);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -1973,9 +1973,9 @@ void StopwatchItem::SerializeWithCachedSizes(
         1, this->name(), target);
   }
 
-  // required int32 time = 2;
+  // required uint32 time = 2;
   if (cached_has_bits & 0x00000002u) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->time(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->time(), target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -1998,9 +1998,9 @@ size_t StopwatchItem::RequiredFieldsByteSizeFallback() const {
   }
 
   if (has_time()) {
-    // required int32 time = 2;
+    // required uint32 time = 2;
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
         this->time());
   }
 
@@ -2021,9 +2021,9 @@ size_t StopwatchItem::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormatLite::StringSize(
         this->name());
 
-    // required int32 time = 2;
+    // required uint32 time = 2;
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
         this->time());
 
   } else {
@@ -2174,7 +2174,7 @@ void StopwatchItem::set_allocated_name(::std::string* name) {
   // @@protoc_insertion_point(field_set_allocated:naothmessages.StopwatchItem.name)
 }
 
-// required int32 time = 2;
+// required uint32 time = 2;
 bool StopwatchItem::has_time() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -2185,14 +2185,14 @@ void StopwatchItem::clear_has_time() {
   _has_bits_[0] &= ~0x00000002u;
 }
 void StopwatchItem::clear_time() {
-  time_ = 0;
+  time_ = 0u;
   clear_has_time();
 }
-::google::protobuf::int32 StopwatchItem::time() const {
+::google::protobuf::uint32 StopwatchItem::time() const {
   // @@protoc_insertion_point(field_get:naothmessages.StopwatchItem.time)
   return time_;
 }
-void StopwatchItem::set_time(::google::protobuf::int32 value) {
+void StopwatchItem::set_time(::google::protobuf::uint32 value) {
   set_has_time();
   time_ = value;
   // @@protoc_insertion_point(field_set:naothmessages.StopwatchItem.time)
