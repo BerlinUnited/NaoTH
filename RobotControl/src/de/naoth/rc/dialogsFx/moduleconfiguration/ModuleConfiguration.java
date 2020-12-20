@@ -191,6 +191,7 @@ public class ModuleConfiguration implements ResponseListener
                 String[] str = m.getName().split("\\|");
                 if (str.length == 2) {
                     Module mod = new Module(type, str[0], str[1], m.getActive());
+                    mod.getActiveProperty().addListener((ob, o, n) -> { enableModule(mod, n); });
                     // process the provided representations
                     m.getProvidedRepresentationsList().forEach((r) -> {
                         // add representation to LUT

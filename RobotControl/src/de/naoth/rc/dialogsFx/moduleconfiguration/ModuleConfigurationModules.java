@@ -269,10 +269,8 @@ public class ModuleConfigurationModules
                 TreeNodeItem leaf = new TreeNodeItem(m);
                 // add this item to the module tree
                 parent.getSourceChildren().add(leaf);
-                // set the selected state AFTER adding it to its parent
-                leaf.setSelected(m.isActive());
-                // set the callback for (de-)activating this module
-                leaf.selectedProperty().addListener((ob, o, n) -> { mConfig.enableModule(m, n); });
+                // bind the modules active property to the checkbox for (de-)activating this module
+                leaf.selectedProperty().bindBidirectional(m.getActiveProperty());
             });
 
             // remove node, where the leaf and its parent have the same name and the leaf is the only child
