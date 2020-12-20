@@ -62,4 +62,13 @@ public class RepresentationInspectorDialog  extends AbstractJFXDialog
         representationPanelController.setGenericManagerFactory(Plugin.genericManagerFactory);
         representationPanelController.setRobotControl(Plugin.parent);
     }
+
+    /**
+     * Is called, when the dialog gets closed.
+     */
+    @Override
+    public void dispose() {
+        // setting the source to "None" disconnects the panel
+        representationPanelController.getSourceProperty().set(RepresentationPanel.Source.None);
+    }
 }
