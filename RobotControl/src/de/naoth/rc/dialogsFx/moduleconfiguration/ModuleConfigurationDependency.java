@@ -83,9 +83,10 @@ public class ModuleConfigurationDependency
         if (n instanceof Module) {
             b.getStyleClass().add("module");
             // mark disabled modules
-            if (!((Module) n).isActive()) {
-                b.getStyleClass().add("inactive");
-            }
+            ((Module) n).getActiveProperty().addListener((ob, _o, _n) -> {
+                if (_n) { b.getStyleClass().remove("inactive"); } 
+                else { b.getStyleClass().add("inactive"); }
+            });
         } else if (n instanceof Representation) {
             b.getStyleClass().add("representation");
         }
