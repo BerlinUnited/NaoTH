@@ -433,8 +433,17 @@ class AgentController(threading.Thread):
         """Returns True, if the thread is connected to the naoth instance, False otherwise."""
         return self._connected.is_set()
 
+    def _assert_is_alive(self):
+        """Asserts, that this thread is alive, otherwise a runtime error is raised."""
+        if not self.is_alive():
+            raise RuntimeError(self.__class__.__name__ + " must be alive and running!")
+
     def wait_connected(self, timeout=None) -> None:
-        """Blocks until the thread is connected to the naoth agent or until the optional timeout occurs."""
+        """
+        Blocks until the thread is connected to the naoth agent or until the optional timeout occurs.
+        If the thread wasn't started or isn't alive anymore, a runtime error is raised.
+        """
+        self._assert_is_alive()
         self._connected.wait(timeout)
 
     def _set_connected(self, state: bool) -> None:
