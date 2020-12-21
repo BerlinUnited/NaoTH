@@ -162,12 +162,14 @@ public class ModuleConfigurationModules
         
         // set binding to the active module/representation
         mConfig.getActiveProperty().addListener((ob, o, n) -> {
-            // clear the representation selection of the representation info list, if another module/representation is selected
-            if (moduleTree.getSelectionModel().getSelectedItem() != null) {
-                Object selection = moduleTree.getSelectionModel().getSelectedItem().getValue();
-                if (selection != n) {
-                    moduleTree.getSelectionModel().clearSelection();
+            if (n instanceof Module) {
+                TreeNodeItem node = findModuleInTree((Module) n);
+                if (node != null && moduleTree.getSelectionModel().getSelectedItem() != node) {
+                    moduleTree.getSelectionModel().select(node);
+                    moduleTree.scrollTo(moduleTree.getRow(node.getParent()));
                 }
+            } else {
+                moduleTree.getSelectionModel().clearSelection();
             }
         });
         
@@ -344,5 +346,29 @@ public class ModuleConfigurationModules
             current.setExpanded(true);
             current = (TreeNodeItem) current.getSourceChildren().get(0);
         }
+    }
+ 
+    /**
+     * Finds the given module in the module tree and returns the corresponding
+     * TreeNodeItem, or null if the module was't found.
+     * 
+     * @param module the module to search for
+     * @return the corresponding TreeNodeItem, or null if not found
+     */
+    private TreeNodeItem findModuleInTree(Module module)
+    {
+        // use the modules path to find the correct TreeNodeItem
+        List<String> path = splitPathIntoParts(module);
+        
+        // find the parent tree item of the module
+        TreeNodeItem current = (TreeNodeItem) moduleTree.getRoot();
+        for (String p : path) {
+            if (!current.hasChild(p)) {
+                break;
+            }
+            current = current.getChild(p);
+        }
+        // return the actual TreeNodeItem of the module
+        return current.getChild(module);
     }
 }
