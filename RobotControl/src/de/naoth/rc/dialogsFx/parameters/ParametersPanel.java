@@ -2,6 +2,8 @@ package de.naoth.rc.dialogsFx.parameters;
 
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.componentsFx.AlertDialog;
+import de.naoth.rc.componentsFx.FilterableTreeItem;
+import de.naoth.rc.componentsFx.TreeItemPredicate;
 import de.naoth.rc.core.server.Command;
 import de.naoth.rc.core.server.ResponseListener;
 import java.io.BufferedWriter;
@@ -20,12 +22,14 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.KeyCode;
@@ -50,11 +54,13 @@ public class ParametersPanel
     @FXML private TreeView<String> params;
     @FXML private TextArea values;
     @FXML private Label notice;
+    @FXML private TextField search;
     
     /** Some key shortcut definitions */
     private final KeyCombination shortcutUpdate = new KeyCodeCombination(KeyCode.F5);
     private final KeyCombination shortcutSaveValueEnter = new KeyCodeCombination(KeyCode.ENTER);
     private final KeyCombination shortcutSaveValuesCtrlS = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination shortcutDisableSearch = new KeyCodeCombination(KeyCode.ESCAPE);
     
     private final Command cmdScheme = new Command("Cognition:representation:print").addArg("PlayerInfo");
     private final Command cmdCognitionParams = new Command("Cognition:ParameterList:list");
@@ -89,10 +95,14 @@ public class ParametersPanel
      */
     @FXML
     private void initialize() {
-        params.setRoot(new TreeItem<>());
+        params.setRoot(new FilterableTreeItem());
         params.getRoot().setExpanded(true);
         params.getSelectionModel().selectedItemProperty().addListener((o) -> { retrieveValues(); });
-        params.setOnKeyPressed((k) -> { if (shortcutUpdate.match(k)) { updateParams(); } });
+        ((FilterableTreeItem)params.getRoot()).predicateProperty().bind(Bindings.createObjectBinding(() -> {
+            if (search.getText() == null || search.getText().isEmpty()) { return null; }
+            return TreeItemPredicate.create(item -> item.toString().toLowerCase().contains(search.getText().toLowerCase()));
+        }, search.textProperty()));
+
         // set the options for the fade-out animation
         fadeOut.setNode(notice);
         fadeOut.setFromValue(1.0);
@@ -131,6 +141,17 @@ public class ParametersPanel
     }
     
     /**
+     * Disables (hide) the search field and keep the current selection on the tree.
+     */
+    private void disableSearch() {
+        TreeItem<String> selection = params.getSelectionModel().getSelectedItem();
+        search.setVisible(false);
+        search.clear();
+        params.getSelectionModel().select(selection);
+        params.scrollTo(params.getSelectionModel().getSelectedIndex());
+    }
+
+    /**
      * Is called, when key event is triggered on the values textarea.
      * 
      * @param k the triggered key event
@@ -167,6 +188,32 @@ public class ParametersPanel
     private void fxDoubleClick(MouseEvent m) {
         if (params.getSelectionModel().getSelectedIndex() != -1 && m.getButton() == MouseButton.PRIMARY && m.getClickCount() >= 2) {
             values.requestFocus();
+        }
+    }
+    
+    /**
+     * Is called, when key event is triggered on the parameter list.
+     * 
+     * @param k the triggered key event
+     */
+    @FXML
+    private void fxParamsTreeShortcuts(KeyEvent k) {
+        if (shortcutUpdate.match(k)) {
+            updateParams();
+        } else if (shortcutDisableSearch.match(k)) {
+            disableSearch();
+        } else if (((FilterableTreeItem)params.getRoot()).getSourceChildren().size() > 0) {
+            // start filtering only, if there's something to filter
+            TreeItem<String> selection = params.getSelectionModel().getSelectedItem();
+            if (k.getCode() == KeyCode.BACK_SPACE) {
+                // handle backspace key
+                search.deletePreviousChar();
+            } else if (!k.getText().isEmpty()) {
+                // add - non-empty - character to the search field
+                search.setVisible(true);
+                search.appendText(k.getText());
+            }
+            params.getSelectionModel().select(selection);
         }
     }
     
@@ -232,8 +279,8 @@ public class ParametersPanel
                         File.createTempFile("tmp_"+Math.random(), ".tmp", directory).delete();
                         
                         // iterate over all listed parameter configurations
-                        params.getRoot().getChildren().forEach((p) -> {
-                            p.getChildren().forEach((i) -> {
+                        ((FilterableTreeItem<String>)params.getRoot()).getSourceChildren().forEach((TreeItem<String> p) -> {
+                            ((FilterableTreeItem<String>)p).getSourceChildren().forEach((TreeItem<String> i) -> {
                                 ParameterResponseWriter h = new ParameterResponseWriter(
                                         i.getValue(),
                                         new File(directory.getPath()+File.separator+p.getValue()+"_"+i.getValue()+".cfg")
@@ -299,28 +346,29 @@ public class ParametersPanel
             String selected = params.getSelectionModel().getSelectedItem() != null ? params.getSelectionModel().getSelectedItem().getValue() : "";
             
             // get the root item of the type or create a new, if it doesn't exists
-            TreeItem root;
-            if (params.getRoot().getChildren().size() > idx && params.getRoot().getChildren().get(idx).getValue().equals(type)) {
-                root = params.getRoot().getChildren().get(idx);
+            FilterableTreeItem<String> paramsRoot = (FilterableTreeItem) params.getRoot();
+            FilterableTreeItem typeRoot;
+            if (paramsRoot.getSourceChildren().size() > idx && paramsRoot.getSourceChildren().get(idx).getValue().equals(type)) {
+                typeRoot = (FilterableTreeItem) paramsRoot.getSourceChildren().get(idx);
             } else {
-                root = new TreeItem(type);
-                root.setExpanded(true);
+                typeRoot = new FilterableTreeItem(type);
+                typeRoot.setExpanded(true);
                 // inserts the tree node at the index position or at the end
-                if(params.getRoot().getChildren().size() > idx) {
-                    params.getRoot().getChildren().add(idx, root);
+                if(paramsRoot.getSourceChildren().size() > idx) {
+                    paramsRoot.getSourceChildren().add(idx, typeRoot);
                 } else {
-                    params.getRoot().getChildren().add(root);
+                    paramsRoot.getSourceChildren().add(typeRoot);
                 }
             }
-            root.getChildren().clear();
+            typeRoot.getSourceChildren().clear();
 
             // add the new items and remember the (previously) selected tree item
             for (String i : items) {
-                TreeItem item = new TreeItem(i);
+                FilterableTreeItem item = new FilterableTreeItem(i);
                 if (i.equals(selected)) {
                     selectedItem = item;
                 }
-                root.getChildren().add(item);
+                typeRoot.getSourceChildren().add(item);
             }
             
             // if we got a (previously) selected item, re-select it
@@ -336,7 +384,7 @@ public class ParametersPanel
     private void retrieveValues() {
         TreeItem<String> selected = params.getSelectionModel().getSelectedItem();
         // check if we got a valid selection; ignore Cognition/Motion entries, which doesn't have a "valid" parent
-        if (selected != null && selected.getParent().getValue() != null) {
+        if (selected != null && selected.getParent() != null && selected.getParent().getValue() != null) {
             retrieveValues(selected.getParent().getValue(), selected.getValue(), responseHandler);
         }
     }
