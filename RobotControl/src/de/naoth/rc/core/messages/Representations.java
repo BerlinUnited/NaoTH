@@ -52688,13 +52688,13 @@ public final class Representations {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional int32 counter = 1;</code>
+     * <code>optional uint32 frameWhenWhistleDetected = 1;</code>
      */
-    boolean hasCounter();
+    boolean hasFrameWhenWhistleDetected();
     /**
-     * <code>optional int32 counter = 1;</code>
+     * <code>optional uint32 frameWhenWhistleDetected = 1;</code>
      */
-    int getCounter();
+    int getFrameWhenWhistleDetected();
 
     /**
      * <code>optional string captureFile = 2;</code>
@@ -52756,7 +52756,7 @@ public final class Representations {
       super(builder);
     }
     private WhistlePercept() {
-      counter_ = 0;
+      frameWhenWhistleDetected_ = 0;
       captureFile_ = "";
       recognizedWhistles_ = java.util.Collections.emptyList();
       whistleDetected_ = false;
@@ -52792,7 +52792,7 @@ public final class Representations {
             }
             case 8: {
               bitField0_ |= 0x00000001;
-              counter_ = input.readInt32();
+              frameWhenWhistleDetected_ = input.readUInt32();
               break;
             }
             case 18: {
@@ -53597,19 +53597,19 @@ public final class Representations {
     }
 
     private int bitField0_;
-    public static final int COUNTER_FIELD_NUMBER = 1;
-    private int counter_;
+    public static final int FRAMEWHENWHISTLEDETECTED_FIELD_NUMBER = 1;
+    private int frameWhenWhistleDetected_;
     /**
-     * <code>optional int32 counter = 1;</code>
+     * <code>optional uint32 frameWhenWhistleDetected = 1;</code>
      */
-    public boolean hasCounter() {
+    public boolean hasFrameWhenWhistleDetected() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>optional int32 counter = 1;</code>
+     * <code>optional uint32 frameWhenWhistleDetected = 1;</code>
      */
-    public int getCounter() {
-      return counter_;
+    public int getFrameWhenWhistleDetected() {
+      return frameWhenWhistleDetected_;
     }
 
     public static final int CAPTUREFILE_FIELD_NUMBER = 2;
@@ -53723,7 +53723,7 @@ public final class Representations {
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeInt32(1, counter_);
+        output.writeUInt32(1, frameWhenWhistleDetected_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, captureFile_);
@@ -53744,7 +53744,7 @@ public final class Representations {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, counter_);
+          .computeUInt32Size(1, frameWhenWhistleDetected_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, captureFile_);
@@ -53773,10 +53773,10 @@ public final class Representations {
       de.naoth.rc.core.messages.Representations.WhistlePercept other = (de.naoth.rc.core.messages.Representations.WhistlePercept) obj;
 
       boolean result = true;
-      result = result && (hasCounter() == other.hasCounter());
-      if (hasCounter()) {
-        result = result && (getCounter()
-            == other.getCounter());
+      result = result && (hasFrameWhenWhistleDetected() == other.hasFrameWhenWhistleDetected());
+      if (hasFrameWhenWhistleDetected()) {
+        result = result && (getFrameWhenWhistleDetected()
+            == other.getFrameWhenWhistleDetected());
       }
       result = result && (hasCaptureFile() == other.hasCaptureFile());
       if (hasCaptureFile()) {
@@ -53801,9 +53801,9 @@ public final class Representations {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      if (hasCounter()) {
-        hash = (37 * hash) + COUNTER_FIELD_NUMBER;
-        hash = (53 * hash) + getCounter();
+      if (hasFrameWhenWhistleDetected()) {
+        hash = (37 * hash) + FRAMEWHENWHISTLEDETECTED_FIELD_NUMBER;
+        hash = (53 * hash) + getFrameWhenWhistleDetected();
       }
       if (hasCaptureFile()) {
         hash = (37 * hash) + CAPTUREFILE_FIELD_NUMBER;
@@ -53948,7 +53948,7 @@ public final class Representations {
       }
       public Builder clear() {
         super.clear();
-        counter_ = 0;
+        frameWhenWhistleDetected_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
         captureFile_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
@@ -53987,7 +53987,7 @@ public final class Representations {
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
-        result.counter_ = counter_;
+        result.frameWhenWhistleDetected_ = frameWhenWhistleDetected_;
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
@@ -54047,8 +54047,8 @@ public final class Representations {
 
       public Builder mergeFrom(de.naoth.rc.core.messages.Representations.WhistlePercept other) {
         if (other == de.naoth.rc.core.messages.Representations.WhistlePercept.getDefaultInstance()) return this;
-        if (other.hasCounter()) {
-          setCounter(other.getCounter());
+        if (other.hasFrameWhenWhistleDetected()) {
+          setFrameWhenWhistleDetected(other.getFrameWhenWhistleDetected());
         }
         if (other.hasCaptureFile()) {
           bitField0_ |= 0x00000002;
@@ -54117,34 +54117,34 @@ public final class Representations {
       }
       private int bitField0_;
 
-      private int counter_ ;
+      private int frameWhenWhistleDetected_ ;
       /**
-       * <code>optional int32 counter = 1;</code>
+       * <code>optional uint32 frameWhenWhistleDetected = 1;</code>
        */
-      public boolean hasCounter() {
+      public boolean hasFrameWhenWhistleDetected() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>optional int32 counter = 1;</code>
+       * <code>optional uint32 frameWhenWhistleDetected = 1;</code>
        */
-      public int getCounter() {
-        return counter_;
+      public int getFrameWhenWhistleDetected() {
+        return frameWhenWhistleDetected_;
       }
       /**
-       * <code>optional int32 counter = 1;</code>
+       * <code>optional uint32 frameWhenWhistleDetected = 1;</code>
        */
-      public Builder setCounter(int value) {
+      public Builder setFrameWhenWhistleDetected(int value) {
         bitField0_ |= 0x00000001;
-        counter_ = value;
+        frameWhenWhistleDetected_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional int32 counter = 1;</code>
+       * <code>optional uint32 frameWhenWhistleDetected = 1;</code>
        */
-      public Builder clearCounter() {
+      public Builder clearFrameWhenWhistleDetected() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        counter_ = 0;
+        frameWhenWhistleDetected_ = 0;
         onChanged();
         return this;
       }
@@ -56544,16 +56544,17 @@ public final class Representations {
       "\003 \003(\0132\034.naothmessages.DoubleVector2\0221\n\013o" +
       "rientation\030\004 \001(\0132\034.naothmessages.DoubleV" +
       "ector2\022\017\n\007headYaw\030\005 \001(\001\022\021\n\theadPitch\030\006 \001",
-      "(\001\"\335\001\n\016WhistlePercept\022\017\n\007counter\030\001 \001(\005\022\023" +
-      "\n\013captureFile\030\002 \001(\t\022A\n\022recognizedWhistle" +
-      "s\030\003 \003(\0132%.naothmessages.WhistlePercept.W" +
-      "histle\022\027\n\017whistleDetected\030\004 \001(\010\032I\n\007Whist" +
-      "le\022\014\n\004name\030\001 \002(\t\022\031\n\021positionInCapture\030\002 " +
-      "\002(\003\022\025\n\rresponseValue\030\003 \002(\001\"\203\001\n\013DebugModi" +
-      "fy\0228\n\010valueMap\030\001 \003(\0132&.naothmessages.Deb" +
-      "ugModify.ModifyValue\032:\n\013ModifyValue\022\014\n\004n" +
-      "ame\030\001 \002(\t\022\016\n\006modify\030\002 \001(\010\022\r\n\005value\030\003 \001(\001" +
-      "B\033\n\031de.naoth.rc.core.messages"
+      "(\001\"\356\001\n\016WhistlePercept\022 \n\030frameWhenWhistl" +
+      "eDetected\030\001 \001(\r\022\023\n\013captureFile\030\002 \001(\t\022A\n\022" +
+      "recognizedWhistles\030\003 \003(\0132%.naothmessages" +
+      ".WhistlePercept.Whistle\022\027\n\017whistleDetect" +
+      "ed\030\004 \001(\010\032I\n\007Whistle\022\014\n\004name\030\001 \002(\t\022\031\n\021pos" +
+      "itionInCapture\030\002 \002(\003\022\025\n\rresponseValue\030\003 " +
+      "\002(\001\"\203\001\n\013DebugModify\0228\n\010valueMap\030\001 \003(\0132&." +
+      "naothmessages.DebugModify.ModifyValue\032:\n" +
+      "\013ModifyValue\022\014\n\004name\030\001 \002(\t\022\016\n\006modify\030\002 \001" +
+      "(\010\022\r\n\005value\030\003 \001(\001B\033\n\031de.naoth.rc.core.me",
+      "ssages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -56844,7 +56845,7 @@ public final class Representations {
     internal_static_naothmessages_WhistlePercept_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_naothmessages_WhistlePercept_descriptor,
-        new java.lang.String[] { "Counter", "CaptureFile", "RecognizedWhistles", "WhistleDetected", });
+        new java.lang.String[] { "FrameWhenWhistleDetected", "CaptureFile", "RecognizedWhistles", "WhistleDetected", });
     internal_static_naothmessages_WhistlePercept_Whistle_descriptor =
       internal_static_naothmessages_WhistlePercept_descriptor.getNestedTypes().get(0);
     internal_static_naothmessages_WhistlePercept_Whistle_fieldAccessorTable = new

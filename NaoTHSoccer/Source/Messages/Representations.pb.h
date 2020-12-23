@@ -7638,12 +7638,12 @@ class WhistlePercept : public ::google::protobuf::Message /* @@protoc_insertion_
   ::std::string* release_capturefile();
   void set_allocated_capturefile(::std::string* capturefile);
 
-  // optional int32 counter = 1;
-  bool has_counter() const;
-  void clear_counter();
-  static const int kCounterFieldNumber = 1;
-  ::google::protobuf::int32 counter() const;
-  void set_counter(::google::protobuf::int32 value);
+  // optional uint32 frameWhenWhistleDetected = 1;
+  bool has_framewhenwhistledetected() const;
+  void clear_framewhenwhistledetected();
+  static const int kFrameWhenWhistleDetectedFieldNumber = 1;
+  ::google::protobuf::uint32 framewhenwhistledetected() const;
+  void set_framewhenwhistledetected(::google::protobuf::uint32 value);
 
   // optional bool whistleDetected = 4;
   bool has_whistledetected() const;
@@ -7654,8 +7654,8 @@ class WhistlePercept : public ::google::protobuf::Message /* @@protoc_insertion_
 
   // @@protoc_insertion_point(class_scope:naothmessages.WhistlePercept)
  private:
-  void set_has_counter();
-  void clear_has_counter();
+  void set_has_framewhenwhistledetected();
+  void clear_has_framewhenwhistledetected();
   void set_has_capturefile();
   void clear_has_capturefile();
   void set_has_whistledetected();
@@ -7666,7 +7666,7 @@ class WhistlePercept : public ::google::protobuf::Message /* @@protoc_insertion_
   mutable int _cached_size_;
   ::google::protobuf::RepeatedPtrField< ::naothmessages::WhistlePercept_Whistle > recognizedwhistles_;
   ::google::protobuf::internal::ArenaStringPtr capturefile_;
-  ::google::protobuf::int32 counter_;
+  ::google::protobuf::uint32 framewhenwhistledetected_;
   bool whistledetected_;
   friend struct protobuf_Representations_2eproto::TableStruct;
 };
@@ -15037,28 +15037,28 @@ inline void WhistlePercept_Whistle::set_responsevalue(double value) {
 
 // WhistlePercept
 
-// optional int32 counter = 1;
-inline bool WhistlePercept::has_counter() const {
+// optional uint32 frameWhenWhistleDetected = 1;
+inline bool WhistlePercept::has_framewhenwhistledetected() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void WhistlePercept::set_has_counter() {
+inline void WhistlePercept::set_has_framewhenwhistledetected() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void WhistlePercept::clear_has_counter() {
+inline void WhistlePercept::clear_has_framewhenwhistledetected() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void WhistlePercept::clear_counter() {
-  counter_ = 0;
-  clear_has_counter();
+inline void WhistlePercept::clear_framewhenwhistledetected() {
+  framewhenwhistledetected_ = 0u;
+  clear_has_framewhenwhistledetected();
 }
-inline ::google::protobuf::int32 WhistlePercept::counter() const {
-  // @@protoc_insertion_point(field_get:naothmessages.WhistlePercept.counter)
-  return counter_;
+inline ::google::protobuf::uint32 WhistlePercept::framewhenwhistledetected() const {
+  // @@protoc_insertion_point(field_get:naothmessages.WhistlePercept.frameWhenWhistleDetected)
+  return framewhenwhistledetected_;
 }
-inline void WhistlePercept::set_counter(::google::protobuf::int32 value) {
-  set_has_counter();
-  counter_ = value;
-  // @@protoc_insertion_point(field_set:naothmessages.WhistlePercept.counter)
+inline void WhistlePercept::set_framewhenwhistledetected(::google::protobuf::uint32 value) {
+  set_has_framewhenwhistledetected();
+  framewhenwhistledetected_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.WhistlePercept.frameWhenWhistleDetected)
 }
 
 // optional string captureFile = 2;

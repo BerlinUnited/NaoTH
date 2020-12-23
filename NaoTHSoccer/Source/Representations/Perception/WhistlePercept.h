@@ -7,6 +7,8 @@
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
 
+#include "Representations/Infrastructure/FrameInfo.h"
+
 namespace naoth
 {
   class WhistlePercept: public Printable
@@ -32,8 +34,7 @@ namespace naoth
     std::vector<Whistle> recognizedWhistles;
     std::string captureFile;
 
-    // for counting the detected whistles. It will never be reset
-    int counter;
+    unsigned int frameWhenWhistleDetected;
 
     bool whistleDetected;
 

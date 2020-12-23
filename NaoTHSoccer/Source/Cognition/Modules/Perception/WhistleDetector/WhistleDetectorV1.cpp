@@ -38,8 +38,7 @@ void WhistleDetectorV1::execute()
     if (sum > params.threshold) {
       //std::cout << "Whistle Detected with sample sum: " << sum << std::endl;
       getWhistlePercept().whistleDetected = true;
-      getWhistlePercept().counter += 1;
+      getWhistlePercept().frameWhenWhistleDetected = getFrameInfo().getFrameNumber();
     }
   }
-  //std::cout << "WhistleDetector V1 not running" << std::endl;
 }

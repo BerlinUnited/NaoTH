@@ -95,7 +95,7 @@ void WhistleDetectorV2::execute()
 
       if( whistle_filter.update(found, 0.3, 0.9) ) {
         getWhistlePercept().whistleDetected = true;
-        getWhistlePercept().counter += 1;
+        getWhistlePercept().frameWhenWhistleDetected = getFrameInfo().getFrameNumber();
       }
 
       DEBUG_REQUEST("Plot:WhistleDetectorV2:scan",
