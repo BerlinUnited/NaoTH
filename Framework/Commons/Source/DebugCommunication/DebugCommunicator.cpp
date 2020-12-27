@@ -23,7 +23,7 @@ DebugCommunicator::DebugCommunicator()
   : 
     serverSocket(NULL),
     connection(NULL),
-    port(-1),
+    port(0),
     fatalFail(false),
     time_of_last_message(0),
     time_out_delta(5) // seconds
@@ -107,8 +107,11 @@ GError* DebugCommunicator::internalSendMessage(gint32 id, const char* data, size
     {
       gsize length = size-pos;
 
-      gsize sent = g_socket_send(connection, data+pos, length, NULL, &err);
-      pos += sent;
+      gssize sent = g_socket_send(connection, data+pos, length, NULL, &err);
+      if(sent < 0) {
+        break;
+      }
+      pos += static_cast<gsize>(sent);
     }
   }
 
@@ -198,7 +201,7 @@ gint32 DebugCommunicator::internalReadMessage(GString** result, GError** err)
   if(sizeOfMessage > 0)
   {
     GString* buffer = g_string_new("");
-    g_string_set_size(buffer, sizeOfMessage);
+    g_string_set_size(buffer, static_cast<gsize>(sizeOfMessage));
     g_assert(buffer->len == (guint32)sizeOfMessage);
 
     // read message completly
@@ -206,7 +209,7 @@ gint32 DebugCommunicator::internalReadMessage(GString** result, GError** err)
     while(*err == NULL && pos < (guint32)sizeOfMessage)
     {
       gssize read_bytes =
-          g_socket_receive_with_blocking(connection, buffer->str + pos, sizeOfMessage - pos, true ,NULL, err);
+          g_socket_receive_with_blocking(connection, buffer->str + pos, static_cast<gsize>(sizeOfMessage) - pos, true ,NULL, err);
 
       if(read_bytes == 0)
       {
@@ -258,7 +261,7 @@ bool DebugCommunicator::connect(int timeout)
     g_socket_set_blocking(serverSocket, false);
   } else {
     g_socket_set_blocking(serverSocket, true);
-    g_socket_set_timeout(serverSocket, timeout);
+    g_socket_set_timeout(serverSocket, static_cast<gsize>(timeout));
   }
 
   // try to accept an eventually pending connection request

@@ -14,8 +14,7 @@ using namespace InverseKinematic;
 using namespace naoth;
 
 InverseKinematicsMotionEngine::InverseKinematicsMotionEngine()
- :
-  rotationStabilizeFactor(0)
+// :  rotationStabilizeFactor(0)
 {
     getDebugParameterList().add(&params);
 }

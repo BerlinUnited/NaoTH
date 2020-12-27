@@ -14,7 +14,6 @@ using namespace naoth;
 using namespace std;
 
 ArmMotionEngine::ArmMotionEngine()
-  : init(false)
 {
     getDebugParameterList().add(&params);
 }
