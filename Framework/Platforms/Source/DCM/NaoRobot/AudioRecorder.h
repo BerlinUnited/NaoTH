@@ -14,7 +14,7 @@
 
   profiles:
     NAO V5: /usr/share/pulseaudio/alsa-mixer/profile-sets/aldebaran-robotics/tangential-trapeze.conf
-    NAO V6: /usr/share/pulseaudio/alsa-mixer/profile-sets/aldebaran-robotics/PCH_trapeze.conf
+    NAO V6: /usr/share/pulseaudio/alsa-mixer/profile-sets/aldebaran-robotics/PCH_trapeze.conf    
 */
 
 #ifndef AudioRecorder_H
@@ -29,6 +29,8 @@
 #include <condition_variable>
 
 // pulseaudio: we use the simple API for synchroneous recording
+// example for using pa_simple API:
+//   http://0pointer.de/lennart/projects/pulseaudio/doxygen/parec-simple_8c-example.html
 #include <pulse/simple.h>
 
 // representations
