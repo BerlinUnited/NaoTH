@@ -295,19 +295,19 @@ class Image : public ::google::protobuf::Message /* @@protoc_insertion_point(cla
   ::google::protobuf::uint32 timestamp() const;
   void set_timestamp(::google::protobuf::uint32 value);
 
-  // optional int32 width = 2 [default = 640];
+  // optional uint32 width = 2 [default = 640];
   bool has_width() const;
   void clear_width();
   static const int kWidthFieldNumber = 2;
-  ::google::protobuf::int32 width() const;
-  void set_width(::google::protobuf::int32 value);
+  ::google::protobuf::uint32 width() const;
+  void set_width(::google::protobuf::uint32 value);
 
-  // optional int32 height = 3 [default = 480];
+  // optional uint32 height = 3 [default = 480];
   bool has_height() const;
   void clear_height();
   static const int kHeightFieldNumber = 3;
-  ::google::protobuf::int32 height() const;
-  void set_height(::google::protobuf::int32 value);
+  ::google::protobuf::uint32 height() const;
+  void set_height(::google::protobuf::uint32 value);
 
   // @@protoc_insertion_point(class_scope:naothmessages.Image)
  private:
@@ -331,8 +331,8 @@ class Image : public ::google::protobuf::Message /* @@protoc_insertion_point(cla
   ::naothmessages::CameraInfo* camerainfo_;
   int format_;
   ::google::protobuf::uint32 timestamp_;
-  ::google::protobuf::int32 width_;
-  ::google::protobuf::int32 height_;
+  ::google::protobuf::uint32 width_;
+  ::google::protobuf::uint32 height_;
   friend struct protobuf_Framework_2dRepresentations_2eproto::TableStruct;
 };
 // -------------------------------------------------------------------
@@ -461,19 +461,19 @@ class CameraInfo : public ::google::protobuf::Message /* @@protoc_insertion_poin
   GOOGLE_PROTOBUF_DEPRECATED_ATTR const ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector2 >&
       headjointoffset() const;
 
-  // required int32 resolutionWidth = 1;
+  // required uint32 resolutionWidth = 1;
   bool has_resolutionwidth() const;
   void clear_resolutionwidth();
   static const int kResolutionWidthFieldNumber = 1;
-  ::google::protobuf::int32 resolutionwidth() const;
-  void set_resolutionwidth(::google::protobuf::int32 value);
+  ::google::protobuf::uint32 resolutionwidth() const;
+  void set_resolutionwidth(::google::protobuf::uint32 value);
 
-  // required int32 resolutionHeight = 2;
+  // required uint32 resolutionHeight = 2;
   bool has_resolutionheight() const;
   void clear_resolutionheight();
   static const int kResolutionHeightFieldNumber = 2;
-  ::google::protobuf::int32 resolutionheight() const;
-  void set_resolutionheight(::google::protobuf::int32 value);
+  ::google::protobuf::uint32 resolutionheight() const;
+  void set_resolutionheight(::google::protobuf::uint32 value);
 
   // optional double focalLength = 5 [deprecated = true];
   GOOGLE_PROTOBUF_DEPRECATED_ATTR bool has_focallength() const;
@@ -608,8 +608,8 @@ class CameraInfo : public ::google::protobuf::Message /* @@protoc_insertion_poin
   ::google::protobuf::RepeatedPtrField< ::naothmessages::Pose3D > transformation_;
   ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector2 > correctionoffset_;
   ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector2 > headjointoffset_;
-  ::google::protobuf::int32 resolutionwidth_;
-  ::google::protobuf::int32 resolutionheight_;
+  ::google::protobuf::uint32 resolutionwidth_;
+  ::google::protobuf::uint32 resolutionheight_;
   double focallength_;
   double openinganglewidth_;
   double openingangleheight_;
@@ -2158,7 +2158,7 @@ inline void Image::set_allocated_data(::std::string* data) {
   // @@protoc_insertion_point(field_set_allocated:naothmessages.Image.data)
 }
 
-// optional int32 width = 2 [default = 640];
+// optional uint32 width = 2 [default = 640];
 inline bool Image::has_width() const {
   return (_has_bits_[0] & 0x00000010u) != 0;
 }
@@ -2169,20 +2169,20 @@ inline void Image::clear_has_width() {
   _has_bits_[0] &= ~0x00000010u;
 }
 inline void Image::clear_width() {
-  width_ = 640;
+  width_ = 640u;
   clear_has_width();
 }
-inline ::google::protobuf::int32 Image::width() const {
+inline ::google::protobuf::uint32 Image::width() const {
   // @@protoc_insertion_point(field_get:naothmessages.Image.width)
   return width_;
 }
-inline void Image::set_width(::google::protobuf::int32 value) {
+inline void Image::set_width(::google::protobuf::uint32 value) {
   set_has_width();
   width_ = value;
   // @@protoc_insertion_point(field_set:naothmessages.Image.width)
 }
 
-// optional int32 height = 3 [default = 480];
+// optional uint32 height = 3 [default = 480];
 inline bool Image::has_height() const {
   return (_has_bits_[0] & 0x00000020u) != 0;
 }
@@ -2193,14 +2193,14 @@ inline void Image::clear_has_height() {
   _has_bits_[0] &= ~0x00000020u;
 }
 inline void Image::clear_height() {
-  height_ = 480;
+  height_ = 480u;
   clear_has_height();
 }
-inline ::google::protobuf::int32 Image::height() const {
+inline ::google::protobuf::uint32 Image::height() const {
   // @@protoc_insertion_point(field_get:naothmessages.Image.height)
   return height_;
 }
-inline void Image::set_height(::google::protobuf::int32 value) {
+inline void Image::set_height(::google::protobuf::uint32 value) {
   set_has_height();
   height_ = value;
   // @@protoc_insertion_point(field_set:naothmessages.Image.height)
@@ -2305,7 +2305,7 @@ inline void Image::set_timestamp(::google::protobuf::uint32 value) {
 
 // CameraInfo
 
-// required int32 resolutionWidth = 1;
+// required uint32 resolutionWidth = 1;
 inline bool CameraInfo::has_resolutionwidth() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -2316,20 +2316,20 @@ inline void CameraInfo::clear_has_resolutionwidth() {
   _has_bits_[0] &= ~0x00000001u;
 }
 inline void CameraInfo::clear_resolutionwidth() {
-  resolutionwidth_ = 0;
+  resolutionwidth_ = 0u;
   clear_has_resolutionwidth();
 }
-inline ::google::protobuf::int32 CameraInfo::resolutionwidth() const {
+inline ::google::protobuf::uint32 CameraInfo::resolutionwidth() const {
   // @@protoc_insertion_point(field_get:naothmessages.CameraInfo.resolutionWidth)
   return resolutionwidth_;
 }
-inline void CameraInfo::set_resolutionwidth(::google::protobuf::int32 value) {
+inline void CameraInfo::set_resolutionwidth(::google::protobuf::uint32 value) {
   set_has_resolutionwidth();
   resolutionwidth_ = value;
   // @@protoc_insertion_point(field_set:naothmessages.CameraInfo.resolutionWidth)
 }
 
-// required int32 resolutionHeight = 2;
+// required uint32 resolutionHeight = 2;
 inline bool CameraInfo::has_resolutionheight() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -2340,14 +2340,14 @@ inline void CameraInfo::clear_has_resolutionheight() {
   _has_bits_[0] &= ~0x00000002u;
 }
 inline void CameraInfo::clear_resolutionheight() {
-  resolutionheight_ = 0;
+  resolutionheight_ = 0u;
   clear_has_resolutionheight();
 }
-inline ::google::protobuf::int32 CameraInfo::resolutionheight() const {
+inline ::google::protobuf::uint32 CameraInfo::resolutionheight() const {
   // @@protoc_insertion_point(field_get:naothmessages.CameraInfo.resolutionHeight)
   return resolutionheight_;
 }
-inline void CameraInfo::set_resolutionheight(::google::protobuf::int32 value) {
+inline void CameraInfo::set_resolutionheight(::google::protobuf::uint32 value) {
   set_has_resolutionheight();
   resolutionheight_ = value;
   // @@protoc_insertion_point(field_set:naothmessages.CameraInfo.resolutionHeight)

@@ -28,20 +28,20 @@ public final class FrameworkRepresentations {
     com.google.protobuf.ByteString getData();
 
     /**
-     * <code>optional int32 width = 2 [default = 640];</code>
+     * <code>optional uint32 width = 2 [default = 640];</code>
      */
     boolean hasWidth();
     /**
-     * <code>optional int32 width = 2 [default = 640];</code>
+     * <code>optional uint32 width = 2 [default = 640];</code>
      */
     int getWidth();
 
     /**
-     * <code>optional int32 height = 3 [default = 480];</code>
+     * <code>optional uint32 height = 3 [default = 480];</code>
      */
     boolean hasHeight();
     /**
-     * <code>optional int32 height = 3 [default = 480];</code>
+     * <code>optional uint32 height = 3 [default = 480];</code>
      */
     int getHeight();
 
@@ -135,12 +135,12 @@ public final class FrameworkRepresentations {
             }
             case 16: {
               bitField0_ |= 0x00000002;
-              width_ = input.readInt32();
+              width_ = input.readUInt32();
               break;
             }
             case 24: {
               bitField0_ |= 0x00000004;
-              height_ = input.readInt32();
+              height_ = input.readUInt32();
               break;
             }
             case 34: {
@@ -314,13 +314,13 @@ public final class FrameworkRepresentations {
     public static final int WIDTH_FIELD_NUMBER = 2;
     private int width_;
     /**
-     * <code>optional int32 width = 2 [default = 640];</code>
+     * <code>optional uint32 width = 2 [default = 640];</code>
      */
     public boolean hasWidth() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     /**
-     * <code>optional int32 width = 2 [default = 640];</code>
+     * <code>optional uint32 width = 2 [default = 640];</code>
      */
     public int getWidth() {
       return width_;
@@ -329,13 +329,13 @@ public final class FrameworkRepresentations {
     public static final int HEIGHT_FIELD_NUMBER = 3;
     private int height_;
     /**
-     * <code>optional int32 height = 3 [default = 480];</code>
+     * <code>optional uint32 height = 3 [default = 480];</code>
      */
     public boolean hasHeight() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     /**
-     * <code>optional int32 height = 3 [default = 480];</code>
+     * <code>optional uint32 height = 3 [default = 480];</code>
      */
     public int getHeight() {
       return height_;
@@ -419,10 +419,10 @@ public final class FrameworkRepresentations {
         output.writeBytes(1, data_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeInt32(2, width_);
+        output.writeUInt32(2, width_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeInt32(3, height_);
+        output.writeUInt32(3, height_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeMessage(4, getCameraInfo());
@@ -447,11 +447,11 @@ public final class FrameworkRepresentations {
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, width_);
+          .computeUInt32Size(2, width_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(3, height_);
+          .computeUInt32Size(3, height_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
@@ -880,19 +880,19 @@ public final class FrameworkRepresentations {
 
       private int width_ = 640;
       /**
-       * <code>optional int32 width = 2 [default = 640];</code>
+       * <code>optional uint32 width = 2 [default = 640];</code>
        */
       public boolean hasWidth() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>optional int32 width = 2 [default = 640];</code>
+       * <code>optional uint32 width = 2 [default = 640];</code>
        */
       public int getWidth() {
         return width_;
       }
       /**
-       * <code>optional int32 width = 2 [default = 640];</code>
+       * <code>optional uint32 width = 2 [default = 640];</code>
        */
       public Builder setWidth(int value) {
         bitField0_ |= 0x00000002;
@@ -901,7 +901,7 @@ public final class FrameworkRepresentations {
         return this;
       }
       /**
-       * <code>optional int32 width = 2 [default = 640];</code>
+       * <code>optional uint32 width = 2 [default = 640];</code>
        */
       public Builder clearWidth() {
         bitField0_ = (bitField0_ & ~0x00000002);
@@ -912,19 +912,19 @@ public final class FrameworkRepresentations {
 
       private int height_ = 480;
       /**
-       * <code>optional int32 height = 3 [default = 480];</code>
+       * <code>optional uint32 height = 3 [default = 480];</code>
        */
       public boolean hasHeight() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       /**
-       * <code>optional int32 height = 3 [default = 480];</code>
+       * <code>optional uint32 height = 3 [default = 480];</code>
        */
       public int getHeight() {
         return height_;
       }
       /**
-       * <code>optional int32 height = 3 [default = 480];</code>
+       * <code>optional uint32 height = 3 [default = 480];</code>
        */
       public Builder setHeight(int value) {
         bitField0_ |= 0x00000004;
@@ -933,7 +933,7 @@ public final class FrameworkRepresentations {
         return this;
       }
       /**
-       * <code>optional int32 height = 3 [default = 480];</code>
+       * <code>optional uint32 height = 3 [default = 480];</code>
        */
       public Builder clearHeight() {
         bitField0_ = (bitField0_ & ~0x00000004);
@@ -1181,20 +1181,20 @@ public final class FrameworkRepresentations {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>required int32 resolutionWidth = 1;</code>
+     * <code>required uint32 resolutionWidth = 1;</code>
      */
     boolean hasResolutionWidth();
     /**
-     * <code>required int32 resolutionWidth = 1;</code>
+     * <code>required uint32 resolutionWidth = 1;</code>
      */
     int getResolutionWidth();
 
     /**
-     * <code>required int32 resolutionHeight = 2;</code>
+     * <code>required uint32 resolutionHeight = 2;</code>
      */
     boolean hasResolutionHeight();
     /**
-     * <code>required int32 resolutionHeight = 2;</code>
+     * <code>required uint32 resolutionHeight = 2;</code>
      */
     int getResolutionHeight();
 
@@ -1486,12 +1486,12 @@ public final class FrameworkRepresentations {
             }
             case 8: {
               bitField0_ |= 0x00000001;
-              resolutionWidth_ = input.readInt32();
+              resolutionWidth_ = input.readUInt32();
               break;
             }
             case 16: {
               bitField0_ |= 0x00000002;
-              resolutionHeight_ = input.readInt32();
+              resolutionHeight_ = input.readUInt32();
               break;
             }
             case 32: {
@@ -1629,13 +1629,13 @@ public final class FrameworkRepresentations {
     public static final int RESOLUTIONWIDTH_FIELD_NUMBER = 1;
     private int resolutionWidth_;
     /**
-     * <code>required int32 resolutionWidth = 1;</code>
+     * <code>required uint32 resolutionWidth = 1;</code>
      */
     public boolean hasResolutionWidth() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>required int32 resolutionWidth = 1;</code>
+     * <code>required uint32 resolutionWidth = 1;</code>
      */
     public int getResolutionWidth() {
       return resolutionWidth_;
@@ -1644,13 +1644,13 @@ public final class FrameworkRepresentations {
     public static final int RESOLUTIONHEIGHT_FIELD_NUMBER = 2;
     private int resolutionHeight_;
     /**
-     * <code>required int32 resolutionHeight = 2;</code>
+     * <code>required uint32 resolutionHeight = 2;</code>
      */
     public boolean hasResolutionHeight() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     /**
-     * <code>required int32 resolutionHeight = 2;</code>
+     * <code>required uint32 resolutionHeight = 2;</code>
      */
     public int getResolutionHeight() {
       return resolutionHeight_;
@@ -2032,10 +2032,10 @@ public final class FrameworkRepresentations {
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeInt32(1, resolutionWidth_);
+        output.writeUInt32(1, resolutionWidth_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeInt32(2, resolutionHeight_);
+        output.writeUInt32(2, resolutionHeight_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeEnum(4, cameraID_);
@@ -2095,11 +2095,11 @@ public final class FrameworkRepresentations {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, resolutionWidth_);
+          .computeUInt32Size(1, resolutionWidth_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, resolutionHeight_);
+          .computeUInt32Size(2, resolutionHeight_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
@@ -2883,19 +2883,19 @@ public final class FrameworkRepresentations {
 
       private int resolutionWidth_ ;
       /**
-       * <code>required int32 resolutionWidth = 1;</code>
+       * <code>required uint32 resolutionWidth = 1;</code>
        */
       public boolean hasResolutionWidth() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>required int32 resolutionWidth = 1;</code>
+       * <code>required uint32 resolutionWidth = 1;</code>
        */
       public int getResolutionWidth() {
         return resolutionWidth_;
       }
       /**
-       * <code>required int32 resolutionWidth = 1;</code>
+       * <code>required uint32 resolutionWidth = 1;</code>
        */
       public Builder setResolutionWidth(int value) {
         bitField0_ |= 0x00000001;
@@ -2904,7 +2904,7 @@ public final class FrameworkRepresentations {
         return this;
       }
       /**
-       * <code>required int32 resolutionWidth = 1;</code>
+       * <code>required uint32 resolutionWidth = 1;</code>
        */
       public Builder clearResolutionWidth() {
         bitField0_ = (bitField0_ & ~0x00000001);
@@ -2915,19 +2915,19 @@ public final class FrameworkRepresentations {
 
       private int resolutionHeight_ ;
       /**
-       * <code>required int32 resolutionHeight = 2;</code>
+       * <code>required uint32 resolutionHeight = 2;</code>
        */
       public boolean hasResolutionHeight() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>required int32 resolutionHeight = 2;</code>
+       * <code>required uint32 resolutionHeight = 2;</code>
        */
       public int getResolutionHeight() {
         return resolutionHeight_;
       }
       /**
-       * <code>required int32 resolutionHeight = 2;</code>
+       * <code>required uint32 resolutionHeight = 2;</code>
        */
       public Builder setResolutionHeight(int value) {
         bitField0_ |= 0x00000002;
@@ -2936,7 +2936,7 @@ public final class FrameworkRepresentations {
         return this;
       }
       /**
-       * <code>required int32 resolutionHeight = 2;</code>
+       * <code>required uint32 resolutionHeight = 2;</code>
        */
       public Builder clearResolutionHeight() {
         bitField0_ = (bitField0_ & ~0x00000002);
@@ -13554,13 +13554,13 @@ public final class FrameworkRepresentations {
     java.lang.String[] descriptorData = {
       "\n\037Framework-Representations.proto\022\rnaoth" +
       "messages\032\021CommonTypes.proto\"\333\001\n\005Image\022\014\n" +
-      "\004data\030\001 \002(\014\022\022\n\005width\030\002 \001(\005:\003640\022\023\n\006heigh" +
-      "t\030\003 \001(\005:\003480\022-\n\ncameraInfo\030\004 \001(\0132\031.naoth" +
+      "\004data\030\001 \002(\014\022\022\n\005width\030\002 \001(\r:\003640\022\023\n\006heigh" +
+      "t\030\003 \001(\r:\003480\022-\n\ncameraInfo\030\004 \001(\0132\031.naoth" +
       "messages.CameraInfo\0220\n\006format\030\005 \001(\0162\033.na" +
       "othmessages.Image.Format:\003YUV\022\021\n\ttimesta" +
       "mp\030\006 \001(\r\"\'\n\006Format\022\007\n\003YUV\020\000\022\n\n\006YUV422\020\001\022" +
       "\010\n\004JPEG\020\002\"\322\004\n\nCameraInfo\022\027\n\017resolutionWi" +
-      "dth\030\001 \002(\005\022\030\n\020resolutionHeight\030\002 \002(\005\0221\n\010c" +
+      "dth\030\001 \002(\r\022\030\n\020resolutionHeight\030\002 \002(\r\0221\n\010c" +
       "ameraID\030\004 \001(\0162\027.naothmessages.CameraID:\006",
       "bottom\022\027\n\013focalLength\030\005 \001(\001B\002\030\001\022\035\n\021openi" +
       "ngAngleWidth\030\006 \001(\001B\002\030\001\022\036\n\022openingAngleHe" +
