@@ -142,7 +142,7 @@ public:
     double quadCompasSmoothingFactor;
     int minimalNumberOfPairs;
     int maximalProjectedLineWidth;
-  } parameters;
+  } params;
 
   struct Neighbors {
     Neighbors():left(-1), right(-1), w_left(0), w_right(0){}

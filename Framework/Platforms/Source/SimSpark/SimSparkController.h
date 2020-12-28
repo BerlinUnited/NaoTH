@@ -81,6 +81,7 @@ private:
   FrameInfo theFrameInfo;
   BatteryData theBatteryData;
   GPSData theGPSData;
+  UltraSoundReceiveData theUSData;
 
   int theCameraId;
   CameraInfo theCameraInfo;
@@ -141,6 +142,7 @@ public:
 
   void get(BatteryData& data);
   void get(GPSData& data);
+  void get(UltraSoundReceiveData& data);
 
   void get(VirtualVision& data);
   void get(VirtualVisionTop& data);
@@ -183,6 +185,7 @@ private:
   bool updateGyro(const sexp_t* sexp);
   bool updateAccelerometer(const sexp_t* sexp);
   bool updateBattery(const sexp_t* sexp);
+  bool updateSonar(const sexp_t* sexp);
   bool updateGPS(const sexp_t* sexp);
   bool updateGameInfo(const sexp_t* sexp);
   bool updateFSR(const sexp_t* sexp);

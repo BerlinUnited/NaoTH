@@ -65,6 +65,7 @@ namespace sensor("Sensor Symbols") {
   float input platform.frameNumber;
 
   bool input button.bumper.pressed.left;
+  bool input button.bumper.pressed.right;
   bool input button.head.pressed.front;
   bool input button.head.pressed.middle;
   bool input button.head.pressed.rear;

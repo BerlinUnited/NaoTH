@@ -1,19 +1,19 @@
 /**
- * @file IPCData.h
+ * @file DCMData.h
  *
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
- * @breief Inter-process communication data
+ * @breief Data communicated from DCM to NaoRobot
  *
  */
 
-#include "IPCData.h"
+#include "DCMData.h"
+
 #include <cstring>
 #include "Tools/NaoTime.h"
 
 using namespace naoth;
 
-
-void NaoSensorData::get(SensorJointData& data) const
+void DCMSensorData::get(SensorJointData& data) const
 {
   unsigned int currentIndex = theSensorJointDataIndex;
   for (int i = 0; i < JointData::RHipYawPitch; i++)
@@ -41,7 +41,7 @@ void NaoSensorData::get(SensorJointData& data) const
 
 }//end SensorJointData
 
-void NaoSensorData::get(FSRData& data) const
+void DCMSensorData::get(FSRData& data) const
 {
   unsigned int currentIndex = theFSRDataIndex;
   for (int i = 0; i < FSRData::numOfFSR; i++) {
@@ -50,9 +50,9 @@ void NaoSensorData::get(FSRData& data) const
   for (int i = 0; i < FSRData::numOfFSR; i++) {
     data.dataRight[i] = sensorsValue[currentIndex++];
   }
-}//end FSRData
+}
 
-void NaoSensorData::get(AccelerometerData& data) const
+void DCMSensorData::get(AccelerometerData& data) const
 {
   data.rawData.x = sensorsValue[theAccelerometerDataIndex + 0];
   data.rawData.y = sensorsValue[theAccelerometerDataIndex + 1];
@@ -82,9 +82,9 @@ void NaoSensorData::get(AccelerometerData& data) const
   data.data.x *= -1;
   //data.data.y *= 1;
   data.data.z *= -1;
-}//end AccelerometerData
+}
 
-void NaoSensorData::get(GyrometerData& data) const
+void DCMSensorData::get(GyrometerData& data) const
 {
   data.rawData.x = sensorsValue[theGyrometerDataIndex + 0];
   data.rawData.y = sensorsValue[theGyrometerDataIndex + 1];
@@ -97,7 +97,7 @@ void NaoSensorData::get(GyrometerData& data) const
   data.ref = sensorsValue[theGyrometerDataIndex + 6];
 
   // if the robot is turned to left around its z axis the measured angular velocity is negative but it should be positiv
-  // this problem is related to that mentioned above in NaoSensorData::get(AccelerometerData& data)
+  // this problem is related to that mentioned above in DCMSensorData::get(AccelerometerData& data)
   // to fix this the values for z have to be negated
   data.data.z *= -1;
   data.rawData.z *= -1;
@@ -113,15 +113,16 @@ void NaoSensorData::get(GyrometerData& data) const
   data.data.y = (data.rawData.y + offset)*scale_gyro;
   data.data.z = (data.rawData.z + offset)*scale_gyro;
   */
-}//end GyrometerData
+}
 
-void NaoSensorData::get(InertialSensorData& data) const
+void DCMSensorData::get(InertialSensorData& data) const
 {
   data.data.x = sensorsValue[theInertialSensorDataIndex];
   data.data.y = sensorsValue[theInertialSensorDataIndex+1];
-}//end InertialSensorData
+}
 
-void NaoSensorData::get(ButtonData& data) const
+// HACK: this method applies iterative updates, so the result depends on the last state (!)
+void DCMSensorData::get(ButtonData& data) const
 {
   unsigned int currentIndex = theButtonDataIndex;
   for (int i = 0; i < ButtonData::numOfButtons; i++)
@@ -143,9 +144,9 @@ void NaoSensorData::get(ButtonData& data) const
       data.numOfFramesPressed[i] = 0;
     }
   }
-}//end ButtonData
+}
 
-void NaoSensorData::get(UltraSoundReceiveData& data) const
+void DCMSensorData::get(UltraSoundReceiveData& data) const
 {
   unsigned int currentIndex = theUltraSoundReceiveDataIndex;
   data.rawdata = sensorsValue[currentIndex++];
@@ -155,10 +156,9 @@ void NaoSensorData::get(UltraSoundReceiveData& data) const
     data.dataLeft[i] = sensorsValue[currentIndex++];
     data.dataRight[i] = sensorsValue[currentIndex++];
   }
+}
 
-}//end UltraSoundReceiveData
-
-void NaoSensorData::get(BatteryData& data) const
+void DCMSensorData::get(BatteryData& data) const
 {
   unsigned int currentIndex = theBatteryDataIdex;
   data.charge = sensorsValue[currentIndex++];

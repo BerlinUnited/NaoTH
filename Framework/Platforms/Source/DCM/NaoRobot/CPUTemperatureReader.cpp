@@ -9,8 +9,7 @@ using namespace naoth;
 using namespace std;
 
 CPUTemperatureReader::CPUTemperatureReader()
-  : exiting(false), 
-    lastGetTime(0)
+  : exiting(false)
 {
   std::cout << "[INFO] CPUTemperatureReader start thread" << std::endl;
   readThread = std::thread([this] {this->readLoop();});

@@ -68,7 +68,7 @@ sourceSets.main.runtimeClasspath += files('build/resources') // make sure, runni
 sourceSets.test.java.srcDirs = []
 sourceSets.test.resources.srcDirs = []
 
-def additionalResources = [ 'config', 'logging.properties', '**/*.fxml', '**/*.html' ]
+def additionalResources = [ 'config', 'logging.properties', '**/*.fxml', '**/*.html', '**/*.css' ]
 processResources {
   // copy the additional resources to the build directory
   from('src/de/naoth/rc/') {
