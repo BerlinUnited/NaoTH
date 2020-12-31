@@ -53,8 +53,14 @@ void CamMatErrorFunctionV3::actual_plotting(const Parameter &p, naoth::CameraInf
 
                 DEBUG_REQUEST("CamMatErrorFunctionV3:debug_drawings:draw_projected_edgels",
                         FIELD_DRAWING_CONTEXT;
-                        PEN("000000", 10);
-                        CIRCLE(edgelProjections[i].x, edgelProjections[i].y, 20);
+                        if (cameraID == naoth::CameraInfo::Bottom) {
+                            PEN("808080", 10);
+                            BOX(edgelProjections[i].x-13, edgelProjections[i].y-13,
+                                edgelProjections[i].x+13, edgelProjections[i].y+13);
+                        } else {
+                            PEN("000000", 10);
+                            CIRCLE(edgelProjections[i].x, edgelProjections[i].y, 20);
+                        }
                 );
             }
 
