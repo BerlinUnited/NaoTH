@@ -99,6 +99,10 @@ include "Options/Soccer/SPL/passive_ball_seen.xabsl";
 include "Options/Soccer/SPL/passive_behavior.xabsl";
 include "Options/Soccer/SPL/passive_look_at_team_ball.xabsl";
 
+// Collision Behavior
+include "Options/Test/walk/bumper_collision_stop.xabsl";
+
+
 /* ########################################################### */
 /*                      Test section                           */
 /* ########################################################### */
@@ -151,6 +155,9 @@ include "Options/Test/WalkAgents/test_walk_stop_and_go_backwards_agent.xabsl";
 include "Options/Test/WalkAgents/turn_look_at_preview_angle_agent.xabsl";
 include "Options/Test/WalkAgents/walk_forward_agent.xabsl";
 
+// Collision Agents
+include "Options/Test/agent/bumper_collision_agent.xabsl";
+
 /* ########################################################### */
 /*                    Agent Registration                       */
 /* ########################################################### */
@@ -192,6 +199,9 @@ agent pathplanner2018_sidestep_agent("pathplanner2018_sidestep_agent", pathplann
 agent path_move_around_ball_agent("path_move_around_ball_agent", path_move_around_ball_agent);
 agent pathplanner2018_move_around2_agent("pathplanner2018_move_around2_agent", pathplanner2018_move_around2_agent);
 agent pathplanner2018_striker_agent("pathplanner2018_striker_agent", pathplanner2018_striker_agent);
+
+// Collision Test Agents
+agent bumper_collision_agent("bumper_collision_agent", bumper_collision_agent);
 
 // Test agents search
 agent search_test_agent("search_test_agent",search_test_agent);

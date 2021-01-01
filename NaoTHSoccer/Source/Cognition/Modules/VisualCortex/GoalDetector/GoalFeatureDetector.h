@@ -106,7 +106,7 @@ private:
 
 
 private:
-  Parameters parameters;
+  Parameters params;
 
   void findfeaturesColor(const Vector2d& scanDir, const Vector2i& p1);
   void findfeaturesDiff(const Vector2d& scanDir, const Vector2i& p1);

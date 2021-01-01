@@ -1,9 +1,7 @@
 import json
-import sys
 import threading
 import socket
 import time
-from naoth.SPLMessage import SPLMessage
 
 from utils.TeamCommReceiver import TeamCommReceiver
 from utils.TeamCommSender import TeamCommSender

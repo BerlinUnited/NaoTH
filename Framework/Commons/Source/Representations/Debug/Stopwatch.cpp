@@ -9,7 +9,7 @@
 
 #include <sstream>
 
-#include "Tools/SynchronizedFileWriter.h"
+#include "Tools/FileUtils.h"
 #include "Tools/NaoTime.h"
 
 #include "Messages/Messages.pb.h"
@@ -56,7 +56,7 @@ void Stopwatch::stop()
 
 
 
-void StopwatchManager::dump(std::string name) const
+void StopwatchManager::dump(const std::string& name) const
 {
   std::stringstream outputStream;
   
@@ -77,14 +77,8 @@ void StopwatchManager::dump(std::string name) const
   }//end for
 
   // write to file
-  std::stringstream s;
-  if(name != "")
-  {
-    s << name << ".";
-  }
-  s << "stopwatch.dump";
-
-  SynchronizedFileWriter::saveStreamToFile(outputStream, s.str());
+  std::string fileName = name.empty()?"stopwatch.dump":name+".stopwatch.dump";
+  FileUtils::writeStreamToFile(outputStream, fileName);
 }//end dump
 
 void naoth::Serializer<StopwatchManager>::serialize(const StopwatchManager& object, std::ostream& stream)

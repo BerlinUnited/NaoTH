@@ -1,6 +1,6 @@
 syntax = "proto2";
 package naothmessages;
-option java_package= "de.naoth.rc.messages";
+option java_package= "de.naoth.rc.core.messages";
 
 message AudioData
 {

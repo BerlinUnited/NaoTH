@@ -1,0 +1,12 @@
+syntax = "proto2";
+package naothmessages;
+option java_package= "de.naoth.rc.core.messages";
+
+import "CommonTypes.proto";
+
+message RobotPose {
+  required Pose2D pose = 1;
+  optional bool isValid = 2;
+  optional DoubleVector2 principleAxisMajor = 3;
+  optional DoubleVector2 principleAxisMinor = 4;
+}

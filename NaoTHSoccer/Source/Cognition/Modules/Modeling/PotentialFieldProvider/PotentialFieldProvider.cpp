@@ -28,12 +28,12 @@ PotentialFieldProvider::PotentialFieldProvider()
 
   DEBUG_REQUEST_REGISTER("PotentialFieldProvider:getGoalTargetOld", "", false);
 
-  getDebugParameterList().add(&theParameters);
+  getDebugParameterList().add(&params);
 }
 
 PotentialFieldProvider::~PotentialFieldProvider()
 {
-  getDebugParameterList().remove(&theParameters);
+  getDebugParameterList().remove(&params);
 }
 
 void PotentialFieldProvider::execute()
@@ -360,7 +360,7 @@ Vector2d PotentialFieldProvider::calculatePotentialField(
 
 Vector2d PotentialFieldProvider::globalExponentialAttractor(const Vector2d& p, const Vector2d& x) const
 {
-  const double alpha = theParameters.goal_attractor_strength; //-0.001;
+  const double alpha = params.goal_attractor_strength; //-0.001;
 
   Vector2d v = p - x;
   double d = v.abs();
@@ -370,8 +370,8 @@ Vector2d PotentialFieldProvider::globalExponentialAttractor(const Vector2d& p, c
 
 Vector2d PotentialFieldProvider::compactExponentialRepeller(const Vector2d& p, const Vector2d& x) const
 {
-  const double a = theParameters.player_repeller_strenth; //1500; 
-  const double d = theParameters.player_repeller_radius; //2000;
+  const double a = params.player_repeller_strenth; //1500; 
+  const double d = params.player_repeller_radius;  // 2000;
 
   Vector2d v = p - x;
   double t = v.abs();
@@ -450,8 +450,8 @@ Vector2d PotentialFieldProvider::getGoalTarget(const Vector2d& point, const Goal
 
 
   // the endpoints of our line are a shortened version of the goal line
-  Vector2d leftEndpoint = oppGoalModel.leftPost + leftToRight * theParameters.goal_post_offset;
-  Vector2d rightEndpoint = oppGoalModel.rightPost - leftToRight * theParameters.goal_post_offset;
+  Vector2d leftEndpoint = oppGoalModel.leftPost + leftToRight * params.goal_post_offset;
+  Vector2d rightEndpoint = oppGoalModel.rightPost - leftToRight * params.goal_post_offset;
 
   // this is the goalline we are shooting for
   Math::LineSegment goalLine(leftEndpoint, rightEndpoint);
@@ -466,8 +466,8 @@ Vector2d PotentialFieldProvider::getGoalTarget(const Vector2d& point, const Goal
   // assymetric quadratic scale
   // goalAngleCos = -1 => t = -goalLineOffsetBack
   // goalAngleCos =  1 => t =  goalLineOffsetFront;
-  double c = (theParameters.goal_line_offset_front + theParameters.goal_line_offset_back)*0.5;
-  double v = (theParameters.goal_line_offset_front - theParameters.goal_line_offset_back)*0.5;
+  double c = (params.goal_line_offset_front + params.goal_line_offset_back)*0.5;
+  double v = (params.goal_line_offset_front - params.goal_line_offset_back)*0.5;
   double t = goalAngleCos*(goalAngleCos*c + v);
 
   // move the target depending on the goal opening angle

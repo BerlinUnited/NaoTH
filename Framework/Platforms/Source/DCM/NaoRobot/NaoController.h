@@ -44,7 +44,7 @@
 #include "Representations/Infrastructure/AudioData.h"
 
 // local tools
-#include "Tools/IPCData.h"
+#include "Tools/DCMData.h"
 #include "Tools/NaoTime.h"
 #include "Tools/SharedMemoryIO.h"
 
@@ -191,7 +191,7 @@ protected:
 
   // -- begin -- shared memory access --
   // DCM --> NaoController
-  SharedMemoryReader<NaoSensorData> naoSensorData;
+  SharedMemoryReader<DCMSensorData> naoSensorData;
 
   // NaoController --> DCM
   SharedMemoryWriter<Accessor<MotorJointData> > naoCommandMotorJointData;

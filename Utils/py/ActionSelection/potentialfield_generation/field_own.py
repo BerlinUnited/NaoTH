@@ -7,7 +7,7 @@ from matplotlib.patches import Circle
 from matplotlib import pyplot as plt
 
 from tools import Simulation as Sim
-from naoth import math2d as m2d
+from naoth import math as m2d
 from tools import tools
 from tools import field_info as field
 from tools import raw_attack_direction_provider as attack_dir

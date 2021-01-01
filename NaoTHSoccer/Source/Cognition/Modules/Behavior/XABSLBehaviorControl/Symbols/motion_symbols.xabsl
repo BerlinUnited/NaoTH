@@ -224,5 +224,12 @@ namespace motion_symbols("Motion Symbols") {
 
   bool output motion.dribble;
   bool input motion.dribble.action_done;
+
+  //Collision Symbols temporarily here
+  bool input motion.collision.collision_left_bumper;
+  bool input motion.collision.collision_right_bumper;
+
+  float input motion.collision.timeSinceCollisionBumperLeft;
+  float input motion.collision.timeSinceCollisionBumperRight;
  }
   

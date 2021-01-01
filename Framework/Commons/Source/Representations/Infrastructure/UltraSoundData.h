@@ -24,7 +24,7 @@ namespace naoth
       numOfUSEcho = 10
     };
 
-    UltraSoundReceiveData() : rawdata(INVALIDE) {
+    UltraSoundReceiveData() : rawdata(INVALID) {
       init();
     }
     virtual ~UltraSoundReceiveData() {}
@@ -36,7 +36,7 @@ namespace naoth
     // A value of 0 means an error, the minimum valid value/distance is 0,25m. 
     // A value of 2,55 means no echo, the maximum detectable distance is 2,54m.
     static const double MIN_DIST;
-    static const double INVALIDE;
+    static const double INVALID;
 
     // value from 
     // Device/SubDeviceList/US/Left/Sensor/ValueX

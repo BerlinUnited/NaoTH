@@ -75,7 +75,7 @@ private:
     }
 
     int minBlockedDistance;
-  } parameters;
+  } params;
 
 private:
 

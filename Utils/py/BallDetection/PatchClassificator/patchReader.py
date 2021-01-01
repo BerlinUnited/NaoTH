@@ -1,10 +1,8 @@
-#!/usr/bin/python
-
 import sys
 import getopt
 
-from naoth.LogReader import LogReader
-from naoth.LogReader import Parser
+from naoth.log import Reader as LogReader
+from naoth.log import Parser
 import numpy
 from PIL import Image
 

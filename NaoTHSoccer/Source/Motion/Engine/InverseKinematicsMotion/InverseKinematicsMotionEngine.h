@@ -154,7 +154,7 @@ public:
 
   void copyLegJoints(double (&position)[naoth::JointData::numOfJoint]) const;
   
-  const IKParameters& getParameters() const { return theParameters; }
+  const IKParameters& getParameters() const { return params; }
   
   /**
    * Solves the inverse kinematic for the hands
@@ -190,7 +190,7 @@ public:
     double (&position)[naoth::JointData::numOfJoint]);
 
 private:
-  IKParameters theParameters;
+  IKParameters params;
 
   Kinematics::InverseKinematics theInverseKinematics;
   
@@ -198,7 +198,7 @@ private:
   InverseKinematic::CoMFeetPose lastCoMFeetControlPose;
   FrameInfo lastCoMFeetControlFrameInfo;
 
-  double rotationStabilizeFactor; // [0, 1] disable ~ enable
+//  double rotationStabilizeFactor; // [0, 1] disable ~ enable
 };
 
 /**

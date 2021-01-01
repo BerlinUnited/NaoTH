@@ -32,8 +32,7 @@ public:
   * @param errorHandler Is invoked when errors occur
   * @param index Index of the agent in array agents in corresponding engine
   */
-  Agent(const char* name, Behavior* rootOption,
-    ErrorHandler& errorHandler, int index);
+  Agent(const char* name, Behavior* rootOption);
 
   /** Returns the root option */
   Behavior* getRootOption() const;
@@ -41,12 +40,6 @@ private:
 
   /** A pointer to the root option */
   Behavior* rootOption;
-
-  /** Is invoked when errors occur */
-  ErrorHandler& errorHandler;
-
-  /** Index of the agent in array agents in corresponding engine */
-  int index;
 };
 
 } // namespace

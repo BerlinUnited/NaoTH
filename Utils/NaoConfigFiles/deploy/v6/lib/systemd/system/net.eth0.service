@@ -1,0 +1,25 @@
+[Unit]
+Description=NaoTH eth configuration
+
+Requires=sys-subsystem-net-devices-eth0.device
+After=sys-subsystem-net-devices-eth0.device
+
+ConditionPathExists=/home/nao/.config/net
+
+Before=network.target
+Wants=network.target
+	
+[Service]
+Type=oneshot
+RemainAfterExit=true
+
+EnvironmentFile=/home/nao/.config/net
+
+ExecStart=/sbin/ifconfig eth0 up
+ExecStart=/sbin/ifconfig eth0 $config_eth0
+
+ExecStopPost=/sbin/ifconfig eth0 down
+
+[Install]
+WantedBy=multi-user.target
+

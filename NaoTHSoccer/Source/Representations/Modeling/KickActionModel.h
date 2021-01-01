@@ -24,7 +24,6 @@ public:
 
   virtual ~KickActionModel() {}
 
-  // position of the most interesting point in robot coords
   enum ActionId
   {
     none,

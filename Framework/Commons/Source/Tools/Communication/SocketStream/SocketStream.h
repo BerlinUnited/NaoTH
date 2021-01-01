@@ -60,7 +60,7 @@ protected:
 
   bool isFixedLengthDataAvailable(unsigned int len) throw(std::runtime_error);
 
-  int prefixedRecv(std::string& msg);
+  unsigned int prefixedRecv(std::string& msg);
 
   void reallocRecvBuffer(unsigned int size);
 

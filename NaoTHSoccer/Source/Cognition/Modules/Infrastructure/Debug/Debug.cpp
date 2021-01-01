@@ -9,10 +9,10 @@
 #include "Debug.h"
 
 #include <PlatformInterface/Platform.h>
-#include <Tools/SynchronizedFileWriter.h>
+#include <Tools/FileUtils.h>
 
 // needed for sleep_for in debug kill 
-#include <thread>
+#include "Tools/ThreadUtil.h"
 
 using namespace std;
 
@@ -71,20 +71,20 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   getDebugImageDrawingsTop().init(getImageTop().width(), getImageTop().height());
 
 
-  getDebugParameterList().add(&parameter);
+  getDebugParameterList().add(&params);
 }
 
 Debug::~Debug()
 {
-  getDebugParameterList().remove(&parameter);
+  getDebugParameterList().remove(&params);
 }
 
 void Debug::execute()
 {
   // log only when a ball was seen
-  if(!parameter.log.onlyWhenBallwasSeen || getMultiBallPercept().wasSeen()) {
+  if(!params.log.onlyWhenBallwasSeen || getMultiBallPercept().wasSeen()) {
     if(lastLogFrameInfo.getFrameNumber() == 0 || 
-       getFrameInfo().getTimeSince(lastLogFrameInfo.getTime()) >= parameter.log.skipTimeMS) 
+       getFrameInfo().getTimeSince(lastLogFrameInfo.getTime()) >= params.log.skipTimeMS) 
     {
       cognitionLogger.log(getFrameInfo().getFrameNumber());
       lastLogFrameInfo = getFrameInfo();
@@ -162,7 +162,7 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
       {
         const string& str = cIter->second;
         //int tmp = str.size();
-        if(SynchronizedFileWriter::saveStringToFile(str, fileName))
+        if(FileUtils::writeStringToFile(str, fileName))
           outstream << fileName << " successfull written.";
         else
           outstream << fileName << " couldn't write file " << fileName;
@@ -210,8 +210,7 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
     {
       std::cout << "cognition in endless loop due to \"kill_cognition\" debug command"
                  << std::endl;
-      //g_usleep(500000);
-      std::this_thread::sleep_for(std::chrono::microseconds(500));
+      ThreadUtil::sleep(5);
     }
   }
 }

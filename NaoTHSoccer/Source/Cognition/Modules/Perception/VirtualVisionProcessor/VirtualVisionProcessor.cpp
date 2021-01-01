@@ -9,7 +9,7 @@
 #include "VirtualVisionProcessor.h"
 
 #include <Tools/Math/Matrix_mxn.h>
-#include "Tools/DataConversion.h"
+#include <Tools/StringTools.h>
 #include "Tools/CameraGeometry.h"
 
 using namespace std;
@@ -560,7 +560,7 @@ void VirtualVisionProcessor::updatePlayers()
       tokenize(key, tokens); // split by whitespaces
 
       int id;
-      if(!DataConversion::strTo(tokens[2],id)) {
+      if(!StringTools::strTo(tokens[2],id)) {
         continue; // id couldn't be parsed
       }
 

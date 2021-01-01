@@ -23,8 +23,8 @@ FieldColorClassifier::FieldColorClassifier()
   DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:histogramUVField", "", false);
   DEBUG_REQUEST_REGISTER("Vision:FieldColorClassifier:histogramUVBall", "", false);
 
-  getDebugParameterList().add(&parametersBottom);
-  getDebugParameterList().add(&parametersTop);
+  getDebugParameterList().add(&paramsBottom);
+  getDebugParameterList().add(&paramsTop);
 
   for(size_t i = 0; i < CameraInfo::numOfCamera; i++) {
     histogramUVArray[i].setSize(256);
@@ -35,8 +35,8 @@ FieldColorClassifier::FieldColorClassifier()
 
 FieldColorClassifier::~FieldColorClassifier()
 {
-  getDebugParameterList().remove(&parametersBottom);
-  getDebugParameterList().remove(&parametersTop);
+  getDebugParameterList().remove(&paramsBottom);
+  getDebugParameterList().remove(&paramsTop);
 }
 
 void FieldColorClassifier::execute(const CameraInfo::CameraID id,  Parameters& parameters)
@@ -56,8 +56,8 @@ void FieldColorClassifier::execute(const CameraInfo::CameraID id,  Parameters& p
     }
   }
 
-  DEBUG_REQUEST("Vision:FieldColorClassifier:CamBottom", if(cameraID == CameraInfo::Bottom) { debug(parametersBottom); } );
-  DEBUG_REQUEST("Vision:FieldColorClassifier:CamTop", if(cameraID == CameraInfo::Top) { debug(parametersTop); } );
+  DEBUG_REQUEST("Vision:FieldColorClassifier:CamBottom", if(cameraID == CameraInfo::Bottom) { debug(paramsBottom); } );
+  DEBUG_REQUEST("Vision:FieldColorClassifier:CamTop", if(cameraID == CameraInfo::Top) { debug(paramsTop); } );
 }
 
 void FieldColorClassifier::debug(Parameters& parameters)

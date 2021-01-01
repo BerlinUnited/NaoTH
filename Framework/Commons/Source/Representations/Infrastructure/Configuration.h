@@ -135,7 +135,7 @@ public:
   }
   bool get(const std::string& group, const std::string& key, unsigned int& result) const {
     if(hasKey(group,key)) { 
-      result = getInt(group, key);
+      result = static_cast<unsigned int>(getInt(group, key));
       return true; 
     }
     return false;
@@ -146,7 +146,7 @@ public:
     setInt(group, key, value);
   }
   void set(const std::string& group, const std::string& key, unsigned int value) {
-    setInt(group, key, value);
+    setInt(group, key, static_cast<int>(value));
   }
 
   void setDefault(const std::string& group, const std::string& key, int value);

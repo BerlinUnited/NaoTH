@@ -93,7 +93,7 @@ public:
     double player_repeller_radius;
     double player_repeller_strenth;
     
-  } theParameters;
+  } params;
 
 
 private:

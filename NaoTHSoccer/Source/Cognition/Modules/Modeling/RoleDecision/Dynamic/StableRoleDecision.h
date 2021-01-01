@@ -77,7 +77,7 @@ private:
     double minFailureProbability;
     
     virtual ~Parameters() {}
-  } parameters;
+  } params;
 
 };
 

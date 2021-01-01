@@ -9,6 +9,8 @@ premake.qtcreator27 = { }
 -- https://doc.qt.io/qtcreator/creator-sharing-project-settings.html
 -- https://doc.qt.io/qtcreator/creator-project-generic.html
 
+-- NOTE: all paths are relative to the project files
+
 local qtc = premake.qtcreator27
 
 function qtc.header()
@@ -124,7 +126,7 @@ function qtc.run_configuration(prj, cfg, cfgCounter)
                 _p(3, "<value type=\"QString\" key=\"ProjectExplorer.CustomExecutableRunConfiguration.Executable\">%s</value>", cfg.buildtarget.fullpath)
                 _p(3, "<value type=\"bool\" key=\"ProjectExplorer.CustomExecutableRunConfiguration.UseTerminal\">false</value>")
                 _p(3, "<valuelist type=\"QVariantList\" key=\"ProjectExplorer.CustomExecutableRunConfiguration.UserEnvironmentChanges\"/>")
-                _p(3, "<value type=\"QString\" key=\"ProjectExplorer.CustomExecutableRunConfiguration.WorkingDirectory\">%%{buildDir}</value>")
+                _p(3, "<value type=\"QString\" key=\"ProjectExplorer.CustomExecutableRunConfiguration.WorkingDirectory\">%%{buildDir}/../..</value>")
                 _p(3, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\">Execute %s</value>", cfg.buildtarget.fullpath)
                 _p(3, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.DisplayName\">%s</value>", cfg.longname)
                 _p(3, "<value type=\"QString\" key=\"ProjectExplorer.ProjectConfiguration.Id\">ProjectExplorer.CustomExecutableRunConfiguration</value>")
@@ -138,19 +140,19 @@ end
 
 function qtc.build_configuration(prj, cfg, cfgCounter, platform)
             _p(2, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.Target.BuildConfiguration.%d\">", cfgCounter)
-                _p(3, "<value type=\"QString\" key=\"ProjectExplorer.BuildConfiguration.BuildDirectory\"></value>")
+                _p(3, "<value type=\"QString\" key=\"ProjectExplorer.BuildConfiguration.BuildDirectory\">../gmake2/</value>")
                 -- the build steps for "Make"
                 _p(3, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.BuildConfiguration.BuildStepList.0\">")
                     _p(4, "<valuemap type=\"QVariantMap\" key=\"ProjectExplorer.BuildStepList.Step.0\">")
                         _p(5, "<value type=\"bool\" key=\"ProjectExplorer.BuildStep.Enabled\">true</value>")
                         if string.endswith(cfg.longname, platform) and platform ~= "" then
-                            _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--platform=&quot;".. platform .."&quot; --file=../Make/premake5.lua gmake2</value>")
+                            _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--platform=&quot;".. platform .."&quot; --file=../../Make/premake5.lua gmake2</value>")
                         else
                             -- what is this supposed to be?
                             if _OPTIONS.Test == nil then
-                                _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--file=../Make/premake5.lua gmake2</value>")
+                                _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--file=../../Make/premake5.lua gmake2</value>")
                             else
-                                _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--Test --file=../Make/premake5.lua gmake2</value>")
+                                _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Arguments\">--Test --file=../../Make/premake5.lua gmake2</value>")
                             end
                         end
                         _p(5, "<value type=\"QString\" key=\"ProjectExplorer.ProcessStep.Command\">premake5</value>")

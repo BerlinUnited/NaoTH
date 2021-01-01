@@ -5,32 +5,32 @@
 #endif
 
 #include <emmintrin.h>
-#include <math.h>
+
 void Fy1500_Conf::cnn(float x0[16][16][1])
 {
 	__m128 w, x, y;
 	for (int xi = 0; xi < 16; xi += 1)
 	{
-	x0[xi][0][0] = (x0[xi][0][0] - 0.000000f);
-	x0[xi][1][0] = (x0[xi][1][0] - 0.000000f);
-	x0[xi][2][0] = (x0[xi][2][0] - 0.000000f);
-	x0[xi][3][0] = (x0[xi][3][0] - 0.000000f);
-	x0[xi][4][0] = (x0[xi][4][0] - 0.000000f);
-	x0[xi][5][0] = (x0[xi][5][0] - 0.000000f);
-	x0[xi][6][0] = (x0[xi][6][0] - 0.000000f);
-	x0[xi][7][0] = (x0[xi][7][0] - 0.000000f);
-	x0[xi][8][0] = (x0[xi][8][0] - 0.000000f);
-	x0[xi][9][0] = (x0[xi][9][0] - 0.000000f);
-	x0[xi][10][0] = (x0[xi][10][0] - 0.000000f);
-	x0[xi][11][0] = (x0[xi][11][0] - 0.000000f);
-	x0[xi][12][0] = (x0[xi][12][0] - 0.000000f);
-	x0[xi][13][0] = (x0[xi][13][0] - 0.000000f);
-	x0[xi][14][0] = (x0[xi][14][0] - 0.000000f);
-	x0[xi][15][0] = (x0[xi][15][0] - 0.000000f);
+	x0[xi][0][0] = (x0[xi][0][0] - 0.542091f);
+	x0[xi][1][0] = (x0[xi][1][0] - 0.542091f);
+	x0[xi][2][0] = (x0[xi][2][0] - 0.542091f);
+	x0[xi][3][0] = (x0[xi][3][0] - 0.542091f);
+	x0[xi][4][0] = (x0[xi][4][0] - 0.542091f);
+	x0[xi][5][0] = (x0[xi][5][0] - 0.542091f);
+	x0[xi][6][0] = (x0[xi][6][0] - 0.542091f);
+	x0[xi][7][0] = (x0[xi][7][0] - 0.542091f);
+	x0[xi][8][0] = (x0[xi][8][0] - 0.542091f);
+	x0[xi][9][0] = (x0[xi][9][0] - 0.542091f);
+	x0[xi][10][0] = (x0[xi][10][0] - 0.542091f);
+	x0[xi][11][0] = (x0[xi][11][0] - 0.542091f);
+	x0[xi][12][0] = (x0[xi][12][0] - 0.542091f);
+	x0[xi][13][0] = (x0[xi][13][0] - 0.542091f);
+	x0[xi][14][0] = (x0[xi][14][0] - 0.542091f);
+	x0[xi][15][0] = (x0[xi][15][0] - 0.542091f);
 	}
 
  	// Convolution Layer
-	alignas(16) static float x1 [16][16][4] = {0};
+	alignas(16) static float x1 [16][16][4] = {};
 	for (int i = 0; i < 16; i += 1)
 	{
 		for (int j = 0; j < 16; j += 1)
@@ -176,7 +176,7 @@ void Fy1500_Conf::cnn(float x0[16][16][1])
 	}
 
  	// Convolution Layer
-	alignas(16) static float x2 [16][16][4] = {0};
+	alignas(16) static float x2 [16][16][4] = {};
 	for (int i = 0; i < 16; i += 1)
 	{
 		for (int j = 0; j < 16; j += 1)
@@ -512,7 +512,7 @@ void Fy1500_Conf::cnn(float x0[16][16][1])
 	}
 
  	// Maxpool Layer 
-	static float x3[8][8][4] = {0};
+	static float x3[8][8][4] = {};
 	for (int ix = 0; ix < 15; ix += 2)
 	{
 		int x_out_1;
@@ -536,7 +536,7 @@ void Fy1500_Conf::cnn(float x0[16][16][1])
 	}
 
  	// Convolution Layer
-	alignas(16) static float x4 [8][8][8] = {0};
+	alignas(16) static float x4 [8][8][8] = {};
 	for (int i = 0; i < 8; i += 1)
 	{
 		for (int j = 0; j < 8; j += 1)
@@ -1132,7 +1132,7 @@ void Fy1500_Conf::cnn(float x0[16][16][1])
 	}
 
  	// Maxpool Layer 
-	static float x5[4][4][8] = {0};
+	static float x5[4][4][8] = {};
 	for (int ix = 0; ix < 7; ix += 2)
 	{
 		int x_out_1;
@@ -1167,7 +1167,7 @@ void Fy1500_Conf::cnn(float x0[16][16][1])
 	}
 
  	// Convolution Layer
-	alignas(16) static float x6 [4][4][8] = {0};
+	alignas(16) static float x6 [4][4][8] = {};
 	for (int i = 0; i < 4; i += 1)
 	{
 		for (int j = 0; j < 4; j += 1)
@@ -2266,7 +2266,7 @@ void Fy1500_Conf::cnn(float x0[16][16][1])
 	}
 
  	// Convolution Layer
-	alignas(16) static float x7 [4][4][8] = {0};
+	alignas(16) static float x7 [4][4][8] = {};
 	for (int i = 0; i < 4; i += 1)
 	{
 		for (int j = 0; j < 4; j += 1)
@@ -2557,8 +2557,7 @@ void Fy1500_Conf::cnn(float x0[16][16][1])
 
 
 
-void Fy1500_Conf::find(const BallCandidates::PatchYUVClassified& patch, double meanBrightness)
-{
+void Fy1500_Conf::predict(const BallCandidates::PatchYUVClassified& patch, double meanBrightness) {
 	ASSERT(patch.size() == 16);
 
 	for(size_t x=0; x < patch.size(); x++) {

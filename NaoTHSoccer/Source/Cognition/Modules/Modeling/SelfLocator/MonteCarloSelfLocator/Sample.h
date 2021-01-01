@@ -28,7 +28,7 @@ class Sample: public Pose2D, public Sample2D
 {
 public: 
   Sample() : likelihood(0.0){}
-  ~Sample() {}
+  virtual ~Sample() {}
 
   Sample& operator=(const Pose2D& pose)
   {

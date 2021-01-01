@@ -121,6 +121,8 @@ public:
     patchesYUV.clear();
     patchesYUVClassified.clear();
   }
+
+  virtual ~BallCandidates() {}
 };
 
 class BallCandidatesTop : public BallCandidates

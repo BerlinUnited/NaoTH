@@ -124,7 +124,7 @@ private:
     double maxGoalWidthRatio;
   };
 
-  Parameters parameters;
+  Parameters params;
 
   struct Goal
   {

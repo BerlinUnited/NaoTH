@@ -53,10 +53,10 @@ public:
   virtual void execute();
 
 private:
-  class ArmMotionParams : public ParameterList
+  class Parameters : public ParameterList
   {
   public:
-    ArmMotionParams():ParameterList("ArmMotionParams")
+      Parameters():ParameterList("ArmMotionParams")
     {
       PARAMETER_REGISTER(maxJointSpeed) = 60;
       PARAMETER_REGISTER(armStiffness) = 0.3;
@@ -69,7 +69,7 @@ private:
       syncWithConfig();
     }
 
-    ~ArmMotionParams() {
+    ~Parameters() {
     }
 
     struct ArmsOnBack {
@@ -83,10 +83,9 @@ private:
     double armStiffness;
   };//end ArmMotionParams
 
-  ArmMotionParams theArmMotionParams;
+  Parameters params;
 
 private:
-  bool init;
   naoth::FrameInfo theMotorJointFrameInfo;
   naoth::JointData theMotorJointDataOld;
   naoth::JointData theJointData;

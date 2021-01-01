@@ -108,7 +108,7 @@ void UDPReceiver::loop()
     if(result > 0)
     {
       std::lock_guard<std::mutex> lock(messageInMutex);
-      messageIn.push_back(std::string(buffer, result));
+      messageIn.push_back(std::string(buffer, static_cast<size_t>(result)));
     }
   }
 }

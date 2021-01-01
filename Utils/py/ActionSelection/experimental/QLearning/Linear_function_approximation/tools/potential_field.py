@@ -7,7 +7,7 @@ from action import Category
 
 import Simulation as Sim
 import action as a
-from naoth import math2d as m2d
+from naoth.math import *
 import copy
 
 
@@ -82,7 +82,7 @@ def evaluate_action_with_robots(results, state):
 
     #update state
     new_state = copy.copy(state)
-    new_state.ball_position = m2d.Vector2(0.0, 0.0) # Ball = Robot
+    new_state.ball_position = Vector2(0.0, 0.0) # Ball = Robot
     new_state.translation = new_ball_pos
     #new_state.rotation = pass # maybe rotation as needed for direkt / shortest path to the ball
     new_state.potential_field_function = "normal"

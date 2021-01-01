@@ -12,7 +12,7 @@ import pickle
 from state import State
 from world import *
 from actions import Actions
-from naoth.math2d import Vector2 as Vec
+from naoth.math import Vector2 as Vec
 from copy import copy
 
 game_field = Field()

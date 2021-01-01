@@ -4,44 +4,40 @@ import argparse
 import pickle
 import tensorflow.keras as keras
 import numpy as np
+from pathlib import Path
 
-parser = argparse.ArgumentParser(description='Train the network given ')
+DATA_DIR = Path(Path(__file__).parent.absolute() / "data").resolve()
+MODEL_DIR = Path(Path(__file__).parent.absolute() / "models/best_models").resolve()
 
-parser.add_argument('-b', '--database-path', dest='imgdb_path',
-                    help='Path to the image database containing test data.'
-                         'Default is img.db in current folder.')
-parser.add_argument('-m', '--model-path', dest='model_path',
-                    help='Store the trained model using this path. Default is model.h5.')
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Evaluate the network given ')
 
-args = parser.parse_args()
+    parser.add_argument('-b', '--database-path', dest='imgdb_path', default=str(DATA_DIR / 'imgdb.pkl'),
+                        help='Path to the image database containing test data.'
+                             'Default is imgdb.pkl in the data folder.')
+    parser.add_argument('-m', '--model-path', dest='model_path', default=str(MODEL_DIR / 'fy1500_conf.h5'),
+                        help='Store the trained model using this path. Default is fy1500_conf.h5.')
 
-imgdb_path = "img.db"
-model_path = "model.h5"
-res = {"x": 16, "y": 16}
+    args = parser.parse_args()
 
-if args.model_path is not None:
-    model_path = args.model_path
+    res = {"x": 16, "y": 16}
+    with open(args.imgdb_path, "rb") as f:
+        mean = pickle.load(f)
+        print("mean=" + str(mean))
+        x = pickle.load(f)
+        y = pickle.load(f)
 
-if args.imgdb_path is not None:
-    imgdb_path = args.imgdb_path
+    model = keras.models.load_model(args.model_path)
 
-with open(imgdb_path, "rb") as f:
-    mean = pickle.load(f)
-    print("mean=" + str(mean))
-    x = pickle.load(f)
-    y = pickle.load(f)
+    print(model.summary())
 
-model = keras.models.load_model(model_path)
+    x = np.array(x)
+    y = np.array(y)
 
-print(model.summary())
+    result = model.evaluate(x, y)
 
-x = np.array(x)
-y = np.array(y)
+    print("Evaluation result")
+    print("=================")
 
-result = model.evaluate(x, y)
-
-print("Evaluation result")
-print("=================")
-
-for idx in range(0, len(result)):
-    print(model.metrics_names[idx] + ":", result[idx])
+    for idx in range(0, len(result)):
+        print(model.metrics_names[idx] + ":", result[idx])

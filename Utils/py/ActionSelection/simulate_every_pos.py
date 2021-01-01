@@ -4,7 +4,7 @@ import argparse
 import pickle
 from tools import action as a
 from tools import Simulation as Sim
-from naoth import math2d as m2d
+import naoth.math as naoth_magic
 from tools import field_info as field
 from state import State
 
@@ -51,7 +51,7 @@ def main(num_samples, num_reps, x_step, y_step, rotation_step):
         print("Rotation: " + str(rot))
         for x in x_range:
             for y in y_range:
-                state.update_pos(m2d.Vector2(x, y), rotation=rot)
+                state.update_pos(naoth_magic.Vector2(x, y), rotation=rot)
                 # Do this multiple times and write the decisions as a histogram
                 decision_histogramm = [0, 0, 0,
                                        0]  # ordinal scale -> define own metric in evaluation script

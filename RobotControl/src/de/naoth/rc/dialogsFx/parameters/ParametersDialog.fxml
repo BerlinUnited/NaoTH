@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SplitMenuButton?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.202-ea" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ToolBar prefHeight="40.0" prefWidth="200.0">
+        <items>
+          <Button mnemonicParsing="false" onAction="#fxUpdateParams" text="Update">
+               <tooltip>
+                  <Tooltip text="Update parameters [Alt+Shift+U]" />
+               </tooltip></Button>
+            <SplitMenuButton mnemonicParsing="false" onAction="#fxExport" text="Export">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#fxExportAll" text="Export all" />
+              </items>
+               <tooltip>
+                  <Tooltip text="Export parameter to file [Alt+Shift+E]" />
+               </tooltip>
+            </SplitMenuButton>
+            <Pane opacity="0.0" HBox.hgrow="ALWAYS" />
+            <Label contentDisplay="TEXT_ONLY" text="Scheme:" textOverrun="LEADING_ELLIPSIS" />
+            <Label fx:id="scheme" text="-">
+               <padding>
+                  <Insets right="5.0" />
+               </padding></Label>
+        </items>
+      </ToolBar>
+      <fx:include fx:id="parametersPanel" source="ParametersPanel.fxml" VBox.vgrow="ALWAYS" />
+   </children>
+</VBox>

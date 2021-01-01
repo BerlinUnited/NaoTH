@@ -8,6 +8,7 @@
 #ifndef _LINEARCLASSIFIER_H
 #define  _LINEARCLASSIFIER_H
 
+#include <cmath>
 #include <iostream>
 #include <vector>
 #include <Tools/Math/Vector_n.h>
@@ -91,8 +92,8 @@ public:
      * @param positiveTrainSet: the positive train set
      * @param negativeTrainSet: the negative train set
      */
-    void LMSTrain(const std::vector<Vector_n<double,SIZE> >& positiveTrainSet, double positiveValue,
-            const std::vector<Vector_n<double,SIZE> >& negativeTrainSet, double negativeValue, double rate, int iterationNum){
+    void LMSTrain(const std::vector<Vector_n<double,SIZE> >& positiveTrainSet,
+            const std::vector<Vector_n<double,SIZE> >& negativeTrainSet, double rate, int iterationNum){
         double err = 1;
         
         double b1 = 1;
@@ -118,13 +119,13 @@ public:
                 double e = b2 - classify(*iter);
                 double pke = pk*e;
                 for (size_t i=0; i<SIZE; i++){
-                    err += fabs(e);
+                    err += std::fabs(e);
                     w[i] += pke*((*iter)[i]);
                 }
-                err += fabs(pke);
+                err += std::fabs(pke);
                 w[SIZE] += pke;
             }
-            std::cout<<"k="<<k<<"\terr="<<err<<std::endl;
+            //std::cout<<"k="<<k<<"\terr="<<err<<std::endl;
         }
     }
 

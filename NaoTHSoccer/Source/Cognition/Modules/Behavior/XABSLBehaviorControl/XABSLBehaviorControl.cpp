@@ -404,7 +404,7 @@ void XABSLBehaviorControl::fillActionSparse(const xabsl::Action* source, naothme
   }
   else // it's a symbol
   {
-    dest->set_type(naothmessages::XABSLActionSparse_ActionType_SymbolAssignement);
+    dest->set_type(naothmessages::XABSLActionSparse_ActionType_SymbolAssignment);
     naothmessages::XABSLSymbol* symbol_msg = dest->mutable_symbol();
 
     if(const xabsl::DecimalOutputSymbol* symbol = source->getDecimalOutputSymbol())

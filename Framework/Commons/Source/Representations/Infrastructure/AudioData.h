@@ -41,8 +41,8 @@ public:
   };
 
 public:
-  int sampleRate;
-  int numChannels;
+  unsigned int sampleRate;
+  unsigned int numChannels;
   unsigned int timestamp;
 
   std::vector<short> samples; /* Samples are interleaved. */

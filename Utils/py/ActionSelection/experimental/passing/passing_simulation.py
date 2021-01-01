@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
 from tools import action as a
 from tools import Simulation as Sim
-from naoth import math2d as m2d
+from naoth.math import *
 from tools import tools
 
 """
@@ -15,17 +15,17 @@ from tools import tools
 
 class State:
     def __init__(self):
-        self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(-2900, -2200)
+        self.pose = Pose2D()
+        self.pose.translation = Vector2(-2900, -2200)
         self.pose.rotation = math.radians(55)
 
-        self.ball_position = m2d.Vector2(100.0, 0.0)
+        self.ball_position = Vector2(100.0, 0.0)
 
         self.obstacle_list = ([])  # is in global coordinates
 
         self.potential_field_function = "influence_01"
 
-        self.own_robots = [m2d.Vector2(-2250, -1000)]
+        self.own_robots = [Vector2(-2250, -1000)]
         self.opp_robots = []
 
 

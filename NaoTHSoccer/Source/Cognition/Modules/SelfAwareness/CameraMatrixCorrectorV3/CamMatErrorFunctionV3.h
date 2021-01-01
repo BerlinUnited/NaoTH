@@ -59,7 +59,7 @@ private:
 
     DebugRequest&        theDebugRequest;
     DebugDrawings&       theDebugDrawings;
-    DebugModify&         theDebugModify;
+    //DebugModify&         theDebugModify;
     const FieldInfo&     theFieldInfo;
     const naoth::CameraInfo&    theCameraInfo;
     const naoth::CameraInfoTop& theCameraInfoTop;
@@ -94,7 +94,7 @@ public:
     CamMatErrorFunctionV3(
         DebugRequest&        theDebugRequest,
         DebugDrawings&       theDebugDrawings,
-        DebugModify&         theDebugModify,
+        DebugModify&         /*theDebugModify*/,
         const FieldInfo&     theFieldInfo,
         const naoth::CameraInfo&    theCameraInfo,
         const naoth::CameraInfoTop& theCameraInfoTop
@@ -103,7 +103,7 @@ public:
         numberOfResudials(0),
         theDebugRequest(theDebugRequest),
         theDebugDrawings(theDebugDrawings),
-        theDebugModify(theDebugModify),
+        //theDebugModify(theDebugModify),
         theFieldInfo(theFieldInfo),
         theCameraInfo(theCameraInfo),
         theCameraInfoTop(theCameraInfoTop)

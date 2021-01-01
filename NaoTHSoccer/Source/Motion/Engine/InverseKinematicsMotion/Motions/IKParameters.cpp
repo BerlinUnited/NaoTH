@@ -49,8 +49,8 @@ IKParameters::IKParameters()
 
   PARAMETER_REGISTER(stand.relax.stiffnessControl.enable) = true;
   //PARAMETER_REGISTER(stand.relax.stiffnessControl.deadTime)     = 100;  // [ms]
-  PARAMETER_REGISTER(stand.relax.stiffnessControl.minAngle)     = 0.08; // [°]
-  PARAMETER_REGISTER(stand.relax.stiffnessControl.maxAngle)     = 2;    // [°]
+  PARAMETER_REGISTER(stand.relax.stiffnessControl.minAngle)     = 0.08; // [degrees]
+  PARAMETER_REGISTER(stand.relax.stiffnessControl.maxAngle)     = 2;    // [degrees]
   PARAMETER_REGISTER(stand.relax.stiffnessControl.minStiffness) = 0.3;
   PARAMETER_REGISTER(stand.relax.stiffnessControl.maxStiffness) = 1.0;
 

@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 from matplotlib.patches import Circle
 from tools import action as a
 from tools import Simulation as Sim
-from naoth import math2d as m2d
+from naoth.math import *
 from tools import tools
 from tools import field_info as field
 from tools import raw_attack_direction_provider as attack_dir
@@ -28,11 +28,11 @@ Example:
 
 class State:
     def __init__(self):
-        self.pose = m2d.Pose2D()
-        self.pose.translation = m2d.Vector2(-4000, -700)
+        self.pose = Pose2D()
+        self.pose.translation = Vector2(-4000, -700)
         self.pose.rotation = math.radians(-40)
 
-        self.ball_position = m2d.Vector2(100.0, 0.0)
+        self.ball_position = Vector2(100.0, 0.0)
 
         self.obstacle_list = ([])  # is in global coordinates
 
@@ -88,7 +88,7 @@ def draw_robot_walk_lines(line):
         origin = state.pose.translation
         ball_pos = state.pose * state.ball_position
 
-        arrow_head = m2d.Vector2(500, 0).rotate(state.pose.rotation)
+        arrow_head = Vector2(500, 0).rotate(state.pose.rotation)
 
         axes.add_artist(Circle(xy=(origin.x, origin.y), radius=100, fill=False, edgecolor='white'))
         axes.add_artist(
@@ -145,9 +145,9 @@ def simulate_goal_cycle(variation=False):
             expected_ball_pos = var_kick(best_action, expected_ball_pos)
 
         # Check if expected_ball_pos inside opponent goal
-        opp_goal_back_right = m2d.Vector2(field.opponent_goalpost_right.x + field.goal_depth,
-                                          field.opponent_goalpost_right.y)
-        opp_goal_box = m2d.Rect2d(opp_goal_back_right, field.opponent_goalpost_left)
+        opp_goal_back_right = Vector2(field.opponent_goalpost_right.x + field.goal_depth,
+                                      field.opponent_goalpost_right.y)
+        opp_goal_box = Rect2d(opp_goal_back_right, field.opponent_goalpost_left)
 
         goal_scored = opp_goal_box.inside(state.pose * expected_ball_pos)
         inside_field = field.field_rect.inside(state.pose * expected_ball_pos)

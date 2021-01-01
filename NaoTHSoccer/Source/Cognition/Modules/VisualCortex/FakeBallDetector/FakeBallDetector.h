@@ -40,7 +40,7 @@ public:
 private:
     FrameInfo lastFrame;
 
-    double active;
+    bool active;
 
     Vector2d startPosition;
     Vector2d position;

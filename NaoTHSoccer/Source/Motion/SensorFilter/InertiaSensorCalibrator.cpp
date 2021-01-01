@@ -218,7 +218,7 @@ void InertiaSensorCalibrator::execute()
      * Inverting the angle is sufficient because it's basically only a 2D rotation in the XZ or YZ plane
      * Note: using bodyIntoFootMapping would be wrong because the foot frame can be rotate around z regarding the body
      * this would result in a redistribution of the inclination on the x,y axis.
-     * (e.g. z rotation about 90° -> a rotation about the body's y axis becomes a rotation about the foot's x axis)
+     * (e.g. z rotation about 90 degrees -> a rotation about the body's y axis becomes a rotation about the foot's x axis)
      */
     Vector2d inertialExpected(-footIntoBodyMapping.getXAngle(), -footIntoBodyMapping.getYAngle());
     Vector3d accExpected(footIntoBodyMapping[2].x, footIntoBodyMapping[2].y, footIntoBodyMapping[2].z);

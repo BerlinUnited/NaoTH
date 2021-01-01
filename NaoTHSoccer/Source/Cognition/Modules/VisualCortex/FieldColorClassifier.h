@@ -105,11 +105,11 @@ public:
 
   void execute()
   {
-    if(parametersBottom.check_changed() || parametersTop.check_changed()) {
+    if(paramsBottom.check_changed() || paramsTop.check_changed()) {
       frameWhenParameterChanged = getFrameInfo();
     }
-    execute(CameraInfo::Top, parametersTop);
-    execute(CameraInfo::Bottom, parametersBottom);
+    execute(CameraInfo::Top, paramsTop);
+    execute(CameraInfo::Bottom, paramsBottom);
   }
 
 private:
@@ -124,14 +124,14 @@ private:
   public:
     ParametersBottom() : Parameters("FieldColorClassifier") {}
     virtual ~ParametersBottom() {}
-  } parametersBottom;
+  } paramsBottom;
 
   class ParametersTop: public Parameters
   {
   public:
     ParametersTop() :  Parameters("FieldColorClassifierTop") {}
     virtual ~ParametersTop() {}
-  } parametersTop;
+  } paramsTop;
   
   naoth::FrameInfo frameWhenParameterChanged;
 

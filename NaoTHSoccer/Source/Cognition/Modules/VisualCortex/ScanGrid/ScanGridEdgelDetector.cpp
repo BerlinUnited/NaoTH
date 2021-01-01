@@ -26,12 +26,12 @@ ScanGridEdgelDetector::ScanGridEdgelDetector()
   DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:draw_refinement", "", false);
   DEBUG_REQUEST_REGISTER("Vision:ScanGridEdgelDetector:plot_gradient_vertical_scan", "", false);
 
-  getDebugParameterList().add(&parameters);
+  getDebugParameterList().add(&params);
 }
 
 ScanGridEdgelDetector::~ScanGridEdgelDetector()
 {
-  getDebugParameterList().remove(&parameters);
+  getDebugParameterList().remove(&params);
 }
 
 void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
@@ -48,8 +48,8 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
   }
 
   // threshold
-  int t_edge = cameraID == CameraInfo::Top? parameters.brightness_threshold_top:
-                                            parameters.brightness_threshold_bottom;
+  int t_edge = cameraID == CameraInfo::Top? params.brightness_threshold_top:
+      params.brightness_threshold_bottom;
 
   // initialize the scanner
   MaxPeakScan maximumPeak(t_edge);
@@ -57,14 +57,14 @@ void ScanGridEdgelDetector::execute(CameraInfo::CameraID id)
 
   scan_id = 0;
 
-  if(parameters.scan_vertical) {
+  if(params.scan_vertical) {
     scan_vertical(maximumPeak, minimumPeak);
     // HACK: increase scan_id here so vertical and horizontal scans are one id appart
     // so that LineGraphProvider doesn't match vertical scan edgels with horizontal scan edgels
     scan_id++;
   }
 
-  if(parameters.scan_horizontal) {
+  if(params.scan_horizontal) {
     maximumPeak.reset();
     minimumPeak.reset();
 
@@ -120,7 +120,7 @@ void ScanGridEdgelDetector::scan_vertical(MaxPeakScan& maximumPeak,
     int x = scanline.x;
     int y = getScanGrid().vScanPattern[scanline.bottom];
 
-    if(x - parameters.gradient_offset < 0 || x + parameters.gradient_offset >= static_cast<int>(getImage().width())) {
+    if(x - params.gradient_offset < 0 || x + params.gradient_offset >= static_cast<int>(getImage().width())) {
       // cannot extract edgel direction on image border
       continue;
     }
@@ -387,7 +387,7 @@ void ScanGridEdgelDetector::scan_horizontal(MaxPeakScan& maximumPeak,
     int y = scanline.y;
     int end_x = scanline.right_x;
 
-    if(y - parameters.gradient_offset < 0 || y + parameters.gradient_offset >= static_cast<int>(getImage().height())) {
+    if(y - params.gradient_offset < 0 || y + params.gradient_offset >= static_cast<int>(getImage().height())) {
       // cannot extract edgel direction on image border
       continue;
     }
@@ -609,7 +609,7 @@ inline bool ScanGridEdgelDetector::refine_range_horizontal(MaxPeakScan& maximumP
 Vector2d ScanGridEdgelDetector::calculateGradient(const Vector2i& point) const
 {
   Vector2d gradient;
-  static const int offset = parameters.gradient_offset;
+  static const int offset = params.gradient_offset;
 
   // no angle at the border (shouldn't happen)
   if( point.x < offset || point.x + offset + 1 > (int)getImage().width() ||

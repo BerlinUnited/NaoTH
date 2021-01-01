@@ -103,7 +103,7 @@ public:
     double double_edgel_angle_threshold;
 
     int gradient_offset;
-  } parameters;
+  } params;
 
 private:
   CameraInfo::CameraID cameraID;
@@ -243,8 +243,8 @@ private:
   }
 
   bool add_edgel(const Vector2i& point, Edgel::Type type) {
-    if( point.x < parameters.gradient_offset || point.x + parameters.gradient_offset + 1 > (int)getImage().width() ||
-        point.y < parameters.gradient_offset || point.y + parameters.gradient_offset + 1 > (int)getImage().height() ) {
+    if( point.x < params.gradient_offset || point.x + params.gradient_offset + 1 > (int)getImage().width() ||
+        point.y < params.gradient_offset || point.y + params.gradient_offset + 1 > (int)getImage().height() ) {
       // Cannot extract direction on image border
       // In the future the edgel detector should make sure not to scan for points on the image border (parameters.gradient_offset)
       return false;
@@ -259,8 +259,8 @@ private:
   }
 
   bool add_edgel(int x, int y, Edgel::Type type) {
-    if( x < parameters.gradient_offset || x + parameters.gradient_offset + 1 > (int)getImage().width() ||
-        y < parameters.gradient_offset || y + parameters.gradient_offset + 1 > (int)getImage().height() ) {
+    if( x < params.gradient_offset || x + params.gradient_offset + 1 > (int)getImage().width() ||
+        y < params.gradient_offset || y + params.gradient_offset + 1 > (int)getImage().height() ) {
       // cannot extract direction on image border
       // In the future the edgel detector should make sure not to scan for points on the image border (parameters.gradient_offset)
       return false;
@@ -308,8 +308,8 @@ private:
                      end.point.y + (int)(end.direction.y*5));
     );
 
-    if(-cos_alpha < parameters.double_edgel_angle_threshold) {
-    //if(-(begin.direction*end.direction) < parameters.double_edgel_angle_threshold) {
+    if(-cos_alpha < params.double_edgel_angle_threshold) {
+    //if(-(begin.direction*end.direction) < params.double_edgel_angle_threshold) {
       return; // false
     }
 

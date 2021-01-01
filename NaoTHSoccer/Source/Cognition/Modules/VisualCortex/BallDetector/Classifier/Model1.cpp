@@ -5,7 +5,7 @@
 #endif
 
 #include <emmintrin.h>
-#include <math.h>
+
 void Model1::cnn(float x0[16][16][1])
 {
 	__m128 w, x, y;
@@ -30,7 +30,7 @@ void Model1::cnn(float x0[16][16][1])
 	}
 
  	// Convolution Layer
-	alignas(16) static float x1 [16][16][4] = {0};
+	alignas(16) static float x1 [16][16][4] = {};
 	for (int i = 0; i < 16; i += 1)
 	{
 		for (int j = 0; j < 16; j += 1)
@@ -176,7 +176,7 @@ void Model1::cnn(float x0[16][16][1])
 	}
 
  	// Convolution Layer
-	alignas(16) static float x2 [16][16][4] = {0};
+	alignas(16) static float x2 [16][16][4] = {};
 	for (int i = 0; i < 16; i += 1)
 	{
 		for (int j = 0; j < 16; j += 1)
@@ -499,7 +499,7 @@ void Model1::cnn(float x0[16][16][1])
 	}
 
  	// Maxpool Layer 
-	static float x3[8][8][4] = {0};
+	static float x3[8][8][4] = {};
 	for (int ix = 0; ix < 15; ix += 2)
 	{
 		int x_out_1;
@@ -535,7 +535,7 @@ void Model1::cnn(float x0[16][16][1])
 	}
 
  	// Convolution Layer
-	alignas(16) static float x4 [8][8][8] = {0};
+	alignas(16) static float x4 [8][8][8] = {};
 	for (int i = 0; i < 8; i += 1)
 	{
 		for (int j = 0; j < 8; j += 1)
@@ -1114,7 +1114,7 @@ void Model1::cnn(float x0[16][16][1])
 	}
 
  	// Maxpool Layer 
-	static float x5[4][4][8] = {0};
+	static float x5[4][4][8] = {};
 	for (int ix = 0; ix < 7; ix += 2)
 	{
 		int x_out_1;
@@ -1165,7 +1165,7 @@ void Model1::cnn(float x0[16][16][1])
 	}
 
  	// Convolution Layer
-	alignas(16) static float x6 [4][4][8] = {0};
+	alignas(16) static float x6 [4][4][8] = {};
 	for (int i = 0; i < 4; i += 1)
 	{
 		for (int j = 0; j < 4; j += 1)
@@ -2248,7 +2248,7 @@ void Model1::cnn(float x0[16][16][1])
 	}
 
  	// Maxpool Layer 
-	static float x7[2][2][8] = {0};
+	static float x7[2][2][8] = {};
 	for (int ix = 0; ix < 3; ix += 2)
 	{
 		int x_out_1;
@@ -2347,7 +2347,7 @@ void Model1::cnn(float x0[16][16][1])
 
 
 
-void Model1::find(const BallCandidates::PatchYUVClassified& patch, double meanBrightness)
+void Model1::predict(const BallCandidates::PatchYUVClassified& patch, double meanBrightness)
 {
 	ASSERT(patch.size() == 16);
 

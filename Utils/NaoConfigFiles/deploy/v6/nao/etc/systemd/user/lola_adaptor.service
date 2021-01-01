@@ -11,7 +11,6 @@ Type=idle
 #Restart=on-failure
 ExecStart = /home/nao/bin/lola_adaptor
 EnvironmentFile=/etc/conf.d/naoth
-WorkingDirectory=/home/nao
 #CPUAccounting=true
 #CPUShares=8192
 LimitRTPRIO=55

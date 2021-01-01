@@ -33,13 +33,7 @@ extern "C"
 
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CameraSettings.h"
-
-
-struct buffer
-{
-  void * start;
-  size_t length;
-};
+#include "V4LCameraSettingsManager.h"
 
 /**
  * This is a CameraHandler that uses the V4L2 API directly. It will use the
@@ -59,6 +53,11 @@ struct buffer
  * This is why we have to change it in the "HACK (exposure)".
  * 
  * There are also some driver issues, see "HACK (FadeToBlack and Sharpness)"
+ *
+ * The code is based on the V4L examples:
+ * https://hverkuil.home.xs4all.nl/codec-api/uapi/v4l/v4l2grab.c.html
+ * https://01.org/linuxgraphics/gfx-docs/drm/media/uapi/v4l/capture.c.html
+ *
  */
 
 namespace naoth {
@@ -69,11 +68,10 @@ public:
   V4lCameraHandler();
   ~V4lCameraHandler();
 
-  void init(std::string camDevice, CameraInfo::CameraID camID, bool blockingMode, bool isV6 = false);
+  void init(std::string camDevice, CameraInfo::CameraID camID, bool isV6 = false);
 
   void shutdown();
   bool isRunning();
-  
   
   void get(Image& theImage);
   void getCameraSettings(CameraSettings& data, bool update = false);
@@ -81,7 +79,9 @@ public:
 
 private:
 
-  void openDevice(bool blockingMode);
+  void resetV6Camera() const;
+
+  void openDevice();
   void initDevice();
   
   void mapBuffers();
@@ -91,18 +91,14 @@ private:
   void stopCapturing();
   void closeDevice();
   
-  
   int readFrame();
   
-  int getSingleCameraParameter(int id);
-  bool setSingleCameraParameter(int id, int value, std::string name);
   void setFPS(int fpsRate);
   void internalUpdateCameraSettings();
   
-  
   // tools
   int xioctl(int fd, int request, void* arg) const;
-  bool hasIOErrorPrint(int lineNumber, int errOccured, int errNo, bool exitByIOError = true);
+  bool hasIOErrorPrint(int lineNumber, int errOccured, int errNo, bool exitByIOError = true) const;
 
 private: // data members
 
@@ -113,31 +109,35 @@ private: // data members
   /** The camera file descriptor */
   int fd;
 
+  // NOTE: the currentBuffer is allways returned to the queue, before a new buffer is dequed,
+  //       so 3 buffers are enough. This might change in the future if we decide to retain 
+  //       images for longer.
   /** Amount of available frame buffers. */
-  static const constexpr unsigned frameBufferCount = 5; 
+  static const constexpr unsigned frameBufferCount = 3; 
   
-  /** Image buffers (v4l2) */
-  struct buffer buffers[frameBufferCount];
+  /** Maximal time in ms to wait for a poll to deliver an image */
+  static const constexpr unsigned maxPollTime = 1000;
+  
+  /** 
+    This holds adresses and sizes of the mapped memory buffers use to capture frames. 
+    Needed so we can unmap the memory at the end.
+  */
+  struct Buffer
+  {
+    void* start;
+    size_t length;
+  };
+  struct Buffer buffers[frameBufferCount];
 
-  // capture
+  /** Structure holding the information regarding the currently captured frame. */
   struct v4l2_buffer currentBuf;
-  struct v4l2_buffer lastBuf;
 
   size_t framesSinceStart;
-  bool initialParamsSet;
-  bool wasQueried;
   bool isCapturing;
-  bool blockingCaptureModeEnabled;
 
-
-  // settings
-  unsigned long long lastCameraSettingTimestamp;
-
-  /** order in which the camera settings need to be applied */
+  /** Settings */
   CameraSettings currentSettings;
-  std::shared_ptr<CameraSettingsManager> settingsManager;
-  
-  int error_count;
+  std::shared_ptr<V4LCameraSettingsManager> settingsManager;
 };
 
 } // namespace naoth

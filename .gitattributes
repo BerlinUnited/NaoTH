@@ -26,11 +26,14 @@
 *.html   text
 *.xabsl  text
 
-# keep the message files allways lf
-*_pb2.py text eol=lf
+# keep the message files allways with the originally generated line endings
+# NOTE: exception for *_pb2.py: 
+#       protoc enerates *_pb2.py files with system line endings
+#*_pb2.py text eol=lf
+# cc, h and java files are always generated with ln
 *.pb.h   text eol=lf
 *.pb.cc  text eol=lf
-RobotControl/RobotConnector/src/de/naoth/rc/messages/*  text eol=lf
+RobotControl/src/de/naoth/rc/core/messages/*  text eol=lf
 
 # Images should be treated as binary
 # (binary is a macro for -text -diff)

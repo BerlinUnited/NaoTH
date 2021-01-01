@@ -253,10 +253,13 @@ int main(int /*argc*/, char **/*argv[]*/)
   {
     pthread_join(motionThread, NULL);
   }
+  std::cout << "[NaoRobot] Motion thread joined. " << std::endl;
 
   if(cognitionThread.joinable()) {
     cognitionThread.join();
   }
-
+  std::cout << "[NaoRobot] Cognition thread joined. " << std::endl;
+  std::cout << "[NaoRobot] Main stopped. " << std::endl;
+  
   return 0;
 }//end main

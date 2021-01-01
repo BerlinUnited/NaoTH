@@ -13,6 +13,8 @@
 #endif //WIN32
 
 #include "WhistleSimulator.h"
+
+#include "Tools/ThreadUtil.h"
 #include "Tools/NaoTime.h"
 #include "Tools/Math/Common.h"
 
@@ -98,17 +100,16 @@ void WhistleSimulator::play() {
         unsigned int startTime = NaoTime::getNaoTimeInMilliSeconds();
         executeFrame();
         unsigned int calculationTime = NaoTime::getNaoTimeInMilliSeconds() - startTime;
+        
         // wait at least 5ms but max 1s
         unsigned int waitTime = Math::clamp((int)frameExecutionTime - (int)calculationTime, 5, 1000);
+        ThreadUtil::sleep(waitTime);
 
 #ifdef WIN32
-        Sleep(waitTime);
         if (_kbhit()) {
             c = getInput();
         }
 #else
-        // wait some time
-        usleep(waitTime * 1000);
         c = getInput();
 #endif
 

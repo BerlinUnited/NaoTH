@@ -1,12 +1,12 @@
-If the robot doesn't receive any generated messages, make sure you have set the correct network (broadcast adress)!
+If the robot doesn't receive any generated messages, make sure you have set the correct network (broadcast address)!
 E.g. »-n 10.0.255.255«
 
 To start the script, use (for example) the following command:
 	./main.py -n 10.0.255.255 -p 10004
 
-To set the inital values of the send teammessage data, one can modify the "config.py" file.
+To set the initial values of the send `teammessage` data, one can modify the "config.py" file.
 
-To set/modify the teammessage data 'online', use the "set" command:
+To set/modify the `teammessage` data 'online', use the "set" command:
 	set playerNumber 4
 
 There's also a help available.

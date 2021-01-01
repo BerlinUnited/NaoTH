@@ -14,15 +14,14 @@ using namespace InverseKinematic;
 using namespace naoth;
 
 InverseKinematicsMotionEngine::InverseKinematicsMotionEngine()
- :
-  rotationStabilizeFactor(0)
+// :  rotationStabilizeFactor(0)
 {
-    getDebugParameterList().add(&theParameters);
+    getDebugParameterList().add(&params);
 }
 
 InverseKinematicsMotionEngine::~InverseKinematicsMotionEngine()
 {
-    getDebugParameterList().remove(&theParameters);
+    getDebugParameterList().remove(&params);
 }
 
 Pose3D InverseKinematicsMotionEngine::getLeftFootFromKinematicChain(const KinematicChain& kc) const
@@ -786,16 +785,16 @@ Vector3d InverseKinematicsMotionEngine::balanceCoM(
   Vector3<double> u;
   for( int i=0; i<3; i++)
   {
-    if (fabs(e[i]) > theParameters.balanceCoM.threshold)
+    if (fabs(e[i]) > params.balanceCoM.threshold)
     {
-      u[i] = e[i] - Math::sgn(e[i]) * theParameters.balanceCoM.threshold;
+      u[i] = e[i] - Math::sgn(e[i]) * params.balanceCoM.threshold;
     }
   }
   uI += u;
   uD = u - uP;
   uP = u;
   frameNumber = theFrameInfo.getFrameNumber();
-  u = uP * theParameters.balanceCoM.kP + uI * theParameters.balanceCoM.kI + uD * theParameters.balanceCoM.kD;
+  u = uP * params.balanceCoM.kP + uI * params.balanceCoM.kI + uD * params.balanceCoM.kD;
   for(int i=0; i<3; i++)
   {
     u[i] = Math::clamp(u[i], -30.0, 30.0);

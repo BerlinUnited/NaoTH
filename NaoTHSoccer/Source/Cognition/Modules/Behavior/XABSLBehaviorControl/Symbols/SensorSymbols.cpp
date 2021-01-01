@@ -52,7 +52,8 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("obstacle.ultrasound.right.distance", &getObstacleDistanceRight);
   engine.registerDecimalInputSymbol("obstacle.ultrasound.blockedtime", &getBlockedTime);
 
-  engine.registerBooleanInputSymbol("button.bumper.pressed.left", &getBumberLeftPressed);
+  engine.registerBooleanInputSymbol("button.bumper.pressed.left", &getBumperLeftPressed);
+  engine.registerBooleanInputSymbol("button.bumper.pressed.right", &getBumperRightPressed);
   engine.registerBooleanInputSymbol("button.head.pressed.front", &getButtonHeadFront);
   engine.registerBooleanInputSymbol("button.head.pressed.middle", &getButtonHeadMiddle);
   engine.registerBooleanInputSymbol("button.head.pressed.rear", &getButtonHeadRear);
@@ -76,10 +77,17 @@ void SensorSymbols::execute()
 
 }//end execute
 
-bool SensorSymbols::getBumberLeftPressed()
+bool SensorSymbols::getBumperLeftPressed()
 {
-  return (theInstance->getButtonData().eventCounter[ButtonData::LeftFootLeft] > 0) ||
-         (theInstance->getButtonData().eventCounter[ButtonData::LeftFootRight] > 0);
+    return theInstance->getButtonData().isPressed[ButtonData::LeftFootLeft] || theInstance->getButtonData().isPressed[ButtonData::LeftFootRight];
+  /*return (theInstance->getButtonData().eventCounter[ButtonData::LeftFootLeft] > 0) ||
+         (theInstance->getButtonData().eventCounter[ButtonData::LeftFootRight] > 0);*/
+}
+bool SensorSymbols::getBumperRightPressed()
+{
+    return theInstance->getButtonData().isPressed[ButtonData::RightFootLeft] || theInstance->getButtonData().isPressed[ButtonData::RightFootRight];
+    /*return (theInstance->getButtonData().eventCounter[ButtonData::LeftFootLeft] > 0) ||
+    (theInstance->getButtonData().eventCounter[ButtonData::LeftFootRight] > 0);*/
 }
 bool SensorSymbols::getButtonHeadFront()
 {

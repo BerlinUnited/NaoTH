@@ -25,6 +25,7 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
   getFieldPercept().reset();
   endpoints.clear();
 
+  // TODO: make it easier readable?
   if((cameraID==CameraInfo::Top)? params.set_whole_image_as_field_top: params.set_whole_image_as_field_bottom) {
     // skip field detection and set whole image under the horizon as field
     endpoints = {
@@ -32,19 +33,26 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
       {0, static_cast<int>(getImage().height())-1},
       {static_cast<int>(getImage().width())-1, static_cast<int>(getImage().height())-1},
       {static_cast<int>(getImage().width())-1, 0},
-      {0, 0}
+      {0, 0} // TODO: do we need this?
     };
 
+	// NOTE: we call convexHull here to make sure the points are in the same 
+	// order as with the regular calculations
     // convex hull calculation sorts endpoints in clockwise order
+	// TODO: check if polygon needs first and last point to be the same
     std::vector<Vector2i> result = ConvexHull::convexHull(endpoints);
 
+	// TODO: why is convexHull not producing Polygon directly?
     FieldPercept::FieldPoly fieldPoly;
     for(size_t i = 0; i < result.size(); i++)
     {
       fieldPoly.add(result[i]);
     }
 
+	  // TODO: is this needed at this place (params.set_whole_image_as_field)?
     getFieldPercept().setField(fieldPoly, getArtificialHorizon());
+
+	  // TODO: (MAGIC NUMBER) is this necessary?  if yes why is it not a parameter?
     if(fieldPoly.getArea() >= 5600) {
       getFieldPercept().valid = true;
     }
@@ -65,17 +73,23 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
     return;
   }
 
+  // TODO: maybe rename getBallDetectorIntegralImage to IntegralImage
+  // TODO: isValid necessary?
   if(!getBallDetectorIntegralImage().isValid()) {
     return;
   }
 
+  // NOTE: the facto may be different for top and bottom
   factor = getBallDetectorIntegralImage().FACTOR;
   const int width = getBallDetectorIntegralImage().getWidth();
   const int height = getBallDetectorIntegralImage().getHeight();
 
+  // TODO: this gives the size of a cell in pixels, not the size of the grid itself
+  // maybe it's better to have the number of cells, i.e., grid size, as parameter?
   const int grid_size = (cameraID==CameraInfo::Top ? params.grid_size_top:
                                                      params.grid_size_bottom) / factor;
 
+  // TODO: better comments
   // determine number of grids
   const int n_cells_horizontal = width / grid_size;
   const int n_cells_vertical = height / grid_size;

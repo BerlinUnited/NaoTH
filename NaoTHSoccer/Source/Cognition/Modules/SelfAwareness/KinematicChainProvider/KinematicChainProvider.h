@@ -47,7 +47,7 @@ private:
 
     bool useIMUData;
 
-  } parameter;
+  } params;
 };
 
 #endif // KINEMATICCHAINPROVIDER_H

@@ -74,14 +74,8 @@ void DebugCommandManager::executeDebugCommand(
     {
       // list all available commands
       out << "Available commands, use \"help <command>\" for a description:\n";
-      ExecutorMap::const_iterator iter = executorMap.begin();
-      while (iter != executorMap.end())
-      {
-        out << iter->first;
-        ++iter;
-        if (iter != executorMap.end()) {
-          out << ": " << iter->second.desctiption << "\n";
-        }
+      for(const auto& iter : executorMap) {
+        out << iter.first << ": " << iter.second.desctiption << "\n";
       }
     }
     else

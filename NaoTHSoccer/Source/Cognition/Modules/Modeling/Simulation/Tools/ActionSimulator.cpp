@@ -154,19 +154,19 @@ ActionSimulator::BallPositionCategory ActionSimulator::classifyBallPosition( con
   {
     category = INFIELD;
   }
-  //Opponent Groundline Out - Ball einen Meter hinter Roboter mind ansto hhe. jeweils seite wo ins ausgeht
+  //Opponent Groundline Out
   else if(globalBallPosition.x > getFieldInfo().xPosOpponentGroundline) {
     category = OPPOUT;
   }
-  //Own Groundline out -  an der seite wo raus geht
+  //Own Groundline out
   else if(globalBallPosition.x < getFieldInfo().xPosOwnGroundline) {
     category = OWNOUT;
   }
-  //an der linken Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
+  //an der linken Seite raus
   else if(globalBallPosition.y > getFieldInfo().yPosLeftSideline ) {  
     category = LEFTOUT;
   }
-  //an der rechten Seite raus -> ein meter hinter roboter oder wo ins ausgeht ein meter hinter
+  //an der rechten Seite raus
   else if(globalBallPosition.y < getFieldInfo().yPosRightSideline) { 
     category = RIGHTOUT;
   }
@@ -175,6 +175,7 @@ ActionSimulator::BallPositionCategory ActionSimulator::classifyBallPosition( con
 
 
 //correction of distance in percentage, angle in degrees
+// TODO unify with ballmodel
 Vector2d ActionSimulator::Action::predict(const Vector2d& ball, bool noise) const
 {
 	double gforce = Math::g*1e3; // mm/s^2
@@ -220,6 +221,7 @@ double ActionSimulator::evaluateAction(const ActionResults& results) const
   double numberOfActions = 0.0;
   for(ActionResults::Positions::const_iterator p = results.positions().begin(); p != results.positions().end(); ++p)
   {
+    // assumes that the potential field is well defined inside the opponent goal
     if(p->cat() == INFIELD || p->cat() == OPPGOAL) {
       sumPotential += evaluateAction(getRobotPose() * p->pos());
       numberOfActions++;

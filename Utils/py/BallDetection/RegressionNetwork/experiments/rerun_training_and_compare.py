@@ -4,8 +4,10 @@
 import pickle
 from pathlib import Path
 from inspect import getmembers, isfunction
-import model_zoo
+import utility_functions.model_zoo as model_zoo
 from train import main
+
+DATA_DIR = Path(Path(__file__).parent.parent.absolute() / "data").resolve()
 
 
 def start_training(test_model, num_runs=30, num_epochs=100):
@@ -15,7 +17,7 @@ def start_training(test_model, num_runs=30, num_epochs=100):
             Path.mkdir(output_path)
 
         history = main(
-            ['-b', '../img.db', '--log', '../logs/', '--epochs', str(num_epochs), '--output', str(output_path)],
+            ['-b', str(DATA_DIR / 'imgdb.pkl'), '--epochs', str(num_epochs), '--output', str(output_path)],
             test_model)
 
         # save trainings history to file

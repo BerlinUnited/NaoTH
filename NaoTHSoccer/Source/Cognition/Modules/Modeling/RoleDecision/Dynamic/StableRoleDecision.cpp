@@ -11,12 +11,12 @@ using namespace std;
 
 StableRoleDecision::StableRoleDecision()
 {
-  getDebugParameterList().add(&parameters);
+  getDebugParameterList().add(&params);
 }
 
 StableRoleDecision::~StableRoleDecision()
 {
-  getDebugParameterList().remove(&parameters);
+  getDebugParameterList().remove(&params);
 }
 
 void StableRoleDecision::execute() 
@@ -48,19 +48,19 @@ void StableRoleDecision::execute()
 
     double time_bonus = 0;
     if (msg.playerNumber == getRoleDecisionModel().firstStriker) {
-      time_bonus = parameters.strikerBonusTime;
+      time_bonus = params.strikerBonusTime;
     }
 
     if (robotNumber == getPlayerInfo().playerNumber && (!getTeamMessagePlayersState().isPlaying(robotNumber) ||
       // ball was seen (> -1) and ball isn't too old
-      msg.ballAge < 0 || msg.ballAge > parameters.maxBallLostTime + time_bonus)) 
+      msg.ballAge < 0 || msg.ballAge > params.maxBallLostTime + time_bonus)) 
     {
       wantsToBeStriker = false;
     }
 
     if (getTeamMessagePlayersState().isPlaying(robotNumber)
       && msg.ballAge >= 0 // Ball was seen some time ago ...
-      && msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) < parameters.maxBallLostTime + time_bonus) //Ball is fresh
+      && msg.ballAge + getFrameInfo().getTimeSince(msg.frameInfo.getTime()) < params.maxBallLostTime + time_bonus) //Ball is fresh
     { 
       if (msg.custom.wantsToBeStriker) { //Decision of the current round
         // If two robots want to be striker, the one with a smaller number is favoured

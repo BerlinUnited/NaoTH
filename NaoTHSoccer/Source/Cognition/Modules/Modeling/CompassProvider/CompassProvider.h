@@ -83,7 +83,7 @@ public:
 
     int minimalNumberOfPairs;
     double quadCompasSmoothingFactor;
-  } parameters;
+  } params;
 
 
 private: 

@@ -5,16 +5,13 @@
  * Created on 10. September 2010, 15:38
  */
 
-#include <string.h>
-
-#include <string>
-#include <cstdlib>
-
 #include <iostream>
 #include <sstream>
 
 #include <Messages/Messages.pb.h>
+
 #include "DebugServer.h"
+
 #include <Tools/NaoTime.h>
 #include <Tools/ThreadUtil.h>
 
@@ -22,8 +19,6 @@ using namespace naoth;
 
 DebugServer::DebugServer()
   : 
-  lastSendTime(0),
-  lastReceiveTime(0),
   abort(false)
 {
   answers = g_async_queue_new();
@@ -94,8 +89,7 @@ void DebugServer::run()
 
     // always give other thread the possibility to gain control before entering
     // the loop again (wait for 1 ms)
-    
-    g_usleep(1000);
+    ThreadUtil::sleep(1); 
 
     // TODO: do we really need this here?
     std::this_thread::yield();

@@ -4,10 +4,9 @@ import math
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-from naoth.LogReader import LogReader
-from naoth.LogReader import Parser
-import naoth.math3d as m3
-import naoth.math2d as m2
+from naoth.log import Reader as LogReader
+from naoth.log import Parser
+import naoth.math as nao_math
 
 import line_detector
 
@@ -68,11 +67,11 @@ class LinePlot:
 
 
 def parseVector3(msg):
-    return m3.Vector3(msg.x,msg.y,msg.z)
+    return nao_math.Vector3(msg.x,msg.y,msg.z)
 
 
 def parseCameraMatrix(matrixFrame):
-    p = m3.Pose3D()
+    p = nao_math.Pose3D()
     p.translation = parseVector3(matrixFrame.pose.translation)
     p.rotation.c1 = parseVector3(matrixFrame.pose.rotation[0])
     p.rotation.c2 = parseVector3(matrixFrame.pose.rotation[1])
@@ -127,13 +126,13 @@ def getFocalLength():
 
 
 def projectEdgel(x,y,cMatrix):
-    v = m3.Vector3()
+    v = nao_math.Vector3()
     v.x = getFocalLength()
     v.y = 320 - x
     v.z = 240 - y
 
     v = cMatrix.rotation*v
-    result = m2.Vector2()
+    result = nao_math.Vector2()
     result.x = v.x
     result.y = v.y
     result = result*(cMatrix.translation.z/(-v.z))

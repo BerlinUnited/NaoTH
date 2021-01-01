@@ -23,7 +23,7 @@
 
   #include <limits>
   #include <iostream>
-  #include <assert.h>
+  #include <cassert>
 
   typedef int HANDLE;
   typedef long LONG;

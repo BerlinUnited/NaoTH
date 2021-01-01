@@ -119,7 +119,7 @@ void FootStepPlanner2018::calculateNewStep(const Step& lastStep, Step& newStep, 
 
     // print it only once
     if(newStep.footStep.liftingFoot() == FootStep::NONE && lastStep.footStep.liftingFoot() != FootStep::NONE) {
-      std::cout << "walk stopping ..." << std::endl;
+      //std::cout << "walk stopping ..." << std::endl;
     }
     return;
   } else {

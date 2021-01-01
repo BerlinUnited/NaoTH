@@ -1,4 +1,5 @@
 #include "TeamCommReceiver.h"
+#include "Tools/NaoTime.h"
 
 TeamCommReceiver::TeamCommReceiver()
 {

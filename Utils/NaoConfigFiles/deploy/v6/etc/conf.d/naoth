@@ -1,8 +1,1 @@
-XDG_RUNTIME_DIR=/run/user/1001
-XDG_CONFIG_DIRS=/opt/aldebaran/etc:/nao/etc:/etc/xdg
-DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/1001/bus"
-PYTHONPATH="/opt/aldebaran/lib/python2.7/site-packages"
-QI_SERVICEMANAGER_LOGGING_PATH=/var/log/naoqi/servicemanager
-QI_ADDITIONAL_SDK_PREFIXES=/opt/aldebaran
-
-LD_LIBRARY_PATH="/opt/aldebaran/lib:/opt/aldebaran/lib/naoqi:/opt/ros/indigo/lib:/home/nao/lib"
+LD_LIBRARY_PATH="/home/nao/lib"

@@ -66,7 +66,7 @@ public:
   {
   public:
 
-    Parameters() : ParameterList("ActionSimulatorParams")
+    Parameters() : ParameterList("Simulation")
     {
       //PARAMETER_REGISTER(sidekick_right.speed) = 750;
       //PARAMETER_REGISTER(sidekick_right.speed_std) = 150;

@@ -3,7 +3,7 @@ import math
 import copy
 import numpy as np
 from matplotlib import pyplot as plt
-from naoth import math2d as m2d
+from naoth.math import *
 from tools import action as a
 from tools import Simulation as Sim
 from tools import tools
@@ -215,7 +215,7 @@ class Simulator:
         # HACK: execute motion request
         self.state.pose.rotate(self.rotate)
         self.state.pose.translate(self.walk_dist, 0)
-        self.state.ball_position = m2d.Vector2(100.0, 0.0)
+        self.state.ball_position = Vector2(100.0, 0.0)
 
         # -----------------
         #  make a decision

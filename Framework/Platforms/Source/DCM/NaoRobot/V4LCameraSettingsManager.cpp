@@ -1,104 +1,153 @@
 #include "V4LCameraSettingsManager.h"
 
-extern "C"
+/**
+Based on example from 
+https://www.kernel.org/doc/html/v4.14/media/uapi/v4l/control.html
+*/
+void V4LCameraSettingsManager::enumerate_menu(int fd, v4l2_queryctrl& queryctrl)
 {
-#include <linux/videodev2.h>
-#include <linux/uvcvideo.h>
-#include <sys/ioctl.h>
-#include <unistd.h>
-#include <linux/usb/video.h>
-}
+  printf("  Menu items:\n");
+  
+  struct v4l2_querymenu querymenu;
+  memset(&querymenu, 0, sizeof(querymenu));
+  querymenu.id = queryctrl.id;
 
-#define LOG "[CameraHandler:" << __LINE__ << ", Camera: " << cameraName << "] "
-
-V4LCameraSettingsManager::V4LCameraSettingsManager()
-    : error_count(0)
-{
-}
-
-int V4LCameraSettingsManager::getSingleCameraParameterRaw(int cameraFd, std::string cameraName, int parameterID)
-{
-  struct v4l2_queryctrl queryctrl;
-  queryctrl.id = parameterID;
-  if (int errCode = ioctl(cameraFd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
-  {
-    std::cerr << LOG << "VIDIOC_QUERYCTRL failed: " << strerror(errCode) << std::endl;
-    return -1;
-  }
-  if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED)
-  {
-    std::cerr << LOG << "not getting camera parameter since it is not available" << std::endl;
-    return -1; // not available
-  }
-  if (queryctrl.type != V4L2_CTRL_TYPE_BOOLEAN && queryctrl.type != V4L2_CTRL_TYPE_INTEGER && queryctrl.type != V4L2_CTRL_TYPE_MENU)
-  {
-    std::cerr << LOG << "not getting camera parameter since it is not supported" << std::endl;
-    return -1; // not supported
-  }
-
-  struct v4l2_control control_g;
-  control_g.id = parameterID;
-
-  // max 20 trials
-  int errorOccured = xioctl(cameraFd, VIDIOC_G_CTRL, &control_g);
-  if (hasIOError(cameraName, errorOccured, errno, false))
-  {
-    return -1;
-  }
-  else
-  {
-    return control_g.value;
+  for (querymenu.index = queryctrl.minimum; (int)querymenu.index <= queryctrl.maximum; querymenu.index++) {
+    if (0 == xioctl(fd, VIDIOC_QUERYMENU, &querymenu)) {
+      printf("   +- [%i] %s\n", querymenu.index, querymenu.name);
+    } else {
+      printf("   +- [%i] (%i) %s\n", querymenu.index, errno, strerror(errno));
+    }
   }
 }
 
-bool V4LCameraSettingsManager::setSingleCameraParameterRaw(int cameraFd, std::string cameraName, int parameterID, std::string parameterName, int value)
+void V4LCameraSettingsManager::enumerate_controls(int fd)
 {
-  if (parameterID < 0)
-  {
-    return false;
-  }
   struct v4l2_queryctrl queryctrl;
   memset(&queryctrl, 0, sizeof(queryctrl));
+
+  printf("=== Camera Controls BEGIN ===\n");
+  
+  queryctrl.id = V4L2_CTRL_FLAG_NEXT_CTRL;
+  while (0 == xioctl(fd, VIDIOC_QUERYCTRL, &queryctrl)) 
+  {
+    if (!(queryctrl.flags & V4L2_CTRL_FLAG_DISABLED)) 
+    {    
+      printf(" %i: %i, %s (min: %i, max: %i, step: %i) \n", queryctrl.id, queryctrl.type, queryctrl.name, queryctrl.minimum, queryctrl.maximum, queryctrl.step);
+
+      if (queryctrl.type == V4L2_CTRL_TYPE_MENU) {
+          enumerate_menu(fd, queryctrl);
+      }
+    }
+    queryctrl.id |= V4L2_CTRL_FLAG_NEXT_CTRL;
+  }
+  
+  if (errno != EINVAL) {
+    perror("VIDIOC_QUERYCTRL");
+    exit(EXIT_FAILURE);
+  }
+  printf("=== Camera Controls END ===\n");
+}
+
+int V4LCameraSettingsManager::getSingleCameraParameterRaw(int cameraFd, const std::string& cameraName, uint32_t parameterID)
+{
+  // TODO: make it more general and maybe do it only once at the beginning
+  // NOTE: first query information regarding the parameter to verify it is avaliable and enabled
+  struct v4l2_queryctrl queryctrl;
+  memset(&queryctrl, 0, sizeof(queryctrl)); // is it necessary?
   queryctrl.id = parameterID;
-  if (int errCode = xioctl(cameraFd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
-  {
-    std::cerr << LOG << "VIDIOC_QUERYCTRL for parameter " << parameterName << " failed with code " << errCode << " " << strerror(errCode) << std::endl;
+  
+  // check if query was successful
+  if (xioctl(cameraFd, VIDIOC_QUERYCTRL, &queryctrl) < 0) {
+    std::cerr << LOG << "VIDIOC_QUERYCTRL for parameter " << parameterID << " failed with code " << errno << " " << strerror(errno) << std::endl;
+    return -1; 
+  }
+  
+  // check if parameter is avaliable (enabled)
+  if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED) {
+    std::cerr << LOG << "V4L2_CTRL_FLAG_DISABLED failed. Parameter " << parameterID << " seems to be not avaliable." << std::endl;
+    return -1; 
+  }
+
+  // check if parameter is supported
+  // NOTE: we only consider boolean, integer and menu types as supported
+  if (queryctrl.type != V4L2_CTRL_TYPE_BOOLEAN && queryctrl.type != V4L2_CTRL_TYPE_INTEGER && queryctrl.type != V4L2_CTRL_TYPE_MENU) {
+    std::cerr << LOG << "ERROR: type " << queryctrl.type << " of the parameter " << parameterID << " is not supported." << std::endl;
+    return -1;
+  }
+
+  /*
+  struct v4l2_control {
+    __u32  id;      // Identifies the control, set by the application.
+    __s32  value;   // New value or current value.
+  } 
+  */
+  struct v4l2_control control;
+  control.id = parameterID;
+
+  int errorOccured = xioctl(cameraFd, VIDIOC_G_CTRL, &control);
+  if (hasIOError(cameraName, errorOccured, errno, false)) {
+    // TODO: some parameter may have -1 as a valid value
+    return -1;
+  } else {
+    return control.value;
+  }
+}
+
+bool V4LCameraSettingsManager::setSingleCameraParameterRaw(int cameraFd, const std::string& cameraName, uint32_t parameterID, const std::string& parameterName, int value)
+{
+  // TODO: make it more general and maybe do it only once at the beginning
+  // NOTE: first query information regarding the parameter to verify it is avaliable and enabled
+  struct v4l2_queryctrl queryctrl;
+  memset(&queryctrl, 0, sizeof(queryctrl)); // is it necessary?
+  queryctrl.id = parameterID;
+  
+  // check if query was successful
+  if (xioctl(cameraFd, VIDIOC_QUERYCTRL, &queryctrl) < 0) {
+    std::cerr << LOG << "VIDIOC_QUERYCTRL for parameter " << parameterName << " failed with code " << errno << " " << strerror(errno) << std::endl;
+    return false; 
+  }
+  
+  // check if parameter is avaliable (enabled)
+  if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED) {
+    std::cerr << LOG << "V4L2_CTRL_FLAG_DISABLED failed. Parameter " << parameterName << " seems to be not avaliable." << std::endl;
+    return false; 
+  }
+
+  // check if parameter is supported
+  // NOTE: we only consider boolean, integer and menu types as supported
+  if (queryctrl.type != V4L2_CTRL_TYPE_BOOLEAN && queryctrl.type != V4L2_CTRL_TYPE_INTEGER && queryctrl.type != V4L2_CTRL_TYPE_MENU) {
+    std::cerr << LOG << "ERROR: type " << queryctrl.type << " of the parameter " << parameterName << " is not supported." << std::endl;
     return false;
-  }
-  if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED)
-  {
-    std::cerr << LOG << "V4L2_CTRL_FLAG_DISABLED failed" << std::endl;
-    return false; // not available
-  }
-  if (queryctrl.type != V4L2_CTRL_TYPE_BOOLEAN && queryctrl.type != V4L2_CTRL_TYPE_INTEGER && queryctrl.type != V4L2_CTRL_TYPE_MENU)
-  {
-    std::cerr << LOG << "V4L2_CTRL_FLAG_DISABLED failed" << std::endl;
-    return false; // not supported
   }
 
   // clip value
-  if (value < queryctrl.minimum)
-  {
-    std::cout << LOG << "Clipping control value  " << parameterName << " from " << value << " to " << queryctrl.minimum << std::endl;
+  if (value < queryctrl.minimum) {
+    std::cout << LOG << "Clipping control value " << parameterName << " from " << value << " to " << queryctrl.minimum << std::endl;
     value = queryctrl.minimum;
-  }
-  if (value > queryctrl.maximum)
-  {
+  } else if (value > queryctrl.maximum) {
     std::cout << LOG << "Clipping control value " << parameterName << " from " << value << " to " << queryctrl.maximum << std::endl;
     value = queryctrl.maximum;
   }
 
-  struct v4l2_control control_s;
-  control_s.id = parameterID;
-  control_s.value = value;
+  /*
+  struct v4l2_control {
+    __u32  id;      // Identifies the control, set by the application.
+    __s32  value;   // New value or current value.
+  } 
+  */
+  struct v4l2_control control {
+    .id = parameterID,
+    .value = value
+  };
 
   std::cout << LOG << "Setting control value " << parameterName << " to " << value << std::endl;
-  int error = xioctl(cameraFd, VIDIOC_S_CTRL, &control_s);
+  int error = xioctl(cameraFd, VIDIOC_S_CTRL, &control);
   return !hasIOError(cameraName, error, errno, false);
 }
 
-bool V4LCameraSettingsManager::setRawIfChanged(int cameraFd, std::string cameraName, int parameterID,
-                                               std::string parameterName, int value, int &bufferedValue, bool force)
+bool V4LCameraSettingsManager::setRawIfChanged(int cameraFd, const std::string& cameraName, uint32_t parameterID,
+                                               const std::string& parameterName, int value, int &bufferedValue, bool force)
 {
   if ((force || bufferedValue != value) &&
       setSingleCameraParameterRaw(cameraFd, cameraName, parameterID, parameterName, value))
@@ -110,165 +159,53 @@ bool V4LCameraSettingsManager::setRawIfChanged(int cameraFd, std::string cameraN
 }
 
 // https://01.org/linuxgraphics/gfx-docs/drm/media/uapi/v4l/capture.c.html
-int V4LCameraSettingsManager::xioctl(int fd, int request, void *arg) const
+int V4LCameraSettingsManager::xioctl(int fd, int request, void *arg)
 {
   int r;
   // TODO: possibly endless loop?
-  do
-  {
+  do {
     r = ioctl(fd, request, arg);
   } while (-1 == r && EINTR == errno); // repeat if the call was interrupted
   return r;
 }
 
-int32_t V4LCameraSettingsManager::getSingleCameraParameterUVC(int cameraFd, std::string cameraName,
-                                                              int parameterSelector, std::string parameterName, uint16_t parameterDataSize)
+
+/**
+// https://linuxtv.org/downloads/v4l-dvb-apis/v4l-drivers/uvcvideo.html
+// https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/uvcvideo.h#L61
+struct uvc_xu_control_query {
+  __u8 unit;          // Extension unit ID
+  __u8 selector;      // Control selector
+  __u8 query;          // Request code to send to the device (Video Class-Specific Request Code, defined in linux/usb/video.h A.8.)  
+  __u16 size;         // Control data size (in bytes)
+  __u8 __user *data;  // Control value
+};
+*/
+int V4LCameraSettingsManager::querySingleCameraParameterUVC(int cameraFd, uint8_t query, uint8_t selector, void* data, uint16_t size)
 {
+  uvc_xu_control_query queryctrl {
+    .unit = 3,
+    .selector = selector,
+    .query = query,
+  
+    .size = size,
+    .data = static_cast<uint8_t*>(data)
+  };
 
-  if (parameterSelector < 0)
-  {
-    return -1;
-  }
-
-  struct uvc_xu_control_query queryctrl;
-  memset(&queryctrl, 0, sizeof(queryctrl));
-
-  uint8_t *value_raw = new uint8_t[parameterDataSize];
-  queryctrl.unit = 3;
-  queryctrl.query = UVC_GET_CUR;
-  queryctrl.selector = static_cast<uint8_t>(parameterSelector);
-
-  queryctrl.size = parameterDataSize;
-  queryctrl.data = value_raw;
-
-  int error = xioctl(cameraFd, UVCIOC_CTRL_QUERY, &queryctrl);
-
-  int32_t value = (value_raw[3] << 24) | (value_raw[2] << 16) | (value_raw[1] << 8) | (value_raw[0]);
-  delete[] value_raw;
-  if (hasIOError(cameraName, error, errno, false, "get " + parameterName))
-  {
-    return -1;
-  }
-  else
-  {
-    return value;
-  }
+  return xioctl(cameraFd, UVCIOC_CTRL_QUERY, &queryctrl);
 }
 
-bool V4LCameraSettingsManager::setSingleCameraParameterUVC(int cameraFd, std::string cameraName,
-                                                           uint8_t parameterSelector, std::string parameterName, uint16_t data_size, int32_t value)
-{
-
-  struct uvc_xu_control_query queryctrl;
-  memset(&queryctrl, 0, sizeof(queryctrl));
-
-  uint8_t *value_raw = new uint8_t[data_size];
-  memset(value_raw, 0, data_size);
-  value_raw[3] = static_cast<uint8_t>(value >> 24);
-  value_raw[2] = static_cast<uint8_t>(value >> 16);
-  value_raw[1] = static_cast<uint8_t>(value >> 8);
-  value_raw[0] = static_cast<uint8_t>(value);
-
-  queryctrl.unit = 3;
-  queryctrl.query = UVC_SET_CUR;
-  queryctrl.selector = static_cast<uint8_t>(parameterSelector);
-  queryctrl.size = data_size;
-  queryctrl.data = value_raw;
-
-  int error = xioctl(cameraFd, UVCIOC_CTRL_QUERY, &queryctrl);
-  return !hasIOError(cameraName, error, errno, false, "set " + parameterName);
-}
-
-bool V4LCameraSettingsManager::hasIOError(std::string cameraName, int errOccured, int errNo, bool exitByIOError, std::string paramName) const
+bool V4LCameraSettingsManager::hasIOErrorPrint(int lineNumber, const std::string& cameraName, int errOccured, int errNo, bool exitByIOError, const std::string& paramName)
 {
   if (errOccured < 0 && errNo != EAGAIN)
   {
-    std::cout << LOG << paramName << " failed with errno " << errNo << " (" << getErrnoDescription(errNo) << ") >> exiting" << std::endl;
-    if (exitByIOError)
-    {
+    std::cout << LOG << paramName << " [hasIOError:" << lineNumber << "]"
+              << " failed with errno " << errNo << " (" << strerror(errNo) << ")" 
+              << (exitByIOError?" >> exiting":"") << std::endl;
+    if (exitByIOError) {
       assert(errOccured >= 0);
     }
     return true;
   }
   return false;
-}
-
-std::string V4LCameraSettingsManager::getErrnoDescription(int err) const
-{
-  switch (err)
-  {
-  case EPERM:
-    return "Operation not permitted";
-  case ENOENT:
-    return "No such file or directory";
-  case ENOBUFS:
-    return "The specified buffer size is incorrect (too big or too small).";
-  case ESRCH:
-    return "No such process";
-  case EINTR:
-    return "Interrupted system call";
-  case EIO:
-    return "I/O error";
-  case ENXIO:
-    return "No such device or address";
-  case E2BIG:
-    return "Argument list too long";
-  case ENOEXEC:
-    return "Exec format error";
-  case EBADF:
-    return "Bad file number";
-  case ECHILD:
-    return "No child processes";
-  case EAGAIN:
-    return "Try again";
-  case ENOMEM:
-    return "Out of memory";
-  case EACCES:
-    return "Permission denied";
-  case EFAULT:
-    return "Bad address";
-  case ENOTBLK:
-    return "Block device required";
-  case EBUSY:
-    return "Device or resource busy";
-  case EEXIST:
-    return "File exists";
-  case EXDEV:
-    return "Cross-device link";
-  case ENODEV:
-    return "No such device";
-  case ENOTDIR:
-    return "Not a directory";
-  case EISDIR:
-    return "Is a directory";
-  case EINVAL:
-    return "Invalid argument";
-  case ENFILE:
-    return "File table overflow";
-  case EMFILE:
-    return "Too many open files";
-  case ENOTTY:
-    return "Not a typewriter";
-  case ETXTBSY:
-    return "Text file busy";
-  case EFBIG:
-    return "File too large";
-  case ENOSPC:
-    return "No space left on device";
-  case ESPIPE:
-    return "Illegal seek";
-  case EROFS:
-    return "Read-only file system";
-  case EMLINK:
-    return "Too many links";
-  case EPIPE:
-    return "Broken pipe";
-  case EDOM:
-    return "Math argument out of domain of func";
-  case ERANGE:
-    return "Math result not representable";
-  case EBADRQC:
-    return "The given request is not supported by the given control.";
-  }
-  return "Unknown errorcode";
 }
