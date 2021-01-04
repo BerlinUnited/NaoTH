@@ -397,13 +397,13 @@ void AddDescriptorsImpl() {
   static const char descriptor[] GOOGLE_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
       "\n\037Framework-Representations.proto\022\rnaoth"
       "messages\032\021CommonTypes.proto\"\333\001\n\005Image\022\014\n"
-      "\004data\030\001 \002(\014\022\022\n\005width\030\002 \001(\005:\003640\022\023\n\006heigh"
-      "t\030\003 \001(\005:\003480\022-\n\ncameraInfo\030\004 \001(\0132\031.naoth"
+      "\004data\030\001 \002(\014\022\022\n\005width\030\002 \001(\r:\003640\022\023\n\006heigh"
+      "t\030\003 \001(\r:\003480\022-\n\ncameraInfo\030\004 \001(\0132\031.naoth"
       "messages.CameraInfo\0220\n\006format\030\005 \001(\0162\033.na"
       "othmessages.Image.Format:\003YUV\022\021\n\ttimesta"
       "mp\030\006 \001(\r\"\'\n\006Format\022\007\n\003YUV\020\000\022\n\n\006YUV422\020\001\022"
       "\010\n\004JPEG\020\002\"\322\004\n\nCameraInfo\022\027\n\017resolutionWi"
-      "dth\030\001 \002(\005\022\030\n\020resolutionHeight\030\002 \002(\005\0221\n\010c"
+      "dth\030\001 \002(\r\022\030\n\020resolutionHeight\030\002 \002(\r\0221\n\010c"
       "ameraID\030\004 \001(\0162\027.naothmessages.CameraID:\006"
       "bottom\022\027\n\013focalLength\030\005 \001(\001B\002\030\001\022\035\n\021openi"
       "ngAngleWidth\030\006 \001(\001B\002\030\001\022\036\n\022openingAngleHe"
@@ -587,8 +587,8 @@ void Image::SharedCtor() {
   ::memset(&camerainfo_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&timestamp_) -
       reinterpret_cast<char*>(&camerainfo_)) + sizeof(timestamp_));
-  width_ = 640;
-  height_ = 480;
+  width_ = 640u;
+  height_ = 480u;
 }
 
 Image::~Image() {
@@ -645,8 +645,8 @@ void Image::Clear() {
     ::memset(&format_, 0, static_cast<size_t>(
         reinterpret_cast<char*>(&timestamp_) -
         reinterpret_cast<char*>(&format_)) + sizeof(timestamp_));
-    width_ = 640;
-    height_ = 480;
+    width_ = 640u;
+    height_ = 480u;
   }
   _has_bits_.Clear();
   _internal_metadata_.Clear();
@@ -674,13 +674,13 @@ bool Image::MergePartialFromCodedStream(
         break;
       }
 
-      // optional int32 width = 2 [default = 640];
+      // optional uint32 width = 2 [default = 640];
       case 2: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(16u /* 16 & 0xFF */)) {
           set_has_width();
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &width_)));
         } else {
           goto handle_unusual;
@@ -688,13 +688,13 @@ bool Image::MergePartialFromCodedStream(
         break;
       }
 
-      // optional int32 height = 3 [default = 480];
+      // optional uint32 height = 3 [default = 480];
       case 3: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(24u /* 24 & 0xFF */)) {
           set_has_height();
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &height_)));
         } else {
           goto handle_unusual;
@@ -781,14 +781,14 @@ void Image::SerializeWithCachedSizes(
       1, this->data(), output);
   }
 
-  // optional int32 width = 2 [default = 640];
+  // optional uint32 width = 2 [default = 640];
   if (cached_has_bits & 0x00000010u) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->width(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->width(), output);
   }
 
-  // optional int32 height = 3 [default = 480];
+  // optional uint32 height = 3 [default = 480];
   if (cached_has_bits & 0x00000020u) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->height(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(3, this->height(), output);
   }
 
   // optional .naothmessages.CameraInfo cameraInfo = 4;
@@ -830,14 +830,14 @@ void Image::SerializeWithCachedSizes(
         1, this->data(), target);
   }
 
-  // optional int32 width = 2 [default = 640];
+  // optional uint32 width = 2 [default = 640];
   if (cached_has_bits & 0x00000010u) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->width(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->width(), target);
   }
 
-  // optional int32 height = 3 [default = 480];
+  // optional uint32 height = 3 [default = 480];
   if (cached_has_bits & 0x00000020u) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->height(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(3, this->height(), target);
   }
 
   // optional .naothmessages.CameraInfo cameraInfo = 4;
@@ -902,17 +902,17 @@ size_t Image::ByteSizeLong() const {
           this->timestamp());
     }
 
-    // optional int32 width = 2 [default = 640];
+    // optional uint32 width = 2 [default = 640];
     if (has_width()) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::Int32Size(
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
           this->width());
     }
 
-    // optional int32 height = 3 [default = 480];
+    // optional uint32 height = 3 [default = 480];
     if (has_height()) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::Int32Size(
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
           this->height());
     }
 
@@ -1081,7 +1081,7 @@ void Image::set_allocated_data(::std::string* data) {
   // @@protoc_insertion_point(field_set_allocated:naothmessages.Image.data)
 }
 
-// optional int32 width = 2 [default = 640];
+// optional uint32 width = 2 [default = 640];
 bool Image::has_width() const {
   return (_has_bits_[0] & 0x00000010u) != 0;
 }
@@ -1092,20 +1092,20 @@ void Image::clear_has_width() {
   _has_bits_[0] &= ~0x00000010u;
 }
 void Image::clear_width() {
-  width_ = 640;
+  width_ = 640u;
   clear_has_width();
 }
-::google::protobuf::int32 Image::width() const {
+::google::protobuf::uint32 Image::width() const {
   // @@protoc_insertion_point(field_get:naothmessages.Image.width)
   return width_;
 }
-void Image::set_width(::google::protobuf::int32 value) {
+void Image::set_width(::google::protobuf::uint32 value) {
   set_has_width();
   width_ = value;
   // @@protoc_insertion_point(field_set:naothmessages.Image.width)
 }
 
-// optional int32 height = 3 [default = 480];
+// optional uint32 height = 3 [default = 480];
 bool Image::has_height() const {
   return (_has_bits_[0] & 0x00000020u) != 0;
 }
@@ -1116,14 +1116,14 @@ void Image::clear_has_height() {
   _has_bits_[0] &= ~0x00000020u;
 }
 void Image::clear_height() {
-  height_ = 480;
+  height_ = 480u;
   clear_has_height();
 }
-::google::protobuf::int32 Image::height() const {
+::google::protobuf::uint32 Image::height() const {
   // @@protoc_insertion_point(field_get:naothmessages.Image.height)
   return height_;
 }
-void Image::set_height(::google::protobuf::int32 value) {
+void Image::set_height(::google::protobuf::uint32 value) {
   set_has_height();
   height_ = value;
   // @@protoc_insertion_point(field_set:naothmessages.Image.height)
@@ -1346,13 +1346,13 @@ bool CameraInfo::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required int32 resolutionWidth = 1;
+      // required uint32 resolutionWidth = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
           set_has_resolutionwidth();
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &resolutionwidth_)));
         } else {
           goto handle_unusual;
@@ -1360,13 +1360,13 @@ bool CameraInfo::MergePartialFromCodedStream(
         break;
       }
 
-      // required int32 resolutionHeight = 2;
+      // required uint32 resolutionHeight = 2;
       case 2: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(16u /* 16 & 0xFF */)) {
           set_has_resolutionheight();
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &resolutionheight_)));
         } else {
           goto handle_unusual;
@@ -1625,14 +1625,14 @@ void CameraInfo::SerializeWithCachedSizes(
   (void) cached_has_bits;
 
   cached_has_bits = _has_bits_[0];
-  // required int32 resolutionWidth = 1;
+  // required uint32 resolutionWidth = 1;
   if (cached_has_bits & 0x00000001u) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->resolutionwidth(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->resolutionwidth(), output);
   }
 
-  // required int32 resolutionHeight = 2;
+  // required uint32 resolutionHeight = 2;
   if (cached_has_bits & 0x00000002u) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->resolutionheight(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->resolutionheight(), output);
   }
 
   // optional .naothmessages.CameraID cameraID = 4 [default = bottom];
@@ -1737,14 +1737,14 @@ void CameraInfo::SerializeWithCachedSizes(
   (void) cached_has_bits;
 
   cached_has_bits = _has_bits_[0];
-  // required int32 resolutionWidth = 1;
+  // required uint32 resolutionWidth = 1;
   if (cached_has_bits & 0x00000001u) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->resolutionwidth(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->resolutionwidth(), target);
   }
 
-  // required int32 resolutionHeight = 2;
+  // required uint32 resolutionHeight = 2;
   if (cached_has_bits & 0x00000002u) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->resolutionheight(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->resolutionheight(), target);
   }
 
   // optional .naothmessages.CameraID cameraID = 4 [default = bottom];
@@ -1850,16 +1850,16 @@ size_t CameraInfo::RequiredFieldsByteSizeFallback() const {
   size_t total_size = 0;
 
   if (has_resolutionwidth()) {
-    // required int32 resolutionWidth = 1;
+    // required uint32 resolutionWidth = 1;
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
         this->resolutionwidth());
   }
 
   if (has_resolutionheight()) {
-    // required int32 resolutionHeight = 2;
+    // required uint32 resolutionHeight = 2;
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
         this->resolutionheight());
   }
 
@@ -1875,14 +1875,14 @@ size_t CameraInfo::ByteSizeLong() const {
         _internal_metadata_.unknown_fields());
   }
   if (((_has_bits_[0] & 0x00000003) ^ 0x00000003) == 0) {  // All required fields are present.
-    // required int32 resolutionWidth = 1;
+    // required uint32 resolutionWidth = 1;
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
         this->resolutionwidth());
 
-    // required int32 resolutionHeight = 2;
+    // required uint32 resolutionHeight = 2;
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
         this->resolutionheight());
 
   } else {
@@ -2140,7 +2140,7 @@ void CameraInfo::InternalSwap(CameraInfo* other) {
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
 // CameraInfo
 
-// required int32 resolutionWidth = 1;
+// required uint32 resolutionWidth = 1;
 bool CameraInfo::has_resolutionwidth() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -2151,20 +2151,20 @@ void CameraInfo::clear_has_resolutionwidth() {
   _has_bits_[0] &= ~0x00000001u;
 }
 void CameraInfo::clear_resolutionwidth() {
-  resolutionwidth_ = 0;
+  resolutionwidth_ = 0u;
   clear_has_resolutionwidth();
 }
-::google::protobuf::int32 CameraInfo::resolutionwidth() const {
+::google::protobuf::uint32 CameraInfo::resolutionwidth() const {
   // @@protoc_insertion_point(field_get:naothmessages.CameraInfo.resolutionWidth)
   return resolutionwidth_;
 }
-void CameraInfo::set_resolutionwidth(::google::protobuf::int32 value) {
+void CameraInfo::set_resolutionwidth(::google::protobuf::uint32 value) {
   set_has_resolutionwidth();
   resolutionwidth_ = value;
   // @@protoc_insertion_point(field_set:naothmessages.CameraInfo.resolutionWidth)
 }
 
-// required int32 resolutionHeight = 2;
+// required uint32 resolutionHeight = 2;
 bool CameraInfo::has_resolutionheight() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -2175,14 +2175,14 @@ void CameraInfo::clear_has_resolutionheight() {
   _has_bits_[0] &= ~0x00000002u;
 }
 void CameraInfo::clear_resolutionheight() {
-  resolutionheight_ = 0;
+  resolutionheight_ = 0u;
   clear_has_resolutionheight();
 }
-::google::protobuf::int32 CameraInfo::resolutionheight() const {
+::google::protobuf::uint32 CameraInfo::resolutionheight() const {
   // @@protoc_insertion_point(field_get:naothmessages.CameraInfo.resolutionHeight)
   return resolutionheight_;
 }
-void CameraInfo::set_resolutionheight(::google::protobuf::int32 value) {
+void CameraInfo::set_resolutionheight(::google::protobuf::uint32 value) {
   set_has_resolutionheight();
   resolutionheight_ = value;
   // @@protoc_insertion_point(field_set:naothmessages.CameraInfo.resolutionHeight)

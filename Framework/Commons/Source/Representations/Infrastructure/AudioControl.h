@@ -11,9 +11,9 @@ namespace naoth
   {
   public:
     bool capture;                 // controls if detection and audio capture is active or not
-    int numChannels;
-    int sampleRate;
-    int buffer_size;
+    unsigned int numChannels;
+    unsigned int sampleRate;
+    unsigned int buffer_size;
 
     AudioControl();
     virtual void print(std::ostream& stream) const;

@@ -86,7 +86,6 @@ private:
   Parameters params;
 
 private:
-  bool init;
   naoth::FrameInfo theMotorJointFrameInfo;
   naoth::JointData theMotorJointDataOld;
   naoth::JointData theJointData;

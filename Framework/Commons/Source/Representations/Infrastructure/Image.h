@@ -39,9 +39,6 @@ private:
   bool selfCreatedImage;
 
 private:
-  unsigned int _width;
-  unsigned int _height;
-
   /** raw data in YUV422 format */
   unsigned char* yuv422;
 
@@ -82,26 +79,26 @@ public: // function members
   // EXPERIMENTAL: return a reference to an aligned yuv422 pixel in the form: |y0|u|y1|v|
   // NOTE: this means we operate with a half of the resolution,
   //       i.e., x = 2*n and x = 2*n+1 will return the same pixel
-  inline const Pixel& getAligned(const int x, const int y) const {
+  inline const Pixel& getAligned(const unsigned int x, const unsigned int y) const {
     return reinterpret_cast<Pixel*>(yuv422)[(y * cameraInfo.resolutionWidth + x)/2];
   }
 
-  inline unsigned char getY(const int x, const int y) const {
+  inline unsigned char getY(const unsigned int x, const unsigned int y) const {
     ASSERT(isInside(x,y));
     return yuv422[PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x)];
   }
 
-  inline unsigned char getY_direct(const int x, const int y) const {
+  inline unsigned char getY_direct(const unsigned int x, const unsigned int y) const {
     //ASSERT(isInside(x,y));
     return yuv422[PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x)];
   }
 
-  inline unsigned char getU(const int x, const int y) const {
+  inline unsigned char getU(const unsigned int x, const unsigned int y) const {
     ASSERT(isInside(x,y));
     return yuv422[PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x) + 1-((x & 1)<<1)];
   }
 
-  inline unsigned char getV(const int x, const int y) const {
+  inline unsigned char getV(const unsigned int x, const unsigned int y) const {
     ASSERT(isInside(x,y));
     return yuv422[PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x) + 3-((x & 1)<<1)];
   }
@@ -112,7 +109,7 @@ public: // function members
     * E.g. cache the pixel and dont call get(x,y).y, get(x,y).u, ...
     * seperatly.
     */
-  inline Pixel get(const int x, const int y) const
+  inline Pixel get(const unsigned int x, const unsigned int y) const
   {
     ASSERT(isInside(x,y));
     unsigned int yOffset = PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x);
@@ -133,7 +130,7 @@ public: // function members
     * E.g. cache the pixel and dont call get(x,y).y, get(x,y).u, ...
     * seperatly.
     */
-  inline void get(const int x, const int y, Pixel& p) const
+  inline void get(const unsigned int x, const unsigned int y, Pixel& p) const
   {
     ASSERT(isInside(x,y));
     unsigned int yOffset = PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x);
@@ -144,7 +141,7 @@ public: // function members
     p.v = yuv422[yOffset+3-((x & 1)<<1)];
   }
 
-  inline void get_direct(const int x, const int y, Pixel& p) const
+  inline void get_direct(const unsigned int x, const unsigned int y, Pixel& p) const
   {
     unsigned int yOffset = PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x);
 
@@ -154,7 +151,7 @@ public: // function members
     p.v = yuv422[yOffset+3-((x & 1)<<1)];
   }
 
-  inline void set(const int x, const int y, const Pixel& p)
+  inline void set(const unsigned int x, const unsigned int y, const Pixel& p)
   {
     ASSERT(isInside(x,y));
     unsigned int yOffset = PIXEL_SIZE_YUV422 * (y * cameraInfo.resolutionWidth + x);
@@ -167,8 +164,8 @@ public: // function members
 
   inline void set
   (
-    const int x,
-    const int y,
+    const unsigned int x,
+    const unsigned int y,
     const unsigned char yy,
     const unsigned char cb, // u
     const unsigned char cr // v
@@ -186,10 +183,10 @@ public: // function members
   /**
     * test whether a pixel is inside the image
     */
-  inline bool isInside(const int x, const int y) const
-  {
-    return x >= 0 && x < (int)cameraInfo.resolutionWidth &&
-           y >= 0 && y < (int)cameraInfo.resolutionHeight;
+  inline bool isInside(const unsigned int x, const unsigned int y) const
+  { 
+    return x < cameraInfo.resolutionWidth &&
+           y < cameraInfo.resolutionHeight;
   }
 
   inline bool isInside(const Vector2i& p) const
