@@ -448,7 +448,7 @@ message WhistlePercept {
     required double responseValue = 3;
   }
   
-  optional int32 counter  = 1;
+  optional uint32 frameWhenWhistleDetected  = 1;
   optional string captureFile = 2;
   repeated Whistle recognizedWhistles = 3;
   optional bool whistleDetected = 4;

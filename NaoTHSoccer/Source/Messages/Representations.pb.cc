@@ -984,7 +984,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_ATTRIBUTE_SECTION
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WhistlePercept, counter_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WhistlePercept, framewhenwhistledetected_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WhistlePercept, capturefile_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WhistlePercept, recognizedwhistles_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WhistlePercept, whistledetected_),
@@ -1651,19 +1651,20 @@ void AddDescriptorsImpl() {
       "\003 \003(\0132\034.naothmessages.DoubleVector2\0221\n\013o"
       "rientation\030\004 \001(\0132\034.naothmessages.DoubleV"
       "ector2\022\017\n\007headYaw\030\005 \001(\001\022\021\n\theadPitch\030\006 \001"
-      "(\001\"\335\001\n\016WhistlePercept\022\017\n\007counter\030\001 \001(\005\022\023"
-      "\n\013captureFile\030\002 \001(\t\022A\n\022recognizedWhistle"
-      "s\030\003 \003(\0132%.naothmessages.WhistlePercept.W"
-      "histle\022\027\n\017whistleDetected\030\004 \001(\010\032I\n\007Whist"
-      "le\022\014\n\004name\030\001 \002(\t\022\031\n\021positionInCapture\030\002 "
-      "\002(\003\022\025\n\rresponseValue\030\003 \002(\001\"\203\001\n\013DebugModi"
-      "fy\0228\n\010valueMap\030\001 \003(\0132&.naothmessages.Deb"
-      "ugModify.ModifyValue\032:\n\013ModifyValue\022\014\n\004n"
-      "ame\030\001 \002(\t\022\016\n\006modify\030\002 \001(\010\022\r\n\005value\030\003 \001(\001"
-      "B\033\n\031de.naoth.rc.core.messages"
+      "(\001\"\356\001\n\016WhistlePercept\022 \n\030frameWhenWhistl"
+      "eDetected\030\001 \001(\r\022\023\n\013captureFile\030\002 \001(\t\022A\n\022"
+      "recognizedWhistles\030\003 \003(\0132%.naothmessages"
+      ".WhistlePercept.Whistle\022\027\n\017whistleDetect"
+      "ed\030\004 \001(\010\032I\n\007Whistle\022\014\n\004name\030\001 \002(\t\022\031\n\021pos"
+      "itionInCapture\030\002 \002(\003\022\025\n\rresponseValue\030\003 "
+      "\002(\001\"\203\001\n\013DebugModify\0228\n\010valueMap\030\001 \003(\0132&."
+      "naothmessages.DebugModify.ModifyValue\032:\n"
+      "\013ModifyValue\022\014\n\004name\030\001 \002(\t\022\016\n\006modify\030\002 \001"
+      "(\010\022\r\n\005value\030\003 \001(\001B\033\n\031de.naoth.rc.core.me"
+      "ssages"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 9989);
+      descriptor, 10006);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   ::naothmessages::protobuf_CommonTypes_2eproto::AddDescriptors();
@@ -28155,7 +28156,7 @@ void WhistlePercept_Whistle::set_responsevalue(double value) {
 // ===================================================================
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int WhistlePercept::kCounterFieldNumber;
+const int WhistlePercept::kFrameWhenWhistleDetectedFieldNumber;
 const int WhistlePercept::kCaptureFileFieldNumber;
 const int WhistlePercept::kRecognizedWhistlesFieldNumber;
 const int WhistlePercept::kWhistleDetectedFieldNumber;
@@ -28180,18 +28181,18 @@ WhistlePercept::WhistlePercept(const WhistlePercept& from)
   if (from.has_capturefile()) {
     capturefile_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.capturefile_);
   }
-  ::memcpy(&counter_, &from.counter_,
+  ::memcpy(&framewhenwhistledetected_, &from.framewhenwhistledetected_,
     static_cast<size_t>(reinterpret_cast<char*>(&whistledetected_) -
-    reinterpret_cast<char*>(&counter_)) + sizeof(whistledetected_));
+    reinterpret_cast<char*>(&framewhenwhistledetected_)) + sizeof(whistledetected_));
   // @@protoc_insertion_point(copy_constructor:naothmessages.WhistlePercept)
 }
 
 void WhistlePercept::SharedCtor() {
   _cached_size_ = 0;
   capturefile_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  ::memset(&counter_, 0, static_cast<size_t>(
+  ::memset(&framewhenwhistledetected_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&whistledetected_) -
-      reinterpret_cast<char*>(&counter_)) + sizeof(whistledetected_));
+      reinterpret_cast<char*>(&framewhenwhistledetected_)) + sizeof(whistledetected_));
 }
 
 WhistlePercept::~WhistlePercept() {
@@ -28239,9 +28240,9 @@ void WhistlePercept::Clear() {
   }
   cached_has_bits = _has_bits_[0];
   if (cached_has_bits & 6u) {
-    ::memset(&counter_, 0, static_cast<size_t>(
+    ::memset(&framewhenwhistledetected_, 0, static_cast<size_t>(
         reinterpret_cast<char*>(&whistledetected_) -
-        reinterpret_cast<char*>(&counter_)) + sizeof(whistledetected_));
+        reinterpret_cast<char*>(&framewhenwhistledetected_)) + sizeof(whistledetected_));
   }
   _has_bits_.Clear();
   _internal_metadata_.Clear();
@@ -28257,14 +28258,14 @@ bool WhistlePercept::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // optional int32 counter = 1;
+      // optional uint32 frameWhenWhistleDetected = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-          set_has_counter();
+          set_has_framewhenwhistledetected();
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &counter_)));
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &framewhenwhistledetected_)));
         } else {
           goto handle_unusual;
         }
@@ -28340,9 +28341,9 @@ void WhistlePercept::SerializeWithCachedSizes(
   (void) cached_has_bits;
 
   cached_has_bits = _has_bits_[0];
-  // optional int32 counter = 1;
+  // optional uint32 frameWhenWhistleDetected = 1;
   if (cached_has_bits & 0x00000002u) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->counter(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->framewhenwhistledetected(), output);
   }
 
   // optional string captureFile = 2;
@@ -28382,9 +28383,9 @@ void WhistlePercept::SerializeWithCachedSizes(
   (void) cached_has_bits;
 
   cached_has_bits = _has_bits_[0];
-  // optional int32 counter = 1;
+  // optional uint32 frameWhenWhistleDetected = 1;
   if (cached_has_bits & 0x00000002u) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->counter(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->framewhenwhistledetected(), target);
   }
 
   // optional string captureFile = 2;
@@ -28447,11 +28448,11 @@ size_t WhistlePercept::ByteSizeLong() const {
           this->capturefile());
     }
 
-    // optional int32 counter = 1;
-    if (has_counter()) {
+    // optional uint32 frameWhenWhistleDetected = 1;
+    if (has_framewhenwhistledetected()) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::Int32Size(
-          this->counter());
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->framewhenwhistledetected());
     }
 
     // optional bool whistleDetected = 4;
@@ -28497,7 +28498,7 @@ void WhistlePercept::MergeFrom(const WhistlePercept& from) {
       capturefile_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.capturefile_);
     }
     if (cached_has_bits & 0x00000002u) {
-      counter_ = from.counter_;
+      framewhenwhistledetected_ = from.framewhenwhistledetected_;
     }
     if (cached_has_bits & 0x00000004u) {
       whistledetected_ = from.whistledetected_;
@@ -28533,7 +28534,7 @@ void WhistlePercept::InternalSwap(WhistlePercept* other) {
   using std::swap;
   recognizedwhistles_.InternalSwap(&other->recognizedwhistles_);
   capturefile_.Swap(&other->capturefile_);
-  swap(counter_, other->counter_);
+  swap(framewhenwhistledetected_, other->framewhenwhistledetected_);
   swap(whistledetected_, other->whistledetected_);
   swap(_has_bits_[0], other->_has_bits_[0]);
   _internal_metadata_.Swap(&other->_internal_metadata_);
@@ -28548,28 +28549,28 @@ void WhistlePercept::InternalSwap(WhistlePercept* other) {
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
 // WhistlePercept
 
-// optional int32 counter = 1;
-bool WhistlePercept::has_counter() const {
+// optional uint32 frameWhenWhistleDetected = 1;
+bool WhistlePercept::has_framewhenwhistledetected() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-void WhistlePercept::set_has_counter() {
+void WhistlePercept::set_has_framewhenwhistledetected() {
   _has_bits_[0] |= 0x00000002u;
 }
-void WhistlePercept::clear_has_counter() {
+void WhistlePercept::clear_has_framewhenwhistledetected() {
   _has_bits_[0] &= ~0x00000002u;
 }
-void WhistlePercept::clear_counter() {
-  counter_ = 0;
-  clear_has_counter();
+void WhistlePercept::clear_framewhenwhistledetected() {
+  framewhenwhistledetected_ = 0u;
+  clear_has_framewhenwhistledetected();
 }
-::google::protobuf::int32 WhistlePercept::counter() const {
-  // @@protoc_insertion_point(field_get:naothmessages.WhistlePercept.counter)
-  return counter_;
+::google::protobuf::uint32 WhistlePercept::framewhenwhistledetected() const {
+  // @@protoc_insertion_point(field_get:naothmessages.WhistlePercept.frameWhenWhistleDetected)
+  return framewhenwhistledetected_;
 }
-void WhistlePercept::set_counter(::google::protobuf::int32 value) {
-  set_has_counter();
-  counter_ = value;
-  // @@protoc_insertion_point(field_set:naothmessages.WhistlePercept.counter)
+void WhistlePercept::set_framewhenwhistledetected(::google::protobuf::uint32 value) {
+  set_has_framewhenwhistledetected();
+  framewhenwhistledetected_ = value;
+  // @@protoc_insertion_point(field_set:naothmessages.WhistlePercept.frameWhenWhistleDetected)
 }
 
 // optional string captureFile = 2;
