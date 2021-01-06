@@ -137,7 +137,7 @@ private:
         {
             registerParameter("processNoiseStdQ00", processNoiseStdSingleDimension(0,0)) = 15;
             registerParameter("processNoiseStdQ10", processNoiseStdSingleDimension(1,0), &Parameters::enforceSymmetryOfQ) = 0;
-            registerParameter("processNoiseStdQ11", processNoiseStdSingleDimension(1,1)) = 20;
+            registerParameter("processNoiseStdQ11", processNoiseStdSingleDimension(1,1)) = 500;
 
             // experimental determined
             registerParameter("measurementNoiseR00", measurementNoiseCovariances(0,0)) =  0.00130217; //[rad^2]
@@ -154,8 +154,8 @@ private:
             PARAMETER_REGISTER(maximumLikelihoodThreshold) = 0.0005;
 
             //AssymetricalBoolFilte parameters
-            PARAMETER_REGISTER(g0) = 0.01;
-            PARAMETER_REGISTER(g1) = 0.1;
+            PARAMETER_REGISTER(g0) = 0.03;
+            PARAMETER_REGISTER(g1) = 0.5;
 
             PARAMETER_REGISTER(association.use_normal) = false;
             PARAMETER_REGISTER(association.use_cool)   = false;
