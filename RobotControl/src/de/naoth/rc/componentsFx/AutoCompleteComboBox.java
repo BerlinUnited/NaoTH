@@ -1,10 +1,9 @@
 package de.naoth.rc.componentsFx;
 
-import com.sun.javafx.scene.control.skin.ComboBoxListViewSkin;
 import java.util.Arrays;
 import java.util.List;
+import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
@@ -14,7 +13,11 @@ import javafx.scene.input.KeyEvent;
  */
 public class AutoCompleteComboBox
 {
-    public static void install(ComboBox box) {
+    public static void install(ComboBox box)
+    {
+        // replace the box items with a filtered version of it
+        FilteredList f = new FilteredList(box.getItems(), (i) -> { return i.toString().toLowerCase().startsWith(""); });
+        box.setItems(f);
         
         // show the dropdown list of available choices
         box.getEditor().focusedProperty().addListener((ob,o,n) -> {
@@ -53,6 +56,11 @@ public class AutoCompleteComboBox
                 }
             }
             
+            // replace the filter predicate and trigger the filtering
+            f.setPredicate((i) -> {
+                return i.toString().toLowerCase().startsWith(box.getEditor().getText().toLowerCase());
+            });
+            
             // search for the avialable choices - ignore case
             Object found = null;
             for (Object item : box.getItems()) {
@@ -69,10 +77,11 @@ public class AutoCompleteComboBox
                 box.getEditor().setText(found.toString());
                 box.getEditor().selectRange(box.getEditor().getText().length(), startSelection);
                 
+                // NOTE: this doesn't work with Java14+! Alternative: FilteredList (see above)
                 // make the current item visible without selecting!
-                ListView view = ((ComboBoxListViewSkin) box.getSkin()).getListView();
-                view.getFocusModel().focus(box.getItems().indexOf(found));
-                view.scrollTo(found);
+                //ListView view = ((ComboBoxListViewSkin) box.getSkin()).getListView();
+                //view.getFocusModel().focus(box.getItems().indexOf(found));
+                //view.scrollTo(found);
             }
 
             // show the dropdown list again (hidden on key press)

@@ -148,8 +148,10 @@ workspace "NaoTHSoccer"
     warnings "Extra"
     -- Wconversion is not included in Wall and Wextra
     buildoptions {"-Wconversion"}
-    -- Wsign-conversion might be useful and is not included in Wconversion
-    --buildoptions {"-Wsign-conversion"}
+    -- These are a lot of warnings that should be fixed, but currently this is not the highest priority
+    buildoptions {"-Wno-sign-conversion"}
+    -- clang - allow unused functions in cpp files
+    buildoptions {"-Wno-unused-function"}
     
     -- for debugging:
     -- buildoptions {"-time"}
