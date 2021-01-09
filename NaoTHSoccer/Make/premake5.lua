@@ -133,7 +133,7 @@ workspace "NaoTHSoccer"
     defines { "NAO" }
     system ("linux")
     
-    -- HACK: system() desn't set the target system properly => set the target system manually
+    -- HACK: system() doesn't set the target system properly => set the target system manually
     if _OPTIONS["platform"] == "Nao" then
       -- include the Nao platform
       if COMPILER_PATH_NAO ~= nil then
