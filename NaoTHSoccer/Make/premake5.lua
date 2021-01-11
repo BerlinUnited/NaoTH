@@ -301,6 +301,10 @@ workspace "NaoTHSoccer"
         dofile ("../Test/Make/LoLa.lua")
             kind "ConsoleApp"
             vpaths { ["*"] = "../Test/Source/LoLa" }
+            
+        dofile ("../Test/Make/AudioRecorder.lua")
+          kind "ConsoleApp"
+          vpaths { ["*"] = "../Test/Source/AudioRecorder" }
     end
 
     
