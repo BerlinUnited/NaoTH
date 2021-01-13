@@ -14,6 +14,7 @@
 #include "Representations/Perception/CameraMatrix.h"
 #include <Tools/CameraGeometry.h>
 
+#include <random>
 
 BEGIN_DECLARE_MODULE(FakeBallDetector)
   PROVIDE(DebugRequest)
@@ -45,7 +46,17 @@ public:
     struct FakeBall {
         Vector2d position;
         Vector2d velocity;
-        bool     const_velocity;
+        bool     const_velocity = false;
+        bool     enabled_pixel_noise = false;
+
+        struct {
+            struct {
+                std::default_random_engine rng;
+                std::normal_distribution<double> dist;
+            } x, y;
+
+            Vector2d operator()() {return Vector2d(x.dist(x.rng), y.dist(y.rng));}
+        } top_pixel_noise, bottom_pixel_noise;
     };
 
     void clearFakeBalls() {
@@ -66,7 +77,7 @@ private:
     std::vector<FakeBall> fakeBalls;
 
     void simulateMovementOnField(double dt);
-    void provideMultiBallPercept() const;
+    void provideMultiBallPercept();
 };
 
 #endif // FAKEBALLDETECTOR_H

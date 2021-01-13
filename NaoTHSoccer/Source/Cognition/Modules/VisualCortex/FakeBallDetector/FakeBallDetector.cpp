@@ -16,13 +16,23 @@ void FakeBallDetector::execute() {
     );
 
     FakeBall fb;
+    static double mean = 0;
+    static Vector2d std(std::sqrt(8e-4), std::sqrt(8e-4));
     MODIFY("Vision:FakeBallDetector:new_ball:x", fb.position.x);
     MODIFY("Vision:FakeBallDetector:new_ball:y", fb.position.y);
     MODIFY("Vision:FakeBallDetector:new_ball:vx", fb.velocity.x);
     MODIFY("Vision:FakeBallDetector:new_ball:vy", fb.velocity.y);
     MODIFY("Vision:FakeBallDetector:new_ball:const_velocity", fb.const_velocity);
+    MODIFY("Vision:FakeBallDetector:new_ball:enable_pixel_noise", fb.enabled_pixel_noise);
+    MODIFY("Vision:FakeBallDetector:new_ball:noise:pixel_mean", mean);
+    MODIFY("Vision:FakeBallDetector:new_ball:noise:pixel_std_x", std.x);
+    MODIFY("Vision:FakeBallDetector:new_ball:noise:pixel_std_y", std.y);
 
     DEBUG_REQUEST_ON_DEACTIVE("Vision:FakeBallDetector:add_new_ball",
+        fb.top_pixel_noise.x.dist = std::normal_distribution<double>(mean, std.x);
+        fb.top_pixel_noise.y.dist = std::normal_distribution<double>(mean, std.y);
+        fb.bottom_pixel_noise.x.dist = std::normal_distribution<double>(mean, std.x);
+        fb.bottom_pixel_noise.y.dist = std::normal_distribution<double>(mean, std.y);
         addFakeBall(fb);
     );
 
@@ -85,7 +95,7 @@ void FakeBallDetector::simulateMovementOnField(double dt) {
 }
 
 // TODO: provide MultiBallPercept::BallPercept::radiusInImage
-void FakeBallDetector::provideMultiBallPercept() const {
+void FakeBallDetector::provideMultiBallPercept() {
     MultiBallPercept::BallPercept ballPercept;
     Vector2d pointInImage;
     Vector3d point(0, 0, getFieldInfo().ballRadius);
@@ -95,11 +105,14 @@ void FakeBallDetector::provideMultiBallPercept() const {
         ignore_image_size = true;
     );
 
-    for(const FakeBall& fb: fakeBalls) {
+    for(FakeBall& fb: fakeBalls) {
         point.x = fb.position.x;
         point.y = fb.position.y;
 
         bool in_image_bottom = CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), point, pointInImage);
+        if(fb.enabled_pixel_noise)
+            pointInImage += fb.bottom_pixel_noise();
+
         if(in_image_bottom
             && (ignore_image_size
                 || ( 0 <= pointInImage.x && pointInImage.x <= getCameraInfo().resolutionWidth
@@ -112,6 +125,9 @@ void FakeBallDetector::provideMultiBallPercept() const {
         }
 
         bool in_image_top = CameraGeometry::relativePointToImage(getCameraMatrixTop(), getCameraInfoTop(), point, pointInImage);
+        if(fb.enabled_pixel_noise)
+            pointInImage += fb.top_pixel_noise();
+
         if(in_image_top
             && (ignore_image_size
                 || ( 0 <= pointInImage.x && pointInImage.x <= getCameraInfoTop().resolutionWidth
