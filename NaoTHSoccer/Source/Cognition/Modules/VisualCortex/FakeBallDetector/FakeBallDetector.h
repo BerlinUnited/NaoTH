@@ -47,6 +47,7 @@ public:
         Vector2d position;
         Vector2d velocity;
         bool     const_velocity = false;
+        bool     enabled_detection_noise = false;
         bool     enabled_pixel_noise = false;
 
         struct {
@@ -57,6 +58,13 @@ public:
 
             Vector2d operator()() {return Vector2d(x.dist(x.rng), y.dist(y.rng));}
         } top_pixel_noise, bottom_pixel_noise;
+
+        struct {
+            std::default_random_engine rng;
+            std::bernoulli_distribution dist;
+
+            bool operator()() {return dist(rng);}
+        } detected_in_top, detected_in_bottom;
     };
 
     void clearFakeBalls() {

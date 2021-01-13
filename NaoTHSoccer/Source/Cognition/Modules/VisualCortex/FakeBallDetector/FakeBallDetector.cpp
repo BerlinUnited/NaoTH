@@ -18,21 +18,26 @@ void FakeBallDetector::execute() {
     FakeBall fb;
     static double mean = 0;
     static Vector2d std(std::sqrt(8e-4), std::sqrt(8e-4));
+    static double detection_rate = 0.9;
     MODIFY("Vision:FakeBallDetector:new_ball:x", fb.position.x);
     MODIFY("Vision:FakeBallDetector:new_ball:y", fb.position.y);
     MODIFY("Vision:FakeBallDetector:new_ball:vx", fb.velocity.x);
     MODIFY("Vision:FakeBallDetector:new_ball:vy", fb.velocity.y);
     MODIFY("Vision:FakeBallDetector:new_ball:const_velocity", fb.const_velocity);
     MODIFY("Vision:FakeBallDetector:new_ball:enable_pixel_noise", fb.enabled_pixel_noise);
+    MODIFY("Vision:FakeBallDetector:new_ball:enable_detection_noise", fb.enabled_detection_noise);
     MODIFY("Vision:FakeBallDetector:new_ball:noise:pixel_mean", mean);
     MODIFY("Vision:FakeBallDetector:new_ball:noise:pixel_std_x", std.x);
     MODIFY("Vision:FakeBallDetector:new_ball:noise:pixel_std_y", std.y);
+    MODIFY("Vision:FakeBallDetector:new_ball:noise:detection_rate", detection_rate);
 
     DEBUG_REQUEST_ON_DEACTIVE("Vision:FakeBallDetector:add_new_ball",
         fb.top_pixel_noise.x.dist = std::normal_distribution<double>(mean, std.x);
         fb.top_pixel_noise.y.dist = std::normal_distribution<double>(mean, std.y);
         fb.bottom_pixel_noise.x.dist = std::normal_distribution<double>(mean, std.x);
         fb.bottom_pixel_noise.y.dist = std::normal_distribution<double>(mean, std.y);
+        fb.detected_in_top.dist = std::bernoulli_distribution(detection_rate);
+        fb.detected_in_bottom.dist = std::bernoulli_distribution(detection_rate);
         addFakeBall(fb);
     );
 
@@ -114,6 +119,7 @@ void FakeBallDetector::provideMultiBallPercept() {
             pointInImage += fb.bottom_pixel_noise();
 
         if(in_image_bottom
+            && (not fb.enabled_detection_noise || fb.detected_in_bottom())
             && (ignore_image_size
                 || ( 0 <= pointInImage.x && pointInImage.x <= getCameraInfo().resolutionWidth
                     && 0 <= pointInImage.y && pointInImage.y <= getCameraInfo().resolutionHeight)))
@@ -129,6 +135,7 @@ void FakeBallDetector::provideMultiBallPercept() {
             pointInImage += fb.top_pixel_noise();
 
         if(in_image_top
+            && (not fb.enabled_detection_noise || fb.detected_in_top())
             && (ignore_image_size
                 || ( 0 <= pointInImage.x && pointInImage.x <= getCameraInfoTop().resolutionWidth
                     && 0 <= pointInImage.y && pointInImage.y <= getCameraInfoTop().resolutionHeight)))
