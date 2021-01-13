@@ -43,6 +43,12 @@ void FakeBallDetector::execute() {
                   f.position.x + f.velocity.x,
                   f.position.y + f.velocity.y);
         }
+
+        PEN("7f7f7fFF", 20);
+        CIRCLE(fb.position.x, fb.position.y, getFieldInfo().ballRadius-10);
+        ARROW(fb.position.x, fb.position.y,
+              fb.position.x + fb.velocity.x,
+              fb.position.y + fb.velocity.y);
     );
 
     provideMultiBallPercept();
