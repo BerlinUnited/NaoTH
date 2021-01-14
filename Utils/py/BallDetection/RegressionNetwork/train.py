@@ -16,30 +16,6 @@ import utility_functions.model_zoo as model_zoo
 DATA_DIR = Path(Path(__file__).parent.absolute() / "data").resolve()
 
 
-class AccHistory(keras.callbacks.Callback):
-    def on_train_begin(self, logs={}):
-        self.acc = []
-
-    def on_epoch_end(self, batch, logs={}):
-        self.acc.append(logs.get('acc'))
-        prev = None
-        max_idx = np.array(self.acc).argmax()
-        offset = max(0, len(self.acc) - 10)
-        print("Accuracy history:")
-        for (idx, a) in enumerate(self.acc[-10:]):
-            idx = idx + offset
-            if prev is None:
-                print("   {:.4f}".format(a))
-            else:
-                if max_idx == idx:
-                    print("-> {:.4f} ({:+.4f}) [max]".format(a, (a - prev)))
-                else:
-                    print("-> {:.4f} ({:+.4f}) ".format(a, (a - prev)))
-            prev = a
-        if 0 <= max_idx < len(self.acc):
-            print("Maximum is {:.4f}".format(self.acc[max_idx]))
-
-
 def str2bool(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
         return True
@@ -88,21 +64,11 @@ def main(raw_args=None, model=None):
     else:
         print("ERROR: No model specified")
         exit(1)
-    # Define precision and recall for 0.5, 0.8 and 0.9 threshold
-    # class_id=3 means use the third element of the output vector
-    precision_class_05 = tf.keras.metrics.Precision(name="precision_classifcation_0.5", thresholds=0.5, class_id=3)
-    recall_class_05 = tf.keras.metrics.Recall(name="recall_classifcation_0.5", thresholds=0.5, class_id=3)
-    precision_class_08 = tf.keras.metrics.Precision(name="precision_classifcation_0.8", thresholds=0.8, class_id=3)
-    recall_class_08 = tf.keras.metrics.Recall(name="recall_classifcation_0.8", thresholds=0.8, class_id=3)
-    precision_class_09 = tf.keras.metrics.Precision(name="precision_classifcation_0.9", thresholds=0.9, class_id=3)
-    recall_class_09 = tf.keras.metrics.Recall(name="recall_classifcation_0.9", thresholds=0.9, class_id=3)
 
     # For using custom loss import your loss function and use the name of the function as loss argument.
-    # NOTE Tensorflow 2 does not allow precision metrics for regression tasks
     model.compile(loss='mean_squared_error',
                   optimizer='adam',
-                  metrics=['accuracy', precision_class_05, recall_class_05,
-                           precision_class_08, recall_class_08, precision_class_09, recall_class_09])
+                  metrics=['accuracy'])
 
     """
         The save callback will overwrite the previous models if the new model is better then the last. Restarting the 

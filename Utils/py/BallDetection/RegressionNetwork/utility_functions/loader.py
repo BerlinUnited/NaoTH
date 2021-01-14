@@ -22,9 +22,11 @@ def get_blender_patch_paths(path):
     patch_folders = glob(path + "/**/ball_patch_bw")
     patch_noball_folders = glob(path + "/**/noball_patch_bw")
     patch_folders += patch_noball_folders
+
     mask_folders = glob(path + "/**/ball_patch_mask")
     mask_noball_folders = glob(path + "/**/noball_patch_mask")
     mask_folders += mask_noball_folders
+
     return zip(patch_folders, mask_folders)
 
 
