@@ -5,7 +5,7 @@ channels:
   - defaults
 dependencies:
   - python=3.6
-  - tensorflow=1.15.3
-  - numpy=1.19.1
-  - opencv=4.4.0.42
-  - kaggle=1.5.6
+  - tensorflow=2.4.0
+  - numpy=1.19.5
+  - opencv=4.5.1.48
+  - kaggle=1.5.10
