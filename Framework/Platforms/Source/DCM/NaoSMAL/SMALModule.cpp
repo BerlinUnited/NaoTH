@@ -346,7 +346,7 @@ void SMALModule::motionCallbackPost()
 
   static int drop_count = 10;
 
-  NaoSensorData* sensorData = naoSensorData.writing();
+  DCMSensorData* sensorData = naoSensorData.writing();
 
   // current system time (System time, not nao time (!))
   sensorData->timeStamp = NaoTime::getSystemTimeInMilliSeconds();

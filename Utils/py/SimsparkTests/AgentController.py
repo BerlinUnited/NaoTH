@@ -60,8 +60,8 @@ class AgentController(Controller):
             args = [self.app]
             if self.sync:    args.append('--sync')
             if self.number:  args.extend(['-n', str(self.number)])
-            if self.team:    args.extend(['--team', self.team])
-            if self.ss_port: args.extend(['--port', self.ss_port])
+            if self.team:    args.extend(['--team', str(self.team)])
+            if self.ss_port: args.extend(['--port', str(self.ss_port)])
 
             # NOTE: the process must be started in its own session in order to gracefully stop the application.
             #       Otherwise an interrupt (CTRL+C) to the main process is propagated to the child process in the

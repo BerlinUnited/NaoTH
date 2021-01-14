@@ -153,6 +153,13 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   // dribble
   engine.registerBooleanOutputSymbol("motion.dribble", &dribble, &dribbleG);
   engine.registerBooleanInputSymbol("motion.dribble.action_done", &dribbleG);
+
+  //Temporary Collision Symbols
+  engine.registerBooleanInputSymbol("motion.collision.collision_left_bumper", &getCollisionPercept().collision_left_bumper);
+  engine.registerBooleanInputSymbol("motion.collision.collision_right_bumper", &getCollisionPercept().collision_right_bumper);
+  engine.registerDecimalInputSymbol("motion.collision.timeSinceCollisionBumperLeft", &getlastComputedCollisionLeft);
+  engine.registerDecimalInputSymbol("motion.collision.timeSinceCollisionBumperRight", &getlastComputedCollisionRight);
+
 }//end registerSymbols
 
 void MotionSymbols::execute()
@@ -320,6 +327,14 @@ double MotionSymbols::getKickDirection() {
 
 double MotionSymbols::getHeadPitchAngle() {
   return Math::toDegrees(theInstance->getSensorJointData().position[JointData::HeadPitch]);
+}
+
+double MotionSymbols::getlastComputedCollisionRight() {
+    return theInstance->getFrameInfo().getTimeInSeconds() - theInstance->getCollisionPercept().lastComputedCollisionRight;
+}
+
+double MotionSymbols::getlastComputedCollisionLeft(){
+    return theInstance->getFrameInfo().getTimeInSeconds() - theInstance->getCollisionPercept().lastComputedCollisionLeft;
 }
 
 double MotionSymbols::getHeadYawAngle() {

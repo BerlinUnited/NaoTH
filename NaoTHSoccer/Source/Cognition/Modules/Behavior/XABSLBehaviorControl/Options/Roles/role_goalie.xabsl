@@ -25,6 +25,9 @@ option role_goalie
          goto clear_ball;
        else if (action_done)
          goto stand_and_look_at_ball;
+       // goalie is "behind" the goal
+       else if (abs(value = robot_pose.planned.y) > (field.yPosLeftGoal + 50) && robot_pose.planned.x < (field.xPosOwnGroundline+50))
+        goto return_to_field;
        else 
          stay;
      }
@@ -45,6 +48,9 @@ option role_goalie
          goto clear_ball;
        else if (action_done)
          goto stand_and_look_at_ball;
+       // goalie is "behind" the goal
+       else if (abs(value = robot_pose.planned.y) > (field.yPosLeftGoal + 50) && robot_pose.planned.x < (field.xPosOwnGroundline+50))
+        goto return_to_field;
        else 
          stay;
      }
@@ -56,6 +62,28 @@ option role_goalie
          );
       head.control_mode = search_for_ball_goalie;
      }
+  }
+
+  // if the goalie knows where he is and he's somewhere "behind" the goal,
+  // he should first return the the field before going back to his home position (avoid running into the goal net)
+  // NOTE: this should be part of a path planner!
+  state return_to_field {
+    decision {
+      else if(strategy.role_dynamic == striker)
+        goto clear_ball;
+      else if (abs(value = robot_pose.planned.y) <= (field.yPosLeftGoal + 100) || robot_pose.planned.x >= (field.xPosOwnGroundline+100))
+        goto go_to_strategy_point;
+      else
+        stay;
+    }
+    action {
+      // use 300 to make sure, the goalie is back in the field -> go_to_point proximity!
+       go_to_point_with_USOA(
+         x=field.xPosOwnGroundline+300,
+         y=robot_pose.planned.y < 0 ? (field.yPosRightGoal - 300) : (field.yPosLeftGoal + 300),
+         rot=robot_pose.planned.y < 0 ? 90 : -90);
+       head.control_mode = look_around;
+    }
   }
 
   state stand_and_look_at_ball {
