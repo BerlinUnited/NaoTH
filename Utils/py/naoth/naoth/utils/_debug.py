@@ -123,7 +123,7 @@ class DebugProxy(threading.Thread):
         """
         self._host_connection_cnt += 1
         #asyncio.Task.current_task().set_name('Host-{}'.format(self._host_connection_cnt))  # 3.8+
-        self._hosts.append(asyncio.Task.current_task())
+        self._hosts.append(current_task())
 
         if self._robot is None:
             self._robot = AgentController(self._robot_host, self._robot_port)
@@ -136,7 +136,7 @@ class DebugProxy(threading.Thread):
         if there are no other active host connections, the naoth agent controller/connection is stopped -- to prevent
         blocking unused resources (naoth instance).
         """
-        self._hosts.remove(asyncio.Task.current_task())
+        self._hosts.remove(current_task())
         if len(self._hosts) == 0:
             if self._robot is not None:
                 self._robot.stop()
@@ -722,6 +722,8 @@ class AgentController(threading.Thread):
 
 if sys.version_info < (3, 7):
     # python < 3.7
+    current_task = asyncio.Task.current_task
+
     @asyncio.coroutine
     def open_connection(host=None, port=None, loop=None):
 
@@ -773,3 +775,4 @@ else:
     # python >= 3.7
     open_connection = asyncio.open_connection
     start_server = asyncio.start_server
+    current_task = asyncio.current_task
