@@ -17,8 +17,6 @@
 #include "Tools/Debug/NaoTHAssert.h"
 #include "Tools/NaoTime.h"
 
-#include "Representations/Infrastructure/Image.h"
-
 #include "CameraSettingsV5Manager.h"
 #include "CameraSettingsV6Manager.h"
 
@@ -26,6 +24,12 @@
 #include <iostream>
 #include <cerrno>
 
+// C-includes
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/mman.h> // map or unmap files or devices into memory 
 #include <poll.h>
 
 // needed for the reset of the camera on NAO V6
@@ -112,7 +116,7 @@ V4lCameraHandler::~V4lCameraHandler()
   std::cout << "[V4lCameraHandler] stop done" << std::endl;
 }
 
-void V4lCameraHandler::init(std::string camDevice, CameraInfo::CameraID camID, bool isV6)
+void V4lCameraHandler::init(const std::string& camDevice, CameraInfo::CameraID camID, bool isV6)
 {
   // shut down the camera if it was running before doing anything else
   if (isCapturing) {
@@ -132,10 +136,11 @@ void V4lCameraHandler::init(std::string camDevice, CameraInfo::CameraID camID, b
 
   // open the device
   openDevice();
-  initDevice();
-  setFPS(30);
-
-  // read and print avaliable controlls (for debuging purposes) 
+  initDevice(naoth::IMAGE_WIDTH, naoth::IMAGE_HEIGHT);
+  setFrameRate(30);
+  mapBuffers();
+  
+  // DEBUG: read and print available controls 
   settingsManager->enumerate_controls(fd);
   
   startCapturing();
@@ -191,17 +196,6 @@ void V4lCameraHandler::resetV6Camera() const
   sleep(3);
 }
 
-void V4lCameraHandler::setFPS(int fpsRate)
-{
-  struct v4l2_streamparm fps;
-  memset(&fps, 0, sizeof(fps));
-  fps.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-  VERIFY(!ioctl(fd, VIDIOC_G_PARM, &fps));
-  
-  fps.parm.capture.timeperframe.numerator = 1;
-  fps.parm.capture.timeperframe.denominator = fpsRate;
-  VERIFY(ioctl(fd, VIDIOC_S_PARM, &fps) != -1);
-}
 
 void V4lCameraHandler::openDevice()
 {
@@ -234,29 +228,40 @@ void V4lCameraHandler::openDevice()
   }
 }
 
-void V4lCameraHandler::initDevice()
+void V4lCameraHandler::initDevice(uint32_t width, uint32_t height)
 {
   /* Select video input, video standard and tune here. */
   // set image format
   struct v4l2_format fmt;
   memset(&fmt, 0, sizeof(struct v4l2_format));
   fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-  fmt.fmt.pix.width       = naoth::IMAGE_WIDTH;
-  fmt.fmt.pix.height      = naoth::IMAGE_HEIGHT;
+  fmt.fmt.pix.width       = width;
+  fmt.fmt.pix.height      = height;
   fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
   fmt.fmt.pix.field       = V4L2_FIELD_NONE;
   VERIFY(xioctl(fd, VIDIOC_S_FMT, &fmt) >= 0);
 
-  //NOTE: VIDIOC_S_FMT may change width and height.
-  ASSERT(fmt.fmt.pix.sizeimage == naoth::IMAGE_WIDTH * naoth::IMAGE_HEIGHT * 2);
+  // NOTE: VIDIOC_S_FMT may change width and height.
+  // Make sure the settings were accepted
+  ASSERT(fmt.fmt.pix.sizeimage == width * height * 2);
 
   // query and verify the capabilities
   struct v4l2_capability cap;
   VERIFY(xioctl(fd, VIDIOC_QUERYCAP, &cap) != -1);
   VERIFY(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE);
   VERIFY(cap.capabilities & V4L2_CAP_STREAMING);
+}
 
-  mapBuffers();
+void V4lCameraHandler::setFrameRate(int rate)
+{
+  struct v4l2_streamparm fps;
+  memset(&fps, 0, sizeof(fps));
+  fps.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  VERIFY(!ioctl(fd, VIDIOC_G_PARM, &fps));
+  
+  fps.parm.capture.timeperframe.numerator = 1;
+  fps.parm.capture.timeperframe.denominator = rate;
+  VERIFY(ioctl(fd, VIDIOC_S_PARM, &fps) != -1);
 }
 
 // map buffers

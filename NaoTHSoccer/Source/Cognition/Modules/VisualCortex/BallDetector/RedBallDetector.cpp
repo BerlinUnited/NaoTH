@@ -8,8 +8,6 @@
 
 #include "RedBallDetector.h"
 
-#include <Representations/Infrastructure/CameraInfoConstants.h>
-
 #include "Tools/Math/Geometry.h"
 #include "Tools/CameraGeometry.h"
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
