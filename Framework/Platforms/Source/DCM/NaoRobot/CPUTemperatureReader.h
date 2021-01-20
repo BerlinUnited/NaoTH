@@ -21,7 +21,6 @@ private:
   bool exiting;
   std::thread readThread;
 
-  unsigned int lastGetTime;
   naoth::CpuData data;
   std::mutex  dataMutex;
   

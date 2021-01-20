@@ -16,7 +16,7 @@ This changelog was started on 2020-12-06.
 -
 
 ### Removed
--
+- removed SimulationTest Module. It was only used to for visualization for a paper
 
 ### Fixed
 - 

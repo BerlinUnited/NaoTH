@@ -67,11 +67,11 @@ protected:
       return getBodyState().fall_down_state == BodyState::upright
           && getPlayerInfo().robotState != PlayerInfo::penalized
           && getBallModel().valid
-          && (getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime()) < parameters.maxBallLostTime + myStrikerBonusTime());
+          && (getFrameInfo().getTimeSince(getBallModel().getFrameInfoWhenBallWasSeen().getTime()) < params.maxBallLostTime + myStrikerBonusTime());
   }
 
   int myStrikerBonusTime() {
-      return getRoleDecisionModel().firstStriker == getPlayerInfo().playerNumber ? parameters.strikerBonusTime:0;
+      return getRoleDecisionModel().firstStriker == getPlayerInfo().playerNumber ? params.strikerBonusTime:0;
   }
 
   /**
@@ -180,7 +180,7 @@ protected:
             default: strikerSelectionFunction = &CleanRoleDecision::strikerSelectionByNumber; break;
         }
     }
-  } parameters;
+  } params;
 
 private:
   /**
@@ -199,8 +199,8 @@ private:
   void inline setStrikerRole(unsigned int number);
 
   /* Some radius functions to determine similiar balls. */
-  inline double ballDifferenceRadiusConstant(double /*d*/) { return parameters.firstSecondStrikerMinBallDistance; }
-  inline double ballDifferenceRadiusLinear(double d) { return d * parameters.firstSecondStrikerLinBallDistanceM + parameters.firstSecondStrikerLinBallDistanceN; }
+  inline double ballDifferenceRadiusConstant(double /*d*/) { return params.firstSecondStrikerMinBallDistance; }
+  inline double ballDifferenceRadiusLinear(double d) { return d * params.firstSecondStrikerLinBallDistanceM + params.firstSecondStrikerLinBallDistanceN; }
   inline double ballDifferenceRadiusConstantLinear(double d) { return std::max(ballDifferenceRadiusConstant(d), ballDifferenceRadiusLinear(d)); }
 };
 

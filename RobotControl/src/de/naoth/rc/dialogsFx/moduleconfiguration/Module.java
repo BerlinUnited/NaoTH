@@ -2,6 +2,8 @@ package de.naoth.rc.dialogsFx.moduleconfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 
 /**
  * The module type class. Represents a module with its dependencies
@@ -26,7 +28,7 @@ public class Module implements Type, Comparable<Module>
     /**
      * The module state flag: enabled or disabled
      */
-    private boolean active = false;
+    private final BooleanProperty active = new SimpleBooleanProperty(false);
     /**
      * The requiring representations
      */
@@ -48,7 +50,7 @@ public class Module implements Type, Comparable<Module>
         this.type = type;
         this.name = name;
         this.path = path;
-        this.active = active;
+        this.active.set(active);
     }
 
     /**
@@ -138,6 +140,15 @@ public class Module implements Type, Comparable<Module>
     public List<Type> getProvide() {
         return provide;
     }
+    
+    /**
+     * Returns the active property flag.
+     * 
+     * @return the active property
+     */
+    public BooleanProperty getActiveProperty() {
+        return active;
+    }
 
     /**
      * Returns whether this module is enabled or not
@@ -145,6 +156,6 @@ public class Module implements Type, Comparable<Module>
      * @return true, if enabled, false otherwise
      */
     public boolean isActive() {
-        return active;
+        return active.get();
     }
 }

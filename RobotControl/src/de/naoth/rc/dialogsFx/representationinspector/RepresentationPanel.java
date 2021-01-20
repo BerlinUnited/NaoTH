@@ -13,8 +13,8 @@ import de.naoth.rc.logmanager.BlackBoard;
 import de.naoth.rc.logmanager.LogFrameListener;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -123,7 +123,8 @@ public class RepresentationPanel
         // handle list changes
         cognitionList.getSelectionModel().selectedItemProperty().addListener((o) -> { subscribeRepresentation(cognitionList); });
         motionList.getSelectionModel().selectedItemProperty().addListener((o) -> { subscribeRepresentation(motionList); });
-        logList.getSelectionModel().selectedItemProperty().addListener((o) -> { content.clear(); });
+        // update content view with the new selected representation
+        logList.getSelectionModel().selectedItemProperty().addListener((o) -> { dataHandlerLog.showFrame(); });
 
         // handle search input
         search.textProperty().addListener((ob) -> { search(true); });
@@ -568,18 +569,26 @@ public class RepresentationPanel
      */
     private class DataHandlerLog implements LogFrameListener
     {
-        /** The data for the current frame indexed by representation name. */
-        private final Map<String, byte[]> dataByName = new HashMap<>();
-        
+        /** The data for the "current" frame indexed by representation name. */
+        private final Map<String, byte[]> dataByName = new TreeMap<>();
+
         @Override
         public void newFrame(BlackBoard b) {
-            // clear old frame data
-            dataByName.clear();
+            // NOTE: the blackboard never deletes representations!
+            //       so we don't need to clear the map, since in the next step it is
+            //       overwritten anyway and the ui must only be updated if blackboard
+            //       actually changes.
+
             // map new frame data
-            b.getNames().forEach((name) -> { dataByName.put(name, b.get(name).getData()); });
-            // update list
-            updateList(logList, dataByName.keySet());
-            
+            b.getNames().forEach((name) -> {
+                dataByName.put(name, b.get(name).getData());
+            });
+
+            // update list, if necessary
+            if (logList.getItems().size() != dataByName.keySet().size()) {
+                updateList(logList, dataByName.keySet());
+            }
+
             showFrame();
         }
 

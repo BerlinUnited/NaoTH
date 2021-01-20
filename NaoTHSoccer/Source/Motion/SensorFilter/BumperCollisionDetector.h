@@ -16,13 +16,13 @@
 #include <Tools/Debug/DebugParameterList.h>
 
 BEGIN_DECLARE_MODULE(BumperCollisionDetector)
-REQUIRE(FrameInfo)
-REQUIRE(UltraSoundReceiveData)
-REQUIRE(ButtonData)
-PROVIDE(DebugModify)
-PROVIDE(CollisionModel)
-PROVIDE(DebugParameterList)
-PROVIDE(CollisionPercept)
+  REQUIRE(FrameInfo)
+  REQUIRE(UltraSoundReceiveData)
+  REQUIRE(ButtonData)
+  PROVIDE(DebugModify)
+  PROVIDE(CollisionModel)
+  PROVIDE(DebugParameterList)
+  PROVIDE(CollisionPercept)
 END_DECLARE_MODULE(BumperCollisionDetector)
 
 class BumperCollisionDetector : public BumperCollisionDetectorBase
@@ -44,14 +44,14 @@ public:
     BumperCollisionDetector();
     virtual ~BumperCollisionDetector();
 
-  virtual void execute();
+    virtual void execute();
 private:
     FrameInfo collisionStartTimeLeft;
     FrameInfo collisionStartTimeRight;
     FrameInfo lastBumpTimeLeft;
     FrameInfo lastBumpTimeRight;
-    bool bumperCollisionLeft;
-    bool bumperCollisionRight;
+    //bool bumperCollisionLeft;
+    //bool bumperCollisionRight;
 };
 
 #endif // BumperCollisionDetector_h
