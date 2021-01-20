@@ -4,9 +4,9 @@
     but the code generators support it better
 """
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Convolution2D, LeakyReLU, MaxPooling2D, Flatten, Dense, ReLU, \
+from tensorflow.keras.layers import Convolution2D, LeakyReLU, MaxPooling2D, Flatten, Dense, ReLU, Input, \
     PReLU, Softmax
-
+from tensorflow.keras import Model
 
 # TODO maybe rewrite every model with functional api for more flexibility
 
@@ -365,3 +365,20 @@ def fy_1500_new():
     model.add(Dense(4, activation='relu', name="dense_1"))
 
     return model
+
+
+def fy_1500_new2():
+    # TODO fix the compiler for that
+    input = Input(shape=(16, 16, 1))
+    x = Convolution2D(4, (3, 3), padding='same', name="Conv2D_1", activation='relu')(input)
+    x = Convolution2D(4, (3, 3), padding='same', name="Conv2D_2", activation='relu')(x)
+    x = MaxPooling2D(pool_size=(2, 2))(x)
+    x = Convolution2D(8, (3, 3), padding='same', name="Conv2D_3", activation="relu")(x)
+    x = MaxPooling2D(pool_size=(2, 2), name="pooling_1")(x)
+    x = Convolution2D(8, (3, 3), padding='same', name="Conv2D_4", activation='relu')(x)
+    x = Convolution2D(8, (1, 1), padding='same', name="Conv2D_5")(x)
+    x = Flatten(name="flatten_1")(x)
+    # output is radius, x, y, confidence
+    predictions = Dense(4, activation='relu', name="dense_1")(x)
+
+    return Model(inputs=input, outputs=predictions)
