@@ -50,20 +50,31 @@ public:
         bool     enabled_detection_noise = false;
         bool     enabled_pixel_noise = false;
 
-        struct {
-            struct {
+        struct MultivariateNormalNoise{
+            struct Dimension {
                 std::default_random_engine rng;
                 std::normal_distribution<double> dist;
+
+                // required by cppyy
+                void setDist(double mean, double std){
+                    dist = std::normal_distribution<double>(mean, std);
+                }
             } x, y;
 
             Vector2d operator()() {return Vector2d(x.dist(x.rng), y.dist(y.rng));}
+
         } top_pixel_noise, bottom_pixel_noise;
 
-        struct {
+        struct BernoulliNoise{
             std::default_random_engine rng;
             std::bernoulli_distribution dist;
 
             bool operator()() {return dist(rng);}
+
+            // required by cppyy
+            void setDist(double mean){
+                dist = std::bernoulli_distribution(mean);
+            }
         } detected_in_top, detected_in_bottom;
     };
 
