@@ -1,6 +1,6 @@
 
-#ifndef _AUDIO_CONTROL_H_
-#define _AUDIO_CONTROL_H_
+#ifndef AUDIO_CONTROL_H
+#define AUDIO_CONTROL_H
 
 #include <string>
 #include "Tools/DataStructures/Printable.h"
@@ -20,5 +20,5 @@ namespace naoth
   };
 }
 
-#endif  /* _AUDIO_CONTROL_H_ */
+#endif  /* AUDIO_CONTROL_H */
 

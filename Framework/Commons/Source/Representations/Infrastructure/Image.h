@@ -39,7 +39,7 @@ private:
   bool selfCreatedImage;
 
 private:
-  /** raw data in YUV422 format */
+  /** raw image data in YUV422 format */
   unsigned char* yuv422;
 
 public:

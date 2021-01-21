@@ -1,6 +1,5 @@
 # Tensorflow for Balldetection
-The requirements are defined in requirements.txt. You can install them with pip with 
-<<<<<<< HEAD
+The requirements are defined in requirements.txt. You can install them with pip with
 
 ```sh
 pip install -r requirements.txt
