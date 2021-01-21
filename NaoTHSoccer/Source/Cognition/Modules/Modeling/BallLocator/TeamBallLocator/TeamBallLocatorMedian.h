@@ -77,7 +77,7 @@ class TeamBallLocatorMedian : protected TeamBallLocatorMedianBase
       unsigned int maxTimeOffset;
       unsigned int maxTimeValid;
 
-    } theParameters;
+    } params;
 
 
   public:

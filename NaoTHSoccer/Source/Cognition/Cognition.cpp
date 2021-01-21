@@ -115,7 +115,6 @@
 #include "Modules/Modeling/StaticDebugModelProvider/StaticDebugModelProvider.h"
 #include "Modules/Modeling/PlayersProvider/DebugPlayersProvider.h"
 
-#include "Modules/Modeling/Simulation/SimulationTest.h"
 #include "Modules/Modeling/Simulation/Simulation.h"
 #include "Modules/Modeling/Simulation/KickDirectionSimulator.h"
 #include "Modules/Modeling/SelfLocator/SituationPriorProvider/SituationPriorProvider.h"
@@ -262,7 +261,6 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   REGISTER_MODULE(KickDirectionSimulator);
   REGISTER_MODULE(Simulation);
-  REGISTER_MODULE(SimulationTest);
   REGISTER_MODULE(StaticDebugModelProvider);
 
   // behavior
@@ -271,9 +269,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   REGISTER_MODULE(PathPlanner);
   REGISTER_MODULE(PathPlanner2018);
 
-  // This is to prevent accidental use of a non working Camera Matrix Corrector. A different name is shown in Robotcontrol
-  //REGISTER_MODULE(CameraMatrixCorrectorV3);
-  registerModule<CameraMatrixCorrectorV3>("FIXMECameraMatrixCorrectorV3", false);
+  REGISTER_MODULE(CameraMatrixCorrectorV3);
 
   REGISTER_MODULE(TeamCommSender);
   

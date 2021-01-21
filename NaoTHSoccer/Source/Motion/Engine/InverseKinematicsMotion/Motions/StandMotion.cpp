@@ -35,8 +35,6 @@ StandMotion::StandMotion()
 
   fullCorrection(true),
   stiffnessIsReady(false),
-  relaxedPoseInitialized(false),
-  resetedAfterLifting(false),
   lastFrameInfo(getFrameInfo())
 {
   // create

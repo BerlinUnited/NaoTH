@@ -18,7 +18,6 @@ genfiles.properties
 *.pyc
 .idea/
 naoth.egg-info*
-*_pb2.py
 
 #pyenv
 .python-version
@@ -28,12 +27,6 @@ trace.dump.*
 projectconfig.user.lua
 *~
 compile_commands.json
-
-#messages
-RobotControl/src/de/naoth/rc/core/messages/*
-!RobotControl/src/de/naoth/rc/core/messages/MessageRegistry.java
-NaoTHSoccer/Source/Messages
-Framework/Commons/Source/Messages
 
 #particular files
 behavior-ic.dat

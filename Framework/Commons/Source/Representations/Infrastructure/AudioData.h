@@ -18,8 +18,8 @@
 * @author <a href="mailto:schlottb@informatik.hu-berlin.de">Benjamin Schlotter</a>
 */
 
-#ifndef _AUDIO_DATA_H_
-#define _AUDIO_DATA_H_
+#ifndef AUDIO_DATA_H
+#define AUDIO_DATA_H
 
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
@@ -41,8 +41,8 @@ public:
   };
 
 public:
-  int sampleRate;
-  int numChannels;
+  unsigned int sampleRate;
+  unsigned int numChannels;
   unsigned int timestamp;
 
   std::vector<short> samples; /* Samples are interleaved. */
@@ -60,4 +60,4 @@ public:
 };
 }//end namespace naoth
 
-#endif  /* _AUDIO_DATA_H_ */
+#endif  /* AUDIO_DATA_H */

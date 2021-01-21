@@ -4,13 +4,23 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
 <SplitPane dividerPositions="0.3" xmlns="http://javafx.com/javafx/8.0.202-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.naoth.rc.dialogsFx.parameters.ParametersPanel">
    <items>
-      <TreeView fx:id="params" onMouseClicked="#fxDoubleClick" prefHeight="200.0" prefWidth="200.0" showRoot="false" />
+      <StackPane>
+         <children>
+            <TreeView fx:id="params" onKeyPressed="#fxParamsTreeShortcuts" onMouseClicked="#fxDoubleClick" prefHeight="200.0" prefWidth="200.0" showRoot="false" />
+            <TextField fx:id="search" focusTraversable="false" maxWidth="150.0" promptText="Search" visible="false" StackPane.alignment="BOTTOM_RIGHT">
+               <StackPane.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </StackPane.margin>
+            </TextField>
+         </children>
+      </StackPane>
       <StackPane prefHeight="150.0" prefWidth="200.0">
          <children>
             <TextArea fx:id="values" onKeyPressed="#fxValuesShortcuts" prefHeight="200.0" prefWidth="200.0">
