@@ -124,7 +124,9 @@ void FakeBallDetector::provideMultiBallPercept() {
                 || ( 0 <= pointInImage.x && pointInImage.x <= getCameraInfo().resolutionWidth
                     && 0 <= pointInImage.y && pointInImage.y <= getCameraInfo().resolutionHeight)))
         {
-            ballPercept.positionOnField = fb.position;
+            CameraGeometry::imagePixelToFieldCoord(getCameraMatrix(), getCameraInfo(),
+                                                   pointInImage.x, pointInImage.y,
+                                                   getFieldInfo().ballRadius, ballPercept.positionOnField);
             ballPercept.centerInImage = pointInImage;
             ballPercept.cameraId = naoth::CameraInfo::Bottom;
             getMultiBallPercept().add(ballPercept);
@@ -140,7 +142,9 @@ void FakeBallDetector::provideMultiBallPercept() {
                 || ( 0 <= pointInImage.x && pointInImage.x <= getCameraInfoTop().resolutionWidth
                     && 0 <= pointInImage.y && pointInImage.y <= getCameraInfoTop().resolutionHeight)))
         {
-            ballPercept.positionOnField = fb.position;
+            CameraGeometry::imagePixelToFieldCoord(getCameraMatrixTop(), getCameraInfoTop(),
+                                                   pointInImage.x, pointInImage.y,
+                                                   getFieldInfo().ballRadius, ballPercept.positionOnField);
             ballPercept.centerInImage = pointInImage;
             ballPercept.cameraId = naoth::CameraInfo::Top;
             getMultiBallPercept().add(ballPercept);
