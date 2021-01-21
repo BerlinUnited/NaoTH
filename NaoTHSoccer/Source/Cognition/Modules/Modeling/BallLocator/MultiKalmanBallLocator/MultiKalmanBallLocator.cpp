@@ -654,8 +654,8 @@ void MultiKalmanBallLocator::doDebugRequest()
       if(getMultiBallPercept().wasSeen()) {
         FIELD_DRAWING_CONTEXT;
         PEN("FF0000", 10);
-        for(MultiBallPercept::ConstABPIterator iter = getMultiBallPercept().begin(); iter != getMultiBallPercept().end(); iter++) {
-            CIRCLE((*iter).positionOnField.x, (*iter).positionOnField.y, getFieldInfo().ballRadius-5);
+        for(const auto& mbp: getMultiBallPercept().getPercepts()){
+            CIRCLE(mbp.positionOnField.x, mbp.positionOnField.y, getFieldInfo().ballRadius-5);
         }
       }
     );
