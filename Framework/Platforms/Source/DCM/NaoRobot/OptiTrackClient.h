@@ -14,7 +14,6 @@ class OptiTrackClient
 {
 public:
   OptiTrackClient();
-
   ~OptiTrackClient();
 
 private:
@@ -32,6 +31,7 @@ private:
   char readBuffer[readBufferSize];
   
   GSocket* socket;
+  GCancellable* cancellable; // this is used to close cancel the listening on stop
   GSocketAddress* serverAddress;
   std::thread socketThread;
   
