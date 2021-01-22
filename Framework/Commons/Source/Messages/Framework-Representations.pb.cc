@@ -73,6 +73,21 @@ public:
  ::google::protobuf::internal::ExplicitlyConstructed<InertialSensorData>
      _instance;
 } _InertialSensorData_default_instance_;
+class GPSDataDefaultTypeInternal {
+public:
+ ::google::protobuf::internal::ExplicitlyConstructed<GPSData>
+     _instance;
+} _GPSData_default_instance_;
+class OptiTrackData_TrackableItemDefaultTypeInternal {
+public:
+ ::google::protobuf::internal::ExplicitlyConstructed<OptiTrackData_TrackableItem>
+     _instance;
+} _OptiTrackData_TrackableItem_default_instance_;
+class OptiTrackDataDefaultTypeInternal {
+public:
+ ::google::protobuf::internal::ExplicitlyConstructed<OptiTrackData>
+     _instance;
+} _OptiTrackData_default_instance_;
 class ButtonDataDefaultTypeInternal {
 public:
  ::google::protobuf::internal::ExplicitlyConstructed<ButtonData>
@@ -84,7 +99,7 @@ namespace protobuf_Framework_2dRepresentations_2eproto {
 
 namespace {
 
-::google::protobuf::Metadata file_level_metadata[12];
+::google::protobuf::Metadata file_level_metadata[15];
 const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[2];
 
 }  // namespace
@@ -100,6 +115,9 @@ PROTOBUF_CONSTEXPR_VAR ::google::protobuf::internal::AuxillaryParseTableField
 };
 PROTOBUF_CONSTEXPR_VAR ::google::protobuf::internal::ParseTable const
     TableStruct::schema[] GOOGLE_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
+  { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
+  { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
+  { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
   { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
   { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
   { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
@@ -278,6 +296,29 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_ATTRIBUTE_SECTION
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(InertialSensorData, data_),
   ~0u,
   0,
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GPSData, _has_bits_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GPSData, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GPSData, pose_),
+  0,
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OptiTrackData_TrackableItem, _has_bits_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OptiTrackData_TrackableItem, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OptiTrackData_TrackableItem, name_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OptiTrackData_TrackableItem, pose_),
+  0,
+  1,
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OptiTrackData, _has_bits_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OptiTrackData, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OptiTrackData, trackables_),
+  ~0u,
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ButtonData, _has_bits_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ButtonData, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -302,7 +343,10 @@ static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_ATTR
   { 130, 138, sizeof(AccelerometerData)},
   { 141, 150, sizeof(GyrometerData)},
   { 154, 161, sizeof(InertialSensorData)},
-  { 163, 171, sizeof(ButtonData)},
+  { 163, 169, sizeof(GPSData)},
+  { 170, 177, sizeof(OptiTrackData_TrackableItem)},
+  { 179, 185, sizeof(OptiTrackData)},
+  { 186, 194, sizeof(ButtonData)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -317,6 +361,9 @@ static ::google::protobuf::Message const * const file_default_instances[] = {
   reinterpret_cast<const ::google::protobuf::Message*>(&_AccelerometerData_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_GyrometerData_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_InertialSensorData_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&_GPSData_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&_OptiTrackData_TrackableItem_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&_OptiTrackData_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_ButtonData_default_instance_),
 };
 
@@ -338,7 +385,7 @@ void protobuf_AssignDescriptorsOnce() {
 void protobuf_RegisterTypes(const ::std::string&) GOOGLE_ATTRIBUTE_COLD;
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 12);
+  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 15);
 }
 
 }  // namespace
@@ -369,7 +416,13 @@ void TableStruct::InitDefaultsImpl() {
   ::google::protobuf::internal::OnShutdownDestroyMessage(
       &_GyrometerData_default_instance_);_InertialSensorData_default_instance_._instance.DefaultConstruct();
   ::google::protobuf::internal::OnShutdownDestroyMessage(
-      &_InertialSensorData_default_instance_);_ButtonData_default_instance_._instance.DefaultConstruct();
+      &_InertialSensorData_default_instance_);_GPSData_default_instance_._instance.DefaultConstruct();
+  ::google::protobuf::internal::OnShutdownDestroyMessage(
+      &_GPSData_default_instance_);_OptiTrackData_TrackableItem_default_instance_._instance.DefaultConstruct();
+  ::google::protobuf::internal::OnShutdownDestroyMessage(
+      &_OptiTrackData_TrackableItem_default_instance_);_OptiTrackData_default_instance_._instance.DefaultConstruct();
+  ::google::protobuf::internal::OnShutdownDestroyMessage(
+      &_OptiTrackData_default_instance_);_ButtonData_default_instance_._instance.DefaultConstruct();
   ::google::protobuf::internal::OnShutdownDestroyMessage(
       &_ButtonData_default_instance_);_Image_default_instance_._instance.get_mutable()->camerainfo_ = const_cast< ::naothmessages::CameraInfo*>(
       ::naothmessages::CameraInfo::internal_default_instance());
@@ -385,6 +438,10 @@ void TableStruct::InitDefaultsImpl() {
       ::naothmessages::DoubleVector3::internal_default_instance());
   _InertialSensorData_default_instance_._instance.get_mutable()->data_ = const_cast< ::naothmessages::DoubleVector2*>(
       ::naothmessages::DoubleVector2::internal_default_instance());
+  _GPSData_default_instance_._instance.get_mutable()->pose_ = const_cast< ::naothmessages::Pose3D*>(
+      ::naothmessages::Pose3D::internal_default_instance());
+  _OptiTrackData_TrackableItem_default_instance_._instance.get_mutable()->pose_ = const_cast< ::naothmessages::Pose3D*>(
+      ::naothmessages::Pose3D::internal_default_instance());
 }
 
 void InitDefaults() {
@@ -439,20 +496,25 @@ void AddDescriptorsImpl() {
       "\n\007rawData\030\003 \001(\0132\034.naothmessages.DoubleVe"
       "ctor3\022\013\n\003ref\030\004 \001(\001\"^\n\022InertialSensorData"
       "\022\034\n\020legacyPackedData\030\001 \003(\001B\002\030\001\022*\n\004data\030\002"
-      " \001(\0132\034.naothmessages.DoubleVector2\"\323\002\n\nB"
-      "uttonData\022\021\n\tisPressed\030\001 \003(\010\022\032\n\022numOfFra"
-      "mesPressed\030\002 \003(\r\022\024\n\014eventCounter\030\003 \003(\r\"\377"
-      "\001\n\010ButtonID\022\t\n\005Chest\020\000\022\020\n\014LeftFootLeft\020\001"
-      "\022\021\n\rLeftFootRight\020\002\022\021\n\rRightFootLeft\020\003\022\022"
-      "\n\016RightFootRight\020\004\022\r\n\tHeadFront\020\005\022\016\n\nHea"
-      "dMiddle\020\006\022\014\n\010HeadRear\020\007\022\020\n\014LeftHandBack\020"
-      "\010\022\020\n\014LeftHandLeft\020\t\022\021\n\rLeftHandRight\020\n\022\021"
-      "\n\rRightHandBack\020\013\022\021\n\rRightHandLeft\020\014\022\022\n\016"
-      "RightHandRight\020\rB\033\n\031de.naoth.rc.core.mes"
-      "sages"
+      " \001(\0132\034.naothmessages.DoubleVector2\".\n\007GP"
+      "SData\022#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose"
+      "3D\"\223\001\n\rOptiTrackData\022>\n\ntrackables\030\001 \003(\013"
+      "2*.naothmessages.OptiTrackData.Trackable"
+      "Item\032B\n\rTrackableItem\022\014\n\004name\030\001 \002(\t\022#\n\004p"
+      "ose\030\002 \002(\0132\025.naothmessages.Pose3D\"\323\002\n\nBut"
+      "tonData\022\021\n\tisPressed\030\001 \003(\010\022\032\n\022numOfFrame"
+      "sPressed\030\002 \003(\r\022\024\n\014eventCounter\030\003 \003(\r\"\377\001\n"
+      "\010ButtonID\022\t\n\005Chest\020\000\022\020\n\014LeftFootLeft\020\001\022\021"
+      "\n\rLeftFootRight\020\002\022\021\n\rRightFootLeft\020\003\022\022\n\016"
+      "RightFootRight\020\004\022\r\n\tHeadFront\020\005\022\016\n\nHeadM"
+      "iddle\020\006\022\014\n\010HeadRear\020\007\022\020\n\014LeftHandBack\020\010\022"
+      "\020\n\014LeftHandLeft\020\t\022\021\n\rLeftHandRight\020\n\022\021\n\r"
+      "RightHandBack\020\013\022\021\n\rRightHandLeft\020\014\022\022\n\016Ri"
+      "ghtHandRight\020\rB\033\n\031de.naoth.rc.core.messa"
+      "ges"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 2165);
+      descriptor, 2363);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Framework-Representations.proto", &protobuf_RegisterTypes);
   ::naothmessages::protobuf_CommonTypes_2eproto::AddDescriptors();
@@ -6974,6 +7036,1040 @@ void InertialSensorData::set_allocated_data(::naothmessages::DoubleVector2* data
     clear_has_data();
   }
   // @@protoc_insertion_point(field_set_allocated:naothmessages.InertialSensorData.data)
+}
+
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
+
+// ===================================================================
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int GPSData::kPoseFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+GPSData::GPSData()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
+    protobuf_Framework_2dRepresentations_2eproto::InitDefaults();
+  }
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:naothmessages.GPSData)
+}
+GPSData::GPSData(const GPSData& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL),
+      _has_bits_(from._has_bits_),
+      _cached_size_(0) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  if (from.has_pose()) {
+    pose_ = new ::naothmessages::Pose3D(*from.pose_);
+  } else {
+    pose_ = NULL;
+  }
+  // @@protoc_insertion_point(copy_constructor:naothmessages.GPSData)
+}
+
+void GPSData::SharedCtor() {
+  _cached_size_ = 0;
+  pose_ = NULL;
+}
+
+GPSData::~GPSData() {
+  // @@protoc_insertion_point(destructor:naothmessages.GPSData)
+  SharedDtor();
+}
+
+void GPSData::SharedDtor() {
+  if (this != internal_default_instance()) delete pose_;
+}
+
+void GPSData::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* GPSData::descriptor() {
+  protobuf_Framework_2dRepresentations_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_Framework_2dRepresentations_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
+}
+
+const GPSData& GPSData::default_instance() {
+  protobuf_Framework_2dRepresentations_2eproto::InitDefaults();
+  return *internal_default_instance();
+}
+
+GPSData* GPSData::New(::google::protobuf::Arena* arena) const {
+  GPSData* n = new GPSData;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void GPSData::Clear() {
+// @@protoc_insertion_point(message_clear_start:naothmessages.GPSData)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  if (has_pose()) {
+    GOOGLE_DCHECK(pose_ != NULL);
+    pose_->::naothmessages::Pose3D::Clear();
+  }
+  _has_bits_.Clear();
+  _internal_metadata_.Clear();
+}
+
+bool GPSData::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:naothmessages.GPSData)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required .naothmessages.Pose3D pose = 1;
+      case 1: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_pose()));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, _internal_metadata_.mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:naothmessages.GPSData)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:naothmessages.GPSData)
+  return false;
+#undef DO_
+}
+
+void GPSData::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:naothmessages.GPSData)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = _has_bits_[0];
+  // required .naothmessages.Pose3D pose = 1;
+  if (cached_has_bits & 0x00000001u) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, *this->pose_, output);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        _internal_metadata_.unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:naothmessages.GPSData)
+}
+
+::google::protobuf::uint8* GPSData::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:naothmessages.GPSData)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = _has_bits_[0];
+  // required .naothmessages.Pose3D pose = 1;
+  if (cached_has_bits & 0x00000001u) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        1, *this->pose_, deterministic, target);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:naothmessages.GPSData)
+  return target;
+}
+
+size_t GPSData::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:naothmessages.GPSData)
+  size_t total_size = 0;
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        _internal_metadata_.unknown_fields());
+  }
+  // required .naothmessages.Pose3D pose = 1;
+  if (has_pose()) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        *this->pose_);
+  }
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = cached_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void GPSData::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:naothmessages.GPSData)
+  GOOGLE_DCHECK_NE(&from, this);
+  const GPSData* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const GPSData>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:naothmessages.GPSData)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:naothmessages.GPSData)
+    MergeFrom(*source);
+  }
+}
+
+void GPSData::MergeFrom(const GPSData& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:naothmessages.GPSData)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from.has_pose()) {
+    mutable_pose()->::naothmessages::Pose3D::MergeFrom(from.pose());
+  }
+}
+
+void GPSData::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:naothmessages.GPSData)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void GPSData::CopyFrom(const GPSData& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:naothmessages.GPSData)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool GPSData::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+  if (has_pose()) {
+    if (!this->pose_->IsInitialized()) return false;
+  }
+  return true;
+}
+
+void GPSData::Swap(GPSData* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void GPSData::InternalSwap(GPSData* other) {
+  using std::swap;
+  swap(pose_, other->pose_);
+  swap(_has_bits_[0], other->_has_bits_[0]);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata GPSData::GetMetadata() const {
+  protobuf_Framework_2dRepresentations_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_Framework_2dRepresentations_2eproto::file_level_metadata[kIndexInFileMessages];
+}
+
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// GPSData
+
+// required .naothmessages.Pose3D pose = 1;
+bool GPSData::has_pose() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+void GPSData::set_has_pose() {
+  _has_bits_[0] |= 0x00000001u;
+}
+void GPSData::clear_has_pose() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+void GPSData::clear_pose() {
+  if (pose_ != NULL) pose_->::naothmessages::Pose3D::Clear();
+  clear_has_pose();
+}
+const ::naothmessages::Pose3D& GPSData::pose() const {
+  const ::naothmessages::Pose3D* p = pose_;
+  // @@protoc_insertion_point(field_get:naothmessages.GPSData.pose)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::Pose3D*>(
+      &::naothmessages::_Pose3D_default_instance_);
+}
+::naothmessages::Pose3D* GPSData::mutable_pose() {
+  set_has_pose();
+  if (pose_ == NULL) {
+    pose_ = new ::naothmessages::Pose3D;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.GPSData.pose)
+  return pose_;
+}
+::naothmessages::Pose3D* GPSData::release_pose() {
+  // @@protoc_insertion_point(field_release:naothmessages.GPSData.pose)
+  clear_has_pose();
+  ::naothmessages::Pose3D* temp = pose_;
+  pose_ = NULL;
+  return temp;
+}
+void GPSData::set_allocated_pose(::naothmessages::Pose3D* pose) {
+  delete pose_;
+  pose_ = pose;
+  if (pose) {
+    set_has_pose();
+  } else {
+    clear_has_pose();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.GPSData.pose)
+}
+
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
+
+// ===================================================================
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int OptiTrackData_TrackableItem::kNameFieldNumber;
+const int OptiTrackData_TrackableItem::kPoseFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+OptiTrackData_TrackableItem::OptiTrackData_TrackableItem()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
+    protobuf_Framework_2dRepresentations_2eproto::InitDefaults();
+  }
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:naothmessages.OptiTrackData.TrackableItem)
+}
+OptiTrackData_TrackableItem::OptiTrackData_TrackableItem(const OptiTrackData_TrackableItem& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL),
+      _has_bits_(from._has_bits_),
+      _cached_size_(0) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.has_name()) {
+    name_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.name_);
+  }
+  if (from.has_pose()) {
+    pose_ = new ::naothmessages::Pose3D(*from.pose_);
+  } else {
+    pose_ = NULL;
+  }
+  // @@protoc_insertion_point(copy_constructor:naothmessages.OptiTrackData.TrackableItem)
+}
+
+void OptiTrackData_TrackableItem::SharedCtor() {
+  _cached_size_ = 0;
+  name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  pose_ = NULL;
+}
+
+OptiTrackData_TrackableItem::~OptiTrackData_TrackableItem() {
+  // @@protoc_insertion_point(destructor:naothmessages.OptiTrackData.TrackableItem)
+  SharedDtor();
+}
+
+void OptiTrackData_TrackableItem::SharedDtor() {
+  name_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (this != internal_default_instance()) delete pose_;
+}
+
+void OptiTrackData_TrackableItem::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* OptiTrackData_TrackableItem::descriptor() {
+  protobuf_Framework_2dRepresentations_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_Framework_2dRepresentations_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
+}
+
+const OptiTrackData_TrackableItem& OptiTrackData_TrackableItem::default_instance() {
+  protobuf_Framework_2dRepresentations_2eproto::InitDefaults();
+  return *internal_default_instance();
+}
+
+OptiTrackData_TrackableItem* OptiTrackData_TrackableItem::New(::google::protobuf::Arena* arena) const {
+  OptiTrackData_TrackableItem* n = new OptiTrackData_TrackableItem;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void OptiTrackData_TrackableItem::Clear() {
+// @@protoc_insertion_point(message_clear_start:naothmessages.OptiTrackData.TrackableItem)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _has_bits_[0];
+  if (cached_has_bits & 3u) {
+    if (cached_has_bits & 0x00000001u) {
+      GOOGLE_DCHECK(!name_.IsDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited()));
+      (*name_.UnsafeRawStringPointer())->clear();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      GOOGLE_DCHECK(pose_ != NULL);
+      pose_->::naothmessages::Pose3D::Clear();
+    }
+  }
+  _has_bits_.Clear();
+  _internal_metadata_.Clear();
+}
+
+bool OptiTrackData_TrackableItem::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:naothmessages.OptiTrackData.TrackableItem)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required string name = 1;
+      case 1: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_name()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->name().data(), static_cast<int>(this->name().length()),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "naothmessages.OptiTrackData.TrackableItem.name");
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // required .naothmessages.Pose3D pose = 2;
+      case 2: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(18u /* 18 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_pose()));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, _internal_metadata_.mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:naothmessages.OptiTrackData.TrackableItem)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:naothmessages.OptiTrackData.TrackableItem)
+  return false;
+#undef DO_
+}
+
+void OptiTrackData_TrackableItem::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:naothmessages.OptiTrackData.TrackableItem)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = _has_bits_[0];
+  // required string name = 1;
+  if (cached_has_bits & 0x00000001u) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->name().data(), static_cast<int>(this->name().length()),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "naothmessages.OptiTrackData.TrackableItem.name");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      1, this->name(), output);
+  }
+
+  // required .naothmessages.Pose3D pose = 2;
+  if (cached_has_bits & 0x00000002u) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      2, *this->pose_, output);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        _internal_metadata_.unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:naothmessages.OptiTrackData.TrackableItem)
+}
+
+::google::protobuf::uint8* OptiTrackData_TrackableItem::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:naothmessages.OptiTrackData.TrackableItem)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = _has_bits_[0];
+  // required string name = 1;
+  if (cached_has_bits & 0x00000001u) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->name().data(), static_cast<int>(this->name().length()),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "naothmessages.OptiTrackData.TrackableItem.name");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        1, this->name(), target);
+  }
+
+  // required .naothmessages.Pose3D pose = 2;
+  if (cached_has_bits & 0x00000002u) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        2, *this->pose_, deterministic, target);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:naothmessages.OptiTrackData.TrackableItem)
+  return target;
+}
+
+size_t OptiTrackData_TrackableItem::RequiredFieldsByteSizeFallback() const {
+// @@protoc_insertion_point(required_fields_byte_size_fallback_start:naothmessages.OptiTrackData.TrackableItem)
+  size_t total_size = 0;
+
+  if (has_name()) {
+    // required string name = 1;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->name());
+  }
+
+  if (has_pose()) {
+    // required .naothmessages.Pose3D pose = 2;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        *this->pose_);
+  }
+
+  return total_size;
+}
+size_t OptiTrackData_TrackableItem::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:naothmessages.OptiTrackData.TrackableItem)
+  size_t total_size = 0;
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        _internal_metadata_.unknown_fields());
+  }
+  if (((_has_bits_[0] & 0x00000003) ^ 0x00000003) == 0) {  // All required fields are present.
+    // required string name = 1;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->name());
+
+    // required .naothmessages.Pose3D pose = 2;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        *this->pose_);
+
+  } else {
+    total_size += RequiredFieldsByteSizeFallback();
+  }
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = cached_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void OptiTrackData_TrackableItem::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:naothmessages.OptiTrackData.TrackableItem)
+  GOOGLE_DCHECK_NE(&from, this);
+  const OptiTrackData_TrackableItem* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const OptiTrackData_TrackableItem>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:naothmessages.OptiTrackData.TrackableItem)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:naothmessages.OptiTrackData.TrackableItem)
+    MergeFrom(*source);
+  }
+}
+
+void OptiTrackData_TrackableItem::MergeFrom(const OptiTrackData_TrackableItem& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:naothmessages.OptiTrackData.TrackableItem)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._has_bits_[0];
+  if (cached_has_bits & 3u) {
+    if (cached_has_bits & 0x00000001u) {
+      set_has_name();
+      name_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.name_);
+    }
+    if (cached_has_bits & 0x00000002u) {
+      mutable_pose()->::naothmessages::Pose3D::MergeFrom(from.pose());
+    }
+  }
+}
+
+void OptiTrackData_TrackableItem::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:naothmessages.OptiTrackData.TrackableItem)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void OptiTrackData_TrackableItem::CopyFrom(const OptiTrackData_TrackableItem& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:naothmessages.OptiTrackData.TrackableItem)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool OptiTrackData_TrackableItem::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
+  if (has_pose()) {
+    if (!this->pose_->IsInitialized()) return false;
+  }
+  return true;
+}
+
+void OptiTrackData_TrackableItem::Swap(OptiTrackData_TrackableItem* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void OptiTrackData_TrackableItem::InternalSwap(OptiTrackData_TrackableItem* other) {
+  using std::swap;
+  name_.Swap(&other->name_);
+  swap(pose_, other->pose_);
+  swap(_has_bits_[0], other->_has_bits_[0]);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata OptiTrackData_TrackableItem::GetMetadata() const {
+  protobuf_Framework_2dRepresentations_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_Framework_2dRepresentations_2eproto::file_level_metadata[kIndexInFileMessages];
+}
+
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// OptiTrackData_TrackableItem
+
+// required string name = 1;
+bool OptiTrackData_TrackableItem::has_name() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+void OptiTrackData_TrackableItem::set_has_name() {
+  _has_bits_[0] |= 0x00000001u;
+}
+void OptiTrackData_TrackableItem::clear_has_name() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+void OptiTrackData_TrackableItem::clear_name() {
+  name_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_name();
+}
+const ::std::string& OptiTrackData_TrackableItem::name() const {
+  // @@protoc_insertion_point(field_get:naothmessages.OptiTrackData.TrackableItem.name)
+  return name_.GetNoArena();
+}
+void OptiTrackData_TrackableItem::set_name(const ::std::string& value) {
+  set_has_name();
+  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:naothmessages.OptiTrackData.TrackableItem.name)
+}
+#if LANG_CXX11
+void OptiTrackData_TrackableItem::set_name(::std::string&& value) {
+  set_has_name();
+  name_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:naothmessages.OptiTrackData.TrackableItem.name)
+}
+#endif
+void OptiTrackData_TrackableItem::set_name(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  set_has_name();
+  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:naothmessages.OptiTrackData.TrackableItem.name)
+}
+void OptiTrackData_TrackableItem::set_name(const char* value, size_t size) {
+  set_has_name();
+  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:naothmessages.OptiTrackData.TrackableItem.name)
+}
+::std::string* OptiTrackData_TrackableItem::mutable_name() {
+  set_has_name();
+  // @@protoc_insertion_point(field_mutable:naothmessages.OptiTrackData.TrackableItem.name)
+  return name_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+::std::string* OptiTrackData_TrackableItem::release_name() {
+  // @@protoc_insertion_point(field_release:naothmessages.OptiTrackData.TrackableItem.name)
+  clear_has_name();
+  return name_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+void OptiTrackData_TrackableItem::set_allocated_name(::std::string* name) {
+  if (name != NULL) {
+    set_has_name();
+  } else {
+    clear_has_name();
+  }
+  name_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), name);
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.OptiTrackData.TrackableItem.name)
+}
+
+// required .naothmessages.Pose3D pose = 2;
+bool OptiTrackData_TrackableItem::has_pose() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+void OptiTrackData_TrackableItem::set_has_pose() {
+  _has_bits_[0] |= 0x00000002u;
+}
+void OptiTrackData_TrackableItem::clear_has_pose() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+void OptiTrackData_TrackableItem::clear_pose() {
+  if (pose_ != NULL) pose_->::naothmessages::Pose3D::Clear();
+  clear_has_pose();
+}
+const ::naothmessages::Pose3D& OptiTrackData_TrackableItem::pose() const {
+  const ::naothmessages::Pose3D* p = pose_;
+  // @@protoc_insertion_point(field_get:naothmessages.OptiTrackData.TrackableItem.pose)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::Pose3D*>(
+      &::naothmessages::_Pose3D_default_instance_);
+}
+::naothmessages::Pose3D* OptiTrackData_TrackableItem::mutable_pose() {
+  set_has_pose();
+  if (pose_ == NULL) {
+    pose_ = new ::naothmessages::Pose3D;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.OptiTrackData.TrackableItem.pose)
+  return pose_;
+}
+::naothmessages::Pose3D* OptiTrackData_TrackableItem::release_pose() {
+  // @@protoc_insertion_point(field_release:naothmessages.OptiTrackData.TrackableItem.pose)
+  clear_has_pose();
+  ::naothmessages::Pose3D* temp = pose_;
+  pose_ = NULL;
+  return temp;
+}
+void OptiTrackData_TrackableItem::set_allocated_pose(::naothmessages::Pose3D* pose) {
+  delete pose_;
+  pose_ = pose;
+  if (pose) {
+    set_has_pose();
+  } else {
+    clear_has_pose();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.OptiTrackData.TrackableItem.pose)
+}
+
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
+
+// ===================================================================
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int OptiTrackData::kTrackablesFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+OptiTrackData::OptiTrackData()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
+    protobuf_Framework_2dRepresentations_2eproto::InitDefaults();
+  }
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:naothmessages.OptiTrackData)
+}
+OptiTrackData::OptiTrackData(const OptiTrackData& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL),
+      _has_bits_(from._has_bits_),
+      _cached_size_(0),
+      trackables_(from.trackables_) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  // @@protoc_insertion_point(copy_constructor:naothmessages.OptiTrackData)
+}
+
+void OptiTrackData::SharedCtor() {
+  _cached_size_ = 0;
+}
+
+OptiTrackData::~OptiTrackData() {
+  // @@protoc_insertion_point(destructor:naothmessages.OptiTrackData)
+  SharedDtor();
+}
+
+void OptiTrackData::SharedDtor() {
+}
+
+void OptiTrackData::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* OptiTrackData::descriptor() {
+  protobuf_Framework_2dRepresentations_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_Framework_2dRepresentations_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
+}
+
+const OptiTrackData& OptiTrackData::default_instance() {
+  protobuf_Framework_2dRepresentations_2eproto::InitDefaults();
+  return *internal_default_instance();
+}
+
+OptiTrackData* OptiTrackData::New(::google::protobuf::Arena* arena) const {
+  OptiTrackData* n = new OptiTrackData;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void OptiTrackData::Clear() {
+// @@protoc_insertion_point(message_clear_start:naothmessages.OptiTrackData)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  trackables_.Clear();
+  _has_bits_.Clear();
+  _internal_metadata_.Clear();
+}
+
+bool OptiTrackData::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:naothmessages.OptiTrackData)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;
+      case 1: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_trackables()));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, _internal_metadata_.mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:naothmessages.OptiTrackData)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:naothmessages.OptiTrackData)
+  return false;
+#undef DO_
+}
+
+void OptiTrackData::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:naothmessages.OptiTrackData)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;
+  for (unsigned int i = 0,
+      n = static_cast<unsigned int>(this->trackables_size()); i < n; i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->trackables(static_cast<int>(i)), output);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        _internal_metadata_.unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:naothmessages.OptiTrackData)
+}
+
+::google::protobuf::uint8* OptiTrackData::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:naothmessages.OptiTrackData)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;
+  for (unsigned int i = 0,
+      n = static_cast<unsigned int>(this->trackables_size()); i < n; i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        1, this->trackables(static_cast<int>(i)), deterministic, target);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:naothmessages.OptiTrackData)
+  return target;
+}
+
+size_t OptiTrackData::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:naothmessages.OptiTrackData)
+  size_t total_size = 0;
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        _internal_metadata_.unknown_fields());
+  }
+  // repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;
+  {
+    unsigned int count = static_cast<unsigned int>(this->trackables_size());
+    total_size += 1UL * count;
+    for (unsigned int i = 0; i < count; i++) {
+      total_size +=
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->trackables(static_cast<int>(i)));
+    }
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = cached_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void OptiTrackData::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:naothmessages.OptiTrackData)
+  GOOGLE_DCHECK_NE(&from, this);
+  const OptiTrackData* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const OptiTrackData>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:naothmessages.OptiTrackData)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:naothmessages.OptiTrackData)
+    MergeFrom(*source);
+  }
+}
+
+void OptiTrackData::MergeFrom(const OptiTrackData& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:naothmessages.OptiTrackData)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  trackables_.MergeFrom(from.trackables_);
+}
+
+void OptiTrackData::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:naothmessages.OptiTrackData)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void OptiTrackData::CopyFrom(const OptiTrackData& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:naothmessages.OptiTrackData)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool OptiTrackData::IsInitialized() const {
+  if (!::google::protobuf::internal::AllAreInitialized(this->trackables())) return false;
+  return true;
+}
+
+void OptiTrackData::Swap(OptiTrackData* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void OptiTrackData::InternalSwap(OptiTrackData* other) {
+  using std::swap;
+  trackables_.InternalSwap(&other->trackables_);
+  swap(_has_bits_[0], other->_has_bits_[0]);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata OptiTrackData::GetMetadata() const {
+  protobuf_Framework_2dRepresentations_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_Framework_2dRepresentations_2eproto::file_level_metadata[kIndexInFileMessages];
+}
+
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// OptiTrackData
+
+// repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;
+int OptiTrackData::trackables_size() const {
+  return trackables_.size();
+}
+void OptiTrackData::clear_trackables() {
+  trackables_.Clear();
+}
+const ::naothmessages::OptiTrackData_TrackableItem& OptiTrackData::trackables(int index) const {
+  // @@protoc_insertion_point(field_get:naothmessages.OptiTrackData.trackables)
+  return trackables_.Get(index);
+}
+::naothmessages::OptiTrackData_TrackableItem* OptiTrackData::mutable_trackables(int index) {
+  // @@protoc_insertion_point(field_mutable:naothmessages.OptiTrackData.trackables)
+  return trackables_.Mutable(index);
+}
+::naothmessages::OptiTrackData_TrackableItem* OptiTrackData::add_trackables() {
+  // @@protoc_insertion_point(field_add:naothmessages.OptiTrackData.trackables)
+  return trackables_.Add();
+}
+::google::protobuf::RepeatedPtrField< ::naothmessages::OptiTrackData_TrackableItem >*
+OptiTrackData::mutable_trackables() {
+  // @@protoc_insertion_point(field_mutable_list:naothmessages.OptiTrackData.trackables)
+  return &trackables_;
+}
+const ::google::protobuf::RepeatedPtrField< ::naothmessages::OptiTrackData_TrackableItem >&
+OptiTrackData::trackables() const {
+  // @@protoc_insertion_point(field_list:naothmessages.OptiTrackData.trackables)
+  return trackables_;
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
