@@ -491,6 +491,10 @@ class AgentController(threading.Thread):
                 # empty queue and set exception – since we doesn't have a connection
                 while not self._cmd_q.empty():
                     self._cmd_q.get_nowait().set_exception(Exception('Not connected to the agent!'))
+                # cancels the already scheduled commands, since we do not get a response after a lost connection!
+                _ids = list(self._cmd_m.keys())  # copy the scheduled ids - prevent modification during iteration!
+                for _id in _ids:
+                    self._cancel_cmd(_id)
 
         if self._stream_writer:
             self._stream_writer.close()
@@ -565,12 +569,6 @@ class AgentController(threading.Thread):
     async def _send_commands(self) -> None:
         """Task to send scheduled commands."""
 
-        def cancel_cmd(cmd, ex=None):
-            """Helper function, if an exception occurred and the command couldn't be send."""
-            _, _id = self._cmd_m.pop(cmd.id)
-            cmd.set_exception(ex if ex else Exception('Lost connection to the agent!'))
-            cmd.id = _id  # replace internal id with the original
-
         while True:
             try:
                 await self._connected_internal.wait()
@@ -584,14 +582,14 @@ class AgentController(threading.Thread):
                         self._stream_writer.write(cmd.serialize())
                         await self._stream_writer.drain()
                     except asyncio.CancelledError:  # task cancelled
-                        cancel_cmd(cmd)
+                        _cancel_cmd(cmd.id)
                         break
                     except OSError:  # connection lost
                         self._set_connected(False)
-                        cancel_cmd(cmd)
+                        _cancel_cmd(cmd.id)
                     except Exception as e:  # unexpected exception
                         print('Send commands:', e, file=sys.stderr)
-                        cancel_cmd(cmd, e)
+                        _cancel_cmd(cmd.id, e)
                     finally:
                         self._cmd_q.task_done()  # mark as done
                 else:
@@ -609,6 +607,12 @@ class AgentController(threading.Thread):
         self._cmd_m[self._cmd_id] = (cmd, cmd.id)
         cmd.id = self._cmd_id
         self._cmd_id += 1
+
+    def _cancel_cmd(self, cmd_id, ex=None):
+        """Helper function, if an exception occurred and the command couldn't be send or a send command must be canceled."""
+        cmd, _id = self._cmd_m.pop(cmd_id)
+        cmd.set_exception(ex if ex else Exception('Lost connection to the agent!'))
+        cmd.id = _id  # replace internal id with the original
 
     def send_command(self, cmd: DebugCommand) -> DebugCommand:
         """
