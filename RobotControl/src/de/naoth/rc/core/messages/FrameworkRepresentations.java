@@ -12418,6 +12418,2149 @@ public final class FrameworkRepresentations {
 
   }
 
+  public interface GPSDataOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:naothmessages.GPSData)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>required .naothmessages.Pose3D pose = 1;</code>
+     */
+    boolean hasPose();
+    /**
+     * <code>required .naothmessages.Pose3D pose = 1;</code>
+     */
+    de.naoth.rc.core.messages.CommonTypes.Pose3D getPose();
+    /**
+     * <code>required .naothmessages.Pose3D pose = 1;</code>
+     */
+    de.naoth.rc.core.messages.CommonTypes.Pose3DOrBuilder getPoseOrBuilder();
+  }
+  /**
+   * Protobuf type {@code naothmessages.GPSData}
+   */
+  public  static final class GPSData extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:naothmessages.GPSData)
+      GPSDataOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use GPSData.newBuilder() to construct.
+    private GPSData(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private GPSData() {
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private GPSData(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              de.naoth.rc.core.messages.CommonTypes.Pose3D.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000001) == 0x00000001)) {
+                subBuilder = pose_.toBuilder();
+              }
+              pose_ = input.readMessage(de.naoth.rc.core.messages.CommonTypes.Pose3D.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(pose_);
+                pose_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000001;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.naoth.rc.core.messages.FrameworkRepresentations.internal_static_naothmessages_GPSData_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.naoth.rc.core.messages.FrameworkRepresentations.internal_static_naothmessages_GPSData_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              de.naoth.rc.core.messages.FrameworkRepresentations.GPSData.class, de.naoth.rc.core.messages.FrameworkRepresentations.GPSData.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int POSE_FIELD_NUMBER = 1;
+    private de.naoth.rc.core.messages.CommonTypes.Pose3D pose_;
+    /**
+     * <code>required .naothmessages.Pose3D pose = 1;</code>
+     */
+    public boolean hasPose() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required .naothmessages.Pose3D pose = 1;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.Pose3D getPose() {
+      return pose_ == null ? de.naoth.rc.core.messages.CommonTypes.Pose3D.getDefaultInstance() : pose_;
+    }
+    /**
+     * <code>required .naothmessages.Pose3D pose = 1;</code>
+     */
+    public de.naoth.rc.core.messages.CommonTypes.Pose3DOrBuilder getPoseOrBuilder() {
+      return pose_ == null ? de.naoth.rc.core.messages.CommonTypes.Pose3D.getDefaultInstance() : pose_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      if (!hasPose()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!getPose().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeMessage(1, getPose());
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, getPose());
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof de.naoth.rc.core.messages.FrameworkRepresentations.GPSData)) {
+        return super.equals(obj);
+      }
+      de.naoth.rc.core.messages.FrameworkRepresentations.GPSData other = (de.naoth.rc.core.messages.FrameworkRepresentations.GPSData) obj;
+
+      boolean result = true;
+      result = result && (hasPose() == other.hasPose());
+      if (hasPose()) {
+        result = result && getPose()
+            .equals(other.getPose());
+      }
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasPose()) {
+        hash = (37 * hash) + POSE_FIELD_NUMBER;
+        hash = (53 * hash) + getPose().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.GPSData parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.GPSData parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.GPSData parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.GPSData parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.GPSData parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.GPSData parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.GPSData parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.GPSData parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.GPSData parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.GPSData parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.GPSData parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.GPSData parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(de.naoth.rc.core.messages.FrameworkRepresentations.GPSData prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code naothmessages.GPSData}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:naothmessages.GPSData)
+        de.naoth.rc.core.messages.FrameworkRepresentations.GPSDataOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.core.messages.FrameworkRepresentations.internal_static_naothmessages_GPSData_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.core.messages.FrameworkRepresentations.internal_static_naothmessages_GPSData_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                de.naoth.rc.core.messages.FrameworkRepresentations.GPSData.class, de.naoth.rc.core.messages.FrameworkRepresentations.GPSData.Builder.class);
+      }
+
+      // Construct using de.naoth.rc.core.messages.FrameworkRepresentations.GPSData.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getPoseFieldBuilder();
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        if (poseBuilder_ == null) {
+          pose_ = null;
+        } else {
+          poseBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.naoth.rc.core.messages.FrameworkRepresentations.internal_static_naothmessages_GPSData_descriptor;
+      }
+
+      public de.naoth.rc.core.messages.FrameworkRepresentations.GPSData getDefaultInstanceForType() {
+        return de.naoth.rc.core.messages.FrameworkRepresentations.GPSData.getDefaultInstance();
+      }
+
+      public de.naoth.rc.core.messages.FrameworkRepresentations.GPSData build() {
+        de.naoth.rc.core.messages.FrameworkRepresentations.GPSData result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public de.naoth.rc.core.messages.FrameworkRepresentations.GPSData buildPartial() {
+        de.naoth.rc.core.messages.FrameworkRepresentations.GPSData result = new de.naoth.rc.core.messages.FrameworkRepresentations.GPSData(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        if (poseBuilder_ == null) {
+          result.pose_ = pose_;
+        } else {
+          result.pose_ = poseBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.naoth.rc.core.messages.FrameworkRepresentations.GPSData) {
+          return mergeFrom((de.naoth.rc.core.messages.FrameworkRepresentations.GPSData)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(de.naoth.rc.core.messages.FrameworkRepresentations.GPSData other) {
+        if (other == de.naoth.rc.core.messages.FrameworkRepresentations.GPSData.getDefaultInstance()) return this;
+        if (other.hasPose()) {
+          mergePose(other.getPose());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasPose()) {
+          return false;
+        }
+        if (!getPose().isInitialized()) {
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        de.naoth.rc.core.messages.FrameworkRepresentations.GPSData parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (de.naoth.rc.core.messages.FrameworkRepresentations.GPSData) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private de.naoth.rc.core.messages.CommonTypes.Pose3D pose_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.Pose3D, de.naoth.rc.core.messages.CommonTypes.Pose3D.Builder, de.naoth.rc.core.messages.CommonTypes.Pose3DOrBuilder> poseBuilder_;
+      /**
+       * <code>required .naothmessages.Pose3D pose = 1;</code>
+       */
+      public boolean hasPose() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required .naothmessages.Pose3D pose = 1;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.Pose3D getPose() {
+        if (poseBuilder_ == null) {
+          return pose_ == null ? de.naoth.rc.core.messages.CommonTypes.Pose3D.getDefaultInstance() : pose_;
+        } else {
+          return poseBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>required .naothmessages.Pose3D pose = 1;</code>
+       */
+      public Builder setPose(de.naoth.rc.core.messages.CommonTypes.Pose3D value) {
+        if (poseBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          pose_ = value;
+          onChanged();
+        } else {
+          poseBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>required .naothmessages.Pose3D pose = 1;</code>
+       */
+      public Builder setPose(
+          de.naoth.rc.core.messages.CommonTypes.Pose3D.Builder builderForValue) {
+        if (poseBuilder_ == null) {
+          pose_ = builderForValue.build();
+          onChanged();
+        } else {
+          poseBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>required .naothmessages.Pose3D pose = 1;</code>
+       */
+      public Builder mergePose(de.naoth.rc.core.messages.CommonTypes.Pose3D value) {
+        if (poseBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001) &&
+              pose_ != null &&
+              pose_ != de.naoth.rc.core.messages.CommonTypes.Pose3D.getDefaultInstance()) {
+            pose_ =
+              de.naoth.rc.core.messages.CommonTypes.Pose3D.newBuilder(pose_).mergeFrom(value).buildPartial();
+          } else {
+            pose_ = value;
+          }
+          onChanged();
+        } else {
+          poseBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>required .naothmessages.Pose3D pose = 1;</code>
+       */
+      public Builder clearPose() {
+        if (poseBuilder_ == null) {
+          pose_ = null;
+          onChanged();
+        } else {
+          poseBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+      /**
+       * <code>required .naothmessages.Pose3D pose = 1;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.Pose3D.Builder getPoseBuilder() {
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return getPoseFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>required .naothmessages.Pose3D pose = 1;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.Pose3DOrBuilder getPoseOrBuilder() {
+        if (poseBuilder_ != null) {
+          return poseBuilder_.getMessageOrBuilder();
+        } else {
+          return pose_ == null ?
+              de.naoth.rc.core.messages.CommonTypes.Pose3D.getDefaultInstance() : pose_;
+        }
+      }
+      /**
+       * <code>required .naothmessages.Pose3D pose = 1;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          de.naoth.rc.core.messages.CommonTypes.Pose3D, de.naoth.rc.core.messages.CommonTypes.Pose3D.Builder, de.naoth.rc.core.messages.CommonTypes.Pose3DOrBuilder> 
+          getPoseFieldBuilder() {
+        if (poseBuilder_ == null) {
+          poseBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              de.naoth.rc.core.messages.CommonTypes.Pose3D, de.naoth.rc.core.messages.CommonTypes.Pose3D.Builder, de.naoth.rc.core.messages.CommonTypes.Pose3DOrBuilder>(
+                  getPose(),
+                  getParentForChildren(),
+                  isClean());
+          pose_ = null;
+        }
+        return poseBuilder_;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:naothmessages.GPSData)
+    }
+
+    // @@protoc_insertion_point(class_scope:naothmessages.GPSData)
+    private static final de.naoth.rc.core.messages.FrameworkRepresentations.GPSData DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new de.naoth.rc.core.messages.FrameworkRepresentations.GPSData();
+    }
+
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.GPSData getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<GPSData>
+        PARSER = new com.google.protobuf.AbstractParser<GPSData>() {
+      public GPSData parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new GPSData(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<GPSData> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<GPSData> getParserForType() {
+      return PARSER;
+    }
+
+    public de.naoth.rc.core.messages.FrameworkRepresentations.GPSData getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface OptiTrackDataOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:naothmessages.OptiTrackData)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+     */
+    java.util.List<de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem> 
+        getTrackablesList();
+    /**
+     * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+     */
+    de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem getTrackables(int index);
+    /**
+     * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+     */
+    int getTrackablesCount();
+    /**
+     * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+     */
+    java.util.List<? extends de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItemOrBuilder> 
+        getTrackablesOrBuilderList();
+    /**
+     * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+     */
+    de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItemOrBuilder getTrackablesOrBuilder(
+        int index);
+  }
+  /**
+   * Protobuf type {@code naothmessages.OptiTrackData}
+   */
+  public  static final class OptiTrackData extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:naothmessages.OptiTrackData)
+      OptiTrackDataOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use OptiTrackData.newBuilder() to construct.
+    private OptiTrackData(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private OptiTrackData() {
+      trackables_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private OptiTrackData(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+                trackables_ = new java.util.ArrayList<de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              trackables_.add(
+                  input.readMessage(de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem.PARSER, extensionRegistry));
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+          trackables_ = java.util.Collections.unmodifiableList(trackables_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.naoth.rc.core.messages.FrameworkRepresentations.internal_static_naothmessages_OptiTrackData_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.naoth.rc.core.messages.FrameworkRepresentations.internal_static_naothmessages_OptiTrackData_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.class, de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.Builder.class);
+    }
+
+    public interface TrackableItemOrBuilder extends
+        // @@protoc_insertion_point(interface_extends:naothmessages.OptiTrackData.TrackableItem)
+        com.google.protobuf.MessageOrBuilder {
+
+      /**
+       * <code>required string name = 1;</code>
+       */
+      boolean hasName();
+      /**
+       * <code>required string name = 1;</code>
+       */
+      java.lang.String getName();
+      /**
+       * <code>required string name = 1;</code>
+       */
+      com.google.protobuf.ByteString
+          getNameBytes();
+
+      /**
+       * <code>required .naothmessages.Pose3D pose = 2;</code>
+       */
+      boolean hasPose();
+      /**
+       * <code>required .naothmessages.Pose3D pose = 2;</code>
+       */
+      de.naoth.rc.core.messages.CommonTypes.Pose3D getPose();
+      /**
+       * <code>required .naothmessages.Pose3D pose = 2;</code>
+       */
+      de.naoth.rc.core.messages.CommonTypes.Pose3DOrBuilder getPoseOrBuilder();
+    }
+    /**
+     * Protobuf type {@code naothmessages.OptiTrackData.TrackableItem}
+     */
+    public  static final class TrackableItem extends
+        com.google.protobuf.GeneratedMessageV3 implements
+        // @@protoc_insertion_point(message_implements:naothmessages.OptiTrackData.TrackableItem)
+        TrackableItemOrBuilder {
+    private static final long serialVersionUID = 0L;
+      // Use TrackableItem.newBuilder() to construct.
+      private TrackableItem(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+        super(builder);
+      }
+      private TrackableItem() {
+        name_ = "";
+      }
+
+      @java.lang.Override
+      public final com.google.protobuf.UnknownFieldSet
+      getUnknownFields() {
+        return this.unknownFields;
+      }
+      private TrackableItem(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        this();
+        int mutable_bitField0_ = 0;
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder();
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              default: {
+                if (!parseUnknownField(
+                    input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
+              case 10: {
+                com.google.protobuf.ByteString bs = input.readBytes();
+                bitField0_ |= 0x00000001;
+                name_ = bs;
+                break;
+              }
+              case 18: {
+                de.naoth.rc.core.messages.CommonTypes.Pose3D.Builder subBuilder = null;
+                if (((bitField0_ & 0x00000002) == 0x00000002)) {
+                  subBuilder = pose_.toBuilder();
+                }
+                pose_ = input.readMessage(de.naoth.rc.core.messages.CommonTypes.Pose3D.PARSER, extensionRegistry);
+                if (subBuilder != null) {
+                  subBuilder.mergeFrom(pose_);
+                  pose_ = subBuilder.buildPartial();
+                }
+                bitField0_ |= 0x00000002;
+                break;
+              }
+            }
+          }
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(this);
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(
+              e).setUnfinishedMessage(this);
+        } finally {
+          this.unknownFields = unknownFields.build();
+          makeExtensionsImmutable();
+        }
+      }
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.core.messages.FrameworkRepresentations.internal_static_naothmessages_OptiTrackData_TrackableItem_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.core.messages.FrameworkRepresentations.internal_static_naothmessages_OptiTrackData_TrackableItem_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem.class, de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem.Builder.class);
+      }
+
+      private int bitField0_;
+      public static final int NAME_FIELD_NUMBER = 1;
+      private volatile java.lang.Object name_;
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public boolean hasName() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public java.lang.String getName() {
+        java.lang.Object ref = name_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            name_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <code>required string name = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getNameBytes() {
+        java.lang.Object ref = name_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      public static final int POSE_FIELD_NUMBER = 2;
+      private de.naoth.rc.core.messages.CommonTypes.Pose3D pose_;
+      /**
+       * <code>required .naothmessages.Pose3D pose = 2;</code>
+       */
+      public boolean hasPose() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required .naothmessages.Pose3D pose = 2;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.Pose3D getPose() {
+        return pose_ == null ? de.naoth.rc.core.messages.CommonTypes.Pose3D.getDefaultInstance() : pose_;
+      }
+      /**
+       * <code>required .naothmessages.Pose3D pose = 2;</code>
+       */
+      public de.naoth.rc.core.messages.CommonTypes.Pose3DOrBuilder getPoseOrBuilder() {
+        return pose_ == null ? de.naoth.rc.core.messages.CommonTypes.Pose3D.getDefaultInstance() : pose_;
+      }
+
+      private byte memoizedIsInitialized = -1;
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized == 1) return true;
+        if (isInitialized == 0) return false;
+
+        if (!hasName()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!hasPose()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        if (!getPose().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+        memoizedIsInitialized = 1;
+        return true;
+      }
+
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          output.writeMessage(2, getPose());
+        }
+        unknownFields.writeTo(output);
+      }
+
+      public int getSerializedSize() {
+        int size = memoizedSize;
+        if (size != -1) return size;
+
+        size = 0;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
+        }
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(2, getPose());
+        }
+        size += unknownFields.getSerializedSize();
+        memoizedSize = size;
+        return size;
+      }
+
+      @java.lang.Override
+      public boolean equals(final java.lang.Object obj) {
+        if (obj == this) {
+         return true;
+        }
+        if (!(obj instanceof de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem)) {
+          return super.equals(obj);
+        }
+        de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem other = (de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem) obj;
+
+        boolean result = true;
+        result = result && (hasName() == other.hasName());
+        if (hasName()) {
+          result = result && getName()
+              .equals(other.getName());
+        }
+        result = result && (hasPose() == other.hasPose());
+        if (hasPose()) {
+          result = result && getPose()
+              .equals(other.getPose());
+        }
+        result = result && unknownFields.equals(other.unknownFields);
+        return result;
+      }
+
+      @java.lang.Override
+      public int hashCode() {
+        if (memoizedHashCode != 0) {
+          return memoizedHashCode;
+        }
+        int hash = 41;
+        hash = (19 * hash) + getDescriptor().hashCode();
+        if (hasName()) {
+          hash = (37 * hash) + NAME_FIELD_NUMBER;
+          hash = (53 * hash) + getName().hashCode();
+        }
+        if (hasPose()) {
+          hash = (37 * hash) + POSE_FIELD_NUMBER;
+          hash = (53 * hash) + getPose().hashCode();
+        }
+        hash = (29 * hash) + unknownFields.hashCode();
+        memoizedHashCode = hash;
+        return hash;
+      }
+
+      public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem parseFrom(
+          java.nio.ByteBuffer data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem parseFrom(
+          java.nio.ByteBuffer data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input);
+      }
+      public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder() {
+        return DEFAULT_INSTANCE.toBuilder();
+      }
+      public static Builder newBuilder(de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem prototype) {
+        return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+      }
+      public Builder toBuilder() {
+        return this == DEFAULT_INSTANCE
+            ? new Builder() : new Builder().mergeFrom(this);
+      }
+
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      /**
+       * Protobuf type {@code naothmessages.OptiTrackData.TrackableItem}
+       */
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+          // @@protoc_insertion_point(builder_implements:naothmessages.OptiTrackData.TrackableItem)
+          de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItemOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return de.naoth.rc.core.messages.FrameworkRepresentations.internal_static_naothmessages_OptiTrackData_TrackableItem_descriptor;
+        }
+
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return de.naoth.rc.core.messages.FrameworkRepresentations.internal_static_naothmessages_OptiTrackData_TrackableItem_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem.class, de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem.Builder.class);
+        }
+
+        // Construct using de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+
+        private Builder(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessageV3
+                  .alwaysUseFieldBuilders) {
+            getPoseFieldBuilder();
+          }
+        }
+        public Builder clear() {
+          super.clear();
+          name_ = "";
+          bitField0_ = (bitField0_ & ~0x00000001);
+          if (poseBuilder_ == null) {
+            pose_ = null;
+          } else {
+            poseBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000002);
+          return this;
+        }
+
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return de.naoth.rc.core.messages.FrameworkRepresentations.internal_static_naothmessages_OptiTrackData_TrackableItem_descriptor;
+        }
+
+        public de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem getDefaultInstanceForType() {
+          return de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem.getDefaultInstance();
+        }
+
+        public de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem build() {
+          de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+
+        public de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem buildPartial() {
+          de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem result = new de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem(this);
+          int from_bitField0_ = bitField0_;
+          int to_bitField0_ = 0;
+          if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+            to_bitField0_ |= 0x00000001;
+          }
+          result.name_ = name_;
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+            to_bitField0_ |= 0x00000002;
+          }
+          if (poseBuilder_ == null) {
+            result.pose_ = pose_;
+          } else {
+            result.pose_ = poseBuilder_.build();
+          }
+          result.bitField0_ = to_bitField0_;
+          onBuilt();
+          return result;
+        }
+
+        public Builder clone() {
+          return (Builder) super.clone();
+        }
+        public Builder setField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return (Builder) super.setField(field, value);
+        }
+        public Builder clearField(
+            com.google.protobuf.Descriptors.FieldDescriptor field) {
+          return (Builder) super.clearField(field);
+        }
+        public Builder clearOneof(
+            com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+          return (Builder) super.clearOneof(oneof);
+        }
+        public Builder setRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            int index, java.lang.Object value) {
+          return (Builder) super.setRepeatedField(field, index, value);
+        }
+        public Builder addRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            java.lang.Object value) {
+          return (Builder) super.addRepeatedField(field, value);
+        }
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem) {
+            return mergeFrom((de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+
+        public Builder mergeFrom(de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem other) {
+          if (other == de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem.getDefaultInstance()) return this;
+          if (other.hasName()) {
+            bitField0_ |= 0x00000001;
+            name_ = other.name_;
+            onChanged();
+          }
+          if (other.hasPose()) {
+            mergePose(other.getPose());
+          }
+          this.mergeUnknownFields(other.unknownFields);
+          onChanged();
+          return this;
+        }
+
+        public final boolean isInitialized() {
+          if (!hasName()) {
+            return false;
+          }
+          if (!hasPose()) {
+            return false;
+          }
+          if (!getPose().isInitialized()) {
+            return false;
+          }
+          return true;
+        }
+
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem parsedMessage = null;
+          try {
+            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            parsedMessage = (de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem) e.getUnfinishedMessage();
+            throw e.unwrapIOException();
+          } finally {
+            if (parsedMessage != null) {
+              mergeFrom(parsedMessage);
+            }
+          }
+          return this;
+        }
+        private int bitField0_;
+
+        private java.lang.Object name_ = "";
+        /**
+         * <code>required string name = 1;</code>
+         */
+        public boolean hasName() {
+          return ((bitField0_ & 0x00000001) == 0x00000001);
+        }
+        /**
+         * <code>required string name = 1;</code>
+         */
+        public java.lang.String getName() {
+          java.lang.Object ref = name_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            if (bs.isValidUtf8()) {
+              name_ = s;
+            }
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>required string name = 1;</code>
+         */
+        public com.google.protobuf.ByteString
+            getNameBytes() {
+          java.lang.Object ref = name_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            name_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>required string name = 1;</code>
+         */
+        public Builder setName(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          name_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string name = 1;</code>
+         */
+        public Builder clearName() {
+          bitField0_ = (bitField0_ & ~0x00000001);
+          name_ = getDefaultInstance().getName();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>required string name = 1;</code>
+         */
+        public Builder setNameBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+          name_ = value;
+          onChanged();
+          return this;
+        }
+
+        private de.naoth.rc.core.messages.CommonTypes.Pose3D pose_ = null;
+        private com.google.protobuf.SingleFieldBuilderV3<
+            de.naoth.rc.core.messages.CommonTypes.Pose3D, de.naoth.rc.core.messages.CommonTypes.Pose3D.Builder, de.naoth.rc.core.messages.CommonTypes.Pose3DOrBuilder> poseBuilder_;
+        /**
+         * <code>required .naothmessages.Pose3D pose = 2;</code>
+         */
+        public boolean hasPose() {
+          return ((bitField0_ & 0x00000002) == 0x00000002);
+        }
+        /**
+         * <code>required .naothmessages.Pose3D pose = 2;</code>
+         */
+        public de.naoth.rc.core.messages.CommonTypes.Pose3D getPose() {
+          if (poseBuilder_ == null) {
+            return pose_ == null ? de.naoth.rc.core.messages.CommonTypes.Pose3D.getDefaultInstance() : pose_;
+          } else {
+            return poseBuilder_.getMessage();
+          }
+        }
+        /**
+         * <code>required .naothmessages.Pose3D pose = 2;</code>
+         */
+        public Builder setPose(de.naoth.rc.core.messages.CommonTypes.Pose3D value) {
+          if (poseBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            pose_ = value;
+            onChanged();
+          } else {
+            poseBuilder_.setMessage(value);
+          }
+          bitField0_ |= 0x00000002;
+          return this;
+        }
+        /**
+         * <code>required .naothmessages.Pose3D pose = 2;</code>
+         */
+        public Builder setPose(
+            de.naoth.rc.core.messages.CommonTypes.Pose3D.Builder builderForValue) {
+          if (poseBuilder_ == null) {
+            pose_ = builderForValue.build();
+            onChanged();
+          } else {
+            poseBuilder_.setMessage(builderForValue.build());
+          }
+          bitField0_ |= 0x00000002;
+          return this;
+        }
+        /**
+         * <code>required .naothmessages.Pose3D pose = 2;</code>
+         */
+        public Builder mergePose(de.naoth.rc.core.messages.CommonTypes.Pose3D value) {
+          if (poseBuilder_ == null) {
+            if (((bitField0_ & 0x00000002) == 0x00000002) &&
+                pose_ != null &&
+                pose_ != de.naoth.rc.core.messages.CommonTypes.Pose3D.getDefaultInstance()) {
+              pose_ =
+                de.naoth.rc.core.messages.CommonTypes.Pose3D.newBuilder(pose_).mergeFrom(value).buildPartial();
+            } else {
+              pose_ = value;
+            }
+            onChanged();
+          } else {
+            poseBuilder_.mergeFrom(value);
+          }
+          bitField0_ |= 0x00000002;
+          return this;
+        }
+        /**
+         * <code>required .naothmessages.Pose3D pose = 2;</code>
+         */
+        public Builder clearPose() {
+          if (poseBuilder_ == null) {
+            pose_ = null;
+            onChanged();
+          } else {
+            poseBuilder_.clear();
+          }
+          bitField0_ = (bitField0_ & ~0x00000002);
+          return this;
+        }
+        /**
+         * <code>required .naothmessages.Pose3D pose = 2;</code>
+         */
+        public de.naoth.rc.core.messages.CommonTypes.Pose3D.Builder getPoseBuilder() {
+          bitField0_ |= 0x00000002;
+          onChanged();
+          return getPoseFieldBuilder().getBuilder();
+        }
+        /**
+         * <code>required .naothmessages.Pose3D pose = 2;</code>
+         */
+        public de.naoth.rc.core.messages.CommonTypes.Pose3DOrBuilder getPoseOrBuilder() {
+          if (poseBuilder_ != null) {
+            return poseBuilder_.getMessageOrBuilder();
+          } else {
+            return pose_ == null ?
+                de.naoth.rc.core.messages.CommonTypes.Pose3D.getDefaultInstance() : pose_;
+          }
+        }
+        /**
+         * <code>required .naothmessages.Pose3D pose = 2;</code>
+         */
+        private com.google.protobuf.SingleFieldBuilderV3<
+            de.naoth.rc.core.messages.CommonTypes.Pose3D, de.naoth.rc.core.messages.CommonTypes.Pose3D.Builder, de.naoth.rc.core.messages.CommonTypes.Pose3DOrBuilder> 
+            getPoseFieldBuilder() {
+          if (poseBuilder_ == null) {
+            poseBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+                de.naoth.rc.core.messages.CommonTypes.Pose3D, de.naoth.rc.core.messages.CommonTypes.Pose3D.Builder, de.naoth.rc.core.messages.CommonTypes.Pose3DOrBuilder>(
+                    getPose(),
+                    getParentForChildren(),
+                    isClean());
+            pose_ = null;
+          }
+          return poseBuilder_;
+        }
+        public final Builder setUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.setUnknownFields(unknownFields);
+        }
+
+        public final Builder mergeUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return super.mergeUnknownFields(unknownFields);
+        }
+
+
+        // @@protoc_insertion_point(builder_scope:naothmessages.OptiTrackData.TrackableItem)
+      }
+
+      // @@protoc_insertion_point(class_scope:naothmessages.OptiTrackData.TrackableItem)
+      private static final de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem DEFAULT_INSTANCE;
+      static {
+        DEFAULT_INSTANCE = new de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem();
+      }
+
+      public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem getDefaultInstance() {
+        return DEFAULT_INSTANCE;
+      }
+
+      @java.lang.Deprecated public static final com.google.protobuf.Parser<TrackableItem>
+          PARSER = new com.google.protobuf.AbstractParser<TrackableItem>() {
+        public TrackableItem parsePartialFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+            return new TrackableItem(input, extensionRegistry);
+        }
+      };
+
+      public static com.google.protobuf.Parser<TrackableItem> parser() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Parser<TrackableItem> getParserForType() {
+        return PARSER;
+      }
+
+      public de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem getDefaultInstanceForType() {
+        return DEFAULT_INSTANCE;
+      }
+
+    }
+
+    public static final int TRACKABLES_FIELD_NUMBER = 1;
+    private java.util.List<de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem> trackables_;
+    /**
+     * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+     */
+    public java.util.List<de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem> getTrackablesList() {
+      return trackables_;
+    }
+    /**
+     * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+     */
+    public java.util.List<? extends de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItemOrBuilder> 
+        getTrackablesOrBuilderList() {
+      return trackables_;
+    }
+    /**
+     * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+     */
+    public int getTrackablesCount() {
+      return trackables_.size();
+    }
+    /**
+     * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+     */
+    public de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem getTrackables(int index) {
+      return trackables_.get(index);
+    }
+    /**
+     * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+     */
+    public de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItemOrBuilder getTrackablesOrBuilder(
+        int index) {
+      return trackables_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      for (int i = 0; i < getTrackablesCount(); i++) {
+        if (!getTrackables(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      for (int i = 0; i < trackables_.size(); i++) {
+        output.writeMessage(1, trackables_.get(i));
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      for (int i = 0; i < trackables_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, trackables_.get(i));
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData)) {
+        return super.equals(obj);
+      }
+      de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData other = (de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData) obj;
+
+      boolean result = true;
+      result = result && getTrackablesList()
+          .equals(other.getTrackablesList());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getTrackablesCount() > 0) {
+        hash = (37 * hash) + TRACKABLES_FIELD_NUMBER;
+        hash = (53 * hash) + getTrackablesList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code naothmessages.OptiTrackData}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:naothmessages.OptiTrackData)
+        de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackDataOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.core.messages.FrameworkRepresentations.internal_static_naothmessages_OptiTrackData_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.core.messages.FrameworkRepresentations.internal_static_naothmessages_OptiTrackData_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.class, de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.Builder.class);
+      }
+
+      // Construct using de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getTrackablesFieldBuilder();
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        if (trackablesBuilder_ == null) {
+          trackables_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          trackablesBuilder_.clear();
+        }
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.naoth.rc.core.messages.FrameworkRepresentations.internal_static_naothmessages_OptiTrackData_descriptor;
+      }
+
+      public de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData getDefaultInstanceForType() {
+        return de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.getDefaultInstance();
+      }
+
+      public de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData build() {
+        de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData buildPartial() {
+        de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData result = new de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData(this);
+        int from_bitField0_ = bitField0_;
+        if (trackablesBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+            trackables_ = java.util.Collections.unmodifiableList(trackables_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.trackables_ = trackables_;
+        } else {
+          result.trackables_ = trackablesBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData) {
+          return mergeFrom((de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData other) {
+        if (other == de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.getDefaultInstance()) return this;
+        if (trackablesBuilder_ == null) {
+          if (!other.trackables_.isEmpty()) {
+            if (trackables_.isEmpty()) {
+              trackables_ = other.trackables_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureTrackablesIsMutable();
+              trackables_.addAll(other.trackables_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.trackables_.isEmpty()) {
+            if (trackablesBuilder_.isEmpty()) {
+              trackablesBuilder_.dispose();
+              trackablesBuilder_ = null;
+              trackables_ = other.trackables_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              trackablesBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getTrackablesFieldBuilder() : null;
+            } else {
+              trackablesBuilder_.addAllMessages(other.trackables_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        for (int i = 0; i < getTrackablesCount(); i++) {
+          if (!getTrackables(i).isInitialized()) {
+            return false;
+          }
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.util.List<de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem> trackables_ =
+        java.util.Collections.emptyList();
+      private void ensureTrackablesIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          trackables_ = new java.util.ArrayList<de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem>(trackables_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem, de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem.Builder, de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItemOrBuilder> trackablesBuilder_;
+
+      /**
+       * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+       */
+      public java.util.List<de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem> getTrackablesList() {
+        if (trackablesBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(trackables_);
+        } else {
+          return trackablesBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+       */
+      public int getTrackablesCount() {
+        if (trackablesBuilder_ == null) {
+          return trackables_.size();
+        } else {
+          return trackablesBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+       */
+      public de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem getTrackables(int index) {
+        if (trackablesBuilder_ == null) {
+          return trackables_.get(index);
+        } else {
+          return trackablesBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+       */
+      public Builder setTrackables(
+          int index, de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem value) {
+        if (trackablesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTrackablesIsMutable();
+          trackables_.set(index, value);
+          onChanged();
+        } else {
+          trackablesBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+       */
+      public Builder setTrackables(
+          int index, de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem.Builder builderForValue) {
+        if (trackablesBuilder_ == null) {
+          ensureTrackablesIsMutable();
+          trackables_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          trackablesBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+       */
+      public Builder addTrackables(de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem value) {
+        if (trackablesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTrackablesIsMutable();
+          trackables_.add(value);
+          onChanged();
+        } else {
+          trackablesBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+       */
+      public Builder addTrackables(
+          int index, de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem value) {
+        if (trackablesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTrackablesIsMutable();
+          trackables_.add(index, value);
+          onChanged();
+        } else {
+          trackablesBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+       */
+      public Builder addTrackables(
+          de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem.Builder builderForValue) {
+        if (trackablesBuilder_ == null) {
+          ensureTrackablesIsMutable();
+          trackables_.add(builderForValue.build());
+          onChanged();
+        } else {
+          trackablesBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+       */
+      public Builder addTrackables(
+          int index, de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem.Builder builderForValue) {
+        if (trackablesBuilder_ == null) {
+          ensureTrackablesIsMutable();
+          trackables_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          trackablesBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+       */
+      public Builder addAllTrackables(
+          java.lang.Iterable<? extends de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem> values) {
+        if (trackablesBuilder_ == null) {
+          ensureTrackablesIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, trackables_);
+          onChanged();
+        } else {
+          trackablesBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+       */
+      public Builder clearTrackables() {
+        if (trackablesBuilder_ == null) {
+          trackables_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          trackablesBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+       */
+      public Builder removeTrackables(int index) {
+        if (trackablesBuilder_ == null) {
+          ensureTrackablesIsMutable();
+          trackables_.remove(index);
+          onChanged();
+        } else {
+          trackablesBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+       */
+      public de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem.Builder getTrackablesBuilder(
+          int index) {
+        return getTrackablesFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+       */
+      public de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItemOrBuilder getTrackablesOrBuilder(
+          int index) {
+        if (trackablesBuilder_ == null) {
+          return trackables_.get(index);  } else {
+          return trackablesBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+       */
+      public java.util.List<? extends de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItemOrBuilder> 
+           getTrackablesOrBuilderList() {
+        if (trackablesBuilder_ != null) {
+          return trackablesBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(trackables_);
+        }
+      }
+      /**
+       * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+       */
+      public de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem.Builder addTrackablesBuilder() {
+        return getTrackablesFieldBuilder().addBuilder(
+            de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+       */
+      public de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem.Builder addTrackablesBuilder(
+          int index) {
+        return getTrackablesFieldBuilder().addBuilder(
+            index, de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;</code>
+       */
+      public java.util.List<de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem.Builder> 
+           getTrackablesBuilderList() {
+        return getTrackablesFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem, de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem.Builder, de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItemOrBuilder> 
+          getTrackablesFieldBuilder() {
+        if (trackablesBuilder_ == null) {
+          trackablesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem, de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItem.Builder, de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData.TrackableItemOrBuilder>(
+                  trackables_,
+                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  getParentForChildren(),
+                  isClean());
+          trackables_ = null;
+        }
+        return trackablesBuilder_;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:naothmessages.OptiTrackData)
+    }
+
+    // @@protoc_insertion_point(class_scope:naothmessages.OptiTrackData)
+    private static final de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData();
+    }
+
+    public static de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<OptiTrackData>
+        PARSER = new com.google.protobuf.AbstractParser<OptiTrackData>() {
+      public OptiTrackData parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new OptiTrackData(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<OptiTrackData> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<OptiTrackData> getParserForType() {
+      return PARSER;
+    }
+
+    public de.naoth.rc.core.messages.FrameworkRepresentations.OptiTrackData getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   public interface ButtonDataOrBuilder extends
       // @@protoc_insertion_point(interface_extends:naothmessages.ButtonData)
       com.google.protobuf.MessageOrBuilder {
@@ -13539,6 +15682,21 @@ public final class FrameworkRepresentations {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_naothmessages_InertialSensorData_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_GPSData_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_naothmessages_GPSData_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_OptiTrackData_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_naothmessages_OptiTrackData_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_OptiTrackData_TrackableItem_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_naothmessages_OptiTrackData_TrackableItem_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_naothmessages_ButtonData_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -13596,17 +15754,22 @@ public final class FrameworkRepresentations {
       "\n\007rawData\030\003 \001(\0132\034.naothmessages.DoubleVe" +
       "ctor3\022\013\n\003ref\030\004 \001(\001\"^\n\022InertialSensorData" +
       "\022\034\n\020legacyPackedData\030\001 \003(\001B\002\030\001\022*\n\004data\030\002" +
-      " \001(\0132\034.naothmessages.DoubleVector2\"\323\002\n\nB" +
-      "uttonData\022\021\n\tisPressed\030\001 \003(\010\022\032\n\022numOfFra" +
-      "mesPressed\030\002 \003(\r\022\024\n\014eventCounter\030\003 \003(\r\"\377" +
-      "\001\n\010ButtonID\022\t\n\005Chest\020\000\022\020\n\014LeftFootLeft\020\001" +
-      "\022\021\n\rLeftFootRight\020\002\022\021\n\rRightFootLeft\020\003\022\022" +
-      "\n\016RightFootRight\020\004\022\r\n\tHeadFront\020\005\022\016\n\nHea",
-      "dMiddle\020\006\022\014\n\010HeadRear\020\007\022\020\n\014LeftHandBack\020" +
-      "\010\022\020\n\014LeftHandLeft\020\t\022\021\n\rLeftHandRight\020\n\022\021" +
-      "\n\rRightHandBack\020\013\022\021\n\rRightHandLeft\020\014\022\022\n\016" +
-      "RightHandRight\020\rB\033\n\031de.naoth.rc.core.mes" +
-      "sages"
+      " \001(\0132\034.naothmessages.DoubleVector2\".\n\007GP" +
+      "SData\022#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose" +
+      "3D\"\223\001\n\rOptiTrackData\022>\n\ntrackables\030\001 \003(\013" +
+      "2*.naothmessages.OptiTrackData.Trackable" +
+      "Item\032B\n\rTrackableItem\022\014\n\004name\030\001 \002(\t\022#\n\004p" +
+      "ose\030\002 \002(\0132\025.naothmessages.Pose3D\"\323\002\n\nBut",
+      "tonData\022\021\n\tisPressed\030\001 \003(\010\022\032\n\022numOfFrame" +
+      "sPressed\030\002 \003(\r\022\024\n\014eventCounter\030\003 \003(\r\"\377\001\n" +
+      "\010ButtonID\022\t\n\005Chest\020\000\022\020\n\014LeftFootLeft\020\001\022\021" +
+      "\n\rLeftFootRight\020\002\022\021\n\rRightFootLeft\020\003\022\022\n\016" +
+      "RightFootRight\020\004\022\r\n\tHeadFront\020\005\022\016\n\nHeadM" +
+      "iddle\020\006\022\014\n\010HeadRear\020\007\022\020\n\014LeftHandBack\020\010\022" +
+      "\020\n\014LeftHandLeft\020\t\022\021\n\rLeftHandRight\020\n\022\021\n\r" +
+      "RightHandBack\020\013\022\021\n\rRightHandLeft\020\014\022\022\n\016Ri" +
+      "ghtHandRight\020\rB\033\n\031de.naoth.rc.core.messa" +
+      "ges"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -13687,8 +15850,26 @@ public final class FrameworkRepresentations {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_naothmessages_InertialSensorData_descriptor,
         new java.lang.String[] { "LegacyPackedData", "Data", });
-    internal_static_naothmessages_ButtonData_descriptor =
+    internal_static_naothmessages_GPSData_descriptor =
       getDescriptor().getMessageTypes().get(11);
+    internal_static_naothmessages_GPSData_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_naothmessages_GPSData_descriptor,
+        new java.lang.String[] { "Pose", });
+    internal_static_naothmessages_OptiTrackData_descriptor =
+      getDescriptor().getMessageTypes().get(12);
+    internal_static_naothmessages_OptiTrackData_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_naothmessages_OptiTrackData_descriptor,
+        new java.lang.String[] { "Trackables", });
+    internal_static_naothmessages_OptiTrackData_TrackableItem_descriptor =
+      internal_static_naothmessages_OptiTrackData_descriptor.getNestedTypes().get(0);
+    internal_static_naothmessages_OptiTrackData_TrackableItem_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_naothmessages_OptiTrackData_TrackableItem_descriptor,
+        new java.lang.String[] { "Name", "Pose", });
+    internal_static_naothmessages_ButtonData_descriptor =
+      getDescriptor().getMessageTypes().get(13);
     internal_static_naothmessages_ButtonData_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_naothmessages_ButtonData_descriptor,

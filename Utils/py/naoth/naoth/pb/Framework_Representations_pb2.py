@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='Framework-Representations.proto',
   package='naothmessages',
   syntax='proto2',
-  serialized_pb=_b('\n\x1f\x46ramework-Representations.proto\x12\rnaothmessages\x1a\x11\x43ommonTypes.proto\"\xdb\x01\n\x05Image\x12\x0c\n\x04\x64\x61ta\x18\x01 \x02(\x0c\x12\x12\n\x05width\x18\x02 \x01(\r:\x03\x36\x34\x30\x12\x13\n\x06height\x18\x03 \x01(\r:\x03\x34\x38\x30\x12-\n\ncameraInfo\x18\x04 \x01(\x0b\x32\x19.naothmessages.CameraInfo\x12\x30\n\x06\x66ormat\x18\x05 \x01(\x0e\x32\x1b.naothmessages.Image.Format:\x03YUV\x12\x11\n\ttimestamp\x18\x06 \x01(\r\"\'\n\x06\x46ormat\x12\x07\n\x03YUV\x10\x00\x12\n\n\x06YUV422\x10\x01\x12\x08\n\x04JPEG\x10\x02\"\xd2\x04\n\nCameraInfo\x12\x17\n\x0fresolutionWidth\x18\x01 \x02(\r\x12\x18\n\x10resolutionHeight\x18\x02 \x02(\r\x12\x31\n\x08\x63\x61meraID\x18\x04 \x01(\x0e\x32\x17.naothmessages.CameraID:\x06\x62ottom\x12\x17\n\x0b\x66ocalLength\x18\x05 \x01(\x01\x42\x02\x18\x01\x12\x1d\n\x11openingAngleWidth\x18\x06 \x01(\x01\x42\x02\x18\x01\x12\x1e\n\x12openingAngleHeight\x18\x07 \x01(\x01\x42\x02\x18\x01\x12\x1a\n\x0eopticalCenterX\x18\x08 \x01(\x01\x42\x02\x18\x01\x12\x1a\n\x0eopticalCenterY\x18\t \x01(\x01\x42\x02\x18\x01\x12\x10\n\x04size\x18\n \x01(\x03\x42\x02\x18\x01\x12\x16\n\nmemorysize\x18\x0b \x01(\x03\x42\x02\x18\x01\x12\x1c\n\x10\x63\x61meraRollOffset\x18\x0c \x01(\x01\x42\x02\x18\x01\x12\x1c\n\x10\x63\x61meraTiltOffset\x18\r \x01(\x01\x42\x02\x18\x01\x12:\n\x10\x63orrectionOffset\x18\x12 \x03(\x0b\x32\x1c.naothmessages.DoubleVector2B\x02\x18\x01\x12\x39\n\x0fheadJointOffset\x18\x13 \x03(\x0b\x32\x1c.naothmessages.DoubleVector2B\x02\x18\x01\x12\x31\n\x0etransformation\x18\x0e \x03(\x0b\x32\x15.naothmessages.Pose3DB\x02\x18\x01\x12\x1c\n\x14openingAngleDiagonal\x18\x0f \x01(\x01\x12\x11\n\tpixelSize\x18\x10 \x01(\x01\x12\r\n\x05\x66ocus\x18\x11 \x01(\x01\"I\n\tJointData\x12\x10\n\x08position\x18\x01 \x03(\x01\x12\x11\n\tstiffness\x18\x02 \x03(\x01\x12\n\n\x02\x64p\x18\x03 \x03(\x01\x12\x0b\n\x03\x64\x64p\x18\x04 \x03(\x01\"l\n\x0fSensorJointData\x12+\n\tjointData\x18\x01 \x02(\x0b\x32\x18.naothmessages.JointData\x12\x13\n\x0btemperature\x18\x02 \x03(\x01\x12\x17\n\x0f\x65lectricCurrent\x18\x03 \x03(\x01\"i\n\x15UltraSoundReceiveData\x12\x1a\n\x12ultraSoundTimeStep\x18\x01 \x01(\r\x12\x0f\n\x07rawdata\x18\x02 \x02(\x01\x12\x10\n\x08\x64\x61taLeft\x18\x03 \x03(\x01\x12\x11\n\tdataRight\x18\x04 \x03(\x01\".\n\tFrameInfo\x12\x13\n\x0b\x66rameNumber\x18\x01 \x02(\r\x12\x0c\n\x04time\x18\x02 \x02(\r\"p\n\tRobotInfo\x12\x10\n\x08platform\x18\x01 \x01(\t\x12\x14\n\x0c\x62odyNickName\x18\x02 \x01(\t\x12\x14\n\x0cheadNickName\x18\x03 \x01(\t\x12\x0e\n\x06\x62odyID\x18\x04 \x01(\t\x12\x15\n\rbasicTimeStep\x18\x05 \x01(\r\"=\n\x07\x46SRData\x12\x11\n\x05\x66orce\x18\x01 \x03(\x01\x42\x02\x18\x01\x12\x0c\n\x04\x64\x61ta\x18\x02 \x03(\x01\x12\x11\n\x05valid\x18\x03 \x03(\x08\x42\x02\x18\x01\"\x8c\x01\n\x11\x41\x63\x63\x65lerometerData\x12\x1c\n\x10legacyPackedData\x18\x01 \x03(\x01\x42\x02\x18\x01\x12*\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\x12-\n\x07rawData\x18\x03 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\"\x95\x01\n\rGyrometerData\x12\x1c\n\x10legacyPackedData\x18\x01 \x03(\x01\x42\x02\x18\x01\x12*\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\x12-\n\x07rawData\x18\x03 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x0b\n\x03ref\x18\x04 \x01(\x01\"^\n\x12InertialSensorData\x12\x1c\n\x10legacyPackedData\x18\x01 \x03(\x01\x42\x02\x18\x01\x12*\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\"\xd3\x02\n\nButtonData\x12\x11\n\tisPressed\x18\x01 \x03(\x08\x12\x1a\n\x12numOfFramesPressed\x18\x02 \x03(\r\x12\x14\n\x0c\x65ventCounter\x18\x03 \x03(\r\"\xff\x01\n\x08\x42uttonID\x12\t\n\x05\x43hest\x10\x00\x12\x10\n\x0cLeftFootLeft\x10\x01\x12\x11\n\rLeftFootRight\x10\x02\x12\x11\n\rRightFootLeft\x10\x03\x12\x12\n\x0eRightFootRight\x10\x04\x12\r\n\tHeadFront\x10\x05\x12\x0e\n\nHeadMiddle\x10\x06\x12\x0c\n\x08HeadRear\x10\x07\x12\x10\n\x0cLeftHandBack\x10\x08\x12\x10\n\x0cLeftHandLeft\x10\t\x12\x11\n\rLeftHandRight\x10\n\x12\x11\n\rRightHandBack\x10\x0b\x12\x11\n\rRightHandLeft\x10\x0c\x12\x12\n\x0eRightHandRight\x10\rB\x1b\n\x19\x64\x65.naoth.rc.core.messages')
+  serialized_pb=_b('\n\x1f\x46ramework-Representations.proto\x12\rnaothmessages\x1a\x11\x43ommonTypes.proto\"\xdb\x01\n\x05Image\x12\x0c\n\x04\x64\x61ta\x18\x01 \x02(\x0c\x12\x12\n\x05width\x18\x02 \x01(\r:\x03\x36\x34\x30\x12\x13\n\x06height\x18\x03 \x01(\r:\x03\x34\x38\x30\x12-\n\ncameraInfo\x18\x04 \x01(\x0b\x32\x19.naothmessages.CameraInfo\x12\x30\n\x06\x66ormat\x18\x05 \x01(\x0e\x32\x1b.naothmessages.Image.Format:\x03YUV\x12\x11\n\ttimestamp\x18\x06 \x01(\r\"\'\n\x06\x46ormat\x12\x07\n\x03YUV\x10\x00\x12\n\n\x06YUV422\x10\x01\x12\x08\n\x04JPEG\x10\x02\"\xd2\x04\n\nCameraInfo\x12\x17\n\x0fresolutionWidth\x18\x01 \x02(\r\x12\x18\n\x10resolutionHeight\x18\x02 \x02(\r\x12\x31\n\x08\x63\x61meraID\x18\x04 \x01(\x0e\x32\x17.naothmessages.CameraID:\x06\x62ottom\x12\x17\n\x0b\x66ocalLength\x18\x05 \x01(\x01\x42\x02\x18\x01\x12\x1d\n\x11openingAngleWidth\x18\x06 \x01(\x01\x42\x02\x18\x01\x12\x1e\n\x12openingAngleHeight\x18\x07 \x01(\x01\x42\x02\x18\x01\x12\x1a\n\x0eopticalCenterX\x18\x08 \x01(\x01\x42\x02\x18\x01\x12\x1a\n\x0eopticalCenterY\x18\t \x01(\x01\x42\x02\x18\x01\x12\x10\n\x04size\x18\n \x01(\x03\x42\x02\x18\x01\x12\x16\n\nmemorysize\x18\x0b \x01(\x03\x42\x02\x18\x01\x12\x1c\n\x10\x63\x61meraRollOffset\x18\x0c \x01(\x01\x42\x02\x18\x01\x12\x1c\n\x10\x63\x61meraTiltOffset\x18\r \x01(\x01\x42\x02\x18\x01\x12:\n\x10\x63orrectionOffset\x18\x12 \x03(\x0b\x32\x1c.naothmessages.DoubleVector2B\x02\x18\x01\x12\x39\n\x0fheadJointOffset\x18\x13 \x03(\x0b\x32\x1c.naothmessages.DoubleVector2B\x02\x18\x01\x12\x31\n\x0etransformation\x18\x0e \x03(\x0b\x32\x15.naothmessages.Pose3DB\x02\x18\x01\x12\x1c\n\x14openingAngleDiagonal\x18\x0f \x01(\x01\x12\x11\n\tpixelSize\x18\x10 \x01(\x01\x12\r\n\x05\x66ocus\x18\x11 \x01(\x01\"I\n\tJointData\x12\x10\n\x08position\x18\x01 \x03(\x01\x12\x11\n\tstiffness\x18\x02 \x03(\x01\x12\n\n\x02\x64p\x18\x03 \x03(\x01\x12\x0b\n\x03\x64\x64p\x18\x04 \x03(\x01\"l\n\x0fSensorJointData\x12+\n\tjointData\x18\x01 \x02(\x0b\x32\x18.naothmessages.JointData\x12\x13\n\x0btemperature\x18\x02 \x03(\x01\x12\x17\n\x0f\x65lectricCurrent\x18\x03 \x03(\x01\"i\n\x15UltraSoundReceiveData\x12\x1a\n\x12ultraSoundTimeStep\x18\x01 \x01(\r\x12\x0f\n\x07rawdata\x18\x02 \x02(\x01\x12\x10\n\x08\x64\x61taLeft\x18\x03 \x03(\x01\x12\x11\n\tdataRight\x18\x04 \x03(\x01\".\n\tFrameInfo\x12\x13\n\x0b\x66rameNumber\x18\x01 \x02(\r\x12\x0c\n\x04time\x18\x02 \x02(\r\"p\n\tRobotInfo\x12\x10\n\x08platform\x18\x01 \x01(\t\x12\x14\n\x0c\x62odyNickName\x18\x02 \x01(\t\x12\x14\n\x0cheadNickName\x18\x03 \x01(\t\x12\x0e\n\x06\x62odyID\x18\x04 \x01(\t\x12\x15\n\rbasicTimeStep\x18\x05 \x01(\r\"=\n\x07\x46SRData\x12\x11\n\x05\x66orce\x18\x01 \x03(\x01\x42\x02\x18\x01\x12\x0c\n\x04\x64\x61ta\x18\x02 \x03(\x01\x12\x11\n\x05valid\x18\x03 \x03(\x08\x42\x02\x18\x01\"\x8c\x01\n\x11\x41\x63\x63\x65lerometerData\x12\x1c\n\x10legacyPackedData\x18\x01 \x03(\x01\x42\x02\x18\x01\x12*\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\x12-\n\x07rawData\x18\x03 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\"\x95\x01\n\rGyrometerData\x12\x1c\n\x10legacyPackedData\x18\x01 \x03(\x01\x42\x02\x18\x01\x12*\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\x12-\n\x07rawData\x18\x03 \x01(\x0b\x32\x1c.naothmessages.DoubleVector3\x12\x0b\n\x03ref\x18\x04 \x01(\x01\"^\n\x12InertialSensorData\x12\x1c\n\x10legacyPackedData\x18\x01 \x03(\x01\x42\x02\x18\x01\x12*\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x1c.naothmessages.DoubleVector2\".\n\x07GPSData\x12#\n\x04pose\x18\x01 \x02(\x0b\x32\x15.naothmessages.Pose3D\"\x93\x01\n\rOptiTrackData\x12>\n\ntrackables\x18\x01 \x03(\x0b\x32*.naothmessages.OptiTrackData.TrackableItem\x1a\x42\n\rTrackableItem\x12\x0c\n\x04name\x18\x01 \x02(\t\x12#\n\x04pose\x18\x02 \x02(\x0b\x32\x15.naothmessages.Pose3D\"\xd3\x02\n\nButtonData\x12\x11\n\tisPressed\x18\x01 \x03(\x08\x12\x1a\n\x12numOfFramesPressed\x18\x02 \x03(\r\x12\x14\n\x0c\x65ventCounter\x18\x03 \x03(\r\"\xff\x01\n\x08\x42uttonID\x12\t\n\x05\x43hest\x10\x00\x12\x10\n\x0cLeftFootLeft\x10\x01\x12\x11\n\rLeftFootRight\x10\x02\x12\x11\n\rRightFootLeft\x10\x03\x12\x12\n\x0eRightFootRight\x10\x04\x12\r\n\tHeadFront\x10\x05\x12\x0e\n\nHeadMiddle\x10\x06\x12\x0c\n\x08HeadRear\x10\x07\x12\x10\n\x0cLeftHandBack\x10\x08\x12\x10\n\x0cLeftHandLeft\x10\t\x12\x11\n\rLeftHandRight\x10\n\x12\x11\n\rRightHandBack\x10\x0b\x12\x11\n\rRightHandLeft\x10\x0c\x12\x12\n\x0eRightHandRight\x10\rB\x1b\n\x19\x64\x65.naoth.rc.core.messages')
   ,
   dependencies=[CommonTypes__pb2.DESCRIPTOR,])
 
@@ -117,8 +117,8 @@ _BUTTONDATA_BUTTONID = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1881,
-  serialized_end=2136,
+  serialized_start=2079,
+  serialized_end=2334,
 )
 _sym_db.RegisterEnumDescriptor(_BUTTONDATA_BUTTONID)
 
@@ -766,6 +766,105 @@ _INERTIALSENSORDATA = _descriptor.Descriptor(
 )
 
 
+_GPSDATA = _descriptor.Descriptor(
+  name='GPSData',
+  full_name='naothmessages.GPSData',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='pose', full_name='naothmessages.GPSData.pose', index=0,
+      number=1, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1796,
+  serialized_end=1842,
+)
+
+
+_OPTITRACKDATA_TRACKABLEITEM = _descriptor.Descriptor(
+  name='TrackableItem',
+  full_name='naothmessages.OptiTrackData.TrackableItem',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='name', full_name='naothmessages.OptiTrackData.TrackableItem.name', index=0,
+      number=1, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='pose', full_name='naothmessages.OptiTrackData.TrackableItem.pose', index=1,
+      number=2, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1926,
+  serialized_end=1992,
+)
+
+_OPTITRACKDATA = _descriptor.Descriptor(
+  name='OptiTrackData',
+  full_name='naothmessages.OptiTrackData',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='trackables', full_name='naothmessages.OptiTrackData.trackables', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[_OPTITRACKDATA_TRACKABLEITEM, ],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1845,
+  serialized_end=1992,
+)
+
+
 _BUTTONDATA = _descriptor.Descriptor(
   name='ButtonData',
   full_name='naothmessages.ButtonData',
@@ -807,8 +906,8 @@ _BUTTONDATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1797,
-  serialized_end=2136,
+  serialized_start=1995,
+  serialized_end=2334,
 )
 
 _IMAGE.fields_by_name['cameraInfo'].message_type = _CAMERAINFO
@@ -824,6 +923,10 @@ _ACCELEROMETERDATA.fields_by_name['rawData'].message_type = CommonTypes__pb2._DO
 _GYROMETERDATA.fields_by_name['data'].message_type = CommonTypes__pb2._DOUBLEVECTOR3
 _GYROMETERDATA.fields_by_name['rawData'].message_type = CommonTypes__pb2._DOUBLEVECTOR3
 _INERTIALSENSORDATA.fields_by_name['data'].message_type = CommonTypes__pb2._DOUBLEVECTOR2
+_GPSDATA.fields_by_name['pose'].message_type = CommonTypes__pb2._POSE3D
+_OPTITRACKDATA_TRACKABLEITEM.fields_by_name['pose'].message_type = CommonTypes__pb2._POSE3D
+_OPTITRACKDATA_TRACKABLEITEM.containing_type = _OPTITRACKDATA
+_OPTITRACKDATA.fields_by_name['trackables'].message_type = _OPTITRACKDATA_TRACKABLEITEM
 _BUTTONDATA_BUTTONID.containing_type = _BUTTONDATA
 DESCRIPTOR.message_types_by_name['Image'] = _IMAGE
 DESCRIPTOR.message_types_by_name['CameraInfo'] = _CAMERAINFO
@@ -836,6 +939,8 @@ DESCRIPTOR.message_types_by_name['FSRData'] = _FSRDATA
 DESCRIPTOR.message_types_by_name['AccelerometerData'] = _ACCELEROMETERDATA
 DESCRIPTOR.message_types_by_name['GyrometerData'] = _GYROMETERDATA
 DESCRIPTOR.message_types_by_name['InertialSensorData'] = _INERTIALSENSORDATA
+DESCRIPTOR.message_types_by_name['GPSData'] = _GPSDATA
+DESCRIPTOR.message_types_by_name['OptiTrackData'] = _OPTITRACKDATA
 DESCRIPTOR.message_types_by_name['ButtonData'] = _BUTTONDATA
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -915,6 +1020,28 @@ InertialSensorData = _reflection.GeneratedProtocolMessageType('InertialSensorDat
   # @@protoc_insertion_point(class_scope:naothmessages.InertialSensorData)
   ))
 _sym_db.RegisterMessage(InertialSensorData)
+
+GPSData = _reflection.GeneratedProtocolMessageType('GPSData', (_message.Message,), dict(
+  DESCRIPTOR = _GPSDATA,
+  __module__ = 'Framework_Representations_pb2'
+  # @@protoc_insertion_point(class_scope:naothmessages.GPSData)
+  ))
+_sym_db.RegisterMessage(GPSData)
+
+OptiTrackData = _reflection.GeneratedProtocolMessageType('OptiTrackData', (_message.Message,), dict(
+
+  TrackableItem = _reflection.GeneratedProtocolMessageType('TrackableItem', (_message.Message,), dict(
+    DESCRIPTOR = _OPTITRACKDATA_TRACKABLEITEM,
+    __module__ = 'Framework_Representations_pb2'
+    # @@protoc_insertion_point(class_scope:naothmessages.OptiTrackData.TrackableItem)
+    ))
+  ,
+  DESCRIPTOR = _OPTITRACKDATA,
+  __module__ = 'Framework_Representations_pb2'
+  # @@protoc_insertion_point(class_scope:naothmessages.OptiTrackData)
+  ))
+_sym_db.RegisterMessage(OptiTrackData)
+_sym_db.RegisterMessage(OptiTrackData.TrackableItem)
 
 ButtonData = _reflection.GeneratedProtocolMessageType('ButtonData', (_message.Message,), dict(
   DESCRIPTOR = _BUTTONDATA,

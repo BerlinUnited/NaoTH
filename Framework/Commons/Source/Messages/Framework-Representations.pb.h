@@ -48,6 +48,9 @@ extern FSRDataDefaultTypeInternal _FSRData_default_instance_;
 class FrameInfo;
 class FrameInfoDefaultTypeInternal;
 extern FrameInfoDefaultTypeInternal _FrameInfo_default_instance_;
+class GPSData;
+class GPSDataDefaultTypeInternal;
+extern GPSDataDefaultTypeInternal _GPSData_default_instance_;
 class GyrometerData;
 class GyrometerDataDefaultTypeInternal;
 extern GyrometerDataDefaultTypeInternal _GyrometerData_default_instance_;
@@ -60,6 +63,12 @@ extern InertialSensorDataDefaultTypeInternal _InertialSensorData_default_instanc
 class JointData;
 class JointDataDefaultTypeInternal;
 extern JointDataDefaultTypeInternal _JointData_default_instance_;
+class OptiTrackData;
+class OptiTrackDataDefaultTypeInternal;
+extern OptiTrackDataDefaultTypeInternal _OptiTrackData_default_instance_;
+class OptiTrackData_TrackableItem;
+class OptiTrackData_TrackableItemDefaultTypeInternal;
+extern OptiTrackData_TrackableItemDefaultTypeInternal _OptiTrackData_TrackableItem_default_instance_;
 class RobotInfo;
 class RobotInfoDefaultTypeInternal;
 extern RobotInfoDefaultTypeInternal _RobotInfo_default_instance_;
@@ -1898,6 +1907,360 @@ class InertialSensorData : public ::google::protobuf::Message /* @@protoc_insert
 };
 // -------------------------------------------------------------------
 
+class GPSData : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:naothmessages.GPSData) */ {
+ public:
+  GPSData();
+  virtual ~GPSData();
+
+  GPSData(const GPSData& from);
+
+  inline GPSData& operator=(const GPSData& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  GPSData(GPSData&& from) noexcept
+    : GPSData() {
+    *this = ::std::move(from);
+  }
+
+  inline GPSData& operator=(GPSData&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const GPSData& default_instance();
+
+  static inline const GPSData* internal_default_instance() {
+    return reinterpret_cast<const GPSData*>(
+               &_GPSData_default_instance_);
+  }
+  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
+    11;
+
+  void Swap(GPSData* other);
+  friend void swap(GPSData& a, GPSData& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline GPSData* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  GPSData* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const GPSData& from);
+  void MergeFrom(const GPSData& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(GPSData* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required .naothmessages.Pose3D pose = 1;
+  bool has_pose() const;
+  void clear_pose();
+  static const int kPoseFieldNumber = 1;
+  const ::naothmessages::Pose3D& pose() const;
+  ::naothmessages::Pose3D* mutable_pose();
+  ::naothmessages::Pose3D* release_pose();
+  void set_allocated_pose(::naothmessages::Pose3D* pose);
+
+  // @@protoc_insertion_point(class_scope:naothmessages.GPSData)
+ private:
+  void set_has_pose();
+  void clear_has_pose();
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::HasBits<1> _has_bits_;
+  mutable int _cached_size_;
+  ::naothmessages::Pose3D* pose_;
+  friend struct protobuf_Framework_2dRepresentations_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class OptiTrackData_TrackableItem : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:naothmessages.OptiTrackData.TrackableItem) */ {
+ public:
+  OptiTrackData_TrackableItem();
+  virtual ~OptiTrackData_TrackableItem();
+
+  OptiTrackData_TrackableItem(const OptiTrackData_TrackableItem& from);
+
+  inline OptiTrackData_TrackableItem& operator=(const OptiTrackData_TrackableItem& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  OptiTrackData_TrackableItem(OptiTrackData_TrackableItem&& from) noexcept
+    : OptiTrackData_TrackableItem() {
+    *this = ::std::move(from);
+  }
+
+  inline OptiTrackData_TrackableItem& operator=(OptiTrackData_TrackableItem&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const OptiTrackData_TrackableItem& default_instance();
+
+  static inline const OptiTrackData_TrackableItem* internal_default_instance() {
+    return reinterpret_cast<const OptiTrackData_TrackableItem*>(
+               &_OptiTrackData_TrackableItem_default_instance_);
+  }
+  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
+    12;
+
+  void Swap(OptiTrackData_TrackableItem* other);
+  friend void swap(OptiTrackData_TrackableItem& a, OptiTrackData_TrackableItem& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline OptiTrackData_TrackableItem* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  OptiTrackData_TrackableItem* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const OptiTrackData_TrackableItem& from);
+  void MergeFrom(const OptiTrackData_TrackableItem& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(OptiTrackData_TrackableItem* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required string name = 1;
+  bool has_name() const;
+  void clear_name();
+  static const int kNameFieldNumber = 1;
+  const ::std::string& name() const;
+  void set_name(const ::std::string& value);
+  #if LANG_CXX11
+  void set_name(::std::string&& value);
+  #endif
+  void set_name(const char* value);
+  void set_name(const char* value, size_t size);
+  ::std::string* mutable_name();
+  ::std::string* release_name();
+  void set_allocated_name(::std::string* name);
+
+  // required .naothmessages.Pose3D pose = 2;
+  bool has_pose() const;
+  void clear_pose();
+  static const int kPoseFieldNumber = 2;
+  const ::naothmessages::Pose3D& pose() const;
+  ::naothmessages::Pose3D* mutable_pose();
+  ::naothmessages::Pose3D* release_pose();
+  void set_allocated_pose(::naothmessages::Pose3D* pose);
+
+  // @@protoc_insertion_point(class_scope:naothmessages.OptiTrackData.TrackableItem)
+ private:
+  void set_has_name();
+  void clear_has_name();
+  void set_has_pose();
+  void clear_has_pose();
+
+  // helper for ByteSizeLong()
+  size_t RequiredFieldsByteSizeFallback() const;
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::HasBits<1> _has_bits_;
+  mutable int _cached_size_;
+  ::google::protobuf::internal::ArenaStringPtr name_;
+  ::naothmessages::Pose3D* pose_;
+  friend struct protobuf_Framework_2dRepresentations_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class OptiTrackData : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:naothmessages.OptiTrackData) */ {
+ public:
+  OptiTrackData();
+  virtual ~OptiTrackData();
+
+  OptiTrackData(const OptiTrackData& from);
+
+  inline OptiTrackData& operator=(const OptiTrackData& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  OptiTrackData(OptiTrackData&& from) noexcept
+    : OptiTrackData() {
+    *this = ::std::move(from);
+  }
+
+  inline OptiTrackData& operator=(OptiTrackData&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const OptiTrackData& default_instance();
+
+  static inline const OptiTrackData* internal_default_instance() {
+    return reinterpret_cast<const OptiTrackData*>(
+               &_OptiTrackData_default_instance_);
+  }
+  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
+    13;
+
+  void Swap(OptiTrackData* other);
+  friend void swap(OptiTrackData& a, OptiTrackData& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline OptiTrackData* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  OptiTrackData* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const OptiTrackData& from);
+  void MergeFrom(const OptiTrackData& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(OptiTrackData* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  typedef OptiTrackData_TrackableItem TrackableItem;
+
+  // accessors -------------------------------------------------------
+
+  // repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;
+  int trackables_size() const;
+  void clear_trackables();
+  static const int kTrackablesFieldNumber = 1;
+  const ::naothmessages::OptiTrackData_TrackableItem& trackables(int index) const;
+  ::naothmessages::OptiTrackData_TrackableItem* mutable_trackables(int index);
+  ::naothmessages::OptiTrackData_TrackableItem* add_trackables();
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::OptiTrackData_TrackableItem >*
+      mutable_trackables();
+  const ::google::protobuf::RepeatedPtrField< ::naothmessages::OptiTrackData_TrackableItem >&
+      trackables() const;
+
+  // @@protoc_insertion_point(class_scope:naothmessages.OptiTrackData)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::HasBits<1> _has_bits_;
+  mutable int _cached_size_;
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::OptiTrackData_TrackableItem > trackables_;
+  friend struct protobuf_Framework_2dRepresentations_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
 class ButtonData : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:naothmessages.ButtonData) */ {
  public:
   ButtonData();
@@ -1939,7 +2302,7 @@ class ButtonData : public ::google::protobuf::Message /* @@protoc_insertion_poin
                &_ButtonData_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    11;
+    14;
 
   void Swap(ButtonData* other);
   friend void swap(ButtonData& a, ButtonData& b) {
@@ -3886,6 +4249,203 @@ inline void InertialSensorData::set_allocated_data(::naothmessages::DoubleVector
 
 // -------------------------------------------------------------------
 
+// GPSData
+
+// required .naothmessages.Pose3D pose = 1;
+inline bool GPSData::has_pose() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void GPSData::set_has_pose() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void GPSData::clear_has_pose() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void GPSData::clear_pose() {
+  if (pose_ != NULL) pose_->::naothmessages::Pose3D::Clear();
+  clear_has_pose();
+}
+inline const ::naothmessages::Pose3D& GPSData::pose() const {
+  const ::naothmessages::Pose3D* p = pose_;
+  // @@protoc_insertion_point(field_get:naothmessages.GPSData.pose)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::Pose3D*>(
+      &::naothmessages::_Pose3D_default_instance_);
+}
+inline ::naothmessages::Pose3D* GPSData::mutable_pose() {
+  set_has_pose();
+  if (pose_ == NULL) {
+    pose_ = new ::naothmessages::Pose3D;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.GPSData.pose)
+  return pose_;
+}
+inline ::naothmessages::Pose3D* GPSData::release_pose() {
+  // @@protoc_insertion_point(field_release:naothmessages.GPSData.pose)
+  clear_has_pose();
+  ::naothmessages::Pose3D* temp = pose_;
+  pose_ = NULL;
+  return temp;
+}
+inline void GPSData::set_allocated_pose(::naothmessages::Pose3D* pose) {
+  delete pose_;
+  pose_ = pose;
+  if (pose) {
+    set_has_pose();
+  } else {
+    clear_has_pose();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.GPSData.pose)
+}
+
+// -------------------------------------------------------------------
+
+// OptiTrackData_TrackableItem
+
+// required string name = 1;
+inline bool OptiTrackData_TrackableItem::has_name() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void OptiTrackData_TrackableItem::set_has_name() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void OptiTrackData_TrackableItem::clear_has_name() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void OptiTrackData_TrackableItem::clear_name() {
+  name_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_name();
+}
+inline const ::std::string& OptiTrackData_TrackableItem::name() const {
+  // @@protoc_insertion_point(field_get:naothmessages.OptiTrackData.TrackableItem.name)
+  return name_.GetNoArena();
+}
+inline void OptiTrackData_TrackableItem::set_name(const ::std::string& value) {
+  set_has_name();
+  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:naothmessages.OptiTrackData.TrackableItem.name)
+}
+#if LANG_CXX11
+inline void OptiTrackData_TrackableItem::set_name(::std::string&& value) {
+  set_has_name();
+  name_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:naothmessages.OptiTrackData.TrackableItem.name)
+}
+#endif
+inline void OptiTrackData_TrackableItem::set_name(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  set_has_name();
+  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:naothmessages.OptiTrackData.TrackableItem.name)
+}
+inline void OptiTrackData_TrackableItem::set_name(const char* value, size_t size) {
+  set_has_name();
+  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:naothmessages.OptiTrackData.TrackableItem.name)
+}
+inline ::std::string* OptiTrackData_TrackableItem::mutable_name() {
+  set_has_name();
+  // @@protoc_insertion_point(field_mutable:naothmessages.OptiTrackData.TrackableItem.name)
+  return name_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* OptiTrackData_TrackableItem::release_name() {
+  // @@protoc_insertion_point(field_release:naothmessages.OptiTrackData.TrackableItem.name)
+  clear_has_name();
+  return name_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void OptiTrackData_TrackableItem::set_allocated_name(::std::string* name) {
+  if (name != NULL) {
+    set_has_name();
+  } else {
+    clear_has_name();
+  }
+  name_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), name);
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.OptiTrackData.TrackableItem.name)
+}
+
+// required .naothmessages.Pose3D pose = 2;
+inline bool OptiTrackData_TrackableItem::has_pose() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void OptiTrackData_TrackableItem::set_has_pose() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void OptiTrackData_TrackableItem::clear_has_pose() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void OptiTrackData_TrackableItem::clear_pose() {
+  if (pose_ != NULL) pose_->::naothmessages::Pose3D::Clear();
+  clear_has_pose();
+}
+inline const ::naothmessages::Pose3D& OptiTrackData_TrackableItem::pose() const {
+  const ::naothmessages::Pose3D* p = pose_;
+  // @@protoc_insertion_point(field_get:naothmessages.OptiTrackData.TrackableItem.pose)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::Pose3D*>(
+      &::naothmessages::_Pose3D_default_instance_);
+}
+inline ::naothmessages::Pose3D* OptiTrackData_TrackableItem::mutable_pose() {
+  set_has_pose();
+  if (pose_ == NULL) {
+    pose_ = new ::naothmessages::Pose3D;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.OptiTrackData.TrackableItem.pose)
+  return pose_;
+}
+inline ::naothmessages::Pose3D* OptiTrackData_TrackableItem::release_pose() {
+  // @@protoc_insertion_point(field_release:naothmessages.OptiTrackData.TrackableItem.pose)
+  clear_has_pose();
+  ::naothmessages::Pose3D* temp = pose_;
+  pose_ = NULL;
+  return temp;
+}
+inline void OptiTrackData_TrackableItem::set_allocated_pose(::naothmessages::Pose3D* pose) {
+  delete pose_;
+  pose_ = pose;
+  if (pose) {
+    set_has_pose();
+  } else {
+    clear_has_pose();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.OptiTrackData.TrackableItem.pose)
+}
+
+// -------------------------------------------------------------------
+
+// OptiTrackData
+
+// repeated .naothmessages.OptiTrackData.TrackableItem trackables = 1;
+inline int OptiTrackData::trackables_size() const {
+  return trackables_.size();
+}
+inline void OptiTrackData::clear_trackables() {
+  trackables_.Clear();
+}
+inline const ::naothmessages::OptiTrackData_TrackableItem& OptiTrackData::trackables(int index) const {
+  // @@protoc_insertion_point(field_get:naothmessages.OptiTrackData.trackables)
+  return trackables_.Get(index);
+}
+inline ::naothmessages::OptiTrackData_TrackableItem* OptiTrackData::mutable_trackables(int index) {
+  // @@protoc_insertion_point(field_mutable:naothmessages.OptiTrackData.trackables)
+  return trackables_.Mutable(index);
+}
+inline ::naothmessages::OptiTrackData_TrackableItem* OptiTrackData::add_trackables() {
+  // @@protoc_insertion_point(field_add:naothmessages.OptiTrackData.trackables)
+  return trackables_.Add();
+}
+inline ::google::protobuf::RepeatedPtrField< ::naothmessages::OptiTrackData_TrackableItem >*
+OptiTrackData::mutable_trackables() {
+  // @@protoc_insertion_point(field_mutable_list:naothmessages.OptiTrackData.trackables)
+  return &trackables_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::OptiTrackData_TrackableItem >&
+OptiTrackData::trackables() const {
+  // @@protoc_insertion_point(field_list:naothmessages.OptiTrackData.trackables)
+  return trackables_;
+}
+
+// -------------------------------------------------------------------
+
 // ButtonData
 
 // repeated bool isPressed = 1;
@@ -3982,6 +4542,12 @@ ButtonData::mutable_eventcounter() {
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

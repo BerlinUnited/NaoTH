@@ -14,7 +14,7 @@ using namespace std;
 
 OptiTrackClient::OptiTrackClient()
   :
-    exiting(false), 
+    exiting(false),
     commandPort(1510),
     dataPort(1511),
     socket(NULL),
@@ -37,6 +37,8 @@ OptiTrackClient::OptiTrackClient()
 
 GError* OptiTrackClient::bindAndListenMulticast(unsigned int port)
 {
+  cancellable = g_cancellable_new();
+
   GError* err = NULL;
   socket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_DATAGRAM, G_SOCKET_PROTOCOL_UDP, &err);
   if (err) return err;
@@ -67,9 +69,9 @@ GError* OptiTrackClient::bindAndListenMulticast(unsigned int port)
 
 
 void OptiTrackClient::get(OptiTrackData& data)
-{ 
+{
   data.trackables.clear();
-  
+
   std::unique_lock<std::mutex> lock(dataMutex, std::try_to_lock);
   if ( lock.owns_lock() )
   {
@@ -77,8 +79,8 @@ void OptiTrackClient::get(OptiTrackData& data)
   }
 }
 
-void OptiTrackClient::get(GPSData& data, const std::string& name) 
-{ 
+void OptiTrackClient::get(GPSData& data, const std::string& name)
+{
   std::unique_lock<std::mutex> lock(dataMutex, std::try_to_lock);
   if ( lock.owns_lock() )
   {
@@ -96,16 +98,21 @@ void OptiTrackClient::get(GPSData& data, const std::string& name)
 
 OptiTrackClient::~OptiTrackClient()
 {
+  std::cout << "[OptiTrackClient] stop wait" << std::endl;
   exiting = true;
 
-  if(socketThread.joinable())
-  {
+  // notify the socket to cancel
+  g_cancellable_cancel(cancellable);
+
+  if(socketThread.joinable()) {
     socketThread.join();
   }
 
   if(socket != NULL) {
     g_object_unref(socket);
   }
+
+  g_object_unref(cancellable);
 
   if(serverAddress != NULL) {
     g_object_unref(serverAddress);
@@ -128,20 +135,20 @@ void OptiTrackClient::send(const char* data, size_t dataSize)
   }
 }
 
-void OptiTrackClient::handleMessage(const char* data, size_t dataSize) 
+void OptiTrackClient::handleMessage(const char* data, size_t dataSize)
 {
   std::lock_guard<std::mutex> lock(dataMutex);
-  
+
   optiTrackParser.reset();
   std::string msg(data, dataSize);
   std::string cmd;
-  
+
   try {
     cmd = optiTrackParser.parseMessage(msg);
   } catch (const std::length_error& le) {
-    std::cout << "[OptiTrackClient] : error in parseMessage " << le.what() << std::endl;
+    std::cout << "[OptiTrackClient]: error in parseMessage " << le.what() << std::endl;
   }
-  
+
   if(!cmd.empty()) {
     send(cmd.c_str(), cmd.size());
   }
@@ -156,10 +163,20 @@ void OptiTrackClient::socketLoop()
   while(!exiting)
   {
     GSocketAddress* senderAddress = NULL;
+
+    GError *error;
     gssize size = g_socket_receive_from(socket, &senderAddress,
-                                     readBuffer, readBufferSize,
-                                     NULL, NULL);
-                             
+                                        readBuffer, readBufferSize,
+                                        cancellable, &error);
+
+    if(error && g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+      std::cout << "[OptiTrackClient] cancel socket on request" << std::endl;
+      g_error_free(error);
+    } else if(error) {
+      std::cerr << "[OptiTrackClient] " << error->message << std::endl;
+      g_error_free(error);
+    }
+
     if(senderAddress != NULL)
     {
       // construct a proper return address from the receiver
