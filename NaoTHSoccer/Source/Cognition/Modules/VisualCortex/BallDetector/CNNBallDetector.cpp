@@ -246,7 +246,7 @@ void CNNBallDetector::calculateCandidates()
         // adjust the center and radius of the patch
         Vector2d ballCenterInPatch(pos.x * patch.width(), pos.y*patch.width());
        
-        addBallPercept(patch.min + ballCenterInPatch, radius*patch.width());
+        addBallPercept(ballCenterInPatch + patch.min, radius*patch.width());
       }
 
       DEBUG_REQUEST("Vision:CNNBallDetector:drawCandidates",
