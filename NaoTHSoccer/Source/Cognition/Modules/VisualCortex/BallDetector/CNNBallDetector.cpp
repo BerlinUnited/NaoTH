@@ -244,9 +244,9 @@ void CNNBallDetector::calculateCandidates()
 
       if (found) {
         // adjust the center and radius of the patch
-        Vector2i ballCenterInPatch(static_cast<int>(pos.x * patch.width()), static_cast<int>(pos.y*patch.width()));
+        Vector2d ballCenterInPatch(pos.x * patch.width(), pos.y*patch.width());
        
-        addBallPercept(patch.min + ballCenterInPatch, radius*patch.width());
+        addBallPercept(ballCenterInPatch + patch.min, radius*patch.width());
       }
 
       DEBUG_REQUEST("Vision:CNNBallDetector:drawCandidates",
@@ -307,7 +307,7 @@ void CNNBallDetector::providePatches()
   }
 }
 
-void CNNBallDetector::addBallPercept(const Vector2i& center, double radius) 
+void CNNBallDetector::addBallPercept(const Vector2d& center, double radius) 
 {
   const double ballRadius = 50.0;
   MultiBallPercept::BallPercept ballPercept;
