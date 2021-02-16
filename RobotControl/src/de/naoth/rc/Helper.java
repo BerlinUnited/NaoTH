@@ -10,10 +10,22 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -96,6 +108,35 @@ public class Helper
 
     return null;
   }//end getResourceAsString
+
+    public static List<Path> getFiles(String location) {
+        return getFiles(location, null);
+    }
+
+    public static List<Path> getFiles(String location, Predicate<Path> filter) {
+        try {
+            URI res = (new Object()).getClass().getResource(location).toURI();
+            
+            // handle current execution location (jar, file)
+            Path resPath;
+            if (res.getScheme().equals("jar")) {
+                FileSystem fs = FileSystems.newFileSystem(res, Collections.<String, Object>emptyMap());
+                resPath = fs.getPath(location);
+            } else {
+                resPath = Paths.get(res);
+            }
+
+            Stream<Path> s = Files.walk(resPath, 1);
+            
+            if (filter != null) { s = s.filter(filter); }
+
+            return s.sorted().collect(Collectors.toList());
+        } catch (IOException | URISyntaxException e) {
+            Logger.getLogger(HelpDialog.class.getName()).log(Level.SEVERE, null, e);
+        }
+
+        return Collections.emptyList();
+    }
 
   /**
    * Validates the name of a given file, i.e., if the file name doesn't have the
