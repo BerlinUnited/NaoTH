@@ -115,7 +115,7 @@ public class Helper
 
     public static List<Path> getFiles(String location, Predicate<Path> filter) {
         try {
-            URI res = (new Object()).getClass().getResource(location).toURI();
+            URI res = Helper.class.getResource(location).toURI();
             
             // handle current execution location (jar, file)
             Path resPath;
