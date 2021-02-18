@@ -7,13 +7,7 @@ import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -117,30 +111,15 @@ public class HelpDialog extends javax.swing.JDialog
      * 
      * @param doc the document, where the TOC should be appended to
      */
-    private void createHelpToc(Document doc) {
-        try {
-            String resLoc = "/de/naoth/rc/dialogs/help/";
-            URI res = getClass().getResource(resLoc).toURI();
-            // handle current execution location (jar, file)
-            Path resPath;
-            if (res.getScheme().equals("jar")) {
-                FileSystem fs = FileSystems.newFileSystem(res, Collections.<String, Object>emptyMap());
-                resPath = fs.getPath(resLoc);
-            } else {
-                resPath = Paths.get(res);
-            }
-            
-            Files.walk(resPath, 1).filter((t) -> {
-                String fileName = t.getFileName().toString();
-                return !fileName.startsWith("index") && fileName.endsWith(".html");
-            }).sorted().forEach((t) -> {
-                String fileName = t.getFileName().toString();
+    private void createHelpToc(Document doc)
+    {
+        Helper.getFiles("/de/naoth/rc/dialogs/help/").forEach((t) -> {
+            String fileName = t.getFileName().toString();
+            if (!fileName.startsWith("index") && fileName.endsWith(".html")) {
                 createHelpTocEntry(doc, fileName);
                 availableHelp.add(fileName.substring(0, fileName.length() - 5)); // remove ".html"
-                });
-        } catch (IOException | URISyntaxException e) {
-            Logger.getLogger(HelpDialog.class.getName()).log(Level.SEVERE, null, e);
-        }
+            }
+        });
     }
     
     /**
