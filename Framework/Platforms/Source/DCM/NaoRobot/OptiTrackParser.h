@@ -422,7 +422,7 @@ private:
 
   std::map<std::string,Pose3D> trackables;
   std::map<unsigned int,std::string> trackable_names;
-  unsigned int trackablesTimeStamp;
+  //unsigned int trackablesTimeStamp;
 
   uint8_t natNetStreamVersion[4];
 };
