@@ -8,20 +8,6 @@ stages:
 
 default:
   image: $DOCKER_IMAGE
-  
-include:
-  - template: Code-Quality.gitlab-ci.yml
-
-code_quality:
-  stage: test
-  rules:
-     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
-     - if: '$CI_PIPELINE_SOURCE == "web"'
-     - if: '$CI_PIPELINE_SOURCE == "trigger"'
-     - if: $CI_COMMIT_BRANCH == "develop"
-  artifacts:
-    expose_as: 'Code Quality Report'
-    paths: [gl-code-quality-report.json]
     
 cppcheck:
   stage: test
@@ -32,10 +18,12 @@ cppcheck:
      - if: $CI_COMMIT_BRANCH == "develop"
   script:
   - cppcheck -j 4 --enable=all --inconclusive --xml --xml-version=2 . 2> cppcheck-result.xml
-  - cppcheck-htmlreport --file=cppcheck-result.xml --report-dir=test1 --source-dir=.
+  - cppcheck-htmlreport --file=cppcheck-result.xml --source-dir=.
+  - python3 -m pip install cppcheck-codequality
+  - python3 -m cppcheck-codequality --input-file=file=cppcheck-result.xml --output-file=cppcheck.json
   artifacts:
-    paths: [test1]
-    expire_in: 1 week
+    reports:
+      codequality: cppcheck.json
 
 publish_naoth:
   # run the publish command if the PUBLISH_NAOTH flag is set or the commit changes the develop with changes in the naoth package
