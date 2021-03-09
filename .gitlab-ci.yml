@@ -18,7 +18,7 @@ cppcheck:
   script:
   - cppcheck -j 4 --enable=all --inconclusive --xml --xml-version=2 . 2> cppcheck-result.xml
   - python3 -m pip install -U cppcheck_codequality
-  - python3 -m cppcheck_codequality.__main__ --input-file=file=cppcheck-result.xml --output-file=cppcheck.json
+  - cppcheck-codequality --input-file=file=cppcheck-result.xml --output-file=cppcheck.json
   artifacts:
     reports:
       codequality: cppcheck.json
