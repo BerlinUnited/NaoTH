@@ -18,7 +18,6 @@ cppcheck:
      - if: $CI_COMMIT_BRANCH == "develop"
   script:
   - cppcheck -j 4 --enable=all --inconclusive --xml --xml-version=2 . 2> cppcheck-result.xml
-  - cppcheck-htmlreport --file=cppcheck-result.xml --source-dir=.
   - python3 -m pip install cppcheck-codequality
   - python3 -m cppcheck-codequality --input-file=file=cppcheck-result.xml --output-file=cppcheck.json
   artifacts:
