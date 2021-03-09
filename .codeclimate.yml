@@ -8,31 +8,16 @@ plugins:
   fixme:
     enabled: true
   sonar-java:
-    enabled: true
+    enabled: false
   sonar-python:
     enabled: true
 exclude_patterns:
-  - config/
-  - db/
-  - features/
-  - "**/node_modules/"
-  - script/
-  - "**/spec/"
-  - "**/test/"
-  - "**/tests/"
-  - Tests/
-  - "**/vendor/"
-  - "**/*_test.go"
-  - "**/*.d.ts"
-  - "**/*.min.js"
-  - "**/*.min.css"
-  - "**/__tests__/"
-  - "**/__mocks__/"
-  - coverage/
-  - examples/
-  - tests/
-  - build/
-  - dist/
-  - "**/naoth/pb/"
-  - "**/core/messages/"
+  - .git/
+  - .gitlab/
+  - .vscode/
+  - Third-Party-Licenses/
+  - NaoSCP/
+  - NaoTHSoccer/
+  - RobotControl/
+
 
