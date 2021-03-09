@@ -38,7 +38,7 @@ publish_naoth:
   - cd ../../Utils/py/naoth
   - ./package_naoth.sh
 
-compileGame:
+compile_nao_gcc:
   stage: build
   rules:
     - changes: 
@@ -52,7 +52,7 @@ compileGame:
   - cd NaoTHSoccer/Make
   - ./compileGame.sh -j 4
 
-compileLocal:
+compile_local_gcc:
   stage: build
   rules:
     - changes: 
@@ -67,3 +67,18 @@ compileLocal:
   - premake5 gmake2 --protoc
   - cd ../build/gmake2
   - make all -j 4
+
+compile_nao_clang:
+  stage: build
+  rules:
+    - changes: 
+      - Framework/**/*
+      - NaoTHSoccer/**/*
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+    - if: '$CI_PIPELINE_SOURCE == "trigger"'
+    - if: $CI_COMMIT_BRANCH == "develop"
+  script:
+  - cd NaoTHSoccer/Make
+  - echo -en "if PLATFORM == "Nao" then\n    _OPTIONS["crosscompiler"] = "clang"\nend\n" > projectconfig.user.lua
+  - ./compileGame.sh -j 4
