@@ -17,4 +17,6 @@ fi
 
 mkdir -p public/$CI_COMMIT_REF_NAME/cppcheck
 cp -r $branch_name/* public/$CI_COMMIT_REF_NAME/cppcheck/
-tar -zcf public/content.tar.gz public/
+tar -zcf content.tar.gz public/
+
+# TODO copy the content.tar.gz inside public
