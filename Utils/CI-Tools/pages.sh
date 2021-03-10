@@ -3,9 +3,10 @@ function validate_url(){
 }
 
 url="https://pages.cms.hu-berlin.de/berlinunited/naoth-2020/content.tar.gz"
+
 echo $(validate_url $url)
 
-if [ -n $(validate_url $url >/dev/null) ]; then
+if [ -n "$(validate_url $url)" ]; then
         wget --no-check-certificate $url -O prev_content.tar.gz;
         if [ -f prev_content.tar.gz ]; then 
         	tar -xzf prev_content.tar.gz public/; 
