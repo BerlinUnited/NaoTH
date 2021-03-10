@@ -15,9 +15,9 @@ else
         echo "remote url does not exist";
 fi
 
-mkdir -p public/$CI_COMMIT_REF_NAME/cppcheck
-cp -r $branch_name/* public/$CI_COMMIT_REF_NAME/cppcheck/
+mkdir -p public/$CI_COMMIT_REF_NAME
+cp -r $branch_name/* public/$CI_COMMIT_REF_NAME/
 tar -zcf content.tar.gz public/
 
-# TODO copy the content.tar.gz inside public
+# copy the content.tar.gz inside public folder so its part of the pages deployment
 cp content.tar.gz public/
