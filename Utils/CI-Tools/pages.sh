@@ -20,3 +20,4 @@ cp -r $branch_name/* public/$CI_COMMIT_REF_NAME/cppcheck/
 tar -zcf content.tar.gz public/
 
 # TODO copy the content.tar.gz inside public
+cp content.tar.gz public/
