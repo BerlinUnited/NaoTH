@@ -99,7 +99,9 @@ pages:
     #- apt update && apt install tree
     #- tree -L 1 -H . -o index.html
     - $(wget --no-check-certificate $pages_url_fixed/content.tar.gz -O prev_content.tar.gz || exit 0;);
-    - '[ -f prev_content.tar.gz ] && tar -xzf prev_content.tar.gz public/'
+    - ls
+    - if [ -f prev_content.tar.gz ]; then tar -xzf prev_content.tar.gz public/; fi
+    #- '[ -f prev_content.tar.gz ] && tar -xzf prev_content.tar.gz public/'
     - tree -L 1
     - mkdir -p public/$CI_COMMIT_REF_NAME/testcov
     - mkdir -p public/testcov
