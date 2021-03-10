@@ -12,14 +12,14 @@ variables:
 cppcheck:
   stage: test
   script:
-  - mkdir -p $branch_name
+  - mkdir -p $CI_COMMIT_REF_NAME
   - cppcheck -j 4 --enable=all --inconclusive --xml --xml-version=2 . 2> cppcheck-result.xml
-  - cppcheck-htmlreport --file=cppcheck-result.xml --report-dir=$branch_name --source-dir=.
+  - cppcheck-htmlreport --file=cppcheck-result.xml --report-dir=$CI_COMMIT_REF_NAME --source-dir=.
   - python3 -m pip install -U cppcheck_codequality
   - cppcheck-codequality --input-file=cppcheck-result.xml --output-file=cppcheck.json
   artifacts:
     paths: 
-      - $branch_name
+      - $CI_COMMIT_REF_NAME
     reports:
       codequality: cppcheck.json
 
@@ -84,16 +84,14 @@ compile_nao_clang:
   - ./compileGame.sh -j 4
 
 pages:
-  # TODO think about cleaning up old branches
   stage: deploy
   script:
-    - mkdir public
-    - new_branch_name="$(sed 's/\//_/g' <<< "${branch_name}")"
-    - mv $branch_name $new_branch_name
-    - mv $new_branch_name/ public/
-    - cd public/
-    - apt update && apt install tree
-    - tree -L 1 -H . -o index.html
+    # install system dependencies used in ./Utils/CI-Tools/pages.sh  # TODO put them into the toolchain
+    - apt update && apt install tree wget -y
+    # handle generation of the html folder structure for cppcheck output
+    - ./Utils/CI-Tools/pages.sh
+    # generate a index.html listing all the subfolders
+    - cd public/ && tree -L 1 -H . -o index.html && cd ..
   artifacts:
     paths:
       - public
