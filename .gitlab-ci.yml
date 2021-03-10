@@ -20,7 +20,7 @@ cppcheck:
   - cppcheck-codequality --input-file=cppcheck-result.xml --output-file=cppcheck.json
   artifacts:
     paths: 
-      - $branch_name
+      - $CI_COMMIT_REF_NAME
     reports:
       codequality: cppcheck.json
 
