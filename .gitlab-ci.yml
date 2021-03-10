@@ -13,7 +13,7 @@ cppcheck:
   stage: test
   script:
   - mkdir -p $CI_COMMIT_REF_NAME
-  - cppcheck -j 4 --enable=all --inconclusive --xml --xml-version=2 . 2> cppcheck-result.xml
+  - cppcheck -j 4 --enable=all --inconclusive --force --xml --xml-version=2 . 2> cppcheck-result.xml
   - cppcheck-htmlreport --file=cppcheck-result.xml --report-dir=$CI_COMMIT_REF_NAME --source-dir=.
   - python3 -m pip install -U cppcheck_codequality
   - cppcheck-codequality --input-file=cppcheck-result.xml --output-file=cppcheck.json
