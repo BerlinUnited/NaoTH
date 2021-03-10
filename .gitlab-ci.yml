@@ -8,19 +8,18 @@ default:
 
 variables:
     branch_name: $CI_COMMIT_REF_NAME
-    pages_url_fixed: "https://pages.cms.hu-berlin.de/berlinunited/naoth-2020/"  # $CI_PAGES_URL is wrong because gitlab is badly configured
     
 cppcheck:
   stage: test
   script:
-  - mkdir -p $branch_name
+  - mkdir -p $CI_COMMIT_REF_NAME
   - cppcheck -j 4 --enable=all --inconclusive --xml --xml-version=2 . 2> cppcheck-result.xml
-  - cppcheck-htmlreport --file=cppcheck-result.xml --report-dir=$branch_name --source-dir=.
+  - cppcheck-htmlreport --file=cppcheck-result.xml --report-dir=$CI_COMMIT_REF_NAME --source-dir=.
   - python3 -m pip install -U cppcheck_codequality
   - cppcheck-codequality --input-file=cppcheck-result.xml --output-file=cppcheck.json
   artifacts:
     paths: 
-      - $branch_name
+      - $CI_COMMIT_REF_NAME
     reports:
       codequality: cppcheck.json
 

@@ -4,6 +4,7 @@ function validate_url(){
 }
 
 # this is the archive that contains all the cppcheck history
+# $CI_PAGES_URL is wrong because gitlab is badly configured
 url="https://pages.cms.hu-berlin.de/berlinunited/naoth-2020/content.tar.gz"
 
 # handle case that previous content exists
