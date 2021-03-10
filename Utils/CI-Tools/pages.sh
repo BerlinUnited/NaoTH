@@ -15,8 +15,12 @@ else
         echo "remote url does not exist";
 fi
 
-mkdir -p public/$CI_COMMIT_REF_NAME
-cp -r $branch_name/* public/$CI_COMMIT_REF_NAME/
+new_branch_name="$(sed 's/\//_/g' <<< "${CI_COMMIT_REF_NAME}")"
+# rename folders like feature/my_cool_feature to feature_my_cool_feature
+if [ "$CI_COMMIT_REF_NAME" != "$new_branch_name" ]; then cp $CI_COMMIT_REF_NAME $new_branch_name; else new_branch_name=$CI_COMMIT_REF_NAME; fi
+mkdir -p public/$new_branch_name
+ls $CI_COMMIT_REF_NAME/
+cp -r $CI_COMMIT_REF_NAME/* public/$new_branch_name/
 tar -zcf content.tar.gz public/
 
 # copy the content.tar.gz inside public folder so its part of the pages deployment
