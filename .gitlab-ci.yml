@@ -87,6 +87,7 @@ pages:
   # TODO think about cleaning up old branches
   stage: deploy
   script:
+    - apt update && apt install tree wget -y
     #- mkdir public
     #- new_branch_name="$(sed 's/\//_/g' <<< "${branch_name}")"
     # rename folders like feature/my_cool_feature to feature_my_cool_feature
@@ -98,6 +99,7 @@ pages:
     #- tree -L 1 -H . -o index.html
     - $(wget --no-check-certificate $CI_PAGES_URL/content.tar.gz -O prev_content.tar.gz || exit 0;);
     - '[ -f prev_content.tar.gz ] && tar -xzf prev_content.tar.gz public/'
+    - tree -L 1
     - mkdir -p public/$CI_COMMIT_REF_NAME/testcov
     - mkdir -p public/testcov
     - cp -r $branch_name/* public/$CI_COMMIT_REF_NAME/testcov/
