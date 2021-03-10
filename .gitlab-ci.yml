@@ -38,7 +38,7 @@ publish_naoth:
   - cd ../../Utils/py/naoth
   - ./package_naoth.sh
 
-.compile_nao_gcc:
+compile_nao_gcc:
   stage: build
   rules:
     - changes: 
@@ -52,7 +52,7 @@ publish_naoth:
   - cd NaoTHSoccer/Make
   - ./compileGame.sh -j 4
 
-.compile_local_gcc:
+compile_local_gcc:
   stage: build
   rules:
     - changes: 
@@ -68,7 +68,7 @@ publish_naoth:
   - cd ../build/gmake2
   - make all -j 4
 
-.compile_nao_clang:
+compile_nao_clang:
   stage: build
   rules:
     - changes: 
