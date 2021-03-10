@@ -90,7 +90,7 @@ pages:
     - mkdir public
     - new_branch_name="$(sed 's/\//_/g' <<< "${branch_name}")"
     # rename folders like feature/my_cool_feature to feature_my_cool_feature
-    - if [ "$branch_name" != "$new_branch_name" ]; then mv $branch_name $new_branch_name; else $new_branch_name=$branch_name; fi
+    - if [ "$branch_name" != "$new_branch_name" ]; then mv $branch_name $new_branch_name; else new_branch_name=$branch_name; fi
     - ls
     - mv $new_branch_name/ public/  # have a folder structure like public/feature_my_cool_feature/index.html
     - cd public/
