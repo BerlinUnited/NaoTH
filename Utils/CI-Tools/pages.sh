@@ -1,11 +1,12 @@
 function validate_url(){
+  # check if a resource exists
   if [[ `wget -S --spider $1  2>&1 | grep 'HTTP/1.1 200 OK'` ]]; then echo "true"; fi
 }
 
+# this is the archive that contains all the cppcheck history
 url="https://pages.cms.hu-berlin.de/berlinunited/naoth-2020/content.tar.gz"
 
-echo $(validate_url $url)
-
+# handle case that previous content exists
 if [ -n "$(validate_url $url)" ]; then
         wget --no-check-certificate $url -O prev_content.tar.gz;
         if [ -f prev_content.tar.gz ]; then 
@@ -18,8 +19,9 @@ if [ -n "$(validate_url $url)" ]; then
 else
         echo "remote url does not exist";
 fi
-if [ -n $CLEANUP_PAGES ]; then
-	echo "cleanup pages";
+
+if [ -n "$CLEANUP_PAGES" ]; then
+	echo "cleanup pages"
 	rm -rf public
 fi
 
