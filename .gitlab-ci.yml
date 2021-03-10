@@ -97,12 +97,11 @@ pages:
     #- ls 
     #- mv $new_branch_name/ public/  # have a folder structure like public/feature_my_cool_feature/index.html
     #- apt update && apt install tree
-    - cd public/ && tree -L 3 -H . -o index.html && cd ..
+    - cd public/ && tree -L 1 -H . -o index.html && cd ..
     #- $(wget --no-check-certificate $pages_url_fixed/content.tar.gz -O prev_content.tar.gz || exit 0;);
     #- ls
     #- if [ -f prev_content.tar.gz ]; then tar -xzf prev_content.tar.gz public/; fi
     #- '[ -f prev_content.tar.gz ] && tar -xzf prev_content.tar.gz public/'
-    - tree -L 3
     #- mkdir -p public/$CI_COMMIT_REF_NAME/testcov
     #- mkdir -p public/testcov
     #- cp -r $branch_name/* public/$CI_COMMIT_REF_NAME/testcov/
