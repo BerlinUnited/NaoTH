@@ -10,9 +10,17 @@ if [ -n "$(validate_url $url)" ]; then
         wget --no-check-certificate $url -O prev_content.tar.gz;
         if [ -f prev_content.tar.gz ]; then 
         	tar -xzf prev_content.tar.gz public/; 
+
+        	# TODO do cleanup
+        	# TODO list folders in public and check if they are branch names
+        	#curl --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab.example.com/api/v4/projects/5/repository/branches/master"
         fi
 else
         echo "remote url does not exist";
+fi
+if [ -n $CLEANUP_PAGES ]; then
+	echo "cleanup pages";
+	rm -rf public
 fi
 
 new_branch_name="$(sed 's/\//_/g' <<< "${CI_COMMIT_REF_NAME}")"
