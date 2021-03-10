@@ -8,6 +8,7 @@ default:
 
 variables:
     branch_name: $CI_COMMIT_REF_NAME
+    pages_url_fixed: "https://pages.cms.hu-berlin.de/berlinunited/naoth-2020/"  # $CI_PAGES_URL is wrong because gitlab is badly configured
     
 cppcheck:
   stage: test
@@ -97,7 +98,7 @@ pages:
     #- cd public/
     #- apt update && apt install tree
     #- tree -L 1 -H . -o index.html
-    - $(wget --no-check-certificate $CI_PAGES_URL/content.tar.gz -O prev_content.tar.gz || exit 0;);
+    - $(wget --no-check-certificate $pages_url_fixed/content.tar.gz -O prev_content.tar.gz || exit 0;);
     - '[ -f prev_content.tar.gz ] && tar -xzf prev_content.tar.gz public/'
     - tree -L 1
     - mkdir -p public/$CI_COMMIT_REF_NAME/testcov
