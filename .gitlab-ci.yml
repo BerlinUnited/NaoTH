@@ -89,8 +89,9 @@ pages:
   script:
     - mkdir public
     - new_branch_name="$(sed 's/\//_/g' <<< "${branch_name}")"
-    - mv $branch_name $new_branch_name
-    - mv $new_branch_name/ public/
+    - mv --backup=simple $branch_name $new_branch_name # rename folders like feature/my_cool_feature to feature_my_cool_feature
+    - ls
+    - mv $new_branch_name/ public/  # have a folder structure like public/feature_my_cool_feature/index.html
     - cd public/
     - apt update && apt install tree
     - tree -L 1 -H . -o index.html
