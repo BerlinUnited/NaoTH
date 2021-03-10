@@ -96,9 +96,9 @@ pages:
     #- if [ "$branch_name" != "$new_branch_name" ]; then mv $branch_name $new_branch_name; else new_branch_name=$branch_name; fi
     #- ls 
     #- mv $new_branch_name/ public/  # have a folder structure like public/feature_my_cool_feature/index.html
-    #- cd public/
+    - 
     #- apt update && apt install tree
-    - tree -L 1 -H . -o index.html
+    - cd public/ && tree -L 1 -H . -o index.html && cd ..
     #- $(wget --no-check-certificate $pages_url_fixed/content.tar.gz -O prev_content.tar.gz || exit 0;);
     #- ls
     #- if [ -f prev_content.tar.gz ]; then tar -xzf prev_content.tar.gz public/; fi
