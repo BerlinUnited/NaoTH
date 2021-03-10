@@ -102,7 +102,7 @@ pages:
     #- ls
     #- if [ -f prev_content.tar.gz ]; then tar -xzf prev_content.tar.gz public/; fi
     #- '[ -f prev_content.tar.gz ] && tar -xzf prev_content.tar.gz public/'
-    - tree -L 2
+    - tree -L 4
     #- mkdir -p public/$CI_COMMIT_REF_NAME/testcov
     #- mkdir -p public/testcov
     #- cp -r $branch_name/* public/$CI_COMMIT_REF_NAME/testcov/
