@@ -1,31 +1,31 @@
 stages:
  - test
- - python
- - static_analysis
  - build
-
+ - deploy
 
 default:
   image: $DOCKER_IMAGE
+
+variables:
+    branch_name: $CI_COMMIT_REF_NAME
     
 cppcheck:
   stage: test
-  rules:
-     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
-     - if: '$CI_PIPELINE_SOURCE == "web"'
-     - if: '$CI_PIPELINE_SOURCE == "trigger"'
-     - if: $CI_COMMIT_BRANCH == "develop"
   script:
+  - mkdir -p $branch_name
   - cppcheck -j 4 --enable=all --inconclusive --xml --xml-version=2 . 2> cppcheck-result.xml
+  - cppcheck-htmlreport --file=cppcheck-result.xml --report-dir=$branch_name --source-dir=.
   - python3 -m pip install -U cppcheck_codequality
   - cppcheck-codequality --input-file=cppcheck-result.xml --output-file=cppcheck.json
   artifacts:
+    paths: 
+      - $branch_name
     reports:
       codequality: cppcheck.json
 
 publish_naoth:
   # run the publish command if the PUBLISH_NAOTH flag is set or the commit changes the develop with changes in the naoth package
-  stage: python
+  stage: deploy
   rules:
     - if: '$PUBLISH_NAOTH'
     - if: $CI_COMMIT_BRANCH == "develop"
@@ -82,3 +82,18 @@ compile_nao_clang:
   - cd NaoTHSoccer/Make
   - echo -en "if PLATFORM == \"Nao\" then\n    _OPTIONS[\"crosscompiler\"] = \"clang\"\nend\n" > projectconfig.user.lua
   - ./compileGame.sh -j 4
+
+pages:
+  # TODO think about cleaning up old branches
+  stage: deploy
+  script:
+    - mkdir public
+    - new_branch_name="$(sed 's/\//_/g' <<< "${branch_name}")"
+    - mv $branch_name $new_branch_name
+    - mv $new_branch_name/ public/
+    - cd public/
+    - apt update && apt install tree
+    - tree -L 1 -H . -o index.html
+  artifacts:
+    paths:
+      - public
