@@ -20,7 +20,7 @@ cppcheck:
   - cppcheck-codequality --input-file=cppcheck-result.xml --output-file=cppcheck.json
   artifacts:
     paths: 
-      - $CI_COMMIT_REF_NAME
+      - $branch_name
     reports:
       codequality: cppcheck.json
 
@@ -102,7 +102,7 @@ pages:
     #- ls
     #- if [ -f prev_content.tar.gz ]; then tar -xzf prev_content.tar.gz public/; fi
     #- '[ -f prev_content.tar.gz ] && tar -xzf prev_content.tar.gz public/'
-    - tree -L 4
+    - tree -L 3
     #- mkdir -p public/$CI_COMMIT_REF_NAME/testcov
     #- mkdir -p public/testcov
     #- cp -r $branch_name/* public/$CI_COMMIT_REF_NAME/testcov/
