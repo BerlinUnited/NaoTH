@@ -1,5 +1,5 @@
 
-#ifdef  WIN32
+#ifdef WIN32
   #include <conio.h>
   #include <windows.h>
   #include <winbase.h>
@@ -10,8 +10,11 @@
 #endif //WIN32
 
 #include <sstream>
+#include <cctype>
 
 #include "Simulator.h"
+
+#include "Tools/ThreadUtil.h"
 #include "Tools/NaoTime.h"
 
 #include <Messages/Framework-Representations.pb.h>
@@ -132,11 +135,13 @@ void Simulator::printCurrentLineInfo()
 
 char Simulator::getInput()
 {
+  int input;
   if (backendMode) {
-    return static_cast<char>(getchar());
+    input = getchar();
   } else {
-    return static_cast<char>(getch());
+    input = getch();
   }
+  return static_cast<char>(std::tolower(input));
 }
 
 void Simulator::main(bool autostart)
@@ -220,16 +225,13 @@ void Simulator::play(bool loop)
 
     // wait at least 5ms but max 1s
     unsigned int waitTime = Math::clamp((int)maxTimeToWait - (int)calculationTime, 5, 1000);
-
+    ThreadUtil::sleep(waitTime);
 
 #ifdef WIN32
-    Sleep(waitTime);
     if(_kbhit()) {
       c = getInput();
     }
 #else
-    // wait some time
-    usleep(waitTime * 1000);
     c = getInput();
 #endif
 

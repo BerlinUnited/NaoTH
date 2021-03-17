@@ -1,22 +1,8 @@
-from pathlib import Path
-
 import numpy as np
 from matplotlib import pyplot as plt
-from naoth.log import Reader as LogReader
 from naoth.log import Parser
-from pywget import wget
-
-
-def get_demo_logfiles():
-    base_url = "https://www2.informatik.hu-berlin.de/~naoth/ressources/log/demo_jointdata/"
-    logfile_list = ["collision_goal_left1.log"]
-
-    target_dir = Path("logs")
-    Path.mkdir(target_dir, exist_ok=True)
-
-    for logfile in logfile_list:
-        if not Path(target_dir / logfile).is_file():
-            wget.download(base_url + logfile, target_dir)
+from naoth.log import Reader as LogReader
+from naoth.datasets import joints
 
 
 def unpack_frame(frame):
@@ -38,47 +24,44 @@ def unpack_frame(frame):
 
 
 if __name__ == "__main__":
-    get_demo_logfiles()
-    path = "logs/collision_goal_left1.log"
+    path = joints.load_data()
 
     myParser = Parser()
-    # Is this a bug? When i try  myParser.register("JointData", "MotorJointData") the script fails
-    myParser.register("MotorJointData", "JointData")
 
-    log = LogReader(path, myParser)
-    print(log[0]["SensorJointData"])
-    quit()
-    data = [unpack_frame(frame) for frame in log]
+    with LogReader(path, myParser) as log:
+        print(log[0]["SensorJointData"])
 
-    data = np.array(data)
+        data = [unpack_frame(frame) for frame in log.read()]
 
-    offset = 4
-    Lsjd = data[offset:data.shape[0], 1]
-    Lmjd = data[0:data.shape[0] - offset, 3]
-    Rsjd = data[offset:data.shape[0], 0]
-    Rmjd = data[0:data.shape[0] - offset, 2]
+        data = np.array(data)
 
-    fig, axes = plt.subplots(3, 2, sharex='all')
-    axes[0, 0].title.set_text('Left MotorJointData')
-    axes[0, 1].title.set_text('Right MotorJointData')
-    axes[1, 0].title.set_text('Left SensorJointData')
-    axes[1, 1].title.set_text('Right SensorJointData')
-    axes[2, 0].title.set_text('Left absolute error')
-    axes[2, 1].title.set_text('Right absolure error')
+        offset = 4
+        Lsjd = data[offset:data.shape[0], 1]
+        Lmjd = data[0:data.shape[0] - offset, 3]
+        Rsjd = data[offset:data.shape[0], 0]
+        Rmjd = data[0:data.shape[0] - offset, 2]
 
-    axes[0, 0].plot(Lmjd)
-    axes[0, 0].set_xlabel('Frame'), axes[0, 0].set_ylabel('Data')
-    axes[0, 1].plot(Rmjd)
-    axes[0, 1].set_xlabel('Frame'), axes[0, 1].set_ylabel('Data')
-    axes[1, 0].plot(Lsjd)
-    axes[1, 0].set_xlabel('Frame'), axes[1, 0].set_ylabel('Data')
-    axes[1, 1].plot(Rsjd)
-    axes[1, 1].set_xlabel('Frame'), axes[1, 1].set_ylabel('Data')
-    axes[2, 0].plot(abs(Lmjd - Lsjd))
-    axes[2, 0].set_ylim([0, 0.15])
-    axes[2, 0].set_xlabel('Frame'), axes[2, 0].set_ylabel('Data')
-    axes[2, 1].plot(abs(Rmjd - Rsjd))
-    axes[2, 1].set_ylim([0, 0.15])
-    axes[2, 1].set_xlabel('Frame'), axes[2, 1].set_ylabel('Data')
+        fig, axes = plt.subplots(3, 2, sharex='all', constrained_layout=True)
+        axes[0, 0].title.set_text('Left MotorJointData')
+        axes[0, 1].title.set_text('Right MotorJointData')
+        axes[1, 0].title.set_text('Left SensorJointData')
+        axes[1, 1].title.set_text('Right SensorJointData')
+        axes[2, 0].title.set_text('Left absolute error')
+        axes[2, 1].title.set_text('Right absolure error')
 
-    plt.show()
+        axes[0, 0].plot(Lmjd)
+        axes[0, 0].set_xlabel('Frame'), axes[0, 0].set_ylabel('Data')
+        axes[0, 1].plot(Rmjd)
+        axes[0, 1].set_xlabel('Frame'), axes[0, 1].set_ylabel('Data')
+        axes[1, 0].plot(Lsjd)
+        axes[1, 0].set_xlabel('Frame'), axes[1, 0].set_ylabel('Data')
+        axes[1, 1].plot(Rsjd)
+        axes[1, 1].set_xlabel('Frame'), axes[1, 1].set_ylabel('Data')
+        axes[2, 0].plot(abs(Lmjd - Lsjd))
+        axes[2, 0].set_ylim([0, 0.15])
+        axes[2, 0].set_xlabel('Frame'), axes[2, 0].set_ylabel('Data')
+        axes[2, 1].plot(abs(Rmjd - Rsjd))
+        axes[2, 1].set_ylim([0, 0.15])
+        axes[2, 1].set_xlabel('Frame'), axes[2, 1].set_ylabel('Data')
+
+        plt.show()

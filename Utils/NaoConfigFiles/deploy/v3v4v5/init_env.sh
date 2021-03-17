@@ -78,6 +78,7 @@ copy ./usr/bin/brainwash /usr/bin/brainwash root 755
 
 # brainwash udev rule
 copy ./etc/udev/rules.d/brainwashing.rules /etc/udev/rules.d/brainwashing.rules nao 644
+copy ./etc/udev/rules.d/disable-wifi-power-save.rules /etc/udev/rules.d/disable-wifi-power-save.rules nao 644
 
 # naoqi user autoload.ini
 copy ./home/nao/naoqi/preferences/autoload.ini /home/nao/naoqi/preferences/autoload.ini nao 644

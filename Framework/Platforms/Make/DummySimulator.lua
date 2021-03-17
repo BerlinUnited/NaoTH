@@ -1,5 +1,7 @@
 -- NaoTH controller for the logfile based "simulator"
 project "DummySimulator"
+  removeplatforms { "Nao" }
+
   kind "ConsoleApp"
   language "C++"
   

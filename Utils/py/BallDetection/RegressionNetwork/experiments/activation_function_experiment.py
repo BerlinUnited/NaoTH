@@ -2,8 +2,8 @@
     iteratively set the activation functions of a model to one each function in the list and run the trainings
      procedure multiple times and compare the best run with each other
 """
-from activation_functions import *
-from model_zoo import *
+from utility_functions.activation_functions import *
+from utility_functions.model_zoo import *
 import tensorflow as tf
 
 from experiments.rerun_training_and_compare import start_training

@@ -1,4 +1,6 @@
 project "ScriptableSimulator"
+  removeplatforms { "Nao" }
+
   kind "SharedLib"
   language "C++"
   

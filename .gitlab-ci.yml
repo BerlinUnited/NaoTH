@@ -1,49 +1,97 @@
 stages:
- - static_analysis
- - nao 
- - linux
+ - test
+ - build
+ - deploy
 
 default:
-  image: scm.cms.hu-berlin.de:4567/berlinunited/tools/linuxtoolchain:latest
+  image: $DOCKER_IMAGE
 
-cppcheck:
-  stage: static_analysis
-  only:
-    refs:
-      - web
-      - merge_requests
-      - triggers
-  script:
-  - apt-get install cppcheck -y  # TODO move to toolchain image
-  - apt install python-pip -y # TODO move to toolchain image
-  - pip install pygments # TODO move to toolchain image
-  - cppcheck -j 4 --enable=all --inconclusive --xml --xml-version=2 . 2> cppcheck-result.xml
-  - cppcheck-htmlreport --file=cppcheck-result.xml --report-dir=test1 --source-dir=.
-
-  artifacts:
-    paths: [test1]
-    expire_in: 1 week
+variables:
+    branch_name: $CI_COMMIT_REF_NAME
     
-compileGame:
-  stage: nao
-  only:
-    refs:
-      - web
-      - merge_requests
-      - triggers
+cppcheck:
+  stage: test
+  script:
+  - mkdir -p $CI_COMMIT_REF_NAME
+  - cppcheck -j 4 --enable=all --inconclusive --force --xml --xml-version=2 . 2> cppcheck-result.xml
+  - cppcheck-htmlreport --file=cppcheck-result.xml --report-dir=$CI_COMMIT_REF_NAME --source-dir=.
+  - python3 -m pip install -U cppcheck_codequality
+  - cppcheck-codequality --input-file=cppcheck-result.xml --output-file=cppcheck.json
+  artifacts:
+    paths: 
+      - $CI_COMMIT_REF_NAME
+    reports:
+      codequality: cppcheck.json
+
+publish_naoth:
+  # run the publish command if the PUBLISH_NAOTH flag is set or the commit changes the develop with changes in the naoth package
+  stage: deploy
+  rules:
+    - if: '$PUBLISH_NAOTH'
+    - if: $CI_COMMIT_BRANCH == "develop"
+      changes:
+      - Utils/py/naoth/**/*
+    
+  script:
+  - cd NaoTHSoccer/Make
+  - premake5 gmake2 --protoc
+  - cd ../../Utils/py/naoth
+  - ./package_naoth.sh
+
+compile_nao_gcc:
+  stage: build
+  rules:
+    - changes: 
+      - Framework/**/*
+      - NaoTHSoccer/**/*
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+    - if: '$CI_PIPELINE_SOURCE == "trigger"'
+    - if: $CI_COMMIT_BRANCH == "develop"
   script:
   - cd NaoTHSoccer/Make
   - ./compileGame.sh -j 4
 
-compileLocal:
-  stage: linux
-  only:
-    refs:
-      - web
-      - merge_requests
-      - triggers
+compile_local_gcc:
+  stage: build
+  rules:
+    - changes: 
+      - Framework/**/*
+      - NaoTHSoccer/**/*
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+    - if: '$CI_PIPELINE_SOURCE == "trigger"'
+    - if: $CI_COMMIT_BRANCH == "develop"
   script:
   - cd NaoTHSoccer/Make
   - premake5 gmake2 --protoc
-  - cd ../build
+  - cd ../build/gmake2
   - make all -j 4
+
+compile_nao_clang:
+  stage: build
+  rules:
+    - changes: 
+      - Framework/**/*
+      - NaoTHSoccer/**/*
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+    - if: '$CI_PIPELINE_SOURCE == "trigger"'
+    - if: $CI_COMMIT_BRANCH == "develop"
+  script:
+  - cd NaoTHSoccer/Make
+  - echo -en "if PLATFORM == \"Nao\" then\n    _OPTIONS[\"crosscompiler\"] = \"clang\"\nend\n" > projectconfig.user.lua
+  - ./compileGame.sh -j 4
+
+pages:
+  stage: deploy
+  script:
+    # install system dependencies used in ./Utils/CI-Tools/pages.sh  # TODO put them into the toolchain
+    - apt update && apt install tree wget -y
+    # handle generation of the html folder structure for cppcheck output
+    - ./Utils/CI-Tools/pages.sh
+    # generate a index.html listing all the subfolders
+    - cd public/ && tree -L 1 -H . -o index.html && cd ..
+  artifacts:
+    paths:
+      - public

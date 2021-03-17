@@ -79,7 +79,7 @@ public: // a dummy robot simulator
       //robotJointData.electricCurrent[i] = 0.0;
     }
 
-    // HACK:
+    // HACK: emulate robot standing on the longer leg
     double leftPressure = 0.0;
     double rightPressure = 0.0;
     if(std::fabs(robotJointData.position[naoth::JointData::LKneePitch] - robotJointData.position[naoth::JointData::RKneePitch]) < 0.1) {

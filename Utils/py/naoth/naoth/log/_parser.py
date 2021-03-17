@@ -1,9 +1,7 @@
-import logging as _logging
 import inspect as _inspect
-
+import sys
 from .. import pb as _pb
 from ._xabsl import XABSLSymbols
-
 
 # get all protobuf classes
 _proto = {}
@@ -38,7 +36,7 @@ class Parser:
 class BehaviorParser:
     def __init__(self, data=None):
 
-        self.__parser = Parser()
+        self.parser = Parser()
         self.symbols = XABSLSymbols()
         self.__options = None
         self.__current_options = None
@@ -51,7 +49,7 @@ class BehaviorParser:
             if data == b'unknown representation\n':
                 raise Exception('Unknown representation')
 
-            message = self.__parser.parse('BehaviorStateComplete', data)
+            message = self.parser.parse('BehaviorStateComplete', data)
 
             # initialize options
             self.__options = message.options
@@ -69,18 +67,24 @@ class BehaviorParser:
                 self.symbols.values[s.name] = s.value
                 self.symbols.enumIdToName[s.id] = s.name
 
+            return message
+
     def __check_initialized(self):
         if self.__options is None:
-            _logging.getLogger("BehaviorParser").error("BehaviorParser must be initialized with 'BehaviorStateComplete' data!")
+            # print(" BehaviorParser must be initialized with 'BehaviorStateComplete' data! -> Running Init")
             return False
 
         return True
 
-    def parse(self, data):
-        if self.__check_initialized():
+    def parse(self, name, data):
+        if not self.__check_initialized() and name == "BehaviorStateComplete":
+            message = self.init(data)
+
+            return (message, self.__current_options, self.symbols)
+        elif name == "BehaviorStateSparse":
             self.__current_options = {}
 
-            message = self.__parser.parse('BehaviorStateSparse', data)
+            message = self.parser.parse("BehaviorStateSparse", data)
 
             # process active options
             for o in message.activeRootActions:
@@ -96,13 +100,18 @@ class BehaviorParser:
             for s in message.inputSymbolList.enumerated:
                 self.symbols.enum(s.id, s.value)
 
+            return (message, self.__current_options, self.symbols)
+        else:
+            return(self.parser.parse(name, data))
+
+
     def __parseOption(self, o):
-        if o.type == 0: # Option
+        if o.type == 0:  # Option
             optionComplete = self.__options[o.option.id]
             self.__current_options[optionComplete.name] = {
-              'time': o.option.timeOfExecution,
-              'state': optionComplete.states[o.option.activeState],
-              'stateTime': o.option.stateTime
+                'time': o.option.timeOfExecution,
+                'state': optionComplete.states[o.option.activeState],
+                'stateTime': o.option.stateTime
             }
 
             for so in o.option.activeSubActions:
@@ -115,7 +124,7 @@ class BehaviorParser:
         return option in self.__current_options
 
     def getActiveStates(self):
-        return [ s['state'].name for s in self.__current_options.values() ]
+        return [s['state'].name for s in self.__current_options.values()]
 
     def getActiveOptionState(self, option):
         if option in self.__current_options:
@@ -126,7 +135,9 @@ class BehaviorParser:
         result = str(self.symbols) + ',\n[\n'
         if self.__current_options:
             for o in self.__current_options:
-                result += '\t{} [{} ms] - {} [{} ms]\n'.format(o, self.__current_options[o]['time'], self.__current_options[o]['state'].name, self.__current_options[o]['stateTime'])
+                result += '\t{} [{} ms] - {} [{} ms]\n'.format(o, self.__current_options[o]['time'],
+                                                               self.__current_options[o]['state'].name,
+                                                               self.__current_options[o]['stateTime'])
         result += ']'
 
         return result

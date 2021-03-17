@@ -1,21 +1,47 @@
-import cppyy;
+import cppyy
+import os
+import sys
 
-cppyy.load_library("../LinuxToolchain/toolchain_native/extern/lib/libprotobuf.so")
-cppyy.load_library("/usr/lib/libglib-2.0.so")
-cppyy.load_library("NaoTHSoccer/dist/Native/libcommons.so")
 
-cppyy.add_include_path("Framework/Commons/Source")
+def get_naoth_dir():
+    script_path = os.path.abspath(__file__)
+    return os.path.abspath(os.path.join(script_path, "../../../../"))
 
-cppyy.include("Tools/Math/ConvexHull.h")
-cppyy.include("Tools/Math/Vector2.h")
 
-from cppyy.gbl import Vector2d
-from cppyy.gbl.std import vector
+def get_toolchain_dir():
+    toolchain_path = os.path.join(
+        os.path.abspath(os.environ["NAO_CTC"]), "../")
+    return toolchain_path
 
-x = vector[cppyy.gbl.Vector2d]()
-x.push_back(Vector2d(0.0,0.0))
-x.push_back(Vector2d(1.0,1.0))
-x.push_back(Vector2d(-1.0,1.0))
-x.push_back(Vector2d(0.0,0.5))
-y = cppyy.gbl.ConvexHull.convexHull[Vector2d](x)
 
+if __name__ == "__main__":
+    naoth_dir = get_naoth_dir()
+    toolchain_dir = get_toolchain_dir()
+
+    # load shared library: all depending libraries should be found automatically
+    shared_lib_name = "libscriptsim.so"
+    if sys.platform.startswith("win32"):
+        shared_lib_name = "scriptsim.dll"
+    elif sys.platform.startswith("darwin"):
+        shared_lib_name = "libscriptsim.dylib"
+
+    cppyy.load_library(os.path.join(
+        naoth_dir, "NaoTHSoccer/dist/Native/" + shared_lib_name))
+
+    # add relevant include paths to allow mapping our code
+    cppyy.add_include_path(os.path.join(
+        naoth_dir, "Framework/Commons/Source"))
+
+    cppyy.include("Tools/Math/ConvexHull.h")
+    cppyy.include("Tools/Math/Vector2.h")
+
+    x = cppyy.gbl.std.vector[cppyy.gbl.Vector2d]()
+    x.push_back(cppyy.gbl.Vector2d(0.0, 0.0))
+    x.push_back(cppyy.gbl.Vector2d(1.0, 1.0))
+    x.push_back(cppyy.gbl.Vector2d(-1.0, 1.0))
+    x.push_back(cppyy.gbl.Vector2d(0.0, 0.5))
+    y = cppyy.gbl.ConvexHull.convexHull[cppyy.gbl.Vector2d](x)
+
+    y = list(y)
+    for elem in y:
+        print(elem.x, elem.y)

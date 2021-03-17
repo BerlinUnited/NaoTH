@@ -46,7 +46,7 @@ void FakeBallDetector::execute()
 
     lastFrame = getFrameInfo();
 
-    Vector3d point(ballPercept.positionOnField.x, ballPercept.positionOnField.y, 32.5);
+    Vector3d point(ballPercept.positionOnField.x, ballPercept.positionOnField.y, 32.5);  // WHY 32.5? i would have set this to ballradius
     Vector2d pointInImage;
 
     bool in_image_bottom = CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), point, pointInImage);

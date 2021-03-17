@@ -17,7 +17,7 @@ namespace naoth
   {
   public:
     /**
-     * This method must be overwritten bei a particular
+     * This method must be overwritten by a particular
      * Printable in order to stream out some specific (visible) data
      */
     virtual void print(std::ostream& stream) const = 0;

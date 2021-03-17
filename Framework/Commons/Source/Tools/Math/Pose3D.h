@@ -73,8 +73,6 @@ protected:
   */
   Pose3T(const Pose3T& other) {*this = other;}
 
-  virtual ~Pose3T() {}
-
   /** Multiplication with Point
   *\param point (Vector3&lt;double&gt;)
   */

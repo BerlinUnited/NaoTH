@@ -164,14 +164,14 @@ NaoController::NaoController()
   if(lolaAvailable)
   {
     std::cout << "[NaoController] " << "Init CameraHandler V6 (bottom)" << std::endl;
-    theBottomCameraHandler.init("/dev/video1", CameraInfo::Bottom, true, true);
+    theBottomCameraHandler.init("/dev/video1", CameraInfo::Bottom, true);
     std::cout << "[NaoController] " << "Init CameraHandler V6 (top)" << std::endl;
-    theTopCameraHandler.init("/dev/video0", CameraInfo::Top, false, true);
+    theTopCameraHandler.init("/dev/video0", CameraInfo::Top, true);
   } else {
     std::cout << "[NaoController] " << "Init CameraHandler V5 (bottom)" << std::endl;
-    theBottomCameraHandler.init("/dev/video1", CameraInfo::Bottom, true, false);
+    theBottomCameraHandler.init("/dev/video1", CameraInfo::Bottom, false);
     std::cout << "[NaoController] " << "Init CameraHandler V5 (top)" << std::endl;
-    theTopCameraHandler.init("/dev/video0", CameraInfo::Top, false, false);
+    theTopCameraHandler.init("/dev/video0", CameraInfo::Top, false);
   }
 }
 

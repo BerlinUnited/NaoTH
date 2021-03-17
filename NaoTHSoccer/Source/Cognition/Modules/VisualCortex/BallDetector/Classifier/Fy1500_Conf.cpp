@@ -5,7 +5,7 @@
 #endif
 
 #include <emmintrin.h>
-#include <math.h>
+
 void Fy1500_Conf::cnn(float x0[16][16][1])
 {
 	__m128 w, x, y;
@@ -2557,8 +2557,7 @@ void Fy1500_Conf::cnn(float x0[16][16][1])
 
 
 
-void Fy1500_Conf::find(const BallCandidates::PatchYUVClassified& patch, double meanBrightness)
-{
+void Fy1500_Conf::predict(const BallCandidates::PatchYUVClassified& patch, double meanBrightness) {
 	ASSERT(patch.size() == 16);
 
 	for(size_t x=0; x < patch.size(); x++) {

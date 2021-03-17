@@ -52,7 +52,7 @@ Walk2018::Walk2018() : IKMotion(getInverseKinematicsMotionEngineService(), motio
   // init zmp reference buffer using the zmp planner
   theZMPPlanner->getModuleT()->init(inital_number_of_cycles, currentCOMFeetPose.com.translation, targetZMP);
 
-  std::cout << "walk start" << std::endl;
+  //std::cout << "walk start" << std::endl;
 }
 
 void Walk2018::execute()
@@ -120,7 +120,7 @@ void Walk2018::execute()
      && theZMPPreviewController->getModuleT()->is_stationary()
      && getStepBuffer().only_zero_steps()) {
     setCurrentState(motion::stopped);
-    std::cout << "walk stopped" << std::endl;
+    //std::cout << "walk stopped" << std::endl;
   } else {
     setCurrentState(motion::running);
   }

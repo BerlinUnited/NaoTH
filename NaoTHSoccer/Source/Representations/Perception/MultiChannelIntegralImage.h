@@ -34,6 +34,7 @@ public:
 		}
 	}
 
+	// TODO: this seems obsolete
 	bool isValid() const {
 		return integralImage != nullptr;
 	}

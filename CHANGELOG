@@ -1,0 +1,22 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+This changelog was started on 2020-12-06.
+
+## [2020 Release] - Unreleased
+
+### Added
+- added bumper collision module
+- added java fx dialogs to robotcontrol
+
+### Changed
+-
+
+### Removed
+- removed SimulationTest Module. It was only used to for visualization for a paper
+
+### Fixed
+- 
