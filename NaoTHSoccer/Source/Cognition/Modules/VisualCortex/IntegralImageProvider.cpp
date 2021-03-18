@@ -13,7 +13,7 @@ IntegralImageProvider::~IntegralImageProvider() {}
 
 void IntegralImageProvider::execute(CameraInfo::CameraID id) {
     cameraID = id;
-    makeIntegralBild(getBallDetectorIntegralImage());
+    makeIntegralBildNew(getBallDetectorIntegralImage());
 }
 
 void IntegralImageProvider::makeIntegralBild(BallDetectorIntegralImage& integralImage) const
