@@ -16,7 +16,7 @@ void IntegralImageProvider::execute(CameraInfo::CameraID id) {
     makeIntegralBildNew(getBallDetectorIntegralImage());
 }
 
-void IntegralImageProvider::makeIntegralBild(BallDetectorIntegralImage& integralImage) const
+void IntegralImageProvider::makeIntegralBildOld(BallDetectorIntegralImage& integralImage) const
 {
   const int32_t FACTOR = integralImage.FACTOR;
   const uint32_t MAX_COLOR = integralImage.MAX_COLOR;

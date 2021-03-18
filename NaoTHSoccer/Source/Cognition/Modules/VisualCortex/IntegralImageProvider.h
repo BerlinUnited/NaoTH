@@ -71,7 +71,7 @@ public:
 private:
   CameraInfo::CameraID cameraID;
 
-  void makeIntegralBild(BallDetectorIntegralImage& integralImage) const;
+  void makeIntegralBildOld(BallDetectorIntegralImage& integralImage) const;
   void makeIntegralBildNew(BallDetectorIntegralImage& integralImage) const;
 
   /*

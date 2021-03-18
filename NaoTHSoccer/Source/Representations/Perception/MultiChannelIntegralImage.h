@@ -8,10 +8,9 @@
 #include <Tools/Math/Vector2.h>
 #include <Tools/Debug/NaoTHAssert.h>
 
-/**
- * @ingroup representations
- */
-class MultiChannelIntegralImage {
+
+class MultiChannelIntegralImage 
+{
 public:
   
   MultiChannelIntegralImage() : 
@@ -29,6 +28,8 @@ public:
       delete[] integralImage;
       width = _width;
       height = _height;
+
+      // this should initialize the array to 0
       integralImage = new uint32_t[height*width*MAX_COLOR];
       memset(integralImage, 0, height*width*MAX_COLOR*sizeof(uint32_t));
     }
@@ -86,10 +87,10 @@ private:
 };
 
 
-class GameColorIntegralImage : public MultiChannelIntegralImage { public: static const uint32_t MAX_COLOR = 3; };
+class GameColorIntegralImage : public MultiChannelIntegralImage { };
 class GameColorIntegralImageTop : public GameColorIntegralImage { };
 
-class BallDetectorIntegralImage : public MultiChannelIntegralImage { public: static const uint32_t MAX_COLOR = 3; };
+class BallDetectorIntegralImage : public MultiChannelIntegralImage { };
 class BallDetectorIntegralImageTop : public BallDetectorIntegralImage { };
 
 #endif
