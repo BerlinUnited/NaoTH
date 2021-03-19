@@ -58,6 +58,7 @@ private:
 public:
 
   double stiffness;
+  bool stiffnessIsReady;
 
   KeyFrameMotion(const MotionNet& currentMotionNet, motion::MotionID id);
   KeyFrameMotion();

@@ -199,7 +199,7 @@ public:
     inline bool noColor(int y, int u, int v) const {
       const double brightnesAlpha = (brightnesConeRadiusWhite - brightnesConeRadiusBlack) / (double)(255 - brightnesConeOffset);
       double cromaThreshold = std::max(brightnesConeRadiusBlack, brightnesConeRadiusBlack + brightnesAlpha * (double)(y-brightnesConeOffset));
-      return Vector2d(u - 128, v - 128).abs() < cromaThreshold;
+      return Vector2d(u - 128, v - 128).abs2() < cromaThreshold*cromaThreshold;
     }
   };
 

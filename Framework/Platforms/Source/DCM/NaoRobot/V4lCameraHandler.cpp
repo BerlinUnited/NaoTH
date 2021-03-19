@@ -1,23 +1,40 @@
 /*
  * File:   V4lCameraHandler.cpp
- * Author: thomas
+ * Author: Thomas Krause <krause@informatik.hu-berlin.de>
+ * Author: Heinrch Mellmann <mellmann@informatik.hu-berlin.de>
  *
  * Created on 22. April 2010, 17:24
+ *
+ * 
+ * The code is based on the V4L examples:
+ * https://hverkuil.home.xs4all.nl/codec-api/uapi/v4l/v4l2grab.c.html
+ * https://01.org/linuxgraphics/gfx-docs/drm/media/uapi/v4l/capture.c.html
+ *
  */
 
 #include "V4lCameraHandler.h"
 
 #include "Tools/Debug/NaoTHAssert.h"
-//#include "Tools/Debug/Stopwatch.h"
 #include "Tools/NaoTime.h"
 
-#include "Representations/Infrastructure/Image.h"
+#include "CameraSettingsV5Manager.h"
+#include "CameraSettingsV6Manager.h"
 
 #include <cstring>
 #include <iostream>
 #include <cerrno>
 
+// C-includes
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/mman.h> // map or unmap files or devices into memory 
 #include <poll.h>
+
+// needed for the reset of the camera on NAO V6
+#include <linux/i2c.h>
+#include <linux/i2c-dev.h>
 
 /*
 // NOTE: for future improvements of the error handling take a look at 
@@ -34,78 +51,62 @@
   }
 */
 
-//Custom V4L control variables
-#define V4L2_MT9M114_FADE_TO_BLACK (V4L2_CID_PRIVATE_BASE) //boolean, enable or disable fade to black feature
-#define V4L2_MT9M114_BRIGHTNESS_DARK (V4L2_CID_PRIVATE_BASE+1)
-#define V4L2_MT9M114_AE_TARGET_GAIN (V4L2_CID_PRIVATE_BASE+2)
-#define V4L2_MT9M114_AE_MIN_VIRT_AGAIN (V4L2_CID_PRIVATE_BASE+3)
-#define V4L2_MT9M114_AE_MAX_VIRT_AGAIN (V4L2_CID_PRIVATE_BASE+4)
-#define V4L2_MT9M114_AE_MIN_VIRT_DGAIN (V4L2_CID_PRIVATE_BASE+5)
-#define V4L2_MT9M114_AE_MAX_VIRT_DGAIN (V4L2_CID_PRIVATE_BASE+6)
-
+// useful macros
 #define LOG "[CameraHandler:" << __LINE__ << ", Camera: " << cameraName << "] "
 #define hasIOError(...) hasIOErrorPrint(__LINE__, __VA_ARGS__)
+#define check(...) hasIOError(__VA_ARGS__, errno)
+
+
+static inline __s32 i2c_smbus_access(int file, char read_write, __u8 command,
+                                     int size, union i2c_smbus_data *data)
+{
+    struct i2c_smbus_ioctl_data args;
+ 
+    args.read_write = read_write;
+    args.command = command;
+    args.size = size;
+    args.data = data;
+    return ioctl(file,I2C_SMBUS,&args);
+}
+
+static inline __s32 i2c_smbus_read_byte_data(int file, __u8 command)
+{
+    union i2c_smbus_data data;
+    if (i2c_smbus_access(file,I2C_SMBUS_READ,command,
+                         I2C_SMBUS_BYTE_DATA,&data))
+        return -1;
+    else
+        return 0x0FF & data.byte;
+}
+
+static inline __s32 i2c_smbus_write_byte_data(int file, __u8 command, __u8 value)
+{
+    union i2c_smbus_data data;
+    data.byte = value;
+    return i2c_smbus_access(file,I2C_SMBUS_WRITE,command, I2C_SMBUS_BYTE_DATA, &data);
+}
+
+// NOTE: send a single value as block data
+static inline __s32 i2c_smbus_write_block_data(int file, __u8 command, __u8 value)
+{
+    union i2c_smbus_data data;
+    data.block[0] = 1;
+    data.block[1] = value;
+    return i2c_smbus_access(file,I2C_SMBUS_WRITE, command, I2C_SMBUS_BLOCK_DATA, &data);
+}
 
 using namespace naoth;
 using namespace std;
 
-
 V4lCameraHandler::V4lCameraHandler()
-  :
-  cameraName("none"),
-  currentCamera(CameraInfo::numOfCamera),
-  fd(-1),
-  atLeastOneImageRetrieved(false),
-  initialParamsSet(false),
-  wasQueried(false),
-  isCapturing(false),
-  blockingCaptureModeEnabled(false),
-  lastCameraSettingTimestamp(0),
-  error_count(0)
+  : cameraName("none"),
+    currentCamera(CameraInfo::numOfCamera),
+    fd(-1),
+    framesSinceStart(0),
+    isCapturing(false)
 {
-  // NOTE: width, height and fps are not included here
-  settingsOrder.push_back(CameraSettings::VerticalFlip);
-  settingsOrder.push_back(CameraSettings::HorizontalFlip);
-
-
-  settingsOrder.push_back(CameraSettings::AutoExposition);
-  settingsOrder.push_back(CameraSettings::AutoExpositionAlgorithm);
-  settingsOrder.push_back(CameraSettings::Brightness);
-//  settingsOrder.push_back(CameraSettings::BrightnessDark);
-  settingsOrder.push_back(CameraSettings::MinAnalogGain);
-  settingsOrder.push_back(CameraSettings::MaxAnalogGain);
-  settingsOrder.push_back(CameraSettings::TargetGain);
-
-
-  settingsOrder.push_back(CameraSettings::AutoWhiteBalancing);
-
-  settingsOrder.push_back(CameraSettings::PowerlineFrequency);
-  
-
-
-  settingsOrder.push_back(CameraSettings::Contrast);
-  settingsOrder.push_back(CameraSettings::Saturation);
-  settingsOrder.push_back(CameraSettings::Hue);
-  settingsOrder.push_back(CameraSettings::Sharpness);
-  settingsOrder.push_back(CameraSettings::Exposure);
-  settingsOrder.push_back(CameraSettings::Gain);
-  settingsOrder.push_back(CameraSettings::GammaCorrection);
-
-  settingsOrder.push_back(CameraSettings::WhiteBalance);
-  // this throws errors sometimes and slows down the robot, check whats wrong before activating it
-//  settingsOrder.push_back(CameraSettings::BacklightCompensation);
-  settingsOrder.push_back(CameraSettings::FadeToBlack);
-  
-  
-  // DEBUG: test
+  // DEBUG: test of the hasIOError macro
   //hasIOError(-1, EPIPE);
-
-  for(int i = 0; i < CameraSettings::numOfCameraSetting; i++)  {
-    currentSettings.data[i] = -1;
-  }
-
-  // set our IDs
-  initIDMapping();
 }
 
 V4lCameraHandler::~V4lCameraHandler()
@@ -115,179 +116,96 @@ V4lCameraHandler::~V4lCameraHandler()
   std::cout << "[V4lCameraHandler] stop done" << std::endl;
 }
 
-void V4lCameraHandler::init(std::string camDevice, CameraInfo::CameraID camID, bool blockingMode)
+void V4lCameraHandler::init(const std::string& camDevice, CameraInfo::CameraID camID, bool isV6)
 {
-  if(isCapturing) {
+  // shut down the camera if it was running before doing anything else
+  if (isCapturing) {
     shutdown();
+  }
+  
+  // initialize parameter manager
+  if (isV6) {
+    resetV6Camera();
+    settingsManager = std::make_shared<CameraSettingsV6Manager>();
+  } else {
+    settingsManager = std::make_shared<CameraSettingsV5Manager>();
   }
 
   currentCamera = camID;
   cameraName = camDevice;
 
   // open the device
-  openDevice(blockingMode);
-  initDevice();
-  setFPS(30);
-
-  // HACK (preserved settings): load the current settings from the driver,
-  //                            so we don't have to set all of them again
-  internalUpdateCameraSettings();
-
-  // HACK (exposure): force change of the exposure
-  if(currentSettings.data[CameraSettings::Exposure] == 40) {
-    setSingleCameraParameter(csConst[CameraSettings::Exposure], 41, "Exposure");
-  } else {
-    setSingleCameraParameter(csConst[CameraSettings::Exposure], 40, "Exposure");
-  }
-  setSingleCameraParameter(csConst[CameraSettings::Exposure], currentSettings.data[CameraSettings::Exposure], "Exposure");
-
-  // print the retrieved settings
-  for (int i = 0; i < CameraSettings::numOfCameraSetting; i++) {
-    if (csConst[i] > -1) {
-      cout << LOG << CameraSettings::getCameraSettingsName((CameraSettings::CameraSettingID)i)
-           << " = " << currentSettings.data[i] << std::endl;
-    }
-  }
-
+  openDevice();
+  initDevice(naoth::IMAGE_WIDTH, naoth::IMAGE_HEIGHT);
+  setFrameRate(30);
+  mapBuffers();
+  
+  // DEBUG: read and print available controls 
+  settingsManager->enumerate_controls(fd);
+  
   startCapturing();
 }
 
-void V4lCameraHandler::initIDMapping()
+// reset camera
+void V4lCameraHandler::resetV6Camera() const 
 {
-  // initialize with an invalid value in order not to be used when updating
-  // the params in V4L
-  for (int i = 0; i < CameraSettings::numOfCameraSetting; i++) {
-    csConst[i] = -1;
+  // NOTE: reset should be done only once at the start of the program
+  static bool resetDone = false;
+  if(resetDone) {
+    return;
   }
-
-  // map the existing parameters that can be used safely
-  csConst[CameraSettings::Brightness] = V4L2_CID_BRIGHTNESS;
-  csConst[CameraSettings::BrightnessDark] = V4L2_MT9M114_BRIGHTNESS_DARK;
-  csConst[CameraSettings::Contrast] = V4L2_CID_CONTRAST;
-  csConst[CameraSettings::Saturation] = V4L2_CID_SATURATION;
-  csConst[CameraSettings::Hue] = V4L2_CID_HUE;
-  csConst[CameraSettings::VerticalFlip] = V4L2_CID_VFLIP;
-  csConst[CameraSettings::HorizontalFlip] = V4L2_CID_HFLIP;
-  csConst[CameraSettings::Sharpness] = V4L2_CID_SHARPNESS;
-  csConst[CameraSettings::AutoExposition] = V4L2_CID_EXPOSURE_AUTO;
-  csConst[CameraSettings::AutoWhiteBalancing] = V4L2_CID_AUTO_WHITE_BALANCE;
-  csConst[CameraSettings::Gain] = V4L2_CID_GAIN;
-  csConst[CameraSettings::MinAnalogGain] = V4L2_MT9M114_AE_MIN_VIRT_AGAIN;
-  csConst[CameraSettings::MaxAnalogGain] = V4L2_MT9M114_AE_MAX_VIRT_AGAIN;
-  csConst[CameraSettings::TargetGain] = V4L2_MT9M114_AE_TARGET_GAIN;
-  csConst[CameraSettings::GammaCorrection] = V4L2_CID_GAMMA;
+  resetDone = true;
   
-  csConst[CameraSettings::Exposure] = V4L2_CID_EXPOSURE;
-  //csConst[CameraSettings::WhiteBalance] = V4L2_CID_DO_WHITE_BALANCE;
-  csConst[CameraSettings::WhiteBalance] = V4L2_CID_WHITE_BALANCE_TEMPERATURE;
-  csConst[CameraSettings::BacklightCompensation] = V4L2_CID_BACKLIGHT_COMPENSATION;
-  csConst[CameraSettings::FadeToBlack] = V4L2_MT9M114_FADE_TO_BLACK;
-  csConst[CameraSettings::PowerlineFrequency] = V4L2_CID_POWER_LINE_FREQUENCY;
-
-//---------------------------------------------------------------------
-// copied from the driver for information:
-//---------------------------------------------------------------------
-/*
-V4L2_CID_BRIGHTNESS:
-Range: [0 .. 255]
-Default: 55
-Description: Set brightness in auto exposure mode.
-
-V4L2_CID_CONTRAST:
-Range: [16 .. 64] (Fixed point number: 16 = 0.5, 64 = 2.0)
-Default: 32
-Description: Controls contrast enhancement and noise reduction values.
-
-V4L2_CID_SATURATION:
-Range: [0 .. 255]
-Default: 128
-Description: Zero means gray-scale, values > 128 result in a boosted saturation.
-
-V4L2_CID_HUE:
-Range: [-22° .. 22°]
-Default: 0
-Description: Hue rotation. Not all values are possible depending on camera internals. The camera chip will clip to the nearest possible number.
-
-V4L2_CID_VFLIP:
-Range: Boolean
-Default: 0
-Description: Vertical flip
-
-V4L2_CID_HFLIP:
-Range: Boolean
-Default: 0
-Description: Horizontal flip
-
-V4L2_CID_SHARPNESS:
-Range: [0 .. 7] and -7
-Default: 0
-Description: Relative adjustment to the applied sharpness.
-             Set to -7 to ensure that no sharpness is applied.
-
-V4L2_CID_EXPOSURE_AUTO:
-Range: Boolean
-Default: 1
-Description: Auto exposure feature. Automatically controls gain
-             and exposure.
-
-V4L2_CID_AUTO_WHITE_BALANCE:
-Range: Boolean
-Default: 1
-Description: Auto white balance feature.
-
-V4L2_CID_GAIN:
-Range: [0 .. 255]
-Default: 32
-Description: The amount of gain that is applied if auto exposure
-             is disabled. 32 = 1x gain.
-
-V4L2_CID_EXPOSURE:
-Range: [0 .. 512]
-Default: 0
-Description: The absolute exposure time if auto exposure is disabled.
-
-V4L2_CID_DO_WHITE_BALANCE:
-Range: [2700 .. 6500] ° Kelvin
-Default: 6500
-Description: White balance color temperature. Ignored if auto white balance
-             is enabled.
-
-V4L2_CID_BACKLIGHT_COMPENSATION:
-Range: [0 .. 4]
-Default: 1
-Description: -
-
-V4L2_MT9M114_FADE_TO_BLACK (V4L2_CID_PRIVATE_BASE):
-Range: Boolean
-Default: 1
-Description: Enable/disable fade-to-black feature.
- */
-//---------------------------------------------------------------------
+  // Infos about working with i2c:
+  // https://github.com/mozilla-b2g/i2c-tools/blob/master/tools/i2cbusses.c
+  //  open_i2c_dev(...)
+  
+  // connect to the i2c bus
+  int i2c = open("/dev/i2c-head", O_RDWR);
+  if(i2c < 0) {
+    fprintf(stderr, "[V4lCameraHandler] Error: Could not open file '/dev/i2c-head': %s\n", strerror(errno));
+    assert(false);
+  } 
+  
+  // select the slave device (camera)
+  int err = ioctl(i2c, I2C_SLAVE, 0x41);
+  if(err < 0) {
+    fprintf(stderr, "[V4lCameraHandler] Error: I2C_SLAVE: %s\n", strerror(errno));
+    assert(false);
+  }
+  
+  // check if the device is set to writing mode?
+  const __s32 result = i2c_smbus_read_byte_data(i2c, 0x3);
+  if (result < 0) {
+    fprintf(stderr, "[V4lCameraHandler] Error: i2c_smbus_read_byte_data: %s\n", strerror(errno));
+  } else if ((result & 0xc) != 0) {
+    // configure as output
+    //check(i2c_smbus_write_byte_data(i2c, 0x3, 0xf3));
+    check(i2c_smbus_write_block_data(i2c, 0x3, 0xf3));
+    //i2c_smbus_write_byte_data(i2c, 0x1, 0x0); // reset_camera_hold
+  }
+  
+  // send the reset command?
+  //check(i2c_smbus_write_byte_data(i2c, 0x1, 0x0)); // reset_camera_hold
+  //check(i2c_smbus_write_byte_data(i2c, 0x1, 0xc)); // reset_camera_release
+  check(i2c_smbus_write_block_data(i2c, 0x1, 0x0)); // reset_camera_hold
+  check(i2c_smbus_write_block_data(i2c, 0x1, 0xc)); // reset_camera_release
+  
+  close(i2c);
+  fprintf(stdout, "[V4lCameraHandler] Done resetting cameras '/dev/i2c-head'.");
+  sleep(3);
 }
 
-void V4lCameraHandler::setFPS(int fpsRate)
-{
-  struct v4l2_streamparm fps;
-  memset(&fps, 0, sizeof (fps));
-  fps.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-  VERIFY(!ioctl(fd, VIDIOC_G_PARM, &fps));
-  fps.parm.capture.timeperframe.numerator = 1;
-  fps.parm.capture.timeperframe.denominator = fpsRate;
-  VERIFY(ioctl(fd, VIDIOC_S_PARM, &fps) != -1);
 
-  // todo: do we need this setting?
-  currentSettings.data[CameraSettings::FPS] = fpsRate;
-}
-
-void V4lCameraHandler::openDevice(bool blockingMode)
+void V4lCameraHandler::openDevice()
 {
   struct stat st;
-  memset (&st, 0, sizeof (st));
+  memset(&st, 0, sizeof(st));
 
   if (-1 == stat(cameraName.c_str(), &st))
   {
-    std::cerr << LOG << "[V4L open] Cannot identify '" << cameraName << "': " << errno << ", " 
-      << strerror(errno) << std::endl;
+    std::cerr << LOG << "[V4L open] Cannot identify '" << cameraName << "': " 
+              << errno << ", " << strerror(errno) << std::endl;
     return;
   }
 
@@ -297,57 +215,53 @@ void V4lCameraHandler::openDevice(bool blockingMode)
     return;
   }
 
-  std::cout << LOG << "Opening camera device '" << cameraName << "' ";
+  std::cout << LOG << "Opening camera device '" << cameraName << "' " << std::endl;
 
-  blockingCaptureModeEnabled = blockingMode;
   // always open file descriptor in non-blocking mode, blocking will be achived with "poll" calls later
   fd = open(cameraName.c_str(), O_RDWR | O_NONBLOCK, 0);
-    
-  if(blockingMode)
-  {
-    std::cout << "(blocking mode)";
-  }
-  else
-  {
-    std::cout << "(non blocking mode)";
-  }
-  std::cout << endl;
 
   if (-1 == fd)
   {
-    std::cerr << LOG << "[V4L open] Cannot open '" << cameraName << "': " << errno << ", "
-      << strerror(errno) << std::endl;
+    std::cerr << LOG << "[V4L open] Cannot open '" << cameraName << "': " 
+              << errno << ", " << strerror(errno) << std::endl;
     return;
   }
 }
 
-void V4lCameraHandler::initDevice()
+void V4lCameraHandler::initDevice(uint32_t width, uint32_t height)
 {
   /* Select video input, video standard and tune here. */
   // set image format
   struct v4l2_format fmt;
-  memset(&fmt, 0, sizeof (struct v4l2_format));
-  fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-  fmt.fmt.pix.width = naoth::IMAGE_WIDTH;
-  fmt.fmt.pix.height = naoth::IMAGE_HEIGHT;
+  memset(&fmt, 0, sizeof(struct v4l2_format));
+  fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  fmt.fmt.pix.width       = width;
+  fmt.fmt.pix.height      = height;
   fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
-  fmt.fmt.pix.field = V4L2_FIELD_NONE;
-  VERIFY(ioctl(fd, VIDIOC_S_FMT, &fmt) >= 0);
+  fmt.fmt.pix.field       = V4L2_FIELD_NONE;
+  VERIFY(xioctl(fd, VIDIOC_S_FMT, &fmt) >= 0);
 
-  /* Note VIDIOC_S_FMT may change width and height. */
-  ASSERT(fmt.fmt.pix.sizeimage == naoth::IMAGE_WIDTH*naoth::IMAGE_HEIGHT*2);
-  
-  memset(&currentBuf, 0, sizeof (currentBuf));
-  currentBuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-  currentBuf.memory = V4L2_MEMORY_MMAP;
+  // NOTE: VIDIOC_S_FMT may change width and height.
+  // Make sure the settings were accepted
+  ASSERT(fmt.fmt.pix.sizeimage == width * height * 2);
 
   // query and verify the capabilities
   struct v4l2_capability cap;
-  VERIFY(ioctl(fd, VIDIOC_QUERYCAP, &cap) != -1);
+  VERIFY(xioctl(fd, VIDIOC_QUERYCAP, &cap) != -1);
   VERIFY(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE);
   VERIFY(cap.capabilities & V4L2_CAP_STREAMING);
+}
 
-  mapBuffers();
+void V4lCameraHandler::setFrameRate(int rate)
+{
+  struct v4l2_streamparm fps;
+  memset(&fps, 0, sizeof(fps));
+  fps.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  VERIFY(!ioctl(fd, VIDIOC_G_PARM, &fps));
+  
+  fps.parm.capture.timeperframe.numerator = 1;
+  fps.parm.capture.timeperframe.denominator = rate;
+  VERIFY(ioctl(fd, VIDIOC_S_PARM, &fps) != -1);
 }
 
 // map buffers
@@ -356,31 +270,30 @@ void V4lCameraHandler::mapBuffers()
   struct v4l2_requestbuffers req;
   memset(&req, 0, sizeof(req));
   
-  req.count = frameBufferCount; // number of internal buffers, since we use debug images that should be quite big
-  req.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  req.count  = frameBufferCount; // number of internal buffers
+  req.type   = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   req.memory = V4L2_MEMORY_MMAP;
 
   VERIFY(-1 != ioctl(fd, VIDIOC_REQBUFS, &req));
-  VERIFY(req.count == frameBufferCount); 
+  VERIFY(req.count == frameBufferCount);
 
   for (size_t i = 0; i < req.count; ++i)
   {
     struct v4l2_buffer buf;
     memset(&buf, 0, sizeof(buf));
-    
-    buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    buf.type   = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     buf.memory = V4L2_MEMORY_MMAP;
-    buf.index = i;
+    buf.index  = i;
 
     VERIFY(-1 != ioctl(fd, VIDIOC_QUERYBUF, &buf));
 
     buffers[i].length = buf.length;
     buffers[i].start = mmap(
-      NULL,  /* start anywhere */
-      buf.length,
-      PROT_READ | PROT_WRITE, /* required */
-      MAP_SHARED, /* recommended */
-      fd, buf.m.offset);
+        NULL, /* start anywhere */
+        buf.length,
+        PROT_READ | PROT_WRITE, /* required */
+        MAP_SHARED,             /* recommended */
+        fd, buf.m.offset);
 
     VERIFY(MAP_FAILED != buffers[i].start);
   }
@@ -407,27 +320,33 @@ void V4lCameraHandler::startCapturing()
 
     VERIFY(-1 != xioctl(fd, VIDIOC_QBUF, &buf));
   }
+  
+  // initialize the strucuture holding the currently captured frame
+  memset(&currentBuf, 0, sizeof(currentBuf));
+  currentBuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  currentBuf.memory = V4L2_MEMORY_MMAP;
 
   enum v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   VERIFY(-1 != ioctl(fd, VIDIOC_STREAMON, &type));
 
   // initialize internal state
   isCapturing = true;
-  wasQueried = false;
-  lastBuf = currentBuf;
-  atLeastOneImageRetrieved = false;
+  framesSinceStart = 0;
 }
 
 void V4lCameraHandler::stopCapturing()
 {
+  int type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  VERIFY(-1 != xioctl(fd, VIDIOC_STREAMOFF, &type));
   isCapturing = false;
 }
 
 void V4lCameraHandler::closeDevice()
 {
   if (-1 == close(fd)) {
-    return;
+    hasIOError(-1, errno);
   }
+  
   fd = -1;
 }
 
@@ -443,126 +362,105 @@ bool V4lCameraHandler::isRunning()
   return isCapturing;
 }
 
-
-
-
 int V4lCameraHandler::readFrame()
 {
-  //not the first frame and the buffer changed last frame
-  if (wasQueried)
-  {
-    //put buffer back in the drivers incoming queue
-    if(blockingCaptureModeEnabled) {
-      VERIFY(-1 != xioctl(fd, VIDIOC_QBUF, &lastBuf));
-    } else {
-      xioctl(fd, VIDIOC_QBUF, &lastBuf);
-    }
-    //std::cout << "give buffer to driver" << std::endl;
+  // return the current buffer to the incomming queue
+  // NOTE: it might be better to check the V4L2_BUF_FLAG_QUEUED flag
+  if (currentBuf.bytesused != 0) {
+    // put buffer back in the drivers incoming queue
+    VERIFY(-1 != xioctl(fd, VIDIOC_QBUF, &currentBuf));
+    // clear the current buffer
+    memset(&currentBuf, 0, sizeof(currentBuf));
+    currentBuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    currentBuf.memory = V4L2_MEMORY_MMAP;
   }
-
-  struct v4l2_buffer buf;
-  memset(&(buf), 0, sizeof (struct v4l2_buffer));
-  buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-  buf.memory = V4L2_MEMORY_MMAP;
-
   
-  // in blocking mode, wait up to a second for new image data
-  const unsigned int maxWaitingTime = blockingCaptureModeEnabled ? 1000 : 1000; 
-  // wait for available data via poll
+  // poll: suspend execution until the driver has captured data
   pollfd pollfds[1] =
   {
     {fd, POLLIN | POLLPRI, 0},
   };
-//  unsigned int startTime = NaoTime::getNaoTimeInMilliSeconds();
-  int polled = poll(pollfds, 1, maxWaitingTime);
-
-//  unsigned int stopTime = NaoTime::getNaoTimeInMilliSeconds();
-//  std::cout << LOG << "polling took " << (stopTime -  startTime) << " ms" << std::endl;
-  if(polled < 0) {
-    std::cerr << LOG << "Polling camera failed after " << maxWaitingTime << " ms. Error was: " << strerror(errno) << std::endl;
+  int polled = poll(pollfds, 1, maxPollTime);
+  
+  if (polled < 0) {
+    std::cerr << LOG << "Polling camera failed after " << maxPollTime << " ms. Error was: " << strerror(errno) << std::endl;
     return -1;
   }
 
-  if(pollfds[0].revents && !(pollfds[0].revents & POLLIN)) {
-      std::cerr << LOG << "Poll for camera returned unexpected poll code " << pollfds[0].revents << std::endl;
+  if (pollfds[0].revents && !(pollfds[0].revents & POLLIN)) {
+    std::cerr << LOG << "Poll for camera returned unexpected flags: " << pollfds[0].revents << std::endl;
+    return -1;
   }
 
-
-  int errorCode = 0;
+  /*
+  // NOTE: 
+  V4L2_BUF_FLAG_LAST
+  Last buffer produced by the hardware. mem2mem codec drivers set this flag on the capture queue 
+  for the last buffer when the ioctl VIDIOC_QUERYBUF or VIDIOC_DQBUF ioctl is called. Due to hardware 
+  limitations, the last buffer may be empty. In this case the driver will set the bytesused field to 0, 
+  regardless of the format. Any subsequent call to the VIDIOC_DQBUF ioctl will not block anymore, 
+  but return an EPIPE error code.
   
-  // Deque all camera images in queue until there is none left. Since we polled, we know data should be available.
+  // https://www.kernel.org/doc/html/v4.8/media/uapi/v4l/buffer.html?highlight=v4l2_buf_flag_last
+  // https://github.com/gebart/python-v4l2capture/issues/16#issuecomment-473519282
+  // https://github.com/gebart/python-v4l2capture/issues/16
+  */
+    
+  // Get the most recent buffer. Deque all camera images from the outgoing queue to get the newest one. 
+  // NOTE: poll was successful, so we know that at least one buffer should be available.
+  v4l2_buffer lastBuf;
   bool first = true;
-  v4l2_buffer lastValidBuf;
-  do {
-    
-    /*
-    // NOTE: 
-    Last buffer produced by the hardware. mem2mem codec drivers set this flag on the capture queue 
-    for the last buffer when the ioctl VIDIOC_QUERYBUF or VIDIOC_DQBUF ioctl is called. Due to hardware 
-    limitations, the last buffer may be empty. In this case the driver will set the bytesused field to 0, 
-    regardless of the format. Any subsequent call to the VIDIOC_DQBUF ioctl will not block anymore, 
-    but return an EPIPE error code.
-    
-    // https://www.kernel.org/doc/html/v4.8/media/uapi/v4l/buffer.html?highlight=v4l2_buf_flag_last
-    // https://github.com/gebart/python-v4l2capture/issues/16#issuecomment-473519282
-    // https://github.com/gebart/python-v4l2capture/issues/16
-    */
-    errorCode = xioctl(fd, VIDIOC_DQBUF, &buf);
-
-    if(errorCode == 0) 
-    {
-      if(first) {
-        first = false;
-      } else {
-        errorCode = xioctl(fd, VIDIOC_QBUF, &lastValidBuf);
-        if (errorCode != 0) {
-          std::cout << LOG << "Buffer { .index = " << buf.index << ", .bytesused = " << buf.bytesused << ", .flags = " << buf.flags << "}" << std::endl;
-          hasIOError(errorCode, errno);
-        }
-      }
-      lastValidBuf = buf;
-    } 
-    else 
-    {
-      if(errno == EAGAIN) {
-        // last element taken from the queue, abort loop
-        if(!first) {
-          // reset error code since first try was successfull
-          errorCode = 0;
-        }
-        break;
-      } else {
-        // we did do a poll on the file descriptor and still got an error, something is wrong: abort the loop
-        // print some info about the buffer
-        std::cout << LOG << "Buffer { .index = " << buf.index << ", .bytesused = " << buf.bytesused << ", .flags = " << buf.flags << "}" << std::endl;
-        hasIOError(errorCode, errno);
-        break;
-      }
+  int errorCode = 0;
+  // We are dequeuing images from the buffer until there is no image left. The loop stops when we reach 
+  // a busy buffer and errorCode == -1 is returned (with errno == EAGAIN)
+  while((errorCode = xioctl(fd, VIDIOC_DQBUF, &currentBuf)) == 0)
+  {
+    if(first) {
+      first = false;
     }
-  } while(errorCode == 0);
-  currentBuf = lastValidBuf;
+    else if(xioctl(fd, VIDIOC_QBUF, &lastBuf) < 0) {
+      // was not able to return the buffer for some reason
+      std::cout << LOG << "Buffer { .index = " << currentBuf.index 
+                       << ", .flags = " << std::bitset<32>(currentBuf.flags)
+                       << ", .bytesused = " << currentBuf.bytesused 
+                       << "}" << std::endl;
+      hasIOError(errorCode, errno);
+    }
+    lastBuf = currentBuf;
+  }
+  
+  // EAGAIN is expected: the above loop reached a busy buffer
+  if (errno == EAGAIN)
+  {
+    // the above loop made at least one iteration, it means currentBuf is valid
+    if (!first) {
+      errorCode = 0;
+    }
+  }
+  else
+  {
+    // we did do a poll on the file descriptor and still got an error, something is wrong: abort the loop
+    // print some info about the buffer
+    std::cout << LOG << "Buffer { .index = " << currentBuf.index << ", .bytesused = " << currentBuf.bytesused << ", .flags = " << currentBuf.flags << "}" << std::endl;
+    hasIOError(errorCode, errno);
+  }
 
-  //remember current buffer for the next frame as last buffer
-  lastBuf = currentBuf;
-
-  wasQueried = true;
   ASSERT(currentBuf.index < frameBufferCount);
-  if(errorCode == 0) {
+  if (errorCode == 0) {
     return currentBuf.index;
   } else {
     return -1;
   }
 }
 
-
 void V4lCameraHandler::get(Image& theImage)
 {
-  if(isCapturing)
+  if (isCapturing)
   {
-
-    //STOPWATCH_START("ImageRetrieve");
+    //unsigned long long start = NaoTime::getSystemTimeInMicroSeconds();
     int resultCode = readFrame();
-    //STOPWATCH_STOP("ImageRetrieve");
+    //unsigned long long end = NaoTime::getSystemTimeInMicroSeconds();
+    //std::cout << LOG << " readFrame (us): " << (end - start) << std::endl;
 
     if (resultCode < 0)
     {
@@ -571,247 +469,117 @@ void V4lCameraHandler::get(Image& theImage)
     else
     {
       //if(currentBuf.bytesused != theImage.cameraInfo.size * Image::PIXEL_SIZE_YUV422)
-      if(currentBuf.bytesused < theImage.cameraInfo.getSize() * Image::PIXEL_SIZE_YUV422)
+      if (currentBuf.bytesused != theImage.cameraInfo.getSize() * Image::PIXEL_SIZE_YUV422)
       {
         theImage.wrongBufferSizeCount++;
-//        cout << "wrong image buffer size: " << (theImage.cameraInfo.size * Image::PIXEL_SIZE_YUV422) << ", buffer: " << currentBuf.bytesused << "/" << currentBuf.length << endl;
+        //        cout << "wrong image buffer size: " << (theImage.cameraInfo.size * Image::PIXEL_SIZE_YUV422) << ", buffer: " << currentBuf.bytesused << "/" << currentBuf.length << endl;
       }
       else
       {
-        theImage.wrapImageDataYUV422((unsigned char*) buffers[currentBuf.index].start, currentBuf.bytesused);
+        theImage.wrapImageDataYUV422(static_cast<unsigned char*>(buffers[currentBuf.index].start), currentBuf.bytesused);
         theImage.cameraInfo.cameraID = currentCamera;
+        
+        // for debug purposes
         theImage.currentBuffer = currentBuf.index;
         theImage.bufferCount = frameBufferCount;
-        theImage.timestamp =
-          (unsigned int) ( (((unsigned long long)currentBuf.timestamp.tv_sec) * NaoTime::long_thousand +
-                            ((unsigned long long)currentBuf.timestamp.tv_usec) / NaoTime::long_thousand) -
-                          NaoTime::startingTimeInMilliSeconds);
+        
+        // convert the timestamp to robot time (milliseconds sinse the start of the process)
+        const struct timeval t = currentBuf.timestamp;
+        theImage.timestamp = static_cast<unsigned int>(t.tv_sec * 1000LL + t.tv_usec / 1000LL - NaoTime::startingTimeInMilliSeconds);
+        
+        // NOTE: usual time difference seems to be (robotTime - theImage.timestamp) ~ 31 or 50 ms. Why?!
+        // DEBUG: sanity check to make sure the time stamps align reasonably (delay < 1s)
+        unsigned int robotTime = NaoTime::getNaoTimeInMilliSeconds();
+        if(robotTime > theImage.timestamp + 1000 || robotTime < theImage.timestamp) {
+          std::cout << LOG << "WARNING: image timestamp doesn't match robot time:" << std::endl; 
+          std::cout << "  robot= " << robotTime << std::endl; 
+          std::cout << "  image= " << theImage.timestamp << std::endl;
+        }
 
-        atLeastOneImageRetrieved = true;
+        /*
+        // DEBUG: troubleshooting the timing
+        std::cout << "it: " << theImage.timestamp << std::endl;
+        std::cout << "rt: " << robotTime << std::endl;
+        
+        #define V4L2_BUF_FLAG_TIMESTAMP_MASK        0x0000e000
+        #define V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC   0x00002000
+        std::cout << "is monotonic: " << (currentBuf.flags & V4L2_BUF_FLAG_TIMESTAMP_MASK) << std::endl;
+        
+        #define V4L2_BUF_FLAG_TSTAMP_SRC_SOE 	0x00010000
+        std::cout << "is SOE: " << (currentBuf.flags & V4L2_BUF_FLAG_TSTAMP_SRC_SOE) << std::endl;
+        
+        struct timespec m;
+        clock_gettime(CLOCK_MONOTONIC ,&m);
+
+        struct timespec r;
+        clock_gettime(CLOCK_REALTIME ,&r);
+
+        unsigned long long ts = NaoTime::getSystemTimeInMicroSeconds();
+        
+        //std::cout << "tm: " << (currentBuf.flags & V4L2_BUF_FLAG_TIMESTAMP_MASK) << std::endl;
+        //std::cout << "sm: " << (currentBuf.flags & V4L2_BUF_FLAG_TSTAMP_SRC_MASK) << std::endl;
+        //std::cout << "fl: " << std::bitset<32>(currentBuf.flags) << std::endl;
+        std::cout << "i0: " << currentBuf.timestamp.tv_sec << std::endl;
+        std::cout << "m0: " << m.tv_sec << std::endl;
+        std::cout << "r0: " << r.tv_sec << std::endl << std::endl;
+        
+        std::cout << "i1: " << currentBuf.timestamp.tv_usec << std::endl;
+        std::cout << "m1: " << (m.tv_nsec/1000LL) << std::endl;
+        std::cout << "r1: " << (r.tv_nsec/1000LL) << std::endl;
+        std::cout << "ns: " << ts << std::endl << std::endl;
+        */
+        
+        framesSinceStart++;
       }
     }
   }
 }
 
-
-void V4lCameraHandler::getCameraSettings(CameraSettings& data, bool update)
+void V4lCameraHandler::getCameraSettings(CameraSettings &data, bool update)
 {
-  if(update)
+  if (update)
   {
     std::cout << LOG << "V4L camera settings are updated" << std::endl;
     internalUpdateCameraSettings();
+    data = currentSettings;
   }
-  for (unsigned int i = 0; i < CameraSettings::numOfCameraSetting; i++)
-  {
-    data.data[i] = currentSettings.data[i];
-  }
-}
-
-int V4lCameraHandler::getSingleCameraParameter(int id)
-{
-  struct v4l2_queryctrl queryctrl;
-  queryctrl.id = id;
-  if (int errCode = ioctl(fd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
-  {
-    std::cerr << LOG << "VIDIOC_QUERYCTRL failed: " << strerror(errCode) << std::endl;
-    return -1;
-  }
-  if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED)
-  {
-    std::cerr << LOG << "not getting camera parameter since it is not available" << std::endl;
-    return -1; // not available
-  }
-  if (queryctrl.type != V4L2_CTRL_TYPE_BOOLEAN && queryctrl.type != V4L2_CTRL_TYPE_INTEGER && queryctrl.type != V4L2_CTRL_TYPE_MENU)
-  {
-    std::cerr << LOG << "not getting camera parameter since it is not supported" << std::endl;
-    return -1; // not supported
-  }
-
-  struct v4l2_control control_g;
-  control_g.id = id;
-
-  // max 20 trials
-  for(int i = 0; i < 20; i++)
-  {
-    int errorOccured = ioctl(fd, VIDIOC_G_CTRL, &control_g);
-    
-    if(errorOccured < 0)
-    {
-      switch (errno)
-      {
-        case EAGAIN: usleep(10); break;
-        case EBUSY: usleep(100000); break;
-        default: hasIOError(errorOccured, errno, false);
-      }
-    }
-    else
-    {
-      //HACK (Sharpness)
-      if(id == csConst[CameraSettings::Sharpness]) {
-        return control_g.value>7?(control_g.value - (1 << 16)):control_g.value;
-      }  else {
-        return control_g.value;
-      }
-    }
-  }
-
-  return -1;
-}
-
-bool V4lCameraHandler::setSingleCameraParameter(int id, int value, std::string name)
-{
-  if(id < 0 ) {
-    return false;
-  }
-  struct v4l2_queryctrl queryctrl;
-  memset (&queryctrl, 0, sizeof (queryctrl));
-  queryctrl.id = id;
-  if (int errCode = xioctl(fd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
-  {
-    std::cerr << LOG << "VIDIOC_QUERYCTRL failed with code " << errCode << " " << strerror(errCode) << std::endl;
-    return false;
-  }
-  if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED)
-  {
-    std::cerr << LOG << "V4L2_CTRL_FLAG_DISABLED failed" << std::endl;
-    return false; // not available
-  }
-  if (queryctrl.type != V4L2_CTRL_TYPE_BOOLEAN && queryctrl.type != V4L2_CTRL_TYPE_INTEGER && queryctrl.type != V4L2_CTRL_TYPE_MENU)
-  {
-    std::cerr << LOG << "V4L2_CTRL_FLAG_DISABLED failed" << std::endl;
-    return false; // not supported
-  }
-
-  // clip value
-  if (value < queryctrl.minimum) {
-    std::cout << LOG << "Clipping control value  " << name << " from " << value << " to " << queryctrl.minimum << std::endl;
-    value = queryctrl.minimum;
-  }
-  if (value > queryctrl.maximum) {
-    std::cout << LOG << "Clipping control value " << name << " from " << value << " to " << queryctrl.maximum << std::endl;
-    value = queryctrl.maximum;
-  }
-  //std::cout << "  -  (" << queryctrl.minimum << ", " << queryctrl.default_value << ", " << queryctrl.maximum << ")" << std::endl;
-
-  struct v4l2_control control_s;
-  control_s.id = id;
-  control_s.value = value;
-
-  int error = xioctl(fd, VIDIOC_S_CTRL, &control_s);
-  return !hasIOError(error, errno, false);
 }
 
 void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
 {
-  if(!atLeastOneImageRetrieved)
+  if (framesSinceStart < 5)
   {
     // do nothing if no image was retrieved yet
-    std::cerr << LOG << "CAN NOT SET PARAMETER YET" << std::endl;
+    std::cerr << LOG << "CAN NOT SET PARAMETERS YET, WAITING ..." << std::endl;
     return;
   }
-
-   bool forceUpdate = !initialParamsSet;
-
-  //unsigned long long currentTime = NaoTime::getSystemTimeInMicroSeconds();
-  //if(currentTime < lastCameraSettingTimestamp + 16000) {
-  //  return;
-  //}
-
-  std::list<CameraSettings::CameraSettingID>::const_iterator it = settingsOrder.begin();
-  for(; it != settingsOrder.end(); it++)
+  else if (framesSinceStart == 5)
   {
-    // only set forced or if csConst was set and the value was changed
-    if(forceUpdate || (csConst[*it] != -1 && data.data[*it] != currentSettings.data[*it]))
+    internalUpdateCameraSettings();
+    if (settingsManager)
     {
-      /*
-      // NOTE: experimental
-      int oldValue = getSingleCameraParameter(csConst[*it]);
-      std::cout << LOG << "trying to change " << CameraSettings::getCameraSettingsName(*it) 
-                << " from " << oldValue << " to " << data.data[*it] << std::endl;
-      */
-
-      if(data.data[CameraSettings::AutoExposition] && 
-        (*it == CameraSettings::Exposure || *it == CameraSettings::Gain)) {
-        // ignore
-      }
-      else if(data.data[CameraSettings::AutoWhiteBalancing] && 
-        (*it == CameraSettings::WhiteBalance)) {
-        // ignore
-//        std::cout << "Ignore WhiteBalance" << std::endl;
-      }
-      // apply the single parameter setting
-      else if(setSingleCameraParameter(csConst[*it], data.data[*it], CameraSettings::getCameraSettingsName(*it))) {
-        lastCameraSettingTimestamp = NaoTime::getSystemTimeInMicroSeconds();
-
-        if(*it == CameraSettings::AutoExposition && currentSettings.data[*it] == 1 && data.data[*it] == 0)
-        {
-          // read back the gain and auto exposure values set by the now deactivated auto exposure
-          currentSettings.data[CameraSettings::Exposure] = getSingleCameraParameter(csConst[CameraSettings::Exposure]);
-          currentSettings.data[CameraSettings::Gain] = getSingleCameraParameter(csConst[CameraSettings::Gain]);
-
-          std::cout << LOG << "autoupdated Exposure to "  << currentSettings.data[CameraSettings::Exposure] << std::endl;
-        }
-        else if(*it == CameraSettings::AutoWhiteBalancing && currentSettings.data[*it] == 1 && data.data[*it] == 0)
-        {
-          // read back the white balance value set to make sure they are in sync
-          currentSettings.data[CameraSettings::WhiteBalance] = getSingleCameraParameter(csConst[CameraSettings::WhiteBalance]);
-
-          std::cout << LOG << "autoupdated WhiteBalance to "  << currentSettings.data[CameraSettings::WhiteBalance] << std::endl;
-        }
-
-        std::cout << LOG << "set " << CameraSettings::getCameraSettingsName(*it) << " to " << data.data[*it] << std::endl;
-
-        currentSettings.data[*it] = data.data[*it];
-
-        /*
-        // NOTE: experimental - check with the actual value
-        int newValue = getSingleCameraParameter(csConst[*it]);
-        if(newValue != data.data[*it]) {
-          std::cout << LOG << "could not change from " << newValue << " to " << data.data[*it] << std::endl;
-        } else {
-          currentSettings.data[*it] = newValue;
-        }
-        */
-
-      } else {
-        std::cout << LOG << "setting " << CameraSettings::getCameraSettingsName(*it) << " failed" << std::endl;
-      }
-//      break;
-    }
-  }// end for
-
-
-  // set the autoexposure grid parameters
-  for(std::size_t i=0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
-    for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
-      if(data.autoExposureWeights[i][j] != currentSettings.autoExposureWeights[i][j]) {
-        std::stringstream paramName;
-        paramName << "autoExposureWeights (" << i << "," << j << ")";
-        if(setSingleCameraParameter(getAutoExposureGridID(i, j), data.autoExposureWeights[i][j], paramName.str())) {
-          currentSettings.autoExposureWeights[i][j] = data.autoExposureWeights[i][j];
-        }
-      }
+      settingsManager->apply(fd, cameraName, data, true);
     }
   }
-
-
-  initialParamsSet = true;
-
-}// end setAllCameraParams
+  else
+  {
+    if (settingsManager)
+    {
+      settingsManager->apply(fd, cameraName, data);
+    }
+  }
+} // end setAllCameraParams
 
 void V4lCameraHandler::internalUpdateCameraSettings()
 {
-  for (int i = 0; i < CameraSettings::numOfCameraSetting; i++)
+  if (settingsManager)
   {
-    if (csConst[i] > -1) {
-      currentSettings.data[i] = getSingleCameraParameter(csConst[i]);
-    }
+    settingsManager->query(fd, cameraName, currentSettings);
   }
 }
 
-
 // https://01.org/linuxgraphics/gfx-docs/drm/media/uapi/v4l/capture.c.html
-int V4lCameraHandler::xioctl(int fd, int request, void* arg) const
+int V4lCameraHandler::xioctl(int fd, int request, void *arg) const
 {
   int r;
   // TODO: possibly endless loop?
@@ -821,16 +589,16 @@ int V4lCameraHandler::xioctl(int fd, int request, void* arg) const
   return r;
 }
 
-bool V4lCameraHandler::hasIOErrorPrint(int lineNumber, int errOccured, int errNo, bool exitByIOError)
+bool V4lCameraHandler::hasIOErrorPrint(int lineNumber, int errOccured, int errNo, bool exitByIOError) const
 {
-  if(errOccured < 0 && errNo != EAGAIN)
+  if (errOccured < 0 && errNo != EAGAIN)
   {
-    std::cout << LOG << "[hasIOError:" << lineNumber << "]" << " failed with errno " << errNo << " (" << strerror(errNo) << ") >> exiting" << std::endl;
-    if(exitByIOError && error_count > 10)
-    {
-      assert(errOccured >= 0);
-    }
-    error_count++;
+    std::cout << LOG << "[hasIOError:" << lineNumber << "]"
+              << " failed with errno " << errNo << " (" << strerror(errNo) << ") >> exiting" << std::endl;
+    
+    // NOTE: it hoolds errOccured < 0
+    assert(!exitByIOError);
+    
     return true;
   }
   return false;

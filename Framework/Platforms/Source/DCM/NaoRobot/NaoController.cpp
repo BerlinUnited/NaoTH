@@ -19,27 +19,30 @@ using namespace naoth;
 
 NaoController::NaoController()
     :
-    PlatformInterface("Nao", 10),
+    lolaAvailable(false),
     theSoundHandler(NULL),
     theTeamCommSender(NULL),
     theTeamCommListener(NULL),
     theRemoteCommandListener(NULL),
     theDebugServer(NULL)
 {
+  if(fileExists("/usr/bin/lola") || fileExists("/opt/aldebaran/bin/lola"))
+  {
+    lolaAvailable = true;
+  }
+
   // init shared memory
   // sensor data
   const std::string naoSensorDataPath = "/nao_sensor_data";
   // command data
   const std::string naoCommandMotorJointDataPath = "/nao_command.MotorJointData";
   const std::string naoCommandUltraSoundSendDataPath = "/nao_command.UltraSoundSendData";
-  const std::string naoCommandIRSendDataPath = "/nao_command.IRSendData";
   const std::string naoCommandLEDDataPath = "/nao_command.LEDData";
 
   naoSensorData.open(naoSensorDataPath);
 
   naoCommandMotorJointData.open(naoCommandMotorJointDataPath);
   naoCommandUltraSoundSendData.open(naoCommandUltraSoundSendDataPath);
-  naoCommandIRSendData.open(naoCommandIRSendDataPath);
   naoCommandLEDData.open(naoCommandLEDDataPath);
   // end init shared memory
 
@@ -112,7 +115,6 @@ NaoController::NaoController()
   registerInput<FSRData>(*this);
   registerInput<GyrometerData>(*this);
   registerInput<InertialSensorData>(*this);
-  registerInput<IRReceiveData>(*this);
   registerInput<ButtonData>(*this);
   registerInput<BatteryData>(*this);
   registerInput<UltraSoundReceiveData>(*this);
@@ -122,7 +124,6 @@ NaoController::NaoController()
   // register command output
   registerOutput<const MotorJointData>(*this);
   registerOutput<const LEDData>(*this);
-  registerOutput<const IRSendData>(*this);
   registerOutput<const UltraSoundSendData>(*this);
   registerOutput<const AudioControl>(*this);
 
@@ -159,10 +160,19 @@ NaoController::NaoController()
   std::cout << "[NaoController] " << "Init SPLGameController"<<endl;
   theGameController = new SPLGameController();
 
-  std::cout << "[NaoController] " << "Init CameraHandler (bottom)" << std::endl;
-  theBottomCameraHandler.init("/dev/video1", CameraInfo::Bottom, true);
-  std::cout << "[NaoController] " << "Init CameraHandler (top)" << std::endl;
-  theTopCameraHandler.init("/dev/video0", CameraInfo::Top, false);
+  // HACK: we are in NAO V6
+  if(lolaAvailable)
+  {
+    std::cout << "[NaoController] " << "Init CameraHandler V6 (bottom)" << std::endl;
+    theBottomCameraHandler.init("/dev/video1", CameraInfo::Bottom, true);
+    std::cout << "[NaoController] " << "Init CameraHandler V6 (top)" << std::endl;
+    theTopCameraHandler.init("/dev/video0", CameraInfo::Top, true);
+  } else {
+    std::cout << "[NaoController] " << "Init CameraHandler V5 (bottom)" << std::endl;
+    theBottomCameraHandler.init("/dev/video1", CameraInfo::Bottom, false);
+    std::cout << "[NaoController] " << "Init CameraHandler V5 (top)" << std::endl;
+    theTopCameraHandler.init("/dev/video0", CameraInfo::Top, false);
+  }
 }
 
 NaoController::~NaoController()

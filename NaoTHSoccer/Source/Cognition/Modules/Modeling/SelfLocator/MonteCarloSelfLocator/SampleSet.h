@@ -35,6 +35,23 @@ public:
 
   /** 
   * normalize the likelihoods of patricle so thay sum up to 1
+  * offset - a value added to all likelihoods to prevent them
+  *          to become too small. The offset should be typically 
+  *          a value in [0,1]
+  *
+  * E.g., the call normalize(0.1) is equivalent to 
+      
+	  // normalize 
+	  normalize();
+	  
+	  // add the relative offset
+	  for(size_t i = 0; i < samples.size(); ++i) {
+		samples[i].likelihood += 0.1;
+	  }
+	
+	  // normalize again
+	  normalize();
+     
   */
   void normalize(double offset = 0.0);
 

@@ -17,9 +17,6 @@ option spl_remote_agent {
 
       spl_remote_secondary_actions();
 
-      //hack
-      situationStatusOwnHalf = situationStatusOwnHalf || (game.player_number == 1);
-
       motion.walk.style = stable;
     }
   }

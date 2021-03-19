@@ -14,11 +14,13 @@
 
 // debug
 #include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugParameterList.h"
 
 // representations
 #include "Representations/Infrastructure/FieldInfo.h"
+#include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Motion/Request/HeadMotionRequest.h"
 #include "Representations/Motion/Request/MotionRequest.h"
 #include "Representations/Motion/MotionStatus.h"
@@ -29,6 +31,7 @@
 
 
 BEGIN_DECLARE_MODULE(PathPlanner2018)
+PROVIDE(DebugPlot)
 PROVIDE(DebugRequest)
 PROVIDE(DebugModify)
 PROVIDE(DebugParameterList)
@@ -37,6 +40,7 @@ REQUIRE(FieldInfo)
 REQUIRE(MultiBallPercept)
 REQUIRE(MotionStatus)
 REQUIRE(BallModel)
+REQUIRE(FrameInfo)
 
 PROVIDE(PathModel)
 PROVIDE(MotionRequest)
@@ -60,43 +64,51 @@ private:
   public:
     Parameters() : ParameterList("PathPlanner2018")
     {
-      PARAMETER_REGISTER(stepLength)                            = 80.0;
       PARAMETER_REGISTER(readyForSideKickThresholdX)            = 4.0;
       PARAMETER_REGISTER(readyForSideKickThresholdY)            = 0.3;
-      PARAMETER_REGISTER(forwardKickThreshold.x)                = 50; // mm
-      PARAMETER_REGISTER(forwardKickThreshold.y)                = 25; // mm
-      PARAMETER_REGISTER(forwardKickAdaptive)                   = false; // mm
-      //PARAMETER_REGISTER(nearApproachForwardKickBallPosOffsetX) = 110;
       PARAMETER_REGISTER(nearApproachSideKickBallPosOffsetX)    = 100;
+      PARAMETER_REGISTER(sidekickOffsetY) = 40.0;
+      PARAMETER_REGISTER(sideKickTime) = 300;
+
       PARAMETER_REGISTER(farToNearApproachThreshold)            = 10.0;
-      PARAMETER_REGISTER(rotationLength)                        = 30.0;
-      PARAMETER_REGISTER(sidekickOffsetY)                       = 40.0;
-      PARAMETER_REGISTER(forwardKickTime)                       = 300;
-      PARAMETER_REGISTER(sideKickTime)                          = 300;
-      PARAMETER_REGISTER(moveAroundBallCharacter)               = 1.0;
-      PARAMETER_REGISTER(moveAroundBallCharacterStable)         = 0.3;
+
+      //Parameters for 2019 - needs cleanup
+      PARAMETER_REGISTER(moveAroundBallCharacter) = 1.0;
+      PARAMETER_REGISTER(moveAroundBallCharacterStable) = 0.3;
+
+      PARAMETER_REGISTER(stepLength) = 80.0;
+      PARAMETER_REGISTER(nearApproach_step_character) = 0.3;
+
+      PARAMETER_REGISTER(forwardKickOffset.x) = 120; // mm
+      PARAMETER_REGISTER(forwardKickOffset.y) = 0; // mm
+      PARAMETER_REGISTER(forwardKickThreshold.x) = 50; // mm
+      PARAMETER_REGISTER(forwardKickThreshold.y) = 25; // mm
+      PARAMETER_REGISTER(forwardKickAdaptive) = false; // mm
+      PARAMETER_REGISTER(forwardKickTime) = 300;
 
       syncWithConfig();
     }
+
     virtual ~Parameters(){}
 
-    double stepLength;
     double readyForSideKickThresholdX;
     double readyForSideKickThresholdY;
-    //double readyForForwardKickThresholdX;
-    //double readyForForwardKickThresholdY;
-    Vector2d forwardKickThreshold;
-    bool forwardKickAdaptive;
-
-    //double nearApproachForwardKickBallPosOffsetX;
     double nearApproachSideKickBallPosOffsetX;
-    double farToNearApproachThreshold;
-    double rotationLength;
     double sidekickOffsetY;
-    int forwardKickTime;
     int sideKickTime;
+
+    double farToNearApproachThreshold;
+
     double moveAroundBallCharacter;
     double moveAroundBallCharacterStable;
+
+    double stepLength;
+    double nearApproach_step_character;
+
+    Vector2d forwardKickThreshold;
+    Vector2d forwardKickOffset;
+    bool forwardKickAdaptive;
+    int forwardKickTime;
   } params;
 
   // NONE means hip
@@ -112,6 +124,9 @@ private:
   typedef WalkRequest::Coordinate Coordinate;
 
   void moveAroundBall(const double direction, const double radius, const bool stable);
+
+  bool target_reached;
+  void moveAroundBall2(const double direction, const double radius, const bool stable);
 
   // goToBall is split up between sideKick and forwardKick so that changing things in upcoming RoboCup 2018
   // won't be so complex as to introduce bugs easily

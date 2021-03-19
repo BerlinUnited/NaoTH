@@ -9,8 +9,8 @@
 * (simmilar to the austrian kangaroos whistle detector)
 */
 
-#ifndef _WhistleDetectorV2_h_
-#define _WhistleDetectorV2_h_
+#ifndef WhistleDetectorV2_H
+#define WhistleDetectorV2_H
 
 #include <ModuleFramework/Module.h>
 
@@ -71,6 +71,7 @@ public:
       PARAMETER_REGISTER(nWindowSkipping) = 80; // windowTimeStep: 160 / 2 = 80 => we skip half of the window size (10ms)
       
       PARAMETER_REGISTER(vWhistleThreshold) = 3.5;
+      PARAMETER_REGISTER(vWhistleThresholdAmplitude) = 5;
 
       PARAMETER_REGISTER(whistle_filter.g0) = 0.1;
       PARAMETER_REGISTER(whistle_filter.g1) = 0.1;
@@ -83,7 +84,11 @@ public:
     int nWindowSize;
     int nWindowZeroPadding;
     int nWindowSkipping;
+
     double vWhistleThreshold;
+
+    // TODO: make this threshold relative to the overall noise of the environment
+    double vWhistleThresholdAmplitude;
 
     struct {
       double g0;
@@ -209,4 +214,4 @@ private:
   FFT fft;
 
 };
-#endif // _WhistleDetectorV2_h_
+#endif // WhistleDetectorV2_H

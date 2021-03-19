@@ -1,4 +1,3 @@
-
 #include "Representations/Infrastructure/CameraSettings.h"
 #include "Representations/Infrastructure/CameraInfo.h"
 
@@ -7,190 +6,216 @@ using namespace std;
 
 CameraSettings::CameraSettings()
 {
-  data[CameraSelection] = CameraInfo::Bottom;
-  
-  for(int i=0;i<numOfCameraSetting;i++) {
-    data[i] = 0;
-  }
 }
 
 CameraSettings::~CameraSettings()
-{ }
-
-string CameraSettings::getCameraSettingsName(CameraSettingID id)
 {
-  switch(id)
-  {
-    case Brightness: return "Brightness"; break;
-    case BrightnessDark: return "BrightnessDark"; break;
-    case Contrast: return "Contrast"; break;
-    case Saturation: return "Saturation"; break;
-    case Hue: return "Hue"; break;
-    case Gain: return "Gain"; break;
-    case MinAnalogGain: return "MinAnalogGain"; break;
-    case MaxAnalogGain: return "MaxAnalogGain"; break;
-    case TargetGain: return "TargetGain"; break;
-    case HorizontalFlip: return "HorizontalFlip"; break;
-    case VerticalFlip: return "VerticalFlip"; break;
-    case AutoExposition: return "AutoExposition"; break;
-    case AutoWhiteBalancing: return "AutoWhiteBalancing"; break;
-    case Exposure: return "Exposure"; break;
-    case FPS: return "FPS"; break;
-    case ResolutionWidth: return "ResolutionWidth"; break;
-    case ResolutionHeight: return "ResolutionHeight"; break;
-    case CameraSelection: return "CameraSelection"; break;
-    case BacklightCompensation: return "BacklightCompensation"; break;
-    case WhiteBalance: return "WhiteBalance"; break;
-    case Sharpness: return "Sharpness"; break;
-    case FadeToBlack: return "FadeToBlack"; break;
-    case PowerlineFrequency: return "PowerlineFrequency"; break;
-    case AutoExpositionAlgorithm: return "AutoExpositionAlgorithm"; break;
-    case GammaCorrection: return "GammaCorrection"; break;
-    default: return "Unknown CameraSetting"; break;
-  }//end switch
-}//end getCameraSettingsName
+}
 
-void CameraSettings::print(ostream& stream) const
+
+void CameraSettings::print(ostream &stream) const
 {
-  for(int i = 0; i < numOfCameraSetting; i++) {
-     stream << getCameraSettingsName((CameraSettingID)i) << " = " << data[i] << ";" << endl;
-  }
-}//end print
+  stream <<  "AutoExposure = " << autoExposition << ";" << endl;
+  stream <<  "Exposure = " << exposure << ";" << endl;
+  stream <<  "Gain = " << gain << ";" << endl;
+  stream <<  "Saturation = " << saturation << ";" << endl;
+  stream <<  "WhiteBalanceTemperature = " << v5.whiteBalanceTemperature << ";" << endl;
 
+} //end print
 
 CurrentCameraSettings::CurrentCameraSettings()
-{}
+{
+}
 
 CurrentCameraSettingsTop::CurrentCameraSettingsTop()
-{}
+{
+}
 
 CameraSettingsRequest::CameraSettingsRequest(string configName)
-: ParameterList(configName),
-  queryCameraSettings(false)
+    : ParameterList(configName),
+      queryCameraSettings(false)
 {
   PARAMETER_REGISTER(autoExposition) = false;
-  PARAMETER_REGISTER(autoExpositionAlgorithm) = 0;
+  PARAMETER_REGISTER(v5.autoExpositionAlgorithm) = 0;
   PARAMETER_REGISTER(autoWhiteBalancing) = false;
   PARAMETER_REGISTER(backlightCompensation) = false;
   PARAMETER_REGISTER(brightness) = 55;
   PARAMETER_REGISTER(cameraSelection) = 0;
   PARAMETER_REGISTER(contrast) = 1.0;
   PARAMETER_REGISTER(exposure) = 1;
-  PARAMETER_REGISTER(fadeToBlack) = false;
+  PARAMETER_REGISTER(v5.fadeToBlack) = false;
   PARAMETER_REGISTER(gain) = 1.0;
-  PARAMETER_REGISTER(gammaCorrection) = 220;
-  PARAMETER_REGISTER(targetGain) = 100.0;
-  PARAMETER_REGISTER(minAnalogGain) = 1.0;
-  PARAMETER_REGISTER(maxAnalogGain) = 8.0;
+  PARAMETER_REGISTER(v5.gammaCorrection) = 220;
+  PARAMETER_REGISTER(v5.targetGain) = 5.0;
+  PARAMETER_REGISTER(v5.minAnalogGain) = 1.0;
+  PARAMETER_REGISTER(v5.maxAnalogGain) = 8.0;
   PARAMETER_REGISTER(horizontalFlip) = 0;
   PARAMETER_REGISTER(hue) = 0;
   PARAMETER_REGISTER(saturation) = 128;
   PARAMETER_REGISTER(sharpness) = 128;
   PARAMETER_REGISTER(verticalFlip) = 0;
-  PARAMETER_REGISTER(whiteBalanceTemperature) = 6500;
-  PARAMETER_REGISTER(powerlineFrequency) = 50;
+  PARAMETER_REGISTER(v5.whiteBalanceTemperature) = 6500;
+  PARAMETER_REGISTER(v5.powerlineFrequency) = 50;
 
   setAutoExposureWeights(100);
+  
+  
+  // V6
+/*
+                     brightness (int)    : min=-255 max=255 step=1 default=0 value=60
+                       contrast (int)    : min=0 max=255 step=1 default=32 value=64
+                     saturation (int)    : min=0 max=255 step=1 default=64 value=128
+                            hue (int)    : min=-180 max=180 step=1 default=0 value=0
+ white_balance_temperature_auto (bool)   : default=1 value=0
+                           gain (int)    : min=0 max=1023 step=1 default=16 value=176
+                       hue_auto (bool)   : default=0 value=0
+      white_balance_temperature (int)    : min=2500 max=6500 step=500 default=2500 value=0
+                      sharpness (int)    : min=0 max=9 step=1 default=4 value=0
+                  exposure_auto (menu)   : min=0 max=3 default=0 value=1
+              exposure_absolute (int)    : min=0 max=1048575 step=1 default=512 value=10000
+                 focus_absolute (int)    : min=0 max=250 step=25 default=0 value=0
+                     focus_auto (bool)   : default=0 value=0
+                     brightness (int)    : min=-255 max=255 step=1 default=0 value=60
+                       contrast (int)    : min=0 max=255 step=1 default=32 value=64
+                     saturation (int)    : min=0 max=255 step=1 default=64 value=128
+                            hue (int)    : min=-180 max=180 step=1 default=0 value=0
+ white_balance_temperature_auto (bool)   : default=1 value=0
+                           gain (int)    : min=0 max=1023 step=1 default=16 value=176
+                       hue_auto (bool)   : default=0 value=0
+      white_balance_temperature (int)    : min=2500 max=6500 step=500 default=2500 value=0
+                      sharpness (int)    : min=0 max=9 step=1 default=4 value=0
+
+*/
+  PARAMETER_REGISTER(v6.autoExposition) = false;
+
+  PARAMETER_REGISTER(v6.exposure) = 10000;
+  PARAMETER_REGISTER(v6.saturation) = 64;
+
+  PARAMETER_REGISTER(v6.autoWhiteBalancing) = false;
+  PARAMETER_REGISTER(v6.gain) = 16;
+  PARAMETER_REGISTER(v6.brightness) = 0;
+  PARAMETER_REGISTER(v6.contrast) = 32;
+  PARAMETER_REGISTER(v6.sharpness) = 4;
+  PARAMETER_REGISTER(v6.hue) = 0;
+  
+  // initial values that "look" good in the lab
+  PARAMETER_REGISTER(v6.gain_red) = 1280;
+  PARAMETER_REGISTER(v6.gain_green) = 1024;
+  PARAMETER_REGISTER(v6.gain_blue) = 2048;
+  
+  PARAMETER_REGISTER(v6.horizontalFlip) = false;
+  PARAMETER_REGISTER(v6.verticalFlip) = false;
 
   syncWithConfig();
 }
 
-void CameraSettingsRequest::reset() {
+void CameraSettingsRequest::reset()
+{
   setAutoExposureWeights(0);
 }
 
-void CameraSettingsRequest::setAutoExposureWeights(std::uint8_t w) {
-  for(std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
-      for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
-          autoExposureWeights[i][j] = w; 
-      }
+void CameraSettingsRequest::setAutoExposureWeights(std::uint8_t w)
+{
+  for (std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++)
+  {
+    for (std::size_t j = 0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++)
+    {
+      autoExposureWeights[i][j] = w;
+    }
   }
 }
 
-CameraSettings CameraSettingsRequest::getCameraSettings() const 
+CameraSettings CameraSettingsRequest::getCameraSettings() const
 {
   CameraSettings result;
 
-  // set some default/constant values
-  result.data[CameraSettings::FPS] = 30;
-  result.data[CameraSettings::ResolutionHeight] = IMAGE_HEIGHT;
-  result.data[CameraSettings::ResolutionWidth] = IMAGE_WIDTH;
+  result.autoExposition = autoExposition;
+  result.exposure = exposure;
+  result.gain = gain;
+  result.saturation = saturation;
+  result.brightness = brightness;
+  result.contrast = static_cast<float>(contrast);
+  result.sharpness = sharpness;
+  result.hue = hue;
+  result.autoWhiteBalancing = autoWhiteBalancing;
+  result.v5.whiteBalanceTemperature = v5.whiteBalanceTemperature;
+  result.verticalFlip = verticalFlip;
+  result.horizontalFlip = horizontalFlip;
+
+  result.v5.targetGain = static_cast<float>(v5.targetGain);
+  // make sure min/max gains are compatible with the choosen target gain
+  result.v5.minAnalogGain = std::min(v5.minAnalogGain, result.v5.targetGain);
+  result.v5.maxAnalogGain = std::max(v5.maxAnalogGain, result.v5.targetGain);
+  result.v5.fadeToBlack = v5.fadeToBlack;
+  result.v5.powerlineFrequency = v5.powerlineFrequency;
+  result.v5.gammaCorrection = v5.gammaCorrection;
   
+  result.backlightCompensation = backlightCompensation;
+
   // Convert each request to a proper setting and clamp values according to the driver documentation
   // (https://github.com/bhuman/BKernel#information-about-the-camera-driver).
   // The V4L controller might later adjust these values by the ranges reported by driver, but these
   // might be inaccurate or less restricted. Also, for fixed point real numbers the clipping should
   // be performed for the real number range, not the byte-representation.
 
-  result.data[CameraSettings::AutoExposition] = autoExposition ? 1 : 0;
-  result.data[CameraSettings::AutoWhiteBalancing] = autoWhiteBalancing ? 1 : 0;
-  result.data[CameraSettings::BacklightCompensation] = backlightCompensation ? 1 : 0;
-  // use target brightness for both lightening conditions
-  result.data[CameraSettings::Brightness] = Math::clamp(brightness, 0, 255);
-  result.data[CameraSettings::BrightnessDark] = Math::clamp(brightness, 0, 255);
-  result.data[CameraSettings::CameraSelection] = cameraSelection;
-  result.data[CameraSettings::Contrast] = Math::toFixPoint<5>(static_cast<float>(Math::clamp(contrast, 0.5, 2.0)));
-  result.data[CameraSettings::Exposure] = Math::clamp(exposure, 1, 1000);
-  result.data[CameraSettings::FadeToBlack] = fadeToBlack ? 1 : 0;
-  result.data[CameraSettings::MinAnalogGain] = Math::clamp(Math::toFixPoint<5>(static_cast<float>(minAnalogGain)), 0, 32767);
-  result.data[CameraSettings::MaxAnalogGain] = Math::clamp(Math::toFixPoint<5>(static_cast<float>(maxAnalogGain)), 0, 32767);
-
-  // manual gain must be inside the min/max given in the other parameters and also can't be larger than 255 (as integer)
-  result.data[CameraSettings::Gain] = Math::clamp(
-    Math::toFixPoint<5>(static_cast<float>(Math::clamp(gain, minAnalogGain, maxAnalogGain))), 0, 255);
-  
-  result.data[CameraSettings::TargetGain] = Math::toFixPoint<5>(static_cast<float>(Math::clamp(targetGain, minAnalogGain, maxAnalogGain)));
   
 
-  result.data[CameraSettings::HorizontalFlip] = horizontalFlip ? 1 : 0;
-  result.data[CameraSettings::Hue] = Math::clamp(hue, -22, 22);
-  result.data[CameraSettings::Saturation] = Math::clamp(saturation, 0, 255);
-  result.data[CameraSettings::Sharpness] = Math::clamp(sharpness, -7, 7);
-  result.data[CameraSettings::VerticalFlip] = verticalFlip ? 1 : 0;
-  result.data[CameraSettings::WhiteBalance] = Math::clamp(whiteBalanceTemperature, 2700, 6500);
-  result.data[CameraSettings::GammaCorrection] = Math::clamp(gammaCorrection, 100, 280);
-
-  // use 50 Hz (val = 1) if 60 Hz (val = 2) is not explicitly requested
-  result.data[CameraSettings::PowerlineFrequency] = powerlineFrequency == 60 ? 2 : 1;
-
-  
-  for(std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++) {
-      for(std::size_t j=0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++) {
-          result.autoExposureWeights[i][j] = autoExposureWeights[i][j]; 
-      }
+  for (std::size_t i = 0; i < CameraSettings::AUTOEXPOSURE_GRID_SIZE; i++)
+  {
+    for (std::size_t j = 0; j < CameraSettings::AUTOEXPOSURE_GRID_SIZE; j++)
+    {
+      result.autoExposureWeights[i][j] = autoExposureWeights[i][j];
+    }
   }
+  
+  
+  // V6
+  result.v6.autoExposition = v6.autoExposition;
 
+  result.v6.exposure = v6.exposure;
+  result.v6.saturation = v6.saturation;
+
+  result.v6.autoWhiteBalancing = v6.autoWhiteBalancing;
+  result.v6.gain = v6.gain;
+  result.v6.brightness = v6.brightness;
+  result.v6.contrast = v6.contrast;
+  result.v6.sharpness = v6.sharpness;
+  result.v6.hue = v6.hue;
+  
+  result.v6.gain_red = v6.gain_red;
+  result.v6.gain_green = v6.gain_green;
+  result.v6.gain_blue = v6.gain_blue;
+  
+  result.v6.horizontalFlip = v6.horizontalFlip;
+  result.v6.verticalFlip = v6.verticalFlip;
+  
   return result;
 }
 
 CameraSettingsRequestTop::CameraSettingsRequestTop()
-  : CameraSettingsRequest("CameraSettingsTop")
+    : CameraSettingsRequest("CameraSettingsTop")
 {
 }
 
 CommonCameraSettingsRequest::CommonCameraSettingsRequest(string configName)
-: ParameterList(configName),
-  queryCameraSettings(false)
+    : ParameterList(configName),
+      queryCameraSettings(false)
 {
   PARAMETER_REGISTER(autoExposition) = false;
   PARAMETER_REGISTER(autoWhiteBalancing) = false;
   PARAMETER_REGISTER(brightness) = 55;
   PARAMETER_REGISTER(exposure) = 1;
   PARAMETER_REGISTER(gain) = 1;
-  PARAMETER_REGISTER(gammaCorrection) = 220;
-  PARAMETER_REGISTER(targetGain) = 100.0;
-  PARAMETER_REGISTER(minAnalogGain) = 1.0;
-  PARAMETER_REGISTER(maxAnalogGain) = 8.0;
 
   PARAMETER_REGISTER(saturation) = 128;
-  PARAMETER_REGISTER(sharpness) = 128;
-  PARAMETER_REGISTER(whiteBalanceTemperature) = 6500;
+  PARAMETER_REGISTER(sharpness) = 2;
+  PARAMETER_REGISTER(v5.whiteBalanceTemperature) = 6500;
+  
   PARAMETER_REGISTER(autoExpositionMethod) = "averageY";
-  PARAMETER_REGISTER(powerlineFrequency) = 50;
 
   PARAMETER_REGISTER(isActive) = false;
 
+  // V6
+  
   syncWithConfig();
 }
-
-

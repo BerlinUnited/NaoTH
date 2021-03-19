@@ -15,13 +15,14 @@
 
 #include "DebugCommunication/DebugServer.h"
 #include "PlatformInterface/PlatformInterface.h"
+#include <ModuleFramework/ModuleManager.h>
 
 // simple robot
 #include <Representations/Infrastructure/JointData.h>
 #include <Representations/Infrastructure/FSRData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
 
-#define CYCLE_TIME 20
+extern ModuleManager* getModuleManager(Cognition* c);
 
 class DummySimulator : public naoth::PlatformInterface
 {
@@ -33,9 +34,10 @@ public:
   virtual std::string getBodyNickName() const { return "naoth"; }
   virtual std::string getHeadNickName() const { return "naoth"; }
   virtual std::string getRobotName() const { return "dummy-simulator"; }
+  virtual std::string getPlatformName() const { return "DummySimulator"; }
+  virtual unsigned int getBasicTimeStep() const { return 20; }
 
   void main();
-
 
   static const unsigned int frameExecutionTime = 33;
 
@@ -77,7 +79,7 @@ public: // a dummy robot simulator
       //robotJointData.electricCurrent[i] = 0.0;
     }
 
-    // HACK:
+    // HACK: emulate robot standing on the longer leg
     double leftPressure = 0.0;
     double rightPressure = 0.0;
     if(std::fabs(robotJointData.position[naoth::JointData::LKneePitch] - robotJointData.position[naoth::JointData::RKneePitch]) < 0.1) {

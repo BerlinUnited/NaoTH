@@ -1,0 +1,29 @@
+[Unit]
+Description=NaoTH wifi configuration
+
+Requires=sys-subsystem-net-devices-wlan0.device
+After=sys-subsystem-net-devices-wlan0.device
+
+ConditionPathExists=/home/nao/.config/net
+ConditionPathExists=/home/nao/.config/wpa_supplicant.conf
+
+Before=network.target
+Wants=network.target
+	
+[Service]
+Type=forking
+RemainAfterExit=true
+
+EnvironmentFile=/home/nao/.config/net
+
+ExecStartPre=/sbin/ifconfig wlan0 up
+ExecStartPre=/sbin/ifconfig wlan0 $config_wlan0
+
+ExecStart=/usr/sbin/wpa_supplicant -B -iwlan0 $wpa_supplicant_wlan0 -c/home/nao/.config/wpa_supplicant.conf
+
+#ExecStop=killall wpa_supplicant
+ExecStopPost=/sbin/ifconfig wlan0 down
+
+[Install]
+WantedBy=multi-user.target
+

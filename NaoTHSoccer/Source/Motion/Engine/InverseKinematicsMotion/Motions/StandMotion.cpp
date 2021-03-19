@@ -35,8 +35,6 @@ StandMotion::StandMotion()
 
   fullCorrection(true),
   stiffnessIsReady(false),
-  relaxedPoseInitialized(false),
-  resetedAfterLifting(false),
   lastFrameInfo(getFrameInfo())
 {
   // create
@@ -357,7 +355,8 @@ void StandMotion::tuneJointOffsets()
       }
     }
 
-    std::cout << "max: " << maxId << " : " << jointMonitors[maxId].filteredCurrent() << std::endl; 
+    // DEBUG: print max joint
+    //std::cout << "max: " << maxId << " : " << jointMonitors[maxId].filteredCurrent() << std::endl; 
 
     // if greater than Threshold then try to tune the offsets
     if(jointMonitors[maxId].filteredCurrent() > getEngine().getParameters().stand.relax.jointOffsetTuning.currentThreshold) {

@@ -1,0 +1,6 @@
+clothObj:0
+crossing:0
+fieldmarkings:0
+ball:1
+FieldRobot:2
+goalpost:3

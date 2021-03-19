@@ -14,7 +14,7 @@ option search_for_ball
 	      goto try_to_look_at_the_old_ball;
       else if(@use_teamball && ball.team.is_valid)
         goto look_at_teamball;
-      else if(ball.angle > 0)
+      else if(ball.last_known.y > 0)
         goto search_for_ball_left;
       else
         goto search_for_ball_right;
@@ -33,7 +33,7 @@ option search_for_ball
       else if (state_time > 2000) {
 	      if(@use_teamball && ball.team.is_valid)
 	        goto look_at_teamball;
-	      else if(ball.angle > 0)
+	      else if(ball.last_known.y > 0)
 	        goto search_for_ball_left;
 	      else
 	        goto search_for_ball_right;
@@ -181,7 +181,7 @@ option search_for_ball
       if (!ball.see_where_itis) {
 	      if(@use_teamball && ball.team.is_valid)
 	        goto look_at_teamball;
-	      else if(ball.angle > 0)
+	      else if(ball.last_known.y > 0)
 	        goto search_for_ball_left;
 	      else
 	        goto search_for_ball_right;

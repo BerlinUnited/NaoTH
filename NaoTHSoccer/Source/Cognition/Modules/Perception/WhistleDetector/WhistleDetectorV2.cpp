@@ -89,8 +89,13 @@ void WhistleDetectorV2::execute()
       const double whistleThresh = mean + params.vWhistleThreshold * dev;
 
       bool found = false;
-      if(max_value > whistleThresh) {
+      if(max_value > whistleThresh && max_value > params.vWhistleThresholdAmplitude) {
         found = true;
+      }
+
+      if( whistle_filter.update(found, 0.3, 0.9) ) {
+        getWhistlePercept().whistleDetected = true;
+        getWhistlePercept().frameWhenWhistleDetected = getFrameInfo().getFrameNumber();
       }
 
       DEBUG_REQUEST("Plot:WhistleDetectorV2:scan",
@@ -105,13 +110,11 @@ void WhistleDetectorV2::execute()
         PLOT_GENERIC("WhistleDetectorV2:max_f", time, max_f);
         PLOT_GENERIC("WhistleDetectorV2:max_value", time, max_value);
         PLOT_GENERIC("WhistleDetectorV2:thresh", time, whistleThresh);
+        PLOT_GENERIC("WhistleDetectorV2:detected", time, dev);
+
+        PLOT_GENERIC("WhistleDetectorV2:whistle_filter", time, whistle_filter.value()*10);
+        PLOT_GENERIC("WhistleDetectorV2:detected", time, getWhistlePercept().whistleDetected*10);
       );
-
-      if( whistle_filter.update(found, 0.3, 0.9) ) {
-        getWhistlePercept().whistleDetected = true;
-      }
-
-      PLOT("WhistleDetectorV2:whistle_filter", whistle_filter.value());
 
       // clear buffer:
       fft.clean(windowTimeStep);

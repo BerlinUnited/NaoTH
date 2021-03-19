@@ -34,7 +34,8 @@ private:
     theHeadHardwareIdentity(_headHardwareIdentity),
     theRobotName(_robotName),
     thePlatform(_platform),
-    theScheme(_scheme)
+    theScheme(_scheme),
+    theStrategy(_strategy)
   {
       // only if the config directory doesn't exists locally ...
       if(!(g_file_test(_configDir.c_str(), G_FILE_TEST_EXISTS) && g_file_test(_configDir.c_str(), G_FILE_TEST_IS_DIR))) {
@@ -49,6 +50,14 @@ private:
   // cannot be copied
   Platform& operator=( const Platform& ) { return *this; }
 
+  void readStringFromFile(std::string file, std::string& str) {
+      // try to read the scheme name from file
+      std::ifstream fstream((theConfigDirectory + file).c_str());
+      if(fstream.is_open() && fstream.good()) {
+        std::getline(fstream, str);
+      }
+  }
+
   // 
   std::string _hardwareIdentity;
   std::string _headHardwareIdentity;
@@ -56,6 +65,7 @@ private:
   std::string _configDir;
   std::string _platform;
   std::string _scheme;
+  std::string _strategy;
 
 public:
   virtual ~Platform(){}
@@ -68,20 +78,19 @@ public:
     _hardwareIdentity = base->getBodyNickName();
     _headHardwareIdentity = base->getHeadNickName();
     _robotName = base->getRobotName();
-    _platform = base->getName(); // set to platform by default
+    _platform = base->getPlatformName(); // set to platform by default
     _scheme = ""; // empty to mark as "no-scheme"
+    _strategy = ""; // empty to mark as "default-strategy"
 
-    // try to read the scheme name from file
-    std::ifstream schemefile((theConfigDirectory + "scheme.cfg").c_str());
-    if(schemefile.is_open() && schemefile.good()) {
-      std::getline(schemefile, _scheme); 
-    }
+    readStringFromFile("scheme.cfg", _scheme);
+    readStringFromFile("strategy.cfg", _strategy);
       
     // load config
     theConfiguration.loadFromDir(
-      theConfigDirectory, thePlatform, theScheme, theHardwareIdentity, theHeadHardwareIdentity, theRobotName);
+      theConfigDirectory, thePlatform, theScheme, theStrategy, theHardwareIdentity, theHeadHardwareIdentity, theRobotName);
   }//end init
 
+  // NOTE: the identity of the robot is defined by the configuration
   // const accessors
   const std::string& theConfigDirectory;
   const std::string& theHardwareIdentity; // the string to indentify different robots
@@ -89,6 +98,7 @@ public:
   const std::string& theRobotName;
   const std::string& thePlatform;
   const std::string& theScheme;
+  const std::string& theStrategy;
 
 
   Configuration theConfiguration;

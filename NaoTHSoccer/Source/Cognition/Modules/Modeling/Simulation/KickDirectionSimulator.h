@@ -69,7 +69,7 @@ public:
   {
   public:
 
-    Parameters() : ParameterList("KickDirectionSimulatorParams")
+    Parameters() : ParameterList("KickDirectionSimulator")
     {
       PARAMETER_REGISTER(sidekick_right.speed) = 750;
       PARAMETER_REGISTER(sidekick_right.speed_std) = 150;
@@ -125,7 +125,7 @@ public:
     int num_angle_particle;
     int iterations; // Number of update calls of particle filter
 
-  } theParameters;
+  } params;
 
 private:
   class Sample {

@@ -27,13 +27,13 @@ LineGraphProvider::LineGraphProvider()
   DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_extended_line_graph", "", false);
   DEBUG_REQUEST_REGISTER("Vision:LineGraphProvider:draw_extended_line_graph_top", "", false);
 
-  getDebugParameterList().add(&parameters);
+  getDebugParameterList().add(&params);
 }
 
 
 LineGraphProvider::~LineGraphProvider()
 {
-  getDebugParameterList().remove(&parameters);
+  getDebugParameterList().remove(&params);
 }
 
 
@@ -41,7 +41,7 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
 
-  calculatePairsAndNeigbors(getScanLineEdgelPercept().pairs, edgelPairs, edgelNeighbors, parameters.edgelSimThreshold);
+  calculatePairsAndNeigbors(getScanLineEdgelPercept().pairs, edgelPairs, edgelNeighbors, params.edgelSimThreshold);
 
 
   // calculate the projection for all edgels
@@ -92,6 +92,10 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
       EdgelD edgel;
       edgel.point = Vector2d(edgelLeft + edgelRight)*0.5;
       edgel.direction = (edgelRight - edgelLeft).normalize();
+      // make edgel direction all point upwards
+      if(edgel.direction.x < 0) {
+        edgel.direction *= -1;
+      }
 
       graph.back().push_back(edgel);
     }
@@ -111,11 +115,14 @@ void LineGraphProvider::execute(CameraInfo::CameraID id)
     Edgel edgel;
     edgel.point = Vector2d(edgelLeft + edgelRight)*0.5;
     edgel.direction = (edgelRight - edgelLeft).normalize(); // is it correct?
-
+    // make edgel direction all point upwards
+    if(edgel.direction.x < 0) {
+      edgel.direction *= -1;
+    }
     //const ScanLineEdgelPercept::EdgelPair& el = getScanLineEdgelPercept().pairs[edgelPair.left];
     //const ScanLineEdgelPercept::EdgelPair& er = getScanLineEdgelPercept().pairs[edgelPair.right];
 
-    if(projectedWidthLeft > parameters.maximalProjectedLineWidth && projectedWidthRight > parameters.maximalProjectedLineWidth) {
+    if(projectedWidthLeft > params.maximalProjectedLineWidth && projectedWidthRight > params.maximalProjectedLineWidth) {
       getLineGraphPercept().edgelsOnField.push_back(edgel);
         
       DEBUG_REQUEST("Vision:LineGraphProvider:draw_line_graph",
@@ -404,7 +411,9 @@ void LineGraphProvider::calculatePairsAndNeigbors(
   {
     const ScanLineEdgelPercept::EdgelPair& edgelOne = edgels[i];
 
-    if(getScanLineEdgelPercept().endPoints[edgelOne.id].posInImage.y > edgelOne.point.y) {
+    if(!getScanLineEdgelPercept().endPoints.empty() &&
+       getScanLineEdgelPercept().endPoints[edgelOne.id].posInImage.y > edgelOne.point.y)
+    {
       continue;
     }
     
@@ -415,7 +424,9 @@ void LineGraphProvider::calculatePairsAndNeigbors(
     {
       const ScanLineEdgelPercept::EdgelPair& edgelTwo = edgels[j];
 
-      if(getScanLineEdgelPercept().endPoints[edgelTwo.id].posInImage.y > edgelTwo.point.y) {
+      if(!getScanLineEdgelPercept().endPoints.empty() &&
+         getScanLineEdgelPercept().endPoints[edgelTwo.id].posInImage.y > edgelTwo.point.y)
+      {
         continue;
       }
 

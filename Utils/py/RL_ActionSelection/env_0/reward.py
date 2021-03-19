@@ -3,6 +3,7 @@ from naoth.math2d import Vector2 as Vec
 from naoth.math2d import LineSegment
 from objects import Rectangle
 
+
 def simple_reward_normalized(world, state, old_state=None):
     """
     simple reward function which checks whether the ball is in one of the goal
@@ -13,13 +14,12 @@ def simple_reward_normalized(world, state, old_state=None):
     :return: reward (float)
     """
 
-
     if world.in_opp_goal(state.position, state.ball_position):
         return 1., True  # reward = 100
     elif world.in_own_goal(state.position, state.ball_position):
         return -1., True  # reward = -100
 
-    return 0., True #-0.1  # reward = -1
+    return 0., True  # -0.1  # reward = -1
 
 
 def simple_reward(world, state, old_state=None):
@@ -32,13 +32,13 @@ def simple_reward(world, state, old_state=None):
     :return: reward (float)
     """
 
-
     if world.in_opp_goal(state.position, state.ball_position):
         return 10., True  # reward = 100
     elif world.in_own_goal(state.position, state.ball_position):
         return -10., True  # reward = -100
 
-    return 0., True #-0.1  # reward = -1
+    return 0., True  # -0.1  # reward = -1
+
 
 def simple_reward_obstacle(world, state, old_state=None):
     """
@@ -70,7 +70,7 @@ def simple_reward_obstacle(world, state, old_state=None):
 
 def distance_motivated_reward(world, state, old_state):
     # state has performed an action, robot was not moved to ball
-    opp_goal_center = Vec(4500.,0.)
+    opp_goal_center = Vec(4500., 0.)
     old_position = state.position
     new_position = state.ball_position
 

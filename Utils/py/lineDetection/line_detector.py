@@ -1,9 +1,7 @@
-import numpy as np
-import random
-
 import math
 
 from ransac import Ransac, Result
+
 
 class Line:
     def __init__(self, params, x_range, y_range, error):
@@ -13,8 +11,10 @@ class Line:
 
         self.error = error
 
+
 # Ransac: iterations, threshDist, minInlier, threshAngle
 ransac = Ransac(20, 50, 10, math.radians(5))
+
 
 def detectLines(edgelFrame):
     lines = []

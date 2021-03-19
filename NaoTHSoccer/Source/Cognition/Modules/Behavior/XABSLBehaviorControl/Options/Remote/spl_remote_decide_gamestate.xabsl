@@ -12,7 +12,8 @@ option spl_remote_decide_gamestate
       goto idle;
   }
   
-  state no_signal 
+  state no_signal
+ 
   {
     decision
     {
@@ -79,10 +80,8 @@ option spl_remote_decide_gamestate
     }
     action 
     {
-      decide_and_go_to_ready_position();
-      
-      //only the first we know that we are in our own half
-      situationStatusOwnHalf = (game.msecsRemaining >= 540000);
+      //FIXME
+      //decide_and_go_to_ready_position();
     }
   }
 
@@ -105,7 +104,6 @@ option spl_remote_decide_gamestate
     action 
     {
       head.control_mode = search_for_ball;
-      situationStatusOwnHalf = true;
     }
   }
 
@@ -137,8 +135,9 @@ option spl_remote_decide_gamestate
 	      stay; 
 	  }
 	  action {
-	    initial_striker();
+	    path2018_initial_striker();
    		team.is_playing_as_striker = true;
 	  }
-  }  
+  }
+  
 }

@@ -20,6 +20,7 @@ void SoundSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumElement("sound", "sound.penalized", 3);
   engine.registerEnumElement("sound", "sound.playing", 4);
   engine.registerEnumElement("sound", "sound.battery_low", 5);
+  engine.registerEnumElement("sound", "sound.weeeee", 6);
 
   engine.registerEnumeratedOutputSymbol("sound.request", "sound", &setSoundRequest, &getSoundRequest);
 }//end registerSymbols
@@ -50,6 +51,8 @@ void SoundSymbols::setSoundRequest(int value)
       theInstance->getSoundPlayData().soundFile = "play.wav";
     } else if(value == 5) {
       theInstance->getSoundPlayData().soundFile = "battery_low.wav";
+    } else if(value == 6) {
+      theInstance->getSoundPlayData().soundFile = "weeeee.wav";
     }
   }
 }
@@ -68,6 +71,8 @@ int SoundSymbols::getSoundRequest()
     return 4;
   } else if(theInstance->getSoundPlayData().soundFile == "battery_low.wav") {
     return 5;
+  } else if(theInstance->getSoundPlayData().soundFile == "weeeee.wav") {
+    return 6;
   }
 
   return 0;

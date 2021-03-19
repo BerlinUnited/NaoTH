@@ -58,11 +58,6 @@ void SituationPriorProvider::execute()
     wasLiftedUp = true;
   }
 
-  // for penalty kicker, this has the highest priority
-  if(getSituationStatus().oppHalf)
-  {
-    getSituationPrior().currentPrior = SituationPrior::oppHalf;
-  }
   //Init Positions and the robot didn't start walking
   else if(currentRobotState == PlayerInfo::ready && lastRobotState == PlayerInfo::initial && !walked_after_penalized_or_init)
   {

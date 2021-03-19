@@ -94,6 +94,7 @@ public:
     return minY;
   }
 
+  // TODO: move this method to the field detectors or to a tool class
   void checkPolyIsUnderHorizon(const Math::LineSegment& horizon)
   {
     for(size_t i = 0; i < fieldPoly.size(); ++i)

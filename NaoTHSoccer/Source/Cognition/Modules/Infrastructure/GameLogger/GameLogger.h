@@ -12,7 +12,6 @@
 #include <Representations/Modeling/BehaviorStateSparse.h>
 #include <Representations/Modeling/PlayerInfo.h>
 
-#include <Representations/Perception/BallPercept.h>
 #include <Representations/Perception/GoalPercept.h>
 #include <Representations/Perception/ScanLineEdgelPercept.h>
 #include <Representations/Perception/LinePercept2018.h>
@@ -55,8 +54,6 @@ BEGIN_DECLARE_MODULE(GameLogger)
   REQUIRE(CameraMatrixTop)
   REQUIRE(GoalPercept)
   REQUIRE(GoalPerceptTop)
-  REQUIRE(BallPercept)
-  REQUIRE(BallPerceptTop)
 
   REQUIRE(FieldPercept)
   REQUIRE(FieldPerceptTop)

@@ -9,6 +9,7 @@
 
 PathPlanner2018::PathPlanner2018()
   :
+  target_reached(false),
   stepBuffer({}),
   footToUse(Foot::RIGHT),
   lastStepRequestID(getMotionStatus().stepControl.stepRequestID + 1),      // WalkRequest stepRequestID starts at 0, we have to start at 1
@@ -56,13 +57,15 @@ void PathPlanner2018::execute()
       return;
     }
     break;
-  case PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL:
-    moveAroundBall(getPathModel().direction, getPathModel().radius, getPathModel().stable);
+  //TODO maybe use a parameter to select the actual routine that is executed when move around is set from the behavior???
+  case PathModel::PathPlanner2018Routine::MOVE_AROUND_BALL2:
+    moveAroundBall2(getPathModel().direction, getPathModel().radius, getPathModel().stable);
     break;
   case PathModel::PathPlanner2018Routine::FORWARDKICK:
     //if (farApproach())
     {
-      if (nearApproach_forwardKick(getPathModel().xOffset, getPathModel().yOffset))
+      //TODO remove offsets from pathmodel
+      if (nearApproach_forwardKick(params.forwardKickOffset.x, params.forwardKickOffset.y))
       {
         forwardKick();
       }
@@ -92,63 +95,108 @@ void PathPlanner2018::execute()
 
   // Always executed last
   executeStepBuffer();
+
+  PLOT("PathPlanner:buffer_size", static_cast<double>(stepBuffer.size()));
 }
 
-void PathPlanner2018::moveAroundBall(const double direction, const double radius, const bool stable)
-{
+void PathPlanner2018::moveAroundBall2(const double direction, const double radius, const bool stable) {
  if (stepBuffer.empty())
  {
-    Vector2d ballPos    = getBallModel().positionPreview;
-    double ballRotation = ballPos.angle();
-    double ballDistance = ballPos.abs();
+    double step_radius = 100;
+    double ball_distance = getBallModel().positionPreview.abs();
+    Pose2D target_pose;
 
-    double direction_deg = Math::toDegrees(direction);
-    if (direction_deg > -10 && direction_deg <= 0){
-      direction_deg = -10;
-    }
-    if (direction_deg < 10 && direction_deg > 0){
-      direction_deg = 10;
-    }
+    Vector2d target_point = getBallModel().positionPreview - Vector2d(cos(direction), sin(direction)) * radius;
 
-    double min1;
-    double min2;
-    double max1;
-    double max2;
-    if (direction_deg <= 0)
-    {
-      // turn left
-	    min1 = 0.0;
-	    min2 = 0.0;
-	    max1 = 45.0;
-	    max2 = 100.0;
-    }
-    else {
-      // turn right
-	    min1 = -45;
-	    min2 = -100;
-	    max1 = 0;
-	    max2 = 0;
+    // reset target_reached flag if we moved too much away from target position
+    if(target_point.abs() > 0.5 * step_radius
+       || fabs(getBallModel().positionPreview.angle()) > Math::fromDegrees(8)) {
+        target_reached = false;
     }
 
-    double stepX = (ballDistance - radius) * std::cos(ballRotation);
-    // Math::clamp(-direction, min1, max1) ==> safe guard for xabsl input
-    // outer clamp geht von -radius zu 0 
-    double stepY = Math::clamp(radius * std::tan(Math::fromDegrees(Math::clamp(-direction_deg, min1, max1))), min2, max2) * std::cos(ballRotation);
+    if (target_reached) {
+        target_pose = Pose2D();
+    } else if(target_point.abs() < step_radius) { // we can reach the target_point directly
+        Vector2d tmp_target_point = target_point;
+        tmp_target_point.rotate(-getBallModel().positionPreview.angle());
+        double angle = std::asin(tmp_target_point.y/radius);
+        target_pose = {getBallModel().positionPreview.angle() - angle, target_point};
+        target_reached = true;
+    } else if(ball_distance >= step_radius + radius) {
+        // TODO: maybe make this the "go to ball" ?!
+        // we are completely outside of the radius of the ball
+        // make step in direction of the target point if it isn't behind the ball
+        Vector2d tmp_target_point = target_point;
+        tmp_target_point.rotate(-getBallModel().positionPreview.angle());
+        if(tmp_target_point.x > ball_distance) {
+            tmp_target_point.x = ball_distance;
+            tmp_target_point.y = tmp_target_point.y > 0 ? radius : -radius;
+        }
+        tmp_target_point.rotate(getBallModel().positionPreview.angle());
+        target_pose = {getBallModel().positionPreview.angle(), tmp_target_point};
+    } else if(ball_distance <= std::max(radius - step_radius, step_radius - radius)){
+        // we are completely in the radius of ball
+        // make step away from ball in direction of the target point, if possible
+        Vector2d tmp_target_point = target_point;
+        tmp_target_point.rotate(-getBallModel().positionPreview.angle());
+        double angle;
+        if(tmp_target_point.x > ball_distance) { // might cross ball so just make a side step
+            tmp_target_point = {0, (tmp_target_point.y > 0) ? step_radius : -step_radius};
+            angle = std::atan2(tmp_target_point.y, ball_distance);
+        } else {
+            if(tmp_target_point.abs2() > step_radius * step_radius) {
+                tmp_target_point.normalize(step_radius);
+            }
+            angle = std::atan2(tmp_target_point.y, ball_distance - tmp_target_point.x);
+        }
 
-    Pose2D pose = { ballRotation, stepX, stepY };
-  
+        tmp_target_point.rotate(getBallModel().positionPreview.angle());
+        target_pose = {getBallModel().positionPreview.angle() - angle, tmp_target_point};
+    } else {
+        // step 1: coordinate transformation, the ball has to lie on the x axis
+        // so we would rotate about -getBallModel().positionPreview.angle()
+        // happens implicitly by using ball_distance
+
+        // step 2: caluclate possible intersection points is1 and is2
+        double step_radius2 = step_radius * step_radius;
+        double ball_distance2 = getBallModel().positionPreview.abs2();
+        double radius2 = radius * radius;
+        double x = (step_radius2 - radius2 + ball_distance2) / (2*ball_distance);
+        double yy = step_radius2 - x * x;
+
+        assert(yy >= 0.0);
+
+        Vector2d is1(x,  sqrt(yy));
+        Vector2d is2(x, -sqrt(yy));
+
+        // need to remember angle for target rotation
+        double angle = std::asin(is1.y/radius);
+
+        // step 3: reverse (hidden) coordinate transformation
+        is1.rotate(getBallModel().positionPreview.angle());
+        is2.rotate(getBallModel().positionPreview.angle());
+
+        // step 4: choose intersection point which is closer to the target point
+        if( (is2 - target_point).abs2() < (is1 - target_point).abs2()) {
+            target_pose.rotation = getBallModel().positionPreview.angle() + angle;
+            target_pose.translation = is2;
+        } else {
+            target_pose.rotation = getBallModel().positionPreview.angle() - angle;
+            target_pose.translation = is1;
+        }
+    }
+
     StepBufferElement move_around_step;
-    move_around_step.debug_name = "move_around_step";
-    move_around_step.setPose(pose);
+    move_around_step.debug_name = "move_around_step2";
+    move_around_step.setPose(target_pose);
     move_around_step.setStepType(StepType::WALKSTEP);
 
-    if (stable){
+    if (stable) {
       move_around_step.setCharacter(params.moveAroundBallCharacterStable);
-    }
-    else{
+    } else{
       move_around_step.setCharacter(params.moveAroundBallCharacter);
     }
-  
+
     move_around_step.setScale(1.0);
     move_around_step.setCoordinate(Coordinate::Hip);
     move_around_step.setFoot(Foot::NONE);
@@ -158,6 +206,10 @@ void PathPlanner2018::moveAroundBall(const double direction, const double radius
     move_around_step.setTime(250);
 
     addStep(move_around_step);
+
+    PLOT("PathPlanner:move_around_ball_2:target:x", target_point.x);
+    PLOT("PathPlanner:move_around_ball_2:target:y", target_point.y);
+    PLOT("PathPlanner:move_around_ball_2:target:reached", target_reached);
   }
 }
 
@@ -271,10 +323,10 @@ bool PathPlanner2018::nearApproach_forwardKick(const double offsetX, const doubl
     if (std::abs(targetPos.x)  > params.forwardKickThreshold.x || std::abs(targetPos.y) > params.forwardKickThreshold.y)
     {
         // generate a correction step
-      double translation_xy = params.stepLength;
+      double translation_xy = params.stepLength;  //TODO kann man nicht die steplength aus den motion nehmen?
 
-      //std::abs(targetPos.y) => das heiﬂt doch wenn der ball in der y richtung springt wird ein schritt zur¸ck geplant und ausgef¸hrt
-      // das ist daf¸r das das er an den ball anlaufen kann ohne zu rotieren. Wenn man nah am ball ist wird angenommen das die Rotation
+      //std::abs(targetPos.y) => das heisst doch wenn der ball in der y richtung springt wird ein schritt zur√ºck geplant und ausgef√ºhrt
+      // das ist daf√ºr das das er an den ball anlaufen kann ohne zu rotieren. Wenn man nah am ball ist wird angenommen das die Rotation
       //stimmt und dann soll diese auch nicht korrigiert werden
       double translation_x = std::min(translation_xy, targetPos.x - std::abs(targetPos.y));
       double translation_y = std::min(translation_xy, std::abs(targetPos.y)) * (targetPos.y < 0 ? -1 : 1);
@@ -283,7 +335,7 @@ bool PathPlanner2018::nearApproach_forwardKick(const double offsetX, const doubl
       near_approach_forward_step.debug_name = "near_approach_forward_step";
       near_approach_forward_step.setPose({ 0.0, translation_x, translation_y });
       near_approach_forward_step.setStepType(StepType::WALKSTEP);
-      near_approach_forward_step.setCharacter(0.3);
+      near_approach_forward_step.setCharacter(params.nearApproach_step_character);
       near_approach_forward_step.setScale(1.0);
       near_approach_forward_step.setCoordinate(coordinate);
       near_approach_forward_step.setFoot(Foot::NONE);
@@ -302,7 +354,7 @@ bool PathPlanner2018::nearApproach_forwardKick(const double offsetX, const doubl
 
   return false;
 }
-   
+
 bool PathPlanner2018::nearApproach_sideKick(const Foot& foot, const double offsetX, const double offsetY)
 {
   // TODO: Has to work without rotation (like nearApproach_forwardKick)
@@ -440,7 +492,7 @@ void PathPlanner2018::forwardKick()
   if (!kickPlanned)
   {
     stepBuffer.clear();
-    
+
     // 2019 version - makes sure to kick with the foot that is behind the ball
     Vector2d ballPos;
     Foot actual_foot;
@@ -473,7 +525,7 @@ void PathPlanner2018::forwardKick()
       ASSERT(false);
     }
     */
-    
+
     // Correction step if the movable foot is different from the foot that is supposed to kick
     if (getMotionStatus().stepControl.moveableFoot != (getBallModel().positionPreview.y < 0 ? MotionStatus::StepControlStatus::RIGHT : MotionStatus::StepControlStatus::LEFT))
     {
@@ -492,7 +544,7 @@ void PathPlanner2018::forwardKick()
 
       addStep(forward_correction_step);
     }
-    
+
     // The kick
     StepBufferElement forward_kick_step;
     forward_kick_step
@@ -673,7 +725,7 @@ void PathPlanner2018::executeStepBuffer()
   getMotionRequest().walkRequest.stepControl.isProtected    = stepBuffer.front().isProtected;
   getMotionRequest().walkRequest.stepControl.stepRequestID  = lastStepRequestID;
   getMotionRequest().walkRequest.stepControl.moveLeftFoot   = (footToUse != Foot::RIGHT); // false means right foot
-  
+
   //std::cout << stepBuffer.front().debug_name << " - " << getMotionRequest().walkRequest.stepControl.moveLeftFoot  << std::endl;
   STOPWATCH_STOP("PathPlanner2018:execute_steplist");
 }

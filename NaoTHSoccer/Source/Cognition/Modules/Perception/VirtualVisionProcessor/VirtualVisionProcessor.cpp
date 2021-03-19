@@ -9,7 +9,7 @@
 #include "VirtualVisionProcessor.h"
 
 #include <Tools/Math/Matrix_mxn.h>
-#include "Tools/DataConversion.h"
+#include <Tools/StringTools.h>
 #include "Tools/CameraGeometry.h"
 
 using namespace std;
@@ -63,6 +63,15 @@ VirtualVisionProcessor::~VirtualVisionProcessor()
   
 }
 
+void VirtualVisionProcessor::execute()
+{
+  getMultiBallPercept().reset();
+  getVirtualLinePercept().reset();
+
+  execute(CameraInfo::Top);
+  execute(CameraInfo::Bottom);
+}
+
 void VirtualVisionProcessor::execute(const CameraInfo::CameraID id)
 {
   cameraID = id;
@@ -86,39 +95,24 @@ Vector3d VirtualVisionProcessor::calculatePosition(const Vector3d& pol)
 
 void VirtualVisionProcessor::updateBall()
 {
-  const VirtualVision& theVirtualVision = getVirtualVision();
-  BallPercept& theBallPercept = getBallPercept();
-  const FrameInfo& theFrameInfo = getFrameInfo();
-  const FieldInfo& theFieldInfo = getFieldInfo();
-  const CameraInfo& theCameraInfo = getCameraInfo();
-  const CameraMatrix& theCameraMatrix = getCameraMatrix();
-  VirtualVision::PointMap::const_iterator iter = theVirtualVision.data.find("B");
-  if ( iter != theVirtualVision.data.end() )
+  //NOTE: MultiBallPercept is used for both cameras and is reset in execute()
+  //getMultiBallPercept().reset();
+
+  VirtualVision::PointMap::const_iterator iter = getVirtualVision().data.find("B");
+  if ( iter != getVirtualVision().data.end() )
   {
-    theBallPercept.ballWasSeen = true;
-    theBallPercept.frameInfoWhenBallWasSeen = theFrameInfo;
     Vector3d p = calculatePosition(iter->second);
-    theBallPercept.bearingBasedOffsetOnField.x = p.x;
-    theBallPercept.bearingBasedOffsetOnField.y = p.y;
-
-    theBallPercept.radiusInImage = theFieldInfo.ballRadius / iter->second.x * theCameraInfo.getFocalLength();
-    CameraGeometry::relativePointToImage(theCameraMatrix, theCameraInfo, p, theBallPercept.centerInImage);
-
-    // set the multiball percept
+    
+    // create a ball percept  
     MultiBallPercept::BallPercept ballPercept;
-  
     ballPercept.cameraId = cameraID;
-    ballPercept.centerInImage = theBallPercept.centerInImage;
-    ballPercept.radiusInImage = theBallPercept.radiusInImage;
+    CameraGeometry::relativePointToImage(getCameraMatrix(), getCameraInfo(), p, ballPercept.centerInImage);
+    ballPercept.radiusInImage = getFieldInfo().ballRadius / iter->second.x * getCameraInfo().getFocalLength();
     ballPercept.positionOnField.x = p.x;
     ballPercept.positionOnField.y = p.y;
 
     getMultiBallPercept().add(ballPercept);
-    getMultiBallPercept().frameInfoWhenBallWasSeen = theFrameInfo;
-  }
-  else
-  {
-    theBallPercept.ballWasSeen = false;
+    getMultiBallPercept().frameInfoWhenBallWasSeen = getFrameInfo();
   }
 }//end updateBall
 
@@ -254,8 +248,10 @@ void VirtualVisionProcessor::updateGoal()
 
 void VirtualVisionProcessor::updateLine()
 {
+  //NOTE: VirtualLinePercept is used for both cameras and is reset in execute()
+  //getVirtualLinePercept().reset();
+
   const VirtualVision& theVirtualVision = getVirtualVision();
-  //getLinePercept().reset();
 
   // lines from flags
   if (theVirtualVision.lines.empty())
@@ -573,7 +569,7 @@ void VirtualVisionProcessor::updatePlayers()
       tokenize(key, tokens); // split by whitespaces
 
       int id;
-      if(!DataConversion::strTo(tokens[2],id)) {
+      if(!StringTools::strTo(tokens[2],id)) {
         continue; // id couldn't be parsed
       }
 

@@ -6,7 +6,7 @@
 
 RansacLineDetector::RansacLineDetector():
 lineRansac(params.line.maxIterations,
-           params.line.minDirectionSimilarity,
+           params.line.outlierThresholdAngle,
            params.line.outlierThresholdDist),
 circleRansac(params.circle.maxIterations,
              params.circle.outlierThresholdAngle,
@@ -132,7 +132,7 @@ void RansacLineDetector::execute()
 
   // reset parameters
   lineRansac.setParameters(params.line.maxIterations,
-                           params.line.minDirectionSimilarity,
+                           params.line.outlierThresholdAngle,
                            params.line.outlierThresholdDist);
 
   for(int i = 0; i < params.line.maxLines; ++i)
@@ -158,7 +158,7 @@ void RansacLineDetector::execute()
             getLineGraphPercept().edgelsOnField, inlier_idx);
       double line_length = line.getLength();
 
-      bool variance_small = line_length > params.line.length_of_var_check ||
+      bool variance_small = line_length > params.line.max_length_for_var_check ||
                             angle_variance <= params.line.maxVariance;
 
       if (line_length > params.line.min_line_length && variance_small)

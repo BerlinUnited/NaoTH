@@ -9,7 +9,7 @@
 #ifndef _SMALModule_H_
 #define _SMALModule_H_
 
-#include "Tools/IPCData.h"
+#include "Tools/DCMData.h"
 #include "Tools/NaoTime.h"
 #include "Tools/SharedMemoryIO.h"
 #include "Tools/BasicMotion.h"
@@ -100,7 +100,7 @@ private:
   int timeOffset;
 
   // DCM --> NaoController
-  SharedMemory<NaoSensorData> naoSensorData;
+  SharedMemory<DCMSensorData> naoSensorData;
 
   SharedMemory<int> debugSM;
 
@@ -108,7 +108,6 @@ private:
   //SharedMemory<NaoCommandData> naoCommandData;
   SharedMemory<Accessor<MotorJointData> > naoCommandMotorJointData;
   SharedMemory<Accessor<UltraSoundSendData> > naoCommandUltraSoundSendData;
-  SharedMemory<Accessor<IRSendData> > naoCommandIRSendData;
   SharedMemory<Accessor<LEDData> > naoCommandLEDData;
 
   // syncronize with NaoController

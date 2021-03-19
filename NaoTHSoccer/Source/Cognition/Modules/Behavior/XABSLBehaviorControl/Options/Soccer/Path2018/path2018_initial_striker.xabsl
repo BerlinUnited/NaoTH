@@ -32,8 +32,6 @@ option path2018_initial_striker
     action
     {
       path2018.routine = forwardkick;
-      path.xOffset = 120; // pathplanner adds ball.radius - this could be done here
-      path.yOffset = 0;
     }
   }
 

@@ -12,8 +12,30 @@
             "group": "build",
             "command": "./compileGame.sh",
             "problemMatcher": {
-                "base" : "$gcc",
-                "fileLocation" : ["relative" , "${workspaceFolder}/NaoTHSoccer/build"]
+                "base": "$gcc",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}/NaoTHSoccer/build"
+                ]
+            },
+            "presentation": {
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Clean",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/NaoTHSoccer/Make"
+            },
+            "group": "build",
+            "command": "premake5 clean",
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}/NaoTHSoccer/build"
+                ]
             },
             "presentation": {
                 "panel": "shared"
@@ -26,7 +48,26 @@
                 "cwd": "${workspaceFolder}/NaoTHSoccer/Make"
             },
             "group": "build",
-            "command": "premake5 gmake && make -C ${workspaceFolder}/NaoTHSoccer/build config=debug_native LogSimulator",
+            "command": "premake5 gmake2 && make -C ${workspaceFolder}/NaoTHSoccer/build config=debug_native LogSimulator",
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}/NaoTHSoccer/build"
+                ]
+            },
+            "presentation": {
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "ScriptableSimulator (OptDebug)",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/NaoTHSoccer/Make"
+            },
+            "group": "build",
+            "command": "premake5 gmake2 && make -C ${workspaceFolder}/NaoTHSoccer/build config=optdebug_native ScriptableSimulator",
             "problemMatcher": {
                 "base" : "$gcc",
                 "fileLocation" : ["relative" , "${workspaceFolder}/NaoTHSoccer/build"]
@@ -42,10 +83,13 @@
                 "cwd": "${workspaceFolder}/NaoTHSoccer/Make"
             },
             "group": "build",
-            "command": "premake5 gmake && make -C ${workspaceFolder}/NaoTHSoccer/build config=debug_native SimSpark",
+            "command": "premake5 gmake2 && make -C ${workspaceFolder}/NaoTHSoccer/build config=debug_native SimSpark",
             "problemMatcher": {
-                "base" : "$gcc",
-                "fileLocation" : ["relative" , "${workspaceFolder}/NaoTHSoccer/build"]
+                "base": "$gcc",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}/NaoTHSoccer/build"
+                ]
             },
             "presentation": {
                 "panel": "shared"
@@ -60,8 +104,11 @@
             "group": "build",
             "command": "./compileNaoSMAL.sh",
             "problemMatcher": {
-                "base" : "$gcc",
-                "fileLocation" : ["relative" , "${workspaceFolder}/NaoTHSoccer/build"]
+                "base": "$gcc",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}/NaoTHSoccer/build"
+                ]
             },
             "presentation": {
                 "panel": "shared"
@@ -73,14 +120,17 @@
             "options": {
                 "cwd": "${workspaceFolder}/NaoTHSoccer/Make",
                 "env": {
-                    "CXX" : "/usr/bin/c++"
+                    "CXX": "/usr/bin/c++"
                 }
             },
             "group": "build",
             "command": "./generate.compile-database.sh",
             "problemMatcher": {
-                "base" : "$gcc",
-                "fileLocation" : ["relative" , "${workspaceFolder}/NaoTHSoccer/build"]
+                "base": "$gcc",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}/NaoTHSoccer/build"
+                ]
             },
             "presentation": {
                 "panel": "shared"

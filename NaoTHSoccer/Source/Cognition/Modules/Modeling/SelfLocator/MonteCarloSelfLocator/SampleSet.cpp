@@ -59,19 +59,35 @@ void SampleSet::quicksort(int d, int low, int high)
 
 void SampleSet::normalize(double offset)
 {
+  // negative offsets do not produce meaningful results
+  ASSERT(offset >= 0);
+	
+  // calculate sum of all likelihoods
   double sum = 0.0;
-  for(size_t i = 0; i < samples.size(); i++) {
-    samples[i].likelihood = samples[i].likelihood;
+  for(size_t i = 0; i < samples.size(); ++i) {
     sum += samples[i].likelihood;
   }
-
+  
   if(sum == 0) { 
+    // TODO: check: normalize should allways make sure that the 
+	// likelihoods are in the valid state. So we should do 
+	// something like this here:
+    // resetLikelihood();
     return; 
   }
 
-  double offset_sum = 1.0+offset*(double)samples.size();
+  // the offset will be added to each normalized likelihood
+  // calculate the sum of likelihoods after normalizing and adding 
+  // the offset to each sample
+  //
+  // NOTE: offset >= 0 implies offset_sum >= 1.0
+  double offset_sum = 1.0 + offset*(double)samples.size();
 
-  for(size_t i = 0; i < samples.size(); i++) {
+  // normalize with offset: 
+  //   xi = xi / sum         // normalize
+  //   xi = xi + o           // add a constant offset
+  //   xi = xi / offset_sum  // normalize again
+  for(size_t i = 0; i < samples.size(); ++i) {
     samples[i].likelihood = ((samples[i].likelihood/sum) + offset)/offset_sum;
   }
 }//end normalize

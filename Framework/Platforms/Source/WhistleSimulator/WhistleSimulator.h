@@ -19,75 +19,84 @@
 
 #include "RawAudioFilePlayer.h"
 
-#define CYCLE_TIME 20
+class WhistleSimulator : public naoth::PlatformInterface {
+    public:
+        WhistleSimulator(const std::string& filePath, bool backendMode, bool realTime, unsigned short port);
+        virtual ~WhistleSimulator() {}
 
-class WhistleSimulator : public naoth::PlatformInterface
-{
-public:
-  WhistleSimulator(const std::string& filePath, bool backendMode, bool realTime, unsigned short port);
-  virtual ~WhistleSimulator(){}
+        virtual std::string getBodyID() const {
+            return "WhistleSimulator";
+        }
+        virtual std::string getBodyNickName() const {
+            return "naoth";
+        }
+        virtual std::string getHeadNickName() const {
+            return "naoth";
+        }
+        virtual std::string getRobotName() const {
+            return "WhistleSimulator";
+        }
+        virtual std::string getPlatformName() const {
+            return "WhistleSimulator";
+        }
+        virtual unsigned int getBasicTimeStep() const {
+            return 20;
+        }
 
-  virtual std::string getBodyID() const { return "whistle-simulator"; }
-  virtual std::string getBodyNickName() const { return "naoth"; }
-  virtual std::string getHeadNickName() const { return "naoth"; }
-  virtual std::string getRobotName() const { return "whistle-simulator"; }
-
-  void main();
-
-
-  static const unsigned int frameExecutionTime = 33;
-
-public: // platform getter and setter
-
-  void get(naoth::FrameInfo& data) const { 
-    data.setTime(data.getTime() + frameExecutionTime);
-    data.setFrameNumber(data.getFrameNumber() + 1);
-
-    if (!backendMode) {
-      std::cout << "Frame: " << data.getFrameNumber() << "\t\r";
-    }
-  }
-
-  void get(naoth::DebugMessageInCognition& data) {
-    theDebugServer.getDebugMessageInCognition(data);
-  }
-  void get(naoth::DebugMessageInMotion& data) {
-    theDebugServer.getDebugMessageInMotion(data);
-  }
-
-  void get(naoth::AudioData& data) {
-		theRawAudioFilePlayer.get(data);
-  }
-
-  void set(const naoth::DebugMessageOut& data) {
-    if (data.answers.size() > 0) {
-      theDebugServer.setDebugMessageOut(data);
-    }
-  }
-
-protected:
-  virtual MessageQueue* createMessageQueue(const std::string& /*name*/) {
-    // for single thread
-    return new MessageQueue();
-  }
-
-public:
-  // the flag for backend mode, which is used by LogfilePlayer of RobotControl
-  bool backendMode;
-
-  void printHelp();
-  char getInput();
-  void executeFrame();
-  void play();
-  void setParams(int numChannels, int sampleRate, int samples, int overlap);
+        void main();
 
 
-private:
-  DebugServer theDebugServer;
-  naoth::FrameInfo theFrameInfo;
-	naoth::RawAudioFilePlayer theRawAudioFilePlayer;
+        static const unsigned int frameExecutionTime = 33;
+
+    public: // platform getter and setter
+
+        void get(naoth::FrameInfo& data) const {
+            data.setTime(data.getTime() + frameExecutionTime);
+            data.setFrameNumber(data.getFrameNumber() + 1);
+
+            if (!backendMode) {
+                std::cout << "Frame: " << data.getFrameNumber() << "\t\r";
+            }
+        }
+
+        void get(naoth::DebugMessageInCognition& data) {
+            theDebugServer.getDebugMessageInCognition(data);
+        }
+        void get(naoth::DebugMessageInMotion& data) {
+            theDebugServer.getDebugMessageInMotion(data);
+        }
+
+        void get(naoth::AudioData& data) {
+            theRawAudioFilePlayer.get(data);
+        }
+
+        void set(const naoth::DebugMessageOut& data) {
+            if (data.answers.size() > 0) {
+                theDebugServer.setDebugMessageOut(data);
+            }
+        }
+
+    protected:
+        virtual MessageQueue* createMessageQueue(const std::string& /*name*/) {
+            // for single thread
+            return new MessageQueue();
+        }
+
+    public:
+        // the flag for backend mode, which is used by LogfilePlayer of RobotControl
+        bool backendMode;
+        std::string myfilePath;
+        void printHelp();
+        char getInput();
+        void executeFrame();
+        void play();
+        void setParams(int numChannels, int sampleRate, int samples, int overlap);
+
+
+    private:
+        DebugServer theDebugServer;
+        naoth::FrameInfo theFrameInfo;
+        naoth::RawAudioFilePlayer theRawAudioFilePlayer;
 };
 
 #endif  /* _WHISTLE_SIMULATOR_H */
-
-

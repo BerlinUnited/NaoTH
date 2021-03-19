@@ -64,9 +64,8 @@ private:
   Process soundProcess;
 
 public:
-  PlatformInterface(const std::string& name, unsigned int basicTimeStep)
-    : 
-    PlatformBase(name, basicTimeStep),
+  PlatformInterface()
+    :
     PlatformDataInterface(environment)
   {
     PRINT_DEBUG("[PlatformInterface] NaoTH " << getName() << " starting...");

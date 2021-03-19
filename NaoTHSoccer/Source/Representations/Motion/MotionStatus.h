@@ -65,6 +65,7 @@ public:
 
   ~MotionStatus(){}
 
+  // TODO: add comments!!!
   unsigned int time;
   motion::MotionID lastMotion;
   motion::MotionID currentMotion;
@@ -72,7 +73,7 @@ public:
   HeadMotionRequest::HeadMotionID headMotion;
   PlannedMotion plannedMotion;
   StepControlStatus stepControl;
-  bool target_reached;
+  bool target_reached; //TODO: which motion do set that? Maybe better stand_target reached
   bool head_target_reached;
   bool head_got_stuck;
   bool walk_emergency_stop;

@@ -1,0 +1,3 @@
+# set the server to a known location
+load-module module-native-protocol-unix auth-anonymous=1 socket=/tmp/pulse-socket
+

@@ -5,7 +5,7 @@ option free_kick_opp
 {
   initial state decide {
     decision {
-      if(game.player_number == 1) {
+      if(strategy.role == goalie) {
         goto goalie_position_free_kick;
       } else if(ball.know_where_itis && ball.distance <= field.centerCircleRadius) {
         goto player_move_away_from_ball;

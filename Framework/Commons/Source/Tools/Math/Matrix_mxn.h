@@ -4,7 +4,6 @@
 
 #include "MVTools.h"
 #include "Vector_n.h"
-#include <math.h>
 #include <vector>
 #include <iostream>
 

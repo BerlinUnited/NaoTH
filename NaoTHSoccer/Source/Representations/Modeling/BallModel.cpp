@@ -14,14 +14,7 @@ void naoth::Serializer<BallModel>::serialize(const BallModel &object, std::ostre
     DataConversion::toMessage(object.positionPreview, *(msg.mutable_positionpreview()));
     DataConversion::toMessage(object.positionPreviewInLFoot, *(msg.mutable_positionpreviewinlfoot()));
     DataConversion::toMessage(object.positionPreviewInRFoot, *(msg.mutable_positionpreviewinrfoot()));
-   
-    for (Vector2d const &futurePos : object.futurePosition)
-    {
-        naothmessages::DoubleVector2* futurePosProto = msg.add_futureposition();
 
-        DataConversion::toMessage(futurePos, *(futurePosProto));
-    }
-   
     msg.set_valid(object.valid);
     msg.set_knows(object.knows);
 
@@ -41,11 +34,6 @@ void naoth::Serializer<BallModel>::deserialize(std::istream &stream, BallModel &
     DataConversion::fromMessage(msg.positionpreview(), object.positionPreview);
     DataConversion::fromMessage(msg.positionpreviewinlfoot(), object.positionPreviewInLFoot);
     DataConversion::fromMessage(msg.positionpreviewinrfoot(), object.positionPreviewInRFoot);
-
-    object.futurePosition.resize(msg.futureposition_size());
-    for (int i = 0; i < msg.futureposition_size(); i++) {   
-        DataConversion::fromMessage(msg.futureposition(i), object.futurePosition[i]);
-    }
 
     object.valid = msg.valid();
     object.knows = msg.knows();

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane id="representation-list" xmlns="http://javafx.com/javafx/8.0.202-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.naoth.rc.dialogsFx.moduleconfiguration.ModuleConfigurationRepresentations">
+   <center>
+      <ListView id="infoList" fx:id="infoList" prefHeight="200.0" prefWidth="200.0" />
+   </center>
+   <top>
+      <ToolBar nodeOrientation="RIGHT_TO_LEFT" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets right="5.0" />
+         </BorderPane.margin>
+         <items>
+            <ToggleButton fx:id="btnInfos" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false" prefWidth="24.0" selected="true" styleClass="info" text="Notifications">
+               <tooltip>
+                  <Tooltip text="Display Notifications" />
+               </tooltip>
+            </ToggleButton>
+            <ToggleButton fx:id="btnWarnings" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false" prefWidth="24.0" selected="true" styleClass="warning" text="Warnings">
+               <tooltip>
+                  <Tooltip text="Display Warnings" />
+               </tooltip>
+            </ToggleButton>
+            <ToggleButton fx:id="btnErrors" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" mnemonicParsing="false" prefWidth="24.0" selected="true" styleClass="error" text="Errors">
+               <tooltip>
+                  <Tooltip text="Display Errors" />
+               </tooltip>
+            </ToggleButton>
+         </items>
+      </ToolBar>
+   </top>
+</BorderPane>
