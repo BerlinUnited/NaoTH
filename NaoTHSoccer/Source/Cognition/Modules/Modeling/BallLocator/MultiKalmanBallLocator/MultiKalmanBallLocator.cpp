@@ -68,6 +68,7 @@ void MultiKalmanBallLocator::execute()
 
     bool allow_removal = true;
     DEBUG_REQUEST("MultiKalmanBallLocator:disallow_removal",
+        // This might be useful for debugging. This will not be used for production
         allow_removal = false;
     );
 
