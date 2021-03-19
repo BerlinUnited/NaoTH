@@ -1,10 +1,10 @@
-#include "bodyCollisionDetector.h"
+#include "BodyCollisionDetector.h"
 
-bodyCollisionDetector::~bodyCollisionDetector()
+BodyCollisionDetector::~BodyCollisionDetector()
 {
 }
 
-void bodyCollisionDetector::execute()
+void BodyCollisionDetector::execute()
 {
     Vector2d inertial = getInertialModel().orientation;
     if (torsoParams.useSteffensInertial) {
@@ -30,12 +30,14 @@ void bodyCollisionDetector::execute()
     const double rotationY = atan2(relativeRotation.c[2].x, relativeRotation.c[2].z);
     buffer.add(Vector2d(relativeRotation.getXAngle(), rotationY));
 
+    // Make it work in stand as well
+    /*
     if (!(getMotionStatus().currentMotion == motion::walk))
     {
         buffer.clear();
         return;
     }
-
+    */
     if (buffer.isFull() && frameDelay > 0 && frameDelay < buffer.size())
     {
         const Vector2d requestedVelocity = (buffer[frameDelay - 1] - buffer[frameDelay]) / getRobotInfo().getBasicTimeStepInSecond();
@@ -51,10 +53,10 @@ void bodyCollisionDetector::execute()
         correctionX += torsoParams.rotation.P.x * inertial.x;
         correctionY += torsoParams.rotation.P.y * inertial.y;
 
-        PLOT("bodyCollisionDetector:correctionX", correctionX);
-        PLOT("bodyCollisionDetector:correctionY", correctionY);
+        PLOT("BodyCollisionDetector:correctionX", correctionX);
+        PLOT("BodyCollisionDetector:correctionY", correctionY);
 
-        DEBUG_REQUEST("bodyCollisionDetector:drawImpactVector",
+        DEBUG_REQUEST("BodyCollisionDetector:drawImpactVector",
             draw_impact_vector(Vector2d(correctionX, correctionY));
         );
 
@@ -66,7 +68,7 @@ void bodyCollisionDetector::execute()
     }
 }
 
-void bodyCollisionDetector::draw_impact_vector(Vector2d vec)
+void BodyCollisionDetector::draw_impact_vector(Vector2d vec)
 {
     FIELD_DRAWING_CONTEXT;
     PEN("000000", 1);

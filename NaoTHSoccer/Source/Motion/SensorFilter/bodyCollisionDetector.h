@@ -1,5 +1,5 @@
-#ifndef _bodyCollisionDetector_H_
-#define _bodyCollisionDetector_H_
+#ifndef _BodyCollisionDetector_H_
+#define _BodyCollisionDetector_H_
 
 //Include module
 #include "ModuleFramework/Module.h"
@@ -32,7 +32,7 @@
 
 
 //Module declaration
-BEGIN_DECLARE_MODULE(bodyCollisionDetector)
+BEGIN_DECLARE_MODULE(BodyCollisionDetector)
     //Provides
     PROVIDE(CollisionPercept)
     PROVIDE(TargetHipFeetPose)
@@ -52,17 +52,17 @@ BEGIN_DECLARE_MODULE(bodyCollisionDetector)
     PROVIDE(DebugRequest)
     PROVIDE(DebugPlot)
     PROVIDE(DebugDrawings)
-END_DECLARE_MODULE(bodyCollisionDetector)
+END_DECLARE_MODULE(BodyCollisionDetector)
 
-class bodyCollisionDetector : private bodyCollisionDetectorBase
+class BodyCollisionDetector : private BodyCollisionDetectorBase
 {
 public:
-    bodyCollisionDetector() : 
+  BodyCollisionDetector() :
         torsoParams(getWalk2018Parameters().torsoRotationStabilizerParams)
     {
-        DEBUG_REQUEST_REGISTER("bodyCollisionDetector:drawImpactVector", "Impact vector", false);
+        DEBUG_REQUEST_REGISTER("BodyCollisionDetector:drawImpactVector", "Impact vector", false);
     };
-    ~bodyCollisionDetector();
+    ~BodyCollisionDetector();
     void execute();
 
 private:
