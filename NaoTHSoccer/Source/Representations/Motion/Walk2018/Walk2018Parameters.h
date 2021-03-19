@@ -69,7 +69,7 @@ class FootStepPlanner2018Parameters: public ParameterList{
 
           PARAMETER_REGISTER(limits.applyChangeX) = true;
           PARAMETER_REGISTER(limits.applyChangeY) = true;
-          PARAMETER_REGISTER(limits.applyChangeRotation) = false;
+          PARAMETER_REGISTER(limits.applyChangeRotation) = true;
 
           PARAMETER_REGISTER(footOffsetY) = 0;
 
