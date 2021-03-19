@@ -1,3 +1,8 @@
+/**
+ * This is the simplest free-kick and kick-in behavior.
+ * If its our free-kick, we continue our normal play;
+ * Otherwise we search for the ball and if we found the ball, we move back from it.
+ */
 option free_kick_simple {
 
   /** true if own free kick **/
@@ -106,7 +111,7 @@ option free_kick_simple {
     }
     
     action {
-        path_decide_role();
+        roles_decide_role();
     }
   }
 }

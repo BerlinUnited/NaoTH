@@ -23,7 +23,13 @@ print("INFO: generating solution NaoTHSoccer")
 print("  PLATFORM = " .. PLATFORM)
 print("  OS = " .. os.target())
 print("  ACTION = " .. (_ACTION or "NONE"))
-print()
+
+-- generate the project directory
+-- or "": dont create a directory for the action if only protobuf files are generated 
+local project_dir = "../build/" .. (_OPTIONS["platform"] or _ACTION or "")
+print("  LOCATION = " .. project_dir)
+
+print("") -- empty line :)
 
 
 -- touch main.cpp to make sure that the repository defines have effect
@@ -34,9 +40,9 @@ end
 workspace "NaoTHSoccer"
   platforms {"Native", "Nao"}
   configurations {"OptDebug", "Debug"}
-  location "../build"
+  location (project_dir)
 
-  -- add general pathes
+  -- add general paths
   -- this mainly reflects the internal structure of the extern directory
   sysincludedirs {
     FRAMEWORK_PATH .. "/Commons/Source/Messages",
@@ -52,9 +58,10 @@ workspace "NaoTHSoccer"
     FRAMEWORK_PATH .. "/Commons/Source" 
   }
 
-  syslibdirs { EXTERN_PATH .. "/lib", EXTERN_PATH .. "/lib64"} -- for os that differentiate between lib and lib64
+  -- for os that differentiate between lib and lib64
+  syslibdirs { EXTERN_PATH .. "/lib", EXTERN_PATH .. "/lib64"} 
 
-  -- this function should be defined in 
+  -- this function can be adjusted in projectconfig.user.lua
   if set_user_defined_paths ~= nil then 
     set_user_defined_paths() 
   end
@@ -87,8 +94,8 @@ workspace "NaoTHSoccer"
   {
     inputFiles  = os.matchfiles(path.join(COMMONS_MESSAGES, "*.proto")),
     cppOut      = path.join(FRAMEWORK_PATH,"Commons/Source/Messages/"),
-    javaOut     = path.join(NAOTH_PROJECT, "RobotControl/RobotConnector/src/"),
-    pythonOut   = path.join(NAOTH_PROJECT, "Utils/py/naoth/naoth"),
+    javaOut     = path.join(NAOTH_PROJECT, "RobotControl/src/"),
+    pythonOut   = path.join(NAOTH_PROJECT, "Utils/py/naoth/naoth/pb/"),
     includeDirs = {COMMONS_MESSAGES}
   }
   
@@ -97,8 +104,8 @@ workspace "NaoTHSoccer"
   {
     inputFiles  = os.matchfiles(path.join(NAOTH_PROJECT, "NaoTHSoccer/Messages/*.proto")),
     cppOut      = path.join(NAOTH_PROJECT, "NaoTHSoccer/Source/Messages/"),
-    javaOut     = path.join(NAOTH_PROJECT, "RobotControl/RobotConnector/src/"),
-    pythonOut   = path.join(NAOTH_PROJECT, "Utils/py/naoth/naoth"),
+    javaOut     = path.join(NAOTH_PROJECT, "RobotControl/src/"),
+    pythonOut   = path.join(NAOTH_PROJECT, "Utils/py/naoth/naoth/pb/"),
     includeDirs = {COMMONS_MESSAGES, path.join(NAOTH_PROJECT, "NaoTHSoccer/Messages/")}
   }
   
@@ -126,7 +133,7 @@ workspace "NaoTHSoccer"
     defines { "NAO" }
     system ("linux")
     
-    -- HACK: system() desn't set the target system properly => set the target system manually
+    -- HACK: system() doesn't set the target system properly => set the target system manually
     if _OPTIONS["platform"] == "Nao" then
       -- include the Nao platform
       if COMPILER_PATH_NAO ~= nil then
@@ -141,8 +148,10 @@ workspace "NaoTHSoccer"
     warnings "Extra"
     -- Wconversion is not included in Wall and Wextra
     buildoptions {"-Wconversion"}
-    -- Wsign-conversion might be useful and is not included in Wconversion
-    --buildoptions {"-Wsign-conversion"}
+    -- These are a lot of warnings that should be fixed, but currently this is not the highest priority
+    buildoptions {"-Wno-sign-conversion"}
+    -- clang - allow unused functions in cpp files
+    buildoptions {"-Wno-unused-function"}
     
     -- for debugging:
     -- buildoptions {"-time"}
@@ -163,8 +172,16 @@ workspace "NaoTHSoccer"
     -- this is needed to supress the linker warning in VS2013 if gloabal links are used 
     -- linkoptions { "/ignore:4221" } -- LNK4221: This object file does not define any previously undefined public symbols, so it will not be used by any link operation that consumes this library
 
-    debugdir "$(SolutionDir).."
+    -- from docu:
+    -- "path to the working directory, relative to the currently executing script file."
+    debugdir ".."
     
+    -- for speed up: inline functions. "Auto" => "/Ob2", "Explicit" => "/Ob1"
+    inlining ("Auto")
+    
+    -- for speed up: "Off" => Program Database /Zi. "On" => Program Database foe Edit and Continue /ZI
+    editandcontinue "Off" 
+
     -- remove the nao platform if action is vs*
     removeplatforms { "Nao" }
     
@@ -186,7 +203,7 @@ workspace "NaoTHSoccer"
     end
     
   -- for linux systems and cygwin 
-  filter {"platforms:Native", "action:gmake", "system:linux"} 
+  filter {"platforms:Native", "action:gmake or gmake2", "system:linux"} 
   -- configuration {"Native", "linux", "gmake"}
     -- "position-independent code" needed to compile shared libraries.
     -- In our case it's only the NaoSMAL. So, we probably don't need this one.
@@ -236,7 +253,7 @@ workspace "NaoTHSoccer"
     if os.ishost("windows") and _ACTION ~= nil and string.match(_ACTION, "^vs.*") then
       project "Generate"
         kind "Utility"
-        prebuildcommands { "cd ../Make/ && premake5 --Test vs2013" }
+        prebuildcommands { "cd ../../Make/ && premake5 --Test " .. _ACTION }
     end
   
   -- set up platforms
@@ -252,10 +269,15 @@ workspace "NaoTHSoccer"
         -- ACHTUNG: NaoSMAL doesn't build with the flag -std=c++11 (because of Boost)
         cppdialect "gnu++11"
         
-      dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
+        dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
         kind "ConsoleApp"
         links { "NaoTHSoccer", "Commons", naoth_links}
         vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/NaoRobot" }
+       
+        dofile (FRAMEWORK_PATH .. "/Platforms/Make/LolaAdaptor.lua")
+        kind "ConsoleApp"
+        links { "NaoTHSoccer", "Commons", naoth_links}
+        vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LolaAdaptor" }
       
     -- generate tests if required
     if _OPTIONS["Test"] ~= nil then
@@ -275,6 +297,14 @@ workspace "NaoTHSoccer"
 	    dofile ("../Test/Make/Polygon.lua")
             kind "ConsoleApp"
             vpaths { ["*"] = "../Test/Source/Polygon" }
+        
+        dofile ("../Test/Make/LoLa.lua")
+            kind "ConsoleApp"
+            vpaths { ["*"] = "../Test/Source/LoLa" }
+            
+        dofile ("../Test/Make/AudioRecorder.lua")
+          kind "ConsoleApp"
+          vpaths { ["*"] = "../Test/Source/AudioRecorder" }
     end
 
     
@@ -292,7 +322,10 @@ workspace "NaoTHSoccer"
         vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/LogSimulator" }
         
       dofile (FRAMEWORK_PATH .. "/Platforms/Make/DummySimulator.lua")
-        kind "ConsoleApp"
+        links { "NaoTHSoccer", "Commons", naoth_links}
+        vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/DummySimulator" }
+
+      dofile (FRAMEWORK_PATH .. "/Platforms/Make/ScriptableSimulator.lua")
         links { "NaoTHSoccer", "Commons", naoth_links}
         vpaths { ["*"] = FRAMEWORK_PATH .. "/Platforms/Source/DummySimulator" }
         
@@ -304,11 +337,6 @@ workspace "NaoTHSoccer"
     -- generate tests if required
     if _OPTIONS["Test"] ~= nil then
       group "Test"
-        dofile ("../Test/Make/BallEvaluator.lua")
-          kind "ConsoleApp"
-          links { "NaoTHSoccer", "Commons", naoth_links}
-          vpaths { ["*"] = "../Test/Source/BallEvaluator" }
-
         dofile ("../Test/Make/EigenPerformance.lua")
           kind "ConsoleApp"
           vpaths { ["*"] = "../Test/Source/EigenPerformance" }
@@ -324,6 +352,10 @@ workspace "NaoTHSoccer"
 	    dofile ("../Test/Make/Polygon.lua")
           kind "ConsoleApp"
           vpaths { ["*"] = "../Test/Source/Polygon" }
+      
+      dofile ("../Test/Make/LoLa.lua")
+          kind "ConsoleApp"
+          vpaths { ["*"] = "../Test/Source/LoLa" }
     end
 
     -- generate LogSimulatorJNI if required

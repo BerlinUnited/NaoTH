@@ -24,16 +24,16 @@ BEGIN_DECLARE_MODULE(ButtonEventMonitor)
   PROVIDE(ButtonState)
 END_DECLARE_MODULE(ButtonEventMonitor)
 
-class ButtonEventMonitor : public ButtonEventMonitorBase
+class ButtonEventMonitor : public ButtonEventMonitorBase 
 {
-public:
-  ButtonEventMonitor(){}
-  virtual ~ButtonEventMonitor(){}
+  public:
+    ButtonEventMonitor() {}
+    virtual ~ButtonEventMonitor() {}
 
-  virtual void execute();
+    virtual void execute();
 
-private:
-  void update(ButtonEvent& buttonEvent, bool pressed);
+  private:
+    void update(ButtonEvent& buttonEvent, bool pressed);
 };
 
 #endif  /* _ButtonEventMonitor_H */

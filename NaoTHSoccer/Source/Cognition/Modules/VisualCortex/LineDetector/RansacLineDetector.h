@@ -52,10 +52,10 @@ private:
       PARAMETER_REGISTER(line.minInliers) = 12;
 
       PARAMETER_REGISTER(line.outlierThresholdDist) = 70;
-      PARAMETER_REGISTER(line.minDirectionSimilarity) = 0.8;
+      PARAMETER_ANGLE_REGISTER(line.outlierThresholdAngle) = 8;
       
       PARAMETER_REGISTER(line.maxVariance) = 0.009;
-      PARAMETER_REGISTER(line.length_of_var_check) = 800;
+      PARAMETER_REGISTER(line.max_length_for_var_check) = 800;
       PARAMETER_REGISTER(line.min_line_length) = 100;
       //PARAMETER_REGISTER(line.fit_lines_to_inliers) = false;
 
@@ -79,10 +79,10 @@ private:
       int maxIterations;
       int minInliers;
       double outlierThresholdDist;
-      double minDirectionSimilarity;
+      double outlierThresholdAngle;
 
       double maxVariance;
-      double length_of_var_check;
+      double max_length_for_var_check;
       double min_line_length;
 
       //bool fit_lines_to_inliers;

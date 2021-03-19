@@ -1,4 +1,4 @@
-option only_ball_looking{
+option only_ball_looking_agent{
   initial state search{
     action{
       basic_play();

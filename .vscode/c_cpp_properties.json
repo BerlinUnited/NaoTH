@@ -24,17 +24,11 @@
             ],
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c11",
-            "cppStandard": "c++17"
+            "cppStandard": "c++14"
         },
         {
             "name": "Linux",
             "includePath": [
-                "${NAOTH_TOOLCHAIN_PATH}/toolchain_nao/compiler/i686-berlinunited-linux-gnu/include/c++/4.9.3/i686-berlinunited-linux-gnu",
-                "${NAOTH_TOOLCHAIN_PATH}/toolchain_nao/compiler/i686-berlinunited-linux-gnu/include/c++/4.9.3",
-                "${NAOTH_TOOLCHAIN_PATH}/toolchain_nao/compiler/i686-berlinunited-linux-gnu/sysroot/usr/include",
-                "${NAOTH_TOOLCHAIN_PATH}/toolchain_nao/compiler/i686-berlinunited-linux-gnu/include/c++/4.9.3/tr1",
-                "${NAOTH_TOOLCHAIN_PATH}/toolchain_nao/compiler/i686-berlinunited-linux-gnu/sysroot/usr/include/linux",
-                "${NAOTH_TOOLCHAIN_PATH}/toolchain_nao/compiler/lib/gcc/i686-berlinunited-linux-gnu/4.9.3/include/",
                 "${workspaceRoot}/NaoTHSoccer/Source",
                 "${workspaceRoot}/NaoTHSoccer/Source/Messages",
                 "${workspaceRoot}/Framework/Commons/Source",
@@ -45,28 +39,9 @@
             ],
             "defines": [],
             "intelliSenseMode": "clang-x64",
-            "browse": {
-                "path": [
-                    "${NAOTH_TOOLCHAIN_PATH}/toolchain_nao/compiler/i686-berlinunited-linux-gnu/include/c++/4.9.3/i686-berlinunited-linux-gnu",
-                    "${NAOTH_TOOLCHAIN_PATH}/toolchain_nao/compiler/i686-berlinunited-linux-gnu/include/c++/4.9.3",
-                    "${NAOTH_TOOLCHAIN_PATH}/toolchain_nao/compiler/i686-berlinunited-linux-gnu/sysroot/usr/include",
-                    "${NAOTH_TOOLCHAIN_PATH}/toolchain_nao/compiler/i686-berlinunited-linux-gnu/include/c++/4.9.3/tr1",
-                    "${NAOTH_TOOLCHAIN_PATH}/toolchain_nao/compiler/i686-berlinunited-linux-gnu/sysroot/usr/include/linux",
-                    "${NAOTH_TOOLCHAIN_PATH}/toolchain_nao/compiler/lib/gcc/i686-berlinunited-linux-gnu/4.9.3/include/",
-                    "${workspaceRoot}/NaoTHSoccer/Source",
-                    "${workspaceRoot}/NaoTHSoccer/Source/Messages",
-                    "${workspaceRoot}/Framework/Commons/Source",
-                    "${workspaceRoot}/Framework/Commons/Source/Messages",
-                    "${NAOTH_TOOLCHAIN_PATH}/toolchain_nao/extern/include",
-                    "${NAOTH_TOOLCHAIN_PATH}/toolchain_nao/extern/include/glib-2.0",
-                    "${NAOTH_TOOLCHAIN_PATH}/toolchain_nao/extern/lib/glib-2.0/include"
-                ],
-                "limitSymbolsToIncludedHeaders": true,
-                "databaseFilename": ""
-            },
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c11",
-            "cppStandard": "c++17"
+            "cppStandard": "c++14"
         },
         {
             "name": "Win32",
@@ -89,7 +64,7 @@
             },
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c11",
-            "cppStandard": "c++17"
+            "cppStandard": "c++14"
         }
     ],
     "version": 4

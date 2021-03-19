@@ -6,7 +6,6 @@ from keras import backend as K
 
 from ring_buffer import History
 
-
 """
 class History(object):
     # save s,a,r,s',d
@@ -58,6 +57,7 @@ class History(object):
         return output_list
 """
 
+
 def loss_function(y_true, y_pred):
     # mean squard error
     return np.mean(np.square(y_true - y_pred))
@@ -65,20 +65,18 @@ def loss_function(y_true, y_pred):
 
 
 class DQNAgent(object):
-
     # reward and feature function are integrated in environment ( env )
 
     # _-- hyperparameters and spaces --_
 
     # -- action space --
-    #action_space = range(1,13)   # discrete action space
+    # action_space = range(1,13)   # discrete action space
 
     # -- exploration parameter --
     epsilon = 1.
 
     # -- learning parameter --
     gamma = 0.90
-
 
     max_episode_length = 10000
 
@@ -88,10 +86,7 @@ class DQNAgent(object):
 
     steps_trained = 0
 
-    epsilons = np.arange(1,0.05,-0.05)
-
-
-
+    epsilons = np.arange(1, 0.05, -0.05)
 
     def __init__(self, model, env, history, loss, update_step_size, epsilon_decay):
         self.loss = loss
@@ -119,12 +114,11 @@ class DQNAgent(object):
 
     def run(self, max_steps, output_format=2):
 
-        print("-"*20 + "\nSimulation started\n" + "-"*20)
+        print("-" * 20 + "\nSimulation started\n" + "-" * 20)
 
         print("Training with Epsilon: " + str(self.epsilon))
 
         self.epsilon_history.append(self.epsilon)
-
 
         steps = 1
         episodes = 0
@@ -185,27 +179,26 @@ class DQNAgent(object):
                 # 1 - Episodes and steps after each episode
                 # 2 - Everything after each step
                 if output_format == 2:
-                    print("Step: " + str(steps) + ";\t Episode: " + str(episodes) + ";\t Step in Episode: " +
-                                                                      str(episode_length))
+                    print("Step: " + str(steps) + ";\t Episode: " + str(
+                        episodes) + ";\t Step in Episode: " +
+                          str(episode_length))
 
                 episode_length += 1
                 steps += 1
 
                 self.state = next_state
 
-
             if output_format == 1:
                 print("Steps: " + str(steps) + ";\t Episode: " + str(episodes))
 
-
         print("Simulated " + str(episodes) + " Episodes in " + str(steps) +
-              " steps " + "\n" + "-"*20)
+              " steps " + "\n" + "-" * 20)
 
         self.episodes_history.append(episodes)
 
     def run_filter(self, max_steps, output_format=2):
 
-        print("-"*20 + "\nSelective simulation started")
+        print("-" * 20 + "\nSelective simulation started")
 
         steps = 0
         episodes = 0
@@ -225,10 +218,8 @@ class DQNAgent(object):
 
             while not done and episode_length <= self.max_episode_length:
 
-
                 if steps > max_steps:
                     break
-
 
                 # get features for every action (1,...,5)
                 features = []
@@ -261,7 +252,8 @@ class DQNAgent(object):
                 next_state, reward, done, _ = self.env.step(selected_action)
 
                 # save transition in short term history
-                short_term_history.append(deepcopy((state, selected_action, reward, next_state, done)))
+                short_term_history.append(
+                    deepcopy((state, selected_action, reward, next_state, done)))
 
                 self.state = next_state
 
@@ -270,15 +262,15 @@ class DQNAgent(object):
                 # 1 - Episodes and steps after each episode
                 # 2 - Everything after each step
                 if output_format == 2:
-                    print("Step: " + str(steps) + ";\t Episode: " + str(episodes) + ";\t Step in Episode: " +
-                                                                      str(episode_length))
+                    print("Step: " + str(steps) + ";\t Episode: " + str(
+                        episodes) + ";\t Step in Episode: " +
+                          str(episode_length))
 
                 episode_length += 1
-                #steps += 1
+                # steps += 1
 
             if done:
                 # only add entries of actions led to goal
-
 
                 episodes += 1
                 steps += len(short_term_history)
@@ -287,26 +279,26 @@ class DQNAgent(object):
 
                 print("Episodes: " + str(episodes) + "Steps: " + str(steps))
 
-
             if output_format == 1:
                 print("Steps: " + str(steps) + ";\t Episode: " + str(episodes))
 
             if steps > 10:
                 self.env.render(mode=1)
 
-        print("-"*20 + "\nSimulated " + str(episodes) + " Episodes in " + str(steps) +
-              " steps " + "\n" + "-"*20)
+        print("-" * 20 + "\nSimulated " + str(episodes) + " Episodes in " + str(steps) +
+              " steps " + "\n" + "-" * 20)
 
     def learn(self, max_update_iterations, update_size=20, epochs=1, output_format=0):
 
         update_iterations = 1
 
-        print("Update Properties:\n\n\tNumber of Iterations:\t" + str(max_update_iterations) + "\n\n\tBatch Size:\t\t" +
-              str(update_size) + "\n\n\tWindow size:\t\t" + str(self.history.time_window) + "\n" + "-"*20)
+        print("Update Properties:\n\n\tNumber of Iterations:\t" + str(
+            max_update_iterations) + "\n\n\tBatch Size:\t\t" +
+              str(update_size) + "\n\n\tWindow size:\t\t" + str(
+            self.history.time_window) + "\n" + "-" * 20)
 
         while update_iterations <= max_update_iterations:
             # clone current model and update every #update_size steps
-
 
             if output_format == 1 or output_format == 2:
                 print("\nUpdate Iteration: " + str(update_iterations))
@@ -373,7 +365,6 @@ class DQNAgent(object):
 
             y_data = np.array(y_data)
 
-
             #  -- update model --
             fit_data = self.model.fit(x=x_data, y=y_data, batch_size=5, epochs=epochs, verbose=1)
 
@@ -381,14 +372,12 @@ class DQNAgent(object):
 
             update_iterations += 1
 
-            print("-"*20)
-
+            print("-" * 20)
 
         self.update_epsilon()
         self.steps_trained += update_size
 
-
-        print("-"*20 + "\nFinished training\n" + "-"*20)
+        print("-" * 20 + "\nFinished training\n" + "-" * 20)
 
     def learn_on_data(self, data, epochs, batch_size=10, shuffle=False):
         old_model = keras.models.clone_model(self.model)
@@ -449,14 +438,15 @@ class DQNAgent(object):
         y_data = np.array(y_data)
 
         #  -- update model --
-        fit_data = self.model.fit(x=x_data, y=y_data, batch_size=batch_size, epochs=epochs, verbose=1, shuffle=shuffle)
+        fit_data = self.model.fit(x=x_data, y=y_data, batch_size=batch_size, epochs=epochs,
+                                  verbose=1, shuffle=shuffle)
 
         self.training_history.append(fit_data)
 
         print("-" * 20)
 
     def test(self):
-        print("-"*20 + "\nSimulation started\n" + "-"*20)
+        print("-" * 20 + "\nSimulation started\n" + "-" * 20)
 
         while True:
             done = False
@@ -507,16 +497,17 @@ class DQNAgent(object):
 # Note: pass in_keras=False to use this function with raw numbers of numpy arrays for testing
 def huber_loss(a, b, in_keras=True):
     error = a - b
-    quadratic_term = error*error / 2
-    linear_term = abs(error) - 1/2
+    quadratic_term = error * error / 2
+    linear_term = abs(error) - 1 / 2
     use_linear_term = (abs(error) > 1.0)
     if in_keras:
         # Keras won't let us multiply floats by booleans, so we explicitly cast the booleans to floats
         use_linear_term = K.cast(use_linear_term, 'float32')
-        return use_linear_term * linear_term + (1-use_linear_term) * quadratic_term
+        return use_linear_term * linear_term + (1 - use_linear_term) * quadratic_term
 
 
-def run(reward_function, feature_function, net_config, load_file=None, save_file="weights_test.hdf5", start_step=0,
+def run(reward_function, feature_function, net_config, load_file=None,
+        save_file="weights_test.hdf5", start_step=0,
         epsilon_decay=10000):
     from keras.models import Sequential
     from keras.layers import Dense, Activation, Flatten
@@ -541,7 +532,7 @@ def run(reward_function, feature_function, net_config, load_file=None, save_file
     history = History(3000, time_window=3)
 
     model = Sequential()
-    model.add(Flatten(input_shape=(1, feature_shape + 1 , 1))) # add one for action input
+    model.add(Flatten(input_shape=(1, feature_shape + 1, 1)))  # add one for action input
 
     for neurons in net_config:
         model.add(Dense(neurons))
@@ -565,17 +556,18 @@ def run(reward_function, feature_function, net_config, load_file=None, save_file
     # env = env.Env(simple_reward_and_termination, no_features)
     env = env.Env(reward_function, feature_function)
 
-    opp_player_1 = Rectangle(Vec(0,0),Vec(500,0),Vec(500,500),Vec(0,500))
-    opp_player_2 = Rectangle(Vec(3000,-500),Vec(3500,-500),Vec(3500,0),Vec(3000,0))
+    opp_player_1 = Rectangle(Vec(0, 0), Vec(500, 0), Vec(500, 500), Vec(0, 500))
+    opp_player_2 = Rectangle(Vec(3000, -500), Vec(3500, -500), Vec(3500, 0), Vec(3000, 0))
 
     env.world.add_object(opp_player_1)
     env.world.add_object(opp_player_2)
 
-    agent = DQNAgent(model=model, env=env, history=history, loss=loss_function, update_step_size=30,
+    agent = DQNAgent(model=model, env=env, history=history, loss=loss_function,
+                     update_step_size=30,
                      epsilon_decay=epsilon_decay)
 
     if start_step is not None:
-        agent.steps_trained=start_step
+        agent.steps_trained = start_step
         agent.update_epsilon()
 
     # plot preparation
@@ -585,13 +577,14 @@ def run(reward_function, feature_function, net_config, load_file=None, save_file
             # some progress printing
             length = int(((iteration / float(training_steps) * 20)))
             output = "[" + "=" * length + ">" + "_" * (20 - (length + 1)) + "]"
-            print "Iteration: " + str(iteration + 1) + " of " + str(training_steps) + ";\t" + "Progress: " + output
+            print
+            "Iteration: " + str(iteration + 1) + " of " + str(
+                training_steps) + ";\t" + "Progress: " + output
 
             agent.run(max_steps=3000, output_format=0)
             # agent.run_filter(max_steps=5000, output_format=0)
 
             agent.learn(max_update_iterations=1, update_size=3000, epochs=4, output_format=2)
-
 
         print("-" * 20 + "\nSaving Weights: " + save_file)
         agent.save_weights(save_file)
@@ -603,17 +596,16 @@ def run(reward_function, feature_function, net_config, load_file=None, save_file
             # if loss > 0.01:
             loss_values.append(loss)
 
-
-        plot_values(loss=loss_values, episodes=agent.episodes_history, epsilon=agent.epsilon_history)
+        plot_values(loss=loss_values, episodes=agent.episodes_history,
+                    epsilon=agent.epsilon_history)
 
         plot_field_by_model(model=model, env=env, seg_x=250, seg_y=250)
-
 
 
 def plot_values(loss, epsilon=None, episodes=None):
     import matplotlib.pyplot as plt
 
-    #TODO: make fancy
+    # TODO: make fancy
 
     plots = 2
     values_for_ploting = [loss]
@@ -624,10 +616,8 @@ def plot_values(loss, epsilon=None, episodes=None):
         values_for_ploting.append(episodes)
         plots += 1
 
-
-
     for plot, values in enumerate(values_for_ploting):
-        plot_number = int(str(plots) + str(1) + str(plot+2))
+        plot_number = int(str(plots) + str(1) + str(plot + 2))
         plt.subplot(plot_number)
         plt.plot(values, '-b')
 
@@ -677,18 +667,18 @@ def load_data_run():
     # env = env.Env(simple_reward_and_termination, no_features)
     env = env.Env(simple_reward, no_features)
 
-    agent = DQNAgent(model=model, env=env, history=history, loss=loss_function, update_step_size=30)
+    agent = DQNAgent(model=model, env=env, history=history, loss=loss_function,
+                     update_step_size=30)
 
     # _-- hyperparams and settings --_
 
     # -- train on saved data --
     for i in range(39):
-        print("Iteration: " + str(i+1))
+        print("Iteration: " + str(i + 1))
         filepath = "training_data/filtered_episodes/save" + str(i) + ".npy"
 
         data = np.load(filepath)
         agent.learn_on_data(data, epochs=4, batch_size=5, shuffle=True)
-
 
         loss_values = []
         for event in agent.training_history:
@@ -741,26 +731,28 @@ def test_agent(weights, feature_function, reward_function, net_config):
     # env = env.Env(simple_reward_and_termination, no_features)
     env = env.Env(reward_function, feature_function)
 
-    agent = DQNAgent(model=model, env=env, history=history, loss=loss_function, update_step_size=30)
+    agent = DQNAgent(model=model, env=env, history=history, loss=loss_function,
+                     update_step_size=30)
 
     agent.test()
 
 
-
 if __name__ == "__main__":
     from env_0.reward import simple_reward, distance_motivated_reward, simple_reward_obstacle
-    from env_0.features import no_features, no_features_normalized, feature_vec, feature_vec_nodirection, \
+    from env_0.features import no_features, no_features_normalized, feature_vec, \
+        feature_vec_nodirection, \
         no_features_no_angle
 
+    net_config = (100, 30)
 
-    net_config = (100,30)
-
-    #load_data_run()
-    #test_agent('test_weights.hdf5', reward_function=simple_reward, feature_function=feature_vec_nodirection,
+    # load_data_run()
+    # test_agent('test_weights.hdf5', reward_function=simple_reward, feature_function=feature_vec_nodirection,
     #           net_config=net_config)
-    run(save_file="test_weights_obstacle_2.hdf5", #load_file='weights_100_30_features_simple_reward_trained_1m.hdf5',
+    run(save_file="test_weights_obstacle_2.hdf5",
+        # load_file='weights_100_30_features_simple_reward_trained_1m.hdf5',
         reward_function=simple_reward_obstacle,
-        feature_function=feature_vec_nodirection, start_step=0, net_config=net_config, epsilon_decay=5000)
+        feature_function=feature_vec_nodirection, start_step=0, net_config=net_config,
+        epsilon_decay=5000)
 
     # TODO: add subplots with epsilon and episodes per run iteration
     # TODO: add value function for grid field

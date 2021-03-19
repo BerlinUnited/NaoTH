@@ -1,0 +1,146 @@
+/*  
+// NOTE: can not use the default script dependencies, since it doesn't allow dynamic modifications
+plugins {
+  id 'application' // uses the java and distribution plugin
+  id 'org.openjfx.javafxplugin' version '0.0.9'
+}
+*/
+
+// the dependencies for this build script (not the project!)
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath 'org.openjfx:javafx-plugin:0.0.9'
+  }
+}
+
+apply plugin: 'application' // uses the java and distribution plugin
+
+// use the 'javafxplugin' based on the available java version
+def jVersion = JavaVersion.current()
+if (jVersion >= JavaVersion.VERSION_11) {
+  apply plugin: 'org.openjfx.javafxplugin'
+} else if (jVersion == JavaVersion.VERSION_1_8) {
+  // do nothing, JavaFX is installed
+} else {
+  // TODO: stop execution / throw error, since javafxplugin only supports 11+
+}
+
+if (jVersion >= JavaVersion.VERSION_11) {
+  javafx {
+    // NOTE: got JVM segfaults, if a different (hard-coded) version than the current java version is used
+    version = jVersion.getMajorVersion()
+    // NOTE: all other modules are dependencies of the listed
+    modules = [ 'javafx.fxml', 'javafx.swing', 'javafx.web' ]
+  }
+}
+
+// the project dependencies
+repositories { mavenCentral() }
+dependencies {
+  // NOTE: we're using the commited libs, if necessary we can switch to a maven repo
+  implementation fileTree(include: ['**/*.jar'], dir: 'lib')
+}
+
+// by default just (build and) run RobotControl
+defaultTasks 'run' // 'clean', 'build', 
+
+// define the targeted versions
+java.sourceCompatibility = JavaVersion.VERSION_1_8
+java.targetCompatibility = JavaVersion.VERSION_1_8
+
+// configure the application plugin
+application.mainClassName = 'de.naoth.rc.RobotControlImpl'
+application.executableDir = '' // do not create a "bin" directory in install/zip
+application.applicationName = 'robotcontrol' // set the startscripts to lower case
+// HACK: show splashscreen for 'gradlew run'
+application.applicationDefaultJvmArgs = ['-splash:build/resources/de/naoth/rc/res/Splash.png']
+
+// set the source directory and disable the other dirs
+sourceSets.main.java.srcDirs = ['src']
+sourceSets.main.resources.srcDirs = ['src/de/naoth/rc/res']
+sourceSets.main.output.resourcesDir = file('build/resources/de/naoth/rc/res') // default: build/resources/main
+sourceSets.main.runtimeClasspath += files('build/resources') // make sure, running from build directory finds the resources
+sourceSets.test.java.srcDirs = []
+sourceSets.test.resources.srcDirs = []
+
+def additionalResources = [ 'config', 'logging.properties', '**/*.fxml', '**/*.html', '**/*.css' ]
+processResources {
+  // copy the additional resources to the build directory
+  from('src/de/naoth/rc/') {
+    include(additionalResources)
+    into '../'
+    // avoid empty directories caused by the additional resources
+    includeEmptyDirs = false
+  }
+}
+
+installDist {
+  // "install" the resulting application to the "dist" directory (mimic the old behavior)
+  destinationDir = file("$projectDir/dist")
+  // copy the platform dependend libs
+  from('bin') { into('bin') }
+}
+// make sure the "installDist" task is executed
+build.finalizedBy(installDist)
+
+distTar {
+  // HACK: disable zip & tar generation, if not explicitly requested (currently i don't know better)
+  onlyIf { gradle.startParameter.taskNames.contains('distTar') }
+  // copy the platform dependend libs
+  from('bin') { into(application.applicationName + '/bin') }
+}
+
+distZip {
+  // HACK: disable zip & tar generation, if not explicitly requested (currently i don't know better)
+  onlyIf { gradle.startParameter.taskNames.contains('distZip') }
+  // copy the platform dependend libs
+  from('bin') { into(application.applicationName + '/bin') }
+}
+
+// make sure the dist directory is also cleaned (since we're moved it out of the build directory)
+task cleanDist(type: Delete) {
+  delete "$projectDir/dist"
+}
+clean.finalizedBy(cleanDist)
+
+jar {
+  // HACK: if a file is part of resource directory, move it to the correct directory instead of 
+  //       putting it in the root directory. This is necessary 'cause of the 'legacy' directory structure.
+  eachFile {
+    file ->
+    if (file.getFile().getPath().startsWith(sourceSets.main.output.resourcesDir.getPath())) {
+      file.setPath("de/naoth/rc/res/" + file.getPath())
+    }
+  }
+    
+  // make sure the additional resources are placed correctly
+  from('src/de/naoth/rc/') {
+    include(additionalResources)
+    into 'de/naoth/rc'
+  }
+
+  // create a manifest for the jar
+  manifest {
+    attributes 'Class-Path': sourceSets.main.runtimeClasspath.collect { it.name }.join(' ')
+    attributes 'Main-Class': application.mainClassName
+    attributes 'SplashScreen-Image': 'de/naoth/rc/res/Splash.png'
+  }
+  
+  // avoid empty directories caused by the modified resource structure
+  includeEmptyDirs = false
+}
+
+startScripts {
+  // overwrite the 'applicationDefaultJvmArgs', since we don't need it here
+  defaultJvmOpts = []
+  doLast {
+    // HACK: modify the script templates in order to call the application via its JAR file
+    unixScript.text = unixScript.text.replaceAll('-classpath.+\\\"\\$APP_ARGS\"', '-jar \\$APP_HOME/lib/RobotControl.jar "\\$APP_ARGS"')
+    windowsScript.text = windowsScript.text.replaceAll('-classpath.+%CMD_LINE_ARGS%', '-jar %APP_HOME%\\\\lib\\\\RobotControl.jar %CMD_LINE_ARGS%')
+  }
+}

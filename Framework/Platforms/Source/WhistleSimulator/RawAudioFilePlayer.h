@@ -7,34 +7,35 @@
 #include "Representations/Infrastructure/AudioData.h"
 #include "Representations/Infrastructure/AudioControl.h"
 
-namespace naoth
-{
-	class RawAudioFilePlayer
-	{
-		public:
-	  	RawAudioFilePlayer();
-	  	virtual ~RawAudioFilePlayer();
+#include "myconio.h"
 
-      void setParams(int numChannels, int sampleRate, int samples, int overlap);
-      void open(const std::string& filePath);
+namespace naoth {
+    class RawAudioFilePlayer {
+        public:
+            RawAudioFilePlayer();
+            virtual ~RawAudioFilePlayer();
 
-	  	void get(naoth::AudioData& data);
+            void setParams(int numChannels, int sampleRate, int samples, int overlap);
+            void open(const std::string& filePath);
 
-      unsigned long readingTimestamp;
+            void get(naoth::AudioData& data);
 
-	  protected:
-      std::ifstream audioFile;
+            unsigned int readingTimestamp;
 
-      int numChannels_;
-      int sampleRate_;
-      int samples_;
-      int overlap_;
+        protected:
+            std::ifstream audioFile;
 
-      bool ready;
+            int numChannels_;
+            int sampleRate_;
+            int samples_;
+            int overlap_;
 
-      void readAupFile(std::ifstream& aupFile);
-      size_t extractField(const std::string& line, const std::string name, std::string& value, const size_t start);
-  };
+            bool ready;
+
+            void readAupFile(std::ifstream& aupFile);
+            size_t extractField(const std::string& line, const std::string name,
+                                std::string& value, const size_t start);
+    };
 }
 
 #endif // _RawAudioFilePlayer_H

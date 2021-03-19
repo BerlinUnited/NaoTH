@@ -1,7 +1,7 @@
 syntax = "proto2";
 package naothmessages;
 
-option java_package= "de.naoth.rc.messages";
+option java_package= "de.naoth.rc.core.messages";
 
 import "CommonTypes.proto";
 
@@ -21,7 +21,7 @@ message CMD {
 
 message StopwatchItem {
   required string name = 1;
-  required int32 time = 2;
+  required uint32 time = 2;
 }
 
 message Stopwatches {
@@ -90,7 +90,7 @@ message XABSLActionSparse {
   enum ActionType {
    Option = 0;
    BasicBehavior = 1;
-   SymbolAssignement = 2;
+   SymbolAssignment = 2;
    Unknown = 3;
   }
   

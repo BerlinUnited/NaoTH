@@ -86,7 +86,7 @@ private:
       }//end for
     }//end getDebugMessageIn
 
-    void clear(std::set<unsigned long>& id_backlog)
+    void clear(std::set<int>& id_backlog)
     {
       while (g_async_queue_length(message_queue) > 0) {
         naoth::DebugMessageIn::Message* msg = (naoth::DebugMessageIn::Message*) g_async_queue_pop(message_queue);
@@ -96,10 +96,7 @@ private:
     }
   };
 
-
-  long long lastSendTime;
-  long long lastReceiveTime;
-
+ 
   /** Communication interface */
   DebugCommunicator comm;
 
@@ -108,7 +105,7 @@ private:
   GAsyncQueue* answers; // outgoing messages
   Channel received_messages_cognition;
   Channel received_messages_motion;
-  std::set<unsigned long> id_backlog; // list of unanswered id's
+  std::set<int> id_backlog; // list of unanswered id's
 
   std::mutex m_executing;
 

@@ -1,0 +1,18 @@
+[Unit]
+Description = NaoTH
+After = dev-video0.device dev-video1.device lola_adaptor.service
+Wants = dev-video0.device dev-video1.device lola_adaptor.service
+Requires = lola_adaptor.service
+ConditionPathExists=/home/nao/bin/naoth
+
+[Service]
+Type=idle
+ExecStart = /home/nao/bin/naoth
+EnvironmentFile=/etc/conf.d/naoth
+#CPUAccounting=true
+#CPUShares=8192
+LimitRTPRIO=55
+Slice=naoqi.slice
+
+[Install]
+WantedBy = multi-user.target

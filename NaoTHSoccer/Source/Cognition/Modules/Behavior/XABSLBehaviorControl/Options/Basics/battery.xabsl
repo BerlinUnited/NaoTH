@@ -75,4 +75,5 @@ option battery {
       set_head = (platform.frameNumber % 30 < 15) ? ((robot_pose.x < 0) ? 3 : 6) : 0;
     }
   }
-}// end option
+}
+// end option

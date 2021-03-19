@@ -30,16 +30,6 @@ void CameraInfoSetter::execute()
   // copy parameter based representation to the "pure" one
   getCameraInfo().cameraID = CameraInfo::Bottom;
 
-  // check if the camera settings actually changed something in the CameraInfo
-  // uses
-  if(camSettings.data[CameraSettings::ResolutionWidth] != 0) {
-    getCameraInfo().resolutionWidth = (unsigned int) camSettings.data[CameraSettings::ResolutionWidth];
-  }
-  
-  if(camSettings.data[CameraSettings::ResolutionHeight] != 0) {
-    getCameraInfo().resolutionHeight = (unsigned int) camSettings.data[CameraSettings::ResolutionHeight];
-  }
-
   // set param for image
   getImage().cameraInfo = getCameraInfo();
 
@@ -49,14 +39,6 @@ void CameraInfoSetter::execute()
 
   // check if the camera settings actually changed something in the CameraInfo
   // uses
-  if(camSettingsTop.data[CameraSettings::ResolutionWidth] != 0) {
-    getCameraInfoTop().resolutionWidth = (unsigned int) camSettingsTop.data[CameraSettings::ResolutionWidth];
-  }
-  
-  if(camSettingsTop.data[CameraSettings::ResolutionHeight] != 0) {
-    getCameraInfoTop().resolutionHeight = (unsigned int) camSettingsTop.data[CameraSettings::ResolutionHeight];
-  }
-
   // set param for image
   getImageTop().cameraInfo = getCameraInfoTop();
 

@@ -12,6 +12,7 @@ DIRS = {
     'general': ('general/', False),
     'platform': ('platform/', True),
     'scheme': ('scheme/', True),
+    'strategy': ('strategy/', True),
     'robots': ('robots/', True),
     'robots_bodies': ('robots_bodies/', True),
     'robot_heads': ('robot_heads/', True),
@@ -54,6 +55,9 @@ class Config:
     def getSchemes(self):
         return self._config['scheme'].keys() if 'scheme' in self._config else []
 
+    def getStrategies(self):
+        return self._config['strategy'].keys() if 'strategy' in self._config else []
+
     def getRobots(self):
         return self._config['robots'].keys() if 'robots' in self._config else []
 
@@ -66,13 +70,17 @@ class Config:
     def getScheme(self):
         return None
 
-    def getConfigFor(self, platform=None, scheme=None, robot=None, body=None, head=None):
+    def getStrategy(self):
+        return None
+
+    def getConfigFor(self, platform=None, scheme=None, strategy=None, robot=None, body=None, head=None):
 
         config = {}
 
         self.__update_config_part(config, 'general')
         self.__update_config_part(config, 'platform', platform)
         self.__update_config_part(config, 'scheme', scheme)
+        self.__update_config_part(config, 'strategy', strategy)
         self.__update_config_part(config, 'robots', robot)
         self.__update_config_part(config, 'robots_bodies', body)
         self.__update_config_part(config, 'robot_heads', head)
@@ -84,17 +92,17 @@ class Config:
     def __update_config_part(self, config, key, box = None):
         if key in self._config:
             if box is None and not DIRS[key][1]:
-                self.update_dict(config, self._config[key])
+                self.update_dict(config, self._config[key], key if box is None else box)
             elif box in self._config[key]:
-                self.update_dict(config, self._config[key][box])
+                self.update_dict(config, self._config[key][box], key if box is None else box)
 
-    def update_dict(self, d, u):
+    def update_dict(self, d, u, o):
         # recursive update dict
         for k, v in u.items():
             if isinstance(v, collections.Mapping):
-                d[k] = self.update_dict(d.get(k, {}), v)
+                d[k] = self.update_dict(d.get(k, {}), v, o)
             else:
-                d[k] = v
+                d[k] = (v, o)  # value, origin
         return d
 
 
@@ -119,6 +127,12 @@ class DirectoryConfig(Config):
     def getScheme(self):
         if os.path.isfile(self._uri + "scheme.cfg"):
             with open(self._uri + "scheme.cfg", "r") as f:
+                return f.readline().strip()
+        return None
+
+    def getStrategy(self):
+        if os.path.isfile(self._uri + "strategy.cfg"):
+            with open(self._uri + "strategy.cfg", "r") as f:
                 return f.readline().strip()
         return None
 
@@ -171,6 +185,13 @@ class TargzConfig(Config):
         if scheme_file and scheme_file.isfile():
             # read scheme file
             return self.file.extractfile(scheme_file).readline().decode("utf-8").strip()
+        return None
+
+    def getStrategy(self):
+        strategy_file = self.__getMember("Config/strategy.cfg")
+        if strategy_file and strategy_file.isfile():
+            # read scheme file
+            return self.file.extractfile(strategy_file).readline().decode("utf-8").strip()
         return None
 
     def readConfig(self):
@@ -227,6 +248,14 @@ class ZipConfig(Config):
         if scheme_file and not scheme_file.is_dir():
             # read scheme file
             return self.file.read(scheme_file).decode("utf-8").strip()
+        return None
+
+    def getStrategy(self):
+        strategy_file = self.__getMember("Config/strategy.cfg")
+        #print(dir(scheme_file))
+        if strategy_file and not strategy_file.is_dir():
+            # read scheme file
+            return self.file.read(strategy_file).decode("utf-8").strip()
         return None
 
     def readConfig(self):

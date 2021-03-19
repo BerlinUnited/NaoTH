@@ -40,6 +40,9 @@ option fall_down_and_stand_up
       motion.execute_immediately = true;
       motion.type = falling;
       arm.react_to_collision = false;
+
+      // enable only for special occasions
+      //sound.request = (state_time < 100)?weeeee:off;
     }
   }
 

@@ -1,0 +1,22 @@
+/**
+ * Agent for testing the striker change without walking.
+ * This should be used to check, whether the striker decision (in C++) is correct.
+ * One can manually move the robots and check the striker decision (blinking ears).
+ */
+option striker_change_test_agent {
+
+  initial state test {    
+    action {
+    
+      // react to the game controller and handle fall down
+      basic_play();
+
+      // indicates and tests the striker decision without moving
+      striker_change_test();
+      
+      // control head movement according to value of head.control_mode
+      head_control();
+    }
+  }
+}
+ 

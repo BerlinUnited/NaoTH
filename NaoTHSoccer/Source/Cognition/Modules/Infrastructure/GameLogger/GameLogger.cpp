@@ -86,9 +86,6 @@ void GameLogger::execute()
         LOGSTUFF(UltraSoundReceiveData);
       }
 
-      //LOGSTUFF(BallPercept);
-      //LOGSTUFF(BallPerceptTop);
-
       LOGSTUFF(FieldPercept);
       LOGSTUFF(FieldPerceptTop);
 

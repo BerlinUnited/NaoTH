@@ -12,7 +12,6 @@
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/SoccerStrategy.h"
-#include "Representations/Modeling/SituationStatus.h"
 #include "Representations/Modeling/KickActionModel.h"
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/CompassDirection.h"
@@ -46,7 +45,6 @@ BEGIN_DECLARE_MODULE(StrategySymbols)
   REQUIRE(RoleDecisionModel)
   REQUIRE(TeamMessagePlayersState)
 
-  PROVIDE(SituationStatus)
   PROVIDE(DebugRequest)
   PROVIDE(DebugDrawings)
   PROVIDE(DebugModify)
@@ -98,14 +96,6 @@ private:
   static double simpleDefensePoseX();
   static double simpleDefensePoseY();
   static double simpleDefensePoseA();
-
-  //find out if the robot is in a certain field half
-  static bool getSituationStatusOwnHalf();
-  static bool getSituationStatusOppHalf();
-  
-  //force selflocator to locate in a certain field half
-  static void setSituationStatusOwnHalf(bool ownHalf);
-  static void setSituationStatusOppHalf(bool oppHalf);
 
   Pose2D calculateDefensePose();
   static double defensePoseX();

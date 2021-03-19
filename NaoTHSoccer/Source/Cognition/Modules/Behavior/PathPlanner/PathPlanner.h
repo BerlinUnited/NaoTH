@@ -22,8 +22,6 @@
 #include "Representations/Motion/Request/HeadMotionRequest.h"
 #include "Representations/Motion/Request/MotionRequest.h"
 #include "Representations/Motion/MotionStatus.h"
-#include "Representations/Perception/BallPercept.h"
-#include "Representations/Perception/MultiBallPercept.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/PathModel.h"
 #include "Representations/Debug/Stopwatch.h"
@@ -35,8 +33,6 @@ PROVIDE(DebugModify)
 PROVIDE(DebugParameterList)
 
 REQUIRE(FieldInfo)
-REQUIRE(BallPercept)
-REQUIRE(MultiBallPercept)
 REQUIRE(MotionStatus)
 REQUIRE(BallModel)
 
@@ -45,7 +41,6 @@ PROVIDE(MotionRequest)
 PROVIDE(HeadMotionRequest)
 PROVIDE(StopwatchManager)
 END_DECLARE_MODULE(PathPlanner)
-
 
 
 class PathPlanner: public PathPlannerBase

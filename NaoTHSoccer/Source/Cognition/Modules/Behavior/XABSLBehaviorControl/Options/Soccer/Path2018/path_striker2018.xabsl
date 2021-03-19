@@ -1,6 +1,5 @@
 option path_striker2018
 {
-
   common decision
   {
     if(!body.ready_to_walk || game.current_mode != playing)
@@ -106,12 +105,7 @@ option path_striker2018
     //    goto long_kick;
     else if(attack.best_action == kick_short)
     {
-      if(random() > 0.0)
-      {
-        goto forwardkick;
-      }
-      else
-        goto dash;
+      goto forwardkick;
     }
     else if(attack.best_action == sidekick_left)
       //goto sidekick_left;
@@ -144,8 +138,6 @@ option path_striker2018
     action
     {
       path2018.routine = forwardkick;
-      path.xOffset = 120; // pathplanner adds ball.radius - this could be done here
-      path.yOffset = 0;
       situation_abortable = true;
       head.control_mode = search_for_ball;
     }
@@ -202,23 +194,6 @@ option path_striker2018
       
       //look at percept
       head.control_mode = look_at_ball_percept;
-    }
-  }
-
-  state dash 
-  {
-    decision
-    {
-      else if(action_done)
-        goto goto_ball;
-      else
-        stay;
-    }
-    action
-    {
-      situation_abortable = true;
-      path_dash();
-      path2018.routine = none; // Why is this here?
     }
   }
 }

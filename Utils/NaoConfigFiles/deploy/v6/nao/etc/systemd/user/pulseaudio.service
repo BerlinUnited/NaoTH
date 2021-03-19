@@ -1,0 +1,9 @@
+[Unit]
+Description=Sound Service
+Before=lola_adaptor.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/pulseaudio --daemonize=no --log-target=syslog
+Restart=on-failure
+Slice=naoqi.slice

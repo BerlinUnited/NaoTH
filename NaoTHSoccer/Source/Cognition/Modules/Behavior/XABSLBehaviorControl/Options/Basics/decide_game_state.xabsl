@@ -23,7 +23,6 @@ option decide_game_state
       arm.control_mode = normal;
       head.control_mode = stay_as_forced;
       audio.capture = false;  //whistledetector off
-      situationStatusOwnHalf = true;
       last_state_was_penalized = false;
     }
   }
@@ -41,7 +40,6 @@ option decide_game_state
       treat_lifted();
       fall_down_and_stand_up();
       last_state_was_penalized = false;
-      situationStatusOwnHalf = (game.msecsRemaining >= 540000);
     }
   }
   
@@ -57,7 +55,7 @@ option decide_game_state
       head.control_mode = stay_as_forced;
       audio.capture = true; //whistledetector on
       treat_lifted();
-      situationStatusOwnHalf = true;
+      fall_down_and_stand_up();
       last_state_was_penalized = false;
     }
   }
@@ -89,7 +87,6 @@ option decide_game_state
       arm.control_mode = normal;
       head.control_mode = (state_time < 2000) ? look_straight_ahead : stay_as_forced;
       audio.capture = false;  //whistledetector off
-      situationStatusOwnHalf = true;
       last_state_was_penalized = true;
     }
   }

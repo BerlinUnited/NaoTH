@@ -23,46 +23,73 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
 {
   cameraID = id;
   getFieldPercept().reset();
+  endpoints.clear();
 
+  // TODO: make it easier readable?
   if((cameraID==CameraInfo::Top)? params.set_whole_image_as_field_top: params.set_whole_image_as_field_bottom) {
     // skip field detection and set whole image under the horizon as field
-    FieldPercept::FieldPoly fieldPoly;
-    fieldPoly.add(0, 0);
-    fieldPoly.add(0, getImage().height()-1);
-    fieldPoly.add(getImage().width()-1, getImage().height()-1);
-    fieldPoly.add(getImage().width()-1, 0);
-    fieldPoly.add(0, 0);
+    endpoints = {
+      {0, 0},
+      {0, static_cast<int>(getImage().height())-1},
+      {static_cast<int>(getImage().width())-1, static_cast<int>(getImage().height())-1},
+      {static_cast<int>(getImage().width())-1, 0},
+      {0, 0} // TODO: do we need this?
+    };
 
+	// NOTE: we call convexHull here to make sure the points are in the same 
+	// order as with the regular calculations
+    // convex hull calculation sorts endpoints in clockwise order
+	// TODO: check if polygon needs first and last point to be the same
+    std::vector<Vector2i> result = ConvexHull::convexHull(endpoints);
+
+	// TODO: why is convexHull not producing Polygon directly?
+    FieldPercept::FieldPoly fieldPoly;
+    for(size_t i = 0; i < result.size(); i++)
+    {
+      fieldPoly.add(result[i]);
+    }
+
+	  // TODO: is this needed at this place (params.set_whole_image_as_field)?
     getFieldPercept().setField(fieldPoly, getArtificialHorizon());
+
+	  // TODO: (MAGIC NUMBER) is this necessary?  if yes why is it not a parameter?
     if(fieldPoly.getArea() >= 5600) {
       getFieldPercept().valid = true;
     }
 
     DEBUG_REQUEST("Vision:IntegralFieldDetector:mark_field_polygon",
-      size_t idx = 0;
-      ColorClasses::Color color = getFieldPercept().valid ? ColorClasses::blue : ColorClasses::red;
+      IMAGE_DRAWING_CONTEXT;
+      CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
+
+      std::string color = getFieldPercept().valid ? "FFFF00" : "FF0000";
+      PEN(color, 2);
+
       const FieldPercept::FieldPoly& poly = getFieldPercept().getValidField();
       for(size_t i = 1; i < poly.size(); i++)
       {
-        LINE_PX(color, poly[idx].x, poly[idx].y, poly[i].x, poly[i].y);
-        idx = i;
+        LINE(poly[i-1].x, poly[i-1].y, poly[i].x, poly[i].y);
       }
     );
     return;
   }
 
+  // TODO: maybe rename getBallDetectorIntegralImage to IntegralImage
+  // TODO: isValid necessary?
   if(!getBallDetectorIntegralImage().isValid()) {
     return;
   }
-  endpoints.clear();
 
+  // NOTE: the facto may be different for top and bottom
   factor = getBallDetectorIntegralImage().FACTOR;
   const int width = getBallDetectorIntegralImage().getWidth();
   const int height = getBallDetectorIntegralImage().getHeight();
 
+  // TODO: this gives the size of a cell in pixels, not the size of the grid itself
+  // maybe it's better to have the number of cells, i.e., grid size, as parameter?
   const int grid_size = (cameraID==CameraInfo::Top ? params.grid_size_top:
                                                      params.grid_size_bottom) / factor;
 
+  // TODO: better comments
   // determine number of grids
   const int n_cells_horizontal = width / grid_size;
   const int n_cells_vertical = height / grid_size;
@@ -110,14 +137,18 @@ void IntegralFieldDetector::execute(CameraInfo::CameraID id)
             cell.minX, cell.minY, cell.maxX, cell.maxY, 1);
 
       DEBUG_REQUEST("Vision:IntegralFieldDetector:draw_grid",
-        ColorClasses::Color color;
+        IMAGE_DRAWING_CONTEXT;
+        CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
+
+        std::string color;
         if(cell.sum_of_green >= min_green) {
-          color = ColorClasses::green;
+          color = "00FF00";
         } else {
-          color = ColorClasses::red;
+          color = "FF00FF";
         }
-        RECT_PX(color, toImage(cell.minX), toImage(cell.minY),
-                       toImage(cell.maxX), toImage(cell.maxY));
+        PEN(color, 1);
+        BOX(toImage(cell.minX), toImage(cell.minY),
+            toImage(cell.maxX), toImage(cell.maxY));
       );
 
       if(cell.sum_of_green >= min_green) {
@@ -199,9 +230,14 @@ void IntegralFieldDetector::find_endpoint(int x, const Cell& cell, Vector2i& end
     }
   }
   DEBUG_REQUEST("Vision:IntegralFieldDetector:draw_end_cell",
-    RECT_PX(ColorClasses::skyblue, toImage(cell.minX), toImage(cell.minY),
-                                   toImage(cell.maxX), toImage(cell.maxY));
-    CIRCLE_PX(ColorClasses::orange, endpoint.x, endpoint.y, 1);
+    IMAGE_DRAWING_CONTEXT;
+    CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
+
+    PEN("1CFFE4", 1);
+    BOX(toImage(cell.minX), toImage(cell.minY),
+        toImage(cell.maxX), toImage(cell.maxY));
+    PEN("FFFF00", 1);
+    CIRCLE(endpoint.x, endpoint.y, 2);
   );
 }
 
@@ -227,13 +263,16 @@ void IntegralFieldDetector::create_field() {
   getFieldPercept().valid = fieldPoly.getArea() >= 5600;
 
   DEBUG_REQUEST("Vision:IntegralFieldDetector:mark_field_polygon",
-    size_t idx = 0;
-    ColorClasses::Color color = getFieldPercept().valid ? ColorClasses::blue : ColorClasses::red;
+    IMAGE_DRAWING_CONTEXT;
+    CANVAS(((cameraID==CameraInfo::Top)? "ImageTop": "ImageBottom"));
+
+    std::string color = getFieldPercept().valid ? "FFFF00" : "FF0000";
+    PEN(color, 2);
+
     const FieldPercept::FieldPoly& poly = getFieldPercept().getValidField();
     for(size_t i = 1; i < poly.size(); i++)
     {
-      LINE_PX(color, poly[idx].x, poly[idx].y, poly[i].x, poly[i].y);
-      idx = i;
+      LINE(poly[i-1].x, poly[i-1].y, poly[i].x, poly[i].y);
     }
   );
 }

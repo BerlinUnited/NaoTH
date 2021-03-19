@@ -20,34 +20,24 @@ namespace naoth
 {
 
 /* 
-  * the PlatformBase holds (and provides access to) 
+  * the PlatformBase provides access to
   * some basic information about the platform
   */
 class PlatformBase
 {
 public:
-  PlatformBase(const std::string& platformName, unsigned int basicTimeStep)
-    :
-    platformName(platformName),
-    theBasicTimeStep(basicTimeStep)
-  {}
 
-  virtual ~PlatformBase() {
-    PRINT_DEBUG("destruct PlatformBase");
-  }
+  // Platform Info
+  virtual std::string getPlatformName() const = 0;
 
-  /////////////////////// get ///////////////////////
+  virtual std::string getRobotName() const = 0;
   virtual std::string getBodyID() const = 0;
   virtual std::string getBodyNickName() const = 0;
   virtual std::string getHeadNickName() const = 0;
-  virtual std::string getRobotName() const = 0;
+  
+  // Robot Info
+  virtual unsigned int getBasicTimeStep() const = 0;
 
-  inline const std::string& getName() const { return platformName; }
-  inline unsigned int getBasicTimeStep() const { return theBasicTimeStep; }
-
-private:
-  std::string platformName;
-  unsigned int theBasicTimeStep;
 };//end class PlatformBase
 
 

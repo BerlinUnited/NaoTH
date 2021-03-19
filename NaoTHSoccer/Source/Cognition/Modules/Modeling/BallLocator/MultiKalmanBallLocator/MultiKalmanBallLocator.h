@@ -2,14 +2,13 @@
 #define MULTIKALMANBALLLOCATOR_H
 
 #include <ModuleFramework/Module.h>
-#include <Eigen/StdVector>
+#include <Eigen/StdVector> //necessary for alignement in std::vector to work
 
 // representations
-#include <Representations/Perception/MultiBallPercept.h>
+#include "Representations/Perception/MultiBallPercept.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/PlayerInfo.h"
-
 
 #include "Representations/Modeling/OdometryData.h"
 #include "Representations/Modeling/KinematicChain.h"
@@ -17,7 +16,9 @@
 #include "Representations/Motion/MotionStatus.h"
 
 #include "Representations/Perception/CameraMatrix.h"
+#include "Representations/Infrastructure/FieldInfo.h"
 
+// tools
 #include "BallHypothesis.h"
 #include "UpdateAssociationFunctions.h"
 
@@ -28,7 +29,6 @@
 #include "Tools/Debug/DebugPlot.h"
 #include "Tools/Debug/Color.h"
 
-#include "Representations/Infrastructure/FieldInfo.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -83,13 +83,23 @@ private:
     Filters filter;
     Filters::const_iterator bestModel;
 
-    const double epsilon; // 10e-6
-    //double area95Threshold;
+    // TODO: does it make sense to use the numerical epsilon: std::numeric_limits<double>::epsilon() or std::numeric_limits<float>::epsilon()?
+    // TODO: or is this value specific to the algorithms? E.g. ball speed below 1mm/s is considered 0.
+    const double epsilon=10e-6;
+
+public:
+    const Filters& get_filter() {
+        return filter;
+    }
+
+    void clear_filter() {
+        filter.clear();
+    }
 
 private:
     void updateByPerceptsCool();
     void updateByPerceptsNormal();
-    void updateByPerceptsNaive(CameraInfo::CameraID camera);
+    void updateByPerceptsGreedy(CameraInfo::CameraID camera);
 
     void applyOdometryOnFilterState(ExtendedKalmanFilter4d& filter);
 
@@ -108,27 +118,35 @@ private:
     void drawFiltersOnField() const;
     void reloadParameters();
 
-    class KFParameters:  public ParameterList
+    class Parameters:  public ParameterList
     {
+        inline void enforceSymmetryOfQ(double v){
+            processNoiseStdSingleDimension(0,1) = v;
+        }
+
+        inline void enforceSymmetryOfR(double v){
+            measurementNoiseCovariances(0,1) = v;
+        }
+
+        inline void enforceSymmetryOfInitialP(double v){
+            initialStateStdSingleDimension(0,1) = v;
+        }
+
      public:
-        KFParameters() : ParameterList("KalmanFilter4dBallModel")
+        Parameters() : ParameterList("MultiKalmanBallLocator")
         {
-            PARAMETER_REGISTER(processNoiseStdQ00) = 15;
-            PARAMETER_REGISTER(processNoiseStdQ01) = 0;
-            PARAMETER_REGISTER(processNoiseStdQ10) = 0;
-            PARAMETER_REGISTER(processNoiseStdQ11) = 20;
+            registerParameter("processNoiseStdQ00", processNoiseStdSingleDimension(0,0)) = 15;
+            registerParameter("processNoiseStdQ10", processNoiseStdSingleDimension(1,0), &Parameters::enforceSymmetryOfQ) = 0;
+            registerParameter("processNoiseStdQ11", processNoiseStdSingleDimension(1,1)) = 500;
 
             // experimental determined
-            PARAMETER_REGISTER(measurementNoiseR00) =  0.00130217; //[rad^2]
-            PARAMETER_REGISTER(measurementNoiseR10) = -0.00041764; //[rad^2]
-            PARAMETER_REGISTER(measurementNoiseR11) =  0.00123935; //[rad^2]
+            registerParameter("measurementNoiseR00", measurementNoiseCovariances(0,0)) =  0.00130217; //[rad^2]
+            registerParameter("measurementNoiseR10", measurementNoiseCovariances(1,0), &Parameters::enforceSymmetryOfR) = -0.00041764; //[rad^2]
+            registerParameter("measurementNoiseR11", measurementNoiseCovariances(1,1)) =  0.00123935; //[rad^2]
 
-            PARAMETER_REGISTER(initialStateStdP00) = 250;
-            PARAMETER_REGISTER(initialStateStdP01) = 0;
-            PARAMETER_REGISTER(initialStateStdP10) = 0;
-            PARAMETER_REGISTER(initialStateStdP11) = 250;
-
-            PARAMETER_REGISTER(area95Threshold) = 2*Math::pi*700*700;
+            registerParameter("initialStateStdP00", initialStateStdSingleDimension(0,0)) = 250;
+            registerParameter("initialStateStdP10", initialStateStdSingleDimension(1,0), &Parameters::enforceSymmetryOfInitialP) = 0;
+            registerParameter("initialStateStdP11", initialStateStdSingleDimension(1,1)) = 250;
 
             //thresholds for association functions
             PARAMETER_REGISTER(euclidThreshold) = Math::fromDegrees(10);
@@ -136,15 +154,15 @@ private:
             PARAMETER_REGISTER(maximumLikelihoodThreshold) = 0.0005;
 
             //AssymetricalBoolFilte parameters
-            PARAMETER_REGISTER(g0) = 0.01;
-            PARAMETER_REGISTER(g1) = 0.1;
+            PARAMETER_REGISTER(g0) = 0.03;
+            PARAMETER_REGISTER(g1) = 0.5;
 
             PARAMETER_REGISTER(association.use_normal) = false;
             PARAMETER_REGISTER(association.use_cool)   = false;
-            PARAMETER_REGISTER(association.use_naive)  = true;
+            PARAMETER_REGISTER(association.use_greedy)  = true;
 
-            PARAMETER_REGISTER(area95Threshold_radius.factor) = 1;
-            PARAMETER_REGISTER(area95Threshold_radius.offset) = 125;
+            PARAMETER_REGISTER(area95Threshold_radius.factor) = std::sqrt(2) * 1;
+            PARAMETER_REGISTER(area95Threshold_radius.offset) = std::sqrt(2) * 125;
 
             PARAMETER_REGISTER(use_covariance_based_selection) = true;
 
@@ -153,20 +171,9 @@ private:
 
         double g0;
         double g1;
-
-        double processNoiseStdQ00;
-        double processNoiseStdQ01;
-        double processNoiseStdQ10;
-        double processNoiseStdQ11;
-
-        double measurementNoiseR00;
-        double measurementNoiseR10;
-        double measurementNoiseR11;
-
-        double initialStateStdP00;
-        double initialStateStdP01;
-        double initialStateStdP10;
-        double initialStateStdP11;
+        Eigen::Matrix2d processNoiseStdSingleDimension;
+        Eigen::Matrix2d measurementNoiseCovariances;
+        Eigen::Matrix2d initialStateStdSingleDimension;
 
         double area95Threshold;
 
@@ -177,7 +184,7 @@ private:
         struct {
             bool use_normal;
             bool use_cool;
-            bool use_naive;
+            bool use_greedy;
         } association;
 
         struct {
@@ -186,7 +193,7 @@ private:
         } area95Threshold_radius;
 
         bool use_covariance_based_selection;
-    } kfParameters;
+    } params;
 
     Measurement_Function_H h;
     UpdateAssociationFunction* updateAssociationFunction;
@@ -195,10 +202,6 @@ private:
     EuclideanUAF   euclid;
     MahalanobisUAF mahalanobis;
     LikelihoodUAF  likelihood;
-
-    Eigen::Matrix2d processNoiseStdSingleDimension;
-    Eigen::Matrix2d measurementNoiseCovariances;
-    Eigen::Matrix2d initialStateStdSingleDimension;
 };
 
 #endif // MULTIKALMANBALLLOCATOR_H

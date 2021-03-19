@@ -13,6 +13,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <sys/stat.h>
 
 //
 #include "PlatformInterface/PlatformInterface.h"
@@ -21,6 +22,10 @@
 
 //
 #include "V4lCameraHandler.h"
+#include "CameraSettingsV5Manager.h"
+#include "CameraSettingsV6Manager.h"
+
+
 #include "SoundControl.h"
 #include "SPLGameController.h"
 #include "CPUTemperatureReader.h"
@@ -39,7 +44,7 @@
 #include "Representations/Infrastructure/AudioData.h"
 
 // local tools
-#include "Tools/IPCData.h"
+#include "Tools/DCMData.h"
 #include "Tools/NaoTime.h"
 #include "Tools/SharedMemoryIO.h"
 
@@ -52,16 +57,28 @@ public:
   NaoController();
   virtual ~NaoController();
 
+  // platform info
   virtual std::string getBodyID() const { return theBodyID; }
   virtual std::string getBodyNickName() const { return theBodyNickName; }
   virtual std::string getHeadNickName() const { return theHeadNickName; }
   virtual std::string getRobotName() const { return theRobotName; }
-
+  virtual std::string getPlatformName() const { return "Nao"; }
+  virtual unsigned int getBasicTimeStep() const { return lolaAvailable?12:10; }
+  
   // camera stuff
-  void get(Image& data){ theBottomCameraHandler.get(data); } // blocking
-  void get(ImageTop& data){ theTopCameraHandler.get(data); } // non blocking
-  void get(CurrentCameraSettings& data) { theBottomCameraHandler.getCameraSettings(data); }
-  void get(CurrentCameraSettingsTop& data) { theTopCameraHandler.getCameraSettings(data); }
+  void get(Image& data){ 
+    theBottomCameraHandler.get(data); 
+  } // blocking
+  void get(ImageTop& data){ 
+    theTopCameraHandler.get(data); 
+  } // non blocking
+  
+  void get(CurrentCameraSettings& data) { 
+    theBottomCameraHandler.getCameraSettings(data);
+  }
+  void get(CurrentCameraSettingsTop& data) { 
+    theTopCameraHandler.getCameraSettings(data);
+  }
   
   void set(const CameraSettingsRequest& data);
   void set(const CameraSettingsRequestTop& data);
@@ -101,7 +118,6 @@ public:
   void get(GyrometerData& data) { naoSensorData.get(data); }
   void get(FSRData& data) { naoSensorData.get(data); }
   void get(InertialSensorData& data) { naoSensorData.get(data); }
-  void get(IRReceiveData& data) { naoSensorData.get(data); }
   void get(ButtonData& data) { naoSensorData.get(data); }
   void get(BatteryData& data) { naoSensorData.get(data); }
   void get(UltraSoundReceiveData& data) { naoSensorData.get(data); }
@@ -113,7 +129,6 @@ public:
   // ACHTUNG: each set calls swapWriting()
   void set(const MotorJointData& data) { naoCommandMotorJointData.set(data); }
   void set(const LEDData& data) { naoCommandLEDData.set(data); }
-  void set(const IRSendData& data) { naoCommandIRSendData.set(data); }
   void set(const UltraSoundSendData& data) { naoCommandUltraSoundSendData.set(data); }
 
   void set(const AudioControl& data) { theAudioRecorder.set(data); }
@@ -161,6 +176,10 @@ protected:
     return new MessageQueue4Threads();
   }
 
+  inline bool fileExists (const std::string& filename) {
+    struct stat buffer;   
+    return (stat (filename.c_str(), &buffer) == 0); 
+  }
 
 protected:
   std::string theBodyID;
@@ -168,20 +187,23 @@ protected:
   std::string theHeadNickName;
   std::string theRobotName;
 
+  bool lolaAvailable;
+
   // -- begin -- shared memory access --
   // DCM --> NaoController
-  SharedMemoryReader<NaoSensorData> naoSensorData;
+  SharedMemoryReader<DCMSensorData> naoSensorData;
 
   // NaoController --> DCM
   SharedMemoryWriter<Accessor<MotorJointData> > naoCommandMotorJointData;
   SharedMemoryWriter<Accessor<UltraSoundSendData> > naoCommandUltraSoundSendData;
-  SharedMemoryWriter<Accessor<IRSendData> > naoCommandIRSendData;
   SharedMemoryWriter<Accessor<LEDData> > naoCommandLEDData;
   // -- end -- shared memory access --
 
   //
+  
   V4lCameraHandler theBottomCameraHandler;
   V4lCameraHandler theTopCameraHandler;
+  
   SoundControl *theSoundHandler;
   BroadCaster* theTeamCommSender;
   UDPReceiver* theTeamCommListener;
@@ -190,7 +212,6 @@ protected:
   DebugServer* theDebugServer;
   CPUTemperatureReader theCPUTemperatureReader;
   AudioRecorder theAudioRecorder;
-
 };
 
 } // end namespace naoth

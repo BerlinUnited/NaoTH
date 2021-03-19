@@ -6,7 +6,7 @@ import threading
 from threading import Event
 import time
 
-from naoth.SPLMessage import SPLMessage
+from naoth.spl import SPLMessage
 
 
 class TeamCommReceiver(threading.Thread):

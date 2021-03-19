@@ -8,7 +8,7 @@
  */
 
 #include "Configuration.h"
-#include "Tools/DataConversion.h"
+#include "Tools/StringTools.h"
 #include "Tools/Debug/NaoTHAssert.h"
 
 #include <iostream>
@@ -55,6 +55,7 @@ Configuration::~Configuration()
 void Configuration::loadFromDir(std::string dirlocation,
                                 const std::string& platform,
                                 const std::string& scheme,
+                                const std::string& strategy,
                                 const std::string& bodyID,
                                 const std::string& headID,
                                 const std::string& robotName)
@@ -71,6 +72,10 @@ void Configuration::loadFromDir(std::string dirlocation,
 
   if(scheme.size() > 0) {
     loadFromSingleDir(publicKeyFile, dirlocation + "scheme/" + scheme + "/");
+  }
+
+  if(strategy.size() > 0) {
+    loadFromSingleDir(publicKeyFile, dirlocation + "strategy/" + strategy + "/");
   }
 
   bool robot_config_required = (platform == "Nao" || platform == "nao");
@@ -206,7 +211,7 @@ void Configuration::saveFile(GKeyFile* keyFile, const std::string& file, const s
     {
       std::ofstream outFile(file.c_str(), std::ios::out);
       if(outFile.is_open()) {
-        outFile.write(data, dataLength);
+        outFile.write(data, static_cast<std::streamsize>(dataLength));
         outFile.close();
       } else {
         std::cerr << "[ERROR] could not open the file " << file << std::endl;
@@ -251,8 +256,12 @@ std::set<std::string> Configuration::getKeys(const std::string& group) const
 
 bool Configuration::hasKey(const std::string& group, const std::string& key) const
 {
-  return ( g_key_file_has_key(publicKeyFile, group.c_str(), key.c_str(), NULL) > 0 )
-      || ( g_key_file_has_key(privateKeyFile, group.c_str(), key.c_str(), NULL) > 0 );
+  // HACK: If the group does not exist, g_key_file_has_key will log a GLib error and we need to avoid this at all cost.
+  // This function is called from constructors (e.g. via syncWithConfig()) and if any constructor generates a GLib error,
+  // newer versions of GLib will crash due the way they internally map string constants to internal IDs:
+  // https://gitlab.gnome.org/GNOME/glib/-/issues/1177
+  return (g_key_file_has_group(publicKeyFile, group.c_str()) && g_key_file_has_key(publicKeyFile, group.c_str(), key.c_str(), NULL) > 0 )
+      || (g_key_file_has_group(privateKeyFile, group.c_str()) && g_key_file_has_key(privateKeyFile, group.c_str(), key.c_str(), NULL) > 0 );
 }
 
 bool Configuration::hasGroup(const std::string& group) const
@@ -338,12 +347,12 @@ void Configuration::setDouble(const std::string& group, const std::string& key, 
 {
   //g_key_file_set_double(privateKeyFile, group.c_str(), key.c_str(), value);
   // the function above produce unecessary zeros
-  g_key_file_set_string(privateKeyFile, group.c_str(), key.c_str(), DataConversion::toStr(value).c_str());
+  g_key_file_set_string(privateKeyFile, group.c_str(), key.c_str(), StringTools::toStr(value).c_str());
 }
 
 void Configuration::setDefault(const std::string& group, const std::string& key, double value)
 {
-  g_key_file_set_string(publicKeyFile, group.c_str(), key.c_str(), DataConversion::toStr(value).c_str());
+  g_key_file_set_string(publicKeyFile, group.c_str(), key.c_str(), StringTools::toStr(value).c_str());
 }
 
 bool Configuration::getBool(const std::string& group, const std::string& key) const

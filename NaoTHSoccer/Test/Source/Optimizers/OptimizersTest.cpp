@@ -1,5 +1,10 @@
-#include <OptimizersTest.h>
+// https://stackoverflow.com/questions/6563810/m-pi-works-with-math-h-but-not-with-cmath-in-visual-studio
+#define _USE_MATH_DEFINES
 #include <cmath>
+
+#include <OptimizersTest.h>
+
+
 //#include <fstream>
 //#include <iostream>
 

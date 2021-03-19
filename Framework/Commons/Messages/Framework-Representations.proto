@@ -1,6 +1,6 @@
 syntax = "proto2";
 package naothmessages;
-option java_package= "de.naoth.rc.messages";
+option java_package= "de.naoth.rc.core.messages";
 
 import "CommonTypes.proto";
 
@@ -10,11 +10,12 @@ message Image {
   enum Format {
     YUV = 0;
     YUV422 = 1;
+    JPEG = 2;
   }
   
   required bytes data = 1;
-  optional int32 width = 2 [default=320];
-  optional int32 height = 3 [default=240];
+  optional uint32 width = 2 [default=640];
+  optional uint32 height = 3 [default=480];
   
   optional CameraInfo cameraInfo = 4;
   
@@ -26,8 +27,8 @@ message Image {
 
 message CameraInfo {
   
-  required int32 resolutionWidth = 1;
-  required int32 resolutionHeight = 2;
+  required uint32 resolutionWidth = 1;
+  required uint32 resolutionHeight = 2;
   
   optional CameraID cameraID = 4 [default=bottom];
   

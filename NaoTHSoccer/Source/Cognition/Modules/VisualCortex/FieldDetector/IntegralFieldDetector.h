@@ -29,6 +29,8 @@ BEGIN_DECLARE_MODULE(IntegralFieldDetector)
   PROVIDE(DebugParameterList)
 
   REQUIRE(FrameInfo)
+  // TODO: why is the image needed?
+  // getImage().width() ...
   REQUIRE(Image)
   REQUIRE(ImageTop)
   REQUIRE(ArtificialHorizon)

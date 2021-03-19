@@ -52,6 +52,7 @@ Motion::Motion()
 
   theArmCollisionDetector = registerModule<ArmCollisionDetector>("ArmCollisionDetector", false);
   theArmCollisionDetector2018 = registerModule<ArmCollisionDetector2018>("ArmCollisionDetector2018", true);
+  theBumperCollisionDetector = registerModule<BumperCollisionDetector>("BumperCollisionDetector", false);
 
   theBodyCollisionDetector = registerModule<bodyCollisionDetector>("bodyCollisionDetector", true);
 
@@ -81,7 +82,8 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
 
 
   // init robot info
-  getRobotInfo().platform = platform.getName();
+  getRobotInfo().platform = platform.getPlatformName();
+  getRobotInfo().headNickName = platform.getHeadNickName();
   getRobotInfo().bodyNickName = platform.getBodyNickName();
   getRobotInfo().bodyID = platform.getBodyID();
   getRobotInfo().basicTimeStep = platform.getBasicTimeStep();
@@ -257,6 +259,7 @@ void Motion::processSensorData()
   //theArmCollisionDetector->execute();
   theArmCollisionDetector2018->execute();
   theBodyCollisionDetector->execute();
+  theBumperCollisionDetector->execute();
 
   // store the MotorJointData
   theLastMotorJointData = getMotorJointData();
