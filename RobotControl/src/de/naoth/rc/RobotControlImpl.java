@@ -28,6 +28,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
@@ -976,6 +977,15 @@ public class RobotControlImpl extends javax.swing.JFrame
   {
       int size = UIManager.getDefaults().getFont("defaultFont") != null ? UIManager.getDefaults().getFont("defaultFont").getSize() : 12;
       return Integer.parseInt(this.getConfig().getProperty("fontSize", String.valueOf(size)));
+  }
+
+  @Override
+  public String getTheme() {
+      URL f = getClass().getResource("/de/naoth/rc/res/themes/" + config.getProperty("theme", "") + ".css");
+      if (f != null) {
+          return f.toExternalForm();
+      }
+      return null;
   }
   
   private ArrayList<Component> statusPanelComponents = new ArrayList<>();
