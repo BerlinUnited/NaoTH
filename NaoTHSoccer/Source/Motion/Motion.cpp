@@ -54,7 +54,7 @@ Motion::Motion()
   theArmCollisionDetector2018 = registerModule<ArmCollisionDetector2018>("ArmCollisionDetector2018", true);
   theBumperCollisionDetector = registerModule<BumperCollisionDetector>("BumperCollisionDetector", false);
 
-  theBodyCollisionDetector = registerModule<BodyCollisionDetector>("BodyCollisionDetector", true);
+  theBodyCollisionDetector = registerModule<BodyCollisionDetector>("BodyCollisionDetector", false);  // WIP module - help wanted
 
 
   theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);

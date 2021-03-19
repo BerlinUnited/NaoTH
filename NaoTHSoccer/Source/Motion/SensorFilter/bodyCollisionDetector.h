@@ -1,5 +1,5 @@
-#ifndef _BodyCollisionDetector_H_
-#define _BodyCollisionDetector_H_
+#ifndef BodyCollisionDetector_H
+#define BodyCollisionDetector_H
 
 //Include module
 #include "ModuleFramework/Module.h"
@@ -33,41 +33,43 @@
 
 //Module declaration
 BEGIN_DECLARE_MODULE(BodyCollisionDetector)
-    //Provides
-    PROVIDE(CollisionPercept)
-    PROVIDE(TargetHipFeetPose)
+//Provides
+PROVIDE(CollisionPercept)
+PROVIDE(TargetHipFeetPose)
 
-    //Requires
-    REQUIRE(FrameInfo)
-    REQUIRE(Walk2018Parameters)
-    REQUIRE(InertialModel)
-    REQUIRE(IMUData)
-    REQUIRE(CalibrationData)
-    REQUIRE(StepBuffer)
-    REQUIRE(GyrometerData)
-    REQUIRE(RobotInfo)
-    REQUIRE(MotionStatus)
+//Requires
+REQUIRE(FrameInfo)
+REQUIRE(Walk2018Parameters)
+REQUIRE(InertialModel)
+REQUIRE(IMUData)
+REQUIRE(CalibrationData)
+REQUIRE(StepBuffer)
+REQUIRE(GyrometerData)
+REQUIRE(RobotInfo)
+REQUIRE(MotionStatus)
 
-    //Debug
-    PROVIDE(DebugRequest)
-    PROVIDE(DebugPlot)
-    PROVIDE(DebugDrawings)
+//Debug
+PROVIDE(DebugRequest)
+PROVIDE(DebugPlot)
+PROVIDE(DebugDrawings)
 END_DECLARE_MODULE(BodyCollisionDetector)
 
 class BodyCollisionDetector : private BodyCollisionDetectorBase
 {
 public:
   BodyCollisionDetector() :
-        torsoParams(getWalk2018Parameters().torsoRotationStabilizerParams)
-    {
-        DEBUG_REQUEST_REGISTER("BodyCollisionDetector:drawImpactVector", "Impact vector", false);
-    };
-    ~BodyCollisionDetector();
-    void execute();
+    torsoParams(getWalk2018Parameters().torsoRotationStabilizerParams)
+  {
+    DEBUG_REQUEST_REGISTER("BodyCollisionDetector:drawImpactVector", "Impact vector", false);
+  };
+  ~BodyCollisionDetector();
+  void execute();
 
 private:
-    void draw_impact_vector(Vector2d);
-    const TorsoRotationStabilizerParameters& torsoParams;
+  void draw_impact_vector(Vector2d);
+  const TorsoRotationStabilizerParameters& torsoParams;
+
+  Vector2d inertial;
 };
 
-#endif
+#endif // BodyCollisionDetector_H
