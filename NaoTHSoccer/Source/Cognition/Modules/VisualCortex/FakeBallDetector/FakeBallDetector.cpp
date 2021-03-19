@@ -119,7 +119,7 @@ void FakeBallDetector::provideMultiBallPercept() {
             pointInImage += fb.bottom_pixel_noise();
 
         if(in_image_bottom
-            && (not fb.enabled_detection_noise || fb.detected_in_bottom())
+            && (! fb.enabled_detection_noise || fb.detected_in_bottom())
             && (ignore_image_size
                 || ( 0 <= pointInImage.x && pointInImage.x <= getCameraInfo().resolutionWidth
                     && 0 <= pointInImage.y && pointInImage.y <= getCameraInfo().resolutionHeight)))
@@ -137,7 +137,7 @@ void FakeBallDetector::provideMultiBallPercept() {
             pointInImage += fb.top_pixel_noise();
 
         if(in_image_top
-            && (not fb.enabled_detection_noise || fb.detected_in_top())
+            && (! fb.enabled_detection_noise || fb.detected_in_top())
             && (ignore_image_size
                 || ( 0 <= pointInImage.x && pointInImage.x <= getCameraInfoTop().resolutionWidth
                     && 0 <= pointInImage.y && pointInImage.y <= getCameraInfoTop().resolutionHeight)))
