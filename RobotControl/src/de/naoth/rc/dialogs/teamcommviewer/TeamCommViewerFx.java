@@ -543,19 +543,26 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         @Override
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
-            if(!empty && item != null) {
-                double temp = (double) item;
-                if (temp >= 75.0) { // 75 °C
-                    java.awt.Color c = RobotStatus.COLOR_DANGER;
-                    setStyle("-fx-background-color: rgba("+c.getRed()+","+c.getGreen()+","+c.getBlue()+","+c.getTransparency()+");");
-                } else if (temp >= 60.0) { // 60 °C
-                    java.awt.Color c = RobotStatus.COLOR_WARNING;
-                    setStyle("-fx-background-color: rgba("+c.getRed()+","+c.getGreen()+","+c.getBlue()+","+c.getTransparency()+");");
-                } else {
-                    setStyle("");
-                }
-                setText(temp == -1 ? "?" : String.format(" %3.1f °C", temp));
+
+            // reset cell if empty
+            if (empty || item == null) {
+                setText(null);
+                setGraphic(null);
+                setStyle("");
+                return;
             }
+
+            double temp = (double) item;
+            if (temp >= 75.0) { // 75 °C
+                java.awt.Color c = RobotStatus.COLOR_DANGER;
+                setStyle("-fx-background-color: rgba("+c.getRed()+","+c.getGreen()+","+c.getBlue()+","+c.getTransparency()+");");
+            } else if (temp >= 60.0) { // 60 °C
+                java.awt.Color c = RobotStatus.COLOR_WARNING;
+                setStyle("-fx-background-color: rgba("+c.getRed()+","+c.getGreen()+","+c.getBlue()+","+c.getTransparency()+");");
+            } else {
+                setStyle("");
+            }
+            setText(temp == -1 ? "?" : String.format(" %3.1f °C", temp));
         }
     }
     
@@ -567,21 +574,28 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         @Override
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
-            if(!empty && item != null) {
-                double bat = ((double) item)/100.0;
-                
-                java.awt.Color c;
-                if (bat <= 0.3) {
-                    c = RobotStatus.COLOR_DANGER;
-                } else if (bat <= 0.6) {
-                    c = RobotStatus.COLOR_WARNING;
-                } else {
-                    c = RobotStatus.COLOR_INFO;
-                }
-//                setStyle("-fx-background-color: red|yellow|green");
-                setStyle("-fx-background-color: rgba("+c.getRed()+","+c.getGreen()+","+c.getBlue()+","+c.getTransparency()+");");
-                setText(bat == -1 ? "?" : String.format("%3.1f%%", bat*100.0));
+
+            // reset cell if empty
+            if (empty || item == null) {
+                setText(null);
+                setGraphic(null);
+                setStyle("");
+                return;
             }
+
+            double bat = ((double) item)/100.0;
+
+            java.awt.Color c;
+            if (bat <= 0.3) {
+                c = RobotStatus.COLOR_DANGER;
+            } else if (bat <= 0.6) {
+                c = RobotStatus.COLOR_WARNING;
+            } else {
+                c = RobotStatus.COLOR_INFO;
+            }
+//          setStyle("-fx-background-color: red|yellow|green");
+            setStyle("-fx-background-color: rgba("+c.getRed()+","+c.getGreen()+","+c.getBlue()+","+c.getTransparency()+");");
+            setText(bat == -1 ? "?" : String.format("%3.1f%%", bat*100.0));
         }
     }
     
@@ -593,9 +607,15 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         @Override
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
-            if(!empty && item != null) {
-                setText((double)item == 0.0 ?"DEAD":String.format("%4.2f", item));
+
+            // reset cell if empty
+            if (empty || item == null) {
+                setText(null);
+                setGraphic(null);
+                return;
             }
+
+            setText((double)item == 0.0 ?"DEAD":String.format("%4.2f", item));
         }
     }
     
@@ -606,10 +626,16 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         @Override
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
-            if(!empty && item != null) {
-                Vector2D vec = (Vector2D) item;
-                setText(String.format("%4.2f / %4.2f", vec.x, vec.y));
+
+            // reset cell if empty
+            if (empty || item == null) {
+                setText(null);
+                setGraphic(null);
+                return;
             }
+
+            Vector2D vec = (Vector2D) item;
+            setText(String.format("%4.2f / %4.2f", vec.x, vec.y));
         }
     }
     
@@ -623,18 +649,25 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         @Override
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
-            if(!empty && item != null) {
-                RobotStatus rs = (RobotStatus) this.getTableRow().getItem();
-                if(rs != null) {
-                    // save team color, if not set
-                    if(!teamColors.containsKey(rs.teamNumProperty().get())) {
-                        teamColors.put(rs.teamNumProperty().get(), new Background(new BackgroundFill(rs.robotColor.get(), CornerRadii.EMPTY, Insets.EMPTY)));
-                    }
-                    // update team color, if (eg.) ordering changed
-                    setBackground(teamColors.get(rs.teamNumProperty().get()));
-                }
-                setText(item.toString());
+
+            // reset cell if empty
+            if (empty || item == null) {
+                setText(null);
+                setGraphic(null);
+                setBackground(null);
+                return;
             }
+
+            RobotStatus rs = (RobotStatus) this.getTableRow().getItem();
+            if(rs != null) {
+                // save team color, if not set
+                if(!teamColors.containsKey(rs.teamNumProperty().get())) {
+                    teamColors.put(rs.teamNumProperty().get(), new Background(new BackgroundFill(rs.robotColor.get(), CornerRadii.EMPTY, Insets.EMPTY)));
+                }
+                // update team color, if (eg.) ordering changed
+                setBackground(teamColors.get(rs.teamNumProperty().get()));
+            }
+            setText(item.toString());
         }
     }
     
@@ -645,9 +678,14 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         @Override
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
-            if(!empty && item != null) {
-                setText((Boolean)item ? "FALLEN" : "NOT FALLEN");
+
+            // reset cell if empty
+            if (empty || item == null) {
+                setText(null);
+                return;
             }
+
+            setText((Boolean)item ? "FALLEN" : "NOT FALLEN");
         }
     }
     
@@ -671,12 +709,16 @@ public class TeamCommViewerFx extends AbstractJFXDialog
         @Override
         protected void updateItem(Object item, boolean empty) {
             super.updateItem(item, empty);
-            if(!empty) {
-                btn.setDisable((boolean)item);
-                setGraphic(btn);
-            } else {
+
+            // reset cell if empty
+            if (empty || item == null) {
+                setText(null);
                 setGraphic(null);
+                return;
             }
+
+            btn.setDisable((boolean)item);
+            setGraphic(btn);
             setText(null);
         }
     }
