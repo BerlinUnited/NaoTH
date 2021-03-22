@@ -13,6 +13,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.FileSystem;
+import java.nio.file.FileSystemAlreadyExistsException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -113,6 +114,14 @@ public class Helper
         return getFiles(location, null);
     }
 
+    private static FileSystem getFileSystem(URI uri) throws IOException{
+        try {
+            return FileSystems.newFileSystem(uri, Collections.emptyMap());
+        } catch (FileSystemAlreadyExistsException e) {
+            return FileSystems.getFileSystem(uri);
+        }
+    }
+    
     public static List<Path> getFiles(String location, Predicate<Path> filter) {
         try {
             URI res = Helper.class.getResource(location).toURI();
@@ -120,8 +129,9 @@ public class Helper
             // handle current execution location (jar, file)
             Path resPath;
             if (res.getScheme().equals("jar")) {
-                FileSystem fs = FileSystems.newFileSystem(res, Collections.<String, Object>emptyMap());
-                resPath = fs.getPath(location);
+                resPath = FileSystems.getDefault().getPath(location);
+                // NOTE: this is a fixed version of the previous solution
+                //resPath = getFileSystem(res).getPath(location);
             } else {
                 resPath = Paths.get(res);
             }
