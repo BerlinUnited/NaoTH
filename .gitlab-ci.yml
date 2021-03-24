@@ -11,7 +11,8 @@ variables:
     
 cppcheck:
   stage: test
-  - changes: 
+  rules:
+    - changes: 
       - Framework/**/*
       - NaoTHSoccer/**/*
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
@@ -92,7 +93,8 @@ compile_nao_clang:
 
 pages:
   stage: deploy
-  - changes: 
+  rules:
+    - changes: 
       - Framework/**/*
       - NaoTHSoccer/**/*
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
