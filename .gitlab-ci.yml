@@ -8,7 +8,9 @@ default:
 
 variables:
     branch_name: $CI_COMMIT_REF_NAME
-    
+
+# Note that reopen MR do not trigger pipeline execution: https://gitlab.com/gitlab-org/gitlab/-/issues/31116
+
 cppcheck:
   stage: test
   rules:

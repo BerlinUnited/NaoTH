@@ -1,6 +1,5 @@
-//dummy change
-#ifndef _Agent_h_
-#define _Agent_h_
+#ifndef Agent_h
+#define Agent_h
 
 #include <PlatformInterface/PlatformInterface.h>
 #include "Cognition/Cognition.h"
@@ -46,4 +45,4 @@ void deleteMotion(Motion* motion)
 }
 
 
-#endif // _Agent_h_
+#endif // Agent_h
