@@ -14,9 +14,6 @@ variables:
 cppcheck:
   stage: test
   rules:
-    - changes: 
-      - Framework/**/*
-      - NaoTHSoccer/**/*
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
     - if: '$CI_PIPELINE_SOURCE == "web"'
     - if: '$CI_PIPELINE_SOURCE == "trigger"'
@@ -51,9 +48,6 @@ publish_naoth:
 compile_nao_gcc:
   stage: build
   rules:
-    - changes: 
-      - Framework/**/*
-      - NaoTHSoccer/**/*
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
     - if: '$CI_PIPELINE_SOURCE == "web"'
     - if: '$CI_PIPELINE_SOURCE == "trigger"'
@@ -65,9 +59,6 @@ compile_nao_gcc:
 compile_local_gcc:
   stage: build
   rules:
-    - changes: 
-      - Framework/**/*
-      - NaoTHSoccer/**/*
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
     - if: '$CI_PIPELINE_SOURCE == "web"'
     - if: '$CI_PIPELINE_SOURCE == "trigger"'
@@ -81,9 +72,6 @@ compile_local_gcc:
 compile_nao_clang:
   stage: build
   rules:
-    - changes: 
-      - Framework/**/*
-      - NaoTHSoccer/**/*
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
     - if: '$CI_PIPELINE_SOURCE == "web"'
     - if: '$CI_PIPELINE_SOURCE == "trigger"'
@@ -96,9 +84,6 @@ compile_nao_clang:
 pages:
   stage: deploy
   rules:
-    - changes: 
-      - Framework/**/*
-      - NaoTHSoccer/**/*
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
     - if: '$CI_PIPELINE_SOURCE == "web"'
     - if: '$CI_PIPELINE_SOURCE == "trigger"'
