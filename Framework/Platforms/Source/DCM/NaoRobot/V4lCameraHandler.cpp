@@ -122,14 +122,6 @@ void V4lCameraHandler::init(const std::string& camDevice, CameraInfo::CameraID c
   if (isCapturing) {
     shutdown();
   }
-  
-  // initialize parameter manager
-  if (isV6) {
-    resetV6Camera();
-    settingsManager = std::make_shared<CameraSettingsV6Manager>();
-  } else {
-    settingsManager = std::make_shared<CameraSettingsV5Manager>();
-  }
 
   currentCamera = camID;
   cameraName = camDevice;
@@ -140,6 +132,14 @@ void V4lCameraHandler::init(const std::string& camDevice, CameraInfo::CameraID c
   setFrameRate(30);
   mapBuffers();
   
+  // initialize parameter manager
+  if (isV6) {
+    resetV6Camera();
+    settingsManager = std::make_shared<CameraSettingsV6Manager>(fd, cameraName);
+  } else {
+    settingsManager = std::make_shared<CameraSettingsV5Manager>(fd, cameraName);
+  }
+
   // DEBUG: read and print available controls 
   settingsManager->enumerate_controls(fd);
   
@@ -565,17 +565,17 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
     // initialize parameters
     internalUpdateCameraSettings();
     // force apply settins
-    settingsManager->apply(fd, cameraName, data, true);
+    settingsManager->apply(data, true);
   } else {
     // update: only apply changed settings 
-    settingsManager->apply(fd, cameraName, data);
+    settingsManager->apply(data);
   }
 } // end setAllCameraParams
 
 void V4lCameraHandler::internalUpdateCameraSettings()
 {
   ASSERT_MSG(settingsManager, "No settingsManager was set.");
-  settingsManager->query(fd, cameraName, currentSettings);
+  settingsManager->query(currentSettings);
 }
 
 // https://01.org/linuxgraphics/gfx-docs/drm/media/uapi/v4l/capture.c.html

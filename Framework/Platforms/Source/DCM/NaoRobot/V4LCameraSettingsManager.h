@@ -1,3 +1,15 @@
+/**
+The SettingManager generalizes the access to the V4L camera settings. 
+It provides two functions query and apply allowing to read and write
+settings to the camera. SettingManager is an abstract class and is 
+supposed to be specialized for a particular camera. The class also
+provides a number of low level functions for interaction with the 
+V4L devices.
+
+One of the key aims is to extend or to fix the functionality provided 
+by the partiular camera driver.
+*/
+
 #ifndef _V4LCameraSettingsManager_H_
 #define _V4LCameraSettingsManager_H_
 
@@ -32,9 +44,25 @@ public:
   // so make also the destructor virtual just in case to prevent future memory leaks
   virtual ~V4LCameraSettingsManager(){}
 
+// public interface: to be implemented by a concrete manager
+// TODO: all tool methods in this class are static and require cameraFd and cameraName provided.
+// cameraName ist mostly used for error messages.
+// This class is wrapping the c-style functions in a object orienten paradigm. So cameraFd and cameraName should be 
+// provided to the constructor and stored locally. This would signifficantly simplify the interface.
+public:
+  /** Queries all values from the actual camera */
+  //virtual void query(int cameraFd, const std::string& cameraName, naoth::CameraSettings& settings) = 0;
+  virtual void query(naoth::CameraSettings& settings) = 0;
+
+  //virtual void apply(int cameraFd, const std::string& cameraName, const naoth::CameraSettings& settings, bool force = false) = 0;
+  /** Apply all changed values on the actual camera */
+  virtual void apply(const naoth::CameraSettings& settings, bool force = false) = 0;
+
+
 private: 
   /** used by enumerate_controls */
   static void enumerate_menu(int fd, v4l2_queryctrl& queryctrl);
+
 public: 
   /** print all controlls and their parameters */
   static void enumerate_controls(int fd);
@@ -73,12 +101,6 @@ protected:
     return !hasIOError(cameraName, error, errno, false, "set " + parameterName);
   }
  
-public:
-  /** Queries all values from the actual camera */
-  virtual void query(int cameraFd, const std::string& cameraName, naoth::CameraSettings &settings) = 0;
-
-  /** Apply all changed values on the actual camera */
-  virtual void apply(int cameraFd, const std::string& cameraName, const naoth::CameraSettings &settings, bool force=false) = 0;
 
 private:
   static int querySingleCameraParameterUVC(int cameraFd, uint8_t query, uint8_t selector, void* data, uint16_t size);

@@ -9,15 +9,18 @@ class CameraSettingsV6Manager : public V4LCameraSettingsManager
 {  
 public:
 
-  CameraSettingsV6Manager();
+  CameraSettingsV6Manager(int cameraFd, const std::string& cameraName);
 
-  virtual void query(int cameraFd, const std::string& cameraName, naoth::CameraSettings& settings);
-  virtual void apply(int cameraFd, const std::string& cameraName, const naoth::CameraSettings& settings, bool force=false);
+  virtual void query(naoth::CameraSettings& settings);
+  virtual void apply(const naoth::CameraSettings& settings, bool force = false);
 
 private:
   //naoth::CameraSettings current;
   naoth::V6CameraSettings current;
   bool initialized;
+
+  int cameraFd; 
+  std::string cameraName;
 
   /* 
   NOTE: this structure is used to write and read registers in setRegister and getRegister.
