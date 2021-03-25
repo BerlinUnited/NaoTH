@@ -54,6 +54,9 @@ Motion::Motion()
   theArmCollisionDetector2018 = registerModule<ArmCollisionDetector2018>("ArmCollisionDetector2018", true);
   theBumperCollisionDetector = registerModule<BumperCollisionDetector>("BumperCollisionDetector", false);
 
+  theBodyCollisionDetector = registerModule<BodyCollisionDetector>("BodyCollisionDetector", false);  // WIP module - help wanted
+
+
   theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
   theCoPProvider  = registerModule<CoPProvider>("CoPProvider", true);
   theSensorLogger = registerModule<SensorLogger>("theSensorLogger", true);
@@ -255,9 +258,8 @@ void Motion::processSensorData()
 
   //theArmCollisionDetector->execute();
   theArmCollisionDetector2018->execute();
-
+  theBodyCollisionDetector->execute();
   theBumperCollisionDetector->execute();
-
 
   // store the MotorJointData
   theLastMotorJointData = getMotorJointData();
