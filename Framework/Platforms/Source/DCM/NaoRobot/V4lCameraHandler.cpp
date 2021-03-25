@@ -537,6 +537,7 @@ void V4lCameraHandler::get(Image& theImage)
 
 void V4lCameraHandler::getCameraSettings(CameraSettings &data, bool update)
 {
+  //FIXME: this seems to be never executed, because update is never set to true
   if (update)
   {
     std::cout << LOG << "V4L camera settings are updated" << std::endl;
@@ -547,35 +548,34 @@ void V4lCameraHandler::getCameraSettings(CameraSettings &data, bool update)
 
 void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
 {
-  if (framesSinceStart < 5)
-  {
-    // do nothing if no image was retrieved yet
+  ASSERT_MSG(settingsManager, "No settingsManager was set.");
+
+  // TODO: move the initialization of the parameters into a separate function which 
+  // is executed once at the start
+
+  // HACK: wait for some frames bevore setting parameters
+  // to give the camera driver some time. This seeps to increase the chance
+  // that the parameters are actually applied 
+  constexpr int framesToWait = 5;
+
+  if (framesSinceStart < framesToWait) {
     std::cerr << LOG << "CAN NOT SET PARAMETERS YET, WAITING ..." << std::endl;
     return;
-  }
-  else if (framesSinceStart == 5)
-  {
+  } else if (framesSinceStart == framesToWait) {
+    // initialize parameters
     internalUpdateCameraSettings();
-    if (settingsManager)
-    {
-      settingsManager->apply(fd, cameraName, data, true);
-    }
-  }
-  else
-  {
-    if (settingsManager)
-    {
-      settingsManager->apply(fd, cameraName, data);
-    }
+    // force apply settins
+    settingsManager->apply(fd, cameraName, data, true);
+  } else {
+    // update: only apply changed settings 
+    settingsManager->apply(fd, cameraName, data);
   }
 } // end setAllCameraParams
 
 void V4lCameraHandler::internalUpdateCameraSettings()
 {
-  if (settingsManager)
-  {
-    settingsManager->query(fd, cameraName, currentSettings);
-  }
+  ASSERT_MSG(settingsManager, "No settingsManager was set.");
+  settingsManager->query(fd, cameraName, currentSettings);
 }
 
 // https://01.org/linuxgraphics/gfx-docs/drm/media/uapi/v4l/capture.c.html
