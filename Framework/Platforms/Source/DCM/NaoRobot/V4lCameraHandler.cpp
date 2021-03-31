@@ -326,6 +326,7 @@ void V4lCameraHandler::startCapturing()
   currentBuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   currentBuf.memory = V4L2_MEMORY_MMAP;
 
+  // Activates the stream
   enum v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   VERIFY(-1 != ioctl(fd, VIDIOC_STREAMON, &type));
 
@@ -375,7 +376,17 @@ int V4lCameraHandler::readFrame()
     currentBuf.memory = V4L2_MEMORY_MMAP;
   }
   
-  // poll: suspend execution until the driver has captured data
+  // poll: "wait for some event on a file descriptor"
+  // In our case: suspend execution until the driver has captured data.
+  // This is necessary to make sure that there is a valid buffer that we
+  // can retrieve in the following step.
+  //
+  // The events that we are waiting for:
+  //   POLLIN  - There is data to read.
+  //   POLLPRI - There is some exceptional condition on the file descriptor.
+  // https://man7.org/linux/man-pages/man2/ppoll.2.html
+  // specific events in v4l
+  // https://www.linuxtv.org/downloads/v4l-dvb-apis-old/func-poll.html
   pollfd pollfds[1] =
   {
     {fd, POLLIN | POLLPRI, 0},
