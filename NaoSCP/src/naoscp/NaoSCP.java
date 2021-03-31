@@ -11,10 +11,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.*;
 import java.net.InetAddress;
-import java.net.URLDecoder;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -116,37 +114,6 @@ public class NaoSCP extends javax.swing.JPanel {
         SwingTools.setEnabled(this, v);
         // when enabling, check whether the config should be enabled too
         if(v) { naoTHPanel.setConfigEditable(); }
-    }
-
-    private void setupNetwork(File setupDir, int robotNumber) throws IOException {
-        NetwokPanel.NetworkConfig cfg = netwokPanel.getNetworkConfig();
-
-        TemplateFile tmp = null;
-        if (cfg.getWlan_encryption().ecryption == NetwokPanel.NetworkConfig.WlanConfig.Encryption.WEP) {
-            tmp = new TemplateFile(new File(utilsPath + "/NaoConfigFiles/deploy/v3v4v5/wpa_supplicant.wep"));
-        } else {
-            tmp = new TemplateFile(new File(utilsPath + "/NaoConfigFiles/deploy/v3v4v5/wpa_supplicant.wpa"));
-        }
-
-        tmp.set("WLAN_SSID", cfg.getWlan_encryption().ssid);
-        tmp.set("WLAN_KEY", cfg.getWlan_encryption().key);
-
-        File wpa_supplicant_dir = new File(setupDir + "/deploy/v3v4v5", "/etc/wpa_supplicant/");
-        wpa_supplicant_dir.mkdirs();
-        tmp.save(new File(setupDir + "/deploy/v3v4v5", "/etc/wpa_supplicant/wpa_supplicant.conf"));
-
-        tmp = new TemplateFile(new File(utilsPath + "/NaoConfigFiles/deploy/v3v4v5/etc/conf.d/net"));
-        tmp.set("ETH_ADDR", cfg.getLan().subnet + "." + robotNumber);
-        tmp.set("ETH_NETMASK", cfg.getLan().mask);
-        tmp.set("ETH_BRD", cfg.getLan().broadcast);
-
-        tmp.set("WLAN_ADDR", cfg.getWlan().subnet + "." + robotNumber);
-        tmp.set("WLAN_NETMASK", cfg.getWlan().mask);
-        tmp.set("WLAN_BRD", cfg.getWlan().broadcast);
-
-        File conf_dir = new File(setupDir + "/deploy/v3v4v5", "/etc/conf.d/");
-        conf_dir.mkdirs();
-        tmp.save(new File(setupDir + "/deploy/v3v4v5", "/etc/conf.d/net"));
     }
 
     /**
@@ -670,11 +637,6 @@ public class NaoSCP extends javax.swing.JPanel {
 
                         scp.chmod(755, "/home/nao/tmp/startBrainwashing.sh");
 
-                        //scp.runStream("su\nroot\ncd /home/nao/tmp\n./init_env.sh");
-                        //scp.run("/home/nao/tmp", "./init_env.sh");
-                        //Scp.CommandStream shell = scp.getShell();
-                        //shell.run("ls");
-                        //shell.close();
                         Scp.CommandStream shell = scp.getShell();
                         shell.run("su", "Password:");
                         shell.run("root");
@@ -718,32 +680,7 @@ public class NaoSCP extends javax.swing.JPanel {
     }
 
     private void btSetNetworkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSetNetworkActionPerformed
-        /*
-        try {
-            File tmpDir = new File("./tmp");
-            File setupDir = new File(tmpDir, "setup");
-            
-            setupNetwork(setupDir);
-            
-        } catch (IOException ex) {
-            Logger.getGlobal().log(Level.SEVERE, null, ex);
-        }
-         */
 
-        String robotNumberRaw = JOptionPane.showInputDialog(NaoSCP.this, "Robot number");
-        // dialog canceled ...
-        if(robotNumberRaw == null || robotNumberRaw.trim().isEmpty()) {
-            Logger.getGlobal().log(Level.INFO, "Canceled.");
-            return;
-        }
-        // default number
-        int robotNr = 100;
-        try {
-            robotNr = Integer.parseInt(robotNumberRaw.trim());
-        } catch (NullPointerException | NumberFormatException ex) {
-            JOptionPane.showMessageDialog(NaoSCP.this, "Could not parse robot number, defaulting to 100");
-        }
-        final int robotNrFinal = robotNr;
         final File tmpDir = createTemporaryDirectory("nao_scp_setup_");
         if(tmpDir == null){return;}
 
@@ -760,10 +697,20 @@ public class NaoSCP extends javax.swing.JPanel {
                 if (!setupDir.mkdirs()) {
                     Logger.getGlobal().log(Level.SEVERE, "Could not create setup directory: " + setupDir.getAbsolutePath());
                 } else {
-                    
-                    setupNetwork(setupDir, robotNrFinal);
-                    
-                    FileUtils.copyFiles(new File(utilsPath, "/NaoConfigFiles/deploy/v3v4v5/init_net.sh"), setupDir);
+                    NetwokPanel.NetworkConfig cfg = netwokPanel.getNetworkConfig();
+
+                    String networkScript = FileUtils.readFile(new File(utilsPath + "/NetworkStick/startBrainwashing.sh"));
+                    networkScript = networkScript.replaceAll("NETWORK_WLAN_SSID=\".*\"", "NETWORK_WLAN_SSID=\""+cfg.getWlan_encryption().ssid+"\"");
+                    networkScript = networkScript.replaceAll("NETWORK_WLAN_PW=\".*\"", "NETWORK_WLAN_PW=\""+cfg.getWlan_encryption().key+"\"");
+                    networkScript = networkScript.replaceAll("NETWORK_WLAN_IP=\".*\"", "NETWORK_WLAN_IP=\""+cfg.getWlan().subnet+"\"");
+                    networkScript = networkScript.replaceAll("NETWORK_WLAN_MASK=\".*\"", "NETWORK_WLAN_MASK=\""+cfg.getWlan().mask+"\"");
+                    networkScript = networkScript.replaceAll("NETWORK_WLAN_BROADCAST=\".*\"", "NETWORK_WLAN_BROADCAST=\""+cfg.getWlan().broadcast+"\"");
+
+                    networkScript = networkScript.replaceAll("NETWORK_ETH_IP=\".*\"", "NETWORK_ETH_IP=\""+cfg.getLan().subnet+"\"");
+                    networkScript = networkScript.replaceAll("NETWORK_ETH_MASK=\".*\"", "NETWORK_ETH_MASK=\""+cfg.getLan().mask+"\"");
+                    networkScript = networkScript.replaceAll("NETWORK_ETH_BROADCAST=\".*\"", "NETWORK_ETH_BROADCAST=\""+cfg.getLan().broadcast+"\"");
+
+                    FileUtils.writeToFile(networkScript, new File(setupDir, "startBrainwashing.sh"));
                     
                     // copy to robot
                     String ip = JOptionPane.showInputDialog(NaoSCP.this, "Robot ip address");
@@ -779,13 +726,14 @@ public class NaoSCP extends javax.swing.JPanel {
                     scp.cleardir("/home/nao/tmp");
                     scp.put(setupDir, "/home/nao/tmp");
                     
-                    scp.chmod(755, "/home/nao/tmp/init_net.sh");
-                    
+                    scp.chmod(755, "/home/nao/tmp/startBrainwashing.sh");
+
                     Scp.CommandStream shell = scp.getShell();
                     shell.run("su", "Password:");
                     shell.run("root");
                     shell.run("cd /home/nao/tmp/");
-                    shell.run("./init_net.sh", "DONE");
+                    shell.run("./startBrainwashing.sh", "DONE");
+                    // TODO: scp doesn't notice connection loss!
                     
                     scp.disconnect();
                     
