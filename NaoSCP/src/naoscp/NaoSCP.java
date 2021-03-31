@@ -642,28 +642,9 @@ public class NaoSCP extends javax.swing.JPanel {
                         // copy scripts
                         FileUtils.copyFiles(new File(utilsPath + "/NaoConfigFiles"), setupDir);
 
-                        String robotNumberRaw = JOptionPane.showInputDialog(NaoSCP.this, "Robot number");
-                        int robotNr = 100;
-                        try {
-                            robotNr = Integer.parseInt(robotNumberRaw.trim());
-                        } catch (NullPointerException | NumberFormatException ex) {
-                            JOptionPane.showMessageDialog(NaoSCP.this, "Could not parse robot number, defaulting to 100");
-                        }
-
                         // copy libs
                         File libDir = chooser.getSelectedFile();
                         FileUtils.copyFiles(libDir, new File(setupDir + "/deploy", "/home/nao/lib"));
-                        try {
-                            setupNetwork(setupDir, robotNr);
-                        } catch (IOException ex) {
-                            Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
-                        }
-
-                        // set hostname
-                        FileUtils.writeToFile("nao" + robotNr, new File(setupDir + "/deploy/v3v4v5", "/etc/hostname"));
-                        FileUtils.writeToFile("hostname=\"nao" + robotNr + "\"", new File(setupDir + "/deploy/v3v4v5", "/etc/conf.d/hostname"));
-                        FileUtils.writeToFile("nao" + robotNr, new File(setupDir + "/deploy/v6", "/etc/hostname"));
-                        FileUtils.writeToFile("hostname=\"nao" + robotNr + "\"", new File(setupDir + "/deploy/v6", "/etc/conf.d/hostname"));
 
                         // try to connect to the robot
                         Scp scp = null;

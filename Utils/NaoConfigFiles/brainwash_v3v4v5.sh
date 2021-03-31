@@ -1,5 +1,8 @@
 #!/bin/bash
 
+HEAD_ID=$(grep "RobotConfig/Head/FullHeadId" /var/persistent/media/internal/DeviceHeadInternalGeode.xml | sed 's/.*value="\([^"]\+\)".*/\1/')
+N=$(grep "$HEAD_ID" robots.cfg | sed 's/.*=\([0-9]\+\)/\1/')
+if [[ -z "$N" ]]; then N=99; fi # fallback number 99 !
 
 # ==================== fun definition ====================
 
@@ -127,15 +130,43 @@ deployFile "/etc/rc.conf" "root" "644" "v3v4v5"
 
 # ==================== network stuff ====================
 
-# WLAN Encryption
-deployFile "/etc/wpa_supplicant/wpa_supplicant.conf" "root" "644" "v3v4v5"
+NETWORK_WLAN_SSID="NAONET"
+NETWORK_WLAN_PW="a1b0a1b0a1"
+NETWORK_WLAN_IP="10.0.4"
+NETWORK_WLAN_MASK="255.255.255.0"
+NETWORK_WLAN_BROADCAST="10.0.4.255"
 
-# Network IP Adresses
-deployFile "/etc/conf.d/net" "root" "644" "v3v4v5"
+NETWORK_ETH_IP="192.168.13"
+NETWORK_ETH_MASK="255.255.255.0"
+NETWORK_ETH_BROADCAST="192.168.13.255"
+
+NETWORK_WLAN_IP="$NETWORK_WLAN_IP.$N"
+NETWORK_ETH_IP="$NETWORK_ETH_IP.$N"
+
+# generate linux network configuration
+cat << EOF > /etc/conf.d/net
+config_wlan0="$NETWORK_WLAN_IP netmask $NETWORK_WLAN_MASK broadcast $NETWORK_WLAN_BROADCAST"
+config_eth0="$NETWORK_ETH_IP netmask $NETWORK_ETH_MASK broadcast $NETWORK_ETH_BROADCAST"
+wpa_supplicant_wlan0="-Dnl80211"
+EOF
+
+# generate wpa_supplicant configuration
+cat << EOF > /etc/wpa_supplicant/wpa_supplicant.conf
+ctrl_interface=/var/run/wpa_supplicant
+ctrl_interface_group=0
+ap_scan=1
+
+network={
+  ssid="$NETWORK_WLAN_SSID"
+  key_mgmt=WPA-PSK
+  psk="$NETWORK_WLAN_PW"
+  priority=5
+}
+EOF
 
 # hostname
-deployFile "/etc/conf.d/hostname" "root" "644" "v3v4v5"
-deployFile "/etc/hostname" "root" "644" "v3v4v5"
+echo 'hostname="nao$N"' > /etc/conf.d/hostname
+echo 'nao$N' > /etc/hostname
 
 # LAN link
 if [ ! -f /etc/init.d/net.eth0 ]
