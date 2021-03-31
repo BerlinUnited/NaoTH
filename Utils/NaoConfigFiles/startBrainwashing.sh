@@ -16,10 +16,6 @@ if [ -f "/opt/aldebaran/bin/lola" ] | [ -f "/usr/bin/lola" ]; then
 else
 	echo "Nao V5 or older"	
 
-  	cd deploy/v3v4v5
-	chmod +x init_env.sh
-	nohup ./init_env.sh &>/dev/null &
-
-	# chmod +x brainwash_v3v4v5.sh
-	#	nohup .brainwash_v3v4v5.sh &>/dev/null &
+	chmod +x brainwash_v3v4v5.sh
+	nohup ./brainwash_v3v4v5.sh &>/dev/null &
 fi

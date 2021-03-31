@@ -6,67 +6,44 @@ if [[ -z "$N" ]]; then N=99; fi # fallback number 99 !
 
 # ==================== fun definition ====================
 
-deployFile() {
-	local FILE="$1"
-	local OWNER="$2"
-	local RIGHTS="$3"
-	local PREFIX="$4"
-
-	if [ -z $PREFIX ]; then
-		SOURCEFILE="$DEPLOY_DIRECTORY/$FILE"
-	else
-		SOURCEFILE="$DEPLOY_DIRECTORY/$PREFIX/$FILE"
-	fi
-
-	echo "$DEPLOY_DIRECTORY/$SOURCEFILE -> $FILE"
-
-	if [ -f "$SOURCEFILE" ]; then
-		logger -t naoth "Deploy file '$SOURCEFILE' for $OWNER with $RIGHTS"
-		# backup existing file
-		if [ -f "$FILE" ]; then
-			mkdir -p $BACKUP_DIRECTORY/$(dirname $FILE)
-			mv -f $FILE $BACKUP_DIRECTORY/$FILE
-		fi
-		cp -f $SOURCEFILE $FILE
-		# copy user and access rights
-		chown $OWNER:$OWNER $FILE
-		chmod $RIGHTS $FILE
-	fi
-}
-
-deployDirectory() {
-	local DIR="$1"
-	local OWNER="$2"
-	local RIGHTS="$3"
-	local PREFIX="$4"
-
-	if [ -z $PREFIX ]; then
-		SOURCEDIR="$DEPLOY_DIRECTORY/$DIR"
-	else
-		SOURCEDIR="$DEPLOY_DIRECTORY/$PREFIX/$DIR"
-
-	fi
-	
-	echo "$SOURCEDIR -> $DIR"
-
-	if [ -d "$SOURCEDIR" ]; then
-		logger -t naoth "Deploy directory '$SOURCEDIR' for $OWNER with $RIGHTS"
-		# backup directory files
-		if [ -d "$DIR" ]; then
-			mkdir -p $BACKUP_DIRECTORY/$DIR
-			mv -f $DIR/* $BACKUP_DIRECTORY/$DIR/
-		fi
-		rm -rf $DIR
-
-		# copy files
-		cp -r $SOURCEDIR $DIR
-
-		chown -R $OWNER:$OWNER $DIR
-		chmod -R $RIGHTS $DIR
-	fi
+copy(){
+  local from="$1"
+  local to="$2"
+  local owner="$3"
+  local rights="$4"
+  
+  if [ -f ${from} ]
+  then
+	  echo "copy ${from} to ${to}";
+    
+    # backup
+    if [ -f ${to} ]
+    then
+			if [ ! -f "${to}.bak" ]
+			then
+				mv "${to}" "${to}.bak";
+			fi
+    fi
+    
+    # copy the file
+	  cp -f ${from} ${to};
+    
+    #set correct rights
+    echo "set owner ${owner}";
+    chown ${owner}:${owner} ${to};
+    echo "set rights ${rights}";
+    chmod ${rights} ${to};
+    
+    return 0
+  else
+	  echo "missing file ${from}";
+    return 1
+  fi
 }
 
 # ==================== pre stuff ====================
+
+cd deploy/v3v4v5
 
 # set volume to 88%
 su nao -c "/usr/bin/pactl set-sink-mute 0 false"
@@ -79,7 +56,7 @@ su nao -c "/usr/bin/pactl set-source-mute 1 false"
 su nao -c "/usr/bin/pactl set-source-volume 1 90%"
 
 # play initial sound
-su nao -c "/usr/bin/paplay $DEPLOY_DIRECTORY/home/nao/naoqi/Media/usb_start.wav"
+su nao -c "/usr/bin/paplay ../home/nao/naoqi/Media/usb_start.wav"
 
 # stop naoqi and naoth
 naoth stop
@@ -88,7 +65,7 @@ naoth stop
 # ==================== boot stuff ====================
 
 # make boot faster
-deployFile "/etc/init.d/checkpart-dummy" "root" "755" "v3v4v5"
+copy ./etc/init.d/checkpart-dummy /etc/init.d/checkpart-dummy root 755
 
 # disable the hal-prestarter that takes quite a long time on boot
 if [ -f /usr/libexec/hal-prestarter ] ; then
@@ -98,35 +75,35 @@ fi
 # ==================== system stuff ====================
 
 # NaoTH init script
-deployFile "/etc/init.d/naoth" "root" "755" "v3v4v5"
+copy ./etc/init.d/naoth /etc/init.d/naoth root 755
 
 # Needed by NaoTH init script
-deployFile "/etc/init.d/cognition-common" "root" "755" "v3v4v5"
+copy ./etc/init.d/cognition-common /etc/init.d/cognition-common root 755
 
 # brainwashinit
-deployFile "/usr/bin/brainwash" "root" "755" "v3v4v5"
+copy ./usr/bin/brainwash /usr/bin/brainwash root 755
 
 # NaoTH binary start script
-deployFile "/usr/bin/naoth" "root" "755" "v3v4v5"
+copy ./usr/bin/naoth /usr/bin/naoth root 755
 
 # brainwash udev rule
-deployFile "/etc/udev/rules.d/brainwashing.rules" "nao" "644" "v3v4v5"
-deployFile "/etc/udev/rules.d/disable-wifi-power-save.rules" "nao" "644" "v3v4v5"
+copy ./etc/udev/rules.d/brainwashing.rules /etc/udev/rules.d/brainwashing.rules nao 644
+copy ./etc/udev/rules.d/disable-wifi-power-save.rules /etc/udev/rules.d/disable-wifi-power-save.rules nao 644
 
 # copy ld.so.conf
-deployFile "/etc/ld.so.conf" "root" "644" "v3v4v5"
+copy ./etc/ld.so.conf /etc/ld.so.conf root 644
 
 # copy new fstab
-deployFile "/etc/fstab" "root" "644" "v3v4v5"
+copy ./etc/fstab /etc/fstab root 644
 
 # add syslogger config
-deployFile "/etc/syslog.conf" "root" "644" "v3v4v5"
+copy ./etc/syslog.conf /etc/syslog.conf root 644
 
 #SSH Config
-deployFile "/etc/ssh.conf/sshd_config" "root" "644" "v3v4v5"
+copy ./etc/ssh.conf/sshd_config /etc/ssh.conf/sshd_config root 644
 
 #RC Config
-deployFile "/etc/rc.conf" "root" "644" "v3v4v5"
+copy ./etc/rc.conf /etc/rc.conf root 644
 
 # ==================== network stuff ====================
 
@@ -165,8 +142,8 @@ network={
 EOF
 
 # hostname
-echo 'hostname="nao$N"' > /etc/conf.d/hostname
-echo 'nao$N' > /etc/hostname
+echo "hostname=\"nao$N\"" > /etc/conf.d/hostname
+echo "nao$N" > /etc/hostname
 
 # LAN link
 if [ ! -f /etc/init.d/net.eth0 ]
@@ -188,50 +165,54 @@ fi
 
 # ==================== libs stuff ====================
 
-if [ -d "$DEPLOY_DIRECTORY/home/nao/lib" ]; then
-	logger -t naoth "Deploy libs"
-	# update the system wide libstdc++
-	if [ -f "$DEPLOY_DIRECTORY/home/nao/lib/libstdc++.so" ]
-	then
-		mkdir -p $BACKUP_DIRECTORY/usr/lib/
-	    mv -f /usr/lib/libstdc++.* $BACKUP_DIRECTORY/usr/lib/
-	    cp $DEPLOY_DIRECTORY/home/nao/lib/libstdc++.* /usr/lib/
-	    # copy user and access rights
-	    chown root:root /usr/lib/libstdc++.*
-	    chmod 755 /usr/lib/libstdc++.*
-	fi
+# update the system wide libstdc++
+if [ -e ../home/nao/lib/libstdc++.so ]
+then
+    mkdir /usr/lib/backup_libst++
+    cp /usr/lib/libstdc++.* /usr/lib/backup_libst++/
+    cp  ../home/nao/lib/libstdc++.* /usr/lib/
+fi
 
-	# copy local libs
-	deployDirectory "/home/nao/lib" "nao" "744"
-
-	# configure the lib dependencies
-	ldconfig
+# create the local lib directory
+if [ ! -d /home/nao/lib ]
+then
+    mkdir /home/nao/lib;
+    if [ $? -ne 0 ]
+    then
+        echo "could not create /home/nao/lib"
+    else
+        chown nao:nao /home/nao/lib;
+        chmod 744 /home/nao/lib;
+    fi
 fi
 
 # ==================== copy stuff ====================
 
-# deploy binaries
-deployFile "/home/nao/bin/libnaosmal.so" "nao" "755"
-deployFile "/home/nao/bin/naoth" "nao" "755"
-
-# deploy media
-deployDirectory "/home/nao/naoqi/Media" "nao" "744"
-
-# add link to the Media directory
-if [ ! -h /home/nao/Media ]
+# create the local bin directory
+if [ ! -d /home/nao/bin ]
 then
-    echo "setting link to NaoTH Media directory";
-    ln -s /home/nao/naoqi/Media /home/nao/Media;
+    mkdir /home/nao/bin;
+    if [ $? -ne 0 ]
+    then
+        echo "could not create /home/nao/bin"
+    else
+       chown nao:nao /home/nao/bin;
+       chmod 755 /home/nao/bin;
+    fi
 fi
 
-# naoqi user autoload.ini
-deployFile "/home/nao/naoqi/preferences/autoload.ini" "nao" "644" "v3v4v5"
-
-# naoqi system autoload.ini
-deployFile "/etc/naoqi/autoload.ini" "root" "644" "v3v4v5"
-
 # create the local Config directory
-deployDirectory "/home/nao/naoqi/Config" "nao" "744"
+if [ ! -d /home/nao/naoqi/Config ]
+then
+    mkdir -p /home/nao/naoqi/Config;
+    if [ $? -ne 0 ]
+    then
+        echo "could not create /home/nao/naoqi/Config"
+    else
+        chown nao:nao /home/nao/naoqi/Config;
+        chmod 744 /home/nao/naoqi/Config;
+    fi
+fi
 
 # add link to the Config directory
 if [ ! -h /home/nao/Config ]
@@ -240,22 +221,84 @@ then
     ln -s /home/nao/naoqi/Config /home/nao/Config;
 fi
 
+# create the local Media directory
+if [ ! -d /home/nao/naoqi/Media ]
+then
+    mkdir -p /home/nao/naoqi/Media;
+    if [ $? -ne 0 ]
+    then
+        echo "could not create /home/nao/naoqi/Media"
+    else
+        chown nao:nao /home/nao/naoqi/Media;
+        chmod 744 /home/nao/naoqi/Media;
+    fi
+fi
+
+# add link to the Config directory
+if [ ! -h /home/nao/Media ]
+then
+    echo "setting link to NaoTH Media directory";
+    ln -s /home/nao/naoqi/Media /home/nao/Media;
+fi
+
+rm -f /home/nao/bin/naoth.bak
+copy ../home/nao/bin/naoth /home/nao/bin/naoth nao 755
+rm -f /home/nao/bin/libnaosmal.so.bak
+copy ../home/nao/bin/libnaosmal.so /home/nao/bin/libnaosmal.so nao 755
+
+if [ -d "/home/nao/naoqi/Config" ]; then
+  rm -rf /home/nao/naoqi/Config/*
+fi
+
+cp -r ../home/nao/naoqi/Config/* /home/nao/Config
+chown -R nao:nao /home/nao/naoqi/Config;
+
+# remove any old media files
+if [ -d "/home/nao/naoqi/Media" ]; then
+  rm -rf /home/nao/naoqi/Media/*
+fi
+
+# copy the new media files
+cp -r ../home/nao/naoqi/Media/* /home/nao/Media
+chown -R nao:nao /home/nao/naoqi/Media;
+
+# ----------- copy libs -----------
+if [ -d "/home/nao/lib" ]; then
+  rm -rf /home/nao/lib/*
+fi
+
+cp -r ../home/nao/lib/* /home/nao/lib
+
+# naoqi user autoload.ini
+copy ./home/nao/naoqi/preferences/autoload.ini /home/nao/naoqi/preferences/autoload.ini nao 644
+
+# naoqi system autoload.ini
+copy ./etc/naoqi/autoload.ini /etc/naoqi/autoload.ini root 644
+
+
 # -----------  video driver -----------
 
 # copy the video driver
-#kernel_name=$(uname -r)
-#video_driver_path=/lib/modules/$kernel_name/kernel/drivers/media/video/mt9m114.ko
-#copy ./kernel/drivers/media/video/mt9m114.ko $video_driver_path root 644
+kernel_name=$(uname -r)
+video_driver_path=/lib/modules/$kernel_name/kernel/drivers/media/video/mt9m114.ko
+copy ./kernel/drivers/media/video/mt9m114.ko $video_driver_path root 644
+
+# -----------  system -----------
 
 # Check and Update Runlevel Configuration for Non-Network Services
-#chown root:root ./checkRC.sh;
-#chmod 744 ./checkRC.sh;
-#./checkRC.sh "naoth=default netmount=disable naopathe=disable vsftpd=disable ofono=disable nginx=disable proxydaemon=disable savecache=disable savecache=boot checkpart=disable checkpart-dummy=boot";
+chown root:root ./checkRC.sh;
+chmod 744 ./checkRC.sh;
+./checkRC.sh "naoth=default netmount=disable naopathe=disable vsftpd=disable ofono=disable nginx=disable proxydaemon=disable savecache=disable savecache=boot checkpart=disable checkpart-dummy=boot";
 
 # Check and Update Runlevel Configuration for Network Services
-#chown root:root ./checkRC.sh;
-#chmod 744 ./checkRC.sh;
-#./checkRC.sh "connman=disable net.eth0=boot net.wlan0=boot savecache=boot checkpart=disable checkpart-dummy=boot";
+chown root:root ./checkRC.sh;
+chmod 744 ./checkRC.sh;
+./checkRC.sh "connman=disable net.eth0=boot net.wlan0=boot savecache=boot checkpart=disable checkpart-dummy=boot";
+
+# ----------------------
+
+# configure the lib dependencies
+ldconfig;
 
 # ==================== post stuff ====================
 
@@ -263,12 +306,11 @@ fi
 chmod +s /sbin/shutdown
 chmod +s /sbin/reboot
 
+su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav"
+
 # prevent reboot if appropiate file exists
 if [ ! -f "./noreboot" ]; then
 	reboot
 fi
-
-# play initial sound
-su nao -c "/usr/bin/paplay /home/nao/naoqi/Media/usb_stop.wav"
 
 echo "DONE"
