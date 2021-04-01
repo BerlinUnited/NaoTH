@@ -151,12 +151,12 @@ public class NaoSCP extends javax.swing.JPanel {
         jProgressBar = new javax.swing.JProgressBar();
 
         popupMenu.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
-            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
             }
             public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
                 popupMenuPopupMenuWillBecomeInvisible(evt);
             }
-            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
             }
         });
 
@@ -265,7 +265,7 @@ public class NaoSCP extends javax.swing.JPanel {
         statusBarPanel.add(txtRobotNumber);
 
         btDeploy.setText("Send to Robot");
-        btDeploy.setToolTipText("Send to Robot");
+        btDeploy.setToolTipText("Send binaries and NaoTH Configs to Robot if checked above. No Network Configs on the robot will be changed.");
         btDeploy.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btDeployActionPerformed(evt);
@@ -279,7 +279,7 @@ public class NaoSCP extends javax.swing.JPanel {
         statusBarPanel.add(txtDeployTag);
 
         btWriteToStick.setText("Write to Stick");
-        btWriteToStick.setToolTipText("Write to Stick");
+        btWriteToStick.setToolTipText("Copy binaries and NaoTH Configs to a USB Stick if checked above. No Network Configs will be copied.");
         btWriteToStick.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btWriteToStickActionPerformed(evt);
