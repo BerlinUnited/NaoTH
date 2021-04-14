@@ -4,4 +4,8 @@
 
 
 def nl_mean():
+    """
+    can be used for denoising before inference. Usually not used for trainings datasets
+    :return:
+    """
     pass

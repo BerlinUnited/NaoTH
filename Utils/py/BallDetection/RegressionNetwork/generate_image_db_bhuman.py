@@ -1,5 +1,8 @@
 """
 Converts the b-human 2019 dataset to the naoth format so we can run performance comparisons
+
+TODO add option to make a balanced dataset
+TODO add option to only get negative images
 """
 import pickle
 import numpy as np
@@ -35,20 +38,22 @@ def download_bhuman2019(origin, target):
         raise
 
 
-if __name__ == '__main__':
-    download_bhuman2019("https://sibylle.informatik.uni-bremen.de/public/datasets/b-alls-2019/b-alls-2019.hdf5",
-                        "data/bhuman/b-alls-2019.hdf5")
-    download_bhuman2019("https://sibylle.informatik.uni-bremen.de/public/datasets/b-alls-2019/",
-                        "data/bhuman/readme.txt")
+def create_classification_dataset(negative_data, positive_data):
+    images = np.append(negative_data, positive_data, axis=0)
+    mean = calculate_mean(images)
+    mean_images = subtract_mean(images, mean)
 
-    # get data
-    f = h5py.File('data/bhuman/b-alls-2019.hdf5', 'r')
+    negative_labels = [0] * len(negative_data)
+    positive_labels = [1] * len(positive_data)
+    labels = negative_labels + positive_labels
 
-    negative_labels = np.array(f.get('negatives/labels'))
-    positive_labels = np.array(f.get('positives/labels'))
-    negative_data = np.array(f.get('negatives/data'))
-    positive_data = np.array(f.get('positives/data'))
+    with open("data/bhuman_classification.pkl", "wb") as f:
+        pickle.dump(mean, f)
+        pickle.dump(mean_images, f)
+        pickle.dump(np.array(labels), f)
 
+
+def create_detection_dataset(negative_data, positive_data, negative_labels, positive_labels):
     labels = np.append(negative_labels, positive_labels, axis=0)
 
     # swap dimensions to convert b-human format to berlin-united format
@@ -62,7 +67,25 @@ if __name__ == '__main__':
     mean = calculate_mean(images)
 
     mean_images = subtract_mean(images, mean)
-    with open("data/bhuman.pkl", "wb") as f:
+    with open("data/bhuman_detection.pkl", "wb") as f:
         pickle.dump(mean, f)
         pickle.dump(mean_images, f)
         pickle.dump(new_labels, f)
+
+
+if __name__ == '__main__':
+    download_bhuman2019("https://sibylle.informatik.uni-bremen.de/public/datasets/b-alls-2019/b-alls-2019.hdf5",
+                        "data/bhuman/b-alls-2019.hdf5")
+    download_bhuman2019("https://sibylle.informatik.uni-bremen.de/public/datasets/b-alls-2019/readme.txt",
+                        "data/bhuman/readme.txt")
+
+    # get data
+    f = h5py.File('data/bhuman/b-alls-2019.hdf5', 'r')
+
+    negative_data = np.array(f.get('negatives/data'))
+    positive_data = np.array(f.get('positives/data'))
+    negative_labels = np.array(f.get('negatives/labels'))
+    positive_labels = np.array(f.get('positives/labels'))
+
+    create_detection_dataset(negative_data, positive_data, negative_labels, positive_labels)
+    create_classification_dataset(negative_data, positive_data)
