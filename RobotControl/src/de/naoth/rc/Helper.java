@@ -114,14 +114,6 @@ public class Helper
         return getFiles(location, null);
     }
 
-    private static FileSystem getFileSystem(URI uri) throws IOException{
-        try {
-            return FileSystems.newFileSystem(uri, Collections.emptyMap());
-        } catch (FileSystemAlreadyExistsException e) {
-            return FileSystems.getFileSystem(uri);
-        }
-    }
-    
     public static List<Path> getFiles(String location, Predicate<Path> filter) {
         try {
             URI res = Helper.class.getResource(location).toURI();
@@ -130,8 +122,6 @@ public class Helper
             Path resPath;
             if (res.getScheme().equals("jar")) {
                 resPath = FileSystems.getDefault().getPath(location);
-                // NOTE: this is a fixed version of the previous solution
-                //resPath = getFileSystem(res).getPath(location);
             } else {
                 resPath = Paths.get(res);
             }
