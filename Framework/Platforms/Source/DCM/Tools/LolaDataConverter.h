@@ -279,9 +279,9 @@ public:
     }
 
     { // BatteryData
-    sensorsValue[theBatteryDataIdex    ] = sensorData.Battery.Charge;
-    sensorsValue[theBatteryDataIdex + 1] = sensorData.Battery.Current;
-    sensorsValue[theBatteryDataIdex + 2] = sensorData.Battery.Temperature;
+    sensorsValue[theBatteryDataIndex    ] = sensorData.Battery.Charge;
+    sensorsValue[theBatteryDataIndex + 1] = sensorData.Battery.Current;
+    sensorsValue[theBatteryDataIndex + 2] = sensorData.Battery.Temperature;
     }
   }
 
