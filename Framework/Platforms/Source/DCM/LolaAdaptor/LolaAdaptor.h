@@ -41,7 +41,7 @@ public:
     initialMotion(NULL),
     sem(SEM_FAILED)
   {
-    // open semaphore
+    // open semaphore to synchronize with NaoController
     if((sem = sem_open("motion_trigger", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 0)) == SEM_FAILED)
     {
       perror("[LolaAdaptor] sem_open");
