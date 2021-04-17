@@ -47,21 +47,11 @@ public:
       perror("[LolaAdaptor] sem_open");
       ::exit(-1);
     }
-    
-    const std::string naoSensorDataPath = "/nao_sensor_data";
-    std::cout<< "[LolaAdaptor] Opening Shared Memory: "<<naoSensorDataPath<<std::endl;
-    naoSensorData.open(naoSensorDataPath);
-    
-    const std::string naoCommandMotorJointDataPath = "/nao_command.MotorJointData";
-    const std::string naoCommandUltraSoundSendDataPath = "/nao_command.UltraSoundSendData";
-    const std::string naoCommandLEDDataPath = "/nao_command.LEDData";
 
-    std::cout << "[LolaAdaptor] Opening Shared Memory: " << naoCommandMotorJointDataPath << std::endl;
-    naoCommandMotorJointData.open(naoCommandMotorJointDataPath);
-    std::cout << "[LolaAdaptor] Opening Shared Memory: " << naoCommandUltraSoundSendDataPath << std::endl;
-    naoCommandUltraSoundSendData.open(naoCommandUltraSoundSendDataPath);
-    std::cout << "[LolaAdaptor] Opening Shared Memory: " << naoCommandLEDDataPath << std::endl;
-    naoCommandLEDData.open(naoCommandLEDDataPath);
+    openSharedMemory(naoSensorData, "/nao_sensor_data");
+    openSharedMemory(naoCommandMotorJointData, "/nao_command.MotorJointData");
+    openSharedMemory(naoCommandUltraSoundSendData, "/nao_command.UltraSoundSendData");
+    openSharedMemory(naoCommandLEDData, "/nao_command.LEDData");
 
     // save the body ID
     std::string theBodyID = "ALDT_lola"; //theDCMHandler.getBodyID();
@@ -95,7 +85,17 @@ public:
       sem = SEM_FAILED;
     }
   }
-  
+
+  /**
+   * @brief Prints and opens the passed shared memory path.
+   */
+  template<typename T>
+  void openSharedMemory(SharedMemory<T> &sm, const std::string &path)
+  {
+      std::cout<< "[LolaAdaptor] Opening Shared Memory: "<<path<<std::endl;
+      sm.open(path);
+  }
+
   static bool fileExists (const std::string& filename) {
     struct stat buffer;   
     return (stat (filename.c_str(), &buffer) == 0); 
