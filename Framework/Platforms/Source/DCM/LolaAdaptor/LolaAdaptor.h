@@ -53,24 +53,7 @@ public:
     openSharedMemory(naoCommandUltraSoundSendData, "/nao_command.UltraSoundSendData");
     openSharedMemory(naoCommandLEDData, "/nao_command.LEDData");
 
-    // save the body ID
-    std::string theBodyID = "ALDT_lola"; //theDCMHandler.getBodyID();
-    std::cout << "[LolaAdaptor] bodyID: "<< theBodyID << std::endl;
-    
-    // save the nick name
-    std::string theBodyNickName = "nao_lola"; //theDCMHandler.getBodyNickName();
-    std::cout << "[LolaAdaptor] nickName: "<< theBodyNickName << std::endl;
-
-    // save the value to file
-    // FIXME: fixed path "Config/nao.info"
-    {
-      std::string staticMemberPath("Config/nao.info");
-      std::ofstream os(staticMemberPath.c_str());
-      ASSERT(os.good());
-      os << theBodyID << "\n" << theBodyNickName << std::endl;
-      os.close();
-    }
-
+    writeNaoInfo();
   }
   
   ~LolaAdaptor()
@@ -94,6 +77,30 @@ public:
   {
       std::cout<< "[LolaAdaptor] Opening Shared Memory: "<<path<<std::endl;
       sm.open(path);
+  }
+
+  /**
+   * @brief Writes the nao bodyId and the nickname to the "Config/nao.info" file.
+   */
+  void writeNaoInfo()
+  {
+      // save the body ID
+      std::string theBodyID = "ALDT_lola"; //theDCMHandler.getBodyID();
+      std::cout << "[LolaAdaptor] bodyID: "<< theBodyID << std::endl;
+
+      // save the nick name
+      std::string theBodyNickName = "nao_lola"; //theDCMHandler.getBodyNickName();
+      std::cout << "[LolaAdaptor] nickName: "<< theBodyNickName << std::endl;
+
+      // save the value to file
+      // FIXME: fixed path "Config/nao.info"
+      {
+          std::string staticMemberPath("Config/nao.info");
+          std::ofstream os(staticMemberPath.c_str());
+          ASSERT(os.good());
+          os << theBodyID << "\n" << theBodyNickName << std::endl;
+          os.close();
+      }
   }
 
   static bool fileExists (const std::string& filename) {
