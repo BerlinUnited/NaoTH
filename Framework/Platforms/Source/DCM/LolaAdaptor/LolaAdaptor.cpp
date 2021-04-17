@@ -48,7 +48,7 @@ void LolaAdaptor::openSharedMemory(SharedMemory<T> &sm, const std::string &path)
     sm.open(path);
 }
 
-void LolaAdaptor::writeNaoInfo()
+void LolaAdaptor::writeNaoInfo() const
 {
     // save the body ID
     std::string theBodyID = "ALDT_lola"; //theDCMHandler.getBodyID();
