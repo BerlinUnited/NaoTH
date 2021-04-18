@@ -2,16 +2,7 @@
 
 using namespace naoth;
 
-LolaAdaptor::LolaAdaptor():
-    running(false),
-    exiting(false),
-    waitingForLola(true),
-    shutdown_requested(false),
-    state(DISCONNECTED),
-    command_data_available(false),
-    sensor_data_available(false),
-    initialMotion(NULL),
-    sem(SEM_FAILED)
+LolaAdaptor::LolaAdaptor()
 {
     // open semaphore to synchronize with NaoController
     if((sem = sem_open("motion_trigger", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 0)) == SEM_FAILED)

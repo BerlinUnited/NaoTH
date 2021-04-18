@@ -65,28 +65,28 @@ private:
   void shutdownCallback();
 
 private:
-  bool running;
-  bool exiting;
-  bool waitingForLola;
+  bool running = false;
+  bool exiting = false;
+  bool waitingForLola = true;
   std::thread lolaThread;
 
   // these things are necessary to handle shutdown
   ButtonData theButtonData;
-  bool shutdown_requested;
+  bool shutdown_requested = false;
   std::thread shutdownCallbackThread;
 
   enum State
   {
     DISCONNECTED,
     CONNECTED
-  } state;
+  } state = DISCONNECTED;
 
   // sitdown motion in case the Controller dies
-  bool command_data_available;
-  bool sensor_data_available;
+  bool command_data_available = false;
+  bool sensor_data_available = false;
   MotorJointData theMotorJointData;
   InertialSensorData theInertialSensorData;
-  BasicMotion* initialMotion;
+  BasicMotion* initialMotion = NULL;
 
   // DCM --> NaoController
   SharedMemory<DCMSensorData> naoSensorData;
@@ -98,7 +98,7 @@ private:
   SharedMemory<Accessor<LEDData> > naoCommandLEDData;
 
   // syncronize with NaoController
-  sem_t* sem;
+  sem_t* sem = SEM_FAILED;
 };
 
 }
