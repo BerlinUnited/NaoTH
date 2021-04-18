@@ -54,6 +54,12 @@ private:
 
   bool runEmergencyMotion(ActuatorData& actuators);
 
+  /**
+   * @brief Reads the motor joint data from shared memory and converts it to the
+   * lola struct (motor joints + led).
+   */
+  void setMotorJoints(ActuatorData &actuators);
+
   void notify();
 
   void shutdownCallback();

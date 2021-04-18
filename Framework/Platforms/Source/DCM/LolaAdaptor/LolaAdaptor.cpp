@@ -163,23 +163,7 @@ void LolaAdaptor::run()
         // like old DCM motionCallbackPre
         if(!runEmergencyMotion(actuators))
         {
-            // get the MotorJointData from the shared memory and put them to the DCM
-            if ( naoCommandMotorJointData.swapReading() )
-            {
-                const Accessor<MotorJointData>* motorData = naoCommandMotorJointData.reading();
-
-                // write MotorJointData to LolaActuatorData
-                LolaDataConverter::set(actuators, motorData->get());
-
-                //drop_count = 0;
-                command_data_available = true;
-            }
-
-            if(naoCommandLEDData.swapReading())
-            {
-                const Accessor<LEDData>* commandData = naoCommandLEDData.reading();
-                LolaDataConverter::set(actuators, commandData->get());
-            }
+            setMotorJoints(actuators);
         }
         lola.writeActuators(actuators);
 
@@ -222,6 +206,28 @@ void LolaAdaptor::run()
     }
 
     running = false;
+}
+
+void LolaAdaptor::setMotorJoints(ActuatorData &actuators)
+{
+    // get the MotorJointData from the shared memory and put them to the DCM
+    if ( naoCommandMotorJointData.swapReading() )
+    {
+        const Accessor<MotorJointData>* motorData = naoCommandMotorJointData.reading();
+
+        // write MotorJointData to LolaActuatorData
+        LolaDataConverter::set(actuators, motorData->get());
+
+        // TODO: why do we need this? It is never resetted ...
+        //drop_count = 0;
+        command_data_available = true;
+    }
+
+    if(naoCommandLEDData.swapReading())
+    {
+        const Accessor<LEDData>* commandData = naoCommandLEDData.reading();
+        LolaDataConverter::set(actuators, commandData->get());
+    }
 }
 
 void LolaAdaptor::setWarningLED(ActuatorData& actuators, bool red)
