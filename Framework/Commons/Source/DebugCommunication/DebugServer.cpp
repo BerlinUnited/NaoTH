@@ -19,8 +19,6 @@ using namespace naoth;
 
 DebugServer::DebugServer()
   : 
-  lastSendTime(0),
-  lastReceiveTime(0),
   abort(false)
 {
   answers = g_async_queue_new();

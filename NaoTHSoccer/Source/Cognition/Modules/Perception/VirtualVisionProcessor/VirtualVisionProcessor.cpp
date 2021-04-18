@@ -63,6 +63,15 @@ VirtualVisionProcessor::~VirtualVisionProcessor()
   
 }
 
+void VirtualVisionProcessor::execute()
+{
+  getMultiBallPercept().reset();
+  getVirtualLinePercept().reset();
+
+  execute(CameraInfo::Top);
+  execute(CameraInfo::Bottom);
+}
+
 void VirtualVisionProcessor::execute(const CameraInfo::CameraID id)
 {
   cameraID = id;

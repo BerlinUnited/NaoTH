@@ -38,6 +38,9 @@ class Vector3:
     def __str__(self):
         return "({0},{1},{2})".format(self.x, self.y, self.z)
 
+    def __repr__(self):
+        return str(self)
+
 
 class Matrix3x3:
     def __init__(self, c1=Vector3(), c2=Vector3(), c3=Vector3()):
@@ -74,6 +77,9 @@ class Matrix3x3:
           self.c1.y, self.c2.y, self.c3.y,
           self.c1.z, self.c2.z, self.c3.z)
 
+    def __repr__(self):
+        return str(self)
+
 
 class Pose3D:
     def __init__(self):
@@ -99,3 +105,6 @@ class Pose3D:
 
     def __str__(self):
         return "(translation = {0}, rotation = {1})".format(self.translation, self.rotation)
+
+    def __repr__(self):
+        return str(self)

@@ -54,7 +54,7 @@ SimSparkController::SimSparkController(const std::string& name)
   registerInput<TeamMessageDataIn>(*this);
   registerInput<GameData>(*this);
   registerInput<GPSData>(*this);
-  registerInput<BatteryData>(*this);
+  registerInput<UltraSoundReceiveData>(*this);
 
   // register output
   registerOutput<const MotorJointData>(*this);
@@ -610,6 +610,7 @@ bool SimSparkController::updateSensors(std::string& msg)
         }
         else if ("GPS" == name) { ok = updateGPS(t->next); }
         else if ("BAT" == name) { ok = updateBattery(t->next); }
+        else if ("US" == name) { ok = updateSonar(t->next); }
         else
         {
           if( ignore.find(name) == ignore.end() ) // new unknown message
@@ -915,6 +916,58 @@ bool SimSparkController::updateBattery(const sexp_t* sexp)
   return true;
 }//end updateBattery
 
+// Example message: (US Left (0.52, 5.00, 5.00, 5.00, 5.00, 5.00, 5.00, 5.00, 5.00, 5.00))
+bool SimSparkController::updateSonar(const sexp_t* sexp)
+{
+    string name;
+    SexpParser::parseValue(sexp, name);
+
+    // decide which 'side' should be updated
+    double *data = nullptr;
+    if (name == "Left") {
+        data = theUSData.dataLeft;
+    } else if (name == "Right") {
+        data = theUSData.dataRight;
+    } else {
+        cerr << "Unknown sonar sensor!\n";
+        return false;
+    }
+
+    // read sonar echoes
+    sexp = sexp->next;
+    if (SexpParser::isList(sexp))
+    {
+        unsigned int i = 0;
+        double echo = 0;
+        const sexp_t* echoes = sexp->list;
+        while (echoes && i < UltraSoundReceiveData::numOfUSEcho) {
+            if (SexpParser::parseValue(echoes, echo)) {
+                data[i++] = echo;
+            } else {
+                cerr << "Unable to parse sonar echo!\n";
+            }
+            echoes = echoes->next;
+        }
+
+        // fill remaining echoes
+        for (; i < UltraSoundReceiveData::numOfUSEcho; ++i) {
+            data[i] = UltraSoundReceiveData::INVALID;
+        }
+
+        // HACK: introduce some "noise" on the last echo, so that the
+        //       UltraSoundObstacleLocator recognizes the new data
+        data[UltraSoundReceiveData::numOfUSEcho - 1] +=
+                NaoTime::getNaoTimeInMilliSeconds() % 2 == 0 ? 0.01 : -0.01;
+
+        // take the smallest value; the first echoes are the smallest
+        theUSData.rawdata = std::min(theUSData.dataLeft[0], theUSData.dataRight[0]);
+    } else {
+        cerr << "Missing sonar echoes!\n";
+        return false;
+    }
+
+    return true;
+}//end updateSonar
 
 // Example message:
 // (GPS (n torso) (tf 0.00 1.00 0.00 -2.00 -1.00 0.00 0.00 2.10 0.00 -0.00 1.00 0.40 0.00 -0.00 0.00 1.00))
@@ -1326,6 +1379,11 @@ void SimSparkController::get(BatteryData& data)
 void SimSparkController::get(GPSData& data)
 {
   data = theGPSData;
+}
+
+void SimSparkController::get(UltraSoundReceiveData& data)
+{
+  data = theUSData;
 }
 
 void SimSparkController::get(Image& data)

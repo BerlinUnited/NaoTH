@@ -20,12 +20,12 @@ UltraSoundObstacleLocator::UltraSoundObstacleLocator()
   DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawSensorData", "draw the measured echos", false);
   DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawBuffer", "draw buffer of measurements", false);
 
-  getDebugParameterList().add(&parameters);
+  getDebugParameterList().add(&params);
 }
 
 UltraSoundObstacleLocator::~UltraSoundObstacleLocator() 
 {
-  getDebugParameterList().remove(&parameters);
+  getDebugParameterList().remove(&params);
 }
 
 void UltraSoundObstacleLocator::execute()
@@ -113,6 +113,8 @@ void UltraSoundObstacleLocator::drawObstacleModel()
 
 bool UltraSoundObstacleLocator::isNewDataAvaliable() const
 {
+  // NOTE: this can lead to unexpected/undesired behavior, if the sensor - for whatever reson -
+  //       returns the same data for some time!
   for(int i = 0; i < UltraSoundReceiveData::numOfUSEcho; i++) {
     if(getUltraSoundReceiveData().dataLeft[i] != lastValidUltraSoundReceiveData.dataLeft[i] ||
        getUltraSoundReceiveData().dataRight[i] != lastValidUltraSoundReceiveData.dataRight[i])
@@ -161,7 +163,7 @@ void UltraSoundObstacleLocator::provideToLocalObstacleModel()
     model.frontDistance = std::min(model.leftDistance, model.rightDistance);
   }
 
-  if(model.frontDistance < parameters.minBlockedDistance)
+  if(model.frontDistance < params.minBlockedDistance)
   {
     if(!wasFrontBlockedInLastFrame)
     {

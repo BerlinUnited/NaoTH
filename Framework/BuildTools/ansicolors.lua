@@ -29,13 +29,26 @@
 
 local std_print = print;
 
--- support detection
-local function isWindows()
-  return os.getenv("PROMPT") ~= nil
-end
+-- enable/disable support for the colors by default
+local supported = true
 
-local supported = not isWindows()
-if isWindows() then supported = os.getenv("ANSICON") end
+-- colors were manually enabled
+if print_colors ~= nil then
+  supported = print_colors
+elseif supported then
+  -- print_colors was not defined 
+  -- try auto detect if supported was set to tru by default
+  
+  -- win10 terminal => supported
+  if os.getenv("WT_SESSION")~= nil then
+    supported = true
+  -- windows CMD is only supported with ANSICON
+  elseif os.getenv("PROMPT") ~= nil then
+    supported = os.getenv("ANSICON")
+  end
+  
+end 
+
 
 local keys = {
   -- reset

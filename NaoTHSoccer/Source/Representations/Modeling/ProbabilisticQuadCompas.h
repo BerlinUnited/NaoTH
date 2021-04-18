@@ -14,7 +14,6 @@
 class ProbabilisticQuadCompas
 {
 private:
-  const double normal_value;
   std::vector<double> angles;
   const double bin_size;
   double smoothing;
@@ -23,7 +22,6 @@ private:
 public:
   ProbabilisticQuadCompas(double smoothing = 0.4, int bins = 18) 
     : 
-    normal_value(1.0/(double)bins),
     angles(bins, 0.0),
     bin_size(Math::pi_2/bins), // size of a bin in rad
     smoothing(smoothing),

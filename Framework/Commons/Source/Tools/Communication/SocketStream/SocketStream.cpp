@@ -159,11 +159,11 @@ bool SocketStream::isFixedLengthDataAvailable(unsigned int len) throw(std::runti
       return false;
     }
     /* res is > 0 */
-    mRecvdLen += res;
+    mRecvdLen += static_cast<unsigned int>(res);
   }
 }
 
-int SocketStream::prefixedRecv(std::string& msg)
+unsigned int SocketStream::prefixedRecv(std::string& msg)
 {
   msg = "";
   unsigned int messLen;

@@ -1,5 +1,5 @@
-tensorflow==1.15.3
-numpy==1.19.1
-opencv-python==4.4.0.42
-matplotlib==3.3.1
-kaggle==1.5.6
+tensorflow==2.4.0
+numpy==1.19.5
+opencv-python==4.5.1.48
+matplotlib==3.3.3
+kaggle==1.5.10

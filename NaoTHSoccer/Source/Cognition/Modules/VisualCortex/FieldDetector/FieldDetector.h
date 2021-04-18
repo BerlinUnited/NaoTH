@@ -73,7 +73,7 @@ public:
       syncWithConfig();
     }
     double pruneThresholdArea;
-  } theParameters;
+  } params;
 
 private:
 

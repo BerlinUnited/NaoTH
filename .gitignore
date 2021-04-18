@@ -3,6 +3,7 @@ dist/
 build/
 private/
 backup_*/
+
 #deploy/
 NaoSCP/tmp/
 XabslEditor/
@@ -17,19 +18,15 @@ genfiles.properties
 *.pyc
 .idea/
 naoth.egg-info*
-*_pb2.py
+
+#pyenv
+.python-version
 
 #
 trace.dump.*
 projectconfig.user.lua
 *~
 compile_commands.json
-
-#messages
-RobotControl/RobotConnector/src/de/naoth/rc/messages
-RobotControl/src/de/naoth/rc/core/messages
-NaoTHSoccer/Source/Messages
-Framework/Commons/Source/Messages
 
 #particular files
 behavior-ic.dat

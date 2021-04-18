@@ -13,12 +13,26 @@
 #include "Motion/Engine/InverseKinematicsMotion/Motions/IKPose.h"
 #include "Representations/Motion/Walk2018/CommandBuffer.h"
 #include "Representations/Motion/Walk2018/CoMErrors.h"
+#include "Representations/Infrastructure/FrameInfo.h"
+#include "Motion/Engine/InverseKinematicsMotion/InverseKinematicsMotionEngine.h"
+
+#include "Tools/Debug/DebugPlot.h"
+#include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugRequest.h"
+#include <Tools/Debug/DebugParameterList.h>
 
 BEGIN_DECLARE_MODULE(CoMErrorProvider)
+    PROVIDE(DebugPlot)
+    PROVIDE(DebugModify)
+    PROVIDE(DebugRequest)
+    PROVIDE(DebugParameterList)
+
   REQUIRE(KinematicChainSensor) // required to calculate current CoM in support foot
   REQUIRE(CommandBuffer)        // required to compare current CoM with the requested one
+  REQUIRE(FrameInfo)
+  REQUIRE(InverseKinematicsMotionEngineService)
 
-  PROVIDE(CoMErrors)            // provide the error, absolute error to the power of 2 and relative (3D)
+  PROVIDE(CoMErrors)            // provide the error, absolute error to the power of 2 and relative (3D)  
 END_DECLARE_MODULE(CoMErrorProvider)
 
 class CoMErrorProvider : private CoMErrorProviderBase
@@ -63,7 +77,40 @@ public:
       Vector3d e = requested_com - observed_com;
       getCoMErrors().absolute2.add(e.abs2());
       getCoMErrors().e.add(e);
+
+      
+
+      PLOT("CoMErrorProvider:absoluteCoMerror_x", e.x);
+      PLOT("CoMErrorProvider:absoluteCoMerror_y", e.y);
+
+
+      InverseKinematic::CoMFeetPose observedCoMFeetPose = getEngine().getCoMFeetPoseBasedOnSensor();
+      
+      Vector3d footError;
+      if (getCommandBuffer().footIds[index] == FootStep::LEFT)
+      {
+          // stand on the right foot
+          expectedCoMFeetPose.localInRightFoot();
+          observedCoMFeetPose.localInRightFoot();
+
+          footError = observedCoMFeetPose.feet.left.translation - expectedCoMFeetPose.feet.left.translation;
+      }
+      else
+      {
+          expectedCoMFeetPose.localInLeftFoot();
+          observedCoMFeetPose.localInLeftFoot();
+
+          footError = observedCoMFeetPose.feet.right.translation - expectedCoMFeetPose.feet.right.translation;
+      }
+
+      PLOT("CoMErrorProvider:foot_error", footError.abs());
+
   }
+
+private:
+    inline const InverseKinematicsMotionEngine& getEngine() const{
+        return getInverseKinematicsMotionEngineService().getEngine();
+    }
 };
 
 #endif // _COM_ERROR_PROVIDER_H

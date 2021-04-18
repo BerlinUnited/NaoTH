@@ -1,8 +1,11 @@
 package de.naoth.rc.components.preferences;
 
+import de.naoth.rc.Helper;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
@@ -64,7 +67,21 @@ public class PreferencesDialog extends javax.swing.JDialog
         font.setName("fontSize");
         font.setAlignmentX(LEFT_ALIGNMENT);
         prefPanel.add(font);
-        
+        prefPanel.add(new javax.swing.Box.Filler(componentGap,componentGap,componentGap));
+
+        // retrieve all available FX themes
+        List<String> themes = Helper.getFiles("/de/naoth/rc/res/themes/", (p) -> { return p.toString().endsWith(".css"); }).stream().map((p) -> {
+            String f = p.getFileName().toString();
+            return f.substring(0, f.length()-4);
+        }).collect(Collectors.toList());
+        themes.add(0, "");
+
+        PreferencesComboBox combo = new PreferencesComboBox("FX Theme", themes, rcConfig.getProperty("theme", ""));
+        combo.setName("theme");
+        combo.setAlignmentX(LEFT_ALIGNMENT);
+        prefPanel.add(combo);
+        prefPanel.add(new javax.swing.Box.Filler(componentGap,componentGap,componentGap));
+
         // resize dialog
         pack();
     }

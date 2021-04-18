@@ -404,7 +404,7 @@ class SimsparkController(threading.Thread):
                             ball['z'] = float(data[1][i][1][15])
                             # notify the managed list of the change!
                             self.__scene[i] = ball
-                        elif nd['type'] == 'nao' and len(data[1][i][1]) > 4:
+                        elif nd['type'] == 'nao' and data[1][i][1][1][0] == 'SLT':
                             robot = self.__scene[i]
                             pose = self.__get_robot_pose(data[1][i][1][1][1:])
                             robot['x'] = pose[0]

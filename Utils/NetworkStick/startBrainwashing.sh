@@ -37,8 +37,8 @@ NETWORK_WLAN_MAC=$(cat /sys/class/net/wlan0/address | sed -e 's/://g')
 NETWORK_WLAN_MAC_FULL=$(cat /sys/class/net/wlan0/address | tr a-z A-Z)
 NETWORK_ETH_MAC=$(cat /sys/class/net/eth0/address | sed -e 's/://g')
 
-NETWORK_WLAN_IP="$NETWORK_WLAN_IP.$N"
-NETWORK_ETH_IP="$NETWORK_ETH_IP.$N"
+FINAL_WLAN_IP="$NETWORK_WLAN_IP.$N"
+FINAL_ETH_IP="$NETWORK_ETH_IP.$N"
 
 # set volume to 88%
 su nao -c "/usr/bin/pactl set-sink-mute 0 false"
@@ -94,8 +94,8 @@ gen_conf_d_net(){
   rm -rf ./net
 
   cat << EOF > ./net
-config_wlan0="$NETWORK_WLAN_IP netmask $NETWORK_WLAN_MASK broadcast $NETWORK_WLAN_BROADCAST"
-config_eth0="$NETWORK_ETH_IP netmask $NETWORK_ETH_MASK broadcast $NETWORK_ETH_BROADCAST"
+config_wlan0="$FINAL_WLAN_IP netmask $NETWORK_WLAN_MASK broadcast $NETWORK_WLAN_BROADCAST"
+config_eth0="$FINAL_ETH_IP netmask $NETWORK_ETH_MASK broadcast $NETWORK_ETH_BROADCAST"
 wpa_supplicant_wlan0="-Dnl80211"
 EOF
 

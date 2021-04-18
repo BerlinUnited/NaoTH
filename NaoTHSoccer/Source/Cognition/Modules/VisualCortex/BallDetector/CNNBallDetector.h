@@ -195,7 +195,7 @@ private:
 
 private:
   void calculateCandidates();
-  void addBallPercept(const Vector2i& center, double radius);
+  void addBallPercept(const Vector2d& center, double radius);
   void extractPatches();
   void providePatches();
 
