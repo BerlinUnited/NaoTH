@@ -54,16 +54,17 @@ namespace naoth
 class NaoController : public PlatformInterface
 {
 public:
-  NaoController();
+  NaoController(bool nao6);
   virtual ~NaoController();
 
   // platform info
+  const bool nao6;
   virtual std::string getBodyID() const { return theBodyID; }
   virtual std::string getBodyNickName() const { return theBodyNickName; }
   virtual std::string getHeadNickName() const { return theHeadNickName; }
   virtual std::string getRobotName() const { return theRobotName; }
-  virtual std::string getPlatformName() const { return "Nao"; }
-  virtual unsigned int getBasicTimeStep() const { return lolaAvailable?12:10; }
+  virtual std::string getPlatformName() const { return nao6 ? "Nao6" : "Nao"; }
+  virtual unsigned int getBasicTimeStep() const { return nao6 ? 12 : 10; }
   
   // camera stuff
   void get(Image& data){ 
@@ -174,11 +175,6 @@ protected:
   virtual MessageQueue* createMessageQueue(const std::string& /*name*/)
   {
     return new MessageQueue4Threads();
-  }
-
-  inline bool fileExists (const std::string& filename) {
-    struct stat buffer;   
-    return (stat (filename.c_str(), &buffer) == 0); 
   }
 
 protected:
