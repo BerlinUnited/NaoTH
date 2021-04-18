@@ -49,6 +49,11 @@ private:
   static bool fileExists (const std::string& filename);
 
   void run();
+
+  /**
+   * @brief Waits for the lola unix socket file to become available (max 5s).
+   */
+  void waitForLolaSocket();
   
   void setWarningLED(ActuatorData& actuators, bool red);
 

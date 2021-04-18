@@ -60,12 +60,6 @@ void LolaAdaptor::writeNaoInfo() const
     }
 }
 
-bool LolaAdaptor::fileExists(const std::string& filename)
-{
-    struct stat buffer;
-    return (stat (filename.c_str(), &buffer) == 0);
-  }
-
 void LolaAdaptor::start()
 {
   exiting = false;
@@ -119,20 +113,7 @@ bool LolaAdaptor::isRunning() const
 
 void LolaAdaptor::run()
 {
-    int tryCount = 0;
-
-    // end the thread if lola could not connect to the socket
-    while(!fileExists("/tmp/robocup"))
-    {
-        std::this_thread::sleep_for(std::chrono::milliseconds(250));
-        if(tryCount > 20 )
-        {
-            fprintf(stderr, "[LolaAdaptor] Waiting for LoLa %d ms.\n", tryCount * 250);
-            assert(false);
-        }
-        tryCount++;
-    }
-    std::this_thread::sleep_for(std::chrono::milliseconds(900));
+    waitForLolaSocket();
 
     Lola lola;
     lola.connectSocket();
@@ -197,6 +178,30 @@ void LolaAdaptor::run()
     }
 
     running = false;
+}
+
+void LolaAdaptor::waitForLolaSocket()
+{
+    int tryCount = 0;
+
+    // end the thread if the lola (unix) socket doesn't exists (after 5s)!
+    while(!fileExists("/tmp/robocup"))
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(250));
+        if(tryCount > 20 )
+        {
+            fprintf(stderr, "[LolaAdaptor] Waiting for LoLa %d ms.\n", tryCount * 250);
+            assert(false);
+        }
+        tryCount++;
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(900));
+}
+
+bool LolaAdaptor::fileExists(const std::string& filename)
+{
+    struct stat buffer;
+    return (stat (filename.c_str(), &buffer) == 0);
 }
 
 void LolaAdaptor::setMotorJoints(ActuatorData &actuators)
@@ -294,6 +299,7 @@ void LolaAdaptor::notify()
       {
         sem_post(sem);
 
+        // until now we were disconnected, but now we're alive and connected ...
         if(state == DISCONNECTED) {
           fprintf(stderr, "[LolaAdaptor] I think the core is alive.\n");
         }
