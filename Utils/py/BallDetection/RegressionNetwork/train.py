@@ -7,7 +7,7 @@ from datetime import datetime
 from pathlib import Path
 from sys import exit
 
-import numpy as np
+# TODO encode dataset into output model name
 import tensorflow as tf
 from tensorflow import keras as keras
 
