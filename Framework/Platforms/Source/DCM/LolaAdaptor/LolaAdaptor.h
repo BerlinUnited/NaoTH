@@ -104,7 +104,7 @@ public:
   void start() 
   {
     exiting = false;
-    lolaThread = std::thread(&LolaAdaptor::run, this);
+    lolaThread = std::thread([this] {this->run();});
     //ThreadUtil::setPriority(lolaThread, ThreadUtil::Priority::highest);
     ThreadUtil::setName(lolaThread, "LOLA");
 
