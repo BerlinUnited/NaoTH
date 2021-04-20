@@ -19,7 +19,7 @@ using namespace naoth;
 
 NaoController::NaoController(bool nao6)
     : 
-    nao6(false),
+    nao6(nao6),
     theSoundHandler(NULL),
     theTeamCommSender(NULL),
     theTeamCommListener(NULL),
