@@ -18,7 +18,7 @@ using namespace std;
 
 double CameraInfo::getFocalLength() const
 {
-  double d2 = resolutionWidth * resolutionWidth + resolutionHeight * resolutionHeight;
+  double d2 = Math::sqr(resolutionWidth) + Math::sqr(resolutionHeight);
   double halfDiagLength = 0.5 * sqrt(d2);
   
   // senity check
@@ -58,9 +58,18 @@ double CameraInfo::getOpeningAngleDiagonal() const
 
 void CameraInfo::print(ostream& stream) const
 {
-  stream << "Camera selection: " << cameraID << endl
-         << "Resolution Width: " << resolutionWidth << ", Height: " << resolutionHeight << endl
-         << "Opening Angle (calculated): " << getOpeningAngleWidth() << " rad, " << getOpeningAngleHeight() << " rad" << endl
+  stream << "Camera ID: " << cameraID << endl
+         << "Resolution Width, Height: " << resolutionWidth << ", " << resolutionHeight << endl
+
+         << "Opening Angle Diagonal (config): " << getOpeningAngleDiagonal() << "rad [" 
+                                                << params.openingAngleDiagonal << " deg]" << endl
+
+         << "Opening Angle Width (calculated): " << getOpeningAngleWidth() << " rad [" 
+                                                 << Math::toDegrees(getOpeningAngleWidth()) << "deg]" << endl
+
+         << "Opening Angle Height (calculated): " << getOpeningAngleHeight() << " rad [" 
+                                                  << Math::toDegrees(getOpeningAngleHeight()) << "deg]" << endl
+
          << "Optical Center (calculated): " << getOpticalCenterX() << " Pixel, " << getOpticalCenterY() << " Pixel" << endl
          << "Focal Length (calculated): "<< getFocalLength() << " Pixel"<< endl
          /*
