@@ -272,28 +272,14 @@ public:
     sensorsValue[currentIndex++] = sensorData.Touch.RHand.Touch.Right;
     }
 
-    { // UltraSoundReceiveData
-    //sensorsValue[theUltraSoundReceiveDataIndex    ] = 0;
-    sensorsValue[theUltraSoundReceiveDataIndex + 1] = sensorData.Sonar.Left;
-    sensorsValue[theUltraSoundReceiveDataIndex + 2] = sensorData.Sonar.Left;
-    sensorsValue[theUltraSoundReceiveDataIndex + 3] = sensorData.Sonar.Left;
-    sensorsValue[theUltraSoundReceiveDataIndex + 4] = sensorData.Sonar.Left;
-    sensorsValue[theUltraSoundReceiveDataIndex + 5] = sensorData.Sonar.Left;
-    sensorsValue[theUltraSoundReceiveDataIndex + 6] = sensorData.Sonar.Left;
-    sensorsValue[theUltraSoundReceiveDataIndex + 7] = sensorData.Sonar.Left;
-    sensorsValue[theUltraSoundReceiveDataIndex + 8] = sensorData.Sonar.Left;
-    sensorsValue[theUltraSoundReceiveDataIndex + 9] = sensorData.Sonar.Left;
-    sensorsValue[theUltraSoundReceiveDataIndex + 10] = sensorData.Sonar.Left;
-    sensorsValue[theUltraSoundReceiveDataIndex + 11] = sensorData.Sonar.Right;
-    sensorsValue[theUltraSoundReceiveDataIndex + 12] = sensorData.Sonar.Right;
-    sensorsValue[theUltraSoundReceiveDataIndex + 13] = sensorData.Sonar.Right;
-    sensorsValue[theUltraSoundReceiveDataIndex + 14] = sensorData.Sonar.Right;
-    sensorsValue[theUltraSoundReceiveDataIndex + 15] = sensorData.Sonar.Right;
-    sensorsValue[theUltraSoundReceiveDataIndex + 16] = sensorData.Sonar.Right;
-    sensorsValue[theUltraSoundReceiveDataIndex + 17] = sensorData.Sonar.Right;
-    sensorsValue[theUltraSoundReceiveDataIndex + 18] = sensorData.Sonar.Right;
-    sensorsValue[theUltraSoundReceiveDataIndex + 19] = sensorData.Sonar.Right;
-    sensorsValue[theUltraSoundReceiveDataIndex + 20] = sensorData.Sonar.Right;
+    { // UltraSoundReceiveData 
+      unsigned int currentIndex = theUltraSoundReceiveDataIndex;
+      sensorsValue[currentIndex++] = 0;
+      for(int i = 0; i < UltraSoundReceiveData::numOfUSEcho; i++)
+      {
+        sensorsValue[currentIndex++] = sensorData.Sonar.Left;
+        sensorsValue[currentIndex++] = sensorData.Sonar.Right;
+      }
     }
 
     { // BatteryData
