@@ -147,7 +147,7 @@ void Configuration::loadFile(GKeyFile* keyFile, std::string file, std::string gr
     } 
     else if(g_strcmp0(groups[0], groupName.c_str()) != 0)
     {
-      std::cerr << "[Configuration] ERROR: " << file << " unexpected grop name " << groups[0] << ", expected " << groupName << "" << std::endl;
+      std::cerr << "[Configuration] ERROR: " << file << " unexpected group name " << groups[0] << ", expected " << groupName << "" << std::endl;
     }
     else 
     {
