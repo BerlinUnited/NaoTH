@@ -137,7 +137,6 @@ void Configuration::loadFile(GKeyFile* keyFile, std::string file, std::string gr
   {
     // syntactically correct, check if there is only one group with the same 
     // name as the file
-    bool groupOK = true;
     gsize numOfGroups;
     gchar** groups = g_key_file_get_groups(tmpKeyFile, &numOfGroups);
 
