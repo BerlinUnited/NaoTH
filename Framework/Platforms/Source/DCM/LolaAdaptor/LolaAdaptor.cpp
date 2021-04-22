@@ -58,7 +58,7 @@ void LolaAdaptor::writeNaoInfo() const
         os << theBodyID << "\n" << theBodyNickName << std::endl;
         os.close();
     }
-}
+}//end writeNaoInfo()
 
 void LolaAdaptor::start()
 {
@@ -91,7 +91,7 @@ void LolaAdaptor::start()
     }
     fprintf(stderr, "[LolaAdaptor] LoLA socket connection established.\n");
     //HACK: pulseaudio is not initialized correctly, but after playing a sound as no it works?!?
-}
+}//end start()
 
 void LolaAdaptor::stop()
 {
@@ -178,7 +178,7 @@ void LolaAdaptor::run()
     }
 
     running = false;
-}
+}//end run()
 
 void LolaAdaptor::waitForLolaSocket()
 {
@@ -196,7 +196,7 @@ void LolaAdaptor::waitForLolaSocket()
         tryCount++;
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(900));
-}
+}//end waitForLolaSocket()
 
 bool LolaAdaptor::fileExists(const std::string& filename)
 {
@@ -224,7 +224,7 @@ void LolaAdaptor::setMotorJoints(ActuatorData &actuators)
         const Accessor<LEDData>* commandData = naoCommandLEDData.reading();
         LolaDataConverter::set(actuators, commandData->get());
     }
-}
+}//end setMotorJoints()
 
 void LolaAdaptor::setWarningLED(ActuatorData& actuators, bool red)
 {
@@ -325,7 +325,7 @@ void LolaAdaptor::notify()
             fprintf(stderr, "[LolaAdaptor] I couldn't get value by sem_getvalue.\n");
         }
     }//end if SEM_FAILED
-}
+}//end notify()
 
 void LolaAdaptor::shutdownCallback()
 {
