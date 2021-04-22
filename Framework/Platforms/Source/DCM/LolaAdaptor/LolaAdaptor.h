@@ -1,5 +1,3 @@
-
-
 #ifndef _LolaAdaptor_h_
 #define _LolaAdaptor_h_
 
@@ -53,7 +51,7 @@ private:
   /**
    * @brief Waits for the lola unix socket file to become available (max 5s).
    */
-  void waitForLolaSocket();
+  static void waitForLolaSocket();
   
   void setWarningLED(ActuatorData& actuators, bool red);
 
