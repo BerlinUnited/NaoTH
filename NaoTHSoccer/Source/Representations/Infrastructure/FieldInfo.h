@@ -56,6 +56,10 @@ public:
   double xLength;
   double yLength;
 
+  // goalbox area
+  double xGoalboxAreaLength;
+  double yGoalboxAreaLength;
+
   // penalty area
   double xPenaltyAreaLength;
   double yPenaltyAreaLength;
@@ -72,6 +76,8 @@ public:
   // white goal box is treated as lines
   bool goalBoxAsLines;
 
+  // when new goalbox is present, set this flag to true
+  bool goalBoxPresent;
 
   /////////////// pre-calculated values from basic values //////////////
   double xPosHalfWayLine;
@@ -80,11 +86,15 @@ public:
   double xPosOpponentGoal;
   double xPosOwnGroundline;
   double xPosOpponentGroundline;
+  double xPosOpponentGoalboxArea;
+  double xPosOwnGoalboxArea;
   double xPosOpponentPenaltyArea;
   double xPosOwnPenaltyArea;
   
   double yPosLeftSideline;
   double yPosRightSideline;
+  double yPosLeftGoalboxArea;
+  double yPosRightGoalboxArea;
   double yPosLeftPenaltyArea;
   double yPosRightPenaltyArea;
   double xPenaltyMarkDistance;
@@ -127,16 +137,27 @@ public:
     ownCornerLeft,
     ownCornerRight,
 
+    opponentGoalboxCornerLeft,
+    opponentGoalboxCornerRight,
+    ownGoalboxCornerLeft,
+    ownGoalboxCornerRight,
+
     opponentPenaltyCornerLeft,
     opponentPenaltyCornerRight,
     ownPenaltyCornerLeft,
     ownPenaltyCornerRight,
 
     // T crossings
-    opponentGoalTCrossingLeft,
-    opponentGoalTCrossingRight,
-    ownGoalTCrossingLeft,
-    ownGoalTCrossingRight,
+    opponentGoalboxTCrossingLeft,
+    opponentGoalboxTCrossingRight,
+    ownGoalboxTCrossingLeft,
+    ownGoalboxTCrossingRight,
+
+    opponentPenaltyTCrossingLeft,
+    opponentPenaltyTCrossingRight,
+    ownPenaltyTCrossingLeft,
+    ownPenaltyTCrossingRight,
+
     centerTCrossingLeft,
     centerTCrossingRight,
 

@@ -180,7 +180,7 @@
         <Component class="javax.swing.JButton" name="btDeploy">
           <Properties>
             <Property name="text" type="java.lang.String" value="Send to Robot"/>
-            <Property name="toolTipText" type="java.lang.String" value="Send to Robot"/>
+            <Property name="toolTipText" type="java.lang.String" value="Send binaries and NaoTH Configs to Robot if checked above. No Network Configs on the robot will be changed."/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btDeployActionPerformed"/>
@@ -198,7 +198,7 @@
         <Component class="javax.swing.JButton" name="btWriteToStick">
           <Properties>
             <Property name="text" type="java.lang.String" value="Write to Stick"/>
-            <Property name="toolTipText" type="java.lang.String" value="Write to Stick"/>
+            <Property name="toolTipText" type="java.lang.String" value="Copy binaries and NaoTH Configs to a USB Stick if checked above. No Network Configs will be copied."/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btWriteToStickActionPerformed"/>
