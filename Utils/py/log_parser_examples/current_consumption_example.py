@@ -10,31 +10,7 @@ import numpy as np
 from naoth.log import BehaviorParser
 from naoth.log import Reader as LogReader
 from naoth.datasets import motion
-
-JointID = {
-    "HeadPitch": 0,
-    "HeadYaw": 1,
-    "RShoulderRoll": 2,
-    "LShoulderRoll": 3,
-    "RShoulderPitch": 4,
-    "LShoulderPitch": 5,
-    "RElbowRoll": 6,
-    "LElbowRoll": 7,
-    "RElbowYaw": 8,
-    "LElbowYaw": 9,
-    "RHipYawPitch": 10,
-    "LHipYawPitch": 11,
-    "RHipPitch": 12,
-    "LHipPitch": 13,
-    "RHipRoll": 14,
-    "LHipRoll": 15,
-    "RKneePitch": 16,
-    "LKneePitch": 17,
-    "RAnklePitch": 18,
-    "LAnklePitch": 19,
-    "RAnkleRoll": 20,
-    "LAnkleRoll": 21
-}
+from naoth.constants import get_joint_id
 
 
 def frame_filter(behavior_parser, frame):
@@ -42,18 +18,18 @@ def frame_filter(behavior_parser, frame):
         behavior_frame = behavior_parser.parse(frame['BehaviorStateSparse'])
 
         return [frame["FrameInfo"].time / 1000.0,
-                frame["BodyStatus"].currentSum[JointID["RHipYawPitch"]],
-                frame["BodyStatus"].currentSum[JointID["LHipYawPitch"]],
-                frame["BodyStatus"].currentSum[JointID["RHipPitch"]],
-                frame["BodyStatus"].currentSum[JointID["LHipPitch"]],
-                frame["BodyStatus"].currentSum[JointID["RHipRoll"]],
-                frame["BodyStatus"].currentSum[JointID["LHipRoll"]],
-                frame["BodyStatus"].currentSum[JointID["RKneePitch"]],
-                frame["BodyStatus"].currentSum[JointID["LKneePitch"]],
-                frame["BodyStatus"].currentSum[JointID["RAnklePitch"]],
-                frame["BodyStatus"].currentSum[JointID["LAnklePitch"]],
-                frame["BodyStatus"].currentSum[JointID["RAnkleRoll"]],
-                frame["BodyStatus"].currentSum[JointID["LAnkleRoll"]],
+                frame["BodyStatus"].currentSum[get_joint_id("RHipYawPitch")],
+                frame["BodyStatus"].currentSum[get_joint_id("LHipYawPitch")],
+                frame["BodyStatus"].currentSum[get_joint_id("RHipPitch")],
+                frame["BodyStatus"].currentSum[get_joint_id("LHipPitch")],
+                frame["BodyStatus"].currentSum[get_joint_id("RHipRoll")],
+                frame["BodyStatus"].currentSum[get_joint_id("LHipRoll")],
+                frame["BodyStatus"].currentSum[get_joint_id("RKneePitch")],
+                frame["BodyStatus"].currentSum[get_joint_id("LKneePitch")],
+                frame["BodyStatus"].currentSum[get_joint_id("RAnklePitch")],
+                frame["BodyStatus"].currentSum[get_joint_id("LAnklePitch")],
+                frame["BodyStatus"].currentSum[get_joint_id("RAnkleRoll")],
+                frame["BodyStatus"].currentSum[get_joint_id("LAnkleRoll")],
                 behavior_frame.input_symbols['executed_motion.type'].value
                 ]
 
