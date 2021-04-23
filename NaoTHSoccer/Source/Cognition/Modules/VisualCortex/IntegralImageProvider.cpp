@@ -19,7 +19,7 @@ void IntegralImageProvider::execute(CameraInfo::CameraID id) {
 void IntegralImageProvider::makeIntegralBildOld(BallDetectorIntegralImage& integralImage) const
 {
   const int32_t FACTOR = integralImage.FACTOR;
-  const uint32_t MAX_COLOR = integralImage.MAX_COLOR;
+  constexpr uint32_t MAX_COLOR = BallDetectorIntegralImage::MAX_COLOR;
 
   const uint32_t imgWidth = getImage().width()/FACTOR;
   const uint32_t imgHeight = getImage().height()/FACTOR;
@@ -45,7 +45,7 @@ void IntegralImageProvider::makeIntegralBildOld(BallDetectorIntegralImage& integ
 
   for(uint16_t y = 1; y < imgHeight; ++y) 
   {
-    uint32_t akk[BallDetectorIntegralImage::MAX_COLOR] = {};
+    uint32_t akk[MAX_COLOR] = {};
 
     prevRowPtr += MAX_COLOR;
     curRowPtr  += MAX_COLOR;
@@ -76,7 +76,7 @@ void IntegralImageProvider::makeIntegralBildOld(BallDetectorIntegralImage& integ
 void IntegralImageProvider::makeIntegralBildNew(BallDetectorIntegralImage& integralImage) const 
 {
     const int32_t FACTOR = integralImage.FACTOR;
-    const uint32_t MAX_COLOR = integralImage.MAX_COLOR;
+    constexpr uint32_t MAX_COLOR = BallDetectorIntegralImage::MAX_COLOR;
 
     const uint32_t imgWidth = getImage().width() / FACTOR;
     const uint32_t imgHeight = getImage().height() / FACTOR;
