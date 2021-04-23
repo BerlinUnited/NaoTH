@@ -464,9 +464,9 @@ void SimSparkController::multiThreadsMain()
 {
   cout << "SimSpark Controller runs in multi-threads" << endl;
 
-  std::thread senseThread = std::thread([this]{this->senseLoop();});
-  std::thread actThread = std::thread([this]{this->actLoop();});
-  std::thread motionThread = std::thread([this]{this->motionLoop();});
+  std::thread senseThread = std::thread(&SimSparkController::senseLoop, this);
+  std::thread actThread = std::thread(&SimSparkController::actLoop, this);
+  std::thread motionThread = std::thread(&SimSparkController::motionLoop, this);
 
   cognitionLoop();
 

@@ -33,7 +33,7 @@ UDPReceiver::UDPReceiver(unsigned int port, unsigned int buffersize)
 
   std::cout << "[INFO] BroadCastLister start thread (" << port << ")" << std::endl;
 
-  socketThread = std::thread([this]{this->loop();});
+  socketThread = std::thread(&UDPReceiver::loop, this);
   ThreadUtil::setPriority(socketThread, ThreadUtil::Priority::lowest);
 
   stringstream s;

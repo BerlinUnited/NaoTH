@@ -53,7 +53,7 @@ BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
 
   queryBroadcastAddress();
 
-  socketThread = std::thread([this]{this->loop();});
+  socketThread = std::thread(&BroadCaster::loop, this);
   ThreadUtil::setPriority(socketThread, ThreadUtil::Priority::lowest);
 
   stringstream s;
