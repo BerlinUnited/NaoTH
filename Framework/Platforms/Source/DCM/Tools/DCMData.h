@@ -36,8 +36,8 @@ const unsigned int theGyrometerDataIndex         = theAccelerometerDataIndex    
 const unsigned int theInertialSensorDataIndex    = theGyrometerDataIndex         + 3 + 3 + 1; // gyro: 3 axes raw + 3 axes rad-s + ref value
 const unsigned int theButtonDataIndex            = theInertialSensorDataIndex    + 2; // inertial: 2 axes
 const unsigned int theUltraSoundReceiveDataIndex = theButtonDataIndex            + ButtonData::numOfButtons;
-const unsigned int theBatteryDataIdex            = theUltraSoundReceiveDataIndex + 1 + 2 * UltraSoundReceiveData::numOfUSEcho; //
-const unsigned int numOfSensors                  = theBatteryDataIdex            + 3; // charge, current, temperature
+const unsigned int theBatteryDataIndex           = theUltraSoundReceiveDataIndex + 1 + 2 * UltraSoundReceiveData::numOfUSEcho; //
+const unsigned int numOfSensors                  = theBatteryDataIndex            + 3; // charge, current, temperature
 
 /**
 * Data written by NaoSMAL and read by NaoRobot.

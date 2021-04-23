@@ -1,45 +1,38 @@
 stages:
  - test
- - python
- - static_analysis
- - nao 
- - linux
-
+ - build
+ - deploy
 
 default:
   image: $DOCKER_IMAGE
-  
-include:
-  - template: Code-Quality.gitlab-ci.yml
 
-code_quality:
-  stage: test
-  rules:
-     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
-     - if: '$CI_PIPELINE_SOURCE == "web"'
-     - if: '$CI_PIPELINE_SOURCE == "trigger"'
-     - if: $CI_COMMIT_BRANCH == "develop"
-  artifacts:
-    expose_as: 'Code Quality Report'
-    paths: [gl-code-quality-report.json]
-    
+variables:
+    branch_name: $CI_COMMIT_REF_NAME
+
+# Note that reopen MR do not trigger pipeline execution: https://gitlab.com/gitlab-org/gitlab/-/issues/31116
+
 cppcheck:
   stage: test
   rules:
-     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
-     - if: '$CI_PIPELINE_SOURCE == "web"'
-     - if: '$CI_PIPELINE_SOURCE == "trigger"'
-     - if: $CI_COMMIT_BRANCH == "develop"
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+    - if: '$CI_PIPELINE_SOURCE == "trigger"'
+    - if: $CI_COMMIT_BRANCH == "develop"
   script:
-  - cppcheck -j 4 --enable=all --inconclusive --xml --xml-version=2 . 2> cppcheck-result.xml
-  - cppcheck-htmlreport --file=cppcheck-result.xml --report-dir=test1 --source-dir=.
+  - mkdir -p $CI_COMMIT_REF_NAME
+  - cppcheck -j 4 --enable=all --inconclusive --force --xml --xml-version=2 . 2> cppcheck-result.xml
+  - cppcheck-htmlreport --file=cppcheck-result.xml --report-dir=$CI_COMMIT_REF_NAME --source-dir=.
+  - python3 -m pip install -U cppcheck_codequality
+  - cppcheck-codequality --input-file=cppcheck-result.xml --output-file=cppcheck.json
   artifacts:
-    paths: [test1]
-    expire_in: 1 week
+    paths: 
+      - $CI_COMMIT_REF_NAME
+    reports:
+      codequality: cppcheck.json
 
 publish_naoth:
   # run the publish command if the PUBLISH_NAOTH flag is set or the commit changes the develop with changes in the naoth package
-  stage: python
+  stage: deploy
   rules:
     - if: '$PUBLISH_NAOTH'
     - if: $CI_COMMIT_BRANCH == "develop"
@@ -52,12 +45,9 @@ publish_naoth:
   - cd ../../Utils/py/naoth
   - ./package_naoth.sh
 
-compileGame:
-  stage: nao
+compile_nao_gcc:
+  stage: build
   rules:
-    - changes: 
-      - Framework/**/*
-      - NaoTHSoccer/**/*
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
     - if: '$CI_PIPELINE_SOURCE == "web"'
     - if: '$CI_PIPELINE_SOURCE == "trigger"'
@@ -66,12 +56,9 @@ compileGame:
   - cd NaoTHSoccer/Make
   - ./compileGame.sh -j 4
 
-compileLocal:
-  stage: linux
+compile_local_gcc:
+  stage: build
   rules:
-    - changes: 
-      - Framework/**/*
-      - NaoTHSoccer/**/*
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
     - if: '$CI_PIPELINE_SOURCE == "web"'
     - if: '$CI_PIPELINE_SOURCE == "trigger"'
@@ -81,3 +68,33 @@ compileLocal:
   - premake5 gmake2 --protoc
   - cd ../build/gmake2
   - make all -j 4
+
+compile_nao_clang:
+  stage: build
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+    - if: '$CI_PIPELINE_SOURCE == "trigger"'
+    - if: $CI_COMMIT_BRANCH == "develop"
+  script:
+  - cd NaoTHSoccer/Make
+  - echo -en "if PLATFORM == \"Nao\" then\n    _OPTIONS[\"crosscompiler\"] = \"clang\"\nend\n" > projectconfig.user.lua
+  - ./compileGame.sh -j 4
+
+pages:
+  stage: deploy
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop"'
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+    - if: '$CI_PIPELINE_SOURCE == "trigger"'
+    - if: $CI_COMMIT_BRANCH == "develop"
+  script:
+    # install system dependencies used in ./Utils/CI-Tools/pages.sh  # TODO put them into the toolchain
+    - apt update && apt install tree wget -y
+    # handle generation of the html folder structure for cppcheck output
+    - ./Utils/CI-Tools/pages.sh
+    # generate a index.html listing all the subfolders
+    - cd public/ && tree -L 1 -H . -o index.html && cd ..
+  artifacts:
+    paths:
+      - public

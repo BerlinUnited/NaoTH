@@ -5,7 +5,7 @@
 * Declaration and definition of class Singleton
 *
 * Usage:
-*  Case 1: the static instanse is created on the stack by default
+*  Case 1: the static instance is created on the stack by default
 
    class MyClass: public Singleton<MyClass>
    {
@@ -22,7 +22,7 @@
       ...
    };
 
-*  Case 2: the static instanse is created on the heap
+*  Case 2: the static instance is created on the heap
 
    class MyClass: public Singleton<MyClass, _SINGLETON_USE_HEAP>
    {

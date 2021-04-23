@@ -2,7 +2,7 @@
 // NOTE: can not use the default script dependencies, since it doesn't allow dynamic modifications
 plugins {
   id 'application' // uses the java and distribution plugin
-  id 'org.openjfx.javafxplugin' version '0.0.8'
+  id 'org.openjfx.javafxplugin' version '0.0.9'
 }
 */
 
@@ -14,7 +14,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath 'org.openjfx:javafx-plugin:0.0.8'
+    classpath 'org.openjfx:javafx-plugin:0.0.9'
   }
 }
 

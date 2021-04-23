@@ -10,6 +10,7 @@
 
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/Math/Vector2.h"
+#include "Tools/Math/Vector3.h"
 #include "Tools/Debug/DebugParameterList.h"
 
 #include <PlatformInterface/Platform.h>
@@ -67,6 +68,10 @@ class FootStepPlanner2018Parameters: public ParameterList{
           PARAMETER_REGISTER(limits.maxCtrlChange)     = 0.3;
           PARAMETER_REGISTER(limits.maxCtrlChangeDown) = 0.8;
 
+          PARAMETER_REGISTER(limits.applyChangeX) = true;
+          PARAMETER_REGISTER(limits.applyChangeY) = true;
+          PARAMETER_REGISTER(limits.applyChangeRotation) = true;
+
           PARAMETER_REGISTER(footOffsetY) = 0;
 
           PARAMETER_REGISTER(step.doubleSupportTime) = 0;
@@ -96,14 +101,20 @@ class FootStepPlanner2018Parameters: public ParameterList{
         double maxStepLength;
         double maxStepLengthBack;
         double maxStepWidth;
+
         double maxStepChange;
         double maxStepChangeDown;
 
         double maxCtrlTurn;
         double maxCtrlLength;
         double maxCtrlWidth;
+
         double maxCtrlChange;
         double maxCtrlChangeDown;
+
+        bool applyChangeX;
+        bool applyChangeY;
+        bool applyChangeRotation;
       } limits;
 
       struct Step {

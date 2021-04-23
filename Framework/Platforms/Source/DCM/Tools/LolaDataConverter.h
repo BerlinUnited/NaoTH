@@ -272,16 +272,24 @@ public:
     sensorsValue[currentIndex++] = sensorData.Touch.RHand.Touch.Right;
     }
 
-    { // UltraSoundReceiveData
-    //sensorsValue[theUltraSoundReceiveDataIndex    ] = 0;
-    sensorsValue[theUltraSoundReceiveDataIndex + 1] = sensorData.Sonar.Left;
-    sensorsValue[theUltraSoundReceiveDataIndex + 2] = sensorData.Sonar.Right;
+    { // UltraSoundReceiveData 
+      unsigned int currentIndex = theUltraSoundReceiveDataIndex;
+      sensorsValue[currentIndex++] = 0;
+      sensorsValue[currentIndex++] = sensorData.Sonar.Left;
+      sensorsValue[currentIndex++] = sensorData.Sonar.Right;
+
+      // set echos to zero because we dont have them on the NAO v6
+      for(int i = 2; i < UltraSoundReceiveData::numOfUSEcho; i++)
+      {
+        sensorsValue[currentIndex++] = 0.0;
+        sensorsValue[currentIndex++] = 0.0;
+      }
     }
 
     { // BatteryData
-    sensorsValue[theBatteryDataIdex    ] = sensorData.Battery.Charge;
-    sensorsValue[theBatteryDataIdex + 1] = sensorData.Battery.Current;
-    sensorsValue[theBatteryDataIdex + 2] = sensorData.Battery.Temperature;
+    sensorsValue[theBatteryDataIndex    ] = sensorData.Battery.Charge;
+    sensorsValue[theBatteryDataIndex + 1] = sensorData.Battery.Current;
+    sensorsValue[theBatteryDataIndex + 2] = sensorData.Battery.Temperature;
     }
   }
 

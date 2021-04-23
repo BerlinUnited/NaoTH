@@ -57,6 +57,15 @@ public class ParametersDialog extends AbstractJFXDialog
     }
 
     /**
+     * Returns the global theme.
+     * @return path to the global theme stylesheet
+     */
+    @Override
+    protected String getTheme() {
+        return Plugin.parent.getTheme();
+    }
+    
+    /**
      * Gets called after ui initialization and sets the message server of the ui controller.
      */
     @Override

@@ -362,7 +362,7 @@ void SMALModule::motionCallbackPost()
   {
     shutdown_requested = true;
 
-    shutdownCallbackThread = std::thread([this]{this->shutdownCallback();});
+    shutdownCallbackThread = std::thread(&SMALModule::shutdownCallback, this);
   }
 
   // save the data for the emergency case

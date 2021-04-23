@@ -463,3 +463,9 @@ message DebugModify {
   
   repeated ModifyValue valueMap = 1;
 }
+
+message bodyAwareness {
+  optional bool isLifted = 1;
+  optional DoubleVector3  calculatedCoM= 2;
+  optional DoubleVector3 currentCoMError = 3;
+}
