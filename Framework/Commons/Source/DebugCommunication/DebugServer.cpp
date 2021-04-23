@@ -48,7 +48,7 @@ void DebugServer::start(unsigned short port)
 
   std::cout << "[INFO] Starting debug server thread" << std::endl;
    
-  connectionThread = std::thread([this] {this->run();});
+  connectionThread = std::thread(&DebugServer::run, this);
   ThreadUtil::setName(connectionThread, "DebugServer");
 }
 
