@@ -63,7 +63,7 @@ void LolaAdaptor::writeNaoInfo() const
 void LolaAdaptor::start()
 {
     exiting = false;
-    lolaThread = std::thread([this] {this->run();});
+    lolaThread = std::thread(&LolaAdaptor::run, this);
     //ThreadUtil::setPriority(lolaThread, ThreadUtil::Priority::highest);
     ThreadUtil::setName(lolaThread, "LOLA");
 
@@ -158,7 +158,7 @@ void LolaAdaptor::run()
             shutdown_requested = true;
             //exit(-1);
             // break;
-            shutdownCallbackThread = std::thread([this]{this->shutdownCallback();});
+            shutdownCallbackThread = std::thread(&LolaAdaptor::shutdownCallback, this);
         }
 
         // save the data for the emergency case
