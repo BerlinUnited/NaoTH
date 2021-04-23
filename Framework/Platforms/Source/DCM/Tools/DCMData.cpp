@@ -160,7 +160,7 @@ void DCMSensorData::get(UltraSoundReceiveData& data) const
 
 void DCMSensorData::get(BatteryData& data) const
 {
-  unsigned int currentIndex = theBatteryDataIdex;
+  unsigned int currentIndex = theBatteryDataIndex;
   data.charge = sensorsValue[currentIndex++];
   data.current = sensorsValue[currentIndex++];
   data.temperature = sensorsValue[currentIndex++];
