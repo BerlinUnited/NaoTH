@@ -274,15 +274,15 @@ public:
 
     { // UltraSoundReceiveData 
       unsigned int currentIndex = theUltraSoundReceiveDataIndex;
-      sensorsValue[currentIndex++] = 0;
+      sensorsValue[currentIndex++] = 0.0f;
       sensorsValue[currentIndex++] = sensorData.Sonar.Left;
       sensorsValue[currentIndex++] = sensorData.Sonar.Right;
 
       // set echos to zero because we dont have them on the NAO v6
       for(int i = 2; i < UltraSoundReceiveData::numOfUSEcho; i++)
       {
-        sensorsValue[currentIndex++] = 0.0;
-        sensorsValue[currentIndex++] = 0.0;
+        sensorsValue[currentIndex++] = 0.0f;
+        sensorsValue[currentIndex++] = 0.0f;
       }
     }
 
