@@ -141,7 +141,6 @@ void UltraSoundObstacleLocator::fillBuffer()
   double rightMeasurement = getUltraSoundReceiveData().dataRight[0] * 1000.0;
 
   // for v5 and v6 the 0.0 value should be treated as invalid
-  // NOTE: Stella 2021/04/14 does not explain the full behavior yet
   if(leftMeasurement == 0.0){
     leftMeasurement = invalidDistanceValue;
   }
