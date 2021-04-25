@@ -74,7 +74,7 @@ def main(raw_args=None, model=None):
         The save callback will overwrite the previous models if the new model is better then the last. Restarting the 
         training will always overwrite the models.
     """
-    filepath = Path(args.output) / (model.name + "_" + Path(args.imgdb_path).name + ".h5")
+    filepath = Path(args.output) / (model.name + "_" + Path(args.imgdb_path).stem + ".h5")
     save_callback = tf.keras.callbacks.ModelCheckpoint(filepath=str(filepath), monitor='loss', verbose=1,
                                                        save_best_only=True)
 
