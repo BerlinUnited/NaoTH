@@ -28,7 +28,7 @@ def str2bool(v):
 def main(raw_args=None, model=None):
     parser = argparse.ArgumentParser(description='Train the network given')
 
-    parser.add_argument('-b', '--database-path', dest='imgdb_path', default=str(DATA_DIR / 'tk03.pkl'),
+    parser.add_argument('-b', '--database-path', dest='imgdb_path', default=str(DATA_DIR / 'tk03_natural_detection.pkl'),
                         help='Path to the image database to use for training. Default is imgdb.pkl in the data folder.')
     parser.add_argument("--output", dest="output", default="./", help="Folder where the trained models are saved")
 
@@ -65,11 +65,6 @@ def main(raw_args=None, model=None):
         print("ERROR: No model specified")
         exit(1)
 
-    # For using custom loss import your loss function and use the name of the function as loss argument.
-    model.compile(loss='mean_squared_error',
-                  optimizer='adam',
-                  metrics=['accuracy'])
-
     """
         The save callback will overwrite the previous models if the new model is better then the last. Restarting the 
         training will always overwrite the models.
@@ -86,6 +81,7 @@ def main(raw_args=None, model=None):
     # TODO prepare an extra validation set, that is consistent over multiple runs
     # history = model.fit(x, y, batch_size=args.batch_size, epochs=args.epochs, verbose=1,
     # validation_data=(X_test, Y_test),callbacks=callbacks)
+
     history = model.fit(x, y, batch_size=args.batch_size, epochs=args.epochs, verbose=1, validation_split=0.1,
                         callbacks=callbacks)
     return history
