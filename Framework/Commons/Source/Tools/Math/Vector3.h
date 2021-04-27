@@ -20,17 +20,13 @@ template <class V> class Vector3
   /** The vector values */
   V x, y, z;
 
-  /** Default constructor*/
-  Vector3<V>():x(0),y(0),z(0)
-  {}
-
-  /** Default constructor. */
-  Vector3<V>(V x, V y, V z) : x(x), y(y), z(z)
-  {}
-
-  /** Copy constructor
-  *\param other The other vector that is copied to this one
+  /**
+  * Constructors
   */
+  Vector3<V>() : x(0),y(0),z(0) {}
+  Vector3<V>(V x, V y, V z) : x(x), y(y), z(z) {}
+
+  // conversion copy constructor, used to cast the type
   template<class W>
   Vector3<V>(const Vector3<W>& other) :
     x(static_cast<V>(other.x)),

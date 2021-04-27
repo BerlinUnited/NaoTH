@@ -11,21 +11,22 @@
 #include <ostream>
 
 /** This class represents a 2-vector */
-template <class V> class Vector2 
+template <typename V> class Vector2 
 {
   public:
   /** The vector values */
   V x, y;
 
-  /** Default constructor. */
-  Vector2<V>() : x(0), y(0)
-  {}
+  /**
+  * Constructors
+  */
+  Vector2<V>() : x(0), y(0) {}
+  Vector2<V>(V x, V y) : x(x), y(y) {}
 
-  /** Default constructor. */
-  Vector2<V>(V x, V y) : x(x), y(y)
-  {}
+  // Since C++11 we have to declare copy constructor explicitly.
+  Vector2<V> ( const Vector2<V> & ) = default;
 
-  // copy constructor
+  // conversion copy constructor, used to cast the type
   template<class W>
   Vector2<V>(const Vector2<W>& other) : 
     x(static_cast<V>(other.x)), 
@@ -40,17 +41,23 @@ template <class V> class Vector2
   *\param other The other vector that is assigned to this one
   *\return A reference to this object after the assignment.
   */
-  Vector2<V>& operator=(const Vector2<V>& other)
-  {
+  // TODO: C++11 can be replaced with
+  // Vector2<V>& operator=(const Vector2<V>& other) = default;
+  /*
+  Vector2<V>& operator=(const Vector2<V>& other) {
     x = other.x; 
     y = other.y;
     return *this;
   }
+  */
 
   /** Assignment operator which converts a vector from another type
   *\param other The other vector that is assigned to this one
   *\return A reference to this object after the assignment.
   */
+  // TODO: do we need to define this? Or is the copy constructor enough?
+  //       Vector3 doesn't have this.
+  /*
   template<class W>
   Vector2<V>& operator=(const Vector2<W>& other)
   {
@@ -58,6 +65,7 @@ template <class V> class Vector2
     y = static_cast<V>(other.y);
     return *this;
   }
+  */
 
   /** Addition of another vector to this one.
   *\param other The other vector that will be added to this one
