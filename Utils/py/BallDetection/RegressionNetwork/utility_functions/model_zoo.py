@@ -8,6 +8,7 @@ from tensorflow.keras.layers import Convolution2D, LeakyReLU, MaxPooling2D, Flat
     PReLU, Softmax
 from tensorflow.keras import Model
 
+
 # TODO maybe rewrite every model with functional api for more flexibility
 
 def fy_1500_old():
@@ -66,6 +67,73 @@ def model1():
 
     # output is radius, x, y, confidence
     model.add(Dense(4, activation="relu", name="dense_1"))
+
+    return model
+
+
+def bhuman_base():
+    """
+    architecture taken from the bhuman code release 2019
+    :return:
+    """
+    input_shape = (32, 32, 1)
+    model = Sequential()
+    model._name = "bhuman_classificator2019"
+
+    # we don't know the kernel size b-human used
+    model.add(Convolution2D(8, (3, 3), input_shape=input_shape, padding='same', name="Conv2D_1"))
+    # Batch Norm
+    model.add(ReLU(name="activation_1"))
+    model.add(MaxPooling2D(pool_size=(2, 2), name="pooling_1"))
+
+    # we don't know the kernel size b-human used
+    model.add(Convolution2D(16, (3, 3), padding='same', name="Conv2D_2"))
+    # Batch Norm
+    model.add(ReLU(name="activation_2"))
+    model.add(MaxPooling2D(pool_size=(2, 2), name="pooling_2"))
+
+    # we don't know the kernel size b-human used
+    model.add(Convolution2D(16, (3, 3), padding='same', name="Conv2D_3"))
+    # Batch Norm
+    model.add(ReLU(name="activation_3"))
+    model.add(MaxPooling2D(pool_size=(2, 2), name="pooling_3"))
+
+    # we don't know the kernel size b-human used
+    model.add(Convolution2D(32, (3, 3), padding='same', name="Conv2D_4"))
+    # Batch Norm
+    model.add(ReLU(name="activation_4"))
+    model.add(MaxPooling2D(pool_size=(2, 2), name="pooling_4"))
+
+    return model
+
+
+def bhuman_classificator():
+    """
+    architecture taken from the bhuman code release 2019
+    :return:
+    """
+    # TODO batch norm is missing
+    model = bhuman_base()
+    model.add(Flatten(name="flatten_1"))
+    model.add(Dense(32, activation="relu", name="dense_1"))
+    model.add(Dense(64, activation="relu", name="dense_2"))
+    model.add(Dense(16, activation="relu", name="dense_3"))
+    model.add(Dense(1, activation="relu", name="dense_4"))
+
+    return model
+
+
+def bhuman_detector():
+    """
+    architecture taken from the bhuman code release 2019
+    :return:
+    """
+    # TODO batch norm is missing
+    model = bhuman_base()
+    model.add(Flatten(name="flatten_1"))
+    model.add(Dense(32, activation="relu", name="dense_1"))
+    model.add(Dense(64, activation="relu", name="dense_2"))
+    model.add(Dense(3, activation="relu", name="dense_3"))
 
     return model
 
@@ -369,8 +437,8 @@ def fy_1500_new():
 
 def fy_1500_new2():
     # TODO fix the compiler for that
-    input = Input(shape=(16, 16, 1))
-    x = Convolution2D(4, (3, 3), padding='same', name="Conv2D_1", activation='relu')(input)
+    input_layer = Input(shape=(16, 16, 1))
+    x = Convolution2D(4, (3, 3), padding='same', name="Conv2D_1", activation='relu')(input_layer)
     x = Convolution2D(4, (3, 3), padding='same', name="Conv2D_2", activation='relu')(x)
     x = MaxPooling2D(pool_size=(2, 2))(x)
     x = Convolution2D(8, (3, 3), padding='same', name="Conv2D_3", activation="relu")(x)
@@ -381,4 +449,4 @@ def fy_1500_new2():
     # output is radius, x, y, confidence
     predictions = Dense(4, activation='relu', name="dense_1")(x)
 
-    return Model(inputs=input, outputs=predictions)
+    return Model(inputs=input_layer, outputs=predictions)

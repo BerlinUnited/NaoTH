@@ -4,10 +4,11 @@ import argparse
 import pickle
 import tensorflow.keras as keras
 import numpy as np
+import cv2
 from pathlib import Path
 
 DATA_DIR = Path(Path(__file__).parent.absolute() / "data").resolve()
-MODEL_DIR = Path(Path(__file__).parent.absolute() / "models/best_models").resolve()
+MODEL_DIR = Path(Path(__file__).parent.absolute() / "data/best_models").resolve()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Evaluate the network given ')
@@ -20,7 +21,6 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    res = {"x": 16, "y": 16}
     with open(args.imgdb_path, "rb") as f:
         mean = pickle.load(f)
         print("mean=" + str(mean))
@@ -29,7 +29,30 @@ if __name__ == '__main__':
 
     model = keras.models.load_model(args.model_path)
 
-    print(model.summary())
+    model.summary()
+
+    # compare image size to network size and resize if necessary
+    target_input_shape = model.layers[0].input_shape[1:]
+    input_shape = x.shape[1:]
+
+    if target_input_shape != input_shape:
+        print("will resize input images to match the required input shape")
+
+        resized_images = list()
+        for image in x:
+            temp = cv2.resize(image, dsize=(target_input_shape[0], target_input_shape[1]),
+                              interpolation=cv2.INTER_CUBIC)
+            temp = temp.reshape(*temp.shape, 1)
+            resized_images.append(temp)
+
+        x = np.array(resized_images)
+
+        # TODO resize radius
+        for i in range(len(y)):
+            if y[i][0] is not 0:
+                y[i][0] = y[i][0] / 2
+                y[i][1] = y[i][1] / 2
+                y[i][2] = y[i][2] / 2
 
     x = np.array(x)
     y = np.array(y)

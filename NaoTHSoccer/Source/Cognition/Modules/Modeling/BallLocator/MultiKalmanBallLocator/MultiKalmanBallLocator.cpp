@@ -169,7 +169,7 @@ void MultiKalmanBallLocator::updateByPerceptsNormal()
             h.camInfo = getCameraInfoTop();
         }
 
-        // tansform measurement into angles
+        // transform measurement into angles
         Vector2d angles = CameraGeometry::pixelToAngles(h.camInfo,(*iter).centerInImage.x,(*iter).centerInImage.y);
         z << angles.x, angles.y;
 
@@ -388,7 +388,7 @@ void MultiKalmanBallLocator::updateByPerceptsCool()
           h.camInfo = getCameraInfoTop();
       }
 
-      // tansform measurement into angles
+      // transform measurement into angles
       Vector2d angles = CameraGeometry::pixelToAngles(h.camInfo,(*iter).centerInImage.x,(*iter).centerInImage.y);
       Eigen::Vector2d z;
       z << angles.x, angles.y;
@@ -425,7 +425,7 @@ void MultiKalmanBallLocator::updateByPerceptsCool()
           h.camInfo = getCameraInfoTop();
       }
 
-      // tansform measurement into angles
+      // transform measurement into angles
       Vector2d angles = CameraGeometry::pixelToAngles(h.camInfo,(*iter).centerInImage.x,(*iter).centerInImage.y);
       Eigen::Vector2d z;
       z << angles.x, angles.y;

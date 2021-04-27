@@ -261,7 +261,7 @@ struct ActuatorData
     bool Right;
     
     MSGPACK_DEFINE_ARRAY(Left, Right);
-  } Sonar;
+  } Sonar = {true, true}; // enable by default
   
   MSGPACK_DEFINE_MAP(Position, Stiffness, REar, LEar, Chest, LEye, REye, LFoot, RFoot, Skull, Sonar);
 };

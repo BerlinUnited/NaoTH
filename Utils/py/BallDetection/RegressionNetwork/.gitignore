@@ -3,7 +3,7 @@ venv/*
 
 # ignore data
 data/*
-models/logs
+models/
 
 
 # don't ignore best models
