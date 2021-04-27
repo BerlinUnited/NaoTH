@@ -3,7 +3,6 @@ import json
 import os
 import random
 import sys
-from collections import defaultdict
 from glob import glob
 from os.path import relpath
 from pathlib import Path
