@@ -14,8 +14,8 @@ from tensorflow.keras import Model
 # TODO maybe rewrite every model with functional api for more flexibility -> NN Compilers dont support that
 def fy_1500_new():
     """
-    TODO add design ideas here
-    :return:
+    The idea here is to remove the relu in the last layer. That makes sure that the x and y values can be negative
+    :return: model
     """
     input_shape = (16, 16, 1)
 
@@ -33,7 +33,7 @@ def fy_1500_new():
     # classifier
     model.add(Flatten(name="flatten_1"))
     # output is radius, x, y, confidence
-    model.add(Dense(4, activation='relu', name="dense_1"))
+    model.add(Dense(4, name="dense_1"))
 
     # For using custom loss import your loss function and use the name of the function as loss argument.
     model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])
