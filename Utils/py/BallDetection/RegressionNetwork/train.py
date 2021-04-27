@@ -65,16 +65,6 @@ def main(raw_args=None, model=None):
         print("ERROR: No model specified")
         exit(1)
 
-    losses = {'seg': 'binary_crossentropy'
-              }
-
-    metrics = {'seg': ['acc']
-               }
-    model.compile(optimizer="adam", loss=losses, metrics=metrics)
-
-    # For using custom loss import your loss function and use the name of the function as loss argument.
-    #model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])
-
     """
         The save callback will overwrite the previous models if the new model is better then the last. Restarting the 
         training will always overwrite the models.
