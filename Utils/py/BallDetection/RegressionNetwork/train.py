@@ -28,7 +28,7 @@ def str2bool(v):
 def main(raw_args=None, model=None):
     parser = argparse.ArgumentParser(description='Train the network given')
 
-    parser.add_argument('-b', '--database-path', dest='imgdb_path', default=str(DATA_DIR / 'tk03.pkl'),
+    parser.add_argument('-b', '--database-path', dest='imgdb_path', default=str(DATA_DIR / 'tk03_blender_segmentation.pkl'),
                         help='Path to the image database to use for training. Default is imgdb.pkl in the data folder.')
     parser.add_argument("--output", dest="output", default="./", help="Folder where the trained models are saved")
 
@@ -65,10 +65,15 @@ def main(raw_args=None, model=None):
         print("ERROR: No model specified")
         exit(1)
 
+    losses = {'seg': 'binary_crossentropy'
+              }
+
+    metrics = {'seg': ['acc']
+               }
+    model.compile(optimizer="adam", loss=losses, metrics=metrics)
+
     # For using custom loss import your loss function and use the name of the function as loss argument.
-    model.compile(loss='mean_squared_error',
-                  optimizer='adam',
-                  metrics=['accuracy'])
+    #model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])
 
     """
         The save callback will overwrite the previous models if the new model is better then the last. Restarting the 
@@ -86,13 +91,14 @@ def main(raw_args=None, model=None):
     # TODO prepare an extra validation set, that is consistent over multiple runs
     # history = model.fit(x, y, batch_size=args.batch_size, epochs=args.epochs, verbose=1,
     # validation_data=(X_test, Y_test),callbacks=callbacks)
+
     history = model.fit(x, y, batch_size=args.batch_size, epochs=args.epochs, verbose=1, validation_split=0.1,
                         callbacks=callbacks)
     return history
 
 
 if __name__ == '__main__':
-    test_model = model_zoo.fy_1500_new()
+    test_model = model_zoo.semantic_segmentation01()
     output_dir = "models"
     # forward commandline arguments to the argparser in the main function
     train_history = main(sys.argv[1:] + ['--output', output_dir], model=test_model)

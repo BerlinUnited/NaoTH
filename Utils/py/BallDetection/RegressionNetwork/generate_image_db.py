@@ -13,7 +13,8 @@ import pickle
 from pathlib import Path
 import numpy as np
 
-from utility_functions.loader import load_images_from_csv_files, load_blender_images, calculate_mean, subtract_mean
+from utility_functions.loader import load_images_from_csv_files, load_blender_images, calculate_mean, subtract_mean, \
+    create_blender_segmenation_dataset
 
 DATA_DIR = Path(Path(__file__).parent.absolute() / "data").resolve()
 
@@ -39,7 +40,7 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
-def store_output(mean, x, y, p):
+def store_output(mean, x, y, p=None):
     with open(args.imgdb_path, "wb") as f:
         pickle.dump(mean, f)
         pickle.dump(x, f)
@@ -51,16 +52,17 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate the image database for training etc. '
                                                  'using a folder with 0, 1 etc. subfolders with png images.')
     parser.add_argument('-d', '--download', default=False, help='download dataset from kaggle')
-    parser.add_argument('-b', '--database-path', dest='imgdb_path', default=str(DATA_DIR / 'tk03.pkl'),
+    parser.add_argument('-b', '--database-path', dest='imgdb_path', default=str(DATA_DIR / 'tk03_blender_segmentation.pkl'),
                         help='Path to the image database to write. Default is imgdb.pkl in the data folder.')
-    parser.add_argument('-n', dest='natural', default=True)
-    parser.add_argument('-s', dest='synthetic', default=True)
+    parser.add_argument('-n', dest='natural', default=False)
+    parser.add_argument('-s', dest='synthetic', default=False)
     parser.add_argument('-i', '--image-folder', dest='img_path', default=str(DATA_DIR / 'TK-03'),
                         help='Path to the CSV file(s) with region annotation.')
     parser.add_argument('-r', '--resolution', dest='res',
                         help='Images will be resized to this resolution. Default is 16x16')
     parser.add_argument("-l", "--limit-noball", type=str2bool, nargs='?', dest="limit_noball",
                         const=True, help="Randomly select at most |balls| from no balls class")
+    parser.add_argument("--ss", dest="ss", default=True)
 
     args = parser.parse_args()
     if args.download:
@@ -72,7 +74,6 @@ if __name__ == '__main__':
         res = {"x": int(args.res), "y": int(args.res)}
 
     if args.natural and not args.synthetic:
-
         x, y, p = load_images_from_csv_files(args.img_path, res, args.limit_noball)
         mean = calculate_mean(x)
         x = subtract_mean(x, mean)
@@ -99,3 +100,10 @@ if __name__ == '__main__':
         mean = calculate_mean(X)
         store_output(mean, X, Y, P)
 
+    if args.ss:
+        path = args.img_path + "/blender"
+        x, y = create_blender_segmenation_dataset(path, res)
+
+        mean_b = calculate_mean(x)
+        x_b = subtract_mean(x, mean_b)
+        store_output(mean_b, x_b, y)

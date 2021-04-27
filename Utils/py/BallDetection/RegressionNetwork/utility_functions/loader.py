@@ -30,6 +30,47 @@ def get_blender_patch_paths(path):
     return zip(patch_folders, mask_folders)
 
 
+def create_blender_segmenation_dataset(path, res):
+    db = []
+    print(f"Loading images from {path} ...")
+    for patch_folder, mask_folder in get_blender_patch_paths(path):
+        print("patch_folder: ", patch_folder)
+        print("mask_folder: ", mask_folder)
+
+        patch_images = list(Path(patch_folder).glob('**/*.png'))
+        for patch_image in patch_images:
+            relativ_patch_path = relpath(str(patch_image), path)
+            # print("P: ", relativ_patch_path)
+            img = cv2.imread(str(patch_image), cv2.IMREAD_GRAYSCALE)
+            img = cv2.resize(img, (res["x"], res["y"]))
+
+            # load mask file
+            f_mask = Path(mask_folder) / patch_image.name
+
+            if f_mask.exists():
+                img_mask = cv2.imread(str(f_mask), cv2.IMREAD_GRAYSCALE)
+                img_mask = cv2.resize(img_mask, (res["x"], res["y"]))
+            elif "noball" in mask_folder:
+                img_mask = np.zeros((res["x"], res["y"])).astype(np.uint8)
+            else:
+                raise "Missing mask file for " + str(patch_image)
+
+            img = img.astype(float) / 255.0
+            img_mask = img_mask.astype(float) / 255.0
+
+            db.append((img, img_mask))
+
+    random.shuffle(db)
+    x, y = list(map(np.array, list(zip(*db))))
+
+    x = x.reshape(*x.shape, 1)
+    y = y.reshape(*y.shape, 1)
+
+    print("Loading finished")
+    print("Number of images: " + str(len(x)))
+    return x, y
+
+
 def load_blender_images(path, res):
     db = []
     print(f"Loading images from {path} ...")

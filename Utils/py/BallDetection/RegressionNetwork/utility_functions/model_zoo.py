@@ -5,7 +5,7 @@
 """
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Convolution2D, LeakyReLU, MaxPooling2D, Flatten, Dense, ReLU, Input, \
-    PReLU, Softmax
+    PReLU, Softmax, concatenate, Dropout, UpSampling2D
 from tensorflow.keras import Model
 
 
@@ -134,6 +134,51 @@ def bhuman_detector():
     model.add(Dense(32, activation="relu", name="dense_1"))
     model.add(Dense(64, activation="relu", name="dense_2"))
     model.add(Dense(3, activation="relu", name="dense_3"))
+
+    return model
+
+
+def semantic_segmentation01():
+    in1 = Input(shape=(16, 16, 1))
+
+    conv1 = Convolution2D(32, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(in1)
+    conv1 = Dropout(0.2)(conv1)
+    conv1 = Convolution2D(32, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(conv1)
+    pool1 = MaxPooling2D((2, 2))(conv1)
+
+    conv2 = Convolution2D(64, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(pool1)
+    conv2 = Dropout(0.2)(conv2)
+    conv2 = Convolution2D(64, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(conv2)
+    pool2 = MaxPooling2D((2, 2))(conv2)
+
+    conv3 = Convolution2D(128, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(pool2)
+    conv3 = Dropout(0.2)(conv3)
+    conv3 = Convolution2D(128, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(conv3)
+    pool3 = MaxPooling2D((2, 2))(conv3)
+
+    conv4 = Convolution2D(128, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(pool3)
+    conv4 = Dropout(0.2)(conv4)
+    conv4 = Convolution2D(128, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(conv4)
+
+    up1 = concatenate([UpSampling2D((2, 2))(conv4), conv3], axis=-1)
+    conv5 = Convolution2D(64, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(up1)
+    conv5 = Dropout(0.2)(conv5)
+    conv5 = Convolution2D(64, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(conv5)
+
+    up2 = concatenate([UpSampling2D((2, 2))(conv5), conv2], axis=-1)
+    conv6 = Convolution2D(64, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(up2)
+    conv6 = Dropout(0.2)(conv6)
+    conv6 = Convolution2D(64, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(conv6)
+
+    up2 = concatenate([UpSampling2D((2, 2))(conv6), conv1], axis=-1)
+    conv7 = Convolution2D(32, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(up2)
+    conv7 = Dropout(0.2)(conv7)
+    conv7 = Convolution2D(32, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same')(conv7)
+    segmentation = Convolution2D(1, (1, 1), activation='sigmoid', name='seg')(conv7)
+
+    model = Model(inputs=[in1], outputs=[segmentation])
+
+
 
     return model
 
