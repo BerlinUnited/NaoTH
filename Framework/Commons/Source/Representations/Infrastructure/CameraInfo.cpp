@@ -83,7 +83,7 @@ void CameraInfo::print(ostream& stream) const
          ;
 }
 
-CameraInfoParameter::CameraInfoParameter(std::string idName)
+CameraInfoParameter::CameraInfoParameter(const std::string& idName)
 :
   ParameterList("CameraInfo" + idName)
 {
