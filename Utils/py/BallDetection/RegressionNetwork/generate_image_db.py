@@ -89,6 +89,15 @@ if __name__ == '__main__':
         output_name = str(DATA_DIR / 'tk03_synthetic_classification.pkl')
         store_output(output_name, mean_b, x_syn, y_syn)
 
+        # merge the two datasets
+        X = np.concatenate((x, x_syn))
+        Y = np.concatenate((y, y_syn))
+        mean = calculate_mean(X)
+
+        print("save classification dataset with combined images")
+        output_name = str(DATA_DIR / 'tk03_combined_classification.pkl')
+        store_output(output_name, mean, X, Y)
+
     if args.data_type == "detection":
         x, y, p = create_natural_dataset(args.img_path, res, args.limit_noball, "detection")
         mean = calculate_mean(x)
