@@ -28,7 +28,7 @@ def str2bool(v):
 def main(raw_args=None, model=None):
     parser = argparse.ArgumentParser(description='Train the network given')
 
-    parser.add_argument('-b', '--database-path', dest='imgdb_path', default=str(DATA_DIR / 'tk03.pkl'),
+    parser.add_argument('-b', '--database-path', dest='imgdb_path', default=str(DATA_DIR / 'tk03_natural_detection.pkl'),
                         help='Path to the image database to use for training. Default is imgdb.pkl in the data folder.')
     parser.add_argument("--output", dest="output", default="./", help="Folder where the trained models are saved")
 

@@ -110,9 +110,12 @@ def model1():
 
     return model
 
+
 """
     Semantic Segmentation Models
 """
+
+
 def semantic_segmentation01():
     in1 = Input(shape=(16, 16, 1))
 
@@ -158,6 +161,7 @@ def semantic_segmentation01():
     model.compile(optimizer="adam", loss=losses, metrics=metrics)
 
     return model
+
 
 """
     B-Human Models
