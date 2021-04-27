@@ -28,7 +28,7 @@ def str2bool(v):
 def main(raw_args=None, model=None):
     parser = argparse.ArgumentParser(description='Train the network given')
 
-    parser.add_argument('-b', '--database-path', dest='imgdb_path', default=str(DATA_DIR / 'tk03_blender_segmentation.pkl'),
+    parser.add_argument('-b', '--database-path', dest='imgdb_path', default=str(DATA_DIR / 'tk03.pkl'),
                         help='Path to the image database to use for training. Default is imgdb.pkl in the data folder.')
     parser.add_argument("--output", dest="output", default="./", help="Folder where the trained models are saved")
 
@@ -88,7 +88,7 @@ def main(raw_args=None, model=None):
 
 
 if __name__ == '__main__':
-    test_model = model_zoo.semantic_segmentation01()
+    test_model = model_zoo.fy_1500_new()
     output_dir = "models"
     # forward commandline arguments to the argparser in the main function
     train_history = main(sys.argv[1:] + ['--output', output_dir], model=test_model)
