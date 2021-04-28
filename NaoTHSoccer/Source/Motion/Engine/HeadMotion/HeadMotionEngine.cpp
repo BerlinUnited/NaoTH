@@ -30,6 +30,12 @@ HeadMotionEngine::HeadMotionEngine():
   DEBUG_REQUEST_REGISTER("HeadMotionEngine:export_g", "exports g for plotting the function", false);
   DEBUG_REQUEST_REGISTER("HeadMotionEngine:draw_search_points_on_field", "draw the projected search points on the field", false);
 
+  headLimitFunctionMin.set_boundary(tk::spline::second_deriv, 0.0, tk::spline::second_deriv, 0.0, false);
+  headLimitFunctionMin.set_points(headLimitsHeadYaw, headLimitsHeadPitchMin);
+
+  headLimitFunctionMax.set_boundary(tk::spline::second_deriv, 0.0, tk::spline::second_deriv, 0.0, false);
+  headLimitFunctionMax.set_points(headLimitsHeadYaw, headLimitsHeadPitchMax);
+
   getDebugParameterList().add(&params);
 }
 
@@ -77,7 +83,7 @@ void HeadMotionEngine::execute()
   last_motion_target = motion_target;
 
   static Vector2d last_yaw_pitch;
-  Vector2d current_yaw_pitch(getSensorJointData().position[JointData::HeadYaw],getSensorJointData().position[JointData::HeadPitch]);
+  Vector2d current_yaw_pitch(getSensorJointData().position[JointData::HeadYaw], getSensorJointData().position[JointData::HeadPitch]);
   absolute_velocity_buffer.add((last_yaw_pitch - current_yaw_pitch) / getRobotInfo().getBasicTimeStepInSecond());
   last_yaw_pitch = current_yaw_pitch;
 
@@ -222,6 +228,13 @@ void HeadMotionEngine::moveByAngle(const Vector2d& target)
   velocity = velocity*(1.0-maxAcceleration) + update*maxAcceleration;
 
   headPos += velocity;
+
+  // restrict joint positions
+  headPos.x = Math::clamp(headPos.x, getMotorJointData().min[JointData::HeadYaw], getMotorJointData().max[JointData::HeadYaw]);
+
+  double headPitchMin = headLimitFunctionMin(headPos.x);
+  double headPitchMax = headLimitFunctionMax(headPos.x);
+  headPos.y = Math::clamp(headPos.y, headPitchMin, headPitchMax);
 
   // set the stiffness
   getMotorJointData().stiffness[JointData::HeadYaw] = stiffness;
@@ -370,7 +383,7 @@ void HeadMotionEngine::search()
   const Vector3d& center = getHeadMotionRequest().searchCenter;
   const Vector3d& size = getHeadMotionRequest().searchSize;
 
-  std::vector<Vector3d > points;
+  std::vector<Vector3d> points;
   points.push_back(Vector3d(center.x-size.x, center.y-size.y, center.z-size.z));
   points.push_back(Vector3d(center.x-size.x, center.y+size.y, center.z-size.z));
   points.push_back(Vector3d(center.x+size.x, center.y+size.y, center.z+size.z));

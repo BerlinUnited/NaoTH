@@ -12,6 +12,7 @@
 
 #include <Tools/Math/Vector2.h>
 #include <Tools/Math/Vector3.h>
+#include <vector>
 
 #include <ModuleFramework/Module.h>
 
@@ -29,6 +30,7 @@
 #include <Representations/Modeling/CameraMatrixOffset.h>
 
 #include "Tools/DataStructures/RingBufferWithSum.h"
+#include "Tools/DataStructures/Spline.h"
 
 // Debug
 #include "Tools/Debug/DebugModify.h"
@@ -97,6 +99,62 @@ private:
   } params;
 
 private:
+
+  // HACK: limits
+  // http://doc.aldebaran.com/2-8/family/nao_technical/joints_naov6.html#naov6-joints-head-joints
+  std::vector<double> headLimitsHeadYaw  = 
+  {
+    -2.086017,
+    -1.526988,
+    -1.089958,
+    -0.903033,
+    -0.756077,
+    -0.486074,
+     0.000000,
+     0.486074,
+     0.756077,
+     0.903033,
+     1.089958,
+     1.526988,
+     2.086017
+  };
+
+  std::vector<double> headLimitsHeadPitchMin = 
+  {
+    -0.449073,
+    -0.330041,
+    -0.430049,
+    -0.479965,
+    -0.548033,
+    -0.671951,
+    -0.671951,
+    -0.671951,
+    -0.548033,
+    -0.479965,
+    -0.430049,
+    -0.330041,
+    -0.449073  
+  };
+  
+  std::vector<double> headLimitsHeadPitchMax = 
+  {
+    0.330041,
+    0.200015,
+    0.300022,
+    0.330041,
+    0.370010,
+    0.422021,
+    0.515047,
+    0.422021,
+    0.370010,
+    0.330041,
+    0.300022,
+    0.200015,
+    0.330041
+  };
+  
+  tk::spline headLimitFunctionMin;
+  tk::spline headLimitFunctionMax;
 
   // internal use
   naoth::JointData theJointData;
