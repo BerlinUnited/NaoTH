@@ -178,7 +178,7 @@ bool isNAO6() {
 int main(int /*argc*/, char **/*argv[]*/)
 {
   // determine the NAO version
-  static const bool NAO6 = isNAO6();
+  const bool NAO6 = isNAO6();
 
   std::cout << "=========================================="  << std::endl;
   std::cout << "NaoTH compiled on: " << __DATE__ << " at " << __TIME__ << std::endl;
