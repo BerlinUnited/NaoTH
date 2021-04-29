@@ -73,10 +73,9 @@ void HeadMotionEngine::execute()
   DEBUG_REQUEST_ON_DEACTIVE("HeadMotionEngine:export_g", export_g(););
 
   bool target_changed = (last_motion_target - motion_target).abs() > params.at_target_threshold;
-  if(last_id != getHeadMotionRequest().id
-     || target_changed){
+  if(last_id != getHeadMotionRequest().id || target_changed) {
 	  //TODO vielleicht ist es sinnvoller die gelenkwinkel zu filtern anstatt die geschwindigkeit
-      absolute_velocity_buffer.clear();
+    absolute_velocity_buffer.clear();
   }
 
   last_id = getHeadMotionRequest().id;
@@ -104,6 +103,7 @@ void HeadMotionEngine::execute()
 
 void HeadMotionEngine::hold()
 {
+  // TODO: should this be a parameter?
   double stiffness = 0.0;    //it was 0.7 in former times
 
   getMotorJointData().stiffness[JointData::HeadYaw] = stiffness;
@@ -127,7 +127,7 @@ void HeadMotionEngine::gotoPointOnTheGround(const Vector2d& target)
     0.0,
     centerOnField);
 
-  std::vector<Vector3d > points;
+  std::vector<Vector3d> points;
   points.push_back(Vector3d(centerOnField.x,centerOnField.y,0.0));
   points.push_back(pointOnTheGround);
 
@@ -137,8 +137,8 @@ void HeadMotionEngine::gotoPointOnTheGround(const Vector2d& target)
 // move the head to the position target = (yaw, pitch)
 void HeadMotionEngine::gotoAngle(const Vector2d& target)
 {
-  Vector2d headPos(getMotorJointData().position[JointData::HeadYaw],
-                   getMotorJointData().position[JointData::HeadPitch]);
+  Vector2d headPos( getMotorJointData().position[JointData::HeadYaw],
+                    getMotorJointData().position[JointData::HeadPitch]);
 
   moveByAngle(target-headPos);
 }
@@ -169,13 +169,9 @@ void HeadMotionEngine::moveByAngle(const Vector2d& target)
   MODIFY("HeadMotionEngine:gotoAngle:max_velocity_deg_in_second", max_velocity_deg_in_second);
   double max_velocity = Math::fromDegrees(max_velocity_deg_in_second)*getRobotInfo().getBasicTimeStepInSecond();
 
-  double stiffness = 0.7;
-  MODIFY("HeadMotionEngine:gotoAngle:hardness", stiffness);
-
   // current position
-  Vector2d headPos(
-    getMotorJointData().position[JointData::HeadYaw],
-    getMotorJointData().position[JointData::HeadPitch]);
+  Vector2d headPos( getMotorJointData().position[JointData::HeadYaw],
+                    getMotorJointData().position[JointData::HeadPitch]);
 
   // used by target_reached and got_stuck
   motion_target = headPos + target;
@@ -229,6 +225,7 @@ void HeadMotionEngine::moveByAngle(const Vector2d& target)
 
   headPos += velocity;
 
+
   // restrict joint positions
   headPos.x = Math::clamp(headPos.x, getMotorJointData().min[JointData::HeadYaw], getMotorJointData().max[JointData::HeadYaw]);
 
@@ -236,12 +233,13 @@ void HeadMotionEngine::moveByAngle(const Vector2d& target)
   double headPitchMax = headLimitFunctionMax(headPos.x);
   headPos.y = Math::clamp(headPos.y, headPitchMin, headPitchMax);
 
+
   // set the stiffness
-  getMotorJointData().stiffness[JointData::HeadYaw] = stiffness;
-  getMotorJointData().stiffness[JointData::HeadPitch] = stiffness;
+  getMotorJointData().stiffness[JointData::HeadYaw]   = params.stiffness;
+  getMotorJointData().stiffness[JointData::HeadPitch] = params.stiffness;
 
   // set the joints
-  getMotorJointData().position[JointData::HeadYaw] = headPos.x;
+  getMotorJointData().position[JointData::HeadYaw]   = headPos.x;
   getMotorJointData().position[JointData::HeadPitch] = headPos.y;
 }//end moveByAngle
 
@@ -402,8 +400,8 @@ void HeadMotionEngine::search()
 
 void HeadMotionEngine::randomSearch()
 {
-    static Vector3<double> randomPoint(0, 0, 0);
-    std::vector<Vector3d > points;
+    static Vector3d randomPoint(0, 0, 0);
+    std::vector<Vector3d> points;
     points.push_back(randomPoint);
     if (trajectoryHeadMove(points))
     {
@@ -419,7 +417,7 @@ void HeadMotionEngine::randomSearch()
 }
 
 // move the head in the specified trajectory
-bool HeadMotionEngine::trajectoryHeadMove(const std::vector<Vector3d >& points)
+bool HeadMotionEngine::trajectoryHeadMove(const std::vector<Vector3d>& points)
 {
   // current state of the head motion
   // indicates the last visited point in the points list

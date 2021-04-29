@@ -86,6 +86,8 @@ private:
       PARAMETER_ANGLE_REGISTER(at_rest_threshold_walking) = 10;
       PARAMETER_ANGLE_REGISTER(at_target_threshold) = 3;
 
+      PARAMETER_REGISTER(stiffness) = 0.7;
+
       syncWithConfig();
     }
 
@@ -96,6 +98,8 @@ private:
     double at_rest_threshold;
     double at_rest_threshold_walking;
     double at_target_threshold;
+
+    double stiffness;
   } params;
 
 private:
@@ -160,8 +164,8 @@ private:
   naoth::JointData theJointData;
   KinematicChain theKinematicChain;
 
-  bool trajectoryHeadMove(const std::vector<Vector3<double> >& points);
-  void gotoPointOnTheGround(const Vector2<double>& target);
+  bool trajectoryHeadMove(const std::vector<Vector3d>& points);
+  void gotoPointOnTheGround(const Vector2d& target);
 
   void lookStraightAhead();
   void lookStraightAheadWithStabilization();
@@ -172,13 +176,13 @@ private:
   void search();
   void randomSearch();
 
-  void moveByAngle(const Vector2<double>& target);
-  void gotoAngle(const Vector2<double>& target);
+  void moveByAngle(const Vector2d& target);
+  void gotoAngle(const Vector2d& target);
 
-  void lookAtWorldPoint(const Vector3<double>& target);
-  void lookAtWorldPointSimple(const Vector3<double>& target);
+  void lookAtWorldPoint(const Vector3d& target);
+  void lookAtWorldPointSimple(const Vector3d& target);
 
-  Vector3<double> g(double yaw, double pitch, const Vector3<double>& pointInWorld);
+  Vector3d g(double yaw, double pitch, const Vector3d& pointInWorld);
   void export_g();
 
   // for providing head_target_reached and head_got_stuck
