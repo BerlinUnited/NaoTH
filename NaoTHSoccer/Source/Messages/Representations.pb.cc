@@ -263,6 +263,11 @@ public:
  ::google::protobuf::internal::ExplicitlyConstructed<DebugModify>
      _instance;
 } _DebugModify_default_instance_;
+class StepBufferDefaultTypeInternal {
+public:
+ ::google::protobuf::internal::ExplicitlyConstructed<StepBuffer>
+     _instance;
+} _StepBuffer_default_instance_;
 class bodyAwarenessDefaultTypeInternal {
 public:
  ::google::protobuf::internal::ExplicitlyConstructed<bodyAwareness>
@@ -274,7 +279,7 @@ namespace protobuf_Representations_2eproto {
 
 namespace {
 
-::google::protobuf::Metadata file_level_metadata[50];
+::google::protobuf::Metadata file_level_metadata[51];
 const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[9];
 
 }  // namespace
@@ -290,6 +295,7 @@ PROTOBUF_CONSTEXPR_VAR ::google::protobuf::internal::AuxillaryParseTableField
 };
 PROTOBUF_CONSTEXPR_VAR ::google::protobuf::internal::ParseTable const
     TableStruct::schema[] GOOGLE_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
+  { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
   { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
   { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
   { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
@@ -1016,6 +1022,13 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_ATTRIBUTE_SECTION
   ~0u,  // no _weak_field_map_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DebugModify, valuemap_),
   ~0u,
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepBuffer, _has_bits_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepBuffer, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepBuffer, support_foot_),
+  0,
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(bodyAwareness, _has_bits_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(bodyAwareness, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -1078,7 +1091,8 @@ static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_ATTR
   { 642, 651, sizeof(WhistlePercept)},
   { 655, 663, sizeof(DebugModify_ModifyValue)},
   { 666, 672, sizeof(DebugModify)},
-  { 673, 681, sizeof(bodyAwareness)},
+  { 673, 679, sizeof(StepBuffer)},
+  { 680, 688, sizeof(bodyAwareness)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -1131,6 +1145,7 @@ static ::google::protobuf::Message const * const file_default_instances[] = {
   reinterpret_cast<const ::google::protobuf::Message*>(&_WhistlePercept_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_DebugModify_ModifyValue_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_DebugModify_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&_StepBuffer_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_bodyAwareness_default_instance_),
 };
 
@@ -1152,7 +1167,7 @@ void protobuf_AssignDescriptorsOnce() {
 void protobuf_RegisterTypes(const ::std::string&) GOOGLE_ATTRIBUTE_COLD;
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 50);
+  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 51);
 }
 
 }  // namespace
@@ -1260,7 +1275,9 @@ void TableStruct::InitDefaultsImpl() {
   ::google::protobuf::internal::OnShutdownDestroyMessage(
       &_DebugModify_ModifyValue_default_instance_);_DebugModify_default_instance_._instance.DefaultConstruct();
   ::google::protobuf::internal::OnShutdownDestroyMessage(
-      &_DebugModify_default_instance_);_bodyAwareness_default_instance_._instance.DefaultConstruct();
+      &_DebugModify_default_instance_);_StepBuffer_default_instance_._instance.DefaultConstruct();
+  ::google::protobuf::internal::OnShutdownDestroyMessage(
+      &_StepBuffer_default_instance_);_bodyAwareness_default_instance_._instance.DefaultConstruct();
   ::google::protobuf::internal::OnShutdownDestroyMessage(
       &_bodyAwareness_default_instance_);_CameraMatrix_default_instance_._instance.get_mutable()->pose_ = const_cast< ::naothmessages::Pose3D*>(
       ::naothmessages::Pose3D::internal_default_instance());
@@ -1422,6 +1439,8 @@ void TableStruct::InitDefaultsImpl() {
       ::naothmessages::Pose3D::internal_default_instance());
   _CalibrationDataCMC_CalibrationDataSampleV3_default_instance_._instance.get_mutable()->orientation_ = const_cast< ::naothmessages::DoubleVector2*>(
       ::naothmessages::DoubleVector2::internal_default_instance());
+  _StepBuffer_default_instance_._instance.get_mutable()->support_foot_ = const_cast< ::naothmessages::Pose3D*>(
+      ::naothmessages::Pose3D::internal_default_instance());
   _bodyAwareness_default_instance_._instance.get_mutable()->calculatedcom_ = const_cast< ::naothmessages::DoubleVector3*>(
       ::naothmessages::DoubleVector3::internal_default_instance());
   _bodyAwareness_default_instance_._instance.get_mutable()->currentcomerror_ = const_cast< ::naothmessages::DoubleVector3*>(
@@ -1685,14 +1704,16 @@ void AddDescriptorsImpl() {
       "\002(\001\"\203\001\n\013DebugModify\0228\n\010valueMap\030\001 \003(\0132&."
       "naothmessages.DebugModify.ModifyValue\032:\n"
       "\013ModifyValue\022\014\n\004name\030\001 \002(\t\022\016\n\006modify\030\002 \001"
-      "(\010\022\r\n\005value\030\003 \001(\001\"\215\001\n\rbodyAwareness\022\020\n\010i"
-      "sLifted\030\001 \001(\010\0223\n\rcalculatedCoM\030\002 \001(\0132\034.n"
-      "aothmessages.DoubleVector3\0225\n\017currentCoM"
-      "Error\030\003 \001(\0132\034.naothmessages.DoubleVector"
-      "3B\033\n\031de.naoth.rc.core.messages"
+      "(\010\022\r\n\005value\030\003 \001(\001\"9\n\nStepBuffer\022+\n\014suppo"
+      "rt_foot\030\001 \001(\0132\025.naothmessages.Pose3D\"\215\001\n"
+      "\rbodyAwareness\022\020\n\010isLifted\030\001 \001(\010\0223\n\rcalc"
+      "ulatedCoM\030\002 \001(\0132\034.naothmessages.DoubleVe"
+      "ctor3\0225\n\017currentCoMError\030\003 \001(\0132\034.naothme"
+      "ssages.DoubleVector3B\033\n\031de.naoth.rc.core"
+      ".messages"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 10150);
+      descriptor, 10209);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   ::naothmessages::protobuf_CommonTypes_2eproto::AddDescriptors();
@@ -29457,6 +29478,309 @@ const ::google::protobuf::RepeatedPtrField< ::naothmessages::DebugModify_ModifyV
 DebugModify::valuemap() const {
   // @@protoc_insertion_point(field_list:naothmessages.DebugModify.valueMap)
   return valuemap_;
+}
+
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
+
+// ===================================================================
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int StepBuffer::kSupportFootFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+StepBuffer::StepBuffer()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
+    protobuf_Representations_2eproto::InitDefaults();
+  }
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:naothmessages.StepBuffer)
+}
+StepBuffer::StepBuffer(const StepBuffer& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL),
+      _has_bits_(from._has_bits_),
+      _cached_size_(0) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  if (from.has_support_foot()) {
+    support_foot_ = new ::naothmessages::Pose3D(*from.support_foot_);
+  } else {
+    support_foot_ = NULL;
+  }
+  // @@protoc_insertion_point(copy_constructor:naothmessages.StepBuffer)
+}
+
+void StepBuffer::SharedCtor() {
+  _cached_size_ = 0;
+  support_foot_ = NULL;
+}
+
+StepBuffer::~StepBuffer() {
+  // @@protoc_insertion_point(destructor:naothmessages.StepBuffer)
+  SharedDtor();
+}
+
+void StepBuffer::SharedDtor() {
+  if (this != internal_default_instance()) delete support_foot_;
+}
+
+void StepBuffer::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* StepBuffer::descriptor() {
+  protobuf_Representations_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_Representations_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
+}
+
+const StepBuffer& StepBuffer::default_instance() {
+  protobuf_Representations_2eproto::InitDefaults();
+  return *internal_default_instance();
+}
+
+StepBuffer* StepBuffer::New(::google::protobuf::Arena* arena) const {
+  StepBuffer* n = new StepBuffer;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void StepBuffer::Clear() {
+// @@protoc_insertion_point(message_clear_start:naothmessages.StepBuffer)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  if (has_support_foot()) {
+    GOOGLE_DCHECK(support_foot_ != NULL);
+    support_foot_->::naothmessages::Pose3D::Clear();
+  }
+  _has_bits_.Clear();
+  _internal_metadata_.Clear();
+}
+
+bool StepBuffer::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:naothmessages.StepBuffer)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional .naothmessages.Pose3D support_foot = 1;
+      case 1: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_support_foot()));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, _internal_metadata_.mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:naothmessages.StepBuffer)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:naothmessages.StepBuffer)
+  return false;
+#undef DO_
+}
+
+void StepBuffer::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:naothmessages.StepBuffer)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = _has_bits_[0];
+  // optional .naothmessages.Pose3D support_foot = 1;
+  if (cached_has_bits & 0x00000001u) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, *this->support_foot_, output);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        _internal_metadata_.unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:naothmessages.StepBuffer)
+}
+
+::google::protobuf::uint8* StepBuffer::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:naothmessages.StepBuffer)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = _has_bits_[0];
+  // optional .naothmessages.Pose3D support_foot = 1;
+  if (cached_has_bits & 0x00000001u) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        1, *this->support_foot_, deterministic, target);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:naothmessages.StepBuffer)
+  return target;
+}
+
+size_t StepBuffer::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:naothmessages.StepBuffer)
+  size_t total_size = 0;
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        _internal_metadata_.unknown_fields());
+  }
+  // optional .naothmessages.Pose3D support_foot = 1;
+  if (has_support_foot()) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        *this->support_foot_);
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = cached_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void StepBuffer::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:naothmessages.StepBuffer)
+  GOOGLE_DCHECK_NE(&from, this);
+  const StepBuffer* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const StepBuffer>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:naothmessages.StepBuffer)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:naothmessages.StepBuffer)
+    MergeFrom(*source);
+  }
+}
+
+void StepBuffer::MergeFrom(const StepBuffer& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:naothmessages.StepBuffer)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from.has_support_foot()) {
+    mutable_support_foot()->::naothmessages::Pose3D::MergeFrom(from.support_foot());
+  }
+}
+
+void StepBuffer::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:naothmessages.StepBuffer)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void StepBuffer::CopyFrom(const StepBuffer& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:naothmessages.StepBuffer)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool StepBuffer::IsInitialized() const {
+  if (has_support_foot()) {
+    if (!this->support_foot_->IsInitialized()) return false;
+  }
+  return true;
+}
+
+void StepBuffer::Swap(StepBuffer* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void StepBuffer::InternalSwap(StepBuffer* other) {
+  using std::swap;
+  swap(support_foot_, other->support_foot_);
+  swap(_has_bits_[0], other->_has_bits_[0]);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata StepBuffer::GetMetadata() const {
+  protobuf_Representations_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_Representations_2eproto::file_level_metadata[kIndexInFileMessages];
+}
+
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// StepBuffer
+
+// optional .naothmessages.Pose3D support_foot = 1;
+bool StepBuffer::has_support_foot() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+void StepBuffer::set_has_support_foot() {
+  _has_bits_[0] |= 0x00000001u;
+}
+void StepBuffer::clear_has_support_foot() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+void StepBuffer::clear_support_foot() {
+  if (support_foot_ != NULL) support_foot_->::naothmessages::Pose3D::Clear();
+  clear_has_support_foot();
+}
+const ::naothmessages::Pose3D& StepBuffer::support_foot() const {
+  const ::naothmessages::Pose3D* p = support_foot_;
+  // @@protoc_insertion_point(field_get:naothmessages.StepBuffer.support_foot)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::Pose3D*>(
+      &::naothmessages::_Pose3D_default_instance_);
+}
+::naothmessages::Pose3D* StepBuffer::mutable_support_foot() {
+  set_has_support_foot();
+  if (support_foot_ == NULL) {
+    support_foot_ = new ::naothmessages::Pose3D;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.StepBuffer.support_foot)
+  return support_foot_;
+}
+::naothmessages::Pose3D* StepBuffer::release_support_foot() {
+  // @@protoc_insertion_point(field_release:naothmessages.StepBuffer.support_foot)
+  clear_has_support_foot();
+  ::naothmessages::Pose3D* temp = support_foot_;
+  support_foot_ = NULL;
+  return temp;
+}
+void StepBuffer::set_allocated_support_foot(::naothmessages::Pose3D* support_foot) {
+  delete support_foot_;
+  support_foot_ = support_foot;
+  if (support_foot) {
+    set_has_support_foot();
+  } else {
+    clear_has_support_foot();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.StepBuffer.support_foot)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS

@@ -166,6 +166,9 @@ extern ScanLineEndPointDefaultTypeInternal _ScanLineEndPoint_default_instance_;
 class ShortLinePercept;
 class ShortLinePerceptDefaultTypeInternal;
 extern ShortLinePerceptDefaultTypeInternal _ShortLinePercept_default_instance_;
+class StepBuffer;
+class StepBufferDefaultTypeInternal;
+extern StepBufferDefaultTypeInternal _StepBuffer_default_instance_;
 class StepControlRequest;
 class StepControlRequestDefaultTypeInternal;
 extern StepControlRequestDefaultTypeInternal _StepControlRequest_default_instance_;
@@ -7924,6 +7927,116 @@ class DebugModify : public ::google::protobuf::Message /* @@protoc_insertion_poi
 };
 // -------------------------------------------------------------------
 
+class StepBuffer : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:naothmessages.StepBuffer) */ {
+ public:
+  StepBuffer();
+  virtual ~StepBuffer();
+
+  StepBuffer(const StepBuffer& from);
+
+  inline StepBuffer& operator=(const StepBuffer& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  StepBuffer(StepBuffer&& from) noexcept
+    : StepBuffer() {
+    *this = ::std::move(from);
+  }
+
+  inline StepBuffer& operator=(StepBuffer&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const StepBuffer& default_instance();
+
+  static inline const StepBuffer* internal_default_instance() {
+    return reinterpret_cast<const StepBuffer*>(
+               &_StepBuffer_default_instance_);
+  }
+  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
+    49;
+
+  void Swap(StepBuffer* other);
+  friend void swap(StepBuffer& a, StepBuffer& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline StepBuffer* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  StepBuffer* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const StepBuffer& from);
+  void MergeFrom(const StepBuffer& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(StepBuffer* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional .naothmessages.Pose3D support_foot = 1;
+  bool has_support_foot() const;
+  void clear_support_foot();
+  static const int kSupportFootFieldNumber = 1;
+  const ::naothmessages::Pose3D& support_foot() const;
+  ::naothmessages::Pose3D* mutable_support_foot();
+  ::naothmessages::Pose3D* release_support_foot();
+  void set_allocated_support_foot(::naothmessages::Pose3D* support_foot);
+
+  // @@protoc_insertion_point(class_scope:naothmessages.StepBuffer)
+ private:
+  void set_has_support_foot();
+  void clear_has_support_foot();
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::HasBits<1> _has_bits_;
+  mutable int _cached_size_;
+  ::naothmessages::Pose3D* support_foot_;
+  friend struct protobuf_Representations_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
 class bodyAwareness : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:naothmessages.bodyAwareness) */ {
  public:
   bodyAwareness();
@@ -7965,7 +8078,7 @@ class bodyAwareness : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_bodyAwareness_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    49;
+    50;
 
   void Swap(bodyAwareness* other);
   friend void swap(bodyAwareness& a, bodyAwareness& b) {
@@ -15464,6 +15577,56 @@ DebugModify::valuemap() const {
 
 // -------------------------------------------------------------------
 
+// StepBuffer
+
+// optional .naothmessages.Pose3D support_foot = 1;
+inline bool StepBuffer::has_support_foot() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void StepBuffer::set_has_support_foot() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void StepBuffer::clear_has_support_foot() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void StepBuffer::clear_support_foot() {
+  if (support_foot_ != NULL) support_foot_->::naothmessages::Pose3D::Clear();
+  clear_has_support_foot();
+}
+inline const ::naothmessages::Pose3D& StepBuffer::support_foot() const {
+  const ::naothmessages::Pose3D* p = support_foot_;
+  // @@protoc_insertion_point(field_get:naothmessages.StepBuffer.support_foot)
+  return p != NULL ? *p : *reinterpret_cast<const ::naothmessages::Pose3D*>(
+      &::naothmessages::_Pose3D_default_instance_);
+}
+inline ::naothmessages::Pose3D* StepBuffer::mutable_support_foot() {
+  set_has_support_foot();
+  if (support_foot_ == NULL) {
+    support_foot_ = new ::naothmessages::Pose3D;
+  }
+  // @@protoc_insertion_point(field_mutable:naothmessages.StepBuffer.support_foot)
+  return support_foot_;
+}
+inline ::naothmessages::Pose3D* StepBuffer::release_support_foot() {
+  // @@protoc_insertion_point(field_release:naothmessages.StepBuffer.support_foot)
+  clear_has_support_foot();
+  ::naothmessages::Pose3D* temp = support_foot_;
+  support_foot_ = NULL;
+  return temp;
+}
+inline void StepBuffer::set_allocated_support_foot(::naothmessages::Pose3D* support_foot) {
+  delete support_foot_;
+  support_foot_ = support_foot;
+  if (support_foot) {
+    set_has_support_foot();
+  } else {
+    clear_has_support_foot();
+  }
+  // @@protoc_insertion_point(field_set_allocated:naothmessages.StepBuffer.support_foot)
+}
+
+// -------------------------------------------------------------------
+
 // bodyAwareness
 
 // optional bool isLifted = 1;
@@ -15586,6 +15749,8 @@ inline void bodyAwareness::set_allocated_currentcomerror(::naothmessages::Double
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

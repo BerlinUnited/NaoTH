@@ -43,6 +43,7 @@
 #include "Representations/Modeling/GroundContactModel.h"
 #include "Representations/Motion/CollisionPercept.h"
 #include "Representations/Motion/Walk2018/Walk2018Parameters.h"
+#include "Representations/Motion/Walk2018/StepBuffer.h"
 
 #include "Representations/Perception/CameraMatrix.h"
 #include <Representations/Modeling/CameraMatrixOffset.h>
@@ -78,6 +79,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(DebugParameterList)
   PROVIDE(DebugModify)
 
+  REQUIRE(StepBuffer) // hack
   REQUIRE(MotionStatus)
   PROVIDE(OdometryData) // hack
   PROVIDE(InertialModel) // need to overwrite the old filter value by IMUModel
@@ -92,7 +94,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(MotorJointData) // TODO: check
 
   PROVIDE(OffsetJointData)
-  
+
   PROVIDE(RobotInfo)
   PROVIDE(KinematicChainSensor)
   PROVIDE(KinematicChainMotor)
