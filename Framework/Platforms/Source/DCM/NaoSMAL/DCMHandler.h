@@ -21,7 +21,7 @@
 //http://doc.aldebaran.com/2-1/dev/cpp/examples/sensors/fastgetsetdcm/fastgetsetexample.html?highlight=almemoryfastaccess
 //#include <almemoryfastaccess/almemoryfastaccess.h>
 
-#include "Tools/IPCData.h"
+#include "Tools/DCMData.h"
 #include "DCM_led.h"
 
 namespace naoth
@@ -59,10 +59,6 @@ private:
 
   //Buttons
   std::string DCMPath_Button[ButtonData::numOfButtons];
-
-  //IR
-  std::string DCMPath_IRSend[IRSendData::numOfIRSend];
-  std::string DCMPath_IRReceive[IRReceiveData::numOfIRReceive];
 
   //UltraSound
   std::string DCMPath_UltraSoundReceive;
@@ -107,8 +103,6 @@ private:
   void initGyrometer();
   void initInertialSensor();
   void initButton();
-  void initIRSend();
-  void initIRReceive();
   void initUltraSoundReceive();
   void initUltraSoundSend();
   void initDeviceState();
@@ -141,7 +135,6 @@ public:
   void setAllHardnessData(const MotorJointData& mjd, int dcmTime);
   void setAllHardnessData(double value, int dcmTime);
   void setUltraSoundSend(const UltraSoundSendData& data, int dcmTime);
-  void setIRSend(const IRSendData& theIRSendData, int dcmTime);
 
   void setLED(const LEDData& data, int dcmTime) { ledHandler.setAllLED(data, dcmTime); }
   bool setSingleLED(const LEDData& data, int dcmTime) { return ledHandler.setSingleLED(data, dcmTime);}

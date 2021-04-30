@@ -40,6 +40,9 @@ namespace selfloc_symbols("Self-localization Symbols") {
   /** The robot's y-position from GPS*/
   float input gps.y [mm];
 
+  bool input goal.own.was_seen;
+  bool input goal.opp.was_seen;
+
   /** This information is based on the self localization. 
   ACHTUNG: make sure robot_pose.is_valid is TRUE before using them
   */

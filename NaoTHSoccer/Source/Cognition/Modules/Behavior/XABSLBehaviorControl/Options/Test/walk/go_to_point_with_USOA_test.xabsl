@@ -26,10 +26,9 @@ option go_to_point_with_USOA_test
       else
         stay;
     }
-    action{
-      head.control_mode = search_for_goal;
-     
-   }
+    action {
+      head.control_mode = look_around;
+    }
   }
   
   state step1
@@ -42,7 +41,7 @@ option go_to_point_with_USOA_test
     }
     action {
       go_to_point_with_USOA(x=-4400, y=0, rot=0);
-      head.control_mode = search_for_goal;
+      head.control_mode = look_around;
     }
   }
 
@@ -55,7 +54,7 @@ option go_to_point_with_USOA_test
     }
     action{
       go_to_point_with_USOA(x=0, y=0, rot=0);
-      head.control_mode = search_for_goal;
+      head.control_mode = look_around;
     }
   }
 
@@ -68,7 +67,7 @@ option go_to_point_with_USOA_test
     }
     action{
       go_to_point_with_USOA(x=-4500, y=3000, rot=0);
-      head.control_mode = search_for_goal;
+      head.control_mode = look_around;
     }
   }
   

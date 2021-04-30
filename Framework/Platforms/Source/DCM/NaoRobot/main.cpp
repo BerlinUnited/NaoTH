@@ -22,21 +22,30 @@
 using namespace naoth;
 using namespace std;
 
-std::atomic_int framesSinceCognitionLastSeen;
-std::atomic_bool running;
-std::atomic_bool already_got_signal;
+// a semaphore for sychronization with the DCM
+sem_t* dcm_sem = SEM_FAILED;
+
+std::atomic_int framesSinceCognitionLastSeen(0);
+// control variable for the motion and cognition threads
+std::atomic_bool running(true); 
+std::atomic_bool already_got_signal(false);
 
 // handle signals to stop the binary
 void got_signal(int sigid)
 {
   // notify all threads to stop
   running = false;
+  
+  // raise the semaphore, so that the motion thread can stop gracefully
+  if (sem_post(dcm_sem) == -1) {
+    std::cerr << "dcm_sem lock errno: " << errno << std::endl;
+  }
 
   system("/usr/bin/paplay Media/naoth_stop.wav");
 
   if(sigid == SIGTERM || sigid == SIGINT) // graceful stop
   {
-    std::cout << "shutdown requested by kill signal" << sigid << std::endl;
+    std::cout << "shutdown requested by kill signal " << sigid << std::endl;
     
     if (already_got_signal) {
       std::cout << "WARNING: received repeated kill signals. Graceful stop was not possible. Will kill." << std::endl;
@@ -69,11 +78,6 @@ void got_signal(int sigid)
   std::raise(sigid);
 
 }//end got_signal
-
-
-// a semaphore for sychronization with the DCM
-sem_t* dcm_sem = SEM_FAILED;
-
 
 /* 
 // Just some experiments with the RT-Threads
@@ -111,9 +115,9 @@ class TestThread : public RtThread
 
 void* motionThreadCallback(void* ref)
 {
+  std::cout << "[NaoRobot] start motion thread" << std::endl;
+  
   framesSinceCognitionLastSeen = 0;
-  running = true;
-  already_got_signal = false;
 
   NaoController* theController = static_cast<NaoController*> (ref);
 
@@ -143,13 +147,15 @@ void* motionThreadCallback(void* ref)
     theController->runMotion();
     
     if(sem_wait(dcm_sem) == -1) {
-      std::cerr << "lock errno: " << errno << std::endl;
+      std::cerr << "dcm_sem lock errno: " << errno << std::endl;
     }
 
     //stopwatch.stop();
     //stopwatch.start();
   }//end while
 
+  std::cout << "[NaoRobot] stop motion thread" << std::endl;
+  
   return NULL;
 }//end motionThreadCallback
 
@@ -186,9 +192,9 @@ int main(int /*argc*/, char **/*argv[]*/)
   //
   std::signal(SIGTERM, got_signal);
   std::signal(SIGTERM, got_signal);
-  std::signal(SIGINT, got_signal);
+  std::signal(SIGINT,  got_signal);
   std::signal(SIGSEGV, got_signal);
-
+  
   // TODO: why do we need that?
   if(chdir("/home/nao") != 0) {
     std::cerr << "Could not change working directory" << std::endl;
@@ -209,6 +215,7 @@ int main(int /*argc*/, char **/*argv[]*/)
 
   // waiting for the first rise of the semaphore
   // bevore starting the threads
+  std::cerr << "[naoth] wait for DCM" << std::endl;
   sem_wait(dcm_sem);
 
 
@@ -246,10 +253,13 @@ int main(int /*argc*/, char **/*argv[]*/)
   {
     pthread_join(motionThread, NULL);
   }
+  std::cout << "[NaoRobot] Motion thread joined. " << std::endl;
 
   if(cognitionThread.joinable()) {
     cognitionThread.join();
   }
-
+  std::cout << "[NaoRobot] Cognition thread joined. " << std::endl;
+  std::cout << "[NaoRobot] Main stopped. " << std::endl;
+  
   return 0;
 }//end main

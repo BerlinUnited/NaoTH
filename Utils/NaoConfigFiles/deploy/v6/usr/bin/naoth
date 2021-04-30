@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# NOTE:
+# make sure the commands are always executed as user nao
+# otherwise root will not be able to run this script directly
+
+function run_as_nao() {
+  if [ nao = `whoami` ]; then
+    systemctl --user $1 naoth.service
+  else
+    su nao -c "systemctl --user $1 naoth.service"
+  fi
+}
+
+function show_log_as_nao() {
+  if [ nao = `whoami` ]; then
+    journalctl --user-unit=naoth
+  else
+    su nao -c "journalctl --user-unit=naoth"
+  fi
+}
+
+case "$1" in
+  start)
+    echo "starting naoth related process"
+    # TODO: this somehow breaks camera... What does it?
+    # /usr/libexec/reset-cameras.sh toggle
+    run_as_nao start
+    ;;
+  stop)
+    echo "stopping naoth related processes"
+    run_as_nao stop
+    ;;
+  restart)
+    run_as_nao restart
+    ;;
+  status)
+    run_as_nao status
+    ;;
+  log)
+    show_log_as_nao
+    ;;
+  *)
+    echo "Usage: naoth {start|stop|restart|status|log}"
+    exit 1
+    ;;
+
+esac
+
+exit 0

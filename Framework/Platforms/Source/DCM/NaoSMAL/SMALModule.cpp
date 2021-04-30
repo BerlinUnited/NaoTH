@@ -77,8 +77,8 @@ SMALModule::SMALModule(boost::shared_ptr<ALBroker> pBroker, const std::string& p
 
   // 
   setModuleDescription( 
-  "Nao Shared Memory Abstraction Layer (NaoSMAL)" 
-  "provides access to the HAL functionality of naoqi through shared memory" 
+    "Nao Shared Memory Abstraction Layer (NaoSMAL)" 
+    "provides access to the HAL functionality of naoqi through shared memory" 
   );
 }
 
@@ -100,8 +100,7 @@ void SMALModule::init()
 
   std::cout << "resetting working directory to /home/nao/" << std::endl;
   int retChDir = chdir("/home/nao");
-  if(retChDir != 0)
-  {
+  if(retChDir != 0) {
     std::cerr << "Could not change working directory" << std::endl;
   }
 
@@ -176,15 +175,12 @@ void SMALModule::init()
 
   const std::string naoCommandMotorJointDataPath = "/nao_command.MotorJointData";
   const std::string naoCommandUltraSoundSendDataPath = "/nao_command.UltraSoundSendData";
-  const std::string naoCommandIRSendDataPath = "/nao_command.IRSendData";
   const std::string naoCommandLEDDataPath = "/nao_command.LEDData";
 
   std::cout << "Opening Shared Memory: " << naoCommandMotorJointDataPath << std::endl;
   naoCommandMotorJointData.open(naoCommandMotorJointDataPath);
   std::cout << "Opening Shared Memory: " << naoCommandUltraSoundSendDataPath << std::endl;
   naoCommandUltraSoundSendData.open(naoCommandUltraSoundSendDataPath);
-  std::cout << "Opening Shared Memory: " << naoCommandIRSendDataPath << std::endl;
-  naoCommandIRSendData.open(naoCommandIRSendDataPath);
   std::cout << "Opening Shared Memory: " << naoCommandLEDDataPath << std::endl;
   naoCommandLEDData.open(naoCommandLEDDataPath);
 
@@ -302,14 +298,6 @@ void SMALModule::motionCallbackPre()
     drop_count += (drop_count < 11);
   }//end else
   
-  /*
-  if ( naoCommandIRSendData.swapReading() )
-  {
-    const Accessor<IRSendData>* commandData = naoCommandIRSendData.reading();
-    theDCMHandler.setIRSendData(commandData->get(), dcmTime);
-  }//end if
-  */
-
   // NOTE: the LEDs are only set if stiffness was not set in this cycle
   // get the LEDData from the shared memory and put them to the DCM
   // !stiffness_set && 
@@ -358,7 +346,7 @@ void SMALModule::motionCallbackPost()
 
   static int drop_count = 10;
 
-  NaoSensorData* sensorData = naoSensorData.writing();
+  DCMSensorData* sensorData = naoSensorData.writing();
 
   // current system time (System time, not nao time (!))
   sensorData->timeStamp = NaoTime::getSystemTimeInMilliSeconds();
@@ -374,7 +362,7 @@ void SMALModule::motionCallbackPost()
   {
     shutdown_requested = true;
 
-    shutdownCallbackThread = std::thread([this]{this->shutdownCallback();});
+    shutdownCallbackThread = std::thread(&SMALModule::shutdownCallback, this);
   }
 
   // save the data for the emergency case
@@ -403,7 +391,7 @@ void SMALModule::motionCallbackPost()
 
         if(state == DISCONNECTED) {
           fprintf(stderr, "libnaoth: I think the core is alive.\n");
-    }
+        }
 
         drop_count = 0;
         state = CONNECTED;
@@ -412,14 +400,14 @@ void SMALModule::motionCallbackPost()
       {
         if(drop_count == 0) {
           fprintf(stderr, "libnaoth: dropped sensor data.\n");
-    } else if(drop_count == 10) {
+        } else if(drop_count == 10) {
           fprintf(stderr, "libnaoth: I think the core is dead.\n");
           state = DISCONNECTED;
         }
 
         // don't count more than 11
         drop_count += (drop_count < 11);
-      }//end if
+      }//end else
     }
     else
     {
@@ -449,7 +437,6 @@ void SMALModule::exit()
   naoSensorData.close();
   naoCommandMotorJointData.close();
   naoCommandUltraSoundSendData.close();
-  naoCommandIRSendData.close();
   naoCommandLEDData.close();
 
   // set all stiffness to 0

@@ -13,13 +13,13 @@ CompassProvider::CompassProvider()
 {
   DEBUG_REQUEST_REGISTER("Vision:CompassProvider:draw_compas", "draw compas direcion based on the edgel directions", false);
 
-  getDebugParameterList().add(&parameters);
+  getDebugParameterList().add(&params);
 }
 
 
 CompassProvider::~CompassProvider()
 {
-  getDebugParameterList().remove(&parameters);
+  getDebugParameterList().remove(&params);
 }
 
 
@@ -59,9 +59,9 @@ void CompassProvider::execute()
 
   ASSERT(getRansacLinePercept().edgelLineIDs.size() == getLineGraphPercept().edgelsOnField.size());
   // fill the compas
-  if((int)getLineGraphPercept().edgelsOnField.size() > parameters.minimalNumberOfPairs)
+  if((int)getLineGraphPercept().edgelsOnField.size() > params.minimalNumberOfPairs)
   {
-    getProbabilisticQuadCompas().setSmoothing(parameters.quadCompasSmoothingFactor);
+    getProbabilisticQuadCompas().setSmoothing(params.quadCompasSmoothingFactor);
     for(size_t j = 0; j < getLineGraphPercept().edgelsOnField.size(); ++j)
     {
       //const EdgelPair& edgelPair = edgelPairs[j];

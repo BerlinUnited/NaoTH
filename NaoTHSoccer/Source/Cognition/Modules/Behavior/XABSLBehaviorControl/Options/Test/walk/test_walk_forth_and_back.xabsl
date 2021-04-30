@@ -1,61 +1,60 @@
+/** This test is usefull to see how walking and stopping works with the current walking parameters
+    Tests how switching of forward and backwards walking works when no stand motion is used in between
+*/
 option test_walk_forth_and_back{
-
-common decision {
-  if (!body.ready_to_walk || game.current_mode != playing)
-    goto idle;
-}
-
-initial state idle{
-  decision 
-  {
-    else
-      goto go_back;
+  common decision {
+    if (!body.ready_to_walk || game.current_mode != playing)
+      goto idle;
   }
-  action
-  {
-  }
-}
 
-state go_back{
-  decision
-  {
-    else if (state_time > 5000){
-      goto go_forth;
-    } else {
-      stay;
+  initial state idle{
+    decision 
+    {
+      else
+        goto go_back;
+    }
+    action
+    {
     }
   }
-  action
-  {
-      //head.control_mode = look_straight_ahead;
-      head.control_mode = search_for_ball;
-      motion.type = walk;
-      motion.walk_speed.x = -100;
-      motion.walk_speed.y = 0;
-      motion.walk_speed.rot = 0;
-      motion.walk.style = fast;
-  }
-}
 
-state go_forth{
-  decision
-  {
-    else if (state_time > 5000){
-      goto go_back;
-    } else {
-      stay;
+  state go_back{
+    decision
+    {
+      else if (state_time > 5000){
+        goto go_forth;
+      } else {
+        stay;
+      }
+    }
+    action
+    {
+        head.control_mode = search_for_ball;
+        motion.type = walk;
+        motion.walk_speed.x = -100;
+        motion.walk_speed.y = 0;
+        motion.walk_speed.rot = 0;
+        motion.walk.style = fast;
     }
   }
-  action
-  {
-      //head.control_mode = look_straight_ahead;
-      head.control_mode = search_for_ball;
-      motion.type = walk;
-      motion.walk_speed.x = 100;
-      motion.walk_speed.y = 0;
-      motion.walk_speed.rot = 0;
-      motion.walk.style = fast;
-  }
-}
 
+  state go_forth{
+    decision
+    {
+      else if (state_time > 5000){
+        goto go_back;
+      } else {
+        stay;
+      }
+    }
+    action
+    {
+        head.control_mode = search_for_ball;
+        motion.type = walk;
+        motion.walk_speed.x = 100;
+        motion.walk_speed.y = 0;
+        motion.walk_speed.rot = 0;
+        motion.walk.style = fast;
+    }
+  }
 }

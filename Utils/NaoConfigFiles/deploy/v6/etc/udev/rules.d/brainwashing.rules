@@ -1,0 +1,3 @@
+# mounts the stick and executes the brainwashing script
+
+KERNEL=="sd*", SUBSYSTEMS=="usb", ENV{ID_FS_TYPE}=="vfat", ACTION=="add", SYMLINK+="brainwasher", RUN+="/usr/bin/brainwash"

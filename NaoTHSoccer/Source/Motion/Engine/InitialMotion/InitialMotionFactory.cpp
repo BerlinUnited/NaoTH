@@ -9,6 +9,7 @@
 
 // motions
 #include "DeadMotion.h"
+#include "FallMotion.h"
 #include "InitialMotion.h"
 #include "Sit.h"
 
@@ -31,12 +32,14 @@ Module* InitialMotionFactory::createMotion(const MotionRequest& motionRequest)
   currentCreator = NULL;
 
   static ModuleCreator<DeadMotion>* creatorDeadMotion = registerModule<DeadMotion>("DeadMotion");
+  static ModuleCreator<FallMotion>* creatorFallMotion = registerModule<FallMotion>("FallMotion");
   static ModuleCreator<InitialMotion>* creatorInitialMotion = registerModule<InitialMotion>("InitialMotion");
   static ModuleCreator<Sit>* creatorSit = registerModule<Sit>("Sit");
   
   switch(motionRequest.id)
   {
   case motion::dead: currentCreator = creatorDeadMotion; break;
+  case motion::falling: currentCreator = creatorFallMotion; break;
   case motion::init: currentCreator = creatorInitialMotion; break;
   case motion::sit: currentCreator = creatorSit; break;
   default: currentCreator = NULL;

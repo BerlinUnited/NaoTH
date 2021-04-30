@@ -1,0 +1,113 @@
+/** stand up */
+
+option stand_up
+{
+  initial state init
+  {
+    decision
+    {
+      if(executed_motion.type == stand_up_from_back ||
+         executed_motion.type == stand_up_from_back_arms_back ||
+         executed_motion.type == stand_up_from_front ||
+         executed_motion.type == stand_up_from_side)
+         stay;
+      else if(fall_down_state == lying_on_front)
+        goto standup_front;
+      else if(fall_down_state == lying_on_back)
+        goto standup_back;
+      else if (fall_down_state == lying_on_left_side ||
+               fall_down_state == lying_on_right_side)
+         goto lying_side;
+      else
+        goto finished;
+    }
+    action
+    {
+      motion.type = dead;
+    }
+  }
+
+  state lying_side
+  {
+    decision
+    {
+      if(executed_motion.type == stand_up_from_side)
+        goto wait_for_standup;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand_up_from_side;
+      motion.execute_immediately = true;
+    }
+  }
+  
+
+  state standup_back  
+  {
+    decision
+    {
+      if( executed_motion.type == stand_up_from_back || 
+          executed_motion.type == stand_up_from_back_arms_back)
+        goto wait_for_standup;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = (arm.control_mode_before_fall != back)?stand_up_from_back:stand_up_from_back_arms_back;   
+      motion.execute_immediately = true;
+    }
+  }
+
+  state standup_front
+  {
+    decision
+    {
+      if(executed_motion.type == stand_up_from_front)
+        goto wait_for_standup;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand_up_from_front;
+      motion.execute_immediately = true;
+    }
+  }
+
+  state wait_for_standup
+  {
+    decision
+    {
+      if(executed_motion.type != stand)
+        stay;
+      else if (fall_down_state == upright)
+        goto finished;
+      else
+        goto init;
+    }
+    action
+    {
+      motion.type = stand;
+      arm.control_mode = normal;
+    }
+  }
+
+  target state finished
+  {
+    decision
+    {
+      if(fall_down_state != upright)
+        goto init;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand;
+      arm.control_mode = normal;
+    }
+  }
+}

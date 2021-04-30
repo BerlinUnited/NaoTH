@@ -20,7 +20,7 @@ XABSLBehaviorControl::XABSLBehaviorControl()
     // init the xabxl engine
     theEngine(NULL),
     theErrorHandler(error_stream),
-    agentName("soccer")
+    agentName("soccer_agent")
 {
   REGISTER_DEBUG_COMMAND("behavior:reload", "reload the behavior file", this);
   REGISTER_DEBUG_COMMAND("behavior:get_agent", "get the current selected agent", this);
@@ -44,7 +44,6 @@ XABSLBehaviorControl::XABSLBehaviorControl()
   REGISTER_MODULE(TeamSymbols, true);
   REGISTER_MODULE(SensorSymbols, true);
   REGISTER_MODULE(MathSymbols, true);
-  REGISTER_MODULE(GoalSymbols, true);
   REGISTER_MODULE(LedSymbols, true);
   REGISTER_MODULE(SelflocSymbols, true);
   REGISTER_MODULE(OdometrySymbols, true);
@@ -237,7 +236,6 @@ void XABSLBehaviorControl::registerXABSLSymbols()
     XABSL_REGISTER_SYMBOLS(TeamSymbols);
     XABSL_REGISTER_SYMBOLS(SensorSymbols);
     XABSL_REGISTER_SYMBOLS(MathSymbols);
-    XABSL_REGISTER_SYMBOLS(GoalSymbols);
     XABSL_REGISTER_SYMBOLS(LedSymbols);
     XABSL_REGISTER_SYMBOLS(SelflocSymbols);
     XABSL_REGISTER_SYMBOLS(OdometrySymbols);
@@ -406,7 +404,7 @@ void XABSLBehaviorControl::fillActionSparse(const xabsl::Action* source, naothme
   }
   else // it's a symbol
   {
-    dest->set_type(naothmessages::XABSLActionSparse_ActionType_SymbolAssignement);
+    dest->set_type(naothmessages::XABSLActionSparse_ActionType_SymbolAssignment);
     naothmessages::XABSLSymbol* symbol_msg = dest->mutable_symbol();
 
     if(const xabsl::DecimalOutputSymbol* symbol = source->getDecimalOutputSymbol())

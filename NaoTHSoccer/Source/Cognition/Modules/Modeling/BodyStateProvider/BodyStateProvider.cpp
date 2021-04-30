@@ -34,6 +34,7 @@ void BodyStateProvider::execute()
   // 
   updateTheLegTemperature();
   updateIsLiftedUp();
+  updateIsReadyToWalk();
   
   // why do we need this?
   if(getBatteryData().current < -0.5) {
@@ -149,4 +150,23 @@ void BodyStateProvider::updateIsLiftedUp()
     !getBodyState().standByLeftFoot && 
     !getBodyState().standByRightFoot && // no foot is on the ground
      getFrameInfo().getTimeSince(getBodyState().foot_state_time) > lifted_up_time;
+}
+
+void BodyStateProvider::updateIsReadyToWalk()
+{
+    if(getBodyState().fall_down_state == BodyState::upright // not fallen
+            && !getBodyState().isLiftedUp                   // not lifted up
+            && determineReadyToWalkState())                 // ready to walk
+    {
+        getBodyState().readyToWalk = true;
+    } else {
+        getBodyState().readyToWalk = false;
+    }
+}
+
+bool BodyStateProvider::determineReadyToWalkState()
+{
+    // already walking or definitly standing
+    return getMotionStatus().currentMotion == motion::walk
+       || (getMotionStatus().currentMotion == motion::stand && getMotionStatus().target_reached);
 }

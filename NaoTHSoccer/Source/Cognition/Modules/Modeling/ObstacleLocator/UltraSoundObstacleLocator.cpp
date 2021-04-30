@@ -20,12 +20,12 @@ UltraSoundObstacleLocator::UltraSoundObstacleLocator()
   DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawSensorData", "draw the measured echos", false);
   DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawBuffer", "draw buffer of measurements", false);
 
-  getDebugParameterList().add(&parameters);
+  getDebugParameterList().add(&params);
 }
 
 UltraSoundObstacleLocator::~UltraSoundObstacleLocator() 
 {
-  getDebugParameterList().remove(&parameters);
+  getDebugParameterList().remove(&params);
 }
 
 void UltraSoundObstacleLocator::execute()
@@ -68,8 +68,8 @@ void UltraSoundObstacleLocator::drawObstacleModel()
     FIELD_DRAWING_CONTEXT;
     Color colorLeft(Color::blue);
     Color colorRight(Color::red);
-    colorLeft[Color::alpha] = 0.5;
-    colorRight[Color::alpha] = 0.5;
+    colorLeft[Color::Alpha] = 0.5;
+    colorRight[Color::Alpha] = 0.5;
     // draw raw sensor data
     for(unsigned int i = 0; i < UltraSoundReceiveData::numOfUSEcho; i++)
     {
@@ -113,6 +113,8 @@ void UltraSoundObstacleLocator::drawObstacleModel()
 
 bool UltraSoundObstacleLocator::isNewDataAvaliable() const
 {
+  // NOTE: this can lead to unexpected/undesired behavior, if the sensor - for whatever reson -
+  //       returns the same data for some time!
   for(int i = 0; i < UltraSoundReceiveData::numOfUSEcho; i++) {
     if(getUltraSoundReceiveData().dataLeft[i] != lastValidUltraSoundReceiveData.dataLeft[i] ||
        getUltraSoundReceiveData().dataRight[i] != lastValidUltraSoundReceiveData.dataRight[i])
@@ -129,10 +131,22 @@ void UltraSoundObstacleLocator::fillBuffer()
     return;
   }
   lastValidUltraSoundReceiveData = getUltraSoundReceiveData();
+  
+  // http://doc.aldebaran.com/2-1/family/nao_dcm/actuator_sensor_names.html#actuator-sensor-list-nao
+  // http://doc.aldebaran.com/2-8/family/nao_technical/lola/actuator_sensor_names.html#sonars
+  // http://doc.aldebaran.com/1-14/family/robots/sonar_robot.html
 
   // convert to mm
   double leftMeasurement = getUltraSoundReceiveData().dataLeft[0] * 1000.0;
   double rightMeasurement = getUltraSoundReceiveData().dataRight[0] * 1000.0;
+
+  // for v5 and v6 the 0.0 value should be treated as invalid
+  if(leftMeasurement == 0.0){
+    leftMeasurement = invalidDistanceValue;
+  }
+  if (rightMeasurement == 0.0) {
+    rightMeasurement = invalidDistanceValue;
+  }
 
   bufferRight.add(rightMeasurement);
   bufferLeft.add(leftMeasurement);
@@ -161,7 +175,7 @@ void UltraSoundObstacleLocator::provideToLocalObstacleModel()
     model.frontDistance = std::min(model.leftDistance, model.rightDistance);
   }
 
-  if(model.frontDistance < parameters.minBlockedDistance)
+  if(model.frontDistance < params.minBlockedDistance)
   {
     if(!wasFrontBlockedInLastFrame)
     {

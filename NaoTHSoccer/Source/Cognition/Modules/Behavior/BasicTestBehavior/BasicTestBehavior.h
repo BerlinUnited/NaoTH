@@ -16,7 +16,6 @@
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Infrastructure/SoundData.h"
 #include "Representations/Modeling/OdometryData.h"
-#include "Representations/Perception/BallPercept.h"
 #include "Representations/Perception/MultiBallPercept.h"
 //#include "Representations/Perception/PlayersPercept.h"
 #include "Representations/Modeling/BallModel.h"
@@ -50,7 +49,6 @@ BEGIN_DECLARE_MODULE(BasicTestBehavior)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
   REQUIRE(MotionStatus)
-  REQUIRE(BallPercept)
   REQUIRE(MultiBallPercept)
   REQUIRE(BallModel)
   REQUIRE(OdometryData)
@@ -81,7 +79,7 @@ private:
   void testHead();
   void testMotion();
   void testLED();
-	void testWhistle();
+  void testAudio();
 };
 
 #endif // _BasicTestBehavior_H_

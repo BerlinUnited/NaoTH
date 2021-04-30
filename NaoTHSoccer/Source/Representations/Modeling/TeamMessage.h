@@ -24,7 +24,7 @@ public:
 
     unsigned int dropNoSplMessage = 0;
     unsigned int dropNotOurTeam = 0;
-    unsigned int dropNotParseable = 0;
+    unsigned int dropNotParseable = 0; // NOTE: currently not used; if key fails it is not parseable!
     unsigned int dropKeyFail = 0;
     unsigned int dropMonotonic = 0;
 

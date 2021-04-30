@@ -58,7 +58,8 @@ option spl_remote_play_direct_control
         stay;
     }
     action {
-      sidekick(to = left);
+      //FIXME
+      //sidekick(to = left);
 
       head.control_mode = look_straight_ahead;
     }
@@ -72,7 +73,8 @@ option spl_remote_play_direct_control
         stay;
     }
     action {
-      sidekick(to = right);
+      //FIXME
+      //sidekick(to = right);
 
       head.control_mode = look_straight_ahead;
     }
@@ -86,7 +88,7 @@ option spl_remote_play_direct_control
         stay;
     }
     action {
-      fast_forward_kick(foot = left);
+      //fast_forward_kick(foot = left);
 
       head.control_mode = look_straight_ahead;
     }
@@ -100,7 +102,7 @@ option spl_remote_play_direct_control
         stay;
     }
     action {
-      fast_forward_kick(foot = right);
+      //fast_forward_kick(foot = right);
 
       head.control_mode = look_straight_ahead;
     }

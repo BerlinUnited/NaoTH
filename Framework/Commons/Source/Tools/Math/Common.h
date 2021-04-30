@@ -3,8 +3,8 @@
 #ifndef _Math_Common_h_
 #define _Math_Common_h_
 
-#include <assert.h>
-#include <math.h>
+#include <cassert>
+#include <cmath>
 #include <ctime>
 #include <cstdint>
 
@@ -264,7 +264,7 @@ namespace Math
   float fromFixPoint(std::int32_t val) {
     static const std::int32_t one = 1 << PrecisionBits;
 
-    return val / static_cast<float>(one);
+    return static_cast<float>(static_cast<double>(val) / static_cast<double>(one));
   }
 
 }//end namespace Math

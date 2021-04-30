@@ -13,7 +13,6 @@
 #include <Representations/Infrastructure/CameraInfo.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/LEDData.h>
-#include <Representations/Infrastructure/IRData.h>
 #include <Representations/Infrastructure/UltraSoundData.h>
 #include <Representations/Infrastructure/SoundData.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
@@ -38,7 +37,6 @@ BEGIN_DECLARE_MODULE(Actuator)
   REQUIRE(CameraSettingsRequest)
   REQUIRE(CameraSettingsRequestTop)
   REQUIRE(LEDData)
-  REQUIRE(IRSendData)
   REQUIRE(UltraSoundSendData)
   REQUIRE(MotionStatus)
   REQUIRE(TeamMessageDataOut)

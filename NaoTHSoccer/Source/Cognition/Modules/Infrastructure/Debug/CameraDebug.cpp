@@ -47,18 +47,12 @@ void CameraDebug::execute()
     
     setCommonCameraSetting(common.brightness, bottom.brightness, top.brightness, changed);
     setCommonCameraSetting(common.exposure, bottom.exposure, top.exposure, changed);
-    setCommonCameraSetting(common.targetGain, bottom.targetGain, top.targetGain, changed);
-    setCommonCameraSetting(common.minAnalogGain, bottom.minAnalogGain, top.minAnalogGain, changed);
-    setCommonCameraSetting(common.maxAnalogGain, bottom.maxAnalogGain, top.maxAnalogGain, changed);
 
     setCommonCameraSetting(common.gain, bottom.gain, top.gain, changed);
     setCommonCameraSetting(common.saturation, bottom.saturation, top.saturation, changed);
     setCommonCameraSetting(common.sharpness, bottom.sharpness, top.sharpness, changed);
-    setCommonCameraSetting(common.whiteBalanceTemperature, bottom.whiteBalanceTemperature, top.whiteBalanceTemperature, changed);
-    setCommonCameraSetting(common.gammaCorrection, bottom.gammaCorrection, top.gammaCorrection, changed);
-
-    setCommonCameraSetting(common.powerlineFrequency, bottom.powerlineFrequency, top.powerlineFrequency, changed);
-
+    setCommonCameraSetting(common.v5.whiteBalanceTemperature, bottom.v5.whiteBalanceTemperature, top.v5.whiteBalanceTemperature, changed);
+    
             
     if(changed)
     {

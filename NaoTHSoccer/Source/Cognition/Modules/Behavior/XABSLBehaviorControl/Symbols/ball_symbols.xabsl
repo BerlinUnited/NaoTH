@@ -6,23 +6,23 @@ namespace ball_symbols("Ball Symbols") {
   /** Position of the ball in x direction relative to the field in mm */
   float input ball.x [mm];
   /** Position of the ball in y direction relative to the field in mm */
-  float input ball.y [mm];
+  float input ball.y [mm];  
+
+  /** Position of the ball at rest in x direction relative to the field in mm */
+  float input ball.position_at_rest.x [mm];
+  /** Position of the ball at rest in y direction relative to the field in mm */
+  float input ball.position_at_rest.y [mm];
+
+  float input ball.future.preview.x;
+  float input ball.future.preview.y;
+
+  float input ball.interception.preview.x;
+  float input ball.interception.preview.y;
   
   /** Distance of the ball in mm */
   float input ball.distance "mm";
   /** Angle to the ball in deg */
   float input ball.angle [-180..180]"deg";
-
-  /** Position of the ball in x direction relative to the left foot */
-  float input ball.left_foot.x "mm";
-  /** Position of the ball in y direction relative to the left foot */
-  float input ball.left_foot.y "mm";
-
-  /** Position of the ball in x direction relative to the right foot */
-  float input ball.right_foot.x "mm";
-  /** Position of the ball in y direction relative to the right foot */
-  float input ball.right_foot.y "mm";
-
 
   /** Position of the ball in previewed model */
   float input ball.preview.x [mm];
@@ -38,6 +38,10 @@ namespace ball_symbols("Ball Symbols") {
 
   /** y direction of speed */
   float input ball.speed.y [mm/s];
+
+  /** position of the  last known ball */
+  float input ball.last_known.x;
+  float input ball.last_known.y;
 
     /** Time since the ball was last seen in ms */
   float input ball.time_since_last_seen "ms";

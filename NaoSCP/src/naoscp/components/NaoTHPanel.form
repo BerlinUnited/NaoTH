@@ -24,6 +24,8 @@
               <Component id="cbCopyConfig" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="cbCopyLib" min="-2" max="-2" attributes="0"/>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Component id="cbCopyLola" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
           </Group>
           <Component id="playerNumberPanel" alignment="1" max="32767" attributes="0"/>
@@ -38,6 +40,7 @@
                   <Component id="cbCopyExe" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="cbCopyConfig" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="cbCopyLib" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="cbCopyLola" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="playerNumberPanel" min="-2" pref="100" max="-2" attributes="0"/>
@@ -230,6 +233,7 @@
     </Component>
     <Component class="javax.swing.JCheckBox" name="cbCopyConfig">
       <Properties>
+        <Property name="selected" type="boolean" value="true"/>
         <Property name="text" type="java.lang.String" value="copyConfig"/>
       </Properties>
       <Events>
@@ -243,5 +247,13 @@
         <Property name="rows" type="int" value="2"/>
       </Layout>
     </Container>
+    <Component class="javax.swing.JCheckBox" name="cbCopyLola">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="copyLolaAdaptor"/>
+      </Properties>
+      <Events>
+        <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cbCopyLolaItemStateChanged"/>
+      </Events>
+    </Component>
   </SubComponents>
 </Form>

@@ -39,4 +39,14 @@ namespace game_symbols("Game Control Symbols")
   };
 
   enum game.set_play input game.set_play;
+
+  enum game.phase
+  {
+    normal,
+    penaltyshoot,
+    overtime,
+    timeout
+  };
+  
+  enum game.phase input game.phase;
 }

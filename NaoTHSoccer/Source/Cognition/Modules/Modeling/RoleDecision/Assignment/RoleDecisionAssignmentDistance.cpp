@@ -65,7 +65,15 @@ void RoleDecisionAssignmentDistance::roleChange(unsigned int playernumber, Roles
     role_changes[playernumber].second = role;
 }
 
-void RoleDecisionAssignmentDistance::keepGoalie(std::map<unsigned int, Roles::Static>& new_roles) {
+void RoleDecisionAssignmentDistance::keepGoalie(std::map<unsigned int, Roles::Static>& new_roles)
+{
+    // find the goalie in the teammessages with the lowest playernumber
+    unsigned int goalie_msg = std::numeric_limits<unsigned int>::max();
+    for(const auto& v : getTeamMessage().data) {
+        if(v.second.custom.robotRole.role == Roles::goalie && goalie_msg > v.first) {
+            goalie_msg = v.first;
+        }
+    }
     // find the player with the goalie role
     const auto& goalie = std::find_if(
                 getRoleDecisionModel().roles.cbegin(),
@@ -73,7 +81,12 @@ void RoleDecisionAssignmentDistance::keepGoalie(std::map<unsigned int, Roles::St
                 [](const std::pair<const unsigned int,Roles::Role>& r) {return r.second.role == Roles::goalie; });
     // set the new role to goale (again)
     if(goalie != getRoleDecisionModel().roles.end()) {
-        new_roles[goalie->first] = Roles::goalie;
+        // if the communicated goalie is different from my own decision, use the one with the smaller playernumber
+        if(goalie_msg < goalie->first) {
+            new_roles[goalie_msg] = Roles::goalie;
+        } else {
+            new_roles[goalie->first] = Roles::goalie;
+        }
     }
 }
 

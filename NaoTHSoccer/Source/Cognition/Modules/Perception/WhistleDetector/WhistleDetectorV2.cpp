@@ -6,7 +6,7 @@
 *
 * Implementation of class WhistleDetectorV2
 * Implements a whistle detector based on a frequency band filter.
-* (simmilar to the austrian kangaroos whistle detector)
+* (inspired by the austrian kangaroos whistle detector)
 */
 
 #include "WhistleDetectorV2.h"
@@ -16,22 +16,20 @@ WhistleDetectorV2::WhistleDetectorV2()
   : 
   lastDataTimestamp(0), 
   whistle_filter(0.3, 0.1)
-  //myfile ("example.bin", std::ios::binary)
 {
-  DEBUG_REQUEST_REGISTER("Plot:WhistleDetectorV2:scan_thresh","", false);
+  DEBUG_REQUEST_REGISTER("Plot:WhistleDetectorV2:scan","", false);
 
-	getDebugParameterList().add(&params);
+  getDebugParameterList().add(&params);
 }
 
 WhistleDetectorV2::~WhistleDetectorV2()
 {
-	getDebugParameterList().remove(&params);
-  //myfile.close();
+  getDebugParameterList().remove(&params);
 }
 
 void WhistleDetectorV2::execute()
 {
-	getWhistlePercept().reset();
+  getWhistlePercept().reset();
 
   // there is no new data, return
   if(lastDataTimestamp >= getAudioData().timestamp ) {
@@ -39,70 +37,87 @@ void WhistleDetectorV2::execute()
   }
 
   // save the timestamp for later
+  PLOT("WhistleDetectorV2:time_delta", (getAudioData().timestamp - lastDataTimestamp));
   lastDataTimestamp = getAudioData().timestamp;
 
-  fft.init(params.nWindowSizePadded);
-  
-  whistle_filter.setParameter(params.whistle_filter.g0, params.whistle_filter.g1);
+  // update parameters if necessary
+  if(params.check_changed()) {
+    fft.init(params.nWindowSize + params.nWindowZeroPadding);
+    whistle_filter.setParameter(params.whistle_filter.g0, params.whistle_filter.g1);
+  }
 
-  static int iInput = 0;
-  const int length = static_cast<int>(getAudioData().samples.size());// - 256*getAudioData().numChannels; // due to a bug in overlay
+  // NOTE: this is channel offset, i.e., the number of the channel that we are listening to
+  const int channel = 0;
+
+  const int length = static_cast<int>(getAudioData().samples.size());
   const int channels = getAudioData().numChannels;
-  const int offset = 0;
-  const int windowTime = params.nWindowSize;
-  const int windowTimeStep = params.nWindowSkipping;
   const std::vector<short>& data = getAudioData().samples;
 
-  const int nWhistleBegin = int(params.fWhistleBegin * params.nWindowSizePadded) / params.fSampleRate;
-	const int nWhistleEnd = int(params.fWhistleEnd  * params.nWindowSizePadded) / params.fSampleRate;
-
-  int plot_idx = 0;
+  const int windowTime = params.nWindowSize;
+  const int windowTimeStep = params.nWindowSkipping;
+  const int whistleBeginIdx  = int(params.fWhistleBegin * fft.getWindowFrequency()) / params.fSampleRate;
+  const int whistleEndIdx    = int(params.fWhistleEnd  * fft.getWindowFrequency()) / params.fSampleRate;
+  
+  // make sure the bin indices stay within bounds
+  // ASSERT(nWhistleBegin <= nWhistleEnd && nWhistleEnd*2 <= params.fSampleRate);
+  ASSERT(whistleBeginIdx <= whistleEndIdx && whistleEndIdx <= fft.getWindowFrequency());
 
   // iterate over the data
-  for (int i = 0; i < length; i += channels) 
+  for (int i = 0; i < length; i += channels)
   {
     // copy to the input data
-    intToNormalizedDouble(data[i + offset], fft.input[iInput++]);
+    fft.add(data[i + channel]);
 
     // enough data is in te input buffer
-    if(iInput >= windowTime) 
+    if(fft.size() >= windowTime)
     {
       fft.execute();
       
+      // find the maximal magnitude within the frequency band of the whistle
+      double max_value = -1;
+      double max_f = 0;
+      for(int k = whistleBeginIdx; k < whistleEndIdx; ++k) {
+        if(fft.magnitude(k) > max_value) {
+          max_value = fft.magnitude(k);
+          max_f = k;
+        }
+      }
+
+      // estimate the dynamic threshold
       double mean, dev;
       calcMeanDeviationApprox(fft.magnitude(), mean, dev);
       const double whistleThresh = mean + params.vWhistleThreshold * dev;
-      
-      bool found = false;
-      double max_value = -1;
-      for(int k = nWhistleBegin; k < nWhistleEnd; ++k) {
-        if(fft.magnitude()[k] > max_value) {
-          max_value = fft.magnitude()[k];
-        }
-        if(fft.magnitude()[k] > whistleThresh) {
-          found = true;
-          break;
-        }
-      }
 
-      DEBUG_REQUEST("Plot:WhistleDetectorV2:scan_thresh",
-        PLOT_GENERIC("WhistleDetectorV2:scan", plot_idx, max_value);
-        PLOT_GENERIC("WhistleDetectorV2:thresh", plot_idx, whistleThresh);
-        plot_idx++;
-      );
+      bool found = false;
+      if(max_value > whistleThresh && max_value > params.vWhistleThresholdAmplitude) {
+        found = true;
+      }
 
       if( whistle_filter.update(found, 0.3, 0.9) ) {
         getWhistlePercept().whistleDetected = true;
+        getWhistlePercept().frameWhenWhistleDetected = getFrameInfo().getFrameNumber();
       }
 
-      PLOT("WhistleDetectorV2:whistle_filter", whistle_filter.value());
+      DEBUG_REQUEST("Plot:WhistleDetectorV2:scan",
+        
+        // length of the buffer in ms
+        const double buffer_time = static_cast<double>(getAudioData().samples.size()/channels) * 1000.0 / static_cast<double>(getAudioData().sampleRate);
+        // offset of the window center in the buffer in ms
+        const double window_time = static_cast<double>(i / channels - windowTime / 2) * 1000.0 / static_cast<double>(getAudioData().sampleRate);
+        // calculate time offset in ms
+        const double time = static_cast<double>(getAudioData().timestamp) - buffer_time + window_time;
 
-      // move the overlapping part to the beginning of the input
-      iInput = 0;
-      for(int k = windowTimeStep; k < windowTime; ++k) {
-        fft.input[iInput++] = fft.input[k];
-      }
+        PLOT_GENERIC("WhistleDetectorV2:max_f", time, max_f);
+        PLOT_GENERIC("WhistleDetectorV2:max_value", time, max_value);
+        PLOT_GENERIC("WhistleDetectorV2:thresh", time, whistleThresh);
+        PLOT_GENERIC("WhistleDetectorV2:detected", time, dev);
+
+        PLOT_GENERIC("WhistleDetectorV2:whistle_filter", time, whistle_filter.value()*10);
+        PLOT_GENERIC("WhistleDetectorV2:detected", time, getWhistlePercept().whistleDetected*10);
+      );
+
+      // clear buffer:
+      fft.clean(windowTimeStep);
     }
   }
-
 }

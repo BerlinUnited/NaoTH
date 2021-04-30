@@ -30,10 +30,10 @@ void AdaptiveAutoExposure::execute()
     if(getCommonCameraSettingsRequest().autoExpositionMethod == "averageY") 
     {
         if(executeBottom) {
-            getCameraSettingsRequest().autoExpositionAlgorithm = 0;
+            getCameraSettingsRequest().v5.autoExpositionAlgorithm = 0;
         }
         if(executeTop) {
-            getCameraSettingsRequestTop().autoExpositionAlgorithm = 0;
+            getCameraSettingsRequestTop().v5.autoExpositionAlgorithm = 0;
         }
     }
     else
@@ -46,10 +46,10 @@ void AdaptiveAutoExposure::execute()
         // include all per default
 
         if(executeBottom) {
-            getCameraSettingsRequest().autoExpositionAlgorithm = 1;
+            getCameraSettingsRequest().v5.autoExpositionAlgorithm = 1;
         }
         if(executeTop) {
-            getCameraSettingsRequestTop().autoExpositionAlgorithm = 1;            
+            getCameraSettingsRequestTop().v5.autoExpositionAlgorithm = 1;            
         }
 
         if(getCommonCameraSettingsRequest().autoExpositionMethod == "dortmund") 
@@ -221,8 +221,8 @@ void AdaptiveAutoExposure::executeDebugDrawings(std::uint8_t onVal)
 {
     DEBUG_REQUEST("AdaptiveAutoExposure:draw_weights",
             IMAGE_DRAWING_CONTEXT;
-            int gridWidth = getImage().width() / CameraSettings::AUTOEXPOSURE_GRID_SIZE;
-            int gridHeight = getImage().height() / CameraSettings::AUTOEXPOSURE_GRID_SIZE;
+            int gridWidth = getImage().width() / static_cast<int>(CameraSettings::AUTOEXPOSURE_GRID_SIZE);
+            int gridHeight = getImage().height() / static_cast<int>(CameraSettings::AUTOEXPOSURE_GRID_SIZE);
             for(std::size_t x = 0; x < CameraSettings::AUTOEXPOSURE_GRID_SIZE; x++) {
                 for(std::size_t y=0; y < CameraSettings::AUTOEXPOSURE_GRID_SIZE; y++) {
                     double w_bottom = (double) getCameraSettingsRequest().autoExposureWeights[y][x];
@@ -280,8 +280,8 @@ void AdaptiveAutoExposure::executeDebugDrawings(std::uint8_t onVal)
 
         DEBUG_REQUEST("AdaptiveAutoExposure:draw_weights_wrong",
             IMAGE_DRAWING_CONTEXT;
-            int gridWidth = getImage().width() / CameraSettings::AUTOEXPOSURE_GRID_SIZE;
-            int gridHeight = getImage().height() / CameraSettings::AUTOEXPOSURE_GRID_SIZE;
+            int gridWidth = getImage().width() / static_cast<int>(CameraSettings::AUTOEXPOSURE_GRID_SIZE);
+            int gridHeight = getImage().height() / static_cast<int>(CameraSettings::AUTOEXPOSURE_GRID_SIZE);
             for(std::size_t x = 0; x < CameraSettings::AUTOEXPOSURE_GRID_SIZE; x++) {
                 for(std::size_t y=0; y < CameraSettings::AUTOEXPOSURE_GRID_SIZE; y++) {
 

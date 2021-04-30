@@ -16,12 +16,26 @@
 class Color: public Vector_n<double,4>
 {
 public:
+  enum ColorPalett
+  {
+    white,
+    gray,
+    black,
+    pink,
+    red,
+    orange,
+    yellow,
+    green,
+    skyblue,
+    blue
+  };
+
   enum Chanel
   {
-    red,
-    green, 
-    blue,
-    alpha,
+    Red,
+    Green,
+    Blue,
+    Alpha,
     numberOfChanel
   };
 
@@ -35,6 +49,8 @@ public:
   Color(double r, double g, double b, double a = 1.0);
 
   Color(const char* color);
+
+  Color(ColorPalett c);
 
   /**
   * Generate a color using an index number.

@@ -8,8 +8,9 @@ option role_default
             && !game.own_kickoff                             // opponent kickoff
             && game.time_in_play < 10000                     // wait for ball free time
             // if we see the ball outside the centercircle, the ball is free!
-            && ((ball.know_where_itis && (abs(value=ball.position.field.x) <= (field.centerCircleRadius+200) && abs(value=ball.position.field.y) <= (field.centerCircleRadius+200))) || !ball.know_where_itis)
+            && (!ball.know_where_itis || vector.abs(x=ball.position.field.x, y=ball.position.field.y) <= 300) // field.centerCircleRadius/2
          )
+         
       goto wait_for_ball_free;
   }
 
@@ -51,7 +52,7 @@ option role_default
               && !game.own_kickoff                             // opponent kickoff
               && game.time_in_play < 10000                     // wait for ball free time
               // if we see the ball outside the centercircle, the ball is free!
-              && ((ball.know_where_itis && (abs(value=ball.position.field.x) <= (field.centerCircleRadius+200) && abs(value=ball.position.field.y) <= (field.centerCircleRadius+200))) || !ball.know_where_itis)
+              && (!ball.know_where_itis || vector.abs(x=ball.position.field.x, y=ball.position.field.y) <= 300) // field.centerCircleRadius/2
               ))
         goto decide_subrole_or_passive;
       else

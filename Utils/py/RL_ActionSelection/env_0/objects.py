@@ -1,6 +1,7 @@
 from naoth.math2d import Vector2 as Vec
 from naoth.math2d import LineSegment
 
+
 class Rectangle(object):
     def __init__(self, point_1, point_2, point_3, point_4):
         # construct a rectangle with four point clockwise starting at bottom left

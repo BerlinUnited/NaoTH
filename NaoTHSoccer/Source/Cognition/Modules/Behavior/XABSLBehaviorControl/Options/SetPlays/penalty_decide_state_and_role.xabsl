@@ -1,0 +1,38 @@
+/** Decide penalty role */
+
+option penalty_decide_state_and_role
+{  
+  common decision
+  {
+    if(!body.ready_to_walk)
+      goto idle;
+    // TODO maybe make sure that in set the players look for ball and opponent?
+    else if(game.current_mode == playing)
+    {
+      if(!game.own_kickoff)
+        goto play_goalie;
+      else
+        goto play_kicker;
+    }
+    else if(true)
+      goto idle;
+  }
+
+  initial state idle{
+    action{}
+  }
+  
+  state play_kicker {
+    action 
+    {
+      penalty_kicker();
+    }
+  }
+
+  state play_goalie {
+    action 
+    {
+      penalty_goalie();
+    }
+  }
+}

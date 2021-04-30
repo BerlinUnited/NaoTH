@@ -11,6 +11,8 @@
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugParameterList.h"
 
+#include "ransac_tools.h"
+
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Perception/LineGraphPercept.h"
 #include "Representations/Perception/LinePercept2018.h"
@@ -50,10 +52,10 @@ private:
       PARAMETER_REGISTER(line.minInliers) = 12;
 
       PARAMETER_REGISTER(line.outlierThresholdDist) = 70;
-      PARAMETER_REGISTER(line.minDirectionSimilarity) = 0.8;
+      PARAMETER_ANGLE_REGISTER(line.outlierThresholdAngle) = 8;
       
       PARAMETER_REGISTER(line.maxVariance) = 0.009;
-      PARAMETER_REGISTER(line.length_of_var_check) = 800;
+      PARAMETER_REGISTER(line.max_length_for_var_check) = 800;
       PARAMETER_REGISTER(line.min_line_length) = 100;
       //PARAMETER_REGISTER(line.fit_lines_to_inliers) = false;
 
@@ -66,6 +68,9 @@ private:
       PARAMETER_REGISTER(circle.enable) = true;
       PARAMETER_REGISTER(circle.refine) = true;
 
+      PARAMETER_REGISTER(circle.validate) = true;
+      PARAMETER_REGISTER(circle.validation_thresh) = 200;
+
       syncWithConfig();
     }
 
@@ -74,10 +79,10 @@ private:
       int maxIterations;
       int minInliers;
       double outlierThresholdDist;
-      double minDirectionSimilarity;
+      double outlierThresholdAngle;
 
       double maxVariance;
-      double length_of_var_check;
+      double max_length_for_var_check;
       double min_line_length;
 
       //bool fit_lines_to_inliers;
@@ -91,6 +96,9 @@ private:
       
       bool enable;
       bool refine;
+
+      bool validate;
+      double validation_thresh;
     } circle;
 
   } params;
@@ -100,48 +108,12 @@ private:
 
 
 private: // detectors
-
-  bool ransacLine(Math::LineSegment& result, std::vector<size_t>& inliers, size_t& start_edgel, size_t& end_edgel);
+  ransac::RansacLine lineRansac;
+  ransac::RansacCircle circleRansac;
 
   int ransacEllipse(Ellipse& result);
 
-  bool ransacCircle(Vector2d& result, std::vector<size_t>& inliers);
-
 private: // helper methods
-
-  // calculate the simmilarity to the other edgel
-  // returns a value [0,1], 0 - not simmilar, 1 - very simmilar
-  inline double sim(const Math::Line& line, const Edgel& edgel) const
-  {
-    double s = 0.0;
-    if(line.getDirection()*edgel.direction > 0) {
-      Vector2d v(edgel.point - line.getBase());
-      v.rotateRight().normalize();
-      s = 1.0-0.5*(fabs(line.getDirection()*v) + fabs(edgel.direction*v));
-    }
-
-    return s;
-  }
-
-  inline double sim(const Vector2d& circle_mean, const Edgel& edgel) const
-  {
-    Vector2d tangent_d(edgel.point - circle_mean);
-    tangent_d.rotateRight().normalize();
-
-    double s = 0.0;
-    if(tangent_d*edgel.direction > 0) {
-      s = 1.0-0.5*(fabs(edgel.direction*tangent_d));
-    }
-
-    return s;
-  }
-
-
-  inline double angle_diff(const Vector2d& circle_mean, const Edgel& edgel) const
-  {
-    double a = fabs(Vector2d(edgel.point - circle_mean).rotateRight().angleTo(edgel.direction));
-    return std::min(a, Math::pi - a);
-  }
 
   /**
     Get random items without replacement from a vector.
@@ -158,70 +130,6 @@ private: // helper methods
     int random_pos = Math::random(ith, max);
     std::swap(vec[random_pos], vec[ith-1]);
     return vec[ith-1];
-  }
-
-  // NOTE: we never call this function with vec.size() <= 2
-  Vector2i choose_random_two(const std::vector<size_t> &vec) const {
-    //ASSERT(vec.size() > 1);
-    int size = static_cast<int>(vec.size());
-    int random_pos_one = Math::random(size);
-    int random_pos_two = (random_pos_one + Math::random(size-1) + 1) % size;
-    return Vector2i(random_pos_one, random_pos_two);
-  }
-
-  //bool estimateCircle(const Edgel& a, const Edgel& b, const double radius, Vector2d& center);
-  inline bool estimateCircle(const Edgel& a, const Edgel& b, const double radius, Vector2d& center) const 
-  {
-    double half_distance = (a.point - b.point).abs()/2;
-
-    // the points need to be reasonably close to each other to form a circle
-    if(half_distance > 0.9*radius) {
-      return false;
-    }
-
-    Math::Line la(a.point, Vector2d(a.direction).rotateLeft());
-    Math::Line lb(b.point, Vector2d(b.direction).rotateLeft());
-    double t = la.intersection(lb);
-
-    // too large error
-    if(fabs(t) > radius*1.5) {
-      return false;
-    }
-
-    Math::LineSegment lab(a.point, b.point);
-    const Vector2d c = la.point(t);
-    const Vector2d direction = (c - lab.projection(c)).normalize();
-
-    Vector2d between((a.point + b.point)/2);
-    // NOTE: we allways make sure half_distance > radius, but just to be sure take fabs ;)
-    double between_dist = sqrt(fabs(Math::sqr(radius) - Math::sqr(half_distance)));
-
-    center = between + direction*between_dist;
-    
-    //assert(std::isfinite(center.x) && std::isfinite(center.y));
-    return true;
-  }
-
-  Vector2d refineCircle(const std::vector<size_t>& inliers, const Vector2d& center) const;
-
-  inline bool isCircleInlier(size_t i, const Vector2d& center, double& distError, double maxAngleError) const {
-    const Edgel& e = getLineGraphPercept().edgelsOnField[i];
-    const double radius = getFieldInfo().centerCircleRadius;
-
-    distError = std::fabs(radius - (center - e.point).abs());
-    return distError             <= params.circle.outlierThresholdDist && 
-           //sim(center, e) > maxAngleError;
-           angle_diff(center, e) <= maxAngleError;
-
-    /*
-    double d2 = (center - e.point).abs2();
-    return fabs(center.x - e.point.x) <= params.circle.outlierThresholdDist + radius &&
-           fabs(center.y - e.point.y) <= params.circle.outlierThresholdDist + radius &&
-           d2 <= Math::sqr(params.circle.outlierThresholdDist + radius) &&
-           radius*radius <= Math::sqr(params.circle.outlierThresholdDist + d2) &&
-           //angle_diff(center, e) <= maxAngleError;
-           sim(center, e) > maxAngleError;
-    */
   }
 };
 

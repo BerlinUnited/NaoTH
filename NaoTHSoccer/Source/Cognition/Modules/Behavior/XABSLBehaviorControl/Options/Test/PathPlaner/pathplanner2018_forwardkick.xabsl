@@ -22,7 +22,7 @@ option pathplanner2018_forwardkick
     }
     action 
     {
-      path2018.routine = path2018.routine.none;
+      path2018.routine = none;
       situation_abortable = true;
     }
   }
@@ -38,7 +38,7 @@ option pathplanner2018_forwardkick
     }
     action{
       situation_abortable = true;
-      path2018.routine = path2018.routine.none;
+      path2018.routine = none;
       search_ball();
     }
   }
@@ -56,7 +56,7 @@ option pathplanner2018_forwardkick
     {
       head.control_mode = look_at_ball_percept;
 
-      path2018.routine = path2018.routine.forwardkick_left;
+      path2018.routine = forwardkick;
     }
   }
   
@@ -71,8 +71,9 @@ option pathplanner2018_forwardkick
     }
     action 
     {
-      path2018.routine = path2018.routine.none;
+      path2018.routine = none;
       head.control_mode = look_at_ball_percept;
+      situation_abortable = false;
     }
   }
 
@@ -84,8 +85,6 @@ option pathplanner2018_forwardkick
     }
     action
     {
-      head.control_mode = look_straight_ahead;
-
       motion.type = stand;
     }  
   }

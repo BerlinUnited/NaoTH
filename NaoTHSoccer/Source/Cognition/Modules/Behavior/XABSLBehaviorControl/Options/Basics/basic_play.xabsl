@@ -1,0 +1,64 @@
+option basic_play
+{
+
+  initial state play {
+    action 
+    {
+    
+      //IMPORTANT: reset some stuff(!)
+      motion.type = stand;
+      motion.execute_immediately = false;
+      motion.standHeight = -1;
+      motion.walk.step_control.foot = none;
+      motion.walk.stop_with_stand = true;
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+      motion.walk.step_control.scale = 1;
+
+      path2018.routine = none;
+      // why was this put here? Steffen?
+      //arm.control_mode = normal;
+      
+      head.control_mode = stay_as_forced;
+
+      //HACK: reset head.angleVelocity
+      head.angleVelocity = 300;
+
+      // team symbols
+      team.is_playing_as_striker = false;
+      
+      //NOTE: can be set false by fall_down_and_stand_up and treat_lifted
+      body.ready_to_walk = true;
+
+      //Set react_to_collision to false
+      arm.react_to_collision = false;
+      
+      // this will be set in state play
+      game.time_in_play = 0;
+      
+      // react to the game controller and observe fall down
+      decide_game_state();
+
+      // it has to be after the decide_game_state because the getup motion uses it
+      // to decide whether the arms are back or not
+      //arm.control_mode = normal;
+
+      //set LED stuff
+      // make here some initializations
+
+      set_right_eye = 
+          goal.own.was_seen ? blue 
+          : (goal.opp.was_seen ? red : off );
+
+      set_left_eye = ball.percept.was_seen ? green : off;   
+
+      set_head = (robot_pose.x < 0) ? 3 : 6;
+
+      // smooth change between init and stand
+      motion_init_stand_watch();
+      
+      //set ear
+      battery();
+    }
+  }
+}

@@ -56,6 +56,10 @@ class Polygon
       return getArea(points);
     }
 
+    const std::vector<Vector2<T>>& getPoints()  const {
+      return points;
+    }
+
     void makeFromPointSet(const std::vector<Vector2<T> >& point_set) {
       ConvexHull::convexHull(point_set, points);
     }

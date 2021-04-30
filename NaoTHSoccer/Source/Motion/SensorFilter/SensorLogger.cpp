@@ -4,10 +4,8 @@
 using namespace std;
 
 SensorLogger::SensorLogger()
-  : 
-  logfileManager(true)
 {
-  logfileManager.openFile("/tmp/sensor.log");
+  logfileManager.openFile("/dev/shm/sensor.log");
   getDebugParameterList().add(&params);
 }
 
@@ -18,7 +16,7 @@ SensorLogger::~SensorLogger()
 }
 
 #define LOGSTUFF(name) \
-  { std::stringstream& dataStream = logfileManager.log(getFrameInfo().getFrameNumber(), #name); \
+  { std::ostream& dataStream = logfileManager.log(getFrameInfo().getFrameNumber(), #name); \
   Serializer<name>::serialize(get##name(), dataStream); } ((void)0)
 
 void SensorLogger::execute()

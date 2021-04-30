@@ -1,14 +1,13 @@
 option look_around
 {
-  initial state get_starting_point
+  initial state get_starting_direction
   {
     decision{
-      // find a close point to start the lookaround
-      if(head.yaw > 0){
+      // decide in which direction to look first
+      if(head.yaw > 0)
         goto look_left;
-      }else{
+      else
         goto look_right;
-      }
     }
     action{}
   }

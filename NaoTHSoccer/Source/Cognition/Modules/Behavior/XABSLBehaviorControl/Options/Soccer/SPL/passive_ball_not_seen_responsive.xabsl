@@ -1,0 +1,71 @@
+option passive_ball_not_seen_responsive
+{
+  common decision 
+  {
+    if(ball.know_where_itis)
+      goto turn_to_ball;
+  }
+
+  initial state look_around
+  {
+    decision {
+      else if(state_time < 1000)
+        stay;
+      else if (ball.team.is_valid)
+        // if we got a 'valid' team ball - turn to and look at
+        goto look_at_team_ball;
+      else
+        goto turn_around;
+    }
+    action {
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+
+  state look_at_team_ball
+  {
+	  decision
+	  {
+      else if(action_done)
+        goto look_around;
+      else 
+        stay;
+	  }
+	  action {
+      passive_look_at_team_ball();
+	  }
+  }
+
+  state turn_around {
+    decision {
+      else if(state_time > 4000 || ball.team.is_valid)
+        goto look_around;
+      else
+        stay;
+    }
+    action {
+      // we don't know anything, just turn to a fixed direction
+      search_ball_turning(search_direction = right); 
+      motion.walk.style = normal;
+    }
+  }
+
+
+  target state turn_to_ball 
+  {
+    decision {
+      else if(!ball.know_where_itis)
+        goto look_around;
+      else
+        stay;
+    }
+    action {
+      motion.type=walk;
+      motion.walk_speed.x=0;
+      motion.walk_speed.y=0;
+      motion.walk_speed.rot=atan2(y=ball.preview.y, x=ball.preview.x);
+      head.control_mode = search_for_ball;
+    }
+  }
+}

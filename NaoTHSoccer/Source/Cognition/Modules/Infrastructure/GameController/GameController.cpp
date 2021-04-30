@@ -20,7 +20,14 @@ GameController::GameController()
   DEBUG_REQUEST_REGISTER("gamecontroller:set_play:pushing_free_kick", "force the setPlay state to pushing free kick", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:set_play:corner_kick", "force the setPlay state to corner kick", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:set_play:kick_in", "force the setPlay state to kick-in", false);
-  DEBUG_REQUEST_REGISTER("gamecontroller:kickoff", "forces the kickoff to be ours", false);
+
+  DEBUG_REQUEST_REGISTER("gamecontroller:gamephase:normal", "force the gamephase", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:gamephase:penaltyshoot", "force the gamephase", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:gamephase:overtime", "force the gamephase", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:gamephase:timeout", "force the gamephase", false);
+
+  DEBUG_REQUEST_REGISTER("gamecontroller:kickoff:own", "forces the kickoff to be ours", false);
+  DEBUG_REQUEST_REGISTER("gamecontroller:kickoff:opp", "forces the kickoff to be opponents", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:secondaryTime:30", "sets the secondary time of the gamecontroller to 30s", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:secondaryTime:20", "sets the secondary time of the gamecontroller to 20s", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:secondaryTime:10", "sets the secondary time of the gamecontroller to 10s", false);
@@ -136,7 +143,6 @@ void GameController::execute()
   lastGameState = getGameData().gameState;
   // set teamcomm: whistle detected!
   getTeamMessageData().custom.whistleDetected = getWhistlePercept().whistleDetected;
-  getTeamMessageData().custom.whistleCount = getWhistlePercept().counter;
 
   // provide the return message
   getGameReturnData().team = getPlayerInfo().teamNumber;
@@ -188,8 +194,24 @@ void GameController::handleDebugRequest()
     getPlayerInfo().robotSetPlay = PlayerInfo::kick_in;
   );
 
+  DEBUG_REQUEST("gamecontroller:gamephase:normal",
+    getPlayerInfo().gamePhase = PlayerInfo::normal;
+  );
+  DEBUG_REQUEST("gamecontroller:gamephase:penaltyshoot",
+    getPlayerInfo().gamePhase = PlayerInfo::penaltyshoot;
+  );
+  DEBUG_REQUEST("gamecontroller:gamephase:overtime",
+    getPlayerInfo().gamePhase = PlayerInfo::overtime;
+  );
+  DEBUG_REQUEST("gamecontroller:gamephase:timeout",
+    getPlayerInfo().gamePhase = PlayerInfo::timeout;
+  );
+
   // DebugRequests for the kickoff state
-  DEBUG_REQUEST("gamecontroller:kickoff",
+  DEBUG_REQUEST("gamecontroller:kickoff:opp",
+    getPlayerInfo().kickoff = false;
+  );
+  DEBUG_REQUEST("gamecontroller:kickoff:own",
     getPlayerInfo().kickoff = true;
   );
 
@@ -245,7 +267,8 @@ void GameController::handleButtons()
   // re-set team color or kickoff in initial
   if (getPlayerInfo().robotState == PlayerInfo::initial)
   {
-    if ( getButtonState()[ButtonState::LeftFoot] == ButtonEvent::PRESSED )
+    if (getButtonState()[ButtonState::LeftFootLeft] == ButtonEvent::PRESSED ||
+        getButtonState()[ButtonState::LeftFootRight] == ButtonEvent::PRESSED)
     {
       // switch team color
       GameData::TeamColor oldColor = getPlayerInfo().teamColor;
@@ -262,7 +285,8 @@ void GameController::handleButtons()
       }
     }
 
-    if ( getButtonState()[ButtonState::RightFoot] == ButtonEvent::PRESSED )
+    if (getButtonState()[ButtonState::RightFootLeft] == ButtonEvent::PRESSED ||
+        getButtonState()[ButtonState::RightFootRight] == ButtonEvent::PRESSED)
     {
       // switch kick off team
       getPlayerInfo().kickoff = !getPlayerInfo().kickoff;
@@ -270,12 +294,13 @@ void GameController::handleButtons()
   }
 
   // go back from penalized to initial both foot bumpers are pressed for more than 1s
-  else if (getPlayerInfo().robotState == PlayerInfo::penalized &&
-    (  getButtonState()[ButtonState::LeftFoot].isPressed && 
-       getFrameInfo().getTimeSince(getButtonState()[ButtonState::LeftFoot].timeOfLastEvent) > 1000 )
-    &&
-    (  getButtonState()[ButtonState::RightFoot].isPressed && 
-       getFrameInfo().getTimeSince(getButtonState()[ButtonState::RightFoot].timeOfLastEvent) > 1000 )
+  else if (getPlayerInfo().robotState == PlayerInfo::penalized && ( 
+     (getButtonState()[ButtonState::LeftFootLeft].isPressed && getButtonState()[ButtonState::LeftFootLeft].timeSinceEvent() > 1000) || 
+     (getButtonState()[ButtonState::LeftFootRight].isPressed && getButtonState()[ButtonState::LeftFootRight].timeSinceEvent() > 1000 )
+    )
+    && (
+     (getButtonState()[ButtonState::RightFootLeft].isPressed && getButtonState()[ButtonState::RightFootLeft].timeSinceEvent() > 1000) ||
+     (getButtonState()[ButtonState::RightFootRight].isPressed && getButtonState()[ButtonState::RightFootRight].timeSinceEvent() > 1000))
     )
   {
     getPlayerInfo().robotState = PlayerInfo::initial;

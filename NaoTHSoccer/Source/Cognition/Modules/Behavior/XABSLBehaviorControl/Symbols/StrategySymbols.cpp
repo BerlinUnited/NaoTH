@@ -51,12 +51,6 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
 
   engine.registerDecimalInputSymbol("soccer_strategy.formation.x", &getSoccerStrategy().formation.x);
   engine.registerDecimalInputSymbol("soccer_strategy.formation.y", &getSoccerStrategy().formation.y);
-
-  // XABSL-Option (current situation) symbol for some models.
-  // informs about the currently used option (option itself must set this variable!)
-  // engine.registerEnumeratedOutputSymbol("situationStatus", "StatusID", &getSituationStatusId);
-  engine.registerBooleanOutputSymbol("situationStatusOwnHalf", &setSituationStatusOwnHalf, &getSituationStatusOwnHalf);
-  engine.registerBooleanOutputSymbol("situationStatusOppHalf", &setSituationStatusOppHalf, &getSituationStatusOppHalf);
   
   // NOTE: do we still need it?
   engine.registerBooleanInputSymbol("attack.approaching_with_right_foot", &getApproachingWithRightFoot );
@@ -76,7 +70,7 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   }
 
   engine.registerEnumeratedInputSymbol("attack.best_action", "attack.action_type", &getBestAction);
-  
+
   //engine.registerDecimalInputSymbol("attack.best_action.direction", &(getKickActionModel().rotation));
 
   // the position of the opponents free kick; it is only valid if x != 0 && y != 0
@@ -126,7 +120,7 @@ void StrategySymbols::execute()
   // NOTE: attack direction is pointing from the ball to the goal (target point)
   //       i.e., it's not affected by the inhomogeneous part of the preview (translation)
   const Vector2d& p = getSoccerStrategy().attackDirection;
-  
+
   // ATTENTION: since it is a vector and not a point, we apply only the rotation
   attackDirection             = Math::toDegrees(p.angle());
 
@@ -174,32 +168,11 @@ void StrategySymbols::execute()
     );
 }//end execute
 
-//int StrategySymbols::getSituationStatusId(){ 
-//	return (int)(theInstance->situationStatus.id); 
-//}
-
-bool StrategySymbols::getSituationStatusOwnHalf(){ 
-	return theInstance->getSituationStatus().ownHalf; 
-}
-
-void StrategySymbols::setSituationStatusOwnHalf(bool ownHalf){ 
-	theInstance->getSituationStatus().ownHalf = ownHalf; 
-}
-
-
-bool StrategySymbols::getSituationStatusOppHalf(){ 
-	return theInstance->getSituationStatus().oppHalf; 
-}
-
-void StrategySymbols::setSituationStatusOppHalf(bool oppHalf){ 
-	theInstance->getSituationStatus().oppHalf = oppHalf; 
-}
-
 // TODO: check if the model is valid
 // NOTE: what about the default position if the ball was not seen?
 Vector2d StrategySymbols::calculateGoalieGuardPosition()
 {
-  Vector2d ballPos = getRobotPose()*getBallModel().getFuturePosition(5);
+  Vector2d ballPos = getRobotPose() * getBallModel().positionPreview;
 
   double groundLineDistance = 500.0;
   MODIFY("StrategySymbols:groundLineDistance", groundLineDistance);
@@ -210,7 +183,7 @@ Vector2d StrategySymbols::calculateGoalieGuardPosition()
   Vector2d result;
   result.x = x;
   result.y = y;
-  
+
   return result;
 }
 
@@ -339,7 +312,7 @@ bool StrategySymbols::getApproachingWithRightFoot()
 {
   // get the vector to the center of the opponent goal
   Vector2d oppGoal = theInstance->getSelfLocGoalModel().getOppGoal(theInstance->getCompassDirection(), theInstance->getFieldInfo()).calculateCenter();
-  
+
   Vector2d ballPose = theInstance->getBallModel().position;
 
   // normal vector to the RIGHT side
@@ -424,7 +397,7 @@ Pose2D StrategySymbols::calculateSimpleDefensePose()
 /*  FIELD_DRAWING_CONTEXT;
   PEN("00FF00", 20);
   CIRCLE(defPose.translation.x, defPose.translation.y, 30);
- */ 
+ */
 
   return defPose;
 }

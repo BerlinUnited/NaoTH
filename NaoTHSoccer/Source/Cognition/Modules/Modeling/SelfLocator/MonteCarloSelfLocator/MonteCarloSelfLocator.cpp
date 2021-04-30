@@ -71,11 +71,15 @@ MonteCarloSelfLocator::~MonteCarloSelfLocator()
 void MonteCarloSelfLocator::execute()
 {
   // reset
+  // TODO: comment why is this here
   updatedByGoalPosts = false;
 
+  // TODO: why not MCSL?
   DEBUG_REQUEST("MCSLS:reset_samples",
 
-    resetLocator();
+	// NOTE: depends on game state 
+	// TODO: can this more explicite?
+    resetLocator(); 
     state = LOCALIZE;
 
     DEBUG_REQUEST("MCSLS:draw_Samples", 
@@ -88,8 +92,9 @@ void MonteCarloSelfLocator::execute()
 
   DEBUG_REQUEST("MCSLS:user_defined_pose",
 
+	// TODO: better Pose2D?
     Vector2d pos;
-    double rot (0);
+    double rot(0);
     MODIFY("MCSLS:posX", pos.x);
     MODIFY("MCSLS:posY", pos.y);
     MODIFY("MCSLS:rot", rot);
@@ -98,7 +103,8 @@ void MonteCarloSelfLocator::execute()
     initializeSampleSetFixedRotation(Geometry::Rect2d(pos - Vector2d(50,50), pos + Vector2d(50,50)), rot, theSampleSet);
 
     islocalized = true;
-    state = LOCALIZE;
+    //TODO: should the state not rather be TRACKING?
+	state = LOCALIZE;
 
     DEBUG_REQUEST("MCSLS:draw_Samples",
       FIELD_DRAWING_CONTEXT;
@@ -113,16 +119,19 @@ void MonteCarloSelfLocator::execute()
 
   // only treat kidnapping in stand, walk or init(!)
   bool motion_ok_kidnap = getMotionStatus().currentMotion == motion::stand ||
-                   getMotionStatus().currentMotion == motion::init ||
-                   getMotionStatus().currentMotion == motion::walk;
+                          getMotionStatus().currentMotion == motion::init  ||
+                          getMotionStatus().currentMotion == motion::walk;
 
   // true when the robot was lifted up
+  // TODO: check if check for upright necessary (e.g., when robot is in stand by exident after fall)
   bool body_lift_up =  getBodyState().isLiftedUp;
 
   if(parameters.treatLiftUp && motion_ok_kidnap && body_lift_up) {
     state = KIDNAPPED;
   }
 
+  // Neded to decide for BLIND
+  // HACK: TODO: comment - what is it here for?
   bool last_motion_ok = getMotionStatus().lastMotion == motion::stand ||
                         getMotionStatus().lastMotion == motion::walk;                    
 
@@ -130,13 +139,17 @@ void MonteCarloSelfLocator::execute()
                     getMotionStatus().currentMotion == motion::walk)
                    // hack: give stand some time in case the last motion was not walk or stand
                    // remark: walk is only executed after walk or stand, so this condition is only relevant for stand
+				   // TODO: can this be replaced with something like getMotionStatus().stand_done? .target_reached
                    && (last_motion_ok || getFrameInfo().getTimeSince(getMotionStatus().time) > 5000); 
 
   bool body_upright = getBodyState().fall_down_state == BodyState::upright;
 
+  // TODO: better logic?
   if(state != KIDNAPPED) 
   {
-    if(parameters.treatInitState && (!motion_ok || !body_upright || getPlayerInfo().robotState == PlayerInfo::penalized)) 
+    // TODO: does 'treatInitState' make sense? BLIND can also occur after, e.g., fall 
+	// TODO: add comment, why is PlayerInfo::penalized a criterium?
+    if(parameters.treatInitState && (!motion_ok || !body_upright || getPlayerInfo().robotState == PlayerInfo::penalized))
     {
       state = BLIND;
     }
@@ -159,21 +172,21 @@ void MonteCarloSelfLocator::execute()
     }
   );
 
+  //HACK: does it have to be static? member? move into the state machine?
   static unsigned localize_start = getFrameInfo().getTime();
   if(state != LOCALIZE) {
     localize_start = getFrameInfo().getTime();
   }
 
-
   switch(state) 
   {
     case KIDNAPPED:
     {
-      resetLocator();
       state = LOCALIZE;
+      resetLocator();
       islocalized = false;
-      lastState = KIDNAPPED;
       getRobotPose().isValid = false;
+      lastState = KIDNAPPED;
       break;
     }
     case BLIND:
@@ -182,8 +195,8 @@ void MonteCarloSelfLocator::execute()
         updateByOdometry(theSampleSet, parameters.motionNoise, true);
       }
 
-      /* do nothing */
-      if(!islocalized) {
+	  // go back to the last state before BLIND
+      if(!islocalized) { //TODO: can we use islocalized = (lastState==TRACKING) here?
         state = LOCALIZE;
       } else {
         state = TRACKING;
@@ -197,6 +210,7 @@ void MonteCarloSelfLocator::execute()
     
       theSampleSet.resetLikelihood();
 
+	  // TODO: why is this a hack? Elaborate.
       // HACK: separate update by the goal posts
       if(parameters.updateByGoalPostLocalize)
       {
@@ -218,7 +232,7 @@ void MonteCarloSelfLocator::execute()
         updateBySituation();
       }
 
-
+	  // TODO. check what does it do?!
       // NOTE: statistics has to be after updates and before resampling
       // NOTE: normalizes the likelihood
       updateStatistics(theSampleSet);
@@ -241,6 +255,7 @@ void MonteCarloSelfLocator::execute()
 
       unsigned localize_time = getFrameInfo().getTimeSince(localize_start);
 
+	  // HACK: go to tracking if time>5s or more than 80% of samples did gather in a cluster
       if(localize_time > 5000 && moments.getRawMoment(0,0) > 0.8*(double)mhBackendSet.size()) {
         theSampleSet = mhBackendSet; // todo: implement swap
         state = TRACKING;
@@ -259,6 +274,7 @@ void MonteCarloSelfLocator::execute()
     }
     case TRACKING:
     {
+      // TODO: measure odometry error?
       updateByOdometry(theSampleSet, parameters.motionNoise, false);
 
       theSampleSet.resetLikelihood();
@@ -302,6 +318,8 @@ void MonteCarloSelfLocator::execute()
       if(parameters.sensorResetByMiddleCircle) {
         sensorResetByMiddleCircle(theSampleSet);
       }
+
+	  // TODO: we don't have a change TRACKING -> LOCALIZE
 
       calculatePose(theSampleSet);
 
@@ -411,8 +429,8 @@ void MonteCarloSelfLocator::updateByOdometryRelative(SampleSet& sampleSet, bool 
     Pose2D odometryModel(odometryDelta);
 
     if(noise) {
-      odometryModel.translation += odometryModel.translation * (Math::random()-0.5)*parameters.motionNoiseDistance;
-      odometryModel.rotation += odometryModel.rotation * (Math::random()-0.5)*parameters.motionNoiseAngle;
+      odometryModel.translation += odometryModel.translation * (Math::random()-0.5)*parameters.motionNoiseDistanceRelative;
+      odometryModel.rotation += odometryModel.rotation * (Math::random()-0.5)*parameters.motionNoiseAngleRelative;
     }
 
     sampleSet[i] += odometryModel;
@@ -1391,10 +1409,23 @@ void MonteCarloSelfLocator::sensorResetByMiddleCircle(SampleSet& sampleSet) cons
   {
     size_t n = sampleSet.size()-1;
 
-    if((centerLeft.translation - getRobotPose().translation).abs2() < (centerRight.translation - getRobotPose().translation).abs2()) {
-      sampleSet[n] = centerLeft;
+    if( 
+      parameters.sensorResetByMiddleCircleAngleDecisionDistance > 0 && 
+      getRobotPose().translation.abs2() < Math::sqr(parameters.sensorResetByMiddleCircleAngleDecisionDistance) )
+    {
+      // choose one by the rotation
+      if(fabs(Math::normalize(centerLeft.rotation - getRobotPose().rotation)) < fabs(Math::normalize(centerRight.rotation - getRobotPose().rotation))) {
+        sampleSet[n] = centerLeft;
+      } else {
+        sampleSet[n] = centerRight;
+      }
     } else {
-      sampleSet[n] = centerRight;
+      // choose one by the distance
+      if((centerLeft.translation - getRobotPose().translation).abs2() < (centerRight.translation - getRobotPose().translation).abs2()) {
+        sampleSet[n] = centerLeft;
+      } else {
+        sampleSet[n] = centerRight;
+      }
     }
   } 
   else 

@@ -23,7 +23,7 @@ public:
   Vector2d position;
   
   // root mean squared error of the estimate [m]
-  double rmse;
+  double rmse = 0.0;
 
   // the time of message [ms] (last received teamcomm message)
   unsigned int time = 0;

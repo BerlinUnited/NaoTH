@@ -12,7 +12,7 @@ SoundControl::SoundControl() :
   stopping(false),
   media_path("Media/")
 {
-  playThread = std::thread([this] {this->play();});
+  playThread = std::thread(&SoundControl::play, this);
 
   ThreadUtil::setPriority(playThread, ThreadUtil::Priority::lowest);
   ThreadUtil::setName(playThread, "SoundControl");
@@ -61,6 +61,10 @@ void SoundControl::play()
     std::string cmd = "/usr/bin/paplay " + filename;
     std::system(cmd.c_str());
 
+    //TODO: handle the case if the file does not exist:
+    //      if the file does not exist, then we end up in 
+    //      a loop printing error messages
+    
     filename = "";
     // NOTE: should we unlock here?
     // lock.unlock();

@@ -149,16 +149,17 @@ void IMUModel::writeIMUData()
      * Inverting the angle is sufficient because it's basically only a 2D rotation in the XZ or YZ plane
      * Note: using bodyIntoGlobalMapping would be wrong because the global frame can be rotated around z regarding the body
      * this would result in a redistribution of the inclination on the x,y axis.
-     * (e.g. z rotation about 90° -> a rotation about the body's y axis becomes a rotation about the global x axis)
+     * (e.g. z rotation about 90 degrees -> a rotation about the body's y axis becomes a rotation about the global x axis)
      * Note: don't use the y axis to determine the inclination in YZ plane because it might be mapped onto the x axis (a rotation about 90° around z)
      * this results in huge devation of the angles determined by atan2 because the projected y axis might end up in the second or third quadrant of the YZ plane
      */
 
-    getIMUData().orientation = Vector2d(-atan2(-bodyIntoGlobalMapping[1].z, bodyIntoGlobalMapping[2].z),
-                                        -atan2(bodyIntoGlobalMapping[0].z,  bodyIntoGlobalMapping[2].z));
-
     Eigen::Vector3d global_Z_in_body(bodyIntoGlobalMapping[0].z, bodyIntoGlobalMapping[1].z, bodyIntoGlobalMapping[2].z);
     getIMUData().orientation_rotvec = quaternionToVector3D(Eigen::Quaterniond::FromTwoVectors(global_Z_in_body, Eigen::Vector3d(0,0,1)));
+    RotationMatrix bodyIntoGlobalMappingWithoutZ(getIMUData().orientation_rotvec);
+
+    getIMUData().orientation = Vector2d(-atan2(bodyIntoGlobalMappingWithoutZ[2].y, bodyIntoGlobalMappingWithoutZ[1].y),
+                                        -atan2(-bodyIntoGlobalMappingWithoutZ[2].x, bodyIntoGlobalMappingWithoutZ[0].x));
 
     PLOT("IMUModel:State:orientation:x", Math::toDegrees(getIMUData().orientation.x));
     PLOT("IMUModel:State:orientation:y", Math::toDegrees(getIMUData().orientation.y));
@@ -222,7 +223,7 @@ void IMUModel::reloadParameters()
     Q_acc *= imuParameters.acceleration.stand.processNoiseAcc;
 
     Q_acc_walk.setIdentity();
-    Q_acc *= imuParameters.acceleration.walk.processNoiseAcc;
+    Q_acc_walk *= imuParameters.acceleration.walk.processNoiseAcc;
 
     // measurement covariance matrix
     R_acc.setIdentity();
@@ -238,8 +239,8 @@ void IMUModel::reloadParameters()
     Q_rotation.block<3,3>(3,3) *= imuParameters.rotation.stand.processNoiseGyro;
 
     Q_rotation_walk.setIdentity();
-    Q_rotation.block<3,3>(0,0) *= imuParameters.rotation.walk.processNoiseRot;
-    Q_rotation.block<3,3>(3,3) *= imuParameters.rotation.walk.processNoiseGyro;
+    Q_rotation_walk.block<3,3>(0,0) *= imuParameters.rotation.walk.processNoiseRot;
+    Q_rotation_walk.block<3,3>(3,3) *= imuParameters.rotation.walk.processNoiseGyro;
 
     // measurement covariance matrix
     R_rotation.setIdentity();

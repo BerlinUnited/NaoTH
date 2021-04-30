@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# set the current directory (next to Config)
+cd /home/nao/naoqi/
+
+# run the program
+# NOTE: exec replaces this bash process with naoth as "main process", so this script 'cognition-common' does not appear in htop
+# NOTE: we store the pid of the current shell before it is replaced by /home/nao/bin/naoth.
+#       After the replacement the /home/nao/bin/naoth process keeps the same pid.
+echo "$$" > /tmp/cognition.pid
+exec /home/nao/bin/naoth > >(exec logger -t "naoth[INFO]" -p local3.info) 2> >(exec logger -t "naoth[ERROR]" -p local3.warning)

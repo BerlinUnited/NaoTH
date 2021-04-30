@@ -65,9 +65,7 @@ private:
   } params;
 
 private:
-  // TODO: make a memory aware LogfileManager that flushes whenever a certain memory
-  // treshold is reached.
-  LogfileManager < 30 > logfileManager;
+  LogfileManager logfileManager;
 };
 
 #endif // _SensorLogger_H_

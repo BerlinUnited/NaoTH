@@ -1,4 +1,5 @@
 #include "TeamCommReceiver.h"
+#include "Tools/NaoTime.h"
 
 TeamCommReceiver::TeamCommReceiver()
 {
@@ -83,43 +84,22 @@ void TeamCommReceiver::handleMessage(const std::string& data)
     return;
   }
 
-  // unpack the message and make sure the user part can be parsed
-  TeamMessageData msg(getFrameInfo());
   // current timestamp as parsing time
+  TeamMessageData msg(getFrameInfo());
   msg.timestampParsed = naoth::NaoTime::getSystemTimeInMilliSeconds();
 
-  //accept own message
-  if (msg.parseFromSplMessage(spl))
-  {
-    // make sure it's really our message
-    if (!msg.isBerlinUnitedMessage()) {
+  // accept own message
+  if(!msg.parseFromSplMessage(spl)) {
+      // looks like an mixed team message, write some "useful" data
+      msg.custom.timestamp = naoth::NaoTime::getSystemTimeInMilliSeconds();
+      msg.custom.readyToWalk = !msg.fallen;
+      // track, how many messages couldn't be parsed
       getTeamMessage().dropKeyFail++;
-      return;
-    }
-
-    // make sure the time step is monotonically rising
-    if (parameters.monotonicTimestampCheck && !monotonicTimeStamp(msg)) {
-      getTeamMessage().dropMonotonic++;
-      return;
-    }
   }
-  else if (parameters.acceptMixedTeamMessages && msg.isDoBerManMessage())
-  {
-    // TODO: this needs to be fixed vefore mixed team comm can be used again
-    //       see: https://gitlab.informatik.hu-berlin.de/berlinunited/NaoTH-2018/issues/36
-    
-    // estimate time to ball for dortmund guys
-    const double stepTime = 200; //ms
-    const double speed = 50.0 / stepTime; // mm/ms
-    const double turnSpeed = Math::fromDegrees(30) / stepTime;
 
-    if (msg.ballAge >= 0) {
-      msg.custom.timeToBall = static_cast<unsigned int>((msg.ballPosition.abs() / speed) + (fabs(msg.ballPosition.angle()) / turnSpeed));
-    }
-  }
-  else
-  {
-    getTeamMessage().dropNotParseable++;
+  // make sure the time step is monotonically rising
+  if (parameters.monotonicTimestampCheck && !monotonicTimeStamp(msg)) {
+    getTeamMessage().dropMonotonic++;
     return;
   }
 

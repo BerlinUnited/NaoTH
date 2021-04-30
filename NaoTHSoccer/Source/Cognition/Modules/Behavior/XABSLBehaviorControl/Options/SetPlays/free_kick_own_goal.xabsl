@@ -1,0 +1,322 @@
+/** If the ball goes out of the baseline by an opponent, the ball is placed back in front of a corner of the penalty box. 
+  * "the Goal Spot is in line with the penalty spot and side-edge of the penalty box"
+  */
+
+option free_kick_own_goal
+{
+  initial state decide {
+    decision
+    {
+      // TODO: what should be done, if the goalie is penalized or otherwise unable to play?
+      if (strategy.role == goalie) {
+        if(ball.know_where_itis) {
+          goto goalie_position_for_free_kick;
+        } else {
+          goto goalie_look_at_left_corner;
+        }
+      } else {
+        if(ball.know_where_itis) {
+          goto player_turn_to_ball;
+        } else {
+          goto player_search_for_ball;
+        }
+      }
+    }
+    action
+    {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  /* ------------------------------------------ */
+  /* The Goalie part                            */
+  /* ------------------------------------------ */
+
+  // we position us on one of the penalty corners
+  state goalie_position_for_free_kick {
+    decision
+    {
+      if(!ball.know_where_itis) {
+        goto goalie_search_for_ball;
+      } else if (vector.abs(x=robot_pose.planned.x - field.xPosOwnPenaltyArea, 
+                            y=robot_pose.planned.y - (ball.position.field.y >= 0 ? field.yPosLeftPenaltyArea : field.yPosRightPenaltyArea)) < 200
+                 && abs(value=robot_pose.planned.rotation ) < 10) {
+        // TODO: do we want explicitly kick the ball, or just wait and switch to "normal" striker role?!?
+        goto done;
+      } else {
+        stay;
+      }
+    }
+    action
+    {
+      // the Goal Spot is in line with the penalty spot and side-edge of the penalty box
+      // we position us on the corner of the penalty box, so we can reach the ball easily and doesn't touch it before
+      go_to_point_with_USOA(
+        x=field.xPosOwnPenaltyArea,
+        y=ball.position.field.y >= 0 ? field.yPosLeftPenaltyArea : field.yPosRightPenaltyArea,
+        rot=0);
+      head.control_mode = look_at_ball;
+    }
+  }
+
+  // we're looking on the left penalty corner, that should be enough to see the ball (if the ball was placed correctly)
+  state goalie_look_at_left_corner {
+    decision {
+      if(ball.know_where_itis) {
+        goto goalie_position_for_free_kick;
+      } else if(abs(value = atan2(y=locator.field_to_relative.y(x=field.xPosOwnPenaltyArea, y=field.yPosLeftPenaltyArea), 
+                                  x=locator.field_to_relative.x(x=field.xPosOwnPenaltyArea, y=field.yPosLeftPenaltyArea))) >= 50) {
+        goto goalie_turn_to_left_corner;
+      } else if(state_time >= 5000) {
+        goto goalie_look_at_right_corner;
+      } else {
+        stay;
+      }
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = none;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = locator.field_to_relative.x(x=field.xPosOwnPenaltyArea, y=field.yPosLeftPenaltyArea);
+      head.point_in_world.y = locator.field_to_relative.y(x=field.xPosOwnPenaltyArea, y=field.yPosLeftPenaltyArea);
+      head.point_in_world.z = ball.radius;
+    }
+  }
+
+  // turn to the left penalty corner, if necessary
+  state goalie_turn_to_left_corner {
+    decision {
+      if(ball.know_where_itis) {
+        goto goalie_position_for_free_kick;
+      } else if(abs(value = atan2(y=locator.field_to_relative.y(x=field.xPosOwnPenaltyArea, y=field.yPosLeftPenaltyArea), 
+                           x=locator.field_to_relative.x(x=field.xPosOwnPenaltyArea, y=field.yPosLeftPenaltyArea))) < 50)
+        goto goalie_look_at_left_corner;
+      else
+        stay;
+    }
+    action {
+      motion.type=walk;
+      motion.walk_speed.x=0;
+      motion.walk_speed.y=0;
+      motion.walk_speed.rot=atan2(y=locator.field_to_relative.y(x=field.xPosOwnPenaltyArea, y=field.yPosLeftPenaltyArea), x=locator.field_to_relative.x(x=field.xPosOwnPenaltyArea, y=field.yPosLeftPenaltyArea));
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  // we're looking on the left penalty corner, that should be enough to see the ball (if the ball was placed correctly)
+  state goalie_look_at_right_corner {
+    decision {
+      if(ball.know_where_itis) {
+        goto goalie_position_for_free_kick;
+      } else if(abs(value = atan2(y=locator.field_to_relative.y(x=field.xPosOwnPenaltyArea, y=field.yPosRightPenaltyArea), 
+                                  x=locator.field_to_relative.x(x=field.xPosOwnPenaltyArea, y=field.yPosRightPenaltyArea))) >= 50) {
+        goto goalie_turn_to_right_corner;
+      } else if(state_time >= 5000) {
+        goto goalie_search_for_ball;
+      } else {
+        stay;
+      }
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = none;
+
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = locator.field_to_relative.x(x=field.xPosOwnPenaltyArea, y=field.yPosRightPenaltyArea);
+      head.point_in_world.y = locator.field_to_relative.y(x=field.xPosOwnPenaltyArea, y=field.yPosRightPenaltyArea);
+      head.point_in_world.z = ball.radius;
+    }
+  }
+
+  // turn to the right penalty corner, if necessary
+  state goalie_turn_to_right_corner {
+    decision {
+      if(ball.know_where_itis) {
+        goto goalie_position_for_free_kick;
+      } else if(abs(value = atan2(y=locator.field_to_relative.y(x=field.xPosOwnPenaltyArea, y=field.yPosRightPenaltyArea), 
+                           x=locator.field_to_relative.x(x=field.xPosOwnPenaltyArea, y=field.yPosRightPenaltyArea))) < 50)
+        goto goalie_look_at_right_corner;
+      else
+        stay;
+    }
+    action {
+      motion.type=walk;
+      motion.walk_speed.x=0;
+      motion.walk_speed.y=0;
+      motion.walk_speed.rot=atan2(y=locator.field_to_relative.y(x=field.xPosOwnPenaltyArea, y=field.yPosRightPenaltyArea), x=locator.field_to_relative.x(x=field.xPosOwnPenaltyArea, y=field.yPosRightPenaltyArea));
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state goalie_search_for_ball {
+    decision {
+      // TODO: what should we do if the goalie doesn't find the ball after a certain time?
+      if(ball.know_where_itis) {
+        goto goalie_position_for_free_kick;
+      } else if(state_time >= 5000) {
+        goto goalie_look_at_left_corner;
+      } else {
+        stay;
+      }
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = search_for_ball_goalie;
+    }
+  }
+
+  /* ------------------------------------------ */
+  /* The Player part                            */
+  /* ------------------------------------------ */
+
+  // Just turn to the ball
+  state player_turn_to_ball {
+    decision {
+      if(!ball.know_where_itis) {
+        goto player_search_for_ball;
+      } else if(abs(value = atan2(y=locator.field_to_relative.y(x=field.xPosOwnPenaltyArea, y=(ball.position.field.y >= 0 ? field.yPosLeftPenaltyArea : field.yPosRightPenaltyArea)), 
+                                  x=locator.field_to_relative.x(x=field.xPosOwnPenaltyArea, y=(ball.position.field.y >= 0 ? field.yPosLeftPenaltyArea : field.yPosRightPenaltyArea)))) < 50) {
+        goto done;
+      } else {
+        stay;
+      }
+    }
+    action {
+      // TODO: make it a bit more sophisticated; eg. move away from ball or from kick direction of the goalie
+      //       support goalie?! one could protect the goal while the goalie is performing the goal kick
+      motion.type=walk;
+      motion.walk_speed.x=0;
+      motion.walk_speed.y=0;
+      motion.walk_speed.rot=atan2(y=locator.field_to_relative.y(x=field.xPosOwnPenaltyArea, y=(ball.position.field.y >= 0 ? field.yPosLeftPenaltyArea : field.yPosRightPenaltyArea)), 
+                                  x=locator.field_to_relative.x(x=field.xPosOwnPenaltyArea, y=(ball.position.field.y >= 0 ? field.yPosLeftPenaltyArea : field.yPosRightPenaltyArea)));
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state player_search_for_ball {
+    decision {
+      if(ball.know_where_itis) {
+        goto player_turn_to_ball;
+      } else if(state_time >= 10000) { // 10 seconds
+        goto player_look_at_left_corner;
+      } else {
+        stay;
+      }
+    }
+    action {
+      passive_ball_not_seen();
+    }
+  }
+
+  // we're looking on the left penalty corner, that should be enough to see the ball (if the ball was placed correctly)
+  state player_look_at_left_corner {
+    decision {
+      if(ball.know_where_itis) {
+        goto player_turn_to_ball;
+      } else if(abs(value = atan2(y=locator.field_to_relative.y(x=field.xPosOwnPenaltyArea, y=field.yPosLeftPenaltyArea), 
+                                  x=locator.field_to_relative.x(x=field.xPosOwnPenaltyArea, y=field.yPosLeftPenaltyArea))) >= 50) {
+        goto player_turn_to_left_corner;
+      } else if(state_time >= 5000) {
+        goto player_look_at_right_corner;
+      } else {
+        stay;
+      }
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = none;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = locator.field_to_relative.x(x=field.xPosOwnPenaltyArea, y=field.yPosLeftPenaltyArea);
+      head.point_in_world.y = locator.field_to_relative.y(x=field.xPosOwnPenaltyArea, y=field.yPosLeftPenaltyArea);
+      head.point_in_world.z = ball.radius; // radius of the ball
+    }
+  }
+
+  // turn to the left penalty corner, if necessary
+  state player_turn_to_left_corner {
+    decision {
+      if(ball.know_where_itis) {
+        goto player_turn_to_ball;
+      } else if(abs(value = atan2(y=locator.field_to_relative.y(x=field.xPosOwnPenaltyArea, y=field.yPosLeftPenaltyArea), 
+                           x=locator.field_to_relative.x(x=field.xPosOwnPenaltyArea, y=field.yPosLeftPenaltyArea))) < 50)
+        goto player_look_at_left_corner;
+      else
+        stay;
+    }
+    action {
+      motion.type=walk;
+      motion.walk_speed.x=0;
+      motion.walk_speed.y=0;
+      motion.walk_speed.rot=atan2(y=locator.field_to_relative.y(x=field.xPosOwnPenaltyArea, y=field.yPosLeftPenaltyArea), 
+                                  x=locator.field_to_relative.x(x=field.xPosOwnPenaltyArea, y=field.yPosLeftPenaltyArea));
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  // we're looking on the left penalty corner, that should be enough to see the ball (if the ball was placed correctly)
+  state player_look_at_right_corner {
+    decision {
+      if(ball.know_where_itis) {
+        goto player_turn_to_ball;
+      } else if(abs(value = atan2(y=locator.field_to_relative.y(x=field.xPosOwnPenaltyArea, y=field.yPosRightPenaltyArea), 
+                                  x=locator.field_to_relative.x(x=field.xPosOwnPenaltyArea, y=field.yPosRightPenaltyArea))) >= 50) {
+        goto player_turn_to_right_corner;
+      } else if(state_time >= 5000) {
+        goto player_search_for_ball;
+      } else {
+        stay;
+      }
+    }
+    action {
+      motion.type = stand;
+      head.control_mode = none;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = locator.field_to_relative.x(x=field.xPosOwnPenaltyArea, y=field.yPosRightPenaltyArea);
+      head.point_in_world.y = locator.field_to_relative.y(x=field.xPosOwnPenaltyArea, y=field.yPosRightPenaltyArea);
+      head.point_in_world.z = ball.radius; // radius of the ball
+    }
+  }
+
+  // turn to the left penalty corner, if necessary
+  state player_turn_to_right_corner {
+    decision {
+      if(ball.know_where_itis) {
+        goto player_turn_to_ball;
+      } else if(abs(value = atan2(y=locator.field_to_relative.y(x=field.xPosOwnPenaltyArea, y=field.yPosRightPenaltyArea), 
+                           x=locator.field_to_relative.x(x=field.xPosOwnPenaltyArea, y=field.yPosRightPenaltyArea))) < 50)
+        goto player_look_at_right_corner;
+      else
+        stay;
+    }
+    action {
+      motion.type=walk;
+      motion.walk_speed.x=0;
+      motion.walk_speed.y=0;
+      motion.walk_speed.rot=atan2(y=locator.field_to_relative.y(x=field.xPosOwnPenaltyArea, y=field.yPosRightPenaltyArea), 
+                                  x=locator.field_to_relative.x(x=field.xPosOwnPenaltyArea, y=field.yPosRightPenaltyArea));
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  /* ------------------------------------------ */
+  /* DONE                                       */
+  /* ------------------------------------------ */
+
+  // we're done with positioning and waiting for time is up.
+  target state done
+  {
+    decision {
+      if(!ball.know_where_itis) {
+        goto decide;
+      } else {
+        stay;
+      }
+    }
+    action
+    {
+      head.control_mode = look_at_ball;
+      motion.type = stand;
+    }
+  }
+}

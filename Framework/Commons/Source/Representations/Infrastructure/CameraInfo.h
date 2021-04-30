@@ -8,19 +8,23 @@
 #ifndef _CAMERAINFO_H_
 #define _CAMERAINFO_H_
 
-#include "CameraInfoConstants.h"
-
 #include "Tools/DataStructures/ParameterList.h"
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
 
 namespace naoth
 {
+  // TODO: remove this
+  static const unsigned int IMAGE_WIDTH = 640;
+  static const unsigned int IMAGE_HEIGHT = 480;
+
   class CameraInfoParameter : public ParameterList
   {
   public:
     //diagonal angle of field of view
     double openingAngleDiagonal;
+
+    /*
     //size of an Pixel on the chip
     double pixelSize;
     //measured focus
@@ -38,7 +42,7 @@ namespace naoth
     //affinity and ... distortion parameters
     double b1;
     double b2;
-
+    */
     CameraInfoParameter(std::string idName);
   };
 
@@ -101,7 +105,6 @@ namespace naoth
 
   protected:
     CameraInfoParameter params;
-
   };
 
 

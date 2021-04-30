@@ -61,7 +61,7 @@ private:
   FootStep nextStep(const FootStep& lastStep, const WalkRequest& req) const;
 
   FootStep controlStep(const FootStep& lastStep, const WalkRequest& req) const;
-  
+
   FootStep finalStep(const FootStep& lastStep, const WalkRequest& req) const;
 
   FootStep zeroStep(const FootStep& lastStep) const;
@@ -72,15 +72,11 @@ private:
 
   void restrictStepSize(Pose2D& step, double character, bool stepControl) const;
 
-  void restrictStepChange(Pose2D& step, const Pose2D& lastStep) const;
+  void restrictStepChange(Pose2D& step, const Pose2D& lastStep, bool stepControl) const;
 
 public:
 
   double theFootOffsetY;
-
-  double theMaxChangeTurn;
-  double theMaxChangeX;
-  double theMaxChangeY;
 
   unsigned int emergencyCounter;
 };

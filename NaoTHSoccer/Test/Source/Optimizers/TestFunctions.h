@@ -4,7 +4,6 @@
 #include <Eigen/Eigen>
 #include <string>
 #include <sstream>
-#include "math.h"
 
 #include "Tools/Math/Common.h"
 

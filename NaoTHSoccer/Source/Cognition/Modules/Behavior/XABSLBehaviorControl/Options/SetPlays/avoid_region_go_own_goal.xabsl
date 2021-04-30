@@ -1,0 +1,162 @@
+/** XABSL implementation of the avoid region behavior */
+option avoid_region_go_own_goal
+{
+  /** x position to avoid **/
+  float @x;
+  /** y position to avoid **/
+  float @y;
+  /** distance to the x/y position to avoid **/
+  float @distance;
+
+/*         x            middle         x
+                          0             
+      \    |              #            |     /       
+  away_xy  |  away_y      #   away_y   |  away_xy   
+        \  |              #            |  /          
+y    ------b------        #      ------b------     -y
+           |              #            |            
+   away_x  |  away        #    away    |  away_x    
+           |              #            |            
+                          #                         */
+
+  // initial state where the decision is made in which direction the robot should move
+  initial state decide {
+    decision {
+      if(robot_pose.x<@x && ((@y>=0 && @y>=robot_pose.y) || (@y<=0 && @y<=robot_pose.y))) {
+        // robot is in the lower quadrant to the middle (y=0)
+        goto move_away;
+      } else if(robot_pose.x<@x) {
+        // robot is in the lower quadrant far from the middle (y=0)
+        goto move_away_x;
+      } else if( (@y>=0 && @y>=robot_pose.y) || (@y<=0 && @y<=robot_pose.y) ) {
+        // robot is in the upper quadrant to the middle (y=0)
+        goto move_away_y;
+      } else {
+        // robot is in the upper quadrant far from the middle (y=0)
+        goto move_away_xy;
+      }
+    }
+    action {
+      // do nothing
+    }
+  }
+
+  // robot is in the lower quadrant to the middle (y=0)
+  // and should position itself between the avoidance-position and the goal center
+  state move_away
+  {
+    decision {
+      if(action_done) {
+        goto done;
+      } else {
+        stay;
+      }
+    }
+    action {
+      // TODO: what happens, if the robot is near a side/groundline/penalty area?!
+      // position on the line between the avoidance-position and the goal center
+      go_to_point_with_USOA(x=field.xPosOwnGroundline+(@x-field.xPosOwnGroundline) - ((@distance+100)*(@x-field.xPosOwnGroundline))/vector.abs(x=(@x-field.xPosOwnGroundline), y=@y), 
+                            y=@y - ((@distance+100)*@y)/vector.abs(x=(@x-field.xPosOwnGroundline), y=@y), 
+                            rot=atan2(y = @y-robot_pose.y, x = @x-robot_pose.x)
+                            );
+    }
+  }
+
+  // robot is in the lower quadrant far from the middle (y=0)
+  // intermediate state to make the x-position constant
+  state move_away_x {
+    decision {
+      goto move_away_x_const_y;
+    }
+    action {
+      freekick_const_pos = robot_pose.y;
+    }
+  }
+
+  // robot is in the lower quadrant far from the middle (y=0)
+  // and should first move back from the avoidance-position, before position itself for better defense
+  state move_away_x_const_y
+  {
+    decision {
+      if(action_done) {
+        goto move_away;
+      } else {
+        stay;
+      }
+    }
+    action {
+      // TODO: what happens, if the robot is near a side/groundline/penalty area?!
+      go_to_point_with_USOA(x=@x-@distance,
+                            y=freekick_const_pos,
+                            rot=atan2(y = @y-robot_pose.y, x = @x-robot_pose.x));
+    }
+  }
+
+  // robot is in the upper quadrant to the middle (y=0)
+  // intermediate state to make the x-position constant
+  state move_away_y {
+    decision {
+      goto move_away_y_const_x;
+    }
+    action {
+      freekick_const_pos = robot_pose.x;
+    }
+  }
+
+  // robot is in the upper quadrant to the middle (y=0)
+  // and should first move to the left/right of the avoidance-position, before position itself for better defense
+  state move_away_y_const_x
+  {
+    decision {
+      if(action_done) {
+        goto move_away;
+      } else {
+        stay;
+      }
+    }
+    action {
+      // TODO: what happens, if the robot is near a side/groundline?!
+      // TODO: how do we rotate?!?
+      go_to_point_with_USOA(x=freekick_const_pos,
+                            y=@y+(@y<0?@distance:-@distance),
+                            rot=atan2(y = @y-robot_pose.y, x = @x-robot_pose.x));
+    }
+  }
+
+  // robot is in the upper quadrant far from the middle (y=0)
+  // this position is furthest away from the optimal defending position
+  // first move away from the avoidance-position to another quadrant, then go to the others quadrants corner and then position for better defense
+  state move_away_xy {
+    decision {
+      if(action_done) {
+        if(robot_pose.x<@x) {
+          goto move_away_x;
+        } else {
+          goto move_away_y;
+        }
+      } else {
+        stay;
+      }
+    }
+    action {
+      // TODO: what happens, if the robot is near a side/groundline?!
+      // depending on which coordinate is closer, we move back in x-direction or y-direction
+      go_to_point_with_USOA(x=abs(value=robot_pose.x-@x) <= abs(value=robot_pose.y-@y)?             @x-250                 : (@x+@distance),
+                            y=abs(value=robot_pose.x-@x) <= abs(value=robot_pose.y-@y)? (@y+(@y<0?-@distance:@distance))   :       @y,
+                            rot=atan2(y = @y-robot_pose.y, x = @x-robot_pose.x));
+    }
+  }
+
+  // robot reached a good defense position
+  target state done
+  {
+    decision {
+      if(vector.abs(x=robot_pose.x-@x, y=robot_pose.y-@y) <= @distance)
+        goto decide;
+      else
+        stay;
+    }
+    action {
+    }
+  }
+}

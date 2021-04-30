@@ -3,37 +3,23 @@
 #include <Tools/ThreadUtil.h>
 #include "Tools/NaoTime.h"
 
-#include <chrono>
 #include <pulse/error.h>
 
 using namespace std;
 using namespace naoth;
 
-
 AudioRecorder::AudioRecorder()
   :
   exiting(false),
-  deinitCyclesCounter(0),
   paSimple(NULL),
   readIdx(1),
   writeIdx(0),
   recordingTimestamp(0)
 {
   std::cout << "[INFO] AudioRecorder thread started" << std::endl;
-  audioRecorderThread = std::thread([this] {this->execute();});
+  audioRecorderThread = std::thread(&AudioRecorder::execute, this);
   ThreadUtil::setPriority(audioRecorderThread, ThreadUtil::Priority::lowest);
   ThreadUtil::setName(audioRecorderThread, "AudioRecorder");
-
-  //The following parameters are used by bhuman:
-  //TODO implement them as controll in AudioData Representation
-  /*
-    (unsigned)(10) retries,      // Number of tries to open device. 
-    (unsigned)(500) retryDelay,  //< Delay before a retry to open device. 
-    (bool)(false) allChannels,   //< Use all 4 channels, instead of only two
-    (unsigned)(8000) sampleRate, //< Sample rate to capture. This variable will contain the framerate the driver finally selected. 
-    (unsigned)(5000) maxFrames,  //< Maximum number of frames read in one cycle. 
-    (bool)(true) onlySoundInSet, // If true, the module will not provide audio data in game states other than set 
-  */
 }
 
 AudioRecorder::~AudioRecorder()
@@ -56,7 +42,6 @@ AudioRecorder::~AudioRecorder()
 
 void AudioRecorder::execute()
 {
-  // return;
   while(!exiting)
   {
     // initialize the audio stream if necessary
@@ -69,20 +54,12 @@ void AudioRecorder::execute()
     // stop capturing
     if(!control.capture && paSimple != NULL) 
     {
-      // TODO: make it dependent on a control parameter, e.g. control.stop_delay
-      // deinit audio device ~8 seconds after switch off command was set
-      // (recording has blocking behaviour 1024 samples equal 128 ms 63*128 equals ~8s
-      if(deinitCyclesCounter >= 63)
-      {
-        std::cout << "[AudioRecorder] stop recording" << std::endl;
-        deinitAudio();
-        deinitCyclesCounter = 0;
-      }
-      deinitCyclesCounter++;
+      std::cout << "[AudioRecorder] stop recording" << std::endl;
+      deinitAudio();
     }
 
     // capture data as long as the device is initialized
-    if(paSimple != NULL) 
+    if(paSimple != NULL)
     {
       int bytesToRead = audioBuffer[writeIdx].size() * static_cast<int>(sizeof(short));
       int error = 0;
@@ -94,7 +71,16 @@ void AudioRecorder::execute()
       else 
       {
         std::lock_guard<std::mutex> lock(dataMutex);
-        recordingTimestamp = NaoTime::getNaoTimeInMilliSeconds();
+        //recordingTimestamp = NaoTime::getNaoTimeInMilliSeconds();
+        
+        // manually iterate the time of the audio stream to get a consistent mononous increment
+        const unsigned int delta = (control.buffer_size * 1000) / control.sampleRate; // buffer length in ms
+        recordingTimestamp += delta;
+        
+        // chech if there are any jumps, e.g., because the buffer was too small etc.
+        if(abs(static_cast<int64_t>(recordingTimestamp) - static_cast<int64_t>(NaoTime::getNaoTimeInMilliSeconds())) > delta) {
+          std::cout << "[AudioRecorder] WARNING: lost audio frame" << std::endl;
+        }
         std::swap(writeIdx, readIdx);
       }
     } 
@@ -107,19 +93,22 @@ void AudioRecorder::execute()
     }
 
   } // end while
-
   
 } // end execute
 
 
-void AudioRecorder::set(const naoth::AudioControl& controlData)
+void AudioRecorder::set(const naoth::AudioControl& newControl)
 {
   std::unique_lock<std::mutex> lock(dataMutex, std::try_to_lock);
   if ( lock.owns_lock() ) {
     // NOTE: changes in the recording parameters like sampleRate or numChannels 
     //       will only have an effect when capture is started. It means the parameters
     //       will not change during an ongoing recording.
-    control = controlData;
+    if(!control.capture) {
+      control = newControl;
+    } else {
+      control.capture = newControl.capture;
+    }
 
     if(control.capture) {
       // release the data lock and notify the thread (in case it was waiting)
@@ -147,32 +136,47 @@ void AudioRecorder::initAudio()
 {
   std::lock_guard<std::mutex> lock(dataMutex);
 
-  pa_sample_spec paSampleSpec;
-  paSampleSpec.format   = PA_SAMPLE_S16LE;
-  paSampleSpec.rate     = control.sampleRate;
-  paSampleSpec.channels = (uint8_t)control.numChannels;
+  pa_sample_spec paSampleSpec = {
+    .format   = PA_SAMPLE_S16LE,
+    .rate     = (uint32_t)control.sampleRate,
+    .channels = (uint8_t)control.numChannels
+  };
 
+  // NOTE: manually configure the channel map (because the default config seems to be different for NAO <= V4 and NAO >= V5)
+  // channel-map = rear-left,rear-right,front-left,front-right
+  pa_channel_map paChannelMap;
+  paChannelMap.channels = (uint8_t)control.numChannels;
+  paChannelMap.map[0] = PA_CHANNEL_POSITION_REAR_LEFT;
+  paChannelMap.map[1] = PA_CHANNEL_POSITION_REAR_RIGHT;
+  paChannelMap.map[2] = PA_CHANNEL_POSITION_FRONT_LEFT;
+  paChannelMap.map[3] = PA_CHANNEL_POSITION_FRONT_RIGHT;
+  
   // Create the recording stream
   int error = 0;
-  if (!(paSimple = pa_simple_new(NULL, "AudioRecorder", PA_STREAM_RECORD, NULL, "AudioRecorder", &paSampleSpec, NULL, NULL, &error)))
-  {
+  paSimple = pa_simple_new(NULL, "AudioRecorder", PA_STREAM_RECORD, NULL, "AudioRecorder", &paSampleSpec, &paChannelMap, NULL, &error);
+
+  if (!paSimple) {
     std::cerr << "[PulseAudio] pa_simple_new() failed: " << pa_strerror(error) << "\n" << std::endl;
-    // NOTE: paSimple is already NULL, this is why we are here :)
-    //paSimple = NULL;
-  }
-  else
-  {
+  } else {
     std::cout << "[PulseAudio] device opened" << std::endl;
     std::cout << "[PulseAudio] Rate: " << paSampleSpec.rate <<std::endl;
     std::cout << "[PulseAudio] Channels: " << (int) paSampleSpec.channels <<std::endl;
     std::cout << "[PulseAudio] Buffer Size: " << control.buffer_size <<std::endl;
 
+    // print the channel map
+    char cm[PA_CHANNEL_MAP_SNPRINT_MAX];
+    pa_channel_map_snprint(cm, sizeof(cm),&paChannelMap);
+    std::cout << "[PulseAudio] channel map: " << cm << std::endl;
+    
     // resize the buffers if necessary
     audioBuffer[readIdx].resize(control.buffer_size*control.numChannels);
     audioBuffer[writeIdx].resize(control.buffer_size*control.numChannels);
 
+    // mark the time when recording started
+    recordingTimestamp = NaoTime::getNaoTimeInMilliSeconds();
+    
     // TODO: do we need that?
-    // give the device a bit time (moved here from the main while-loop
+    // give the device a bit time (moved here from the main while-loop)
     usleep(128);
   }
 } //end initAudio

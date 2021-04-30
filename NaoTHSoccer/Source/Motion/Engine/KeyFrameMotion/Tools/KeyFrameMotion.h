@@ -23,10 +23,14 @@
 #include "Representations/Motion/MotionStatus.h"
 #include <Representations/Infrastructure/JointData.h>
 
+// a small hack, keyframe parameters are stored here
+#include "Representations/Motion/Walk2018/Walk2018Parameters.h"
+
 BEGIN_DECLARE_MODULE(KeyFrameMotion)
   REQUIRE(RobotInfo)
   REQUIRE(SensorJointData)
   REQUIRE(MotionRequest)
+  REQUIRE(Walk2018Parameters)
 
   PROVIDE(MotionStatus)
   PROVIDE(MotionLock)
@@ -54,6 +58,7 @@ private:
 public:
 
   double stiffness;
+  bool stiffnessIsReady;
 
   KeyFrameMotion(const MotionNet& currentMotionNet, motion::MotionID id);
   KeyFrameMotion();

@@ -4,15 +4,24 @@
 #include <Tools/Math/Matrix_mxn.h>
 #include <numeric>
 
-RansacLineDetector::RansacLineDetector()
+RansacLineDetector::RansacLineDetector():
+lineRansac(params.line.maxIterations,
+           params.line.outlierThresholdAngle,
+           params.line.outlierThresholdDist),
+circleRansac(params.circle.maxIterations,
+             params.circle.outlierThresholdAngle,
+             params.circle.outlierThresholdDist,
+             getFieldInfo().centerCircleRadius)
 {
   // initialize some stuff here
-  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:draw_edgels_field", "", false);
-  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:draw_lines_field", "", false);
-  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:fit_and_draw_ellipse_field", "", false);
-
-  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:draw_circle_field", "", false);
-
+  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:draw_edgels_field",
+                         "", false);
+  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:draw_lines_field",
+                         "", false);
+  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:fit_and_draw_ellipse_field",
+                         "", false);
+  DEBUG_REQUEST_REGISTER("Vision:RansacLineDetector:draw_circle_field",
+                         "", false);
   getDebugParameterList().add(&params);
 }
 
@@ -26,103 +35,167 @@ void RansacLineDetector::execute()
   getRansacLinePercept().reset();
   getRansacCirclePercept2018().reset();
 
+  // prepare line id index structure to assign edgels to lines
   // prepare the index arrays
-  getRansacLinePercept().edgelLineIDs.resize(getLineGraphPercept().edgelsOnField.size());
+  getRansacLinePercept().edgelLineIDs.resize(
+        getLineGraphPercept().edgelsOnField.size());
   outliers.resize(getLineGraphPercept().edgelsOnField.size());
   for(size_t i = 0; i < getLineGraphPercept().edgelsOnField.size(); ++i) {
     outliers[i] = i;
     getRansacLinePercept().edgelLineIDs[i] = -1;
   }
 
-  std::vector<size_t> inliers;
+  std::vector<size_t> inlier_idx;
 
-  
-  // detect circle
-  inliers.clear();
-  if(params.circle.enable) 
+  /*****
+   * Ransac to detect the center circle in edgels
+   *****/
+
+  if(params.circle.enable)
   {
-    Vector2d circResult;
-    if (ransacCircle(circResult, inliers)) 
+    // reset parameters
+    circleRansac.setParameters(params.circle.maxIterations,
+                               params.circle.outlierThresholdAngle,
+                               params.circle.outlierThresholdDist,
+                               getFieldInfo().centerCircleRadius);
+    ransac::CircleModel model;
+    if(circleRansac.find_best_model(model, getLineGraphPercept().edgelsOnField, outliers)
+       && model.inlier >= params.circle.minInliers)
     {
+      // get inliers and outliers of the model
+      std::vector<size_t> new_outlier_idx;
+      circleRansac.get_inliers(model, getLineGraphPercept().edgelsOnField,
+                               outliers, inlier_idx, new_outlier_idx);      
 
-      DEBUG_REQUEST("Vision:RansacLineDetector:draw_circle_field",
-        FIELD_DRAWING_CONTEXT;
-        PEN("000099", 5);
-        for(size_t i : inliers) {
-          const Edgel& inlier = getLineGraphPercept().edgelsOnField[i];
-          CIRCLE(inlier.point.x, inlier.point.y, 30);
+      bool valid = !params.circle.validate;
+      if (!valid) {
+        // VALIDATE
+        std::vector<Vector2d> points(inlier_idx.size());
+
+        for(size_t i=0; i<inlier_idx.size(); ++i) {
+          points[i] = getLineGraphPercept().edgelsOnField[inlier_idx[i]].point;
         }
-        PEN("99000066", 50);
-        CIRCLE(circResult.x, circResult.y, getFieldInfo().centerCircleRadius);
-      );
 
-      if(params.circle.refine) 
-      {
-        Vector2d newCircleMean = refineCircle(inliers, circResult);
-        getRansacCirclePercept2018().set(newCircleMean);
+        Vector2d center;
+        double radius;
+        if (Geometry::calculateCircle(points, center, radius)) {
+          valid = !params.circle.validate || std::fabs(radius - getFieldInfo().centerCircleRadius)
+                               <= params.circle.validation_thresh;
 
-        DEBUG_REQUEST("Vision:RansacLineDetector:draw_circle_field",
-          FIELD_DRAWING_CONTEXT;
-          PEN("00990066", 50);
-          CIRCLE(newCircleMean.x, newCircleMean.y, getFieldInfo().centerCircleRadius);
-        );
-      } else {
-        getRansacCirclePercept2018().set(circResult);
+          DEBUG_REQUEST("Vision:RansacLineDetector:draw_circle_field",
+            FIELD_DRAWING_CONTEXT;
+            PEN("000099", 5);
+            for(size_t idx : inlier_idx) {
+              const Edgel& inlier = getLineGraphPercept().edgelsOnField[idx];
+              CIRCLE(inlier.point.x, inlier.point.y, 30);
+            }
+
+            if(valid) {
+              PEN("99000066", 50);
+            } else {
+              PEN("FF69B1FF", 70);
+            }
+            CIRCLE(model.circle_mean.x, model.circle_mean.y, model.radius);
+
+            PEN("DEAD07FF", 50);
+            CIRCLE(center.x, center.y, radius);
+          );
+        }
+      }
+
+      if(valid) {
+        // continue with ransac on remaining outliers
+        outliers = new_outlier_idx;
+
+        if(params.circle.refine)
+        {
+          Vector2d newCircleMean = model.refine(
+                getLineGraphPercept().edgelsOnField, inlier_idx);
+
+          getRansacCirclePercept2018().set(newCircleMean);
+
+          DEBUG_REQUEST("Vision:RansacLineDetector:draw_circle_field",
+            FIELD_DRAWING_CONTEXT;
+            PEN("00990066", 35);
+            CIRCLE(newCircleMean.x, newCircleMean.y, model.radius);
+          );
+        } else {
+          getRansacCirclePercept2018().set(model.circle_mean);
+        }
       }
     }
   }// end if circle
 
+  /*****
+   * Ransac to detect lines in edgels
+   *****/
 
-  // detect lines
-  inliers.clear();
+  // reset parameters
+  lineRansac.setParameters(params.line.maxIterations,
+                           params.line.outlierThresholdAngle,
+                           params.line.outlierThresholdDist);
+
   for(int i = 0; i < params.line.maxLines; ++i)
   {
-    inliers.clear();
-    Math::LineSegment result;
-    size_t start_edgel, end_edgel;
-    if(ransacLine(result, inliers, start_edgel, end_edgel))
+    ransac::LineModel model;
+    if(lineRansac.find_best_model(model, getLineGraphPercept().edgelsOnField, outliers) &&
+       model.inlier > params.line.minInliers)
     {
-      // refine the detected line segment
-      /*
-      // FIXME: the simpleLinearRegression doesn't work properly for two-variabe regression
-      //        don't use until it's fixed
-      if(params.line.fit_lines_to_inliers) 
+      inlier_idx.clear();
+
+      // get inliers and outliers of the model
+      std::vector<size_t> new_outlier_idx;
+      lineRansac.get_inliers(model, getLineGraphPercept().edgelsOnField,
+                             outliers, inlier_idx, new_outlier_idx);
+
+      // calculate edgel angle variance
+      // -> edgels on the same line are expected to have a low angle variance
+      double angle_variance = ransac::angle_variance(
+            getLineGraphPercept().edgelsOnField, inlier_idx);
+
+      // calculate line segment and line length from inliers
+      Math::LineSegment line = model.getLineSegment(
+            getLineGraphPercept().edgelsOnField, inlier_idx);
+      double line_length = line.getLength();
+
+      bool variance_small = line_length > params.line.max_length_for_var_check ||
+                            angle_variance <= params.line.maxVariance;
+
+      if (line_length > params.line.min_line_length && variance_small)
       {
-        std::vector<Vector2d> points;
-        points.reserve(inliers.size());
-        for(size_t i : inliers) {
-          const Edgel& e = getLineGraphPercept().edgelsOnField[i];
-          points.push_back(e.point);
+        // add line to line percept and assign corresponding line to edgels
+        for(size_t idx : inlier_idx) {
+          getRansacLinePercept().edgelLineIDs[idx] =
+              static_cast<int>(getRansacLinePercept().fieldLineSegments.size());
         }
+        getRansacLinePercept().fieldLineSegments.push_back(line);
 
-        double slope, intercept;
-        Geometry::simpleLinearRegression(points, slope, intercept);
-
-        Vector2d base(0, intercept);
-        Vector2d direction = base - Vector2d(1, slope + intercept);
-        Math::Line regression_line(base, direction);
-
-        Math::LineSegment regression_result(
-          regression_line.projection(getLineGraphPercept().edgelsOnField[start_edgel].point),
-          regression_line.projection(getLineGraphPercept().edgelsOnField[end_edgel].point)
-        );
-
-        result = regression_result;
+        // set search space to remaining outliers
+        outliers = new_outlier_idx;
+      } else {
+        break; // model does not satisfy parameters
       }
-      */
-
-      getRansacLinePercept().fieldLineSegments.push_back(result);
-
-      for(size_t i : inliers) {
-        getRansacLinePercept().edgelLineIDs[i] = static_cast<int>(getRansacLinePercept().fieldLineSegments.size()-1);
-      }
-    }
-    else {
-      break; // no line has been found
+    } else {
+      break; // no model has been found
     }
   }
 
-
+  DEBUG_REQUEST("Vision:RansacLineDetector:draw_lines_field",
+    FIELD_DRAWING_CONTEXT;
+    for(size_t i=0; i<getRansacLinePercept().fieldLineSegments.size(); i++)
+    {
+      std::string color;
+      switch(i%3) {
+        case 0: color = "FF000066"; break;
+        case 1: color = "0000FF66"; break;
+        default: color = "00FFFF66"; break;
+      }
+      const Math::LineSegment& line =
+          getRansacLinePercept().fieldLineSegments[i];
+      PEN(color, 50);
+      LINE(line.begin().x, line.begin().y, line.end().x, line.end().y);
+    }
+  );
 
   DEBUG_REQUEST("Vision:RansacLineDetector:draw_edgels_field",
     FIELD_DRAWING_CONTEXT;
@@ -133,9 +206,9 @@ void RansacLineDetector::execute()
       if(getRansacLinePercept().edgelLineIDs[i] > -1) {
         std::string color;
         switch(getRansacLinePercept().edgelLineIDs[i]%3) {
-          case 0: color = "00FF00"; break;
-          case 1: color = "0000FF"; break;
-          default: color = "00FFFF"; break;
+        case 0: color = "FF0000"; break;
+        case 1: color = "0000FF"; break;
+        default: color = "00FFFF"; break;
         }
         PEN(color,2);
       } else {
@@ -146,23 +219,8 @@ void RansacLineDetector::execute()
         CIRCLE(e.point.x, e.point.y, 25);
       }
       PEN("000000",0.1);
-      LINE(e.point.x, e.point.y, e.point.x + e.direction.x*100.0, e.point.y + e.direction.y*100.0);
-    }
-  );
-
-  DEBUG_REQUEST("Vision:RansacLineDetector:draw_lines_field",
-    FIELD_DRAWING_CONTEXT;
-    for(size_t i=0; i<getRansacLinePercept().fieldLineSegments.size(); i++)
-    {
-      std::string color;
-      switch(i%3) {
-        case 0: color = "00FF0066"; break;
-        case 1: color = "0000FF66"; break;
-        default: color = "00FFFF66"; break;
-      }
-      const Math::LineSegment& line = getRansacLinePercept().fieldLineSegments[i];
-      PEN(color, 50);
-      LINE(line.begin().x, line.begin().y, line.end().x, line.end().y);
+      LINE(e.point.x, e.point.y,
+           e.point.x + e.direction.x*100.0, e.point.y + e.direction.y*100.0);
     }
   );
 
@@ -212,254 +270,6 @@ void RansacLineDetector::execute()
   );
 }
 
-bool RansacLineDetector::ransacLine(Math::LineSegment& result, std::vector<size_t>& inliers, size_t& start_edgel, size_t& end_edgel)
-{
-  // not enough remaining edgels
-  if(outliers.size() <= 2) {
-    return false;
-  }
-
-  Math::Line bestModel;
-  int bestInlier = 0;
-  double bestInlierError = 0;
-  int bestBaseEdgelId = -1;
-
-  for(int i = 0; i < params.line.maxIterations; ++i)
-  {
-    //pick two random points without replacement
-    size_t i0 = choose_random_from(outliers, 1);
-    size_t i1 = choose_random_from(outliers, 2);
-
-    const Edgel& a = getLineGraphPercept().edgelsOnField[i0];
-    const Edgel& b = getLineGraphPercept().edgelsOnField[i1];
-
-    // prior check: edgels should have simmilar direction
-    if(a.sim(b) < params.line.minDirectionSimilarity) {
-      continue;
-    }
-
-    Math::Line model(a.point, b.point-a.point);
-
-    // prior check: edgel directions should fit the direction of the line (same check as for inliers)
-    if(sim(model, a) < params.line.minDirectionSimilarity || sim(model, b) < params.line.minDirectionSimilarity) {
-      continue;
-    }
-
-    double inlierError = 0;
-    int inlier = 0;
-    for(size_t i: outliers)
-    {
-      const Edgel& e = getLineGraphPercept().edgelsOnField[i];
-      double d = model.minDistance(e.point);
-
-      // inlier
-      if(d < params.line.outlierThresholdDist && sim(model, e) > params.line.minDirectionSimilarity) {
-        ++inlier;
-        inlierError += d;
-      }
-    }
-
-    if(inlier >= params.line.minInliers && (inlier > bestInlier || (inlier == bestInlier && inlierError < bestInlierError))) {
-      bestModel = model;
-      bestInlier = inlier;
-      bestInlierError = inlierError;
-      bestBaseEdgelId = static_cast<int>(i0);
-    }
-  }
-
-  if(bestInlier >= params.line.minInliers && bestBaseEdgelId >= 0)
-  {
-    std::vector<size_t> newOutliers;
-    newOutliers.reserve(outliers.size() - bestInlier + 1);
-    inliers.clear(); // make sure the list is empty
-    inliers.reserve(bestInlier);
-
-    // In the following we determine the endpoints of the line segment
-    // The endpoints are defined by the most outer inliers
-    // ACHTUNG: We need to start with a point inside the actual line segment.
-    // NOTE: We assume that bestModel.point(0) is one of the inliers which had 
-    //       been used to create the model.
-    double minT = 0.0;
-    double maxT = 0.0;
-    start_edgel = end_edgel = bestBaseEdgelId;
-
-    Vector2d direction_var;
-
-    for(size_t i: outliers)
-    {
-      const Edgel& e = getLineGraphPercept().edgelsOnField[i];
-      double d = bestModel.minDistance(e.point);
-
-      if(d < params.line.outlierThresholdDist && sim(bestModel, e) > params.line.minDirectionSimilarity) {
-        inliers.push_back(i);
-
-        double t = bestModel.project(e.point);
-        if (t < minT) {
-          minT = t;
-          start_edgel = i;
-        }
-        if (t > maxT) {
-          maxT = t;
-          end_edgel = i;
-        }
-        direction_var += e.direction;
-      } else {
-        newOutliers.push_back(i);
-      }
-    }
-
-    // calculate angle variance
-    // TODO: This might penalize lines with lots of inliers!
-    direction_var /= static_cast<double>(inliers.size());
-    const double angle_var = 1 - direction_var.abs();
-
-    result = Math::LineSegment(bestModel.point(minT), bestModel.point(maxT));
-    double line_length = result.getLength();
-
-    if (line_length > params.line.min_line_length
-        && (line_length > params.line.length_of_var_check || angle_var <= params.line.maxVariance))
-    {
-      outliers = newOutliers;
-      return true;
-    }
-
-  }
-  return false;
-}
-
-bool RansacLineDetector::ransacCircle(Vector2d& result, std::vector<size_t>& inliers)
-{
-  if(outliers.size() <= 2) {
-    return false;
-  }
-
-  Vector2d bestModel = getRansacCirclePercept2018().center;
-  int bestInlier = 0;
-  double bestInlierError = 0;
-
-  /*
-  // refine initial model
-  double n = 1;
-  for(size_t i: outliers)
-  {
-    const Edgel& e = getLineGraphPercept().edgelsOnField[i];
-      
-    // inlier
-    double distError = 0.0;
-    if(isCircleInlier(i, bestModel, distError, 3.0*params.circle.outlierThresholdAngle)) 
-    {
-      Vector2d c = e.point + (bestModel - e.point).normalize(getFieldInfo().centerCircleRadius);
-      bestModel += c;
-      n++;
-    }
-  }
-
-  bestModel /= n;
-  */
-
-  const double radius = getFieldInfo().centerCircleRadius;
-
-  for(int i = 0; i < params.circle.maxIterations; ++i)
-  {
-    Vector2d model;
-
-    if(false && i == 0) {
-      model = bestModel;
-    }
-    else
-    {
-      //pick two random points without replacement
-      //size_t i0 = choose_random_from(outliers, 1);
-      //size_t i1 = choose_random_from(outliers, 2);
-
-      Vector2i idx = choose_random_two(outliers);
-
-      const Edgel& a = getLineGraphPercept().edgelsOnField[idx[0]];
-      const Edgel& b = getLineGraphPercept().edgelsOnField[idx[1]];
-
-      
-      if(!estimateCircle(a,b,radius,model)) {
-        continue;
-      }
-
-      if(angle_diff(model, a) > params.circle.outlierThresholdAngle || angle_diff(model, b) > params.circle.outlierThresholdAngle) {
-        continue;
-      }
-    }
-
-    double inlierError = 0;
-    int inlier = 0;
-
-    for(size_t i: outliers)
-    {
-      // inlier
-      double distError = 0.0;
-      if(isCircleInlier(i, model, distError, params.circle.outlierThresholdAngle)) 
-      {
-        inlier += 1;
-        inlierError += distError;
-      }
-    }
-
-    if(inlier > bestInlier || (inlier == bestInlier && inlierError < bestInlierError)) 
-    {
-      bestModel = model;
-      bestInlier = inlier;
-      bestInlierError = inlierError;
-    }
-
-  } // end for
-
-  // update the outliers
-  if (bestInlier >= params.circle.minInliers) 
-  {
-    std::vector<size_t> newOutliers;
-    newOutliers.reserve(outliers.size() - bestInlier + 1);
-    //size_t outlierIdx = 0;
-    inliers.reserve(bestInlier);
-
-    for(size_t i: outliers)
-    {
-      double distError = 0.0;
-      if(isCircleInlier(i, bestModel, distError, 3.0*params.circle.outlierThresholdAngle)) {
-        inliers.push_back(i);
-      } else {
-        //outliers[outlierIdx++] = i;
-        newOutliers.push_back(i);
-      }
-    }
-    outliers = newOutliers;
-    //outliers.resize(outliers.size() + 1 - bestInlier);
-
-    result = bestModel;
-    return true;
-  }
-
-  return false;
-}
-
-
-Vector2d RansacLineDetector::refineCircle(const std::vector<size_t>& inliers, const Vector2d& center) const
-{
-  Vector2d result;
-  double n = 0;
-
-  for(size_t i: inliers) 
-  {
-    const Edgel& e = getLineGraphPercept().edgelsOnField[i];
-
-    Vector2d c = e.point + (center - e.point).normalize(getFieldInfo().centerCircleRadius);
-    result += c;
-    n++;
-  }
-
-  if(n > 0) {
-    result /= n;
-  }
-
-  return result;
-}
-
 int RansacLineDetector::ransacEllipse(Ellipse& result)
 {
   if(outliers.size() <= 5) {
@@ -503,7 +313,10 @@ int RansacLineDetector::ransacEllipse(Ellipse& result)
         continue;
       }
     }
-    if(inlier >= params.circle.minInliers && (inlier > bestInlier || (inlier == bestInlier && inlierError < bestInlierError))) {
+    if(inlier >= params.circle.minInliers && (inlier > bestInlier ||
+                                              (inlier == bestInlier &&
+                                              inlierError < bestInlierError)))
+    {
       bestModel = ellipse;
       bestInlier = inlier;
       bestInlierError = inlierError;
@@ -541,5 +354,3 @@ int RansacLineDetector::ransacEllipse(Ellipse& result)
 
   return bestInlier;
 }
-
-

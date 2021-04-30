@@ -40,13 +40,15 @@ public:
     class Parameters: public ParameterList
     {
     public:
-        Parameters() : ParameterList("TeamBallLocatorCanopyClusterParameters")
+        Parameters() : ParameterList("TeamBallLocatorCanopyCluster")
         {
             PARAMETER_REGISTER(maxBallAge) = 850; // in ms, wait at least two messages (approx.)
             PARAMETER_REGISTER(t1) = 1000; // in mm
             PARAMETER_REGISTER(t2) = 500; // in mm
             PARAMETER_REGISTER(maxTimeTbIsValidWithoutUpdate) = 2000; // in ms
             PARAMETER_REGISTER(ballsAreOnlyValidOnField) = true; // the received balls are only 'valid' if their inside the field boundries
+            PARAMETER_REGISTER(enablePlayingCheck) = true; // whether the check, if a teammate is alive, active & playing should be used
+            PARAMETER_REGISTER(enableNtpAdjustment) = true; // whether the ball age should be adjusted for the network latency
             syncWithConfig();
         }
         int maxBallAge;
@@ -54,6 +56,9 @@ public:
         int t2; // tight distance
         int maxTimeTbIsValidWithoutUpdate;
         bool ballsAreOnlyValidOnField;
+
+        bool enablePlayingCheck;
+        bool enableNtpAdjustment;
     } params;
 
     TeamBallLocatorCanopyCluster();

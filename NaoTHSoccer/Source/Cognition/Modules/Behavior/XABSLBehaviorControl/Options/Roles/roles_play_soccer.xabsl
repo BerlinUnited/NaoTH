@@ -61,8 +61,7 @@ option roles_play_soccer
     }
     action 
     {
-      head.control_mode = search_for_goal;
-      situationStatusOwnHalf = true;
+      head.control_mode = look_around;
       motion.type = stand;
     }
   }
@@ -81,9 +80,6 @@ option roles_play_soccer
     action 
     {
       roles_go_to_ready_position();
-      
-      //only the first we know that we are in our own half
-      situationStatusOwnHalf = (game.msecsRemaining >= 540000);
     }
   }
 
@@ -105,7 +101,6 @@ option roles_play_soccer
     action 
     {
       head.control_mode = search_for_ball;
-      situationStatusOwnHalf = true;
     }
   }
 
@@ -116,7 +111,8 @@ option roles_play_soccer
       // TODO! with roles, the freekick may change too!?
       else if (game.current_mode != playing)
         goto idle;
-      else if (game.set_play != none)
+      else if (game.set_play != none && strategy.role != goalie)
+        // goalie should'n turn and search for ball - keep playing!
         goto free_kick_simple;
       /* else if (game.set_play == goal_free_kick && game.own_kickoff)
         // if free kick time is (nearly) up, we proceed with our normal game, otherwise position for free kick
@@ -177,7 +173,7 @@ option roles_play_soccer
         stay;
     }
     action {
-      role_free_kick_simple(own=game.own_kickoff);
+      free_kick_simple(own=game.own_kickoff);
     }
   }
   
@@ -191,7 +187,7 @@ option roles_play_soccer
         stay;
     }
     action {
-      role_free_kick_own_goal();
+      free_kick_own_goal();
     }
   }
   
@@ -205,7 +201,7 @@ option roles_play_soccer
         stay;
     }
     action {
-      role_free_kick_opp_goal();
+      free_kick_opp_goal();
     }
   }
   
@@ -219,7 +215,7 @@ option roles_play_soccer
         stay;
     }
     action {
-      role_free_kick_own();
+      free_kick_own();
     }
   }
   
@@ -233,7 +229,35 @@ option roles_play_soccer
         stay;
     }
     action {
-      role_free_kick_opp();
+      free_kick_opp();
+    }
+  }
+  
+  state free_kick_own_in
+  {
+    decision
+    {
+      else if (game.set_play != kick_in || game.msecsRemainingSecondary <= 5000)
+        goto play;
+      else
+        stay;
+    }
+    action {
+      free_kick_own_in();
+    }
+  }
+  
+  state free_kick_opp_in
+  {
+    decision
+    {
+      else if (game.set_play != kick_in)
+        goto play;
+      else
+        stay;
+    }
+    action {
+      free_kick_opp_in();
     }
   }
 }

@@ -5,7 +5,6 @@ using namespace std;
 
 GameLogger::GameLogger()
   : 
-  logfileManager(true),
   lastCompleteFrameNumber(0),
   oldState(PlayerInfo::initial),
   firstRecording(true),
@@ -28,7 +27,7 @@ GameLogger::~GameLogger()
 }
 
 #define LOGSTUFF(name) \
-  { std::stringstream& dataStream = logfileManager.log(getFrameInfo().getFrameNumber(), #name); \
+  { std::ostream& dataStream = logfileManager.log(getFrameInfo().getFrameNumber(), #name); \
   Serializer<name>::serialize(get##name(), dataStream); } ((void)0)
 
 void GameLogger::execute()
@@ -81,14 +80,15 @@ void GameLogger::execute()
       LOGSTUFF(GoalPerceptTop);
 
       LOGSTUFF(MultiBallPercept);
+      LOGSTUFF(BallModel);
       
       if(params.logUltraSound) {
         LOGSTUFF(UltraSoundReceiveData);
       }
 
-      //LOGSTUFF(BallPercept);
-      //LOGSTUFF(BallPerceptTop);
-      
+      LOGSTUFF(FieldPercept);
+      LOGSTUFF(FieldPerceptTop);
+
       LOGSTUFF(ScanLineEdgelPercept);
       LOGSTUFF(ScanLineEdgelPerceptTop);
       LOGSTUFF(ShortLinePercept);
@@ -104,10 +104,26 @@ void GameLogger::execute()
 
       LOGSTUFF(TeamMessage);
 
-      if(params.logAudioData && lastAudioDataTimestamp < getAudioData().timestamp) {
-        LOGSTUFF(AudioData);
-        lastAudioDataTimestamp = getAudioData().timestamp;
+
+      // keep the audio device open for some time
+
+      if(params.logAudioData) 
+      {
+        // remember when the capture was on and keep recording for some time after the behavior says stop recording
+        if(getAudioControl().capture) {
+          timeOfLastCapture = getFrameInfo();
+        } else if(getFrameInfo().getTimeSince(timeOfLastCapture.getTime()) < 3000) {
+          getAudioControl().capture = true;
+        }
+
+        // new data avaliable and capture is still on
+        if(lastAudioDataTimestamp < getAudioData().timestamp) {
+          LOGSTUFF(AudioData);
+          lastAudioDataTimestamp = getAudioData().timestamp;
+        }
       }
+
+      
       
       if (getWhistlePercept().whistleDetected) {
         LOGSTUFF(WhistlePercept);

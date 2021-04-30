@@ -42,7 +42,6 @@ public:
     exludeMap.insert("FSRData");
     exludeMap.insert("GyrometerData");
     exludeMap.insert("InertialSensorData");
-    exludeMap.insert("IRReceiveData");
     exludeMap.insert("CurrentCameraSettings");
     exludeMap.insert("ButtonData");
     exludeMap.insert("BatteryData");

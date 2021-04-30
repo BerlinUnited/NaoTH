@@ -14,6 +14,9 @@ void SelflocSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("gps.x",&getGPSData().data.translation.x);
   engine.registerDecimalInputSymbol("gps.y",&getGPSData().data.translation.y);
 
+  engine.registerBooleanInputSymbol("goal.opp.was_seen", &getOpponentGoalWasSeen);
+  engine.registerBooleanInputSymbol("goal.own.was_seen", &getOwnGoalWasSeen);
+
   // goal symbols based on self localization
   engine.registerDecimalInputSymbol("goal.opp.x", &oppGoal.center.x);
   engine.registerDecimalInputSymbol("goal.opp.y", &oppGoal.center.y);
@@ -112,4 +115,16 @@ double SelflocSymbols::getFieldToRelativeX()
 double SelflocSymbols::getFieldToRelativeY()
 {
   return (theInstance->getRobotPose()/theInstance->parameterVector).y;
+}
+
+bool SelflocSymbols::getOpponentGoalWasSeen()
+{
+  return  theInstance->getLocalGoalModel().opponentGoalIsValid && 
+          theInstance->getLocalGoalModel().someGoalWasSeen;
+}
+
+bool SelflocSymbols::getOwnGoalWasSeen()
+{
+  return  theInstance->getLocalGoalModel().ownGoalIsValid && 
+          theInstance->getLocalGoalModel().someGoalWasSeen;
 }

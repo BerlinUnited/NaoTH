@@ -18,6 +18,11 @@ void Serializer<CollisionPercept>::serialize(const CollisionPercept& representat
   message.set_timecollisionarmleft(representation.timeCollisionArmLeft);
   message.set_timecollisionarmright(representation.timeCollisionArmRight);
 
+  message.set_iscollisionleftbumper(representation.collision_left_bumper);
+  message.set_iscollisionrightbumper(representation.collision_right_bumper);
+  message.set_lastcomputedcollisionleft(representation.lastComputedCollisionLeft);
+  message.set_lastcomputedcollisionright(representation.lastComputedCollisionRight);
+
   google::protobuf::io::OstreamOutputStream buf(&stream);
   message.SerializeToZeroCopyStream(&buf);
 }
@@ -30,6 +35,10 @@ void Serializer<CollisionPercept>::deserialize(std::istream& stream, CollisionPe
   {
     representation.timeCollisionArmLeft = message.timecollisionarmleft();
     representation.timeCollisionArmRight = message.timecollisionarmright();
+    representation.collision_left_bumper = message.iscollisionleftbumper();
+    representation.collision_left_bumper = message.iscollisionrightbumper();
+    representation.lastComputedCollisionLeft = message.lastcomputedcollisionleft();
+    representation.lastComputedCollisionRight = message.lastcomputedcollisionright();
   }
   else
   {

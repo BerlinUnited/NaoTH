@@ -1,0 +1,34 @@
+option path_turn_to_attack_direction
+{  
+  initial state turn {
+    decision {
+      if(obstacle.ultrasound.distance < 400)
+        goto turn_stable;
+      else
+        stay;
+    }
+    
+    action{
+      path2018.routine = move_around_ball2;
+      path.direction = attack.direction.preview;
+      path.radius = 210;
+      path.stable = false;
+    }
+  }
+
+  state turn_stable {
+    decision {
+      if(obstacle.ultrasound.distance > 450)
+        goto turn;
+      else
+        stay;
+    }
+    
+    action{
+      path2018.routine = move_around_ball2;
+      path.direction = attack.direction.preview;
+      path.radius = 210;
+      path.stable = true;
+    }
+  }  
+}

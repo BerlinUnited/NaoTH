@@ -1,17 +1,0 @@
-option pathplanner_test_only_sidekick_agent {
-  initial state test {    
-    action {
-    
-      // react to the game controller and handle fall down
-      basic_play();
-
-      pathplanner_sidekick_only();
-      
-      // control the arms
-      arms_control();
-
-      // control head movement according to value of head.control_mode
-      head_control();
-    }
-  }
-}

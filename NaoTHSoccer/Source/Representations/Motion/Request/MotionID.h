@@ -10,7 +10,7 @@
 #define __MotionID_h_
 
 #include <string>
-#include <Tools/DataConversion.h>
+#include <Tools/StringTools.h>
 
 namespace motion
 {
@@ -22,6 +22,7 @@ namespace motion
     empty,
     init,
     dead,
+    falling,
     sit,
 
     /* inverse kinematic */
@@ -53,13 +54,12 @@ namespace motion
 
     kick_right,
 
-    goalie_dive_right_test,
-    goalie_dive_left_test,
     goalie_sit_block,
     goalie_sit_n_dive_left,
     goalie_sit_n_dive_right,
-    goalie_sit_n_dive_left_test,
-    goalie_sit_n_dive_right_test,
+
+    jump_indicator_left,
+    jump_indicator_right,
 
     // instantly load and run the play_editor_motionnet.mef
     // used by the motion editor
@@ -76,6 +76,7 @@ namespace motion
       case empty: return "empty";
       case init: return "init";
       case dead: return "dead";
+      case falling: return "falling";
       case sit: return "sit";
 
       case stand: return "stand";
@@ -104,20 +105,19 @@ namespace motion
 
       case kick_right: return "kick_right";
 
-      case goalie_dive_right_test: return "goalie_dive_right_test";
-      case goalie_dive_left_test: return "goalie_dive_left_test";
       case goalie_sit_block: return "goalie_sit_block";
       case goalie_sit_n_dive_left: return "goalie_sit_n_dive_left";
       case goalie_sit_n_dive_right: return "goalie_sit_n_dive_right";
-      case goalie_sit_n_dive_left_test: return "goalie_sit_n_dive_left_test";
-      case goalie_sit_n_dive_right_test: return "goalie_sit_n_dive_right_test";
+
+      case jump_indicator_left: return "jump_indicator_left";
+      case jump_indicator_right: return "jump_indicator_right";
 
       case play_editor_motionnet: return "play_editor_motionnet";
 
       case num_of_motions: return "num_of_motion";
     }///end switch
 
-    return "unknown "+naoth::DataConversion::toStr(id);
+    return "unknown " + naoth::StringTools::toStr(id);
   }///end getName
 
   /** return the motion id reprented by the name */

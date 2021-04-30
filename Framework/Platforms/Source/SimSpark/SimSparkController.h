@@ -19,8 +19,6 @@
 #include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/FSRData.h>
 #include <Representations/Infrastructure/InertialSensorData.h>
-#include <Representations/Infrastructure/IRData.h>
-#include <Representations/Infrastructure/CameraSettings.h>
 #include <Representations/Infrastructure/LEDData.h>
 #include <Representations/Infrastructure/UltraSoundData.h>
 #include <Representations/Infrastructure/SoundData.h>
@@ -56,6 +54,8 @@ using namespace naoth;
 class SimSparkController : public PlatformInterface, DebugCommandExecutor
 {
 private:
+  std::string thePlatformName;
+
   GSocket* socket;
   PrefixedSocketStream theSocket;
 
@@ -81,6 +81,7 @@ private:
   FrameInfo theFrameInfo;
   BatteryData theBatteryData;
   GPSData theGPSData;
+  UltraSoundReceiveData theUSData;
 
   int theCameraId;
   CameraInfo theCameraInfo;
@@ -101,6 +102,7 @@ private:
 
   // set of unknown messages to be ignored
   std::set<std::string> ignore;
+  bool ignoreOpponentMsg;
 
 public:
   SimSparkController(const std::string& name);
@@ -108,14 +110,14 @@ public:
   virtual ~SimSparkController();
 
   virtual std::string getBodyID() const;
-
   virtual std::string getBodyNickName() const;
-
   virtual std::string getHeadNickName() const;
   virtual std::string getRobotName() const { return getBodyNickName(); }
+  virtual std::string getPlatformName() const { return thePlatformName; }
+  virtual unsigned int getBasicTimeStep() const { return 20; }
 
   /////////////////////// init ///////////////////////
-  bool init(const std::string& modelPath, const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync);
+  bool init(const std::string& modelPath, const std::string& teamName, unsigned int teamNumber, unsigned int num, const std::string& server, unsigned int port, bool sync);
 
   void main();
 
@@ -138,10 +140,9 @@ public:
 
   void get(InertialSensorData& data);
 
-  void get(CurrentCameraSettings& data);
-
   void get(BatteryData& data);
   void get(GPSData& data);
+  void get(UltraSoundReceiveData& data);
 
   void get(VirtualVision& data);
   void get(VirtualVisionTop& data);
@@ -154,8 +155,6 @@ public:
   void set(const MotorJointData& data);
 
   void set(const TeamMessageDataOut& data);
-
-  void set(const CameraSettingsRequest& data);
 
 protected:
   virtual MessageQueue* createMessageQueue(const std::string& name);
@@ -177,7 +176,7 @@ private:
 
   int parseString(char* data, std::string& value);
   int parseInt(char* data, int& value);
-  int paseImage(char* data);
+  int parseImage(char* data);
   bool parsePoint3D(const sexp_t* sexp, Vector3d& result) const;
   bool parseTeamInfo(const sexp_t* team, std::vector<naoth::GameData::RobotInfo>& players);
 
@@ -186,6 +185,7 @@ private:
   bool updateGyro(const sexp_t* sexp);
   bool updateAccelerometer(const sexp_t* sexp);
   bool updateBattery(const sexp_t* sexp);
+  bool updateSonar(const sexp_t* sexp);
   bool updateGPS(const sexp_t* sexp);
   bool updateGameInfo(const sexp_t* sexp);
   bool updateFSR(const sexp_t* sexp);

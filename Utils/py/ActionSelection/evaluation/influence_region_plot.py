@@ -14,18 +14,17 @@ mlp.rcParams.update(pgf_with_rc_fonts)
 
 
 def estimate_time(x, y):
-
     angle = np.degrees(np.arctan2(y, x))
-    rot_time = np.abs(angle/velRot)
+    rot_time = np.abs(angle / velRot)
 
     # calculate the distance
     distance = np.hypot(x, y)
-    distance_time = distance/velWalk
+    distance_time = distance / velWalk
     total_time = distance_time + rot_time  # type: np.ndarray
 
     for d1 in range(len(x)):
         for d2 in range(len(y)):
-            total_time[d1, d2] = 1.5*total_time[d1, d2] * m.exp(-total_time[d1, d2] * 0.1)
+            total_time[d1, d2] = 1.5 * total_time[d1, d2] * m.exp(-total_time[d1, d2] * 0.1)
 
             if total_time[d1, d2] >= 5:
                 total_time[d1, d2] = 5
@@ -64,10 +63,10 @@ if __name__ == "__main__":
 
     ax.get_xaxis().tick_bottom()  # remove unneeded ticks
     ax.get_yaxis().tick_left()
-          
+
     CS1 = plt.contourf(x_val, y_val, times, 10, alpha=0.5, cmap="coolwarm", frameon=False)
-    
+
     CS = plt.contour(CS1, levels=CS1.levels)
     plt.clabel(CS, inline=1, fontsize=10)
-        
+
     plt.show()

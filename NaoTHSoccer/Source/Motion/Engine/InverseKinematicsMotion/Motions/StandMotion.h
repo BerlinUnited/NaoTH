@@ -11,8 +11,8 @@
 *
 */
 
-#ifndef _StandMotion_H
-#define _StandMotion_H
+#ifndef _StandMotion_H_
+#define _StandMotion_H_
 
 #include "IKMotion.h"
 #include "Tools/Debug/DebugPlot.h"
@@ -76,9 +76,11 @@ class StandMotion : private StandMotionBase, public IKMotion
 public:
   enum State {
     GotoStandPose,
-    Relax
+    Relax,
+    None // this is a virtual state only used for lastState
   };
 
+  bool firstRun;
   State state;
   State lastState;
   time_t state_time;
@@ -93,7 +95,7 @@ public:
 private:
   void setStiffnessBuffer(double s);
 
-  void calcStandPose();
+  void calcStandPose(bool fullCorrection);
 
   bool interpolateToPose();
 
@@ -113,8 +115,14 @@ private:
 
   double totalTime;
   double time;
+
+  // monitor the state in order to react to changes
   double height;
   bool standardStand;
+  bool isLiftedUp;
+
+  // this flag controlls which pose will be calculated as target pose in GotoStandPose
+  bool fullCorrection; 
 
   bool stiffnessIsReady;
 
@@ -123,10 +131,7 @@ private:
 
   //InverseKinematic::HipFeetPose relaxedPose;
   JointData relaxData;
-  bool relaxedPoseInitialized;
-  bool isRelaxing;
-  bool resetedAfterLifting;
-
+  
   JointMonitor jointMonitors[naoth::JointData::numOfJoint];
 
   // used by StandMotion:stiffness_controller
@@ -140,5 +145,5 @@ private:
 
 };
 
-#endif  /* _StandMotion_H */
+#endif  /* _StandMotion_H_ */
 

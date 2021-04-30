@@ -1,3 +1,0 @@
-naoth
-numpy
-pillow

@@ -22,7 +22,6 @@
 // situation
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/BodyState.h"
-#include "Representations/Modeling/SituationStatus.h"
 
 #include "Representations/Modeling/SituationPrior.h"
 
@@ -45,7 +44,6 @@ BEGIN_DECLARE_MODULE(SituationPriorProvider)
 
   REQUIRE(MotionStatus)
   REQUIRE(BodyState)
-  REQUIRE(SituationStatus)
 
   PROVIDE(SituationPrior)
 END_DECLARE_MODULE(SituationPriorProvider)
@@ -63,9 +61,9 @@ private:
   class LineDensity {
   private:
     Math::LineSegment segment;
-    double angle; 
-    double distDeviation; 
-    double angleDeviation;
+    double angle;
+    //double distDeviation; 
+    //double angleDeviation;
 
   public:
     LineDensity()
@@ -74,9 +72,12 @@ private:
 
     LineDensity(
       const Vector2d& start, const Vector2d& end, 
-      double angle, double distDeviation, double angleDeviation)
+      double angle)
       :
-      segment(start, end), angle(angle), distDeviation(distDeviation), angleDeviation(angleDeviation)
+      segment(start, end),
+      angle(angle)/*, 
+      distDeviation(distDeviation), 
+      angleDeviation(angleDeviation)*/
     {
     }
 
@@ -105,6 +106,7 @@ private:
   PlayerInfo::RobotState lastRobotState;
   PlayerInfo::RobotState currentRobotState;
   GameData::GameState gameStateWhenPenalized;
+  GameData::Penalty reasonForLastPenalized;
 
   bool walked_after_penalized_or_init;
 

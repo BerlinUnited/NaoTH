@@ -2,9 +2,12 @@
 dist/
 build/
 private/
-deploy/
+backup_*/
+
+#deploy/
 NaoSCP/tmp/
 XabslEditor/
+.gradle/
 
 #java project files
 build.xml
@@ -16,19 +19,21 @@ genfiles.properties
 .idea/
 naoth.egg-info*
 
+#pyenv
+.python-version
+
 #
 trace.dump.*
 projectconfig.user.lua
 *~
 compile_commands.json
 
-#messages
-RobotControl/RobotConnector/src/de/naoth/rc/messages
-NaoTHSoccer/Source/Messages
-Framework/Commons/Source/Messages
-
 #particular files
 behavior-ic.dat
 
 #vim swap files
 .*.swp
+/Utils/.vscode/settings.json
+
+# macOS
+.DS_Store

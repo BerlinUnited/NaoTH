@@ -1,0 +1,145 @@
+/**
+This file should become the central place to handle collisions
+for all kinds of different types of collision. For now there will
+only be the Bumper collision handling. Planning on moving
+arm collision handling from arms_control into here (good idea?)
+*/
+option bumper_collision_stop
+{
+common decision {
+  if (!body.ready_to_walk || game.current_mode != playing)
+    goto idle;
+}
+
+initial state idle{
+  decision 
+  {
+    else
+      goto forward;
+  }
+  action{}
+}
+
+state forward{
+  decision
+    {
+      else if(state_time > 20000 || (motion.collision.timeSinceCollisionBumperLeft <= 1 &&
+              motion.collision.timeSinceCollisionBumperRight <= 1)||
+              (button.bumper.pressed.left)){
+       goto backward;
+      } 
+      else if((motion.collision.timeSinceCollisionBumperLeft <= 1)||
+      (button.bumper.pressed.left)){
+        //goto avoid_right;
+        goto backward;
+      }
+      else if((motion.collision.timeSinceCollisionBumperRight <= 1)||
+      (button.bumper.pressed.right)){
+        //goto avoid_left;
+        goto backward;
+      }
+      else {
+       stay;
+      }
+    }
+    action
+    {
+      head.control_mode = look_straight_ahead;
+      arm.control_mode = normal;
+      motion.type = walk;
+      motion.walk_speed.x = 100;
+      motion.walk.style = stable;
+    }
+  }
+
+state stand{
+  decision{
+      else {
+        stay;
+      }
+    }
+    action
+    {
+      head.control_mode = look_straight_ahead;
+      arm.control_mode = normal;
+      motion.walk_speed.x = -100;
+      motion.type = stand;
+    }  
+  }
+
+state avoid_left
+  {
+    decision
+    { 
+      else if(state_time < 1000)
+        stay;
+      else
+        goto stand;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      
+      motion.type = walk;
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = -100;
+      motion.walk_speed.rot = (vector.abs(x=ball.preview.x, y=ball.preview.y) > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
+
+      arm.control_mode = back;
+    }
+  }
+
+
+  state avoid_right
+  {
+    decision
+    { 
+      else if(state_time < 1000)
+        stay;
+      else
+        goto stand;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      
+      motion.type = walk;
+      motion.walk.coordinate = hip;
+      motion.walk.style = normal;
+
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 100;
+      motion.walk_speed.rot = (vector.abs(x=ball.preview.x, y=ball.preview.y) > 250) ? atan2(y = ball.preview.y, x = ball.preview.x) : 0;
+
+      arm.control_mode = back;
+    }
+  }
+
+  state backward
+  {
+    decision
+    { 
+      else if(state_time < 2500)
+        stay;
+      else
+        goto stand;
+    }
+    action 
+    {    
+      arm.control_mode = normal;
+      motion.type = walk;
+      motion.walk.coordinate = hip;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+      motion.walk.style = normal;
+      motion.walk_speed.x = -50;
+
+    }
+  }
+
+
+
+}

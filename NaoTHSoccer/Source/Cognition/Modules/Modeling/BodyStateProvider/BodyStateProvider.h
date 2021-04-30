@@ -94,6 +94,20 @@ private:
 
   void updateIsLiftedUp();
 
+  /**
+   * @brief Updates the 'ready to walk' body state.
+   *        The robot is 'ready to walk', if he's not fallen, not lifted up and is able to walk
+   *        (see determineReadyToWalkState()).
+   */
+  void updateIsReadyToWalk();
+
+  /**
+   * @brief Determines, whether the robot is ready to walk.
+   *        The robot is ready to walk, if he's already walking or if the stand motion is completed.
+   * @return true, if ready to walk, false otherwise
+   */
+  inline bool determineReadyToWalkState();
+
   // internal data
   RingBufferWithSum<Vector2d, 10> inertialBuffer;
 

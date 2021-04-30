@@ -11,7 +11,7 @@ FrugallyDeep::~FrugallyDeep()
 {
 }
 
-void FrugallyDeep::find(const BallCandidates::PatchYUVClassified &patch, double meanBrightness)
+void FrugallyDeep::predict(const BallCandidates::PatchYUVClassified &patch, double meanBrightness)
 {
     // create input data from patch (TODO: why not use a Y-patch directly and save the copy operation?)
     ASSERT(patch.size() == 16);

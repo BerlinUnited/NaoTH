@@ -13,18 +13,11 @@ using namespace std;
 FootStepPlanner2018::FootStepPlanner2018() :
   parameters(getWalk2018Parameters().footStepPlanner2018Params),
   theFootOffsetY(0.0),
-  theMaxChangeTurn(0.0),
-  theMaxChangeX(0.0),
-  theMaxChangeY(0.0),
   emergencyCounter(0)
 {}
 
 void FootStepPlanner2018::updateParameters() {
   theFootOffsetY   = NaoInfo::HipOffsetY + parameters.footOffsetY;
-  
-  theMaxChangeTurn = parameters.limits.maxStepTurn   * parameters.limits.maxStepChange;
-  theMaxChangeX    = parameters.limits.maxStepLength * parameters.limits.maxStepChange;
-  theMaxChangeY    = parameters.limits.maxStepWidth  * parameters.limits.maxStepChange;
 }
 
 void FootStepPlanner2018::init(size_t initial_number_of_cycles, FeetPose initialFeetPose)
@@ -126,7 +119,7 @@ void FootStepPlanner2018::calculateNewStep(const Step& lastStep, Step& newStep, 
 
     // print it only once
     if(newStep.footStep.liftingFoot() == FootStep::NONE && lastStep.footStep.liftingFoot() != FootStep::NONE) {
-      std::cout << "walk stopping ..." << std::endl;
+      //std::cout << "walk stopping ..." << std::endl;
     }
     return;
   } else {
@@ -282,7 +275,7 @@ FootStep FootStepPlanner2018::firstStep(const InverseKinematic::FeetPose& pose, 
 {
   FootStep firstStepLeft  = calculateNextWalkStep(pose, offset, lastStepRequest, FootStep::LEFT, req);
   FootStep firstStepRight = calculateNextWalkStep(pose, offset, lastStepRequest, FootStep::RIGHT, req);
-  
+
   Pose3D leftMove  = firstStepLeft.footBegin().invert() * firstStepLeft.footEnd();
   Pose3D rightMove = firstStepRight.footBegin().invert() * firstStepRight.footEnd();
 
@@ -334,20 +327,20 @@ FootStep FootStepPlanner2018::calculateNextWalkStep(const InverseKinematic::Feet
   }
 
   // apply restriction mode
-  if (stepControl && req.stepControl.restriction == WalkRequest::StepControlRequest::RestrictionMode::SOFT) 
+  if (stepControl && req.stepControl.restriction == WalkRequest::StepControlRequest::RestrictionMode::SOFT)
   {
     restrictStepSize(stepRequest, req.character, true);
-  } 
-  // the stepControl with restriction mode HARD behaves the same way as regular walk request 
+  }
+  // the stepControl with restriction mode HARD behaves the same way as regular walk request
   else if (stepControl && req.stepControl.restriction == WalkRequest::StepControlRequest::RestrictionMode::HARD)
   {
     restrictStepSize(stepRequest, req.character, false);
-    restrictStepChange(stepRequest, lastStepRequest);
+    restrictStepChange(stepRequest, lastStepRequest, true);
   }
-  else // regular walk request 
+  else // regular walk request
   {
     restrictStepSize(stepRequest, req.character, false);
-    restrictStepChange(stepRequest, lastStepRequest);
+    restrictStepChange(stepRequest, lastStepRequest, false);
   }
 
   // create a new step
@@ -374,7 +367,7 @@ FootStep FootStepPlanner2018::calculateNextWalkStep(const InverseKinematic::Feet
 }//end calculateNextWalkStep
 
 //TODO: do we really need different parameters for normal and step control steps?
-void FootStepPlanner2018::restrictStepSize(Pose2D& step, double character, bool stepControl) const 
+void FootStepPlanner2018::restrictStepSize(Pose2D& step, double character, bool stepControl) const
 {
   // scale the character: [0, 1] --> [0.5, 1]
   character = 0.5*character + 0.5;
@@ -431,19 +424,43 @@ void FootStepPlanner2018::restrictStepSize(Pose2D& step, double character, bool 
   }
 }//end restrictStepSize
 
-void FootStepPlanner2018::restrictStepChange(Pose2D& step, const Pose2D& lastStep) const
+void FootStepPlanner2018::restrictStepChange(Pose2D& step, const Pose2D& lastStep, bool stepControl) const
 {
-  Pose2D change;
-  change.translation = step.translation - lastStep.translation;
-  change.rotation = Math::normalize(step.rotation - lastStep.rotation);
-  double maxX = theMaxChangeX;
-  double maxY = theMaxChangeY;
-  double maxT = theMaxChangeTurn;
+    double maxChangeDownX,  maxChangeDownY, maxChangeDownTurn, maxChangeX, maxChangeY,  maxChangeTurn;
 
-  change.translation.x = Math::clamp(change.translation.x, -maxX, maxX);
-  change.translation.y = Math::clamp(change.translation.y, -maxY, maxY);
-  change.rotation = Math::clamp(change.rotation, -maxT, maxT);
+    if(stepControl){
+        maxChangeDownX    = parameters.limits.maxCtrlLength * parameters.limits.maxCtrlChangeDown;
+        maxChangeDownY    = parameters.limits.maxCtrlWidth  * parameters.limits.maxCtrlChangeDown;
+        maxChangeDownTurn = parameters.limits.maxCtrlTurn   * parameters.limits.maxCtrlChangeDown;
+        maxChangeX        = parameters.limits.maxCtrlLength * parameters.limits.maxCtrlChange;
+        maxChangeY        = parameters.limits.maxCtrlWidth  * parameters.limits.maxCtrlChange;
+        maxChangeTurn     = parameters.limits.maxCtrlTurn   * parameters.limits.maxCtrlChange;
+    } else {
+        maxChangeDownX    = parameters.limits.maxStepLength * parameters.limits.maxStepChangeDown;
+        maxChangeDownY    = parameters.limits.maxStepWidth  * parameters.limits.maxStepChangeDown;
+        maxChangeDownTurn = parameters.limits.maxStepTurn   * parameters.limits.maxStepChangeDown;
+        maxChangeX        = parameters.limits.maxStepLength * parameters.limits.maxStepChange;
+        maxChangeY        = parameters.limits.maxStepWidth  * parameters.limits.maxStepChange;
+        maxChangeTurn     = parameters.limits.maxStepTurn   * parameters.limits.maxStepChange;
+    }
 
-  step.translation = lastStep.translation + change.translation;
-  step.rotation = Math::normalize(lastStep.rotation + change.rotation);
+    // calculate planned change
+    Pose2D change;
+    change.translation = step.translation - lastStep.translation;
+    change.rotation = Math::normalize(step.rotation - lastStep.rotation);
+
+    // apply restrictions to change
+    if(parameters.limits.applyChangeX) {
+      change.translation.x = Math::clamp(change.translation.x, -maxChangeDownX, maxChangeX);
+    }
+    if(parameters.limits.applyChangeY) {
+      change.translation.y = Math::clamp(change.translation.y, -maxChangeDownY, maxChangeY);
+    }
+    if(parameters.limits.applyChangeRotation) {
+      change.rotation = Math::clamp(change.rotation, -maxChangeDownTurn, maxChangeTurn);
+    }
+
+    // apply restricted change
+    step.translation = lastStep.translation + change.translation;
+    step.rotation = Math::normalize(lastStep.rotation + change.rotation);
 }

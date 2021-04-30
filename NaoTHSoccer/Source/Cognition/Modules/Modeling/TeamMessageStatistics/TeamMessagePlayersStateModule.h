@@ -136,12 +136,12 @@ private:
 
     /**
      * @brief Determines the 'playing' state of the players.
-     *        A player is currently 'playing', if he's not fallen.
+     *        A player is currently 'playing', if he's not fallen and ready to walk.
      *        There could be other indicators, like de-localised robots.
      */
     void determinePlayingStates() {
         for(const auto& it : getTeamMessage().data) {
-            getTeamMessagePlayersState().data[it.first].playing = !it.second.fallen;
+            getTeamMessagePlayersState().data[it.first].playing = !it.second.fallen && it.second.custom.readyToWalk;
         }
     }
 

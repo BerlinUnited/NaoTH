@@ -1,0 +1,41 @@
+option look_at_preview_angle
+{
+  initial state look_at_plannend_rotation_angle 
+  {
+    decision {  
+      if (ball.percept.was_seen)
+        goto look_at_ball_percept;
+      else
+        stay;
+    }
+    action {
+     head.motion_type = goto_angle;
+     head.target_angle.x = planned_motion.hip.rot;
+     head.target_angle.y = 30;
+
+     head.angleVelocity = 60;
+    }
+  }
+
+  state look_at_ball_percept
+  {
+    decision
+    {
+      if (state_time > 1000)
+        goto look_at_plannend_rotation_angle;
+      else
+        stay;
+    }
+    action
+    {
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x * clip(value=vector.abs(x=ball.percept.x, y=ball.percept.y), min=250, max=500) / vector.abs(x=ball.percept.x, y=ball.percept.y);
+      head.point_in_world.y = ball.percept.y * clip(value=vector.abs(x=ball.percept.x, y=ball.percept.y), min=250, max=500) / vector.abs(x=ball.percept.x, y=ball.percept.y);
+      head.point_in_world.z = ball.radius;
+
+      // look at ball percept fast!
+      head.angleVelocity = 300;
+    }
+  }
+
+}

@@ -94,6 +94,7 @@ public:
     return minY;
   }
 
+  // TODO: move this method to the field detectors or to a tool class
   void checkPolyIsUnderHorizon(const Math::LineSegment& horizon)
   {
     for(size_t i = 0; i < fieldPoly.size(); ++i)
@@ -112,6 +113,11 @@ public:
     checkPolyIsUnderHorizon(horizon);
   }
 
+  void setField(const FieldPoly& newField)
+  {
+    fieldPoly = newField;
+  }
+
   void reset()
   {
     valid = false;
@@ -125,13 +131,25 @@ public:
   }
 };
 
-
 class FieldPerceptRaw : public FieldPercept{};
 class FieldPerceptRawTop : public FieldPerceptRaw{};
 
 class FieldPerceptTop : public FieldPercept{};
 
+namespace naoth
+{
+template<>
+class Serializer<FieldPercept>
+{
+  public:
+  static void serialize(const FieldPercept& object, std::ostream& stream);
+  static void deserialize(std::istream& stream, FieldPercept& object);
+};
 
+template<>
+class Serializer<FieldPerceptTop> : public Serializer<FieldPercept>
+{};
+}
 
 #endif /* _FIELDPERCEPT_H */
 

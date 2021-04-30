@@ -12,15 +12,17 @@ using namespace naoth;
 
 OdometryCalculator::OdometryCalculator()
   :
-  init(false)
+  init(false),
+  accumulatedGyroRotationZ(0.0)
 {
+  DEBUG_REQUEST_REGISTER("OdometryCalculator:support_foot", "plot the support foot in OdometryCalculator", false);
 
-//TODO
-    //DEBUG_REQUEST_REGISTER("Motion:OdometryCalculator:support_foot", "plot the support foot in OdometryCalculator", false);
+  getDebugParameterList().add(&parameter);
 }
 
 OdometryCalculator::~OdometryCalculator()
 {
+  getDebugParameterList().remove(&parameter);
 }
 
 void OdometryCalculator::execute()
@@ -31,11 +33,11 @@ void OdometryCalculator::execute()
 
   GroundContactModel::Foot supportFoot = getGroundContactModel().supportFoot;
 
-  if ( init ) {
-    //TODO
-    //DEBUG_REQUEST("Motion:OdometryCalculator:support_foot",
-    //  PLOT("OdometryCalculator.support_foot",static_cast<double>(supportFoot));
-    //  );
+  if ( init ) 
+  {  
+    DEBUG_REQUEST("OdometryCalculator:support_foot",
+      PLOT("OdometryCalculator:support_foot",static_cast<double>(supportFoot));
+    );
 
     const Pose3D& lastFoot = (supportFoot == GroundContactModel::LEFT) ? lastLeftFoot : lastRightFoot;
 
@@ -56,6 +58,27 @@ void OdometryCalculator::execute()
     init = true;
   }
 
+  // NOTE: (deprecated) estimate the Z rotation based on simple gyro accumulation
+  // only for testing purposes
+  if(parameter.useGyroRotationOdometry) 
+  {
+    // a simple model for gyro rotation
+    if(getCalibrationData().calibrated) {
+      accumulatedGyroRotationZ += getGyrometerData().data.z * getRobotInfo().getBasicTimeStepInSecond();
+    } else {
+      accumulatedGyroRotationZ = 0.0;
+    }
+    PLOT("OdometryCalculator:accumulatedGyroRotationZ", accumulatedGyroRotationZ);
+
+    getOdometryData().rotation = accumulatedGyroRotationZ;
+  }
+
+  if(parameter.useIMUDataForRotationOdometry) {
+    double z_angle = RotationMatrix(getIMUData().rotation).getZAngle();
+    PLOT("Motion:rotationZ", z_angle);
+    getOdometryData().rotation = z_angle;
+  }
+
   // cache data
   lastLeftFoot.translation = kc.theLinks[KinematicChain::LFoot].p;
   lastLeftFoot.rotation = kc.theLinks[KinematicChain::LFoot].R;
@@ -63,7 +86,6 @@ void OdometryCalculator::execute()
   lastRightFoot.rotation = kc.theLinks[KinematicChain::RFoot].R;
   lastHip.translation = kc.theLinks[KinematicChain::Hip].p;
   lastHip.rotation = kc.theLinks[KinematicChain::Hip].R;
-
 
   ASSERT(!Math::isNan(od.translation.x));
   ASSERT(!Math::isNan(od.translation.y));

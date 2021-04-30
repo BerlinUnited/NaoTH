@@ -72,14 +72,14 @@ int main(int argc, char** argv)
     }
     if (strcmp(argv[i], "-h") == 0) {
         std::cout << "syntax: (-b)? (-r)? (-h)? (-p <port number>)? <logfile>" << std::endl;
-        std::cout << "\"-b\" enable the backend mode which is only used by LogfileSimulatorJNI" << std::endl;
+        std::cout << "\"-b\" enable the backend mode which enables reading commands from stdin" << std::endl;
         std::cout << "\"-r\" play and loop the logfile according to the time recorded in the FrameInfo of the logfile" << std::endl;
-        std::cout << "\"--port\" debug port number, range of valid values: [1,65535]" << std::endl;
+        std::cout << "\"-p, --port\" debug port number, range of valid values: [1,65535]" << std::endl;
         std::cout << "\"-a\" autoplay the log file immediately" << std::endl;
         std::cout << "\"-h\" help" << std::endl;
         return (EXIT_SUCCESS);
     }
-    if (strcmp(argv[i], "--port") == 0) {
+    if (strcmp(argv[i], "-p") == 0 || strcmp(argv[i], "--port") == 0) {
       port = (unsigned short) strtol(argv[++i],0,10);
       if (port == 0) {
           cerr << "invalid port number" << endl;
@@ -95,9 +95,9 @@ int main(int argc, char** argv)
   {
     cerr << "You need to give the path to the logfile as argument" << endl;
     cerr << "arguments: (-b)? (-r)? (-h)? (-p <port number>)? <logfile>" << endl;
-    cerr << "\"-b\" enable the backend mode which is only used by LogfilePlayer of RobotControl" << endl;
+    cerr << "\"-b\" enable the backend mode which enables reading commands from stdin" << endl;
     cerr << "\"-r\" play and loop the logfile according to the time recorded in the FrameInfo of the logfile" << endl;
-    cerr << "\"--port\" debug port number, range of valid values: [1,65535]" << std::endl;
+    cerr << "\"-p, --port\" debug port number, range of valid values: [1,65535]" << std::endl;
     cerr << "\"-a\" starts playing the log file immediatly" << std::endl;
     cerr << "\"-h\" help" << endl;
     return (EXIT_FAILURE);

@@ -11,6 +11,8 @@ namespace motion_symbols("Motion Symbols") {
     look_at_point,
     look_at_world_point,
     look_at_point_on_the_ground
+,
+    goto_angle
   };
   
   /** The motion request for the head */
@@ -19,10 +21,19 @@ namespace motion_symbols("Motion Symbols") {
   enum head.motion_type input head.executed_motion_type;
   /** time the current motion is executed for */
   float input executed_motion.time;
+
+  float input planned_motion.hip.rot;
+  float input planned_motion.hip.x;
+  float input planned_motion.hip.y;
   
   /** Position in image for the head to look to */
   float output head.point_in_image.x [px];
   float output head.point_in_image.y [px];
+
+  /** Position to rotate to */
+  float output head.target_angle.x [px];
+  float output head.target_angle.y [px];
+
   
   /** Position in the world for the head to look to */
   float output head.point_in_world.x [mm];
@@ -80,6 +91,7 @@ namespace motion_symbols("Motion Symbols") {
     empty,
     init,
     dead,
+    falling,
 
     sit,
     stand,
@@ -110,8 +122,9 @@ namespace motion_symbols("Motion Symbols") {
     goalie_sit_block,
     goalie_sit_n_dive_left,
     goalie_sit_n_dive_right,
-    goalie_sit_n_dive_left_test,
-    goalie_sit_n_dive_right_test
+
+    jump_indicator_left,
+    jump_indicator_right
   };
 
   enum motion.walk.coordinate
@@ -211,5 +224,12 @@ namespace motion_symbols("Motion Symbols") {
 
   bool output motion.dribble;
   bool input motion.dribble.action_done;
+
+  //Collision Symbols temporarily here
+  bool input motion.collision.collision_left_bumper;
+  bool input motion.collision.collision_right_bumper;
+
+  float input motion.collision.timeSinceCollisionBumperLeft;
+  float input motion.collision.timeSinceCollisionBumperRight;
  }
   

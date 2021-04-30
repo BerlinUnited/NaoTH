@@ -1,10 +1,11 @@
-#ifndef _WHISTLEDETECTOR_V1_H
-#define _WHISTLEDETECTOR_V1_H
+#ifndef WHISTLEDETECTOR_V1_H
+#define WHISTLEDETECTOR_V1_H
 
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/AudioData.h>
 #include <Representations/Perception/WhistlePercept.h>
 #include <Representations/Infrastructure/AudioControl.h>
+#include <Representations/Infrastructure/FrameInfo.h>
 
 #include <Tools/DataStructures/ParameterList.h>
 #include <Tools/Debug/DebugParameterList.h>
@@ -14,6 +15,7 @@ using namespace naoth;
 BEGIN_DECLARE_MODULE(WhistleDetectorV1)
 	REQUIRE(AudioData)
 	REQUIRE(AudioControl)
+	REQUIRE(FrameInfo)
 
 	PROVIDE(WhistlePercept)
 	PROVIDE(DebugParameterList)
@@ -39,7 +41,5 @@ public:
 
 	} params;
 
-
-private:
 };
-#endif // _WHISTLEDETECTOR_V1_H
+#endif // WHISTLEDETECTOR_V1_H

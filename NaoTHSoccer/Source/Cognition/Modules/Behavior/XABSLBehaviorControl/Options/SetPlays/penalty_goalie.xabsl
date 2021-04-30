@@ -1,0 +1,54 @@
+/* Dummy Implemenation for the penalty goalie */
+option penalty_goalie
+{
+  initial state intial_stand
+  { 
+    decision
+    {
+      if (state_time > 5000)
+          goto block_middle;
+        else 
+          stay;
+    }
+    action
+    {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state block_middle
+  { 
+    decision
+    {
+      if (state_time > 5000)
+          goto stand_up;
+        else 
+          stay;
+    }
+    action
+    {
+      motion.type = block_middle;
+      head.control_mode = look_straight_ahead;
+    }
+  }
+
+  state stand_up
+  { 
+    decision
+    {
+      if (state_time > 5000)
+          goto block_middle;
+        else 
+          stay;
+    }
+    action
+    {
+      motion.type = stand;
+      arm.control_mode = normal;
+      head.control_mode = look_straight_ahead;
+    }
+  }
+
+  
+}

@@ -15,7 +15,9 @@ using namespace naoth;
 
 void Serializer<ScanLineEdgelPercept>::serialize(const ScanLineEdgelPercept& representation, std::ostream& stream)
 {
-  naothmessages::ScanLineEdgelPercept percept_msg;
+  // EVIL HACK: recreating these messages can be very expensive. For now we just make them static.
+  static naothmessages::ScanLineEdgelPercept percept_msg;
+  percept_msg.Clear();
 
   for(size_t i = 0; i < representation.endPoints.size(); i++)
   {

@@ -34,19 +34,21 @@ public:
   // The speed of the ball relative to the robot (in mm/s)
   Vector2d speed;
 
+  // the rest position
+  Vector2d position_at_rest;
+
   // precalculated ball position in the coordinates of the planed motion (see motionStatus)
   Vector2d positionPreview;
   Vector2d positionPreviewInLFoot;
   Vector2d positionPreviewInRFoot;
-
-  /** The estimated position of the ball 0-10s in the future */
-  std::vector<Vector2d> futurePosition;
 
   // algorithmical validity of the model: true => the ball locator was able to compute a ball model
   bool valid;
 
   // indicates that the ball was perceived well enough to be sure
   bool knows;
+
+  Vector2d last_known_ball;
 
 private:
 
@@ -58,7 +60,7 @@ private:
 
 
 public:
-  
+
   const naoth::FrameInfo& getFrameInfoWhenBallWasSeen() const {
     return frameInfoWhenBallWasSeen;
   }
@@ -73,24 +75,12 @@ public:
       timeBallIsSeen = 0;
     else
     {
-      ASSERT(frameInfoWhenBallWasSeen.getTime() < frameInfo.getTime());
-      timeBallIsSeen += frameInfo.getTimeSince(frameInfoWhenBallWasSeen.getTime());
+      int diff = frameInfo.getTimeSince(frameInfoWhenBallWasSeen.getTime());
+      ASSERT(diff >= 0); 
+      timeBallIsSeen += static_cast<unsigned int>(diff);
     }
 
     frameInfoWhenBallWasSeen = frameInfo;
-  }
-
-  const Vector2d& getFuturePosition(size_t t) const 
-  {
-    if(t < futurePosition.size()) {
-      return futurePosition[t];
-    }
-
-    if(futurePosition.empty()) {
-      return position;
-    }
-
-    return futurePosition.back();
   }
 
   void reset() {
@@ -110,6 +100,17 @@ public:
     stream << "frameInfoWhenBallWasSeen:\n" << frameInfoWhenBallWasSeen << std::endl;
   }
 };
+
+namespace naoth
+{
+template<>
+class Serializer<BallModel>
+{
+  public:
+  static void serialize(const BallModel& object, std::ostream& stream);
+  static void deserialize(std::istream& stream, BallModel& object);
+};
+}
 
 #endif // _BallModel_h_
 

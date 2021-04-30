@@ -37,7 +37,6 @@
 #include "Symbols/TeamSymbols.h"
 #include "Symbols/SensorSymbols.h"
 #include "Symbols/MathSymbols.h"
-#include "Symbols/GoalSymbols.h"
 #include "Symbols/LedSymbols.h"
 #include "Symbols/SelflocSymbols.h"
 #include "Symbols/OdometrySymbols.h"
@@ -149,7 +148,6 @@ private:
   ModuleCreator<TeamSymbols>* theTeamSymbols;
   ModuleCreator<SensorSymbols>* theSensorSymbols;
   ModuleCreator<MathSymbols>* theMathSymbols;
-  ModuleCreator<GoalSymbols>* theGoalSymbols;
   ModuleCreator<LedSymbols>* theLedSymbols;
   ModuleCreator<SelflocSymbols>* theSelflocSymbols;
   ModuleCreator<OdometrySymbols>* theOdometrySymbols;

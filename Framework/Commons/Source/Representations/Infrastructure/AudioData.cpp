@@ -11,8 +11,7 @@ AudioData::AudioData():
   sampleRate(8000),
   numChannels(2),
   timestamp(0)
-{
-  
+{ 
 }
 
 void AudioData::print(std::ostream& stream) const
@@ -21,10 +20,6 @@ void AudioData::print(std::ostream& stream) const
   stream << "numChannels: " << numChannels << std::endl;
   stream << "Number of Samples: " << samples.size() << std::endl;
   stream << "timestamp: " << timestamp << std::endl;
-}
-
-AudioData::~AudioData()
-{
 }
 
 void Serializer<AudioData>::serialize(const AudioData& representation, std::ostream& stream)
@@ -52,7 +47,7 @@ void Serializer<AudioData>::deserialize(std::istream& stream, AudioData& represe
   representation.numChannels = msg.numchannels();
   representation.timestamp = msg.timestamp();
 
-  assert(msg.samplesize() == sizeof(short));
-  representation.samples.resize(msg.samples().size() / sizeof(short));
+  assert(msg.samplesize() == sizeof(uint16_t));
+  representation.samples.resize(msg.samples().size() / sizeof(uint16_t));
   std::copy_n(msg.samples().data(), msg.samples().size(), (unsigned char*)representation.samples.data());
 }

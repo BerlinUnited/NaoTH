@@ -1,3 +1,6 @@
+/** This test walks backwards for two steps and then stops and repeats the process. This is used to
+    investigate if the robot falls when accelerating backwards. 
+    2019-05: WIP */
 option test_walk_stop_and_go_backwards{
 
 common decision {

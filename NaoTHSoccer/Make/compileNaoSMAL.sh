@@ -1,10 +1,10 @@
-echo "###### MAKE FILES ######" && \
-premake5 --platform=Nao gmake && \
-echo "###### C++ ######" && \
-cd ../build/ &&
-make config=optdebug_nao NaoSMAL $@ && \
-cd ../Make/ && \
-echo "###### FINISH ######" && exit 0 \
+#!/bin/bash
 
-echo "!!!! FAILURE !!!!"
-exit 100
+# Any subsequent commands which fail will cause 
+# the shell script to exit immediately
+set -e
+
+# catch the EXIT and print a message if the exit code is not zero
+trap '[ $? -eq 0 ] || echo "!!!! FAILURE WITH CODE $? !!!!"' EXIT
+
+./compileNao.sh NaoSMAL $@

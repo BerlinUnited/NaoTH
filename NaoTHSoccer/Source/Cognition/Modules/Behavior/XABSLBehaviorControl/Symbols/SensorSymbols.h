@@ -15,7 +15,6 @@
 #include "Representations/Infrastructure/UltraSoundData.h"
 #include "Representations/Infrastructure/GyrometerData.h"
 #include "Representations/Infrastructure/InertialSensorData.h"
-#include "Representations/Infrastructure/IRData.h"
 #include "Representations/Infrastructure/BatteryData.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Modeling/BodyState.h"
@@ -33,7 +32,6 @@ BEGIN_DECLARE_MODULE(SensorSymbols)
   REQUIRE(UltraSoundReceiveData)
   REQUIRE(GyrometerData)
   REQUIRE(InertialSensorData)
-  REQUIRE(IRReceiveData)
   REQUIRE(BatteryData)
   REQUIRE(FrameInfo)
   REQUIRE(BodyState)
@@ -89,7 +87,8 @@ private:
   static double getInertialSensorX();
   static double getInertialSensorY();
 
-  static bool getBumberLeftPressed();
+  static bool getBumperLeftPressed();
+  static bool getBumperRightPressed();
   static bool getButtonHeadMiddle();
   static bool getButtonHeadFront();
   static bool getButtonHeadRear();

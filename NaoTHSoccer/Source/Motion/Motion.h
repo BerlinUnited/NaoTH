@@ -12,11 +12,10 @@
 #include <PlatformInterface/Callable.h>
 #include <PlatformInterface/PlatformInterface.h>
 
-#include <ModuleFramework/ModuleManager.h>
 #include <ModuleFramework/Module.h>
 #include <Tools/Debug/ModuleManagerWithDebug.h>
 
-//#include "MorphologyProcessor/SupportPolygonGenerator.h"
+// motion modules
 #include "MorphologyProcessor/OdometryCalculator.h"
 //#include "MorphologyProcessor/FootTouchCalibrator.h"
 #include "MorphologyProcessor/FootGroundContactDetector.h"
@@ -26,19 +25,14 @@
 #include "SensorFilter/IMUModel.h"
 #include "SensorFilter/ArmCollisionDetector.h"
 #include "SensorFilter/ArmCollisionDetector2018.h"
+#include "SensorFilter/BodyCollisionDetector.h"
+#include "SensorFilter/BumperCollisionDetector.h"
 #include "SensorFilter/CoPProvider.h"
 #include "SensorFilter/SensorLogger.h"
 
-#include "Representations/Perception/CameraMatrix.h"
-#include <Representations/Modeling/CameraMatrixOffset.h>
-
-#include "Tools/Debug/Logger.h"
-#include "Engine/MotionEngine.h"
-
-
 // representations
-#include <Representations/Infrastructure/JointData.h>
 #include <Representations/Infrastructure/FrameInfo.h>
+#include <Representations/Infrastructure/JointData.h>
 #include <Representations/Infrastructure/InertialSensorData.h>
 #include <Representations/Infrastructure/FSRData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
@@ -51,10 +45,13 @@
 #include "Representations/Motion/Walk2018/Walk2018Parameters.h"
 #include "Representations/Motion/Walk2018/StepBuffer.h"
 
+#include "Representations/Perception/CameraMatrix.h"
+#include <Representations/Modeling/CameraMatrixOffset.h>
+#include <Representations/Modeling/BodyStatus.h>
+#include <Representations/Modeling/BodyState.h>
+
 // debug
 #include <Representations/Debug/Stopwatch.h>
-#include <Representations/Infrastructure/FrameInfo.h>
-#include <Representations/Modeling/BodyStatus.h>
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugImageDrawings.h"
@@ -63,10 +60,12 @@
 #include "Tools/Debug/DebugParameterList.h"
 #include "Tools/Debug/DebugModify.h"
 
-#include <Representations/Modeling/BodyState.h>
-
+// tools
 #include <Tools/DataStructures/ParameterList.h>
 #include <Tools/DataStructures/RingBufferWithSum.h>
+
+#include "Tools/Debug/Logger.h"
+#include "Engine/MotionEngine.h"
 
 BEGIN_DECLARE_MODULE(Motion)
   REQUIRE(GroundContactModel)
@@ -157,19 +156,15 @@ private:
   public:
     Parameter() : ParameterList("Motion")
     {
-      PARAMETER_REGISTER(useGyroRotationOdometry) = true;
       PARAMETER_REGISTER(letIMUModelProvideInertialModel) = true;
       //PARAMETER_REGISTER(useInertiaSensorCalibration) = true;
-      PARAMETER_REGISTER(useIMUDataForRotationOdometry) = true;
 
-      PARAMETER_REGISTER(recordSensorData) = true;
+      PARAMETER_REGISTER(recordSensorData) = false;
       syncWithConfig();
     }
 
-    bool useGyroRotationOdometry;
     bool letIMUModelProvideInertialModel;
     //bool useInertiaSensorCalibration;
-    bool useIMUDataForRotationOdometry;
 
     bool recordSensorData;
   } parameter;
@@ -180,24 +175,26 @@ private:
   void updateCameraMatrix();
   void drawRobot3D(const KinematicChain& kinematicChain);
 
-private:
+private: // motion modules
   // HACK: needs a better solution
   AbstractModuleCreator* theLogProvider;
 
   ModuleCreator<InertiaSensorCalibrator>* theInertiaSensorCalibrator;
   ModuleCreator<InertiaSensorFilter>* theInertiaSensorFilterBH;
   ModuleCreator<FootGroundContactDetector>* theFootGroundContactDetector;
-  //ModuleCreator<SupportPolygonGenerator>* theSupportPolygonGenerator;
   ModuleCreator<OdometryCalculator>* theOdometryCalculator;
   ModuleCreator<KinematicChainProviderMotion>* theKinematicChainProvider;
   ModuleCreator<IMUModel>* theIMUModel;
+
   ModuleCreator<ArmCollisionDetector>* theArmCollisionDetector;
   ModuleCreator<ArmCollisionDetector2018>* theArmCollisionDetector2018;
-
+  ModuleCreator<BodyCollisionDetector>* theBodyCollisionDetector;
+  ModuleCreator<BumperCollisionDetector>* theBumperCollisionDetector;
+   
   ModuleCreator<CoPProvider>* theCoPProvider;
-  ModuleCreator<SensorLogger>* theSensorLogger;
-
   ModuleCreator<MotionEngine>* theMotionEngine;
+
+  ModuleCreator<SensorLogger>* theSensorLogger;
 
   naoth::MotorJointData theLastMotorJointData;
 
