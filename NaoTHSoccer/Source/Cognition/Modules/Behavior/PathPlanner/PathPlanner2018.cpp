@@ -633,6 +633,10 @@ void PathPlanner2018::sideKick(const Foot& foot) // Foot == RIGHT means that we 
 }
 
 
+void PathPlanner2018::addStep(const StepBufferElement& new_step) {
+  stepBuffer.push_back(new_step);
+}
+
 void PathPlanner2018::updateSpecificStep(const unsigned int index, StepBufferElement& step)
 {
   ASSERT(stepBuffer.size() > 0);
