@@ -464,6 +464,11 @@ message DebugModify {
   repeated ModifyValue valueMap = 1;
 }
 
+
+message StepBuffer {
+  optional Pose3D support_foot = 1;
+}
+
 message bodyAwareness {
   optional bool isLifted = 1;
   optional DoubleVector3  calculatedCoM= 2;
