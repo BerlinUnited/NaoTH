@@ -145,29 +145,27 @@ void HeadMotionEngine::gotoAngle(const Vector2d& target)
 
 void HeadMotionEngine::moveByAngle(const Vector2d& target)
 {
+  // Bas maximal head velocity for the case if the robot is stationary.
   double max_velocity_deg_in_second = params.max_velocity_deg_in_second_slow;
-  // calculate depending on the walking speed
+  
+  // Restrict the head velocity when walking. Calculate depending on the walking speed.
   if(getMotionStatus().currentMotion == motion::walk)
   {
     double walking_speed = getMotionStatus().plannedMotion.hip.translation.abs();
 
-    if(walking_speed > params.cutting_velocity)
-    {
+    if(walking_speed > params.cutting_velocity) {
       max_velocity_deg_in_second = params.max_velocity_deg_in_second_slow;
     } else {
       double t = walking_speed/params.cutting_velocity;
       max_velocity_deg_in_second = (1.0 - t)*params.max_velocity_deg_in_second_slow + t*params.max_velocity_deg_in_second_fast;
     }
   }
-  else
-  {
-    max_velocity_deg_in_second = params.max_velocity_deg_in_second_slow;
-  }
 
   max_velocity_deg_in_second = min(getHeadMotionRequest().velocity, max_velocity_deg_in_second);
 
   MODIFY("HeadMotionEngine:gotoAngle:max_velocity_deg_in_second", max_velocity_deg_in_second);
   double max_velocity = Math::fromDegrees(max_velocity_deg_in_second)*getRobotInfo().getBasicTimeStepInSecond();
+
 
   // current position
   Vector2d headPos( getMotorJointData().position[JointData::HeadYaw],
@@ -177,10 +175,22 @@ void HeadMotionEngine::moveByAngle(const Vector2d& target)
   motion_target = headPos + target;
 
   // calculate the update step (normalize with speed if needed)
-  Vector2d update(
-    Math::normalize(target.x),
-    Math::normalize(target.y));
+  Vector2d update( Math::normalize(target.x), Math::normalize(target.y) );
 
+  // TODO: verify. This might be made more elegant with the limits of the joints
+  //       getMotorJointData().min[JointData::HeadYaw], getMotorJointData().max[JointData::HeadYaw]
+  Vector2d motion_target_normalized ( Math::normalize(headPos.x + target.x), Math::normalize(headPos.y + target.y) );
+  // make sure the head allways turns in the valid direction
+  // NOTE: the abs(update.x) can be larger than pi (e.g., when turning from far left to far right)
+  if(headPos.x < 0 && update.x < 0 && motion_target_normalized.x > 0 ) {
+    // current pos negative & target pos positive => direction hast to be positive
+    update.x = Math::pi2 + update.x;
+  } else if(headPos.x > 0 && update.x > 0 && motion_target_normalized.x < 0 ) {
+    // current pos positive & target pos negative => direction hast to be negarive
+    update.x = update.x - Math::pi2;
+  }
+
+  // restrict to maximal velocity
   if (update.abs() > max_velocity) {
     update = update.normalize(max_velocity);
   }
@@ -226,9 +236,11 @@ void HeadMotionEngine::moveByAngle(const Vector2d& target)
   headPos += velocity;
 
 
-  // restrict joint positions
+  // restrict yaw joint position to maximal limits
   headPos.x = Math::clamp(headPos.x, getMotorJointData().min[JointData::HeadYaw], getMotorJointData().max[JointData::HeadYaw]);
 
+  // restrict pitch joint position to the limits from the table, 
+  // to make sure the head doesn't collide with the body.
   double headPitchMin = headLimitFunctionMin(headPos.x);
   double headPitchMax = headLimitFunctionMax(headPos.x);
   headPos.y = Math::clamp(headPos.y, headPitchMin, headPitchMax);
