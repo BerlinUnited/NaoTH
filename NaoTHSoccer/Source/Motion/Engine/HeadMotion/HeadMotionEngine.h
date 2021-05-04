@@ -104,8 +104,11 @@ private:
 
 private:
 
-  // HACK: limits
+  // HACK: limits.
+  // TODO: make them parameters. (as soon as we have a config system that allows loading vectors :)
+  // NOTE: V4, V5, V6 have the same limits
   // http://doc.aldebaran.com/2-8/family/nao_technical/joints_naov6.html#naov6-joints-head-joints
+  // http://doc.aldebaran.com/2-1/family/robots/joints_robot.html
   std::vector<double> headLimitsHeadYaw  = 
   {
     -2.086017,
