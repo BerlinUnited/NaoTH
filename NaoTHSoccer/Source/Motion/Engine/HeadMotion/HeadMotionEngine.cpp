@@ -56,7 +56,8 @@ void HeadMotionEngine::execute()
     case HeadMotionRequest::look_at_point:
       lookAtPoint(); break;
     case HeadMotionRequest::look_at_world_point:
-      lookAtWorldPoint(getHeadMotionRequest().targetPointInTheWorld); break;
+      //lookAtWorldPoint(getHeadMotionRequest().targetPointInTheWorld); break;
+      lookAtWorldPointCool(getHeadMotionRequest().targetPointInTheWorld); break;
     case HeadMotionRequest::look_at_point_on_the_ground:
       gotoPointOnTheGround(getHeadMotionRequest().targetPointOnTheGround); break;
     case HeadMotionRequest::goto_angle:
@@ -122,13 +123,13 @@ void HeadMotionEngine::gotoPointOnTheGround(const Vector2d& target)
   CameraGeometry::imagePixelToFieldCoord(
     getCameraMatrix(),
     getCameraInfo(),
-    static_cast<double>(getCameraInfo().getOpticalCenterX()),
-    static_cast<double>(getCameraInfo().getOpticalCenterY()),
+    getCameraInfo().getOpticalCenterX(),
+    getCameraInfo().getOpticalCenterY(),
     0.0,
     centerOnField);
 
   std::vector<Vector3d> points;
-  points.push_back(Vector3d(centerOnField.x,centerOnField.y,0.0));
+  points.push_back(Vector3d(centerOnField.x, centerOnField.y, 0.0));
   points.push_back(pointOnTheGround);
 
   trajectoryHeadMove(points);
@@ -145,21 +146,27 @@ void HeadMotionEngine::gotoAngle(const Vector2d& target)
 
 void HeadMotionEngine::moveByAngle(const Vector2d& target)
 {
-  // Bas maximal head velocity for the case if the robot is stationary.
-  double max_velocity_deg_in_second = params.max_velocity_deg_in_second_slow;
+  // Base maximal head velocity for the case if the robot is stationary.
+  double max_velocity_deg_in_second = params.max_velocity_deg_in_second_fast;
   
   // Restrict the head velocity when walking. Calculate depending on the walking speed.
   if(getMotionStatus().currentMotion == motion::walk)
   {
     double walking_speed = getMotionStatus().plannedMotion.hip.translation.abs();
 
+    // we are walking to fast => move the head slowly
     if(walking_speed > params.cutting_velocity) {
       max_velocity_deg_in_second = params.max_velocity_deg_in_second_slow;
     } else {
+      // reduce the speed of the head linearly the faste we walk
+      //  t = 1 => params.max_velocity_deg_in_second_slow
+      //  t = 0 => params.max_velocity_deg_in_second_fast
       double t = walking_speed/params.cutting_velocity;
-      max_velocity_deg_in_second = (1.0 - t)*params.max_velocity_deg_in_second_slow + t*params.max_velocity_deg_in_second_fast;
+      max_velocity_deg_in_second = t*params.max_velocity_deg_in_second_slow + (1.0 - t)*params.max_velocity_deg_in_second_fast;
     }
   }
+
+  PLOT("HeadMotionEngine:max_velocity_deg_in_second", max_velocity_deg_in_second);
 
   max_velocity_deg_in_second = min(getHeadMotionRequest().velocity, max_velocity_deg_in_second);
 
@@ -254,6 +261,30 @@ void HeadMotionEngine::moveByAngle(const Vector2d& target)
   getMotorJointData().position[JointData::HeadYaw]   = headPos.x;
   getMotorJointData().position[JointData::HeadPitch] = headPos.y;
 }//end moveByAngle
+
+void HeadMotionEngine::lookAtWorldPointCool(const Vector3d& origTarget)
+{
+  // HACK: transform the head motion request to hip from the support foot coordinates
+  const Pose3D& lFoot = getKinematicChainSensor().theLinks[KinematicChain::LFoot].M;
+  const Pose3D& rFoot = getKinematicChainSensor().theLinks[KinematicChain::RFoot].M;
+  Vector3d target(origTarget);
+
+  // transform the requested target to hip coordinates
+  if(getHeadMotionRequest().coordinate == HeadMotionRequest::LFoot) {
+    target = lFoot*target;
+  } else if(getHeadMotionRequest().coordinate == HeadMotionRequest::RFoot) {
+    target = rFoot*target;
+  }
+
+  Vector2d x;
+  if(getHeadMotionRequest().cameraID == naoth::CameraInfo::Top) {
+    x = CameraGeometry::lookAtPoint(getCameraMatrixTop(), target);
+  } else {
+    x = CameraGeometry::lookAtPoint(getCameraMatrix(), target);
+  }
+
+  moveByAngle(x);
+}//end lookAtWorldPointCool
 
 // needed by lookAtWorldPoint
 Vector3d HeadMotionEngine::g(double yaw, double pitch, const Vector3d& pointInWorld)

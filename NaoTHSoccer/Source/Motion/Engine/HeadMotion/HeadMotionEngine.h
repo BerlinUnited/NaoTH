@@ -182,6 +182,7 @@ private:
   void moveByAngle(const Vector2d& target);
   void gotoAngle(const Vector2d& target);
 
+  void lookAtWorldPointCool(const Vector3d& target);
   void lookAtWorldPoint(const Vector3d& target);
   void lookAtWorldPointSimple(const Vector3d& target);
 
