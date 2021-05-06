@@ -5,7 +5,6 @@
 
 GameController::GameController()
   : 
-  lastGameState(GameData::GameState::unknown_game_state),
   debug_whistle_heard(false),
   play_by_whistle(false)
 {
@@ -109,8 +108,9 @@ void GameController::execute()
       getPlayerInfo().playerNumber = getGameData().newPlayerNumber;
     }
 
-    getPlayerInfo().update(getGameData());
-
+    if (getPlayerInfo().robotState != PlayerInfo::unstiff) {
+      getPlayerInfo().update(getGameData());
+    }
     // take the ownership of the play state
     if(getPlayerInfo().robotState == PlayerInfo::playing) {
       play_by_whistle = false;
@@ -139,14 +139,13 @@ void GameController::execute()
     updateLEDs();
   }
 
-  // remember last game state (from gamecontroller)
-  lastGameState = getGameData().gameState;
   // set teamcomm: whistle detected!
   getTeamMessageData().custom.whistleDetected = getWhistlePercept().whistleDetected;
 
   // provide the return message
   getGameReturnData().team = getPlayerInfo().teamNumber;
   getGameReturnData().player = getPlayerInfo().playerNumber;
+  //getGameReturnData().
   getGameReturnData().message = getWifiMode().wifiEnabled ? GameReturnData::alive : GameReturnData::dead;
 } // end execute
 
@@ -241,6 +240,7 @@ void GameController::handleButtons()
 
   if (getButtonState()[ButtonState::Chest].isSingleClick())
   {
+    //handle unstiff
     switch (getPlayerInfo().robotState)
     {
     case PlayerInfo::initial:
@@ -258,6 +258,10 @@ void GameController::handleButtons()
       // take the ownership of the play state
       play_by_whistle = false;
       break;
+    }
+    case PlayerInfo::unstiff:
+    {
+      getPlayerInfo().robotState = PlayerInfo::initial;
     }
     default:
       ASSERT(false);
@@ -304,8 +308,8 @@ void GameController::handleButtons()
     )
   {
     getPlayerInfo().robotState = PlayerInfo::initial;
-  }
 
+  }
 } // end handleButtons
 
 
@@ -323,6 +327,14 @@ void GameController::handleHeadButtons()
       getSoundPlayData().mute = false;
       getSoundPlayData().soundFile = ssWav.str();
     }
+  }
+
+
+  if((getButtonState().buttons[ButtonState::HeadFront].isPressed && getButtonState()[ButtonState::HeadFront].timeSinceEvent() > 1000) &&
+    (getButtonState()[ButtonState::HeadMiddle].isPressed && getButtonState()[ButtonState::HeadMiddle].timeSinceEvent() > 1000) &&
+    (getButtonState()[ButtonState::HeadRear].isPressed && getButtonState()[ButtonState::HeadRear].timeSinceEvent() > 1000)) {
+
+    getPlayerInfo().robotState = PlayerInfo::unstiff;
   }
 }
 
