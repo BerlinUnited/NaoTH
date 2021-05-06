@@ -265,8 +265,8 @@ void HeadMotionEngine::moveByAngle(const Vector2d& target)
 void HeadMotionEngine::lookAtWorldPointCool(const Vector3d& origTarget)
 {
   // HACK: transform the head motion request to hip from the support foot coordinates
-  const Pose3D& lFoot = getKinematicChainSensor().theLinks[KinematicChain::LFoot].M;
-  const Pose3D& rFoot = getKinematicChainSensor().theLinks[KinematicChain::RFoot].M;
+  const Pose3D& lFoot = getKinematicChainMotor().theLinks[KinematicChain::LFoot].M;
+  const Pose3D& rFoot = getKinematicChainMotor().theLinks[KinematicChain::RFoot].M;
   Vector3d target(origTarget);
 
   // transform the requested target to hip coordinates
@@ -276,11 +276,22 @@ void HeadMotionEngine::lookAtWorldPointCool(const Vector3d& origTarget)
     target = rFoot*target;
   }
 
+  CameraMatrix cameraMatrix = CameraGeometry::calculateCameraMatrixFromChestPose(
+    getKinematicChainMotor().theLinks[KinematicChain::Torso].M,
+    NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Bottom].offset,
+    NaoInfo::robotDimensions.cameraTransform[naoth::CameraInfo::Bottom].rotationY,
+    getCameraMatrixOffset().body_rot,
+    getCameraMatrixOffset().head_rot,
+    getCameraMatrixOffset().cam_rot[naoth::CameraInfo::Bottom],
+    getSensorJointData().position[JointData::HeadYaw],
+    getSensorJointData().position[JointData::HeadPitch],
+    getInertialModel().orientation);
+
   Vector2d x;
   if(getHeadMotionRequest().cameraID == naoth::CameraInfo::Top) {
-    x = CameraGeometry::lookAtPoint(getCameraMatrixTop(), target);
+    x = CameraGeometry::lookAtPoint(cameraMatrix, target);
   } else {
-    x = CameraGeometry::lookAtPoint(getCameraMatrix(), target);
+    x = CameraGeometry::lookAtPoint(cameraMatrix, target);
   }
 
   moveByAngle(x);
